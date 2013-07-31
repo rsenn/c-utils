@@ -1,4 +1,5 @@
 #include "dir_internal.h"
+#include <stdlib.h>
 
 int dir_open(struct dir_s *d, const char *p)
 {

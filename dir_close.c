@@ -5,6 +5,7 @@
 #else
 #include <dirent.h>
 #endif
+#include <stdlib.h>
 
 
 void dir_close(struct dir_s *d)

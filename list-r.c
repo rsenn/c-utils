@@ -28,7 +28,7 @@ return 0;
 int list_dir_internal(stralloc *dir,  char type)
 {
   unsigned long l;
-  struct dir_s *d;
+  struct dir_s d;
   int is_dir;
   unsigned long len;
   
