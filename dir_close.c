@@ -7,11 +7,12 @@
 #endif
 
 
-void dir_close(struct dir *d)
+void dir_close(struct dir_s *d)
 {
 #if defined(__MINGW32__) || defined(__MSYS__)
-  CloseHandle(d->dir_handle);
+  CloseHandle(((struct dir_internal_s *)(d->dir_int))->dir_handle);
 #else
-  closedir(d->dir_handle);
+  closedir(((struct dir_internal_s *)(d->dir_int))->dir_handle);
 #endif
+  free(d->dir_int);
 }

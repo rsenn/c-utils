@@ -9,7 +9,7 @@
 #include <dirent.h>
 #endif
 
-struct dir {
+struct dir_internal_s {
 #if defined(__MINGW32__) || defined(__MSYS__)
   HANDLE dir_handle;
   WIN32_FIND_DATAA dir_finddata;

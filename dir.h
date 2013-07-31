@@ -16,12 +16,12 @@ enum
   D_DIRECTORY = 0x10,
 };
 
-struct dir;
+struct dir_s { void *dir_int; };
 
-int dir_open(struct dir *d, const char *p);
-char *dir_read(struct dir *d);
-void dir_close(struct dir *d);
+int dir_open(struct dir_s *d, const char *p);
+char *dir_read(struct dir_s *d);
+void dir_close(struct dir_s *d);
 
-int dir_type(struct dir *d);
+int dir_type(struct dir_s *d);
 
 #endif // _DIR_H__
