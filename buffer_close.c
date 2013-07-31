@@ -1,7 +1,11 @@
 #include <buffer.h>
 #include <shell.h>
 #include <unistd.h>
+#ifndef __MINGW32__
 #include <sys/mman.h>
+#else
+#include <windows.h>
+#endif
 
 void buffer_close(buffer* b) {
   if (b->fd != -1) close(b->fd);

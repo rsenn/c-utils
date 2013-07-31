@@ -10,8 +10,8 @@ int list_dir_internal(stralloc *dir,  char type);
 
 int list_dir(stralloc *dir)
 {
-        list_dir_internal(dir, DT_DIR);
-        list_dir_internal(dir, -DT_DIR);
+        //list_dir_internal(dir, DT_DIR);
+        //list_dir_internal(dir, -DT_DIR);
 }
 
 int list_dir_internal(stralloc *dir,  char type)
@@ -32,8 +32,8 @@ int list_dir_internal(stralloc *dir,  char type)
           if(strcmp(de->d_name, ".") == 0) continue;
           if(strcmp(de->d_name, "..") == 0) continue;
 
-          if(type > 0 && !(de->d_type & type)) continue;
-          if(type < 0 && (de->d_type & (-type))) continue;
+//          if(type > 0 && !(de->d_type & type)) continue;
+//          if(type < 0 && (de->d_type & (-type))) continue;
 
 //        idx = dir->s + l;  *idx = '\0';
 
@@ -43,7 +43,7 @@ int list_dir_internal(stralloc *dir,  char type)
         //      stralloc_cats(dir, de->d_name);
         //
 
-        if(de->d_type & DT_DIR)
+//        if(de->d_type & DT_DIR)
         {
                 stralloc_cats(dir, "/");
         }
@@ -53,7 +53,7 @@ int list_dir_internal(stralloc *dir,  char type)
                 buffer_put(&buffer_1, "\n", 1);
              buffer_flush(&buffer_1);
       
-          if(de->d_type & DT_DIR)
+//          if(de->d_type & DT_DIR)
           {
                 dir->len--;
                   list_dir_internal(dir,0);
