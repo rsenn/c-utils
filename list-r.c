@@ -22,8 +22,7 @@ int list_dir(stralloc *dir)
 				{
 							idx[1] = '\0';
 
-							stralloc_readyplus(dir, strlen(de->d_name)+1);
-							strcpy(&idx[1], de->d_name);
+							stralloc_cats(dir, de->d_name);
 
 								buffer_put(&buffer_1, dir->s,dir->len);
 								buffer_put(&buffer_1, "\n", 1);
