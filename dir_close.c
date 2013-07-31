@@ -1,5 +1,10 @@
 #include "dir.h"
 
+#if defined(__MINGW32__) ||defined(__MSYS__)
+#include <windows.h>
+#endif
+
+
 void dir_close(struct dir *d)
 {
 #if defined(__MINGW32__) || defined(__MSYS__)
