@@ -21,7 +21,7 @@ extern char* mmap_read(const char* filename,unsigned long* filesize) {
   if(fd == -1)
     return 0;
 #endif
-  map = mmap_read_fd(fd, filesize);
+  map = mmap_read_fd((int)fd, filesize);
   close(fd);
   return map;
 }

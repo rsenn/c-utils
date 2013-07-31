@@ -16,7 +16,7 @@ char* mmap_read_fd(int fd, unsigned long *filesize)
 #if defined(__MINGW32__) || defined(__MSYS__)
   HANDLE m;
   char* map;
-  m=CreateFileMapping(fd,0,PAGE_READONLY,0,0,NULL);
+  m=CreateFileMapping((HANDLE)fd,0,PAGE_READONLY,0,0,NULL);
   map=0;
   if (m)
     map=MapViewOfFile(m,FILE_MAP_READ,0,0,0);
