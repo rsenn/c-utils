@@ -9,13 +9,14 @@ HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')
 
 
 ifeq ($(HOST),mingw32)
-
 				EXEEXT := .exe
 				LIBS += -lshlwapi
 endif
 ifeq ($(HOST),msys)
 
 				EXEEXT := .exe
+				LIBS += -lshlwapi
+
 endif
 
 

@@ -3,7 +3,7 @@
 int dir_open(struct dir *d, const char *p)
 {
   int ret;
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(__MSYS__)
   char path[MAX_PATH+1];
   size_t len;
   strncpy(path, p, sizeof(path)-1);

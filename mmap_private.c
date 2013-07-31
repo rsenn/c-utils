@@ -1,6 +1,6 @@
 #include <sys/types.h>
 #include <unistd.h>
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
 #else
 #include <sys/mman.h>
@@ -9,7 +9,7 @@
 #include "mmap.h"
 
 char* mmap_private(const char* filename,unsigned long* filesize) {
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(__MSYS__)
   HANDLE fd,m;
   char* map;
   fd=CreateFile(filename,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0);

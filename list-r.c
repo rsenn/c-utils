@@ -1,4 +1,5 @@
-#inc	lude <stdio.h>
+
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <dirent.h>
@@ -8,27 +9,26 @@
 #include "stralloc.h"
 #include "dir.h"
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
 #include <shlwapi.h>
 #endif
 
 static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer buffer_1 = BUFFER_INIT(write, 1, buffer_1_out, BUFFER_OUTSIZE);
+static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 int list_dir_internal(stralloc *dir,  char type);
 
 int list_dir(stralloc *dir)
 {
   //list_dir_internal(dir, DT_DIR);
   //list_dir_internal(dir, -DT_DIR);
-}
+return 0;
+  }
 
 int list_dir_internal(stralloc *dir,  char type)
 {
-  struct dir d;
-  struct dirent *de;
-  char *idx;
   unsigned long l;
+  struct dir d;
   int is_dir;
   unsigned long len;
   
@@ -82,6 +82,7 @@ int list_dir_internal(stralloc *dir,  char type)
     }
   }
   dir_close(&d);
+  return 0;
 }
 
 int main(int argc, char *argv[])

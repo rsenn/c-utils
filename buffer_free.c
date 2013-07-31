@@ -1,5 +1,5 @@
 #include <shell.h>
-#ifndef __MINGW32__
+#if !(defined(__MINGW32__) ||defined(__MSYS__))
 #include <sys/mman.h>
 #else
 #include <windows.h>
@@ -12,7 +12,7 @@ void buffer_free(buffer *b)
   {
     case FREE: shell_free(b->x); break;
     case MUNMAP: 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(__MSYS__)
 								 UnmapViewOfFile(b->x);
 #else
 							   munmap(b->x,b->a);
