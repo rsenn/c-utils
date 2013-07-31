@@ -1,71 +1,93 @@
+#inc	lude <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #include "buffer.h"
 #include "stralloc.h"
+#include "dir.h"
+
+#ifdef __MINGW32__
+#include <windows.h>
+#include <shlwapi.h>
+#endif
+
 static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer buffer_1 = BUFFER_INIT(write, 1, buffer_1_out, BUFFER_OUTSIZE);
 int list_dir_internal(stralloc *dir,  char type);
 
 int list_dir(stralloc *dir)
 {
-        //list_dir_internal(dir, DT_DIR);
-        //list_dir_internal(dir, -DT_DIR);
+  //list_dir_internal(dir, DT_DIR);
+  //list_dir_internal(dir, -DT_DIR);
 }
 
 int list_dir_internal(stralloc *dir,  char type)
 {
-        DIR *d;
-        struct dirent *de;
-        char *idx;
-        unsigned long l;
+  struct dir d;
+  struct dirent *de;
+  char *idx;
+  unsigned long l;
+  int is_dir;
+  unsigned long len;
+  
+  char *name,*s;
 
-        stralloc_nul(dir);
-        d  = opendir(dir->s);
-        stralloc_cats(dir, "/");
-        l = dir->len;
-        while((de = readdir(d)))
-        {
-          dir->len = l;
+  while(dir->len > 0 && IS_PATHSEP(dir->s[dir->len - 1]))
+    dir->len--;
+  
+  stralloc_nul(dir);
+  
+  dir_open(&d, dir->s);
+  
+  
+  stralloc_cats(dir, PATHSEP_S);
+  l = dir->len;
+  
+  
+  while((name = dir_read(&d)))
+  {
+    dir->len = l;
 
-          if(strcmp(de->d_name, ".") == 0) continue;
-          if(strcmp(de->d_name, "..") == 0) continue;
+    if(strcmp(name, ".") == 0) continue;
+    if(strcmp(name, "..") == 0) continue;
 
-//          if(type > 0 && !(de->d_type & type)) continue;
-//          if(type < 0 && (de->d_type & (-type))) continue;
+    stralloc_readyplus(dir, strlen(name)+1);
+    strcpy(dir->s + dir->len, name);
+    dir->len+=strlen(name);
+	
+    is_dir=dir_ISDIR(&d);
 
-//        idx = dir->s + l;  *idx = '\0';
+	//fprintf(stderr,"%d %08x\n", is_dir, dir_ATTRS(&d));
+    if(is_dir)
+      stralloc_cats(dir, PATHSEP_S);
+    
+	s=dir->s;
+    len=dir->len;
+    if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1]))
+    {
+      len -= 2;
+      s+= 2;
+    }
 
-         stralloc_readyplus(dir, strlen(de->d_name)+1);
-         strcpy(dir->s + dir->len, de->d_name);
-         dir->len+=strlen(de->d_name);
-        //      stralloc_cats(dir, de->d_name);
-        //
+    buffer_put(&buffer_1, s,len);
+    buffer_put(&buffer_1, "\n", 1);
+    buffer_flush(&buffer_1);
 
-//        if(de->d_type & DT_DIR)
-        {
-                stralloc_cats(dir, "/");
-        }
-     
-
-                buffer_put(&buffer_1, dir->s,dir->len);
-                buffer_put(&buffer_1, "\n", 1);
-             buffer_flush(&buffer_1);
-      
-//          if(de->d_type & DT_DIR)
-          {
-                dir->len--;
-                  list_dir_internal(dir,0);
-          }
-        }
-        closedir(d);
+    if(is_dir)
+    {
+      dir->len--;
+      list_dir_internal(dir,0);
+    }
+  }
+  dir_close(&d);
 }
 
 int main(int argc, char *argv[])
 {
-        stralloc dir={0,0,0};
-        stralloc_copys(&dir,argv[1]);
-        list_dir_internal(&dir,0);
-        return 0;
+  stralloc dir= {0,0,0};
+  stralloc_copys(&dir,argv[1]);
+  list_dir_internal(&dir,0);
+  return 0;
 }
