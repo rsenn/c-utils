@@ -7,7 +7,7 @@
 
 #include "buffer.h"
 #include "stralloc.h"
-#include "dir.h"
+#include "dir_internal.h"
 
 #if defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
@@ -57,7 +57,7 @@ int list_dir_internal(stralloc *dir,  char type)
     strcpy(dir->s + dir->len, name);
     dir->len+=strlen(name);
 	
-    is_dir=dir_ISDIR(&d);
+    is_dir= !!(dir_type(&d) & D_DIRECTORY);
 
 	//fprintf(stderr,"%d %08x\n", is_dir, dir_ATTRS(&d));
     if(is_dir)

@@ -1,4 +1,4 @@
-#include "dir.h"
+#include "dir_internal.h"
 
 char *dir_read(struct dir *d)
 {

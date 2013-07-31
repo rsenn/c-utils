@@ -1,4 +1,4 @@
-#include "dir.h"
+#include "dir_internal.h"
 
 #if defined(__MINGW32__) ||defined(__MSYS__)
 #include <windows.h>

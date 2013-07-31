@@ -1,4 +1,4 @@
-#include "dir.h"
+#include "dir_internal.h"
 
 int dir_open(struct dir *d, const char *p)
 {
