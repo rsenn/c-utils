@@ -2,7 +2,11 @@
 CC = gcc
 #CPPFLAGS = -I/usr/include/libowfat 
 CPPFLAGS = -I.
-CFLAGS = -g -ggdb -Wall -O0
+ifeq ($(DEBUG),1)
+CFLAGS = -g -ggdb -Wall -Wno-unused-variable -O0
+else
+				CFLAGS =  -O2 
+endif
 #LIBS = -lowfat
 EXEEXT =
 HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')
