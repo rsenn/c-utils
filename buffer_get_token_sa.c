@@ -1,3 +1,4 @@
+#include "str.h"
 #include "byte.h"
 #include "stralloc.h"
 #include "buffer.h"

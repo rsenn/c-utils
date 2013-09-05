@@ -1,7 +1,7 @@
-#include "dir_internal.h"
 #if !( defined(__MINGW32__) || defined(__MSYS__))
 #include <dirent.h>
 #endif
+#include "dir_internal.h"
 
 int dir_type(struct dir_s *d)
 {
@@ -12,6 +12,12 @@ int dir_type(struct dir_s *d)
   else if(((struct dir_internal_s *)(d->dir_int))->dir_finddata.dwFileAttributes & 0x20)
     r |= D_FILE;
 #else
+#ifndef DT_DIR
+#define DT_DIR 4
+#endif
+#ifndef DT_REG
+#define DT_REG 8
+#endif
   if((((struct dir_internal_s *)(d->dir_int))->dir_entry->d_type)  & DT_DIR)
     r |= D_DIRECTORY;
   if((((struct dir_internal_s *)(d->dir_int))->dir_entry->d_type) & DT_REG)
