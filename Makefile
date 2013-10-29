@@ -5,7 +5,7 @@ CPPFLAGS = -I. -D__USE_BSD=1
 ifeq ($(DEBUG),1)
 CFLAGS = -g -ggdb -Wall -Wno-unused-variable -O0
 else
-CFLAGS =  -Os -fomit-frame-pointer -std=c99  -Wall -Werror
+CFLAGS =  -Os -fomit-frame-pointer -std=c99  -Wall 
 endif
 #LIBS = -lowfat
 EXEEXT =
