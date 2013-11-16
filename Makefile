@@ -4,11 +4,12 @@ bindir = ${prefix}/bin
 INSTALL = install
 CC = gcc
 #CPPFLAGS = -I/usr/include/libowfat 
-CPPFLAGS = -I. -D__USE_BSD=1
+#CPPFLAGS = -I. -D__USE_BSD=1
+CPPFLAGS = -I.  -DPATH_MAX=4096
 ifeq ($(DEBUG),1)
 CFLAGS = -g -ggdb -Wall -Wno-unused-variable -O0
 else
-CFLAGS =  -Os -fomit-frame-pointer -std=c99  -Wall 
+CFLAGS =  -Os -fomit-frame-pointer -std=c99  
 endif
 #LIBS = -lowfat
 EXEEXT =

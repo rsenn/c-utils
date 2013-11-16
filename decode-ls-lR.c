@@ -1,9 +1,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <stdlib.h>
+#include <string.h>
+#include <libgen.h>
+
 #include "buffer.h"
 #include "open.h"
 #include "fmt.h"
+
 static int skip_fields = 0;
 static char *delimiters = " \t\r";
 static unsigned long delimiters_len;
