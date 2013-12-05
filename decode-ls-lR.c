@@ -24,7 +24,7 @@ static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSI
 
 int is_delimiter(char c)
 {
-				return !(byte_chr(delimiters, delimiters_len, c) == delimiters_len);
+  return !(byte_chr(delimiters, delimiters_len, c) == delimiters_len);
 }
 unsigned long skip_field(int n, char *s, unsigned long len)
 {
@@ -101,11 +101,11 @@ int main(int argc, char *argv[])
         break;
       case 'd':
         argi++;
-        if(argi<argc){
+        if(argi<argc) {
 
           delimiters = argv[argi];
           delimiters_len = strlen(delimiters);
-				}
+        }
         break;
       default:
         usage(argv[0]);
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
     if((buffer_0.fd = open(argv[argi], O_RDONLY)) < 0)
       usage(argv[0]);
   }
-delimiters_len = strlen(delimiters);  
-decode_ls_lR();
+  delimiters_len = strlen(delimiters);
+  decode_ls_lR();
 }
 
