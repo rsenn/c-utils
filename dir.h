@@ -16,6 +16,13 @@ enum
   D_DIRECTORY = 0x10,
 };
 
+enum
+{
+  D_TIME_CREATION,
+  D_TIME_ACCESS,
+  D_TIME_MODIFICATION,
+};
+
 struct dir_s { void *dir_int; };
 
 int dir_open(struct dir_s *d, const char *p);
