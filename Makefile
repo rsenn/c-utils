@@ -1,12 +1,18 @@
 prefix = /usr/local
 bindir = ${prefix}/bin
 
+DEBUG = 1
+
 INSTALL = install
 CC = gcc
 #CPPFLAGS = -I/usr/include/libowfat 
 #CPPFLAGS = -I. -D__USE_BSD=1
 CPPFLAGS = -I.  -DPATH_MAX=4096
+ifeq ($(DEBUG),1)
+CFLAGS = -g -ggdb -O0 
+else
 CFLAGS = -g -O2 -Wall
+endif
 #LIBS = -lowfat
 EXEEXT =
 HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')

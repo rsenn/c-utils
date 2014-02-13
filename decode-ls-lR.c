@@ -11,7 +11,7 @@
 #include "open.h"
 #include "fmt.h"
 
-static int skip_fields = 0;
+static int skip_fields = 8;
 static char *delimiters = " \t\r";
 static unsigned long delimiters_len;
 static char buffer_0_in[BUFFER_INSIZE];
@@ -55,12 +55,13 @@ int decode_ls_lR()
   unsigned long pos;
   char num[FMT_ULONG];
   unsigned long len, i, c;
+
   for(;;)
   {
     buffer[0] = '\0';
     len = buffer_getline(&buffer_0, buffer, sizeof(buffer));
 
-    if(len == 0 || buffer[0] == '\0')
+    if(len < 0) // || buffer[0] == '\0')
       break;
 
     if(buffer[len - 1 ] == '/')
