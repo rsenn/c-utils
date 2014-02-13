@@ -43,3 +43,10 @@ install: $(PROGRAMS)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(PROGRAMS) $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
+
+uninstall: 
+	@for PROGRAM in $(PROGRAMS); do \
+		echo $(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
+		$(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
+  done
+
