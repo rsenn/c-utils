@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
+<<<<<<< HEAD
 #include <sys/mman.h>
+=======
+>>>>>>> 784436caea6b9577f0db4d816fbc9a8d2c54d3ff
 #include "buffer.h"
 #include "open.h"
 #include "mmap.h"

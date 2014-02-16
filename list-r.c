@@ -88,7 +88,9 @@ int list_dir_internal(stralloc *dir,  char type)
 int main(int argc, char *argv[])
 {
   stralloc dir= {0,0,0};
+  if(argc > 1)
   stralloc_copys(&dir,argv[1]);
+  else stralloc_copys(&dir,".");
   list_dir_internal(&dir,0);
   return 0;
 }

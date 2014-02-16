@@ -3,6 +3,11 @@
 #include "buffer.h"
 #include "fmt.h"
 
+#ifndef PATH_MAX
+#define PATH_MAX (4096-1)
+#endif
+
+
 static char buffer_0_in[BUFFER_INSIZE];
 static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
 

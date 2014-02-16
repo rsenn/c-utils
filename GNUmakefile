@@ -1,18 +1,12 @@
 prefix = /usr/local
 bindir = ${prefix}/bin
 
-DEBUG = 1
-
 INSTALL = install
 CC = gcc
 #CPPFLAGS = -I/usr/include/libowfat 
 #CPPFLAGS = -I. -D__USE_BSD=1
 CPPFLAGS = -I.  -DPATH_MAX=4096
-ifeq ($(DEBUG),1)
-CFLAGS = -g -ggdb -O0 
-else
 CFLAGS = -g -O2 -Wall
-endif
 #LIBS = -lowfat
 EXEEXT =
 HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')
@@ -49,10 +43,3 @@ install: $(PROGRAMS)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(PROGRAMS) $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
-
-uninstall: 
-	@for PROGRAM in $(PROGRAMS); do \
-		echo $(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
-		$(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
-  done
-

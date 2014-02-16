@@ -1,10 +1,17 @@
+// decode-ls-lR.c
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <stdlib.h>
+#include <string.h>
+#include <libgen.h>
+
 #include "buffer.h"
 #include "open.h"
 #include "fmt.h"
-static int skip_fields = 0;
+
+static int skip_fields = 8;
 static char *delimiters = " \t\r";
 static unsigned long delimiters_len;
 static char buffer_0_in[BUFFER_INSIZE];
@@ -19,7 +26,7 @@ static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSI
 
 int is_delimiter(char c)
 {
-				return !(byte_chr(delimiters, delimiters_len, c) == delimiters_len);
+  return !(byte_chr(delimiters, delimiters_len, c) == delimiters_len);
 }
 unsigned long skip_field(int n, char *s, unsigned long len)
 {
@@ -48,12 +55,13 @@ int decode_ls_lR()
   unsigned long pos;
   char num[FMT_ULONG];
   unsigned long len, i, c;
+
   for(;;)
   {
     buffer[0] = '\0';
     len = buffer_getline(&buffer_0, buffer, sizeof(buffer));
 
-    if(len == 0 || buffer[0] == '\0')
+    if(len < 0) // || buffer[0] == '\0')
       break;
 
     if(buffer[len - 1 ] == '/')
@@ -96,11 +104,11 @@ int main(int argc, char *argv[])
         break;
       case 'd':
         argi++;
-        if(argi<argc){
+        if(argi<argc) {
 
           delimiters = argv[argi];
           delimiters_len = strlen(delimiters);
-				}
+        }
         break;
       default:
         usage(argv[0]);
@@ -118,7 +126,7 @@ int main(int argc, char *argv[])
     if((buffer_0.fd = open(argv[argi], O_RDONLY)) < 0)
       usage(argv[0]);
   }
-delimiters_len = strlen(delimiters);  
-decode_ls_lR();
+  delimiters_len = strlen(delimiters);
+  decode_ls_lR();
 }
 
