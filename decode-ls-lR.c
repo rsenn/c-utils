@@ -100,6 +100,8 @@ void usage(const char *arg0)
   buffer_puts(&buffer_2, (char *)basename(arg0));
   buffer_puts(&buffer_2, " [Options]\n");
   buffer_puts(&buffer_2, " -s num   Skip <num> Number of fields\n");
+  buffer_puts(&buffer_2, " -t chars Delimiter chars\n");
+  buffer_puts(&buffer_2, " -p str   prefix to prepend\n");
   buffer_flush(&buffer_2);
   exit(1);
 }
@@ -131,10 +133,9 @@ int main(int argc, char *argv[])
           }
         }
         break;
-      case 'd':
+      case 't':
         argi++;
         if(argi<argc) {
-
           delimiters = argv[argi];
           delimiters_len = strlen(delimiters);
         }
