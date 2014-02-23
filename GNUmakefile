@@ -13,33 +13,122 @@ HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')
 RM = rm -f 
 
 
-LIB_OBJ = buffer_close.o buffer_default.o buffer_dump.o buffer_feed.o buffer_flush.o buffer_free.o buffer_fromsa.o buffer_fromstr.o buffer_get.o buffer_get_new_token_sa.o buffer_get_new_token_sa_pred.o buffer_get_token.o buffer_get_token_pred.o buffer_get_token_sa.o buffer_get_token_sa_pred.o buffer_get_until.o buffer_getc.o buffer_getline.o buffer_getline_sa.o buffer_init.o buffer_mmapprivate.o buffer_mmapread.o buffer_mmapread_fd.o buffer_prefetch.o buffer_put.o buffer_putc.o buffer_putflush.o buffer_putm_internal.o buffer_putnlflush.o buffer_putnspace.o buffer_puts.o buffer_putsa.o buffer_putsflush.o buffer_putspace.o buffer_putulong.o buffer_skip_until.o buffer_stubborn.o buffer_stubborn2.o buffer_tosa.o buffer_truncfile.o byte_chr.o byte_copy.o byte_copyr.o byte_fill.o dir_close.o dir_open.o dir_read.o dir_type.o dir_time.o fmt_minus.o fmt_ulong.o fmt_ulong0.o mmap_private.o mmap_read.o mmap_read_fd.o mmap_unmap.o open_read.o open_trunc.o shell_alloc.o shell_error.o shell_errorn.o shell_init.o shell_realloc.o str_len.o stralloc_append.o stralloc_cat.o stralloc_catb.o stralloc_catc.o stralloc_catlong0.o stralloc_cats.o stralloc_catulong0.o stralloc_copy.o stralloc_copyb.o stralloc_copys.o stralloc_diffs.o stralloc_free.o stralloc_init.o stralloc_insertb.o stralloc_move.o stralloc_nul.o stralloc_ready.o stralloc_readyplus.o stralloc_remove.o stralloc_trunc.o stralloc_write.o stralloc_zero.o
+LIB_DEP = $(LIB_MODULES:%=%.o)
+LIB_MODULES = \
+  buffer_close \
+  buffer_default \
+  buffer_dump \
+  buffer_feed \
+  buffer_flush \
+  buffer_free \
+  buffer_fromsa \
+  buffer_fromstr \
+  buffer_get \
+  buffer_get_new_token_sa \
+  buffer_get_new_token_sa_pred \
+  buffer_get_token \
+  buffer_get_token_pred \
+  buffer_get_token_sa \
+  buffer_get_token_sa_pred \
+  buffer_get_until \
+  buffer_getc \
+  buffer_getline \
+  buffer_getline_sa \
+  buffer_init \
+  buffer_mmapprivate \
+  buffer_mmapread \
+  buffer_mmapread_fd \
+  buffer_prefetch \
+  buffer_put \
+  buffer_putc \
+  buffer_putflush \
+  buffer_putm_internal \
+  buffer_putnlflush \
+  buffer_putnspace \
+  buffer_puts \
+  buffer_putsa \
+  buffer_putsflush \
+  buffer_putspace \
+  buffer_putulong \
+  buffer_skip_until \
+  buffer_stubborn \
+  buffer_stubborn2 \
+  buffer_tosa \
+  buffer_truncfile \
+  byte_chr \
+  byte_copy \
+  byte_copyr \
+  byte_fill \
+  dir_close \
+  dir_open \
+  dir_read \
+  dir_type \
+  dir_time \
+  fmt_minus \
+  fmt_ulong \
+  fmt_ulong0 \
+  mmap_private \
+  mmap_read \
+  mmap_read_fd \
+  mmap_unmap \
+  open_read \
+  open_trunc \
+  shell_alloc \
+  shell_error \
+  shell_errorn \
+  shell_init \
+  shell_realloc \
+  str_len \
+  stralloc_append \
+  stralloc_cat \
+  stralloc_catb \
+  stralloc_catc \
+  stralloc_catlong0 \
+  stralloc_cats \
+  stralloc_catulong0 \
+  stralloc_copy \
+  stralloc_copyb \
+  stralloc_copys \
+  stralloc_diffs \
+  stralloc_free \
+  stralloc_init \
+  stralloc_insertb \
+  stralloc_move \
+  stralloc_nul \
+  stralloc_ready \
+  stralloc_readyplus \
+  stralloc_remove \
+  stralloc_trunc \
+  stralloc_write \
+  stralloc_zero
+
 PROGRAMS = list-r$(EXEEXT) count-depth$(EXEEXT) decode-ls-lR$(EXEEXT) torrent-progress$(EXEEXT)
 all: $(PROGRAMS) 
 
 decode-ls-lR.o: decode-ls-lR.c
-decode-ls-lR$(EXEEXT): decode-ls-lR.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ decode-ls-lR.o $(LIB_OBJ) $(LIBS)
+decode-ls-lR$(EXEEXT): decode-ls-lR.o $(LIB_DEP)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 count-depth.o: count-depth.c
-count-depth$(EXEEXT): count-depth.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ count-depth.o $(LIB_OBJ) $(LIBS)
+count-depth$(EXEEXT): count-depth.o $(LIB_DEP)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 list-r.o: list-r.c
-list-r$(EXEEXT): list-r.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ list-r.o $(LIB_OBJ) $(LIBS)
+list-r$(EXEEXT): list-r.o $(LIB_DEP)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 torrent-progress.o: torrent-progress.c
-torrent-progress$(EXEEXT): torrent-progress.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ torrent-progress.o $(LIB_OBJ) $(LIBS)
+torrent-progress$(EXEEXT): torrent-progress.o $(LIB_DEP)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 .c.o:
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 clean:
-	$(RM) -f $(LIB_OBJ) list-r.o list-r$(EXEEXT)
+	$(RM) -f $(LIB_DEP) list-r.o list-r$(EXEEXT)
 
 install: $(PROGRAMS)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(PROGRAMS) $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
+

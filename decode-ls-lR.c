@@ -65,13 +65,13 @@ int decode_ls_lR()
 
   for(;;)
   {
-    buffer[0] = '\0';
+    buffer[0] = '\n';
     len = buffer_getline(&buffer_0, buffer, sizeof(buffer));
 
-    if(len < 0) // || buffer[0] == '\0')
+    if(len == 0 && buffer[0] == '\0')
       break;
 
-    if(len == 0) continue;
+    //if(len == 0) continue;
 
     last = buffer[len - 1];
 
@@ -80,6 +80,7 @@ int decode_ls_lR()
       if(last == ':') len--;
 
       stralloc_copyb(&dir,buffer,len);
+      stralloc_catc(&dir,'/');
       continue;
     }
 
