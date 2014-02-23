@@ -10,6 +10,8 @@
 #include "buffer.h"
 #include "open.h"
 #include "fmt.h"
+#include "byte.h"
+#include "stralloc.h"
 
 static int skip_fields = 8;
 static char *delimiters = " \t\r";
@@ -23,6 +25,8 @@ static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSI
 
 static char buffer_2_out[BUFFER_OUTSIZE];
 static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
+
+static stralloc pfx;
 
 int is_delimiter(char c)
 {
@@ -55,6 +59,9 @@ int decode_ls_lR()
   unsigned long pos;
   char num[FMT_ULONG];
   unsigned long len, i, c;
+  char last;
+  stralloc dir;
+  stralloc_init(&dir);
 
   for(;;)
   {
@@ -64,14 +71,24 @@ int decode_ls_lR()
     if(len < 0) // || buffer[0] == '\0')
       break;
 
-    if(buffer[len - 1 ] == '/')
-      len--;
+    if(len == 0) continue;
 
+    last = buffer[len - 1];
 
-    pos = skip_field(skip_fields,buffer, len);
+    if(last == '/' || last == ':')
+    {
+      if(last == ':') len--;
 
-    //  buffer_putulong(&buffer_1, c);
-//buffer_put(&buffer_1, " ", 1);
+      stralloc_copyb(&dir,buffer,len);
+      continue;
+    }
+
+    pos = skip_field(skip_fields, buffer, len);
+
+    if(pfx.len) buffer_putsa(&buffer_1, &pfx);
+
+    if(dir.len) buffer_putsa(&buffer_1, &dir);
+
     buffer_put(&buffer_1, &buffer[pos], len-pos);
     buffer_put(&buffer_1, "\n", 1);
   }
@@ -101,6 +118,18 @@ int main(int argc, char *argv[])
         argi++;
         if(argi<argc)
           skip_fields = atoi(argv[argi]);
+        break;
+      case 'p':
+        argi++;
+        if(argi<argc)
+        {
+          stralloc_copys(&pfx, argv[argi]);
+          if(pfx.len > 0)
+          {
+            if(pfx.s[pfx.len - 1] != '/')
+              stralloc_catc(&pfx, '/');
+          }
+        }
         break;
       case 'd':
         argi++;
