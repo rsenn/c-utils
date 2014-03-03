@@ -7,6 +7,7 @@
 #include <string.h>
 #include <libgen.h>
 
+#include "stralloc.h"
 #include "buffer.h"
 #include "open.h"
 #include "fmt.h"
@@ -55,20 +56,36 @@ int decode_ls_lR()
   unsigned long pos;
   char num[FMT_ULONG];
   unsigned long len, i, c;
+  int is_dir;
+  stralloc dirp = { 0,0,0 };
 
   for(;;)
   {
+    is_dir = 0;
     buffer[0] = '\0';
     len = buffer_getline(&buffer_0, buffer, sizeof(buffer));
 
     if(len < 0) // || buffer[0] == '\0')
       break;
 
-    if(buffer[len - 1 ] == '/')
-      len--;
+    if(buffer[len - 1 ] == ':')
+      buffer[len - 1] = '/';
 
+    if(buffer[len - 1 ] == '/')
+      is_dir = 1;
+
+    if(is_dir)
+    {
+      stralloc_copyb(&dirp, buffer, len);
+      stralloc_catb(&dirp,"/",1);
+      buffer_put(&buffer_1,dirp.s,dirp.len);
+      buffer_put(&buffer_1, "\n", 1);
+      continue;
+    }
 
     pos = skip_field(skip_fields,buffer, len);
+
+    buffer_put(&buffer_1,dirp.s,dirp.len);
 
     //  buffer_putulong(&buffer_1, c);
 //buffer_put(&buffer_1, " ", 1);
