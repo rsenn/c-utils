@@ -132,7 +132,11 @@ int main(int argc, char *argv[])
       case 'p':
 	argi++;
 	if(argi<argc)
+	{
 	  stralloc_copys(&dirp,argv[argi]);
+		  if(dirp.len && dirp.s[dirp.len-1] != '/')
+			  stralloc_catb(&dirp,"/",1);
+	}
 	break;
       default:
         usage(argv[0]);
