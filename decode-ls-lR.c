@@ -89,11 +89,12 @@ int decode_ls_lR()
 
     buffer_put(&buffer_1,dirp.s,dirp.len);
 
-    for(i = len-4; i >= pos; i--)
+    for(i = len-4; i > 0 && i >= pos; i--)
 		{
 						if(!str_diffn(&buffer[i], " -> ",4))
 						{
 										len = i;
+										break;
 						}
 		}
 
