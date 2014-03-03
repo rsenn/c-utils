@@ -25,6 +25,8 @@ static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSI
 static char buffer_2_out[BUFFER_OUTSIZE];
 static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
 
+static stralloc dirp = { 0,0,0 };
+
 int is_delimiter(char c)
 {
   return !(byte_chr(delimiters, delimiters_len, c) == delimiters_len);
@@ -56,8 +58,8 @@ int decode_ls_lR()
   unsigned long pos;
   char num[FMT_ULONG];
   unsigned long len, i, c;
+  unsigned int offset = dirp.len;
   int is_dir;
-  stralloc dirp = { 0,0,0 };
 
   for(;;)
   {
@@ -76,8 +78,8 @@ int decode_ls_lR()
 
     if(is_dir)
     {
-      stralloc_copyb(&dirp, buffer, len);
-      stralloc_catb(&dirp,"/",1);
+      dirp.len = offset;
+      stralloc_catb(&dirp, buffer, len);
       buffer_put(&buffer_1,dirp.s,dirp.len);
       buffer_put(&buffer_1, "\n", 1);
       continue;
@@ -127,6 +129,11 @@ int main(int argc, char *argv[])
           delimiters_len = strlen(delimiters);
         }
         break;
+      case 'p':
+	argi++;
+	if(argi<argc)
+	  stralloc_copys(&dirp,argv[argi]);
+	break;
       default:
         usage(argv[0]);
         break;
