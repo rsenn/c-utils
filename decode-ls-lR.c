@@ -57,7 +57,7 @@ int decode_ls_lR()
   char buffer[PATH_MAX];
   unsigned long pos;
   char num[FMT_ULONG];
-  unsigned long len, i, c;
+  long len, i, c;
   unsigned int offset = dirp.len;
   int is_dir;
 
@@ -89,7 +89,7 @@ int decode_ls_lR()
 
     buffer_put(&buffer_1,dirp.s,dirp.len);
 
-    for(i = len-4; i >= pos+4; i--)
+    for(i = len-4; i >= pos; i--)
 		{
 						if(!str_diffn(&buffer[i], " -> ",4))
 						{
