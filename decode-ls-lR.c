@@ -91,7 +91,7 @@ int decode_ls_lR()
 
     for(i = len-pos-4; i >= pos+4; i--)
 		{
-						if(!str_ndiff(&buffer[i], " -> "))
+						if(!str_diffn(&buffer[i], " -> "))
 						{
 										len = i;
 						}
