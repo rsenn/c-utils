@@ -87,6 +87,9 @@ int decode_ls_lR()
 
     pos = skip_field(skip_fields,buffer, len);
 
+    if(pos == len)
+      continue;
+
     buffer_put(&buffer_1,dirp.s,dirp.len);
 
     for(i = len-4; i > 0 && i >= pos; i--)

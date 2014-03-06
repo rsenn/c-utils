@@ -1,7 +1,7 @@
-prefix = /usr/local
+prefix = /usr
 bindir = ${prefix}/bin
 
-DEBUG = 1
+DEBUG = 0
 
 INSTALL = install
 CC = gcc
