@@ -36,15 +36,16 @@ int list_dir_internal(stralloc *dir,  char type)
   
   char *name,*s;
 
-  while(dir->len > 0 && IS_PATHSEP(dir->s[dir->len - 1]))
+  while(dir->len > 1 && IS_PATHSEP(dir->s[dir->len - 1]))
     dir->len--;
   
   stralloc_nul(dir);
   
   dir_open(&d, dir->s);
-  
-  
-  stralloc_cats(dir, path_separator);
+
+  if(!(dir->len == 1 && IS_PATHSEP(dir->s[0])))
+    stralloc_cats(dir, path_separator);
+
   l = dir->len;
   
   
