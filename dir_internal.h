@@ -20,7 +20,15 @@ struct dir_internal_s {
 #endif
 
 };
-/*
+
+#define dir_INTERNAL(d) ((struct dir_internal_s *)(d))
+
+#if defined(__MINGW32__) || defined(__MSYS__)
+#define dir_NAME(d) ((d)->dir_finddata.szName)
+#else
+#define dir_NAME(d) ((d)->dir_entry->d_name)
+#endif
+
 #if defined(__MINGW32__) || defined(__MSYS__)
 #define dir_ATTRS(d) ((d)->dir_finddata.dwFileAttributes)
 #else
@@ -34,5 +42,5 @@ struct dir_internal_s {
 #endif
 
 
-*/
+
 	#endif // _DIR_INTERNAL_H__
