@@ -14,6 +14,8 @@
 #include <shlwapi.h>
 #endif
 
+static const char path_separator[2] = {'/','\0'};
+
 static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 int list_dir_internal(stralloc *dir,  char type);
@@ -34,15 +36,16 @@ int list_dir_internal(stralloc *dir,  char type)
   
   char *name,*s;
 
-  while(dir->len > 0 && IS_PATHSEP(dir->s[dir->len - 1]))
+  while(dir->len > 1 && IS_PATHSEP(dir->s[dir->len - 1]))
     dir->len--;
   
   stralloc_nul(dir);
   
   dir_open(&d, dir->s);
-  
-  
-  stralloc_cats(dir, PATHSEP_S);
+
+  if(!(dir->len == 1 && IS_PATHSEP(dir->s[0])))
+    stralloc_cats(dir, path_separator);
+
   l = dir->len;
   
   
@@ -61,7 +64,7 @@ int list_dir_internal(stralloc *dir,  char type)
 
 	//fprintf(stderr,"%d %08x\n", is_dir, dir_ATTRS(&d));
     if(is_dir)
-      stralloc_cats(dir, PATHSEP_S);
+      stralloc_cats(dir, path_separator);
     
 	s=dir->s;
     len=dir->len;

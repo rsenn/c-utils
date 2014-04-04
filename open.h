@@ -1,6 +1,10 @@
 #ifndef OPEN_H
 #define OPEN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* open filename for reading and return the file handle or -1 on error */
 int open_read(const char* filename);
 
@@ -31,5 +35,9 @@ int open_rw(const char* filename);
 /* create temporary file for reading and writing. 
  * Return file handle or -1 on error. */
 int open_temp(char* tmpl);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
