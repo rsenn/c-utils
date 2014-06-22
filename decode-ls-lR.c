@@ -7,11 +7,10 @@
 #include <string.h>
 #include <libgen.h>
 
+#include "stralloc.h"
 #include "buffer.h"
 #include "open.h"
 #include "fmt.h"
-#include "byte.h"
-#include "stralloc.h"
 
 static int skip_fields = 8;
 static char *delimiters = " \t\r";
@@ -26,7 +25,7 @@ static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSI
 static char buffer_2_out[BUFFER_OUTSIZE];
 static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
 
-static stralloc pfx;
+static stralloc dirp = { 0,0,0 };
 
 int is_delimiter(char c)
 {
@@ -58,37 +57,49 @@ int decode_ls_lR()
   char buffer[PATH_MAX];
   unsigned long pos;
   char num[FMT_ULONG];
-  unsigned long len, i, c;
-  char last;
-  stralloc dir;
-  stralloc_init(&dir);
+  long len, i, c;
+  unsigned int offset = dirp.len;
+  int is_dir;
 
   for(;;)
   {
-    buffer[0] = '\n';
+    is_dir = 0;
+    buffer[0] = '\0';
     len = buffer_getline(&buffer_0, buffer, sizeof(buffer));
 
-    if(len == 0 && buffer[0] == '\0')
+    if(len < 0) // || buffer[0] == '\0')
       break;
 
-    //if(len == 0) continue;
+    if(buffer[len - 1 ] == ':')
+      buffer[len - 1] = '/';
 
-    last = buffer[len - 1];
+    if(buffer[len - 1 ] == '/')
+      is_dir = 1;
 
-    if(last == '/' || last == ':')
+    if(is_dir)
     {
-      if(last == ':') len--;
-
-      stralloc_copyb(&dir,buffer,len);
-      stralloc_catc(&dir,'/');
+      dirp.len = offset;
+      stralloc_catb(&dirp, buffer, len);
+      buffer_put(&buffer_1,dirp.s,dirp.len);
+      buffer_put(&buffer_1, "\n", 1);
       continue;
     }
 
-    pos = skip_field(skip_fields, buffer, len);
+    pos = skip_field(skip_fields,buffer, len);
 
-    if(pfx.len) buffer_putsa(&buffer_1, &pfx);
+    if(pos == len)
+      continue;
 
-    if(dir.len) buffer_putsa(&buffer_1, &dir);
+    buffer_put(&buffer_1,dirp.s,dirp.len);
+
+    for(i = len-4; i > 0 && i >= pos; i--)
+		{
+						if(!str_diffn(&buffer[i], " -> ",4))
+						{
+										len = i;
+										break;
+						}
+		}
 
     buffer_put(&buffer_1, &buffer[pos], len-pos);
     buffer_put(&buffer_1, "\n", 1);
@@ -101,8 +112,6 @@ void usage(const char *arg0)
   buffer_puts(&buffer_2, (char *)basename(arg0));
   buffer_puts(&buffer_2, " [Options]\n");
   buffer_puts(&buffer_2, " -s num   Skip <num> Number of fields\n");
-  buffer_puts(&buffer_2, " -t chars Delimiter chars\n");
-  buffer_puts(&buffer_2, " -p str   prefix to prepend\n");
   buffer_flush(&buffer_2);
   exit(1);
 }
@@ -122,25 +131,23 @@ int main(int argc, char *argv[])
         if(argi<argc)
           skip_fields = atoi(argv[argi]);
         break;
-      case 'p':
-        argi++;
-        if(argi<argc)
-        {
-          stralloc_copys(&pfx, argv[argi]);
-          if(pfx.len > 0)
-          {
-            if(pfx.s[pfx.len - 1] != '/')
-              stralloc_catc(&pfx, '/');
-          }
-        }
-        break;
-      case 't':
+      case 'd':
         argi++;
         if(argi<argc) {
+
           delimiters = argv[argi];
           delimiters_len = strlen(delimiters);
         }
         break;
+      case 'p':
+	argi++;
+	if(argi<argc)
+	{
+	  stralloc_copys(&dirp,argv[argi]);
+		  if(dirp.len && dirp.s[dirp.len-1] != '/')
+			  stralloc_catb(&dirp,"/",1);
+	}
+	break;
       default:
         usage(argv[0]);
         break;

@@ -13,9 +13,11 @@ char *dir_read(struct dir_s *d)
 	  
 	  ret = ((struct dir_internal_s *)(d->dir_int))->dir_finddata.cFileName;
 	#else
+
+
 	  if((((struct dir_internal_s *)(d->dir_int))->dir_entry = readdir(((struct dir_internal_s *)(d->dir_int))->dir_handle)) != 0)
 	  {
-		ret = ((struct dir_internal_s *)(d->dir_int))->dir_entry->d_name;
+		ret = dir_NAME(dir_INTERNAL(d));
 		}
 	#endif
 	  return ret;

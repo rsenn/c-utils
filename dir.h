@@ -1,6 +1,10 @@
 #ifndef _DIR_H__
 #define _DIR_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(__MINGW32__) || defined(__MSYS__)
 #define PATHSEP_C '\\'
 #define PATHSEP_S "\\"
@@ -31,5 +35,9 @@ char *dir_read(struct dir_s *d);
 void dir_close(struct dir_s *d);
 
 int dir_type(struct dir_s *d);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _DIR_H__

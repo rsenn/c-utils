@@ -3,10 +3,12 @@ bindir = ${prefix}/bin
 
 INSTALL = install
 CC = gcc
+CXX = g++
 #CPPFLAGS = -I/usr/include/libowfat 
 #CPPFLAGS = -I. -D__USE_BSD=1
 CPPFLAGS = -I.  -DPATH_MAX=4096
 CFLAGS = -g -O2 -Wall
+CXXFLAGS = $(CFLAGS)
 #LIBS = -lowfat
 EXEEXT =
 HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')
@@ -79,6 +81,8 @@ LIB_MODULES = \
   mmap_unmap \
   open_read \
   open_trunc \
+  open_append \
+  open_rw \
   shell_alloc \
   shell_error \
   shell_errorn \
@@ -106,8 +110,12 @@ LIB_MODULES = \
   stralloc_write \
   stralloc_zero
 
+list-r$(EXEEXT): LIB_MODULES += \
+	file \
+	directory_iterator
+
 PROGRAMS = list-r$(EXEEXT) count-depth$(EXEEXT) decode-ls-lR$(EXEEXT) torrent-progress$(EXEEXT)
-all: $(PROGRAMS) 
+all: $(LIB_DEP) $(PROGRAMS) 
 
 decode-ls-lR.o: decode-ls-lR.c
 decode-ls-lR$(EXEEXT): decode-ls-lR.o $(EXTRA_DEP) $(LIB_DEP)
@@ -119,7 +127,7 @@ count-depth$(EXEEXT): count-depth.o $(EXTRA_DEP) $(LIB_DEP)
 
 list-r.o: list-r.c
 list-r$(EXEEXT): list-r.o $(EXTRA_DEP) $(LIB_DEP)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CXX) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 torrent-progress.o: torrent-progress.c
 torrent-progress$(EXEEXT): torrent-progress.o $(EXTRA_DEP) $(LIB_DEP)
@@ -127,6 +135,9 @@ torrent-progress$(EXEEXT): torrent-progress.o $(EXTRA_DEP) $(LIB_DEP)
 
 .c.o:
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+
+.cpp.o:
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 clean:
 	$(RM) -f $(EXTRA_MODULES:%=%.o) $(LIB_MODULES:%=%.o) list-r.o list-r$(EXEEXT)
