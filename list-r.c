@@ -31,8 +31,9 @@ int list_dir_internal(stralloc *dir,  char type)
 {
   unsigned long l;
   struct dir_s d;
-  int is_dir;
+  int is_dir, is_symlink;
   unsigned long len;
+  struct stat st;
   
   char *name,*s;
 
@@ -58,6 +59,11 @@ int list_dir_internal(stralloc *dir,  char type)
     stralloc_readyplus(dir, strlen(name)+1);
     strcpy(dir->s + dir->len, name);
     dir->len+=strlen(name);
+
+    if(lstat(dir->s, &st) != -1)
+      is_symlink = S_ISLNK(st.st_mode);
+    else
+      is_symlink = 0;
 	
     is_dir= !!(dir_type(&d) & D_DIRECTORY);
 
@@ -77,7 +83,7 @@ int list_dir_internal(stralloc *dir,  char type)
     buffer_put(&buffer_1, "\n", 1);
     buffer_flush(&buffer_1);
 
-    if(is_dir)
+    if(is_dir && !is_symlink)
     {
       dir->len--;
       list_dir_internal(dir,0);

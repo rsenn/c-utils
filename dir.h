@@ -14,6 +14,7 @@ enum
 {
   D_FILE = 0x20,
   D_DIRECTORY = 0x10,
+  D_LINK = 0x40,
 };
 
 enum

@@ -18,10 +18,15 @@ int dir_type(struct dir_s *d)
 #ifndef DT_REG
 #define DT_REG 8
 #endif
+#ifndef DT_LNK
+#define DT_LNK 10
+#endif
   if((((struct dir_internal_s *)(d->dir_int))->dir_entry->d_type)  & DT_DIR)
     r |= D_DIRECTORY;
   if((((struct dir_internal_s *)(d->dir_int))->dir_entry->d_type) & DT_REG)
     r |= D_FILE;
+  if((((struct dir_internal_s *)(d->dir_int))->dir_entry->d_type) & DT_LNK)
+    r |= D_LINK;
 	
 #endif
   return r;
