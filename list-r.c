@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -31,7 +30,7 @@ int list_dir_internal(stralloc *dir,  char type)
 {
   unsigned long l;
   struct dir_s d;
-  int is_dir;
+  int is_dir, is_symlink;
   unsigned long len;
   
   char *name,*s;
@@ -60,6 +59,13 @@ int list_dir_internal(stralloc *dir,  char type)
     strcpy(dir->s + dir->len, name);
     dir->len+=strlen(name);
 	
+    struct stat st;
+    if(lstat(dir->s, &st) != -1)
+      is_symlink = !!S_ISLNK(st.st_mode);
+    else
+      is_symlink = 0;
+
+
     is_dir= !!(dir_type(&d) & D_DIRECTORY);
 
 	//fprintf(stderr,"%d %08x\n", is_dir, dir_ATTRS(&d));
@@ -78,7 +84,7 @@ int list_dir_internal(stralloc *dir,  char type)
     buffer_put(&buffer_1, "\n", 1);
     buffer_flush(&buffer_1);
 
-    if(is_dir)
+    if(is_dir && !is_symlink)
     {
       dir->len--;
       list_dir_internal(dir,0);
