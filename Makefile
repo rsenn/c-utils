@@ -25,13 +25,9 @@ LIB_OBJ = buffer_close.o buffer_default.o buffer_dump.o buffer_feed.o buffer_flu
 LIBS += -lstdc++
 
 PROGRAMS = list-r$(EXEEXT) count-depth$(EXEEXT) decode-ls-lR$(EXEEXT) torrent-progress$(EXEEXT)
-<<<<<<< HEAD
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
 all: $(PROGRAMS) 
-=======
-all: $(LIB_OBJ) $(PROGRAMS) 
->>>>>>> 04da9886070edf13da9b4918bfab67c7b0c4a5ca
 
 decode-ls-lR.o: decode-ls-lR.c
 decode-ls-lR$(EXEEXT): decode-ls-lR.o $(LIB_OBJ)
