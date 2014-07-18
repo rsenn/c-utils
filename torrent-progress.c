@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     buffer_putulong(&buffer_1,percent%100);
     buffer_putnlflush(&buffer_1);
 
-    munmap(m, fsize);;
+    mmap_unmap(m, fsize);;
   }
 
   return 0;

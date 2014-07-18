@@ -7,6 +7,7 @@
 #include <string.h>
 #include <libgen.h>
 
+#include "stralloc.h"
 #include "buffer.h"
 #include "open.h"
 #include "fmt.h"
@@ -23,6 +24,8 @@ static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSI
 
 static char buffer_2_out[BUFFER_OUTSIZE];
 static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
+
+static stralloc dirp = { 0,0,0 };
 
 int is_delimiter(char c)
 {
@@ -54,24 +57,50 @@ int decode_ls_lR()
   char buffer[PATH_MAX];
   unsigned long pos;
   char num[FMT_ULONG];
-  unsigned long len, i, c;
+  long len, i, c;
+  unsigned int offset = dirp.len;
+  int is_dir;
 
   for(;;)
   {
+    is_dir = 0;
     buffer[0] = '\0';
     len = buffer_getline(&buffer_0, buffer, sizeof(buffer));
 
     if(len < 0) // || buffer[0] == '\0')
       break;
 
-    if(buffer[len - 1 ] == '/')
-      len--;
+    if(buffer[len - 1 ] == ':')
+      buffer[len - 1] = '/';
 
+    if(buffer[len - 1 ] == '/')
+      is_dir = 1;
+
+    if(is_dir)
+    {
+      dirp.len = offset;
+      stralloc_catb(&dirp, buffer, len);
+      buffer_put(&buffer_1,dirp.s,dirp.len);
+      buffer_put(&buffer_1, "\n", 1);
+      continue;
+    }
 
     pos = skip_field(skip_fields,buffer, len);
 
-    //  buffer_putulong(&buffer_1, c);
-//buffer_put(&buffer_1, " ", 1);
+    if(pos == len)
+      continue;
+
+    buffer_put(&buffer_1,dirp.s,dirp.len);
+
+    for(i = len-4; i > 0 && i >= pos; i--)
+		{
+						if(!str_diffn(&buffer[i], " -> ",4))
+						{
+										len = i;
+										break;
+						}
+		}
+
     buffer_put(&buffer_1, &buffer[pos], len-pos);
     buffer_put(&buffer_1, "\n", 1);
   }
@@ -110,6 +139,15 @@ int main(int argc, char *argv[])
           delimiters_len = strlen(delimiters);
         }
         break;
+      case 'p':
+	argi++;
+	if(argi<argc)
+	{
+	  stralloc_copys(&dirp,argv[argi]);
+		  if(dirp.len && dirp.s[dirp.len-1] != '/')
+			  stralloc_catb(&dirp,"/",1);
+	}
+	break;
       default:
         usage(argv[0]);
         break;
