@@ -13,6 +13,12 @@ CFLAGS = -g -ggdb -O0
 else
 CFLAGS = -g -O2 -Wall
 endif
+ifeq ($(STATIC),1)
+LDFLAGS += -static
+endif
+ifeq ($(STRIP),1)
+LDFLAGS += -s
+endif
 CXXFLAGS = $(CFLAGS)
 #LIBS = -lowfat
 EXEEXT =
