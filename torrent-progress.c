@@ -32,22 +32,23 @@ static int fraction = 1;
 
 int main(int argc, char *argv[])
 {
-  int ai = 1;
+  int ai;
 
-  while(ai < argc) {
+  for(ai = 1; ai < argc; ++ai) {
     char* av = argv[ai];
 
     if(av[0] != '-')
       break;
 
     switch(av[1]) {
-      case 'F': fraction = 0; ++ai; continue;
+      case 'F': fraction = 0;  break;
+      case '-': ++ai; goto next;
       default: 
           goto next;
     }
   }
 next:
-  for(; ai < argc; ai++) {
+  for(; ai < argc; ++ai) {
     unsigned long fsize;
     unsigned int blocks;
     int zero_blocks = 0;
