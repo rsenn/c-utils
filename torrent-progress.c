@@ -28,7 +28,7 @@ int get_block(char *b)
   return buffer_get(&infile, b, BLOCK_SIZE);
 }
 
-static int fraction = 1;
+static int fraction = 1, space = 1;
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 
     switch(av[1]) {
       case 'F': fraction = 0;  break;
+      case 'S': space = 0;  break;
       case '-': ++ai; goto next;
       default: 
           goto next;
@@ -80,7 +81,7 @@ next:
     percent = (float)nonzero_blocks * 10000 / blocks;
 
     buffer_puts(&buffer_1,argv[ai]);
-    buffer_puts(&buffer_1,": ");
+    buffer_puts(&buffer_1,(space?": ":":"));
     if(!fraction)
       percent += 50;
     buffer_putulong(&buffer_1,percent/100);
