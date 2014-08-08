@@ -1,7 +1,7 @@
 #include "byte.h"
 #include "stralloc.h"
 
-int stralloc_insertb(stralloc* sa, const char *s, unsigned long pos, unsigned long n) {
+int stralloc_insertb(stralloc* sa, const char *s, size_t pos, size_t n) {
   if(pos >= sa->len)
     return stralloc_catb(sa, s, n);
   if(!stralloc_readyplus(sa, n))

@@ -5,9 +5,9 @@
  * already allocated, stralloc_readyplus adds the current length of sa
  * to len. */
 #ifdef DEBUG
-int stralloc_readyplusdebug(const char *file, unsigned int line, stralloc *sa,unsigned long len)
+int stralloc_readyplusdebug(const char *file, unsigned int line, stralloc *sa,size_t len)
 #else
-int stralloc_readyplus(stralloc *sa,unsigned long len)
+int stralloc_readyplus(stralloc *sa,size_t len)
 #endif /* DEBUG */  
 {
   if (sa->s) {

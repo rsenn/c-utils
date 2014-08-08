@@ -11,10 +11,12 @@
 #include "buffer.h"
 #include "open.h"
 #include "fmt.h"
+#include "byte.h"
+#include "str.h"
 
 static int skip_fields = 8;
 static char *delimiters = " \t\r";
-static unsigned long delimiters_len;
+static size_t delimiters_len;
 static char buffer_0_in[BUFFER_INSIZE];
 static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
 
@@ -31,9 +33,9 @@ int is_delimiter(char c)
 {
   return !(byte_chr(delimiters, delimiters_len, c) == delimiters_len);
 }
-unsigned long skip_field(int n, char *s, unsigned long len)
+size_t skip_field(int n, char *s, size_t len)
 {
-  unsigned long ret=0;
+  size_t ret=0;
   while(n-- && ret < len)
   {
     if(ret == len) return ret;
@@ -55,9 +57,8 @@ unsigned long skip_field(int n, char *s, unsigned long len)
 int decode_ls_lR()
 {
   char buffer[PATH_MAX];
-  unsigned long pos;
-  char num[FMT_ULONG];
-  long len, i, c;
+  size_t pos;
+  long len, i;
   unsigned int offset = dirp.len;
   int is_dir;
 
@@ -105,8 +106,10 @@ int decode_ls_lR()
     buffer_put(&buffer_1, "\n", 1);
   }
   buffer_flush(&buffer_1);
+  return 0;
 }
-void usage(const char *arg0)
+
+void usage(char *arg0)
 {
   buffer_puts(&buffer_2, "Usage: ");
   buffer_puts(&buffer_2, (char *)basename(arg0));
@@ -166,5 +169,6 @@ int main(int argc, char *argv[])
   }
   delimiters_len = strlen(delimiters);
   decode_ls_lR();
+  return 0;
 }
 

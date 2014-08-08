@@ -17,8 +17,7 @@ static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSI
 int count_depth()
 {
   char buffer[PATH_MAX];
-  char num[FMT_ULONG];
-  unsigned long len, i, c;
+  size_t len, i, c;
   for(;;)
   {
     buffer[0] = '\0';
@@ -42,11 +41,10 @@ int count_depth()
     buffer_put(&buffer_1, "\n", 1);
   }
   buffer_flush(&buffer_1);
+  return 0;
 }
 
-int main(int argc, char *argv[])
-{
-
-  count_depth();
+int main(int argc, char *argv[]) {
+  return count_depth();
 }
 

@@ -1,11 +1,11 @@
 #include <shell.h>
 
 #ifdef DEBUG
-extern void *debug_realloc(const char *file, unsigned int line, void *ptr, unsigned long size);
+extern void *debug_realloc(const char *file, unsigned int line, void *ptr, size_t size);
 
-void *shell_reallocdebug(const char *file, unsigned int line, void *ptr, unsigned long size)
+void *shell_reallocdebug(const char *file, unsigned int line, void *ptr, size_t size)
 #else
-void *shell_realloc(void *ptr, unsigned long size)
+void *shell_realloc(void *ptr, size_t size)
 #endif /* DEBUG */
 {
   void *newptr;

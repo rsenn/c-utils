@@ -26,10 +26,10 @@ return 0;
 
 int list_dir_internal(stralloc *dir,  char type)
 {
-  unsigned long l;
+  size_t l;
   struct dir_s d;
   int is_dir, is_symlink;
-  unsigned long len;
+  size_t len;
   
   char *name,*s;
 

@@ -12,9 +12,9 @@ static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer infile = BUFFER_INIT((void*)read, -1, 0,0);
 static buffer buffer_1 = BUFFER_INIT((void*)write, 2, buffer_1_out, BUFFER_OUTSIZE);
 
-int check_block_zero(char *b, unsigned long n)
+int check_block_zero(char *b, size_t n)
 {
-  unsigned long i;
+  size_t i;
   for(i = 0; i < n; i++)
   {
     if(b[i] != '\0')
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   }
 next:
   for(; ai < argc; ++ai) {
-    unsigned long fsize;
+    size_t fsize;
     unsigned int blocks;
     int zero_blocks = 0;
     int nonzero_blocks;

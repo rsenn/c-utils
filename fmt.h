@@ -19,15 +19,15 @@ unsigned int fmt_long(char *dest,signed long src);
 
 /* convert unsigned src integer 23 to ASCII '2','3', return length.
  * If dest is not NULL, write result to dest */
-unsigned int fmt_ulong(char *dest,unsigned long src);
+unsigned int fmt_ulong(char *dest,size_t src);
 
 /* convert unsigned src integer 0x23 to ASCII '2','3', return length.
  * If dest is not NULL, write result to dest */
-unsigned int fmt_xlong(char *dest,unsigned long src);
+unsigned int fmt_xlong(char *dest,size_t src);
 
 /* convert unsigned src integer 023 to ASCII '2','3', return length.
  * If dest is not NULL, write result to dest */
-unsigned int fmt_8long(char *dest,unsigned long src);
+unsigned int fmt_8long(char *dest,size_t src);
 
 unsigned int fmt_longlong(char *dest,signed long long src);
 unsigned int fmt_ulonglong(char *dest,unsigned long long src);
@@ -40,7 +40,7 @@ unsigned int fmt_xlonglong(char *dest,unsigned long long src);
 
 /* Like fmt_ulong, but prepend '0' while length is smaller than padto.
  * Does not truncate! */
-unsigned int fmt_ulong0(char *,unsigned long src,unsigned int padto);
+unsigned int fmt_ulong0(char *,size_t src,unsigned int padto);
 
 #define fmt_uint0(buf,src,padto) fmt_ulong0(buf,src,padto)
 
@@ -58,23 +58,23 @@ unsigned int fmt_plusminus(char *dest,int src);
 unsigned int fmt_minus(char *dest,int src);
 
 /* copy str to dest until \0 byte, return number of copied bytes. */
-unsigned long fmt_str(char *dest,const char *src);
+size_t fmt_str(char *dest,const char *src);
 
 /* copy str to dest until \0 byte or limit bytes copied.
  * return number of copied bytes. */
-unsigned long fmt_strn(char *dest,const char *src,unsigned long limit);
+size_t fmt_strn(char *dest,const char *src,size_t limit);
 
 /* "foo" -> "  foo"
  * write padlen-srclen spaces, if that is >= 0.  Then copy srclen
  * characters from src.  Truncate only if total length is larger than
  * maxlen.  Return number of characters written. */
-unsigned long fmt_pad(char* dest,const char* src,unsigned long srclen,unsigned long padlen,unsigned long maxlen);
+size_t fmt_pad(char* dest,const char* src,size_t srclen,size_t padlen,size_t maxlen);
 
 /* "foo" -> "foo  "
  * append padlen-srclen spaces after dest, if that is >= 0.  Truncate
  * only if total length is larger than maxlen.  Return number of
  * characters written. */
-unsigned long fmt_fill(char* dest,unsigned long srclen,unsigned long padlen,unsigned long maxlen);
+size_t fmt_fill(char* dest,size_t srclen,size_t padlen,size_t maxlen);
 
 /* 1 -> "1", 4900 -> "4.9k", 2300000 -> "2.3M" */
 unsigned int fmt_human(char* dest,unsigned long long l);
