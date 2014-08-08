@@ -28,13 +28,26 @@ int get_block(char *b)
   return buffer_get(&infile, b, BLOCK_SIZE);
 }
 
+static int fraction = 1;
 
 int main(int argc, char *argv[])
 {
   int ai = 1;
 
-  for(ai = 1; ai < argc; ai++)
-  {
+  while(ai < argc) {
+    char* av = argv[ai];
+
+    if(av[0] != '-')
+      break;
+
+    switch(av[1]) {
+      case 'F': fraction = 0; ++ai; continue;
+      default: 
+          goto next;
+    }
+  }
+next:
+  for(; ai < argc; ai++) {
     unsigned long fsize;
     unsigned int blocks;
     int zero_blocks = 0;
@@ -67,9 +80,13 @@ int main(int argc, char *argv[])
 
     buffer_puts(&buffer_1,argv[ai]);
     buffer_puts(&buffer_1,": ");
+    if(!fraction)
+      percent += 50;
     buffer_putulong(&buffer_1,percent/100);
-    buffer_puts(&buffer_1,".");
-    buffer_putulong(&buffer_1,percent%100);
+    if(fraction) {
+      buffer_puts(&buffer_1,".");
+      buffer_putulong(&buffer_1,percent%100);
+    }
     buffer_putnlflush(&buffer_1);
 
     mmap_unmap(m, fsize);;
