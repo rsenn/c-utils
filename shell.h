@@ -10,7 +10,7 @@
 #define SH_FNM_NOESCAPE    (1 << 1) /* Backslashes don't quote special chars.  */
 #define SH_FNM_PERIOD      (1 << 2) /* Leading .' is matched only explicitly.  */
 
-void shell_getcwd(stralloc *sa, unsigned long start);
+void shell_getcwd(stralloc *sa, size_t start);
 
 int shell_realpath(const char *path, stralloc *sa, int symbolic, stralloc *cwd);
 
@@ -44,14 +44,14 @@ extern buffer     *shell_buff;
 extern const char *shell_name;
 
 #ifndef DEBUG
-void *shell_alloc(unsigned long size);
-void *shell_realloc(void *ptr, unsigned long size);
+void *shell_alloc(size_t size);
+void *shell_realloc(void *ptr, size_t size);
 void *shell_strdup(const char *s);
 #define shell_free(p) free((p))  
 #else
 extern void debug_free(const char *file, unsigned int line, void *p);
-void *shell_allocdebug(const char *file, unsigned int line, unsigned long size);
-void *shell_reallocdebug(const char *file, unsigned int line, void *ptr, unsigned long size);
+void *shell_allocdebug(const char *file, unsigned int line, size_t size);
+void *shell_reallocdebug(const char *file, unsigned int line, void *ptr, size_t size);
 void *shell_strdupdebug(const char *file, unsigned int line, const char *s);
 #define shell_alloc(n) shell_allocdebug(__FILE__, __LINE__, (n))
 #define shell_realloc(p, n) shell_reallocdebug(__FILE__, __LINE__, (p), (n))

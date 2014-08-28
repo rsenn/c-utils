@@ -11,7 +11,7 @@ extern int stralloc_write();
 void buffer_dump(buffer *out, buffer *b) 
 {
   char xlong[FMT_LONG+FMT_LONG+FMT_LONG];
-  unsigned long n;
+  size_t n;
 
   n = fmt_xlong(xlong, (long)out->x);
   buffer_putc(out, '[');

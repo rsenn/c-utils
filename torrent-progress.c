@@ -12,9 +12,9 @@ static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer infile = BUFFER_INIT((void*)read, -1, 0,0);
 static buffer buffer_1 = BUFFER_INIT((void*)write, 2, buffer_1_out, BUFFER_OUTSIZE);
 
-int check_block_zero(char *b, unsigned long n)
+int check_block_zero(char *b, size_t n)
 {
-  unsigned long i;
+  size_t i;
   for(i = 0; i < n; i++)
   {
     if(b[i] != '\0')
@@ -28,14 +28,29 @@ int get_block(char *b)
   return buffer_get(&infile, b, BLOCK_SIZE);
 }
 
+static int fraction = 1, space = 1;
 
 int main(int argc, char *argv[])
 {
-  int ai = 1;
+  int ai;
 
-  for(ai = 1; ai < argc; ai++)
-  {
-    unsigned long fsize;
+  for(ai = 1; ai < argc; ++ai) {
+    char* av = argv[ai];
+
+    if(av[0] != '-')
+      break;
+
+    switch(av[1]) {
+      case 'F': fraction = 0;  break;
+      case 'S': space = 0;  break;
+      case '-': ++ai; goto next;
+      default: 
+          goto next;
+    }
+  }
+next:
+  for(; ai < argc; ++ai) {
+    size_t fsize;
     unsigned int blocks;
     int zero_blocks = 0;
     int nonzero_blocks;
@@ -66,10 +81,14 @@ int main(int argc, char *argv[])
     percent = (float)nonzero_blocks * 10000 / blocks;
 
     buffer_puts(&buffer_1,argv[ai]);
-    buffer_puts(&buffer_1,": ");
+    buffer_puts(&buffer_1,(space?": ":":"));
+    if(!fraction)
+      percent += 50;
     buffer_putulong(&buffer_1,percent/100);
-    buffer_puts(&buffer_1,".");
-    buffer_putulong(&buffer_1,percent%100);
+    if(fraction) {
+      buffer_puts(&buffer_1,".");
+      buffer_putulong(&buffer_1,percent%100);
+    }
     buffer_putnlflush(&buffer_1);
 
     mmap_unmap(m, fsize);;
