@@ -30,7 +30,7 @@ int64 filesize(int fd) {
 
 static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer infile = BUFFER_INIT((void*)read, -1, 0,0);
-static buffer buffer_1 = BUFFER_INIT((void*)write, 2, buffer_1_out, BUFFER_OUTSIZE);
+static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 
 int check_block_zero(char *b, size_t n) {
   size_t i;
