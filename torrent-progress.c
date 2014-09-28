@@ -47,7 +47,7 @@ int get_block(char *b)
   return buffer_get(&infile, b, BLOCK_SIZE);
 }
 
-static int fraction = 1, space = 1;
+static int verbose=0, fraction = 1, space = 1;
 
 
 
@@ -62,15 +62,10 @@ int main(int argc, char *argv[]) {
       break;
 
     switch(av[1]) {
-    case 'F':
-      fraction = 0;
-      break;
-    case 'S':
-      space = 0;
-      break;
-    case '-':
-      ++ai;
-      goto next;
+    case 'F': fraction = 0; break;
+    case 'v': verbose++; break;
+    case 'S': space = 0; break;
+    case '-': ++ai; goto next;
     default:
       goto next;
     }
@@ -93,7 +88,8 @@ next:
     uint64 iterations = (fsize + map_size + 1) / map_size;
     uint64 remain = fsize;
 
-    fprintf(stderr, "memory map size: %uMB (0x%08llX) iterations: %llu (end offset: 0x%08llX)\n", map_size/1048576, map_size, i, fsize);
+    if(verbose)
+        fprintf(stderr, "memory map size: %uMB (0x%016llX) iterations: %llu (end offset: 0x%016llX)\n", map_size/1048576, map_size, i, fsize);
 
     //(uint64)map_size * iterations);
     //mmap_private(argv[ai], &fsize);
@@ -115,7 +111,6 @@ next:
 
       size_t msz =  (remain >= map_size ? map_size : remain);
       uint64 mofs =  (uint64)map_size * i;
-      fprintf(stderr, "mmap at %08llX, size %08llX\n", mofs, msz);
 
 
       char *m = mmap_map(fd, msz, mofs);
@@ -123,14 +118,20 @@ next:
       int blocks = msz / BLOCK_SIZE;
 
       all_blocks += blocks;
+      int z = 0;
       //int remain = msz - (blocks * BLOCK_SIZE);
       for(bi = 0; bi < blocks; bi++)
       {
         //get_block(m);
 
-        zero_blocks += check_block_zero(&m[bi*BLOCK_SIZE], BLOCK_SIZE);
+        z += check_block_zero(&m[bi*BLOCK_SIZE], BLOCK_SIZE);
         //fprintf(stderr, "block #%lu\n", bi); fflush(stderr);
       }
+    
+    if(verbose)
+      fprintf(stderr, "mmap at 0x%llX, size 0x%llX%s\n", mofs, msz, (z < blocks ? "" : " zero"));
+      
+      zero_blocks += z;
 
       mmap_unmap(m, msz);
 
@@ -142,14 +143,13 @@ next:
     nonzero_blocks = all_blocks - zero_blocks;
     percent = (float)nonzero_blocks * 10000 / all_blocks;
 
-
-
-
     buffer_puts(&buffer_1,argv[ai]);
     buffer_puts(&buffer_1,(space?": ":":"));
-    if(!fraction)
-      percent += 50;
+
+    if(!fraction) percent += 50;
+
     buffer_putulong(&buffer_1,percent/100);
+    
     if(fraction) {
       buffer_puts(&buffer_1,".");
       buffer_putulong(&buffer_1,percent%100);
