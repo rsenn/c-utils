@@ -79,6 +79,7 @@ LIB_MODULES = \
   mmap_read \
   mmap_read_fd \
   mmap_unmap \
+  mmap_map \
   open_read \
   open_trunc \
   open_append \

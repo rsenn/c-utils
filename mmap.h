@@ -1,7 +1,8 @@
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef MMAP_H
 #define MMAP_H
-
+#include "uint64.h"
+#include <sys/types.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -23,6 +24,9 @@ char* mmap_shared(const char *filename,size_t* filesize);
 
 /* unmap a mapped region */
 int mmap_unmap(char* mapped,size_t maplen);
+
+char* mmap_map(int fd, size_t sz, uint64 offset);
+
 
 #ifdef __cplusplus
 }
