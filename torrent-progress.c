@@ -89,7 +89,8 @@ next:
     uint64 remain = fsize;
 
     if(verbose)
-        fprintf(stderr, "memory map size: %uMB (0x%016llX) iterations: %llu (end offset: 0x%016llX)\n", map_size/1048576, map_size, iterations, fsize);
+        fprintf(stderr, "memory map size: %uMB (0x%016u) iterations: %i (end offset: 0x%08X)\n", 
+								map_size/1048576, map_size, (int)iterations, (uint32_t)fsize);
 
     //(uint64)map_size * iterations);
     //mmap_private(argv[ai], &fsize);
@@ -129,7 +130,7 @@ next:
       }
     
     if(verbose)
-      fprintf(stderr, "mmap at 0x%llX, size 0x%llX%s\n", mofs, msz, (z < blocks ? "" : " zero"));
+      fprintf(stderr, "mmap at 0x%zx, size 0x%zx%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
       
       zero_blocks += z;
 
