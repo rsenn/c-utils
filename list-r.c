@@ -49,6 +49,7 @@ int list_dir_internal(stralloc *dir,  char type)
   {
     dir->len = l;
 
+    if(strcmp(name, "") == 0) continue;
     if(strcmp(name, ".") == 0) continue;
     if(strcmp(name, "..") == 0) continue;
 
