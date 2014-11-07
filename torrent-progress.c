@@ -12,18 +12,22 @@
 #include "open.h"
 #include "mmap.h"
 
+#if defined(__x86_64__) && defined(__linux)
+#define lseek lseek64
+#endif
+
 #define BLOCK_SIZE 262144
 
 int64 filesize(int fd) {
-  off64_t pos, end;
+  uint64 pos, end;
   int64 sz;
   //if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1;
-  if((pos = lseek64(fd, 0, SEEK_CUR)) < 0) return -1;
+  if((pos = lseek(fd, 0, SEEK_CUR)) < 0) return -1;
   //if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1;
-  if((end = lseek64(fd, 0, SEEK_END)) < 0) return -1;
+  if((end = lseek(fd, 0, SEEK_END)) < 0) return -1;
 
   sz = end;
-  lseek64(fd, pos, SEEK_SET);
+  lseek(fd, pos, SEEK_SET);
   //_llseek(fd, pos >> 32, pos & 0xffffffff,  &pos, SEEK_SET);
   return sz;
 }
