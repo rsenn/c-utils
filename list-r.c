@@ -13,8 +13,6 @@
 #include <shlwapi.h>
 #endif
 
-static const char path_separator[2] = {'/','\0'};
-
 static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 int list_dir_internal(stralloc *dir,  char type);
@@ -28,11 +26,15 @@ return 0;
 
 int list_dir_internal(stralloc *dir,  char type)
 {
-  unsigned long l;
+  size_t l;
   struct dir_s d;
   int is_dir, is_symlink;
+<<<<<<< HEAD
   unsigned long len;
   struct stat st;
+=======
+  size_t len;
+>>>>>>> 51dbe95660f220791aa6ce3f165a743c05f26617
   
   char *name,*s;
 
@@ -44,7 +46,11 @@ int list_dir_internal(stralloc *dir,  char type)
   dir_open(&d, dir->s);
   
   
+<<<<<<< HEAD
   stralloc_cats(dir, path_separator);
+=======
+  stralloc_cats(dir, PATHSEP_S);
+>>>>>>> 51dbe95660f220791aa6ce3f165a743c05f26617
   l = dir->len;
   
   
@@ -64,11 +70,18 @@ int list_dir_internal(stralloc *dir,  char type)
     else
       is_symlink = 0;
 	
+    struct stat st;
+    if(lstat(dir->s, &st) != -1)
+      is_symlink = !!S_ISLNK(st.st_mode);
+    else
+      is_symlink = 0;
+
+
     is_dir= !!(dir_type(&d) & D_DIRECTORY);
 
 	//fprintf(stderr,"%d %08x\n", is_dir, dir_ATTRS(&d));
     if(is_dir)
-      stralloc_cats(dir, path_separator);
+      stralloc_cats(dir, PATHSEP_S);
     
 	s=dir->s;
     len=dir->len;

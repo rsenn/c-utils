@@ -1,13 +1,13 @@
 #include <shell.h>
 
 #ifdef DEBUG
-extern void *debug_alloc(const char *file, unsigned int line, unsigned long size);  
+extern void *debug_alloc(const char *file, unsigned int line, size_t size);  
 
-void *shell_allocdebug(const char *file, unsigned int line, unsigned long size)
+void *shell_allocdebug(const char *file, unsigned int line, size_t size)
 {
   void *ptr = debug_alloc(file, line, size);
 #else
-void *shell_alloc(unsigned long size)
+void *shell_alloc(size_t size)
 {
   void *ptr = malloc(size);
 #endif /* DEBUG */

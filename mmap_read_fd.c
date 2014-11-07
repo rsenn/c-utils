@@ -11,7 +11,7 @@
 
 char mmap_empty[] = { 0 };
 
-char* mmap_read_fd(int fd, unsigned long *filesize)
+char* mmap_read_fd(int fd, size_t *filesize)
 {
 #if defined(__MINGW32__) || defined(__MSYS__)
   HANDLE m;

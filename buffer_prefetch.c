@@ -3,7 +3,7 @@
 
 extern int buffer_stubborn_read(int (*op)(),int fd,const char* buf, unsigned int len);
 
-int buffer_prefetch(buffer* b, unsigned long n) {
+int buffer_prefetch(buffer* b, size_t n) {
   if(b->p && b->p+n>=b->a)
   {
     if(b->op == buffer_dummyread)

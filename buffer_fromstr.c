@@ -1,7 +1,7 @@
 #include "str.h"
 #include "buffer.h"
 
-void buffer_fromstr(buffer *b, char *s, unsigned long len)
+void buffer_fromstr(buffer *b, char *s, size_t len)
 {
   b->x=s;
   b->p=0;

@@ -13,15 +13,15 @@
 
 /* interpret src as ASCII decimal number, write number to dest and
  * return the number of bytes that were parsed */
-unsigned int scan_ulong(const char *src,unsigned long *dest);
+unsigned int scan_ulong(const char *src,size_t *dest);
 
 /* interpret src as ASCII hexadecimal number, write number to dest and
  * return the number of bytes that were parsed */
-unsigned int scan_xlong(const char *src,unsigned long *dest);
+unsigned int scan_xlong(const char *src,size_t *dest);
 
 /* interpret src as ASCII octal number, write number to dest and
  * return the number of bytes that were parsed */
-unsigned int scan_8long(const char *src,unsigned long *dest);
+unsigned int scan_8long(const char *src,size_t *dest);
 
 /* interpret src as signed ASCII decimal number, write number to dest
  * and return the number of bytes that were parsed */
@@ -52,18 +52,18 @@ unsigned int scan_double(const char *in, double *dest);
 unsigned int scan_plusminus(const char *src,signed int *dest);
 
 /* return the highest integer n<=limit so that isspace(in[i]) for all 0<=i<=n */
-unsigned long scan_whitenskip(const char *in,unsigned long limit) __pure__;
+size_t scan_whitenskip(const char *in,size_t limit) __pure__;
 
 /* return the highest integer n<=limit so that !isspace(in[i]) for all 0<=i<=n */
-unsigned long scan_nonwhitenskip(const char *in,unsigned long limit) __pure__;
+size_t scan_nonwhitenskip(const char *in,size_t limit) __pure__;
 
 /* return the highest integer n<=limit so that in[i] is element of
  * charset (ASCIIZ string) for all 0<=i<=n */
-unsigned long scan_charsetnskip(const char *in,const char *charset,unsigned long limit) __pure__;
+size_t scan_charsetnskip(const char *in,const char *charset,size_t limit) __pure__;
 
 /* return the highest integer n<=limit so that in[i] is not element of
  * charset (ASCIIZ string) for all 0<=i<=n */
-unsigned long scan_noncharsetnskip(const char *in,const char *charset,unsigned long limit) __pure__;
+size_t scan_noncharsetnskip(const char *in,const char *charset,size_t limit) __pure__;
 
 /* try to parse ASCII GMT date; does not understand time zones. */
 /* example dates:

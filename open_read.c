@@ -7,5 +7,5 @@
 #endif
 
 int open_read(const char *filename) {
-  return open(filename,O_RDONLY);
+  return open(filename,O_RDONLY | O_LARGEFILE);
 }
