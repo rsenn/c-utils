@@ -3,6 +3,9 @@
 
 /* for time_t: */
 #include <sys/types.h>
+#ifdef _MSC_VER
+#include <crtdefs.h>
+#endif
 
 #define FMT_LONG  41 /* enough space to hold -2^127 in decimal, plus \0 */
 #define FMT_ULONG 40 /* enough space to hold 2^128 - 1 in decimal, plus \0 */

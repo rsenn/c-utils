@@ -4,6 +4,10 @@
 #ifdef __dietlibc__
 #include <sys/cdefs.h>
 #endif
+#ifdef _MSC_VER
+#include <crtdefs.h>
+#endif
+
 #ifndef __pure__
 #define __pure__
 #endif

@@ -1,4 +1,6 @@
+#ifndef WIN32
 #include <unistd.h>
+#endif
 #include <fcntl.h>
 #include "open.h"
 

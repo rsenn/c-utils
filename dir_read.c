@@ -3,7 +3,7 @@
 char *dir_read(struct dir_s *d)
 {
   char *ret = 0;
-#if defined(__MINGW32__) || defined(__MSYS__)
+#if defined(WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 	  if(!dir_INTERNAL(d)->first)
 	  {
 		if(!FindNextFileA(dir_INTERNAL(d)->dir_handle, &dir_INTERNAL(d)->dir_finddata))

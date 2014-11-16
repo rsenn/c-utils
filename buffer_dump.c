@@ -1,4 +1,6 @@
+#ifndef WIN32
 #include <unistd.h>
+#endif
 #include <buffer.h>
 #include <fmt.h>
 

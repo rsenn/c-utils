@@ -1,11 +1,18 @@
-// decode-ls-lR.c
+#include "config.h"
 
+#ifndef WIN32
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 #include <fcntl.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef HAVE_LIBGEN_H
 #include <libgen.h>
+#endif
 
 #include "stralloc.h"
 #include "buffer.h"
@@ -13,6 +20,10 @@
 #include "fmt.h"
 #include "byte.h"
 #include "str.h"
+
+#ifndef PATH_MAX
+#define PATH_MAX _MAX_PATH
+#endif
 
 static int skip_fields = 8;
 static char *delimiters = " \t\r";
@@ -28,6 +39,16 @@ static char buffer_2_out[BUFFER_OUTSIZE];
 static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
 
 static stralloc dirp = { 0,0,0 };
+
+static char* mybasename(const char* s) {
+  char* r1 = strrchr(s, '/');
+  char* r2 = strrchr(s, '\\');
+
+  if(!r1 && !r2)
+    return s;
+
+  return (r1 > r2) ? r1+1 : r2+1;
+}
 
 int is_delimiter(char c)
 {
@@ -112,7 +133,7 @@ int decode_ls_lR()
 void usage(char *arg0)
 {
   buffer_puts(&buffer_2, "Usage: ");
-  buffer_puts(&buffer_2, (char *)basename(arg0));
+  buffer_puts(&buffer_2, mybasename(arg0));
   buffer_puts(&buffer_2, " [Options]\n");
   buffer_puts(&buffer_2, " -s num   Skip <num> Number of fields\n");
   buffer_flush(&buffer_2);

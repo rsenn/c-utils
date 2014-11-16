@@ -1,18 +1,28 @@
+#include "config.h"
+
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 
+#ifndef WIN32
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#ifndef __MINGW32__
+
+#ifndef WIN32
 #include <sys/mman.h>
 #endif
+
 #include "buffer.h"
 #include "open.h"
 #include "mmap.h"
+#include "uint64.h"
 
 #if defined(__x86_64__) && defined(__linux)
 #define lseek lseek64
@@ -79,24 +89,23 @@ int main(int argc, char *argv[]) {
 next:
   for(; ai < argc; ++ai) {
     uint64 all_blocks=0, zero_blocks = 0, nonzero_blocks;
-    unsigned int percent;;
+    unsigned int percent;
     unsigned int bi;
-    int fd = open_read(argv[ai]);
-    int64 fsize = filesize(fd);
-
-
+    int fd;
+    int64 fsize, i;
+    uint64 iterations, remain;
     int map_blocks = 128;
     int map_size = (BLOCK_SIZE * map_blocks);
-    int64 i;
 
+    fd = open_read(argv[ai]);
+    fsize = filesize(fd);
 
-
-    uint64 iterations = (fsize + map_size + 1) / map_size;
-    uint64 remain = fsize;
+    iterations = (fsize + map_size + 1) / map_size;
+    remain = fsize;
 
     if(verbose)
         fprintf(stderr, "memory map size: %uMB (0x%016u) iterations: %i (end offset: 0x%08X)\n", 
-								map_size/1048576, map_size, (int)iterations, (uint32_t)fsize);
+								map_size/1048576, map_size, (int)iterations, (unsigned int)fsize);
 
     //(uint64)map_size * iterations);
     //mmap_private(argv[ai], &fsize);
@@ -115,17 +124,16 @@ next:
     //buffer_puts(&buffer_1,"fsize #"); buffer_putulong(&buffer_1,fsize);; buffer_puts(&buffer_1,", blocks #");buffer_putulong(&buffer_1,blocks); buffer_putnlflush(&buffer_1);
 
     for(i = 0; i < iterations; i++) {
-
       size_t msz =  (remain >= map_size ? map_size : remain);
       uint64 mofs =  (uint64)map_size * i;
-
 
       char *m = mmap_map(fd, msz, mofs);
 
       int blocks = msz / BLOCK_SIZE;
+      int z = 0;
 
       all_blocks += blocks;
-      int z = 0;
+
       //int remain = msz - (blocks * BLOCK_SIZE);
       for(bi = 0; bi < blocks; bi++)
       {

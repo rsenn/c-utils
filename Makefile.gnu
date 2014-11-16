@@ -6,7 +6,7 @@ CC = gcc
 CXX = g++
 #CPPFLAGS = -I/usr/include/libowfat 
 #CPPFLAGS = -I. -D__USE_BSD=1
-CPPFLAGS = -I.  -DPATH_MAX=4096
+CPPFLAGS = -I.  -DPATHLEN=4096
 CFLAGS = -g -O2 -Wall
 CXXFLAGS = $(CFLAGS)
 #LIBS = -lowfat

@@ -1,4 +1,9 @@
+#include "config.h"
+#ifndef WIN32
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 #include <limits.h>
 #include "buffer.h"
 #include "fmt.h"

@@ -1,14 +1,19 @@
+#include "config.h"
 #include <stdio.h>
+#ifndef WIN32
 #include <unistd.h>
-#include <string.h>
 #include <dirent.h>
+#else
+#include <io.h>
+#endif
+#include <string.h>
 #include <sys/stat.h>
 
 #include "buffer.h"
 #include "stralloc.h"
 #include "dir_internal.h"
 
-#if defined(__MINGW32__) || defined(__MSYS__)
+#if defined(WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
 #include <shlwapi.h>
 #endif
@@ -58,12 +63,14 @@ int list_dir_internal(stralloc *dir,  char type)
     strcpy(dir->s + dir->len, name);
     dir->len+=strlen(name);
 
+#if !defined(WIN32)
     if(lstat(dir->s, &st) != -1)
       is_symlink = S_ISLNK(st.st_mode);
     else
+#endif
       is_symlink = 0;
 	
-#if !defined(__MINGW32__)
+#if !defined(WIN32)
     struct stat st;
     if(lstat(dir->s, &st) != -1)
       is_symlink = !!S_ISLNK(st.st_mode);
