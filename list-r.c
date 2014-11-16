@@ -29,7 +29,8 @@ int list_dir_internal(stralloc *dir,  char type)
   size_t l;
   struct dir_s d;
   int is_dir, is_symlink;
-  size_t len;
+  unsigned long len;
+  struct stat st;
   
   char *name,*s;
 
@@ -56,6 +57,11 @@ int list_dir_internal(stralloc *dir,  char type)
     stralloc_readyplus(dir, strlen(name)+1);
     strcpy(dir->s + dir->len, name);
     dir->len+=strlen(name);
+
+    if(lstat(dir->s, &st) != -1)
+      is_symlink = S_ISLNK(st.st_mode);
+    else
+      is_symlink = 0;
 	
 #if !defined(__MINGW32__)
     struct stat st;
