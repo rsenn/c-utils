@@ -35,7 +35,9 @@ int list_dir_internal(stralloc *dir,  char type)
   struct dir_s d;
   int is_dir, is_symlink;
   unsigned long len;
+#ifndef WIN32
   struct stat st;
+#endif
   
   char *name,*s;
 

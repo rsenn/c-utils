@@ -40,12 +40,13 @@ static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSI
 
 static stralloc dirp = { 0,0,0 };
 
-static char* mybasename(const char* s) {
+static char*
+mybasename(const char* s) {
   char* r1 = strrchr(s, '/');
   char* r2 = strrchr(s, '\\');
 
   if(!r1 && !r2)
-    return s;
+    return (char*)s;
 
   return (r1 > r2) ? r1+1 : r2+1;
 }
@@ -78,8 +79,7 @@ size_t skip_field(int n, char *s, size_t len)
 int decode_ls_lR()
 {
   char buffer[PATH_MAX];
-  size_t pos;
-  long len, i;
+  long pos, len, i;
   unsigned int offset = dirp.len;
   int is_dir;
 

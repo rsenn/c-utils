@@ -2,6 +2,8 @@
 #include <shell.h>
 #ifndef WIN32
 #include <unistd.h>
+#else
+#include <io.h>
 #endif
 #if !(defined(WIN32) || defined(__MINGW32__) ||defined(__MSYS__))
 #include <sys/mman.h>

@@ -9,10 +9,22 @@ check_include_file(inttypes.h HAVE_INTTYPES_H)
 check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(libgen.h HAVE_LIBGEN_H)
 check_include_file(alloca.h HAVE_ALLOCA_H)
+check_include_file(sys/stat.h HAVE_SYS_STAT_H)
+
+include(CheckTypeSize)
+
+check_type_size(loff_t LOFF_T)
+check_type_size(lloff_t LLOFF_T)
+check_type_size(off64_t OFF64_T)
 
 include(CheckFunctionExists)
 
 check_function_exists(alloca HAVE_ALLOCA_FUNC)
+check_function_exists(stat HAVE_STAT_FUNC)
+check_function_exists(lstat HAVE_LSTAT_FUNC)
+check_function_exists(lseek HAVE_LSEEK_FUNC)
+check_function_exists(llseek HAVE_LLSEEK_FUNC)
+check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
 
   configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
                  "${CMAKE_BINARY_DIR}/config.h")

@@ -1,5 +1,7 @@
 #ifndef WIN32
 #include <unistd.h>
+#else
+#include <io.h>
 #endif
 #include <fcntl.h>
 #include "open.h"
