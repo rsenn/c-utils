@@ -5,17 +5,17 @@ DEBUG = 1
 
 INSTALL = install
 
-BUILD = $(cc -dumpmachine)
+BUILD = $(shell cc -dumpmachine)
 HOST ?= $(BUILD)
 
 ifneq ($(HOST),)
-CROSS = $(HOST)-
 TRIPLET = $(subst -, ,$(HOST))
 OS = $(word 3,$(TRIPLET))
+ifneq ($(HOST),$(BUILD))
+CROSS = $(HOST)-
+BUILDDIR = build/$(HOST)/
 endif
 
-ifneq ($(HOST),$(BUILD))
-BUILDDIR = build/$(HOST)/
 endif
 
 $(info OS: $(OS))
@@ -46,7 +46,6 @@ LDFLAGS += -s
 endif
 CXXFLAGS = $(CFLAGS)
 #LIBS = -lowfat
-HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')
 RM = rm -f 
 
 
