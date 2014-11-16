@@ -7,7 +7,9 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#ifndef __MINGW32__
 #include <sys/mman.h>
+#endif
 #include "buffer.h"
 #include "open.h"
 #include "mmap.h"

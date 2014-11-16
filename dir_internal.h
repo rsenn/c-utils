@@ -21,7 +21,7 @@ struct dir_internal_s {
 
 };
 
-#define dir_INTERNAL(d) ((struct dir_internal_s *)(d))
+#define dir_INTERNAL(d) ((struct dir_internal_s *)((d)->dir_int))
 
 #if defined(__MINGW32__) || defined(__MSYS__)
 #define dir_NAME(d) ((d)->dir_finddata.szName)

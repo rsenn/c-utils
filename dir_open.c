@@ -14,11 +14,11 @@ int dir_open(struct dir_s *d, const char *p)
   len = strlen(path);
   strncat(path, (len > 0 && (path[len -1] == '\\' || path[len - 1] == '/')) ? "*" : "\\*", sizeof(path)-1);
   
-  ((struct dir_internal_s *)(d->dir_int))->dir_handle = FindFirstFileA(path, &((struct dir_internal_s *)(d->dir_int))->dir_finddata);
-  ((struct dir_internal_s *)(d->dir_int))->first = 1;
-  ret = (((struct dir_internal_s *)(d->dir_int))->dir_handle ==  INVALID_HANDLE_VALUE);
+  dir_INTERNAL(d)->dir_handle = FindFirstFileA(path, &dir_INTERNAL(d)->dir_finddata);
+  dir_INTERNAL(d)->first = 1;
+  ret = (dir_INTERNAL(d)->dir_handle ==  INVALID_HANDLE_VALUE);
 #else
-  ret = !(((struct dir_internal_s *)(d->dir_int))->dir_handle = opendir(p));
+  ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
 #endif
 return ret;
 }

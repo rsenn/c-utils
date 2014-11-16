@@ -7,9 +7,9 @@ int dir_type(struct dir_s *d)
 {
   int r=0;
 #if defined(__MINGW32__) || defined(__MSYS__)
-  if(((struct dir_internal_s *)(d->dir_int))->dir_finddata.dwFileAttributes & 0x10)
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x10)
     r |= D_DIRECTORY;
-  else if(((struct dir_internal_s *)(d->dir_int))->dir_finddata.dwFileAttributes & 0x20)
+  else if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x20)
     r |= D_FILE;
 #else
 #ifndef DT_DIR
@@ -21,11 +21,11 @@ int dir_type(struct dir_s *d)
 #ifndef DT_LNK
 #define DT_LNK 10
 #endif
-  if((((struct dir_internal_s *)(d->dir_int))->dir_entry->d_type) == DT_DIR)
+  if((dir_INTERNAL(d)->dir_entry->d_type) == DT_DIR)
     r |= D_DIRECTORY;
-  if((((struct dir_internal_s *)(d->dir_int))->dir_entry->d_type) == DT_REG)
+  if((dir_INTERNAL(d)->dir_entry->d_type) == DT_REG)
     r |= D_FILE;
-  if((((struct dir_internal_s *)(d->dir_int))->dir_entry->d_type) == DT_LNK)
+  if((dir_INTERNAL(d)->dir_entry->d_type) == DT_LNK)
     r |= D_SYMLINK;
 	
 #endif
