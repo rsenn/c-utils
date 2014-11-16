@@ -1,8 +1,8 @@
 #include <sys/types.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <windows.h>
 #else
 #include <sys/types.h>
@@ -16,7 +16,7 @@
 #endif
 
 char* mmap_map(int fd, size_t sz, uint64 offset) {
-#if defined(WIN32)
+#if defined(_WIN32)
   HANDLE m;
   DWORD szl,szh;
   char* map;

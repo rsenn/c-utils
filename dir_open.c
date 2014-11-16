@@ -7,7 +7,7 @@ int dir_open(struct dir_s *d, const char *p)
   int ret;
   if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))
   return 1;
-#if defined(WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 
   strncpy(path, p, sizeof(path)-1);
   path[PATH_MAX]='\0';

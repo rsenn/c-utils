@@ -1,5 +1,5 @@
-#include <byte.h>
-#include <buffer.h>
+#include "byte.h"
+#include "buffer.h"
 
 extern int buffer_stubborn_read(int (*op)(),int fd,const char* buf, unsigned int len);
 

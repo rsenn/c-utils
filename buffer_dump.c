@@ -1,8 +1,8 @@
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
-#include <buffer.h>
-#include <fmt.h>
+#include "buffer.h"
+#include "fmt.h"
 
 #ifdef DEBUG
 

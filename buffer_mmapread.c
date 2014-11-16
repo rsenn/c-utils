@@ -1,5 +1,5 @@
-#include <buffer.h>
-#include <mmap.h>
+#include "buffer.h"
+#include "mmap.h"
 
 int buffer_dummyreadmmap()
 {

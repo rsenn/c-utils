@@ -5,7 +5,7 @@
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #else
 #include <windows.h>
@@ -18,7 +18,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/mman.h>
 #endif
 
@@ -35,7 +35,7 @@
 
 int64 filesize(int fd) {
   int64 sz;
-#ifdef WIN32
+#ifdef _WIN32
   DWORD fszH;
   sz = GetFileSize((HANDLE)fd, &fszH);
   sz |= ((int64)fszH) << 32;

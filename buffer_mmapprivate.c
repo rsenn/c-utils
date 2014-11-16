@@ -1,5 +1,5 @@
-#include <buffer.h>
-#include <mmap.h>
+#include "buffer.h"
+#include "mmap.h"
 
 int buffer_mmapprivate(buffer* b,const char* filename) {
   if (!(b->x=mmap_private(filename,&b->n))) return -1;
