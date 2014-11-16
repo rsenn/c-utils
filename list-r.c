@@ -29,12 +29,8 @@ int list_dir_internal(stralloc *dir,  char type)
   size_t l;
   struct dir_s d;
   int is_dir, is_symlink;
-<<<<<<< HEAD
   unsigned long len;
   struct stat st;
-=======
-  size_t len;
->>>>>>> 51dbe95660f220791aa6ce3f165a743c05f26617
   
   char *name,*s;
 
@@ -46,11 +42,7 @@ int list_dir_internal(stralloc *dir,  char type)
   dir_open(&d, dir->s);
   
   
-<<<<<<< HEAD
-  stralloc_cats(dir, path_separator);
-=======
   stralloc_cats(dir, PATHSEP_S);
->>>>>>> 51dbe95660f220791aa6ce3f165a743c05f26617
   l = dir->len;
   
   

@@ -47,7 +47,6 @@ struct dir_internal_s {
 #define dir_ISLINK(d) S_ISLINK(dir_ATTRS(d))
 #endif
 
-<<<<<<< HEAD
 #if defined(__MINGW32__) || defined(__MSYS__)
 #define dir_ISLINK(d) (!!(dir_ATTRS(d)&0x08))
 #else
@@ -57,6 +56,3 @@ struct dir_internal_s {
 
 
 	#endif // _DIR_INTERNAL_H__
-=======
-#endif // _DIR_INTERNAL_H__
->>>>>>> 51dbe95660f220791aa6ce3f165a743c05f26617

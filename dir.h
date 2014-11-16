@@ -18,11 +18,7 @@ enum
 {
   D_FILE = 0x20,
   D_DIRECTORY = 0x10,
-<<<<<<< HEAD
-  D_LINK = 0x08,
-=======
   D_SYMLINK = 0x08,
->>>>>>> 51dbe95660f220791aa6ce3f165a743c05f26617
 };
 
 enum
