@@ -28,6 +28,7 @@
 #define PATH_MAX _MAX_PATH
 #endif
 
+static int  force = 0;
 
 static char buffer_0_in[BUFFER_INSIZE];
 static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
@@ -235,6 +236,9 @@ int reg2cmd()
 			buffer_puts(&buffer_1, key);
 			buffer_puts(&buffer_1, "\" ");
 			
+			if(force)
+			 buffer_puts(&buffer_1, "/f ");
+				
 			if(line.s[keystart] == '@' && (keyend - keystart) == 1) {
 			  buffer_puts(&buffer_1, "/ve ");
 			} else {
@@ -287,7 +291,7 @@ int reg2cmd()
 			}
 		
 				
-			buffer_puts(&buffer_1, " /f\r\n");
+			buffer_puts(&buffer_1, "\r\n");
 			buffer_flush(&buffer_1);
     }
      /*   
@@ -316,7 +320,7 @@ void usage(char *arg0)
 {
   buffer_puts(&buffer_2, "Usage: ");
   buffer_puts(&buffer_2, basename(arg0));
-  buffer_puts(&buffer_2, " [file]\n");
+  buffer_puts(&buffer_2, " [-f] [input-file] [output-file]\n");
   buffer_flush(&buffer_2);
   exit(1);
 }
@@ -331,28 +335,9 @@ int main(int argc, char *argv[])
     {
       switch(arg[1])
       {
-/*      case 's':
-        argi++;
-        if(argi<argc)
-          skip_fields = atoi(argv[argi]);
+      case 'f':
+        force++;
         break;
-      case 'd':
-        argi++;
-        if(argi<argc) {
-
-          delimiters = argv[argi];
-          delimiters_len = strlen(delimiters);
-        }
-        break;
-      case 'p':
-        argi++;
-        if(argi<argc)
-        {
-          stralloc_copys(&dirp,argv[argi]);
-          if(dirp.len && dirp.s[dirp.len-1] != '/')
-            stralloc_catb(&dirp,"/",1);
-        }
-        break;*/
       default:
         usage(argv[0]);
         break;
@@ -362,12 +347,25 @@ int main(int argc, char *argv[])
   }
   if(argi < argc)
   {
-    buffer_puts(&buffer_2, "Opening file ");
+    buffer_puts(&buffer_2, "Opening file for reading '");
     buffer_puts(&buffer_2, argv[argi]);
-    buffer_puts(&buffer_2, "...\n");
+    buffer_puts(&buffer_2, "' ...\n");
     buffer_flush(&buffer_2);
     if((buffer_0.fd = open(argv[argi], O_RDONLY)) < 0)
       usage(argv[0]);
+      
+    argi++;
+  }
+  if(argi < argc)
+  {
+    buffer_puts(&buffer_2, "Opening file for writing '");
+    buffer_puts(&buffer_2, argv[argi]);
+    buffer_puts(&buffer_2, "' ...\n");
+    buffer_flush(&buffer_2);
+    if((buffer_1.fd = open(argv[argi], O_CREAT|O_TRUNC|O_WRONLY, 0644)) < 0)
+      usage(argv[0]);
+      
+    argi++;
   }
   reg2cmd();
   return 0;
