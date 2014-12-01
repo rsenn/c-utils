@@ -49,11 +49,12 @@ CXXFLAGS = $(CFLAGS)
 RM = rm -f 
 
 
-LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,buffer_close.o buffer_default.o buffer_dump.o buffer_feed.o buffer_flush.o buffer_free.o buffer_fromsa.o buffer_fromstr.o buffer_get.o buffer_get_new_token_sa.o buffer_get_new_token_sa_pred.o buffer_get_token.o buffer_get_token_pred.o buffer_get_token_sa.o buffer_get_token_sa_pred.o buffer_get_until.o buffer_getc.o buffer_getline.o buffer_getline_sa.o buffer_init.o buffer_mmapprivate.o buffer_mmapread.o buffer_mmapread_fd.o buffer_prefetch.o buffer_put.o buffer_putc.o buffer_putflush.o buffer_putm_internal.o buffer_putnlflush.o buffer_putnspace.o buffer_puts.o buffer_putsa.o buffer_putsflush.o buffer_putspace.o buffer_putulong.o buffer_skip_until.o buffer_stubborn.o buffer_stubborn2.o buffer_tosa.o buffer_truncfile.o byte_chr.o byte_copy.o byte_copyr.o byte_fill.o dir_close.o dir_open.o dir_read.o dir_type.o dir_time.o fmt_minus.o fmt_ulong.o fmt_ulong0.o mmap_private.o mmap_read.o mmap_read_fd.o mmap_unmap.o mmap_map.o  open_append.o open_read.o open_rw.o open_trunc.o shell_alloc.o shell_error.o shell_errorn.o shell_init.o shell_realloc.o str_diffn.o str_len.o stralloc_append.o stralloc_cat.o stralloc_catb.o stralloc_catc.o stralloc_catlong0.o stralloc_cats.o stralloc_catulong0.o stralloc_copy.o stralloc_copyb.o stralloc_copys.o stralloc_diffs.o stralloc_free.o stralloc_init.o stralloc_insertb.o stralloc_move.o stralloc_nul.o stralloc_ready.o stralloc_readyplus.o stralloc_remove.o stralloc_trunc.o stralloc_write.o stralloc_zero.o file.o directory_iterator.o)
+LIB_SRCS = $(wildcard *_*.c)
+LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(LIB_SRCS:%.c=%.o))
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(EXEEXT) $(BUILDDIR)count-depth$(EXEEXT) $(BUILDDIR)decode-ls-lR$(EXEEXT) $(BUILDDIR)torrent-progress$(EXEEXT)
+PROGRAMS = $(BUILDDIR)list-r$(EXEEXT) $(BUILDDIR)count-depth$(EXEEXT) $(BUILDDIR)decode-ls-lR$(EXEEXT) $(BUILDDIR)reg2cmd$(EXEEXT) $(BUILDDIR)torrent-progress$(EXEEXT)
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
 vpath $(BUILDDIR)
@@ -68,6 +69,10 @@ $(BUILDDIR):
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
 $(BUILDDIR)decode-ls-lR$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ)
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ) $(LIBS)
+
+$(BUILDDIR)reg2cmd.o: reg2cmd.c
+$(BUILDDIR)reg2cmd$(EXEEXT): $(BUILDDIR)reg2cmd.o $(LIB_OBJ)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)reg2cmd.o $(LIB_OBJ) $(LIBS)
 
 $(BUILDDIR)count-depth.o: count-depth.c
 $(BUILDDIR)count-depth$(EXEEXT): $(BUILDDIR)count-depth.o $(LIB_OBJ)

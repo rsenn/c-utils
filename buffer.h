@@ -105,13 +105,13 @@ void buffer_seek(buffer* b,size_t len);
 
 int buffer_copy(buffer* out,buffer* in);
 
-int buffer_putulong(buffer *b,size_t l);
-int buffer_put8long(buffer *b,size_t l);
-int buffer_putxlong(buffer *b,size_t l);
-int buffer_putlong(buffer *b,signed long int l);
+int buffer_putulong(buffer *b,unsigned long l);
+int buffer_put8long(buffer *b,unsigned long l);
+int buffer_putxlong(buffer *b,unsigned long l);
+int buffer_putlong(buffer *b,signed long l);
 
-int buffer_putlonglong(buffer* b,signed long long int l);
-int buffer_putulonglong(buffer* b,unsigned long long int l);
+int buffer_putlonglong(buffer* b,signed long long l);
+int buffer_putulonglong(buffer* b,unsigned long long l);
 
 int buffer_puterror(buffer* b);
 int buffer_puterror2(buffer* b, int errnum);
