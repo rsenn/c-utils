@@ -5,12 +5,15 @@ DEBUG = 1
 
 INSTALL = install
 
-BUILD = $(shell cc -dumpmachine)
+CC ?= cc
+
+BUILD = $(shell $(CC) -dumpmachine)
 HOST ?= $(BUILD)
 
 ifneq ($(HOST),)
 TRIPLET = $(subst -, ,$(HOST))
-OS = $(word 3,$(TRIPLET))
+MACHINE := $(word 1,$(TRIPLET))
+OS := $(word 3,$(TRIPLET))
 ifneq ($(HOST),$(BUILD))
 CROSS = $(HOST)-
 BUILDDIR = build/$(HOST)/
@@ -18,9 +21,20 @@ endif
 
 endif
 
+ifeq ($(MACHINE),x86_64)
+EXESUFFIX = 64
+endif
+
+
+$(info Machine: $(MACHINE))
 $(info OS: $(OS))
 
 ifeq ($(OS),mingw32)
+EXEEXT = .exe
+LDFLAGS = -s -static
+endif
+
+ifeq ($(OS),cygwin)
 EXEEXT = .exe
 LDFLAGS = -s -static
 endif
@@ -54,7 +68,7 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(LIB_SRCS:%.c=%.o))
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(EXEEXT) $(BUILDDIR)count-depth$(EXEEXT) $(BUILDDIR)decode-ls-lR$(EXEEXT) $(BUILDDIR)reg2cmd$(EXEEXT) $(BUILDDIR)torrent-progress$(EXEEXT)
+PROGRAMS = $(BUILDDIR)list-r$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)reg2cmd$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)torrent-progress$(EXESUFFIX)$(EXEEXT)
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
 vpath $(BUILDDIR)
@@ -67,23 +81,23 @@ $(BUILDDIR):
 	mkdir -p $(BUILDDIR)
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
-$(BUILDDIR)decode-ls-lR$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ)
+$(BUILDDIR)decode-ls-lR$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ)
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ) $(LIBS)
 
 $(BUILDDIR)reg2cmd.o: reg2cmd.c
-$(BUILDDIR)reg2cmd$(EXEEXT): $(BUILDDIR)reg2cmd.o $(LIB_OBJ)
+$(BUILDDIR)reg2cmd$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)reg2cmd.o $(LIB_OBJ)
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)reg2cmd.o $(LIB_OBJ) $(LIBS)
 
 $(BUILDDIR)count-depth.o: count-depth.c
-$(BUILDDIR)count-depth$(EXEEXT): $(BUILDDIR)count-depth.o $(LIB_OBJ)
+$(BUILDDIR)count-depth$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)count-depth.o $(LIB_OBJ)
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)count-depth.o $(LIB_OBJ) $(LIBS)
 
 $(BUILDDIR)list-r.o: list-r.c
-$(BUILDDIR)list-r$(EXEEXT): $(BUILDDIR)list-r.o $(LIB_OBJ)
+$(BUILDDIR)list-r$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)list-r.o $(LIB_OBJ)
 	$(CXX) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)list-r.o $(LIB_OBJ) $(LIBS)
 
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
-$(BUILDDIR)torrent-progress$(EXEEXT): $(BUILDDIR)torrent-progress.o $(LIB_OBJ)
+$(BUILDDIR)torrent-progress$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(LIB_OBJ)
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)torrent-progress.o $(LIB_OBJ) $(LIBS)
 
 .c.o:
@@ -105,7 +119,7 @@ $(BUILDDIR)%.o: %.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
 
 clean:
-	$(RM) -f $(OBJECTS) list-r.o list-r$(EXEEXT)
+	$(RM) -f $(OBJECTS) list-r.o list-r$(EXESUFFIX)$(EXEEXT)
 
 install: $(PROGRAMS)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
