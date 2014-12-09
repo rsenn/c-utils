@@ -4,6 +4,10 @@
 #ifdef __dietlibc__
 #include <sys/cdefs.h>
 #endif
+#ifdef _MSC_VER
+#include <crtdefs.h>
+#endif
+
 #ifndef __pure__
 #define __pure__
 #endif
@@ -73,7 +77,7 @@ int stralloc_copy(stralloc* sa,const stralloc* sa2);
 int stralloc_catb(stralloc* sa,const char* in,size_t len);
 
 int stralloc_write(stralloc* sa,const char *in, size_t len);
-int stralloc_catc(stralloc* sa,unsigned char c);
+int stralloc_catc(stralloc* sa,const unsigned char c);
 
 /* stralloc_cats is analogous to stralloc_copys */
 int stralloc_cats(stralloc* sa,const char* in);

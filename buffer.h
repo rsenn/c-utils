@@ -2,6 +2,9 @@
 #define BUFFER_H
 
 #include <sys/types.h>
+#ifdef _MSC_VER
+#include <crtdefs.h>
+#endif
 
 typedef struct buffer {
   char *x;	/* actual buffer space */

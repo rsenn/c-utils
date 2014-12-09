@@ -6,6 +6,9 @@
 #endif
 
 #include <sys/types.h>
+#ifdef _MSC_VER
+#include <crtdefs.h>
+#endif
 
 #ifndef __pure__
 #define __pure__

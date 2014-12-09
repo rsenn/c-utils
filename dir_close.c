@@ -1,6 +1,6 @@
 #include "dir_internal.h"
 
-#if defined(__MINGW32__) ||defined(__MSYS__)
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
 #else
 #include <dirent.h>
@@ -10,10 +10,10 @@
 
 void dir_close(struct dir_s *d)
 {
-#if defined(__MINGW32__) || defined(__MSYS__)
-  CloseHandle(((struct dir_internal_s *)(d->dir_int))->dir_handle);
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+  CloseHandle(dir_INTERNAL(d)->dir_handle);
 #else
-  closedir(((struct dir_internal_s *)(d->dir_int))->dir_handle);
+  closedir(dir_INTERNAL(d)->dir_handle);
 #endif
   free(d->dir_int);
 }

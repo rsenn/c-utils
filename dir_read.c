@@ -3,21 +3,21 @@
 char *dir_read(struct dir_s *d)
 {
   char *ret = 0;
-#if defined(__MINGW32__) || defined(__MSYS__)
-	  if(!((struct dir_internal_s *)(d->dir_int))->first)
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+	  if(!dir_INTERNAL(d)->first)
 	  {
-		if(!FindNextFileA(((struct dir_internal_s *)(d->dir_int))->dir_handle, &((struct dir_internal_s *)(d->dir_int))->dir_finddata))
+		if(!FindNextFileA(dir_INTERNAL(d)->dir_handle, &dir_INTERNAL(d)->dir_finddata))
 		  return 0;
 	  }
-	  ((struct dir_internal_s *)(d->dir_int))->first = 0;
+	  dir_INTERNAL(d)->first = 0;
 	  
-	  ret = ((struct dir_internal_s *)(d->dir_int))->dir_finddata.cFileName;
+	  ret = dir_INTERNAL(d)->dir_finddata.cFileName;
 	#else
 
 
-	  if((((struct dir_internal_s *)(d->dir_int))->dir_entry = readdir(((struct dir_internal_s *)(d->dir_int))->dir_handle)) != 0)
+	  if((dir_INTERNAL(d)->dir_entry = readdir(dir_INTERNAL(d)->dir_handle)) != 0)
 	  {
-		ret = dir_NAME(dir_INTERNAL(d));
+		  ret = dir_NAME(dir_INTERNAL(d));
 		}
 	#endif
 	  return ret;

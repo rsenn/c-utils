@@ -1,7 +1,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef _WIN32
 #include <unistd.h>
-#if defined(__MINGW32__) || defined(__MSYS__)
+#endif
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
 #else
 #include <sys/mman.h>
@@ -13,7 +15,7 @@ char mmap_empty[] = { 0 };
 
 char* mmap_read_fd(int fd, size_t *filesize)
 {
-#if defined(__MINGW32__) || defined(__MSYS__)
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
   HANDLE m;
   char* map;
   m=CreateFileMapping((HANDLE)fd,0,PAGE_READONLY,0,0,NULL);

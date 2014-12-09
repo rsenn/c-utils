@@ -1,4 +1,11 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+#ifndef _WIN32
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 #include <limits.h>
 #include "buffer.h"
 #include "fmt.h"

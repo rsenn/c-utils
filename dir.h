@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#if defined(__MINGW32__) || defined(__MSYS__)
+#if 0 //defined(__MINGW32__) || defined(__MSYS__)
 #define PATHSEP_C '\\'
 #define PATHSEP_S "\\"
 #else

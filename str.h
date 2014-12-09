@@ -9,6 +9,9 @@
 #endif
 
 #include <sys/types.h>
+#ifdef _MSC_VER
+#include <crtdefs.h>
+#endif
 
 /* str_copy copies leading bytes from in to out until \0.
  * return number of copied bytes. */

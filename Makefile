@@ -4,7 +4,32 @@ bindir = ${prefix}/bin
 DEBUG = 1
 
 INSTALL = install
-CC = gcc
+
+BUILD = $(shell cc -dumpmachine)
+HOST ?= $(BUILD)
+
+ifneq ($(HOST),)
+TRIPLET = $(subst -, ,$(HOST))
+OS = $(word 3,$(TRIPLET))
+ifneq ($(HOST),$(BUILD))
+CROSS = $(HOST)-
+BUILDDIR = build/$(HOST)/
+endif
+
+endif
+
+$(info OS: $(OS))
+
+ifeq ($(OS),mingw32)
+EXEEXT = .exe
+LDFLAGS = -s -static
+endif
+
+
+CC = $(CROSS)gcc
+CXX = $(CROSS)g++
+
+
 #CPPFLAGS = -I/usr/include/libowfat 
 #CPPFLAGS = -I. -D__USE_BSD=1
 CPPFLAGS = -I.  -DPATH_MAX=4096 -D_LARGEFILE_SOURCE=1 -D_GNU_SOURCE=1 -D_FILE_OFFSET_BITS=64
@@ -21,41 +46,58 @@ LDFLAGS += -s
 endif
 CXXFLAGS = $(CFLAGS)
 #LIBS = -lowfat
-EXEEXT =
-HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')
 RM = rm -f 
 
 
-LIB_OBJ = buffer_close.o buffer_default.o buffer_dump.o buffer_feed.o buffer_flush.o buffer_free.o buffer_fromsa.o buffer_fromstr.o buffer_get.o buffer_get_new_token_sa.o buffer_get_new_token_sa_pred.o buffer_get_token.o buffer_get_token_pred.o buffer_get_token_sa.o buffer_get_token_sa_pred.o buffer_get_until.o buffer_getc.o buffer_getline.o buffer_getline_sa.o buffer_init.o buffer_mmapprivate.o buffer_mmapread.o buffer_mmapread_fd.o buffer_prefetch.o buffer_put.o buffer_putc.o buffer_putflush.o buffer_putm_internal.o buffer_putnlflush.o buffer_putnspace.o buffer_puts.o buffer_putsa.o buffer_putsflush.o buffer_putspace.o buffer_putulong.o buffer_skip_until.o buffer_stubborn.o buffer_stubborn2.o buffer_tosa.o buffer_truncfile.o byte_chr.o byte_copy.o byte_copyr.o byte_fill.o dir_close.o dir_open.o dir_read.o dir_type.o dir_time.o fmt_minus.o fmt_ulong.o fmt_ulong0.o mmap_private.o mmap_read.o mmap_read_fd.o mmap_unmap.o mmap_map.o  open_append.o open_read.o open_rw.o open_trunc.o shell_alloc.o shell_error.o shell_errorn.o shell_init.o shell_realloc.o str_diffn.o str_len.o stralloc_append.o stralloc_cat.o stralloc_catb.o stralloc_catc.o stralloc_catlong0.o stralloc_cats.o stralloc_catulong0.o stralloc_copy.o stralloc_copyb.o stralloc_copys.o stralloc_diffs.o stralloc_free.o stralloc_init.o stralloc_insertb.o stralloc_move.o stralloc_nul.o stralloc_ready.o stralloc_readyplus.o stralloc_remove.o stralloc_trunc.o stralloc_write.o stralloc_zero.o file.o directory_iterator.o
+LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,buffer_close.o buffer_default.o buffer_dump.o buffer_feed.o buffer_flush.o buffer_free.o buffer_fromsa.o buffer_fromstr.o buffer_get.o buffer_get_new_token_sa.o buffer_get_new_token_sa_pred.o buffer_get_token.o buffer_get_token_pred.o buffer_get_token_sa.o buffer_get_token_sa_pred.o buffer_get_until.o buffer_getc.o buffer_getline.o buffer_getline_sa.o buffer_init.o buffer_mmapprivate.o buffer_mmapread.o buffer_mmapread_fd.o buffer_prefetch.o buffer_put.o buffer_putc.o buffer_putflush.o buffer_putm_internal.o buffer_putnlflush.o buffer_putnspace.o buffer_puts.o buffer_putsa.o buffer_putsflush.o buffer_putspace.o buffer_putulong.o buffer_skip_until.o buffer_stubborn.o buffer_stubborn2.o buffer_tosa.o buffer_truncfile.o byte_chr.o byte_copy.o byte_copyr.o byte_fill.o dir_close.o dir_open.o dir_read.o dir_type.o dir_time.o fmt_minus.o fmt_ulong.o fmt_ulong0.o mmap_private.o mmap_read.o mmap_read_fd.o mmap_unmap.o mmap_map.o  open_append.o open_read.o open_rw.o open_trunc.o shell_alloc.o shell_error.o shell_errorn.o shell_init.o shell_realloc.o str_diffn.o str_len.o stralloc_append.o stralloc_cat.o stralloc_catb.o stralloc_catc.o stralloc_catlong0.o stralloc_cats.o stralloc_catulong0.o stralloc_copy.o stralloc_copyb.o stralloc_copys.o stralloc_diffs.o stralloc_free.o stralloc_init.o stralloc_insertb.o stralloc_move.o stralloc_nul.o stralloc_ready.o stralloc_readyplus.o stralloc_remove.o stralloc_trunc.o stralloc_write.o stralloc_zero.o file.o directory_iterator.o)
 
 LIBS += -lstdc++
 
-PROGRAMS = list-r$(EXEEXT) count-depth$(EXEEXT) decode-ls-lR$(EXEEXT) torrent-progress$(EXEEXT)
+PROGRAMS = $(BUILDDIR)list-r$(EXEEXT) $(BUILDDIR)count-depth$(EXEEXT) $(BUILDDIR)decode-ls-lR$(EXEEXT) $(BUILDDIR)torrent-progress$(EXEEXT)
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
-all: $(PROGRAMS) 
+vpath $(BUILDDIR)
 
-decode-ls-lR.o: decode-ls-lR.c
-decode-ls-lR$(EXEEXT): decode-ls-lR.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ decode-ls-lR.o $(LIB_OBJ) $(LIBS)
+VPATH = $(BUILDDIR):.
 
-count-depth.o: count-depth.c
-count-depth$(EXEEXT): count-depth.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ count-depth.o $(LIB_OBJ) $(LIBS)
+all: $(BUILDDIR) $(PROGRAMS) 
 
-list-r.o: list-r.c
-list-r$(EXEEXT): list-r.o $(LIB_OBJ)
-	$(CXX) $(LDFLAGS) $(CFLAGS) -o $@ list-r.o $(LIB_OBJ) $(LIBS)
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)
 
-torrent-progress.o: torrent-progress.c
-torrent-progress$(EXEEXT): torrent-progress.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ torrent-progress.o $(LIB_OBJ) $(LIBS)
+$(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
+$(BUILDDIR)decode-ls-lR$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ) $(LIBS)
+
+$(BUILDDIR)count-depth.o: count-depth.c
+$(BUILDDIR)count-depth$(EXEEXT): $(BUILDDIR)count-depth.o $(LIB_OBJ)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)count-depth.o $(LIB_OBJ) $(LIBS)
+
+$(BUILDDIR)list-r.o: list-r.c
+$(BUILDDIR)list-r$(EXEEXT): $(BUILDDIR)list-r.o $(LIB_OBJ)
+	$(CXX) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)list-r.o $(LIB_OBJ) $(LIBS)
+
+$(BUILDDIR)torrent-progress.o: torrent-progress.c
+$(BUILDDIR)torrent-progress$(EXEEXT): $(BUILDDIR)torrent-progress.o $(LIB_OBJ)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)torrent-progress.o $(LIB_OBJ) $(LIBS)
 
 .c.o:
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
+%.o: %.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
+$(BUILDDIR)%.o: %.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 .cpp.o:
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
+
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
+
+$(BUILDDIR)%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
 
 clean:
 	$(RM) -f $(OBJECTS) list-r.o list-r$(EXEEXT)

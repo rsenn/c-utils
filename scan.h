@@ -2,6 +2,9 @@
 #define SCAN_H
 
 #include <sys/types.h>
+#ifdef _MSC_VER
+#include <crtdefs.h>
+#endif
 
 #ifdef __dietlibc__
 #include <sys/cdefs.h>

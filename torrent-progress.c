@@ -1,16 +1,35 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 
+#ifndef _WIN32
 #include <unistd.h>
+#else
+#include <windows.h>
+#include <io.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifndef _WIN32
 #include <sys/mman.h>
+#endif
+
 #include "buffer.h"
 #include "open.h"
 #include "mmap.h"
+#include "uint64.h"
+
+#if defined(__x86_64__) && defined(__linux)
+#define lseek lseek64
+#endif
 
 #define BLOCK_SIZE 262144
 #ifdef __APPLE__
@@ -20,16 +39,26 @@ typedef off64_t offset_type;;
 #endif
 
 int64 filesize(int fd) {
+<<<<<<< HEAD
   offset_type pos, end;
+=======
+>>>>>>> 3492cf8eab1491bebdd58914bd6d205c4150df6f
   int64 sz;
+#ifdef _WIN32
+  DWORD fszH;
+  sz = GetFileSize((HANDLE)fd, &fszH);
+  sz |= ((int64)fszH) << 32;
+#else
+  uint64 pos, end;
   //if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1;
-  if((pos = lseek64(fd, 0, SEEK_CUR)) < 0) return -1;
+  if((pos = lseek(fd, 0, SEEK_CUR)) < 0) return -1;
   //if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1;
-  if((end = lseek64(fd, 0, SEEK_END)) < 0) return -1;
+  if((end = lseek(fd, 0, SEEK_END)) < 0) return -1;
 
   sz = end;
-  lseek64(fd, pos, SEEK_SET);
+  lseek(fd, pos, SEEK_SET);
   //_llseek(fd, pos >> 32, pos & 0xffffffff,  &pos, SEEK_SET);
+#endif
   return sz;
 }
 
@@ -78,24 +107,23 @@ int main(int argc, char *argv[]) {
 next:
   for(; ai < argc; ++ai) {
     uint64 all_blocks=0, zero_blocks = 0, nonzero_blocks;
-    unsigned int percent;;
+    unsigned int percent;
     unsigned int bi;
-    int fd = open_read(argv[ai]);
-    int64 fsize = filesize(fd);
-
-
+    int fd;
+    uint64 fsize, i;
+    uint64 iterations, remain;
     int map_blocks = 128;
     int map_size = (BLOCK_SIZE * map_blocks);
-    int64 i;
 
+    fd = open_read(argv[ai]);
+    fsize = filesize(fd);
 
-
-    uint64 iterations = (fsize + map_size + 1) / map_size;
-    uint64 remain = fsize;
+    iterations = (fsize + map_size + 1) / map_size;
+    remain = fsize;
 
     if(verbose)
         fprintf(stderr, "memory map size: %uMB (0x%016u) iterations: %i (end offset: 0x%08X)\n", 
-								map_size/1048576, map_size, (int)iterations, (uint32_t)fsize);
+								map_size/1048576, map_size, (int)iterations, (unsigned int)fsize);
 
     //(uint64)map_size * iterations);
     //mmap_private(argv[ai], &fsize);
@@ -114,17 +142,15 @@ next:
     //buffer_puts(&buffer_1,"fsize #"); buffer_putulong(&buffer_1,fsize);; buffer_puts(&buffer_1,", blocks #");buffer_putulong(&buffer_1,blocks); buffer_putnlflush(&buffer_1);
 
     for(i = 0; i < iterations; i++) {
-
-      size_t msz =  (remain >= map_size ? map_size : remain);
+      size_t msz =  (remain >= map_size ? map_size : (size_t)remain);
       uint64 mofs =  (uint64)map_size * i;
-
 
       char *m = mmap_map(fd, msz, mofs);
 
-      int blocks = msz / BLOCK_SIZE;
+      unsigned int z = 0, blocks = msz / BLOCK_SIZE;
 
       all_blocks += blocks;
-      int z = 0;
+
       //int remain = msz - (blocks * BLOCK_SIZE);
       for(bi = 0; bi < blocks; bi++)
       {
@@ -134,8 +160,8 @@ next:
         //fprintf(stderr, "block #%lu\n", bi); fflush(stderr);
       }
     
-    if(verbose)
-      fprintf(stderr, "mmap at 0x%zx, size 0x%zx%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
+      if(verbose)
+        fprintf(stderr, "mmap at 0x%zx, size 0x%zx%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
       
       zero_blocks += z;
 
@@ -147,7 +173,7 @@ next:
     //	 buffer_putulong(&buffer_1,blocks);
     //	 buffer_putnlflush(&buffer_1);
     nonzero_blocks = all_blocks - zero_blocks;
-    percent = (float)nonzero_blocks * 10000 / all_blocks;
+    percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
 
     buffer_puts(&buffer_1,argv[ai]);
     buffer_puts(&buffer_1,(space?": ":":"));

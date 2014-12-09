@@ -1,14 +1,21 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include <stdio.h>
+#ifndef _WIN32
 #include <unistd.h>
-#include <string.h>
 #include <dirent.h>
+#else
+#include <io.h>
+#endif
+#include <string.h>
 #include <sys/stat.h>
 
 #include "buffer.h"
 #include "stralloc.h"
 #include "dir_internal.h"
 
-#if defined(__MINGW32__) || defined(__MSYS__)
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
 #include <shlwapi.h>
 #endif
@@ -29,7 +36,10 @@ int list_dir_internal(stralloc *dir,  char type)
   size_t l;
   struct dir_s d;
   int is_dir, is_symlink;
-  size_t len;
+  unsigned long len;
+#ifndef _WIN32
+  struct stat st;
+#endif
   
   char *name,*s;
 
@@ -49,17 +59,27 @@ int list_dir_internal(stralloc *dir,  char type)
   {
     dir->len = l;
 
+    if(strcmp(name, "") == 0) continue;
     if(strcmp(name, ".") == 0) continue;
     if(strcmp(name, "..") == 0) continue;
 
     stralloc_readyplus(dir, strlen(name)+1);
     strcpy(dir->s + dir->len, name);
     dir->len+=strlen(name);
+
+#if !defined(_WIN32)
+    if(lstat(dir->s, &st) != -1)
+      is_symlink = S_ISLNK(st.st_mode);
+    else
+#endif
+      is_symlink = 0;
 	
+#if !defined(_WIN32)
     struct stat st;
     if(lstat(dir->s, &st) != -1)
       is_symlink = !!S_ISLNK(st.st_mode);
     else
+#endif
       is_symlink = 0;
 
 
