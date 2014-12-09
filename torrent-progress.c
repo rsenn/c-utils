@@ -39,10 +39,6 @@ typedef off64_t offset_type;;
 #endif
 
 int64 filesize(int fd) {
-<<<<<<< HEAD
-  offset_type pos, end;
-=======
->>>>>>> 3492cf8eab1491bebdd58914bd6d205c4150df6f
   int64 sz;
 #ifdef _WIN32
   DWORD fszH;
