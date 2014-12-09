@@ -13,9 +13,14 @@
 #include "mmap.h"
 
 #define BLOCK_SIZE 262144
+#ifdef __APPLE__
+typedef off_t offset_type;
+#else
+typedef off64_t offset_type;;
+#endif
 
 int64 filesize(int fd) {
-  off64_t pos, end;
+  offset_type pos, end;
   int64 sz;
   //if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1;
   if((pos = lseek64(fd, 0, SEEK_CUR)) < 0) return -1;
