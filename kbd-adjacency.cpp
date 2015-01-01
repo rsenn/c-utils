@@ -1,14 +1,21 @@
+#include <iostream>
+#include <functional> 
 #include <map>
 #include <vector>
 #include <initializer_list>
 #include <algorithm>
 #include <cstring>
+#include <locale>
+#include <iterator>
+#include <unordered_set>
 
+//-----------------------------------------------------------------------------
 namespace std {
 const char* begin(const char* s) { return s; }
 const char* end(const char* s) { return begin(s)+std::strlen(s); }
 }
 
+//-----------------------------------------------------------------------------
 typedef  std::vector<char> char_v;
 typedef std::map<char,char_v> adjacency_t;
 
@@ -28,6 +35,45 @@ range_to_v(std::initializer_list<T> il) {
 	return v;
 }
 
+//-----------------------------------------------------------------------------
+template<class Char, class Container>
+typename std::enable_if< 
+  std::is_same< Char, typename Container::value_type >::value,
+	std::basic_ostream<Char>&
+>::type
+operator<<(std::basic_ostream<Char>& os, const Container& vc) {
+	std::copy(vc.begin(), vc.end(),  std::ostream_iterator<Char>(std::cout, ""));
+	return os;
+}
+
+//-----------------------------------------------------------------------------
+template<class Map>
+void
+dump_map(const Map& m) {
+	for(auto& kv : m) {
+		std::cout << "m['" << kv.first <<  "'] = \"" << kv.second << "\"" << std::endl;
+	}
+}
+
+//-----------------------------------------------------------------------------
+template<class Char>
+std::unordered_set<Char>
+collect_chars(const std::map<Char,std::vector<Char> >& m) {
+	std::unordered_set<Char> r;
+	for(auto& kv : m) {
+		r.insert(kv.first);
+		for(auto& ch : kv.second) {
+		  r.insert(ch);
+		}
+	}
+	/*for(auto& kv : m) {
+		r.insert(kv.first);
+	}*/
+	return r;
+}
+
+
+//-----------------------------------------------------------------------------
 static adjacency_t
 make_adjacency_matrix() {
   adjacency_t m;
@@ -83,12 +129,25 @@ make_adjacency_matrix() {
   m['.'] = m[':'] = range_to_v(",;lLצי-_");
   m['-'] = m['_'] = range_to_v(".:ציהא");
 
-
 	return m;
 };
 
 int main() {
+	 using namespace std::placeholders;
   adjacency_t m = make_adjacency_matrix();
+	
+	std::locale lc("de_CH.iso88591"); 
+	const std::ctype<char>& ct = std::use_facet< std::ctype<char> >(lc); 
+
+	dump_map(m);
+
+  auto cl = collect_chars(m);
+
+  std::copy_if(cl.begin(), cl.end(), std::ostream_iterator<char>(std::cout), 
+			 std::bind( (bool(std::ctype<char>::*)(std::ctype_base::mask,char) const) &std::ctype<char>::is, &ct, std::ctype<char>::lower, _1)
+		//	std::bind1st(std::mem_fun(&std::ctype<char>::is), &ct)
+			); 
+	std::cout << std::endl;
 
 	return 0;
 }
