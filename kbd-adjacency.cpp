@@ -132,27 +132,44 @@ make_adjacency_matrix() {
 	return m;
 };
 
+using namespace std::placeholders;
+
+template<typename CharT>
+std::function<bool(CharT)>
+make_predicate(const std::ctype<CharT>& ct, std::ctype_base::mask m) {
+	return std::bind(
+			(bool(std::ctype<CharT>::*)(std::ctype_base::mask,CharT) const) &std::ctype<CharT>::is, &ct, m, _1);
+}
+
 int main() {
-	 using namespace std::placeholders;
+
+	using std::cout;
+	using std::ctype;
+	using std::copy;
+	using std::endl;
+	using std::ostream_iterator;
+
   adjacency_t m = make_adjacency_matrix();
 	
 	std::locale lc("de_CH.iso88591"); 
-	const std::ctype<char>& ct = std::use_facet< std::ctype<char> >(lc); 
+	const ctype<char>& ct = std::use_facet< ctype<char> >(lc); 
 
 	dump_map(m);
 
   auto cl = collect_chars(m);
 
-  std::copy_if(cl.begin(), cl.end(), std::ostream_iterator<char>(std::cout), 
-			 std::bind( (bool(std::ctype<char>::*)(std::ctype_base::mask,char) const) &std::ctype<char>::is, &ct, std::ctype<char>::lower, _1)
-	); 
-
-  std::copy_if(cl.begin(), cl.end(), std::ostream_iterator<char>(std::cout), 
-			 std::bind( (bool(std::ctype<char>::*)(std::ctype_base::mask,char) const) &std::ctype<char>::is, &ct, std::ctype<char>::upper, _1)
-	); 
-
-
-	std::cout << std::endl;
+	for(auto mask : {
+			ctype<char>::lower, 
+			ctype<char>::upper,
+			ctype<char>::digit,
+			ctype<char>::punct,
+			ctype<char>::graph,
+			ctype<char>::print
+			})
+	{
+		copy_if(cl.begin(), cl.end(), ostream_iterator<char>(cout), make_predicate(ct, mask));
+		cout << endl;
+	}
 
 	return 0;
 }
