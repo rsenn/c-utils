@@ -26,8 +26,8 @@ LDFLAGS = -s -static
 endif
 
 
-CC = $(CROSS)gcc
-CXX = $(CROSS)g++
+CC = gcc
+CXX = g++ -std=c++11
 
 
 #CPPFLAGS = -I/usr/include/libowfat 
@@ -53,7 +53,7 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,buffer_close.o buffer_default.o buffer_d
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(EXEEXT) $(BUILDDIR)count-depth$(EXEEXT) $(BUILDDIR)decode-ls-lR$(EXEEXT) $(BUILDDIR)torrent-progress$(EXEEXT)
+PROGRAMS = $(BUILDDIR)list-r$(EXEEXT) $(BUILDDIR)count-depth$(EXEEXT) $(BUILDDIR)decode-ls-lR$(EXEEXT) $(BUILDDIR)torrent-progress$(EXEEXT)  kbd-adjacency$(EXEEXT)
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
 vpath $(BUILDDIR)
@@ -67,37 +67,41 @@ $(BUILDDIR):
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
 $(BUILDDIR)decode-ls-lR$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ) $(LIBS)
+	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ) $(LIBS)
 
 $(BUILDDIR)count-depth.o: count-depth.c
 $(BUILDDIR)count-depth$(EXEEXT): $(BUILDDIR)count-depth.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)count-depth.o $(LIB_OBJ) $(LIBS)
+	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)count-depth.o $(LIB_OBJ) $(LIBS)
 
 $(BUILDDIR)list-r.o: list-r.c
 $(BUILDDIR)list-r$(EXEEXT): $(BUILDDIR)list-r.o $(LIB_OBJ)
-	$(CXX) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)list-r.o $(LIB_OBJ) $(LIBS)
+	$(CROSS)$(CXX) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)list-r.o $(LIB_OBJ) $(LIBS)
 
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
 $(BUILDDIR)torrent-progress$(EXEEXT): $(BUILDDIR)torrent-progress.o $(LIB_OBJ)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)torrent-progress.o $(LIB_OBJ) $(LIBS)
+	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)torrent-progress.o $(LIB_OBJ) $(LIBS)
+
+$(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
+$(BUILDDIR)kbd-adjacency$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
+	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ) $(LIBS)
 
 .c.o:
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(BUILDDIR)%.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 .cpp.o:
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
+	$(CROSS)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
 
 %.o: %.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
+	$(CROSS)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
 
 $(BUILDDIR)%.o: %.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
+	$(CROSS)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDIR)$(patsubst %.cpp,%.o,$<) $<
 
 clean:
 	$(RM) -f $(OBJECTS) list-r.o list-r$(EXEEXT)
