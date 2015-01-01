@@ -145,8 +145,13 @@ int main() {
 
   std::copy_if(cl.begin(), cl.end(), std::ostream_iterator<char>(std::cout), 
 			 std::bind( (bool(std::ctype<char>::*)(std::ctype_base::mask,char) const) &std::ctype<char>::is, &ct, std::ctype<char>::lower, _1)
-		//	std::bind1st(std::mem_fun(&std::ctype<char>::is), &ct)
-			); 
+	); 
+
+  std::copy_if(cl.begin(), cl.end(), std::ostream_iterator<char>(std::cout), 
+			 std::bind( (bool(std::ctype<char>::*)(std::ctype_base::mask,char) const) &std::ctype<char>::is, &ct, std::ctype<char>::upper, _1)
+	); 
+
+
 	std::cout << std::endl;
 
 	return 0;
