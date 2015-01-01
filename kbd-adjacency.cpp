@@ -28,8 +28,23 @@ range_to_v(std::initializer_list<T> il) {
 	return v;
 }
 
-static  adjacency_t adjacency_matrix() {
+static adjacency_t
+make_adjacency_matrix() {
   adjacency_t m;
+
+  m['1'] = m['+'] = range_to_v("§°2\"qQ");
+  m['2'] = m['"'] = range_to_v("1+3*wWqQ");
+  m['3'] = m['*'] = range_to_v("2\"4çeE¿wW");
+  m['4'] = m['ç'] = range_to_v("3*5%rReE¿");
+  m['5'] = m['%'] = range_to_v("4ç6&tTrR");
+  m['6'] = m['&'] = range_to_v("5%7/zZtT");
+  m['7'] = m['/'] = range_to_v("6&8(uUzZ");
+  m['8'] = m['('] = range_to_v("7/9)iIuU");
+  m['9'] = m[')'] = range_to_v("8(0=oOiI");
+  m['0'] = m['='] = range_to_v("9)'?pPoO");
+  m['\''] = m['?'] = range_to_v("0=üèpP");
+  m['^'] = m['`'] = range_to_v("'?üè");
+  //m['"'] = m['!'] = range_to_v("'üè$£äà");
 
 	m['q'] = m['Q'] = range_to_v( {'1', '2', 'w', 'W', 'A', 'a'} );
 	m['w'] = m['W'] = range_to_v( {'q', 'Q', '2', '3', 'e', 'E', 's', 'S', 'a', 'A'} );
@@ -73,6 +88,7 @@ static  adjacency_t adjacency_matrix() {
 };
 
 int main() {
+  adjacency_t m = make_adjacency_matrix();
 
 	return 0;
 }
