@@ -31,7 +31,7 @@
 #endif
 
 static INLINE char*
-basename(const char* path) {
+mybasename(const char* path) {
   char *r = strrchr(path, '/');
   return r?r+1:path;
 }
@@ -383,7 +383,7 @@ int reg2cmd()
 void usage(char *arg0)
 {
   buffer_puts(&buffer_2, "Usage: ");
-  buffer_puts(&buffer_2, basename(arg0));
+  buffer_puts(&buffer_2, mybasename(arg0));
   buffer_puts(&buffer_2, " [-f] [input-file] [output-file]\n");
   buffer_flush(&buffer_2);
   exit(1);

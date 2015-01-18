@@ -58,8 +58,10 @@ else()
 endif()
 
 if(CXX11)
-  add_definitions(-DCXX11=1)
+#  add_definitions(-DCXX11=1)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS} -DCXX11=1")
 endif()
+
 
 include_directories("${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 

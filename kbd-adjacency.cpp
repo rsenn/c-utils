@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <functional> 
 #include <map>
@@ -7,15 +8,15 @@
 #include <locale>
 #include <iterator>
 
-#ifdef HAVE_INITIALIZER_LIST
-#include <initializer_list>
-#endif
-
 #ifdef CXX11
 #include <unordered_set>
 #include <type_traits>
 using std::enable_if;
 using std::unordered_set;
+//#ifdef HAVE_INITIALIZER_LIST
+#include <initializer_list>
+//#endif
+
 #else
 # include <boost/foreach.hpp>
 # ifdef _MSC_VER
@@ -57,7 +58,7 @@ range_to_v(Range r) {
 	return v;
 }
 
-#ifdef HAVE_INITIALIZER_LIST
+#ifdef CXX11
 template<class T>
 std::vector<T>
 range_to_v(std::initializer_list<T> il) {
