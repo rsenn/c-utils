@@ -9,7 +9,6 @@
 #endif
 #include <fcntl.h>
 #include <limits.h>
-#include <libgen.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -43,12 +42,12 @@ static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSI
 static char buffer_2_out[BUFFER_OUTSIZE];
 static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
 
-static inline char hexchar(char value) {
+static INLINE char hexchar(char value) {
   static const char hchars[] = "0123456789abcdef";
   return hchars[(unsigned int)((unsigned char)value & 0xf)];
 }
 
-static inline char char_tolower(char ch) {
+static INLINE char char_tolower(char ch) {
   if(ch >= 'A' && ch <= 'Z')
     ch += 0x20;
   return ch;

@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 2.8)
 
 project(dirlist)
 
+include(FindBoost)
+include(CheckCXX11Features)
+
 include(CheckIncludeFile)
 
 check_include_file(inttypes.h HAVE_INTTYPES_H)
@@ -35,6 +38,14 @@ set(COMMON_SOURCES buffer_close.c buffer_default.c buffer_dump.c buffer_feed.c b
 set(PROGRAMS list-r count-depth decode-ls-lR torrent-progress reg2cmd)
 set(CXXPROGRAMS kbd-adjacency)
 
+if(MSVC)
+#  add_definitions(-Dinline=__force_inline)
+  add_definitions(/DINLINE=__inline)
+  add_definitions(/wo4005)
+else()
+  add_definitions(-DINLINE=inline)
+endif()
+
 include_directories("${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 
 add_definitions(-DHAVE_CONFIG_H)
@@ -44,6 +55,9 @@ foreach(PROGRAM ${PROGRAMS})
   install(TARGETS ${PROGRAM} DESTINATION bin) 
 endforeach(PROGRAM)
 
+if(Boost_INCLUDE_DIRS)
+  include_directories("${Boost_INCLUDE_DIRS}")
+endif()
 
 foreach(CXXPROGRAM ${CXXPROGRAMS})
   add_executable(${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_SOURCES})

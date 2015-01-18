@@ -14,12 +14,18 @@
 using std::enable_if;
 using std::unordered_set;
 #else
-
 #include <boost/foreach.hpp>
+
+#ifdef _MSC_VER
+#include <hash_set>
+using stdext::hash_set;
+
+#else
 #include <ext/hash_set>
 #include <ext/type_traits.h>
-#define unordered_set  hash_set
 using __gnu_cxx::hash_set;
+#endif
+#define unordered_set  hash_set
 using std::enable_if;
 
 #endif
