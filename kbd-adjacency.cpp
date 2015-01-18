@@ -7,7 +7,22 @@
 #include <cstring>
 #include <locale>
 #include <iterator>
+#include <type_traits>
+
+#ifdef CXX11
 #include <unordered_set>
+using std::enable_if;
+using std::unordered_set;
+#else
+
+#include <boost/foreach.hpp>
+#include <ext/hash_set>
+#include <ext/type_traits.h>
+#define unordered_set  hash_set
+using __gnu_cxx::hash_set;
+using std::enable_if;
+
+#endif
 
 //-----------------------------------------------------------------------------
 namespace std {
@@ -19,6 +34,8 @@ const char* end(const char* s) { return begin(s)+std::strlen(s); }
 typedef  std::vector<char> char_v;
 typedef std::map<char,char_v> adjacency_t;
 
+
+
 template<class Range>
 char_v
 range_to_v(Range r) {
@@ -27,6 +44,7 @@ range_to_v(Range r) {
 	return v;
 }
 
+#ifdef CXX11
 template<class T>
 std::vector<T>
 range_to_v(std::initializer_list<T> il) {
@@ -34,10 +52,19 @@ range_to_v(std::initializer_list<T> il) {
 	std::copy(std::begin(il), std::end(il), std::back_inserter(v));
 	return v;
 }
+#else
+template<class T,template<class> class C>
+std::vector<T>
+range_to_v(C<T> il) {
+	std::vector<T> v;
+	std::copy(std::begin(il), std::end(il), std::back_inserter(v));
+	return v;
+}
+#endif
 
 //-----------------------------------------------------------------------------
 template<class Char, class Container>
-typename std::enable_if< 
+typename enable_if< 
 std::is_same< Char, typename Container::value_type >::value,
 std::basic_ostream<Char>&
 >::type
@@ -50,19 +77,35 @@ operator<<(std::basic_ostream<Char>& os, const Container& vc) {
 template<class Map>
 void
 dump_map(const Map& m) {
+#ifdef CXX11
 	for(auto& kv : m) {
+#else 
+  BOOST_FOREACH(typename Map::const_iterator it, m) {
+#define kv (*it)
+#endif
 		std::cout << "m['" << kv.first <<  "'] = \"" << kv.second << "\"" << std::endl;
 	}
 }
 
 //-----------------------------------------------------------------------------
 template<class Char>
-std::unordered_set<Char>
+unordered_set<Char>
 collect_chars(const std::map<Char,std::vector<Char> >& m) {
-	std::unordered_set<Char> r;
+  typedef typename std::map<Char,std::vector<Char> > map_type;
+	unordered_set<Char> r;
+#ifdef CXX11
 	for(auto& kv : m) {
+#else 
+  BOOST_FOREACH(typename map_type::const_iterator it, m) {
+#define kv (*it)
+#endif
 		r.insert(kv.first);
+#ifdef CXX11
 		for(auto& ch : kv.second) {
+#else 
+  BOOST_FOREACH(typename std::vector<Char>::const_iterator it, kv.second) {
+#define ch (*it)
+#endif
 			r.insert(ch);
 		}
 	}
