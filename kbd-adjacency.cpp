@@ -7,8 +7,11 @@
 #include <locale>
 #include <iterator>
 
-#ifdef CXX11
+#ifdef HAVE_INITIALIZER_LIST
 #include <initializer_list>
+#endif
+
+#ifdef CXX11
 #include <unordered_set>
 #include <type_traits>
 using std::enable_if;

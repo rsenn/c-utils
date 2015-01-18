@@ -22,6 +22,9 @@
 /* Define this if you have xtr1common */
 #cmakedefine HAVE_XTR1COMMON 1
 
+/* Define this if you have initializer_list */
+#cmakedefine HAVE_INITIALIZER_LIST 1
+
 /* Define this if you have the stat() function */
 #cmakedefine HAVE_STAT_FUNC 1
 

@@ -23,6 +23,7 @@ check_include_file(alloca.h HAVE_ALLOCA_H)
 check_include_file(sys/stat.h HAVE_SYS_STAT_H)
 check_include_file(boost/foreach.hpp HAVE_BOOST_FOREACH_HPP)
 check_include_file(xtr1common HAVE_XTR1COMMON)
+check_include_file(initializer_list HAVE_INITIALIZER_LIST)
 
 include(CheckTypeSize)
 
