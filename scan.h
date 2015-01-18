@@ -16,15 +16,15 @@
 
 /* interpret src as ASCII decimal number, write number to dest and
  * return the number of bytes that were parsed */
-unsigned int scan_ulong(const char *src,unsigned long *dest);
+unsigned int scan_ulong(const char *src,size_t *dest);
 
 /* interpret src as ASCII hexadecimal number, write number to dest and
  * return the number of bytes that were parsed */
-unsigned int scan_xlong(const char *src,unsigned long *dest);
+unsigned int scan_xlong(const char *src,size_t *dest);
 
 /* interpret src as ASCII octal number, write number to dest and
  * return the number of bytes that were parsed */
-unsigned int scan_8long(const char *src,unsigned long *dest);
+unsigned int scan_8long(const char *src,size_t *dest);
 
 /* interpret src as signed ASCII decimal number, write number to dest
  * and return the number of bytes that were parsed */
