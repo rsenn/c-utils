@@ -16,6 +16,15 @@
 /* Define this if you have sys/stat.h */
 #cmakedefine HAVE_SYS_STAT_H 1
 
+/* Define this if you have boost/foreach.hpp */
+#cmakedefine HAVE_BOOST_FOREACH_HPP 1
+
+/* Define this if you have xtr1common */
+#cmakedefine HAVE_XTR1COMMON 1
+
+/* Define this if you have initializer_list */
+#cmakedefine HAVE_INITIALIZER_LIST 1
+
 /* Define this if you have the stat() function */
 #cmakedefine HAVE_STAT_FUNC 1
 
@@ -39,4 +48,5 @@
 
 /* Define this if you have the 'off64_t' type */
 #cmakedefine HAVE_OFF64_T 1
+
 
