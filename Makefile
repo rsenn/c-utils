@@ -79,7 +79,8 @@ VPATH = $(BUILDDIR):.
 all: $(BUILDDIR) $(PROGRAMS) 
 
 $(BUILDDIR):
-	mkdir -p $(BUILDDIR)
+	-mkdir $(BUILDDIR)
+	-md $(subst /,\,$(BUILDDIR))
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
 $(BUILDDIR)decode-ls-lR$(M64)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(LIB_OBJ)
