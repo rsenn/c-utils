@@ -57,7 +57,7 @@ range_to_v(Range r) {
 	return v;
 }
 
-#ifdef CXX11
+#ifdef HAVE_INITIALIZER_LIST
 template<class T>
 std::vector<T>
 range_to_v(std::initializer_list<T> il) {
