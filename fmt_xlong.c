@@ -4,8 +4,8 @@ static inline char tohex(char c) {
   return c>=10?c-10+'a':c+'0';
 }
 
-unsigned int fmt_xlong(char *dest,unsigned long i) {
-  register unsigned long len,tmp;
+unsigned int fmt_xlong(char *dest,size_t i) {
+  register size_t len,tmp;
   /* first count the number of bytes needed */
   for (len=1, tmp=i; tmp>15; ++len) tmp>>=4;
   if (dest)

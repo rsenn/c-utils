@@ -1,6 +1,6 @@
 #include "scan.h"
 
-unsigned int scan_xlong(const char *src,unsigned long *dest) {
+unsigned int scan_xlong(const char *src,size_t *dest) {
   register const char *tmp=src;
   register unsigned long l=0;
   register unsigned char c;
