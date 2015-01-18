@@ -32,6 +32,11 @@
 #endif
 
 #define BLOCK_SIZE 262144
+#ifdef __APPLE__
+typedef off_t offset_type;
+#else
+typedef off64_t offset_type;;
+#endif
 
 int64 filesize(int fd) {
   int64 sz;

@@ -1,6 +1,6 @@
 #include "fmt.h"
 
-unsigned int fmt_ulong(char *dest,unsigned long i) {
+unsigned int fmt_ulong(char *dest,size_t i) {
   register size_t len,tmp,len2;
   /* first count the number of bytes needed */
   for (len=1, tmp=i; tmp>9; ++len) tmp/=10;

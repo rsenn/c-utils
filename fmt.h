@@ -22,15 +22,15 @@ unsigned int fmt_long(char *dest,signed long src);
 
 /* convert unsigned src integer 23 to ASCII '2','3', return length.
  * If dest is not NULL, write result to dest */
-unsigned int fmt_ulong(char *dest,unsigned long src);
+unsigned int fmt_ulong(char *dest,size_t src);
 
 /* convert unsigned src integer 0x23 to ASCII '2','3', return length.
  * If dest is not NULL, write result to dest */
-unsigned int fmt_xlong(char *dest,unsigned long src);
+unsigned int fmt_xlong(char *dest,size_t src);
 
 /* convert unsigned src integer 023 to ASCII '2','3', return length.
  * If dest is not NULL, write result to dest */
-unsigned int fmt_8long(char *dest,unsigned long src);
+unsigned int fmt_8long(char *dest,size_t src);
 
 unsigned int fmt_longlong(char *dest,signed long long src);
 unsigned int fmt_ulonglong(char *dest,unsigned long long src);
