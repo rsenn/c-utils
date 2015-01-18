@@ -8,6 +8,12 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 include(FindBoost)
 #include(CMakeDetermineCompileFeatures)
 include(CheckCXX11Features)
+
+if(CXX11_FLAGS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
+#  add_definitions(-std=c++11)
+endif()
+
 if(HAS_CXX11_AUTO AND HAS_CXX11_NULLPTR AND HAS_CXX11_LAMBDA AND HAS_CXX11_STATIC_ASSERT AND HAS_CXX11_RVALUE_REFERENCES AND HAS_CXX11_DECLTYPE AND HAS_CXX11_CSTDINT_H AND HAS_CXX11_LONG_LONG)
   message(STATUS "Enabling C++11 support")
   set(CXX11 TRUE)
