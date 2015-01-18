@@ -3,7 +3,10 @@ cmake_minimum_required(VERSION 2.8)
 
 project(dirlist)
 
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
+
 include(FindBoost)
+#include(CMakeDetermineCompileFeatures)
 include(CheckCXX11Features)
 
 include(CheckIncludeFile)
