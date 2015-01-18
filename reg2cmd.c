@@ -30,6 +30,12 @@
 #define PATH_MAX _MAX_PATH
 #endif
 
+static INLINE char*
+basename(const char* path) {
+  char *r = strrchr(path, '/');
+  return r?r+1:path;
+}
+
 static int  force = 0;
 
 static char buffer_0_in[BUFFER_INSIZE];

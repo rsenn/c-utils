@@ -2,32 +2,36 @@
 #include <functional> 
 #include <map>
 #include <vector>
-#include <initializer_list>
 #include <algorithm>
 #include <cstring>
 #include <locale>
 #include <iterator>
-#include <type_traits>
 
 #ifdef CXX11
+#include <initializer_list>
 #include <unordered_set>
+#include <type_traits>
 using std::enable_if;
 using std::unordered_set;
 #else
-#include <boost/foreach.hpp>
-
-#ifdef _MSC_VER
-#include <hash_set>
-using stdext::hash_set;
-
-#else
-#include <ext/hash_set>
-#include <ext/type_traits.h>
-using __gnu_cxx::hash_set;
-#endif
-#define unordered_set  hash_set
+# include <boost/foreach.hpp>
+# ifdef _MSC_VER
+#  include <hash_set>
+#  ifdef HAVE_XTR1COMMON
+#   include <xtr1common>
 using std::enable_if;
-
+#  else
+#    include <boost/utility/enable_if.hpp>
+using boost::enable_if;
+#  endif
+using stdext::hash_set;
+# else
+#  include <ext/hash_set>
+#  include <ext/type_traits.h>
+using __gnu_cxx::hash_set;
+using std::enable_if;
+# endif
+# define unordered_set hash_set
 #endif
 
 //-----------------------------------------------------------------------------

@@ -8,6 +8,11 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 include(FindBoost)
 #include(CMakeDetermineCompileFeatures)
 include(CheckCXX11Features)
+if(HAS_CXX11_AUTO AND HAS_CXX11_NULLPTR AND HAS_CXX11_LAMBDA AND HAS_CXX11_STATIC_ASSERT AND HAS_CXX11_RVALUE_REFERENCES AND HAS_CXX11_DECLTYPE AND HAS_CXX11_CSTDINT_H AND HAS_CXX11_LONG_LONG)
+  message(STATUS "Enabling C++11 support")
+  set(CXX11 TRUE)
+endif()
+
 
 include(CheckIncludeFile)
 
@@ -17,6 +22,7 @@ check_include_file(libgen.h HAVE_LIBGEN_H)
 check_include_file(alloca.h HAVE_ALLOCA_H)
 check_include_file(sys/stat.h HAVE_SYS_STAT_H)
 check_include_file(boost/foreach.hpp HAVE_BOOST_FOREACH_HPP)
+check_include_file(xtr1common HAVE_XTR1COMMON)
 
 include(CheckTypeSize)
 
@@ -45,8 +51,13 @@ if(MSVC)
 #  add_definitions(-Dinline=__force_inline)
   add_definitions(/DINLINE=__inline)
   add_definitions(/wo4005)
+  add_definitions(/W0)
 else()
   add_definitions(-DINLINE=inline)
+endif()
+
+if(CXX11)
+  add_definitions(-DCXX11=1)
 endif()
 
 include_directories("${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
