@@ -21,12 +21,25 @@ int dir_type(struct dir_s *d)
 #ifndef DT_LNK
 #define DT_LNK 10
 #endif
-  if((dir_INTERNAL(d)->dir_entry->d_type) == DT_DIR)
-    r |= D_DIRECTORY;
-  if((dir_INTERNAL(d)->dir_entry->d_type) == DT_REG)
-    r |= D_FILE;
-  if((dir_INTERNAL(d)->dir_entry->d_type) == DT_LNK)
+  switch((dir_INTERNAL(d)->dir_entry->d_type)) {
+		case DT_DIR: {
+			r |= D_DIRECTORY;
+			break;
+		}
+
+		case DT_REG: {
+			r |= D_FILE;
+			break;
+		}
+		case DT_LNK: {
     r |= D_SYMLINK;
+		break; 
+	 }
+		case 0:
+		default: {
+							 break;
+		}
+	}	 
 	
 #endif
   return r;
