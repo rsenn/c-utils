@@ -2,48 +2,12 @@
 #include <functional> 
 #include <map>
 #include <vector>
-<<<<<<< HEAD
 #include <initializer_list>
-=======
->>>>>>> fb3933712a37c607e3b03737a6be55108913b00b
 #include <algorithm>
 #include <cstring>
 #include <locale>
 #include <iterator>
-<<<<<<< HEAD
 #include <unordered_set>
-=======
-
-#ifdef HAVE_INITIALIZER_LIST
-#include <initializer_list>
-#endif
-
-#ifdef CXX11
-#include <unordered_set>
-#include <type_traits>
-using std::enable_if;
-using std::unordered_set;
-#else
-# include <boost/foreach.hpp>
-# ifdef _MSC_VER
-#  include <hash_set>
-#  ifdef HAVE_XTR1COMMON
-#   include <xtr1common>
-using std::enable_if;
-#  else
-#    include <boost/utility/enable_if.hpp>
-using boost::enable_if;
-#  endif
-using stdext::hash_set;
-# else
-#  include <ext/hash_set>
-#  include <ext/type_traits.h>
-using __gnu_cxx::hash_set;
-using std::enable_if;
-# endif
-# define unordered_set hash_set
-#endif
->>>>>>> fb3933712a37c607e3b03737a6be55108913b00b
 
 //-----------------------------------------------------------------------------
 namespace std {
@@ -55,11 +19,6 @@ const char* end(const char* s) { return begin(s)+std::strlen(s); }
 typedef  std::vector<char> char_v;
 typedef std::map<char,char_v> adjacency_t;
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> fb3933712a37c607e3b03737a6be55108913b00b
 template<class Range>
 char_v
 range_to_v(Range r) {
@@ -68,10 +27,6 @@ range_to_v(Range r) {
 	return v;
 }
 
-<<<<<<< HEAD
-=======
-#ifdef HAVE_INITIALIZER_LIST
->>>>>>> fb3933712a37c607e3b03737a6be55108913b00b
 template<class T>
 std::vector<T>
 range_to_v(std::initializer_list<T> il) {
@@ -79,26 +34,10 @@ range_to_v(std::initializer_list<T> il) {
 	std::copy(std::begin(il), std::end(il), std::back_inserter(v));
 	return v;
 }
-<<<<<<< HEAD
 
 //-----------------------------------------------------------------------------
 template<class Char, class Container>
 typename std::enable_if< 
-=======
-#else
-template<class T,template<class> class C>
-std::vector<T>
-range_to_v(C<T> il) {
-	std::vector<T> v;
-	std::copy(std::begin(il), std::end(il), std::back_inserter(v));
-	return v;
-}
-#endif
-
-//-----------------------------------------------------------------------------
-template<class Char, class Container>
-typename enable_if< 
->>>>>>> fb3933712a37c607e3b03737a6be55108913b00b
 std::is_same< Char, typename Container::value_type >::value,
 std::basic_ostream<Char>&
 >::type
@@ -111,48 +50,19 @@ operator<<(std::basic_ostream<Char>& os, const Container& vc) {
 template<class Map>
 void
 dump_map(const Map& m) {
-<<<<<<< HEAD
 	for(auto& kv : m) {
-=======
-#ifdef CXX11
-	for(auto& kv : m) {
-#else 
-  BOOST_FOREACH(typename Map::const_iterator it, m) {
-#define kv (*it)
-#endif
->>>>>>> fb3933712a37c607e3b03737a6be55108913b00b
 		std::cout << "m['" << kv.first <<  "'] = \"" << kv.second << "\"" << std::endl;
 	}
 }
 
 //-----------------------------------------------------------------------------
 template<class Char>
-<<<<<<< HEAD
 std::unordered_set<Char>
 collect_chars(const std::map<Char,std::vector<Char> >& m) {
 	std::unordered_set<Char> r;
 	for(auto& kv : m) {
 		r.insert(kv.first);
 		for(auto& ch : kv.second) {
-=======
-unordered_set<Char>
-collect_chars(const std::map<Char,std::vector<Char> >& m) {
-  typedef typename std::map<Char,std::vector<Char> > map_type;
-	unordered_set<Char> r;
-#ifdef CXX11
-	for(auto& kv : m) {
-#else 
-  BOOST_FOREACH(typename map_type::const_iterator it, m) {
-#define kv (*it)
-#endif
-		r.insert(kv.first);
-#ifdef CXX11
-		for(auto& ch : kv.second) {
-#else 
-  BOOST_FOREACH(typename std::vector<Char>::const_iterator it, kv.second) {
-#define ch (*it)
-#endif
->>>>>>> fb3933712a37c607e3b03737a6be55108913b00b
 			r.insert(ch);
 		}
 	}
