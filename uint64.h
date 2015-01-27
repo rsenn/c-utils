@@ -2,14 +2,21 @@
 #ifndef UINT64_H
 #define UINT64_H
 
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifdef _MSC_VER
+typedef unsigned __int64 uint64;
+typedef signed __int64 int64;
+#else
 typedef unsigned long long uint64;
 typedef signed long long int64;
+#endif
 
 #if (defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT64_MACROS)
 #define uint64_pack(out,in) (*(uint64*)(out)=(in))
