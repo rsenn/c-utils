@@ -35,6 +35,7 @@ int list_dir_internal(stralloc *dir,  char type)
 {
   size_t l;
   struct dir_s d;
+	int dtype;
   int is_dir, is_symlink;
   unsigned long len;
 #ifndef _WIN32
@@ -82,8 +83,17 @@ int list_dir_internal(stralloc *dir,  char type)
 #endif
       is_symlink = 0;
 
+		dtype = dir_type(&d); 
 
-    is_dir= !!(dir_type(&d) & D_DIRECTORY);
+		if(dtype) {
+			is_dir= !!(dtype & D_DIRECTORY);
+		} else {
+#if defined(_WIN32)
+			is_dir = 0;
+#else
+			is_dir = !!S_ISDIR(st.st_mode);
+#endif
+		}
 
 	//fprintf(stderr,"%d %08x\n", is_dir, dir_ATTRS(&d));
     if(is_dir)
@@ -111,12 +121,21 @@ int list_dir_internal(stralloc *dir,  char type)
   return 0;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+
   stralloc dir= {0,0,0};
-  if(argc > 1)
-  stralloc_copys(&dir,argv[1]);
-  else stralloc_copys(&dir,".");
-  list_dir_internal(&dir,0);
+	int argi = 1;
+  if(argc > 1) {
+		while(argi < argc) {
+			stralloc_copys(&dir,argv[argi]);
+      list_dir_internal(&dir,0);
+			argi++;
+		}
+	} else { 
+			stralloc_copys(&dir,".");
+      list_dir_internal(&dir,0);
+	}
   return 0;
+
+
 }
