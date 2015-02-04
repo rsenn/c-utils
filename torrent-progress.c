@@ -1,3 +1,6 @@
+#define _LARGEFILE_SOURCE 1
+#define _GNU_SOURCE 1
+#define _FILE_OFFSET_BITS 64
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -40,6 +43,16 @@ typedef loff_t offset_type;
 typedef LONG64 offset_type;
 #else
 typedef off64_t offset_type;
+#endif
+
+#ifdef WIN64
+#define FMT_SIZE_T "%ull"
+#elif defined(WIN32)
+#define FMT_SIZE_T "%ul"
+#endif
+
+#ifndef FMT_SIZE_T
+#define FMT_SIZE_T "%zx"
 #endif
 
 int64 filesize(int fd) {
@@ -161,7 +174,7 @@ next:
       }
     
       if(verbose)
-        fprintf(stderr, "mmap at 0x%zx, size 0x%zx%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
+        fprintf(stderr, "mmap at 0x"FMT_SIZE_T", size 0x"FMT_SIZE_T"%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
       
       zero_blocks += z;
 

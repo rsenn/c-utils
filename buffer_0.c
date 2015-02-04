@@ -1,5 +1,8 @@
 #include <unistd.h>
 #include "buffer.h"
+#ifdef __MINGW32__
+#include <io.h>
+#endif
 
 static ssize_t b0read(int fd,char* buf, size_t len) {
   if (buffer_flush(buffer_1)<0) return -1;

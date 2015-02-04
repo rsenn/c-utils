@@ -82,7 +82,11 @@ CPPFLAGS := -I.
 
 DEFS += INLINE=inline
 DEFS += PATH_MAX=4096
-DEFS += _LARGEFILE_SOURCE=1 _GNU_SOURCE=1 _FILE_OFFSET_BITS=64
+DEFS += _FILE_OFFSET_BITS=64
+DEFS += _LARGEFILE_SOURCE=1
+DEFS += _GNU_SOURCE=1 
+
+WARNINGS += no-strict-aliasing
 
 ifeq ($(DEBUG),1)
 CFLAGS = -g -ggdb -O0
@@ -203,13 +207,13 @@ else
 	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 $(BUILDDIR)%.o: %.c
-	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
 
 .cpp.o:
 	$(CROSS)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 $(BUILDDIR)%.o: %.cpp
-	$(CROSS)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CROSS)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
 endif
 
 clean:

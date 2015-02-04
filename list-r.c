@@ -1,3 +1,7 @@
+#define _LARGEFILE_SOURCE 1
+#define _GNU_SOURCE 1
+#define _FILE_OFFSET_BITS 64
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -14,6 +18,7 @@
 #include "buffer.h"
 #include "stralloc.h"
 #include "fmt.h"
+#include "uint64.h"
 #include "dir_internal.h"
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
@@ -138,6 +143,9 @@ int list_dir_internal(stralloc *dir,  char type)
   
   while((name = dir_read(&d)))
   {
+	  unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
+		uint64 size = 0, mtime = 0;
+
     dir->len = l;
 
     if(strcmp(name, "") == 0) continue;
@@ -149,8 +157,9 @@ int list_dir_internal(stralloc *dir,  char type)
     dir->len+=strlen(name);
 
 #if !defined(_WIN32)
+
     if(lstat(dir->s, &st) != -1)
-      is_symlink = S_ISLNK(st.st_mode);
+      is_symlink = S_ISLNK(mode);
     else
 #endif
       is_symlink = 0;
@@ -158,12 +167,21 @@ int list_dir_internal(stralloc *dir,  char type)
 #if !defined(_WIN32)
     struct stat st;
     if(lstat(dir->s, &st) != -1)
-      is_symlink = !!S_ISLNK(st.st_mode);
+      is_symlink = !!S_ISLNK(mode);
     else
 #endif
       is_symlink = 0;
 
 		dtype = dir_type(&d); 
+
+#ifndef _WIN32
+    mode = st.st_mode;
+    nlink = st.st_nlink;
+    uid = st.st_uid;
+    gid = st.st_gid;
+    size = st.st_size;
+    mtime = st.st_mtime
+#endif
 
 		if(dtype) {
 			is_dir= !!(dtype & D_DIRECTORY);
@@ -171,23 +189,23 @@ int list_dir_internal(stralloc *dir,  char type)
 #if defined(_WIN32)
 			is_dir = 0;
 #else
-			is_dir = !!S_ISDIR(st.st_mode);
+			is_dir = !!S_ISDIR(mode);
 #endif
 		}
 
    if(opt_list) {
 		 stralloc_init(&pre);
-     mode_str(&pre, st.st_mode);
+     mode_str(&pre, mode);
 		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, st.st_nlink, 3);
+		 make_num(&pre, nlink, 3);
 		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, st.st_uid, 0);
+		 make_num(&pre, uid, 0);
 		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, st.st_gid, 0);
+		 make_num(&pre, gid, 0);
 		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, st.st_size, 6);
+		 make_num(&pre, size, 6);
 		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, (unsigned long)st.st_mtime, 10);
+		 make_num(&pre, (unsigned long)mtime, 10);
 		 stralloc_catb(&pre, " ", 1);
 	 }
 
