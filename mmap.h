@@ -3,6 +3,7 @@
 #define MMAP_H
 
 #include <stddef.h>
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,6 +25,9 @@ char* mmap_shared(const char *filename,size_t* filesize);
 
 /* unmap a mapped region */
 int mmap_unmap(char* mapped,size_t maplen);
+
+char* mmap_map(int fd, size_t sz, uint64 offset);
+
 
 #ifdef __cplusplus
 }

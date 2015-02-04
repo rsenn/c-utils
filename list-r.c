@@ -34,15 +34,15 @@ return 0;
   }
 
 int mode_str(stralloc *out, int mode) {
-	stralloc_catb(&out, (mode & S_IRUSR) ? "r" : "-", 1);
-	stralloc_catb(&out, (mode & S_IWUSR) ? "w" : "-", 1);
-	stralloc_catb(&out, (mode & S_IXUSR) ? "x" : "-", 1);
-	stralloc_catb(&out, (mode & S_IRGRP) ? "r" : "-", 1);
-	stralloc_catb(&out, (mode & S_IWGRP) ? "w" : "-", 1);
-	stralloc_catb(&out, (mode & S_IXGRP) ? "x" : "-", 1);
-	stralloc_catb(&out, (mode & S_IROTH) ? "r" : "-", 1);
-	stralloc_catb(&out, (mode & S_IWOTH) ? "w" : "-", 1);
-	stralloc_catb(&out, (mode & S_IXOTH) ? "x" : "-", 1);
+	stralloc_catb(out, (mode & S_IRUSR) ? "r" : "-", 1);
+	stralloc_catb(out, (mode & S_IWUSR) ? "w" : "-", 1);
+	stralloc_catb(out, (mode & S_IXUSR) ? "x" : "-", 1);
+	stralloc_catb(out, (mode & S_IRGRP) ? "r" : "-", 1);
+	stralloc_catb(out, (mode & S_IWGRP) ? "w" : "-", 1);
+	stralloc_catb(out, (mode & S_IXGRP) ? "x" : "-", 1);
+	stralloc_catb(out, (mode & S_IROTH) ? "r" : "-", 1);
+	stralloc_catb(out, (mode & S_IWOTH) ? "w" : "-", 1);
+	stralloc_catb(out, (mode & S_IXOTH) ? "x" : "-", 1);
 }
 
 

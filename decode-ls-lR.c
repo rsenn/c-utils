@@ -91,7 +91,7 @@ int decode_ls_lR()
   {
     is_dir = 0;
     buffer[0] = '\0';
-    len = buffer_getline(&buffer_0, buffer, sizeof(buffer));
+    len = buffer_getline(buffer_0, buffer, sizeof(buffer));
 
     if(len < 0) // || buffer[0] == '\0')
       break;
