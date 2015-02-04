@@ -61,6 +61,15 @@ M64 = 64
 endif
 endif
 
+ifeq ($(OS),msys)
+EXEEXT = .exe
+STATIC := 1
+endif
+
+ifeq ($(OS),cygwin)
+EXEEXT = .exe
+endif
+
 ifeq ($(OS),mingw32)
 EXEEXT = .exe
 STATIC := 1
