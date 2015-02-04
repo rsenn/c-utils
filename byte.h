@@ -39,6 +39,8 @@ int byte_diff(const void* a, size_t len, const void* b) __pure__;
 /* byte_zero sets the bytes out[0], out[1], ..., out[len-1] to 0 */
 void byte_zero(void* out, size_t len);
 
+void byte_fill(void* out, size_t len, int c);
+
 #define byte_equal(s,n,t) (!byte_diff((s),(n),(t)))
 
 int byte_equal_notimingattack(const void* a, size_t len,const void* b) __pure__;

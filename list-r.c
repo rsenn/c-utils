@@ -33,16 +33,41 @@ int list_dir(stralloc *dir)
 return 0;
   }
 
-int mode_str(stralloc *out, int mode) {
-	stralloc_catb(out, (mode & S_IRUSR) ? "r" : "-", 1);
-	stralloc_catb(out, (mode & S_IWUSR) ? "w" : "-", 1);
-	stralloc_catb(out, (mode & S_IXUSR) ? "x" : "-", 1);
-	stralloc_catb(out, (mode & S_IRGRP) ? "r" : "-", 1);
-	stralloc_catb(out, (mode & S_IWGRP) ? "w" : "-", 1);
-	stralloc_catb(out, (mode & S_IXGRP) ? "x" : "-", 1);
-	stralloc_catb(out, (mode & S_IROTH) ? "r" : "-", 1);
-	stralloc_catb(out, (mode & S_IWOTH) ? "w" : "-", 1);
-	stralloc_catb(out, (mode & S_IXOTH) ? "x" : "-", 1);
+void make_num(stralloc *out, unsigned long num, size_t width) {
+	char fmt[FMT_ULONG+1];
+  size_t sz = fmt_ulong(fmt, num);
+  
+	int n = width - sz; 
+
+	while(n-- > 0) {
+		stralloc_catb(out, " ", 1);
+	}
+	stralloc_catb(out, fmt, sz);
+}
+
+void mode_str(stralloc *out, int mode) {
+	char mchars[10];
+	switch(mode & S_IFMT) {
+		case S_IFLNK: mchars[0] = 'l'; break;
+		case S_IFDIR: mchars[0] = 'd'; break;
+		case S_IFCHR: mchars[0] = 'c'; break;
+		case S_IFBLK: mchars[0] = 'b'; break;
+		case S_IFIFO: mchars[0] = 'i'; break;
+		case S_IFSOCK: mchars[0] = 's'; break;
+		case S_IFREG: 
+		default: mchars[0] = '-'; break;
+	}
+	mchars[1] = (mode & S_IRUSR) ? 'r' : '-';
+	mchars[2] = (mode & S_IWUSR) ? 'w' : '-';
+	mchars[3] = (mode & S_IXUSR) ? 'x' : '-';
+	mchars[4] = (mode & S_IRGRP) ? 'r' : '-';
+	mchars[5] = (mode & S_IWGRP) ? 'w' : '-';
+	mchars[6] = (mode & S_IXGRP) ? 'x' : '-';
+	mchars[7] = (mode & S_IROTH) ? 'r' : '-';
+	mchars[8] = (mode & S_IWOTH) ? 'w' : '-';
+	mchars[9] = (mode & S_IXOTH) ? 'x' : '-';
+
+	stralloc_catb(out, mchars, sizeof(mchars));
 }
 
 
@@ -115,7 +140,15 @@ int list_dir_internal(stralloc *dir,  char type)
 		 stralloc_init(&pre);
      mode_str(&pre, st.st_mode);
 		 stralloc_catb(&pre, " ", 1);
-		 stralloc_catulong0(&pre, st.st_uid, FMT_LONG);
+		 make_num(&pre, st.st_nlink, 3);
+		 stralloc_catb(&pre, " ", 1);
+		 make_num(&pre, st.st_uid, 0);
+		 stralloc_catb(&pre, " ", 1);
+		 make_num(&pre, st.st_gid, 0);
+		 stralloc_catb(&pre, " ", 1);
+		 make_num(&pre, st.st_size, 6);
+		 stralloc_catb(&pre, " ", 1);
+		 make_num(&pre, (unsigned long)st.st_mtime, 10);
 		 stralloc_catb(&pre, " ", 1);
 	 }
 

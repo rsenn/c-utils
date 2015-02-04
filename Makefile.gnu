@@ -4,7 +4,7 @@ bindir = ${prefix}/bin
 INSTALL = install
 CC = gcc
 CXX = g++
-#CPPFLAGS = -I/usr/include/libowfat 
+#CPPFLAGS = -I/usr/include/libowfat
 #CPPFLAGS = -I. -D__USE_BSD=1
 CPPFLAGS = -I.  -DPATHLEN=4096
 CFLAGS = -g -O2 -Wall
@@ -12,7 +12,7 @@ CXXFLAGS = $(CFLAGS)
 #LIBS = -lowfat
 EXEEXT =
 HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')
-RM = rm -f 
+RM = rm -f
 
 
 EXTRA_DEP = $(EXTRA_MODULES:%=%.o)
@@ -116,7 +116,7 @@ list-r$(EXEEXT): LIB_MODULES += \
 	directory_iterator
 
 PROGRAMS = list-r$(EXEEXT) count-depth$(EXEEXT) decode-ls-lR$(EXEEXT) torrent-progress$(EXEEXT)
-all: $(LIB_DEP) $(PROGRAMS) 
+all: $(LIB_DEP) $(PROGRAMS)
 
 decode-ls-lR.o: decode-ls-lR.c
 decode-ls-lR$(EXEEXT): decode-ls-lR.o $(EXTRA_DEP) $(LIB_DEP)
