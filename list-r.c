@@ -28,9 +28,10 @@
 #endif
 
 static int opt_list = 0, opt_numeric = 0;
-/*static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);*/
-int list_dir_internal(stralloc *dir,  char type);
+static const char* opt_timestyle = "%b %2e %H:%M";
+
+int
+list_dir_internal(stralloc *dir,  char type);
 
 static void
 make_num(stralloc *out, unsigned long num, size_t width) {
@@ -55,8 +56,8 @@ make_time(stralloc *out, time_t t, size_t width) {
 		size_t sz; 
 	  int n; 	
 		localtime_r(&t, &ltime);
-		sz = strftime(buf, sizeof(buf), "%b %2d %H:%M", &ltime);
-		 n = width - sz;
+		sz = strftime(buf, sizeof(buf), opt_timestyle , &ltime);
+		n = width - sz;
 		while(n-- > 0) {
 			stralloc_catb(out, " ", 1);
 		}
@@ -259,10 +260,13 @@ int main(int argc, char *argv[]) {
 	int argi = 1;
 
   while(argi < argc) {
-		if(!strcmp(argv[argi], "-l")) {
+		if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
 			opt_list = 1;
-		} else if(!strcmp(argv[argi], "-n")) {
+		} else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
 			opt_numeric = 1;
+		} else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time-style")) {
+			argi++;
+			opt_timestyle = argv[argi];
 		} else {
 			break;
 		}
