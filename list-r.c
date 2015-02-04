@@ -12,6 +12,7 @@
 #else
 #include <io.h>
 #endif
+#include <time.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -26,19 +27,13 @@
 #include <shlwapi.h>
 #endif
 
-static int opt_list = 0;
+static int opt_list = 0, opt_numeric = 0;
 /*static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);*/
 int list_dir_internal(stralloc *dir,  char type);
 
-int list_dir(stralloc *dir)
-{
-  //list_dir_internal(dir, DT_DIR);
-  //list_dir_internal(dir, -DT_DIR);
-return 0;
-  }
-
-void make_num(stralloc *out, unsigned long num, size_t width) {
+static void
+make_num(stralloc *out, unsigned long num, size_t width) {
 	char fmt[FMT_ULONG+1];
   size_t sz = fmt_ulong(fmt, num);
   
@@ -50,7 +45,27 @@ void make_num(stralloc *out, unsigned long num, size_t width) {
 	stralloc_catb(out, fmt, sz);
 }
 
-void mode_str(stralloc *out, int mode) {
+static void
+make_time(stralloc *out, time_t t, size_t width) {
+	if(opt_numeric) {
+		 make_num(out, (unsigned long)t, width);
+	} else {
+		struct tm ltime;
+    char buf[1024];
+		size_t sz; 
+	  int n; 	
+		localtime_r(&t, &ltime);
+		sz = strftime(buf, sizeof(buf), "%b %2d %H:%M", &ltime);
+		 n = width - sz;
+		while(n-- > 0) {
+			stralloc_catb(out, " ", 1);
+		}
+		stralloc_catb(out, buf, sz);
+	}
+}
+
+static void
+mode_str(stralloc *out, int mode) {
 	char mchars[10];
 	switch(mode & S_IFMT) {
 #ifdef S_IFLNK
@@ -205,7 +220,7 @@ int list_dir_internal(stralloc *dir,  char type)
 		 stralloc_catb(&pre, " ", 1);
 		 make_num(&pre, size, 6);
 		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, (unsigned long)mtime, 10);
+		 make_time(&pre, mtime, 10);
 		 stralloc_catb(&pre, " ", 1);
 	 }
 
@@ -243,11 +258,15 @@ int main(int argc, char *argv[]) {
   stralloc dir= {0,0,0};
 	int argi = 1;
 
-  if(argc > 1) {
+  while(argi < argc) {
 		if(!strcmp(argv[argi], "-l")) {
 			opt_list = 1;
-			argi++;
+		} else if(!strcmp(argv[argi], "-n")) {
+			opt_numeric = 1;
+		} else {
+			break;
 		}
+		argi++;
 	}
 
   if(argi < argc) {

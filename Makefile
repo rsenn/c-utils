@@ -54,7 +54,7 @@ OS = $(word 3,$(TRIPLET))
 KERN = $(word 2,$(TRIPLET))
 endif
 
-ifneq ($(KERN),linux)
+ifneq ($(OS),linux)
 ifeq ($(ARCH),x86_64)
 M64 = 64
 endif

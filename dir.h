@@ -35,9 +35,11 @@ char *dir_read(struct dir_s *d);
 void dir_close(struct dir_s *d);
 
 int dir_type(struct dir_s *d);
+time_t dir_time(struct dir_s *d, int time_type);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif // _DIR_H__
+/* dir_time.c */
