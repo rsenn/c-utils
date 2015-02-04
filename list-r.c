@@ -121,12 +121,21 @@ int list_dir_internal(stralloc *dir,  char type)
   return 0;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+
   stralloc dir= {0,0,0};
-  if(argc > 1)
-  stralloc_copys(&dir,argv[1]);
-  else stralloc_copys(&dir,".");
-  list_dir_internal(&dir,0);
+	int argi = 1;
+  if(argc > 1) {
+		while(argi < argc) {
+			stralloc_copys(&dir,argv[argi]);
+      list_dir_internal(&dir,0);
+			argi++;
+		}
+	} else { 
+			stralloc_copys(&dir,".");
+      list_dir_internal(&dir,0);
+	}
   return 0;
+
+
 }

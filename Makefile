@@ -49,7 +49,8 @@ endif
 
 ifeq ($(OS),mingw32)
 EXEEXT = .exe
-LDFLAGS = -s -static
+STATIC := 1
+#LDFLAGS = -s -static
 CXXOPTS := -std=c++11 -DCXX11=1
 endif
 
@@ -99,7 +100,7 @@ VPATH = $(BUILDDIR):.
 all: $(BUILDDIR) $(PROGRAMS) 
 
 $(BUILDDIR):
-	-mkdir $(BUILDDIR)
+	-mkdir -p $(BUILDDIR) || mkdir $(BUILDDIR)
 	-md $(subst /,\,$(BUILDDIR))
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
