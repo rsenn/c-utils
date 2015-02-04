@@ -46,9 +46,9 @@ typedef off64_t offset_type;
 #endif
 
 #ifdef WIN64
-#define FMT_SIZE_T "%ull"
+#define FMT_SIZE_T "%"SCNx64
 #elif defined(WIN32)
-#define FMT_SIZE_T "%ul"
+#define FMT_SIZE_T "%"SCNx32
 #endif
 
 #ifndef FMT_SIZE_T
@@ -59,7 +59,7 @@ int64 filesize(int fd) {
   int64 sz;
 #ifdef _WIN32
   DWORD fszH;
-  sz = GetFileSize((HANDLE)fd, &fszH);
+  sz = GetFileSize((HANDLE)(size_t)fd, &fszH);
   sz |= ((int64)fszH) << 32;
 #else
   uint64 pos, end;
