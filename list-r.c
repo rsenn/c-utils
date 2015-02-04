@@ -13,6 +13,7 @@
 
 #include "buffer.h"
 #include "stralloc.h"
+#include "fmt.h"
 #include "dir_internal.h"
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
@@ -20,6 +21,7 @@
 #include <shlwapi.h>
 #endif
 
+static int opt_list = 0;
 static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 int list_dir_internal(stralloc *dir,  char type);
@@ -31,10 +33,24 @@ int list_dir(stralloc *dir)
 return 0;
   }
 
+int mode_str(stralloc *out, int mode) {
+	stralloc_catb(&out, (mode & S_IRUSR) ? "r" : "-", 1);
+	stralloc_catb(&out, (mode & S_IWUSR) ? "w" : "-", 1);
+	stralloc_catb(&out, (mode & S_IXUSR) ? "x" : "-", 1);
+	stralloc_catb(&out, (mode & S_IRGRP) ? "r" : "-", 1);
+	stralloc_catb(&out, (mode & S_IWGRP) ? "w" : "-", 1);
+	stralloc_catb(&out, (mode & S_IXGRP) ? "x" : "-", 1);
+	stralloc_catb(&out, (mode & S_IROTH) ? "r" : "-", 1);
+	stralloc_catb(&out, (mode & S_IWOTH) ? "w" : "-", 1);
+	stralloc_catb(&out, (mode & S_IXOTH) ? "x" : "-", 1);
+}
+
+
 int list_dir_internal(stralloc *dir,  char type)
 {
   size_t l;
   struct dir_s d;
+	stralloc pre;
 	int dtype;
   int is_dir, is_symlink;
   unsigned long len;
@@ -95,6 +111,14 @@ int list_dir_internal(stralloc *dir,  char type)
 #endif
 		}
 
+   if(opt_list) {
+		 stralloc_init(&pre);
+     mode_str(&pre, st.st_mode);
+		 stralloc_catb(&pre, " ", 1);
+		 stralloc_catulong0(&pre, st.st_uid, FMT_LONG);
+		 stralloc_catb(&pre, " ", 1);
+	 }
+
 	//fprintf(stderr,"%d %08x\n", is_dir, dir_ATTRS(&d));
     if(is_dir)
       stralloc_cats(dir, PATHSEP_S);
@@ -106,6 +130,9 @@ int list_dir_internal(stralloc *dir,  char type)
       len -= 2;
       s+= 2;
     }
+
+   if(opt_list)
+     buffer_putsa(&buffer_1, &pre);
 
     buffer_put(&buffer_1, s,len);
     buffer_put(&buffer_1, "\n", 1);
@@ -125,7 +152,16 @@ int main(int argc, char *argv[]) {
 
   stralloc dir= {0,0,0};
 	int argi = 1;
+
   if(argc > 1) {
+		if(!strcmp(argv[argi], "-l")) {
+			opt_list = 1;
+			argi++;
+		}
+	}
+
+  if(argi < argc) {
+		
 		while(argi < argc) {
 			stralloc_copys(&dir,argv[argi]);
       list_dir_internal(&dir,0);
