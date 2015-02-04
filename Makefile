@@ -2,6 +2,7 @@ prefix = /usr/local
 bindir = ${prefix}/bin
 
 DEBUG = 1
+LARGEFILE = 1
 WARNINGS = all
 WARNINGS += error
 
@@ -86,17 +87,24 @@ CPPFLAGS := -I.
 
 DEFS += INLINE=inline
 DEFS += PATH_MAX=4096
+
+ifeq ($(LARGEFILE),1)
 DEFS += _FILE_OFFSET_BITS=64
 DEFS += _LARGEFILE_SOURCE=1
+endif
 DEFS += _GNU_SOURCE=1 
 
 WARNINGS += no-strict-aliasing
 
 ifeq ($(DEBUG),1)
 CFLAGS = -g -ggdb -O0
+DEFS += DEBUG=1
 else
 CFLAGS = -g -O2
+DEFS += NDEBUG=1
 endif
+
+
 ifeq ($(STATIC),1)
 LDFLAGS += -static
 endif

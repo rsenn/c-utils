@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "dir_internal.h"
 
 int dir_open(struct dir_s *d, const char *p)
@@ -21,5 +22,8 @@ int dir_open(struct dir_s *d, const char *p)
 #else
   ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
 #endif
+
+assert(dir_INTERNAL(d)->dir_handle);
+
 return ret;
 }
