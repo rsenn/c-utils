@@ -180,7 +180,7 @@ int list_dir_internal(stralloc *dir,  char type)
     uid = st.st_uid;
     gid = st.st_gid;
     size = st.st_size;
-    mtime = st.st_mtime
+    mtime = st.st_mtime;
 #endif
 
 		if(dtype) {

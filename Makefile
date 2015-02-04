@@ -38,6 +38,10 @@ endif
 
 ifneq ($(HOST),$(BUILD))
 BUILDDIR = build/$(HOST)/$(BUILDTYPE)/
+else
+ifneq ($(CROSS),)
+BUILDDIR = build/$(HOST)/$(BUILDTYPE)/
+endif
 endif
 
 ifeq ($(HOST),$(BUILD))
