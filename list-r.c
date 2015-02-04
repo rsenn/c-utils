@@ -48,24 +48,63 @@ void make_num(stralloc *out, unsigned long num, size_t width) {
 void mode_str(stralloc *out, int mode) {
 	char mchars[10];
 	switch(mode & S_IFMT) {
+#ifdef S_IFLNK
 		case S_IFLNK: mchars[0] = 'l'; break;
+#endif
 		case S_IFDIR: mchars[0] = 'd'; break;
 		case S_IFCHR: mchars[0] = 'c'; break;
 		case S_IFBLK: mchars[0] = 'b'; break;
 		case S_IFIFO: mchars[0] = 'i'; break;
+#ifdef S_IFSOCK
 		case S_IFSOCK: mchars[0] = 's'; break;
+#endif
 		case S_IFREG: 
 		default: mchars[0] = '-'; break;
 	}
-	mchars[1] = (mode & S_IRUSR) ? 'r' : '-';
-	mchars[2] = (mode & S_IWUSR) ? 'w' : '-';
-	mchars[3] = (mode & S_IXUSR) ? 'x' : '-';
-	mchars[4] = (mode & S_IRGRP) ? 'r' : '-';
-	mchars[5] = (mode & S_IWGRP) ? 'w' : '-';
-	mchars[6] = (mode & S_IXGRP) ? 'x' : '-';
-	mchars[7] = (mode & S_IROTH) ? 'r' : '-';
-	mchars[8] = (mode & S_IWOTH) ? 'w' : '-';
-	mchars[9] = (mode & S_IXOTH) ? 'x' : '-';
+#ifdef S_IRUSR
+	if(mode & S_IRUSR) mchars[1] = 'r'; else
+#endif
+	mchars[1] = '-';
+
+#ifdef S_IWUSR
+	if(mode & S_IWUSR) mchars[2] = 'w'; else
+#endif
+	mchars[2] = '-';
+
+#ifdef S_IXUSR
+	if(mode & S_IXUSR) mchars[3] = 'x'; else
+#endif
+	mchars[3] = '-';
+
+#ifdef S_IRGRP
+	if(mode & S_IRGRP) mchars[4] = 'r'; else
+#endif
+	mchars[4] = '-';
+
+#ifdef S_IWGRP
+	if(mode & S_IWGRP) mchars[5] = 'w'; else
+#endif
+	mchars[5] = '-';
+
+#ifdef S_IXGRP
+	if(mode & S_IXGRP) mchars[6] = 'x'; else
+#endif
+	mchars[6] = '-';
+
+#ifdef S_IROTH
+	if(mode & S_IROTH) mchars[7] = 'r'; else
+#endif
+	mchars[7] = '-';
+
+#ifdef S_IWOTH
+	if(mode & S_IWOTH) mchars[8] = 'w'; else
+#endif
+	mchars[8] = '-';
+
+#ifdef S_IXOTH
+	if(mode & S_IXOTH) mchars[9] = 'x'; else
+#endif
+	mchars[9] = '-';
 
 	stralloc_catb(out, mchars, sizeof(mchars));
 }
