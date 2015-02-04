@@ -5,8 +5,10 @@ DEBUG = 1
 
 INSTALL = install
 
+ifneq ($(KERN),linux)
 BOOST_INCLUDE_DIR = C:/Boost
 BOOST_LIB_DIR = C:/Boost
+endif
 BOOST_LIBS = boost_random
 
 BUILD := $(shell gcc -dumpmachine)
@@ -39,12 +41,16 @@ BUILDDIR = build/$(HOST)/
 ifneq ($(TRIPLET),)
 ARCH = $(word 1,$(TRIPLET))
 OS = $(word 3,$(TRIPLET))
+KERN = $(word 2,$(TRIPLET))
 endif
 
 $(info OS: $(OS))
+$(info KERN: $(KERN))
 
+ifneq ($(KERN),linux)
 ifeq ($(ARCH),x86_64)
 M64 = 64
+endif
 endif
 
 ifeq ($(OS),mingw32)
@@ -89,7 +95,7 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,buffer_close.o buffer_default.o buffer_d
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(M64)$(EXEEXT) $(BUILDDIR)count-depth$(M64)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64)$(EXEEXT)  kbd-adjacency$(M64)$(EXEEXT)
+PROGRAMS = $(BUILDDIR)list-r$(M64)$(EXEEXT) $(BUILDDIR)count-depth$(M64)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64)$(EXEEXT)  #kbd-adjacency$(M64)$(EXEEXT)
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
 vpath $(BUILDDIR)
