@@ -1,8 +1,8 @@
 #include "fmt.h"
 
-unsigned int fmt_ulong0(char *dest,size_t i,unsigned int pad) {
+size_t fmt_ulong0(char *dest,unsigned long i,size_t pad) {
   register unsigned int len;
-  register size_t tmp;
+  register unsigned long tmp;
   /* first count the number of bytes needed */
   for (len=1, tmp=i; tmp>9; ++len) tmp/=10;
   /* now see if we need to pad */

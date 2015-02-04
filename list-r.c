@@ -22,8 +22,8 @@
 #endif
 
 static int opt_list = 0;
-static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+/*static char buffer_1_out[BUFFER_OUTSIZE];
+static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);*/
 int list_dir_internal(stralloc *dir,  char type);
 
 int list_dir(stralloc *dir)
@@ -132,11 +132,11 @@ int list_dir_internal(stralloc *dir,  char type)
     }
 
    if(opt_list)
-     buffer_putsa(&buffer_1, &pre);
+     buffer_putsa(buffer_1, &pre);
 
-    buffer_put(&buffer_1, s,len);
-    buffer_put(&buffer_1, "\n", 1);
-    buffer_flush(&buffer_1);
+    buffer_put(buffer_1, s,len);
+    buffer_put(buffer_1, "\n", 1);
+    buffer_flush(buffer_1);
 
     if(is_dir && !is_symlink)
     {

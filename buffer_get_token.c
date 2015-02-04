@@ -2,7 +2,7 @@
 #include "buffer.h"
 #include "scan.h"
 
-int buffer_get_token(buffer* b,char* x,size_t len,const char* charset,size_t setlen) {
+ssize_t buffer_get_token(buffer* b,char* x,size_t len,const char* charset,size_t setlen) {
   size_t blen;
 
   for (blen=0;blen<len;++blen) {

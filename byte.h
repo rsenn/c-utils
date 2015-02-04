@@ -1,13 +1,12 @@
+/* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef BYTE_H
 #define BYTE_H
 
-#ifdef __dietlibc__
-#include <sys/cdefs.h>
-#endif
+/* for size_t: */
+#include <stddef.h>
 
-#include <sys/types.h>
-#ifdef _MSC_VER
-#include <crtdefs.h>
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 #ifndef __pure__
@@ -40,8 +39,12 @@ int byte_diff(const void* a, size_t len, const void* b) __pure__;
 /* byte_zero sets the bytes out[0], out[1], ..., out[len-1] to 0 */
 void byte_zero(void* out, size_t len);
 
-void byte_fill(void* out, size_t len, int c);
-
 #define byte_equal(s,n,t) (!byte_diff((s),(n),(t)))
+
+int byte_equal_notimingattack(const void* a, size_t len,const void* b) __pure__;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

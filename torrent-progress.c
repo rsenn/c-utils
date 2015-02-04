@@ -62,9 +62,9 @@ int64 filesize(int fd) {
   return sz;
 }
 
-static char buffer_1_out[BUFFER_OUTSIZE];
+//static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer infile = BUFFER_INIT((void*)read, -1, 0,0);
-static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+//static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 
 int check_block_zero(char *b, size_t n) {
   size_t i;
@@ -132,14 +132,14 @@ next:
 
     /*struct stat st;
     infile.fd = open_read(argv[1]);
-    	 buffer_puts(&buffer_1,"fd #");
-    	 buffer_putulong(&buffer_1,infile.fd);;
-    	 buffer_putnlflush(&buffer_1);
+    	 buffer_puts(buffer_1,"fd #");
+    	 buffer_putulong(buffer_1,infile.fd);;
+    	 buffer_putnlflush(buffer_1);
     				fstat(infile.fd, &st);
     fsize = st.st_size;*/
 
 
-    //buffer_puts(&buffer_1,"fsize #"); buffer_putulong(&buffer_1,fsize);; buffer_puts(&buffer_1,", blocks #");buffer_putulong(&buffer_1,blocks); buffer_putnlflush(&buffer_1);
+    //buffer_puts(buffer_1,"fsize #"); buffer_putulong(buffer_1,fsize);; buffer_puts(buffer_1,", blocks #");buffer_putulong(buffer_1,blocks); buffer_putnlflush(buffer_1);
 
     for(i = 0; i < iterations; i++) {
       size_t msz =  (remain >= map_size ? map_size : (size_t)remain);
@@ -170,23 +170,23 @@ next:
       if(remain >= map_size)
         remain -= map_size;
     }
-    //	 buffer_putulong(&buffer_1,blocks);
-    //	 buffer_putnlflush(&buffer_1);
+    //	 buffer_putulong(buffer_1,blocks);
+    //	 buffer_putnlflush(buffer_1);
     nonzero_blocks = all_blocks - zero_blocks;
     percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
 
-    buffer_puts(&buffer_1,argv[ai]);
-    buffer_puts(&buffer_1,(space?": ":":"));
+    buffer_puts(buffer_1,argv[ai]);
+    buffer_puts(buffer_1,(space?": ":":"));
 
     if(!fraction) percent += 50;
 
-    buffer_putulong(&buffer_1,percent/100);
+    buffer_putulong(buffer_1,percent/100);
     
     if(fraction) {
-      buffer_puts(&buffer_1,".");
-      buffer_putulong(&buffer_1,percent%100);
+      buffer_puts(buffer_1,".");
+      buffer_putulong(buffer_1,percent%100);
     }
-    buffer_putnlflush(&buffer_1);
+    buffer_putnlflush(buffer_1);
   }
   return 0;
 }

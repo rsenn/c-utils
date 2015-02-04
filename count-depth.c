@@ -14,12 +14,13 @@
 #define PATH_MAX (4096-1)
 #endif
 
-
+/*
 static char buffer_0_in[BUFFER_INSIZE];
 static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
 
 static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+*/
 
 int count_depth()
 {
@@ -42,12 +43,12 @@ int count_depth()
       if(buffer[i] == '/')
         c++;
     }
-    buffer_putulong(&buffer_1, c);
-    buffer_put(&buffer_1, " ", 1);
-    buffer_put(&buffer_1, buffer, len);
-    buffer_put(&buffer_1, "\n", 1);
+    buffer_putulong(buffer_1, c);
+    buffer_put(buffer_1, " ", 1);
+    buffer_put(buffer_1, buffer, len);
+    buffer_put(buffer_1, "\n", 1);
   }
-  buffer_flush(&buffer_1);
+  buffer_flush(buffer_1);
   return 0;
 }
 

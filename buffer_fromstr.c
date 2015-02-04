@@ -1,6 +1,10 @@
 #include "str.h"
 #include "buffer.h"
 
+ssize_t buffer_dummyread() {
+	return 0;
+}
+
 void buffer_fromstr(buffer *b, char *s, size_t len)
 {
   b->x=s;

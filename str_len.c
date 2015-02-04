@@ -1,5 +1,6 @@
+#undef __dietlibc__
 #include "str.h"
-#undef str_len
+
 size_t str_len(const char* in) {
   register const char* t=in;
   for (;;) {

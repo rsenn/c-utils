@@ -9,7 +9,8 @@
 #include <sys/mman.h>
 #endif
 #include "open.h"
-#include "mmap.h"
+#include "mmap.h" 
+#include "uint64.h"
 
 #if defined(__x86_64__) && defined(__linux)
 #define mmap mmap64

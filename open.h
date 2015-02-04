@@ -1,3 +1,4 @@
+/* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef OPEN_H
 #define OPEN_H
 
@@ -31,10 +32,6 @@ int open_write(const char* filename);
 /* open filename for reading and writing.  Create file if not there.
  * Return file handle or -1 on error. */
 int open_rw(const char* filename);
-
-/* create temporary file for reading and writing. 
- * Return file handle or -1 on error. */
-int open_temp(char* tmpl);
 
 #ifdef __cplusplus
 }

@@ -1,8 +1,5 @@
-#ifndef _WIN32
+#define _FILE_OFFSET_BITS 64
 #include <unistd.h>
-#else
-#include <io.h>
-#endif
 #include <fcntl.h>
 #include "open.h"
 
@@ -10,10 +7,6 @@
 #define O_NDELAY 0
 #endif
 
-#ifndef O_LARGEFILE
-#define O_LARGEFILE 0
-#endif
-
 int open_read(const char *filename) {
-  return open(filename,O_RDONLY | O_LARGEFILE);
+  return open(filename,O_RDONLY|O_NDELAY);
 }

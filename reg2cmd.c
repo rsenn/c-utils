@@ -119,14 +119,14 @@ int reg2cmd()
         unicode = 1;
       }
       /*
-          buffer_puts(&buffer_2, "BOM: ");
-          buffer_putulong(&buffer_2, (unsigned char)buffer[0]);
-          buffer_puts(&buffer_2, " ");
-          buffer_putulong(&buffer_2, (unsigned char)buffer[1]);
-          buffer_puts(&buffer_2, " ");
-          buffer_putulong(&buffer_2, (unsigned char)unicode);
-          buffer_puts(&buffer_2, "\n");
-      		buffer_flush(&buffer_2);
+          buffer_puts(buffer_2, "BOM: ");
+          buffer_putulong(buffer_2, (unsigned char)buffer[0]);
+          buffer_puts(buffer_2, " ");
+          buffer_putulong(buffer_2, (unsigned char)buffer[1]);
+          buffer_puts(buffer_2, " ");
+          buffer_putulong(buffer_2, (unsigned char)unicode);
+          buffer_puts(buffer_2, "\n");
+      		buffer_flush(buffer_2);
        */
       continue;
     }
@@ -257,26 +257,26 @@ int reg2cmd()
         word = ull;
         rt = REG_QWORD;
       } else {
-        buffer_puts(&buffer_2, "No such type: ");
-        buffer_put(&buffer_2, &line.s[valuestart], line.len-valuestart);
-        buffer_puts(&buffer_2, "\n");
-        buffer_flush(&buffer_2);
+        buffer_puts(buffer_2, "No such type: ");
+        buffer_put(buffer_2, &line.s[valuestart], line.len-valuestart);
+        buffer_puts(buffer_2, "\n");
+        buffer_flush(buffer_2);
         exit(2);
       }
 
-      buffer_puts(&buffer_1, "REG ADD \"");
-      buffer_puts(&buffer_1, key);
-      buffer_puts(&buffer_1, "\" ");
+      buffer_puts(buffer_1, "REG ADD \"");
+      buffer_puts(buffer_1, key);
+      buffer_puts(buffer_1, "\" ");
 
       if(force)
-        buffer_puts(&buffer_1, "/f ");
+        buffer_puts(buffer_1, "/f ");
 
       if(line.s[keystart] == '@' && (keyend - keystart) == 1) {
-        buffer_puts(&buffer_1, "/ve ");
+        buffer_puts(buffer_1, "/ve ");
       } else {
-        buffer_puts(&buffer_1, "/v \"");
-        buffer_put(&buffer_1, &line.s[keystart], keyend - keystart);
-        buffer_puts(&buffer_1, "\" ");
+        buffer_puts(buffer_1, "/v \"");
+        buffer_put(buffer_1, &line.s[keystart], keyend - keystart);
+        buffer_puts(buffer_1, "\" ");
       }
 
       has_newline =
@@ -297,83 +297,83 @@ int reg2cmd()
       else
         type = regtype_strings[rt];
 
-      buffer_puts(&buffer_1, "/t ");
-      buffer_puts(&buffer_1, type);
+      buffer_puts(buffer_1, "/t ");
+      buffer_puts(buffer_1, type);
 
-      buffer_puts(&buffer_1, " /d ");
+      buffer_puts(buffer_1, " /d ");
 
       switch(rt) {
       //case REG_BINARY:
       case REG_EXPAND_SZ: {
-        buffer_putc(&buffer_1, '"');
+        buffer_putc(buffer_1, '"');
         for(pos = valuestart; pos < valueend; pos++) {
           if(line.s[pos] == '%')
-            buffer_putc(&buffer_1, '^');
-          buffer_putc(&buffer_1, line.s[pos]);
+            buffer_putc(buffer_1, '^');
+          buffer_putc(buffer_1, line.s[pos]);
         }
-        buffer_putc(&buffer_1, '"');
+        buffer_putc(buffer_1, '"');
         break;
       }
       case REG_SZ:  {
-        buffer_putc(&buffer_1, '"');
+        buffer_putc(buffer_1, '"');
         if(has_newline) {
           for(pos = valuestart; pos < valueend; pos++) {
-            buffer_putc(&buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
-            buffer_putc(&buffer_1, hexchar((unsigned char)line.s[pos] & 0x0f));
+            buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
+            buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] & 0x0f));
           }
         } else {
-          buffer_put(&buffer_1, &line.s[valuestart], valueend - valuestart);
+          buffer_put(buffer_1, &line.s[valuestart], valueend - valuestart);
         }
-        buffer_putc(&buffer_1, '"');
+        buffer_putc(buffer_1, '"');
         break;
       }
       case REG_DWORD:  {
-        buffer_putulong(&buffer_1, word);
+        buffer_putulong(buffer_1, word);
         break;
       }
       case REG_QWORD:  {
-        buffer_putulonglong(&buffer_1, word);
+        buffer_putulonglong(buffer_1, word);
         break;
       }
       case REG_BINARY:  {
-        buffer_putc(&buffer_1, '"');
+        buffer_putc(buffer_1, '"');
         for(pos = valuestart; pos < valueend; pos++) {
           if(scan_fromhex(line.s[pos]) != -1)
-            buffer_putc(&buffer_1, char_tolower(line.s[pos]));
+            buffer_putc(buffer_1, char_tolower(line.s[pos]));
         }
-        buffer_putc(&buffer_1, '"');
+        buffer_putc(buffer_1, '"');
         break;
       }
       default: {
-        buffer_puts(&buffer_2, "Unhandled type: ");
-        buffer_puts(&buffer_2, regtype_strings[rt]);
-        buffer_puts(&buffer_2, "\n");
-        buffer_flush(&buffer_2);
+        buffer_puts(buffer_2, "Unhandled type: ");
+        buffer_puts(buffer_2, regtype_strings[rt]);
+        buffer_puts(buffer_2, "\n");
+        buffer_flush(buffer_2);
         exit(2);
         break;
       }
       }
 
 
-      buffer_puts(&buffer_1, "\r\n");
-      buffer_flush(&buffer_1);
+      buffer_puts(buffer_1, "\r\n");
+      buffer_flush(buffer_1);
     }
     /*
-    buffer_puts(&buffer_2, "Line ");
-    buffer_putulong(&buffer_2, lineno);
-    buffer_puts(&buffer_2, ": ");
-    buffer_put(&buffer_2, line.s, line.len);
-    buffer_puts(&buffer_2, "\n");
-    buffer_flush(&buffer_2);
+    buffer_puts(buffer_2, "Line ");
+    buffer_putulong(buffer_2, lineno);
+    buffer_puts(buffer_2, ": ");
+    buffer_put(buffer_2, line.s, line.len);
+    buffer_puts(buffer_2, "\n");
+    buffer_flush(buffer_2);
 
 
-    buffer_puts(&buffer_2, "Length: ");
-    buffer_putulong(&buffer_2, len);
-    buffer_puts(&buffer_2, "\n");
-    buffer_flush(&buffer_2);
+    buffer_puts(buffer_2, "Length: ");
+    buffer_putulong(buffer_2, len);
+    buffer_puts(buffer_2, "\n");
+    buffer_flush(buffer_2);
     */
-    /*  buffer_put(&buffer_1, "\r\n", 2);
-      buffer_flush(&buffer_1);
+    /*  buffer_put(buffer_1, "\r\n", 2);
+      buffer_flush(buffer_1);
       */
     stralloc_zero(&line);
   }
@@ -382,10 +382,10 @@ int reg2cmd()
 
 void usage(char *arg0)
 {
-  buffer_puts(&buffer_2, "Usage: ");
-  buffer_puts(&buffer_2, basename(arg0));
-  buffer_puts(&buffer_2, " [-f] [input-file] [output-file]\n");
-  buffer_flush(&buffer_2);
+  buffer_puts(buffer_2, "Usage: ");
+  buffer_puts(buffer_2, basename(arg0));
+  buffer_puts(buffer_2, " [-f] [input-file] [output-file]\n");
+  buffer_flush(buffer_2);
   exit(1);
 }
 int main(int argc, char *argv[])
@@ -411,10 +411,10 @@ int main(int argc, char *argv[])
   }
   if(argi < argc)
   {
-    buffer_puts(&buffer_2, "Opening file for reading '");
-    buffer_puts(&buffer_2, argv[argi]);
-    buffer_puts(&buffer_2, "' ...\n");
-    buffer_flush(&buffer_2);
+    buffer_puts(buffer_2, "Opening file for reading '");
+    buffer_puts(buffer_2, argv[argi]);
+    buffer_puts(buffer_2, "' ...\n");
+    buffer_flush(buffer_2);
     if((buffer_0.fd = open(argv[argi], O_RDONLY)) < 0)
       usage(argv[0]);
 
@@ -422,10 +422,10 @@ int main(int argc, char *argv[])
   }
   if(argi < argc)
   {
-    buffer_puts(&buffer_2, "Opening file for writing '");
-    buffer_puts(&buffer_2, argv[argi]);
-    buffer_puts(&buffer_2, "' ...\n");
-    buffer_flush(&buffer_2);
+    buffer_puts(buffer_2, "Opening file for writing '");
+    buffer_puts(buffer_2, argv[argi]);
+    buffer_puts(buffer_2, "' ...\n");
+    buffer_flush(buffer_2);
     if((buffer_1.fd = open(argv[argi], O_CREAT|O_TRUNC|O_WRONLY, 0644)) < 0)
       usage(argv[0]);
 

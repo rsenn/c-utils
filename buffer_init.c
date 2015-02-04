@@ -1,6 +1,6 @@
 #include "buffer.h"
 
-void buffer_init(buffer* b,int (*op)(),int fd,
+void buffer_init(buffer* b,ssize_t (*op)(),int fd,
 		 char* y,size_t ylen) {
   b->op=op;
   b->fd=fd;
@@ -9,4 +9,5 @@ void buffer_init(buffer* b,int (*op)(),int fd,
   b->p=0;
   b->n=0;
   b->todo=NOTHING;
+  b->cookie=0;
 }
