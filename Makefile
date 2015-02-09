@@ -14,7 +14,6 @@ BUILD := $(shell gcc -dumpmachine)
 CC = gcc
 CXX = g++
 
-#CXX += -std=c++11
 CCVER := $(shell gcc -dumpversion)
 CXXVER := $(shell gcc -dumpversion)
 
@@ -50,13 +49,16 @@ endif
 ifeq ($(OS),mingw32)
 EXEEXT = .exe
 LDFLAGS = -s -static
-CXXOPTS := -std=c++11 -DCXX11=1
 endif
 
-#CXXOPTS := $(shell  $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'
-#CXXOPTS = $(shell  sh -c "if !  { $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++0x -D__GXX_EXPERIMENTAL_CXX0X__=1 -D_GLIBCXX_PERMIT_BACKWARD_HASH=1; elif !  { $(CXX) -std=c++11 2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++11 -DCXX11=1; fi")
+##CXXOPTS := $(shell  $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'
+##CXXOPTS = $(shell  sh -c "if !  { $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++0x -D__GXX_EXPERIMENTAL_CXX0X__=1 -D_GLIBCXX_PERMIT_BACKWARD_HASH=1; elif !  { $(CXX) -std=c++11 2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++11 -DCXX11=1; fi")
 ifeq ($(CXXOPTS),)
-CXXOPTS := $(shell  sh -c "if !  { $(CXX) -std=c++11 2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++11 -DCXX11=1; elif ! { $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++0x -D__GXX_EXPERIMENTAL_CXX0X__=1; fi")
+#CXXOPTS += $(shell  sh -c "if !  { $(CXX) -std=c++11 2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++11 -DCXX11=1; elif ! { $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++0x -D__GXX_EXPERIMENTAL_CXX0X__=1; fi")
+$(info OS: '$(OS)')
+ifneq ($(OS),msys)
+##CXXOPTS += -std=c++11 -DCXX11=1
+endif
 endif
 
 #CPPFLAGS = -I/usr/include/libowfat 
@@ -89,7 +91,7 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,buffer_close.o buffer_default.o buffer_d
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(M64)$(EXEEXT) $(BUILDDIR)count-depth$(M64)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64)$(EXEEXT)  kbd-adjacency$(M64)$(EXEEXT)
+PROGRAMS = $(BUILDDIR)list-r$(M64)$(EXEEXT) $(BUILDDIR)count-depth$(M64)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64)$(EXEEXT) #kbd-adjacency$(M64)$(EXEEXT)
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
 vpath $(BUILDDIR)
