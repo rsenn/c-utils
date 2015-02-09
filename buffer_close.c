@@ -1,22 +1,18 @@
-#include "buffer.h"
-#include "shell.h"
-#ifndef _WIN32
+#include <buffer.h>
+#include <stdlib.h>
 #include <unistd.h>
-#else
-#include <io.h>
-#endif
-#if !(defined(_WIN32) || defined(__MINGW32__) ||defined(__MSYS__))
-#include <sys/mman.h>
-#else
+#ifdef __MINGW32__
 #include <windows.h>
+#else
+#include <sys/mman.h>
 #endif
 
 void buffer_close(buffer* b) {
   if (b->fd != -1) close(b->fd);
   switch (b->todo) {
-  case FREE: shell_free(b->x); break;
+  case FREE: free(b->x); break;
   case MUNMAP:
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+#ifdef __MINGW32__
     UnmapViewOfFile(b->x);
 #else
     munmap(b->x,b->a); break;

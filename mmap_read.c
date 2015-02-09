@@ -1,8 +1,6 @@
 #include <sys/types.h>
-#ifndef _WIN32
 #include <unistd.h>
-#endif
-#if defined(_WIN32)
+#ifdef __MINGW32__
 #include <windows.h>
 #else
 #include <sys/mman.h>
@@ -11,7 +9,7 @@
 #include "mmap.h"
 
 extern char* mmap_read(const char* filename,size_t * filesize) {
-#if defined(_WIN32)
+#ifdef __MINGW32__
   HANDLE fd,m;
   char* map;
   fd=CreateFile(filename,GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0);

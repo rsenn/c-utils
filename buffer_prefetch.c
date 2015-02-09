@@ -1,12 +1,13 @@
 #include "byte.h"
 #include "buffer.h"
 
-extern int buffer_stubborn_read(int (*op)(),int fd,const char* buf, unsigned int len);
+extern int buffer_dummyread();
+extern int buffer_stubborn_read(ssize_t (*op)(),int fd,const char* buf, unsigned int len);
 
 int buffer_prefetch(buffer* b, size_t n) {
   if(b->p && b->p+n>=b->a)
   {
-    if(b->op == buffer_dummyread)
+    if((void*)b->op == (void*)&buffer_dummyread)
       return (b->n-b->p);
     
     byte_copy(b->x, b->n - b->p, &b->x[b->p]);

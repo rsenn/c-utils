@@ -1,9 +1,9 @@
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef MMAP_H
 #define MMAP_H
-#include "uint64.h"
-#include <sys/types.h>
+
 #include <stddef.h>
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {

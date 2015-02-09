@@ -1,12 +1,11 @@
-#include "str.h"
 #include "byte.h"
 #include "stralloc.h"
 #include "buffer.h"
 #include <errno.h>
 
 int buffer_get_token_sa(buffer* b,stralloc* sa,
-			const char* charset) {
-				unsigned int setlen = str_len(charset);
+			const char* charset,
+			size_t setlen) {
   for (;;) {
     char x;
     if (!stralloc_readyplus(sa,1)) goto nomem;

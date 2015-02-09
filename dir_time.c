@@ -5,8 +5,8 @@
 #include "dir.h"
 #include "dir_internal.h"
 
-unsigned long long dir_time(struct dir_s *d, int time_type)
-{
+time_t 
+dir_time(struct dir_s *d, int time_type) {
   unsigned long long r=0;
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
   switch(time_type)

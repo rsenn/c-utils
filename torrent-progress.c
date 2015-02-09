@@ -1,3 +1,6 @@
+#define _LARGEFILE_SOURCE 1
+#define _GNU_SOURCE 1
+#define _FILE_OFFSET_BITS 64
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -42,11 +45,21 @@ typedef LONG64 offset_type;
 typedef off64_t offset_type;
 #endif
 
+#ifdef WIN64
+#define FMT_SIZE_T "%"SCNx64
+#elif defined(WIN32)
+#define FMT_SIZE_T "%"SCNx32
+#endif
+
+#ifndef FMT_SIZE_T
+#define FMT_SIZE_T "%zx"
+#endif
+
 int64 filesize(int fd) {
   int64 sz;
 #ifdef _WIN32
   DWORD fszH;
-  sz = GetFileSize((HANDLE)fd, &fszH);
+  sz = GetFileSize((HANDLE)(size_t)fd, &fszH);
   sz |= ((int64)fszH) << 32;
 #else
   uint64 pos, end;
@@ -62,9 +75,9 @@ int64 filesize(int fd) {
   return sz;
 }
 
-static char buffer_1_out[BUFFER_OUTSIZE];
+//static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer infile = BUFFER_INIT((void*)read, -1, 0,0);
-static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+//static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 
 int check_block_zero(char *b, size_t n) {
   size_t i;
@@ -132,14 +145,14 @@ next:
 
     /*struct stat st;
     infile.fd = open_read(argv[1]);
-    	 buffer_puts(&buffer_1,"fd #");
-    	 buffer_putulong(&buffer_1,infile.fd);;
-    	 buffer_putnlflush(&buffer_1);
+    	 buffer_puts(buffer_1,"fd #");
+    	 buffer_putulong(buffer_1,infile.fd);;
+    	 buffer_putnlflush(buffer_1);
     				fstat(infile.fd, &st);
     fsize = st.st_size;*/
 
 
-    //buffer_puts(&buffer_1,"fsize #"); buffer_putulong(&buffer_1,fsize);; buffer_puts(&buffer_1,", blocks #");buffer_putulong(&buffer_1,blocks); buffer_putnlflush(&buffer_1);
+    //buffer_puts(buffer_1,"fsize #"); buffer_putulong(buffer_1,fsize);; buffer_puts(buffer_1,", blocks #");buffer_putulong(buffer_1,blocks); buffer_putnlflush(buffer_1);
 
     for(i = 0; i < iterations; i++) {
       size_t msz =  (remain >= map_size ? map_size : (size_t)remain);
@@ -161,7 +174,7 @@ next:
       }
     
       if(verbose)
-        fprintf(stderr, "mmap at 0x%zx, size 0x%zx%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
+        fprintf(stderr, "mmap at 0x"FMT_SIZE_T", size 0x"FMT_SIZE_T"%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
       
       zero_blocks += z;
 
@@ -170,23 +183,23 @@ next:
       if(remain >= map_size)
         remain -= map_size;
     }
-    //	 buffer_putulong(&buffer_1,blocks);
-    //	 buffer_putnlflush(&buffer_1);
+    //	 buffer_putulong(buffer_1,blocks);
+    //	 buffer_putnlflush(buffer_1);
     nonzero_blocks = all_blocks - zero_blocks;
     percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
 
-    buffer_puts(&buffer_1,argv[ai]);
-    buffer_puts(&buffer_1,(space?": ":":"));
+    buffer_puts(buffer_1,argv[ai]);
+    buffer_puts(buffer_1,(space?": ":":"));
 
     if(!fraction) percent += 50;
 
-    buffer_putulong(&buffer_1,percent/100);
+    buffer_putulong(buffer_1,percent/100);
     
     if(fraction) {
-      buffer_puts(&buffer_1,".");
-      buffer_putulong(&buffer_1,percent%100);
+      buffer_puts(buffer_1,".");
+      buffer_putulong(buffer_1,percent%100);
     }
-    buffer_putnlflush(&buffer_1);
+    buffer_putnlflush(buffer_1);
   }
   return 0;
 }
