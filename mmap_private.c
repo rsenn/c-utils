@@ -5,9 +5,7 @@
 #if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
 #include <windows.h>
 #else
-#ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
-#endif // defined HAVE_SYS_MMAN_H
 #endif
 #include "open.h"
 #include "mmap.h"

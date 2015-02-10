@@ -3,14 +3,8 @@
 #define UINT32_H
 
 #include <sys/types.h>
-
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif /* defined HAVE_STDINT_H */
-
-#ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
-#endif /* defined HAVE_INTTYPES_H */
 
 #ifdef _MSC_VER
 #include <windows.h>

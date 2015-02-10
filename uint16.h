@@ -2,12 +2,8 @@
 #ifndef UINT16_H
 #define UINT16_H
 
-#ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
-#endif /* defined HAVE_INTTYPES_H */
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif /* defined HAVE_STDINT_H */
 #include <sys/types.h>
 
 #ifdef _MSC_VER

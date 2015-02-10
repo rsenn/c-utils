@@ -1,9 +1,8 @@
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif // defined HAVE_UNISTD_H
 #include "buffer.h"
 #if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
 #include <io.h>
+#else
+#include <unistd.h>
 #endif
 
 static ssize_t b0read(int fd,char* buf, size_t len) {
