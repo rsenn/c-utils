@@ -8,40 +8,7 @@
 #include <cstring>
 #include <locale>
 #include <iterator>
-<<<<<<< HEAD
-
-#ifdef CXX11
 #include <unordered_set>
-#include <type_traits>
-using std::enable_if;
-using std::unordered_set;
-//#ifdef HAVE_INITIALIZER_LIST
-#include <initializer_list>
-//#endif
-
-#else
-# include <boost/foreach.hpp>
-# ifdef _MSC_VER
-#  include <hash_set>
-#  ifdef HAVE_XTR1COMMON
-#   include <xtr1common>
-using std::enable_if;
-#  else
-#    include <boost/utility/enable_if.hpp>
-using boost::enable_if;
-#  endif
-using stdext::hash_set;
-# else
-#  include <ext/hash_set>
-#  include <ext/type_traits.h>
-using __gnu_cxx::hash_set;
-using std::enable_if;
-# endif
-# define unordered_set hash_set
-#endif
-=======
-#include <unordered_set>
->>>>>>> 30dc815864d44ccc70f9aadaaa58dc05de955624
 
 //-----------------------------------------------------------------------------
 namespace std {
@@ -61,10 +28,6 @@ range_to_v(Range r) {
 	return v;
 }
 
-<<<<<<< HEAD
-#ifdef CXX11
-=======
->>>>>>> 30dc815864d44ccc70f9aadaaa58dc05de955624
 template<class T>
 std::vector<T>
 range_to_v(std::initializer_list<T> il) {

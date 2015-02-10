@@ -1,15 +1,19 @@
-#include <sys/types.h>
+#include <stdio.h>
+#ifndef WIN32
 #include <unistd.h>
-#ifdef __MINGW32__
+#endif
+#if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
 #include <windows.h>
 #else
+#ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
+#endif // defined HAVE_SYS_MMAN_H
 #endif
 #include "open.h"
 #include "mmap.h"
 
 char* mmap_private(const char* filename,size_t * filesize) {
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
   HANDLE fd,m;
   char* map;
   fd=CreateFile(filename,GENERIC_WRITE|GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0);

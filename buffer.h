@@ -7,6 +7,12 @@
 /* for ssize_t: */
 #include <sys/types.h>
 
+#ifdef _MSC_VER
+#include <windows.h>
+#define size_t SIZE_T
+#define ssize_t SSIZE_T
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

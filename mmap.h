@@ -5,6 +5,12 @@
 #include <stddef.h>
 #include "uint64.h"
 
+#ifdef _MSC_VER
+#include <windows.h>
+#define size_t SIZE_T
+#define ssize_t SSIZE_T
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

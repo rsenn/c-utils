@@ -1,12 +1,16 @@
 #include <sys/types.h>
 #ifndef _WIN32
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif // defined HAVE_UNISTD_H
 #endif
 #if defined(_WIN32)
 #include <windows.h>
 #else
 #include <sys/types.h>
+#ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
+#endif // defined HAVE_SYS_MMAN_H
 #endif
 #include "open.h"
 #include "mmap.h" 

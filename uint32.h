@@ -2,7 +2,21 @@
 #ifndef UINT32_H
 #define UINT32_H
 
+#include <sys/types.h>
+
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif /* defined HAVE_STDINT_H */
+
+#ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
+#endif /* defined HAVE_INTTYPES_H */
+
+#ifdef _MSC_VER
+#include <windows.h>
+#define uint32_t UINT32
+#define int32_t INT32
+#endif
 
 #ifdef __cplusplus
 extern "C" {

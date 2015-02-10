@@ -1,10 +1,10 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 #define _FILE_OFFSET_BITS 64
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include <stdio.h>
 #ifndef _WIN32
 #include <unistd.h>
@@ -21,6 +21,7 @@
 #include "fmt.h"
 #include "uint64.h"
 #include "dir_internal.h"
+
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
@@ -55,7 +56,11 @@ make_time(stralloc *out, time_t t, size_t width) {
     char buf[1024];
 		size_t sz; 
 	  int n; 	
+#ifdef HAVE_LOCALTIME_R_FUNC
 		localtime_r(&t, &ltime);
+#else
+        ltime = *localtime(&t);
+#endif
 		sz = strftime(buf, sizeof(buf), opt_timestyle , &ltime);
 		n = width - sz;
 		while(n-- > 0) {
@@ -74,8 +79,12 @@ mode_str(stralloc *out, int mode) {
 #endif
 		case S_IFDIR: mchars[0] = 'd'; break;
 		case S_IFCHR: mchars[0] = 'c'; break;
+#ifdef S_IFBLK
 		case S_IFBLK: mchars[0] = 'b'; break;
+#endif
+#ifdef S_IFIFO
 		case S_IFIFO: mchars[0] = 'i'; break;
+#endif
 #ifdef S_IFSOCK
 		case S_IFSOCK: mchars[0] = 's'; break;
 #endif

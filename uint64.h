@@ -2,7 +2,19 @@
 #ifndef UINT64_H
 #define UINT64_H
 
+#include <sys/types.h>
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif /* defined HAVE_STDINT_H */
+#ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
+#endif /* defined HAVE_INTTYPES_H */
+
+#ifdef _MSC_VER
+#include <windows.h>
+#define uint64_t UINT64
+#define int64_t INT64
+#endif
 
 #ifdef __cplusplus
 extern "C" {

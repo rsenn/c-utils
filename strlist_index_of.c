@@ -1,7 +1,8 @@
 #include <string.h>
 #include "strlist.h"
+#include "uint64.h"
 
-ssize_t
+int64
 strlist_index_of(strlist* sl, const char* str) {
   size_t p, l = 0;
   const char *s = sl->sa.s;

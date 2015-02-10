@@ -23,10 +23,12 @@ endif()
 include(CheckIncludeFile)
 
 check_include_file(inttypes.h HAVE_INTTYPES_H)
+check_include_file(sys/types.h HAVE_SYS_TYPES_H)
 check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(libgen.h HAVE_LIBGEN_H)
 check_include_file(alloca.h HAVE_ALLOCA_H)
 check_include_file(sys/stat.h HAVE_SYS_STAT_H)
+check_include_file(sys/mman.h HAVE_SYS_MMAN_H)
 check_include_file(boost/foreach.hpp HAVE_BOOST_FOREACH_HPP)
 check_include_file(xtr1common HAVE_XTR1COMMON)
 check_include_file(initializer_list HAVE_INITIALIZER_LIST)
@@ -45,15 +47,16 @@ check_function_exists(lstat HAVE_LSTAT_FUNC)
 check_function_exists(lseek HAVE_LSEEK_FUNC)
 check_function_exists(llseek HAVE_LLSEEK_FUNC)
 check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
+check_function_exists(localtime HAVE_LOCALTIME_FUNC)
+check_function_exists(localtime_r HAVE_LOCALTIME_R_FUNC)
 
 configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
                "${CMAKE_BINARY_DIR}/config.h")
 
-set(COMMON_SOURCES array_allocate.c array_bytes.c array_cat.c array_cat0.c array_catb.c array_cate.c array_cats.c array_cats0.c array_equal.c array_fail.c array_get.c array_length.c array_reset.c array_start.c array_trunc.c array_truncate.c buffer_close.c buffer_default.c buffer_dump.c buffer_feed.c buffer_flush.c buffer_free.c buffer_fromsa.c buffer_fromstr.c buffer_get.c buffer_get_new_token_sa.c buffer_get_new_token_sa_pred.c buffer_get_token.c buffer_get_token_pred.c buffer_get_token_sa.c buffer_get_token_sa_pred.c buffer_get_until.c buffer_getc.c buffer_getline.c buffer_getline_sa.c buffer_init.c buffer_mmapprivate.c buffer_mmapread.c buffer_mmapread_fd.c buffer_prefetch.c buffer_put.c buffer_putc.c buffer_putflush.c buffer_putm_internal.c buffer_putnlflush.c buffer_putnspace.c buffer_puts.c buffer_putsa.c buffer_putsflush.c buffer_putspace.c buffer_putulong.c buffer_putulonglong.c buffer_putxlong.c buffer_skip_until.c buffer_stubborn.c buffer_stubborn2.c buffer_tosa.c buffer_truncfile.c byte_chr.c byte_copy.c byte_copyr.c byte_fill.c dir_close.c dir_open.c dir_read.c dir_time.c dir_type.c fmt_minus.c fmt_ulong.c fmt_ulong0.c fmt_ulonglong.c fmt_xlong.c fmt_xlonglong.c mmap_map.c mmap_private.c mmap_read.c mmap_read_fd.c mmap_unmap.c open_append.c open_read.c open_rw.c open_trunc.c scan_fromhex.c scan_xlong.c scan_xlonglong.c shell_alloc.c shell_error.c shell_errorn.c shell_init.c shell_realloc.c str_diffn.c str_len.c stralloc_append.c stralloc_cat.c stralloc_catb.c stralloc_catc.c stralloc_catlong0.c stralloc_cats.c stralloc_catulong0.c stralloc_copy.c stralloc_copyb.c stralloc_copys.c stralloc_diffs.c stralloc_free.c stralloc_init.c stralloc_insertb.c stralloc_move.c stralloc_nul.c stralloc_ready.c stralloc_readyplus.c stralloc_remove.c stralloc_trunc.c stralloc_write.c stralloc_zero.c
-array_allocate.c array_bytes.c array_cat.c array_cat0.c array_catb.c array_cate.c array_cats.c array_cats0.c array_equal.c array_fail.c array_get.c array_length.c array_reset.c array_start.c array_trunc.c array_truncate.c buffer_close.c buffer_default.c buffer_dump.c buffer_feed.c buffer_flush.c buffer_free.c buffer_fromsa.c buffer_fromstr.c buffer_get.c buffer_get_new_token_sa.c buffer_get_new_token_sa_pred.c buffer_get_token.c buffer_get_token_pred.c buffer_get_token_sa.c buffer_get_token_sa_pred.c buffer_get_until.c buffer_getc.c buffer_getline.c buffer_getline_sa.c buffer_init.c buffer_mmapprivate.c buffer_mmapread.c buffer_mmapread_fd.c buffer_prefetch.c buffer_put.c buffer_putc.c buffer_putflush.c buffer_putm_internal.c buffer_putnlflush.c buffer_putnspace.c buffer_puts.c buffer_putsa.c buffer_putsflush.c buffer_putspace.c buffer_putulong.c buffer_putulonglong.c buffer_putxlong.c buffer_skip_until.c buffer_stubborn.c buffer_stubborn2.c buffer_tosa.c buffer_truncfile.c byte_chr.c byte_copy.c byte_copyr.c byte_fill.c dir_close.c dir_open.c dir_read.c dir_time.c dir_type.c fmt_minus.c fmt_ulong.c fmt_ulong0.c fmt_ulonglong.c fmt_xlong.c fmt_xlonglong.c mmap_map.c mmap_private.c mmap_read.c mmap_read_fd.c mmap_unmap.c open_append.c open_read.c open_rw.c open_trunc.c scan_fromhex.c scan_xlong.c scan_xlonglong.c shell_alloc.c shell_error.c shell_errorn.c shell_init.c shell_realloc.c str_diffn.c str_len.c stralloc_append.c stralloc_cat.c stralloc_catb.c stralloc_catc.c stralloc_catlong0.c stralloc_cats.c stralloc_catulong0.c stralloc_copy.c stralloc_copyb.c stralloc_copys.c stralloc_diffs.c stralloc_free.c stralloc_init.c stralloc_insertb.c stralloc_move.c stralloc_nul.c stralloc_ready.c stralloc_readyplus.c stralloc_remove.c stralloc_trunc.c stralloc_write.c stralloc_zero.c array.h buffer.h byte.h dir.h dir_internal.h directory_iterator.h fmt.h mmap.h open.h scan.h shell.h str.h stralloc.h uint64.h)
+file(GLOB COMMON_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
 
 set(PROGRAMS list-r count-depth decode-ls-lR torrent-progress reg2cmd)
-set(CXXPROGRAMS kbd-adjacency)
+#set(CXXPROGRAMS kbd-adjacency)
 
 if(MSVC)
 #  add_definitions(-Dinline=__force_inline)
@@ -73,6 +76,14 @@ endif()
 include_directories("${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 
 add_definitions(-DHAVE_CONFIG_H)
+
+set(HAVE_VARS HAVE_ALLOCA_H HAVE_BOOST_FOREACH_HPP HAVE_INTTYPES_H HAVE_LIBGEN_H HAVE_STDINT_H HAVE_SYS_MMAN_H HAVE_SYS_STAT_H HAVE_SYS_TYPES_H)
+
+foreach(V ${HAVE_VARS})
+  if(${V})
+    add_definitions(-D${V}=1)
+  endif()
+endforeach()
 
 foreach(PROGRAM ${PROGRAMS})
   add_executable(${PROGRAM} "${CMAKE_SOURCE_DIR}/${PROGRAM}.c" ${COMMON_SOURCES})

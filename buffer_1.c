@@ -1,6 +1,8 @@
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include "buffer.h"
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
 #include <io.h>
 #endif
 

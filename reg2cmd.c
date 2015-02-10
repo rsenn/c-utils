@@ -33,20 +33,11 @@
 static INLINE char*
 mybasename(const char* path) {
   char *r = strrchr(path, '/');
-  return r?r+1:path;
+  return r?r+1:(char*)path;
 }
 
 static int  force = 0;
 
-static char buffer_0_in[BUFFER_INSIZE];
-static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
-
-static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
-
-
-static char buffer_2_out[BUFFER_OUTSIZE];
-static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
 
 static INLINE char hexchar(char value) {
   static const char hchars[] = "0123456789abcdef";
@@ -83,13 +74,13 @@ static int collapse_unicode(char *buffer, unsigned int n) {
 }
 
 typedef enum {
-  REG_NONE = 0,
-  REG_SZ,
-  REG_MULTI_SZ,
-  REG_EXPAND_SZ,
-  REG_DWORD,
-  REG_QWORD,
-  REG_BINARY,
+  REGISTRY_NONE = 0,
+  REGISTRY_SZ,
+  REGISTRY_MULTI_SZ,
+  REGISTRY_EXPAND_SZ,
+  REGISTRY_DWORD,
+  REGISTRY_QWORD,
+  REGISTRY_BINARY,
 } regtype_t;
 
 const char* regtype_strings[] = {
@@ -230,7 +221,7 @@ int reg2cmd()
       }
 
       if(line.s[valuestart] == '"') {
-        rt = REG_SZ;
+        rt = REGISTRY_SZ;
 
         if(line.s[valuestart] == '"')
           valuestart++;
@@ -239,7 +230,7 @@ int reg2cmd()
           valueend--;
 
       } else if(!strncmp(&line.s[valuestart],"hex",3)) {
-        rt = REG_BINARY;
+        rt = REGISTRY_BINARY;
 
         while(line.s[valuestart] != ':' && valuestart < valueend)
           valuestart++;
@@ -250,12 +241,12 @@ int reg2cmd()
         unsigned long ul;
         scan_xlong(&line.s[valuestart+6], &ul);
         word = ul;
-        rt = REG_DWORD;
+        rt = REGISTRY_DWORD;
       } else if(!strncmp(&line.s[valuestart],"qword:",6)) {
         unsigned long long ull;
         scan_xlonglong(&line.s[valuestart+6], &ull);
         word = ull;
-        rt = REG_QWORD;
+        rt = REGISTRY_QWORD;
       } else {
         buffer_puts(buffer_2, "No such type: ");
         buffer_put(buffer_2, &line.s[valuestart], line.len-valuestart);
@@ -287,12 +278,12 @@ int reg2cmd()
       has_expansion =
         (find_char('%', &line.s[valuestart], valueend - valuestart) >= 2);
 
-      if(has_expansion && rt == REG_SZ)
-        rt = REG_EXPAND_SZ;
+      if(has_expansion && rt == REGISTRY_SZ)
+        rt = REGISTRY_EXPAND_SZ;
 
-      if(valueend == valuestart && rt == REG_BINARY)
+      if(valueend == valuestart && rt == REGISTRY_BINARY)
         type = "REG_SZ";
-      if(has_newline && rt == REG_SZ)
+      if(has_newline && rt == REGISTRY_SZ)
         type = "REG_BINARY";
       else
         type = regtype_strings[rt];
@@ -303,8 +294,8 @@ int reg2cmd()
       buffer_puts(buffer_1, " /d ");
 
       switch(rt) {
-      //case REG_BINARY:
-      case REG_EXPAND_SZ: {
+      //case REGISTRY_BINARY:
+      case REGISTRY_EXPAND_SZ: {
         buffer_putc(buffer_1, '"');
         for(pos = valuestart; pos < valueend; pos++) {
           if(line.s[pos] == '%')
@@ -314,7 +305,7 @@ int reg2cmd()
         buffer_putc(buffer_1, '"');
         break;
       }
-      case REG_SZ:  {
+      case REGISTRY_SZ:  {
         buffer_putc(buffer_1, '"');
         if(has_newline) {
           for(pos = valuestart; pos < valueend; pos++) {
@@ -327,15 +318,15 @@ int reg2cmd()
         buffer_putc(buffer_1, '"');
         break;
       }
-      case REG_DWORD:  {
+      case REGISTRY_DWORD:  {
         buffer_putulong(buffer_1, word);
         break;
       }
-      case REG_QWORD:  {
+      case REGISTRY_QWORD:  {
         buffer_putulonglong(buffer_1, word);
         break;
       }
-      case REG_BINARY:  {
+      case REGISTRY_BINARY:  {
         buffer_putc(buffer_1, '"');
         for(pos = valuestart; pos < valueend; pos++) {
           if(scan_fromhex(line.s[pos]) != -1)
@@ -382,17 +373,10 @@ int reg2cmd()
 
 void usage(char *arg0)
 {
-<<<<<<< HEAD
-  buffer_puts(&buffer_2, "Usage: ");
-  buffer_puts(&buffer_2, mybasename(arg0));
-  buffer_puts(&buffer_2, " [-f] [input-file] [output-file]\n");
-  buffer_flush(&buffer_2);
-=======
   buffer_puts(buffer_2, "Usage: ");
-  buffer_puts(buffer_2, basename(arg0));
+  buffer_puts(buffer_2, mybasename(arg0));
   buffer_puts(buffer_2, " [-f] [input-file] [output-file]\n");
   buffer_flush(buffer_2);
->>>>>>> 30dc815864d44ccc70f9aadaaa58dc05de955624
   exit(1);
 }
 int main(int argc, char *argv[])
@@ -422,7 +406,8 @@ int main(int argc, char *argv[])
     buffer_puts(buffer_2, argv[argi]);
     buffer_puts(buffer_2, "' ...\n");
     buffer_flush(buffer_2);
-    if((buffer_0.fd = open(argv[argi], O_RDONLY)) < 0)
+
+    if((buffer_0->fd = open(argv[argi], O_RDONLY)) < 0)
       usage(argv[0]);
 
     argi++;
@@ -433,7 +418,7 @@ int main(int argc, char *argv[])
     buffer_puts(buffer_2, argv[argi]);
     buffer_puts(buffer_2, "' ...\n");
     buffer_flush(buffer_2);
-    if((buffer_1.fd = open(argv[argi], O_CREAT|O_TRUNC|O_WRONLY, 0644)) < 0)
+    if((buffer_1->fd = open(argv[argi], O_CREAT|O_TRUNC|O_WRONLY, 0644)) < 0)
       usage(argv[0]);
 
     argi++;

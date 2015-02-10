@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #if !(defined(_WIN32) || defined(__MINGW32__) ||defined(__MSYS__))
+#ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
+#endif // defined HAVE_SYS_MMAN_H
 #else
 #include <windows.h>
 #endif

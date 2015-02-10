@@ -4,10 +4,10 @@
 
 /* for size_t: */
 #include <stddef.h>
-/* for uint32_t: */
-#include <stdint.h>
 /* for time_t: */
 #include <sys/types.h>
+
+#include "uint32.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -80,7 +80,7 @@ size_t scan_noncharsetnskip(const char *in,const char *charset,size_t limit) __p
 size_t scan_httpdate(const char *in,time_t *t) __pure__;
 
 /* some variable length encodings for integers */
-size_t scan_utf8(const char* in,size_t len,uint32_t* n) __pure__;
+size_t scan_utf8(const char* in,size_t len,uint32* n) __pure__;
 size_t scan_asn1derlength(const char* in,size_t len,unsigned long long* n) __pure__;
 size_t scan_asn1dertag(const char* in,size_t len,unsigned long long* n) __pure__;
 

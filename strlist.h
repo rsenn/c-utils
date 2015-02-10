@@ -3,6 +3,7 @@
 
 #include <sys/types.h>
 #include "stralloc.h"
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,7 +26,7 @@ strlist_count(strlist* sl);
 const char*
 strlist_at(strlist* sl, size_t pos);
 
-ssize_t
+int64
 strlist_index_of(strlist* sl, const char* str);
 
 int

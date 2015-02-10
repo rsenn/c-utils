@@ -4,10 +4,14 @@
 
 /* for size_t: */
 #include <stddef.h>
-/* for uint32_t */
+/* for uint32 */
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif /* defined HAVE_STDINT_H */
 /* for time_t: */
 #include <sys/types.h>
+
+#include "uint32.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -98,7 +102,7 @@ size_t fmt_httpdate(char* dest,time_t t);
 #define FMT_ASN1LENGTH 17 /* enough space to hold 2^128-1 */
 #define FMT_ASN1TAG 19 /* enough space to hold 2^128-1 */
 /* some variable length encodings for integers */
-size_t fmt_utf8(char* dest,uint32_t n);	/* can store 0-0x7fffffff */
+size_t fmt_utf8(char* dest,uint32 n);	/* can store 0-0x7fffffff */
 size_t fmt_asn1derlength(char* dest,unsigned long long l);	/* 0-0x7f: 1 byte, above that 1+bytes_needed bytes */
 size_t fmt_asn1dertag(char* dest,unsigned long long l);	/* 1 byte for each 7 bits; upper bit = more bytes coming */
 

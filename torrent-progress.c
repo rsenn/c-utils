@@ -1,9 +1,9 @@
-#define _LARGEFILE_SOURCE 1
-#define _GNU_SOURCE 1
-#define _FILE_OFFSET_BITS 64
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#define _LARGEFILE_SOURCE 1
+#define _GNU_SOURCE 1
+#define _FILE_OFFSET_BITS 64
 
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
@@ -22,7 +22,9 @@
 #include <sys/types.h>
 
 #ifndef _WIN32
+#ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
+#endif // defined HAVE_SYS_MMAN_H
 #endif
 
 #include "buffer.h"
@@ -48,6 +50,9 @@ typedef off64_t offset_type;
 #ifdef WIN64
 #define FMT_SIZE_T "%"SCNx64
 #elif defined(WIN32)
+#ifndef SCNx32
+#define SCNx32 "%08x"
+#endif
 #define FMT_SIZE_T "%"SCNx32
 #endif
 
