@@ -1,3 +1,4 @@
+#include "str.h"
 #include "strlist.h"
 
 size_t
@@ -15,7 +16,7 @@ strlist_sort(strlist* sl) {
 
     len = str_len(&sl->sa.s[p]);
 		
-	  stralloc_catb(&ptrs, &str, sizeof(str));
+	  stralloc_catb(&ptrs, (const char*)&str, sizeof(str));
 	  p += len;
      ++l;
   }
