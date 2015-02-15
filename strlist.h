@@ -2,6 +2,7 @@
 #define STRLIST_H
 
 #include <sys/types.h>
+
 #include "stralloc.h"
 #include "uint64.h"
 

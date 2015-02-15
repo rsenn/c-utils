@@ -1,8 +1,8 @@
 #include <sys/types.h>
-#include <unistd.h>
 #if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
 #include <windows.h>
 #else
+#include <unistd.h>
 #include <sys/mman.h>
 #endif
 #include "open.h"

@@ -2,8 +2,11 @@
 #ifndef UINT16_H
 #define UINT16_H
 
+#ifndef _MSC_VER
 #include <inttypes.h>
 #include <stdint.h>
+#endif
+
 #include <sys/types.h>
 
 #ifdef _MSC_VER

@@ -2,9 +2,12 @@
 #ifndef UINT32_H
 #define UINT32_H
 
-#include <sys/types.h>
-#include <stdint.h>
+#ifndef _MSC_VER
 #include <inttypes.h>
+#include <stdint.h>
+#endif
+
+#include <sys/types.h>
 
 #ifdef _MSC_VER
 #include <windows.h>

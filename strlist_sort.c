@@ -2,10 +2,10 @@
 
 size_t
 strlist_sort(strlist* sl) {
+  size_t p, l = 0;
 	stralloc ptrs;
 	stralloc_init(&ptrs);
 
-  size_t p, l = 0;
   for(p = 0; p < sl->sa.len; ++p) {
 		size_t len;
     char* str = &sl->sa.s[p];
