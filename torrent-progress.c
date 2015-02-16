@@ -69,9 +69,9 @@ int64 filesize(int fd) {
 #else
   uint64 pos, end;
   //if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1;
-  if((pos = lseek(fd, 0, SEEK_CUR)) < 0) return -1;
+  if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t)-1) return -1;
   //if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1;
-  if((end = lseek(fd, 0, SEEK_END)) < 0) return -1;
+  if((end = lseek(fd, 0, SEEK_END)) == (off_t)-1) return -1;
 
   sz = end;
   lseek(fd, pos, SEEK_SET);
