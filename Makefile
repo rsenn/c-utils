@@ -198,7 +198,7 @@ $(BUILDDIR)list-r$(M64)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)buffer_1.o $(BU
 	$(CROSS)$(CXX) $(CXXOPTS) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
-$(BUILDDIR)torrent-progress$(M64)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(LIB_OBJ)
+$(BUILDDIR)torrent-progress$(M64)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)byte_copy.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)str_len.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_get.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_unmap.o $(BUILDDIR)open_read.o
 	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
