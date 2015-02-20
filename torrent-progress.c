@@ -47,7 +47,7 @@ typedef LONG64 offset_type;
 typedef off64_t offset_type;
 #endif
 
-#ifdef WIN64
+#if __MINGW64__
 #define FMT_SIZE_T "%"SCNx64
 #elif defined(WIN32)
 #ifndef SCNx32

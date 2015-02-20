@@ -30,7 +30,7 @@
 #define PATH_MAX _MAX_PATH
 #endif
 
-static INLINE char*
+INLINE static char*
 mybasename(const char* path) {
   char *r = strrchr(path, '/');
   return r?r+1:(char*)path;
@@ -39,7 +39,7 @@ mybasename(const char* path) {
 static int  force = 0;
 
 
-static INLINE char hexchar(char value) {
+INLINE static char hexchar(char value) {
   static const char hchars[] = "0123456789abcdef";
   return hchars[(unsigned int)((unsigned char)value & 0xf)];
 }
