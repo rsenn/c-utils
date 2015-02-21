@@ -1,6 +1,6 @@
 #include "buffer.h"
 
-void buffer_init(buffer* b, ssize_t ( * op)(), int fd,
+void buffer_init(buffer* b, ssize_t(*op)(), int fd,
      char* y, size_t ylen) {
   b->op = op;
   b->fd = fd;

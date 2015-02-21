@@ -31,19 +31,19 @@
 #endif
 
 static int skip_fields = 8;
-static char *delimiters = " \t\r";
+static char* delimiters = " \t\r";
 static size_t delimiters_len;
 
 /*
 static char buffer_0_in[BUFFER_INSIZE];
-static buffer buffer_0 = BUFFER_INIT((void *)read, 0, buffer_0_in, BUFFER_INSIZE);
+static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
 
 static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer buffer_1 = BUFFER_INIT((void *)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 
 
 static char buffer_2_out[BUFFER_OUTSIZE];
-static buffer buffer_2 = BUFFER_INIT((void *)write, 2, buffer_2_out, BUFFER_OUTSIZE);
+static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
 */
 static stralloc dirp = { 0, 0,0 };
 
@@ -62,7 +62,7 @@ int is_delimiter(char c)
 {
   return !(byte_chr(delimiters, delimiters_len, c) == delimiters_len);
 }
-size_t skip_field(int n, char *s, size_t len)
+size_t skip_field(int n, char* s, size_t len)
 {
   size_t ret = 0;
   while(n-- && ret < len)
@@ -108,7 +108,7 @@ int decode_ls_lR()
     if(is_dir)
     {
       dirp.len = offset;
-      stralloc_catb( & dirp, buffer, len);
+      stralloc_catb(&dirp, buffer, len);
       buffer_put(buffer_1, dirp.s, dirp.len);
       buffer_put(buffer_1, "\n", 1);
       continue;
@@ -123,7 +123,7 @@ int decode_ls_lR()
 
     for(i = len - 4; i > 0 && i >= pos; i--)
     {
-            if(!str_diffn( & buffer[i], " -> ", 4))
+            if(!str_diffn(&buffer[i], " -> ", 4))
             {
                     len = i;
                     break;
@@ -137,7 +137,7 @@ int decode_ls_lR()
   return 0;
 }
 
-void usage(char *arg0)
+void usage(char* arg0)
 {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, mybasename(arg0));
@@ -146,13 +146,13 @@ void usage(char *arg0)
   buffer_flush(buffer_2);
   exit(1);
 }
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   int argi;
 
   for(argi = 1; argi < argc; argi++)
   {
-    char *arg = argv[argi];
+    char* arg = argv[argi];
     if(arg[0] == '-')
     {
       switch(arg[1])
@@ -174,9 +174,9 @@ int main(int argc, char *argv[])
   argi++;
   if(argi < argc)
   {
-    stralloc_copys( & dirp, argv[argi]);
+    stralloc_copys(&dirp, argv[argi]);
       if(dirp.len && dirp.s[dirp.len - 1] != '/')
-        stralloc_catb( & dirp, "/", 1);
+        stralloc_catb(&dirp, "/", 1);
   }
   break;
       default:

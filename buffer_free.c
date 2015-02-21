@@ -6,7 +6,7 @@
 #endif
 #include "buffer.h"
 
-void buffer_free(buffer *b)
+void buffer_free(buffer* b)
 {
   switch(b->todo)
   {

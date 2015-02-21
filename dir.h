@@ -30,14 +30,14 @@ enum
   D_TIME_MODIFICATION,
 };
 
-struct dir_s { void *dir_int; };
+struct dir_s { void* dir_int; };
 
-int dir_open(struct dir_s *d, const char *p);
-char *dir_read(struct dir_s *d);
-void dir_close(struct dir_s *d);
+int dir_open(struct dir_s* d, const char* p);
+char* dir_read(struct dir_s* d);
+void dir_close(struct dir_s* d);
 
-int dir_type(struct dir_s *d);
-time_t dir_time(struct dir_s *d, int time_type);
+int dir_type(struct dir_s* d);
+time_t dir_time(struct dir_s* d, int time_type);
 
 #ifdef __cplusplus
 }

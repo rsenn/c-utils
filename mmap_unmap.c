@@ -11,7 +11,7 @@
 int mmap_unmap(char* mapped, size_t maplen) {
 #if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
   (void)maplen;
-  return UnmapViewOfFile(mapped)?0:-1;
+  return UnmapViewOfFile(mapped) ? 0:-1;
 #else
   return munmap(mapped, maplen);
 #endif

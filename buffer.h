@@ -23,12 +23,12 @@ extern "C" {
 #endif
 
 typedef struct buffer {
-  char *x;    /* actual buffer space */
+  char* x;    /* actual buffer space */
   size_t p;    /* current position */
   size_t n;    /* current size of string in buffer */
   size_t a;    /* allocated buffer size */
   int fd;    /* passed as first argument to op */
-  ssize_t ( * op)();  /* use read(2) or write(2) */
+  ssize_t(*op)();  /* use read(2) or write(2) */
   enum { NOTHING, FREE, MUNMAP } todo;
   void* cookie;
 } buffer;
@@ -39,8 +39,8 @@ typedef struct buffer {
 #define BUFFER_INSIZE 8192
 #define BUFFER_OUTSIZE 8192
 
-void buffer_init(buffer* b,ssize_t (*op)(),int fd,char* y,size_t ylen);
-void buffer_init_free(buffer* b,ssize_t (*op)(),int fd,char* y,size_t ylen);
+void buffer_init(buffer* b, ssize_t(*op)(), int fd, char* y, size_t ylen);
+void buffer_init_free(buffer* b, ssize_t(*op)(), int fd, char* y, size_t ylen);
 int buffer_mmapread(buffer* b, const char* filename);
 void buffer_close(buffer* b);
 
@@ -86,7 +86,7 @@ typedef int ( * string_predicate)(const char* x, size_t len);
 /* like buffer_get_token but the token ends when your predicate says so */
 ssize_t buffer_get_token_pred(buffer* b, char* x, size_t len, string_predicate p);
 
-char *buffer_peek(buffer* b);
+char* buffer_peek(buffer* b);
 void buffer_seek(buffer* b, size_t len);
 
 #define buffer_PEEK(s) ( (s)->x + (s)->p )
@@ -98,10 +98,10 @@ void buffer_seek(buffer* b, size_t len);
     : buffer_get((s), (c), 1) \
   )
 
-int buffer_putulong(buffer *b, unsigned long int l);
-int buffer_put8long(buffer *b, unsigned long int l);
-int buffer_putxlong(buffer *b, unsigned long int l);
-int buffer_putlong(buffer *b, signed long int l);
+int buffer_putulong(buffer* b, unsigned long int l);
+int buffer_put8long(buffer* b, unsigned long int l);
+int buffer_putxlong(buffer* b, unsigned long int l);
+int buffer_putlong(buffer* b, signed long int l);
 
 int buffer_putlonglong(buffer* b, signed long long int l);
 int buffer_putulonglong(buffer* b, unsigned long long int l);
@@ -109,11 +109,11 @@ int buffer_putulonglong(buffer* b, unsigned long long int l);
 int buffer_puterror(buffer* b);
 int buffer_puterror2(buffer* b, int errnum);
 
-extern buffer *buffer_0;
-extern buffer *buffer_0small;
-extern buffer *buffer_1;
-extern buffer *buffer_1small;
-extern buffer *buffer_2;
+extern buffer* buffer_0;
+extern buffer* buffer_0small;
+extern buffer* buffer_1;
+extern buffer* buffer_1small;
+extern buffer* buffer_2;
 
 #ifdef STRALLOC_H
 /* write stralloc to buffer */
@@ -155,7 +155,7 @@ void buffer_fromsa(buffer* b, stralloc* sa);  /* read from sa */
 int buffer_tosa(buffer * b, stralloc* sa);    /* write to sa, auto - growing it */
 #endif
 
-int buffer_putuint64(buffer *b, uint64 i);
+int buffer_putuint64(buffer* b, uint64 i);
 
 #ifdef __cplusplus
 }

@@ -28,7 +28,7 @@ static inline void uint16_pack(char* out, uint16 in) {
   *(uint16 *)out = in;
 }
 
-static inline void uint16_unpack(const char *in, uint16* out) {
+static inline void uint16_unpack(const char* in, uint16* out) {
   *out = *(uint16 *)in;
 }
 
@@ -36,17 +36,17 @@ static inline uint16 uint16_read(const char* in) {
   return *(uint16 *)in;
 }
 
-void uint16_pack_big(char *out, uint16 in);
-void uint16_unpack_big(const char *in, uint16* out);
-uint16 uint16_read_big(const char *in);
+void uint16_pack_big(char* out, uint16 in);
+void uint16_unpack_big(const char* in, uint16* out);
+uint16 uint16_read_big(const char* in);
 #else
 
-void uint16_pack(char *out, uint16 in);
-void uint16_pack_big(char *out, uint16 in);
-void uint16_unpack(const char *in, uint16* out);
-void uint16_unpack_big(const char *in, uint16* out);
-uint16 uint16_read(const char *in);
-uint16 uint16_read_big(const char *in);
+void uint16_pack(char* out, uint16 in);
+void uint16_pack_big(char* out, uint16 in);
+void uint16_unpack(const char* in, uint16* out);
+void uint16_unpack_big(const char* in, uint16* out);
+uint16 uint16_read(const char* in);
+uint16 uint16_read_big(const char* in);
 
 #endif
 

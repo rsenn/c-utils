@@ -11,6 +11,6 @@
 #define O_NDELAY 0
 #endif
 
-int open_append(const char *filename) {
+int open_append(const char* filename) {
   return open(filename, O_WRONLY|O_NDELAY|O_APPEND|O_CREAT, 0600);
 }

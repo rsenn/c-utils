@@ -79,10 +79,10 @@ int64 filesize(int fd) {
 }
 
 //static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer infile = BUFFER_INIT((void *)read, -1, 0, 0);
-//static buffer buffer_1 = BUFFER_INIT((void *)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+static buffer infile = BUFFER_INIT((void*)read, -1, 0, 0);
+//static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 
-int check_block_zero(char *b, size_t n) {
+int check_block_zero(char* b, size_t n) {
   size_t i;
   for(i = 0; i < n; i++)
   {
@@ -92,9 +92,9 @@ int check_block_zero(char *b, size_t n) {
   return 1;
 }
 
-ssize_t get_block(char *b)
+ssize_t get_block(char* b)
 {
-  return buffer_get( & infile, b, BLOCK_SIZE);
+  return buffer_get(&infile, b, BLOCK_SIZE);
 }
 
 static int verbose = 0, fraction = 1, space = 1;
@@ -102,7 +102,7 @@ static int verbose = 0, fraction = 1, space = 1;
 
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   int ai;
 
   for(ai = 1; ai < argc; ++ai) {
@@ -138,7 +138,7 @@ next:
     remain = fsize;
 
     if(verbose)
-        fprintf(stderr, "memory map size: %uMB (0x%016u) iterations: %i (end offset: 0x%08X)\n", 
+        fprintf(stderr, "memory map size: %uMB (0x % 016u) iterations: %i (end offset: 0x % 08X)\n", 
                 map_size / 1048576, map_size, (int)iterations, (unsigned int)fsize);
 
     //(uint64)map_size * iterations);
@@ -161,7 +161,7 @@ next:
       size_t msz =  (remain >= map_size ? map_size : (size_t)remain);
       uint64 mofs =  (uint64)map_size * i;
 
-      char *m = mmap_map(fd, msz, mofs);
+      char* m = mmap_map(fd, msz, mofs);
 
       size_t z = 0, blocks = msz / BLOCK_SIZE;
 
@@ -172,7 +172,7 @@ next:
       {
         //get_block(m);
 
-        z += check_block_zero( & m[bi*BLOCK_SIZE], BLOCK_SIZE);
+        z += check_block_zero(&m[bi*BLOCK_SIZE], BLOCK_SIZE);
         //fprintf(stderr, "block #%lu\n", bi); fflush(stderr);
       }
     
@@ -192,7 +192,7 @@ next:
     percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
 
     buffer_puts(buffer_1, argv[ai]);
-    buffer_puts(buffer_1, (space?": ":":"));
+    buffer_puts(buffer_1, (space ? ": " : ":"));
 
     if(!fraction) percent += 50;
 
@@ -200,7 +200,7 @@ next:
     
     if(fraction) {
       buffer_puts(buffer_1, ".");
-      buffer_putulong(buffer_1, percent%100);
+      buffer_putulong(buffer_1, percent % 100);
     }
     buffer_putnlflush(buffer_1);
   }

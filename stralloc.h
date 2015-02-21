@@ -50,11 +50,11 @@ int stralloc_copyb(stralloc* sa, const char* buf, size_t len);
 
 /* stralloc_copys copies a \0 - terminated string from buf into sa,
  * without the \0. It is the same as
- * stralloc_copyb( & sa, buf, str_len(buf)). */
+ * stralloc_copyb(&sa, buf, str_len(buf)). */
 int stralloc_copys(stralloc* sa, const char* buf);
 
 /* stralloc_copy copies the string stored in sa2 into sa. It is the same
- * as stralloc_copyb( & sa, sa2.s, sa2.len). sa2 must already be allocated. */
+ * as stralloc_copyb(&sa, sa2.s, sa2.len). sa2 must already be allocated. */
 int stralloc_copy(stralloc* sa, const stralloc* sa2);
 
 /* stralloc_catb adds the string buf[0], buf[1], ... buf[len - 1] to the
@@ -79,7 +79,7 @@ int stralloc_catm_internal(stralloc* sa, ...);
 int stralloc_cat(stralloc* sa, stralloc* in);
 
 /* stralloc_append adds one byte in[0] to the end of the string stored
- * in sa. It is the same as stralloc_catb( & sa, in, 1). */
+ * in sa. It is the same as stralloc_catb(&sa, in, 1). */
 int stralloc_append(stralloc* sa, const char* in); /* beware: this takes a pointer to 1 char */
 
 /* stralloc_starts returns 1 if the \0 - terminated string in "in", without
@@ -103,7 +103,7 @@ int stralloc_diffs(const stralloc* a, const char* b) __pure__;
 /* stralloc_0 appends \0 */
 #define stralloc_0(sa) stralloc_append(sa, "")
 
-int stralloc_nul(stralloc *sa);
+int stralloc_nul(stralloc* sa);
 
 /* stralloc_catulong0 appends a '0' padded ASCII representation of in */
 int stralloc_catulong0(stralloc* sa, unsigned long int in, size_t n);

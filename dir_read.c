@@ -1,9 +1,9 @@
 #include <assert.h>
 #include "dir_internal.h"
 
-char *dir_read(struct dir_s *d)
+char* dir_read(struct dir_s* d)
 {
-  char *ret = 0;
+  char* ret = 0;
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
     if(!dir_INTERNAL(d)->first)
     {

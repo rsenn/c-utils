@@ -5,12 +5,12 @@
 #include "array.h"
 #include "byte.h"
 
-#if 0
+/*
       static array x;
-      t *p;
+      t* p;
       int64 pos;
 
-      p = array_allocate( & x, sizeof(t), pos);
+      p = array_allocate(&x, sizeof(t), pos);
 
    array_allocate makes sure that enough bytes are allocated in x for at
    least pos + 1 objects of type t. (The size of t must be positive;
@@ -42,7 +42,7 @@
 
    array_allocate does not change x to have failed; if you want to do
    that, use array_fail.
-#endif
+*/
 
 void* array_allocate(array* x, uint64 membersize, int64 pos) {
   uint64 wanted;
@@ -55,9 +55,9 @@ void* array_allocate(array* x, uint64 membersize, int64 pos) {
     if(__unlikely(wanted >= (uint64)x->allocated)) {
       /* round up a little */
       if(membersize < 8)
-  wanted = (wanted + 127) & ( - 128ll);  /* round up to multiple of 128 */
+  wanted = (wanted + 127) & (-128ll);  /* round up to multiple of 128 */
       else
-  wanted = (wanted + 4095) & ( - 4096ll);  /* round up to 4k pages */
+  wanted = (wanted + 4095) & (-4096ll);  /* round up to 4k pages */
 
       if(__unlikely(wanted < 128)) return 0;  /* overflow during rounding */
 

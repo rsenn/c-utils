@@ -12,5 +12,5 @@ static ssize_t b0read(int fd, char* buf, size_t len) {
 
 char buffer_0_space[BUFFER_INSIZE];
 static buffer it = BUFFER_INIT_READ(b0read, 0, buffer_0_space, sizeof buffer_0_space);
-buffer *buffer_0 = &it;
+buffer* buffer_0 = &it;
 

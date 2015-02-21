@@ -3,7 +3,7 @@
 #endif
 #include "dir_internal.h"
 
-int dir_type(struct dir_s *d)
+int dir_type(struct dir_s* d)
 {
   int r = 0;
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)

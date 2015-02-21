@@ -17,7 +17,7 @@ int buffer_putnspace(buffer* b, int n) {
 
   { 
     int ret;
-    char *space = 
+    char* space = 
 #ifdef HAVE_ALLOCA_FUNC
       alloca(n);
 #else

@@ -8,7 +8,7 @@ int stralloc_remove(stralloc* sa, size_t pos, size_t n) {
     sa->len = pos;
     return n;
   }
-  byte_copy( & sa->s[pos], sa->len - (pos + n), &sa->s[pos + n]);
+  byte_copy(&sa->s[pos], sa->len - (pos + n), &sa->s[pos + n]);
   sa->len -= n;
   return n;
 }

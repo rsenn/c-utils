@@ -27,23 +27,23 @@ extern "C" {
 
 /* convert signed src integer -23 to ASCII '-','2','3', return length.
  * If dest is not NULL, write result to dest */
-size_t fmt_long(char *dest, signed long src);
+size_t fmt_long(char* dest, signed long src);
 
 /* convert unsigned src integer 23 to ASCII '2','3', return length.
  * If dest is not NULL, write result to dest */
-size_t fmt_ulong(char *dest, unsigned long src);
+size_t fmt_ulong(char* dest, unsigned long src);
 
 /* convert unsigned src integer 0x23 to ASCII '2','3', return length.
  * If dest is not NULL, write result to dest */
-size_t fmt_xlong(char *dest, unsigned long src);
+size_t fmt_xlong(char* dest, unsigned long src);
 
 /* convert unsigned src integer 023 to ASCII '2','3', return length.
  * If dest is not NULL, write result to dest */
-size_t fmt_8long(char *dest, unsigned long src);
+size_t fmt_8long(char* dest, unsigned long src);
 
-size_t fmt_longlong(char *dest, signed long long src);
-size_t fmt_ulonglong(char *dest, unsigned long long src);
-size_t fmt_xlonglong(char *dest, unsigned long long src);
+size_t fmt_longlong(char* dest, signed long long src);
+size_t fmt_ulonglong(char* dest, unsigned long long src);
+size_t fmt_xlonglong(char* dest, unsigned long long src);
 
 #define fmt_uint(dest, src) fmt_ulong(dest, src)
 #define fmt_int(dest, src) fmt_long(dest, src)
@@ -58,23 +58,23 @@ size_t fmt_ulong0(char *, unsigned long src, size_t padto);
 
 /* convert src double 1.7 to ASCII '1','.','7', return length.
  * If dest is not NULL, write result to dest */
-size_t fmt_double(char *dest, double d, int max, int prec);
+size_t fmt_double(char* dest, double d, int max, int prec);
 
 /* if src is negative, write '-' and return 1.
  * if src is positive, write '+' and return 1.
  * otherwise return 0 */
-size_t fmt_plusminus(char *dest, int src);
+size_t fmt_plusminus(char* dest, int src);
 
 /* if src is negative, write '-' and return 1.
  * otherwise return 0. */
-size_t fmt_minus(char *dest, int src);
+size_t fmt_minus(char* dest, int src);
 
 /* copy str to dest until \0 byte, return number of copied bytes. */
-size_t fmt_str(char *dest, const char *src);
+size_t fmt_str(char* dest, const char* src);
 
 /* copy str to dest until \0 byte or limit bytes copied.
  * return number of copied bytes. */
-size_t fmt_strn(char *dest, const char *src, size_t limit);
+size_t fmt_strn(char* dest, const char* src, size_t limit);
 
 /* "foo" -> "  foo"
  * write padlen - srclen spaces, if that is >= 0.  Then copy srclen
@@ -116,7 +116,7 @@ size_t fmt_strm_internal(char* dest, ...);
 #endif
 #define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if (c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
 
-size_t fmt_uint64(char *dest, uint64 i);
+size_t fmt_uint64(char* dest, uint64 i);
 
 #ifdef __cplusplus
 }

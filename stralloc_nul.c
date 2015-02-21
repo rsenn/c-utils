@@ -1,6 +1,6 @@
 #include "stralloc.h"
 
-int stralloc_nul(stralloc *sa)
+int stralloc_nul(stralloc* sa)
 {
   if(stralloc_ready(sa, sa->len + 1)) 
   {

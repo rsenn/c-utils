@@ -25,7 +25,7 @@ extern char* mmap_read(const char* filename, size_t * filesize) {
   return map;
 #else
   int fd = open_read(filename);
-  char *map;
+  char* map;
   if(fd >= 0) {
     *filesize = lseek(fd, 0, SEEK_END);
     map = mmap(0, *filesize, PROT_READ, MAP_SHARED, fd, 0);

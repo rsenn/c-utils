@@ -27,7 +27,7 @@ char* mmap_private(const char* filename, size_t * filesize) {
   return map;
 #else
   int fd = open_read(filename);
-  char *map;
+  char* map;
   if(fd >= 0) {
     *filesize = lseek(fd, 0, SEEK_END);
     map = (char *)mmap(0, *filesize, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);

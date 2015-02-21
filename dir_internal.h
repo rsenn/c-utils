@@ -31,7 +31,7 @@ struct dir_internal_s {
   int first;
 #else
   DIR *dir_handle;
-  struct dirent *dir_entry;
+  struct dirent* dir_entry;
 #endif
 
 };

@@ -32,10 +32,10 @@ static int opt_list = 0, opt_numeric = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
 int
-list_dir_internal(stralloc *dir,  char type);
+list_dir_internal(stralloc* dir,  char type);
 
 static void
-make_num(stralloc *out, size_t num, size_t width) {
+make_num(stralloc* out, size_t num, size_t width) {
   char fmt[FMT_ULONG+1];
   size_t sz = fmt_uint64(fmt, num);
   
@@ -48,7 +48,7 @@ make_num(stralloc *out, size_t num, size_t width) {
 }
 
 static void
-make_time(stralloc *out, time_t t, size_t width) {
+make_time(stralloc* out, time_t t, size_t width) {
   if(opt_numeric) {
          make_num(out, (size_t)t, width);
   } else {
@@ -57,9 +57,9 @@ make_time(stralloc *out, time_t t, size_t width) {
     size_t sz; 
       ssize_t n;
 #ifdef HAVE_LOCALTIME_R_FUNC
-    localtime_r( & t, &ltime);
+    localtime_r(&t, &ltime);
 #else
-        ltime = *localtime( & t);
+        ltime = *localtime(&t);
 #endif
     sz = strftime(buf, sizeof(buf), opt_timestyle , &ltime);
     n = width - sz;
@@ -71,7 +71,7 @@ make_time(stralloc *out, time_t t, size_t width) {
 }
 
 static void
-mode_str(stralloc *out, int mode) {
+mode_str(stralloc* out, int mode) {
   char mchars[10];
   switch(mode & S_IFMT) {
 #ifdef S_IFLNK
@@ -140,7 +140,7 @@ mode_str(stralloc *out, int mode) {
 }
 
 
-int list_dir_internal(stralloc *dir,  char type)
+int list_dir_internal(stralloc* dir,  char type)
 {
   size_t l;
   struct dir_s d;
@@ -152,21 +152,21 @@ int list_dir_internal(stralloc *dir,  char type)
   struct stat st;
 #endif
   
-  char *name,*s;
+  char* name,*s;
 
   while(dir->len > 0 && IS_PATHSEP(dir->s[dir->len - 1]))
     dir->len--;
   
   stralloc_nul(dir);
   
-  dir_open( & d, dir->s);
+  dir_open(&d, dir->s);
   
   
   stralloc_cats(dir, PATHSEP_S);
   l = dir->len;
   
   
-  while((name = dir_read( & d)))
+  while((name = dir_read(&d)))
   {
     unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
     uint64 size = 0, mtime = 0;
@@ -197,7 +197,7 @@ int list_dir_internal(stralloc *dir,  char type)
 #endif
       is_symlink = 0;
 
-    dtype = dir_type( & d); 
+    dtype = dir_type(&d); 
 
 #ifndef _WIN32
     mode = st.st_mode;
@@ -219,22 +219,22 @@ int list_dir_internal(stralloc *dir,  char type)
     }
 
    if(opt_list) {
-     stralloc_init( & pre);
-     mode_str( & pre, mode);
-     stralloc_catb( & pre, " ", 1);
-     make_num( & pre, nlink, 3);
-     stralloc_catb( & pre, " ", 1);
-     make_num( & pre, uid, 0);
-     stralloc_catb( & pre, " ", 1);
-     make_num( & pre, gid, 0);
-     stralloc_catb( & pre, " ", 1);
-     make_num( & pre, size, 6);
-     stralloc_catb( & pre, " ", 1);
-     make_time( & pre, mtime, 10);
-     stralloc_catb( & pre, " ", 1);
+     stralloc_init(&pre);
+     mode_str(&pre, mode);
+     stralloc_catb(&pre, " ", 1);
+     make_num(&pre, nlink, 3);
+     stralloc_catb(&pre, " ", 1);
+     make_num(&pre, uid, 0);
+     stralloc_catb(&pre, " ", 1);
+     make_num(&pre, gid, 0);
+     stralloc_catb(&pre, " ", 1);
+     make_num(&pre, size, 6);
+     stralloc_catb(&pre, " ", 1);
+     make_time(&pre, mtime, 10);
+     stralloc_catb(&pre, " ", 1);
    }
 
-  //fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS( & d));
+  //fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d));
     if(is_dir)
       stralloc_cats(dir, PATHSEP_S);
     
@@ -259,11 +259,11 @@ int list_dir_internal(stralloc *dir,  char type)
       list_dir_internal(dir, 0);
     }
   }
-  dir_close( & d);
+  dir_close(&d);
   return 0;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 
   stralloc dir= {0, 0,0};
   int argi = 1;
@@ -285,13 +285,13 @@ int main(int argc, char *argv[]) {
   if(argi < argc) {
     
     while(argi < argc) {
-      stralloc_copys( & dir, argv[argi]);
-      list_dir_internal( & dir, 0);
+      stralloc_copys(&dir, argv[argi]);
+      list_dir_internal(&dir, 0);
       argi++;
     }
   } else { 
-      stralloc_copys( & dir, ".");
-      list_dir_internal( & dir, 0);
+      stralloc_copys(&dir, ".");
+      list_dir_internal(&dir, 0);
   }
   return 0;
 

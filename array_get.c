@@ -7,7 +7,7 @@
       t *p;
       int64 pos;
 
-      p = array_get( & x, sizeof(t), pos);
+      p = array_get(&x, sizeof(t), pos);
 
    array_get is similar to array_allocate, but it does not allocate any
    extra bytes, and it does not initialize any extra bytes. It
@@ -21,5 +21,5 @@ void* array_get(const array* const x, uint64 membersize, int64 pos) {
   if(__unlikely(!umult64(membersize, pos, &wanted))) return 0;
 
   if(__unlikely((int64)wanted >= x->allocated || wanted >= x->initialized)) return 0;
-  return(void *)(x->p + pos * membersize);
+  return(void*)(x->p + pos * membersize);
 }

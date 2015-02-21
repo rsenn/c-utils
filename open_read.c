@@ -11,6 +11,6 @@
 #define O_NDELAY 0
 #endif
 
-int open_read(const char *filename) {
+int open_read(const char* filename) {
   return open(filename, O_RDONLY|O_NDELAY);
 }

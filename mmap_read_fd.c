@@ -17,7 +17,7 @@
 
 char mmap_empty[] = { 0 };
 
-char* mmap_read_fd(int fd, size_t *filesize)
+char* mmap_read_fd(int fd, size_t* filesize)
 {
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
   HANDLE m;
@@ -30,8 +30,8 @@ char* mmap_read_fd(int fd, size_t *filesize)
   return map;
 #else
   struct stat st;
-  char *map = mmap_empty;
-  if(fstat(fd, &st) == 0 && ( * filesize = st.st_size))
+  char* map = mmap_empty;
+  if(fstat(fd, &st) == 0 && (*filesize = st.st_size))
   {
     map = mmap(0, *filesize, PROT_READ, MAP_SHARED, fd, 0);
     if(map == (char *) - 1)

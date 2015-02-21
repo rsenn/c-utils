@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "dir_internal.h"
 
-int dir_open(struct dir_s *d, const char *p)
+int dir_open(struct dir_s* d, const char* p)
 {
   int ret;
   if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))

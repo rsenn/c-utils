@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-void dir_close(struct dir_s *d)
+void dir_close(struct dir_s* d)
 {
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
   CloseHandle(dir_INTERNAL(d)->dir_handle);
