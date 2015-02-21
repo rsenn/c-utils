@@ -138,7 +138,7 @@ next:
     remain = fsize;
 
     if(verbose)
-        fprintf(stderr, "memory map size: %uMB (0x % 016u) iterations: %i (end offset: 0x % 08X)\n", 
+        fprintf(stderr, "memory map size: %uMB (0x%016x) iterations: %i (end offset: 0x%08X)\n",
                 map_size / 1048576, map_size, (int)iterations, (unsigned int)fsize);
 
     //(uint64)map_size * iterations);

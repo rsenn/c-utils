@@ -177,7 +177,7 @@ int reg2cmd()
     {
       int has_newline = 0, has_expansion = 0;
       const char* type;
-      unsigned int keystart, keyend, valuestart = 0, valueend;
+			int keystart, keyend, valuestart = 0, valueend;
       regtype_t rt = 0;
       uint64 word = 0;
       int inquote;
@@ -185,7 +185,7 @@ int reg2cmd()
       keystart = (line.s[0] == '"' ? 1 : 0);
       inquote = keystart;
 
-      for(keyend = keystart; keyend < line.len; keyend++) {
+			for(keyend = keystart; (unsigned)keyend < line.len; keyend++) {
         if(line.s[keyend] == '\\') {
           keyend++;
           continue;

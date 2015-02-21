@@ -56,6 +56,16 @@ int count_depth()
 }
 
 int main(int argc, char* argv[]) {
+	int argi = 1;
+
+	while(argi < argc) {
+/*		if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
+			opt_list = 1;
+		} else*/ {
+			break;
+		}
+		argi++;
+	}
   return count_depth();
 }
 

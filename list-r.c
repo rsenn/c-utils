@@ -151,6 +151,8 @@ int list_dir_internal(stralloc* dir,  char type)
 #ifndef _WIN32
   struct stat st;
 #endif
+
+	(void)type;
   
   char* name,*s;
 
@@ -266,21 +268,21 @@ int list_dir_internal(stralloc* dir,  char type)
 int main(int argc, char* argv[]) {
 
   stralloc dir= {0, 0,0};
-  int argi = 1;
+	int argi = 1;
 
-  while(argi < argc) {
-    if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
-      opt_list = 1;
-    } else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
-      opt_numeric = 1;
-    } else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
-      argi++;
-      opt_timestyle = argv[argi];
-    } else {
-      break;
-    }
-    argi++;
-  }
+	while(argi < argc) {
+		if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
+			opt_list = 1;
+		} else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
+			opt_numeric = 1;
+		} else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
+			argi++;
+			opt_timestyle = argv[argi];
+		} else {
+			break;
+		}
+		argi++;
+	}
 
   if(argi < argc) {
     
