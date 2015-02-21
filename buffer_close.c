@@ -1,4 +1,4 @@
-#include <buffer.h>
+#include "buffer.h"
 #include <stdlib.h>
 #if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
 #include <windows.h>

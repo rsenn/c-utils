@@ -102,7 +102,7 @@ int reg2cmd()
     buffer[0] = '\0';
     buffer[1] = '\0';
     lineno++;
-    len = buffer_getline(&buffer_0, buffer, sizeof(buffer));
+    len = buffer_getline(buffer_0, buffer, sizeof(buffer));
 
     if(lineno == 1) {
       if(((unsigned char)buffer[0] == 0xff && (unsigned char)buffer[1] == 0xfe) ||

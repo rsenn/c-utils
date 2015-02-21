@@ -22,7 +22,7 @@ char* mmap_map(int fd, size_t sz, uint64 offset) {
   DWORD szl,szh;
   char* map;
   szl = GetFileSize((void*)(ssize_t)fd,&szh);
-  m=CreateFileMapping(fd,0,PAGE_WRITECOPY,szh,szl,NULL);
+  m=CreateFileMapping((HANDLE)fd,0,PAGE_WRITECOPY,szh,szl,NULL);
   map=0;
   if(m){ 
    map=MapViewOfFile(m,FILE_MAP_COPY,(offset>>32),offset&0xffffffff,sz);
