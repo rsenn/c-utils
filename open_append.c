@@ -12,5 +12,5 @@
 #endif
 
 int open_append(const char *filename) {
-  return open(filename,O_WRONLY|O_NDELAY|O_APPEND|O_CREAT,0600);
+  return open(filename, O_WRONLY|O_NDELAY|O_APPEND|O_CREAT, 0600);
 }

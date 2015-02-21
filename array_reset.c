@@ -3,6 +3,6 @@
 
 void array_reset(array* x) {
   if(x->p) free(x->p);
-  x->p=0;
-  x->allocated=x->initialized=0;
+  x->p = 0;
+  x->allocated = x->initialized = 0;
 }

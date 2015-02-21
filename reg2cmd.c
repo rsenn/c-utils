@@ -33,7 +33,7 @@
 INLINE static char*
 mybasename(const char* path) {
   char *r = strrchr(path, '/');
-  return r?r+1:(char*)path;
+  return r?r + 1:(char *)path;
 }
 
 static int  force = 0;
@@ -95,7 +95,7 @@ int reg2cmd()
   int unicode = 0;
   ssize_t pos, len;
   stralloc line;
-  stralloc_init(&line);
+  stralloc_init( & line);
 
   for(;;)
   {
@@ -117,7 +117,7 @@ int reg2cmd()
           buffer_puts(buffer_2, " ");
           buffer_putulong(buffer_2, (unsigned char)unicode);
           buffer_puts(buffer_2, "\n");
-      		buffer_flush(buffer_2);
+          buffer_flush(buffer_2);
        */
       continue;
     }
@@ -149,7 +149,7 @@ int reg2cmd()
           break;
       }
     }
-    stralloc_catb(&line, &buffer[pos], len-pos);
+    stralloc_catb( & line, &buffer[pos], len - pos);
 
     if(line.len >= 1) {
       if(line.s[line.len - 1] == '\\') {
@@ -158,17 +158,17 @@ int reg2cmd()
       }
     }
 
-    stralloc_catb(&line, "\0", 1);
+    stralloc_catb( & line, "\0", 1);
     line.len -= 1;
 
     if(line.s[0] == '[') {
-      const char* end = strrchr(&line.s[1], ']');
+      const char* end = strrchr( & line.s[1], ']');
 
       if(end) {
         size_t keylen = end - &line.s[1];
         memcpy(key, &line.s[1], keylen);
         key[keylen] = '\0';
-        stralloc_zero(&line);
+        stralloc_zero( & line);
         continue;
       }
     }
@@ -191,11 +191,11 @@ int reg2cmd()
           continue;
         }
         if(!inquote && line.s[keyend] == '=') {
-          valuestart = keyend+1;
+          valuestart = keyend + 1;
           if(keystart > 0) {
             keyend--;
           }
-//			    line.s[keyend] = '\0';
+//          line.s[keyend] = '\0';
           break;
         }
         if(line.s[keyend] == '"')
@@ -216,7 +216,7 @@ int reg2cmd()
       }
 
       if(inquote) {
-        stralloc_catb(&line, "\r\n", 2);
+        stralloc_catb( & line, "\r\n", 2);
         continue;
       }
 
@@ -229,7 +229,7 @@ int reg2cmd()
         if(line.s[valueend - 1] == '"')
           valueend--;
 
-      } else if(!strncmp(&line.s[valuestart],"hex",3)) {
+      } else if(!strncmp( & line.s[valuestart], "hex", 3)) {
         rt = REGISTRY_BINARY;
 
         while(line.s[valuestart] != ':' && valuestart < valueend)
@@ -237,19 +237,19 @@ int reg2cmd()
 
         valuestart++;
 
-      } else if(!strncmp(&line.s[valuestart],"dword:",6)) {
+      } else if(!strncmp( & line.s[valuestart], "dword:", 6)) {
         unsigned long ul;
-        scan_xlong(&line.s[valuestart+6], &ul);
+        scan_xlong( & line.s[valuestart + 6], &ul);
         word = ul;
         rt = REGISTRY_DWORD;
-      } else if(!strncmp(&line.s[valuestart],"qword:",6)) {
+      } else if(!strncmp( & line.s[valuestart], "qword:", 6)) {
         unsigned long long ull;
-        scan_xlonglong(&line.s[valuestart+6], &ull);
+        scan_xlonglong( & line.s[valuestart + 6], &ull);
         word = ull;
         rt = REGISTRY_QWORD;
       } else {
         buffer_puts(buffer_2, "No such type: ");
-        buffer_put(buffer_2, &line.s[valuestart], line.len-valuestart);
+        buffer_put(buffer_2, &line.s[valuestart], line.len - valuestart);
         buffer_puts(buffer_2, "\n");
         buffer_flush(buffer_2);
         exit(2);
@@ -366,7 +366,7 @@ int reg2cmd()
     /*  buffer_put(buffer_1, "\r\n", 2);
       buffer_flush(buffer_1);
       */
-    stralloc_zero(&line);
+    stralloc_zero( & line);
   }
   return 0;
 }
@@ -375,7 +375,7 @@ void usage(char *arg0)
 {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, mybasename(arg0));
-  buffer_puts(buffer_2, " [-f] [input-file] [output-file]\n");
+  buffer_puts(buffer_2, " [-f] [input - file] [output - file]\n");
   buffer_flush(buffer_2);
   exit(1);
 }

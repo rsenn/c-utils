@@ -67,9 +67,9 @@ int64 filesize(int fd) {
 #else
   uint64 pos, end;
   //if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1;
-  if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t)-1) return -1;
+  if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t) - 1) return -1;
   //if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1;
-  if((end = lseek(fd, 0, SEEK_END)) == (off_t)-1) return -1;
+  if((end = lseek(fd, 0, SEEK_END)) == (off_t) - 1) return -1;
 
   sz = end;
   lseek(fd, pos, SEEK_SET);
@@ -79,8 +79,8 @@ int64 filesize(int fd) {
 }
 
 //static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer infile = BUFFER_INIT((void*)read, -1, 0,0);
-//static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+static buffer infile = BUFFER_INIT((void *)read, -1, 0, 0);
+//static buffer buffer_1 = BUFFER_INIT((void *)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 
 int check_block_zero(char *b, size_t n) {
   size_t i;
@@ -94,10 +94,10 @@ int check_block_zero(char *b, size_t n) {
 
 ssize_t get_block(char *b)
 {
-  return buffer_get(&infile, b, BLOCK_SIZE);
+  return buffer_get( & infile, b, BLOCK_SIZE);
 }
 
-static int verbose=0, fraction = 1, space = 1;
+static int verbose = 0, fraction = 1, space = 1;
 
 
 
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
   }
 next:
   for(; ai < argc; ++ai) {
-    uint64 all_blocks=0, zero_blocks = 0, nonzero_blocks;
+    uint64 all_blocks = 0, zero_blocks = 0, nonzero_blocks;
     unsigned int percent;
     unsigned int bi;
     int fd;
@@ -139,7 +139,7 @@ next:
 
     if(verbose)
         fprintf(stderr, "memory map size: %uMB (0x%016u) iterations: %i (end offset: 0x%08X)\n", 
-								map_size/1048576, map_size, (int)iterations, (unsigned int)fsize);
+                map_size / 1048576, map_size, (int)iterations, (unsigned int)fsize);
 
     //(uint64)map_size * iterations);
     //mmap_private(argv[ai], &fsize);
@@ -148,14 +148,14 @@ next:
 
     /*struct stat st;
     infile.fd = open_read(argv[1]);
-    	 buffer_puts(buffer_1,"fd #");
-    	 buffer_putulong(buffer_1,infile.fd);;
-    	 buffer_putnlflush(buffer_1);
-    				fstat(infile.fd, &st);
+       buffer_puts(buffer_1, "fd #");
+       buffer_putulong(buffer_1, infile.fd);;
+       buffer_putnlflush(buffer_1);
+            fstat(infile.fd, &st);
     fsize = st.st_size;*/
 
 
-    //buffer_puts(buffer_1,"fsize #"); buffer_putulong(buffer_1,fsize);; buffer_puts(buffer_1,", blocks #");buffer_putulong(buffer_1,blocks); buffer_putnlflush(buffer_1);
+    //buffer_puts(buffer_1, "fsize #"); buffer_putulong(buffer_1, fsize);; buffer_puts(buffer_1, ", blocks #"); buffer_putulong(buffer_1, blocks); buffer_putnlflush(buffer_1);
 
     for(i = 0; i < iterations; i++) {
       size_t msz =  (remain >= map_size ? map_size : (size_t)remain);
@@ -172,7 +172,7 @@ next:
       {
         //get_block(m);
 
-        z += check_block_zero(&m[bi*BLOCK_SIZE], BLOCK_SIZE);
+        z += check_block_zero( & m[bi*BLOCK_SIZE], BLOCK_SIZE);
         //fprintf(stderr, "block #%lu\n", bi); fflush(stderr);
       }
     
@@ -186,21 +186,21 @@ next:
       if(remain >= map_size)
         remain -= map_size;
     }
-    //	 buffer_putulong(buffer_1,blocks);
-    //	 buffer_putnlflush(buffer_1);
+    //   buffer_putulong(buffer_1, blocks);
+    //   buffer_putnlflush(buffer_1);
     nonzero_blocks = all_blocks - zero_blocks;
     percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
 
-    buffer_puts(buffer_1,argv[ai]);
-    buffer_puts(buffer_1,(space?": ":":"));
+    buffer_puts(buffer_1, argv[ai]);
+    buffer_puts(buffer_1, (space?": ":":"));
 
     if(!fraction) percent += 50;
 
-    buffer_putulong(buffer_1,percent/100);
+    buffer_putulong(buffer_1, percent / 100);
     
     if(fraction) {
-      buffer_puts(buffer_1,".");
-      buffer_putulong(buffer_1,percent%100);
+      buffer_puts(buffer_1, ".");
+      buffer_putulong(buffer_1, percent%100);
     }
     buffer_putnlflush(buffer_1);
   }

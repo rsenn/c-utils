@@ -14,15 +14,15 @@
 #include "fmt.h"
 
 #ifndef PATH_MAX
-#define PATH_MAX (4096-1)
+#define PATH_MAX (4096 - 1)
 #endif
 
 /*
 static char buffer_0_in[BUFFER_INSIZE];
-static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
+static buffer buffer_0 = BUFFER_INIT((void *)read, 0, buffer_0_in, BUFFER_INSIZE);
 
 static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+static buffer buffer_1 = BUFFER_INIT((void *)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 */
 
 int count_depth()
@@ -40,7 +40,7 @@ int count_depth()
     if(buffer[len - 1 ] == '/')
       len--;
 
-    c=0;
+    c = 0;
     for(i = 0; i < len; i++)
     {
       if(buffer[i] == '/')

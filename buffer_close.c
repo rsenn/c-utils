@@ -15,7 +15,7 @@ void buffer_close(buffer* b) {
 #if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
     UnmapViewOfFile(b->x);
 #else
-    munmap(b->x,b->a); break;
+    munmap(b->x, b->a); break;
 #endif
   default: ;
   }

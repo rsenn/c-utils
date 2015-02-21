@@ -1,5 +1,5 @@
 #include "array.h"
 
 void array_trunc(array* x) {
-  x->initialized=0;
+  x->initialized = 0;
 }

@@ -36,107 +36,107 @@ list_dir_internal(stralloc *dir,  char type);
 
 static void
 make_num(stralloc *out, size_t num, size_t width) {
-	char fmt[FMT_ULONG+1];
-  size_t sz = fmt_ulong(fmt, num);
+  char fmt[FMT_ULONG+1];
+  size_t sz = fmt_uint64(fmt, num);
   
     ssize_t n = width - sz;
 
-	while(n-- > 0) {
-		stralloc_catb(out, " ", 1);
-	}
-	stralloc_catb(out, fmt, sz);
+  while(n-- > 0) {
+    stralloc_catb(out, " ", 1);
+  }
+  stralloc_catb(out, fmt, sz);
 }
 
 static void
 make_time(stralloc *out, time_t t, size_t width) {
-	if(opt_numeric) {
+  if(opt_numeric) {
          make_num(out, (size_t)t, width);
-	} else {
-		struct tm ltime;
+  } else {
+    struct tm ltime;
     char buf[1024];
-		size_t sz; 
+    size_t sz; 
       ssize_t n;
 #ifdef HAVE_LOCALTIME_R_FUNC
-		localtime_r(&t, &ltime);
+    localtime_r( & t, &ltime);
 #else
-        ltime = *localtime(&t);
+        ltime = *localtime( & t);
 #endif
-		sz = strftime(buf, sizeof(buf), opt_timestyle , &ltime);
-		n = width - sz;
-		while(n-- > 0) {
-			stralloc_catb(out, " ", 1);
-		}
-		stralloc_catb(out, buf, sz);
-	}
+    sz = strftime(buf, sizeof(buf), opt_timestyle , &ltime);
+    n = width - sz;
+    while(n-- > 0) {
+      stralloc_catb(out, " ", 1);
+    }
+    stralloc_catb(out, buf, sz);
+  }
 }
 
 static void
 mode_str(stralloc *out, int mode) {
-	char mchars[10];
-	switch(mode & S_IFMT) {
+  char mchars[10];
+  switch(mode & S_IFMT) {
 #ifdef S_IFLNK
-		case S_IFLNK: mchars[0] = 'l'; break;
+    case S_IFLNK: mchars[0] = 'l'; break;
 #endif
-		case S_IFDIR: mchars[0] = 'd'; break;
-		case S_IFCHR: mchars[0] = 'c'; break;
+    case S_IFDIR: mchars[0] = 'd'; break;
+    case S_IFCHR: mchars[0] = 'c'; break;
 #ifdef S_IFBLK
-		case S_IFBLK: mchars[0] = 'b'; break;
+    case S_IFBLK: mchars[0] = 'b'; break;
 #endif
 #ifdef S_IFIFO
-		case S_IFIFO: mchars[0] = 'i'; break;
+    case S_IFIFO: mchars[0] = 'i'; break;
 #endif
 #ifdef S_IFSOCK
-		case S_IFSOCK: mchars[0] = 's'; break;
+    case S_IFSOCK: mchars[0] = 's'; break;
 #endif
-		case S_IFREG: 
-		default: mchars[0] = '-'; break;
-	}
+    case S_IFREG: 
+    default: mchars[0] = '-'; break;
+  }
 #ifdef S_IRUSR
-	if(mode & S_IRUSR) mchars[1] = 'r'; else
+  if(mode & S_IRUSR) mchars[1] = 'r'; else
 #endif
-	mchars[1] = '-';
+  mchars[1] = '-';
 
 #ifdef S_IWUSR
-	if(mode & S_IWUSR) mchars[2] = 'w'; else
+  if(mode & S_IWUSR) mchars[2] = 'w'; else
 #endif
-	mchars[2] = '-';
+  mchars[2] = '-';
 
 #ifdef S_IXUSR
-	if(mode & S_IXUSR) mchars[3] = 'x'; else
+  if(mode & S_IXUSR) mchars[3] = 'x'; else
 #endif
-	mchars[3] = '-';
+  mchars[3] = '-';
 
 #ifdef S_IRGRP
-	if(mode & S_IRGRP) mchars[4] = 'r'; else
+  if(mode & S_IRGRP) mchars[4] = 'r'; else
 #endif
-	mchars[4] = '-';
+  mchars[4] = '-';
 
 #ifdef S_IWGRP
-	if(mode & S_IWGRP) mchars[5] = 'w'; else
+  if(mode & S_IWGRP) mchars[5] = 'w'; else
 #endif
-	mchars[5] = '-';
+  mchars[5] = '-';
 
 #ifdef S_IXGRP
-	if(mode & S_IXGRP) mchars[6] = 'x'; else
+  if(mode & S_IXGRP) mchars[6] = 'x'; else
 #endif
-	mchars[6] = '-';
+  mchars[6] = '-';
 
 #ifdef S_IROTH
-	if(mode & S_IROTH) mchars[7] = 'r'; else
+  if(mode & S_IROTH) mchars[7] = 'r'; else
 #endif
-	mchars[7] = '-';
+  mchars[7] = '-';
 
 #ifdef S_IWOTH
-	if(mode & S_IWOTH) mchars[8] = 'w'; else
+  if(mode & S_IWOTH) mchars[8] = 'w'; else
 #endif
-	mchars[8] = '-';
+  mchars[8] = '-';
 
 #ifdef S_IXOTH
-	if(mode & S_IXOTH) mchars[9] = 'x'; else
+  if(mode & S_IXOTH) mchars[9] = 'x'; else
 #endif
-	mchars[9] = '-';
+  mchars[9] = '-';
 
-	stralloc_catb(out, mchars, sizeof(mchars));
+  stralloc_catb(out, mchars, sizeof(mchars));
 }
 
 
@@ -144,8 +144,8 @@ int list_dir_internal(stralloc *dir,  char type)
 {
   size_t l;
   struct dir_s d;
-	stralloc pre;
-	int dtype;
+  stralloc pre;
+  int dtype;
   int is_dir, is_symlink;
   size_t len;
 #ifndef _WIN32
@@ -159,17 +159,17 @@ int list_dir_internal(stralloc *dir,  char type)
   
   stralloc_nul(dir);
   
-  dir_open(&d, dir->s);
+  dir_open( & d, dir->s);
   
   
   stralloc_cats(dir, PATHSEP_S);
   l = dir->len;
   
   
-  while((name = dir_read(&d)))
+  while((name = dir_read( & d)))
   {
-	  unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
-		uint64 size = 0, mtime = 0;
+    unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
+    uint64 size = 0, mtime = 0;
 
     dir->len = l;
 
@@ -177,9 +177,9 @@ int list_dir_internal(stralloc *dir,  char type)
     if(strcmp(name, ".") == 0) continue;
     if(strcmp(name, "..") == 0) continue;
 
-    stralloc_readyplus(dir, strlen(name)+1);
+    stralloc_readyplus(dir, strlen(name) + 1);
     strcpy(dir->s + dir->len, name);
-    dir->len+=strlen(name);
+    dir->len += strlen(name);
 
 #if !defined(_WIN32)
 
@@ -188,7 +188,7 @@ int list_dir_internal(stralloc *dir,  char type)
     else
 #endif
       is_symlink = 0;
-	
+  
 #if !defined(_WIN32)
     struct stat st;
     if(lstat(dir->s, &st) != -1)
@@ -197,7 +197,7 @@ int list_dir_internal(stralloc *dir,  char type)
 #endif
       is_symlink = 0;
 
-		dtype = dir_type(&d); 
+    dtype = dir_type( & d); 
 
 #ifndef _WIN32
     mode = st.st_mode;
@@ -208,38 +208,38 @@ int list_dir_internal(stralloc *dir,  char type)
     mtime = st.st_mtime;
 #endif
 
-		if(dtype) {
-			is_dir= !!(dtype & D_DIRECTORY);
-		} else {
+    if(dtype) {
+      is_dir= !!(dtype & D_DIRECTORY);
+    } else {
 #if defined(_WIN32)
-			is_dir = 0;
+      is_dir = 0;
 #else
-			is_dir = !!S_ISDIR(mode);
+      is_dir = !!S_ISDIR(mode);
 #endif
-		}
+    }
 
    if(opt_list) {
-		 stralloc_init(&pre);
-     mode_str(&pre, mode);
-		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, nlink, 3);
-		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, uid, 0);
-		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, gid, 0);
-		 stralloc_catb(&pre, " ", 1);
-		 make_num(&pre, size, 6);
-		 stralloc_catb(&pre, " ", 1);
-		 make_time(&pre, mtime, 10);
-		 stralloc_catb(&pre, " ", 1);
-	 }
+     stralloc_init( & pre);
+     mode_str( & pre, mode);
+     stralloc_catb( & pre, " ", 1);
+     make_num( & pre, nlink, 3);
+     stralloc_catb( & pre, " ", 1);
+     make_num( & pre, uid, 0);
+     stralloc_catb( & pre, " ", 1);
+     make_num( & pre, gid, 0);
+     stralloc_catb( & pre, " ", 1);
+     make_num( & pre, size, 6);
+     stralloc_catb( & pre, " ", 1);
+     make_time( & pre, mtime, 10);
+     stralloc_catb( & pre, " ", 1);
+   }
 
-	//fprintf(stderr,"%d %08x\n", is_dir, dir_ATTRS(&d));
+  //fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS( & d));
     if(is_dir)
       stralloc_cats(dir, PATHSEP_S);
     
-	s=dir->s;
-    len=dir->len;
+  s = dir->s;
+    len = dir->len;
     if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1]))
     {
       len -= 2;
@@ -249,50 +249,50 @@ int list_dir_internal(stralloc *dir,  char type)
    if(opt_list)
      buffer_putsa(buffer_1, &pre);
 
-    buffer_put(buffer_1, s,len);
+    buffer_put(buffer_1, s, len);
     buffer_put(buffer_1, "\n", 1);
     buffer_flush(buffer_1);
 
     if(is_dir && !is_symlink)
     {
       dir->len--;
-      list_dir_internal(dir,0);
+      list_dir_internal(dir, 0);
     }
   }
-  dir_close(&d);
+  dir_close( & d);
   return 0;
 }
 
 int main(int argc, char *argv[]) {
 
-  stralloc dir= {0,0,0};
-	int argi = 1;
+  stralloc dir= {0, 0,0};
+  int argi = 1;
 
   while(argi < argc) {
-		if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
-			opt_list = 1;
-		} else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
-			opt_numeric = 1;
-		} else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time-style")) {
-			argi++;
-			opt_timestyle = argv[argi];
-		} else {
-			break;
-		}
-		argi++;
-	}
+    if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
+      opt_list = 1;
+    } else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
+      opt_numeric = 1;
+    } else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
+      argi++;
+      opt_timestyle = argv[argi];
+    } else {
+      break;
+    }
+    argi++;
+  }
 
   if(argi < argc) {
-		
-		while(argi < argc) {
-			stralloc_copys(&dir,argv[argi]);
-      list_dir_internal(&dir,0);
-			argi++;
-		}
-	} else { 
-			stralloc_copys(&dir,".");
-      list_dir_internal(&dir,0);
-	}
+    
+    while(argi < argc) {
+      stralloc_copys( & dir, argv[argi]);
+      list_dir_internal( & dir, 0);
+      argi++;
+    }
+  } else { 
+      stralloc_copys( & dir, ".");
+      list_dir_internal( & dir, 0);
+  }
   return 0;
 
 

@@ -36,16 +36,16 @@ static size_t delimiters_len;
 
 /*
 static char buffer_0_in[BUFFER_INSIZE];
-static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
+static buffer buffer_0 = BUFFER_INIT((void *)read, 0, buffer_0_in, BUFFER_INSIZE);
 
 static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+static buffer buffer_1 = BUFFER_INIT((void *)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 
 
 static char buffer_2_out[BUFFER_OUTSIZE];
-static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
+static buffer buffer_2 = BUFFER_INIT((void *)write, 2, buffer_2_out, BUFFER_OUTSIZE);
 */
-static stralloc dirp = { 0,0,0 };
+static stralloc dirp = { 0, 0,0 };
 
 static char*
 mybasename(const char* s) {
@@ -53,9 +53,9 @@ mybasename(const char* s) {
   char* r2 = strrchr(s, '\\');
 
   if(!r1 && !r2)
-    return(char*)s;
+    return(char *)s;
 
-  return(r1 > r2) ? r1+1 : r2+1;
+  return(r1 > r2) ? r1 + 1 : r2 + 1;
 }
 
 int is_delimiter(char c)
@@ -64,7 +64,7 @@ int is_delimiter(char c)
 }
 size_t skip_field(int n, char *s, size_t len)
 {
-  size_t ret=0;
+  size_t ret = 0;
   while(n-- && ret < len)
   {
     if(ret == len) return ret;
@@ -108,29 +108,29 @@ int decode_ls_lR()
     if(is_dir)
     {
       dirp.len = offset;
-      stralloc_catb(&dirp, buffer, len);
-      buffer_put(buffer_1,dirp.s,dirp.len);
+      stralloc_catb( & dirp, buffer, len);
+      buffer_put(buffer_1, dirp.s, dirp.len);
       buffer_put(buffer_1, "\n", 1);
       continue;
     }
 
-    pos = skip_field(skip_fields,buffer, len);
+    pos = skip_field(skip_fields, buffer, len);
 
     if(pos == len)
       continue;
 
-    buffer_put(buffer_1,dirp.s,dirp.len);
+    buffer_put(buffer_1, dirp.s, dirp.len);
 
-    for(i = len-4; i > 0 && i >= pos; i--)
-		{
-						if(!str_diffn(&buffer[i], " -> ",4))
-						{
-										len = i;
-										break;
-						}
-		}
+    for(i = len - 4; i > 0 && i >= pos; i--)
+    {
+            if(!str_diffn( & buffer[i], " -> ", 4))
+            {
+                    len = i;
+                    break;
+            }
+    }
 
-    buffer_put(buffer_1, &buffer[pos], len-pos);
+    buffer_put(buffer_1, &buffer[pos], len - pos);
     buffer_put(buffer_1, "\n", 1);
   }
   buffer_flush(buffer_1);
@@ -159,26 +159,26 @@ int main(int argc, char *argv[])
       {
       case 's':
         argi++;
-        if(argi<argc)
+        if(argi < argc)
           skip_fields = atoi(argv[argi]);
         break;
       case 'd':
         argi++;
-        if(argi<argc) {
+        if(argi < argc) {
 
           delimiters = argv[argi];
           delimiters_len = strlen(delimiters);
         }
         break;
       case 'p':
-	argi++;
-	if(argi<argc)
-	{
-	  stralloc_copys(&dirp,argv[argi]);
-		  if(dirp.len && dirp.s[dirp.len-1] != '/')
-			  stralloc_catb(&dirp,"/",1);
-	}
-	break;
+  argi++;
+  if(argi < argc)
+  {
+    stralloc_copys( & dirp, argv[argi]);
+      if(dirp.len && dirp.s[dirp.len - 1] != '/')
+        stralloc_catb( & dirp, "/", 1);
+  }
+  break;
       default:
         usage(argv[0]);
         break;

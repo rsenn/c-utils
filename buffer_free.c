@@ -13,11 +13,11 @@ void buffer_free(buffer *b)
     case FREE: free(b->x); break;
     case MUNMAP: 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-								 UnmapViewOfFile(b->x);
+                 UnmapViewOfFile(b->x);
 #else
-							   munmap(b->x,b->a);
+                 munmap(b->x, b->a);
 #endif
-												break;
+                        break;
     default: ;
   }
   

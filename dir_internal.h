@@ -51,19 +51,19 @@ struct dir_internal_s {
 #endif
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-#define dir_ISDIR(d) (!!(dir_ATTRS(d)&0x10))
+#define dir_ISDIR(d) (!!(dir_ATTRS(d) & 0x10))
 #else
 #define dir_ISDIR(d) S_ISDIR(dir_ATTRS(d))
 #endif
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-#define dir_ISLINK(d) (!!(dir_ATTRS(d)&0x08))
+#define dir_ISLINK(d) (!!(dir_ATTRS(d) & 0x08))
 #else
 #define dir_ISLINK(d) S_ISLINK(dir_ATTRS(d))
 #endif
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-#define dir_ISLINK(d) (!!(dir_ATTRS(d)&0x08))
+#define dir_ISLINK(d) (!!(dir_ATTRS(d) & 0x08))
 #else
 #define dir_ISLINK(d) S_ISLINK(dir_ATTRS(d))
 #endif

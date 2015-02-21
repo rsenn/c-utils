@@ -13,7 +13,7 @@ strlist_index_of(strlist* sl, const char* str) {
     if(sl->sa.s[p] == '\0')
       ++l;
 
-    s = &sl->sa.s[p+1];
+    s = &sl->sa.s[p + 1];
   }
   return -1;
 }

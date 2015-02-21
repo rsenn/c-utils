@@ -14,7 +14,7 @@ extern "C" {
 #define PATHSEP_C '/'
 #define PATHSEP_S "/"
 #endif
-#define IS_PATHSEP(c) ((c)=='\\'||(c)=='/')
+#define IS_PATHSEP(c) ((c) == '\\'||(c) == '/')
 
 enum 
 {
