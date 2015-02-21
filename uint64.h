@@ -4,8 +4,8 @@
 
 #ifndef _MSC_VER
 #include <inttypes.h>
-#include <stdint.h>
 #endif
+#include <stdint.h>
 
 #ifdef _MSC_VER
 #include <windows.h>
