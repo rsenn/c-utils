@@ -1,7 +1,9 @@
 #define _FILE_OFFSET_BITS 64
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif // defined HAVE_UNISTD_H
+#ifdef _WIN32
+# include <io.h>
+#else
+# include <unistd.h>
+#endif
 #include <fcntl.h>
 #include "open.h"
 

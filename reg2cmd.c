@@ -13,7 +13,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef HAVE_LIBGEN_H
+#ifndef _WIN32
 #include <libgen.h>
 #endif
 
@@ -61,8 +61,8 @@ static int find_char(char ch, char *buffer, unsigned int n) {
 }
 
 
-static int collapse_unicode(char *buffer, unsigned int n) {
-  unsigned int i = 0, o = 0;
+static ssize_t collapse_unicode(char *buffer, size_t n) {
+  size_t i = 0, o = 0;
   while(buffer[i] == '\0')
     i++;
 
@@ -93,7 +93,7 @@ int reg2cmd()
   char key[PATH_MAX];
   unsigned int lineno = 0;
   int unicode = 0;
-  long pos, len;
+  ssize_t pos, len;
   stralloc line;
   stralloc_init(&line);
 
@@ -165,7 +165,7 @@ int reg2cmd()
       const char* end = strrchr(&line.s[1], ']');
 
       if(end) {
-        unsigned int keylen = end - &line.s[1];
+        size_t keylen = end - &line.s[1];
         memcpy(key, &line.s[1], keylen);
         key[keylen] = '\0';
         stralloc_zero(&line);
@@ -319,11 +319,11 @@ int reg2cmd()
         break;
       }
       case REGISTRY_DWORD:  {
-        buffer_putulong(buffer_1, word);
+        buffer_putuint64(buffer_1, word);
         break;
       }
       case REGISTRY_QWORD:  {
-        buffer_putulonglong(buffer_1, word);
+        buffer_putuint64(buffer_1, word);
         break;
       }
       case REGISTRY_BINARY:  {

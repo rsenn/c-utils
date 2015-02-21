@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 *msvc* {
-  DEFINES += INLINE=__inline
+  DEFINES += INLINE=__inline _CRT_NONSTDC_NO_DEPRECATE=1 _CRT_SECURE_NO_WARNINGS=1
   QMAKE_CFLAGS_WARN_ON = -W3
 }
 !*msvc*: DEFINES += INLINE=inline

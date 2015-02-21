@@ -5,13 +5,12 @@
 /* for size_t: */
 #include <stddef.h>
 /* for uint32 */
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif /* defined HAVE_STDINT_H */
 /* for time_t: */
 #include <sys/types.h>
 
 #include "uint32.h"
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -116,6 +115,8 @@ size_t fmt_strm_internal(char* dest,...);
 #define MAX_ALLOCA 100000
 #endif
 #define fmt_strm_alloca(a,...) ({ size_t len=fmt_strm((char*)0,a,__VA_ARGS__)+1; char* c=(len<MAX_ALLOCA?alloca(len):0); if (c) c[fmt_strm(c,a,__VA_ARGS__)]=0; c;})
+
+size_t fmt_uint64(char *dest, uint64 i);
 
 #ifdef __cplusplus
 }

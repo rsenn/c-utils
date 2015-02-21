@@ -22,9 +22,7 @@
 #include <sys/types.h>
 
 #ifndef _WIN32
-#ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
-#endif // defined HAVE_SYS_MMAN_H
 #endif
 
 #include "buffer.h"
@@ -94,7 +92,7 @@ int check_block_zero(char *b, size_t n) {
   return 1;
 }
 
-int get_block(char *b)
+ssize_t get_block(char *b)
 {
   return buffer_get(&infile, b, BLOCK_SIZE);
 }
@@ -165,7 +163,7 @@ next:
 
       char *m = mmap_map(fd, msz, mofs);
 
-      unsigned int z = 0, blocks = msz / BLOCK_SIZE;
+      size_t z = 0, blocks = msz / BLOCK_SIZE;
 
       all_blocks += blocks;
 

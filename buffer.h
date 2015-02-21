@@ -9,9 +9,14 @@
 
 #ifdef _MSC_VER
 #include <windows.h>
-#define size_t SIZE_T
-#define ssize_t SSIZE_T
+# ifdef _WIN64
+typedef signed __int64 ssize_t;
+# else
+typedef signed __int32 ssize_t;
+# endif
 #endif
+
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,9 +65,10 @@ int buffer_putnlflush(buffer* b); /* put \n and flush */
     ? ( (s)->x[(s)->p++] = (c), 0 ) \
     : buffer_put((s),&(c),1) \
   )
+int buffer_putc(buffer* b, char c);
 
 ssize_t buffer_get(buffer* b,char* x,size_t len);
-int buffer_feed(buffer* b);
+ssize_t buffer_feed(buffer* b);
 int buffer_getc(buffer* b,char* x);
 ssize_t buffer_getn(buffer* b,char* x,size_t len);
 
@@ -148,6 +154,8 @@ int buffer_get_new_token_sa_pred(buffer* b,stralloc* sa,sa_predicate p);
 void buffer_fromsa(buffer* b,stralloc* sa);	/* read from sa */
 int buffer_tosa(buffer*b,stralloc* sa);		/* write to sa, auto-growing it */
 #endif
+
+int buffer_putuint64(buffer *b, uint64 i);
 
 #ifdef __cplusplus
 }

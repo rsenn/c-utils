@@ -46,7 +46,7 @@ int count_depth()
       if(buffer[i] == '/')
         c++;
     }
-    buffer_putulong(buffer_1, c);
+    buffer_putulong(buffer_1, (unsigned long)c);
     buffer_put(buffer_1, " ", 1);
     buffer_put(buffer_1, buffer, len);
     buffer_put(buffer_1, "\n", 1);

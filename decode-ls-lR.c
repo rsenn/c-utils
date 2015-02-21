@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_LIBGEN_H
+#ifndef _WIN32
 #include <libgen.h>
 #endif
 
@@ -86,8 +86,8 @@ size_t skip_field(int n, char *s, size_t len)
 int decode_ls_lR()
 {
   char buffer[PATH_MAX];
-  long pos, len, i;
-  unsigned int offset = dirp.len;
+  ssize_t pos, len, i;
+  size_t offset = dirp.len;
   int is_dir;
 
   for(;;)

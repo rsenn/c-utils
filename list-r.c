@@ -35,11 +35,11 @@ int
 list_dir_internal(stralloc *dir,  char type);
 
 static void
-make_num(stralloc *out, unsigned long num, size_t width) {
+make_num(stralloc *out, size_t num, size_t width) {
 	char fmt[FMT_ULONG+1];
   size_t sz = fmt_ulong(fmt, num);
   
-	int n = width - sz; 
+    ssize_t n = width - sz;
 
 	while(n-- > 0) {
 		stralloc_catb(out, " ", 1);
@@ -50,12 +50,12 @@ make_num(stralloc *out, unsigned long num, size_t width) {
 static void
 make_time(stralloc *out, time_t t, size_t width) {
 	if(opt_numeric) {
-		 make_num(out, (unsigned long)t, width);
+         make_num(out, (size_t)t, width);
 	} else {
 		struct tm ltime;
     char buf[1024];
 		size_t sz; 
-	  int n; 	
+      ssize_t n;
 #ifdef HAVE_LOCALTIME_R_FUNC
 		localtime_r(&t, &ltime);
 #else
@@ -147,7 +147,7 @@ int list_dir_internal(stralloc *dir,  char type)
 	stralloc pre;
 	int dtype;
   int is_dir, is_symlink;
-  unsigned long len;
+  size_t len;
 #ifndef _WIN32
   struct stat st;
 #endif

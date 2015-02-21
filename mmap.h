@@ -7,9 +7,13 @@
 
 #ifdef _MSC_VER
 #include <windows.h>
-#define size_t SIZE_T
-#define ssize_t SSIZE_T
+# ifdef _WIN64
+typedef signed __int64 ssize_t;
+# else
+typedef signed __int32 ssize_t;
+# endif
 #endif
+
 
 #ifdef __cplusplus
 extern "C" {
