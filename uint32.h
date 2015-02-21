@@ -4,10 +4,13 @@
 
 #ifndef _MSC_VER
 #include <inttypes.h>
+#ifndef _MSC_VER
 #include <stdint.h>
+#endif // !defined(_MSC_VER)
 #endif
 
 #include <sys/types.h>
+
 
 #ifdef _MSC_VER
 #include <windows.h>

@@ -1,4 +1,5 @@
 #include <sys/types.h>
+
 #ifndef _WIN32
 #include <unistd.h>
 #endif
@@ -6,6 +7,7 @@
 #include <windows.h>
 #else
 #include <sys/types.h>
+
 #include <sys/mman.h>
 #endif
 #include "open.h"

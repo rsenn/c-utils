@@ -151,11 +151,11 @@ int list_dir_internal(stralloc* dir,  char type)
 #ifndef _WIN32
   struct stat st;
 #endif
+  char *name, *s;
+
 
 	(void)type;
   
-  char* name,*s;
-
   while(dir->len > 0 && IS_PATHSEP(dir->s[dir->len - 1]))
     dir->len--;
   

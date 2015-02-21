@@ -3,7 +3,7 @@
 #define BUFFER_H
 
 /* for size_t: */
-#include <stddef.h>
+//#include <stddef.h>
 /* for ssize_t: */
 #include <sys/types.h>
 

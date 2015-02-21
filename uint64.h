@@ -5,7 +5,9 @@
 #ifndef _MSC_VER
 #include <inttypes.h>
 #endif
+#ifndef _MSC_VER
 #include <stdint.h>
+#endif // !defined(_MSC_VER)
 
 #ifdef _MSC_VER
 #include <windows.h>

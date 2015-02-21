@@ -2,7 +2,7 @@
 #ifndef MMAP_H
 #define MMAP_H
 
-#include <stddef.h>
+//#include <stddef.h>
 #include "uint64.h"
 
 #ifdef _MSC_VER

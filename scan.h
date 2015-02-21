@@ -3,9 +3,10 @@
 #define SCAN_H
 
 /* for size_t: */
-#include <stddef.h>
+//#include <stddef.h>
 /* for time_t: */
 #include <sys/types.h>
+
 
 #include "uint32.h"
 
