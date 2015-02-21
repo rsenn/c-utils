@@ -2,7 +2,7 @@
 #include "byte.h"
 
 void array_cat(array* to,const array* const from) {
-  if (from->allocated<0) {
+  if(from->allocated<0) {
     array_fail(to);
     return;
   }

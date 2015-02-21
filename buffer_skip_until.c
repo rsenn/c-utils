@@ -5,7 +5,7 @@
 int buffer_skip_until(buffer* b,const char* charset,size_t setlen) {
   int r;
   int n = 0;
-  for (;;) {
+  for(;;) {
     if(b->p == b->n)
       if((r = buffer_feed(b)) <= 0)
         return r;    

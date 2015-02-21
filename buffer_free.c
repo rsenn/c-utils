@@ -8,7 +8,7 @@
 
 void buffer_free(buffer *b)
 {
-  switch (b->todo)
+  switch(b->todo)
   {
     case FREE: free(b->x); break;
     case MUNMAP: 

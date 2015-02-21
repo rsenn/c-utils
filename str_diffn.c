@@ -11,11 +11,11 @@ int str_diffn(const char* a, const char* b, size_t limit) {
   register const unsigned char* u=t+limit;
   register int j;
   j=0;
-  for (;;) {
-    if (t>=u) break; if ((j=(*s-*t))) break; if (!*t) break; ++s; ++t;
-    if (t>=u) break; if ((j=(*s-*t))) break; if (!*t) break; ++s; ++t;
-    if (t>=u) break; if ((j=(*s-*t))) break; if (!*t) break; ++s; ++t;
-    if (t>=u) break; if ((j=(*s-*t))) break; if (!*t) break; ++s; ++t;
+  for(;;) {
+    if(t>=u) break; if((j=(*s-*t))) break; if(!*t) break; ++s; ++t;
+    if(t>=u) break; if((j=(*s-*t))) break; if(!*t) break; ++s; ++t;
+    if(t>=u) break; if((j=(*s-*t))) break; if(!*t) break; ++s; ++t;
+    if(t>=u) break; if((j=(*s-*t))) break; if(!*t) break; ++s; ++t;
   }
   return j;
 }

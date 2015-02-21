@@ -5,7 +5,7 @@ static ssize_t strallocwrite(int fd,char* buf,size_t len,void* myself) {
   buffer* b=myself;
   stralloc* sa=b->cookie;
   sa->len+=len;
-  if (stralloc_readyplus(sa,1024)==0) return 0;
+  if(stralloc_readyplus(sa,1024)==0) return 0;
   b->x=sa->s+sa->len;
   b->p=0;
   b->a=1024;
@@ -15,7 +15,7 @@ static ssize_t strallocwrite(int fd,char* buf,size_t len,void* myself) {
 }
 
 int buffer_tosa(buffer* b,stralloc* sa) {
-  if (stralloc_ready(sa,1024)==0) return -1;
+  if(stralloc_ready(sa,1024)==0) return -1;
   b->x=sa->s;
   b->p=0;
   b->n=0;

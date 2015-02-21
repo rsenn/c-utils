@@ -53,9 +53,9 @@ mybasename(const char* s) {
   char* r2 = strrchr(s, '\\');
 
   if(!r1 && !r2)
-    return (char*)s;
+    return(char*)s;
 
-  return (r1 > r2) ? r1+1 : r2+1;
+  return(r1 > r2) ? r1+1 : r2+1;
 }
 
 int is_delimiter(char c)

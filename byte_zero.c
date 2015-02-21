@@ -7,16 +7,16 @@ void byte_zero(void* out, size_t len) {
    * simpler code */
   register char* s=out;
   size_t i;
-  for (i=0; i<len; ++i)
+  for(i=0; i<len; ++i)
     s[i]=0;
 #else
   register char* s=out;
   register const char* t=s+len;
-  for (;;) {
-    if (s==t) break; *s=0; ++s;
-    if (s==t) break; *s=0; ++s;
-    if (s==t) break; *s=0; ++s;
-    if (s==t) break; *s=0; ++s;
+  for(;;) {
+    if(s==t) break; *s=0; ++s;
+    if(s==t) break; *s=0; ++s;
+    if(s==t) break; *s=0; ++s;
+    if(s==t) break; *s=0; ++s;
   }
 #endif
 }
