@@ -6,7 +6,7 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <stdio.h>
-#ifndef _WIN32
+#ifndef PLAIN_WINDOWS
 #include <unistd.h>
 #include <dirent.h>
 #else
@@ -22,6 +22,9 @@
 #include "uint64.h"
 #include "dir_internal.h"
 
+#if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MSYS__)
+#define PLAIN_WINDOWS 1
+#endif
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
@@ -30,6 +33,7 @@
 
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
+static 
 
 int
 list_dir_internal(stralloc* dir,  char type);
@@ -148,25 +152,32 @@ int list_dir_internal(stralloc* dir,  char type)
   int dtype;
   int is_dir, is_symlink;
   size_t len;
-#ifndef _WIN32
+#ifndef PLAIN_WINDOWS
   struct stat st;
+  static dev_t root_dev;
 #endif
   char *name, *s;
 
 
-	(void)type;
+  (void)type;
   
   while(dir->len > 0 && IS_PATHSEP(dir->s[dir->len - 1]))
     dir->len--;
   
   stralloc_nul(dir);
   
+#ifndef PLAIN_WINDOWS
+  if(root_dev == 0) {
+    if(stat(dir->s, &st) != -1) {
+      root_dev = st.st_dev;
+    }
+  }
+#endif
+  
   dir_open(&d, dir->s);
-  
-  
+    
   stralloc_cats(dir, PATHSEP_S);
   l = dir->len;
-  
   
   while((name = dir_read(&d)))
   {
@@ -183,25 +194,20 @@ int list_dir_internal(stralloc* dir,  char type)
     strcpy(dir->s + dir->len, name);
     dir->len += strlen(name);
 
-#if !defined(_WIN32)
-
-    if(lstat(dir->s, &st) != -1)
-      is_symlink = S_ISLNK(mode);
-    else
+#ifndef PLAIN_WINDOWS
+    if(lstat(dir->s, &st) != -1) {
+      if(root_dev && st.st_dev) {
+        if(st.st_dev != root_dev)
+          continue;
+      }
+      is_symlink = !!S_ISLNK(mode);
+    } else
 #endif
       is_symlink = 0;
   
-#if !defined(_WIN32)
-    struct stat st;
-    if(lstat(dir->s, &st) != -1)
-      is_symlink = !!S_ISLNK(mode);
-    else
-#endif
-      is_symlink = 0;
-
     dtype = dir_type(&d); 
 
-#ifndef _WIN32
+#ifndef PLAIN_WINDOWS
     mode = st.st_mode;
     nlink = st.st_nlink;
     uid = st.st_uid;
@@ -213,7 +219,7 @@ int list_dir_internal(stralloc* dir,  char type)
     if(dtype) {
       is_dir= !!(dtype & D_DIRECTORY);
     } else {
-#if defined(_WIN32)
+#ifdef PLAIN_WINDOWS
       is_dir = 0;
 #else
       is_dir = !!S_ISDIR(mode);
@@ -268,21 +274,21 @@ int list_dir_internal(stralloc* dir,  char type)
 int main(int argc, char* argv[]) {
 
   stralloc dir= {0, 0,0};
-	int argi = 1;
+  int argi = 1;
 
-	while(argi < argc) {
-		if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
-			opt_list = 1;
-		} else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
-			opt_numeric = 1;
-		} else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
-			argi++;
-			opt_timestyle = argv[argi];
-		} else {
-			break;
-		}
-		argi++;
-	}
+  while(argi < argc) {
+    if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
+      opt_list = 1;
+    } else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
+      opt_numeric = 1;
+    } else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
+      argi++;
+      opt_timestyle = argv[argi];
+    } else {
+      break;
+    }
+    argi++;
+  }
 
   if(argi < argc) {
     
