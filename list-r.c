@@ -246,6 +246,14 @@ int list_dir_internal(stralloc* dir,  char type)
     if(is_dir)
       stralloc_cats(dir, PATHSEP_S);
     
+    if(dir->len > PATH_MAX) {
+      buffer_puts(buffer_2, "ERROR: Directory ");
+      buffer_putsa(buffer_2, dir);
+      buffer_puts(buffer_2, " longer than PATH_MAX!\n");
+      buffer_flush(buffer_2);
+      return 0;
+    }
+    
   s = dir->s;
     len = dir->len;
     if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1]))
