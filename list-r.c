@@ -6,7 +6,7 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <stdio.h>
-#ifndef PLAIN_WINDOWS
+#ifndef _WIN32
 #include <unistd.h>
 #include <dirent.h>
 #else
