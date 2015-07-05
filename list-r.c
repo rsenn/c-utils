@@ -38,35 +38,10 @@ static const char* opt_timestyle = "%b %2e %H:%M";
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL
 
-static uint64_t
-WindowsTickToUnixSeconds(uint64_t windowsTicks) {
-	return (uint64_t)(windowsTicks / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
-}
-
-static uint64_t
-FileTimeToUnixSeconds(const FILETIME* ft) {
+static inline uint64_t
+filetime_to_unix(const FILETIME* ft) {
 	uint64_t windowsTicks = ((uint64_t)ft->dwHighDateTime << 32) + ft->dwLowDateTime;
-}
-
-static time_t
-FileTime_to_POSIX(FILETIME ft)
-{
-	FILETIME localFileTime;
-	FileTimeToLocalFileTime(&ft, &localFileTime);
-	SYSTEMTIME sysTime;
-	FileTimeToSystemTime(&localFileTime, &sysTime);
-	struct tm tmtime = { 0 };
-	tmtime.tm_year = sysTime.wYear - 1900;
-	tmtime.tm_mon = sysTime.wMonth - 1;
-	tmtime.tm_mday = sysTime.wDay;
-	tmtime.tm_hour = sysTime.wHour;
-	tmtime.tm_min = sysTime.wMinute;
-	tmtime.tm_sec = sysTime.wSecond;
-	tmtime.tm_wday = 0;
-	tmtime.tm_yday = 0;
-	tmtime.tm_isdst = -1;
-	time_t ret = mktime(&tmtime);
-	return ret;
+	return (uint64_t)(windowsTicks / 10000000 - SEC_TO_UNIX_EPOCH);
 }
 
 static int
@@ -242,6 +217,19 @@ int list_dir_internal(stralloc* dir,  char type)
   
     dtype = dir_type(&d); 
 
+
+	if (dtype) {
+		is_dir = !!(dtype & D_DIRECTORY);
+	}
+	else {
+#ifdef PLAIN_WINDOWS
+		is_dir = 0;
+#else
+		is_dir = !!S_ISDIR(mode);
+#endif
+  }
+
+
 #ifndef PLAIN_WINDOWS
     mode = st.st_mode;
     nlink = st.st_nlink;
@@ -250,20 +238,12 @@ int list_dir_internal(stralloc* dir,  char type)
     size = st.st_size;
     mtime = st.st_mtime;
 #else
+	mode = (is_dir ? S_IFDIR : (is_symlink ? S_IFLNK : S_IFREG));
 	size = ((uint64_t)(dir_INTERNAL(&d)->dir_finddata.nFileSizeHigh) << 32) + dir_INTERNAL(&d)->dir_finddata.nFileSizeLow;
-	//mtime = FileTimeToUnixSeconds(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
-	mtime = FileTime_to_POSIX(dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
+	mtime = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
+	//mtime = FileTime_to_POSIX(dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
 #endif
 
-    if(dtype) {
-      is_dir= !!(dtype & D_DIRECTORY);
-    } else {
-#ifdef PLAIN_WINDOWS
-      is_dir = 0;
-#else
-      is_dir = !!S_ISDIR(mode);
-#endif
-    }
 
    if(opt_list) {
      stralloc_init(&pre);

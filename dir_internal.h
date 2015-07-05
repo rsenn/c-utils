@@ -36,6 +36,36 @@ struct dir_internal_s {
 
 };
 
+#ifndef _S_IFDIR
+#define _S_IFDIR  0040000 /* directory */
+#endif // !defined(_S_IFDIR)
+
+#ifndef _S_IFCHR
+#define _S_IFCHR  0020000 /* character special */
+#endif // !defined(_S_IFCHR)
+
+#ifndef S_IFBLK
+#define S_IFBLK  0060000 /* block special */
+#endif // !defined(S_IFBLK)
+
+#ifndef S_IFREG
+#define S_IFREG  0100000 /* regular */
+#endif // !defined(S_IFREG)
+
+#ifndef S_IFLNK
+#define S_IFLNK  0120000 /* symbolic link */
+#endif // !defined(S_IFLNK)
+
+#ifndef S_IFSOCK
+#define S_IFSOCK 0140000 /* socket */
+#endif // !defined(S_IFSOCK)
+
+#ifndef S_IFIFO
+#define S_IFIFO  0010000 /* fifo */
+#endif // !defined(S_IFIFO)
+
+
+
 #define dir_INTERNAL(d) ((struct dir_internal_s *)((d)->dir_int))
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
