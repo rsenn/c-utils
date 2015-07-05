@@ -36,13 +36,6 @@ else
 BUILDTYPE = release
 endif
 
-ifneq ($(HOST),$(BUILD))
-BUILDDIR = build/$(HOST)/$(BUILDTYPE)/
-else
-ifneq ($(CROSS),)
-BUILDDIR = build/$(HOST)/$(BUILDTYPE)/
-endif
-endif
 
 ifeq ($(HOST),$(BUILD))
 CROSS :=
@@ -74,6 +67,22 @@ EXEEXT = .exe
 endif
 BOOST_LIBS = boost_random
 
+ifeq ($(OS),mingw32)
+TOOLCHAIN = $(HOST)-$(shell $(CROSS)gcc -dumpversion)
+else
+TOOLCHAIN = $(HOST)
+endif
+
+ifneq ($(HOST),$(BUILD))
+BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
+else
+ifeq ($(CROSS),)
+BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
+else
+BUILDDIR = build/$(patsubst %-,%,$(CROSS))/$(BUILD_TYPE)/
+endif
+endif
+
 ##CXXOPTS := $(shell  $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'
 ##CXXOPTS = $(shell  sh -c "if !  { $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++0x -D__GXX_EXPERIMENTAL_CXX0X__=1 -D_GLIBCXX_PERMIT_BACKWARD_HASH=1; elif !  { $(CXX) -std=c++11 2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++11 -DCXX11=1; fi")
 ifeq ($(CXXOPTS),)
@@ -101,14 +110,63 @@ WARNINGS += no-strict-aliasing
 
 CFLAGS = -pipe
 
+CFLAGS_Debug = -g -ggdb -O0
+CFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
+CFLAGS_RelWithDebInfo = -g -ggdb -O2
+CFLAGS_Release = -g -fomit-frame-pointer -O2
+
+CXXFLAGS = -pipe
+
+CXXFLAGS_Debug = -g -ggdb -O0
+CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
+CXXFLAGS_RelWithDebInfo = -g -ggdb -O2
+CXXFLAGS_Release = -g -fomit-frame-pointer -O2
+
+ifeq ($(BUILD_TYPE),)
 ifeq ($(DEBUG),1)
-CFLAGS += -g -ggdb -O0
+ifeq ($(RELEASE),1)
+BUILD_TYPE = RelWithDebInfo
+else
+BUILD_TYPE = Debug
+endif
+else
+ifeq ($(MINSIZE),1)
+BUILD_TYPE = MinSizeRel
+else
+BUILD_TYPE = Release
+endif
+endif
+endif
+
+ifeq ($(BUILD_TYPE),Debug)
+DEBUG := 1
+RELEASE := 0
+MINSIZE := 0
+endif
+ifeq ($(BUILD_TYPE),RelWithDebInfo)
+DEBUG := 1
+RELEASE := 1
+MINSIZE := 0
+endif
+ifeq ($(BUILD_TYPE),MinSizeRel)
+DEBUG := 0
+RELEASE := 1
+MINSIZE := 1
+endif
+ifeq ($(BUILD_TYPE),Release)
+DEBUG := 0
+RELEASE := 1
+MINSIZE := 0
+endif
+
+ifeq ($(DEBUG),1)
 DEFS += DEBUG=1
 else
-CFLAGS += -g -O2
 DEFS += NDEBUG=1
 endif
 
+CFLAGS += $(CFLAGS_$(BUILD_TYPE))
+CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 
 ifeq ($(STATIC),1)
 LDFLAGS += -static
@@ -116,7 +174,6 @@ endif
 ifeq ($(STRIP),1)
 LDFLAGS += -s
 endif
-CXXFLAGS = $(CFLAGS)
 #LIBS = -lowfat
 RM = rm -f
 
@@ -163,6 +220,7 @@ $(info CXXVER: $(CXXVER))
 #$(info DESTDIR: $(DESTDIR))
 #$(info EXEEXT: $(EXEEXT))
 $(info HOST: $(HOST))
+$(info TOOLCHAIN: $(TOOLCHAIN))
 #$(info INSTALL: $(INSTALL))
 $(info KERN: $(KERN))
 #$(info LDFLAGS: $(LDFLAGS))
@@ -249,5 +307,6 @@ uninstall:
 		echo $(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
 		$(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
   done
+
 
 

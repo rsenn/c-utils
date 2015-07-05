@@ -51,7 +51,7 @@ make_num(stralloc* out, size_t num, size_t width) {
   stralloc_catb(out, fmt, sz);
 }
 
-static void
+void
 make_time(stralloc* out, time_t t, size_t width) {
   if(opt_numeric) {
          make_num(out, (size_t)t, width);
@@ -186,9 +186,9 @@ int list_dir_internal(stralloc* dir,  char type)
 
     dir->len = l;
 
-    if(strcmp(name, "") == 0) continue;
-    if(strcmp(name, ".") == 0) continue;
-    if(strcmp(name, "..") == 0) continue;
+    if(strcmp(name, "") == 0 || strcmp(name, ".") == 0 || strcmp(name, "..") == 0) { 
+      continue;
+      }
 
     stralloc_readyplus(dir, strlen(name) + 1);
     strcpy(dir->s + dir->len, name);
@@ -197,8 +197,9 @@ int list_dir_internal(stralloc* dir,  char type)
 #ifndef PLAIN_WINDOWS
     if(lstat(dir->s, &st) != -1) {
       if(root_dev && st.st_dev) {
-        if(st.st_dev != root_dev)
+        if(st.st_dev != root_dev) {
           continue;
+          }
       }
       is_symlink = !!S_ISLNK(mode);
     } else
@@ -228,17 +229,26 @@ int list_dir_internal(stralloc* dir,  char type)
 
    if(opt_list) {
      stralloc_init(&pre);
+
+	 // Mode string
      mode_str(&pre, mode);
      stralloc_catb(&pre, " ", 1);
+	 // num links
      make_num(&pre, nlink, 3);
      stralloc_catb(&pre, " ", 1);
+	 // uid
      make_num(&pre, uid, 0);
      stralloc_catb(&pre, " ", 1);
+	 // gid 
      make_num(&pre, gid, 0);
      stralloc_catb(&pre, " ", 1);
+	 // size
      make_num(&pre, size, 6);
      stralloc_catb(&pre, " ", 1);
-     make_time(&pre, mtime, 10);
+	 // time
+	 make_num(&pre, mtime, 0);
+
+//     make_time(&pre, mtime, 10);
      stralloc_catb(&pre, " ", 1);
    }
 
@@ -251,7 +261,7 @@ int list_dir_internal(stralloc* dir,  char type)
       buffer_putsa(buffer_2, dir);
       buffer_puts(buffer_2, " longer than PATH_MAX!\n");
       buffer_flush(buffer_2);
-      return 0;
+      goto end;
     }
     
   s = dir->s;
@@ -275,6 +285,7 @@ int list_dir_internal(stralloc* dir,  char type)
       list_dir_internal(dir, 0);
     }
   }
+end:
   dir_close(&d);
   return 0;
 }
