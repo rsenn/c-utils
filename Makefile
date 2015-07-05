@@ -36,7 +36,6 @@ else
 BUILDTYPE = release
 endif
 
-
 ifeq ($(HOST),$(BUILD))
 CROSS :=
 endif
@@ -83,18 +82,12 @@ BUILDDIR = build/$(patsubst %-,%,$(CROSS))/$(BUILD_TYPE)/
 endif
 endif
 
-##CXXOPTS := $(shell  $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'
-##CXXOPTS = $(shell  sh -c "if !  { $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++0x -D__GXX_EXPERIMENTAL_CXX0X__=1 -D_GLIBCXX_PERMIT_BACKWARD_HASH=1; elif !  { $(CXX) -std=c++11 2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++11 -DCXX11=1; fi")
 ifeq ($(CXXOPTS),)
-#CXXOPTS += $(shell  sh -c "if !  { $(CXX) -std=c++11 2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++11 -DCXX11=1; elif ! { $(CXX) -std=c++0x  2>&1 | grep -q 'unrecognized command line option'; }; then echo -std=c++0x -D__GXX_EXPERIMENTAL_CXX0X__=1; fi")
-$(info OS: '$(OS)')
+#$(info OS: '$(OS)')
 ifneq ($(OS),msys)
-##CXXOPTS += -std=c++11 -DCXX11=1
 endif
 endif
 
-#CPPFLAGS = -I/usr/include/libowfat
-#CPPFLAGS = -I. -D__USE_BSD=1
 CPPFLAGS := -I.
 
 DEFS += INLINE=inline
@@ -174,7 +167,6 @@ endif
 ifeq ($(STRIP),1)
 LDFLAGS += -s
 endif
-#LIBS = -lowfat
 RM = rm -f
 
 ifneq ($(BOOST_INCLUDE_DIR),)
@@ -200,43 +192,20 @@ vpath $(BUILDDIR)
 
 VPATH = $(BUILDDIR):.
 
-$(info ARCH: $(ARCH))
-#$(info BOOST_INCLUDE_DIR: $(BOOST_INCLUDE_DIR))
-#$(info BOOST_LIBS: $(BOOST_LIBS))
-#$(info BOOST_LIB_DIR: $(BOOST_LIB_DIR))
-$(info BUILD: $(BUILD))
-$(info BUILDDIR: $(BUILDDIR))
-$(info BUILDTYPE: $(BUILDTYPE))
-#$(info CC: $(CC))
-$(info CCVER: $(CCVER))
-#$(info CFLAGS: $(CFLAGS))
-#$(info CPPFLAGS: $(CPPFLAGS))
-$(info CROSS: $(CROSS))
-#$(info CXX: $(CXX))
-#$(info CXXFLAGS: $(CXXFLAGS))
-#$(info CXXOPTS: $(CXXOPTS))
-$(info CXXVER: $(CXXVER))
-#$(info DEBUG: $(DEBUG))
-#$(info DESTDIR: $(DESTDIR))
-#$(info EXEEXT: $(EXEEXT))
-$(info HOST: $(HOST))
-$(info TOOLCHAIN: $(TOOLCHAIN))
-#$(info INSTALL: $(INSTALL))
-$(info KERN: $(KERN))
-#$(info LDFLAGS: $(LDFLAGS))
-#$(info LIBS: $(LIBS))
-#$(info LIB_OBJ: $(LIB_OBJ))
-#$(info LIB_SRC: $(LIB_SRC))
-$(info M64: $(M64))
-#$(info OBJECTS: $(OBJECTS))
-$(info OS: $(OS))
-#$(info PROGRAM: $(PROGRAM))
-#$(info PROGRAMS: $(PROGRAMS))
-#$(info RM: $(RM))
-$(info STATIC: $(STATIC))
-#$(info STRIP: $(STRIP))
-$(info TRIPLET: $(TRIPLET))
-#$(info VPATH: $(VPATH))
+#$(info ARCH: $(ARCH))
+#$(info BUILD: $(BUILD))
+#$(info BUILDDIR: $(BUILDDIR))
+#$(info BUILDTYPE: $(BUILDTYPE))
+#$(info CCVER: $(CCVER))
+#$(info CROSS: $(CROSS))
+#$(info CXXVER: $(CXXVER))
+#$(info HOST: $(HOST))
+#$(info TOOLCHAIN: $(TOOLCHAIN))
+#$(info KERN: $(KERN))
+#$(info M64: $(M64))
+#$(info OS: $(OS))
+#$(info STATIC: $(STATIC))
+#$(info TRIPLET: $(TRIPLET))
 
 all: $(BUILDDIR) $(PROGRAMS)
 
@@ -307,6 +276,3 @@ uninstall:
 		echo $(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
 		$(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
   done
-
-
-
