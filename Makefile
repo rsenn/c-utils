@@ -8,18 +8,18 @@ WARNINGS += error
 
 INSTALL = install
 
-BUILD := $(shell gcc -dumpmachine)
+CC ?= gcc
+CXX ?= g++
 
-CC = gcc
-CXX = g++
+BUILD := $(shell $(CC) -dumpmachine)
 
-CCVER := $(shell gcc -dumpversion)
-CXXVER := $(shell gcc -dumpversion)
+CCVER := $(shell $(CC) -dumpversion)
+CXXVER := $(shell $(CXX) -dumpversion)
 
 ifeq ($(CROSS),)
 HOST ?= $(BUILD)
 else
-HOST := $(shell $(CROSS)gcc -dumpmachine)
+HOST := $(shell $(CROSS)$(CC) -dumpmachine)
 endif
 
 ifneq ($(HOST),)
