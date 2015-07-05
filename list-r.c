@@ -33,9 +33,43 @@
 
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
-static 
 
-int
+
+#define WINDOWS_TICK 10000000
+#define SEC_TO_UNIX_EPOCH 11644473600LL
+
+static uint64_t
+WindowsTickToUnixSeconds(uint64_t windowsTicks) {
+	return (uint64_t)(windowsTicks / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
+}
+
+static uint64_t
+FileTimeToUnixSeconds(const FILETIME* ft) {
+	uint64_t windowsTicks = ((uint64_t)ft->dwHighDateTime << 32) + ft->dwLowDateTime;
+}
+
+static time_t
+FileTime_to_POSIX(FILETIME ft)
+{
+	FILETIME localFileTime;
+	FileTimeToLocalFileTime(&ft, &localFileTime);
+	SYSTEMTIME sysTime;
+	FileTimeToSystemTime(&localFileTime, &sysTime);
+	struct tm tmtime = { 0 };
+	tmtime.tm_year = sysTime.wYear - 1900;
+	tmtime.tm_mon = sysTime.wMonth - 1;
+	tmtime.tm_mday = sysTime.wDay;
+	tmtime.tm_hour = sysTime.wHour;
+	tmtime.tm_min = sysTime.wMinute;
+	tmtime.tm_sec = sysTime.wSecond;
+	tmtime.tm_wday = 0;
+	tmtime.tm_yday = 0;
+	tmtime.tm_isdst = -1;
+	time_t ret = mktime(&tmtime);
+	return ret;
+}
+
+static int
 list_dir_internal(stralloc* dir,  char type);
 
 static void
@@ -215,6 +249,10 @@ int list_dir_internal(stralloc* dir,  char type)
     gid = st.st_gid;
     size = st.st_size;
     mtime = st.st_mtime;
+#else
+	size = ((uint64_t)(dir_INTERNAL(&d)->dir_finddata.nFileSizeHigh) << 32) + dir_INTERNAL(&d)->dir_finddata.nFileSizeLow;
+	//mtime = FileTimeToUnixSeconds(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
+	mtime = FileTime_to_POSIX(dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
 #endif
 
     if(dtype) {
