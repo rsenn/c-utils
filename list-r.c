@@ -222,6 +222,19 @@ int list_dir_internal(stralloc* dir,  char type)
   
     dtype = dir_type(&d); 
 
+
+	if (dtype) {
+		is_dir = !!(dtype & D_DIRECTORY);
+	}
+	else {
+#ifdef PLAIN_WINDOWS
+		is_dir = 0;
+#else
+		is_dir = !!S_ISDIR(mode);
+#endif
+  }
+
+
 #ifndef PLAIN_WINDOWS
     mode = st.st_mode;
     nlink = st.st_nlink;
@@ -229,17 +242,13 @@ int list_dir_internal(stralloc* dir,  char type)
     gid = st.st_gid;
     size = st.st_size;
     mtime = st.st_mtime;
+#else
+	mode = (is_dir ? S_IFDIR : (is_symlink ? S_IFLNK : S_IFREG));
+	size = ((uint64_t)(dir_INTERNAL(&d)->dir_finddata.nFileSizeHigh) << 32) + dir_INTERNAL(&d)->dir_finddata.nFileSizeLow;
+	mtime = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
+	//mtime = FileTime_to_POSIX(dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
 #endif
 
-    if(dtype) {
-      is_dir= !!(dtype & D_DIRECTORY);
-    } else {
-#ifdef PLAIN_WINDOWS
-      is_dir = 0;
-#else
-      is_dir = !!S_ISDIR(mode);
-#endif
-    }
 
    if(opt_list) {
      stralloc_init(&pre);
