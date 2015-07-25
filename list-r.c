@@ -33,9 +33,23 @@
 
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
-static 
 
-int
+#ifdef PLAIN_WINDOWS
+#define WINDOWS_TICK 10000000
+#define SEC_TO_UNIX_EPOCH 11644473600LL
+
+static uint64_t
+WindowsTickToUnixSeconds(uint64_t windowsTicks) {
+     return (uint64_t)(windowsTicks / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
+}
+
+static uint64_t
+FileTimeToUnixSeconds(const FILETIME* ft) {
+  uint64_t windowsTicks = ft->
+}
+#endif
+
+static int
 list_dir_internal(stralloc* dir,  char type);
 
 static void
