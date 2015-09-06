@@ -159,10 +159,17 @@ next:
     for(i = 0; i < iterations; i++) {
       size_t msz =  (remain >= map_size ? map_size : (size_t)remain);
       uint64 mofs =  (uint64)map_size * i;
+	  size_t z, blocks;
 
       char* m = mmap_map(fd, msz, mofs);
 
-      size_t z = 0, blocks = msz / BLOCK_SIZE;
+	  if(m == NULL) {
+		  fprintf(stderr, "mmap_map(%d, 0x%08x, %I64u) failed!\n", fd, msz, mofs);
+		  exit(2);
+	  }
+
+      z = 0;
+	  blocks = msz / BLOCK_SIZE;
 
       all_blocks += blocks;
 

@@ -21,7 +21,8 @@
 #include <limits.h>
 
 #ifndef PATH_MAX
-#define PATH_MAX _MAX_PATH
+//#define PATH_MAX _MAX_PATH
+#define PATH_MAX 4095
 #endif
 
 struct dir_internal_s {
