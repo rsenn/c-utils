@@ -35,10 +35,11 @@
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
-#ifdef _WIN32
+#ifdef PLAIN_WINDOWS
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL
 
+<<<<<<< HEAD
 static INLINE uint64_t
 filetime_to_unix(const FILETIME* ft) {
   uint64_t windowsTicks = ((uint64_t)ft->dwHighDateTime << 32) + ft->dwLowDateTime;
@@ -100,6 +101,16 @@ is_junction_point(const char* fn) {
   }
 
   return status;
+=======
+static uint64_t
+WindowsTickToUnixSeconds(uint64_t windowsTicks) {
+     return (uint64_t)(windowsTicks / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
+}
+
+static uint64_t
+FileTimeToUnixSeconds(const FILETIME* ft) {
+  uint64_t windowsTicks = ft->
+>>>>>>> e979c217228ca969ed4c3ecf5da2147930ffe872
 }
 #endif
 
