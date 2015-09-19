@@ -6,7 +6,12 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <stdio.h>
+#ifdef HAVE_STDBOOL_H
 #include <stdbool.h>
+#endif
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
 #ifndef _WIN32
 #include <unistd.h>
 #include <dirent.h>
@@ -39,16 +44,15 @@ static const char* opt_timestyle = "%b %2e %H:%M";
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL
 
-<<<<<<< HEAD
 static INLINE uint64_t
 filetime_to_unix(const FILETIME* ft) {
   uint64_t windowsTicks = ((uint64_t)ft->dwHighDateTime << 32) + ft->dwLowDateTime;
   return (uint64_t)(windowsTicks / 10000000 - SEC_TO_UNIX_EPOCH);
 }
 
-bool
+int
 is_junction_point(const char* fn) {
-  int status = false;
+  int status = 0;
 
   WIN32_FIND_DATA FindFileData;
   HANDLE hFind;
@@ -58,7 +62,7 @@ is_junction_point(const char* fn) {
     if(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
       // We're probably going to skip this reparse point,
       // but not always. (See the logic below.)
-      status = true;
+      status = 1;
 
       // Tag values come from
       // http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx
@@ -80,14 +84,14 @@ is_junction_point(const char* fn) {
         // This is the reparse point for Data Deduplication
         // See http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
         // Unfortunately the compiler doesn't have this value defined yet.
-        status = false;
+        status = 0;
         break;
 
       case IO_REPARSE_TAG_SIS:
         // Single Instance Storage
         // "is a system's ability to keep one copy of content that multiple users or computers share"
         // http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
-        status = false;
+        status = 0;
         break;
 
       default:
@@ -101,16 +105,6 @@ is_junction_point(const char* fn) {
   }
 
   return status;
-=======
-static uint64_t
-WindowsTickToUnixSeconds(uint64_t windowsTicks) {
-     return (uint64_t)(windowsTicks / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
-}
-
-static uint64_t
-FileTimeToUnixSeconds(const FILETIME* ft) {
-  uint64_t windowsTicks = ft->
->>>>>>> e979c217228ca969ed4c3ecf5da2147930ffe872
 }
 #endif
 

@@ -164,7 +164,7 @@ next:
       char* m = mmap_map(fd, msz, mofs);
 
 	  if(m == NULL) {
-		  fprintf(stderr, "mmap_map(%d, 0x%08lx, %"PRIu64") failed!\n", fd, (unsigned long)msz, mofs);
+		  fprintf(stderr, "mmap_map(%d, 0x%08lx, %"PRIu64") failed!\n", (int)fd, (unsigned long)msz, (uint64_t)mofs);
 		  exit(2);
 	  }
 

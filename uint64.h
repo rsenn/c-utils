@@ -40,6 +40,29 @@ uint64 uint64_read_big(const char* in);
 
 #endif
 
+#if defined(_WIN32) && defined(_MSC_VER)
+// for older MSVC
+# ifndef PRId64
+#  define PRId64 "I64d"
+# endif
+# ifndef PRIu64
+#  define PRIu64 "I64u"
+# endif
+# ifndef PRIx64
+#  define PRIx64 "I64x"
+# endif
+#endif // _WIN32 && _MSC_VER
+
+#if defined(_WIN32) && defined(_MSC_VER)
+// for older MSVC: "unsigned __int64 -> double" conversion not implemented (why?-)
+__inline double uint64_to_double(uint64_t ull) {
+  return ((int64_t)ull >= 0 ? (double)(int64_t)ull :
+    ((double)(int64_t)(ull - 9223372036854775808UI64)) + 9223372036854775808.0);
+}
+#else
+# define uint64_to_double(ull) ((double)(ull))
+#endif // _WIN32 && _MSC_VER && TSCI2_OS_WIN32
+
 #ifdef __cplusplus
 }
 #endif
