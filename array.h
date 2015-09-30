@@ -2,7 +2,7 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
-//#include <stddef.h>
+#include <stddef.h>
 #include "uint64.h"
 
 #ifdef __cplusplus
