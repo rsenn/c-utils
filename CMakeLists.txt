@@ -53,6 +53,22 @@ check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
 check_function_exists(localtime HAVE_LOCALTIME_FUNC)
 check_function_exists(localtime_r HAVE_LOCALTIME_R_FUNC)
 
+check_function_exists(free HAVE_FREE_FUNC)
+check_function_exists(malloc HAVE_MALLOC_FUNC)
+check_function_exists(opendir HAVE_OPENDIR_FUNC)
+check_function_exists(readdir HAVE_READDIR_FUNC)
+
+
+if(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
+  set(USE_READDIR TRUE)
+else(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
+  set(USE_READDIR FALSE)
+endif(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
+
+if(USE_READDIR)
+  add_definitions(-DUSE_READDIR=1)
+endif(USE_READDIR)
+
 configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
                "${CMAKE_BINARY_DIR}/config.h")
 
@@ -80,7 +96,7 @@ string(REGEX REPLACE "/W[0-9]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 include_directories("${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 
-add_definitions(-DHAVE_CONFIG_H)
+add_definitions(-DHAVE_CONFIG_H=1)
 
 set(HAVE_VARS HAVE_ALLOCA_H HAVE_BOOST_FOREACH_HPP HAVE_INTTYPES_H HAVE_LIBGEN_H HAVE_STDINT_H HAVE_SYS_MMAN_H HAVE_SYS_STAT_H HAVE_SYS_TYPES_H)
 

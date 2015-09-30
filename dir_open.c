@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <assert.h>
 #include "dir_internal.h"
 
@@ -6,7 +10,9 @@ int dir_open(struct dir_s* d, const char* p)
   int ret;
   if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))
     return 1;
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+#ifdef USE_READDIR
+  ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
+#else
   {
     char path[PATH_MAX+1];
     size_t len;
@@ -19,8 +25,6 @@ int dir_open(struct dir_s* d, const char* p)
     dir_INTERNAL(d)->first = 1;
     ret = (dir_INTERNAL(d)->dir_handle ==  INVALID_HANDLE_VALUE);
   }
-#else
-  ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
 #endif
 
 assert(dir_INTERNAL(d)->dir_handle);

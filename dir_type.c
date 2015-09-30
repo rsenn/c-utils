@@ -1,4 +1,8 @@
-#if !(defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__))
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef USE_READDIR
 #include <dirent.h>
 #endif
 #include "dir_internal.h"
@@ -6,15 +10,7 @@
 int dir_type(struct dir_s* d)
 {
   int r = 0;
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
-    r |= D_SYMLINK;
-
-  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x10)
-    r |= D_DIRECTORY;
-  else if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x20)
-    r |= D_FILE;
-#else
+#ifdef USE_READDIR
 #ifndef DT_DIR
 #define DT_DIR 4
 #endif
@@ -44,6 +40,14 @@ int dir_type(struct dir_s* d)
     }
   }   
   
+#else
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+    r |= D_SYMLINK;
+
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x10)
+    r |= D_DIRECTORY;
+  else if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x20)
+    r |= D_FILE;
 #endif
   return r;
 }
