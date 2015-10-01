@@ -7,6 +7,12 @@ set(BUILD_SHARED_LIBS FALSE)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
+
+#if(MSVC)
+#  set(CMAKE_CXX_STANDARD_LIBRARIES "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib")
+#  set(CMAKE_C_STANDARD_LIBRARIES "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib")
+#endif(MSVC)
+#
 include(FindBoost)
 #include(CMakeDetermineCompileFeatures)
 include(CheckCXX11Features)
@@ -128,8 +134,13 @@ add_executable(decode-ls-lR decode-ls-lR.c) # buffer.h buffer_0.c buffer_1.c buf
 add_executable(torrent-progress torrent-progress.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_putflush.c buffer_putnlflush.c buffer_putulong.c buffer_puts.c buffer_putulong.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c fmt.h fmt_ulong.c mmap.h mmap_map.c mmap_private.c mmap_read.c mmap_read_fd.c mmap_unmap.c open.h open_read.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_init.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c torrent-progress.c
 add_executable(reg2cmd reg2cmd.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_puts.c buffer_putuint64.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c fmt.h fmt_uint64.c reg2cmd.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_init.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c
 
+if(WIN32)
+  set(EXTRA_LIBS advapi32.lib)
+endif(WIN32)
+
 foreach(PROGRAM ${PROGRAMS})
-    target_link_libraries(${PROGRAM} libowfat)
+  target_link_libraries(${PROGRAM} libowfat ${EXTRA_LIBS})
+    
 #  add_executable(${PROGRAM} "${CMAKE_SOURCE_DIR}/${PROGRAM}.c" ${COMMON_SOURCES})
   install(TARGETS ${PROGRAM} DESTINATION bin) 
 endforeach(PROGRAM)

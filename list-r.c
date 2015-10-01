@@ -17,6 +17,9 @@
 #include <dirent.h>
 #else
 #include <io.h>
+#include <aclapi.h>
+#include <sddl.h>
+#include <winternl.h>
 #endif
 #include <time.h>
 #include <string.h>
@@ -25,6 +28,8 @@
 #include "buffer.h"
 #include "stralloc.h"
 #include "fmt.h"
+#include "str.h"
+#include "byte.h"
 #include "uint64.h"
 #include "dir_internal.h"
 
@@ -43,19 +48,204 @@ static const char* opt_timestyle = "%b %2e %H:%M";
 static INLINE uint64_t filetime_to_unix(const FILETIME* ft);
 #ifdef _WIN32
 
-int64 get_file_size(const char* name) {
-    WIN32_FILE_ATTRIBUTE_DATA fad;
-    if (!GetFileAttributesEx(name, GetFileExInfoStandard, &fad))
-        return -1; // error condition, could call GetLastError to find out more
-    return ((uint64)fad.nFileSizeHigh) << 32 + fad.nFileSizeLow;
+static const char*
+last_error_str () {
+  DWORD errCode = GetLastError();
+  static char buffer[1024];
+  char *err;
+  buffer[0] = '\0';
+  if(errCode == 0) return buffer;
+  
+   SetLastError(0);
+  if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+					 NULL,
+					 errCode,
+					 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+					 (LPTSTR) &err,
+					 0,
+					 NULL))
+	  return 0;
+
+  
+  _snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
+  
+  //OutputDebugString(buffer); // or otherwise log it
+  LocalFree(err);
+  return buffer;
 }
 
-uint64_t get_file_time(const char* name) {
-    WIN32_FILE_ATTRIBUTE_DATA fad;
-    if (!GetFileAttributesEx(name, GetFileExInfoStandard, &fad))
-        return 0; // error condition, could call GetLastError to find out more
-    return filetime_to_unix(&fad.ftLastWriteTime);
+int64 get_file_size(char* path) {
+  HANDLE hFile = CreateFileA(path, GENERIC_READ, 
+	  FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
+	  FILE_ATTRIBUTE_NORMAL, NULL);
+  if (hFile==INVALID_HANDLE_VALUE)
+	  return -1; // error condition, could call GetLastError to find out more
+
+  LARGE_INTEGER size;
+  if (!GetFileSizeEx(hFile, &size))
+  {
+	  CloseHandle(hFile);
+	  return -1; // error condition, could call GetLastError to find out more
+  }
+
+  CloseHandle(hFile);
+
+//  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());  
+  return size.QuadPart;
+}	
+
+uint64_t get_file_time(const char* path) {
+  FILETIME c, la, lw;
+  int64 t;
+ HANDLE hFile = CreateFileA(path, GENERIC_READ, 
+	  FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
+	  FILE_ATTRIBUTE_NORMAL, NULL);
+  if(hFile == INVALID_HANDLE_VALUE)
+	  return -1; // error condition, could call GetLastError to find out more
+
+  if(!GetFileTime(hFile, &c, &la, &lw)) {
+	  CloseHandle(hFile);
+	  return -1; // error condition, could call GetLastError to find out more
+  }
+
+  CloseHandle(hFile);
+
+  if((t = filetime_to_unix(&lw)) <= 0)
+    if((t = filetime_to_unix(&c)) <= 0)
+      t = filetime_to_unix(&la);
+
+//  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());  
+  return t;
 }
+
+const char*
+get_file_owner(const char* path) {
+  static char buffer[1024];
+  DWORD dwRtnCode = 0;
+  PSID pSidOwner = NULL;
+  BOOL bRtnBool = TRUE;
+  LPTSTR AcctName = NULL;
+  LPTSTR DomainName = NULL;
+  DWORD dwAcctName = 1, dwDomainName = 1;
+  SID_NAME_USE eUse = SidTypeUnknown;
+  HANDLE hFile;
+  PSECURITY_DESCRIPTOR pSD = NULL;
+LPSTR strsid = NULL;
+
+  buffer[0] = '\0';
+
+  // Get the handle of the file object.
+  hFile = CreateFileA(path,
+					GENERIC_READ,
+					FILE_SHARE_READ,
+					NULL,
+					OPEN_EXISTING,
+					FILE_ATTRIBUTE_NORMAL,
+					NULL);
+
+  // Check GetLastError for CreateFile error code.
+  if (hFile == INVALID_HANDLE_VALUE) {
+			DWORD dwErrorCode = 0;
+
+			dwErrorCode = GetLastError();
+//			_snprintf(buffer, sizeof(buffer), "CreateFile error = %d\n", dwErrorCode);
+			return  0;
+  }
+
+
+
+  // Get the owner SID of the file.
+  dwRtnCode = GetSecurityInfo(
+					hFile,
+					SE_FILE_OBJECT,
+					OWNER_SECURITY_INFORMATION,
+					&pSidOwner,
+					NULL,
+					NULL,
+					NULL,
+					&pSD);
+
+  // Check GetLastError for GetSecurityInfo error condition.
+  if (dwRtnCode != ERROR_SUCCESS) {
+			DWORD dwErrorCode = 0;
+
+			dwErrorCode = GetLastError();
+	//		_snprintf(buffer, sizeof(buffer), "GetSecurityInfo error = %d\n", dwErrorCode);
+			return 0;
+  }
+  
+  
+  if(ConvertSidToStringSid(pSidOwner, &strsid)) {
+    snprintf(buffer,sizeof(buffer), "%s", strsid);
+    LocalFree(strsid);
+  }
+
+  // First call to LookupAccountSid to get the buffer sizes.
+  bRtnBool = LookupAccountSid(
+					NULL,           // local computer
+					pSidOwner,
+					AcctName,
+					(LPDWORD)&dwAcctName,
+					DomainName,
+					(LPDWORD)&dwDomainName,
+					&eUse);
+
+  // Reallocate memory for the buffers.
+  AcctName = (LPTSTR)GlobalAlloc(
+			GMEM_FIXED,
+			dwAcctName);
+
+  // Check GetLastError for GlobalAlloc error condition.
+  if (AcctName == NULL) {
+			DWORD dwErrorCode = 0;
+
+			dwErrorCode = GetLastError();
+		//	snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);
+			return buffer;
+  }
+
+  DomainName = (LPTSTR)GlobalAlloc(
+		 GMEM_FIXED,
+		 dwDomainName);
+
+  // Check GetLastError for GlobalAlloc error condition.
+  if (DomainName == NULL) {
+		DWORD dwErrorCode = 0;
+
+		dwErrorCode = GetLastError();
+		//snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);
+		return buffer;
+
+  }
+
+  // Second call to LookupAccountSid to get the account name.
+  bRtnBool = LookupAccountSid(
+		NULL,                   // name of local or remote computer
+		pSidOwner,              // security identifier
+		AcctName,               // account name buffer
+		(LPDWORD)&dwAcctName,   // size of account name buffer 
+		DomainName,             // domain name
+		(LPDWORD)&dwDomainName, // size of domain name buffer
+		&eUse);                 // SID type
+
+  // Check GetLastError for LookupAccountSid error condition.
+  if(bRtnBool == FALSE) {
+		DWORD dwErrorCode = 0;
+
+		dwErrorCode = GetLastError();
+
+		if(dwErrorCode == ERROR_NONE_MAPPED)
+			snprintf(buffer, sizeof(buffer), "Account owner not found for specified SID.\n");
+		else 
+			snprintf(buffer, sizeof(buffer), "Error in LookupAccountSid.\n");
+		return buffer;
+
+  } else if (bRtnBool == TRUE) 
+	  // Print the account name.
+	  snprintf(buffer, sizeof(buffer), "%s", AcctName);
+	  return buffer;
+  }
+
 #endif
 
 #ifdef PLAIN_WINDOWS
@@ -132,6 +322,18 @@ is_junction_point(const char* fn) {
 
 static int
 list_dir_internal(stralloc* dir,  char type);
+
+static void
+make_str(stralloc* out, const char* s, size_t width) {
+  size_t sz = str_len(s);
+  if(sz < width)  {
+	ssize_t n = width - sz;
+	while(n-- > 0) {
+	  stralloc_catb(out, " ", 1);
+	}
+  }
+  stralloc_catb(out, s, sz);
+}
 
 static void
 make_num(stralloc* out, int64 num, size_t width) {
@@ -275,7 +477,7 @@ int list_dir_internal(stralloc* dir,  char type) {
   static dev_t root_dev;
 #endif
   char *name, *s;
-
+const char* u;
 
   (void)type;
 
@@ -299,7 +501,11 @@ int list_dir_internal(stralloc* dir,  char type) {
 
   while((name = dir_read(&d))) {
     unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
+    char user[32], group[32];
     int64 size = 0, mtime = 0;
+    
+    user[0] = '\0';
+    group[0] = '\0';
 
     dir->len = l;
 
@@ -320,7 +526,7 @@ int list_dir_internal(stralloc* dir,  char type) {
       }
       is_symlink = !!S_ISLNK(mode);
     } else
-#endif
+# endif
       is_symlink = 0;
 
     dtype = dir_type(&d);
@@ -329,16 +535,27 @@ int list_dir_internal(stralloc* dir,  char type) {
     if (dtype) {
       is_dir = !!(dtype & D_DIRECTORY);
     } else {
-#ifndef USE_LSTAT
+# ifndef USE_LSTAT
       is_dir = 0;
-#else
+# else
       is_dir = !!S_ISDIR(mode);
-#endif
+# endif
     }
 
     if(dtype & D_SYMLINK)
       is_symlink = 1;
 
+    if(is_dir) {
+      stralloc_cats(dir, PATHSEP_S);
+      dir->len--;
+      }
+
+    s = dir->s;
+    len = dir->len;
+    if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1])) {
+      len -= 2;
+      s += 2;
+    }
 
 #ifdef USE_LSTAT //ndef PLAIN_WINDOWS
     mode = st.st_mode;
@@ -350,15 +567,32 @@ int list_dir_internal(stralloc* dir,  char type) {
 #else
     mode = (is_dir ? S_IFDIR : (is_symlink ? S_IFLNK : S_IFREG));
     
-#ifdef USE_READDIR
-   size = get_file_size(dir_INTERNAL(&d)->dir_entry->d_name);
-#else
+# ifdef USE_READDIR
+  if(!is_dir) {
+	 size = get_file_size(s); // dir_INTERNAL(&d)->dir_entry->d_name);
+	 mtime = get_file_time(s);
+	 
+   } else {
+	 mtime = 0;
+	 size = 0;
+	  
+   }
+# else
     size = ((uint64_t)(dir_INTERNAL(&d)->dir_finddata.nFileSizeHigh) << 32) + dir_INTERNAL(&d)->dir_finddata.nFileSizeLow;
     mtime = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
+# endif
+
 #endif
     
+   
+   if(gid != 0) fmt_long(group, gid);
+   else byte_copy(group, 2, "-");
+   
+   /*if((u = get_file_owner(s))) byte_copy(user, str_len(u), u);
+   else*/ if(uid != 0) fmt_long(user, uid);
+   else byte_copy(user, 2, "-");
+   
     //mtime = FileTime_to_POSIX(dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
-#endif
 
 
     if(opt_list) {
@@ -371,24 +605,22 @@ int list_dir_internal(stralloc* dir,  char type) {
       make_num(&pre, nlink, 3);
       stralloc_catb(&pre, " ", 1);
       // uid
-      make_num(&pre, uid, 0);
+      make_str(&pre, user, 10);
       stralloc_catb(&pre, " ", 1);
       // gid
-      make_num(&pre, gid, 0);
+      make_str(&pre, group, 10);
       stralloc_catb(&pre, " ", 1);
       // size
       make_num(&pre, size, 6);
       stralloc_catb(&pre, " ", 1);
       // time
-      make_num(&pre, mtime, 0);
+      make_num(&pre, mtime, 10);
 
 //     make_time(&pre, mtime, 10);
       stralloc_catb(&pre, " ", 1);
     }
 
     //fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d));
-    if(is_dir)
-      stralloc_cats(dir, PATHSEP_S);
 
     if(dir->len > PATH_MAX) {
       buffer_puts(buffer_2, "ERROR: Directory ");
@@ -398,17 +630,10 @@ int list_dir_internal(stralloc* dir,  char type) {
       goto end;
     }
 
-    s = dir->s;
-    len = dir->len;
-    if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1])) {
-      len -= 2;
-      s += 2;
-    }
-
     if(opt_list)
       buffer_putsa(buffer_1, &pre);
 
-    buffer_put(buffer_1, s, len);
+    buffer_put(buffer_1, s, len + !!is_dir);
     buffer_put(buffer_1, "\n", 1);
     buffer_flush(buffer_1);
 

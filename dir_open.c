@@ -11,6 +11,9 @@ int dir_open(struct dir_s* d, const char* p)
   if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))
     return 1;
 #ifdef USE_READDIR
+# ifdef __MINGW32__
+   dir_INTERNAL(d)->dir_path = p;
+# endif
   ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
 #else
   {
