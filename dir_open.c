@@ -7,9 +7,6 @@ int dir_open(struct dir_s* d, const char* p)
   if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))
     return 1;
 #ifdef USE_READDIR
-# ifdef __MINGW32__
-   dir_INTERNAL(d)->dir_path = p;
-# endif
   ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
 #else
   {
@@ -24,8 +21,6 @@ int dir_open(struct dir_s* d, const char* p)
     dir_INTERNAL(d)->first = 1;
     ret = (dir_INTERNAL(d)->dir_handle ==  INVALID_HANDLE_VALUE);
   }
-#else
-  ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
 #endif
 
 assert(dir_INTERNAL(d)->dir_handle);

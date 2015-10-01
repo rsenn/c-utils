@@ -29,16 +29,10 @@ struct dir_internal_s {
 #ifdef USE_READDIR
   DIR *dir_handle;
   struct dirent* dir_entry;
-#ifdef __MINGW32__
-  const char* dir_path;
-#endif
 #else
   HANDLE dir_handle;
   WIN32_FIND_DATAA dir_finddata;
   int first;
-#else
-  DIR *dir_handle;
-  struct dirent* dir_entry;
 #endif
 
 };
