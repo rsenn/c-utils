@@ -4,13 +4,17 @@
 
 #include "dir_internal.h"
 
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
 #ifdef USE_READDIR
 #include <dirent.h>
-#ifdef __MINGW32__
-#include <sys/stat.h>
+#endif
+
+#ifdef WIN32
 #include <io.h>
 #include <windows.h>
-#endif
 #endif
 
 static unsigned 

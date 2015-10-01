@@ -6,6 +6,12 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <stdio.h>
+#include <stdlib.h>
+
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
+
 #ifdef HAVE_STDBOOL_H
 #include <stdbool.h>
 #endif
@@ -20,6 +26,7 @@
 #include <aclapi.h>
 #include <sddl.h>
 #include <winternl.h>
+#include <wtypes.h>
 #endif
 #include <time.h>
 #include <string.h>
@@ -67,7 +74,7 @@ last_error_str () {
 	  return 0;
 
   
-  _snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
+  snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
   
   //OutputDebugString(buffer); // or otherwise log it
   LocalFree(err);
@@ -75,13 +82,13 @@ last_error_str () {
 }
 
 int64 get_file_size(char* path) {
+  LARGE_INTEGER size;
   HANDLE hFile = CreateFileA(path, GENERIC_READ, 
 	  FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
 	  FILE_ATTRIBUTE_NORMAL, NULL);
   if (hFile==INVALID_HANDLE_VALUE)
 	  return -1; // error condition, could call GetLastError to find out more
 
-  LARGE_INTEGER size;
   if (!GetFileSizeEx(hFile, &size))
   {
 	  CloseHandle(hFile);
@@ -148,7 +155,7 @@ LPSTR strsid = NULL;
 			DWORD dwErrorCode = 0;
 
 			dwErrorCode = GetLastError();
-//			_snprintf(buffer, sizeof(buffer), "CreateFile error = %d\n", dwErrorCode);
+//			snprintf(buffer, sizeof(buffer), "CreateFile error = %d\n", dwErrorCode);
 			return  0;
   }
 
@@ -170,7 +177,7 @@ LPSTR strsid = NULL;
 			DWORD dwErrorCode = 0;
 
 			dwErrorCode = GetLastError();
-	//		_snprintf(buffer, sizeof(buffer), "GetSecurityInfo error = %d\n", dwErrorCode);
+	//		snprintf(buffer, sizeof(buffer), "GetSecurityInfo error = %d\n", dwErrorCode);
 			return 0;
   }
   
