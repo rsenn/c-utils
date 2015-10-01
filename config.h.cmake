@@ -49,4 +49,33 @@
 /* Define this if you have the 'off64_t' type */
 #cmakedefine HAVE_OFF64_T 1
 
+/* Define this if you have stdbool.h */
+#cmakedefine HAVE_STDBOOL_H 1
+
+/* Define this if you have sys/mman.h */
+#cmakedefine HAVE_SYS_MMAN_H 1
+
+/* Define this if you have sys/types.h */
+#cmakedefine HAVE_SYS_TYPES_H 1
+
+/* Define this if you want to use readdir() */
+#cmakedefine USE_READDIR 1
+
+/* Define this if you have the free() function */
+#cmakedefine HAVE_FREE_FUNC 1
+
+/* Define this if you have the localtime() function */
+#cmakedefine HAVE_LOCALTIME_FUNC 1
+
+/* Define this if you have the localtime_r() function */
+#cmakedefine HAVE_LOCALTIME_R_FUNC 1
+
+/* Define this if you have the malloc() function */
+#cmakedefine HAVE_MALLOC_FUNC 1
+
+/* Define this if you have the opendir() function */
+#cmakedefine HAVE_OPENDIR_FUNC 1
+
+/* Define this if you have the readdir() function */
+#cmakedefine HAVE_READDIR_FUNC 1
 

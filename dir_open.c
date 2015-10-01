@@ -6,7 +6,12 @@ int dir_open(struct dir_s* d, const char* p)
   int ret;
   if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))
     return 1;
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+#ifdef USE_READDIR
+# ifdef __MINGW32__
+   dir_INTERNAL(d)->dir_path = p;
+# endif
+  ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
+#else
   {
     char path[PATH_MAX+1];
     size_t len;

@@ -9,11 +9,11 @@
 #include <crtdefs.h>
 #endif
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+#ifdef USE_READDIR
+#include <dirent.h>
+#else
 #include <windows.h>
 #include <limits.h>
-#else
-#include <dirent.h>
 #endif
 
 //#include <stddef.h>
@@ -26,7 +26,13 @@
 #endif
 
 struct dir_internal_s {
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+#ifdef USE_READDIR
+  DIR *dir_handle;
+  struct dirent* dir_entry;
+#ifdef __MINGW32__
+  const char* dir_path;
+#endif
+#else
   HANDLE dir_handle;
   WIN32_FIND_DATAA dir_finddata;
   int first;
@@ -65,38 +71,43 @@ struct dir_internal_s {
 #define S_IFIFO  0010000 /* fifo */
 #endif // !defined(S_IFIFO)
 
+#ifdef USE_READDIR
+#ifndef __MINGW32__
+#define USE_LSTAT 1
+#endif
+#endif
 
 
 #define dir_INTERNAL(d) ((struct dir_internal_s *)((d)->dir_int))
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-#define dir_NAME(d) ((d)->dir_finddata.szName)
-#else
+#ifdef USE_READDIR
 #define dir_NAME(d) ((d)->dir_entry->d_name)
+#else
+#define dir_NAME(d) ((d)->dir_finddata.szName)
 #endif
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-#define dir_ATTRS(d) ((d)->dir_finddata.dwFileAttributes)
-#else
+#ifdef USE_READDIR
 #define dir_ATTRS(d) ((d)->dir_entry->st_mode)
+#else
+#define dir_ATTRS(d) ((d)->dir_finddata.dwFileAttributes)
 #endif
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-#define dir_ISDIR(d) (!!(dir_ATTRS(d) & 0x10))
-#else
+#ifdef USE_READDIR
 #define dir_ISDIR(d) S_ISDIR(dir_ATTRS(d))
+#else
+#define dir_ISDIR(d) (!!(dir_ATTRS(d) & 0x10))
 #endif
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-#define dir_ISLINK(d) (!!(dir_ATTRS(d) & 0x08))
-#else
+#ifdef USE_READDIR
 #define dir_ISLINK(d) S_ISLINK(dir_ATTRS(d))
+#else
+#define dir_ISLINK(d) (!!(dir_ATTRS(d) & 0x08))
 #endif
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
-#define dir_ISLINK(d) (!!(dir_ATTRS(d) & 0x08))
-#else
+#ifdef USE_READDIR
 #define dir_ISLINK(d) S_ISLINK(dir_ATTRS(d))
+#else
+#define dir_ISLINK(d) (!!(dir_ATTRS(d) & 0x08))
 #endif
 
 #endif // _DIR_INTERNAL_H__

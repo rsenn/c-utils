@@ -535,9 +535,22 @@ int list_dir_internal(stralloc* dir,  char type) {
     mtime = st.st_mtime;
 #else
     mode = (is_dir ? S_IFDIR : (is_symlink ? S_IFLNK : S_IFREG));
+    
+# ifdef USE_READDIR
+  if(!is_dir) {
+	 size = get_file_size(s); // dir_INTERNAL(&d)->dir_entry->d_name);
+	 mtime = get_file_time(s);
+	 
+   } else {
+	 mtime = 0;
+	 size = 0;
+	  
+   }
+# else
     size = ((uint64_t)(dir_INTERNAL(&d)->dir_finddata.nFileSizeHigh) << 32) + dir_INTERNAL(&d)->dir_finddata.nFileSizeLow;
     mtime = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
-    //mtime = FileTime_to_POSIX(dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
+# endif
+
 #endif
 
 

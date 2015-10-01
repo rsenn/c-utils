@@ -24,12 +24,38 @@ int dir_type(struct dir_s* d)
 #ifndef DT_LNK
 #define DT_LNK 10
 #endif
+
+#ifndef __MINGW32__
+
+#ifndef __MINGW32__
   switch((dir_INTERNAL(d)->dir_entry->d_type)) {
     case DT_DIR: {
       r |= D_DIRECTORY;
       break;
     }
+#else
+  r = dir_fileattr(dir_INTERNAL(d)->dir_entry->d_name);
+#endif
+ 
+#else
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+    r |= D_SYMLINK;
+#else
+  r = dir_fileattr(dir_INTERNAL(d)->dir_entry->d_name);
+#endif
+ 
+#else
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+    r |= D_SYMLINK;
 
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x10)
+    r |= D_DIRECTORY;
+  else if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x20)
+    r |= D_FILE;
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x10)
+    r |= D_DIRECTORY;
+  else if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x20)
+    r |= D_FILE;
     case DT_REG: {
       r |= D_FILE;
       break;

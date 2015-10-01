@@ -53,6 +53,22 @@ check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
 check_function_exists(localtime HAVE_LOCALTIME_FUNC)
 check_function_exists(localtime_r HAVE_LOCALTIME_R_FUNC)
 
+check_function_exists(free HAVE_FREE_FUNC)
+check_function_exists(malloc HAVE_MALLOC_FUNC)
+check_function_exists(opendir HAVE_OPENDIR_FUNC)
+check_function_exists(readdir HAVE_READDIR_FUNC)
+
+
+if(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
+  set(USE_READDIR TRUE)
+else(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
+  set(USE_READDIR FALSE)
+endif(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
+
+if(USE_READDIR)
+  add_definitions(-DUSE_READDIR=1)
+endif(USE_READDIR)
+
 configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
                "${CMAKE_BINARY_DIR}/config.h")
 
