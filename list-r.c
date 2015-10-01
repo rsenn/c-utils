@@ -639,6 +639,10 @@ const char* u;
 
     if(is_dir && !is_symlink) {
       dir->len--;
+      
+      #ifndef NDEBUG
+      fprintf(stderr, "recursion(%s,0)\n", dir->s);
+      #endif
       list_dir_internal(dir, 0);
     }
   }
