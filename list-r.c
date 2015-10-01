@@ -72,10 +72,12 @@ is_junction_point(const char* fn) {
         //ocb.error_filename(fn, "Junction point, skipping");
         break;
 
+#ifdef IO_REPARSE_TAG_SYMLINK
       case IO_REPARSE_TAG_SYMLINK:
         // TODO: Maybe have the option to follow symbolic links?
        // ocb.error_filename(fn, "Symbolic link, skipping");
         break;
+#endif
 
       // TODO: Use label for deduplication reparse point
       //         when the compiler supports it
@@ -299,7 +301,7 @@ int list_dir_internal(stralloc* dir,  char type) {
     } else
 #endif
       is_symlink = 0;
-      
+
     dtype = dir_type(&d);
 
 
@@ -312,7 +314,7 @@ int list_dir_internal(stralloc* dir,  char type) {
       is_dir = !!S_ISDIR(mode);
 #endif
     }
-    
+
     if(dtype & D_SYMLINK)
       is_symlink = 1;
 
