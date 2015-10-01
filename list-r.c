@@ -47,7 +47,7 @@ int64 get_file_size(const char* name) {
     WIN32_FILE_ATTRIBUTE_DATA fad;
     if (!GetFileAttributesEx(name, GetFileExInfoStandard, &fad))
         return -1; // error condition, could call GetLastError to find out more
-    return ((uint64)fad.nFileSizeHigh) << 32 + fad.nFileSizeHigh;
+    return ((uint64)fad.nFileSizeHigh) << 32 + fad.nFileSizeLow;
 }
 
 uint64_t get_file_time(const char* name) {
@@ -134,9 +134,10 @@ static int
 list_dir_internal(stralloc* dir,  char type);
 
 static void
-make_num(stralloc* out, size_t num, size_t width) {
-  char fmt[FMT_ULONG + 1];
-  size_t sz = fmt_uint64(fmt, num);
+make_num(stralloc* out, int64 num, size_t width) {
+  char fmt[FMT_LONG*2 + 1];
+  int i = 0;  
+  size_t sz = fmt_int64(&fmt[i], num);
 
   ssize_t n = width - sz;
 
@@ -298,7 +299,7 @@ int list_dir_internal(stralloc* dir,  char type) {
 
   while((name = dir_read(&d))) {
     unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
-    uint64 size = 0, mtime = 0;
+    int64 size = 0, mtime = 0;
 
     dir->len = l;
 
