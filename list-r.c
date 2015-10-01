@@ -17,6 +17,10 @@
 #include <dirent.h>
 #else
 #include <io.h>
+#include <aclapi.h>
+#include <sddl.h>
+#include <winternl.h>
+#include <wtypes.h>
 #endif
 #include <time.h>
 #include <string.h>
@@ -40,7 +44,212 @@
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
+static INLINE uint64_t filetime_to_unix(const FILETIME* ft);
+#ifdef _WIN32
+
+static const char*
+last_error_str () {
+  DWORD errCode = GetLastError();
+  static char buffer[1024];
+  char *err;
+  buffer[0] = '\0';
+  if(errCode == 0) return buffer;
+  
+   SetLastError(0);
+  if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+					 NULL,
+					 errCode,
+					 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+					 (LPTSTR) &err,
+					 0,
+					 NULL))
+	  return 0;
+
+  
+  snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
+  
+  //OutputDebugString(buffer); // or otherwise log it
+  LocalFree(err);
+  return buffer;
+}
+
+int64 get_file_size(char* path) {
+  LARGE_INTEGER size;
+  HANDLE hFile = CreateFileA(path, GENERIC_READ, 
+	  FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
+	  FILE_ATTRIBUTE_NORMAL, NULL);
+  if (hFile==INVALID_HANDLE_VALUE)
+	  return -1; // error condition, could call GetLastError to find out more
+
+  if (!GetFileSizeEx(hFile, &size))
+  {
+	  CloseHandle(hFile);
+	  return -1; // error condition, could call GetLastError to find out more
+  }
+
+  CloseHandle(hFile);
+
+//  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());  
+  return size.QuadPart;
+}	
+
+uint64_t get_file_time(const char* path) {
+  FILETIME c, la, lw;
+  int64 t;
+ HANDLE hFile = CreateFileA(path, GENERIC_READ, 
+	  FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
+	  FILE_ATTRIBUTE_NORMAL, NULL);
+  if(hFile == INVALID_HANDLE_VALUE)
+	  return -1; // error condition, could call GetLastError to find out more
+
+  if(!GetFileTime(hFile, &c, &la, &lw)) {
+	  CloseHandle(hFile);
+	  return -1; // error condition, could call GetLastError to find out more
+  }
+
+  CloseHandle(hFile);
+
+  if((t = filetime_to_unix(&lw)) <= 0)
+    if((t = filetime_to_unix(&c)) <= 0)
+      t = filetime_to_unix(&la);
+
+//  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());  
+  return t;
+}
+
+const char*
+get_file_owner(const char* path) {
+  static char buffer[1024];
+  DWORD dwRtnCode = 0;
+  PSID pSidOwner = NULL;
+  BOOL bRtnBool = TRUE;
+  LPTSTR AcctName = NULL;
+  LPTSTR DomainName = NULL;
+  DWORD dwAcctName = 1, dwDomainName = 1;
+  SID_NAME_USE eUse = SidTypeUnknown;
+  HANDLE hFile;
+  PSECURITY_DESCRIPTOR pSD = NULL;
+LPSTR strsid = NULL;
+
+  buffer[0] = '\0';
+
+  // Get the handle of the file object.
+  hFile = CreateFileA(path,
+					GENERIC_READ,
+					FILE_SHARE_READ,
+					NULL,
+					OPEN_EXISTING,
+					FILE_ATTRIBUTE_NORMAL,
+					NULL);
+
+  // Check GetLastError for CreateFile error code.
+  if (hFile == INVALID_HANDLE_VALUE) {
+			DWORD dwErrorCode = 0;
+
+			dwErrorCode = GetLastError();
+//			snprintf(buffer, sizeof(buffer), "CreateFile error = %d\n", dwErrorCode);
+			return  0;
+  }
+
+
+
+  // Get the owner SID of the file.
+  dwRtnCode = GetSecurityInfo(
+					hFile,
+					SE_FILE_OBJECT,
+					OWNER_SECURITY_INFORMATION,
+					&pSidOwner,
+					NULL,
+					NULL,
+					NULL,
+					&pSD);
+
+  // Check GetLastError for GetSecurityInfo error condition.
+  if (dwRtnCode != ERROR_SUCCESS) {
+			DWORD dwErrorCode = 0;
+
+			dwErrorCode = GetLastError();
+	//		snprintf(buffer, sizeof(buffer), "GetSecurityInfo error = %d\n", dwErrorCode);
+			return 0;
+  }
+  
+  
+  if(ConvertSidToStringSid(pSidOwner, &strsid)) {
+    snprintf(buffer,sizeof(buffer), "%s", strsid);
+    LocalFree(strsid);
+  }
+
+  // First call to LookupAccountSid to get the buffer sizes.
+  bRtnBool = LookupAccountSid(
+					NULL,           // local computer
+					pSidOwner,
+					AcctName,
+					(LPDWORD)&dwAcctName,
+					DomainName,
+					(LPDWORD)&dwDomainName,
+					&eUse);
+
+  // Reallocate memory for the buffers.
+  AcctName = (LPTSTR)GlobalAlloc(
+			GMEM_FIXED,
+			dwAcctName);
+
+  // Check GetLastError for GlobalAlloc error condition.
+  if (AcctName == NULL) {
+			DWORD dwErrorCode = 0;
+
+			dwErrorCode = GetLastError();
+		//	snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);
+			return buffer;
+  }
+
+  DomainName = (LPTSTR)GlobalAlloc(
+		 GMEM_FIXED,
+		 dwDomainName);
+
+  // Check GetLastError for GlobalAlloc error condition.
+  if (DomainName == NULL) {
+		DWORD dwErrorCode = 0;
+
+		dwErrorCode = GetLastError();
+		//snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);
+		return buffer;
+
+  }
+
+  // Second call to LookupAccountSid to get the account name.
+  bRtnBool = LookupAccountSid(
+		NULL,                   // name of local or remote computer
+		pSidOwner,              // security identifier
+		AcctName,               // account name buffer
+		(LPDWORD)&dwAcctName,   // size of account name buffer 
+		DomainName,             // domain name
+		(LPDWORD)&dwDomainName, // size of domain name buffer
+		&eUse);                 // SID type
+
+  // Check GetLastError for LookupAccountSid error condition.
+  if(bRtnBool == FALSE) {
+		DWORD dwErrorCode = 0;
+
+		dwErrorCode = GetLastError();
+
+		if(dwErrorCode == ERROR_NONE_MAPPED)
+			snprintf(buffer, sizeof(buffer), "Account owner not found for specified SID.\n");
+		else 
+			snprintf(buffer, sizeof(buffer), "Error in LookupAccountSid.\n");
+		return buffer;
+
+  } else if (bRtnBool == TRUE) 
+	  // Print the account name.
+	  snprintf(buffer, sizeof(buffer), "%s", AcctName);
+	  return buffer;
+  }
+
+#endif
+
 #ifdef PLAIN_WINDOWS
+
+
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL
 
