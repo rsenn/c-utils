@@ -552,17 +552,11 @@ const char* u;
     if(dtype & D_SYMLINK)
       is_symlink = 1;
 
-    if(is_dir) {
+/*    if(is_dir) {
       stralloc_cats(dir, PATHSEP_S);
       dir->len--;
-      }
+      }*/
 
-    s = dir->s;
-    len = dir->len;
-    if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1])) {
-      len -= 2;
-      s += 2;
-    }
 
 #ifdef USE_LSTAT //ndef PLAIN_WINDOWS
     mode = st.st_mode;
@@ -640,15 +634,30 @@ const char* u;
     if(opt_list)
       buffer_putsa(buffer_1, &pre);
 
-    buffer_put(buffer_1, s, len + !!is_dir);
+    if(is_dir) {
+      stralloc_catb(&dir, PATHSEP_S, 1);
+      dir->len -= 1;
+    }
+
+   stralloc_catb(&dir, "\0", 1);
+   dir->len -= 1;
+
+    s = dir->s;
+    len = dir->len;
+    if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1])) {
+      len -= 2;
+      s += 2;
+    }
+
+    buffer_put(buffer_1, s, len);
     buffer_put(buffer_1, "\n", 1);
     buffer_flush(buffer_1);
 
     if(is_dir && !is_symlink) {
-      dir->len--;
+  //    dir->len--;
       
       #ifndef NDEBUG
-      fprintf(stderr, "recursion(%s,0)\n", dir->s);
+      fprintf(stderr, "recursion(%s,0)\n", s);
       #endif
       list_dir_internal(dir, 0);
     }
