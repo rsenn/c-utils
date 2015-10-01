@@ -5,6 +5,12 @@
 #include <assert.h>
 #include "dir_internal.h"
 
+#ifdef USE_READDIR
+#include <dirent.h>
+#else
+#include <windows.h>
+#endif
+
 char* dir_read(struct dir_s* d)
 {
   char* ret = 0;

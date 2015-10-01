@@ -40,7 +40,27 @@
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
+static INLINE uint64_t filetime_to_unix(const FILETIME* ft);
+#ifdef _WIN32
+
+int64 get_file_size(const char* name) {
+    WIN32_FILE_ATTRIBUTE_DATA fad;
+    if (!GetFileAttributesEx(name, GetFileExInfoStandard, &fad))
+        return -1; // error condition, could call GetLastError to find out more
+    return ((uint64)fad.nFileSizeHigh) << 32 + fad.nFileSizeHigh;
+}
+
+uint64_t get_file_time(const char* name) {
+    WIN32_FILE_ATTRIBUTE_DATA fad;
+    if (!GetFileAttributesEx(name, GetFileExInfoStandard, &fad))
+        return 0; // error condition, could call GetLastError to find out more
+    return filetime_to_unix(&fad.ftLastWriteTime);
+}
+#endif
+
 #ifdef PLAIN_WINDOWS
+
+
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL
 
@@ -249,7 +269,7 @@ int list_dir_internal(stralloc* dir,  char type) {
   int dtype;
   int is_dir, is_symlink;
   size_t len;
-#ifndef PLAIN_WINDOWS
+#ifdef USE_LSTAT
   struct stat st;
   static dev_t root_dev;
 #endif
@@ -290,7 +310,7 @@ int list_dir_internal(stralloc* dir,  char type) {
     strcpy(dir->s + dir->len, name);
     dir->len += strlen(name);
 
-#ifndef PLAIN_WINDOWS
+#ifdef USE_LSTAT
     if(lstat(dir->s, &st) != -1) {
       if(root_dev && st.st_dev) {
         if(st.st_dev != root_dev) {
@@ -308,7 +328,7 @@ int list_dir_internal(stralloc* dir,  char type) {
     if (dtype) {
       is_dir = !!(dtype & D_DIRECTORY);
     } else {
-#ifdef PLAIN_WINDOWS
+#ifndef USE_LSTAT
       is_dir = 0;
 #else
       is_dir = !!S_ISDIR(mode);
@@ -319,7 +339,7 @@ int list_dir_internal(stralloc* dir,  char type) {
       is_symlink = 1;
 
 
-#ifndef PLAIN_WINDOWS
+#ifdef USE_LSTAT //ndef PLAIN_WINDOWS
     mode = st.st_mode;
     nlink = st.st_nlink;
     uid = st.st_uid;
@@ -328,8 +348,14 @@ int list_dir_internal(stralloc* dir,  char type) {
     mtime = st.st_mtime;
 #else
     mode = (is_dir ? S_IFDIR : (is_symlink ? S_IFLNK : S_IFREG));
+    
+#ifdef USE_READDIR
+   size = get_file_size(dir_INTERNAL(&d)->dir_entry->d_name);
+#else
     size = ((uint64_t)(dir_INTERNAL(&d)->dir_finddata.nFileSizeHigh) << 32) + dir_INTERNAL(&d)->dir_finddata.nFileSizeLow;
     mtime = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
+#endif
+    
     //mtime = FileTime_to_POSIX(dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
 #endif
 
