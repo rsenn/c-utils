@@ -6,6 +6,12 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <stdio.h>
+#include <stdlib.h>
+
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
+
 #ifdef HAVE_STDBOOL_H
 #include <stdbool.h>
 #endif
