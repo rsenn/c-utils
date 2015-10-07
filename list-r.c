@@ -50,8 +50,8 @@
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
-static INLINE uint64_t filetime_to_unix(const FILETIME* ft);
 #ifdef _WIN32
+static INLINE uint64_t filetime_to_unix(const FILETIME* ft);
 
 static const char*
 last_error_str () {

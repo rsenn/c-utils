@@ -1,50 +1,20 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include "dir_internal.h"
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
-#ifdef USE_READDIR
+#if !(defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__))
 #include <dirent.h>
 #endif
-
-#ifdef WIN32
-#include <io.h>
-#include <windows.h>
-#endif
-
-static unsigned 
-dir_fileattr(const char *p) {
- unsigned int r = 0;
-#ifdef USE_LSTAT
- struct stat st;
- 
-  if(lstat(dir_INTERNAL(d)->dir_entry->d_name, &st) == 0) {
-	if(S_IFDIR(st.st_mode)) r |= D_DIRECTORY;
-  else if(S_IFLNK(st.st_mode)) r |= D_SYMLINK;
-  else if(S_IFREG(st.st_mode)) r |= D_FILE;
-
-#else
-DWORD attr = GetFileAttributes(p);
-  if(attr & FILE_ATTRIBUTE_DIRECTORY)
-   r |= D_DIRECTORY;
-  else
-   r |= D_FILE;
-  if(attr & FILE_ATTRIBUTE_REPARSE_POINT)
-    r |= D_SYMLINK;
-  
-#endif
-  return r;
-  }
+#include "dir_internal.h"
 
 int dir_type(struct dir_s* d)
 {
   int r = 0;
-#ifdef USE_READDIR
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+    r |= D_SYMLINK;
+
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x10)
+    r |= D_DIRECTORY;
+  else if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x20)
+    r |= D_FILE;
+#else
 #ifndef DT_DIR
 #define DT_DIR 4
 #endif
@@ -54,8 +24,6 @@ int dir_type(struct dir_s* d)
 #ifndef DT_LNK
 #define DT_LNK 10
 #endif
-
-#ifndef __MINGW32__
   switch((dir_INTERNAL(d)->dir_entry->d_type)) {
     case DT_DIR: {
       r |= D_DIRECTORY;
@@ -75,18 +43,7 @@ int dir_type(struct dir_s* d)
                break;
     }
   }   
-#else
-  r = dir_fileattr(dir_INTERNAL(d)->dir_entry->d_name);
-#endif
- 
-#else
-  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
-    r |= D_SYMLINK;
-
-  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x10)
-    r |= D_DIRECTORY;
-  else if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x20)
-    r |= D_FILE;
+  
 #endif
   return r;
 }

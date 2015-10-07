@@ -17,7 +17,7 @@ void dir_close(struct dir_s* d)
 #ifdef USE_READDIR
   closedir(dir_INTERNAL(d)->dir_handle);
 #else
-  CloseHandle(dir_INTERNAL(d)->dir_handle);
+  FindClose(dir_INTERNAL(d)->dir_handle);
 #endif
   free(d->dir_int);
 }
