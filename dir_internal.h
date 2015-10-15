@@ -10,10 +10,12 @@
 #endif
 
 #ifdef USE_READDIR
-#include <dirent.h>
+# include <dirent.h>
 #else
-#include <windows.h>
-#include <limits.h>
+# ifdef _WIN32
+#  include <windows.h>
+# endif
+# include <limits.h>
 #endif
 
 //#include <stddef.h>

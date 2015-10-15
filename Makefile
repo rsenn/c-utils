@@ -11,7 +11,7 @@ INSTALL = install
 CC ?= gcc
 CXX ?= g++
 
-BUILD := $(shell $(CC) -dumpmachine)
+BUILD ?= $(shell $(CC) -dumpmachine)
 
 CCVER := $(shell $(CC) -dumpversion)
 CXXVER := $(shell $(CXX) -dumpversion)
@@ -19,7 +19,7 @@ CXXVER := $(shell $(CXX) -dumpversion)
 ifeq ($(CROSS),)
 HOST ?= $(BUILD)
 else
-HOST := $(shell $(CROSS)$(CC) -dumpmachine)
+HOST ?= $(shell $(CROSS)$(CC) -dumpmachine)
 endif
 
 ifneq ($(HOST),)
@@ -52,13 +52,19 @@ M64 = 64
 endif
 endif
 
+ifeq ($(OS),linux)
+DEFS += USE_READDIR=1
+endif
+
 ifeq ($(OS),msys)
 EXEEXT = .exe
 STATIC := 1
+DEFS += USE_READDIR=1
 endif
 
 ifeq ($(OS),cygwin)
 EXEEXT = .exe
+DEFS += USE_READDIR=1
 endif
 
 ifeq ($(OS),mingw32)
