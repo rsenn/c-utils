@@ -23,6 +23,7 @@
 #include <dirent.h>
 #else
 #include <io.h>
+#include <fcntl.h>
 #include <aclapi.h>
 #include <sddl.h>
 #include <winternl.h>
@@ -625,6 +626,10 @@ int main(int argc, char* argv[]) {
 
   stralloc dir = {0, 0, 0};
   int argi = 1;
+
+#ifdef _WIN32
+  setmode(STDOUT_FILENO, O_BINARY);
+#endif
 
   while(argi < argc) {
     if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
