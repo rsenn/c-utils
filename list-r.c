@@ -5,6 +5,9 @@
 #define _GNU_SOURCE 1
 #define _FILE_OFFSET_BITS 64
 
+#define INTERNAL_STRINGIFY(VALUE) #VALUE
+#define STRINGIFY(VALUE) INTERNAL_STRINGIFY(VALUE)
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -590,10 +593,12 @@ int list_dir_internal(stralloc* dir,  char type) {
     if(is_dir)
       stralloc_cats(dir, PATHSEP_S);
 
-    if(dir->len > PATH_MAX) {
+    if(dir->len > MAXIMUM_PATH_LENGTH) {
       buffer_puts(buffer_2, "ERROR: Directory ");
       buffer_putsa(buffer_2, dir);
-      buffer_puts(buffer_2, " longer than PATH_MAX!\n");
+      buffer_puts(buffer_2, " longer than MAXIMUM_PATH_LENGTH (" STRINGIFY(MAXIMUM_PATH_LENGTH) ")!\n");
+      /*buffer_putulong(buffer_2, MAXIMUM_PATH_LENGTH);
+      buffer_puts(buffer_2, ")!\n");*/
       buffer_flush(buffer_2);
       goto end;
     }

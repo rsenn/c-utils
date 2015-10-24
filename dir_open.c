@@ -10,10 +10,10 @@ int dir_open(struct dir_s* d, const char* p)
   ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
 #else
   {
-    char path[PATH_MAX+1];
+    char path[MAXIMUM_PATH_LENGTH+1];
     size_t len;
     strncpy(path, p, sizeof(path) - 1);
-    path[PATH_MAX]='\0';
+    path[MAXIMUM_PATH_LENGTH]='\0';
     len = strlen(path);
     strncat(path, (len > 0 && (path[len -1] == '\\' || path[len - 1] == '/')) ? "*" : "\\*", sizeof(path) - 1);
     

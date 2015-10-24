@@ -13,8 +13,8 @@
 #include "buffer.h"
 #include "fmt.h"
 
-#ifndef PATH_MAX
-#define PATH_MAX (4096 - 1)
+#ifndef MAXIMUM_PATH_LENGTH
+#define MAXIMUM_PATH_LENGTH (4096 - 1)
 #endif
 
 /*
@@ -27,7 +27,7 @@ static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSI
 
 int count_depth()
 {
-  char buffer[PATH_MAX];
+  char buffer[MAXIMUM_PATH_LENGTH];
   size_t len, i, c;
   for(;;)
   {

@@ -26,8 +26,8 @@
 #include "scan.h"
 #include "uint64.h"
 
-#ifndef PATH_MAX
-#define PATH_MAX _MAX_PATH
+#ifndef MAXIMUM_PATH_LENGTH
+#define MAXIMUM_PATH_LENGTH _MAX_PATH
 #endif
 
 INLINE static char*
@@ -89,8 +89,8 @@ const char* regtype_strings[] = {
 
 int reg2cmd()
 {
-  char buffer[PATH_MAX];
-  char key[PATH_MAX];
+  char buffer[MAXIMUM_PATH_LENGTH];
+  char key[MAXIMUM_PATH_LENGTH];
   unsigned int lineno = 0;
   int unicode = 0;
   ssize_t pos, len;

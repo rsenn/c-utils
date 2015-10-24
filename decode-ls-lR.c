@@ -26,8 +26,8 @@
 #include "byte.h"
 #include "str.h"
 
-#ifndef PATH_MAX
-#define PATH_MAX _MAX_PATH
+#ifndef MAXIMUM_PATH_LENGTH
+#define MAXIMUM_PATH_LENGTH _MAX_PATH
 #endif
 
 static int skip_fields = 8;
@@ -85,7 +85,7 @@ size_t skip_field(int n, char* s, size_t len)
 
 int decode_ls_lR()
 {
-  char buffer[PATH_MAX];
+  char buffer[MAXIMUM_PATH_LENGTH];
   ssize_t pos, len, i;
   size_t offset = dirp.len;
   int is_dir;
