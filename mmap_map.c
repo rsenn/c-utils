@@ -5,6 +5,7 @@
 #endif
 #if defined(_WIN32)
 #include <windows.h>
+#include <stdio.h>
 #else
 #include <sys/types.h>
 
@@ -20,15 +21,17 @@
 
 char* mmap_map(int fd, size_t sz, uint64 offset) {
 #if defined(_WIN32)
-  HANDLE m;
+  HANDLE h = _get_osfhandle(fd), m;
   DWORD szl, szh;
   char* map;
-  szl = GetFileSize((void*)(ssize_t)fd, &szh);
-  m=CreateFileMapping((HANDLE)(intptr_t)fd, 0, PAGE_WRITECOPY, szh, szl, NULL);
+  szl = GetFileSize(h, &szh);
+  m=CreateFileMapping(h, 0, PAGE_WRITECOPY, szh, szl, NULL);
   map = 0;
   if(m) { 
    map=MapViewOfFile(m, FILE_MAP_COPY, (offset >> 32), offset & 0xffffffff, sz);
-  }
+   //if(map == NULL)  fprintf(stderr, "MapViewOfFile(%p, %i, 0x%08x, 0x%08x, %lu) = NULL\n",  m, FILE_MAP_COPY, (offset >> 32), offset & 0xffffffff, sz);
+  } //else fprintf(stderr, "CreateFileMapping(%p, %i, %i, 0x%08x, 0x%08x, NULL) = NULL\n",  h, 0, PAGE_WRITECOPY, szh, szl);
+
   CloseHandle(m);
   return map;
 #else
