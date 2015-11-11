@@ -26,6 +26,10 @@
 #include "byte.h"
 #include "str.h"
 
+#ifndef _MAX_PATH
+#define _MAX_PATH PATH_MAX
+#endif
+
 #ifndef MAXIMUM_PATH_LENGTH
 #define MAXIMUM_PATH_LENGTH _MAX_PATH
 #endif

@@ -1,6 +1,3 @@
-prefix = /usr/local
-bindir = ${prefix}/bin
-
 DEBUG = 1
 LARGEFILE = 1
 WARNINGS = all
@@ -10,6 +7,10 @@ INSTALL = install
 
 CC ?= gcc
 CXX ?= g++
+
+prefix := `$(CC)  -print-search-dirs|sed -n "s|^[^:]*: =\?\(/\?[^/]\+\)/.*|\1|p" | head -n1`
+
+bindir = ${prefix}/bin
 
 BUILD ?= $(shell $(CC) -dumpmachine)
 

@@ -10,6 +10,8 @@
 
 #ifndef _WIN32
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 #else
 #include <windows.h>
 #include <io.h>
@@ -91,6 +93,7 @@ int64 filesize(int fd) {
 
 static const char*
 last_error_str () {
+#ifdef _WIN32
   DWORD errCode = GetLastError();
   static char buffer[1024];
   char *err;
@@ -113,8 +116,10 @@ last_error_str () {
   //OutputDebugString(buffer); // or otherwise log it
   LocalFree(err);
   return buffer;
+#else
+	return strerror(errno);
+#endif
 }
-
 
 static buffer infile = BUFFER_INIT((void*)read, -1, 0, 0);
 
