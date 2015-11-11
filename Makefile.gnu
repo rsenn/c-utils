@@ -12,7 +12,7 @@ EXEEXT =
 HOST = $(shell $(CC) -dumpmachine |sed 's,.*-,,')
 RM = rm -f
 
-prefix = `$(CC)  -print-search-dirs|sed -n "s|^[^:]*: =\?\(/\?[^/]\+\)/.*|\1|p" | head -n1`
+prefix := `$(CC)  -print-search-dirs|sed -n "s|^[^:]*: =\?\(/\?[^/]\+\)/.*|\1|p" | head -n1`
 bindir = ${prefix}/bin
 
 #EXTRA_DEP = $(EXTRA_MODULES:%=%.o)
