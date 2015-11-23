@@ -1,18 +1,17 @@
+prefix = /usr/local
+bindir = ${prefix}/bin
+
 DEBUG = 1
 LARGEFILE = 1
 WARNINGS = all
-WARNINGS += error
+#WARNINGS += error
 
 INSTALL = install
 
 CC ?= gcc
 CXX ?= g++
 
-prefix := `$(CC)  -print-search-dirs|sed -n "s|^[^:]*: =\?\(/\?[^/]\+\)/.*|\1|p" | head -n1`
-
-bindir = ${prefix}/bin
-
-BUILD ?= $(shell $(CC) -dumpmachine)
+BUILD := $(shell $(CC) -dumpmachine)
 
 CCVER := $(shell $(CC) -dumpversion)
 CXXVER := $(shell $(CXX) -dumpversion)
@@ -20,11 +19,11 @@ CXXVER := $(shell $(CXX) -dumpversion)
 ifeq ($(CROSS),)
 HOST ?= $(BUILD)
 else
-HOST ?= $(shell $(CROSS)$(CC) -dumpmachine)
+HOST := $(shell $(CROSS)$(CC) -dumpmachine |sed "s,[-.0-9]*\$,,")
 endif
 
 ifneq ($(HOST),)
-TRIPLET = $(subst -, ,$(HOST))
+TRIPLET := $(subst -, ,$(HOST))
 endif
 
 ifeq ($(CROSS),)
@@ -43,9 +42,12 @@ endif
 
 ifneq ($(TRIPLET),)
 ARCH = $(word 1,$(TRIPLET))
-OS = $(word 3,$(TRIPLET))
+OS := $(shell echo $(word 3,$(TRIPLET)) |sed 's,[0-9].*,,')
 KERN = $(word 2,$(TRIPLET))
 endif
+
+$(info Arch: $(ARCH))
+$(info OS: $(OS))
 
 ifneq ($(OS),linux)
 ifeq ($(ARCH),x86_64)
@@ -53,19 +55,13 @@ M64 = 64
 endif
 endif
 
-ifeq ($(OS),linux)
-DEFS += USE_READDIR=1
-endif
-
 ifeq ($(OS),msys)
 EXEEXT = .exe
 STATIC := 1
-DEFS += USE_READDIR=1
 endif
 
 ifeq ($(OS),cygwin)
 EXEEXT = .exe
-DEFS += USE_READDIR=1
 endif
 
 ifeq ($(OS),mingw32)
@@ -213,6 +209,11 @@ VPATH = $(BUILDDIR):.
 #$(info OS: $(OS))
 #$(info STATIC: $(STATIC))
 #$(info TRIPLET: $(TRIPLET))
+ifeq ($(OS),darwin)
+#DEFINES += USE_READDIR=1
+CFLAGS += -DUSE_READDIR=1
+CPPFLAGS += -DUSE_READDIR=1
+endif
 
 all: $(BUILDDIR) $(PROGRAMS)
 
@@ -229,7 +230,7 @@ $(BUILDDIR)count-depth$(M64_)$(EXEEXT): $(BUILDDIR)count-depth.o $(BUILDDIR)buff
 	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)list-r.o: list-r.c
-$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)byte_copy.o $(BUILDDIR)dir_close.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_type.o $(BUILDDIR)fmt_uint64.o $(BUILDDIR)str_len.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o
+$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)byte_copy.o $(BUILDDIR)dir_close.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_type.o $(BUILDDIR)fmt_long.o $(BUILDDIR)fmt_ulong.o  $(BUILDDIR)fmt_int64.o  $(BUILDDIR)fmt_uint64.o  $(BUILDDIR)str_len.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o
 	$(CROSS)$(CXX) $(CXXOPTS) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)reg2cmd.o: reg2cmd.c
