@@ -173,15 +173,19 @@ next:
     int map_size = (BLOCK_SIZE * map_blocks);
 
     fd = open_read(argv[ai]);
+#ifdef DEBUG
       fprintf(stderr, "open_read(%s) = %d\n", argv[ai], fd);
+#endif
     fsize = filesize(fd);
 
     iterations = (((fsize + map_size + 1) / map_size) + 7) >> 3;
     remain = fsize;
 
+#ifdef DEBUG
     if(verbose)
         fprintf(stderr, "memory map size: %lukB (0x%016lx) iterations: %"PRIu64" (end offset: 0x%"PRIx64")\n",
                 (long)(map_size / 1024), (long)map_size, iterations, fsize);
+#endif
 
     //(uint64)map_size * iterations);
     //mmap_private(argv[ai], &fsize);
@@ -207,7 +211,9 @@ next:
       char* m = mmap_map(fd, msz, mofs);
 
 	  if(m == NULL) {
+#ifdef DEBUG
 		  fprintf(stderr, "mmap_map(%d, "FMT_SIZE_T", "FMT_OFFS_T") failed: %s\n", fd, (size_t)msz, (size_t)mofs, last_error_str());
+#endif
 		  exit(2);
 	  }
 
@@ -224,9 +230,10 @@ next:
         z += check_block_zero(&m[bi*BLOCK_SIZE], BLOCK_SIZE);
         //fprintf(stderr, "block #%lu\n", bi); fflush(stderr);
       }
-    
+#ifdef DEBUG 
       if(verbose)
         fprintf(stderr, "mmap at "FMT_OFFS_T", size "FMT_SIZE_T"%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
+#endif
       
       zero_blocks += z;
 
