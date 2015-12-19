@@ -37,7 +37,7 @@
 INLINE static char*
 mybasename(const char* path) {
   char* r = strrchr(path, '/');
-  return r ? r + 1:(char *)path;
+  return r ? r + 1 : (char *)path;
 }
 
 static int  force = 0;
@@ -91,8 +91,7 @@ const char* regtype_strings[] = {
   "REG_NONE", "REG_SZ", "REG_MULTI_SZ", "REG_EXPAND_SZ", "REG_DWORD", "REG_QWORD", "REG_BINARY",
 };
 
-int reg2cmd()
-{
+int reg2cmd() {
   char buffer[MAXIMUM_PATH_LENGTH];
   char key[MAXIMUM_PATH_LENGTH];
   unsigned int lineno = 0;
@@ -101,8 +100,7 @@ int reg2cmd()
   stralloc line;
   stralloc_init(&line);
 
-  for(;;)
-  {
+  for(;;) {
     buffer[0] = '\0';
     buffer[1] = '\0';
     lineno++;
@@ -177,11 +175,10 @@ int reg2cmd()
       }
     }
 
-    if(key[0])
-    {
+    if(key[0]) {
       int has_newline = 0, has_expansion = 0;
       const char* type;
-			int keystart, keyend, valuestart = 0, valueend;
+      int keystart, keyend, valuestart = 0, valueend;
       regtype_t rt = 0;
       uint64 word = 0;
       int inquote;
@@ -189,7 +186,7 @@ int reg2cmd()
       keystart = (line.s[0] == '"' ? 1 : 0);
       inquote = keystart;
 
-			for(keyend = keystart; (unsigned)keyend < line.len; keyend++) {
+      for(keyend = keystart; (unsigned)keyend < line.len; keyend++) {
         if(line.s[keyend] == '\\') {
           keyend++;
           continue;
@@ -298,7 +295,7 @@ int reg2cmd()
       buffer_puts(buffer_1, " /d ");
 
       switch(rt) {
-      //case REGISTRY_BINARY:
+        //case REGISTRY_BINARY:
       case REGISTRY_EXPAND_SZ: {
         buffer_putc(buffer_1, '"');
         for(pos = valuestart; pos < valueend; pos++) {
@@ -375,25 +372,20 @@ int reg2cmd()
   return 0;
 }
 
-void usage(char* arg0)
-{
+void usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, mybasename(arg0));
   buffer_puts(buffer_2, " [-f] [input - file] [output - file]\n");
   buffer_flush(buffer_2);
   exit(1);
 }
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
   int argi;
 
-  for(argi = 1; argi < argc; argi++)
-  {
+  for(argi = 1; argi < argc; argi++) {
     char* arg = argv[argi];
-    if(arg[0] == '-')
-    {
-      switch(arg[1])
-      {
+    if(arg[0] == '-') {
+      switch(arg[1]) {
       case 'f':
         force++;
         break;
@@ -401,11 +393,9 @@ int main(int argc, char* argv[])
         usage(argv[0]);
         break;
       }
-    }
-    else break;
+    } else break;
   }
-  if(argi < argc)
-  {
+  if(argi < argc) {
     buffer_puts(buffer_2, "Opening file for reading '");
     buffer_puts(buffer_2, argv[argi]);
     buffer_puts(buffer_2, "' ...\n");
@@ -416,13 +406,12 @@ int main(int argc, char* argv[])
 
     argi++;
   }
-  if(argi < argc)
-  {
+  if(argi < argc) {
     buffer_puts(buffer_2, "Opening file for writing '");
     buffer_puts(buffer_2, argv[argi]);
     buffer_puts(buffer_2, "' ...\n");
     buffer_flush(buffer_2);
-    if((buffer_1->fd = open(argv[argi], O_CREAT|O_TRUNC|O_WRONLY, 0644)) < 0)
+    if((buffer_1->fd = open(argv[argi], O_CREAT | O_TRUNC | O_WRONLY, 0644)) < 0)
       usage(argv[0]);
 
     argi++;

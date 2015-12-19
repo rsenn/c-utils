@@ -92,32 +92,32 @@ int64 filesize(int fd) {
 
 
 static const char*
-last_error_str () {
+last_error_str() {
 #ifdef _WIN32
   DWORD errCode = GetLastError();
   static char buffer[1024];
   char *err;
   buffer[0] = '\0';
   if(errCode == 0) return buffer;
-  
-   SetLastError(0);
-  if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-					 NULL,
-					 errCode,
-					 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
-					 (LPTSTR) &err,
-					 0,
-					 NULL))
-	  return 0;
 
-  
+  SetLastError(0);
+  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                    NULL,
+                    errCode,
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+                    (LPTSTR) &err,
+                    0,
+                    NULL))
+    return 0;
+
+
   snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
-  
+
   //OutputDebugString(buffer); // or otherwise log it
   LocalFree(err);
   return buffer;
 #else
-	return strerror(errno);
+  return strerror(errno);
 #endif
 }
 
@@ -125,16 +125,14 @@ static buffer infile = BUFFER_INIT((void*)read, -1, 0, 0);
 
 int check_block_zero(char* b, size_t n) {
   size_t i;
-  for(i = 0; i < n; i++)
-  {
+  for(i = 0; i < n; i++) {
     if(b[i] != '\0')
       return 0;
   }
   return 1;
 }
 
-ssize_t get_block(char* b)
-{
+ssize_t get_block(char* b) {
   return buffer_get(&infile, b, BLOCK_SIZE);
 }
 
@@ -174,17 +172,17 @@ next:
 
     fd = open_read(argv[ai]);
 #ifdef DEBUG
-      fprintf(stderr, "open_read(%s) = %d\n", argv[ai], fd);
+    fprintf(stderr, "open_read(%s) = %d\n", argv[ai], fd);
 #endif
     fsize = filesize(fd);
 
-    iterations = (((fsize + map_size + 1) / map_size) + 7) >> 3;
+    iterations = (((fsize + map_size - 1) / map_size) + 7) >> 3;
     remain = fsize;
 
 #ifdef DEBUG
     if(verbose)
-        fprintf(stderr, "memory map size: %lukB (0x%016lx) iterations: %"PRIu64" (end offset: 0x%"PRIx64")\n",
-                (long)(map_size / 1024), (long)map_size, iterations, fsize);
+      fprintf(stderr, "memory map size: %lukB (0x%016lx) iterations: %"PRIu64" (end offset: 0x%"PRIx64")\n",
+              (long)(map_size / 1024), (long)map_size, iterations, fsize);
 #endif
 
     //(uint64)map_size * iterations);
@@ -202,50 +200,55 @@ next:
 
 
     //buffer_puts(buffer_1, "fsize #"); buffer_putulong(buffer_1, fsize);; buffer_puts(buffer_1, ", blocks #"); buffer_putulong(buffer_1, blocks); buffer_putnlflush(buffer_1);
+    if(iterations) {
+      for(i = 0; i < iterations; i++) {
+        size_t msz = (remain >= map_size ? map_size : (size_t)remain);
+        uint64 mofs = (uint64)map_size * i;
+        size_t z, blocks;
 
-    for(i = 0; i < iterations; i++) {
-      size_t msz =  (remain >= map_size ? map_size : (size_t)remain);
-      uint64 mofs =  (uint64)map_size * i;
-	  size_t z, blocks;
+        char* m = mmap_map(fd, msz, mofs);
 
-      char* m = mmap_map(fd, msz, mofs);
-
-	  if(m == NULL) {
+        if(m == NULL) {
 #ifdef DEBUG
-		  fprintf(stderr, "mmap_map(%d, "FMT_SIZE_T", "FMT_OFFS_T") failed: %s\n", fd, (size_t)msz, (size_t)mofs, last_error_str());
+          fprintf(stderr, "mmap_map(%d, "FMT_SIZE_T", "FMT_OFFS_T") failed: %s\n", fd, (size_t)msz, (size_t)mofs, last_error_str());
 #endif
-		  exit(2);
-	  }
+          exit(2);
+        }
 
-      z = 0;
-	  blocks = msz / BLOCK_SIZE;
+        z = 0;
+        blocks = msz / BLOCK_SIZE;
 
-      all_blocks += blocks;
+        all_blocks += blocks;
 
-      //int remain = msz - (blocks * BLOCK_SIZE);
-      for(bi = 0; bi < blocks; bi++)
-      {
-        //get_block(m);
+        //int remain = msz - (blocks * BLOCK_SIZE);
+        for(bi = 0; bi < blocks; bi++) {
+          //get_block(m);
 
-        z += check_block_zero(&m[bi*BLOCK_SIZE], BLOCK_SIZE);
-        //fprintf(stderr, "block #%lu\n", bi); fflush(stderr);
+          z += check_block_zero(&m[bi * BLOCK_SIZE], BLOCK_SIZE);
+          //fprintf(stderr, "block #%lu\n", bi); fflush(stderr);
+        }
+#ifdef DEBUG
+        if(verbose)
+          fprintf(stderr, "mmap at "FMT_OFFS_T", size "FMT_SIZE_T"%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
+#endif
+
+        zero_blocks += z;
+
+        mmap_unmap(m, msz);
+
+        if(remain >= map_size)
+          remain -= map_size;
       }
-#ifdef DEBUG 
-      if(verbose)
-        fprintf(stderr, "mmap at "FMT_OFFS_T", size "FMT_SIZE_T"%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
-#endif
-      
-      zero_blocks += z;
-
-      mmap_unmap(m, msz);
-
-      if(remain >= map_size)
-        remain -= map_size;
+      //   buffer_putulong(buffer_1, blocks);
+      //   buffer_putnlflush(buffer_1);
+      nonzero_blocks = all_blocks - zero_blocks;
+      percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
+    } else {
+//percent  = 100000;
+      percent  = 0;
+      //if(verbose)
+      fprintf(stderr, "warning: empty file '%s'!\n",  argv[ai]);
     }
-    //   buffer_putulong(buffer_1, blocks);
-    //   buffer_putnlflush(buffer_1);
-    nonzero_blocks = all_blocks - zero_blocks;
-    percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
 
     buffer_puts(buffer_1, argv[ai]);
     buffer_puts(buffer_1, (space ? ": " : ":"));
@@ -253,7 +256,7 @@ next:
     if(!fraction) percent += 50;
 
     buffer_putulong(buffer_1, percent / 100);
-    
+
     if(fraction) {
       buffer_puts(buffer_1, ".");
       buffer_putulong(buffer_1, percent % 100);

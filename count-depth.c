@@ -25,12 +25,10 @@ static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 */
 
-int count_depth()
-{
+int count_depth() {
   char buffer[MAXIMUM_PATH_LENGTH];
   size_t len, i, c;
-  for(;;)
-  {
+  for(;;) {
     buffer[0] = '\0';
     len = buffer_getline(buffer_0, buffer, sizeof(buffer));
 
@@ -41,8 +39,7 @@ int count_depth()
       len--;
 
     c = 0;
-    for(i = 0; i < len; i++)
-    {
+    for(i = 0; i < len; i++) {
       if(buffer[i] == '/')
         c++;
     }
@@ -56,16 +53,16 @@ int count_depth()
 }
 
 int main(int argc, char* argv[]) {
-	int argi = 1;
+  int argi = 1;
 
-	while(argi < argc) {
-/*		if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
-			opt_list = 1;
-		} else*/ {
-			break;
-		}
-		argi++;
-	}
+  while(argi < argc) {
+    /*		if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
+    			opt_list = 1;
+    		} else*/ {
+      break;
+    }
+    argi++;
+  }
   return count_depth();
 }
 
