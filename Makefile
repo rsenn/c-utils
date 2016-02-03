@@ -95,7 +95,9 @@ CPPFLAGS := -I.
 
 DEFS += INLINE=inline
 DEFS += PATH_MAX=4096
+ifneq ($(READDIR),)
 DEFS += USE_READDIR=1
+endif
 
 ifeq ($(LARGEFILE),1)
 DEFS += _FILE_OFFSET_BITS=64

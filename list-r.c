@@ -49,12 +49,14 @@
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
 #include <shlwapi.h>
+#include <sys/fcntl.h>
+#include <io.h>
 #endif
 
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
-#ifdef _WIN32
+#if defined( _WIN32 ) && !defined(__MSYS__)
 static INLINE uint64_t filetime_to_unix(const FILETIME* ft);
 
 static const char*
