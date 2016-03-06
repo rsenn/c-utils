@@ -1,4 +1,4 @@
-#if !(defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__))
+#if USE_READDIR || !(defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__))
 #include <dirent.h>
 #endif
 #include "dir_internal.h"
@@ -6,7 +6,7 @@
 int dir_type(struct dir_s* d)
 {
   int r = 0;
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+#if !USE_READDIR && (defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__))
   if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
     r |= D_SYMLINK;
 
