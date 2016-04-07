@@ -75,7 +75,7 @@ last_error_str() {
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                     NULL,
                     errCode,
-                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language*/
                     (LPTSTR) &err,
                     0,
                     NULL))
@@ -84,7 +84,7 @@ last_error_str() {
 
   snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
 
-  //OutputDebugString(buffer); // or otherwise log it
+  /*OutputDebugString(buffer); // or otherwise log it*/
   LocalFree(err);
   return buffer;
 }
@@ -95,16 +95,16 @@ int64 get_file_size(char* path) {
                              FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
                              FILE_ATTRIBUTE_NORMAL, NULL);
   if(hFile == INVALID_HANDLE_VALUE)
-    return -1; // error condition, could call GetLastError to find out more
+    return -1; /* error condition, could call GetLastError to find out more*/
 
   if(!GetFileSizeEx(hFile, &size)) {
     CloseHandle(hFile);
-    return -1; // error condition, could call GetLastError to find out more
+    return -1; /* error condition, could call GetLastError to find out more*/
   }
 
   CloseHandle(hFile);
 
-//  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());
+/*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());*/
   return size.QuadPart;
 }
 
@@ -115,11 +115,11 @@ uint64_t get_file_time(const char* path) {
                              FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
                              FILE_ATTRIBUTE_NORMAL, NULL);
   if(hFile == INVALID_HANDLE_VALUE)
-    return -1; // error condition, could call GetLastError to find out more
+    return -1; /* error condition, could call GetLastError to find out more*/
 
   if(!GetFileTime(hFile, &c, &la, &lw)) {
     CloseHandle(hFile);
-    return -1; // error condition, could call GetLastError to find out more
+    return -1; /* error condition, could call GetLastError to find out more*/
   }
 
   CloseHandle(hFile);
@@ -128,121 +128,89 @@ uint64_t get_file_time(const char* path) {
     if((t = filetime_to_unix(&c)) <= 0)
       t = filetime_to_unix(&la);
 
-//  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());
+/*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());*/
   return t;
 }
 
 const char*
-get_file_owner(const char* path) {
-  static char buffer[1024];
-  DWORD dwRtnCode = 0;
-  PSID pSidOwner = NULL;
-  BOOL bRtnBool = TRUE;
-  LPTSTR AcctName = NULL;
-  LPTSTR DomainName = NULL;
-  DWORD dwAcctName = 1, dwDomainName = 1;
-  SID_NAME_USE eUse = SidTypeUnknown;
-  HANDLE hFile;
-  PSECURITY_DESCRIPTOR pSD = NULL;
-  LPSTR strsid = NULL;
+get_file_owner(const char* path)
+{
+    static char buffer[1024];
+    DWORD dwRtnCode = 0, dwAcctName = 1, dwDomainName = 1;
+    PSID pSidOwner = NULL;
+    BOOL bRtnBool = TRUE;
+    LPTSTR AcctName = NULL, DomainName = NULL;
+    SID_NAME_USE eUse = SidTypeUnknown;
+    HANDLE hFile;
+    PSECURITY_DESCRIPTOR pSD = NULL;
+    LPSTR strsid = NULL;
 
   buffer[0] = '\0';
 
-  // Get the handle of the file object.
-  hFile = CreateFileA(path,
-                      GENERIC_READ,
-                      FILE_SHARE_READ,
-                      NULL,
-                      OPEN_EXISTING,
-                      FILE_ATTRIBUTE_NORMAL,
-                      NULL);
+  /* Get the handle of the file object.*/
+  hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-  // Check GetLastError for CreateFile error code.
-  if(hFile == INVALID_HANDLE_VALUE) {
-    DWORD dwErrorCode = 0;
-
-    dwErrorCode = GetLastError();
-//			snprintf(buffer, sizeof(buffer), "CreateFile error = %d\n", dwErrorCode);
+  /* Check GetLastError for CreateFile error code.*/
+ if(hFile == INVALID_HANDLE_VALUE) { DWORD dwErrorCode = 0; dwErrorCode = GetLastError();
+/* snprintf(buffer, sizeof(buffer), "CreateFile error = %d\n", dwErrorCode);*/
     return  0;
   }
 
+  /* Get the owner SID of the file.*/
+  dwRtnCode = GetSecurityInfo(hFile,SE_FILE_OBJECT,OWNER_SECURITY_INFORMATION,&pSidOwner,NULL,NULL,NULL,&pSD);
 
-
-  // Get the owner SID of the file.
-  dwRtnCode = GetSecurityInfo(
-                hFile,
-                SE_FILE_OBJECT,
-                OWNER_SECURITY_INFORMATION,
-                &pSidOwner,
-                NULL,
-                NULL,
-                NULL,
-                &pSD);
-
-  // Check GetLastError for GetSecurityInfo error condition.
+  /* Check GetLastError for GetSecurityInfo error condition.*/
   if(dwRtnCode != ERROR_SUCCESS) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
-    //		snprintf(buffer, sizeof(buffer), "GetSecurityInfo error = %d\n", dwErrorCode);
+    /*		snprintf(buffer, sizeof(buffer), "GetSecurityInfo error = %d\n", dwErrorCode);*/
     return 0;
   }
-
 
   if(ConvertSidToStringSid(pSidOwner, &strsid)) {
     snprintf(buffer, sizeof(buffer), "%s", strsid);
     LocalFree(strsid);
   }
 
-  // First call to LookupAccountSid to get the buffer sizes.
-  bRtnBool = LookupAccountSid(
-               NULL,           // local computer
-               pSidOwner,
-               AcctName,
-               (LPDWORD)&dwAcctName,
-               DomainName,
-               (LPDWORD)&dwDomainName,
-               &eUse);
+    /* First call to LookupAccountSid to get the buffer sizes.*/
+    bRtnBool = LookupAccountSid(NULL, /* local computer*/pSidOwner, AcctName, (LPDWORD)&dwAcctName, DomainName, (LPDWORD)&dwDomainName, &eUse);
 
-  // Reallocate memory for the buffers.
-  AcctName = (LPTSTR)GlobalAlloc(
-               GMEM_FIXED,
-               dwAcctName);
 
-  // Check GetLastError for GlobalAlloc error condition.
+  /* Reallocate memory for the buffers.*/
+    AcctName = (LPTSTR)GlobalAlloc( GMEM_FIXED, dwAcctName);
+
+  /* Check GetLastError for GlobalAlloc error condition.*/
   if(AcctName == NULL) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
-    //	snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);
+    /*	snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);*/
     return buffer;
   }
+ DomainName = (LPTSTR)GlobalAlloc( GMEM_FIXED, dwDomainName);
 
-  DomainName = (LPTSTR)GlobalAlloc(
-                 GMEM_FIXED,
-                 dwDomainName);
-
-  // Check GetLastError for GlobalAlloc error condition.
+  /* Check GetLastError for GlobalAlloc error condition.*/
   if(DomainName == NULL) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
-    //snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);
+    /*snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);*/
     return buffer;
 
   }
 
-  // Second call to LookupAccountSid to get the account name.
+  /* Second call to LookupAccountSid to get the account name.*/
   bRtnBool = LookupAccountSid(
-               NULL,                   // name of local or remote computer
-               pSidOwner,              // security identifier
-               AcctName,               // account name buffer
-               (LPDWORD)&dwAcctName,   // size of account name buffer
-               DomainName,             // domain name
-               (LPDWORD)&dwDomainName, // size of domain name buffer
-               &eUse);                 // SID type
+               NULL,                   /* name of local or remote computer*/
+               pSidOwner,              /* security identifier*/
+               AcctName,               /* account name buffer*/
+               (LPDWORD)&dwAcctName,   /* size of account name buffer*/
+               DomainName,             /* domain name*/
+               (LPDWORD)&dwDomainName, /* size of domain name buffer*/
+               &eUse);                 /* SID type*/
 
-  // Check GetLastError for LookupAccountSid error condition.
+  /* Check GetLastError for LookupAccountSid error condition.*/
   if(bRtnBool == FALSE) {
     DWORD dwErrorCode = 0;
 
@@ -255,7 +223,7 @@ get_file_owner(const char* path) {
     return buffer;
 
   } else if(bRtnBool == TRUE)
-    // Print the account name.
+    /* Print the account name.*/
     snprintf(buffer, sizeof(buffer), "%s", AcctName);
   return buffer;
 }
@@ -284,37 +252,37 @@ is_junction_point(const char* fn) {
   hFind = FindFirstFile(fn, &FindFileData);
   if(INVALID_HANDLE_VALUE != hFind) {
     if(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
-      // We're probably going to skip this reparse point,
-      // but not always. (See the logic below.)
+      /* We're probably going to skip this reparse point,*/
+      /* but not always. (See the logic below.)*/
       status = 1;
 
-      // Tag values come from
-      // http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx
+      /* Tag values come from*/
+      /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx*/
 
       switch(FindFileData.dwReserved0) {
       case IO_REPARSE_TAG_MOUNT_POINT:
-        //ocb.error_filename(fn, "Junction point, skipping");
+        /*ocb.error_filename(fn, "Junction point, skipping");*/
         break;
 
       case IO_REPARSE_TAG_SYMLINK:
-        // TODO: Maybe have the option to follow symbolic links?
-        // ocb.error_filename(fn, "Symbolic link, skipping");
+        /* TODO: Maybe have the option to follow symbolic links?*/
+        /* ocb.error_filename(fn, "Symbolic link, skipping");*/
         break;
 
-        // TODO: Use label for deduplication reparse point
-        //         when the compiler supports it
-        //      case IO_REPARSE_TAG_DEDUP:
+        /* TODO: Use label for deduplication reparse point*/
+        /*         when the compiler supports it*/
+        /*      case IO_REPARSE_TAG_DEDUP:*/
       case 0x80000013:
-        // This is the reparse point for Data Deduplication
-        // See http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
-        // Unfortunately the compiler doesn't have this value defined yet.
+        /* This is the reparse point for Data Deduplication*/
+        /* See http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx*/
+        /* Unfortunately the compiler doesn't have this value defined yet.*/
         status = 0;
         break;
 
       case IO_REPARSE_TAG_SIS:
-        // Single Instance Storage
-        // "is a system's ability to keep one copy of content that multiple users or computers share"
-        // http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
+        /* Single Instance Storage*/
+        /* "is a system's ability to keep one copy of content that multiple users or computers share"*/
+        /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx*/
         status = 0;
         break;
 
@@ -323,8 +291,8 @@ is_junction_point(const char* fn) {
       }
     }
 
-    // We don't error check this call as there's nothing to do differently
-    // if it fails.
+    /* We don't error check this call as there's nothing to do differently*/
+    /* if it fails.*/
     FindClose(hFind);
   }
 
@@ -555,7 +523,7 @@ int list_dir_internal(stralloc* dir,  char type) {
 
 # ifdef USE_READDIR
     if(!is_dir) {
-      size = get_file_size(s); // dir_INTERNAL(&d)->dir_entry->d_name);
+      size = get_file_size(s); /* dir_INTERNAL(&d)->dir_entry->d_name);*/
       mtime = get_file_time(s);
 
     } else {
@@ -574,29 +542,29 @@ int list_dir_internal(stralloc* dir,  char type) {
     if(opt_list) {
       stralloc_init(&pre);
 
-      // Mode string
+      /* Mode string*/
       mode_str(&pre, mode);
       stralloc_catb(&pre, " ", 1);
-      // num links
+      /* num links*/
       make_num(&pre, nlink, 3);
       stralloc_catb(&pre, " ", 1);
-      // uid
+      /* uid*/
       make_num(&pre, uid, 0);
       stralloc_catb(&pre, " ", 1);
-      // gid
+      /* gid*/
       make_num(&pre, gid, 0);
       stralloc_catb(&pre, " ", 1);
-      // size
+      /* size*/
       make_num(&pre, size, 6);
       stralloc_catb(&pre, " ", 1);
-      // time
+      /* time*/
       make_num(&pre, mtime, 0);
 
-//     make_time(&pre, mtime, 10);
+/*     make_time(&pre, mtime, 10);*/
       stralloc_catb(&pre, " ", 1);
     }
 
-    //fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d));
+    /*fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d));*/
     if(is_dir)
       stralloc_cats(dir, PATHSEP_S);
 
