@@ -1,4 +1,6 @@
+
 #ifdef HAVE_CONFIG_H
+
 #include "config.h"
 #endif
 #define _LARGEFILE_SOURCE 1
@@ -11,18 +13,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 #ifdef _MSC_VER
+
 #define snprintf _snprintf
 #endif
 
+
 #ifdef USE_MAGIC
+
 #include <magic.h>
 #endif
 
+
 #ifdef HAVE_STDBOOL_H
+
 #include <stdbool.h>
 #endif
+
 #ifdef HAVE_STDINT_H
+
 #include <stdint.h>
 #endif
 #ifndef _WIN32
@@ -145,90 +155,57 @@ get_file_owner(const char* path)
     PSECURITY_DESCRIPTOR pSD = NULL;
     LPSTR strsid = NULL;
 
-  buffer[0] = '\0';
+    buffer[0] = '\0';
 
-  /* Get the handle of the file object.*/
-  hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    /* Get the handle of the file object.*/
+    hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-  /* Check GetLastError for CreateFile error code.*/
- if(hFile == INVALID_HANDLE_VALUE) { DWORD dwErrorCode = 0; dwErrorCode = GetLastError();
-/* snprintf(buffer, sizeof(buffer), "CreateFile error = %d\n", dwErrorCode);*/
-    return  0;
-  }
+    /* Check GetLastError for CreateFile error code.*/
+    if(hFile == INVALID_HANDLE_VALUE) {   DWORD dwErrorCode = 0; dwErrorCode = GetLastError(); return 0; }
 
-  /* Get the owner SID of the file.*/
-  dwRtnCode = GetSecurityInfo(hFile,SE_FILE_OBJECT,OWNER_SECURITY_INFORMATION,&pSidOwner,NULL,NULL,NULL,&pSD);
+    /* Get the owner SID of the file.*/
+    dwRtnCode = GetSecurityInfo(hFile,SE_FILE_OBJECT,OWNER_SECURITY_INFORMATION,&pSidOwner,NULL,NULL,NULL,&pSD);
 
-  /* Check GetLastError for GetSecurityInfo error condition.*/
-  if(dwRtnCode != ERROR_SUCCESS) {
-    DWORD dwErrorCode = 0;
-
-    dwErrorCode = GetLastError();
-    /*		snprintf(buffer, sizeof(buffer), "GetSecurityInfo error = %d\n", dwErrorCode);*/
-    return 0;
-  }
-
-  if(ConvertSidToStringSid(pSidOwner, &strsid)) {
-    snprintf(buffer, sizeof(buffer), "%s", strsid);
-    LocalFree(strsid);
-  }
+    /* Check GetLastError for GetSecurityInfo error condition.*/
+    if(dwRtnCode != ERROR_SUCCESS) { DWORD dwErrorCode = 0; dwErrorCode = GetLastError(); return 0; }
+    if(ConvertSidToStringSid(pSidOwner, &strsid)) { snprintf(buffer, sizeof(buffer), "%s", strsid); LocalFree(strsid); }
 
     /* First call to LookupAccountSid to get the buffer sizes.*/
-    bRtnBool = LookupAccountSid(NULL, /* local computer*/pSidOwner, AcctName, (LPDWORD)&dwAcctName, DomainName, (LPDWORD)&dwDomainName, &eUse);
+    bRtnBool = LookupAccountSid(NULL, pSidOwner, AcctName, (LPDWORD)&dwAcctName,
+                                DomainName, (LPDWORD)&dwDomainName, &eUse);
 
-
-  /* Reallocate memory for the buffers.*/
+    /* Reallocate memory for the buffers.*/
     AcctName = (LPTSTR)GlobalAlloc( GMEM_FIXED, dwAcctName);
 
-  /* Check GetLastError for GlobalAlloc error condition.*/
-  if(AcctName == NULL) {
-    DWORD dwErrorCode = 0;
+    /* Check GetLastError for GlobalAlloc error condition.*/
+    if(AcctName == NULL) { DWORD dwErrorCode = 0; dwErrorCode = GetLastError(); return buffer; }
+    DomainName = (LPTSTR)GlobalAlloc( GMEM_FIXED, dwDomainName);
 
-    dwErrorCode = GetLastError();
-    /*	snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);*/
+    /* Check GetLastError for GlobalAlloc error condition.*/
+    if(DomainName == NULL) { DWORD dwErrorCode = 0; dwErrorCode = GetLastError(); return buffer; }
+
+    /* Second call to LookupAccountSid to get the account name.*/
+    bRtnBool = LookupAccountSid(
+                    NULL,                   /* name of local or remote computer*/
+                    pSidOwner,              /* security identifier*/
+                    AcctName,               /* account name buffer*/
+                    (LPDWORD)&dwAcctName,   /* size of account name buffer*/
+                    DomainName,             /* domain name*/
+                    (LPDWORD)&dwDomainName, /* size of domain name buffer*/
+                    &eUse);                 /* SID type*/
+
+    /* Check GetLastError for LookupAccountSid error condition.*/
+    if(bRtnBool == FALSE) {
+        DWORD dwErrorCode = 0; dwErrorCode = GetLastError();
+        if(dwErrorCode == ERROR_NONE_MAPPED) snprintf(buffer, sizeof(buffer), "Account owner not found for specified SID.\n");
+        else snprintf(buffer, sizeof(buffer), "Error in LookupAccountSid.\n"); return buffer;
+    } else if(bRtnBool == TRUE) { snprintf(buffer, sizeof(buffer), "%s", AcctName); }
+
     return buffer;
-  }
- DomainName = (LPTSTR)GlobalAlloc( GMEM_FIXED, dwDomainName);
-
-  /* Check GetLastError for GlobalAlloc error condition.*/
-  if(DomainName == NULL) {
-    DWORD dwErrorCode = 0;
-
-    dwErrorCode = GetLastError();
-    /*snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);*/
-    return buffer;
-
-  }
-
-  /* Second call to LookupAccountSid to get the account name.*/
-  bRtnBool = LookupAccountSid(
-               NULL,                   /* name of local or remote computer*/
-               pSidOwner,              /* security identifier*/
-               AcctName,               /* account name buffer*/
-               (LPDWORD)&dwAcctName,   /* size of account name buffer*/
-               DomainName,             /* domain name*/
-               (LPDWORD)&dwDomainName, /* size of domain name buffer*/
-               &eUse);                 /* SID type*/
-
-  /* Check GetLastError for LookupAccountSid error condition.*/
-  if(bRtnBool == FALSE) {
-    DWORD dwErrorCode = 0;
-
-    dwErrorCode = GetLastError();
-
-    if(dwErrorCode == ERROR_NONE_MAPPED)
-      snprintf(buffer, sizeof(buffer), "Account owner not found for specified SID.\n");
-    else
-      snprintf(buffer, sizeof(buffer), "Error in LookupAccountSid.\n");
-    return buffer;
-
-  } else if(bRtnBool == TRUE)
-    /* Print the account name.*/
-    snprintf(buffer, sizeof(buffer), "%s", AcctName);
-  return buffer;
 }
 
 #endif
+
 
 #ifdef PLAIN_WINDOWS
 
@@ -325,7 +302,9 @@ make_time(stralloc* out, time_t t, size_t width) {
     char buf[1024];
     size_t sz;
     ssize_t n;
+
 #ifdef HAVE_LOCALTIME_R_FUNC
+
     localtime_r(&t, &ltime);
 #else
     ltime = *localtime(&t);
@@ -343,91 +322,58 @@ static void
 mode_str(stralloc* out, int mode) {
   char mchars[10];
   switch(mode & S_IFMT) {
+
 #ifdef S_IFLNK
-  case S_IFLNK:
-    mchars[0] = 'l';
-    break;
+      case S_IFLNK: mchars[0] = 'l'; break;
 #endif
-  case S_IFDIR:
-    mchars[0] = 'd';
-    break;
-  case S_IFCHR:
-    mchars[0] = 'c';
-    break;
+      case S_IFDIR: mchars[0] = 'd'; break;
+      case S_IFCHR: mchars[0] = 'c'; break;
 #ifdef S_IFBLK
-  case S_IFBLK:
-    mchars[0] = 'b';
-    break;
+      case S_IFBLK: mchars[0] = 'b'; break;
 #endif
 #ifdef S_IFIFO
-  case S_IFIFO:
-    mchars[0] = 'i';
-    break;
+      case S_IFIFO: mchars[0] = 'i'; break;
 #endif
 #ifdef S_IFSOCK
-  case S_IFSOCK:
-    mchars[0] = 's';
-    break;
+      case S_IFSOCK: mchars[0] = 's'; break;
 #endif
-  case S_IFREG:
-  default:
-    mchars[0] = '-';
-    break;
-  }
+      case S_IFREG: default: mchars[0] = '-'; break; }
 #ifdef S_IRUSR
-  if(mode & S_IRUSR) mchars[1] = 'r';
-  else
+  if(mode & S_IRUSR) mchars[1] = 'r'; else
 #endif
-    mchars[1] = '-';
-
+      mchars[1] = '-';
 #ifdef S_IWUSR
-  if(mode & S_IWUSR) mchars[2] = 'w';
-  else
+  if(mode & S_IWUSR) mchars[2] = 'w'; else
 #endif
-    mchars[2] = '-';
-
+      mchars[2] = '-';
 #ifdef S_IXUSR
-  if(mode & S_IXUSR) mchars[3] = 'x';
-  else
+  if(mode & S_IXUSR) mchars[3] = 'x'; else
 #endif
-    mchars[3] = '-';
-
+      mchars[3] = '-';
 #ifdef S_IRGRP
-  if(mode & S_IRGRP) mchars[4] = 'r';
-  else
+  if(mode & S_IRGRP) mchars[4] = 'r'; else
 #endif
-    mchars[4] = '-';
-
+      mchars[4] = '-';
 #ifdef S_IWGRP
-  if(mode & S_IWGRP) mchars[5] = 'w';
-  else
+  if(mode & S_IWGRP) mchars[5] = 'w'; else
 #endif
-    mchars[5] = '-';
-
+      mchars[5] = '-';
 #ifdef S_IXGRP
-  if(mode & S_IXGRP) mchars[6] = 'x';
-  else
+  if(mode & S_IXGRP) mchars[6] = 'x'; else
 #endif
-    mchars[6] = '-';
-
+      mchars[6] = '-';
 #ifdef S_IROTH
-  if(mode & S_IROTH) mchars[7] = 'r';
-  else
+  if(mode & S_IROTH) mchars[7] = 'r'; else
 #endif
-    mchars[7] = '-';
-
+      mchars[7] = '-';
 #ifdef S_IWOTH
-  if(mode & S_IWOTH) mchars[8] = 'w';
-  else
+  if(mode & S_IWOTH) mchars[8] = 'w'; else
 #endif
-    mchars[8] = '-';
-
+      mchars[8] = '-';
 #ifdef S_IXOTH
-  if(mode & S_IXOTH) mchars[9] = 'x';
-  else
+  if(mode & S_IXOTH) mchars[9] = 'x'; else
 #endif
-    mchars[9] = '-';
-
+  mchars[9] = '-';
   stralloc_catb(out, mchars, sizeof(mchars));
 }
 
@@ -500,7 +446,9 @@ int list_dir_internal(stralloc* dir,  char type) {
     if(dtype) {
       is_dir = !!(dtype & D_DIRECTORY);
     } else {
+
 #ifdef PLAIN_WINDOWS
+
       is_dir = 0;
 #else
       is_dir = !!S_ISDIR(mode);
@@ -602,7 +550,9 @@ end:
   return 0;
 }
 
+
 #ifdef USE_MAGIC
+
 magic_t mcookie;
 #endif
 void
@@ -611,7 +561,9 @@ print_filename(buffer* b, const char* s, size_t n) {
     buffer_put(b, s, n);
     
     if(s[n-1]!='/') {
+
 #ifdef USE_MAGIC
+
         if(opt_magic) {
             const char* mstr;
            
@@ -635,11 +587,15 @@ int main(int argc, char* argv[]) {
   stralloc dir = {0, 0, 0};
   int argi = 1;
 
+
 #ifdef _WIN32
+
   setmode(STDOUT_FILENO, O_BINARY);
 #endif
 
+
 #ifdef USE_MAGIC
+
   mcookie = magic_open(  MAGIC_NONE
     |MAGIC_RAW
     |MAGIC_NO_CHECK_COMPRESS
@@ -655,7 +611,9 @@ int main(int argc, char* argv[]) {
       opt_list = 1;
     } else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
       opt_numeric = 1;
+
 #ifdef USE_MAGIC
+
     } else if(!strcmp(argv[argi], "-m") || !strcmp(argv[argi], "--magic")) {
       opt_magic = 1;
 #endif
@@ -680,7 +638,9 @@ int main(int argc, char* argv[]) {
     list_dir_internal(&dir, 0);
   }
 
+
 #ifdef USE_MAGIC
+
   magic_close(mcookie);
 #endif
 

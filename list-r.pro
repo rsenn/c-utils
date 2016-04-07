@@ -3,6 +3,11 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+_MAGIC = $$MAGIC
+
+isEmpty( _MAGIC ): _MAGIC = 1
+
+
 *msvc* {
   DEFINES += INLINE=__inline
   DEFINES += _CRT_NONSTDC_NO_DEPRECATE=1
@@ -16,14 +21,24 @@ CONFIG -= qt
 
   #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
+msys|cygwin {
+  DEFINES += USE_READDIR=1
+}
+
+equals(_MAGIC, 1) {
+  DEFINES += USE_MAGIC
+  LIBS += -L/usr/lib -lmagic
+}
 
 INCLUDEPATH += .
 
 SOURCES = list-r.c \
   buffer.h \
   buffer_1.c \
+  buffer_2.c \
   buffer_flush.c \
   buffer_put.c \
+  buffer_puts.c \
   buffer_putsa.c \
   buffer_stubborn.c \
   byte.h \
@@ -38,6 +53,7 @@ SOURCES = list-r.c \
   str.h \
   str_len.c \
   stralloc.h \
+  stralloc_append.c \
   stralloc_catb.c \
   stralloc_cats.c \
   stralloc_copyb.c \
