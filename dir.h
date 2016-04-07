@@ -7,6 +7,14 @@
 extern "C" {
 #endif
 
+#if (defined _WIN32 || defined WIN32 || defined _WINDOWS)  
+# if !(defined __MINGW32__ || defined __CYGWIN__ || defined __MSYS__)
+#define USE_READDIR
+# endif
+#else
+#define USE_READDIR
+#endif
+
 #if 0 //defined(__MINGW32__) || defined(__MSYS__)
 #define PATHSEP_C '\\'
 #define PATHSEP_S "\\"

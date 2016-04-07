@@ -15,6 +15,10 @@
 #define snprintf _snprintf
 #endif
 
+#ifdef USE_MAGIC
+#include <magic.h>
+#endif
+
 #ifdef HAVE_STDBOOL_H
 #include <stdbool.h>
 #endif
@@ -459,6 +463,8 @@ mode_str(stralloc* out, int mode) {
   stralloc_catb(out, mchars, sizeof(mchars));
 }
 
+void
+print_filename(buffer* b, const char* s, size_t n);
 
 int list_dir_internal(stralloc* dir,  char type) {
   size_t l;
@@ -604,8 +610,10 @@ int list_dir_internal(stralloc* dir,  char type) {
       goto end;
     }
 
-    s = dir->s;
     len = dir->len;
+    stralloc_0(dir);
+    s = dir->s;
+
     if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1])) {
       len -= 2;
       s += 2;
@@ -613,10 +621,8 @@ int list_dir_internal(stralloc* dir,  char type) {
 
     if(opt_list)
       buffer_putsa(buffer_1, &pre);
-
-    buffer_put(buffer_1, s, len);
-    buffer_put(buffer_1, "\n", 1);
-    buffer_flush(buffer_1);
+      
+    print_filename(buffer_1, s, len);
 
     if(is_dir && !is_symlink) {
       dir->len--;
@@ -628,6 +634,23 @@ end:
   return 0;
 }
 
+#ifdef USE_MAGIC
+magic_t mcookie;
+#endif
+void
+print_filename(buffer* b, const char* s, size_t n) {
+
+    buffer_put(b, s, n);
+#ifdef USE_MAGIC
+   const char* mstr = magic_file(mcookie, s);
+    buffer_put(b, ": ", 2);
+    buffer_puts(b, mstr);
+#endif
+
+    buffer_put(b, "\n", 1);
+    buffer_flush(b);
+}
+
 int main(int argc, char* argv[]) {
 
   stralloc dir = {0, 0, 0};
@@ -635,6 +658,10 @@ int main(int argc, char* argv[]) {
 
 #ifdef _WIN32
   setmode(STDOUT_FILENO, O_BINARY);
+#endif
+
+#ifdef USE_MAGIC
+  mcookie = magic_open(MAGIC_NONE);
 #endif
 
   while(argi < argc) {
@@ -662,6 +689,11 @@ int main(int argc, char* argv[]) {
     stralloc_copys(&dir, ".");
     list_dir_internal(&dir, 0);
   }
+
+#ifdef USE_MAGIC
+  magic_close(mcookie);
+#endif
+
   return 0;
 
 

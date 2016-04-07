@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="xfdxIw" name="list-r" projectType="consoleapp" version="1.0.0"
+              bundleIdentifier="com.yourcompany.list-r" includeBinaryInAppConfig="1"
+              jucerVersion="4.1.0">
+  <MAINGROUP id="ekXe4F" name="list-r">
+    <GROUP id="{BA1159A7-5399-A17C-E7FE-536A285AA0E3}" name="Source">
+      <GROUP id="{B157C159-8464-0299-F934-27ACBD794AD7}" name="buffer">
+        <FILE id="Ki4fgi" name="buffer_1.c" compile="1" resource="0" file="buffer_1.c"/>
+        <FILE id="lIX1Kv" name="buffer_2.c" compile="1" resource="0" file="buffer_2.c"/>
+        <FILE id="RvUzYb" name="buffer_flush.c" compile="1" resource="0" file="buffer_flush.c"/>
+        <FILE id="CQPHjC" name="buffer_put.c" compile="1" resource="0" file="buffer_put.c"/>
+        <FILE id="FvLJxD" name="buffer_puts.c" compile="1" resource="0" file="buffer_puts.c"/>
+        <FILE id="fadY9I" name="buffer_putsa.c" compile="1" resource="0" file="buffer_putsa.c"/>
+        <FILE id="FuNGWo" name="buffer_stubborn.c" compile="1" resource="0"
+              file="buffer_stubborn.c"/>
+      </GROUP>
+      <GROUP id="{F62C2EDB-7B49-7E1C-257E-5EE5021D7A72}" name="byte">
+        <FILE id="lJQtYx" name="byte_copy.c" compile="1" resource="0" file="byte_copy.c"/>
+      </GROUP>
+      <GROUP id="{B7BC27B4-078A-8636-D228-B0B86538B859}" name="dir">
+        <FILE id="RLSqpo" name="dir.h" compile="0" resource="0" file="dir.h"/>
+        <FILE id="eaKvhD" name="dir_close.c" compile="1" resource="0" file="dir_close.c"/>
+        <FILE id="C3LMHd" name="dir_internal.h" compile="0" resource="0" file="dir_internal.h"/>
+        <FILE id="OKf4OI" name="dir_open.c" compile="1" resource="0" file="dir_open.c"/>
+        <FILE id="AushPX" name="dir_read.c" compile="1" resource="0" file="dir_read.c"/>
+        <FILE id="ORq1uN" name="dir_time.c" compile="1" resource="0" file="dir_time.c"/>
+        <FILE id="sVo95U" name="dir_type.c" compile="1" resource="0" file="dir_type.c"/>
+      </GROUP>
+      <GROUP id="{98556796-9CA6-C9A5-ED7A-1D8B9C785992}" name="fmt">
+        <FILE id="va5nxM" name="fmt_uint64.c" compile="1" resource="0" file="fmt_uint64.c"/>
+      </GROUP>
+      <GROUP id="{23B4424D-A9A0-5782-6632-3B2A56475262}" name="str">
+        <FILE id="gXrtoL" name="str_len.c" compile="1" resource="0" file="str_len.c"/>
+      </GROUP>
+      <GROUP id="{DF25CA81-8E92-3521-F7AC-ABEA13AECE65}" name="stralloc">
+        <FILE id="pAzjLN" name="stralloc_append.c" compile="1" resource="0"
+              file="stralloc_append.c"/>
+        <FILE id="mGdjdM" name="stralloc_catb.c" compile="1" resource="0" file="stralloc_catb.c"/>
+        <FILE id="T14mE5" name="stralloc_cats.c" compile="1" resource="0" file="stralloc_cats.c"/>
+        <FILE id="klexJw" name="stralloc_copyb.c" compile="1" resource="0"
+              file="stralloc_copyb.c"/>
+        <FILE id="gqNcN3" name="stralloc_copys.c" compile="1" resource="0"
+              file="stralloc_copys.c"/>
+        <FILE id="Vgqovc" name="stralloc_init.c" compile="1" resource="0" file="stralloc_init.c"/>
+        <FILE id="V935sW" name="stralloc_nul.c" compile="1" resource="0" file="stralloc_nul.c"/>
+        <FILE id="ga1hIR" name="stralloc_ready.c" compile="1" resource="0"
+              file="stralloc_ready.c"/>
+        <FILE id="WNXYSw" name="stralloc_readyplus.c" compile="1" resource="0"
+              file="stralloc_readyplus.c"/>
+      </GROUP>
+      <FILE id="Yfe4ZS" name="list-r.c" compile="1" resource="0" file="list-r.c"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <LINUX_MAKE targetFolder="Builds/Linux" extraCompilerFlags="" extraLinkerFlags="-L/usr/lib"
+                externalLibraries="magic" extraDefs="USE_MAGIC=1" cppLanguageStandard="-std=c++11">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
+                       targetName="list-r" headerPath="."/>
+        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
+                       targetName="list-r" headerPath="."/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-git/modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
+    <CMAKE targetFolder="Builds/CMake" externalLibraries="magic" extraDefs="USE_MAGIC=1"
+           extraLinkerFlags="-L/usr/lib">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" libraryPath="${CMAKE_SYSTEM_LIBRARY_PATH}"
+                       isDebug="1" optimisation="1" targetName="list-r" headerPath="."/>
+        <CONFIGURATION name="Release" winWarningLevel="4" libraryPath="${CMAKE_SYSTEM_LIBRARY_PATH}"
+                       isDebug="0" optimisation="3" targetName="list-r" headerPath="."/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_events" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-git/modules"/>
+      </MODULEPATHS>
+    </CMAKE>
+    <QT_CREATOR targetFolder="Builds/QtCreator" externalLibraries="">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
+                       targetName="list-r" headerPath="."/>
+        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
+                       targetName="list-r" headerPath="."/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_events" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-git/modules"/>
+      </MODULEPATHS>
+    </QT_CREATOR>
+    <CODEBLOCKS_LINUX targetFolder="Builds/CodeBlocksLinux">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="list-r"
+                       headerPath="."/>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="list-r"
+                       headerPath="."/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_events" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-git/modules"/>
+      </MODULEPATHS>
+    </CODEBLOCKS_LINUX>
+    <MINGW_MAKE targetFolder="Builds/MinGW">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="list-r"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="list-r"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_events" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-git/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-git/modules"/>
+      </MODULEPATHS>
+    </MINGW_MAKE>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0"/>
+  </MODULES>
+  <JUCEOPTIONS/>
+</JUCERPROJECT>

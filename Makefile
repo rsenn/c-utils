@@ -26,6 +26,18 @@ ifneq ($(HOST),)
 TRIPLET := $(subst -, ,$(HOST))
 endif
 
+ifneq ($(TRIPLET),)
+ARCH := $(word 1,$(TRIPLET))
+endif
+
+ifneq ($(ARCH),$(subst 64,,$(ARCH)))
+    LIB32SUFFIX := 
+    LIB64SUFFIX := 64
+else
+    LIB32SUFFIX := 32
+    LIB64SUFFIX := 
+endif 
+
 ifeq ($(CROSS),)
 	CROSS := $(HOST)-
 endif
@@ -95,6 +107,11 @@ CPPFLAGS := -I.
 
 DEFS += INLINE=inline
 DEFS += PATH_MAX=4096
+
+ifneq ($(MAGIC),)
+DEFS += USE_MAGIC=1
+LIBS += -L/usr/lib$(LIB32SUFFIX) -lmagic
+endif
 
 ifeq ($(READDIR),)
 DEFS += USE_READDIR=1

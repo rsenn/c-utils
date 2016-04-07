@@ -1,13 +1,13 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#include "dir.h"
+#include "dir_internal.h"
 
 #ifdef USE_READDIR
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
-#include "dir.h"
-#include "dir_internal.h"
 
 time_t 
 dir_time(struct dir_s* d, int time_type) {
