@@ -57,7 +57,7 @@
 #include <io.h>
 #endif
 
-static int opt_list = 0, opt_numeric = 0;
+static int opt_list = 0, opt_numeric = 0, opt_magic = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
 #if defined( _WIN32 ) && !defined(__MSYS__)
@@ -641,11 +641,22 @@ void
 print_filename(buffer* b, const char* s, size_t n) {
 
     buffer_put(b, s, n);
+    
+    if(s[n-1]!='/') {
 #ifdef USE_MAGIC
-   const char* mstr = magic_file(mcookie, s);
-    buffer_put(b, ": ", 2);
-    buffer_puts(b, mstr);
+        if(opt_magic) {
+            const char* mstr;
+           
+            if((mstr = magic_file(mcookie, s)))  {
+                buffer_put(b, ": ", 2);
+                buffer_puts(b, mstr);
+            } else {
+                buffer_puts(b, ": ERROR: ");
+                buffer_puts(b, magic_error(mcookie));
+            }    
+        }
 #endif
+    }
 
     buffer_put(b, "\n", 1);
     buffer_flush(b);
@@ -661,7 +672,14 @@ int main(int argc, char* argv[]) {
 #endif
 
 #ifdef USE_MAGIC
-  mcookie = magic_open(MAGIC_NONE);
+  mcookie = magic_open(  MAGIC_NONE
+    |MAGIC_RAW
+    |MAGIC_NO_CHECK_COMPRESS
+    |MAGIC_NO_CHECK_TAR
+    |MAGIC_NO_CHECK_ENCODING
+  );
+  
+  magic_load(mcookie, NULL);
 #endif
 
   while(argi < argc) {
@@ -669,6 +687,10 @@ int main(int argc, char* argv[]) {
       opt_list = 1;
     } else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
       opt_numeric = 1;
+#ifdef USE_MAGIC
+    } else if(!strcmp(argv[argi], "-m") || !strcmp(argv[argi], "--magic")) {
+      opt_magic = 1;
+#endif
     } else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
       argi++;
       opt_timestyle = argv[argi];
