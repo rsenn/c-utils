@@ -1,6 +1,3 @@
-prefix = /usr/local
-bindir = ${prefix}/bin
-
 DEBUG = 1
 LARGEFILE = 1
 WARNINGS = all
@@ -21,7 +18,18 @@ HOST ?= $(BUILD)
 else
 HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
 endif
+
 $(info HOST: $(HOST))
+
+ifeq ($(PREFIX),)
+PREFIX := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs |sed -n 's,.*:\s\+=\?,,; s,/bin.*,,p ; s,/lib.*,,p' |head -n1 )
+endif
+
+$(info PREFIX: $(PREFIX))
+
+prefix ?= $(PREFIX)
+bindir = ${prefix}/bin
+
 
 ifneq ($(HOST),)
 TRIPLET := $(subst -, ,$(HOST))

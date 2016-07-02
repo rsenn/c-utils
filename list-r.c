@@ -54,6 +54,7 @@
 #endif
 
 static int opt_list = 0, opt_numeric = 0;
+static const char* opt_relative = NULL;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
 #if defined( _WIN32 ) && !defined(__MSYS__)
@@ -613,6 +614,19 @@ int list_dir_internal(stralloc* dir,  char type) {
 
     if(opt_list)
       buffer_putsa(buffer_1, &pre);
+      
+    if(opt_relative) {
+      size_t sz = str_len(opt_relative);
+      if(str_diffn(s, opt_relative, sz) == 0) {
+        s += sz;
+        len -= sz;
+        
+        while(*s == '\\' || *s == '/') {
+          s++;
+          len--;
+        }
+      }
+    }
 
     buffer_put(buffer_1, s, len);
     buffer_put(buffer_1, "\n", 1);
@@ -631,6 +645,7 @@ end:
 int main(int argc, char* argv[]) {
 
   stralloc dir = {0, 0, 0};
+  int relative = 0;
   int argi = 1;
 
 #ifdef _WIN32
@@ -642,6 +657,8 @@ int main(int argc, char* argv[]) {
       opt_list = 1;
     } else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
       opt_numeric = 1;
+    } else if(!strcmp(argv[argi], "-r") || !strcmp(argv[argi], "--relative")) {
+      relative = 1;
     } else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
       argi++;
       opt_timestyle = argv[argi];
@@ -654,6 +671,8 @@ int main(int argc, char* argv[]) {
   if(argi < argc) {
 
     while(argi < argc) {
+	  if(relative)  opt_relative = argv[argi];
+	  
       stralloc_copys(&dir, argv[argi]);
       list_dir_internal(&dir, 0);
       argi++;
