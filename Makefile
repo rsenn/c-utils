@@ -8,26 +8,27 @@ WARNINGS = all
 
 INSTALL = install
 
-CC ?= gcc
-CXX ?= g++
+CC := gcc
+CXX = g++
 
 BUILD := $(shell $(CC) -dumpmachine)
 
 CCVER := $(shell $(CC) -dumpversion)
 CXXVER := $(shell $(CXX) -dumpversion)
 
-ifeq ($(CROSS),)
+ifeq ($(CROSS_COMPILE),)
 HOST ?= $(BUILD)
 else
-HOST := $(shell $(CROSS)$(CC) -dumpmachine |sed "s,[-.0-9]*\$,,")
+HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
 endif
+$(info HOST: $(HOST))
 
 ifneq ($(HOST),)
 TRIPLET := $(subst -, ,$(HOST))
 endif
 
-ifeq ($(CROSS),)
-	CROSS := $(HOST)-
+ifeq ($(CROSS_COMPILE),)
+	CROSS_COMPILE := $(HOST)-
 endif
 
 ifeq ($(DEBUG),1)
@@ -37,17 +38,28 @@ BUILDTYPE = release
 endif
 
 ifeq ($(HOST),$(BUILD))
-CROSS :=
+CROSS_COMPILE :=
 endif
 
 ifneq ($(TRIPLET),)
-ARCH = $(word 1,$(TRIPLET))
-OS := $(shell echo $(word 3,$(TRIPLET)) |sed 's,[0-9].*,,')
-KERN = $(word 2,$(TRIPLET))
+ARCH := $(word 1,$(TRIPLET))
+OS := $(shell echo $(word 3,$(TRIPLET)) |sed "s|[0-9].*||")
+KERN := $(word 2,$(TRIPLET))
+SYS := $(word 3,$(TRIPLET))
+W := 4
+ifeq ($(SYS),pc)
+SYS := $(word $(W),$(TRIPLET))
+W := 5
+endif
+ifeq ($(SYS),w64)
+SYS := $(word $(W),$(TRIPLET))
+endif
 endif
 
 $(info Arch: $(ARCH))
 $(info OS: $(OS))
+$(info KERN: $(KERN))
+$(info SYS: $(SYS))
 
 ifneq ($(OS),linux)
 ifeq ($(ARCH),x86_64)
@@ -70,7 +82,7 @@ endif
 BOOST_LIBS = boost_random
 
 ifeq ($(OS),mingw32)
-TOOLCHAIN = $(HOST)-$(shell $(CROSS)gcc -dumpversion)
+TOOLCHAIN = $(HOST)-$(shell $(CROSS_COMPILE)gcc -dumpversion)
 else
 TOOLCHAIN = $(HOST)
 endif
@@ -78,15 +90,15 @@ endif
 ifneq ($(HOST),$(BUILD))
 BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
 else
-ifeq ($(CROSS),)
+ifeq ($(CROSS_COMPILE),)
 BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
 else
-BUILDDIR = build/$(patsubst %-,%,$(CROSS))/$(BUILD_TYPE)/
+BUILDDIR = build/$(patsubst %-,%,$(CROSS_COMPILE))/$(BUILD_TYPE)/
 endif
 endif
 
 ifeq ($(CXXOPTS),)
-#$(info OS: '$(OS)')
+#$(info OS: "$(OS)")
 ifneq ($(OS),msys)
 endif
 endif
@@ -97,7 +109,11 @@ DEFS += INLINE=inline
 DEFS += PATH_MAX=4096
 
 ifeq ($(READDIR),)
+ifeq ($(SYS),mingw32)
+DEFS += USE_READDIR=0
+else
 DEFS += USE_READDIR=1
+endif
 endif
 
 ifeq ($(LARGEFILE),1)
@@ -204,7 +220,7 @@ VPATH = $(BUILDDIR):.
 #$(info BUILDDIR: $(BUILDDIR))
 #$(info BUILDTYPE: $(BUILDTYPE))
 #$(info CCVER: $(CCVER))
-#$(info CROSS: $(CROSS))
+#$(info CROSS_COMPILE: $(CROSS_COMPILE))
 #$(info CXXVER: $(CXXVER))
 #$(info HOST: $(HOST))
 #$(info TOOLCHAIN: $(TOOLCHAIN))
@@ -227,52 +243,52 @@ $(BUILDDIR):
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
 $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_getc.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)buffer_get_token.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)byte_copy.o $(BUILDDIR)str_len.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)buffer_0.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_getline.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)byte_chr.o $(BUILDDIR)str_diffn.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_copys.o
-	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)count-depth.o: count-depth.c
 $(BUILDDIR)count-depth$(M64_)$(EXEEXT): $(BUILDDIR)count-depth.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_getc.o $(BUILDDIR)byte_chr.o $(BUILDDIR)buffer_get_token.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)byte_copy.o $(BUILDDIR)buffer_0.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_getline.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)fmt_ulong.o
-	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)list-r.o: list-r.c
 $(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)byte_copy.o $(BUILDDIR)dir_close.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_type.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)fmt_uint64.o  $(BUILDDIR)str_len.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o
-	$(CROSS)$(CXX) $(CXXOPTS) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)reg2cmd.o: reg2cmd.c
 $(BUILDDIR)reg2cmd$(M64_)$(EXEEXT): $(BUILDDIR)reg2cmd.o $(BUILDDIR)buffer_0.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_get_token.o $(BUILDDIR)buffer_getc.o $(BUILDDIR)buffer_getline.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putc.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putuint64.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)fmt_uint64.o $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_xlonglong.o $(BUILDDIR)str_len.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)stralloc_zero.o
-	$(CROSS)$(CXX) $(CXXOPTS) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
 $(BUILDDIR)torrent-progress$(M64_)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)byte_copy.o $(BUILDDIR)str_len.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_get.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_unmap.o $(BUILDDIR)open_read.o
-	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
 $(BUILDDIR)kbd-adjacency$(M64_)$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
-	$(CROSS)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 ifeq ($(BUILDDIR),)
 .c.o:
-	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 $(BUILDDIR)%.o: %.c
-	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 .cpp.o:
-	$(CROSS)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 $(BUILDDIR)%.o: %.cpp
-	$(CROSS)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 else
 .c.o:
-	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 $(BUILDDIR)%.o: %.c
-	$(CROSS)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
 
 .cpp.o:
-	$(CROSS)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 $(BUILDDIR)%.o: %.cpp
-	$(CROSS)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
 endif
 
 clean:

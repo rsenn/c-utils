@@ -9,7 +9,7 @@
 #include <crtdefs.h>
 #endif
 
-#ifdef USE_READDIR
+#if USE_READDIR
 # include <dirent.h>
 #else
 # ifdef _WIN32
@@ -28,7 +28,7 @@
 #endif
 
 struct dir_internal_s {
-#ifdef USE_READDIR
+#if USE_READDIR
   DIR *dir_handle;
   struct dirent* dir_entry;
 #else
@@ -67,7 +67,7 @@ struct dir_internal_s {
 #define S_IFIFO  0010000 /* fifo */
 #endif // !defined(S_IFIFO)
 
-#ifdef USE_READDIR
+#if USE_READDIR
 #ifndef __MINGW32__
 #define USE_LSTAT 1
 #endif
@@ -76,31 +76,31 @@ struct dir_internal_s {
 
 #define dir_INTERNAL(d) ((struct dir_internal_s *)((d)->dir_int))
 
-#ifdef USE_READDIR
+#if USE_READDIR
 #define dir_NAME(d) ((d)->dir_entry->d_name)
 #else
 #define dir_NAME(d) ((d)->dir_finddata.szName)
 #endif
 
-#ifdef USE_READDIR
+#if USE_READDIR
 #define dir_ATTRS(d) ((d)->dir_entry->st_mode)
 #else
 #define dir_ATTRS(d) ((d)->dir_finddata.dwFileAttributes)
 #endif
 
-#ifdef USE_READDIR
+#if USE_READDIR
 #define dir_ISDIR(d) S_ISDIR(dir_ATTRS(d))
 #else
 #define dir_ISDIR(d) (!!(dir_ATTRS(d) & 0x10))
 #endif
 
-#ifdef USE_READDIR
+#if USE_READDIR
 #define dir_ISLINK(d) S_ISLINK(dir_ATTRS(d))
 #else
 #define dir_ISLINK(d) (!!(dir_ATTRS(d) & 0x08))
 #endif
 
-#ifdef USE_READDIR
+#if USE_READDIR
 #define dir_ISLINK(d) S_ISLINK(dir_ATTRS(d))
 #else
 #define dir_ISLINK(d) (!!(dir_ATTRS(d) & 0x08))

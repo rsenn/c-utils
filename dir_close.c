@@ -4,7 +4,7 @@
 
 #include "dir_internal.h"
 
-#ifdef USE_READDIR
+#if USE_READDIR
 #include <dirent.h>
 #else
 #include <windows.h>
@@ -14,7 +14,7 @@
 
 void dir_close(struct dir_s* d)
 {
-#ifdef USE_READDIR
+#if USE_READDIR
   closedir(dir_INTERNAL(d)->dir_handle);
 #else
   FindClose(dir_INTERNAL(d)->dir_handle);

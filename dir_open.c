@@ -6,7 +6,7 @@ int dir_open(struct dir_s* d, const char* p)
   int ret;
   if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))
     return 1;
-#ifdef USE_READDIR
+#if USE_READDIR
   ret = !(dir_INTERNAL(d)->dir_handle = opendir(p));
 #else
   {

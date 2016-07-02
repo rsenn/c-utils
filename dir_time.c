@@ -2,7 +2,7 @@
 #include "config.h"
 #endif
 
-#ifdef USE_READDIR
+#if USE_READDIR
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
@@ -12,7 +12,7 @@
 time_t 
 dir_time(struct dir_s* d, int time_type) {
   unsigned long long r = 0;
-#ifdef USE_READDIR
+#if USE_READDIR
   const char* name = dir_INTERNAL(d)->dir_entry->d_name;
   struct stat st;
 
