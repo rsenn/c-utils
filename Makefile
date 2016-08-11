@@ -195,7 +195,7 @@ CFLAGS += $(CFLAGS_$(BUILD_TYPE))
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 
 ifeq ($(STATIC),1)
-LDFLAGS += -static
+LDFLAGS += -static -static-libgcc -static-libstdc++
 endif
 ifeq ($(STRIP),1)
 LDFLAGS += -s
