@@ -13,6 +13,7 @@ void
 set16(intelhex::hex_data& hex, unsigned int address, uint16_t value) {
   hex.set(address, value & 0xff);
   hex.set(address+1, value >> 8);
+  hex.compact();
 }
 
 int main(int argc, char* argv[])
@@ -39,8 +40,14 @@ printf("newval: %04X\n", newval);
     }*/
     printf("old value: 0x%04X\n", config_reg);
     if(newval != -1) {
-	  set16(hex, 0x400E, newval);
-	  hex.set(0x4010, 0x3f);
+    intelhex::hex_data::iterator it = hex.end();
+    --it;
+    
+    printf("block: %08X:%08X\n", it->first, it->second.size());
+    
+    hex.erase(it->first);
+  set16(hex, 0x400E, newval);
+	  //hex.set(0x4010, 0x3f);
 	  printf("new value: 0x%04X\n", newval);
 	  hex.write(filename.c_str());
 	}
