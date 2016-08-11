@@ -141,6 +141,8 @@ CFLAGS_Release = -g -fomit-frame-pointer -O2
 
 CXXFLAGS = -pipe
 
+CXXFLAGS += -std=c++11
+
 CXXFLAGS_Debug = -g -ggdb -O0
 CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
 CXXFLAGS_RelWithDebInfo = -g -ggdb -O2
@@ -216,7 +218,7 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXEEXT)  #kbd-adjacency$(M64_)$(EXEEXT)
+PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXEEXT)   $(BUILDDIR)piccfghex$(M64_)$(EXEEXT)  #kbd-adjacency$(M64_)$(EXEEXT)
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
 vpath $(BUILDDIR)
@@ -269,6 +271,10 @@ $(BUILDDIR)torrent-progress.o: torrent-progress.c
 $(BUILDDIR)torrent-progress$(M64_)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)byte_copy.o $(BUILDDIR)str_len.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_get.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_unmap.o $(BUILDDIR)open_read.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
+$(BUILDDIR)piccfghex.o: piccfghex.cpp
+$(BUILDDIR)piccfghex$(M64_)$(EXEEXT): $(BUILDDIR)piccfghex.o $(BUILDDIR)intelhex.o
+
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
 $(BUILDDIR)kbd-adjacency$(M64_)$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
