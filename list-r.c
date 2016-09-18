@@ -49,8 +49,22 @@
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
 #include <windows.h>
 #include <shlwapi.h>
-#include <sys/fcntl.h>
 #include <io.h>
+#endif
+#ifndef _MSC_VER
+#include <sys/fcntl.h>
+#endif
+
+#ifndef STDIN_FILENO
+#define STDIN_FILENO 0
+#endif
+
+#ifndef STDOUT_FILENO
+#define STDOUT_FILENO 1
+#endif
+
+#ifndef STDERR_FILENO
+#define STDERR_FILENO 2
 #endif
 
 static int opt_list = 0, opt_numeric = 0;
@@ -548,7 +562,7 @@ int list_dir_internal(stralloc* dir,  char type) {
 #else
     mode = (is_dir ? S_IFDIR : (is_symlink ? S_IFLNK : S_IFREG));
 
-# ifdef USE_READDIR
+# if USE_READDIR
     if(!is_dir) {
       size = get_file_size(s); // dir_INTERNAL(&d)->dir_entry->d_name);
       mtime = get_file_time(s);

@@ -12,9 +12,9 @@
 #if USE_READDIR
 # include <dirent.h>
 #else
-# ifdef _WIN32
+//# ifdef _WIN32
 #  include <windows.h>
-# endif
+//# endif
 # include <limits.h>
 #endif
 
@@ -32,7 +32,7 @@ struct dir_internal_s {
   DIR *dir_handle;
   struct dirent* dir_entry;
 #else
-  HANDLE dir_handle;
+  intptr_t dir_handle;
   WIN32_FIND_DATAA dir_finddata;
   int first;
 #endif

@@ -25,28 +25,28 @@ LIB_MODULES = $(LIB_SOURCES:%.c=%)
 
 LIB_DEP = libowfat.a
 
-PROGRAMS = list-r$(EXEEXT) count-depth$(EXEEXT) decode-ls-lR$(EXEEXT) torrent-progress$(EXEEXT)
+PROGRAMS = list-r$(EXESUFFIX)$(EXEEXT) count-depth$(EXESUFFIX)$(EXEEXT) decode-ls-lR$(EXESUFFIX)$(EXEEXT) torrent-progress$(EXESUFFIX)$(EXEEXT)
 all: $(LIB_DEP) $(PROGRAMS)
 
 libowfat.a: $(LIB_MODULES:%=%.o)
 	ar rcs $@ $^
 
 decode-ls-lR.o: decode-ls-lR.c
-decode-ls-lR$(EXEEXT): decode-ls-lR.o $(EXTRA_DEP) $(LIB_DEP)
+decode-ls-lR$(EXESUFFIX)$(EXEEXT): decode-ls-lR.o $(EXTRA_DEP) $(LIB_DEP)
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 count-depth.o: count-depth.c
-count-depth$(EXEEXT): count-depth.o $(EXTRA_DEP) $(LIB_DEP)
+count-depth$(EXESUFFIX)$(EXEEXT): count-depth.o $(EXTRA_DEP) $(LIB_DEP)
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 list-r.o: list-r.c libowfat.a
-list-r$(EXEEXT): list-r.o $(EXTRA_DEP) $(LIB_DEP)
+list-r$(EXESUFFIX)$(EXEEXT): list-r.o $(EXTRA_DEP) $(LIB_DEP)
 	$(CXX) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
-#list-r$(EXEEXT): LIB_MODULES += file directory_iterator
+#list-r$(EXESUFFIX)$(EXEEXT): LIB_MODULES += file directory_iterator
 
 torrent-progress.o: torrent-progress.c
-torrent-progress$(EXEEXT): torrent-progress.o $(EXTRA_DEP) $(LIB_DEP)
+torrent-progress$(EXESUFFIX)$(EXEEXT): torrent-progress.o $(EXTRA_DEP) $(LIB_DEP)
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 .c.o:
@@ -56,7 +56,7 @@ torrent-progress$(EXEEXT): torrent-progress.o $(EXTRA_DEP) $(LIB_DEP)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 clean:
-	$(RM) -f $(EXTRA_MODULES:%=%.o) $(LIB_MODULES:%=%.o) list-r.o list-r$(EXEEXT)
+	$(RM) -f $(EXTRA_MODULES:%=%.o) $(LIB_MODULES:%=%.o) list-r.o list-r$(EXESUFFIX)$(EXEEXT)
 
 install: $(PROGRAMS)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
