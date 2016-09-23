@@ -15,7 +15,7 @@
 #include "mmap.h" 
 #include "uint64.h"
 
-#if defined(__x86_64__) && defined(__linux)
+#if defined(__x86_64__) && defined(__linux) && !defined(__dietlibc__)
 #define mmap mmap64
 #endif
 

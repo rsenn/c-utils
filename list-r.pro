@@ -12,7 +12,7 @@ CONFIG -= qt
 }
 
 !*msvc* {
-  DEFINES += INLINE=inline
+  DEFINES += INLINE=inline USE_READDIR=1
 
   #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
@@ -22,8 +22,10 @@ INCLUDEPATH += .
 SOURCES = list-r.c \
   buffer.h \
   buffer_1.c \
+  buffer_2.c \
   buffer_flush.c \
   buffer_put.c \
+  buffer_puts.c \
   buffer_putsa.c \
   buffer_stubborn.c \
   byte.h \

@@ -70,6 +70,11 @@ typedef off64_t offset_type;
 #define FMT_SIZE_T "%zu"
 #endif
 
+#ifdef __dietlibc__
+#undef lseek
+#undef mmap
+#endif
+
 int64 filesize(int fd) {
   int64 sz;
 #ifdef _WIN32

@@ -84,9 +84,9 @@ check_function_exists(readdir HAVE_READDIR_FUNC)
 
 if(HAVE_LSTAT_FUNC)
   if(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
-	set(USE_READDIR TRUE)
+    set(USE_READDIR TRUE)
   else(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
-	set(USE_READDIR FALSE)
+    set(USE_READDIR FALSE)
   endif(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
 endif(HAVE_LSTAT_FUNC)
 
@@ -136,10 +136,10 @@ set(LIBOWFAT_SOURCES array.h array_allocate.c array_bytes.c array_cat.c array_ca
 add_library(libowfat ${LIBOWFAT_SOURCES})
 
 if("${CMAKE_STATIC_LIBRARY_PREFIX}" STREQUAL "lib")
-	set_target_properties(libowfat PROPERTIES
-		ARCHIVE_OUTPUT_NAME owfat
-		LIBRARY_OUTPUT_NAME owfat
-	)
+    set_target_properties(libowfat PROPERTIES
+        ARCHIVE_OUTPUT_NAME owfat
+        LIBRARY_OUTPUT_NAME owfat
+    )
 endif()
 
 add_executable(list-r list-r.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_putsa.c buffer_puts.c buffer_putuint64.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c dir.h dir_close.c dir_internal.h dir_open.c dir_read.c dir_time.c dir_type.c fmt.h fmt_uint64.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_cats.c stralloc_copyb.c stralloc_copys.c stralloc_init.c stralloc_nul.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c

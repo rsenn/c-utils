@@ -259,7 +259,7 @@ int reg2cmd()
         exit(2);
       }
 
-      buffer_puts(buffer_1, "REG ADD \"");
+      buffer_puts(buffer_1, "reg add \"");
       buffer_puts(buffer_1, key);
       buffer_puts(buffer_1, "\" ");
 
