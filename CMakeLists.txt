@@ -35,6 +35,10 @@ include(FindBoost)
 #include(CMakeDetermineCompileFeatures)
 include(CheckCXX11Features)
 
+if(NOT CXX11_FLAGS)
+set(CXX11_FLAGS "-std=c++11")
+endif()
+
 if(CXX11_FLAGS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
 #  add_definitions(-std=c++11)
@@ -97,10 +101,12 @@ endif(USE_READDIR)
 configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
                "${CMAKE_BINARY_DIR}/config.h")
 
-file(GLOB COMMON_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
+file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
+set(COMMON_CXX_SOURCES directory_iterator.cpp file.cpp intelhex.cpp)
 
 set(PROGRAMS list-r count-depth decode-ls-lR torrent-progress reg2cmd)
-#set(CXXPROGRAMS kbd-adjacency)
+set(CXXPROGRAMS kbd-adjacency #ls-R
+    piccfghex)
 
 if(MSVC)
 #  add_definitions(-Dinline=__force_inline)
@@ -157,7 +163,7 @@ endif()
 foreach(PROGRAM ${PROGRAMS})
    set_target_properties(${PROGRAM} PROPERTIES OUTPUT_NAME "${PROGRAM}${X64}")
     target_link_libraries(${PROGRAM} libowfat)
-#  add_executable(${PROGRAM} "${CMAKE_SOURCE_DIR}/${PROGRAM}.c" ${COMMON_SOURCES})
+#  add_executable(${PROGRAM} "${CMAKE_SOURCE_DIR}/${PROGRAM}.c" ${COMMON_C_SOURCES})
   install(TARGETS ${PROGRAM} DESTINATION bin) 
 endforeach(PROGRAM)
 
@@ -166,7 +172,7 @@ if(Boost_INCLUDE_DIRS)
 endif()
 
 foreach(CXXPROGRAM ${CXXPROGRAMS})
-  add_executable(${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_SOURCES})
+  add_executable(${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_CXX_SOURCES} ${COMMON_C_SOURCES})
   install(TARGETS ${CXXPROGRAM} DESTINATION bin) 
 endforeach(CXXPROGRAM)
 

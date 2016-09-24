@@ -1,3 +1,4 @@
+#include <iostream>
 #include <experimental/filesystem>
 
 int main(int argc, char *argv[]) {
@@ -9,5 +10,5 @@ int main(int argc, char *argv[]) {
     myPath = argv[1];
 
   for(auto& dirEntry : recursive_directory_iterator(myPath))
-       cout << dirEntry << endl;
+       std::cout << dirEntry << std::endl;
 }
