@@ -37,6 +37,7 @@
 #include <sys/stat.h>
 
 #include "buffer.h"
+#include "str.h"
 #include "stralloc.h"
 #include "fmt.h"
 #include "uint64.h"
@@ -504,7 +505,13 @@ int list_dir_internal(stralloc* dir,  char type) {
   }
 #endif
 
-  dir_open(&d, dir->s);
+  if(dir_open(&d, dir->s) != 0) {
+      buffer_puts(buffer_2, "ERROR: Opening directory ");
+      buffer_putsa(buffer_2, dir);
+      buffer_puts(buffer_2, " failed!\n");
+      buffer_flush(buffer_2);
+   goto end;
+  }
 
   stralloc_cats(dir, PATHSEP_S);
   l = dir->len;
