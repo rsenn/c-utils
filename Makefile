@@ -5,9 +5,6 @@ WARNINGS = all
 
 INSTALL = install
 
-vpath lib
-VPATH = lib
-
 
 CC := gcc
 CXX = g++
@@ -124,6 +121,11 @@ BUILDDIR = build/$(patsubst %-,%,$(CROSS_COMPILE))/$(BUILD_TYPE)/
 endif
 endif
 
+
+vpath lib $(BUILDDIR)
+VPATH = lib:$(BUILDDIR)
+
+
 ifeq ($(CXXOPTS),)
 #$(info OS: "$(OS)")
 ifneq ($(OS),msys)
@@ -151,7 +153,7 @@ ifeq ($(LARGEFILE),1)
 DEFS += _FILE_OFFSET_BITS=64
 DEFS += _LARGEFILE_SOURCE=1
 endif
-DEFS += _GNU_SOURCE=1 
+DEFS += _GNU_SOURCE=1
 
 WARNINGS += no-strict-aliasing
 
@@ -241,11 +243,13 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT)    #kbd-adjacency$(M64_)$(EXESUFFIX)$(EXEEXT)
+PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT) 
+  
+  
 ifeq ($(DO_CXX),1)
 PROGRAMS += \
   $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT)   \
-  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT)  
+  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT)
 endif
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
@@ -299,18 +303,23 @@ $(BUILDDIR)torrent-progress.o: torrent-progress.c
 $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)byte_copy.o $(BUILDDIR)str_len.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_get.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_unmap.o $(BUILDDIR)open_read.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
+$(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_get_token_pred.o $(BUILDDIR)buffer_init.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)open_read.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)buffer_getc.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)byte_copy.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)str_len.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_putsflush.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)byte_chr.o $(BUILDDIR)buffer_2.o
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+
 ifeq ($(DO_CXX),1)
 $(BUILDDIR)piccfghex.o: piccfghex.cpp
 $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)piccfghex.o $(BUILDDIR)intelhex.o
 
 $(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
-$(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser-cpp.o 
+	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
+
+$(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser-cpp.o
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
 $(BUILDDIR)kbd-adjacency$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
-endif 
+endif
 
 ifeq ($(BUILDDIR),)
 .c.o:
