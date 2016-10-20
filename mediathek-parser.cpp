@@ -125,7 +125,7 @@ int main()
     std::cerr << "Line: " << line << std::endl;
 
     try {
-      read_json(line, pt);
+      read_json(line, pt, std::locale);
 
 
       /*ptree::const_iterator end = pt.end();

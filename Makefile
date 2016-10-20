@@ -130,7 +130,7 @@ ifneq ($(OS),msys)
 endif
 endif
 
-CPPFLAGS := -I.
+CPPFLAGS := -I. -Ilib
 
 DEFS += INLINE=inline
 DEFS += PATH_MAX=4096
