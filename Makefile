@@ -160,7 +160,7 @@ CFLAGS_Release = -g -fomit-frame-pointer -O2
 
 CXXFLAGS = -pipe
 
-CXXFLAGS += -std=c++11
+CXXFLAGS += -std=c++14
 
 CXXFLAGS_Debug = -g -ggdb -O0
 CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
@@ -239,7 +239,9 @@ LIBS += -lstdc++
 
 PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT)    #kbd-adjacency$(M64_)$(EXESUFFIX)$(EXEEXT)
 ifeq ($(DO_CXX),1)
-PROGRAMS += $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT)  
+PROGRAMS += \
+  $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT)   \
+  $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT)  
 endif
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
@@ -296,6 +298,9 @@ $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)torrent-prog
 ifeq ($(DO_CXX),1)
 $(BUILDDIR)piccfghex.o: piccfghex.cpp
 $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)piccfghex.o $(BUILDDIR)intelhex.o
+
+$(BUILDDIR)mediathek-parser.o: mediathek-parser.cpp
+$(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)intelhex.o
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
