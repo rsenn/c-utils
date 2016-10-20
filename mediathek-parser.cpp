@@ -122,8 +122,10 @@ int main()
   while(std::getline(input_stream, line)) {
     ptree pt;
 
+    std::cerr << "Line: " << line << std::endl;
+
     try {
-      read_json(input_file, pt);
+      read_json(line, pt);
 
 
       /*ptree::const_iterator end = pt.end();
