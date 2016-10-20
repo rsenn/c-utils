@@ -5,6 +5,10 @@ WARNINGS = all
 
 INSTALL = install
 
+vpath lib
+VPATH = lib
+
+
 CC := gcc
 CXX = g++
 
@@ -312,17 +316,20 @@ ifeq ($(BUILDDIR),)
 .c.o:
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
-$(BUILDDIR)%.o: %.c
+%.o: %.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 .cpp.o:
 	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-$(BUILDDIR)%.o: %.cpp
+%.o: %.cpp
 	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 else
 .c.o:
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+
+$(BUILDDIR)%.o: lib/%.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
 
 $(BUILDDIR)%.o: %.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
