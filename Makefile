@@ -245,7 +245,7 @@ PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$
 ifeq ($(DO_CXX),1)
 PROGRAMS += \
   $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT)   \
-  $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT)  
+  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT)  
 endif
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
@@ -303,8 +303,8 @@ ifeq ($(DO_CXX),1)
 $(BUILDDIR)piccfghex.o: piccfghex.cpp
 $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)piccfghex.o $(BUILDDIR)intelhex.o
 
-$(BUILDDIR)mediathek-parser.o: mediathek-parser.cpp
-$(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)intelhex.o
+$(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
+$(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser-cpp.o 
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
