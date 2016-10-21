@@ -35,6 +35,9 @@ int
 strlist_append(strlist* sl, const char* str);
 
 int
+strlist_append_sa(strlist* sl, const stralloc *sa);
+
+int
 strlist_append_unique(strlist* sl, const char* str);
 
 
