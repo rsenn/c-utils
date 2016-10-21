@@ -21,6 +21,7 @@ typedef struct strlist {
 /* strlist_init will initialize a strlist. */
 #define strlist_init stralloc_init
 #define strlist_free stralloc_free
+#define strlist_zero stralloc_zero
 
 size_t
 strlist_count(strlist* sl);
