@@ -6,6 +6,7 @@
 
 #include "stralloc.h"
 #include "uint64.h"
+#include "buffer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,15 +20,15 @@ typedef struct strlist {
 } strlist;
 
 /* strlist_init will initialize a strlist. */
-#define strlist_init stralloc_init
-#define strlist_free stralloc_free
-#define strlist_zero(l) stralloc_zero((stralloc*)l)
+#define strlist_zero(l) stralloc_zero(&(l)->sa)
+#define strlist_init(l) stralloc_init(&(l)->sa)
+#define strlist_free(l) stralloc_free(&(l)->sa)
 
 size_t
 strlist_count(strlist* sl);
 
 const char*
-strlist_at(strlist* sl, size_t pos);
+strlist_at(const strlist* sl, size_t pos);
 
 int64
 strlist_index_of(strlist* sl, const char* str);
@@ -44,9 +45,8 @@ strlist_pushsa(strlist* sl, const stralloc *sa);
 int
 strlist_pushunique(strlist* sl, const char* str);
 
-
-int
-strlist_dump(buffer*, strlist*);
+void
+strlist_dump(buffer* out, const strlist* sl);
 #ifdef __cplusplus
 }
 #endif

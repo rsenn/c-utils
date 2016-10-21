@@ -3,11 +3,10 @@
 
 int
 strlist_pushb(strlist* sl, const char* s, size_t n) {
+
   if(stralloc_readyplus(&sl->sa, n + 2)) {
-    byte_copy(&sl->sa.s[sl->sa.len], n + 1, s);
-    sl->sa.len += n + 1;
-    sl->sa.s[sl->sa.len] = '\0';
-    return 1;
+	stralloc_catb(&sl->sa, s, n);
+	stralloc_catb(&sl->sa, "\0", 1);
   }
   return 0;
 }
