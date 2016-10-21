@@ -10,7 +10,7 @@ strlist_dump(buffer* out, const strlist* sl) {
   for(size_t i = 0; i < n; ++i) {
   	buffer_puts(out, strlist_at(sl, i));
   	if(i + 1 < n)
-  		buffer_put(out, "|", 1);
+  		buffer_puts(out, "\033[1;31m|\033[0m");
   }
   buffer_putsflush(out, "}\n");
 }
