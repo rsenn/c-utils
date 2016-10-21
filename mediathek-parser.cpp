@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <boost/date_time/local_time/local_time.hpp>
+#include <boost/algorithm/string.hpp>
 
 struct dateparser
 {
@@ -113,6 +114,7 @@ int main()
     std::string input_file = "D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
     std::ifstream input_stream(input_file);
     std::string line;
+
     dateparser d_parser("%d.%m.%Y");
     dateparser t_parser("%H:%M:%S");
 
@@ -121,18 +123,23 @@ int main()
 
   while(std::getline(input_stream, line)) {
     ptree pt;
+  std::stringstream ss;
+   boost::trim_if(line, boost::is_any_of(",\r")); 
+   ss << "{ " << line << " }";
+   //  ss .str(line);
+//  ss.str(line);
 
     std::cerr << "Line: " << line << std::endl;
 
     try {
-      read_json(line, pt);
+      read_json(ss, pt);
 
 
       /*ptree::const_iterator end = pt.end();
       for (ptree::const_iterator it = pt.begin(); it != end; ++it) {*/
         std::list<std::string> fields;
         entry_to_v(pt, fields);
-        std::cout << boost::algorithm::join(fields, ",") << std::endl;
+        std::cout << boost::algorithm::join(fields, " ||| ") << std::endl;
    /*   }*/
 
       /*  BOOST_FOREACH(boost::property_tree::ptree::value_type & v, pt)

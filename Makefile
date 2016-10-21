@@ -6,6 +6,11 @@ WARNINGS = all
 INSTALL = install
 
 
+ifeq ($SUBLIME_FILENAME),None)
+PATH = /c/git-sdk-64/usr/bin
+MAKE = c:/git-sdk-64/usr/bin/make
+endif
+
 CC := gcc
 CXX = g++
 
@@ -93,7 +98,7 @@ endif
 
 ifeq ($(OS),msys)
 EXEEXT = .exe
-STATIC := 1
+STATIC_LIBGCC := 1
 endif
 
 ifeq ($(OS),cygwin)
@@ -220,7 +225,13 @@ CFLAGS += $(CFLAGS_$(BUILD_TYPE))
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 
 ifeq ($(STATIC),1)
-LDFLAGS += -static -static-libgcc -static-libstdc++
+LDFLAGS += -static
+endif
+ifeq ($(STATIC_LIBGCC),1)
+LDFLAGS += -static-libgcc
+endif
+ifeq ($(STATIC_LIBSTDCXX),1)
+LDFLAGS += -static-libstdc++
 endif
 ifeq ($(STRIP),1)
 LDFLAGS += -s
@@ -256,6 +267,8 @@ OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 vpath $(BUILDDIR)
 
 VPATH = $(BUILDDIR):.
+
+$(info Programs: $(PROGRAMS))
 
 #$(info ARCH: $(ARCH))
 #$(info BUILD: $(BUILD))
@@ -309,16 +322,20 @@ $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-pa
 ifeq ($(DO_CXX),1)
 $(BUILDDIR)piccfghex.o: piccfghex.cpp
 $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)piccfghex.o $(BUILDDIR)intelhex.o
+	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 $(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
-	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
+	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser-cpp.o
+	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
+	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o  $(BUILDDIR)$(patsubst %.cpp,%.o,$(notdir $<))  $<
+
 $(BUILDDIR)kbd-adjacency$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 endif
 
 ifeq ($(BUILDDIR),)

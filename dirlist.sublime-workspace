@@ -1,0 +1,573 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"USE_",
+				"USE_HD44780_LCD"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "mediathek-parser.c",
+			"settings":
+			{
+				"buffer_size": 5680,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/array_cats.c",
+			"settings":
+			{
+				"buffer_size": 125,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/array_start.c",
+			"settings":
+			{
+				"buffer_size": 79,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/array_bytes.c",
+			"settings":
+			{
+				"buffer_size": 123,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Makefile/Make.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Makefile/Make.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 219.0,
+		"last_filter": "insta",
+		"selected_items":
+		[
+			[
+				"insta",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"build",
+				"Build: New Build System"
+			],
+			[
+				"packa",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"package",
+				"Preferences: Package Control Settings – Default"
+			],
+			[
+				"",
+				"About"
+			]
+		],
+		"width": 528.0
+	},
+	"console":
+	{
+		"height": 114.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/roman/Documents/dirlist"
+	],
+	"file_history":
+	[
+		"/C/Users/roman/Documents/dirlist/lib/array_reset.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_dump.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_pushb.c",
+		"/C/Users/roman/Documents/dirlist/lib/stralloc_cats.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_at.c",
+		"/C/Users/roman/Documents/dirlist/Makefile",
+		"/C/Users/roman/Documents/dirlist/lib/strlist.h",
+		"/C/Users/roman/Documents/dirlist/lib/stralloc_init.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_push_sa.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_push.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_pushsa.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_index_of.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_count.c",
+		"/C/Users/roman/Documents/dirlist/mediathek-parser.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_append.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_dump.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_mmapread.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_mmapread_fd.c",
+		"/C/Users/roman/Documents/dirlist/lib/strlist_append_sa.c",
+		"/C/Users/roman/Documents/dirlist/lib/stralloc_append_sa.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_get_token_sa.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_skip_until.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer.h",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_prefetch.c",
+		"/C/Users/roman/Documents/dirlist/lib/stralloc_zero.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_getc.c",
+		"/C/Users/roman/Documents/dirlist/mediathek-parser.cpp",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_get_token_sa_pred.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_get_token_pred.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_get.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_feed.c",
+		"/C/Users/roman/Documents/dirlist/lib/buffer_get_token.c",
+		"/C/Users/roman/Documents/dirlist/byte.h",
+		"/C/Users/roman/Documents/dirlist/dirlist.sublime-project",
+		"/C/Users/roman/Documents/dirlist/dirlist.sublime-build",
+		"/C/Users/roman/Documents/dirlist/buffer_1.c",
+		"/D/Programs/Sublime Text 3/Data/Packages/Package Control/Package Control.sublime-settings",
+		"/C/Users/roman/Documents/pictest/lib/timer.h",
+		"/C/Users/roman/Documents/pictest/lib/tsmdelay.h",
+		"/C/Users/roman/Documents/pictest/lib/timer.c",
+		"/C/Users/roman/Documents/pictest/src/blinktest.c",
+		"/C/Users/roman/Documents/pictest/src/pictest.h",
+		"/C/Users/roman/Documents/pictest/src/device.h",
+		"/C/Users/roman/Documents/pictest/lib/softpwm.c",
+		"/F/Sources/PIC/Pyralis/t45/softpwm.c",
+		"/F/Sources/PIC/Pyralis/t84/softpwm.c",
+		"/F/Sources/PIC/picworks/soft_pwm_simple.X/soft_pwm_simple_main.c",
+		"/E/Sources/wiringOli/wiringOli/softPwm.c",
+		"/I/Programs/CooCox/CoIDE/repo/Examples/828_Soft Pwm/src/main.c",
+		"/F/Sources/rpi_SoftPwm/pwm.c",
+		"/F/Sources/lighthouse-attiny-softpwm/main.c",
+		"/E/Sources/wiringOli/wiringOli/softPwm.h",
+		"/C/Users/roman/Documents/lc-meter/src/display.c",
+		"/C/Users/roman/Documents/lc-meter/src/LC-meter.c",
+		"/C/Program Files (x86)/Sublime Text 3/Data/Packages/GitMode/GitMode.sublime-settings",
+		"/C/Program Files (x86)/Sublime Text 3/Data/Packages/User/GitMode.sublime-settings",
+		"/C/Program Files (x86)/Sublime Text 3/Data/Packages/BeautifyRuby/BeautifyRuby.sublime-settings",
+		"/C/Program Files (x86)/Sublime Text 3/Data/Packages/Ruby Debugger/Ruby Debugger.sublime-settings",
+		"/C/Users/roman/Documents/lc-meter/scripts/baud.sh",
+		"/C/Users/roman/Documents/lc-meter/scripts/calc-lc-tank.c",
+		"/C/Users/roman/Documents/pictest/src/config-12f1840.h",
+		"/C/Users/roman/Documents/pictest/src/pictest.c",
+		"/C/Users/roman/Documents/pictest/build/vars.mk",
+		"/C/Users/roman/Documents/pictest/src/config-18f252.h",
+		"/C/Users/roman/Documents/pictest/src/config-18f2550.h",
+		"/C/Users/roman/Documents/pictest/src/config-18f25k50.h",
+		"/E/Sources/pictest/src/pictest.c",
+		"/E/Sources/pictest/build/vars.mk",
+		"/E/Sources/pictest/config-18f25k22.h",
+		"/E/Sources/pictest/config-16f876a.h",
+		"/E/Sources/pictest/pictest.c",
+		"/E/Sources/pictest/CMakeLists.txt",
+		"/E/Sources/pictest/config-18f2550.h",
+		"/E/Sources/pictest/scripts/baud.sh",
+		"/E/Sources/pictest/scripts/init-brd.rb",
+		"/E/Sources/pictest/cmdline.txt",
+		"/E/Sources/pictest/config-18f252.h",
+		"/E/Sources/pictest/config-16f628a.h",
+		"/E/Sources/pictest/files.list",
+		"/E/Sources/pictest/Makefile.vars",
+		"/E/Sources/pictest/Makefile.common",
+		"/E/Sources/pictest/Makefile.htc",
+		"/E/Sources/pictest/Makefile.mcc18",
+		"/E/Sources/pictest/Makefile.xc8",
+		"/E/Sources/pictest/lib/ds18b20.h",
+		"/E/Sources/pictest/baud.sh",
+		"/E/Sources/pictest/device.h",
+		"/E/Sources/pictest/timer.c",
+		"/E/Sources/pictest/knapsack.rb",
+		"/E/Sources/pictest/adc.c",
+		"/E/Sources/pictest/pictest.h",
+		"/E/Sources/pictest/pictest.cbp",
+		"/E/Sources/LC-meter-16f876a+n3310display/uart.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/ser.c",
+		"/E/Sources/LC-meter-16f876a+n3310display/display.c",
+		"/E/Sources/LC-meter-16f876a+n3310display/display.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/ser.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/Makefile.vars",
+		"/E/Sources/LC-meter-16f876a+n3310display/LC-meter.c",
+		"/E/Sources/LC-meter-16f876a+n3310display/oscillator.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/Makefile.xc8",
+		"/E/Sources/LC-meter-16f876a+n3310display/uart.c",
+		"/E/Sources/LC-meter-16f876a+n3310display/main.c",
+		"/E/Sources/LC-meter-16f876a+n3310display/types.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/timer.c",
+		"/E/Sources/LC-meter-16f876a+n3310display/interrupt.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/LC-meter.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/lcd44780.c",
+		"/E/Sources/LC-meter-16f876a+n3310display/lcd44780.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/lcd44780-config.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/output.log",
+		"/E/Sources/LC-meter-16f876a+n3310display/timer.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/Last Loaded LCmeter876a.DBK",
+		"/E/Sources/LC-meter-16f876a+n3310display/make.log",
+		"/E/Sources/LC-meter-16f876a+n3310display/lcd3310.c",
+		"/E/Sources/LC-meter-16f876a+n3310display/lcd3310.h",
+		"/E/Sources/LC-meter-16f876a+n3310display/delay.h",
+		"/F/Sources/shish/src/fdtable.h",
+		"/F/Sources/shish/src/term.h",
+		"/F/Sources/shish/src/vartab.h",
+		"/F/Sources/shish/src/var.h",
+		"/F/Sources/shish/src/var/var_rndhash.c",
+		"/F/Sources/shish/src/term/term_ansi.c",
+		"/F/Sources/shish/src/term/term_attr.c",
+		"/F/Sources/shish/src/term/term_backspace.c",
+		"/F/Sources/shish/src/term/term_home.c",
+		"/F/Sources/shish/src/builtin/builtin_error.c",
+		"/F/Sources/shish/src/builtin/builtin_exec.c"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"free",
+			"zero",
+			"mediat",
+			"media",
+			"mediathe",
+			"get_until",
+			"mediathe",
+			"string_predicate",
+			"mediathe",
+			"std::string",
+			"seconds",
+			"64",
+			"SOFTPWM",
+			"number",
+			"USE_HD44780_LCD",
+			"TRISA",
+			"RA",
+			"def",
+			"chipl",
+			":65",
+			"BUILDDIR",
+			"-I",
+			"CPPFLAGS",
+			"-I",
+			"to_amount",
+			"led_enabled",
+			"LED_PIN",
+			"LED_",
+			"UART_",
+			"uart_",
+			"#warning",
+			"uart_",
+			"uart_ini",
+			"OF_BIT",
+			"PRESC",
+			"TMR1",
+			"TMR0",
+			"IVAL",
+			" PRESCALE",
+			"uint8 ",
+			"__delay_ms",
+			"echo_mode"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"init",
+			"string",
+			"dsecs",
+			"SoftPWM",
+			"USE_LCD",
+			"TRISGP",
+			"GP",
+			"OBJDIR",
+			"SER_",
+			"ser_",
+			"#advisory",
+			"POSTSC",
+			"TMR2",
+			"TMR1",
+			"INTERVAL",
+			" SCALE",
+			"volatile uint8 ",
+			""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "mediathek-parser.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5680,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2667.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "lib/array_cats.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 125,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								125,
+								125
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/array_start.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 79,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/array_bytes.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 123,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 21.0
+	},
+	"input":
+	{
+		"height": 29.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 283.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/Bash Build System/Bash.sublime-build",
+	"project": "dirlist.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 333.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

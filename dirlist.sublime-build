@@ -1,0 +1,6 @@
+{
+	"cmd": [ "c:/git-sdk-64/usr/bin/make", "PATH=/c/git-sdk-64/usr/bin" ],
+	    "working_dir": "${project_path:${folder}}",
+    "selector": "source.cpp",
+    "path": "c:\\git-sdk-64\\usr\\bin;${path}"
+}	
