@@ -68,6 +68,7 @@ get_second_std(const auto& field) {
 void
 entry_to_v(boost::property_tree::ptree const& pt, std::list<std::string>& list)
 {
+  std::cerr << "pt.size=" << pt.size() << std::endl;
   //std::transform(pt.begin(),pt.end(), list.begin(), get_second_std::string);
 
   ptree::const_iterator end = pt.end();
@@ -78,6 +79,8 @@ entry_to_v(boost::property_tree::ptree const& pt, std::list<std::string>& list)
 std::vector<std::string>
 entry_to_v(boost::property_tree::ptree const& pt)
 {
+
+  std::cerr << "pt.size=" << pt.size() << ",value=" <<  pt.get_value<std::string>() <<  std::endl;
   std::vector<std::string> ret;
   for (const auto& field : pt) {
     ret.push_back(field.second.get_value<std::string>());
@@ -114,6 +117,7 @@ int main()
     std::string input_file = "D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
     std::ifstream input_stream(input_file);
     std::string line;
+    std::size_t lineno = 0;
 
     dateparser d_parser("%d.%m.%Y");
     dateparser t_parser("%H:%M:%S");
@@ -121,9 +125,11 @@ int main()
     // send your JSON above to the parser below, but populate ss first
 
 
-  while(std::getline(input_stream, line)) {
+  while(std::getline(input_stream, line) && ++lineno < 4) {
     ptree pt;
   std::stringstream ss;
+
+  
    boost::trim_if(line, boost::is_any_of(",\r")); 
    ss << "{ " << line << " }";
    //  ss .str(line);
@@ -138,7 +144,7 @@ int main()
       /*ptree::const_iterator end = pt.end();
       for (ptree::const_iterator it = pt.begin(); it != end; ++it) {*/
         std::list<std::string> fields;
-        entry_to_v(pt, fields);
+        entry_to_v(pt.front().second, fields);
         std::cout << boost::algorithm::join(fields, " ||| ") << std::endl;
    /*   }*/
 

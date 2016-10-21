@@ -5,16 +5,18 @@
 #include "byte.h"
 #include "open.h"
 #include "array.h"
+#include "str.h"
 #include <errno.h>
 #include <ctype.h>
-
+#include <sys/time.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 static const char* file_path = "D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
 static const char delimiters[] = "\"";
 static char  inbuf[16384];
 
-
+/*
 int
 parse_predicate(const char* x, size_t len)
 {
@@ -44,12 +46,11 @@ parse_predicate(const char* x, size_t len)
 
   return 0;
 }
-
+*/
 
 int
-read_line(buffer* input, strlist* fields, char** * arr)
+read_line(buffer* input, strlist* fields, array* x)
 {
-  static array x;
   int64 pos = 0;
 
   const char* end = input->x + input->n, *p = input->x + input->p;
@@ -57,9 +58,8 @@ read_line(buffer* input, strlist* fields, char** * arr)
   size_t n, i = 0;
   char tokbuf[16384];
 
-  *arr = (char**)array_allocate(&x, sizeof(char*), pos);
-
-
+array_trunc(x);
+  //array_allocate(&x, sizeof(char*), pos);
 
   if ((n = byte_chr(p, end - p, '\n')) != end - p)
     end = p + n;
@@ -80,9 +80,9 @@ read_line(buffer* input, strlist* fields, char** * arr)
         continue;
       } else {
         quoted = 0;
-        char** a = array_allocate(&x, sizeof(char*), pos++);
+        char** a = array_allocate(x, sizeof(char*), pos++);
         *a++ = strndup(tokbuf, i);
-        *a = NULL;
+//        *a = NULL;
 
         //        strlist_pushb(fields, tokbuf, i);
         i = 0;
@@ -95,64 +95,92 @@ read_line(buffer* input, strlist* fields, char** * arr)
     }
     tokbuf[i++] = *p;
   }
-  /*
-      while (p < end && isspace(*p))
-        ++p;
 
-      while (p < end && *p != '"')
-        ++p;
-
-      if (p >= end || *p == '\n') goto end;
-
-
-      if (*p == '"') {
-        const char* x = ++p;
-        bool escaped = false;
-        i = 0;
-
-
-        while (x < end && *x != '"') {
-          if (*x == '\\') {
-            escaped = true;
-            if (++x == end)
-              break;
-          }
-          if (*x == '"' && !escaped) {
-            if (++x == end || *x == '\n')
-              return x - input->x;
-
-            if(*x == ',' && x < end)
-              ++x;
-
-            while (x < end && (isspace(*x) && *x != '\n'))
-              ++x;
-
-
-            strlist_pushb(fields, tokbuf, i);
-
-            ret = x - p;
-
-            i=0;
-            break;
-
-          }
-          tokbuf[i++] = *x;
-
-          escaped = false;
-          ++x;
-        }
-        if(x < end && *x == ',')
-          ++x;
-
-        while(x < end && *x != '"' && *x != '\n')
-              ++x;
-
-        p = x;
-      }
-
-    }*/
-  *arr = array_start(&x);
+ // *arr = array_start(&x);
   return p - &input->x[input->p];
+}
+
+void
+strarray_dump(buffer* b, const array* a) {
+  char** av = array_start(a);
+  ssize_t ac = array_length(a, sizeof(char*));
+  buffer_puts(b, "[ \"");
+  while(ac--) {
+    buffer_puts(b, *av);
+    if(ac > 0) buffer_puts(b, "\", \"");
+    ++av;
+  }
+  buffer_putsflush(b, "\" ]\n");
+}
+
+void
+dump_pair(buffer* b, const char* first, const char* second) {
+  buffer_puts(b, first);
+  buffer_puts(b, ": ");
+  buffer_puts(b, second);
+  buffer_putnlflush(b);
+}
+
+void
+process_entry(const array* a) {
+
+   char** av = array_start(a);
+  size_t ac = array_length(a, sizeof(char*));
+
+  if(ac >= 21 && !str_diff(av[0], "X")) {
+    stralloc datetime;
+    struct tm tm;
+    time_t t;
+
+    char *sender = av[1], *thema = av[2], *title = av[3], *date = av[4], *time = av[5], *duration = av[6], *grcoee = av[7], *beschreibung = av[8], *url = av[9], *website = av[10], *untertitel = av[11], *urlrtmp = av[12], *url_klein = av[13], *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17], *url_history = av[18], *geo = av[19], *neu = av[20];
+
+/*    char* title = av[8];
+    char* date = av[4];
+    char* time = av[5];
+    char* duration = av[6]; 
+    char* url = av[9]; 
+  */  
+    stralloc url_lo;
+    stralloc_init(&url_lo);
+    char* endptr = url_klein;
+    unsigned long pos_lo = strtoul(url_klein, &endptr, 10);
+    //*endptr++ = '\0';
+    endptr++;
+        stralloc_copyb(&url_lo, url, pos_lo);
+    stralloc_catb(&url_lo, endptr, str_len(endptr)+1);
+
+
+    stralloc_init(&datetime);
+    stralloc_copys(&datetime, av[4]);
+    stralloc_catc(&datetime, ' ');
+    stralloc_cats(&datetime, av[5]);
+    stralloc_nul(&datetime);
+    if(strptime(datetime.s, "%d.%m.%Y %H:%M:%S", &tm) == NULL) {
+      t = 0;
+    } else {
+      t = mktime(&tm);
+    }
+  dump_pair(buffer_2, "title", title);
+  dump_pair(buffer_2, "duration", duration);
+  dump_pair(buffer_2, "url", url);
+  dump_pair(buffer_2, "url_lo.n", av[13]);
+  dump_pair(buffer_2, "url_lo.s", url_lo.s);
+
+buffer_puts(buffer_1, "#EXTINF:,");
+buffer_puts(buffer_1, sender);
+buffer_puts(buffer_1, "-");
+buffer_puts(buffer_1, thema);
+buffer_puts(buffer_1, "-");
+buffer_puts(buffer_1, title);
+buffer_put(buffer_1, "\r\n", 2);
+buffer_puts(buffer_1, url_lo.s);
+buffer_put(buffer_1, "\r\n", 2);
+buffer_flush(buffer_1);
+  }
+  else {
+      strarray_dump(buffer_2, a);
+  
+  }
 }
 
 int
@@ -162,7 +190,7 @@ read_file(const char* p)
   int ret;
   size_t line = 0, index = 0;
   stralloc sa;
-  char** arr;
+  static array arr;
   strlist fields;
   stralloc_init(&sa);
   strlist_init(&fields);
@@ -187,6 +215,8 @@ read_file(const char* p)
     buffer_init(&input, read, fd, 	inbuf, sizeof(inbuf));*/
   buffer_mmapread(&input, file_path);
 
+buffer_puts(buffer_1, "#EXTM3U\r\n");
+
   for (; input.p < input.n;) {
 
 
@@ -204,44 +234,33 @@ read_file(const char* p)
     }
 
     strlist_init(&fields);
+    array_trunc(&arr);
     ret = read_line(&input, &fields, &arr);
-
+/*
     buffer_puts(buffer_1, "Line ");
     buffer_putulong(buffer_1, line);
-    buffer_puts(buffer_1, ": \"");
+    buffer_puts(buffer_1, ":");
 
+size_t index = 0;
     while (*arr) {
 
+    buffer_puts(buffer_1, "\n    ");
+    buffer_putulong(buffer_1, index++);
+    buffer_puts(buffer_1, ": \"");
       buffer_puts(buffer_1, *arr++);
-      buffer_puts(buffer_1, "\"\n   \"");
+      buffer_puts(buffer_1, "\"");
     }
+
     buffer_flush(buffer_1);
 
     //strlist_dump(buffer_1, &fields);
     buffer_putnlflush(buffer_1);
     //  strlist_free(&fields);
 
-    /*    char c;
-
-        do {
-          if ((ret = buffer_get(&input, &c, 1)) != 1)
-    			goto end;
-
-
-        } while (isspace(c));*/
-
-    //ret = buffer_getline(&input, tokbuf, sizeof(tokbuf));
     strlist_zero(&fields);
-    //    ret = 0;
-    //ret = buffer_get_token(&input, tokbuf, sizeof(tokbuf), "\"\r\n", 4);
-    //ret = buffer_get_token_sa(&input, &sa, delimiters, sizeof(delimiters));
-    //    ret = buffer_get_token_pred(&input, tokbuf, sizeof(tokbuf), parse_predicate);
-
-    /*
-    buffer_puts(buffer_1, "Buffer: ");
-    buffer_dump(buffer_1, &input);
-    buffer_putnlflush(buffer_1);
     */
+
+process_entry(&arr);
 
     if (ret > 0) {
       input.p += ret;

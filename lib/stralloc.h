@@ -66,8 +66,10 @@ int stralloc_catb(stralloc* sa, const char* in, size_t len);
 
 /* stralloc_cats is analogous to stralloc_copys */
 int stralloc_cats(stralloc* sa, const char* in);
+int stralloc_catc(stralloc* sa, const unsigned char c);
 
 void stralloc_zero(stralloc* sa);
+int stralloc_trunc(stralloc* sa, size_t n);
 
 /* like stralloc_cats but can cat more than one string at once */
 int stralloc_catm_internal(stralloc* sa, ...);
