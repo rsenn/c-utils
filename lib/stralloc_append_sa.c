@@ -3,7 +3,7 @@
 #include "str.h"
 
 int
-strlist_append_sa(strlist* sl, const stralloc* sa) {
+strlist_pushsa(strlist* sl, const stralloc* sa) {
   if(stralloc_readyplus(&sl->sa, sa->n + 2)) {
     byte_copy(&sl->sa.s[sl->sa.len], sa->n + 1, sa->s);
     sl->sa.len += sa->n + 1;

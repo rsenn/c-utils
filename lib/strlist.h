@@ -32,13 +32,16 @@ int64
 strlist_index_of(strlist* sl, const char* str);
 
 int
-strlist_append(strlist* sl, const char* str);
+strlist_push(strlist* sl, const char* str);
 
 int
-strlist_append_sa(strlist* sl, const stralloc *sa);
+strlist_pushb(strlist* sl, const char* s, size_t n);
 
 int
-strlist_append_unique(strlist* sl, const char* str);
+strlist_pushsa(strlist* sl, const stralloc *sa);
+
+int
+strlist_pushunique(strlist* sl, const char* str);
 
 
 #ifdef __cplusplus
