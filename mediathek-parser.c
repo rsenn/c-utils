@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <sys/time.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme.json"; //"D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
@@ -142,6 +143,37 @@ get_domain(const char* url, stralloc* d)
   stralloc_copyb(d, url, str_chr(url, '/'));
 }
 
+
+void
+cleanup_text(char* t)
+{
+  for (int i = 0; i < str_len(t); i++) {
+    if (isspace(t[i])  || t[i] == ',')
+      t[i] = '_';
+  }
+}
+
+char*
+cleanup_domain(stralloc* d)
+{
+  d->len = byte_rchr(d->s, d->len, '.');
+  for (size_t i = 0; i < d->len; ++i)
+    d->s[i] = toupper(d->s[i]);
+  stralloc_nul(d);
+  const char* remove_parts[] = { "ondemand", "storage", "files", "stream", "mvideos", "online", 0 };
+
+  for(size_t i = 0; remove_parts[i]; ++i) {
+    char *s2, *s = strtok(d->s, remove_parts[i]);
+    if(s && (s2 = strchr(s, '.')) && s2 > s) {
+      ++s2;
+      s = strdup(s2);
+      free(d->s);
+      d->s = s;
+    }
+  }
+  return d->s;
+}
+
 void
 process_entry(const array* a)
 {
@@ -202,23 +234,18 @@ process_entry(const array* a)
     if (d < 20 * 60)
       return;
 
-    for (int i = 0; i < str_len(thema); i++) {
-      if (isspace(thema[i])  || thema[i] == ',')
-        thema[i] = '_';
-    }
+    cleanup_text(thema);
+    cleanup_text(title);
+    cleanup_text(description);
 
-    for (int i = 0; i < str_len(title); i++) {
-      if (isspace(title[i])  || title[i] == ',')
-        title[i] = '_';
-    }
-
-    stralloc s;
-    stralloc_init(&s);
 
     if (str_len(sender) == 0) {
+
+      stralloc s;
+      stralloc_init(&s);
       get_domain(url_lo.s, &s);
-    } else {
-      stralloc_copys(&s, sender);
+      free(sender);
+      sender = cleanup_domain(&s);
     }
 
     dump_pair(buffer_2, "thema", thema);
@@ -226,6 +253,7 @@ process_entry(const array* a)
     dump_long(buffer_2, "d", d);
     dump_pair(buffer_2, "duration", duration);
     dump_pair(buffer_2, "url", url);
+    dump_pair(buffer_2, "sender", sender);
     dump_pair(buffer_2, "url_lo.n", av[13]);
     dump_pair(buffer_2, "url_lo.s", url_lo.s);
 
@@ -236,9 +264,9 @@ process_entry(const array* a)
     buffer_puts(buffer_1, "#EXTINF:");
     buffer_putulong(buffer_1, d);
     buffer_put(buffer_1, ",", 1);
-    buffer_puts(buffer_1, timebuf);
+    buffer_put(buffer_1, timebuf, str_len(timebuf)-2);
     buffer_puts(buffer_1, "-");
-    buffer_putsa(buffer_1, &s);
+    buffer_puts(buffer_1, sender);
     buffer_puts(buffer_1, "-");
     buffer_puts(buffer_1, thema);
     buffer_puts(buffer_1, "-");
@@ -252,7 +280,13 @@ process_entry(const array* a)
     buffer_flush(buffer_1);
   } else {
     strarray_dump(buffer_2, a);
+  }
 
+  while(ac > 0) {
+    if(av[ac])
+      free(av[ac]);
+    --ac;
+    ++av;
   }
 }
 
