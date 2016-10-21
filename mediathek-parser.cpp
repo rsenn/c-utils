@@ -16,45 +16,43 @@
 #include <boost/date_time/local_time/local_time.hpp>
 #include <boost/algorithm/string.hpp>
 
-struct dateparser
-{
-    dateparser(std::string fmt)
-    {
-        // set format
-        using namespace boost::local_time;
-        local_time_input_facet* input_facet = new local_time_input_facet();
-        input_facet->format(fmt.c_str());
-        ss.imbue(std::locale(ss.getloc(), input_facet));
+struct dateparser {
+  dateparser(std::string fmt)
+  {
+    // set format
+    using namespace boost::local_time;
+    local_time_input_facet* input_facet = new local_time_input_facet();
+    input_facet->format(fmt.c_str());
+    ss.imbue(std::locale(ss.getloc(), input_facet));
+  }
+
+  bool operator()(std::string const& text)
+  {
+    ss.clear();
+    ss.str(text);
+
+    ss >> pt;
+    bool ok = !pt.is_not_a_date_time();
+
+    if (ok) {
+      auto tm = to_tm(pt);
+      year    = tm.tm_year;
+      month   = tm.tm_mon + 1; // for 1-based (1:jan, .. 12:dec)
+      day     = tm.tm_mday;
+      hour    = tm.tm_hour;
+      min     = tm.tm_min;
+      sec     = tm.tm_sec;
     }
 
-    bool operator()(std::string const& text)
-    {
-        ss.clear();
-        ss.str(text);
+    return ok;
+  }
 
-        ss >> pt;
-        bool ok = !pt.is_not_a_date_time();
+  boost::posix_time::ptime pt;
+  unsigned year, month, day;
+  unsigned hour, min, sec;
 
-        if (ok)
-        {
-            auto tm = to_tm(pt);
-            year    = tm.tm_year;
-            month   = tm.tm_mon + 1; // for 1-based (1:jan, .. 12:dec)
-            day     = tm.tm_mday;
-            hour    = tm.tm_hour;
-            min     = tm.tm_min;
-            sec     = tm.tm_sec;
-        }
-
-        return ok;
-    }
-
-    boost::posix_time::ptime pt;
-    unsigned year, month, day;
-    unsigned hour, min, sec;
-
-  private:
-    std::stringstream ss;
+private:
+  std::stringstream ss;
 };
 
 using boost::property_tree::ptree;
@@ -125,36 +123,36 @@ int main()
     // send your JSON above to the parser below, but populate ss first
 
 
-  while(std::getline(input_stream, line) && ++lineno < 4) {
-    ptree pt;
-  std::stringstream ss;
-
-  
-   boost::trim_if(line, boost::is_any_of(",\r")); 
-   ss << "{ " << line << " }";
-   //  ss .str(line);
-//  ss.str(line);
-
-    std::cerr << "Line: " << line << std::endl;
-
-    try {
-      read_json(ss, pt);
+    while (std::getline(input_stream, line) && ++lineno < 4) {
+      ptree pt;
+      std::stringstream ss;
 
 
-      /*ptree::const_iterator end = pt.end();
-      for (ptree::const_iterator it = pt.begin(); it != end; ++it) {*/
+      boost::trim_if(line, boost::is_any_of(",\r"));
+      ss << "{ " << line << " }";
+      //  ss .str(line);
+      //  ss.str(line);
+
+      std::cerr << "Line: " << line << std::endl;
+
+      try {
+        read_json(ss, pt);
+
+
+        /*ptree::const_iterator end = pt.end();
+        for (ptree::const_iterator it = pt.begin(); it != end; ++it) {*/
         std::list<std::string> fields;
         entry_to_v(pt.front().second, fields);
         std::cout << boost::algorithm::join(fields, " ||| ") << std::endl;
-   /*   }*/
+        /*   }*/
 
-      /*  BOOST_FOREACH(boost::property_tree::ptree::value_type & v, pt)
-          print(v);*/
-    } catch(boost::property_tree::json_parser_error const& parse_error) {
-       std::cerr << parse_error.what() << std::endl;
+        /*  BOOST_FOREACH(boost::property_tree::ptree::value_type & v, pt)
+            print(v);*/
+      } catch (boost::property_tree::json_parser_error const& parse_error) {
+        std::cerr << parse_error.what() << std::endl;
+      }
     }
-  }
-//    std::for_each(pt.begin(), pt.end(), print);
+    //    std::for_each(pt.begin(), pt.end(), print);
 
 
     /*  BOOST_FOREACH(boost::property_tree::ptree::value_type & v, pt.get_child("particles.electron")) {
@@ -168,7 +166,7 @@ int main()
     {
          iter->first; // Your key, at this level it will be "electron", "proton", "proton"
          iter->second; // The object at each step {"pos": [0,0,0], "vel": [0,0,0]}, etc.
-    }*/ 
+    }*/
     return EXIT_SUCCESS;
   } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
