@@ -8,6 +8,7 @@
 #include "str.h"
 #include <errno.h>
 #include <ctype.h>
+#include <time.h>
 #include <sys/time.h>
 #include <stdbool.h>
 #include <stdio.h>
