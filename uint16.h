@@ -11,7 +11,6 @@
 
 #include <sys/types.h>
 
-
 #ifdef _MSC_VER
 #include <windows.h>
 #define uint16_t UINT16
@@ -25,7 +24,7 @@ extern "C" {
 typedef uint16_t uint16;
 typedef int16_t int16;
 
-#if (defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT16_MACROS)
+#if(defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT16_MACROS)
 
 static inline void uint16_pack(char* out, uint16 in) {
   *(uint16 *)out = in;

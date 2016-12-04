@@ -15,8 +15,8 @@ size_t fmt_escapecharxml(char* dest,uint32_t ch) {
     b[0]='x';
     b[j=fmt_xlong(b+1,ch)+1]=0;
     s=a;
-    if (i>j) { s=b; i=j; }
-    if (dest) {
+    if(i>j) { s=b; i=j; }
+    if(dest) {
       dest[0]='&';
       dest[1]='#';
       byte_copy(dest+2,i,s);
@@ -35,5 +35,4 @@ size_t fmt_escapecharhtml(char* dest,uint32_t ch) {
 }
 #else
 size_t fmt_escapecharhtml(char* dest,uint32_t ch) __attribute__((__alias__("fmt_escapecharxml")));
-#endif
 #endif

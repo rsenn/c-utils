@@ -8,7 +8,7 @@ static void fmt_oct3(char* dest,uint8_t w) {
 
 size_t fmt_escapecharc(char* dest,uint32_t ch) {
   char c;
-  if (ch>0xff) return 0;
+  if(ch>0xff) return 0;
   switch (ch) {
   case '\a': c='a'; goto doescape;
   case '\b': c='b'; goto doescape;
@@ -21,13 +21,13 @@ size_t fmt_escapecharc(char* dest,uint32_t ch) {
   case '\\':
     c='\\';
   doescape:
-    if (dest) {
+    if(dest) {
       dest[0]='\\';
       dest[1]=c;
     }
     return 2;
   default:
-    if (dest) {
+    if(dest) {
       dest[0]='\\';
       fmt_oct3(dest+1,ch&0xff);
     }

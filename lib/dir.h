@@ -16,7 +16,7 @@ extern "C" {
 #endif
 #define IS_PATHSEP(c) ((c) == '\\'||(c) == '/')
 
-enum 
+enum
 {
   D_FILE = 0x20,
   D_DIRECTORY = 0x10,

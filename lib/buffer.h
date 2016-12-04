@@ -8,6 +8,7 @@
 #include <sys/types.h>
 /* for strlen */
 #include <string.h>
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -161,6 +162,10 @@ void buffer_frombuf(buffer* b,const char* x,size_t l);	/* buffer reads from stat
 void buffer_fromarray(buffer* b,array* a);	/* buffer reads from array */
 #endif
 void buffer_dump(buffer *out, buffer *b);
+
+int buffer_putc(buffer *b, char c);
+int buffer_putuint64(buffer *b, uint64 i);
+int buffer_putnspace(buffer *b, int n);
 
 #ifdef __cplusplus
 }

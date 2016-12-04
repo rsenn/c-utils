@@ -11,7 +11,6 @@
 
 #include <sys/types.h>
 
-
 #ifdef _MSC_VER
 #include <windows.h>
 #define uint32_t UINT32
@@ -25,7 +24,7 @@ extern "C" {
 typedef uint32_t uint32;
 typedef int32_t int32;
 
-#if (defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT32_MACROS)
+#if(defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT32_MACROS)
 
 static inline void uint32_pack(char* out, uint32 in) {
   *(uint32 *)out = in;

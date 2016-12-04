@@ -3,8 +3,7 @@
 #include <iterator>
 #include <string>
 #include <sstream>
-#include <iomanip>   
-
+#include <iomanip>
 
 #include <cstdio>
 #include <cstring>
@@ -12,7 +11,6 @@
 
 using std::string;
 using std::vector;
-
 
 uint16_t
 get16(intelhex::hex_data& hex, unsigned int address) {
@@ -34,7 +32,7 @@ implode(const vector<T>& v, const S& s = ",") {
 void
 set16(intelhex::hex_data& hex, unsigned int address, uint16_t value) {
       intelhex::hex_data::iterator it, prev;
-      
+
     hex.set(address, value & 0xff);
     hex.set(address+1, value >> 8);
     /*
@@ -46,7 +44,7 @@ set16(intelhex::hex_data& hex, unsigned int address, uint16_t value) {
     }
   std::copy(prev->second.begin(),prev->second.end(),std::ostream_iterator<int>(std::cout<< " " ));
 
-  printf("new block: 0x%04X size: 0x%04X \n", prev->first, prev->second.size());  
+  printf("new block: 0x%04X size: 0x%04X \n", prev->first, prev->second.size());
     prev->second[1]=(value >> 8);
     */
 //    hex[address+1] = value >> 8;
@@ -57,7 +55,7 @@ int main(int argc, char* argv[])
 {
     intelhex::hex_data hex;
 
-    if (argc > 1) {
+    if(argc > 1) {
         std::string file = argv[1];
         std::string filename = basename(argv[1]);
         int newval = -1; //0xFF72;
@@ -70,7 +68,7 @@ int main(int argc, char* argv[])
 
         hex.load(file);
 
-        for (const auto& p : hex) {
+        for(const auto& p : hex) {
             printf("address: 0x%04X size: 0x%04X\n", p.first, p.second.size());
         }
 
@@ -81,13 +79,12 @@ int main(int argc, char* argv[])
 		if(hex.size()) {
 		uint32_t addr, v;
 		  intelhex::hex_data::iterator it = --hex.end();
-		
+
 		  addr = it->first / 2;
-		  v = get16(hex, addr); 
+		  v = get16(hex, addr);
 		  printf("block %08X[%d]: %s\n", addr, it->second.size(), implode(it->second, ' ').c_str());
 
 		  if(newval != -1) {
-
 
 //			  hex.erase(it->first, it->first+1);
 			  set16(hex, addr, newval);

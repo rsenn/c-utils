@@ -34,7 +34,7 @@ struct dateparser {
     ss >> pt;
     bool ok = !pt.is_not_a_date_time();
 
-    if (ok) {
+    if(ok) {
       auto tm = to_tm(pt);
       year    = tm.tm_year;
       month   = tm.tm_mon + 1; // for 1-based (1:jan, .. 12:dec)
@@ -70,7 +70,7 @@ entry_to_v(boost::property_tree::ptree const& pt, std::list<std::string>& list)
   //std::transform(pt.begin(),pt.end(), list.begin(), get_second_std::string);
 
   ptree::const_iterator end = pt.end();
-  for (ptree::const_iterator it = pt.begin(); it != end;)
+  for(ptree::const_iterator it = pt.begin(); it != end;)
     list.push_back(it->second.get_value<std::string>());
 }
 
@@ -80,7 +80,7 @@ entry_to_v(boost::property_tree::ptree const& pt)
 
   std::cerr << "pt.size=" << pt.size() << ",value=" <<  pt.get_value<std::string>() <<  std::endl;
   std::vector<std::string> ret;
-  for (const auto& field : pt) {
+  for(const auto& field : pt) {
     ret.push_back(field.second.get_value<std::string>());
   }
   return ret;
@@ -91,10 +91,10 @@ print(boost::property_tree::ptree::value_type& v/* boost::property_tree::ptree c
 {
   boost::property_tree::ptree const& pt = v.second;
   ptree::const_iterator end = pt.end();
-  for (ptree::const_iterator it = pt.begin(); it != end;) {
+  for(ptree::const_iterator it = pt.begin(); it != end;) {
     std::string value = it->second.get_value<std::string>();
 
-    if (value.find(',') != std::string::npos)
+    if(value.find(',') != std::string::npos)
       std::cout << std::quoted(value);
     else
       std::cout << value;
@@ -103,7 +103,7 @@ print(boost::property_tree::ptree::value_type& v/* boost::property_tree::ptree c
 
     //  std::cout << '(';print(it->second); std::cout << ')';
 
-    if (++it != end)
+    if(++it != end)
       std::cout << ",";
   }
   std::cout << std::endl;
@@ -122,11 +122,9 @@ int main()
 
     // send your JSON above to the parser below, but populate ss first
 
-
-    while (std::getline(input_stream, line) && ++lineno < 4) {
+    while(std::getline(input_stream, line) && ++lineno < 4) {
       ptree pt;
       std::stringstream ss;
-
 
       boost::trim_if(line, boost::is_any_of(",\r"));
       ss << "{ " << line << " }";
@@ -138,9 +136,8 @@ int main()
       try {
         read_json(ss, pt);
 
-
         /*ptree::const_iterator end = pt.end();
-        for (ptree::const_iterator it = pt.begin(); it != end; ++it) {*/
+        for(ptree::const_iterator it = pt.begin(); it != end; ++it) {*/
         std::list<std::string> fields;
         entry_to_v(pt.front().second, fields);
         std::cout << boost::algorithm::join(fields, " ||| ") << std::endl;
@@ -153,7 +150,6 @@ int main()
       }
     }
     //    std::for_each(pt.begin(), pt.end(), print);
-
 
     /*  BOOST_FOREACH(boost::property_tree::ptree::value_type & v, pt.get_child("particles.electron")) {
         assert(v.first.empty()); // array elements have no names

@@ -12,7 +12,6 @@
 /* for time_t: */
 #include <sys/types.h>
 
-
 #include "uint32.h"
 #include "uint64.h"
 
@@ -118,7 +117,7 @@ size_t fmt_strm_internal(char* dest, ...);
 #ifndef MAX_ALLOCA
 #define MAX_ALLOCA 100000
 #endif
-#define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if (c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
+#define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if(c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
 
 size_t fmt_uint64(char* dest, uint64 i);
 

@@ -36,14 +36,14 @@ int dir_type(struct dir_s* d)
     }
     case DT_LNK: {
     r |= D_SYMLINK;
-    break; 
+    break;
    }
     case 0:
     default: {
                break;
     }
-  }   
-  
+  }
+
 #endif
   return r;
 }

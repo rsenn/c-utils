@@ -2,7 +2,6 @@
 #include "buffer.h"
 #include "fmt.h"
 
-
 extern ssize_t buffer_dummyreadmmap();
 extern unsigned long stralloc_write();
 
@@ -11,11 +10,10 @@ void buffer_dump(buffer *out, buffer *b) {
   unsigned long n;
 
   buffer_puts(out, "[ x=0x");
-  
-   
-   buffer_putxlong(out, (unsigned long)out->x);
-   buffer_puts(out, ",fd=");
-  if(b->op == stralloc_write) {
+
+  buffer_putxlong(out, (unsigned long)out->x);
+  buffer_puts(out, ",fd=");
+  if(b->op == (void*)stralloc_write) {
     buffer_puts(out, "*sa");
   } else {
     n = fmt_long(xlong, b->fd);
@@ -24,12 +22,12 @@ void buffer_dump(buffer *out, buffer *b) {
   }
 
   buffer_putspace(out);
-buffer_puts(out, "p=");
-buffer_putulong(out, b->p);
-buffer_puts(out, ",n=");
-buffer_putulong(out, b->n);
-buffer_puts(out, ",a=");
-buffer_putulong(out, b->a);
+  buffer_puts(out, "p=");
+  buffer_putulong(out, b->p);
+  buffer_puts(out, ",n=");
+  buffer_putulong(out, b->n);
+  buffer_puts(out, ",a=");
+  buffer_putulong(out, b->a);
 
   buffer_putspace(out);
   if(b->op == read)
@@ -38,7 +36,7 @@ buffer_putulong(out, b->a);
     buffer_puts(out, "<write> ");
   else if(b->op == buffer_dummyreadmmap)
     buffer_puts(out, "<mmap>  ");
-  else if(b->op == stralloc_write)
+  else if(b->op == (void*)stralloc_write)
     buffer_puts(out, "<sa-wr> ");
   else if(b->op == NULL)
     buffer_puts(out, "NULL    ");

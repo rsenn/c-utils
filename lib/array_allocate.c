@@ -66,7 +66,7 @@ void* array_allocate(array* x, uint64 membersize, int64 pos) {
   return 0;
       {
   char* tmp = realloc(x->p, wanted);
-  if (__unlikely(!tmp)) return 0;
+  if(__unlikely(!tmp)) return 0;
   x->p = tmp;
       }
       x->allocated = wanted;

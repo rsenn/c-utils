@@ -14,7 +14,6 @@ typedef signed __int32 ssize_t;
 # endif
 #endif
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -37,7 +36,6 @@ char* mmap_shared(const char* filename, size_t* filesize);
 int mmap_unmap(char* mapped, size_t maplen);
 
 char* mmap_map(int fd, size_t sz, uint64 offset);
-
 
 #ifdef __cplusplus
 }

@@ -20,15 +20,15 @@ size_t fmt_escapecharjson(char* dest,uint32_t ch) {
   case '\\':
   case '/':
 simple:
-    if (dest) {
+    if(dest) {
       dest[0]='\\';
       dest[1]=(char)ch;
     }
     return 2;
   }
-  if (ch>0xffff) {
-    if (ch>0x10ffff) return 0;	// highest representable unicode codepoint
-    if (dest) {
+  if(ch>0xffff) {
+    if(ch>0x10ffff) return 0;	// highest representable unicode codepoint
+    if(dest) {
       dest[0]='\\';
       dest[1]='u';
       fmt_hex4(dest+2,(uint16_t)(0xd800 | (((ch-0x10000)>>10)&0x3ff)));
@@ -38,7 +38,7 @@ simple:
     n=6;
   } else
     n=0;
-  if (dest) {
+  if(dest) {
     dest[0]='\\';
     dest[1]='u';
     fmt_hex4(dest+2,(uint16_t)ch);

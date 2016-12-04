@@ -358,7 +358,7 @@ namespace intelhex
 
             if( hex2binary(buffer, line) )  // Ignore lines with bad checksums
                  ; //break;
-                
+
 /*                std::cout << "parse line: " << line << std::endl;
                 std::cout.flush();
 */

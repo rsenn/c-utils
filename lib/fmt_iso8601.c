@@ -12,7 +12,7 @@ size_t fmt_iso8601(char* dest,time_t t) {
   struct tm* x=gmtime(&t);
   size_t i;
 
-  if (dest==0) return sizeof("2014-05-27T19:22:16Z")-1;
+  if(dest==0) return sizeof("2014-05-27T19:22:16Z")-1;
   /* "2014-05-27T19:22:16Z" */
   i=fmt_ulong(dest,(x->tm_year+1900));
   dest[i++]='-';

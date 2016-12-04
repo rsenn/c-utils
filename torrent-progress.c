@@ -23,7 +23,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-
 #ifndef _WIN32
 #include <sys/mman.h>
 #endif
@@ -95,7 +94,6 @@ int64 filesize(int fd) {
   return sz;
 }
 
-
 static const char*
 last_error_str () {
 #ifdef _WIN32
@@ -104,9 +102,9 @@ last_error_str () {
   char *err;
   buffer[0] = '\0';
   if(errCode == 0) return buffer;
-  
+
    SetLastError(0);
-  if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 					 NULL,
 					 errCode,
 					 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
@@ -115,9 +113,8 @@ last_error_str () {
 					 NULL))
 	  return 0;
 
-  
   snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
-  
+
   //OutputDebugString(buffer); // or otherwise log it
   LocalFree(err);
   return buffer;
@@ -144,9 +141,6 @@ ssize_t get_block(char* b)
 }
 
 static int verbose = 0, fraction = 1, space = 1;
-
-
-
 
 int main(int argc, char* argv[]) {
   int ai;
@@ -191,8 +185,6 @@ next:
     //(uint64)map_size * iterations);
     //mmap_private(argv[ai], &fsize);
 
-
-
     /*struct stat st;
     infile.fd = open_read(argv[1]);
        buffer_puts(buffer_1, "fd #");
@@ -200,7 +192,6 @@ next:
        buffer_putnlflush(buffer_1);
             fstat(infile.fd, &st);
     fsize = st.st_size;*/
-
 
     //buffer_puts(buffer_1, "fsize #"); buffer_putulong(buffer_1, fsize);; buffer_puts(buffer_1, ", blocks #"); buffer_putulong(buffer_1, blocks); buffer_putnlflush(buffer_1);
 
@@ -229,10 +220,10 @@ next:
         z += check_block_zero(&m[bi*BLOCK_SIZE], BLOCK_SIZE);
         //fprintf(stderr, "block #%lu\n", bi); fflush(stderr);
       }
-    
+
       if(verbose)
         fprintf(stderr, "mmap at "FMT_OFFS_T", size "FMT_SIZE_T"%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
-      
+
       zero_blocks += z;
 
       mmap_unmap(m, msz);
@@ -251,7 +242,7 @@ next:
     if(!fraction) percent += 50;
 
     buffer_putulong(buffer_1, percent / 100);
-    
+
     if(fraction) {
       buffer_puts(buffer_1, ".");
       buffer_putulong(buffer_1, percent % 100);

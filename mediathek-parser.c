@@ -18,24 +18,24 @@ static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme
 static const char delimiters[] = "\"";
 static char  inbuf[16384];
 
+char *strptime(const char *s, const char *format, struct tm *tm);
+
 /*
 int
 parse_predicate(const char* x, size_t len)
 {
 
-  while (isspace(*x) && len > 0) {
+  while(isspace(*x) && len > 0) {
     ++x;
     --len;
   }
-  if (len == 0)
+  if(len == 0)
     return 0;
-
 
   size_t pos = byte_chr(x, '\n', len);
 
-  if (pos != len && pos > 0)
+  if(pos != len && pos > 0)
     return 1;
-
 
   buffer_puts(buffer_1, "Predicate: ");
   buffer_put(buffer_1, x, len);
@@ -43,7 +43,7 @@ parse_predicate(const char* x, size_t len)
   buffer_putulong(buffer_1, len);
   buffer_putsflush(buffer_1, ")\n");
 
-  if (len > 0 && x[len - 1] == ' ')
+  if(len > 0 && x[len - 1] == ' ')
     return 1;
 
   return 0;
@@ -56,34 +56,35 @@ read_line(buffer* input, strlist* fields, array* x)
   int64 pos = 0;
 
   const char* end = input->x + input->n, *p = input->x + input->p;
-  int ret = 0, quoted = 0, escaped = 0;
+  int ret = 0, quoted = 0/*, escaped = 0*/;
   size_t n, i = 0;
   char tokbuf[16384];
 
   array_trunc(x);
   //array_allocate(&x, sizeof(char*), pos);
 
-  if ((n = byte_chr(p, end - p, '\n')) != end - p)
+  if((n = byte_chr(p, end - p, '\n')) != end - p)
     end = p + n;
 
-  while (p < end && *p != '"')
+  while(p < end && *p != '"')
     ++p;
 
-  for (; p < end; ++p, escaped = 0) {
-    if (*p == '\\') {
-      escaped = 1;
+  for(; p < end; ++p/*, escaped = 0*/) {
+    if(*p == '\\') {
+     /* escaped = 1;*/
       ++p;
     }
 
-    else if (*p == '"') {
-      if (!quoted) {
+    else if(*p == '"') {
+      if(!quoted) {
         quoted = 1;
         i = 0;
         continue;
       } else {
         quoted = 0;
         char** a = array_allocate(x, sizeof(char*), pos++);
-        *a++ = strndup(tokbuf, i);
+        tokbuf[i] = '\0';
+        *a++ = strdup(tokbuf);
         //        *a = NULL;
 
         //        strlist_pushb(fields, tokbuf, i);
@@ -108,9 +109,9 @@ strarray_dump(buffer* b, const array* a)
   char** av = array_start(a);
   ssize_t ac = array_length(a, sizeof(char*));
   buffer_puts(b, "[ \"");
-  while (ac--) {
+  while(ac--) {
     buffer_puts(b, *av);
-    if (ac > 0) buffer_puts(b, "\", \"");
+    if(ac > 0) buffer_puts(b, "\", \"");
     ++av;
   }
   buffer_putsflush(b, "\" ]\n");
@@ -136,20 +137,19 @@ dump_long(buffer* b, const char* name, long value)
 void
 get_domain(const char* url, stralloc* d)
 {
-  while (*url && *url != ':')
+  while(*url && *url != ':')
     ++url;
   ++url;
-  while (*url && *url == '/')
+  while(*url && *url == '/')
     ++url;
   stralloc_copyb(d, url, str_chr(url, '/'));
 }
 
-
 void
 cleanup_text(char* t)
 {
-  for (int i = 0; i < str_len(t); i++) {
-    if (isspace(t[i])  || t[i] == ',')
+  for(int i = 0; i < str_len(t); i++) {
+    if(isspace(t[i])  || t[i] == ',')
       t[i] = '_';
   }
 }
@@ -158,7 +158,7 @@ char*
 cleanup_domain(stralloc* d)
 {
   d->len = byte_rchr(d->s, d->len, '.');
-  for (size_t i = 0; i < d->len; ++i)
+  for(size_t i = 0; i < d->len; ++i)
     d->s[i] = toupper(d->s[i]);
   stralloc_nul(d);
   const char* remove_parts[] = { "ondemand", "storage", "files", "stream", "mvideos", "online", 0 };
@@ -182,7 +182,7 @@ process_entry(const array* a)
   char** av = array_start(a);
   size_t ac = array_length(a, sizeof(char*));
 
-  if (ac >= 21 && !str_diff(av[0], "X")) {
+  if(ac >= 21 && !str_diff(av[0], "X")) {
     stralloc datetime;
     struct tm tm;
     time_t t;
@@ -199,7 +199,7 @@ process_entry(const array* a)
     stralloc url_lo;
     stralloc_init(&url_lo);
 
-    if (str_len(url_klein)) {
+    if(str_len(url_klein)) {
       char* endptr = url_klein;
       unsigned long pos_lo = strtoul(url_klein, &endptr, 10);
       //*endptr++ = '\0';
@@ -210,37 +210,36 @@ process_entry(const array* a)
       stralloc_copys(&url_lo, url);
     }
 
-
     stralloc_init(&datetime);
     stralloc_copys(&datetime, av[4]);
     stralloc_catc(&datetime, ' ');
     stralloc_cats(&datetime, av[5]);
     stralloc_nul(&datetime);
-    if (strptime(datetime.s, "%d.%m.%Y %H:%M:%S", &tm) == NULL) {
+    if(strptime(datetime.s, "%d.%m.%Y %H:%M:%S", &tm) == NULL) {
       t = 0;
     } else {
       t = mktime(&tm);
     }
+
     {
       int h = 0, m = 0, s = 0;
-      if (sscanf(duration, "%d:%d:%d", &h, &m, &s) >= 2) {
+      if(sscanf(duration, "%d:%d:%d", &h, &m, &s) >= 2) {
         d = h * 3600 + m * 60 + s;
       } else {
         d = 0;
       }
     }
 
-    if (str_len(thema) == 0)
+    if(str_len(thema) == 0)
       return;
-    if (d < 20 * 60)
+    if(d < 20 * 60)
       return;
 
     cleanup_text(thema);
     cleanup_text(title);
     cleanup_text(description);
 
-
-    if (str_len(sender) == 0) {
+    if(str_len(sender) == 0) {
 
       stralloc s;
       stralloc_init(&s);
@@ -279,10 +278,12 @@ process_entry(const array* a)
     buffer_puts(buffer_1, url_lo.s);
     buffer_put(buffer_1, "\r\n", 2);
     buffer_flush(buffer_1);
+
+    (void)t;
   } else {
     strarray_dump(buffer_2, a);
   }
-
+  
   while(ac > 0) {
     if(av[ac])
       free(av[ac]);
@@ -295,8 +296,8 @@ int
 read_file(const char* p)
 {
   buffer input;
-  int ret;
-  size_t line = 0, index = 0;
+  int ret = -1;
+  size_t line = 0/*, index = 0*/;
   stralloc sa;
   static array arr;
   strlist fields;
@@ -309,8 +310,7 @@ read_file(const char* p)
   buffer_putnlflush(buffer_2);
   /*  int fd = open_read(p);
 
-
-    if (fd == -1) {
+    if(fd == -1) {
 
       buffer_puts(buffer_2, "Failed to open: ");
       buffer_puts(buffer_2, file_path);
@@ -325,17 +325,16 @@ read_file(const char* p)
 
   buffer_puts(buffer_1, "#EXTM3U\r\n");
 
-  for (; input.p < input.n;) {
+  for(; input.p < input.n;) {
 
-
-    while (input.p < input.n && isspace(input.x[input.p])) {
-      if (input.x[input.p] == '\n') {
-        /*        if (strlist_count(&fields)) {
+    while(input.p < input.n && isspace(input.x[input.p])) {
+      if(input.x[input.p] == '\n') {
+        /*        if(strlist_count(&fields)) {
                   strlist_dump(buffer_1, &fields);
                 }
         */
         ++line;
-        index = 0;
+/*        index = 0;*/
 
       }
       ++input.p;
@@ -350,7 +349,7 @@ read_file(const char* p)
         buffer_puts(buffer_1, ":");
 
     size_t index = 0;
-        while (*arr) {
+        while(*arr) {
 
         buffer_puts(buffer_1, "\n    ");
         buffer_putulong(buffer_1, index++);
@@ -370,7 +369,7 @@ read_file(const char* p)
 
     process_entry(&arr);
 
-    if (ret > 0) {
+    if(ret > 0) {
       input.p += ret;
       /*
             strlist_push_sa(&fields, &sa);
@@ -393,9 +392,8 @@ read_file(const char* p)
 
     }
 
-
   }
-end:
+/*end:*/
   //  close(fd);
   buffer_close(&input);
   return ret;
