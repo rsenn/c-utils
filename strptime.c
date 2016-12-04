@@ -3,7 +3,7 @@
 #include <string.h>
 #include <strings.h>
 
-int __isleap(int year);
+int isleap(int year);
 
 extern const short  __spm [];
 
@@ -152,7 +152,7 @@ char* strptime(const char* s,const char* format, struct tm* tm) {
   }
 
   day  = (tm->tm_year - 70) * 365 + (tm->tm_year - 69) / 4;
-  day += tm->tm_yday = __spm [tm->tm_mon] + tm->tm_mday-1 + (__isleap (tm->tm_year+1900) & (tm->tm_mon > 1));
+  day += tm->tm_yday = __spm [tm->tm_mon] + tm->tm_mday-1 + (isleap (tm->tm_year+1900) & (tm->tm_mon > 1));
   tm->tm_wday = (day + 4) % 7;
 
   return (char*)s;
