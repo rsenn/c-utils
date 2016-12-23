@@ -305,7 +305,7 @@ read_file(const char* p)
   strlist_init(&fields);
 
   buffer_puts(buffer_2, "Opening '");
-  buffer_puts(buffer_2, file_path);
+  buffer_puts(buffer_2, p);
   buffer_puts(buffer_2, "' ...");
   buffer_putnlflush(buffer_2);
   /*  int fd = open_read(p);
@@ -313,7 +313,7 @@ read_file(const char* p)
     if(fd == -1) {
 
       buffer_puts(buffer_2, "Failed to open: ");
-      buffer_puts(buffer_2, file_path);
+      buffer_puts(buffer_2, p);
       buffer_puts(buffer_2, " (");
       buffer_putulong(buffer_2, errno);
       buffer_putsflush(buffer_2, ")\n");
@@ -321,7 +321,7 @@ read_file(const char* p)
     }
 
     buffer_init(&input, read, fd, 	inbuf, sizeof(inbuf));*/
-  buffer_mmapread(&input, file_path);
+  buffer_mmapread(&input, p);
 
   buffer_puts(buffer_1, "#EXTM3U\r\n");
 
