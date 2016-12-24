@@ -43,11 +43,15 @@
 #include "uint64.h"
 #include "dir_internal.h"
 
-#if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MSYS__)
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#define MINGW 1
+#endif
+
+#if (defined(_WIN32) || defined(MINGW)) && !defined(__CYGWIN__) && !defined(__MSYS__)
 #define PLAIN_WINDOWS 1
 #endif
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__)
+#if defined(_WIN32) || defined(MINGW) || defined(__MSYS__)
 #include <windows.h>
 #include <shlwapi.h>
 #include <io.h>
@@ -72,7 +76,7 @@ static int opt_list = 0, opt_numeric = 0;
 static const char* opt_relative = NULL;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
-#if defined( _WIN32 ) && !defined(__MSYS__)
+#if (defined( _WIN32 ) || defined(MINGW)) && !defined(__MSYS__)
 static INLINE uint64_t filetime_to_unix(const FILETIME* ft);
 
 static const char*
@@ -275,7 +279,7 @@ get_file_owner(const char* path) {
 #endif
 
 #ifdef PLAIN_WINDOWS
-
+#warning PLAIN_WINDOWS
 
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL
