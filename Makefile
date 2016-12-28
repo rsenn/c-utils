@@ -11,8 +11,8 @@ PATH = /c/git-sdk-64/usr/bin
 MAKE = c:/git-sdk-64/usr/bin/make
 endif
 
-CC := gcc
-CXX = g++
+CC ?= gcc
+CXX ?= g++
 
 BUILD := $(shell $(CC) -dumpmachine)
 
@@ -23,8 +23,10 @@ ifneq ($(subst diet,,(CROSS_COMPILE)),$(CROSS_COMPILE))
 DIET := 1
 endif
 
-ifneq ($(subst mingw,,(BUILD)),$(BUILD))
+ifeq ($(word 3,$(BUILD)),mingw32)
 MINGW := 1
+else
+MINGW := 0
 endif
 
 ifeq ($(DIET),1)
@@ -44,6 +46,7 @@ endif
 endif
 
 $(info DIET: $(DIET))
+$(info MINGW: $(MINGW))
 $(info HOST: $(HOST))
 
 ifeq ($(PREFIX),)
