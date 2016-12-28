@@ -19,8 +19,10 @@ BUILD := $(shell $(CC) -dumpmachine)
 CCVER := $(shell $(CC) -dumpversion)
 CXXVER := $(shell $(CXX) -dumpversion)
 
-ifneq ($(subst diet,,(CROSS_COMPILE)),$(CROSS_COMPILE))
+ifeq ($(word 1,(CROSS_COMPILE)),diet)
 DIET := 1
+else
+DIET := 0
 endif
 
 ifeq ($(word 3,$(BUILD)),mingw32)
