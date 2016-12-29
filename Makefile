@@ -362,7 +362,7 @@ endif
 
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(shell $(PKG_CONFIG) --cflags libxml-2.0)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(shell $(PKG_CONFIG) --libs libxml-2.0)
-$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)str_len.o $(BUILDDIR)stralloc_init.o  $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_catb.o  $(BUILDDIR)byte_copy.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o  $(BUILDDIR)buffer_putsa.o
+$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)str_len.o $(BUILDDIR)stralloc_init.o  $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_catb.o  $(BUILDDIR)byte_copy.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o  $(BUILDDIR)buffer_putsa.o $(BUILDDIR)stralloc_copy.o $(BUILDDIR)stralloc_cat.o $(BUILDDIR)stralloc_zero.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
