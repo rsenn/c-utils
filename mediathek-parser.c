@@ -263,15 +263,15 @@ process_entry(const array* a)
 
     buffer_puts(buffer_1, "#EXTINF:");
     buffer_putulong(buffer_1, d);
-    buffer_put(buffer_1, ",", 1);
+    buffer_put(buffer_1, ",|", 2);
     buffer_put(buffer_1, timebuf, str_len(timebuf)-2);
-    buffer_puts(buffer_1, "-");
+    buffer_puts(buffer_1, "|");
     buffer_puts(buffer_1, sender);
-    buffer_puts(buffer_1, "-");
+    buffer_puts(buffer_1, "|");
     buffer_puts(buffer_1, thema);
-    buffer_puts(buffer_1, "-");
+    buffer_puts(buffer_1, "|");
     buffer_puts(buffer_1, title);
-    buffer_puts(buffer_1, "-");
+    buffer_puts(buffer_1, "|");
     buffer_puts(buffer_1, description);
     buffer_put(buffer_1, "\r\n", 2);
     buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");

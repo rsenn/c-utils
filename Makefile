@@ -80,6 +80,8 @@ ifeq ($(HOST),$(BUILD))
 CROSS_COMPILE :=
 endif
 
+PKG_CONFIG ?= pkg-config
+
 ifneq ($(TRIPLET),)
 ARCH := $(word 1,$(TRIPLET))
 OS := $(shell echo $(word 3,$(TRIPLET)) |sed "s|[0-9].*||")
@@ -242,6 +244,7 @@ CFLAGS += $(CFLAGS_$(BUILD_TYPE))
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 
 ifeq ($(STATIC),1)
+PKG_CONFIG += --static
 ifeq ($(MINGW),1)
 LDFLAGS += -static-libgcc -static-libstdc++
 else
@@ -277,7 +280,7 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT) 
+PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT) 
   
   
 ifeq ($(DO_CXX),1)
@@ -352,6 +355,14 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILDDIR)array_cat.o $(BUILDDIR)array_cat0.o $(BUILDDIR)array_catb.o $(BUILDDIR)array_cate.o $(BUILDDIR)array_cats.o $(BUILDDIR)array_cats0.o $(BUILDDIR)array_equal.o $(BUILDDIR)array_fail.o $(BUILDDIR)array_get.o $(BUILDDIR)array_length.o $(BUILDDIR)array_reset.o $(BUILDDIR)array_start.o $(BUILDDIR)array_trunc.o $(BUILDDIR)array_truncate.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_close.o $(BUILDDIR)buffer_dummyreadmmap.o $(BUILDDIR)buffer_dump.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_get.o $(BUILDDIR)buffer_getc.o $(BUILDDIR)buffer_getline.o $(BUILDDIR)buffer_get_token.o $(BUILDDIR)buffer_get_token_pred.o $(BUILDDIR)buffer_get_token_sa.o $(BUILDDIR)buffer_init.o $(BUILDDIR)buffer_mmapread.o $(BUILDDIR)buffer_munmap.o $(BUILDDIR)buffer_peek.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putlong.o $(BUILDDIR)buffer_putc.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_putnspace.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)buffer_putsflush.o $(BUILDDIR)buffer_putspace.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)buffer_putxlong.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_fill.o $(BUILDDIR)fmt_long.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)fmt_xlong.o $(BUILDDIR)mmap_read.o $(BUILDDIR)open_read.o $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_append_sa.o $(BUILDDIR)stralloc_cat.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_catlong0.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_catulong0.o $(BUILDDIR)stralloc_copy.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_diffs.o $(BUILDDIR)stralloc_free.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_insertb.o $(BUILDDIR)stralloc_move.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)stralloc_remove.o $(BUILDDIR)stralloc_trunc.o $(BUILDDIR)stralloc_write.o $(BUILDDIR)stralloc_zero.o $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)str_len.o $(BUILDDIR)str_chr.o $(BUILDDIR)umult64.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_diff.o $(BUILDDIR)byte_zero.o $(BUILDDIR)fmt_minus.o $(BUILDDIR)fmt_ulong0.o $(BUILDDIR)str_diff.o $(BUILDDIR)time_table_spd.o $(BUILDDIR)isleap.o $(BUILDDIR)strptime.o
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
+
+$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(shell $(PKG_CONFIG) --cflags libxml-2.0)
+$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(shell $(PKG_CONFIG) --libs libxml-2.0)
+$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)str_len.o $(BUILDDIR)stralloc_init.o  $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_catb.o  $(BUILDDIR)byte_copy.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o  $(BUILDDIR)buffer_putsa.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@

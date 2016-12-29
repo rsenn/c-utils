@@ -82,10 +82,10 @@ static INLINE uint64_t filetime_to_unix(const FILETIME* ft);
 static const char*
 last_error_str() {
   DWORD errCode = GetLastError();
-  static char buffer[1024];
+  static char tmpbuf[1024];
   char *err;
-  buffer[0] = '\0';
-  if(errCode == 0) return buffer;
+  tmpbuf[0] = '\0';
+  if(errCode == 0) return tmpbuf;
 
   SetLastError(0);
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -98,11 +98,11 @@ last_error_str() {
     return 0;
 
 
-  snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
+  snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
 
-  //OutputDebugString(buffer); // or otherwise log it
+  //OutputDebugString(tmpbuf); // or otherwise log it
   LocalFree(err);
-  return buffer;
+  return tmpbuf;
 }
 
 int64 get_file_size(char* path) {
@@ -150,7 +150,7 @@ uint64_t get_file_time(const char* path) {
 
 const char*
 get_file_owner(const char* path) {
-  static char buffer[1024];
+  static char tmpbuf[1024];
   DWORD dwRtnCode = 0;
   PSID pSidOwner = NULL;
   BOOL bRtnBool = TRUE;
@@ -162,7 +162,7 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = NULL;
   LPSTR strsid = NULL;
 
-  buffer[0] = '\0';
+  tmpbuf[0] = '\0';
 
   // Get the handle of the file object.
   hFile = CreateFileA(path,
@@ -178,7 +178,7 @@ get_file_owner(const char* path) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
-//			snprintf(buffer, sizeof(buffer), "CreateFile error = %d\n", dwErrorCode);
+//			snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode);
     return  0;
   }
 
@@ -200,17 +200,17 @@ get_file_owner(const char* path) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
-    //		snprintf(buffer, sizeof(buffer), "GetSecurityInfo error = %d\n", dwErrorCode);
+    //		snprintf(tmpbuf, sizeof(tmpbuf), "GetSecurityInfo error = %d\n", dwErrorCode);
     return 0;
   }
 
 
   if(ConvertSidToStringSid(pSidOwner, &strsid)) {
-    snprintf(buffer, sizeof(buffer), "%s", strsid);
+    snprintf(tmpbuf, sizeof(tmpbuf), "%s", strsid);
     LocalFree(strsid);
   }
 
-  // First call to LookupAccountSid to get the buffer sizes.
+  // First call to LookupAccountSid to get the tmpbuf sizes.
   bRtnBool = LookupAccountSid(
                NULL,           // local computer
                pSidOwner,
@@ -230,8 +230,8 @@ get_file_owner(const char* path) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
-    //	snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);
-    return buffer;
+    //	snprintf(tmpbuf, sizeof(tmpbuf), "GlobalAlloc error = %d\n", dwErrorCode);
+    return tmpbuf;
   }
 
   DomainName = (LPTSTR)GlobalAlloc(
@@ -243,8 +243,8 @@ get_file_owner(const char* path) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
-    //snprintf(buffer, sizeof(buffer), "GlobalAlloc error = %d\n", dwErrorCode);
-    return buffer;
+    //snprintf(tmpbuf, sizeof(tmpbuf), "GlobalAlloc error = %d\n", dwErrorCode);
+    return tmpbuf;
 
   }
 
@@ -252,10 +252,10 @@ get_file_owner(const char* path) {
   bRtnBool = LookupAccountSid(
                NULL,                   // name of local or remote computer
                pSidOwner,              // security identifier
-               AcctName,               // account name buffer
-               (LPDWORD)&dwAcctName,   // size of account name buffer
+               AcctName,               // account name tmpbuf
+               (LPDWORD)&dwAcctName,   // size of account name tmpbuf
                DomainName,             // domain name
-               (LPDWORD)&dwDomainName, // size of domain name buffer
+               (LPDWORD)&dwDomainName, // size of domain name tmpbuf
                &eUse);                 // SID type
 
   // Check GetLastError for LookupAccountSid error condition.
@@ -265,15 +265,15 @@ get_file_owner(const char* path) {
     dwErrorCode = GetLastError();
 
     if(dwErrorCode == ERROR_NONE_MAPPED)
-      snprintf(buffer, sizeof(buffer), "Account owner not found for specified SID.\n");
+      snprintf(tmpbuf, sizeof(tmpbuf), "Account owner not found for specified SID.\n");
     else
-      snprintf(buffer, sizeof(buffer), "Error in LookupAccountSid.\n");
-    return buffer;
+      snprintf(tmpbuf, sizeof(tmpbuf), "Error in LookupAccountSid.\n");
+    return tmpbuf;
 
   } else if(bRtnBool == TRUE)
     // Print the account name.
-    snprintf(buffer, sizeof(buffer), "%s", AcctName);
-  return buffer;
+    snprintf(tmpbuf, sizeof(tmpbuf), "%s", AcctName);
+  return tmpbuf;
 }
 
 #endif
