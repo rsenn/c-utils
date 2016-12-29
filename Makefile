@@ -25,7 +25,7 @@ else
 DIET := 0
 endif
 
-ifeq ($(word 3,$(BUILD)),mingw32)
+ifeq ($(word 3,$(subst -, ,$(BUILD))),mingw32)
 MINGW := 1
 else
 MINGW := 0
@@ -157,7 +157,7 @@ endif
 CPPFLAGS := -I. -Ilib
 
 DEFS += INLINE=inline
-DEFS += PATH_MAX=4096
+#DEFS += PATH_MAX=4096
 
 ifeq ($(READDIR),)
 ifeq ($(SYS),mingw32)
