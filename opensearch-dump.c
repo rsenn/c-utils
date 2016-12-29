@@ -10,10 +10,10 @@ static char sep = '?';
 static void
 print_attr_names(xmlElement* elm)
 {
-  bool param = !strcmp(elm->name, "Param");
-  for (xmlAttribute* attr_p = elm->attributes; attr_p; attr_p = attr_p->next) {
+  bool param = !strcmp((const char*)elm->name, "Param");
+  for (xmlAttribute* attr_p = (xmlAttribute*)elm->attributes; attr_p; attr_p = (xmlAttribute*)attr_p->next) {
     const char* content = (const char*)xmlNodeGetContent((xmlNodePtr)attr_p);
-    bool name = !strcmp(attr_p->name, "name");
+    bool name = !strcmp((const char*)attr_p->name, "name");
     if (param) {
       stralloc_catb(&url, name ? &sep : "=", 1);
       if (!strcmp(content, "{searchTerms}"))
@@ -25,7 +25,7 @@ print_attr_names(xmlElement* elm)
        buffer_puts(buffer_2, attr_p->name);
        buffer_puts(buffer_2, param ? "=" : "\n  attribute value: ");
        buffer_puts(buffer_2, content);*/
-    if (!strcmp(attr_p->name, "template")) {
+    if (!strcmp((const char*)attr_p->name, "template")) {
       stralloc_copys(&templ, content);
       //templ = content;
     }
@@ -59,13 +59,13 @@ print_element_names(xmlNode* a_node)
           buffer_puts(buffer_2, ", value: ");
       */
       //      print_element_names(elm->children);
-      if (!strcmp(elm->name, "Url")) {
+      if (!strcmp((const char*)elm->name, "Url")) {
         print_attr_names(elm);
         xmlNode* child_node = NULL;
         for (child_node = elm->children; child_node; child_node = child_node->next) {
           //    if (child_node->type == XML_ELEMENT_NODE)
           {
-            print_attr_names(child_node);
+            print_attr_names((xmlElement*)child_node);
           }
         }
       }
@@ -80,18 +80,11 @@ print_element_names(xmlNode* a_node)
   buffer_putsa(buffer_1, &url);
   buffer_putnlflush(buffer_1);
 }
-/**
- * Simple example to parse a file called "file.xml",
- * walk down the DOM, and print the name of the
- * xml elements nodes.
- */
+
 int
-main(int argc, char** argv)
-{
-  xmlDoc* doc = NULL;
+parse_xml(const char* filename) {
+    xmlDoc* doc = NULL;
   xmlNode* root_element = NULL;
-  if (argc != 2)
-    return (1);
   /*
    * this initialize the library and check potential ABI mismatches
    * between the version it was compiled for and the actual shared
@@ -99,11 +92,12 @@ main(int argc, char** argv)
    */
   LIBXML_TEST_VERSION
   /*parse the file and get the DOM */
-  doc = xmlReadFile(argv[1], NULL, 0);
+  doc = xmlReadFile(filename, NULL, 0);
   if (doc == NULL) {
     buffer_puts(buffer_2, "error: could not parse file ");
-    buffer_puts(buffer_2, argv[1]);
+    buffer_puts(buffer_2, filename);
     buffer_putnlflush(buffer_2);
+    return -1;
   }
   /*Get the root element node */
   root_element = xmlDocGetRootElement(doc);
@@ -114,6 +108,26 @@ main(int argc, char** argv)
    *Free the global variables that may
    *have been allocated by the parser.
    */
+  return 0;
+}
+
+/**
+ * Simple example to parse a file called "file.xml",
+ * walk down the DOM, and print the name of the
+ * xml elements nodes.
+ */
+int
+main(int argc, char** argv)
+{
+  int ai;
+  if (argc < 2)
+    return 1;
+
+  for(ai = 1; ai < argc; ++ai) {
+    int ret = parse_xml(argv[ai]);
+    if(ret == -1)
+      return 1;
+  }
   xmlCleanupParser();
   return 0;
 }
