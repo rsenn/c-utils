@@ -214,12 +214,16 @@ CFLAGS += $(CFLAGS_$(BUILD_TYPE))
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 
 ifeq ($(STATIC),1)
-LDFLAGS += -static -static-libgcc -static-libstdc++
+LDFLAGS += -static
 endif
 ifeq ($(STRIP),1)
 LDFLAGS += -s
 endif
 RM = rm -f
+
+ifneq ($(shell uname -s)-$(shell uname -o),MINGW32_NT-5.1-Msys)
+LDFLAGS +=  -static-libgcc -static-libstdc++
+endif
 
 ifneq ($(BOOST_INCLUDE_DIR),)
 CXXFLAGS += -I$(BOOST_INCLUDE_DIR)

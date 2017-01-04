@@ -33,6 +33,13 @@
 #include "mmap.h"
 #include "uint64.h"
 
+#ifndef PRIu64
+#define PRIu64 "%llu"
+#endif
+#ifndef PRIx64
+#define PRIx64 "%llx"
+#endif
+
 #if defined(__x86_64__) && defined(__linux)
 #define lseek lseek64
 #endif
