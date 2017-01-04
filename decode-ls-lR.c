@@ -45,7 +45,6 @@ static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE)
 static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 
-
 static char buffer_2_out[BUFFER_OUTSIZE];
 static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
 */
@@ -72,7 +71,6 @@ size_t skip_field(int n, char* s, size_t len)
   while(n-- && ret < len)
   {
     if(ret == len) return ret;
-
 
     while(ret < len && !is_delimiter(s[ret]))
       ret++;

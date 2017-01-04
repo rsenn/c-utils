@@ -1,0 +1,30 @@
+	
+{
+	"folders":
+	[
+		{
+			"path": ".",
+            "folder_exclude_patterns": [ ".*", "Default" ],
+            
+            "file_exclude_patterns": [ ".*", "*.stackdump", "*#*", "*~", "*.pui", "*.log", "*.out", "*.d", "*.p1", "*.sdb" ]
+
+            
+        }
+    ],
+  "build_systems":
+  [
+    {
+        "name": "List",
+        "cmd": ["ls"]
+    },
+    {
+        "name": "Make",
+        "cmd": [ "c:/git-sdk-64/usr/bin/make", "-C", "${project_path:${folder}}", "PATH=/c/git-sdk-64/usr/bin" ]
+    },
+    {
+        "name": "Make clean",
+        "cmd": [ "c:/git-sdk-64/usr/bin/make", "-C", "${project_path:${folder}}", "PATH=/c/git-sdk-64/usr/bin", "clean" ]
+    }
+]
+
+}

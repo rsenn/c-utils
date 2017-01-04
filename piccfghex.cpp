@@ -1,20 +1,38 @@
 #include "intelhex.h"
 #include <iostream>
 #include <iterator>
+#include <string>
+#include <sstream>
+#include <iomanip>
+
 #include <cstdio>
 #include <cstring>
 #include <libgen.h>
 
+using std::string;
+using std::vector;
 
 uint16_t
 get16(intelhex::hex_data& hex, unsigned int address) {
     return hex.get(address) | (hex.get(address+1) << 8);
 }
 
+template<class T, class S=string>
+string
+implode(const vector<T>& v, const S& s = ",") {
+  std::stringstream ss;
+  ss << std::hex << std::uppercase << std::setfill('0');
+  for(auto&& p : v) {
+    if(&p != &v.front()) ss << s;
+    ss << std::setw(2) << static_cast<unsigned>(p);
+  }
+  return ss.str();
+}
+
 void
 set16(intelhex::hex_data& hex, unsigned int address, uint16_t value) {
       intelhex::hex_data::iterator it, prev;
-      
+
     hex.set(address, value & 0xff);
     hex.set(address+1, value >> 8);
     /*
@@ -26,7 +44,7 @@ set16(intelhex::hex_data& hex, unsigned int address, uint16_t value) {
     }
   std::copy(prev->second.begin(),prev->second.end(),std::ostream_iterator<int>(std::cout<< " " ));
 
-  printf("new block: 0x%04X size: 0x%04X \n", prev->first, prev->second.size());  
+  printf("new block: 0x%04X size: 0x%04X \n", prev->first, prev->second.size());
     prev->second[1]=(value >> 8);
     */
 //    hex[address+1] = value >> 8;
@@ -37,7 +55,7 @@ int main(int argc, char* argv[])
 {
     intelhex::hex_data hex;
 
-    if (argc > 1) {
+    if(argc > 1) {
         std::string file = argv[1];
         std::string filename = basename(argv[1]);
         int newval = -1; //0xFF72;
@@ -50,28 +68,31 @@ int main(int argc, char* argv[])
 
         hex.load(file);
 
-        for (const auto& p : hex) {
+        for(const auto& p : hex) {
             printf("address: 0x%04X size: 0x%04X\n", p.first, p.second.size());
         }
 
-        uint16_t config_reg = get16(hex, 0x400E);
-
+/*        uint16_t config_reg = get16(hex, 0x400E);
         printf("old value: 0x%04X\n", config_reg);
+*/
 
-        intelhex::hex_data::iterator it = --hex.end();
-        
-        printf("block: %08X:%08X\n", it->first, it->second.size());
+		if(hex.size()) {
+		uint32_t addr, v;
+		  intelhex::hex_data::iterator it = --hex.end();
 
-        if(newval != -1) {
+		  addr = it->first / 2;
+		  v = get16(hex, addr);
+		  printf("block %08X[%d]: %s\n", addr, it->second.size(), implode(it->second, ' ').c_str());
 
+		  if(newval != -1) {
 
-            hex.erase(it->first, it->first+1);
-            set16(hex, 0x400E, newval);
-            //hex.set(0x4010, 0x3f);
-            printf("new value: 0x%04X\n", newval);
-            hex.write(filename.c_str());
-        }
-
+//			  hex.erase(it->first, it->first+1);
+			  set16(hex, addr, newval);
+			  //hex.set(0x4010, 0x3f);
+			  printf("new value: 0x%04X\n", newval);
+			  hex.write(filename.c_str());
+			}
+		}
     }
 
     return 0;
