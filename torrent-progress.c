@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -268,7 +267,7 @@ next:
   }
   return 0;
 }
-=======
+/*
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -462,7 +461,7 @@ next:
        buffer_putulong(buffer_1, infile.fd);;
        buffer_putnlflush(buffer_1);
             fstat(infile.fd, &st);
-    fsize = st.st_size;*/
+    fsize = st.st_size;
 
     //buffer_puts(buffer_1, "fsize #"); buffer_putulong(buffer_1, fsize);; buffer_puts(buffer_1, ", blocks #"); buffer_putulong(buffer_1, blocks); buffer_putnlflush(buffer_1);
 
@@ -522,4 +521,4 @@ next:
   }
   return 0;
 }
->>>>>>> 030e6346620344676c02e04419d9c7064508de40
+*/

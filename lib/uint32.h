@@ -10,20 +10,17 @@
 #endif // !defined(_MSC_VER)
 
 #ifdef __MSYS__
-#define __MS_types__
-#include <sys/types.h>
-<<<<<<< HEAD:uint32.h
-#ifdef __BIT_TYPES_DEFINED__
-#define uint32_t u_int32_t
+# define __MS_types__
+# include <sys/types.h>
+# ifdef __BIT_TYPES_DEFINED__
+#  define uint32_t u_int32_t
+# endif
 #endif
-#endif
-=======
->>>>>>> 030e6346620344676c02e04419d9c7064508de40:lib/uint32.h
 
 #ifdef _MSC_VER
-#include <windows.h>
-#define uint32_t UINT32
-#define int32_t INT32
+# include <windows.h>
+# define uint32_t UINT32
+# define int32_t INT32
 #endif
 
 #ifdef __cplusplus
