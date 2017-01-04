@@ -2,12 +2,20 @@
 #ifndef UINT64_H
 #define UINT64_H
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <inttypes.h>
 #endif
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <stdint.h>
 #endif // !defined(_MSC_VER)
+
+#ifdef __MSYS__
+#define __MS_types__
+#include <sys/types.h>
+#ifdef __BIT_TYPES_DEFINED__
+#define uint64_t u_int64_t
+#endif
+#endif
 
 #ifdef _MSC_VER
 #include <windows.h>

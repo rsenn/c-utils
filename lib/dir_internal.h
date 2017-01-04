@@ -18,6 +18,10 @@
 # include <limits.h>
 #endif
 
+#ifdef __MSYS__
+#define intptr_t __PTRDIFF_TYPE__
+#endif
+
 //#include <stddef.h>
 #include <stdlib.h>
 #include <limits.h>

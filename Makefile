@@ -244,6 +244,7 @@ CFLAGS += $(CFLAGS_$(BUILD_TYPE))
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 
 ifeq ($(STATIC),1)
+#LDFLAGS += -static
 PKG_CONFIG += --static
 ifeq ($(MINGW),1)
 LDFLAGS += -static-libgcc -static-libstdc++
@@ -256,13 +257,19 @@ endif
 ifeq ($(STATIC_LIBGCC),1)
 LDFLAGS += -static-libgcc
 endif
+
 ifeq ($(STATIC_LIBSTDCXX),1)
 LDFLAGS += -static-libstdc++
 endif
+
 ifeq ($(CROSS_COMPILE)$(STRIP),1)
 LDFLAGS += -s
 endif
 RM = rm -f
+
+ifneq ($(shell uname -s)-$(shell uname -o),MINGW32_NT-5.1-Msys)
+LDFLAGS +=  -static-libgcc -static-libstdc++
+endif
 
 ifneq ($(BOOST_INCLUDE_DIR),)
 CXXFLAGS += -I$(BOOST_INCLUDE_DIR)
