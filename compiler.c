@@ -19,9 +19,9 @@ static   int argi, argn;
 
 static operation_mode mode = COMPILE_ASSEMBLE_LINK;
 static int debug = 0, warn = 0, dblbits = 24, ident_len = 31;
-static strlist defines, includedirs, opts, longopts, args;
+static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
-static stralloc map_file, chip;
+static stralloc map_file, chip, optimization, runtime, debugger;
 
 void
 print_strlist(const strlist* sl, const char* s);
@@ -30,9 +30,7 @@ void
 process_option(const char* optstr) {
   while(*optstr == '-')
     ++optstr;
-  buffer_puts(buffer_1, "optstr: ");
-  buffer_puts(buffer_1, optstr);
-  buffer_putnlflush(buffer_1);
+  //buffer_puts(buffer_1, "optstr: ");   buffer_puts(buffer_1, optstr);  buffer_putnlflush(buffer_1);
 
   if(!str_diff(optstr, "pass1") || (str_len(optstr) == 1 && tolower(*optstr) == 'c')) {
     mode = COMPILE_AND_ASSEMBLE;
@@ -40,18 +38,26 @@ process_option(const char* optstr) {
     mode = COMPILE;
   } else if(!str_diff(optstr, "P") || (str_len(optstr) == 1 && toupper(*optstr) == 'E')) {
     mode = PREPROCESS;
-  } else if(!str_diffn(optstr, "outdir", 6)) {
+  } else if(!str_diffn(optstr, "outdir=", 7)) {
     stralloc_copys(&output_dir, &optstr[7]);
-  } else if(!str_diffn(optstr, "chip", 4)) {
+  } else if(!str_diffn(optstr, "chip=", 5)) {
     stralloc_copys(&chip, &optstr[5]);
+  } else if(!str_diffn(optstr, "mode=", 5)) {
+    //stralloc_copys(&license_mode, &optstr[5]);
+  } else if(!str_diffn(optstr, "warn=" , 5)) {
+    warn = atoi(&optstr[5]);
+  } else if(!str_diffn(optstr, "opt=" , 4)) {
+    stralloc_copys(&optimization, &optstr[4]);
+  } else if(!str_diffn(optstr, "runtime=" ,8)) {
+    stralloc_copys(&runtime, &optstr[8]);
+  } else if(!str_diffn(optstr, "debugger=", 9)) {
+    stralloc_copys(&debugger, &optstr[8]);
   } else if(tolower(*optstr) == 'o') {
     stralloc_copys(&output_file, &optstr[1]);
   } else if(tolower(*optstr) == 'm') {
     stralloc_copys(&map_file, &optstr[1]);
   } else if(tolower(*optstr) == 'g') {
     debug = 1;
-  } else if(!str_diffn(optstr, "warn" , 4)) {
-    warn = atoi(&optstr[5]);
   } else if(toupper(*optstr) == 'N') {
     ident_len = atoi(&optstr[1]);
   }
@@ -79,7 +85,7 @@ read_arguments() {
   while(argi < argn) {
     const char* s = strlist_at(sl, argi);
 
-    if(!str_diffn("-D", s, 2)) {
+    if(!str_diffn("-D", s, 2)) {  
       if(str_len(s) == 2 && argi + 1 < argn) {
         strlist_push(&defines, strlist_at(sl, ++argi));
       } else {
@@ -96,17 +102,17 @@ read_arguments() {
     } else if(s[0] == '-') {
       strlist_push(&opts, &s[1]);
     } else {
-      strlist_push(&args, s);
+      strlist_push(&params, s);
     }
 
     ++argi;
   }
 
-  buffer_puts(buffer_1, "defines"); print_strlist(&defines, ";");
-  buffer_puts(buffer_1, "includedirs"); print_strlist(&includedirs, ":");
-  buffer_puts(buffer_1, "longopts"); print_strlist(&longopts, " ");
-  buffer_puts(buffer_1, "opts"); print_strlist(&opts, " ");
-  buffer_puts(buffer_1, "args"); print_strlist(&args, " ");
+  buffer_puts(buffer_1, "defines"); print_strlist(&defines, "\n\t");
+  buffer_puts(buffer_1, "includedirs"); print_strlist(&includedirs, "\n\t");
+  buffer_puts(buffer_1, "longopts"); print_strlist(&longopts, "\n\t");
+  buffer_puts(buffer_1, "opts"); print_strlist(&opts, "\n\t");
+  buffer_puts(buffer_1, "params"); print_strlist(&params, " ");
 
   strlist_foreach(&longopts, process_option);
   strlist_foreach(&opts, process_option);
@@ -122,6 +128,9 @@ read_arguments() {
   buffer_puts(buffer_1, "warn: "); buffer_putlong(buffer_1, warn); buffer_putnlflush(buffer_1);
   buffer_puts(buffer_1, "double bits: "); buffer_putlong(buffer_1, dblbits); buffer_putnlflush(buffer_1);
   buffer_puts(buffer_1, "identifier length: "); buffer_putlong(buffer_1, ident_len); buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_1, "optimization: "); buffer_putsa(buffer_1, &optimization); buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_1, "runtime: "); buffer_putsa(buffer_1, &runtime); buffer_putnlflush(buffer_1);
+ buffer_puts(buffer_1, "debugger: "); buffer_putsa(buffer_1, &debugger); buffer_putnlflush(buffer_1);
 
 }
 
@@ -130,7 +139,7 @@ print_strlist(const strlist* sl, const char* separator) {
   size_t n = strlist_count(sl);
   buffer_puts(buffer_1, " (#");
   buffer_putlong(buffer_1, n);
-  buffer_puts(buffer_1, "): ");
+  buffer_puts(buffer_1, "):\n\n\t");
   for(int i = 0; i < n; ++i) {
     if(i > 0)
       buffer_puts(buffer_1, separator);
@@ -138,7 +147,8 @@ print_strlist(const strlist* sl, const char* separator) {
 
 
   }
-  buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_1, "\n\n");
+  buffer_flush(buffer_1);
 }
 
 int
