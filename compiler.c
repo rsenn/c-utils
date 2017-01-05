@@ -72,6 +72,12 @@ strlist_foreach(strlist* sl, void(*slptr)(const char*)) {
   }
 }
 
+int
+strlist_execve(const strlist* sl) {
+  char** av = strlist_to_argv(sl);
+
+  return execve(av[0], av, NULL);
+}
 
 void
 read_arguments() {
@@ -98,9 +104,9 @@ read_arguments() {
         strlist_push(&includedirs, &s[2]);
       }
     } else if(!str_diffn("--", s, 2)) {
-      strlist_push(&longopts, &s[2]);
+      strlist_push(&longopts, s);
     } else if(s[0] == '-') {
-      strlist_push(&opts, &s[1]);
+      strlist_push(&opts, s);
     } else {
       strlist_push(&params, s);
     }

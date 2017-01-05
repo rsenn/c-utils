@@ -40,6 +40,9 @@ extern "C"
   int strlist_pushunique (strlist * sl, const char *str);
 
   void strlist_dump (buffer * out, const strlist * sl);
+
+  char** strlist_to_argv(const strlist* sl);
+
 # ifdef __cplusplus
 }
 # endif
