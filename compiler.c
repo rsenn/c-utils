@@ -51,7 +51,7 @@ process_option(const char* optstr) {
   } else if(!str_diffn(optstr, "runtime=" ,8)) {
     stralloc_copys(&runtime, &optstr[8]);
   } else if(!str_diffn(optstr, "debugger=", 9)) {
-    stralloc_copys(&debugger, &optstr[8]);
+    stralloc_copys(&debugger, &optstr[9]);
   } else if(tolower(*optstr) == 'o') {
     stralloc_copys(&output_file, &optstr[1]);
   } else if(tolower(*optstr) == 'm') {
@@ -108,30 +108,30 @@ read_arguments() {
     ++argi;
   }
 
-  buffer_puts(buffer_1, "defines"); print_strlist(&defines, "\n\t");
-  buffer_puts(buffer_1, "includedirs"); print_strlist(&includedirs, "\n\t");
-  buffer_puts(buffer_1, "longopts"); print_strlist(&longopts, "\n\t");
-  buffer_puts(buffer_1, "opts"); print_strlist(&opts, "\n\t");
-  buffer_puts(buffer_1, "params"); print_strlist(&params, " ");
+  #define DUMP_LIST(n,sep)   buffer_puts(buffer_1, #n); print_strlist(&n, sep);
+  #define DUMP_VALUE(n,fn,v)   buffer_puts(buffer_1, n ": "); fn(buffer_1, v); buffer_putnlflush(buffer_1);
+
+  DUMP_LIST(defines, "\n\t");
+  DUMP_LIST(includedirs, "\n\t");
+  DUMP_LIST(longopts, "\n\t");
+  DUMP_LIST(opts, "\n\t");
+  DUMP_LIST(params, "\n\t");
 
   strlist_foreach(&longopts, process_option);
   strlist_foreach(&opts, process_option);
 
-  buffer_puts(buffer_1, "mode: ");
-  buffer_puts(buffer_1,   opmode_strs[mode]);
-  buffer_putnlflush(buffer_1);
+  DUMP_VALUE("output file", buffer_putsa, &output_file);
+  DUMP_VALUE("mode", buffer_puts, opmode_strs[mode]);
+  DUMP_VALUE("chip", buffer_putsa, &chip);
+  DUMP_VALUE("output dir", buffer_putsa, &output_dir);
+  DUMP_VALUE("map file", buffer_putsa, &map_file);
+  DUMP_VALUE("optimization", buffer_putsa, &optimization);
+  DUMP_VALUE("runtime", buffer_putsa, &runtime);
+  DUMP_VALUE("debugger", buffer_putsa, &debugger);
 
-  buffer_puts(buffer_1, "output file: "); buffer_putsa(buffer_1, &output_file); buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "output dir: "); buffer_putsa(buffer_1, &output_dir); buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "chip: "); buffer_putsa(buffer_1, &chip); buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "map file: "); buffer_putsa(buffer_1, &map_file); buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "warn: "); buffer_putlong(buffer_1, warn); buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "double bits: "); buffer_putlong(buffer_1, dblbits); buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "identifier length: "); buffer_putlong(buffer_1, ident_len); buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "optimization: "); buffer_putsa(buffer_1, &optimization); buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "runtime: "); buffer_putsa(buffer_1, &runtime); buffer_putnlflush(buffer_1);
- buffer_puts(buffer_1, "debugger: "); buffer_putsa(buffer_1, &debugger); buffer_putnlflush(buffer_1);
-
+  DUMP_VALUE("warn", buffer_putlong, warn);
+  DUMP_VALUE("dblbits", buffer_putlong, dblbits);
+  DUMP_VALUE("ident len", buffer_putlong, ident_len);
 }
 
 void
