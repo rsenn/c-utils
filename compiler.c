@@ -33,6 +33,7 @@ static int debug = 0, warn = 0, dblbits = 24, ident_len = 31;
 static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
 static stralloc map_file, chip, optimization, runtime, debugger;
+static stralloc err_format, warn_format;
 
 void
 print_strlist(const strlist* sl, const char* s);
@@ -63,6 +64,10 @@ process_option(const char* optstr) {
     stralloc_copys(&runtime, &optstr[8]);
   } else if(!str_diffn(optstr, "debugger=", 9)) {
     stralloc_copys(&debugger, &optstr[9]);
+  } else if(!str_diffn(optstr, "errformat=", 10)) {
+    stralloc_copys(&err_format, &optstr[10]);
+  } else if(!str_diffn(optstr, "warnformat=", 11)) {
+    stralloc_copys(&warn_format, &optstr[11]);
   } else if(tolower(*optstr) == 'o') {
     stralloc_copys(&output_file, &optstr[1]);
   } else if(tolower(*optstr) == 'm') {
@@ -213,7 +218,7 @@ if(output_dir.len > 0) {
   strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
 }
 
-  strlist_unshift(&cmd, "C:/Program Files (x86)/Microchip/xc8/v1.34/bin/xc8");
+  strlist_unshift(&cmd, "C:\\Program Files (x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
 
   strlist_copy(&cmd, &params);
   DUMP_LIST(cmd, "\n\t")
