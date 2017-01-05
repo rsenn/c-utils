@@ -38,7 +38,7 @@ static stralloc map_file, chip, optimization, runtime, debugger;
 static stralloc err_format, warn_format;
 
 void
-print_strlist(buffer*, const strlist* sl, const char* s);
+print_strlist(buffer*, const strlist* sl, const char* sep, const char* quot);
 
 int
 process_option(const char* optstr) {
@@ -157,14 +157,14 @@ read_arguments() {
 
   if(!chip.len) stralloc_copys(&chip, "16f876a");
 
-  #define DUMP_LIST(buf,n,sep)   buffer_puts(buf, #n); print_strlist(buf, &n, sep);
+  #define DUMP_LIST(buf,n,sep,q)   buffer_puts(buf, #n); print_strlist(buf, &n, sep, q);
   #define DUMP_VALUE(n,fn,v)   buffer_puts(debug_buf, n ": "); fn(debug_buf, v); buffer_putnlflush(debug_buf);
 
-  DUMP_LIST(debug_buf, defines, "\n\t");
-  DUMP_LIST(debug_buf, includedirs, "\n\t");
-  DUMP_LIST(debug_buf, longopts, "\n\t");
-  DUMP_LIST(debug_buf, opts, "\n\t");
-  DUMP_LIST(debug_buf, params, "\n\t");
+  DUMP_LIST(debug_buf, defines, "\n\t", "");
+  DUMP_LIST(debug_buf, includedirs, "\n\t", "");
+  DUMP_LIST(debug_buf, longopts, "\n\t", "");
+  DUMP_LIST(debug_buf, opts, "\n\t", "");
+  DUMP_LIST(debug_buf, params, "\n\t", "");
 
 //  strlist_foreach(&longopts, process_option);
 //  strlist_foreach(&opts, process_option);
@@ -224,7 +224,7 @@ strlist_copy(&cmd, &opts);
   strlist_unshift(&cmd, "C:\\Program Files (x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
 
   strlist_copy(&cmd, &params);
-  DUMP_LIST(err_buf, cmd, "\n\t")
+  DUMP_LIST(err_buf, cmd, " ", "'")
 
   if(strlist_execve(&cmd) == -1) {
     buffer_puts(debug_buf, "ERROR: ");
@@ -235,11 +235,14 @@ strlist_copy(&cmd, &opts);
 }
 
 void
-print_strlist(buffer* b, const strlist* sl, const char* separator) {
+print_strlist(buffer* b, const strlist* sl, const char* separator, const char* quot) {
   size_t n = strlist_count(sl);
   buffer_puts(b, " (#");
   buffer_putlong(b, n);
-  buffer_puts(b, "):\n\n\t");
+  buffer_puts(b, "):");
+  buffer_put(b, separator, 1);
+  buffer_puts(b, separator);
+
   for(int i = 0; i < n; ++i) {
     const char* s = strlist_at(sl, i);
 
@@ -247,11 +250,15 @@ print_strlist(buffer* b, const strlist* sl, const char* separator) {
 
       if(i > 0)
         buffer_puts(b, separator);
+        
+      if(str_len(quot)) buffer_puts(b, quot);
       buffer_puts(b, strlist_at(sl, i));
+      if(str_len(quot)) buffer_puts(b, quot);
     }
 
   }
-  buffer_puts(b, "\n\n");
+  buffer_puts(b, "\n");
+//  buffer_put(b, separator, 1);
   buffer_flush(b);
 }
 
