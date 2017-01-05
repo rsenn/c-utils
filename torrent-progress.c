@@ -27,6 +27,13 @@
 #include <sys/mman.h>
 #endif
 
+#ifndef PRIu64
+#define PRIu64 "lu"
+#endif
+#ifndef PRIx64
+#define PRIx64 "lx"
+#endif
+
 #include "buffer.h"
 #include "open.h"
 #include "mmap.h"

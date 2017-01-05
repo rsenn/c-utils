@@ -11,8 +11,8 @@ PATH = /c/git-sdk-64/usr/bin
 MAKE = c:/git-sdk-64/usr/bin/make
 endif
 
-CC ?= gcc
-CXX ?= g++
+CC := gcc
+CXX := g++
 
 BUILD := $(shell $(CC) -dumpmachine)
 
@@ -287,7 +287,7 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT) 
+PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT)   $(BUILDDIR)compiler$(M64_)$(EXESUFFIX)$(EXEEXT) 
   
   
 ifeq ($(DO_CXX),1)
@@ -377,7 +377,7 @@ endif
 
 $(BUILDDIR)compiler$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(shell $(PKG_CONFIG) --cflags libxml-2.0)
 $(BUILDDIR)compiler$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(shell $(PKG_CONFIG) --libs libxml-2.0)
-$(BUILDDIR)compiler$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_push.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)byte_copy.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)str_len.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)buffer_putlong.o $(BUILDDIR)fmt_long.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_diff.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)strlist_to_argv.o $(BUILDDIR)strlist_unshift.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)stralloc_free.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_copy.o $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_cat.o
+$(BUILDDIR)compiler$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_push.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)byte_copy.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)str_len.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)buffer_putlong.o $(BUILDDIR)fmt_long.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_diff.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)strlist_to_argv.o $(BUILDDIR)strlist_unshift.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)stralloc_free.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_copy.o $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_cat.o $(BUILDDIR)strlist_count.o
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)

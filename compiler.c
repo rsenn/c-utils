@@ -2,7 +2,15 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <unistd.h>
+#include <errno.h>
+#include <string.h>
+
+#ifdef __MINGW32__
+#include <process.h>
+#else
 #include <sys/wait.h>
+#endif
+
 #include "strlist.h"
 #include "str.h"
 #include "buffer.h"
@@ -82,13 +90,17 @@ int
 strlist_execve(const strlist* sl) {
   char** av = strlist_to_argv(sl);
   const char* p = av[0];
+    av[0] = basename(p);
+  
+#ifdef __MINGW32__
+return spawnv(P_WAIT, p, av);
+#else
   int pid = vfork();
 
   if(pid == -1)
     return -1;
 
   if(pid == 0) {
-    av[0] = basename(p);
 
     if(execv(p, av) == -1)
       exit(127);
@@ -99,6 +111,7 @@ strlist_execve(const strlist* sl) {
 
      return status;
   }
+  #endif
 }
 
 void
@@ -205,7 +218,12 @@ if(output_dir.len > 0) {
   strlist_copy(&cmd, &params);
   DUMP_LIST(cmd, "\n\t")
 
-  strlist_execve(&cmd);
+  if(strlist_execve(&cmd) == -1) {
+    buffer_puts(buffer_1, "ERROR: ");
+    buffer_puts(buffer_1, strerror(errno));
+    buffer_putnlflush(buffer_1);
+    
+  }
 }
 
 void
