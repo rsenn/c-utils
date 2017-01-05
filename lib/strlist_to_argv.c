@@ -1,3 +1,4 @@
+#include <malloc.h>
 #include "strlist.h"
 
 char**

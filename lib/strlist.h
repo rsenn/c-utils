@@ -32,16 +32,24 @@ extern "C"
     int64 strlist_index_of (strlist * sl, const char *str);
 
   int strlist_push (strlist * sl, const char *str);
+  
+  int strlist_pushm (strlist * sl, ...);
 
   int strlist_pushb (strlist * sl, const char *s, size_t n);
 
   int strlist_pushsa (strlist * sl, const stralloc * sa);
 
-  int strlist_pushunique (strlist * sl, const char *str);
-
+  int strlist_copy (strlist * sl, const strlist* l);
+  
   void strlist_dump (buffer * out, const strlist * sl);
 
   char** strlist_to_argv(const strlist* sl);
+
+  int strlist_unshift(strlist * sl, const char *s);
+  int strlist_shift(strlist * sl, const char** s);
+
+#define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char *)0)
+int strlist_pushm_internal(strlist* sl, ...);
 
 # ifdef __cplusplus
 }

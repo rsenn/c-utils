@@ -1,5 +1,8 @@
 #include <ctype.h>
 #include <stdlib.h>
+#include <malloc.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include "strlist.h"
 #include "str.h"
 #include "buffer.h"
@@ -15,7 +18,7 @@ typedef enum {
 
 const char const* opmode_strs[] = { "compile,assemble,link", "preprocess", "compile", "compile,assemble" };
 static strlist args;
-static   int argi, argn;
+static int argi, argn;
 
 static operation_mode mode = COMPILE_ASSEMBLE_LINK;
 static int debug = 0, warn = 0, dblbits = 24, ident_len = 31;
@@ -26,7 +29,7 @@ static stralloc map_file, chip, optimization, runtime, debugger;
 void
 print_strlist(const strlist* sl, const char* s);
 
-void
+int
 process_option(const char* optstr) {
   while(*optstr == '-')
     ++optstr;
@@ -60,7 +63,10 @@ process_option(const char* optstr) {
     debug = 1;
   } else if(toupper(*optstr) == 'N') {
     ident_len = atoi(&optstr[1]);
+  } else {
+    return 0;
   }
+  return 1;
 }
 
 void
@@ -75,17 +81,30 @@ strlist_foreach(strlist* sl, void(*slptr)(const char*)) {
 int
 strlist_execve(const strlist* sl) {
   char** av = strlist_to_argv(sl);
+  const char* p = av[0];
+  int pid = vfork();
 
-  return execve(av[0], av, NULL);
+  if(pid == -1)
+    return -1;
+
+  if(pid == 0) {
+    av[0] = basename(p);
+
+    if(execv(p, av) == -1)
+      exit(127);
+  } else { 
+    int status = 0;
+     if(waitpid(pid, &status, 0) == -1)
+      return 127;
+
+     return status;
+  }
 }
 
 void
 read_arguments() {
   strlist* sl = &args;
-
   argn = strlist_count(sl);;
-
-
   argi = 0;
 
   while(argi < argn) {
@@ -104,9 +123,11 @@ read_arguments() {
         strlist_push(&includedirs, &s[2]);
       }
     } else if(!str_diffn("--", s, 2)) {
-      strlist_push(&longopts, s);
+      if(!process_option(s))
+        strlist_push(&longopts, s);
     } else if(s[0] == '-') {
-      strlist_push(&opts, s);
+      if(!process_option(s))
+        strlist_push(&opts, s);
     } else {
       strlist_push(&params, s);
     }
@@ -123,8 +144,8 @@ read_arguments() {
   DUMP_LIST(opts, "\n\t");
   DUMP_LIST(params, "\n\t");
 
-  strlist_foreach(&longopts, process_option);
-  strlist_foreach(&opts, process_option);
+//  strlist_foreach(&longopts, process_option);
+//  strlist_foreach(&opts, process_option);
 
   DUMP_VALUE("output file", buffer_putsa, &output_file);
   DUMP_VALUE("mode", buffer_puts, opmode_strs[mode]);
@@ -138,6 +159,53 @@ read_arguments() {
   DUMP_VALUE("warn", buffer_putlong, warn);
   DUMP_VALUE("dblbits", buffer_putlong, dblbits);
   DUMP_VALUE("ident len", buffer_putlong, ident_len);
+
+strlist cmd;
+strlist_init(&cmd);
+
+
+//  strlist_unshift(&cmd, "-v");
+
+strlist_copy(&cmd, &opts);
+  
+  stralloc_0(&chip);  strlist_pushm(&cmd, "--chip=", chip.s, 0);
+  if(runtime.len > 0) { stralloc_0(&runtime);  strlist_pushm(&cmd, "--runtime=", runtime.s, 0); }
+  if(optimization.len > 0) { stralloc_0(&optimization);  strlist_pushm(&cmd, "--opt=", optimization.s, 0); }
+  if(debugger.len > 0) {  stralloc_0(&debugger);  strlist_pushm(&cmd, "--debugger=", debugger.s, 0);  }
+  strlist_push(&cmd, "--mode=PRO");
+
+  strlist_copy(&cmd, &longopts);
+
+  size_t i, n = strlist_count(&includedirs);
+  for(i = 0; i < n; ++i) {
+    strlist_pushm(&cmd, "-I", strlist_at(&includedirs, i));
+  }
+
+  n = strlist_count(&defines);
+  for(i = 0; i < n; ++i) {
+    strlist_pushm(&cmd, "-D", strlist_at(&defines, i));
+  }
+
+  switch(mode) {
+    case PREPROCESS: { strlist_push(&cmd, "-P"); break;  }
+    case COMPILE: { strlist_push(&cmd, "-S"); break;  }
+    case COMPILE_AND_ASSEMBLE: { strlist_push(&cmd, "--pass1"); break; }
+    default: { break; }
+  //  case COMPILE_ASSEMBLE_LINK: { break; }
+  }
+
+
+if(output_dir.len > 0) {
+  stralloc_0(&output_dir);
+  strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
+}
+
+  strlist_unshift(&cmd, "C:/Program Files (x86)/Microchip/xc8/v1.34/bin/xc8");
+
+  strlist_copy(&cmd, &params);
+  DUMP_LIST(cmd, "\n\t")
+
+  strlist_execve(&cmd);
 }
 
 void
@@ -147,10 +215,14 @@ print_strlist(const strlist* sl, const char* separator) {
   buffer_putlong(buffer_1, n);
   buffer_puts(buffer_1, "):\n\n\t");
   for(int i = 0; i < n; ++i) {
-    if(i > 0)
-      buffer_puts(buffer_1, separator);
-    buffer_puts(buffer_1, strlist_at(sl, i));
+    const char* s = strlist_at(sl, i);
 
+    if(str_len(s)) { 
+
+      if(i > 0)
+        buffer_puts(buffer_1, separator);
+      buffer_puts(buffer_1, strlist_at(sl, i));
+    }
 
   }
   buffer_puts(buffer_1, "\n\n");
