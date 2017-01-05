@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <fcntl.h>
 
 #ifdef __MINGW32__
 #include <process.h>
@@ -15,6 +16,7 @@
 #include "str.h"
 #include "buffer.h"
 
+static buffer *debug_buf, *err_buf;
 
 typedef enum {
   COMPILE_ASSEMBLE_LINK = 0,
@@ -36,13 +38,13 @@ static stralloc map_file, chip, optimization, runtime, debugger;
 static stralloc err_format, warn_format;
 
 void
-print_strlist(const strlist* sl, const char* s);
+print_strlist(buffer*, const strlist* sl, const char* s);
 
 int
 process_option(const char* optstr) {
   while(*optstr == '-')
     ++optstr;
-  //buffer_puts(buffer_1, "optstr: ");   buffer_puts(buffer_1, optstr);  buffer_putnlflush(buffer_1);
+  //buffer_puts(debug_buf, "optstr: ");   buffer_puts(debug_buf, optstr);  buffer_putnlflush(debug_buf);
 
   if(!str_diff(optstr, "pass1") || (str_len(optstr) == 1 && tolower(*optstr) == 'c')) {
     mode = COMPILE_AND_ASSEMBLE;
@@ -155,14 +157,14 @@ read_arguments() {
 
   if(!chip.len) stralloc_copys(&chip, "16f876a");
 
-  #define DUMP_LIST(n,sep)   buffer_puts(buffer_1, #n); print_strlist(&n, sep);
-  #define DUMP_VALUE(n,fn,v)   buffer_puts(buffer_1, n ": "); fn(buffer_1, v); buffer_putnlflush(buffer_1);
+  #define DUMP_LIST(buf,n,sep)   buffer_puts(buf, #n); print_strlist(buf, &n, sep);
+  #define DUMP_VALUE(n,fn,v)   buffer_puts(debug_buf, n ": "); fn(debug_buf, v); buffer_putnlflush(debug_buf);
 
-  DUMP_LIST(defines, "\n\t");
-  DUMP_LIST(includedirs, "\n\t");
-  DUMP_LIST(longopts, "\n\t");
-  DUMP_LIST(opts, "\n\t");
-  DUMP_LIST(params, "\n\t");
+  DUMP_LIST(debug_buf, defines, "\n\t");
+  DUMP_LIST(debug_buf, includedirs, "\n\t");
+  DUMP_LIST(debug_buf, longopts, "\n\t");
+  DUMP_LIST(debug_buf, opts, "\n\t");
+  DUMP_LIST(debug_buf, params, "\n\t");
 
 //  strlist_foreach(&longopts, process_option);
 //  strlist_foreach(&opts, process_option);
@@ -214,48 +216,54 @@ strlist_copy(&cmd, &opts);
   //  case COMPILE_ASSEMBLE_LINK: { break; }
   }
 
-
-if(output_dir.len > 0) {
-  stralloc_0(&output_dir);
-  strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
-}
+  if(output_dir.len > 0) {
+	stralloc_0(&output_dir);
+	strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
+  }
 
   strlist_unshift(&cmd, "C:\\Program Files (x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
 
   strlist_copy(&cmd, &params);
-  DUMP_LIST(cmd, "\n\t")
+  DUMP_LIST(err_buf, cmd, "\n\t")
 
   if(strlist_execve(&cmd) == -1) {
-    buffer_puts(buffer_1, "ERROR: ");
-    buffer_puts(buffer_1, strerror(errno));
-    buffer_putnlflush(buffer_1);
+    buffer_puts(debug_buf, "ERROR: ");
+    buffer_puts(debug_buf, strerror(errno));
+    buffer_putnlflush(debug_buf);
     
   }
 }
 
 void
-print_strlist(const strlist* sl, const char* separator) {
+print_strlist(buffer* b, const strlist* sl, const char* separator) {
   size_t n = strlist_count(sl);
-  buffer_puts(buffer_1, " (#");
-  buffer_putlong(buffer_1, n);
-  buffer_puts(buffer_1, "):\n\n\t");
+  buffer_puts(b, " (#");
+  buffer_putlong(b, n);
+  buffer_puts(b, "):\n\n\t");
   for(int i = 0; i < n; ++i) {
     const char* s = strlist_at(sl, i);
 
     if(str_len(s)) { 
 
       if(i > 0)
-        buffer_puts(buffer_1, separator);
-      buffer_puts(buffer_1, strlist_at(sl, i));
+        buffer_puts(b, separator);
+      buffer_puts(b, strlist_at(sl, i));
     }
 
   }
-  buffer_puts(buffer_1, "\n\n");
-  buffer_flush(buffer_1);
+  buffer_puts(b, "\n\n");
+  buffer_flush(b);
 }
 
 int
 main(int argc, char* argv[]) {
+
+debug_buf = buffer_1;
+err_buf = buffer_2;
+
+#if NDEBUG == 1
+  debug_buf->fd = open("/dev/null", O_WRONLY);	
+#endif
 
   strlist_init(&args);
 
