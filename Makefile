@@ -375,6 +375,15 @@ ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
+$(BUILDDIR)compiler$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(shell $(PKG_CONFIG) --cflags libxml-2.0)
+$(BUILDDIR)compiler$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(shell $(PKG_CONFIG) --libs libxml-2.0)
+$(BUILDDIR)compiler$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_push.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)byte_copy.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)str_len.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)buffer_putlong.o $(BUILDDIR)fmt_long.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_diff.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)stralloc_copys.o
+
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
+
 ifeq ($(DO_CXX),1)
 $(BUILDDIR)piccfghex.o: piccfghex.cpp
 $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)piccfghex.o $(BUILDDIR)intelhex.o
