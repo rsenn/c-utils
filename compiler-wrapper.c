@@ -153,6 +153,8 @@ read_arguments() {
     ++argi;
   }
 
+  if(!chip.len) stralloc_copys(&chip, "16f876a");
+
   #define DUMP_LIST(n,sep)   buffer_puts(buffer_1, #n); print_strlist(&n, sep);
   #define DUMP_VALUE(n,fn,v)   buffer_puts(buffer_1, n ": "); fn(buffer_1, v); buffer_putnlflush(buffer_1);
 
