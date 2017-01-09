@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
+#include <libgen.h>
 
 #ifdef __MINGW32__
 #include <process.h>
@@ -42,7 +43,7 @@ static int argi, argn;
 
 static compiler_type type;
 static operation_mode mode = COMPILE_ASSEMBLE_LINK;
-static int debug = 0, warn = 0, dblbits = 24, ident_len = 31;
+static int debug = 0, warn = 0, dblbits = 24, ident_len = 31, optlevel = 0;
 static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
 static stralloc map_file, chip, optimization, runtime, debugger;
@@ -67,6 +68,15 @@ get_compiler_dir(const char* basedir, stralloc* out) {
   }
 
   dir_close(&d);
+  return 0;
+}
+
+int
+get_machine(const stralloc* chip, stralloc* mach) {
+  if(chip->len < 3 || chip->s[0] != '1')
+    return -1;
+
+  stralloc_copys(mach, chip->s[1] > '6' ? "pic16" : "pic14");
   return 0;
 }
 
@@ -112,7 +122,16 @@ process_option(const char* optstr) {
     stralloc_copys(&err_format, &optstr[10]);
   } else if(!str_diffn(optstr, "warnformat=", 11)) {
     stralloc_copys(&warn_format, &optstr[11]);
-  } else if(tolower(*optstr) == 'o') {
+  } else if(*optstr == 'p') {
+    stralloc_copys(&chip, &optstr[1]);
+  } else if(*optstr == 'W') {
+    if(!str_diff(&optstr[1], "all")) warn = 9;
+    else warn = 5;
+  } else if(*optstr == 'w') {
+    warn = 0;
+  } else if(*optstr == 'O') {
+    optlevel = atoi(&optstr[1]) * 3;
+  } else if(*optstr == 'o') {
     stralloc_copys(&output_file, &optstr[1]);
   } else if(tolower(*optstr) == 'm') {
     stralloc_copys(&map_file, &optstr[1]);
@@ -139,7 +158,7 @@ int
 strlist_execve(const strlist* sl)
 {
   char** av = strlist_to_argv(sl);
-  const char* p = av[0];
+  char* p = av[0];
   av[0] = basename(p);
 
 #ifdef __MINGW32__
@@ -162,12 +181,14 @@ strlist_execve(const strlist* sl)
     return status;
   }
 #endif
+  return -1;
 }
 
 void
 read_arguments() {
   strlist* sl = &args;
-  argn = strlist_count(sl);;
+  argn = strlist_count(sl);
+  ;
   argi = 0;
 
   while(argi < argn) {
@@ -228,16 +249,11 @@ read_arguments() {
   strlist cmd;
   strlist_init(&cmd);
 
-
   //  strlist_unshift(&cmd, "-v");
 
   strlist_copy(&cmd, &opts);
 
-  stralloc_0(&chip);  strlist_pushm(&cmd, "--chip=", chip.s, 0);
-  if(runtime.len > 0) { stralloc_0(&runtime);  strlist_pushm(&cmd, "--runtime=", runtime.s, 0); }
-  if(optimization.len > 0) { stralloc_0(&optimization);  strlist_pushm(&cmd, "--opt=", optimization.s, 0); }
-  if(debugger.len > 0) {  stralloc_0(&debugger);  strlist_pushm(&cmd, "--debugger=", debugger.s, 0);  }
-  strlist_push(&cmd, "--mode=PRO");
+  stralloc_0(&chip);
 
   strlist_copy(&cmd, &longopts);
 
@@ -252,18 +268,92 @@ read_arguments() {
   }
 
   if(type == PICC || type == PICC18 || type == XC8) {
+    strlist_pushm(&cmd, "--chip=", chip.s, 0);
+    if(runtime.len > 0) {
+      stralloc_0(&runtime);strlist_pushm(&cmd, "--runtime=", runtime.s, 0);
+    }
+    if(optimization.len > 0) {
+      stralloc_0(&optimization);strlist_pushm(&cmd, "--opt=", optimization.s, 0);
+    }
+    if(debugger.len > 0) {
+      stralloc_0(&debugger);strlist_pushm(&cmd, "--debugger=", debugger.s, 0);
+    }
+    strlist_push(&cmd, "--mode=PRO");
+
     switch (mode) {
-      case PREPROCESS: { strlist_push(&cmd, "-P"); break;  }
-      case COMPILE: { strlist_push(&cmd, "-S"); break;  }
-      case COMPILE_AND_ASSEMBLE: { strlist_push(&cmd, "--pass1"); break; }
-      default: { break; }
-        //  case COMPILE_ASSEMBLE_LINK: { break; }
+  	  case PREPROCESS: {
+    		strlist_push(&cmd, "-P");
+    		break;
+  	  }
+  	  case COMPILE: {
+    		strlist_push(&cmd, "-S");
+    		break;
+  	  }
+  	  case COMPILE_AND_ASSEMBLE: {
+    		strlist_push(&cmd, "--pass1");
+    		break;
+  	  }
+  	  default: {
+   		break;
+  	  }
+	  //  case COMPILE_ASSEMBLE_LINK: { break; }
+	  }
+
+    if(debug) {
+      strlist_push(&cmd, "-G");
     }
 
-    if(output_dir.len > 0) {
-      stralloc_0(&output_dir);
-      strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
+	  if(output_dir.len > 0) {
+  		stralloc_0(&output_dir);
+  		strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
+	  }
+	} else if(type == SDCC) {
+    stralloc outp, machine;
+    stralloc_init(&outp);
+    stralloc_init(&machine);
+
+    strlist_push(&cmd, "--use-non-free");
+
+    if(get_machine(&chip, &machine) == 0) {
+      stralloc_0(&machine);
+      strlist_pushm(&cmd, "-m", machine.s, 0);
     }
+
+    strlist_pushm(&cmd, "-p", chip.s, 0);
+
+	  switch (mode) {
+  	  case PREPROCESS: {
+  		  strlist_push(&cmd, "-E");
+  		  break;
+  	  }
+  	  case COMPILE: {
+  		  strlist_push(&cmd, "-S");
+  		  break;
+  	  }
+  	  case COMPILE_AND_ASSEMBLE: {
+  	   	strlist_push(&cmd, "-c");
+    		break;
+  	  }
+  	  default: {
+    		break;
+  	  }
+    }
+
+    if(debug) {
+      strlist_pushm(&cmd, "--debug", "--debug-xtra", 0);
+    }      
+    if(output_dir.len > 0) {
+      stralloc_copy(&outp, &output_dir);
+    }
+    if(output_file.len > 0) {
+      if(outp.len > 0)
+        stralloc_cats(&outp, "/");
+      stralloc_cat(&outp, &output_file);
+    }
+    if(outp.len > 0) {
+  	stralloc_0(&outp);
+  	strlist_pushm(&cmd, "-o", outp.s, 0);
+	 }
   }
 
 
@@ -273,9 +363,9 @@ read_arguments() {
   DUMP_LIST(err_buf, cmd, " ", "'")
 
   if(strlist_execve(&cmd) == -1) {
-    buffer_puts(debug_buf, "ERROR: ");
-    buffer_puts(debug_buf, strerror(errno));
-    buffer_putnlflush(debug_buf);
+	buffer_puts(debug_buf, "ERROR: ");
+	buffer_puts(debug_buf, strerror(errno));
+	buffer_putnlflush(debug_buf);
 
   }
 }
@@ -295,7 +385,7 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
     if(str_len(s)) {
 
       if(i > 0)
-        buffer_puts(b, separator);
+  buffer_puts(b, separator);
 
       if(str_len(quot)) buffer_puts(b, quot);
       buffer_puts(b, strlist_at(sl, i));
@@ -321,7 +411,7 @@ main(int argc, char* argv[]) {
   } else if(!strncasecmp(argv0, "picc18", 6)) {
     type = PICC18;
     get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18", &compiler);
-  } else if(!strncasecmp(argv0, "picc", 6)) {
+  } else if(!strncasecmp(argv0, "picc", 4)) {
     type = PICC;
     get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
   } else if(!strncasecmp(argv0, "xc8", 3)) {

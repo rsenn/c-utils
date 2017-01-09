@@ -308,8 +308,6 @@ PROGRAMS += \
 endif
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
-
-
 vpath $(BUILDDIR) lib src
 
 VPATH = $(BUILDDIR):.:lib:src
@@ -402,7 +400,7 @@ ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
-$(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)strlist.a $(BUILDDIR)byte.a
+$(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)strlist.a $(BUILDDIR)byte.a $(BUILDDIR)strptime.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
