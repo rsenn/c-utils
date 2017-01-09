@@ -6,7 +6,25 @@
 			"path": ".",
             "folder_exclude_patterns": [ ".*", "Default" ],
             
-            "file_exclude_patterns": [ ".*", "*.stackdump", "*#*", "*~", "*.pui", "*.log", "*.out", "*.d", "*.p1", "*.sdb" ]
+            "file_exclude_patterns": [ 
+                ".*",
+                "*.stackdump",
+                 "*.o",
+                "*.d",
+                "*#*",
+                "*~",
+                "*.pui",
+                "*.log",
+                "*.out",
+                "*.d",
+                "*.p1",
+                "*.pre",
+                "*.sym",
+                "*.obj",
+                "*.as",
+                "*.rlf",
+                "*.sdb"
+         ]
 
             
         }

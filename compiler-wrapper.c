@@ -16,7 +16,15 @@
 #include "str.h"
 #include "buffer.h"
 
+const char* argv0;
 static buffer *debug_buf, *err_buf;
+
+typedef enum {
+  SDCC = 0,
+  PICC = 1,
+  PICC18 = 2,
+  XC8 = 3,
+} compiler_type;
 
 typedef enum {
   COMPILE_ASSEMBLE_LINK = 0,
@@ -30,6 +38,7 @@ const char const* opmode_strs[] = { "compile,assemble,link", "preprocess", "comp
 static strlist args;
 static int argi, argn;
 
+static compiler_type type;
 static operation_mode mode = COMPILE_ASSEMBLE_LINK;
 static int debug = 0, warn = 0, dblbits = 24, ident_len = 31;
 static strlist defines, includedirs, opts, longopts, params;
@@ -265,8 +274,19 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
 int
 main(int argc, char* argv[]) {
 
-debug_buf = buffer_1;
-err_buf = buffer_2;
+	argv0 = basename(argv[0]);
+
+  if(!strncasecmp(argv0, "sdcc", 4))
+    type = SDCC;
+  else if(!strncasecmp(argv0, "picc18", 6))
+    type = PICC18;
+  else if(!strncasecmp(argv0, "picc", 6))
+    type = PICC;
+  else if(!strncasecmp(argv0, "xc8", 6))
+    type = XC8;
+
+	debug_buf = buffer_1;
+	err_buf = buffer_2;
 
 #if NDEBUG == 1
   debug_buf->fd = open("/dev/null", O_WRONLY);	
