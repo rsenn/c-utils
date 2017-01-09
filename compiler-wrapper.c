@@ -18,7 +18,7 @@
 #include "buffer.h"
 #include "dir_internal.h"
 
-const char* argv0;
+static const char* argv0;
 static buffer* debug_buf, *err_buf;
 
 typedef enum {
@@ -48,6 +48,7 @@ static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
 static stralloc map_file, chip, optimization, runtime, debugger;
 static stralloc err_format, warn_format;
+static  stralloc compiler;
 
 int
 get_compiler_dir(const char* basedir, stralloc* out) {
@@ -206,6 +207,13 @@ read_arguments() {
       } else {
         strlist_push(&includedirs, &s[2]);
       }
+    }  else if(!str_diffn("-t", s, 2)) {
+      if(str_len(s) == 2 && argi + 1 < argn) {
+        argv0 = strlist_at(sl, ++argi);
+
+      } else {
+        argv0 = &s[2];
+      }
     } else if(!str_diffn("--", s, 2)) {
       if(!process_option(s))
         strlist_push(&longopts, s);
@@ -220,6 +228,28 @@ read_arguments() {
   }
 
   if(!chip.len) stralloc_copys(&chip, "16f876a");
+
+
+  if(!strncasecmp(argv0, "sdcc", 4)) {
+    type = SDCC;
+    stralloc_copys(&compiler, "C:/Program Files/SDCC");
+  } else if(!strncasecmp(argv0, "picc18", 6)) {
+    type = PICC18;
+    get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18", &compiler);
+  } else if(!strncasecmp(argv0, "picc", 4)) {
+    type = PICC;
+    get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
+  } else if(!strncasecmp(argv0, "xc8", 3)) {
+    type = XC8;
+    get_compiler_dir("C:/Program Files (x86)/Microchip/xc8", &compiler);
+  }
+
+
+  stralloc_cats(&compiler, "/bin/");
+  stralloc_cats(&compiler, compiler_strs[type]);
+
+  dump_stralloc("compiler", &compiler);
+
 
 #define DUMP_LIST(buf,n,sep,q)   buffer_puts(buf, #n); print_strlist(buf, &n, sep, q);
 #define DUMP_VALUE(n,fn,v)   buffer_puts(debug_buf, n ": "); fn(debug_buf, v); buffer_putnlflush(debug_buf);
@@ -245,6 +275,11 @@ read_arguments() {
   DUMP_VALUE("warn", buffer_putlong, warn);
   DUMP_VALUE("dblbits", buffer_putlong, dblbits);
   DUMP_VALUE("ident len", buffer_putlong, ident_len);
+}
+
+
+void
+execute_cmd() {
 
   strlist cmd;
   strlist_init(&cmd);
@@ -252,9 +287,7 @@ read_arguments() {
   //  strlist_unshift(&cmd, "-v");
 
   strlist_copy(&cmd, &opts);
-
   stralloc_0(&chip);
-
   strlist_copy(&cmd, &longopts);
 
   size_t i, n = strlist_count(&includedirs);
@@ -351,11 +384,10 @@ read_arguments() {
       stralloc_cat(&outp, &output_file);
     }
     if(outp.len > 0) {
-  	stralloc_0(&outp);
-  	strlist_pushm(&cmd, "-o", outp.s, 0);
-	 }
+  	  stralloc_0(&outp);
+  	  strlist_pushm(&cmd, "-o", outp.s, 0);
+    }
   }
-
 
   strlist_unshift(&cmd, "C:\\Program Files (x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
 
@@ -400,28 +432,9 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
 
 int
 main(int argc, char* argv[]) {
-  stralloc compiler;
   stralloc_init(&compiler);
 
   argv0 = basename(argv[0]);
-
-  if(!strncasecmp(argv0, "sdcc", 4)) {
-    type = SDCC;
-    stralloc_copys(&compiler, "C:/Program Files/SDCC");
-  } else if(!strncasecmp(argv0, "picc18", 6)) {
-    type = PICC18;
-    get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18", &compiler);
-  } else if(!strncasecmp(argv0, "picc", 4)) {
-    type = PICC;
-    get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
-  } else if(!strncasecmp(argv0, "xc8", 3)) {
-    type = XC8;
-    get_compiler_dir("C:/Program Files (x86)/Microchip/xc8", &compiler);
-  }
-  stralloc_cats(&compiler, "/bin/");
-  stralloc_cats(&compiler, compiler_strs[type]);
-
-  dump_stralloc("compiler", &compiler);
 
   debug_buf = buffer_1;
   err_buf = buffer_2;
@@ -442,6 +455,7 @@ main(int argc, char* argv[]) {
     strlist_push(&args, argv[i]);
   }
   read_arguments();
+  execute_cmd();
   //print_strlist(&args);
 
   return 0;

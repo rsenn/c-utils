@@ -419,16 +419,27 @@ $(BUILDDIR)xc8-wrapper/:
 	
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DXC8_WRAPPER=1
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
 
 $(BUILDDIR)picc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DPICC_WRAPPER=1
 $(BUILDDIR)picc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
 
 $(BUILDDIR)picc18-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DPICC18_WRAPPER=1
 $(BUILDDIR)picc18-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
 
 $(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DSDCC_WRAPPER=1
 $(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
-
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
