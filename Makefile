@@ -30,6 +30,11 @@ MINGW := 1
 else
 MINGW := 0
 endif
+ifeq ($(word 3,$(subst -, ,$(BUILD))),cygwin)
+CYGWIN := 1
+else
+CYGWIN := 0
+endif
 
 ifeq ($(DIET),1)
 DO_CXX := 0
@@ -243,10 +248,14 @@ endif
 CFLAGS += $(CFLAGS_$(BUILD_TYPE))
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 
+ifneq ($(STATIC),1)
+STATIC := 0
+endif
+
 ifeq ($(STATIC),1)
 #LDFLAGS += -static
 PKG_CONFIG += --static
-ifeq ($(MINGW)$(STATIC),1)
+ifeq ($(MINGW)$(STATIC)$(CYGWIN),10)
 LDFLAGS += -static-libgcc -static-libstdc++
 else
 LDFLAGS += -static
@@ -254,11 +263,11 @@ endif
 endif
 
 
-ifeq ($(STATIC_LIBGCC)$(STATIC),1)
+ifeq ($(STATIC_LIBGCC),1)
 LDFLAGS += -static-libgcc
 endif
 
-ifeq ($(STATIC_LIBSTDCXX)$(STATIC),1)
+ifeq ($(STATIC_LIBSTDCXX),1)
 LDFLAGS += -static-libstdc++
 endif
 
@@ -289,7 +298,7 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
 LIBS += -lstdc++
 
-PROGRAMS = $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)count-depth$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT) $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT)  $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT)   $(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT) 
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd torrent-progress mediathek-parser opensearch-dump xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper)
   
   
 ifeq ($(DO_CXX),1)
@@ -410,11 +419,17 @@ endif
 $(BUILDDIR)xc8-wrapper/:
 	mkdir -p $@
 	
-#$(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(shell $(PKG_CONFIG) --cflags libxml-2.0)
-#$(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(shell $(PKG_CONFIG) --libs libxml-2.0)
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DXC8_WRAPPER=1
-#$(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): OBJDIR := $(BUILDDIR)xc8-wrapper/
-$(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a
+$(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
+
+$(BUILDDIR)picc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DPICC_WRAPPER=1
+$(BUILDDIR)picc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
+
+$(BUILDDIR)picc18-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DPICC18_WRAPPER=1
+$(BUILDDIR)picc18-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
+
+$(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DSDCC_WRAPPER=1
+$(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)

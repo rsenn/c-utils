@@ -15,9 +15,10 @@
 #include "strlist.h"
 #include "str.h"
 #include "buffer.h"
+#include "dir_internal.h"
 
 const char* argv0;
-static buffer *debug_buf, *err_buf;
+static buffer* debug_buf, *err_buf;
 
 typedef enum {
   SDCC = 0,
@@ -25,6 +26,7 @@ typedef enum {
   PICC18 = 2,
   XC8 = 3,
 } compiler_type;
+const char const* compiler_strs[] = { "sdcc", "picc", "picc18", "xc8" };
 
 typedef enum {
   COMPILE_ASSEMBLE_LINK = 0,
@@ -45,6 +47,37 @@ static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
 static stralloc map_file, chip, optimization, runtime, debugger;
 static stralloc err_format, warn_format;
+
+int
+get_compiler_dir(const char* basedir, stralloc* out) {
+  struct dir_s d;
+  char* name;
+
+  if(dir_open(&d, basedir) != 0)
+    return -1;
+
+  while((name = dir_read(&d))) {
+    int dtype = dir_type(&d);
+
+    if(dtype != D_DIRECTORY) continue;
+
+    stralloc_copys(out, basedir);
+    stralloc_catb(out, "/", 1);
+    stralloc_cats(out, name);
+  }
+
+  dir_close(&d);
+  return 0;
+}
+
+void
+dump_stralloc(const char* name, const stralloc* out) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, "=\"");
+  buffer_putsa(buffer_2, out);
+  buffer_puts(buffer_2, "\"\n");
+  buffer_flush(buffer_2);
+}
 
 void
 print_strlist(buffer*, const strlist* sl, const char* sep, const char* quot);
@@ -71,7 +104,7 @@ process_option(const char* optstr) {
     warn = atoi(&optstr[5]);
   } else if(!str_diffn(optstr, "opt=" , 4)) {
     stralloc_copys(&optimization, &optstr[4]);
-  } else if(!str_diffn(optstr, "runtime=" ,8)) {
+  } else if(!str_diffn(optstr, "runtime=" , 8)) {
     stralloc_copys(&runtime, &optstr[8]);
   } else if(!str_diffn(optstr, "debugger=", 9)) {
     stralloc_copys(&debugger, &optstr[9]);
@@ -103,13 +136,14 @@ strlist_foreach(strlist* sl, void(*slptr)(const char*)) {
 }
 
 int
-strlist_execve(const strlist* sl) {
+strlist_execve(const strlist* sl)
+{
   char** av = strlist_to_argv(sl);
   const char* p = av[0];
-    av[0] = basename(p);
-  
+  av[0] = basename(p);
+
 #ifdef __MINGW32__
-return spawnv(P_WAIT, p, av);
+  return spawnv(P_WAIT, p, av);
 #else
   int pid = vfork();
 
@@ -120,14 +154,14 @@ return spawnv(P_WAIT, p, av);
 
     if(execv(p, av) == -1)
       exit(127);
-  } else { 
+  } else {
     int status = 0;
-     if(waitpid(pid, &status, 0) == -1)
+    if(waitpid(pid, &status, 0) == -1)
       return 127;
 
-     return status;
+    return status;
   }
-  #endif
+#endif
 }
 
 void
@@ -139,7 +173,7 @@ read_arguments() {
   while(argi < argn) {
     const char* s = strlist_at(sl, argi);
 
-    if(!str_diffn("-D", s, 2)) {  
+    if(!str_diffn("-D", s, 2)) {
       if(str_len(s) == 2 && argi + 1 < argn) {
         strlist_push(&defines, strlist_at(sl, ++argi));
       } else {
@@ -166,8 +200,8 @@ read_arguments() {
 
   if(!chip.len) stralloc_copys(&chip, "16f876a");
 
-  #define DUMP_LIST(buf,n,sep,q)   buffer_puts(buf, #n); print_strlist(buf, &n, sep, q);
-  #define DUMP_VALUE(n,fn,v)   buffer_puts(debug_buf, n ": "); fn(debug_buf, v); buffer_putnlflush(debug_buf);
+#define DUMP_LIST(buf,n,sep,q)   buffer_puts(buf, #n); print_strlist(buf, &n, sep, q);
+#define DUMP_VALUE(n,fn,v)   buffer_puts(debug_buf, n ": "); fn(debug_buf, v); buffer_putnlflush(debug_buf);
 
   DUMP_LIST(debug_buf, defines, "\n\t", "");
   DUMP_LIST(debug_buf, includedirs, "\n\t", "");
@@ -175,8 +209,8 @@ read_arguments() {
   DUMP_LIST(debug_buf, opts, "\n\t", "");
   DUMP_LIST(debug_buf, params, "\n\t", "");
 
-//  strlist_foreach(&longopts, process_option);
-//  strlist_foreach(&opts, process_option);
+  //  strlist_foreach(&longopts, process_option);
+  //  strlist_foreach(&opts, process_option);
 
   DUMP_VALUE("output file", buffer_putsa, &output_file);
   DUMP_VALUE("mode", buffer_puts, opmode_strs[mode]);
@@ -191,14 +225,14 @@ read_arguments() {
   DUMP_VALUE("dblbits", buffer_putlong, dblbits);
   DUMP_VALUE("ident len", buffer_putlong, ident_len);
 
-strlist cmd;
-strlist_init(&cmd);
+  strlist cmd;
+  strlist_init(&cmd);
 
 
-//  strlist_unshift(&cmd, "-v");
+  //  strlist_unshift(&cmd, "-v");
 
-strlist_copy(&cmd, &opts);
-  
+  strlist_copy(&cmd, &opts);
+
   stralloc_0(&chip);  strlist_pushm(&cmd, "--chip=", chip.s, 0);
   if(runtime.len > 0) { stralloc_0(&runtime);  strlist_pushm(&cmd, "--runtime=", runtime.s, 0); }
   if(optimization.len > 0) { stralloc_0(&optimization);  strlist_pushm(&cmd, "--opt=", optimization.s, 0); }
@@ -217,18 +251,21 @@ strlist_copy(&cmd, &opts);
     strlist_pushm(&cmd, "-D", strlist_at(&defines, i));
   }
 
-  switch(mode) {
-    case PREPROCESS: { strlist_push(&cmd, "-P"); break;  }
-    case COMPILE: { strlist_push(&cmd, "-S"); break;  }
-    case COMPILE_AND_ASSEMBLE: { strlist_push(&cmd, "--pass1"); break; }
-    default: { break; }
-  //  case COMPILE_ASSEMBLE_LINK: { break; }
+  if(type == PICC || type == PICC18 || type == XC8) {
+    switch (mode) {
+      case PREPROCESS: { strlist_push(&cmd, "-P"); break;  }
+      case COMPILE: { strlist_push(&cmd, "-S"); break;  }
+      case COMPILE_AND_ASSEMBLE: { strlist_push(&cmd, "--pass1"); break; }
+      default: { break; }
+        //  case COMPILE_ASSEMBLE_LINK: { break; }
+    }
+
+    if(output_dir.len > 0) {
+      stralloc_0(&output_dir);
+      strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
+    }
   }
 
-  if(output_dir.len > 0) {
-	stralloc_0(&output_dir);
-	strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
-  }
 
   strlist_unshift(&cmd, "C:\\Program Files (x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
 
@@ -239,7 +276,7 @@ strlist_copy(&cmd, &opts);
     buffer_puts(debug_buf, "ERROR: ");
     buffer_puts(debug_buf, strerror(errno));
     buffer_putnlflush(debug_buf);
-    
+
   }
 }
 
@@ -255,11 +292,11 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
   for(int i = 0; i < n; ++i) {
     const char* s = strlist_at(sl, i);
 
-    if(str_len(s)) { 
+    if(str_len(s)) {
 
       if(i > 0)
         buffer_puts(b, separator);
-        
+
       if(str_len(quot)) buffer_puts(b, quot);
       buffer_puts(b, strlist_at(sl, i));
       if(str_len(quot)) buffer_puts(b, quot);
@@ -267,29 +304,40 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
 
   }
   buffer_puts(b, "\n");
-//  buffer_put(b, separator, 1);
+  //  buffer_put(b, separator, 1);
   buffer_flush(b);
 }
 
 int
 main(int argc, char* argv[]) {
+  stralloc compiler;
+  stralloc_init(&compiler);
 
-	argv0 = basename(argv[0]);
+  argv0 = basename(argv[0]);
 
-  if(!strncasecmp(argv0, "sdcc", 4))
+  if(!strncasecmp(argv0, "sdcc", 4)) {
     type = SDCC;
-  else if(!strncasecmp(argv0, "picc18", 6))
+    stralloc_copys(&compiler, "C:/Program Files/SDCC");
+  } else if(!strncasecmp(argv0, "picc18", 6)) {
     type = PICC18;
-  else if(!strncasecmp(argv0, "picc", 6))
+    get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18", &compiler);
+  } else if(!strncasecmp(argv0, "picc", 6)) {
     type = PICC;
-  else if(!strncasecmp(argv0, "xc8", 6))
+    get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
+  } else if(!strncasecmp(argv0, "xc8", 3)) {
     type = XC8;
+    get_compiler_dir("C:/Program Files (x86)/Microchip/xc8", &compiler);
+  }
+  stralloc_cats(&compiler, "/bin/");
+  stralloc_cats(&compiler, compiler_strs[type]);
 
-	debug_buf = buffer_1;
-	err_buf = buffer_2;
+  dump_stralloc("compiler", &compiler);
+
+  debug_buf = buffer_1;
+  err_buf = buffer_2;
 
 #if NDEBUG == 1
-  debug_buf->fd = open("/dev/null", O_WRONLY);	
+  debug_buf->fd = open("/dev/null", O_WRONLY);
 #endif
 
   strlist_init(&args);
