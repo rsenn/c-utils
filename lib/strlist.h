@@ -39,7 +39,7 @@ extern "C"
 
   int strlist_push_sa (strlist * sl, const stralloc * sa);
 
-  int strlist_copy (strlist * sl, const strlist* l);
+  int strlist_cat (strlist * sl, const strlist* l);
   
   void strlist_dump (buffer * out, const strlist * sl);
 

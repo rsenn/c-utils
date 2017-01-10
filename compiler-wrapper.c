@@ -15,6 +15,7 @@
 
 #include "strlist.h"
 #include "str.h"
+#include "byte.h"
 #include "buffer.h"
 #include "dir_internal.h"
 
@@ -271,10 +272,12 @@ read_arguments() {
 
   DUMP_STRALLOC(compiler);
 
+  dump_str("mode", opmode_strs[mode]);
 
   if(err_format.len == 0) stralloc_copys(&err_format, "\n%f:%l: error: (%n) %s");
   if(warn_format.len == 0) stralloc_copys(&warn_format, "\n%f:%l: warning: (%n) %s");
   if(msg_format.len == 0) stralloc_copys(&msg_format, "\n%f:%l: advisory: (%n) %s");
+
 
   if(!strncasecmp(argv0, "sdcc", 4)) {
     type = SDCC;
@@ -299,6 +302,29 @@ read_arguments() {
     stralloc_cats(&compiler, compiler_strs[type]);
 
   dump_stralloc("compiler", &compiler);
+  if(output_file.len == 0 && (mode == COMPILE_AND_ASSEMBLE || mode == COMPILE || mode == PREPROCESS)) {
+    size_t n;
+    stralloc_copys(&output_file, basename(strlist_at(&params, 0)));
+
+    n = byte_rchr(output_file.s, output_file.len, '.');
+    if(n < output_file.len) {
+      output_file.len = n + 1;
+
+      switch(mode) {
+        case PREPROCESS:
+          stralloc_cats(&output_file, (type == SDCC) ? "e" : "pre");
+          break;
+        case COMPILE_AND_ASSEMBLE:
+          stralloc_cats(&output_file, (type == SDCC) ? "o" : "p1");
+          break;
+        case COMPILE:
+          stralloc_cats(&output_file, (type == SDCC) ? "s" : "as");
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
 #define DUMP_LIST(buf,n,sep,q)   buffer_puts(buf, #n); print_strlist(buf, &n, sep, q);
 #define DUMP_VALUE(n,fn,v)   buffer_puts(debug_buf, n ": "); fn(debug_buf, v); buffer_putnlflush(debug_buf);
@@ -335,9 +361,9 @@ execute_cmd() {
 
   //  strlist_unshift(&cmd, "-v");
 
-  strlist_copy(&cmd, &opts);
+  strlist_cat(&cmd, &opts);
   stralloc_0(&chip);
-  strlist_copy(&cmd, &longopts);
+  strlist_cat(&cmd, &longopts);
 
   size_t i, n = strlist_count(&includedirs);
   for(i = 0; i < n; ++i) {
@@ -371,9 +397,9 @@ execute_cmd() {
     }
     strlist_push(&cmd, "--mode=PRO");
 
-    switch (mode) {
+    switch(mode) {
       case PREPROCESS: {
-          strlist_push(&cmd, "-P");
+          strlist_push(&cmd, "--pre");
           break;
         }
       case COMPILE: {
@@ -424,7 +450,7 @@ execute_cmd() {
 
     strlist_pushm(&cmd, "-p", chip.s, 0);
 
-    switch (mode) {
+    switch(mode) {
       case PREPROCESS: {
           strlist_push(&cmd, "-E");
           break;
@@ -463,7 +489,7 @@ execute_cmd() {
   stralloc_0(&compiler);
   strlist_unshift(&cmd, compiler.s); //"C:\\Program Files (x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
 
-  strlist_copy(&cmd, &params);
+  strlist_cat(&cmd, &params);
   DUMP_LIST(err_buf, cmd, " ", "\"")
 
   if(output_dir.len > 0) {
