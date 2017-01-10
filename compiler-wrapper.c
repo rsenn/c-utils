@@ -219,17 +219,17 @@ read_arguments() {
 
     if(!str_diffn("-D", s, 2)) {
       if(str_len(s) == 2 && i + 1 < n) {
-        strlist_push(&defines, s2);
+        strlist_push_unique(&defines, s2);
         ++i;
       } else {
-        strlist_push(&defines, &s[2]);
+        strlist_push_unique(&defines, &s[2]);
       }
     } else if(!str_diffn("-I", s, 2)) {
       if(str_len(s) == 2 && i + 1 < n) {
-        strlist_push(&includedirs, s2);
+        strlist_push_unique(&includedirs, s2);
         ++i;
       } else {
-        strlist_push(&includedirs, &s[2]);
+        strlist_push_unique(&includedirs, &s[2]);
       }
     }  else if(!str_diffn("-t", s, 2)) {
       if(str_len(s) == 2 && i + 1 < n) {
@@ -564,14 +564,18 @@ main(int argc, char* argv[]) {
 #if NDEBUG == 1
   debug_buf->fd = open("/dev/null", O_WRONLY);
 #endif
+stralloc_init(&output_dir);
+stralloc_init(&output_file);
+stralloc_init(&map_file);
+stralloc_init(&chip);
+stralloc_init(&optimization);
+stralloc_init(&runtime);
+stralloc_init(&debugger);
+stralloc_init(&err_format);
+stralloc_init(&warn_format);
+stralloc_init(&msg_format);
 
-  strlist_init(&args);
-  stralloc_init(&compiler);
-  strlist_init(&defines);
-  strlist_init(&includedirs);
-  strlist_init(&longopts);
-  strlist_init(&opts);
-  strlist_init(&args);
+strlist_init(&args);
 
   for(int i = 1; i < argc; ++i) {
     strlist_push(&args, argv[i]);

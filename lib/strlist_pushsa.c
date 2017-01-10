@@ -4,5 +4,6 @@
 
 int
 strlist_pushsa(strlist* sl, const stralloc* sa) {
-	return strlist_pushb(sl, sa->s, sa->len);
+    stralloc_cat((stralloc*)sl, sa);
+    return stralloc_catb((stralloc*)sl, "\0", 1);
 }
