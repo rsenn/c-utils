@@ -37,7 +37,7 @@ extern "C"
 
   int strlist_pushb (strlist * sl, const char *s, size_t n);
 
-  int strlist_pushsa (strlist * sl, const stralloc * sa);
+  int strlist_push_sa (strlist * sl, const stralloc * sa);
 
   int strlist_copy (strlist * sl, const strlist* l);
   

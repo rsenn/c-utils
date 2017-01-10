@@ -18,7 +18,7 @@
 #include "buffer.h"
 #include "dir_internal.h"
 
-static const char* argv0;
+static char* argv0;
 static buffer* debug_buf, *err_buf;
 
 typedef enum {
