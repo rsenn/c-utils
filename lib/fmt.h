@@ -16,6 +16,8 @@
 extern "C" {
 #endif
 
+#define FMT_INT  21 /* enough space to hold -2^63 in decimal, plus \0 */
+#define FMT_UINT 20 /* enough space to hold 2^64 - 1 in decimal, plus \0 */
 #define FMT_LONG  41 /* enough space to hold -2^127 in decimal, plus \0 */
 #define FMT_ULONG 40 /* enough space to hold 2^128 - 1 in decimal, plus \0 */
 #define FMT_8LONG 44 /* enough space to hold 2^128 - 1 in octal, plus \0 */

@@ -16,6 +16,7 @@
 #include "strlist.h"
 #include "str.h"
 #include "byte.h"
+#include "fmt.h"
 #include "buffer.h"
 #include "dir_internal.h"
 
@@ -44,7 +45,7 @@ static int i, n;
 
 static compiler_type type;
 static operation_mode mode = COMPILE_ASSEMBLE_LINK;
-static int debug = 0, warn = 0, dblbits = 24, ident_len = 31, optlevel = 0;
+static int debug = 0, warn = 0, fltbits = 0, dblbits = 0, ident_len = 127, optlevel = 0, optsize = 0;
 static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
 static stralloc map_file, chip, optimization, runtime, debugger;
@@ -135,6 +136,10 @@ process_option(const char* optstr, const char*  nextopt, int* i) {
     //stralloc_copys(&license_mode, &optstr[5]);
   } else if(!str_diffn(optstr, "warn=", 5)) {
     warn = atoi(&optstr[5]);
+  } else if(!str_diffn(optstr, "float=", 6)) {
+    fltbits = atoi(&optstr[6]);
+  } else if(!str_diffn(optstr, "double=", 7)) {
+    dblbits = atoi(&optstr[7]);
   } else if(!str_diffn(optstr, "opt=", 4)) {
     stralloc_copys(&optimization, &optstr[4]);
   } else if(!str_diffn(optstr, "runtime=", 8)) {
@@ -153,7 +158,10 @@ process_option(const char* optstr, const char*  nextopt, int* i) {
   } else if(*optstr == 'w') {
     warn = 0;
   } else if(*optstr == 'O') {
-    optlevel = atoi(&optstr[1]) * 3;
+    if(optstr[1] == 's')
+      optsize = 1;
+    else 
+      optlevel = atoi(&optstr[1]) * 3;
   } else if(*optstr == 'o') {
 
     stralloc_copys(&output_file, &optstr[1]);
@@ -288,7 +296,7 @@ read_arguments() {
   } else if(!strncasecmp(argv0, "picc", 4)) {
     type = PICC;
     if(compiler.len == 0) get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
-  } else if(!strncasecmp(argv0, "xc8", 3)) {
+  } else if(strstr(argv0, "xc8") != NULL) {
     type = XC8;
     if(compiler.len == 0) get_compiler_dir("C:/Program Files (x86)/Microchip/xc8", &compiler);
   }
@@ -324,6 +332,19 @@ read_arguments() {
           break;
       }
     }
+  }
+
+
+  if(debug) {
+    strlist_push_unique(&defines, "DEBUG=1");
+    strlist_push_unique(&defines, "__DEBUG=1");
+  } else {
+    strlist_push_unique(&defines, "NDEBUG=1");
+    strlist_push_unique(&defines, "__NDEBUG=1");    
+  }
+
+  if(optsize) {
+    if(optlevel == 0) optlevel = 9;
   }
 
 #define DUMP_LIST(buf,n,sep,q)   buffer_puts(buf, #n); print_strlist(buf, &n, sep, q);
@@ -374,9 +395,13 @@ execute_cmd() {
   for(i = 0; i < n; ++i) {
     strlist_pushm(&cmd, "-D", strlist_at(&defines, i));
   }
-
   if(type == PICC || type == PICC18 || type == XC8) {
+          char nbuf[FMT_UINT+1];
+
     strlist_pushm(&cmd, "--chip=", chip.s, 0);
+
+if(mode != PREPROCESS) {
+
     if(runtime.len > 0) {
       stralloc_0(&runtime); strlist_pushm(&cmd, "--runtime=", runtime.s, 0);
     }
@@ -397,6 +422,33 @@ execute_cmd() {
     }
     strlist_push(&cmd, "--mode=PRO");
 
+
+    if(optlevel) {
+       nbuf[fmt_uint(nbuf, optlevel)] = '\0';
+      strlist_pushm(&cmd, "--opt=default,+asm,", debug ? "+debug,":"", optsize ? "-speed,+space,":"-space,+speed,", nbuf, NULL);
+    } 
+
+     if(warn) {
+       nbuf[fmt_uint(nbuf, warn)] = '\0';
+      strlist_pushm(&cmd, "--warn=",nbuf,NULL);
+    }
+    if(debug) strlist_push(&cmd, "-G");
+    
+    if(ident_len != 0) {
+      nbuf[fmt_uint(nbuf, ident_len)] = '\0';
+      strlist_pushm(&cmd, "-N",nbuf, NULL);
+    }
+    if(fltbits != 0) {
+      nbuf[fmt_uint(nbuf, fltbits)] = '\0';
+      strlist_pushm(&cmd, "--float=",nbuf, NULL);
+    }
+    if(dblbits != 0) {
+      nbuf[fmt_uint(nbuf, dblbits)] = '\0';
+      strlist_pushm(&cmd, "--double=",nbuf, NULL);
+    }
+
+  }
+
     switch(mode) {
       case PREPROCESS: {
           strlist_push(&cmd, "--pre");
@@ -414,10 +466,6 @@ execute_cmd() {
           break;
         }
         //  case COMPILE_ASSEMBLE_LINK: { break; }
-    }
-
-    if(debug) {
-      strlist_push(&cmd, "-G");
     }
 
     if(output_file.len > 0) {
