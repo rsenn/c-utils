@@ -27,7 +27,7 @@ extern "C"
 
     size_t strlist_count (const strlist * sl);
 
-  const char *strlist_at (const strlist * sl, size_t pos);
+   char *strlist_at (const strlist * sl, size_t pos);
 
     int64 strlist_index_of (strlist * sl, const char *str);
 

@@ -39,7 +39,7 @@ typedef enum {
 
 const char const* opmode_strs[] = { "compile,assemble,link", "preprocess", "compile", "compile,assemble" };
 static strlist args;
-static int argi, argn;
+static int i, n;
 
 static compiler_type type;
 static operation_mode mode = COMPILE_ASSEMBLE_LINK;
@@ -47,13 +47,34 @@ static int debug = 0, warn = 0, dblbits = 24, ident_len = 31, optlevel = 0;
 static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
 static stralloc map_file, chip, optimization, runtime, debugger;
-static stralloc err_format, warn_format;
+static stralloc err_format, warn_format, msg_format;
 static  stralloc compiler;
+
+void
+dump_stralloc(const char* name, const stralloc* out) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, "=\"");
+  buffer_putsa(buffer_2, out);
+  buffer_puts(buffer_2, "\"\n");
+  buffer_flush(buffer_2);
+}
+
+void
+dump_str(const char* name, const char* s) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, "=\"");
+  buffer_puts(buffer_2, s ? s : "(null)");
+  buffer_puts(buffer_2, "\"\n");
+  buffer_flush(buffer_2);
+}
+#define DUMP_STRALLOC(n) dump_stralloc(#n, &n)
+#define DUMP_STR(s) dump_str(#s, s)
 
 int
 get_compiler_dir(const char* basedir, stralloc* out) {
   struct dir_s d;
   char* name;
+  struct stat st;
 
   if(dir_open(&d, basedir) != 0)
     return -1;
@@ -62,10 +83,15 @@ get_compiler_dir(const char* basedir, stralloc* out) {
     int dtype = dir_type(&d);
 
     if(dtype != D_DIRECTORY) continue;
+    if(name[0] == '.') continue;
 
     stralloc_copys(out, basedir);
     stralloc_catb(out, "/", 1);
     stralloc_cats(out, name);
+    stralloc_0(out);
+
+    if(stat(out->s, &st) == 0)
+      return 0;
   }
 
   dir_close(&d);
@@ -82,24 +108,19 @@ get_machine(const stralloc* chip, stralloc* mach) {
 }
 
 void
-dump_stralloc(const char* name, const stralloc* out) {
-  buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, "=\"");
-  buffer_putsa(buffer_2, out);
-  buffer_puts(buffer_2, "\"\n");
-  buffer_flush(buffer_2);
-}
-
-void
 print_strlist(buffer*, const strlist* sl, const char* sep, const char* quot);
 
 int
-process_option(const char* optstr) {
+process_option(const char* optstr, const char*  nextopt, int* i) {
   while(*optstr == '-')
     ++optstr;
   //buffer_puts(debug_buf, "optstr: ");   buffer_puts(debug_buf, optstr);  buffer_putnlflush(debug_buf);
 
-  if(!str_diff(optstr, "pass1") || (str_len(optstr) == 1 && tolower(*optstr) == 'c')) {
+  if(!str_diff(optstr, "outdir")) {
+    stralloc_copys(&output_dir, nextopt);
+    ++*i;
+    return 0;
+  } else if(!str_diff(optstr, "pass1") || (str_len(optstr) == 1 && tolower(*optstr) == 'c')) {
     mode = COMPILE_AND_ASSEMBLE;
   } else if(!str_diff(optstr, "S") || (str_len(optstr) == 1 && toupper(*optstr) == 'S')) {
     mode = COMPILE;
@@ -111,11 +132,11 @@ process_option(const char* optstr) {
     stralloc_copys(&chip, &optstr[5]);
   } else if(!str_diffn(optstr, "mode=", 5)) {
     //stralloc_copys(&license_mode, &optstr[5]);
-  } else if(!str_diffn(optstr, "warn=" , 5)) {
+  } else if(!str_diffn(optstr, "warn=", 5)) {
     warn = atoi(&optstr[5]);
-  } else if(!str_diffn(optstr, "opt=" , 4)) {
+  } else if(!str_diffn(optstr, "opt=", 4)) {
     stralloc_copys(&optimization, &optstr[4]);
-  } else if(!str_diffn(optstr, "runtime=" , 8)) {
+  } else if(!str_diffn(optstr, "runtime=", 8)) {
     stralloc_copys(&runtime, &optstr[8]);
   } else if(!str_diffn(optstr, "debugger=", 9)) {
     stralloc_copys(&debugger, &optstr[9]);
@@ -133,6 +154,7 @@ process_option(const char* optstr) {
   } else if(*optstr == 'O') {
     optlevel = atoi(&optstr[1]) * 3;
   } else if(*optstr == 'o') {
+
     stralloc_copys(&output_file, &optstr[1]);
   } else if(tolower(*optstr) == 'm') {
     stralloc_copys(&map_file, &optstr[1]);
@@ -141,9 +163,9 @@ process_option(const char* optstr) {
   } else if(toupper(*optstr) == 'N') {
     ident_len = atoi(&optstr[1]);
   } else {
-    return 0;
+    return 1;
   }
-  return 1;
+  return 0;
 }
 
 void
@@ -156,8 +178,7 @@ strlist_foreach(strlist* sl, void(*slptr)(const char*)) {
 }
 
 int
-strlist_execve(const strlist* sl)
-{
+strlist_execve(const strlist* sl) {
   char** av = strlist_to_argv(sl);
   char* p = av[0];
   av[0] = basename(p);
@@ -188,68 +209,96 @@ strlist_execve(const strlist* sl)
 void
 read_arguments() {
   strlist* sl = &args;
-  argn = strlist_count(sl);
-  ;
-  argi = 0;
+  n = strlist_count(sl);
+  i = 0;
 
-  while(argi < argn) {
-    const char* s = strlist_at(sl, argi);
+  for(i = 0; i < n; ++i) {
+    char* s = strlist_at(sl, i);
+    char* s2 = i + 1 < n ? strlist_at(sl, i + 1) : NULL;
 
     if(!str_diffn("-D", s, 2)) {
-      if(str_len(s) == 2 && argi + 1 < argn) {
-        strlist_push(&defines, strlist_at(sl, ++argi));
+      if(str_len(s) == 2 && i + 1 < n) {
+        strlist_push(&defines, s2);
+        ++i;
       } else {
         strlist_push(&defines, &s[2]);
       }
     } else if(!str_diffn("-I", s, 2)) {
-      if(str_len(s) == 2 && argi + 1 < argn) {
-        strlist_push(&includedirs, strlist_at(sl, ++argi));
+      if(str_len(s) == 2 && i + 1 < n) {
+        strlist_push(&includedirs, s2);
+        ++i;
       } else {
         strlist_push(&includedirs, &s[2]);
       }
     }  else if(!str_diffn("-t", s, 2)) {
-      if(str_len(s) == 2 && argi + 1 < argn) {
-        argv0 = strlist_at(sl, ++argi);
-
+      if(str_len(s) == 2 && i + 1 < n) {
+        argv0 = s2;
+        ++i;
       } else {
         argv0 = &s[2];
       }
+      if(strchr(argv0, '/'))
+        stralloc_copys(&compiler, argv0);
+      argv0 = strdup(basename(argv0));
+    }  else if(!str_diffn("-o", s, 2)) {
+      stralloc output;
+      stralloc_init(&output);
+      if(str_len(s) == 2 && i + 1 < n) {
+        stralloc_copys(&output, s2);
+        ++i;
+      } else {
+        stralloc_copys(&output, &s[2]);
+      }
+      stralloc_0(&output);
+      stralloc_copys(&output_file, basename(output.s));
+      if(strchr(output.s, '/') || strchr(output.s, '\\')) {
+        stralloc_copys(&output_dir, dirname(output.s));
+      }
+      continue;
     } else if(!str_diffn("--", s, 2)) {
-      if(!process_option(s))
+      if(process_option(s, s2, &i))
         strlist_push(&longopts, s);
     } else if(s[0] == '-') {
-      if(!process_option(s))
+
+      if(process_option(s, s2, &i))
         strlist_push(&opts, s);
     } else {
       strlist_push(&params, s);
     }
-
-    ++argi;
   }
 
   if(!chip.len) stralloc_copys(&chip, "16f876a");
 
+  DUMP_STRALLOC(compiler);
+
+
+  if(err_format.len == 0) stralloc_copys(&err_format, "\n%f:%l: error: (%n) %s");
+  if(warn_format.len == 0) stralloc_copys(&warn_format, "\n%f:%l: warning: (%n) %s");
+  if(msg_format.len == 0) stralloc_copys(&msg_format, "\n%f:%l: advisory: (%n) %s");
 
   if(!strncasecmp(argv0, "sdcc", 4)) {
     type = SDCC;
-    stralloc_copys(&compiler, "C:/Program Files/SDCC");
+    if(compiler.len == 0) stralloc_copys(&compiler, "C:/Program Files/SDCC");
   } else if(!strncasecmp(argv0, "picc18", 6)) {
     type = PICC18;
-    get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18", &compiler);
+    if(compiler.len == 0) get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18", &compiler);
   } else if(!strncasecmp(argv0, "picc", 4)) {
     type = PICC;
-    get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
+    if(compiler.len == 0) get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
   } else if(!strncasecmp(argv0, "xc8", 3)) {
     type = XC8;
-    get_compiler_dir("C:/Program Files (x86)/Microchip/xc8", &compiler);
+    if(compiler.len == 0) get_compiler_dir("C:/Program Files (x86)/Microchip/xc8", &compiler);
   }
 
+  stralloc_0(&compiler);
+  if(strstr(compiler.s, "/bin") == NULL)
+    stralloc_cats(&compiler, "/bin/");
 
-  stralloc_cats(&compiler, "/bin/");
-  stralloc_cats(&compiler, compiler_strs[type]);
+  stralloc_0(&compiler);
+  if(strstr(compiler.s, "/bin/") == NULL)
+    stralloc_cats(&compiler, compiler_strs[type]);
 
   dump_stralloc("compiler", &compiler);
-
 
 #define DUMP_LIST(buf,n,sep,q)   buffer_puts(buf, #n); print_strlist(buf, &n, sep, q);
 #define DUMP_VALUE(n,fn,v)   buffer_puts(debug_buf, n ": "); fn(debug_buf, v); buffer_putnlflush(debug_buf);
@@ -303,44 +352,65 @@ execute_cmd() {
   if(type == PICC || type == PICC18 || type == XC8) {
     strlist_pushm(&cmd, "--chip=", chip.s, 0);
     if(runtime.len > 0) {
-      stralloc_0(&runtime);strlist_pushm(&cmd, "--runtime=", runtime.s, 0);
+      stralloc_0(&runtime); strlist_pushm(&cmd, "--runtime=", runtime.s, 0);
     }
     if(optimization.len > 0) {
-      stralloc_0(&optimization);strlist_pushm(&cmd, "--opt=", optimization.s, 0);
+      stralloc_0(&optimization); strlist_pushm(&cmd, "--opt=", optimization.s, 0);
     }
     if(debugger.len > 0) {
-      stralloc_0(&debugger);strlist_pushm(&cmd, "--debugger=", debugger.s, 0);
+      stralloc_0(&debugger); strlist_pushm(&cmd, "--debugger=", debugger.s, 0);
+    }
+    if(err_format.len > 0) {
+      stralloc_0(&err_format); strlist_pushm(&cmd, "--errformat=", err_format.s, 0);
+    }
+    if(warn_format.len > 0) {
+      stralloc_0(&warn_format); strlist_pushm(&cmd, "--warnformat=", warn_format.s, 0);
+    }
+    if(msg_format.len > 0) {
+      stralloc_0(&msg_format); strlist_pushm(&cmd, "--msgformat=", msg_format.s, 0);
     }
     strlist_push(&cmd, "--mode=PRO");
 
     switch (mode) {
-  	  case PREPROCESS: {
-    		strlist_push(&cmd, "-P");
-    		break;
-  	  }
-  	  case COMPILE: {
-    		strlist_push(&cmd, "-S");
-    		break;
-  	  }
-  	  case COMPILE_AND_ASSEMBLE: {
-    		strlist_push(&cmd, "--pass1");
-    		break;
-  	  }
-  	  default: {
-   		break;
-  	  }
-	  //  case COMPILE_ASSEMBLE_LINK: { break; }
-	  }
+      case PREPROCESS: {
+          strlist_push(&cmd, "-P");
+          break;
+        }
+      case COMPILE: {
+          strlist_push(&cmd, "-S");
+          break;
+        }
+      case COMPILE_AND_ASSEMBLE: {
+          strlist_push(&cmd, "--pass1");
+          break;
+        }
+      default: {
+          break;
+        }
+        //  case COMPILE_ASSEMBLE_LINK: { break; }
+    }
 
     if(debug) {
       strlist_push(&cmd, "-G");
     }
 
-	  if(output_dir.len > 0) {
-  		stralloc_0(&output_dir);
-  		strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
-	  }
-	} else if(type == SDCC) {
+    if(output_file.len > 0) {
+      stralloc outf;
+      stralloc_init(&outf);
+
+      if(output_dir.len > 0) {
+        stralloc_copy(&outf, &output_dir);
+        stralloc_cats(&outf, "/");
+      }
+      stralloc_cat(&outf, &output_file);
+      stralloc_0(&outf);
+      strlist_pushm(&cmd, "-O", outf.s, 0);
+    } else if(output_dir.len > 0) {
+      stralloc_0(&output_dir);
+      strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
+    }
+
+  } else if(type == SDCC) {
     stralloc outp, machine;
     stralloc_init(&outp);
     stralloc_init(&machine);
@@ -354,27 +424,27 @@ execute_cmd() {
 
     strlist_pushm(&cmd, "-p", chip.s, 0);
 
-	  switch (mode) {
-  	  case PREPROCESS: {
-  		  strlist_push(&cmd, "-E");
-  		  break;
-  	  }
-  	  case COMPILE: {
-  		  strlist_push(&cmd, "-S");
-  		  break;
-  	  }
-  	  case COMPILE_AND_ASSEMBLE: {
-  	   	strlist_push(&cmd, "-c");
-    		break;
-  	  }
-  	  default: {
-    		break;
-  	  }
+    switch (mode) {
+      case PREPROCESS: {
+          strlist_push(&cmd, "-E");
+          break;
+        }
+      case COMPILE: {
+          strlist_push(&cmd, "-S");
+          break;
+        }
+      case COMPILE_AND_ASSEMBLE: {
+          strlist_push(&cmd, "-c");
+          break;
+        }
+      default: {
+          break;
+        }
     }
 
     if(debug) {
       strlist_pushm(&cmd, "--debug", "--debug-xtra", 0);
-    }      
+    }
     if(output_dir.len > 0) {
       stralloc_copy(&outp, &output_dir);
     }
@@ -384,21 +454,29 @@ execute_cmd() {
       stralloc_cat(&outp, &output_file);
     }
     if(outp.len > 0) {
-  	  stralloc_0(&outp);
-  	  strlist_pushm(&cmd, "-o", outp.s, 0);
+      stralloc_0(&outp);
+      strlist_push(&cmd, "-o");
+      strlist_push_sa(&cmd, &outp);
     }
   }
 
-  strlist_unshift(&cmd, "C:\\Program Files (x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
+  stralloc_0(&compiler);
+  strlist_unshift(&cmd, compiler.s); //"C:\\Program Files (x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
 
   strlist_copy(&cmd, &params);
-  DUMP_LIST(err_buf, cmd, " ", "'")
+  DUMP_LIST(err_buf, cmd, " ", "\"")
+
+  if(output_dir.len > 0) {
+    struct stat st;
+    stralloc_0(&output_dir);
+    if(stat(output_dir.s, &st) == -1)
+      mkdir(output_dir.s, 0755);
+  }
 
   if(strlist_execve(&cmd) == -1) {
-	buffer_puts(debug_buf, "ERROR: ");
-	buffer_puts(debug_buf, strerror(errno));
-	buffer_putnlflush(debug_buf);
-
+    buffer_puts(debug_buf, "ERROR: ");
+    buffer_puts(debug_buf, strerror(errno));
+    buffer_putnlflush(debug_buf);
   }
 }
 
@@ -408,7 +486,7 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
   buffer_puts(b, " (#");
   buffer_putlong(b, n);
   buffer_puts(b, "):");
-  buffer_put(b, separator, 1);
+  // buffer_put(b, separator, 1);
   buffer_puts(b, separator);
 
   for(int i = 0; i < n; ++i) {
@@ -417,11 +495,30 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
     if(str_len(s)) {
 
       if(i > 0)
-  buffer_puts(b, separator);
+        buffer_puts(b, separator);
 
-      if(str_len(quot)) buffer_puts(b, quot);
-      buffer_puts(b, strlist_at(sl, i));
-      if(str_len(quot)) buffer_puts(b, quot);
+      int need_quote = 0;
+
+      if(str_len(quot)) {
+        while(*s) {
+          if(*s == ' ' || *s == '"' || *s == '\'' || *s == '\'' || *s == '\n') {
+            need_quote = 1;
+            break;
+          }
+          ++s;
+        }
+      }
+
+      s = strlist_at(sl, i);
+
+      if(need_quote) buffer_puts(b, quot);
+
+      while(*s) {
+        if(*s == '\n') buffer_puts(b, "\\n");
+        else buffer_put(b, s, 1);
+        ++s;
+      }
+      if(need_quote) buffer_puts(b, quot);
     }
 
   }
@@ -432,7 +529,6 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
 
 int
 main(int argc, char* argv[]) {
-  stralloc_init(&compiler);
 
   argv0 = basename(argv[0]);
 
@@ -444,7 +540,7 @@ main(int argc, char* argv[]) {
 #endif
 
   strlist_init(&args);
-
+  stralloc_init(&compiler);
   strlist_init(&defines);
   strlist_init(&includedirs);
   strlist_init(&longopts);
@@ -454,9 +550,9 @@ main(int argc, char* argv[]) {
   for(int i = 1; i < argc; ++i) {
     strlist_push(&args, argv[i]);
   }
+  DUMP_LIST(err_buf, args, "\n\t", "'");
   read_arguments();
   execute_cmd();
-  //print_strlist(&args);
 
   return 0;
 }
