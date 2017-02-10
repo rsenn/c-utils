@@ -82,6 +82,7 @@ typedef enum {
   REGISTRY_DWORD,
   REGISTRY_QWORD,
   REGISTRY_BINARY,
+  REGISTRY_DELETE,
 } regtype_t;
 
 const char *regtype_strings[] = {
@@ -227,6 +228,8 @@ int reg2cmd() {
         if(line.s[valueend - 1] == '"')
           valueend--;
 
+      } else if(!strncmp(&line.s[valuestart], "-", 1)) {
+        rt = REGISTRY_DELETE;
       } else if(!strncmp(&line.s[valuestart], "hex", 3)) {
         rt = REGISTRY_BINARY;
 
@@ -252,8 +255,11 @@ int reg2cmd() {
         buffer_flush(buffer_2);
         exit(2);
       }
+      
+      
+      if
 
-      buffer_puts(buffer_1, "reg add \"");
+      buffer_puts(buffer_1, (rt == REGISTRY_DELETE) ? "reg delete \"" : "reg add \"");
       buffer_puts(buffer_1, key);
       buffer_puts(buffer_1, "\" ");
 
@@ -285,62 +291,64 @@ int reg2cmd() {
       else
         type = regtype_strings[rt];
 
-      buffer_puts(buffer_1, "/t ");
-      buffer_puts(buffer_1, type);
+	  if(rt != REGISTRY_DELETE) {
+		buffer_puts(buffer_1, "/t ");
+		buffer_puts(buffer_1, type);
 
-      buffer_puts(buffer_1, " /d ");
+		buffer_puts(buffer_1, " /d ");
 
-      switch (rt) {
-      // case REGISTRY_BINARY:
-      case REGISTRY_EXPAND_SZ: {
-        buffer_putc(buffer_1, '"');
-        for(pos = valuestart; pos < valueend; pos++) {
-          if(line.s[pos] == '%')
-            buffer_putc(buffer_1, '^');
-          buffer_putc(buffer_1, line.s[pos]);
-        }
-        buffer_putc(buffer_1, '"');
-        break;
-      }
-      case REGISTRY_SZ: {
-        buffer_putc(buffer_1, '"');
-        if(has_newline) {
-          for(pos = valuestart; pos < valueend; pos++) {
-            buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
-            buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] & 0x0f));
-          }
-        } else {
-          buffer_put(buffer_1, &line.s[valuestart], valueend - valuestart);
-        }
-        buffer_putc(buffer_1, '"');
-        break;
-      }
-      case REGISTRY_DWORD: {
-        buffer_putuint64(buffer_1, word);
-        break;
-      }
-      case REGISTRY_QWORD: {
-        buffer_putuint64(buffer_1, word);
-        break;
-      }
-      case REGISTRY_BINARY: {
-        buffer_putc(buffer_1, '"');
-        for(pos = valuestart; pos < valueend; pos++) {
-          if(scan_fromhex(line.s[pos]) != -1)
-            buffer_putc(buffer_1, char_tolower(line.s[pos]));
-        }
-        buffer_putc(buffer_1, '"');
-        break;
-      }
-      default: {
-        buffer_puts(buffer_2, "Unhandled type: ");
-        buffer_puts(buffer_2, regtype_strings[rt]);
-        buffer_puts(buffer_2, "\n");
-        buffer_flush(buffer_2);
-        exit(2);
-        break;
-      }
-      }
+		switch (rt) {
+		// case REGISTRY_BINARY:
+		case REGISTRY_EXPAND_SZ: {
+		  buffer_putc(buffer_1, '"');
+		  for(pos = valuestart; pos < valueend; pos++) {
+			if(line.s[pos] == '%')
+			  buffer_putc(buffer_1, '^');
+			buffer_putc(buffer_1, line.s[pos]);
+		  }
+		  buffer_putc(buffer_1, '"');
+		  break;
+		}
+		case REGISTRY_SZ: {
+		  buffer_putc(buffer_1, '"');
+		  if(has_newline) {
+			for(pos = valuestart; pos < valueend; pos++) {
+			  buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
+			  buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] & 0x0f));
+			}
+		  } else {
+			buffer_put(buffer_1, &line.s[valuestart], valueend - valuestart);
+		  }
+		  buffer_putc(buffer_1, '"');
+		  break;
+		}
+		case REGISTRY_DWORD: {
+		  buffer_putuint64(buffer_1, word);
+		  break;
+		}
+		case REGISTRY_QWORD: {
+		  buffer_putuint64(buffer_1, word);
+		  break;
+		}
+		case REGISTRY_BINARY: {
+		  buffer_putc(buffer_1, '"');
+		  for(pos = valuestart; pos < valueend; pos++) {
+			if(scan_fromhex(line.s[pos]) != -1)
+			  buffer_putc(buffer_1, char_tolower(line.s[pos]));
+		  }
+		  buffer_putc(buffer_1, '"');
+		  break;
+		}
+		default: {
+		  buffer_puts(buffer_2, "Unhandled type: ");
+		  buffer_puts(buffer_2, regtype_strings[rt]);
+		  buffer_puts(buffer_2, "\n");
+		  buffer_flush(buffer_2);
+		  exit(2);
+		  break;
+		}
+		}
+	  }
 
       buffer_puts(buffer_1, "\r\n");
       buffer_flush(buffer_1);
