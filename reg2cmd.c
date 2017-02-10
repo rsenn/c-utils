@@ -39,7 +39,7 @@ INLINE static char *mybasename(const char *path) {
   return r ? r + 1 : (char *)path;
 }
 
-static int force = 0;
+static int force = 0, shortroot = 0;
 
 INLINE static char hexchar(char value) {
   static const char hchars[] = "0123456789abcdef";
@@ -73,6 +73,30 @@ static ssize_t collapse_unicode(char *buffer, size_t n) {
   buffer[o] = '\0';
   return o;
 }
+
+typedef enum {
+  ROOT_HKLM = 0,
+  ROOT_HKCU,
+  ROOT_HKCR,
+  ROOT_HKU,
+  ROOT_HKCC,
+} regroot_t;
+
+static const char* registry_roots[] = { 
+  "HKEY_LOCAL_MACHINE",
+  "HKEY_CURRENT_USER", 
+  "HKEY_CLASSES_ROOT", 
+  "HKEY_USERS", 
+  "HKEY_CURRENT_CONFIG", 
+};
+
+static const char* registry_roots_short[] = { 
+  "HKLM",
+  "HKCU", 
+  "HKCR", 
+  "HKU", 
+  "HKCC", 
+};
 
 typedef enum {
   REGISTRY_NONE = 0,
@@ -173,14 +197,37 @@ int reg2cmd() {
         continue;
       }
     }
+    
+    #define KEY_EQ(a,b) !str_diffn(a,b,str_len(b))
 
     if(key[0]) {
       int has_newline = 0, has_expansion = 0;
       const char *type;
       int keystart, keyend, valuestart = 0, valueend;
       regtype_t rt = 0;
+      regroot_t rr = -1;
       uint64 word = 0;
       int inquote;
+      static stralloc subkey;
+      stralloc_zero(&subkey);
+      
+      if(KEY_EQ(key, "HKLM") || KEY_EQ(key, "HKEY_LOCAL_MACHINE"))
+		rr = ROOT_HKLM;
+	  else if(KEY_EQ(key, "HKCU") || KEY_EQ(key, "HKEY_CURRENT_USER"))
+		rr = ROOT_HKCU;
+	  else if(KEY_EQ(key, "HKCR") || KEY_EQ(key, "HKEY_CLASSES_ROOT"))
+		rr = ROOT_HKCR;
+	  else if(KEY_EQ(key, "HKU") || KEY_EQ(key, "HKEY_USERS"))
+		rr = ROOT_HKU;
+	  else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_CONFIG"))
+		rr = ROOT_HKCC;
+		
+	  char* o = strchr(key, '\\');
+	  if(o) {
+	    ++o;
+	    stralloc_copys(&subkey, o);
+	  }
+        
 
       keystart = (line.s[0] == '"' ? 1 : 0);
       inquote = keystart;
@@ -256,11 +303,11 @@ int reg2cmd() {
         exit(2);
       }
       
-      
-      if
-
       buffer_puts(buffer_1, (rt == REGISTRY_DELETE) ? "reg delete \"" : "reg add \"");
-      buffer_puts(buffer_1, key);
+      buffer_puts(buffer_1, (shortroot ? registry_roots_short : registry_roots)[rr]);
+      buffer_puts(buffer_1, "\\");
+      buffer_putsa(buffer_1, &subkey);
+      
       buffer_puts(buffer_1, "\" ");
 
       if(force)
@@ -391,6 +438,9 @@ int main(int argc, char *argv[]) {
       switch (arg[1]) {
       case 'f':
         force++;
+        break;
+      case 's':
+        shortroot++;
         break;
       default:
         usage(argv[0]);
