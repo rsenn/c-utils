@@ -36,6 +36,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "array.h"
 #include "buffer.h"
 #include "str.h"
 #include "stralloc.h"
@@ -72,6 +73,7 @@
 #define STDERR_FILENO 2
 #endif
 
+static array exclude_masks;
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_relative = NULL;
 static const char* opt_timestyle = "%b %2e %H:%M";
@@ -683,6 +685,12 @@ int main(int argc, char* argv[]) {
     } else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
       opt_numeric = 1;
     } else if(!strcmp(argv[argi], "-r") || !strcmp(argv[argi], "--relative")) {
+      relative = 1;
+    } else if(!strcmp(argv[argi], "-x")) {
+      array_catb(&exclude_masks, argv[argi+1], sizeof(char**));
+    } else if(!strncmp(argv[argi], "-x", 2)) {
+      array_catb(&exclude_masks, argv[argi]+2, sizeof(char**));
+    } else if(!strcmp(argv[argi], "--relative")) {
       relative = 1;
     } else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
       argi++;
