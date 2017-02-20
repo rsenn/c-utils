@@ -9,9 +9,11 @@
 
 #ifdef __MINGW32__
 #include <process.h>
+#define mkdir _mkdir
 #else
 #include <sys/wait.h>
 #endif
+#include <sys/stat.h>
 
 #include "strlist.h"
 #include "str.h"

@@ -73,6 +73,9 @@
 #define STDERR_FILENO 2
 #endif
 
+static void
+print_strarray(buffer* b, array* a);
+
 static array exclude_masks;
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_relative = NULL;
@@ -85,18 +88,18 @@ static const char*
 last_error_str() {
   DWORD errCode = GetLastError();
   static char tmpbuf[1024];
-  char *err;
+  char* err;
   tmpbuf[0] = '\0';
-  if(errCode == 0) return tmpbuf;
+  if (errCode == 0) return tmpbuf;
 
   SetLastError(0);
-  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                    NULL,
-                    errCode,
-                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
-                    (LPTSTR) &err,
-                    0,
-                    NULL))
+  if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                     NULL,
+                     errCode,
+                     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+                     (LPTSTR) &err,
+                     0,
+                     NULL))
     return 0;
 
 
@@ -112,17 +115,17 @@ int64 get_file_size(char* path) {
   HANDLE hFile = CreateFileA(path, GENERIC_READ,
                              FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
                              FILE_ATTRIBUTE_NORMAL, NULL);
-  if(hFile == INVALID_HANDLE_VALUE)
+  if (hFile == INVALID_HANDLE_VALUE)
     return -1; // error condition, could call GetLastError to find out more
 
-  if(!GetFileSizeEx(hFile, &size)) {
+  if (!GetFileSizeEx(hFile, &size)) {
     CloseHandle(hFile);
     return -1; // error condition, could call GetLastError to find out more
   }
 
   CloseHandle(hFile);
 
-//  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());
+  //  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());
   return size.QuadPart;
 }
 
@@ -132,21 +135,21 @@ uint64_t get_file_time(const char* path) {
   HANDLE hFile = CreateFileA(path, GENERIC_READ,
                              FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
                              FILE_ATTRIBUTE_NORMAL, NULL);
-  if(hFile == INVALID_HANDLE_VALUE)
+  if (hFile == INVALID_HANDLE_VALUE)
     return -1; // error condition, could call GetLastError to find out more
 
-  if(!GetFileTime(hFile, &c, &la, &lw)) {
+  if (!GetFileTime(hFile, &c, &la, &lw)) {
     CloseHandle(hFile);
     return -1; // error condition, could call GetLastError to find out more
   }
 
   CloseHandle(hFile);
 
-  if((t = filetime_to_unix(&lw)) <= 0)
-    if((t = filetime_to_unix(&c)) <= 0)
+  if ((t = filetime_to_unix(&lw)) <= 0)
+    if ((t = filetime_to_unix(&c)) <= 0)
       t = filetime_to_unix(&la);
 
-//  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());
+  //  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str());
   return t;
 }
 
@@ -176,11 +179,11 @@ get_file_owner(const char* path) {
                       NULL);
 
   // Check GetLastError for CreateFile error code.
-  if(hFile == INVALID_HANDLE_VALUE) {
+  if (hFile == INVALID_HANDLE_VALUE) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
-//			snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode);
+    //			snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode);
     return  0;
   }
 
@@ -198,7 +201,7 @@ get_file_owner(const char* path) {
                 &pSD);
 
   // Check GetLastError for GetSecurityInfo error condition.
-  if(dwRtnCode != ERROR_SUCCESS) {
+  if (dwRtnCode != ERROR_SUCCESS) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
@@ -207,7 +210,7 @@ get_file_owner(const char* path) {
   }
 
 
-  if(ConvertSidToStringSid(pSidOwner, &strsid)) {
+  if (ConvertSidToStringSid(pSidOwner, &strsid)) {
     snprintf(tmpbuf, sizeof(tmpbuf), "%s", strsid);
     LocalFree(strsid);
   }
@@ -228,7 +231,7 @@ get_file_owner(const char* path) {
                dwAcctName);
 
   // Check GetLastError for GlobalAlloc error condition.
-  if(AcctName == NULL) {
+  if (AcctName == NULL) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
@@ -241,7 +244,7 @@ get_file_owner(const char* path) {
                  dwDomainName);
 
   // Check GetLastError for GlobalAlloc error condition.
-  if(DomainName == NULL) {
+  if (DomainName == NULL) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
@@ -261,18 +264,18 @@ get_file_owner(const char* path) {
                &eUse);                 // SID type
 
   // Check GetLastError for LookupAccountSid error condition.
-  if(bRtnBool == FALSE) {
+  if (bRtnBool == FALSE) {
     DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
 
-    if(dwErrorCode == ERROR_NONE_MAPPED)
+    if (dwErrorCode == ERROR_NONE_MAPPED)
       snprintf(tmpbuf, sizeof(tmpbuf), "Account owner not found for specified SID.\n");
     else
       snprintf(tmpbuf, sizeof(tmpbuf), "Error in LookupAccountSid.\n");
     return tmpbuf;
 
-  } else if(bRtnBool == TRUE)
+  } else if (bRtnBool == TRUE)
     // Print the account name.
     snprintf(tmpbuf, sizeof(tmpbuf), "%s", AcctName);
   return tmpbuf;
@@ -300,8 +303,8 @@ is_junction_point(const char* fn) {
   HANDLE hFind;
 
   hFind = FindFirstFile(fn, &FindFileData);
-  if(INVALID_HANDLE_VALUE != hFind) {
-    if(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
+  if (INVALID_HANDLE_VALUE != hFind) {
+    if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
       // We're probably going to skip this reparse point,
       // but not always. (See the logic below.)
       status = 1;
@@ -309,35 +312,35 @@ is_junction_point(const char* fn) {
       // Tag values come from
       // http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx
 
-      switch(FindFileData.dwReserved0) {
-      case IO_REPARSE_TAG_MOUNT_POINT:
-        //ocb.error_filename(fn, "Junction point, skipping");
-        break;
+      switch (FindFileData.dwReserved0) {
+        case IO_REPARSE_TAG_MOUNT_POINT:
+          //ocb.error_filename(fn, "Junction point, skipping");
+          break;
 
-      case IO_REPARSE_TAG_SYMLINK:
-        // TODO: Maybe have the option to follow symbolic links?
-        // ocb.error_filename(fn, "Symbolic link, skipping");
-        break;
+        case IO_REPARSE_TAG_SYMLINK:
+          // TODO: Maybe have the option to follow symbolic links?
+          // ocb.error_filename(fn, "Symbolic link, skipping");
+          break;
 
         // TODO: Use label for deduplication reparse point
         //         when the compiler supports it
         //      case IO_REPARSE_TAG_DEDUP:
-      case 0x80000013:
-        // This is the reparse point for Data Deduplication
-        // See http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
-        // Unfortunately the compiler doesn't have this value defined yet.
-        status = 0;
-        break;
+        case 0x80000013:
+          // This is the reparse point for Data Deduplication
+          // See http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
+          // Unfortunately the compiler doesn't have this value defined yet.
+          status = 0;
+          break;
 
-      case IO_REPARSE_TAG_SIS:
-        // Single Instance Storage
-        // "is a system's ability to keep one copy of content that multiple users or computers share"
-        // http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
-        status = 0;
-        break;
+        case IO_REPARSE_TAG_SIS:
+          // Single Instance Storage
+          // "is a system's ability to keep one copy of content that multiple users or computers share"
+          // http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
+          status = 0;
+          break;
 
-      default:
-        break;
+        default:
+          break;
       }
     }
 
@@ -360,15 +363,31 @@ make_num(stralloc* out, size_t num, size_t width) {
 
   ssize_t n = width - sz;
 
-  while(n-- > 0) {
+  while (n-- > 0) {
     stralloc_catb(out, " ", 1);
   }
   stralloc_catb(out, fmt, sz);
 }
 
+static void
+print_strarray(buffer* b, array* a) {
+  size_t i, n = array_length(a, sizeof(char*));
+  char** x = array_start(a);
+
+  for (i = 0; i < n; ++i) {
+    char* s = x[i];
+
+    if (s == NULL) break;
+
+    buffer_puts(b, x[i]);
+    buffer_putc(b, '\n');
+  }
+  buffer_flush(b);
+}
+
 void
 make_time(stralloc* out, time_t t, size_t width) {
-  if(opt_numeric) {
+  if (opt_numeric) {
     make_num(out, (size_t)t, width);
   } else {
     struct tm ltime;
@@ -382,7 +401,7 @@ make_time(stralloc* out, time_t t, size_t width) {
 #endif
     sz = strftime(buf, sizeof(buf), opt_timestyle , &ltime);
     n = width - sz;
-    while(n-- > 0) {
+    while (n-- > 0) {
       stralloc_catb(out, " ", 1);
     }
     stralloc_catb(out, buf, sz);
@@ -392,88 +411,88 @@ make_time(stralloc* out, time_t t, size_t width) {
 static void
 mode_str(stralloc* out, int mode) {
   char mchars[10];
-  switch(mode & S_IFMT) {
+  switch (mode & S_IFMT) {
 #ifdef S_IFLNK
-  case S_IFLNK:
-    mchars[0] = 'l';
-    break;
+    case S_IFLNK:
+      mchars[0] = 'l';
+      break;
 #endif
-  case S_IFDIR:
-    mchars[0] = 'd';
-    break;
-  case S_IFCHR:
-    mchars[0] = 'c';
-    break;
+    case S_IFDIR:
+      mchars[0] = 'd';
+      break;
+    case S_IFCHR:
+      mchars[0] = 'c';
+      break;
 #ifdef S_IFBLK
-  case S_IFBLK:
-    mchars[0] = 'b';
-    break;
+    case S_IFBLK:
+      mchars[0] = 'b';
+      break;
 #endif
 #ifdef S_IFIFO
-  case S_IFIFO:
-    mchars[0] = 'i';
-    break;
+    case S_IFIFO:
+      mchars[0] = 'i';
+      break;
 #endif
 #ifdef S_IFSOCK
-  case S_IFSOCK:
-    mchars[0] = 's';
-    break;
+    case S_IFSOCK:
+      mchars[0] = 's';
+      break;
 #endif
-  case S_IFREG:
-  default:
-    mchars[0] = '-';
-    break;
+    case S_IFREG:
+    default:
+      mchars[0] = '-';
+      break;
   }
 #ifdef S_IRUSR
-  if(mode & S_IRUSR) mchars[1] = 'r';
+  if (mode & S_IRUSR) mchars[1] = 'r';
   else
 #endif
     mchars[1] = '-';
 
 #ifdef S_IWUSR
-  if(mode & S_IWUSR) mchars[2] = 'w';
+  if (mode & S_IWUSR) mchars[2] = 'w';
   else
 #endif
     mchars[2] = '-';
 
 #ifdef S_IXUSR
-  if(mode & S_IXUSR) mchars[3] = 'x';
+  if (mode & S_IXUSR) mchars[3] = 'x';
   else
 #endif
     mchars[3] = '-';
 
 #ifdef S_IRGRP
-  if(mode & S_IRGRP) mchars[4] = 'r';
+  if (mode & S_IRGRP) mchars[4] = 'r';
   else
 #endif
     mchars[4] = '-';
 
 #ifdef S_IWGRP
-  if(mode & S_IWGRP) mchars[5] = 'w';
+  if (mode & S_IWGRP) mchars[5] = 'w';
   else
 #endif
     mchars[5] = '-';
 
 #ifdef S_IXGRP
-  if(mode & S_IXGRP) mchars[6] = 'x';
+  if (mode & S_IXGRP) mchars[6] = 'x';
   else
 #endif
     mchars[6] = '-';
 
 #ifdef S_IROTH
-  if(mode & S_IROTH) mchars[7] = 'r';
+  if (mode & S_IROTH) mchars[7] = 'r';
   else
 #endif
     mchars[7] = '-';
 
 #ifdef S_IWOTH
-  if(mode & S_IWOTH) mchars[8] = 'w';
+  if (mode & S_IWOTH) mchars[8] = 'w';
   else
 #endif
     mchars[8] = '-';
 
 #ifdef S_IXOTH
-  if(mode & S_IXOTH) mchars[9] = 'x';
+  if (mode & S_IXOTH) mchars[9] = 'x';
   else
 #endif
     mchars[9] = '-';
@@ -493,42 +512,42 @@ int list_dir_internal(stralloc* dir,  char type) {
   struct stat st;
   static dev_t root_dev;
 #endif
-  char *name, *s;
+  char* name, *s;
 
 
   (void)type;
 
-  while(dir->len > 0 && IS_PATHSEP(dir->s[dir->len - 1]))
+  while (dir->len > 0 && IS_PATHSEP(dir->s[dir->len - 1]))
     dir->len--;
 
   stralloc_nul(dir);
 
 #ifndef PLAIN_WINDOWS
-  if(root_dev == 0) {
-    if(stat(dir->s, &st) != -1) {
+  if (root_dev == 0) {
+    if (stat(dir->s, &st) != -1) {
       root_dev = st.st_dev;
     }
   }
 #endif
 
-  if(dir_open(&d, dir->s) != 0) {
-      buffer_puts(buffer_2, "ERROR: Opening directory ");
-      buffer_putsa(buffer_2, dir);
-      buffer_puts(buffer_2, " failed!\n");
-      buffer_flush(buffer_2);
-   goto end;
+  if (dir_open(&d, dir->s) != 0) {
+    buffer_puts(buffer_2, "ERROR: Opening directory ");
+    buffer_putsa(buffer_2, dir);
+    buffer_puts(buffer_2, " failed!\n");
+    buffer_flush(buffer_2);
+    goto end;
   }
 
   stralloc_cats(dir, PATHSEP_S);
   l = dir->len;
 
-  while((name = dir_read(&d))) {
+  while ((name = dir_read(&d))) {
     unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
     uint64 size = 0, mtime = 0;
 
     dir->len = l;
 
-    if(strcmp(name, "") == 0 || strcmp(name, ".") == 0 || strcmp(name, "..") == 0) {
+    if (strcmp(name, "") == 0 || strcmp(name, ".") == 0 || strcmp(name, "..") == 0) {
       continue;
     }
 
@@ -537,9 +556,9 @@ int list_dir_internal(stralloc* dir,  char type) {
     dir->len += strlen(name);
 
 #ifndef PLAIN_WINDOWS
-    if(lstat(dir->s, &st) != -1) {
-      if(root_dev && st.st_dev) {
-        if(st.st_dev != root_dev) {
+    if (lstat(dir->s, &st) != -1) {
+      if (root_dev && st.st_dev) {
+        if (st.st_dev != root_dev) {
           continue;
         }
       }
@@ -551,7 +570,7 @@ int list_dir_internal(stralloc* dir,  char type) {
     dtype = dir_type(&d);
 
 
-    if(dtype) {
+    if (dtype) {
       is_dir = !!(dtype & D_DIRECTORY);
     } else {
 #ifdef PLAIN_WINDOWS
@@ -561,7 +580,7 @@ int list_dir_internal(stralloc* dir,  char type) {
 #endif
     }
 
-    if(dtype & D_SYMLINK)
+    if (dtype & D_SYMLINK)
       is_symlink = 1;
 
 
@@ -576,7 +595,7 @@ int list_dir_internal(stralloc* dir,  char type) {
     mode = (is_dir ? S_IFDIR : (is_symlink ? S_IFLNK : S_IFREG));
 
 # if USE_READDIR
-    if(!is_dir) {
+    if (!is_dir) {
       size = get_file_size(s); // dir_INTERNAL(&d)->dir_entry->d_name);
       mtime = get_file_time(s);
 
@@ -593,7 +612,7 @@ int list_dir_internal(stralloc* dir,  char type) {
 #endif
 
 
-    if(opt_list) {
+    if (opt_list) {
       stralloc_init(&pre);
 
       // Mode string
@@ -614,15 +633,15 @@ int list_dir_internal(stralloc* dir,  char type) {
       // time
       make_num(&pre, mtime, 0);
 
-//     make_time(&pre, mtime, 10);
+      //     make_time(&pre, mtime, 10);
       stralloc_catb(&pre, " ", 1);
     }
 
     //fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d));
-    if(is_dir)
+    if (is_dir)
       stralloc_cats(dir, PATHSEP_S);
 
-    if(dir->len > MAXIMUM_PATH_LENGTH) {
+    if (dir->len > MAXIMUM_PATH_LENGTH) {
       buffer_puts(buffer_2, "ERROR: Directory ");
       buffer_putsa(buffer_2, dir);
       buffer_puts(buffer_2, " longer than MAXIMUM_PATH_LENGTH (" STRINGIFY(MAXIMUM_PATH_LENGTH) ")!\n");
@@ -634,21 +653,21 @@ int list_dir_internal(stralloc* dir,  char type) {
 
     s = dir->s;
     len = dir->len;
-    if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1])) {
+    if (len >= 2 && s[0] == '.' && IS_PATHSEP(s[1])) {
       len -= 2;
       s += 2;
     }
 
-    if(opt_list)
+    if (opt_list)
       buffer_putsa(buffer_1, &pre);
-      
-    if(opt_relative) {
+
+    if (opt_relative) {
       size_t sz = str_len(opt_relative);
-      if(str_diffn(s, opt_relative, sz) == 0) {
+      if (str_diffn(s, opt_relative, sz) == 0) {
         s += sz;
         len -= sz;
-        
-        while(*s == '\\' || *s == '/') {
+
+        while (*s == '\\' || *s == '/') {
           s++;
           len--;
         }
@@ -659,7 +678,7 @@ int list_dir_internal(stralloc* dir,  char type) {
     buffer_put(buffer_1, "\n", 1);
     buffer_flush(buffer_1);
 
-    if(is_dir && !is_symlink) {
+    if (is_dir && !is_symlink) {
       dir->len--;
       list_dir_internal(dir, 0);
     }
@@ -679,20 +698,25 @@ int main(int argc, char* argv[]) {
   setmode(STDOUT_FILENO, O_BINARY);
 #endif
 
-  while(argi < argc) {
-    if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
+  while (argi < argc) {
+    if (!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
       opt_list = 1;
-    } else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
+    } else if (!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
       opt_numeric = 1;
-    } else if(!strcmp(argv[argi], "-r") || !strcmp(argv[argi], "--relative")) {
+    } else if (!strcmp(argv[argi], "-r") || !strcmp(argv[argi], "--relative")) {
       relative = 1;
-    } else if(!strcmp(argv[argi], "-x")) {
-      array_catb(&exclude_masks, argv[argi+1], sizeof(char**));
-    } else if(!strncmp(argv[argi], "-x", 2)) {
-      array_catb(&exclude_masks, argv[argi]+2, sizeof(char**));
-    } else if(!strcmp(argv[argi], "--relative")) {
+    } else if (!strcmp(argv[argi], "-x") || !strcmp(argv[argi], "--exclude")) {
+      char* s = argv[argi + 1];
+      array_catb(&exclude_masks, &s, sizeof(char*));
+    } else if (!strncmp(argv[argi], "-x", 2)) {
+      char* s = argv[argi] + 2;
+      array_catb(&exclude_masks, &s, sizeof(char*));
+    } else if (!strncmp(argv[argi], "--exclude=", 10)) {
+      char* s = argv[argi] + 10;
+      array_catb(&exclude_masks, &s, sizeof(char*));
+    } else if (!strcmp(argv[argi], "--relative")) {
       relative = 1;
-    } else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
+    } else if (!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
       argi++;
       opt_timestyle = argv[argi];
     } else {
@@ -700,12 +724,15 @@ int main(int argc, char* argv[]) {
     }
     argi++;
   }
+  array_catb(&exclude_masks, "\0\0\0\0\0\0\0\0", sizeof(char**));
 
-  if(argi < argc) {
+  print_strarray(buffer_2, &exclude_masks);
 
-    while(argi < argc) {
-	  if(relative)  opt_relative = argv[argi];
-	  
+  if (argi < argc) {
+
+    while (argi < argc) {
+      if (relative)  opt_relative = argv[argi];
+
       stralloc_copys(&dir, argv[argi]);
       list_dir_internal(&dir, 0);
       argi++;
