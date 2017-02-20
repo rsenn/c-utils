@@ -35,6 +35,7 @@
 #include <time.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <fnmatch.h>
 
 #include "array.h"
 #include "buffer.h"
@@ -73,8 +74,8 @@
 #define STDERR_FILENO 2
 #endif
 
-static void
-print_strarray(buffer* b, array* a);
+static void print_strarray(buffer* b, array* a);
+static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 
 static array exclude_masks;
 static int opt_list = 0, opt_numeric = 0;
@@ -383,6 +384,23 @@ print_strarray(buffer* b, array* a) {
     buffer_putc(b, '\n');
   }
   buffer_flush(b);
+}
+
+static int
+fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
+  size_t i, n = array_length(a, sizeof(char*));
+  char** x = array_start(a);
+  int ret = FNM_NOMATCH;
+
+  for (i = 0; i < n; ++i) {
+    char* s = x[i];
+
+    if (s == NULL) break;
+
+    if((ret = fnmatch(s, string, flags)) != FNM_NOMATCH)
+      break;
+  }
+  return ret;
 }
 
 void
