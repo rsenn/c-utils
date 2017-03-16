@@ -27,10 +27,10 @@ void byte_copy(void* out, size_t len, const void* in) {
       }
   }
   for(;;) {
-    if(t == u) break; *s = *t; ++s; ++t;
-    if(t == u) break; *s = *t; ++s; ++t;
-    if(t == u) break; *s = *t; ++s; ++t;
-    if(t == u) break; *s = *t; ++s; ++t;
+    if(t == u) { break; }; *s = *t; ++s; ++t;
+    if(t == u) { break; }; *s = *t; ++s; ++t;
+    if(t == u) { break; }; *s = *t; ++s; ++t;
+    if(t == u) { break; }; *s = *t; ++s; ++t;
   }
 #endif
 }

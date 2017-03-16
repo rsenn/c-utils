@@ -14,7 +14,7 @@ int byte_diff(const void* a, size_t len, const void* b) {
   register int j;
   j = 0;
   for(;;) {
-    if(t == u) break; if((j = ((unsigned int) * s - *t))) break; ++s; ++t;
+    if(t == u) { break; }; if((j = ((unsigned int) * s - *t))) { break; }; ++s; ++t;
   }
   return j;
 #else

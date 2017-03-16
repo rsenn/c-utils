@@ -14,7 +14,7 @@ int buffer_get_token_sa(buffer* b,stralloc* sa,
     case 0: return 0;
     }
     stralloc_append(sa,&x);
-    if (byte_chr(charset,setlen,x)<setlen) break;
+    if (byte_chr(charset,setlen,x)<setlen) { break; };
   }
   return 1;
 nomem:

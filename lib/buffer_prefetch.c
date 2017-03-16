@@ -8,7 +8,7 @@ int buffer_prefetch(buffer* b, size_t n) {
   if(b->p && b->p + n >= b->a)
   {
     if((void*)b->op == (void*) & buffer_dummyread)
-      return(b->n - b->p);
+      return b->n - b->p;
 
     byte_copy(b->x, b->n - b->p, &b->x[b->p]);
     b->n -= b->p;
@@ -25,7 +25,7 @@ int buffer_prefetch(buffer* b, size_t n) {
     if((w = buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n)) < 0)
       return -1;
     b->n += w;
-    if(!w) break;
+    if(!w) { break; };
   }
-  return(b->n - b->p);
+  return b->n - b->p;
 }

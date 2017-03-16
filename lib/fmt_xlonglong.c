@@ -11,7 +11,7 @@ size_t fmt_xlonglong(char *dest, unsigned long long i) {
   if(dest)
     for(tmp = i, dest += len; ; ) {
       *--dest = tohex(tmp & 15);
-      if(!(tmp >>= 4)) break;
+      if(!(tmp >>= 4)) { break; };
     }
   return len;
 }

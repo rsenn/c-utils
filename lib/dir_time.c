@@ -9,7 +9,7 @@
 #include "dir.h"
 #include "dir_internal.h"
 
-time_t 
+time_t
 dir_time(struct dir_s* d, int time_type) {
   unsigned long long r = 0;
 #if USE_READDIR
@@ -18,8 +18,7 @@ dir_time(struct dir_s* d, int time_type) {
 
   lstat(name, &st);
 
-  switch(time_type)
-  {
+  switch (time_type) {
     case D_TIME_CREATION: r = st.st_ctime; break;
     case D_TIME_ACCESS: r = st.st_atime; break;
     case D_TIME_MODIFICATION: r = st.st_mtime; break;

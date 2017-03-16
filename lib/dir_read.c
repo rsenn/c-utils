@@ -7,25 +7,30 @@
 #include <windows.h>
 #endif
 
-char* dir_read(struct dir_s* d)
-{
+char* dir_read(struct dir_s* d) {
   char* ret = 0;
 #if USE_READDIR
-    assert(dir_INTERNAL(d)->dir_handle);
+  assert(dir_INTERNAL(d)->dir_handle);
 
-    if((dir_INTERNAL(d)->dir_entry = readdir(dir_INTERNAL(d)->dir_handle)) != 0)
-    {
-      ret = dir_NAME(dir_INTERNAL(d));
-    }
+  if((dir_INTERNAL(d)->dir_entry = readdir(dir_INTERNAL(d)->dir_handle)) != 0) {
+    ret = dir_NAME(dir_INTERNAL(d));
+  }
 #else
-    if(!dir_INTERNAL(d)->first)
-    {
+  if(!dir_INTERNAL(d)->first) {
+#if USE_WIDECHAR
+    if(!FindNextFileW((HANDLE)dir_INTERNAL(d)->dir_handle, &dir_INTERNAL(d)->dir_finddata))
+#else
     if(!FindNextFileA(dir_INTERNAL(d)->dir_handle, &dir_INTERNAL(d)->dir_finddata))
-      return 0;
-    }
-    dir_INTERNAL(d)->first = 0;
-    
-    ret = dir_INTERNAL(d)->dir_finddata.cFileName;
 #endif
-    return ret;
+      return 0;
+  }
+  dir_INTERNAL(d)->first = 0;
+
+#if USE_WIDECHAR
+  ret = dir_name(d);
+#else
+  ret = dir_INTERNAL(d)->dir_finddata.cFileName;
+#endif
+#endif
+  return ret;
 }

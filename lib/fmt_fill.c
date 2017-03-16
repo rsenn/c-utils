@@ -16,7 +16,7 @@ size_t fmt_fill(char* dest,size_t srclen,size_t padlen,size_t maxlen) {
   }
   dest+=srclen;
   for(todo=(long)(padlen-srclen); todo>0; --todo) {
-    if(dest>max) break;
+    if(dest>max) { break; };
     *dest=' '; ++dest;
   }
   return (size_t)(dest-olddest);

@@ -176,6 +176,32 @@ endif
 endif
 endif
 
+ifeq ($(WIN32),)
+ifeq ($(SYS),mingw32)
+WIN32 := 1
+else
+ifeq ($(SYS),msys)
+WIN32 := 1
+endif
+endif
+endif
+ifeq ($(WIN32),)
+WIN32 := 0
+endif
+
+ifeq ($(WIN32),1)
+OTHERLIBS := -lws2_32
+endif
+
+ifeq ($(WIN32),1)
+WIDECHAR := 1
+endif
+ifeq ($(WIDECHAR),)
+WIDECHAR := 0
+endif
+
+DEFS += USE_WIDECHAR=$(WIDECHAR)
+
 ifeq ($(LARGEFILE),1)
 DEFS += _FILE_OFFSET_BITS=64
 DEFS += _LARGEFILE_SOURCE=1
@@ -296,6 +322,13 @@ CPPFLAGS += $(patsubst %,-D%,$(DEFS))
 LIB_SRC = $(wildcard *_*.c umult*.c)
 LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
+pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG) $(1) $(L)))
+LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
+LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
+
+$(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
+$(info LIBXML2_LIBS: $(LIBXML2_LIBS))
+
 LIBS += -lstdc++
 
 PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd torrent-progress mediathek-parser opensearch-dump xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper)
@@ -350,7 +383,7 @@ $(BUILDDIR)open.a: $(BUILDDIR)open_append.o $(BUILDDIR)open_read.o $(BUILDDIR)op
 	$(AR) rcs $@ $^
 $(BUILDDIR)str.a: $(BUILDDIR)str_chr.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_len.o
 	$(AR) rcs $@ $^
-$(BUILDDIR)dir.a: $(BUILDDIR)dir_close.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_time.o $(BUILDDIR)dir_type.o
+$(BUILDDIR)dir.a: $(BUILDDIR)dir_close.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_time.o $(BUILDDIR)dir_name.o $(BUILDDIR)dir_type.o $(BUILDDIR)utf8.o
 	$(AR) rcs $@ $^
 $(BUILDDIR)mmap.a: $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_private.o $(BUILDDIR)mmap_read.o $(BUILDDIR)mmap_read_fd.o $(BUILDDIR)mmap_unmap.o
 	$(AR) rcs $@ $^
@@ -409,8 +442,8 @@ ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
-$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(shell $(PKG_CONFIG) --cflags libxml-2.0)
-$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(shell $(PKG_CONFIG) --libs libxml-2.0)
+$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
+$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) -liconv $(OTHERLIBS)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)

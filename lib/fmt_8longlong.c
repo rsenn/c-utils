@@ -8,7 +8,7 @@ size_t fmt_8longlong(char *dest,unsigned long long i) {
   if (dest)
     for (tmp=i, dest+=len; ; ) {
       *--dest = (char)((tmp&7)+'0');
-      if (!(tmp>>=3)) break;
+      if (!(tmp>>=3)) { break; };
     }
   return len;
 }

@@ -37,7 +37,12 @@ struct dir_internal_s {
   struct dirent* dir_entry;
 #else
   intptr_t dir_handle;
+#if USE_WIDECHAR
+  WIN32_FIND_DATAW dir_finddata;
+  char* tmpname;
+#else
   WIN32_FIND_DATAA dir_finddata;
+#endif 
   int first;
 #endif
 
@@ -81,15 +86,15 @@ struct dir_internal_s {
 #define dir_INTERNAL(d) ((struct dir_internal_s *)((d)->dir_int))
 
 #if USE_READDIR
-#define dir_NAME(d) ((d)->dir_entry->d_name)
+#define dir_NAME(d) (dir_INTERNAL(d)->dir_entry->d_name)
 #else
-#define dir_NAME(d) ((d)->dir_finddata.szName)
+#define dir_NAME(d) (dir_INTERNAL(d)->dir_finddata.cFileName)
 #endif
 
 #if USE_READDIR
-#define dir_ATTRS(d) ((d)->dir_entry->st_mode)
+#define dir_ATTRS(d) (dir_INTERNAL(d)->dir_entry->st_mode)
 #else
-#define dir_ATTRS(d) ((d)->dir_finddata.dwFileAttributes)
+#define dir_ATTRS(d) (dir_INTERNAL(d)->dir_finddata.dwFileAttributes)
 #endif
 
 #if USE_READDIR

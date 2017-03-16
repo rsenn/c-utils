@@ -125,7 +125,7 @@ endif()
 string(REGEX REPLACE "/W[0-9]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 string(REGEX REPLACE "/W[0-9]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-include_directories("${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
+include_directories("${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/lib" "${CMAKE_BINARY_DIR}")
 
 add_definitions(-DHAVE_CONFIG_H)
 

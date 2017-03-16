@@ -3,8 +3,7 @@
 #endif
 #include "dir_internal.h"
 
-int dir_type(struct dir_s* d)
-{
+int dir_type(struct dir_s* d) {
   int r = 0;
 #if !USE_READDIR && (defined(_WIN32) || defined(__MINGW32__) || defined(__MSYS__))
   if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
@@ -24,24 +23,24 @@ int dir_type(struct dir_s* d)
 #ifndef DT_LNK
 #define DT_LNK 10
 #endif
-  switch((dir_INTERNAL(d)->dir_entry->d_type)) {
+  switch ((dir_INTERNAL(d)->dir_entry->d_type)) {
     case DT_DIR: {
-      r |= D_DIRECTORY;
-      break;
-    }
+        r |= D_DIRECTORY;
+        break;
+      }
 
     case DT_REG: {
-      r |= D_FILE;
-      break;
-    }
+        r |= D_FILE;
+        break;
+      }
     case DT_LNK: {
-    r |= D_SYMLINK;
-    break;
-   }
+        r |= D_SYMLINK;
+        break;
+      }
     case 0:
     default: {
-               break;
-    }
+        break;
+      }
   }
 
 #endif
