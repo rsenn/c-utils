@@ -168,11 +168,11 @@ ifeq ($(READDIR),)
 ifeq ($(SYS),mingw32)
 DEFS += USE_READDIR=0
 else
-ifeq ($(SYS),msys)
-DEFS += USE_READDIR=0
-else
+#ifeq ($(SYS),msys)	
+#DEFS += USE_READDIR=0
+#else
 DEFS += USE_READDIR=1
-endif
+#endif
 endif
 endif
 

@@ -11,7 +11,7 @@
 #include "dir_internal.h"
 
 char* dir_name(struct dir_s* d) {
-#if USE_WIDECHAR
+#if !USE_READDIR && USE_WIDECHAR
   size_t n = wcsu8slen(dir_INTERNAL(d)->dir_finddata.cFileName);
   if(dir_INTERNAL(d)->tmpname)
     free(dir_INTERNAL(d)->tmpname);

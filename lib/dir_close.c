@@ -17,13 +17,12 @@ void dir_close(struct dir_s* d) {
 #if USE_READDIR
     closedir(dir_INTERNAL(d)->dir_handle);
 #else
+# if USE_WIDECHAR
+  if(dir_INTERNAL(d)->tmpname)
+    free(dir_INTERNAL(d)->tmpname);
+# endif
     FindClose(dir_INTERNAL(d)->dir_handle);
 #endif
   }
   free(d->dir_int);
-
-#if USE_WIDECHAR
-  if(dir_INTERNAL(d)->tmpname)
-    free(dir_INTERNAL(d)->tmpname);
-#endif
 }
