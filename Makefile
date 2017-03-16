@@ -362,9 +362,9 @@ $(info Programs: $(PROGRAMS))
 #$(info STATIC: $(STATIC))
 #$(info TRIPLET: $(TRIPLET))
 ifeq ($(OS),darwin)
-#DEFINES += USE_READDIR=1
-CFLAGS += -DUSE_READDIR=1
-CPPFLAGS += -DUSE_READDIR=1
+DEFS += USE_READDIR=1
+#CFLAGS += -DUSE_READDIR=1
+#CPPFLAGS += -DUSE_READDIR=1
 endif
 
 all: $(BUILDDIR) $(PROGRAMS)
@@ -442,7 +442,7 @@ ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
-$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
+$(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): INCLUDES += $(LIBXML2_CFLAGS)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) -liconv $(OTHERLIBS)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
@@ -490,7 +490,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
-	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser-cpp.o
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
@@ -500,7 +500,7 @@ endif
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
-	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o  $(BUILDDIR)$(patsubst %.cpp,%.o,$(notdir $<))  $<
+	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c -o  $(BUILDDIR)$(patsubst %.cpp,%.o,$(notdir $<))  $<
 
 $(BUILDDIR)kbd-adjacency$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
@@ -526,16 +526,16 @@ else
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 $(BUILDDIR)%.o: lib/%.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) $(INCLUDES) -c -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
 
 $(BUILDDIR)%.o: %.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) $(INCLUDES) -c -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
 
 .cpp.o:
 	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 $(BUILDDIR)%.o: %.cpp
-	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
 endif
 
 clean:

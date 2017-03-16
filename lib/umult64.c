@@ -1,4 +1,4 @@
-#if defined(__x86_64__) && defined(__OPTIMIZE__) && !(defined(__MINGW32__) || defined(__CYGWIN64__))
+#if defined(__x86_64__) && defined(__OPTIMIZE__) && !(defined(__MINGW32__) || defined(__CYGWIN__) || defined(__CYGWIN64__) || defined(__MSYS__))
 
 /* WARNING: this only works if compiled with -fomit - frame - pointer */
 void umult64() {
