@@ -336,8 +336,8 @@ PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-de
   
 ifeq ($(DO_CXX),1)
 PROGRAMS += \
-  $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT)   \
-  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT)
+  $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT)   
+#  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT)
 endif
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
 
