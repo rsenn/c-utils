@@ -11,8 +11,13 @@ CONFIG -= qt
   QMAKE_CFLAGS_WARN_ON = -W3
 }
 
-mingw | msvc {
+mingw | mingw32 | mingw64 | msvc {
   DEFINES += USE_READDIR=0
+}
+
+
+mingw | mingw32 | mingw64 {
+  QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 }
 
 !*msvc* {
