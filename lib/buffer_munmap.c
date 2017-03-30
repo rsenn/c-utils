@@ -1,5 +1,5 @@
 #include "buffer.h"
-#ifdef __MINGW32__
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <sys/mman.h>
@@ -7,7 +7,7 @@
 
 void buffer_munmap(void* buf) {
   buffer* b=(buffer*)buf;
-#ifdef __MINGW32__
+#ifdef _WIN32
   UnmapViewOfFile(b->x);
 #else
   munmap(b->x,b->a);

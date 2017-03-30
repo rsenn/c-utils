@@ -45,7 +45,7 @@
    it is simpler to just do this in the source for each such file.  */
 
 //#if defined (_LIBC) || !defined (__GNU_LIBRARY__)
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
+#if defined(_WIN32) || defined(__MINGW64__) || defined(_MSC_VER)
 
 # ifndef errno
 extern int errno;
@@ -205,4 +205,4 @@ matched:;
 }
 
 //#endif	/* _LIBC or not __GNU_LIBRARY__.  */
-#endif /* defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER) */
+#endif /* defined(_WIN32) || defined(__MINGW64__) || defined(_MSC_VER) */

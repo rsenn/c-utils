@@ -1,4 +1,8 @@
+#ifndef _WIN32
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 #include "buffer.h"
 
 char buffer_1_space[128];

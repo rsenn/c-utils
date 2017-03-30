@@ -2,7 +2,7 @@
 #ifndef WIN32
 #include <unistd.h>
 #endif
-#if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
 #include <windows.h>
 #else
 #include <sys/mman.h>
@@ -11,7 +11,7 @@
 #include "mmap.h"
 
 char* mmap_private(const char* filename, size_t * filesize) {
-#if defined(__MINGW32__) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
   HANDLE fd, m;
   char* map;
   fd=CreateFile(filename, GENERIC_WRITE|GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);

@@ -1,6 +1,10 @@
+#ifndef _WIN32
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 #include "buffer.h"
-#ifdef __MINGW32__
+#ifdef _WIN32
 #include <io.h>
 #endif
 

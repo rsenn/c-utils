@@ -77,7 +77,7 @@ struct dir_internal_s {
 #endif // !defined(S_IFIFO)
 
 #if USE_READDIR
-#ifndef __MINGW32__
+#ifndef _WIN32
 #define USE_LSTAT 1
 #endif
 #endif

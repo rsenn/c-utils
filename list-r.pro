@@ -13,8 +13,10 @@ CONFIG -= qt
 
 mingw | mingw32 | mingw64 | msvc {
   DEFINES += USE_READDIR=0
+
 }
 
+win32:CONFIG(release, debug|release):  LIBS += -ladvapi32
 
 mingw | mingw32 | mingw64 {
   QMAKE_LFLAGS += -static-libgcc -static-libstdc++
@@ -144,12 +146,6 @@ lib/umult64.c \
   lib/fmt_asn1derlength.c \
   lib/fmt_asn1dertag.c \
   lib/fmt_double.c \
-  lib/fmt_escapecharc.c \
-  lib/fmt_escapecharhtml.c \
-  lib/fmt_escapecharjson.c \
-  lib/fmt_escapecharquotedprintable.c \
-  lib/fmt_escapecharquotedprintableutf8.c \
-  lib/fmt_escapecharxml.c \
   lib/fmt_fill.c \
   lib/fmt_httpdate.c \
   lib/fmt_human.c \
@@ -169,7 +165,6 @@ lib/umult64.c \
   lib/fmt_ulong0.c \
   lib/fmt_ulonglong.c \
   lib/fmt_utf8.c \
-  lib/fmt_varint.c \
   lib/fmt_xlong.c \
   lib/fmt_xlonglong.c \
   lib/fmt_xmlescape.c \

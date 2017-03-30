@@ -14,6 +14,11 @@
 extern "C" {
 #endif
 
+#ifdef _MSC_VER
+typedef SSIZE_T ssize_t;
+#endif
+
+
 typedef struct buffer {
   char *x;		/* actual buffer space */
   size_t p;		/* current position */

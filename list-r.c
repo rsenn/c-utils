@@ -285,7 +285,7 @@ get_file_owner(const char* path) {
 #endif
 
 #ifdef PLAIN_WINDOWS
-#warning PLAIN_WINDOWS
+//#warning PLAIN_WINDOWS
 
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL

@@ -1,4 +1,4 @@
-#ifndef __MINGW32__
+#ifndef _WIN32
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <errno.h>
@@ -21,7 +21,7 @@ int buffer_putflush(buffer* b,const char* x,size_t len) {
    * optimize a bit */
   if (!b->p)	/* if the buffer is empty, just call buffer_stubborn directly */
     return buffer_stubborn(b->op,b->fd,x,len,b);
-#ifndef __MINGW32__
+#ifndef _WIN32
   if (b->op==write) {
     struct iovec v[2];
     ssize_t w;
