@@ -16,7 +16,9 @@ mingw | mingw32 | mingw64 | msvc {
 
 }
 
-win32:CONFIG(release, debug|release):  LIBS += -ladvapi32
+#win32|win64|msvc|mingw32:CONFIG(release, debug|release):  LIBS += -ladvapi32 -lws2_32
+msvc: LIBS += advapi32.lib ws2_32.lib
+mingw32|mingw64: LIBS += -ladvapi32 -lws2_32
 
 mingw | mingw32 | mingw64 {
   QMAKE_LFLAGS += -static-libgcc -static-libstdc++
