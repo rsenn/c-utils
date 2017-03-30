@@ -138,16 +138,22 @@ else
 TOOLCHAIN = $(HOST)
 endif
 
-ifneq ($(HOST),$(BUILD))
-BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
+ifneq (${builddir},)
+BUILDDIR := ${builddir}/$(BUILD_TYPE)/
 else
-ifeq ($(CROSS_COMPILE),)
-BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
-else
-BUILDDIR = build/$(patsubst %-,%,$(CROSS_COMPILE))/$(BUILD_TYPE)/
-endif
+  ifneq ($(HOST),$(BUILD))
+  BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
+  else
+	ifeq ($(CROSS_COMPILE),)
+	BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
+	else
+	BUILDDIR = build/$(patsubst %-,%,$(CROSS_COMPILE))/$(BUILD_TYPE)/
+	endif
+  endif
 endif
 
+$(info BUILDDIR: $(BUILDDIR))
+$(info builddir: $(builddir))
 
 vpath lib $(BUILDDIR)
 VPATH = lib:$(BUILDDIR)
