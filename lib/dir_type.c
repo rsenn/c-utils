@@ -23,7 +23,9 @@ int dir_type(struct dir_s* d) {
 #ifndef DT_LNK
 #define DT_LNK 10
 #endif
-  switch ((dir_INTERNAL(d)->dir_entry->d_type)) {
+
+#ifndef __MSYS__
+  switch ((dir_TYPE(d)->dir_entry->d_type)) {
     case DT_DIR: {
         r |= D_DIRECTORY;
         break;
@@ -42,6 +44,7 @@ int dir_type(struct dir_s* d) {
         break;
       }
   }
+#endif
 
 #endif
   return r;

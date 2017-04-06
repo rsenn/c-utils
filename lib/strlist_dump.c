@@ -6,12 +6,13 @@
 void
 strlist_dump(buffer* out, const strlist* sl)
 {
+const char* s;
   size_t n = strlist_count(sl);
   buffer_puts(out, "strlist[");
   buffer_putulong(out, n);
   buffer_puts(out, "]{\"");
   const char* end = sl->sa.s+sl->sa.len;
-  for(const char* s = sl->sa.s; s < end; ++s) {
+  for( s = sl->sa.s; s < end; ++s) {
       while(*s) {
         char chrs[5] = { '\\', *s, '\0' };
         char* p = &chrs[1];

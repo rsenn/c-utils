@@ -26,7 +26,7 @@ int dir_open(struct dir_s* d, const char* p) {
       wchar_t wpath[wlen + 1];
       u8stowcs(wpath, path, wlen);
       wpath[wlen] = '\0';
-      dir_INTERNAL(d)->dir_handle = FindFirstFileW(wpath, &dir_INTERNAL(d)->dir_finddata);
+      dir_INTERNAL(d)->dir_handle = FindFirstFileW(wpath, &dir_INTERNAL---(d)->dir_finddata);
     }
 #else
     dir_INTERNAL(d)->dir_handle = FindFirstFileA(path, &dir_INTERNAL(d)->dir_finddata);

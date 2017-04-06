@@ -148,7 +148,8 @@ get_domain(const char* url, stralloc* d)
 void
 cleanup_text(char* t)
 {
-  for(int i = 0; i < str_len(t); i++) {
+int i;
+  for(i = 0; i < str_len(t); i++) {
     if(isspace(t[i])  || t[i] == ',')
       t[i] = '_';
   }
@@ -157,13 +158,14 @@ cleanup_text(char* t)
 char*
 cleanup_domain(stralloc* d)
 {
+  size_t i;
   d->len = byte_rchr(d->s, d->len, '.');
-  for(size_t i = 0; i < d->len; ++i)
+  for(i = 0; i < d->len; ++i)
     d->s[i] = toupper(d->s[i]);
   stralloc_nul(d);
   const char* remove_parts[] = { "ondemand", "storage", "files", "stream", "mvideos", "online", 0 };
 
-  for(size_t i = 0; remove_parts[i]; ++i) {
+  for(i = 0; remove_parts[i]; ++i) {
     char *s2, *s = strtok(d->s, remove_parts[i]);
     if(s && (s2 = strchr(s, '.')) && s2 > s) {
       ++s2;
