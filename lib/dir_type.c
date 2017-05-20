@@ -25,7 +25,7 @@ int dir_type(struct dir_s* d) {
 #endif
 
 #ifndef __MSYS__
-  switch ((dir_TYPE(d)->dir_entry->d_type)) {
+  switch ((dir_TYPE(d))) {
     case DT_DIR: {
         r |= D_DIRECTORY;
         break;
