@@ -12,8 +12,8 @@ ifneq ($(ROOTNAME),$(subst msys,,$(subst git-sdk,,$(subst cygwin,,$(ROOTNAME))))
 SYSNAME := $(subst git-sdk-,gitsdk,$(ROOTNAME))
 endif
 
-$(info ROOTNAME=$(ROOTNAME))
-$(info SYSNAME=$(SYSNAME))
+#$(info ROOTNAME=$(ROOTNAME))
+#$(info SYSNAME=$(SYSNAME))
 
 OS ?= $(shell uname -o | tr "[[:upper:]]" "[[:lower:]]")
 
@@ -63,15 +63,15 @@ HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\
 endif
 endif
 
-$(info DIET: $(DIET))
-$(info MINGW: $(MINGW))
-$(info HOST: $(HOST))
+#$(info DIET: $(DIET))
+#$(info MINGW: $(MINGW))
+#$(info HOST: $(HOST))
 
 ifeq ($(PREFIX),)
 PREFIX := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs |sed -n 's,.*:\s\+=\?,,; s,/bin.*,,p ; s,/lib.*,,p' |head -n1 )
 endif
 
-$(info PREFIX: $(PREFIX))
+#$(info PREFIX: $(PREFIX))
 
 prefix ?= $(PREFIX)
 bindir = ${prefix}/bin
@@ -98,6 +98,8 @@ endif
 
 PKG_CONFIG ?= $(CROSS_COMPILE)pkg-config
 
+#$(info PKG_CONFIG: $(PKG_CONFIG))
+
 ifneq ($(TRIPLET),)
 ARCH := $(word 1,$(TRIPLET))
 OS := $(shell echo $(word 3,$(TRIPLET)) |sed "s|[0-9].*||")
@@ -113,10 +115,10 @@ SYS := $(word $(W),$(TRIPLET))
 endif
 endif
 
-$(info Arch: $(ARCH))
-$(info OS: $(OS))
-$(info KERN: $(KERN))
-$(info SYS: $(SYS))
+#$(info Arch: $(ARCH))
+#$(info OS: $(OS))
+#$(info KERN: $(KERN))
+#$(info SYS: $(SYS))
 
 ifneq ($(OS),linux)
 ifeq ($(ARCH),x86_64)
@@ -149,7 +151,7 @@ HOST3 := $(subst $(HOST1)-$(HOST2)-,,$(HOST))
 
 
 
-$(info HOST1=$(HOST1), HOST2=$(HOST2), HOST3=$(HOST3))
+#$(info HOST1=$(HOST1), HOST2=$(HOST2), HOST3=$(HOST3))
 
 #ifneq ($(SYSNAME),)
 #BUILDDIR := $(subst w64,$(SYSNAME),$(BUILDDIR))
@@ -168,7 +170,7 @@ endif
 #endif
 TOOLCHAIN := $(HOST1)-$(HOST2)-$(HOST3)
 
-$(info HOST: $(HOST))
+#$(info HOST: $(HOST))
 
 #ifeq ($(OS),mingw32)
 #TOOLCHAIN = $(HOST)-$(shell $(CROSS_COMPILE)gcc -dumpversion)
@@ -176,7 +178,7 @@ $(info HOST: $(HOST))
 #TOOLCHAIN = $(HOST)
 #endif
 #
-$(info TOOLCHAIN: $(TOOLCHAIN))
+#$(info TOOLCHAIN: $(TOOLCHAIN))
 
 ifneq (${builddir},)
 BUILDDIR := ${builddir}/$(BUILD_TYPE)/
@@ -192,15 +194,15 @@ else
   endif
 endif
 
-$(info BUILDDIR: $(BUILDDIR))
-$(info builddir: $(builddir))
+#$(info BUILDDIR: $(BUILDDIR))
+#$(info builddir: $(builddir))
 
 vpath lib $(BUILDDIR)
 VPATH = lib:$(BUILDDIR)
 
 
 ifeq ($(CXXOPTS),)
-#$(info OS: "$(OS)")
+##$(info OS: "$(OS)")
 ifneq ($(OS),msys)
 endif
 endif
@@ -387,18 +389,18 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG) $(1) $(L)))
 
 ifneq ($(shell uname -o),GNU/Linux)
-LIBICONV_CFLAGS := $(shell $(PKG_CONFIG) --cflags libiconv 2>/dev/null || echo)
-LIBICONV_LIBS := $(shell $(PKG_CONFIG) --libs libiconv 2>/dev/null || echo -liconv)
+ICONV_CFLAGS := $(shell $(PKG_CONFIG) --cflags libiconv 2>/dev/null || echo)
+ICONV_LIBS := $(shell $(PKG_CONFIG) --libs libiconv 2>/dev/null || echo -liconv)
 endif
 
-$(info LIBICONV_CFLAGS: $(LIBICONV_CFLAGS))
-$(info LIBICONV_LIBS: $(LIBICONV_LIBS))
+#$(info ICONV_CFLAGS: $(ICONV_CFLAGS))
+#$(info ICONV_LIBS: $(ICONV_LIBS))
 
 LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
 LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
 
-$(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
-$(info LIBXML2_LIBS: $(LIBXML2_LIBS))
+#$(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
+#$(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 
 LIBS += -lstdc++
 
@@ -417,22 +419,22 @@ vpath $(BUILDDIR) lib src
 
 VPATH = $(BUILDDIR):.:lib:src
 
-$(info Programs: $(PROGRAMS))
+#$(info Programs: $(PROGRAMS))
 
-#$(info ARCH: $(ARCH))
-#$(info BUILD: $(BUILD))
-#$(info BUILDDIR: $(BUILDDIR))
-#$(info BUILDTYPE: $(BUILDTYPE))
-#$(info CCVER: $(CCVER))
-#$(info CROSS_COMPILE: $(CROSS_COMPILE))
-#$(info CXXVER: $(CXXVER))
-#$(info HOST: $(HOST))
-#$(info TOOLCHAIN: $(TOOLCHAIN))
-#$(info KERN: $(KERN))
-#$(info M64: $(M64))
-#$(info OS: $(OS))
-#$(info STATIC: $(STATIC))
-#$(info TRIPLET: $(TRIPLET))
+##$(info ARCH: $(ARCH))
+##$(info BUILD: $(BUILD))
+##$(info BUILDDIR: $(BUILDDIR))
+##$(info BUILDTYPE: $(BUILDTYPE))
+##$(info CCVER: $(CCVER))
+##$(info CROSS_COMPILE: $(CROSS_COMPILE))
+##$(info CXXVER: $(CXXVER))
+##$(info HOST: $(HOST))
+##$(info TOOLCHAIN: $(TOOLCHAIN))
+##$(info KERN: $(KERN))
+##$(info M64: $(M64))
+##$(info OS: $(OS))
+##$(info STATIC: $(STATIC))
+##$(info TRIPLET: $(TRIPLET))
 ifeq ($(OS),darwin)
 DEFS += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
