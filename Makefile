@@ -5,6 +5,17 @@ WARNINGS = all no-unused-variable
 
 INSTALL = install
 
+ROOT := $(shell cygpath -am / 2>/dev/null | sed "s|/$$||")
+ROOTNAME := $(shell basename "$(ROOT)" | tr "[[:upper:]]" "[[:lower:]]")
+
+ifneq ($(ROOTNAME),$(subst msys,,$(subst git-sdk,,$(subst cygwin,,$(ROOTNAME)))))
+SYSNAME := $(subst git-sdk-,gitsdk,$(ROOTNAME))
+endif
+
+$(info ROOTNAME=$(ROOTNAME))
+$(info SYSNAME=$(SYSNAME))
+
+OS ?= $(shell uname -o | tr "[[:upper:]]" "[[:lower:]]")
 
 ifeq ($SUBLIME_FILENAME),None)
 PATH = /c/git-sdk-64/usr/bin
@@ -14,10 +25,10 @@ endif
 CC = gcc
 CXX = g++
 
-BUILD := $(shell $(CC) -dumpmachine)
+BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 
-CCVER := $(shell $(CC) -dumpversion)
-CXXVER := $(shell $(CXX) -dumpversion)
+CCVER := $(shell $(CROSS_COMPILE)$(CC) -dumpversion)
+CXXVER := $(shell $(CROSS_COMPILE)$(CXX) -dumpversion)
 
 ifeq ($(word 1,(CROSS_COMPILE)),diet)
 DIET := 1
@@ -85,7 +96,7 @@ ifeq ($(HOST),$(BUILD))
 CROSS_COMPILE :=
 endif
 
-PKG_CONFIG ?= pkg-config
+PKG_CONFIG ?= $(CROSS_COMPILE)pkg-config
 
 ifneq ($(TRIPLET),)
 ARCH := $(word 1,$(TRIPLET))
@@ -132,11 +143,40 @@ EXEEXT = .exe
 endif
 BOOST_LIBS = boost_random
 
-ifeq ($(OS),mingw32)
-TOOLCHAIN = $(HOST)-$(shell $(CROSS_COMPILE)gcc -dumpversion)
-else
-TOOLCHAIN = $(HOST)
+HOST1 := $(word 1,$(subst -, ,$(HOST)))
+HOST2 := $(word 2,$(subst -, ,$(HOST)))
+HOST3 := $(subst $(HOST1)-$(HOST2)-,,$(HOST))
+
+
+
+$(info HOST1=$(HOST1), HOST2=$(HOST2), HOST3=$(HOST3))
+
+#ifneq ($(SYSNAME),)
+#BUILDDIR := $(subst w64,$(SYSNAME),$(BUILDDIR))
+#endif
+
+ifeq ($(HOST2),pc)
+HOST2 := $(SYSNAME)
 endif
+ifeq ($(HOST2),w64)
+HOST2 := $(SYSNAME)
+endif
+
+
+#ifneq ($(SYSNAME),)
+#HOST := $(subst w64,$(SYSNAME),$(HOST))
+#endif
+TOOLCHAIN := $(HOST1)-$(HOST2)-$(HOST3)
+
+$(info HOST: $(HOST))
+
+#ifeq ($(OS),mingw32)
+#TOOLCHAIN = $(HOST)-$(shell $(CROSS_COMPILE)gcc -dumpversion)
+#else
+#TOOLCHAIN = $(HOST)
+#endif
+#
+$(info TOOLCHAIN: $(TOOLCHAIN))
 
 ifneq (${builddir},)
 BUILDDIR := ${builddir}/$(BUILD_TYPE)/
@@ -144,11 +184,11 @@ else
   ifneq ($(HOST),$(BUILD))
   BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
   else
-	ifeq ($(CROSS_COMPILE),)
+#	ifeq ($(CROSS_COMPILE),)
 	BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
-	else
-	BUILDDIR = build/$(patsubst %-,%,$(CROSS_COMPILE))/$(BUILD_TYPE)/
-	endif
+#	else
+#	BUILDDIR = build/$(patsubst %-,%,$(CROSS_COMPILE))/$(BUILD_TYPE)/
+#	endif
   endif
 endif
 
@@ -284,7 +324,10 @@ ifneq ($(STATIC),1)
 STATIC := 0
 endif
 
+ifeq ($(HOST),)
 HOST := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
+endif
+
 ifneq ($(HOST),$(subst mingw,,$(HOST)))
 MINGW := 1
 endif
@@ -344,9 +387,12 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG) $(1) $(L)))
 
 ifneq ($(shell uname -o),GNU/Linux)
-LIBICONV_CFLAGS := $(call pkg-conf,--cflags,libiconv)
-LIBICONV_LIBS := $(call pkg-conf,--libs,libiconv)
+LIBICONV_CFLAGS := $(shell $(PKG_CONFIG) --cflags libiconv 2>/dev/null || echo)
+LIBICONV_LIBS := $(shell $(PKG_CONFIG) --libs libiconv 2>/dev/null || echo -liconv)
 endif
+
+$(info LIBICONV_CFLAGS: $(LIBICONV_CFLAGS))
+$(info LIBICONV_LIBS: $(LIBICONV_LIBS))
 
 LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
 LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
@@ -356,7 +402,8 @@ $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 
 LIBS += -lstdc++
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd torrent-progress mediathek-parser opensearch-dump xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper)
+
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd torrent-progress mediathek-parser opensearch-dump xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper eagle-init-brd)
   
   
 ifeq ($(DO_CXX),1)
@@ -471,6 +518,14 @@ endif
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): INCLUDES += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
+
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): INCLUDES += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS)
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
