@@ -181,7 +181,7 @@ TOOLCHAIN := $(HOST1)-$(HOST2)-$(HOST3)
 #$(info TOOLCHAIN: $(TOOLCHAIN))
 
 ifneq (${builddir},)
-BUILDDIR := ${builddir}/$(BUILD_TYPE)/
+BUILDDIR = ${builddir}/$(BUILD_TYPE)/
 else
   ifneq ($(HOST),$(BUILD))
   BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
@@ -530,7 +530,7 @@ $(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	#$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
 $(BUILDDIR)xc8-wrapper/:
