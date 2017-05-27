@@ -2,7 +2,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+
+#ifdef __GNUC__
 #include <libgen.h>
+#endif
+
 #include <libxml/SAX.h>
 
 #include "str.h"
