@@ -70,8 +70,11 @@ endif
 ifeq ($(PREFIX),)
 PREFIX := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs |sed -n 's,.*:\s\+=\?,,; s,/bin.*,,p ; s,/lib.*,,p' |head -n1 )
 endif
-
 #$(info PREFIX: $(PREFIX))
+
+SYSROOT := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs|sed -n "/^lib/ { s|.*:\s\+|| ; s|^=|| ; s|.*:|| ; s|/lib.*|| ; s|/mingw$$|| ; s|/usr$$|| ; p }")
+$(info SYSROOT: $(SYSROOT))
+
 
 prefix ?= $(PREFIX)
 bindir = ${prefix}/bin
@@ -98,7 +101,7 @@ endif
 
 PKG_CONFIG ?= $(CROSS_COMPILE)pkg-config
 
-#$(info PKG_CONFIG: $(PKG_CONFIG))
+$(info PKG_CONFIG: $(PKG_CONFIG))
 
 ifneq ($(TRIPLET),)
 ARCH := $(word 1,$(TRIPLET))
@@ -193,9 +196,6 @@ else
 #	endif
   endif
 endif
-
-#$(info BUILDDIR: $(BUILDDIR))
-#$(info builddir: $(builddir))
 
 vpath lib $(BUILDDIR)
 VPATH = lib:$(BUILDDIR)
@@ -292,6 +292,10 @@ endif
 endif
 endif
 
+$(info BUILDDIR: $(BUILDDIR))
+#$(info builddir: $(builddir))
+
+
 ifeq ($(BUILD_TYPE),Debug)
 DEBUG := 1
 RELEASE := 0
@@ -386,11 +390,11 @@ CPPFLAGS += $(patsubst %,-D%,$(DEFS))
 LIB_SRC = $(wildcard *_*.c umult*.c)
 LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
-pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG) $(1) $(L)))
+pkg-conf = $(foreach L,$(2),$(shell $(if $(SYSROOT),env PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(PKG_CONFIG) $(1) $(L)))
 
 ifneq ($(shell uname -o),GNU/Linux)
-ICONV_CFLAGS := $(shell $(PKG_CONFIG) --cflags libiconv 2>/dev/null || echo)
-ICONV_LIBS := $(shell $(PKG_CONFIG) --libs libiconv 2>/dev/null || echo -liconv)
+ICONV_CFLAGS := $(shell $(if $(SYSROOT),env PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(PKG_CONFIG) --cflags libiconv 2>/dev/null || echo)
+ICONV_LIBS := $(shell $(if $(SYSROOT),env PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(PKG_CONFIG) --libs libiconv 2>/dev/null || echo -liconv)
 endif
 
 #$(info ICONV_CFLAGS: $(ICONV_CFLAGS))
@@ -399,8 +403,8 @@ endif
 LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
 LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
 
-#$(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
-#$(info LIBXML2_LIBS: $(LIBXML2_LIBS))
+$(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
+$(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 
 LIBS += -lstdc++
 

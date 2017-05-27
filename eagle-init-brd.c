@@ -19,11 +19,11 @@ attr_list(stralloc* sa, HMAP_DB* hmap) {
   if(hmap == NULL) return;
   for(p = hmap->list_tuple; p; p = p->next) {
     if(p->data_type == HMAP_DATA_TYPE_CHARS) {
-	  stralloc_catb(sa, " ", 1);    
-	  stralloc_cats(sa, p->key);
-	  stralloc_catb(sa, "=\"", 2);
-	  stralloc_cats(sa, p->vals.val_chars);
-	  stralloc_catb(sa, "\"", 1);
+      stralloc_catb(sa, " ", 1);
+      stralloc_cats(sa, p->key);
+      stralloc_catb(sa, "=\"", 2);
+      stralloc_cats(sa, p->vals.val_chars);
+      stralloc_catb(sa, "\"", 1);
     }
     if(p->next == hmap->list_tuple) break;
   }
@@ -36,7 +36,8 @@ print_list(HMAP_DB* hmap) {
   if(hmap == NULL) return;
   for(p = hmap->list_tuple; p; p = p->next) {
     if(p->data_type == HMAP_DATA_TYPE_CHARS) {
-        //printf("index[%d][%p] key[%s], data[%s]\n", p->index, p,  p->key, p->vals.val_chars);
+      /*//printf("index[%d][%p] key[%s], data[%s]\n", p->index, p,  p->key, p->vals.val_chars);
+      */
       printf("key=\"%s\",data=\"%s\"\n", p->key, p->vals.val_chars);
     }
     if(p->next == hmap->list_tuple) break;
@@ -69,17 +70,17 @@ xmlSAXHandler make_sax_handler();
 
 /* ----------------------------------------------------------------------- */
 static void on_attribute_decl(void*, const xmlChar*, const xmlChar*, int, int,
-  const xmlChar*, xmlEnumerationPtr);
+                              const xmlChar*, xmlEnumerationPtr);
 
 static void after_element(const char*);
 static void on_start_element(void*, const xmlChar*, const xmlChar**);
 static void on_end_element(void*, const xmlChar*);
 
 static void on_start_element_ns(void*, const xmlChar*, const xmlChar*,
-  const xmlChar*, int, const xmlChar**, int, int, const xmlChar**);
+                                const xmlChar*, int, const xmlChar**, int, int, const xmlChar**);
 
 static void on_end_element_ns(void*, const xmlChar*, const xmlChar*,
-  const xmlChar*);
+                              const xmlChar*);
 
 static void on_characters(void* ctx, const xmlChar* ch, int len);
 
@@ -118,29 +119,25 @@ make_sax_handler() {
 
   memset(&sax_hander, 0, sizeof(xmlSAXHandler));
 
-  sax_hander.initialized = 0; //XML_SAX2_MAGIC;
+  /*//sax_hander.initialized = 0;
+  */
+  sax_hander.initialized = XML_SAX2_MAGIC;
   sax_hander.startElement = on_start_element;
   sax_hander.startElementNs = on_start_element_ns;
   sax_hander.endElement = on_end_element;
   sax_hander.endElementNs = on_end_element_ns;
   sax_hander.characters = on_characters;
-  //  sax_hander.attributeDecl = on_attribute_decl;
+  /* sax_hander.attributeDecl = on_attribute_decl; */
 
   return sax_hander;
 }
 
 /* ----------------------------------------------------------------------- */
 static void
-on_attribute_decl(
-  void* ctx,
-  const xmlChar* elem,
-  const xmlChar* fullname,
-  int type,
-  int def,
-  const xmlChar* defaultValue,
-  xmlEnumerationPtr tree
-) {
-  //  printf("<%s> %s=\"%s\"\n", get_element_name(), fullname, defaultValue);
+on_attribute_decl(void* ctx, const xmlChar* elem, const xmlChar* fullname,
+                  int type, int def, const xmlChar* defaultValue,
+                  xmlEnumerationPtr tree) {
+  /* printf("<%s> %s=\"%s\"\n", get_element_name(), fullname, defaultValue); */
 }
 
 /* ----------------------------------------------------------------------- */
@@ -169,17 +166,10 @@ on_start_element(void* ctx, const xmlChar* name, const xmlChar** attrs) {
 
 /* ----------------------------------------------------------------------- */
 static void
-on_start_element_ns(
-  void* ctx,
-  const xmlChar* localname,
-  const xmlChar* prefix,
-  const xmlChar* URI,
-  int nb_namespaces,
-  const xmlChar** namespaces,
-  int nb_attributes,
-  int nb_defaulted,
-  const xmlChar** attributes
-) {
+on_start_element_ns(void* ctx, const xmlChar* localname, const xmlChar* prefix,
+  const xmlChar* URI, int nb_namespaces, const xmlChar** namespaces, int nb_attributes,
+  int nb_defaulted, const xmlChar** attributes) {
+  
   set_element_name((const char*)localname);
   /*  printf("<%s> %d\n", localname, nb_attributes);
 
@@ -197,28 +187,24 @@ on_end_element(void* ctx, const xmlChar* name) {
 
 /* ----------------------------------------------------------------------- */
 static void
-on_end_element_ns(
-  void* ctx,
-  const xmlChar* localname,
-  const xmlChar* prefix,
-  const xmlChar* URI
-) {
+on_end_element_ns(void* ctx, const xmlChar* localname, const xmlChar* prefix,
+                  const xmlChar* URI) {
   after_element((const char*)localname);
 }
 
 /* ----------------------------------------------------------------------- */
 static void
 after_element(const char* name) {
-   stralloc saa;
-   stralloc_init(&saa);
-   
+  stralloc saa;
+  stralloc_init(&saa);
+
   attr_list(&saa, my_hmap_db);
-//    print_list(my_hmap_db);
+  /* print_list(my_hmap_db); */
   stralloc_nul(&saa);
-  
+
   if(saa.len)
-	printf("<%s> attrs:%s\n", get_element_name(), saa.s);
-	
+    printf("<%s> attrs:%s\n", get_element_name(), saa.s);
+
   stralloc_free(&saa);
 
   hmap_destroy(&my_hmap_db);
@@ -268,7 +254,7 @@ on_characters(void* ctx, const xmlChar* ch, int len) {
 
   if(str_len(escaped) > 0) {
     stralloc_cats(&character_buf, escaped);
-    //	printf("<%s> [%s]\n", get_element_name(), escaped);
+    /*printf("<%s> [%s]\n", get_element_name(), escaped); */
   }
   free(escaped);
   free(chars);
