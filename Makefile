@@ -12,6 +12,11 @@ ifneq ($(ROOTNAME),$(subst msys,,$(subst git-sdk,,$(subst cygwin,,$(ROOTNAME))))
 SYSNAME := $(subst git-sdk-,gitsdk,$(ROOTNAME))
 endif
 
+ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
+PKG_CONFIG_PATH := $(subst /bin,/lib/pkgconfig,$(CROSS_COMPILE))
+endif
+$(info PKG_CONFIG_PATH=$(PKG_CONFIG_PATH))
+
 #$(info ROOTNAME=$(ROOTNAME))
 #$(info SYSNAME=$(SYSNAME))
 
@@ -72,7 +77,11 @@ PREFIX := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs |sed -n 's,.*:\s\+=\?
 endif
 #$(info PREFIX: $(PREFIX))
 
-SYSROOT := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs|sed -n "/^lib/ { s|.*:\s\+|| ; s|^=|| ; s|.*:|| ; s|/lib.*|| ; s|/mingw$$|| ; s|/usr$$|| ; p }")
+ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
+SYSROOT := $(subst /bin/,,$(CROSS_COMPILE))
+else
+SYSROOT := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs|sed -n "/^lib/ { s|.*:\s\+|| ; s|^=|| ; /;/ { s|.*;|;| }; /;/! { s|.*:|| } ; s|^;|| ; s|/lib.*|| ; s|/mingw$$|| ; s|/usr$$|| ; p }")
+endif
 $(info SYSROOT: $(SYSROOT))
 
 
@@ -102,6 +111,9 @@ endif
 PKG_CONFIG ?= $(CROSS_COMPILE)pkg-config
 
 $(info PKG_CONFIG: $(PKG_CONFIG))
+
+PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env $(if $(SYSROOT),PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,),)$(PKG_CONFIG)
+$(info PKG_CONFIG_CMD: $(PKG_CONFIG_CMD))
 
 ifneq ($(TRIPLET),)
 ARCH := $(word 1,$(TRIPLET))
@@ -390,11 +402,11 @@ CPPFLAGS += $(patsubst %,-D%,$(DEFS))
 LIB_SRC = $(wildcard *_*.c umult*.c)
 LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
-pkg-conf = $(foreach L,$(2),$(shell $(if $(SYSROOT),env PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(PKG_CONFIG) $(1) $(L)))
+pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L)))
 
 ifneq ($(shell uname -o),GNU/Linux)
-ICONV_CFLAGS := $(shell $(if $(SYSROOT),env PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(PKG_CONFIG) --cflags libiconv 2>/dev/null || echo)
-ICONV_LIBS := $(shell $(if $(SYSROOT),env PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(PKG_CONFIG) --libs libiconv 2>/dev/null || echo -liconv)
+ICONV_CFLAGS := $(shell $(PKG_CONFIG_CMD) --cflags libiconv 2>/dev/null || echo)
+ICONV_LIBS := $(shell $(PKG_CONFIG_CMD) --libs libiconv 2>/dev/null || echo -liconv)
 endif
 
 #$(info ICONV_CFLAGS: $(ICONV_CFLAGS))

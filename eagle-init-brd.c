@@ -9,6 +9,8 @@
 
 static stralloc element_name, character_buf;
 
+static xmlDocPtr my_doc = NULL;
+
 static HMAP_DB* my_hmap_db = NULL;
 static TUPLE* ptr_tuple    = NULL;
 
@@ -44,6 +46,26 @@ print_list(HMAP_DB* hmap) {
   }
 }
 
+/**
+ * print_element_names:
+ * @a_node: the initial xml node to consider.
+ *
+ * Prints the names of the all the xml elements
+ * that are siblings or children of a given xml node.
+ */
+static void
+print_element_names(xmlNode* a_node) {
+  xmlNode* cur_node = NULL;
+
+  for(cur_node = a_node; cur_node; cur_node = cur_node->next) {
+    if(cur_node->type == XML_ELEMENT_NODE) {
+      printf("node type: Element, name: %s\n", cur_node->name);
+    }
+
+    print_element_names(cur_node->children);
+  }
+}
+
 /* ----------------------------------------------------------------------- */
 static void
 set_element_name(const char* name) {
@@ -65,7 +87,8 @@ get_characters() {
 }
 
 /* ----------------------------------------------------------------------- */
-int read_xmlfile(FILE* f);
+int read_xmlfile(const char* filename);
+int parse_xmlfile(const char* filename, xmlDocPtr* p_doc);
 xmlSAXHandler make_sax_handler();
 
 /* ----------------------------------------------------------------------- */
@@ -86,10 +109,20 @@ static void on_characters(void* ctx, const xmlChar* ch, int len);
 
 /* ----------------------------------------------------------------------- */
 int
-read_xmlfile(FILE* f) {
+read_xmlfile(const  char* filename) {
+  FILE* f;
+  int res;
   char chars[1024];
-  int res = fread(chars, 1, 4, f);
+
+  f = fopen(filename, "r");
+  if(!f) {
+    puts("file open error.");
+    return 1;
+  }
+
+  res = fread(chars, 1, 4, f);
   if(res <= 0) {
+    fclose(f);
     return 1;
   }
 
@@ -109,6 +142,39 @@ read_xmlfile(FILE* f) {
 
   xmlFreeParserCtxt(ctxt);
   xmlCleanupParser();
+
+  fclose(f);
+  return 0;
+}
+
+/* ----------------------------------------------------------------------- */
+int
+parse_xmlfile(const char* filename, xmlDocPtr* p_doc) {
+  xmlParserCtxtPtr ctxt; /* the parser context */
+  xmlDocPtr doc; /* the resulting document tree */
+
+  /* create a parser context */
+  ctxt = xmlNewParserCtxt();
+  if(ctxt == NULL) {
+    fprintf(stderr, "Failed to allocate parser context\n");
+    return 1;
+  }
+  /* parse the file, activating the DTD validation option */
+  doc = xmlCtxtReadFile(ctxt, filename, NULL, XML_PARSE_DTDVALID);
+  /* check if parsing suceeded */
+  if(doc == NULL) {
+    fprintf(stderr, "Failed to parse %s\n", filename);
+    return 1;
+  } else {
+    /* check if validation suceeded */
+    if(ctxt->valid == 0)
+      fprintf(stderr, "Failed to validate %s\n", filename);
+
+    *p_doc = doc;
+    return 1;
+  }
+  /* free up the parser context */
+  xmlFreeParserCtxt(ctxt);
   return 0;
 }
 
@@ -167,9 +233,9 @@ on_start_element(void* ctx, const xmlChar* name, const xmlChar** attrs) {
 /* ----------------------------------------------------------------------- */
 static void
 on_start_element_ns(void* ctx, const xmlChar* localname, const xmlChar* prefix,
-  const xmlChar* URI, int nb_namespaces, const xmlChar** namespaces, int nb_attributes,
-  int nb_defaulted, const xmlChar** attributes) {
-  
+                    const xmlChar* URI, int nb_namespaces, const xmlChar** namespaces, int nb_attributes,
+                    int nb_defaulted, const xmlChar** attributes) {
+
   set_element_name((const char*)localname);
   /*  printf("<%s> %d\n", localname, nb_attributes);
 
@@ -211,7 +277,7 @@ after_element(const char* name) {
   hmap_init(1024, &my_hmap_db);
 
   stralloc_zero(&character_buf);
-  printf("\n");
+  //printf("\n");
 }
 
 /* ----------------------------------------------------------------------- */
@@ -263,6 +329,7 @@ on_characters(void* ctx, const xmlChar* ch, int len) {
 /* ----------------------------------------------------------------------- */
 int
 main(int argc, char* argv[]) {
+  xmlNode *root_element = NULL;
   const char* filename = "sample.xml";
 
   /* initialize database */
@@ -271,18 +338,18 @@ main(int argc, char* argv[]) {
   if(argc > 1)
     filename = argv[1];
 
-  FILE* f = fopen(filename, "r");
-  if(!f) {
-    puts("file open error.");
-    exit(1);
-  }
-
-  if(read_xmlfile(f)) {
+  /*   if(read_xmlfile(f)) {*/
+  if(parse_xmlfile(filename, &my_doc)) {
     puts("xml read error.");
     exit(1);
   }
 
+  /* Get the root element node */
+  root_element = xmlDocGetRootElement(my_doc);
+  print_element_names(root_element);
 
-  fclose(f);
+  /* free up the resulting document */
+  xmlFreeDoc(my_doc);
+
   return 0;
 }
