@@ -8,13 +8,31 @@
 #include "stralloc.h"
 #include "hmap.h"
 
+#define END_OF_LINE "; "
+//#define END_OF_LINE ";\n"
+
 static stralloc element_name, character_buf;
 
 static float const
     unit_factor = 25.4
-  , scale_factor = 0.6
+  , scale_factor = 0.5
   , grid_mils = 100
 ;
+
+static float 
+   min_x = 0.0
+ , max_x = 0.0
+ , min_y = 0.0
+ , max_y = 0.0
+;
+
+static void
+update_minmax_xy(float x, float y) {
+  if(x < min_x) min_x = x;
+  if(y < min_y) min_y = y;
+  if(x > max_x) max_x = x;
+  if(y > max_y) max_y = y;
+};
 
 static xmlDocPtr xmldoc = NULL;
 
@@ -66,18 +84,25 @@ str_copyn(char* out, const char* in, size_t n) {
 static void
 each_part(part_t* p) {
 
-  if(p->device[0]) {
-    printf("MOVE %s (%.2f %.2f); ", p->name, p->x, p->y);
+  if(p->device[0] == '\0' && p->value[0] == '\0')
+    return;
+    
+     
+  {
+    printf("MOVE %s (%.2f %.2f)"END_OF_LINE, p->name, p->x - min_x, p->y - min_y);
     fflush(stdout);
+
+    if(fabs(p->rot) >= 0.1) {
+      int angle = (int)((p->rot/90))*90.0;
+      while(angle < 0) angle += 360;
+      while(angle > 360) angle -= 360;
+      
+      printf("ROTATE =R%d '%s'" END_OF_LINE, angle % 360 , p->name);
+      //printf("ROTATE =R0 '%s'" END_OF_LINE, p->name);
+    }
+
   }
   
-  if(fabs(p->rot) >= 0.1) {
-    int angle = -(int)p->rot;
-    while(angle < 0) angle += 360;
-    while(angle > 360) angle -= 360;
-    
-    printf("ROTATE R%d '%s'; ", angle % 360 , p->name);
-  }
   
 /*  printf("each_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
     p->name, p->library, p->deviceset, p->device, p->value);*/
@@ -129,7 +154,9 @@ get_instance(const char* part, const char* gate) {
 /* ----------------------------------------------------------------------- */
 static instance_t*
 create_instance(const char* part, const char* gate, float x, float y, float rot) {
+#if DEBUG
   printf("create_instance{part=%s,gate=%s,x=%.2f,y=%.2f,rot=%.f}\n", part, gate, x, y, rot);
+#endif
   int ret;
   stralloc key;
   instance_t* i;
@@ -149,7 +176,7 @@ create_instance(const char* part, const char* gate, float x, float y, float rot)
   hmap_add(&instances_db, key.s, key.len, 1, HMAP_DATA_TYPE_CUSTOM, i);
   
   update_part(part, x, y, rot);
-   
+  
   //dump_instance(i);
   return i;
 }
@@ -161,8 +188,10 @@ create_part(const char* name, const char* library, const char* deviceset,
   if(value == NULL) value = "";
   /*if(deviceset == NULL) deviceset = "";
   if(device == NULL) device = "";*/
+#if DEBUG
    printf("create_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
     name, library, deviceset, device, value);
+#endif
   part_t* p;         
   p = malloc(sizeof(part_t));
   if(p == NULL) return NULL;
@@ -186,9 +215,11 @@ static void
 update_part(const char* name, float x, float y, float rot) {
   part_t* p = get_part(name);
   if(p == NULL) return;
-  printf("update_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%.2f,y=%.2f,rot=%.0f}\n",
-    p->name, p->library, p->deviceset, p->device, p->value,
-    p->x, p->y, p->rot);
+#if DEBUG
+  printf("update_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%.2f,y=%.2f,rot=%.0f}[%.2f,%.2f,%.2f]\n",
+    p->name, p->library, p->deviceset, p->device, p->value, p->x, p->y, p->rot, x, y, rot);
+#endif
+    
   if(p->x == 0.0 || isnanf(p->x)) { p->x = x; } else { 
     p->x += x; p->x /= 2;
     p->x = roundf(p->x * 100) / 100;
@@ -198,9 +229,11 @@ update_part(const char* name, float x, float y, float rot) {
     p->y = roundf(p->y * 100) / 100;
   } 
   if(p->rot == 0.0 || isnanf(p->rot)) { p->rot = rot; } else {
-    p->rot += rot; p->rot /= 2;
+    p->rot += rot; //p->rot /= 2;
     p->rot = roundf(p->rot);
   } 
+  
+  update_minmax_xy(p->x, p->y);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -652,13 +685,17 @@ main(int argc, char* argv[]) {
   hmap_init(1024, &instances_db);
   hmap_init(1024, &parts_db);
 
-  if(argc > 1)
+  if(argc > 1) {
     filename = argv[1];
+  } else {
+    fprintf(stderr, "Usage: %s <filename>\n", basename(argv[0]));
+    return 1;
+  }
 
   /*   if(read_xmlfile(f)) {*/
   if(parse_xmlfile(filename, &xmldoc)) {
     puts("xml read error.");
-    exit(1);
+    return 2;
   }
 
   /* Get the root element node */
