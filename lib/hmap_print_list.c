@@ -1,9 +1,9 @@
 #include "hmap_internal.h"
 
-static void hmap_print_list_tuple( HMAP_DB *my_hmap_db ){
+static void hmap_print_list_tuple( HMAP_DB *my_hmap_db ) {
     TUPLE *ptr_list_tuple = my_hmap_db->list_tuple;
-    while( ptr_list_tuple ){
-        switch( ptr_list_tuple->data_type ){
+    while( ptr_list_tuple ) {
+        switch( ptr_list_tuple->data_type ) {
           case HMAP_DATA_TYPE_INT:
             printf("index[%d][%p] key[%s], data[%d]\n", ptr_list_tuple->index, ptr_list_tuple,  ptr_list_tuple->key, ptr_list_tuple->vals.val_int);
             break;
@@ -26,14 +26,14 @@ static void hmap_print_list_tuple( HMAP_DB *my_hmap_db ){
             printf("index[%d][%p] key[%s], data[%p]\n", ptr_list_tuple->index, ptr_list_tuple,  ptr_list_tuple->key, ptr_list_tuple->vals.val_custom);
             break;
         }
-        if( ptr_list_tuple->next == my_hmap_db->list_tuple){
+        if(ptr_list_tuple->next == my_hmap_db->list_tuple) {
             break;
         }
         ptr_list_tuple = ptr_list_tuple->next;
     }
 }
 
-int hmap_print_list( HMAP_DB *my_hmap_db ){
+int hmap_print_list( HMAP_DB *my_hmap_db ) {
     if( my_hmap_db == NULL ) 
         return HMAP_DB_EMPTY;
     hmap_print_list_tuple(my_hmap_db);

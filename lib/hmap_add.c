@@ -1,7 +1,7 @@
 #include "hmap_internal.h"
 #include "hmap_internal.c"
 
-int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, int dup_flag, int data_type, ...){
+int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, int dup_flag, int data_type, ...) {
     
     VALIDATE_DB(*hmap_db, key, k_len);
     
@@ -15,7 +15,7 @@ int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, int dup_flag, int data_typ
     va_start(args, data_type);
     r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);
     
-    if ( r == HMAP_SUCCESS ){
+    if ( r == HMAP_SUCCESS ) {
         return HMAP_TUPLE_ALREADY_EXIST;
     }
     
@@ -23,11 +23,11 @@ int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, int dup_flag, int data_typ
     
         root_tuple = ((*hmap_db)->tuple + index);
         
-        if( root_tuple == NULL ){
+        if(root_tuple == NULL ) {
             return HMAP_TUPUL_EMPTY;
         }
 
-        if(root_tuple->key_len == 0){ /* Reuse record */
+        if(root_tuple->key_len == 0) { /* Reuse record */
             new_tuple = root_tuple;
 
             HMAP_DEBUG("Primary :> ");
@@ -39,18 +39,18 @@ int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, int dup_flag, int data_typ
             new_tuple->index       = index;                                                     
             new_tuple->type        = HMAP_TUPLE_PRIMARY;
             new_tuple->data_type   = data_type;
-            if( root_tuple->hash_next == NULL && root_tuple->hash_prev == NULL){
+            if(root_tuple->hash_next == NULL && root_tuple->hash_prev == NULL) {
                 root_tuple->hash_next = root_tuple->hash_prev = root_tuple;
-            }else{
+            } else {
                 HDB_HASH_APPEND(root_tuple, root_tuple);
             }
             HDB_LIST_APPEND((*hmap_db)->list_tuple, root_tuple);
            
             
-        }else{
+        } else {
             new_tuple = (TUPLE *) calloc(1, sizeof(TUPLE)); /* Create new recordeto store data */
 
-            if( new_tuple == NULL ){
+            if(new_tuple == NULL ) {
                 return HMAP_ALLOCATED_ERROR;
             } 
             HMAP_DEBUG("Secondary :> ");
@@ -70,7 +70,7 @@ int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, int dup_flag, int data_typ
             HDB_HASH_APPEND(root_tuple, new_tuple);
         }
         
-    }else{
+    } else {
         return r;
     }
     

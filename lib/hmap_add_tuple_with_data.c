@@ -1,7 +1,7 @@
 #include "hmap_internal.h"
 #include "hmap_internal.c"
 
-int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, int data_type, void *data, int dup_flag){
+int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, int data_type, void *data, int dup_flag) {
     
     VALIDATE_DB(*hmap_db, key, k_len);
     
@@ -11,19 +11,19 @@ int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, int data_t
     
     r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);
     
-    if ( r == HMAP_SUCCESS ){
+    if ( r == HMAP_SUCCESS ) {
         return HMAP_TUPLE_ALREADY_EXIST;
     }
     
-    if ( r  == HMAP_TUPLE_NOT_FOUND ){
+    if ( r  == HMAP_TUPLE_NOT_FOUND ) {
     
         root_tuple = ((*hmap_db)->tuple + index);
         
-        if( root_tuple == NULL ){
+        if(root_tuple == NULL ) {
             return HMAP_TUPUL_EMPTY;
         }
         /* free slot */
-        if(root_tuple->key_len == 0){
+        if(root_tuple->key_len == 0) {
         
             root_tuple->data = data;
             root_tuple->data_len = -1;
@@ -35,18 +35,18 @@ int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, int data_t
             root_tuple->index = index;
             root_tuple->type = HMAP_TUPLE_PRIMARY;
             
-            if( root_tuple->hash_next == NULL && root_tuple->hash_prev == NULL){
+            if(root_tuple->hash_next == NULL && root_tuple->hash_prev == NULL) {
                 root_tuple->hash_next = root_tuple->hash_prev = root_tuple;
-            }else{
+            } else {
                 HDB_HASH_APPEND(root_tuple, root_tuple);
             }
             HDB_LIST_APPEND((*hmap_db)->list_tuple, root_tuple);
            
             
-        }else{
+        } else {
             new_tuple = (TUPLE *) calloc(1, sizeof(TUPLE));
 
-            if( new_tuple == NULL ){
+            if(new_tuple == NULL ) {
                 return HMAP_ALLOCATED_ERROR;
             } 
             
@@ -66,7 +66,7 @@ int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, int data_t
             HDB_HASH_APPEND(root_tuple, new_tuple);
         }
         
-    }else{
+    } else {
         return r;
     }
     

@@ -529,7 +529,7 @@ endif
 
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): INCLUDES += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS)
-$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)hmap.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	#$(CROSS_COMPILE)$(STRIP) --strip-all $@

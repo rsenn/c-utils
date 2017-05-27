@@ -4,16 +4,20 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define HMAP_DEBUG(...) do {printf( __VA_ARGS__ );}while(0)
+#if DEBUG
+#define HMAP_DEBUG(...) do { printf(__VA_ARGS__); } while(0)
+#else
+#define HMAP_DEBUG(...)
+#endif
 
-#define VALIDATE_DB(_hdb, _key, _klen) do{  \
-    if( _hdb == NULL ){                     \
+#define VALIDATE_DB(_hdb, _key, _klen) do { \
+    if(_hdb == NULL ) {                     \
         return HMAP_DB_EMPTY;               \
     }                                       \
-    if( _key == NULL || _klen <= 0){        \
+    if(_key == NULL || _klen <= 0) {        \
         return HMAP_KEY_EMPTY;              \
     }                                       \
-}while(0)
+} while(0)
 
 
 #define HDB_LIST_APPEND(_first,_item)                                 \
@@ -87,15 +91,15 @@
    (_item)->hash_prev = (_item)->hash_next = NULL;                    \
 }
 
-#define IS_NEXT_HASH(_first, _curr){        \
-    if( _curr->hash_next == _first ){       \
+#define IS_NEXT_HASH(_first, _curr) {       \
+    if(_curr->hash_next == _first ) {       \
         break;                              \
     }                                       \
     _curr = _curr->hash_next;               \
 }
 
-#define IS_NEXT_LIST(_first, _curr){        \
-    if( _curr->next == _first ){            \
+#define IS_NEXT_LIST(_first, _curr) {       \
+    if(_curr->next == _first ) {            \
         break;                              \
     }                                       \
     _curr = _curr->next;                    \

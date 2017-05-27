@@ -1,17 +1,17 @@
 #include "hmap_internal.h"
 
-static void hmap_print_tree_tuple( HMAP_DB *my_hmap_db ){
+static void hmap_print_tree_tuple( HMAP_DB *my_hmap_db ) {
     int i = 0;
     TUPLE *root_tuple, *ptr_list_tuple;
-    for( ; i < my_hmap_db->bucket_size ; i++){
+    for( ; i < my_hmap_db->bucket_size ; i++) {
         ptr_list_tuple = root_tuple = (my_hmap_db->tuple+i);
-        if( root_tuple == NULL  ){
+        if(root_tuple == NULL  ) {
             continue;
         }
         printf("index[%d]\n", ptr_list_tuple->index);
-        while( ptr_list_tuple ){
-            if ( ptr_list_tuple->key_len > 0){
-              switch( ptr_list_tuple->data_type ){
+        while( ptr_list_tuple ) {
+            if ( ptr_list_tuple->key_len > 0) {
+              switch( ptr_list_tuple->data_type ) {
                 case HMAP_DATA_TYPE_INT:
                   printf("index[%d][%p] key[%s], data[%d]\n", ptr_list_tuple->index, ptr_list_tuple,  ptr_list_tuple->key, ptr_list_tuple->vals.val_int);
                   break;
@@ -35,7 +35,7 @@ static void hmap_print_tree_tuple( HMAP_DB *my_hmap_db ){
                   break;
               }
             }
-            if( ptr_list_tuple->hash_next == root_tuple ){
+            if(ptr_list_tuple->hash_next == root_tuple ) {
                 break;
             }
             ptr_list_tuple = ptr_list_tuple->hash_next;
@@ -43,7 +43,7 @@ static void hmap_print_tree_tuple( HMAP_DB *my_hmap_db ){
     }
 }
 
-int hmap_print_tree( HMAP_DB *my_hmap_db ){
+int hmap_print_tree( HMAP_DB *my_hmap_db ) {
     if( my_hmap_db == NULL ) 
         return HMAP_DB_EMPTY;
     hmap_print_tree_tuple(my_hmap_db);
