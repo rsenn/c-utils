@@ -1,7 +1,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-#include <strings.h>
+//#include <strings.h>
 
 int isleap(int year);
 
