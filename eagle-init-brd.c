@@ -143,16 +143,21 @@ on_attribute_decl(
 
 static void
 on_start_element(void *ctx, const xmlChar* name, const xmlChar **attrs) {
-  int i, nb_attributes;
+  int i, nb_attributes = 0;
   set_element_name((const char*)name);
+
+  if(attrs) {
+	for(i = 0; attrs[i]; ++i) {}
+	nb_attributes = i >> 1;
+  }
   
-  for(i = 0; attrs[i]; ++i) ;
-  nb_attributes = i;
-  
-    printf("<%s> %d\n", name, nb_attributes);
-  
-  for(i = 0; attrs[i]; ++i) {
-    printf("<%s> %d: %s\n", name, i, attrs[i]);
+  printf("<%s> %d\n", name, nb_attributes);
+
+  for(i = 0; i < nb_attributes; ++i) {
+	const char *attr = attrs[i << 1], 
+			   *value = attrs[(i << 1) + 1];
+			   
+	printf("<%s> %d/%d: %s=\"%s\"\n", name, i, nb_attributes, attr, value);
   }
 }
 
