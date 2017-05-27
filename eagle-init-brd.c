@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 #include <libxml/SAX.h>
 
 #include "str.h"
@@ -14,7 +15,10 @@ static xmlDocPtr xmldoc = NULL;
 static HMAP_DB* hashmap = NULL;
 static TUPLE* ptr_tuple    = NULL;
 
-static HMAP_DB* instances_db = NULL;
+static HMAP_DB *instances_db = NULL, *parts_db = NULL;
+
+static void
+hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void *));
 
 
 #define NAMELEN 8
@@ -25,6 +29,7 @@ typedef struct part {
   const char deviceset[NAMELEN];
   const char device[NAMELEN];
   const char value[NAMELEN];
+  float x, y, rot;
 } part_t;
 
 typedef struct instance {
@@ -44,15 +49,49 @@ str_copyn(char* out, const char* in, size_t n) {
 
 /* ----------------------------------------------------------------------- */
 static void
-dump_instance(instance_t const* i) {
+dump_part(part_t const* p) {
+  printf("part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
+    p->name, p->library, p->deviceset, p->device, p->value);
+}
 
-  printf("instance{part=%s,gate=%s,x=%f,y=%f,rot=%f}\n",
+/* ----------------------------------------------------------------------- */
+static void
+dump_instance(instance_t const* i) {
+  printf("instance{part=%s,gate=%s,x=%f,y=%f,rot=%.f}\n",
     i->part, i->gate, i->x, i->y, i->rot);
+}
+
+/* ----------------------------------------------------------------------- */
+inline static const part_t*
+get_part(const char* part) {
+  TUPLE *ptr_tuple = NULL;
+  part_t* p = NULL;
+  hmap_search(parts_db, part, str_len(part), &ptr_tuple);
+  if(ptr_tuple) p = ptr_tuple->vals.val_custom;
+  return p;
+}
+
+/* ----------------------------------------------------------------------- */
+inline static const instance_t*
+get_instance(const char* part, const char* gate) {
+  stralloc key;
+  stralloc_init(&key);
+  stralloc_copys(&key, part);
+  stralloc_cats(&key, ":");
+  stralloc_cats(&key, gate);
+  stralloc_nul(&key);
+  
+  TUPLE *ptr_tuple = NULL;
+  instance_t* i = NULL;
+  hmap_search(instances_db, key.s, key.len, &ptr_tuple);
+  if(ptr_tuple) i = ptr_tuple->vals.val_custom;
+  return i;
 }
 
 /* ----------------------------------------------------------------------- */
 static instance_t*
 create_instance(const char* part, const char* gate, float x, float y, float rot) {
+  printf("create_instance{part=%s,gate=%s,x=%f,y=%f,rot=%f}\n", part, gate, x, y, rot);
   int ret;
   stralloc key;
   instance_t* i;
@@ -68,9 +107,50 @@ create_instance(const char* part, const char* gate, float x, float y, float rot)
   i->x = x;
   i->y = y;
   i->rot = rot; 
+  
   hmap_add(&instances_db, key.s, key.len, 1, HMAP_DATA_TYPE_CUSTOM, i);
-  printf("create_instance ");dump_instance(i);
+  
+  update_part(part, x, y, rot);
+   
+  //dump_instance(i);
   return i;
+}
+
+/* ----------------------------------------------------------------------- */
+static part_t*
+create_part(const char* name, const char* library, const char* deviceset,
+            const char* device, const char* value) {
+  if(value == NULL) value = "";
+  /*if(deviceset == NULL) deviceset = "";
+  if(device == NULL) device = "";*/
+   printf("create_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
+    name, library, deviceset, device, value);
+  part_t* p;         
+  p = malloc(sizeof(part_t));
+  if(p == NULL) return NULL;
+  //memset(p, 0, spzeof(part_t));
+  str_copyn(p->name, name, sizeof(p->name)-1);
+  str_copyn(p->library, library ? library : "", sizeof(p->library)-1);
+  str_copyn(p->deviceset, deviceset ? deviceset : "", sizeof(p->deviceset)-1);
+  str_copyn(p->device, device ? device : "", sizeof(p->device)-1);
+  str_copyn(p->value, value ? value : "", sizeof(p->value)-1);
+  p->x = 0.0;
+  p->y = 0.0;
+  p->rot = 0.0;
+            
+  hmap_add(&parts_db, name, str_len(name), 1, HMAP_DATA_TYPE_CUSTOM, p);
+  
+  return p;
+}
+
+/* ----------------------------------------------------------------------- */
+static void
+update_part(const char* name, float x, float y, float rot) {
+  part_t* p = get_part(name);
+  if(p == NULL) return;
+  if(p->x == 0.0 || p->x == nanf()) { p->x = x; } else { p->x += x; p->x /= 2; } 
+  if(p->y == 0.0 || p->y == nanf()) { p->y = y; } else { p->y += y; p->y /= 2; } 
+  if(p->rot == 0.0 || p->rot == nanf()) { p->rot = rot; } else { p->rot += rot; p->rot /= 2; } 
 }
 
 /* ----------------------------------------------------------------------- */
@@ -92,14 +172,26 @@ attr_list(stralloc* sa, HMAP_DB* hmap) {
 
 /* ----------------------------------------------------------------------- */
 static void
+hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void *)) {
+  TUPLE* t;
+  if(hmap == NULL) return;
+  for(t = hmat->list_tuple; t; t = t->next) {
+    if(t->data_tyte == HMAP_DATA_TYPE_CUSTOM) 
+      foreach_fn(p);
+  }
+}
+
+/* ----------------------------------------------------------------------- */
+static void
 print_list(HMAP_DB* hmap) {
   TUPLE* p;
   if(hmap == NULL) return;
   for(p = hmap->list_tuple; p; p = p->next) {
     if(p->data_type == HMAP_DATA_TYPE_CHARS) {
-      /*//printf("index[%d][%p] key[%s], data[%s]\n", p->index, p,  p->key, p->vals.val_chars);
-      */
+      /* printf("index[%d][%p] key[%s], data[%s]\n", p->index, p,  p->key, p->vals.val_chars); */
       printf("key=\"%s\",data=\"%s\"\n", p->key, p->vals.val_chars);
+    } else if(p->data_type == HMAP_DATA_TYPE_CUSTOM) {
+       printf("key=\"%s\",data=%p\n", p->key, p->vals.val_custom);
     }
     if(p->next == hmap->list_tuple) break;
   }
@@ -132,8 +224,8 @@ get_attribute_sa(stralloc* sa, xmlElement* e, const char* name) {
   xmlAttribute* a;
   for(a = e->attributes; a; a = a->next) {
     if(!str_diff(a->name, name)) {
-      const char value = (const char*)xmlNodeGetContent(a);
-      stralloc_copys(sa, value);
+      const char* value = (const char*)xmlNodeGetContent(a);
+      stralloc_copys(sa, value ? value : "");
       stralloc_nul(sa);
       return 1;
     }
@@ -167,10 +259,11 @@ cat_attributes(stralloc* sa, xmlElement* e) {
   stralloc_catb(sa, "\"", 1);
   }
 }
+
 /* ----------------------------------------------------------------------- */
 static void
 process_instance(xmlElement* e) {
-  double x = 0.0, y = 0.0, rot = 0.0;
+  double x = 0.0, y = 0.0, rotate = 0.0;
   stralloc part, gate, rot;
   stralloc_init(&part); get_attribute_sa(&part, e, "part");
   stralloc_init(&gate); get_attribute_sa(&gate, e, "gate");
@@ -180,13 +273,29 @@ process_instance(xmlElement* e) {
     const char* r = rot.s;
     while(*r && !isdigit(*r)) ++r;
     
-    scan_double(r, &rot);
+    scan_double(r, &rotate);
   }
   
   get_attribute_double(&x, e, "x");
   get_attribute_double(&y, e, "y");
   
-  instance_t* newinst = create_instance(part.s, gate.s, x, y, rot);
+  x /= 25.4;
+  y /= 25.4;
+  
+  instance_t* newinst = create_instance(part.s, gate.s, round(x*10)/10, round(x*10)/10, rotate);
+}
+
+/* ----------------------------------------------------------------------- */
+static void
+process_part(xmlElement* e) {
+  stralloc name, library, deviceset, device, value;
+  stralloc_init(&name); get_attribute_sa(&name, e, "name");
+  stralloc_init(&library); get_attribute_sa(&library, e, "library");
+  stralloc_init(&deviceset); get_attribute_sa(&deviceset, e, "deviceset");
+  stralloc_init(&device); get_attribute_sa(&device, e, "device");
+  stralloc_init(&value); get_attribute_sa(&value, e, "value");
+  
+  part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -206,8 +315,10 @@ print_element_names(xmlNode* a_node) {
 
       if(!str_diff((const char*)e->name, "instance")) {
         process_instance(e);
+      } else if(!str_diff((const char*)e->name, "part")) {
+        process_part(e);
       } else {
-        printf("<%s%s>%s</%s>\n", e->name, attrs.s, value ? value : "", e->name);
+//        printf("<%s%s>%s</%s>\n", e->name, attrs.s, value ? value : "", e->name);
       }
       stralloc_free(&attrs);
 //      print_attributes(e);
@@ -482,6 +593,7 @@ main(int argc, char* argv[]) {
   /* initialize database */
   hmap_init(1024, &hashmap);
   hmap_init(1024, &instances_db);
+  hmap_init(1024, &parts_db);
 
   if(argc > 1)
     filename = argv[1];
@@ -495,6 +607,16 @@ main(int argc, char* argv[]) {
   /* Get the root element node */
   root_element = xmlDocGetRootElement(xmldoc);
   print_element_names(root_element);
+
+//  print_list(instances_db);
+//  print_list(parts_db);
+  
+  
+  { 
+    const part_t* tmp = get_part("IC1");
+    
+    if(tmp) dump_part(tmp);
+  }
 
   /* free up the resulting document */
   xmlFreeDoc(xmldoc);

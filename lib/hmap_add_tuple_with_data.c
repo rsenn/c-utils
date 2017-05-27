@@ -1,7 +1,7 @@
 #include "hmap_internal.h"
 #include "hmap_internal.c"
 
-int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, int data_type, void *data, int dup_flag) {
+int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, void *data) {
     
     VALIDATE_DB(*hmap_db, key, k_len);
     
