@@ -10,6 +10,12 @@
 
 static stralloc element_name, character_buf;
 
+static float const
+    unit_factor = 25.4
+  , scale_factor = 0.6
+  , grid_mils = 100
+;
+
 static xmlDocPtr xmldoc = NULL;
 
 static HMAP_DB* hashmap = NULL;
@@ -42,6 +48,13 @@ typedef struct instance {
 } instance_t;
 
 /* ----------------------------------------------------------------------- */
+inline static float
+round_to_mil(float val, float mil) {
+  float factor = (1000.0f / mil);
+  return roundf(val * factor) / factor;
+}
+
+/* ----------------------------------------------------------------------- */
 static size_t
 str_copyn(char* out, const char* in, size_t n) {
   strncpy(out, in, n);
@@ -52,8 +65,19 @@ str_copyn(char* out, const char* in, size_t n) {
 /* ----------------------------------------------------------------------- */
 static void
 each_part(part_t* p) {
-  printf("MOVE %s (%.2f %.2f); ", p->name, p->x, p->y);
-  fflush(stdout);
+
+  if(p->device[0]) {
+    printf("MOVE %s (%.2f %.2f); ", p->name, p->x, p->y);
+    fflush(stdout);
+  }
+  
+  if(fabs(p->rot) >= 0.1) {
+    int angle = -(int)p->rot;
+    while(angle < 0) angle += 360;
+    while(angle > 360) angle -= 360;
+    
+    printf("ROTATE R%d '%s'; ", angle % 360 , p->name);
+  }
   
 /*  printf("each_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
     p->name, p->library, p->deviceset, p->device, p->value);*/
@@ -71,7 +95,7 @@ dump_part(part_t const* p) {
 /* ----------------------------------------------------------------------- */
 static void
 dump_instance(instance_t const* i) {
-  printf("instance{part=%s,gate=%s,x=%f,y=%f,rot=%.f}\n",
+  printf("dump_instance \"%s:%s\" x=%.2f, y=%.2f, rot=%.f\n",
     i->part, i->gate, i->x, i->y, i->rot);
 }
 
@@ -306,10 +330,16 @@ process_instance(xmlElement* e) {
   get_attribute_double(&x, e, "x");
   get_attribute_double(&y, e, "y");
   
-  x /= 25.4;
-  y /= 25.4;
+  /*x /= unit_factor;
+  y /= unit_factor;*/
   
-  instance_t* newinst = create_instance(part.s, gate.s, x, y, rotate);
+  /*x *= scale_factor;
+  y *= scale_factor;*/
+  
+  instance_t* newinst = create_instance(part.s, gate.s,
+    round_to_mil(x * scale_factor / unit_factor, grid_mils),
+    round_to_mil(y * scale_factor / unit_factor, grid_mils),
+    rotate);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -644,6 +674,9 @@ main(int argc, char* argv[]) {
     
     if(tmp) dump_part(tmp);
   }
+
+  /*hmap_foreach(instances_db, &dump_instance);*/
+  /*hmap_foreach(parts_db, &dump_part);*/
   
   hmap_foreach(parts_db, &each_part);
   printf("\n");
