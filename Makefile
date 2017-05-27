@@ -396,6 +396,8 @@ ifneq ($(BOOST_LIB_DIR),)
 LIBS += -L$(BOOST_LIB_DIR) $(patsubst %,-l%,$(BOOST_LIBS))
 endif
 
+WARNINGS += no-unused-function
+
 CFLAGS += $(patsubst %,-W%,$(WARNINGS))
 CPPFLAGS += $(patsubst %,-D%,$(DEFS))
 
