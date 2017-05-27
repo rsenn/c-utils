@@ -19,6 +19,8 @@ static HMAP_DB *instances_db = NULL, *parts_db = NULL;
 
 static void
 hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void *));
+static void
+update_part(const char*, float, float, float);
 
 
 #define NAMELEN 8
@@ -49,9 +51,21 @@ str_copyn(char* out, const char* in, size_t n) {
 
 /* ----------------------------------------------------------------------- */
 static void
+each_part(part_t* p) {
+  printf("MOVE %s (%.2f %.2f); ", p->name, p->x, p->y);
+  fflush(stdout);
+  
+/*  printf("each_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
+    p->name, p->library, p->deviceset, p->device, p->value);*/
+}
+
+
+/* ----------------------------------------------------------------------- */
+static void
 dump_part(part_t const* p) {
-  printf("part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
-    p->name, p->library, p->deviceset, p->device, p->value);
+  printf("dump_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%.2f,y=%.2f,rot=%.0f}\n",
+    p->name, p->library, p->deviceset, p->device, p->value,
+    p->x, p->y, p->rot);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -91,7 +105,7 @@ get_instance(const char* part, const char* gate) {
 /* ----------------------------------------------------------------------- */
 static instance_t*
 create_instance(const char* part, const char* gate, float x, float y, float rot) {
-  printf("create_instance{part=%s,gate=%s,x=%f,y=%f,rot=%f}\n", part, gate, x, y, rot);
+  printf("create_instance{part=%s,gate=%s,x=%.2f,y=%.2f,rot=%.f}\n", part, gate, x, y, rot);
   int ret;
   stralloc key;
   instance_t* i;
@@ -148,9 +162,21 @@ static void
 update_part(const char* name, float x, float y, float rot) {
   part_t* p = get_part(name);
   if(p == NULL) return;
-  if(p->x == 0.0 || p->x == nanf()) { p->x = x; } else { p->x += x; p->x /= 2; } 
-  if(p->y == 0.0 || p->y == nanf()) { p->y = y; } else { p->y += y; p->y /= 2; } 
-  if(p->rot == 0.0 || p->rot == nanf()) { p->rot = rot; } else { p->rot += rot; p->rot /= 2; } 
+  printf("update_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%.2f,y=%.2f,rot=%.0f}\n",
+    p->name, p->library, p->deviceset, p->device, p->value,
+    p->x, p->y, p->rot);
+  if(p->x == 0.0 || isnanf(p->x)) { p->x = x; } else { 
+    p->x += x; p->x /= 2;
+    p->x = roundf(p->x * 100) / 100;
+  } 
+  if(p->y == 0.0 || isnanf(p->y)) { p->y = y; } else { 
+    p->y += y; p->y /= 2;
+    p->y = roundf(p->y * 100) / 100;
+  } 
+  if(p->rot == 0.0 || isnanf(p->rot)) { p->rot = rot; } else {
+    p->rot += rot; p->rot /= 2;
+    p->rot = roundf(p->rot);
+  } 
 }
 
 /* ----------------------------------------------------------------------- */
@@ -175,9 +201,10 @@ static void
 hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void *)) {
   TUPLE* t;
   if(hmap == NULL) return;
-  for(t = hmat->list_tuple; t; t = t->next) {
-    if(t->data_tyte == HMAP_DATA_TYPE_CUSTOM) 
-      foreach_fn(p);
+  for(t = hmap->list_tuple; t; t = t->next) {
+    if(t->data_type == HMAP_DATA_TYPE_CUSTOM) 
+      foreach_fn(t->vals.val_custom);
+    if(t->next == hmap->list_tuple) break;
   }
 }
 
@@ -282,7 +309,7 @@ process_instance(xmlElement* e) {
   x /= 25.4;
   y /= 25.4;
   
-  instance_t* newinst = create_instance(part.s, gate.s, round(x*10)/10, round(x*10)/10, rotate);
+  instance_t* newinst = create_instance(part.s, gate.s, x, y, rotate);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -617,6 +644,9 @@ main(int argc, char* argv[]) {
     
     if(tmp) dump_part(tmp);
   }
+  
+  hmap_foreach(parts_db, &each_part);
+  printf("\n");
 
   /* free up the resulting document */
   xmlFreeDoc(xmldoc);
