@@ -467,7 +467,7 @@ $(OBJDIR):
 	-mkdir -p $(OBJDIR) || mkdir $(OBJDIR)
 	-md $(subst /,\,$(OBJDIR))
 
-$(BUILDDIR)scan.a: $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_xlonglong.o
+$(BUILDDIR)scan.a: $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_xlonglong.o $(BUILDDIR)scan_double.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)open.a: $(BUILDDIR)open_append.o $(BUILDDIR)open_read.o $(BUILDDIR)open_rw.o $(BUILDDIR)open_trunc.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
