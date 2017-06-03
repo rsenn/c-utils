@@ -115,7 +115,8 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 set(PROGRAMS list-r count-depth decode-ls-lR torrent-progress reg2cmd eagle-init-brd)
 set(CXXPROGRAMS #kbd-adjacency
 #ls-R
-    piccfghex)
+ #   piccfghex
+ )
 
 if(MSVC)
 #  add_definitions(-Dinline=__force_inline)
@@ -167,7 +168,9 @@ add_executable(decode-ls-lR decode-ls-lR.c) # buffer.h buffer_0.c buffer_1.c buf
 add_executable(torrent-progress torrent-progress.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_putflush.c buffer_putnlflush.c buffer_putulong.c buffer_puts.c buffer_putulong.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c fmt.h fmt_ulong.c mmap.h mmap_map.c mmap_private.c mmap_read.c mmap_read_fd.c mmap_unmap.c open.h open_read.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_init.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c torrent-progress.c
 add_executable(reg2cmd reg2cmd.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_puts.c buffer_putuint64.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c fmt.h fmt_uint64.c reg2cmd.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_init.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c
 add_executable(eagle-init-brd eagle-init-brd.c) # lib/hmap_add.c lib/hmap_add_tuple_with_data.c lib/hmap_delete.c lib/hmap_destroy.c lib/hmap_free_data.c lib/hmap_init.c lib/hmap_internal.c lib/hmap_is_locate.c lib/hmap_print_list.c lib/hmap_print_table.c lib/hmap_print_tree.c lib/hmap_search.c lib/hmap_set.c lib/hmap_truncate.c lib/scan_double.c lib/scan_fromhex.c lib/scan_xlong.c lib/scan_xlonglong.c lib/str_chr.c lib/str_diff.c lib/str_diffn.c lib/str_len.c lib/stralloc_append.c lib/stralloc_append_sa.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_catc.c lib/stralloc_catlong0.c lib/stralloc_cats.c lib/stralloc_catulong0.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_diffs.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_insertb.c lib/stralloc_move.c lib/stralloc_nul.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/stralloc_remove.c lib/stralloc_trunc.c lib/stralloc_write.c lib/stralloc_zero.c) 
-
+ target_link_libraries(eagle-init-brd ${LIBXML2_LIBRARIES})
+ 
+ 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(X64 "64")
 endif()

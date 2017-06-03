@@ -7,7 +7,13 @@
 
 #include <cstdio>
 #include <cstring>
+#include <experimental/filesystem>
+#include <filesystem> // Microsoft-specific implementation header file name  
+using namespace std::experimental::filesystem::v1;  
+
+#ifdef __GNUC__
 #include <libgen.h>
+#endif
 
 using std::string;
 using std::vector;
@@ -57,7 +63,8 @@ int main(int argc, char* argv[])
 
     if(argc > 1) {
         std::string file = argv[1];
-        std::string filename = basename(argv[1]);
+        path p(file);
+        std::string filename = p.filename().generic_string();
         int newval = -1; //0xFF72;
         if(argc > 2) {
             const char* p = argv[2];

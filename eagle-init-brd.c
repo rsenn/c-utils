@@ -679,6 +679,15 @@ on_characters(void* ctx, const xmlChar* ch, int len) {
   free(chars);
 }
 
+static const char*
+basename(const char* filename) {
+  char* s1 = strrchr(filename, '\\');
+  char* s2 = strrchr(filename, '/');
+  if(s2 > s1)  s1 = s2;
+  if(s1) return s1+1;
+  return 0;
+}
+
 /* ----------------------------------------------------------------------- */
 int
 main(int argc, char* argv[]) {
