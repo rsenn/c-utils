@@ -5,6 +5,7 @@ project(dirlist)
 
 set(BUILD_SHARED_LIBS FALSE)
 
+
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
 
@@ -95,6 +96,20 @@ if(HAVE_LSTAT_FUNC)
 endif(HAVE_LSTAT_FUNC)
 
 find_package(libxml2)
+
+if(LIBXML2_LIBRARIES MATCHES static)
+  option(STATIC_LINK "Compile as static libraries" ON)
+else()
+  option(STATIC_LINK "Compile as static libraries" OFF)
+endif()
+
+if(STATIC_LINK)
+  add_definitions(-DNOLIBTOOL=1 -DLIBXML_STATIC=1)
+else(STATIC_LINK)
+  add_definitions(-DPIC=1)
+endif(STATIC_LINK)
+
+
 include_directories(${LIBXML2_INCLUDE_DIR})
 set(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
 
@@ -183,8 +198,13 @@ foreach(PROGRAM ${PROGRAMS})
 endforeach(PROGRAM)
 
   string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}")
+  
+  
+if(STATIC_LINK)
   install(FILES ${LIBXML2_LIBRARIES} DESTINATION lib) 
+else()
   install(FILES ${LIBXML2_DLL} DESTINATION bin) 
+endif()
 
 #target_link_libraries(eagle-init-brd)
 
