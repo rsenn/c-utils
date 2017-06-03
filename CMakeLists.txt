@@ -182,6 +182,10 @@ foreach(PROGRAM ${PROGRAMS})
   install(TARGETS ${PROGRAM} DESTINATION bin) 
 endforeach(PROGRAM)
 
+  string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}")
+  install(FILES ${LIBXML2_LIBRARIES} DESTINATION lib) 
+  install(FILES ${LIBXML2_DLL} DESTINATION bin) 
+
 #target_link_libraries(eagle-init-brd)
 
 if(Boost_INCLUDE_DIRS)
