@@ -423,7 +423,7 @@ $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 LIBS += -lstdc++
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd torrent-progress mediathek-parser opensearch-dump xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper eagle-init-brd)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser opensearch-dump xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper eagle-init-brd)
   
   
 ifeq ($(DO_CXX),1)
@@ -519,6 +519,13 @@ endif
 
 $(BUILDDIR)reg2cmd.o: reg2cmd.c
 $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)reg2cmd.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
+
+$(BUILDDIR)regfilter.o: regfilter.c
+$(BUILDDIR)regfilter$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)regfilter.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
