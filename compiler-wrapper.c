@@ -559,13 +559,14 @@ if(mode != PREPROCESS) {
 void
 print_strlist(buffer* b, const strlist* sl, const char* separator, const char* quot) {
   size_t n = strlist_count(sl);
+  int i;
   buffer_puts(b, " (#");
   buffer_putlong(b, n);
   buffer_puts(b, "):");
   // buffer_put(b, separator, 1);
   buffer_puts(b, separator);
 
-  for(int i = 0; i < n; ++i) {
+  for(i = 0; i < n; ++i) {
     const char* s = strlist_at(sl, i);
 
     if(str_len(s)) {
@@ -605,6 +606,7 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
 
 int
 main(int argc, char* argv[]) {
+   int i;
 
   argv0 = basename(argv[0]);
 
@@ -627,7 +629,7 @@ stralloc_init(&msg_format);
 
 strlist_init(&args);
 
-  for(int i = 1; i < argc; ++i) {
+  for(i = 1; i < argc; ++i) {
     strlist_push(&args, argv[i]);
   }
   DUMP_LIST(err_buf, args, "\n\t", "'");

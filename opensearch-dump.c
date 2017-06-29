@@ -10,8 +10,8 @@ static char sep = '?';
 static void
 print_attr_names(xmlElement* elm) {
   bool param = !strcmp((const char*)elm->name, "Param");
-
-  for(xmlAttribute* attr_p = (xmlAttribute*)elm->attributes; attr_p; attr_p = (xmlAttribute*)attr_p->next) {
+  xmlAttribute* attr_p;
+  for(attr_p = (xmlAttribute*)elm->attributes; attr_p; attr_p = (xmlAttribute*)attr_p->next) {
     const char* content = (const char*)xmlNodeGetContent((xmlNodePtr)attr_p);
     bool name = !strcmp((const char*)attr_p->name, "name");
     if(param) {
@@ -40,6 +40,7 @@ print_attr_names(xmlElement* elm) {
 static void
 print_element_names(xmlNode* a_node) {
   xmlNode* cur_node = NULL;
+  size_t i;
   stralloc_init(&url);
   stralloc_init(&templ);
   a_node = a_node->children;
@@ -82,7 +83,7 @@ print_element_names(xmlNode* a_node) {
   /* buffer_puts(buffer_1, "url: ");
     buffer_putsa(buffer_1, &url);
     buffer_putnlflush(buffer_1);*/
-  for(size_t i = 0; i < url.len; ++i) {
+  for(i = 0; i < url.len; ++i) {
     if(url.s[i] == '{') {
       /*  buffer_put(buffer_2, &url.s[i], 13);
         buffer_putnlflush(buffer_2); */
