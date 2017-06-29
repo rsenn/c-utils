@@ -281,7 +281,7 @@ CFLAGS_Release = -g -fomit-frame-pointer -O2
 
 CXXFLAGS = -pipe
 
-CXXFLAGS += -std=c++14
+CXXFLAGS += -std=c++11
 
 CXXFLAGS_Debug = -g -ggdb -O0
 CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
@@ -553,7 +553,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): INCLUDES += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
-$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS)
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS) -lm
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a $(BUILDDIR)hmap.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
