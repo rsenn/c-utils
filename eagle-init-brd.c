@@ -680,7 +680,7 @@ on_characters(void* ctx, const xmlChar* ch, int len) {
 }
 
 static const char*
-basename(const char* filename) {
+mybasename(const char* filename) {
   char* s1 = strrchr(filename, '\\');
   char* s2 = strrchr(filename, '/');
   if(s2 > s1)  s1 = s2;
@@ -702,7 +702,7 @@ main(int argc, char* argv[]) {
   if(argc > 1) {
     filename = argv[1];
   } else {
-    fprintf(stderr, "Usage: %s <filename>\n", basename(argv[0]));
+    fprintf(stderr, "Usage: %s <filename>\n", mybasename(argv[0]));
     return 1;
   }
 
