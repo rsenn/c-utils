@@ -55,7 +55,7 @@ endif
 ifeq ($(DIET),1)
 DO_CXX := 0
 else
-DO_CXX := 1
+DO_CXX := 0
 endif
 
 ifeq ($(CROSS_COMPILE),)
@@ -404,7 +404,7 @@ CPPFLAGS += $(patsubst %,-D%,$(DEFS))
 LIB_SRC = $(wildcard *_*.c umult*.c)
 LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
-pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L)))
+pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upper:]]:/\),\n-I\1,g ; /^-I$$/d"))
 
 ifneq ($(shell uname -o),GNU/Linux)
 ICONV_CFLAGS := $(shell $(PKG_CONFIG_CMD) --cflags libiconv 2>/dev/null || echo)
