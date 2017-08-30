@@ -12,7 +12,6 @@ buffer_dummyread(int fd, char* b, size_t n) { return 0; }
 int
 count_field_lengths(strlist* sl, int lengths[21])
 {
-
   int i;
   for(i = 0; i < 21; i++) {
     const char* s = strlist_at(sl, i);
@@ -92,22 +91,32 @@ get_mediathek_list(const char* url)
   {
     char buf[1024];
     char buf2[16384];
-    ssize_t ret;
+    ssize_t ret, ret2;
     strlist sl;
     buffer b = BUFFER_INIT(read, xzpipe[0], buf, sizeof(buf));
 
     strlist_init(&sl);
 
     while((ret = buffer_get_token(&b, buf2, sizeof(buf2), "]", 1)) > 0) {
-      buf2[ret++] = ']';
+
+      for(;;) {
+        buf2[ret++] = ']';
+        ret2 = buffer_get(&b, &buf2[ret], 1);
+        if(ret2 > 0) {
+
+          if(buf2[ret] == ',') break;
+
+          ret += ret2;
+          ret2 = buffer_get_token(&b, &buf2[ret], sizeof(buf2) - ret, "]", 1);
+          if(ret2 > 0)
+            ret += ret2;
+        }
+      }
 
       split_fields(&sl, buf2, ret);
-
-      /*buffer_put(buffer_1, buf2, ret);
-      buffer_put(buffer_1, "\n", 1);*/
     }
-    buffer_flush(buffer_1);
-
+    
+		buffer_flush(buffer_1);
   }
 
 
