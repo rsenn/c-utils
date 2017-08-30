@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/wait.h>
 #include "buffer.h"
 #include "strlist.h"
 #include "str.h"
@@ -9,7 +10,7 @@ const char* const mediathek_url = "http://download10.onlinetvrecorder.com/mediat
 static ssize_t
 buffer_dummyread(int fd, char* b, size_t n) { return 0; }
 
-int
+void
 count_field_lengths(strlist* sl, int lengths[21])
 {
   int i;
@@ -25,6 +26,7 @@ count_field_lengths(strlist* sl, int lengths[21])
 int
 split_fields(strlist* sl, char* buf, size_t n)
 {
+				int ret = 0;
   char buf2[4096];
   char *p = buf;
   char *end = buf + n;
@@ -50,14 +52,17 @@ split_fields(strlist* sl, char* buf, size_t n)
     }
 
     strlist_pushb(sl, buf2, n);
+		ret++;
   }
 
   strlist_dump(buffer_2, sl);
+	return ret;
 }
 
 int
 get_mediathek_list(const char* url)
 {
+				int status;
   int xzpid;
   int xzpipe[2];
 
@@ -119,7 +124,8 @@ get_mediathek_list(const char* url)
 		buffer_flush(buffer_1);
   }
 
-
+	waitpid(-1, &status, WNOHANG);
+  return 0;
 }
 
 int main()
