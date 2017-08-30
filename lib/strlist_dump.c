@@ -17,7 +17,7 @@ const char* s;
         char chrs[64] = { '\\', *s, '\0' };
         char* p = &chrs[1];
         if(!isprint(*p) || iscntrl(*p)) {
-          p[fmt_ulong(p, *p)] = '\0';
+          p[fmt_ulong(p, (unsigned long)(unsigned char)*p)] = '\0';
 
           --p;
         }

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "buffer.h"
 #include "strlist.h"
+#include "str.h"
 
 const char* const mediathek_url = "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz";
 
@@ -9,28 +10,47 @@ static ssize_t
 buffer_dummyread(int fd, char* b, size_t n) { return 0; }
 
 int
+count_field_lengths(strlist* sl, int lengths[21])
+{
+
+  int i;
+  for(i = 0; i < 21; i++) {
+    const char* s = strlist_at(sl, i);
+    if(s) {
+      if(str_len(s) >= lengths[i])
+        lengths[i] = str_len(s);
+    }
+  }
+}
+
+int
 split_fields(strlist* sl, char* buf, size_t n)
 {
   char buf2[4096];
-  buffer b = BUFFER_INIT(buffer_dummyread, 0, buf, n);
-  b.n = b.a;
+  char *p = buf;
+  char *end = buf + n;
 
   strlist_zero(sl);
-  int ret;
 
+  for(;;) {
+    size_t n = 0;
+    while(p < end && *p != '"')
+      ++p;
 
-  while((ret = buffer_get_token(&b, buf2, sizeof(buf2), "\"", 1)) > 0) {
+    if(p == end) break;
 
-    ret = buffer_get_token(&b, buf2, sizeof(buf2), "\"", 1);
+    ++p;
 
-    if(ret > 0) {
+    while(p < end) {
 
-      strlist_pushb(sl, buf2, ret);
-      /*buffer_put(buffer_2, "\n", 1);
-      buffer_put(buffer_2, buf2, ret);
-      buffer_put(buffer_2, "\n", 1);
-      buffer_flush(buffer_2);*/
+      if(*p == '\\' && p[1] == '"')	{ ++p; } else {
+        if(*p == '"') { ++p; break; }
+      }
+
+      buf2[n++] = *p++;
     }
+
+    strlist_pushb(sl, buf2, n);
   }
 
   strlist_dump(buffer_2, sl);
