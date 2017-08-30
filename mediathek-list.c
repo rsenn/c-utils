@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <signal.h>
 #include "buffer.h"
 #include "strlist.h"
 #include "str.h"
@@ -26,7 +27,7 @@ count_field_lengths(strlist* sl, int lengths[21])
 int
 split_fields(strlist* sl, char* buf, size_t n)
 {
-				int ret = 0;
+  int ret = 0;
   char buf2[4096];
   char *p = buf;
   char *end = buf + n;
@@ -52,44 +53,42 @@ split_fields(strlist* sl, char* buf, size_t n)
     }
 
     strlist_pushb(sl, buf2, n);
-		ret++;
+    ret++;
   }
 
   strlist_dump(buffer_2, sl);
-	return ret;
+  return ret;
 }
 
 int
 get_mediathek_list(const char* url)
 {
-				int status;
+  int status;
   int xzpid;
   int xzpipe[2];
+  int clpipe[2];
+  int clpid;
 
   if(pipe(xzpipe) != 0) return -1;
+  if(pipe(clpipe) != 0) return -1;
 
   if((xzpid = fork()) == 0) {
-    int clpipe[2];
-    int clpid;
-
-
-    if(pipe(clpipe) != 0) return -1;
 
     close(STDOUT_FILENO);
     dup(xzpipe[1]);
     close(STDIN_FILENO);
     dup(clpipe[0]);
 
-    if((clpid = fork()) == 0) {
-
-      close(STDOUT_FILENO);
-      dup(clpipe[1]);
-
-      execlp("curl", "curl", "-s", url, NULL);
-      exit(1);
-    }
-
     execlp("xzcat", "xzcat", NULL);
+    exit(1);
+  }
+
+  if((clpid = fork()) == 0) {
+
+    close(STDOUT_FILENO);
+    dup(clpipe[1]);
+
+    execlp("curl", "curl", "-s", url, NULL);
     exit(1);
   }
 
@@ -120,11 +119,14 @@ get_mediathek_list(const char* url)
 
       split_fields(&sl, buf2, ret);
     }
-    
-		buffer_flush(buffer_1);
+
+    buffer_flush(buffer_1);
   }
 
-	waitpid(-1, &status, WNOHANG);
+  kill(xzpid, SIGKILL);
+  waitpid(xzpid, &status, WNOHANG);
+  kill(clpid, SIGKILL);
+  waitpid(clpid, &status, WNOHANG);
   return 0;
 }
 
