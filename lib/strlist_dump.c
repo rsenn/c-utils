@@ -14,7 +14,7 @@ const char* s;
   const char* end = sl->sa.s+sl->sa.len;
   for( s = sl->sa.s; s < end; ++s) {
       while(*s) {
-        char chrs[5] = { '\\', *s, '\0' };
+        char chrs[64] = { '\\', *s, '\0' };
         char* p = &chrs[1];
         if(!isprint(*p) || iscntrl(*p)) {
           p[fmt_ulong(p, *p)] = '\0';
@@ -28,6 +28,8 @@ const char* s;
       }
     if(s + 1 < end)
       buffer_puts(out, "\", \"");
+		if(--n == 0)
+						break;
   }
   buffer_putsflush(out, "\"}\n");
 }

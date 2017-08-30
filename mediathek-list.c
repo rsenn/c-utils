@@ -1,33 +1,65 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "buffer.h"
+#include "strlist.h"
 
 const char* const mediathek_url = "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz";
+
+static ssize_t
+buffer_dummyread(int fd, char* b, size_t n) { return 0; }
+
+int
+split_fields(strlist* sl, char* buf, size_t n)
+{
+  char buf2[4096];
+  buffer b = BUFFER_INIT(buffer_dummyread, 0, buf, n);
+  b.n = b.a;
+
+  strlist_zero(sl);
+  int ret;
+
+
+  while((ret = buffer_get_token(&b, buf2, sizeof(buf2), "\"", 1)) > 0) {
+
+    ret = buffer_get_token(&b, buf2, sizeof(buf2), "\"", 1);
+
+    if(ret > 0) {
+
+      strlist_pushb(sl, buf2, ret);
+      /*buffer_put(buffer_2, "\n", 1);
+      buffer_put(buffer_2, buf2, ret);
+      buffer_put(buffer_2, "\n", 1);
+      buffer_flush(buffer_2);*/
+    }
+  }
+
+  strlist_dump(buffer_2, sl);
+}
 
 int
 get_mediathek_list(const char* url)
 {
-  int pid;
-  int pipe1[2];
+  int xzpid;
+  int xzpipe[2];
 
-  if(pipe(pipe1) != 0) return -1;
+  if(pipe(xzpipe) != 0) return -1;
 
-  if((pid = fork()) == 0) {
-    int pipe2[2];
-    int pid2;
+  if((xzpid = fork()) == 0) {
+    int clpipe[2];
+    int clpid;
 
 
-    if(pipe(pipe2) != 0) return -1;
+    if(pipe(clpipe) != 0) return -1;
 
     close(STDOUT_FILENO);
-    dup(pipe1[1]);
+    dup(xzpipe[1]);
     close(STDIN_FILENO);
-    dup(pipe2[0]);
+    dup(clpipe[0]);
 
-    if((pid2 = fork()) == 0) {
+    if((clpid = fork()) == 0) {
 
       close(STDOUT_FILENO);
-      dup(pipe2[1]);
+      dup(clpipe[1]);
 
       execlp("curl", "curl", "-s", url, NULL);
       exit(1);
@@ -41,12 +73,18 @@ get_mediathek_list(const char* url)
     char buf[1024];
     char buf2[16384];
     ssize_t ret;
-    buffer b = BUFFER_INIT(read, pipe1[0], buf, sizeof(buf));
+    strlist sl;
+    buffer b = BUFFER_INIT(read, xzpipe[0], buf, sizeof(buf));
+
+    strlist_init(&sl);
 
     while((ret = buffer_get_token(&b, buf2, sizeof(buf2), "]", 1)) > 0) {
-			if(buf2[ret - 1] == ']') 
-        buffer_put(buffer_1, "\n", 1);
-      buffer_put(buffer_1, buf2, ret);
+      buf2[ret++] = ']';
+
+      split_fields(&sl, buf2, ret);
+
+      /*buffer_put(buffer_1, buf2, ret);
+      buffer_put(buffer_1, "\n", 1);*/
     }
     buffer_flush(buffer_1);
 
