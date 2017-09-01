@@ -587,6 +587,12 @@ int list_dir_internal(stralloc* dir,  char type) {
 
     dtype = dir_type(&d);
 
+#ifndef PLAIN_WINDOWS
+		if(S_ISLNK(st.st_mode)) {
+						stat(dir->s, &st);
+		}
+    mode = st.st_mode;
+#endif
 
     if (dtype) {
       is_dir = !!(dtype & D_DIRECTORY);
@@ -603,7 +609,6 @@ int list_dir_internal(stralloc* dir,  char type) {
 
 
 #ifndef PLAIN_WINDOWS
-    mode = st.st_mode;
     nlink = st.st_nlink;
     uid = st.st_uid;
     gid = st.st_gid;

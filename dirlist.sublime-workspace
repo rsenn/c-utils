@@ -12,15 +12,6 @@
 	"buffers":
 	[
 		{
-			"file": "lib/dir_open.c",
-			"settings":
-			{
-				"buffer_size": 1110,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "lib/utf8.c",
 			"settings":
 			{
@@ -29,62 +20,44 @@
 			}
 		},
 		{
-			"file": "lib/utf8.h",
+			"contents": "#include <unistd.h>\n#include <stdlib.h>\n#include <sys/wait.h>\n#include <signal.h>\n#include \"buffer.h\"\n#include \"strlist.h\"\n#include \"str.h\"\n\nconst char* const mediathek_url = \"http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz\";\n\nstatic ssize_t\nbuffer_dummyread(int fd, char* b, size_t n) { return 0; }\n\nvoid\ncount_field_lengths(strlist* sl, int lengths[21])\n{\n  int i;\n  for(i = 0; i < 21; i++) {\n    const char* s = strlist_at(sl, i);\n    if(s) {\n      if(str_len(s) >= lengths[i])\n        lengths[i] = str_len(s);\n    }\n  }\n}\n\nint\nsplit_fields(strlist* sl, char* buf, size_t n)\n{\n  int ret = 0;\n  char buf2[4096];\n  char *p = buf;\n  char *end = buf + n;\n\n  strlist_zero(sl);\n\n  for(;;) {\n    \n    size_t n = 0;\n    while(p < end && *p != '\"')\n      ++p;\n\n    if(p == end) break;\n\n    ++p;\n\n    while(p < end) {\n\n      if(*p == '\\\\' && p[1] == '\"')\t{ ++p; } else {\n        if(*p == '\"') { ++p; break; }\n      }\n\n      buf2[n++] = *p++;\n    }\n\n    strlist_pushb(sl, buf2, n);\n    ret++;\n  }\n\n  strlist_dump(buffer_2, sl);\n  return ret;\n}\n\nint\nget_mediathek_list(const char* url)\n{\n  int status;\n  int xzpid;\n  int xzpipe[2];\n  int clpipe[2];\n  int clpid;\n\n  if(pipe(xzpipe) != 0) return -1;\n  if(pipe(clpipe) != 0) return -1;\n\n  if((xzpid = fork()) == 0) {\n\n    close(STDOUT_FILENO);\n    dup(xzpipe[1]);\n    close(STDIN_FILENO);\n    dup(clpipe[0]);\n\n    execlp(\"xzcat\", \"xzcat\", NULL);\n    exit(1);\n  }\n\n  if((clpid = fork()) == 0) {\n\n    close(STDOUT_FILENO);\n    dup(clpipe[1]);\n\n    execlp(\"curl\", \"curl\", \"-s\", url, NULL);\n    exit(1);\n  }\n\n  {\n    char buf[1024];\n    char buf2[16384];\n    ssize_t ret, ret2;\n    strlist sl;\n    buffer b = BUFFER_INIT(read, xzpipe[0], buf, sizeof(buf));\n\n    strlist_init(&sl);\n\n    while((ret = buffer_get_token(&b, buf2, sizeof(buf2), \"]\", 1)) > 0) {\n\n      for(;;) {\n        buf2[ret++] = ']';\n        ret2 = buffer_get(&b, &buf2[ret], 1);\n        if(ret2 > 0) {\n\n          if(buf2[ret] == ',') break;\n\n          ret += ret2;\n          ret2 = buffer_get_token(&b, &buf2[ret], sizeof(buf2) - ret, \"]\", 1);\n          if(ret2 > 0)\n            ret += ret2;\n        }\n      }\n\n      split_fields(&sl, buf2, ret);\n    }\n\n    buffer_flush(buffer_1);\n  }\n\n  kill(xzpid, SIGKILL);\n  waitpid(xzpid, &status, WNOHANG);\n  kill(clpid, SIGKILL);\n  waitpid(clpid, &status, WNOHANG);\n  return 0;\n}\n\nint main()\n{\n  get_mediathek_list(mediathek_url);\n}\n\n",
+			"file": "mediathek-list.c",
+			"file_size": 2393,
+			"file_write_time": 131485461226003622,
 			"settings":
 			{
-				"buffer_size": 3028,
+				"buffer_size": 2398,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/dir_name.c",
+			"file": "count-depth.c",
 			"settings":
 			{
-				"buffer_size": 580,
+				"buffer_size": 1388,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "[\n\t{ \"keys\": [\"alt+f5\"], \"command\": \"schemr_list_schemes\" },\n\t{ \"keys\": [\"alt+f7\"], \"command\": \"schemr_cycle_schemes\", \"args\": {\"direction\": \"prev\"}},\n\t{ \"keys\": [\"alt+f8\"], \"command\": \"schemr_cycle_schemes\", \"args\": {\"direction\": \"next\"}},\n\t{ \"keys\": [\"alt+f10\"], \"command\": \"schemr_cycle_schemes\", \"args\": {\"direction\": \"rand\"}},\n\n\t{ \"keys\": [\"shift+alt+f5\"], \"command\": \"schemr_list_favorite_schemes\" },\n\t{ \"keys\": [\"shift+alt+f7\"], \"command\": \"schemr_cycle_favorite_schemes\", \"args\": {\"direction\": \"prev\"}},\n\t{ \"keys\": [\"shift+alt+f8\"], \"command\": \"schemr_cycle_favorite_schemes\", \"args\": {\"direction\": \"next\"}},\n\t{ \"keys\": [\"shift+alt+f10\"], \"command\": \"schemr_cycle_favorite_schemes\", \"args\": {\"direction\": \"rand\"}}\n]\n",
+			"file": "/home/roman/.config/sublime-text-3/Packages/Schemr/Default (Linux).sublime-keymap",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 724,
+				"line_ending": "Unix",
+				"read_only": true,
+				"scratch": true
+			}
+		},
+		{
+			"file": "/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+			"settings":
+			{
+				"buffer_size": 967,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/dir_read.c",
-			"settings":
-			{
-				"buffer_size": 765,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/dir_internal.h",
-			"settings":
-			{
-				"buffer_size": 2199,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/dir_close.c",
-			"settings":
-			{
-				"buffer_size": 473,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/dir.h",
-			"settings":
-			{
-				"buffer_size": 762,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Windows"
 			}
 		}
 	],
@@ -135,10 +108,14 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 152.0,
-		"last_filter": "Remove",
+		"height": 363.0,
+		"last_filter": "Package Control: ",
 		"selected_items":
 		[
+			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
 			[
 				"Remove",
 				"Package Control: Remove Package"
@@ -172,13 +149,15 @@
 				"About"
 			]
 		],
-		"width": 528.0
+		"width": 449.0
 	},
 	"console":
 	{
 		"height": 114.0,
 		"history":
 		[
+			"schemr",
+			"schemr_favorite_current_scheme",
 			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
 		]
 	},
@@ -193,11 +172,19 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/roman/Documents/dirlist",
-		"/C/Users/roman/Documents/dirlist/lib"
+		"/home/roman/Sources/dirlist"
 	],
 	"file_history":
 	[
+		"/home/roman/.config/sublime-text-3/Packages/User/Package Control.sublime-settings",
+		"/home/roman/.config/sublime-text-3/Packages/Package Control/Package Control.sublime-settings",
+		"/home/roman/Sources/dirlist/lib/utf8.h",
+		"/home/roman/Sources/dirlist/lib/dir_name.c",
+		"/home/roman/Sources/dirlist/lib/dir_read.c",
+		"/home/roman/Sources/dirlist/lib/dir_internal.h",
+		"/home/roman/Sources/dirlist/lib/dir_close.c",
+		"/home/roman/Sources/dirlist/lib/dir.h",
+		"/home/roman/Sources/dirlist/lib/dir_open.c",
 		"/C/Users/roman/Documents/dirlist/list-r.c",
 		"/C/Users/roman/Documents/dirlist/lib/utf8.c",
 		"/C/Users/roman/Documents/dirlist/lib/utf8.h",
@@ -316,20 +303,11 @@
 		"/E/Sources/pictest/adc.c",
 		"/E/Sources/pictest/pictest.h",
 		"/E/Sources/pictest/pictest.cbp",
-		"/E/Sources/LC-meter-16f876a+n3310display/uart.h",
-		"/E/Sources/LC-meter-16f876a+n3310display/ser.c",
-		"/E/Sources/LC-meter-16f876a+n3310display/display.c",
-		"/E/Sources/LC-meter-16f876a+n3310display/display.h",
-		"/E/Sources/LC-meter-16f876a+n3310display/ser.h",
-		"/E/Sources/LC-meter-16f876a+n3310display/Makefile.vars",
-		"/E/Sources/LC-meter-16f876a+n3310display/LC-meter.c",
-		"/E/Sources/LC-meter-16f876a+n3310display/oscillator.h",
-		"/E/Sources/LC-meter-16f876a+n3310display/Makefile.xc8",
-		"/E/Sources/LC-meter-16f876a+n3310display/uart.c"
+		"/E/Sources/LC-meter-16f876a+n3310display/uart.h"
 	],
 	"find":
 	{
-		"height": 34.0
+		"height": 21.0
 	},
 	"find_in_files":
 	{
@@ -343,6 +321,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"shift+ctrl",
+			"alt",
 			"dir_INTERNAL(d)->tmpname",
 			"size",
 			"double",
@@ -429,6 +409,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			"ctrl+shift",
+			"ctrl",
 			"d->tmpname",
 			"space",
 			"msg",
@@ -470,120 +452,11 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "lib/dir_open.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1110,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								89,
-								89
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"incomplete_sync": null,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"file": "lib/utf8.c",
 					"semi_transient": false,
 					"settings":
@@ -695,719 +568,131 @@
 							"origin_encoding": "ASCII",
 							"remote_loading": false,
 							"synced": false,
-							"syntax": "Packages/C99/C99.tmLanguage",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2250.0,
+						"translation.y": 430.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "lib/utf8.h",
+					"buffer": 1,
+					"file": "mediathek-list.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3028,
+						"buffer_size": 2398,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1834,
-								1842
+								548,
+								547
 							]
 						],
 						"settings":
 						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-									"1":
-									[
-										1884,
-										1885
-									]
-								},
-								"icon":
-								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/round_bracket.png",
-										"brackethighlighter.default"
-									]
-								},
-								"open":
-								{
-									"1":
-									[
-										1842,
-										1843
-									]
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"incomplete_sync": null,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 450.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/dir_name.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 580,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								580,
-								580
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"incomplete_sync": null,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 80.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/dir_read.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 765,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"incomplete_sync": null,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/C99/C99.tmLanguage",
+							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 156.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "lib/dir_internal.h",
-					"semi_transient": false,
+					"buffer": 2,
+					"file": "count-depth.c",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 2199,
+						"buffer_size": 1388,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								545,
-								545
+								1388,
+								1388
 							]
 						],
 						"settings":
 						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-									"1":
-									[
-										738,
-										739
-									]
-								},
-								"icon":
-								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/curly_bracket.png",
-										"brackethighlighter.default"
-									]
-								},
-								"open":
-								{
-									"1":
-									[
-										509,
-										510
-									]
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content"
-							],
-							"incomplete_sync": null,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 56.0,
+						"translation.y": 469.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "lib/dir_close.c",
+					"buffer": 3,
+					"file": "/home/roman/.config/sublime-text-3/Packages/Schemr/Default (Linux).sublime-keymap",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 473,
+						"buffer_size": 724,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								166,
-								166
+								724,
+								724
 							]
 						],
 						"settings":
 						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"incomplete_sync": null,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "lib/dir.h",
+					"buffer": 4,
+					"file": "/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 762,
+						"buffer_size": 967,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								741,
-								741
+								493,
+								493
 							]
 						],
 						"settings":
 						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"incomplete_sync": null,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 405.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"incomplete_sync": null,
-							"is_init_dirty_state": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
