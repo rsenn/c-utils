@@ -11,9 +11,12 @@ CONFIG -= qt
   QMAKE_CFLAGS_WARN_ON = -W3
 }
 
-mingw | mingw32 | mingw64 | msvc {
+#mingw | mingw32 | mingw64 | msvc {
+win32 | winn64 {
   DEFINES += USE_READDIR=0
 
+} else {
+   DEFINES += USE_READDIR=1
 }
 
 #win32|win64|msvc|mingw32:CONFIG(release, debug|release):  LIBS += -ladvapi32 -lws2_32
