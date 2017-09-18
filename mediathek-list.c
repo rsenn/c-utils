@@ -240,7 +240,7 @@ int
 parse_entry(buffer* b, strlist* sl)
 {
 
-  const char* sep = "\n";
+  const char* sep = ", ";
   time_t dt = parse_datetime(strlist_at(sl, 4), "%d.%m.%Y");
 
   time_t tm = parse_time(strlist_at(sl, 5));
