@@ -217,8 +217,13 @@ output_entry(buffer* b, strlist* sl) {
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6));  /* duration */
   
-  size_t mbytes = 0; 
-  scan_uint(strlist_at(sl, 7), &mbytes);
+  size_t mbytes = 0;
+  const char *mb = strlist_at(sl, 7);
+  if(mb) scan_uint(mb, &mbytes);
+  
+  const char* desc = strlist_at(sl, 8);
+  const char* url = strlist_at(sl, 9);
+    const char* link = strlist_at(sl, 10);
   
 //  fprintf(stderr, "datetime: %llu\n", datetime);
   //buffer_putm(b, "time: ",  format_time(ti), " (", format_num(datetime), ") ", sep, NULL);
@@ -229,7 +234,7 @@ output_entry(buffer* b, strlist* sl) {
   
   buffer_putm(b, "Datum/Zeit: ", format_datetime(dt+tm, "%d.%m.%Y %H:%M:%S"), sep, NULL);
   buffer_putm(b, "Dauer: ", format_time(dr), sep, NULL);
-   
+     buffer_putm(b, "Grösse: ", format_num(mbytes), "MB", sep, NULL);
   buffer_putnlflush(b);
 }
 
