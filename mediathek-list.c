@@ -240,7 +240,7 @@ void
 output_entry(buffer* b, strlist* sl)
 {
 
-  const char* sep = ",\n";
+  const char* sep = "\n";
   time_t dt = parse_datetime(strlist_at(sl, 4), "%d.%m.%Y");
 
   time_t tm = parse_time(strlist_at(sl, 5));
@@ -254,22 +254,17 @@ output_entry(buffer* b, strlist* sl)
   const char* url = strlist_at(sl, 9);
   const char* link = strlist_at(sl, 10);
 
-
-
-//  fprintf(stderr, "datetime: %llu\n", datetime);
-  //buffer_putm(b, "time: ",  format_time(ti), " (", format_num(datetime), ") ", sep, NULL);
-
-  buffer_putm(b, "Sender: ", strlist_at(sl, 1), sep, NULL);
-  buffer_putm(b, "Thema: ", strlist_at(sl, 2), sep, NULL);
-  buffer_putm(b, "Titel: ", strlist_at(sl, 3), sep, NULL);
+  buffer_putm(b, "Sender:     ", strlist_at(sl, 1), sep, NULL);
+  buffer_putm(b, "Thema:      ", strlist_at(sl, 2), sep, NULL);
+  buffer_putm(b, "Titel:      ", strlist_at(sl, 3), sep, NULL);
 
   buffer_putm(b, "Datum/Zeit: ", format_datetime(dt + tm, "%d.%m.%Y %H:%M:%S"), sep, NULL);
-  buffer_putm(b, "Dauer: ", format_time(dr), sep, NULL);
-  buffer_putm(b, "Grösse: ", format_num(mbytes), "MB", sep, NULL);
+  buffer_putm(b, "Dauer:      ", format_time(dr), sep, NULL);
+  buffer_putm(b, "Grösse:     ", format_num(mbytes), "MB", sep, NULL);
 
-  buffer_putm(b, "URL: ", url , sep, NULL);
-  buffer_putm(b, "URL (lo): ", make_url(url, strlist_at(sl, 13)), sep, NULL);
-  buffer_putm(b, "URL (hi): ", make_url(url, strlist_at(sl, 15)), sep, NULL);
+  buffer_putm(b, "URL:        ", url , sep, NULL);
+  buffer_putm(b, "URL (lo):   ", make_url(url, strlist_at(sl, 13)), sep, NULL);
+  buffer_putm(b, "URL (hi):   ", make_url(url, strlist_at(sl, 15)), sep, NULL);
 
   buffer_putnlflush(b);
 }
@@ -304,8 +299,7 @@ parse_mediathek_list(int fd)
     strlist_init(&sl);
     split_fields(&sl, &prev, buf2, ret);
 
-
-    strlist_dump(buffer_2, &sl);
+//    strlist_dump(buffer_2, &sl);
     output_entry(buffer_1, &sl);
 
     prev = sl;
@@ -313,11 +307,6 @@ parse_mediathek_list(int fd)
 
   buffer_flush(buffer_1);
 }
-
-//kill(xzpid, SIGKILL);
-//waitpid(xzpid, &status, WNOHANG);
-//kill(clpid, SIGKILL);
-//waitpid(clpid, &status, WNOHANG);
 
 int main(int argc, char *argv[])
 {
