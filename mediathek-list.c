@@ -236,8 +236,8 @@ make_url(const char* base, const char* trail)
 
 
 
-void
-output_entry(buffer* b, strlist* sl)
+int
+parse_entry(buffer* b, strlist* sl)
 {
 
   const char* sep = "\n";
@@ -267,6 +267,22 @@ output_entry(buffer* b, strlist* sl)
   buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);
 
   buffer_putnlflush(b);
+  
+  return 0;
+}
+
+void
+output_entry(buffer* b, strlist* sl) {
+
+  size_t i, n = strlist_count(sl);
+    
+  buffer_put(b, " ", 1);
+    
+  for(i = 0; i < n; ++i) {
+    buffer_put(b, " \"", 2);
+    buffer_puts(b, strlist_at(sl, i));
+    buffer_puts(b, (i == 0 ? "\" : [" : ((i + 1 < n) ? "\"," : "\" ]")));
+  }
 }
 
 int
@@ -279,6 +295,8 @@ parse_mediathek_list(int fd)
   buffer b = BUFFER_INIT(read, fd, buf, sizeof(buf));
 
   strlist_init(&prev);
+  
+  buffer_put(buffer_1, "{\n", 2);
 
   while((ret = buffer_get_token(&b, buf2, sizeof(buf2), "]", 1)) > 0) {
 
@@ -300,6 +318,9 @@ parse_mediathek_list(int fd)
     split_fields(&sl, &prev, buf2, ret);
 
 //    strlist_dump(buffer_2, &sl);
+    parse_entry(buffer_2, &sl);
+    
+    if(strlist_count(&prev)) buffer_put(buffer_1, ",\n", 2);
     output_entry(buffer_1, &sl);
 
     prev = sl;
