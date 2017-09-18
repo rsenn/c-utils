@@ -273,8 +273,20 @@ output_entry(buffer* b, strlist* sl) {
   buffer_put(b, " ", 1);
 
   for(i = 0; i < n; ++i) {
+    char c;
+    const char* s = strlist_at(sl, i);
     buffer_put(b, " \"", 2);
-    buffer_puts(b, strlist_at(sl, i));
+
+    while((c = *s++)) {
+      if(c == '"') {
+        c = '\\';
+        buffer_PUTC(b, c);
+        c = '"';
+      }
+      buffer_PUTC(b, c);
+
+    }
+
     buffer_puts(b, (i == 0 ? "\" : [" : ((i + 1 < n) ? "\"," : "\" ]")));
   }
 }

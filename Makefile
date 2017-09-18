@@ -424,11 +424,11 @@ LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
 $(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
 $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 
-LIBS += -lstdc++
+#LIBS += -lstdc++
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list opensearch-dump xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper eagle-init-brd)
-  
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper )
+ #opensearch-dump eagle-init-brd)
   
 ifeq ($(DO_CXX),1)
 PROGRAMS += \
@@ -473,7 +473,7 @@ $(OBJDIR):
 	-mkdir -p $(OBJDIR) || mkdir $(OBJDIR)
 	-md $(subst /,\,$(OBJDIR))
 
-$(BUILDDIR)scan.a: $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_uint.o $(BUILDDIR)scan_ushort.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_xlonglong.o $(BUILDDIR)scan_double.o
+$(BUILDDIR)scan.a: $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_ulongn.o $(BUILDDIR)scan_ulong.o $(BUILDDIR)scan_uint.o $(BUILDDIR)scan_ushort.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_xlonglong.o $(BUILDDIR)scan_double.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)open.a: $(BUILDDIR)open_append.o $(BUILDDIR)open_read.o $(BUILDDIR)open_rw.o $(BUILDDIR)open_trunc.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
