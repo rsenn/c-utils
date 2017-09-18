@@ -95,7 +95,16 @@ if(HAVE_LSTAT_FUNC)
   endif(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
 endif(HAVE_LSTAT_FUNC)
 
-find_package(libxml2)
+include(FindPkgConfig)
+
+pkg_search_module(
+				LIBXML2
+				libxml-2.0 
+				#REQUIRED
+)
+
+
+#find_package(libxml2)
 
 if(LIBXML2_LIBRARIES MATCHES static)
   option(STATIC_LINK "Compile as static libraries" ON)
