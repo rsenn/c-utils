@@ -51,6 +51,7 @@ HEADERS = \
 
 SOURCES = \
 	lib/buffer_1.c \
+	lib/buffer_2.c \
 	lib/buffer_feed.c \
 	lib/buffer_flush.c \
 	lib/buffer_get.c \
