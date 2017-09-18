@@ -32,6 +32,10 @@ CXX = g++
 
 BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 
+ifneq ($(CC),$(subst m32,,$(CC)))
+BUILD := $(subst x86_64,i386,$(BUILD))
+endif
+
 CCVER := $(shell $(CROSS_COMPILE)$(CC) -dumpversion)
 CXXVER := $(shell $(CROSS_COMPILE)$(CXX) -dumpversion)
 
