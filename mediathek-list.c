@@ -13,6 +13,8 @@
 #include "scan.h"
 #include "fmt.h"
 
+extern char strlist_dumpx[5];
+
 const char* argv0;
 
 const char* const mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
@@ -132,14 +134,15 @@ read_mediathek_list(const char* url)
 
 
 unsigned long
-parse_time(const char* s) { 
+parse_time(const char* s)
+{
   size_t r = 0;
   unsigned short n;
   size_t l;
-  
+
   if(s == NULL) return 0;
-  
-  for(;;) {  
+
+  for(;;) {
     l = scan_ushort(s, &n);
     if(l == 0) break;
     r += n;
@@ -151,11 +154,12 @@ parse_time(const char* s) {
     }
     if(*s == '\0') break;
   }
-  return r;  
+  return r;
 }
 
 char*
-format_num(time_t num) {
+format_num(time_t num)
+{
   static char buf[1024];
   memset(buf, 0,  sizeof(buf));
   buf[fmt_ulonglong(buf, num)] = '\0';
@@ -163,19 +167,20 @@ format_num(time_t num) {
 }
 
 char*
-format_time(time_t ti) {
+format_time(time_t ti)
+{
 
   static char buf[1024];
-  
+
   unsigned short h, m, s;
   size_t i = 0;
-  
+
   s = ti % 60;
   ti /= 60;
   m = ti % 60;
   ti /= 60;
   h = ti;
-  
+
   if(h < 10) buf[i++] = '0';
   i += fmt_ulong(&buf[i], h);
   buf[i++] = ':';
@@ -185,56 +190,87 @@ format_time(time_t ti) {
   if(s < 10) buf[i++] = '0';
   i += fmt_ulong(&buf[i], s);
   buf[i] = '\0';
-  
+
   return buf;
 }
 
 
 time_t
-parse_datetime(const char* s, const char* fmt) {
+parse_datetime(const char* s, const char* fmt)
+{
   struct tm tm_s;
   memset(&tm_s, 0, sizeof(struct tm));
-  if(strptime(s, fmt, &tm_s) == s)  
+  if(strptime(s, fmt, &tm_s) == s)
     return 0;
   return mktime(&tm_s);
 }
 
 char*
-format_datetime(size_t t, const char* fmt) {
-  static char buf[1024]; 
+format_datetime(size_t t, const char* fmt)
+{
+  static char buf[1024];
   time_t tm = t;
-   size_t n = strftime(buf, sizeof(buf), fmt, localtime(&tm));
-   
- return buf; //  buffer_put(b, buf, n);
+  size_t n = strftime(buf, sizeof(buf), fmt, localtime(&tm));
+
+  return buf; //  buffer_put(b, buf, n);
 }
 
-void
-output_entry(buffer* b, strlist* sl) {
 
-  const char* sep = ", ";
+char*
+make_url(const char* base, const char* trail)
+{
+  static stralloc url;
+
+  size_t n = 0;
+  size_t i;
+
+  if(trail == NULL) return NULL;
+  i = scan_uint(trail, &n);
+  if(trail[i] != '|') return NULL;
+  stralloc_copyb(&url, base, n);
+
+  stralloc_cats(&url, &trail[++i]);
+  stralloc_0(&url);
+  return url.s;
+}
+
+
+
+void
+output_entry(buffer* b, strlist* sl)
+{
+
+  const char* sep = ",\n";
   time_t dt = parse_datetime(strlist_at(sl, 4), "%d.%m.%Y");
-  
+
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6));  /* duration */
-  
+
   size_t mbytes = 0;
   const char *mb = strlist_at(sl, 7);
   if(mb) scan_uint(mb, &mbytes);
-  
+
   const char* desc = strlist_at(sl, 8);
   const char* url = strlist_at(sl, 9);
-    const char* link = strlist_at(sl, 10);
-  
+  const char* link = strlist_at(sl, 10);
+
+
+
 //  fprintf(stderr, "datetime: %llu\n", datetime);
   //buffer_putm(b, "time: ",  format_time(ti), " (", format_num(datetime), ") ", sep, NULL);
 
   buffer_putm(b, "Sender: ", strlist_at(sl, 1), sep, NULL);
   buffer_putm(b, "Thema: ", strlist_at(sl, 2), sep, NULL);
-  buffer_putm(b, "Titel: ", strlist_at(sl, 3), sep, NULL); 
-  
-  buffer_putm(b, "Datum/Zeit: ", format_datetime(dt+tm, "%d.%m.%Y %H:%M:%S"), sep, NULL);
+  buffer_putm(b, "Titel: ", strlist_at(sl, 3), sep, NULL);
+
+  buffer_putm(b, "Datum/Zeit: ", format_datetime(dt + tm, "%d.%m.%Y %H:%M:%S"), sep, NULL);
   buffer_putm(b, "Dauer: ", format_time(dr), sep, NULL);
-     buffer_putm(b, "Grösse: ", format_num(mbytes), "MB", sep, NULL);
+  buffer_putm(b, "Grösse: ", format_num(mbytes), "MB", sep, NULL);
+
+  buffer_putm(b, "URL: ", url , sep, NULL);
+  buffer_putm(b, "URL (lo): ", make_url(url, strlist_at(sl, 13)), sep, NULL);
+  buffer_putm(b, "URL (hi): ", make_url(url, strlist_at(sl, 15)), sep, NULL);
+
   buffer_putnlflush(b);
 }
 
@@ -268,7 +304,7 @@ parse_mediathek_list(int fd)
     strlist_init(&sl);
     split_fields(&sl, &prev, buf2, ret);
 
-  
+
     strlist_dump(buffer_2, &sl);
     output_entry(buffer_1, &sl);
 
@@ -285,6 +321,10 @@ parse_mediathek_list(int fd)
 
 int main(int argc, char *argv[])
 {
+  strlist_dumpx[1] = '\n';
+  strlist_dumpx[2] = '\t';
+
+
   argv0 = basename(argv[0]);
   return parse_mediathek_list(read_mediathek_list(mediathek_url));
 }

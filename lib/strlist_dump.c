@@ -3,6 +3,9 @@
 #include "fmt.h"
 #include <ctype.h>
 
+char
+strlist_dumpx[5] = {',', ' ', '\0', '\0'};
+
 void
 strlist_dump(buffer* out, const strlist* sl)
 {
@@ -27,7 +30,8 @@ strlist_dump(buffer* out, const strlist* sl)
       ++s;
     }
     if(s + 1 < end) {
-      buffer_puts(out, "\", ");
+      buffer_put(out, "\"", 1);
+      buffer_puts(out, strlist_dumpx);
       buffer_putulong(out, ++i);
       buffer_puts(out, ":\"");
     }
