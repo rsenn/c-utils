@@ -254,17 +254,17 @@ output_entry(buffer* b, strlist* sl)
   const char* url = strlist_at(sl, 9);
   const char* link = strlist_at(sl, 10);
 
-  buffer_putm(b, "Sender:     ", strlist_at(sl, 1), sep, NULL);
-  buffer_putm(b, "Thema:      ", strlist_at(sl, 2), sep, NULL);
-  buffer_putm(b, "Titel:      ", strlist_at(sl, 3), sep, NULL);
+  buffer_putm(b, "Kanal:\t", strlist_at(sl, 1), sep, NULL);
+  buffer_putm(b, "Thema:\t", strlist_at(sl, 2), sep, NULL);
+  buffer_putm(b, "Titel:\t", strlist_at(sl, 3), sep, NULL);
 
-  buffer_putm(b, "Datum/Zeit: ", format_datetime(dt + tm, "%d.%m.%Y %H:%M:%S"), sep, NULL);
-  buffer_putm(b, "Dauer:      ", format_time(dr), sep, NULL);
-  buffer_putm(b, "Grösse:     ", format_num(mbytes), "MB", sep, NULL);
+  buffer_putm(b, "Datum:\t", format_datetime(dt + tm, "%d.%m.%Y %H:%M:%S"), sep, NULL);
+  buffer_putm(b, "Dauer:\t", format_time(dr), sep, NULL);
+  buffer_putm(b, "Grösse:\t", format_num(mbytes), "MB", sep, NULL);
 
-  buffer_putm(b, "URL:        ", url , sep, NULL);
-  buffer_putm(b, "URL (lo):   ", make_url(url, strlist_at(sl, 13)), sep, NULL);
-  buffer_putm(b, "URL (hi):   ", make_url(url, strlist_at(sl, 15)), sep, NULL);
+  buffer_putm(b, "URL:\t", url , sep, NULL);
+  buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, NULL);
+  buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);
 
   buffer_putnlflush(b);
 }
