@@ -284,7 +284,6 @@ output_entry(buffer* b, strlist* sl) {
         c = '"';
       }
       buffer_PUTC(b, c);
-
     }
 
     buffer_puts(b, (i == 0 ? "\" : [" : ((i + 1 < n) ? "\"," : "\" ]")));
@@ -336,6 +335,10 @@ parse_mediathek_list(int fd) {
 }
 
 int main(int argc, char *argv[]) {
+
+
+
+
   strlist_dumpx[1] = '\n';
   strlist_dumpx[2] = '\t';
 

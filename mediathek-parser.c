@@ -16,7 +16,7 @@
 
 static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme.json"; //"D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
 static const char delimiters[] = "\"";
-static char  inbuf[16384];
+//static char  inbuf[16384];
 
 char *strptime(const char *s, const char *format, struct tm *tm);
 
@@ -58,7 +58,7 @@ read_line(buffer* input, strlist* fields, array* x)
   const char* end = input->x + input->n, *p = input->x + input->p;
   int ret = 0, quoted = 0/*, escaped = 0*/;
   size_t n, i = 0;
-  char tokbuf[16384];
+  char tokbuf[65536];
 
   array_trunc(x);
   //array_allocate(&x, sizeof(char*), pos);
@@ -273,8 +273,8 @@ process_entry(const array* a)
     buffer_puts(buffer_1, thema);
     buffer_puts(buffer_1, "|");
     buffer_puts(buffer_1, title);
-    buffer_puts(buffer_1, "|");
-    buffer_puts(buffer_1, description);
+/*    buffer_puts(buffer_1, "|");
+    buffer_puts(buffer_1, description);*/
     buffer_put(buffer_1, "\r\n", 2);
     buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
     buffer_puts(buffer_1, url_lo.s);

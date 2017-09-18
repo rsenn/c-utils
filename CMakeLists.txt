@@ -106,6 +106,8 @@ pkg_search_module(
 
 #find_package(libxml2)
 
+include_directories(${LIBXML2_INCLUDE_DIRS})
+
 if(LIBXML2_LIBRARIES MATCHES static)
   option(STATIC_LINK "Compile as static libraries" ON)
 else()
