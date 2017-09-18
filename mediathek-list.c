@@ -13,6 +13,8 @@
 #include "scan.h"
 #include "fmt.h"
 
+#define BUFSIZE 65535
+
 extern char strlist_dumpx[5];
 
 const char* argv0;
@@ -280,7 +282,7 @@ output_entry(buffer* b, strlist* sl) {
 int
 parse_mediathek_list(int fd) {
   char buf[1024];
-  char buf2[32768];
+  static char buf2[BUFSIZE];
   ssize_t ret, ret2;
   strlist prev, sl;
   buffer b = BUFFER_INIT(read, fd, buf, sizeof(buf));
@@ -292,6 +294,7 @@ parse_mediathek_list(int fd) {
   while((ret = buffer_get_token(&b, buf2, sizeof(buf2), "]", 1)) > 0) {
 
     for(;;) {
+      if(ret + 1 >= BUFSIZE) break;
       buf2[ret++] = ']';
       ret2 = buffer_get(&b, &buf2[ret], 1);
       if(ret2 > 0) {
