@@ -51,7 +51,6 @@ HEADERS = \
 
 SOURCES = \
 	lib/buffer_1.c \
-	lib/buffer_2.c \
 	lib/buffer_feed.c \
 	lib/buffer_flush.c \
 	lib/buffer_get.c \
@@ -59,6 +58,8 @@ SOURCES = \
 	lib/buffer_get_token.c \
 	lib/buffer_put.c \
 	lib/buffer_putflush.c \
+	lib/buffer_putm_internal.c \
+	lib/buffer_putnlflush.c \
 	lib/buffer_puts.c \
 	lib/buffer_putulong.c \
 	lib/buffer_stubborn2.c \
@@ -66,8 +67,15 @@ SOURCES = \
 	lib/byte_chr.c \
 	lib/byte_copy.c \
 	lib/fmt_ulong.c \
+	lib/fmt_ulonglong.c \
 	lib/isleap.c \
+	lib/scan_uint.c \
+	lib/scan_ushort.c \
+	lib/stralloc_append.c \
 	lib/stralloc_catb.c \
+	lib/stralloc_cats.c \
+	lib/stralloc_copyb.c \
+	lib/stralloc_copys.c \
 	lib/stralloc_init.c \
 	lib/stralloc_ready.c \
 	lib/stralloc_readyplus.c \
@@ -77,9 +85,10 @@ SOURCES = \
 	lib/strlist_count.c \
 	lib/strlist_dump.c \
 	lib/strlist_pushb.c \
+	lib/strlist_push.c \
 	lib/strptime.c \
 	lib/time_table_spd.c \
-	mediathek-list.c
+	mediathek-list.c 
 
 include(deployment.pri)
 qtcAddDeployment()
