@@ -250,15 +250,15 @@ process_entry(const array* a)
       sender = cleanup_domain(&s);
     }
 
+    dump_pair(buffer_2, "sender", sender);
     dump_pair(buffer_2, "thema", thema);
     dump_pair(buffer_2, "title", title);
-    dump_long(buffer_2, "d", d);
+/*    dump_long(buffer_2, "d", d);
     dump_pair(buffer_2, "duration", duration);
     dump_pair(buffer_2, "url", url);
-    dump_pair(buffer_2, "sender", sender);
     dump_pair(buffer_2, "url_lo.n", av[13]);
     dump_pair(buffer_2, "url_lo.s", url_lo.s);
-
+*/
     char timebuf[256];
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M:%S", &tm);
@@ -277,7 +277,7 @@ process_entry(const array* a)
     buffer_puts(buffer_1, description);*/
     buffer_put(buffer_1, "\r\n", 2);
     buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
-    buffer_puts(buffer_1, url_lo.s);
+    buffer_puts(buffer_1, url/*_lo.s*/);
     buffer_put(buffer_1, "\r\n", 2);
     buffer_flush(buffer_1);
 
@@ -287,10 +287,11 @@ process_entry(const array* a)
   }
   
   while(ac > 0) {
+    --ac;
     if(av[ac])
       free(av[ac]);
-    --ac;
-    ++av;
+//    --ac;
+//    ++av;
   }
 }
 

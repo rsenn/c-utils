@@ -137,7 +137,7 @@ read_mediathek_list(const char* url) {
   return fileno(pfd);
 }
 
-
+/* Parses a time in HH:MM:SS format and returns seconds */
 unsigned long
 parse_time(const char* s) {
   size_t r = 0;
@@ -163,7 +163,7 @@ parse_time(const char* s) {
 
 char*
 format_num(time_t num) {
-  static char buf[1024];
+  static char buf[FMT_LONG];
   memset(buf, 0,  sizeof(buf));
   buf[fmt_ulonglong(buf, num)] = '\0';
   return buf;
@@ -205,6 +205,17 @@ parse_datetime(const char* s, const char* fmt) {
   return mktime(&tm_s);
 }
 
+time_t
+parse_anydate(const char* s) {
+  const char* fmt;
+  size_t len = str_len(s);
+  if(len - str_rchr(s, '.') == 4)
+    fmt = "%d.%m.%Y";
+  else
+    fmt = "%Y%m%d";
+  return parse_datetime(s, fmt);  
+}
+
 char*
 format_datetime(size_t t, const char* fmt) {
   static char buf[1024];
@@ -235,7 +246,7 @@ int
 parse_entry(buffer* b, strlist* sl) {
 
   const char* sep = ", ";
-  time_t dt = parse_datetime(strlist_at(sl, 4), "%d.%m.%Y");
+  time_t dt = parse_anydate(strlist_at(sl, 4));
 
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6));  /* duration */
@@ -252,7 +263,7 @@ parse_entry(buffer* b, strlist* sl) {
   buffer_putm(b, "Thema:\t", strlist_at(sl, 2), sep, NULL);
   buffer_putm(b, "Titel:\t", strlist_at(sl, 3), sep, NULL);
 
-  buffer_putm(b, "Datum:\t", format_datetime(dt + tm, "%d.%m.%Y %H:%M:%S"), sep, NULL);
+  buffer_putm(b, "Datum:\t", format_datetime(dt + tm, "%Y%m%d %H:%M:%S"), sep, NULL);
   buffer_putm(b, "Dauer:\t", format_time(dr), sep, NULL);
   buffer_putm(b, "Grösse:\t", format_num(mbytes), "MB", sep, NULL);
 
@@ -260,7 +271,8 @@ parse_entry(buffer* b, strlist* sl) {
   buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, NULL);
   buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);
 
-  buffer_putnlflush(b);
+  buffer_put(b, "\n", 1);
+//  buffer_putnlflush(b);
 
   return 0;
 }
@@ -288,6 +300,8 @@ output_entry(buffer* b, strlist* sl) {
 
     buffer_puts(b, (i == 0 ? "\" : [" : ((i + 1 < n) ? "\"," : "\" ]")));
   }
+  
+//  buffer_flush(b);
 }
 
 int
