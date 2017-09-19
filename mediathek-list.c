@@ -263,7 +263,7 @@ parse_entry(buffer* b, strlist* sl) {
   buffer_putm(b, "Thema:\t", strlist_at(sl, 2), sep, NULL);
   buffer_putm(b, "Titel:\t", strlist_at(sl, 3), sep, NULL);
 
-  buffer_putm(b, "Datum:\t", format_datetime(dt + tm, "%Y%m%d %H:%M:%S"), sep, NULL);
+  buffer_putm(b, "Datum:\t", format_datetime(dt + tm, "%Y%m%d %H:%M"), sep, NULL);
   buffer_putm(b, "Dauer:\t", format_time(dr), sep, NULL);
   buffer_putm(b, "Grösse:\t", format_num(mbytes), "MB", sep, NULL);
 
