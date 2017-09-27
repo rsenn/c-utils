@@ -261,12 +261,12 @@ process_entry(const array* a)
 */
     char timebuf[256];
 
-    strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M:%S", &tm);
+    strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
 
     buffer_puts(buffer_1, "#EXTINF:");
     buffer_putulong(buffer_1, d);
     buffer_put(buffer_1, ",|", 2);
-    buffer_put(buffer_1, timebuf, str_len(timebuf)-2);
+    buffer_put(buffer_1, timebuf, str_len(timebuf));
     buffer_puts(buffer_1, "|");
     buffer_puts(buffer_1, sender);
     buffer_puts(buffer_1, "|");

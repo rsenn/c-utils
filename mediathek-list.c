@@ -209,7 +209,7 @@ time_t
 parse_anydate(const char* s) {
   const char* fmt;
   size_t len = str_len(s);
-  if(len - str_rchr(s, '.') == 4)
+  if(len != 8) //len - str_rchr(s, '.') == 4)
     fmt = "%d.%m.%Y";
   else
     fmt = "%Y%m%d";
@@ -229,7 +229,7 @@ char*
 make_url(const char* base, const char* trail) {
   static stralloc url;
 
-  size_t n = 0;
+  unsigned int n = 0;
   size_t i;
 
   if(trail == NULL) return NULL;
@@ -251,7 +251,7 @@ parse_entry(buffer* b, strlist* sl) {
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6));  /* duration */
 
-  size_t mbytes = 0;
+  unsigned int mbytes = 0;
   const char *mb = strlist_at(sl, 7);
   if(mb) scan_uint(mb, &mbytes);
 
@@ -346,6 +346,7 @@ parse_mediathek_list(int fd) {
   }
 
   buffer_flush(buffer_1);
+  return 0;
 }
 
 int main(int argc, char *argv[]) {

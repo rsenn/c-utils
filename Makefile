@@ -72,6 +72,10 @@ HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\
 endif
 endif
 
+ifneq ($(CC),$(subst m32,,$(CC)))
+HOST := $(subst x86_64,i386,$(HOST))
+endif
+
 #$(info DIET: $(DIET))
 #$(info MINGW: $(MINGW))
 #$(info HOST: $(HOST))
@@ -164,6 +168,9 @@ EXEEXT = .exe
 endif
 BOOST_LIBS = boost_random
 
+$(info Host: $(HOST))
+$(info Build: $(BUILD))
+
 HOST1 := $(word 1,$(subst -, ,$(HOST)))
 HOST2 := $(word 2,$(subst -, ,$(HOST)))
 HOST3 := $(subst $(HOST1)-$(HOST2)-,,$(HOST))
@@ -182,6 +189,7 @@ endif
 ifeq ($(HOST2),w64)
 HOST2 := $(SYSNAME)
 endif
+
 
 
 #ifneq ($(SYSNAME),)
@@ -278,9 +286,9 @@ STRIP ?= strip
 
 CFLAGS = -pipe
 
-CFLAGS_Debug = -g -ggdb -pg -O0
+CFLAGS_Debug = -g -ggdb -O0
 CFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
-CFLAGS_RelWithDebInfo = -g -ggdb -pg -O2
+CFLAGS_RelWithDebInfo = -g -ggdb -O2
 CFLAGS_Release = -g -fomit-frame-pointer -O2
 
 CXXFLAGS = -pipe
