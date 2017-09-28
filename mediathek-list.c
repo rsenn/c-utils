@@ -21,6 +21,8 @@ const char* argv0;
 
 const char* const mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
 
+static unsigned long min_length;
+
 static ssize_t
 buffer_dummyread(int fd, char* b, size_t n) {
   return 0;
@@ -213,7 +215,7 @@ parse_anydate(const char* s) {
     fmt = "%d.%m.%Y";
   else
     fmt = "%Y%m%d";
-  return parse_datetime(s, fmt);  
+  return parse_datetime(s, fmt);
 }
 
 char*
@@ -250,6 +252,11 @@ parse_entry(buffer* b, strlist* sl) {
 
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6));  /* duration */
+  
+//  buffer_putm(buffer_2, "dr: ", format_time(dr), " (", strlist_at(sl, 6), ")\n", NULL);
+
+  if(dr < min_length)
+    return 1;
 
   unsigned int mbytes = 0;
   const char *mb = strlist_at(sl, 7);
@@ -267,9 +274,9 @@ parse_entry(buffer* b, strlist* sl) {
   buffer_putm(b, "Dauer:\t", format_time(dr), sep, NULL);
   buffer_putm(b, "Grösse:\t", format_num(mbytes), "MB", sep, NULL);
 
-  buffer_putm(b, "URL:\t", url , sep, NULL);
+ /* buffer_putm(b, "URL:\t", url , sep, NULL);
   buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, NULL);
-  buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);
+  buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);*/
 
   buffer_put(b, "\n", 1);
 //  buffer_putnlflush(b);
@@ -300,7 +307,7 @@ output_entry(buffer* b, strlist* sl) {
 
     buffer_puts(b, (i == 0 ? "\" : [" : ((i + 1 < n) ? "\"," : "\" ]")));
   }
-  
+
 //  buffer_flush(b);
 }
 
@@ -337,10 +344,10 @@ parse_mediathek_list(int fd) {
     split_fields(&sl, &prev, buf2, ret);
 
 //    strlist_dump(buffer_2, &sl);
-    parse_entry(buffer_2, &sl);
-
-    if(strlist_count(&prev)) buffer_put(buffer_1, ",\n", 2);
-    output_entry(buffer_1, &sl);
+    if(parse_entry(buffer_2, &sl) == 0) {
+      if(strlist_count(&prev)) buffer_put(buffer_1, ",\n", 2);
+      output_entry(buffer_1, &sl);
+    }
 
     prev = sl;
   }
@@ -349,10 +356,33 @@ parse_mediathek_list(int fd) {
   return 0;
 }
 
+
 int main(int argc, char *argv[]) {
 
+  int opt;
+  
+  min_length = 0;
 
+  while((opt = getopt(argc, argv, "t:")) != -1) {
+    switch(opt) {
+    case 't':
+      min_length  = parse_time(optarg);
+      break;
+    default: /* '?' */
+      buffer_putm(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n");
+      exit(EXIT_FAILURE);
+    }
+  }
 
+//  buffer_putm(buffer_2, "min_length: ", format_time(min_length), "\n", NULL);
+  
+  
+  /*   if (optind >= argc) {
+         fprintf(stderr,
+                 "Nach den Optionen wurde ein Argument erwartet\n");
+         exit(EXIT_FAILURE);
+     }
+  */
 
   strlist_dumpx[1] = '\n';
   strlist_dumpx[2] = '\t';
