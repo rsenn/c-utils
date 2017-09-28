@@ -260,26 +260,26 @@ typedef struct mediathek_entry {
 
 mediathek_entry_t*
 new_mediathek_entry() {
-   mediathek_entry_t* e = malloc(sizeof(mediathek_entry_t));
-   if(e == NULL) return NULL;
-   byte_zero(e, sizeof(mediathek_entry_t));
-   return e;
+  mediathek_entry_t* e = malloc(sizeof(mediathek_entry_t));
+  if(e == NULL) return NULL;
+  byte_zero(e, sizeof(mediathek_entry_t));
+  return e;
 }
 
 mediathek_entry_t*
 create_mediathek_entry(const char* ch, const char* tpc, const char* tit, const char* dsc, const char* ur, const char* ln) {
-   mediathek_entry_t* e = new_mediathek_entry();
-   if(e == NULL) return NULL;
+  mediathek_entry_t* e = new_mediathek_entry();
+  if(e == NULL) return NULL;
 
-   stralloc_copys(&e->channel, ch); stralloc_0(&e->channel);
-   stralloc_copys(&e->topic, tpc); stralloc_0(&e->topic);
-   stralloc_copys(&e->title, tit); stralloc_0(&e->title);
+  stralloc_copys(&e->channel, ch); stralloc_0(&e->channel);
+  stralloc_copys(&e->topic, tpc); stralloc_0(&e->topic);
+  stralloc_copys(&e->title, tit); stralloc_0(&e->title);
 
-   stralloc_copys(&e->desc, dsc); stralloc_0(&e->desc);
-   stralloc_copys(&e->url, ur); stralloc_0(&e->url);
-   stralloc_copys(&e->link, ln); stralloc_0(&e->link);
-   
-   return e;
+  stralloc_copys(&e->desc, dsc); stralloc_0(&e->desc);
+  stralloc_copys(&e->url, ur); stralloc_0(&e->url);
+  stralloc_copys(&e->link, ln); stralloc_0(&e->link);
+
+  return e;
 }
 
 void
@@ -287,7 +287,7 @@ delete_mediathek_entry(mediathek_entry_t* e) {
   stralloc_free(&e->channel);
   stralloc_free(&e->topic);
   stralloc_free(&e->title);
-  
+
   stralloc_free(&e->desc);
   stralloc_free(&e->url);
   stralloc_free(&e->link);
@@ -299,12 +299,12 @@ static mediathek_entry_t* e;
 int
 parse_entry(buffer* b, strlist* sl) {
 
-  const char* sep = ", ";
+
   time_t dt = parse_anydate(strlist_at(sl, 4));
 
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6));  /* duration */
-  
+
 //  buffer_putm(buffer_2, "dr: ", format_time(dr), " (", strlist_at(sl, 6), ")\n", NULL);
 
   if(dr < min_length)
@@ -318,33 +318,39 @@ parse_entry(buffer* b, strlist* sl) {
   const char* url = strlist_at(sl, 9);
   const char* link = strlist_at(sl, 10);
 
-/*  mediathek_entry_t* */e = create_mediathek_entry(
-      strlist_at(sl, 1), strlist_at(sl, 2), strlist_at(sl, 3),
+  /*  mediathek_entry_t* */e = create_mediathek_entry(
+                                 strlist_at(sl, 1), strlist_at(sl, 2), strlist_at(sl, 3),
 
-      desc, url, link
-      
-  );
-  
+                                 desc, url, link
+
+                               );
+
   e->tm = dt + tm;
   e->dr =  dr;
   e->mbytes = mbytes;
+  return 0;
+}
 
-  buffer_putm(b, "Kanal:\t", e->channel /*strlist_at(sl, 1)*/, sep, NULL);
-  buffer_putm(b, "Thema:\t", e->topic /*strlist_at(sl, 2)*/, sep, NULL);
-  buffer_putm(b, "Titel:\t", e->title /*strlist_at(sl, 3)*/, sep, NULL);
+void
+print_entry(buffer* b, const mediathek_entry_t* e) {
+
+  const char* sep = ", ";
+  
+  buffer_putm(b, "Kanal:\t", e->channel.s /*strlist_at(sl, 1)*/, sep, NULL);
+  buffer_putm(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep, NULL);
+  buffer_putm(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
 
   buffer_putm(b, "Datum:\t", format_datetime(e->tm, "%Y%m%d %H:%M"), sep, NULL);
   buffer_putm(b, "Dauer:\t", format_time(e->dr), sep, NULL);
   buffer_putm(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, NULL);
 
- /* buffer_putm(b, "URL:\t", url , sep, NULL);
-  buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, NULL);
-  buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);*/
+  /* buffer_putm(b, "URL:\t", url , sep, NULL);
+   buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, NULL);
+   buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);*/
 
-  buffer_put(b, "\n", 1);
-//  buffer_putnlflush(b);
+//  buffer_put(b, "\n", 1);
 
-  return 0;
+  buffer_putnlflush(b);
 }
 
 void
@@ -371,7 +377,7 @@ output_entry(buffer* b, strlist* sl) {
     buffer_puts(b, (i == 0 ? "\" : [" : ((i + 1 < n) ? "\"," : "\" ]")));
   }
 
-//  buffer_flush(b);
+
 }
 
 int
@@ -408,9 +414,14 @@ parse_mediathek_list(int fd) {
 
 //    strlist_dump(buffer_2, &sl);
     if(parse_entry(buffer_2, &sl) == 0) {
-      if(strlist_count(&prev)) buffer_put(buffer_1, ",\n", 2);
+      if(strlist_count(&prev)) { 
+        buffer_put(buffer_1, ",\n", 2);
+        buffer_flush(buffer_1);
+      }
+
+      print_entry(buffer_2, e);
       output_entry(buffer_1, &sl);
-      
+
       delete_mediathek_entry(e);
       e = NULL;
     }
@@ -426,7 +437,7 @@ parse_mediathek_list(int fd) {
 int main(int argc, char *argv[]) {
 
   int opt;
-  
+
   min_length = 0;
 
   while((opt = getopt(argc, argv, "t:")) != -1) {
@@ -441,8 +452,8 @@ int main(int argc, char *argv[]) {
   }
 
 //  buffer_putm(buffer_2, "min_length: ", format_time(min_length), "\n", NULL);
-  
-  
+
+
   /*   if (optind >= argc) {
          fprintf(stderr,
                  "Nach den Optionen wurde ein Argument erwartet\n");
