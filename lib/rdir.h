@@ -7,12 +7,14 @@
 extern "C" {
 #endif
 
+struct rdir_s;
+
 struct rdir_s {
   union {
     struct dir_s dir;
     void* dir_int;
   };
-  struct rdir_s* dir_prev;
+  struct rdir_s* prev;
 };
 
 int rdir_open(struct rdir_s* d, const char* p);

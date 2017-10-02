@@ -435,7 +435,7 @@ $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 #LIBS += -lstdc++
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper )
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test )
  #opensearch-dump eagle-init-brd)
   
 ifeq ($(DO_CXX),1)
@@ -527,7 +527,14 @@ $(BUILDDIR)fnmatch.o: fnmatch.c
 
 
 $(BUILDDIR)list-r.o: list-r.c
-$(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)dir.a $(BUILDDIR)rdir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
+$(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
+
+$(BUILDDIR)rdir-test.o: rdir-test.c
+$(BUILDDIR)rdir-test$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)rdir-test.o $(BUILDDIR)fnmatch.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
