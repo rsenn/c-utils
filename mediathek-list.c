@@ -275,9 +275,9 @@ create_mediathek_entry(const char* ch, const char* tpc, const char* tit, const c
   stralloc_copys(&e->topic, tpc); stralloc_0(&e->topic);
   stralloc_copys(&e->title, tit); stralloc_0(&e->title);
 
-  stralloc_copys(&e->desc, dsc); stralloc_0(&e->desc);
-  stralloc_copys(&e->url, ur); stralloc_0(&e->url);
-  stralloc_copys(&e->link, ln); stralloc_0(&e->link);
+  stralloc_copys(&e->desc, dsc ? dsc : ""); stralloc_0(&e->desc);
+  stralloc_copys(&e->url, ur ? ur : ""); stralloc_0(&e->url);
+  stralloc_copys(&e->link, ln ? ln : ""); stralloc_0(&e->link);
 
   return e;
 }
