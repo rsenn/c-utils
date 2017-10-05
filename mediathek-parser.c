@@ -233,7 +233,7 @@ process_entry(const array* a) {
 
     cleanup_text(thema);
     cleanup_text(title);
-    cleanup_text(description);
+//    cleanup_text(description);
 
     if(str_len(sender) == 0) {
 
@@ -244,9 +244,10 @@ process_entry(const array* a) {
       sender = cleanup_domain(&s);
     }
 
-    dump_pair(buffer_2, "sender", sender);
+    /*dump_pair(buffer_2, "sender", sender);
     dump_pair(buffer_2, "thema", thema);
-    dump_pair(buffer_2, "title", title);
+    dump_pair(buffer_2, "title", title);*/
+    
     /*    dump_long(buffer_2, "d", d);
         dump_pair(buffer_2, "duration", duration);
         dump_pair(buffer_2, "url", url);
