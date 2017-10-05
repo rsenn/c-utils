@@ -142,13 +142,28 @@ get_domain(const char* url, stralloc* d) {
   stralloc_copyb(d, url, str_chr(url, '/'));
 }
 
+#define isdelim(c) (isspace(c)||c=='-'||c==';'||c==',')
+
 void
 cleanup_text(char* t) {
   int i;
-  for(i = 0; i < str_len(t); i++) {
-    if(isspace(t[i])  || t[i] == ',')
-      t[i] = '_';
+  char c;
+  char prev='x';
+  stralloc out;
+  stralloc_init(&out);
+  
+  for(i = 0; (c = t[i]); ++i) {
+  
+    if(isdelim(c) && isdelim(prev))
+      continue;
+    
+    if(isdelim(c)) c=' ';
+    stralloc_append(&out, &c);
+    prev=c;
   }
+  byte_copy(t, out.len, out.s);
+  t[out.len] = '\0';
+  stralloc_free(&out); 
 }
 
 char*
@@ -233,7 +248,7 @@ process_entry(const array* a) {
 
     cleanup_text(thema);
     cleanup_text(title);
-//    cleanup_text(description);
+    cleanup_text(description);
 
     if(str_len(sender) == 0) {
 
