@@ -267,8 +267,8 @@ process_entry(const array* a) {
     buffer_puts(buffer_1, thema);
     buffer_puts(buffer_1, "|");
     buffer_puts(buffer_1, title);
-        buffer_puts(buffer_1, "|");
-        buffer_puts(buffer_1, description);
+    buffer_puts(buffer_1, "|");
+    buffer_puts(buffer_1, description);
     buffer_put(buffer_1, "\r\n", 2);
     buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
     buffer_puts(buffer_1, url/*_lo.s*/);
@@ -303,19 +303,19 @@ process_input(buffer* input) {
 
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
-        ++line;
+    ++line;
 
     strlist_init(&fields);
     array_trunc(&arr);
-    
+
     ret = read_line(sa.s, sa.len, &fields, &arr);
-    
-/*        buffer_puts(buffer_2, "Line ");
-        buffer_putulong(buffer_2, line);
-        buffer_puts(buffer_2, ": ");
-        buffer_putsa(buffer_2, &sa);
-        buffer_putnlflush(buffer_2);
-*/
+
+    /*        buffer_puts(buffer_2, "Line ");
+            buffer_putulong(buffer_2, line);
+            buffer_puts(buffer_2, ": ");
+            buffer_putsa(buffer_2, &sa);
+            buffer_putnlflush(buffer_2);
+    */
 
     process_entry(&arr);
   }
