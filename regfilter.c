@@ -13,7 +13,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
 

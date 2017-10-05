@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <math.h>
 
-#ifdef __GNUC__
+#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
 

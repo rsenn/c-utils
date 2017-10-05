@@ -1,12 +1,14 @@
-
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <libgen.h>
 #include <time.h>
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <signal.h>
+
+#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
+#include <libgen.h>
+#endif
 
 #include "buffer.h"
 #include "byte.h"

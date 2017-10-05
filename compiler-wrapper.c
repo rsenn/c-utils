@@ -5,7 +5,10 @@
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
+
+#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
+#endif
 
 #ifdef __MINGW32__
 #include <process.h>

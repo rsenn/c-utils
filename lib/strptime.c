@@ -3,6 +3,10 @@
 #include <string.h>
 //#include <strings.h>
 
+#if (defined(__MSYS__) && __MSYS__ == 1)
+#define isblank(c) ((c)==' '||(c)=='\t')
+#endif
+
 int isleap(int year);
 
 extern const short  __spm [];
