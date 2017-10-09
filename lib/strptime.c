@@ -1,7 +1,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-//#include <strings.h>
+#include "str.h"
 
 #if (defined(__MSYS__) && __MSYS__ == 1)
 #define isblank(c) ((c)==' '||(c)=='\t')

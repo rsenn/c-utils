@@ -1,9 +1,10 @@
 #include <string.h>
+#include "str.h"
 
 char *
 str_istr(char* s, char* find) {
   register char c, sc;
-  register len;
+  register size_t len;
 
   if((c = *find++) != 0) {
     len = str_len(find);
