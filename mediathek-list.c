@@ -26,6 +26,9 @@ const char* argv0;
 const char* const mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
 
 static unsigned long min_length;
+static int debug;
+static strlist include, exclude;
+
 
 static ssize_t
 buffer_dummyread(int fd, char* b, size_t n) {
@@ -87,7 +90,8 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
   return ret;
 }
 
-void process_status(void) {
+void
+process_status(void) {
   /* display interesting process IDs  */
   fprintf(stderr, "process %s: pid=%d, ppid=%d, pgid=%d, fg pgid=%dn\n",
           argv0, (int)getpid(), (int)getppid(),
@@ -421,7 +425,9 @@ parse_mediathek_list(int fd) {
         buffer_flush(buffer_1);
       }
 
-      print_entry(buffer_2, e);
+      if(debug)
+        print_entry(buffer_2, e);
+
       output_entry(buffer_1, &sl);
 
       delete_mediathek_entry(e);
@@ -435,23 +441,38 @@ parse_mediathek_list(int fd) {
   return 0;
 }
 
-
 int main(int argc, char *argv[]) {
 
   int opt;
 
   min_length = 0;
 
-  while((opt = getopt(argc, argv, "t:")) != -1) {
+  while((opt = getopt(argc, argv, "dt:i:x:")) != -1) {
     switch(opt) {
+    case 'd':
+      debug++;
+      break;
     case 't':
       min_length  = parse_time(optarg);
+      break;
+    case 'i':
+      strlist_push(&include, optarg);
+      break;
+    case 'x':
+      strlist_push(&exclude, optarg);
       break;
     default: /* '?' */
       buffer_putm(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n");
       exit(EXIT_FAILURE);
     }
   }
+
+  if(strlist_count(&include) == 0)
+    strlist_push(&include, "");
+
+  fprintf(stderr, "%p\n", str_istr("blah", ""));
+  fprintf(stderr, "%p\n", str_istr("[", "blah"));
+  fflush(stderr);
 
 //  buffer_putm(buffer_2, "min_length: ", format_time(min_length), "\n", NULL);
 
