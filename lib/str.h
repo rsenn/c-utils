@@ -49,6 +49,8 @@ size_t str_rchr(const char* haystack, char needle) __pure__;
 int str_start(const char* a, const char* b) __pure__;
 
 char *str_istr(char *s, char *find);
+char *str_tok(char *s, const char *delim, char **ptrptr);
+char *str_dup(const char *s);
 
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))

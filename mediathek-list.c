@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <string.h>
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -32,6 +33,9 @@ static strlist include, exclude;
 
 static ssize_t
 buffer_dummyread(int fd, char* b, size_t n) {
+    (void)fd;
+    (void)b;
+    (void)n;
   return 0;
 }
 
@@ -230,7 +234,7 @@ char*
 format_datetime(size_t t, const char* fmt) {
   static char buf[1024];
   time_t tm = t;
-  size_t n = strftime(buf, sizeof(buf), fmt, localtime(&tm));
+  /*size_t n =*/ strftime(buf, sizeof(buf), fmt, localtime(&tm));
 
   return buf; //  buffer_put(b, buf, n);
 }
@@ -302,10 +306,78 @@ delete_mediathek_entry(mediathek_entry_t* e) {
 
 static mediathek_entry_t* e;
 
+
+/* returns 1 if all tokens match */
 int
+match_tokens(char* toks, const char* str) {
+  size_t i;
+  int ret = 1;
+  strlist t;
+  strlist_init(&t);
+  strlist_push_tokens(&t, toks, "/+,|*;");
+
+  for(i = 0; i < strlist_count(&t); ++i) {
+    char* tok = strlist_at(&t, i);
+
+    if(str_istr((char*)str, tok) == NULL) {
+      ret = 0;
+      break;
+    }
+  }
+
+  if(ret && debug > 1) {
+      buffer_putm(buffer_2, "token list '", toks, "' matched '", str, "'.");
+      buffer_putnlflush(buffer_2);
+  }
+
+  strlist_free(&t);
+  return ret;
+}
+
+/* returns 1 if any of the token lists match */
+int
+match_toklists(strlist* sl) {
+  stralloc sa;
+  int ret = 0;
+  size_t i, n;
+  stralloc_init(&sa);
+  strlist_join(sl, &sa, '|');
+  stralloc_0(&sa);
+
+  n = strlist_count(&include);
+  if(n == 0) ret = 1;
+
+  for(i = 0; i < n; ++i) {
+    char* toklist = strlist_at(&include, i);
+
+    if(match_tokens(toklist, sa.s)) {
+      ret = 1;
+      break;
+    }
+  }
+
+  if(ret == 0) return 0;
+
+  n = strlist_count(&exclude);
+
+  for(i = 0; i < n; ++i) {
+    char* toklist = strlist_at(&exclude, i);
+
+    if(match_tokens(toklist, sa.s)) {
+      ret = 0;
+      break;
+    }
+  }
+
+  stralloc_free(&sa);
+
+  return ret;
+}
+
+mediathek_entry_t*
 parse_entry(buffer* b, strlist* sl) {
 
-
+  mediathek_entry_t* ret;
   time_t dt = parse_anydate(strlist_at(sl, 4));
 
   time_t tm = parse_time(strlist_at(sl, 5));
@@ -313,8 +385,8 @@ parse_entry(buffer* b, strlist* sl) {
 
 //  buffer_putm(buffer_2, "dr: ", format_time(dr), " (", strlist_at(sl, 6), ")\n", NULL);
 
-  if(dr < min_length)
-    return 1;
+  if((unsigned)dr < min_length)
+    return NULL;
 
   unsigned int mbytes = 0;
   const char *mb = strlist_at(sl, 7);
@@ -324,24 +396,26 @@ parse_entry(buffer* b, strlist* sl) {
   const char* url = strlist_at(sl, 9);
   const char* link = strlist_at(sl, 10);
 
-  /*  mediathek_entry_t* */e = create_mediathek_entry(
-                                 strlist_at(sl, 1), strlist_at(sl, 2), strlist_at(sl, 3),
+  ret = create_mediathek_entry(
+          strlist_at(sl, 1), strlist_at(sl, 2), strlist_at(sl, 3),
 
-                                 desc, url, link
+          desc, url, link
 
-                               );
+        );
 
-  e->tm = dt + tm;
-  e->dr =  dr;
-  e->mbytes = mbytes;
-  return 0;
+  if(ret) {
+    ret->tm = dt + tm;
+    ret->dr =  dr;
+    ret->mbytes = mbytes;
+  }
+  return ret;
 }
 
 void
 print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
-  
+
   buffer_putm(b, "Kanal:\t", e->channel.s /*strlist_at(sl, 1)*/, sep, NULL);
   buffer_putm(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep, NULL);
   buffer_putm(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
@@ -382,19 +456,19 @@ output_entry(buffer* b, strlist* sl) {
 
     buffer_puts(b, (i == 0 ? "\" : [" : ((i + 1 < n) ? "\"," : "\" ]")));
   }
-
-
 }
 
 int
 parse_mediathek_list(int fd) {
   char buf[1024];
   static char buf2[BUFSIZE];
+  size_t matched = 0, total = 0;
   ssize_t ret, ret2;
-  strlist prev, sl;
+  strlist prev, prevout, sl;
   buffer b = BUFFER_INIT(read, fd, buf, sizeof(buf));
 
   strlist_init(&prev);
+  strlist_init(&prevout);
 
   buffer_put(buffer_1, "{\n", 2);
 
@@ -406,7 +480,7 @@ parse_mediathek_list(int fd) {
       ret2 = buffer_get(&b, &buf2[ret], 1);
       if(ret2 > 0) {
 
-        if(buf2[ret] == ',') break;
+          if(ret > 1 && buf2[ret-2] == '"' && buf2[ret] == ',') break;
 
         ret += ret2;
         ret2 = buffer_get_token(&b, &buf2[ret], sizeof(buf2) - ret, "]", 1);
@@ -419,16 +493,24 @@ parse_mediathek_list(int fd) {
     split_fields(&sl, &prev, buf2, ret);
 
 //    strlist_dump(buffer_2, &sl);
-    if(parse_entry(buffer_2, &sl) == 0) {
-      if(strlist_count(&prev)) { 
-        buffer_put(buffer_1, ",\n", 2);
-        buffer_flush(buffer_1);
-      }
-
-      if(debug)
+    if((e = parse_entry(buffer_2, &sl))) {
+        total++;
+      if(debug > 2)
         print_entry(buffer_2, e);
 
-      output_entry(buffer_1, &sl);
+
+      if(match_toklists(&sl)) {
+          matched++;
+
+          if(strlist_count(&prevout)) {
+            buffer_put(buffer_1, ",\n", 2);
+            buffer_flush(buffer_1);
+          }
+
+
+        output_entry(buffer_1, &sl);
+        prevout = sl;
+      }
 
       delete_mediathek_entry(e);
       e = NULL;
@@ -438,6 +520,16 @@ parse_mediathek_list(int fd) {
   }
 
   buffer_flush(buffer_1);
+
+  if(debug) {
+      buffer_puts(buffer_2, "\nprocessed ");
+      buffer_putulong(buffer_2, matched);
+      buffer_puts(buffer_2, "/");
+      buffer_putulong(buffer_2, total);
+      buffer_puts(buffer_2, " entries.");
+      buffer_putnlflush(buffer_2);
+  }
+
   return 0;
 }
 
@@ -467,8 +559,28 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if(strlist_count(&include) == 0)
-    strlist_push(&include, "");
+  while(optind < argc) {
+
+      strlist_push(&include, argv[optind++]);
+  }
+
+ // strlist_push_tokens(&include, "blah|test|haha", "|");
+
+
+ /* if(strlist_count(&include) == 0)
+    strlist_push(&include, "");*/
+
+  strlist_dump(buffer_2, &include);
+  strlist_dump(buffer_2, &exclude);
+
+
+/*  stralloc sa;
+  stralloc_init(&sa);
+
+  strlist_join(&include, &sa, ',');
+
+  buffer_putsa(buffer_2, &sa);
+  buffer_putnlflush(buffer_2);*/
 
   fprintf(stderr, "%p\n", str_istr("blah", ""));
   fprintf(stderr, "%p\n", str_istr("[", "blah"));

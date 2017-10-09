@@ -6,7 +6,7 @@ str_istr(char* s, char* find) {
   register len;
 
   if((c = *find++) != 0) {
-    len = strlen(find);
+    len = str_len(find);
     do {
       do {
         if((sc = *s++) == 0)

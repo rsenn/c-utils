@@ -253,7 +253,7 @@ read_arguments() {
       }
       if(strchr(argv0, '/'))
         stralloc_copys(&compiler, argv0);
-      argv0 = strdup(basename(argv0));
+      argv0 = str_dup(basename(argv0));
     }  else if(!str_diffn("-o", s, 2)) {
       stralloc output;
       stralloc_init(&output);

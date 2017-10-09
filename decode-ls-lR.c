@@ -167,7 +167,7 @@ int main(int argc, char* argv[]) {
         if(argi < argc) {
 
           delimiters = argv[argi];
-          delimiters_len = strlen(delimiters);
+          delimiters_len = str_len(delimiters);
         }
         break;
       case 'p':
@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
     if((buffer_0->fd = open(argv[argi], O_RDONLY)) < 0)
       usage(argv[0]);
   }
-  delimiters_len = strlen(delimiters);
+  delimiters_len = str_len(delimiters);
   decode_ls_lR();
   return 0;
 }

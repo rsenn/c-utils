@@ -6,7 +6,7 @@ strlist_shift(strlist* sl, const char** strp) {
   size_t i, n = strlist_count(sl);
   if(n <= 0) return -1;
   
-  *strp = strdup(strlist_at(sl, 0));  
+  *strp = str_dup(strlist_at(sl, 0));  
   strlist_init(&newl);
   
   for(i = 1; i < n; ++i) {  

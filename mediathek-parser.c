@@ -85,7 +85,7 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
         quoted = 0;
         char** a = array_allocate(x, sizeof(char*), pos++);
         tokbuf[i] = '\0';
-        *a++ = strdup(tokbuf);
+        *a++ = str_dup(tokbuf);
         //        *a = NULL;
 
         //        strlist_pushb(fields, tokbuf, i);
@@ -179,7 +179,7 @@ cleanup_domain(stralloc* d) {
     char *s2, *s = strtok(d->s, remove_parts[i]);
     if(s && (s2 = strchr(s, '.')) && s2 > s) {
       ++s2;
-      s = strdup(s2);
+      s = str_dup(s2);
       free(d->s);
       d->s = s;
     }

@@ -112,6 +112,10 @@ BUILDTYPE = release
 DO_STRIP := 1
 endif
 
+ifeq ($(PROF),1)
+BUILDTYPE := prof
+endif
+
 ifeq ($(HOST),$(BUILD))
 CROSS_COMPILE :=
 endif
@@ -286,6 +290,7 @@ STRIP ?= strip
 
 CFLAGS = -pipe
 
+CFLAGS_Prof = -pg -O2 
 CFLAGS_Debug = -g -ggdb -O0
 CFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
 CFLAGS_RelWithDebInfo = -g -ggdb -O2
@@ -295,12 +300,16 @@ CXXFLAGS = -pipe
 
 CXXFLAGS += -std=c++11
 
+CXXFLAGS_Prof = -pg -O2 
 CXXFLAGS_Debug = -g -ggdb -O0
 CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
 CXXFLAGS_RelWithDebInfo = -g -ggdb -O2
 CXXFLAGS_Release = -g -fomit-frame-pointer -O2
 
 ifeq ($(BUILD_TYPE),)
+ifeq ($(PROF),1)
+BUILD_TYPE = Prof
+else
 ifeq ($(DEBUG),1)
 ifeq ($(RELEASE),1)
 BUILD_TYPE = RelWithDebInfo
@@ -315,11 +324,17 @@ BUILD_TYPE = Release
 endif
 endif
 endif
+endif
 
 $(info BUILDDIR: $(BUILDDIR))
 #$(info builddir: $(builddir))
 
 
+ifeq ($(BUILD_TYPE),Prof)
+DEBUG := 0
+RELEASE := 1
+MINSIZE := 0
+endif
 ifeq ($(BUILD_TYPE),Debug)
 DEBUG := 1
 RELEASE := 0
@@ -487,7 +502,7 @@ $(BUILDDIR)scan.a: $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_ulongn.o $(BUILDDIR
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)open.a: $(BUILDDIR)open_append.o $(BUILDDIR)open_read.o $(BUILDDIR)open_rw.o $(BUILDDIR)open_trunc.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
-$(BUILDDIR)str.a: $(BUILDDIR)str_chr.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_len.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_istr.o
+$(BUILDDIR)str.a: $(BUILDDIR)str_chr.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_len.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_tok.o $(BUILDDIR)str_dup.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)dir.a: $(BUILDDIR)dir_close.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_time.o $(BUILDDIR)dir_name.o $(BUILDDIR)dir_type.o $(BUILDDIR)utf8.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
@@ -497,7 +512,7 @@ $(BUILDDIR)mmap.a: $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_private.o $(BUILDDIR)mm
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)byte.a: $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_diff.o $(BUILDDIR)byte_fill.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_zero.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
-$(BUILDDIR)strlist.a: $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_cat.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_index_of.o $(BUILDDIR)strlist_push.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)strlist_push_unique.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)strlist_sort.o $(BUILDDIR)strlist_to_argv.o $(BUILDDIR)strlist_unshift.o
+$(BUILDDIR)strlist.a: $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_cat.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_index_of.o $(BUILDDIR)strlist_push.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)strlist_push_tokens.o $(BUILDDIR)strlist_push_unique.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)strlist_sort.o $(BUILDDIR)strlist_to_argv.o $(BUILDDIR)strlist_unshift.o $(BUILDDIR)strlist_join.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)array.a: $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILDDIR)array_cat.o $(BUILDDIR)array_cat0.o $(BUILDDIR)array_catb.o $(BUILDDIR)array_cate.o $(BUILDDIR)array_cats.o $(BUILDDIR)array_cats0.o $(BUILDDIR)array_equal.o $(BUILDDIR)array_fail.o $(BUILDDIR)array_get.o $(BUILDDIR)array_length.o $(BUILDDIR)array_reset.o $(BUILDDIR)array_start.o $(BUILDDIR)array_trunc.o $(BUILDDIR)array_truncate.o $(BUILDDIR)umult64.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^

@@ -48,7 +48,7 @@ char* strptime(const char* s,const char* format, struct tm* tm) {
 	break;
       case 'b': case 'B': case 'h':
 	for (i=0; i<12; ++i) {
-	  if (strncasecmp(s,months[i],j=strlen(months[i])))
+	  if (strncasecmp(s,months[i],j=str_len(months[i])))
 	    if (strncasecmp(s,months[i],j=3))
 	      j=0;
 	  if (j) { break; };
