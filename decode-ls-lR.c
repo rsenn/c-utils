@@ -51,7 +51,7 @@ static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSI
 static stralloc dirp = { 0, 0, 0 };
 
 static char*
-mybasename(const char* s) {
+mystr_basename(const char* s) {
   char* r1 = strrchr(s, '/');
   char* r2 = strrchr(s, '\\');
 
@@ -144,7 +144,7 @@ int decode_ls_lR() {
 
 void usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
-  buffer_puts(buffer_2, mybasename(arg0));
+  buffer_puts(buffer_2, mystr_basename(arg0));
   buffer_puts(buffer_2, " [Options]\n");
   buffer_puts(buffer_2, " -s num   Skip <num> Number of fields\n");
   buffer_flush(buffer_2);

@@ -216,7 +216,7 @@ time_t
 parse_datetime(const char* s, const char* fmt) {
   struct tm tm_s;
   memset(&tm_s, 0, sizeof(struct tm));
-  if(strptime(s, fmt, &tm_s) == s)
+  if(str_ptime(s, fmt, &tm_s) == s)
     return 0;
   return mktime(&tm_s);
 }
@@ -602,6 +602,10 @@ int main(int argc, char *argv[]) {
   strlist_dumpx[2] = '\t';
 
 
-  argv0 = basename(argv[0]);
+  argv0 = argv[0];
+  
+  if(argv0[str_rchr(argv0, '/')] != '\0')
+    argv0 += str_rchr(argv0, '/') + 1;
+  
   return parse_mediathek_list(read_mediathek_list(mediathek_url));
 }
