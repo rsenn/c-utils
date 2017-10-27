@@ -23,6 +23,11 @@
 #define int64_t INT64
 #endif
 
+#ifdef __GNUC__
+#define uint64_t __UINT64_TYPE__
+#define int64_t __INT64_TYPE__
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

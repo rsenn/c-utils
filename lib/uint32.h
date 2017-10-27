@@ -23,6 +23,11 @@
 # define int32_t INT32
 #endif
 
+#ifdef __GNUC__
+#define uint32_t __UINT32_TYPE__
+#define int32_t __INT32_TYPE__
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

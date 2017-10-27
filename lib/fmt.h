@@ -8,6 +8,8 @@
 
 /* for time_t: */
 #include <sys/types.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include "uint32.h"
 #include "uint64.h"
