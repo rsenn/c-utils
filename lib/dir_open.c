@@ -17,7 +17,7 @@ int dir_open(struct dir_s* d, const char* p) {
     size_t len;
     strncpy(path, p, sizeof(path) - 1);
     path[MAXIMUM_PATH_LENGTH] = '\0';
-    len = strlen(path);
+    len = str_len(path);
     strncat(path, (len > 0 && (path[len - 1] == '\\' || path[len - 1] == '/')) ? "*" : "\\*", sizeof(path) - 1);
 
 #if USE_WIDECHAR

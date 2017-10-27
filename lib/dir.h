@@ -45,4 +45,3 @@ time_t dir_time(struct dir_s* d, int time_type);
 #endif
 
 #endif // _DIR_H__
-/* dir_time.c */

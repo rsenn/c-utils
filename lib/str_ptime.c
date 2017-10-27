@@ -28,7 +28,7 @@ static int getint(const char** s,int max) {
   return i;
 }
 
-char* strptime(const char* s,const char* format, struct tm* tm) {
+char* str_ptime(const char* s,const char* format, struct tm* tm) {
   int i,j;
   register time_t  day;
   while (*format) {
@@ -58,7 +58,7 @@ char* strptime(const char* s,const char* format, struct tm* tm) {
 	tm->tm_mon=i;
 	break;
       case 'c':
-	s=strptime(s,"%b %a %d %k:%M:%S %Z %Y",tm);
+	s=str_ptime(s,"%b %a %d %k:%M:%S %Z %Y",tm);
 	break;
       case 'C':
 	i=getint(&s,2);
@@ -71,7 +71,7 @@ char* strptime(const char* s,const char* format, struct tm* tm) {
 	tm->tm_mday=i;
 	break;
       case 'D':
-	s=strptime(s,"%m/%d/%y",tm);
+	s=str_ptime(s,"%m/%d/%y",tm);
 	break;
       case 'H': case 'k':
 	i=getint(&s,2);
@@ -104,10 +104,10 @@ char* strptime(const char* s,const char* format, struct tm* tm) {
 	s+=2;
 	break;
       case 'r':
-	s=strptime(s,"%I:%M:%S %p",tm);
+	s=str_ptime(s,"%I:%M:%S %p",tm);
 	break;
       case 'R':
-	s=strptime(s,"%H:%M",tm);
+	s=str_ptime(s,"%H:%M",tm);
 	break;
       case 'S':
 	i=getint(&s,2);
@@ -115,7 +115,7 @@ char* strptime(const char* s,const char* format, struct tm* tm) {
 	tm->tm_sec=i;
 	break;
       case 'T':
-	s=strptime(s,"%H:%M:%S",tm);
+	s=str_ptime(s,"%H:%M:%S",tm);
 	break;
       case 'U': case 'W':
 	if (getint(&s,2)==-1) return 0;
@@ -125,10 +125,10 @@ char* strptime(const char* s,const char* format, struct tm* tm) {
 	++s;
 	break;
       case 'x':
-	s=strptime(s,"%b %a %d",tm);
+	s=str_ptime(s,"%b %a %d",tm);
 	break;
       case 'X':
-	s=strptime(s,"%k:%M:%S",tm);
+	s=str_ptime(s,"%k:%M:%S",tm);
 	break;
       case 'y':
 	i=getint(&s,2);

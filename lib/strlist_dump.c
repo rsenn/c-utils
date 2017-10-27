@@ -13,6 +13,11 @@ strlist_dump(buffer* out, const strlist* sl)
   size_t i = 0, n = strlist_count(sl);
   buffer_puts(out, "strlist[");
   buffer_putulong(out, n);
+  if( n == 0) {
+    buffer_puts(out, "]{}\n");
+    buffer_flush(out);
+    return;
+  }
   buffer_puts(out, "]{0:\"");
   const char* end = sl->sa.s + sl->sa.len;
   for(s = sl->sa.s; s < end; ++s) {

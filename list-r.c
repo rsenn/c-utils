@@ -535,7 +535,7 @@ int list_dir_internal(stralloc* dir,  char type) {
 
   (void)type;
 
-  while (dir->len > 0 && IS_PATHSEP(dir->s[dir->len - 1]))
+  while (dir->len > 1 && IS_PATHSEP(dir->s[dir->len - 1]))
     dir->len--;
 
   stralloc_nul(dir);
@@ -556,7 +556,9 @@ int list_dir_internal(stralloc* dir,  char type) {
     goto end;
   }
 
-  stralloc_cats(dir, PATHSEP_S);
+  if(dir->s[dir->len-1] != PATHSEP_C)
+    stralloc_cats(dir, PATHSEP_S);
+
   l = dir->len;
 
   while ((name = dir_read(&d))) {
@@ -569,9 +571,9 @@ int list_dir_internal(stralloc* dir,  char type) {
       continue;
     }
 
-    stralloc_readyplus(dir, strlen(name) + 1);
+    stralloc_readyplus(dir, str_len(name) + 1);
     strcpy(dir->s + dir->len, name);
-    dir->len += strlen(name);
+    dir->len += str_len(name);
 
 #ifndef PLAIN_WINDOWS
     if (lstat(dir->s, &st) != -1) {
@@ -730,13 +732,13 @@ int main(int argc, char* argv[]) {
       relative = 1;
     } else if (!strcmp(argv[argi], "-x") || !strcmp(argv[argi], "--exclude")) {
       char* s = argv[argi + 1];
-      array_catb(&exclude_masks, &s, sizeof(char*));
+      array_catb(&exclude_masks, (void*)&s, sizeof(char*));
     } else if (!strncmp(argv[argi], "-x", 2)) {
       char* s = argv[argi] + 2;
-      array_catb(&exclude_masks, &s, sizeof(char*));
+      array_catb(&exclude_masks, (void*)&s, sizeof(char*));
     } else if (!strncmp(argv[argi], "--exclude=", 10)) {
       char* s = argv[argi] + 10;
-      array_catb(&exclude_masks, &s, sizeof(char*));
+      array_catb(&exclude_masks, (void*)&s, sizeof(char*));
     } else if (!strcmp(argv[argi], "--relative")) {
       relative = 1;
     } else if (!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {

@@ -13,7 +13,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
 
@@ -34,7 +34,7 @@
 #define MAXIMUM_PATH_LENGTH _MAX_PATH
 #endif
 
-INLINE static char *mybasename(const char *path) {
+INLINE static char *mystr_basename(const char *path) {
   char *r = strrchr(path, '/');
   return r ? r + 1 : (char *)path;
 }
@@ -424,7 +424,7 @@ int reg2cmd() {
 
 void usage(char *arg0) {
   buffer_puts(buffer_2, "Usage: ");
-  buffer_puts(buffer_2, mybasename(arg0));
+  buffer_puts(buffer_2, mystr_basename(arg0));
   buffer_puts(buffer_2, " [-f] [input - file] [output - file]\n");
   buffer_flush(buffer_2);
   exit(1);

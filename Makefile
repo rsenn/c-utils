@@ -72,6 +72,10 @@ HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\
 endif
 endif
 
+ifneq ($(CC),$(subst m32,,$(CC)))
+HOST := $(subst x86_64,i386,$(HOST))
+endif
+
 #$(info DIET: $(DIET))
 #$(info MINGW: $(MINGW))
 #$(info HOST: $(HOST))
@@ -106,6 +110,10 @@ BUILDTYPE = debug
 else
 BUILDTYPE = release
 DO_STRIP := 1
+endif
+
+ifeq ($(PROF),1)
+BUILDTYPE := prof
 endif
 
 ifeq ($(HOST),$(BUILD))
@@ -164,6 +172,9 @@ EXEEXT = .exe
 endif
 BOOST_LIBS = boost_random
 
+$(info Host: $(HOST))
+$(info Build: $(BUILD))
+
 HOST1 := $(word 1,$(subst -, ,$(HOST)))
 HOST2 := $(word 2,$(subst -, ,$(HOST)))
 HOST3 := $(subst $(HOST1)-$(HOST2)-,,$(HOST))
@@ -182,6 +193,7 @@ endif
 ifeq ($(HOST2),w64)
 HOST2 := $(SYSNAME)
 endif
+
 
 
 #ifneq ($(SYSNAME),)
@@ -278,21 +290,26 @@ STRIP ?= strip
 
 CFLAGS = -pipe
 
-CFLAGS_Debug = -g -ggdb -pg -O0
+CFLAGS_Prof = -pg -O2 
+CFLAGS_Debug = -g -ggdb -O0
 CFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
-CFLAGS_RelWithDebInfo = -g -ggdb -pg -O2
+CFLAGS_RelWithDebInfo = -g -ggdb -O2
 CFLAGS_Release = -g -fomit-frame-pointer -O2
 
 CXXFLAGS = -pipe
 
 CXXFLAGS += -std=c++11
 
+CXXFLAGS_Prof = -pg -O2 
 CXXFLAGS_Debug = -g -ggdb -O0
 CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
 CXXFLAGS_RelWithDebInfo = -g -ggdb -O2
 CXXFLAGS_Release = -g -fomit-frame-pointer -O2
 
 ifeq ($(BUILD_TYPE),)
+ifeq ($(PROF),1)
+BUILD_TYPE = Prof
+else
 ifeq ($(DEBUG),1)
 ifeq ($(RELEASE),1)
 BUILD_TYPE = RelWithDebInfo
@@ -307,11 +324,17 @@ BUILD_TYPE = Release
 endif
 endif
 endif
+endif
 
 $(info BUILDDIR: $(BUILDDIR))
 #$(info builddir: $(builddir))
 
 
+ifeq ($(BUILD_TYPE),Prof)
+DEBUG := 0
+RELEASE := 1
+MINSIZE := 0
+endif
 ifeq ($(BUILD_TYPE),Debug)
 DEBUG := 1
 RELEASE := 0
@@ -427,7 +450,7 @@ $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 #LIBS += -lstdc++
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper )
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test )
  #opensearch-dump eagle-init-brd)
   
 ifeq ($(DO_CXX),1)
@@ -464,6 +487,8 @@ DEFS += USE_READDIR=1
 endif
 
 all: $(BUILDDIR) $(PROGRAMS)
+all-release:
+	$(MAKE) DEBUG=0 all
 
 $(BUILDDIR):
 	-mkdir -p $(BUILDDIR) || mkdir $(BUILDDIR)
@@ -477,15 +502,17 @@ $(BUILDDIR)scan.a: $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_ulongn.o $(BUILDDIR
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)open.a: $(BUILDDIR)open_append.o $(BUILDDIR)open_read.o $(BUILDDIR)open_rw.o $(BUILDDIR)open_trunc.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
-$(BUILDDIR)str.a: $(BUILDDIR)str_chr.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_len.o $(BUILDDIR)str_rchr.o
+$(BUILDDIR)str.a: $(BUILDDIR)str_chr.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_len.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_tok.o $(BUILDDIR)str_dup.o $(BUILDDIR)str_basename.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)dir.a: $(BUILDDIR)dir_close.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_time.o $(BUILDDIR)dir_name.o $(BUILDDIR)dir_type.o $(BUILDDIR)utf8.o
+	$(CROSS_COMPILE)$(AR) rcs $@ $^
+$(BUILDDIR)rdir.a: $(BUILDDIR)rdir_close.o $(BUILDDIR)rdir_open.o $(BUILDDIR)rdir_read.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)mmap.a: $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_private.o $(BUILDDIR)mmap_read.o $(BUILDDIR)mmap_read_fd.o $(BUILDDIR)mmap_unmap.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)byte.a: $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_diff.o $(BUILDDIR)byte_fill.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_zero.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
-$(BUILDDIR)strlist.a: $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_cat.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_index_of.o $(BUILDDIR)strlist_push.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)strlist_push_unique.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)strlist_sort.o $(BUILDDIR)strlist_to_argv.o $(BUILDDIR)strlist_unshift.o
+$(BUILDDIR)strlist.a: $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_cat.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_index_of.o $(BUILDDIR)strlist_push.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)strlist_push_tokens.o $(BUILDDIR)strlist_push_unique.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)strlist_sort.o $(BUILDDIR)strlist_to_argv.o $(BUILDDIR)strlist_unshift.o $(BUILDDIR)strlist_join.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)array.a: $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILDDIR)array_cat.o $(BUILDDIR)array_cat0.o $(BUILDDIR)array_catb.o $(BUILDDIR)array_cate.o $(BUILDDIR)array_cats.o $(BUILDDIR)array_cats0.o $(BUILDDIR)array_equal.o $(BUILDDIR)array_fail.o $(BUILDDIR)array_get.o $(BUILDDIR)array_length.o $(BUILDDIR)array_reset.o $(BUILDDIR)array_start.o $(BUILDDIR)array_trunc.o $(BUILDDIR)array_truncate.o $(BUILDDIR)umult64.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
@@ -515,7 +542,14 @@ $(BUILDDIR)fnmatch.o: fnmatch.c
 
 
 $(BUILDDIR)list-r.o: list-r.c
-$(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
+$(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
+
+$(BUILDDIR)rdir-test.o: rdir-test.c
+$(BUILDDIR)rdir-test$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)rdir-test.o $(BUILDDIR)fnmatch.o $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
@@ -542,13 +576,13 @@ ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
-$(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)str.a $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)strptime.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
+$(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)str.a $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)str_ptime.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
-$(BUILDDIR)mediathek-list$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)array.a $(BUILDDIR)strlist.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)strptime.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
+$(BUILDDIR)mediathek-list$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)array.a $(BUILDDIR)strlist.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)str_ptime.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
@@ -666,6 +700,9 @@ install: $(PROGRAMS)
 	$(INSTALL) -m 755 $(PROGRAMS) $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 
+install-release:
+	$(MAKE) DEBUG=0 install
+
 uninstall:
 	@for PROGRAM in $(PROGRAMS); do \
 		echo $(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
@@ -673,5 +710,15 @@ uninstall:
   done
 LIBSOURCES = array.h array_allocate.c array_bytes.c array_cat.c array_cat0.c array_catb.c array_cate.c array_cats.c array_cats0.c array_equal.c array_fail.c array_get.c array_length.c array_reset.c array_start.c array_trunc.c array_truncate.c buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_close.c buffer_default.c buffer_feed.c buffer_flush.c buffer_free.c buffer_fromsa.c buffer_fromstr.c buffer_get.c buffer_get_new_token_sa.c buffer_get_new_token_sa_pred.c buffer_get_token.c buffer_get_token_pred.c buffer_get_token_sa.c buffer_get_token_sa_pred.c buffer_get_until.c buffer_getc.c buffer_getline.c buffer_getline_sa.c buffer_init.c buffer_mmapprivate.c buffer_mmapread.c buffer_mmapread_fd.c buffer_prefetch.c buffer_put.c buffer_putc.c buffer_putflush.c buffer_putm_internal.c buffer_putnlflush.c buffer_putnspace.c buffer_puts.c buffer_putsa.c buffer_putsflush.c buffer_putspace.c buffer_putuint64.c buffer_putulong.c buffer_putulonglong.c buffer_putxlong.c buffer_skip_until.c buffer_stubborn.c buffer_stubborn2.c buffer_tosa.c buffer_truncfile.c byte.h byte_chr.c byte_copy.c byte_copyr.c byte_diff.c byte_fill.c byte_zero.c dir.h dir_close.c dir_internal.h dir_open.c dir_read.c dir_time.c dir_type.c fmt.h fmt_minus.c fmt_uint64.c fmt_ulong.c fmt_ulong0.c fmt_ulonglong.c fmt_xlong.c fmt_xlonglong.c mmap.h mmap_map.c mmap_private.c mmap_read.c mmap_read_fd.c mmap_unmap.c open.h open_append.c open_read.c open_rw.c open_trunc.c scan.h scan_fromhex.c scan_ushort.c scan_xlong.c scan_xlonglong.c str.h str_diffn.c str_len.c stralloc.h stralloc_append.c stralloc_cat.c stralloc_catb.c stralloc_catc.c stralloc_catlong0.c stralloc_cats.c stralloc_catulong0.c stralloc_copy.c stralloc_copyb.c stralloc_copys.c stralloc_diffs.c stralloc_free.c stralloc_init.c stralloc_insertb.c stralloc_move.c stralloc_nul.c stralloc_ready.c stralloc_readyplus.c stralloc_remove.c stralloc_trunc.c stralloc_write.c stralloc_zero.c strlist.h strlist_push.c strlist_pushunique.c strlist_at.c strlist_count.c strlist_index_of.c strlist_sort.c
 
+slackpkg: all-release
+	@set -x; distdir="_inst"; rm -rf $$distdir; \
+		$(MAKE) install-release DESTDIR="$$(realpath $$distdir)"; \
+		tar -cJf dirlist-`date +%Y%m%d`-slackware.txz -C $$distdir .; \
+		rm -rf $$distdir
 
 
+inst-slackpkg: slackpkg
+	for x in /m*/*/pmagic/pmodules/; do \
+		rm -vf "$$x"/dirlist-*.txz; \
+		cp -vf dirlist-`date +%Y%m%d`-slackware.txz "$$x"; \
+  done

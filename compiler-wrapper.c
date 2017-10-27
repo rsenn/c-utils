@@ -5,7 +5,10 @@
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
+
+#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
+#endif
 
 #ifdef __MINGW32__
 #include <process.h>
@@ -192,7 +195,7 @@ int
 strlist_execve(const strlist* sl) {
   char** av = strlist_to_argv(sl);
   char* p = av[0];
-  av[0] = basename(p);
+  av[0] = str_basename(p);
 
 #ifdef __MINGW32__
   return spawnv(P_WAIT, p, av);
@@ -250,7 +253,7 @@ read_arguments() {
       }
       if(strchr(argv0, '/'))
         stralloc_copys(&compiler, argv0);
-      argv0 = strdup(basename(argv0));
+      argv0 = str_dup(str_basename(argv0));
     }  else if(!str_diffn("-o", s, 2)) {
       stralloc output;
       stralloc_init(&output);
@@ -261,9 +264,10 @@ read_arguments() {
         stralloc_copys(&output, &s[2]);
       }
       stralloc_0(&output);
-      stralloc_copys(&output_file, basename(output.s));
+      stralloc_copys(&output_file, str_basename(output.s));
       if(strchr(output.s, '/') || strchr(output.s, '\\')) {
-        stralloc_copys(&output_dir, dirname(output.s));
+        stralloc_copys(&output_dir, output.s);
+		output_dir.len = str_rchr(output.s, '/');
       }
       continue;
     } else if(!str_diffn("--", s, 2)) {
@@ -314,7 +318,7 @@ read_arguments() {
   dump_stralloc("compiler", &compiler);
   if(output_file.len == 0 && (mode == COMPILE_AND_ASSEMBLE || mode == COMPILE || mode == PREPROCESS)) {
     size_t n;
-    stralloc_copys(&output_file, basename(strlist_at(&params, 0)));
+    stralloc_copys(&output_file, str_basename(strlist_at(&params, 0)));
 
     n = byte_rchr(output_file.s, output_file.len, '.');
     if(n < output_file.len) {
@@ -608,7 +612,7 @@ int
 main(int argc, char* argv[]) {
    int i;
 
-  argv0 = basename(argv[0]);
+  argv0 = str_basename(argv[0]);
 
   debug_buf = buffer_1;
   err_buf = buffer_2;

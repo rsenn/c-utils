@@ -92,7 +92,8 @@ struct dir_internal_s {
 #endif
 
 #if USE_READDIR
-#define dir_TYPE(d) (dir_INTERNAL(d)->dir_entry->d_type)
+//#define dir_TYPE(d) (dir_INTERNAL(d)->dir_entry->d_type)
+#define dir_TYPE(d) (dir_INTERNAL(d)->dir_entry ? dir_INTERNAL(d)->dir_entry->d_type : 0)
 #else
 #define dir_TYPE(d) (dir_INTERNAL(d)->dir_finddata.cFileType)
 #endif

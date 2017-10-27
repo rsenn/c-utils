@@ -48,6 +48,16 @@ size_t str_rchr(const char* haystack, char needle) __pure__;
 /* str_start returns 1 if the b is a prefix of a, 0 otherwise */
 int str_start(const char* a, const char* b) __pure__;
 
+char *str_istr(char *s, char *find);
+char *str_tok(char *s, const char *delim, char **ptrptr);
+char *str_dup(const char *s);
+
+struct tm;
+
+char* str_ptime(const char* s,const char* format, struct tm* tm);
+
+char*
+str_basename(char* s) ;
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 
