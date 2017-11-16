@@ -20,29 +20,29 @@ CONFIG -= qt
 INCLUDEPATH += .
 
 SOURCES = torrent-progress.c \
-  buffer.h \
-  buffer_1.c \
-  buffer_feed.c \
-  buffer_flush.c \
-  buffer_get.c \
-  buffer_put.c \
-  buffer_putflush.c \
-  buffer_putnlflush.c \
-  buffer_puts.c \
-  buffer_putulong.c \
-  buffer_stubborn.c \
-  buffer_stubborn2.c \
-  byte.h \
-  byte_copy.c \
-  fmt.h \
-  fmt_ulong.c \
-  mmap.h \
-  mmap_map.c \
-  mmap_unmap.c \
-  open.h \
-  open_read.c \
-  str.h \
-  str_len.c
+  lib/buffer.h \
+  lib/buffer_1.c \
+  lib/buffer_feed.c \
+  lib/buffer_flush.c \
+  lib/buffer_get.c \
+  lib/buffer_put.c \
+  lib/buffer_putflush.c \
+  lib/buffer_putnlflush.c \
+  lib/buffer_puts.c \
+  lib/buffer_putulong.c \
+  lib/buffer_stubborn.c \
+  lib/buffer_stubborn2.c \
+  lib/byte.h \
+  lib/byte_copy.c \
+  lib/fmt.h \
+  lib/fmt_ulong.c \
+  lib/mmap.h \
+  lib/mmap_map.c \
+  lib/mmap_unmap.c \
+  lib/open.h \
+  lib/open_read.c \
+  lib/str.h \
+  lib/str_len.c
 
 include(deployment.pri)
 qtcAddDeployment()

@@ -20,38 +20,38 @@ CONFIG -= qt
 INCLUDEPATH += .
 
 SOURCES = reg2cmd.c \
-  buffer.h \
-  buffer_0.c \
-  buffer_1.c \
-  buffer_2.c \
-  buffer_feed.c \
-  buffer_flush.c \
-  buffer_get_token.c \
-  buffer_getc.c \
-  buffer_getline.c \
-  buffer_put.c \
-  buffer_putc.c \
-  buffer_puts.c \
-  buffer_putuint64.c \
-  buffer_stubborn.c \
-  buffer_stubborn2.c \
-  byte.h \
-  byte_chr.c \
-  byte_copy.c \
-  fmt.h \
-  fmt_uint64.c \
-  scan.h \
-  scan_fromhex.c \
-  scan_xlong.c \
-  scan_xlonglong.c \
-  str.h \
-  str_len.c \
-  stralloc.h \
-  stralloc_catb.c \
-  stralloc_init.c \
-  stralloc_ready.c \
-  stralloc_readyplus.c \
-  stralloc_zero.c
+  lib/buffer.h \
+  lib/buffer_0.c \
+  lib/buffer_1.c \
+  lib/buffer_2.c \
+  lib/buffer_feed.c \
+  lib/buffer_flush.c \
+  lib/buffer_get_token.c \
+  lib/buffer_getc.c \
+  lib/buffer_getline.c \
+  lib/buffer_put.c \
+  lib/buffer_putc.c \
+  lib/buffer_puts.c \
+  lib/buffer_putuint64.c \
+  lib/buffer_stubborn.c \
+  lib/buffer_stubborn2.c \
+  lib/byte.h \
+  lib/byte_chr.c \
+  lib/byte_copy.c \
+  lib/fmt.h \
+  lib/fmt_uint64.c \
+  lib/scan.h \
+  lib/scan_fromhex.c \
+  lib/scan_xlong.c \
+  lib/scan_xlonglong.c \
+  lib/str.h \
+  lib/str_len.c \
+  lib/stralloc.h \
+  lib/stralloc_catb.c \
+  lib/stralloc_init.c \
+  lib/stralloc_ready.c \
+  lib/stralloc_readyplus.c \
+  lib/stralloc_zero.c
 
 include(deployment.pri)
 qtcAddDeployment()

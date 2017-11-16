@@ -20,23 +20,23 @@ CONFIG -= qt
 INCLUDEPATH += .
 
 SOURCES = count-depth.c \
-  buffer.h \
-  buffer_0.c \
-  buffer_1.c \
-  buffer_feed.c \
-  buffer_flush.c \
-  buffer_get_token.c \
-  buffer_getc.c \
-  buffer_getline.c \
-  buffer_put.c \
-  buffer_putulong.c \
-  buffer_stubborn.c \
-  buffer_stubborn2.c \
-  byte.h \
-  byte_chr.c \
-  byte_copy.c \
-  fmt.h \
-  fmt_ulong.c
+  lib/buffer.h \
+  lib/buffer_0.c \
+  lib/buffer_1.c \
+  lib/buffer_feed.c \
+  lib/buffer_flush.c \
+  lib/buffer_get_token.c \
+  lib/buffer_getc.c \
+  lib/buffer_getline.c \
+  lib/buffer_put.c \
+  lib/buffer_putulong.c \
+  lib/buffer_stubborn.c \
+  lib/buffer_stubborn2.c \
+  lib/byte.h \
+  lib/byte_chr.c \
+  lib/byte_copy.c \
+  lib/fmt.h \
+  lib/fmt_ulong.c
 
 
 include(deployment.pri)

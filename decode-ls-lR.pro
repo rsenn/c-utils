@@ -20,31 +20,31 @@ CONFIG -= qt
 INCLUDEPATH += .
 
 SOURCES = decode-ls-lR.c \
-  buffer.h \
-  buffer_0.c \
-  buffer_1.c \
-  buffer_2.c \
-  buffer_feed.c \
-  buffer_flush.c \
-  buffer_get_token.c \
-  buffer_getc.c \
-  buffer_getline.c \
-  buffer_put.c \
-  buffer_puts.c \
-  buffer_stubborn.c \
-  buffer_stubborn2.c \
-  byte.h \
-  byte_chr.c \
-  byte_copy.c \
-  str.h \
-  str_diffn.c \
-  str_len.c \
-  stralloc.h \
-  stralloc_catb.c \
-  stralloc_copyb.c \
-  stralloc_copys.c \
-  stralloc_ready.c \
-  stralloc_readyplus.c
+  lib/buffer.h \
+  lib/buffer_0.c \
+  lib/buffer_1.c \
+  lib/buffer_2.c \
+  lib/buffer_feed.c \
+  lib/buffer_flush.c \
+  lib/buffer_get_token.c \
+  lib/buffer_getc.c \
+  lib/buffer_getline.c \
+  lib/buffer_put.c \
+  lib/buffer_puts.c \
+  lib/buffer_stubborn.c \
+  lib/buffer_stubborn2.c \
+  lib/byte.h \
+  lib/byte_chr.c \
+  lib/byte_copy.c \
+  lib/str.h \
+  lib/str_diffn.c \
+  lib/str_len.c \
+  lib/stralloc.h \
+  lib/stralloc_catb.c \
+  lib/stralloc_copyb.c \
+  lib/stralloc_copys.c \
+  lib/stralloc_ready.c \
+  lib/stralloc_readyplus.c
 
 include(deployment.pri)
 qtcAddDeployment()
