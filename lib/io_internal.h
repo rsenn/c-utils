@@ -1,22 +1,20 @@
 #ifndef my_extern
-#define my_extern extern
+# define my_extern extern
 #endif
 
 #include "io.h"
 #include "array.h"
 #include "iarray.h"
 #ifdef __MINGW32__
-#include "socket.h"
+# include "socket.h"
 my_extern HANDLE io_comport;
 #else
-#include "haveepoll.h"
-#include "havekqueue.h"
-#include "havedevpoll.h"
-#include "havesigio.h"
-#ifdef HAVE_SIGIO
-#define _GNU_SOURCE
-#include <signal.h>
-#endif
+# define HAVE_EPOLL 1
+# define HAVE_SIGIO
+# ifdef HAVE_SIGIO
+# define _GNU_SOURCE
+#  include <signal.h>
+# endif
 #endif
 
 /* We simulate a level-triggered API on top of an event signalling
@@ -128,5 +126,3 @@ struct eventpacket {
 };
 
 #define debug_printf(x)
-#define HAVE_EPOLL 1
-#define HAVE_SIGIO

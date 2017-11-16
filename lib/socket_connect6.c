@@ -9,10 +9,8 @@
 #include "byte.h"
 #include "socket.h"
 #include "ip6.h"
-#include "haveip6.h"
 #include "uint32.h"
 #include "ip4.h"
-#include "havescope.h"
 
 int socket_connect6(int s,const char ip[16],uint16 port,uint32 scope_id)
 {

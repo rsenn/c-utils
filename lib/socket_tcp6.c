@@ -5,7 +5,6 @@
 #include <netinet/in.h>
 #endif
 #include <errno.h>
-#include "haveip6.h"
 #include "socket.h"
 #include "ndelay.h"
 

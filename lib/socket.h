@@ -4,6 +4,9 @@
 
 #include <sys/types.h>
 
+#define LIBC_HAS_IP6 1
+#define LIBC_HAS_SCOPE_ID 1
+
 #include "uint16.h"
 #include "uint32.h"
 
