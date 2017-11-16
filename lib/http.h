@@ -23,7 +23,7 @@ typedef struct http_request_s {
 typedef struct {
   int64 sock;
   stralloc host;
-  uint8 addr[4];
+  char addr[4];
   uint16 port;
   http_request* request;
 } http;
