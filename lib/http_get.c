@@ -12,7 +12,7 @@
 #include <arpa/inet.h>
 
 
-#include "buffer.h".h"
+#include "buffer.h"
 
 int
 http_get(http* h, const char* location) {
