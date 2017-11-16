@@ -12,7 +12,7 @@
 
 int
 http_get(http* h, const char* location) {
-  http_request* r;
+  http_request** r;
   struct hostent *he;
   struct in_addr a;
 
@@ -33,18 +33,23 @@ http_get(http* h, const char* location) {
   h->sock = socket_tcp4();
   io_nonblock(h->sock);
 
-  for(r = h->requests; r->next; r = r->next)
-  {}
+  uint32 serial=0;
+  if(h->request) {
+    serial = h->request->serial+1;
+    free(h->request);
+    h->request = NULL;
+  }
+//  for(r = &h->request; *r && (*r)->next; r = &(*r)->next)  {} 
+  r = &h->request;
 
-  r->next = malloc(sizeof(http_request));
-  byte_zero(&r->next, sizeof(http_request));
-  r->next->serial = r->serial+1;
-  r = r->next;
+  (*r)= malloc(sizeof(http_request));
+  byte_zero((*r), sizeof(http_request));
+ (*r)->serial = serial;
 
-  r->type = GET;
+  (*r)->type = GET;
 
-  stralloc_init(&r->location);
-  stralloc_copys(&r->location, location);
+  stralloc_init(&((*r)->location));
+  stralloc_copys(&((*r)->location), location);
 
   return socket_connect4(h->sock, h->addr.s, h->port);
 }

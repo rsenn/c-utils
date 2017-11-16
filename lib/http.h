@@ -25,7 +25,7 @@ typedef struct {
   stralloc host;
   stralloc addr;
   uint16 port;
-  http_request* requests;
+  http_request* request;
 } http;
 
 /* lib/http_get.c */
