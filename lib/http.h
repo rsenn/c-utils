@@ -20,12 +20,20 @@ typedef struct http_request_s {
   struct http_request_s* next;
 } http_request;
 
+struct http_response_s;
+
+typedef struct http_response_s {
+  enum { DEFAULT=0, CLOSED, ERROR } status;
+  stralloc body;
+} http_response;
+
 typedef struct {
   int64 sock;
   uint16 port;
   stralloc host;
   char addr[4];
   http_request* request;
+  http_response* response;
 } http;
 
 int http_get(http *h, const char *location);
