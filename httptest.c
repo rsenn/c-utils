@@ -1,7 +1,16 @@
-#include "io.h"
-#include "ndelay.h"
-#include "socket.h"
+#include "buffer.h"
+#include "http.h"
 
 int main(int argc, char* argv[]) {
+
+  http h;
+
+  http_init(&h, "www.google.ch", 80);
+  int ret = http_get(&h, "/");
+
+  buffer_puts(buffer_1, "http_get() = ");
+  buffer_putulong(buffer_1, ret);
+  buffer_putnlflush(buffer_1);
+
   return 0;
 }
