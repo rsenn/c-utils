@@ -44,7 +44,6 @@ HEADERS = \
     lib/ndelay.h \
     lib/socket.h \
 
-
 SOURCES = \
   httptest.c \
     lib/io_nonblock.c \
@@ -86,6 +85,7 @@ SOURCES = \
     lib/stralloc_copys.c \
     lib/stralloc_copyb.c \
     lib/str_len.c \
+    lib/iopause.c \
 
 
 include(deployment.pri)

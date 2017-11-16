@@ -25,14 +25,28 @@ http_get(http* h, const char* location) {
 
   if(he == NULL)
     return 0;
-  a = *(struct in_addr*)he->h_addr_list[0];
+  a = *((struct in_addr**)(he->h_addr_list))[0];
 
   if(a.s_addr == 0)
     return 0;
 
 //  stralloc_ready(&h->addr, 16);
   stralloc_copys(&h->addr, inet_ntoa(a));
-  h->addr.len = str_len(h->addr.s);
+  stralloc_0(&h->addr);
+
+buffer_putsa(buffer_2, &h->host);
+buffer_puts(buffer_2, " (");
+  buffer_putulong(buffer_2, a.s_addr & 0xff); buffer_puts(buffer_2, ".");
+  buffer_putulong(buffer_2, (a.s_addr>>8) & 0xff); buffer_puts(buffer_2, ".");
+  buffer_putulong(buffer_2, (a.s_addr>>16) & 0xff); buffer_puts(buffer_2, ".");
+  buffer_putulong(buffer_2, (a.s_addr>>24) & 0xff);
+  buffer_puts(buffer_2, ", ");
+  buffer_putsa(buffer_2, &h->addr);
+  buffer_puts(buffer_2, ")");
+  buffer_putnlflush(buffer_2);
+
+
+//  h->addr.len = str_len(h->addr.s);
 
   h->sock = socket_tcp4();
   io_nonblock(h->sock);
@@ -58,11 +72,6 @@ http_get(http* h, const char* location) {
   int ret = socket_connect4(h->sock, h->addr.s, h->port);
 
   if(ret == -1) {
-    /*
-    buffer_puts(buffer_2, "errno = ");
-    buffer_putlong(buffer_2, (long)errno);
-    buffer_putnlflush(buffer_2);
-    */
 
     if(errno == EINPROGRESS) {
       ret = 0;
