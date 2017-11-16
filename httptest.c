@@ -1,5 +1,7 @@
 #include "buffer.h"
 #include "http.h"
+#include "io.h"
+#include "iopause.h"
 
 int main(int argc, char* argv[]) {
 

@@ -12,7 +12,9 @@ my_extern HANDLE io_comport;
 # define HAVE_EPOLL 1
 # define HAVE_SIGIO
 # ifdef HAVE_SIGIO
+# ifndef _GNU_SOURCE
 # define _GNU_SOURCE
+# endif
 #  include <signal.h>
 # endif
 #endif

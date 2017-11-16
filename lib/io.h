@@ -11,6 +11,10 @@
 extern "C" {
 #endif
 
+#define HAVE_PREAD
+#define HAVE_SENDFILE
+#define HAVE_UINT128
+
 /* like open(s,O_RDONLY) */
 /* return 1 if ok, 0 on error */
 int io_readfile(int64* d,const char* s);

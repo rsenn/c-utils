@@ -1,6 +1,7 @@
 gen-a-rules () 
 { 
-    for a in $( ls -d lib/*_*.c|sed -n 's,.*/,, ; s,_.*,,p'|uniq);
+    [ $# -le 0 ] && set --  $( ls -d lib/*_*.c|sed -n 's,.*/,, ; s,_.*,,p'|uniq);
+    for a 
     do
         c=$(ls -d lib/"$a"_*.c);
         o=`echo "$c" |sed 's,.*/,$(BUILDDIR), ; s,\.c$,.o,'  `

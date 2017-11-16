@@ -3,12 +3,16 @@
 #include "str.h"
 #include "byte.h"
 #include "io.h"
-#include <stdlib.h>
 #include <netdb.h>
+#include <stdlib.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
+
+#include "buffer.h".h"
 
 int
 http_get(http* h, const char* location) {
@@ -51,5 +55,19 @@ http_get(http* h, const char* location) {
   stralloc_init(&((*r)->location));
   stralloc_copys(&((*r)->location), location);
 
-  return socket_connect4(h->sock, h->addr.s, h->port);
+  int ret = socket_connect4(h->sock, h->addr.s, h->port);
+
+  if(ret == -1) {
+    /*
+    buffer_puts(buffer_2, "errno = ");
+    buffer_putlong(buffer_2, (long)errno);
+    buffer_putnlflush(buffer_2);
+    */
+
+    if(errno == EINPROGRESS) {
+      ret = 0;
+      errno = 0;
+    }
+  }
+  return ret == 0;
 }
