@@ -2,6 +2,8 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
+CONFIG += link_pkgconfig
+PKGCONFIG += libxml-2.0
 
 *msvc* {
   DEFINES += INLINE=__inline
@@ -38,7 +40,7 @@ win64: LIBXML2_DIR = e:/Libraries/libxml2-2.9.4/vs2015-x64
 
 DEFINES += LIBXML_STATIC=1
 INCLUDEPATH += $$LIBXML2_DIR/include $$LIBXML2_DIR/include/libxml
-LIBS += $$LIBXML2_DIR/lib/xml2.lib
+!unix: LIBS += $$LIBXML2_DIR/lib/xml2.lib
 
 #WIN_ICONV_DIR = e:/Libraries/win-iconv-0.0.6/x86_64-w64-mingw32
 #INCLUDEPATH += $$WIN_ICONV_DIR/include
@@ -51,30 +53,27 @@ HEADERS = \
 
 
 SOURCES = \
-  eagle-init-brd.c \
-  lib/byte_copy.c \
-  lib/hmap_add.c \
-  lib/hmap_add_tuple_with_data.c \
-  lib/hmap_delete.c \
-  lib/hmap_destroy.c \
-  lib/hmap_free_data.c \
-  lib/hmap_init.c \
-  lib/hmap_is_locate.c \
-  lib/hmap_print_list.c \
-  lib/hmap_print_table.c \
-  lib/hmap_print_tree.c \
-  lib/hmap_search.c \
-  lib/hmap_set.c \
-  lib/hmap_truncate.c \
-  lib/stralloc_catb.c \
-  lib/stralloc_cats.c \
-  lib/stralloc_copyb.c \
-  lib/stralloc_copys.c \
-  lib/stralloc_nul.c \
-  lib/stralloc_ready.c \
-  lib/stralloc_readyplus.c \
-  lib/stralloc_zero.c \
-  lib/str_len.c \
+    eagle-init-brd.c \
+    lib/byte_copy.c \
+    lib/hmap_add.c \
+    lib/hmap_destroy.c \
+    lib/hmap_free_data.c \
+    lib/hmap_init.c \
+    lib/hmap_search.c \
+    lib/hmap_truncate.c \
+    lib/scan_double.c \
+    lib/stralloc_catb.c \
+    lib/stralloc_cats.c \
+    lib/stralloc_copyb.c \
+    lib/stralloc_copys.c \
+    lib/stralloc_free.c \
+    lib/stralloc_init.c \
+    lib/stralloc_nul.c \
+    lib/stralloc_ready.c \
+    lib/stralloc_readyplus.c \
+    lib/stralloc_zero.c \
+    lib/str_diff.c \
+    lib/str_len.c \
 
 
 include(deployment.pri)

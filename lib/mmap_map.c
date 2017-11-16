@@ -14,11 +14,11 @@
 #include "open.h"
 #include "mmap.h" 
 #include "uint64.h"
-
+/*
 #if defined(__x86_64__) && defined(__linux) && !defined(__dietlibc__)
 #define mmap mmap64
 #endif
-
+*/
 char* mmap_map(int fd, size_t sz, uint64 offset) {
 #if defined(_WIN32)
   HANDLE h = _get_osfhandle(fd), m;
