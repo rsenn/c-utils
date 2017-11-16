@@ -21,6 +21,7 @@ http_get(http* h, const char* location) {
   struct in_addr a;
 
   stralloc_0(&h->host);
+  h->host.len = str_len(h->host.s);
   he = gethostbyname(h->host.s);
 
   if(he == NULL)

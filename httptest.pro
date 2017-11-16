@@ -11,6 +11,8 @@ CONFIG -= qt
   QMAKE_CFLAGS_WARN_ON = -W3
 }
 
+gcc:   QMAKE_CFLAGS_WARN_ON = -Wno-unused
+
 #mingw | mingw32 | mingw64 | msvc {
 win32 | winn64 {
   DEFINES += USE_READDIR=0
@@ -45,47 +47,47 @@ HEADERS = \
     lib/socket.h \
 
 SOURCES = \
-  httptest.c \
-    lib/io_nonblock.c \
-    lib/ndelay_on.c \
-    lib/socket_connect4.c \
-    lib/socket_connect6.c \
-    lib/socket_connected.c \
-    lib/socket_tcp4.c \
-    lib/socket_tcp6.c \
-    lib/byte_copy.c \
-    lib/byte_diff.c \
-    lib/byte_zero.c \
-    lib/iarray_get.c \
-    lib/socket_tcp4b.c \
-    lib/socket_tcp6b.c \
-    lib/uint16_pack_big.c \
-    lib/io_fd.c \
-    lib/socket_ip4loopback.c \
-    lib/socket_noipv6.c \
-    lib/socket_v4mappedprefix.c \
-    lib/socket_v6loopback.c \
-    lib/iarray_allocate.c \
-    lib/iarray_init.c \
-    lib/http_get.c \
-    lib/http_init.c \
+    httptest.c \
     lib/buffer_1.c \
     lib/buffer_2.c \
-    lib/buffer_put.c \
-    lib/buffer_putulong.c \
-    lib/buffer_putnlflush.c \
-    lib/buffer_putflush.c \
     lib/buffer_flush.c \
+    lib/buffer_put.c \
+    lib/buffer_putflush.c \
+    lib/buffer_putlong.c \
+    lib/buffer_putnlflush.c \
+    lib/buffer_putsa.c \
+    lib/buffer_putulong.c \
     lib/buffer_stubborn.c \
+    lib/byte_copy.c \
+    lib/byte_zero.c \
+    lib/fmt_long.c \
     lib/fmt_ulong.c \
+    lib/http_get.c \
+    lib/http_init.c \
+    lib/http_sendreq.c \
+    lib/iarray_allocate.c \
+    lib/iarray_get.c \
+    lib/iarray_init.c \
+    lib/io_fd.c \
+    lib/io_nonblock.c \
+    lib/iopause.c \
+    lib/ndelay_on.c \
+    lib/socket_connect4.c \
+    lib/socket_tcp4b.c \
+    lib/socket_tcp4.c \
     lib/stralloc_append.c \
+    lib/stralloc_copyb.c \
+    lib/stralloc_copys.c \
     lib/stralloc_init.c \
     lib/stralloc_ready.c \
     lib/stralloc_readyplus.c \
-    lib/stralloc_copys.c \
-    lib/stralloc_copyb.c \
     lib/str_len.c \
-    lib/iopause.c \
+    lib/taia_approx.c \
+    lib/taia_frac.c \
+    lib/taia_less.c \
+    lib/taia_sub.c \
+    lib/taia_uint.c \
+    lib/uint16_pack_big.c \
 
 
 include(deployment.pri)

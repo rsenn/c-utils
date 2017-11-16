@@ -516,9 +516,6 @@ $(BUILDDIR)fmt.a: $(BUILDDIR)fmt_8long.o $(BUILDDIR)fmt_8longlong.o $(BUILDDIR)f
 $(BUILDDIR)hmap.a: $(BUILDDIR)hmap_add.o $(BUILDDIR)hmap_add_tuple_with_data.o $(BUILDDIR)hmap_delete.o $(BUILDDIR)hmap_destroy.o $(BUILDDIR)hmap_free_data.o $(BUILDDIR)hmap_init.o $(BUILDDIR)hmap_internal.o $(BUILDDIR)hmap_is_locate.o $(BUILDDIR)hmap_print_list.o $(BUILDDIR)hmap_print_table.o $(BUILDDIR)hmap_print_tree.o $(BUILDDIR)hmap_search.o $(BUILDDIR)hmap_set.o $(BUILDDIR)hmap_truncate.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
-$(BUILDDIR)http.a: $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o 
-	$(CROSS_COMPILE)$(AR) rcs $@ $^
-
 $(BUILDDIR)iarray.a: $(BUILDDIR)iarray_allocate.o $(BUILDDIR)iarray_get.o $(BUILDDIR)iarray_init.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
@@ -567,6 +564,9 @@ $(BUILDDIR)tai.a: $(BUILDDIR)tai_add.o $(BUILDDIR)tai_now.o $(BUILDDIR)tai_pack.
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 $(BUILDDIR)taia.a: $(BUILDDIR)taia_add.o $(BUILDDIR)taia_addsec.o $(BUILDDIR)taia_approx.o $(BUILDDIR)taia_frac.o $(BUILDDIR)taia_half.o $(BUILDDIR)taia_less.o $(BUILDDIR)taia_now.o $(BUILDDIR)taia_pack.o $(BUILDDIR)taia_sub.o $(BUILDDIR)taia_tai.o $(BUILDDIR)taia_uint.o $(BUILDDIR)taia_unpack.o 
+	$(CROSS_COMPILE)$(AR) rcs $@ $^
+
+$(BUILDDIR)http.a: $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_sendreq.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 
@@ -632,7 +632,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)httptest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)httptest.o $(BUILDDIR)http.a $(BUILDDIR)socket.a $(BUILDDIR)io.a $(BUILDDIR)ndelay.a $(BUILDDIR)uint16.a $(BUILDDIR)iarray.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)scan.a $(BUILDDIR)stralloc.a $(BUILDDIR)str.a $(BUILDDIR)byte.a   $(BUILDDIR)taia.a  $(BUILDDIR)uint32.a  
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) -lefence
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif

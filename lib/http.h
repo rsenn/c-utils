@@ -22,16 +22,18 @@ typedef struct http_request_s {
 
 typedef struct {
   int64 sock;
+  uint16 port;
   stralloc host;
   char addr[4];
-  uint16 port;
   http_request* request;
 } http;
 
-/* lib/http_get.c */
 int http_get(http *h, const char *location);
-/* lib/http_init.c */
 void http_init(http *h, const char *host, uint16 port);
+int http_sendreq(http *h);
+void http_readable();
+void http_writeable();
+
 
 #ifdef __cplusplus
 }
