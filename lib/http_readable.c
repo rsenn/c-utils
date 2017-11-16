@@ -1,4 +1,6 @@
 #include "http.h"
+#include <errno.h>
+#include <sys/socket.h>
 
 void
 http_readable(http* h) {
@@ -7,20 +9,24 @@ http_readable(http* h) {
     ssize_t  ret;
     http_response* r = h->response;
 
-    ret = recv(h->sock, recvbuf, sizeof(recvbuf), 0);
+    for(;;) {
+      ret = recv(h->sock, recvbuf, sizeof(recvbuf), 0);
 
-    if(ret == -1 && errno == EAGAIN) {
-      errno = 0;
+      if(ret == -1 && errno == EAGAIN) {
+        errno = 0;
+        return;
+      }
+
+      if(ret > 0) {
+        stralloc_catb(&r->body, recvbuf, ret);
+        continue;
+      }
+
+      if(ret == 0)
+        r->status = CLOSED;
+      else
+        r->status = ERROR;
       return;
     }
-
-    if(ret > 0) {
-      stralloc_catb(&r->body, recvbuf, ret);
-    } else if(ret == 0) {
-      r->status = CLOSED;
-    } else {
-      r->status = ERROR;
-    }
   }
-
 }

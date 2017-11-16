@@ -5,9 +5,17 @@
 #include "taia.h"
 #include "byte.h"
 #include <sys/socket.h>
-#include <errno.h>.h>
+#include <errno.h>
 
 static int last_errno = 0;
+
+static struct taia deadline, stamp;
+
+static void
+set_timeouts(int seconds) {
+  taia_uint(&deadline, seconds);
+  taia_uint(&stamp, 0);
+}
 
 static ssize_t
 do_recv(int64 s, void* buf, size_t len) {
@@ -27,7 +35,6 @@ int main(int argc, char* argv[]) {
 
   http h;
   iopause_fd iop;
-  static struct taia a1, a2;
   static buffer in;
   char inbuf[8192];
   int ret;
@@ -45,35 +52,48 @@ int main(int argc, char* argv[]) {
   iop.fd = h.sock;
   iop.events = /*IOPAUSE_READ|*/IOPAUSE_WRITE;
 
-  taia_uint(&a1, 30); taia_uint(&a2, 0);
-  iopause(&iop, 1, &a1, &a2);
+  set_timeouts(10);
+  iopause(&iop, 1, &deadline, &stamp);
 
   http_sendreq(&h);
 
-  iop.events = IOPAUSE_READ;
 
-  taia_uint(&a1, 30); taia_uint(&a2, 0 );
-  iopause(&iop, 1, &a1, &a2);
+  for(;;) {
+   iop.events = IOPAUSE_READ;
 
-  stralloc line;
-  stralloc_init(&line);
+    set_timeouts(10);
+    iopause(&iop, 1, &deadline, &stamp);
 
-  io_block(h.sock);
+    if(iop.revents & IOPAUSE_READ) {
+      http_readable(&h);
 
-  while((ret = buffer_getline_sa(&in, &line))) {
-    buffer_puts(buffer_1, "Line: ");
-    buffer_putsa(buffer_1, &line);
-    buffer_puts(buffer_1, " (len==");
-    buffer_putlong(buffer_1, line.len);
-    buffer_puts(buffer_1, ")");
-    buffer_putnlflush(buffer_1);
-    stralloc_zero(&line);
-
-    if(line.len > 0 && line.s[0] == '\0')
-      break;
-
-    //if(last_errno == EAGAIN)      break;
+      if(h.response->status != DEFAULT)
+        break;
+    }
   }
+
+  buffer_putsa(buffer_1, &h.response->body);
+  buffer_putnlflush(buffer_1);
+
+  //  stralloc line;
+//  stralloc_init(&line);
+
+//  io_block(h.sock);
+
+//  while((ret = buffer_getline_sa(&in, &line))) {
+//    buffer_puts(buffer_1, "Line: ");
+//    buffer_putsa(buffer_1, &line);
+//    buffer_puts(buffer_1, " (len==");
+//    buffer_putlong(buffer_1, line.len);
+//    buffer_puts(buffer_1, ")");
+//
+//    stralloc_zero(&line);
+
+//    if(line.len > 0 && line.s[0] == '\0')
+//      break;
+
+//    //if(last_errno == EAGAIN)      break;
+//  }
 
   return 0;
 }
