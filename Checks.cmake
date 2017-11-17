@@ -23,7 +23,7 @@ message( STATUS "Writing ${CMAKE_CURRENT_BINARY_DIR}/tryepoll.c" )
 file( WRITE "${CMAKE_CURRENT_BINARY_DIR}/tryepoll.c" "#include <inttypes.h>\n#include <sys/epoll.h>\n#include <stdio.h>\n\nint main() {\nint efd=epoll_create(10);\nstruct epoll_event x;\nif (efd==-1) return 111;\nx.events=EPOLLIN;\nx.data.fd=0;\nif (epoll_ctl(efd,EPOLL_CTL_ADD,0 /* fd */,&x)==-1) return 111;\n{\nint n;\nstruct epoll_event y[100];\nif ((n=epoll_wait(efd,y,100,1000))==-1) return 111;\nif (n>0)\nprintf(\"event %d on fd #%d\n\",y[0].events,y[0].data.fd);\n}\nreturn 0;\n}" )
 try_compile( HAVE_EPOLL ${CMAKE_CURRENT_BINARY_DIR} SOURCES "${CMAKE_CURRENT_BINARY_DIR}/tryepoll.c" )
 if( HAVE_EPOLL )
-file( WRITE "${CMAKE_BINARY_DIR}/haveepoll.h" "#define HAVE_EPOLL 2\n")
+file( WRITE "${CMAKE_BINARY_DIR}/haveepoll.h" "#define HAVE_EPOLL 1\n")
 endif( HAVE_EPOLL )
 
 message( STATUS "Writing ${CMAKE_CURRENT_BINARY_DIR}/tryinline.c" )
