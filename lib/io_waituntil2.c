@@ -1,9 +1,13 @@
 #include "io_internal.h"
 #ifdef HAVE_EPOLL
+#ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
 #endif
+#endif
 #ifdef HAVE_SIGIO
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #include <signal.h>
 #endif
 #include <unistd.h>

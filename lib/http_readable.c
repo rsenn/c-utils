@@ -1,6 +1,9 @@
 #include "http.h"
 #include "buffer.h"
+#include "str.h"
+#include "scan.h"
 #include <errno.h>
+#include <ctype.h>
 #include <sys/socket.h>
 
 ssize_t
@@ -34,7 +37,7 @@ http_readable(http* h) {
     http_response* r = h->response;
     buffer recvb  = BUFFER_INIT(buffer_dummyread, -1, r->body.s, r->body.len);
     recvb.p = r->ptr;
-again:
+
     for(;;) {
       ret = recv(h->sock, recvbuf, sizeof(recvbuf), 0);
       err = errno;

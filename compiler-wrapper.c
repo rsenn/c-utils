@@ -34,7 +34,7 @@ typedef enum {
   PICC18 = 2,
   XC8 = 3,
 } compiler_type;
-const char const* compiler_strs[] = { "sdcc", "picc", "picc18", "xc8" };
+const char* compiler_strs[] = { "sdcc", "picc", "picc18", "xc8" };
 
 typedef enum {
   COMPILE_ASSEMBLE_LINK = 0,
@@ -44,7 +44,7 @@ typedef enum {
 
 } operation_mode;
 
-const char const* opmode_strs[] = { "compile,assemble,link", "preprocess", "compile", "compile,assemble" };
+const char* opmode_strs[] = { "compile,assemble,link", "preprocess", "compile", "compile,assemble" };
 static strlist args;
 static int i, n;
 

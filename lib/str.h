@@ -55,6 +55,7 @@ char *str_dup(const char *s);
 struct tm;
 
 char* str_ptime(const char* s,const char* format, struct tm* tm);
+char *str_dup(const char *s);
 
 char*
 str_basename(char* s) ;
@@ -66,3 +67,4 @@ str_basename(char* s) ;
 #endif
 
 #endif
+size_t scan_ulongn(const char *src, size_t n, unsigned long int *dest);

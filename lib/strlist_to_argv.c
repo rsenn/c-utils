@@ -8,7 +8,8 @@ strlist_to_argv(const strlist* sl) {
   if(v == NULL) return NULL;
   
   while(i < n) {
-     v[i] = strlist_at(sl, i++);
+     v[i] = strlist_at(sl, i);
+     i++;
   }
   //v[i] = NULL;
   return v;

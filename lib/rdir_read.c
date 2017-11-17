@@ -5,13 +5,13 @@
 #include "dir_internal.h"
 #include "buffer.h"
 
-void rdir_read_r(volatile rdir_t* d);
+void rdir_read_r(rdir_t* d);
 
 char*
 rdir_read(rdir_t* pd) {
   size_t len;
   char* s;
-  volatile rdir_t* d = pd;
+  rdir_t* d = pd;
 
   
   if(d->sa.s && strchr(&d->sa.s[d->sa.len], '/') 
@@ -67,7 +67,7 @@ rdir_read(rdir_t* pd) {
 }
 
 void
-rdir_read_r(volatile rdir_t* d) {
+rdir_read_r(rdir_t* d) {
   rdir_t* rdn = malloc(sizeof(rdir_t)); 
   byte_copy(rdn, sizeof(rdir_t), d);
   byte_zero(d, sizeof(rdir_t));

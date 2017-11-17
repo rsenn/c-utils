@@ -1,4 +1,5 @@
 #include "strlist.h"
+#include "str.h"
 
 int
 strlist_shift(strlist* sl, const char** strp) {
@@ -6,7 +7,7 @@ strlist_shift(strlist* sl, const char** strp) {
   size_t i, n = strlist_count(sl);
   if(n <= 0) return -1;
   
-  *strp = str_dup(strlist_at(sl, 0));  
+  *strp = (const char*)str_dup(strlist_at(sl, 0));  
   strlist_init(&newl);
   
   for(i = 1; i < n; ++i) {  
