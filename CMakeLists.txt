@@ -178,37 +178,80 @@ foreach(V ${HAVE_VARS})
   endif()
 endforeach()
 
-#set(LIBOWFAT_SOURCES lib/array.h lib/array_allocate.c lib/array_bytes.c lib/array_cat.c lib/array_cat0.c lib/array_catb.c lib/array_cate.c lib/array_cats.c lib/array_cats0.c lib/array_equal.c lib/array_fail.c lib/array_get.c lib/array_length.c lib/array_reset.c lib/array_start.c lib/array_trunc.c lib/array_truncate.c lib/buffer.h lib/buffer_0.c lib/buffer_0small.c lib/buffer_1.c lib/buffer_1small.c lib/buffer_2.c lib/buffer_close.c lib/buffer_default.c lib/buffer_dummyread.c lib/buffer_dummyreadmmap.c lib/buffer_dump.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_free.c lib/buffer_fromarray.c lib/buffer_frombuf.c lib/buffer_fromsa.c lib/buffer_fromstr.c lib/buffer_get.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_getline_sa.c lib/buffer_getn.c lib/buffer_getnewline_sa.c lib/buffer_get_new_token_sa.c lib/buffer_get_new_token_sa_pred.c lib/buffer_get_token.c lib/buffer_get_token_pred.c lib/buffer_get_token_sa.c lib/buffer_get_token_sa_pred.c lib/buffer_get_until.c lib/buffer_init.c lib/buffer_init_free.c lib/buffer_mmapprivate.c lib/buffer_mmapread.c lib/buffer_mmapread_fd.c lib/buffer_munmap.c lib/buffer_peek.c lib/buffer_prefetch.c lib/buffer_put.c lib/buffer_put8long.c lib/buffer_putalign.c lib/buffer_putc.c lib/buffer_puterror.c lib/buffer_puterror2.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putlonglong.c lib/buffer_putm_internal.c lib/buffer_putm_internal_flush.c lib/buffer_putnlflush.c lib/buffer_putnspace.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_putsaflush.c lib/buffer_putsalign.c lib/buffer_putsflush.c lib/buffer_putspace.c lib/buffer_putuint64.c lib/buffer_putulong.c lib/buffer_putulonglong.c lib/buffer_putxlong.c lib/buffer_seek.c lib/buffer_skip_until.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/buffer_tosa.c lib/buffer_truncfile.c lib/byte.h lib/byte_chr.c lib/byte_copy.c lib/byte_copyr.c lib/byte_diff.c lib/byte_fill.c lib/byte_rchr.c lib/byte_zero.c lib/dir.h lib/directory_iterator.cpp lib/directory_iterator.hpp lib/dir_close.c lib/dir_internal.h lib/dir_name.c lib/dir_open.c lib/dir_read.c lib/dir_time.c lib/dir_type.c lib/file.cpp lib/file.hpp lib/fmt.h lib/fmt_8long.c lib/fmt_8longlong.c lib/fmt_asn1derlength.c lib/fmt_asn1dertag.c lib/fmt_double.c lib/fmt_escapecharc.c lib/fmt_escapecharhtml.c lib/fmt_escapecharquotedprintable.c lib/fmt_escapecharquotedprintableutf8.c lib/fmt_escapecharxml.c lib/fmt_fill.c lib/fmt_httpdate.c lib/fmt_human.c lib/fmt_humank.c lib/fmt_iso8601.c lib/fmt_long.c lib/fmt_longlong.c lib/fmt_minus.c lib/fmt_pad.c lib/fmt_plusminus.c lib/fmt_str.c lib/fmt_strm_internal.c lib/fmt_strn.c lib/fmt_tohex.c lib/fmt_uint64.c lib/fmt_ulong.c lib/fmt_ulong0.c lib/fmt_ulonglong.c lib/fmt_utf8.c lib/fmt_varint.c lib/fmt_xlong.c lib/fmt_xlonglong.c lib/fmt_xmlescape.c lib/fnmatch.c lib/fnmatch.h lib/hmap.h lib/hmap_add.c lib/hmap_add_tuple_with_data.c lib/hmap_delete.c lib/hmap_destroy.c lib/hmap_free_data.c lib/hmap_init.c lib/hmap_internal.c lib/hmap_internal.h lib/hmap_is_locate.c lib/hmap_print_list.c lib/hmap_print_table.c lib/hmap_print_tree.c lib/hmap_search.c lib/hmap_set.c lib/hmap_truncate.c lib/iarray_allocate.c lib/iarray_free.c lib/iarray_get.c lib/iarray_init.c lib/iarray_length.c lib/intelhex.cpp lib/intelhex.h lib/isleap.c lib/likely.h lib/mmap.h lib/mmap_map.c lib/mmap_private.c lib/mmap_read.c lib/mmap_read_fd.c lib/mmap_unmap.c lib/open.h lib/open_append.c lib/open_read.c lib/open_rw.c lib/open_trunc.c lib/safemult.h lib/scan.h lib/scan_double.c lib/scan_fromhex.c lib/scan_xlong.c lib/scan_xlonglong.c lib/str.h lib/stralloc.h lib/stralloc_append.c lib/stralloc_append_sa.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_catc.c lib/stralloc_catlong0.c lib/stralloc_cats.c lib/stralloc_catulong0.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_diffs.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_insertb.c lib/stralloc_move.c lib/stralloc_nul.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/stralloc_remove.c lib/stralloc_trunc.c lib/stralloc_write.c lib/stralloc_zero.c lib/strlist.h lib/strlist_at.c lib/strlist_cat.c lib/strlist_count.c lib/strlist_dump.c lib/strlist_index_of.c lib/strlist_push.c lib/strlist_pushb.c lib/strlist_pushm_internal.c lib/strlist_pushsa.c lib/strlist_push_sa.c lib/strlist_push_unique.c lib/strlist_shift.c lib/strlist_sort.c lib/strlist_to_argv.c lib/strlist_unshift.c lib/strptime.c lib/str_chr.c lib/str_diff.c lib/str_diffn.c lib/str_len.c lib/time_table_spd.c lib/uint16.h lib/uint32.h lib/uint64.h lib/umult64.c lib/utf8.c lib/utf8.h)
 
-file(GLOB LIBOWFAT_SOURCES lib/*.c lib/*.h)
+#file(GLOB LIBOWFAT_SOURCES lib/*.c lib/*.h)
+#
+#add_library(libowfat ${LIBOWFAT_SOURCES})
+#
+#if("${CMAKE_STATIC_LIBRARY_PREFIX}" STREQUAL "lib")
+#    set_target_properties(libowfat PROPERTIES
+#        ARCHIVE_OUTPUT_NAME owfat
+#        LIBRARY_OUTPUT_NAME owfat
+#    )
+#endif()
 
-add_library(libowfat ${LIBOWFAT_SOURCES})
+foreach(ARCHIVE http io mmap rdir dir socket strlist stralloc strarray hmap iarray ndelay array buffer open str fmt scan taia tai byte uint16 uint32)
+  file(GLOB MODSOURCES lib/${ARCHIVE}_*.c)
 
-if("${CMAKE_STATIC_LIBRARY_PREFIX}" STREQUAL "lib")
-    set_target_properties(libowfat PROPERTIES
-        ARCHIVE_OUTPUT_NAME owfat
-        LIBRARY_OUTPUT_NAME owfat
-    )
-endif()
+  if(ARCHIVE STREQUAL io)
+    list(APPEND MODSOURCES lib/iopause.c)
+  endif()
+  if(ARCHIVE STREQUAL str)
+    list(APPEND MODSOURCES lib/time_table_spd.c lib/isleap.c)
+  endif()
+  if(ARCHIVE STREQUAL array)
+    list(APPEND MODSOURCES lib/umult64.c)
+  endif()
+  # message(STATUS ${ARCHIVE}: ${MODSOURCES}) 
+  add_library("${ARCHIVE}" STATIC ${MODSOURCES})
+  set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
+endforeach(ARCHIVE)
 
-add_executable(eagle-init-brd eagle-init-brd.c)
-target_link_libraries(eagle-init-brd ${LIBXML2_LIBRARIES})
-set_target_properties(eagle-init-brd PROPERTIES COMPILE_FLAGS ${LIBXML2_CFLAGS})
+add_executable( eagle-init-brd eagle-init-brd.c )
+target_link_libraries( eagle-init-brd hmap scan stralloc str byte ${LIBXML2_LIBRARIES} m )
+set_target_properties( eagle-init-brd PROPERTIES COMPILE_FLAGS ${LIBXML2_CFLAGS} )
 
-add_executable(count-depth count-depth.c lib/buffer_0.c lib/buffer_1.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_get_token.c lib/buffer_put.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/fmt_ulong.c)
-add_executable(decode-ls-lR decode-ls-lR.c lib/buffer_0.c lib/buffer_1.c lib/buffer_2.c lib/buffer_close.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_get_token.c lib/buffer_put.c lib/buffer_puts.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/byte_copy.c lib/stralloc_catb.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/str_diffn.c lib/str_len.c)
-add_executable(httptest httptest.c lib/buffer_1.c lib/buffer_2.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_get.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_get_token.c lib/buffer_init.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/byte_copy.c lib/byte_zero.c lib/fmt_long.c lib/fmt_ulong.c lib/http_get.c lib/http_init.c lib/http_readable.c lib/http_sendreq.c lib/iarray_allocate.c lib/iarray_get.c lib/iarray_init.c lib/iopause.c lib/io_fd.c lib/io_nonblock.c lib/ndelay_on.c lib/scan_fromhex.c lib/scan_xlong.c lib/socket_connect4.c lib/socket_tcp4.c lib/socket_tcp4b.c lib/stralloc_append.c lib/stralloc_catb.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/str_chr.c lib/str_len.c lib/taia_approx.c lib/taia_frac.c lib/taia_less.c lib/taia_sub.c lib/taia_uint.c lib/uint16_pack_big.c)
-add_executable(list-r lib/array_allocate.c lib/array_catb.c lib/array_fail.c lib/array_length.c lib/array_start.c lib/buffer_1.c lib/buffer_2.c lib/buffer_flush.c lib/buffer_put.c lib/buffer_putc.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_stubborn.c lib/byte_copy.c lib/byte_zero.c lib/dir_close.c lib/dir_open.c lib/dir_read.c lib/dir_type.c lib/fmt_uint64.c lib/fnmatch.c lib/stralloc_catb.c lib/stralloc_cats.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_init.c lib/stralloc_nul.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/str_diffn.c lib/str_len.c lib/umult64.c list-r.c)
-add_executable(mediathek-list lib/buffer_1.c lib/buffer_2.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_get.c lib/buffer_getc.c lib/buffer_get_token.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putm_internal.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/byte_copy.c lib/byte_zero.c lib/fmt_ulong.c lib/fmt_ulonglong.c lib/isleap.c lib/scan_uint.c lib/scan_ushort.c lib/stralloc_append.c lib/stralloc_catb.c lib/stralloc_cats.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/stralloc_zero.c lib/strlist_at.c lib/strlist_count.c lib/strlist_dump.c lib/strlist_join.c lib/strlist_push.c lib/strlist_pushb.c lib/strlist_push_tokens.c lib/str_dup.c lib/str_istr.c lib/str_len.c lib/str_ptime.c lib/str_rchr.c lib/str_tok.c lib/time_table_spd.c mediathek-list.c)
-add_executable(mediathek-parser lib/array_allocate.c lib/array_length.c lib/array_start.c lib/array_trunc.c lib/buffer_1.c lib/buffer_2.c lib/buffer_close.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_getc.c lib/buffer_getline_sa.c lib/buffer_get_token_sa.c lib/buffer_init.c lib/buffer_mmapread.c lib/buffer_munmap.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/byte_copy.c lib/byte_rchr.c lib/byte_zero.c lib/fmt_long.c lib/fmt_ulong.c lib/isleap.c lib/mmap_read.c lib/open_read.c lib/stralloc_append.c lib/stralloc_catb.c lib/stralloc_catc.c lib/stralloc_cats.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_nul.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/stralloc_zero.c lib/str_chr.c lib/str_diff.c lib/str_dup.c lib/str_len.c lib/str_ptime.c lib/time_table_spd.c lib/umult64.c mediathek-parser.c)
-add_executable(picc-wrapper compiler-wrapper.c lib/buffer_1.c lib/buffer_2.c lib/buffer_flush.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_stubborn.c lib/byte_copy.c lib/byte_rchr.c lib/dir_close.c lib/dir_open.c lib/dir_read.c lib/dir_type.c lib/fmt_long.c lib/fmt_ulong.c lib/stralloc_append.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_cats.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/strlist_at.c lib/strlist_cat.c lib/strlist_count.c lib/strlist_index_of.c lib/strlist_push.c lib/strlist_pushm_internal.c lib/strlist_push_sa.c lib/strlist_push_unique.c lib/strlist_to_argv.c lib/strlist_unshift.c lib/str_basename.c lib/str_diff.c lib/str_diffn.c lib/str_dup.c lib/str_len.c lib/str_rchr.c)
-add_executable(picc18-wrapper compiler-wrapper.c lib/buffer_1.c lib/buffer_2.c lib/buffer_flush.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_stubborn.c lib/byte_copy.c lib/byte_rchr.c lib/dir_close.c lib/dir_open.c lib/dir_read.c lib/dir_type.c lib/fmt_long.c lib/fmt_ulong.c lib/stralloc_append.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_cats.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/strlist_at.c lib/strlist_cat.c lib/strlist_count.c lib/strlist_index_of.c lib/strlist_push.c lib/strlist_pushm_internal.c lib/strlist_push_sa.c lib/strlist_push_unique.c lib/strlist_to_argv.c lib/strlist_unshift.c lib/str_basename.c lib/str_diff.c lib/str_diffn.c lib/str_dup.c lib/str_len.c lib/str_rchr.c)
-add_executable(rdir-test lib/buffer_1.c lib/buffer_2.c lib/buffer_flush.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putm_internal.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_stubborn.c lib/byte_copy.c lib/byte_zero.c lib/dir_close.c lib/dir_open.c lib/dir_read.c lib/dir_type.c lib/fnmatch.c lib/rdir_close.c lib/rdir_open.c lib/rdir_read.c lib/stralloc_append.c lib/stralloc_catb.c lib/stralloc_catc.c lib/stralloc_cats.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/str_diff.c lib/str_len.c rdir-test.c)
-add_executable(reg2cmd lib/buffer_0.c lib/buffer_1.c lib/buffer_2.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_get_token.c lib/buffer_put.c lib/buffer_putc.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_putuint64.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/byte_copy.c lib/fmt_uint64.c lib/scan_fromhex.c lib/scan_xlong.c lib/scan_xlonglong.c lib/stralloc_catb.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/stralloc_zero.c lib/str_diffn.c lib/str_len.c reg2cmd.c)
-add_executable(regfilter lib/buffer_0.c lib/buffer_1.c lib/buffer_2.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_get_token.c lib/buffer_put.c lib/buffer_putc.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_putuint64.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/byte_copy.c lib/fmt_uint64.c lib/scan_fromhex.c lib/scan_xlong.c lib/scan_xlonglong.c lib/stralloc_catb.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/stralloc_zero.c lib/str_diffn.c lib/str_len.c regfilter.c)
-add_executable(sdcc-wrapper compiler-wrapper.c lib/buffer_1.c lib/buffer_2.c lib/buffer_flush.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_stubborn.c lib/byte_copy.c lib/byte_rchr.c lib/dir_close.c lib/dir_open.c lib/dir_read.c lib/dir_type.c lib/fmt_long.c lib/fmt_ulong.c lib/stralloc_append.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_cats.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/strlist_at.c lib/strlist_cat.c lib/strlist_count.c lib/strlist_index_of.c lib/strlist_push.c lib/strlist_pushm_internal.c lib/strlist_push_sa.c lib/strlist_push_unique.c lib/strlist_to_argv.c lib/strlist_unshift.c lib/str_basename.c lib/str_diff.c lib/str_diffn.c lib/str_dup.c lib/str_len.c lib/str_rchr.c)
-add_executable(torrent-progress lib/buffer_1.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_get.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_copy.c lib/fmt_ulong.c lib/mmap_map.c lib/mmap_unmap.c lib/open_read.c lib/str_len.c torrent-progress.c)
-add_executable(xc8-wrapper compiler-wrapper.c lib/buffer_1.c lib/buffer_2.c lib/buffer_flush.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_stubborn.c lib/byte_copy.c lib/byte_rchr.c lib/dir_close.c lib/dir_open.c lib/dir_read.c lib/dir_type.c lib/fmt_long.c lib/fmt_ulong.c lib/stralloc_append.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_cats.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/strlist_at.c lib/strlist_cat.c lib/strlist_count.c lib/strlist_index_of.c lib/strlist_push.c lib/strlist_pushm_internal.c lib/strlist_push_sa.c lib/strlist_push_unique.c lib/strlist_to_argv.c lib/strlist_unshift.c lib/str_basename.c lib/str_diff.c lib/str_diffn.c lib/str_dup.c lib/str_len.c lib/str_rchr.c)
+add_executable( count-depth count-depth.c )
+target_link_libraries( count-depth buffer str fmt byte )
+
+add_executable( decode-ls-lR decode-ls-lR.c )
+target_link_libraries( decode-ls-lR stralloc str byte buffer )
+
+add_executable( httptest httptest.c )
+target_link_libraries( httptest http socket uint16 scan ndelay io iarray taia stralloc buffer fmt str byte buffer )
+
+add_executable( list-r list-r.c )
+target_link_libraries( list-r stralloc buffer str fmt dir array byte )
+
+add_executable( mediathek-list mediathek-list.c )
+target_link_libraries( mediathek-list buffer strlist stralloc str scan fmt byte )
+
+add_executable( mediathek-parser mediathek-parser.c )
+target_link_libraries( mediathek-parser buffer stralloc str mmap open fmt array byte )
+
+#add_executable( picc-wrapper picc-wrapper.c )
+#target_link_libraries( picc-wrapper strlist stralloc str fmt dir byte buffer )
+#
+#add_executable( picc18-wrapper picc18-wrapper.c )
+#target_link_libraries( picc18-wrapper strlist stralloc str fmt dir byte buffer )
+
+add_executable( rdir-test rdir-test.c )
+target_link_libraries( rdir-test rdir dir buffer stralloc str byte )
+
+add_executable( reg2cmd reg2cmd.c )
+target_link_libraries( reg2cmd stralloc str buffer scan fmt byte )
+
+add_executable( regfilter regfilter.c )
+target_link_libraries( regfilter stralloc str buffer scan fmt byte )
+
+#add_executable( sdcc-wrapper sdcc-wrapper.c )
+#target_link_libraries( sdcc-wrapper strlist stralloc str fmt dir byte buffer )
+
+add_executable( torrent-progress torrent-progress.c )
+target_link_libraries( torrent-progress buffer mmap open fmt str byte )
+
+#add_executable( xc8-wrapper xc8-wrapper.c )
+#target_link_libraries( xc8-wrapper strlist stralloc str fmt dir byte buffer )
 
  
 #target_link_libraries(eagle-init-brd ${LIBXML2_LIBRARIES})
@@ -218,12 +261,13 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(X64 "64")
 endif()
 
-foreach(PROGRAM ${PROGRAMS})
-   set_target_properties(${PROGRAM} PROPERTIES OUTPUT_NAME "${PROGRAM}${X64}")
-    target_link_libraries(${PROGRAM} libowfat  ${LIBXML2_LIBRARES})
-#  add_executable(${PROGRAM} "${CMAKE_SOURCE_DIR}/${PROGRAM}.c" ${COMMON_C_SOURCES})
-  install(TARGETS ${PROGRAM} DESTINATION bin) 
-endforeach(PROGRAM)
+
+#foreach(PROGRAM ${PROGRAMS})
+#   set_target_properties(${PROGRAM} PROPERTIES OUTPUT_NAME "${PROGRAM}${X64}")
+#   #target_link_libraries(${PROGRAM} libowfat  ${LIBXML2_LIBRARES})
+##  add_executable( ${PROGRAM} "${CMAKE_SOURCE_DIR}/${PROGRAM}.c" ${COMMON_C_SOURCES} )
+#  install(TARGETS ${PROGRAM} DESTINATION bin) 
+#endforeach(PROGRAM)
 
   string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}")
   
@@ -241,7 +285,7 @@ if(Boost_INCLUDE_DIRS)
 endif()
 
 foreach(CXXPROGRAM ${CXXPROGRAMS})
-  add_executable(${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_CXX_SOURCES} ${COMMON_C_SOURCES})
+  add_executable( ${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_CXX_SOURCES} ${COMMON_C_SOURCES} )
   install(TARGETS ${CXXPROGRAM} DESTINATION bin) 
 endforeach(CXXPROGRAM)
 
