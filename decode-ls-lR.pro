@@ -24,6 +24,7 @@ SOURCES = decode-ls-lR.c \
   lib/buffer_0.c \
   lib/buffer_1.c \
   lib/buffer_2.c \
+  lib/buffer_close.c \
   lib/buffer_feed.c \
   lib/buffer_flush.c \
   lib/buffer_get_token.c \
