@@ -42,6 +42,7 @@ pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
 pkg_search_module(LIBLZMA liblzma)
 pkg_search_module(LIBZ zlib)
 pkg_search_module(LIBBZ2 libbz2 bzip2)
+pkg_search_module(LIBSSL openssl libssl)
 
 if(NOT CXX11_FLAGS)
 set(CXX11_FLAGS "-std=c++11")
