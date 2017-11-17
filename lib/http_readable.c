@@ -100,9 +100,9 @@ http_readable(http* h) {
             r->data.len += n;
 
 
-            buffer_puts(buffer_1, "data len=");
-            buffer_putulong(buffer_1, r->data.len);
-            buffer_putnlflush(buffer_1);
+            buffer_puts(buffer_2, "data len=");
+            buffer_putulong(buffer_2, r->data.len);
+            buffer_putnlflush(buffer_2);
 
 
             r->chnk++;

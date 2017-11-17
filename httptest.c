@@ -44,9 +44,9 @@ int main(int argc, char* argv[]) {
 
   buffer_init(&in, do_recv, h.sock, inbuf, sizeof(inbuf));
 
-  buffer_puts(buffer_1, "http_get() = ");
-  buffer_putlong(buffer_1, (long)ret);
-  buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_2, "http_get() = ");
+  buffer_putlong(buffer_2, (long)ret);
+  buffer_putnlflush(buffer_2);
 
   byte_zero(&iop, sizeof(iop));
   iop.fd = h.sock;
@@ -81,11 +81,11 @@ int main(int argc, char* argv[]) {
 //  io_block(h.sock);
 
 //  while((ret = buffer_getline_sa(&in, &line))) {
-//    buffer_puts(buffer_1, "Line: ");
-//    buffer_putsa(buffer_1, &line);
-//    buffer_puts(buffer_1, " (len==");
-//    buffer_putlong(buffer_1, line.len);
-//    buffer_puts(buffer_1, ")");
+//    buffer_puts(buffer_2, "Line: ");
+//    buffer_putsa(buffer_2, &line);
+//    buffer_puts(buffer_2, " (len==");
+//    buffer_putlong(buffer_2, line.len);
+//    buffer_puts(buffer_2, ")");
 //
 //    stralloc_zero(&line);
 
