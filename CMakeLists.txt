@@ -38,7 +38,10 @@ include(FindBoost)
 #include(CMakeDetermineCompileFeatures)
 #include(CheckCXX11Features)
 
-pkg_check_modules(LIBXML2 libxml-2.0)
+pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
+pkg_search_module(LIBLZMA liblzma)
+pkg_search_module(LIBZ zlib)
+pkg_search_module(LIBBZ2 libbz2 bzip2)
 
 if(NOT CXX11_FLAGS)
 set(CXX11_FLAGS "-std=c++11")
@@ -142,8 +145,8 @@ configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
 file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
-set(PROGRAMS list-r count-depth decode-ls-lR torrent-progress reg2cmd #eagle-init-brd
-  )
+set(PROGRAMS eagle-init-brd count-depth decode-ls-lR httptest list-r mediathek-list mediathek-parser rdir-test reg2cmd regfilter torrent-progress)
+
 set(CXXPROGRAMS #kbd-adjacency
 #ls-R
  #   piccfghex
@@ -262,12 +265,10 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 endif()
 
 
-#foreach(PROGRAM ${PROGRAMS})
-#   set_target_properties(${PROGRAM} PROPERTIES OUTPUT_NAME "${PROGRAM}${X64}")
-#   #target_link_libraries(${PROGRAM} libowfat  ${LIBXML2_LIBRARES})
-##  add_executable( ${PROGRAM} "${CMAKE_SOURCE_DIR}/${PROGRAM}.c" ${COMMON_C_SOURCES} )
-#  install(TARGETS ${PROGRAM} DESTINATION bin) 
-#endforeach(PROGRAM)
+foreach(PROGRAM ${PROGRAMS})
+  # set_target_properties(${PROGRAM} PROPERTIES OUTPUT_NAME "${PROGRAM}${X64}")
+  install(TARGETS ${PROGRAM} DESTINATION bin) 
+endforeach(PROGRAM)
 
   string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}")
   
