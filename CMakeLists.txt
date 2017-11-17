@@ -8,6 +8,8 @@ set(BUILD_SHARED_LIBS FALSE)
 
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
+include(FindPkgConfig)
+include(UsePkgConfig)
 
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
 #set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O0 -Wall")
@@ -35,6 +37,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 include(FindBoost)
 #include(CMakeDetermineCompileFeatures)
 #include(CheckCXX11Features)
+
+pkg_check_modules(LIBXML2 libxml-2.0)
 
 if(NOT CXX11_FLAGS)
 set(CXX11_FLAGS "-std=c++11")
@@ -138,7 +142,8 @@ configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
 file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
-set(PROGRAMS list-r count-depth decode-ls-lR torrent-progress reg2cmd eagle-init-brd)
+set(PROGRAMS list-r count-depth decode-ls-lR torrent-progress reg2cmd #eagle-init-brd
+  )
 set(CXXPROGRAMS #kbd-adjacency
 #ls-R
  #   piccfghex
@@ -186,6 +191,10 @@ if("${CMAKE_STATIC_LIBRARY_PREFIX}" STREQUAL "lib")
     )
 endif()
 
+add_executable(eagle-init-brd eagle-init-brd.c)
+target_link_libraries(eagle-init-brd ${LIBXML2_LIBRARIES})
+set_target_properties(eagle-init-brd PROPERTIES COMPILE_FLAGS ${LIBXML2_CFLAGS})
+
 add_executable(count-depth count-depth.c lib/buffer_0.c lib/buffer_1.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_get_token.c lib/buffer_put.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/fmt_ulong.c)
 add_executable(decode-ls-lR decode-ls-lR.c lib/buffer_0.c lib/buffer_1.c lib/buffer_2.c lib/buffer_close.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_get_token.c lib/buffer_put.c lib/buffer_puts.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/byte_copy.c lib/stralloc_catb.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/str_diffn.c lib/str_len.c)
 add_executable(httptest httptest.c lib/buffer_1.c lib/buffer_2.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_get.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_get_token.c lib/buffer_init.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_chr.c lib/byte_copy.c lib/byte_zero.c lib/fmt_long.c lib/fmt_ulong.c lib/http_get.c lib/http_init.c lib/http_readable.c lib/http_sendreq.c lib/iarray_allocate.c lib/iarray_get.c lib/iarray_init.c lib/iopause.c lib/io_fd.c lib/io_nonblock.c lib/ndelay_on.c lib/scan_fromhex.c lib/scan_xlong.c lib/socket_connect4.c lib/socket_tcp4.c lib/socket_tcp4b.c lib/stralloc_append.c lib/stralloc_catb.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/str_chr.c lib/str_len.c lib/taia_approx.c lib/taia_frac.c lib/taia_less.c lib/taia_sub.c lib/taia_uint.c lib/uint16_pack_big.c)
@@ -200,10 +209,9 @@ add_executable(regfilter lib/buffer_0.c lib/buffer_1.c lib/buffer_2.c lib/buffer
 add_executable(sdcc-wrapper compiler-wrapper.c lib/buffer_1.c lib/buffer_2.c lib/buffer_flush.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_stubborn.c lib/byte_copy.c lib/byte_rchr.c lib/dir_close.c lib/dir_open.c lib/dir_read.c lib/dir_type.c lib/fmt_long.c lib/fmt_ulong.c lib/stralloc_append.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_cats.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/strlist_at.c lib/strlist_cat.c lib/strlist_count.c lib/strlist_index_of.c lib/strlist_push.c lib/strlist_pushm_internal.c lib/strlist_push_sa.c lib/strlist_push_unique.c lib/strlist_to_argv.c lib/strlist_unshift.c lib/str_basename.c lib/str_diff.c lib/str_diffn.c lib/str_dup.c lib/str_len.c lib/str_rchr.c)
 add_executable(torrent-progress lib/buffer_1.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_get.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte_copy.c lib/fmt_ulong.c lib/mmap_map.c lib/mmap_unmap.c lib/open_read.c lib/str_len.c torrent-progress.c)
 add_executable(xc8-wrapper compiler-wrapper.c lib/buffer_1.c lib/buffer_2.c lib/buffer_flush.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_stubborn.c lib/byte_copy.c lib/byte_rchr.c lib/dir_close.c lib/dir_open.c lib/dir_read.c lib/dir_type.c lib/fmt_long.c lib/fmt_ulong.c lib/stralloc_append.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_cats.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/strlist_at.c lib/strlist_cat.c lib/strlist_count.c lib/strlist_index_of.c lib/strlist_push.c lib/strlist_pushm_internal.c lib/strlist_push_sa.c lib/strlist_push_unique.c lib/strlist_to_argv.c lib/strlist_unshift.c lib/str_basename.c lib/str_diff.c lib/str_diffn.c lib/str_dup.c lib/str_len.c lib/str_rchr.c)
-add_executable(list-r list-r.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_putsa.c buffer_puts.c buffer_putuint64.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c dir.h dir_close.c dir_internal.h dir_open.c dir_read.c dir_time.c dir_type.c fmt.h fmt_uint64.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_cats.c stralloc_copyb.c stralloc_copys.c stralloc_init.c stralloc_nul.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c
 
  
-target_link_libraries(eagle-init-brd ${LIBXML2_LIBRARIES})
+#target_link_libraries(eagle-init-brd ${LIBXML2_LIBRARIES})
  
  
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
