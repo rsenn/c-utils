@@ -12,9 +12,9 @@
 #if USE_READDIR
 # include <dirent.h>
 #else
-//# ifdef _WIN32
+# ifdef _WIN32
 #  include <windows.h>
-//# endif
+# endif
 # include <limits.h>
 #endif
 
