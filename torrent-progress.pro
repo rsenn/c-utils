@@ -19,6 +19,8 @@ CONFIG -= qt
 
 INCLUDEPATH += .
 
+HEADERS =
+
 SOURCES = torrent-progress.c \
   lib/buffer.h \
   lib/buffer_1.c \
