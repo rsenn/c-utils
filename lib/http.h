@@ -5,6 +5,7 @@
 #include "uint32.h"
 #include "uint64.h"
 #include "stralloc.h"
+//#include "buffer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,7 +25,11 @@ struct http_response_s;
 
 typedef struct http_response_s {
   enum { DEFAULT=0, CLOSED, ERROR } status;
+  enum { START=0, HEADER=1, CHUNKS=2 } part;
   stralloc body;
+  stralloc data;
+  size_t ptr;
+//  buffer rbuf;
 } http_response;
 
 typedef struct {
