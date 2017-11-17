@@ -113,7 +113,7 @@ http_readable(http* h) {
           }
 
           ssize_t n = buffer_getline(&recvb, line, sizeof(line));
-          putline("Newline", "", n, &recvb);
+          putline("Newline", "", -n, &recvb);
           if(recvb.n - recvb.p <= 0)
             return;
 
