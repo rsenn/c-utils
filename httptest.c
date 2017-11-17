@@ -67,12 +67,12 @@ int main(int argc, char* argv[]) {
     if(iop.revents & IOPAUSE_READ) {
       http_readable(&h);
 
-      if(h.response->status != DEFAULT)
+      if(h.response->status == DONE )
         break;
     }
   }
 
-  buffer_putsa(buffer_1, &h.response->body);
+  buffer_putsa(buffer_1, &h.response->data);
   buffer_putnlflush(buffer_1);
 
   //  stralloc line;

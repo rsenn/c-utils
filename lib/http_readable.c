@@ -24,12 +24,14 @@ http_readable(http* h) {
   if(h->response) {
     char recvbuf[8192];
     ssize_t  ret;
+    int err;
     http_response* r = h->response;
     buffer recvb  = BUFFER_INIT(buffer_dummyread, -1, r->body.s, r->body.len);
     recvb.p = r->ptr;
-
+again:
     for(;;) {
       ret = recv(h->sock, recvbuf, sizeof(recvbuf), 0);
+      err = errno;
 
       if(ret == -1 && errno == EAGAIN) {
         errno = 0;
@@ -44,7 +46,7 @@ http_readable(http* h) {
 
       if(ret == 0)
         r->status = CLOSED;
-      else
+      else if(err != 0)
         r->status = ERROR;
       break;
 
@@ -61,36 +63,49 @@ http_readable(http* h) {
         while(ret > 0 && isspace(line[ret - 1]))
           ret--;
 
-        unsigned long n;
-        if(scan_ulong(line, &n) > 0) {
+        line[ret] = '\0';
 
+        unsigned long n, p;
+
+        if(r->part < CHUNKS && line[str_chr(line, ':')] == ':') {
+          if(r->part == HEADER)
+            putline("Header", line, ret);
+          r->part = HEADER;
+
+        } else {
           if(r->part == HEADER)
             r->part = CHUNKS;
+        }
+          
+        if(r->part == CHUNKS && (p = scan_xlong(line, &n)) > 0) {
 
+          putline("Chunks", line, p);
 
-          if(recvb.n - recvb.p >= n) {
+          if(n == 0) {
+             r->status = DONE;
+             return;
+          } else if(recvb.n - recvb.p >= n) {
             stralloc_readyplus(&r->data, n);
             buffer_get(&recvb, &r->data.s[r->data.len], n);
-            continue;
+            r->data.len += n;
+
+
+            buffer_puts(buffer_1, "data len=");
+            buffer_putulong(buffer_1, r->data.len);
+            buffer_putnlflush(buffer_1);
+
+
           } else {
-            return;
+            goto again;
           }
+          
+          buffer_getline(&recvb, line, sizeof(line));
+          continue;
         }
         if(!r->part) {
           putline("Response", line, ret);
-
-          r->part = HEADER;
-
-        } else if(r->part == HEADER) {
-          putline("Header", line, ret);
-
-        } else if(r->part = CHUNKS) {
-          if(ret > 0)
-            putline("Chunks", line, ret);
-
-          else
-            break;
         }
+
       }
     }
   }
