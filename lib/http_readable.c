@@ -113,13 +113,12 @@ again:
           putline("Newline", "", n, &recvb);
           if(recvb.n - recvb.p <= 0)
             return;
-          
+
           continue;
         }
         if(!r->part) {
           putline("Response", line, ret, &recvb);
         }
-
       }
     }
   }
