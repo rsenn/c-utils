@@ -29,6 +29,7 @@ typedef struct http_response_s {
   stralloc body;
   stralloc data;
   size_t ptr;
+  size_t chnk;
 //  buffer rbuf;
 } http_response;
 

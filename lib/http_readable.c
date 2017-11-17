@@ -9,13 +9,19 @@ buffer_dummyread() {
 }
 
 void
-putline(const char* what, const char*b, size_t l) {
+putline(const char* what, const char*b, ssize_t l, buffer *buf) {
   buffer_puts(buffer_2, what);
   buffer_puts(buffer_2, "[");
-  buffer_putulong(buffer_2, l);
+  buffer_putulong(buffer_2, l <= 0 ? -l : l);
   buffer_puts(buffer_2, "]");
   buffer_puts(buffer_2, ": ");
-  buffer_put(buffer_2, b, l);
+  if(l <= 0)
+    buffer_puts(buffer_2, b);
+  else
+    buffer_put(buffer_2, b, l);
+  buffer_puts(buffer_2, " (bytes in recvb: ");
+  buffer_putulong(buffer_2, buf->n - buf->p);
+  buffer_puts(buffer_2, ")");
   buffer_putnlflush(buffer_2);
 }
 
@@ -54,6 +60,7 @@ again:
 
     for(;;)   {
       char line[1024];
+      size_t sptr = r->ptr;
       int ret = buffer_getline(&recvb, line, sizeof(line));
 
       r->ptr = recvb.p;
@@ -69,21 +76,21 @@ again:
 
         if(r->part < CHUNKS && line[str_chr(line, ':')] == ':') {
           if(r->part == HEADER)
-            putline("Header", line, ret);
+            putline("Header", line, ret, &recvb);
           r->part = HEADER;
 
         } else {
           if(r->part == HEADER)
             r->part = CHUNKS;
         }
-          
+
         if(r->part == CHUNKS && (p = scan_xlong(line, &n)) > 0) {
 
-          putline("Chunks", line, p);
+          putline("Chunk", line, -r->chnk, &recvb);
 
           if(n == 0) {
-             r->status = DONE;
-             return;
+            r->status = DONE;
+            return;
           } else if(recvb.n - recvb.p >= n) {
             stralloc_readyplus(&r->data, n);
             buffer_get(&recvb, &r->data.s[r->data.len], n);
@@ -95,15 +102,22 @@ again:
             buffer_putnlflush(buffer_1);
 
 
+            r->chnk++;
+
           } else {
-            goto again;
+            r->ptr = sptr;
+            return; //goto again;
           }
+
+          ssize_t n = buffer_getline(&recvb, line, sizeof(line));
+          putline("Newline", "", n, &recvb);
+          if(recvb.n - recvb.p <= 0)
+            return;
           
-          buffer_getline(&recvb, line, sizeof(line));
           continue;
         }
         if(!r->part) {
-          putline("Response", line, ret);
+          putline("Response", line, ret, &recvb);
         }
 
       }
