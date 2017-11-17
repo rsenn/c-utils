@@ -124,7 +124,7 @@ pkg_search_module(
 
 
 #find_package(libxml2)
-
+include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" ) 
 include_directories( ${LIBXML2_INCLUDE_DIRS} )
 
 #if(LIBXML2_LIBRARIES MATCHES static)

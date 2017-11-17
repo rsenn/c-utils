@@ -11,7 +11,7 @@ cfg ()
     ( mkdir -p $builddir;
     cd $builddir;
     set -x
-    cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=$(get-prefix) \
+    ${CMAKE-cmake} -Wno-dev -DCMAKE_INSTALL_PREFIX=$(get-prefix) \
     -G "${SYSTEM:-MSYS} Makefiles" \
     -DCMAKE_VERBOSE_MAKEFILE=TRUE \
     -DCMAKE_BUILD_TYPE="${TYPE:-RelWithDebInfo}" \
