@@ -570,7 +570,7 @@ $(BUILDDIR)http.a: $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 
-$(BUILDDIR)list.a: $(BUILDDIR)list_init.o $(BUILDDIR)list_push.o $(BUILDDIR)list_unshift.o  $(BUILDDIR)list_length.o $(BUILDDIR)list_remove.o 
+$(BUILDDIR)list.a: $(BUILDDIR)list_add_after.o $(BUILDDIR)list_add_before.o $(BUILDDIR)list_init.o $(BUILDDIR)list_length.o $(BUILDDIR)list_move_head.o $(BUILDDIR)list_move_tail.o $(BUILDDIR)list_push.o $(BUILDDIR)list_remove.o $(BUILDDIR)list_unshift.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c

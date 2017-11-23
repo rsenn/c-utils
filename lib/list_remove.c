@@ -2,23 +2,23 @@
 #include "list.h"
 
 void
-list_remove(list *l, link *link) {
-  /* If there is a prev link, update its next-
+list_remove(list *l, link *p) {
+  /* If there is a prev p, update its next-
      reference, otherwise update the head */
-  if(link == l->head)
-    l->head = link->next;
+  if(p == l->head)
+    l->head = p->next;
   else
-    link->prev->next = link->next;
+    p->prev->next = p->next;
 
-  /* If there is a next link, update its prev-
+  /* If there is a next p, update its prev-
      reference otherwise update the tail */
-  if(l->tail == link)
-    l->tail = link->prev;
+  if(l->tail == p)
+    l->tail = p->prev;
   else
-    link->next->prev = link->prev;
+    p->next->prev = p->prev;
 
-  /* Zero references on this link */
-  link->next = NULL;
-  link->prev = NULL;
+  /* Zero references on this p */
+  p->next = NULL;
+  p->prev = NULL;
 }
 
