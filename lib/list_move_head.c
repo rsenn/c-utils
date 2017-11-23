@@ -9,6 +9,7 @@ list_move_head(list *from, list *to) {
     to->head = from->head;
     to->tail = from->tail;
   }
+
   /* Add lists */
   else if(from->tail != NULL) {
     /* Prepend from-list */

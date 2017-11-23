@@ -1,4 +1,5 @@
 #include "list.h"
+
 void
 list_add_after(list *l, link *p, link *after) {
   /* If <after> is the list tail, then a list_add_tail() does the job */

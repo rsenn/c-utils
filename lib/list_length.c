@@ -2,8 +2,7 @@
 #include "list.h"
 
 size_t
-list_length(list *l)
-{
+list_length(list *l) {
   link* link;
   size_t count = 0;
   

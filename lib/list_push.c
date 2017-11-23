@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "list.h"
+
 void
 list_push(list *l, link *p) {
   /* We add to the list tail, so there's no next p */
