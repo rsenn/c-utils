@@ -570,6 +570,9 @@ $(BUILDDIR)http.a: $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 
+$(BUILDDIR)list.a: $(BUILDDIR)list_init.o $(BUILDDIR)list_push.o $(BUILDDIR)list_unshift.o  $(BUILDDIR)list_length.o $(BUILDDIR)list_remove.o 
+	$(CROSS_COMPILE)$(AR) rcs $@ $^
+
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
 $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
