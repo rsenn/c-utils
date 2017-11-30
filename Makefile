@@ -450,7 +450,7 @@ $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 #LIBS += -lstdc++
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3) 
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 plstest) 
  #opensearch-dump eagle-init-brd)
   
 ifeq ($(DO_CXX),1)
@@ -573,6 +573,9 @@ $(BUILDDIR)http.a: $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_
 $(BUILDDIR)list.a: $(BUILDDIR)list_add_after.o $(BUILDDIR)list_add_before.o $(BUILDDIR)list_find.o $(BUILDDIR)list_find_remove.o $(BUILDDIR)list_init.o $(BUILDDIR)list_length.o $(BUILDDIR)list_move_head.o $(BUILDDIR)list_move_tail.o $(BUILDDIR)list_push.o $(BUILDDIR)list_remove.o $(BUILDDIR)list_swap.o $(BUILDDIR)list_unshift.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
+$(BUILDDIR)playlist.a: $(BUILDDIR)playlist_init.o $(BUILDDIR)playlist_xspf.o 
+	$(CROSS_COMPILE)$(AR) rcs $@ $^
+
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
 $(BUILDDIR)decode-ls-lR$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
@@ -659,6 +662,14 @@ endif
 $(BUILDDIR)xmltest3$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS)
 $(BUILDDIR)xmltest3$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
 $(BUILDDIR)xmltest3$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)xmltest3.o 
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
+
+$(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS)
+$(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
+$(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)plstest.o  $(BUILDDIR)playlist.a $(BUILDDIR)stralloc.a  $(BUILDDIR)buffer.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
