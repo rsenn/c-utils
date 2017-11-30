@@ -573,7 +573,7 @@ $(BUILDDIR)http.a: $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_
 $(BUILDDIR)list.a: $(BUILDDIR)list_add_after.o $(BUILDDIR)list_add_before.o $(BUILDDIR)list_find.o $(BUILDDIR)list_find_remove.o $(BUILDDIR)list_init.o $(BUILDDIR)list_length.o $(BUILDDIR)list_move_head.o $(BUILDDIR)list_move_tail.o $(BUILDDIR)list_push.o $(BUILDDIR)list_remove.o $(BUILDDIR)list_swap.o $(BUILDDIR)list_unshift.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
-$(BUILDDIR)playlist.a: $(BUILDDIR)playlist_init.o $(BUILDDIR)playlist_xspf.o 
+$(BUILDDIR)playlist.a: $(patsubst %.c,$(BUILDDIR)%.o,$(notdir $(wildcard lib/playlist_*.c)))
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
@@ -669,7 +669,7 @@ endif
 
 $(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS)
 $(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
-$(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)plstest.o  $(BUILDDIR)playlist.a $(BUILDDIR)stralloc.a  $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)str.a $(BUILDDIR)byte.a 
+$(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)plstest.o  $(BUILDDIR)playlist.a $(BUILDDIR)stralloc.a  $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)str.a $(BUILDDIR)fmt.a $(BUILDDIR)scan.a  $(BUILDDIR)byte.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
