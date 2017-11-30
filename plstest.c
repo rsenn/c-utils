@@ -13,15 +13,20 @@ int main() {
 
   buffer inbuf;
 
-  playlist pls;
-  playlist_init(&pls);
-
-  buffer_mmapread(&inbuf, "/home/roman/Dokumente/vlc.xspf");
-
-  playlist_xspf(&pls, &inbuf);
-
-  pls.callback = playlist_process;
-
-  playlist_read(&pls);
+  playlist pls1, pls2;
+  playlist_init(&pls1);
+  playlist_init(&pls2);
+  /*
+    buffer_mmapread(&inbuf, "/home/roman/Dokumente/vlc.xspf");
+    playlist_xspf(&pls1, &inbuf);
+    pls1.callback = playlist_process;
+    playlist_read(&pls1);
+    buffer_close(&inbuf);
+  */
+  buffer_mmapread(&inbuf, "/home/roman/Unsorted Files/ARTE.m3u");
+  playlist_m3u(&pls2, &inbuf);
+  pls2.callback = playlist_process;
+  playlist_read(&pls2);
+  buffer_close(&inbuf);
 
 }

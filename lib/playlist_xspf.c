@@ -40,7 +40,7 @@ xspf_process(playlist* pl) {
     } else if(strcmp(name, "duration") == 0) {
       track.length = atoi(nodeText.s);
     } else if(strcmp(name, "track") == 0) {
-  //    printf("XTRACKX: title:\"%s\" location:\"%s\" length:%u\n", track.title.s, track.location.s, track.length);
+      //    printf("XTRACKX: title:\"%s\" location:\"%s\" length:%u\n", track.title.s, track.location.s, track.length);
 
       if(pl->callback) {
         pl->callback(pl, &track.title, &track.location, track.length);
@@ -66,9 +66,9 @@ xspf_process(playlist* pl) {
     }
   }
 
-/*  if(name[0] != '#') {
-//   printf("%d: <%s%s(%d))>%s\n", xmlTextReaderDepth(reader), nodeType == 15 ? "/" : "", name, nodeType, nodeText.s);
-  }*/
+  /*  if(name[0] != '#') {
+  //   printf("%d: <%s%s(%d))>%s\n", xmlTextReaderDepth(reader), nodeType == 15 ? "/" : "", name, nodeType, nodeText.s);
+    }*/
 
   if(name[0] != '#') {
     stralloc_zero(&nodeText);
