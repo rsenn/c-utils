@@ -13,4 +13,5 @@ playlist_xspf(playlist* pls, buffer *b) {
   xmlTextReaderPtr rd;
   rd = xmlReaderForIO((xmlInputReadCallback)buffer_get, (xmlInputCloseCallback)buffer_close_return_int, b, "", "UTF-8", 0);
   pls->ptr = rd;
+  pls->type = XSPF;
 }

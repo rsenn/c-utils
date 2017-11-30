@@ -669,7 +669,7 @@ endif
 
 $(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS)
 $(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
-$(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)plstest.o  $(BUILDDIR)playlist.a $(BUILDDIR)stralloc.a  $(BUILDDIR)buffer.a $(BUILDDIR)byte.a
+$(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)plstest.o  $(BUILDDIR)playlist.a $(BUILDDIR)stralloc.a  $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@

@@ -12,6 +12,13 @@
 extern "C"{
 #endif
 
+typedef enum playlist_type {
+  UNKNOWN = 0,
+  M3U = 1,
+  XSPF = 2,
+  PLS = 3,
+} playlist_type;
+
 typedef struct playlist_entry {
   stralloc title;
   stralloc path;
@@ -20,6 +27,7 @@ typedef struct playlist_entry {
 
 typedef struct playlist {
   playlist_entry* entry;
+  playlist_type type;
   void *ptr;
 } playlist;
 
