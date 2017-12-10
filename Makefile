@@ -195,7 +195,9 @@ HOST2 := $(SYSNAME)
 endif
 
 
-
+ifeq ($(HOST2),)
+HOST2 := pc
+endif
 #ifneq ($(SYSNAME),)
 #HOST := $(subst w64,$(SYSNAME),$(HOST))
 #endif
