@@ -17,7 +17,7 @@ CONFIG -= qt
   #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
 
-INCLUDEPATH += .
+INCLUDEPATH += . $$PWD/lib
 
 SOURCES = \
     lib/buffer_0.c \
