@@ -4,7 +4,7 @@
 #include "iopause.h"
 #include "taia.h"
 #include "byte.h"
-//#include <sys/socket.h>
+#include "socket.h"
 #include <errno.h>
 
 static int last_errno = 0;

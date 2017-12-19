@@ -2,9 +2,9 @@
 #include "buffer.h"
 #include "str.h"
 #include "scan.h"
+#include "socket.h"
 #include <errno.h>
 #include <ctype.h>
-//#include <sys/socket.h>
 
 ssize_t
 buffer_dummyread() {
