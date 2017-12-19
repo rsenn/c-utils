@@ -293,6 +293,7 @@ add_executable( xmltest3 xmltest3.c )
 ##target_link_libraries( xc8-wrapper strlist stralloc str fmt dir byte buffer )
 #
 # 
+target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
 target_link_libraries(plstest ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest2 ${LIBXML2_LIBRARIES})
