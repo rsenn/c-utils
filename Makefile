@@ -447,7 +447,7 @@ LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
 LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
 
 ifeq ($(STATIC),1)
-LIBXML2_LIBS += -lws2_32
+LIBXML2_LIBS += $(OTHERLIBS)
 LIBXML2_LIBS += -liconv
 endif
 
@@ -644,7 +644,7 @@ ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
-$(BUILDDIR)httptest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += -lws2_32
+$(BUILDDIR)httptest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(OTHERLIBS)
 $(BUILDDIR)httptest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)httptest.o $(BUILDDIR)http.a $(BUILDDIR)socket.a $(BUILDDIR)io.a $(BUILDDIR)ndelay.a $(BUILDDIR)uint16.a $(BUILDDIR)iarray.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)scan.a $(BUILDDIR)stralloc.a $(BUILDDIR)str.a $(BUILDDIR)byte.a   $(BUILDDIR)taia.a  $(BUILDDIR)uint32.a  
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)

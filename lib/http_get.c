@@ -3,13 +3,15 @@
 #include "str.h"
 #include "byte.h"
 #include "io.h"
-//#include <netdb.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <sys/types.h>
-/*#include <sys/socket.h>
+#include "socket.h"
+
+#ifndef _WIN32
+#include <netdb.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>*/
+#endif
+
 
 
 #include "buffer.h"
