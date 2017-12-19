@@ -14,44 +14,65 @@ extern "C"
 
 /* strlist is the internal data structure all functions are working on.
  */
-
-  typedef struct strlist
-  {
-    stralloc sa;
-  } strlist;
+typedef struct strlist
+{
+  stralloc sa;
+} strlist;
 
 /* strlist_init will initialize a strlist. */
 # define strlist_zero(l) stralloc_zero(&(l)->sa)
 # define strlist_init(l) stralloc_init(&(l)->sa)
 # define strlist_free(l) stralloc_free(&(l)->sa)
 
-    size_t strlist_count (const strlist * sl);
+size_t 
+strlist_count (const strlist * sl);
 
-   char *strlist_at (const strlist * sl, size_t pos);
+char *
+strlist_at (const strlist * sl, size_t pos);
 
-    int64 strlist_index_of (strlist * sl, const char *str);
+int64 
+strlist_index_of (strlist * sl, const char *str);
 
-  int strlist_push (strlist * sl, const char *str);
-  
-  int strlist_pushm (strlist * sl, ...);
+int 
+strlist_push (strlist * sl, const char *str);
 
-  int strlist_pushb (strlist * sl, const char *s, size_t n);
+int 
+strlist_pushm (strlist * sl, ...);
 
-  int strlist_push_sa (strlist * sl, const stralloc * sa);
-	
-	int strlist_push_unique(strlist *sl, const char *s);
+int 
+strlist_pushb (strlist * sl, const char *s, size_t n);
 
-  int strlist_cat (strlist * sl, const strlist* l);
-  
-  void strlist_dump (buffer * out, const strlist * sl);
+int 
+strlist_push_sa (strlist * sl, const stralloc * sa);
 
-  char** strlist_to_argv(const strlist* sl);
+int 
+strlist_push_unique(strlist *sl, const char *s);
 
-  int strlist_unshift(strlist * sl, const char *s);
-  int strlist_shift(strlist * sl, const char** s);
+void 
+strlist_push_tokens(strlist *sl, char *s, const char *delim);
+
+int 
+strlist_cat (strlist * sl, const strlist* l);
+
+void 
+strlist_dump (buffer * out, const strlist * sl);
+
+char** 
+strlist_to_argv(const strlist* sl);
+
+int 
+strlist_unshift(strlist * sl, const char *s);
+
+int 
+strlist_shift(strlist * sl, const char** s);
 
 #define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char *)0)
-int strlist_pushm_internal(strlist* sl, ...);
+int 
+strlist_pushm_internal(strlist* sl, ...);
+
+void 
+strlist_join(const strlist *sl, stralloc *sa, char delim);
+
 
 # ifdef __cplusplus
 }
