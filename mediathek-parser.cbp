@@ -24,6 +24,10 @@
 					<Add directory="." />
 					<Add directory="lib" />
 				</Compiler>
+				<Linker>
+					<Add option="-static-libgcc" />
+					<Add option="-static-libstdc++" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/mediathek-parser" prefix_auto="1" extension_auto="1" />
@@ -45,6 +49,10 @@
 					<Add directory="." />
 					<Add directory="lib" />
 				</Compiler>
+				<Linker>
+					<Add option="-static-libgcc" />
+					<Add option="-static-libstdc++" />
+				</Linker>
 			</Target>
 		</Build>
 		<Compiler>

@@ -24,6 +24,10 @@
 					<Add directory="." />
 					<Add directory="lib" />
 				</Compiler>
+				<Linker>
+					<Add option="-static-libgcc" />
+					<Add option="-static-libstdc++" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/mediathek-list" prefix_auto="1" extension_auto="1" />
@@ -44,6 +48,8 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-static-libgcc" />
+					<Add option="-static-libstdc++" />
 				</Linker>
 			</Target>
 		</Build>
