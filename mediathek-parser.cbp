@@ -2,13 +2,13 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="mediathek-list" />
+		<Option title="mediathek-parser" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Option virtualFolders="Lib/;" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/mediathek-list" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/mediathek-parser" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -26,7 +26,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/mediathek-list" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/mediathek-parser" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -50,10 +50,25 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="lib/array_allocate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/array_length.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/array_start.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/array_trunc.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="lib/buffer_1.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/buffer_2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer_close.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/buffer_feed.c">
@@ -62,13 +77,22 @@
 		<Unit filename="lib/buffer_flush.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="lib/buffer_get.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_get_token.c">
+		<Unit filename="lib/buffer_get_token_sa.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/buffer_getc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer_getline_sa.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer_mmapread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer_munmap.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/buffer_put.c">
@@ -77,7 +101,7 @@
 		<Unit filename="lib/buffer_putflush.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="lib/buffer_putm_internal.c">
+		<Unit filename="lib/buffer_putlong.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/buffer_putnlflush.c">
@@ -101,28 +125,34 @@
 		<Unit filename="lib/byte_copy.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="lib/byte_rchr.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="lib/byte_zero.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/fmt_long.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/fmt_ulong.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="lib/fmt_ulonglong.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="lib/isleap.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="lib/scan_uint.c">
+		<Unit filename="lib/mmap_read.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="lib/scan_ushort.c">
+		<Unit filename="lib/open_read.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/str_chr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/str_diff.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/str_dup.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_istr.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/str_len.c">
@@ -131,16 +161,13 @@
 		<Unit filename="lib/str_ptime.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="lib/str_rchr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_tok.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="lib/stralloc_append.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/stralloc_catb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/stralloc_catc.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/stralloc_cats.c">
@@ -158,6 +185,9 @@
 		<Unit filename="lib/stralloc_init.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="lib/stralloc_nul.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="lib/stralloc_ready.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -167,31 +197,13 @@
 		<Unit filename="lib/stralloc_zero.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="lib/strlist_at.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/strlist_count.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/strlist_dump.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/strlist_join.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/strlist_push.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/strlist_push_tokens.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/strlist_pushb.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="lib/time_table_spd.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="mediathek-list.c">
+		<Unit filename="lib/umult64.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mediathek-parser.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
