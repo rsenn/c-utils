@@ -446,6 +446,11 @@ endif
 LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
 LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
 
+ifeq ($(STATIC),1)
+LIBXML2_LIBS += -lws2_32
+LIBXML2_LIBS += -liconv
+endif
+
 $(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
 $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 
