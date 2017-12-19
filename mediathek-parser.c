@@ -287,7 +287,7 @@ process_entry(const array* a) {
     buffer_puts(buffer_1, description);
     buffer_put(buffer_1, "\r\n", 2);
     buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
-    buffer_puts(buffer_1, url/*_lo.s*/);
+    buffer_puts(buffer_1, url_lo.s);
     buffer_put(buffer_1, "\r\n", 2);
     buffer_flush(buffer_1);
 
