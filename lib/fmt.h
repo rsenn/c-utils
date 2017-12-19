@@ -5,11 +5,13 @@
 /* for size_t: */
 //#include <stddef.h>
 /* for uint32 */
+#ifndef _MSC_VER
+#include <stdint.h>
+#endif // !defined(_MSC_VER)
 
 /* for time_t: */
 #include <sys/types.h>
-#include <sys/time.h>
-#include <time.h>
+
 
 #include "uint32.h"
 #include "uint64.h"
@@ -18,8 +20,6 @@
 extern "C" {
 #endif
 
-#define FMT_INT  21 /* enough space to hold -2^63 in decimal, plus \0 */
-#define FMT_UINT 20 /* enough space to hold 2^64 - 1 in decimal, plus \0 */
 #define FMT_LONG  41 /* enough space to hold -2^127 in decimal, plus \0 */
 #define FMT_ULONG 40 /* enough space to hold 2^128 - 1 in decimal, plus \0 */
 #define FMT_8LONG 44 /* enough space to hold 2^128 - 1 in octal, plus \0 */
@@ -118,11 +118,9 @@ size_t fmt_strm_internal(char* dest, ...);
 #ifndef MAX_ALLOCA
 #define MAX_ALLOCA 100000
 #endif
-#define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if(c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
+#define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if (c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
 
 size_t fmt_uint64(char* dest, uint64 i);
-
-size_t fmt_escapecharquotedprintable(char *dest, uint32_t ch);
 
 #ifdef __cplusplus
 }

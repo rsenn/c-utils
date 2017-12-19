@@ -1,44 +1,70 @@
-//=---------------------------------------------------------------------=
-//
-// $Id: utf8.h,v 1.1 2011/01/10 10:50:54 matt-beard Exp $ $Name:  $
-//
-// The contents of this file are subject to the AAF SDK Public
-// Source License Agreement (the "License"); You may not use this file
-// except in compliance with the License.  The License is available in
-// AAFSDKPSL.TXT, or you may obtain a copy of the License from the AAF
-// Association or its successor.
-//
-// Software distributed under the License is distributed on an "AS IS"
-// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.  See
-// the License for the specific language governing rights and limitations
-// under the License.
-//
-// The Original Code of this file is Copyright 2004, Licensor of the
-// AAF Association.
-//
-// The Initial Developer of the Original Code of this file and the
-// Licensor of the AAF Association is Metaglue Corporation.
-// All rights reserved.
-//
-//=--
-#ifndef __UTF8_h__
-#define __UTF8_h__
+/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
+#ifndef UINT32_H
+#define UINT32_H
 
-#include <wchar.h>
+#if !defined(_MSC_VER) && !defined(__MSYS__)
+#include <inttypes.h>
+#endif
+#if !defined(_MSC_VER) && !defined(__MSYS__)
+#include <stdint.h>
+#endif // !defined(_MSC_VER)
 
-// UTF8 versions of mbs/wcs libc functions
-// (because MSFT and GNU take different approaches from each other)
-
-#ifndef MG_UTF8
-#define MG_UTF8 1
+#ifdef __MSYS__
+# define __MS_types__
+# include <sys/types.h>
+# ifdef __BIT_TYPES_DEFINED__
+#  define uint32_t u_int32_t
+# endif
 #endif
 
-#if defined(MG_UTF8)
+#ifdef _MSC_VER
+# include <windows.h>
+# define uint32_t UINT32
+# define int32_t INT32
+#endif
 
-// convert a wchar_t to a utf8 (multibyte)char
-// follows signature of int wctomb( char *m, wchar_t w )
-// requires m to point to a buffer of length 4 or more
-int wctou8(char* m, wchar_t w);
+#ifdef __GNUC__
+#define uint32_t __UINT32_TYPE__
+#define int32_t __INT32_TYPE__
+#endif
 
-// number of char required to represent a single wchar_t in utf8
-// follows signature of mblen( const wchar_t, 1
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef uint32_t uint32;
+typedef int32_t int32;
+
+#if(defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT32_MACROS)
+
+static inline void uint32_pack(char* out, uint32 in) {
+  *(uint32 *)out = in;
+}
+
+static inline void uint32_unpack(const char* in, uint32* out) {
+  *out = *(uint32 *)in;
+}
+
+static inline uint32 uint32_read(const char* in) {
+  return *(uint32 *)in;
+}
+
+void uint32_pack_big(char* out, uint32 in);
+void uint32_unpack_big(const char* in, uint32* out);
+uint32 uint32_read_big(const char* in);
+#else
+
+void uint32_pack(char* out, uint32 in);
+void uint32_pack_big(char* out, uint32 in);
+void uint32_unpack(const char* in, uint32* out);
+void uint32_unpack_big(const char* in, uint32* out);
+uint32 uint32_read(const char* in);
+uint32 uint32_read_big(const char* in);
+
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
