@@ -9,6 +9,7 @@ extern "C" {
 #ifdef IOPAUSE_POLL
 
 /* sysdep: +poll */
+#define IOPAUSE_POLL
 
 #include <sys/types.h>
 #include <sys/poll.h>

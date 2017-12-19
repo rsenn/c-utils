@@ -10,22 +10,23 @@ extern "C" {
 
 struct rdir_s;
 
-typedef struct rdir_s {
+struct rdir_s {
+  stralloc sa;
   union {
     struct dir_s dir;
     void* dir_int;
   };
   struct rdir_s* prev;
-  stralloc sa;
-} rdir_t;
+};
+typedef struct rdir_s rdir_t;
 
-int rdir_open(rdir_t* d, const char* p);
-char* rdir_read(rdir_t* d);
-void rdir_close(rdir_t* d);
+int rdir_open(struct rdir_s* d, const char* p);
+char* rdir_read(struct rdir_s* d);
+void rdir_close(struct rdir_s* d);
 
-/*char* rdir_name(rdir_t* d);
-int rdir_type(rdir_t* d);
-time_t rdir_time(rdir_t* d, int time_type);
+/*char* rdir_name(struct rdir_s* d);
+int rdir_type(struct rdir_s* d);
+time_t rdir_time(struct rdir_s* d, int time_type);
 */
 #ifdef __cplusplus
 }

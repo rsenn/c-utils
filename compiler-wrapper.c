@@ -402,7 +402,7 @@ execute_cmd() {
     strlist_pushm(&cmd, "-D", strlist_at(&defines, i));
   }
   if(type == PICC || type == PICC18 || type == XC8) {
-          char nbuf[FMT_UINT+1];
+          char nbuf[FMT_ULONG];
 
     strlist_pushm(&cmd, "--chip=", chip.s, 0);
 
@@ -430,26 +430,26 @@ if(mode != PREPROCESS) {
 
 
     if(optlevel) {
-       nbuf[fmt_uint(nbuf, optlevel)] = '\0';
+       nbuf[fmt_ulong(nbuf, optlevel)] = '\0';
       strlist_pushm(&cmd, "--opt=default,+asm,", debug ? "+debug,":"", optsize ? "-speed,+space,":"-space,+speed,", nbuf, NULL);
     } 
 
      if(warn) {
-       nbuf[fmt_uint(nbuf, warn)] = '\0';
+       nbuf[fmt_ulong(nbuf, warn)] = '\0';
       strlist_pushm(&cmd, "--warn=",nbuf,NULL);
     }
     if(debug) strlist_push(&cmd, "-G");
     
     if(ident_len != 0) {
-      nbuf[fmt_uint(nbuf, ident_len)] = '\0';
+      nbuf[fmt_ulong(nbuf, ident_len)] = '\0';
       strlist_pushm(&cmd, "-N",nbuf, NULL);
     }
     if(fltbits != 0) {
-      nbuf[fmt_uint(nbuf, fltbits)] = '\0';
+      nbuf[fmt_ulong(nbuf, fltbits)] = '\0';
       strlist_pushm(&cmd, "--float=",nbuf, NULL);
     }
     if(dblbits != 0) {
-      nbuf[fmt_uint(nbuf, dblbits)] = '\0';
+      nbuf[fmt_ulong(nbuf, dblbits)] = '\0';
       strlist_pushm(&cmd, "--double=",nbuf, NULL);
     }
 

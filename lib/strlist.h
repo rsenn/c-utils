@@ -53,10 +53,6 @@ extern "C"
 #define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char *)0)
 int strlist_pushm_internal(strlist* sl, ...);
 
-void strlist_push_tokens(strlist *sl, char *s, const char *delim);
-void strlist_join(const strlist *sl, stralloc *sa, char delim);
-
-
 # ifdef __cplusplus
 }
 # endif

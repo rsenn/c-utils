@@ -2,17 +2,19 @@
 #ifndef UINT16_H
 #define UINT16_H
 
+#ifndef _MSC_VER
+#include <inttypes.h>
+#ifndef _MSC_VER
+#include <stdint.h>
+#endif // !defined(_MSC_VER)
+#endif
+
 #include <sys/types.h>
 
-#if defined(_MSC_VER)
+#ifdef _MSC_VER
 #include <windows.h>
 #define uint16_t UINT16
 #define int16_t INT16
-#elif !(defined(__MSYS__) && __MSYS__ == 1)
-#include <inttypes.h>
-#include <stdint.h>
-#elif defined(__BIT_TYPES_DEFINED__)
-typedef u_int16_t uint16_t;
 #endif
 
 #ifdef __cplusplus
