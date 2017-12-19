@@ -2,12 +2,16 @@
 #ifndef MMAP_H
 #define MMAP_H
 
-#include <stddef.h>
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/* map fd
+ * return pointer to map */
+  char *mmap_map(int fd, size_t sz, uint64 offset);
+  
 /* open file for reading, mmap whole file, close file, write length of
  * map in filesize and return pointer to map. */
 char* mmap_read(const char *filename,size_t* filesize);
