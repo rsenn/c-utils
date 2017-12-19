@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+static int lowq = 0, debug = 0;
 static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme.json"; //"D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
 static const char delimiters[] = "\"";
 //static char  inbuf[16384];
@@ -287,7 +288,7 @@ process_entry(const array* a) {
     buffer_puts(buffer_1, description);
     buffer_put(buffer_1, "\r\n", 2);
     buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
-    buffer_puts(buffer_1, url_lo.s);
+    buffer_puts(buffer_1, lowq > 0 ? url_lo.s : url);
     buffer_put(buffer_1, "\r\n", 2);
     buffer_flush(buffer_1);
 
@@ -341,26 +342,50 @@ process_input(buffer* input) {
 }
 
 int main(int argc, char* argv[]) {
+	
+  int opt;
+
   char inbuf[8192];
   buffer b;
 
-  if(argc > 1) {
-    buffer_puts(buffer_2, "Opening '");
-    buffer_puts(buffer_2, argv[1]);
-    buffer_puts(buffer_2, "' ... ");
-
-    if(buffer_mmapread(&b, argv[1])) {
-      buffer_puts(buffer_2, "failed");
-      buffer_putnlflush(buffer_2);
-      return 1;
-    } else {
-      buffer_putnlflush(buffer_2);
+  while((opt = getopt(argc, argv, "dt:i:x:")) != -1) {
+    switch(opt) {
+    case 'd':
+      debug++;
+      break;
+    case 'l':
+  lowq++;
+      break;
+    default: /* '?' */
+      buffer_putm(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n");
+      exit(EXIT_FAILURE);
     }
-
-  } else {
-    buffer_init(&b, read, STDIN_FILENO, inbuf, sizeof(inbuf));
   }
+  
+  
+  while(optind < argc) {
+/* 
+	  buffer_puts(buffer_2, "Opening '");
+		buffer_puts(buffer_2, argv[optind]);
+		buffer_puts(buffer_2, "' ... ");
 
-  process_input(&b);
+		if(buffer_mmapread(&b, argv[optind])) {
+		  buffer_puts(buffer_2, "failed");
+		  buffer_putnlflush(buffer_2);
+		  return 1;
+		} else {
+		  buffer_putnlflush(buffer_2);
+		}
+
+	  } else  */{
+		buffer_init(&b, read, STDIN_FILENO, inbuf, sizeof(inbuf));
+		  process_input(&b);
+
+	  }
+	  ++optind;
+
+	}
+	
+	
   return 0;
 }

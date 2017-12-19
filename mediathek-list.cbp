@@ -5,13 +5,13 @@
 		<Option title="mediathek-list" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Lib/;" />
+		<Option virtualFolders="Lib\;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/mediathek-list" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="mingw32" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DINLINE=inline" />
@@ -29,11 +29,11 @@
 				<Option output="bin/Release/mediathek-list" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="mingw32" />
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DINLINE=inline" />
-					<Add option="-DUSE_READDIR=1" />
+					<Add option="-DUSE_READDIR=0" />
 					<Add option="-DUSE_WIDECHAR=0" />
 					<Add option="-D_FILE_OFFSET_BITS=64" />
 					<Add option="-D_LARGEFILE_SOURCE=1" />
@@ -114,6 +114,15 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/scan_uint.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/scan_ulong.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/scan_ulonglong.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/scan_ulongn.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/scan_ushort.c">

@@ -24,8 +24,12 @@
 #endif
 
 #ifdef __GNUC__
+#ifndef uint64_t
 #define uint64_t __UINT64_TYPE__
+#endif
+#ifndef int64_t
 #define int64_t __INT64_TYPE__
+#endif
 #endif
 
 #ifdef __cplusplus

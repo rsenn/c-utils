@@ -8,7 +8,7 @@
 #ifdef __MINGW32__
 # include "socket.h"
 my_extern HANDLE io_comport;
-#else
+#elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32)
 # define HAVE_EPOLL 1
 # define HAVE_SIGIO
 # ifdef HAVE_SIGIO
