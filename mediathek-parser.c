@@ -42,6 +42,7 @@ parse_predicate(const char* x, size_t len)
 
   buffer_puts(buffer_1, "Predicate: ");
   buffer_put(buffer_1, x, len);
+
   buffer_puts(buffer_1, " (");
   buffer_putulong(buffer_1, len);
   buffer_putsflush(buffer_1, ")\n");
