@@ -15,7 +15,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DINLINE=inline" />
-					<Add option="-DUSE_READDIR=1" />
+					<Add option="-DUSE_READDIR=0" />
 					<Add option="-DUSE_WIDECHAR=0" />
 					<Add option="-D_FILE_OFFSET_BITS=64" />
 					<Add option="-D_LARGEFILE_SOURCE=1" />
@@ -48,7 +48,7 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-Wall" />
+			<Add option="-w" />
 		</Compiler>
 		<Unit filename="lib/buffer_1.c">
 			<Option compilerVar="CC" />
