@@ -1,7 +1,6 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <stdlib.h>
 #include <sys/types.h>
 
 #ifdef __cplusplus
@@ -28,7 +27,7 @@ void list_unshift(list*, link*);
 
 #define list_foreach_down(list, n) \
   for((n) = (void*)(list)->head; \
-      (n); \
+      (n) != NULL; \
       (n) = (void*)(((link*)n)->next))
 
 /* n is set to the current link and n->next is backupped
@@ -36,10 +35,10 @@ void list_unshift(list*, link*);
    links get deleted */
 #define list_foreach_down_safe(list, n, m) \
   for((n) = (void*)(list)->head, \
-      (m) = (void*)((link*)n) ? (void*)((link*)n)->next : NULL; \
-      (n); \
+      (m) = (void*)((link*)n) != NULL ? (void*)((link*)n)->next : NULL; \
+      (n) != NULL; \
       (n) = (void*)((link*)m), \
-      (m) = (void*)((link*)n) ? (void*)((link*)n)->next : NULL)
+      (m) = (void*)((link*)n) != NULL ? (void*)((link*)n)->next : NULL)
 
 /* ------------------------------------------------------------------------ *
  * Macros to walk through a list list from tail to head.                     *
@@ -47,7 +46,7 @@ void list_unshift(list*, link*);
 /* n is set to the current link*/
 #define list_foreach_up(list, n) \
   for((n) = (void*)(list)->tail; \
-      (n); \
+      (n) != NULL; \
       (n) = (void*)(((link*)n)->prev))
 
 /* n is set to the current link and n->prev is backupped
@@ -55,10 +54,10 @@ void list_unshift(list*, link*);
    links get deleted */
 #define list_foreach_up_safe(list, n, m) \
   for((n) = (void*)(list)->tail, \
-      (m) = (void*)((link*)n) ? (void*)((link*)n)->prev : NULL; \
-      (n); \
+      (m) = (void*)((link*)n) != NULL ? (void*)((link*)n)->prev : NULL; \
+      (n) != NULL; \
       (n) = (void*)((link*)m), \
-      (m) = (void*)((link*)n) ? (void*)((link*)n)->prev : NULL)
+      (m) = (void*)((link*)n) != NULL ? (void*)((link*)n)->prev : NULL)
 
 /* aliases for backwards compatibility */
 #define list_foreach           list_foreach_down
