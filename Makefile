@@ -539,7 +539,7 @@ $(BUILDDIR)rdir.a: $(BUILDDIR)rdir_close.o $(BUILDDIR)rdir_open.o $(BUILDDIR)rdi
 $(BUILDDIR)scan.a: $(BUILDDIR)scan_double.o $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_uint.o $(BUILDDIR)scan_ulong.o $(BUILDDIR)scan_ulonglong.o $(BUILDDIR)scan_ulongn.o $(BUILDDIR)scan_ushort.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_xlonglong.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
-$(BUILDDIR)socket.a: $(BUILDDIR)socket_connect4.o $(BUILDDIR)socket_connect6.o $(BUILDDIR)socket_connected.o $(BUILDDIR)socket_ip4loopback.o $(BUILDDIR)socket_noipv6.o $(BUILDDIR)socket_tcp4b.o $(BUILDDIR)socket_tcp4.o $(BUILDDIR)socket_tcp6b.o $(BUILDDIR)socket_tcp6.o $(BUILDDIR)socket_v4mappedprefix.o $(BUILDDIR)socket_v6loopback.o 
+$(BUILDDIR)socket.a: $(BUILDDIR)socket_connect4.o $(BUILDDIR)socket_connect6.o $(BUILDDIR)socket_connected.o $(BUILDDIR)socket_ip4loopback.o $(BUILDDIR)socket_noipv6.o $(BUILDDIR)socket_tcp4b.o $(BUILDDIR)socket_tcp4.o $(BUILDDIR)socket_tcp6b.o $(BUILDDIR)socket_tcp6.o $(BUILDDIR)socket_v4mappedprefix.o $(BUILDDIR)socket_v6loopback.o  $(BUILDDIR)winsock2errno.o $(BUILDDIR)winsock_init.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 $(BUILDDIR)stralloc.a: $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_append_sa.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_cat.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_catlong0.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_catulong0.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copy.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_diffs.o $(BUILDDIR)stralloc_free.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_insertb.o $(BUILDDIR)stralloc_move.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)stralloc_remove.o $(BUILDDIR)stralloc_trunc.o $(BUILDDIR)stralloc_write.o $(BUILDDIR)stralloc_zero.o 
@@ -639,6 +639,7 @@ ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
+$(BUILDDIR)httptest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += -lws2_32
 $(BUILDDIR)httptest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)httptest.o $(BUILDDIR)http.a $(BUILDDIR)socket.a $(BUILDDIR)io.a $(BUILDDIR)ndelay.a $(BUILDDIR)uint16.a $(BUILDDIR)iarray.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)scan.a $(BUILDDIR)stralloc.a $(BUILDDIR)str.a $(BUILDDIR)byte.a   $(BUILDDIR)taia.a  $(BUILDDIR)uint32.a  
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
