@@ -1,6 +1,7 @@
 #include "http.h"
 #include "buffer.h"
-#include <sys/socket.h>
+#include "socket.h"
+//#include <sys/socket.h>
 
 static ssize_t
 do_send(int64 s, const void* buf, size_t len) {

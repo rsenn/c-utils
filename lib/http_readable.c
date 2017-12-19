@@ -4,7 +4,7 @@
 #include "scan.h"
 #include <errno.h>
 #include <ctype.h>
-#include <sys/socket.h>
+//#include <sys/socket.h>
 
 ssize_t
 buffer_dummyread() {

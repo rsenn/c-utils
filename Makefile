@@ -509,7 +509,7 @@ $(BUILDDIR)buffer.a: $(BUILDDIR)buffer_0.o $(BUILDDIR)buffer_0small.o $(BUILDDIR
 $(BUILDDIR)byte.a: $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_diff.o $(BUILDDIR)byte_fill.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_zero.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
-$(BUILDDIR)dir.a: $(BUILDDIR)dir_close.o $(BUILDDIR)dir_name.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_time.o $(BUILDDIR)dir_type.o 
+$(BUILDDIR)dir.a: $(BUILDDIR)dir_close.o $(BUILDDIR)dir_name.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_time.o $(BUILDDIR)dir_type.o  $(BUILDDIR)utf8.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 $(BUILDDIR)fmt.a: $(BUILDDIR)fmt_8long.o $(BUILDDIR)fmt_8longlong.o $(BUILDDIR)fmt_asn1derlength.o $(BUILDDIR)fmt_asn1dertag.o $(BUILDDIR)fmt_double.o $(BUILDDIR)fmt_escapecharc.o $(BUILDDIR)fmt_escapecharhtml.o $(BUILDDIR)fmt_escapecharquotedprintable.o $(BUILDDIR)fmt_escapecharquotedprintableutf8.o $(BUILDDIR)fmt_escapecharxml.o $(BUILDDIR)fmt_fill.o $(BUILDDIR)fmt_httpdate.o $(BUILDDIR)fmt_human.o $(BUILDDIR)fmt_humank.o $(BUILDDIR)fmt_iso8601.o $(BUILDDIR)fmt_long.o $(BUILDDIR)fmt_longlong.o $(BUILDDIR)fmt_minus.o $(BUILDDIR)fmt_pad.o $(BUILDDIR)fmt_plusminus.o $(BUILDDIR)fmt_str.o $(BUILDDIR)fmt_strm_internal.o $(BUILDDIR)fmt_strn.o $(BUILDDIR)fmt_tohex.o $(BUILDDIR)fmt_uint64.o $(BUILDDIR)fmt_ulong0.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)fmt_ulonglong.o $(BUILDDIR)fmt_utf8.o $(BUILDDIR)fmt_xlong.o $(BUILDDIR)fmt_xlonglong.o $(BUILDDIR)fmt_xmlescape.o 

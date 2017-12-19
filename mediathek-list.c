@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
-#include <sys/wait.h>
+//#include <sys/wait.h>
 #include <signal.h>
 #include <string.h>
 
@@ -99,9 +99,11 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 void
 process_status(void) {
   /* display interesting process IDs  */
+#ifndef _WIN32
   fprintf(stderr, "process %s: pid=%d, ppid=%d, pgid=%d, fg pgid=%dn\n",
           argv0, (int)getpid(), (int)getppid(),
           (int)getpgrp(), (int)tcgetpgrp(STDIN_FILENO));
+#endif
 }
 
 int
