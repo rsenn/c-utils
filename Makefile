@@ -693,6 +693,13 @@ ifeq ($(DO_STRIP),1)
 	#$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
+$(BUILDDIR)plstest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)plstest.o $(BUILDDIR)buffer.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+ifeq ($(DO_STRIP),1)
+	#$(CROSS_COMPILE)$(STRIP) --strip-all $@
+endif
+
+
 $(BUILDDIR)xc8-wrapper/:
 	mkdir -p $@
 	

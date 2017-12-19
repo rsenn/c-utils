@@ -18,6 +18,7 @@ include( FindOpenSSL ) # OPENSSL_CRYPTO_LIBRARIES OPENSSL_CRYPTO_LIBRARY OPENSSL
 
 #include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
 
+add_definitions( -g )
 
 include( FindPkgConfig )
 include( UsePkgConfig )
