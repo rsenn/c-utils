@@ -20,6 +20,7 @@ extern "C" {
 /* interpret src as ASCII decimal number, write number to dest and
  * return the number of bytes that were parsed */
 size_t scan_ulong(const char* src, unsigned long* dest);
+size_t scan_ulongn(const char *src, size_t n, unsigned long int *dest);
 
 /* interpret src as ASCII hexadecimal number, write number to dest and
  * return the number of bytes that were parsed */
