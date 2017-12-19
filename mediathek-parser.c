@@ -152,19 +152,19 @@ cleanup_text(char* t) {
   char prev='x';
   stralloc out;
   stralloc_init(&out);
-  
+
   for(i = 0; (c = t[i]); ++i) {
-  
+
     if(isdelim(c) && isdelim(prev))
       continue;
-    
+
     if(isdelim(c)) c=' ';
     stralloc_append(&out, &c);
     prev=c;
   }
   byte_copy(t, out.len, out.s);
   t[out.len] = '\0';
-  stralloc_free(&out); 
+  stralloc_free(&out);
 }
 
 char*
@@ -199,6 +199,7 @@ process_entry(const array* a) {
     struct tm tm;
     time_t t;
     size_t d;
+
 
     char* sender = av[1], *thema = av[2], *title = av[3], *date = av[4], *time = av[5], *duration = av[6], *grcoee = av[7], *description = av[8], *url = av[9], *website = av[10], *untertitel = av[11], *urlrtmp = av[12], *url_klein = av[13], *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17], *url_history = av[18], *geo = av[19], *neu = av[20];
 
@@ -263,7 +264,7 @@ process_entry(const array* a) {
     /*dump_pair(buffer_2, "sender", sender);
     dump_pair(buffer_2, "thema", thema);
     dump_pair(buffer_2, "title", title);*/
-    
+
     /*    dump_long(buffer_2, "d", d);
         dump_pair(buffer_2, "duration", duration);
         dump_pair(buffer_2, "url", url);
@@ -342,7 +343,7 @@ process_input(buffer* input) {
 }
 
 int main(int argc, char* argv[]) {
-	
+
   int opt;
 
   char inbuf[8192];
@@ -361,10 +362,10 @@ int main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
     }
   }
-  
-  
+
+
   while(optind < argc) {
-/* 
+/*
 	  buffer_puts(buffer_2, "Opening '");
 		buffer_puts(buffer_2, argv[optind]);
 		buffer_puts(buffer_2, "' ... ");
@@ -385,7 +386,7 @@ int main(int argc, char* argv[]) {
 	  ++optind;
 
 	}
-	
-	
+
+
   return 0;
 }
