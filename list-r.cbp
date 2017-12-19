@@ -50,51 +50,40 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="lib/array_allocate.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/array_catb.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/array_fail.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/array_length.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/array_start.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_1.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_2.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_flush.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_put.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_puts.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putsa.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_stubborn.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_copy.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_zero.c">
-			<Option compilerVar="CC" />
-		</Unit>
+                <Unit filename="lib/array_allocate.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/array_catb.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/array_fail.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/array_length.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/array_start.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/buffer_1.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/buffer_2.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/buffer_flush.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/buffer_put.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/buffer_putc.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/buffer_puts.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/buffer_putsa.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/buffer_stubborn.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/byte_copy.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/byte_zero.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/dir_close.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/dir_name.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/dir_open.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/dir_read.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/dir_type.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/fmt_uint64.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/fnmatch.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/stralloc_catb.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/stralloc_cats.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/stralloc_copyb.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/stralloc_copys.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/stralloc_init.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/stralloc_nul.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/stralloc_ready.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/stralloc_readyplus.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/str_diffn.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/str_len.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/umult64.c"><Option compilerVar="CC" /></Unit>
+                <Unit filename="lib/utf8.c"><Option compilerVar="CC" /></Unit>
 		<Unit filename="list-r.c">
 			<Option compilerVar="CC" />
 		</Unit>

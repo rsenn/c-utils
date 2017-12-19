@@ -122,6 +122,9 @@ size_t fmt_strm_internal(char* dest, ...);
 
 size_t fmt_uint64(char* dest, uint64 i);
 
+size_t fmt_escapecharquotedprintable(char *dest, unsigned int ch);
+size_t fmt_escapecharquotedprintableutf8(char *dest, unsigned int ch);
+
 #ifdef __cplusplus
 }
 #endif
