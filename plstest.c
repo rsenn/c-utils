@@ -47,9 +47,6 @@ int main(int argc, char *argv[]) {
     }
   }
 
-
-
-
   playlist_init(&pls1);
   playlist_init(&pls2);
   /*
