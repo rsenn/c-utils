@@ -597,7 +597,18 @@ $(BUILDDIR)http.a: $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_
 $(BUILDDIR)list.a: $(patsubst %.c,$(BUILDDIR)%.o,$(notdir $(wildcard lib/list_*.c)))
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
-$(BUILDDIR)playlist.a: $(patsubst %.c,$(BUILDDIR)%.o,$(notdir $(wildcard lib/playlist_*.c)))
+$(BUILDDIR)playlist_m3u.o: lib/playlist/playlist_m3u.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)playlist_init.o: lib/playlist/playlist_init.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)playlist_pls.o: lib/playlist/playlist_pls.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)playlist_xspf.o: lib/playlist/playlist_xspf.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)playlist_read.o: lib/playlist/playlist_read.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
+$(BUILDDIR)playlist.a: $(addprefix $(BUILDDIR),playlist_m3u.o playlist_init.o playlist_pls.o playlist_xspf.o playlist_read.o)
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
