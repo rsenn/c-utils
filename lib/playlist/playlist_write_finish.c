@@ -1,4 +1,7 @@
 #include "playlist.h"
+#include "byte.h"
+#include "fmt.h"
+#include <unistd.h>
 
 int
 playlist_write_finish(buffer* b, playlist* pl) {
@@ -7,8 +10,21 @@ playlist_write_finish(buffer* b, playlist* pl) {
       break;
     }
     case PLS: {
-      buffer_puts(b, "NumberOfEntries=");
-      buffer_putulong(b, pl->count);
+      char lenbuf[20];
+
+      byte_fill(lenbuf, sizeof(lenbuf), ' ');
+      lenbuf[fmt_ulong(lenbuf, pl->count)] = '\n';
+
+
+      buffer_flush(b); 
+
+      lseek(b->fd, pl->num_items_pos, 0);
+
+      buffer_put(b, lenbuf, sizeof(lenbuf));
+      buffer_flush(b);
+
+      lseek(b->fd, 0, SEEK_END);
+
       break;
     }
     case XSPF: {

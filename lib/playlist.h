@@ -37,6 +37,7 @@ typedef struct playlist {
   int (*reader)(struct playlist *);
   void *ptr;
   size_t count;
+  size_t num_items_pos;
 } playlist;
 
 void playlist_init(playlist *pl);

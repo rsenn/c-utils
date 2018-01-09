@@ -70,5 +70,6 @@ int main(int argc, char *argv[]) {
   playlist_read(&pls2);
   buffer_close(&inbuf);
 
+  playlist_write_finish(&outfile, &pls1);
   buffer_flush(&outfile);
 }

@@ -1,5 +1,7 @@
 #include "playlist.h"
 
+#include <unistd.h>
+
 int
 playlist_write_start(buffer* b, playlist* pl) {
   pl->count = 0;
@@ -10,7 +12,11 @@ playlist_write_start(buffer* b, playlist* pl) {
     }
     case PLS: {
       buffer_puts(b, "[playlist]\n");
-      buffer_puts(b, "NumberOfEntries=XXXXXXXXXXXXXXXXXXXX\n");
+      buffer_putsflush(b, "NumberOfEntries=");
+
+      pl->num_items_pos = lseek(b->fd, 0, SEEK_CUR);
+
+      buffer_puts(b, "XXXXXXXXXXXXXXXXXXXX\n");
       break;
     }
     case XSPF: {
