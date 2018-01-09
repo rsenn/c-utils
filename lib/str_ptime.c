@@ -35,7 +35,7 @@ char* str_ptime(const char* s,const char* format, struct tm* tm) {
     switch (*format) {
     case ' ': case '\t':
       /* match zero or more white space in input string */
-      while (isblank(*s)) ++s;
+      while (*s == ' ' || *s == '\t' || *s == '\r' || *s == '\n') ++s;
       ++format;
       break;
     case '%':

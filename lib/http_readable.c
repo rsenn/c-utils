@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <ctype.h>
 
+#define isspace(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n')
+
 ssize_t
 buffer_dummyread() {
   return 0;

@@ -24,7 +24,7 @@ strlist_dump(buffer* out, const strlist* sl)
     while(*s) {
       char chrs[64] = { '\\', *s, '\0' };
       char* p = &chrs[1];
-      if(!isprint(*p) || iscntrl(*p)) {
+      if(*p == '\n' || *p == '\r' || *p == '\0') {
         p[fmt_ulong(p, (unsigned long)(unsigned char)*p)] = '\0';
 
         --p;

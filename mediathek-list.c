@@ -605,9 +605,9 @@ int main(int argc, char *argv[]) {
 
 
   argv0 = argv[0];
-  
+
   if(argv0[str_rchr(argv0, '/')] != '\0')
     argv0 += str_rchr(argv0, '/') + 1;
-  
+
   return parse_mediathek_list(read_mediathek_list(mediathek_url));
 }

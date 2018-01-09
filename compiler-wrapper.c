@@ -25,6 +25,8 @@
 #include "buffer.h"
 #include "dir_internal.h"
 
+#define tolower(c) ((c)>='A'&&(c)<='Z'?(c)+0x20:(c))
+
 static char* argv0;
 static buffer* debug_buf, *err_buf;
 

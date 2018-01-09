@@ -144,7 +144,7 @@ get_domain(const char* url, stralloc* d) {
   stralloc_copyb(d, url, str_chr(url, '/'));
 }
 
-#define isdelim(c) (isspace(c)||c=='-'||c==';'||c==',')
+#define isdelim(c) (c==' '||c=='\t'||c=='\n' ||c=='-'||c==';'||c==',')
 
 void
 cleanup_text(char* t) {
@@ -365,25 +365,34 @@ int main(int argc, char* argv[]) {
   }
 
 
+  if(optind == argc) {
+    ++argc;
+    argv[optind] = "-";
+  }
+
   while(optind < argc) {
 
-          buffer_puts(buffer_2, "Processing '");
-    		buffer_puts(buffer_2, argv[optind]);
-    		buffer_puts(buffer_2, "' ... ");
-/*
-    		if(buffer_mmapread(&b, argv[optind])) {
-    		  buffer_puts(buffer_2, "failed");
-    		  buffer_putnlflush(buffer_2);
-    		  return 1;
-    		} else {
-    		  buffer_putnlflush(buffer_2);
-    		}
 
-    	  } else  */{
+    if(str_diff(argv[optind], "-")) {
+      buffer_puts(buffer_2, "Processing '");
+      buffer_puts(buffer_2, argv[optind]);
+      buffer_puts(buffer_2, "' ... ");
+
+      if(buffer_mmapread(&b, argv[optind])) {
+        buffer_puts(buffer_2, "failed");
+        buffer_putnlflush(buffer_2);
+        return 1;
+      } else {
+        buffer_putnlflush(buffer_2);
+      }
+    } else
+
+
+    {
       buffer_init(&b, read, STDIN_FILENO, inbuf, sizeof(inbuf));
-      process_input(&b);
 
     }
+    process_input(&b);
     ++optind;
 
   }
