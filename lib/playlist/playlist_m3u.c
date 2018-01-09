@@ -36,7 +36,7 @@ m3u_reader(playlist* pl) {
       stralloc_copys(&entry.title, &line.s[index]);
       stralloc_0(&entry.title);
       entry.title.len -= 1;
-      
+
     } else if(!str_diffn(line.s, "#EXTVLCOPT", 10)) {
 
     } else {
