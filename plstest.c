@@ -23,7 +23,7 @@ int main() {
     playlist_read(&pls1);
     buffer_close(&inbuf);
   */
-  buffer_mmapread(&inbuf, "/home/roman/Unsorted Files/ARTE.m3u");
+  buffer_mmapread(&inbuf, "/home/roman/startrek.m3u");
   playlist_m3u(&pls2, &inbuf);
   pls2.callback = playlist_process;
   playlist_read(&pls2);
