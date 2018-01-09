@@ -19,9 +19,9 @@ SOURCES = plstest.c \
   lib/buffer_putm_internal.c \
   lib/buffer_putnlflush.c \
   lib/buffer_putulong.c \
-  lib/playlist_init.c \
-  lib/playlist_m3u.c \
-  lib/playlist_read.c \
+  lib/playlist/playlist_init.c \
+  lib/playlist/playlist_m3u.c \
+  lib/playlist/playlist_read.c \
   lib/buffer_flush.c \
   lib/buffer_getline_sa.c \
   lib/buffer_munmap.c \
