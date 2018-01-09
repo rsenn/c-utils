@@ -1,7 +1,7 @@
 #include <buffer.h>
 #include <mmap.h>
 
-static ssize_t op() {
+/*static*/ ssize_t op() {
   return 0;
 }
 

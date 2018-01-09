@@ -43,11 +43,13 @@ ifneq ($(DIET),0)
 ifneq ($(DIET),1)
 ifneq ($(DIET),)
 CC := $(DIET) $(CC)
+PREFIX := $(patsubst %/bin/diet,%,$(DIET))
 USE_DIET := 1
 endif
 endif
 endif
 
+$(info PREFIX: $(PREFIX))
 $(info DIET: $(DIET))
 $(info USE_DIET: $(USE_DIET))
 

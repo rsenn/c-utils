@@ -33,8 +33,8 @@ static int debug;
 static strlist include, exclude;
 
 
-static ssize_t
-buffer_dummyread(int fd, char* b, size_t n) {
+//static
+ssize_t buffer_dummyread(int fd, char* b, size_t n) {
   (void)fd;
   (void)b;
   (void)n;

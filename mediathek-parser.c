@@ -16,8 +16,8 @@
 #include <unistd.h>
 
 static int lowq = 0, debug = 0;
-static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme.json"; //"D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
-static const char delimiters[] = "\"";
+//static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme.json"; //"D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
+//static const char delimiters[] = "\"";
 //static char  inbuf[16384];
 
 char *str_ptime(const char *s, const char *format, struct tm *tm);
@@ -58,15 +58,17 @@ int
 read_line(const char* s, size_t len, strlist* fields, array* x) {
   int64 pos = 0;
 
+  (void)fields;
+
   const char* end = s + len, *p = s;
-  int ret = 0, quoted = 0/*, escaped = 0*/;
+  int quoted = 0/*, escaped = 0*/;
   size_t n, i = 0;
   char tokbuf[65536];
 
   array_trunc(x);
   //array_allocate(&x, sizeof(char*), pos);
 
-  if((n = byte_chr(p, end - p, '\n')) != end - p)
+  if((n = byte_chr(p, end - p, '\n')) != (unsigned)(end - p))
     end = p + n;
 
   while(p < end && *p != '"')
@@ -202,7 +204,7 @@ process_entry(const array* a) {
     size_t d;
 
 
-    char* sender = av[1], *thema = av[2], *title = av[3], *date = av[4], *time = av[5], *duration = av[6], *grcoee = av[7], *description = av[8], *url = av[9], *website = av[10], *untertitel = av[11], *urlrtmp = av[12], *url_klein = av[13], *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17], *url_history = av[18], *geo = av[19], *neu = av[20];
+    char* sender = av[1], *thema = av[2], *title = av[3]/*, *date = av[4], *time = av[5]*/, *duration = av[6], /**grcoee = av[7],*/ *description = av[8], *url = av[9]/*, *website = av[10], *untertitel = av[11], *urlrtmp = av[12]*/, *url_klein = av[13]/*, *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17], *url_history = av[18], *geo = av[19], *neu = av[20]*/;
 
     /*    char* title = av[8];
         char* date = av[4];
