@@ -1,6 +1,8 @@
-#include "playlist.h"
-
+#define _LARGEFILE64_SOURCE     /* See feature_test_macros(7) */
+#include <sys/types.h>
 #include <unistd.h>
+
+#include "playlist.h"
 
 int
 playlist_write_start(buffer* b, playlist* pl) {
@@ -14,7 +16,7 @@ playlist_write_start(buffer* b, playlist* pl) {
       buffer_puts(b, "[playlist]\n");
       buffer_putsflush(b, "NumberOfEntries=");
 
-      pl->num_items_pos = lseek(b->fd, 0, SEEK_CUR);
+      pl->num_items_pos = lseek64(b->fd, 0, SEEK_CUR);
 
       buffer_puts(b, "XXXXXXXXXXXXXXXXXXXX\n");
       break;

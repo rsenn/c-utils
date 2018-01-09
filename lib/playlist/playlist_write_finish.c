@@ -1,7 +1,10 @@
+#define _LARGEFILE64_SOURCE     /* See feature_test_macros(7) */
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "playlist.h"
 #include "byte.h"
 #include "fmt.h"
-#include <unistd.h>
 
 int
 playlist_write_finish(buffer* b, playlist* pl) {
@@ -18,12 +21,12 @@ playlist_write_finish(buffer* b, playlist* pl) {
 
       buffer_flush(b); 
 
-      lseek(b->fd, pl->num_items_pos, 0);
+      lseek64(b->fd, pl->num_items_pos, 0);
 
       buffer_put(b, lenbuf, sizeof(lenbuf));
       buffer_flush(b);
 
-      lseek(b->fd, 0, SEEK_END);
+      lseek64(b->fd, 0, SEEK_END);
 
       break;
     }
