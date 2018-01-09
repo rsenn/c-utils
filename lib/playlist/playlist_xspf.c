@@ -25,7 +25,7 @@ xspf_process(playlist* pl) {
   if(nodeDepth <= 0) return;
 
   if(name == NULL)
-    name = (const char*)( BAD_CAST "--" );
+    name = (const char*)(BAD_CAST "--");
 
   value = (const char*) xmlTextReaderConstValue(reader);
 

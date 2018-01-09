@@ -613,8 +613,15 @@ $(BUILDDIR)playlist_xspf.o: lib/playlist/playlist_xspf.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)playlist_read.o: lib/playlist/playlist_read.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)playlist_write_start.o: lib/playlist/playlist_write_start.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)playlist_write_entry.o: lib/playlist/playlist_write_entry.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
-$(BUILDDIR)playlist.a: $(addprefix $(BUILDDIR),playlist_m3u.o playlist_init.o playlist_pls.o playlist_xspf.o playlist_read.o)
+$(BUILDDIR)playlist_write_finish.o: lib/playlist/playlist_write_finish.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
+$(BUILDDIR)playlist.a: $(addprefix $(BUILDDIR),playlist_m3u.o playlist_init.o playlist_pls.o playlist_xspf.o playlist_read.o playlist_write_start.o playlist_write_entry.o playlist_write_finish.o )
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c

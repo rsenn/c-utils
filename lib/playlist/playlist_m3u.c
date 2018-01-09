@@ -21,6 +21,7 @@ m3u_reader(playlist* pl) {
     while(line.len > 1 && (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == '\n'))
       line.len--;
     stralloc_0(&line);
+    line.len -= 1;
 
 
     if(!str_diffn(line.s, "#EXTM3U", 7)) {
@@ -34,12 +35,14 @@ m3u_reader(playlist* pl) {
       index++;
       stralloc_copys(&entry.title, &line.s[index]);
       stralloc_0(&entry.title);
-
+      entry.title.len -= 1;
+      
     } else if(!str_diffn(line.s, "#EXTVLCOPT", 10)) {
 
     } else {
       stralloc_copy(&entry.path, &line);
       stralloc_0(&entry.path);
+      entry.path.len -= 1;
 
       if(pl->callback) {
 

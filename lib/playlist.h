@@ -36,6 +36,7 @@ typedef struct playlist {
   playlist_callback_ptr callback;
   int (*reader)(struct playlist *);
   void *ptr;
+  size_t count;
 } playlist;
 
 void playlist_init(playlist *pl);
@@ -43,6 +44,13 @@ void playlist_xspf(playlist *pls, buffer *b);
 void playlist_m3u(playlist *pls, buffer *b);
 
 int playlist_read(playlist *pl);
+
+int
+playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) ;
+
+int
+playlist_write_start(buffer* b, playlist* pl);
+#define playlist_settype(pl,t)  { (pl)->type=(t); } 
 
 #ifdef __cplusplus
 }
