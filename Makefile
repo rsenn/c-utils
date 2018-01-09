@@ -462,9 +462,13 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
 LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
 
+ifeq ($(USE_DIET),1)
+STATIC := 1
+endif
+
 ifeq ($(STATIC),1)
 LIBXML2_LIBS += $(OTHERLIBS)
-LIBXML2_LIBS += -liconv
+LIBXML2_LIBS += -liconv -lpthread -lm
 endif
 
 $(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
