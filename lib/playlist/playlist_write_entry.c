@@ -41,6 +41,7 @@ playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {
     buffer_puts(b, "</duration></track>\n");
     break;
   }
+  case UNKNOWN:
   default: {
     return 0;
   }
