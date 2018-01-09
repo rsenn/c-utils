@@ -150,7 +150,7 @@ void
 cleanup_text(char* t) {
   int i;
   char c;
-  char prev='x';
+  char prev = 'x';
   stralloc out;
   stralloc_init(&out);
 
@@ -159,9 +159,9 @@ cleanup_text(char* t) {
     if(isdelim(c) && isdelim(prev))
       continue;
 
-    if(isdelim(c)) c=' ';
+    if(isdelim(c)) c = ' ';
     stralloc_append(&out, &c);
-    prev=c;
+    prev = c;
   }
   byte_copy(t, out.len, out.s);
   t[out.len] = '\0';
@@ -356,7 +356,7 @@ int main(int argc, char* argv[]) {
       debug++;
       break;
     case 'l':
-  lowq++;
+      lowq++;
       break;
     default: /* '?' */
       buffer_putm(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n");
@@ -366,27 +366,27 @@ int main(int argc, char* argv[]) {
 
 
   while(optind < argc) {
+
+          buffer_puts(buffer_2, "Processing '");
+    		buffer_puts(buffer_2, argv[optind]);
+    		buffer_puts(buffer_2, "' ... ");
 /*
-	  buffer_puts(buffer_2, "Opening '");
-		buffer_puts(buffer_2, argv[optind]);
-		buffer_puts(buffer_2, "' ... ");
+    		if(buffer_mmapread(&b, argv[optind])) {
+    		  buffer_puts(buffer_2, "failed");
+    		  buffer_putnlflush(buffer_2);
+    		  return 1;
+    		} else {
+    		  buffer_putnlflush(buffer_2);
+    		}
 
-		if(buffer_mmapread(&b, argv[optind])) {
-		  buffer_puts(buffer_2, "failed");
-		  buffer_putnlflush(buffer_2);
-		  return 1;
-		} else {
-		  buffer_putnlflush(buffer_2);
-		}
+    	  } else  */{
+      buffer_init(&b, read, STDIN_FILENO, inbuf, sizeof(inbuf));
+      process_input(&b);
 
-	  } else  */{
-		buffer_init(&b, read, STDIN_FILENO, inbuf, sizeof(inbuf));
-		  process_input(&b);
+    }
+    ++optind;
 
-	  }
-	  ++optind;
-
-	}
+  }
 
 
   return 0;

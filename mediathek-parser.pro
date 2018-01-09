@@ -71,6 +71,7 @@ SOURCES = \
  lib/buffer_putlong.c \
  lib/buffer_putnlflush.c \
  lib/buffer_puts.c \
+ lib/buffer_putm_internal.c \
  lib/buffer_putulong.c \
  lib/buffer_stubborn2.c \
  lib/buffer_stubborn.c \
