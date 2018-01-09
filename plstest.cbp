@@ -14,7 +14,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add option="`pkg-config --cflags libxml-2.0`" />
+                    <!-- <Add option="`pkg-config --cflags libxml-2.0`" /> //-->
 					<Add option="-DINLINE=inline" />
 					<Add option="-DUSE_READDIR=0" />
 					<Add option="-DUSE_WIDECHAR=0" />
@@ -42,13 +42,13 @@
 				<Option projectResourceIncludeDirsRelation="-1" />
 				<Option projectLibDirsRelation="-1" />
 				<Compiler>
-					<Add option="`pkg-config --cflags libxml-2.0`" />
+                  <!-- <Add option="`pkg-config --cflags libxml-2.0`" /> //-->
 					<Add directory="." />
 					<Add directory="lib" />
 					<Add directory='`pkg-config --cflags-only-I libxml-2.0|sed &quot;s|-I||g&quot;`' />
 				</Compiler>
 				<Linker>
-					<Add option="`pkg-config --libs libxml-2.0`" />
+                  <!-- 	<Add option="`pkg-config --libs libxml-2.0`" />//-->
 				</Linker>
 				<MakeCommands>
 					<Build command="" />
