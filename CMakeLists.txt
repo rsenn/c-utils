@@ -158,7 +158,7 @@ configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
 file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
-set(PROGRAMS eagle-init-brd count-depth decode-ls-lR httptest list-r mediathek-list mediathek-parser rdir-test reg2cmd regfilter torrent-progress)
+set(PROGRAMS compiler-wrapper count-depth decode-ls-lR httptest list-r mediathek-list mediathek-parser picc-wrapper picc18-wrapper plstest rdir-test reg2cmd regfilter sdcc-wrapper torrent-progress xc8-wrapper xmltest xmltest2 xmltest3)
 
 set(CXXPROGRAMS #kbd-adjacency
 #ls-R
