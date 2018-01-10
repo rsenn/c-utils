@@ -1,47 +1,60 @@
-/* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
-#ifndef TAI_H
-#define TAI_H
+#ifndef STRARRAY_H
+# define STRARRAY_H
 
-/* Times with 1 second precision */
+# include <sys/types.h>
 
-#include "uint64.h"
+# include "array.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+# ifdef __cplusplus
+extern "C"
+{
+# endif
 
-/* A struct tai value is an integer between 0 inclusive and 2^64
- * exclusive. The format of struct tai is designed to speed up common
- * operations; applications should not look inside struct tai.
- *
- * A struct tai variable is commonly used to store a TAI64 label. Each
- * TAI64 label refers to one second of real time. TAI64 labels span a
- * range of hundreds of billions of years.
- *
- * A struct tai variable may also be used to store the numerical
- * difference between two TAI64 labels.
- * See http://cr.yp.to/libtai/tai64.html */
+/* strarray is the internal data structure all functions are working on.
+ */
 
-typedef struct tai {
-  uint64 x;
-} tai64;
+  typedef struct strarray
+  {
+    array a;
+  } strarray;
 
+/* strarray_init will initialize a strarray. */
+  #define strarray_zero(l) array_trunc(&(l)->a, 0)
+  #define strarray_init(l) byte_zero(&(l)->a, sizeof(array))
+  #define strarray_free(l) array_free(&(l)->a)
 
-#define tai_unix(t,u) ((void) ((t)->x = 4611686018427387914ULL + (uint64) (u)))
+  #define strarray_count(l) array_length(&(l)->a, sizeof(char*))
 
-/* tai_now puts the current time into t. More precisely: tai_now puts
- * into t its best guess as to the TAI64 label for the 1-second interval
- * that contains the current time.
- *
- * This implementation of tai_now assumes that the time_t returned from
- * the time function represents the number of TAI seconds since
- * 1970-01-01 00:00:10 TAI. This matches the convention used by the
- * Olson tz library in ``right'' mode. */
-void tai_now(struct tai *);
+  #define strarray_at(l,pos) *array_get(&(l)->a, sizeof(char*), pos)
 
-/* tai_approx returns a double-precision approximation to t. The result
- * of tai_approx is always nonnegative. */
-#define tai_approx(t) ((double) ((t)->x))
+  void strarray_push(strarray* sa, char *str);
+  void strarray_pushd(strarray* sa, const char *str);
 
-/* tai_add adds a to b modulo 2^64 and puts the result into t. The
- * inputs and output may overla
+//    //int64 strarray_index_of (strarray * sl, const char *str);
+//
+//  int strarray_push (strarray * sl, const char *str);
+//  
+//  int strarray_pushm (strarray * sl, ...);
+//
+//  int strarray_pushb (strarray * sl, const char *s, size_t n);
+//
+//  int strarray_push_sa (strarray * sl, const stralloc * sa);
+//	
+//	int strarray_push_unique(strarray *sl, const char *s);
+//
+//  int strarray_cat (strarray * sl, const strarray* l);
+//  
+//  void strarray_dump (buffer * out, const strarray * sl);
+//
+//  char** strarray_to_argv(const strarray* sl);
+//
+//  int strarray_unshift(strarray * sl, const char *s);
+//  int strarray_shift(strarray * sl, const char** s);
+//
+//#define strarray_pushm(sa, ...) strarray_pushm_internal(sa, __VA_ARGS__, (char *)0)
+//int strarray_pushm_internal(strarray* sl, ...);
+
+# ifdef __cplusplus
+}
+# endif
+#endif /* defined(STRARRAY_H) */
