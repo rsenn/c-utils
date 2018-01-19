@@ -232,7 +232,7 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   endif()
 endif()
 
-set(COMMON_LIBS array stralloc buffer open mmap fmt scan str byte)
+set(COMMON_LIBS strlist array stralloc buffer open mmap fmt scan str byte)
 
 foreach(PROGRAM ${PROGRAMS})
   add_executable(${PROGRAM} ${PROGRAM}.c)
@@ -241,6 +241,7 @@ foreach(PROGRAM ${PROGRAMS})
   install(TARGETS ${PROGRAM} DESTINATION bin) 
 endforeach(PROGRAM)
 
+target_link_libraries(list-r dir ${COMMON_LIBS})
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
   string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}")
