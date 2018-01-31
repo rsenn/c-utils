@@ -55,148 +55,53 @@
 			<Add option="-w" />
 			<Add option="`pkg-config --cflags libxml-2.0`" />
 		</Compiler>
-		<Unit filename="lib/buffer_2.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_close.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_feed.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_flush.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_get_token_sa.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_getc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_getline_sa.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_init.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_mmapread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_munmap.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_put.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putflush.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putm_internal.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putnlflush.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_puts.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putsa.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putulong.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_stubborn.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_stubborn2.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_chr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_copy.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_fill.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_zero.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/fmt_ulong.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/mmap_read.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/open_read.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/open_trunc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/playlist.h">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/playlist/playlist_init.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/playlist/playlist_m3u.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/playlist/playlist_read.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/playlist/playlist_write_entry.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/playlist/playlist_write_finish.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/playlist/playlist_write_finish.c.orig" />
-		<Unit filename="lib/playlist/playlist_write_start.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/scan_ulong.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/scan_ulongn.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_diff.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_diffn.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_len.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_append.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_copy.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_copyb.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_copys.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_init.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_ready.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_readyplus.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="plstest.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="lib/buffer_2.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_close.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_feed.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_flush.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_get_token_sa.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_getc.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_getline_sa.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_init.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_mmapread.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_munmap.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_put.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_putflush.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_putm_internal.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_putnlflush.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_puts.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_putsa.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_putulong.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_stubborn.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/buffer_stubborn2.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/byte_chr.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/byte_copy.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/byte_fill.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/byte_zero.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/fmt_ulong.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/mmap_read.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/open_read.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/open_trunc.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/playlist.h"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/playlist/playlist_init.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/playlist/playlist_m3u.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/playlist/playlist_read.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/playlist/playlist_write_entry.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/playlist/playlist_write_finish.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/playlist/playlist_write_finish.c.orig" /><Unit filename="lib/playlist/playlist_write_start.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/scan_ulong.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/scan_ulongn.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/str_diff.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/str_diffn.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/str_len.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/stralloc_append.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/stralloc_copy.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/stralloc_copyb.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/stralloc_copys.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/stralloc_init.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/stralloc_ready.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="lib/stralloc_readyplus.c"><Option compilerVar="CC" /></Unit>
+		<Unit filename="plstest.c"><Option compilerVar="CC" /></Unit>
 		<Extensions>
 			<envvars />
 			<code_completion />
