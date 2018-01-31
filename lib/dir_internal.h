@@ -7,6 +7,12 @@
 
 #ifdef _MSC_VER
 #include <crtdefs.h>
+#endif // _MSC_VER
+
+#ifndef USE_READDIR
+#ifdef __unix__
+#define USE_READDIR 1
+#endif
 #endif
 
 #if USE_READDIR
@@ -42,7 +48,7 @@ struct dir_internal_s {
   char* tmpname;
 #else
   WIN32_FIND_DATAA dir_finddata;
-#endif 
+#endif
   int first;
 #endif
 

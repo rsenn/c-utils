@@ -5,13 +5,13 @@
 		<Option title="mediathek-parser" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Lib\;" />
+		<Option virtualFolders="Lib/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/mediathek-parser" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-				<Option compiler="mingw32" />
+				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DINLINE=inline" />
@@ -25,15 +25,15 @@
 					<Add directory="lib" />
 				</Compiler>
 				<Linker>
-					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
 				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/mediathek-parser" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
-				<Option compiler="mingw32" />
+				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
@@ -50,8 +50,8 @@
 					<Add directory="lib" />
 				</Compiler>
 				<Linker>
-					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
 				</Linker>
 			</Target>
 		</Build>
