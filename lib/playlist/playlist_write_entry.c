@@ -8,7 +8,7 @@ playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {
     buffer_puts(b, "#EXTINF:");
     buffer_putulong(b, e->length);
     buffer_puts(b, ",");
-    buffer_putsa(b, &e->title);
+    buffer_putsa(b, e->title.len ? &e->title : &e->path);
     buffer_puts(b, "\n");
     buffer_putsa(b, &e->path);
     buffer_puts(b, "\n");
@@ -32,11 +32,11 @@ playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {
   }
   case XSPF: {
 
-    buffer_puts(b, "<track>\n<location>");
+    buffer_puts(b, "    <track>\n      <location>");
     buffer_putsa(b, &e->path);
-    buffer_puts(b, "</location>\n<title>");
+    buffer_puts(b, "</location>\n      <title>");
     buffer_putsa(b, &e->title);
-    buffer_puts(b, "</title>\n<duration>");
+    buffer_puts(b, "</title>\n         <duration>");
     buffer_putulong(b, e->length);
     buffer_puts(b, "</duration></track>\n");
     break;

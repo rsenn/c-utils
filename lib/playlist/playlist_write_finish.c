@@ -31,7 +31,7 @@ playlist_write_finish(buffer* b, playlist* pl) {
       break;
     }
     case XSPF: {
-      buffer_puts(b, "\n</trackList>\n</playlist>\n");
+      buffer_puts(b, "\n  </trackList>\n</playlist>\n");
       break;
     }
     case UNKNOWN: 

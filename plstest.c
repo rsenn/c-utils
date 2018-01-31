@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 
   playlist_write_start(&outfile, &pls1);
 
-  buffer_mmapread(&inbuf, "/home/roman/startrek.m3u");
+  buffer_mmapread(&inbuf, "/home/roman/nectarine.m3u");
   playlist_m3u(&pls2, &inbuf);
   pls2.callback = playlist_process;
   playlist_read(&pls2);
