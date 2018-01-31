@@ -53,6 +53,7 @@
     </Build>
     <Compiler>
       <Add option="-w" />
+      <Add option="`pkg-config --cflags libxml-2.0`" />
     </Compiler>
 
     <Unit filename="xmltest2.c"><Option compilerVar="CC" /></Unit>

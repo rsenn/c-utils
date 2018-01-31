@@ -53,6 +53,7 @@
     </Build>
     <Compiler>
       <Add option="-w" />
+      <Add option="`pkg-config --cflags libxml-2.0`" />
     </Compiler>
 
     <Unit filename="opensearch-dump.c"><Option compilerVar="CC" /></Unit>
