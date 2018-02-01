@@ -39,6 +39,7 @@ playlist_write_finish(buffer* b, playlist* pl) {
                return 0;
     }
   }
+  buffer_flush(b);
   return 1;
 }
 

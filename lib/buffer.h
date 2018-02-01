@@ -45,6 +45,7 @@ void buffer_init_free(buffer* b,ssize_t (*op)(),int fd,char* y,size_t ylen);
 void buffer_free(void* buf);
 void buffer_munmap(void* buf);
 int buffer_mmapread(buffer* b,const char* filename);
+int buffer_mmapread_fd(buffer *b, int fd);
 void buffer_close(buffer* b);
 
 int buffer_flush(buffer* b);
