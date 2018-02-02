@@ -160,7 +160,7 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS compiler-wrapper count-depth decode-ls-lR eagle-init-brd httptest list-r mediathek-list mediathek-parser opensearch-dump
   #picc-wrapper picc18-wrapper xc8-wrapper sdcc-wrapper 
-  plstest rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3)
+  plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3)
 
 set(CXXPROGRAMS #kbd-adjacency
 #ls-R
@@ -248,7 +248,7 @@ target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
   
 target_link_libraries(eagle-init-brd ${LIBXML2_LIBRARIES} m)
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
-target_link_libraries(plstest ${LIBXML2_LIBRARIES})
+target_link_libraries(plsconv ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest2 ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest3 ${LIBXML2_LIBRARIES})

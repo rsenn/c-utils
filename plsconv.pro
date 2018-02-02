@@ -6,12 +6,12 @@ CONFIG -= qt
 CONFIG += link_pkgconfig
 PKGCONFIG += libxml-2.0
 
-TARGET = plstest
+TARGET = plsconv
 
 INCLUDEPATH += . $$PWD/lib
 
 HEADERS = lib/playlist.h
-SOURCES = plstest.c \
+SOURCES = plsconv.c \
   lib/buffer_2.c \
   lib/buffer_close.c \
   lib/buffer_mmapread.c \
