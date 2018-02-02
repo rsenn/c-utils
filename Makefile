@@ -49,6 +49,10 @@ endif
 endif
 endif
 
+ifneq ($(CROSS_COMPILE),$(subst diet,,$(CROSS_COMPILE)))
+USE_DIET := 1
+endif
+
 $(info PREFIX: $(PREFIX))
 $(info DIET: $(DIET))
 $(info USE_DIET: $(USE_DIET))
@@ -390,9 +394,16 @@ endif
 CFLAGS += $(CFLAGS_$(BUILD_TYPE))
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 
+ifeq ($(USE_DIET),1)
+STATIC := 1
+endif
+
 ifneq ($(STATIC),1)
 STATIC := 0
 endif
+
+$(info DIET: $(DIET))
+$(info STATIC: $(STATIC))
 
 ifeq ($(HOST),)
 HOST := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
