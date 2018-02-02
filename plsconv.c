@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
   int opt;
 
-  void (*playlist_fn)(playlist*,buffer*);
+  playlist_type_fn* playlist_fn;
   playlist_type intype = M3U, outtype = XSPF;
 
   while((opt = getopt(argc, argv, "t:")) != -1) {
@@ -62,12 +62,12 @@ int main(int argc, char *argv[]) {
 
   size_t i = str_rchr(in_file, '.');
   
-  if(!str_diff(&in_file[i], ".m3u"))
-    playlist_fn = &playlist_m3u /*, intype = M3U*/;
-  //else if(!str_diff(&in_file[i], ".pls"))
-  //  playlist_fn = &playlist_pls /*, intype = PLS*/;
-  else if(!str_diff(&in_file[i], ".xspf"))
+  /*if(!str_diff(&in_file[i], ".pls"))
+    playlist_fn = &playlist_pls;
+  else */if(!str_diff(&in_file[i], ".xspf"))
     playlist_fn = &playlist_xspf /*, intype = XSPF*/;
+  else
+    playlist_fn = &playlist_m3u;
 
   playlist_init(&pls1);
   playlist_init(&pls2);

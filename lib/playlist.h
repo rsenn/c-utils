@@ -40,7 +40,10 @@ typedef struct playlist {
   size_t num_items_pos;
 } playlist;
 
+typedef void playlist_type_fn(playlist *, buffer *);
+
 void playlist_init(playlist *pl);
+
 void playlist_xspf(playlist *pls, buffer *b);
 void playlist_m3u(playlist *pls, buffer *b);
 

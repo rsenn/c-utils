@@ -32,8 +32,13 @@ playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {
       break;
     }
     case XSPF: {
-
+      size_t i = byte_chr(e->path.s, e->path.len, ':');
+      
       buffer_puts(b, "    <track>\n      <location>");
+      
+      if(str_diffn(&e->path.s[i], "://", 3))
+        buffer_puts(b, "file://");
+
       buffer_putsa(b, &e->path);
       buffer_puts(b, "</location>\n      <title>");
       buffer_putsa(b, title);
