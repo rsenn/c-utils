@@ -1,62 +1,79 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <CodeBlocks_project_file>
-	<FileVersion major="1" minor="6" />
-	<Project>
-		<Option title="xmltest2" />
-		<Option pch_mode="2" />
-		<Option compiler="gcc" />
-		<Option virtualFolders="Lib/;" />
-		<Build>
-			<Target title="Debug"><Option output="bin/Debug/xmltest2" prefix_auto="1" extension_auto="1" /><Option object_output="obj/Debug/" /><Option type="1" /><Option compiler="gcc" /><Compiler>
-          <Add option="-Wextra"/><Add option="-Wall"/><Add option="-g"/><Add option="-ggdb -O0"/><Add option="-DINLINE=inline"/><Add option="-DUSE_WIDECHAR=0"/><Add option="-D_FILE_OFFSET_BITS=64"/><Add option="-D_LARGEFILE_SOURCE=1"/><Add option="-D_GNU_SOURCE=1"/><Add option="-DDEBUG"/>
-          <Add option="-g" />
-					<Add option="-DINLINE=inline" />
-					<Add option="-DUSE_WIDECHAR=0" />
-					<Add option="-D_FILE_OFFSET_BITS=64" />
-					<Add option="-D_LARGEFILE_SOURCE=1" />
-					<Add option="-D_GNU_SOURCE=1" />
-					<Add option="-DNDEBUG=1" />
-					<Add directory="." />
-					<Add directory="lib" />
-				</Compiler>
-				<Linker>
-					<Add option="-static-libstdc++" />
-					<Add option="-static-libgcc" />
-					<Add library="xml2" />
-				</Linker>
-			</Target>
-			<Target title="Release"><Option output="bin/Release/xmltest2" prefix_auto="1" extension_auto="1" /><Option object_output="obj/Release/" /><Option type="1" /><Option compiler="gcc" /><Compiler>
-          <Add option="-fomit-frame-pointer"/><Add option="-fexpensive-optimizations"/><Add option="-Os"/><Add option="-w"/><Add option="-ffast-math"/><Add option="-DINLINE=inline"/><Add option="-DUSE_WIDECHAR=0"/><Add option="-D_FILE_OFFSET_BITS=64"/><Add option="-D_LARGEFILE_SOURCE=1"/><Add option="-D_GNU_SOURCE=1"/><Add option="-DNDEBUG=1"/>
-          <Add option="-O2" />
-					<Add option="-DINLINE=inline" />
-					<Add option="-DUSE_WIDECHAR=0" />
-					<Add option="-D_FILE_OFFSET_BITS=64" />
-					<Add option="-D_LARGEFILE_SOURCE=1" />
-					<Add option="-D_GNU_SOURCE=1" />
-					<Add option="-DNDEBUG=1" />
-					<Add directory="." />
-					<Add directory="lib" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add option="-static-libstdc++" />
-					<Add option="-static-libgcc" />
-					<Add library="xml2" />
-				</Linker>
-			</Target>
-		</Build>
-		<Compiler>
-			<Add option="-w" />
-			<Add option="`pkg-config --cflags libxml-2.0`" />
-		</Compiler>
-		<Unit filename="xmltest2.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Extensions>
-			<envvars />
-			<code_completion />
-			<lib_finder disable_auto="1" />
-			<debugger />
-		</Extensions>
-	</Project>
+  <FileVersion major="1" minor="6"/>
+  <Project>
+    <Option title="xmltest2"/>
+    <Option pch_mode="2"/>
+    <Option compiler="gcc"/>
+    <Option virtualFolders="Lib/;"/>
+    <Build>
+      <Target title="Debug">
+        <Option output="bin/Debug/xmltest2" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Debug/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-Wextra"/>
+          <Add option="-Wall"/>
+          <Add option="-g"/>
+          <Add option="-ggdb -O0"/>
+          <Add option="-DINLINE=inline"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-D_FILE_OFFSET_BITS=64"/>
+          <Add option="-D_LARGEFILE_SOURCE=1"/>
+          <Add option="-D_GNU_SOURCE=1"/>
+          <Add option="-DDEBUG"/>
+          <Add option="-g"/>
+          <Add directory="."/>
+          <Add directory="lib"/>
+        </Compiler>
+        <Linker>
+          <Add option="-static-libstdc++"/>
+          <Add option="-static-libgcc"/>
+          <Add library="xml2"/>
+        </Linker>
+      </Target>
+      <Target title="Release">
+        <Option output="bin/Release/xmltest2" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Release/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-fomit-frame-pointer"/>
+          <Add option="-fexpensive-optimizations"/>
+          <Add option="-Os"/>
+          <Add option="-w"/>
+          <Add option="-ffast-math"/>
+          <Add option="-DINLINE=inline"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-D_FILE_OFFSET_BITS=64"/>
+          <Add option="-D_LARGEFILE_SOURCE=1"/>
+          <Add option="-D_GNU_SOURCE=1"/>
+          <Add option="-DNDEBUG=1"/>
+          <Add option="-O2"/>
+          <Add directory="."/>
+          <Add directory="lib"/>
+        </Compiler>
+        <Linker>
+          <Add option="-s"/>
+          <Add option="-static-libstdc++"/>
+          <Add option="-static-libgcc"/>
+          <Add library="xml2"/>
+        </Linker>
+      </Target>
+    </Build>
+    <Compiler>
+      <Add option="-w"/>
+      <Add option="`pkg-config --cflags libxml-2.0`"/>
+    </Compiler>
+    <Unit filename="xmltest2.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Extensions>
+      <envvars/>
+      <code_completion/>
+      <lib_finder disable_auto="1"/>
+      <debugger/>
+    </Extensions>
+  </Project>
 </CodeBlocks_project_file>
