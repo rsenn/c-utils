@@ -4,6 +4,7 @@
 #include "byte.h"
 #include "str.h"
 #include <unistd.h>
+#include <libgen.h>
 
 playlist pls1, pls2;
 static buffer outfile;
@@ -14,6 +15,7 @@ static  buffer inbuf;
 
 static void
 playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 length) {
+  (void)pl;
   /*  buffer_putm(buffer_2, "Title: ", title->s, "\n", NULL);
     buffer_putm(buffer_2, "Location: ", location->s, "\n", NULL);
     buffer_puts(buffer_2, "Duration: ");
@@ -49,7 +51,9 @@ main(int argc, char *argv[]) {
 
   const char *out_file = NULL, *in_type = NULL;
   playlist_type_fn* playlist_fn;
-  playlist_type intype = M3U, outtype = XSPF;
+  /*playlist_type intype = M3U*/
+   playlist_type outtype = XSPF;
+
   int out_fd = STDOUT_FILENO;
 
   while((opt = getopt(argc, argv, "o:f:t:h")) != -1) {
