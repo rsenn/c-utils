@@ -7,47 +7,41 @@
     <Option compiler="gcc"/>
     <Option virtualFolders="Lib/;"/>
     <Build>
-      <Target title="Debug">
-        <Option output="bin/Debug/xc8-wrapper" prefix_auto="1" extension_auto="1"/>
-        <Option object_output="obj/Debug/"/>
-        <Option type="1"/>
-        <Option compiler="gcc"/>
-        <Compiler>
-          <Add option="-g"/>
-          <Add option="-DINLINE=inline"/>
-          <Add option="-DUSE_WIDECHAR=0"/>
-          <Add option="-D_FILE_OFFSET_BITS=64"/>
-          <Add option="-D_LARGEFILE_SOURCE=1"/>
-          <Add option="-D_GNU_SOURCE=1"/>
-          <Add option="-DNDEBUG=1"/>
+      <Target title="Debug"><Option output="bin/Debug/xc8-wrapper" prefix_auto="1" extension_auto="1"/><Option object_output="obj/Debug/"/><Option type="1"/><Option compiler="gcc"/><Compiler>
+          <Add option="-Wextra"/><Add option="-Wall"/><Add option="-g"/><Add option="-ggdb -O0"/><Add option="-DINLINE=inline"/><Add option="-DUSE_WIDECHAR=0"/><Add option="-D_FILE_OFFSET_BITS=64"/><Add option="-D_LARGEFILE_SOURCE=1"/><Add option="-D_GNU_SOURCE=1"/><Add option="-DDEBUG"/>
+<!--           
+          <Add option="-g"/> //-->
+<!--           <Add option="-DINLINE=inline"/> //-->
+<!--           <Add option="-DUSE_WIDECHAR=0"/> //-->
+<!--           <Add option="-D_FILE_OFFSET_BITS=64"/> //-->
+<!--           <Add option="-D_LARGEFILE_SOURCE=1"/> //-->
+<!--           <Add option="-D_GNU_SOURCE=1"/> //-->
+<!--           <Add option="-DNDEBUG=1"/> //-->
           <Add directory="."/>
           <Add directory="lib"/>
         </Compiler>
         <Linker>
-          <Add option="-static-libstdc++"/>
-          <Add option="-static-libgcc"/>
+<!--           <Add option="-static-libstdc++"/> //-->
+<!--           <Add option="-static-libgcc"/> //-->
         </Linker>
       </Target>
-      <Target title="Release">
-        <Option output="bin/Release/xc8-wrapper" prefix_auto="1" extension_auto="1"/>
-        <Option object_output="obj/Release/"/>
-        <Option type="1"/>
-        <Option compiler="gcc"/>
-        <Compiler>
-          <Add option="-O2"/>
-          <Add option="-DINLINE=inline"/>
-          <Add option="-DUSE_WIDECHAR=0"/>
-          <Add option="-D_FILE_OFFSET_BITS=64"/>
-          <Add option="-D_LARGEFILE_SOURCE=1"/>
-          <Add option="-D_GNU_SOURCE=1"/>
-          <Add option="-DNDEBUG=1"/>
+      <Target title="Release"><Option output="bin/Release/xc8-wrapper" prefix_auto="1" extension_auto="1"/><Option object_output="obj/Release/"/><Option type="1"/><Option compiler="gcc"/><Compiler>
+          <Add option="-fomit-frame-pointer"/><Add option="-fexpensive-optimizations"/><Add option="-Os"/><Add option="-w"/><Add option="-ffast-math"/><Add option="-DINLINE=inline"/><Add option="-DUSE_WIDECHAR=0"/><Add option="-D_FILE_OFFSET_BITS=64"/><Add option="-D_LARGEFILE_SOURCE=1"/><Add option="-D_GNU_SOURCE=1"/><Add option="-DNDEBUG=1"/>
+<!--           
+          <Add option="-O2"/> //-->
+<!--           <Add option="-DINLINE=inline"/> //-->
+<!--           <Add option="-DUSE_WIDECHAR=0"/> //-->
+<!--           <Add option="-D_FILE_OFFSET_BITS=64"/> //-->
+<!--           <Add option="-D_LARGEFILE_SOURCE=1"/> //-->
+<!--           <Add option="-D_GNU_SOURCE=1"/> //-->
+<!--           <Add option="-DNDEBUG=1"/> //-->
           <Add directory="."/>
           <Add directory="lib"/>
         </Compiler>
         <Linker>
-          <Add option="-s"/>
-          <Add option="-static-libstdc++"/>
-          <Add option="-static-libgcc"/>
+<!--           <Add option="-s"/> //-->
+<!--           <Add option="-static-libstdc++"/> //-->
+<!--           <Add option="-static-libgcc"/> //-->
         </Linker>
       </Target>
     </Build>
