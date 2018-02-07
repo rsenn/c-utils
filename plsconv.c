@@ -14,13 +14,13 @@ static  buffer inbuf;
 
 static void
 playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 length) {
-/*  buffer_putm(buffer_2, "Title: ", title->s, "\n", NULL);
-  buffer_putm(buffer_2, "Location: ", location->s, "\n", NULL);
-  buffer_puts(buffer_2, "Duration: ");
-  buffer_putulong(buffer_2, length);
-  buffer_putnlflush(buffer_2);
+  /*  buffer_putm(buffer_2, "Title: ", title->s, "\n", NULL);
+    buffer_putm(buffer_2, "Location: ", location->s, "\n", NULL);
+    buffer_puts(buffer_2, "Duration: ");
+    buffer_putulong(buffer_2, length);
+    buffer_putnlflush(buffer_2);
 
-*/
+  */
 
   playlist_entry e;
 
@@ -31,7 +31,19 @@ playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 lengt
   playlist_write_entry(&outfile, &pls1, &e);
 }
 
-int main(int argc, char *argv[]) {
+void
+usage(const char* argv0) {
+  buffer_putm(buffer_1, "Usage: ", argv0, " [-f type] [-t type] [-o output] [input or stdin]\n\n",
+              "  -f type  Input type\n"
+              "  -t type  Output type\n"
+              "\n"
+              "Supported types are: m3u pls xspf\n");
+  buffer_flush(buffer_1);
+  exit(0);
+}
+
+int
+main(int argc, char *argv[]) {
 
   int opt;
 
@@ -40,7 +52,7 @@ int main(int argc, char *argv[]) {
   playlist_type intype = M3U, outtype = XSPF;
   int out_fd = STDOUT_FILENO;
 
-  while((opt = getopt(argc, argv, "o:f:t:")) != -1) {
+  while((opt = getopt(argc, argv, "o:f:t:h")) != -1) {
     switch(opt) {
     case 'o':
       out_file = optarg;
@@ -53,6 +65,9 @@ int main(int argc, char *argv[]) {
       else if(!str_diff(optarg, "m3u")) outtype = M3U;
       else if(!str_diff(optarg, "xspf"))  outtype = XSPF;
       break;
+    case 'h':
+      usage(basename(argv[0]));
+      exit(EXIT_SUCCESS);
     default: /* '?' */
       buffer_putm(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n");
       exit(EXIT_FAILURE);
@@ -60,7 +75,7 @@ int main(int argc, char *argv[]) {
   }
 
   const char* in_file = argc > optind ? argv[optind] : "-";
-  int in_fd; 
+  int in_fd;
 
   if(!str_diff(in_file, "-")) {
     in_fd = STDIN_FILENO;
@@ -75,7 +90,7 @@ int main(int argc, char *argv[]) {
     in_type = &in_file[i];
     if(*in_type == '.') ++in_type;
   }
-  
+
   /*if(!str_diff(&in_file[i], ".pls"))
     playlist_fn = &playlist_pls;
   else */if(!str_diff(in_type, "xspf"))
@@ -97,15 +112,15 @@ int main(int argc, char *argv[]) {
 
 
   if(out_file != NULL) {
-     out_fd = open_trunc(out_file);
-     if(out_fd == -1) {
+    out_fd = open_trunc(out_file);
+    if(out_fd == -1) {
       buffer_putm(buffer_2, "Error writing: ", out_file ? out_file : "(null)", "\n");
       buffer_flush(buffer_2);
       exit(1);
-     }
+    }
   }
 
- //buffer_init(&outfile, write, open_trunc("playlist.out"), outbuf, sizeof(outbuf));
+//buffer_init(&outfile, write, open_trunc("playlist.out"), outbuf, sizeof(outbuf));
   buffer_init(&outfile, write, out_fd, outbuf, sizeof(outbuf));
 // outfile.deinit  = &buffer_close;
 
