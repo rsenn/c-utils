@@ -91,9 +91,9 @@ main(int argc, char *argv[]) {
     if(*in_type == '.') ++in_type;
   }
 
-  /*if(!str_diff(&in_file[i], ".pls"))
+  if(!str_diff(in_type, ".pls"))
     playlist_fn = &playlist_pls;
-  else */if(!str_diff(in_type, "xspf"))
+  else if(!str_diff(in_type, "xspf"))
     playlist_fn = &playlist_xspf /*, intype = XSPF*/;
   else
     playlist_fn = &playlist_m3u;

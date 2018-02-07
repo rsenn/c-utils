@@ -46,6 +46,7 @@ void playlist_init(playlist *pl);
 
 void playlist_xspf(playlist *pls, buffer *b);
 void playlist_m3u(playlist *pls, buffer *b);
+void playlist_pls(playlist *pls, buffer *b);
 
 int playlist_read(playlist *pl);
 

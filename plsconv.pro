@@ -66,7 +66,10 @@ SOURCES = \
   lib/str_rchr.c \
   plsconv.c \
     lib/buffer_read_fd.c \
-    lib/buffer_free.c
+    lib/buffer_free.c \
+    lib/playlist/playlist_pls.c \
+    lib/buffer_1.c \
+    lib/str_chr.c
 
 
 include(deployment.pri)
