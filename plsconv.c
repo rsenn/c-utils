@@ -62,7 +62,10 @@ int main(int argc, char *argv[]) {
   const char* in_file = argv[optind];
   int in_fd; 
 
-  if(in_file == NULL || (in_fd = open_read(in_file)) == -1) {
+  if(!str_diff(in_file, "-")) {
+    in_fd = STDIN_FILENO;
+
+  } else if(in_file == NULL || (in_fd = open_read(in_file)) == -1) {
     buffer_putm(buffer_2, "No such file: ", in_file ? in_file : "(null)", "\n");
     buffer_flush(buffer_2);
     exit(1);
@@ -110,7 +113,8 @@ int main(int argc, char *argv[]) {
   playlist_write_start(&outfile, &pls1);
 
   //buffer_mmapread(&inbuf, "/home/roman/nectarine.m3u");
-  buffer_mmapread_fd(&inbuf, in_fd);
+
+  buffer_read_fd(&inbuf, in_fd);
 
   playlist_fn(&pls2, &inbuf);
 
