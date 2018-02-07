@@ -1,4 +1,6 @@
 #include "playlist.h"
+#include "str.h"
+#include "byte.h"
 
 int
 playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {
