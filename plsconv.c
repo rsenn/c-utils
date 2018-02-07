@@ -59,12 +59,11 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  const char* in_file = argv[optind];
+  const char* in_file = argc > optind ? argv[optind] : "-";
   int in_fd; 
 
   if(!str_diff(in_file, "-")) {
     in_fd = STDIN_FILENO;
-
   } else if(in_file == NULL || (in_fd = open_read(in_file)) == -1) {
     buffer_putm(buffer_2, "No such file: ", in_file ? in_file : "(null)", "\n");
     buffer_flush(buffer_2);
