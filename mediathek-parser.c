@@ -352,7 +352,7 @@ int main(int argc, char* argv[]) {
   char inbuf[8192];
   buffer b;
 
-  while((opt = getopt(argc, argv, "dt:i:x:")) != -1) {
+  while((opt = getopt(argc, argv, "dt:i:x:l")) != -1) {
     switch(opt) {
     case 'd':
       debug++;
