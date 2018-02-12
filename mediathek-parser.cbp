@@ -1,230 +1,256 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <CodeBlocks_project_file>
-	<FileVersion major="1" minor="6" />
-	<Project>
-		<Option title="mediathek-parser" />
-		<Option pch_mode="2" />
-		<Option compiler="gcc" />
-		<Option virtualFolders="Lib\;" />
-		<Build>
-			<Target title="Debug">
-				<Option output="bin/Debug/mediathek-parser" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
-				<Option type="1" />
-				<Option compiler="mingw32" />
-				<Compiler>
-					<Add option="-g" />
-					<Add option="-DINLINE=inline" />
-					<Add option="-DUSE_READDIR=0" />
-					<Add option="-DUSE_WIDECHAR=0" />
-					<Add option="-D_FILE_OFFSET_BITS=64" />
-					<Add option="-D_LARGEFILE_SOURCE=1" />
-					<Add option="-D_GNU_SOURCE=1" />
-					<Add option="-DNDEBUG=1" />
-					<Add directory="." />
-					<Add directory="lib" />
-				</Compiler>
-				<Linker>
-					<Add option="-static-libgcc" />
-					<Add option="-static-libstdc++" />
-				</Linker>
-			</Target>
-			<Target title="Release">
-				<Option output="bin/Release/mediathek-parser" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
-				<Option type="1" />
-				<Option compiler="mingw32" />
-				<Compiler>
-					<Add option="-fomit-frame-pointer" />
-					<Add option="-fexpensive-optimizations" />
-					<Add option="-Os" />
-					<Add option="-w" />
-					<Add option="-DINLINE=inline" />
-					<Add option="-DUSE_READDIR=0" />
-					<Add option="-DUSE_WIDECHAR=0" />
-					<Add option="-D_FILE_OFFSET_BITS=64" />
-					<Add option="-D_LARGEFILE_SOURCE=1" />
-					<Add option="-D_GNU_SOURCE=1" />
-					<Add option="-DNDEBUG=1" />
-					<Add directory="." />
-					<Add directory="lib" />
-				</Compiler>
-				<Linker>
-					<Add option="-static-libgcc" />
-					<Add option="-static-libstdc++" />
-				</Linker>
-			</Target>
-		</Build>
-		<Compiler>
-			<Add option="-w" />
-		</Compiler>
-		<Unit filename="lib/array_allocate.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/array_length.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/array_start.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/array_trunc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_1.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_2.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_close.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_feed.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_flush.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_get_token_sa.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_getc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_getline_sa.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_init.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_mmapread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_munmap.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_put.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putflush.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putlong.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putm_internal.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putm_internal_flush.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putnlflush.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_puts.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_putulong.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_stubborn.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/buffer_stubborn2.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_chr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_copy.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_rchr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/byte_zero.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/fmt_long.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/fmt_ulong.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/isleap.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/mmap_read.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/open_read.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_chr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_diff.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_dup.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_len.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/str_ptime.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_append.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_catb.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_catc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_cats.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_copyb.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_copys.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_free.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_init.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_nul.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_ready.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_readyplus.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/stralloc_zero.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/time_table_spd.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/umult64.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="mediathek-parser.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Extensions>
-			<envvars />
-			<code_completion />
-			<lib_finder disable_auto="1" />
-			<debugger />
-		</Extensions>
-	</Project>
+  <FileVersion major="1" minor="6"/>
+  <Project>
+    <Option title="mediathek-parser"/>
+    <Option pch_mode="2"/>
+    <Option compiler="gcc"/>
+    <Option virtualFolders="Lib/;"/>
+    <Build>
+      <Target title="Debug">
+        <Option output="bin/Debug/mediathek-parser" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Debug/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-Wextra"/>
+          <Add option="-Wall"/>
+          <Add option="-g"/>
+          <Add option="-ggdb -O0"/>
+          <Add option="-DINLINE=inline"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-D_FILE_OFFSET_BITS=64"/>
+          <Add option="-D_LARGEFILE_SOURCE=1"/>
+          <Add option="-D_GNU_SOURCE=1"/>
+          <Add option="-DDEBUG"/>
+          <!--           
+          <Add option="-g"/> //-->
+          <Add directory="."/>
+          <Add directory="lib"/>
+        </Compiler>
+        <Linker>
+        </Linker>
+      </Target>
+      <Target title="Release">
+        <Option output="bin/Release/mediathek-parser" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Release/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-fomit-frame-pointer"/>
+          <Add option="-fexpensive-optimizations"/>
+          <Add option="-Os"/>
+          <Add option="-w"/>
+          <Add option="-ffast-math"/>
+          <Add option="-DINLINE=inline"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-D_FILE_OFFSET_BITS=64"/>
+          <Add option="-D_LARGEFILE_SOURCE=1"/>
+          <Add option="-D_GNU_SOURCE=1"/>
+          <Add option="-DNDEBUG=1"/>
+          <!--           
+          <Add option="-O2"/> //-->
+          <Add directory="."/>
+          <Add directory="lib"/>
+        </Compiler>
+        <Linker>
+        </Linker>
+      </Target>
+    </Build>
+    <Compiler>
+      <Add option="-w"/>
+    </Compiler>
+    <Unit filename="lib/buffer.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/byte.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/fmt.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/scan.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/str.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/strlist.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/uint32.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/uint64.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="mediathek-parser.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/array_allocate.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/array_length.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/array_start.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/array_trunc.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_1.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_2.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_close.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_feed.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_flush.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_getc.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_getline_sa.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_get_token_sa.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_init.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_mmapread.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_munmap.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_put.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_putflush.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_putlong.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_putnlflush.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_puts.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_putm_internal.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_putulong.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_stubborn2.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_stubborn.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/byte_chr.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/byte_copy.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/byte_rchr.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/byte_zero.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/fmt_long.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/fmt_ulong.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/isleap.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/mmap_read.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/open_read.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_append.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_catb.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_catc.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_cats.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_copyb.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_copys.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_free.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_init.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_nul.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_ready.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_readyplus.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_zero.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/str_chr.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/str_diff.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/str_len.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/str_dup.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/str_ptime.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/time_table_spd.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/umult64.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Extensions>
+      <envvars/>
+      <code_completion/>
+      <lib_finder disable_auto="1"/>
+      <debugger/>
+    </Extensions>
+  </Project>
 </CodeBlocks_project_file>

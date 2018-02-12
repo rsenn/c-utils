@@ -45,7 +45,12 @@ void buffer_init_free(buffer* b,ssize_t (*op)(),int fd,char* y,size_t ylen);
 void buffer_free(void* buf);
 void buffer_munmap(void* buf);
 int buffer_mmapread(buffer* b,const char* filename);
+int buffer_mmapread_fd(buffer *b, int fd);
 void buffer_close(buffer* b);
+
+/* reading from an fd... if it is a regular file, then  buffer_mmapread_fd is called,
+   otherwise  buffer_init(&b, read, fd, malloc(8192), 8192) */
+int buffer_read_fd(buffer* b, int fd);
 
 int buffer_flush(buffer* b);
 int buffer_put(buffer* b,const char* x,size_t len);

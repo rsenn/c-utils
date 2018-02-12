@@ -6,6 +6,7 @@
 #include "byte.h"
 #include "socket.h"
 #include <errno.h>
+#include <sys/socket.h>
 
 static int last_errno = 0;
 

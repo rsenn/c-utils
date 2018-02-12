@@ -1,3 +1,5 @@
+#include "dir_internal.h"
+
 #if USE_READDIR
 #include <dirent.h>
 #else
@@ -7,8 +9,6 @@
 #if USE_WIDECHAR
 #include "utf8.h"
 #endif
-
-#include "dir_internal.h"
 
 char* dir_name(struct dir_s* d) {
 #if !USE_READDIR && USE_WIDECHAR
