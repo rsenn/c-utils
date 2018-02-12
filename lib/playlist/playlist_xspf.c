@@ -33,10 +33,10 @@ xspf_process(playlist* pl) {
 
     if(strcmp(name, "location") == 0) {
       stralloc_copy(&track.location, &nodeText);
-      stralloc_0(&track.location);
+      //stralloc_0(&track.location);
     } else if(strcmp(name, "title") == 0) {
       stralloc_copy(&track.title, &nodeText);
-      stralloc_0(&track.title);
+      //stralloc_0(&track.title);
     } else if(strcmp(name, "duration") == 0) {
       track.length = atoi(nodeText.s);
     } else if(strcmp(name, "track") == 0) {
@@ -59,7 +59,7 @@ xspf_process(playlist* pl) {
     }
 
     stralloc_cats(&nodeText, s);
-    stralloc_0(&nodeText);
+    //stralloc_0(&nodeText);
 
     if(nodeText.len && nodeText.s[0]) {
       //  printf("@%d: \"%s\"\n", xmlTextReaderDepth(reader), nodeText.s);

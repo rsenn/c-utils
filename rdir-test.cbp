@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<CodeBlocks_project_file>
+  <FileVersion major="1" minor="6"/>
+  <Project>
+    <Option title="rdir-test"/>
+    <Option pch_mode="2"/>
+    <Option compiler="gcc"/>
+    <Option virtualFolders="Lib/;"/>
+    <Build>
+      <Target title="Debug">
+        <Option output="bin/Debug/rdir-test" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Debug/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-Wextra"/>
+          <Add option="-Wall"/>
+          <Add option="-g"/>
+          <Add option="-ggdb -O0"/>
+          <Add option="-DINLINE=inline"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-D_FILE_OFFSET_BITS=64"/>
+          <Add option="-D_LARGEFILE_SOURCE=1"/>
+          <Add option="-D_GNU_SOURCE=1"/>
+          <Add option="-DDEBUG"/>
+          <!--           
+          <Add option="-g"/> //-->
+          <Add directory="."/>
+          <Add directory="lib"/>
+        </Compiler>
+        <Linker>
+        </Linker>
+      </Target>
+      <Target title="Release">
+        <Option output="bin/Release/rdir-test" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Release/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-fomit-frame-pointer"/>
+          <Add option="-fexpensive-optimizations"/>
+          <Add option="-Os"/>
+          <Add option="-w"/>
+          <Add option="-ffast-math"/>
+          <Add option="-DINLINE=inline"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-D_FILE_OFFSET_BITS=64"/>
+          <Add option="-D_LARGEFILE_SOURCE=1"/>
+          <Add option="-D_GNU_SOURCE=1"/>
+          <Add option="-DNDEBUG=1"/>
+          <!--           
+          <Add option="-O2"/> //-->
+          <Add directory="."/>
+          <Add directory="lib"/>
+        </Compiler>
+        <Linker>
+        </Linker>
+      </Target>
+    </Build>
+    <Compiler>
+      <Add option="-w"/>
+    </Compiler>
+    <Unit filename="lib/buffer.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/byte.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/dir.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/rdir.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/str.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc.h">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_1.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_2.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_flush.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_put.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_putflush.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_putm_internal.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_putnlflush.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_puts.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/buffer_stubborn.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/byte_copy.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/byte_zero.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/dir_close.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/dir_open.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/dir_read.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/dir_type.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/fnmatch.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="rdir-test.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/rdir_close.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/rdir_open.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/rdir_read.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_append.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_catb.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_catc.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_cats.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_copyb.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_copys.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_free.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_init.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_ready.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/stralloc_readyplus.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/str_diff.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Unit filename="lib/str_len.c">
+      <Option compilerVar="CC"/>
+    </Unit>
+    <Extensions>
+      <envvars/>
+      <code_completion/>
+      <lib_finder disable_auto="1"/>
+      <debugger/>
+    </Extensions>
+  </Project>
+</CodeBlocks_project_file>
