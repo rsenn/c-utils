@@ -49,21 +49,21 @@ HEADERS = \
 
 SOURCES = \
   impgen.c \
-  lib/buffer_1.c \
-  lib/buffer_flush.c \
-  lib/buffer_put.c \
-  lib/buffer_putflush.c \
-  lib/buffer_putm_internal.c \
-  lib/buffer_putnlflush.c \
-  lib/buffer_puts.c \
-  lib/buffer_putulong.c \
-  lib/buffer_stubborn.c \
-  lib/byte_copy.c \
-  lib/fmt_ulong.c \
-  lib/mmap_read.c \
-  lib/mmap_unmap.c \
-  lib/open_read.c \
-  lib/str_len.c
+  lib/buffer/buffer_1.c \
+  lib/buffer/buffer_flush.c \
+  lib/buffer/buffer_put.c \
+  lib/buffer/buffer_putflush.c \
+  lib/buffer/buffer_putm_internal.c \
+  lib/buffer/buffer_putnlflush.c \
+  lib/buffer/buffer_puts.c \
+  lib/buffer/buffer_putulong.c \
+  lib/buffer/buffer_stubborn.c \
+  lib/byte/byte_copy.c \
+  lib/fmt/fmt_ulong.c \
+  lib/mmap/mmap_read.c \
+  lib/mmap/mmap_unmap.c \
+  lib/open/open_read.c \
+  lib/str/str_len.c
 
 include(deployment.pri)
 qtcAddDeployment()

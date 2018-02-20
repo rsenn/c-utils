@@ -54,26 +54,26 @@ HEADERS = \
 
 SOURCES = \
     eagle-init-brd.c \
-    lib/byte_copy.c \
-    lib/hmap_add.c \
-    lib/hmap_destroy.c \
-    lib/hmap_free_data.c \
-    lib/hmap_init.c \
-    lib/hmap_search.c \
-    lib/hmap_truncate.c \
-    lib/scan_double.c \
-    lib/stralloc_catb.c \
-    lib/stralloc_cats.c \
-    lib/stralloc_copyb.c \
-    lib/stralloc_copys.c \
-    lib/stralloc_free.c \
-    lib/stralloc_init.c \
-    lib/stralloc_nul.c \
-    lib/stralloc_ready.c \
-    lib/stralloc_readyplus.c \
-    lib/stralloc_zero.c \
-    lib/str_diff.c \
-    lib/str_len.c \
+    lib/byte/byte_copy.c \
+    lib/hmap/hmap_add.c \
+    lib/hmap/hmap_destroy.c \
+    lib/hmap/hmap_free_data.c \
+    lib/hmap/hmap_init.c \
+    lib/hmap/hmap_search.c \
+    lib/hmap/hmap_truncate.c \
+    lib/scan/scan_double.c \
+    lib/stralloc/stralloc_catb.c \
+    lib/stralloc/stralloc_cats.c \
+    lib/stralloc/stralloc_copyb.c \
+    lib/stralloc/stralloc_copys.c \
+    lib/stralloc/stralloc_free.c \
+    lib/stralloc/stralloc_init.c \
+    lib/stralloc/stralloc_nul.c \
+    lib/stralloc/stralloc_ready.c \
+    lib/stralloc/stralloc_readyplus.c \
+    lib/stralloc/stralloc_zero.c \
+    lib/str/str_diff.c \
+    lib/str/str_len.c \
 
 
 include(deployment.pri)
