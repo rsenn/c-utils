@@ -35,7 +35,7 @@ pe_file_header*
 pe_filehdr_ptr(const void* ptr) {
   const pe_dos_header* dos = ptr;
   size_t offset = uint32_get(&dos->e_lfanew);
-  return (pe_file_header*)((unsigned char*)ptr + offset);
+  return(pe_file_header*)((unsigned char*)ptr + offset);
 }
 
 void*

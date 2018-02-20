@@ -12,12 +12,12 @@ extern void io_dontwantwrite_really(int64 d,io_entry* e);
 
 void io_close(int64 d) {
   io_entry* e;
-  if ((e=iarray_get(&io_fds,d))) {
+  if((e=iarray_get(&io_fds,d))) {
     e->inuse=0;
     e->cookie=0;
-    if (e->kernelwantread) io_dontwantread_really(d,e);
-    if (e->kernelwantwrite) io_dontwantwrite_really(d,e);
-    if (e->mmapped) {
+    if(e->kernelwantread) io_dontwantread_really(d,e);
+    if(e->kernelwantwrite) io_dontwantwrite_really(d,e);
+    if(e->mmapped) {
 #ifdef __MINGW32__
       UnmapViewOfFile(e->mmapped);
       CloseHandle(e->mh);

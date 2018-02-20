@@ -5,7 +5,7 @@
 
 int io_readwritefile(int64* d,const char* s) {
   long fd=open(s,O_RDWR);
-  if (fd != -1) {
+  if(fd != -1) {
     *d=fd;
     return 1;
   }

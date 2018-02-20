@@ -15,12 +15,12 @@
 static iarray_page* new_page(size_t pagesize) {
 #ifdef __MINGW32__
   void* x=malloc(pagesize);
-  if (x==0) return 0;
+  if(x==0) return 0;
 #else
   void* x=mmap(0,pagesize,PROT_READ|PROT_WRITE,MAP_ANONYMOUS|MAP_PRIVATE,-1,0);
-  if (x==MAP_FAILED) return 0;
+  if(x==MAP_FAILED) return 0;
 #endif
-  return (iarray_page*)x;
+  return(iarray_page*)x;
 }
 
 void* iarray_allocate(iarray* ia,size_t pos) {
@@ -38,17 +38,17 @@ void* iarray_allocate(iarray* ia,size_t pos) {
   pos /= sizeof(ia->pages)/sizeof(ia->pages[0]);
   /* now walk the linked list of pages until we reach the one we want */
   for (index=0; ; index+=ia->elemperpage) {
-    if (!*p) {
-      if (!newpage)
-	if (!(newpage=new_page(ia->bytesperpage))) return 0;
-      if (__CAS(p,0,newpage)==0)
+    if(!*p) {
+      if(!newpage)
+	if(!(newpage=new_page(ia->bytesperpage))) return 0;
+      if(__CAS(p,0,newpage)==0)
 	newpage=0;
     }
-    if (index+ia->elemperpage>pos)
+    if(index+ia->elemperpage>pos)
       break;
     p=&(*p)->next;
   }
-  if (newpage)
+  if(newpage)
 #ifdef __MINGW32__
     free(newpage);
 #else
@@ -58,7 +58,7 @@ void* iarray_allocate(iarray* ia,size_t pos) {
     size_t l;
     do {
       l=__CAS(&ia->len,prevlen,realpos);
-    } while (l<realpos);
+    } while(l<realpos);
   }
   return &(*p)->data[(pos-index)*ia->elemsize];
 }

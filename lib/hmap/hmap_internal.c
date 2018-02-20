@@ -28,7 +28,7 @@
               free(new_tuple);                                                        \
               return HMAP_ALLOCATED_ERROR;                                            \
           }                                                                           \
-          if ( memcpy( new_tuple->vals.val_chars, data, d_len ) == NULL ){            \
+          if( memcpy( new_tuple->vals.val_chars, data, d_len ) == NULL ){            \
               free(new_tuple->vals.val_chars);                                        \
               free(new_tuple);                                                        \
               return  HMAP_FAILED;                                                    \

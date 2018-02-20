@@ -1,10 +1,13 @@
 #include "byte.h"
 #include "buffer.h"
 
-extern int buffer_dummyread();
-extern ssize_t buffer_stubborn_read(ssize_t(*op)(), int fd, const char* buf, unsigned int len);
+extern int 
+buffer_dummyread();
+extern ssize_t 
+buffer_stubborn_read(ssize_t(*op)(), int fd, const char* buf, unsigned int len);
 
-int buffer_prefetch(buffer* b, size_t n) {
+int 
+buffer_prefetch(buffer* b, size_t n) {
   if(b->p && b->p + n >= b->a)
   {
     if((void*)b->op == (void*) & buffer_dummyread)
@@ -22,7 +25,8 @@ int buffer_prefetch(buffer* b, size_t n) {
 
   while(b->n < b->p + n) {
     int w;
-    if((w = buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n)) < 0)
+    if((w = 
+buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n)) < 0)
       return -1;
     b->n += w;
     if(!w) { break; };

@@ -17,17 +17,17 @@ int64 io_mmapwritefile(int64 out,int64 in,uint64 off,uint64 bytes,io_write_callb
   ssize_t n,m;
   uint64 sent=0;
   io_entry* e=iarray_get(&io_fds,out);
-  if (e) {
+  if(e) {
     const char* c;
     unsigned long left;
 #ifdef __MINGW32__
-    if (!e->mh) e->mh=CreateFileMapping(in,0,PAGE_READONLY,0,0,NULL);
-    if (!e->mh) goto readwrite;
+    if(!e->mh) e->mh=CreateFileMapping(in,0,PAGE_READONLY,0,0,NULL);
+    if(!e->mh) goto readwrite;
 #endif
     do {
-      if (e->mmapped) {
+      if(e->mmapped) {
 	/* did we already map the right chunk? */
-	if (off>=e->mapofs && off<e->mapofs+e->maplen)
+	if(off>=e->mapofs && off<e->mapofs+e->maplen)
 	  goto mapok;	/* ok; mmapped the right chunk*/
 #ifdef __MINGW32__
 	UnmapViewOfFile(e->mmapped);
@@ -36,15 +36,15 @@ int64 io_mmapwritefile(int64 out,int64 in,uint64 off,uint64 bytes,io_write_callb
 #endif
       }
       e->mapofs=off&0xffffffffffff0000ull;
-      if (e->mapofs+0x10000>off+bytes)
+      if(e->mapofs+0x10000>off+bytes)
 	e->maplen=off+bytes-e->mapofs;
       else
 	e->maplen=0x10000;
 #ifdef __MINGW32__
-      if ((e->mmapped=MapViewOfFile(e->mh,FILE_MAP_READ,(DWORD)(e->mapofs>>32),
+      if((e->mmapped=MapViewOfFile(e->mh,FILE_MAP_READ,(DWORD)(e->mapofs>>32),
 				    (DWORD)e->mapofs,e->maplen))==0)
 #else
-      if ((e->mmapped=mmap(0,e->maplen,PROT_READ,MAP_SHARED,in,e->mapofs))==MAP_FAILED)
+      if((e->mmapped=mmap(0,e->maplen,PROT_READ,MAP_SHARED,in,e->mapofs))==MAP_FAILED)
 #endif
       {
 	e->mmapped=0;
@@ -53,12 +53,12 @@ int64 io_mmapwritefile(int64 out,int64 in,uint64 off,uint64 bytes,io_write_callb
   mapok:
       c=(const char*)(e->mmapped)+(off&0xffff);
       left=e->maplen-(off&0xffff);
-      if (left>bytes) left=bytes;
-      while (left>0) {
+      if(left>bytes) left=bytes;
+      while(left>0) {
 	m=writecb(out,c,left);
-	if (m<0) {
+	if(m<0) {
 	  io_eagain(out);
-	  if (errno!=EAGAIN) {
+	  if(errno!=EAGAIN) {
 #ifdef __MINGW32__
 	    UnmapViewOfFile(e->mmapped);
 #else
@@ -69,20 +69,20 @@ int64 io_mmapwritefile(int64 out,int64 in,uint64 off,uint64 bytes,io_write_callb
 	  }
 	  return sent?(int64)sent:-1;
 	}
-	if (m==0) return sent;
+	if(m==0) return sent;
 	sent+=m;
 	left-=m;
 	bytes-=m;
 	off+=m;
 	c+=m;
-	if (e && left>0) {
+	if(e && left>0) {
 	  e->canwrite=0;
 	  e->next_write=-1;
 	  return sent;
 	}
       }
-    } while (bytes);
-    if (e->mmapped) {
+    } while(bytes);
+    if(e->mmapped) {
 #ifdef __MINGW32__
       UnmapViewOfFile(e->mmapped);
 #else
@@ -94,23 +94,23 @@ int64 io_mmapwritefile(int64 out,int64 in,uint64 off,uint64 bytes,io_write_callb
   }
 readwrite:
 #ifndef HAVE_PREAD
-  if (lseek(in,off,SEEK_SET) != (off_t)off)
+  if(lseek(in,off,SEEK_SET) != (off_t)off)
     return -1;
 #endif
-  while (bytes>0) {
+  while(bytes>0) {
     char* tmp=buf;
 #ifdef HAVE_PREAD
-    if ((n=pread(in,tmp,(bytes<BUFSIZE)?bytes:BUFSIZE,off))<=0)
-      return (sent?(int64)sent:-1);
+    if((n=pread(in,tmp,(bytes<BUFSIZE)?bytes:BUFSIZE,off))<=0)
+      return(sent?(int64)sent:-1);
     off+=n;
 #else
-    if ((n=read(in,tmp,(bytes<BUFSIZE)?bytes:BUFSIZE))<=0)
-      return (sent?(int64)sent:-1);
+    if((n=read(in,tmp,(bytes<BUFSIZE)?bytes:BUFSIZE))<=0)
+      return(sent?(int64)sent:-1);
 #endif
-    while (n>0) {
-      if ((m=writecb(out,tmp,n))<0) {
-	if (m==-1) {
-	  if (e) {
+    while(n>0) {
+      if((m=writecb(out,tmp,n))<0) {
+	if(m==-1) {
+	  if(e) {
 	    e->canwrite=0;
 	    e->next_write=-1;
 	  }
@@ -122,7 +122,7 @@ readwrite:
       n-=m;
       bytes-=m;
       tmp+=m;
-      if (e && m!=n) {
+      if(e && m!=n) {
 	e->canwrite=0;
 	e->next_write=-1;
 	goto abort;

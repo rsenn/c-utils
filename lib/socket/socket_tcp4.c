@@ -11,10 +11,10 @@
 int socket_tcp4(void) {
   int s;
 #ifdef SOCK_NONBLOCK
-  if ((s=socket(PF_INET,SOCK_STREAM|SOCK_NONBLOCK,IPPROTO_TCP))>-1 || errno!=EINVAL) return s;
+  if((s=socket(PF_INET,SOCK_STREAM|SOCK_NONBLOCK,IPPROTO_TCP))>-1 || errno!=EINVAL) return s;
 #endif
   s=socket_tcp4b();
-  if (s==-1) return -1;
-  if (ndelay_on(s) == -1) { close(s); return -1; }
+  if(s==-1) return -1;
+  if(ndelay_on(s) == -1) { close(s); return -1; }
   return s;
 }

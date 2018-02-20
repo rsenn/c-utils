@@ -21,34 +21,34 @@
 
 int64 io_tryread(int64 d,char* buf,int64 len) {
   io_entry* e=iarray_get(&io_fds,d);
-  if (!e) { errno=EBADF; return -3; }
-  if (len<0) { errno=EINVAL; return -3; }
-  if (e->readqueued==2) {
+  if(!e) { errno=EBADF; return -3; }
+  if(len<0) { errno=EINVAL; return -3; }
+  if(e->readqueued==2) {
     int x=e->bytes_read;
-    if (e->errorcode) {
+    if(e->errorcode) {
       errno=e->errorcode;
       e->canread=0;
       return -3;
     }
-    if (x>len) x=len;
-    if (x) {
+    if(x>len) x=len;
+    if(x) {
       byte_copy(buf,x,e->inbuf);
       byte_copy(e->inbuf,e->bytes_read-x,e->inbuf+x);
       e->bytes_read-=x;
     }
-    if (!e->bytes_read) {
+    if(!e->bytes_read) {
       e->canread=0;
-      if (len>x) {
+      if(len>x) {
 	/* queue next read */
-	if (len>sizeof(e->inbuf)) len=sizeof(e->inbuf);
+	if(len>sizeof(e->inbuf)) len=sizeof(e->inbuf);
 	fprintf(stderr,"Queueing ReadFile on handle %p...",d);
-	if (ReadFile((HANDLE)d,e->inbuf,len,0,&e->or)) {
+	if(ReadFile((HANDLE)d,e->inbuf,len,0,&e->or)) {
 	  fprintf(stderr," got immediate answer\n");
 	  e->canread=1;
 	  e->readqueued=2;
 	  e->next_write=first_writeable;
 	  first_writeable=d;
-	} else if ((e->errorcode=GetLastError())==ERROR_IO_PENDING) {
+	} else if((e->errorcode=GetLastError())==ERROR_IO_PENDING) {
 	  fprintf(stderr," OK\n");
 	  e->readqueued=1;
 	  e->errorcode=0;
@@ -63,10 +63,10 @@ int64 io_tryread(int64 d,char* buf,int64 len) {
     }
     return x;
   }
-  if (!e->readqueued) {
+  if(!e->readqueued) {
     fprintf(stderr,"!e->readqueued\n");
-    if (len>sizeof(e->inbuf)) len=sizeof(e->inbuf);
-    if (ReadFile((HANDLE)d,e->inbuf,len,0,&e->or)) {
+    if(len>sizeof(e->inbuf)) len=sizeof(e->inbuf);
+    if(ReadFile((HANDLE)d,e->inbuf,len,0,&e->or)) {
       e->readqueued=1;
       fprintf(stderr,"ReadFile returned nonzero\n");
     } else
@@ -83,10 +83,10 @@ int64 io_tryread(int64 d,char* buf,int64 len) {
   struct itimerval old,new;
   struct pollfd p;
   io_entry* e=iarray_get(&io_fds,d);
-  if (!e) { errno=EBADF; return -3; }
-  if (!e->nonblock) {
+  if(!e) { errno=EBADF; return -3; }
+  if(!e->nonblock) {
     p.fd=d;
-    if (p.fd!=d) { errno=EBADF; return -3; }	/* catch integer truncation */
+    if(p.fd!=d) { errno=EBADF; return -3; }	/* catch integer truncation */
     p.events=POLLIN;
     switch (poll(&p,1,0)) {
     case -1: return -3;
@@ -102,18 +102,18 @@ int64 io_tryread(int64 d,char* buf,int64 len) {
     setitimer(ITIMER_REAL,&new,&old);
   }
   r=read(d,buf,len);
-  if (!e->nonblock) {
+  if(!e->nonblock) {
     setitimer(ITIMER_REAL,&old,0);
   }
-  if (r==-1) {
-    if (errno==EINTR) errno=EAGAIN;
-    if (errno!=EAGAIN)
+  if(r==-1) {
+    if(errno==EINTR) errno=EAGAIN;
+    if(errno!=EAGAIN)
       r=-3;
   }
-  if (r!=len) {
+  if(r!=len) {
     e->canread=0;
 #if defined(HAVE_SIGIO)
-    if (d==alt_firstread) {
+    if(d==alt_firstread) {
       debug_printf(("io_tryread: dequeueing %ld from alt read queue (next is %ld)\n",d,e->next_read));
       alt_firstread=e->next_read;
       e->next_read=-1;

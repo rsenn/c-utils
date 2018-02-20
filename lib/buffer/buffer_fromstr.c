@@ -1,11 +1,13 @@
 #include "str.h"
 #include "buffer.h"
 
-ssize_t buffer_dummyread() {
+ssize_t 
+buffer_dummyread() {
   return 0;
 }
 
-void buffer_fromstr(buffer* b, char* s, size_t len)
+void 
+buffer_fromstr(buffer* b, char* s, size_t len)
 {
   b->x = s;
   b->p = 0;

@@ -10,7 +10,7 @@ static void hmap_print_tree_tuple( HMAP_DB *my_hmap_db ) {
         }
         printf("index[%d]\n", ptr_list_tuple->index);
         while( ptr_list_tuple ) {
-            if ( ptr_list_tuple->key_len > 0) {
+            if( ptr_list_tuple->key_len > 0) {
               switch( ptr_list_tuple->data_type ) {
                 case HMAP_DATA_TYPE_INT:
                   printf("index[%d][%p] key[%s], data[%d]\n", ptr_list_tuple->index, ptr_list_tuple,  ptr_list_tuple->key, ptr_list_tuple->vals.val_int);

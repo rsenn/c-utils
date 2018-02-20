@@ -11,7 +11,8 @@ buffer_read_fd(buffer* b, int fd) {
     return -1;
 
   if((st.st_mode & S_IFMT) == S_IFREG)
-    return buffer_mmapread_fd(b, fd);
+    return 
+buffer_mmapread_fd(b, fd);
 
   b->fd = fd;
 

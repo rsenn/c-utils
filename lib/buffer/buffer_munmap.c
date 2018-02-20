@@ -5,7 +5,8 @@
 #include <sys/mman.h>
 #endif
 
-void buffer_munmap(void* buf) {
+void 
+buffer_munmap(void* buf) {
   buffer* b=(buffer*)buf;
 #ifdef _WIN32
   UnmapViewOfFile(b->x);

@@ -21,11 +21,11 @@
 int64 io_trywrite(int64 d,const char* buf,int64 len) {
   io_entry* e=iarray_get(&io_fds,d);
   int r;
-  if (!e) { errno=EBADF; return -3; }
-  if (!e->nonblock) {
+  if(!e) { errno=EBADF; return -3; }
+  if(!e->nonblock) {
     DWORD written;
     fprintf(stderr,"Socket is in blocking mode, just calling WriteFile...");
-    if (WriteFile((HANDLE)d,buf,len,&written,0)) {
+    if(WriteFile((HANDLE)d,buf,len,&written,0)) {
       fprintf(stderr," OK, got %u bytes.\n",written);
       return written;
     } else {
@@ -33,15 +33,15 @@ int64 io_trywrite(int64 d,const char* buf,int64 len) {
       return winsock2errno(-3);
     }
   } else {
-    if (e->writequeued && !e->canwrite) {
+    if(e->writequeued && !e->canwrite) {
       fprintf(stderr,"io_trywrite: write already queued, returning EAGAIN\n");
       errno=EAGAIN;
       return -1;
     }
-    if (e->canwrite) {
+    if(e->canwrite) {
       e->canwrite=0;
       e->next_write=-1;
-      if (e->errorcode) {
+      if(e->errorcode) {
 	fprintf(stderr,"io_trywrite: e->canwrite was set, returning error %d\n",e->errorcode);
 	errno=winsock2errno(e->errorcode);
 	return -3;
@@ -50,10 +50,10 @@ int64 io_trywrite(int64 d,const char* buf,int64 len) {
       return e->bytes_written;
     } else {
       fprintf(stderr,"io_trywrite: queueing write...");
-      if (WriteFile((HANDLE)d,buf,len,&e->errorcode,&e->ow)) {
+      if(WriteFile((HANDLE)d,buf,len,&e->errorcode,&e->ow)) {
 	fprintf(stderr," worked unexpectedly, error %d\n",e->errorcode);
 	return e->errorcode; /* should not happen */
-      } else if (GetLastError()==ERROR_IO_PENDING) {
+      } else if(GetLastError()==ERROR_IO_PENDING) {
 	fprintf(stderr," pending.\n");
 	e->writequeued=1;
 	errno=EAGAIN;
@@ -77,10 +77,10 @@ int64 io_trywrite(int64 d,const char* buf,int64 len) {
   struct pollfd p;
   io_entry* e=iarray_get(&io_fds,d);
   io_sigpipe();
-  if (!e) { errno=EBADF; return -3; }
-  if (!e->nonblock) {
+  if(!e) { errno=EBADF; return -3; }
+  if(!e->nonblock) {
     p.fd=d;
-    if (p.fd != d) { errno=EBADF; return -3; }	/* catch overflow */
+    if(p.fd != d) { errno=EBADF; return -3; }	/* catch overflow */
     p.events=POLLOUT;
     switch (poll(&p,1,0)) {
     case -1: return -3;
@@ -96,18 +96,18 @@ int64 io_trywrite(int64 d,const char* buf,int64 len) {
     setitimer(ITIMER_REAL,&new,&old);
   }
   r=write(d,buf,len);
-  if (!e->nonblock) {
+  if(!e->nonblock) {
     setitimer(ITIMER_REAL,&old,0);
   }
-  if (r==-1) {
-    if (errno==EINTR) errno=EAGAIN;
-    if (errno!=EAGAIN)
+  if(r==-1) {
+    if(errno==EINTR) errno=EAGAIN;
+    if(errno!=EAGAIN)
       r=-3;
   }
-  if (r!=len) {
+  if(r!=len) {
     e->canwrite=0;
 #if defined(HAVE_SIGIO)
-    if (d==alt_firstwrite) {
+    if(d==alt_firstwrite) {
       debug_printf(("io_trywrite: dequeueing %ld from alt write queue (next is %ld)\n",d,e->next_write));
       alt_firstwrite=e->next_write;
       e->next_write=-1;

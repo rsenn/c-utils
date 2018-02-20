@@ -7,7 +7,7 @@
 void io_sigpipe(void) {
 #ifndef __MINGW32__
   static int isitdone;
-  if (!isitdone) {
+  if(!isitdone) {
     signal(SIGPIPE,SIG_IGN);
     isitdone=1;
   }

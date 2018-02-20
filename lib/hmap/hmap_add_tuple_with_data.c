@@ -11,11 +11,11 @@ int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, void *data
     
     r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);
     
-    if ( r == HMAP_SUCCESS ) {
+    if( r == HMAP_SUCCESS ) {
         return HMAP_TUPLE_ALREADY_EXIST;
     }
     
-    if ( r  == HMAP_TUPLE_NOT_FOUND ) {
+    if( r  == HMAP_TUPLE_NOT_FOUND ) {
     
         root_tuple = ((*hmap_db)->tuple + index);
         

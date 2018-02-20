@@ -6,7 +6,8 @@
 #include "buffer.h"
 
 static ssize_t b0read(int fd,char* buf, size_t len) {
-  if (buffer_flush(buffer_1small)<0) return -1;
+  if(
+buffer_flush(buffer_1small)<0) return -1;
   return read(fd,buf,len);
 }
 

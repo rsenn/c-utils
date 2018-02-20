@@ -8,7 +8,8 @@ static ssize_t dummyreadwrite(int fd,char* buf,size_t len) {
   return 0;
 }
 
-void buffer_frombuf(buffer* b,const char* x,size_t l) {
+void 
+buffer_frombuf(buffer* b,const char* x,size_t l) {
   b->x=(char*)x;
   b->p=0;
   b->n=l;

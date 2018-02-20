@@ -59,11 +59,11 @@ static io_entry* io_fd_internal(int64 d,int flags) {
   io_entry* e;
 #ifndef __MINGW32__
   long r;
-  if ((flags&(IO_FD_BLOCK|IO_FD_NONBLOCK))==0) {
-    if ((r=fcntl(d,F_GETFL,0)) == -1)
+  if((flags&(IO_FD_BLOCK|IO_FD_NONBLOCK))==0) {
+    if((r=fcntl(d,F_GETFL,0)) == -1)
       return 0;	/* file descriptor not open */
   } else
-    if (flags&IO_FD_NONBLOCK)
+    if(flags&IO_FD_NONBLOCK)
       r=O_NDELAY;
     else
       r=0;
@@ -73,44 +73,44 @@ static io_entry* io_fd_internal(int64 d,int flags) {
    * and not to 1.  We know we are done when it is 1.  We know we need
    * to do something when it is 0.  We know somebody else is doing it
    * when it is 2. */
-  if (__CAS(&io_fds_inited,0,2)==0) {
+  if(__CAS(&io_fds_inited,0,2)==0) {
     iarray_init(&io_fds,sizeof(io_entry));
     io_fds_inited=1;
   } else
-    do { asm("" : : : "memory"); } while (io_fds_inited!=1);
-  if (!(e=iarray_allocate(&io_fds,d))) return 0;
-  if (e->inuse) return e;
+    do { asm("" : : : "memory"); } while(io_fds_inited!=1);
+  if(!(e=iarray_allocate(&io_fds,d))) return 0;
+  if(e->inuse) return e;
   byte_zero(e,sizeof(io_entry));
   e->inuse=1;
 #ifdef __MINGW32__
   e->mh=0;
 #else
-  if (r&O_NDELAY) e->nonblock=1;
+  if(r&O_NDELAY) e->nonblock=1;
 #endif
   e->next_read=e->next_write=-1;
-  if (io_waitmode==UNDECIDED) {
+  if(io_waitmode==UNDECIDED) {
     first_readable=first_writeable=-1;
 #if defined(HAVE_EPOLL)
     io_master=epoll_create(1000);
-    if (io_master!=-1) io_waitmode=EPOLL;
+    if(io_master!=-1) io_waitmode=EPOLL;
 #endif
 #if defined(HAVE_KQUEUE)
-    if (io_waitmode==UNDECIDED) {	/* who knows, maybe someone supports both one day */
+    if(io_waitmode==UNDECIDED) {	/* who knows, maybe someone supports both one day */
       io_master=kqueue();
-      if (io_master!=-1) io_waitmode=KQUEUE;
+      if(io_master!=-1) io_waitmode=KQUEUE;
     }
 #endif
 #if defined(HAVE_DEVPOLL)
-    if (io_waitmode==UNDECIDED) {
+    if(io_waitmode==UNDECIDED) {
       io_master=open("/dev/poll",O_RDWR);
-      if (io_master!=-1) io_waitmode=DEVPOLL;
+      if(io_master!=-1) io_waitmode=DEVPOLL;
     }
 #endif
 #if defined(HAVE_SIGIO)
     alt_firstread=alt_firstwrite=-1;
-    if (io_waitmode==UNDECIDED) {
+    if(io_waitmode==UNDECIDED) {
       io_signum=SIGRTMIN+1;
-      if (sigemptyset(&io_ss)==0 &&
+      if(sigemptyset(&io_ss)==0 &&
           sigaddset(&io_ss,io_signum)==0 &&
           sigaddset(&io_ss,SIGIO)==0 &&
           sigprocmask(SIG_BLOCK,&io_ss,0)==0)
@@ -119,7 +119,7 @@ static io_entry* io_fd_internal(int64 d,int flags) {
 #endif
 #ifdef __MINGW32__
     io_comport=CreateIoCompletionPort(INVALID_HANDLE_VALUE,NULL,0,0);
-    if (io_comport) {
+    if(io_comport) {
       io_waitmode=COMPLETIONPORT;
       fprintf(stderr,"Initialized completion port: %p\n",io_comport);
     } else {
@@ -130,7 +130,7 @@ static io_entry* io_fd_internal(int64 d,int flags) {
 #endif
   }
 #if defined(HAVE_SIGIO)
-  if (io_waitmode==_SIGIO) {
+  if(io_waitmode==_SIGIO) {
     fcntl(d,F_SETOWN,getpid());
     fcntl(d,F_SETSIG,io_signum);
 #if defined(O_ONESIGFD) && defined(F_SETAUXFL)
@@ -140,9 +140,9 @@ static io_entry* io_fd_internal(int64 d,int flags) {
   }
 #endif
 #ifdef __MINGW32__
-  if (io_comport) {
+  if(io_comport) {
     fprintf(stderr,"Queueing %p at completion port %p...",d,io_comport);
-    if (CreateIoCompletionPort((HANDLE)d,io_comport,(ULONG_PTR)d,0)==0) {
+    if(CreateIoCompletionPort((HANDLE)d,io_comport,(ULONG_PTR)d,0)==0) {
       fprintf(stderr," failed!\n");
       errno=EBADF;
       return 0;
@@ -160,12 +160,12 @@ int io_fd(int64 d) {
 
 int io_fd_canwrite(int64 d) {
   io_entry* e=io_fd_internal(d,0);
-  if (e) e->canwrite=1;
+  if(e) e->canwrite=1;
   return !!e;
 }
 
 int io_fd_flags(int64 d,int flags) {
   io_entry* e=io_fd_internal(d,flags);
-  if (e && (flags&IO_FD_CANWRITE)) e->canwrite=1;
+  if(e && (flags&IO_FD_CANWRITE)) e->canwrite=1;
   return !!e;
 }

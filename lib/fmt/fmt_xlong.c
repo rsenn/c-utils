@@ -1,7 +1,7 @@
 #include "fmt.h"
 
 static inline char tohex(char c) {
-  return (char)(c >= 10 ? c - 10 + 'a' : c + '0');
+  return(char)(c >= 10 ? c - 10 + 'a' : c + '0');
 }
 
 size_t fmt_xlong(char *dest, unsigned long i) {

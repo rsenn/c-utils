@@ -6,20 +6,20 @@
  * unsigned long) */
 
 size_t scan_uint(const char* src,unsigned int* dest) {
-  if (sizeof(unsigned int) == sizeof(unsigned long)) {
+  if(sizeof(unsigned int) == sizeof(unsigned long)) {
     /* a good optimizing compiler should remove the else clause when not
      * needed */
     return scan_ulong(src,(unsigned long*)dest);
-  } else if (sizeof(unsigned int) < sizeof(unsigned long)) {
+  } else if(sizeof(unsigned int) < sizeof(unsigned long)) {
     const char* cur;
     unsigned int l;
     for (cur=src,l=0; *cur>='0' && *cur<='9'; ++cur) {
       unsigned long tmp=l*10ul+*cur-'0';
-      if ((unsigned int)tmp != tmp) break;
+      if((unsigned int)tmp != tmp) break;
       l=tmp;
     }
-    if (cur>src) *dest=l;
-    return (size_t)(cur-src);
+    if(cur>src) *dest=l;
+    return(size_t)(cur-src);
   } else {
     /* the C standard says that sizeof(short) <= sizeof(unsigned int) <=
      * sizeof(unsigned long); this can never happen. Provoke a compile

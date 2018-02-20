@@ -22,5 +22,5 @@ size_t fmt_pad(char* dest,const char* src,size_t srclen,size_t padlen,size_t max
     if(dest>max) { break; };
     *dest=*src; ++dest; ++src;
   }
-  return (size_t)(dest-olddest);
+  return(size_t)(dest-olddest);
 }

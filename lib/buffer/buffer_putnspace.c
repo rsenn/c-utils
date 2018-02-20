@@ -12,7 +12,8 @@
 #include "byte.h"
 #include "buffer.h"
 
-int buffer_putnspace(buffer* b, int n) {
+int 
+buffer_putnspace(buffer* b, int n) {
   if(n <= 0) return 0;
 
   { 
@@ -24,7 +25,8 @@ int buffer_putnspace(buffer* b, int n) {
       malloc(n);
 #endif
     byte_fill(space, n, ' ');
-    ret = buffer_put(b, space, n);
+    ret = 
+buffer_put(b, space, n);
 #ifndef HAVE_ALLOCA_FUNC
     free(space);
 #endif

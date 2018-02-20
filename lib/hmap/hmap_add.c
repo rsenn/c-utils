@@ -15,11 +15,11 @@ int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, int dup_flag, int data_typ
     va_start(args, data_type);
     r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);
     
-    if ( r == HMAP_SUCCESS ) {
+    if( r == HMAP_SUCCESS ) {
         return HMAP_TUPLE_ALREADY_EXIST;
     }
     
-    if ( r  == HMAP_TUPLE_NOT_FOUND ){ /* there are avialable record to store */
+    if( r  == HMAP_TUPLE_NOT_FOUND ){ /* there are avialable record to store */
     
         root_tuple = ((*hmap_db)->tuple + index);
         

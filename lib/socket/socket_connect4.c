@@ -16,5 +16,5 @@ int socket_connect4(int s,const char *ip,uint16 port) {
   si.sin_family=AF_INET;
   uint16_pack_big((char*) &si.sin_port,port);
   *((uint32*)&si.sin_addr) = *((uint32*)ip);
-  return (winsock2errno(connect(s,(struct sockaddr*)&si,sizeof(si))));
+  return(winsock2errno(connect(s,(struct sockaddr*)&si,sizeof(si))));
 }
