@@ -488,6 +488,10 @@ $(BUILDDIR)io_timeouted.o: lib/io/io_timeouted.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)winsock_init.o: lib/winsock_init.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)ndelay_on.o: lib/ndelay/ndelay_on.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)ndelay_off.o: lib/ndelay/ndelay_off.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_read_fd.o: lib/mmap/mmap_read_fd.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_private.o: lib/mmap/mmap_private.c

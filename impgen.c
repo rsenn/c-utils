@@ -30,7 +30,7 @@ main(int argc, char* argv[]) {
   int optarg;
 
   for(optarg = 1; optarg < argc; ++optarg) {
-    char *dll, *filename, *dll_name;
+    char *dll, *filename/*, *dll_name*/;
     size_t dllsz;
     uint32 pe_header_offset, opthdr_ofs, num_entries, i;
     uint32 export_rva, export_size, expptr;
@@ -39,9 +39,9 @@ main(int argc, char* argv[]) {
     char *expdata, *erva;
     pe_dos_header* dos_hdr;
     pe32_opt_header* opt_hdr_32;
-    pe64_opt_header* opt_hdr_64;
+    //pe64_opt_header* opt_hdr_64;
     pe_data_directory* datadir;
-    pe_type* type;
+    pe_type type;
 
     filename = argv[optarg];
 
@@ -64,7 +64,7 @@ main(int argc, char* argv[]) {
     opt_hdr_32 = (pe32_opt_header*)&dll[pe_header_offset + 4 + 20];
     opt_hdr_64 = (pe64_opt_header*)&dll[pe_header_offset + 4 + 20];
 
-    type = opt_hdr_32->magic;
+    type = uint16_get(&opt_hdr_32->magic);
 
 /*    buffer_puts(buffer_2, "opt_hdr directory: ");
     buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_32->number_of_rva_and_sizes - (unsigned char*)opt_hdr_32);
