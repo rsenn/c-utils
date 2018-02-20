@@ -72,6 +72,8 @@ SOURCES = \
  lib/fmt/fmt_ulong.c \
  lib/fmt/fmt_ulonglong.c \
  lib/isleap.c \
+ lib/scan/scan_ulong.c \
+ lib/scan/scan_ulongn.c \
  lib/scan/scan_uint.c \
  lib/scan/scan_ushort.c \
  lib/stralloc/stralloc_append.c \
