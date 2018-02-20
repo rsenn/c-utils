@@ -4,7 +4,7 @@
 static const char
 pe_offsets[27][2] = {
   {   0,   0 }, /* magic */
-  {   4,   4 }, /* size_of_code *
+  {   4,   4 }, /* size_of_code */
   {   8,   8 }, /* size_of_initialized_data */
   {  12,  12 }, /* size_of_uninitialized_data */
   {  16,  16 }, /* address_of_entry_point */
