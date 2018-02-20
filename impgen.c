@@ -37,6 +37,7 @@ main(int argc, char* argv[]) {
     uint16 nsections, secptr;
     uint32 name_rvas, nexp;
     char *expdata, *erva;
+    pe_dos_header* dos_hdr;
     pe32_opt_header* opt_hdr_32;
     pe64_opt_header* opt_hdr_64;
     pe_data_directory* datadir;
@@ -48,20 +49,22 @@ main(int argc, char* argv[]) {
     if(dll == NULL)
       return 1;
 
+    dos_hdr = (pe_dos_header*)dll;
+
     dll_name = filename;
 
     for(i = 0; filename[i]; i++)
       if(filename[i] == '/' || filename[i] == '\\'  || filename[i] == ':')
         dll_name = filename + i + 1;
 
-    uint32_unpack(&dll[0x3c], &pe_header_offset);
+    pe_header_offset = uint32_get(&dos_hdr->e_lfanew);
 
     opthdr_ofs = pe_header_offset + 4 + 20;
 
     opt_hdr_32 = (pe32_opt_header*)&dll[pe_header_offset + 4 + 20];
     opt_hdr_64 = (pe64_opt_header*)&dll[pe_header_offset + 4 + 20];
 
-    type = opt_hdr_32->signature;
+    type = opt_hdr_32->magic;
 
 /*    buffer_puts(buffer_2, "opt_hdr directory: ");
     buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_32->number_of_rva_and_sizes - (unsigned char*)opt_hdr_32);
@@ -70,27 +73,29 @@ main(int argc, char* argv[]) {
     buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_64->number_of_rva_and_sizes - (unsigned char*)opt_hdr_64);
     buffer_putnlflush(buffer_2);
 */
+size_t o = pe_opthdr_offset(dll, PE_OPTHDR_NUMBER_OF_RVA_AND_SIZES);
 
-    uint32_unpack(&dll[opthdr_ofs + (type == MAGIC_PE64 ? 108 : 92)], &num_entries);
+printf("o=%08x\n", o);
+    num_entries = uint32_get(&dll[opthdr_ofs + (type == MAGIC_PE64 ? 108 : 92)]);
 
     if(num_entries < 1)  /* no exports */
       return 1;
 
     datadir = (pe_data_directory*)((unsigned char*)opt_hdr_32 + (type == MAGIC_PE64 ? 112 : 96));
 
-    uint32_unpack((const void*)&datadir->virtual_address, &export_rva);
-    uint32_unpack((const void*)&datadir->size, &export_size);
-    uint16_unpack(&dll[pe_header_offset + 4 + 2], &nsections);
-    uint16_unpack(&dll[pe_header_offset + 4 + 16], &secptr);
+    export_rva = uint32_get(&datadir->virtual_address);
+    export_size = uint32_get(&datadir->size);
+    nsections = uint16_get(&dll[pe_header_offset + 4 + 2]);
+    secptr = uint16_get(&dll[pe_header_offset + 4 + 16]);
     secptr += pe_header_offset + 4 + 20;
 
     expptr = 0;
     for(i = 0; i < nsections; i++) {
       char sname[8];
       uint32 vaddr, vsize, fptr, secptr1 = secptr + 40 * i;
-      uint32_unpack(&dll[secptr1 + 12], &vaddr);
-      uint32_unpack(&dll[secptr1 + 16], &vsize);
-      uint32_unpack(&dll[secptr1 + 20], &fptr);
+      vaddr =  uint32_get(&dll[secptr1 + 12]);
+      vsize = uint32_get(&dll[secptr1 + 16]);
+      fptr = uint32_get(&dll[secptr1 + 20]);
       byte_copy(sname, 8, &dll[secptr1]);
       if(vaddr <= export_rva && vaddr + vsize > export_rva) {
         expptr = fptr + (export_rva - vaddr);
@@ -103,8 +108,8 @@ main(int argc, char* argv[]) {
     expdata = &dll[expptr];
     erva = expdata - export_rva;
 
-    uint32_unpack(&expdata[24], &nexp);
-    uint32_unpack(&expdata[32], &name_rvas);
+    nexp = uint32_get(&expdata[24]);
+    name_rvas = uint32_get(&expdata[32]);
 
     buffer_puts(buffer_1, "EXPORTS\n");
     //  buffer_putm(buffer_1, "LIBRARY ", dll_name, "\n", NULL);

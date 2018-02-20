@@ -254,8 +254,8 @@ else
   endif
 endif
 
-vpath lib $(BUILDDIR)
-VPATH = lib:$(BUILDDIR)
+vpath lib lib/array lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR)
+ VPATH = lib:lib/array:lib/buffer:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR)
 
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
@@ -572,6 +572,9 @@ $(BUILDDIR)ndelay.a: $(BUILDDIR)ndelay_on.o
 $(BUILDDIR)open.a: $(BUILDDIR)open_append.o $(BUILDDIR)open_read.o $(BUILDDIR)open_rw.o $(BUILDDIR)open_trunc.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
+$(BUILDDIR)pe_offsets.o: lib/pe/pe_offsets.c lib/pe.h lib/uint16.h lib/uint32.h  lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
 $(BUILDDIR)rdir.a: $(BUILDDIR)rdir_close.o $(BUILDDIR)rdir_open.o $(BUILDDIR)rdir_read.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
@@ -608,6 +611,9 @@ $(BUILDDIR)taia.a: $(BUILDDIR)taia_add.o $(BUILDDIR)taia_addsec.o $(BUILDDIR)tai
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 $(BUILDDIR)http.a: $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_readable.o $(BUILDDIR)http_sendreq.o $(BUILDDIR)http_writeable.o 
+	$(CROSS_COMPILE)$(AR) rcs $@ $^
+
+$(BUILDDIR)pe.a: $(BUILDDIR)pe_offsets.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 
@@ -751,17 +757,15 @@ ifeq ($(DO_STRIP),1)
 	#$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
-$(BUILDDIR)impgen$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)impgen.o $(BUILDDIR)mmap.a $(BUILDDIR)buffer.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)open.a $(BUILDDIR)uint32.a 
+$(BUILDDIR)impgen$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)impgen.o $(BUILDDIR)pe.a $(BUILDDIR)mmap.a $(BUILDDIR)buffer.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)open.a $(BUILDDIR)uint32.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	#$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
-
-
-
-$(BUILDDIR)xc8-wrapper/:
-	mkdir -p $@
-
+#
+#$(BUILDDIR)xc8-wrapper/:
+#	mkdir -p $@
+#
 $(BUILDDIR)compiler-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)dir.a $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a  $(BUILDDIR)byte.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
@@ -884,4 +888,7 @@ inst-slackpkg: slackpkg
 		cp -vf dirlist-`date +%Y%m%d`-slackware.txz "$$x"; \
   done
 
+$(BUILDDIR)io_sigpipe.o $(BUILDDIR)io_waituntil.o $(BUILDDIR)io_sendfile.o $(BUILDDIR)io_readwritefile.o $(BUILDDIR)io_canwrite.o $(BUILDDIR)io_trywrite.o $(BUILDDIR)io_tryread.o $(BUILDDIR)io_fd.o $(BUILDDIR)io_dontwantwrite.o $(BUILDDIR)io_eagain.o $(BUILDDIR)io_dontwantread.o $(BUILDDIR)io_waituntil2.o $(BUILDDIR)io_setcookie.o $(BUILDDIR)io_eagain_write.o $(BUILDDIR)io_timeouted.o $(BUILDDIR)winsock_init.o $(BUILDDIR)mmap_read_fd.o $(BUILDDIR)mmap_private.o $(BUILDDIR)mmap_unmap.o $(BUILDDIR)mmap_read.o $(BUILDDIR)mmap_map.o $(BUILDDIR)strptime.o $(BUILDDIR)iopause.o $(BUILDDIR)fnmatch.o $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_zero.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_fill.o $(BUILDDIR)byte_diff.o $(BUILDDIR)strlist_index_of.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_cat.o $(BUILDDIR)list_move_head.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)list_add_before.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)strlist_join.o $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_sort.o $(BUILDDIR)list_find.o $(BUILDDIR)list_init.o $(BUILDDIR)list_find_remove.o $(BUILDDIR)list_add_after.o $(BUILDDIR)list_remove.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)list_move_tail.o $(BUILDDIR)strlist_push.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)list_unshift.o $(BUILDDIR)list_push.o $(BUILDDIR)strlist_push_tokens.o $(BUILDDIR)strlist_push_unique.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_to_argv.o $(BUILDDIR)list_swap.o $(BUILDDIR)list_length.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_unshift.o $(BUILDDIR)taia_sub.o $(BUILDDIR)taia_frac.o $(BUILDDIR)taia_now.o $(BUILDDIR)taia_add.o $(BUILDDIR)taia_addsec.o $(BUILDDIR)taia_pack.o $(BUILDDIR)taia_tai.o $(BUILDDIR)taia_uint.o $(BUILDDIR)taia_less.o $(BUILDDIR)taia_approx.o $(BUILDDIR)taia_half.o $(BUILDDIR)taia_unpack.o $(BUILDDIR)socket_tcp6.o $(BUILDDIR)socket_tcp6b.o $(BUILDDIR)socket_v6loopback.o $(BUILDDIR)socket_ip4loopback.o $(BUILDDIR)socket_connect4.o $(BUILDDIR)socket_v4mappedprefix.o $(BUILDDIR)socket_noipv6.o $(BUILDDIR)socket_connected.o $(BUILDDIR)socket_connect6.o $(BUILDDIR)socket_tcp4.o $(BUILDDIR)socket_tcp4b.o $(BUILDDIR)pe_offsets.o $(BUILDDIR)isleap.o $(BUILDDIR)utf8.o $(BUILDDIR)hmap_add.o $(BUILDDIR)hmap_delete.o $(BUILDDIR)hmap_free_data.o $(BUILDDIR)hmap_truncate.o $(BUILDDIR)hmap_print_list.o $(BUILDDIR)hmap_destroy.o $(BUILDDIR)hmap_add_tuple_with_data.o $(BUILDDIR)hmap_is_locate.o $(BUILDDIR)hmap_set.o $(BUILDDIR)hmap_print_tree.o $(BUILDDIR)hmap_init.o $(BUILDDIR)hmap_print_table.o $(BUILDDIR)hmap_search.o $(BUILDDIR)hmap_internal.o $(BUILDDIR)scan_xlonglong.o $(BUILDDIR)scan_ulong.o $(BUILDDIR)scan_ulongn.o $(BUILDDIR)scan_ushort.o $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_ulonglong.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_uint.o $(BUILDDIR)scan_double.o $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_writeable.o $(BUILDDIR)http_sendreq.o $(BUILDDIR)http_readable.o: $(BUILDDIR)%.o: %.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
+-include Makefile.deps

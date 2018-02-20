@@ -49,6 +49,7 @@ HEADERS = \
 
 SOURCES = \
   impgen.c \
+  lib/pe/pe_offsets.c \
   lib/buffer/buffer_1.c \
   lib/buffer/buffer_flush.c \
   lib/buffer/buffer_put.c \

@@ -1,11 +1,15 @@
 #ifndef PE_H
 #define PE_H
 
+#include <sys/types.h>
+#include "uint16.h"
+#include "uint32.h"
+#include "uint64.h"
+
 typedef struct {
   unsigned char* x;
   size_t n;
-} pe_map;
-
+} pe_file;
 
 typedef struct {
   uint32 virtual_address;
@@ -44,9 +48,12 @@ typedef struct {
   uint16 characteristics; /* ImageCharacteristics */
 } pe_file_header;
 
+
+#define PE_SECTION_NAME_SIZE 8
+
 /* Quoting pecoff_v8.docx: "Entries in the section table are numbered starting from one (1)". */
 typedef struct {
-  unsigned char name[SECTION_NAME_SIZE]; /* TODO: Should we use char instead? */
+  unsigned char name[PE_SECTION_NAME_SIZE]; /* TODO: Should we use char instead? */
   union {
     uint32 physical_address; /* same value as next field */
     uint32 virtual_size;
@@ -151,16 +158,16 @@ typedef enum {
 } pe_type;
 
 typedef enum {
-  PE_OPTHDR_MAGIC                          = 0,
-  PE_OPTHDR_SIZE_OF_CODE                   = 1,
-  PE_OPTHDR_SIZE_OF_INITIALIZED_DATA       = 2,
-  PE_OPTHDR_SIZE_OF_UNINITIALIZED_DATA     = 3,
-  PE_OPTHDR_ADDRESS_OF_ENTRY_POINT         = 4,
-  PE_OPTHDR_BASE_OF_CODE                   = 5,
-  PE_OPTHDR_IMAGE_BASE                     = 6,
-  PE_OPTHDR_SECTION_ALIGNMENT              = 7,
-  PE_OPTHDR_FILE_ALIGNMENT                 = 8,
-  PE_OPTHDR_MAJOR_OPERATING_SYSTEM_VERSION = 9,
+  PE_OPTHDR_MAGIC                          =  0,
+  PE_OPTHDR_SIZE_OF_CODE                   =  1,
+  PE_OPTHDR_SIZE_OF_INITIALIZED_DATA       =  2,
+  PE_OPTHDR_SIZE_OF_UNINITIALIZED_DATA     =  3,
+  PE_OPTHDR_ADDRESS_OF_ENTRY_POINT         =  4,
+  PE_OPTHDR_BASE_OF_CODE                   =  5,
+  PE_OPTHDR_IMAGE_BASE                     =  6,
+  PE_OPTHDR_SECTION_ALIGNMENT              =  7,
+  PE_OPTHDR_FILE_ALIGNMENT                 =  8,
+  PE_OPTHDR_MAJOR_OPERATING_SYSTEM_VERSION =  9,
   PE_OPTHDR_MINOR_OPERATING_SYSTEM_VERSION = 10,
   PE_OPTHDR_MAJOR_IMAGE_VERSION            = 11,
   PE_OPTHDR_MINOR_IMAGE_VERSION            = 12,
@@ -180,14 +187,13 @@ typedef enum {
   PE_OPTHDR_BASE_OF_DATA                   = 26,
 } pe_opthdr_field;
 
-
 pe_file_header*
-pe_filehdr_ptr(const pe_file*);
+pe_filehdr_ptr(const void*);
 
 void*
-pe_opthdr_ptr(const pe_file*);
+pe_opthdr_ptr(const void*);
 
-uint32
-pe_opthdr_offset(const pe_file*, pe_opthdr_field);
+int32
+pe_opthdr_offset(const void*, pe_opthdr_field);
 
 #endif /* defined PE_H */
