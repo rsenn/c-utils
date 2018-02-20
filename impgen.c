@@ -73,7 +73,7 @@ main(int argc, char* argv[]) {
       buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_64->number_of_rva_and_sizes - (unsigned char*)opt_hdr_64);
       buffer_putnlflush(buffer_2);
     */
-    size_t o = pe_opthdr_offset(dll, PE_OPTHDR_NUMBER_OF_RVA_AND_SIZES);
+    /* size_t o = pe_opthdr_offset(dll, PE_OPTHDR_NUMBER_OF_RVA_AND_SIZES); */
 
     /*fprintf(stderr, "o=%08x, type=%d (0x%3x)\n", o, type, type); */
     num_entries = uint32_get(&dll[opthdr_ofs + (type == MAGIC_PE64 ? 108 : 92)]);
