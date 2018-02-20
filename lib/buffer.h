@@ -18,10 +18,15 @@ extern "C" {
 typedef SSIZE_T ssize_t;
 #endif
 
-#ifdef __GNUC__
+#ifdef __MSYS__
+#define ssize_t  int
+//#define ssize_t  __PTRDIFF_TYPE__
+#elif defined __GNUC__
 #define ssize_t __INTPTR_TYPE__
 #endif
 
+typedef ssize_t (buffer_op_fn)();
+typedef buffer_op_fn* buffer_op_ptr;
 
 typedef struct buffer {
   char *x;		/* actual buffer space */
