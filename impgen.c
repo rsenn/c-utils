@@ -25,88 +25,88 @@
 #include "uint32.h"
 
 typedef struct {
-  uint32 VirtualAddress;
-  uint32 Size;
-} PEDataDirectory;
+  uint32 virtual_address;
+  uint32 size;
+} pe_data_directory;
 
 typedef enum {
-    MAGIC_ROM   = 0x107,
-    MAGIC_PE32  = 0x10b,
-    MAGIC_PE64  = 0x20b // PE32+
+  MAGIC_ROM   = 0x107,
+  MAGIC_PE32  = 0x10b,
+  MAGIC_PE64  = 0x20b // PE32+
 } opt_type_e;
 
 /* 64 bit version of the PE Optional Header also known as IMAGE_OPTIONAL_HEADER64 */
 typedef struct {
   uint16 signature; //decimal number 267 for 32 bit, 523 for 64 bit, and 263 for a ROM image.
-  char MajorLinkerVersion;
-  char MinorLinkerVersion;
-  uint32 SizeOfCode;
-  uint32 SizeOfInitializedData;
-  uint32 SizeOfUninitializedData;
-  uint32 AddressOfEntryPoint;  //The RVA of the code entry point
-  uint32 BaseOfCode;
+  char major_linker_version;
+  char minor_linker_version;
+  uint32 size_of_code;
+  uint32 size_of_initialized_data;
+  uint32 size_of_uninitialized_data;
+  uint32 address_of_entry_point;  //The RVA of the code entry point
+  uint32 base_of_code;
   /*The next 21 fields are an extension to the COFF optional header format*/
-  uint64 ImageBase;
-  uint32 SectionAlignment;
-  uint32 FileAlignment;
-  uint16 MajorOSVersion;
-  uint16 MinorOSVersion;
-  uint16 MajorImageVersion;
-  uint16 MinorImageVersion;
-  uint16 MajorSubsystemVersion;
-  uint16 MinorSubsystemVersion;
-  uint32 Win32VersionValue;
-  uint32 SizeOfImage;
-  uint32 SizeOfHeaders;
-  uint32 Checksum;
-  uint16 Subsystem;
-  uint16 DLLCharacteristics;
-  uint64 SizeOfStackReserve;
-  uint64 SizeOfStackCommit;
-  uint64 SizeOfHeapReserve;
-  uint64 SizeOfHeapCommit;
-  uint32 LoaderFlags;
-  uint32 NumberOfRvaAndSizes;
-  PEDataDirectory DataDirectory[0];     //Can have any number of elements, matching the number in NumberOfRvaAndSizes.
-} PE64OptHeader;                                        //However, it is always 16 in PE files.
+  uint64 image_base;
+  uint32 section_alignment;
+  uint32 file_alignment;
+  uint16 majoros_version;
+  uint16 minoros_version;
+  uint16 major_image_version;
+  uint16 minor_image_version;
+  uint16 major_subsystem_version;
+  uint16 minor_subsystem_version;
+  uint32 win32_version_value;
+  uint32 size_of_image;
+  uint32 size_of_headers;
+  uint32 checksum;
+  uint16 subsystem;
+  uint16 dll_characteristics;
+  uint64 size_of_stack_reserve;
+  uint64 size_of_stack_commit;
+  uint64 size_of_heap_reserve;
+  uint64 size_of_heap_commit;
+  uint32 loader_flags;
+  uint32 number_of_rva_and_sizes;
+  pe_data_directory data_directory[0];     //Can have any number of elements, matching the number in number_of_rva_and_sizes.
+} pe64_opt_header;                                        //However, it is always 16 in PE files.
 
 /* This is the 32 bit version of the PE Optional Header presented as a C data structure: */
 
 /* 32 bit version of the PE Optional Header also known as IMAGE_OPTIONAL_HEADER */
-typedef struct PE32OptHeader {
+typedef struct pe32_opt_header {
   uint16 signature; //decimal number 267 for 32 bit, 523 for 64 bit, and 263 for a ROM image.
-  char MajorLinkerVersion;
-  char MinorLinkerVersion;
-  uint32 SizeOfCode;
-  uint32 SizeOfInitializedData;
-  uint32 SizeOfUninitializedData;
-  uint32 AddressOfEntryPoint;  //The RVA of the code entry point
-  uint32 BaseOfCode;
-  uint32 BaseOfData;
+  char major_linker_version;
+  char minor_linker_version;
+  uint32 size_of_code;
+  uint32 size_of_initialized_data;
+  uint32 size_of_uninitialized_data;
+  uint32 address_of_entry_point;  //The RVA of the code entry point
+  uint32 base_of_code;
+  uint32 base_of_data;
   /*The next 21 fields are an extension to the COFF optional header format*/
-  uint32 ImageBase;
-  uint32 SectionAlignment;
-  uint32 FileAlignment;
-  uint16 MajorOSVersion;
-  uint16 MinorOSVersion;
-  uint16 MajorImageVersion;
-  uint16 MinorImageVersion;
-  uint16 MajorSubsystemVersion;
-  uint16 MinorSubsystemVersion;
-  uint32 Win32VersionValue;
-  uint32 SizeOfImage;
-  uint32 SizeOfHeaders;
-  uint32 Checksum;
-  uint16 Subsystem;
-  uint16 DLLCharacteristics;
-  uint32 SizeOfStackReserve;
-  uint32 SizeOfStackCommit;
-  uint32 SizeOfHeapReserve;
-  uint32 SizeOfHeapCommit;
-  uint32 LoaderFlags;
-  uint32 NumberOfRvaAndSizes;
-  PEDataDirectory DataDirectory[0];     //Can have any number of elements, matching the number in NumberOfRvaAndSizes.
-} PE32OptHeader;                                       //However, it is always 16 in PE files.
+  uint32 image_base;
+  uint32 section_alignment;
+  uint32 file_alignment;
+  uint16 majoros_version;
+  uint16 minoros_version;
+  uint16 major_image_version;
+  uint16 minor_image_version;
+  uint16 major_subsystem_version;
+  uint16 minor_subsystem_version;
+  uint32 win32_version_value;
+  uint32 size_of_image;
+  uint32 size_of_headers;
+  uint32 checksum;
+  uint16 subsystem;
+  uint16 dll_characteristics;
+  uint32 size_of_stack_reserve;
+  uint32 size_of_stack_commit;
+  uint32 size_of_heap_reserve;
+  uint32 size_of_heap_commit;
+  uint32 loader_flags;
+  uint32 number_of_rva_and_sizes;
+  pe_data_directory data_directory[0];     //Can have any number of elements, matching the number in number_of_rva_and_sizes.
+} pe32_opt_header;                                       //However, it is always 16 in PE files.
 
 int
 main(int argc, char* argv[]) {
@@ -120,9 +120,9 @@ main(int argc, char* argv[]) {
     uint16 nsections, secptr;
     uint32 name_rvas, nexp;
     char *expdata, *erva;
-    PE32OptHeader* opthdr;
-    PE64OptHeader* opthdr64;
-    PEDataDirectory* datadir;
+    pe32_opt_header* opthdr;
+    pe64_opt_header* opthdr64;
+    pe_data_directory* datadir;
     opt_type_e* type;
 
     filename = argv[optarg];
@@ -140,29 +140,29 @@ main(int argc, char* argv[]) {
     uint32_unpack(&dll[0x3c], &pe_header_offset);
 
     opthdr_ofs = pe_header_offset + 4 + 20;
-  
-    opthdr = (PE32OptHeader*)&dll[pe_header_offset + 4 + 20];
-    opthdr64 = (PE64OptHeader*)&dll[pe_header_offset + 4 + 20];
 
-     type = opthdr->signature;
+    opthdr = (pe32_opt_header*)&dll[pe_header_offset + 4 + 20];
+    opthdr64 = (pe64_opt_header*)&dll[pe_header_offset + 4 + 20];
 
-buffer_puts(buffer_2, "OptHdr directory: ");
-buffer_putulong(buffer_2, (unsigned char*)&opthdr->NumberOfRvaAndSizes-(unsigned char*)opthdr);
-buffer_putnlflush(buffer_2);
-buffer_puts(buffer_2, "OptHdr64 directory: ");
-buffer_putulong(buffer_2, (unsigned char*)&opthdr64->NumberOfRvaAndSizes-(unsigned char*)opthdr64);
-buffer_putnlflush(buffer_2);
+    type = opthdr->signature;
 
+/*    buffer_puts(buffer_2, "opt_hdr directory: ");
+    buffer_putulong(buffer_2, (unsigned char*)&opthdr->number_of_rva_and_sizes - (unsigned char*)opthdr);
+    buffer_putnlflush(buffer_2);
+    buffer_puts(buffer_2, "opt_hdr_64 directory: ");
+    buffer_putulong(buffer_2, (unsigned char*)&opthdr64->number_of_rva_and_sizes - (unsigned char*)opthdr64);
+    buffer_putnlflush(buffer_2);
+*/
 
     uint32_unpack(&dll[opthdr_ofs + (type == MAGIC_PE64 ? 108 : 92)], &num_entries);
 
     if(num_entries < 1)  /* no exports */
       return 1;
 
-    datadir = (PEDataDirectory*)((unsigned char*)opthdr + (type == MAGIC_PE64 ? 112 : 96));
+    datadir = (pe_data_directory*)((unsigned char*)opthdr + (type == MAGIC_PE64 ? 112 : 96));
 
-    uint32_unpack((const void*)&datadir->VirtualAddress, &export_rva);
-    uint32_unpack((const void*)&datadir->Size, &export_size);
+    uint32_unpack((const void*)&datadir->virtual_address, &export_rva);
+    uint32_unpack((const void*)&datadir->size, &export_size);
     uint16_unpack(&dll[pe_header_offset + 4 + 2], &nsections);
     uint16_unpack(&dll[pe_header_offset + 4 + 16], &secptr);
     secptr += pe_header_offset + 4 + 20;
