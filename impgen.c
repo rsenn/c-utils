@@ -30,7 +30,7 @@ main(int argc, char* argv[]) {
   int optarg;
 
   for(optarg = 1; optarg < argc; ++optarg) {
-    char *dll, *filename/*, *dll_name*/;
+    char *dll, *filename, *dll_name;
     size_t dllsz;
     uint32 pe_header_offset, opthdr_ofs, num_entries, i;
     uint32 export_rva, export_size, expptr;
@@ -39,7 +39,7 @@ main(int argc, char* argv[]) {
     char *expdata, *erva;
     pe_dos_header* dos_hdr;
     pe32_opt_header* opt_hdr_32;
-    //pe64_opt_header* opt_hdr_64;
+    /*pe64_opt_header* opt_hdr_64; */
     pe_data_directory* datadir;
     pe_type type;
 
@@ -62,20 +62,20 @@ main(int argc, char* argv[]) {
     opthdr_ofs = pe_header_offset + 4 + 20;
 
     opt_hdr_32 = (pe32_opt_header*)&dll[pe_header_offset + 4 + 20];
-    opt_hdr_64 = (pe64_opt_header*)&dll[pe_header_offset + 4 + 20];
+    /*opt_hdr_64 = (pe64_opt_header*)&dll[pe_header_offset + 4 + 20]; */
 
-    type = uint16_get(&opt_hdr_32->magic);
+    type = uint16_get(&opt_hdr_32->magic);  
+    /*
+      buffer_puts(buffer_2, "opt_hdr directory: ");
+      buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_32->number_of_rva_and_sizes - (unsigned char*)opt_hdr_32);
+      buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_2, "opt_hdr_64 directory: ");
+      buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_64->number_of_rva_and_sizes - (unsigned char*)opt_hdr_64);
+      buffer_putnlflush(buffer_2);
+    */
+    size_t o = pe_opthdr_offset(dll, PE_OPTHDR_NUMBER_OF_RVA_AND_SIZES);
 
-/*    buffer_puts(buffer_2, "opt_hdr directory: ");
-    buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_32->number_of_rva_and_sizes - (unsigned char*)opt_hdr_32);
-    buffer_putnlflush(buffer_2);
-    buffer_puts(buffer_2, "opt_hdr_64 directory: ");
-    buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_64->number_of_rva_and_sizes - (unsigned char*)opt_hdr_64);
-    buffer_putnlflush(buffer_2);
-*/
-size_t o = pe_opthdr_offset(dll, PE_OPTHDR_NUMBER_OF_RVA_AND_SIZES);
-
-printf("o=%08x\n", o);
+    /*fprintf(stderr, "o=%08x, type=%d (0x%3x)\n", o, type, type); */
     num_entries = uint32_get(&dll[opthdr_ofs + (type == MAGIC_PE64 ? 108 : 92)]);
 
     if(num_entries < 1)  /* no exports */
@@ -112,7 +112,8 @@ printf("o=%08x\n", o);
     name_rvas = uint32_get(&expdata[32]);
 
     buffer_puts(buffer_1, "EXPORTS\n");
-    //  buffer_putm(buffer_1, "LIBRARY ", dll_name, "\n", NULL);
+    (void)dll_name;
+    /* buffer_putm(buffer_1, "LIBRARY ", dll_name, "\n", NULL); */
 
     for(i = 0; i < nexp; i++) {
       uint32 name_rva;
@@ -126,4 +127,3 @@ printf("o=%08x\n", o);
 
   return 0;
 }
-
