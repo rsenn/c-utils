@@ -62,6 +62,12 @@ $(BUILDDIR)strlist_push_sa.o: lib/strlist/strlist_push_sa.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_unshift.o: lib/strlist/strlist_unshift.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)iarray_allocate.o: lib/iarray/iarray_allocate.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)iarray_get.o: lib/iarray/iarray_get.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)iarray_init.o: lib/iarray/iarray_init.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)uint32_pack.o: lib/uint32/uint32_pack.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)uint32_pack_big.o: lib/uint32/uint32_pack_big.c
@@ -108,12 +114,6 @@ $(BUILDDIR)str_tok.o: lib/str/str_tok.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dir_close.o: lib/dir/dir_close.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)rdir_read.o: lib/dir/rdir_read.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)rdir_open.o: lib/dir/rdir_open.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)rdir_close.o: lib/dir/rdir_close.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dir_open.o: lib/dir/dir_open.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dir_type.o: lib/dir/dir_type.c
@@ -125,6 +125,12 @@ $(BUILDDIR)dir_name.o: lib/dir/dir_name.c
 $(BUILDDIR)dir_time.o: lib/dir/dir_time.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)time_table_spd.o: lib/time_table_spd.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)rdir_read.o: lib/rdir/rdir_read.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)rdir_open.o: lib/rdir/rdir_open.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)rdir_close.o: lib/rdir/rdir_close.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_copy.o: lib/stralloc/stralloc_copy.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -188,6 +194,10 @@ $(BUILDDIR)playlist_read.o: lib/playlist/playlist_read.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)playlist_write_finish.o: lib/playlist/playlist_write_finish.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_push.o: lib/strarray/strarray_push.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_pushd.o: lib/strarray/strarray_pushd.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)uint64_pack.o: lib/uint64/uint64_pack.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)uint64_unpack_big.o: lib/uint64/uint64_unpack_big.c
@@ -200,13 +210,7 @@ $(BUILDDIR)winsock2errno.o: lib/winsock2errno.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)array_catb.o: lib/array/array_catb.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)iarray_allocate.o: lib/array/iarray_allocate.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)strarray_push.o: lib/array/strarray_push.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)array_truncate.o: lib/array/array_truncate.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)iarray_get.o: lib/array/iarray_get.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)array_cats0.o: lib/array/array_cats0.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -230,15 +234,11 @@ $(BUILDDIR)array_get.o: lib/array/array_get.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)array_start.o: lib/array/array_start.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)strarray_pushd.o: lib/array/strarray_pushd.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)array_allocate.o: lib/array/array_allocate.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)array_equal.o: lib/array/array_equal.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)array_cat.o: lib/array/array_cat.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)iarray_init.o: lib/array/iarray_init.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putm_internal_flush.o: lib/buffer/buffer_putm_internal_flush.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

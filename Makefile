@@ -572,9 +572,6 @@ $(BUILDDIR)ndelay.a: $(BUILDDIR)ndelay_on.o
 $(BUILDDIR)open.a: $(BUILDDIR)open_append.o $(BUILDDIR)open_read.o $(BUILDDIR)open_rw.o $(BUILDDIR)open_trunc.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
-$(BUILDDIR)pe_offsets.o: lib/pe/pe_offsets.c lib/pe.h lib/uint16.h lib/uint32.h  lib/uint64.h
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-
 $(BUILDDIR)rdir.a: $(BUILDDIR)rdir_close.o $(BUILDDIR)rdir_open.o $(BUILDDIR)rdir_read.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
@@ -619,24 +616,6 @@ $(BUILDDIR)pe.a: $(BUILDDIR)pe_offsets.o
 
 $(BUILDDIR)list.a: $(patsubst %.c,$(BUILDDIR)%.o,$(notdir $(wildcard lib/list_*.c)))
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
-
-$(BUILDDIR)playlist_m3u.o: lib/playlist/playlist_m3u.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)playlist_init.o: lib/playlist/playlist_init.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)playlist_pls.o: lib/playlist/playlist_pls.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)playlist_xspf.o: lib/playlist/playlist_xspf.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)playlist_read.o: lib/playlist/playlist_read.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)playlist_write_start.o: lib/playlist/playlist_write_start.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)playlist_write_entry.o: lib/playlist/playlist_write_entry.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-
-$(BUILDDIR)playlist_write_finish.o: lib/playlist/playlist_write_finish.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(BUILDDIR)playlist.a: $(addprefix $(BUILDDIR),playlist_m3u.o playlist_init.o playlist_pls.o playlist_xspf.o playlist_read.o playlist_write_start.o playlist_write_entry.o playlist_write_finish.o )
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
