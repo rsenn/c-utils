@@ -120,8 +120,8 @@ main(int argc, char* argv[]) {
     uint16 nsections, secptr;
     uint32 name_rvas, nexp;
     char *expdata, *erva;
-    pe32_opt_header* opthdr;
-    pe64_opt_header* opthdr64;
+    pe32_opt_header* opt_hdr_32;
+    pe64_opt_header* opt_hdr_64;
     pe_data_directory* datadir;
     opt_type_e* type;
 
@@ -141,16 +141,16 @@ main(int argc, char* argv[]) {
 
     opthdr_ofs = pe_header_offset + 4 + 20;
 
-    opthdr = (pe32_opt_header*)&dll[pe_header_offset + 4 + 20];
-    opthdr64 = (pe64_opt_header*)&dll[pe_header_offset + 4 + 20];
+    opt_hdr_32 = (pe32_opt_header*)&dll[pe_header_offset + 4 + 20];
+    opt_hdr_64 = (pe64_opt_header*)&dll[pe_header_offset + 4 + 20];
 
-    type = opthdr->signature;
+    type = opt_hdr_32->signature;
 
 /*    buffer_puts(buffer_2, "opt_hdr directory: ");
-    buffer_putulong(buffer_2, (unsigned char*)&opthdr->number_of_rva_and_sizes - (unsigned char*)opthdr);
+    buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_32->number_of_rva_and_sizes - (unsigned char*)opt_hdr_32);
     buffer_putnlflush(buffer_2);
     buffer_puts(buffer_2, "opt_hdr_64 directory: ");
-    buffer_putulong(buffer_2, (unsigned char*)&opthdr64->number_of_rva_and_sizes - (unsigned char*)opthdr64);
+    buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_64->number_of_rva_and_sizes - (unsigned char*)opt_hdr_64);
     buffer_putnlflush(buffer_2);
 */
 
@@ -159,7 +159,7 @@ main(int argc, char* argv[]) {
     if(num_entries < 1)  /* no exports */
       return 1;
 
-    datadir = (pe_data_directory*)((unsigned char*)opthdr + (type == MAGIC_PE64 ? 112 : 96));
+    datadir = (pe_data_directory*)((unsigned char*)opt_hdr_32 + (type == MAGIC_PE64 ? 112 : 96));
 
     uint32_unpack((const void*)&datadir->virtual_address, &export_rva);
     uint32_unpack((const void*)&datadir->size, &export_size);
