@@ -38,6 +38,7 @@ mingw | mingw32 | mingw64 {
 INCLUDEPATH += . $$PWD/lib
 
 HEADERS = \
+  lib/pe.h \
   lib/byte.h \
   lib/buffer.h \
   lib/uint64.h \

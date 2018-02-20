@@ -40,7 +40,7 @@ main(int argc, char* argv[]) {
     pe32_opt_header* opt_hdr_32;
     pe64_opt_header* opt_hdr_64;
     pe_data_directory* datadir;
-    opt_type_e* type;
+    pe_type* type;
 
     filename = argv[optarg];
 
