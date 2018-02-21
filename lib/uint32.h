@@ -10,10 +10,13 @@
 #endif // !defined(_MSC_VER)
 
 #ifdef __MSYS__
-# define __MS_types__
+# ifndef __MS_types__
+#  define __MS_types__
+# endif
 # include <sys/types.h>
 # ifdef __BIT_TYPES_DEFINED__
 #  define uint32_t u_int32_t
+#  define int32_t int
 # endif
 #endif
 

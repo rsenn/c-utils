@@ -1,6 +1,6 @@
 #include "fmt.h"
+#include "uint32.h"
 #include <sys/types.h>
-#include <stdint.h>
 
 static void fmt_oct3(char* dest,unsigned char w) {
   dest[2]=(char)((w&7)+'0'); w>>=3;
@@ -8,7 +8,7 @@ static void fmt_oct3(char* dest,unsigned char w) {
   dest[0]=(char)((w&7)+'0');
 }
 
-size_t fmt_escapecharc(char* dest,uint32_t ch) {
+size_t fmt_escapecharc(char* dest,uint32 ch) {
   char c;
   if(ch>0xff) return 0;
   switch (ch) {

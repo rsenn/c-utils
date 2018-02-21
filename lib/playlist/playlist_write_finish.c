@@ -6,6 +6,10 @@
 #include "byte.h"
 #include "fmt.h"
 
+#ifndef __MSYS__
+#define lseek lseek64
+#endif
+
 int
 playlist_write_finish(buffer* b, playlist* pl) {
   switch(pl->type) {
@@ -21,12 +25,12 @@ playlist_write_finish(buffer* b, playlist* pl) {
 
       buffer_flush(b); 
 
-      lseek64(b->fd, pl->num_items_pos, 0);
+      lseek(b->fd, pl->num_items_pos, 0);
 
       buffer_put(b, lenbuf, sizeof(lenbuf));
       buffer_flush(b);
 
-      lseek64(b->fd, 0, SEEK_END);
+      lseek(b->fd, 0, SEEK_END);
 
       break;
     }
