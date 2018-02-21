@@ -149,5 +149,9 @@ main(int argc, char *argv[]) {
   playlist_write_finish(&outfile, &pls1);
   buffer_flush(&outfile);
   buffer_close(&outfile);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5662437229f8cf0600b4e48610b721c55521bcfa
   return 0;
 }

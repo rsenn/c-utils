@@ -50,38 +50,38 @@ lib/safemult.h
 
 
 SOURCES = list-r.c \
-  lib/array_allocate.c \
-  lib/array_catb.c \
-  lib/array_fail.c \
-  lib/array_length.c \
-  lib/array_start.c \
-  lib/buffer_1.c \
-  lib/buffer_2.c \
-  lib/buffer_flush.c \
-  lib/buffer_put.c \
-  lib/buffer_putc.c \
-  lib/buffer_puts.c \
-  lib/buffer_putsa.c \
-  lib/buffer_stubborn.c \
-  lib/byte_copy.c \
-  lib/byte_zero.c \
-  lib/dir_close.c \
-  lib/dir_name.c \
-  lib/dir_open.c \
-  lib/dir_read.c \
-  lib/dir_type.c \
-  lib/fmt_uint64.c \
+  lib/array/array_allocate.c \
+  lib/array/array_catb.c \
+  lib/array/array_fail.c \
+  lib/array/array_length.c \
+  lib/array/array_start.c \
+  lib/buffer/buffer_1.c \
+  lib/buffer/buffer_2.c \
+  lib/buffer/buffer_flush.c \
+  lib/buffer/buffer_put.c \
+  lib/buffer/buffer_putc.c \
+  lib/buffer/buffer_puts.c \
+  lib/buffer/buffer_putsa.c \
+  lib/buffer/buffer_stubborn.c \
+  lib/byte/byte_copy.c \
+  lib/byte/byte_zero.c \
+  lib/dir/dir_close.c \
+  lib/dir/dir_name.c \
+  lib/dir/dir_open.c \
+  lib/dir/dir_read.c \
+  lib/dir/dir_type.c \
+  lib/fmt/fmt_uint64.c \
   lib/fnmatch.c \
-  lib/stralloc_catb.c \
-  lib/stralloc_cats.c \
-  lib/stralloc_copyb.c \
-  lib/stralloc_copys.c \
-  lib/stralloc_init.c \
-  lib/stralloc_nul.c \
-  lib/stralloc_ready.c \
-  lib/stralloc_readyplus.c \
-  lib/str_diffn.c \
-  lib/str_len.c \
+  lib/stralloc/stralloc_catb.c \
+  lib/stralloc/stralloc_cats.c \
+  lib/stralloc/stralloc_copyb.c \
+  lib/stralloc/stralloc_copys.c \
+  lib/stralloc/stralloc_init.c \
+  lib/stralloc/stralloc_nul.c \
+  lib/stralloc/stralloc_ready.c \
+  lib/stralloc/stralloc_readyplus.c \
+  lib/str/str_diffn.c \
+  lib/str/str_len.c \
   lib/umult64.c \
   lib/utf8.c
 

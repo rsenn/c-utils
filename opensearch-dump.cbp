@@ -69,70 +69,70 @@
     <Unit filename="lib/buffer.h">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/buffer_1.c">
+    <Unit filename="lib/buffer/buffer_1.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/buffer_2.c">
+    <Unit filename="lib/buffer/buffer_2.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/buffer_flush.c">
+    <Unit filename="lib/buffer/buffer_flush.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/buffer_put.c">
+    <Unit filename="lib/buffer/buffer_put.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/buffer_putflush.c">
+    <Unit filename="lib/buffer/buffer_putflush.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/buffer_putnlflush.c">
+    <Unit filename="lib/buffer/buffer_putnlflush.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/buffer_puts.c">
+    <Unit filename="lib/buffer/buffer_puts.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/buffer_putsa.c">
+    <Unit filename="lib/buffer/buffer_putsa.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/buffer_stubborn.c">
+    <Unit filename="lib/buffer/buffer_stubborn.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/byte_copy.c">
+    <Unit filename="lib/byte/byte_copy.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/str_len.c">
+    <Unit filename="lib/str/str_len.c">
       <Option compilerVar="CC"/>
     </Unit>
     <Unit filename="lib/stralloc.h">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_cat.c">
+    <Unit filename="lib/stralloc/stralloc_cat.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_catb.c">
+    <Unit filename="lib/stralloc/stralloc_catb.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_cats.c">
+    <Unit filename="lib/stralloc/stralloc_cats.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_copy.c">
+    <Unit filename="lib/stralloc/stralloc_copy.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_copyb.c">
+    <Unit filename="lib/stralloc/stralloc_copyb.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_copys.c">
+    <Unit filename="lib/stralloc/stralloc_copys.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_init.c">
+    <Unit filename="lib/stralloc/stralloc_init.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_ready.c">
+    <Unit filename="lib/stralloc/stralloc_ready.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_readyplus.c">
+    <Unit filename="lib/stralloc/stralloc_readyplus.c">
       <Option compilerVar="CC"/>
     </Unit>
-    <Unit filename="lib/stralloc_zero.c">
+    <Unit filename="lib/stralloc/stralloc_zero.c">
       <Option compilerVar="CC"/>
     </Unit>
     <Unit filename="opensearch-dump.c">

@@ -5,7 +5,7 @@ int main() {
 
   struct rdir_s rd;
   char *s;
-  int r = rdir_open(&rd, ".");
+  int r = rdir_open(&rd, "/etc");
 
   while((s = rdir_read(&rd))) {
     buffer_putm(buffer_1, s, "\n", NULL);

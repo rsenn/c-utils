@@ -30,12 +30,16 @@
 #endif
 
 #ifdef __GNUC__
-#ifndef uint64_t
-#define uint64_t __UINT64_TYPE__
-#endif
-#ifndef int64_t
-#define int64_t __INT64_TYPE__
-#endif
+# ifndef uint64_t
+#  ifdef __UINT64_TYPE__
+#   define uint64_t __UINT64_TYPE__
+#  elif defined __INT64_TYPE__
+#   define uint64_t unsigned __INT64_TYPE__
+#  endif
+# endif
+# ifndef int64_t
+#  define int64_t __INT64_TYPE__
+# endif
 #endif
 
 #ifdef __cplusplus
