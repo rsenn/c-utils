@@ -1,3 +1,8 @@
+#ifdef _WIN32
+#include <w32api/mswsock.h>
+#define cmsghdr wsacmsghdr 
+#endif
+
 #ifdef __MINGW32__
 #include "io_internal.h"
 #include <errno.h>

@@ -4,7 +4,6 @@
 #include "byte.h"
 #include "str.h"
 #include <unistd.h>
-#include <libgen.h>
 
 playlist pls1, pls2;
 static buffer outfile;
@@ -12,6 +11,13 @@ static char outbuf[1024];
 
 static  buffer inbuf;
 
+static const char*
+mybasename(char* name) {
+  size_t n = str_rchr(name, '/');
+  if(name[n] != '\0')
+    return &name[n+1];
+  return name;
+}
 
 static void
 playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 length) {
@@ -70,7 +76,7 @@ main(int argc, char *argv[]) {
       else if(!str_diff(optarg, "xspf"))  outtype = XSPF;
       break;
     case 'h':
-      usage(basename(argv[0]));
+      usage(mybasename(argv[0]));
       exit(EXIT_SUCCESS);
     default: /* '?' */
       buffer_putm(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n");
@@ -125,7 +131,7 @@ main(int argc, char *argv[]) {
   }
 
 //buffer_init(&outfile, write, open_trunc("playlist.out"), outbuf, sizeof(outbuf));
-  buffer_init(&outfile, write, out_fd, outbuf, sizeof(outbuf));
+  buffer_init(&outfile, (buffer_op_ptr)&write, out_fd, outbuf, sizeof(outbuf));
 // outfile.deinit  = &buffer_close;
 
   playlist_write_start(&outfile, &pls1);
@@ -143,4 +149,6 @@ main(int argc, char *argv[]) {
   playlist_write_finish(&outfile, &pls1);
   buffer_flush(&outfile);
   buffer_close(&outfile);
+  
+  return 0;
 }

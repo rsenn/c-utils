@@ -46,11 +46,11 @@ HEADERS = \
     lib/ndelay.h \
     lib/socket.h \
 
-SOURCES = httptest.c lib/buffer_1.c lib/buffer_2.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_get.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_get_token.c lib/buffer_init.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_putsa.c lib/buffer_puts.c lib/buffer_putulong.c lib/buffer_stubborn2.c lib/buffer_stubborn.c lib/byte_chr.c lib/byte_copy.c lib/byte_zero.c lib/fmt_long.c lib/fmt_ulong.c lib/http_get.c lib/http_init.c lib/http_readable.c lib/http_sendreq.c lib/iarray_allocate.c lib/iarray_get.c lib/iarray_init.c lib/io_fd.c lib/io_nonblock.c lib/iopause.c lib/ndelay_on.c \
-lib/scan_ulong.c lib/scan_ulongn.c lib/scan_fromhex.c lib/scan_xlong.c \
-lib/socket_connect4.c lib/socket_tcp4b.c lib/socket_tcp4.c lib/stralloc_append.c lib/stralloc_catb.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c \
-  lib/str_len.c lib/str_chr.c \
-lib/taia_approx.c lib/taia_frac.c lib/taia_less.c lib/taia_sub.c lib/taia_uint.c lib/uint16_pack_big.c
+SOURCES = httptest.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get.c lib/buffer/buffer_getc.c lib/buffer/buffer_getline.c lib/buffer/buffer_get_token.c lib/buffer/buffer_init.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_putsa.c lib/buffer/buffer_puts.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn2.c lib/buffer/buffer_stubborn.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_zero.c lib/fmt/fmt_long.c lib/fmt/fmt_ulong.c lib/http/http_get.c lib/http/http_init.c lib/http/http_readable.c lib/http/http_sendreq.c lib/iarray/iarray_allocate.c lib/iarray/iarray_get.c lib/iarray/iarray_init.c lib/io/io_fd.c lib/io/io_nonblock.c lib/iopause.c lib/ndelay/ndelay_on.c \
+lib/scan/scan_ulong.c lib/scan/scan_ulongn.c lib/scan/scan_fromhex.c lib/scan/scan_xlong.c \
+lib/socket/socket_connect4.c lib/socket/socket_tcp4b.c lib/socket/socket_tcp4.c lib/stralloc/stralloc_append.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_copyb.c lib/stralloc/stralloc_copys.c lib/stralloc/stralloc_init.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c \
+  lib/str/str_len.c lib/str/str_chr.c \
+lib/taia/taia_approx.c lib/taia/taia_frac.c lib/taia/taia_less.c lib/taia/taia_sub.c lib/taia/taia_uint.c lib/uint16/uint16_pack_big.c
 
 
 include(deployment.pri)

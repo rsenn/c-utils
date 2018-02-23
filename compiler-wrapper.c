@@ -25,7 +25,7 @@
 #include "buffer.h"
 #include "dir_internal.h"
 
-#define tolower(c) ((c)>='A'&&(c)<='Z'?(c)+0x20:(c))
+#define mytolower(c) ((c)>='A'&&(c)<='Z'?(c)+0x20:(c))
 
 static char* argv0;
 static buffer* debug_buf, *err_buf;
@@ -129,7 +129,7 @@ process_option(const char* optstr, const char*  nextopt, int* i) {
     stralloc_copys(&output_dir, nextopt);
     ++*i;
     return 0;
-  } else if(!str_diff(optstr, "pass1") || (str_len(optstr) == 1 && tolower(*optstr) == 'c')) {
+  } else if(!str_diff(optstr, "pass1") || (str_len(optstr) == 1 && mytolower(*optstr) == 'c')) {
     mode = COMPILE_AND_ASSEMBLE;
   } else if(!str_diff(optstr, "S") || (str_len(optstr) == 1 && toupper(*optstr) == 'S')) {
     mode = COMPILE;

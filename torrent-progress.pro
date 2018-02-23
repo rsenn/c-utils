@@ -23,28 +23,28 @@ HEADERS =
 
 SOURCES = torrent-progress.c \
   lib/buffer.h \
-  lib/buffer_1.c \
-  lib/buffer_feed.c \
-  lib/buffer_flush.c \
-  lib/buffer_get.c \
-  lib/buffer_put.c \
-  lib/buffer_putflush.c \
-  lib/buffer_putnlflush.c \
-  lib/buffer_puts.c \
-  lib/buffer_putulong.c \
-  lib/buffer_stubborn.c \
-  lib/buffer_stubborn2.c \
+  lib/buffer/buffer_1.c \
+  lib/buffer/buffer_feed.c \
+  lib/buffer/buffer_flush.c \
+  lib/buffer/buffer_get.c \
+  lib/buffer/buffer_put.c \
+  lib/buffer/buffer_putflush.c \
+  lib/buffer/buffer_putnlflush.c \
+  lib/buffer/buffer_puts.c \
+  lib/buffer/buffer_putulong.c \
+  lib/buffer/buffer_stubborn.c \
+  lib/buffer/buffer_stubborn2.c \
   lib/byte.h \
-  lib/byte_copy.c \
+  lib/byte/byte_copy.c \
   lib/fmt.h \
-  lib/fmt_ulong.c \
+  lib/fmt/fmt_ulong.c \
   lib/mmap.h \
-  lib/mmap_map.c \
-  lib/mmap_unmap.c \
+  lib/mmap/mmap_map.c \
+  lib/mmap/mmap_unmap.c \
   lib/open.h \
-  lib/open_read.c \
+  lib/open/open_read.c \
   lib/str.h \
-  lib/str_len.c
+  lib/str/str_len.c
 
 include(deployment.pri)
 qtcAddDeployment()

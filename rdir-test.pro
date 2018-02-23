@@ -47,38 +47,38 @@ HEADERS = \
 
 
 SOURCES = \
-  lib/buffer_1.c \
-  lib/buffer_2.c \
-  lib/buffer_flush.c \
-  lib/buffer_put.c \
-  lib/buffer_putflush.c \
-  lib/buffer_putm_internal.c \
-  lib/buffer_putnlflush.c \
-  lib/buffer_puts.c \
-  lib/buffer_stubborn.c \
-  lib/byte_copy.c \
-  lib/byte_zero.c \
-  lib/dir_close.c \
-  lib/dir_open.c \
-  lib/dir_read.c \
-  lib/dir_type.c \
+  lib/buffer/buffer_1.c \
+  lib/buffer/buffer_2.c \
+  lib/buffer/buffer_flush.c \
+  lib/buffer/buffer_put.c \
+  lib/buffer/buffer_putflush.c \
+  lib/buffer/buffer_putm_internal.c \
+  lib/buffer/buffer_putnlflush.c \
+  lib/buffer/buffer_puts.c \
+  lib/buffer/buffer_stubborn.c \
+  lib/byte/byte_copy.c \
+  lib/byte/byte_zero.c \
+  lib/dir/dir_close.c \
+  lib/dir/dir_open.c \
+  lib/dir/dir_read.c \
+  lib/dir/dir_type.c \
   lib/fnmatch.c \
   rdir-test.c \
-  lib/rdir_close.c \
-  lib/rdir_open.c \
-  lib/rdir_read.c \
-  lib/stralloc_append.c \
-  lib/stralloc_catb.c \
-  lib/stralloc_catc.c \
-  lib/stralloc_cats.c \
-  lib/stralloc_copyb.c \
-  lib/stralloc_copys.c \
-  lib/stralloc_free.c \
-  lib/stralloc_init.c \
-  lib/stralloc_ready.c \
-  lib/stralloc_readyplus.c \
-  lib/str_diff.c \
-  lib/str_len.c \
+  lib/rdir/rdir_close.c \
+  lib/rdir/rdir_open.c \
+  lib/rdir/rdir_read.c \
+  lib/stralloc/stralloc_append.c \
+  lib/stralloc/stralloc_catb.c \
+  lib/stralloc/stralloc_catc.c \
+  lib/stralloc/stralloc_cats.c \
+  lib/stralloc/stralloc_copyb.c \
+  lib/stralloc/stralloc_copys.c \
+  lib/stralloc/stralloc_free.c \
+  lib/stralloc/stralloc_init.c \
+  lib/stralloc/stralloc_ready.c \
+  lib/stralloc/stralloc_readyplus.c \
+  lib/str/str_diff.c \
+  lib/str/str_len.c \
 
 include(deployment.pri)
 qtcAddDeployment()
