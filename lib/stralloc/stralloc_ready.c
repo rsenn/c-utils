@@ -9,12 +9,19 @@
  * old space, and returns 1. Note that this changes sa.s. */
 int stralloc_ready(stralloc* sa, size_t len) {
   register size_t wanted = len + (len >> 3) + 30; /* heuristic from djb */
-  if(!sa->s || sa->a < len) {
-    register char* tmp;
+  register char* tmp;
+  if(sa->s && sa->a >= len)
+    return 1;
+  if(sa->a == 0 || sa->s == NULL) {
+    if(!(tmp = malloc(wanted)))
+      return 0;
+    if(sa->s)
+      byte_copy(tmp, sa->len, sa->s);
+  } else {
     if(!(tmp = realloc(sa->s, wanted)))
       return 0;
-    sa->a = wanted;
-    sa->s = tmp;
   }
+  sa->a = wanted;
+  sa->s = tmp;
   return 1;
 }

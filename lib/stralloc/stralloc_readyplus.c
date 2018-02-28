@@ -8,6 +8,7 @@ int stralloc_readyplus(stralloc* sa, size_t len) {
   if(sa->s) {
     if(sa->len + len < len) return 0;  /* catch integer overflow */
     return stralloc_ready(sa, sa->len + len);
-  } else
+  } else {
     return stralloc_ready(sa, len);
+  }
 }
