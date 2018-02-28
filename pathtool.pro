@@ -20,9 +20,6 @@ HEADERS = \
 
 SOURCES = \
   pathtool.c \
-  lib/strlist/strlist_join.c \
-  lib/strlist/strlist_push.c \
-  lib/strlist/strlist_push_tokens.c \
   lib/str/str_tok.c \
   lib/str/str_len.c \
   lib/str/str_dup.c \
@@ -39,10 +36,37 @@ SOURCES = \
   lib/buffer/buffer_stubborn.c \
   lib/buffer/buffer_flush.c \
   lib/buffer/buffer_put.c \
-  lib/buffer/buffer_putsa.c
+  lib/buffer/buffer_putsa.c \
+  lib/strlist/strlist_at.c \
+  lib/strlist/strlist_cat.c \
+  lib/strlist/strlist_count.c \
+  lib/strlist/strlist_dump.c \
+  lib/strlist/strlist_index_of.c \
+  lib/strlist/strlist_join.c \
+  lib/strlist/strlist_pushb.c \
+  lib/strlist/strlist_push.c \
+  lib/strlist/strlist_pushm_internal.c \
+  lib/strlist/strlist_push_sa.c \
+  lib/strlist/strlist_pushsa.c \
+  lib/strlist/strlist_push_tokens.c \
+  lib/strlist/strlist_push_unique.c \
+  lib/strlist/strlist_range.c \
+  lib/strlist/strlist_shift.c \
+  lib/strlist/strlist_sort.c \
+  lib/strlist/strlist_to_argv.c \
+  lib/strlist/strlist_unshift.c \
+  lib/buffer/buffer_puts.c \
+  lib/buffer/buffer_putulong.c \
+  lib/fmt/fmt_ulong.c \
+  lib/stralloc/stralloc_cat.c \
+  lib/stralloc/stralloc_cats.c \
+  lib/stralloc/stralloc_free.c
 
 
 include(deployment.pri)
 qtcAddDeployment()
+
+
+
 
 

@@ -107,6 +107,10 @@ check_function_exists(malloc HAVE_MALLOC_FUNC)
 check_function_exists(opendir HAVE_OPENDIR_FUNC)
 check_function_exists(readdir HAVE_READDIR_FUNC)
 
+check_function_exists(getdents64 HAVE_GETDENTS64_FUNC)
+check_function_exists(getdents HAVE_GETDENTS_FUNC)
+
+
 if(HAVE_LSTAT_FUNC)
   if(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
     set(USE_READDIR TRUE)
