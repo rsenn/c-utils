@@ -98,5 +98,16 @@ main(int argc, char* argv[]) {
     pathtool(argv[optind++]);
   }
 
+  {
+    stralloc test = { 0,0,0 };
+    stralloc out = { 0,0,0 };
+    stralloc_copys(&test, "NumberOfSections");
+    stralloc_decamelize(&test, &out);
+
+    buffer_putsa(buffer_1, &out);
+    buffer_putnlflush(buffer_1);
+  }
+    
+
   return 0;
 }

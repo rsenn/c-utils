@@ -187,6 +187,27 @@ typedef enum {
   PE_OPTHDR_BASE_OF_DATA                   = 26,
 } pe_opthdr_field;
 
+typedef struct {
+  uint64 flink, blink;
+} list_entry;
+
+typedef struct {
+  uint64     module_name;         /* 0x00 (PSTR) */
+  uint64     h_file;              /* 0x08 (HANDLE) */
+  uint64     mapped_address;      /* 0x10 (PUCHAR) */
+  uint64     file_header;         /* 0x18 (PIMAGE_NT_HEADERS64) */
+  uint64     last_rva_section;    /* 0x20 (PIMAGE_SECTION_HEADER) */
+  uint64     number_of_sections;  /* 0x28 (ULONG) */
+  uint64     sections;            /* 0x30 (PIMAGE_SECTION_HEADER) */
+  uint32     characteristics;     /* 0x38 (ULONG) */
+  char       f_system_image;      /* 0x3c (BOOLEAN) */
+  char       fdos_image;          /* 0x3d (BOOLEAN) */
+  char       f_read_only;         /* 0x3e (BOOLEAN) */
+  char       version;             /* 0x3f (UCHAR) */
+  list_entry links;               /* 0x40 (LIST_ENTRY) */
+  uint64     size_of_image;       /* 0x50 (ULONG) */
+} pe_loaded_image;
+
 pe_file_header*
 pe_filehdr_ptr(const void*);
 

@@ -127,6 +127,8 @@ int stralloc_chop(stralloc* sa);
 /* remove trailing "\r\n", "\n" or "\r".  Return number of removed chars (0, 1 or 2) */
 int stralloc_chomp(stralloc* sa);
 
+int stralloc_decamelize(stralloc *sa, stralloc *to);
+
 #ifdef BUFFER_H
 /* write stralloc to buffer */
 int buffer_putsa(buffer* b, stralloc* sa);

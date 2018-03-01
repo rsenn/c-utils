@@ -4,9 +4,21 @@ $(BUILDDIR)mediathek-parser.o: mediathek-parser.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pathtool.o: pathtool.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)feature_tests.o: build/cmake/CMakeFiles/feature_tests.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)LOFF_T.o: build/cmake/CMakeFiles/CheckTypeSize/LOFF_T.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)LLOFF_T.o: build/cmake/CMakeFiles/CheckTypeSize/LLOFF_T.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)OFF64_T.o: build/cmake/CMakeFiles/CheckTypeSize/OFF64_T.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)CMakeCCompilerId.o: build/cmake/CMakeFiles/3.10.2/CompilerIdC/CMakeCCompilerId.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)impgen.o: impgen.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)main.o: main.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)ntldd.o: ntldd.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -25,6 +37,8 @@ $(BUILDDIR)compiler-wrapper.o: compiler-wrapper.c
 $(BUILDDIR)regfilter.o: regfilter.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)opensearch-dump.o: opensearch-dump.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)libntldd.o: libntldd.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xmltest.o: xmltest.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -197,6 +211,8 @@ $(BUILDDIR)str_basename.o: lib/str/str_basename.c
 $(BUILDDIR)str_len.o: lib/str/str_len.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_ptime.o: lib/str/str_ptime.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)str_decamelize.o: lib/str/str_decamelize.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_istr.o: lib/str/str_istr.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -501,6 +517,8 @@ $(BUILDDIR)stralloc_append.o: lib/stralloc/stralloc_append.c
 $(BUILDDIR)stralloc_append_sa.o: lib/stralloc/stralloc_append_sa.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_free.o: lib/stralloc/stralloc_free.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_decamelize.o: lib/stralloc/stralloc_decamelize.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_catulong0.o: lib/stralloc/stralloc_catulong0.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
