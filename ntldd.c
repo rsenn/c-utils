@@ -68,7 +68,7 @@ For bug reporting instructions, please see:\n\
 <somewhere>.", argv0);
 }
 
-int PrintImageLinks(int first, int verbose, int unused, int datarelocs, int functionrelocs, struct dep_tree_element *self, int recursive, int list_exports, int list_imports, int depth) {
+int print_image_links(int first, int verbose, int unused, int datarelocs, int functionrelocs, struct dep_tree_element *self, int recursive, int list_exports, int list_imports, int depth) {
   uint64 i;
   int unresolved = 0;
   self->flags |= DEPTREE_VISITED;
@@ -120,7 +120,7 @@ int PrintImageLinks(int first, int verbose, int unused, int datarelocs, int func
     for(i = 0; i < self->childs_len; i++) {
       if(!(self->childs[i]->flags & DEPTREE_VISITED)) {
         printf("\t%*s%s", depth, depth > 0 ? " " : "", self->childs[i]->module);
-        PrintImageLinks(0, verbose, unused, datarelocs, functionrelocs, self->childs[i], recursive, list_exports, list_imports, depth + 1);
+        print_image_links(0, verbose, unused, datarelocs, functionrelocs, self->childs[i], recursive, list_exports, list_imports, depth + 1);
       }
     }
   }
@@ -230,7 +230,8 @@ Try `ntldd --help' for more information\n", argv[i]);
       struct dep_tree_element *child = (struct dep_tree_element *) malloc(sizeof(struct dep_tree_element));
       memset(child, 0, sizeof(struct dep_tree_element));
       child->module = strdup(argv[i]);
-      add_dep(&root, child);
+     
+add_dep(&root, child);
       char **stack = NULL;
       uint64 stack_len = 0;
       uint64 stack_size = 0;
@@ -244,14 +245,16 @@ Try `ntldd --help' for more information\n", argv[i]);
       cfg.stack = &stack;
       cfg.stack_len = &stack_len;
       cfg.stack_size = &stack_size;
-      cfg.searchPaths = &sp;
-      build_dep_tree(&cfg, argv[i], &root, child);
+      cfg.search_paths = &sp;
+     
+build_dep_tree(&cfg, argv[i], &root, child);
     }
-    clear_dep_status(&root, DEPTREE_VISITED | DEPTREE_PROCESSED);
+   
+clear_dep_status(&root, DEPTREE_VISITED | DEPTREE_PROCESSED);
     for(i = files_start; i < argc; i++) {
       if(multiple)
         printf("%s:\n", argv[i]);
-      PrintImageLinks(1, verbose, unused, datarelocs, functionrelocs, root.childs[i - files_start], recursive, list_exports, list_imports, 0);
+      print_image_links(1, verbose, unused, datarelocs, functionrelocs, root.childs[i - files_start], recursive, list_exports, list_imports, 0);
     }
   }
   return 0;
