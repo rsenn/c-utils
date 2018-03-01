@@ -24,7 +24,7 @@ int dir_type(struct dir_s* d) {
 #define DT_LNK 10
 #endif
 
-#ifndef __MSYS__
+#if !defined(__MSYS__) && !defined(__CYGWIN__)
   switch ((dir_TYPE(d))) {
     case DT_DIR: {
         r |= D_DIRECTORY;
