@@ -293,7 +293,7 @@ typedef struct {
 
 
 typedef struct {
-  uint32 Signature;
+  uint32 signature;
   pe_file_header file_header;
   pe64_opt_header optional_header;
 } pe_nt_headers64;
@@ -311,8 +311,8 @@ typedef struct {
 typedef struct {
   uint64             module_name;         /* 0x00 (PSTR) */
   uint64             h_file;              /* 0x08 (HANDLE) */
-  uint64             mapped_address;      /* 0x10 (PUCHAR) */
-  pe_nt_headers64*    file_header;         /* 0x18 (PIMAGE_NT_HEADERS64) */
+  char*              mapped_address;      /* 0x10 (PUCHAR) */
+  pe_nt_headers64*   file_header;         /* 0x18 (PIMAGE_NT_HEADERS64) */
   uint64             last_rva_section;    /* 0x20 (pe_section_header) */
   uint64             number_of_sections;  /* 0x28 (ULONG) */
   section_header*    sections;            /* 0x30 (pe_section_header) */

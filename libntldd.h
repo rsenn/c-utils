@@ -7,8 +7,8 @@
 #include "pe.h"
 
 #ifdef __unix__
-#define stricmp strcasecmp 
-#define strnicmp strncasecmp 
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
 #endif
 
 #define NTLDD_VERSION_MAJOR 0

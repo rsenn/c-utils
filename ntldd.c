@@ -68,7 +68,8 @@ For bug reporting instructions, please see:\n\
 <somewhere>.", argv0);
 }
 
-int print_image_links(int first, int verbose, int unused, int datarelocs, int functionrelocs, struct dep_tree_element *self, int recursive, int list_exports, int list_imports, int depth) {
+int
+print_image_links(int first, int verbose, int unused, int datarelocs, int functionrelocs, struct dep_tree_element *self, int recursive, int list_exports, int list_imports, int depth) {
   uint64 i;
   int unresolved = 0;
   self->flags |= DEPTREE_VISITED;
@@ -230,8 +231,8 @@ Try `ntldd --help' for more information\n", argv[i]);
       struct dep_tree_element *child = (struct dep_tree_element *) malloc(sizeof(struct dep_tree_element));
       memset(child, 0, sizeof(struct dep_tree_element));
       child->module = strdup(argv[i]);
-     
-add_dep(&root, child);
+
+      add_dep(&root, child);
       char **stack = NULL;
       uint64 stack_len = 0;
       uint64 stack_size = 0;
@@ -246,11 +247,11 @@ add_dep(&root, child);
       cfg.stack_len = &stack_len;
       cfg.stack_size = &stack_size;
       cfg.search_paths = &sp;
-     
-build_dep_tree(&cfg, argv[i], &root, child);
+
+      build_dep_tree(&cfg, argv[i], &root, child);
     }
-   
-clear_dep_status(&root, DEPTREE_VISITED | DEPTREE_PROCESSED);
+
+    clear_dep_status(&root, DEPTREE_VISITED | DEPTREE_PROCESSED);
     for(i = files_start; i < argc; i++) {
       if(multiple)
         printf("%s:\n", argv[i]);

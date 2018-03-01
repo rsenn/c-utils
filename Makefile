@@ -419,6 +419,11 @@ endif
 
 ifeq ($(MINGW),1)
 LDFLAGS += -static-libgcc -static-lib{asan,gfortran,lsan,tsan,ubsan}
+WIN32 := 1
+endif
+
+ifeq ($(CYGWIN),1)
+WIN32 := 1
 endif
 
 ifeq ($(STATIC),1)
@@ -430,6 +435,11 @@ else
 LDFLAGS += -static
 endif
 endif
+
+ifeq ($(WIN32),1)
+EXTRA_LIBS += -lkernel32
+endif
+
 
 
 ifeq ($(STATIC_LIBGCC),1)
@@ -749,6 +759,7 @@ ifeq ($(DO_STRIP),1)
 	#$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
+$(BUILDDIR)ntldd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)ntldd$(M64_)$(EXESUFFIX)$(EXEEXT): CPPFLAGS += -DNTLDD_VERSION_MAJOR=0 -DNTLDD_VERSION_MINOR=2
 $(BUILDDIR)ntldd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)ntldd.o $(BUILDDIR)libntldd.o $(BUILDDIR)pe.a $(BUILDDIR)mmap.a $(BUILDDIR)buffer.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)open.a $(BUILDDIR)uint32.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  

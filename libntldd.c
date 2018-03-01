@@ -23,7 +23,9 @@ Code is mostly written after
 MSDN Magazine articles
 */
 
-//#include <windows.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 //#include <imagehlp.h>
 
@@ -32,11 +34,14 @@ MSDN Magazine articles
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <libgen.h>
 #include <errno.h>
 #include <limits.h>
 
 #include "libntldd.h"
 #include "uint64.h"
+#include "mmap.h"
 #include "pe.h"
 
 #define FALSE 0
@@ -141,7 +146,7 @@ find_dep(struct dep_tree_element *root, char *name, struct dep_tree_element **re
   }
   for(i = 0; i < root->childs_len && ret < 0; i++) {
     ret =
-find_dep(root->childs[i], name, result);
+      find_dep(root->childs[i], name, result);
   }
   root->flags &= ~DEPTREE_VISITED;
   return ret;
@@ -154,8 +159,7 @@ struct dep_tree_element *process_dep(build_tree_config* cfg, soff_entry *soffs, 
   struct dep_tree_element *child = NULL;
   int found;
   int64_t i;
-  char *dllname = (char *)
-map_pointer(soffs, soffs_len, name, NULL);
+  char *dllname = (char *)map_pointer(soffs, soffs_len, name, NULL);
   if(dllname == NULL)
     return NULL;
   if(strlen(dllname) > 10 && strnicmp("api-ms-win", dllname, 10) == 0) {
@@ -169,19 +173,19 @@ map_pointer(soffs, soffs_len, name, NULL);
       break;
   }
   found =
-find_dep(root, dllname, &child);
+    find_dep(root, dllname, &child);
   if(found < 0) {
     child = (struct dep_tree_element *) malloc(sizeof(struct dep_tree_element));
     memset(child, 0, sizeof(struct dep_tree_element));
     if(deep == 0) {
       child->module = strdup(dllname);
-     
-add_dep(self, child);
+
+      add_dep(self, child);
     }
   }
   if(deep == 1) {
-   
-build_dep_tree(cfg, dllname, root, child);
+
+    build_dep_tree(cfg, dllname, root, child);
   }
   return child;
 }
@@ -198,8 +202,8 @@ int
 clear_dep_status(struct dep_tree_element *self, uint64_t flags) {
   uint64_t i;
   for(i = 0; i < self->childs_len; i++)
-   
-clear_dep_status(self->childs[i], flags);
+
+    clear_dep_status(self->childs[i], flags);
   self->flags &= ~flags;
   return 0;
 }
@@ -245,11 +249,9 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
   idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_EXPORT, cfg);
   if(idata->size > 0 && idata->virtual_address != 0) {
     int export_section = -2;
-    ied = (pe_export_directory *)
-map_pointer(soffs, soffs_len, idata->virtual_address, &export_section);
+    ied = (pe_export_directory *)map_pointer(soffs, soffs_len, idata->virtual_address, &export_section);
     if(ied && ied->name != 0) {
-      char *export_module =
-map_pointer(soffs, soffs_len, ied->name, NULL);
+      char *export_module = map_pointer(soffs, soffs_len, ied->name, NULL);
       if(export_module != NULL) {
         if(self->export_module == NULL)
           self->export_module = strdup(export_module);
@@ -262,17 +264,13 @@ map_pointer(soffs, soffs_len, ied->name, NULL);
       self->exports_len = ied->number_of_functions;
       self->exports = (struct export_table_item *) malloc(sizeof(struct export_table_item) * self->exports_len);
       memset(self->exports, 0, sizeof(struct export_table_item) * self->exports_len);
-      addrs = (uint32 *)
-map_pointer(soffs, soffs_len, ied->address_of_functions, NULL);
-      ords = (uint16 *)
-map_pointer(soffs, soffs_len, ied->address_of_name_ordinals, NULL);
-      names = (uint32 *)
-map_pointer(soffs, soffs_len, ied->address_of_names, NULL);
+      addrs = (uint32 *)map_pointer(soffs, soffs_len, ied->address_of_functions, NULL);
+      ords = (uint16 *)map_pointer(soffs, soffs_len, ied->address_of_name_ordinals, NULL);
+      names = (uint32 *)map_pointer(soffs, soffs_len, ied->address_of_names, NULL);
       for(i = 0; i < ied->number_of_names; i++) {
         self->exports[ords[i]].ordinal = ords[i] + ied->base;
         if(names[i] != 0) {
-          char *s_name = (char *)
-map_pointer(soffs, soffs_len, names[i], NULL);
+          char *s_name = (char *)map_pointer(soffs, soffs_len, names[i], NULL);
           if(s_name != NULL)
             self->exports[ords[i]].name = strdup(s_name);
         }
@@ -280,14 +278,12 @@ map_pointer(soffs, soffs_len, names[i], NULL);
       for(i = 0; i < ied->number_of_functions; i++) {
         if(addrs[i] != 0) {
           int section_index =
-find_section_by_raw_data(img, addrs[i]);
+            find_section_by_raw_data(img, addrs[i]);
           if((idata->virtual_address <= addrs[i]) && (idata->virtual_address + idata->size > addrs[i])) {
             self->exports[i].address = NULL;
-            self->exports[i].forward_str = strdup((char *)
-map_pointer(soffs, soffs_len, addrs[i], NULL));
+            self->exports[i].forward_str = strdup((char *)map_pointer(soffs, soffs_len, addrs[i], NULL));
           } else
-            self->exports[i].address =
-map_pointer(soffs, soffs_len, addrs[i], &section);
+            self->exports[i].address = map_pointer(soffs, soffs_len, addrs[i], &section);
           self->exports[i].ordinal = i + ied->base;
           self->exports[i].section_index = section_index;
           self->exports[i].address_offset = addrs[i];
@@ -298,8 +294,7 @@ map_pointer(soffs, soffs_len, addrs[i], &section);
 
   idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_IMPORT, cfg);
   if(idata->size > 0 && idata->virtual_address != 0) {
-    iid = (pe_import_descriptor *)
-map_pointer(soffs, soffs_len,
+    iid = (pe_import_descriptor *)map_pointer(soffs, soffs_len,
           idata->virtual_address, NULL);
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp ||
@@ -307,16 +302,14 @@ map_pointer(soffs, soffs_len,
         struct dep_tree_element *dll;
         uint64_t impaddress;
         dll =
-process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 0);
+          process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 0);
         if(dll == NULL)
           continue;
-        ith = (void *)
-map_pointer(soffs, soffs_len, iid[i].first_thunk, NULL);
-        oith = (void *)
-map_pointer(soffs, soffs_len, iid[i].original_first_thunk, NULL);
+        ith = (void *)map_pointer(soffs, soffs_len, iid[i].first_thunk, NULL);
+        oith = (void *)map_pointer(soffs, soffs_len, iid[i].original_first_thunk, NULL);
         for(j = 0; (impaddress = thunk_data_u1_function(ith, j, cfg)) != 0; j++) {
           struct import_table_item *imp =
-add_import(self);
+            add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
           if(oith);
@@ -327,8 +320,7 @@ add_import(self);
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
-            pe_import_by_name *byname = (pe_import_by_name *)
-map_pointer(soffs, soffs_len, imp->orig_address, NULL);
+            pe_import_by_name *byname = (pe_import_by_name *)map_pointer(soffs, soffs_len, imp->orig_address, NULL);
             if(byname != NULL)
               imp->name = strdup((char *) byname->name);
           }
@@ -338,8 +330,7 @@ map_pointer(soffs, soffs_len, imp->orig_address, NULL);
 
   idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_DELAY_IMPORT, cfg);
   if(idata->size > 0 && idata->virtual_address != 0) {
-    idd = (pe_delayload_descriptor *)
-map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
+    idd = (pe_delayload_descriptor *)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva ||
           idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
@@ -348,21 +339,19 @@ map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
         struct dep_tree_element *dll;
         uint64_t impaddress;
         dll =
-process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 0);
+          process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 0);
         if(dll == NULL)
           continue;
         if(idd[i].attributes.all_attributes & 0x00000001) {
-          ith = (void *)
-map_pointer(soffs, soffs_len, idd[i].import_address_table_rva, NULL);
-          oith = (void *)
-map_pointer(soffs, soffs_len, idd[i].import_name_table_rva, NULL);
+          ith = (void *)map_pointer(soffs, soffs_len, idd[i].import_address_table_rva, NULL);
+          oith = (void *)map_pointer(soffs, soffs_len, idd[i].import_name_table_rva, NULL);
         } else {
           ith = (void *) idd[i].import_address_table_rva;
           oith = (void *) idd[i].import_name_table_rva;
         }
         for(j = 0; (impaddress = thunk_data_u1_function(ith, j, cfg)) != 0; j++) {
           struct import_table_item *imp =
-add_import(self);
+            add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
           if(oith)
@@ -373,8 +362,7 @@ add_import(self);
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
-            pe_import_by_name *byname = (pe_import_by_name *)
-map_pointer(soffs, soffs_len, imp->orig_address, NULL);
+            pe_import_by_name *byname = (pe_import_by_name *)map_pointer(soffs, soffs_len, imp->orig_address, NULL);
             if(byname != NULL)
               imp->name = strdup((char *) byname->name);
           }
@@ -384,39 +372,55 @@ map_pointer(soffs, soffs_len, imp->orig_address, NULL);
 
   idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_IMPORT, cfg);
   if(idata->size > 0 && idata->virtual_address != 0) {
-    iid = (pe_import_descriptor *)
-map_pointer(soffs, soffs_len,
+    iid = (pe_import_descriptor *)map_pointer(soffs, soffs_len,
           idata->virtual_address, NULL);
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp ||
           iid[i].forwarder_chain || iid[i].name || iid[i].first_thunk; i++)
-       
-process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 1);
+
+        process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 1);
   }
 
   idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_DELAY_IMPORT, cfg);
   if(idata->size > 0 && idata->virtual_address != 0) {
-    idd = (pe_delayload_descriptor *)
-map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
+    idd = (pe_delayload_descriptor *)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva ||
           idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
           idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva ||
           idd[i].time_date_stamp; i++)
-       
-process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 1);
+
+        process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 1);
   }
 }
 
 char
 try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int required_machine_type) {
-  char success = MapAndLoad(name, path, loaded_image, FALSE, TRUE);
+  char success = 0;
+  pe_dos_header* dhdr = mmap_read(name, &loaded_image->size_of_image);
+
+
+  if(dhdr) {
+    loaded_image->mapped_address = (char*)dhdr;
+    loaded_image->file_header = (pe_nt_headers64*)(loaded_image->mapped_address + dhdr->e_lfanew);
+    loaded_image->number_of_sections = loaded_image->file_header->file_header.number_of_sections;
+    loaded_image->module_name = basename(name);
+    loaded_image->sections = (section_header*) &((pe_nt_headers64*)loaded_image->file_header)[1];
+    success = 1;
+  }
+
+
+
+
+
+  /*MapAndLoad(name, path, loaded_image, FALSE, TRUE);
   if(!success && errno == ENOENT)
     success = MapAndLoad(name, path, loaded_image, TRUE, TRUE);
   if(success && required_machine_type != -1 && (int)loaded_image->file_header->file_header.machine != required_machine_type) {
     UnMapAndLoad(loaded_image);
     return FALSE;
-  }
+  }*/
+
   return success;
 }
 
@@ -426,7 +430,7 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
   pe_loaded_image *img;
   pe_dos_header *dos;
   unsigned char* hmod;
-  char success;
+  char success = 0;
 
   uint32 i, j;
   int soffs_len;
@@ -438,11 +442,11 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
 
   if(cfg->on_self) {
     char modpath[MAX_PATH];
-    success = GetModuleHandleExA(0x2, name, &hmod);
+    /*success = GetModuleHandleExA(0x2, name, &hmod);*/
     if(!success)
       return 1;
-    if(GetModuleFileNameA(hmod, modpath, MAX_PATH) == 0)
-      return 1;
+    /*if(GetModuleFileNameA(hmod, modpath, MAX_PATH) == 0)
+      return 1;*/
     if(self->resolved_module == NULL)
       self->resolved_module = strdup(modpath);
 
@@ -457,11 +461,11 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
     success = FALSE;
     for(i = 0; i < cfg->search_paths->count && !success; ++i) {
       success =
-try_map_and_load(name, cfg->search_paths->path[i], &loaded_image, cfg->machine_type);
+        try_map_and_load(name, cfg->search_paths->path[i], &loaded_image, cfg->machine_type);
     }
     if(!success)
       success =
-try_map_and_load(name, NULL, &loaded_image, cfg->machine_type);
+        try_map_and_load(name, NULL, &loaded_image, cfg->machine_type);
     if(!success) {
       self->flags |= DEPTREE_UNRESOLVED;
       return 1;
@@ -473,8 +477,8 @@ try_map_and_load(name, NULL, &loaded_image, cfg->machine_type);
     cfg->machine_type = (int)loaded_image.file_header->file_header.machine;
   img = &loaded_image;
 
- 
-push_stack(cfg->stack, cfg->stack_len, cfg->stack_size, name);
+
+  push_stack(cfg->stack, cfg->stack_len, cfg->stack_size, name);
 
   self->mapped_address = loaded_image.mapped_address;
 
@@ -500,8 +504,9 @@ push_stack(cfg->stack, cfg->stack_len, cfg->stack_size, name);
   build_dep_tree32or64(img, cfg, root, self, soffs, soffs_len);
   free(soffs);
 
-  if(!cfg->on_self)
-    UnMapAndLoad(&loaded_image);
+  if(!cfg->on_self) {
+    mmap_unmap(loaded_image.mapped_address, &loaded_image.size_of_image);
+  }
 
   /* Not sure if a forwarded export warrants an import. If it doesn't, then the dll to which the export is forwarded will NOT
    * be among the dependencies of this dll and it will be necessary to do yet another process_dep...
