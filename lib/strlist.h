@@ -49,7 +49,7 @@ int
 strlist_push_unique(strlist *sl, const char *s);
 
 void 
-strlist_push_tokens(strlist *sl, char *s, const char *delim);
+strlist_push_tokens(strlist *sl, const char *s, const char *delim);
 
 int 
 strlist_cat (strlist * sl, const strlist* l);

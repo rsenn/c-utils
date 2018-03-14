@@ -6,7 +6,7 @@
 #include "byte.h"
 #include "fmt.h"
 
-#ifndef __MSYS__
+#if !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__dietlibc__)
 #define lseek lseek64
 #endif
 

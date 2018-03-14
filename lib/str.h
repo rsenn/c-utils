@@ -58,6 +58,10 @@ char* str_ptime(const char* s,const char* format, struct tm* tm);
 
 char*
 str_basename(char* s) ;
+
+/* returned string must be free'd */
+char *str_decamelize(const char *s);
+
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 

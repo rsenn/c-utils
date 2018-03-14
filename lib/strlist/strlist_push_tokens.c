@@ -3,7 +3,7 @@
 #include "strlist.h"
 
 void
-strlist_push_tokens(strlist* sl, char* s, const char* delim) {
+strlist_push_tokens(strlist* sl, const char* s, const char* delim) {
   char *p = NULL, *tok;
 
   if((s = str_dup(s)) == NULL)
