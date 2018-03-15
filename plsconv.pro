@@ -10,8 +10,7 @@ TARGET = plsconv
 
 INCLUDEPATH += . $$PWD/lib
 
-HEADERS = lib/playlist.h \
-    lib/buffer.h
+HEADERS = lib/playlist.h lib/buffer.h
 SOURCES = \
   lib/buffer/buffer_2.c \
   lib/buffer/buffer_close.c \

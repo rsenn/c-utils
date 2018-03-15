@@ -19,8 +19,8 @@ CONFIG -= qt
 
 INCLUDEPATH += . $$PWD/lib
 
+HEADERS = lib/buffer.h lib/byte.h lib/fmt.h
 SOURCES = count-depth.c \
-  lib/buffer.h \
   lib/buffer/buffer_0.c \
   lib/buffer/buffer_1.c \
   lib/buffer/buffer_feed.c \
@@ -32,10 +32,8 @@ SOURCES = count-depth.c \
   lib/buffer/buffer_putulong.c \
   lib/buffer/buffer_stubborn.c \
   lib/buffer/buffer_stubborn2.c \
-  lib/byte.h \
   lib/byte/byte_chr.c \
   lib/byte/byte_copy.c \
-  lib/fmt.h \
   lib/fmt/fmt_ulong.c
 
 

@@ -46,11 +46,7 @@ INCLUDEPATH += $$LIBXML2_DIR/include $$LIBXML2_DIR/include/libxml $$PWD/lib
 #INCLUDEPATH += $$WIN_ICONV_DIR/include $$PWD/lib
 
 HEADERS = \
-  lib/byte.h \
-  lib/hmap.h \
-  lib/stralloc.h \
-  lib/str.h \
-
+  lib/byte.h lib/hmap.h lib/stralloc.h lib/str.h 
 
 SOURCES = \
     eagle-init-brd.c \
