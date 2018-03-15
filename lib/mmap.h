@@ -2,6 +2,7 @@
 #ifndef MMAP_H
 #define MMAP_H
 
+#include <sys/types.h>
 #include "uint64.h"
 
 #ifdef __cplusplus
