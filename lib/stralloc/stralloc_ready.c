@@ -1,4 +1,5 @@
 #include "stralloc.h"
+#include "byte.h"
 #include <stdlib.h>
 
 /* stralloc_ready makes sure that sa has enough space allocated to hold

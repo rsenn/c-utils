@@ -4,6 +4,10 @@
 
 #include <sys/types.h>
 
+#ifdef __unix__
+#include <sys/socket.h>
+#endif
+
 #include "uint16.h"
 #include "uint32.h"
 

@@ -309,7 +309,7 @@ typedef struct {
 
 
 typedef struct {
-  uint64             module_name;         /* 0x00 (PSTR) */
+  char*              module_name;         /* 0x00 (PSTR) */
   uint64             h_file;              /* 0x08 (HANDLE) */
   char*              mapped_address;      /* 0x10 (PUCHAR) */
   pe_nt_headers64*   file_header;         /* 0x18 (PIMAGE_NT_HEADERS64) */

@@ -32,6 +32,7 @@ MSDN Magazine articles
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <limits.h>
 
 #include "libntldd.h"
@@ -79,7 +80,7 @@ print_image_links(int first, int verbose, int unused, int datarelocs, int functi
       struct export_table_item *item = &self->exports[i];
 
       printf("%*s[%u] %s (0x%lx)%s%s <%d>\n", depth, depth > 0 ? " " : "", \
-             item->ordinal, item->name, item->address_offset, \
+             item->ordinal, item->name, (long)item->address_offset, \
              item->forward_str ? " ->" : "", \
              item->forward_str ? item->forward_str : "",
              item->section_index);
