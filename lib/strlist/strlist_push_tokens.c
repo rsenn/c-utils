@@ -9,10 +9,10 @@ strlist_push_tokens(strlist* sl, const char* s, const char* delim) {
   if((s = str_dup(s)) == NULL)
     return;
 
-  if((tok = str_tok(s, delim, &p)) != NULL) {
+  if((tok = str_tok((char*)s, delim, &p)) != NULL) {
     do {
       strlist_push(sl, tok);
     } while((tok = str_tok(NULL, delim, &p)));
   }
-  free(s);
+  free((char*)s);
 }

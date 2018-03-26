@@ -37,16 +37,7 @@ mingw | mingw32 | mingw64 {
 
 INCLUDEPATH += . $$PWD/lib
 
-HEADERS =   lib/array.h \
-  lib/buffer.h \
-  lib/byte.h \
-  lib/dir.h \
-  lib/fmt.h \
-lib/mmap.h \
-  lib/str.h \
-  lib/stralloc.h \
-  lib/fnmatch.h \
-lib/safemult.h
+HEADERS =   lib/array.h lib/buffer.h lib/byte.h lib/dir.h lib/fmt.h lib/mmap.h lib/str.h lib/stralloc.h lib/fnmatch.h lib/safemult.h
 
 
 SOURCES = list-r.c \

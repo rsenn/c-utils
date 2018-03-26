@@ -38,14 +38,7 @@ mingw | mingw32 | mingw64 {
 INCLUDEPATH += . $$PWD/lib
 
 HEADERS = \
-  lib/pe.h \
-  lib/byte.h \
-  lib/buffer.h \
-  lib/uint64.h \
-  lib/mmap.h \
-  lib/open.h \
-  lib/uint16.h \
-  lib/uint32.h
+  lib/pe.h lib/byte.h lib/buffer.h lib/uint64.h lib/mmap.h lib/open.h lib/uint16.h lib/uint32.h
 
 SOURCES = \
   impgen.c \

@@ -19,10 +19,14 @@ CONFIG -= qt
 
 INCLUDEPATH += . $$PWD/lib
 
-HEADERS =
+HEADERS = \
+  lib/buffer.h \
+  lib/byte.h \
+  lib/fmt.h \
+  lib/mmap.h \
+  lib/open.h
 
 SOURCES = torrent-progress.c \
-  lib/buffer.h \
   lib/buffer/buffer_1.c \
   lib/buffer/buffer_feed.c \
   lib/buffer/buffer_flush.c \
@@ -34,16 +38,11 @@ SOURCES = torrent-progress.c \
   lib/buffer/buffer_putulong.c \
   lib/buffer/buffer_stubborn.c \
   lib/buffer/buffer_stubborn2.c \
-  lib/byte.h \
   lib/byte/byte_copy.c \
-  lib/fmt.h \
   lib/fmt/fmt_ulong.c \
-  lib/mmap.h \
   lib/mmap/mmap_map.c \
   lib/mmap/mmap_unmap.c \
-  lib/open.h \
   lib/open/open_read.c \
-  lib/str.h \
   lib/str/str_len.c
 
 include(deployment.pri)

@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <ctype.h>
 
-#define isspace(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n')
+#define is_space(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n')
 
 ssize_t
 buffer_dummyread() {
@@ -72,7 +72,7 @@ http_readable(http* h) {
 
       if(ret >= 0) {
 
-        while(ret > 0 && isspace(line[ret - 1]))
+        while(ret > 0 && is_space(line[ret - 1]))
           ret--;
 
         line[ret] = '\0';

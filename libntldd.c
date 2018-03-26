@@ -397,8 +397,10 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
 char
 try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int required_machine_type) {
   char success = 0;
-  pe_dos_header* dhdr = mmap_read(name, &loaded_image->size_of_image);
-
+  size_t sz; 
+  pe_dos_header* dhdr = (pe_dos_header*)mmap_read(name, &sz); 
+  
+  loaded_image->size_of_image = sz;
 
   if(dhdr) {
     loaded_image->mapped_address = (char*)dhdr;
@@ -452,7 +454,7 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
 
     dos = (pe_dos_header *) hmod;
     loaded_image.file_header = (pe_nt_headers64 *)((char *) hmod + dos->e_lfanew);
-    loaded_image.sections = (pe_section_header *)((char *) hmod + dos->e_lfanew + sizeof(pe_nt_headers64));
+    loaded_image.sections = (section_header *)((char *) hmod + dos->e_lfanew + sizeof(pe_nt_headers64));
     loaded_image.number_of_sections = loaded_image.file_header->file_header.number_of_sections;
     loaded_image.mapped_address = (void *) hmod;
     if(cfg->machine_type != -1 && (int)loaded_image.file_header->file_header.machine != cfg->machine_type)
@@ -505,7 +507,7 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
   free(soffs);
 
   if(!cfg->on_self) {
-    mmap_unmap(loaded_image.mapped_address, &loaded_image.size_of_image);
+    mmap_unmap(loaded_image.mapped_address, loaded_image.size_of_image);
   }
 
   /* Not sure if a forwarded export warrants an import. If it doesn't, then the dll to which the export is forwarded will NOT

@@ -38,15 +38,7 @@ mingw | mingw32 | mingw64 {
 INCLUDEPATH += . $$PWD/lib
 
 HEADERS = \
- lib/buffer.h \
- lib/byte.h \
- lib/fmt.h \
- lib/scan.h \
- lib/stralloc.h \
- lib/str.h \
- lib/strlist.h \
- lib/uint32.h \
- lib/uint64.h
+ lib/buffer.h lib/byte.h lib/fmt.h lib/scan.h lib/stralloc.h lib/str.h lib/strlist.h lib/uint32.h lib/uint64.h
 
 
 SOURCES = \

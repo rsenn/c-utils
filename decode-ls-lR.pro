@@ -19,8 +19,9 @@ CONFIG -= qt
 
 INCLUDEPATH += . $$PWD/lib
 
+HEADERS = lib/buffer.h lib/byte.h lib/str.h lib/stralloc.h
+
 SOURCES = decode-ls-lR.c \
-  lib/buffer.h \
   lib/buffer/buffer_0.c \
   lib/buffer/buffer_1.c \
   lib/buffer/buffer_2.c \
@@ -34,13 +35,10 @@ SOURCES = decode-ls-lR.c \
   lib/buffer/buffer_puts.c \
   lib/buffer/buffer_stubborn.c \
   lib/buffer/buffer_stubborn2.c \
-  lib/byte.h \
   lib/byte/byte_chr.c \
   lib/byte/byte_copy.c \
-  lib/str.h \
   lib/str/str_diffn.c \
   lib/str/str_len.c \
-  lib/stralloc.h \
   lib/stralloc/stralloc_catb.c \
   lib/stralloc/stralloc_copyb.c \
   lib/stralloc/stralloc_copys.c \
