@@ -151,7 +151,8 @@ PKG_CONFIG ?= $(CROSS_COMPILE)pkg-config
 
 $(info PKG_CONFIG: $(PKG_CONFIG))
 
-PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env $(if $(SYSROOT),PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,),)$(PKG_CONFIG)
+#PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env $(if $(SYSROOT),PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,),)$(PKG_CONFIG)
+PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env  ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,)$(PKG_CONFIG)
 $(info PKG_CONFIG_CMD: $(PKG_CONFIG_CMD))
 
 ifneq ($(TRIPLET),)
@@ -598,7 +599,7 @@ $(BUILDDIR)stralloc.a: $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_append_s
 $(BUILDDIR)strarray.a: $(BUILDDIR)strarray_push.o $(BUILDDIR)strarray_pushd.o 
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
-$(BUILDDIR)str.a: $(BUILDDIR)str_basename.o $(BUILDDIR)str_chr.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_dup.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_len.o $(BUILDDIR)str_ptime.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_tok.o  $(BUILDDIR)str_decamelize.o 
+$(BUILDDIR)str.a: $(BUILDDIR)str_basename.o $(BUILDDIR)str_case_diff.o $(BUILDDIR)str_case_diffn.o $(BUILDDIR)str_case_equal.o $(BUILDDIR)str_case_start.o $(BUILDDIR)str_cat.o $(BUILDDIR)str_chr.o $(BUILDDIR)str_copy.o $(BUILDDIR)str_copyb.o $(BUILDDIR)str_decamelize.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_dup.o $(BUILDDIR)str_equal.o $(BUILDDIR)str_find.o $(BUILDDIR)str_findb.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_len.o $(BUILDDIR)str_lower.o $(BUILDDIR)str_ptime.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_start.o $(BUILDDIR)str_tok.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 
 $(BUILDDIR)strlist.a: $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_cat.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_index_of.o $(BUILDDIR)strlist_join.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_push.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)strlist_push_tokens.o $(BUILDDIR)strlist_push_unique.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)strlist_sort.o $(BUILDDIR)strlist_to_argv.o  $(BUILDDIR)strlist_unshift.o $(BUILDDIR)strlist_range.o 
@@ -639,7 +640,7 @@ $(BUILDDIR)count-depth.o: count-depth.c
 $(BUILDDIR)count-depth$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)count-depth.o $(BUILDDIR)buffer.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)fnmatch.o: fnmatch.c
@@ -649,54 +650,54 @@ $(BUILDDIR)list-r.o: list-r.c
 $(BUILDDIR)list-r$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)rdir-test.o: rdir-test.c
 $(BUILDDIR)rdir-test$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)rdir-test.o $(BUILDDIR)fnmatch.o $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)reg2cmd.o: reg2cmd.c
 $(BUILDDIR)reg2cmd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)reg2cmd.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)regfilter.o: regfilter.c
 $(BUILDDIR)regfilter$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)regfilter.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
 $(BUILDDIR)torrent-progress$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)str.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)str.a $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)mediathek-list$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)array.a $(BUILDDIR)strlist.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)httptest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(OTHERLIBS)
 $(BUILDDIR)httptest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)httptest.o $(BUILDDIR)http.a $(BUILDDIR)socket.a $(BUILDDIR)io.a $(BUILDDIR)iarray.a $(BUILDDIR)array.a $(BUILDDIR)ndelay.a $(BUILDDIR)uint16.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)scan.a $(BUILDDIR)stralloc.a $(BUILDDIR)str.a $(BUILDDIR)byte.a   $(BUILDDIR)taia.a  $(BUILDDIR)uint32.a  
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)xmltest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) -lm
@@ -704,7 +705,7 @@ $(BUILDDIR)xmltest$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
 $(BUILDDIR)xmltest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)xmltest.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)xmltest2$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) -lm
@@ -712,15 +713,15 @@ $(BUILDDIR)xmltest2$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
 $(BUILDDIR)xmltest2$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)xmltest2.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)xmltest3$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) -lm
 $(BUILDDIR)xmltest3$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
-$(BUILDDIR)xmltest3$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)xmltest3.o 
+$(BUILDDIR)xmltest3$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)xmltest3.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)plsconv$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) -lm
@@ -728,13 +729,13 @@ $(BUILDDIR)plsconv$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
 $(BUILDDIR)plsconv$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)plsconv.o  $(BUILDDIR)playlist.a $(BUILDDIR)stralloc.a  $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)str.a $(BUILDDIR)fmt.a $(BUILDDIR)scan.a  $(BUILDDIR)byte.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)pathtool$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)pathtool.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)str.a $(BUILDDIR)fmt.a $(BUILDDIR)scan.a $(BUILDDIR)byte.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): INCLUDES += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
@@ -742,7 +743,7 @@ $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) 
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): INCLUDES += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
@@ -750,13 +751,13 @@ $(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a $(BUILDDIR)hmap.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	#$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	#$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)impgen$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)impgen.o $(BUILDDIR)pe.a $(BUILDDIR)mmap.a $(BUILDDIR)buffer.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)open.a $(BUILDDIR)uint32.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	#$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	#$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)ntldd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(EXTRA_LIBS)
@@ -764,7 +765,7 @@ $(BUILDDIR)ntldd$(M64_)$(EXESUFFIX)$(EXEEXT): CPPFLAGS += -DNTLDD_VERSION_MAJOR=
 $(BUILDDIR)ntldd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)ntldd.o $(BUILDDIR)libntldd.o $(BUILDDIR)pe.a $(BUILDDIR)mmap.a $(BUILDDIR)buffer.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)open.a $(BUILDDIR)uint32.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	#$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	#$(CROSS_COMPILE)$(STRIP) $@
 endif
 #
 #$(BUILDDIR)xc8-wrapper/:
@@ -773,35 +774,35 @@ endif
 $(BUILDDIR)compiler-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)dir.a $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a  $(BUILDDIR)byte.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DXC8_WRAPPER=1
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)picc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DPICC_WRAPPER=1
 $(BUILDDIR)picc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)picc18-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DPICC18_WRAPPER=1
 $(BUILDDIR)picc18-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DSDCC_WRAPPER=1
 $(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 ifeq ($(DO_CXX),1)
@@ -809,7 +810,7 @@ $(BUILDDIR)piccfghex.o: piccfghex.cpp
 $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)piccfghex.o $(BUILDDIR)intelhex.o
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
@@ -818,7 +819,7 @@ $(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
 $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser-cpp.o
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
@@ -828,7 +829,7 @@ $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
 $(BUILDDIR)kbd-adjacency$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(CROSS_COMPILE)$(STRIP) --strip-all $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 endif
 

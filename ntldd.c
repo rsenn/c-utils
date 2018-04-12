@@ -96,7 +96,7 @@ print_image_links(int first, int verbose, int unused, int datarelocs, int functi
   }
 
   if(!unresolved && !first) {
-    if(stricmp(self->module, self->resolved_module) == 0)
+    if(str_case_diff(self->module, self->resolved_module) == 0)
       printf(" (0x%p)\n", self->mapped_address);
     else
       printf(" => %s (0x%p)\n", self->resolved_module,

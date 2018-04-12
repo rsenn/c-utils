@@ -62,6 +62,16 @@ str_basename(char* s) ;
 /* returned string must be free'd */
 char *str_decamelize(const char *s);
 
+int str_case_diff(const void *p1, const void *p2);
+int str_case_diffn(const void *p1, const void *p2, unsigned int n);
+unsigned int str_case_equal(const void *s, const void *t);
+unsigned int str_case_start(const void *p1, const void *p2);
+unsigned int str_cat(void *p1, const void *p2);
+unsigned int str_copyb(void *p1, const void *p2, unsigned int max);
+unsigned int str_find(const void *s, const void *what);
+unsigned int str_findb(const void *p1, const void *what, unsigned int len);
+void str_lower(void *str);
+
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 

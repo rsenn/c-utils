@@ -137,7 +137,7 @@ find_dep(struct dep_tree_element *root, char *name, struct dep_tree_element **re
   }
   root->flags |= DEPTREE_VISITED;
   for(i = 0; i < root->childs_len; i++) {
-    if(stricmp(root->childs[i]->module, name) == 0) {
+    if(str_case_diff(root->childs[i]->module, name) == 0) {
       if(result != NULL)
         *result = root->childs[i];
       root->flags &= ~DEPTREE_VISITED;
@@ -162,12 +162,12 @@ struct dep_tree_element *process_dep(build_tree_config* cfg, soff_entry *soffs, 
   char *dllname = (char *)map_pointer(soffs, soffs_len, name, NULL);
   if(dllname == NULL)
     return NULL;
-  if(strlen(dllname) > 10 && strnicmp("api-ms-win", dllname, 10) == 0) {
+  if(strlen(dllname) > 10 && str_case_diffn("api-ms-win", dllname, 10) == 0) {
     /* TODO: find a better way to identify api stubs. Versioninfo, maybe? */
     return NULL;
   }
   for(i = (int64_t) * cfg->stack_len - 1; i >= 0; i--) {
-    if((*cfg->stack)[i] && stricmp((*cfg->stack)[i], dllname) == 0)
+    if((*cfg->stack)[i] && str_case_diff((*cfg->stack)[i], dllname) == 0)
       return NULL;
     if(i == 0)
       break;
