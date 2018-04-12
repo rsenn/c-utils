@@ -20,7 +20,7 @@
  * we are called. */
 
 int64 io_tryread(int64 d,char* buf,int64 len) {
-  io_entry* e=iarray_get(&io_fds,d);
+  io_entry* e=iarray_get(io_getfds(),d);
   if(!e) { errno=EBADF; return -3; }
   if(len<0) { errno=EINVAL; return -3; }
   if(e->readqueued==2) {
@@ -82,7 +82,7 @@ int64 io_tryread(int64 d,char* buf,int64 len) {
   long r;
   struct itimerval old,new;
   struct pollfd p;
-  io_entry* e=iarray_get(&io_fds,d);
+  io_entry* e=iarray_get(io_getfds(),d);
   if(!e) { errno=EBADF; return -3; }
   if(!e->nonblock) {
     p.fd=d;

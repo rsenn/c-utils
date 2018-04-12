@@ -13,7 +13,7 @@
 #endif
 
 void io_nonblock(int64 d) {
-  io_entry* e=iarray_get(&io_fds,d);
+  io_entry* e=iarray_get(io_getfds(),d);
 #ifdef __MINGW32__
   unsigned long i=1;
   if(ioctlsocket( d, FIONBIO, &i)==0)

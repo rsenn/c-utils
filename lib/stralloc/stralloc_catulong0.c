@@ -1,4 +1,5 @@
 #include "stralloc.h"
+#undef stralloc_catulong0
 #include "fmt.h"
 
 int stralloc_catulong0(stralloc* sa, unsigned long int in, size_t n) {

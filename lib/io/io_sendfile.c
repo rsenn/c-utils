@@ -15,7 +15,7 @@ int64 io_sendfile(int64 s,int64 fd,uint64 off,uint64 n) {
   off_t sbytes;
   int r=sendfile(fd,s,off,n,0,&sbytes,0);
   if(r==-1) {
-    io_entry* e=iarray_get(&io_fds,s);
+    io_entry* e=iarray_get(io_getfds(),s);
     if(e) {
       e->canwrite=0;
       e->next_write=-1;
@@ -38,7 +38,7 @@ int64 io_sendfile(int64 out,int64 in,uint64 off,uint64 bytes) {
   long long r=sendfile64(out,in,off,bytes,0,0);
   if(r==-1 && errno!=EAGAIN) r=-3;
   if(r!=bytes) {
-    io_entry* e=iarray_get(&io_fds,s);
+    io_entry* e=iarray_get(io_getfds(),s);
     if(e) {
       e->canwrite=0;
       e->next_write=-1;
@@ -59,7 +59,7 @@ int64 io_sendfile(int64 out,int64 in,uint64 off,uint64 bytes) {
   long long r=sendfile64(out,in,&o,bytes);
   if(r==-1 && errno!=EAGAIN) r=-3;
   if(r!=bytes) {
-    io_entry* e=iarray_get(&io_fds,s);
+    io_entry* e=iarray_get(io_getfds(),s);
     if(e) {
       e->canwrite=0;
       e->next_write=-1;
@@ -87,7 +87,7 @@ int64 io_sendfile(int64 out,int64 in,uint64 off,uint64 bytes) {
   p.trailer_length=0;
   if(send_file(&destfd,&p,0)>=0) {
     if(p.bytes_sent != bytes) {
-      io_entry* e=iarray_get(&io_fds,s);
+      io_entry* e=iarray_get(io_getfds(),s);
       if(e) {
 	e->canwrite=0;
 	e->next_write=-1;
@@ -113,7 +113,7 @@ _syscall4(int,sendfile,int,out,int,in,long *,offset,unsigned long,count)
 
 int64 io_sendfile(int64 s,int64 fd,uint64 off,uint64 n) {
   off_t o=off;
-  io_entry* e=iarray_get(&io_fds,s);
+  io_entry* e=iarray_get(io_getfds(),s);
   off_t i;
   uint64 done=0;
   /* What a spectacularly broken design for sendfile64.
@@ -147,7 +147,7 @@ int64 io_sendfile(int64 s,int64 fd,uint64 off,uint64 n) {
 #include <mswsock.h>
 
 int64 io_sendfile(int64 out,int64 in,uint64 off,uint64 bytes) {
-  io_entry* e=iarray_get(&io_fds,out);
+  io_entry* e=iarray_get(io_getfds(),out);
   if(!e) { errno=EBADF; return -3; }
   if(e->sendfilequeued==1) {
     /* we called TransmitFile, and it returned. */

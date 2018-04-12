@@ -64,7 +64,7 @@ void io_dontwantread_really(int64 d, io_entry* e) {
 }
 
 void io_dontwantread(int64 d) {
-  io_entry* e=iarray_get(&io_fds,d);
+  io_entry* e=iarray_get(io_getfds(),d);
   if(e) {
     if(e->canread)
       io_dontwantread_really(d,e);

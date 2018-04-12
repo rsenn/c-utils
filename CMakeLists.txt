@@ -12,7 +12,7 @@ include( FindLibXml2 ) # LIBXML2_FOUND LIBXML2_DEFINITIONS LIBXML2_INCLUDE_DIR L
 include( FindZLIB )    # ZLIB_FOUND ZLIB_INCLUDE_DIR ZLIB_INCLUDE_DIRS ZLIB_LIBRARIES ZLIB_LIBRARY ZLIB_ROOT
 include( FindBZip2 )   # BZIP2_FOUND BZIP2_INCLUDE_DIR BZIP2_INCLUDE_DIRS BZIP2_LIBRARIES BZIP2_LIBRARY
 
-include( FindLibLZMA ) # LIBLZMA_FOUND LIBLZMA_INCLUDE_DIR LIBLZMA_INCLUDE_DIRS LIBLZMA_LIBRARIES LIBLZMA_LIBRARY
+#include( FindLibLZMA ) # LIBLZMA_FOUND LIBLZMA_INCLUDE_DIR LIBLZMA_INCLUDE_DIRS LIBLZMA_LIBRARIES LIBLZMA_LIBRARY
 include( FindOpenSSL ) # OPENSSL_CRYPTO_LIBRARIES OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARIES OPENSSL_SSL_LIBRARY LIB_EAY_LIBRARY SSL_EAY_LIBRARY 
                        # OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES 
 
@@ -51,7 +51,7 @@ include( FindBoost )
 #include(CheckCXX11Features)
 
 #pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
-#pkg_search_module(LIBLZMA liblzma)
+pkg_search_module(LIBLZMA liblzma)
 #pkg_search_module(LIBZ zlib)
 #pkg_search_module(LIBBZ2 libbz2 bzip2)
 #pkg_search_module(LIBSSL openssl libssl)
@@ -102,6 +102,17 @@ check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
 check_function_exists(localtime HAVE_LOCALTIME_FUNC)
 check_function_exists(localtime_r HAVE_LOCALTIME_R_FUNC)
 
+foreach(SEEK_FN LSEEK LLSEEK LSEEK64)
+  if(HAVE_${SEEK_FN}_FUNC)
+    add_definitions(-DHAVE_${SEEK_FN}=1)
+  endif()
+endforeach()
+if(HAVE_LLSEEK_FUNC)
+  add_definitions(-Dlseek=llseek)
+elseif(HAVE_LSEEK64_FUNC)
+  add_definitions(-Dlseek=lseek64)
+endif()
+
 check_function_exists(free HAVE_FREE_FUNC)
 check_function_exists(malloc HAVE_MALLOC_FUNC)
 check_function_exists(opendir HAVE_OPENDIR_FUNC)
@@ -129,8 +140,9 @@ pkg_search_module(
 
 
 #find_package(libxml2)
+include_directories( "${CMAKE_SOURCE_DIR}/lib" )
 include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" ) 
-include_directories( ${LIBXML2_INCLUDE_DIRS} )
+#include_directories( ${LIBXML2_INCLUDE_DIRS} )
 
 #if(LIBXML2_LIBRARIES MATCHES static)
 #  option(STATIC_LINK "Compile as static libraries" ON)
@@ -145,7 +157,7 @@ else(STATIC_LINK)
 endif(STATIC_LINK)
 
 
-include_directories( ${LIBXML2_INCLUDE_DIR} )
+#include_directories( ${LIBXML2_INCLUDE_DIR} )
 set(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
 
 if(LIBXML2_INCLUDE_DIR)
@@ -188,7 +200,6 @@ endif()
 string(REGEX REPLACE "/W[0-9]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 string(REGEX REPLACE "/W[0-9]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-include_directories( "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/lib" "${CMAKE_BINARY_DIR}" )
 
 add_definitions(-DHAVE_CONFIG_H)
 
@@ -215,7 +226,10 @@ endforeach()
 
 #
 foreach(ARCHIVE array buffer byte dir fmt hmap http iarray io list mmap ndelay open playlist rdir scan socket str stralloc strarray strlist tai taia time uint16 uint32 uint64)
-  file(GLOB MODSOURCES lib/${ARCHIVE}_*.c lib/${ARCHIVE}/*.c)
+  file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
+  if(NOT MODSOURCES)
+    file(GLOB MODSOURCES lib/${ARCHIVE}_*.c)
+  endif()
 
   if(ARCHIVE STREQUAL io)
     list(APPEND MODSOURCES lib/iopause.c)
@@ -250,12 +264,14 @@ target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
   string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}")
   
-target_link_libraries(eagle-init-brd ${LIBXML2_LIBRARIES} m)
+target_link_libraries(compiler-wrapper dir)
+target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES})
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
-target_link_libraries(plsconv ${LIBXML2_LIBRARIES})
+target_link_libraries(plsconv playlist ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest2 ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest3 ${LIBXML2_LIBRARIES})
+target_link_libraries(httptest http io socket taia tai iarray ndelay socket uint16)
  
   
 #if(STATIC_LINK)
@@ -266,9 +282,9 @@ target_link_libraries(xmltest3 ${LIBXML2_LIBRARIES})
 
 #target_link_libraries(eagle-init-brd)
 
-if(Boost_INCLUDE_DIRS)
-  include_directories("${Boost_INCLUDE_DIRS}")
-endif()
+#if(Boost_INCLUDE_DIRS)
+#  include_directories("${Boost_INCLUDE_DIRS}")
+#endif()
 
 foreach(CXXPROGRAM ${CXXPROGRAMS})
 #  add_executable( ${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_CXX_SOURCES} ${COMMON_C_SOURCES} )

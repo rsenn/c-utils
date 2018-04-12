@@ -1,4 +1,5 @@
 #include "stralloc.h"
+#undef stralloc_diffs
 #include "byte.h"
 #include "str.h"
 

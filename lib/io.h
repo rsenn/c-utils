@@ -6,6 +6,7 @@
 
 #include "uint64.h"
 #include "taia.h"
+#include "iarray.h"
 
 #ifdef __cplusplus
 extern "C" {

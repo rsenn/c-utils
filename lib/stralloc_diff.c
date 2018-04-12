@@ -1,4 +1,5 @@
-#include "libowfat/stralloc.h"
+#include "stralloc.h"
+#undef stralloc_diff
 #include "byte.h"
 #include "str.h"
 

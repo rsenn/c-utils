@@ -8,7 +8,7 @@
 #ifdef __MINGW32__
 # include "socket.h"
 my_extern HANDLE io_comport;
-#elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32)
+#elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
 # define HAVE_EPOLL 1
 # define HAVE_SIGIO
 # ifdef HAVE_SIGIO
@@ -72,6 +72,8 @@ typedef struct {
 
 extern int io_multithreaded;
 extern int io_sockets[2];
+
+iarray* io_getfds();
 
 my_extern iarray io_fds;
 my_extern uint64 io_wanted_fds;

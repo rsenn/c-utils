@@ -1,4 +1,5 @@
 #include "stralloc.h"
+#undef stralloc_catint0
 
 unsigned int stralloc_catint0(stralloc *sa, int i, unsigned int n)
 {

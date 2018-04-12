@@ -1,5 +1,5 @@
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+# define _GNU_SOURCE
 #endif
 #include <errno.h>
 #define my_extern
@@ -7,37 +7,49 @@
 #undef my_extern
 #include "byte.h"
 #ifdef HAVE_SIGIO
-#include <signal.h>
-#include <fcntl.h>
+# include <signal.h>
+# include <fcntl.h>
 #endif
 #include <sys/types.h>
 #include <fcntl.h>
 
 #ifdef HAVE_KQUEUE
-#include <sys/event.h>
+# include <sys/event.h>
 #endif
 #ifdef HAVE_EPOLL
-#include <inttypes.h>
-#include <sys/epoll.h>
+# include <inttypes.h>
+# include <sys/epoll.h>
 #endif
 #include <unistd.h>
 #ifdef HAVE_DEVPOLL
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/devpoll.h>
+# include <sys/types.h>
+# include <sys/socket.h>
+# include <sys/devpoll.h>
 #endif
 
 #ifdef __dietlibc__
-#include <sys/atomic.h>
+# include <sys/atomic.h>
 #else
-#define __CAS(ptr,oldval,newval) __sync_val_compare_and_swap(ptr,oldval,newval)
+# define __CAS(ptr,oldval,newval) __sync_val_compare_and_swap(ptr,oldval,newval)
+#endif
+
+#ifdef __APPLE__
+#define EXPORT __attribute__((visibility("default")))
+#elif defined(__MINGW32__) || defined(_WIN32) || defined(__CYGWIN__)
+#define EXPORT _declspec(dllexport)
+#else
+#define EXPORT
 #endif
 
 #ifdef __MINGW32__
-#include <stdio.h>
+# include <stdio.h>
 extern HANDLE io_comport;
 #endif
-iarray io_fds;
+EXPORT iarray io_fds;
+
+iarray*
+io_getfds() { return &io_fds; }
+
 static int io_fds_inited;
 uint64 io_wanted_fds;
 array io_pollfds;

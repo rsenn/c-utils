@@ -16,7 +16,7 @@ int64 io_mmapwritefile(int64 out,int64 in,uint64 off,uint64 bytes,io_write_callb
   char buf[BUFSIZE];
   ssize_t n,m;
   uint64 sent=0;
-  io_entry* e=iarray_get(&io_fds,out);
+  io_entry* e=iarray_get(io_getfds(),out);
   if(e) {
     const char* c;
     unsigned long left;

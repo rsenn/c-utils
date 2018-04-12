@@ -11,7 +11,7 @@
  * copy: see Copyright for the status of this software.
  */
 
-#include <stdio.h>
+#include "buffer.h"
 #include <libxml/xmlreader.h>
 
 #ifdef LIBXML_READER_ENABLED
@@ -33,17 +33,17 @@ static void processDoc(xmlTextReaderPtr readerPtr) {
      */
     docPtr = xmlTextReaderCurrentDoc(readerPtr);
     if (NULL == docPtr) {
-      fprintf(stderr, "failed to obtain document\n");      
+      buffer_putsflush(buffer_2, "failed to obtain document\n");
       return;
     }
       
     URL = docPtr->URL;
     if (NULL == URL) {
-      fprintf(stderr, "Failed to obtain URL\n");      
+      buffer_putsflush(buffer_2, "Failed to obtain URL\n");      
     }
 
     if (ret != 0) {
-      fprintf(stderr, "%s: Failed to parse\n", URL);
+      buffer_putmflush(buffer_2, URL, ": Failed to parse\n");
       return;
     }
 
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
      */
     readerPtr = xmlReaderForFile(argv[1], NULL, 0);
     if (NULL == readerPtr) {
-      fprintf(stderr, "%s: failed to create reader\n", argv[1]);      
+      buffer_putmflush(buffer_2, argv[1], ": failed to create reader\n");      
       return(1);
     }
     processDoc(readerPtr);
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     for (i=2; i < argc; ++i) {
       	xmlReaderNewFile(readerPtr, argv[i], NULL, 0);
 	if (NULL == readerPtr) {
-	  fprintf(stderr, "%s: failed to create reader\n", argv[i]);      
+	  buffer_putmflush(buffer_2, argv[i], ": failed to create reader\n");      
 	  return(1);
 	}
         processDoc(readerPtr);
@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 
 #else
 int main(void) {
-    fprintf(stderr, "xmlReader support not compiled in\n");
+    buffer_putsflush(buffer_2, "xmlReader support not compiled in\n");
     exit(1);
 }
 #endif

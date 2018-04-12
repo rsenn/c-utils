@@ -1,4 +1,4 @@
-#include "libowfat/stralloc.h"
+#include "stralloc.h"
 
 int stralloc_chomp(stralloc* sa) {
   size_t max=sa->len;

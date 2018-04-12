@@ -50,7 +50,7 @@
 
 #if 0
 static void handleevent(int fd,int readable,int writable,int error) {
-  io_entry* e=array_get(&io_fds,sizeof(io_entry),fd);
+  io_entry* e=array_get(io_getfds(),sizeof(io_entry),fd);
   if(e) {
     int curevents=0,newevents;
     if(e->kernelwantread) curevents |= POLLIN;
@@ -130,7 +130,7 @@ int64 io_waituntil2(int64 milliseconds) {
     struct epoll_event y[100];
     if((n=epoll_wait(io_master,y,100,milliseconds))==-1) return -1;
     for (i=0; i<n; ++i) {
-      io_entry* e=iarray_get(&io_fds,y[i].data.fd);
+      io_entry* e=iarray_get(io_getfds(),y[i].data.fd);
       if(e) {
 	int curevents=0,newevents;
 	if(e->kernelwantread) curevents |= EPOLLIN;
@@ -243,7 +243,7 @@ int64 io_waituntil2(int64 milliseconds) {
     ts.tv_sec=milliseconds/1000; ts.tv_nsec=(milliseconds%1000)*1000000;
     if((n=kevent(io_master,0,0,y,100,milliseconds!=-1?&ts:0))==-1) return -1;
     for (i=n-1; i>=0; --i) {
-      io_entry* e=iarray_get(&io_fds,y[--n].ident);
+      io_entry* e=iarray_get(io_getfds(),y[--n].ident);
       if(e) {
 	if(y[n].flags&EV_ERROR) {
 	  /* error; signal whatever app is looking for */
@@ -279,7 +279,7 @@ int64 io_waituntil2(int64 milliseconds) {
     timeout.dp_fds=y;
     if((n=ioctl(io_master,DP_POLL,&timeout))==-1) return -1;
     for (i=n-1; i>=0; --i) {
-      io_entry* e=iarray_get(&io_fds,y[--n].fd);
+      io_entry* e=iarray_get(io_getfds(),y[--n].fd);
       if(e) {
 	if(y[n].revents&(POLLERR|POLLHUP|POLLNVAL)) {
 	  /* error; signal whatever app is looking for */
@@ -315,8 +315,8 @@ int64 io_waituntil2(int64 milliseconds) {
     struct timespec ts;
     int r;
     io_entry* e;
-    if(alt_firstread>=0 && (e=iarray_get(&io_fds,alt_firstread)) && e->canread) return 1;
-    if(alt_firstwrite>=0 && (e=iarray_get(&io_fds,alt_firstwrite)) && e->canwrite) return 1;
+    if(alt_firstread>=0 && (e=iarray_get(io_getfds(),alt_firstread)) && e->canread) return 1;
+    if(alt_firstwrite>=0 && (e=iarray_get(io_getfds(),alt_firstwrite)) && e->canwrite) return 1;
     if(milliseconds==-1)
       r=sigwaitinfo(&io_ss,&info);
     else {
@@ -330,7 +330,7 @@ int64 io_waituntil2(int64 milliseconds) {
       goto dopoll;
     default:
       if(r==io_signum) {
-	io_entry* e=iarray_get(&io_fds,info.si_fd);
+	io_entry* e=iarray_get(io_getfds(),info.si_fd);
 	if(e) {
 	  if(info.si_band&(POLLERR|POLLHUP)) {
 	    /* error; signal whatever app is looking for */
@@ -370,7 +370,7 @@ dopoll:
   }
   fprintf(stderr,"Calling GetQueuedCompletionStatus %p...",io_comport);
   if(GetQueuedCompletionStatus(io_comport,&numberofbytes,&x,&o,milliseconds==-1?INFINITE:milliseconds)) {
-    io_entry* e=iarray_get(&io_fds,x);
+    io_entry* e=iarray_get(io_getfds(),x);
     fprintf(stderr," OK.  Got %x, e=%p\n",x,e);
     if(!e) return 0;
     e->errorcode=0;
@@ -417,7 +417,7 @@ dopoll:
     /* we got a completion packet for a failed I/O operation */
     err=GetLastError();
     if(err==WAIT_TIMEOUT) return 0;	/* or maybe not */
-    e=iarray_get(&io_fds,x);
+    e=iarray_get(io_getfds(),x);
     if(!e) return 0;	/* WTF?! */
     e->errorcode=err;
     if(o==&e->or && (e->readqueued || e->acceptqueued)) {
@@ -441,8 +441,8 @@ dopoll:
     return 1;
   }
 #else
-  for (i=r=0; (size_t)i<iarray_length(&io_fds); ++i) {
-    io_entry* e=iarray_get(&io_fds,i);
+  for (i=r=0; (size_t)i<iarray_length(io_getfds()); ++i) {
+    io_entry* e=iarray_get(io_getfds(),i);
     if(!e) return -1;
     e->canread=e->canwrite=0;
     if(e->wantread || e->wantwrite) {
@@ -458,7 +458,7 @@ dopoll:
   p=array_start(&io_pollfds);
   if((i=poll(array_start(&io_pollfds),r,milliseconds))<1) return -1;
   for (j=r-1; j>=0; --j) {
-    io_entry* e=iarray_get(&io_fds,p->fd);
+    io_entry* e=iarray_get(io_getfds(),p->fd);
     if(p->revents&(POLLERR|POLLHUP|POLLNVAL)) {
       /* error; signal whatever app is looking for */
       if(e->wantread) p->revents|=POLLIN;

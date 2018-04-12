@@ -8,7 +8,7 @@ unsigned int io_debugstring(int64 s,char* buf,unsigned int bufsize) {
   unsigned int i;
   io_entry* e;
   gettimeofday(&tv,NULL);
-  e=iarray_get(&io_fds,s);
+  e=iarray_get(io_getfds(),s);
   if(!e) return 0;
   if(bufsize<100) return 0;
   i=fmt_str(buf,"first_readable ");

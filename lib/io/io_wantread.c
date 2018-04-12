@@ -115,7 +115,7 @@ queueread:
 }
 
 void io_wantread(int64 d) {
-  io_entry* e=iarray_get(&io_fds,d);
+  io_entry* e=iarray_get(io_getfds(),d);
   if(!e || e->wantread) return;
   if(e->canread) {
     e->next_read=first_readable;

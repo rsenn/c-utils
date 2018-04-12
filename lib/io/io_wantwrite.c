@@ -99,7 +99,7 @@ void io_wantwrite_really(int64 d, io_entry* e) {
 }
 
 void io_wantwrite(int64 d) {
-  io_entry* e=iarray_get(&io_fds,d);
+  io_entry* e=iarray_get(io_getfds(),d);
   if(!e) return;
   if(e->wantwrite && e->kernelwantwrite) return;
   if(e->canwrite) {

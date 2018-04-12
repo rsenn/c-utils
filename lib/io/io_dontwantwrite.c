@@ -70,7 +70,7 @@ void io_dontwantwrite_really(int64 d,io_entry* e) {
 }
 
 void io_dontwantwrite(int64 d) {
-  io_entry* e=iarray_get(&io_fds,d);
+  io_entry* e=iarray_get(io_getfds(),d);
   if(e) {
     if(e->canwrite)
       io_dontwantwrite_really(d,e);

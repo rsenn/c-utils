@@ -1,5 +1,5 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef __LIST_H
+#define __LIST_H
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -67,4 +67,4 @@ void list_unshift(list*, link*);
 #ifdef __cplusplus
 }
 #endif
-#endif /* defined(LIST_H) */
+#endif /* defined(__LIST_H) */

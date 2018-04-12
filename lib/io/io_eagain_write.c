@@ -1,7 +1,7 @@
 #include "io_internal.h"
 
 void io_eagain_write(int64 d) {
-  io_entry* e=iarray_get(&io_fds,d);
+  io_entry* e=iarray_get(io_getfds(),d);
   if(e) {
     e->canwrite=0;
 #if defined(HAVE_SIGIO)

@@ -182,7 +182,6 @@ $(BUILDDIR)stralloc_trim.o: lib/stralloc_trim.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_num.o: lib/stralloc_num.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_base32hex_encode.o: lib/stralloc_base32hex_encode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_start.o: lib/stralloc_start.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -502,7 +501,6 @@ $(BUILDDIR)stralloc_endb.o: lib/stralloc_endb.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_finds.o: lib/stralloc_finds.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_base32_encode.o: lib/stralloc_base32_encode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)iopause.o: lib/iopause.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -624,7 +622,6 @@ $(BUILDDIR)uint16_unpack.o: lib/uint16/uint16_unpack.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)uint16_unpack_big.o: lib/uint16/uint16_unpack_big.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_base32hex_decode.o: lib/stralloc_base32hex_decode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_case_diff.o: lib/stralloc_case_diff.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -666,7 +663,6 @@ $(BUILDDIR)hmap_init.o: lib/hmap/hmap_init.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_offsets.o: lib/pe/pe_offsets.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_base32_decode.o: lib/stralloc_base32_decode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)utf8.o: lib/utf8.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

@@ -1,4 +1,5 @@
 #include "stralloc.h"
+#undef stralloc_catlong
 
 unsigned int stralloc_catlong(stralloc *sa, long l)
 {

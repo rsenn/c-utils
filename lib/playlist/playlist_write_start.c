@@ -4,7 +4,7 @@
 
 #include "playlist.h"
 
-#if !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__dietlibc__)
+#if !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__dietlibc__) && !defined(__APPLE__)
 #define lseek lseek64
 #endif
 
