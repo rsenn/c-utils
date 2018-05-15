@@ -1,6 +1,6 @@
 #include "buffer.h"
 
-char *
+char*
 buffer_peek(buffer* b) {
-  return b->x+b->p;
+  return b->x + b->p;
 }

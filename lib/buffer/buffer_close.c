@@ -5,7 +5,7 @@
 #include <io.h>
 #endif
 
-void 
+void
 buffer_close(buffer* b) {
   if(b->fd > 2) close(b->fd);
   if(b->deinit) b->deinit(b);

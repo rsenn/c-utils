@@ -53,7 +53,7 @@ int buffer_mmapread(buffer* b, const char* filename);
 int buffer_mmapread_fd(buffer *b,  int fd);
 void buffer_close(buffer* b);
 
-/* reading from an fd... if it is a regular file,  then  buffer_mmapread_fd is called, 
+/* reading from an fd... if it is a regular file,  then  buffer_mmapread_fd is called,
    otherwise  buffer_init(&b,  read,  fd,  malloc(8192),  8192) */
 int buffer_read_fd(buffer* b,  int fd);
 
@@ -101,10 +101,10 @@ ssize_t buffer_getline(buffer* b, char* x, size_t len);
 
 /* this predicate is given the string as currently read from the buffer
  * and is supposed to return 1 if the token is complete,  0 if not. */
-typedef int (*string_predicate)(const char* x, size_t len);
+typedef int (*string_predicate)(const char* x, size_t len, void* arg);
 
 /* like buffer_get_token but the token ends when your predicate says so */
-ssize_t buffer_get_token_pred(buffer* b, char* x, size_t len, string_predicate p);
+ssize_t buffer_get_token_pred(buffer* b, char* x, size_t len, string_predicate p, void*);
 
 char *buffer_peek(buffer* b);
 void buffer_seek(buffer* b, size_t len);
@@ -162,12 +162,12 @@ int buffer_get_new_token_sa(buffer* b, stralloc* sa, const char* charset, size_t
 /* same as buffer_getline_sa but empty sa first */
 int buffer_getnewline_sa(buffer* b, stralloc* sa);
 
-typedef int (*sa_predicate)(stralloc* sa);
+typedef int (*sa_predicate)(stralloc* sa, void*);
 
 /* like buffer_get_token_sa but the token ends when your predicate says so */
-int buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p);
+int buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
 /* same,  but clear sa first */
-int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p);
+int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
 
 /* make a buffer from a stralloc.
  * Do not change the stralloc after this! */

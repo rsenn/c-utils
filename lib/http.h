@@ -30,6 +30,8 @@ typedef struct http_response_s {
   stralloc data;
   size_t ptr;
   size_t chnk;
+  size_t line;
+  stralloc boundary;
 //  buffer rbuf;
 } http_response;
 

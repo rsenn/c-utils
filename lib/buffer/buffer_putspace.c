@@ -1,9 +1,8 @@
-#include "str.h"
 #include "buffer.h"
+#include "str.h"
 
-int 
+int
 buffer_putspace(buffer* b) {
-  static char space=' ';
-  return 
-buffer_put(b,&space,1);
+  static char space = ' ';
+  return buffer_put(b, &space, 1);
 }
