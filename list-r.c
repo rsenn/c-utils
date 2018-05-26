@@ -8,6 +8,7 @@
 #define INTERNAL_STRINGIFY(VALUE) #VALUE
 #define STRINGIFY(VALUE) INTERNAL_STRINGIFY(VALUE)
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -37,6 +38,7 @@
 #include <sys/stat.h>
 #include <fnmatch.h>
 
+#include "open.h"
 #include "array.h"
 #include "buffer.h"
 #include "str.h"
@@ -713,6 +715,20 @@ end:
   return 0;
 }
 
+static ssize_t
+write_err_check(int fd, const void* buf, size_t len) {
+
+  int ret = write(fd, buf, len);
+
+  if(ret == -1) {
+      buffer_putm(buffer_2, "ERROR: ", strerror(errno), "\n");
+      buffer_flush(buffer_2);
+      exit(errno);
+      //return -1;
+  }
+  return ret;
+}
+
 int main(int argc, char* argv[]) {
 
   stralloc dir = {0, 0, 0};
@@ -730,6 +746,10 @@ int main(int argc, char* argv[]) {
       opt_numeric = 1;
     } else if (!strcmp(argv[argi], "-r") || !strcmp(argv[argi], "--relative")) {
       relative = 1;
+    } else if (!strcmp(argv[argi], "-o") || !strcmp(argv[argi], "--output")) {
+      buffer_1->fd = open_trunc(argv[argi+1]);
+      //buffer_mmapread(buffer_1, argv[argi+1]);
+      ++argi;
     } else if (!strcmp(argv[argi], "-x") || !strcmp(argv[argi], "--exclude")) {
       char* s = argv[argi + 1];
       array_catb(&exclude_masks, (void*)&s, sizeof(char*));
