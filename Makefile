@@ -1,4 +1,5 @@
 DEBUG = 1
+DEBUG = 1
 LARGEFILE = 1
 WARNINGS = all no-unused-variable
 #WARNINGS += error
@@ -500,7 +501,7 @@ $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 plsconv compiler-wrapper impgen pathtool ntldd) 
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 plsconv compiler-wrapper impgen pathtool ntldd hexedit) 
  #opensearch-dump eagle-init-brd)
 LIBSOURCES = $(wildcard lib/*/*.c) 
   
@@ -767,6 +768,15 @@ $(BUILDDIR)ntldd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)ntldd.o $(BUILDDIR)libn
 ifeq ($(DO_STRIP),1)
 	#$(CROSS_COMPILE)$(STRIP) $@
 endif
+
+$(BUILDDIR)hexedit$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(EXTRA_LIBS)
+$(BUILDDIR)hexedit$(M64_)$(EXESUFFIX)$(EXEEXT): CPPFLAGS += -Dhexedit_VERSION_MAJOR=0 -Dhexedit_VERSION_MINOR=2
+$(BUILDDIR)hexedit$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)hexedit.o $(BUILDDIR)mmap.a $(BUILDDIR)buffer.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)open.a $(BUILDDIR)uint32.a 
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
+ifeq ($(DO_STRIP),1)
+	#$(CROSS_COMPILE)$(STRIP) $@
+endif
+
 #
 #$(BUILDDIR)xc8-wrapper/:
 #	mkdir -p $@
