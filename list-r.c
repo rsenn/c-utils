@@ -716,6 +716,17 @@ end:
 }
 
 static ssize_t
+io_err_check(ssize_t ret) {
+  if(ret == -1) {
+      buffer_putm(buffer_2, "ERROR: ", strerror(errno), "\n");
+      buffer_flush(buffer_2);
+      exit(errno);
+      //return -1;
+  }
+  return ret;
+}
+
+static ssize_t
 write_err_check(int fd, const void* buf, size_t len) {
 
   int ret = write(fd, buf, len);
@@ -747,7 +758,7 @@ int main(int argc, char* argv[]) {
     } else if (!strcmp(argv[argi], "-r") || !strcmp(argv[argi], "--relative")) {
       relative = 1;
     } else if (!strcmp(argv[argi], "-o") || !strcmp(argv[argi], "--output")) {
-      buffer_1->fd = open_trunc(argv[argi+1]);
+      buffer_1->fd = io_err_check(open_trunc(argv[argi+1]));
       //buffer_mmapread(buffer_1, argv[argi+1]);
       ++argi;
     } else if (!strcmp(argv[argi], "-x") || !strcmp(argv[argi], "--exclude")) {

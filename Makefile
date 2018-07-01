@@ -54,6 +54,10 @@ ifneq ($(CROSS_COMPILE),$(subst diet,,$(CROSS_COMPILE)))
 USE_DIET := 1
 endif
 
+ifneq ($(CROSS_COMPILE),$(subst musl,,$(CROSS_COMPILE)))
+USE_MUSL := 1
+endif
+
 $(info PREFIX: $(PREFIX))
 $(info DIET: $(DIET))
 $(info USE_DIET: $(USE_DIET))
@@ -86,10 +90,14 @@ endif
 ifeq ($(CROSS_COMPILE),)
 HOST ?= $(BUILD)
 else
-ifeq ($(USE_DIET),1)
-HOST := $(shell set -x; $(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$|| ;; s|^\([^-]*\)-\([^-]*\)-\([^-]*\)-gnu|\1-\2-\3-diet| ;; s|^\([^-]*\)-\([^-]*\)-\([^-]*\)|\1-diet-\3|' )
+ifeq ($(USE_MUSL),1)
+    HOST := $(subst gnu,musl,$(BUILD))
 else
-HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
+    ifeq ($(USE_DIET),1)
+    HOST := $(shell set -x; $(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$|| ;; s|^\([^-]*\)-\([^-]*\)-\([^-]*\)-gnu|\1-\2-\3-diet| ;; s|^\([^-]*\)-\([^-]*\)-\([^-]*\)|\1-diet-\3|' )
+    else
+    HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
+    endif
 endif
 endif
 
