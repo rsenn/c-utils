@@ -1,5 +1,5 @@
-#include "array.h"
-#include "buffer.h"
+#include "../array.h"
+#include "../buffer.h"
 
 void
 buffer_fromarray(buffer* b, array* a) {

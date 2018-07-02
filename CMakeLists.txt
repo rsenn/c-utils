@@ -8,6 +8,7 @@ set(BUILD_SHARED_LIBS FALSE)
 include( CheckCCompilerFlag )
 include( CheckCXXCompilerFlag )
 
+include( FindIconv )
 include( FindLibXml2 ) # LIBXML2_FOUND LIBXML2_DEFINITIONS LIBXML2_INCLUDE_DIR LIBXML2_LIBRARIES LIBXML2_VERSION_STRING LIBXML2_XMLLINT_EXECUTABLE
 include( FindZLIB )    # ZLIB_FOUND ZLIB_INCLUDE_DIR ZLIB_INCLUDE_DIRS ZLIB_LIBRARIES ZLIB_LIBRARY ZLIB_ROOT
 include( FindBZip2 )   # BZIP2_FOUND BZIP2_INCLUDE_DIR BZIP2_INCLUDE_DIRS BZIP2_LIBRARIES BZIP2_LIBRARY
@@ -140,7 +141,7 @@ pkg_search_module(
 
 
 #find_package(libxml2)
-include_directories( "${CMAKE_SOURCE_DIR}/lib" )
+#include_directories( "${CMAKE_SOURCE_DIR}/lib" )
 include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" ) 
 #include_directories( ${LIBXML2_INCLUDE_DIRS} )
 
@@ -161,7 +162,7 @@ endif(STATIC_LINK)
 set(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
 
 if(LIBXML2_INCLUDE_DIR)
-  include_directories("${LIBXML2_INCLUDE_DIR}" "${LIBXML2_INCLUDE_DIR}/libxml")
+  include_directories(${Iconv_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR}/libxml)
 endif()
 
 if(USE_READDIR)
@@ -262,7 +263,7 @@ endforeach(PROGRAM)
 target_link_libraries(list-r dir ${COMMON_LIBS})
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
-  string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}")
+  string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}" "${Iconv_LIBRARIES}")
   
 target_link_libraries(compiler-wrapper dir)
 target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES})

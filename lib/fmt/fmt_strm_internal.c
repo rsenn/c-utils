@@ -1,5 +1,5 @@
 #include <stdarg.h>
-#include "fmt.h"
+#include "../fmt.h"
 
 size_t fmt_strm_internal(char* dest, ...) {
   size_t n;

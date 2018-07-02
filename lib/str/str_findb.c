@@ -1,5 +1,5 @@
-#include "byte.h"
-#include "str.h"
+#include "../byte.h"
+#include "../str.h"
 /*
   return index to first occurance of data,
   otherwise return str_len(s)

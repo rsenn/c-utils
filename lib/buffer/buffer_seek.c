@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "../buffer.h"
 
 void
 buffer_seek(buffer* b, size_t len) {

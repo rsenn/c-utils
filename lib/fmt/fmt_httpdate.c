@@ -1,5 +1,5 @@
-#include "fmt.h"
-#include "byte.h"
+#include "../fmt.h"
+#include "../byte.h"
 #include <time.h>
 
 static unsigned int fmt_2digits(char* dest,int i) {

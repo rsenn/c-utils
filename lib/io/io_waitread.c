@@ -1,13 +1,12 @@
-#include <unistd.h>
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 #else
 #include <poll.h>
 #endif
 #include <errno.h>
-#include "io_internal.h"
+#include "../io_internal.h"
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 
 int64 io_waitread(int64 d,char* buf,int64 len) {
   long r;

@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "list.h"
+#include "../list.h"
 
 link*
 list_find(list *l, int (*pred)(void *)) {

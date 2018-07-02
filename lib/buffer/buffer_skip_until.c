@@ -1,5 +1,5 @@
-#include "buffer.h"
-#include "byte.h"
+#include "../buffer.h"
+#include "../byte.h"
 
 /* skips bytes in buffer until a char in charset occurs, the char itself will be skipped also */
 int

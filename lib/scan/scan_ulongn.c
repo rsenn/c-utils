@@ -1,5 +1,5 @@
-#include "scan.h"
-//#include "haveuint128.h"
+#include "../scan.h"
+//#include "../haveuint128.h"
 
 size_t scan_ulongn(const char* src,size_t n,unsigned long int* dest) {
   register const char *tmp=src;

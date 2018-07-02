@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "str.h"
-#include "strlist.h"
+#include "../str.h"
+#include "../strlist.h"
 
 void
 strlist_push_tokens(strlist* sl, const char* s, const char* delim) {

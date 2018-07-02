@@ -1,11 +1,11 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-#include "ndelay.h"
+#include "../ndelay.h"
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include <winsock2.h>
-#include "windoze.h"
+#include "../windoze.h"
 #endif
 
 #ifndef O_NDELAY
@@ -13,7 +13,7 @@
 #endif
 
 int ndelay_on(int fd) {
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   unsigned long i=0;
   return winsock2errno(ioctlsocket( fd, FIONBIO, &i));
 #else

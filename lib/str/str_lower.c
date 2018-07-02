@@ -1,4 +1,4 @@
-#include "str.h"
+#include "../str.h"
 
 void str_lower(void *str)
 {

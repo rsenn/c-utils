@@ -1,5 +1,5 @@
-#include "playlist.h"
-#include "byte.h"
+#include "../playlist.h"
+#include "../byte.h"
 
 int
 playlist_read(playlist* pl) {

@@ -1,5 +1,5 @@
 #define NO_UINT32_MACROS
-#include "uint32.h"
+#include "../uint32.h"
 
 void uint32_unpack(const char *in,uint32 *out) {
   *out = (((uint32)(unsigned char)in[3])<<24) |

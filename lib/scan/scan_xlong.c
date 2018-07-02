@@ -1,4 +1,4 @@
-#include "scan.h"
+#include "../scan.h"
 
 size_t scan_xlong(const char* src, unsigned long* dest) {
   register const char* tmp = src;

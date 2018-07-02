@@ -1,5 +1,5 @@
-#include "strlist.h"
-#include "byte.h"
+#include "../strlist.h"
+#include "../byte.h"
 
 int
 strlist_pushb(strlist* sl, const char* s, size_t n) {

@@ -1,17 +1,17 @@
-#include "byte.h"
-#include "http.h"
-#include "io.h"
-#include "socket.h"
-#include "str.h"
+#include "../byte.h"
+#include "../http.h"
+#include "../io.h"
+#include "../socket.h"
+#include "../str.h"
 #include <errno.h>
 #include <stdlib.h>
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <netdb.h>
 #include <netinet/in.h>
 #endif
 
-#include "buffer.h"
+#include "../buffer.h"
 
 int
 http_get(http* h, const char* location) {

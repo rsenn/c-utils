@@ -1,4 +1,4 @@
-#include "strarray.h"
+#include "../strarray.h"
 
 void
 strarray_pushd(strarray* a, const char* s) {

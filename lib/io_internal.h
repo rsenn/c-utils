@@ -19,6 +19,13 @@ my_extern HANDLE io_comport;
 # endif
 #endif
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <io.h>
+#else
+#include <unistd.h>
+#include <sys/time.h>
+#endif
+
 /* We simulate a level-triggered API on top of an event signalling
  * mechanism that can be level-triggered (epoll/kqueue/poll) or
  * edge-triggered (SIGIO).

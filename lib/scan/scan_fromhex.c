@@ -1,4 +1,4 @@
-#include "scan.h"
+#include "../scan.h"
 
 int scan_fromhex(unsigned char c) {
   c-='0';

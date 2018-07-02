@@ -1,5 +1,5 @@
-#include "buffer.h"
-#include "stralloc.h"
+#include "../buffer.h"
+#include "../stralloc.h"
 
 void
 buffer_fromsa(buffer* b, const stralloc* sa) {

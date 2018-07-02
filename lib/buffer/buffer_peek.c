@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "../buffer.h"
 
 char*
 buffer_peek(buffer* b) {

@@ -3,9 +3,9 @@
 #endif
 #include <errno.h>
 #define my_extern
-#include "io_internal.h"
+#include "../io_internal.h"
 #undef my_extern
-#include "byte.h"
+#include "../byte.h"
 #ifdef HAVE_SIGIO
 # include <signal.h>
 # include <fcntl.h>
@@ -20,7 +20,9 @@
 # include <inttypes.h>
 # include <sys/epoll.h>
 #endif
-#include <unistd.h>
+#if defined(_WIN32) || defined(_WIN64)
+#else
+#endif
 #ifdef HAVE_DEVPOLL
 # include <sys/types.h>
 # include <sys/socket.h>
@@ -35,13 +37,13 @@
 
 #ifdef __APPLE__
 #define EXPORT __attribute__((visibility("default")))
-#elif defined(__MINGW32__) || defined(_WIN32) || defined(__CYGWIN__) || defined(__MSYS__)
+#elif defined(_WIN32) || defined(_WIN32) || defined(__CYGWIN__) || defined(__MSYS__)
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 # include <stdio.h>
 extern HANDLE io_comport;
 #endif
@@ -69,7 +71,7 @@ long alt_firstwrite;
 /* put d on internal data structure, return 1 on success, 0 on error */
 static io_entry* io_fd_internal(int64 d,int flags) {
   io_entry* e;
-#ifndef __MINGW32__
+#if !(defined(_WIN32) || defined(_WIN64))
   long r;
   if((flags&(IO_FD_BLOCK|IO_FD_NONBLOCK))==0) {
     if((r=fcntl(d,F_GETFL,0)) == -1)
@@ -94,7 +96,7 @@ static io_entry* io_fd_internal(int64 d,int flags) {
   if(e->inuse) return e;
   byte_zero(e,sizeof(io_entry));
   e->inuse=1;
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   e->mh=0;
 #else
   if(r&O_NDELAY) e->nonblock=1;
@@ -129,7 +131,7 @@ static io_entry* io_fd_internal(int64 d,int flags) {
 	io_waitmode=_SIGIO;
     }
 #endif
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
     io_comport=CreateIoCompletionPort(INVALID_HANDLE_VALUE,NULL,0,0);
     if(io_comport) {
       io_waitmode=COMPLETIONPORT;
@@ -151,7 +153,7 @@ static io_entry* io_fd_internal(int64 d,int flags) {
     fcntl(d,F_SETFL,fcntl(d,F_GETFL)|O_NONBLOCK|O_ASYNC);
   }
 #endif
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   if(io_comport) {
     fprintf(stderr,"Queueing %p at completion port %p...",d,io_comport);
     if(CreateIoCompletionPort((HANDLE)d,io_comport,(ULONG_PTR)d,0)==0) {

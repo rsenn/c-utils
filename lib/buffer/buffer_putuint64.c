@@ -1,5 +1,5 @@
-#include "buffer.h"
-#include "fmt.h"
+#include "../buffer.h"
+#include "../fmt.h"
 
 int
 buffer_putuint64(buffer* b, uint64 i) {

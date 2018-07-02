@@ -1,4 +1,4 @@
-#include "io_internal.h"
+#include "../io_internal.h"
 
 int64 io_timeouted() {
   tai6464 now;

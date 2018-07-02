@@ -8,13 +8,13 @@
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 
-#ifndef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#include <io.h>
+#else
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#else
-#include <windows.h>
-#include <io.h>
 #endif
 
 #include <stdlib.h>
@@ -23,7 +23,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/mman.h>
 #endif
 
@@ -83,7 +83,7 @@ typedef off64_t offset_type;
 
 int64 filesize(int fd) {
   int64 sz;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
   DWORD fszH;
   sz = GetFileSize((HANDLE)(size_t)fd, &fszH);
   sz |= ((int64)fszH) << 32;
@@ -103,7 +103,7 @@ int64 filesize(int fd) {
 
 static const char*
 last_error_str () {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
   DWORD errCode = GetLastError();
   static char buffer[1024];
   char *err;

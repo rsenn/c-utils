@@ -1,6 +1,6 @@
-#include "buffer.h"
-#include "http.h"
-#include "socket.h"
+#include "../buffer.h"
+#include "../http.h"
+#include "../socket.h"
 //#include <sys/socket.h>
 
 static ssize_t

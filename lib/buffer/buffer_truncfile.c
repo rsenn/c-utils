@@ -1,11 +1,11 @@
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #else
 #include <io.h>
 #endif
 
-#include "buffer.h"
-#include "open.h"
+#include "../buffer.h"
+#include "../open.h"
 
 int
 buffer_truncfile(buffer* b, const char* fn, char* y, size_t ylen) {

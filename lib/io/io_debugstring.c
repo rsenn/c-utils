@@ -1,7 +1,6 @@
-#include "io_internal.h"
-#include <iarray.h>
-#include "fmt.h"
-#include <sys/time.h>
+#include "../io_internal.h"
+#include "../iarray.h"
+#include "../fmt.h"
 
 unsigned int io_debugstring(int64 s,char* buf,unsigned int bufsize) {
   struct timeval tv;

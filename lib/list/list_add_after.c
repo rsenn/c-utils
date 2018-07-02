@@ -1,4 +1,4 @@
-#include "list.h"
+#include "../list.h"
 
 void
 list_add_after(list *l, link *p, link *after) {

@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "str.h"
-#include "byte.h"
+#include "../str.h"
+#include "../byte.h"
 
 char*
 str_dup(const char* s) {

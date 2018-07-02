@@ -1,4 +1,4 @@
-#include <buffer.h>
+#include "../buffer.h"
 
 ssize_t
 buffer_getline(buffer* b, char* x, size_t len) {

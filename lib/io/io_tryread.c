@@ -1,16 +1,13 @@
-#include <unistd.h>
-#include <sys/time.h>
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-#include <stdio.h>
 #else
 #include <poll.h>
 #endif
 #include <errno.h>
-#include "io_internal.h"
-#include "byte.h"
+#include "../io_internal.h"
+#include "../byte.h"
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 /* In Windows, I/O works differently. */
 /* Instead of calling read until it says EAGAIN, you call read in
  * overlapping mode, and then wait for it to finish.

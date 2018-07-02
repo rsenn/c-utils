@@ -1,4 +1,4 @@
-#include "hmap_internal.h"
+#include "../hmap_internal.h"
 
 static void hmap_print( HMAP_DB *my_hmap_db ) {
     int i = 0;

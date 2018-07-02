@@ -1,5 +1,5 @@
-#include "strlist.h"
-#include "str.h"
+#include "../strlist.h"
+#include "../str.h"
 
 int
 strlist_shift(strlist* sl, const char** strp) {

@@ -1,5 +1,5 @@
-#include "playlist.h"
-#include "byte.h"
+#include "../playlist.h"
+#include "../byte.h"
 
 void
 playlist_init(playlist* pl) {

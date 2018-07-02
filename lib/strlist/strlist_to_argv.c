@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "strlist.h"
+#include "../strlist.h"
 
 char**
 strlist_to_argv(const strlist* sl) {

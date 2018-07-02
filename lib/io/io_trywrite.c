@@ -1,15 +1,12 @@
-#include <unistd.h>
-#include <sys/time.h>
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 #else
 #include <poll.h>
 #endif
 #include <errno.h>
-#include "io_internal.h"
+#include "../io_internal.h"
 
-#ifdef __MINGW32__
-#include <stdio.h>
+#if defined(_WIN32) || defined(_WIN64)
 
 /* All the Unix trickery is unsupported on Windows.  Instead, one is
  * supposed to do the whole write in overlapping mode and then get

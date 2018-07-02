@@ -1,4 +1,4 @@
-#include "fmt.h"
+#include "../fmt.h"
 
 size_t fmt_8longlong(char *dest,unsigned long long i) {
   register unsigned long len;

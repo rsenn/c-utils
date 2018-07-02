@@ -1,9 +1,9 @@
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #else
 #include <io.h>
 #endif
-#include "buffer.h"
+#include "../buffer.h"
 
 static ssize_t
 b0read(int fd, char* buf, size_t len) {

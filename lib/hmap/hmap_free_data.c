@@ -1,4 +1,4 @@
-#include "hmap_internal.h"
+#include "../hmap_internal.h"
 
 int hmap_free_data(TUPLE *tuple){                                                     
   switch( tuple->data_type ){                                                        

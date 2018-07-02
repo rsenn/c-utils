@@ -6,8 +6,8 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #endif
-#include "open.h"
-#include "mmap.h"
+#include "../open.h"
+#include "../mmap.h"
 
 int mmap_unmap(char* mapped, size_t maplen) {
 #if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)

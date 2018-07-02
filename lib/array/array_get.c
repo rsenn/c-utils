@@ -1,6 +1,6 @@
-#include "likely.h"
-#include "safemult.h"
-#include "array.h"
+#include "../likely.h"
+#include "../safemult.h"
+#include "../array.h"
 
 #if 0
       static array x;

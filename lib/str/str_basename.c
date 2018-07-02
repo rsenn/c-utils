@@ -1,4 +1,4 @@
-#include "str.h"
+#include "../str.h"
 
 char*
 str_basename(char* s) {

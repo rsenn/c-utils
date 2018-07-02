@@ -1,5 +1,5 @@
-#include "io_internal.h"
-#include "safemult.h"
+#include "../io_internal.h"
+#include "../safemult.h"
 
 void io_waituntil(tai6464 t) {
   uint64 x,y;

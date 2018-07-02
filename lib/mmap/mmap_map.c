@@ -1,6 +1,6 @@
 #include <sys/types.h>
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #endif
 #if defined(_WIN32)
@@ -11,9 +11,9 @@
 
 #include <sys/mman.h>
 #endif
-#include "open.h"
-#include "mmap.h" 
-#include "uint64.h"
+#include "../open.h"
+#include "../mmap.h" 
+#include "../uint64.h"
 /*
 #if defined(__x86_64__) && defined(__linux) && !defined(__dietlibc__)
 #define mmap mmap64

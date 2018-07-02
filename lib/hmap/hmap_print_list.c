@@ -1,4 +1,4 @@
-#include "hmap_internal.h"
+#include "../hmap_internal.h"
 
 static void hmap_print_list_tuple( HMAP_DB *my_hmap_db ) {
     TUPLE *ptr_list_tuple = my_hmap_db->list_tuple;

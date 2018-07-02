@@ -1,9 +1,9 @@
-#include "buffer.h"
-#include "http.h"
-#include "scan.h"
-#include "socket.h"
-#include "str.h"
-#include "byte.h"
+#include "../buffer.h"
+#include "../http.h"
+#include "../scan.h"
+#include "../socket.h"
+#include "../str.h"
+#include "../byte.h"
 #include <ctype.h>
 #include <errno.h>
 

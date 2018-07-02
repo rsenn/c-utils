@@ -22,7 +22,7 @@
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #include <dirent.h>
 #else
@@ -47,7 +47,7 @@
 #include "uint64.h"
 #include "dir_internal.h"
 
-#if defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(_WIN32) || defined(__MINGW64__)
 #define MINGW 1
 #endif
 
@@ -746,7 +746,7 @@ int main(int argc, char* argv[]) {
   int relative = 0;
   int argi = 1;
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
   setmode(STDOUT_FILENO, O_BINARY);
 #endif
 

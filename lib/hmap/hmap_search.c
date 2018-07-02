@@ -1,6 +1,6 @@
 #include <stdarg.h>
-#include "hmap_internal.h"
-#include "hmap_internal.c"
+#include "../hmap_internal.h"
+#include "../hmap_internal.c"
 
 int hmap_search(HMAP_DB *hmap_db, void *key, int k_len, TUPLE **data) {
 

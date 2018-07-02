@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "../buffer.h"
 #include <errno.h>
 #include <string.h>
 

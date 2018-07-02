@@ -1,15 +1,14 @@
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
 #define _FILE_OFFSET_BITS 64
-#include "io_internal.h"
-/* #include "havebsdsf.h" */
-/* #include "havesendfile.h" */
+#include "../io_internal.h"
+/* #include "../havebsdsf.h" */
+/* #include "../havesendfile.h" */
 #include <errno.h>
 
 #if defined(HAVE_BSDSENDFILE)
 #define SENDFILE 1
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/uio.h>
 
 int64 io_sendfile(int64 s,int64 fd,uint64 off,uint64 n) {
   off_t sbytes;
@@ -31,7 +30,6 @@ int64 io_sendfile(int64 s,int64 fd,uint64 off,uint64 n) {
 
 #define _LARGEFILE64_SOURCE
 #include <sys/types.h>
-#include <sys/uio.h>
 #include <sys/socket.h>
 
 int64 io_sendfile(int64 out,int64 in,uint64 off,uint64 bytes) {
@@ -72,7 +70,6 @@ int64 io_sendfile(int64 out,int64 in,uint64 off,uint64 bytes) {
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <unistd.h>
 #include <errno.h>
 
 int64 io_sendfile(int64 out,int64 in,uint64 off,uint64 bytes) {
@@ -107,7 +104,6 @@ int64 io_sendfile(int64 out,int64 in,uint64 off,uint64 bytes) {
 #elif defined(__dietlibc__)
 #include <sys/sendfile.h>
 #else
-#include <linux/unistd.h>
 _syscall4(int,sendfile,int,out,int,in,long *,offset,unsigned long,count)
 #endif
 
@@ -141,7 +137,7 @@ int64 io_sendfile(int64 s,int64 fd,uint64 off,uint64 n) {
 }
 #endif
 
-#elif defined(__MINGW32__)
+#elif defined(_WIN32)
 
 #include <windows.h>
 #include <mswsock.h>
@@ -175,8 +171,7 @@ int64 io_sendfile(int64 out,int64 in,uint64 off,uint64 bytes) {
 
 #else
 
-#include <iob.h>
-#include <unistd.h>
+#include "../iob.h"
 
 static int64 writecb(int64 s,const void* buf,uint64 n) {
   return write(s,buf,n);

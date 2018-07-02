@@ -1,5 +1,5 @@
-#include "buffer.h"
-#include "byte.h"
+#include "../buffer.h"
+#include "../byte.h"
 
 extern int buffer_dummyread();
 extern ssize_t buffer_stubborn_read(ssize_t (*op)(), int fd, const char* buf, unsigned int len);

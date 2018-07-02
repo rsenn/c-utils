@@ -1,9 +1,9 @@
 #include <stdlib.h>
-#include "byte.h"
-#include "str.h"
-#include "rdir.h"
-#include "dir_internal.h"
-#include "buffer.h"
+#include "../byte.h"
+#include "../str.h"
+#include "../rdir.h"
+#include "../dir_internal.h"
+#include "../buffer.h"
 
 void rdir_read_r(rdir_t* d);
 

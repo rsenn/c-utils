@@ -1,14 +1,14 @@
 #include <sys/types.h>
-#ifndef __MINGW32__
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "windoze.h"
+#include "../windoze.h"
 
-#include "byte.h"
-#include "socket.h"
-#include "uint16.h"
-#include "uint32.h"
+#include "../byte.h"
+#include "../socket.h"
+#include "../uint16.h"
+#include "../uint32.h"
 
 int socket_connect4(int s,const char *ip,uint16 port) {
   struct sockaddr_in si;

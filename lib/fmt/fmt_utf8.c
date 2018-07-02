@@ -1,4 +1,4 @@
-#include "fmt.h"
+#include "../fmt.h"
 
 size_t fmt_utf8(char *dest,uint32_t n) {
   size_t i,j;

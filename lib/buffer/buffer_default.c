@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "../buffer.h"
 
 /* set sane defaults + operation */
 void

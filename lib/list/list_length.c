@@ -1,5 +1,5 @@
 #include <sys/types.h>
-#include "list.h"
+#include "../list.h"
 
 size_t
 list_length(list *l) {
