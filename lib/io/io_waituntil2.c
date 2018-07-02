@@ -261,7 +261,7 @@ int64 io_waituntil2(int64 milliseconds) {
 	}
 #ifdef DEBUG
       } else {
-	fprintf(stderr,"got kevent on fd#%d, which is not in array!\n",y[n].ident);
+	//fprintf(stderr,"got kevent on fd#%d, which is not in array!\n",y[n].ident);
 #endif
       }
     }
@@ -350,7 +350,7 @@ int64 io_waituntil2(int64 milliseconds) {
 	  }
 #ifdef DEBUG
 	} else {
-	  fprintf(stderr,"got kevent on fd#%d, which is not in array!\n",info.si_fd);
+	  //fprintf(stderr,"got kevent on fd#%d, which is not in array!\n",info.si_fd);
 #endif
 	}
       }
