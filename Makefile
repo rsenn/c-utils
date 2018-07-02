@@ -294,7 +294,7 @@ ifneq ($(OS),msys)
 endif
 endif
 
-CPPFLAGS := -I. -Ilib
+CPPFLAGS := -I.
 
 DEFS += INLINE=inline
 #DEFS += PATH_MAX=4096
@@ -531,6 +531,8 @@ $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 
 
 PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 plsconv compiler-wrapper impgen pathtool ntldd hexedit) 
+
+
  #opensearch-dump eagle-init-brd)
 LIBSOURCES = $(wildcard lib/*/*.c) 
   
@@ -573,6 +575,10 @@ all: \
 all-release:
 	$(MAKE) DEBUG=0 all
 
+PROGRAM_OBJECTS = $(patsubst %,%.o,$(PROGRAMS))
+
+$(PROGRAM_OBJECTS): CPPFLAGS += -Ilib
+
 $(BUILDDIR):
 	-mkdir -p $(BUILDDIR) || mkdir $(BUILDDIR)
 	-md $(subst /,\,$(BUILDDIR))
@@ -580,6 +586,8 @@ $(BUILDDIR):
 $(OBJDIR):
 	-mkdir -p $(OBJDIR) || mkdir $(OBJDIR)
 	-md $(subst /,\,$(OBJDIR))
+
+
 
 $(BUILDDIR)array.a: $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILDDIR)array_cat0.o $(BUILDDIR)array_catb.o $(BUILDDIR)array_cat.o $(BUILDDIR)array_cate.o $(BUILDDIR)array_cats0.o $(BUILDDIR)array_cats.o $(BUILDDIR)array_equal.o $(BUILDDIR)array_fail.o $(BUILDDIR)array_get.o $(BUILDDIR)array_length.o $(BUILDDIR)array_reset.o $(BUILDDIR)array_start.o $(BUILDDIR)array_truncate.o $(BUILDDIR)array_trunc.o $(BUILDDIR)/umult64.o
 	$(AR) rcs $@ $^

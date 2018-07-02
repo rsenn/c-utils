@@ -19,6 +19,11 @@ include( FindOpenSSL ) # OPENSSL_CRYPTO_LIBRARIES OPENSSL_CRYPTO_LIBRARY OPENSSL
 
 #include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
 
+
+#if(WIN32 OR MSYS OR CYGWIN)
+  add_definitions(-D_FILE_OFFSET_BITS=64)
+#endif(WIN32 OR WIN64)
+
 add_definitions( -g )
 
 include( FindPkgConfig )

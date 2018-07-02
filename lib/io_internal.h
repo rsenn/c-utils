@@ -21,6 +21,8 @@ my_extern HANDLE io_comport;
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <io.h>
+#define lseek lseek64
+#define llseek lseek64
 #else
 #include <unistd.h>
 #include <sys/time.h>
