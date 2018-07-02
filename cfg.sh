@@ -41,7 +41,6 @@ cfg() {
   cmake \
   -Wno-dev \
     -DCMAKE_INSTALL_PREFIX="${prefix-/usr}" \
-    ${libdir:+-DZXING_INSTALL_LIB_DIR="$libdir"} \
     -G "${SYSTEM:-Unix} Makefiles" \
     ${VERBOSE+:-DCMAKE_VERBOSE_MAKEFILE=TRUE} \
     -DCMAKE_BUILD_TYPE="${TYPE:-RelWithDebInfo}" \
