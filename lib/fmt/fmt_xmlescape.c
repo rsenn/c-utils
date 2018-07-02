@@ -1,4 +1,4 @@
-#include "fmt.h"
+#include "../fmt.h"
 
 size_t fmt_xmlescape(char* dest,uint32_t ch) {
   char* x;

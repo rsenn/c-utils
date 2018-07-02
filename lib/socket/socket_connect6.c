@@ -1,16 +1,16 @@
+#if !(defined(_WIN32) || defined(_WIN64))
+#include <sys/socket.h>
 #include <sys/param.h>
 #include <sys/types.h>
-#ifndef __MINGW32__
-#include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "windoze.h"
+#include "../windoze.h"
 #include <errno.h>
-#include "byte.h"
-#include "socket.h"
-#include "ip6.h"
-#include "uint32.h"
-#include "ip4.h"
+#include "../byte.h"
+#include "../socket.h"
+#include "../ip6.h"
+#include "../uint32.h"
+#include "../ip4.h"
 
 int socket_connect6(int s,const char ip[16],uint16 port,uint32 scope_id)
 {

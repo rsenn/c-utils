@@ -1,4 +1,4 @@
-#include "str.h"
+#include "../str.h"
 
 unsigned int str_case_start(const void *p1, register const void *p2)
 {

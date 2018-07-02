@@ -1,5 +1,5 @@
-#include "hmap_internal.h"
-#include "hmap_internal.c"
+#include "../hmap_internal.h"
+#include "../hmap_internal.c"
 
 int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, void *data) {
     

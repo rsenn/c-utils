@@ -1,5 +1,5 @@
 #include <stdarg.h>
-#include "strlist.h"
+#include "../strlist.h"
 
 int strlist_pushm_internal(strlist* sl, ...) {
 stralloc sa;

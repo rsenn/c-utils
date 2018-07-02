@@ -1,11 +1,11 @@
-#include "likely.h"
+#include "../likely.h"
 #include <stdlib.h>
-#ifndef __MINGW32__
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #endif
-#include "iarray.h"
+#include "../iarray.h"
 #ifdef __dietlibc__
 #include <sys/atomic.h>
 #else
@@ -13,7 +13,7 @@
 #endif
 
 static iarray_page* new_page(size_t pagesize) {
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   void* x=malloc(pagesize);
   if(x==0) return 0;
 #else
@@ -49,7 +49,7 @@ void* iarray_allocate(iarray* ia,size_t pos) {
     p=&(*p)->next;
   }
   if(newpage)
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
     free(newpage);
 #else
     munmap(newpage,ia->bytesperpage);

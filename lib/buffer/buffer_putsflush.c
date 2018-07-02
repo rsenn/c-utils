@@ -1,6 +1,6 @@
 #define __LIBOWFAT_INTERNAL
-#include "buffer.h"
-#include "str.h"
+#include "../buffer.h"
+#include "../str.h"
 
 int
 buffer_putsflush(buffer* b, const char* x) {

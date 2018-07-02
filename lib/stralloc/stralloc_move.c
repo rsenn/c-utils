@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "byte.h"
-#include "stralloc.h"
+#include "../byte.h"
+#include "../stralloc.h"
 
 void stralloc_move(stralloc* to, stralloc* from) 
 {

@@ -1,4 +1,4 @@
-#include "hmap_internal.h"
+#include "../hmap_internal.h"
 
 static void hmap_print_tree_tuple( HMAP_DB *my_hmap_db ) {
     int i = 0;

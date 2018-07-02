@@ -1,4 +1,4 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 #undef stralloc_zero
 
 void stralloc_zero(stralloc* sa) {

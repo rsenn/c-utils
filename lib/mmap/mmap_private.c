@@ -7,8 +7,8 @@
 #else
 #include <sys/mman.h>
 #endif
-#include "open.h"
-#include "mmap.h"
+#include "../open.h"
+#include "../mmap.h"
 
 char* mmap_private(const char* filename, size_t * filesize) {
 #if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)

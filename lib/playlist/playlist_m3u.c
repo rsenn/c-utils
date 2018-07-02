@@ -1,10 +1,10 @@
 
 #include <libxml/xmlreader.h>
 #include <ctype.h>
-#include "playlist.h"
-#include "buffer.h"
-#include "str.h"
-#include "scan.h"
+#include "../playlist.h"
+#include "../buffer.h"
+#include "../str.h"
+#include "../scan.h"
 
 static int
 m3u_reader(playlist* pl) {

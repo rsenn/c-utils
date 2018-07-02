@@ -1,5 +1,5 @@
-#include "str.h"
-#include "strlist.h"
+#include "../str.h"
+#include "../strlist.h"
 
 size_t
 strlist_sort(strlist* sl) {

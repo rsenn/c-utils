@@ -1,4 +1,4 @@
-#include "str.h"
+#include "../str.h"
 
 unsigned int str_copyb(void *p1, const void *p2, register unsigned int max)
 {

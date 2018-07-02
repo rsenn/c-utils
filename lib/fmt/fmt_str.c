@@ -1,4 +1,4 @@
-#include "fmt.h"
+#include "../fmt.h"
 
 size_t fmt_str(char *out,const char *in) {
   register char* s=out;

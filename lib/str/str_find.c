@@ -1,4 +1,4 @@
-#include "str.h"
+#include "../str.h"
 /*
   return index to first occurance of data,
   otherwise return str_len(s)

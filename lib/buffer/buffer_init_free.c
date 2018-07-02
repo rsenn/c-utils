@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "../buffer.h"
 
 void
 buffer_init_free(buffer* b, ssize_t (*op)(), int fd, char* y, size_t ylen) {

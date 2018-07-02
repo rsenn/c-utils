@@ -1,16 +1,14 @@
-#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "io_internal.h"
+#include "../io_internal.h"
 #ifdef HAVE_KQUEUE
 #include <sys/types.h>
 #include <sys/event.h>
-#include <sys/time.h>
 #endif
 #ifdef HAVE_EPOLL
 #include <inttypes.h>
 #include <sys/epoll.h>
-#include <byte.h>
+#include "../byte.h"
 #endif
 #ifdef HAVE_SIGIO
 #include <sys/poll.h>
@@ -85,7 +83,7 @@ void io_wantwrite_really(int64 d, io_entry* e) {
     }
   }
 #endif
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   printf("e->wantwrite == %d\n",e->wantwrite);
   if(!e->wantwrite) {
     e->next_write=first_writeable;

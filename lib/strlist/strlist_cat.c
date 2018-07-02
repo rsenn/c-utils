@@ -1,4 +1,4 @@
-#include "strlist.h"
+#include "../strlist.h"
 
 int
 strlist_cat (strlist * sl, const strlist* l) {

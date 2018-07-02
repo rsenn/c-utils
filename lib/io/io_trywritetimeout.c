@@ -1,5 +1,5 @@
 #include <errno.h>
-#include "io_internal.h"
+#include "../io_internal.h"
 
 int64 io_trywritetimeout(int64 d,const char* buf,int64 len) {
   int64 r=io_trywrite(d,buf,len);

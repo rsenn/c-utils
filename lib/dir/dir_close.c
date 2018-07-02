@@ -2,7 +2,7 @@
 #include "config.h"
 #endif
 
-#include "dir_internal.h"
+#include "../dir_internal.h"
 
 #if USE_READDIR
 #include <dirent.h>

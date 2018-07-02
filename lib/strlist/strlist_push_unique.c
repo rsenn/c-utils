@@ -1,4 +1,4 @@
-#include "strlist.h"
+#include "../strlist.h"
 
 int
 strlist_push_unique(strlist* sl, const char* s) {

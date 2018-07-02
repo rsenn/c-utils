@@ -1,5 +1,5 @@
-#include "buffer.h"
-#include "stralloc.h"
+#include "../buffer.h"
+#include "../stralloc.h"
 
 int
 buffer_putsaflush(buffer* b, const stralloc* sa) {

@@ -1,6 +1,6 @@
-#include "strlist.h"
-#include "byte.h"
-#include "str.h"
+#include "../strlist.h"
+#include "../byte.h"
+#include "../str.h"
 
 int
 strlist_unshift(strlist* sl, const char* s) {

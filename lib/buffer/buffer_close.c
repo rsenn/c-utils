@@ -1,8 +1,8 @@
-#include <buffer.h>
-#ifndef _WIN32
-#include <unistd.h>
+#include "../buffer.h"
+#if !(defined(_WIN32) || defined(_WIN64))
+#include "unistd.h"
 #else
-#include <io.h>
+#include "io.h"
 #endif
 
 void

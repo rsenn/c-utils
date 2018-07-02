@@ -1,5 +1,5 @@
 #include <string.h>
-#include "str.h"
+#include "../str.h"
 
 char *
 str_istr(char* s, char* find) {

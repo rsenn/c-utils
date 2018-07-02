@@ -1,4 +1,4 @@
-#include "str.h"
+#include "../str.h"
 
 int str_case_diff(const void *p1, const void *p2)
 {

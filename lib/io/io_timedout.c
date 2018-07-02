@@ -1,4 +1,4 @@
-#include "io_internal.h"
+#include "../io_internal.h"
 
 int io_timedout(int64 d) {
   tai6464 now;

@@ -1,13 +1,14 @@
 #include <sys/types.h>
-#include <sys/time.h>
-#include "taia.h"
-#ifdef __MINGW32__
+#include "../taia.h"
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
+#else
+#include <sys/time.h>
 #endif
 
 void taia_now(struct taia *t)
 {
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   union {
     FILETIME f;
     unsigned long long l;

@@ -1,4 +1,4 @@
-#include "taia.h"
+#include "../taia.h"
 
 double taia_frac(const struct taia *t)
 {

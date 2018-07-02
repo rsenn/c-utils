@@ -1,6 +1,6 @@
-#include "buffer.h"
-#include "byte.h"
-#include "scan.h"
+#include "../buffer.h"
+#include "../byte.h"
+#include "../scan.h"
 
 int
 buffer_get_until(buffer* b, char* x, size_t len, const char* charset, size_t setlen) {

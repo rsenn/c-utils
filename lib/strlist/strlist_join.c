@@ -1,5 +1,5 @@
-#include "strlist.h"
-#include "byte.h"
+#include "../strlist.h"
+#include "../byte.h"
 
 void
 strlist_join(const strlist* sl, stralloc* sa, char delim) {

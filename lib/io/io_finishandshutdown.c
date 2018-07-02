@@ -1,4 +1,4 @@
-#include "io_internal.h"
+#include "../io_internal.h"
 
 void io_finishandshutdown(void) {
   iarray_free(io_getfds());

@@ -9,7 +9,7 @@
 #include <libgen.h>
 #endif
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include <process.h>
 #define mkdir _mkdir
 #else
@@ -198,7 +198,7 @@ strlist_execve(const strlist* sl) {
   char* p = av[0];
   av[0] = str_basename(p);
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   return spawnv(P_WAIT, p, av);
 #else
   int pid = vfork();

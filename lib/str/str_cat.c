@@ -1,4 +1,4 @@
-#include "str.h"
+#include "../str.h"
 
 unsigned int str_cat(void *p1, const void *p2)
 {

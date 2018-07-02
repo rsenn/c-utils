@@ -1,16 +1,17 @@
-#include <unistd.h>
+#if defined(_WIN32) || defined(_WIN64)
+#else
+#endif
 #include <fcntl.h>
 #include <errno.h>
-#include "io_internal.h"
+#include "../io_internal.h"
 #ifdef HAVE_KQUEUE
 #include <sys/types.h>
 #include <sys/event.h>
-#include <sys/time.h>
 #endif
 #ifdef HAVE_EPOLL
 #include <inttypes.h>
 #include <sys/epoll.h>
-#include <byte.h>
+#include "../byte.h"
 #endif
 #ifdef HAVE_DEVPOLL
 #include <sys/types.h>

@@ -1,4 +1,4 @@
-#include "taia.h"
+#include "../taia.h"
 
 /* XXX: breaks tai encapsulation */
 

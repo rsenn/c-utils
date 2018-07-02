@@ -1,4 +1,4 @@
-#include "hmap_internal.h"
+#include "../hmap_internal.h"
 
 int hmap_init(int bucket_size, HMAP_DB **hmap_db) {
 

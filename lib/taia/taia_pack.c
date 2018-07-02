@@ -1,4 +1,4 @@
-#include "taia.h"
+#include "../taia.h"
 
 void taia_pack(char *s,const struct taia *t)
 {

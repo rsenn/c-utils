@@ -8,9 +8,9 @@
 #include <alloca.h>
 #endif /* HAVE_ALLOCA_H */
 
-#include "buffer.h"
-#include "byte.h"
-#include "str.h"
+#include "../buffer.h"
+#include "../byte.h"
+#include "../str.h"
 
 int
 buffer_putnspace(buffer* b, int n) {

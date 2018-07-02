@@ -1,4 +1,4 @@
-#include "hmap_internal.h"
+#include "../hmap_internal.h"
 
 int hmap_delete(HMAP_DB **hmap_db, void *key, int k_len) {
 

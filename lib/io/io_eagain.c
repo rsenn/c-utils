@@ -1,4 +1,4 @@
-#include "io_internal.h"
+#include "../io_internal.h"
 
 void io_eagain(int64 d) {
   io_entry* e=iarray_get(io_getfds(),d);

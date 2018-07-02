@@ -1,4 +1,4 @@
-#include "taia.h"
+#include "../taia.h"
 
 double taia_approx(const struct taia *t)
 {

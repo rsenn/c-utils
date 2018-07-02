@@ -1,4 +1,4 @@
-#include "io_internal.h"
+#include "../io_internal.h"
 #ifdef HAVE_EPOLL
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
@@ -10,11 +10,11 @@
 #endif
 #include <signal.h>
 #endif
-#include <unistd.h>
-#include <sys/time.h>
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
+#else
+#endif
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-#include <stdio.h>
 #else
 #include <poll.h>
 #endif
@@ -33,12 +33,11 @@
 #endif
 
 #ifdef __dietlibc__
-#include "fmt.h"
+#include "../fmt.h"
 #include <write12.h>
 #endif
 
 #ifdef DEBUG
-#include <stdio.h>
 #endif
 
 #ifndef EPOLLRDNORM
@@ -119,7 +118,7 @@ static void handleevent(int fd,int readable,int writable,int error) {
 #endif
 
 int64 io_waituntil2(int64 milliseconds) {
-#ifndef __MINGW32__
+#if !(defined(_WIN32) || defined(_WIN64))
   struct pollfd* p;
 #endif
   long i,j,r;
@@ -360,7 +359,7 @@ int64 io_waituntil2(int64 milliseconds) {
   }
 dopoll:
 #endif
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   DWORD numberofbytes;
   ULONG_PTR x;
   LPOVERLAPPED o;

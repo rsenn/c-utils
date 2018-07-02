@@ -27,7 +27,6 @@ int io_passfd(int64 sock,int64 fd) {
 #endif
 #include <stddef.h>
 #include <sys/types.h>
-#include <sys/time.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include <errno.h>

@@ -1,9 +1,9 @@
 #include <libxml/xmlreader.h>
 #include <ctype.h>
-#include "playlist.h"
-#include "buffer.h"
-#include "str.h"
-#include "scan.h"
+#include "../playlist.h"
+#include "../buffer.h"
+#include "../str.h"
+#include "../scan.h"
 
 static int
 pls_reader(playlist* pl) {

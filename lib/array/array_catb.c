@@ -1,5 +1,5 @@
-#include "array.h"
-#include "byte.h"
+#include "../array.h"
+#include "../byte.h"
 
 void array_catb(array* to, const char* from, uint64 len) {
   long l;

@@ -1,6 +1,6 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 #undef stralloc_catlong0
-#include "fmt.h"
+#include "../fmt.h"
 
 int stralloc_catlong0(stralloc* sa, signed long int in, size_t n) {
   if(stralloc_readyplus(sa, fmt_minus(0, in) + fmt_ulong0(0, in, n))) {
