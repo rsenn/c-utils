@@ -43,7 +43,7 @@ MSDN Magazine articles
 #include "uint64.h"
 #include "mmap.h"
 #include "str.h"
-#include "pe.h"
+#include "lib/pe.h"
 
 #define FALSE 0
 #define TRUE 1

@@ -575,9 +575,12 @@ all: \
 all-release:
 	$(MAKE) DEBUG=0 all
 
-PROGRAM_OBJECTS = $(patsubst %,%.o,$(PROGRAMS))
+PROGRAM_OBJECTS = $(patsubst %,$(BUILDDIR)%.o,$(wildcard *.c))
+#$(patsubst %,%.o,$(PROGRAMS))
 
+$(PROGRAM_OBJECTS): CFLAGS += -Ilib
 $(PROGRAM_OBJECTS): CPPFLAGS += -Ilib
+$(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
 
 $(BUILDDIR):
 	-mkdir -p $(BUILDDIR) || mkdir $(BUILDDIR)
