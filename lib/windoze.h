@@ -1,4 +1,17 @@
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
+
+#include <io.h>
+
+#ifndef _SSIZE_T_DEFINED
+#ifdef _WIN64
+typedef unsigned __int64 ssize_t;
+#else
+typedef _W64 unsigned int ssize_t;
+#endif
+#define _SSIZE_T_DEFINED
+#endif
+
+//typedef ssize_t socklen_t;
 
 #ifdef __cplusplus
 extern "C" {

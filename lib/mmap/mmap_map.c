@@ -29,8 +29,8 @@ char* mmap_map(int fd, size_t sz, uint64 offset) {
   map = 0;
   if(m) { 
    map=MapViewOfFile(m, FILE_MAP_COPY, (offset >> 32), offset & 0xffffffff, sz);
-   //if(map == NULL)  fprintf(stderr, "MapViewOfFile(%p, %i, 0x%08x, 0x%08x, %lu) = NULL\n",  m, FILE_MAP_COPY, (offset >> 32), offset & 0xffffffff, sz);
-  } //else fprintf(stderr, "CreateFileMapping(%p, %i, %i, 0x%08x, 0x%08x, NULL) = NULL\n",  h, 0, PAGE_WRITECOPY, szh, szl);
+//   //if(map == NULL)  fprintf(stderr, "MapViewOfFile(%p, %i, 0x%08x, 0x%08x, %lu) = NULL\n",  m, FILE_MAP_COPY, (offset >> 32), offset & 0xffffffff, sz);
+//  } //else fprintf(stderr, "CreateFileMapping(%p, %i, %i, 0x%08x, 0x%08x, NULL) = NULL\n",  h, 0, PAGE_WRITECOPY, szh, szl);
 
   CloseHandle(m);
   return map;

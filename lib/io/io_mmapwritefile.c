@@ -1,11 +1,8 @@
-#include "../io_internal.h"
+  #include "../io_internal.h"
 #include "../iob.h"
-#if defined(_WIN32) || defined(_WIN64)
-#else
-#endif
 #include <sys/types.h>
 #if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
+#include "../windoze.h"
 #else
 #include <sys/mman.h>
 #endif

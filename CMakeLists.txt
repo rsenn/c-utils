@@ -24,7 +24,7 @@ include( FindOpenSSL ) # OPENSSL_CRYPTO_LIBRARIES OPENSSL_CRYPTO_LIBRARY OPENSSL
   add_definitions(-D_FILE_OFFSET_BITS=64)
 #endif(WIN32 OR WIN64)
 
-add_definitions( -g )
+add_definitions( -g  )
 
 include( FindPkgConfig )
 include( UsePkgConfig )
@@ -148,7 +148,7 @@ pkg_search_module(
 #find_package(libxml2)
 #include_directories( "${CMAKE_SOURCE_DIR}/lib" )
 include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" )
-#include_directories( ${LIBXML2_INCLUDE_DIRS} )
+include_directories( ${Iconv_INCLUDE_DIR} )
 
 #if(LIBXML2_LIBRARIES MATCHES static)
 #  option(STATIC_LINK "Compile as static libraries" ON)

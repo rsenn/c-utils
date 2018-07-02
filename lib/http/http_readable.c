@@ -72,7 +72,7 @@ http_readable(http* h) {
       if(ret == 0)
         r->status = CLOSED;
       else if(err != 0)
-        r->status = ERROR;
+        r->status = ERR;
       break;
     }
 

@@ -91,7 +91,11 @@ static io_entry* io_fd_internal(int64 d,int flags) {
     iarray_init(&io_fds,sizeof(io_entry));
     io_fds_inited=1;
   } else
-    do { asm("" : : : "memory"); } while(io_fds_inited!=1);
+    do {
+ #ifdef __GNUC__
+      asm("" : : : "memory");
+#endif
+    } while(io_fds_inited!=1);
   if(!(e=iarray_allocate(&io_fds,d))) return 0;
   if(e->inuse) return e;
   byte_zero(e,sizeof(io_entry));
@@ -135,9 +139,9 @@ static io_entry* io_fd_internal(int64 d,int flags) {
     io_comport=CreateIoCompletionPort(INVALID_HANDLE_VALUE,NULL,0,0);
     if(io_comport) {
       io_waitmode=COMPLETIONPORT;
-      fprintf(stderr,"Initialized completion port: %p\n",io_comport);
+//      fprintf(stderr,"Initialized completion port: %p\n",io_comport);
     } else {
-      fprintf(stderr,"ARGH!  Could not init completion port!\n");
+//      fprintf(stderr,"ARGH!  Could not init completion port!\n");
       errno=EINVAL;
       return 0;
     }
@@ -155,13 +159,13 @@ static io_entry* io_fd_internal(int64 d,int flags) {
 #endif
 #if defined(_WIN32) || defined(_WIN64)
   if(io_comport) {
-    fprintf(stderr,"Queueing %p at completion port %p...",d,io_comport);
+//    fprintf(stderr,"Queueing %p at completion port %p...",d,io_comport);
     if(CreateIoCompletionPort((HANDLE)d,io_comport,(ULONG_PTR)d,0)==0) {
-      fprintf(stderr," failed!\n");
+//      fprintf(stderr," failed!\n");
       errno=EBADF;
       return 0;
     }
-    fprintf(stderr," OK!\n");
+//    fprintf(stderr," OK!\n");
   }
 #endif
   return e;

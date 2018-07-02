@@ -3,7 +3,7 @@
 #define cmsghdr wsacmsghdr 
 #endif
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include "io_internal.h"
 #include <errno.h>
 int io_passfd(int64 sock,int64 fd) {

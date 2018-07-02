@@ -1,4 +1,4 @@
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include "socket.h"
 #include "windoze.h"
 

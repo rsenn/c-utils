@@ -24,7 +24,12 @@ typedef struct http_request_s {
 struct http_response_s;
 
 typedef struct http_response_s {
-  enum { DEFAULT=0, CLOSED, ERROR, DONE } status;
+  enum {
+    DEFAULT=0,
+    CLOSED,
+    ERR,
+    DONE
+  } status;
   enum { START=0, HEADER=1, CHUNKS=2 } part;
   stralloc body;
   stralloc data;

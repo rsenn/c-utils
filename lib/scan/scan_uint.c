@@ -20,11 +20,13 @@ size_t scan_uint(const char* src,unsigned int* dest) {
     }
     if(cur>src) *dest=l;
     return(size_t)(cur-src);
+#ifdef __GNUC__
   } else {
     /* the C standard says that sizeof(short) <= sizeof(unsigned int) <=
      * sizeof(unsigned long); this can never happen. Provoke a compile
      * error if it does */
     char compileerror[sizeof(unsigned long)-sizeof(unsigned int)];
     (void)compileerror;
+#endif
   }
 }

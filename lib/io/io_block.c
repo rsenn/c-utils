@@ -7,7 +7,7 @@
 #include "../io_internal.h"
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <winsock2.h>
+//#include <winsock2.h>
 #include "../windoze.h"
 #endif
 

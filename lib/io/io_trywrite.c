@@ -21,17 +21,17 @@ int64 io_trywrite(int64 d,const char* buf,int64 len) {
   if(!e) { errno=EBADF; return -3; }
   if(!e->nonblock) {
     DWORD written;
-    fprintf(stderr,"Socket is in blocking mode, just calling WriteFile...");
+//    fprintf(stderr,"Socket is in blocking mode, just calling WriteFile...");
     if(WriteFile((HANDLE)d,buf,len,&written,0)) {
-      fprintf(stderr," OK, got %u bytes.\n",written);
+//      fprintf(stderr," OK, got %u bytes.\n",written);
       return written;
     } else {
-      fprintf(stderr," failed.\n",written);
+//      fprintf(stderr," failed.\n",written);
       return winsock2errno(-3);
     }
   } else {
     if(e->writequeued && !e->canwrite) {
-      fprintf(stderr,"io_trywrite: write already queued, returning EAGAIN\n");
+//      fprintf(stderr,"io_trywrite: write already queued, returning EAGAIN\n");
       errno=EAGAIN;
       return -1;
     }
@@ -39,25 +39,25 @@ int64 io_trywrite(int64 d,const char* buf,int64 len) {
       e->canwrite=0;
       e->next_write=-1;
       if(e->errorcode) {
-	fprintf(stderr,"io_trywrite: e->canwrite was set, returning error %d\n",e->errorcode);
+//	fprintf(stderr,"io_trywrite: e->canwrite was set, returning error %d\n",e->errorcode);
 	errno=winsock2errno(e->errorcode);
 	return -3;
       }
-      fprintf(stderr,"io_trywrite: e->canwrite was set, had written %u bytes\n",e->bytes_written);
+//      fprintf(stderr,"io_trywrite: e->canwrite was set, had written %u bytes\n",e->bytes_written);
       return e->bytes_written;
     } else {
-      fprintf(stderr,"io_trywrite: queueing write...");
+//      fprintf(stderr,"io_trywrite: queueing write...");
       if(WriteFile((HANDLE)d,buf,len,&e->errorcode,&e->ow)) {
-	fprintf(stderr," worked unexpectedly, error %d\n",e->errorcode);
+//	fprintf(stderr," worked unexpectedly, error %d\n",e->errorcode);
 	return e->errorcode; /* should not happen */
       } else if(GetLastError()==ERROR_IO_PENDING) {
-	fprintf(stderr," pending.\n");
+//	fprintf(stderr," pending.\n");
 	e->writequeued=1;
 	errno=EAGAIN;
 	e->errorcode=0;
 	return -1;
       } else {
-	fprintf(stderr," failed, error %d\n",e->errorcode);
+//	fprintf(stderr," failed, error %d\n",e->errorcode);
 	winsock2errno(-1);
 	e->errorcode=errno;
 	return -3;
