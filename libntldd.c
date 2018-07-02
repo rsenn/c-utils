@@ -42,6 +42,7 @@ MSDN Magazine articles
 #include "libntldd.h"
 #include "uint64.h"
 #include "mmap.h"
+#include "str.h"
 #include "pe.h"
 
 #define FALSE 0
@@ -346,8 +347,8 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
           ith = (void *)map_pointer(soffs, soffs_len, idd[i].import_address_table_rva, NULL);
           oith = (void *)map_pointer(soffs, soffs_len, idd[i].import_name_table_rva, NULL);
         } else {
-          ith = (void *) idd[i].import_address_table_rva;
-          oith = (void *) idd[i].import_name_table_rva;
+          ith = (void *)(uintptr_t)idd[i].import_address_table_rva;
+          oith = (void *)(uintptr_t)idd[i].import_name_table_rva;
         }
         for(j = 0; (impaddress = thunk_data_u1_function(ith, j, cfg)) != 0; j++) {
           struct import_table_item *imp =
