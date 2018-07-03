@@ -35,7 +35,7 @@ cfg() {
  [ -n "$CXX" ] && { test -e "$CXX"  || CXX=$(which "$CXX"); }
 
  (mkdir -p $builddir
-  relsrcdir=$(/usr/bin/realpath --relative-to "$builddir" "${PWD:-$(pwd)}")
+  relsrcdir=$(/usr/bin/realpath --relative-to "$(realpath "$builddir")" "$(realpath "${PWD:-$(pwd)}")")
   set -x
   cd $builddir
   cmake \

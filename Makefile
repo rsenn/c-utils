@@ -578,9 +578,7 @@ all-release:
 PROGRAM_OBJECTS = $(patsubst %,$(BUILDDIR)%.o,$(wildcard *.c))
 #$(patsubst %,%.o,$(PROGRAMS))
 
-$(PROGRAM_OBJECTS): CFLAGS += -Ilib
-$(PROGRAM_OBJECTS): CPPFLAGS += -Ilib
-$(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
+CPPFLAGS := -I.
 
 $(BUILDDIR):
 	-mkdir -p $(BUILDDIR) || mkdir $(BUILDDIR)
@@ -779,6 +777,13 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
+$(BUILDDIR)access.o: access.c
+$(BUILDDIR)access$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)access.o $(BUILDDIR)path.o $(BUILDDIR)open.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): INCLUDES += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
@@ -827,28 +832,28 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DXC8_WRAPPER=1
+$(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += XC8_WRAPPER=1
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)picc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DPICC_WRAPPER=1
+$(BUILDDIR)picc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += PICC_WRAPPER=1
 $(BUILDDIR)picc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)picc18-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DPICC18_WRAPPER=1
+$(BUILDDIR)picc18-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += PICC18_WRAPPER=1
 $(BUILDDIR)picc18-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += -DSDCC_WRAPPER=1
+$(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): DEFS += SDCC_WRAPPER=1
 $(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)fmt.a $(BUILDDIR)dir.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
@@ -864,7 +869,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
-	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
+	$(CROSS_COMPILE)$(CXX) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser-cpp.o
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
@@ -874,7 +879,7 @@ endif
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
-	$(CROSS_COMPILE)$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c -o  $(BUILDDIR)$(patsubst %.cpp,%.o,$(notdir $<))  $<
+	$(CROSS_COMPILE)$(CXX) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c -o  $(BUILDDIR)$(patsubst %.cpp,%.o,$(notdir $<))  $<
 
 $(BUILDDIR)kbd-adjacency$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
@@ -885,31 +890,31 @@ endif
 
 ifeq ($(BUILDDIR),)
 .c.o:
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c $<
 
 %.o: %.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c $<
 
 .cpp.o:
-	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 %.o: %.cpp
-	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) -c $<
 else
 .c.o:
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $(BUILDDIR)$@ $<
+	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c -o $(BUILDDIR)$@ $<
 
 $(BUILDDIR)%.o: lib/%.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) $(INCLUDES) -c -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
+	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) $(INCLUDES) -c -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
 
 $(BUILDDIR)%.o: %.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) $(INCLUDES) -c -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
+	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) $(INCLUDES) -c -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
 
 .cpp.o:
-	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 $(BUILDDIR)%.o: %.cpp
-	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
 endif
 
 clean:
@@ -943,3 +948,11 @@ inst-slackpkg: slackpkg
   done
 
 -include Makefile.deps
+
+$(PROGRAM_OBJECTS): CFLAGS += -Ilib
+$(PROGRAM_OBJECTS): CPPFLAGS += -Ilib
+$(PROGRAMS): CPPFLAGS += -I.
+$(PROGRAMS): CPPFLAGS += -Ilib
+
+$(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
+
