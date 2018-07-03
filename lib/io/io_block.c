@@ -16,13 +16,13 @@
 #endif
 
 void io_block(int64 d) {
-  io_entry* e=iarray_get(io_getfds(),d);
+  io_entry* e = iarray_get(io_getfds(), d);
 #if defined(_WIN32) || defined(_WIN64)
-  unsigned long i=0;
-  if(ioctlsocket( d, FIONBIO, &i)==0)
-    if(e) e->nonblock=0;
+  unsigned long i = 0;
+  if(ioctlsocket(d, FIONBIO, &i) == 0)
+    if(e) e->nonblock = 0;
 #else
-  if(fcntl(d,F_SETFL,fcntl(d,F_GETFL,0) & ~O_NDELAY)==0)
-    if(e) e->nonblock=0;
+  if(fcntl(d, F_SETFL, fcntl(d, F_GETFL, 0) & ~O_NDELAY) == 0)
+    if(e) e->nonblock = 0;
 #endif
 }

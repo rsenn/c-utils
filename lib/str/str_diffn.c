@@ -6,16 +6,16 @@
  * When the strings are different, str_diff does not read bytes past the
  * first difference. */
 int str_diffn(const char* a, const char* b, size_t limit) {
-  register const unsigned char* s=(const unsigned char*)a;
-  register const unsigned char* t=(const unsigned char*)b;
-  register const unsigned char* u=t+limit;
+  register const unsigned char* s = (const unsigned char*)a;
+  register const unsigned char* t = (const unsigned char*)b;
+  register const unsigned char* u = t + limit;
   register int j;
-  j=0;
+  j = 0;
   for(;;) {
-    if(t>=u) { break; }; if((j=(*s-*t))) { break; }; if(!*t) { break; }; ++s; ++t;
-    if(t>=u) { break; }; if((j=(*s-*t))) { break; }; if(!*t) { break; }; ++s; ++t;
-    if(t>=u) { break; }; if((j=(*s-*t))) { break; }; if(!*t) { break; }; ++s; ++t;
-    if(t>=u) { break; }; if((j=(*s-*t))) { break; }; if(!*t) { break; }; ++s; ++t;
+    if(t >= u) { break; }; if((j = (*s - *t))) { break; }; if(!*t) { break; }; ++s; ++t;
+    if(t >= u) { break; }; if((j = (*s - *t))) { break; }; if(!*t) { break; }; ++s; ++t;
+    if(t >= u) { break; }; if((j = (*s - *t))) { break; }; if(!*t) { break; }; ++s; ++t;
+    if(t >= u) { break; }; if((j = (*s - *t))) { break; }; if(!*t) { break; }; ++s; ++t;
   }
   return j;
 }
