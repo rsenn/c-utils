@@ -36,10 +36,10 @@ static void processDoc(xmlTextReaderPtr readerPtr) {
       buffer_putsflush(buffer_2, "failed to obtain document\n");
       return;
     }
-      
+
     URL = docPtr->URL;
     if(NULL == URL) {
-      buffer_putsflush(buffer_2, "Failed to obtain URL\n");      
+      buffer_putsflush(buffer_2, "Failed to obtain URL\n");
     }
 
     if(ret != 0) {
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
      */
     readerPtr = xmlReaderForFile(argv[1], NULL, 0);
     if(NULL == readerPtr) {
-      buffer_putmflush(buffer_2, argv[1], ": failed to create reader\n");      
+      buffer_putmflush(buffer_2, argv[1], ": failed to create reader\n");
       return(1);
     }
     processDoc(readerPtr);
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     for(i=2; i < argc; ++i) {
       	xmlReaderNewFile(readerPtr, argv[i], NULL, 0);
 	if(NULL == readerPtr) {
-	  buffer_putmflush(buffer_2, argv[i], ": failed to create reader\n");      
+	  buffer_putmflush(buffer_2, argv[i], ": failed to create reader\n");
 	  return(1);
 	}
         processDoc(readerPtr);

@@ -35,14 +35,14 @@ patch(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
 
 int
 main(int argc, char* argv[]) {
-	
+
   p = mmap_private(argv[1], &n);
-	
+
 	patch(p, 0x00076608, 0x90, 0xeb);
   patch(p, 0x0023f89c, 0xdf, 0x75);
   patch(p, 0x00076626, 0x8b, 0x75);
   patch(p, 0x000b23c9, 0x10, 0x85);
   patch(p, 0x00076609, 0x48, 0x2a);
 
-  mmap_unmap(p, n); 
+  mmap_unmap(p, n);
 }

@@ -6,7 +6,7 @@ int hmap_delete(HMAP_DB **hmap_db, void *key, int k_len) {
 
     TUPLE *root_tuple = NULL, *ptr_tuple = NULL;
     int r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);
-    
+
     if(r == HMAP_SUCCESS ) {
         HDB_LIST_REMOVE((*hmap_db)->list_tuple, ptr_tuple);
         root_tuple = (*hmap_db)->tuple+ptr_tuple->index;
@@ -34,6 +34,6 @@ int hmap_delete(HMAP_DB **hmap_db, void *key, int k_len) {
         }
         (*hmap_db)->tuple_count--;
     }
-        
+
     return r;
 }

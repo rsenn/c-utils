@@ -82,20 +82,20 @@ typedef enum {
   ROOT_HKCC,
 } regroot_t;
 
-static const char* registry_roots[] = { 
+static const char* registry_roots[] = {
   "HKEY_LOCAL_MACHINE",
-  "HKEY_CURRENT_USER", 
-  "HKEY_CLASSES_ROOT", 
-  "HKEY_USERS", 
-  "HKEY_CURRENT_CONFIG", 
+  "HKEY_CURRENT_USER",
+  "HKEY_CLASSES_ROOT",
+  "HKEY_USERS",
+  "HKEY_CURRENT_CONFIG",
 };
 
-static const char* registry_roots_short[] = { 
+static const char* registry_roots_short[] = {
   "HKLM",
-  "HKCU", 
-  "HKCR", 
-  "HKU", 
-  "HKCC", 
+  "HKCU",
+  "HKCR",
+  "HKU",
+  "HKCC",
 };
 
 typedef enum {
@@ -197,7 +197,7 @@ int reg2cmd() {
         continue;
       }
     }
-    
+
     #define KEY_EQ(a,b) !str_diffn(a,b,str_len(b))
 
     if(key[0]) {
@@ -210,7 +210,7 @@ int reg2cmd() {
       int inquote;
       static stralloc subkey;
       stralloc_zero(&subkey);
-      
+
       if(KEY_EQ(key, "HKLM") || KEY_EQ(key, "HKEY_LOCAL_MACHINE"))
 		rr = ROOT_HKLM;
 	  else if(KEY_EQ(key, "HKCU") || KEY_EQ(key, "HKEY_CURRENT_USER"))
@@ -221,13 +221,13 @@ int reg2cmd() {
 		rr = ROOT_HKU;
 	  else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_CONFIG"))
 		rr = ROOT_HKCC;
-		
+
 	  char* o = strchr(key, '\\');
 	  if(o) {
 	    ++o;
 	    stralloc_copys(&subkey, o);
 	  }
-        
+
 
       keystart = (line.s[0] == '"' ? 1 : 0);
       inquote = keystart;
@@ -302,12 +302,12 @@ int reg2cmd() {
         buffer_flush(buffer_2);
         exit(2);
       }
-      
+
       buffer_puts(buffer_1, (rt == REGISTRY_DELETE) ? "reg delete \"" : "reg add \"");
       buffer_puts(buffer_1, (shortroot ? registry_roots_short : registry_roots)[rr]);
       buffer_puts(buffer_1, "\\");
       buffer_putsa(buffer_1, &subkey);
-      
+
       buffer_puts(buffer_1, "\" ");
 
       if(force)

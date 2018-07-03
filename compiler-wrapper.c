@@ -166,7 +166,7 @@ process_option(const char* optstr, const char*  nextopt, int* i) {
   } else if(*optstr == 'O') {
     if(optstr[1] == 's')
       optsize = 1;
-    else 
+    else
       optlevel = atoi(&optstr[1]) * 3;
   } else if(*optstr == 'o') {
 
@@ -347,7 +347,7 @@ read_arguments() {
     strlist_push_unique(&defines, "__DEBUG=1");
   } else {
     strlist_push_unique(&defines, "NDEBUG=1");
-    strlist_push_unique(&defines, "__NDEBUG=1");    
+    strlist_push_unique(&defines, "__NDEBUG=1");
   }
 
   if(optsize) {
@@ -433,14 +433,14 @@ if(mode != PREPROCESS) {
     if(optlevel) {
        nbuf[fmt_ulong(nbuf, optlevel)] = '\0';
       strlist_pushm(&cmd, "--opt=default,+asm,", debug ? "+debug,":"", optsize ? "-speed,+space,":"-space,+speed,", nbuf, NULL);
-    } 
+    }
 
      if(warn) {
        nbuf[fmt_ulong(nbuf, warn)] = '\0';
       strlist_pushm(&cmd, "--warn=",nbuf,NULL);
     }
     if(debug) strlist_push(&cmd, "-G");
-    
+
     if(ident_len != 0) {
       nbuf[fmt_ulong(nbuf, ident_len)] = '\0';
       strlist_pushm(&cmd, "-N",nbuf, NULL);

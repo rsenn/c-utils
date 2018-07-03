@@ -44,7 +44,7 @@
       default :                                                                       \
         return HMAP_DATA_TYPE_INVALID;                                                \
   }                                                                                   \
-} 
+}
 
 inline static int
 hmap_cmp(void *v1, int v1_len, void *v2, int v2_len) {

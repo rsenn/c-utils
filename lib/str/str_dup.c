@@ -8,5 +8,5 @@ str_dup(const char* s) {
   char* r = malloc(n);
   if(r == NULL) return NULL;
   byte_copy(r, n, s);
-  return r; 
+  return r;
 }

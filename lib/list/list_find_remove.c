@@ -24,7 +24,7 @@ list_find_delete(list *l, int (*pred)(void*)) {
       /* Zero references on this link */
       p->next = NULL;
       p->prev = NULL;
-      
+
       return p;
     }
   }

@@ -45,7 +45,7 @@ size_t scan_double(const char *in, double *dest) {
        while(exp) {	/* XXX: this introduces rounding errors */
 	d/=10; --exp;
       }
-    else 
+    else
       while(exp) {	/* XXX: this introduces rounding errors */
 	d*=10; --exp;
       }

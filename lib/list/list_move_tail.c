@@ -3,7 +3,7 @@
 
 void
 list_move_tail(list *from, list *to) {
-  
+
   if(to->tail == NULL) {
     /* Copy to to-list */
     to->head = from->head;

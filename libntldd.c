@@ -398,9 +398,9 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
 char
 try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int required_machine_type) {
   char success = 0;
-  size_t sz; 
-  pe_dos_header* dhdr = (pe_dos_header*)mmap_read(name, &sz); 
-  
+  size_t sz;
+  pe_dos_header* dhdr = (pe_dos_header*)mmap_read(name, &sz);
+
   loaded_image->size_of_image = sz;
 
   if(dhdr) {

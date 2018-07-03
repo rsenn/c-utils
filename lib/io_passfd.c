@@ -1,6 +1,6 @@
 #ifdef _WIN32
 #include <w32api/mswsock.h>
-#define cmsghdr wsacmsghdr 
+#define cmsghdr wsacmsghdr
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)

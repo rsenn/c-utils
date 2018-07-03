@@ -6,7 +6,7 @@ list_add_after(list *l, link *p, link *after) {
   if(after == l->tail) {
     list_push(l, p);
     return;
-  } 
+  }
 
   /* Make references on the new p */
   p->next = after->next;
@@ -17,4 +17,4 @@ list_add_after(list *l, link *p, link *after) {
 
   /* Update next-reference of the <after> p */
   after->next = p;
-} 
+}

@@ -25,7 +25,7 @@ static float const
   , grid_mils = 100
 ;
 
-static float 
+static float
    min_x = 0.0
  , max_x = 0.0
  , min_y = 0.0
@@ -68,7 +68,7 @@ typedef struct instance {
   char part[NAMELEN];
   char gate[NAMELEN];
   float x, y;
-  float rot;  
+  float rot;
 } instance_t;
 
 /* ----------------------------------------------------------------------- */
@@ -92,8 +92,8 @@ each_part(part_t* p) {
 
   if(p->device[0] == '\0' && p->value[0] == '\0')
     return;
-    
-     
+
+
   {
     printf("MOVE %s (%.2f %.2f)"END_OF_LINE, p->name, p->x - min_x, p->y - min_y);
     fflush(stdout);
@@ -102,14 +102,14 @@ each_part(part_t* p) {
       int angle = (int)((p->rot/90))*90.0;
       while(angle < 0) angle += 360;
       while(angle > 360) angle -= 360;
-      
+
       printf("ROTATE =R%d '%s'" END_OF_LINE, angle % 360 , p->name);
       //printf("ROTATE =R0 '%s'" END_OF_LINE, p->name);
     }
 
   }
-  
-  
+
+
 /*  printf("each_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
     p->name, p->library, p->deviceset, p->device, p->value);*/
 }
@@ -149,7 +149,7 @@ get_instance(const char* part, const char* gate) {
   stralloc_cats(&key, ":");
   stralloc_cats(&key, gate);
   stralloc_nul(&key);
-  
+
   TUPLE *ptr_tuple = NULL;
   instance_t* i = NULL;
   hmap_search(instances_db, key.s, key.len, &ptr_tuple);
@@ -177,12 +177,12 @@ create_instance(const char* part, const char* gate, float x, float y, float rot)
   str_copyn(i->gate, gate, sizeof(i->gate)-1);
   i->x = x;
   i->y = y;
-  i->rot = rot; 
-  
+  i->rot = rot;
+
   hmap_add(&instances_db, key.s, key.len, 1, HMAP_DATA_TYPE_CUSTOM, i);
-  
+
   update_part(part, x, y, rot);
-  
+
   //dump_instance(i);
   return i;
 }
@@ -198,7 +198,7 @@ create_part(const char* name, const char* library, const char* deviceset,
    printf("create_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
     name, library, deviceset, device, value);
 #endif
-  part_t* p;         
+  part_t* p;
   p = malloc(sizeof(part_t));
   if(p == NULL) return NULL;
   //memset(p, 0, spzeof(part_t));
@@ -210,9 +210,9 @@ create_part(const char* name, const char* library, const char* deviceset,
   p->x = 0.0;
   p->y = 0.0;
   p->rot = 0.0;
-            
+
   hmap_add(&parts_db, (char*)name, str_len(name), 1, HMAP_DATA_TYPE_CUSTOM, p);
-  
+
   return p;
 }
 
@@ -225,20 +225,20 @@ update_part(const char* name, float x, float y, float rot) {
   printf("update_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%.2f,y=%.2f,rot=%.0f}[%.2f,%.2f,%.2f]\n",
     p->name, p->library, p->deviceset, p->device, p->value, p->x, p->y, p->rot, x, y, rot);
 #endif
-    
-  if(p->x == 0.0 || isnan(p->x)) { p->x = x; } else { 
+
+  if(p->x == 0.0 || isnan(p->x)) { p->x = x; } else {
     p->x += x; p->x /= 2;
     p->x = roundf(p->x * 100) / 100;
-  } 
-  if(p->y == 0.0 || isnan(p->y)) { p->y = y; } else { 
+  }
+  if(p->y == 0.0 || isnan(p->y)) { p->y = y; } else {
     p->y += y; p->y /= 2;
     p->y = roundf(p->y * 100) / 100;
-  } 
+  }
   if(p->rot == 0.0 || isnan(p->rot)) { p->rot = rot; } else {
     p->rot += rot; //p->rot /= 2;
     p->rot = roundf(p->rot);
-  } 
-  
+  }
+
   update_minmax_xy(p->x, p->y);
 }
 
@@ -265,7 +265,7 @@ hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void *)) {
   TUPLE* t;
   if(hmap == NULL) return;
   for(t = hmap->list_tuple; t; t = t->next) {
-    if(t->data_type == HMAP_DATA_TYPE_CUSTOM) 
+    if(t->data_type == HMAP_DATA_TYPE_CUSTOM)
       foreach_fn(t->vals.val_custom);
     if(t->next == hmap->list_tuple) break;
   }
@@ -358,23 +358,23 @@ process_instance(xmlElement* e) {
   stralloc_init(&part); get_attribute_sa(&part, e, "part");
   stralloc_init(&gate); get_attribute_sa(&gate, e, "gate");
   stralloc_init(&rot); get_attribute_sa(&rot, e, "rot");
-  
+
   if(rot.len > 0) {
     const char* r = rot.s;
     while(*r && !isdigit(*r)) ++r;
-    
+
     scan_double(r, &rotate);
   }
-  
+
   get_attribute_double(&x, e, "x");
   get_attribute_double(&y, e, "y");
-  
+
   /*x /= unit_factor;
   y /= unit_factor;*/
-  
+
   /*x *= scale_factor;
   y *= scale_factor;*/
-  
+
   instance_t* newinst = create_instance(part.s, gate.s,
     round_to_mil(x * scale_factor / unit_factor, grid_mils),
     round_to_mil(y * scale_factor / unit_factor, grid_mils),
@@ -390,7 +390,7 @@ process_part(xmlElement* e) {
   stralloc_init(&deviceset); get_attribute_sa(&deviceset, e, "deviceset");
   stralloc_init(&device); get_attribute_sa(&device, e, "device");
   stralloc_init(&value); get_attribute_sa(&value, e, "value");
-  
+
   part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s);
 }
 
@@ -718,17 +718,17 @@ main(int argc, char* argv[]) {
 
 //  print_list(instances_db);
 //  print_list(parts_db);
-  
-  
-  { 
+
+
+  {
     const part_t* tmp = get_part("IC1");
-    
+
     if(tmp) dump_part(tmp);
   }
 
   /*hmap_foreach(instances_db, &dump_instance);*/
   /*hmap_foreach(parts_db, &dump_part);*/
-  
+
   hmap_foreach(parts_db, (void*)&each_part);
   printf("\n");
 

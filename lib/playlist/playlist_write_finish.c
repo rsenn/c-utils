@@ -27,7 +27,7 @@ playlist_write_finish(buffer* b, playlist* pl) {
       lenbuf[fmt_ulong(lenbuf, pl->count)] = '\n';
 
 
-      buffer_flush(b); 
+      buffer_flush(b);
 
       lseek(b->fd, pl->num_items_pos, 0);
 
@@ -42,7 +42,7 @@ playlist_write_finish(buffer* b, playlist* pl) {
       buffer_puts(b, "  </trackList>\n</playlist>\n");
       break;
     }
-    case UNKNOWN: 
+    case UNKNOWN:
     default: {
                return 0;
     }

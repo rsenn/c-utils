@@ -149,6 +149,6 @@ main(int argc, char *argv[]) {
   playlist_write_finish(&outfile, &pls1);
   buffer_flush(&outfile);
   buffer_close(&outfile);
-  
+
   return 0;
 }

@@ -8,8 +8,8 @@
 #include <cstdio>
 #include <cstring>
 //#include <experimental/filesystem>
-//#include <filesystem> // Microsoft-specific implementation header file name  
-using namespace std::experimental::filesystem::v1;  
+//#include <filesystem> // Microsoft-specific implementation header file name
+using namespace std::experimental::filesystem::v1;
 
 #ifdef __GNUC__
 #include <libgen.h>

@@ -46,7 +46,7 @@ typedef struct {
   uint32 first_thunk;
 } pe_import_descriptor;
 
-typedef struct {  
+typedef struct {
   uint16  hint;
     unsigned char   name[1];
 } pe_import_by_name;
@@ -244,7 +244,7 @@ typedef struct {
   uint64 flink, blink;
 } list_entry;
 
-#define  PE_SIZEOF_SHORT_NAME 8 
+#define  PE_SIZEOF_SHORT_NAME 8
 typedef struct {
   char name[PE_SIZEOF_SHORT_NAME];
   union {
@@ -260,7 +260,7 @@ typedef struct {
   uint16 number_of_linenumbers;
   uint32 characteristics;
 } section_header;
-  
+
 typedef struct {
   union {
     uint64 forwarder_string;
