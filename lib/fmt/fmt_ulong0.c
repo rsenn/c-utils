@@ -15,5 +15,5 @@ size_t fmt_ulong0(char *dest, unsigned long i, size_t pad) {
     fmt_ulong(dest, i);
     return len;
   } else
-    return(len < pad ? pad : len);
+    return len < pad ? pad : len;
 }

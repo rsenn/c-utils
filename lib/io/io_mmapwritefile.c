@@ -100,11 +100,11 @@ readwrite:
     char* tmp=buf;
 #ifdef HAVE_PREAD
     if((n=pread(in,tmp,(bytes<BUFSIZE)?bytes:BUFSIZE,off))<=0)
-      return(sent?(int64)sent:-1);
+      return sent?(int64)sent:-1;
     off+=n;
 #else
     if((n=read(in,tmp,(bytes<BUFSIZE)?bytes:BUFSIZE))<=0)
-      return(sent?(int64)sent:-1);
+      return sent?(int64)sent:-1;
 #endif
     while(n>0) {
       if((m=writecb(out,tmp,n))<0) {

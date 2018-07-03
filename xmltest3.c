@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
     xmlDocPtr docPtr;
 
     if(argc < 2)
-        return(1);
+        return 1;
 
     /*
      * this initialises the library and check potential ABI mismatches
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     readerPtr = xmlReaderForFile(argv[1], NULL, 0);
     if(NULL == readerPtr) {
       buffer_putmflush(buffer_2, argv[1], ": failed to create reader\n");
-      return(1);
+      return 1;
     }
     processDoc(readerPtr);
 
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
       	xmlReaderNewFile(readerPtr, argv[i], NULL, 0);
 	if(NULL == readerPtr) {
 	  buffer_putmflush(buffer_2, argv[i], ": failed to create reader\n");
-	  return(1);
+	  return 1;
 	}
         processDoc(readerPtr);
     }
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
      * this is to debug memory for regression tests
      */
     xmlMemoryDump();
-    return(0);
+    return 0;
 }
 
 #else

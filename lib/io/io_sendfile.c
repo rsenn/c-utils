@@ -19,7 +19,7 @@ int64 io_sendfile(int64 s,int64 fd,uint64 off,uint64 n) {
       e->canwrite=0;
       e->next_write=-1;
     }
-    return(errno==EAGAIN?(sbytes?sbytes:-1):-3);
+    return errno==EAGAIN?(sbytes?sbytes:-1):-3;
   }
   return n;
 }
@@ -128,7 +128,7 @@ int64 io_sendfile(int64 s,int64 fd,uint64 off,uint64 n) {
 	e->next_write=-1;
       }
       if(i==-1)
-	return(errno==EAGAIN?-1:-3);
+	return errno==EAGAIN?-1:-3;
       else
 	return done+i;
     }
