@@ -1,27 +1,26 @@
-#include "strlist.h"
-#include "stralloc.h"
-#include "strlist.h"
+#include "array.h"
 #include "buffer.h"
 #include "byte.h"
 #include "open.h"
-#include "array.h"
 #include "str.h"
-#include <errno.h>
+#include "stralloc.h"
+#include "strlist.h"
 #include <ctype.h>
-#include <time.h>
-#include <sys/time.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 
 static int lowq = 0, debug = 0;
-//static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme.json"; //"D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
-//static const char delimiters[] = "\"";
-//static char  inbuf[16384];
+// static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme.json";
+// //"D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json"; static const char delimiters[] = "\""; static char  inbuf[16384];
 
-char *str_ptime(const char *s, const char *format, struct tm *tm);
+char* str_ptime(const char* s, const char* format, struct tm* tm);
 
+void output_entry(const char* sender, const char* thema, const char* title, const char* description, const char* datetime, const char* url);
 /*
 int
 parse_predicate(const char* x, size_t len)
@@ -60,21 +59,20 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
 
   (void)fields;
 
-  const char* end = s + len, *p = s;
-  int quoted = 0/*, escaped = 0*/;
+  const char *end = s + len, *p = s;
+  int quoted = 0 /*, escaped = 0*/;
   size_t n, i = 0;
   char tokbuf[65536];
 
   array_trunc(x);
-  //array_allocate(&x, sizeof(char*), pos);
+  // array_allocate(&x, sizeof(char*), pos);
 
-  if((n = byte_chr(p, end - p, '\n')) != (unsigned)(end - p))
-    end = p + n;
+  if((n = byte_chr(p, end - p, '\n')) != (unsigned)(end - p)) end = p + n;
 
   while(p < end && *p != '"')
     ++p;
 
-  for(; p < end; ++p/*, escaped = 0*/) {
+  for(; p < end; ++p /*, escaped = 0*/) {
     if(*p == '\\') {
       /* escaped = 1;*/
       ++p;
@@ -146,7 +144,7 @@ get_domain(const char* url, stralloc* d) {
   stralloc_copyb(d, url, str_chr(url, '/'));
 }
 
-#define isdelim(c) (c==' '||c=='\t'||c=='\n' ||c=='-'||c==';'||c==',')
+#define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
 
 void
 cleanup_text(char* t) {
@@ -158,8 +156,7 @@ cleanup_text(char* t) {
 
   for(i = 0; (c = t[i]); ++i) {
 
-    if(isdelim(c) && isdelim(prev))
-      continue;
+    if(isdelim(c) && isdelim(prev)) continue;
 
     if(isdelim(c)) c = ' ';
     stralloc_append(&out, &c);
@@ -177,7 +174,7 @@ cleanup_domain(stralloc* d) {
   for(i = 0; i < d->len; ++i)
     d->s[i] = toupper(d->s[i]);
   stralloc_nul(d);
-  const char* remove_parts[] = { "ondemand", "storage", "files", "stream", "mvideos", "online", 0 };
+  const char* remove_parts[] = {"ondemand", "storage", "files", "stream", "mvideos", "online", 0};
 
   for(i = 0; remove_parts[i]; ++i) {
     char *s2, *s = strtok(d->s, remove_parts[i]);
@@ -203,8 +200,10 @@ process_entry(const array* a) {
     time_t t;
     size_t d;
 
-
-    char* sender = av[1], *thema = av[2], *title = av[3]/*, *date = av[4], *time = av[5]*/, *duration = av[6], /**grcoee = av[7],*/ *description = av[8], *url = av[9]/*, *website = av[10], *untertitel = av[11], *urlrtmp = av[12]*/, *url_klein = av[13]/*, *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17], *url_history = av[18], *geo = av[19], *neu = av[20]*/;
+    char *sender = av[1], *thema = av[2], *title = av[3] /*, *date = av[4], *time = av[5]*/, *duration = av[6], /**grcoee = av[7],*/ *description = av[8],
+         *url = av[9] /*, *website = av[10], *untertitel = av[11], *urlrtmp = av[12]*/,
+         *url_klein =
+           av[13] /*, *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17], *url_history = av[18], *geo = av[19], *neu = av[20]*/;
 
     /*    char* title = av[8];
         char* date = av[4];
@@ -246,10 +245,8 @@ process_entry(const array* a) {
       }
     }
 
-    if(str_len(thema) == 0)
-      return;
-    if(d < 20 * 60)
-      return;
+    if(str_len(thema) == 0) return;
+    if(d < 20 * 60) return;
 
     cleanup_text(thema);
     cleanup_text(title);
@@ -278,23 +275,7 @@ process_entry(const array* a) {
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
 
-    buffer_puts(buffer_1, "#EXTINF:");
-    buffer_putulong(buffer_1, d);
-    buffer_put(buffer_1, ",|", 2);
-    buffer_put(buffer_1, timebuf, str_len(timebuf));
-    buffer_puts(buffer_1, "|");
-    buffer_puts(buffer_1, sender);
-    buffer_puts(buffer_1, "|");
-    buffer_puts(buffer_1, thema);
-    buffer_puts(buffer_1, "|");
-    buffer_puts(buffer_1, title);
-    buffer_puts(buffer_1, "|");
-    buffer_puts(buffer_1, description);
-    buffer_put(buffer_1, "\r\n", 2);
-    buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
-    buffer_puts(buffer_1, lowq > 0 ? url_lo.s : url);
-    buffer_put(buffer_1, "\r\n", 2);
-    buffer_flush(buffer_1);
+    output_entry(sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url);
 
     (void)t;
   } else {
@@ -303,17 +284,38 @@ process_entry(const array* a) {
 
   while(ac > 0) {
     --ac;
-    if(av[ac])
-      free(av[ac]);
-//    --ac;
-//    ++av;
+    if(av[ac]) free(av[ac]);
+    //    --ac;
+    //    ++av;
   }
+}
+
+void
+output_entry(const char* sender, const char* thema, const char* title,
+             const char* description, const char* datetime, const char* url) {
+  buffer_puts(buffer_1, "#EXTINF:");
+  buffer_putulong(buffer_1, description);
+  buffer_put(buffer_1, ",|", 2);
+  buffer_put(buffer_1, datetime, str_len(datetime));
+  buffer_puts(buffer_1, "|");
+  buffer_puts(buffer_1, sender);
+  buffer_puts(buffer_1, "|");
+  buffer_puts(buffer_1, thema);
+  buffer_puts(buffer_1, "|");
+  buffer_puts(buffer_1, title);
+  buffer_puts(buffer_1, "|");
+  buffer_puts(buffer_1, description);
+  buffer_put(buffer_1, "\r\n", 2);
+  buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
+  buffer_puts(buffer_1, url);
+  buffer_put(buffer_1, "\r\n", 2);
+  buffer_flush(buffer_1);
 }
 
 int
 process_input(buffer* input) {
   int ret = -1;
-  size_t line = 0/*, index = 0*/;
+  size_t line = 0 /*, index = 0*/;
   stralloc sa;
   static array arr;
   strlist fields;
@@ -321,7 +323,6 @@ process_input(buffer* input) {
   strlist_init(&fields);
 
   buffer_puts(buffer_1, "#EXTM3U\r\n");
-
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
@@ -345,7 +346,8 @@ process_input(buffer* input) {
   return ret;
 }
 
-int main(int argc, char* argv[]) {
+int
+main(int argc, char* argv[]) {
 
   int opt;
 
@@ -354,18 +356,11 @@ int main(int argc, char* argv[]) {
 
   while((opt = getopt(argc, argv, "dt:i:x:l")) != -1) {
     switch(opt) {
-    case 'd':
-      debug++;
-      break;
-    case 'l':
-      lowq++;
-      break;
-    default: /* '?' */
-      buffer_putm(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n");
-      exit(EXIT_FAILURE);
+      case 'd': debug++; break;
+      case 'l': lowq++; break;
+      default: /* '?' */ buffer_putm(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n"); exit(EXIT_FAILURE);
     }
   }
-
 
   if(optind == argc) {
     ++argc;
@@ -373,7 +368,6 @@ int main(int argc, char* argv[]) {
   }
 
   while(optind < argc) {
-
 
     if(str_diff(argv[optind], "-")) {
       buffer_puts(buffer_2, "Processing '");
@@ -389,16 +383,12 @@ int main(int argc, char* argv[]) {
       }
     } else
 
-
     {
       buffer_init(&b, read, STDIN_FILENO, inbuf, sizeof(inbuf));
-
     }
     process_input(&b);
     ++optind;
-
   }
-
 
   return 0;
 }

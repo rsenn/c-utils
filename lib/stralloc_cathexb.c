@@ -5,7 +5,7 @@ unsigned int stralloc_cathexb(register stralloc *sa, const void *d, register uns
 {
   register unsigned int len;
   len = n << 1;
-  if (!stralloc_readyplus(sa, len)) return 0;
+  if(!stralloc_readyplus(sa, len)) return 0;
   fmt_hexb(sa->s + sa->len, d, n);
   sa->len += len;
   return 1;

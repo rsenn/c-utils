@@ -9,7 +9,7 @@ size_t fmt_asn1derlength(char* dest,unsigned long long l) {
     if(dest) *dest=l&0x7f;
     return 1;
   }
-  for (i=1; i<needed; ++i)
+  for(i=1; i<needed; ++i)
     if(!(l>>(i*8)))
       break;
   if(dest) {

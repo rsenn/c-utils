@@ -37,7 +37,7 @@ void* iarray_allocate(iarray* ia,size_t pos) {
   size_t realpos=pos;
   pos /= sizeof(ia->pages)/sizeof(ia->pages[0]);
   /* now walk the linked list of pages until we reach the one we want */
-  for (index=0; ; index+=ia->elemperpage) {
+  for(index=0; ; index+=ia->elemperpage) {
     if(!*p) {
       if(!newpage)
 	if(!(newpage=new_page(ia->bytesperpage))) return 0;

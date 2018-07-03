@@ -49,7 +49,7 @@ extern "C" {
 typedef uint64_t uint64;
 typedef int64_t int64;
 
-#if (defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT64_MACROS)
+#if(defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT64_MACROS)
 #define uint64_pack(out, in) ( * (uint64 *)(out) = (in))
 #define uint64_unpack(in, out) ( * (out) = *(uint64 *)(in))
 #define uint64_read(in) ( * (uint64 *)(in))

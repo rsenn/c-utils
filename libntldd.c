@@ -76,9 +76,9 @@ void *map_pointer(soff_entry *soffs, int soffs_len, uint32 in_ptr, int *section)
 int find_section_id (pe_optional_header *oh, uint32 address, uint32 size)
 {
   int i;
-  for (i = 0; i < oh->number_of_rva_and_sizes; i++)
+  for(i = 0; i < oh->number_of_rva_and_sizes; i++)
   {
-    if (oh->data_directory[i].virtual_address == address &&
+    if(oh->data_directory[i].virtual_address == address &&
         oh->data_directory[i].size == size)
       return i;
   }
@@ -108,9 +108,9 @@ resize_array(void **data, uint64_t *data_size, size_t sizeof_data) {
   *data_size = new_size;
 }
 
-#define resize_dep_list(ptr_deptree, ptr_deptree_size) resize_array ((void **) ptr_deptree, ptr_deptree_size, sizeof (struct dep_tree_element *))
-#define resize_import_list(ptr_import_list, ptr_import_list_size) resize_array ((void **) ptr_import_list, ptr_import_list_size, sizeof (struct import_table_item))
-#define resize_stack(ptr_stack, ptr_stack_size) resize_array ((void **) ptr_stack, ptr_stack_size, sizeof (char *))
+#define resize_dep_list(ptr_deptree, ptr_deptree_size) resize_array ((void **) ptr_deptree, ptr_deptree_size, sizeof(struct dep_tree_element *))
+#define resize_import_list(ptr_import_list, ptr_import_list_size) resize_array ((void **) ptr_import_list, ptr_import_list_size, sizeof(struct import_table_item))
+#define resize_stack(ptr_stack, ptr_stack_size) resize_array ((void **) ptr_stack, ptr_stack_size, sizeof(char *))
 
 void
 add_dep(struct dep_tree_element *parent, struct dep_tree_element *child) {
@@ -513,19 +513,19 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
 
   /* Not sure if a forwarded export warrants an import. If it doesn't, then the dll to which the export is forwarded will NOT
    * be among the dependencies of this dll and it will be necessary to do yet another process_dep...
-  for (i = 0; i < self->exports_len; i++)
+  for(i = 0; i < self->exports_len; i++)
   {
-    if (self->exports[i]->forward_str != NULL && self-.exports[i]->forward == NULL)
+    if(self->exports[i]->forward_str != NULL && self-.exports[i]->forward == NULL)
     {
       char *forward_str_copy = NULL, *export_name = NULL, *rdot = NULL;
       uint32 export_ordinal = 0;
       forward_str_copy = strdup (self->exports[i]->forward_str);
       rdot = strrchr (forward_str_copy, '.');
-      if (rdot != NULL && rdot[1] != 0)
+      if(rdot != NULL && rdot[1] != 0)
       {
         rdot[0] = 0;
         export_name = &rdot[1];
-        if (export_name[0] == '#' && export_name[1] >= '0' && export_name[1] <= '9')
+        if(export_name[0] == '#' && export_name[1] >= '0' && export_name[1] <= '9')
         {
           export_ordinal = strtol (&export_name[1], NULL, 10);
           export_name = NULL;
@@ -547,8 +547,8 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
         }
       }
       /*
-            if (self->imports[i].mapped == NULL)
-              printf ("Could not match %s (%d) in %s to %s\n", self->imports[i].name, self->imports[i].ordinal, self->module, dll->module);
+            if(self->imports[i].mapped == NULL)
+              printf("Could not match %s (%d) in %s to %s\n", self->imports[i].name, self->imports[i].ordinal, self->module, dll->module);
       */
     }
   }

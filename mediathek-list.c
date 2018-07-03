@@ -604,7 +604,7 @@ int main(int argc, char *argv[]) {
 //  buffer_putm(buffer_2, "min_length: ", format_time(min_length), "\n", NULL);
 
 
-  /*   if (optind >= argc) {
+  /*   if(optind >= argc) {
          fprintf(stderr,
                  "Nach den Optionen wurde ein Argument erwartet\n");
          exit(EXIT_FAILURE);

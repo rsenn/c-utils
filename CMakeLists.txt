@@ -1,202 +1,244 @@
-set(CMAKE_LEGACY_CYGWIN_WIN32 0) cmake_minimum_required(VERSION 2.8)
+set(CMAKE_LEGACY_CYGWIN_WIN32 0)
+cmake_minimum_required(VERSION 2.8)
 
-  project(dirlist)
+project(dirlist)
 
-    set(BUILD_SHARED_LIBS FALSE)
+set(BUILD_SHARED_LIBS FALSE)
 
-      include(CheckCCompilerFlag) include(CheckCXXCompilerFlag)
+include( CheckCCompilerFlag )
+include( CheckCXXCompilerFlag )
 
-        include(FindIconv)
-          include(FindLibXml2) #LIBXML2_FOUND LIBXML2_DEFINITIONS LIBXML2_INCLUDE_DIR LIBXML2_LIBRARIES LIBXML2_VERSION_STRING LIBXML2_XMLLINT_EXECUTABLE
-  include(FindZLIB) #ZLIB_FOUND ZLIB_INCLUDE_DIR ZLIB_INCLUDE_DIRS ZLIB_LIBRARIES ZLIB_LIBRARY ZLIB_ROOT
-  include(FindBZip2) #BZIP2_FOUND BZIP2_INCLUDE_DIR BZIP2_INCLUDE_DIRS BZIP2_LIBRARIES BZIP2_LIBRARY
+include( FindIconv )
+include( FindLibXml2 ) # LIBXML2_FOUND LIBXML2_DEFINITIONS LIBXML2_INCLUDE_DIR LIBXML2_LIBRARIES LIBXML2_VERSION_STRING LIBXML2_XMLLINT_EXECUTABLE
+include( FindZLIB )    # ZLIB_FOUND ZLIB_INCLUDE_DIR ZLIB_INCLUDE_DIRS ZLIB_LIBRARIES ZLIB_LIBRARY ZLIB_ROOT
+include( FindBZip2 )   # BZIP2_FOUND BZIP2_INCLUDE_DIR BZIP2_INCLUDE_DIRS BZIP2_LIBRARIES BZIP2_LIBRARY
 
-#include(FindLibLZMA) #LIBLZMA_FOUND LIBLZMA_INCLUDE_DIR LIBLZMA_INCLUDE_DIRS LIBLZMA_LIBRARIES LIBLZMA_LIBRARY
-  include(FindOpenSSL) #OPENSSL_CRYPTO_LIBRARIES OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARIES OPENSSL_SSL_LIBRARY LIB_EAY_LIBRARY SSL_EAY_LIBRARY
-#OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
+#include( FindLibLZMA ) # LIBLZMA_FOUND LIBLZMA_INCLUDE_DIR LIBLZMA_INCLUDE_DIRS LIBLZMA_LIBRARIES LIBLZMA_LIBRARY
+include( FindOpenSSL ) # OPENSSL_CRYPTO_LIBRARIES OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARIES OPENSSL_SSL_LIBRARY LIB_EAY_LIBRARY SSL_EAY_LIBRARY
+                       # OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
 
-#include("${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake")
+#include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
+
 
 #if(WIN32 OR MSYS OR CYGWIN)
-  add_definitions(-D_FILE_OFFSET_BITS = 64)
+  add_definitions(-D_FILE_OFFSET_BITS=64)
 #endif(WIN32 OR WIN64)
 
-    add_definitions(-g)
+add_definitions( -g  )
 
-      include(FindPkgConfig) include(UsePkgConfig)
+include( FindPkgConfig )
+include( UsePkgConfig )
 
-        set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
+set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
 #set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O0 -Wall")
 
-          CHECK_C_COMPILER_FLAG("-ggdb" C_COMPILER_SUPPORTS_GGDB)
+CHECK_C_COMPILER_FLAG("-ggdb" C_COMPILER_SUPPORTS_GGDB)
 
-            if(C_COMPILER_SUPPORTS_GGDB) set(CMAKE_C_FLAGS_DEBUG
-                                             "${CMAKE_C_FLAGS_DEBUG} -ggdb") set(CMAKE_C_FLAGS_RELWITHDEBINFO
-                                                                                 "${CMAKE_C_FLAGS_RELWITHDEBINFO} -ggdb") endif(C_COMPILER_SUPPORTS_GGDB)
+if(C_COMPILER_SUPPORTS_GGDB)
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb")
+  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -ggdb")
+endif(C_COMPILER_SUPPORTS_GGDB)
 
-              set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
 #set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O0 -Wall")
 
-                CHECK_CXX_COMPILER_FLAG("-ggdb" CXX_COMPILER_SUPPORTS_GGDB)
+CHECK_CXX_COMPILER_FLAG("-ggdb" CXX_COMPILER_SUPPORTS_GGDB)
 
-                  if(CXX_COMPILER_SUPPORTS_GGDB) set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb") set(
-                    CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -ggdb") endif(CXX_COMPILER_SUPPORTS_GGDB)
+if(CXX_COMPILER_SUPPORTS_GGDB)
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -ggdb")
+endif(CXX_COMPILER_SUPPORTS_GGDB)
 
-                    set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
-                      include(FindBoost)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
+
+include( FindBoost )
 #include(CMakeDetermineCompileFeatures)
 #include(CheckCXX11Features)
 
-#pkg_search_module(LIBXML2 libxml - 2.0 libxml2 libxml)
-                        pkg_search_module(LIBLZMA liblzma)
+#pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
+pkg_search_module(LIBLZMA liblzma)
 #pkg_search_module(LIBZ zlib)
 #pkg_search_module(LIBBZ2 libbz2 bzip2)
 #pkg_search_module(LIBSSL openssl libssl)
 
-                          if(NOT CXX11_FLAGS) set(CXX11_FLAGS "-std=c++11") endif()
+if(NOT CXX11_FLAGS)
+set(CXX11_FLAGS "-std=c++11")
+endif()
 
-                            if(CXX11_FLAGS) set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
-#add_definitions(-std = c++ 11)
-                              endif()
+if(CXX11_FLAGS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
+#  add_definitions(-std=c++11)
+endif()
 
-                                if(HAS_CXX11_AUTO AND HAS_CXX11_NULLPTR AND HAS_CXX11_LAMBDA AND HAS_CXX11_STATIC_ASSERT AND HAS_CXX11_RVALUE_REFERENCES AND
-                                     HAS_CXX11_DECLTYPE AND HAS_CXX11_CSTDINT_H AND
-                                       HAS_CXX11_LONG_LONG) message(STATUS "Enabling C++11 support") set(CXX11 TRUE) endif()
+if(HAS_CXX11_AUTO AND HAS_CXX11_NULLPTR AND HAS_CXX11_LAMBDA AND HAS_CXX11_STATIC_ASSERT AND HAS_CXX11_RVALUE_REFERENCES AND HAS_CXX11_DECLTYPE AND HAS_CXX11_CSTDINT_H AND HAS_CXX11_LONG_LONG)
+  message(STATUS "Enabling C++11 support")
+  set(CXX11 TRUE)
+endif()
 
-                                  include(CheckIncludeFile)
 
-                                    check_include_file(inttypes.h HAVE_INTTYPES_H) check_include_file(sys / types.h HAVE_SYS_TYPES_H) check_include_file(
-                                      stdint.h HAVE_STDINT_H) check_include_file(stdbool.h HAVE_STDBOOL_H) check_include_file(libgen.h HAVE_LIBGEN_H)
-                                      check_include_file(alloca.h HAVE_ALLOCA_H) check_include_file(sys / stat.h HAVE_SYS_STAT_H) check_include_file(
-                                        sys /
-                                        mman.h HAVE_SYS_MMAN_H) check_include_file(boost / foreach.hpp HAVE_BOOST_FOREACH_HPP)
-                                        check_include_file(xtr1common HAVE_XTR1COMMON) check_include_file(initializer_list HAVE_INITIALIZER_LIST)
+include( CheckIncludeFile )
 
-                                          include(CheckTypeSize)
+check_include_file(inttypes.h HAVE_INTTYPES_H)
+check_include_file(sys/types.h HAVE_SYS_TYPES_H)
+check_include_file(stdint.h HAVE_STDINT_H)
+check_include_file(stdbool.h HAVE_STDBOOL_H)
+check_include_file(libgen.h HAVE_LIBGEN_H)
+check_include_file(alloca.h HAVE_ALLOCA_H)
+check_include_file(sys/stat.h HAVE_SYS_STAT_H)
+check_include_file(sys/mman.h HAVE_SYS_MMAN_H)
+check_include_file(boost/foreach.hpp HAVE_BOOST_FOREACH_HPP)
+check_include_file(xtr1common HAVE_XTR1COMMON)
+check_include_file(initializer_list HAVE_INITIALIZER_LIST)
 
-                                            check_type_size(loff_t LOFF_T) check_type_size(lloff_t LLOFF_T) check_type_size(off64_t OFF64_T)
+include( CheckTypeSize )
 
-                                              include(CheckFunctionExists)
+check_type_size(loff_t LOFF_T)
+check_type_size(lloff_t LLOFF_T)
+check_type_size(off64_t OFF64_T)
 
-                                                check_function_exists(alloca HAVE_ALLOCA_FUNC) check_function_exists(stat HAVE_STAT_FUNC) check_function_exists(
-                                                  lstat HAVE_LSTAT_FUNC) check_function_exists(lseek HAVE_LSEEK_FUNC)
-                                                  check_function_exists(llseek HAVE_LLSEEK_FUNC) check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
-                                                    check_function_exists(localtime HAVE_LOCALTIME_FUNC)
-                                                      check_function_exists(localtime_r HAVE_LOCALTIME_R_FUNC)
+include( CheckFunctionExists )
 
-                                                        foreach(SEEK_FN LSEEK LLSEEK LSEEK64) if(HAVE_${SEEK_FN} _FUNC) add_definitions(
-                                                          -DHAVE_${SEEK_FN} =
-                                                            1) endif() endforeach() if(HAVE_LLSEEK_FUNC) add_definitions(-Dlseek =
-                                                                                                                           llseek) elseif(HAVE_LSEEK64_FUNC)
-                                                          add_definitions(-Dlseek = lseek64) endif()
+check_function_exists(alloca HAVE_ALLOCA_FUNC)
+check_function_exists(stat HAVE_STAT_FUNC)
+check_function_exists(lstat HAVE_LSTAT_FUNC)
+check_function_exists(lseek HAVE_LSEEK_FUNC)
+check_function_exists(llseek HAVE_LLSEEK_FUNC)
+check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
+check_function_exists(localtime HAVE_LOCALTIME_FUNC)
+check_function_exists(localtime_r HAVE_LOCALTIME_R_FUNC)
 
-                                                            check_function_exists(free HAVE_FREE_FUNC) check_function_exists(malloc HAVE_MALLOC_FUNC)
-                                                              check_function_exists(opendir HAVE_OPENDIR_FUNC) check_function_exists(readdir HAVE_READDIR_FUNC)
+foreach(SEEK_FN LSEEK LLSEEK LSEEK64)
+  if(HAVE_${SEEK_FN}_FUNC)
+    add_definitions(-DHAVE_${SEEK_FN}=1)
+  endif()
+endforeach()
+if(HAVE_LLSEEK_FUNC)
+  add_definitions(-Dlseek=llseek)
+elseif(HAVE_LSEEK64_FUNC)
+  add_definitions(-Dlseek=lseek64)
+endif()
 
-                                                                check_function_exists(getdents64 HAVE_GETDENTS64_FUNC) check_function_exists(
-                                                                  getdents HAVE_GETDENTS_FUNC)
+check_function_exists(free HAVE_FREE_FUNC)
+check_function_exists(malloc HAVE_MALLOC_FUNC)
+check_function_exists(opendir HAVE_OPENDIR_FUNC)
+check_function_exists(readdir HAVE_READDIR_FUNC)
 
-                                                                  if(HAVE_LSTAT_FUNC) if(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
-                                                                    set(USE_READDIR TRUE) else(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC) set(USE_READDIR FALSE)
-                                                                      endif(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC) endif(HAVE_LSTAT_FUNC)
+check_function_exists(getdents64 HAVE_GETDENTS64_FUNC)
+check_function_exists(getdents HAVE_GETDENTS_FUNC)
 
-                                                                        include(FindPkgConfig)
 
-                                                                          pkg_search_module(
-                                                                            LIBXML2 libxml - 2.0
-#REQUIRED
-                                                                            )
+if(HAVE_LSTAT_FUNC)
+  if(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
+    set(USE_READDIR TRUE)
+  else(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
+    set(USE_READDIR FALSE)
+  endif(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
+endif(HAVE_LSTAT_FUNC)
+
+include( FindPkgConfig )
+
+pkg_search_module(
+                LIBXML2
+                libxml-2.0
+                #REQUIRED
+)
+
 
 #find_package(libxml2)
-#include_directories("${CMAKE_SOURCE_DIR}/lib")
-                                                                            include_directories(
-                                                                              "${CMAKE_BINARY_DIR}"
-                                                                              "${CMAKE_SOURCE_DIR}") include_directories(${Iconv_INCLUDE_DIR})
+#include_directories( "${CMAKE_SOURCE_DIR}/lib" )
+include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" )
+include_directories( ${Iconv_INCLUDE_DIR} )
 
 #if(LIBXML2_LIBRARIES MATCHES static)
-#option(STATIC_LINK "Compile as static libraries" ON)
+#  option(STATIC_LINK "Compile as static libraries" ON)
 #else()
-#option(STATIC_LINK "Compile as static libraries" OFF)
+#  option(STATIC_LINK "Compile as static libraries" OFF)
 #endif()
 
-                                                                              if(STATIC_LINK)
-                                                                                add_definitions(-DNOLIBTOOL = 1 - DLIBXML_STATIC = 1) else(
-                                                                                  STATIC_LINK) add_definitions(-DPIC = 1) endif(STATIC_LINK)
+if(STATIC_LINK)
+  add_definitions(-DNOLIBTOOL=1 -DLIBXML_STATIC=1)
+else(STATIC_LINK)
+  add_definitions(-DPIC=1)
+endif(STATIC_LINK)
 
-#include_directories(${LIBXML2_INCLUDE_DIR})
-                                                                                  set(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
 
-                                                                                    if(LIBXML2_INCLUDE_DIR)
-                                                                                      include_directories(
-                                                                                        ${Iconv_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR} /
-                                                                                        libxml) endif()
+#include_directories( ${LIBXML2_INCLUDE_DIR} )
+set(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
 
-                                                                                        if(USE_READDIR)
-                                                                                          add_definitions(-DUSE_READDIR = 1) endif(USE_READDIR)
+if(LIBXML2_INCLUDE_DIR)
+  include_directories(${Iconv_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR}/libxml)
+endif()
 
-                                                                                            configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
-                                                                                                           "${CMAKE_BINARY_DIR}/config.h")
+if(USE_READDIR)
+  add_definitions(-DUSE_READDIR=1)
+endif(USE_READDIR)
 
-                                                                                              file(GLOB COMMON_C_SOURCES RELATIVE
-                                                                                                   "${CMAKE_SOURCE_DIR}"
-                                                                                                   "*_*.c"
-                                                                                                   "umult*.c"
-                                                                                                   "*.h")
-                                                                                                set(COMMON_CXX_SOURCES lib / directory_iterator.cpp lib /
-                                                                                                    file.cpp lib / intelhex.cpp)
+configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
+               "${CMAKE_BINARY_DIR}/config.h")
 
-                                                                                                  set(PROGRAMS compiler - wrapper count - depth decode - ls -
-                                                                                                      lR eagle - init -
-                                                                                                      brd hexedit httptest impgen
-                                                                                                        list -
-                                                                                                      r main mediathek -
-                                                                                                      list mediathek -
-                                                                                                      parser ntldd opensearch -
-                                                                                                      dump pathtool
-                                                                                                        plsconv rdir -
-                                                                                                      test reg2cmd regfilter torrent -
-                                                                                                      progress xmltest xmltest2
-                                                                                                        xmltest3)
+file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
+set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
-                                                                                                    set(CXXPROGRAMS #kbd - adjacency
-#ls - R
-#piccfghex
-                                                                                                        )
+set(PROGRAMS
+    compiler-wrapper
+    count-depth
+    decode-ls-lR
+    eagle-init-brd
+    hexedit
+    httptest
+    impgen
+    list-r
+    main
+    mediathek-list
+    mediathek-parser
+    ntldd
+    opensearch-dump
+    pathtool
+    plsconv
+    rdir-test
+    reg2cmd
+    regfilter
+    torrent-progress
+    xmltest
+    xmltest2
+    xmltest3
+    access
+)
 
-                                                                                                      if(MSVC)
-#add_definitions(-Dinline = __force_inline)
-                                                                                                        add_definitions(/ DINLINE = __inline)
-                                                                                                          add_definitions(/ wo4005) add_definitions(/ W0) else()
-                                                                                                            add_definitions(-DINLINE = inline) endif()
+set(CXXPROGRAMS #kbd-adjacency
+#ls-R
+ #   piccfghex
+ )
 
-                                                                                                              if(CXX11)
-#add_definitions(-DCXX11 = 1)
-                                                                                                                set(
-                                                                                                                  CMAKE_CXX_FLAGS
-                                                                                                                  "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS} -DCXX11=1")
-                                                                                                                  endif()
+if(MSVC)
+#  add_definitions(-Dinline=__force_inline)
+  add_definitions(/DINLINE=__inline)
+  add_definitions(/wo4005)
+  add_definitions(/W0)
+else()
+  add_definitions(-DINLINE=inline)
+endif()
 
-                                                                                                                    string(REGEX REPLACE
-                                                                                                                           "/W[0-9]"
-                                                                                                                           "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-                                                                                                                      string(REGEX REPLACE "/W[0-9]"
-                                                                                                                                           "" CMAKE_CXX_FLAGS
-                                                                                                                                           "${CMAKE_CXX_FLAGS}")
+if(CXX11)
+#  add_definitions(-DCXX11=1)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS} -DCXX11=1")
+endif()
 
-                                                                                                                        add_definitions(-DHAVE_CONFIG_H)
+string(REGEX REPLACE "/W[0-9]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+string(REGEX REPLACE "/W[0-9]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-                                                                                                                          set(
-                                                                                                                            HAVE_VARS HAVE_ALLOCA_H
-                                                                                                                              HAVE_BOOST_FOREACH_HPP
-                                                                                                                                HAVE_INTTYPES_H HAVE_LIBGEN_H
-                                                                                                                                  HAVE_STDINT_H HAVE_SYS_MMAN_H
-                                                                                                                                    HAVE_SYS_STAT_H
-                                                                                                                                      HAVE_SYS_TYPES_H)
 
-                                                                                                                            foreach(V ${HAVE_VARS}) if(${V})
-                                                                                                                              add_definitions(-D${V} = 1)
-                                                                                                                                endif() endforeach()
+add_definitions(-DHAVE_CONFIG_H)
+
+set(HAVE_VARS HAVE_ALLOCA_H HAVE_BOOST_FOREACH_HPP HAVE_INTTYPES_H HAVE_LIBGEN_H HAVE_STDINT_H HAVE_SYS_MMAN_H HAVE_SYS_STAT_H HAVE_SYS_TYPES_H)
+
+foreach(V ${HAVE_VARS})
+  if(${V})
+    add_definitions(-D${V}=1)
+  endif()
+endforeach()
+
 
 #file(GLOB LIBOWFAT_SOURCES lib/*.c lib/*.h)
 #
@@ -244,7 +286,7 @@ foreach(PROGRAM ${PROGRAMS})
   else("${PROGRAM}" STREQUAL ntldd)
     set(EXTRA_SOURCES )
   endif("${PROGRAM}" STREQUAL ntldd)
-   
+
   add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES})
 #  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
  # list(APPEND ${PROGRAM}_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR})

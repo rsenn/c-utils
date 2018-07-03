@@ -11,11 +11,11 @@ unsigned int stralloc_findb(const stralloc *sa, const void *what, unsigned int l
   register unsigned int last;
   register char *s;
   sa_len = sa->len;
-  if (sa_len < len) return sa_len;
+  if(sa_len < len) return sa_len;
   last = sa_len - len;
   s = sa->s;
-  for (i = 0; i <= last; i++) {
-    if (byte_equal(s, len, what)) return i;
+  for(i = 0; i <= last; i++) {
+    if(byte_equal(s, len, what)) return i;
     s++;
   }
   return sa_len;

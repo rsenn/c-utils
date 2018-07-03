@@ -8,7 +8,7 @@
 int
 stralloc_copyb (stralloc * sa, const char *src, unsigned int n)
 {
-	if (!stralloc_ready (sa, n + 1))
+	if(!stralloc_ready (sa, n + 1))
 		return 0;
 	byte_copy (sa->s, n, src);
 	sa->len = n;

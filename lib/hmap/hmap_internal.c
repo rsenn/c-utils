@@ -58,7 +58,7 @@ inline static int
 hash (void *key, int len) {
    unsigned int hash, i;
 
-   for (hash = i = 0; i < len; ++i)
+   for(hash = i = 0; i < len; ++i)
    {
       hash += ((unsigned char *)key)[i];
       hash += (hash << 10);

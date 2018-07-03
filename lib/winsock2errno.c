@@ -6,7 +6,7 @@
 
 int winsock2errno(long l) {
   long x;
-  if (l==-1)
+  if(l==-1)
     switch ((x=WSAGetLastError())) {
     case WSANOTINITIALISED:
       printf("WSANOTINITIALISED!\n");

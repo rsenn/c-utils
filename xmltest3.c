@@ -22,7 +22,7 @@ static void processDoc(xmlTextReaderPtr readerPtr) {
     const xmlChar *URL;
 
     ret = xmlTextReaderRead(readerPtr);
-    while (ret == 1) {
+    while(ret == 1) {
       ret = xmlTextReaderRead(readerPtr);
     }
 
@@ -32,17 +32,17 @@ static void processDoc(xmlTextReaderPtr readerPtr) {
      * be sure to clean it up at the end (see below).
      */
     docPtr = xmlTextReaderCurrentDoc(readerPtr);
-    if (NULL == docPtr) {
+    if(NULL == docPtr) {
       buffer_putsflush(buffer_2, "failed to obtain document\n");
       return;
     }
       
     URL = docPtr->URL;
-    if (NULL == URL) {
+    if(NULL == URL) {
       buffer_putsflush(buffer_2, "Failed to obtain URL\n");      
     }
 
-    if (ret != 0) {
+    if(ret != 0) {
       buffer_putmflush(buffer_2, URL, ": Failed to parse\n");
       return;
     }
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
     int i;
     xmlDocPtr docPtr;
 
-    if (argc < 2)
+    if(argc < 2)
         return(1);
 
     /*
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
      * document.
      */
     readerPtr = xmlReaderForFile(argv[1], NULL, 0);
-    if (NULL == readerPtr) {
+    if(NULL == readerPtr) {
       buffer_putmflush(buffer_2, argv[1], ": failed to create reader\n");      
       return(1);
     }
@@ -79,9 +79,9 @@ int main(int argc, char **argv) {
     /*
      * The reader can be reused for subsequent files.
      */
-    for (i=2; i < argc; ++i) {
+    for(i=2; i < argc; ++i) {
       	xmlReaderNewFile(readerPtr, argv[i], NULL, 0);
-	if (NULL == readerPtr) {
+	if(NULL == readerPtr) {
 	  buffer_putmflush(buffer_2, argv[i], ": failed to create reader\n");      
 	  return(1);
 	}
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
      * care of it.
      */
     docPtr = xmlTextReaderCurrentDoc(readerPtr);
-    if (docPtr != NULL)
+    if(docPtr != NULL)
       xmlFreeDoc(docPtr);
 
     /*

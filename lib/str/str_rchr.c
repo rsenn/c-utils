@@ -4,7 +4,7 @@ size_t str_rchr(const char *in, char needle) {
   register const char* t=in;
   register const char c=needle;
   register const char* found=0;
-  for (;;) {
+  for(;;) {
     if(!*t) break;
                     if(*t==c) found=t;
                                         ++t;

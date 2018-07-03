@@ -33,7 +33,7 @@ Unicode code points in the following ranges are valid in XML 1.0 documents:
     }
   if(dest) {
     size_t i;
-    for (i=0; i<n; ++i)
+    for(i=0; i<n; ++i)
       dest[i]=x[i];
   }
   return n;

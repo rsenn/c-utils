@@ -18,7 +18,7 @@
 
 #define HDB_LIST_APPEND(_first,_item)                                 \
 {                                                                     \
-   if ((_first) == NULL)                                              \
+   if((_first) == NULL)                                              \
    {                                                                  \
       (_first) = (_item)->prev = (_item)->next = (_item);             \
    }                                                                  \
@@ -32,9 +32,9 @@
 }
 #define HDB_LIST_REMOVE(_first,_item)                                 \
 {                                                                     \
-   if ((_first) == (_item))                                           \
+   if((_first) == (_item))                                           \
    {                                                                  \
-      if ((_first)->next == (_first))                                 \
+      if((_first)->next == (_first))                                 \
          (_first) = NULL;                                             \
       else                                                            \
       {                                                               \
@@ -53,7 +53,7 @@
 
 #define HDB_HASH_APPEND(_first,_item)                                 \
 {                                                                     \
-   if ((_first) == NULL)                                              \
+   if((_first) == NULL)                                              \
    {                                                                  \
       (_first) = (_item)->hash_prev = (_item)->hash_next = (_item);   \
    }                                                                  \
@@ -68,9 +68,9 @@
 
 #define HDB_HASH_REMOVE(_first,_item)                                 \
 {                                                                     \
-   if ((_first) == (_item))                                           \
+   if((_first) == (_item))                                           \
    {                                                                  \
-      if ((_first)->hash_next == (_first))                            \
+      if((_first)->hash_next == (_first))                            \
          (_first) = NULL;                                             \
       else                                                            \
       {                                                               \

@@ -24,7 +24,7 @@ int64 io_canread() {
 #else
     return -1;
 #endif
-  for (;;) {
+  for(;;) {
     int64 r;
     e=iarray_get(io_getfds(),first_readable);
     if(!e) break;

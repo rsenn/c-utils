@@ -14,7 +14,7 @@ size_t scan_ushort(const char* src,unsigned short* dest) {
     /* this is the regular case */
     const char* cur;
     unsigned short l;
-    for (cur=src,l=0; *cur>='0' && *cur<='9'; ++cur) {
+    for(cur=src,l=0; *cur>='0' && *cur<='9'; ++cur) {
       unsigned long tmp=l*10ul+*cur-'0';
       if((unsigned short)tmp != tmp) break;
       l=tmp;

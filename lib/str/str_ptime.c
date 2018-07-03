@@ -18,7 +18,7 @@ static const char*  months [12] = {
 
 static int getint(const char** s,int max) {
   int i,j;
-  for (i=j=0; j<max; ++j) {
+  for(i=j=0; j<max; ++j) {
     if(!isdigit(**s)) {
       if(j==0) return -1; else break;
     }
@@ -43,11 +43,11 @@ char* str_ptime(const char* s,const char* format, struct tm* tm) {
       switch (*format) {
       case '%': if(*s=='%') ++s; else return 0; break;
       case 'a': case 'A': /* weekday; we just skip */
-	for (i=0; i<3; ++i)
+	for(i=0; i<3; ++i)
 	  if(isalpha(*s)) ++s;
 	break;
       case 'b': case 'B': case 'h':
-	for (i=0; i<12; ++i) {
+	for(i=0; i<12; ++i) {
 	  if(strncasecmp(s,months[i],j=str_len(months[i])))
 	    if(strncasecmp(s,months[i],j=3))
 	      j=0;

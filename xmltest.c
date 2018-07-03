@@ -27,7 +27,7 @@ processNode(xmlTextReaderPtr reader) {
     const xmlChar *name, *value;
 
     name = xmlTextReaderConstName(reader);
-    if (name == NULL)
+    if(name == NULL)
 	name = BAD_CAST "--";
 
     value = xmlTextReaderConstValue(reader);
@@ -38,10 +38,10 @@ processNode(xmlTextReaderPtr reader) {
 	    name,
 	    xmlTextReaderIsEmptyElement(reader),
 	    xmlTextReaderHasValue(reader));
-    if (value == NULL)
+    if(value == NULL)
 	printf("\n");
     else {
-        if (xmlStrlen(value) > 40)
+        if(xmlStrlen(value) > 40)
             printf(" %.40s...\n", value);
         else
 	    printf(" %s\n", value);
@@ -60,14 +60,14 @@ streamFile(const char *filename) {
     int ret;
 
     reader = xmlReaderForFile(filename, NULL, 0);
-    if (reader != NULL) {
+    if(reader != NULL) {
         ret = xmlTextReaderRead(reader);
-        while (ret == 1) {
+        while(ret == 1) {
             processNode(reader);
             ret = xmlTextReaderRead(reader);
         }
         xmlFreeTextReader(reader);
-        if (ret != 0) {
+        if(ret != 0) {
             fprintf(stderr, "%s : failed to parse\n", filename);
         }
     } else {
@@ -76,7 +76,7 @@ streamFile(const char *filename) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2)
+    if(argc != 2)
         return(1);
 
     /*

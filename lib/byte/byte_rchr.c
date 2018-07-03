@@ -6,7 +6,7 @@ size_t byte_rchr(const void* haystack,size_t len,char needle) {
   register char c=needle;
   register const char* s=haystack;
   register const char* t=s+len;
-  for (;;) {
+  for(;;) {
     --t; if(s>t) { break; }; if(*t==c) return(size_t)(t-s);
     --t; if(s>t) { break; }; if(*t==c) return(size_t)(t-s);
     --t; if(s>t) { break; }; if(*t==c) return(size_t)(t-s);

@@ -11,7 +11,7 @@ size_t scan_ulongn(const char* src,size_t n,unsigned long int* dest) {
 #ifdef HAVE_UINT128
   if(sizeof(unsigned long)==sizeof(unsigned long long) && sizeof(unsigned long)<sizeof(__uint128_t)) {
     /* implementation for 64-bit platforms with gcc */
-    for (; n-->0 && (c=(unsigned char)(*tmp-'0'))<10; ++tmp) {
+    for(; n-->0 && (c=(unsigned char)(*tmp-'0'))<10; ++tmp) {
       __uint128_t L=(__uint128_t)l*10+c;
       if((L >> ((sizeof(L)-sizeof(l))*8))) break;
       l=(unsigned long)L;
@@ -22,7 +22,7 @@ size_t scan_ulongn(const char* src,size_t n,unsigned long int* dest) {
 #endif
   if(sizeof(unsigned long)<sizeof(unsigned long long)) {
     /* implementation for 32-bit platforms */
-    for (; n-->0 && (c=(unsigned char)(*tmp-'0'))<10; ++tmp) {
+    for(; n-->0 && (c=(unsigned char)(*tmp-'0'))<10; ++tmp) {
       unsigned long long  L=(unsigned long long)l*10+c;
       if((unsigned long)L != L) break;
       l=(unsigned long)L;

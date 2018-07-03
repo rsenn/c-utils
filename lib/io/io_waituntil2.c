@@ -128,7 +128,7 @@ int64 io_waituntil2(int64 milliseconds) {
     int n;
     struct epoll_event y[100];
     if((n=epoll_wait(io_master,y,100,milliseconds))==-1) return -1;
-    for (i=0; i<n; ++i) {
+    for(i=0; i<n; ++i) {
       io_entry* e=iarray_get(io_getfds(),y[i].data.fd);
       if(e) {
 	int curevents=0,newevents;
@@ -241,7 +241,7 @@ int64 io_waituntil2(int64 milliseconds) {
     struct timespec ts;
     ts.tv_sec=milliseconds/1000; ts.tv_nsec=(milliseconds%1000)*1000000;
     if((n=kevent(io_master,0,0,y,100,milliseconds!=-1?&ts:0))==-1) return -1;
-    for (i=n-1; i>=0; --i) {
+    for(i=n-1; i>=0; --i) {
       io_entry* e=iarray_get(io_getfds(),y[--n].ident);
       if(e) {
 	if(y[n].flags&EV_ERROR) {
@@ -277,7 +277,7 @@ int64 io_waituntil2(int64 milliseconds) {
     timeout.dp_nfds=100;
     timeout.dp_fds=y;
     if((n=ioctl(io_master,DP_POLL,&timeout))==-1) return -1;
-    for (i=n-1; i>=0; --i) {
+    for(i=n-1; i>=0; --i) {
       io_entry* e=iarray_get(io_getfds(),y[--n].fd);
       if(e) {
 	if(y[n].revents&(POLLERR|POLLHUP|POLLNVAL)) {
@@ -440,7 +440,7 @@ dopoll:
     return 1;
   }
 #else
-  for (i=r=0; (size_t)i<iarray_length(io_getfds()); ++i) {
+  for(i=r=0; (size_t)i<iarray_length(io_getfds()); ++i) {
     io_entry* e=iarray_get(io_getfds(),i);
     if(!e) return -1;
     e->canread=e->canwrite=0;
@@ -456,7 +456,7 @@ dopoll:
   }
   p=array_start(&io_pollfds);
   if((i=poll(array_start(&io_pollfds),r,milliseconds))<1) return -1;
-  for (j=r-1; j>=0; --j) {
+  for(j=r-1; j>=0; --j) {
     io_entry* e=iarray_get(io_getfds(),p->fd);
     if(p->revents&(POLLERR|POLLHUP|POLLNVAL)) {
       /* error; signal whatever app is looking for */
