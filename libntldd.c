@@ -432,7 +432,7 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
   pe_loaded_image loaded_image;
   pe_loaded_image *img;
   pe_dos_header *dos;
-  unsigned char* hmod;
+  unsigned char* hmod = 0;
   char success = 0;
 
   uint32 i, j;

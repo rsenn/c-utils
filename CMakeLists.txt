@@ -254,6 +254,7 @@ endforeach()
 
 #
 foreach(ARCHIVE array buffer byte dir fmt hmap http iarray io list mmap ndelay open playlist rdir scan socket str stralloc strarray strlist tai taia time uint16 uint32 uint64)
+  file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
   file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
   if(NOT MODSOURCES)
     file(GLOB MODSOURCES lib/${ARCHIVE}_*.c)
@@ -268,7 +269,7 @@ foreach(ARCHIVE array buffer byte dir fmt hmap http iarray io list mmap ndelay o
   if(ARCHIVE STREQUAL array)
     list(APPEND MODSOURCES lib/umult64.c)
   endif()
-  add_library("${ARCHIVE}" STATIC ${MODSOURCES})
+  add_library("${ARCHIVE}" STATIC ${MODSOURCES} ${MODHEADERS})
   set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
 endforeach(ARCHIVE)
 

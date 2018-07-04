@@ -20,7 +20,8 @@ static int lowq = 0, debug = 0;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
-void output_entry(const char* sender, const char* thema, const char* title, const char* description, const char* datetime, const char* url);
+void output_entry(const char* sender, const char* thema, const char* title,
+                  unsigned duration, const char* datetime, const char* url, const char* description);
 /*
 int
 parse_predicate(const char* x, size_t len)
@@ -198,7 +199,7 @@ process_entry(const array* a) {
     stralloc datetime;
     struct tm tm;
     time_t t;
-    size_t d;
+    unsigned d;
 
     char *sender = av[1], *thema = av[2], *title = av[3] /*, *date = av[4], *time = av[5]*/, *duration = av[6], /**grcoee = av[7],*/ *description = av[8],
          *url = av[9] /*, *website = av[10], *untertitel = av[11], *urlrtmp = av[12]*/,
@@ -275,7 +276,7 @@ process_entry(const array* a) {
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
 
-    output_entry(sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url);
+    output_entry(sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url, description);
 
     (void)t;
   } else {
@@ -292,9 +293,9 @@ process_entry(const array* a) {
 
 void
 output_entry(const char* sender, const char* thema, const char* title,
-             const char* description, const char* datetime, const char* url) {
+             unsigned duration, const char* datetime, const char* url, const char* description) {
   buffer_puts(buffer_1, "#EXTINF:");
-  buffer_putulong(buffer_1, description);
+  buffer_putulong(buffer_1, duration);
   buffer_put(buffer_1, ",|", 2);
   buffer_put(buffer_1, datetime, str_len(datetime));
   buffer_puts(buffer_1, "|");

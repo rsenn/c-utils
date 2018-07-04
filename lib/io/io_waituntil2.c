@@ -38,6 +38,7 @@
 #endif
 
 #ifdef DEBUG
+#include <stdio.h>
 #endif
 
 #ifndef EPOLLRDNORM
