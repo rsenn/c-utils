@@ -7,13 +7,13 @@
 #include "strlist.h"
 #include <ctype.h>
 #include <errno.h>
+#include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include <getopt.h>
 
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
@@ -291,20 +291,18 @@ process_entry(const array* a) {
 }
 
 static void
-
 put_quoted_string(const char* str) {
   buffer_putc(buffer_1, '"');
   while(*str) {
     char c = *str++;
     if(c == '"' || c == '\\') {
-      buffer_puts(buffer_1, c == '\\' ? "\\\\" : "\\\"");
+      buffer_puts(buffer_1, c == '\\' ? "\\\\" : "\"\"");
     } else {
       buffer_putc(buffer_1, c);
     }
   }
   buffer_putc(buffer_1, '"');
 }
-
 
 void
 output_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
@@ -354,7 +352,7 @@ process_input(buffer* input) {
   stralloc_init(&sa);
   strlist_init(&fields);
 
-  buffer_puts(buffer_1, "#EXTM3U\r\n");
+  if(csv == false) buffer_puts(buffer_1, "#EXTM3U\r\n");
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
