@@ -13,15 +13,17 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <getopt.h>
 
 static int lowq = 0, debug = 0;
+static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
+static bool csv = false;
 // static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme.json";
 // //"D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json"; static const char delimiters[] = "\""; static char  inbuf[16384];
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
-void output_entry(const char* sender, const char* thema, const char* title,
-                  unsigned duration, const char* datetime, const char* url, const char* description);
+void output_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description);
 /*
 int
 parse_predicate(const char* x, size_t len)
@@ -70,8 +72,7 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
 
   if((n = byte_chr(p, end - p, '\n')) != (unsigned)(end - p)) end = p + n;
 
-  while(p < end && *p != '"')
-    ++p;
+  while(p < end && *p != '"') ++p;
 
   for(; p < end; ++p /*, escaped = 0*/) {
     if(*p == '\\') {
@@ -137,11 +138,9 @@ dump_long(buffer* b, const char* name, long value) {
 
 void
 get_domain(const char* url, stralloc* d) {
-  while(*url && *url != ':')
-    ++url;
+  while(*url && *url != ':') ++url;
   ++url;
-  while(*url && *url == '/')
-    ++url;
+  while(*url && *url == '/') ++url;
   stralloc_copyb(d, url, str_chr(url, '/'));
 }
 
@@ -172,8 +171,7 @@ char*
 cleanup_domain(stralloc* d) {
   size_t i;
   d->len = byte_rchr(d->s, d->len, '.');
-  for(i = 0; i < d->len; ++i)
-    d->s[i] = toupper(d->s[i]);
+  for(i = 0; i < d->len; ++i) d->s[i] = toupper(d->s[i]);
   stralloc_nul(d);
   const char* remove_parts[] = {"ondemand", "storage", "files", "stream", "mvideos", "online", 0};
 
@@ -231,7 +229,8 @@ process_entry(const array* a) {
     stralloc_catc(&datetime, ' ');
     stralloc_cats(&datetime, av[5]);
     stralloc_nul(&datetime);
-    if(str_ptime(datetime.s, "%d.%m.%Y %H:%M:%S", &tm) == NULL) {
+
+    if(str_ptime(datetime.s, datetime_format, &tm) == NULL) {
       t = 0;
     } else {
       t = mktime(&tm);
@@ -291,24 +290,56 @@ process_entry(const array* a) {
   }
 }
 
+static void
+
+put_quoted_string(const char* str) {
+  buffer_putc(buffer_1, '"');
+  while(*str) {
+    char c = *str++;
+    if(c == '"' || c == '\\') {
+      buffer_puts(buffer_1, c == '\\' ? "\\\\" : "\\\"");
+    } else {
+      buffer_putc(buffer_1, c);
+    }
+  }
+  buffer_putc(buffer_1, '"');
+}
+
+
 void
-output_entry(const char* sender, const char* thema, const char* title,
-             unsigned duration, const char* datetime, const char* url, const char* description) {
-  buffer_puts(buffer_1, "#EXTINF:");
-  buffer_putulong(buffer_1, duration);
-  buffer_put(buffer_1, ",|", 2);
-  buffer_put(buffer_1, datetime, str_len(datetime));
-  buffer_puts(buffer_1, "|");
-  buffer_puts(buffer_1, sender);
-  buffer_puts(buffer_1, "|");
-  buffer_puts(buffer_1, thema);
-  buffer_puts(buffer_1, "|");
-  buffer_puts(buffer_1, title);
-  buffer_puts(buffer_1, "|");
-  buffer_puts(buffer_1, description);
-  buffer_put(buffer_1, "\r\n", 2);
-  buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
-  buffer_puts(buffer_1, url);
+output_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
+
+  if(csv == false) {
+    buffer_puts(buffer_1, "#EXTINF:");
+    buffer_putulong(buffer_1, duration);
+    buffer_put(buffer_1, ",|", 2);
+    buffer_put(buffer_1, datetime, str_len(datetime));
+    buffer_puts(buffer_1, "|");
+    buffer_puts(buffer_1, sender);
+    buffer_puts(buffer_1, "|");
+    buffer_puts(buffer_1, thema);
+    buffer_puts(buffer_1, "|");
+    buffer_puts(buffer_1, title);
+    buffer_puts(buffer_1, "|");
+    buffer_puts(buffer_1, description);
+    buffer_put(buffer_1, "\r\n", 2);
+    buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
+    buffer_puts(buffer_1, url);
+  } else {
+    put_quoted_string(sender);
+    buffer_puts(buffer_1, ",");
+    put_quoted_string(thema);
+    buffer_puts(buffer_1, ",");
+    put_quoted_string(title);
+    buffer_puts(buffer_1, ",");
+    buffer_put(buffer_1, datetime, str_len(datetime));
+    buffer_puts(buffer_1, ",");
+    buffer_putulong(buffer_1, duration);
+    buffer_puts(buffer_1, ",");
+    put_quoted_string(description);
+    buffer_puts(buffer_1, ",");
+    put_quoted_string(url);
+  }
   buffer_put(buffer_1, "\r\n", 2);
   buffer_flush(buffer_1);
 }
@@ -350,15 +381,24 @@ process_input(buffer* input) {
 int
 main(int argc, char* argv[]) {
 
-  int opt;
+  int opt, index = 0;
 
   char inbuf[8192];
   buffer b;
 
-  while((opt = getopt(argc, argv, "dt:i:x:l")) != -1) {
+  struct option opts[] = {
+    {"csv", 0, NULL, 'c'},
+    {"debug", 0, NULL, 'd'},
+    {"low", 0, NULL, 'l'},
+    {"format", 1, NULL, 'F'},
+  };
+
+  while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {
     switch(opt) {
+      case 'c': csv++; break;
       case 'd': debug++; break;
       case 'l': lowq++; break;
+      case 'f': datetime_format = optarg; break;
       default: /* '?' */ buffer_putm(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n"); exit(EXIT_FAILURE);
     }
   }

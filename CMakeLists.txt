@@ -181,29 +181,7 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-    compiler-wrapper
-    count-depth
-    decode-ls-lR
-    eagle-init-brd
-    hexedit
-    httptest
-    impgen
-    list-r
-    main
-    mediathek-list
-    mediathek-parser
-    ntldd
-    opensearch-dump
-    pathtool
-    plsconv
-    rdir-test
-    reg2cmd
-    regfilter
-    torrent-progress
-    xmltest
-    xmltest2
-    xmltest3
-    access
+access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3
 )
 
 set(CXXPROGRAMS #kbd-adjacency
