@@ -18,8 +18,6 @@
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
 static bool csv = false;
-// static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme.json";
-// //"D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json"; static const char delimiters[] = "\""; static char  inbuf[16384];
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
