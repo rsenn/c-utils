@@ -116,7 +116,7 @@ endforeach()
 if(HAVE_LLSEEK_FUNC)
   add_definitions(-Dlseek=llseek)
 elseif(HAVE_LSEEK64_FUNC)
-  add_definitions(-Dlseek=lseek64)
+  add_definitions(-DLSEEK=lseek64)
 endif()
 
 check_function_exists(free HAVE_FREE_FUNC)

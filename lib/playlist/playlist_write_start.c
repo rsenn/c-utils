@@ -6,6 +6,8 @@
 #include <unistd.h>
 #endif
 
+#include <stdio.h>
+
 
 #include "../playlist.h"
 
@@ -25,7 +27,7 @@ playlist_write_start(buffer* b, playlist* pl) {
       buffer_puts(b, "[playlist]\n");
       buffer_putsflush(b, "NumberOfEntries=");
 
-      pl->num_items_pos = lseek(b->fd, 0, SEEK_CUR);
+      pl->num_items_pos = LSEEK(b->fd, 0, SEEK_CUR);
 
       buffer_puts(b, "XXXXXXXXXXXXXXXXXXXX\n");
       break;

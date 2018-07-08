@@ -1,6 +1,6 @@
 #ifndef my_extern
 #if defined(_WIN32) || defined(_WIN64)
-#define my_extern extern EXPORT
+#define my_extern extern __declspec(dllexport)
 #else
 #define my_extern extern
 #endif

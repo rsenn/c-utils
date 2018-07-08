@@ -1,3 +1,5 @@
+#include <string.h>
+
 #define HMAP_SET_DATA() {                                                              \
   switch( data_type ){                                                                \
       case HMAP_DATA_TYPE_INT:                                                        \

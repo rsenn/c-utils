@@ -375,8 +375,7 @@ dopoll:
     if(!e) return 0;
     e->errorcode = 0;
 //    fprintf(stderr,"o=%p, e->or=%p, e->ow=%p, e->os=%p\n",o,&e->or,&e->ow,&e->os);
-//    fprintf(stderr,"e->readqueued=%d, e->writequeued=%d, e->acceptqueued=%d, e->connectqueued=%d, e->sendfilequeued=%d\n",
-    e->readqueued, e->writequeued, e->acceptqueued, e->connectqueued, e->sendfilequeued);
+//    fprintf(stderr,"e->readqueued=%d, e->writequeued=%d, e->acceptqueued=%d, e->connectqueued=%d, e->sendfilequeued=%d\n",    e->readqueued, e->writequeued, e->acceptqueued, e->connectqueued, e->sendfilequeued);
     if(o == &e-> or && e->readqueued == 1) {
     e->readqueued = 2;
     e->canread = 1;

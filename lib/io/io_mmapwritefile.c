@@ -93,7 +93,7 @@ mapok:
   }
 readwrite:
 #ifndef HAVE_PREAD
-  if(lseek(in, off, SEEK_SET) != (off_t)off)
+  if(LSEEK(in, off, SEEK_SET) != (off_t)off)
     return -1;
 #endif
   while(bytes > 0) {
