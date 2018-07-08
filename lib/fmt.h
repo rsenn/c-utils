@@ -6,8 +6,7 @@
 //#include <stddef.h>
 /* for uint32 */
 #if defined(__MSYS__)
-//#undef size_t
-//#define size_t unsigned long
+typedef __SIZE_TYPE__ size_t;
 #elif !defined(_MSC_VER)
 #include <stdint.h>
 #endif // !defined(_MSC_VER)
@@ -121,7 +120,7 @@ size_t fmt_strm_internal(char* dest, ...);
 #ifndef MAX_ALLOCA
 #define MAX_ALLOCA 100000
 #endif
-#define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if (c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
+#define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if(c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
 
 size_t fmt_uint64(char* dest, uint64 i);
 

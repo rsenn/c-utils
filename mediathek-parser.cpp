@@ -145,7 +145,7 @@ int main()
 
         /*  BOOST_FOREACH(boost::property_tree::ptree::value_type & v, pt)
             print(v);*/
-      } catch (boost::property_tree::json_parser_error const& parse_error) {
+      } catch(boost::property_tree::json_parser_error const& parse_error) {
         std::cerr << parse_error.what() << std::endl;
       }
     }
@@ -164,7 +164,7 @@ int main()
          iter->second; // The object at each step {"pos": [0,0,0], "vel": [0,0,0]}, etc.
     }*/
     return EXIT_SUCCESS;
-  } catch (std::exception& e) {
+  } catch(std::exception& e) {
     std::cerr << e.what() << std::endl;
   }
   return EXIT_FAILURE;

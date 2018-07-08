@@ -1,4 +1,4 @@
-#include "strlist.h"
+#include "../strlist.h"
 
 size_t
 strlist_count(const strlist* sl) {

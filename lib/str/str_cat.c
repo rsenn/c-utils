@@ -1,4 +1,4 @@
-#include "str.h"
+#include "../str.h"
 
 unsigned int str_cat(void *p1, const void *p2)
 {
@@ -9,23 +9,23 @@ unsigned int str_cat(void *p1, const void *p2)
   t = p2;
   len = str_len(s);
   s += len;
-  for (;;) {
-    if (!(*s = *t)) return len;
+  for(;;) {
+    if(!(*s = *t)) return len;
     ++s;
     ++t;
     ++len;
 
-    if (!(*s = *t)) return len;
+    if(!(*s = *t)) return len;
     ++s;
     ++t;
     ++len;
 
-    if (!(*s = *t)) return len;
+    if(!(*s = *t)) return len;
     ++s;
     ++t;
     ++len;
 
-    if (!(*s = *t)) return len;
+    if(!(*s = *t)) return len;
     ++s;
     ++t;
     ++len;

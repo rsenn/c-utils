@@ -4,7 +4,7 @@
 #include "uint16.h"
 #include "uint32.h"
 #include "uint64.h"
-#include "pe.h"
+#include "lib/pe.h"
 
 #ifdef __unix__
 #define stricmp strcasecmp

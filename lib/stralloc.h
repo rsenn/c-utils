@@ -131,9 +131,9 @@ int stralloc_decamelize(stralloc *sa, stralloc *to);
 
 #ifdef BUFFER_H
 /* write stralloc to buffer */
-int buffer_putsa(buffer* b, stralloc* sa);
+int buffer_putsa(buffer* b, const stralloc* sa);
 /* write stralloc to buffer and flush */
-int buffer_putsaflush(buffer* b, stralloc* sa);
+int buffer_putsaflush(buffer* b, const stralloc* sa);
 
 /* these "read token" functions return 0 if the token was complete or
  * EOF was hit or -1 on error.  In contrast to the non - stralloc token
@@ -156,17 +156,17 @@ int buffer_get_new_token_sa(buffer* b, stralloc* sa, const char* charset, size_t
 /* same as buffer_getline_sa but empty sa first */
 int buffer_getnewline_sa(buffer* b, stralloc* sa);
 
-typedef int ( * sa_predicate)(stralloc* sa);
+typedef int ( * sa_predicate)(stralloc* sa, void*);
 
 /* like buffer_get_token_sa but the token ends when your predicate says so */
-int buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p);
+int buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
 /* same, but clear sa first */
-int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p);
+int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
 
 
 /* make a buffer from a stralloc.
  * Do not change the stralloc after this! */
-void buffer_fromsa(buffer* b, stralloc* sa);
+void buffer_fromsa(buffer* b, const stralloc* sa);
 #endif
 
 #ifdef __cplusplus

@@ -1,10 +1,10 @@
-#include "likely.h"
+#include "../likely.h"
 #include <sys/types.h>
 
 #include <stdlib.h>
-#include "safemult.h"
-#include "array.h"
-#include "byte.h"
+#include "../safemult.h"
+#include "../array.h"
+#include "../byte.h"
 
 /*
       static array x;

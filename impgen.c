@@ -64,7 +64,7 @@ main(int argc, char* argv[]) {
     opt_hdr_32 = (pe32_opt_header*)&dll[pe_header_offset + 4 + 20];
     /*opt_hdr_64 = (pe64_opt_header*)&dll[pe_header_offset + 4 + 20]; */
 
-    type = uint16_get(&opt_hdr_32->magic);  
+    type = uint16_get(&opt_hdr_32->magic);
     /*
       buffer_puts(buffer_2, "opt_hdr directory: ");
       buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_32->number_of_rva_and_sizes - (unsigned char*)opt_hdr_32);

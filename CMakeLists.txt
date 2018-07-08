@@ -8,17 +8,23 @@ set(BUILD_SHARED_LIBS FALSE)
 include( CheckCCompilerFlag )
 include( CheckCXXCompilerFlag )
 
+include( FindIconv )
 include( FindLibXml2 ) # LIBXML2_FOUND LIBXML2_DEFINITIONS LIBXML2_INCLUDE_DIR LIBXML2_LIBRARIES LIBXML2_VERSION_STRING LIBXML2_XMLLINT_EXECUTABLE
 include( FindZLIB )    # ZLIB_FOUND ZLIB_INCLUDE_DIR ZLIB_INCLUDE_DIRS ZLIB_LIBRARIES ZLIB_LIBRARY ZLIB_ROOT
 include( FindBZip2 )   # BZIP2_FOUND BZIP2_INCLUDE_DIR BZIP2_INCLUDE_DIRS BZIP2_LIBRARIES BZIP2_LIBRARY
 
 #include( FindLibLZMA ) # LIBLZMA_FOUND LIBLZMA_INCLUDE_DIR LIBLZMA_INCLUDE_DIRS LIBLZMA_LIBRARIES LIBLZMA_LIBRARY
-include( FindOpenSSL ) # OPENSSL_CRYPTO_LIBRARIES OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARIES OPENSSL_SSL_LIBRARY LIB_EAY_LIBRARY SSL_EAY_LIBRARY 
-                       # OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES 
+include( FindOpenSSL ) # OPENSSL_CRYPTO_LIBRARIES OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARIES OPENSSL_SSL_LIBRARY LIB_EAY_LIBRARY SSL_EAY_LIBRARY
+                       # OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
 
 #include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
 
-add_definitions( -g )
+
+#if(WIN32 OR MSYS OR CYGWIN)
+  add_definitions(-D_FILE_OFFSET_BITS=64)
+#endif(WIN32 OR WIN64)
+
+add_definitions( -g  )
 
 include( FindPkgConfig )
 include( UsePkgConfig )
@@ -133,16 +139,16 @@ endif(HAVE_LSTAT_FUNC)
 include( FindPkgConfig )
 
 pkg_search_module(
-				LIBXML2
-				libxml-2.0 
-				#REQUIRED
+                LIBXML2
+                libxml-2.0
+                #REQUIRED
 )
 
 
 #find_package(libxml2)
-include_directories( "${CMAKE_SOURCE_DIR}/lib" )
-include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" ) 
-#include_directories( ${LIBXML2_INCLUDE_DIRS} )
+#include_directories( "${CMAKE_SOURCE_DIR}/lib" )
+include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" )
+include_directories( ${Iconv_INCLUDE_DIR} )
 
 #if(LIBXML2_LIBRARIES MATCHES static)
 #  option(STATIC_LINK "Compile as static libraries" ON)
@@ -161,7 +167,7 @@ endif(STATIC_LINK)
 set(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
 
 if(LIBXML2_INCLUDE_DIR)
-  include_directories("${LIBXML2_INCLUDE_DIR}" "${LIBXML2_INCLUDE_DIR}/libxml")
+  include_directories(${Iconv_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR}/libxml)
 endif()
 
 if(USE_READDIR)
@@ -174,9 +180,9 @@ configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
 file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
-set(PROGRAMS compiler-wrapper count-depth decode-ls-lR eagle-init-brd httptest list-r mediathek-list mediathek-parser opensearch-dump
-  #picc-wrapper picc18-wrapper xc8-wrapper sdcc-wrapper 
-  plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3)
+set(PROGRAMS
+access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3
+)
 
 set(CXXPROGRAMS #kbd-adjacency
 #ls-R
@@ -226,6 +232,7 @@ endforeach()
 
 #
 foreach(ARCHIVE array buffer byte dir fmt hmap http iarray io list mmap ndelay open playlist rdir scan socket str stralloc strarray strlist tai taia time uint16 uint32 uint64)
+  file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
   file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
   if(NOT MODSOURCES)
     file(GLOB MODSOURCES lib/${ARCHIVE}_*.c)
@@ -240,7 +247,7 @@ foreach(ARCHIVE array buffer byte dir fmt hmap http iarray io list mmap ndelay o
   if(ARCHIVE STREQUAL array)
     list(APPEND MODSOURCES lib/umult64.c)
   endif()
-  add_library("${ARCHIVE}" STATIC ${MODSOURCES})
+  add_library("${ARCHIVE}" STATIC ${MODSOURCES} ${MODHEADERS})
   set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
 endforeach(ARCHIVE)
 
@@ -253,31 +260,47 @@ endif()
 set(COMMON_LIBS strlist array stralloc buffer open mmap fmt scan str byte)
 
 foreach(PROGRAM ${PROGRAMS})
-  add_executable(${PROGRAM} ${PROGRAM}.c)
-  set_target_properties(${PROGRAM} PROPERTIES OUTPUT_NAME "${PROGRAM}${X64}")
+  if("${PROGRAM}" STREQUAL ntldd)
+    set(EXTRA_SOURCES libntldd.c)
+  else("${PROGRAM}" STREQUAL ntldd)
+    set(EXTRA_SOURCES )
+  endif("${PROGRAM}" STREQUAL ntldd)
+
+  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES})
+#  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
+ # list(APPEND ${PROGRAM}_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR})
+
+  set_target_properties(${PROGRAM} PROPERTIES
+    OUTPUT_NAME "${PROGRAM}${X64}"
+    INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/lib;${LIBXML2_INCLUDE_DIR};${CMAKE_BINARY_DIR}"
+    )
   target_link_libraries(${PROGRAM} ${COMMON_LIBS})
-  install(TARGETS ${PROGRAM} DESTINATION bin) 
+  install(TARGETS ${PROGRAM} DESTINATION bin)
 endforeach(PROGRAM)
 
 target_link_libraries(list-r dir ${COMMON_LIBS})
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
-  string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}")
-  
+  string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}" "${Iconv_LIBRARIES}")
+
 target_link_libraries(compiler-wrapper dir)
-target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES})
+target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES} m)
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
-target_link_libraries(plsconv playlist ${LIBXML2_LIBRARIES})
+target_link_libraries(plsconv playlist  buffer byte fmt scan str stralloc ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest2 ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest3 ${LIBXML2_LIBRARIES})
-target_link_libraries(httptest http io socket taia tai iarray ndelay socket uint16)
- 
-  
+target_link_libraries(httptest http io socket taia tai iarray ndelay socket buffer byte scan str stralloc uint16)
+target_link_libraries(mediathek-parser mmap open)
+target_link_libraries(ntldd open)
+target_link_libraries(hexedit open)
+target_link_libraries(impgen open)
+
+
 #if(STATIC_LINK)
-#  install(FILES ${LIBXML2_LIBRARIES} DESTINATION lib) 
+#  install(FILES ${LIBXML2_LIBRARIES} DESTINATION lib)
 #else()
-#  install(FILES ${LIBXML2_DLL} DESTINATION bin) 
+#  install(FILES ${LIBXML2_DLL} DESTINATION bin)
 #endif()
 
 #target_link_libraries(eagle-init-brd)
@@ -288,5 +311,5 @@ target_link_libraries(httptest http io socket taia tai iarray ndelay socket uint
 
 foreach(CXXPROGRAM ${CXXPROGRAMS})
 #  add_executable( ${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_CXX_SOURCES} ${COMMON_C_SOURCES} )
-  install(TARGETS ${CXXPROGRAM} DESTINATION bin) 
+  install(TARGETS ${CXXPROGRAM} DESTINATION bin)
 endforeach(CXXPROGRAM)

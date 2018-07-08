@@ -1,8 +1,13 @@
 #define _LARGEFILE64_SOURCE     /* See feature_test_macros(7) */
 #include <sys/types.h>
+#if defined(_WIN32) || defined(_WIN64)
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
-#include "playlist.h"
+
+#include "../playlist.h"
 
 #if !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__dietlibc__) && !defined(__APPLE__)
 #define lseek lseek64
@@ -29,7 +34,7 @@ playlist_write_start(buffer* b, playlist* pl) {
       buffer_puts(b, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<playlist xmlns=\"http://xspf.org/ns/0/\" xmlns:vlc=\"http://www.videolan.org/vlc/playlist/ns/0/\" version=\"1\">\n  <title>Wiedergabeliste</title>\n  <trackList>\n");
       break;
     }
-    case UNKNOWN: 
+    case UNKNOWN:
     default: {
                return 0;
     }

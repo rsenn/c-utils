@@ -110,7 +110,7 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 void
 process_status(void) {
   /* display interesting process IDs  */
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
   fprintf(stderr, "process %s: pid=%d, ppid=%d, pgid=%d, fg pgid=%dn\n",
           argv0, (int)getpid(), (int)getppid(),
           (int)getpgrp(), (int)tcgetpgrp(STDIN_FILENO));
@@ -604,7 +604,7 @@ int main(int argc, char *argv[]) {
 //  buffer_putm(buffer_2, "min_length: ", format_time(min_length), "\n", NULL);
 
 
-  /*   if (optind >= argc) {
+  /*   if(optind >= argc) {
          fprintf(stderr,
                  "Nach den Optionen wurde ein Argument erwartet\n");
          exit(EXIT_FAILURE);

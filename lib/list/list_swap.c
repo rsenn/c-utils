@@ -1,4 +1,4 @@
-#include "list.h"
+#include "../list.h"
 
 void
 list_swap(list *l, link *p1, link *p2) {

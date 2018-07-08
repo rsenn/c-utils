@@ -1,4 +1,4 @@
-#include "taia.h"
+#include "../taia.h"
 
 /* XXX: breaks tai encapsulation */
 
@@ -6,7 +6,7 @@ void taia_sub(struct taia *t,const struct taia *u,const struct taia *v)
 {
   uint32 unano = u->nano;
   uint32 uatto = u->atto;
-  
+
   t->sec.x = u->sec.x - v->sec.x;
   t->nano = unano - v->nano;
   t->atto = uatto - v->atto;

@@ -50,10 +50,10 @@ torrent-progress$(EXESUFFIX)$(EXEEXT): torrent-progress.o $(EXTRA_DEP) $(LIB_DEP
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 .c.o:
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c $<
 
 .cpp.o:
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CXX) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 clean:
 	$(RM) -f $(EXTRA_MODULES:%=%.o) $(LIB_MODULES:%=%.o) list-r.o list-r$(EXESUFFIX)$(EXEEXT)

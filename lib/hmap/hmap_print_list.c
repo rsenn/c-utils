@@ -1,4 +1,4 @@
-#include "hmap_internal.h"
+#include "../hmap_internal.h"
 
 static void hmap_print_list_tuple( HMAP_DB *my_hmap_db ) {
     TUPLE *ptr_list_tuple = my_hmap_db->list_tuple;
@@ -34,7 +34,7 @@ static void hmap_print_list_tuple( HMAP_DB *my_hmap_db ) {
 }
 
 int hmap_print_list( HMAP_DB *my_hmap_db ) {
-    if( my_hmap_db == NULL ) 
+    if( my_hmap_db == NULL )
         return HMAP_DB_EMPTY;
     hmap_print_list_tuple(my_hmap_db);
     return HMAP_SUCCESS;

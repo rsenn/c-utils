@@ -1,4 +1,4 @@
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include <winsock2.h>
 #include <errno.h>
 #include <stdio.h>
@@ -6,7 +6,7 @@
 
 int winsock2errno(long l) {
   long x;
-  if (l==-1)
+  if(l==-1)
     switch ((x=WSAGetLastError())) {
     case WSANOTINITIALISED:
       printf("WSANOTINITIALISED!\n");

@@ -7,14 +7,15 @@
 extern "C" {
 #endif
 
-#if 0 //defined(_WIN32) || defined(__MSYS__)
+#if defined(_WIN32) || defined(__MSYS__)
 #define PATHSEP_C '\\'
 #define PATHSEP_S "\\"
+#define IS_PATHSEP(c) ((c) == '\\'||(c) == '/')
 #else
 #define PATHSEP_C '/'
 #define PATHSEP_S "/"
+#define IS_PATHSEP(c) ((c) == '/')
 #endif
-#define IS_PATHSEP(c) ((c) == '\\'||(c) == '/')
 
 enum
 {

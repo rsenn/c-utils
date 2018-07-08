@@ -1,4 +1,4 @@
-#include "hmap_internal.h"
+#include "../hmap_internal.h"
 
 int hmap_truncate(HMAP_DB **hmap_db) {
     TUPLE *ptr_list_tuple = (*hmap_db)->list_tuple;

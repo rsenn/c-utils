@@ -40,12 +40,27 @@ mingw | mingw32 | mingw64 {
 INCLUDEPATH += . $$PWD/lib
 
 HEADERS = \
-    lib/http.h lib/io.h lib/io_internal.h lib/ndelay.h lib/socket.h 
+    lib/http.h lib/io.h lib/io_internal.h lib/ndelay.h lib/socket.h \
+    lib/buffer.h \
+    lib/stralloc.h
 SOURCES = httptest.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get.c lib/buffer/buffer_getc.c lib/buffer/buffer_getline.c lib/buffer/buffer_get_token.c lib/buffer/buffer_init.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_putsa.c lib/buffer/buffer_puts.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn2.c lib/buffer/buffer_stubborn.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_zero.c lib/fmt/fmt_long.c lib/fmt/fmt_ulong.c lib/http/http_get.c lib/http/http_init.c lib/http/http_readable.c lib/http/http_sendreq.c lib/iarray/iarray_allocate.c lib/iarray/iarray_get.c lib/iarray/iarray_init.c lib/io/io_fd.c lib/io/io_nonblock.c lib/iopause.c lib/ndelay/ndelay_on.c \
 lib/scan/scan_ulong.c lib/scan/scan_ulongn.c lib/scan/scan_fromhex.c lib/scan/scan_xlong.c \
 lib/socket/socket_connect4.c lib/socket/socket_tcp4b.c lib/socket/socket_tcp4.c lib/stralloc/stralloc_append.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_copyb.c lib/stralloc/stralloc_copys.c lib/stralloc/stralloc_init.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c \
   lib/str/str_len.c lib/str/str_chr.c \
-lib/taia/taia_approx.c lib/taia/taia_frac.c lib/taia/taia_less.c lib/taia/taia_sub.c lib/taia/taia_uint.c lib/uint16/uint16_pack_big.c
+lib/taia/taia_approx.c lib/taia/taia_frac.c lib/taia/taia_less.c lib/taia/taia_sub.c lib/taia/taia_uint.c lib/uint16/uint16_pack_big.c \
+    lib/buffer/buffer_get_new_token_sa_pred.c \
+    lib/buffer/buffer_get_token_pred.c \
+    lib/buffer/buffer_get_token_sa_pred.c \
+    lib/buffer/buffer_get_until.c \
+    lib/buffer/buffer_getline_sa.c \
+    lib/buffer/buffer_getn.c \
+    lib/buffer/buffer_getnewline_sa.c \
+    lib/str/str_diffn.c \
+    lib/str/str_find.c \
+    lib/stralloc/stralloc_zero.c \
+    lib/buffer/buffer_get_token_sa.c \
+    lib/str/str_findb.c \
+    lib/byte/byte_diff.c
 
 
 include(deployment.pri)

@@ -1,9 +1,11 @@
 
-#include <unistd.h>
-#include "io_internal.h"
+#if defined(_WIN32) || defined(_WIN64)
+#else
+#endif
+#include "../io_internal.h"
 
-void io_setcookie(int64 d,void* cookie) {
+void io_setcookie(int64 d, void* cookie) {
   io_entry* e;
-  if((e=iarray_get(io_getfds(),d)))
-    e->cookie=cookie;
+  if((e = iarray_get(io_getfds(), d)))
+    e->cookie = cookie;
 }

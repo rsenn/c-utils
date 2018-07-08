@@ -8,6 +8,11 @@
 #include <sys/socket.h>
 #endif
 
+#if defined(_WIN32) || defined(_WIN64)
+#include "windoze.h"
+#endif
+
+
 #include "uint16.h"
 #include "uint32.h"
 
@@ -104,7 +109,7 @@ ssize_t socket_fastopen_connect4(int s,const char* ip,uint16 port,const char* bu
 ssize_t socket_fastopen_connect6(int s,const char* ip,uint16 port,uint32 scope_id,const char* buf,size_t len);
 
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include <winsock2.h>
 #include <ws2tcpip.h>
 

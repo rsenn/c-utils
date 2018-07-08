@@ -5,7 +5,7 @@
 
 #include <sys/stat.h>
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #endif
 #if defined(_WIN32) || defined(_WIN32) || defined(__MSYS__)
@@ -13,8 +13,8 @@
 #else
 #include <sys/mman.h>
 #endif
-#include "open.h"
-#include "mmap.h"
+#include "../open.h"
+#include "../mmap.h"
 
 char mmap_empty[] = { 0 };
 

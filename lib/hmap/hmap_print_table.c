@@ -1,4 +1,4 @@
-#include "hmap_internal.h"
+#include "../hmap_internal.h"
 
 static void hmap_print( HMAP_DB *my_hmap_db ) {
     int i = 0;
@@ -33,7 +33,7 @@ static void hmap_print( HMAP_DB *my_hmap_db ) {
 }
 
 int hmap_print_table( HMAP_DB *my_hmap_db ) {
-    if( my_hmap_db == NULL ) 
+    if( my_hmap_db == NULL )
         return HMAP_DB_EMPTY;
     hmap_print(my_hmap_db);
     return HMAP_SUCCESS;

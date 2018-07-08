@@ -28,21 +28,21 @@ processNode(xmlTextReaderPtr reader) {
     const xmlChar *name, *value;
 
     name = xmlTextReaderConstName(reader);
-    if (name == NULL)
+    if(name == NULL)
 	name = BAD_CAST "--";
 
     value = xmlTextReaderConstValue(reader);
 
-    printf("%d %d %s %d %d", 
+    printf("%d %d %s %d %d",
 	    xmlTextReaderDepth(reader),
 	    xmlTextReaderNodeType(reader),
 	    name,
 	    xmlTextReaderIsEmptyElement(reader),
 	    xmlTextReaderHasValue(reader));
-    if (value == NULL)
+    if(value == NULL)
 	printf("\n");
     else {
-        if (xmlStrlen(value) > 40)
+        if(xmlStrlen(value) > 40)
             printf(" %.40s...\n", value);
         else
 	    printf(" %s\n", value);
@@ -69,20 +69,20 @@ streamFile(const char *filename) {
                  XML_PARSE_DTDATTR |  /* default DTD attributes */
 		 XML_PARSE_NOENT |    /* substitute entities */
 		 XML_PARSE_DTDVALID); /* validate with the DTD */
-    if (reader != NULL) {
+    if(reader != NULL) {
         ret = xmlTextReaderRead(reader);
-        while (ret == 1) {
+        while(ret == 1) {
             processNode(reader);
             ret = xmlTextReaderRead(reader);
         }
 	/*
 	 * Once the document has been fully parsed check the validation results
 	 */
-	if (xmlTextReaderIsValid(reader) != 1) {
+	if(xmlTextReaderIsValid(reader) != 1) {
 	    fprintf(stderr, "Document %s does not validate\n", filename);
 	}
         xmlFreeTextReader(reader);
-        if (ret != 0) {
+        if(ret != 0) {
             fprintf(stderr, "%s : failed to parse\n", filename);
         }
     } else {
@@ -91,8 +91,8 @@ streamFile(const char *filename) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2)
-        return(1);
+    if(argc != 2)
+        return 1;
 
     /*
      * this initialize the library and check potential ABI mismatches
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
      * this is to debug memory for regression tests
      */
     xmlMemoryDump();
-    return(0);
+    return 0;
 }
 
 #else

@@ -1,7 +1,7 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 #undef stralloc_diffs
-#include "byte.h"
-#include "str.h"
+#include "../byte.h"
+#include "../str.h"
 
 extern int stralloc_diffs(const stralloc* a, const char* b) {
   register size_t i;

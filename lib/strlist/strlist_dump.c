@@ -1,6 +1,6 @@
-#include "strlist.h"
-#include "buffer.h"
-#include "fmt.h"
+#include "../strlist.h"
+#include "../buffer.h"
+#include "../fmt.h"
 #include <ctype.h>
 
 char

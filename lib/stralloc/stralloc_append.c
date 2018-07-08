@@ -1,4 +1,4 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 #undef stralloc_append
 
 /* stralloc_append adds one byte in[0] to the end of the string stored

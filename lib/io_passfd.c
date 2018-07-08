@@ -1,9 +1,9 @@
 #ifdef _WIN32
 #include <w32api/mswsock.h>
-#define cmsghdr wsacmsghdr 
+#define cmsghdr wsacmsghdr
 #endif
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include "io_internal.h"
 #include <errno.h>
 int io_passfd(int64 sock,int64 fd) {
@@ -27,7 +27,6 @@ int io_passfd(int64 sock,int64 fd) {
 #endif
 #include <stddef.h>
 #include <sys/types.h>
-#include <sys/time.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include <errno.h>

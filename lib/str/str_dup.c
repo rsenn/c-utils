@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "str.h"
-#include "byte.h"
+#include "../str.h"
+#include "../byte.h"
 
 char*
 str_dup(const char* s) {
@@ -8,5 +8,5 @@ str_dup(const char* s) {
   char* r = malloc(n);
   if(r == NULL) return NULL;
   byte_copy(r, n, s);
-  return r; 
+  return r;
 }

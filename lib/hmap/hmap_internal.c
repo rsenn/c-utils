@@ -44,7 +44,7 @@
       default :                                                                       \
         return HMAP_DATA_TYPE_INVALID;                                                \
   }                                                                                   \
-} 
+}
 
 inline static int
 hmap_cmp(void *v1, int v1_len, void *v2, int v2_len) {
@@ -58,7 +58,7 @@ inline static int
 hash (void *key, int len) {
    unsigned int hash, i;
 
-   for (hash = i = 0; i < len; ++i)
+   for(hash = i = 0; i < len; ++i)
    {
       hash += ((unsigned char *)key)[i];
       hash += (hash << 10);

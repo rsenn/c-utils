@@ -1,7 +1,7 @@
 #include <libxml/xmlreader.h>
 #include <ctype.h>
-#include "playlist.h"
-#include "buffer.h"
+#include "../playlist.h"
+#include "../buffer.h"
 
 int
 buffer_close_return_int(buffer *b) {

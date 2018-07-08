@@ -1,18 +1,21 @@
-#include "byte.h"
-#include "buffer.h"
-#include "scan.h"
+#include "../stralloc.h"
+#include "../buffer.h"
+#include "../byte.h"
+#include "../scan.h"
 
-ssize_t 
-buffer_get_token_pred(buffer* b,char* x,size_t len,
-			  string_predicate p) {
+ssize_t
+buffer_get_token_pred(buffer* b, char* x, size_t len, string_predicate p, void* arg) {
   unsigned int blen;
 
-  for (blen=0;blen<len;++blen) {
+  for(blen = 0; blen < len; ++blen) {
     register ssize_t r;
-    if((r=
-buffer_getc(b,x))<0) return r;
-    if(r==0) { break; };
-    if(p(x-blen,blen+1)) { break; };
+    if((r = buffer_getc(b, x)) < 0) return r;
+    if(r == 0) {
+      break;
+    };
+    if(p(x - blen, blen + 1, arg)) {
+      break;
+    };
     ++x;
   }
   return blen;

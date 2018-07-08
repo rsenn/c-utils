@@ -5,7 +5,7 @@
 #define _GNU_SOURCE 1
 #define _FILE_OFFSET_BITS 64
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #else
 #include <io.h>
@@ -102,7 +102,7 @@ int decode_ls_lR() {
       buffer_close(buffer_0);
       //buffer_puts(buffer_2, "len == 0!!!\n");
       //buffer_flush(buffer_2);
-      break; 
+      break;
 
 
     }
