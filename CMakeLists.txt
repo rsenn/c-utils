@@ -283,6 +283,10 @@ target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
   string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}" "${Iconv_LIBRARIES}")
 
+IF(MSVC OR WIN32 OR WIN64)
+  SET(SOCKET_LIB ws2_32)
+endif()
+
 target_link_libraries(compiler-wrapper dir)
 target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES} m)
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
@@ -290,7 +294,7 @@ target_link_libraries(plsconv playlist  buffer byte fmt scan str stralloc ${LIBX
 target_link_libraries(xmltest ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest2 ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest3 ${LIBXML2_LIBRARIES})
-target_link_libraries(httptest http io socket taia tai iarray ndelay socket buffer byte scan str stralloc uint16)
+target_link_libraries(httptest http io socket taia tai iarray ndelay socket buffer byte scan str stralloc uint16  ${SOCKET_LIB})
 target_link_libraries(mediathek-parser mmap open)
 target_link_libraries(ntldd open)
 target_link_libraries(hexedit open)

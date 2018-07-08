@@ -36,6 +36,7 @@ unset CC CXX
 # [ -n "$CC" ] && { test -e "$CC"  || CC=$(which "$CC"); }
 # [ -n "$CXX" ] && { test -e "$CXX"  || CXX=$(which "$CXX"); }
 
+mkdir -p $builddir
   relsrcdir=$(/usr/bin/realpath --relative-to "$builddir" .)
   #$(realpath "$builddir")" "$(realpath "${PWD:-$(pwd)}")")
   

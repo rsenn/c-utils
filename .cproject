@@ -1,117 +1,1930 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<?xml version="1.0" encoding="UTF-8"?>
+<?fileVersion 4.0.0?>
+<cproject>
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
-		<cconfiguration id="cdt.managedbuild.toolchain.gnu.mingw.base.2088183845.1942313602">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.mingw.base.2088183845.1942313602" moduleId="org.eclipse.cdt.core.settings" name="Release">
-				<macros>
-					<stringMacro name="DEBUG" type="VALUE_TEXT" value="0"/>
-					<stringMacro name="STATIC" type="VALUE_TEXT" value="1"/>
-				</macros>
+		<cconfiguration id="org.eclipse.cdt.core.default.config.1">
+			<storageModule buildSystemId="org.eclipse.cdt.core.defaultConfigDataProvider" id="org.eclipse.cdt.core.default.config.1" moduleId="org.eclipse.cdt.core.settings" name="Configuration">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
-			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildProperties="" description="Release Build" id="cdt.managedbuild.toolchain.gnu.mingw.base.2088183845.1942313602" name="Release" parent="org.eclipse.cdt.build.core.emptycfg">
-					<folderInfo id="cdt.managedbuild.toolchain.gnu.mingw.base.2088183845.1942313602." name="/" resourcePath="">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base.1205571968" name="MinGW GCC" nonInternalBuilderId="cdt.managedbuild.builder.gnu.cross" superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="cdt.managedbuild.target.gnu.platform.mingw.base.775011684" name="Debug Platform" osList="win32" superClass="cdt.managedbuild.target.gnu.platform.mingw.base"/>
-							<builder arguments="DEBUG=${DEBUG} STATIC=${STATIC}" buildPath="${workspace_loc:/dirlist}" command="make" id="cdt.managedbuild.builder.gnu.cross.2091273714" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.base.1003524643" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.base">
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2036232881" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.1019353261" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.1078669817" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base">
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.63528425" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.base.2089958912" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.base">
-								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.299591784" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.1847612201" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.172852399" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base">
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.69600972" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
-									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
-									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
-								</inputType>
-							</tool>
-						</toolChain>
-					</folderInfo>
-				</configuration>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping">
+				<project-mappings/>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
-			<storageModule moduleId="ilg.gnuarmeclipse.managedbuild.packs"/>
-		</cconfiguration>
-		<cconfiguration id="cdt.managedbuild.toolchain.gnu.mingw.base.2088183845.2055202672">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.mingw.base.2088183845.2055202672" moduleId="org.eclipse.cdt.core.settings" name="Debug">
-				<macros>
-					<stringMacro name="DEBUG" type="VALUE_TEXT" value="1"/>
-					<stringMacro name="STATIC" type="VALUE_TEXT" value="1"/>
-				</macros>
-				<externalSettings/>
-				<extensions>
-					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-				</extensions>
+			<storageModule moduleId="org.eclipse.cdt.core.pathentry">
+				<pathentry kind="src" path="[Subprojects]"/>
+				<pathentry excluding="**/CMakeFiles/" kind="out" path=""/>
+				<pathentry kind="mac" name="_FILE_OFFSET_BITS" path="" value="64"/>
+				<pathentry kind="mac" name="HAVE_LSEEK" path="" value="1"/>
+				<pathentry kind="mac" name="HAVE_LSEEK64" path="" value="1"/>
+				<pathentry kind="mac" name="LSEEK" path="" value="lseek64"/>
+				<pathentry kind="mac" name="PIC" path="" value="1"/>
+				<pathentry kind="mac" name="INLINE" path="" value="inline"/>
+				<pathentry kind="mac" name="HAVE_CONFIG_H" path="" value=""/>
+				<pathentry kind="mac" name="HAVE_INTTYPES_H" path="" value="1"/>
+				<pathentry kind="mac" name="HAVE_LIBGEN_H" path="" value="1"/>
+				<pathentry kind="mac" name="HAVE_STDINT_H" path="" value="1"/>
+				<pathentry kind="mac" name="HAVE_SYS_STAT_H" path="" value="1"/>
+				<pathentry kind="mac" name="HAVE_SYS_TYPES_H" path="" value="1"/>
+				<pathentry kind="mac" name="__STDC__" path="" value="1"/>
+				<pathentry kind="mac" name="__STDC_VERSION__" path="" value="201112L"/>
+				<pathentry kind="mac" name="__STDC_UTF_16__" path="" value="1"/>
+				<pathentry kind="mac" name="__STDC_UTF_32__" path="" value="1"/>
+				<pathentry kind="mac" name="__STDC_HOSTED__" path="" value="1"/>
+				<pathentry kind="mac" name="__GNUC__" path="" value="7"/>
+				<pathentry kind="mac" name="__GNUC_MINOR__" path="" value="3"/>
+				<pathentry kind="mac" name="__GNUC_PATCHLEVEL__" path="" value=" "/>
+				<pathentry kind="mac" name="__VERSION__" path="" value="&quot;7.3.0&quot;"/>
+				<pathentry kind="mac" name="__ATOMIC_RELAXED" path="" value=" "/>
+				<pathentry kind="mac" name="__ATOMIC_SEQ_CST" path="" value="5"/>
+				<pathentry kind="mac" name="__ATOMIC_ACQUIRE" path="" value="2"/>
+				<pathentry kind="mac" name="__ATOMIC_RELEASE" path="" value="3"/>
+				<pathentry kind="mac" name="__ATOMIC_ACQ_REL" path="" value="4"/>
+				<pathentry kind="mac" name="__ATOMIC_CONSUME" path="" value="1"/>
+				<pathentry kind="mac" name="__pic__" path="" value="1"/>
+				<pathentry kind="mac" name="__PIC__" path="" value="1"/>
+				<pathentry kind="mac" name="__FINITE_MATH_ONLY__" path="" value=" "/>
+				<pathentry kind="mac" name="__SIZEOF_INT__" path="" value="4"/>
+				<pathentry kind="mac" name="__SIZEOF_LONG__" path="" value="4"/>
+				<pathentry kind="mac" name="__SIZEOF_LONG_LONG__" path="" value="8"/>
+				<pathentry kind="mac" name="__SIZEOF_SHORT__" path="" value="2"/>
+				<pathentry kind="mac" name="__SIZEOF_FLOAT__" path="" value="4"/>
+				<pathentry kind="mac" name="__SIZEOF_DOUBLE__" path="" value="8"/>
+				<pathentry kind="mac" name="__SIZEOF_LONG_DOUBLE__" path="" value="16"/>
+				<pathentry kind="mac" name="__SIZEOF_SIZE_T__" path="" value="8"/>
+				<pathentry kind="mac" name="__CHAR_BIT__" path="" value="8"/>
+				<pathentry kind="mac" name="__BIGGEST_ALIGNMENT__" path="" value="16"/>
+				<pathentry kind="mac" name="__ORDER_LITTLE_ENDIAN__" path="" value="1234"/>
+				<pathentry kind="mac" name="__ORDER_BIG_ENDIAN__" path="" value="4321"/>
+				<pathentry kind="mac" name="__ORDER_PDP_ENDIAN__" path="" value="3412"/>
+				<pathentry kind="mac" name="__BYTE_ORDER__" path="" value="__ORDER_LITTLE_ENDIAN__"/>
+				<pathentry kind="mac" name="__FLOAT_WORD_ORDER__" path="" value="__ORDER_LITTLE_ENDIAN__"/>
+				<pathentry kind="mac" name="__SIZEOF_POINTER__" path="" value="8"/>
+				<pathentry kind="mac" name="__SIZE_TYPE__" path="" value="long long unsigned int"/>
+				<pathentry kind="mac" name="__PTRDIFF_TYPE__" path="" value="long long int"/>
+				<pathentry kind="mac" name="__WCHAR_TYPE__" path="" value="short unsigned int"/>
+				<pathentry kind="mac" name="__WINT_TYPE__" path="" value="short unsigned int"/>
+				<pathentry kind="mac" name="__INTMAX_TYPE__" path="" value="long long int"/>
+				<pathentry kind="mac" name="__UINTMAX_TYPE__" path="" value="long long unsigned int"/>
+				<pathentry kind="mac" name="__CHAR16_TYPE__" path="" value="short unsigned int"/>
+				<pathentry kind="mac" name="__CHAR32_TYPE__" path="" value="unsigned int"/>
+				<pathentry kind="mac" name="__SIG_ATOMIC_TYPE__" path="" value="int"/>
+				<pathentry kind="mac" name="__INT8_TYPE__" path="" value="signed char"/>
+				<pathentry kind="mac" name="__INT16_TYPE__" path="" value="short int"/>
+				<pathentry kind="mac" name="__INT32_TYPE__" path="" value="int"/>
+				<pathentry kind="mac" name="__INT64_TYPE__" path="" value="long long int"/>
+				<pathentry kind="mac" name="__UINT8_TYPE__" path="" value="unsigned char"/>
+				<pathentry kind="mac" name="__UINT16_TYPE__" path="" value="short unsigned int"/>
+				<pathentry kind="mac" name="__UINT32_TYPE__" path="" value="unsigned int"/>
+				<pathentry kind="mac" name="__UINT64_TYPE__" path="" value="long long unsigned int"/>
+				<pathentry kind="mac" name="__INT_LEAST8_TYPE__" path="" value="signed char"/>
+				<pathentry kind="mac" name="__INT_LEAST16_TYPE__" path="" value="short int"/>
+				<pathentry kind="mac" name="__INT_LEAST32_TYPE__" path="" value="int"/>
+				<pathentry kind="mac" name="__INT_LEAST64_TYPE__" path="" value="long long int"/>
+				<pathentry kind="mac" name="__UINT_LEAST8_TYPE__" path="" value="unsigned char"/>
+				<pathentry kind="mac" name="__UINT_LEAST16_TYPE__" path="" value="short unsigned int"/>
+				<pathentry kind="mac" name="__UINT_LEAST32_TYPE__" path="" value="unsigned int"/>
+				<pathentry kind="mac" name="__UINT_LEAST64_TYPE__" path="" value="long long unsigned int"/>
+				<pathentry kind="mac" name="__INT_FAST8_TYPE__" path="" value="signed char"/>
+				<pathentry kind="mac" name="__INT_FAST16_TYPE__" path="" value="short int"/>
+				<pathentry kind="mac" name="__INT_FAST32_TYPE__" path="" value="int"/>
+				<pathentry kind="mac" name="__INT_FAST64_TYPE__" path="" value="long long int"/>
+				<pathentry kind="mac" name="__UINT_FAST8_TYPE__" path="" value="unsigned char"/>
+				<pathentry kind="mac" name="__UINT_FAST16_TYPE__" path="" value="short unsigned int"/>
+				<pathentry kind="mac" name="__UINT_FAST32_TYPE__" path="" value="unsigned int"/>
+				<pathentry kind="mac" name="__UINT_FAST64_TYPE__" path="" value="long long unsigned int"/>
+				<pathentry kind="mac" name="__INTPTR_TYPE__" path="" value="long long int"/>
+				<pathentry kind="mac" name="__UINTPTR_TYPE__" path="" value="long long unsigned int"/>
+				<pathentry kind="mac" name="__has_include(STR)" path="" value="__has_include__(STR)"/>
+				<pathentry kind="mac" name="__has_include_next(STR)" path="" value="__has_include_next__(STR)"/>
+				<pathentry kind="mac" name="__GXX_ABI_VERSION" path="" value="1011"/>
+				<pathentry kind="mac" name="__SCHAR_MAX__" path="" value="0x7f"/>
+				<pathentry kind="mac" name="__SHRT_MAX__" path="" value="0x7fff"/>
+				<pathentry kind="mac" name="__INT_MAX__" path="" value="0x7fffffff"/>
+				<pathentry kind="mac" name="__LONG_MAX__" path="" value="0x7fffffffL"/>
+				<pathentry kind="mac" name="__LONG_LONG_MAX__" path="" value="0x7fffffffffffffffLL"/>
+				<pathentry kind="mac" name="__WCHAR_MAX__" path="" value="0xffff"/>
+				<pathentry kind="mac" name="__WCHAR_MIN__" path="" value=" "/>
+				<pathentry kind="mac" name="__WINT_MAX__" path="" value="0xffff"/>
+				<pathentry kind="mac" name="__WINT_MIN__" path="" value=" "/>
+				<pathentry kind="mac" name="__PTRDIFF_MAX__" path="" value="0x7fffffffffffffffLL"/>
+				<pathentry kind="mac" name="__SIZE_MAX__" path="" value="0xffffffffffffffffULL"/>
+				<pathentry kind="mac" name="__SCHAR_WIDTH__" path="" value="8"/>
+				<pathentry kind="mac" name="__SHRT_WIDTH__" path="" value="16"/>
+				<pathentry kind="mac" name="__INT_WIDTH__" path="" value="32"/>
+				<pathentry kind="mac" name="__LONG_WIDTH__" path="" value="32"/>
+				<pathentry kind="mac" name="__LONG_LONG_WIDTH__" path="" value="64"/>
+				<pathentry kind="mac" name="__WCHAR_WIDTH__" path="" value="16"/>
+				<pathentry kind="mac" name="__WINT_WIDTH__" path="" value="16"/>
+				<pathentry kind="mac" name="__PTRDIFF_WIDTH__" path="" value="64"/>
+				<pathentry kind="mac" name="__SIZE_WIDTH__" path="" value="64"/>
+				<pathentry kind="mac" name="__INTMAX_MAX__" path="" value="0x7fffffffffffffffLL"/>
+				<pathentry kind="mac" name="__INTMAX_C(c)" path="" value="c ## LL"/>
+				<pathentry kind="mac" name="__UINTMAX_MAX__" path="" value="0xffffffffffffffffULL"/>
+				<pathentry kind="mac" name="__UINTMAX_C(c)" path="" value="c ## ULL"/>
+				<pathentry kind="mac" name="__INTMAX_WIDTH__" path="" value="64"/>
+				<pathentry kind="mac" name="__SIG_ATOMIC_MAX__" path="" value="0x7fffffff"/>
+				<pathentry kind="mac" name="__SIG_ATOMIC_MIN__" path="" value="(-__SIG_ATOMIC_MAX__ - 1)"/>
+				<pathentry kind="mac" name="__SIG_ATOMIC_WIDTH__" path="" value="32"/>
+				<pathentry kind="mac" name="__INT8_MAX__" path="" value="0x7f"/>
+				<pathentry kind="mac" name="__INT16_MAX__" path="" value="0x7fff"/>
+				<pathentry kind="mac" name="__INT32_MAX__" path="" value="0x7fffffff"/>
+				<pathentry kind="mac" name="__INT64_MAX__" path="" value="0x7fffffffffffffffLL"/>
+				<pathentry kind="mac" name="__UINT8_MAX__" path="" value="0xff"/>
+				<pathentry kind="mac" name="__UINT16_MAX__" path="" value="0xffff"/>
+				<pathentry kind="mac" name="__UINT32_MAX__" path="" value="0xffffffffU"/>
+				<pathentry kind="mac" name="__UINT64_MAX__" path="" value="0xffffffffffffffffULL"/>
+				<pathentry kind="mac" name="__INT_LEAST8_MAX__" path="" value="0x7f"/>
+				<pathentry kind="mac" name="__INT8_C(c)" path="" value="c"/>
+				<pathentry kind="mac" name="__INT_LEAST8_WIDTH__" path="" value="8"/>
+				<pathentry kind="mac" name="__INT_LEAST16_MAX__" path="" value="0x7fff"/>
+				<pathentry kind="mac" name="__INT16_C(c)" path="" value="c"/>
+				<pathentry kind="mac" name="__INT_LEAST16_WIDTH__" path="" value="16"/>
+				<pathentry kind="mac" name="__INT_LEAST32_MAX__" path="" value="0x7fffffff"/>
+				<pathentry kind="mac" name="__INT32_C(c)" path="" value="c"/>
+				<pathentry kind="mac" name="__INT_LEAST32_WIDTH__" path="" value="32"/>
+				<pathentry kind="mac" name="__INT_LEAST64_MAX__" path="" value="0x7fffffffffffffffLL"/>
+				<pathentry kind="mac" name="__INT64_C(c)" path="" value="c ## LL"/>
+				<pathentry kind="mac" name="__INT_LEAST64_WIDTH__" path="" value="64"/>
+				<pathentry kind="mac" name="__UINT_LEAST8_MAX__" path="" value="0xff"/>
+				<pathentry kind="mac" name="__UINT8_C(c)" path="" value="c"/>
+				<pathentry kind="mac" name="__UINT_LEAST16_MAX__" path="" value="0xffff"/>
+				<pathentry kind="mac" name="__UINT16_C(c)" path="" value="c"/>
+				<pathentry kind="mac" name="__UINT_LEAST32_MAX__" path="" value="0xffffffffU"/>
+				<pathentry kind="mac" name="__UINT32_C(c)" path="" value="c ## U"/>
+				<pathentry kind="mac" name="__UINT_LEAST64_MAX__" path="" value="0xffffffffffffffffULL"/>
+				<pathentry kind="mac" name="__UINT64_C(c)" path="" value="c ## ULL"/>
+				<pathentry kind="mac" name="__INT_FAST8_MAX__" path="" value="0x7f"/>
+				<pathentry kind="mac" name="__INT_FAST8_WIDTH__" path="" value="8"/>
+				<pathentry kind="mac" name="__INT_FAST16_MAX__" path="" value="0x7fff"/>
+				<pathentry kind="mac" name="__INT_FAST16_WIDTH__" path="" value="16"/>
+				<pathentry kind="mac" name="__INT_FAST32_MAX__" path="" value="0x7fffffff"/>
+				<pathentry kind="mac" name="__INT_FAST32_WIDTH__" path="" value="32"/>
+				<pathentry kind="mac" name="__INT_FAST64_MAX__" path="" value="0x7fffffffffffffffLL"/>
+				<pathentry kind="mac" name="__INT_FAST64_WIDTH__" path="" value="64"/>
+				<pathentry kind="mac" name="__UINT_FAST8_MAX__" path="" value="0xff"/>
+				<pathentry kind="mac" name="__UINT_FAST16_MAX__" path="" value="0xffff"/>
+				<pathentry kind="mac" name="__UINT_FAST32_MAX__" path="" value="0xffffffffU"/>
+				<pathentry kind="mac" name="__UINT_FAST64_MAX__" path="" value="0xffffffffffffffffULL"/>
+				<pathentry kind="mac" name="__INTPTR_MAX__" path="" value="0x7fffffffffffffffLL"/>
+				<pathentry kind="mac" name="__INTPTR_WIDTH__" path="" value="64"/>
+				<pathentry kind="mac" name="__UINTPTR_MAX__" path="" value="0xffffffffffffffffULL"/>
+				<pathentry kind="mac" name="__GCC_IEC_559" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_IEC_559_COMPLEX" path="" value="2"/>
+				<pathentry kind="mac" name="__FLT_EVAL_METHOD__" path="" value=" "/>
+				<pathentry kind="mac" name="__FLT_EVAL_METHOD_TS_18661_3__" path="" value=" "/>
+				<pathentry kind="mac" name="__DEC_EVAL_METHOD__" path="" value="2"/>
+				<pathentry kind="mac" name="__FLT_RADIX__" path="" value="2"/>
+				<pathentry kind="mac" name="__FLT_MANT_DIG__" path="" value="24"/>
+				<pathentry kind="mac" name="__FLT_DIG__" path="" value="6"/>
+				<pathentry kind="mac" name="__FLT_MIN_EXP__" path="" value="(-125)"/>
+				<pathentry kind="mac" name="__FLT_MIN_10_EXP__" path="" value="(-37)"/>
+				<pathentry kind="mac" name="__FLT_MAX_EXP__" path="" value="128"/>
+				<pathentry kind="mac" name="__FLT_MAX_10_EXP__" path="" value="38"/>
+				<pathentry kind="mac" name="__FLT_DECIMAL_DIG__" path="" value="9"/>
+				<pathentry kind="mac" name="__FLT_MAX__" path="" value="3.40282346638528859811704183484516925e+38F"/>
+				<pathentry kind="mac" name="__FLT_MIN__" path="" value="1.17549435082228750796873653722224568e-38F"/>
+				<pathentry kind="mac" name="__FLT_EPSILON__" path="" value="1.19209289550781250000000000000000000e-7F"/>
+				<pathentry kind="mac" name="__FLT_DENORM_MIN__" path="" value="1.40129846432481707092372958328991613e-45F"/>
+				<pathentry kind="mac" name="__FLT_HAS_DENORM__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT_HAS_INFINITY__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT_HAS_QUIET_NAN__" path="" value="1"/>
+				<pathentry kind="mac" name="__DBL_MANT_DIG__" path="" value="53"/>
+				<pathentry kind="mac" name="__DBL_DIG__" path="" value="15"/>
+				<pathentry kind="mac" name="__DBL_MIN_EXP__" path="" value="(-1021)"/>
+				<pathentry kind="mac" name="__DBL_MIN_10_EXP__" path="" value="(-307)"/>
+				<pathentry kind="mac" name="__DBL_MAX_EXP__" path="" value="1024"/>
+				<pathentry kind="mac" name="__DBL_MAX_10_EXP__" path="" value="308"/>
+				<pathentry kind="mac" name="__DBL_DECIMAL_DIG__" path="" value="17"/>
+				<pathentry kind="mac" name="__DBL_MAX__" path="" value="((double)1.79769313486231570814527423731704357e+308L)"/>
+				<pathentry kind="mac" name="__DBL_MIN__" path="" value="((double)2.22507385850720138309023271733240406e-308L)"/>
+				<pathentry kind="mac" name="__DBL_EPSILON__" path="" value="((double)2.22044604925031308084726333618164062e-16L)"/>
+				<pathentry kind="mac" name="__DBL_DENORM_MIN__" path="" value="((double)4.94065645841246544176568792868221372e-324L)"/>
+				<pathentry kind="mac" name="__DBL_HAS_DENORM__" path="" value="1"/>
+				<pathentry kind="mac" name="__DBL_HAS_INFINITY__" path="" value="1"/>
+				<pathentry kind="mac" name="__DBL_HAS_QUIET_NAN__" path="" value="1"/>
+				<pathentry kind="mac" name="__LDBL_MANT_DIG__" path="" value="64"/>
+				<pathentry kind="mac" name="__LDBL_DIG__" path="" value="18"/>
+				<pathentry kind="mac" name="__LDBL_MIN_EXP__" path="" value="(-16381)"/>
+				<pathentry kind="mac" name="__LDBL_MIN_10_EXP__" path="" value="(-4931)"/>
+				<pathentry kind="mac" name="__LDBL_MAX_EXP__" path="" value="16384"/>
+				<pathentry kind="mac" name="__LDBL_MAX_10_EXP__" path="" value="4932"/>
+				<pathentry kind="mac" name="__DECIMAL_DIG__" path="" value="21"/>
+				<pathentry kind="mac" name="__LDBL_DECIMAL_DIG__" path="" value="21"/>
+				<pathentry kind="mac" name="__LDBL_MAX__" path="" value="1.18973149535723176502126385303097021e+4932L"/>
+				<pathentry kind="mac" name="__LDBL_MIN__" path="" value="3.36210314311209350626267781732175260e-4932L"/>
+				<pathentry kind="mac" name="__LDBL_EPSILON__" path="" value="1.08420217248550443400745280086994171e-19L"/>
+				<pathentry kind="mac" name="__LDBL_DENORM_MIN__" path="" value="3.64519953188247460252840593361941982e-4951L"/>
+				<pathentry kind="mac" name="__LDBL_HAS_DENORM__" path="" value="1"/>
+				<pathentry kind="mac" name="__LDBL_HAS_INFINITY__" path="" value="1"/>
+				<pathentry kind="mac" name="__LDBL_HAS_QUIET_NAN__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT32_MANT_DIG__" path="" value="24"/>
+				<pathentry kind="mac" name="__FLT32_DIG__" path="" value="6"/>
+				<pathentry kind="mac" name="__FLT32_MIN_EXP__" path="" value="(-125)"/>
+				<pathentry kind="mac" name="__FLT32_MIN_10_EXP__" path="" value="(-37)"/>
+				<pathentry kind="mac" name="__FLT32_MAX_EXP__" path="" value="128"/>
+				<pathentry kind="mac" name="__FLT32_MAX_10_EXP__" path="" value="38"/>
+				<pathentry kind="mac" name="__FLT32_DECIMAL_DIG__" path="" value="9"/>
+				<pathentry kind="mac" name="__FLT32_MAX__" path="" value="3.40282346638528859811704183484516925e+38F32"/>
+				<pathentry kind="mac" name="__FLT32_MIN__" path="" value="1.17549435082228750796873653722224568e-38F32"/>
+				<pathentry kind="mac" name="__FLT32_EPSILON__" path="" value="1.19209289550781250000000000000000000e-7F32"/>
+				<pathentry kind="mac" name="__FLT32_DENORM_MIN__" path="" value="1.40129846432481707092372958328991613e-45F32"/>
+				<pathentry kind="mac" name="__FLT32_HAS_DENORM__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT32_HAS_INFINITY__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT32_HAS_QUIET_NAN__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT64_MANT_DIG__" path="" value="53"/>
+				<pathentry kind="mac" name="__FLT64_DIG__" path="" value="15"/>
+				<pathentry kind="mac" name="__FLT64_MIN_EXP__" path="" value="(-1021)"/>
+				<pathentry kind="mac" name="__FLT64_MIN_10_EXP__" path="" value="(-307)"/>
+				<pathentry kind="mac" name="__FLT64_MAX_EXP__" path="" value="1024"/>
+				<pathentry kind="mac" name="__FLT64_MAX_10_EXP__" path="" value="308"/>
+				<pathentry kind="mac" name="__FLT64_DECIMAL_DIG__" path="" value="17"/>
+				<pathentry kind="mac" name="__FLT64_MAX__" path="" value="1.79769313486231570814527423731704357e+308F64"/>
+				<pathentry kind="mac" name="__FLT64_MIN__" path="" value="2.22507385850720138309023271733240406e-308F64"/>
+				<pathentry kind="mac" name="__FLT64_EPSILON__" path="" value="2.22044604925031308084726333618164062e-16F64"/>
+				<pathentry kind="mac" name="__FLT64_DENORM_MIN__" path="" value="4.94065645841246544176568792868221372e-324F64"/>
+				<pathentry kind="mac" name="__FLT64_HAS_DENORM__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT64_HAS_INFINITY__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT64_HAS_QUIET_NAN__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT128_MANT_DIG__" path="" value="113"/>
+				<pathentry kind="mac" name="__FLT128_DIG__" path="" value="33"/>
+				<pathentry kind="mac" name="__FLT128_MIN_EXP__" path="" value="(-16381)"/>
+				<pathentry kind="mac" name="__FLT128_MIN_10_EXP__" path="" value="(-4931)"/>
+				<pathentry kind="mac" name="__FLT128_MAX_EXP__" path="" value="16384"/>
+				<pathentry kind="mac" name="__FLT128_MAX_10_EXP__" path="" value="4932"/>
+				<pathentry kind="mac" name="__FLT128_DECIMAL_DIG__" path="" value="36"/>
+				<pathentry kind="mac" name="__FLT128_MAX__" path="" value="1.18973149535723176508575932662800702e+4932F128"/>
+				<pathentry kind="mac" name="__FLT128_MIN__" path="" value="3.36210314311209350626267781732175260e-4932F128"/>
+				<pathentry kind="mac" name="__FLT128_EPSILON__" path="" value="1.92592994438723585305597794258492732e-34F128"/>
+				<pathentry kind="mac" name="__FLT128_DENORM_MIN__" path="" value="6.47517511943802511092443895822764655e-4966F128"/>
+				<pathentry kind="mac" name="__FLT128_HAS_DENORM__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT128_HAS_INFINITY__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT128_HAS_QUIET_NAN__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT32X_MANT_DIG__" path="" value="53"/>
+				<pathentry kind="mac" name="__FLT32X_DIG__" path="" value="15"/>
+				<pathentry kind="mac" name="__FLT32X_MIN_EXP__" path="" value="(-1021)"/>
+				<pathentry kind="mac" name="__FLT32X_MIN_10_EXP__" path="" value="(-307)"/>
+				<pathentry kind="mac" name="__FLT32X_MAX_EXP__" path="" value="1024"/>
+				<pathentry kind="mac" name="__FLT32X_MAX_10_EXP__" path="" value="308"/>
+				<pathentry kind="mac" name="__FLT32X_DECIMAL_DIG__" path="" value="17"/>
+				<pathentry kind="mac" name="__FLT32X_MAX__" path="" value="1.79769313486231570814527423731704357e+308F32x"/>
+				<pathentry kind="mac" name="__FLT32X_MIN__" path="" value="2.22507385850720138309023271733240406e-308F32x"/>
+				<pathentry kind="mac" name="__FLT32X_EPSILON__" path="" value="2.22044604925031308084726333618164062e-16F32x"/>
+				<pathentry kind="mac" name="__FLT32X_DENORM_MIN__" path="" value="4.94065645841246544176568792868221372e-324F32x"/>
+				<pathentry kind="mac" name="__FLT32X_HAS_DENORM__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT32X_HAS_INFINITY__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT32X_HAS_QUIET_NAN__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT64X_MANT_DIG__" path="" value="64"/>
+				<pathentry kind="mac" name="__FLT64X_DIG__" path="" value="18"/>
+				<pathentry kind="mac" name="__FLT64X_MIN_EXP__" path="" value="(-16381)"/>
+				<pathentry kind="mac" name="__FLT64X_MIN_10_EXP__" path="" value="(-4931)"/>
+				<pathentry kind="mac" name="__FLT64X_MAX_EXP__" path="" value="16384"/>
+				<pathentry kind="mac" name="__FLT64X_MAX_10_EXP__" path="" value="4932"/>
+				<pathentry kind="mac" name="__FLT64X_DECIMAL_DIG__" path="" value="21"/>
+				<pathentry kind="mac" name="__FLT64X_MAX__" path="" value="1.18973149535723176502126385303097021e+4932F64x"/>
+				<pathentry kind="mac" name="__FLT64X_MIN__" path="" value="3.36210314311209350626267781732175260e-4932F64x"/>
+				<pathentry kind="mac" name="__FLT64X_EPSILON__" path="" value="1.08420217248550443400745280086994171e-19F64x"/>
+				<pathentry kind="mac" name="__FLT64X_DENORM_MIN__" path="" value="3.64519953188247460252840593361941982e-4951F64x"/>
+				<pathentry kind="mac" name="__FLT64X_HAS_DENORM__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT64X_HAS_INFINITY__" path="" value="1"/>
+				<pathentry kind="mac" name="__FLT64X_HAS_QUIET_NAN__" path="" value="1"/>
+				<pathentry kind="mac" name="__DEC32_MANT_DIG__" path="" value="7"/>
+				<pathentry kind="mac" name="__DEC32_MIN_EXP__" path="" value="(-94)"/>
+				<pathentry kind="mac" name="__DEC32_MAX_EXP__" path="" value="97"/>
+				<pathentry kind="mac" name="__DEC32_MIN__" path="" value="1E-95DF"/>
+				<pathentry kind="mac" name="__DEC32_MAX__" path="" value="9.999999E96DF"/>
+				<pathentry kind="mac" name="__DEC32_EPSILON__" path="" value="1E-6DF"/>
+				<pathentry kind="mac" name="__DEC32_SUBNORMAL_MIN__" path="" value="0.000001E-95DF"/>
+				<pathentry kind="mac" name="__DEC64_MANT_DIG__" path="" value="16"/>
+				<pathentry kind="mac" name="__DEC64_MIN_EXP__" path="" value="(-382)"/>
+				<pathentry kind="mac" name="__DEC64_MAX_EXP__" path="" value="385"/>
+				<pathentry kind="mac" name="__DEC64_MIN__" path="" value="1E-383DD"/>
+				<pathentry kind="mac" name="__DEC64_MAX__" path="" value="9.999999999999999E384DD"/>
+				<pathentry kind="mac" name="__DEC64_EPSILON__" path="" value="1E-15DD"/>
+				<pathentry kind="mac" name="__DEC64_SUBNORMAL_MIN__" path="" value="0.000000000000001E-383DD"/>
+				<pathentry kind="mac" name="__DEC128_MANT_DIG__" path="" value="34"/>
+				<pathentry kind="mac" name="__DEC128_MIN_EXP__" path="" value="(-6142)"/>
+				<pathentry kind="mac" name="__DEC128_MAX_EXP__" path="" value="6145"/>
+				<pathentry kind="mac" name="__DEC128_MIN__" path="" value="1E-6143DL"/>
+				<pathentry kind="mac" name="__DEC128_MAX__" path="" value="9.999999999999999999999999999999999E6144DL"/>
+				<pathentry kind="mac" name="__DEC128_EPSILON__" path="" value="1E-33DL"/>
+				<pathentry kind="mac" name="__DEC128_SUBNORMAL_MIN__" path="" value="0.000000000000000000000000000000001E-6143DL"/>
+				<pathentry kind="mac" name="__REGISTER_PREFIX__" path="" value=" "/>
+				<pathentry kind="mac" name="__USER_LABEL_PREFIX__" path="" value=" "/>
+				<pathentry kind="mac" name="__GNUC_STDC_INLINE__" path="" value="1"/>
+				<pathentry kind="mac" name="__NO_INLINE__" path="" value="1"/>
+				<pathentry kind="mac" name="__GCC_HAVE_SYNC_COMPARE_AND_SWAP_1" path="" value="1"/>
+				<pathentry kind="mac" name="__GCC_HAVE_SYNC_COMPARE_AND_SWAP_2" path="" value="1"/>
+				<pathentry kind="mac" name="__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4" path="" value="1"/>
+				<pathentry kind="mac" name="__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8" path="" value="1"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_BOOL_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_CHAR_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_CHAR16_T_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_CHAR32_T_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_WCHAR_T_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_SHORT_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_INT_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_LONG_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_LLONG_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_TEST_AND_SET_TRUEVAL" path="" value="1"/>
+				<pathentry kind="mac" name="__GCC_ATOMIC_POINTER_LOCK_FREE" path="" value="2"/>
+				<pathentry kind="mac" name="__PRAGMA_REDEFINE_EXTNAME" path="" value="1"/>
+				<pathentry kind="mac" name="__SIZEOF_INT128__" path="" value="16"/>
+				<pathentry kind="mac" name="__SIZEOF_WCHAR_T__" path="" value="2"/>
+				<pathentry kind="mac" name="__SIZEOF_WINT_T__" path="" value="2"/>
+				<pathentry kind="mac" name="__SIZEOF_PTRDIFF_T__" path="" value="8"/>
+				<pathentry kind="mac" name="__amd64" path="" value="1"/>
+				<pathentry kind="mac" name="__amd64__" path="" value="1"/>
+				<pathentry kind="mac" name="__x86_64" path="" value="1"/>
+				<pathentry kind="mac" name="__x86_64__" path="" value="1"/>
+				<pathentry kind="mac" name="__SIZEOF_FLOAT80__" path="" value="16"/>
+				<pathentry kind="mac" name="__SIZEOF_FLOAT128__" path="" value="16"/>
+				<pathentry kind="mac" name="__ATOMIC_HLE_ACQUIRE" path="" value="65536"/>
+				<pathentry kind="mac" name="__ATOMIC_HLE_RELEASE" path="" value="131072"/>
+				<pathentry kind="mac" name="__GCC_ASM_FLAG_OUTPUTS__" path="" value="1"/>
+				<pathentry kind="mac" name="__k8" path="" value="1"/>
+				<pathentry kind="mac" name="__k8__" path="" value="1"/>
+				<pathentry kind="mac" name="__code_model_medium__" path="" value="1"/>
+				<pathentry kind="mac" name="__MMX__" path="" value="1"/>
+				<pathentry kind="mac" name="__SSE__" path="" value="1"/>
+				<pathentry kind="mac" name="__SSE2__" path="" value="1"/>
+				<pathentry kind="mac" name="__FXSR__" path="" value="1"/>
+				<pathentry kind="mac" name="__SSE_MATH__" path="" value="1"/>
+				<pathentry kind="mac" name="__SSE2_MATH__" path="" value="1"/>
+				<pathentry kind="mac" name="__SEG_FS" path="" value="1"/>
+				<pathentry kind="mac" name="__SEG_GS" path="" value="1"/>
+				<pathentry kind="mac" name="__SEH__" path="" value="1"/>
+				<pathentry kind="mac" name="__stdcall" path="" value="__attribute__((__stdcall__))"/>
+				<pathentry kind="mac" name="__fastcall" path="" value="__attribute__((__fastcall__))"/>
+				<pathentry kind="mac" name="__thiscall" path="" value="__attribute__((__thiscall__))"/>
+				<pathentry kind="mac" name="__cdecl" path="" value="__attribute__((__cdecl__))"/>
+				<pathentry kind="mac" name="_stdcall" path="" value="__attribute__((__stdcall__))"/>
+				<pathentry kind="mac" name="_fastcall" path="" value="__attribute__((__fastcall__))"/>
+				<pathentry kind="mac" name="_thiscall" path="" value="__attribute__((__thiscall__))"/>
+				<pathentry kind="mac" name="_cdecl" path="" value="__attribute__((__cdecl__))"/>
+				<pathentry kind="mac" name="__GXX_MERGED_TYPEINFO_NAMES" path="" value=" "/>
+				<pathentry kind="mac" name="__GXX_TYPEINFO_EQUALITY_INLINE" path="" value=" "/>
+				<pathentry kind="mac" name="__MSVCRT__" path="" value="1"/>
+				<pathentry kind="mac" name="__MINGW32__" path="" value="1"/>
+				<pathentry kind="mac" name="_WIN32" path="" value="1"/>
+				<pathentry kind="mac" name="__WIN32" path="" value="1"/>
+				<pathentry kind="mac" name="__WIN32__" path="" value="1"/>
+				<pathentry kind="mac" name="WIN32" path="" value="1"/>
+				<pathentry kind="mac" name="__WINNT" path="" value="1"/>
+				<pathentry kind="mac" name="__WINNT__" path="" value="1"/>
+				<pathentry kind="mac" name="WINNT" path="" value="1"/>
+				<pathentry kind="mac" name="_INTEGRAL_MAX_BITS" path="" value="64"/>
+				<pathentry kind="mac" name="__MINGW64__" path="" value="1"/>
+				<pathentry kind="mac" name="__WIN64" path="" value="1"/>
+				<pathentry kind="mac" name="__WIN64__" path="" value="1"/>
+				<pathentry kind="mac" name="WIN64" path="" value="1"/>
+				<pathentry kind="mac" name="_WIN64" path="" value="1"/>
+				<pathentry kind="mac" name="__declspec(x)" path="" value="__attribute__((x))"/>
+				<pathentry kind="mac" name="__DECIMAL_BID_FORMAT__" path="" value="1"/>
+				<pathentry kind="mac" name="_REENTRANT" path="" value="1"/>
+				<pathentry kind="mac" name="__cplusplus" path="" value="201402L"/>
+				<pathentry kind="mac" name="__GNUG__" path="" value="7"/>
+				<pathentry kind="mac" name="__GXX_WEAK__" path="" value="1"/>
+				<pathentry kind="mac" name="__DEPRECATED" path="" value="1"/>
+				<pathentry kind="mac" name="__GXX_RTTI" path="" value="1"/>
+				<pathentry kind="mac" name="__cpp_rtti" path="" value="199711"/>
+				<pathentry kind="mac" name="__GXX_EXPERIMENTAL_CXX0X__" path="" value="1"/>
+				<pathentry kind="mac" name="__cpp_binary_literals" path="" value="201304"/>
+				<pathentry kind="mac" name="__cpp_hex_float" path="" value="201603"/>
+				<pathentry kind="mac" name="__cpp_runtime_arrays" path="" value="198712"/>
+				<pathentry kind="mac" name="__cpp_unicode_characters" path="" value="200704"/>
+				<pathentry kind="mac" name="__cpp_raw_strings" path="" value="200710"/>
+				<pathentry kind="mac" name="__cpp_unicode_literals" path="" value="200710"/>
+				<pathentry kind="mac" name="__cpp_user_defined_literals" path="" value="200809"/>
+				<pathentry kind="mac" name="__cpp_lambdas" path="" value="200907"/>
+				<pathentry kind="mac" name="__cpp_range_based_for" path="" value="200907"/>
+				<pathentry kind="mac" name="__cpp_static_assert" path="" value="200410"/>
+				<pathentry kind="mac" name="__cpp_decltype" path="" value="200707"/>
+				<pathentry kind="mac" name="__cpp_attributes" path="" value="200809"/>
+				<pathentry kind="mac" name="__cpp_rvalue_reference" path="" value="200610"/>
+				<pathentry kind="mac" name="__cpp_rvalue_references" path="" value="200610"/>
+				<pathentry kind="mac" name="__cpp_variadic_templates" path="" value="200704"/>
+				<pathentry kind="mac" name="__cpp_initializer_lists" path="" value="200806"/>
+				<pathentry kind="mac" name="__cpp_delegating_constructors" path="" value="200604"/>
+				<pathentry kind="mac" name="__cpp_nsdmi" path="" value="200809"/>
+				<pathentry kind="mac" name="__cpp_inheriting_constructors" path="" value="201511"/>
+				<pathentry kind="mac" name="__cpp_ref_qualifiers" path="" value="200710"/>
+				<pathentry kind="mac" name="__cpp_alias_templates" path="" value="200704"/>
+				<pathentry kind="mac" name="__cpp_return_type_deduction" path="" value="201304"/>
+				<pathentry kind="mac" name="__cpp_init_captures" path="" value="201304"/>
+				<pathentry kind="mac" name="__cpp_generic_lambdas" path="" value="201304"/>
+				<pathentry kind="mac" name="__cpp_constexpr" path="" value="201304"/>
+				<pathentry kind="mac" name="__cpp_decltype_auto" path="" value="201304"/>
+				<pathentry kind="mac" name="__cpp_aggregate_nsdmi" path="" value="201304"/>
+				<pathentry kind="mac" name="__cpp_variable_templates" path="" value="201304"/>
+				<pathentry kind="mac" name="__cpp_digit_separators" path="" value="201309"/>
+				<pathentry kind="mac" name="__cpp_sized_deallocation" path="" value="201309"/>
+				<pathentry kind="mac" name="__cpp_threadsafe_static_init" path="" value="200806"/>
+				<pathentry kind="mac" name="__EXCEPTIONS" path="" value="1"/>
+				<pathentry kind="mac" name="__cpp_exceptions" path="" value="199711"/>
+				<pathentry kind="mac" name="__GLIBCXX_TYPE_INT_N_0" path="" value="__int128"/>
+				<pathentry kind="mac" name="__GLIBCXX_BITSIZE_INT_N_0" path="" value="128"/>
+				<pathentry kind="mac" name="__WCHAR_UNSIGNED__" path="" value="1"/>
+				<pathentry include="C:/Users/roman/Documents/Sources/dirlist" kind="inc" path="" system="true"/>
+				<pathentry include="C:/msys64/mingw64/include" kind="inc" path="" system="true"/>
+				<pathentry include="C:/msys64/mingw64/include/libxml2" kind="inc" path="" system="true"/>
+				<pathentry include="C:/msys64/mingw64/include/libxml2/libxml" kind="inc" path="" system="true"/>
+				<pathentry include="C:/Users/roman/Documents/Sources/dirlist/lib" kind="inc" path="" system="true"/>
+				<pathentry include="C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/7.3.0/include" kind="inc" path="" system="true"/>
+				<pathentry include="C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed" kind="inc" path="" system="true"/>
+				<pathentry include="C:/msys64/mingw64/x86_64-w64-mingw32/include" kind="inc" path="" system="true"/>
+				<pathentry include="C:/msys64/mingw64/include/c++/7.3.0" kind="inc" path="" system="true"/>
+				<pathentry include="C:/msys64/mingw64/include/c++/7.3.0/x86_64-w64-mingw32" kind="inc" path="" system="true"/>
+				<pathentry include="C:/msys64/mingw64/include/c++/7.3.0/backward" kind="inc" path="" system="true"/>
 			</storageModule>
-			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildProperties="" description="Debug Build" id="cdt.managedbuild.toolchain.gnu.mingw.base.2088183845.2055202672" name="Debug" parent="org.eclipse.cdt.build.core.emptycfg">
-					<folderInfo id="cdt.managedbuild.toolchain.gnu.mingw.base.2088183845.2055202672." name="/" resourcePath="">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base.318792271" name="MinGW GCC" nonInternalBuilderId="cdt.managedbuild.builder.gnu.cross" superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="cdt.managedbuild.target.gnu.platform.mingw.base.822956617" name="Debug Platform" osList="win32" superClass="cdt.managedbuild.target.gnu.platform.mingw.base"/>
-							<builder buildPath="${workspace_loc:/dirlist}" command="make" id="cdt.managedbuild.builder.gnu.cross.1280355891" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.base.1771802786" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.base">
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2113700352" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.2084393825" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.1196801934" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base">
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.598742673" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.base.1507482524" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.base">
-								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1380666401" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.1509167243" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.1666220056" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base">
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.130033817" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
-									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
-									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
-								</inputType>
-							</tool>
-						</toolChain>
-					</folderInfo>
-				</configuration>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+				<buildTargets>
+					<target name=": list_install_components" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>list_install_components</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] hexedit" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>hexedit</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] hexedit/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>hexedit/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] hexedit" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>hexedit</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] hexedit" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/hexedit.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] array" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>array</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] array/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>array/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] array" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>array</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] array" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/array.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] buffer" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>buffer</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] buffer/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>buffer/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] buffer" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>buffer</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] buffer" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/buffer.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] xmltest3" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>xmltest3</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] xmltest3/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>xmltest3/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] xmltest3" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>xmltest3</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] xmltest3" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/xmltest3.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] hmap" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>hmap</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] hmap/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>hmap/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] hmap" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>hmap</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] hmap" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/hmap.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] byte" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>byte</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] byte/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>byte/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] byte" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>byte</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] byte" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/byte.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] taia" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>taia</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] taia/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>taia/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] taia" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>taia</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] taia" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/taia.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] dir" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>dir</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] dir/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>dir/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] dir" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>dir</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] dir" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/dir.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] fmt" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>fmt</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] fmt/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>fmt/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] fmt" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>fmt</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] fmt" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/fmt.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] httptest" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>httptest</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] httptest/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>httptest/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] httptest" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>httptest</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] httptest" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/httptest.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] http" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>http</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] http/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>http/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] http" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>http</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] http" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/http.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] io" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>io</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] io/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>io/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] io" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>io</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] io" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/io.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] mediathek-parser" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>mediathek-parser</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] mediathek-parser/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>mediathek-parser/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] mediathek-parser" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>mediathek-parser</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] mediathek-parser" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/mediathek-parser.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] iarray" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>iarray</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] iarray/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>iarray/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] iarray" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>iarray</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] iarray" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/iarray.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] list" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>list</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] list/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>list/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] list" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>list</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] list" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/list.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] mmap" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>mmap</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] mmap/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>mmap/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] mmap" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>mmap</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] mmap" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/mmap.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] count-depth" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>count-depth</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] count-depth/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>count-depth/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] count-depth" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>count-depth</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] count-depth" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/count-depth.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] ndelay" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>ndelay</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] ndelay/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>ndelay/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] ndelay" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>ndelay</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] ndelay" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/ndelay.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name=": install/strip" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>install/strip</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] open" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>open</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] open/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>open/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] open" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>open</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] open" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/open.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] reg2cmd" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>reg2cmd</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] reg2cmd/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>reg2cmd/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] reg2cmd" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>reg2cmd</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] reg2cmd" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/reg2cmd.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] playlist" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>playlist</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] playlist/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>playlist/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] playlist" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>playlist</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] playlist" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/playlist.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] xmltest2" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>xmltest2</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] xmltest2/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>xmltest2/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] xmltest2" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>xmltest2</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] xmltest2" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/xmltest2.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] time" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>time</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] time/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>time/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] time" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>time</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] time" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/time.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] rdir" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>rdir</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] rdir/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>rdir/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] rdir" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>rdir</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] rdir" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/rdir.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] scan" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>scan</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] scan/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>scan/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] scan" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>scan</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] scan" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/scan.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] socket" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>socket</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] socket/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>socket/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] socket" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>socket</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] socket" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/socket.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] str" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>str</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] str/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>str/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] str" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>str</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] str" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/str.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] stralloc" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>stralloc</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] stralloc/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>stralloc/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] stralloc" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>stralloc</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] stralloc" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/stralloc.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] strarray" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>strarray</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] strarray/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>strarray/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] strarray" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>strarray</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] strarray" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/strarray.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] strlist" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>strlist</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] strlist/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>strlist/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] strlist" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>strlist</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] strlist" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/strlist.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name=": rebuild_cache" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>rebuild_cache</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] tai" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>tai</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] tai/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>tai/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] tai" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>tai</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] tai" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/tai.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] uint16" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>uint16</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] uint16/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>uint16/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] uint16" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>uint16</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] uint16" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/uint16.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] uint32" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>uint32</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] uint32/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>uint32/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] uint32" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>uint32</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] uint32" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/uint32.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] uint64" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>uint64</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[lib] uint64/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>uint64/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[lib] uint64" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>uint64</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[lib] uint64" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/uint64.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] torrent-progress" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>torrent-progress</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] torrent-progress/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>torrent-progress/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] torrent-progress" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>torrent-progress</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] torrent-progress" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/torrent-progress.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] access" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>access</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] access/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>access/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] access" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>access</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] access" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/access.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] compiler-wrapper" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>compiler-wrapper</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] compiler-wrapper/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>compiler-wrapper/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] compiler-wrapper" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>compiler-wrapper</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] compiler-wrapper" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/compiler-wrapper.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] plsconv" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>plsconv</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] plsconv/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>plsconv/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] plsconv" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>plsconv</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] plsconv" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/plsconv.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] decode-ls-lR" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>decode-ls-lR</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] decode-ls-lR/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>decode-ls-lR/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] decode-ls-lR" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>decode-ls-lR</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] decode-ls-lR" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/decode-ls-lR.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] eagle-init-brd" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>eagle-init-brd</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] eagle-init-brd/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>eagle-init-brd/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] eagle-init-brd" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>eagle-init-brd</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] eagle-init-brd" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/eagle-init-brd.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] impgen" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>impgen</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] impgen/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>impgen/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] impgen" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>impgen</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] impgen" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/impgen.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] list-r" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>list-r</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] list-r/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>list-r/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] list-r" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>list-r</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] list-r" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/list-r.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name=": edit_cache" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>edit_cache</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] main" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>main</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] main/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>main/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] main" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>main</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] main" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/main.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] mediathek-list" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>mediathek-list</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] mediathek-list/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>mediathek-list/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] mediathek-list" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>mediathek-list</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] mediathek-list" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/mediathek-list.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] ntldd" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>ntldd</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] ntldd/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>ntldd/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] ntldd" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>ntldd</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] ntldd" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/ntldd.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] opensearch-dump" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>opensearch-dump</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] opensearch-dump/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>opensearch-dump/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] opensearch-dump" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>opensearch-dump</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] opensearch-dump" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/opensearch-dump.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name=": install/local" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>install/local</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name=": install" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>install</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] pathtool" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>pathtool</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] pathtool/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>pathtool/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] pathtool" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>pathtool</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] pathtool" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/pathtool.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] rdir-test" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>rdir-test</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] rdir-test/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>rdir-test/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] rdir-test" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>rdir-test</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] rdir-test" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/rdir-test.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] regfilter" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>regfilter</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] regfilter/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>regfilter/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] regfilter" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>regfilter</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] regfilter" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/regfilter.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] xmltest" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>xmltest</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="[exe] xmltest/fast" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>xmltest/fast</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Build" path="[Targets]/[exe] xmltest" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments>-C "C:/Users/roman/Documents/Sources/dirlist" </buildArguments>
+						<buildTarget>xmltest</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name="Clean" path="[Targets]/[exe] xmltest" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe</buildCommand>
+						<buildArguments>-E chdir "C:/Users/roman/Documents/Sources/dirlist" "C:/Programs/cmake-3.11.1-win64-x64/bin/cmake.exe" -P "CMakeFiles/xmltest.dir/cmake_clean.cmake"</buildArguments>
+						<buildTarget></buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name=": all" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>all</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+					<target name=": clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+						<buildCommand>C:/msys64/usr/bin/make.exe</buildCommand>
+						<buildArguments></buildArguments>
+						<buildTarget>clean</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+					</target>
+				</buildTargets>
 			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="scannerConfiguration">
+				<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
+				<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
+					<buildOutputProvider>
+						<openAction enabled="true" filePath=""/>
+						<parser enabled="true"/>
+					</buildOutputProvider>
+					<scannerInfoProvider id="specsFile">
+						<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="C:/msys64/mingw64/bin/cc.exe" useDefault="true"/>
+						<parser enabled="true"/>
+					</scannerInfoProvider>
+				</profile>
+				<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
+					<buildOutputProvider>
+						<openAction enabled="true" filePath=""/>
+						<parser enabled="true"/>
+					</buildOutputProvider>
+					<scannerInfoProvider id="makefileGenerator">
+						<runAction arguments="-f ${project_name}_scd.mk" command="C:/msys64/usr/bin/make.exe" useDefault="true"/>
+						<parser enabled="true"/>
+					</scannerInfoProvider>
+				</profile>
+			</storageModule>
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="dirlist.null.1154091901" name="dirlist"/>
+		<project id="dirlist.null.1" name="dirlist"/>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Default">
-			<resource resourceType="PROJECT" workspacePath="/dirlist"/>
-		</configuration>
-		<configuration configurationName="make">
-			<resource resourceType="PROJECT" workspacePath="/dirlist"/>
-		</configuration>
-		<configuration configurationName="Release">
-			<resource resourceType="PROJECT" workspacePath="/dirlist"/>
-		</configuration>
-		<configuration configurationName="Debug"/>
-	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
-	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>
