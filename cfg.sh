@@ -1,15 +1,19 @@
 cfg() { 
- (: ${build:=`gcc -dumpmachine`}
+ (:
+ 
+  ${build:=`gcc -dumpmachine`}
   [ -n "$build" ] && build=${build//-pc-/-}
 
   : ${host:=$build}
   : ${prefix:=/usr}
   : ${libdir:=$prefix/lib}
-  [ -d "$libdir/$host" ] && libdir=$libdir/$host
-  : ${builddir:=build/$host}
+  [ -d "$libdir/$host" ] && libdir=$libdir/$host : ${builddir:=build/$host}
+
+ 
+ : ${builddir=build/$host}
 
   case $(uname -o) in
-#    MSys|MSYS|Msys) SYSTEM="MSYS" ;;
+   # MSys|MSYS|Msys) SYSTEM="MSYS" ;;
     *) SYSTEM="Unix" ;;
   esac
 
@@ -32,20 +36,17 @@ cfg() {
     3) GTK3="ON" ;;
   esac
 
-unset CC CXX
 # [ -n "$CC" ] && { test -e "$CC"  || CC=$(which "$CC"); }
 # [ -n "$CXX" ] && { test -e "$CXX"  || CXX=$(which "$CXX"); }
 
-mkdir -p $builddir
-  relsrcdir=$(/usr/bin/realpath --relative-to "$builddir" .)
-  #$(realpath "$builddir")" "$(realpath "${PWD:-$(pwd)}")")
-  
- (set -x
+ (mkdir -p $builddir
+  relsrcdir=$(/usr/bin/realpath --relative-to $builddir .)
+  set -x
   cd $builddir
   cmake \
   -Wno-dev \
     -DCMAKE_INSTALL_PREFIX="${prefix-/usr}" \
-    -G ${generator:-"${SYSTEM:-Unix} Makefiles"} \
+    -G "${SYSTEM:-Unix} Makefiles" \
     ${VERBOSE+:-DCMAKE_VERBOSE_MAKEFILE=TRUE} \
     -DCMAKE_BUILD_TYPE="${TYPE:-RelWithDebInfo}" \
     ${CC:+-DCMAKE_C_COMPILER="$CC"} \
