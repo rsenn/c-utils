@@ -21,7 +21,7 @@ void dir_close(struct dir_s* d) {
   if(dir_INTERNAL(d)->tmpname)
     free(dir_INTERNAL(d)->tmpname);
 # endif
-    FindClose(dir_INTERNAL(d)->dir_handle);
+    FindClose((HANDLE)dir_INTERNAL(d)->dir_handle);
 #endif
   }
   free(d->dir_int);

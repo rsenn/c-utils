@@ -167,6 +167,7 @@ get_file_owner(const char* path) {
   HANDLE hFile;
   PSECURITY_DESCRIPTOR pSD = NULL;
   LPSTR strsid = NULL;
+    DWORD dwErrorCode = 0;
 
   tmpbuf[0] = '\0';
 
@@ -181,7 +182,6 @@ get_file_owner(const char* path) {
 
   // Check GetLastError for CreateFile error code.
   if (hFile == INVALID_HANDLE_VALUE) {
-    DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
     //			snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode);
@@ -203,7 +203,6 @@ get_file_owner(const char* path) {
 
   // Check GetLastError for GetSecurityInfo error condition.
   if (dwRtnCode != ERROR_SUCCESS) {
-    DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
     //		snprintf(tmpbuf, sizeof(tmpbuf), "GetSecurityInfo error = %d\n", dwErrorCode);
@@ -233,7 +232,6 @@ get_file_owner(const char* path) {
 
   // Check GetLastError for GlobalAlloc error condition.
   if (AcctName == NULL) {
-    DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
     //	snprintf(tmpbuf, sizeof(tmpbuf), "GlobalAlloc error = %d\n", dwErrorCode);
@@ -246,7 +244,6 @@ get_file_owner(const char* path) {
 
   // Check GetLastError for GlobalAlloc error condition.
   if (DomainName == NULL) {
-    DWORD dwErrorCode = 0;
 
     dwErrorCode = GetLastError();
     //snprintf(tmpbuf, sizeof(tmpbuf), "GlobalAlloc error = %d\n", dwErrorCode);
@@ -266,8 +263,6 @@ get_file_owner(const char* path) {
 
   // Check GetLastError for LookupAccountSid error condition.
   if (bRtnBool == FALSE) {
-    DWORD dwErrorCode = 0;
-
     dwErrorCode = GetLastError();
 
     if (dwErrorCode == ERROR_NONE_MAPPED)

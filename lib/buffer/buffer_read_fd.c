@@ -21,7 +21,7 @@ buffer_mmapread_fd(b, fd);
   b->x = malloc(BUFFER_INSIZE);
 
   if(b->x == NULL) return -1;
-  b->op = read;
+  b->op = (void*)read;
   b->deinit = buffer_free;
   return 0;
 }

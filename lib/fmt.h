@@ -6,7 +6,8 @@
 //#include <stddef.h>
 /* for uint32 */
 #if defined(__MSYS__)
-#define size_t  __SIZE_TYPE__
+//#undef size_t
+//#define size_t unsigned long
 #elif !defined(_MSC_VER)
 #include <stdint.h>
 #endif // !defined(_MSC_VER)

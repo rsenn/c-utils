@@ -39,7 +39,7 @@ typedef struct buffer {
   int fd;		/* passed as first argument to op */
 } buffer;
 
-#define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (op),  NULL,  NULL,  (fd) }
+#define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (void*)(op),  NULL,  NULL,  (fd) }
 #define BUFFER_INIT_FREE(op, fd, buf, len) { (buf),  0,  0,  (len),  (op),  NULL,  buffer_free,  (fd) }
 #define BUFFER_INIT_READ(op, fd, buf, len) BUFFER_INIT(op, fd, buf, len) /*obsolete*/
 #define BUFFER_INSIZE 8192

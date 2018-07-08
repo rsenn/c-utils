@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "dir_internal.h"
+#include "str.h"
 
 #if USE_WIDECHAR
 #include "utf8.h"
@@ -22,18 +23,19 @@ int dir_open(struct dir_s* d, const char* p) {
 
 #if USE_WIDECHAR
     {
-      size_t wlen = u8swcslen(path);
+      size_t wlen = mbstowcs(NULL, path, 1);
       wchar_t wpath[wlen + 1];
-      u8stowcs(wpath, path, wlen);
+      mbstowcs(wpath, path, wlen);
       wpath[wlen] = '\0';
-      dir_INTERNAL(d)->dir_handle = FindFirstFileW(wpath, &dir_INTERNAL(d)->dir_finddata);
+      dir_INTERNAL(d)->dir_handle = (uintptr_t)FindFirstFileW(wpath, &dir_INTERNAL(d)->dir_finddata);
     }
+    dir_INTERNAL(d)->tmpname = NULL;
 #else
     dir_INTERNAL(d)->dir_handle = FindFirstFileA(path, &dir_INTERNAL(d)->dir_finddata);
 #endif
     dir_INTERNAL(d)->first = 1;
 
-    ret = (dir_INTERNAL(d)->dir_handle ==  INVALID_HANDLE_VALUE);
+    ret = (dir_INTERNAL(d)->dir_handle ==  (uintptr_t)INVALID_HANDLE_VALUE);
   }
 #endif
 

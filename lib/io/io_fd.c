@@ -36,7 +36,7 @@
 #ifdef __APPLE__
 #define EXPORT __attribute__((visibility("default")))
 #elif defined(__MINGW32__) || defined(_WIN32) || defined(__CYGWIN__)
-#define EXPORT _declspec(dllexport)
+#define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif
