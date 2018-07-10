@@ -34,7 +34,6 @@ int main() {
   return 0;
 }" >test_$(1).c;
 $(CC) -o test_$(1) test_$(1).c;
-./test_$(1)
 endef
 cmds-exitcode = ($(1)) 2>/dev/null >/dev/null && echo 1 || echo 0
 
@@ -809,7 +808,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)access.o: access.c
-$(BUILDDIR)access$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)access.o $(BUILDDIR)path.o $(BUILDDIR)open.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
+$(BUILDDIR)access$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)access.o $(BUILDDIR)path.a $(BUILDDIR)open.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
