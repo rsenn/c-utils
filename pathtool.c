@@ -1,7 +1,7 @@
 #include "buffer.h"
 #include "strlist.h"
-#include <stdlib.h>
 #include <getopt.h>
+#include <stdlib.h>
 
 typedef enum {
   MIXED = 0,

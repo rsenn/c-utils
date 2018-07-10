@@ -7,23 +7,23 @@
 #else
 #include <io.h>
 #endif
+#include <ctype.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
 
-#include "stralloc.h"
 #include "buffer.h"
-#include "open.h"
-#include "fmt.h"
 #include "byte.h"
-#include "str.h"
+#include "fmt.h"
+#include "open.h"
 #include "scan.h"
+#include "str.h"
+#include "stralloc.h"
 #include "uint64.h"
 
 #ifndef _MAX_PATH

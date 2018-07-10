@@ -1,10 +1,10 @@
-#include "buffer.h"
 #include "http.h"
+#include "buffer.h"
+#include "byte.h"
 #include "io.h"
 #include "iopause.h"
-#include "taia.h"
-#include "byte.h"
 #include "socket.h"
+#include "taia.h"
 #include <errno.h>
 
 static int last_errno = 0;

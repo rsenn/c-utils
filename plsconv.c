@@ -1,7 +1,7 @@
-#include "playlist.h"
-#include "open.h"
 #include "buffer.h"
 #include "byte.h"
+#include "open.h"
+#include "playlist.h"
 #include "str.h"
 #include <unistd.h>
 

@@ -1,8 +1,8 @@
 #include "buffer.h"
 #include "stralloc.h"
-#include <stdbool.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <stdbool.h>
 
 static stralloc url, templ;
 static char sep = '?';

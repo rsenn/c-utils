@@ -26,6 +26,24 @@ cmd-exists = $(shell type "$(1)" 2>/dev/null >/dev/null && echo 1)
 
 OS ?= $(shell uname -o | tr "[[:upper:]]" "[[:lower:]]")
 
+define cmds-function-exists =
+set -e; 
+echo "extern int $(1)();
+int main() {
+  $(1)();
+  return 0;
+}" >test_$(1).c;
+$(CC) -o test_$(1) test_$(1).c;
+./test_$(1)
+endef
+cmds-exitcode = ($(1)) 2>/dev/null >/dev/null && echo 1 || echo 0
+
+check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
+
+$(info lseek64: $(call check-function-exists,lseek64))
+$(info lseek: $(call check-function-exists,lseek))
+$(info llseek: $(call check-function-exists,llseek))
+
 ifeq ($SUBLIME_FILENAME),None)
 PATH = /c/git-sdk-64/usr/bin
 MAKE = c:/git-sdk-64/usr/bin/make
@@ -569,6 +587,19 @@ DEFS += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
 #CPPFLAGS += -DUSE_READDIR=1
 endif
+
+ifeq ($(call check-function-exists,lseek64),1)
+DEFS += LSEEK=lseek64
+else
+  ifeq ($(call check-function-exists,llseek),1)
+    DEFS += LSEEK=llseek
+  else
+	ifeq ($(call check-function-exists,lseek),1)
+	  DEFS += LSEEK=lseek
+	endif
+  endif
+endif
+
 
 all: \
    $(BUILDDIR) $(PROGRAMS)

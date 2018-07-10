@@ -9,17 +9,17 @@
 #define _GNU_SOURCE 1
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
 #include <io.h>
+#include <windows.h>
 #else
-#include <unistd.h>
-#include <string.h>
 #include <errno.h>
+#include <string.h>
+#include <unistd.h>
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -35,8 +35,8 @@
 #endif
 
 #include "buffer.h"
-#include "open.h"
 #include "mmap.h"
+#include "open.h"
 #include "uint64.h"
 
 #if defined(__x86_64__) && defined(__linux)

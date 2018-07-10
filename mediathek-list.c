@@ -1,10 +1,10 @@
 #define _XOPEN_SOURCE 1
 
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
 //#include <sys/wait.h>
 #include <signal.h>
 #include <string.h>
@@ -15,10 +15,10 @@
 
 #include "buffer.h"
 #include "byte.h"
-#include "strlist.h"
-#include "str.h"
-#include "scan.h"
 #include "fmt.h"
+#include "scan.h"
+#include "str.h"
+#include "strlist.h"
 
 #define BUFSIZE 65535
 

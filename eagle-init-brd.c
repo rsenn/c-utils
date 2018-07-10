@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -9,10 +9,10 @@
 
 #include <libxml/SAX.h>
 
-#include "str.h"
-#include "scan.h"
-#include "stralloc.h"
 #include "hmap.h"
+#include "scan.h"
+#include "str.h"
+#include "stralloc.h"
 
 #define END_OF_LINE "; "
 //#define END_OF_LINE ";\n"

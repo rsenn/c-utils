@@ -23,29 +23,29 @@
 #include <stdint.h>
 #endif
 #if !(defined(_WIN32) || defined(_WIN64))
-#include <unistd.h>
 #include <dirent.h>
+#include <unistd.h>
 #else
-#include <io.h>
-#include <fcntl.h>
 #include <aclapi.h>
+#include <fcntl.h>
+#include <io.h>
 #include <sddl.h>
 #include <winternl.h>
 #include <wtypes.h>
 #endif
-#include <time.h>
+#include <fnmatch.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <fnmatch.h>
+#include <time.h>
 
-#include "open.h"
 #include "array.h"
 #include "buffer.h"
+#include "dir_internal.h"
+#include "fmt.h"
+#include "open.h"
 #include "str.h"
 #include "stralloc.h"
-#include "fmt.h"
 #include "uint64.h"
-#include "dir_internal.h"
 
 #if defined(_WIN32) || defined(__MINGW64__)
 #define MINGW 1
@@ -56,9 +56,9 @@
 #endif
 
 #if defined(_WIN32) || defined(MINGW) || defined(__MSYS__)
-#include <windows.h>
-#include <shlwapi.h>
 #include <io.h>
+#include <shlwapi.h>
+#include <windows.h>
 #endif
 #ifndef _MSC_VER
 #include <sys/fcntl.h>

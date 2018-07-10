@@ -12,8 +12,8 @@
  * copy: see Copyright for the status of this software.
  */
 
-#include <stdio.h>
 #include <libxml/xmlreader.h>
+#include <stdio.h>
 
 #ifdef LIBXML_READER_ENABLED
 

@@ -31,19 +31,19 @@ MSDN Magazine articles
 
 //#include <winnt.h>
 
-#include <string.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <libgen.h>
 #include <errno.h>
+#include <libgen.h>
 #include <limits.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include "lib/pe.h"
 #include "libntldd.h"
-#include "uint64.h"
 #include "mmap.h"
 #include "str.h"
-#include "lib/pe.h"
+#include "uint64.h"
 
 #define FALSE 0
 #define TRUE 1

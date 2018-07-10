@@ -1,9 +1,9 @@
 #include <ctype.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
-#include <string.h>
 #include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -17,12 +17,12 @@
 #endif
 #include <sys/stat.h>
 
-#include "strlist.h"
-#include "str.h"
-#include "byte.h"
-#include "fmt.h"
 #include "buffer.h"
+#include "byte.h"
 #include "dir_internal.h"
+#include "fmt.h"
+#include "str.h"
+#include "strlist.h"
 
 #define mytolower(c) ((c)>='A'&&(c)<='Z'?(c)+0x20:(c))
 

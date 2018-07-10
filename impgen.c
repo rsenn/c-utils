@@ -17,13 +17,13 @@
      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "byte.h"
 #include "buffer.h"
+#include "byte.h"
 #include "mmap.h"
 #include "open.h"
+#include "pe.h"
 #include "uint16.h"
 #include "uint32.h"
-#include "pe.h"
 
 int
 main(int argc, char* argv[]) {

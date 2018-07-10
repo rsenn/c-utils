@@ -1,5 +1,5 @@
-#include "mmap.h"
 #include "buffer.h"
+#include "mmap.h"
 
 char hexdigits[] = "0123456789abcdef";
 
