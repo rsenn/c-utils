@@ -808,7 +808,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)access.o: access.c
-$(BUILDDIR)access$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)access.o $(BUILDDIR)path.a $(BUILDDIR)open.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
+$(BUILDDIR)access$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)access.o $(BUILDDIR)open.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a  $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)rdir.a $(BUILDDIR)dir.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

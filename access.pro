@@ -7,9 +7,10 @@ TARGET = access
 
 INCLUDEPATH += . $$PWD/lib
 
-HEADERS = access.c
-SOURCES = 
+HEADERS = 
 
 include(deployment.pri)
 qtcAddDeployment()
 
+
+SOURCES = access.c
