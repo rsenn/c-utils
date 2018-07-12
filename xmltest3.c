@@ -11,7 +11,7 @@
  * copy: see Copyright for the status of this software.
  */
 
-#include "buffer.h"
+#include "lib/buffer.h"
 #include <libxml/xmlreader.h>
 
 #ifdef LIBXML_READER_ENABLED

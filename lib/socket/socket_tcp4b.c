@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #endif
 #include "../windoze.h"
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../ndelay.h"
 
 int socket_tcp4b(void) {

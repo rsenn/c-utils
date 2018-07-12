@@ -1,12 +1,12 @@
 #include <ctype.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <string.h>
-#include <unistd.h>
+#include <fcntl.h>
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
+#include <unistd.h>
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -17,12 +17,12 @@
 #endif
 #include <sys/stat.h>
 
-#include "buffer.h"
-#include "byte.h"
-#include "dir_internal.h"
-#include "fmt.h"
-#include "str.h"
-#include "strlist.h"
+#include "lib/strlist.h"
+#include "lib/str.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
+#include "lib/buffer.h"
+#include "lib/dir_internal.h"
 
 #define mytolower(c) ((c)>='A'&&(c)<='Z'?(c)+0x20:(c))
 

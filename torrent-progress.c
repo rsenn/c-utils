@@ -9,17 +9,17 @@
 #define _GNU_SOURCE 1
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <io.h>
 #include <windows.h>
+#include <io.h>
 #else
-#include <errno.h>
-#include <string.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 #endif
 
-#include <fcntl.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -34,10 +34,11 @@
 #define PRIx64 "lx"
 #endif
 
-#include "buffer.h"
-#include "mmap.h"
-#include "open.h"
-#include "uint64.h"
+#include "lib/buffer.h"
+#include "lib/open.h"
+#include "lib/mmap.h"
+#include "lib/uint64.h"
+#include "lib/io_internal.h"
 
 #if defined(__x86_64__) && defined(__linux)
 #define lseek lseek64
@@ -80,6 +81,10 @@ typedef off64_t offset_type;
 #undef lseek
 #undef mmap
 #endif
+/*
+extern ssize_t read();
+extern ssize_t write();
+*/
 
 int64 filesize(int fd) {
   int64 sz;

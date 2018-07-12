@@ -22,7 +22,7 @@
 #include <sys/devpoll.h>
 #endif
 #if defined(_WIN32) || defined(_WIN64)
-#include <mswsock.h>
+#include <winsock.h>
 #endif
 
 #ifdef DEBUG

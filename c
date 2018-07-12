@@ -1,5 +1,5 @@
 #if defined(_WIN32) || defined(_WIN64)
-#include <winsock2.h>
+#include <winsock.h>
 #include <errno.h>
 #include <stdio.h>
 #include "socket.h"

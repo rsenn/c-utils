@@ -9,9 +9,9 @@
 #else
 #include <io.h>
 #endif
-#include "buffer.h"
-#include "fmt.h"
 #include <limits.h>
+#include "lib/buffer.h"
+#include "lib/fmt.h"
 
 #ifndef MAXIMUM_PATH_LENGTH
 #define MAXIMUM_PATH_LENGTH (4096 - 1)

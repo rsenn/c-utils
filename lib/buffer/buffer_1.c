@@ -1,11 +1,11 @@
 #if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
-#else
-#include <io.h>
 #endif
+
+#include "../io_internal.h"
 #include "../buffer.h"
 #if defined(_WIN32) || defined(_WIN64)
-#include <io.h>
+#include "../io_internal.h"
 #endif
 
 char buffer_1_space[BUFFER_INSIZE];

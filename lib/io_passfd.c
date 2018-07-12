@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#include <w32api/mswsock.h>
+#include <winsock.h>
 #define cmsghdr wsacmsghdr
 #endif
 
@@ -17,10 +17,10 @@ int io_passfd(int64 sock,int64 fd) {
 #endif
 
 #ifdef __OpenBSD__
-#warning This is a HORRIBLE kludge around yet another thing OpenBSD broke
-#warning If they make it possible to do file descriptor passing with
-#warning _XOPEN_SOURCE defined, please send me an email so I can remove this.
-#warning _XOPEN_SOURCE needs to be defined for this to work on Solaris.
+#pragma warning This is a HORRIBLE kludge around yet another thing OpenBSD broke
+#pragma warning If they make it possible to do file descriptor passing with
+#pragma warning _XOPEN_SOURCE defined, please send me an email so I can remove this.
+#pragma warning _XOPEN_SOURCE needs to be defined for this to work on Solaris.
 #else
 #define _XOPEN_SOURCE
 #define _XOPEN_SOURCE_EXTENDED 1

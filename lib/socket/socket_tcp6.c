@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #endif
 #include <errno.h>
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../ndelay.h"
 
 #ifndef EAFNOSUPPORT

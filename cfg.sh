@@ -46,7 +46,7 @@ cfg() {
   cmake \
   -Wno-dev \
     -DCMAKE_INSTALL_PREFIX="${prefix-/usr}" \
-    -G "${SYSTEM:-Unix} Makefiles" \
+    -G ${generator:-"${SYSTEM:-Unix} Makefiles"} \
     ${VERBOSE+:-DCMAKE_VERBOSE_MAKEFILE=TRUE} \
     -DCMAKE_BUILD_TYPE="${TYPE:-RelWithDebInfo}" \
     ${CC:+-DCMAKE_C_COMPILER="$CC"} \

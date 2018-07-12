@@ -1,3 +1,6 @@
+#ifndef IO_INTERNAL_H
+#define IO_INTERNAL_H 1
+
 #ifndef my_extern
 #if defined(_WIN32) || defined(_WIN64)
 #define my_extern extern __declspec(dllexport)
@@ -10,6 +13,7 @@
 #include "iarray.h"
 #include "io.h"
 #if defined(_WIN32) || defined(_WIN64)
+#include <io.h>
 #include "socket.h"
 my_extern HANDLE io_comport;
 #elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
@@ -30,6 +34,22 @@ my_extern HANDLE io_comport;
 #else
 #include <sys/time.h>
 #include <unistd.h>
+#endif
+
+
+#ifndef STDIN_FILENO
+#define STDIN_FILENO 0
+#endif
+#ifndef STDOUT_FILENO
+#define STDOUT_FILENO 1
+#endif
+#ifndef STDERR_FILENO
+#define STDERR_FILENO 2
+#endif
+
+#if defined(__MINGW32__) || defined(__MINGW64__)
+int write();
+int read();
 #endif
 
 /* We simulate a level-triggered API on top of an event signalling
@@ -88,7 +108,6 @@ extern int io_sockets[2];
 
 iarray* io_getfds();
 
-my_extern iarray io_fds;
 my_extern uint64 io_wanted_fds;
 my_extern array io_pollfds;
 
@@ -148,3 +167,4 @@ struct eventpacket {
 };
 
 #define debug_printf(x)
+#endif

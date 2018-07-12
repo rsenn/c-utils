@@ -1,8 +1,7 @@
-#include "buffer.h"
-#include "rdir.h"
+#include "lib/rdir.h"
+#include "lib/buffer.h"
 
-int
-main() {
+int main() {
 
   struct rdir_s rd;
   char *s;

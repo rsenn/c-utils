@@ -1,13 +1,16 @@
 #include "../byte.h"
 #include "../http.h"
 #include "../io.h"
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../str.h"
 #include <errno.h>
 #include <stdlib.h>
 
-#if !(defined(_WIN32) || defined(_WIN64))
+#if defined(_WIN32) || defined(_WIN64)
+#include <winsock.h>
+#else
 #include <netdb.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 #endif
 

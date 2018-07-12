@@ -1,10 +1,10 @@
 #define _XOPEN_SOURCE 1
 
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <time.h>
-#include <unistd.h>
+#include <sys/time.h>
 //#include <sys/wait.h>
 #include <signal.h>
 #include <string.h>
@@ -13,12 +13,15 @@
 #include <libgen.h>
 #endif
 
-#include "buffer.h"
-#include "byte.h"
-#include "fmt.h"
-#include "scan.h"
-#include "str.h"
-#include "strlist.h"
+#include "lib/io_internal.h"
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/strlist.h"
+#include "lib/str.h"
+#include "lib/scan.h"
+#include "lib/fmt.h"
+
+//extern ssize_t read();
 
 #define BUFSIZE 65535
 

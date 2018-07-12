@@ -7,6 +7,7 @@ set(BUILD_SHARED_LIBS FALSE)
 
 include( CheckCCompilerFlag )
 include( CheckCXXCompilerFlag )
+include( CheckLibraryExists )
 
 include( FindIconv )
 include( FindLibXml2 ) # LIBXML2_FOUND LIBXML2_DEFINITIONS LIBXML2_INCLUDE_DIR LIBXML2_LIBRARIES LIBXML2_VERSION_STRING LIBXML2_XMLLINT_EXECUTABLE
@@ -34,6 +35,16 @@ set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
 
 CHECK_C_COMPILER_FLAG("-ggdb" C_COMPILER_SUPPORTS_GGDB)
 
+CHECK_C_COMPILER_FLAG(-Wno-unused-variable, W_NO_UNUSED_VAR)
+if(W_NO_UNUSED_VAR)
+  add_definitions(-Wno-unused-variable)
+endif(W_NO_UNUSED_VAR)
+CHECK_C_COMPILER_FLAG(-Wno-unused-parameter, W_NO_UNUSED_PARAM)
+if(W_NO_UNUSED_PARAM)
+  add_definitions(-Wno-unused-parameter)
+endif(W_NO_UNUSED_PARAM)
+
+
 if(C_COMPILER_SUPPORTS_GGDB)
   set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb")
   set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -ggdb")
@@ -56,11 +67,14 @@ include( FindBoost )
 #include(CMakeDetermineCompileFeatures)
 #include(CheckCXX11Features)
 
-#pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
+pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
 pkg_search_module(LIBLZMA liblzma)
-#pkg_search_module(LIBZ zlib)
-#pkg_search_module(LIBBZ2 libbz2 bzip2)
-#pkg_search_module(LIBSSL openssl libssl)
+pkg_search_module(LIBZ zlib)
+pkg_search_module(LIBBZ2 libbz2 bzip2)
+#check_library_exists(LIBMSWSOCK ws2_32 HAVE_MSWSOCK)
+if(HAVE_MSWSOCK)
+set(LIBMSWSOCK ws2_32)
+endif()
 
 if(NOT CXX11_FLAGS)
 set(CXX11_FLAGS "-std=c++11")
@@ -96,33 +110,62 @@ include( CheckTypeSize )
 check_type_size(loff_t LOFF_T)
 check_type_size(lloff_t LLOFF_T)
 check_type_size(off64_t OFF64_T)
+check_type_size(socklen_t SOCKLEN_T)
+
+if(NOT SOCKLEN_T)
+#  add_definitions(-Dsocklen_t=int)
+endif()
 
 include( CheckFunctionExists )
 
 check_function_exists(alloca HAVE_ALLOCA_FUNC)
 check_function_exists(stat HAVE_STAT_FUNC)
 check_function_exists(lstat HAVE_LSTAT_FUNC)
+check_function_exists(_llseek HAVE__LLSEEK_FUNC)
+check_function_exists(_lseeki64 HAVE__LSEEKI64_FUNC)
 check_function_exists(lseek HAVE_LSEEK_FUNC)
 check_function_exists(llseek HAVE_LLSEEK_FUNC)
 check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
 check_function_exists(localtime HAVE_LOCALTIME_FUNC)
 check_function_exists(localtime_r HAVE_LOCALTIME_R_FUNC)
+check_function_exists(setmode HAVE_SETMODE_FUNC)
+check_function_exists(strncasecmp HAVE_STRNCASECMP_FUNC)
+check_function_exists(strnicmp HAVE_STRNICMP_FUNC)
+check_function_exists(strcasecmp HAVE_STRCASECMP_FUNC)
+check_function_exists(stricmp HAVE_STRICMP_FUNC)
+
+if(NOT HAVE_STRNCASECMP_FUNC AND HAVE_STRNICMP_FUNC)
+add_definitions(-Dstrncasecmp=strnicmp)
+endif(NOT HAVE_STRNCASECMP_FUNC AND HAVE_STRNICMP_FUNC)
+
+if(NOT HAVE_STRCASECMP_FUNC AND HAVE_STRICMP_FUNC)
+add_definitions(-Dstrcasecmp=stricmp)
+endif(NOT HAVE_STRCASECMP_FUNC AND HAVE_STRICMP_FUNC)
+
+if(HAVE_SETMODE_FUNC)
+ add_definitions(-DHAVE_SETMODE=1)
+ endif()
 
 foreach(SEEK_FN LSEEK LLSEEK LSEEK64)
   if(HAVE_${SEEK_FN}_FUNC)
     add_definitions(-DHAVE_${SEEK_FN}=1)
   endif()
 endforeach()
-if(HAVE_LLSEEK_FUNC)
-  add_definitions(-Dlseek=llseek)
+
+
+#check_library_exists(ws2_32, WSAStartup "" HAVE_WS2_32_LIBRARY)
+if(HAVE_WS2_32_LIBRARY)
+link_libraries(ws2_32)
+endif(HAVE_WS2_32_LIBRARY)
+
+if(HAVE__LLSEEK_FUNC)
+  add_definitions(-DLSEEK=_llseek)
+elseif(HAVE__LSEEKI64_FUNC)
+  add_definitions(-DLSEEK=_lseeki64)
+elseif(HAVE_LLSEEK_FUNC)
+  add_definitions(-DLSEEK=llseek)
 elseif(HAVE_LSEEK64_FUNC)
   add_definitions(-DLSEEK=lseek64)
-endif()
-
-if(HAVE_LSEEK64_FUNC)
-  add_definitions(-DLSEEK=lseek64)
-elseif(HAVE_LLSEEK)
-  add_definitions(-DLSEEK=llseek)
 elseif(HAVE_LSEEK)
   add_definitions(-DLSEEK=lseek)
 endif()
@@ -136,6 +179,7 @@ check_function_exists(getdents64 HAVE_GETDENTS64_FUNC)
 check_function_exists(getdents HAVE_GETDENTS_FUNC)
 
 
+
 if(HAVE_LSTAT_FUNC)
   if(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
     set(USE_READDIR TRUE)
@@ -144,6 +188,14 @@ if(HAVE_LSTAT_FUNC)
   endif(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
 endif(HAVE_LSTAT_FUNC)
 
+check_function_exists(getopt_long HAVE_GETOPT_LONG_FUNC)
+check_function_exists(getopt HAVE_GETOPT_FUNC)
+
+if(NOT HAVE_GETOPT_LONG_FUNC OR NOT HAVE_GETOPT_FUNC)
+  set(GETOPT_SOURCES ${CMAKE_SOURCE_DIR}/lib/getopt.c)
+endif()
+
+
 include( FindPkgConfig )
 
 pkg_search_module(
@@ -151,6 +203,19 @@ pkg_search_module(
                 libxml-2.0
                 #REQUIRED
 )
+
+
+check_library_exists(m, atan2 "" HAVE_MATH_LIBRARY)
+
+
+if(HAVE_MATH_LIBRARY)
+set(MATH_LIBRARY m)
+else()
+check_function_exists(atan2 HAVE_ATAN2_FUNC)
+
+endif(HAVE_MATH_LIBRARY)
+
+
 
 
 #find_package(libxml2)
@@ -190,6 +255,7 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
 access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3
+eagle-gen-cmds
 )
 
 set(CXXPROGRAMS #kbd-adjacency
@@ -255,6 +321,9 @@ foreach(ARCHIVE array buffer byte dir fmt hmap http iarray io list mmap ndelay o
   if(ARCHIVE STREQUAL array)
     list(APPEND MODSOURCES lib/umult64.c)
   endif()
+  if(ARCHIVE STREQUAL dir)
+    list(APPEND MODSOURCES lib/fnmatch.c)
+  endif()
   add_library("${ARCHIVE}" STATIC ${MODSOURCES} ${MODHEADERS})
   set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
 endforeach(ARCHIVE)
@@ -274,7 +343,7 @@ foreach(PROGRAM ${PROGRAMS})
     set(EXTRA_SOURCES )
   endif("${PROGRAM}" STREQUAL ntldd)
 
-  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES})
+  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES} ${GETOPT_SOURCES})
 #  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
  # list(APPEND ${PROGRAM}_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR})
 
@@ -295,8 +364,11 @@ IF(MSVC OR WIN32 OR WIN64)
   SET(SOCKET_LIB ws2_32)
 endif()
 
+list(APPEND LIBXML2_LIBRARIES ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
+
 target_link_libraries(compiler-wrapper dir)
-target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES} m)
+target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
+target_link_libraries(eagle-gen-cmds hmap ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
 target_link_libraries(plsconv playlist  buffer byte fmt scan str stralloc ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest ${LIBXML2_LIBRARIES})

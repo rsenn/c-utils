@@ -23,29 +23,29 @@
 #include <stdint.h>
 #endif
 #if !(defined(_WIN32) || defined(_WIN64))
-#include <dirent.h>
 #include <unistd.h>
+#include <dirent.h>
 #else
-#include <aclapi.h>
-#include <fcntl.h>
 #include <io.h>
+#include <fcntl.h>
+#include <aclapi.h>
 #include <sddl.h>
 #include <winternl.h>
 #include <wtypes.h>
 #endif
-#include <fnmatch.h>
+#include <time.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <time.h>
+#include <fnmatch.h>
 
-#include "array.h"
-#include "buffer.h"
-#include "dir_internal.h"
-#include "fmt.h"
-#include "open.h"
-#include "str.h"
-#include "stralloc.h"
-#include "uint64.h"
+#include "lib/open.h"
+#include "lib/array.h"
+#include "lib/buffer.h"
+#include "lib/str.h"
+#include "lib/stralloc.h"
+#include "lib/fmt.h"
+#include "lib/uint64.h"
+#include "lib/dir_internal.h"
 
 #if defined(_WIN32) || defined(__MINGW64__)
 #define MINGW 1
@@ -56,9 +56,9 @@
 #endif
 
 #if defined(_WIN32) || defined(MINGW) || defined(__MSYS__)
-#include <io.h>
-#include <shlwapi.h>
 #include <windows.h>
+#include <shlwapi.h>
+#include <io.h>
 #endif
 #ifndef _MSC_VER
 #include <sys/fcntl.h>
@@ -746,7 +746,7 @@ int main(int argc, char* argv[]) {
   int relative = 0;
   int argi = 1;
 
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__CYGWIN__) && !defined(__MSYS__)
   setmode(STDOUT_FILENO, O_BINARY);
 #endif
 

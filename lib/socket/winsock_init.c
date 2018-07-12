@@ -1,6 +1,6 @@
 #if defined(_WIN32) || defined(_WIN64)
-#include "socket.h"
-#include "windoze.h"
+#include "../socket_internal.h"
+#include "../windoze.h"
 
 void __winsock_init(void) {
   static int inited;

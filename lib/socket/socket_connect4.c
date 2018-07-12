@@ -6,7 +6,7 @@
 #include "../windoze.h"
 
 #include "../byte.h"
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../uint16.h"
 #include "../uint32.h"
 

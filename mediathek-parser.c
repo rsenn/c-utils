@@ -1,19 +1,25 @@
-#include "array.h"
-#include "buffer.h"
-#include "byte.h"
-#include "open.h"
-#include "str.h"
-#include "stralloc.h"
-#include "strlist.h"
+#include "lib/io_internal.h"
+#include "lib/array.h"
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/open.h"
+#include "lib/str.h"
+#include "lib/stralloc.h"
+#include "lib/strlist.h"
+
 #include <ctype.h>
 #include <errno.h>
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <time.h>
+
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__)
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
@@ -418,9 +424,7 @@ main(int argc, char* argv[]) {
       } else {
         buffer_putnlflush(buffer_2);
       }
-    } else
-
-    {
+    } else {
       buffer_init(&b, read, STDIN_FILENO, inbuf, sizeof(inbuf));
     }
     process_input(&b);
