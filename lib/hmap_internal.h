@@ -7,6 +7,8 @@
 //#define HMAP_DEBUG(...) do {printf( __VA_ARGS__ );}while(0)
 
 #if defined(DEBUG) && !defined(NDEBUG)
+#include "buffer.h"
+
 #define HMAP_DEBUG(...)                                                                                                                                        \
   do {                                                                                                                                                         \
     buffer_putm(buffer_2, __VA_ARGS__, NULL);                                                                                                                  \
