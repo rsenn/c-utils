@@ -113,7 +113,7 @@ check_type_size(off64_t OFF64_T)
 check_type_size(socklen_t SOCKLEN_T)
 
 if(NOT SOCKLEN_T)
-  add_definitions(-Dsocklen_t=int)
+#  add_definitions(-Dsocklen_t=int)
 endif()
 
 include( CheckFunctionExists )
