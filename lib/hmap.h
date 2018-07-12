@@ -1,8 +1,8 @@
 #ifndef _HMAP_H
-# define _HMAP_H
+#define _HMAP_H
 
-# define MAP_BUCKET   1024
-# define MAX_SIZE_KEY 1024
+#define MAP_BUCKET 1024
+#define MAX_SIZE_KEY 1024
 
 enum hmap_error_enum {
   HMAP_SUCCESS = 0,
@@ -21,10 +21,7 @@ enum hmap_error_enum {
   HMAP_ALL
 };
 
-enum hmap_tuple_type {
-  HMAP_TUPLE_PRIMARY = 0,
-  HMAP_TUPLE_SECONDARY
-};
+enum hmap_tuple_type { HMAP_TUPLE_PRIMARY = 0, HMAP_TUPLE_SECONDARY };
 
 enum hmap_data_type {
   HMAP_DATA_TYPE_INT = 0,
@@ -38,28 +35,28 @@ enum hmap_data_type {
 } HMAP_DATA_TYPE;
 
 typedef struct tuple {
-  struct tuple *next;
-  struct tuple *prev;
-  struct tuple *hash_next;
-  struct tuple *hash_prev;
+  struct tuple* next;
+  struct tuple* prev;
+  struct tuple* hash_next;
+  struct tuple* hash_prev;
 
   char key[MAX_SIZE_KEY];
   int key_len;
   int type;
   int index;
   int data_len;
-  void *data;
+  void* data;
 
   int data_type;
   union {
-	int val_int;
-	unsigned int val_uint;
-	long int val_int64;
-	unsigned long int val_uint64;
-	double val_double;
-	char *val_chars;
-	struct tuple *val_tuple;
-	void *val_custom;
+    int val_int;
+    unsigned int val_uint;
+    long int val_int64;
+    unsigned long int val_uint64;
+    double val_double;
+    char* val_chars;
+    struct tuple* val_tuple;
+    void* val_custom;
   } vals;
 
 } TUPLE;
@@ -68,20 +65,20 @@ typedef struct hmap_db {
   int tuple_count;
   int secondary_tuple_count;
   int bucket_size;
-  TUPLE *tuple;
-  TUPLE *list_tuple;
+  TUPLE* tuple;
+  TUPLE* list_tuple;
 } HMAP_DB;
 
-int hmap_init(int bucket_size, HMAP_DB **hmap_db);
-int hmap_is_locate(HMAP_DB *hmap_db, void *key, int k_len);
-int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, int dup_flag, int data_type, ...);
-int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, void *data);
-int hmap_set(HMAP_DB *hmap_db, void *key, int k_len, void *data, int d_len, int alway_set);
-int hmap_print_table(HMAP_DB *hmap_db);
-int hmap_print_list(HMAP_DB *hmap_db);
-int hmap_print_tree(HMAP_DB *my_hmap_db);
-int hmap_search(HMAP_DB *hmap_db, void *key, int k_len, TUPLE **data);
-int hmap_destroy(HMAP_DB **hmap_db);
-int hmap_truncate(HMAP_DB **HMAP_db);
+int hmap_init(int bucket_size, HMAP_DB** hmap_db);
+int hmap_is_locate(HMAP_DB* hmap_db, void* key, int k_len);
+int hmap_add(HMAP_DB** hmap_db, void* key, int k_len, int dup_flag, int data_type, ...);
+int hmap_add_tuple_with_data(HMAP_DB** hmap_db, void* key, int k_len, void* data);
+int hmap_set(HMAP_DB* hmap_db, void* key, int k_len, void* data, int d_len, int alway_set);
+int hmap_print_table(HMAP_DB* hmap_db);
+int hmap_print_list(HMAP_DB* hmap_db);
+int hmap_print_tree(HMAP_DB* my_hmap_db);
+int hmap_search(HMAP_DB* hmap_db, void* key, int k_len, TUPLE** data);
+int hmap_destroy(HMAP_DB** hmap_db);
+int hmap_truncate(HMAP_DB** HMAP_db);
 
 #endif

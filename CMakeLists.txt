@@ -7,6 +7,7 @@ set(BUILD_SHARED_LIBS FALSE)
 
 include( CheckCCompilerFlag )
 include( CheckCXXCompilerFlag )
+#include( CheckLibraryExists )
 
 include( FindIconv )
 include( FindLibXml2 ) # LIBXML2_FOUND LIBXML2_DEFINITIONS LIBXML2_INCLUDE_DIR LIBXML2_LIBRARIES LIBXML2_VERSION_STRING LIBXML2_XMLLINT_EXECUTABLE
@@ -70,7 +71,7 @@ pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
 pkg_search_module(LIBLZMA liblzma)
 pkg_search_module(LIBZ zlib)
 pkg_search_module(LIBBZ2 libbz2 bzip2)
-check_library_exists(LIBMSWSOCK ws2_32 HAVE_MSWSOCK)
+#check_library_exists(LIBMSWSOCK ws2_32 HAVE_MSWSOCK)
 if(HAVE_MSWSOCK)
 set(LIBMSWSOCK ws2_32)
 endif()
@@ -151,9 +152,8 @@ foreach(SEEK_FN LSEEK LLSEEK LSEEK64)
   endif()
 endforeach()
 
-include( CheckLibraryExists )
 
-check_library_exists(ws2_32, WSAStartup "" HAVE_WS2_32_LIBRARY)
+#check_library_exists(ws2_32, WSAStartup "" HAVE_WS2_32_LIBRARY)
 if(HAVE_WS2_32_LIBRARY)
 link_libraries(ws2_32)
 endif(HAVE_WS2_32_LIBRARY)

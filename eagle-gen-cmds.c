@@ -42,26 +42,40 @@ print_node(xmlNode* node) {
 
 static void
 print_element_name(xmlNode* a_node) {
+  if(!str_diff(a_node->name, "eagle")) return;
+  if(!str_diff(a_node->name, "drawing")) return;
   if(a_node->parent) {
+
     print_element_name(a_node->parent);
   }
-  buffer_putm(buffer_1, a_node->parent ? "/" : "", a_node->name, NULL);
+
+  if(a_node->name) buffer_putm(buffer_1, a_node->parent ? "/" : "", a_node->name, NULL);
 }
 
 static void
-hashmap_dump(HMAP_DB* db) {
+hashmap_dump(HMAP_DB* db, const char* name) {
 
   int i = 0;
   TUPLE* tuple = NULL;
-  tuple = db->tuple;
+  tuple = db->tuple;  buffer_putm(buffer_1, name, ": ", NULL);
   for(i = 0; i < db->bucket_size; i++) {
     switch(tuple->data_type) {
       case HMAP_DATA_TYPE_CHARS:
 
-        buffer_putm(buffer_1, tuple->key, ".", tuple->data, NULL);
+        buffer_putm(buffer_1, " ", tuple->key, "=", tuple->data, NULL);
         buffer_putnlflush(buffer_1);
 
         break;
+
+      case HMAP_DATA_TYPE_DOUBLE: {
+        char dbl[100];
+        fmt_double(dbl, *(double*)tuple->data, sizeof(dbl), -1);
+
+        buffer_putm(buffer_1, " ", tuple->key, "=", dbl, NULL);
+        buffer_putnlflush(buffer_1);
+
+        break;
+      }
     }
   }
 }
@@ -75,38 +89,53 @@ str_isspace(const char* s) {
   return 1;
 }
 
+static int
+str_isfloat(const char* s) {
+  while(*s) {
+    static const char floatchars[] = "0123456789+-.Ee";
+
+    if(!floatchars[str_chr(floatchars, *s)]) return 0;
+    s++;
+  }
+  return 1;
+}
+
 static HMAP_DB*
-node_to_hashmap(xmlNode* a_node) {
+element_to_hashmap(xmlElement* elm) {
   HMAP_DB* hash;
 
   hmap_init(1024, &hash);
 
-  xmlNode* ptr;
-  for(ptr = a_node->children; ptr; ptr = ptr->next) {
-    if(ptr->type == XML_ELEMENT_CONTENT_ELEMENT) continue;
-    if(ptr->name) {
+  xmlAttr* ptr;
+  for(ptr = elm->attributes; ptr; ptr = ptr->next) {
 
-      xmlChar* content = xmlNodeGetContent(ptr);
-      if(str_len(ptr->name)) {
-        const char* str = content ? content : "";
-        if(str_isspace(str)) str = "";
+    //    if(ptr->type == XML_ELEMENT_CONTENT_ELEMENT) continue;p
+    if(ptr->name && str_len(ptr->name)) {
 
-        size_t len = str_len(str);
-        const char* dest = malloc(len * 4 + 1);
-        size_t i;
+      xmlChar* content = xmlGetProp(elm, ptr->name); // xmlNodeGetContent(ptr);
+      if(content && str_len(content) && !str_isspace(content)) {
+        if(str_isfloat(content)) {
+          hmap_add(&hash, ptr->name, str_len(ptr->name), 1, HMAP_DATA_TYPE_DOUBLE, strtod(content, NULL) / 2.54);
 
-        for(size_t i = 0; *str; ++str) {
+        } else {
 
-          i += fmt_escapecharquotedprintableutf8(&dest[i], *str);
+          size_t len = str_len(content);
+          const char* in = content, * dest = malloc(len * 4 + 1);
+          size_t i = 0;
+
+          for(i = 0; *in; ++in) {
+
+            i += fmt_escapecharquotedprintableutf8(&dest[i], *in);
+          }
+          //        dest[i] = '\0';
+          hmap_add(&hash, ptr->name, str_len(ptr->name), 0, HMAP_DATA_TYPE_CHARS, dest, i);
+          //  free(dest);
         }
-        //        dest[i] = '\0';
-
-        hmap_add(&hash, ptr->name, str_len(ptr->name), 1, HMAP_DATA_TYPE_CHARS, dest, i);
       }
     }
   }
 
-  // hashmap_dump(hash);
+  //  hashmap_dump(hash);
   return hash;
 }
 
@@ -122,8 +151,26 @@ print_element_names(xmlNode* a_node) {
   xmlNode* cur_node = NULL;
 
   for(cur_node = a_node; cur_node; cur_node = cur_node->next) {
+
     if(cur_node->type == XML_ELEMENT_NODE) {
+      xmlElement* elm = (xmlElement*)cur_node;
+
       print_element_name(cur_node);
+
+      HMAP_DB* hmap = element_to_hashmap(elm);
+
+      hashmap_dump(hmap, elm->name);
+
+      hmap_destroy(&hmap);
+
+      /*
+
+      for(xmlAttribute* attr = elm->attributes; attr; attr = attr->next) {
+
+        xmlChar* prop = xmlGetProp(cur_node, attr->name);
+        buffer_putm(buffer_1, " ", attr->name, str_isfloat(prop) ? "=" : "=\"", prop, str_isfloat(prop) ? "" : "\"", NULL);
+      }*/
+
       buffer_putnlflush(buffer_1);
       //      printf("node type: Element, name: %s\n", cur_node->name);
     }
@@ -172,18 +219,21 @@ main(int argc, char* argv[]) {
   xmlNodePtr node = xmlDocGetRootElement(doc);
   size_t child_count = xmlChildElementCount(node);
 
-  HMAP_DB* db = node_to_hashmap(node);
-
-  hashmap_dump(db);
-
   print_element_names(node);
 
   xmlNode* child;
   for(child = node->children; child; child = child->next) {
 
-    // if(child->type == XML_ELEMENT_TYPE_ANY)
+    if(child->type == XML_ELEMENT_NODE) {
 
-    print_node(child);
+      // if(child->type == XML_ELEMENT_TYPE_ANY)
+      HMAP_DB* db = element_to_hashmap((xmlElement*)child);
+
+      hashmap_dump(db, child->name);
+
+      hmap_destroy(&db);
+    }
+    // print_node(child);
   }
 
   /*
