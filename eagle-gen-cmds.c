@@ -211,6 +211,9 @@ main(int argc, char* argv[]) {
    */
   LIBXML_TEST_VERSION
 
+  if(!argv[1])
+	  argv[1] = "C:/Users/roman/Documents/Sources/an-tronics/eagle/40106-4069-Synth.brd";
+
   size_t mapsz;
   void* ptr = mmap_private(argv[1], &mapsz);
 

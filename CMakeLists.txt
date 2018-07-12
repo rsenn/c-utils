@@ -7,7 +7,7 @@ set(BUILD_SHARED_LIBS FALSE)
 
 include( CheckCCompilerFlag )
 include( CheckCXXCompilerFlag )
-#include( CheckLibraryExists )
+include( CheckLibraryExists )
 
 include( FindIconv )
 include( FindLibXml2 ) # LIBXML2_FOUND LIBXML2_DEFINITIONS LIBXML2_INCLUDE_DIR LIBXML2_LIBRARIES LIBXML2_VERSION_STRING LIBXML2_XMLLINT_EXECUTABLE
@@ -205,6 +205,19 @@ pkg_search_module(
 )
 
 
+check_library_exists(m, atan2 "" HAVE_MATH_LIBRARY)
+
+
+if(HAVE_MATH_LIBRARY)
+set(MATH_LIBRARY m)
+else()
+check_function_exists(atan2 HAVE_ATAN2_FUNC)
+
+endif(HAVE_MATH_LIBRARY)
+
+
+
+
 #find_package(libxml2)
 #include_directories( "${CMAKE_SOURCE_DIR}/lib" )
 include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" )
@@ -354,8 +367,8 @@ endif()
 list(APPEND LIBXML2_LIBRARIES ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
 
 target_link_libraries(compiler-wrapper dir)
-target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES} m)
-target_link_libraries(eagle-gen-cmds hmap ${LIBXML2_LIBRARIES} m)
+target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
+target_link_libraries(eagle-gen-cmds hmap ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
 target_link_libraries(plsconv playlist  buffer byte fmt scan str stralloc ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest ${LIBXML2_LIBRARIES})
