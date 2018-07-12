@@ -3,11 +3,13 @@
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/str.h"
-#include "lib/io.h"
-#include <unistd.h>
+#include "lib/io_internal.h"
 
-extern ssize_t write();
+#include <getopt.h>
+#include <stdio.h>
 
+/*extern ssize_t write();
+*/
 playlist pls1, pls2;
 static buffer outfile;
 static char outbuf[1024];

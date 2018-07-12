@@ -35,7 +35,6 @@ MSDN Magazine articles
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <libgen.h>
 #include <errno.h>
 #include <limits.h>
 

@@ -81,10 +81,10 @@ typedef off64_t offset_type;
 #undef lseek
 #undef mmap
 #endif
-
+/*
 extern ssize_t read();
 extern ssize_t write();
-
+*/
 
 int64 filesize(int fd) {
   int64 sz;

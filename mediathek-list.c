@@ -21,7 +21,7 @@
 #include "lib/scan.h"
 #include "lib/fmt.h"
 
-extern ssize_t read();
+//extern ssize_t read();
 
 #define BUFSIZE 65535
 

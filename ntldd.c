@@ -35,6 +35,7 @@ MSDN Magazine articles
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <inttypes.h>
 
 #include "libntldd.h"
 
@@ -108,7 +109,7 @@ print_image_links(int first, int verbose, int unused, int datarelocs, int functi
     for(i = 0; i < self->imports_len; i++) {
       struct import_table_item *item = &self->imports[i];
 
-      printf("\t%*s%"PRIx64" %"PRIx64" %3d %s %s %s\n", depth, depth > 0 ? " " : "", \
+      printf("\t%*s%" PRIx64 " %" PRIx64 " %3d %s %s %s\n", depth, depth > 0 ? " " : "", \
              item->orig_address, item->address, item->ordinal, \
              item->name ? item->name : "<NULL>",
              item->mapped ? "" : "<UNRESOLVED>",

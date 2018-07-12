@@ -37,7 +37,7 @@
 
 #ifdef __APPLE__
 #define EXPORT __attribute__((visibility("default")))
-#elif defined(_WIN32) || defined(_WIN32) || defined(__CYGWIN__) || defined(__MSYS__)
+#elif defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__) || defined(__MSYS__)
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
@@ -47,7 +47,7 @@
 # include <stdio.h>
 extern HANDLE io_comport;
 #endif
-EXPORT iarray io_fds;
+static iarray io_fds;
 
 iarray*
 io_getfds() { return &io_fds; }

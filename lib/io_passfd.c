@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#include <w32api/mswsock.h>
+#include <winsock.h>
 #define cmsghdr wsacmsghdr
 #endif
 

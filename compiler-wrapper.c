@@ -1,12 +1,12 @@
 #include <ctype.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
+#include <unistd.h>
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)

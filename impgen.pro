@@ -62,3 +62,4 @@ SOURCES = \
 include(deployment.pri)
 qtcAddDeployment()
 
+DEFINES += LSEEK=lseek64

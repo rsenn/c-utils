@@ -166,7 +166,7 @@ $(BUILDDIR)stralloc_catuint.o: lib/stralloc_catuint.c
 	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_passfd.o: lib/io_passfd.c
 	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)winsock2errno.o: lib/winsock2errno.c
+$(BUILDDIR)winsock2errno.o: lib/socket/winsock2errno.c
 	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_case_equal.o: lib/stralloc_case_equal.c
 	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -610,7 +610,7 @@ $(BUILDDIR)stralloc_find.o: lib/stralloc_find.c
 	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_catxlong.o: lib/stralloc_catxlong.c
 	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)winsock_init.o: lib/winsock_init.c
+$(BUILDDIR)winsock_init.o: lib/socket/winsock_init.c
 	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_catint.o: lib/stralloc_catint.c
 	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

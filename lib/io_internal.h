@@ -33,6 +33,17 @@ my_extern HANDLE io_comport;
 #include <unistd.h>
 #endif
 
+
+#ifndef STDIN_FILENO
+#define STDIN_FILENO 0
+#endif
+#ifndef STDOUT_FILENO
+#define STDOUT_FILENO 1
+#endif
+#ifndef STDERR_FILENO
+#define STDERR_FILENO 2
+#endif
+
 /* We simulate a level-triggered API on top of an event signalling
  * mechanism that can be level-triggered (epoll/kqueue/poll) or
  * edge-triggered (SIGIO).
@@ -89,7 +100,6 @@ extern int io_sockets[2];
 
 iarray* io_getfds();
 
-my_extern iarray io_fds;
 my_extern uint64 io_wanted_fds;
 my_extern array io_pollfds;
 

@@ -34,6 +34,16 @@ set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
 
 CHECK_C_COMPILER_FLAG("-ggdb" C_COMPILER_SUPPORTS_GGDB)
 
+CHECK_C_COMPILER_FLAG(-Wno-unused-variable, W_NO_UNUSED_VAR)
+if(W_NO_UNUSED_VAR)
+  add_definitions(-Wno-unused-variable)
+endif(W_NO_UNUSED_VAR)
+CHECK_C_COMPILER_FLAG(-Wno-unused-parameter, W_NO_UNUSED_PARAM)
+if(W_NO_UNUSED_PARAM)
+  add_definitions(-Wno-unused-parameter)
+endif(W_NO_UNUSED_PARAM)
+
+
 if(C_COMPILER_SUPPORTS_GGDB)
   set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb")
   set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -ggdb")
@@ -96,27 +106,65 @@ include( CheckTypeSize )
 check_type_size(loff_t LOFF_T)
 check_type_size(lloff_t LLOFF_T)
 check_type_size(off64_t OFF64_T)
+check_type_size(socklen_t SOCKLEN_T)
+
+if(NOT SOCKLEN_T)
+  add_definitions(-Dsocklen_t=int)
+endif()
 
 include( CheckFunctionExists )
 
 check_function_exists(alloca HAVE_ALLOCA_FUNC)
 check_function_exists(stat HAVE_STAT_FUNC)
 check_function_exists(lstat HAVE_LSTAT_FUNC)
+check_function_exists(_llseek HAVE__LLSEEK_FUNC)
+check_function_exists(_lseeki64 HAVE__LSEEKI64_FUNC)
 check_function_exists(lseek HAVE_LSEEK_FUNC)
 check_function_exists(llseek HAVE_LLSEEK_FUNC)
 check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
 check_function_exists(localtime HAVE_LOCALTIME_FUNC)
 check_function_exists(localtime_r HAVE_LOCALTIME_R_FUNC)
+check_function_exists(setmode HAVE_SETMODE_FUNC)
+check_function_exists(strncasecmp HAVE_STRNCASECMP_FUNC)
+check_function_exists(strnicmp HAVE_STRNICMP_FUNC)
+check_function_exists(strcasecmp HAVE_STRCASECMP_FUNC)
+check_function_exists(stricmp HAVE_STRICMP_FUNC)
+
+if(NOT HAVE_STRNCASECMP_FUNC AND HAVE_STRNICMP_FUNC)
+add_definitions(-Dstrncasecmp=strnicmp)
+endif(NOT HAVE_STRNCASECMP_FUNC AND HAVE_STRNICMP_FUNC)
+
+if(NOT HAVE_STRCASECMP_FUNC AND HAVE_STRICMP_FUNC)
+add_definitions(-Dstrcasecmp=stricmp)
+endif(NOT HAVE_STRCASECMP_FUNC AND HAVE_STRICMP_FUNC)
+
+if(HAVE_SETMODE_FUNC)
+ add_definitions(-DHAVE_SETMODE=1)
+ endif()
 
 foreach(SEEK_FN LSEEK LLSEEK LSEEK64)
   if(HAVE_${SEEK_FN}_FUNC)
     add_definitions(-DHAVE_${SEEK_FN}=1)
   endif()
 endforeach()
-if(HAVE_LLSEEK_FUNC)
-  add_definitions(-Dlseek=llseek)
+
+include( CheckLibraryExists )
+
+check_library_exists(ws2_32, WSAStartup "" HAVE_WS2_32_LIBRARY)
+if(HAVE_WS2_32_LIBRARY)
+link_libraries(ws2_32)
+endif(HAVE_WS2_32_LIBRARY)
+
+if(HAVE__LLSEEK_FUNC)
+  add_definitions(-DLSEEK=_llseek)
+elseif(HAVE__LSEEKI64_FUNC)
+  add_definitions(-DLSEEK=_lseeki64)
+elseif(HAVE_LLSEEK_FUNC)
+  add_definitions(-DLSEEK=llseek)
 elseif(HAVE_LSEEK64_FUNC)
   add_definitions(-DLSEEK=lseek64)
+elseif(HAVE_LSEEK)
+  add_definitions(-DLSEEK=lseek)
 endif()
 
 check_function_exists(free HAVE_FREE_FUNC)
@@ -126,6 +174,7 @@ check_function_exists(readdir HAVE_READDIR_FUNC)
 
 check_function_exists(getdents64 HAVE_GETDENTS64_FUNC)
 check_function_exists(getdents HAVE_GETDENTS_FUNC)
+
 
 
 if(HAVE_LSTAT_FUNC)

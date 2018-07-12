@@ -13,18 +13,13 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <time.h>
 
-#if defined _WIN32 || defined _WIN64
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__)
 #include <io.h>
-#endif
-
-#if defined __MINGW32__
+#else
 #include <unistd.h>
 #endif
-
-extern ssize_t read();
 
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";

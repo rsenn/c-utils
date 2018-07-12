@@ -746,7 +746,7 @@ int main(int argc, char* argv[]) {
   int relative = 0;
   int argi = 1;
 
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__CYGWIN__) && !defined(__MSYS__)
   setmode(STDOUT_FILENO, O_BINARY);
 #endif
 

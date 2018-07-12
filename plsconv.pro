@@ -10,6 +10,8 @@ TARGET = plsconv
 
 INCLUDEPATH += . $$PWD/lib
 
+DEFINES += LSEEK=lseek64
+
 HEADERS = lib/playlist.h lib/buffer.h
 SOURCES = \
   lib/buffer/buffer_2.c \
