@@ -77,3 +77,4 @@ qtcAddDeployment()
 
 
 
+SOURCES = eagle-gen-cmds.c lib/buffer/buffer_1.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_stubborn.c lib/hmap/hmap_add.c lib/hmap/hmap_init.c lib/hmap/hmap_search.c lib/mmap/mmap_private.c lib/mmap/mmap_unmap.c lib/str/str_len.c
