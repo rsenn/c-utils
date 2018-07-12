@@ -1,7 +1,7 @@
 #if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #else
-#include <io.h>
+#include "../io_internal.h"
 #endif
 #include "../buffer.h"
 

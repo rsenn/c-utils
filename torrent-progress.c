@@ -38,7 +38,7 @@
 #include "lib/open.h"
 #include "lib/mmap.h"
 #include "lib/uint64.h"
-#include "lib/io.h"
+#include "lib/io_internal.h"
 
 #if defined(__x86_64__) && defined(__linux)
 #define lseek lseek64

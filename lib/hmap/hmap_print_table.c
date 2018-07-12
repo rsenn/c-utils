@@ -1,11 +1,11 @@
 #include "../hmap_internal.h"
 
 static void hmap_print( HMAP_DB *my_hmap_db ) {
-    int i = 0;
-    TUPLE * my_tuple = NULL;
-    my_tuple = my_hmap_db->tuple;
-    for(i = 0; i < my_hmap_db->bucket_size; i++) {
-        switch( my_tuple->data_type ) {
+  int i = 0;
+  TUPLE * my_tuple = NULL;
+  my_tuple = my_hmap_db->tuple;
+  for(i = 0; i < my_hmap_db->bucket_size; i++) {
+      switch( my_tuple->data_type ) {
           case HMAP_DATA_TYPE_INT:
             printf("index[%d][%p] key[%s], data[%d]\n", i, my_tuple , my_tuple->key, my_tuple->vals.val_int);
             break;

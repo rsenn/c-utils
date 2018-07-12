@@ -1,3 +1,6 @@
+#ifndef IO_INTERNAL_H
+#define IO_INTERNAL_H 1
+
 #ifndef my_extern
 #if defined(_WIN32) || defined(_WIN64)
 #define my_extern extern __declspec(dllexport)
@@ -42,6 +45,11 @@ my_extern HANDLE io_comport;
 #endif
 #ifndef STDERR_FILENO
 #define STDERR_FILENO 2
+#endif
+
+#if defined(__MINGW32__) || defined(__MINGW64__)
+int write();
+int read();
 #endif
 
 /* We simulate a level-triggered API on top of an event signalling
@@ -159,3 +167,4 @@ struct eventpacket {
 };
 
 #define debug_printf(x)
+#endif

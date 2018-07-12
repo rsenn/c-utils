@@ -2,7 +2,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-#include <io.h>
+#include "../io_internal.h"
 #include <stdio.h>
 #else
 #include <unistd.h>

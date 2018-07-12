@@ -1,8 +1,9 @@
 #if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #else
-#include <io.h>
+#include "../io_internal.h"
 #endif
+#include "../io_internal.h"
 #include "../buffer.h"
 
 char buffer_1_space[128];

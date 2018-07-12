@@ -4,6 +4,10 @@
 
 #include "socket.h"
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+typedef int socklen_t;
+#endif
+
 #if defined(_WIN32) || defined(_WIN64)
 #include <winsock.h>
 //#include <ws2tcpip.h>

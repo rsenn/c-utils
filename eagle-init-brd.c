@@ -537,7 +537,7 @@ make_sax_handler() {
   memset(&sax_hander, 0, sizeof(xmlSAXHandler));
 
   /*//sax_hander.initialized = 0;
-  */
+   */
   sax_hander.initialized = XML_SAX2_MAGIC;
   sax_hander.startElement = on_start_element;
   sax_hander.startElementNs = on_start_element_ns;
@@ -570,7 +570,7 @@ on_start_element(void* ctx, const xmlChar* name, const xmlChar** attrs) {
   printf("<%s> %d\n", name, numAttrs);
 
   for(i = 0; i < numAttrs; ++i) {
-    char *attr = ((char **)attrs)[i << 1], *value = ((char **)attrs)[(i << 1) + 1];
+    char *attr = ((char**)attrs)[i << 1], *value = ((char**)attrs)[(i << 1) + 1];
 
     printf("<%s> %d/%d: %s=\"%s\"\n", name, i, numAttrs, attr, value);
 
