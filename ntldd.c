@@ -25,9 +25,9 @@ MSDN Magazine articles
 
 //#include <windows.h>
 
-//#include "imagehlp.h"
-#include "uint64.h"
-#include "str.h"
+//#include "lib/imagehlp.h"
+#include "lib/uint64.h"
+#include "lib/str.h"
 
 //#include <winnt.h>
 

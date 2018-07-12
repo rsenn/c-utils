@@ -1,7 +1,7 @@
 #include "../buffer.h"
 #include "../http.h"
 #include "../scan.h"
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../str.h"
 #include "../byte.h"
 #include <ctype.h>

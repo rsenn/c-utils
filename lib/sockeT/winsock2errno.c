@@ -2,7 +2,7 @@
 #include <winsock.h>
 #include <errno.h>
 #include <stdio.h>
-#include "socket.h"
+#include "../socket_internal.h"
 
 int winsock2errno(long l) {
   long x;

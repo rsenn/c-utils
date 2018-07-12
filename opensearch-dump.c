@@ -1,5 +1,5 @@
-#include "buffer.h"
-#include "stralloc.h"
+#include "lib/buffer.h"
+#include "lib/stralloc.h"
 #include <stdbool.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>

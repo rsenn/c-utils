@@ -136,6 +136,14 @@ if(HAVE_LSTAT_FUNC)
   endif(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
 endif(HAVE_LSTAT_FUNC)
 
+check_function_exists(getopt_long HAVE_GETOPT_LONG_FUNC)
+check_function_exists(getopt HAVE_GETOPT_FUNC)
+
+if(NOT HAVE_GETOPT_LONG_FUNC OR NOT HAVE_GETOPT_FUNC)
+  set(GETOPT_SOURCES ${CMAKE_SOURCE_DIR}/lib/getopt.c)
+endif()
+
+
 include( FindPkgConfig )
 
 pkg_search_module(
@@ -182,6 +190,7 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
 access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3
+eagle-gen-cmds
 )
 
 set(CXXPROGRAMS #kbd-adjacency
@@ -247,6 +256,9 @@ foreach(ARCHIVE array buffer byte dir fmt hmap http iarray io list mmap ndelay o
   if(ARCHIVE STREQUAL array)
     list(APPEND MODSOURCES lib/umult64.c)
   endif()
+  if(ARCHIVE STREQUAL dir)
+    list(APPEND MODSOURCES lib/fnmatch.c)
+  endif()
   add_library("${ARCHIVE}" STATIC ${MODSOURCES} ${MODHEADERS})
   set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
 endforeach(ARCHIVE)
@@ -266,7 +278,7 @@ foreach(PROGRAM ${PROGRAMS})
     set(EXTRA_SOURCES )
   endif("${PROGRAM}" STREQUAL ntldd)
 
-  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES})
+  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES} ${GETOPT_SOURCES})
 #  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
  # list(APPEND ${PROGRAM}_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR})
 
@@ -289,6 +301,7 @@ endif()
 
 target_link_libraries(compiler-wrapper dir)
 target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES} m)
+target_link_libraries(eagle-gen-cmds hmap ${LIBXML2_LIBRARIES} m)
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
 target_link_libraries(plsconv playlist  buffer byte fmt scan str stralloc ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest ${LIBXML2_LIBRARIES})

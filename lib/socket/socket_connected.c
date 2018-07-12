@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "../socket.h"
+#include "../socket_internal.h"
 
 int socket_connected(int s) {
   struct sockaddr si;

@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../ndelay.h"
 #include <errno.h>
 

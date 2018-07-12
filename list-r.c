@@ -38,14 +38,14 @@
 #include <sys/stat.h>
 #include <fnmatch.h>
 
-#include "open.h"
-#include "array.h"
-#include "buffer.h"
-#include "str.h"
-#include "stralloc.h"
-#include "fmt.h"
-#include "uint64.h"
-#include "dir_internal.h"
+#include "lib/open.h"
+#include "lib/array.h"
+#include "lib/buffer.h"
+#include "lib/str.h"
+#include "lib/stralloc.h"
+#include "lib/fmt.h"
+#include "lib/uint64.h"
+#include "lib/dir_internal.h"
 
 #if defined(_WIN32) || defined(__MINGW64__)
 #define MINGW 1

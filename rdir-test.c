@@ -1,5 +1,5 @@
-#include "rdir.h"
-#include "buffer.h"
+#include "lib/rdir.h"
+#include "lib/buffer.h"
 
 int main() {
 

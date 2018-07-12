@@ -10,6 +10,7 @@
 #include "iarray.h"
 #include "io.h"
 #if defined(_WIN32) || defined(_WIN64)
+#include <io.h>
 #include "socket.h"
 my_extern HANDLE io_comport;
 #elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)

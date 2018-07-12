@@ -19,12 +19,12 @@
 #include <libgen.h>
 #endif
 
-#include "stralloc.h"
-#include "buffer.h"
-#include "open.h"
-#include "fmt.h"
-#include "byte.h"
-#include "str.h"
+#include "lib/stralloc.h"
+#include "lib/buffer.h"
+#include "lib/open.h"
+#include "lib/fmt.h"
+#include "lib/byte.h"
+#include "lib/str.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX

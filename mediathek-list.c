@@ -13,12 +13,15 @@
 #include <libgen.h>
 #endif
 
-#include "buffer.h"
-#include "byte.h"
-#include "strlist.h"
-#include "str.h"
-#include "scan.h"
-#include "fmt.h"
+#include "lib/io_internal.h"
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/strlist.h"
+#include "lib/str.h"
+#include "lib/scan.h"
+#include "lib/fmt.h"
+
+extern ssize_t read();
 
 #define BUFSIZE 65535
 

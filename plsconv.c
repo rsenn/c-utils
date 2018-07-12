@@ -1,9 +1,12 @@
-#include "playlist.h"
-#include "open.h"
-#include "buffer.h"
-#include "byte.h"
-#include "str.h"
+#include "lib/playlist.h"
+#include "lib/open.h"
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/str.h"
+#include "lib/io.h"
 #include <unistd.h>
+
+extern ssize_t write();
 
 playlist pls1, pls2;
 static buffer outfile;

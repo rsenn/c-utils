@@ -40,9 +40,9 @@ MSDN Magazine articles
 #include <limits.h>
 
 #include "libntldd.h"
-#include "uint64.h"
-#include "mmap.h"
-#include "str.h"
+#include "lib/uint64.h"
+#include "lib/mmap.h"
+#include "lib/str.h"
 #include "lib/pe.h"
 
 #define FALSE 0

@@ -1,5 +1,5 @@
-#include "buffer.h"
-#include "strlist.h"
+#include "lib/buffer.h"
+#include "lib/strlist.h"
 #include <stdlib.h>
 #include <getopt.h>
 

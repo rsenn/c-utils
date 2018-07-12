@@ -34,10 +34,11 @@
 #define PRIx64 "lx"
 #endif
 
-#include "buffer.h"
-#include "open.h"
-#include "mmap.h"
-#include "uint64.h"
+#include "lib/buffer.h"
+#include "lib/open.h"
+#include "lib/mmap.h"
+#include "lib/uint64.h"
+#include "lib/io.h"
 
 #if defined(__x86_64__) && defined(__linux)
 #define lseek lseek64
@@ -80,6 +81,10 @@ typedef off64_t offset_type;
 #undef lseek
 #undef mmap
 #endif
+
+extern ssize_t read();
+extern ssize_t write();
+
 
 int64 filesize(int fd) {
   int64 sz;

@@ -7,7 +7,7 @@
 #include "../windoze.h"
 #include <errno.h>
 #include "../byte.h"
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../ip6.h"
 #include "../uint32.h"
 #include "../ip4.h"

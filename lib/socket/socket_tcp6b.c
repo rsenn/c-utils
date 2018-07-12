@@ -6,7 +6,7 @@
 #endif
 #include "../windoze.h"
 #include <errno.h>
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../ndelay.h"
 
 #ifndef EAFNOSUPPORT
