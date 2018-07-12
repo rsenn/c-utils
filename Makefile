@@ -832,7 +832,7 @@ endif
 
 $(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
 $(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a $(BUILDDIR)hmap.a
+$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a $(BUILDDIR)hmap.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

@@ -10,11 +10,13 @@
 #include <libxml/SAX.h>
 
 #include "lib/buffer.h"
+#include "lib/fmt.h"
 #include "lib/hmap.h"
 #include "lib/mmap.h"
 #include "lib/scan.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
+
 /**
  * section: Parsing
  * synopsis: Parse an XML document in memory to a tree and free it
@@ -67,11 +69,11 @@ hashmap_dump(HMAP_DB* db) {
 static int
 str_isspace(const char* s) {
   while(*s) {
-  if(!isspace(*s)) return 0;
-     s++;
-  } 
-  return 1;
+    if(!isspace(*s)) return 0;
+    s++;
   }
+  return 1;
+}
 
 static HMAP_DB*
 node_to_hashmap(xmlNode* a_node) {
@@ -83,14 +85,23 @@ node_to_hashmap(xmlNode* a_node) {
   for(ptr = a_node->children; ptr; ptr = ptr->next) {
     if(ptr->type == XML_ELEMENT_CONTENT_ELEMENT) continue;
     if(ptr->name) {
-    
-      xmlChar* content =  xmlNodeGetContent(ptr);
+
+      xmlChar* content = xmlNodeGetContent(ptr);
       if(str_len(ptr->name)) {
         const char* str = content ? content : "";
         if(str_isspace(str)) str = "";
-        
+
         size_t len = str_len(str);
-        hmap_add(&hash, ptr->name, str_len(ptr->name), 1, HMAP_DATA_TYPE_CHARS, str, len);
+        const char* dest = malloc(len * 4 + 1);
+        size_t i;
+
+        for(size_t i = 0; *str; ++str) {
+
+          i += fmt_escapecharquotedprintableutf8(&dest[i], *str);
+        }
+        //        dest[i] = '\0';
+
+        hmap_add(&hash, ptr->name, str_len(ptr->name), 1, HMAP_DATA_TYPE_CHARS, dest, i);
       }
     }
   }
@@ -186,4 +197,3 @@ main(int argc, char* argv[]) {
   //    xmlMemoryDump();
   return (0);
 }
-SOURCES = 
