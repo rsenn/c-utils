@@ -1,4 +1,4 @@
-#include "../map.h"
+#include "../map_internal.h"
 
 static map_node_t** map_getref(map_base_t* m, const char* key) {
   unsigned hash = map_hash(key);

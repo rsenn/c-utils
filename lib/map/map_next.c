@@ -1,4 +1,4 @@
-#include "../map.h"
+#include "../map_internal.h"
 
 const char* map_next_(map_base_t* m, map_iter_t* iter) {
   if(iter->node) {

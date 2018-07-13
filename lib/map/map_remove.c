@@ -1,4 +1,4 @@
-#include "../map.h"
+#include "../map_internal.h"
 
 void map_remove_(map_base_t* m, const char* key) {
   map_node_t* node;

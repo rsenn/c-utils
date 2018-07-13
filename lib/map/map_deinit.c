@@ -1,4 +1,4 @@
-#include "../map.h"
+#include "../map_internal.h"
 
 void map_deinit_(map_base_t* m) {
   map_node_t *next, *node;

@@ -1,4 +1,4 @@
-#include "../map.h"
+#include "../map_internal.h"
 
 int map_set_(map_base_t* m, const char* key, void* value, int vsize) {
   int n, err;
