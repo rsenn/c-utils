@@ -1,14 +1,11 @@
 cfg() { 
- (:
- 
-  ${build:=`gcc -dumpmachine`}
+  : ${build:=`gcc -dumpmachine`}
   [ -n "$build" ] && build=${build//-pc-/-}
 
   : ${host:=$build}
   : ${prefix:=/usr}
   : ${libdir:=$prefix/lib}
-  [ -d "$libdir/$host" ] && libdir=$libdir/$host : ${builddir:=build/$host}
-
+  [ -d "$libdir/$host" ] && libdir=$libdir/$host
  
  : ${builddir=build/$host}
 
@@ -22,31 +19,14 @@ cfg() {
       -DBUILD_SHARED_LIBS=OFF \
       -DENABLE_PIC=OFF ;;
   esac
-   case "$PYTHON" in
-     NO|no|n|0|OFF|off) set -- "$@" \
-        -DBUILD_opencv_python2=OFF \
-        -DBUILD_opencv_python3=OFF \
-        -DBUILD_opencv_python_bindings_generator=OFF \
-        -DENABLE_PYLINT=OFF \
-        -DINSTALL_PYTHON_EXAMPLES=OFF \
-        -DOPENCV_FORCE_PYTHON_LIBS=OFF ;;
-  esac
-  case "$GTK" in
-    2) GTK2="ON" ;;
-    3) GTK3="ON" ;;
-  esac
-
-# [ -n "$CC" ] && { test -e "$CC"  || CC=$(which "$CC"); }
-# [ -n "$CXX" ] && { test -e "$CXX"  || CXX=$(which "$CXX"); }
 
  (mkdir -p $builddir
-  relsrcdir=$(/usr/bin/realpath --relative-to $builddir .)
+  relsrcdir=`realpath --relative-to "$builddir" .`
   set -x
   cd $builddir
-  cmake \
-  -Wno-dev \
+  ${CMAKE:-cmake} -Wno-dev \
     -DCMAKE_INSTALL_PREFIX="${prefix-/usr}" \
-    -G ${generator:-"${SYSTEM:-Unix} Makefiles"} \
+    -G "$generator" \
     ${VERBOSE+:-DCMAKE_VERBOSE_MAKEFILE=TRUE} \
     -DCMAKE_BUILD_TYPE="${TYPE:-RelWithDebInfo}" \
     ${CC:+-DCMAKE_C_COMPILER="$CC"} \
@@ -58,7 +38,7 @@ cfg() {
     -DCMAKE_{C,CXX}_FLAGS_DEBUG="-g -ggdb3" \
     -DCMAKE_{C,CXX}_FLAGS_RELWITHDEBINFO="-O2 -g -ggdb3 -DNDEBUG" \
     "$@" \
-    $relsrcdir 2>&1 ) |tee "${builddir##*/}.log")
+    $relsrcdir 2>&1 ) |tee "${builddir##*/}.log"
 }
 
 cfg-android () 

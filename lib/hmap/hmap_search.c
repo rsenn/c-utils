@@ -1,5 +1,5 @@
 #include "../hmap_internal.h"
-#include "hmap_internal.c"
+
 #include <stdarg.h>
 #include <string.h>
 

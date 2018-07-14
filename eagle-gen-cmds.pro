@@ -13,6 +13,11 @@ PKGCONFIG += libxml-2.0
   QMAKE_CFLAGS_WARN_ON = -W3
 }
 
+gcc {
+  QMAKE_CFLAGS_WARN_ON += -Wno-unused-parameter
+  QMAKE_CFLAGS_WARN_ON += -Wno-unused-variable
+}
+
 mingw | mingw32 | mingw64 | msvc {
   DEFINES += USE_READDIR=0
 }
@@ -46,13 +51,61 @@ INCLUDEPATH += $$LIBXML2_DIR/include $$LIBXML2_DIR/include/libxml $$PWD/lib
 #INCLUDEPATH += $$WIN_ICONV_DIR/include $$PWD/lib
 
 HEADERS = \
-  lib/byte.h lib/hmap.h lib/stralloc.h lib/str.h
+  lib/byte.h  lib/buffer.h lib/hmap.h lib/stralloc.h lib/str.h \
+    lib/cbmap/alloc.h \
+    lib/cbmap/cbmap.h \
+    lib/cbmap/alloc.h \
+    lib/cbmap/cbmap.h
 
-
+DEFINES += LSEEK=lseek64
 
 include(deployment.pri)
 qtcAddDeployment()
 
-SOURCES = eagle-gen-cmds.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_stubborn.c lib/fmt/fmt_double.c lib/fmt/fmt_escapecharquotedprintable.c lib/fmt/fmt_escapecharquotedprintableutf8.c lib/fmt/fmt_tohex.c lib/fmt/fmt_utf8.c lib/hmap/hmap_add.c lib/hmap/hmap_destroy.c lib/hmap/hmap_free_data.c lib/hmap/hmap_init.c lib/hmap/hmap_search.c lib/hmap/hmap_truncate.c lib/mmap/mmap_private.c lib/mmap/mmap_unmap.c lib/open/open_read.c lib/str/str_chr.c lib/str/str_diff.c lib/str/str_len.c
-
-
+SOURCES += eagle-gen-cmds.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_stubborn.c lib/fmt/fmt_double.c lib/fmt/fmt_escapecharquotedprintable.c lib/fmt/fmt_escapecharquotedprintableutf8.c lib/fmt/fmt_tohex.c lib/fmt/fmt_utf8.c lib/hmap/hmap_add.c lib/hmap/hmap_destroy.c lib/hmap/hmap_free_data.c lib/hmap/hmap_init.c lib/hmap/hmap_search.c lib/hmap/hmap_truncate.c lib/mmap/mmap_private.c lib/mmap/mmap_unmap.c lib/open/open_read.c lib/str/str_chr.c lib/str/str_diff.c lib/str/str_diffn.c lib/str/str_len.c \
+    lib/cbmap/cbmap.c \
+    lib/stralloc/stralloc_zero.c \
+    lib/stralloc/stralloc_write.c \
+    lib/stralloc/stralloc_trunc.c \
+    lib/stralloc/stralloc_remove.c \
+    lib/stralloc/stralloc_readyplus.c \
+    lib/stralloc/stralloc_ready.c \
+    lib/stralloc/stralloc_nul.c \
+    lib/stralloc/stralloc_move.c \
+    lib/stralloc/stralloc_insertb.c \
+    lib/stralloc/stralloc_init.c \
+    lib/stralloc/stralloc_free.c \
+    lib/stralloc/stralloc_diffs.c \
+    lib/stralloc/stralloc_decamelize.c \
+    lib/stralloc/stralloc_copys.c \
+    lib/stralloc/stralloc_copyb.c \
+    lib/stralloc/stralloc_copy.c \
+    lib/stralloc/stralloc_catulong0.c \
+    lib/stralloc/stralloc_cats.c \
+    lib/stralloc/stralloc_catlong0.c \
+    lib/stralloc/stralloc_catc.c \
+    lib/stralloc/stralloc_catb.c \
+    lib/stralloc/stralloc_cat.c \
+    lib/stralloc/stralloc_append_sa.c \
+    lib/stralloc/stralloc_append.c \
+    lib/byte/byte_chr.c \
+    lib/byte/byte_copy.c \
+    lib/byte/byte_copyr.c \
+    lib/byte/byte_diff.c \
+    lib/byte/byte_fill.c \
+    lib/byte/byte_rchr.c \
+    lib/byte/byte_zero.c \
+    lib/fmt/fmt_minus.c \
+    lib/fmt/fmt_ulong0.c \
+    lib/fmt/fmt_ulong.c \
+    lib/buffer/buffer_0.c \
+    lib/buffer/buffer_close.c \
+    lib/buffer/buffer_default.c \
+    lib/buffer/buffer_putc.c \
+    lib/buffer/buffer_putlong.c \
+    lib/buffer/buffer_putm_internal_flush.c \
+    lib/buffer/buffer_putulong.c \
+    lib/buffer/buffer_putxlong.c \
+    lib/buffer/buffer_putm_internal.c \
+    lib/fmt/fmt_long.c \
+    lib/fmt/fmt_xlong.c

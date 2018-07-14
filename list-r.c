@@ -85,7 +85,7 @@ static const char* opt_relative = NULL;
 static const char* opt_timestyle = "%b %2e %H:%M";
 
 #if(defined( _WIN32 ) || defined(MINGW)) && !defined(__MSYS__)
-static INLINE uint64_t filetime_to_unix(const FILETIME* ft);
+static uint64_t filetime_to_unix(const FILETIME* ft);
 
 static const char*
 last_error_str() {
@@ -292,7 +292,7 @@ get_file_owner(const char* path) {
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL
 
-static INLINE uint64_t
+static uint64_t
 filetime_to_unix(const FILETIME* ft) {
   uint64_t windowsTicks = ((uint64_t)ft->dwHighDateTime << 32) + ft->dwLowDateTime;
   return (uint64_t)(windowsTicks / 10000000 - SEC_TO_UNIX_EPOCH);

@@ -206,13 +206,14 @@ pkg_search_module(
 )
 
 
-check_library_exists(m, atan2 "" HAVE_MATH_LIBRARY)
-
+#check_library_exists(m, atan2 "" HAVE_MATH_LIBRARY)
+check_library_exists(m roundf "" HAVE_MATH_LIBRARY)
 
 if(HAVE_MATH_LIBRARY)
-set(MATH_LIBRARY m)
+  set(MATH_LIBRARY m)
 else()
-check_function_exists(atan2 HAVE_ATAN2_FUNC)
+  check_function_exists(atan2 HAVE_ATAN2_FUNC)
+  check_function_exists(roundf HAVE_ROUNDF_FUNC)
 
 endif(HAVE_MATH_LIBRARY)
 

@@ -39,9 +39,12 @@ cmds-exitcode = ($(1)) 2>/dev/null >/dev/null && echo 1 || echo 0
 
 check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
 
-$(info lseek64: $(call check-function-exists,lseek64))
-$(info lseek: $(call check-function-exists,lseek))
-$(info llseek: $(call check-function-exists,llseek))
+
+HAVE_LSEEK64 := $(call check-function-exists,lseek64)
+HAVE_LSEEK := $(call check-function-exists,lseek)
+HAVE_LLSEEK := $(call check-function-exists,llseek)
+$(info HAVE_LSEEK64=$(HAVE_LSEEK64) HAVE_LSEEK=$(HAVE_LSEEK64)  HAVE_LLSEEK=$(HAVE_LLSEEK64))
+#$(info llseek: $(call check-function-exists,llseek))
 
 ifeq ($SUBLIME_FILENAME),None)
 PATH = /c/git-sdk-64/usr/bin
@@ -586,8 +589,8 @@ DEFS += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
 #CPPFLAGS += -DUSE_READDIR=1
 
-ifeq ($(call check-function-exists,_lseek),1)
-LSEEK = _lseek
+ifeq ($(call check-function-exists,lseek64),1)
+LSEEK = lseek64
   else
  ifeq ($(call check-function-exists,lseek),1)
 LSEEK = lseek
@@ -598,8 +601,8 @@ LSEEK = _llseek
  ifeq ($(call check-function-exists,llseek),1)
 LSEEK = llseek
   else
- ifeq ($(call check-function-exists,lseek64),1)
-LSEEK = lseek64
+ ifeq ($(call check-function-exists,_lseek),1)
+LSEEK = _lseek
   else
  ifeq ($(call check-function-exists,_lseeki64),1)
 LSEEK = _lseeki64
@@ -613,9 +616,13 @@ endif
 endif
 endif
 
-LSEEK ?= lseek
+#LSEEK ?= lseek
 
 DEFS += LSEEK=$(LSEEK)
+CPPFLAGS += $(DEFS:%=-D%)
+CFLAGS += $(DEFS:%=-D%)
+
+$(info DEFS: $(DEFS))
 
 
 all: \

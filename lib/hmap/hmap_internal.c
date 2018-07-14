@@ -48,25 +48,25 @@
     }                                                                                                                                                          \
   }
 
-inline static int
-hmap_cmp(void* v1, int v1_len, void* v2, int v2_len) {
-  if(v1_len != v2_len) {
-    return -1;
-  }
-  return memcmp(v1, v2, v1_len);
-}
+//inline int
+//hmap_cmp(void* v1, int v1_len, void* v2, int v2_len) {
+//  if(v1_len != v2_len) {
+//    return -1;
+//  }
+//  return memcmp(v1, v2, v1_len);
+//}
 
-inline static int
-hash(void* key, int len) {
-  unsigned int hash, i;
+//inline int
+//hash(void* key, unsigned int len) {
+//  unsigned int hash, i;
 
-  for(hash = i = 0; i < len; ++i) {
-    hash += ((unsigned char*)key)[i];
-    hash += (hash << 10);
-    hash ^= (hash >> 6);
-  }
-  hash += (hash << 3);
-  hash ^= (hash >> 11);
-  hash += (hash << 15);
-  return hash & 0x7FFFFFFF;
-}
+//  for(hash = i = 0; i < len; ++i) {
+//    hash += ((unsigned char*)key)[i];
+//    hash += (hash << 10);
+//    hash ^= (hash >> 6);
+//  }
+//  hash += (hash << 3);
+//  hash ^= (hash >> 11);
+//  hash += (hash << 15);
+//  return hash & 0x7FFFFFFF;
+//}
