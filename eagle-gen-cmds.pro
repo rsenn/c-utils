@@ -55,7 +55,12 @@ HEADERS = \
     lib/cbmap/alloc.h \
     lib/cbmap/cbmap.h \
     lib/cbmap/alloc.h \
-    lib/cbmap/cbmap.h
+    lib/cbmap/cbmap.h \
+    lib/cbmap.h \
+    lib/cb_internal.h \
+    lib/critbit.h \
+    lib/cb_internal.h \
+    lib/cbmap_internal.h
 
 DEFINES += LSEEK=lseek64
 
@@ -63,7 +68,6 @@ include(deployment.pri)
 qtcAddDeployment()
 
 SOURCES += eagle-gen-cmds.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_stubborn.c lib/fmt/fmt_double.c lib/fmt/fmt_escapecharquotedprintable.c lib/fmt/fmt_escapecharquotedprintableutf8.c lib/fmt/fmt_tohex.c lib/fmt/fmt_utf8.c lib/hmap/hmap_add.c lib/hmap/hmap_destroy.c lib/hmap/hmap_free_data.c lib/hmap/hmap_init.c lib/hmap/hmap_search.c lib/hmap/hmap_truncate.c lib/mmap/mmap_private.c lib/mmap/mmap_unmap.c lib/open/open_read.c lib/str/str_chr.c lib/str/str_diff.c lib/str/str_diffn.c lib/str/str_len.c \
-    lib/cbmap/cbmap.c \
     lib/stralloc/stralloc_zero.c \
     lib/stralloc/stralloc_write.c \
     lib/stralloc/stralloc_trunc.c \
@@ -108,4 +112,24 @@ SOURCES += eagle-gen-cmds.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buff
     lib/buffer/buffer_putxlong.c \
     lib/buffer/buffer_putm_internal.c \
     lib/fmt/fmt_long.c \
-    lib/fmt/fmt_xlong.c
+    lib/fmt/fmt_xlong.c \
+    lib/cb/cb_clear.c \
+    lib/cb/cb_erase.c \
+    lib/cb/cb_find.c \
+    lib/cb/cb_find_prefix.c \
+    lib/cb/cb_foreach.c \
+    lib/cb/cb_get_kv.c \
+    lib/cb/cb_get_kv_ex.c \
+    lib/cb/cb_insert.c \
+    lib/cb/cb_new_kv.c \
+    lib/cbmap/cbmap_count.c \
+    lib/cbmap/cbmap_data_node_destroy.c \
+    lib/cbmap/cbmap_delete.c \
+    lib/cbmap/cbmap_destroy.c \
+    lib/cbmap/cbmap_get.c \
+    lib/cbmap/cbmap_insert.c \
+    lib/cbmap/cbmap_new.c \
+    lib/cbmap/cbmap_visit.c \
+    lib/cbmap/cbmap_visit_all.c \
+    lib/cbmap/alloc.c \
+    lib/cbmap/cbmap_internal_node.c

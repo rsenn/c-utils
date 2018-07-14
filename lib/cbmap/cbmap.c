@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#pragma mark - Readability macros
+/** mark - Readability macros */
 
 /* KEY_COMPARE and VALUE_COMPARE are here because
  I cannot distinguish very well between memcmp and memcpy
@@ -20,7 +20,7 @@
 #define NOT_FOUND 0
 #define FOUND 1
 
-#pragma mark - Allocation and deallocation utility functions and structures
+/** mark - Allocation and deallocation utility functions and structures */
 
 /** A pair of allocation and deallocation functions */
 typedef struct cbmap_allocator {
@@ -57,7 +57,7 @@ cbmap_nop_deallocator(void* data) {
 
 struct cbmap_allocator CBMAP_NOP_ALLOCATOR = {.malloc = cbmap_nop_allocator, .free = cbmap_nop_deallocator};
 
-#pragma mark - cbmap_data_node : holds keys and values
+/** mark - cbmap_data_node : holds keys and values */
 
 struct cbmap_data_node {
   uint8_t* key;
@@ -132,7 +132,7 @@ cbmap_data_node_destroy(struct cbmap_data_node* data, cbmap_allocator_t key_allo
   }
 }
 
-#pragma mark - cbmap_internal_node : holds structural information of nodes
+/** mark - cbmap_internal_node : holds structural information of nodes */
 
 /**
  A cbmap_internal_node is a branching node on a given bit.
@@ -168,7 +168,7 @@ cbmap_internal_node_destroy(struct cbmap_internal_node* node) {
   }
 }
 
-#pragma mark - cbmap
+/** mark - cbmap */
 
 #define IS_INTERNAL_NODE(p) (1 & (intptr_t)(p))
 #define GET_INTERNAL_NODE(p) ((struct cbmap_internal_node*)(((intptr_t)(p)) - 1))
@@ -183,7 +183,7 @@ struct cbmap {
   struct cbmap_allocator value_allocator;
 };
 
-#pragma mark - cbmap_new
+/** mark - cbmap_new */
 
 cbmap_t
 cbmap_new_with_custom_allocation(cbmap_allocator_fn key_allocator, cbmap_deallocator_fn key_deallocator, cbmap_allocator_fn value_allocator,
@@ -212,7 +212,7 @@ cbmap_new_with_static_keys_and_values(void) {
   return cbmap_new_with_custom_allocation(CBMAP_NOP_ALLOCATOR.malloc, CBMAP_NOP_ALLOCATOR.free, CBMAP_NOP_ALLOCATOR.malloc, CBMAP_NOP_ALLOCATOR.free);
 }
 
-#pragma mark - cbmap_destroy
+/** mark - cbmap_destroy */
 
 void
 cbmap_recursive_delete(void* top, cbmap_allocator_t key_allocator, cbmap_allocator_t value_allocator) {
@@ -243,7 +243,7 @@ cbmap_destroy(cbmap_t* cmap_ptr) {
   }
 }
 
-#pragma mark - cbmap_insert
+/** mark - cbmap_insert */
 
 int
 cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_len) {
@@ -341,7 +341,7 @@ different_byte_found:
   return INSERT_OK;
 }
 
-#pragma mark - cbmap_get
+/** mark - cbmap_get */
 
 int
 cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_len) {
@@ -373,7 +373,7 @@ cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_le
   return NOT_FOUND;
 }
 
-#pragma mark - Removal
+/** mark - Removal */
 
 int
 cbmap_delete(cbmap_t map, void* key, size_t key_len) {
@@ -418,7 +418,7 @@ cbmap_delete(cbmap_t map, void* key, size_t key_len) {
   return FOUND;
 }
 
-#pragma mark - Visiting
+/** mark - Visiting */
 
 int
 cbmap_visit(uint8_t* top, cbmap_visitor visitor_fn, void* user_data) {
@@ -470,7 +470,7 @@ cbmap_visit_all(cbmap_t map, cbmap_visitor visitor_fn, void* user_data) {
   return cbmap_visit_prefix(map, empty_prefix, 0, visitor_fn, user_data);
 }
 
-#pragma mark - count
+/** mark - count */
 
 size_t
 cbmap_count(cbmap_t map) {
