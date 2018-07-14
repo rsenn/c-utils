@@ -50,13 +50,13 @@ struct pinlist {
 };
 
 struct pinmapping {
-  struct package* pkg;
+  struct package pkg;
   array map;
 };
 
 struct gate {
   stralloc name;
-  struct pinlist symbol;
+  stralloc symbol;
 };
 
 struct deviceset {
@@ -72,10 +72,30 @@ struct part {
 
 static cbmap_t devicesets;
 
+xmlElement*
+get_parent(xmlElement* node, const char* parent) {
+
+  while(node && str_diff(node_name(node), parent))
+    node = node->parent;
+  return (xmlElement*)node;
+}
+
+xmlNode*
+get_child(xmlNode* node, const char* name) {
+  for(node = node->children; node; node = node->next) {
+    if(!str_diff(node_name(node), name))
+      return node;
+  }
+  return NULL;
+}
+
 void
 build_deviceset(xmlNode* set) {
 
   const char* name = node_prop(set, "name");
+
+  buffer_putm(buffer_2, "deviceset: ", name, NULL);
+  buffer_putnlflush(buffer_2);
 
   struct deviceset d;
   byte_zero(&d, sizeof(struct deviceset));
@@ -83,6 +103,27 @@ build_deviceset(xmlNode* set) {
   stralloc_copys(&d.name, name);
 
   d.devices = cbmap_new();
+
+  xmlNode* gates = get_parent(set, "gates");
+  xmlNode* devices = get_parent(set, "devices");
+
+  for(xmlNode* node = gates->children; node; node = node->next) {
+    struct gate g;
+    byte_zero(&g, sizeof(struct gate));
+    stralloc_copys(&g.name, node_prop(node, "name"));
+    stralloc_copys(&g.symbol, node_prop(node, "symbol"));
+
+    array_catb(&d.gates, &g, sizeof(struct gate));
+  }
+  for(xmlNode* node = devices->children; node; node = node->next) {
+    struct pinmapping pm;
+    const char* name = node_prop(node, "name");
+    const char* package = node_prop(node, "package");
+    byte_zero(&pm, sizeof(struct pinmapping));
+    stralloc_copys(&pm.pkg, package);
+
+    cbmap_insert(d.devices, name, str_len(name), &pm, sizeof(struct pinmapping));
+  }
 
   cbmap_insert(devicesets, name, str_len(name), &d, sizeof(struct deviceset));
 }
@@ -153,12 +194,14 @@ getparts(xmlDoc* doc) {
   }
 }
 
-xmlElement*
-get_parent(xmlNode* node, const char* parent) {
-
-  while(node && str_diff(node_name(node), parent))
-    node = node->parent;
-  return (xmlElement*)node;
+strlist
+for_set(xmlNodeSet* set, void (*fn)(xmlNode*)) {
+  if(!set)
+    return;
+  for(int i = 0; i < xmlXPathNodeSetGetLength(set); ++i) {
+    xmlNode* node = xmlXPathNodeSetItem(set, i);
+    fn(node);
+  }
 }
 
 const char*
@@ -637,6 +680,9 @@ main(int argc, char* argv[]) {
   //  }
 
   xpath_query(doc, xq);
+
+  xmlXPathObject* sets = getnodeset(doc, "//deviceset");
+  for_set(sets->nodesetval, build_deviceset);
 
   /*
    * Cleanup function for the XML library.
