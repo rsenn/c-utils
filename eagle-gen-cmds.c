@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>.h>
+#include <assert.h>
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
@@ -113,10 +113,23 @@ get_child(xmlNode* node, const char* name) {
   return NULL;
 }
 
-struct package* get_package(const char* name) {
-  struct package* ret = NULL;
-  size_t len;
-  cbmap_get(packages, (void*)name, str_len(name), (void**)&ret, &len);
+//struct package*
+//get_package(const char* name) {
+//  struct package* ret = NULL;
+//  size_t len;
+//  cbmap_get(packages, (void*)name, str_len(name)+1, (void**)&ret, &len);
+//  return ret;
+//}
+
+/**
+ * Index a cbmap
+ */
+void*
+at(cbmap_t map, const char* key) {
+  size_t  len = str_len(key)+1;
+  void* ret = NULL;
+
+  cbmap_get(map, (void*)key, len, &ret, &len);
   return ret;
 }
 
@@ -133,21 +146,34 @@ build_part(xmlNode* part) {
   if(!pkgname || str_len(pkgname) == 0) return;
 
   buffer_putm(buffer_2, "part: ", name, ", package: ", pkgname, NULL);
-  buffer_putnlflush(buffer_2);
 
   struct part p;
   byte_zero(&p, sizeof(struct part));
 
   stralloc_copys(&p.name, name);
-  stralloc_copys(&p.value, node_prop(part, "value"));
+
+  char* val =  node_prop(part, "value");
+  if(val)
+    stralloc_copys(&p.value, val);
 
   p.x = getdouble(part, "x");
   p.y = getdouble(part, "y");
 
-  p.pkg = get_package(pkgname);
+  p.pkg = at(packages, pkgname);
+
+  buffer_puts(buffer_2, " (0x");
+  buffer_putxlong(buffer_2, (unsigned long)p.pkg);
+  buffer_puts(buffer_2, ")");
+
+  buffer_putnlflush(buffer_2);
+
+  char* dsname = node_prop(part, "deviceset");
+
+  if(dsname)
+    p.dset = at(devicesets, dsname);
 
 
-  cbmap_insert(&parts, (void*)name, str_len(name), &p, sizeof(struct part));
+  cbmap_insert(parts, (void*)name, str_len(name)+1, &p, sizeof(struct part));
 }
 
 
@@ -186,7 +212,7 @@ build_package(xmlNode* set) {
     array_catb(&pkg.pads, (const void*)&p, sizeof(struct pad));
   }
 
-  cbmap_insert(packages, name, str_len(name), &pkg, sizeof(struct package));
+  cbmap_insert(packages, name, str_len(name)+1, &pkg, sizeof(struct package));
 
 }
 
@@ -235,10 +261,10 @@ build_deviceset(xmlNode* set) {
 
     pm.pkg = pkg;
 
-    cbmap_insert(d.devices, name, str_len(name), &pm, sizeof(struct pinmapping));
+    cbmap_insert(d.devices, name, str_len(name)+1, &pm, sizeof(struct pinmapping));
   }
 
-  cbmap_insert(devicesets, name, str_len(name), &d, sizeof(struct deviceset));
+  cbmap_insert(devicesets, name, str_len(name)+1, &d, sizeof(struct deviceset));
 }
 
 const char* document = "<doc/>";
