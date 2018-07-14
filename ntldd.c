@@ -199,8 +199,8 @@ int main(int argc, char **argv) {
       break;
     } else if(strcmp(argv[i], "--") == 0) {
       files = 1;
-    } else if(strlen(argv[i]) > 1 && argv[i][0] == '-' && (argv[i][1] == '-' ||
-              strlen(argv[i]) == 2) && !files) {
+    } else if(str_len(argv[i]) > 1 && argv[i][0] == '-' && (argv[i][1] == '-' ||
+              str_len(argv[i]) == 2) && !files) {
       fprintf(stderr, "Unrecognized option `%s'\n\
 Try `ntldd --help' for more information\n", argv[i]);
       skip = 1;

@@ -48,7 +48,7 @@ directory_iterator::next() {
 
 int
 directory_iterator::requested_buffer_length() {
-  if(m_retcode) return strlen(m_retcode)+1;
+  if(m_retcode) return str_len(m_retcode)+1;
   return 0;
 }
 

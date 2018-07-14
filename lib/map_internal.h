@@ -23,7 +23,7 @@ static unsigned map_hash(const char *str) {
 
 static map_node_t *map_newnode(const char *key, void *value, int vsize) {
   map_node_t *node;
-  int ksize = strlen(key) + 1;
+  int ksize = str_len(key) + 1;
   int voffset = ksize + ((sizeof(void*) - ksize) % sizeof(void*));
   node = malloc(sizeof(*node) + voffset + vsize);
   if (!node) return NULL;

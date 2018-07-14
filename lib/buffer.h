@@ -6,7 +6,7 @@
 #include <stddef.h>
 /* for ssize_t: */
 #include <sys/types.h>
-/* for strlen */
+/* for str_len */
 #include <string.h>
 #include "uint64.h"
 
@@ -70,8 +70,8 @@ int buffer_putsflush(buffer* b, const char* x);
 /* as a little gcc-specific hack,  if somebody calls buffer_puts with a
  * constant string,  where we know its length at compile-time,  call
  * buffer_put with the known length instead */
-#define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, strlen(s)) : buffer_puts(b, s))
-#define buffer_putsflush(b, s) (__builtin_constant_p(s) ? buffer_putflush(b, s, strlen(s)) : buffer_putsflush(b, s))
+#define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, str_len(s)) : buffer_puts(b, s))
+#define buffer_putsflush(b, s) (__builtin_constant_p(s) ? buffer_putflush(b, s, str_len(s)) : buffer_putsflush(b, s))
 #endif
 
 int buffer_putm_internal(buffer*b, ...);
@@ -127,6 +127,8 @@ int buffer_putlong(buffer *b, signed long int l);
 
 int buffer_putlonglong(buffer* b, signed long long int l);
 int buffer_putulonglong(buffer* b, unsigned long long int l);
+
+int buffer_putdouble(buffer *b, double d);
 
 int buffer_puterror(buffer* b);
 int buffer_puterror2(buffer* b,  int errnum);

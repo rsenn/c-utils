@@ -349,13 +349,13 @@ cb_new_kv(const char* key, size_t keylen, const void* value, size_t len, void* o
 void
 cb_get_kv(const void* kv, void* value, size_t len) {
   const char* key = (const char*)kv;
-  size_t keylen = strlen(key) + 1;
+  size_t keylen = str_len(key) + 1;
   memmove(value, key + keylen, len);
 }
 
 void
 cb_get_kv_ex(void* kv, void** value) {
   char* key = (char*)kv;
-  size_t keylen = strlen(key) + 1;
+  size_t keylen = str_len(key) + 1;
   *value = key + keylen;
 }

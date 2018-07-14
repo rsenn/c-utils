@@ -62,7 +62,7 @@ cbmap_mem_debug_strdup(const char* p, const char* file, int line) {
   result = strdup(p);
   if(result != NULL) {
     CBM_DEBUG_ALLOCATIONS += 1;
-    size = strlen(p);
+    size = str_len(p);
     CBM_DEBUG_ALLOCATED_BYTES += size;
   }
 #ifdef DEBUG
