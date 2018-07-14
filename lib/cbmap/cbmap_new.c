@@ -43,7 +43,6 @@ cbmap_nop_deallocator(void* data) {
   ; /* Empty */
 }
 
-
 struct cbmap_allocator CBMAP_DEFAULT_ALLOCATOR = {.malloc = cbmap_default_allocator, .free = cbmap_default_deallocator};
 
 struct cbmap_allocator CBMAP_NOP_ALLOCATOR = {.malloc = cbmap_nop_allocator, .free = cbmap_nop_deallocator};

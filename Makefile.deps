@@ -128,6 +128,8 @@ $(BUILDDIR)buffer_putalign.o: lib/buffer/buffer_putalign.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putc.o: lib/buffer/buffer_putc.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_putdouble.o: lib/buffer/buffer_putdouble.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_puterror.o: lib/buffer/buffer_puterror.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_puterror2.o: lib/buffer/buffer_puterror2.c
@@ -642,8 +644,6 @@ $(BUILDDIR)stralloc_diffb.o: lib/stralloc/stralloc_diffb.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_diffs.o: lib/stralloc/stralloc_diffs.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_eady.o: lib/stralloc/stralloc_eady.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_end.o: lib/stralloc/stralloc_end.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_endb.o: lib/stralloc/stralloc_endb.c
@@ -675,8 +675,6 @@ $(BUILDDIR)stralloc_lower.o: lib/stralloc/stralloc_lower.c
 $(BUILDDIR)stralloc_move.o: lib/stralloc/stralloc_move.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_nul.o: lib/stralloc/stralloc_nul.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_num.o: lib/stralloc/stralloc_num.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_opyb.o: lib/stralloc/stralloc_opyb.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

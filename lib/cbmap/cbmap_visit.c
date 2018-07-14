@@ -17,7 +17,6 @@ cbmap_visit(uint8_t* top, cbmap_visitor visitor_fn, void* user_data) {
   return visitor_fn(data->key, data->key_len, data->value, data->value_len, user_data);
 }
 
-
 int
 cbmap_visit_prefix(cbmap_t map, uint8_t* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data) {
   uint8_t* p = map->root;

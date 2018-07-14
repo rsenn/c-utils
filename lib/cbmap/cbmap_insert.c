@@ -51,7 +51,6 @@ cbmap_data_node_new(cbmap_allocator_t key_allocator, cbmap_allocator_t value_all
   return data;
 }
 
-
 /** mark - cbmap_insert */
 
 int
