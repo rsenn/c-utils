@@ -1,3 +1,4 @@
+#include "../str.h"
 #include "../cb_internal.h"
 
 void

@@ -1,3 +1,4 @@
+#include "../str.h"
 #include <stdarg.h>
 #include <string.h>
 #include "stralloc.h"

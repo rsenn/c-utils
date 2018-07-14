@@ -1,9 +1,10 @@
-﻿#include <ctype.h>
+#include <assert.h>
+#include <ctype.h>
 #include <float.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdbool.h>.h>
 #include <string.h>
-#include <assert.h>
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
@@ -47,12 +48,22 @@ struct pad {
 
 struct package {
   stralloc name;
-  array pads;
+  array pads; /**< list of struct pad */
 };
 
-struct pinlist {
+//struct pinlist {
+//  stralloc name;
+//  array pins;
+//};
+struct pin {
   stralloc name;
-  strlist pins;
+  double x, y, r;
+  bool visible;
+};
+
+struct symbol {
+  stralloc name;
+  array pins; /**< list of struct pin */
 };
 
 struct pinmapping {
@@ -67,8 +78,8 @@ struct gate {
 
 struct deviceset {
   stralloc name;
-  array gates;     // gate
-  cbmap_t devices; // pinmapping
+  array gates;     /**< list of struct gate */
+  cbmap_t devices; /**< map of struct pinmapping */
 };
 
 struct part {
@@ -79,8 +90,21 @@ struct part {
   struct deviceset* dset;
 };
 
-static cbmap_t devicesets, packages, parts;
+struct ref {
+  struct part* part;
+  int pad;
+};
 
+struct net {
+  stralloc name;
+  array contacts; /**<  list of struct ref */
+};
+
+static cbmap_t devicesets, packages, parts, nets, symbols;
+
+/**
+ * Reads a real-number value from the element/attribute given
+ */
 double
 getdouble(xmlNode* node, const char* key) {
   double ret = 0.0;
@@ -94,16 +118,24 @@ getdouble(xmlNode* node, const char* key) {
   return ret;
 }
 
-
+/**
+ * Gets a parent element by name.
+ */
 xmlElement*
 get_parent(void* n, const char* parent) {
   xmlNode* node = n;
 
-  while(node && str_diff(node_name(node), parent))
-    node = node->parent;
+  for(node = n; node; node = node->parent) {
+    if(node->name == NULL) continue;
+    if(str_equal(node_name(node), parent))
+      break;
+  }
   return (xmlElement*)node;
 }
 
+/**
+ * Gets a child element by name.
+ */
 xmlNode*
 get_child(xmlNode* node, const char* name) {
   for(node = node->children; node; node = node->next) {
@@ -113,8 +145,26 @@ get_child(xmlNode* node, const char* name) {
   return NULL;
 }
 
-//struct package*
-//get_package(const char* name) {
+/**
+ * Gets or creates a cbmap_t element.
+ */
+void*
+get_or_create(cbmap_t m, const char* name, size_t datasz) {
+  void* ptr = NULL;
+  size_t len = datasz;
+  size_t klen = str_len(name) + 1;
+  if(!cbmap_get(m, name, klen, &ptr, &len)) {
+    char* data = alloca(datasz);
+    byte_zero(data, datasz);
+    if(!cbmap_insert(m, name, klen, data, datasz))
+      return NULL;
+    cbmap_get(m, name, klen, &ptr, &len);
+  }
+  return ptr;
+}
+
+// struct package*
+// get_package(const char* name) {
 //  struct package* ret = NULL;
 //  size_t len;
 //  cbmap_get(packages, (void*)name, str_len(name)+1, (void**)&ret, &len);
@@ -126,11 +176,20 @@ get_child(xmlNode* node, const char* name) {
  */
 void*
 at(cbmap_t map, const char* key) {
-  size_t  len = str_len(key)+1;
+  size_t len = str_len(key) + 1;
   void* ret = NULL;
 
   cbmap_get(map, (void*)key, len, &ret, &len);
   return ret;
+}
+
+/**
+ * Outputs name/value pair
+ */
+void
+put_name_value(buffer* b, const char* name, const char* value) {
+  buffer_putm(b, name, ": ", value ? value : "(null)", NULL);
+  buffer_putnlflush(b);
 }
 
 /**
@@ -141,18 +200,19 @@ build_part(xmlNode* part) {
   char* name = node_prop(part, "name");
   char* pkgname = node_prop(part, "package");
 
+  if(!name || str_len(name) == 0)
+    return;
+  if(!pkgname || str_len(pkgname) == 0)
+    return;
 
-  if(!name || str_len(name) == 0) return;
-  if(!pkgname || str_len(pkgname) == 0) return;
-
-  buffer_putm(buffer_2, "part: ", name, ", package: ", pkgname, NULL);
+  //  put_name_value(buffer_2, "part", name);
 
   struct part p;
   byte_zero(&p, sizeof(struct part));
 
   stralloc_copys(&p.name, name);
 
-  char* val =  node_prop(part, "value");
+  char* val = node_prop(part, "value");
   if(val)
     stralloc_copys(&p.value, val);
 
@@ -161,21 +221,66 @@ build_part(xmlNode* part) {
 
   p.pkg = at(packages, pkgname);
 
-  buffer_puts(buffer_2, " (0x");
-  buffer_putxlong(buffer_2, (unsigned long)p.pkg);
-  buffer_puts(buffer_2, ")");
+  //  buffer_puts(buffer_2, " (0x");
+  //  buffer_putxlong(buffer_2, (unsigned long)p.pkg);
+  //  buffer_puts(buffer_2, ")");
 
-  buffer_putnlflush(buffer_2);
+  //  buffer_putnlflush(buffer_2);
 
   char* dsname = node_prop(part, "deviceset");
 
   if(dsname)
     p.dset = at(devicesets, dsname);
 
-
-  cbmap_insert(parts, (void*)name, str_len(name)+1, &p, sizeof(struct part));
+  cbmap_insert(parts, (void*)name, str_len(name) + 1, &p, sizeof(struct part));
 }
 
+
+/**
+ * Build structures from <symbol> element
+ */
+void
+build_sym(xmlNode* part) {
+  char* name = node_prop(part, "name");
+
+  if(!name || str_len(name) == 0)
+    return;
+
+  for(xmlNode* pin = part->children; pin; pin = pin->next) {
+    if(pin->type != XML_ELEMENT_NODE) continue;
+    if(str_diff(node_name(pin), "pin")) continue;
+    char* pin_name = node_prop(pin, "name");
+
+    put_name_value(buffer_2, "pin.name", pin_name);
+    put_name_value(buffer_2, "pin.x", node_prop(pin, "x"));
+
+
+  }
+}
+
+/**
+ * Build reference list from <contactref> or <pinref>
+ */
+void
+build_ref(xmlNode* ref) {
+  xmlNode* sn;
+
+  if(!(sn = get_parent(ref, "signal")))
+    sn = get_parent(ref, "net");
+
+  char* sign = node_prop(sn, "name");
+
+  if(sign == NULL) return;
+
+  put_name_value(buffer_2, "signal name:", sign);
+
+  struct net* n = get_or_create(&nets, sign, sizeof(struct net));
+
+  //  struct ref r;
+  //  byte_zero(&r, sizeof(struct ref));
+
+  //  stralloc_copys(&p.name, name);
+}
 
 /**
  * Build structures from <package> element
@@ -184,9 +289,7 @@ void
 build_package(xmlNode* set) {
   char* name = node_prop(set, "name");
 
-
-  buffer_putm(buffer_2, "package: ", name, NULL);
-  buffer_putnlflush(buffer_2);
+  // put_name_value(buffer_2, "package: ", name);
 
   struct package pkg;
   byte_zero(&pkg, sizeof(struct package));
@@ -198,22 +301,21 @@ build_package(xmlNode* set) {
       continue;
 
     char* pn = node_prop(node, "name");
-    if(!pn || str_len(pn) == 0) continue;
+    if(!pn || str_len(pn) == 0)
+      continue;
 
     struct pad p;
 
-
     byte_zero(&p, sizeof(struct pad));
 
-      p.x = getdouble(node, "x");
-      p.y = getdouble(node, "y");
-      stralloc_copys(&p.name, pn);
+    p.x = getdouble(node, "x");
+    p.y = getdouble(node, "y");
+    stralloc_copys(&p.name, pn);
 
     array_catb(&pkg.pads, (const void*)&p, sizeof(struct pad));
   }
 
-  cbmap_insert(packages, name, str_len(name)+1, &pkg, sizeof(struct package));
-
+  cbmap_insert(packages, name, str_len(name) + 1, &pkg, sizeof(struct package));
 }
 
 /**
@@ -223,9 +325,7 @@ void
 build_deviceset(xmlNode* set) {
 
   char* name = node_prop(set, "name");
-
-  buffer_putm(buffer_2, "deviceset: ", name, NULL);
-  buffer_putnlflush(buffer_2);
+  put_name_value(buffer_2, "deviceset", name);
 
   struct deviceset d;
   byte_zero(&d, sizeof(struct deviceset));
@@ -238,7 +338,8 @@ build_deviceset(xmlNode* set) {
   xmlNode* devices = get_child(set, "devices");
 
   for(xmlNode* node = gates->children; node; node = node->next) {
-    if(node->type != XML_ELEMENT_NODE) continue;
+    if(node->type != XML_ELEMENT_NODE)
+      continue;
     struct gate g;
     byte_zero(&g, sizeof(struct gate));
     stralloc_copys(&g.name, node_prop(node, "name"));
@@ -247,13 +348,14 @@ build_deviceset(xmlNode* set) {
     array_catb(&d.gates, (const void*)&g, sizeof(struct gate));
   }
   for(xmlNode* node = devices->children; node; node = node->next) {
-    if(node->type != XML_ELEMENT_NODE) continue;
+    if(node->type != XML_ELEMENT_NODE)
+      continue;
     struct pinmapping pm;
     char* name = node_prop(node, "name");
-    if(!name || str_len(name) == 0) continue;
+    if(!name || str_len(name) == 0)
+      continue;
     char* package = node_prop(node, "package");
     byte_zero(&pm, sizeof(struct pinmapping));
-
 
     struct package* pkg;
     size_t len;
@@ -261,10 +363,10 @@ build_deviceset(xmlNode* set) {
 
     pm.pkg = pkg;
 
-    cbmap_insert(d.devices, name, str_len(name)+1, &pm, sizeof(struct pinmapping));
+    cbmap_insert(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
   }
 
-  cbmap_insert(devicesets, name, str_len(name)+1, &d, sizeof(struct deviceset));
+  cbmap_insert(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
 }
 
 const char* document = "<doc/>";
@@ -358,8 +460,6 @@ xmlElement*
 net_for_node(xmlNode* node) {
   return get_parent(node, "net");
 }
-
-
 
 void
 nodeset_topleft(xmlNodeSet* s, double* x, double* y) {
@@ -776,7 +876,8 @@ main(int argc, char* argv[]) {
   devicesets = cbmap_new();
   packages = cbmap_new();
   parts = cbmap_new();
-
+  nets = cbmap_new();
+  symbols = cbmap_new();
 
   /*
    * this initialize the library and check potential ABI mismatches
@@ -830,6 +931,17 @@ main(int argc, char* argv[]) {
 
   for_set(xpo->nodesetval, build_part);
 
+  xpo = getnodeset(doc, "//contactref");
+  if(!xpo || !xpo->nodesetval)
+    xpo = getnodeset(doc, "//pinref");
+
+  if(xpo && xpo->nodesetval)
+    for_set(xpo->nodesetval, build_ref);
+
+  xpo = getnodeset(doc, "//symbol");
+
+  if(xpo && xpo->nodesetval)
+    for_set(xpo->nodesetval, build_sym);
 
   /*
    * Cleanup function for the XML library.

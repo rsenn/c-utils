@@ -1,3 +1,4 @@
+#include "../str.h"
 #include <assert.h>
 #include "../dir_internal.h"
 
