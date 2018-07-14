@@ -133,4 +133,13 @@ SOURCES += eagle-gen-cmds.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buff
     lib/cbmap/cbmap_visit.c \
     lib/cbmap/cbmap_visit_all.c \
     lib/cbmap/alloc.c \
-    lib/cbmap/cbmap_internal_node.c
+    lib/cbmap/cbmap_internal_node.c \
+    lib/buffer/buffer_get.c \
+    lib/buffer/buffer_mmapread.c \
+    lib/buffer/buffer_mmapprivate.c \
+    lib/buffer/buffer_feed.c \
+    lib/buffer/buffer_munmap.c \
+    lib/buffer/buffer_stubborn2.c \
+    lib/mmap/mmap_read.c \
+    lib/buffer/buffer_skip_until.c \
+    lib/stralloc/stralloc_catm_internal.c

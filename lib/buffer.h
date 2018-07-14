@@ -51,6 +51,7 @@ void buffer_free(void* buf);
 void buffer_munmap(void* buf);
 int buffer_mmapread(buffer* b, const char* filename);
 int buffer_mmapread_fd(buffer *b,  int fd);
+int buffer_mmapprivate(buffer* b, const char* filename);
 void buffer_close(buffer* b);
 
 /* reading from an fd... if it is a regular file,  then  buffer_mmapread_fd is called,
@@ -98,6 +99,7 @@ ssize_t buffer_getn(buffer* b, char* x, size_t len);
  * EOF is reached,  \0 is written to the buffer */
 ssize_t buffer_get_token(buffer* b, char* x, size_t len, const char* charset, size_t setlen);
 ssize_t buffer_getline(buffer* b, char* x, size_t len);
+int buffer_skip_until(buffer* b, const char* charset, size_t setlen);
 
 /* this predicate is given the string as currently read from the buffer
  * and is supposed to return 1 if the token is complete,  0 if not. */

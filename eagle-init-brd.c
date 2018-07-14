@@ -34,7 +34,7 @@ static void update_minmax_xy(float x, float y) {
     max_y = y;
 };
 
-static xmlDocPtr xmldoc = NULL;
+static xmlDoc* xmldoc = NULL;
 
 static HMAP_DB* hashmap = NULL;
 static TUPLE* ptr_tuple = NULL;
@@ -434,11 +434,11 @@ static const char* get_characters() {
 
 /* ----------------------------------------------------------------------- */
 int read_xmlfile(const char* filename);
-int parse_xmlfile(const char* filename, xmlDocPtr* p_doc);
+int parse_xmlfile(const char* filename, xmlDoc** p_doc);
 xmlSAXHandler make_sax_handler();
 
 /* ----------------------------------------------------------------------- */
-static void on_attribute_decl(void*, const xmlChar*, const xmlChar*, int, int, const xmlChar*, xmlEnumerationPtr);
+static void on_attribute_decl(void*, const xmlChar*, const xmlChar*, int, int, const xmlChar*, xmlEnumeration*);
 
 static void after_element(const char*);
 static void on_start_element(void*, const xmlChar*, const xmlChar**);
@@ -470,7 +470,7 @@ int read_xmlfile(const char* filename) {
 
   xmlSAXHandler sax_hander = make_sax_handler();
 
-  xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt(&sax_hander, NULL, chars, res, NULL);
+  xmlParserCtxt* ctxt = xmlCreatePushParserCtxt(&sax_hander, NULL, chars, res, NULL);
 
   while((res = fread(chars, 1, sizeof(chars), f)) > 0) {
     if(xmlParseChunk(ctxt, chars, res, 0)) {
@@ -488,9 +488,9 @@ int read_xmlfile(const char* filename) {
 }
 
 /* ----------------------------------------------------------------------- */
-int parse_xmlfile(const char* filename, xmlDocPtr* p_doc) {
-  xmlParserCtxtPtr ctxt; /* the parser context */
-  xmlDocPtr doc;         /* the resulting document tree */
+int parse_xmlfile(const char* filename, xmlDoc** p_doc) {
+  xmlParserCtxt* ctxt; /* the parser context */
+  xmlDoc* doc;         /* the resulting document tree */
 
   /* create a parser context */
   ctxt = xmlNewParserCtxt();
@@ -539,7 +539,7 @@ xmlSAXHandler make_sax_handler() {
 }
 
 /* ----------------------------------------------------------------------- */
-static void on_attribute_decl(void* ctx, const xmlChar* elem, const xmlChar* fullname, int type, int def, const xmlChar* defaultValue, xmlEnumerationPtr tree) {
+static void on_attribute_decl(void* ctx, const xmlChar* elem, const xmlChar* fullname, int type, int def, const xmlChar* defaultValue, xmlEnumeration* tree) {
   /* printf("<%s> %s=\"%s\"\n", get_element_name(), fullname, defaultValue); */
 }
 
