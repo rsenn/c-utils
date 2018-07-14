@@ -1,9 +1,9 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include "critbit.h"
+#include "cb.h"
 
-/* see http://cr.yp.to/critbit.html */
+/* see http://cr.yp.to/cb.html */
 struct critbit_node {
   void* child[2];
   size_t byte;

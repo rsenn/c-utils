@@ -12,12 +12,12 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 **/
 
-#include "critbit.h"
+#include "cb.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
-/* see http://cr.yp.to/critbit.html */
+/* see http://cr.yp.to/cb.html */
 struct critbit_node {
   void* child[2];
   size_t byte;

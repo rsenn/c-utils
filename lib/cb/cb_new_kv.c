@@ -1,5 +1,5 @@
 #include <string.h>
-#include "../critbit.h"
+#include "../cb.h"
 
 size_t
 cb_new_kv(const char* key, size_t keylen, const void* value, size_t len, void* out) {

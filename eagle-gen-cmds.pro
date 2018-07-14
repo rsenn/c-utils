@@ -58,9 +58,10 @@ HEADERS = \
     lib/cbmap/cbmap.h \
     lib/cbmap.h \
     lib/cb_internal.h \
-    lib/critbit.h \
+    lib/cb.h \
     lib/cb_internal.h \
-    lib/cbmap_internal.h
+    lib/cbmap_internal.h \
+    lib/cb.h
 
 DEFINES += LSEEK=lseek64
 

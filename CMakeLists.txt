@@ -307,7 +307,7 @@ endforeach()
 
 
 #
-foreach(ARCHIVE array buffer byte dir fmt hmap http iarray io list mmap ndelay open playlist rdir scan socket str stralloc strarray strlist tai taia time uint16 uint32 uint64)
+foreach(ARCHIVE array buffer cb cbmap byte dir fmt hmap http iarray io list mmap ndelay open playlist rdir scan socket str stralloc strarray strlist tai taia time uint16 uint32 uint64)
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
   file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
   if(NOT MODSOURCES)
