@@ -1,4 +1,4 @@
-#include "scan.h"
+#include "../scan.h"
 
 /* ASN.1 DER encoded length:
  * if (value<=0x80):

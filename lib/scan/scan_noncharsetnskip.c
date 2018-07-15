@@ -1,4 +1,4 @@
-#include "scan.h"
+#include "../scan.h"
 #include <ctype.h>
 
 size_t scan_noncharsetnskip(const char *s,const char *charset,size_t limit) {

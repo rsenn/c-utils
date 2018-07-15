@@ -9,6 +9,7 @@
 /* for str_len */
 #include <string.h>
 #include "uint64.h"
+#include "str.h"
 
 #ifdef __cplusplus
 extern "C" {

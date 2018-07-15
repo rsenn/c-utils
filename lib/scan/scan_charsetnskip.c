@@ -1,4 +1,4 @@
-#include "scan.h"
+#include "../scan.h"
 #include <ctype.h>
 
 /* Return the number of leading chars in s that are in charset, but no

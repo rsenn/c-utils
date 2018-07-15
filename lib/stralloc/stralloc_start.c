@@ -1,4 +1,5 @@
 #include "../byte.h"
+#include "../byte.h"
 #include "../stralloc.h"
 
 unsigned int stralloc_start(register const stralloc *sa, register const stralloc *prefix)

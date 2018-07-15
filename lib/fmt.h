@@ -132,3 +132,4 @@ size_t fmt_escapecharquotedprintableutf8(char *dest, unsigned int ch);
 #endif
 
 #endif
+char fmt_tohex(char c);

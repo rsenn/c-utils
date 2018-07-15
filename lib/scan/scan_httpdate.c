@@ -1,8 +1,9 @@
+#include "../byte.h"
 #define _GNU_SOURCE
 #define __deprecated__
-#include "scan.h"
-#include "byte.h"
-#include "case.h"
+#include "../scan.h"
+#include "../byte.h"
+#include "../case.h"
 #include <time.h>
 #include <stdlib.h>
 

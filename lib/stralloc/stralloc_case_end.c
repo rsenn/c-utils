@@ -1,4 +1,5 @@
 #include "../byte.h"
+#include "../byte.h"
 #include "../stralloc.h"
 
 unsigned int stralloc_case_end(const stralloc *sa, const stralloc *suffix)

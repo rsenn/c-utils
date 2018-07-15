@@ -129,6 +129,18 @@ int stralloc_chomp(stralloc* sa);
 
 int stralloc_decamelize(stralloc *sa, stralloc *to);
 
+int stralloc_case_diff(const stralloc *sa1, const stralloc *sa2);
+int stralloc_case_diffs(const stralloc *sa, const char *s);
+int stralloc_diffb(register const stralloc *sa, const void *d, register unsigned int dlen);
+int stralloc_diffs(const stralloc *a, const char *b);
+unsigned int stralloc_case_equal(const stralloc *sa1, const stralloc *sa2);
+unsigned int stralloc_case_equals(const stralloc *sa, const char *s);
+unsigned int stralloc_cathexb(register stralloc *sa, const void *d, register unsigned int n);
+unsigned int stralloc_equalb(const stralloc *sa, const void *d, unsigned int dlen);
+unsigned int stralloc_find(const stralloc *sa, register const stralloc *what);
+unsigned int stralloc_findb(const stralloc *sa, const void *what, unsigned int len);
+unsigned int stralloc_finds(const stralloc *sa, register const char *what);
+
 #ifdef BUFFER_H
 /* write stralloc to buffer */
 int buffer_putsa(buffer* b, const stralloc* sa);

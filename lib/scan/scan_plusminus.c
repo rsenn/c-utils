@@ -1,4 +1,4 @@
-#include "scan.h"
+#include "../scan.h"
 
 size_t scan_plusminus(const char *src,signed int *dest) {
   *dest=1;

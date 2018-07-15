@@ -1,4 +1,4 @@
-#include "scan.h"
+#include "../scan.h"
 
 size_t scan_xshort(const char* src,unsigned short* dest) {
   register const char *tmp=src;

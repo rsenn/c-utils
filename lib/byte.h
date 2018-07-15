@@ -45,6 +45,15 @@ int byte_equal_notimingattack(const void* a, size_t len,const void* b) __pure__;
 
 void byte_fill(void *out, size_t len, int c);
 
+int byte_case_diff(const void *x1, unsigned int len, const void *x2);
+unsigned int byte_case_equal(register const void *s, register unsigned int len, register const void *t);
+void byte_copyr(void *out, size_t len, const void *in);
+unsigned int byte_count(const void *s, register unsigned int n, char c);
+int byte_diff(const void *a, size_t len, const void *b);
+unsigned int byte_equal(const void *s, unsigned int n, const void *t);
+void byte_fill(void *out, size_t len, int c);
+void byte_lower(void *s, register unsigned int len);
+
 #if defined(__i386__) || defined(__x86_64__)
 #define UNALIGNED_ACCESS_OK
 #endif

@@ -307,7 +307,7 @@ build_ref(xmlNode* ref) {
 
   if(sign == NULL) return;
 
-  put_name_value(buffer_2, "signal name:", sign);
+//  put_name_value(buffer_2, "signal name:", sign);
 
   struct net* n = get_or_create(nets, sign, sizeof(struct net));
 
@@ -447,7 +447,7 @@ getnodeset(void* n, const char* xpath) {
     return NULL;
   }
 
-  buffer_puts(buffer_2, "nodes: ");
+  buffer_putm(buffer_2, "xpath: ", xpath, ", num nodes: ", NULL);
   buffer_putulong(buffer_2, result && result->nodesetval ? xmlXPathNodeSetGetLength(result->nodesetval) : 0);
   buffer_putnlflush(buffer_2);
 
