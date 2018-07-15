@@ -629,10 +629,10 @@ dump_net(buffer* b, struct net* n) {
   int64 i, len = array_length(&n->contacts, sizeof(struct ref));
 
   for(i = 0; i < len; ++i) {
-     struct ref* r = array_get(&n->contacts, sizeof(struct ref), i);
+    struct ref* r = array_get(&n->contacts, sizeof(struct ref), i);
 
-     buffer_putspace(b);
-     buffer_putsa(b, &r->part->name);
+    buffer_putspace(b);
+    buffer_putsa(b, &r->part->name);
     buffer_putc(b, '.');
     buffer_putulong(b, r->pin);
   }
