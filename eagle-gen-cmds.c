@@ -381,6 +381,7 @@ build_deviceset(xmlNode* set) {
 
     array_catb(&d.gates, (const void*)&g, sizeof(struct gate));
   }
+
   for(xmlNode* node = devices->children; node; node = node->next) {
     if(node->type != XML_ELEMENT_NODE)
       continue;
@@ -406,19 +407,17 @@ build_deviceset(xmlNode* set) {
 const char* document = "<doc/>";
 static const char* xq = "//net";
 
-void
-node_print(xmlNode* node);
-int
-node_depth(xmlNode* node);
-int
-str_ischarset(const char* s, const char* set);
-int
-str_isfloat(const char* s);
-int
-str_isspace(const char* s);
-void
-print_element_attrs(xmlNode* a_node);
+void node_print(xmlNode* node);
+int node_depth(xmlNode* node);
+int str_ischarset(const char* s, const char* set);
+int str_isfloat(const char* s);
+int str_isspace(const char* s);
+void print_element_attrs(xmlNode* a_node);
 
+
+/**
+ * Run an XPath query and return a XPath object
+ */
 xmlXPathObject*
 getnodeset(void* n, const char* xpath) {
 
@@ -454,12 +453,15 @@ getnodeset(void* n, const char* xpath) {
   return result;
 }
 
+/**
+ * Retrieve all <part> (schematic) or <element> (board) objects
+ */
 strlist
 getparts(xmlDoc* doc) {
   strlist ret;
   strlist_init(&ret);
 
-  xmlXPathObject* nodes = getnodeset(doc, "//part");
+  xmlXPathObject* nodes = getnodeset(doc, "//part | //element");
   if(!nodes || !nodes->nodesetval)
     return ret;
 
@@ -471,6 +473,9 @@ getparts(xmlDoc* doc) {
   return ret;
 }
 
+/**
+ * Iterate through a node-set, calling a functor for every item
+ */
 void
 for_set(xmlNodeSet* set, void (*fn)(xmlNode*)) {
   if(!set)
@@ -481,20 +486,9 @@ for_set(xmlNodeSet* set, void (*fn)(xmlNode*)) {
   }
 }
 
-const char*
-x_for_parent(xmlElement* node, const char* parent, const char* attr_name) {
-
-  node = get_parent(node, parent);
-  if(node)
-    return node_prop(node, attr_name);
-  return NULL;
-}
-
-xmlElement*
-net_for_node(xmlNode* node) {
-  return get_parent(node, "net");
-}
-
+/**
+ * Get the top-leftmost x and y coordinate from a set of nodes.
+ */
 void
 nodeset_topleft(xmlNodeSet* s, double* x, double* y) {
   int len = xmlXPathNodeSetGetLength(s);
@@ -568,7 +562,7 @@ dump_package(xmlElement* elem) {
     if(!str_diff(node_name(node), "pad")) {
 
       double xpos = round((getdouble(node, "x") - dx) / 0.254) * 0.1;
-      double ypos = round((getdouble(node, "") - dy) / 0.254) * 0.1;
+      double ypos = round((getdouble(node, "y") - dy) / 0.254) * 0.1;
 
       buffer_putdouble(buffer_1, xpos);
       buffer_puts(buffer_1, ",");
