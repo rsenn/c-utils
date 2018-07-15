@@ -1,5 +1,5 @@
-#include "stdint.h"
-#include "stralloc.h"
+#include <stdint.h>
+#include "../stralloc.h"
 #include <ctype.h>
 
 void stralloc_replace_non_printable(register stralloc *sa, char ch)

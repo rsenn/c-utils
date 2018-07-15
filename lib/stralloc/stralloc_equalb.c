@@ -1,4 +1,4 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 
 unsigned int stralloc_equalb(const stralloc *sa, const void *d, unsigned int dlen)
 {

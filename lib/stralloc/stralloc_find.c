@@ -1,4 +1,4 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 /*
   return index to first occurance of data,
   otherwise return sa->len

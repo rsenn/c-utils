@@ -1,8 +1,8 @@
-#include "stdint.h"
-#include "stralloc.h"
-#include "sa_stream.h"
-#include "error.h"
-#include "char.h"
+#include <stdint.h>
+#include "../stralloc.h"
+#include "../sa_stream.h"
+#include "../error.h"
+#include "../char.h"
 
 unsigned int stralloc_qp_decode(stralloc *out, const stralloc *in)
 {

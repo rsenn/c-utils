@@ -1,4 +1,4 @@
-#include "cbmap.h"
+#include "../cbmap.h"
 #include "alloc.h"
 
 #include <stdint.h>

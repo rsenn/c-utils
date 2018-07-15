@@ -1,4 +1,4 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 
 void stralloc_replace(register stralloc *sa, char before, char after)
 {

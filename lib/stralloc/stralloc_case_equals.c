@@ -1,4 +1,4 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 
 unsigned int stralloc_case_equals(const stralloc *sa, const char *s)
 {

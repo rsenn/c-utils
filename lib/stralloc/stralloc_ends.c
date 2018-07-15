@@ -1,6 +1,6 @@
-#include "str.h"
-#include "byte.h"
-#include "stralloc.h"
+#include "../str.h"
+#include "../byte.h"
+#include "../stralloc.h"
 
 unsigned int stralloc_ends(register const stralloc *sa, const char *suffix)
 {

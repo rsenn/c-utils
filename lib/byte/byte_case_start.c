@@ -1,5 +1,5 @@
-#include "byte.h"
-#include "stdint.h"
+#include "../byte.h"
+#include <stdint.h>
 
 unsigned int
 byte_case_start(register const void* x1, unsigned int len, register const void* x2) {

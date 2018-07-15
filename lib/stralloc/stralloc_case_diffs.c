@@ -1,6 +1,6 @@
-#include "byte.h"
-#include "str.h"
-#include "stralloc.h"
+#include "../byte.h"
+#include "../str.h"
+#include "../stralloc.h"
 
 int stralloc_case_diffs(const stralloc *sa, const char *s)
 {

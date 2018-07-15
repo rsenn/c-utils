@@ -1,4 +1,4 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 
 unsigned int stralloc_catulong(register stralloc *sa, unsigned long ul)
 {

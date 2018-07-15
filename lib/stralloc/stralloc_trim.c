@@ -1,5 +1,5 @@
-#include "stralloc.h"
-#include "byte.h"
+#include "../stralloc.h"
+#include "../byte.h"
 
 void stralloc_trim(register stralloc *sa, register const char *trimchars, register unsigned int trimcharslen)
 {

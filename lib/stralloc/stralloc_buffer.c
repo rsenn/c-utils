@@ -1,5 +1,5 @@
-#include "stralloc.h"
-#include "buffer.h"
+#include "../stralloc.h"
+#include "../buffer.h"
 
 int main() {
   static stralloc sa;

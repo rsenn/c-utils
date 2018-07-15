@@ -1,4 +1,4 @@
-#include "stralloc.h"
+#include "../stralloc.h"
 
 unsigned int stralloc_catuint(stralloc *sa, unsigned int ui)
 {

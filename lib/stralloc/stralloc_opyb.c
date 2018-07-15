@@ -2,8 +2,8 @@
  * reimplementation of Daniel Bernstein's unix library.
  * placed in the public domain by Uwe Ohse, uwe@ohse.de.
  */
-#include "stralloc.h"
-#include "byte.h"
+#include "../stralloc.h"
+#include "../byte.h"
 
 int
 stralloc_copyb (stralloc * sa, const char *src, unsigned int n)

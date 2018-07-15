@@ -1,9 +1,9 @@
-#include "../buffer.h"
-#if !(defined(_WIN32) || defined(_WIN64))
-#include "unistd.h"
+#if defined(_WIN32) || defined(_WIN64)
+#include "../io_internal.h"
 #else
-#include "io.h"
+#include <unistd.h>
 #endif
+#include "../buffer.h"
 
 void
 buffer_close(buffer* b) {

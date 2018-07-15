@@ -1,8 +1,8 @@
-#include "stdint.h"
-#include "stralloc.h"
-#include "byte.h"
-#include "char.h"
-#include "fmt.h"
+#include <stdint.h>
+#include "../stralloc.h"
+#include "../byte.h"
+#include "../char.h"
+#include "../fmt.h"
 
 unsigned int stralloc_qp_encode(stralloc *out, const stralloc *in)
 {

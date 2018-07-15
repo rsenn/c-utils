@@ -1,7 +1,7 @@
 #include "../str.h"
 #include <stdarg.h>
 #include <string.h>
-#include "stralloc.h"
+#include "../stralloc.h"
 #undef stralloc_catm_internal
 
 int stralloc_catm_internal(stralloc* sa, ...) {

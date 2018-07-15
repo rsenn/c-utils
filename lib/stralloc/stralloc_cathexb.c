@@ -1,5 +1,5 @@
-#include "stralloc.h"
-#include "fmt.h"
+#include "../stralloc.h"
+#include "../fmt.h"
 
 unsigned int stralloc_cathexb(register stralloc *sa, const void *d, register unsigned int n)
 {

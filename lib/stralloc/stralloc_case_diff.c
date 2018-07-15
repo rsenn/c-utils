@@ -1,5 +1,5 @@
-#include "byte.h"
-#include "stralloc.h"
+#include "../byte.h"
+#include "../stralloc.h"
 
 int stralloc_case_diff(const stralloc *sa1, const stralloc *sa2)
 {

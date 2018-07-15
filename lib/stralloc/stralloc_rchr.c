@@ -1,5 +1,5 @@
-#include "byte.h"
-#include "stralloc.h"
+#include "../byte.h"
+#include "../stralloc.h"
 
 unsigned int stralloc_rchr(register const stralloc *sa, char c)
 {

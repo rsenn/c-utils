@@ -1,6 +1,6 @@
-#include "byte.h"
-#include "stralloc.h"
-#include "str.h"
+#include "../byte.h"
+#include "../stralloc.h"
+#include "../str.h"
 
 unsigned int stralloc_case_starts(const stralloc *sa, const char *prefix)
 {

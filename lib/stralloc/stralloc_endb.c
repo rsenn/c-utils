@@ -1,5 +1,5 @@
-#include "byte.h"
-#include "stralloc.h"
+#include "../byte.h"
+#include "../stralloc.h"
 
 unsigned int stralloc_endb(register const stralloc *sa, const void *suffix, register unsigned int len)
 {

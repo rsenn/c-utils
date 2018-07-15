@@ -1,4 +1,4 @@
-#include "byte.h"
+#include "../byte.h"
 
 unsigned int
 byte_equal(const void* s, unsigned int n, const void* t) {

@@ -3,7 +3,7 @@
 #include <float.h>
 #include <math.h>
 #include <stdio.h>
-#include <stdbool.h>.h>
+#include <stdbool.h>
 #include <string.h>
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -119,6 +119,22 @@ getdouble(xmlNode* node, const char* key) {
 }
 
 /**
+ * Reads an integer number value from the element/attribute given
+ */
+int
+getint(xmlNode* node, const char* key) {
+  long ret = INT_MIN;
+  const char* istr =  node_prop(node, key);
+  if(istr) {
+    while(*istr && str_chr("-0123456789", *istr) >= 11)
+      ++istr;
+    if(!scan_long(istr, &ret))
+      ret = INT_MAX;
+  }
+  return ret;
+}
+
+/**
  * Gets a parent element by name.
  */
 xmlElement*
@@ -216,8 +232,8 @@ build_part(xmlNode* part) {
   if(val)
     stralloc_copys(&p.value, val);
 
-  p.x = getdouble(part, "x");
-  p.y = getdouble(part, "y");
+  p.x = getdouble(part, "x") / 0.127;
+  p.y = getdouble(part, "y") / 0.127;
 
   p.pkg = at(packages, pkgname);
 
@@ -246,13 +262,31 @@ build_sym(xmlNode* part) {
   if(!name || str_len(name) == 0)
     return;
 
+  struct symbol *sym = get_or_create(symbols, name, sizeof(struct symbol));
+
+  stralloc_copys(&sym->name, name);
+
+  size_t i = 0;
+
   for(xmlNode* pin = part->children; pin; pin = pin->next) {
     if(pin->type != XML_ELEMENT_NODE) continue;
     if(str_diff(node_name(pin), "pin")) continue;
     char* pin_name = node_prop(pin, "name");
+    if(pin_name == NULL) continue;
 
-    put_name_value(buffer_2, "pin.name", pin_name);
-    put_name_value(buffer_2, "pin.x", node_prop(pin, "x"));
+    struct pin* p = array_allocate(&sym->pins, sizeof(struct ref), i++);
+
+    stralloc_copys(&p->name, pin_name);
+    p->x = getdouble(pin, "x");
+    p->y = getdouble(pin, "y");
+    p->r = (double)getint(pin, "rot") * M_PI / 180;
+    p->visible = str_diff(node_prop(pin, "visible"), "off");
+
+
+//    put_name_value(buffer_2, "pin.name", pin_name);
+//    put_name_value(buffer_2, "pin.x", node_prop(pin, "x"));
+//    put_name_value(buffer_2, "pin.y", node_prop(pin, "y"));
+//    put_name_value(buffer_2, "pin.visible", node_prop(pin, "visible"));
 
 
   }
@@ -274,7 +308,7 @@ build_ref(xmlNode* ref) {
 
   put_name_value(buffer_2, "signal name:", sign);
 
-  struct net* n = get_or_create(&nets, sign, sizeof(struct net));
+  struct net* n = get_or_create(nets, sign, sizeof(struct net));
 
   //  struct ref r;
   //  byte_zero(&r, sizeof(struct ref));

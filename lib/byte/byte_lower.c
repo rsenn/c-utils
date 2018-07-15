@@ -1,5 +1,5 @@
-#include "byte.h"
-#include "stdint.h"
+#include "../byte.h"
+#include <stdint.h>
 
 void
 byte_lower(void* s, register unsigned int len) {
