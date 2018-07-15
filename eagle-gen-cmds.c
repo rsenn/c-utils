@@ -275,6 +275,7 @@ build_sym(xmlNode* part) {
     if(pin_name == NULL) continue;
 
     struct pin* p = array_allocate(&sym->pins, sizeof(struct ref), i++);
+    byte_zero(p, sizeof(struct ref));
 
     stralloc_copys(&p->name, pin_name);
     p->x = getdouble(pin, "x");
