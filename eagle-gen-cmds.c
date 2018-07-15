@@ -39,10 +39,12 @@
 #include <stdio.h>
 
 #define NODE_NAME(n) ((char*)(n)->name)
-#define NODE_PROPERTY(n, p) ((char*)xmlGetProp(((xmlNode*)(n)), ((xmlChar*)(p))))
 #define NODE_IS_ELEMENT(n) (((xmlNode*)(n))->type == 1)
 #define NODE_ATTRIBUTES(n) (void*)(NODE_IS_ELEMENT(n) ? ((xmlElement*)(n))->attributes : NULL)
 #define NODE_CONTENT(n) ((char*)xmlNodeGetContent(n))
+#define NODE_CHILDREN(n) ((xmlNode*)(n))->children
+//#define NODE_ATTRIBUTES(n) ((xmlElement*)(n))->attributes
+#define NODE_PROPERTY(n, p) ((char*)xmlGetProp(((xmlNode*)(n)), ((xmlChar*)(p))))
 
 struct pad {
   stralloc name;
@@ -88,14 +90,19 @@ struct deviceset {
 struct part {
   stralloc name;
   stralloc value;
-  double x, y;
   struct package* pkg;
+  struct device* dev;
   struct deviceset* dset;
+  double x, y;
 };
 
 struct ref {
   struct part* part;
-  int pad;
+  int gate;
+  union {
+    int pad;
+    int pin;
+  };
 };
 
 struct net {
@@ -224,7 +231,7 @@ get_or_create(cbmap_t m, char* name, size_t datasz) {
  * Index a cbmap
  */
 void*
-at(cbmap_t map, const char* key) {
+get_entry(cbmap_t map, const char* key) {
   size_t len = str_len(key) + 1;
   void* ret = NULL;
   cbmap_get(map, (void*)key, len, &ret, &len);
@@ -237,7 +244,6 @@ at(cbmap_t map, const char* key) {
 void
 print_name_value(buffer* b, const char* name, const char* value) {
   buffer_putm(b, name, ": ", value ? value : "(null)", NULL);
-  buffer_putnlflush(b);
 }
 
 /**
@@ -263,7 +269,8 @@ build_part(xmlNode* part) {
     stralloc_copys(&p.value, val);
   p.x = get_double(part, "x") / 0.127;
   p.y = get_double(part, "y") / 0.127;
-  p.pkg = at(packages, pkgname);
+
+  p.pkg = get_entry(packages, pkgname);
   //  buffer_puts(buffer_2, " (0x");
   //  buffer_putxlong(buffer_2, (unsigned long)p.pkg);
   //  buffer_puts(buffer_2, ")");
@@ -271,7 +278,7 @@ build_part(xmlNode* part) {
   char* dsname = NODE_PROPERTY(part, "deviceset");
 
   if(dsname)
-    p.dset = at(devicesets, dsname);
+    p.dset = get_entry(devicesets, dsname);
 
 
   cbmap_insert(parts, (void*)name, str_len(name) + 1, &p, sizeof(struct part));
@@ -313,6 +320,42 @@ build_sym(xmlNode* part) {
 }
 
 /**
+ * @param node   Parent is the 'net' or 'signal' element
+ */
+void
+build_reflist(xmlNode* node,  struct net* n, int* index) {
+
+  for(; node; node = node->next) {
+    if(!NODE_IS_ELEMENT(node))
+      continue;
+
+    char* nn = NODE_NAME(node);
+
+    if(str_equal(nn, "segment")) {
+      build_reflist(node->children, n, index);
+      continue;
+    }
+
+    bool is_pin = str_equal(nn, "pinref");
+
+    if(str_diff(nn, is_pin ? "pinref" : "contactref"))
+      continue;
+
+    char* part_name = NODE_PROPERTY(node, is_pin ? "part" : "element");
+
+    struct ref* r = array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
+
+    r->part = get(parts, part_name, sizeof(struct part));
+
+    print_name_value(buffer_1, nn, part_name);
+    buffer_putc(buffer_1, '\t');
+    print_element_attrs(node);
+    buffer_putnlflush(buffer_1);
+  }
+
+}
+
+/**
  * Build reference list from
  *
  *      <contactref element="IC1" pad="4"/>
@@ -320,44 +363,35 @@ build_sym(xmlNode* part) {
  *      <pinref part="IC1" gate="B" pin="O"/>
  */
 void
-build_nets(xmlNode* net) {
+build_nets(xmlNode* node) {
   xmlNode* sn;
-  char *sign, *name = NODE_NAME(net);
+  char *sign, *name = NODE_NAME(node);
 
   assert(str_equal(name, "net") || str_equal(name, "signal"));
 
-  if(!(sign = NODE_PROPERTY(net, "name")))
+  if(!(sign = NODE_PROPERTY(node, "name")))
     return;
 
   print_name_value(buffer_2, name, sign);
+  buffer_putnlflush(buffer_2);
 
-  struct net* n = get_or_create(nets, sign, sizeof(struct net));
+  struct net* ptr = get_or_create(nets, sign, sizeof(struct net));
 
-  for(xmlNode* node = net->children; node; node = node->next) {
-    if(!NODE_IS_ELEMENT(node))
-      continue;
+  stralloc_copys(&ptr->name, sign);
 
-    char* nn = NODE_NAME(node);
-    bool is_pin = str_equal(nn, "pinref");
+  int i = 0;
+  build_reflist(node->children, ptr, &i);
+//  for(xmlNode* node = net->children; node; node = node->next) {
+//    if(!NODE_IS_ELEMENT(node))
+//      continue;
 
-    if(str_diff(nn + (is_pin ? 3 : 7), "ref"))
-      continue;
-
-    char* part_name = NODE_PROPERTY(node, is_pin ? "part" : "element");
-
-    struct part* part = get(parts, part, sizeof(struct part));
-    assert(part);
-
-
-
-      print_name_value(buffer_2, nn, part);
-    print_element_attrs(node);
-    buffer_putnlflush(buffer_1);
-  }
+//  }
 
   //  struct ref r;
   //  byte_zero(&r, sizeof(struct ref));
   //  stralloc_copys(&p.name, name);
+
+  dump_net(buffer_1, ptr);
 }
 
 /**
@@ -395,6 +429,7 @@ void
 build_deviceset(xmlNode* set) {
   char* name = NODE_PROPERTY(set, "name");
   print_name_value(buffer_2, "deviceset", name);
+  buffer_putnlflush(buffer_2);
 
   struct deviceset d;
   byte_zero(&d, sizeof(struct deviceset));
@@ -583,6 +618,30 @@ dump_package(xmlElement* elem) {
 
 void
 dump_part(xmlElement* elem) {}
+
+void
+dump_net(buffer* b, struct net* n) {
+
+  buffer_puts(b, "net['");
+  buffer_putsa(b, &n->name);
+  buffer_puts(b, "']:");
+
+  int64 i, len = array_length(&n->contacts, sizeof(struct ref));
+
+  for(i = 0; i < len; ++i) {
+     struct ref* r = array_get(&n->contacts, sizeof(struct ref), i);
+
+     buffer_putspace(b);
+     buffer_putsa(b, &r->part->name);
+    buffer_putc(b, '.');
+    buffer_putulong(b, r->pin);
+  }
+
+  buffer_putnlflush(b);
+}
+
+
+
 /**
  *  node_print: Prints XML node
  */
@@ -735,18 +794,18 @@ hashmap_dump(HMAP_DB* db, const char* name) {
 
   for(i = 0; i < db->bucket_size; i++) {
     switch(tuple->data_type) {
-      case HMAP_DATA_TYPE_CHARS: {
-        buffer_putm(buffer_1, " ", tuple->key, "=", tuple->data, NULL);
-        buffer_putnlflush(buffer_1);
-        break;
-      }
-      case HMAP_DATA_TYPE_DOUBLE: {
-        char dbl[100];
-        fmt_double(dbl, *(double*)tuple->data, sizeof(dbl), -1);
-        buffer_putm(buffer_1, " ", tuple->key, "=", dbl, NULL);
-        buffer_putnlflush(buffer_1);
-        break;
-      }
+    case HMAP_DATA_TYPE_CHARS: {
+      buffer_putm(buffer_1, " ", tuple->key, "=", tuple->data, NULL);
+      buffer_putnlflush(buffer_1);
+      break;
+    }
+    case HMAP_DATA_TYPE_DOUBLE: {
+      char dbl[100];
+      fmt_double(dbl, *(double*)tuple->data, sizeof(dbl), -1);
+      buffer_putm(buffer_1, " ", tuple->key, "=", dbl, NULL);
+      buffer_putnlflush(buffer_1);
+      break;
+    }
     }
   }
 }
@@ -830,6 +889,7 @@ read_xml_tree(const char* filename, buffer* in) {
 void
 xpath_query(xmlDoc* doc, const char* q) {
   print_name_value(buffer_1, "XPath query", q);
+  buffer_putnlflush(buffer_1);
   xmlXPathObject* nodes = getnodeset(doc, q);
 
   if(!nodes || !nodes->nodesetval)

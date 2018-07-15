@@ -171,8 +171,8 @@ create_part(const char* name, const char* library, const char* deviceset, const 
 
   if(value == NULL)
     value = "";
-    /*if(deviceset == NULL) deviceset = "";
-    if(device == NULL) device = "";*/
+  /*if(deviceset == NULL) deviceset = "";
+  if(device == NULL) device = "";*/
 #if DEBUG
   printf("create_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n", name, library, deviceset, device, value);
 #endif
