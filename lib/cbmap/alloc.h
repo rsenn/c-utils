@@ -40,6 +40,8 @@ cbmap_mem_allocated(void);
 #define CBM_MEM_ALLOCATED() cbmap_mem_allocated()
 
 #else
+int
+cbmap_mem_memalign(void** p, size_t alignment, size_t size);
 
 #include "../str.h"
 

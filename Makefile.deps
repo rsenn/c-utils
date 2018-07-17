@@ -2,23 +2,15 @@ $(BUILDDIR)access.o: access.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)CMakeCCompilerId.o: Builds/CodeLite-dirlist/CMakeFiles/3.11.1/CompilerIdC/CMakeCCompilerId.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)LLOFF_T.o: Builds/CodeLite-dirlist/CMakeFiles/CheckTypeSize/LLOFF_T.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)LOFF_T.o: Builds/CodeLite-dirlist/CMakeFiles/CheckTypeSize/LOFF_T.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)OFF64_T.o: Builds/CodeLite-dirlist/CMakeFiles/CheckTypeSize/OFF64_T.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)SOCKLEN_T.o: Builds/CodeLite-dirlist/CMakeFiles/CheckTypeSize/SOCKLEN_T.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)feature_tests.o: Builds/CodeLite-dirlist/CMakeFiles/feature_tests.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)LLOFF_T.o: CMakeFiles/CheckTypeSize/LLOFF_T.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)LOFF_T.o: CMakeFiles/CheckTypeSize/LOFF_T.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)OFF64_T.o: CMakeFiles/CheckTypeSize/OFF64_T.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)feature_tests.o: CMakeFiles/feature_tests.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)compiler-wrapper.o: compiler-wrapper.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

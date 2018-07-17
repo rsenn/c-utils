@@ -66,7 +66,7 @@ void *map_pointer(soff_entry *soffs, int soffs_len, uint32 in_ptr, int *section)
       if(section != NULL)
         *section = i;
       if(soffs[i].off)
-        return soffs[i].off + in_ptr;
+        return (char*)soffs[i].off + in_ptr;
     }
   return NULL;
 }
