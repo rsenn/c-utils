@@ -290,7 +290,6 @@ build_part(xmlNode* part) {
   if(dsname)
     p.dset = get_entry(devicesets, dsname);
 
-
   cbmap_insert(parts, (void*)name, str_len(name) + 1, &p, sizeof(struct part));
 }
 
@@ -357,6 +356,9 @@ build_reflist(xmlNode* node,  struct net* n, int* index) {
 
     r->part = get(parts, part_name, sizeof(struct part));
 
+    print_name_value(buffer_1, nn, part_name);
+    buffer_putnlflush(buffer_1);
+    //assert(r->part);
 
 //    stralloc_copys(&r->part->name, part_name);
 
@@ -394,7 +396,6 @@ build_nets(xmlNode* node) {
 
   int i = 0;
   build_reflist(node->children, ptr, &i);
-
 }
 
 /**
@@ -619,15 +620,24 @@ dump_package(xmlElement* elem) {
   buffer_putnlflush(buffer_1);
 }
 
-void
-dump_part(struct part* ptr) {
+int
+dump_part(const void* key, size_t key_len, const void* value, size_t value_len, void *user_data) {
+  const struct part* ptr = value;
+
   assert(ptr->name.s);
+
+
+  buffer_puts(buffer_1, "dump_part: ");
   buffer_putsa(buffer_1, &ptr->name);
-  buffer_putspace(buffer_1);
+  //buffer_putspace(buffer_1);
+  buffer_putnlflush(buffer_1); 
+  return 0;
 }
 
-void
-dump_net(struct net* n) {
+int
+dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void *user_data) {
+
+  const struct net* n = value;
 
   buffer* b = buffer_1;
 
@@ -640,6 +650,8 @@ dump_net(struct net* n) {
   for(i = 0; i < len; ++i) {
     struct ref* r = array_get(&n->contacts, sizeof(struct ref), i);
 
+    assert(r->part);
+
     buffer_putspace(b);
     buffer_putsa(b, &r->part->name);
     buffer_putc(b, '.');
@@ -647,6 +659,8 @@ dump_net(struct net* n) {
   }
 
   buffer_putnlflush(b);
+  
+  return 0;
 }
 
 
@@ -990,12 +1004,17 @@ main(int argc, char* argv[]) {
   xpath_foreach(doc, "//deviceset", build_deviceset);
   xpath_foreach(doc, "//part | //element", build_part);
 
-  cbmap_visit_all(parts, dump_part, "part");
+  buffer_puts(buffer_2, "items in parts: ");
+  buffer_putulong(buffer_2, cbmap_count(parts));
+  buffer_putnlflush(buffer_2);
+
+
+  cbmap_visit_prefix(parts, "", 0, dump_part, "part");
 
   xpath_foreach(doc, "//net | //signal", build_nets);
 
 
-  cbmap_visit_all(nets, dump_net, "nets");
+//  cbmap_visit_all(nets, dump_net, "nets");
 
 
   xpath_foreach(doc, "//symbol", build_sym);

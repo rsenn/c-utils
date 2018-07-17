@@ -132,7 +132,7 @@ cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const cha
 //#elif defined(_WIN32) || defined(_WIN64)
 //  result = !(*memptr = _aligned_malloc_dbg(size, alignment, file, line)); // This is reduced to a call to `_aligned_malloc` when _DEBUG is not defined
 #elif HAVE_POSIX_MEMALIGN
-  result = posix_memalign(&result, alignment, size);
+  result = posix_memalign(memptr, alignment, size);
 #else
   result = !(*memptr = malloc(size));
 #endif

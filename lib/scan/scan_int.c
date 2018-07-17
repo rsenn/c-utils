@@ -9,7 +9,7 @@ size_t scan_int(const char* src, int* dest) {
   unsigned int neg;
   int ok;
   tmp = src; l = 0; ok = 0; neg = 0;
-  switch (*tmp) {
+  switch(*tmp) {
   case '-': neg = 1;
   case '+': ++tmp;
   }
