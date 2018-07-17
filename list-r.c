@@ -36,7 +36,7 @@
 #include <time.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <fnmatch.h>
+#include "lib/fnmatch.h"
 
 #include "lib/open.h"
 #include "lib/array.h"

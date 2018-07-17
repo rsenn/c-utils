@@ -18,6 +18,7 @@ $(info PKG_CONFIG_PATH=$(PKG_CONFIG_PATH))
 
 file-exists = $(shell echo "Checking for $(1) ..." 1>&2; test -e "$(1)" && echo 1)
 cmd-exists = $(shell type "$(1)" 2>/dev/null >/dev/null && echo 1)
+file-exists = $(shell test -e "$(1)" 2>/dev/null >/dev/null && echo 1)
 
 #$(info ROOTNAME=$(ROOTNAME))
 #$(info SYSNAME=$(SYSNAME))
@@ -31,7 +32,7 @@ int main() {
   $(1)();
   return 0;
 }" >test_$(1).c;
-$(CC) -o test_$(1) test_$(1).c;
+$(CROSS_COMPILE)$(CC) -o test_$(1) test_$(1).c;
 endef
 cmds-exitcode = ($(1)) 2>&1 >>check.log && echo 1 || echo 0
 
@@ -161,8 +162,15 @@ CROSS_COMPILE :=
 endif
 
 PKG_CONFIG := pkg-config
+ifneq ($(CROSS_COMPILE),)
 ifeq ($(call cmd-exists,$(CROSS_COMPILE)$(PKG_CONFIG)),1)
 PKG_CONFIG := $(CROSS_COMPILE)$(PKG_CONFIG)
+else
+  P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/sys*root/*/lib/pkgconfig)
+  ifeq ($(call file-exists,$(P)),1)
+  PKG_CONFIG_PATH := $(P)
+  endif
+endif
 endif
 
 AR := ar
@@ -181,6 +189,7 @@ STRIP := $(STRIP)
 endif
 
 $(info PKG_CONFIG: $(PKG_CONFIG))
+$(info PKG_CONFIG_PATH: $(PKG_CONFIG_PATH))
 
 #PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env $(if $(SYSROOT),PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,),)$(PKG_CONFIG)
 PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env  ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,)$(PKG_CONFIG)
@@ -425,6 +434,7 @@ MINGW := 0
 endif
 ifeq ($(MINGW),1)
 LDFLAGS += -static-libgcc 
+DEFS += open=_open read=_read write=_write close=_close
 #LDFLAGS += -static-lib{asan,gfortran,lsan,tsan,ubsan}
 WIN32 := 1
 endif
@@ -973,10 +983,10 @@ inst-slackpkg: slackpkg
 
 -include Makefile.deps
 
-$(PROGRAM_OBJECTS): CFLAGS += -Ilib
-$(PROGRAM_OBJECTS): CPPFLAGS += -Ilib
+#$(PROGRAM_OBJECTS): CFLAGS += -Ilib
+#$(PROGRAM_OBJECTS): CPPFLAGS += -Ilib
 $(PROGRAMS): CPPFLAGS += -I.
-$(PROGRAMS): CPPFLAGS += -Ilib
+#$(PROGRAMS): CPPFLAGS += -Ilib
 
 $(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
 

@@ -41,10 +41,10 @@ buffer_dump(buffer* out, buffer* b) {
   buffer_putulong(out, b->a);
 
   buffer_putspace(out);
-  if(b->op == read)
+  if(b->op == (void*)read)
 
     buffer_puts(out, "<read>  ");
-  else if(b->op == write)
+  else if(b->op == (void*)write)
 
     buffer_puts(out, "<write> ");
   else if(b->op == buffer_dummyreadmmap)
@@ -57,7 +57,7 @@ buffer_dump(buffer* out, buffer* b) {
 
     buffer_puts(out, "NULL    ");
   else {
-    n = fmt_xlong(xlong, (long)b->op);
+    n = fmt_xlong(xlong, (long)(intptr_t)b->op);
 
     buffer_put(out, xlong, n);
   }

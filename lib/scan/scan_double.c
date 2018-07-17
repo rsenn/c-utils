@@ -2,6 +2,7 @@
 
 #ifdef __GNUC__
 static inline int isdigit(int c) { return(c >= '0' && c <= '9'); }
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #else
 #include <ctype.h>
 #endif

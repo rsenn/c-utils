@@ -1,9 +1,9 @@
 #ifndef __LIBNTLDD_H__
 #define __LIBNTLDD_H__
 
-#include "uint16.h"
-#include "uint32.h"
-#include "uint64.h"
+#include "lib/uint16.h"
+#include "lib/uint32.h"
+#include "lib/uint64.h"
 #include "lib/pe.h"
 
 #ifdef __unix__

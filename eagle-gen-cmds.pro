@@ -21,7 +21,7 @@ unix|linux {
   QMAKE_CFLAGS_WARN_ON = -W3
 }
 
-gcc {
+gcc|linux {
   QMAKE_CFLAGS_WARN_ON += -Wno-unused-parameter
   QMAKE_CFLAGS_WARN_ON += -Wno-unused-variable
 }
@@ -72,7 +72,8 @@ HEADERS = \
     lib/cb.h \
     lib/iterator.h
 
-DEFINES += LSEEK=lseek64
+DEFINES += LSEEK=lseek64 _LARGEFILE64_SOURCE=1
+
 
 include(deployment.pri)
 qtcAddDeployment()
