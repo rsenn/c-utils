@@ -1,3 +1,4 @@
+#include "../io_internal.h"
 #define _LARGEFILE64_SOURCE     /* See feature_test_macros(7) */
 #include <sys/types.h>
 #if defined(_WIN32) || defined(_WIN64)

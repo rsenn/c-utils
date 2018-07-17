@@ -36,6 +36,10 @@ my_extern HANDLE io_comport;
 #include <unistd.h>
 #endif
 
+#ifndef LSEEK
+#warning No LSEEK() function defined, defaulting to lseek
+#define LSEEK lseek
+#endif
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0

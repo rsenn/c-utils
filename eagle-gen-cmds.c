@@ -20,6 +20,8 @@
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
+#include "lib/iterator.h"
+
 #include <libxml/SAX.h>
 
 /**
@@ -347,6 +349,9 @@ build_reflist(xmlNode* node,  struct net* n, int* index) {
 
     r->part = get(parts, part_name, sizeof(struct part));
 
+
+//    stralloc_copys(&r->part->name, part_name);
+
     print_name_value(buffer_1, nn, part_name);
     buffer_putc(buffer_1, '\t');
     print_element_attrs(node);
@@ -381,17 +386,7 @@ build_nets(xmlNode* node) {
 
   int i = 0;
   build_reflist(node->children, ptr, &i);
-//  for(xmlNode* node = net->children; node; node = node->next) {
-//    if(!NODE_IS_ELEMENT(node))
-//      continue;
 
-//  }
-
-  //  struct ref r;
-  //  byte_zero(&r, sizeof(struct ref));
-  //  stralloc_copys(&p.name, name);
-
-  dump_net(buffer_1, ptr);
 }
 
 /**
@@ -617,10 +612,16 @@ dump_package(xmlElement* elem) {
 }
 
 void
-dump_part(xmlElement* elem) {}
+dump_part(struct part* ptr) {
+  assert(ptr->name.s);
+  buffer_putsa(buffer_1, &ptr->name);
+  buffer_putspace(buffer_1);
+}
 
 void
-dump_net(buffer* b, struct net* n) {
+dump_net(struct net* n) {
+
+  buffer* b = buffer_1;
 
   buffer_puts(b, "net['");
   buffer_putsa(b, &n->name);
@@ -974,25 +975,21 @@ main(int argc, char* argv[]) {
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
   xmlDoc* doc = read_xml_tree(argv[1], &input);
-  //  xmlNode* node = xmlDocGetRootElement(doc);
-  //  size_t child_count = xmlChildElementCount(node);
-  //  print_element_names(node);
-  //  xmlNode* child;
-  //  for(child = node->children; child; child = child->next) {
-  //    if(child->type == XML_ELEMENT_NODE) {
-  //      // if(child->type == XML_ELEMENT_TYPE_ANY)
-  //      HMAP_DB* db = element_to_hashmap((xmlElement*)child);
-  //      hashmap_dump(db, NODE_NAME(child));
-  //      hmap_destroy(&db);
-  //    }
-  //    // print_node(child);
-  //  }
+
   xpath_query(doc, xq);
 
   xpath_foreach(doc, "//package", build_package);
   xpath_foreach(doc, "//deviceset", build_deviceset);
   xpath_foreach(doc, "//part | //element", build_part);
+
+  cbmap_visit_all(parts, dump_part, "part");
+
   xpath_foreach(doc, "//net | //signal", build_nets);
+
+
+  cbmap_visit_all(nets, dump_net, "nets");
+
+
   xpath_foreach(doc, "//symbol", build_sym);
 
   /*

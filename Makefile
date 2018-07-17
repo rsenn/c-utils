@@ -35,7 +35,7 @@ int main() {
 }" >test_$(1).c;
 $(CC) -o test_$(1) test_$(1).c;
 endef
-cmds-exitcode = ($(1)) 2>/dev/null >/dev/null && echo 1 || echo 0
+cmds-exitcode = ($(1)) 2>&1 >>check.log && echo 1 || echo 0
 
 check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
 
@@ -43,6 +43,7 @@ check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
 HAVE_LSEEK64 := $(call check-function-exists,lseek64)
 HAVE_LSEEK := $(call check-function-exists,lseek)
 HAVE_LLSEEK := $(call check-function-exists,llseek)
+
 $(info HAVE_LSEEK64=$(HAVE_LSEEK64) HAVE_LSEEK=$(HAVE_LSEEK64)  HAVE_LLSEEK=$(HAVE_LLSEEK64))
 #$(info llseek: $(call check-function-exists,llseek))
 
@@ -589,26 +590,20 @@ DEFS += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
 #CPPFLAGS += -DUSE_READDIR=1
 
-ifeq ($(call check-function-exists,lseek64),1)
+ifeq ($(HAVE_LSEEK64),1)
 LSEEK = lseek64
   else
- ifeq ($(call check-function-exists,lseek),1)
-LSEEK = lseek
-  else
- ifeq ($(call check-function-exists,_llseek),1)
-LSEEK = _llseek
-  else
- ifeq ($(call check-function-exists,llseek),1)
+ifeq ($(HAVE_LLSEEK),1)
 LSEEK = llseek
   else
- ifeq ($(call check-function-exists,_lseek),1)
+ifeq ($(HAVE_LSEEKI64),1)
+LSEEK = lseeki64
+  else
+ifeq ($(HAVE__LSEEK),1)
 LSEEK = _lseek
   else
- ifeq ($(call check-function-exists,_lseeki64),1)
-LSEEK = _lseeki64
-  else
-
-endif
+ifeq ($(HAVE_LSEEK),1)
+LSEEK = lseek
 endif
 endif
 endif
@@ -616,7 +611,9 @@ endif
 endif
 endif
 
-#LSEEK ?= lseek
+ifeq ($(LSEEK),)
+LSEEK := lseek
+endif
 
 DEFS += LSEEK=$(LSEEK)
 CPPFLAGS += $(DEFS:%=-D%)
