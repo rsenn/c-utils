@@ -1,5 +1,4 @@
 #include "../byte.h"
-#define _GNU_SOURCE
 #define __deprecated__
 #include "../scan.h"
 #include "../byte.h"

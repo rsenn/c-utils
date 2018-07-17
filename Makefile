@@ -41,6 +41,7 @@ check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
 HAVE_LSEEK64 := $(call check-function-exists,lseek64)
 HAVE_LSEEK := $(call check-function-exists,lseek)
 HAVE_LLSEEK := $(call check-function-exists,llseek)
+HAVE_POSIX_MEMALIGN := $(call check-function-exists,posix_memalign)
 
 $(info HAVE_LSEEK64=$(HAVE_LSEEK64) HAVE_LSEEK=$(HAVE_LSEEK64)  HAVE_LLSEEK=$(HAVE_LLSEEK64))
 #$(info llseek: $(call check-function-exists,llseek))
@@ -564,6 +565,9 @@ LSEEK := lseek
 endif
 ifneq ($(LSEEK),)
 DEFS += LSEEK=$(LSEEK)
+endif
+ifeq ($(HAVE_POSIX_MEMALIGN),1)
+DEFS += HAVE_POSIX_MEMALIGN=1
 endif
 
 
