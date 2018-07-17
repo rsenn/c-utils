@@ -1,7 +1,7 @@
 /* ISC license. */
 
-#include <skalibs/alloc.h>
-#include <skalibs/stralloc.h>
+#include "alloc.h"
+#include "stralloc.h"
 
 int stralloc_shrink (stralloc *sa)
 {

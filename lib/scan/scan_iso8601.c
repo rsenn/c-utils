@@ -38,7 +38,9 @@ size_t scan_iso8601(const char* in,struct timespec* t) {
     }
   }
 
-  x.tm_wday=x.tm_yday=x.tm_isdst=x.tm_gmtoff=0;
+  x.tm_wday=x.tm_yday=x.tm_isdst=0;
+
+//  x.tm_gmtoff=0;
 #if defined(__dietlibc__) || defined(__GLIBC__)
   t->tv_sec=timegm(&x);
 #elif defined(__MINGW32__)
@@ -50,7 +52,7 @@ size_t scan_iso8601(const char* in,struct timespec* t) {
     char** newenv={0};
     environ=newenv;
     t->tv_sec=mktime(&x);
-    environ=old;
+    environ=old;$
 #else
     char* old=getenv("TZ");
     unsetenv("TZ");

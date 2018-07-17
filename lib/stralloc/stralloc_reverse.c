@@ -1,7 +1,7 @@
 /* ISC license. */
 
 #include <string.h>
-#include <skalibs/stralloc.h>
+#include "stralloc.h"
 
 void stralloc_reverse (stralloc *sa)
 {

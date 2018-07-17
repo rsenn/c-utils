@@ -2,8 +2,8 @@
 
 #include <string.h>
 #include <errno.h>
-#include <skalibs/alloc.h>
-#include <skalibs/stralloc.h>
+#include "alloc.h"
+#include "stralloc.h"
 
 int stralloc_ready_tuned (stralloc *sa, size_t n, size_t base, size_t a, size_t b)
 {
