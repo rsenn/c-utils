@@ -8,11 +8,9 @@ INSTALL = install
 
 ROOT := $(shell cygpath -am / 2>/dev/null | sed "s|/$$||")
 ROOTNAME := $(shell basename "$(ROOT)" | tr "[[:upper:]]" "[[:lower:]]")
-
 ifneq ($(ROOTNAME),$(subst msys,,$(subst git-sdk,,$(subst cygwin,,$(ROOTNAME)))))
 SYSNAME := $(subst git-sdk-,gitsdk,$(ROOTNAME))
 endif
-
 ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
 PKG_CONFIG_PATH := $(subst /bin,/lib/pkgconfig,$(CROSS_COMPILE))
 endif
@@ -46,7 +44,6 @@ HAVE_LLSEEK := $(call check-function-exists,llseek)
 
 $(info HAVE_LSEEK64=$(HAVE_LSEEK64) HAVE_LSEEK=$(HAVE_LSEEK64)  HAVE_LLSEEK=$(HAVE_LLSEEK64))
 #$(info llseek: $(call check-function-exists,llseek))
-
 ifeq ($SUBLIME_FILENAME),None)
 PATH = /c/git-sdk-64/usr/bin
 MAKE = c:/git-sdk-64/usr/bin/make
@@ -56,14 +53,12 @@ CC = gcc
 CXX = g++
 
 BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
-
 ifneq ($(CC),$(subst m32,,$(CC)))
 BUILD := $(subst x86_64,i386,$(BUILD))
 endif
 
 CCVER := $(shell $(CROSS_COMPILE)$(CC) -dumpversion)
 CXXVER := $(shell $(CROSS_COMPILE)$(CXX) -dumpversion)
-
 ifneq ($(DIET),0)
 ifneq ($(DIET),1)
 ifneq ($(DIET),)
@@ -73,11 +68,9 @@ USE_DIET := 1
 endif
 endif
 endif
-
 ifneq ($(CROSS_COMPILE),$(subst diet,,$(CROSS_COMPILE)))
 USE_DIET := 1
 endif
-
 ifneq ($(CROSS_COMPILE),$(subst musl,,$(CROSS_COMPILE)))
 USE_MUSL := 1
 endif
@@ -85,7 +78,6 @@ endif
 $(info PREFIX: $(PREFIX))
 $(info DIET: $(DIET))
 $(info USE_DIET: $(USE_DIET))
-
 ifneq ($(USE_DIET),1)
 ifeq ($(word 1,(CROSS_COMPILE)),diet)
 USE_DIET := 1
@@ -93,7 +85,6 @@ else
 USE_DIET := 0
 endif
 endif
-
 ifeq ($(word 3,$(subst -, ,$(BUILD))),mingw32)
 MINGW := 1
 else
@@ -104,43 +95,37 @@ CYGWIN := 1
 else
 CYGWIN := 0
 endif
-
 ifeq ($(USE_DIET),1)
 DO_CXX := 0
 else
 DO_CXX := 0
 endif
-
 ifeq ($(CROSS_COMPILE),)
 HOST ?= $(BUILD)
 else
 ifeq ($(USE_MUSL),1)
     HOST := $(subst gnu,musl,$(BUILD))
 else
-    ifeq ($(USE_DIET),1)
+ifeq ($(USE_DIET),1)
     HOST := $(shell set -x; $(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$|| ;; s|^\([^-]*\)-\([^-]*\)-\([^-]*\)-gnu|\1-\2-\3-diet| ;; s|^\([^-]*\)-\([^-]*\)-\([^-]*\)|\1-diet-\3|' )
-    else
+else
     HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
     endif
 endif
 endif
-
 ifneq ($(CC),$(subst m32,,$(CC)))
 HOST := $(subst x86_64,i386,$(HOST))
 endif
-
 ifeq ($(USE_DIET),1)
 HOST := $(subst gnu,dietlibc,$(HOST))
 endif
 #$(info USE_DIET: $(USE_DIET))
 #$(info MINGW: $(MINGW))
 $(info HOST: $(HOST))
-
 ifeq ($(PREFIX),)
 PREFIX := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs |sed -n 's,.*:\s\+=\?,,; s,/bin.*,,p ; s,/lib.*,,p' |head -n1 )
 endif
 #$(info PREFIX: $(PREFIX))
-
 ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
 SYSROOT := $(subst /bin/,,$(CROSS_COMPILE))
 else
@@ -151,12 +136,9 @@ $(info SYSROOT: $(SYSROOT))
 
 prefix ?= $(PREFIX)
 bindir = ${prefix}/bin
-
-
 ifneq ($(HOST),)
 TRIPLET := $(subst -, ,$(HOST))
 endif
-
 ifneq ($(USE_DIET),1)
 ifneq ($(HOST),$(BUILD))
 ifeq ($(CROSS_COMPILE),)
@@ -164,18 +146,15 @@ ifeq ($(CROSS_COMPILE),)
 endif
 endif
 endif
-
 ifeq ($(DEBUG),1)
 BUILDTYPE = debug
 else
 BUILDTYPE = release
 DO_STRIP := 1
 endif
-
 ifeq ($(PROF),1)
 BUILDTYPE := prof
 endif
-
 ifeq ($(HOST),$(BUILD))
 CROSS_COMPILE :=
 endif
@@ -205,7 +184,6 @@ $(info PKG_CONFIG: $(PKG_CONFIG))
 #PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env $(if $(SYSROOT),PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,),)$(PKG_CONFIG)
 PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env  ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,)$(PKG_CONFIG)
 $(info PKG_CONFIG_CMD: $(PKG_CONFIG_CMD))
-
 ifneq ($(TRIPLET),)
 ARCH := $(word 1,$(TRIPLET))
 OS := $(shell echo $(word 3,$(TRIPLET)) |sed "s|[0-9].*||")
@@ -225,27 +203,22 @@ endif
 #$(info OS: $(OS))
 #$(info KERN: $(KERN))
 #$(info SYS: $(SYS))
-
 ifneq ($(OS),linux)
 ifeq ($(ARCH),x86_64)
 M64 = 64
 endif
 endif
-
 ifeq ($(OS),msys)
 EXEEXT = .exe
 STATIC_LIBGCC := 1
 endif
-
 ifeq ($(OS),mingw)
 EXEEXT = .exe
 STATIC_LIBGCC := 1
 endif
-
 ifeq ($(OS),cygwin)
 EXEEXT = .exe
 endif
-
 ifeq ($(OS),mingw32)
 EXEEXT = .exe
 endif
@@ -265,15 +238,12 @@ HOST3 := $(subst $(HOST1)-$(HOST2)-,,$(HOST))
 #ifneq ($(SYSNAME),)
 #BUILDDIR := $(subst w64,$(SYSNAME),$(BUILDDIR))
 #endif
-
 ifeq ($(HOST2),pc)
 HOST2 := $(SYSNAME)
 endif
 ifeq ($(HOST2),w64)
 HOST2 := $(SYSNAME)
 endif
-
-
 ifeq ($(HOST2),)
 HOST2 := pc
 endif
@@ -291,13 +261,12 @@ TOOLCHAIN := $(HOST1)-$(HOST2)-$(HOST3)
 #endif
 #
 #$(info TOOLCHAIN: $(TOOLCHAIN))
-
 ifneq (${builddir},)
 BUILDDIR = ${builddir}/$(BUILD_TYPE)/
 else
-  ifneq ($(HOST),$(BUILD))
+ifneq ($(HOST),$(BUILD))
   BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
-  else
+else
 #	ifeq ($(CROSS_COMPILE),)
 	BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
 #	else
@@ -308,7 +277,6 @@ endif
 
 vpath lib lib/array lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR)
 VPATH = lib:lib/array:lib/buffer:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR)
-
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
 ifneq ($(OS),msys)
@@ -319,7 +287,6 @@ CPPFLAGS := -I.
 
 DEFS += INLINE=inline
 #DEFS += PATH_MAX=4096
-
 ifeq ($(READDIR),)
 ifeq ($(SYS),mingw32)
 DEFS += USE_READDIR=0
@@ -331,7 +298,6 @@ DEFS += USE_READDIR=1
 #endif
 endif
 endif
-
 ifeq ($(WIN32),)
 ifeq ($(SYS),mingw32)
 WIN32 := 1
@@ -344,11 +310,9 @@ endif
 ifeq ($(WIN32),)
 WIN32 := 0
 endif
-
 ifeq ($(WIN32),1)
 OTHERLIBS := -lws2_32
 endif
-
 ifeq ($(WIN32),1)
 WIDECHAR := 1
 endif
@@ -357,7 +321,6 @@ WIDECHAR := 0
 endif
 
 DEFS += USE_WIDECHAR=$(WIDECHAR)
-
 ifeq ($(LARGEFILE),1)
 DEFS += _FILE_OFFSET_BITS=64
 DEFS += _LARGEFILE_SOURCE=1
@@ -385,7 +348,6 @@ CXXFLAGS_Debug = -g -ggdb -O0
 CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
 CXXFLAGS_RelWithDebInfo = -g -ggdb -O2
 CXXFLAGS_Release = -g -fomit-frame-pointer -O2
-
 ifeq ($(BUILD_TYPE),)
 ifeq ($(PROF),1)
 BUILD_TYPE = Prof
@@ -409,8 +371,6 @@ endif
 $(info BUILDDIR: \
   )
 #$(info builddir: $(builddir))
-
-
 ifeq ($(BUILD_TYPE),Prof)
 DEBUG := 0
 RELEASE := 1
@@ -436,7 +396,6 @@ DEBUG := 0
 RELEASE := 1
 MINSIZE := 0
 endif
-
 ifeq ($(DEBUG),1)
 DEFS += DEBUG=1
 else
@@ -445,40 +404,32 @@ endif
 
 CFLAGS += $(CFLAGS_$(BUILD_TYPE))
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
-
 ifeq ($(USE_DIET),1)
 STATIC := 1
 endif
-
 ifneq ($(STATIC),1)
 STATIC := 0
 endif
 
 $(info DIET: $(DIET))
 $(info STATIC: $(STATIC))
-
 ifeq ($(HOST),)
 HOST := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 endif
-
 ifneq ($(HOST),$(subst mingw,,$(HOST)))
 MINGW := 1
 endif
-
 ifneq ($(MINGW),1)
 MINGW := 0
 endif
-
 ifeq ($(MINGW),1)
 LDFLAGS += -static-libgcc 
 #LDFLAGS += -static-lib{asan,gfortran,lsan,tsan,ubsan}
 WIN32 := 1
 endif
-
 ifeq ($(CYGWIN),1)
 WIN32 := 1
 endif
-
 ifeq ($(STATIC),1)
 #LDFLAGS += -static
 PKG_CONFIG += --static
@@ -488,36 +439,27 @@ else
 LDFLAGS += -static
 endif
 endif
-
 ifeq ($(WIN32),1)
 EXTRA_LIBS += -lkernel32
 endif
-
-
-
 ifeq ($(STATIC_LIBGCC),1)
 LDFLAGS += -static-libgcc
 endif
-
 ifeq ($(STATIC_LIBSTDCXX),1)
 LDFLAGS += -static-libstdc++
 endif
-
 ifeq ($(STRIP),1)
 LDFLAGS += -s
 endif
 RM = rm -f
-
 ifneq ($(shell uname -s)-$(shell uname -o),MINGW32_NT-5.1-Msys)
 ifeq ($(STATIC),)
 LDFLAGS +=  -static-libgcc -static-libstdc++
 endif
 endif
-
 ifneq ($(BOOST_INCLUDE_DIR),)
 CXXFLAGS += -I$(BOOST_INCLUDE_DIR)
 endif
-
 ifneq ($(BOOST_LIB_DIR),)
 LIBS += -L$(BOOST_LIB_DIR) $(patsubst %,-l%,$(BOOST_LIBS))
 endif
@@ -537,11 +479,9 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 
 LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
 LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
-
 ifeq ($(USE_DIET),1)
 STATIC := 1
 endif
-
 ifeq ($(STATIC),1)
 LIBXML2_LIBS += $(OTHERLIBS)
 LIBXML2_LIBS += -liconv -lpthread -lm
@@ -556,7 +496,6 @@ PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-de
 
  #opensearch-dump 
 LIBSOURCES = $(wildcard lib/*/*.c) 
-  
 ifeq ($(DO_CXX),1)
 PROGRAMS += \
   piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT)   
@@ -589,21 +528,28 @@ ifeq ($(OS),darwin)
 DEFS += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
 #CPPFLAGS += -DUSE_READDIR=1
-
-ifeq ($(HAVE_LSEEK64),1)
+ifneq ($(HAVE_LSEEK64),)
 LSEEK = lseek64
-  else
-ifeq ($(HAVE_LLSEEK),1)
-LSEEK = llseek
-  else
-ifeq ($(HAVE_LSEEKI64),1)
-LSEEK = lseeki64
-  else
-ifeq ($(HAVE__LSEEK),1)
-LSEEK = _lseek
-  else
+else
 ifeq ($(HAVE_LSEEK),1)
 LSEEK = lseek
+else
+ifeq ($(HAVE__LLSEEK),1)
+LSEEK = _llseek
+else
+ifeq ($(HAVE_LLSEEK),1)
+LSEEK = llseek
+else
+ifeq ($(HAVE__LSEEK),1)
+LSEEK = _lseek
+else
+ifeq ($(HAVE__LSEEKI64),1)
+LSEEK = _lseeki64
+else
+ifeq ($(HAVE_LSEEK),1)
+LSEEK = lseek
+endif
+endif
 endif
 endif
 endif
@@ -614,8 +560,11 @@ endif
 ifeq ($(LSEEK),)
 LSEEK := lseek
 endif
-
+ifneq ($(LSEEK),)
 DEFS += LSEEK=$(LSEEK)
+endif
+
+
 CPPFLAGS += $(DEFS:%=-D%)
 CFLAGS += $(DEFS:%=-D%)
 
@@ -693,7 +642,7 @@ $(BUILDDIR)scan.a: $(BUILDDIR)scan_8int.o $(BUILDDIR)scan_8long.o $(BUILDDIR)sca
 $(BUILDDIR)socket.a: $(BUILDDIR)socket_connect4.o $(BUILDDIR)socket_connect6.o $(BUILDDIR)socket_connected.o $(BUILDDIR)socket_ip4loopback.o $(BUILDDIR)socket_noipv6.o $(BUILDDIR)socket_tcp4b.o $(BUILDDIR)socket_tcp4.o $(BUILDDIR)socket_tcp6b.o $(BUILDDIR)socket_tcp6.o $(BUILDDIR)socket_v4mappedprefix.o $(BUILDDIR)socket_v6loopback.o  $(BUILDDIR)winsock2errno.o $(BUILDDIR)winsock_init.o
 	$(AR) rcs $@ $^
 
-$(BUILDDIR)stralloc.a: $(BUILDDIR)stralloc_0.o $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_append_sa.o $(BUILDDIR)stralloc_buffer.o $(BUILDDIR)stralloc_case_diff.o $(BUILDDIR)stralloc_case_diffs.o $(BUILDDIR)stralloc_case_end.o $(BUILDDIR)stralloc_case_equal.o $(BUILDDIR)stralloc_case_equals.o $(BUILDDIR)stralloc_case_start.o $(BUILDDIR)stralloc_case_starts.o $(BUILDDIR)stralloc_cat.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_cathexb.o $(BUILDDIR)stralloc_catint.o $(BUILDDIR)stralloc_catint0.o $(BUILDDIR)stralloc_catlong.o $(BUILDDIR)stralloc_catlong0.o $(BUILDDIR)stralloc_catm_internal.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_catuint.o $(BUILDDIR)stralloc_catuint0.o $(BUILDDIR)stralloc_catulong.o $(BUILDDIR)stralloc_catulong0.o $(BUILDDIR)stralloc_catv.o $(BUILDDIR)stralloc_catxlong.o $(BUILDDIR)stralloc_chomp.o $(BUILDDIR)stralloc_chop.o $(BUILDDIR)stralloc_chr.o $(BUILDDIR)stralloc_copy.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_count.o $(BUILDDIR)stralloc_decamelize.o $(BUILDDIR)stralloc_diff.o $(BUILDDIR)stralloc_diffb.o $(BUILDDIR)stralloc_diffs.o $(BUILDDIR)stralloc_end.o $(BUILDDIR)stralloc_endb.o $(BUILDDIR)stralloc_ends.o $(BUILDDIR)stralloc_equal.o $(BUILDDIR)stralloc_equalb.o $(BUILDDIR)stralloc_equals.o $(BUILDDIR)stralloc_erase.o $(BUILDDIR)stralloc_find.o $(BUILDDIR)stralloc_findb.o $(BUILDDIR)stralloc_finds.o $(BUILDDIR)stralloc_free.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_insertb.o $(BUILDDIR)stralloc_lower.o $(BUILDDIR)stralloc_move.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_rchr.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_ready_tuned.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)stralloc_remove.o $(BUILDDIR)stralloc_replace.o $(BUILDDIR)stralloc_replace_non_printable.o $(BUILDDIR)stralloc_reverse.o $(BUILDDIR)stralloc_reverse_blocks.o $(BUILDDIR)stralloc_shrink.o $(BUILDDIR)stralloc_start.o $(BUILDDIR)stralloc_startb.o $(BUILDDIR)stralloc_starts.o $(BUILDDIR)stralloc_trim.o $(BUILDDIR)stralloc_trunc.o $(BUILDDIR)stralloc_write.o $(BUILDDIR)stralloc_zero.o
+$(BUILDDIR)stralloc.a: $(BUILDDIR)stralloc_0.o $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_append_sa.o $(BUILDDIR)stralloc_buffer.o $(BUILDDIR)stralloc_case_diff.o $(BUILDDIR)stralloc_case_diffs.o $(BUILDDIR)stralloc_case_end.o $(BUILDDIR)stralloc_case_equal.o $(BUILDDIR)stralloc_case_equals.o $(BUILDDIR)stralloc_case_start.o $(BUILDDIR)stralloc_case_starts.o $(BUILDDIR)stralloc_cat.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_cathexb.o $(BUILDDIR)stralloc_catint.o $(BUILDDIR)stralloc_catint0.o $(BUILDDIR)stralloc_catlong.o $(BUILDDIR)stralloc_catlong0.o $(BUILDDIR)stralloc_catm_internal.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_catuint.o $(BUILDDIR)stralloc_catuint0.o $(BUILDDIR)stralloc_catulong.o $(BUILDDIR)stralloc_catulong0.o $(BUILDDIR)stralloc_catxlong.o $(BUILDDIR)stralloc_chomp.o $(BUILDDIR)stralloc_chop.o $(BUILDDIR)stralloc_chr.o $(BUILDDIR)stralloc_copy.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_count.o $(BUILDDIR)stralloc_decamelize.o $(BUILDDIR)stralloc_diff.o $(BUILDDIR)stralloc_diffb.o $(BUILDDIR)stralloc_diffs.o $(BUILDDIR)stralloc_end.o $(BUILDDIR)stralloc_endb.o $(BUILDDIR)stralloc_ends.o $(BUILDDIR)stralloc_equal.o $(BUILDDIR)stralloc_equalb.o $(BUILDDIR)stralloc_equals.o $(BUILDDIR)stralloc_erase.o $(BUILDDIR)stralloc_find.o $(BUILDDIR)stralloc_findb.o $(BUILDDIR)stralloc_finds.o $(BUILDDIR)stralloc_free.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_insertb.o $(BUILDDIR)stralloc_lower.o $(BUILDDIR)stralloc_move.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_rchr.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)stralloc_remove.o $(BUILDDIR)stralloc_replace.o $(BUILDDIR)stralloc_replace_non_printable.o $(BUILDDIR)stralloc_start.o $(BUILDDIR)stralloc_startb.o $(BUILDDIR)stralloc_starts.o $(BUILDDIR)stralloc_trim.o $(BUILDDIR)stralloc_trunc.o $(BUILDDIR)stralloc_write.o $(BUILDDIR)stralloc_zero.o
 	$(AR) rcs $@ $^
 
 $(BUILDDIR)strarray.a: $(BUILDDIR)strarray_push.o $(BUILDDIR)strarray_pushd.o 
@@ -930,7 +879,6 @@ $(BUILDDIR)sdcc-wrapper$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)compiler-wrapper
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
-
 ifeq ($(DO_CXX),1)
 $(BUILDDIR)piccfghex.o: piccfghex.cpp
 $(BUILDDIR)piccfghex$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)piccfghex.o $(BUILDDIR)intelhex.o
@@ -958,7 +906,6 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 endif
-
 ifeq ($(BUILDDIR),)
 .c.o:
 	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
