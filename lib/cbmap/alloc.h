@@ -36,20 +36,20 @@ cbmap_mem_allocated(void);
 #define CBM_STRDUP(s) cbmap_mem_debug_strdup((s), __FILE__, __LINE__)
 #define CBM_STRNDUP(s, n) cbmap_mem_debug_strndup((s), (n), __FILE__, __LINE__)
 #define CBM_MEMDUP(k, v) cbmap_mem_mem_dup(k, v, __FILE__, __LINE__)
-#define CBM_MEMALIGN(p, a, s) cbmap_mem_memalign((p), (a), (s))
+#define CBM_MEMALIGN(p, a, s) cbmap_mem_posix_memalign((p), (a), (s), __FILE__, __LINE__)
 #define CBM_MEM_ALLOCATED() cbmap_mem_allocated()
 
 #else
 
-#include <strings.h>
+#include "../str.h"
 
 #define CBM_CALLOC(n, s) calloc((n), (s))
 #define CBM_MALLOC(n) malloc((n))
 #define CBM_FREE(p) free((p))
-#define CBM_STRDUP(s) strdup((s))
-#define CBM_STRNDUP(s, n) strndup((s), (n))
+#define CBM_STRDUP(s) str_dup((s))
+#define CBM_STRNDUP(s, n) str_ndup((s), (n))
 #define CBM_MEM_LOG()
-#define CBM_MEMALIGN(p, a, s) posix_memalign((p), (a), (s))
+#define CBM_MEMALIGN(p, a, s) cbmap_mem_memalign((p), (a), (s))
 #define CBM_MEM_ALLOCATED() ((double)0)
 
 #endif

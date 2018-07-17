@@ -4,7 +4,7 @@
 
 #include "socket.h"
 
-#if defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(_WIN32) || defined(_WIN64)
 typedef int socklen_t;
 #endif
 

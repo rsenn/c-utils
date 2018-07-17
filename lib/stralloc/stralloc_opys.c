@@ -6,7 +6,6 @@
 #include "../stralloc.h"
 
 int
-stralloc_copys (stralloc * sa, const char *src)
-{
-	return stralloc_copyb (sa, src, str_len (src));
+stralloc_copys(stralloc * sa, const char *src) {
+  return stralloc_copyb(sa, src, str_len(src));
 }

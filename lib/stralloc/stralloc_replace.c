@@ -1,7 +1,6 @@
 #include "../stralloc.h"
 
-void stralloc_replace(register stralloc *sa, char before, char after)
-{
+void stralloc_replace(register stralloc *sa, char before, char after) {
   register unsigned int i;
 
   for(i = 0; i < sa->len; i++) {

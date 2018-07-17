@@ -2,8 +2,7 @@
 #include "../byte.h"
 #include "../stralloc.h"
 
-unsigned int stralloc_case_end(const stralloc *sa, const stralloc *suffix)
-{
+unsigned int stralloc_case_end(const stralloc *sa, const stralloc *suffix) {
   register unsigned int sa_len;
   register unsigned int suffix_len;
   sa_len = sa->len;

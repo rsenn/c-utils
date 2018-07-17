@@ -1,16 +1,14 @@
 #include <stdint.h>
 #include "../stralloc.h"
 #include "../byte.h"
-#include "../char.h"
 #include "../fmt.h"
 
-unsigned int stralloc_qp_encode(stralloc *out, const stralloc *in)
-{
-  static stralloc tmp = STRALLOC;
+unsigned int stralloc_qp_encode(stralloc *out, const stralloc *in) {
+  static stralloc tmp = { 0, 0, 0 };
   register unsigned int i;
   register unsigned int len;
   char ch;
-  byte_t hex[2];
+  unsigned char hex[2];
 
   len = in->len;
   if(!len) return stralloc_erase(out);

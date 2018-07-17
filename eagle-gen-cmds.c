@@ -24,6 +24,10 @@
 
 #include <libxml/SAX.h>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846264338327950288 
+#endif
+
 /**
  * section: Parsing
  * synopsis: Parse an XML document in memory to a tree and free it
@@ -198,7 +202,7 @@ get_child(xmlNode* node, const char* name) {
 void*
 get(cbmap_t m, char* name, size_t datasz) {
   void* ptr;
-  size_t len;
+  size_t len = datasz;
 
   if(!cbmap_get(m, name, str_len(name) + 1, &ptr, &len))
     ptr = NULL;

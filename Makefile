@@ -433,7 +433,7 @@ endif
 ifeq ($(STATIC),1)
 #LDFLAGS += -static
 PKG_CONFIG += --static
-ifeq ($(MINGW)$(STATIC)$(CYGWIN),10)
+ifeq ($(MINGW)$(STATIC),10)
 LDFLAGS += -static-libgcc -static-libstdc++
 else
 LDFLAGS += -static
@@ -454,7 +454,9 @@ endif
 RM = rm -f
 ifneq ($(shell uname -s)-$(shell uname -o),MINGW32_NT-5.1-Msys)
 ifeq ($(STATIC),)
+ifeq ($(CYGWIN),)
 LDFLAGS +=  -static-libgcc -static-libstdc++
+endif
 endif
 endif
 ifneq ($(BOOST_INCLUDE_DIR),)
@@ -648,7 +650,7 @@ $(BUILDDIR)stralloc.a: $(BUILDDIR)stralloc_0.o $(BUILDDIR)stralloc_append.o $(BU
 $(BUILDDIR)strarray.a: $(BUILDDIR)strarray_push.o $(BUILDDIR)strarray_pushd.o 
 	$(AR) rcs $@ $^
 
-$(BUILDDIR)str.a: $(BUILDDIR)str_basename.o $(BUILDDIR)str_case_diff.o $(BUILDDIR)str_case_diffn.o $(BUILDDIR)str_case_equal.o $(BUILDDIR)str_case_start.o $(BUILDDIR)str_cat.o $(BUILDDIR)str_chr.o $(BUILDDIR)str_copy.o $(BUILDDIR)str_copyb.o $(BUILDDIR)str_decamelize.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_dup.o $(BUILDDIR)str_equal.o $(BUILDDIR)str_find.o $(BUILDDIR)str_findb.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_len.o $(BUILDDIR)str_lower.o $(BUILDDIR)str_ptime.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_start.o $(BUILDDIR)str_tok.o
+$(BUILDDIR)str.a: $(BUILDDIR)str_basename.o $(BUILDDIR)str_case_diff.o $(BUILDDIR)str_case_diffn.o $(BUILDDIR)str_case_equal.o $(BUILDDIR)str_case_start.o $(BUILDDIR)str_cat.o $(BUILDDIR)str_chr.o $(BUILDDIR)str_copy.o $(BUILDDIR)str_copyb.o $(BUILDDIR)str_decamelize.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_dup.o $(BUILDDIR)str_ndup.o $(BUILDDIR)str_equal.o $(BUILDDIR)str_find.o $(BUILDDIR)str_findb.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_len.o $(BUILDDIR)str_lower.o $(BUILDDIR)str_ptime.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_start.o $(BUILDDIR)str_tok.o
 	$(AR) rcs $@ $^
 
 $(BUILDDIR)strlist.a: $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_cat.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_index_of.o $(BUILDDIR)strlist_join.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_push.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)strlist_push_tokens.o $(BUILDDIR)strlist_push_unique.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)strlist_sort.o $(BUILDDIR)strlist_to_argv.o  $(BUILDDIR)strlist_unshift.o $(BUILDDIR)strlist_range.o 

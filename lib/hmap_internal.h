@@ -11,7 +11,8 @@
 
 #define HMAP_DEBUG(...)                                                                                                                                        \
   do {                                                                                                                                                         \
-    buffer_putm(buffer_2, __VA_ARGS__, NULL);                                                                                                                  \
+    fprintf(stderr, __VA_ARGS__);                                                                                                                  \
+    fflush(stderr); \
   } while(0)
 #else
 #define HMAP_DEBUG(...)

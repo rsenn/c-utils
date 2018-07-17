@@ -9,14 +9,6 @@ include( CheckCCompilerFlag )
 include( CheckCXXCompilerFlag )
 include( CheckLibraryExists )
 
-include( FindIconv )
-include( FindLibXml2 ) # LIBXML2_FOUND LIBXML2_DEFINITIONS LIBXML2_INCLUDE_DIR LIBXML2_LIBRARIES LIBXML2_VERSION_STRING LIBXML2_XMLLINT_EXECUTABLE
-include( FindZLIB )    # ZLIB_FOUND ZLIB_INCLUDE_DIR ZLIB_INCLUDE_DIRS ZLIB_LIBRARIES ZLIB_LIBRARY ZLIB_ROOT
-include( FindBZip2 )   # BZIP2_FOUND BZIP2_INCLUDE_DIR BZIP2_INCLUDE_DIRS BZIP2_LIBRARIES BZIP2_LIBRARY
-
-#include( FindLibLZMA ) # LIBLZMA_FOUND LIBLZMA_INCLUDE_DIR LIBLZMA_INCLUDE_DIRS LIBLZMA_LIBRARIES LIBLZMA_LIBRARY
-include( FindOpenSSL ) # OPENSSL_CRYPTO_LIBRARIES OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARIES OPENSSL_SSL_LIBRARY LIB_EAY_LIBRARY SSL_EAY_LIBRARY
-                       # OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
 
 #include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
 
@@ -63,17 +55,44 @@ endif(CXX_COMPILER_SUPPORTS_GGDB)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
-include( FindBoost )
+#include( FindBoost )
 #include(CMakeDetermineCompileFeatures)
 #include(CheckCXX11Features)
 
-pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
-pkg_search_module(LIBLZMA liblzma)
-pkg_search_module(LIBZ zlib)
-pkg_search_module(LIBBZ2 libbz2 bzip2)
+#pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
+
+include(FindLibXml2)
+if(LIBXML2_FOUND)
+  link_libraries(${LIBXML2_LIBRARIES})
+  include_directories(${LIBXML2_INCLUDE_DIR})
+endif(LIBXML2_FOUND)
+
+#pkg_search_module(LIBLZMA liblzma)
+include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
+if(LIBLZMA_FOUND)
+  link_libraries(${LIBLZMA_LIBRARIES})
+  include_directories(${LIBLZMA_INCLUDE_DIRS})
+endif(LIBLZMA_FOUND)
+
+include(FindZLIB)
+if(ZLIB_FOUND)
+  link_libraries(${ZLIB_LIBRARIES})
+  include_directories(${ZLIB_INCLUDE_DIRS})
+endif(ZLIB_FOUND)
+
+include(FindBZip2)
+if(BZIP2_FOUND)
+  link_libraries(${BZIP2_LIBRARIES})
+  include_directories(${BZIP2_INCLUDE_DIR})
+endif(BZIP2_FOUND)
+
+#pkg_search_module(LIBZ zlib)
+#pkg_search_module(LIBBZ2 libbz2 bzip2)
 #check_library_exists(LIBMSWSOCK ws2_32 HAVE_MSWSOCK)
+check_library_exists(ws2_32 socket "" HAVE_MSWSOCK)
+
 if(HAVE_MSWSOCK)
-set(LIBMSWSOCK ws2_32)
+  set(LIBMSWSOCK ws2_32)
 endif()
 
 if(NOT CXX11_FLAGS)
@@ -119,6 +138,17 @@ endif()
 include( CheckFunctionExists )
 
 check_function_exists(alloca HAVE_ALLOCA_FUNC)
+
+foreach(FUNC posix_memalign aligned_alloc _aligned_malloc)
+  string(TOUPPER "HAVE_${FUNC}_FUNC" DEF)
+  check_function_exists(func ${DEF})
+  if(${DEF})
+    add_definitions(-D${DEF}=1)
+  endif()
+endforeach()
+check_function_exists(aligned_alloc HAVE_ALIGNED_ALLOC_FUNC)
+check_function_exists(_aligned_malloc HAVE__ALIGNED_MALLOC_FUNC)
+
 check_function_exists(stat HAVE_STAT_FUNC)
 check_function_exists(lstat HAVE_LSTAT_FUNC)
 check_function_exists(_llseek HAVE__LLSEEK_FUNC)
@@ -151,7 +181,6 @@ foreach(SEEK_FN LSEEK LLSEEK LSEEK64)
     add_definitions(-DHAVE_${SEEK_FN}=1)
   endif()
 endforeach()
-
 
 #check_library_exists(ws2_32, WSAStartup "" HAVE_WS2_32_LIBRARY)
 if(HAVE_WS2_32_LIBRARY)

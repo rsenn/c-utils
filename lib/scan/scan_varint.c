@@ -15,4 +15,9 @@ size_t scan_varint(const char* in,size_t len, unsigned long long* n) {
   return 0;
 }
 
-size_t scan_pb_type0_int(const char* dest,size_t len,unsigned long long* l) __attribute__((alias("scan_varint")));
+size_t scan_pb_type0_int(const char* dest,size_t len,unsigned long long* l) 
+#ifdef __GNUC__
+__attribute__((alias("scan_varint")));
+#else
+{ return scan_varint(dest, len, l); }
+#endif

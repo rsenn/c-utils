@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <crtdbg.h>
+#endif
+
 static uint32_t CBM_DEBUG_ALLOCATIONS = 0;
 static uint32_t CBM_DEBUG_FREES = 0;
 static uint32_t CBM_DEBUG_ALLOCATED_BYTES = 0;
@@ -16,11 +20,25 @@ cbmap_mem_allocated(void) {
 
 int
 cbmap_mem_memalign(void** p, size_t alignment, size_t size) {
-  int a = posix_memalign(p, alignment, size);
-  if(a == 0) {
+  int a;
+
+#ifdef HAVE_ALIGNED_ALLOC
+  a = !(*p = aligned_alloc(alignment, size));
+#elif defined(HAVE__ALIGNED_MALLOC)
+  a = !(*p = _aligned_malloc(size, alignment));
+//#elif defined(_WIN32) || defined(_WIN64)
+//  a = !(*p = _aligned_malloc_dbg(size, alignment, __FILE__, __LINE__)); // This is reduced to a call to `_aligned_malloc` when _DEBUG is not defined
+#elif HAVE_POSIX_MEMALIGN
+  a = posix_memalign(p, alignment, size);
+#else
+  a = !(*p = malloc(size));
+#endif
+
+  if(!a) {
     CBM_DEBUG_ALLOCATIONS += 1;
     CBM_DEBUG_ALLOCATED_BYTES += size;
-  }
+  } 
+  
   return a;
 }
 
@@ -41,7 +59,7 @@ cbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line) {
 
 char*
 cbmap_mem_debug_strndup(const char* p, size_t size, const char* file, int line) {
-  char* result = strndup(p, size);
+  char* result = str_ndup(p, size);
   if(result != NULL) {
     CBM_DEBUG_ALLOCATIONS += 1;
     CBM_DEBUG_ALLOCATED_BYTES += size;
@@ -60,7 +78,7 @@ cbmap_mem_debug_strdup(const char* p, const char* file, int line) {
   if(p == NULL)
     return NULL;
 
-  result = strdup(p);
+  result = str_dup(p);
   if(result != NULL) {
     CBM_DEBUG_ALLOCATIONS += 1;
     size = str_len(p);
@@ -105,12 +123,25 @@ cbmap_mem_debug_free(const void* ptr, const char* file, int line) {
 
 int
 cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const char* file, int line) {
-  int result = posix_memalign(memptr, alignment, size);
+  int result;
+
+#ifdef HAVE_ALIGNED_ALLOC
+  result = !(*memptr = aligned_alloc(alignment, size));
+#elif defined(HAVE__ALIGNED_MALLOC)
+  result = !(*memptr = _aligned_malloc(size, alignment));
+//#elif defined(_WIN32) || defined(_WIN64)
+//  result = !(*memptr = _aligned_malloc_dbg(size, alignment, file, line)); // This is reduced to a call to `_aligned_malloc` when _DEBUG is not defined
+#elif HAVE_POSIX_MEMALIGN
+  result = posix_memalign(&result, alignment, size);
+#else
+  result = !(*memptr = malloc(size));
+#endif
 
   if(!result) {
     CBM_DEBUG_ALLOCATIONS += 1;
     CBM_DEBUG_ALLOCATED_BYTES += (uint32_t)size;
   }
+  
 #ifdef DEBUG
   fprintf(stdout, "%p     CBM_MEM_ALIGNED %-20s (%03d): Allocated %g bytes\n", *memptr, file, line, (float)size);
 #endif

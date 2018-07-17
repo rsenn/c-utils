@@ -51,6 +51,7 @@ int str_start(const char* a, const char* b) __pure__;
 char *str_istr(char *s, char *find);
 char *str_tok(char *s, const char *delim, char **ptrptr);
 char *str_dup(const char *s);
+char *str_ndup(const char *s, size_t n);
 
 struct tm;
 

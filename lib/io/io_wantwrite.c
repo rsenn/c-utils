@@ -1,5 +1,6 @@
 #include <fcntl.h>
 #include <errno.h>
+#include <stdio.h>
 #include "../io_internal.h"
 #ifdef HAVE_KQUEUE
 #include <sys/types.h>
