@@ -6,9 +6,10 @@
 #include <stddef.h>
 /* for ssize_t: */
 #include <sys/types.h>
-/* for strlen */
+/* for str_len */
 #include <string.h>
 #include "uint64.h"
+#include "str.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,6 +52,7 @@ void buffer_free(void* buf);
 void buffer_munmap(void* buf);
 int buffer_mmapread(buffer* b, const char* filename);
 int buffer_mmapread_fd(buffer *b,  int fd);
+int buffer_mmapprivate(buffer* b, const char* filename);
 void buffer_close(buffer* b);
 
 /* reading from an fd... if it is a regular file,  then  buffer_mmapread_fd is called,
@@ -69,8 +71,8 @@ int buffer_putsflush(buffer* b, const char* x);
 /* as a little gcc-specific hack,  if somebody calls buffer_puts with a
  * constant string,  where we know its length at compile-time,  call
  * buffer_put with the known length instead */
-#define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, strlen(s)) : buffer_puts(b, s))
-#define buffer_putsflush(b, s) (__builtin_constant_p(s) ? buffer_putflush(b, s, strlen(s)) : buffer_putsflush(b, s))
+#define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, str_len(s)) : buffer_puts(b, s))
+#define buffer_putsflush(b, s) (__builtin_constant_p(s) ? buffer_putflush(b, s, str_len(s)) : buffer_putsflush(b, s))
 #endif
 
 int buffer_putm_internal(buffer*b, ...);
@@ -98,6 +100,7 @@ ssize_t buffer_getn(buffer* b, char* x, size_t len);
  * EOF is reached,  \0 is written to the buffer */
 ssize_t buffer_get_token(buffer* b, char* x, size_t len, const char* charset, size_t setlen);
 ssize_t buffer_getline(buffer* b, char* x, size_t len);
+int buffer_skip_until(buffer* b, const char* charset, size_t setlen);
 
 /* this predicate is given the string as currently read from the buffer
  * and is supposed to return 1 if the token is complete,  0 if not. */
@@ -125,6 +128,8 @@ int buffer_putlong(buffer *b, signed long int l);
 
 int buffer_putlonglong(buffer* b, signed long long int l);
 int buffer_putulonglong(buffer* b, unsigned long long int l);
+
+int buffer_putdouble(buffer *b, double d);
 
 int buffer_puterror(buffer* b);
 int buffer_puterror2(buffer* b,  int errnum);

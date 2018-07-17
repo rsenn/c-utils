@@ -11,6 +11,14 @@ SOURCE_FILES=$(
 )
 
 for FILE in $SOURCE_FILES; do
-  find "$BASEDIR" -name "${FILE##*/}"
+  NAME=${FILE##*/}
+  MASK=$NAME 
+#  case "$FILE" in
+#    lib/*/*_*.c) MASK=${NAME%%_*}_*.c ;;
+#  esac
+
+  find "$BASEDIR/" -name "$MASK"
 done |sort -u| 
-  sed "s|$PWD/||" #|   sed "1! s|^|  | ;; \$! s|.*|& \\\\|"
+  sed "s|$PWD/||" 
+  
+#|   sed "1! s|^|  | ;; \$! s|.*|& \\\\|"

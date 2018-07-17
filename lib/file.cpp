@@ -47,7 +47,7 @@ file::read(char* b, const unsigned long n) {
 
 void
 file::put_line(const char* s) {
-	write(s, strlen(s));
+	write(s, str_len(s));
 	write("\r\n", 2);
 }
 

@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<CodeBlocks_workspace_file>
-	<Workspace title="Workspace">
-		<Project filename="../../../../mnt/sources/dirlist/list-r.cbp" />
-		<Project filename="../../../../mnt/sources/dirlist/decode-ls-lR.cbp" />
-		<Project filename="../../../../mnt/sources/dirlist/httptest.cbp" />
-		<Project filename="../../../../mnt/sources/dirlist/mediathek-list.cbp" />
-		<Project filename="../../../../mnt/sources/dirlist/mediathek-parser.cbp" />
-		<Project filename="../../../../mnt/sources/dirlist/plsconv.cbp" />
-		<Project filename="../../../../mnt/sources/dirlist/rdir-test.cbp" />
-	</Workspace>
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_workspace_file Version="10.0.0">
+  <Workspace title="Workspace">
+    <Project filename="../../../../mnt/sources/dirlist/list-r.cbp"/>
+    <Project filename="../../../../mnt/sources/dirlist/decode-ls-lR.cbp"/>
+    <Project filename="../../../../mnt/sources/dirlist/httptest.cbp"/>
+    <Project filename="../../../../mnt/sources/dirlist/mediathek-list.cbp"/>
+    <Project filename="../../../../mnt/sources/dirlist/mediathek-parser.cbp"/>
+    <Project filename="../../../../mnt/sources/dirlist/plsconv.cbp"/>
+    <Project filename="../../../../mnt/sources/dirlist/rdir-test.cbp"/>
+  </Workspace>
 </CodeBlocks_workspace_file>

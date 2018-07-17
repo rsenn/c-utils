@@ -34,19 +34,19 @@
 #define MAXIMUM_PATH_LENGTH _MAX_PATH
 #endif
 
-INLINE static char *mystr_basename(const char *path) {
+static char *mystr_basename(const char *path) {
   char *r = strrchr(path, '/');
   return r ? r + 1 : (char *)path;
 }
 
 static int force = 0, shortroot = 0;
 
-INLINE static char hexchar(char value) {
+static char hexchar(char value) {
   static const char hchars[] = "0123456789abcdef";
   return hchars[(unsigned int)((unsigned char)value & 0xf)];
 }
 
-static INLINE char char_tolower(char ch) {
+static char char_tolower(char ch) {
   if(ch >= 'A' && ch <= 'Z')
     ch += 0x20;
   return ch;

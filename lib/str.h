@@ -33,7 +33,7 @@ int str_diffn(const char* a, const char* b, size_t limit) __pure__;
 
 #ifdef __dietlibc__
 #include <string.h>
-#define str_len(foo) strlen(foo)
+#define str_len(foo) str_len(foo)
 #else
 /* str_len returns the index of \0 in s */
 size_t str_len(const char* s) __pure__;

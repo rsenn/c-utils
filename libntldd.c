@@ -162,7 +162,7 @@ struct dep_tree_element *process_dep(build_tree_config* cfg, soff_entry *soffs, 
   char *dllname = (char *)map_pointer(soffs, soffs_len, name, NULL);
   if(dllname == NULL)
     return NULL;
-  if(strlen(dllname) > 10 && str_case_diffn("api-ms-win", dllname, 10) == 0) {
+  if(str_len(dllname) > 10 && str_case_diffn("api-ms-win", dllname, 10) == 0) {
     /* TODO: find a better way to identify api stubs. Versioninfo, maybe? */
     return NULL;
   }

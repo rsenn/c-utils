@@ -158,14 +158,15 @@ if(HAVE_WS2_32_LIBRARY)
 link_libraries(ws2_32)
 endif(HAVE_WS2_32_LIBRARY)
 
-if(HAVE__LLSEEK_FUNC)
+if(HAVE_LSEEK64_FUNC)
+  add_definitions(-DLSEEK=lseek64)
+elseif(HAVE__LLSEEK_FUNC)
   add_definitions(-DLSEEK=_llseek)
 elseif(HAVE__LSEEKI64_FUNC)
   add_definitions(-DLSEEK=_lseeki64)
 elseif(HAVE_LLSEEK_FUNC)
   add_definitions(-DLSEEK=llseek)
-elseif(HAVE_LSEEK64_FUNC)
-  add_definitions(-DLSEEK=lseek64)
+
 elseif(HAVE_LSEEK)
   add_definitions(-DLSEEK=lseek)
 endif()
@@ -205,13 +206,14 @@ pkg_search_module(
 )
 
 
-check_library_exists(m, atan2 "" HAVE_MATH_LIBRARY)
-
+#check_library_exists(m, atan2 "" HAVE_MATH_LIBRARY)
+check_library_exists(m roundf "" HAVE_MATH_LIBRARY)
 
 if(HAVE_MATH_LIBRARY)
-set(MATH_LIBRARY m)
+  set(MATH_LIBRARY m)
 else()
-check_function_exists(atan2 HAVE_ATAN2_FUNC)
+  check_function_exists(atan2 HAVE_ATAN2_FUNC)
+  check_function_exists(roundf HAVE_ROUNDF_FUNC)
 
 endif(HAVE_MATH_LIBRARY)
 
@@ -305,7 +307,7 @@ endforeach()
 
 
 #
-foreach(ARCHIVE array buffer byte dir fmt hmap http iarray io list mmap ndelay open playlist rdir scan socket str stralloc strarray strlist tai taia time uint16 uint32 uint64)
+foreach(ARCHIVE array buffer cb cbmap byte dir fmt hmap http iarray io list mmap ndelay open playlist rdir scan socket str stralloc strarray strlist tai taia time uint16 uint32 uint64)
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
   file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
   if(NOT MODSOURCES)
@@ -334,7 +336,7 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   endif()
 endif()
 
-set(COMMON_LIBS strlist array stralloc buffer open mmap fmt scan str byte)
+set(COMMON_LIBS strlist array stralloc buffer mmap open fmt scan str byte)
 
 foreach(PROGRAM ${PROGRAMS})
   if("${PROGRAM}" STREQUAL ntldd)

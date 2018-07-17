@@ -2,47 +2,44 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
-
-#include <libxml/SAX.h>
-
 #include "lib/hmap.h"
 #include "lib/scan.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
-
+#include <libxml/SAX.h>
 #define END_OF_LINE "; "
 //#define END_OF_LINE ";\n"
-
 static stralloc element_name, character_buf;
-
 static float const unit_factor = 25.4, scale_factor = 0.666666, grid_mils = 100;
-
 static float min_x = 0.0, max_x = 0.0, min_y = 0.0, max_y = 0.0;
-
 static void
 update_minmax_xy(float x, float y) {
-  if(x < min_x) min_x = x;
-  if(y < min_y) min_y = y;
-  if(x > max_x) max_x = x;
-  if(y > max_y) max_y = y;
+
+  if(x < min_x)
+    min_x = x;
+
+  if(y < min_y)
+    min_y = y;
+
+  if(x > max_x)
+    max_x = x;
+
+  if(y > max_y)
+    max_y = y;
 };
 
-static xmlDocPtr xmldoc = NULL;
-
+static xmlDoc* xmldoc = NULL;
 static HMAP_DB* hashmap = NULL;
 static TUPLE* ptr_tuple = NULL;
-
 static HMAP_DB *instances_db = NULL, *parts_db = NULL;
-
-static void hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*));
-static void update_part(const char*, float, float, float);
-
+static void
+hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*));
+static void
+update_part(const char*, float, float, float);
 #define NAMELEN 8
-
 typedef struct part {
   char name[NAMELEN];
   char library[NAMELEN];
@@ -51,14 +48,12 @@ typedef struct part {
   char value[NAMELEN];
   float x, y, rot;
 } part_t;
-
 typedef struct instance {
   char part[NAMELEN];
   char gate[NAMELEN];
   float x, y;
   float rot;
 } instance_t;
-
 /* ----------------------------------------------------------------------- */
 inline static float
 round_to_mil(float val, float mil) {
@@ -78,24 +73,21 @@ str_copyn(char* out, const char* in, size_t n) {
 static void
 each_part(part_t* p) {
 
-  if(p->device[0] == '\0' && p->value[0] == '\0') return;
-
+  if(p->device[0] == '\0' && p->value[0] == '\0')
+    return;
   {
     printf("MOVE %s (%.2f %.2f)" END_OF_LINE, p->name, p->x - min_x, p->y - min_y);
     fflush(stdout);
-
     if(fabs(p->rot) >= 0.1) {
       int angle = (int)((p->rot / 90)) * 90.0;
       while(angle < 0)
         angle += 360;
       while(angle > 360)
         angle -= 360;
-
       printf("ROTATE =R%d '%s'" END_OF_LINE, angle % 360, p->name);
       // printf("ROTATE =R0 '%s'" END_OF_LINE, p->name);
     }
   }
-
   /*  printf("each_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
       p->name, p->library, p->deviceset, p->device, p->value);*/
 }
@@ -120,7 +112,9 @@ get_part(const char* part) {
   TUPLE* ptr_tuple = NULL;
   part_t* p = NULL;
   hmap_search(parts_db, (char*)part, str_len(part), &ptr_tuple);
-  if(ptr_tuple) p = ptr_tuple->vals.val_custom;
+
+  if(ptr_tuple)
+    p = ptr_tuple->vals.val_custom;
   return p;
 }
 
@@ -133,11 +127,12 @@ get_instance(const char* part, const char* gate) {
   stralloc_cats(&key, ":");
   stralloc_cats(&key, gate);
   stralloc_nul(&key);
-
   TUPLE* ptr_tuple = NULL;
   instance_t* i = NULL;
   hmap_search(instances_db, key.s, key.len, &ptr_tuple);
-  if(ptr_tuple) i = ptr_tuple->vals.val_custom;
+
+  if(ptr_tuple)
+    i = ptr_tuple->vals.val_custom;
   return i;
 }
 
@@ -155,18 +150,17 @@ create_instance(const char* part, const char* gate, float x, float y, float rot)
   stralloc_cats(&key, ":");
   stralloc_cats(&key, gate);
   i = malloc(sizeof(instance_t));
-  if(i == NULL) return NULL;
+
+  if(i == NULL)
+    return NULL;
   // memset(i, 0, sizeof(instance_t));
   str_copyn(i->part, part, sizeof(i->part) - 1);
   str_copyn(i->gate, gate, sizeof(i->gate) - 1);
   i->x = x;
   i->y = y;
   i->rot = rot;
-
   hmap_add(&instances_db, key.s, key.len, 1, HMAP_DATA_TYPE_CUSTOM, i);
-
   update_part(part, x, y, rot);
-
   // dump_instance(i);
   return i;
 }
@@ -174,15 +168,19 @@ create_instance(const char* part, const char* gate, float x, float y, float rot)
 /* ----------------------------------------------------------------------- */
 static part_t*
 create_part(const char* name, const char* library, const char* deviceset, const char* device, const char* value) {
-  if(value == NULL) value = "";
-/*if(deviceset == NULL) deviceset = "";
-if(device == NULL) device = "";*/
+
+  if(value == NULL)
+    value = "";
+  /*if(deviceset == NULL) deviceset = "";
+  if(device == NULL) device = "";*/
 #if DEBUG
   printf("create_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n", name, library, deviceset, device, value);
 #endif
   part_t* p;
   p = malloc(sizeof(part_t));
-  if(p == NULL) return NULL;
+
+  if(p == NULL)
+    return NULL;
   // memset(p, 0, spzeof(part_t));
   str_copyn(p->name, name, sizeof(p->name) - 1);
   str_copyn(p->library, library ? library : "", sizeof(p->library) - 1);
@@ -192,9 +190,7 @@ if(device == NULL) device = "";*/
   p->x = 0.0;
   p->y = 0.0;
   p->rot = 0.0;
-
   hmap_add(&parts_db, (char*)name, str_len(name), 1, HMAP_DATA_TYPE_CUSTOM, p);
-
   return p;
 }
 
@@ -202,7 +198,9 @@ if(device == NULL) device = "";*/
 static void
 update_part(const char* name, float x, float y, float rot) {
   part_t* p = get_part(name);
-  if(p == NULL) return;
+
+  if(p == NULL)
+    return;
 #if DEBUG
   printf("update_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%."
          "2f,y=%.2f,rot=%.0f}[%.2f,%.2f,%.2f]\n",
@@ -216,6 +214,7 @@ update_part(const char* name, float x, float y, float rot) {
     p->x /= 2;
     p->x = roundf(p->x * 100) / 100;
   }
+
   if(p->y == 0.0 || isnan(p->y)) {
     p->y = y;
   } else {
@@ -223,13 +222,13 @@ update_part(const char* name, float x, float y, float rot) {
     p->y /= 2;
     p->y = roundf(p->y * 100) / 100;
   }
+
   if(p->rot == 0.0 || isnan(p->rot)) {
     p->rot = rot;
   } else {
     p->rot += rot; // p->rot /= 2;
     p->rot = roundf(p->rot);
   }
-
   update_minmax_xy(p->x, p->y);
 }
 
@@ -237,7 +236,10 @@ update_part(const char* name, float x, float y, float rot) {
 static void
 attr_list(stralloc* sa, HMAP_DB* hmap) {
   TUPLE* p;
-  if(hmap == NULL) return;
+
+  if(hmap == NULL)
+    return;
+
   for(p = hmap->list_tuple; p; p = p->next) {
     if(p->data_type == HMAP_DATA_TYPE_CHARS) {
       stralloc_catb(sa, " ", 1);
@@ -246,7 +248,8 @@ attr_list(stralloc* sa, HMAP_DB* hmap) {
       stralloc_cats(sa, p->vals.val_chars);
       stralloc_cats(sa, "\"");
     }
-    if(p->next == hmap->list_tuple) break;
+    if(p->next == hmap->list_tuple)
+      break;
   }
 }
 
@@ -254,10 +257,15 @@ attr_list(stralloc* sa, HMAP_DB* hmap) {
 static void
 hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
   TUPLE* t;
-  if(hmap == NULL) return;
+
+  if(hmap == NULL)
+    return;
+
   for(t = hmap->list_tuple; t; t = t->next) {
-    if(t->data_type == HMAP_DATA_TYPE_CUSTOM) foreach_fn(t->vals.val_custom);
-    if(t->next == hmap->list_tuple) break;
+    if(t->data_type == HMAP_DATA_TYPE_CUSTOM)
+      foreach_fn(t->vals.val_custom);
+    if(t->next == hmap->list_tuple)
+      break;
   }
 }
 
@@ -265,7 +273,10 @@ hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
 static void
 print_list(HMAP_DB* hmap) {
   TUPLE* p;
-  if(hmap == NULL) return;
+
+  if(hmap == NULL)
+    return;
+
   for(p = hmap->list_tuple; p; p = p->next) {
     if(p->data_type == HMAP_DATA_TYPE_CHARS) {
       /* printf("index[%d][%p] key[%s], data[%s]\n", p->index, p,  p->key,
@@ -274,7 +285,8 @@ print_list(HMAP_DB* hmap) {
     } else if(p->data_type == HMAP_DATA_TYPE_CUSTOM) {
       printf("key=\"%s\",data=%p\n", p->key, p->vals.val_custom);
     }
-    if(p->next == hmap->list_tuple) break;
+    if(p->next == hmap->list_tuple)
+      break;
   }
 }
 
@@ -282,6 +294,7 @@ print_list(HMAP_DB* hmap) {
 static void
 print_attributes(xmlElement* e) {
   xmlAttribute* a;
+
   for(a = e->attributes; a; a = (xmlAttribute*)a->next) {
     printf("%s=\"%s\"\n", (const char*)a->name, (const char*)xmlNodeGetContent((xmlNode*)a));
   }
@@ -291,6 +304,7 @@ print_attributes(xmlElement* e) {
 static const char*
 get_attribute(xmlElement* e, const char* name) {
   xmlAttribute* a;
+
   for(a = e->attributes; a; a = (xmlAttribute*)a->next) {
     if(!str_diff((const char*)a->name, name)) {
       return (const char*)xmlNodeGetContent((xmlNode*)a);
@@ -303,6 +317,7 @@ get_attribute(xmlElement* e, const char* name) {
 static int
 get_attribute_sa(stralloc* sa, xmlElement* e, const char* name) {
   xmlAttribute* a;
+
   for(a = e->attributes; a; a = (xmlAttribute*)a->next) {
     if(!str_diff((const char*)a->name, name)) {
       const char* value = (const char*)xmlNodeGetContent((xmlNode*)a);
@@ -319,9 +334,13 @@ static int
 get_attribute_double(double* d, xmlElement* e, const char* name) {
   stralloc sa;
   stralloc_init(&sa);
-  if(!get_attribute_sa(&sa, e, name)) return 0;
+
+  if(!get_attribute_sa(&sa, e, name))
+    return 0;
   stralloc_nul(&sa);
-  if(scan_double(sa.s, d) == sa.len) return 1;
+
+  if(scan_double(sa.s, d) == sa.len)
+    return 1;
   return 0;
 }
 
@@ -329,12 +348,14 @@ get_attribute_double(double* d, xmlElement* e, const char* name) {
 static void
 cat_attributes(stralloc* sa, xmlElement* e) {
   xmlAttribute* a;
+
   for(a = e->attributes; a; a = (xmlAttribute*)a->next) {
     const char* value = (const char*)xmlNodeGetContent((xmlNode*)a);
     stralloc_cats(sa, "\n  ");
     stralloc_cats(sa, (const char*)a->name);
     stralloc_cats(sa, "=\"");
-    if(value) stralloc_cats(sa, value);
+    if(value)
+      stralloc_cats(sa, value);
     stralloc_catb(sa, "\"", 1);
   }
 }
@@ -355,19 +376,14 @@ process_instance(xmlElement* e) {
     const char* r = rot.s;
     while(*r && !isdigit(*r))
       ++r;
-
     scan_double(r, &rotate);
   }
-
   get_attribute_double(&x, e, "x");
   get_attribute_double(&y, e, "y");
-
   /*x /= unit_factor;
   y /= unit_factor;*/
-
   /*x *= scale_factor;
   y *= scale_factor;*/
-
   instance_t* newinst =
     create_instance(part.s, gate.s, round_to_mil(x * scale_factor / unit_factor, grid_mils), round_to_mil(y * scale_factor / unit_factor, grid_mils), rotate);
 }
@@ -386,7 +402,6 @@ process_part(xmlElement* e) {
   get_attribute_sa(&device, e, "device");
   stralloc_init(&value);
   get_attribute_sa(&value, e, "value");
-
   part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s);
 }
 
@@ -400,11 +415,9 @@ print_element_names(xmlNode* a_node) {
       stralloc attrs;
       xmlElement* e = (xmlElement*)n;
       const char* value = (const char*)xmlNodeGetContent(n);
-
       stralloc_init(&attrs);
       cat_attributes(&attrs, e);
       stralloc_nul(&attrs);
-
       if(!str_diff((const char*)e->name, "instance")) {
         process_instance(e);
       } else if(!str_diff((const char*)e->name, "part")) {
@@ -441,45 +454,47 @@ get_characters() {
 }
 
 /* ----------------------------------------------------------------------- */
-int read_xmlfile(const char* filename);
-int parse_xmlfile(const char* filename, xmlDocPtr* p_doc);
-xmlSAXHandler make_sax_handler();
-
+int
+read_xmlfile(const char* filename);
+int
+parse_xmlfile(const char* filename, xmlDoc** p_doc);
+xmlSAXHandler
+make_sax_handler();
 /* ----------------------------------------------------------------------- */
-static void on_attribute_decl(void*, const xmlChar*, const xmlChar*, int, int, const xmlChar*, xmlEnumerationPtr);
-
-static void after_element(const char*);
-static void on_start_element(void*, const xmlChar*, const xmlChar**);
-static void on_end_element(void*, const xmlChar*);
-
-static void on_start_element_ns(void*, const xmlChar*, const xmlChar*, const xmlChar*, int, const xmlChar**, int, int, const xmlChar**);
-
-static void on_end_element_ns(void*, const xmlChar*, const xmlChar*, const xmlChar*);
-
-static void on_characters(void* ctx, const xmlChar* ch, int len);
-
+static void
+on_attribute_decl(void*, const xmlChar*, const xmlChar*, int, int, const xmlChar*, xmlEnumeration*);
+static void
+after_element(const char*);
+static void
+on_start_element(void*, const xmlChar*, const xmlChar**);
+static void
+on_end_element(void*, const xmlChar*);
+static void
+on_start_element_ns(void*, const xmlChar*, const xmlChar*, const xmlChar*, int, const xmlChar**, int, int, const xmlChar**);
+static void
+on_end_element_ns(void*, const xmlChar*, const xmlChar*, const xmlChar*);
+static void
+on_characters(void* ctx, const xmlChar* ch, int len);
 /* ----------------------------------------------------------------------- */
 int
 read_xmlfile(const char* filename) {
   FILE* f;
   int res;
   char chars[1024];
-
   f = fopen(filename, "r");
+
   if(!f) {
     puts("file open error.");
     return 1;
   }
-
   res = fread(chars, 1, 4, f);
+
   if(res <= 0) {
     fclose(f);
     return 1;
   }
-
   xmlSAXHandler sax_hander = make_sax_handler();
-
-  xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt(&sax_hander, NULL, chars, res, NULL);
+  xmlParserCtxt* ctxt = xmlCreatePushParserCtxt(&sax_hander, NULL, chars, res, NULL);
 
   while((res = fread(chars, 1, sizeof(chars), f)) > 0) {
     if(xmlParseChunk(ctxt, chars, res, 0)) {
@@ -488,31 +503,28 @@ read_xmlfile(const char* filename) {
     }
   }
   xmlParseChunk(ctxt, chars, 0, 1);
-
   xmlFreeParserCtxt(ctxt);
   xmlCleanupParser();
-
   fclose(f);
   return 0;
 }
 
 /* ----------------------------------------------------------------------- */
 int
-parse_xmlfile(const char* filename, xmlDocPtr* p_doc) {
-  xmlParserCtxtPtr ctxt; /* the parser context */
-  xmlDocPtr doc;         /* the resulting document tree */
-
+parse_xmlfile(const char* filename, xmlDoc** p_doc) {
+  xmlParserCtxt* ctxt; /* the parser context */
+  xmlDoc* doc;         /* the resulting document tree */
   /* create a parser context */
   ctxt = xmlNewParserCtxt();
+
   if(ctxt == NULL) {
     fprintf(stderr, "Failed to allocate parser context\n");
     return 1;
   }
-
   /* parse the file, activating the DTD validation option */
   doc = xmlCtxtReadFile(ctxt, filename, NULL, XML_PARSE_RECOVER | XML_PARSE_NOENT | XML_PARSE_NOBLANKS | XML_PARSE_NSCLEAN | XML_PARSE_COMPACT);
-
   /* check if parsing suceeded */
+
   if(doc == NULL) {
     fprintf(stderr, "Failed to parse %s\n", filename);
     xmlFreeParserCtxt(ctxt);
@@ -523,7 +535,6 @@ parse_xmlfile(const char* filename, xmlDocPtr* p_doc) {
         fprintf(stderr, "Failed to validate %s\n", filename);
   */
   *p_doc = doc;
-
   /* free up the parser context */
   xmlFreeParserCtxt(ctxt);
   return 0;
@@ -533,9 +544,7 @@ parse_xmlfile(const char* filename, xmlDocPtr* p_doc) {
 xmlSAXHandler
 make_sax_handler() {
   xmlSAXHandler sax_hander;
-
   memset(&sax_hander, 0, sizeof(xmlSAXHandler));
-
   /*//sax_hander.initialized = 0;
    */
   sax_hander.initialized = XML_SAX2_MAGIC;
@@ -545,13 +554,12 @@ make_sax_handler() {
   sax_hander.endElementNs = on_end_element_ns;
   sax_hander.characters = on_characters;
   /* sax_hander.attributeDecl = on_attribute_decl; */
-
   return sax_hander;
 }
 
 /* ----------------------------------------------------------------------- */
 static void
-on_attribute_decl(void* ctx, const xmlChar* elem, const xmlChar* fullname, int type, int def, const xmlChar* defaultValue, xmlEnumerationPtr tree) {
+on_attribute_decl(void* ctx, const xmlChar* elem, const xmlChar* fullname, int type, int def, const xmlChar* defaultValue, xmlEnumeration* tree) {
   /* printf("<%s> %s=\"%s\"\n", get_element_name(), fullname, defaultValue); */
 }
 
@@ -566,14 +574,11 @@ on_start_element(void* ctx, const xmlChar* name, const xmlChar** attrs) {
     }
     numAttrs = i >> 1;
   }
-
   printf("<%s> %d\n", name, numAttrs);
 
   for(i = 0; i < numAttrs; ++i) {
     char *attr = ((char**)attrs)[i << 1], *value = ((char**)attrs)[(i << 1) + 1];
-
     printf("<%s> %d/%d: %s=\"%s\"\n", name, i, numAttrs, attr, value);
-
     hmap_add(&hashmap, attr, str_len(attr), 1, HMAP_DATA_TYPE_CHARS, value, str_len(value));
   }
 }
@@ -582,10 +587,8 @@ on_start_element(void* ctx, const xmlChar* name, const xmlChar** attrs) {
 static void
 on_start_element_ns(void* ctx, const xmlChar* name, const xmlChar* prefix, const xmlChar* URI, int nb_nss, const xmlChar** nss, int nb_attrs, int nb_defaulted,
                     const xmlChar** attrs) {
-
   set_element_name((const char*)name);
   /*  printf("<%s> %d\n", name, numAttrs);
-
     for(i = 0; i < numAttrs; ++i) {
       printf("<%s> %d/%d %s\n", name, i, numAttrs, attributes[i]);
     }
@@ -609,17 +612,14 @@ static void
 after_element(const char* name) {
   stralloc saa;
   stralloc_init(&saa);
-
   attr_list(&saa, hashmap);
   stralloc_nul(&saa);
 
-  if(saa.len) printf("<%s> attrs:%s\n", get_element_name(), saa.s);
-
+  if(saa.len)
+    printf("<%s> attrs:%s\n", get_element_name(), saa.s);
   stralloc_free(&saa);
-
   hmap_destroy(&hashmap);
   hmap_init(1024, &hashmap);
-
   stralloc_zero(&character_buf);
 }
 
@@ -627,6 +627,7 @@ after_element(const char* name) {
 size_t
 str_escapen(char* out, const char* in, size_t n) {
   size_t i;
+
   for(i = 0; i < n; ++i, ++out) {
     if(in[i] == '\n') {
       *out = '\\';
@@ -647,8 +648,10 @@ on_characters(void* ctx, const xmlChar* ch, int len) {
   int i;
   str_copyn(chars, (const char*)ch, len);
   str_escapen(escaped, chars, str_len(chars));
+
   for(i = len - 1; i >= 0; --i) {
-    if(!isspace(escaped[i])) break;
+    if(!isspace(escaped[i]))
+      break;
     escaped[i] = '\0';
   }
 
@@ -664,8 +667,12 @@ static const char*
 mystr_basename(const char* filename) {
   char* s1 = strrchr(filename, '\\');
   char* s2 = strrchr(filename, '/');
-  if(s2 > s1) s1 = s2;
-  if(s1) return s1 + 1;
+
+  if(s2 > s1)
+    s1 = s2;
+
+  if(s1)
+    return s1 + 1;
   return 0;
 }
 
@@ -674,7 +681,6 @@ int
 main(int argc, char* argv[]) {
   xmlNode* root_element = NULL;
   const char* filename = "sample.xml";
-
   /* initialize database */
   hmap_init(1024, &hashmap);
   hmap_init(1024, &instances_db);
@@ -686,34 +692,27 @@ main(int argc, char* argv[]) {
     fprintf(stderr, "Usage: %s <filename>\n", mystr_basename(argv[0]));
     return 1;
   }
-
   /*   if(read_xmlfile(f)) {*/
+
   if(parse_xmlfile(filename, &xmldoc)) {
     puts("xml read error.");
     return 2;
   }
-
   /* Get the root element node */
   root_element = xmlDocGetRootElement(xmldoc);
   print_element_names(root_element);
-
   //  print_list(instances_db);
   //  print_list(parts_db);
-
   {
     const part_t* tmp = get_part("IC1");
-
-    if(tmp) dump_part(tmp);
+    if(tmp)
+      dump_part(tmp);
   }
-
   /*hmap_foreach(instances_db, &dump_instance);*/
   /*hmap_foreach(parts_db, &dump_part);*/
-
   hmap_foreach(parts_db, (void*)&each_part);
   printf("\n");
-
   /* free up the resulting document */
   xmlFreeDoc(xmldoc);
-
   return 0;
 }

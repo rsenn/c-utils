@@ -13,7 +13,7 @@
 //-----------------------------------------------------------------------------
 namespace std {
 const char* begin(const char* s) { return s; }
-const char* end(const char* s) { return begin(s)+std::strlen(s); }
+const char* end(const char* s) { return begin(s)+std::str_len(s); }
 }
 
 //-----------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 #include "../byte.h"
+#include "../byte.h"
 #include "../str.h"
 /*
   return index to first occurance of data,
