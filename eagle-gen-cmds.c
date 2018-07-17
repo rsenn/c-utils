@@ -80,6 +80,10 @@ hashmap_dump(HMAP_DB* db, const char* name) {
   }
 }
 
+
+/**
+ * str is white space?
+ */
 static int
 str_isspace(const char* s) {
   while(*s) {
@@ -89,6 +93,10 @@ str_isspace(const char* s) {
   return 1;
 }
 
+
+/*
+ * str is float num?
+ */
 static int
 str_isfloat(const char* s) {
   while(*s) {
@@ -99,6 +107,11 @@ str_isfloat(const char* s) {
   }
   return 1;
 }
+
+
+/*
+ * Convert XML element attributes to a hashmap
+ */
 
 static HMAP_DB*
 element_to_hashmap(xmlElement* elm) {
