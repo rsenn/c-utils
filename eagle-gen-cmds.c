@@ -631,7 +631,7 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
   buffer_putsa(buffer_1, &ptr->name);
   //buffer_putspace(buffer_1);
   buffer_putnlflush(buffer_1); 
-  return 0;
+  return 1;
 }
 
 int
@@ -660,7 +660,7 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
 
   buffer_putnlflush(b);
   
-  return 0;
+  return 1;
 }
 
 
@@ -1009,12 +1009,12 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
 
 
-  cbmap_visit_prefix(parts, "", 0, dump_part, "part");
+  cbmap_visit_all(parts,  dump_part, "part");
 
   xpath_foreach(doc, "//net | //signal", build_nets);
 
 
-//  cbmap_visit_all(nets, dump_net, "nets");
+  cbmap_visit_all(nets, dump_net, "nets");
 
 
   xpath_foreach(doc, "//symbol", build_sym);
