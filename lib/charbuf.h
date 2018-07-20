@@ -25,4 +25,6 @@ int charbuf_skip(charbuf *b);
 
 int charbuf_nextc(charbuf *b, char* ch);
 
+int charbuf_skip_until(charbuf *b, char c);
+
 #endif /* defined CHARBUF_H */

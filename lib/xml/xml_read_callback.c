@@ -31,6 +31,7 @@ void
 xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
   ssize_t n;
   hmap_init(1024, &r->attrmap);
+
   while((n = buffer_skip_until(&r->b, "<", 1)) > 0) {
     const char* s;
     stralloc sa;

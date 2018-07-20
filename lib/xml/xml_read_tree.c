@@ -62,7 +62,6 @@ xml_read_node(xmlreader *reader, xmlnodeid id, stralloc *name, stralloc *value, 
         node->attributes = *attrs;
         *attrs = NULL;
 
-
         buffer_putlong(buffer_1, textbuf_line(&reader->b));
         buffer_puts(buffer_1, ":");
         buffer_putlong(buffer_1, textbuf_column(&reader->b));
