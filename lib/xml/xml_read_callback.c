@@ -38,75 +38,83 @@ xml_read_callback(xmlreader* r, buffer* b, xml_read_fn* fn) {
   hmap_init(1024, &r->attrmap);
 
   while((n = buffer_skip_until(r->b, "<", 1)) > 0) {
-    char ch;
     const char *s;
     stralloc sa;
     stralloc_init(&sa);
     r->self_closing = r->closing = 0;
     s = buffer_peek(r->b);
 
-    if((n = buffer_get_token_sa(r->b, &sa, " \t\r\v/>", 6)) < 0)
+    if((n = buffer_gettok_sa(r->b, &sa, " \t\r\v/>", 6)) < 0)
       return;
+
 
     if(sa.s[0] == '/') {
       r->closing = 1;
-      if((n = buffer_get_token_sa(r->b, &sa, ">", 1)) < 0)
+      if((n = buffer_gettok_sa(r->b, &sa, ">", 1)) < 0)
         return;
     } else {
       r->closing = 0;
     }
-    sa.len--;
 
-    if(sa.len > 0 && sa.s[sa.len - 1] == '>') {
-      ch = '>';
-      sa.len--;
-    } else {
-      ch = s[sa.len - 1];
-    }
+    s = buffer_peek(r->b);
 
-    if(ch != '>') {
+
+//    if(sa.len > 0 && sa.s[sa.len - 1] == '>') {
+//    //  *s = '>';
+//      sa.len--;
+//    } else {
+//    //  *s = s[sa.len - 1];
+//    }
+
+    if(*s != '>' && *s != '/' && *s != '?') {
       while(isspace(*buffer_peek(r->b))) {
-        if(buffer_getc(r->b, &ch) <= 0)
+        if(buffer_skipc(r->b) <= 0)
           break;
       }
     }
 
-    ch = *buffer_peek(r->b);
+    s = buffer_peek(r->b);
 
-    while(isalpha(ch)) {
+    while(isalpha(*s)) {
+      char ch;
+
       stralloc attr, val;
       stralloc_init(&attr);
       stralloc_init(&val);
 
-      if((n = buffer_get_token_sa(r->b, &attr, "=", 1)) < 0)
+      if((n = buffer_gettok_sa(r->b, &attr, "=", 1)) < 0)
         break;
 
-      if(attr.len > 0 && attr.s[attr.len - 1] == '=')
-        attr.len--;
+      if(buffer_skipc(r->b) < 0)
+        return;
 
       int quoted = 0;
-      ch = *buffer_peek(r->b);
+
+      if(buffer_peekc(r->b, &ch) < 0 )
+        return;
 
       if(ch == '"') {
-        char dummy;
-
-        if(buffer_getc(r->b, &dummy) < 0)
-          break;
-
+        if(buffer_skipc(r->b) < 0)
+          return;
         quoted = 1;
       }
       const char *charset = quoted ? "\"" : "/> \t\r\n\v";
 
-      if((n = buffer_get_token_sa(r->b, &val, charset, str_len(charset))) < 0)
+      if((n = buffer_gettok_sa(r->b, &val, charset, str_len(charset))) < 0)
         break;
 
-      if(val.len > 0)
-        val.len--;
+      if(quoted)
+        if(buffer_skipc(r->b) < 0)
+          return;
 
-      while(isspace((ch = *buffer_peek(r->b)))) {
-        if(buffer_getc(r->b, &ch) <= 0)
-          break;
+      for(;;) {
+        if(buffer_peekc(r->b, &ch) < 0)
+          return;
+        if(!isspace(ch)) break;
+        if(buffer_skipc(r->b) < 0) return;
       }
+
+      s = buffer_peek(r->b);
 
       hmap_set_stralloc(&r->attrmap, &attr, &val);
       if(!fn(r, XML_NODE_ATTRIBUTE, &attr, &val, NULL))
@@ -114,7 +122,8 @@ xml_read_callback(xmlreader* r, buffer* b, xml_read_fn* fn) {
     }
 
     if(sa.s[0] != '/') {
-      if(sa.s[0] == '?' || sa.s[sa.len - 1] == '/' || ch == '/')
+      if(sa.s[0] == '?' || sa.s[sa.len - 1] == '/'  //|| ch == '/'
+         )
         r->self_closing = 1;
 
       if(r->self_closing)
