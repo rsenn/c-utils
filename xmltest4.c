@@ -53,7 +53,10 @@ main(int argc, char* argv[1]) {
 
   xmlnode* doc = xml_read_tree(&infile);
 
-  xml_print(doc);
+//  xml_print(doc);
+
+  xml_dump(doc, buffer_1);
+
   xml_free(doc);
 
   buffer_close(&b);

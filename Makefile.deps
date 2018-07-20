@@ -1022,6 +1022,8 @@ $(BUILDDIR)xml_dump.o: lib/xml/xml_dump.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_dump_attributes.o: lib/xml/xml_dump_attributes.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_escape.o: lib/xml/xml_escape.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_free.o: lib/xml/xml_free.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_newnode.o: lib/xml/xml_newnode.c

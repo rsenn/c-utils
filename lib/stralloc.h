@@ -199,6 +199,8 @@ size_t byte_fmt_pred(const char *in, size_t in_len, stralloc *out, size_t (*fmt_
 size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));
 #endif
 
+int stralloc_insertb(stralloc *sa, const char *s, size_t pos, size_t n);
+
 #ifdef __cplusplus
 }
 #endif
