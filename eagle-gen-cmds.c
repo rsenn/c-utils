@@ -897,57 +897,57 @@ print_element_children(xmlNode* a_node) {
 /**
  *  hashmap_dump: Outputs hashmap to stdout
  */
-void
-hashmap_dump(HMAP_DB* db, const char* name) {
-  int i = 0;
-  TUPLE* tuple = NULL;
-  tuple = db->tuple;
-  buffer_putm(buffer_1, name, ": ", NULL);
+//void
+//hashmap_dump(HMAP_DB* db, const char* name) {
+//  int i = 0;
+//  TUPLE* tuple = NULL;
+//  tuple = db->tuple;
+//  buffer_putm(buffer_1, name, ": ", NULL);
 
-  for(i = 0; i < db->bucket_size; i++) {
-    switch(tuple->data_type) {
-    case HMAP_DATA_TYPE_CHARS: {
-      buffer_putm(buffer_1, " ", tuple->key, "=", tuple->data, NULL);
-      buffer_putnlflush(buffer_1);
-      break;
-    }
-    case HMAP_DATA_TYPE_DOUBLE: {
-      char dbl[100];
-      fmt_double(dbl, *(double*)tuple->data, sizeof(dbl), -1);
-      buffer_putm(buffer_1, " ", tuple->key, "=", dbl, NULL);
-      buffer_putnlflush(buffer_1);
-      break;
-    }
-    }
-  }
-}
+//  for(i = 0; i < db->bucket_size; i++) {
+//    switch(tuple->data_type) {
+//    case HMAP_DATA_TYPE_CHARS: {
+//      buffer_putm(buffer_1, " ", tuple->key, "=", tuple->data, NULL);
+//      buffer_putnlflush(buffer_1);
+//      break;
+//    }
+//    case HMAP_DATA_TYPE_DOUBLE: {
+//      char dbl[100];
+//      fmt_double(dbl, *(double*)tuple->data, sizeof(dbl), -1);
+//      buffer_putm(buffer_1, " ", tuple->key, "=", dbl, NULL);
+//      buffer_putnlflush(buffer_1);
+//      break;
+//    }
+//    }
+//  }
+//}
 
-HMAP_DB*
-element_to_hmap(xmlElement* elm) {
-  HMAP_DB* hash;
-  hmap_init(1024, &hash);
+//HMAP_DB*
+//element_to_hmap(xmlElement* elm) {
+//  HMAP_DB* hash;
+//  hmap_init(1024, &hash);
 
-  for(xmlNode* ptr = NODE_ATTRIBUTES(elm); ptr; ptr = ptr->next) {
-    char* name = NODE_NAME(ptr);
-    if(name && str_len(name)) {
-      char* content = NODE_PROPERTY(elm, name);
-      if(content && str_len(content) && !str_isspace(content)) {
-        if(str_isfloat(content)) {
-          hmap_add(&hash, name, str_len(name), 1, HMAP_DATA_TYPE_DOUBLE, strtod(content, NULL) / 2.54);
-        } else {
-          size_t i, len = str_len(content);
-          char *in = content, *dest = malloc(len * 4 + 1);
-          for(i = 0; *in; ++in) {
-            i += fmt_escapecharquotedprintableutf8(&dest[i], *in);
-          }
-          hmap_add(&hash, name, str_len(name), 0, HMAP_DATA_TYPE_CHARS, dest, i);
-        }
-      }
-    }
-  }
-  //  hashmap_dump(hash);
-  return hash;
-}
+//  for(xmlNode* ptr = NODE_ATTRIBUTES(elm); ptr; ptr = ptr->next) {
+//    char* name = NODE_NAME(ptr);
+//    if(name && str_len(name)) {
+//      char* content = NODE_PROPERTY(elm, name);
+//      if(content && str_len(content) && !str_isspace(content)) {
+//        if(str_isfloat(content)) {
+//          hmap_add(&hash, name, str_len(name), 1, HMAP_DATA_TYPE_DOUBLE, strtod(content, NULL) / 2.54);
+//        } else {
+//          size_t i, len = str_len(content);
+//          char *in = content, *dest = malloc(len * 4 + 1);
+//          for(i = 0; *in; ++in) {
+//            i += fmt_escapecharquotedprintableutf8(&dest[i], *in);
+//          }
+//          hmap_add(&hash, name, str_len(name), 0, HMAP_DATA_TYPE_CHARS, dest, i);
+//        }
+//      }
+//    }
+//  }
+//  //  hashmap_dump(hash);
+//  return hash;
+//}
 
 /**
  * print_element_names:
