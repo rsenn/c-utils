@@ -7,8 +7,18 @@ int
 hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc* data) {
   assert(key->s);
   assert(key->len);
+
+  if(!data->s || !data->len) {
+  buffer_putm(buffer_2, __FUNCTION__, " ", __FILE__, ":");
+buffer_putlong(buffer_2, __LINE__);
+  buffer_puts(buffer_2, ": No data for key '");
+  buffer_put(buffer_2, key->s, key->len);
+  buffer_puts(buffer_2, "'");
+  buffer_putnlflush(buffer_2);
   assert(data->s);
   assert(data->len);
+
+  }
 
 #ifdef HMAP_DEBUG
   buffer_putm(buffer_2, __FUNCTION__, "(");

@@ -1,5 +1,5 @@
-#include <ctype.h>
 #include "../buffer.h"
+#include <ctype.h>
 
 int
 buffer_skipspace(buffer* b) {

@@ -34,7 +34,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
   stralloc_init(&tag);
   stralloc_init(&attr);
   stralloc_init(&val);
-  hmap_init(1024, &r->attrmap);
+  hmap_init(XML_HMAP_BUCKETS, &r->attrmap);
   while((n = buffer_skip_until(&r->b, "<", 1)) > 0) {
     const char* s;
     stralloc_zero(&tag);
@@ -44,6 +44,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       buffer_skipc(&r->b);
     }
     if((n = buffer_gettok_sa(&r->b, &tag, " \t\r\v/>", 6)) < 0) return;
+    stralloc_nul(&tag);
     buffer_skipspace(&r->b);
     while(isalpha(*(s = buffer_peek(&r->b)))) {
       char ch;
@@ -61,6 +62,10 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
         break;
       if(quoted && buffer_skipc(&r->b) < 0) return;
       buffer_skipspace(&r->b);
+      stralloc_nul(&attr);
+      stralloc_nul(&val);
+
+      buffer_dump(buffer_2, &r->b);
       hmap_set_stralloc(&r->attrmap, &attr, &val);
       if(!fn(r, XML_NODE_ATTRIBUTE, &attr, &val, NULL)) return;
     }
@@ -77,7 +82,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       hmap_destroy(&r->attrmap);
       r->attrmap = NULL;
     }
-    hmap_init(1024, &r->attrmap);
+    hmap_init(XML_HMAP_BUCKETS, &r->attrmap);
     stralloc_zero(&tag);
     if((n = buffer_gettok_sa(&r->b, &tag, "<", 1)) < 0) return;
     s = buffer_peek(&r->b);

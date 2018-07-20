@@ -52,4 +52,7 @@ size_t xml_escape(const char *s, size_t n, stralloc *out);
 void xml_debug(xmlnode *node, buffer *b);
 xmlnode *xml_find(xmlnode *node, const char *tag);
 
+#define XML_READ_BUFFER 64
+#define XML_HMAP_BUCKETS 48
+
 #endif /* LIB_XML_H_ */
