@@ -362,7 +362,7 @@ endforeach()
 
 
 #
-set(LIBSUBDIRS array buffer byte case cb cbmap dir fmt hmap http iarray io list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia uint16 uint32 uint64 xml)
+set(LIBSUBDIRS array buffer byte case cb cbmap dir fmt hmap http iarray io list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia uint16 uint32 uint64 xml textbuf charbuf)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -393,7 +393,7 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   endif()
 endif()
 
-set(COMMON_LIBS strlist array stralloc buffer mmap open fmt scan str byte)
+set(COMMON_LIBS strlist array buffer stralloc mmap open fmt scan str byte)
 
 foreach(PROGRAM ${PROGRAMS})
   if("${PROGRAM}" STREQUAL ntldd)

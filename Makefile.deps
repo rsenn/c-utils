@@ -66,6 +66,8 @@ $(BUILDDIR)buffer_frombuf.o: lib/buffer/buffer_frombuf.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_fromsa.o: lib/buffer/buffer_fromsa.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_fromstr.o: lib/buffer/buffer_fromstr.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putm_internal_flush.o: lib/buffer/buffer_putm_internal_flush.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putnlflush.o: lib/buffer/buffer_putnlflush.c
@@ -148,15 +150,13 @@ $(BUILDDIR)buffer_putlong.o: lib/buffer/buffer_putlong.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putlonglong.o: lib/buffer/buffer_putlonglong.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_fromstr.o: lib/buffer/buffer_fromstr.c
+$(BUILDDIR)buffer_get.o: lib/buffer/buffer_get.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_mmapprivate.o: lib/buffer/buffer_mmapprivate.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putm_internal.o: lib/buffer/buffer_putm_internal.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_skip_until.o: lib/buffer/buffer_skip_until.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_get.o: lib/buffer/buffer_get.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_getc.o: lib/buffer/buffer_getc.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -283,6 +283,8 @@ $(BUILDDIR)charbuf_peek.o: lib/charbuf/charbuf_peek.c
 $(BUILDDIR)charbuf_peekc.o: lib/charbuf/charbuf_peekc.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)charbuf_skip.o: lib/charbuf/charbuf_skip.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_skip_until.o: lib/charbuf/charbuf_skip_until.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)critbit.o: lib/critbit.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -755,8 +757,6 @@ $(BUILDDIR)stralloc_lower.o: lib/stralloc/stralloc_lower.c
 $(BUILDDIR)stralloc_move.o: lib/stralloc/stralloc_move.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_nul.o: lib/stralloc/stralloc_nul.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_opys.o: lib/stralloc/stralloc_opys.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_qp_encode.o: lib/stralloc/stralloc_qp_encode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
