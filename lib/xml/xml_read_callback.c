@@ -5,7 +5,7 @@
 #include <ctype.h>
 
 void
-xml_read(xmlreader* r, buffer* b, xml_read_fn* fn) {
+xml_read_callback(xmlreader* r, buffer* b, xml_read_fn* fn) {
   ssize_t n;
   byte_zero(r, sizeof(xmlreader));
 

@@ -34,11 +34,12 @@ typedef struct xmlreader {
 
 typedef int (xml_read_fn)(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
-
-xmlnode* xml_newnode(xmlnodeid type);
 xmlnode *xml_attrnode(const char *name, size_t name_len, const char *value, size_t value_len);
+void xml_dump(xmlnode *node, buffer *b);
+xmlnode *xml_newnode(xmlnodeid type);
+void xml_read_callback(xmlreader *r, buffer *b, xml_read_fn *fn);
+xmlnode *xml_read_tree(buffer *b);
 xmlnode *xml_textnode(const char *text, size_t len);
 
-void xml_read(xmlreader* r, buffer* b, xml_read_fn* fn);
 
 #endif /* LIB_XML_H_ */
