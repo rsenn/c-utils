@@ -119,6 +119,7 @@ ifneq ($(CC),$(subst m32,,$(CC)))
 HOST := $(subst x86_64,i386,$(HOST))
 endif
 ifeq ($(USE_DIET),1)
+HOST := $(subst -diet-,-,$(HOST))
 HOST := $(subst gnu,dietlibc,$(HOST))
 endif
 #$(info USE_DIET: $(USE_DIET))
@@ -586,6 +587,9 @@ CFLAGS += $(DEFS:%=-D%)
 
 $(info DEFS: $(DEFS))
 
+ifneq ($(SYSROOT),)
+CC += --sysroot="$(SYSROOT)"
+endif
 
 all: \
    $(BUILDDIR) $(PROGRAMS)
@@ -610,10 +614,10 @@ $(OBJDIR):
 $(BUILDDIR)array.a: $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILDDIR)array_cat0.o $(BUILDDIR)array_catb.o $(BUILDDIR)array_cat.o $(BUILDDIR)array_cate.o $(BUILDDIR)array_cats0.o $(BUILDDIR)array_cats.o $(BUILDDIR)array_equal.o $(BUILDDIR)array_fail.o $(BUILDDIR)array_get.o $(BUILDDIR)array_length.o $(BUILDDIR)array_reset.o $(BUILDDIR)array_start.o $(BUILDDIR)array_truncate.o $(BUILDDIR)array_trunc.o $(BUILDDIR)/umult64.o
 	$(AR) rcs $@ $^
 
-$(BUILDDIR)buffer.a: $(BUILDDIR)buffer_0.o $(BUILDDIR)buffer_0small.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_1small.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_close.o $(BUILDDIR)buffer_default.o $(BUILDDIR)buffer_dummyread.o $(BUILDDIR)buffer_dummyreadmmap.o $(BUILDDIR)buffer_dump.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_free.o $(BUILDDIR)buffer_fromarray.o $(BUILDDIR)buffer_frombuf.o $(BUILDDIR)buffer_fromsa.o $(BUILDDIR)buffer_fromstr.o $(BUILDDIR)buffer_get.o $(BUILDDIR)buffer_getc.o $(BUILDDIR)buffer_getline.o $(BUILDDIR)buffer_getline_sa.o $(BUILDDIR)buffer_getn.o $(BUILDDIR)buffer_getnewline_sa.o $(BUILDDIR)buffer_get_new_token_sa.o $(BUILDDIR)buffer_get_new_token_sa_pred.o $(BUILDDIR)buffer_get_token.o $(BUILDDIR)buffer_get_token_pred.o $(BUILDDIR)buffer_gettok_sa.o $(BUILDDIR)buffer_get_token_sa.o $(BUILDDIR)buffer_get_token_sa_pred.o $(BUILDDIR)buffer_get_until.o $(BUILDDIR)buffer_init.o $(BUILDDIR)buffer_init_free.o $(BUILDDIR)buffer_mmapprivate.o $(BUILDDIR)buffer_mmapread.o $(BUILDDIR)buffer_mmapread_fd.o $(BUILDDIR)buffer_munmap.o $(BUILDDIR)buffer_peek.o $(BUILDDIR)buffer_prefetch.o $(BUILDDIR)buffer_put8long.o $(BUILDDIR)buffer_putalign.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putc.o $(BUILDDIR)buffer_puterror2.o $(BUILDDIR)buffer_puterror.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)buffer_putdouble.o $(BUILDDIR)buffer_putlong.o $(BUILDDIR)buffer_putlonglong.o $(BUILDDIR)buffer_putm_internal.o $(BUILDDIR)buffer_putm_internal_flush.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_putnspace.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)buffer_putsaflush.o $(BUILDDIR)buffer_putsalign.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putsflush.o $(BUILDDIR)buffer_putspace.o $(BUILDDIR)buffer_putuint64.o $(BUILDDIR)buffer_putulong0.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)buffer_putulonglong.o $(BUILDDIR)buffer_putxlong.o $(BUILDDIR)buffer_seek.o $(BUILDDIR)buffer_skip_until.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_tosa.o $(BUILDDIR)buffer_truncfile.o $(BUILDDIR)buffer_read_fd.o $(BUILDDIR)buffer_putptr.o $(BUILDDIR)buffer_peekc.o $(BUILDDIR)buffer_skipc.o $(BUILDDIR)buffer_skipspace.o  $(BUILDDIR)buffer_skip_pred.o 
+$(BUILDDIR)buffer.a: $(BUILDDIR)buffer_0.o $(BUILDDIR)buffer_0small.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_1small.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_close.o $(BUILDDIR)buffer_default.o $(BUILDDIR)buffer_dummyread.o $(BUILDDIR)buffer_dump.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_free.o $(BUILDDIR)buffer_fromarray.o $(BUILDDIR)buffer_frombuf.o $(BUILDDIR)buffer_fromsa.o $(BUILDDIR)buffer_fromstr.o $(BUILDDIR)buffer_get.o $(BUILDDIR)buffer_getc.o $(BUILDDIR)buffer_getline.o $(BUILDDIR)buffer_getline_sa.o $(BUILDDIR)buffer_getn.o $(BUILDDIR)buffer_getnewline_sa.o $(BUILDDIR)buffer_get_new_token_sa.o $(BUILDDIR)buffer_get_new_token_sa_pred.o $(BUILDDIR)buffer_get_token.o $(BUILDDIR)buffer_get_token_pred.o $(BUILDDIR)buffer_gettok_sa.o $(BUILDDIR)buffer_get_token_sa.o $(BUILDDIR)buffer_get_token_sa_pred.o $(BUILDDIR)buffer_get_until.o $(BUILDDIR)buffer_init.o $(BUILDDIR)buffer_init_free.o $(BUILDDIR)buffer_mmapprivate.o $(BUILDDIR)buffer_mmapread.o $(BUILDDIR)buffer_mmapread_fd.o $(BUILDDIR)buffer_munmap.o $(BUILDDIR)buffer_peek.o $(BUILDDIR)buffer_prefetch.o $(BUILDDIR)buffer_put8long.o $(BUILDDIR)buffer_putalign.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_putc.o $(BUILDDIR)buffer_puterror2.o $(BUILDDIR)buffer_puterror.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)buffer_putdouble.o $(BUILDDIR)buffer_putlong.o $(BUILDDIR)buffer_putlonglong.o $(BUILDDIR)buffer_putm_internal.o $(BUILDDIR)buffer_putm_internal_flush.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_putnspace.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)buffer_putsaflush.o $(BUILDDIR)buffer_putsalign.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putsflush.o $(BUILDDIR)buffer_putspace.o $(BUILDDIR)buffer_putuint64.o $(BUILDDIR)buffer_putulong0.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)buffer_putulonglong.o $(BUILDDIR)buffer_putxlong.o $(BUILDDIR)buffer_seek.o $(BUILDDIR)buffer_skip_until.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_tosa.o $(BUILDDIR)buffer_truncfile.o $(BUILDDIR)buffer_read_fd.o $(BUILDDIR)buffer_putptr.o $(BUILDDIR)buffer_peekc.o $(BUILDDIR)buffer_skipc.o $(BUILDDIR)buffer_skipspace.o  $(BUILDDIR)buffer_skip_pred.o 
 	$(AR) rcs $@ $^
 
-$(BUILDDIR)byte.a: $(BUILDDIR)byte_case_diff.o $(BUILDDIR)byte_case_equal.o $(BUILDDIR)byte_case_start.o $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_count.o $(BUILDDIR)byte_diff.o $(BUILDDIR)byte_equal.o $(BUILDDIR)byte_fill.o $(BUILDDIR)byte_lower.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_upper.o $(BUILDDIR)byte_zero.o $(BUILDDIR)byte_fmt.o $(BUILDDIR)byte_scan.o
+$(BUILDDIR)byte.a: $(BUILDDIR)byte_case_diff.o $(BUILDDIR)byte_case_equal.o $(BUILDDIR)byte_case_start.o $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_count.o $(BUILDDIR)byte_diff.o $(BUILDDIR)byte_equal.o $(BUILDDIR)byte_fill.o $(BUILDDIR)byte_lower.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_upper.o $(BUILDDIR)byte_zero.o $(BUILDDIR)byte_fmt.o $(BUILDDIR)byte_fmt_pred.o $(BUILDDIR)byte_scan.o
 
 	$(AR) rcs $@ $^
 
@@ -707,7 +711,7 @@ $(BUILDDIR)xml.a: $(addprefix $(BUILDDIR),xml_attrnode.o xml_dump_attributes.o x
 $(BUILDDIR)textbuf.a: $(addprefix $(BUILDDIR),textbuf_init.o textbuf_read.o textbuf_free.o is_textbuf.o textbuf_line.o textbuf_column.o)
 	$(AR) rcs $@ $^
 
-$(BUILDDIR)charbuf.a: $(addprefix $(BUILDDIR),charbuf_get.o charbuf_getc.o charbuf_peek.o charbuf_peekc.o charbuf_skip.o charbuf_skipc.o)
+$(BUILDDIR)charbuf.a: $(addprefix $(BUILDDIR),charbuf_get.o charbuf_getc.o charbuf_peek.o charbuf_peekc.o charbuf_skip.o charbuf_nextc.o)
 	$(AR) rcs $@ $^
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
@@ -802,7 +806,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)xmltest4$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)xmltest4.o $(BUILDDIR)xml.a $(BUILDDIR)array.a $(BUILDDIR)charbuf.a $(BUILDDIR)textbuf.a $(BUILDDIR)hmap.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a $(BUILDDIR)fmt.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
+$(BUILDDIR)xmltest4$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)xmltest4.o $(BUILDDIR)xml.a $(BUILDDIR)array.a $(BUILDDIR)charbuf.a $(BUILDDIR)textbuf.a $(BUILDDIR)hmap.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)byte.a $(BUILDDIR)stralloc.a $(BUILDDIR)scan.a $(BUILDDIR)fmt.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

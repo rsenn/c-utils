@@ -210,6 +210,8 @@ $(BUILDDIR)byte_fill.o: lib/byte/byte_fill.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_fmt.o: lib/byte/byte_fmt.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_fmt_pred.o: lib/byte/byte_fmt_pred.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_lower.o: lib/byte/byte_lower.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_rchr.o: lib/byte/byte_rchr.c
@@ -1038,12 +1040,6 @@ $(BUILDDIR)libntldd.o: libntldd.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)list-r.o: list-r.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)main.o: main.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)map.o: map.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mediathek-list.o: mediathek-list.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mediathek-parser.o: mediathek-parser.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ntldd.o: ntldd.c
@@ -1089,4 +1085,10 @@ $(BUILDDIR)test_lseek64.o: test_lseek64.c
 $(BUILDDIR)test_posix_memalign.o: test_posix_memalign.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)main.o: main.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)map.o: map.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mediathek-list.o: mediathek-list.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

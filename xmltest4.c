@@ -1,11 +1,12 @@
 #include "lib/buffer.h"
 #include "lib/byte.h"
-#include "lib/fmt.h"
 #include "lib/hmap.h"
 #include "lib/iterator.h"
 #include "lib/stralloc.h"
 #include "lib/xml.h"
+#include "lib/fmt.h"
 #include <assert.h>
+#include <ctype.h>
 #include <sys/types.h>
 
 static buffer infile;
@@ -15,7 +16,7 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  byte_fmt(str, str_len(str), &esc, fmt_escapecharc);
+  byte_fmt_pred(str, str_len(str), &esc, fmt_escapecharc, iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -45,15 +46,12 @@ xml_print(xmlnode* n) {
 }
 
 int
-main() {
-  buffer_mmapprivate(&infile, "../dirlist/test.xml");
+main(int argc, char* argv[1]) {
+
+
+  buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
 
   xmlnode* doc = xml_read_tree(&infile);
-//  textbuf_init(&b, &infile, 1024);
-
-//  assert(is_textbuf(&b));
-
-//  xmlnode* doc = xml_read_tree(&b);
 
   xml_print(doc);
   xml_free(doc);

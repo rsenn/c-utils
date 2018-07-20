@@ -1,15 +1,26 @@
+#include <ctype.h>
 #include "../xml.h"
 #include "../fmt.h"
+#include "../byte.h"
 #include "../scan.h"
+
+static int
+fmt_pred(int c) {
+  if(isalpha(c) || isdigit(c) || ispunct(c) || c == ' ')
+    return 0;
+
+  return 1;
+}
 
 static size_t
 xml_escape(const stralloc* in, stralloc* out) {
-  return stralloc_fmt(in, out, fmt_xmlescape);
+
+  return byte_fmt_pred(in->s, in->len, out, fmt_xmlescape, &fmt_pred);
 }
 
 static size_t
 xml_unescape(const stralloc* in, stralloc* out) {
-  return stralloc_scan(in, out, scan_xmlescape);
+  return byte_scan(in->s, in->len, out, scan_xmlescape);
 }
 
 static int

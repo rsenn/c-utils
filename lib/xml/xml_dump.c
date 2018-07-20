@@ -6,8 +6,10 @@ xml_dump_node(xmlnode* node, buffer* b, int depth) {
   do {
     buffer_putnspace(b, depth * 2);
     buffer_putm(b, "<", node->name);
+
     if(node->attributes)
       xml_dump_attributes(node, b, " ", "=", "\"");
+
     if(node->children) {
       buffer_puts(b, ">\n");
       xml_dump_node(node->children, b, depth + 1);
@@ -16,6 +18,7 @@ xml_dump_node(xmlnode* node, buffer* b, int depth) {
     } else {
       buffer_puts(b, node->name[0] == '?' ? "?>" : "/>");
     }
+
     buffer_putnlflush(b);
   } while((node = node->next));
 }
