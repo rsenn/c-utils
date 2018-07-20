@@ -13,6 +13,7 @@ typedef struct {
 void textbuf_destroy(buffer *b);
 void textbuf_init(buffer *b, buffer *src, size_t bufsize);
 ssize_t textbuf_read(intptr_t fd, char *buf, size_t n);
+void textbuf_free(buffer* b);
 
 static inline unsigned
 textbuf_line(buffer *b) {
