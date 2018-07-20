@@ -8,8 +8,8 @@
 #include <sys/types.h>
 /* for str_len */
 #include <string.h>
-#include "lib/uint64.h"
-#include "lib/str.h"
+#include "uint64.h"
+#include "str.h"
 
 #ifdef __cplusplus
 extern "C" {

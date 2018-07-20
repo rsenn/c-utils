@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
-#include "lib/map.h"
-#include "lib/str.h"
+#include "map.h"
+#include "str.h"
 
 struct map_node_t {
   unsigned hash;

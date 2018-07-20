@@ -7,7 +7,7 @@
 /* for time_t: */
 #include <sys/types.h>
 
-#include "lib/uint32.h"
+#include "uint32.h"
 
 #ifdef __cplusplus
 extern "C" {

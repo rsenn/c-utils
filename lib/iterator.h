@@ -1,9 +1,9 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H 1
 
-#include "lib/array.h"
-#include "lib/stralloc.h"
-#include "lib/hmap.h"
+#include "array.h"
+#include "stralloc.h"
+#include "hmap.h"
 
 #define size(container) _Generic((container), \
   stralloc*: (container)->len, \

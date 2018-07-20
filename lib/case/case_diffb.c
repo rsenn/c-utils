@@ -1,4 +1,4 @@
-#include "case.h"
+#include "../case.h"
 
 int case_diffb(register const void* S, register size_t len, register const void* T) {
   register unsigned char x;

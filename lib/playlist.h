@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-#include "lib/stralloc.h"
-#include "lib/uint32.h"
-#include "lib/buffer.h"
+#include "stralloc.h"
+#include "uint32.h"
+#include "buffer.h"
 
 #ifdef __cplusplus
 extern "C" {

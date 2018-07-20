@@ -2,7 +2,7 @@
 #ifndef SOCKET_INTERNAL_H
 #define SOCKET_INTERNAL_H
 
-#include "lib/socket.h"
+#include "socket.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 typedef int socklen_t;

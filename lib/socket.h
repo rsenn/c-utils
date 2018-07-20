@@ -8,9 +8,9 @@
 #include <sys/socket.h>
 #endif
 
-#include "lib/uint16.h"
-#include "lib/uint32.h"
-#include "lib/windoze.h"
+#include "uint16.h"
+#include "uint32.h"
+#include "windoze.h"
 
 #ifdef __cplusplus
 extern "C" {

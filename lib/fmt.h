@@ -15,8 +15,8 @@ typedef __SIZE_TYPE__ size_t;
 #include <sys/types.h>
 
 
-#include "lib/uint32.h"
-#include "lib/uint64.h"
+#include "uint32.h"
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {

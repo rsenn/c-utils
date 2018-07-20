@@ -1,9 +1,9 @@
 #ifndef LIB_XML_H_
 #define LIB_XML_H_
 
-#include "lib/buffer.h"
-#include "lib/stralloc.h"
-#include "lib/hmap.h"
+#include "buffer.h"
+#include "stralloc.h"
+#include "hmap.h"
 
 typedef enum xmlnodeid {
     XML_NODE_DOCUMENT,

@@ -1,4 +1,4 @@
-#include "case.h"
+#include "../case.h"
 
 void case_lowers(char *s) {
   unsigned char x;

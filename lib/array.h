@@ -3,7 +3,7 @@
 #define ARRAY_H
 
 #include <stddef.h>
-#include "lib/uint64.h"
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {

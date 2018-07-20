@@ -1,4 +1,4 @@
-#include "lib/hmap.h"
+#include "hmap.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +7,7 @@
 //#define HMAP_DUMP(...) do {printf( __VA_ARGS__ );}while(0)
 
 #if defined(HMAP_DEBUG) && !defined(NDEBUG)
-#include "lib/buffer.h"
+#include "buffer.h"
 
 #define HMAP_DUMP(...) \
   do { \
