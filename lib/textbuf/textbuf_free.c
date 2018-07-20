@@ -3,6 +3,10 @@
 
 void
 textbuf_free(buffer* b) {
-  textbuf* tb = (void*)b->fd;
-  free(tb);
+  textbuf* tb = is_textbuf(b);
+  if(tb) {
+    if(tb->source)
+      buffer_close(tb->source);
+    free(tb);
+  }
 }

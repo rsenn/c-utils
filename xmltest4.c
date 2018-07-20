@@ -8,34 +8,8 @@
 #include <assert.h>
 #include <sys/types.h>
 
-typedef struct {
-  unsigned line;
-  unsigned col;
-  buffer b;
-  char buf[1024];
-} line_buffer;
-
-static line_buffer linebuf_inst;
 static buffer infile;
-
-static ssize_t
-linebuf_read(intptr_t fd, void *p, size_t n, void* cookie) {
-  char* x = p;
-  ssize_t r = buffer_get(&infile, x, n);
-
-  for(ssize_t i = 0; i < r; ++i) {
-    if(x[i] == '\n') {
-      ++linebuf_inst.line;
-      linebuf_inst.col = 0;
-    } else {
-      ++linebuf_inst.col;
-    }
-  }
-  return r;
-}
-
-
-
+static buffer b;
 
 void
 put_str_escaped(buffer* b, const char* str) {
@@ -52,8 +26,6 @@ xml_print(xmlnode* n) {
     stralloc_init(&path);
 
     xml_path(n, &path);
-
-    buffer_puts(buffer_1, "path: ");
     buffer_putsa(buffer_1, &path);
 
     if(n->type == XML_NODE_TEXT) {
@@ -76,14 +48,14 @@ int
 main() {
   buffer_mmapprivate(&infile, "../dirlist/test.xml");
 
-  buffer b;
   textbuf_init(&b, &infile, 1024);
 
   assert(is_textbuf(&b));
-
 
   xmlnode* doc = xml_read_tree(&b);
 
   xml_print(doc);
   xml_free(doc);
+
+  buffer_close(&b);
 }

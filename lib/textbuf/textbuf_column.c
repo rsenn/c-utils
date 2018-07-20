@@ -1,8 +1,8 @@
 #include "../textbuf.h"
 
-unsigned
+uint64
 textbuf_column(buffer *b) {
-  textbuf* tb = (void*)b->fd;
-  return tb->column;
+  textbuf* tb = is_textbuf(b);
+  return tb ? tb->column : 0;
 }
 

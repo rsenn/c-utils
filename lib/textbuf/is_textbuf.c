@@ -1,7 +1,9 @@
 #include "../textbuf.h"
 
-int
+textbuf*
 is_textbuf(buffer* b) {
-  return (char*)b->fd == b->x - (size_t)((char*)&(((textbuf*)0)->buf));
+  textbuf* tb = (void*)(b->x - (size_t)((char*)&(((textbuf*)0)->buf)));
+  
+  return (void*)tb == b->cookie ? tb : 0;
 }
 

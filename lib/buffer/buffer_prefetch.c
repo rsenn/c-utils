@@ -2,7 +2,7 @@
 #include "../byte.h"
 
 extern int buffer_dummyread();
-extern ssize_t buffer_stubborn_read(buffer_op_fn*, intptr_t fd, const char* buf, unsigned int len);
+extern ssize_t buffer_stubborn_read(buffer_op_proto*, int fd, void* buf, size_t len, void*);
 
 int
 buffer_prefetch(buffer* b, size_t n) {
@@ -19,7 +19,7 @@ buffer_prefetch(buffer* b, size_t n) {
 
   while(b->n < b->p + n) {
     int w;
-    if((w = buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n)) < 0) return -1;
+    if((w = buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n, b)) < 0) return -1;
     b->n += w;
     if(!w)
       break;

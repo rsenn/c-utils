@@ -14,7 +14,7 @@
 #endif
 #endif
 
-extern ssize_t buffer_stubborn(buffer_op_fn* op, intptr_t fd, const char* buf, size_t len, void* cookie);
+extern ssize_t buffer_stubborn(buffer_op_fn* op, int fd, const char* buf, size_t len, void* cookie);
 
 int
 buffer_putflush(buffer* b, const char* x, size_t len) {

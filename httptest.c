@@ -18,7 +18,7 @@ set_timeouts(int seconds) {
 }
 
 static ssize_t
-do_recv(int64 s, void* buf, size_t len) {
+do_recv(int s, void* buf, size_t len, void* ptr) {
   ssize_t ret = recv(s, buf, len, 0);
   if(ret == -1) {
     last_errno = errno;

@@ -23,7 +23,7 @@ typedef struct xmlnode {
 } xmlnode;
 
 typedef struct xmlreader {
-  buffer *b;
+  buffer b;
   xmlnode *doc;
   xmlnode *parent;
   xmlnode **ptr;
@@ -39,7 +39,7 @@ xmlnode *xml_attrnode(const char *name, size_t name_len, const char *value,
                       size_t value_len);
 void xml_dump(xmlnode *node, buffer *b);
 xmlnode *xml_newnode(xmlnodeid type);
-void xml_read_callback(xmlreader *r, buffer *b, xml_read_fn *fn);
+void xml_read_callback(xmlreader *r,  xml_read_fn *fn);
 xmlnode *xml_read_tree(buffer *b);
 xmlnode *xml_textnode(const char *text, size_t len);
 int xml_path(xmlnode *node, stralloc *out);

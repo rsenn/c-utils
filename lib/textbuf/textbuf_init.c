@@ -8,7 +8,8 @@ textbuf_init(buffer* b, buffer* src, size_t bufsize) {
   if(tb) {
     byte_zero(tb, sizeof(textbuf));
     tb->source = src;
-    buffer_init(b, (buffer_op_fn*)&textbuf_read, (intptr_t)tb, tb->buf, bufsize);
+    buffer_init(b, (buffer_op_fn*)&textbuf_read, -1, tb->buf, bufsize);
     b->deinit = (void*)&textbuf_free;
+    b->cookie = tb;
   }
 }

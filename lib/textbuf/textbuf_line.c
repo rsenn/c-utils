@@ -1,8 +1,8 @@
 #include "../textbuf.h"
 
-unsigned
+uint64
 textbuf_line(buffer *b) {
-  textbuf* tb = (void*)b->fd;
-  return tb->line;
+  textbuf* tb = is_textbuf(b);
+  return tb ? tb->line : 0;
 }
 

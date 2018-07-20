@@ -62,6 +62,16 @@ xml_read_node(xmlreader *reader, xmlnodeid id,
 
         node->attributes = *attrs;
         *attrs = NULL;
+
+
+
+        buffer_putlong(buffer_1, textbuf_line(&reader->b));
+        buffer_puts(buffer_1, ":");
+        buffer_putlong(buffer_1, textbuf_column(&reader->b));
+        buffer_puts(buffer_1, ": ");
+
+        xml_dump(node, buffer_1);
+
         break;
       }
     }
@@ -72,6 +82,9 @@ xml_read_node(xmlreader *reader, xmlnodeid id,
 xmlnode*
 xml_read_tree(buffer *b) {
   xmlreader r;
-  xml_read_callback(&r, b, xml_read_node);
+  textbuf_init(&r.b, b, 1024);
+
+
+  xml_read_callback(&r, xml_read_node);
   return r.doc;
 }
