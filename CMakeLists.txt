@@ -393,7 +393,7 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   endif()
 endif()
 
-set(COMMON_LIBS strlist array buffer stralloc mmap open fmt scan str byte)
+set(COMMON_LIBS strlist array buffer stralloc scan str byte mmap open fmt )
 
 foreach(PROGRAM ${PROGRAMS})
   if("${PROGRAM}" STREQUAL ntldd)
