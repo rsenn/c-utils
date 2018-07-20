@@ -136,6 +136,8 @@ $(BUILDDIR)buffer_skipc.o: lib/buffer/buffer_skipc.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_skipn.o: lib/buffer/buffer_skipn.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_skipspace.o: lib/buffer/buffer_skipspace.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_skip_until.o: lib/buffer/buffer_skip_until.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_stubborn.o: lib/buffer/buffer_stubborn.c
@@ -989,6 +991,8 @@ $(BUILDDIR)utf8.o: lib/utf8.c
 $(BUILDDIR)xml_attrnode.o: lib/xml/xml_attrnode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_dump.o: lib/xml/xml_dump.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_dump_attributes.o: lib/xml/xml_dump_attributes.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_free.o: lib/xml/xml_free.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

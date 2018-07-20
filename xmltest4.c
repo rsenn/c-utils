@@ -1,10 +1,10 @@
 #include "lib/buffer.h"
+#include "lib/byte.h"
 #include "lib/fmt.h"
 #include "lib/hmap.h"
 #include "lib/iterator.h"
 #include "lib/stralloc.h"
 #include "lib/xml.h"
-#include "lib/byte.h"
 #include <assert.h>
 
 void
@@ -30,6 +30,9 @@ xml_print(xmlnode* n) {
       buffer_puts(buffer_1, " \"");
       put_str_escaped(buffer_1, n->name);
       buffer_puts(buffer_1, "\"");
+
+    } else if(n->type == XML_NODE_ELEMENT) {
+      xml_dump_attributes(n, buffer_1, ", ", ":", "");
     }
 
     buffer_putnlflush(buffer_1);
@@ -43,7 +46,7 @@ int
 main() {
   buffer input;
   buffer_mmapprivate(&input, "../dirlist/test.xml");
-  
+
   xmlnode* doc = xml_read_tree(&input);
   xml_print(doc);
   xml_free(doc);

@@ -43,5 +43,6 @@ xmlnode *xml_read_tree(buffer *b);
 xmlnode *xml_textnode(const char *text, size_t len);
 int xml_path(xmlnode *node, stralloc *out);
 void xml_free(xmlnode *node);
+void xml_dump_attributes(xmlnode *node, buffer *b, const char *sep, const char *eq, const char *quot);
 
 #endif /* LIB_XML_H_ */
