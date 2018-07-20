@@ -27,4 +27,9 @@ SOURCES = xmltest4.c lib/xml/xml_newnode.c lib/xml/xml_dump.c lib/xml/xml_attrno
     lib/stralloc/stralloc_cats.c \
     lib/stralloc/stralloc_zero.c \
     lib/stralloc/stralloc_catb.c \
-    lib/buffer/buffer_gettok_sa.c
+    lib/buffer/buffer_gettok_sa.c \
+    lib/xml/xml_read_tree.c \
+    lib/buffer/buffer_peekc.c \
+    lib/buffer/buffer_prefetch.c \
+    lib/buffer/buffer_dummyread.c \
+    lib/buffer/buffer_skipc.c

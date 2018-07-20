@@ -8,7 +8,6 @@ xml_path_out(xmlnode* node, stralloc* out) {
   stralloc_catc(out, '/');
   stralloc_cats(out, node->name);
 }
-
 int
 xml_path(xmlnode* node, stralloc* out) {
   stralloc_zero(out);
