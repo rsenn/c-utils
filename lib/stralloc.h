@@ -201,7 +201,7 @@ size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_fun
 
 int stralloc_insertb(stralloc *sa, const char *s, size_t pos, size_t n);
 int stralloc_subst(stralloc *out, const char *b, size_t len, const char *from, const char *to);
-size_t stralloc_fmt_call(stralloc *out, size_t (*fmt_function)(void), ...);
+size_t stralloc_fmt_call(stralloc *out, size_t (*fmt_function)(), ...);
 
 #ifdef __cplusplus
 }

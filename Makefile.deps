@@ -352,6 +352,8 @@ $(BUILDDIR)fmt_pad.o: lib/fmt/fmt_pad.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_plusminus.o: lib/fmt/fmt_plusminus.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_repeat.o: lib/fmt/fmt_repeat.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_str.o: lib/fmt/fmt_str.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_strm_internal.o: lib/fmt/fmt_strm_internal.c
@@ -755,6 +757,8 @@ $(BUILDDIR)stralloc_findb.o: lib/stralloc/stralloc_findb.c
 $(BUILDDIR)stralloc_finds.o: lib/stralloc/stralloc_finds.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_fmt.o: lib/stralloc/stralloc_fmt.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_fmt_call.o: lib/stralloc/stralloc_fmt_call.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_free.o: lib/stralloc/stralloc_free.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
