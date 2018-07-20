@@ -707,7 +707,7 @@ $(BUILDDIR)xml.a: $(addprefix $(BUILDDIR),xml_attrnode.o xml_dump_attributes.o x
 $(BUILDDIR)textbuf.a: $(addprefix $(BUILDDIR),textbuf_init.o textbuf_read.o textbuf_free.o is_textbuf.o textbuf_line.o textbuf_column.o)
 	$(AR) rcs $@ $^
 
-$(BUILDDIR)charbuf.a: $(addprefix $(BUILDDIR),charbuf_get.o charbuf_peek.o charbuf_skip.o)
+$(BUILDDIR)charbuf.a: $(addprefix $(BUILDDIR),charbuf_get.o charbuf_getc.o charbuf_peek.o charbuf_peekc.o charbuf_skip.o charbuf_skipc.o)
 	$(AR) rcs $@ $^
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c

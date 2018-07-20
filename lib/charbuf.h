@@ -22,8 +22,6 @@ int charbuf_getc(charbuf *b, char* ch);
 int charbuf_peek(charbuf *b);
 int charbuf_peekc(charbuf *b, char* ch);
 int charbuf_skip(charbuf *b);
-int charbuf_skipc(charbuf *b, char* ch);
-
+int charbuf_nextc(charbuf *b, char* ch);
 
 #endif /* defined CHARBUF_H */
-jj

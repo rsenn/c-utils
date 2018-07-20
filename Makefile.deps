@@ -274,9 +274,15 @@ $(BUILDDIR)cbmap_visit_all.o: lib/cbmap/cbmap_visit_all.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)charbuf_get.o: lib/charbuf/charbuf_get.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_getc.o: lib/charbuf/charbuf_getc.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)charbuf_peek.o: lib/charbuf/charbuf_peek.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_peekc.o: lib/charbuf/charbuf_peekc.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)charbuf_skip.o: lib/charbuf/charbuf_skip.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_skipc.o: lib/charbuf/charbuf_skipc.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)critbit.o: lib/critbit.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
