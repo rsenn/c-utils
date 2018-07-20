@@ -206,6 +206,8 @@ $(BUILDDIR)byte_equal.o: lib/byte/byte_equal.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_fill.o: lib/byte/byte_fill.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_fmt.o: lib/byte/byte_fmt.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_lower.o: lib/byte/byte_lower.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_rchr.o: lib/byte/byte_rchr.c
@@ -278,7 +280,7 @@ $(BUILDDIR)dir_time.o: lib/dir/dir_time.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dir_type.o: lib/dir/dir_type.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_longlong.o: lib/fmt/fmt_longlong.c
+$(BUILDDIR)fmt_long.o: lib/fmt/fmt_long.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_8long.o: lib/fmt/fmt_8long.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -312,7 +314,7 @@ $(BUILDDIR)fmt_humank.o: lib/fmt/fmt_humank.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_iso8601.o: lib/fmt/fmt_iso8601.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_long.o: lib/fmt/fmt_long.c
+$(BUILDDIR)fmt_longlong.o: lib/fmt/fmt_longlong.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_minus.o: lib/fmt/fmt_minus.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -554,9 +556,7 @@ $(BUILDDIR)rdir_open.o: lib/rdir/rdir_open.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)rdir_read.o: lib/rdir/rdir_read.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_fromhex.o: lib/scan/scan_fromhex.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_pb_type1_fixed64.o: lib/scan/scan_pb_type1_fixed64.c
+$(BUILDDIR)scan_noncharsetnskip.o: lib/scan/scan_noncharsetnskip.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_8int.o: lib/scan/scan_8int.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -576,6 +576,8 @@ $(BUILDDIR)scan_charsetnskip.o: lib/scan/scan_charsetnskip.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_double.o: lib/scan/scan_double.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_fromhex.o: lib/scan/scan_fromhex.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_httpdate.o: lib/scan/scan_httpdate.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_int.o: lib/scan/scan_int.c
@@ -590,13 +592,13 @@ $(BUILDDIR)scan_longn.o: lib/scan/scan_longn.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_netstring.o: lib/scan/scan_netstring.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_noncharsetnskip.o: lib/scan/scan_noncharsetnskip.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_nonwhitenskip.o: lib/scan/scan_nonwhitenskip.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_pb_tag.o: lib/scan/scan_pb_tag.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_pb_type0_sint.o: lib/scan/scan_pb_type0_sint.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_pb_type1_fixed64.o: lib/scan/scan_pb_type1_fixed64.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_pb_type5_fixed32.o: lib/scan/scan_pb_type5_fixed32.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -627,6 +629,8 @@ $(BUILDDIR)scan_xlong.o: lib/scan/scan_xlong.c
 $(BUILDDIR)scan_xlonglong.o: lib/scan/scan_xlonglong.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_xlongn.o: lib/scan/scan_xlongn.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_xmlescape.o: lib/scan/scan_xmlescape.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_xshort.o: lib/scan/scan_xshort.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -720,6 +724,8 @@ $(BUILDDIR)stralloc_findb.o: lib/stralloc/stralloc_findb.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_finds.o: lib/stralloc/stralloc_finds.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_fmt.o: lib/stralloc/stralloc_fmt.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_free.o: lib/stralloc/stralloc_free.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_init.o: lib/stralloc/stralloc_init.c
@@ -751,6 +757,8 @@ $(BUILDDIR)stralloc_replace_non_printable.o: lib/stralloc/stralloc_replace_non_p
 $(BUILDDIR)stralloc_reverse.o: lib/stralloc/stralloc_reverse.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_reverse_blocks.o: lib/stralloc/stralloc_reverse_blocks.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_scan.o: lib/stralloc/stralloc_scan.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_shrink.o: lib/stralloc/stralloc_shrink.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

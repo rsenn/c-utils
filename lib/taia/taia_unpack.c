@@ -2,7 +2,7 @@
 
 void taia_unpack(const char* s,struct taia* t)
 {
-  uint32_t x;
+  unsigned int x;
 
   tai_unpack(s,&t->sec);
   s += 8;

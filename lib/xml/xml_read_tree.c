@@ -1,4 +1,16 @@
 #include "../xml.h"
+#include "../fmt.h"
+#include "../scan.h"
+
+static size_t
+xml_escape(const stralloc* in, stralloc* out) {
+  return stralloc_fmt(in, out, fmt_xmlescape);
+}
+
+static size_t
+xml_unescape(const stralloc* in, stralloc* out) {
+  return stralloc_scan(in, out, scan_xmlescape);
+}
 
 static int
 xml_read_node(xmlreader *reader, xmlnodeid id,
@@ -8,8 +20,15 @@ xml_read_node(xmlreader *reader, xmlnodeid id,
       break;
     }
     case XML_NODE_TEXT: {
-      xmlnode* tnode = xml_textnode(value->s, value->len);
+      stralloc text;
+      stralloc_init(&text);
+      xml_unescape(value, &text);
+
+      xmlnode* tnode = xml_newnode(XML_NODE_TEXT);
+
+      tnode->name = text.s;
       tnode->parent = reader->parent;
+
       *reader->ptr = tnode;
       reader->ptr = &tnode->next;
       break;

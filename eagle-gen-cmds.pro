@@ -71,7 +71,8 @@ HEADERS = \
     lib/cbmap_internal.h \
     lib/cb.h \
     lib/iterator.h \
-    lib/xml.h
+    lib/xml.h \
+    lib/fmt.h
 
 DEFINES += LSEEK=lseek64 _LARGEFILE64_SOURCE=1
 
@@ -94,4 +95,5 @@ SOURCES = eagle-gen-cmds.c lib/umult64.c lib/array/array_catb.c lib/array/array_
     lib/buffer/buffer_prefetch.c \
     lib/buffer/buffer_peekc.c \
     lib/buffer/buffer_skipc.c \
-    lib/buffer/buffer_skipn.c
+    lib/buffer/buffer_skipn.c \
+    lib/fmt/fmt_escapecharc.c

@@ -58,6 +58,10 @@ void byte_lower(void *s, register unsigned int len);
 #define UNALIGNED_ACCESS_OK
 #endif
 
+#ifdef STRALLOC_H
+size_t byte_fmt(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch));
+#endif
+
 #ifdef __cplusplus
 }
 #endif

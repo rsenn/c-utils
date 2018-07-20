@@ -56,8 +56,8 @@ cbmap_data_node_new(cbmap_allocator_t key_allocator, cbmap_allocator_t value_all
 
 int
 cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_len) {
-  uint8_t* p = map->root;
-  const uint8_t* const key_bytes = (void*)key;
+  unsigned char* p = map->root;
+  const unsigned char* const key_bytes = (void*)key;
 
   if(p == NULL) {
     struct cbmap_data_node* data = cbmap_data_node_new(&map->key_allocator, &map->value_allocator, key, key_len, value, value_len);
@@ -71,7 +71,7 @@ cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_l
 
   while(IS_INTERNAL_NODE(p)) {
     struct cbmap_internal_node* node = GET_INTERNAL_NODE(p);
-    uint8_t c = 0;
+    unsigned char c = 0;
     if(node->byte < key_len) {
       c = key_bytes[node->byte];
     }
@@ -79,8 +79,8 @@ cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_l
     p = node->branch[direction];
   }
 
-  uint32_t newbyte;
-  uint32_t newotherbits;
+  unsigned int newbyte;
+  unsigned int newotherbits;
 
   struct cbmap_data_node* data = GET_DATA_NODE(p);
 
@@ -104,7 +104,7 @@ different_byte_found:
   newotherbits |= newotherbits >> 2;
   newotherbits |= newotherbits >> 4;
   newotherbits = (newotherbits & ~(newotherbits >> 1)) ^ 255;
-  uint8_t c = data->key[newbyte];
+  unsigned char c = data->key[newbyte];
   int newdirection = (1 + (newotherbits | c)) >> 8;
 
   struct cbmap_internal_node* newnode = cbmap_internal_node_new();
@@ -124,7 +124,7 @@ different_byte_found:
 
   void** insertion_node = &map->root;
   for(;;) {
-    uint8_t* p = *insertion_node;
+    unsigned char* p = *insertion_node;
     if(!IS_INTERNAL_NODE(p)) {
       break;
     }
@@ -135,7 +135,7 @@ different_byte_found:
     if(q->byte == newbyte && q->otherbits > newotherbits) {
       break;
     }
-    uint8_t c = 0;
+    unsigned char c = 0;
     if(q->byte < key_len) {
       c = key_bytes[q->byte];
     }
@@ -144,7 +144,7 @@ different_byte_found:
   }
 
   newnode->branch[newdirection] = *insertion_node;
-  *insertion_node = (void*)(1 + (uint8_t*)newnode);
+  *insertion_node = (void*)(1 + (unsigned char*)newnode);
   map->count++;
 
   return INSERT_OK;

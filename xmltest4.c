@@ -1,22 +1,19 @@
 #include "lib/buffer.h"
+#include "lib/fmt.h"
 #include "lib/hmap.h"
 #include "lib/iterator.h"
 #include "lib/stralloc.h"
 #include "lib/xml.h"
+#include "lib/byte.h"
 #include <assert.h>
 
-// void
-// xml_add_attrs(xmlnode** ptr, HMAP_DB* hmap) {
-//  for(TUPLE** it = hmap_begin(hmap); hmap_iterator_dereference(it);
-//  hmap_iterator_increment(it)) {
-//    TUPLE* tuple = hmap_iterator_dereference(it);
-//    assert(tuple->key);
-//    assert(tuple->data);
-//    xmlnode* attr = xml_attrnode(tuple->key, tuple->key_len, tuple->data,
-//    tuple->data_len); *ptr = attr; ptr = &attr->next; if(hmap_last(hmap, it))
-//      break;
-//  }
-//}
+void
+put_str_escaped(buffer* b, const char* str) {
+  stralloc esc;
+  stralloc_init(&esc);
+  byte_fmt(str, str_len(str), &esc, fmt_escapecharc);
+  buffer_putsa(b, &esc);
+}
 
 void
 xml_print(xmlnode* n) {
@@ -28,10 +25,16 @@ xml_print(xmlnode* n) {
 
     buffer_puts(buffer_1, "path: ");
     buffer_putsa(buffer_1, &path);
+
+    if(n->type == XML_NODE_TEXT) {
+      buffer_puts(buffer_1, " \"");
+      put_str_escaped(buffer_1, n->name);
+      buffer_puts(buffer_1, "\"");
+    }
+
     buffer_putnlflush(buffer_1);
 
-    if(n->children)
-      xml_print(n->children);
+    if(n->children) xml_print(n->children);
 
   } while((n = n->next));
 }
@@ -40,8 +43,8 @@ int
 main() {
   buffer input;
   buffer_mmapprivate(&input, "../dirlist/test.xml");
+  
   xmlnode* doc = xml_read_tree(&input);
   xml_print(doc);
-
   xml_free(doc);
 }

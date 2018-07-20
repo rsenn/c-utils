@@ -8,10 +8,10 @@
 #include <crtdbg.h>
 #endif
 
-static uint32_t CBM_DEBUG_ALLOCATIONS = 0;
-static uint32_t CBM_DEBUG_FREES = 0;
-static uint32_t CBM_DEBUG_ALLOCATED_BYTES = 0;
-static uint32_t CBM_DEBUG_DEALLOCATED_BYTES = 0;
+static unsigned int CBM_DEBUG_ALLOCATIONS = 0;
+static unsigned int CBM_DEBUG_FREES = 0;
+static unsigned int CBM_DEBUG_ALLOCATED_BYTES = 0;
+static unsigned int CBM_DEBUG_DEALLOCATED_BYTES = 0;
 
 double
 cbmap_mem_allocated(void) {
@@ -49,7 +49,7 @@ cbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line) {
   p = calloc(count, size);
   if(p != NULL) {
     CBM_DEBUG_ALLOCATIONS += 1;
-    CBM_DEBUG_ALLOCATED_BYTES += ((uint32_t)count * (uint32_t)size);
+    CBM_DEBUG_ALLOCATED_BYTES += ((unsigned int)count * (unsigned int)size);
   }
 #ifdef DEBUG
   fprintf(stdout, "%p     CBM_MEM_CALLOC %-20s (%03d): Allocated %g x %g = %g bytes\n", p, file, line, (float)count, (float)size, (float)(count * size));
@@ -139,7 +139,7 @@ cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const cha
 
   if(!result) {
     CBM_DEBUG_ALLOCATIONS += 1;
-    CBM_DEBUG_ALLOCATED_BYTES += (uint32_t)size;
+    CBM_DEBUG_ALLOCATED_BYTES += (unsigned int)size;
   }
   
 #ifdef DEBUG
@@ -150,9 +150,9 @@ cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const cha
 
 void
 cbmap_mem_debug_mem(const char* file, int line) {
-  uint32_t allocations = CBM_DEBUG_ALLOCATIONS;
-  uint32_t deallocations = CBM_DEBUG_FREES;
-  uint32_t check = allocations - deallocations;
+  unsigned int allocations = CBM_DEBUG_ALLOCATIONS;
+  unsigned int deallocations = CBM_DEBUG_FREES;
+  unsigned int check = allocations - deallocations;
 
   fprintf(stdout, "CBM_MEM_LOG %-20s (%d) ALLOCATIONS %d DEALLOCATIONS %d CHECK %d BYTES %d\n", file, line, allocations, deallocations, check,
           CBM_DEBUG_ALLOCATED_BYTES);

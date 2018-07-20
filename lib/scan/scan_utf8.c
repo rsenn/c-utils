@@ -1,7 +1,7 @@
 #include "../fmt.h"
 
-size_t scan_utf8(const char* in, size_t len, uint32_t* num) {
-  uint32_t i, k, m;
+size_t scan_utf8(const char* in, size_t len, unsigned int* num) {
+  unsigned int i, k, m;
   const char* orig = in;
   if(len == 0) return 0;
   i = (*(unsigned char*)in++);	/* grab first byte */
@@ -39,7 +39,7 @@ size_t scan_utf8(const char* in, size_t len, uint32_t* num) {
    * expression can be written as
    *   1 << (k*5-4+(k==2))
    */
-  m = ((uint32_t)1 << (k * 5 - 4 + (k == 2)));
+  m = ((unsigned int)1 << (k * 5 - 4 + (k == 2)));
   while(k > 1) {
     if((*in & 0xc0) != 0x80) return 0;
     i = (i << 6) | ((*in++) & 0x3f);
