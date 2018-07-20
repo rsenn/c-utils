@@ -2,7 +2,7 @@
 #include "../xml.h"
 
 void
-xml_dump_attributes(xmlnode* node, buffer* b, const char* sep, const char* eq, const char* quot) {
+xml_print_attributes(xmlnode* node, buffer* b, const char* sep, const char* eq, const char* quot) {
   TUPLE* tpl = node->attributes->list_tuple;
   while(tpl) {
     buffer_putm(b, sep, tpl->key, eq, quot);

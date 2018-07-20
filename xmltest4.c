@@ -55,6 +55,7 @@ main(int argc, char* argv[1]) {
 
 //  xml_print(doc);
 
+  xml_debug(doc, buffer_1);
   xml_dump(doc, buffer_1);
 
   xml_free(doc);

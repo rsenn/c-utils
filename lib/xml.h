@@ -39,15 +39,16 @@ typedef int(xml_read_callback_fn)(xmlreader *r, xmlnodeid id, stralloc *name,
 
 xmlnode *xml_attrnode(const char *name, size_t name_len, const char *value,
                       size_t value_len);
-void xml_dump(xmlnode *node, buffer *b);
+void xml_print(xmlnode *node, buffer *b);
 xmlnode *xml_newnode(xmlnodeid type);
 void xml_read_callback(xmlreader *r,  xml_read_callback_fn *fn);
 xmlnode *xml_read_tree(buffer *b);
 xmlnode *xml_textnode(const char *text, size_t len);
 int xml_path(xmlnode *node, stralloc *out);
 void xml_free(xmlnode *node);
-void xml_dump_attributes(xmlnode *node, buffer *b, const char *sep, const char *eq, const char *quot);
+void xml_print_attributes(xmlnode *node, buffer *b, const char *sep, const char *eq, const char *quot);
 void xml_reader_init(xmlreader *r, buffer *b);
 size_t xml_escape(const char *s, size_t n, stralloc *out);
+void xml_debug(xmlnode *node, buffer *b);
 
 #endif /* LIB_XML_H_ */
