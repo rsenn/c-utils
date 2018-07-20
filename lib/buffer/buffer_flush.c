@@ -1,7 +1,6 @@
 #include "../buffer.h"
 
-extern ssize_t buffer_stubborn(ssize_t (*op)
-                               (intptr_t fd, void* buf, size_t len, void* arg), intptr_t fd, const char* buf, size_t len, void* cookie);
+extern ssize_t buffer_stubborn(buffer_op_fn* op, intptr_t fd, const char* buf, size_t len, void* cookie);
 
 extern int
 buffer_flush(buffer* b) {

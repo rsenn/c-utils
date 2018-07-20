@@ -704,7 +704,7 @@ $(BUILDDIR)xml.a: $(addprefix $(BUILDDIR),xml_attrnode.o xml_dump_attributes.o x
 	$(AR) rcs $@ $^
 
 
-$(BUILDDIR)textbuf.a: $(addprefix $(BUILDDIR),textbuf_init.o textbuf_read.o textbuf_free.o)
+$(BUILDDIR)textbuf.a: $(addprefix $(BUILDDIR),textbuf_init.o textbuf_read.o textbuf_free.o is_textbuf.o textbuf_line.o textbuf_column.o)
 	$(AR) rcs $@ $^
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c

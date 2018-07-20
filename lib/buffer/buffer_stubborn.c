@@ -2,7 +2,7 @@
 #include <errno.h>
 
 int
-buffer_stubborn(ssize_t (*op)(intptr_t fd, void* buf, size_t len, void* arg), intptr_t fd, const char* buf, size_t len, void* cookie) {
+buffer_stubborn(buffer_op_fn* op, intptr_t fd, const char* buf, size_t len, void* cookie) {
   ssize_t w;
   errno = 0;
   while(len) {

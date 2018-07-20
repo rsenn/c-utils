@@ -960,11 +960,15 @@ $(BUILDDIR)taia_uint.o: lib/taia/taia_uint.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)taia_unpack.o: lib/taia/taia_unpack.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)textbuf_destroy.o: lib/textbuf/textbuf_destroy.c
+$(BUILDDIR)is_textbuf.o: lib/textbuf/is_textbuf.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)textbuf_column.o: lib/textbuf/textbuf_column.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)textbuf_free.o: lib/textbuf/textbuf_free.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)textbuf_init.o: lib/textbuf/textbuf_init.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)textbuf_line.o: lib/textbuf/textbuf_line.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)textbuf_read.o: lib/textbuf/textbuf_read.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

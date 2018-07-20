@@ -78,6 +78,10 @@ main() {
 
   buffer b;
   textbuf_init(&b, &infile, 1024);
+
+  assert(is_textbuf(&b));
+
+
   xmlnode* doc = xml_read_tree(&b);
 
   xml_print(doc);
