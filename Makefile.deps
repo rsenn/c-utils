@@ -212,6 +212,8 @@ $(BUILDDIR)byte_lower.o: lib/byte/byte_lower.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_rchr.o: lib/byte/byte_rchr.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_scan.o: lib/byte/byte_scan.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_upper.o: lib/byte/byte_upper.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_zero.o: lib/byte/byte_zero.c
