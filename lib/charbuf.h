@@ -26,3 +26,4 @@ int charbuf_skipc(charbuf *b, char* ch);
 
 
 #endif /* defined CHARBUF_H */
+jj
