@@ -9,5 +9,6 @@ textbuf_init(buffer* b, buffer* src, size_t bufsize) {
     byte_zero(tb, sizeof(textbuf));
     tb->source = src;
     buffer_init(b, (buffer_op_fn*)&textbuf_read, (intptr_t)tb, tb->buf, bufsize);
+    b->deinit = (void*)&textbuf_free;
   }
 }
