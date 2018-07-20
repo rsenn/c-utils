@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 void
-xml_read(xmlreader* r, buffer* b) {
+xml_read(xmlreader* r, buffer* b, xml_read_fn* fn) {
   ssize_t n;
   r->b = b;
 
@@ -92,6 +92,9 @@ xml_read(xmlreader* r, buffer* b) {
       buffer_putsa(buffer_1, &val);
       buffer_puts(buffer_1, "\"");
       //      buffer_putnlflush(buffer_1);
+
+      if(!fn(r, XML_NODE_ATTRIBUTE, &attr, &val))
+        return;
     }
 
     if(sa.s[0] != '/') {
@@ -102,8 +105,12 @@ xml_read(xmlreader* r, buffer* b) {
         r->closing = 0;
     }
 
+
     buffer_puts(buffer_1, (!r->closing && r->self_closing) ? "/>" : ">");
     buffer_putnlflush(buffer_1);
+
+    if(!fn(r, XML_NODE_ELEMENT, &sa, NULL))
+      return;
 
     if(s[sa.len] != '>') {
       if(buffer_skip_until(r->b, ">", 1) <= 0)

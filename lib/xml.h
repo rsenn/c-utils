@@ -2,6 +2,7 @@
 #define LIB_XML_H_
 
 #include "buffer.h"
+#include "stralloc.h"
 
 typedef enum xmlnodeid {
     XML_NODE_DOCUMENT,
@@ -26,8 +27,10 @@ typedef struct xmlreader {
     int self_closing:1;
 } xmlreader;
 
+typedef int (xml_read_fn)(xmlreader* r, xmlnodeid id, stralloc* name,  stralloc* value);
+
 
 xmlnode* xml_newnode(xmlnodeid type);
-void xml_read(xmlreader* r, buffer* b);
+void xml_read(xmlreader* r, buffer* b, xml_read_fn* fn);
 
 #endif /* LIB_XML_H_ */
