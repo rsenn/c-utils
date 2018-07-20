@@ -18,8 +18,11 @@ typedef struct {
 #define CHARBUF_INIT(op, fd) { '\0', 0, (op), (fd) }
 
 int charbuf_get(charbuf *b);
+int charbuf_getc(charbuf *b, char* ch);
 int charbuf_peek(charbuf *b);
+int charbuf_peekc(charbuf *b, char* ch);
 int charbuf_skip(charbuf *b);
+int charbuf_skipc(charbuf *b, char* ch);
 
 
 #endif /* defined CHARBUF_H */
