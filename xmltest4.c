@@ -76,9 +76,9 @@ int
 main() {
   buffer_mmapprivate(&infile, "../dirlist/test.xml");
 
-  textbuf text;
-  textbuf_init(&text, &infile);
-  xmlnode* doc = xml_read_tree(&text.b);
+  buffer b;
+  textbuf_init(&b, &infile, 1024);
+  xmlnode* doc = xml_read_tree(&b);
 
   xml_print(doc);
   xml_free(doc);

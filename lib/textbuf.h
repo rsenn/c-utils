@@ -4,14 +4,14 @@
 #include "buffer.h"
 
 typedef struct {
-  buffer b;
   unsigned line;
   unsigned col;
   buffer* source;
-  char buf[1024];
+  char buf[];
 } textbuf;
 
-void textbuf_init(textbuf *tb, buffer *src);
-ssize_t textbuf_read(intptr_t fd, void *buf, size_t n, void *cookie);
+void textbuf_destroy(buffer *b);
+void textbuf_init(buffer *b, buffer *src, size_t bufsize);
+ssize_t textbuf_read(intptr_t fd, char *buf, size_t n);
 
 #endif /* defined TEXTBUF_H */
