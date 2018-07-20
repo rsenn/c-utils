@@ -37,7 +37,7 @@ typedef struct buffer {
   ssize_t (*op)();	/* use read(2) or write(2) */
   void* cookie;			/* used internally by the to-stralloc buffers,  and for buffer chaining */
   void (*deinit)(void*);	/* called to munmap/free cleanup,  with a pointer to the buffer as argument */
-  int fd;		/* passed as first argument to op */
+  intptr_t fd;		/* passed as first argument to op */
 } buffer;
 
 #define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (void*)(op),  NULL,  NULL,  (fd) }
@@ -204,6 +204,7 @@ int buffer_putptr(buffer *b, void *ptr);
 int buffer_putulong0(buffer *b, unsigned long l, int pad);
 
 int buffer_skipspace(buffer *b);
+int buffer_skip_pred(buffer *b, int (*pred)(char));
 
 
 #ifdef __cplusplus

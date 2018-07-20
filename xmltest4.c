@@ -6,6 +6,31 @@
 #include "lib/stralloc.h"
 #include "lib/xml.h"
 #include <assert.h>
+#include <sys/types.h>
+
+typedef struct {
+  unsigned line;
+  unsigned col;
+  buffer* b;
+} line_buffer;
+
+static ssize_t
+linebuf_read(line_buffer* lb, char *x, size_t n) {
+  ssize_t r = buffer_get(lb->b, x, n);
+  for(ssize_t i = 0; i < r; ++i) {
+    if(x[i] == '\n') {
+      ++lb->line;
+      lb->col = 0;
+    } else {
+      ++lb->col;
+    }
+  }
+  return r;
+}
+
+
+static line_buffer linebuf_inst;
+
 
 void
 put_str_escaped(buffer* b, const char* str) {
@@ -44,10 +69,16 @@ xml_print(xmlnode* n) {
 
 int
 main() {
-  buffer input;
-  buffer_mmapprivate(&input, "../dirlist/test.xml");
+  buffer infile;
+  buffer_mmapprivate(&infile, "../dirlist/test.xml");
 
-  xmlnode* doc = xml_read_tree(&input);
+  linebuf_inst.b = &infile;
+
+static buffer input_buffer;
+
+buffer_init(&input_buffer, &linebuf_read, &linebuf_inst, NULL, 0);
+
+  xmlnode* doc = xml_read_tree(&input_buffer);
   xml_print(doc);
   xml_free(doc);
 }
