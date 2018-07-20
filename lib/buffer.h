@@ -110,7 +110,14 @@ typedef int (*string_predicate)(const char* x, size_t len, void* arg);
 ssize_t buffer_get_token_pred(buffer* b, char* x, size_t len, string_predicate p, void*);
 
 char *buffer_peek(buffer* b);
+int buffer_peekc(buffer *b, char *c);
 void buffer_seek(buffer* b, size_t len);
+
+int buffer_skipc(buffer *b);
+int buffer_skipn(buffer *b, size_t n);
+
+int buffer_prefetch(buffer *b, size_t n);
+
 
 #define buffer_PEEK(s) ( (s)->x + (s)->p )
 #define buffer_SEEK(s, len) ( (s)->p += (len) )
@@ -178,6 +185,8 @@ int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*)
  * Do not change the stralloc after this! */
 void buffer_fromsa(buffer* b, const stralloc* sa);	/* read from sa */
 int buffer_tosa(buffer*b, stralloc* sa);		/* write to sa,  auto-growing it */
+
+int buffer_gettok_sa(buffer *b, stralloc *sa, const char *charset, size_t setlen);
 #endif
 
 void buffer_frombuf(buffer* b, const char* x, size_t l);	/* buffer reads from static buffer */

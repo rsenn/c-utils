@@ -88,4 +88,10 @@ SOURCES = eagle-gen-cmds.c lib/umult64.c lib/array/array_catb.c lib/array/array_
     lib/byte/byte_equal.c \
     lib/hmap/hmap_set_chars.c \
     lib/hmap/hmap_set_stralloc.c \
-    lib/str/str_dup.c
+    lib/str/str_dup.c \
+    lib/buffer/buffer_gettok_sa.c \
+    lib/buffer/buffer_peek.c \
+    lib/buffer/buffer_prefetch.c \
+    lib/buffer/buffer_peekc.c \
+    lib/buffer/buffer_skipc.c \
+    lib/buffer/buffer_skipn.c

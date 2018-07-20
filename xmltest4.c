@@ -20,10 +20,29 @@
 //  }
 //}
 
+void
+xml_print(xmlnode* n) {
+  do {
+    stralloc path;
+    stralloc_init(&path);
+
+    xml_path(n, &path);
+
+    buffer_putsa(buffer_1, &path);
+    buffer_putnlflush(buffer_1);
+
+    if(n->children)
+      xml_print(n->children);
+
+  } while(( n = n->next));
+
+
+}
+
 int
 main() {
   buffer input;
   buffer_mmapprivate(&input, "../dirlist/test.xml");
   xmlnode* doc = xml_read_tree(&input);
-  xml_dump(doc, buffer_1);
+  xml_print(doc);
 }

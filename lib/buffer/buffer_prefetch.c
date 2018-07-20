@@ -21,9 +21,8 @@ buffer_prefetch(buffer* b, size_t n) {
     int w;
     if((w = buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n)) < 0) return -1;
     b->n += w;
-    if(!w) {
+    if(!w)
       break;
-    };
   }
   return b->n - b->p;
 }
