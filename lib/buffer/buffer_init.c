@@ -1,7 +1,7 @@
 #include "../buffer.h"
 
 void
-buffer_init(buffer* b, ssize_t (*op)(), int fd, char* y, size_t ylen) {
+buffer_init(buffer* b, ssize_t (*op)(intptr_t fd, void* buf, size_t len, void* arg), intptr_t fd, char* y, size_t ylen) {
   b->op = op;
   b->fd = fd;
   b->x = y;

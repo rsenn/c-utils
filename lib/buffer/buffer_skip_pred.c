@@ -1,7 +1,7 @@
 #include "../buffer.h"
 
 int
-buffer_skip_pred(buffer* b, int (*pred)(char)) {
+buffer_skip_pred(buffer* b, int (*pred)(int)) {
   char c;
   int n = 0;
   for(;;) {

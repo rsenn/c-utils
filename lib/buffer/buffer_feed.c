@@ -1,6 +1,6 @@
 #include "../buffer.h"
 
-extern ssize_t buffer_stubborn_read(ssize_t (*op)(), int fd, const char* buf, size_t len, void* cookie);
+extern ssize_t buffer_stubborn_read(ssize_t (*op)(intptr_t fd, void* buf, size_t len, void* arg), intptr_t fd, const char* buf, size_t len, void* cookie);
 
 ssize_t
 buffer_feed(buffer* b) {

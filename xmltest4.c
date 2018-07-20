@@ -11,25 +11,30 @@
 typedef struct {
   unsigned line;
   unsigned col;
-  buffer* b;
+  buffer b;
+  char buf[1024];
 } line_buffer;
 
+static line_buffer linebuf_inst;
+static buffer infile;
+
 static ssize_t
-linebuf_read(line_buffer* lb, char *x, size_t n) {
-  ssize_t r = buffer_get(lb->b, x, n);
+linebuf_read(intptr_t fd, void *p, size_t n, void* cookie) {
+  char* x = p;
+  ssize_t r = buffer_get(&infile, x, n);
+
   for(ssize_t i = 0; i < r; ++i) {
     if(x[i] == '\n') {
-      ++lb->line;
-      lb->col = 0;
+      ++linebuf_inst.line;
+      linebuf_inst.col = 0;
     } else {
-      ++lb->col;
+      ++linebuf_inst.col;
     }
   }
   return r;
 }
 
 
-static line_buffer linebuf_inst;
 
 
 void
@@ -69,16 +74,12 @@ xml_print(xmlnode* n) {
 
 int
 main() {
-  buffer infile;
   buffer_mmapprivate(&infile, "../dirlist/test.xml");
 
-  linebuf_inst.b = &infile;
+  buffer_init(&linebuf_inst.b, &linebuf_read, 0, linebuf_inst.buf, sizeof(linebuf_inst.buf));
+  linebuf_inst.b.cookie = &infile;
 
-static buffer input_buffer;
-
-buffer_init(&input_buffer, &linebuf_read, &linebuf_inst, NULL, 0);
-
-  xmlnode* doc = xml_read_tree(&input_buffer);
+  xmlnode* doc = xml_read_tree(&linebuf_inst.b);
   xml_print(doc);
   xml_free(doc);
 }

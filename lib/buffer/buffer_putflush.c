@@ -14,7 +14,7 @@
 #endif
 #endif
 
-extern ssize_t buffer_stubborn(ssize_t (*op)(), int fd, const char* buf, size_t len, void* cookie);
+extern ssize_t buffer_stubborn(ssize_t (*op)(intptr_t fd, void* buf, size_t len, void* arg), intptr_t fd, const char* buf, size_t len, void* cookie);
 
 int
 buffer_putflush(buffer* b, const char* x, size_t len) {
@@ -23,7 +23,7 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
   if(!b->p) /* if the buffer is empty, just call buffer_stubborn directly */
     return buffer_stubborn(b->op, b->fd, x, len, b);
 #if !(defined(_WIN32) || defined(_WIN64))
-  if(b->op == write) {
+  if(b->op == (buffer_op_fn*)&write) {
     struct iovec v[2];
     ssize_t w;
     size_t cl = b->p + len;

@@ -2,7 +2,7 @@
 #include "../byte.h"
 
 extern int buffer_dummyread();
-extern ssize_t buffer_stubborn_read(ssize_t (*op)(), int fd, const char* buf, unsigned int len);
+extern ssize_t buffer_stubborn_read(ssize_t (*op)(intptr_t fd, void* buf, size_t len, void* arg), intptr_t fd, const char* buf, unsigned int len);
 
 int
 buffer_prefetch(buffer* b, size_t n) {

@@ -11,7 +11,7 @@
 #endif
 
 int
-buffer_read_fd(buffer* b, int fd) {
+buffer_read_fd(buffer* b, intptr_t fd) {
   struct stat st;
   if(fstat(fd, &st) == -1) return -1;
 

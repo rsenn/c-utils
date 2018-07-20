@@ -1,6 +1,6 @@
 #include "../buffer.h"
 
-extern int buffer_stubborn(ssize_t (*op)(), int fd, const char* buf, size_t len);
+extern int buffer_stubborn(ssize_t (*op)(intptr_t fd, void* buf, size_t len, void* arg), intptr_t fd, const char* buf, size_t len);
 
 int
 buffer_putc(buffer* b, char c) {

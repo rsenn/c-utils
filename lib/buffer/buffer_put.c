@@ -4,7 +4,7 @@
 #include <x86intrin.h>
 #endif
 
-extern int buffer_stubborn(ssize_t (*op)(), int fd, const char* buf, size_t len, void* cookie);
+extern int buffer_stubborn(ssize_t (*op)(intptr_t fd, void* buf, size_t len, void* arg), intptr_t fd, const char* buf, size_t len, void* cookie);
 
 #ifndef __unlikely
 #ifdef __GNUC__

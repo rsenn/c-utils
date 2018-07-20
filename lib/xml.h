@@ -4,6 +4,7 @@
 #include "buffer.h"
 #include "hmap.h"
 #include "stralloc.h"
+#include "textbuf.h"
 
 typedef enum xmlnodeid {
   XML_NODE_DOCUMENT,

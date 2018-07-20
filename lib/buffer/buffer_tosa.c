@@ -2,7 +2,7 @@
 #include "../stralloc.h"
 
 static ssize_t
-strallocwrite(int fd, char* buf, size_t len, void* myself) {
+strallocwrite(intptr_t fd, char* buf, size_t len, void* myself) {
   buffer* b = myself;
   stralloc* sa = b->cookie;
   sa->len += len;
@@ -23,7 +23,7 @@ buffer_tosa(buffer* b, stralloc* sa) {
   b->n = 0;
   b->a = 1024;
   b->fd = 0;
-  b->op = strallocwrite;
+  b->op = (buffer_op_fn*)strallocwrite;
   b->cookie = sa;
   b->deinit = 0;
   return 0;
