@@ -40,10 +40,19 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     const char* s;
     stralloc_zero(&tag);
     r->self_closing = r->closing = 0;
-    if(str_chr("/?", *buffer_peek(b)) < 2) {
+
+    s = buffer_peek(b);
+    if(*s == '/') {
       r->closing = 1;
       buffer_skipc(b);
+    } else if(*s == '?') {
+      r->self_closing = 1;
+    } else if(*s == '!') {
+      if(buffer_skip_until(b, ">", 1) <= 0)
+        return;
+      continue;
     }
+
     if((n = buffer_gettok_sa(b, &tag, " \t\r\v/>", 6)) < 0) return;
     stralloc_nul(&tag);
     buffer_skipspace(b);

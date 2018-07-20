@@ -133,6 +133,7 @@ size_t fmt_escapecharc(char *dest, unsigned int ch);
 
 size_t fmt_escapecharshell(char *dest, uint32 ch);
 char fmt_tohex(char c);
+size_t fmt_repeat(char *dest, const char *src, int n);
 
 #ifdef __cplusplus
 }
