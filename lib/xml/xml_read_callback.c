@@ -67,7 +67,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       stralloc_nul(&attr);
       stralloc_nul(&val);
 
-      buffer_dump(buffer_2, b);
+  //    buffer_dump(buffer_2, b);
 
       hmap_set(&r->attrmap, attr.s, attr.len, val.s, val.len + 1);
 

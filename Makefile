@@ -704,7 +704,7 @@ $(BUILDDIR)playlist.a: $(addprefix $(BUILDDIR),playlist_m3u.o playlist_init.o pl
 $(BUILDDIR)map.a: $(addprefix $(BUILDDIR),map_deinit.o map_get.o map_iter.o map_next.o map_remove.o map_set.o)
 	$(AR) rcs $@ $^
 
-$(BUILDDIR)xml.a: $(addprefix $(BUILDDIR),xml_attrnode.o xml_print_attributes.o xml_debug.o xml_print.o xml_newnode.o xml_read_callback.o xml_read_tree.o xml_textnode.o xml_path.o xml_free.o xml_reader_init.o xml_escape.o xml_find.o)
+$(BUILDDIR)xml.a: $(addprefix $(BUILDDIR),xml_attrnode.o xml_print_attributes.o xml_debug.o xml_print.o xml_newnode.o xml_read_callback.o xml_read_tree.o xml_textnode.o xml_path.o xml_free.o xml_reader_init.o xml_escape.o xml_find_element_attr.o xml_find_element.o xml_get_attribute.o xml_has_attribute.o xml_find_pred.o)
 	$(AR) rcs $@ $^
 
 

@@ -12,10 +12,10 @@ static int
 xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   switch(id) {
     case XML_NODE_ATTRIBUTE: {
-
-
+#ifdef XML_DEBUG
       buffer_putm(buffer_2, "reading attribute '", name->s, "' value '", value->s, "'");
       buffer_putnlflush(buffer_2);
+#endif /* defined XML_DEBUG */
       break;
     }
     case XML_NODE_TEXT: {
@@ -32,8 +32,10 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
     }
     case XML_NODE_ELEMENT:
     default: {
+#ifdef XML_DEBUG
       buffer_putm(buffer_2, "reading element '", name->s, "'");
       buffer_putnlflush(buffer_2);
+#endif /* defined XML_DEBUG */
       if(reader->closing) {
         xmlnode* parent = reader->parent;
         if(parent) {
