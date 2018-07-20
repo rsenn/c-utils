@@ -1,11 +1,11 @@
 #ifndef HTTP_H
 #define HTTP_H 1
 
-#include "uint16.h"
-#include "uint32.h"
-#include "uint64.h"
-#include "stralloc.h"
-//#include "buffer.h"
+#include "lib/uint16.h"
+#include "lib/uint32.h"
+#include "lib/uint64.h"
+#include "lib/stralloc.h"
+//#include "lib/buffer.h"
 
 #ifdef __cplusplus
 extern "C" {

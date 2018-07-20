@@ -6,7 +6,7 @@
 #ifndef HASH_MAP_H
 #define HASH_MAP_H
 
-#include "linked_list.h"
+#include "lib/linked_list.h"
 
 #include <stdlib.h>
 #include <stdint.h>

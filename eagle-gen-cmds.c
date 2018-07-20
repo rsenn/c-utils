@@ -256,7 +256,7 @@ get_entry(cbmap_t map, const char* key) {
  */
 void
 print_name_value(buffer* b, const char* name, const char* value) {
-  buffer_putm(b, name, ": ", value ? value : "(null)", NULL);
+  buffer_putm(b, name, ": ", value ? value : "(null)");
 }
 
 int
@@ -528,7 +528,7 @@ getnodeset(void* n, const char* xpath) {
     buffer_putsflush(buffer_2, "No result\n");
     return NULL;
   }
-  buffer_putm(buffer_2, "xpath: ", xpath, ", num nodes: ", NULL);
+  buffer_putm(buffer_2, "xpath: ", xpath, ", num nodes: ");
   buffer_putulong(buffer_2, result && result->nodesetval ? xmlXPathNodeSetGetLength(result->nodesetval) : 0);
   buffer_putnlflush(buffer_2);
   return result;
@@ -760,9 +760,9 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
  */
 void
 node_print(xmlNode* node) {
-  buffer_putm(buffer_1, "<", node->name, NULL);
+  buffer_putm(buffer_1, "<", node->name);
   print_element_attrs(node);
-  buffer_putm(buffer_1, ">", NULL);
+  buffer_putm(buffer_1, ">");
   buffer_putnlflush(buffer_1);
 }
 /**
@@ -826,13 +826,13 @@ print_element_name(xmlNode* a_node) {
 
   if(str_diff(name, "eagle") && str_diff(name, "drawing")) {
 
-    buffer_putm(buffer_1, a_node->parent ? "/" : "", name, NULL);
+    buffer_putm(buffer_1, a_node->parent ? "/" : "", name);
 
     if(!(name = NODE_PROPERTY(a_node, "name")))
       return;
 
     if(str_len(name))
-      buffer_putm(buffer_1, "[@name='", name, "']", NULL);
+      buffer_putm(buffer_1, "[@name='", name, "']");
   }
 }
 
@@ -847,7 +847,7 @@ print_attrs(xmlNode* a) {
 
   for(; a; a = a->next) {
     char* v = NODE_CONTENT(a);
-    buffer_putm(buffer_1, " ", NODE_NAME(a), str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
+    buffer_putm(buffer_1, " ", NODE_NAME(a), str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"");
   }
 }
 
@@ -869,7 +869,7 @@ print_element_content(xmlNode* node) {
       s = "";
 
     if(str_len(s))
-      buffer_putm(buffer_1, " \"", s, "\"", NULL);
+      buffer_putm(buffer_1, " \"", s, "\"");
   }
 }
 
@@ -902,19 +902,19 @@ print_element_children(xmlNode* a_node) {
 //  int i = 0;
 //  TUPLE* tuple = NULL;
 //  tuple = db->tuple;
-//  buffer_putm(buffer_1, name, ": ", NULL);
+//  buffer_putm(buffer_1, name, ": ");
 
 //  for(i = 0; i < db->bucket_size; i++) {
 //    switch(tuple->data_type) {
 //    case HMAP_DATA_TYPE_CHARS: {
-//      buffer_putm(buffer_1, " ", tuple->key, "=", tuple->data, NULL);
+//      buffer_putm(buffer_1, " ", tuple->key, "=", tuple->data);
 //      buffer_putnlflush(buffer_1);
 //      break;
 //    }
 //    case HMAP_DATA_TYPE_DOUBLE: {
 //      char dbl[100];
 //      fmt_double(dbl, *(double*)tuple->data, sizeof(dbl), -1);
-//      buffer_putm(buffer_1, " ", tuple->key, "=", dbl, NULL);
+//      buffer_putm(buffer_1, " ", tuple->key, "=", dbl);
 //      buffer_putnlflush(buffer_1);
 //      break;
 //    }

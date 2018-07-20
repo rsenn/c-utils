@@ -84,4 +84,8 @@ SOURCES = eagle-gen-cmds.c lib/umult64.c lib/array/array_catb.c lib/array/array_
     lib/buffer/buffer_putspace.c \
     lib/str/str_ndup.c \
     lib/xml/xml_newnode.c \
-    lib/xml/xml_read.c
+    lib/xml/xml_read.c \
+    lib/byte/byte_equal.c \
+    lib/hmap/hmap_set_chars.c \
+    lib/hmap/hmap_set_stralloc.c \
+    lib/str/str_dup.c

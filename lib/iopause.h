@@ -18,7 +18,7 @@ typedef struct pollfd iopause_fd;
 #define IOPAUSE_READ POLLIN
 #define IOPAUSE_WRITE POLLOUT
 
-#include "taia.h"
+#include "lib/taia.h"
 
 extern void iopause(iopause_fd *,unsigned int,struct taia *,struct taia *);
 
@@ -35,7 +35,7 @@ typedef struct {
 #define IOPAUSE_READ 1
 #define IOPAUSE_WRITE 4
 
-#include "taia.h"
+#include "lib/taia.h"
 
 extern void iopause(iopause_fd *,unsigned int,struct taia *,struct taia *);
 

@@ -4,8 +4,8 @@
 
 /* http://cr.yp.to/lib/io.html */
 
-#include "uint64.h"
-#include "taia.h"
+#include "lib/uint64.h"
+#include "lib/taia.h"
 
 #ifdef __cplusplus
 extern "C" {

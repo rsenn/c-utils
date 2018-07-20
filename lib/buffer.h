@@ -8,8 +8,8 @@
 #include <sys/types.h>
 /* for str_len */
 #include <string.h>
-#include "uint64.h"
-#include "str.h"
+#include "lib/uint64.h"
+#include "lib/str.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,7 +71,7 @@ int buffer_putsflush(buffer* b, const char* x);
 /* as a little gcc-specific hack,  if somebody calls buffer_puts with a
  * constant string,  where we know its length at compile-time,  call
  * buffer_put with the known length instead */
-#define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, str_len(s)) : buffer_puts(b, s))
+//buffer_puts#define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, str_len(s)) : buffer_puts(b, s))
 #define buffer_putsflush(b, s) (__builtin_constant_p(s) ? buffer_putflush(b, s, str_len(s)) : buffer_putsflush(b, s))
 #endif
 
@@ -190,6 +190,9 @@ void buffer_dump(buffer *out,  buffer *b);
 int buffer_putc(buffer *b,  char c);
 int buffer_putuint64(buffer *b,  uint64 i);
 int buffer_putnspace(buffer *b,  int n);
+
+int buffer_putptr(buffer *b, void *ptr);
+int buffer_putulong0(buffer *b, unsigned long l, int pad);
 
 #ifdef __cplusplus
 }

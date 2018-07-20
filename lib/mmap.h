@@ -3,7 +3,7 @@
 #define MMAP_H
 
 #include <sys/types.h>
-#include "uint64.h"
+#include "lib/uint64.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,7 @@
 #ifndef _DIR_INTERNAL_H__
 #define _DIR_INTERNAL_H__
 
-#include "dir.h"
+#include "lib/dir.h"
 
 #define _POSIX_ 1
 

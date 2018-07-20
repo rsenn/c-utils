@@ -113,12 +113,12 @@ main(int argc, char* argv[]) {
 
     buffer_puts(buffer_1, "EXPORTS\n");
     (void)dll_name;
-    /* buffer_putm(buffer_1, "LIBRARY ", dll_name, "\n", NULL); */
+    /* buffer_putm(buffer_1, "LIBRARY ", dll_name, "\n"); */
 
     for(i = 0; i < nexp; i++) {
       uint32 name_rva;
       uint32_unpack(erva + name_rvas + i * 4, &name_rva);
-      buffer_putm(buffer_1, "  ", erva + name_rva, " @ ", NULL);
+      buffer_putm(buffer_1, "  ", erva + name_rva, " @ ");
       buffer_putulong(buffer_1, 1 + i);
       buffer_putnlflush(buffer_1);
     }

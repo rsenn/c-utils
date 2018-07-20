@@ -4,12 +4,12 @@
 
 xmlnode*
 xml_newnode(xmlnodeid type) {
-	xmlnode* ret;
+    xmlnode* ret;
 
-	if((ret = malloc(sizeof(xmlnode)))) {
-		byte_zero(ret, sizeof(xmlnode));
-		ret->type = type;
-	}
+    if((ret = malloc(sizeof(xmlnode)))) {
+        byte_zero(ret, sizeof(xmlnode));
+        ret->type = type;
+    }
 
-	return ret;
+    return ret;
 }

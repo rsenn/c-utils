@@ -1,5 +1,5 @@
-#include "cbmap.h"
-#include "cbmap/alloc.h"
+#include "lib/cbmap.h"
+#include "lib/cbmap/alloc.h"
 #include <string.h>
 
 /** A pair of allocation and deallocation functions */

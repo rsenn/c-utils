@@ -3,7 +3,7 @@
 #define ARRAY_H
 
 #include <stddef.h>
-#include "uint64.h"
+#include "lib/uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,6 +43,7 @@ void array_chop(array* x,uint64 membersize,uint64 members);
 
 #define array_failed(x) (array_bytes(x)==-1)
 #define array_unallocated(x) (array_bytes(x)==0)
+
 
 #ifdef __cplusplus
 }

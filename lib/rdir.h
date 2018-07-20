@@ -1,8 +1,8 @@
 #ifndef _RDIR_H__
 #define _RDIR_H__
 
-#include "dir.h"
-#include "stralloc.h"
+#include "lib/dir.h"
+#include "lib/stralloc.h"
 
 #ifdef __cplusplus
 extern "C" {

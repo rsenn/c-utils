@@ -4,7 +4,7 @@
 #include <string.h>
 
 int
-hmap_search(HMAP_DB* hmap_db, void* key, int k_len, TUPLE** data) {
+hmap_search(HMAP_DB* hmap_db, void* key, size_t k_len, TUPLE** data) {
 
   VALIDATE_DB(hmap_db, key, k_len);
 

@@ -10,7 +10,7 @@ hmap_print(HMAP_DB* my_hmap_db) {
       case HMAP_DATA_TYPE_INT: printf("index[%d][%p] key[%s], data[%d]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_int); break;
       case HMAP_DATA_TYPE_UINT: printf("index[%d][%p] key[%s], data[%u]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_uint); break;
       case HMAP_DATA_TYPE_INT64: printf("index[%d][%p] key[%s], data[%ld]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_int64); break;
-      case HMAP_DATA_TYPE_UNIT64: printf("index[%d][%p] key[%s], data[%lu]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_uint64); break;
+      case HMAP_DATA_TYPE_UINT64: printf("index[%d][%p] key[%s], data[%lu]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_uint64); break;
       case HMAP_DATA_TYPE_DOUBLE: printf("index[%d][%p] key[%s], data[%f]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_double); break;
       case HMAP_DATA_TYPE_CHARS: printf("index[%d][%p] key[%s], data[%s]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_chars); break;
       case HMAP_DATA_TYPE_CUSTOM: printf("index[%d][%p] key[%s], data[%p]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_custom); break;

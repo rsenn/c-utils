@@ -181,6 +181,16 @@ int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*)
 void buffer_fromsa(buffer* b, const stralloc* sa);
 #endif
 
+#define stralloc_begin(sa) ((sa)->s)
+#define stralloc_end(sa) ((sa)->s + (sa)->len)
+#define stralloc_iterator_increment(it) (++(it))
+#define stralloc_iterator_decrement(it) (--(it))
+#define stralloc_iterator_dereference(it_ptr) (*(*(it_ptr)))
+#define stralloc_iterator_distance(it1, it2) ((it2) - (it1))
+#define stralloc_iterator_equal(it1, it2) ((it1) == (it2))
+#define stralloc_is_last(sa, ptr) ((sa)->len > 0 && ((sa)->s + (sa)->len - 1) == (ptr))
+
+
 #ifdef __cplusplus
 }
 #endif

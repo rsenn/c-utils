@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cb.h"
+#include "lib/cb.h"
 
 /* see http://cr.yp.to/cb.html */
 struct critbit_node {

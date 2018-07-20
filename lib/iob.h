@@ -13,8 +13,8 @@
  * frames as possible.  On Linux it will also use the TCP_CORK socket
  * option. */
 
-#include "io.h"
-#include "array.h"
+#include "lib/io.h"
+#include "lib/array.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -4,8 +4,8 @@
 
 /* Times with 1 attosecond precision */
 
-#include "tai.h"
-#include "uint32.h"
+#include "lib/tai.h"
+#include "lib/uint32.h"
 
 #ifdef __cplusplus
 extern "C" {

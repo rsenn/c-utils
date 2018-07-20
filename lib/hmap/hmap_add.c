@@ -3,13 +3,13 @@
 #include <string.h>
 
 int
-hmap_add(HMAP_DB** hmap_db, void* key, int k_len, int dup_flag, int data_type, ...) {
+hmap_add(HMAP_DB** hmap_db, void* key, size_t k_len, int dup_flag, int data_type, ...) {
 
   VALIDATE_DB(*hmap_db, key, k_len);
 
   TUPLE *new_tuple = NULL, *ptr_tuple = NULL, *root_tuple = NULL;
   int r = 0;
-  int d_len = 0;
+  size_t d_len = 0;
   char* data = NULL;
   va_list args;
 
@@ -32,7 +32,7 @@ hmap_add(HMAP_DB** hmap_db, void* key, int k_len, int dup_flag, int data_type, .
     if(root_tuple->key_len == 0) { /* Reuse record */
       new_tuple = root_tuple;
 
-      HMAP_DEBUG("Primary :> ");
+      HMAP_DUMP("Primary :> ");
       HMAP_SET_DATA();
 
       memcpy(new_tuple->key, key, k_len);
@@ -54,7 +54,7 @@ hmap_add(HMAP_DB** hmap_db, void* key, int k_len, int dup_flag, int data_type, .
       if(new_tuple == NULL) {
         return HMAP_ALLOCATED_ERROR;
       }
-      HMAP_DEBUG("Secondary :> ");
+      HMAP_DUMP("Secondary :> ");
       HMAP_SET_DATA();
 
       memcpy(new_tuple->key, key, k_len);

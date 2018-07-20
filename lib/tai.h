@@ -4,7 +4,7 @@
 
 /* Times with 1 second precision */
 
-#include "uint64.h"
+#include "lib/uint64.h"
 
 #ifdef __cplusplus
 extern "C" {

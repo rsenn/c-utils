@@ -9,7 +9,7 @@
  * - the compiler supports it via __sync_val_compare_and_swap
  */
 
-#include "uint64.h"
+#include "lib/uint64.h"
 #include <stddef.h>
 #ifdef _WIN32
 #include <windows.h>

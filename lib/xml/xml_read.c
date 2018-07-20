@@ -1,12 +1,18 @@
 #include "../xml.h"
 #include "../buffer.h"
 #include "../stralloc.h"
+#include "../byte.h"
 #include <ctype.h>
 
 void
 xml_read(xmlreader* r, buffer* b, xml_read_fn* fn) {
   ssize_t n;
+  byte_zero(r, sizeof(xmlreader));
+
   r->b = b;
+  r->ptr = &r->doc;
+
+  hmap_init(1024, &r->attrmap);
 
   while((n = buffer_skip_until(r->b, "<", 1)) > 0) {
     char ch;
@@ -14,6 +20,7 @@ xml_read(xmlreader* r, buffer* b, xml_read_fn* fn) {
 
     stralloc sa;
     stralloc_init(&sa);
+    r->self_closing = r->closing = 0;
 
     s = buffer_peek(r->b);
 
@@ -50,12 +57,14 @@ xml_read(xmlreader* r, buffer* b, xml_read_fn* fn) {
 
     ch = *buffer_peek(r->b);
 
+
     //    if(ch != '>' && ch != '/') {
 
     while(isalpha(ch)) {
       stralloc attr, val;
       stralloc_init(&attr);
       stralloc_init(&val);
+
 
       if((n = buffer_get_token_sa(r->b, &attr, "=", 1)) < 0)
         break;
@@ -93,12 +102,14 @@ xml_read(xmlreader* r, buffer* b, xml_read_fn* fn) {
       buffer_puts(buffer_1, "\"");
       //      buffer_putnlflush(buffer_1);
 
-      if(!fn(r, XML_NODE_ATTRIBUTE, &attr, &val))
+      hmap_set_stralloc(&r->attrmap, &attr, &val);
+
+      if(!fn(r, XML_NODE_ATTRIBUTE, &attr, &val, NULL))
         return;
     }
 
     if(sa.s[0] != '/') {
-      if(sa.s[sa.len - 1] == '/' || ch == '/') {
+      if(sa.s[0] == '?' || sa.s[sa.len - 1] == '/' || ch == '/') {
         r->self_closing = 1;
       }
       if(r->self_closing)
@@ -109,8 +120,17 @@ xml_read(xmlreader* r, buffer* b, xml_read_fn* fn) {
     buffer_puts(buffer_1, (!r->closing && r->self_closing) ? "/>" : ">");
     buffer_putnlflush(buffer_1);
 
-    if(!fn(r, XML_NODE_ELEMENT, &sa, NULL))
+
+    if(!fn(r, XML_NODE_ELEMENT, &sa, NULL, &r->attrmap))
       return;
+
+//    hmap_truncate(&r->attrmap);
+    if(r->attrmap) {
+      hmap_destroy(&r->attrmap);
+      r->attrmap = NULL;
+    }
+
+    hmap_init(1024, &r->attrmap);
 
     if(s[sa.len] != '>') {
       if(buffer_skip_until(r->b, ">", 1) <= 0)
