@@ -32,18 +32,19 @@ typedef struct xmlreader {
   HMAP_DB *attrmap;
 } xmlreader;
 
-typedef int(xml_read_fn)(xmlreader *r, xmlnodeid id, stralloc *name,
+typedef int(xml_read_callback_fn)(xmlreader *r, xmlnodeid id, stralloc *name,
                          stralloc *value, HMAP_DB **attrs);
 
 xmlnode *xml_attrnode(const char *name, size_t name_len, const char *value,
                       size_t value_len);
 void xml_dump(xmlnode *node, buffer *b);
 xmlnode *xml_newnode(xmlnodeid type);
-void xml_read_callback(xmlreader *r,  xml_read_fn *fn);
+void xml_read_callback(xmlreader *r,  xml_read_callback_fn *fn);
 xmlnode *xml_read_tree(buffer *b);
 xmlnode *xml_textnode(const char *text, size_t len);
 int xml_path(xmlnode *node, stralloc *out);
 void xml_free(xmlnode *node);
 void xml_dump_attributes(xmlnode *node, buffer *b, const char *sep, const char *eq, const char *quot);
+void xml_reader_init(xmlreader *r, buffer *b);
 
 #endif /* LIB_XML_H_ */

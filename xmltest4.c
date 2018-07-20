@@ -48,11 +48,12 @@ int
 main() {
   buffer_mmapprivate(&infile, "../dirlist/test.xml");
 
-  textbuf_init(&b, &infile, 1024);
+  xmlnode* doc = xml_read_tree(&infile);
+//  textbuf_init(&b, &infile, 1024);
 
-  assert(is_textbuf(&b));
+//  assert(is_textbuf(&b));
 
-  xmlnode* doc = xml_read_tree(&b);
+//  xmlnode* doc = xml_read_tree(&b);
 
   xml_print(doc);
   xml_free(doc);

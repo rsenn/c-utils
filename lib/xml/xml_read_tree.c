@@ -13,8 +13,7 @@ xml_unescape(const stralloc* in, stralloc* out) {
 }
 
 static int
-xml_read_node(xmlreader *reader, xmlnodeid id,
-              stralloc *name, stralloc *value, HMAP_DB **attrs) {
+xml_read_node(xmlreader *reader, xmlnodeid id, stralloc *name, stralloc *value, HMAP_DB **attrs) {
   switch(id) {
     case XML_NODE_ATTRIBUTE: {
       break;
@@ -64,7 +63,6 @@ xml_read_node(xmlreader *reader, xmlnodeid id,
         *attrs = NULL;
 
 
-
         buffer_putlong(buffer_1, textbuf_line(&reader->b));
         buffer_puts(buffer_1, ":");
         buffer_putlong(buffer_1, textbuf_column(&reader->b));
@@ -82,8 +80,7 @@ xml_read_node(xmlreader *reader, xmlnodeid id,
 xmlnode*
 xml_read_tree(buffer *b) {
   xmlreader r;
-  textbuf_init(&r.b, b, 1024);
-
+  xml_reader_init(&r, b);
 
   xml_read_callback(&r, xml_read_node);
   return r.doc;

@@ -28,10 +28,8 @@ putsa(const char* name, stralloc* sa) {
 }
 
 void
-xml_read_callback(xmlreader* r, xml_read_fn* fn) {
+xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
   ssize_t n;
-  byte_zero(r, sizeof(xmlreader));
-  r->ptr = &r->doc;
   hmap_init(1024, &r->attrmap);
   while((n = buffer_skip_until(&r->b, "<", 1)) > 0) {
     const char* s;
@@ -78,6 +76,7 @@ xml_read_callback(xmlreader* r, xml_read_fn* fn) {
       buffer_skipc(&r->b);
     }
     buffer_skipspace(&r->b);
+
     if(*buffer_peek(&r->b) == '>') buffer_skipc(&r->b);
     if(!fn(r, XML_NODE_ELEMENT, &sa, NULL, &r->attrmap)) return;
     if(r->attrmap) {
