@@ -2,11 +2,14 @@
 
 static int
 xml_path_out(xmlnode* node, stralloc* out) {
+  size_t n = 0;
   if(node->parent) {
-    xml_path_out(node->parent, out);
+    n += xml_path_out(node->parent, out);
   }
+  ++n;
   stralloc_catc(out, '/');
   stralloc_cats(out, node->type == XML_NODE_TEXT ? "#text" : node->name);
+  return n;
 }
 
 int

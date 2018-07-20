@@ -42,21 +42,31 @@ xml_read_callback(xmlreader* r, buffer* b, xml_read_fn* fn) {
     stralloc sa;
     stralloc_init(&sa);
     r->self_closing = r->closing = 0;
+    
     s = buffer_peek(r->b);
+
+    if(*s == '/') {
+      r->closing = 1;
+      buffer_skipc(r->b);
+    }
 
     if((n = buffer_gettok_sa(r->b, &sa, " \t\r\v/>", 6)) < 0)
       return;
+   
 
+    s = buffer_peek(r->b);
 
-    if(sa.s[0] == '/') {
-      r->closing = 1;
-      if((n = buffer_gettok_sa(r->b, &sa, ">", 1)) < 0)
-        return;
-    } else {
+    if(*s == '/') {
+      r->self_closing = 1;
       r->closing = 0;
+      buffer_skipc(r->b);
+//      if((n = buffer_gettok_sa(r->b, &sa, ">", 1)) < 0)
+//        return;
     }
 
     s = buffer_peek(r->b);
+    if(*s == '>')
+      buffer_skipc(r->b);
 
 
 //    if(sa.len > 0 && sa.s[sa.len - 1] == '>') {
