@@ -2,7 +2,7 @@
 
 ssize_t
 textbuf_read(intptr_t fd, void* buf, size_t n, void* cookie) {
-  textbuf* tb = cookie;
+  textbuf* tb = (void*)fd;
   char* x = buf;
   ssize_t r = buffer_get(tb->source, buf, n);
 

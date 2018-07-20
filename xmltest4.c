@@ -76,10 +76,10 @@ int
 main() {
   buffer_mmapprivate(&infile, "../dirlist/test.xml");
 
-  buffer_init(&linebuf_inst.b, &linebuf_read, 0, linebuf_inst.buf, sizeof(linebuf_inst.buf));
-  linebuf_inst.b.cookie = &infile;
+  textbuf text;
+  textbuf_init(&text, &infile);
+  xmlnode* doc = xml_read_tree(&text.b);
 
-  xmlnode* doc = xml_read_tree(&linebuf_inst.b);
   xml_print(doc);
   xml_free(doc);
 }

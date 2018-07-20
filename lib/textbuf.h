@@ -8,6 +8,7 @@ typedef struct {
   unsigned line;
   unsigned col;
   buffer* source;
+  char buf[1024];
 } textbuf;
 
 void textbuf_init(textbuf *tb, buffer *src);
