@@ -802,7 +802,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)xmltest4$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)xmltest4.o $(BUILDDIR)xml.a $(BUILDDIR)charbuf.a $(BUILDDIR)textbuf.a $(BUILDDIR)hmap.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a $(BUILDDIR)fmt.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
+$(BUILDDIR)xmltest4$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)xmltest4.o $(BUILDDIR)xml.a $(BUILDDIR)array.a $(BUILDDIR)charbuf.a $(BUILDDIR)textbuf.a $(BUILDDIR)hmap.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a $(BUILDDIR)fmt.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
