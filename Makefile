@@ -480,7 +480,8 @@ endif
 
 WARNINGS += no-unused-function
 
-CFLAGS += $(patsubst %,-W%,$(WARNINGS))
+
+#CFLAGS = $(patsubst %,-W%,$(WARNINGS))
 CPPFLAGS += $(patsubst %,-D%,$(DEFS))
 
 LIB_SRC = $(wildcard *_*.c umult*.c)
@@ -582,17 +583,41 @@ DEFS += HAVE_POSIX_MEMALIGN=1
 endif
 
 
-CPPFLAGS += $(DEFS:%=-D%)
-CFLAGS += $(DEFS:%=-D%)
-
-$(info DEFS: $(DEFS))
+#CPPFLAGS += $(DEFS:%=-D%)
+#CFLAGS += $(DEFS:%=-D%)
+#
+#$(info DEFS: $(DEFS))
 
 ifneq ($(SYSROOT),)
 CC += --sysroot="$(SYSROOT)"
 endif
 
-all: \
-   $(BUILDDIR) $(PROGRAMS)
+
+FLAGS := $(sort $(patsubst %,-W%,$(WARNINGS)) $(patsubst %,-D%,$(DEFS)) $(CPPFLAGS))
+FLAGS_FILE := $(patsubst %/,%,$(dir $(patsubst %/,%,$(BUILDDIR))))/Debug.flags
+
+SPACE := $(DUMMY) $(DUMMY)
+define NL
+
+
+endef
+
+CFLAGS += @$(FLAGS_FILE)
+
+$(info CFLAGS: $(CFLAGS))
+$(info CXXFLAGS: $(CXXFLAGS))
+$(info LDFLAGS: $(LDFLAGS))
+$(info EXTRA_CPPFLAGS: $(EXTRA_CPPFLAGS))
+$(info CC: $(CC))
+$(info COMPILE: $(COMPILE))
+$(info CROSS_COMPILE: $(CROSS_COMPILE))
+
+all: $(BUILDDIR) $(FLAGS_FILE) \
+   $(PROGRAMS)
+
+$(FLAGS_FILE): $(BUILDDIR)
+	$(file >$@,$(subst $(SPACE),$(NL),$(FLAGS)))
+
 all-release:
 	$(MAKE) DEBUG=0 all
 
@@ -924,7 +949,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
-	$(CROSS_COMPILE)$(CXX) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $@ $<
+	$(CROSS_COMPILE)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $@ $<
 
 $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser-cpp.o
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -934,7 +959,7 @@ endif
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
-	$(CROSS_COMPILE)$(CXX) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o  $(BUILDDIR)$(patsubst %.cpp,%.o,$(notdir $<))  $<
+	$(CROSS_COMPILE)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o  $(BUILDDIR)$(patsubst %.cpp,%.o,$(notdir $<))  $<
 
 $(BUILDDIR)kbd-adjacency$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -944,31 +969,31 @@ endif
 endif
 ifeq ($(BUILDDIR),)
 .c.o:
-	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
 
 %.o: %.c
-	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
 
 .cpp.o:
-	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<
 
 %.o: %.cpp
-	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<
 else
 .c.o:
-	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$@ $<
 
 $(BUILDDIR)%.o: lib/%.c
-	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
 
 $(BUILDDIR)%.o: %.c
-	$(CROSS_COMPILE)$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
 
 .cpp.o:
-	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<
 
 $(BUILDDIR)%.o: %.cpp
-	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
+	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CXXFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
 endif
 
 clean:
@@ -1005,7 +1030,7 @@ inst-slackpkg: slackpkg
 
 #$(PROGRAM_OBJECTS): CFLAGS += -Ilib
 #$(PROGRAM_OBJECTS): CPPFLAGS += -Ilib
-$(PROGRAMS): CPPFLAGS += -I.
+$(PROGRAMS):  #CPPFLAGS += -I.
 #$(PROGRAMS): CPPFLAGS += -Ilib
 
 $(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
