@@ -31,8 +31,7 @@ buffer_dump(buffer* out, buffer* b) {
 
   if(b->p > 6) { n = b->p; buffer_puts(out, "..."); } else n = 0;
   buffer_puts(out, "\"");
-  b->x[32] = '\0';
-  buffer_puts_escaped(out, &b->x[n]);
+  buffer_put_escaped(out, &b->x[n], 32);
   buffer_puts(out, "\"");
 
   buffer_puts(out, NONE ", " YELLOW "fd" CYAN "=" NONE);

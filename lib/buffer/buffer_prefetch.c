@@ -1,10 +1,8 @@
 #include "../buffer.h"
 #include "../byte.h"
 
-extern int
-buffer_dummyread();
-extern ssize_t
-buffer_stubborn_read(buffer_op_proto*, int fd, void* buf, size_t len, void*);
+extern int buffer_dummyread();
+extern ssize_t buffer_stubborn_read(buffer_op_proto*, int fd, void* buf, size_t len, void*);
 
 int
 buffer_prefetch(buffer* b, size_t n) {

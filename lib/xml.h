@@ -23,7 +23,7 @@ typedef struct xmlnode {
 } xmlnode;
 
 typedef struct xmlreader {
-  buffer b;
+  buffer* b;
   xmlnode *doc;
   xmlnode *parent;
   xmlnode **ptr;
@@ -52,7 +52,7 @@ size_t xml_escape(const char *s, size_t n, stralloc *out);
 void xml_debug(xmlnode *node, buffer *b);
 xmlnode *xml_find(xmlnode *node, const char *tag);
 
-#define XML_READ_BUFFER 64
+#define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48
 
 #endif /* LIB_XML_H_ */
