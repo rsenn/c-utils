@@ -55,8 +55,12 @@ main(int argc, char* argv[1]) {
 
 //  xml_print(doc);
 
-  xml_debug(doc, buffer_1);
-  xml_print(doc, buffer_1);
+  //xml_debug(doc, buffer_1);
+  //xml_print(doc, buffer_1);
+
+  xmlnode* n = xml_find(doc, "signals");
+
+  xml_print(n, buffer_1);
 
   xml_free(doc);
 

@@ -50,5 +50,6 @@ void xml_print_attributes(xmlnode *node, buffer *b, const char *sep, const char 
 void xml_reader_init(xmlreader *r, buffer *b);
 size_t xml_escape(const char *s, size_t n, stralloc *out);
 void xml_debug(xmlnode *node, buffer *b);
+xmlnode *xml_find(xmlnode *node, const char *tag);
 
 #endif /* LIB_XML_H_ */

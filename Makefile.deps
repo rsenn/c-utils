@@ -1020,17 +1020,19 @@ $(BUILDDIR)xml_attrnode.o: lib/xml/xml_attrnode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_debug.o: lib/xml/xml_debug.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_print.o: lib/xml/xml_print.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_print_attributes.o: lib/xml/xml_print_attributes.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_escape.o: lib/xml/xml_escape.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_find.o: lib/xml/xml_find.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_free.o: lib/xml/xml_free.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_newnode.o: lib/xml/xml_newnode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_path.o: lib/xml/xml_path.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_print.o: lib/xml/xml_print.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_print_attributes.o: lib/xml/xml_print_attributes.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_reader_init.o: lib/xml/xml_reader_init.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
