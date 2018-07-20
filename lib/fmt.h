@@ -131,9 +131,11 @@ unsigned int fmt_hexb(void *out, const void *d, register unsigned int len);
 size_t fmt_xmlescape(char *dest, unsigned int ch);
 size_t fmt_escapecharc(char *dest, unsigned int ch);
 
+size_t fmt_escapecharshell(char *dest, uint32 ch);
+char fmt_tohex(char c);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-char fmt_tohex(char c);

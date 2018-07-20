@@ -210,6 +210,8 @@ int buffer_skip_pred(buffer *b, int (*pred)(int));
 
 int buffer_puts_escaped(buffer *b, const char *x);
 
+int buffer_freshen(buffer *b);
+
 #ifdef __cplusplus
 }
 #endif

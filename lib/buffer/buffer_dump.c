@@ -2,39 +2,50 @@
 #include "../fmt.h"
 #include "../io_internal.h"
 
-extern ssize_t
-buffer_dummyreadmmap();
-extern unsigned long
-stralloc_write();
+extern ssize_t buffer_dummyreadmmap();
+extern unsigned long stralloc_write();
 
 void
 buffer_dump(buffer* out, buffer* b) {
   char xlong[FMT_LONG + FMT_LONG + FMT_LONG];
   unsigned long n;
-  //buffer_puts(out, "[ x=0x");
-  //buffer_putxlong(out, (unsigned long)out->x);
+  // buffer_puts(out, "[ x=0x");
+  // buffer_putxlong(out, (unsigned long)out->x);
 
-  buffer_puts(out, "[ x=\"");
+#define RED "\033[1;31m"
+#define GREEN "\033[1;32m"
+#define YELLOW "\033[1;33m"
+#define CYAN "\033[1;36m"
+#define MAGENTA "\033[1;35m"
+#define NONE "\033[0m"
 
-  buffer_puts(out, b->x);
 
+  buffer_puts(out, "[ ");
+  buffer_puts(out, YELLOW "p" CYAN "=" MAGENTA);
+  buffer_putulong0(out, b->p, 3);
+  buffer_puts(out, NONE ", " YELLOW "n" CYAN "=" MAGENTA);
+  buffer_putulong0(out, b->n, 3);
+  buffer_puts(out, NONE ", " YELLOW "a" CYAN "=" MAGENTA);
+  buffer_putulong0(out, b->a, 3);
+  buffer_puts(out, NONE ", " YELLOW "x" CYAN "@" YELLOW "p" CYAN "=" NONE);
 
-  buffer_puts(out, "\",fd=");
+  if(b->p > 6) { n = b->p; buffer_puts(out, "..."); } else n = 0;
+  buffer_puts(out, "\"");
+  b->x[32] = '\0';
+  buffer_puts_escaped(out, &b->x[n]);
+  buffer_puts(out, "\"");
+
+  buffer_puts(out, NONE ", " YELLOW "fd" CYAN "=" NONE);
   if(b->op == (void*)stralloc_write) {
     buffer_puts(out, "*sa");
   } else {
     n = fmt_long(xlong, b->fd);
-    buffer_putnspace(out, 3 - n);
+   // buffer_putnspace(out, 3 - n);
     buffer_put(out, xlong, n);
   }
-  buffer_putspace(out);
-  buffer_puts(out, "p=");
-  buffer_putulong(out, b->p);
-  buffer_puts(out, ",n=");
-  buffer_putulong(out, b->n);
-  buffer_puts(out, ",a=");
-  buffer_putulong(out, b->a);
-  buffer_putspace(out);
+  buffer_puts(out, ", op=");
+  //buffer_putspace(out);
+
   if(b->op == (void*)read)
     buffer_puts(out, "<read>  ");
   else if(b->op == (void*)write)
@@ -46,8 +57,8 @@ buffer_dump(buffer* out, buffer* b) {
   else if(b->op == NULL)
     buffer_puts(out, "NULL    ");
   else {
-    n = fmt_xlong(xlong, (long long)(intptr_t)b->op);
-    buffer_put(out, xlong, n);
+    //n = fmt_xlong(xlong, (long long)(intptr_t)b->op);
+    buffer_putptr(out, b->op); //xlong, n);
   }
   buffer_puts(out, " ]");
   buffer_putnlflush(out);

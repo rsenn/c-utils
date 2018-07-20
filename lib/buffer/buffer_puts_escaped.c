@@ -6,7 +6,8 @@
 
 static int
 escaped_pred(int c) {
-  if(isalpha(c) || isdigit(c) || ispunct(c) || c == ' ') return 0;
+  if(c == '\'' || c == '"' || c == '$' || c < 0x20) return 1;
+  if(isalpha(c) || isdigit(c) || ispunct(c)  || c == ' ') return 0;
   return 1;
 }
 
@@ -15,7 +16,7 @@ buffer_puts_escaped(buffer* b, const char* x) {
   int ret;
   stralloc e;
   stralloc_init(&e);
-  byte_fmt_pred(x, str_len(x), &e, &fmt_escapecharc, &escaped_pred);
+  byte_fmt_pred(x, str_len(x), &e, &fmt_escapecharshell, &escaped_pred);
   ret = buffer_putsa(b, &e);
   stralloc_free(&e);
   return ret;
