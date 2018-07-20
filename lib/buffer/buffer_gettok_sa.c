@@ -1,12 +1,12 @@
-#include "../stralloc.h"
 #include "../buffer.h"
 #include "../byte.h"
+#include "../stralloc.h"
 #include <errno.h>
 
 int
 buffer_gettok_sa(buffer* b, stralloc* sa, const char* charset, size_t setlen) {
   size_t i;
-  for(i = 0; ; ++i) {
+  for(i = 0;; ++i) {
     char c;
     if(buffer_peekc(b, &c) <= 0)
       return 0;

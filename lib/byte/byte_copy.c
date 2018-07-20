@@ -10,8 +10,7 @@ byte_copy(void* out, size_t len, const void* in) {
   /* gcc 4.3.1 generates wrong code for this, so I'm switching to
    * simpler code */
   size_t i;
-  for(i = 0; i < len; ++i)
-    s[i] = t[i];
+  for(i = 0; i < len; ++i) s[i] = t[i];
 #else
   const char* u = t + len;
   if(len > 127) {
@@ -31,27 +30,7 @@ byte_copy(void* out, size_t len, const void* in) {
       }
   }
   for(;;) {
-    if(t == u) {
-      break;
-    };
-    *s = *t;
-    ++s;
-    ++t;
-    if(t == u) {
-      break;
-    };
-    *s = *t;
-    ++s;
-    ++t;
-    if(t == u) {
-      break;
-    };
-    *s = *t;
-    ++s;
-    ++t;
-    if(t == u) {
-      break;
-    };
+    if(t == u) { break; };
     *s = *t;
     ++s;
     ++t;
