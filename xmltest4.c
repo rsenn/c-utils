@@ -21,26 +21,26 @@ put_str_escaped(buffer* b, const char* str) {
 }
 
 void
-xml_print(xmlnode* n) {
+xml_dump(xmlnode* n, buffer* b) {
   do {
     stralloc path;
     stralloc_init(&path);
 
     xml_path(n, &path);
-    buffer_putsa(buffer_1, &path);
+    buffer_putsa(b, &path);
 
     if(n->type == XML_NODE_TEXT) {
-      buffer_puts(buffer_1, " \"");
-      put_str_escaped(buffer_1, n->name);
-      buffer_puts(buffer_1, "\"");
+      buffer_puts(b, " \"");
+      put_str_escaped(b, n->name);
+      buffer_puts(b, "\"");
 
     } else if(n->type == XML_NODE_ELEMENT) {
-      xml_dump_attributes(n, buffer_1, ", ", ":", "");
+      xml_print_attributes(n, b, ", ", ":", "");
     }
 
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(b);
 
-    if(n->children) xml_print(n->children);
+    if(n->children) xml_dump(n->children, b);
 
   } while((n = n->next));
 }
@@ -56,7 +56,7 @@ main(int argc, char* argv[1]) {
 //  xml_print(doc);
 
   xml_debug(doc, buffer_1);
-  xml_dump(doc, buffer_1);
+  xml_print(doc, buffer_1);
 
   xml_free(doc);
 
