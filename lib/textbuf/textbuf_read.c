@@ -8,9 +8,9 @@ textbuf_read(intptr_t fd, char* x, size_t n) {
   for(ssize_t i = 0; i < r; ++i) {
     if(x[i] == '\n') {
       ++tb->line;
-      tb->col = 0;
+      tb->column = 0;
     } else {
-      ++tb->col;
+      ++tb->column;
     }
   }
   return r;
