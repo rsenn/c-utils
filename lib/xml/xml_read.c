@@ -1,7 +1,7 @@
-#include <ctype.h>
 #include "../xml.h"
-#include "../stralloc.h"
 #include "../buffer.h"
+#include "../stralloc.h"
+#include <ctype.h>
 
 void
 xml_read(xmlreader* r, buffer* b) {
@@ -17,12 +17,12 @@ xml_read(xmlreader* r, buffer* b) {
 
     s = buffer_peek(r->b);
 
-    if((n = buffer_get_token_sa(r->b, &sa, " \t\r\v/>", 6))  < 0)
+    if((n = buffer_get_token_sa(r->b, &sa, " \t\r\v/>", 6)) < 0)
       return;
 
     if(sa.s[0] == '/') {
       r->closing = 1;
-      if((n = buffer_get_token_sa(r->b, &sa, ">", 1))  < 0)
+      if((n = buffer_get_token_sa(r->b, &sa, ">", 1)) < 0)
         return;
     } else {
       r->closing = 0;
@@ -48,7 +48,6 @@ xml_read(xmlreader* r, buffer* b) {
     buffer_puts(buffer_1, "<");
     buffer_putsa(buffer_1, &sa);
 
-
     ch = *buffer_peek(r->b);
 
     //    if(ch != '>' && ch != '/') {
@@ -68,7 +67,8 @@ xml_read(xmlreader* r, buffer* b) {
       ch = *buffer_peek(r->b);
       if(ch == '"') {
         char dummy;
-        if(buffer_getc(r->b, &dummy) < 0) break;
+        if(buffer_getc(r->b, &dummy) < 0)
+          break;
         quoted = 1;
       }
 
@@ -91,7 +91,7 @@ xml_read(xmlreader* r, buffer* b) {
 
       buffer_putsa(buffer_1, &val);
       buffer_puts(buffer_1, "\"");
-//      buffer_putnlflush(buffer_1);
+      //      buffer_putnlflush(buffer_1);
     }
 
     if(sa.s[0] != '/') {
@@ -105,11 +105,9 @@ xml_read(xmlreader* r, buffer* b) {
     buffer_puts(buffer_1, (!r->closing && r->self_closing) ? "/>" : ">");
     buffer_putnlflush(buffer_1);
 
-
     if(s[sa.len] != '>') {
       if(buffer_skip_until(r->b, ">", 1) <= 0)
         break;
     }
-
   }
 }
