@@ -1,10 +1,10 @@
 #include "../str.h"
 
-unsigned int str_copyb(void *p1, const void *p2, register unsigned int max)
-{
-  register unsigned int len;
-  register char *s;
-  register const char *t;
+unsigned int
+str_copyb(void* p1, const void* p2, unsigned int max) {
+  unsigned int len;
+  char* s;
+  const char* t;
   s = p1;
   t = p2;
   len = 0;

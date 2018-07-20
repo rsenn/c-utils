@@ -2,9 +2,9 @@
 
 size_t scan_8int(const char* src, unsigned int* dest) {
   /* make a copy of src so we can return the number of bytes we progressed */
-  register const char *tmp = src;
-  register unsigned int l = 0;
-  register unsigned char c;
+  const char *tmp = src;
+  unsigned int l = 0;
+  unsigned char c;
   /* *tmp - '0' can be negative, but casting to unsigned char makes
    * those cases positive and large; that means we only need one
    * comparison.  This trick is no longer needed on modern compilers,

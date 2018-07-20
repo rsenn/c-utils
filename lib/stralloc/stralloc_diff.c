@@ -5,8 +5,8 @@
 
 extern int
 stralloc_diff(const stralloc* a, const stralloc* b) {
-  register size_t i;
-  register int j;
+  size_t i;
+  int j;
   for(i = 0;; ++i) {
     if(i == a->len)
       return i == b->len ? 0 : -1;

@@ -698,8 +698,6 @@ $(BUILDDIR)stralloc_catlong0.o: lib/stralloc/stralloc_catlong0.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_catm_internal.o: lib/stralloc/stralloc_catm_internal.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_diff.o: lib/stralloc/stralloc_diff.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_diffb.o: lib/stralloc/stralloc_diffb.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_diffs.o: lib/stralloc/stralloc_diffs.c
@@ -772,7 +770,7 @@ $(BUILDDIR)stralloc_zero.o: lib/stralloc/stralloc_zero.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_cats.o: lib/stralloc/stralloc_cats.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_decamelize.o: lib/stralloc/stralloc_decamelize.c
+$(BUILDDIR)stralloc_diff.o: lib/stralloc/stralloc_diff.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_remove.o: lib/stralloc/stralloc_remove.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -799,6 +797,8 @@ $(BUILDDIR)stralloc_copyb.o: lib/stralloc/stralloc_copyb.c
 $(BUILDDIR)stralloc_copys.o: lib/stralloc/stralloc_copys.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_count.o: lib/stralloc/stralloc_count.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_decamelize.o: lib/stralloc/stralloc_decamelize.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)http_get.o: lib/http/http_get.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -979,6 +979,8 @@ $(BUILDDIR)utf8.o: lib/utf8.c
 $(BUILDDIR)xml_attrnode.o: lib/xml/xml_attrnode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_dump.o: lib/xml/xml_dump.c
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_free.o: lib/xml/xml_free.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_newnode.o: lib/xml/xml_newnode.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

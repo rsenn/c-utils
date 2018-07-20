@@ -42,5 +42,6 @@ void xml_read_callback(xmlreader *r, buffer *b, xml_read_fn *fn);
 xmlnode *xml_read_tree(buffer *b);
 xmlnode *xml_textnode(const char *text, size_t len);
 int xml_path(xmlnode *node, stralloc *out);
+void xml_free(xmlnode *node);
 
 #endif /* LIB_XML_H_ */

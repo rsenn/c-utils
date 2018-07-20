@@ -1,8 +1,8 @@
 #include "../byte.h"
 #include "../stralloc.h"
 
-int stralloc_diffb(register const stralloc *sa, const void *d, register unsigned int dlen) {
-  register unsigned int len;
+int stralloc_diffb(const stralloc *sa, const void *d, unsigned int dlen) {
+  unsigned int len;
   int r;
   /*
     get shortest len

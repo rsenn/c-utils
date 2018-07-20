@@ -1,39 +1,45 @@
-#include <time.h>
+#include "../str.h"
 #include <ctype.h>
 #include <string.h>
-#include "../str.h"
+#include <time.h>
 
 #if(defined(__MSYS__) && __MSYS__ == 1)
-#define isblank(c) ((c)==' '||(c)=='\t')
+#define isblank(c) ((c) == ' ' || (c) == '\t')
 #endif
 
-int isleap(int year);
+int
+isleap(int year);
 
-extern const short  __spm [];
+extern const short __spm[];
 
-static const char*  months [12] = {
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-};
+static const char* months[12] = {
+    "January", "February", "March",     "April",   "May",      "June",
+    "July",    "August",   "September", "October", "November", "December"};
 
-static int get_int(const char** s, int max) {
+static int
+get_int(const char** s, int max) {
   int i, j;
   for(i = j = 0; j < max; ++j) {
     if(!isdigit(**s)) {
-      if(j == 0) return -1; else break;
+      if(j == 0)
+        return -1;
+      else
+        break;
     }
-    i = i * 10 +**s - '0';
+    i = i * 10 + **s - '0';
     ++*s;
   }
   return i;
 }
 
-char* str_ptime(const char* s, const char* format, struct tm* tm) {
+char*
+str_ptime(const char* s, const char* format, struct tm* tm) {
   int i, j;
-  register time_t  day;
+  time_t day;
   while(*format) {
     switch(*format) {
-    case ' ': case '\t':
+    case ' ':
+    case '\t':
       /* match zero or more white space in input string */
       while(*s == ' ' || *s == '\t' || *s == '\r' || *s == '\n') ++s;
       ++format;
@@ -41,16 +47,23 @@ char* str_ptime(const char* s, const char* format, struct tm* tm) {
     case '%':
       ++format;
       switch(*format) {
-      case '%': if(*s == '%') ++s; else return 0; break;
-      case 'a': case 'A': /* weekday; we just skip */
+      case '%':
+        if(*s == '%')
+          ++s;
+        else
+          return 0;
+        break;
+      case 'a':
+      case 'A': /* weekday; we just skip */
         for(i = 0; i < 3; ++i)
           if(isalpha(*s)) ++s;
         break;
-      case 'b': case 'B': case 'h':
+      case 'b':
+      case 'B':
+      case 'h':
         for(i = 0; i < 12; ++i) {
           if(strncasecmp(s, months[i], j = str_len(months[i])))
-            if(strncasecmp(s, months[i], j = 3))
-              j = 0;
+            if(strncasecmp(s, months[i], j = 3)) j = 0;
           if(j) { break; };
         }
         if(!j) return 0;
@@ -65,7 +78,8 @@ char* str_ptime(const char* s, const char* format, struct tm* tm) {
         if(i == -1) return 0;
         tm->tm_year = (tm->tm_year % 100) + (i * 100);
         break;
-      case 'd': case 'e':
+      case 'd':
+      case 'e':
         i = get_int(&s, 2);
         if(i == -1 || i > 31) return 0;
         tm->tm_mday = i;
@@ -73,18 +87,20 @@ char* str_ptime(const char* s, const char* format, struct tm* tm) {
       case 'D':
         s = str_ptime(s, "%m/%d/%y", tm);
         break;
-      case 'H': case 'k':
+      case 'H':
+      case 'k':
         i = get_int(&s, 2);
         if(i == -1 || i > 23) return 0;
         tm->tm_hour = i;
         break;
-      case 'I': case 'l':
+      case 'I':
+      case 'l':
         i = get_int(&s, 2);
         if(i == -1 || i > 12) return 0;
         tm->tm_hour = (tm->tm_hour / 12) * 12 + i;
         break;
       case 'j':
-        get_int(&s, 3);	/* not used */
+        get_int(&s, 3); /* not used */
         break;
       case 'm':
         i = get_int(&s, 2);
@@ -96,10 +112,12 @@ char* str_ptime(const char* s, const char* format, struct tm* tm) {
         if(i == -1 || i > 59) return 0;
         tm->tm_min = i;
         break;
-      case 'n': case 't':
+      case 'n':
+      case 't':
         while(isblank(*s)) ++s;
         break;
-      case 'p': case 'P':
+      case 'p':
+      case 'P':
         if(*s == 'p' || *s == 'P') tm->tm_hour = (tm->tm_hour % 12) + 12;
         s += 2;
         break;
@@ -117,7 +135,8 @@ char* str_ptime(const char* s, const char* format, struct tm* tm) {
       case 'T':
         s = str_ptime(s, "%H:%M:%S", tm);
         break;
-      case 'U': case 'W':
+      case 'U':
+      case 'W':
         if(get_int(&s, 2) == -1) return 0;
         break;
       case 'w':
@@ -150,14 +169,16 @@ char* str_ptime(const char* s, const char* format, struct tm* tm) {
       break;
     default:
       if(*s != *format) return 0;
-      ++format; ++s;
+      ++format;
+      ++s;
       break;
     }
   }
 
-  day  = (tm->tm_year - 70) * 365 + (tm->tm_year - 69) / 4;
-  day += tm->tm_yday = __spm [tm->tm_mon] + tm->tm_mday - 1 + (isleap(tm->tm_year + 1900) & (tm->tm_mon > 1));
+  day = (tm->tm_year - 70) * 365 + (tm->tm_year - 69) / 4;
+  day += tm->tm_yday = __spm[tm->tm_mon] + tm->tm_mday - 1 +
+                       (isleap(tm->tm_year + 1900) & (tm->tm_mon > 1));
   tm->tm_wday = (day + 4) % 7;
 
-  return(char*)s;
+  return (char*)s;
 }

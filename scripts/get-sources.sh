@@ -17,7 +17,7 @@ for FILE in $SOURCE_FILES; do
 #    lib/*/*_*.c) MASK=${NAME%%_*}_*.c ;;
 #  esac
 
-  find "$BASEDIR/" -name "$MASK"
+  find "$BASEDIR/" -name "$MASK" -and -not -wholename "*build/*"
 done |sort -u| 
   sed "s|$PWD/||" 
   

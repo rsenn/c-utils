@@ -6,10 +6,10 @@
   otherwise return sa->len
 */
 unsigned int stralloc_findb(const stralloc *sa, const void *what, unsigned int len) {
-  register unsigned int i;
-  register unsigned int sa_len;
-  register unsigned int last;
-  register char *s;
+  unsigned int i;
+  unsigned int sa_len;
+  unsigned int last;
+  char *s;
   sa_len = sa->len;
   if(sa_len < len) return sa_len;
   last = sa_len - len;

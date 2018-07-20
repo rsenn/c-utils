@@ -5,7 +5,7 @@ static inline char tohex(char c) {
 }
 
 size_t fmt_xlong(char *dest, unsigned long i) {
-  register unsigned long len, tmp;
+  unsigned long len, tmp;
   /* first count the number of bytes needed */
   for(len = 1, tmp = i; tmp > 15; ++len) tmp >>= 4;
   if(dest)

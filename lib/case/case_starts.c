@@ -2,10 +2,10 @@
 
 /* str_start returns 1 if the b is a prefix of a, 0 otherwise */
 int case_starts(const char* a, const char* b) {
-  register const char* s = a;
-  register const char* t = b;
+  const char* s = a;
+  const char* t = b;
   for(;;) {
-    register unsigned char x, y;
+    unsigned char x, y;
     if(!*t) return 1;
     x = *s - 'A';
     if(x <= 'Z' - 'A') x += 'a'; else x += 'A';

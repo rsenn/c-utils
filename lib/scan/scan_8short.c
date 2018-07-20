@@ -2,11 +2,11 @@
 
 size_t scan_8short(const char* src, unsigned short* dest) {
   /* make a copy of src so we can return the number of bytes we progressed */
-  register const char *tmp = src;
+  const char *tmp = src;
   /* this is called l because we copy and pasted from 8long, where l
    * stood for "long" */
-  register unsigned short l = 0;
-  register unsigned char c;
+  unsigned short l = 0;
+  unsigned char c;
   /* *tmp - '0' can be negative, but casting to unsigned char makes
    * those cases positive and large; that means we only need one
    * comparison.  This trick is no longer needed on modern compilers,

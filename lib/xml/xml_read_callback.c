@@ -3,9 +3,18 @@
 #include "../xml.h"
 #include <ctype.h>
 
+static int
+is_whitespace(const char* x, size_t n) {
+  for(size_t i = 0; i < n; ++i) {
+    if(!isspace(x[i]))
+      return 0;
+  }
+  return 1;
+}
+
 static void
-putsa(stralloc *sa) {
-  buffer_puts(buffer_1, "sa: ");
+putsa(const char* name, stralloc *sa) {
+  buffer_putm(buffer_1, name, ": ");
 
   for(size_t i = 0; i < sa->len; ++i) {
     if(sa->s[i] == '\r')
@@ -127,8 +136,6 @@ xml_read_callback(xmlreader* r, buffer* b, xml_read_fn* fn) {
         break;
     }
 
-    putsa(&sa);
-
     stralloc_zero(&sa);
 
     if((n = buffer_gettok_sa(r->b, &sa, "<", 1)) < 0)
@@ -137,6 +144,10 @@ xml_read_callback(xmlreader* r, buffer* b, xml_read_fn* fn) {
     if(sa.len > 0 && sa.s[sa.len - 1] == '<')
       sa.len--;
 
-    putsa(&sa);
+    if(!is_whitespace(sa.s, sa.len)) {
+      if(!fn(r, XML_NODE_TEXT, NULL, &sa, NULL))
+        return;
+      //    putsa("text", &sa);
+    }
   }
 }

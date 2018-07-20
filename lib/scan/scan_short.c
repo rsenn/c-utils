@@ -3,9 +3,9 @@
 static const unsigned short maxshort = ((unsigned short) -1) >> 1;
 
 size_t scan_short(const char* src, short* dest) {
-  register const char *tmp;
-  register short l;
-  register unsigned char c;
+  const char *tmp;
+  short l;
+  unsigned char c;
   int neg;
   int ok;
   tmp = src; l = 0; ok = neg = 0;

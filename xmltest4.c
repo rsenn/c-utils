@@ -26,6 +26,7 @@ xml_print(xmlnode* n) {
 
     xml_path(n, &path);
 
+    buffer_puts(buffer_1, "path: ");
     buffer_putsa(buffer_1, &path);
     buffer_putnlflush(buffer_1);
 
@@ -41,4 +42,6 @@ main() {
   buffer_mmapprivate(&input, "../dirlist/test.xml");
   xmlnode* doc = xml_read_tree(&input);
   xml_print(doc);
+
+  xml_free(doc);
 }

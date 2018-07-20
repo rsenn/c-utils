@@ -1,10 +1,10 @@
 #include "../case.h"
 
-int case_diffb(register const void* S, register size_t len, register const void* T) {
-  register unsigned char x;
-  register unsigned char y;
-  register const char* s = (const char*)S;
-  register const char* t = (const char*)T;
+int case_diffb(const void* S, size_t len, const void* T) {
+  unsigned char x;
+  unsigned char y;
+  const char* s = (const char*)S;
+  const char* t = (const char*)T;
 
   while(len > 0) {
     --len;

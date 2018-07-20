@@ -3,9 +3,9 @@
 static const unsigned int maxint = ((unsigned int) - 1) >> 1;
 
 size_t scan_int(const char* src, int* dest) {
-  register const char *tmp;
-  register int l;
-  register unsigned char c;
+  const char *tmp;
+  int l;
+  unsigned char c;
   unsigned int neg;
   int ok;
   tmp = src; l = 0; ok = 0; neg = 0;

@@ -7,6 +7,13 @@ xml_read_node(xmlreader *reader, xmlnodeid id,
     case XML_NODE_ATTRIBUTE: {
       break;
     }
+    case XML_NODE_TEXT: {
+      xmlnode* tnode = xml_textnode(value->s, value->len);
+      tnode->parent = reader->parent;
+      *reader->ptr = tnode;
+      reader->ptr = &tnode->next;
+      break;
+    }
     case XML_NODE_ELEMENT:
     default: {
       if(reader->closing) {
@@ -20,6 +27,7 @@ xml_read_node(xmlreader *reader, xmlnodeid id,
         xmlnode *node = xml_newnode(id);
         stralloc_nul(name);
         node->name = name->s;
+        name->s = NULL;
 
         if(reader->parent)
           node->parent = reader->parent;

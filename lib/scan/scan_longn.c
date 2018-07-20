@@ -3,9 +3,9 @@
 static const unsigned long maxlong = ((unsigned long) -1) >> 1;
 
 size_t scan_longn(const char *src, size_t n, long *dest) {
-  register const char *tmp;
-  register long int l;
-  register unsigned char c;
+  const char *tmp;
+  long int l;
+  unsigned char c;
   unsigned int neg;
   int ok;
   if(!n--) return 0;
