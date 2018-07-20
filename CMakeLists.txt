@@ -19,19 +19,19 @@ include(UsePkgConfig)
 
 
 set(ignored_files
-  "\\.git.*"
-  "\\.o"
-  "\\.log"
+  "\\\\.git.*"
+  "\\\\.o"
+  "\\\\.log"
   "build/.*"
-  "\\.swp\\$"
-  "~\\$"
+  "\\\\.swp\\\\$"
+  "~\\\\$"
   "fuse_hidden"
-  "core\\.[0-9]"
-  "\\.vscode"
-  "\\.codelite"
-  "\\.settings"
-  "CMakeFiles\\/"
-  "\\.user"
+  "core\\\\.[0-9]"
+  "\\\\.vscode"
+  "\\\\.codelite"
+  "\\\\.settings"
+  "CMakeFiles\\\\/"
+  "\\\\.user"
 )
 
 set(DIRLIST_VERSION 1.0)
