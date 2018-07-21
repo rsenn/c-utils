@@ -66,7 +66,7 @@ clean_args() {
     ARG=${ARG#" "}
     ARG=${ARG//" *"/"* "}
    
-    if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ]; then 
+    if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ] 2>/dev/null; then 
       ARG=${ARG%" "[[:alpha:]]*}
       ARG=${ARG%" "}
     fi
@@ -92,8 +92,8 @@ get_prototypes() {
       -r | --remove* | -R) REMOVE_NAMES=true; shift ;;
       -c | --copy* | --xclip*) XCLIP=true; shift ;;
       -E | --ellips* | --empty*) EMPTY=true; shift ;;
-      -e | --expr) EXPR="$2"; shift 2 ;;
-      -e=* | --expr=*) EXPR="${1#*=}"; shift ;;
+      -e | --expr) EXPR="${EXPR:+$EXPR ;; }$2"; shift 2 ;;
+      -e=* | --expr=*) EXPR="${EXPR:+$EXPR ;; }$2"; shift ;;
       -e* ) EXPR="${1#-e}"; shift ;;
       *) break ;;
     esac
@@ -105,7 +105,7 @@ get_prototypes() {
     exec 7>/dev/null
   fi
 
-  CPROTO_OUT=`cproto -p "$@"  | sed "\\|^/|d ;; $EXPR"`
+  CPROTO_OUT=`cproto -D__{value,x,y}= -p "$@"  | sed "\\|^/|d ;; $EXPR"`
  
   IFS=" "
   while read_proto; do

@@ -103,8 +103,7 @@ int str_isfloat(const char* s);
 int str_isspace(const char* s);
 void print_attrs(xmlnode* a_node);
 void print_element_attrs(xmlnode* a_node);
-int dump_net(const void* key, size_t key_len, const void* value,
-             size_t value_len, void* user_data);
+int dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
 
 static cbmap_t devicesets, packages, parts, nets, symbols;
 
@@ -289,7 +288,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     if(str_diff(nn, is_pin ? "pinref" : "contactref")) continue;
     char* part_name = xml_get_attribute(node, is_pin ? "part" : "element");
     struct ref* r =
-      array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
+        array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
     r->part = get(parts, part_name, sizeof(struct part));
     print_name_value(buffer_2, nn, part_name);
     buffer_putnlflush(buffer_2);
@@ -399,8 +398,7 @@ getparts(xmlnode* doc, const char* elem_name) {
   strlist_init(&ret);
   xmlnodeset nodes = xml_find_all(doc, xml_match_name, elem_name);
 
-  if((n = xml_nodeset_length(&nodes)) == 0)
-    return ret;
+  if((n = xml_nodeset_length(&nodes)) == 0) return ret;
 
   for(i = 0; i < n; ++i) {
     xmlnode* node = xml_nodeset_item(&nodes, i);
@@ -409,7 +407,6 @@ getparts(xmlnode* doc, const char* elem_name) {
 
   return ret;
 }
-
 
 /**
  * Iterate through a node-set, calling a functor for every item
@@ -420,7 +417,8 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
 
   xml_nodeset_iterator_t it, e;
 
-  for(it = begin(ns), e = end(ns); !iterator_equal(ns, it, e); iterator_increment(ns, it)) {
+  for(it = begin(ns), e = end(ns); !iterator_equal(ns, it, e);
+      iterator_increment(ns, it)) {
     xmlnode* node = iterator_dereference(ns, it);
     fn(node);
   }
@@ -433,7 +431,7 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
 void
 nodeset_topleft(xmlnodeset* s, double* x, double* y) {
   int len = xml_nodeset_length(s);
-  if(len == 0)  return;
+  if(len == 0) return;
 
   xmlnode* node = xml_nodeset_item(s, 0);
 
@@ -444,10 +442,8 @@ nodeset_topleft(xmlnodeset* s, double* x, double* y) {
     node = xml_nodeset_item(s, i);
     double nx = get_double(node, "x");
     double ny = get_double(node, "y");
-    if(nx < *x)
-      *x = nx;
-    if(ny < *y)
-      *y = ny;
+    if(nx < *x) *x = nx;
+    if(ny < *y) *y = ny;
   }
 }
 
@@ -787,7 +783,9 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
 
-    xmlnodeset xr = xml_find_all(doc, name ? xml_match_name_and_attr : xml_match_name, elem_name, "name", name);
+  xmlnodeset xr =
+      xml_find_all(doc, name ? xml_match_name_and_attr : xml_match_name,
+                   elem_name, "name", name);
 
   if((n = xml_nodeset_length(&xr)) == 0) return;
 
@@ -813,11 +811,10 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
         const char* v = xml_get_attribute(node, attr_name);
         if(!v || str_len(v) == 0) continue;
 
-        xml_query(doc, elem_name,  v);
+        xml_query(doc, elem_name, v);
 
         strlist part_names = getparts(doc, "element");
-        if(xml_nodeset_empty(&part_names))
-          part_names = getparts(doc, "part");
+        if(xml_nodeset_empty(&part_names)) part_names = getparts(doc, "part");
 
         strlist_dump(buffer_1, &part_names);
       }
