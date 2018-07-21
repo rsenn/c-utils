@@ -34,8 +34,13 @@ clean_args() {
   echo "[$DEPTH] clean_args $*" 1>&7
   [ "${OUT+set}" != set ] && OUT=
   ARG=
+  I=0
   while [ $# -gt 0 ]; do 
     ARG="${ARG:+$ARG, }${1# }"; shift
+
+    : $((++I))
+
+   #[ "$REMOVE_NAMES" = "$I" ] && REMOVE_NAMES=true
 
     P1=${ARG%%")("*}
     P2=${ARG#"$P1"}
@@ -60,8 +65,11 @@ clean_args() {
     ARG=${ARG#"("}
     ARG=${ARG#" "}
     ARG=${ARG//" *"/"* "}
-    ARG=${ARG%" "[[:alpha:]]*}
-    ARG=${ARG%" "}
+   
+    if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ]; then 
+      ARG=${ARG%" "[[:alpha:]]*}
+      ARG=${ARG%" "}
+    fi
 
     [ "$EMPTY" = true -a -n "$ARG2" ] && ARG2="()"
     ARG=$ARG$ARG2
@@ -77,6 +85,8 @@ get_prototypes() {
   while :; do
     case "$1" in
       -[dx] | --debug) DEBUG=true; shift ;;
+      -r=* | --remove*=* | -R=*) REMOVE_NAMES=${1#*=}; shift ;;
+      -r | --remove* | -R) REMOVE_NAMES=true; shift ;;
       -c | --copy* | --xclip*) XCLIP=true; shift ;;
       -E | --ellips* | --empty*) EMPTY=true; shift ;;
       -e | --expr) EXPR="$2"; shift 2 ;;
@@ -93,7 +103,6 @@ get_prototypes() {
   fi
 
   CPROTO_OUT=`cproto -p "$@"  | sed "\\|^/|d ;; $EXPR"`
- 
  
   IFS=" "
   while read_proto; do
