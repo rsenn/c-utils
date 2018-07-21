@@ -88,7 +88,9 @@ int hmap_truncate(HMAP_DB** HMAP_db);
 
 static inline TUPLE* hmap_begin(HMAP_DB* hmap) { return hmap->list_tuple; }
 
-static inline void hmap_iterator_increment(HMAP_DB* hmap, TUPLE** t) { *t = (*t)->next; }
+static inline void hmap_iterator_increment(TUPLE** t) { *t = (*t)->next; }
+static inline int hmap_iterator_equal(TUPLE** t1, TUPLE** t2) { return (*t1) == (*t2); }
+static inline TUPLE* hmap_iterator_dereference(TUPLE** it) { return *it; }
 
 //#define hmap_end(hmap_db) (&((hmap_db)->list_tuple->prev->next))
 //#define hmap_end(hmap_db) ((hmap_db)->list_tuple ? &((hmap_db)->list_tuple->prev->next) : NULL)

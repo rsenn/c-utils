@@ -188,12 +188,15 @@ static inline size_t stralloc_length(const stralloc* sa) { return sa->len; }
 
 #define stralloc_begin(sa) ((sa)->s)
 #define stralloc_end(sa) ((sa)->s + (sa)->len)
-#define stralloc_iterator_increment(it) (++(it))
 #define stralloc_iterator_decrement(it) (--(it))
 #define stralloc_iterator_dereference(it_ptr) (*(*(it_ptr)))
 #define stralloc_iterator_distance(it1, it2) ((it2) - (it1))
-#define stralloc_iterator_equal(it1, it2) ((it1) == (it2))
 #define stralloc_is_last(sa, ptr) ((sa)->len > 0 && ((sa)->s + (sa)->len - 1) == (ptr))
+
+
+static inline void stralloc_iterator_increment(char** it) { ++(*it); }
+static inline int stralloc_iterator_equal(char** it1, char** it2) { return it1 == it2; }
+
 
 #ifdef BYTE_H
 size_t byte_fmt(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch));

@@ -903,9 +903,17 @@ main(int argc, char* argv[]) {
 
   xml_nodeset_iterator_t it, e;
 
+  size_t i = 0;
+  for(it = begin(&ns), e = end(&ns); !iterator_equal(&ns, it, e); iterator_increment(&ns, it)) {
+    xmlnode* n = iterator_dereference(&ns, it);
 
-  for(it = begin(&ns), e = end(&ns); ; iterator_increment(&ns, it)) {
-
+  
+    buffer_puts(buffer_1, "NODESET[");
+    buffer_putlong(buffer_1, i++);
+    buffer_puts(buffer_1, "]: ");
+  
+    xml_debug(n, buffer_1);
+    buffer_putnlflush(buffer_1);
   }
 
   ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "C1");

@@ -33,27 +33,27 @@
     HMAP_DB*: hmap_iterator_decrement, \
     array*: array_iterator_decrement, \
     xmlnodeset*: xml_nodeset_iterator_decrement \
-  )(container, it)
+  )(&it)
 
 #define iterator_dereference(container, it) _Generic((container), \
     HMAP_DB*: hmap_iterator_dereference, \
     array*: array_iterator_dereference, \
     xmlnodeset*: xml_nodeset_iterator_dereference \
-  )(container, it)
+  )(&it)
 
 #define iterator_distance(container,it1,it2) _Generic((container), \
     HMAP_DB*: hmap_iterator_distance, \
     array*: array_iterator_distance, \
     stralloc*: stralloc_iterator_distance, \
     xmlnodeset*: xml_nodeset_iterator_distance \
-  )(container, it1, it2)
+  )(&it1, &it2)
 
 #define iterator_equal(container,it1,it2) _Generic((container), \
     HMAP_DB*: hmap_iterator_equal, \
     array*: array_iterator_equal, \
     stralloc*: stralloc_iterator_equal, \
     xmlnodeset*: xml_nodeset_iterator_equal \
-  )(container, it1, it2)
+  )(&it1, &it2)
 
 #define is_last(container,it) _Generic((container), \
     HMAP_DB*: hmap_last \
