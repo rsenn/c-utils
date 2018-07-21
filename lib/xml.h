@@ -11,10 +11,10 @@
 #define __inl static inline
 
 typedef enum xmlnodeid {
-  XML_DOCUMENT,
-  XML_ELEMENT,
-  XML_ATTRIBUTE,
-  XML_TEXT,
+  XML_DOCUMENT = 1,
+  XML_ELEMENT = 2,
+  XML_ATTRIBUTE = 3,
+  XML_TEXT = 4,
 } xmlnodeid;
 
 typedef struct xmlnode {

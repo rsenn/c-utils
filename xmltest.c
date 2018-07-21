@@ -20,75 +20,40 @@ put_str_escaped(buffer* b, const char* str) {
   buffer_putsa(b, &esc);
 }
 
-void
-xml_dump(xmlnode* n, buffer* b) {
-  do {
-    stralloc path;
-    stralloc_init(&path);
+const char* node_types[] = {
+  "(null)",
+  "XML_DOCUMENT",
+  "XML_ELEMENT",
+  "XML_TEXT",
+};
 
-    xml_path(n, &path);
-    buffer_putsa(b, &path);
+int
+xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
 
-    if(n->type == XML_TEXT) {
-      buffer_puts(b, " \"");
-      put_str_escaped(b, n->name);
-      buffer_puts(b, "\"");
 
-    } else if(n->type == XML_ELEMENT) {
-      xml_print_attributes(n, b, ", ", ":", "");
-    }
+  if(id == XML_ATTRIBUTE) return 1;
 
-    buffer_putnlflush(b);
+  buffer_putm(buffer_1, "node type=", node_types[id], ", name=", name ? name->s : "", ", value=", value ? value->s : "");
 
-    if(n->children) xml_dump(n->children, b);
+  buffer_puts(buffer_1, ", closing=");
+  buffer_putlong(buffer_1, reader->closing);
 
-  } while((n = n->next));
+  buffer_puts(buffer_1, ", self_closing=");
+  buffer_putlong(buffer_1, reader->self_closing);
+
+  buffer_putnlflush(buffer_1);
+
+  return 1;
 }
 
 int
 main(int argc, char* argv[1]) {
-  stralloc tmp;
-  stralloc_init(&tmp);
 
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
 
-  xmlnode* doc = xml_read_tree(&infile);
-
-  //  xml_print(doc);
-
-  // xml_debug(doc, buffer_1);
-  // xml_print(doc, buffer_1);
-
-  xmlnode* n = xml_find_element(doc, "signals");
-
-  xml_print(n, buffer_1);
-
-  xmlnode* n2;
-
-  if((n2 = xml_find_element_attr(doc, "signal", "name", "N$11"))) {
-    xml_print(n2, buffer_1);
-    xml_path(n2, &tmp);
-    buffer_putsa(buffer_1, &tmp);
-    buffer_putnlflush(buffer_1);
-  }
-
-  if((n2 = xml_find_element_attr(doc, "element", "name", "C1"))) {
-    xml_print(n2, buffer_1);
-    xml_path(n2, &tmp);
-    buffer_putsa(buffer_1, &tmp);
-    buffer_putnlflush(buffer_1);
-  }
-
-  if((n2 = xml_find_element_attr(doc, "element", "name", "R1"))) {
-    xml_print(n2, buffer_1);
-    xml_path(n2, &tmp);
-    buffer_putsa(buffer_1, &tmp);
-    buffer_putnlflush(buffer_1);
-  }
-
-  xml_debug(doc, buffer_2);
-
-  xml_free(doc);
+  xmlreader r;
+  xml_reader_init(&r, &infile);
+  xml_read_callback(&r, xml_read_function);
 
   buffer_close(&b);
 }
