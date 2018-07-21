@@ -818,7 +818,7 @@ xpath_query(xmlnode* doc, const char* q) {
   buffer_putnlflush(buffer_1);
   xmlnodeset* xr = NULL; // = getnodeset(doc, q);
   if(!xr || !xr->nodes) return;
-  for(int i = 0; i < xml_nodeset_length(xr->nodes); ++i) {
+  for(int i = 0; i < xml_nodeset_length(xr); ++i) {
     xmlnode* node = xml_nodeset_item(xr->nodes, i);
     print_element_name(node);
     print_element_attrs(node);
@@ -901,6 +901,12 @@ main(int argc, char* argv[]) {
   ns = xml_find_all(doc, xml_match_name, "package");
   xml_print_nodeset(&ns, buffer_1);
 
+  xml_nodeset_iterator_t it, e;
+
+
+  for(it = begin(&ns), e = end(&ns); ; iterator_increment(&ns, it)) {
+
+  }
 
   ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "C1");
   xml_print_nodeset(&ns, buffer_1);

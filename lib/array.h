@@ -23,7 +23,8 @@ typedef struct {
 
 void* array_allocate(array* x,uint64 membersize,int64 pos);
 void* array_get(const array* const x,uint64 membersize,int64 pos);
-void* array_start(const array* const x);
+void* array_start(const array* const);
+void* array_end(const array* const);
 int64 array_length(const array* const x,uint64 membersize);
 int64 array_bytes(const array* const x);
 void array_truncate(array* x,uint64 membersize,int64 len);
@@ -43,6 +44,8 @@ void array_chop(array* x,uint64 membersize,uint64 members);
 
 #define array_failed(x) (array_bytes(x)==-1)
 #define array_unallocated(x) (array_bytes(x)==0)
+
+static inline void array_iterator_increment(void** it, uint64 membersize) { char** i = (char**)it; (*i) += membersize; }
 
 
 #ifdef __cplusplus

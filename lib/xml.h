@@ -73,17 +73,20 @@ xmlnode*   xml_textnode           (const char*, size_t);
 
 #define xml_attribute_list(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 
-#define xml_nodeset_item(nodeset, i) ((nodeset[i]))
+#define xml_nodeset_item(ns, i) ((ns[i]))
 
-static inline size_t
-xml_nodeset_length(const xmlnodeset* nodeset) {
-  size_t i = 0;
-  if(nodeset) {
-    while(nodeset[i])
-      ++i;
-  }
-  return i;
-}
+static inline xmlnode** xml_nodeset_begin(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[0] : NULL; }
+static inline xmlnode** xml_nodeset_end(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[ns->count] : NULL; }
+static inline size_t xml_nodeset_length(const xmlnodeset* set ) { return set->count; }
+
+typedef xmlnode** xml_nodeset_iterator_t;
+
+static inline void xml_nodeset_iterator_increment(xmlnode*** itp) { ++(*itp); }
+static inline void xml_nodeset_iterator_decrement(xmlnode*** itp) { --(*itp); }
+static inline xmlnode* xml_nodeset_iterator_dereference(xmlnode*** itp) { return *(*itp); }
+static inline int xml_nodeset_iterator_equal(xmlnode*** itp1, xmlnode*** itp2) { return (*itp1) == (*itp2); }
+static inline ptrdiff_t xml_nodeset_iterator_distance(xmlnode*** itp1, xmlnode*** itp2) { return (*itp2) - (*itp1); }
+
 
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48
