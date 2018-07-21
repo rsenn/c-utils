@@ -1,6 +1,6 @@
 #include "../xml.h"
 
-const char*
+char*
 xml_get_attribute(xmlnode* node, const char* attr) {
   if(node->attributes) {
     TUPLE* data;

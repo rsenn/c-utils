@@ -699,10 +699,11 @@ print_element_name(xmlnode* a_node) {
  *  print_element_attrs: Prints all element attributes to stdout
  */
 void
-print_attrs(xmlnode* a) {
-  for(; a; a = a->next) {
-    char* v = NODE_CONTENT(a);
-    buffer_putm(buffer_1, " ", NODE_NAME(a), str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"");
+print_attrs(xmlnode* node) {
+  TUPLE* a;
+  for(a = xml_attribute_list(node); a; a = a->next) {
+    char* v = a->vals.val_chars;
+    buffer_putm(buffer_1, " ", a->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"");
   }
 }
 
@@ -710,7 +711,7 @@ void
 print_element_attrs(xmlnode* a_node) {
   if(NODE_IS_ELEMENT(a_node)) {
     xmlnode* e = (xmlnode*)a_node;
-    print_attrs(NODE_ATTRIBUTES(e));
+    print_attrs(e);
   }
 }
 
@@ -916,6 +917,8 @@ main(int argc, char* argv[]) {
   buffer_skip_until(&input, "\r\n", 2);
 
   xmlnode* doc = xml_read_tree(&input);
+
+  xml_find_element(doc, "package");
 
 //  xpath_query(doc, xq);
 //  xpath_foreach(doc, "//package", build_package);

@@ -60,7 +60,7 @@ size_t xml_escape(const char *s, size_t n, stralloc *out);
 void xml_debug(xmlnode *node, buffer *b);
 xmlnode *xml_find_element(xmlnode *node, const char *tag);
 xmlnode *xml_find_element_attr(xmlnode *node, const char *tag, const char *attr, const char *value);
-const char *xml_get_attribute(xmlnode *node, const char *attr);
+char *xml_get_attribute(xmlnode *node, const char *attr);
 int xml_has_attribute(xmlnode *node, const char *attr);
 xmlnode *xml_find_pred(xmlnode *node, int (*pred)(xmlnode*, void*), ...);
 xmlnode *xml_get_document(xmlnode *node);
