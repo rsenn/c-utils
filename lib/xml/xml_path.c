@@ -8,7 +8,7 @@ xml_path_out(const xmlnode* node, stralloc* out) {
   }
   ++n;
   stralloc_catc(out, '/');
-  stralloc_cats(out, node->type == XML_NODE_TEXT ? "#text" : node->name);
+  stralloc_cats(out, node->type == XML_TEXT ? "#text" : node->name);
   return n;
 }
 

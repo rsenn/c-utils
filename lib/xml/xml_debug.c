@@ -1,14 +1,15 @@
+#include <assert.h>
 #include "../xml.h"
 #include "../fmt.h"
 
 static void
-xml_debug_node(xmlnode* node, buffer* b, int depth) {
+xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
   do {
     int closing = node_is_closing(node);
 
     if(!closing) buffer_putnspace(b, depth * 2);
 
-    if(node->type == XML_NODE_TEXT) {
+    if(node->type == XML_TEXT) {
       stralloc space, text;
       stralloc_init(&space);
       stralloc_init(&text);
@@ -41,11 +42,11 @@ xml_debug_node(xmlnode* node, buffer* b, int depth) {
     if(node->children) {
       buffer_puts(b, " ");
       buffer_puts(b, "\n");
-      int only_text_children = (node->children->type == XML_NODE_TEXT);
+      int only_text_children = (node->children->type == XML_TEXT);
       if(only_text_children) {
-        xml_debug_node(node->children, b, depth + 1);
+        xml_debug_nodelist(node->children, b, depth + 1);
       } else {
-        xml_debug_node(node->children, b, depth + 1);
+        xml_debug_nodelist(node->children, b, depth + 1);
       }
       buffer_putnspace(b, depth * 2);
 //      buffer_puts(b, "\n");
@@ -65,5 +66,5 @@ xml_debug_node(xmlnode* node, buffer* b, int depth) {
 
 void
 xml_debug(xmlnode* node, buffer* b) {
-  xml_debug_node(node, b, 0);
+  xml_debug_nodelist(node, b, 0);
 }

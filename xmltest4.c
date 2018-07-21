@@ -29,12 +29,12 @@ xml_dump(xmlnode* n, buffer* b) {
     xml_path(n, &path);
     buffer_putsa(b, &path);
 
-    if(n->type == XML_NODE_TEXT) {
+    if(n->type == XML_TEXT) {
       buffer_puts(b, " \"");
       put_str_escaped(b, n->name);
       buffer_puts(b, "\"");
 
-    } else if(n->type == XML_NODE_ELEMENT) {
+    } else if(n->type == XML_ELEMENT) {
       xml_print_attributes(n, b, ", ", ":", "");
     }
 

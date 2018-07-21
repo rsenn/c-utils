@@ -69,7 +69,9 @@ each_part(part_t* p) {
 
   if(p->device[0] == '\0' && p->value[0] == '\0') return;
   {
-    printf("MOVE %s (%.2f %.2f)" END_OF_LINE, p->name, p->x - min_x,
+    printf("MOVE %s (%.2f %.2f)" END_OF_LINE,
+           p->name,
+           p->x - min_x,
            p->y - min_y);
     fflush(stdout);
     if(fabs(p->rot) >= 0.1) {
@@ -89,15 +91,25 @@ static void
 dump_part(part_t const* p) {
   printf("dump_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%.2f,"
          "y=%.2f,rot=%.0f}\n",
-         p->name, p->library, p->deviceset, p->device, p->value, p->x, p->y,
+         p->name,
+         p->library,
+         p->deviceset,
+         p->device,
+         p->value,
+         p->x,
+         p->y,
          p->rot);
 }
 
 /* ----------------------------------------------------------------------- */
 static void
 dump_instance(instance_t const* i) {
-  printf("dump_instance \"%s:%s\" x=%.2f, y=%.2f, rot=%.f\n", i->part, i->gate,
-         i->x, i->y, i->rot);
+  printf("dump_instance \"%s:%s\" x=%.2f, y=%.2f, rot=%.f\n",
+         i->part,
+         i->gate,
+         i->x,
+         i->y,
+         i->rot);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -130,11 +142,15 @@ get_instance(const char* part, const char* gate) {
 
 /* ----------------------------------------------------------------------- */
 static instance_t*
-create_instance(const char* part, const char* gate, float x, float y,
-                float rot) {
+create_instance(
+    const char* part, const char* gate, float x, float y, float rot) {
 #if DEBUG
-  printf("create_instance{part=%s,gate=%s,x=%.2f,y=%.2f,rot=%.f}\n", part, gate,
-         x, y, rot);
+  printf("create_instance{part=%s,gate=%s,x=%.2f,y=%.2f,rot=%.f}\n",
+         part,
+         gate,
+         x,
+         y,
+         rot);
 #endif
   int ret;
   stralloc key;
@@ -160,15 +176,22 @@ create_instance(const char* part, const char* gate, float x, float y,
 
 /* ----------------------------------------------------------------------- */
 static part_t*
-create_part(const char* name, const char* library, const char* deviceset,
-            const char* device, const char* value) {
+create_part(const char* name,
+            const char* library,
+            const char* deviceset,
+            const char* device,
+            const char* value) {
 
   if(value == NULL) value = "";
     /*if(deviceset == NULL) deviceset = "";
     if(device == NULL) device = "";*/
 #if DEBUG
   printf("create_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
-         name, library, deviceset, device, value);
+         name,
+         library,
+         deviceset,
+         device,
+         value);
 #endif
   part_t* p;
   p = malloc(sizeof(part_t));
@@ -196,8 +219,17 @@ update_part(const char* name, float x, float y, float rot) {
 #if DEBUG
   printf("update_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%."
          "2f,y=%.2f,rot=%.0f}[%.2f,%.2f,%.2f]\n",
-         p->name, p->library, p->deviceset, p->device, p->value, p->x, p->y,
-         p->rot, x, y, rot);
+         p->name,
+         p->library,
+         p->deviceset,
+         p->device,
+         p->value,
+         p->x,
+         p->y,
+         p->rot,
+         x,
+         y,
+         rot);
 #endif
 
   if(p->x == 0.0 || isnan(p->x)) {
@@ -282,7 +314,8 @@ print_attributes(xmlElement* e) {
   xmlAttribute* a;
 
   for(a = e->attributes; a; a = (xmlAttribute*)a->next) {
-    printf("%s=\"%s\"\n", (const char*)a->name,
+    printf("%s=\"%s\"\n",
+           (const char*)a->name,
            (const char*)xmlNodeGetContent((xmlNode*)a));
   }
 }
@@ -367,9 +400,12 @@ process_instance(xmlElement* e) {
   y /= unit_factor;*/
   /*x *= scale_factor;
   y *= scale_factor;*/
-  instance_t* newinst = create_instance(
-      part.s, gate.s, round_to_mil(x * scale_factor / unit_factor, grid_mils),
-      round_to_mil(y * scale_factor / unit_factor, grid_mils), rotate);
+  instance_t* newinst =
+      create_instance(part.s,
+                      gate.s,
+                      round_to_mil(x * scale_factor / unit_factor, grid_mils),
+                      round_to_mil(y * scale_factor / unit_factor, grid_mils),
+                      rotate);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -443,16 +479,27 @@ int read_xmlfile(const char* filename);
 int parse_xmlfile(const char* filename, xmlDoc** p_doc);
 xmlSAXHandler make_sax_handler();
 /* ----------------------------------------------------------------------- */
-static void on_attribute_decl(void*, const xmlChar*, const xmlChar*, int, int,
-                              const xmlChar*, xmlEnumeration*);
+static void on_attribute_decl(void*,
+                              const xmlChar*,
+                              const xmlChar*,
+                              int,
+                              int,
+                              const xmlChar*,
+                              xmlEnumeration*);
 static void after_element(const char*);
 static void on_start_element(void*, const xmlChar*, const xmlChar**);
 static void on_end_element(void*, const xmlChar*);
-static void on_start_element_ns(void*, const xmlChar*, const xmlChar*,
-                                const xmlChar*, int, const xmlChar**, int, int,
+static void on_start_element_ns(void*,
+                                const xmlChar*,
+                                const xmlChar*,
+                                const xmlChar*,
+                                int,
+                                const xmlChar**,
+                                int,
+                                int,
                                 const xmlChar**);
-static void on_end_element_ns(void*, const xmlChar*, const xmlChar*,
-                              const xmlChar*);
+static void
+on_end_element_ns(void*, const xmlChar*, const xmlChar*, const xmlChar*);
 static void on_characters(void* ctx, const xmlChar* ch, int len);
 /* ----------------------------------------------------------------------- */
 int
@@ -502,10 +549,12 @@ parse_xmlfile(const char* filename, xmlDoc** p_doc) {
     return 1;
   }
   /* parse the file, activating the DTD validation option */
-  doc =
-      xmlCtxtReadFile(ctxt, filename, NULL,
-                      XML_PARSE_RECOVER | XML_PARSE_NOENT | XML_PARSE_NOBLANKS |
-                          XML_PARSE_NSCLEAN | XML_PARSE_COMPACT);
+  doc = xmlCtxtReadFile(ctxt,
+                        filename,
+                        NULL,
+                        XML_PARSE_RECOVER | XML_PARSE_NOENT |
+                            XML_PARSE_NOBLANKS | XML_PARSE_NSCLEAN |
+                            XML_PARSE_COMPACT);
   /* check if parsing suceeded */
 
   if(doc == NULL) {
@@ -542,8 +591,12 @@ make_sax_handler() {
 
 /* ----------------------------------------------------------------------- */
 static void
-on_attribute_decl(void* ctx, const xmlChar* elem, const xmlChar* fullname,
-                  int type, int def, const xmlChar* defaultValue,
+on_attribute_decl(void* ctx,
+                  const xmlChar* elem,
+                  const xmlChar* fullname,
+                  int type,
+                  int def,
+                  const xmlChar* defaultValue,
                   xmlEnumeration* tree) {
   /* printf("<%s> %s=\"%s\"\n", get_element_name(), fullname, defaultValue); */
 }
@@ -564,16 +617,27 @@ on_start_element(void* ctx, const xmlChar* name, const xmlChar** attrs) {
     char *attr = ((char**)attrs)[i << 1],
          *value = ((char**)attrs)[(i << 1) + 1];
     printf("<%s> %d/%d: %s=\"%s\"\n", name, i, numAttrs, attr, value);
-    hmap_add(&hashmap, attr, str_len(attr), 1, HMAP_DATA_TYPE_CHARS, value,
+    hmap_add(&hashmap,
+             attr,
+             str_len(attr),
+             1,
+             HMAP_DATA_TYPE_CHARS,
+             value,
              str_len(value));
   }
 }
 
 /* ----------------------------------------------------------------------- */
 static void
-on_start_element_ns(void* ctx, const xmlChar* name, const xmlChar* prefix,
-                    const xmlChar* URI, int nb_nss, const xmlChar** nss,
-                    int nb_attrs, int nb_defaulted, const xmlChar** attrs) {
+on_start_element_ns(void* ctx,
+                    const xmlChar* name,
+                    const xmlChar* prefix,
+                    const xmlChar* URI,
+                    int nb_nss,
+                    const xmlChar** nss,
+                    int nb_attrs,
+                    int nb_defaulted,
+                    const xmlChar** attrs) {
   set_element_name((const char*)name);
   /*  printf("<%s> %d\n", name, numAttrs);
     for(i = 0; i < numAttrs; ++i) {
@@ -590,7 +654,9 @@ on_end_element(void* ctx, const xmlChar* name) {
 
 /* ----------------------------------------------------------------------- */
 static void
-on_end_element_ns(void* ctx, const xmlChar* name, const xmlChar* prefix,
+on_end_element_ns(void* ctx,
+                  const xmlChar* name,
+                  const xmlChar* prefix,
                   const xmlChar* URI) {
   after_element((const char*)name);
 }

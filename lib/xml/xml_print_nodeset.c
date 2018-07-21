@@ -5,7 +5,7 @@ xml_print_nodeset(const xmlnodeset* ns, buffer* b) {
   size_t i;
   stralloc nodepath;
   stralloc_init(&nodepath);
-  for(i = 0; i < ns->count; ++i) {
+  for(i = 0; i < ns->size; ++i) {
     buffer_puts(b, "xmlnodeset[");
     buffer_putlong(b, i);
     buffer_puts(b, "] ");

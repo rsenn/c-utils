@@ -7,11 +7,14 @@
 #include "stralloc.h"
 #include "textbuf.h"
 
+
+#define __inl static inline
+
 typedef enum xmlnodeid {
-  XML_NODE_DOCUMENT,
-  XML_NODE_ELEMENT,
-  XML_NODE_ATTRIBUTE,
-  XML_NODE_TEXT,
+  XML_DOCUMENT,
+  XML_ELEMENT,
+  XML_ATTRIBUTE,
+  XML_TEXT,
 } xmlnodeid;
 
 typedef struct xmlnode {
@@ -28,18 +31,14 @@ typedef struct xmlreader {
   xmlnode* doc;
   xmlnode* parent;
   xmlnode** ptr;
+  HMAP_DB* attrmap;
   int closing : 1;
   int self_closing : 1;
-  HMAP_DB* attrmap;
 } xmlreader;
-
-typedef struct xmlxpathctx {
-  xmlnode* doc;
-} xmlxpathctx;
 
 typedef struct xmlnodeset {
   xmlnode** nodes;
-  size_t count;
+  size_t size;
 } xmlnodeset;
 
 #define node_is_closing(n) ((n)->name[0] == '/')
@@ -47,7 +46,7 @@ typedef struct xmlnodeset {
 typedef int(xml_read_callback_fn)(xmlreader *r, xmlnodeid id, stralloc *name,
                                   stralloc *value, HMAP_DB **attrs);
 
-typedef int(xml_predicate_fn)(xmlnode*, ...);
+typedef int(xml_predicate_fn)();
 
 xmlnode*   xml_attrnode           (const char*, size_t, const char*, size_t);
 void       xml_debug              (xmlnode*, buffer*);
@@ -60,7 +59,7 @@ void       xml_free               (xmlnode*);
 char*      xml_get_attribute      (xmlnode*, const char*);
 xmlnode*   xml_get_document       (xmlnode*);
 int        xml_has_attribute      (xmlnode*, const char*);
-int        xml_match_name         (xmlnode*, const char*);
+int        xml_match_name         (xmlnode*, const char*, const char*, const char*);
 int        xml_match_name_and_attr(xmlnode*, const char*, const char*, const char*);
 xmlnode*   xml_newnode            (xmlnodeid);
 int        xml_path               (const xmlnode*, stralloc*);
@@ -73,23 +72,23 @@ xmlnode*   xml_read_tree          (buffer*);
 xmlnode*   xml_textnode           (const char*, size_t);
 
 
-#define xml_attribute_list(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
+#define xml_attributes(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 
-#define xml_nodeset_item(ns, i) ((ns)->nodes[i])
+#define xmlnodeset_item(ns, i) ((ns)->nodes[i])
 
-static inline xmlnode** xml_nodeset_begin(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[0] : NULL; }
-static inline xmlnode** xml_nodeset_end(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[ns->count] : NULL; }
+__inl xmlnode** xmlnodeset_begin(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[0] : NULL; }
+__inl xmlnode** xmlnodeset_end(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[ns->size] : NULL; }
 
-static inline size_t xml_nodeset_length(const xmlnodeset* set ) { return set->count; }
-#define xml_nodeset_empty(ns) (xml_nodeset_length(ns) == 0)
+__inl size_t xmlnodeset_size(const xmlnodeset* set ) { return set->size; }
+#define xmlnodeset_empty(ns) (xmlnodeset_size(ns) == 0)
 
-typedef xmlnode** xml_nodeset_iterator_t;
+typedef xmlnode** xmlnodeset_iter_t;
 
-static inline void xml_nodeset_iterator_increment(xmlnode*** itp) { ++(*itp); }
-static inline void xml_nodeset_iterator_decrement(xmlnode*** itp) { --(*itp); }
-static inline xmlnode* xml_nodeset_iterator_dereference(xmlnode*** itp) { return *(*itp); }
-static inline int xml_nodeset_iterator_equal(xmlnode*** itp1, xmlnode*** itp2) { return (*itp1) == (*itp2); }
-static inline ptrdiff_t xml_nodeset_iterator_distance(xmlnode*** itp1, xmlnode*** itp2) { return (*itp2) - (*itp1); }
+__inl void xmlnodeset_iter_pp(xmlnode*** itp) { ++(*itp); }
+__inl void xmlnodeset_iter_mm(xmlnode*** itp) { --(*itp); }
+__inl xmlnode* xmlnodeset_iter_ref(xmlnode*** itp) { return *(*itp); }
+__inl int xmlnodeset_iter_eq(xmlnode*** itp1, xmlnode*** itp2) { return (*itp1) == (*itp2); }
+__inl ptrdiff_t xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) { return (*itp2) - (*itp1); }
 
 
 #define XML_READ_BUFFER 4096

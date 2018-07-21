@@ -82,7 +82,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
 
       hmap_set(&r->attrmap, attr.s, attr.len, val.s, val.len + 1);
 
-      if(!fn(r, XML_NODE_ATTRIBUTE, &attr, &val, NULL)) return;
+      if(!fn(r, XML_ATTRIBUTE, &attr, &val, NULL)) return;
 
       buffer_skipspace(b);
 
@@ -95,7 +95,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     }
     buffer_skipspace(b);
     if(*buffer_peek(b) == '>') buffer_skipc(b);
-    if(!fn(r, XML_NODE_ELEMENT, &tag, NULL, &r->attrmap)) return;
+    if(!fn(r, XML_ELEMENT, &tag, NULL, &r->attrmap)) return;
     if(r->attrmap) {
       hmap_destroy(&r->attrmap);
       r->attrmap = NULL;
@@ -105,7 +105,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     if((n = buffer_gettok_sa(b, &tag, "<", 1)) < 0) return;
     s = buffer_peek(b);
     if(!is_whitespace(tag.s, tag.len)) {
-      if(!fn(r, XML_NODE_TEXT, NULL, &tag, NULL)) return;
+      if(!fn(r, XML_TEXT, NULL, &tag, NULL)) return;
     }
   }
 }

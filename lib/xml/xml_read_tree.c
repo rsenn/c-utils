@@ -11,26 +11,26 @@ xml_unescape(const stralloc* in, stralloc* out) {
 static int
 xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   switch(id) {
-    case XML_NODE_ATTRIBUTE: {
+    case XML_ATTRIBUTE: {
 #ifdef XML_DEBUG
       buffer_putm(buffer_2, "reading attribute '", name->s, "' value '", value->s, "'");
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
       break;
     }
-    case XML_NODE_TEXT: {
+    case XML_TEXT: {
       stralloc text;
       stralloc_init(&text);
       xml_unescape(value, &text);
       stralloc_nul(&text);
-      xmlnode* tnode = xml_newnode(XML_NODE_TEXT);
+      xmlnode* tnode = xml_newnode(XML_TEXT);
       tnode->name = text.s;
       tnode->parent = reader->parent;
       *reader->ptr = tnode;
       reader->ptr = &tnode->next;
       break;
     }
-    case XML_NODE_ELEMENT:
+    case XML_ELEMENT:
     default: {
 #ifdef XML_DEBUG
       buffer_putm(buffer_2, "reading element '", name->s, "'");
@@ -42,7 +42,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
           reader->ptr = &parent->next;
           reader->parent = parent->parent;
         }
-        xmlnode* node = xml_newnode(XML_NODE_ELEMENT);
+        xmlnode* node = xml_newnode(XML_ELEMENT);
         *reader->ptr = node;
         reader->ptr = &node->next;
         stralloc_insertb(name, "/", 0, 1);

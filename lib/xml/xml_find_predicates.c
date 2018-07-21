@@ -2,7 +2,9 @@
 #include "../str.h"
 
 int
-xml_match_name(xmlnode* node, const char* name) {
+xml_match_name(xmlnode* node, const char* name, const char* attr, const char* value) {
+  (void)attr;
+  (void)value;
   return str_equal(node->name, name);
 }
 

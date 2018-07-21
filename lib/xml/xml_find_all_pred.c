@@ -36,7 +36,7 @@ xml_find_all(xmlnode* node, int (*pred)(xmlnode*, void*), ...) {
   xml_find_all_predicate(node, &a, pred, ptr[0], ptr[1], ptr[2]);
   va_end(args);
   ret.nodes = array_start(&a);
-  ret.count = array_length(&a,  sizeof(xmlnode*));
+  ret.size = array_length(&a,  sizeof(xmlnode*));
   return ret;
 }
 

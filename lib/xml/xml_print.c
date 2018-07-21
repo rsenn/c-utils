@@ -5,7 +5,7 @@ static void xml_print_list(xmlnode*, buffer*, int);
 static void
 xml_print_node(xmlnode* node, buffer* b, int depth) {
   int closing = node_is_closing(node);
-  if(node->type == XML_NODE_TEXT) {
+  if(node->type == XML_TEXT) {
     stralloc text;
     stralloc_init(&text);
     xml_escape(node->name, str_len(node->name), &text);
@@ -18,7 +18,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
   if(node->attributes) xml_print_attributes(node, b, " ", "=", "\"");
   if(node->children) {
     buffer_puts(b, ">");
-    int only_text_children = (node->children->type == XML_NODE_TEXT);
+    int only_text_children = (node->children->type == XML_TEXT);
     if(only_text_children) {
       xml_print_list(node->children, b, 0);
     } else {

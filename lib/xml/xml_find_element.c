@@ -2,7 +2,7 @@
 
 static int
 xml_tag_pred(xmlnode* node, void* ptr) {
-  return node->type == XML_NODE_ELEMENT && str_equal(ptr, node->name);
+  return node->type == XML_ELEMENT && str_equal(ptr, node->name);
 }
 
 xmlnode*

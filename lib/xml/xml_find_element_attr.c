@@ -7,7 +7,7 @@ struct tag_attr_value {
 static int
 xml_tag_attr_value_pred(xmlnode* node, void* ptr) {
   struct tag_attr_value* tav_ptr = ptr;
-  if(node->type == XML_NODE_ELEMENT  && str_equal(tav_ptr->t, node->name)) {
+  if(node->type == XML_ELEMENT  && str_equal(tav_ptr->t, node->name)) {
     const char* a = xml_get_attribute(node, tav_ptr->a);
     if(a && str_equal(tav_ptr->v, a))
       return 1;
