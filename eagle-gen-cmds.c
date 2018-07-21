@@ -125,23 +125,15 @@ struct net {
 
 const char* document = "<doc/>";
 static const char* xq = "//net";
-void
-node_print(xmlNode* node);
-int
-node_depth(xmlNode* node);
-int
-str_ischarset(const char* s, const char* set);
-int
-str_isfloat(const char* s);
-int
-str_isspace(const char* s);
-void
-print_attrs(xmlNode* a_node);
-void
-print_element_attrs(xmlNode* a_node);
-int
-dump_net(const void* key, size_t key_len, const void* value, size_t value_len,
-         void* user_data);
+void node_print(xmlNode* node);
+int node_depth(xmlNode* node);
+int str_ischarset(const char* s, const char* set);
+int str_isfloat(const char* s);
+int str_isspace(const char* s);
+void print_attrs(xmlNode* a_node);
+void print_element_attrs(xmlNode* a_node);
+int dump_net(const void* key, size_t key_len, const void* value,
+             size_t value_len, void* user_data);
 
 static cbmap_t devicesets, packages, parts, nets, symbols;
 /**

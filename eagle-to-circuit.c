@@ -96,23 +96,15 @@ struct net {
 const char* document = "<doc/>";
 static const char* xq = "//net";
 
-void
-node_print(xmlnode* node);
-int
-node_depth(xmlnode* node);
-int
-str_ischarset(const char* s, const char* set);
-int
-str_isfloat(const char* s);
-int
-str_isspace(const char* s);
-void
-print_attrs(xmlnode* a_node);
-void
-print_element_attrs(xmlnode* a_node);
-int
-dump_net(const void* key, size_t key_len, const void* value, size_t value_len,
-         void* user_data);
+void node_print(xmlnode* node);
+int node_depth(xmlnode* node);
+int str_ischarset(const char* s, const char* set);
+int str_isfloat(const char* s);
+int str_isspace(const char* s);
+void print_attrs(xmlnode* a_node);
+void print_element_attrs(xmlnode* a_node);
+int dump_net(const void* key, size_t key_len, const void* value,
+             size_t value_len, void* user_data);
 
 static cbmap_t devicesets, packages, parts, nets, symbols;
 
@@ -904,14 +896,14 @@ main(int argc, char* argv[]) {
   xml_nodeset_iterator_t it, e;
 
   size_t i = 0;
-  for(it = begin(&ns), e = end(&ns); !iterator_equal(&ns, it, e); iterator_increment(&ns, it)) {
+  for(it = begin(&ns), e = end(&ns); !iterator_equal(&ns, it, e);
+      iterator_increment(&ns, it)) {
     xmlnode* n = iterator_dereference(&ns, it);
 
-  
     buffer_puts(buffer_1, "NODESET[");
     buffer_putlong(buffer_1, i++);
     buffer_puts(buffer_1, "]: ");
-  
+
     xml_debug(n, buffer_1);
     buffer_putnlflush(buffer_1);
   }

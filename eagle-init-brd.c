@@ -31,10 +31,8 @@ static xmlDoc* xmldoc = NULL;
 static HMAP_DB* hashmap = NULL;
 static TUPLE* ptr_tuple = NULL;
 static HMAP_DB *instances_db = NULL, *parts_db = NULL;
-static void
-hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*));
-static void
-update_part(const char*, float, float, float);
+static void hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*));
+static void update_part(const char*, float, float, float);
 #define NAMELEN 8
 typedef struct part {
   char name[NAMELEN];
@@ -441,29 +439,21 @@ get_characters() {
 }
 
 /* ----------------------------------------------------------------------- */
-int
-read_xmlfile(const char* filename);
-int
-parse_xmlfile(const char* filename, xmlDoc** p_doc);
-xmlSAXHandler
-make_sax_handler();
+int read_xmlfile(const char* filename);
+int parse_xmlfile(const char* filename, xmlDoc** p_doc);
+xmlSAXHandler make_sax_handler();
 /* ----------------------------------------------------------------------- */
-static void
-on_attribute_decl(void*, const xmlChar*, const xmlChar*, int, int,
-                  const xmlChar*, xmlEnumeration*);
-static void
-after_element(const char*);
-static void
-on_start_element(void*, const xmlChar*, const xmlChar**);
-static void
-on_end_element(void*, const xmlChar*);
-static void
-on_start_element_ns(void*, const xmlChar*, const xmlChar*, const xmlChar*, int,
-                    const xmlChar**, int, int, const xmlChar**);
-static void
-on_end_element_ns(void*, const xmlChar*, const xmlChar*, const xmlChar*);
-static void
-on_characters(void* ctx, const xmlChar* ch, int len);
+static void on_attribute_decl(void*, const xmlChar*, const xmlChar*, int, int,
+                              const xmlChar*, xmlEnumeration*);
+static void after_element(const char*);
+static void on_start_element(void*, const xmlChar*, const xmlChar**);
+static void on_end_element(void*, const xmlChar*);
+static void on_start_element_ns(void*, const xmlChar*, const xmlChar*,
+                                const xmlChar*, int, const xmlChar**, int, int,
+                                const xmlChar**);
+static void on_end_element_ns(void*, const xmlChar*, const xmlChar*,
+                              const xmlChar*);
+static void on_characters(void* ctx, const xmlChar* ch, int len);
 /* ----------------------------------------------------------------------- */
 int
 read_xmlfile(const char* filename) {
