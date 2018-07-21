@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
   http_init(&h, url_host,url_port);
   ret = http_get(&h, url_location);
 
-  buffer_init(&in, do_recv, h.sock, inbuf, sizeof(inbuf));
+  buffer_init(&in, (void*)do_recv, h.sock, inbuf, sizeof(inbuf));
 
   buffer_puts(buffer_2, "http_get() = ");
   buffer_putlong(buffer_2, (long)ret);
