@@ -82,9 +82,12 @@ clean_args() {
 }
 
 get_prototypes() {
+  : ${PAD_ARGS=false}
   while :; do
     case "$1" in
       -[dx] | --debug) DEBUG=true; shift ;;
+      -A | --no-pad-args* | -*no*args*) PAD_ARGS=false; shift ;;
+      -a | --pad-args* | -*args*) PAD_ARGS=true; shift ;;
       -r=* | --remove*=* | -R=*) REMOVE_NAMES=${1#*=}; shift ;;
       -r | --remove* | -R) REMOVE_NAMES=true; shift ;;
       -c | --copy* | --xclip*) XCLIP=true; shift ;;
@@ -113,10 +116,10 @@ get_prototypes() {
 
  (TEMP=`mktemp`
   trap 'rm -f "$TEMP"' EXIT 
-
+  [ "$PAD_ARGS" = true ] && PAD_A2="-$((FNAME_MAXLEN))"
   while read_proto; do
     set -- "$TYPE" "$FNAME" "$ARGS"
-    printf "%-$((TYPE_MAXLEN))s |%-$((FNAME_MAXLEN))s|%s\n" "$1" "$2" "$(clean_args "$3");"
+    printf "%-$((TYPE_MAXLEN))s |%${PAD_A2}s|%s\n" "$1" "$2" "$(clean_args "$3");"
   done <<<"$CPROTO_OUT" | 
       sort -t'|' -k2 -f |
       sed "s,|,,g" >"$TEMP"
