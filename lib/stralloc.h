@@ -184,6 +184,8 @@ void buffer_fromsa(buffer* b, const stralloc* sa);
 size_t stralloc_fmt(stralloc *out, const stralloc *in, size_t (*fmt_function)(char*, unsigned int));
 size_t stralloc_scan(stralloc *out, const stralloc *in, size_t (*scan_function)(const char *, char *));
 
+static inline size_t stralloc_length(const stralloc* sa) { return sa->len; }
+
 #define stralloc_begin(sa) ((sa)->s)
 #define stralloc_end(sa) ((sa)->s + (sa)->len)
 #define stralloc_iterator_increment(it) (++(it))

@@ -901,9 +901,12 @@ main(int argc, char* argv[]) {
   ns = xml_find_all(doc, xml_match_name, "package");
   xml_print_nodeset(&ns, buffer_1);
 
-  
+
   ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "C1");
   xml_print_nodeset(&ns, buffer_1);
+
+  buffer_putlong(buffer_1, size(&ns));
+  buffer_putnlflush(buffer_1);
 
   ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "R1");
   xml_print_nodeset(&ns, buffer_1);

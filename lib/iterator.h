@@ -9,7 +9,7 @@
 #define size(container) _Generic((container), \
   stralloc*: stralloc_length, \
   array*: array_length, \
-  nodeset*: xml_nodeset_length, \
+  xmlnodeset*: xml_nodeset_length \
   )((container))
 
 #define begin(container) _Generic((container), \

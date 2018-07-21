@@ -71,12 +71,12 @@ xmlnode*   xml_read_tree          (buffer*);
 xmlnode*   xml_textnode           (const char*, size_t);
 
 
-
 #define xml_attribute_list(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 
 #define xml_nodeset_item(nodeset, i) ((nodeset[i]))
+
 static inline size_t
-xml_nodeset_length(xmlnode** nodeset) {
+xml_nodeset_length(const xmlnodeset* nodeset) {
   size_t i = 0;
   if(nodeset) {
     while(nodeset[i])
