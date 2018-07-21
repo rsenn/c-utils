@@ -1,102 +1,94 @@
-/**
- * section: xmlReader
- * synopsis: Parse an XML file with an xmlReader
- * purpose: Demonstrate the use of xmlReaderForFile() to parse an XML file
- *          and dump the informations about the nodes found in the process.
- *          (Note that the XMLReader functions require libxml2 version later
- *          than 2.6.)
- * usage: reader1 <filename>
- * test: reader1 test2.xml > reader1.tmp && diff reader1.tmp
- * $(srcdir)/reader1.res author: Daniel Veillard copy: see Copyright for the
- * status of this software.
- */
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
+#include "lib/hmap.h"
+#include "lib/iterator.h"
+#include "lib/stralloc.h"
+#include "lib/xml.h"
+#include <assert.h>
+#include <ctype.h>
+#include <sys/types.h>
 
-#include <libxml/xmlreader.h>
-#include <stdio.h>
+static buffer infile;
+static buffer b;
 
-#ifdef LIBXML_READER_ENABLED
-
-/**
- * processNode:
- * @reader: the xmlReader
- *
- * Dump information about the current node
- */
-static void
-processNode(xmlTextReaderPtr reader) {
-  const xmlChar *name, *value;
-
-  name = xmlTextReaderConstName(reader);
-  if(name == NULL) name = BAD_CAST "--";
-
-  value = xmlTextReaderConstValue(reader);
-
-  printf("%d %d %s %d %d", xmlTextReaderDepth(reader),
-         xmlTextReaderNodeType(reader), name,
-         xmlTextReaderIsEmptyElement(reader), xmlTextReaderHasValue(reader));
-  if(value == NULL)
-    printf("\n");
-  else {
-    if(xmlStrlen(value) > 40)
-      printf(" %.40s...\n", value);
-    else
-      printf(" %s\n", value);
-  }
+void
+put_str_escaped(buffer* b, const char* str) {
+  stralloc esc;
+  stralloc_init(&esc);
+  byte_fmt_pred(str, str_len(str), &esc, fmt_escapecharc, iscntrl);
+  buffer_putsa(b, &esc);
 }
 
-/**
- * streamFile:
- * @filename: the file name to parse
- *
- * Parse and print information about an XML file.
- */
-static void
-streamFile(const char* filename) {
-  xmlTextReaderPtr reader;
-  int ret;
+void
+xml_dump(xmlnode* n, buffer* b) {
+  do {
+    stralloc path;
+    stralloc_init(&path);
 
-  reader = xmlReaderForFile(filename, NULL, 0);
-  if(reader != NULL) {
-    ret = xmlTextReaderRead(reader);
-    while(ret == 1) {
-      processNode(reader);
-      ret = xmlTextReaderRead(reader);
+    xml_path(n, &path);
+    buffer_putsa(b, &path);
+
+    if(n->type == XML_TEXT) {
+      buffer_puts(b, " \"");
+      put_str_escaped(b, n->name);
+      buffer_puts(b, "\"");
+
+    } else if(n->type == XML_ELEMENT) {
+      xml_print_attributes(n, b, ", ", ":", "");
     }
-    xmlFreeTextReader(reader);
-    if(ret != 0) { fprintf(stderr, "%s : failed to parse\n", filename); }
-  } else {
-    fprintf(stderr, "Unable to open %s\n", filename);
+
+    buffer_putnlflush(b);
+
+    if(n->children) xml_dump(n->children, b);
+
+  } while((n = n->next));
+}
+
+int
+main(int argc, char* argv[1]) {
+  stralloc tmp;
+  stralloc_init(&tmp);
+
+  buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
+
+  xmlnode* doc = xml_read_tree(&infile);
+
+  //  xml_print(doc);
+
+  // xml_debug(doc, buffer_1);
+  // xml_print(doc, buffer_1);
+
+  xmlnode* n = xml_find_element(doc, "signals");
+
+  xml_print(n, buffer_1);
+
+  xmlnode* n2;
+
+  if((n2 = xml_find_element_attr(doc, "signal", "name", "N$11"))) {
+    xml_print(n2, buffer_1);
+    xml_path(n2, &tmp);
+    buffer_putsa(buffer_1, &tmp);
+    buffer_putnlflush(buffer_1);
   }
+
+  if((n2 = xml_find_element_attr(doc, "element", "name", "C1"))) {
+    xml_print(n2, buffer_1);
+    xml_path(n2, &tmp);
+    buffer_putsa(buffer_1, &tmp);
+    buffer_putnlflush(buffer_1);
+  }
+
+  if((n2 = xml_find_element_attr(doc, "element", "name", "R1"))) {
+    xml_print(n2, buffer_1);
+    xml_path(n2, &tmp);
+    buffer_putsa(buffer_1, &tmp);
+    buffer_putnlflush(buffer_1);
+  }
+
+  xml_debug(doc, buffer_2);
+
+  xml_free(doc);
+
+  buffer_close(&b);
 }
-
-int
-main(int argc, char** argv) {
-  if(argc != 2) return 1;
-
-  /*
-   * this initialize the library and check potential ABI mismatches
-   * between the version it was compiled for and the actual shared
-   * library used.
-   */
-  LIBXML_TEST_VERSION
-
-  streamFile(argv[1]);
-
-  /*
-   * Cleanup function for the XML library.
-   */
-  xmlCleanupParser();
-  /*
-   * this is to debug memory for regression tests
-   */
-  xmlMemoryDump();
-  return 0;
-}
-
-#else
-int
-main(void) {
-  fprintf(stderr, "XInclude support not compiled in\n");
-  exit(1);
-}
-#endif

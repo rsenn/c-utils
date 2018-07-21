@@ -67,7 +67,7 @@ struct deviceset {
 };
 struct part {
   stralloc name;
-  stralloc value;
+  stralloc v;
   struct package* pkg;
   struct device* dev;
   struct deviceset* dset;
@@ -96,31 +96,31 @@ int str_isfloat(const char* s);
 int str_isspace(const char* s);
 void print_attrs(xmlnode* a_node);
 void print_element_attrs(xmlnode* a_node);
-int dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
+int dump_net(const void* k, size_t ksz, const void* v, size_t vsz, void* p);
 
 static cbmap_t devicesets, packages, parts, nets, symbols;
 
 /**
- * Reads a real-number value from the element/attribute given
+ * Reads a real-number v from the element/attribute given
  */
 double
-get_double(xmlnode* node, const char* key) {
+get_double(xmlnode* node, const char* k) {
   double ret = 0.0;
   const char* dstr = NULL;
-  if(xml_has_attribute(node, (char*)key)) {
-    dstr = (const char*)xml_get_attribute(node, (char*)key);
+  if(xml_has_attribute(node, (char*)k)) {
+    dstr = (const char*)xml_get_attribute(node, (char*)k);
     if(scan_double(dstr, &ret) <= 0) ret = DBL_MAX;
   }
   return ret;
 }
 
 /**
- * Reads an integer number value from the element/attribute given
+ * Reads an integer number v from the element/attribute given
  */
 int
-get_int(xmlnode* node, const char* key) {
+get_int(xmlnode* node, const char* k) {
   long ret = INT_MIN;
-  const char* istr = xml_get_attribute(node, key);
+  const char* istr = xml_get_attribute(node, k);
   if(istr) {
     while(*istr && str_chr("-0123456789", *istr) >= 11) ++istr;
     if(!scan_long(istr, &ret)) ret = INT_MAX;
@@ -189,19 +189,19 @@ get_or_create(cbmap_t m, char* name, size_t datasz) {
  * Index a cbmap
  */
 void*
-get_entry(cbmap_t map, const char* key) {
-  size_t len = str_len(key) + 1;
+get_entry(cbmap_t map, const char* k) {
+  size_t len = str_len(k) + 1;
   void* ret = NULL;
-  cbmap_get(map, (void*)key, len, &ret, &len);
+  cbmap_get(map, (void*)k, len, &ret, &len);
   return ret;
 }
 
 /**
- * Outputs name/value pair
+ * Outputs name/v pair
  */
 void
-print_name_value(buffer* b, const char* name, const char* value) {
-  buffer_putm(b, name, ": ", value ? value : "(null)");
+print_name_value(buffer* b, const char* name, const char* v) {
+  buffer_putm(b, name, ": ", v ? v : "(null)");
 }
 
 int
@@ -228,8 +228,8 @@ build_part(xmlnode* part) {
   struct part p;
   byte_zero(&p, sizeof(struct part));
   stralloc_copys(&p.name, name);
-  char* val = xml_get_attribute(part, "value");
-  if(val) stralloc_copys(&p.value, val);
+  char* val = xml_get_attribute(part, "v");
+  if(val) stralloc_copys(&p.v, val);
   p.x = get_double(part, "x") / 0.127;
   p.y = get_double(part, "y") / 0.127;
   if(pkgname && str_len(pkgname)) p.pkg = get_entry(packages, pkgname);
@@ -461,12 +461,8 @@ tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
 }
 
 int
-dump_package(const void* key,
-             size_t key_len,
-             const void* value,
-             size_t value_len,
-             void* user_data) {
-  const struct package* pkg = value;
+dump_package(const void* k, size_t ksz, const void* v, size_t vsz, void* p) {
+  const struct package* pkg = v;
   buffer_puts(buffer_1, "dump_package: ");
   buffer_putsa(buffer_1, &pkg->name);
   buffer_puts(buffer_1, " [");
@@ -503,12 +499,8 @@ dump_package(const void* key,
 }
 
 int
-dump_part(const void* key,
-          size_t key_len,
-          const void* value,
-          size_t value_len,
-          void* user_data) {
-  struct part* ptr = (struct part*)value;
+dump_part(const void* k, size_t ksz, const void* v, size_t vsz, void* p) {
+  struct part* ptr = (struct part*)v;
   assert(ptr->name.s);
   buffer_puts(buffer_2, "dump_part: ");
   buffer_putsa(buffer_2, &ptr->name);
@@ -540,13 +532,9 @@ net_connects(const struct net* net, struct part* part, int pin) {
 }
 
 int
-dump_net(const void* key,
-         size_t key_len,
-         const void* value,
-         size_t value_len,
-         void* user_data) {
-  struct net* n = (struct net*)value;
-  struct part* p = user_data;
+dump_net(const void* k, size_t ksz, const void* v, size_t vsz, void* u) {
+  struct net* n = (struct net*)v;
+  struct part* p = u;
   struct ref* rc;
   //  if(!net_connects(n, p, ))
   //  buffer* b = buffer_2;
@@ -647,7 +635,7 @@ print_attrs(xmlnode* node) {
   for(a = xml_attributes(node); a; a = a->next) {
     char* v = a->vals.val_chars;
     const char* quot = str_isdoublenum(v) ? "" : "\"";
-    buffer_putm(buffer_1, " ", a->key, "=", quot, v, quot);
+    buffer_putm(buffer_1, " ", a->key_len, "=", quot, v, quot);
   }
 }
 
