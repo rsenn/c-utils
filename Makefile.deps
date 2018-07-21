@@ -1036,15 +1036,21 @@ $(BUILDDIR)xml_debug.o: lib/xml/xml_debug.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_escape.o: lib/xml/xml_escape.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_find_all_pred.o: lib/xml/xml_find_all_pred.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_find_element.o: lib/xml/xml_find_element.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_find_element_attr.o: lib/xml/xml_find_element_attr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_find_pred.o: lib/xml/xml_find_pred.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_find_predicates.o: lib/xml/xml_find_predicates.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_free.o: lib/xml/xml_free.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_get_attribute.o: lib/xml/xml_get_attribute.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_get_document.o: lib/xml/xml_get_document.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_has_attribute.o: lib/xml/xml_has_attribute.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1055,6 +1061,8 @@ $(BUILDDIR)xml_path.o: lib/xml/xml_path.c
 $(BUILDDIR)xml_print.o: lib/xml/xml_print.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_print_attributes.o: lib/xml/xml_print_attributes.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_print_nodeset.o: lib/xml/xml_print_nodeset.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_reader_init.o: lib/xml/xml_reader_init.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1097,6 +1105,8 @@ $(BUILDDIR)xmltest2.o: xmltest2.c
 $(BUILDDIR)xmltest3.o: xmltest3.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xmltest4.o: xmltest4.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)eagle-to-circuit.o: eagle-to-circuit.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)hexedit.o: hexedit.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

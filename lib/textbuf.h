@@ -11,12 +11,11 @@ typedef struct {
   char buf[];
 } textbuf;
 
-void textbuf_destroy(buffer *b);
-void textbuf_init(buffer *b, buffer *src, size_t bufsize);
-ssize_t textbuf_read(int, char *, size_t, void*);
-void textbuf_free(buffer* b);
-uint64 textbuf_column(buffer *b);
-uint64 textbuf_line(buffer *b);
-textbuf* is_textbuf(buffer *b);
+textbuf* is_textbuf    (buffer*);
+uint64   textbuf_column(buffer*);
+void     textbuf_free  (buffer*);
+void     textbuf_init  (buffer*, buffer*, size_t);
+uint64   textbuf_line  (buffer*);
+ssize_t  textbuf_read  (int, char*, size_t, void*);
 
 #endif /* defined TEXTBUF_H */

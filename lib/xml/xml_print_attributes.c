@@ -3,9 +3,10 @@
 
 void
 xml_print_attributes(xmlnode* node, buffer* b, const char* sep, const char* eq, const char* quot) {
-  TUPLE* tpl = node->attributes->list_tuple;
+  HMAP_DB* db = node->attributes;
+  TUPLE* tpl = db->list_tuple;
   while(tpl) {
-    buffer_putm(b, sep, tpl->key, eq, quot);
+    buffer_putm(b, tpl == db->list_tuple ? "" : sep, tpl->key, eq, quot);
     switch(tpl->data_type) {
     case HMAP_DATA_TYPE_INT:
       buffer_putlong(b, tpl->vals.val_int);
