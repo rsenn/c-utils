@@ -507,7 +507,7 @@ $(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
 $(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit)
 
 
  #opensearch-dump 
@@ -897,6 +897,13 @@ endif
 #$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
 $(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS) -lm
 $(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(BUILDDIR)array.a $(BUILDDIR)cbmap.a $(BUILDDIR)strlist.a $(BUILDDIR)map.a $(BUILDDIR)hmap.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS)  
+ifeq ($(DO_STRIP),1)
+	#$(STRIP) $@
+endif
+
+$(BUILDDIR)eagle-to-circuit$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
+$(BUILDDIR)eagle-to-circuit$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-to-circuit.o $(BUILDDIR)cbmap.a $(BUILDDIR)xml.a $(BUILDDIR)array.a $(BUILDDIR)charbuf.a $(BUILDDIR)textbuf.a $(BUILDDIR)hmap.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a $(BUILDDIR)fmt.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

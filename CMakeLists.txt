@@ -310,7 +310,7 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
 access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3 xmltest4
-eagle-gen-cmds
+eagle-gen-cmds eagle-to-circuit
 )
 
 set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})
@@ -428,6 +428,7 @@ list(APPEND LIBXML2_LIBRARIES ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} $
 target_link_libraries(compiler-wrapper dir)
 target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
 target_link_libraries(eagle-gen-cmds cbmap hmap ${COMMON_LIBS} ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
+target_link_libraries(eagle-to-circuit cbmap xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
 target_link_libraries(plsconv playlist  buffer byte fmt scan str stralloc ${LIBXML2_LIBRARIES})
 target_link_libraries(xmltest ${LIBXML2_LIBRARIES})

@@ -24,13 +24,21 @@ typedef struct xmlnode {
 
 typedef struct xmlreader {
   buffer* b;
-  xmlnode *doc;
-  xmlnode *parent;
-  xmlnode **ptr;
+  xmlnode* doc;
+  xmlnode* parent;
+  xmlnode** ptr;
   int closing : 1;
   int self_closing : 1;
-  HMAP_DB *attrmap;
+  HMAP_DB* attrmap;
 } xmlreader;
+
+typedef struct xmlxpathctx {
+  xmlnode* doc;
+} xmlxpathctx;
+
+typedef struct xmlxpathobj {
+  xmlnode** nodeset;
+} xmlxpathobj;
 
 #define node_is_closing(n) ((n)->name[0] == '/')
 
@@ -55,6 +63,20 @@ xmlnode *xml_find_element_attr(xmlnode *node, const char *tag, const char *attr,
 const char *xml_get_attribute(xmlnode *node, const char *attr);
 int xml_has_attribute(xmlnode *node, const char *attr);
 xmlnode *xml_find_pred(xmlnode *node, int (*pred)(xmlnode*, void*), ...);
+xmlnode *xml_get_document(xmlnode *node);
+
+#define xml_attribute_list(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
+
+#define xml_nodeset_item(nodeset, i) ((nodeset[i]))
+static inline size_t
+xml_nodeset_length(xmlnode** nodeset) {
+  size_t i = 0;
+  if(nodeset) {
+    while(nodeset[i])
+      ++i;
+  }
+  return i;
+}
 
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48

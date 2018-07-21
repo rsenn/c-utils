@@ -85,9 +85,9 @@ int hmap_destroy(HMAP_DB** hmap_db);
 int hmap_truncate(HMAP_DB** HMAP_db);
 
 #define hmap_last(hmap_db, it)  ((hmap_db)->list_tuple == (*(it))->next)
-
-
 #define hmap_begin(hmap_db) (&(hmap_db)->list_tuple)
+
+
 //#define hmap_end(hmap_db) (&((hmap_db)->list_tuple->prev->next))
 #define hmap_end(hmap_db) ((hmap_db)->list_tuple ? &((hmap_db)->list_tuple->prev->next) : NULL)
 
