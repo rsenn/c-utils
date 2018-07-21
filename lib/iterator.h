@@ -4,12 +4,13 @@
 #include "array.h"
 #include "stralloc.h"
 #include "hmap.h"
+#include "xml.h"
 
 #define size(container) _Generic((container), \
-  stralloc*: (container)->len, \
-  array*: array_length((container)) \
-  )
-
+  stralloc*: stralloc_length, \
+  array*: array_length, \
+  nodeset*: xml_nodeset_length, \
+  )((container))
 
 #define begin(container) _Generic((container), \
    HMAP_DB*: hmap_begin, \
