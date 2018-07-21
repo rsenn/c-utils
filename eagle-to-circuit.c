@@ -289,7 +289,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     if(str_diff(nn, is_pin ? "pinref" : "contactref")) continue;
     char* part_name = xml_get_attribute(node, is_pin ? "part" : "element");
     struct ref* r =
-        array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
+      array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
     r->part = get(parts, part_name, sizeof(struct part));
     print_name_value(buffer_2, nn, part_name);
     buffer_putnlflush(buffer_2);
@@ -390,83 +390,58 @@ build_deviceset(xmlnode* set) {
 }
 
 /**
- * Run an XPath query and return a XPath object
- */
-// xmlnodeset*
-// getnodeset(void* n, const char* xpath) {
-//  xmlnode* node = n;
-//  xmlxpathctx* context;
-//  xmlnodeset* result;
-//  context = xmlXPathNewContext(xml_get_document(node));
-//  if(node != (xmlnode*)xml_get_document(node))
-//    xmlXPathSetContextNode(node, context);
-//  if(context == NULL) {
-//    buffer_putsflush(buffer_2, "Error in xmlXPathNewContext\n");
-//    return NULL;
-//  }
-//  result = xmlXPathEvalExpression((char*)xpath, context);
-//  xmlXPathFreeContext(context);
-//  if(result == NULL) {
-//    buffer_putsflush(buffer_2, "Error in xmlXPathEvalExpression\n");
-//    return NULL;
-//  }
-//  if(xmlXPathNodeSetIsEmpty(result->nodes)) {
-//    xmlXPathFreeObject(result);
-//    buffer_putsflush(buffer_2, "No result\n");
-//    return NULL;
-//  }
-//  buffer_putm(buffer_2, "xpath: ", xpath, ", num nodes: ");
-//  buffer_putulong(buffer_2, result && result->nodes ?
-//  xmlXPathNodeSetGetLength(result->nodes) : 0); buffer_putnlflush(buffer_2);
-//  return result;
-//}
-
-/**
  * Retrieve all <part> (schematic) or <element> (board) objects
  */
-/*
 strlist
-getparts(xmlnode* doc) {
+getparts(xmlnode* doc, const char* elem_name) {
+  size_t i, n;
   strlist ret;
   strlist_init(&ret);
-  xmlnodeset* nodes = getnodeset(doc, "//part | //element");
-  if(!nodes || !nodes->nodes)
+  xmlnodeset nodes = xml_find_all(doc, xml_match_name, elem_name);
+
+  if((n = xml_nodeset_length(&nodes)) == 0)
     return ret;
-  for(int i = 0; i < xmlXPathNodeSetGetLength(nodes->nodes); ++i) {
-    xmlnode* node = xmlXPathNodeSetItem(nodes->nodes, i);
+
+  for(i = 0; i < n; ++i) {
+    xmlnode* node = xml_nodeset_item(&nodes, i);
     strlist_push(&ret, xml_get_attribute(node, "name"));
   }
+
   return ret;
-}*/
+}
+
 
 /**
  * Iterate through a node-set, calling a functor for every item
  */
-/*
 void
-for_set(xmlNodeSet* set, void (*fn)(xmlnode*)) {
-  if(!set)
-    return;
-  for(int i = 0; i < xmlXPathNodeSetGetLength(set); ++i) {
-    xmlnode* node = xmlXPathNodeSetItem(set, i);
+for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
+  if(!ns) return;
+
+  xml_nodeset_iterator_t it, e;
+
+  for(it = begin(ns), e = end(ns); !iterator_equal(ns, it, e); iterator_increment(ns, it)) {
+    xmlnode* node = iterator_dereference(ns, it);
     fn(node);
   }
-}*/
+}
 
-/**
+/*
  * Get the top-leftmost x and y coordinate from a set of nodes.
  */
-/*
+
 void
-nodeset_topleft(xmlNodeSet* s, double* x, double* y) {
-  int len = xmlXPathNodeSetGetLength(s);
-  if(len == 0)
-    return;
-  xmlnode* node = xmlXPathNodeSetItem(s, 0);
+nodeset_topleft(xmlnodeset* s, double* x, double* y) {
+  int len = xml_nodeset_length(s);
+  if(len == 0)  return;
+
+  xmlnode* node = xml_nodeset_item(s, 0);
+
   *x = get_double(node, "x");
   *y = get_double(node, "y");
+
   for(int i = 1; i < len; ++i) {
-    node = xmlXPathNodeSetItem(s, i);
+    node = xml_nodeset_item(s, i);
     double nx = get_double(node, "x");
     double ny = get_double(node, "y");
     if(nx < *x)
@@ -474,7 +449,7 @@ nodeset_topleft(xmlNodeSet* s, double* x, double* y) {
     if(ny < *y)
       *y = ny;
   }
-}*/
+}
 
 /**
  * get extrema from x/y attrs
@@ -805,13 +780,19 @@ read_xml_tree(const char* filename, buffer* in) {
 }
 
 void
-xpath_query(xmlnode* doc, const char* q) {
-  print_name_value(buffer_1, "XPath query", q);
+xml_query(xmlnode* doc, const char* elem_name, const char* name) {
+  size_t i, n;
+  buffer_putm(buffer_1, "XML query (element=", elem_name);
+  if(name) buffer_putm(buffer_1, ", name=", name);
+  buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
-  xmlnodeset* xr = NULL; // = getnodeset(doc, q);
-  if(!xr || !xr->nodes) return;
-  for(int i = 0; i < xml_nodeset_length(xr); ++i) {
-    xmlnode* node = xml_nodeset_item(xr->nodes, i);
+
+    xmlnodeset xr = xml_find_all(doc, name ? xml_match_name_and_attr : xml_match_name, elem_name, "name", name);
+
+  if((n = xml_nodeset_length(&xr)) == 0) return;
+
+  for(i = 0; i < n; ++i) {
+    xmlnode* node = xml_nodeset_item(&xr, i);
     print_element_name(node);
     print_element_attrs(node);
     buffer_putnlflush(buffer_1);
@@ -822,28 +803,22 @@ xpath_query(xmlnode* doc, const char* q) {
     print_element_children(node);
     buffer_putnlflush(buffer_1);
     if(0) {
-      stralloc query;
-      stralloc_init(&query);
-      const char* elem_name = &q[2];
       elem_name = "*";
 
       for(TUPLE* a = xml_attribute_list(node); a; a = a->next) {
         const char* attr_name = a->key;
+
+        if(!str_equal(attr_name, "name")) continue;
+
         const char* v = xml_get_attribute(node, attr_name);
         if(!v || str_len(v) == 0) continue;
-        if(!str_diff(attr_name, "name")) {
-          elem_name = "*";
-          attr_name = NODE_NAME(node);
-        } else {
-          elem_name = attr_name;
-          attr_name = "name";
-        }
-        stralloc_copym(&query, "//", elem_name, "[@", attr_name, "='", v, "']",
-                       NULL);
-        stralloc_0(&query);
-        xpath_query(doc, query.s);
 
-        strlist part_names; // = getparts(doc);
+        xml_query(doc, elem_name,  v);
+
+        strlist part_names = getparts(doc, "element");
+        if(xml_nodeset_empty(&part_names))
+          part_names = getparts(doc, "part");
+
         strlist_dump(buffer_1, &part_names);
       }
     }
@@ -923,7 +898,7 @@ main(int argc, char* argv[]) {
   ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "L1");
   xml_print_nodeset(&ns, buffer_1);
 
-  //  xpath_query(doc, xq);
+  //  xml_query(doc, xq);
   //  xpath_foreach(doc, "//package", build_package);
   //  buffer_puts(buffer_2, "items in packages: ");
   //  buffer_putulong(buffer_2, cbmap_count(packages));

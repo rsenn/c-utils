@@ -45,7 +45,9 @@ typedef struct xmlnodeset {
 #define node_is_closing(n) ((n)->name[0] == '/')
 
 typedef int(xml_read_callback_fn)(xmlreader *r, xmlnodeid id, stralloc *name,
-                         stralloc *value, HMAP_DB **attrs);
+                                  stralloc *value, HMAP_DB **attrs);
+
+typedef int(xml_predicate_fn)(xmlnode*, ...);
 
 xmlnode*   xml_attrnode           (const char*, size_t, const char*, size_t);
 void       xml_debug              (xmlnode*, buffer*);
@@ -73,11 +75,13 @@ xmlnode*   xml_textnode           (const char*, size_t);
 
 #define xml_attribute_list(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 
-#define xml_nodeset_item(ns, i) ((ns[i]))
+#define xml_nodeset_item(ns, i) ((ns)->nodes[i])
 
 static inline xmlnode** xml_nodeset_begin(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[0] : NULL; }
 static inline xmlnode** xml_nodeset_end(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[ns->count] : NULL; }
+
 static inline size_t xml_nodeset_length(const xmlnodeset* set ) { return set->count; }
+#define xml_nodeset_empty(ns) (xml_nodeset_length(ns) == 0)
 
 typedef xmlnode** xml_nodeset_iterator_t;
 

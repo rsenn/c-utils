@@ -48,12 +48,12 @@ mingw | mingw32 | mingw64 {
 
 INCLUDEPATH += . $$PWD/lib
 
-win32: LIBXML2_DIR = e:/Libraries/libxml2-2.9.4/vs2015-x86
-win64: LIBXML2_DIR = e:/Libraries/libxml2-2.9.4/vs2015-x64
+#win32: LIBXML2_DIR = e:/Libraries/libxml2-2.9.4/vs2015-x86
+#win64: LIBXML2_DIR = e:/Libraries/libxml2-2.9.4/vs2015-x64
 
 DEFINES += LIBXML_STATIC=1
 INCLUDEPATH += $$LIBXML2_DIR/include $$LIBXML2_DIR/include/libxml $$PWD/lib
-!unix: LIBS += $$LIBXML2_DIR/lib/xml2.lib
+#!unix: LIBS += $$LIBXML2_DIR/lib/xml2.lib
 
 #WIN_ICONV_DIR = e:/Libraries/win-iconv-0.0.6/x86_64-w64-mingw32
 #INCLUDEPATH += $$WIN_ICONV_DIR/include $$PWD/lib
