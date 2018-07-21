@@ -92,7 +92,7 @@ static io_entry* io_fd_internal(int64 d, int flags) {
   } else
     do {
 #ifdef __GNUC__
-      asm("" : : : "memory");
+      __asm__("" : : : "memory");
 #endif
     } while(io_fds_inited != 1);
   if(!(e = iarray_allocate(&io_fds, d))) return 0;

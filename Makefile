@@ -171,9 +171,22 @@ else
   P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/sys*root/*/lib/pkgconfig)
   ifeq ($(call file-exists,$(P)),1)
   PKG_CONFIG_PATH := $(P)
+  SYSROOT := $(dir $(subst /lib/pkgconfig,,$(P)))
+$(info SYSROOT=$(SYSROOT))
   endif
 endif
 endif
+
+define get-compiler-defs =
+echo | $(CROSS_COMPILE)$(CC) $(1) -dM -E - | grep "^#define"
+endef
+
+C11_COMPILER_DEFS := $(shell $(call get-compiler-defs,-std=c11))
+#$(info C11_COMPILER_DEFS: $(C11_COMPILER_DEFS))
+ifneq ($(C11_COMPILER_DEFS),)
+CC += -std=c11
+endif
+
 
 AR := ar
 ifeq ($(call cmd-exists,$(CROSS_COMPILE)$(AR)),1)
@@ -604,20 +617,24 @@ endef
 
 CFLAGS += @$(FLAGS_FILE)
 
-ifeq ($(call file-exists,/usr/$(HOST)/sys-root/mingw),1)
-SYSROOT := /usr/$(HOST)/sys-root/mingw
+ifeq ($(SYSROOT),)
+
+ifeq ($(call file-exists,/$(HOST)/sys-root),1)
+SYSROOT := /$(HOST)/sys-root
 else
-ifeq ($(call file-exists,/usr/$(HOST)/sys-root/usr),1)
-SYSROOT := /usr/$(HOST)/sys-root/usr
+ifeq ($(call file-exists,/$(HOST)/sys-root),1)
+SYSROOT := /$(HOST)/sys-root
 else 
-ifeq ($(call file-exists,/usr/$(HOST)/sysroot/usr),1)
-SYSROOT := /usr/$(HOST)/sysroot/usr
+ifeq ($(call file-exists,/$(HOST)/sysroot),1)
+SYSROOT := /$(HOST)/sysroot
 else 
-ifeq ($(call file-exists,/opt/$(HOST)/sysroot/usr),1)
-SYSROOT := /opt/$(HOST)/sys-root/usr
+ifeq ($(call file-exists,/opt/$(HOST)/sysroot),1)
+SYSROOT := /opt/$(HOST)/sys-root
 endif
 endif
 endif
+endif
+
 endif
 
 

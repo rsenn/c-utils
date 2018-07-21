@@ -5,7 +5,8 @@
 
 static int
 is_whitespace(const char* x, size_t n) {
-  for(size_t i = 0; i < n; ++i) {
+  size_t i;
+  for(i = 0; i < n; ++i) {
     if(!isspace(x[i])) return 0;
   }
   return 1;
@@ -13,8 +14,9 @@ is_whitespace(const char* x, size_t n) {
 
 static void
 putsa(const char* name, stralloc* tag) {
+  size_t i;
   buffer_putm(buffer_1, name, ": ");
-  for(size_t i = 0; i < tag->len; ++i) {
+  for(i = 0; i < tag->len; ++i) {
     if(tag->s[i] == '\r')
       buffer_puts(buffer_1, "\\r");
     else if(tag->s[i] == '\n')
