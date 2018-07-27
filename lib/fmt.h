@@ -6,7 +6,7 @@
 //#include <stddef.h>
 /* for uint32 */
 #if defined(__MSYS__)
-#define size_t  __SIZE_TYPE__
+typedef __SIZE_TYPE__ size_t;
 #elif !defined(_MSC_VER)
 #include <stdint.h>
 #endif // !defined(_MSC_VER)
@@ -120,12 +120,20 @@ size_t fmt_strm_internal(char* dest, ...);
 #ifndef MAX_ALLOCA
 #define MAX_ALLOCA 100000
 #endif
-#define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if (c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
+#define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if(c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
 
 size_t fmt_uint64(char* dest, uint64 i);
 
 size_t fmt_escapecharquotedprintable(char *dest, unsigned int ch);
 size_t fmt_escapecharquotedprintableutf8(char *dest, unsigned int ch);
+
+unsigned int fmt_hexb(void *out, const void *d, register unsigned int len);
+size_t fmt_xmlescape(char *dest, unsigned int ch);
+size_t fmt_escapecharc(char *dest, unsigned int ch);
+
+size_t fmt_escapecharshell(char *dest, uint32 ch);
+char fmt_tohex(char c);
+size_t fmt_repeat(char *dest, const char *src, int n);
 
 #ifdef __cplusplus
 }

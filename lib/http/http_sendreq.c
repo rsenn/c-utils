@@ -1,6 +1,6 @@
-#include "http.h"
-#include "buffer.h"
-#include "socket.h"
+#include "../buffer.h"
+#include "../http.h"
+#include "../socket_internal.h"
 //#include <sys/socket.h>
 
 static ssize_t
@@ -13,8 +13,7 @@ http_sendreq(http* h) {
   char buf[1024];
   buffer b = BUFFER_INIT(do_send, h->sock, buf, sizeof(buf));
 
-  if(h->request == NULL)
-    return 0;
+  if(h->request == NULL) return 0;
 
   buffer_puts(&b, "GET ");
   buffer_putsa(&b, &h->request->location);

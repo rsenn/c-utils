@@ -10,6 +10,7 @@
 
 #include "uint16.h"
 #include "uint32.h"
+#include "windoze.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -102,52 +103,6 @@ int socket_quickack(int s,int value);
  * just one step, so we need an API to do it in one step */
 ssize_t socket_fastopen_connect4(int s,const char* ip,uint16 port,const char* buf,size_t len);
 ssize_t socket_fastopen_connect6(int s,const char* ip,uint16 port,uint32 scope_id,const char* buf,size_t len);
-
-
-#ifdef __MINGW32__
-#include <winsock2.h>
-#include <ws2tcpip.h>
-
-#ifndef EWOULDBLOCK
-#define EWOULDBLOCK WSAEWOULDBLOCK
-#define EINPROGRESS WSAEINPROGRESS
-#define EALREADY WSAEALREADY
-#define ENOTSOCK WSAENOTSOCK
-#define EDESTADDRREQ WSAEDESTADDRREQ
-#define EMSGSIZE WSAEMSGSIZE
-#define EPROTOTYPE WSAEPROTOTYPE
-#define ENOPROTOOPT WSAENOPROTOOPT
-#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
-#define ESOCKTNOSUPPORT WSAESOCKTNOSUPPORT
-#define EOPNOTSUPP WSAEOPNOTSUPP
-#define EPFNOSUPPORT WSAEPFNOSUPPORT
-#define EAFNOSUPPORT WSAEAFNOSUPPORT
-#define EADDRINUSE WSAEADDRINUSE
-#define EADDRNOTAVAIL WSAEADDRNOTAVAIL
-#define ENETDOWN WSAENETDOWN
-#define ENETUNREACH WSAENETUNREACH
-#define ENETRESET WSAENETRESET
-#define ECONNABORTED WSAECONNABORTED
-#define ECONNRESET WSAECONNRESET
-#define ENOBUFS WSAENOBUFS
-#define EISCONN WSAEISCONN
-#define ENOTCONN WSAENOTCONN
-#define ESHUTDOWN WSAESHUTDOWN
-#define ETOOMANYREFS WSAETOOMANYREFS
-#define ETIMEDOUT WSAETIMEDOUT
-#define ECONNREFUSED WSAECONNREFUSED
-#define ELOOP WSAELOOP
-#define EHOSTDOWN WSAEHOSTDOWN
-#define EHOSTUNREACH WSAEHOSTUNREACH
-#define EPROCLIM WSAEPROCLIM
-#define EUSERS WSAEUSERS
-#define EDQUOT WSAEDQUOT
-#define ESTALE WSAESTALE
-#define EREMOTE WSAEREMOTE
-#define EDISCON WSAEDISCON
-#endif
-
-#endif
 
 #ifdef __cplusplus
 }

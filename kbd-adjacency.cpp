@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include <functional> 
+#include <functional>
 #include <map>
 #include <vector>
 #include <initializer_list>
@@ -13,7 +13,7 @@
 //-----------------------------------------------------------------------------
 namespace std {
 const char* begin(const char* s) { return s; }
-const char* end(const char* s) { return begin(s)+std::strlen(s); }
+const char* end(const char* s) { return begin(s)+std::str_len(s); }
 }
 
 //-----------------------------------------------------------------------------
@@ -38,7 +38,7 @@ range_to_v(std::initializer_list<T> il) {
 
 //-----------------------------------------------------------------------------
 template<class Char, class Container>
-typename std::enable_if< 
+typename std::enable_if<
 std::is_same< Char, typename Container::value_type >::value,
 std::basic_ostream<Char>&
 >::type
@@ -152,8 +152,8 @@ int main() {
 
 	adjacency_t m = make_adjacency_matrix();
 
-	std::locale lc("de_CH.iso88591"); 
-	const ctype<char>& ct = std::use_facet< ctype<char> >(lc); 
+	std::locale lc("de_CH.iso88591");
+	const ctype<char>& ct = std::use_facet< ctype<char> >(lc);
 
 	dump_map(m);
 

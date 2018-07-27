@@ -1,5 +1,5 @@
-#include "strlist.h"
-#include "stralloc.h"
+#include "../strlist.h"
+#include "../stralloc.h"
 
 strlist
 strlist_range(const strlist* sl, size_t from, size_t to) {
@@ -13,4 +13,4 @@ strlist_range(const strlist* sl, size_t from, size_t to) {
   ret.sa.a = 0;
   return ret;
 }
-  
+

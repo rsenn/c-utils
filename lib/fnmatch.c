@@ -24,7 +24,7 @@
 
 
 #include <errno.h>
-#include <fnmatch.h>
+#include "fnmatch.h"
 #include <ctype.h>
 
 #if defined (STDC_HEADERS) || !defined (isascii)

@@ -1,122 +1,94 @@
-/**
- * section: xmlReader
- * synopsis: Parse multiple XML files reusing an xmlReader
- * purpose: Demonstrate the use of xmlReaderForFile() and
- * xmlReaderNewFile to parse XML files while reusing the reader object
- * and parser context.  (Note that the XMLReader functions require
- * libxml2 version later than 2.6.)
- * usage: reader4 <filename> [ filename ... ]
- * test: reader4 test1.xml test2.xml test3.xml > reader4.tmp && diff reader4.tmp $(srcdir)/reader4.res
- * author: Graham Bennett
- * copy: see Copyright for the status of this software.
- */
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
+#include "lib/hmap.h"
+#include "lib/iterator.h"
+#include "lib/stralloc.h"
+#include "lib/xml.h"
+#include <assert.h>
+#include <ctype.h>
+#include <sys/types.h>
 
-#include "buffer.h"
-#include <libxml/xmlreader.h>
+static buffer infile;
+static buffer b;
 
-#ifdef LIBXML_READER_ENABLED
-
-static void processDoc(xmlTextReaderPtr readerPtr) {
-    int ret;
-    xmlDocPtr docPtr;
-    const xmlChar *URL;
-
-    ret = xmlTextReaderRead(readerPtr);
-    while (ret == 1) {
-      ret = xmlTextReaderRead(readerPtr);
-    }
-
-    /*
-     * One can obtain the document pointer to get insteresting
-     * information about the document like the URL, but one must also
-     * be sure to clean it up at the end (see below).
-     */
-    docPtr = xmlTextReaderCurrentDoc(readerPtr);
-    if (NULL == docPtr) {
-      buffer_putsflush(buffer_2, "failed to obtain document\n");
-      return;
-    }
-      
-    URL = docPtr->URL;
-    if (NULL == URL) {
-      buffer_putsflush(buffer_2, "Failed to obtain URL\n");      
-    }
-
-    if (ret != 0) {
-      buffer_putmflush(buffer_2, URL, ": Failed to parse\n");
-      return;
-    }
-
-    printf("%s: Processed ok\n", (const char *)URL);
+void
+put_str_escaped(buffer* b, const char* str) {
+  stralloc esc;
+  stralloc_init(&esc);
+  byte_fmt_pred(str, str_len(str), &esc, fmt_escapecharc, iscntrl);
+  buffer_putsa(b, &esc);
 }
 
-int main(int argc, char **argv) {
-    xmlTextReaderPtr readerPtr;
-    int i;
-    xmlDocPtr docPtr;
+void
+xml_dump(xmlnode* n, buffer* b) {
+  do {
+    stralloc path;
+    stralloc_init(&path);
 
-    if (argc < 2)
-        return(1);
+    xml_path(n, &path);
+    buffer_putsa(b, &path);
 
-    /*
-     * this initialises the library and check potential ABI mismatches
-     * between the version it was compiled for and the actual shared
-     * library used.
-     */
-    LIBXML_TEST_VERSION
+    if(n->type == XML_TEXT) {
+      buffer_puts(b, " \"");
+      put_str_escaped(b, n->name);
+      buffer_puts(b, "\"");
 
-    /*
-     * Create a new reader for the first file and process the
-     * document.
-     */
-    readerPtr = xmlReaderForFile(argv[1], NULL, 0);
-    if (NULL == readerPtr) {
-      buffer_putmflush(buffer_2, argv[1], ": failed to create reader\n");      
-      return(1);
-    }
-    processDoc(readerPtr);
-
-    /*
-     * The reader can be reused for subsequent files.
-     */
-    for (i=2; i < argc; ++i) {
-      	xmlReaderNewFile(readerPtr, argv[i], NULL, 0);
-	if (NULL == readerPtr) {
-	  buffer_putmflush(buffer_2, argv[i], ": failed to create reader\n");      
-	  return(1);
-	}
-        processDoc(readerPtr);
+    } else if(n->type == XML_ELEMENT) {
+      xml_print_attributes(n, b, ", ", ":", "");
     }
 
-    /*
-     * Since we've called xmlTextReaderCurrentDoc, we now have to
-     * clean up after ourselves.  We only have to do this the last
-     * time, because xmlReaderNewFile calls xmlCtxtReset which takes
-     * care of it.
-     */
-    docPtr = xmlTextReaderCurrentDoc(readerPtr);
-    if (docPtr != NULL)
-      xmlFreeDoc(docPtr);
+    buffer_putnlflush(b);
 
-    /*
-     * Clean up the reader.
-     */
-    xmlFreeTextReader(readerPtr);
+    if(n->children) xml_dump(n->children, b);
 
-    /*
-     * Cleanup function for the XML library.
-     */
-    xmlCleanupParser();
-    /*
-     * this is to debug memory for regression tests
-     */
-    xmlMemoryDump();
-    return(0);
+  } while((n = n->next));
 }
 
-#else
-int main(void) {
-    buffer_putsflush(buffer_2, "xmlReader support not compiled in\n");
-    exit(1);
+int
+main(int argc, char* argv[1]) {
+  stralloc tmp;
+  stralloc_init(&tmp);
+
+  buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
+
+  xmlnode* doc = xml_read_tree(&infile);
+
+  //  xml_print(doc);
+
+  // xml_debug(doc, buffer_1);
+  // xml_print(doc, buffer_1);
+
+  xmlnode* n = xml_find_element(doc, "signals");
+
+  xml_print(n, buffer_1);
+
+  xmlnode* n2;
+
+  if((n2 = xml_find_element_attr(doc, "signal", "name", "N$11"))) {
+    xml_print(n2, buffer_1);
+    xml_path(n2, &tmp);
+    buffer_putsa(buffer_1, &tmp);
+    buffer_putnlflush(buffer_1);
+  }
+
+  if((n2 = xml_find_element_attr(doc, "element", "name", "C1"))) {
+    xml_print(n2, buffer_1);
+    xml_path(n2, &tmp);
+    buffer_putsa(buffer_1, &tmp);
+    buffer_putnlflush(buffer_1);
+  }
+
+  if((n2 = xml_find_element_attr(doc, "element", "name", "R1"))) {
+    xml_print(n2, buffer_1);
+    xml_path(n2, &tmp);
+    buffer_putsa(buffer_1, &tmp);
+    buffer_putnlflush(buffer_1);
+  }
+
+  xml_debug(doc, buffer_2);
+
+  xml_free(doc);
+
+  buffer_close(&b);
 }
-#endif

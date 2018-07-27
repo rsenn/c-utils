@@ -1,101 +1,78 @@
-#include <libxml/xmlreader.h>
+#include "../buffer.h"
+#include "../byte.h"
+#include "../playlist.h"
+#include "../scan.h"
+#include "../xml.h"
 #include <ctype.h>
-#include "playlist.h"
-#include "buffer.h"
+
+typedef struct {
+  stralloc tag;
+  stralloc title, location;
+  uint32 length;
+  playlist* pl;
+} track;
 
 int
-buffer_close_return_int(buffer *b) {
+buffer_close_return_int(buffer* b) {
   buffer_close(b);
   return 0;
 }
 
 static void
-xspf_process(playlist* pl) {
-  xmlTextReaderPtr reader = pl->ptr;
-  const char *name, *value;
-  static stralloc nodeText;
-  static struct {
-    stralloc title, location;
-    uint32 length;
-  } track;
-  int nodeType = xmlTextReaderNodeType(reader);
-  int nodeDepth = xmlTextReaderDepth(reader);
-  name = (const char*) xmlTextReaderConstName(reader);
-
-  if(nodeDepth <= 0) return;
-
-  if(name == NULL)
-    name = (const char*)(BAD_CAST "--");
-
-  value = (const char*) xmlTextReaderConstValue(reader);
-
-  if(nodeType == 15 && nodeDepth > 1) {
-
-    if(strcmp(name, "location") == 0) {
-      stralloc_copy(&track.location, &nodeText);
-      //stralloc_0(&track.location);
-    } else if(strcmp(name, "title") == 0) {
-      stralloc_copy(&track.title, &nodeText);
-      //stralloc_0(&track.title);
-    } else if(strcmp(name, "duration") == 0) {
-      track.length = atoi(nodeText.s);
-    } else if(strcmp(name, "track") == 0) {
-      //    printf("XTRACKX: title:\"%s\" location:\"%s\" length:%u\n", track.title.s, track.location.s, track.length);
-
-      if(pl->callback) {
-        pl->callback(pl, &track.title, &track.location, track.length);
-      }
-    }
-
-  }
-
-// if(xmlTextReaderIsEmptyElement(reader)) return;
-
-  if(value || xmlTextReaderReadString(reader)) {
-    const char* s = value ? (const char*)value : (const char*)xmlTextReaderReadString(reader);
-
-    while(*s && (isspace(*s) || *s == '\n' || *s == '\r' || *s == '\t' || *s == ' ')) {
-      s++;
-    }
-
-    stralloc_cats(&nodeText, s);
-    //stralloc_0(&nodeText);
-
-    if(nodeText.len && nodeText.s[0]) {
-      //  printf("@%d: \"%s\"\n", xmlTextReaderDepth(reader), nodeText.s);
-    }
-  }
-
-  /*  if(name[0] != '#') {
-  //   printf("%d: <%s%s(%d))>%s\n", xmlTextReaderDepth(reader), nodeType == 15 ? "/" : "", name, nodeType, nodeText.s);
-    }*/
-
-  if(name[0] != '#') {
-    stralloc_zero(&nodeText);
+xspf_process(playlist* pl, track* t, const char* tag, stralloc* value) {
+  if(str_equal(t->tag.s, "location")) {
+    stralloc_copy(&t->location, value);
+  } else if(str_equal(t->tag.s, "title")) {
+    stralloc_copy(&t->title, value);
+  } else if(str_equal(t->tag.s, "duration")) {
+    scan_uint(value->s, &t->length);
   }
 }
 
 static int
-xspf_reader(playlist*pl) {
-  xmlTextReaderPtr reader = pl->ptr;
-  int ret = xmlTextReaderRead(reader);
+xspf_xml_callback(xmlreader* reader,
+                  xmlnodeid id,
+                  stralloc* name,
+                  stralloc* value,
+                  HMAP_DB** attrs) {
+  track* t = reader->data;
+  playlist* pl = t->pl;
 
-  if(ret)
-    xspf_process(pl);
-  else
-    xmlFreeTextReader(reader);
+  if(id == XML_ELEMENT) {
+    stralloc_copy(&t->tag, name);
+    stralloc_nul(&t->tag);
 
+    if(reader->closing && str_equal(t->tag.s, "track")) {
+      pl->callback(pl, &t->title, &t->location, t->length);
+    }
 
-  return ret;
+  } else if(id == XML_TEXT) {
+    xspf_process(pl, t, t->tag.s, value);
+  }
+
+  return 1;
+}
+
+static int
+xspf_reader(playlist* pl) {
+  xml_read_callback(pl->ptr, &xspf_xml_callback);
+  return 0;
 }
 
 void
-playlist_xspf(playlist* pls, buffer *b) {
-  xmlTextReaderPtr rd;
-  rd = xmlReaderForIO((xmlInputReadCallback)buffer_get, (xmlInputCloseCallback)buffer_close_return_int, b, "", "UTF-8", 0);
-  pls->ptr = rd;
-  pls->type = XSPF;
-  pls->reader = (int(*)(playlist*))xspf_reader;
+playlist_xspf(playlist* pls, buffer* b) {
+  xmlreader rd;
+  xml_reader_init(&rd, b);
+  track* t = malloc(sizeof(track));
+  if(t == NULL) return;
 
-// xspf_reader(pls->ptr);
+  byte_zero(t, sizeof(track));
+  t->pl = pls;
+  rd.data = t;
+
+  pls->ptr = &rd;
+  pls->type = XSPF;
+
+  pls->reader = (int (*)(playlist*))xspf_reader;
+  // xspf_reader(pls->ptr);
 }

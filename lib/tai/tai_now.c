@@ -1,5 +1,5 @@
 #include <time.h>
-#include "tai.h"
+#include "../tai.h"
 
 void tai_now(struct tai *t)
 {

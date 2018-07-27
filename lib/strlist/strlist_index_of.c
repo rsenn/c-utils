@@ -1,6 +1,6 @@
 #include <string.h>
-#include "strlist.h"
-#include "uint64.h"
+#include "../strlist.h"
+#include "../uint64.h"
 
 int64
 strlist_index_of(strlist* sl, const char* str) {

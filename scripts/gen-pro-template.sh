@@ -3,8 +3,10 @@ gen-pro-template ()
 
   SOURCE=${1%.*}.c
 
-  SOURCES="$SOURCE"
-  HEADERS=$(for x in $(sed -n '/include/ { s,.*"\([^"]*\)".*,\1,p }' $SOURCES); do
+  SOURCES=$(scripts/get-sources.sh build/*/Debug/"${1%.*}")
+
+  : ${SOURCES:="$SOURCE"}
+  HEADERS=$(for x in $(sed -n '/include/ { s,.*"\([^"]*\)".*,\1, ; s,lib/,, ; p }' $SOURCES); do
   find * -iname "$x"; done )
 
   PROJECT=${SOURCE%.*}.pro

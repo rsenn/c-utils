@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "dir_internal.h"
+#include "../dir_internal.h"
 
 #if USE_READDIR
 #include <dirent.h>

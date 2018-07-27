@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "list.h"
+#include "../list.h"
 
 void
 list_unshift(list *l, link *p) {

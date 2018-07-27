@@ -24,53 +24,53 @@ typedef struct strlist
 # define strlist_init(l) stralloc_init(&(l)->sa)
 # define strlist_free(l) stralloc_free(&(l)->sa)
 
-size_t 
+size_t
 strlist_count (const strlist * sl);
 
 char *
 strlist_at (const strlist * sl, size_t pos);
 
-int64 
+int64
 strlist_index_of (strlist * sl, const char *str);
 
-int 
+int
 strlist_push (strlist * sl, const char *str);
 
-int 
+int
 strlist_pushm (strlist * sl, ...);
 
-int 
+int
 strlist_pushb (strlist * sl, const char *s, size_t n);
 
-int 
+int
 strlist_push_sa (strlist * sl, const stralloc * sa);
 
-int 
+int
 strlist_push_unique(strlist *sl, const char *s);
 
-void 
+void
 strlist_push_tokens(strlist *sl, const char *s, const char *delim);
 
-int 
+int
 strlist_cat (strlist * sl, const strlist* l);
 
-void 
+void
 strlist_dump (buffer * out, const strlist * sl);
 
-char** 
+char**
 strlist_to_argv(const strlist* sl);
 
-int 
+int
 strlist_unshift(strlist * sl, const char *s);
 
-int 
+int
 strlist_shift(strlist * sl, const char** s);
 
 #define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char *)0)
-int 
+int
 strlist_pushm_internal(strlist* sl, ...);
 
-void 
+void
 strlist_join(const strlist *sl, stralloc *sa, char delim);
 
 

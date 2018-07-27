@@ -1,6 +1,9 @@
-#include "buffer.h"
+#include "../buffer.h"
 
-char *
+char*
 buffer_peek(buffer* b) {
-  return b->x+b->p;
+  if(buffer_prefetch(b, 1) <= 0)
+    return NULL;
+
+  return b->x + b->p;
 }

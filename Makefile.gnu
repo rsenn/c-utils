@@ -33,27 +33,27 @@ libowfat.a: $(LIB_MODULES:%=%.o)
 
 decode-ls-lR.o: decode-ls-lR.c
 decode-ls-lR$(EXESUFFIX)$(EXEEXT): decode-ls-lR.o $(EXTRA_DEP) $(LIB_DEP)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 count-depth.o: count-depth.c
 count-depth$(EXESUFFIX)$(EXEEXT): count-depth.o $(EXTRA_DEP) $(LIB_DEP)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 list-r.o: list-r.c libowfat.a
 list-r$(EXESUFFIX)$(EXEEXT): list-r.o $(EXTRA_DEP) $(LIB_DEP)
-	$(CXX) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CXX) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 #list-r$(EXESUFFIX)$(EXEEXT): LIB_MODULES += file directory_iterator
 
 torrent-progress.o: torrent-progress.c
 torrent-progress$(EXESUFFIX)$(EXEEXT): torrent-progress.o $(EXTRA_DEP) $(LIB_DEP)
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 .c.o:
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CC) $(DEFS:%=-D%) $(CPPFLAGS) $(CFLAGS) -c $<
 
 .cpp.o:
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
+	$(CXX) $(DEFS:%=-D%) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 clean:
 	$(RM) -f $(EXTRA_MODULES:%=%.o) $(LIB_MODULES:%=%.o) list-r.o list-r$(EXESUFFIX)$(EXEEXT)

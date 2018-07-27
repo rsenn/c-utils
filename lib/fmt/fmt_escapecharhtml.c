@@ -1,9 +1,10 @@
 #ifndef __GNUC__
 
-#include "fmt.h"
+#include "../fmt.h"
 
-size_t fmt_escapecharhtml(char* dest,uint32_t ch) {
-  return fmt_escapecharxml(dest,ch);
+size_t
+fmt_escapecharhtml(char* dest, unsigned int ch) {
+  return fmt_escapecharxml(dest, ch);
 }
 
 #endif

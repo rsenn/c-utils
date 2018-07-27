@@ -31,13 +31,7 @@ int str_diff(const char* a, const char* b) __pure__;
  * limit characters match. */
 int str_diffn(const char* a, const char* b, size_t limit) __pure__;
 
-#ifdef __dietlibc__
-#include <string.h>
-#define str_len(foo) strlen(foo)
-#else
-/* str_len returns the index of \0 in s */
-size_t str_len(const char* s) __pure__;
-#endif
+size_t str_len(const char *in);
 
 /* str_chr returns the index of the first occurance of needle or \0 in haystack */
 size_t str_chr(const char* haystack, char needle) __pure__;
@@ -51,6 +45,7 @@ int str_start(const char* a, const char* b) __pure__;
 char *str_istr(char *s, char *find);
 char *str_tok(char *s, const char *delim, char **ptrptr);
 char *str_dup(const char *s);
+char *str_ndup(const char *s, size_t n);
 
 struct tm;
 

@@ -17,13 +17,13 @@
      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "byte.h"
-#include "buffer.h"
-#include "mmap.h"
-#include "open.h"
-#include "uint16.h"
-#include "uint32.h"
-#include "pe.h"
+#include "lib/byte.h"
+#include "lib/buffer.h"
+#include "lib/mmap.h"
+#include "lib/open.h"
+#include "lib/uint16.h"
+#include "lib/uint32.h"
+#include "lib/pe.h"
 
 int
 main(int argc, char* argv[]) {
@@ -64,7 +64,7 @@ main(int argc, char* argv[]) {
     opt_hdr_32 = (pe32_opt_header*)&dll[pe_header_offset + 4 + 20];
     /*opt_hdr_64 = (pe64_opt_header*)&dll[pe_header_offset + 4 + 20]; */
 
-    type = uint16_get(&opt_hdr_32->magic);  
+    type = uint16_get(&opt_hdr_32->magic);
     /*
       buffer_puts(buffer_2, "opt_hdr directory: ");
       buffer_putulong(buffer_2, (unsigned char*)&opt_hdr_32->number_of_rva_and_sizes - (unsigned char*)opt_hdr_32);
@@ -113,12 +113,12 @@ main(int argc, char* argv[]) {
 
     buffer_puts(buffer_1, "EXPORTS\n");
     (void)dll_name;
-    /* buffer_putm(buffer_1, "LIBRARY ", dll_name, "\n", NULL); */
+    /* buffer_putm(buffer_1, "LIBRARY ", dll_name, "\n"); */
 
     for(i = 0; i < nexp; i++) {
       uint32 name_rva;
       uint32_unpack(erva + name_rvas + i * 4, &name_rva);
-      buffer_putm(buffer_1, "  ", erva + name_rva, " @ ", NULL);
+      buffer_putm(buffer_1, "  ", erva + name_rva, " @ ");
       buffer_putulong(buffer_1, 1 + i);
       buffer_putnlflush(buffer_1);
     }

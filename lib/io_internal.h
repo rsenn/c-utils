@@ -1,22 +1,63 @@
+#ifndef IO_INTERNAL_H
+#define IO_INTERNAL_H 1
+
 #ifndef my_extern
-# define my_extern extern
+#if defined(_WIN32) || defined(_WIN64)
+#define my_extern extern __declspec(dllexport)
+#else
+#define my_extern extern
+#endif
 #endif
 
-#include "io.h"
 #include "array.h"
 #include "iarray.h"
-#ifdef __MINGW32__
-# include "socket.h"
+#include "io.h"
+#if defined(_WIN32) || defined(_WIN64)
+#include <io.h>
+#define read _read
+#define write _write
+#define open _open
+#define close _close
+#include "socket.h"
 my_extern HANDLE io_comport;
 #elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
-# define HAVE_EPOLL 1
-# define HAVE_SIGIO
-# ifdef HAVE_SIGIO
-# ifndef _GNU_SOURCE
-# define _GNU_SOURCE
-# endif
-#  include <signal.h>
-# endif
+#define HAVE_EPOLL 1
+#define HAVE_SIGIO
+#ifdef HAVE_SIGIO
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#include <signal.h>
+#endif
+#endif
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <io.h>
+#define lseek lseek64
+#define llseek lseek64
+#else
+#include <sys/time.h>
+#include <unistd.h>
+#endif
+
+#ifndef LSEEK
+#warning No LSEEK() function defined, defaulting to lseek
+#define LSEEK lseek
+#endif
+
+#ifndef STDIN_FILENO
+#define STDIN_FILENO 0
+#endif
+#ifndef STDOUT_FILENO
+#define STDOUT_FILENO 1
+#endif
+#ifndef STDERR_FILENO
+#define STDERR_FILENO 2
+#endif
+
+#if defined(__MINGW32__) || defined(__MINGW64__)
+int write();
+int read();
 #endif
 
 /* We simulate a level-triggered API on top of an event signalling
@@ -37,22 +78,22 @@ my_extern HANDLE io_comport;
 
 typedef struct {
   tai6464 timeout;
-  unsigned int wantread:1;	/* does the app want to read/write? */
-  unsigned int wantwrite:1;
-  unsigned int canread:1;	/* do we know we can read/write? */
-  unsigned int canwrite:1;
-  unsigned int nonblock:1;	/* is this socket non-blocking? */
-  unsigned int inuse:1;		/* internal consistency checking */
-  unsigned int kernelwantread:1;	/* did we tell the kernel we want to read/write? */
-  unsigned int kernelwantwrite:1;
-  unsigned int epolladded:1;
-#ifdef __MINGW32__
-  unsigned int readqueued:2;
-  unsigned int writequeued:2;
-  unsigned int acceptqueued:2;
-  unsigned int connectqueued:2;
-  unsigned int sendfilequeued:2;
-  unsigned int listened:1;
+  unsigned int wantread : 1; /* does the app want to read/write? */
+  unsigned int wantwrite : 1;
+  unsigned int canread : 1; /* do we know we can read/write? */
+  unsigned int canwrite : 1;
+  unsigned int nonblock : 1;       /* is this socket non-blocking? */
+  unsigned int inuse : 1;          /* internal consistency checking */
+  unsigned int kernelwantread : 1; /* did we tell the kernel we want to read/write? */
+  unsigned int kernelwantwrite : 1;
+  unsigned int epolladded : 1;
+#if defined(_WIN32) || defined(_WIN64)
+  unsigned int readqueued : 2;
+  unsigned int writequeued : 2;
+  unsigned int acceptqueued : 2;
+  unsigned int connectqueued : 2;
+  unsigned int sendfilequeued : 2;
+  unsigned int listened : 2;
 #endif
   long next_read;
   long next_write;
@@ -60,11 +101,11 @@ typedef struct {
   void* mmapped;
   long maplen;
   uint64 mapofs;
-#ifdef __MINGW32__
-  OVERLAPPED or,ow,os;	/* overlapped for read+accept, write+connect, sendfile */
+#if defined(_WIN32) || defined(_WIN64)
+  OVERLAPPED or, ow, os; /* overlapped for read+accept, write+connect, sendfile */
   HANDLE /* fd, */ mh;
   char inbuf[8192];
-  int bytes_read,bytes_written;
+  int bytes_read, bytes_written;
   DWORD errorcode;
   SOCKET next_accept;
 #endif
@@ -75,7 +116,6 @@ extern int io_sockets[2];
 
 iarray* io_getfds();
 
-my_extern iarray io_fds;
 my_extern uint64 io_wanted_fds;
 my_extern array io_pollfds;
 
@@ -86,19 +126,24 @@ my_extern enum __io_waitmode {
   UNDECIDED,
   POLL
 #ifdef HAVE_KQUEUE
-  ,KQUEUE
+  ,
+  KQUEUE
 #endif
 #ifdef HAVE_EPOLL
-  ,EPOLL
+  ,
+  EPOLL
 #endif
 #ifdef HAVE_SIGIO
-  ,_SIGIO
+  ,
+  _SIGIO
 #endif
 #ifdef HAVE_DEVPOLL
-  ,DEVPOLL
+  ,
+  DEVPOLL
 #endif
-#ifdef __MINGW32__
-  ,COMPLETIONPORT
+#if defined(_WIN32) || defined(_WIN64)
+  ,
+  COMPLETIONPORT
 #endif
 } io_waitmode;
 
@@ -130,3 +175,4 @@ struct eventpacket {
 };
 
 #define debug_printf(x)
+#endif

@@ -1,10 +1,10 @@
-#include "buffer.h"
-#include "http.h"
-#include "io.h"
-#include "iopause.h"
-#include "taia.h"
-#include "byte.h"
-#include "socket.h"
+#include "lib/buffer.h"
+#include "lib/http.h"
+#include "lib/io.h"
+#include "lib/iopause.h"
+#include "lib/taia.h"
+#include "lib/byte.h"
+#include "lib/socket.h"
 #include <errno.h>
 
 static int last_errno = 0;
@@ -18,7 +18,7 @@ set_timeouts(int seconds) {
 }
 
 static ssize_t
-do_recv(int64 s, void* buf, size_t len) {
+do_recv(int s, void* buf, size_t len, void* ptr) {
   ssize_t ret = recv(s, buf, len, 0);
   if(ret == -1) {
     last_errno = errno;
@@ -31,6 +31,10 @@ do_recv(int64 s, void* buf, size_t len) {
   return ret;
 }
 
+static const char* const url_host = "127.0.0.1";
+static const char* const url_location = "/.*.jpeg";
+static const uint16 url_port = 8000;
+
 int main(int argc, char* argv[]) {
 
   http h;
@@ -39,10 +43,10 @@ int main(int argc, char* argv[]) {
   char inbuf[8192];
   int ret;
 
-  http_init(&h, "map.bern.ch", 80);
-  ret = http_get(&h, "/stadtplan/");
+  http_init(&h, url_host,url_port);
+  ret = http_get(&h, url_location);
 
-  buffer_init(&in, do_recv, h.sock, inbuf, sizeof(inbuf));
+  buffer_init(&in, (void*)do_recv, h.sock, inbuf, sizeof(inbuf));
 
   buffer_puts(buffer_2, "http_get() = ");
   buffer_putlong(buffer_2, (long)ret);

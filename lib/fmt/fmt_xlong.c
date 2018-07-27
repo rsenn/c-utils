@@ -1,11 +1,11 @@
-#include "fmt.h"
+#include "../fmt.h"
 
 static inline char tohex(char c) {
   return(char)(c >= 10 ? c - 10 + 'a' : c + '0');
 }
 
 size_t fmt_xlong(char *dest, unsigned long i) {
-  register unsigned long len, tmp;
+  unsigned long len, tmp;
   /* first count the number of bytes needed */
   for(len = 1, tmp = i; tmp > 15; ++len) tmp >>= 4;
   if(dest)

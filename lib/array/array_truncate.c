@@ -1,6 +1,6 @@
-#include "likely.h"
-#include "safemult.h"
-#include "array.h"
+#include "../likely.h"
+#include "../safemult.h"
+#include "../array.h"
 
 /* I'm not sure I understand what this function is good for */
 void array_truncate(array* x, uint64 membersize, int64 len) {

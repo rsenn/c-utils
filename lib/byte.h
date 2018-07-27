@@ -39,14 +39,30 @@ int byte_diff(const void* a, size_t len, const void* b) __pure__;
 /* byte_zero sets the bytes out[0], out[1], ..., out[len-1] to 0 */
 void byte_zero(void* out, size_t len);
 
-#define byte_equal(s,n,t) (!byte_diff((s),(n),(t)))
+//#define byte_equal(s,n,t) (!byte_diff((s),(n),(t)))
 
 int byte_equal_notimingattack(const void* a, size_t len,const void* b) __pure__;
 
 void byte_fill(void *out, size_t len, int c);
 
+int byte_case_diff(const void *x1, unsigned int len, const void *x2);
+unsigned int byte_case_equal(register const void *s, register unsigned int len, register const void *t);
+void byte_copyr(void *out, size_t len, const void *in);
+unsigned int byte_count(const void *s, register unsigned int n, char c);
+int byte_diff(const void *a, size_t len, const void *b);
+unsigned int byte_equal(const void *s, unsigned int n, const void *t);
+void byte_fill(void *out, size_t len, int c);
+void byte_lower(void *s, register unsigned int len);
+
 #if defined(__i386__) || defined(__x86_64__)
 #define UNALIGNED_ACCESS_OK
+#endif
+
+#ifdef STRALLOC_H
+size_t byte_fmt(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch));
+size_t byte_fmt_pred(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch), int (*pred)(int));
+
+size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));
 #endif
 
 #ifdef __cplusplus

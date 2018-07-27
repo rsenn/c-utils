@@ -1,4 +1,4 @@
-#include "pe.h"
+#include "../pe.h"
 
 static const char
 pe_offsets[27][2] = {

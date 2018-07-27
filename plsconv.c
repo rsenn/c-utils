@@ -1,10 +1,15 @@
-#include "playlist.h"
-#include "open.h"
-#include "buffer.h"
-#include "byte.h"
-#include "str.h"
-#include <unistd.h>
+#include "lib/playlist.h"
+#include "lib/open.h"
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/str.h"
+#include "lib/io_internal.h"
 
+#include <getopt.h>
+#include <stdio.h>
+
+/*extern ssize_t write();
+*/
 playlist pls1, pls2;
 static buffer outfile;
 static char outbuf[1024];
@@ -22,8 +27,8 @@ mybasename(char* name) {
 static void
 playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 length) {
   (void)pl;
-  /*  buffer_putm(buffer_2, "Title: ", title->s, "\n", NULL);
-    buffer_putm(buffer_2, "Location: ", location->s, "\n", NULL);
+  /*  buffer_putm(buffer_2, "Title: ", title->s, "\n");
+    buffer_putm(buffer_2, "Location: ", location->s, "\n");
     buffer_puts(buffer_2, "Duration: ");
     buffer_putulong(buffer_2, length);
     buffer_putnlflush(buffer_2);
@@ -149,6 +154,6 @@ main(int argc, char *argv[]) {
   playlist_write_finish(&outfile, &pls1);
   buffer_flush(&outfile);
   buffer_close(&outfile);
-  
+
   return 0;
 }

@@ -1,4 +1,4 @@
-#include "strlist.h"
+#include "../strlist.h"
 
 char*
 strlist_at(const strlist* sl, size_t i) {

@@ -1,10 +1,15 @@
-#define _LARGEFILE64_SOURCE     /* See feature_test_macros(7) */
+#include "../io_internal.h"
 #include <sys/types.h>
+#if defined(_WIN32) || defined(_WIN64)
+#else
 #include <unistd.h>
+#endif
 
-#include "playlist.h"
-#include "byte.h"
-#include "fmt.h"
+#include <stdio.h>
+
+#include "../playlist.h"
+#include "../byte.h"
+#include "../fmt.h"
 
 #if !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__dietlibc__) && !defined(__APPLE__)
 #define lseek lseek64
@@ -23,14 +28,14 @@ playlist_write_finish(buffer* b, playlist* pl) {
       lenbuf[fmt_ulong(lenbuf, pl->count)] = '\n';
 
 
-      buffer_flush(b); 
+      buffer_flush(b);
 
-      lseek(b->fd, pl->num_items_pos, 0);
+      LSEEK(b->fd, pl->num_items_pos, 0);
 
       buffer_put(b, lenbuf, sizeof(lenbuf));
       buffer_flush(b);
 
-      lseek(b->fd, 0, SEEK_END);
+      LSEEK(b->fd, 0, SEEK_END);
 
       break;
     }
@@ -38,7 +43,7 @@ playlist_write_finish(buffer* b, playlist* pl) {
       buffer_puts(b, "  </trackList>\n</playlist>\n");
       break;
     }
-    case UNKNOWN: 
+    case UNKNOWN:
     default: {
                return 0;
     }

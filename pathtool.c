@@ -1,5 +1,5 @@
-#include "buffer.h"
-#include "strlist.h"
+#include "lib/buffer.h"
+#include "lib/strlist.h"
 #include <stdlib.h>
 #include <getopt.h>
 
@@ -107,7 +107,7 @@ main(int argc, char* argv[]) {
     buffer_putsa(buffer_1, &out);
     buffer_putnlflush(buffer_1);
   }
-    
+
 
   return 0;
 }

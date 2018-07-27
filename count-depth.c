@@ -4,14 +4,14 @@
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 #define _FILE_OFFSET_BITS 64
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #else
 #include <io.h>
 #endif
 #include <limits.h>
-#include "buffer.h"
-#include "fmt.h"
+#include "lib/buffer.h"
+#include "lib/fmt.h"
 
 #ifndef MAXIMUM_PATH_LENGTH
 #define MAXIMUM_PATH_LENGTH (4096 - 1)

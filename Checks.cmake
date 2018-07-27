@@ -92,7 +92,7 @@ file( WRITE "${CMAKE_BINARY_DIR}/havesigio.h" "#define HAVE_SIGIO\n")
 endif( HAVE_SIGIO )
 
 message( STATUS "Writing ${CMAKE_CURRENT_BINARY_DIR}/trysl.c" )
-file( WRITE "${CMAKE_CURRENT_BINARY_DIR}/trysl.c" "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() {\nsocklen_t t;\n(void)t;\nreturn 0;\n}" )
+file( WRITE "${CMAKE_CURRENT_BINARY_DIR}/trysl.c" "#include <sys/types.h>\n#if defined(_WIN32) || defined(_WIN64)\n#include <winsock.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() {\nsocklen_t t;\n(void)t;\nreturn 0;\n}" )
 try_compile( HAVE_SL ${CMAKE_CURRENT_BINARY_DIR} SOURCES "${CMAKE_CURRENT_BINARY_DIR}/trysl.c" )
 if( NOT HAVE_SL )
 file( WRITE "${CMAKE_BINARY_DIR}/havesl.h" "typedef int socklen_t;\n")

@@ -25,8 +25,9 @@ MSDN Magazine articles
 
 //#include <windows.h>
 
-//#include "imagehlp.h"
-#include "uint64.h"
+//#include "lib/imagehlp.h"
+#include "lib/uint64.h"
+#include "lib/str.h"
 
 //#include <winnt.h>
 
@@ -34,6 +35,7 @@ MSDN Magazine articles
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <inttypes.h>
 
 #include "libntldd.h"
 
@@ -107,7 +109,7 @@ print_image_links(int first, int verbose, int unused, int datarelocs, int functi
     for(i = 0; i < self->imports_len; i++) {
       struct import_table_item *item = &self->imports[i];
 
-      printf("\t%*s%llX %llX %3d %s %s %s\n", depth, depth > 0 ? " " : "", \
+      printf("\t%*s%" PRIx64 " %" PRIx64 " %3d %s %s %s\n", depth, depth > 0 ? " " : "", \
              item->orig_address, item->address, item->ordinal, \
              item->name ? item->name : "<NULL>",
              item->mapped ? "" : "<UNRESOLVED>",
@@ -197,8 +199,8 @@ int main(int argc, char **argv) {
       break;
     } else if(strcmp(argv[i], "--") == 0) {
       files = 1;
-    } else if(strlen(argv[i]) > 1 && argv[i][0] == '-' && (argv[i][1] == '-' ||
-              strlen(argv[i]) == 2) && !files) {
+    } else if(str_len(argv[i]) > 1 && argv[i][0] == '-' && (argv[i][1] == '-' ||
+              str_len(argv[i]) == 2) && !files) {
       fprintf(stderr, "Unrecognized option `%s'\n\
 Try `ntldd --help' for more information\n", argv[i]);
       skip = 1;

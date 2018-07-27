@@ -5,7 +5,7 @@
 
 #include <sys/stat.h>
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #endif
 #if defined(_WIN32) || defined(_WIN32) || defined(__MSYS__)
@@ -13,27 +13,25 @@
 #else
 #include <sys/mman.h>
 #endif
-#include "open.h"
-#include "mmap.h"
+#include "../open.h"
+#include "../mmap.h"
 
 char mmap_empty[] = { 0 };
 
-char* mmap_read_fd(int fd, size_t* filesize)
-{
+char* mmap_read_fd(int fd, size_t* filesize) {
 #if defined(_WIN32) || defined(_WIN32) || defined(__MSYS__)
   HANDLE m;
   char* map;
-  m=CreateFileMapping((HANDLE)(size_t)fd, 0,PAGE_READONLY,0, 0, NULL);
+  m = CreateFileMapping((HANDLE)(size_t)fd, 0, PAGE_READONLY, 0, 0, NULL);
   map = 0;
   if(m)
-    map=MapViewOfFile(m, FILE_MAP_READ, 0, 0, 0);
+    map = MapViewOfFile(m, FILE_MAP_READ, 0, 0, 0);
   CloseHandle(m);
   return map;
 #else
   struct stat st;
   char* map = mmap_empty;
-  if(fstat(fd, &st) == 0 && (*filesize = st.st_size))
-  {
+  if(fstat(fd, &st) == 0 && (*filesize = st.st_size)) {
     map = mmap(0, *filesize, PROT_READ, MAP_SHARED, fd, 0);
     if(map == (char *) - 1)
       map = 0;

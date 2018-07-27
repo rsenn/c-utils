@@ -1,6 +1,5 @@
-#include "str.h"
-#include "stralloc.h"
-
+#include "../str.h"
+#include "../stralloc.h"
 
 char*
 str_decamelize(const char* s) {

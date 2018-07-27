@@ -1,8 +1,9 @@
+#include "../str.h"
 #include <assert.h>
-#include "dir_internal.h"
+#include "../dir_internal.h"
 
 #if USE_WIDECHAR
-#include "utf8.h"
+#include "../utf8.h"
 #endif
 
 int dir_open(struct dir_s* d, const char* p) {

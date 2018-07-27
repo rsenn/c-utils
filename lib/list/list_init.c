@@ -1,5 +1,5 @@
-#include "list.h"
-#include "byte.h"
+#include "../list.h"
+#include "../byte.h"
 
 void
 list_init(list* l) {
