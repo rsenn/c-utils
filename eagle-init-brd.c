@@ -11,8 +11,19 @@
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/xml.h"
+
+
 #define END_OF_LINE "; "
 //#define END_OF_LINE ";\n"
+
+
+static int
+xml_callback(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
+
+
+static int
+xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
+
 static stralloc element_name, character_buf;
 static float const unit_factor = 25.4, scale_factor = 0.666666, grid_mils = 100;
 static float min_x = 0.0, max_x = 0.0, min_y = 0.0, max_y = 0.0;
@@ -330,7 +341,7 @@ static const char*
 get_attribute(xmlnode* e, const char* name) {
   TUPLE* t;
 
-  if(hmap_search(xml_attributes(e), name, str_len(name), &t)) {
+  if(hmap_search(e->attributes, (char*)name, str_len(name), &t) == HMAP_SUCCESS) {
     return t->vals.val_chars;
   }
   return NULL;
@@ -341,7 +352,7 @@ static int
 get_attribute_sa(stralloc* sa, xmlnode* n, const char* name) {
   TUPLE* t;
 
-  if(hmap_search(xml_attributes(n), name, str_len(name), &t)) {
+  if(hmap_search(n->attributes, (char*)name, str_len(name), &t) == HMAP_SUCCESS) {
     stralloc_copyb(sa, t->vals.val_chars, t->data_len);
     if(sa->len > 0 && sa->s[sa->len - 1] == '\0')
       --sa->len;
@@ -482,137 +493,66 @@ int read_xmlfile(const char* filename);
 int parse_xmlfile(const char* filename, xmlnode** p_doc);
 //xmlSAXHandler make_sax_handler();
 /* ----------------------------------------------------------------------- */
-//static void on_attribute_decl(void*,
-//                              const char*,
-//                              const char*,
-//                              int,
-//                              int,
-//                              const char*,
-//                              xmlEnumeration*);
-//static void after_element(const char*);
-//static void on_start_element(void*, const char*, const char**);
-//static void on_end_element(void*, const char*);
-//static void on_start_element_ns(void*,
-//                                const char*,
-//                                const char*,
-//                                const char*,
-//                                int,
-//                                const char**,
-//                                int,
-//                                int,
-//                                const char**);
-//static void
-//on_end_element_ns(void*, const char*, const char*, const char*);
-//static void on_characters(void* ctx, const char* ch, int len);
-/* ----------------------------------------------------------------------- */
-//int
-//read_xmlfile(const char* filename) {
-//  FILE* f;
-//  int res;
-//  char chars[1024];
-//  f = fopen(filename, "r");
-
-//  if(!f) {
-//    puts("file open error.");
-//    return 1;
-//  }
-//  res = fread(chars, 1, 4, f);
-
-//  if(res <= 0) {
-//    fclose(f);
-//    return 1;
-//  }
-//  xmlSAXHandler sax_hander = make_sax_handler();
-//  xmlParserCtxt* ctxt =
-//    xmlCreatePushParserCtxt(&sax_hander, NULL, chars, res, NULL);
-
-//  while((res = fread(chars, 1, sizeof(chars), f)) > 0) {
-//    if(xmlParseChunk(ctxt, chars, res, 0)) {
-//      xmlParserError(ctxt, "xmlParseChunk");
-//      return 1;
-//    }
-//  }
-//  xmlParseChunk(ctxt, chars, 0, 1);
-//  xmlFreeParserCtxt(ctxt);
-//  xmlCleanupParser();
-//  fclose(f);
-//  return 0;
-//}
 
 /* ----------------------------------------------------------------------- */
-//int
-//parse_xmlfile(const char* filename, xmlnode** p_doc) {
-//  xmlParserCtxt* ctxt; /* the parser context */
-//  xmlnode* doc;         /* the resulting document tree */
-//  /* create a parser context */
-//  ctxt = xmlNewParserCtxt();
+int
+read_xmlfile(const char* filename) {
 
-//  if(ctxt == NULL) {
-//    fprintf(stderr, "Failed to allocate parser context\n");
-//    return 1;
-//  }
-//  /* parse the file, activating the DTD validation option */
-//  doc = xmlCtxtReadFile(ctxt,
-//                        filename,
-//                        NULL,
-//                        XML_PARSE_RECOVER | XML_PARSE_NOENT |
-//                        XML_PARSE_NOBLANKS | XML_PARSE_NSCLEAN |
-//                        XML_PARSE_COMPACT);
-//  /* check if parsing suceeded */
+  buffer input;
+  xmlreader r;
+  buffer_mmapprivate(&input, filename);
 
-//  if(doc == NULL) {
-//    fprintf(stderr, "Failed to parse %s\n", filename);
-//    xmlFreeParserCtxt(ctxt);
-//    return 1;
-//  }
-//  /* check if validation suceeded */
-//  /*    if(ctxt->valid == 0)
-//        fprintf(stderr, "Failed to validate %s\n", filename);
-//  */
-//  *p_doc = doc;
-//  /* free up the parser context */
-//  xmlFreeParserCtxt(ctxt);
-//  return 0;
-//}
+  xml_reader_init(&r, &input);
+  xml_read_callback(&r, &xml_read_node);
+
+  return 0;
+}
+
+/* ----------------------------------------------------------------------- */
+int
+parse_xmlfile(const char* filename, xmlnode** p_doc) {
+  buffer input;
+  buffer_mmapprivate(&input, filename);
+
+  *p_doc = xml_read_tree(&input);
+
+  return *p_doc;
+}
 
 ///* ----------------------------------------------------------------------- */
-//xmlSAXHandler
-//make_sax_handler() {
-//  xmlSAXHandler sax_hander;
-//  memset(&sax_hander, 0, sizeof(xmlSAXHandler));
-//  /*//sax_hander.initialized = 0;
-//   */
-//  sax_hander.initialized = XML_SAX2_MAGIC;
-//  sax_hander.startElement = on_start_element;
-//  sax_hander.startElementNs = on_start_element_ns;
-//  sax_hander.endElement = on_end_element;
-//  sax_hander.endElementNs = on_end_element_ns;
-//  sax_hander.characters = on_characters;
-//  /* sax_hander.attributeDecl = on_attribute_decl; */
-//  return sax_hander;
-//}
 
-/* ----------------------------------------------------------------------- */
-//static void
-//on_attribute_decl(void* ctx,
-//                  const char* elem,
-//                  const char* fullname,
-//                  int type,
-//                  int def,
-//                  const char* defaultValue,
-//                  xmlEnumeration* tree) {
-//  /* printf("<%s> %s=\"%s\"\n", get_element_name(), fullname, defaultValue); */
-//}
+static int
+xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+
+  stralloc_nul(name);
+  if(reader->closing && id == XML_ELEMENT) {
+    on_end_element(reader, name->s);
+  } else if(id == XML_TEXT) {
+    on_characters(reader, name->s, name->len);
+  } else if(id == XML_ELEMENT) {
+    on_start_element(reader, name->s, attrs);
+  }
+}
 
 /* ----------------------------------------------------------------------- */
 static void
-on_start_element(void* ctx, const char* name, const char** attrs) {
+on_attribute_decl(void* ctx,
+                  const char* elem,
+                  const char* fullname,
+                  int type,
+                  int def,
+                  const char* defaultValue) {
+  /* printf("<%s> %s=\"%s\"\n", get_element_name(), fullname, defaultValue); */
+}
+
+/* ----------------------------------------------------------------------- */
+void
+on_start_element(void* ctx, const char* name, HMAP_DB* attrs) {
   int i, numAttrs = 0;
   set_element_name((const char*)name);
 
   if(attrs) {
-    for(i = 0; attrs[i]; ++i) {}
-    numAttrs = i >> 1;
+    numAttrs = hmap_size(&attrs);
   }
   printf("<%s> %d\n", name, numAttrs);
 
@@ -650,10 +590,10 @@ on_start_element_ns(void* ctx,
 }
 
 /* ----------------------------------------------------------------------- */
-//static void
-//on_end_element(void* ctx, const char* name) {
-//  after_element((const char*)name);
-//}
+void
+on_end_element(void* ctx, const char* name) {
+  after_element((const char*)name);
+}
 
 /* ----------------------------------------------------------------------- */
 //static void
@@ -665,19 +605,19 @@ on_start_element_ns(void* ctx,
 //}
 
 /* ----------------------------------------------------------------------- */
-//atic void
-//after_element(const char* name) {
-//  stralloc saa;
-//  stralloc_init(&saa);
-//  attr_list(&saa, hashmap);
-//  stralloc_nul(&saa);
+void
+after_element(const char* name) {
+  stralloc saa;
+  stralloc_init(&saa);
+  attr_list(&saa, hashmap);
+  stralloc_nul(&saa);
 
-//  if(saa.len) printf("<%s> attrs:%s\n", get_element_name(), saa.s);
-//  stralloc_free(&saa);
-//  hmap_destroy(&hashmap);
-//  hmap_init(1024, &hashmap);
-//  stralloc_zero(&character_buf);
-//}
+  if(saa.len) printf("<%s> attrs:%s\n", get_element_name(), saa.s);
+  stralloc_free(&saa);
+  hmap_destroy(&hashmap);
+  hmap_init(1024, &hashmap);
+  stralloc_zero(&character_buf);
+}
 
 /* ----------------------------------------------------------------------- */
 size_t
@@ -697,13 +637,13 @@ str_escapen(char* out, const char* in, size_t n) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 on_characters(void* ctx, const char* ch, int len) {
-  char* chars = malloc(len + 1);
+  char* chars = str_ndup(ch, len);
   char* escaped = malloc(len * 2 + 1);
   int i;
   str_copyn(chars, (const char*)ch, len);
-  str_escapen(escaped, chars, str_len(chars));
+  str_escapen(escaped, chars, len);
 
   for(i = len - 1; i >= 0; --i) {
     if(!isspace(escaped[i])) break;
@@ -732,6 +672,7 @@ mystr_basename(const char* filename) {
 static int
 xml_callback(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs){
 
+
 }
 
 /* ----------------------------------------------------------------------- */
@@ -747,7 +688,8 @@ main(int argc, char* argv[]) {
   if(argc > 1) {
     filename = argv[1];
   } else {
-    fprintf(stderr, "Usage: %s <filename>\n", mystr_basename(argv[0]));
+    buffer_putm(buffer_2, "Usage: ", mystr_basename(argv[0]), " <filename>");
+    buffer_putnlflush(buffer_2);
     return 1;
   }
   /*   if(read_xmlfile(f)) {*/
@@ -770,7 +712,7 @@ main(int argc, char* argv[]) {
   print_element_names(root_element);
 
 
-  //  print_list(instances_db);
+    print_list(instances_db);
   //  print_list(parts_db);
   {
     const part_t* tmp = get_part("IC1");
@@ -779,7 +721,8 @@ main(int argc, char* argv[]) {
   /*hmap_foreach(instances_db, &dump_instance);*/
   /*hmap_foreach(parts_db, &dump_part);*/
   hmap_foreach(parts_db, (void*)&each_part);
-  printf("\n");
+
+  buffer_flush(buffer_1);
   /* free up the resulting document */
   xml_free(doc);
   return 0;

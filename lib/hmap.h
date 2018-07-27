@@ -3,6 +3,9 @@
 
 #include <sys/types.h>
 
+#include "stralloc.h"
+#include "buffer.h"
+
 #define MAP_BUCKET 1024
 #define MAX_SIZE_KEY 1024
 
@@ -71,18 +74,24 @@ typedef struct hmap_db {
   TUPLE* list_tuple;
 } HMAP_DB;
 
-int hmap_init(int bucket_size, HMAP_DB** hmap_db);
-int hmap_is_locate(HMAP_DB* hmap_db, void* key, size_t k_len);
-int hmap_add(HMAP_DB** hmap_db, void* key, size_t k_len, int dup_flag, int data_type, ...);
-int hmap_add_tuple_with_data(HMAP_DB** hmap_db, void* key, size_t k_len, void* data);
-int hmap_set(HMAP_DB** hmap_db, void* key, size_t k_len, void* data, size_t d_len);
-int hmap_set_chars(HMAP_DB** hmap_db, const char* key, const char* data);
-int hmap_print_table(HMAP_DB* hmap_db);
-int hmap_print_list(HMAP_DB* hmap_db);
-int hmap_print_tree(HMAP_DB* my_hmap_db);
-int hmap_search(HMAP_DB* hmap_db, void* key, size_t k_len, TUPLE** data);
-int hmap_destroy(HMAP_DB** hmap_db);
-int hmap_truncate(HMAP_DB** HMAP_db);
+int    hmap_add_tuple_with_data(HMAP_DB** hmap_db, void* key, size_t k_len, void* data);
+int    hmap_add(HMAP_DB** hmap_db, void* key, size_t k_len, int dup_flag, int data_type, ...);
+int    hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len);
+int    hmap_destroy(HMAP_DB** hmap_db);
+void   hmap_dump(HMAP_DB* hmap, buffer* b);
+int    hmap_free_data(TUPLE* tuple);
+int    hmap_init(int bucket_size, HMAP_DB** hmap_db);
+int    hmap_is_locate(HMAP_DB* hmap_db, void* key, size_t k_len);
+int    hmap_print_list(HMAP_DB* my_hmap_db);
+int    hmap_print_table(HMAP_DB* my_hmap_db);
+int    hmap_print_tree(HMAP_DB* my_hmap_db);
+int    hmap_search(HMAP_DB* hmap_db, void* key, size_t k_len, TUPLE** data);
+int    hmap_set_chars(HMAP_DB** hmap_db, const char* key, const char* data);
+int    hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc* data);
+int    hmap_set(HMAP_DB** hmap_db, void* key, size_t k_len, void* data, size_t d_len);
+size_t hmap_size(HMAP_DB* my_hmap_db);
+int    hmap_truncate(HMAP_DB** hmap_db);
+
 
 #define hmap_last(hmap_db, tuple)  ((hmap_db)->list_tuple == (tuple)->next)
 #define hmap_next(hmap_db, tuple) (hmap_last(hmap_db, tuple) ? NULL : (tuple)->next)

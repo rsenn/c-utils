@@ -64,6 +64,8 @@ clean_args() {
     esac
     ARG=${ARG#"("}
     ARG=${ARG#" "}
+    ARG=${ARG//" ***"/"*** "}
+    ARG=${ARG//" **"/"** "}
     ARG=${ARG//" *"/"* "}
    
     if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ] 2>/dev/null; then 
