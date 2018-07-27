@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
@@ -36,7 +37,7 @@
  * section: Parsing
  * synopsis: Parse an XML document in memory to a tree and free it
  * purpose: Demonstrate the use of xmlReadMemory() to read an XML file
- *          into a tree and and xmlFreeDoc() to free the resulting tree
+ *          into a tree and and xml_free() to free the resulting tree
  * usage: parse3
  * test: parse3
  * author: Daniel Veillard
@@ -45,15 +46,14 @@
 
 #include <stdio.h>
 
-#define NODE_NAME(n) ((char*)(n)->name)
+#define NODE_NAME(n) ((n)->name)
 #define NODE_IS_ELEMENT(n) (((xmlnode*)(n))->type == XML_ELEMENT)
 #define NODE_ATTRIBUTES(n)                                                     \
   (void*)(NODE_IS_ELEMENT(n) ? ((xmlnode*)(n))->attributes : NULL)
-#define NODE_CONTENT(n) ((char*)xml_content(n))
+#define NODE_CONTENT(n) (xml_content(n))
 #define NODE_CHILDREN(n) ((xmlnode*)(n))->children
 //#define NODE_ATTRIBUTES(n) ((xmlnode*)(n))->attributes
-#define NODE_PROPERTY(n, p)                                                    \
-  ((char*)xmlGetProp(((xmlnode*)(n)), ((char*)(p))))
+#define NODE_PROPERTY(n, p)    xml_get_attribute(n, p)
 
 struct pad {
   stralloc name;
@@ -141,8 +141,8 @@ get_double(xmlnode* node, const char* key) {
   double ret = 0.0;
   const char* dstr = NULL;
 
-  if(xmlHasProp(node, (char*)key)) {
-    dstr = (const char*)xmlGetProp(node, (char*)key);
+  if(xml_has_attribute(node, key)) {
+    dstr = xml_get_attribute(node, key);
     if(scan_double(dstr, &ret) <= 0) ret = DBL_MAX;
   }
   return ret;
@@ -473,38 +473,9 @@ build_deviceset(xmlnode* set) {
 /**
  * Run an XPath query and return a XPath object
  */
-xmlXPathObject*
+xmlnodeset
 getnodeset(void* n, const char* xpath) {
-  xmlnode* node = n;
-  xmlXPathContext* context;
-  xmlXPathObject* result;
-  context = xmlXPathNewContext(node->doc);
-
-  if(node != (xmlnode*)node->doc) xmlXPathSetContextNode(node, context);
-
-  if(context == NULL) {
-    buffer_putsflush(buffer_2, "Error in xmlXPathNewContext\n");
-    return NULL;
-  }
-  result = xmlXPathEvalExpression((char*)xpath, context);
-  xmlXPathFreeContext(context);
-
-  if(result == NULL) {
-    buffer_putsflush(buffer_2, "Error in xmlXPathEvalExpression\n");
-    return NULL;
-  }
-
-  if(xmlXPathNodeSetIsEmpty(result->nodesetval)) {
-    xmlXPathFreeObject(result);
-    buffer_putsflush(buffer_2, "No result\n");
-    return NULL;
-  }
-  buffer_putm(buffer_2, "xpath: ", xpath, ", num nodes: ");
-  buffer_putulong(buffer_2, result && result->nodesetval
-                                ? xmlXPathNodeSetGetLength(result->nodesetval)
-                                : 0);
-  buffer_putnlflush(buffer_2);
-  return result;
+  return xml_find_all(n, xml_match_name, xpath);
 }
 
 /**
@@ -514,14 +485,16 @@ strlist
 getparts(xmlnode* doc) {
   strlist ret;
   strlist_init(&ret);
-  xmlXPathObject* nodes = getnodeset(doc, "//part | //element");
+  xmlnodeset ns = getnodeset(doc, "part|element");
 
-  if(!nodes || !nodes->nodesetval) return ret;
+  xmlnodeset_iter_t it, e;
 
-  for(int i = 0; i < xmlXPathNodeSetGetLength(nodes->nodesetval); ++i) {
-    xmlnode* node = xmlXPathNodeSetItem(nodes->nodesetval, i);
-    strlist_push(&ret, NODE_PROPERTY(node, "name"));
+  for(it = begin(&ns), e = end(&ns); !iterator_equal(&ns, it, e);
+      iterator_increment(&ns, it)) {
+    xmlnode* node = iterator_dereference(&ns, it);
+ strlist_push(&ret, NODE_PROPERTY(node, "name"));
   }
+
   return ret;
 }
 
@@ -529,12 +502,14 @@ getparts(xmlnode* doc) {
  * Iterate through a node-set, calling a functor for every item
  */
 void
-for_set(xmlNodeSet* set, void (*fn)(xmlnode*)) {
+for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
+  if(!ns) return;
 
-  if(!set) return;
+  xmlnodeset_iter_t it, e;
 
-  for(int i = 0; i < xmlXPathNodeSetGetLength(set); ++i) {
-    xmlnode* node = xmlXPathNodeSetItem(set, i);
+  for(it = begin(ns), e = end(ns); !iterator_equal(ns, it, e);
+      iterator_increment(ns, it)) {
+    xmlnode* node = iterator_dereference(ns, it);
     fn(node);
   }
 }
@@ -543,17 +518,17 @@ for_set(xmlNodeSet* set, void (*fn)(xmlnode*)) {
  * Get the top-leftmost x and y coordinate from a set of nodes.
  */
 void
-nodeset_topleft(xmlNodeSet* s, double* x, double* y) {
-  int len = xmlXPathNodeSetGetLength(s);
+nodeset_topleft(xmlnodeset* s, double* x, double* y) {
+  int len = xmlnodeset_size(s);
 
   if(len == 0) return;
 
-  xmlnode* node = xmlXPathNodeSetItem(s, 0);
+  xmlnode* node = xmlnodeset_item(s, 0);
   *x = get_double(node, "x");
   *y = get_double(node, "y");
 
   for(int i = 1; i < len; ++i) {
-    node = xmlXPathNodeSetItem(s, i);
+    node = xmlnodeset_item(s, i);
     double nx = get_double(node, "x");
     double ny = get_double(node, "y");
     if(nx < *x) *x = nx;
@@ -753,7 +728,7 @@ int
 str_isdoublenum(const char* s) {
   char* end;
   strtod(s, &end);
-  return (const char*)end > s;
+  return end > s;
 }
 
 int
@@ -927,35 +902,19 @@ buffer_read(void* ptr, char* buf, int len) {
   return buffer_get(ptr, buf, len);
 }
 
-/**
- * Parse the in memory document and free the resulting tree
- */
-xmlnode*
-read_xml_tree(const char* filename, buffer* in) {
-  xmlnode* doc; /* the resulting document tree */
-
-  doc = xmlReadFile(filename, "UTF-8", XML_PARSE_RECOVER);
-  //  doc = xmlReadIO(buffer_read, (void*)buffer_close, in, XML_XML_NAMESPACE,
-  //  "UTF-8", XML_PARSE_RECOVER);
-
-  if(doc == NULL) {
-    buffer_puts(buffer_2, "Failed to parse document");
-    buffer_putnlflush(buffer_2);
-    return NULL;
-  }
-  return doc;
-}
 
 void
 xpath_query(xmlnode* doc, const char* q) {
   print_name_value(buffer_1, "XPath query", q);
   buffer_putnlflush(buffer_1);
-  xmlXPathObject* nodes = getnodeset(doc, q);
+  xmlnodeset ns = getnodeset(doc, q);
 
-  if(!nodes || !nodes->nodesetval) return;
+  xmlnodeset_iter_t it, e;
 
-  for(int i = 0; i < xmlXPathNodeSetGetLength(nodes->nodesetval); ++i) {
-    xmlnode* node = xmlXPathNodeSetItem(nodes->nodesetval, i);
+  for(it = begin(&ns), e = end(&ns); !iterator_equal(&ns, it, e);
+      iterator_increment(&ns, it)) {
+    xmlnode* node = iterator_dereference(&ns, it);
+
     print_element_name(node);
     print_element_attrs(node);
     buffer_putnlflush(buffer_1);
@@ -970,9 +929,10 @@ xpath_query(xmlnode* doc, const char* q) {
       stralloc_init(&query);
       const char* elem_name = &q[2];
       elem_name = "*";
-      for(xmlAttr* a = NODE_ATTRIBUTES(node); a; a = a->next) {
-        const char* attr_name = NODE_NAME(a);
-        const char* v = NODE_PROPERTY(node, attr_name);
+      for(TUPLE* a = NODE_ATTRIBUTES(node); a; a = hmap_next(node->attributes, a)) {
+        const char* attr_name = a->key;
+        const char* v = a->vals.val_chars;
+
         if(!v || str_len(v) == 0) continue;
         if(!str_diff(attr_name, "name")) {
           elem_name = "*";
@@ -999,10 +959,10 @@ xpath_query(xmlnode* doc, const char* q) {
  */
 bool
 xpath_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
-  xmlXPathObject* xpo = getnodeset(doc, q);
+  xmlnodeset ns = getnodeset(doc, q);
 
-  if(xpo && &xpo->nodesetval) {
-    for_set(xpo->nodesetval, fn);
+  if(xmlnodeset_size(&ns)) {
+    for_set(&ns, fn);
     return true;
   }
   return false;
@@ -1015,12 +975,6 @@ main(int argc, char* argv[]) {
   parts = cbmap_new();
   nets = cbmap_new();
   symbols = cbmap_new();
-  /*
-   * this initialize the library and check potential ABI mismatches
-   * between the version it was compiled for and the actual shared
-   * library used.
-   */
-  LIBXML_TEST_VERSION
 
   if(!argv[1]) {
     argv[1] = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
@@ -1032,7 +986,7 @@ main(int argc, char* argv[]) {
   buffer input;
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
-  xmlnode* doc = read_xml_tree(argv[1], &input);
+  xmlnode* doc = xml_read_tree(&input);
 
   xpath_query(doc, xq);
 
@@ -1060,7 +1014,8 @@ main(int argc, char* argv[]) {
   /*
    * Cleanup function for the XML library.
    */
-  xmlCleanupParser();
+   xml_free(doc);
+
   /*
    * this is to debug memory for regression tests
    */

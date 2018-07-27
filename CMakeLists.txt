@@ -427,7 +427,7 @@ list(APPEND LIBXML2_LIBRARIES ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} $
 
 target_link_libraries(compiler-wrapper dir)
 target_link_libraries(eagle-init-brd xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
-target_link_libraries(eagle-gen-cmds cbmap hmap ${COMMON_LIBS} ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
+target_link_libraries(eagle-gen-cmds cbmap xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
 target_link_libraries(eagle-to-circuit cbmap xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
 target_link_libraries(plsconv playlist xml hmap buffer byte fmt scan str stralloc)

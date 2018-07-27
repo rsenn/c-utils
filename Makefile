@@ -912,7 +912,7 @@ endif
 
 #$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
 $(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(BUILDDIR)array.a $(BUILDDIR)cbmap.a $(BUILDDIR)strlist.a $(BUILDDIR)map.a $(BUILDDIR)hmap.a $(BUILDDIR)stralloc.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a
+$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(BUILDDIR)cbmap.a $(BUILDDIR)xml.a $(BUILDDIR)hmap.a $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)scan.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

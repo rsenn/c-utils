@@ -6,12 +6,12 @@
 #endif
 #include "../buffer.h"
 
-#ifndef __unlikely
-#ifdef __GNUC__
-#define __unlikely(x) __builtin_expect((x), 0)
-#else
-#define __unlikely(x) (x)
+#ifdef __dietlibc__
+#undef __unlikely
 #endif
+
+#ifndef __unlikely
+#define __unlikely(x) (x)
 #endif
 
 extern ssize_t buffer_stubborn(buffer_op_fn* op, int fd, const char* buf, size_t len, void* cookie);
