@@ -84,7 +84,8 @@ int hmap_search(HMAP_DB* hmap_db, void* key, size_t k_len, TUPLE** data);
 int hmap_destroy(HMAP_DB** hmap_db);
 int hmap_truncate(HMAP_DB** HMAP_db);
 
-#define hmap_last(hmap_db, it)  ((hmap_db)->list_tuple == (*(it))->next)
+#define hmap_last(hmap_db, tuple)  ((hmap_db)->list_tuple == (tuple)->next)
+#define hmap_next(hmap_db, tuple) (hmap_last(hmap_db, tuple) ? NULL : (tuple)->next)
 
 static inline TUPLE* hmap_begin(HMAP_DB* hmap) { return hmap->list_tuple; }
 

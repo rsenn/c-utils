@@ -22,7 +22,7 @@
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 
-#include <libxml/SAX.h>
+#include "lib/xml.h"
 
 #ifdef _MSC_VER
 #define alloca _alloca
@@ -43,20 +43,17 @@
  * copy: see Copyright for the status of this software.
  */
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
 #include <stdio.h>
 
 #define NODE_NAME(n) ((char*)(n)->name)
-#define NODE_IS_ELEMENT(n) (((xmlNode*)(n))->type == 1)
+#define NODE_IS_ELEMENT(n) (((xmlnode*)(n))->type == XML_ELEMENT)
 #define NODE_ATTRIBUTES(n)                                                     \
-  (void*)(NODE_IS_ELEMENT(n) ? ((xmlElement*)(n))->attributes : NULL)
-#define NODE_CONTENT(n) ((char*)xmlNodeGetContent(n))
-#define NODE_CHILDREN(n) ((xmlNode*)(n))->children
-//#define NODE_ATTRIBUTES(n) ((xmlElement*)(n))->attributes
+  (void*)(NODE_IS_ELEMENT(n) ? ((xmlnode*)(n))->attributes : NULL)
+#define NODE_CONTENT(n) ((char*)xml_content(n))
+#define NODE_CHILDREN(n) ((xmlnode*)(n))->children
+//#define NODE_ATTRIBUTES(n) ((xmlnode*)(n))->attributes
 #define NODE_PROPERTY(n, p)                                                    \
-  ((char*)xmlGetProp(((xmlNode*)(n)), ((xmlChar*)(p))))
+  ((char*)xmlGetProp(((xmlnode*)(n)), ((char*)(p))))
 
 struct pad {
   stralloc name;
@@ -125,13 +122,13 @@ struct net {
 
 const char* document = "<doc/>";
 static const char* xq = "//net";
-void node_print(xmlNode* node);
-int node_depth(xmlNode* node);
+void node_print(xmlnode* node);
+int node_depth(xmlnode* node);
 int str_ischarset(const char* s, const char* set);
 int str_isfloat(const char* s);
 int str_isspace(const char* s);
-void print_attrs(xmlNode* a_node);
-void print_element_attrs(xmlNode* a_node);
+void print_attrs(xmlnode* a_node);
+void print_element_attrs(xmlnode* a_node);
 int dump_net(const void* key, size_t key_len, const void* value,
              size_t value_len, void* user_data);
 
@@ -140,12 +137,12 @@ static cbmap_t devicesets, packages, parts, nets, symbols;
  * Reads a real-number value from the element/attribute given
  */
 double
-get_double(xmlNode* node, const char* key) {
+get_double(xmlnode* node, const char* key) {
   double ret = 0.0;
   const char* dstr = NULL;
 
-  if(xmlHasProp(node, (xmlChar*)key)) {
-    dstr = (const char*)xmlGetProp(node, (xmlChar*)key);
+  if(xmlHasProp(node, (char*)key)) {
+    dstr = (const char*)xmlGetProp(node, (char*)key);
     if(scan_double(dstr, &ret) <= 0) ret = DBL_MAX;
   }
   return ret;
@@ -155,7 +152,7 @@ get_double(xmlNode* node, const char* key) {
  * Reads an integer number value from the element/attribute given
  */
 int
-get_int(xmlNode* node, const char* key) {
+get_int(xmlnode* node, const char* key) {
   long ret = INT_MIN;
   const char* istr = NODE_PROPERTY(node, key);
 
@@ -169,22 +166,22 @@ get_int(xmlNode* node, const char* key) {
 /**
  * Gets a parent element by name.
  */
-xmlElement*
+xmlnode*
 get_parent(void* n, const char* parent) {
-  xmlNode* node = n;
+  xmlnode* node = n;
 
   for(node = n; node; node = node->parent) {
     if(node->name == NULL) continue;
     if(str_equal(NODE_NAME(node), parent)) break;
   }
-  return (xmlElement*)node;
+  return (xmlnode*)node;
 }
 
 /**
  * Gets a child element by name.
  */
-xmlNode*
-get_child(xmlNode* node, const char* name) {
+xmlnode*
+get_child(xmlnode* node, const char* name) {
 
   for(node = node->children; node; node = node->next) {
     if(!str_diff(NODE_NAME(node), name)) return node;
@@ -265,7 +262,7 @@ package_pin(struct package* pkg, const char* name) {
  * Build structures from <part> or <element> element
  */
 void
-build_part(xmlNode* part) {
+build_part(xmlnode* part) {
   char* name = NODE_PROPERTY(part, "name");
   char* pkgname = NODE_PROPERTY(part, "package");
 
@@ -303,7 +300,7 @@ build_part(xmlNode* part) {
  * Build structures from <symbol> element
  */
 void
-build_sym(xmlNode* part) {
+build_sym(xmlnode* part) {
   char* name = NODE_PROPERTY(part, "name");
 
   if(!name || str_len(name) == 0) return;
@@ -311,8 +308,8 @@ build_sym(xmlNode* part) {
   stralloc_copys(&sym->name, name);
   size_t i = 0;
 
-  for(xmlNode* pin = part->children; pin; pin = pin->next) {
-    if(pin->type != XML_ELEMENT_NODE) continue;
+  for(xmlnode* pin = part->children; pin; pin = pin->next) {
+    if(pin->type != XML_ELEMENT) continue;
     if(str_diff(NODE_NAME(pin), "pin")) continue;
     char* pin_name = NODE_PROPERTY(pin, "name");
     if(pin_name == NULL) continue;
@@ -335,7 +332,7 @@ build_sym(xmlNode* part) {
  * @param node   Parent is the 'net' or 'signal' element
  */
 void
-build_reflist(xmlNode* node, struct net* n, int* index) {
+build_reflist(xmlnode* node, struct net* n, int* index) {
 
   for(; node; node = node->next) {
     if(!NODE_IS_ELEMENT(node)) continue;
@@ -382,8 +379,8 @@ build_reflist(xmlNode* node, struct net* n, int* index) {
  *      <pinref part="IC1" gate="B" pin="O"/>
  */
 void
-build_nets(xmlNode* node) {
-  xmlNode* sn;
+build_nets(xmlnode* node) {
+  xmlnode* sn;
   char *sign, *name = NODE_NAME(node);
 
   assert(str_equal(name, "net") || str_equal(name, "signal"));
@@ -405,7 +402,7 @@ build_nets(xmlNode* node) {
  * Build structures from <package> element
  */
 void
-build_package(xmlNode* set) {
+build_package(xmlnode* set) {
   char* name = NODE_PROPERTY(set, "name");
   // put_name_value(buffer_2, "package: ", name);
   struct package pkg;
@@ -413,8 +410,8 @@ build_package(xmlNode* set) {
   byte_zero(&pkg, sizeof(struct package));
   stralloc_copys(&pkg.name, name);
 
-  for(xmlNode* node = set->children; node; node = node->next) {
-    if(node->type != XML_ELEMENT_NODE || str_diff(NODE_NAME(node), "pad"))
+  for(xmlnode* node = set->children; node; node = node->next) {
+    if(node->type != XML_ELEMENT || str_diff(NODE_NAME(node), "pad"))
       continue;
     char* pn = NODE_PROPERTY(node, "name");
     if(!pn || str_len(pn) == 0) continue;
@@ -432,7 +429,7 @@ build_package(xmlNode* set) {
  * Build structures from <deviceset> element
  */
 void
-build_deviceset(xmlNode* set) {
+build_deviceset(xmlnode* set) {
   char* name = NODE_PROPERTY(set, "name");
   print_name_value(buffer_2, "deviceset", name);
   buffer_putnlflush(buffer_2);
@@ -443,11 +440,11 @@ build_deviceset(xmlNode* set) {
 
   d.devices = cbmap_new();
 
-  xmlNode* gates = get_child(set, "gates");
-  xmlNode* devices = get_child(set, "devices");
+  xmlnode* gates = get_child(set, "gates");
+  xmlnode* devices = get_child(set, "devices");
 
-  for(xmlNode* node = gates->children; node; node = node->next) {
-    if(node->type != XML_ELEMENT_NODE) continue;
+  for(xmlnode* node = gates->children; node; node = node->next) {
+    if(node->type != XML_ELEMENT) continue;
     struct gate g;
     byte_zero(&g, sizeof(struct gate));
     stralloc_copys(&g.name, NODE_PROPERTY(node, "name"));
@@ -455,8 +452,8 @@ build_deviceset(xmlNode* set) {
     array_catb(&d.gates, (const void*)&g, sizeof(struct gate));
   }
 
-  for(xmlNode* node = devices->children; node; node = node->next) {
-    if(node->type != XML_ELEMENT_NODE) continue;
+  for(xmlnode* node = devices->children; node; node = node->next) {
+    if(node->type != XML_ELEMENT) continue;
     struct pinmapping pm;
     char* name = NODE_PROPERTY(node, "name");
     if(!name || str_len(name) == 0) continue;
@@ -478,18 +475,18 @@ build_deviceset(xmlNode* set) {
  */
 xmlXPathObject*
 getnodeset(void* n, const char* xpath) {
-  xmlNode* node = n;
+  xmlnode* node = n;
   xmlXPathContext* context;
   xmlXPathObject* result;
   context = xmlXPathNewContext(node->doc);
 
-  if(node != (xmlNode*)node->doc) xmlXPathSetContextNode(node, context);
+  if(node != (xmlnode*)node->doc) xmlXPathSetContextNode(node, context);
 
   if(context == NULL) {
     buffer_putsflush(buffer_2, "Error in xmlXPathNewContext\n");
     return NULL;
   }
-  result = xmlXPathEvalExpression((xmlChar*)xpath, context);
+  result = xmlXPathEvalExpression((char*)xpath, context);
   xmlXPathFreeContext(context);
 
   if(result == NULL) {
@@ -514,7 +511,7 @@ getnodeset(void* n, const char* xpath) {
  * Retrieve all <part> (schematic) or <element> (board) objects
  */
 strlist
-getparts(xmlDoc* doc) {
+getparts(xmlnode* doc) {
   strlist ret;
   strlist_init(&ret);
   xmlXPathObject* nodes = getnodeset(doc, "//part | //element");
@@ -522,7 +519,7 @@ getparts(xmlDoc* doc) {
   if(!nodes || !nodes->nodesetval) return ret;
 
   for(int i = 0; i < xmlXPathNodeSetGetLength(nodes->nodesetval); ++i) {
-    xmlNode* node = xmlXPathNodeSetItem(nodes->nodesetval, i);
+    xmlnode* node = xmlXPathNodeSetItem(nodes->nodesetval, i);
     strlist_push(&ret, NODE_PROPERTY(node, "name"));
   }
   return ret;
@@ -532,12 +529,12 @@ getparts(xmlDoc* doc) {
  * Iterate through a node-set, calling a functor for every item
  */
 void
-for_set(xmlNodeSet* set, void (*fn)(xmlNode*)) {
+for_set(xmlNodeSet* set, void (*fn)(xmlnode*)) {
 
   if(!set) return;
 
   for(int i = 0; i < xmlXPathNodeSetGetLength(set); ++i) {
-    xmlNode* node = xmlXPathNodeSetItem(set, i);
+    xmlnode* node = xmlXPathNodeSetItem(set, i);
     fn(node);
   }
 }
@@ -551,7 +548,7 @@ nodeset_topleft(xmlNodeSet* s, double* x, double* y) {
 
   if(len == 0) return;
 
-  xmlNode* node = xmlXPathNodeSetItem(s, 0);
+  xmlnode* node = xmlXPathNodeSetItem(s, 0);
   *x = get_double(node, "x");
   *y = get_double(node, "y");
 
@@ -568,19 +565,19 @@ nodeset_topleft(xmlNodeSet* s, double* x, double* y) {
  * get extrema from x/y attrs
  */
 void
-tree_topleft(xmlElement* elem, const char* elems, double* x, double* y) {
-  xmlNode* node = elem->children;
+tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
+  xmlnode* node = elem->children;
 
   if(node == 0) return;
 
-  while(node && node->type != XML_ELEMENT_NODE &&
+  while(node && node->type != XML_ELEMENT &&
         str_diff(NODE_NAME(node), elems))
     node = node->next;
   *x = get_double(node, "x");
   *y = get_double(node, "y");
 
   while((node = node->next)) {
-    if(node->type != XML_ELEMENT_NODE || str_diff(NODE_NAME(node), elems))
+    if(node->type != XML_ELEMENT || str_diff(NODE_NAME(node), elems))
       continue;
     double nx = get_double(node, "x");
     double ny = get_double(node, "y");
@@ -618,7 +615,7 @@ dump_package(const void* key, size_t key_len, const void* value,
   //  buffer_puts(buffer_1, name);
   //  buffer_puts(buffer_1, "\t");
   //
-  //  for(xmlNode* node = elem->children; node; node = node->next) {
+  //  for(xmlnode* node = elem->children; node; node = node->next) {
   //    //  xmlXPathObject* set = getnodeset(elem, "./pad");
   //    if(!str_diff(NODE_NAME(node), "pad")) {
   //      double xpos = round((get_double(node, "x") - dx) / 0.254) * 0.1;
@@ -720,7 +717,7 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len,
  *  node_print: Prints XML node
  */
 void
-node_print(xmlNode* node) {
+node_print(xmlnode* node) {
   buffer_putm(buffer_1, "<", node->name);
   print_element_attrs(node);
   buffer_putm(buffer_1, ">");
@@ -730,7 +727,7 @@ node_print(xmlNode* node) {
  *  hashmap_dump: Gets depth of node in hierarchy
  */
 int
-node_depth(xmlNode* node) {
+node_depth(xmlnode* node) {
   size_t i = 0;
 
   while((node = node->next)) ++i;
@@ -768,11 +765,11 @@ str_isspace(const char* s) {
  *  print element path/name
  */
 void
-print_element_name(xmlNode* a_node) {
+print_element_name(xmlnode* a_node) {
   char* name = NODE_NAME(a_node);
 
   if(a_node->parent) {
-    xmlNode* p = a_node->parent;
+    xmlnode* p = a_node->parent;
     const char* pn = NODE_NAME(p);
     if(pn && !str_diffn(pn, name, str_len(name))) { p = p->parent; }
     print_element_name(p);
@@ -794,7 +791,7 @@ print_element_name(xmlNode* a_node) {
  *  print_element_attrs: Prints all element attributes to stdout
  */
 void
-print_attrs(xmlNode* a) {
+print_attrs(xmlnode* a) {
 
   //  if(!NODE_IS_ELEMENT(a_node))
   //    return;
@@ -807,16 +804,16 @@ print_attrs(xmlNode* a) {
 }
 
 void
-print_element_attrs(xmlNode* a_node) {
+print_element_attrs(xmlnode* a_node) {
 
   if(NODE_IS_ELEMENT(a_node)) {
-    xmlElement* e = (xmlElement*)a_node;
+    xmlnode* e = (xmlnode*)a_node;
     print_attrs(NODE_ATTRIBUTES(e));
   }
 }
 
 void
-print_element_content(xmlNode* node) {
+print_element_content(xmlnode* node) {
   char* s;
 
   if((s = NODE_CONTENT(node))) {
@@ -830,11 +827,11 @@ print_element_content(xmlNode* node) {
  *  print_element_children: Prints all element attributes to stdout
  */
 void
-print_element_children(xmlNode* a_node) {
+print_element_children(xmlnode* a_node) {
 
   if(!a_node->children) return;
 
-  for(xmlNode* node = a_node->children; node; node = node->next) {
+  for(xmlnode* node = a_node->children; node; node = node->next) {
     if(!NODE_IS_ELEMENT(node)) continue;
 
     print_element_name(node);
@@ -874,11 +871,11 @@ print_element_children(xmlNode* a_node) {
 //}
 
 // HMAP_DB*
-// element_to_hmap(xmlElement* elm) {
+// element_to_hmap(xmlnode* elm) {
 //  HMAP_DB* hash;
 //  hmap_init(1024, &hash);
 
-//  for(xmlNode* ptr = NODE_ATTRIBUTES(elm); ptr; ptr = ptr->next) {
+//  for(xmlnode* ptr = NODE_ATTRIBUTES(elm); ptr; ptr = ptr->next) {
 //    char* name = NODE_NAME(ptr);
 //    if(name && str_len(name)) {
 //      char* content = NODE_PROPERTY(elm, name);
@@ -910,7 +907,7 @@ print_element_children(xmlNode* a_node) {
  * that are siblings or children of a given xml node.
  */
 void
-print_element_names(xmlNode* node) {
+print_element_names(xmlnode* node) {
 
   for(; node; node = node->next) {
     if(!NODE_IS_ELEMENT(node)) continue;
@@ -933,9 +930,9 @@ buffer_read(void* ptr, char* buf, int len) {
 /**
  * Parse the in memory document and free the resulting tree
  */
-xmlDoc*
+xmlnode*
 read_xml_tree(const char* filename, buffer* in) {
-  xmlDoc* doc; /* the resulting document tree */
+  xmlnode* doc; /* the resulting document tree */
 
   doc = xmlReadFile(filename, "UTF-8", XML_PARSE_RECOVER);
   //  doc = xmlReadIO(buffer_read, (void*)buffer_close, in, XML_XML_NAMESPACE,
@@ -950,7 +947,7 @@ read_xml_tree(const char* filename, buffer* in) {
 }
 
 void
-xpath_query(xmlDoc* doc, const char* q) {
+xpath_query(xmlnode* doc, const char* q) {
   print_name_value(buffer_1, "XPath query", q);
   buffer_putnlflush(buffer_1);
   xmlXPathObject* nodes = getnodeset(doc, q);
@@ -958,12 +955,12 @@ xpath_query(xmlDoc* doc, const char* q) {
   if(!nodes || !nodes->nodesetval) return;
 
   for(int i = 0; i < xmlXPathNodeSetGetLength(nodes->nodesetval); ++i) {
-    xmlNode* node = xmlXPathNodeSetItem(nodes->nodesetval, i);
+    xmlnode* node = xmlXPathNodeSetItem(nodes->nodesetval, i);
     print_element_name(node);
     print_element_attrs(node);
     buffer_putnlflush(buffer_1);
     //    if(!str_diff(NODE_NAME(node), "package")) {
-    //      dump_package((xmlElement*)node);
+    //      dump_package((xmlnode*)node);
     //      continue;
     //    }
     print_element_children(node);
@@ -1001,7 +998,7 @@ xpath_query(xmlDoc* doc, const char* q) {
  * Executes XPath query and for every resulting element calls a function
  */
 bool
-xpath_foreach(xmlDoc* doc, const char* q, void (*fn)(xmlNode*)) {
+xpath_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
   xmlXPathObject* xpo = getnodeset(doc, q);
 
   if(xpo && &xpo->nodesetval) {
@@ -1035,7 +1032,7 @@ main(int argc, char* argv[]) {
   buffer input;
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
-  xmlDoc* doc = read_xml_tree(argv[1], &input);
+  xmlnode* doc = read_xml_tree(argv[1], &input);
 
   xpath_query(doc, xq);
 

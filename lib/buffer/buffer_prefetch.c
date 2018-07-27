@@ -2,12 +2,14 @@
 #include "../byte.h"
 
 extern int buffer_dummyread();
+extern int buffer_dummyreadmmap();
 extern ssize_t buffer_stubborn_read(buffer_op_proto*, int fd, void* buf, size_t len, void*);
 
 int
 buffer_prefetch(buffer* b, size_t n) {
   if(b->p && b->p + n >= b->a) {
-    if((void*)b->op == (void*)&buffer_dummyread) return b->n - b->p;
+    if((void*)b->op == (void*)&buffer_dummyread ||
+       (void*)b->op == (void*)&buffer_dummyreadmmap) return b->n - b->p;
     byte_copy(b->x, b->n - b->p, &b->x[b->p]);
     b->n -= b->p;
     b->p = 0;

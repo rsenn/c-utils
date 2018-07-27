@@ -58,6 +58,9 @@ BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 ifneq ($(CC),$(subst m32,,$(CC)))
 BUILD := $(subst x86_64,i386,$(BUILD))
 endif
+ifneq ($(BUILD),$(subst -pc-,-,$(BUILD)))
+BUILD := $(subst -pc-,-,$(BUILD))
+endif
 
 CCVER := $(shell $(CROSS_COMPILE)$(CC) -dumpversion)
 CXXVER := $(shell $(CROSS_COMPILE)$(CXX) -dumpversion)
@@ -117,6 +120,9 @@ endif
 endif
 ifneq ($(CC),$(subst m32,,$(CC)))
 HOST := $(subst x86_64,i386,$(HOST))
+endif
+ifneq ($(HOST),$(subst -pc-,-,$(HOST)))
+HOST := $(subst -pc-,-,$(HOST))
 endif
 ifeq ($(USE_DIET),1)
 HOST := $(subst -diet-,-,$(HOST))
@@ -506,18 +512,18 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #$(info ICONV_CFLAGS: $(ICONV_CFLAGS))
 #$(info ICONV_LIBS: $(ICONV_LIBS))
 
-LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
-LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
-ifeq ($(USE_DIET),1)
-STATIC := 1
-endif
-ifeq ($(STATIC),1)
-LIBXML2_LIBS += $(OTHERLIBS)
-LIBXML2_LIBS += -liconv -lpthread -lm
-endif
-
-$(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
-$(info LIBXML2_LIBS: $(LIBXML2_LIBS))
+#LIBXML2_CFLAGS := $(call pkg-conf,--cflags,libxml-2.0 liblzma zlib)
+#LIBXML2_LIBS := $(call pkg-conf,--libs,libxml-2.0 liblzma zlib)
+#ifeq ($(USE_DIET),1)
+#STATIC := 1
+#endif
+#ifeq ($(STATIC),1)
+#LIBXML2_LIBS += $(OTHERLIBS)
+#LIBXML2_LIBS += -liconv -lpthread -lm
+#endif
+#
+#$(info LIBXML2_CFLAGS: $(LIBXML2_CFLAGS))
+#$(info LIBXML2_LIBS: $(LIBXML2_LIBS))
 
 
 PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXESUFFIX)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit)
@@ -870,7 +876,7 @@ endif
 
 $(BUILDDIR)plsconv$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) -lm
 #$(BUILDDIR)plsconv$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS)
-$(BUILDDIR)plsconv$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)plsconv.o  $(BUILDDIR)playlist.a $(BUILDDIR)stralloc.a  $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)str.a $(BUILDDIR)fmt.a $(BUILDDIR)scan.a  $(BUILDDIR)byte.a 
+$(BUILDDIR)plsconv$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)plsconv.o  $(BUILDDIR)playlist.a $(BUILDDIR)xml.a $(BUILDDIR)hmap.a $(BUILDDIR)stralloc.a  $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)str.a $(BUILDDIR)fmt.a $(BUILDDIR)scan.a  $(BUILDDIR)byte.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -897,9 +903,8 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-#$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): CFLAGS += $(LIBXML2_CFLAGS) $(ICONV_CFLAGS)
-$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(LIBXML2_LIBS) $(ICONV_LIBS) $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o  $(BUILDDIR)hmap.a $(BUILDDIR)buffer.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(BUILDDIR)xml.a $(BUILDDIR)hmap.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)scan.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
