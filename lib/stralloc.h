@@ -127,11 +127,25 @@ int stralloc_chop(stralloc* sa);
 /* remove trailing "\r\n", "\n" or "\r".  Return number of removed chars (0, 1 or 2) */
 int stralloc_chomp(stralloc* sa);
 
+int stralloc_decamelize(stralloc *sa, stralloc *to);
+
+int stralloc_case_diff(const stralloc *sa1, const stralloc *sa2);
+int stralloc_case_diffs(const stralloc *sa, const char *s);
+int stralloc_diffb(register const stralloc *sa, const void *d, register unsigned int dlen);
+int stralloc_diffs(const stralloc *a, const char *b);
+unsigned int stralloc_case_equal(const stralloc *sa1, const stralloc *sa2);
+unsigned int stralloc_case_equals(const stralloc *sa, const char *s);
+unsigned int stralloc_cathexb(register stralloc *sa, const void *d, register unsigned int n);
+unsigned int stralloc_equalb(const stralloc *sa, const void *d, unsigned int dlen);
+unsigned int stralloc_find(const stralloc *sa, register const stralloc *what);
+unsigned int stralloc_findb(const stralloc *sa, const void *what, unsigned int len);
+unsigned int stralloc_finds(const stralloc *sa, register const char *what);
+
 #ifdef BUFFER_H
 /* write stralloc to buffer */
-int buffer_putsa(buffer* b, stralloc* sa);
+int buffer_putsa(buffer* b, const stralloc* sa);
 /* write stralloc to buffer and flush */
-int buffer_putsaflush(buffer* b, stralloc* sa);
+int buffer_putsaflush(buffer* b, const stralloc* sa);
 
 /* these "read token" functions return 0 if the token was complete or
  * EOF was hit or -1 on error.  In contrast to the non - stralloc token
@@ -154,17 +168,45 @@ int buffer_get_new_token_sa(buffer* b, stralloc* sa, const char* charset, size_t
 /* same as buffer_getline_sa but empty sa first */
 int buffer_getnewline_sa(buffer* b, stralloc* sa);
 
-typedef int ( * sa_predicate)(stralloc* sa);
+typedef int ( * sa_predicate)(stralloc* sa, void*);
 
 /* like buffer_get_token_sa but the token ends when your predicate says so */
-int buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p);
+int buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
 /* same, but clear sa first */
-int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p);
+int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
+
 
 /* make a buffer from a stralloc.
  * Do not change the stralloc after this! */
-void buffer_fromsa(buffer* b, stralloc* sa);
+void buffer_fromsa(buffer* b, const stralloc* sa);
 #endif
+
+size_t stralloc_fmt(stralloc *out, const stralloc *in, size_t (*fmt_function)(char*, unsigned int));
+size_t stralloc_scan(stralloc *out, const stralloc *in, size_t (*scan_function)(const char *, char *));
+
+static inline size_t stralloc_length(const stralloc* sa) { return sa->len; }
+
+#define stralloc_begin(sa) ((sa)->s)
+#define stralloc_end(sa) ((sa)->s + (sa)->len)
+#define stralloc_iterator_decrement(it) (--(it))
+#define stralloc_iterator_dereference(it_ptr) (*(*(it_ptr)))
+#define stralloc_iterator_distance(it1, it2) ((it2) - (it1))
+#define stralloc_is_last(sa, ptr) ((sa)->len > 0 && ((sa)->s + (sa)->len - 1) == (ptr))
+
+
+static inline void stralloc_iterator_increment(char** it) { ++(*it); }
+static inline int stralloc_iterator_equal(char** it1, char** it2) { return it1 == it2; }
+
+
+#ifdef BYTE_H
+size_t byte_fmt(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch));
+size_t byte_fmt_pred(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch), int (*pred)(int));
+size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));
+#endif
+
+int stralloc_insertb(stralloc *sa, const char *s, size_t pos, size_t n);
+int stralloc_subst(stralloc *out, const char *b, size_t len, const char *from, const char *to);
+size_t stralloc_fmt_call(stralloc *out, size_t (*fmt_function)(), ...);
 
 #ifdef __cplusplus
 }

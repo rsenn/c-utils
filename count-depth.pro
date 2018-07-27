@@ -17,26 +17,10 @@ CONFIG -= qt
   QMAKE_CFLAGS_WARN_ON += -Wno-unused-parameter
 }
 
-INCLUDEPATH += .
+INCLUDEPATH += . $$PWD/lib
 
-SOURCES = count-depth.c \
-  buffer.h \
-  buffer_0.c \
-  buffer_1.c \
-  buffer_feed.c \
-  buffer_flush.c \
-  buffer_get_token.c \
-  buffer_getc.c \
-  buffer_getline.c \
-  buffer_put.c \
-  buffer_putulong.c \
-  buffer_stubborn.c \
-  buffer_stubborn2.c \
-  byte.h \
-  byte_chr.c \
-  byte_copy.c \
-  fmt.h \
-  fmt_ulong.c
+HEADERS = lib/buffer.h lib/byte.h lib/fmt.h
+SOURCES = count-depth.c lib/buffer/buffer_0.c lib/buffer/buffer_0small.c lib/buffer/buffer_1.c lib/buffer/buffer_1small.c lib/buffer/buffer_2.c lib/buffer/buffer_close.c lib/buffer/buffer_default.c lib/buffer/buffer_dummyread.c lib/buffer/buffer_dummyreadmmap.c lib/buffer/buffer_dump.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_free.c lib/buffer/buffer_fromarray.c lib/buffer/buffer_frombuf.c lib/buffer/buffer_fromsa.c lib/buffer/buffer_fromstr.c lib/buffer/buffer_get.c lib/buffer/buffer_getc.c lib/buffer/buffer_getline.c lib/buffer/buffer_getline_sa.c lib/buffer/buffer_getn.c lib/buffer/buffer_getnewline_sa.c lib/buffer/buffer_get_new_token_sa.c lib/buffer/buffer_get_new_token_sa_pred.c lib/buffer/buffer_get_token.c lib/buffer/buffer_get_token_pred.c lib/buffer/buffer_get_token_sa.c lib/buffer/buffer_get_token_sa_pred.c lib/buffer/buffer_get_until.c lib/buffer/buffer_init.c lib/buffer/buffer_init_free.c lib/buffer/buffer_mmapprivate.c lib/buffer/buffer_mmapread.c lib/buffer/buffer_mmapread_fd.c lib/buffer/buffer_munmap.c lib/buffer/buffer_peek.c lib/buffer/buffer_prefetch.c lib/buffer/buffer_put.c lib/buffer/buffer_put8long.c lib/buffer/buffer_putalign.c lib/buffer/buffer_putc.c lib/buffer/buffer_puterror.c lib/buffer/buffer_puterror2.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putlonglong.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putm_internal_flush.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_putnspace.c lib/buffer/buffer_puts.c lib/buffer/buffer_putsa.c lib/buffer/buffer_putsaflush.c lib/buffer/buffer_putsalign.c lib/buffer/buffer_putsflush.c lib/buffer/buffer_putspace.c lib/buffer/buffer_putuint64.c lib/buffer/buffer_putulong.c lib/buffer/buffer_putulonglong.c lib/buffer/buffer_putxlong.c lib/buffer/buffer_read_fd.c lib/buffer/buffer_seek.c lib/buffer/buffer_skip_until.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/buffer/buffer_tosa.c lib/buffer/buffer_truncfile.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_copyr.c lib/byte/byte_diff.c lib/byte/byte_fill.c lib/byte/byte_rchr.c lib/byte/byte_zero.c lib/fmt/fmt_8long.c lib/fmt/fmt_8longlong.c lib/fmt/fmt_asn1derlength.c lib/fmt/fmt_asn1dertag.c lib/fmt/fmt_double.c lib/fmt/fmt_escapecharc.c lib/fmt/fmt_escapecharhtml.c lib/fmt/fmt_escapecharquotedprintable.c lib/fmt/fmt_escapecharquotedprintableutf8.c lib/fmt/fmt_escapecharxml.c lib/fmt/fmt_fill.c lib/fmt/fmt_httpdate.c lib/fmt/fmt_human.c lib/fmt/fmt_humank.c lib/fmt/fmt_iso8601.c lib/fmt/fmt_long.c lib/fmt/fmt_longlong.c lib/fmt/fmt_minus.c lib/fmt/fmt_pad.c lib/fmt/fmt_plusminus.c lib/fmt/fmt_str.c lib/fmt/fmt_strm_internal.c lib/fmt/fmt_strn.c lib/fmt/fmt_tohex.c lib/fmt/fmt_uint64.c lib/fmt/fmt_ulong.c lib/fmt/fmt_ulong0.c lib/fmt/fmt_ulonglong.c lib/fmt/fmt_utf8.c lib/fmt/fmt_xlong.c lib/fmt/fmt_xlonglong.c lib/fmt/fmt_xmlescape.c
 
 
 include(deployment.pri)

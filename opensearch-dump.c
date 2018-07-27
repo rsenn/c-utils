@@ -1,5 +1,5 @@
-#include "buffer.h"
-#include "stralloc.h"
+#include "lib/buffer.h"
+#include "lib/stralloc.h"
 #include <stdbool.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -88,7 +88,7 @@ print_element_names(xmlNode* a_node) {
       /*  buffer_put(buffer_2, &url.s[i], 13);
         buffer_putnlflush(buffer_2); */
       stralloc_cats(&newurl, "%s");
-      while (++i < url.len) {
+      while(++i < url.len) {
         if(url.s[i] == '}') {
           break;
         }

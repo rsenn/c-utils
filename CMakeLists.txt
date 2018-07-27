@@ -5,14 +5,70 @@ project(dirlist)
 
 set(BUILD_SHARED_LIBS FALSE)
 
-
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
+include(CheckFunctionExists)
+include(CheckIncludeFile)
+include(CheckLibraryExists)
+include(CheckTypeSize)
+include(FindBZip2)
+include(FindLibXml2)
+include(FindPkgConfig)
+include(FindZLIB)
+include(UsePkgConfig)
+
+
+set(ignored_files
+  "\\\\.git.*"
+  "\\\\.o"
+  "\\\\.log"
+  "build/.*"
+  "\\\\.swp\\\\$"
+  "~\\\\$"
+  "fuse_hidden"
+  "core\\\\.[0-9]"
+  "\\\\.vscode"
+  "\\\\.codelite"
+  "\\\\.settings"
+  "CMakeFiles\\\\/"
+  "\\\\.user"
+)
+
+set(DIRLIST_VERSION 1.0)
+set(CPACK_SOURCE_GENERATOR TXZ)
+set(CPACK_SOURCE_IGNORE_FILES ${ignored_files})
+set(CPACK_SOURCE_PACKAGE_FILE_NAME dirlist-${DIRLIST_VERSION})
+set(CPACK_PACKAGE_NAME dirlist)
+set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
+set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL;/")
+
+
+include(CPack)
+
+#include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
+
+
+#if(WIN32 OR MSYS OR CYGWIN)
+  add_definitions(-D_FILE_OFFSET_BITS=64)
+#endif(WIN32 OR WIN64)
+
+add_definitions( -g  )
+
 
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
 #set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O0 -Wall")
 
 CHECK_C_COMPILER_FLAG("-ggdb" C_COMPILER_SUPPORTS_GGDB)
+
+CHECK_C_COMPILER_FLAG(-Wno-unused-variable, W_NO_UNUSED_VAR)
+if(W_NO_UNUSED_VAR)
+  add_definitions(-Wno-unused-variable)
+endif(W_NO_UNUSED_VAR)
+CHECK_C_COMPILER_FLAG(-Wno-unused-parameter, W_NO_UNUSED_PARAM)
+if(W_NO_UNUSED_PARAM)
+  add_definitions(-Wno-unused-parameter)
+endif(W_NO_UNUSED_PARAM)
+
 
 if(C_COMPILER_SUPPORTS_GGDB)
   set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb")
@@ -32,9 +88,40 @@ endif(CXX_COMPILER_SUPPORTS_GGDB)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
-include(FindBoost)
-#include(CMakeDetermineCompileFeatures)
-#include(CheckCXX11Features)
+
+#pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
+include_directories("${CMAKE_SOURCE_DIR}")
+
+if(LIBXML2_FOUND)
+  link_libraries(${LIBXML2_LIBRARIES})
+  include_directories(${LIBXML2_INCLUDE_DIR})
+endif(LIBXML2_FOUND)
+
+#pkg_search_module(LIBLZMA liblzma)
+include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
+if(LIBLZMA_FOUND)
+  link_libraries(${LIBLZMA_LIBRARIES})
+  include_directories(${LIBLZMA_INCLUDE_DIRS})
+endif(LIBLZMA_FOUND)
+
+if(ZLIB_FOUND)
+  link_libraries(${ZLIB_LIBRARIES})
+  include_directories(${ZLIB_INCLUDE_DIRS})
+endif(ZLIB_FOUND)
+
+if(BZIP2_FOUND)
+  link_libraries(${BZIP2_LIBRARIES})
+  include_directories(${BZIP2_INCLUDE_DIR})
+endif(BZIP2_FOUND)
+
+#pkg_search_module(LIBZ zlib)
+#pkg_search_module(LIBBZ2 libbz2 bzip2)
+#check_library_exists(LIBMSWSOCK ws2_32 HAVE_MSWSOCK)
+check_library_exists(ws2_32 socket "" HAVE_MSWSOCK)
+
+if(HAVE_MSWSOCK)
+  set(LIBMSWSOCK ws2_32)
+endif()
 
 if(NOT CXX11_FLAGS)
 set(CXX11_FLAGS "-std=c++11")
@@ -51,7 +138,6 @@ if(HAS_CXX11_AUTO AND HAS_CXX11_NULLPTR AND HAS_CXX11_LAMBDA AND HAS_CXX11_STATI
 endif()
 
 
-include(CheckIncludeFile)
 
 check_include_file(inttypes.h HAVE_INTTYPES_H)
 check_include_file(sys/types.h HAVE_SYS_TYPES_H)
@@ -65,27 +151,89 @@ check_include_file(boost/foreach.hpp HAVE_BOOST_FOREACH_HPP)
 check_include_file(xtr1common HAVE_XTR1COMMON)
 check_include_file(initializer_list HAVE_INITIALIZER_LIST)
 
-include(CheckTypeSize)
 
 check_type_size(loff_t LOFF_T)
 check_type_size(lloff_t LLOFF_T)
 check_type_size(off64_t OFF64_T)
+check_type_size(socklen_t SOCKLEN_T)
 
-include(CheckFunctionExists)
+if(NOT SOCKLEN_T)
+#  add_definitions(-Dsocklen_t=int)
+endif()
+
 
 check_function_exists(alloca HAVE_ALLOCA_FUNC)
+
+foreach(FUNC posix_memalign aligned_alloc _aligned_malloc)
+  string(TOUPPER "HAVE_${FUNC}_FUNC" DEF)
+  check_function_exists(func ${DEF})
+  if(${DEF})
+    add_definitions(-D${DEF}=1)
+  endif()
+endforeach()
+check_function_exists(aligned_alloc HAVE_ALIGNED_ALLOC_FUNC)
+check_function_exists(_aligned_malloc HAVE__ALIGNED_MALLOC_FUNC)
+
 check_function_exists(stat HAVE_STAT_FUNC)
 check_function_exists(lstat HAVE_LSTAT_FUNC)
+check_function_exists(_llseek HAVE__LLSEEK_FUNC)
+check_function_exists(_lseeki64 HAVE__LSEEKI64_FUNC)
 check_function_exists(lseek HAVE_LSEEK_FUNC)
 check_function_exists(llseek HAVE_LLSEEK_FUNC)
 check_function_exists(lseek64 HAVE_LSEEK64_FUNC)
 check_function_exists(localtime HAVE_LOCALTIME_FUNC)
 check_function_exists(localtime_r HAVE_LOCALTIME_R_FUNC)
+check_function_exists(setmode HAVE_SETMODE_FUNC)
+check_function_exists(strncasecmp HAVE_STRNCASECMP_FUNC)
+check_function_exists(strnicmp HAVE_STRNICMP_FUNC)
+check_function_exists(strcasecmp HAVE_STRCASECMP_FUNC)
+check_function_exists(stricmp HAVE_STRICMP_FUNC)
+
+if(NOT HAVE_STRNCASECMP_FUNC AND HAVE_STRNICMP_FUNC)
+add_definitions(-Dstrncasecmp=strnicmp)
+endif(NOT HAVE_STRNCASECMP_FUNC AND HAVE_STRNICMP_FUNC)
+
+if(NOT HAVE_STRCASECMP_FUNC AND HAVE_STRICMP_FUNC)
+add_definitions(-Dstrcasecmp=stricmp)
+endif(NOT HAVE_STRCASECMP_FUNC AND HAVE_STRICMP_FUNC)
+
+if(HAVE_SETMODE_FUNC)
+ add_definitions(-DHAVE_SETMODE=1)
+ endif()
+
+foreach(SEEK_FN LSEEK LLSEEK LSEEK64)
+  if(HAVE_${SEEK_FN}_FUNC)
+    add_definitions(-DHAVE_${SEEK_FN}=1)
+  endif()
+endforeach()
+
+#check_library_exists(ws2_32, WSAStartup "" HAVE_WS2_32_LIBRARY)
+if(HAVE_WS2_32_LIBRARY)
+link_libraries(ws2_32)
+endif(HAVE_WS2_32_LIBRARY)
+
+if(HAVE_LSEEK64_FUNC)
+  add_definitions(-DLSEEK=lseek64)
+elseif(HAVE__LLSEEK_FUNC)
+  add_definitions(-DLSEEK=_llseek)
+elseif(HAVE__LSEEKI64_FUNC)
+  add_definitions(-DLSEEK=_lseeki64)
+elseif(HAVE_LLSEEK_FUNC)
+  add_definitions(-DLSEEK=llseek)
+
+elseif(HAVE_LSEEK)
+  add_definitions(-DLSEEK=lseek)
+endif()
 
 check_function_exists(free HAVE_FREE_FUNC)
 check_function_exists(malloc HAVE_MALLOC_FUNC)
 check_function_exists(opendir HAVE_OPENDIR_FUNC)
 check_function_exists(readdir HAVE_READDIR_FUNC)
+
+check_function_exists(getdents64 HAVE_GETDENTS64_FUNC)
+check_function_exists(getdents HAVE_GETDENTS_FUNC)
+
+
 
 if(HAVE_LSTAT_FUNC)
   if(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
@@ -95,24 +243,46 @@ if(HAVE_LSTAT_FUNC)
   endif(HAVE_OPENDIR_FUNC AND HAVE_READDIR_FUNC)
 endif(HAVE_LSTAT_FUNC)
 
-include(FindPkgConfig)
+check_function_exists(getopt_long HAVE_GETOPT_LONG_FUNC)
+check_function_exists(getopt HAVE_GETOPT_FUNC)
+
+if(NOT HAVE_GETOPT_LONG_FUNC OR NOT HAVE_GETOPT_FUNC)
+  set(GETOPT_SOURCES ${CMAKE_SOURCE_DIR}/lib/getopt.c)
+endif()
+
+
 
 pkg_search_module(
-				LIBXML2
-				libxml-2.0 
-				#REQUIRED
+                LIBXML2
+                libxml-2.0
+                #REQUIRED
 )
 
 
-#find_package(libxml2)
+#check_library_exists(m, atan2 "" HAVE_MATH_LIBRARY)
+check_library_exists(m roundf "" HAVE_MATH_LIBRARY)
 
-include_directories(${LIBXML2_INCLUDE_DIRS})
-
-if(LIBXML2_LIBRARIES MATCHES static)
-  option(STATIC_LINK "Compile as static libraries" ON)
+if(HAVE_MATH_LIBRARY)
+  set(MATH_LIBRARY m)
 else()
-  option(STATIC_LINK "Compile as static libraries" OFF)
-endif()
+  check_function_exists(atan2 HAVE_ATAN2_FUNC)
+  check_function_exists(roundf HAVE_ROUNDF_FUNC)
+
+endif(HAVE_MATH_LIBRARY)
+
+
+
+
+#find_package(libxml2)
+#include_directories( "${CMAKE_SOURCE_DIR}/lib" )
+include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" )
+include_directories( ${Iconv_INCLUDE_DIR} )
+
+#if(LIBXML2_LIBRARIES MATCHES static)
+#  option(STATIC_LINK "Compile as static libraries" ON)
+#else()
+#  option(STATIC_LINK "Compile as static libraries" OFF)
+#endif()
 
 if(STATIC_LINK)
   add_definitions(-DNOLIBTOOL=1 -DLIBXML_STATIC=1)
@@ -121,11 +291,11 @@ else(STATIC_LINK)
 endif(STATIC_LINK)
 
 
-include_directories(${LIBXML2_INCLUDE_DIR})
+#include_directories( ${LIBXML2_INCLUDE_DIR} )
 set(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
 
 if(LIBXML2_INCLUDE_DIR)
-  include_directories("${LIBXML2_INCLUDE_DIR}" "${LIBXML2_INCLUDE_DIR}/libxml")
+  include_directories(${Iconv_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR}/libxml)
 endif()
 
 if(USE_READDIR)
@@ -138,7 +308,13 @@ configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
 file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
-set(PROGRAMS list-r count-depth decode-ls-lR torrent-progress reg2cmd eagle-init-brd)
+set(PROGRAMS
+access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3 xmltest4
+eagle-gen-cmds eagle-to-circuit
+)
+
+set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})
+
 set(CXXPROGRAMS #kbd-adjacency
 #ls-R
  #   piccfghex
@@ -161,7 +337,6 @@ endif()
 string(REGEX REPLACE "/W[0-9]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 string(REGEX REPLACE "/W[0-9]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-include_directories("${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/lib" "${CMAKE_BINARY_DIR}")
 
 add_definitions(-DHAVE_CONFIG_H)
 
@@ -173,61 +348,113 @@ foreach(V ${HAVE_VARS})
   endif()
 endforeach()
 
-#set(LIBOWFAT_SOURCES lib/array.h lib/array_allocate.c lib/array_bytes.c lib/array_cat.c lib/array_cat0.c lib/array_catb.c lib/array_cate.c lib/array_cats.c lib/array_cats0.c lib/array_equal.c lib/array_fail.c lib/array_get.c lib/array_length.c lib/array_reset.c lib/array_start.c lib/array_trunc.c lib/array_truncate.c lib/buffer.h lib/buffer_0.c lib/buffer_0small.c lib/buffer_1.c lib/buffer_1small.c lib/buffer_2.c lib/buffer_close.c lib/buffer_default.c lib/buffer_dummyread.c lib/buffer_dummyreadmmap.c lib/buffer_dump.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_free.c lib/buffer_fromarray.c lib/buffer_frombuf.c lib/buffer_fromsa.c lib/buffer_fromstr.c lib/buffer_get.c lib/buffer_getc.c lib/buffer_getline.c lib/buffer_getline_sa.c lib/buffer_getn.c lib/buffer_getnewline_sa.c lib/buffer_get_new_token_sa.c lib/buffer_get_new_token_sa_pred.c lib/buffer_get_token.c lib/buffer_get_token_pred.c lib/buffer_get_token_sa.c lib/buffer_get_token_sa_pred.c lib/buffer_get_until.c lib/buffer_init.c lib/buffer_init_free.c lib/buffer_mmapprivate.c lib/buffer_mmapread.c lib/buffer_mmapread_fd.c lib/buffer_munmap.c lib/buffer_peek.c lib/buffer_prefetch.c lib/buffer_put.c lib/buffer_put8long.c lib/buffer_putalign.c lib/buffer_putc.c lib/buffer_puterror.c lib/buffer_puterror2.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putlonglong.c lib/buffer_putm_internal.c lib/buffer_putm_internal_flush.c lib/buffer_putnlflush.c lib/buffer_putnspace.c lib/buffer_puts.c lib/buffer_putsa.c lib/buffer_putsaflush.c lib/buffer_putsalign.c lib/buffer_putsflush.c lib/buffer_putspace.c lib/buffer_putuint64.c lib/buffer_putulong.c lib/buffer_putulonglong.c lib/buffer_putxlong.c lib/buffer_seek.c lib/buffer_skip_until.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/buffer_tosa.c lib/buffer_truncfile.c lib/byte.h lib/byte_chr.c lib/byte_copy.c lib/byte_copyr.c lib/byte_diff.c lib/byte_fill.c lib/byte_rchr.c lib/byte_zero.c lib/dir.h lib/directory_iterator.cpp lib/directory_iterator.hpp lib/dir_close.c lib/dir_internal.h lib/dir_name.c lib/dir_open.c lib/dir_read.c lib/dir_time.c lib/dir_type.c lib/file.cpp lib/file.hpp lib/fmt.h lib/fmt_8long.c lib/fmt_8longlong.c lib/fmt_asn1derlength.c lib/fmt_asn1dertag.c lib/fmt_double.c lib/fmt_escapecharc.c lib/fmt_escapecharhtml.c lib/fmt_escapecharquotedprintable.c lib/fmt_escapecharquotedprintableutf8.c lib/fmt_escapecharxml.c lib/fmt_fill.c lib/fmt_httpdate.c lib/fmt_human.c lib/fmt_humank.c lib/fmt_iso8601.c lib/fmt_long.c lib/fmt_longlong.c lib/fmt_minus.c lib/fmt_pad.c lib/fmt_plusminus.c lib/fmt_str.c lib/fmt_strm_internal.c lib/fmt_strn.c lib/fmt_tohex.c lib/fmt_uint64.c lib/fmt_ulong.c lib/fmt_ulong0.c lib/fmt_ulonglong.c lib/fmt_utf8.c lib/fmt_varint.c lib/fmt_xlong.c lib/fmt_xlonglong.c lib/fmt_xmlescape.c lib/fnmatch.c lib/fnmatch.h lib/hmap.h lib/hmap_add.c lib/hmap_add_tuple_with_data.c lib/hmap_delete.c lib/hmap_destroy.c lib/hmap_free_data.c lib/hmap_init.c lib/hmap_internal.c lib/hmap_internal.h lib/hmap_is_locate.c lib/hmap_print_list.c lib/hmap_print_table.c lib/hmap_print_tree.c lib/hmap_search.c lib/hmap_set.c lib/hmap_truncate.c lib/iarray_allocate.c lib/iarray_free.c lib/iarray_get.c lib/iarray_init.c lib/iarray_length.c lib/intelhex.cpp lib/intelhex.h lib/isleap.c lib/likely.h lib/mmap.h lib/mmap_map.c lib/mmap_private.c lib/mmap_read.c lib/mmap_read_fd.c lib/mmap_unmap.c lib/open.h lib/open_append.c lib/open_read.c lib/open_rw.c lib/open_trunc.c lib/safemult.h lib/scan.h lib/scan_double.c lib/scan_fromhex.c lib/scan_xlong.c lib/scan_xlonglong.c lib/str.h lib/stralloc.h lib/stralloc_append.c lib/stralloc_append_sa.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_catc.c lib/stralloc_catlong0.c lib/stralloc_cats.c lib/stralloc_catulong0.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_diffs.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_insertb.c lib/stralloc_move.c lib/stralloc_nul.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/stralloc_remove.c lib/stralloc_trunc.c lib/stralloc_write.c lib/stralloc_zero.c lib/strlist.h lib/strlist_at.c lib/strlist_cat.c lib/strlist_count.c lib/strlist_dump.c lib/strlist_index_of.c lib/strlist_push.c lib/strlist_pushb.c lib/strlist_pushm_internal.c lib/strlist_pushsa.c lib/strlist_push_sa.c lib/strlist_push_unique.c lib/strlist_shift.c lib/strlist_sort.c lib/strlist_to_argv.c lib/strlist_unshift.c lib/strptime.c lib/str_chr.c lib/str_diff.c lib/str_diffn.c lib/str_len.c lib/time_table_spd.c lib/uint16.h lib/uint32.h lib/uint64.h lib/umult64.c lib/utf8.c lib/utf8.h)
 
-file(GLOB LIBOWFAT_SOURCES lib/*.c lib/*.h)
+#file(GLOB LIBOWFAT_SOURCES lib/*.c lib/*.h)
+#
+#add_library(libowfat ${LIBOWFAT_SOURCES})
+#
+#if("${CMAKE_STATIC_LIBRARY_PREFIX}" STREQUAL "lib")
+#    set_target_properties(libowfat PROPERTIES
+#        ARCHIVE_OUTPUT_NAME owfat
+#        LIBRARY_OUTPUT_NAME owfat
+#    )
+#endif()
 
-add_library(libowfat ${LIBOWFAT_SOURCES})
 
-if("${CMAKE_STATIC_LIBRARY_PREFIX}" STREQUAL "lib")
-    set_target_properties(libowfat PROPERTIES
-        ARCHIVE_OUTPUT_NAME owfat
-        LIBRARY_OUTPUT_NAME owfat
-    )
-endif()
+#
+set(LIBSUBDIRS array buffer byte case cb cbmap dir fmt hmap http iarray io list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia uint16 uint32 uint64 xml textbuf charbuf)
 
-add_executable(list-r list-r.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_putsa.c buffer_puts.c buffer_putuint64.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c dir.h dir_close.c dir_internal.h dir_open.c dir_read.c dir_time.c dir_type.c fmt.h fmt_uint64.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_cats.c stralloc_copyb.c stralloc_copys.c stralloc_init.c stralloc_nul.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c
+foreach(ARCHIVE ${LIBSUBDIRS})
+  file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
+  file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
+  if(NOT MODSOURCES)
+    file(GLOB MODSOURCES lib/${ARCHIVE}_*.c)
+  endif()
 
- 
-add_executable(count-depth count-depth.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_puts.c buffer_putulong.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c fmt.h fmt_ulong.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_init.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c
-add_executable(decode-ls-lR decode-ls-lR.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_puts.c buffer_putuint64.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c decode-ls-lR.c fmt.h fmt_uint64.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c str_diffn.c stralloc.h stralloc_catb.c stralloc_copyb.c stralloc_copys.c  stralloc_init.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c
-add_executable(torrent-progress torrent-progress.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_putflush.c buffer_putnlflush.c buffer_putulong.c buffer_puts.c buffer_putulong.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c fmt.h fmt_ulong.c mmap.h mmap_map.c mmap_private.c mmap_read.c mmap_read_fd.c mmap_unmap.c open.h open_read.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_init.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c torrent-progress.c
-add_executable(reg2cmd reg2cmd.c) # buffer.h buffer_0.c buffer_1.c buffer_2.c buffer_feed.c buffer_flush.c buffer_get_token.c buffer_getc.c buffer_getline.c buffer_put.c buffer_putc.c buffer_puts.c buffer_putuint64.c buffer_stubborn.c buffer_stubborn2.c byte.h byte_chr.c byte_copy.c fmt.h fmt_uint64.c reg2cmd.c scan.h scan_fromhex.c scan_xlong.c scan_xlonglong.c str.h str_len.c stralloc.h stralloc_catb.c stralloc_init.c stralloc_ready.c stralloc_readyplus.c stralloc_zero.c
-add_executable(eagle-init-brd eagle-init-brd.c) # lib/hmap_add.c lib/hmap_add_tuple_with_data.c lib/hmap_delete.c lib/hmap_destroy.c lib/hmap_free_data.c lib/hmap_init.c lib/hmap_internal.c lib/hmap_is_locate.c lib/hmap_print_list.c lib/hmap_print_table.c lib/hmap_print_tree.c lib/hmap_search.c lib/hmap_set.c lib/hmap_truncate.c lib/scan_double.c lib/scan_fromhex.c lib/scan_xlong.c lib/scan_xlonglong.c lib/str_chr.c lib/str_diff.c lib/str_diffn.c lib/str_len.c lib/stralloc_append.c lib/stralloc_append_sa.c lib/stralloc_cat.c lib/stralloc_catb.c lib/stralloc_catc.c lib/stralloc_catlong0.c lib/stralloc_cats.c lib/stralloc_catulong0.c lib/stralloc_copy.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_diffs.c lib/stralloc_free.c lib/stralloc_init.c lib/stralloc_insertb.c lib/stralloc_move.c lib/stralloc_nul.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/stralloc_remove.c lib/stralloc_trunc.c lib/stralloc_write.c lib/stralloc_zero.c) 
-add_executable(mediathek-parser mediathek-parser.c lib/array_allocate.c lib/array_length.c lib/array_start.c lib/array_trunc.c lib/buffer_1.c lib/buffer_2.c lib/buffer_close.c lib/buffer_flush.c lib/buffer_mmapread.c lib/buffer_munmap.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putlong.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/byte_chr.c lib/byte_copy.c lib/byte_rchr.c lib/byte_zero.c lib/fmt_long.c lib/fmt_ulong.c lib/isleap.c lib/mmap_read.c lib/open_read.c lib/stralloc_catb.c lib/stralloc_catc.c lib/stralloc_cats.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_init.c lib/stralloc_nul.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/strptime.c lib/str_chr.c lib/str_diff.c lib/str_len.c lib/time_table_spd.c lib/umult64.c)
-add_executable(mediathek-list mediathek-list.c lib/buffer.h lib/buffer_1.c lib/buffer_2.c lib/buffer_feed.c lib/buffer_flush.c lib/buffer_get.c lib/buffer_getc.c lib/buffer_get_token.c lib/buffer_put.c lib/buffer_putflush.c lib/buffer_putm_internal.c lib/buffer_putnlflush.c lib/buffer_puts.c lib/buffer_putulong.c lib/buffer_stubborn.c lib/buffer_stubborn2.c lib/byte.h lib/byte_chr.c lib/byte_copy.c lib/fmt.h lib/fmt_ulong.c lib/fmt_ulonglong.c lib/isleap.c lib/scan.h lib/scan_uint.c lib/scan_ushort.c lib/str.h lib/stralloc.h lib/stralloc_append.c lib/stralloc_catb.c lib/stralloc_cats.c lib/stralloc_copyb.c lib/stralloc_copys.c lib/stralloc_init.c lib/stralloc_ready.c lib/stralloc_readyplus.c lib/stralloc_zero.c lib/strlist.h lib/strlist_at.c lib/strlist_count.c lib/strlist_dump.c lib/strlist_push.c lib/strlist_pushb.c lib/strptime.c lib/str_len.c lib/time_table_spd.c lib/uint32.h lib/uint64.h) 
+  if(ARCHIVE STREQUAL io)
+    list(APPEND MODSOURCES lib/iopause.c)
+  endif()
+  if(ARCHIVE STREQUAL str)
+    list(APPEND MODSOURCES lib/time_table_spd.c lib/isleap.c)
+  endif()
+  if(ARCHIVE STREQUAL array)
+    list(APPEND MODSOURCES lib/umult64.c)
+  endif()
+  if(ARCHIVE STREQUAL dir)
+    list(APPEND MODSOURCES lib/fnmatch.c)
+  endif()
+  add_library("${ARCHIVE}" STATIC ${MODSOURCES} ${MODHEADERS})
+  set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
+endforeach(ARCHIVE)
 
-target_link_libraries(eagle-init-brd ${LIBXML2_LIBRARIES})
- 
- 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(X64 "64")
+  if(NOT UNIX)
+    set(X64 "-x64")
+  endif()
 endif()
+
+set(COMMON_LIBS strlist array buffer stralloc scan str byte mmap open fmt )
 
 foreach(PROGRAM ${PROGRAMS})
-   set_target_properties(${PROGRAM} PROPERTIES OUTPUT_NAME "${PROGRAM}${X64}")
-    target_link_libraries(${PROGRAM} libowfat  ${LIBXML2_LIBRARES})
-#  add_executable(${PROGRAM} "${CMAKE_SOURCE_DIR}/${PROGRAM}.c" ${COMMON_C_SOURCES})
-  install(TARGETS ${PROGRAM} DESTINATION bin) 
+  if("${PROGRAM}" STREQUAL ntldd)
+    set(EXTRA_SOURCES libntldd.c)
+  else("${PROGRAM}" STREQUAL ntldd)
+    set(EXTRA_SOURCES )
+  endif("${PROGRAM}" STREQUAL ntldd)
+
+  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES} ${GETOPT_SOURCES})
+#  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
+ # list(APPEND ${PROGRAM}_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR})
+
+  set_target_properties(${PROGRAM} PROPERTIES
+    OUTPUT_NAME "${PROGRAM}${X64}"
+    INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/lib;${LIBXML2_INCLUDE_DIR};${CMAKE_BINARY_DIR}"
+    )
+  target_link_libraries(${PROGRAM} ${COMMON_LIBS})
+  install(TARGETS ${PROGRAM} DESTINATION bin)
 endforeach(PROGRAM)
 
-  string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}")
-  
-  
-if(STATIC_LINK)
-  install(FILES ${LIBXML2_LIBRARIES} DESTINATION lib) 
-else()
-  install(FILES ${LIBXML2_DLL} DESTINATION bin) 
+target_link_libraries(list-r dir ${COMMON_LIBS})
+target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
+
+  string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}" "${Iconv_LIBRARIES}")
+
+IF(MSVC OR WIN32 OR WIN64)
+  SET(SOCKET_LIB ws2_32)
 endif()
+
+list(APPEND LIBXML2_LIBRARIES ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
+
+target_link_libraries(compiler-wrapper dir)
+target_link_libraries(eagle-init-brd xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
+target_link_libraries(eagle-gen-cmds cbmap xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
+target_link_libraries(eagle-to-circuit cbmap xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
+target_link_libraries(plsconv playlist xml hmap buffer byte fmt scan str stralloc)
+target_link_libraries(xmltest xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(xmltest2 xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(xmltest3 xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(xmltest4 xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(httptest http io socket taia tai iarray ndelay ${SOCKET_LIB} uint16 ${COMMON_LIBS})
+target_link_libraries(mediathek-parser mmap open)
+target_link_libraries(ntldd open)
+target_link_libraries(hexedit open)
+target_link_libraries(impgen open)
+
+
+#if(STATIC_LINK)
+#  install(FILES ${LIBXML2_LIBRARIES} DESTINATION lib)
+#else()
+#  install(FILES ${LIBXML2_DLL} DESTINATION bin)
+#endif()
 
 #target_link_libraries(eagle-init-brd)
 
-if(Boost_INCLUDE_DIRS)
-  include_directories("${Boost_INCLUDE_DIRS}")
-endif()
+#if(Boost_INCLUDE_DIRS)
+#  include_directories("${Boost_INCLUDE_DIRS}")
+#endif()
 
 foreach(CXXPROGRAM ${CXXPROGRAMS})
-  add_executable(${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_CXX_SOURCES} ${COMMON_C_SOURCES})
-  install(TARGETS ${CXXPROGRAM} DESTINATION bin) 
+#  add_executable( ${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_CXX_SOURCES} ${COMMON_C_SOURCES} )
+  install(TARGETS ${CXXPROGRAM} DESTINATION bin)
 endforeach(CXXPROGRAM)
-

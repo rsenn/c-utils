@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
-#include <sys/wait.h>
+//#include <sys/wait.h>
 #include <signal.h>
 #include <string.h>
 
@@ -13,18 +13,32 @@
 #include <libgen.h>
 #endif
 
-#include "buffer.h"
-#include "byte.h"
-#include "strlist.h"
-#include "str.h"
-#include "scan.h"
-#include "fmt.h"
+#include "lib/io_internal.h"
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/strlist.h"
+#include "lib/str.h"
+#include "lib/scan.h"
+#include "lib/fmt.h"
+
+//extern ssize_t read();
 
 #define BUFSIZE 65535
 
 extern char strlist_dumpx[5];
 
 const char* argv0;
+
+/*
+http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz
+http://mediathekview.jankal.me/Filmliste-akt.xz
+http://verteiler1.mediathekview.de/Filmliste-akt.xz
+http://verteiler2.mediathekview.de/Filmliste-akt.xz
+http://verteiler3.mediathekview.de/Filmliste-akt.xz
+http://verteiler4.mediathekview.de/Filmliste-akt.xz
+http://verteiler5.mediathekview.de/Filmliste-akt.xz
+http://verteiler6.mediathekview.de/Filmliste-akt.xz
+*/
 
 const char* const mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
 
@@ -33,8 +47,8 @@ static int debug;
 static strlist include, exclude;
 
 
-static ssize_t
-buffer_dummyread(int fd, char* b, size_t n) {
+//static
+ssize_t buffer_dummyread(int fd, char* b, size_t n) {
   (void)fd;
   (void)b;
   (void)n;
@@ -99,9 +113,11 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 void
 process_status(void) {
   /* display interesting process IDs  */
+#if !(defined(_WIN32) || defined(_WIN64))
   fprintf(stderr, "process %s: pid=%d, ppid=%d, pgid=%d, fg pgid=%dn\n",
           argv0, (int)getpid(), (int)getppid(),
           (int)getpgrp(), (int)tcgetpgrp(STDIN_FILENO));
+#endif
 }
 
 int
@@ -385,7 +401,7 @@ parse_entry(strlist* sl) {
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6));  /* duration */
 
-//  buffer_putm(buffer_2, "dr: ", format_time(dr), " (", strlist_at(sl, 6), ")\n", NULL);
+//  buffer_putm(buffer_2, "dr: ", format_time(dr), " (", strlist_at(sl, 6), ")\n");
 
   if((unsigned)dr < min_length)
     return NULL;
@@ -418,17 +434,17 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm(b, "Kanal:\t", e->channel.s /*strlist_at(sl, 1)*/, sep, NULL);
-  buffer_putm(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep, NULL);
-  buffer_putm(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
+  buffer_putm(b, "Kanal:\t", e->channel.s /*strlist_at(sl, 1)*/, sep);
+  buffer_putm(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep);
+  buffer_putm(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep);
 
-  buffer_putm(b, "Datum:\t", format_datetime(e->tm, "%Y%m%d %H:%M"), sep, NULL);
-  buffer_putm(b, "Dauer:\t", format_time(e->dr), sep, NULL);
-  buffer_putm(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, NULL);
+  buffer_putm(b, "Datum:\t", format_datetime(e->tm, "%Y%m%d %H:%M"), sep);
+  buffer_putm(b, "Dauer:\t", format_time(e->dr), sep);
+  buffer_putm(b, "Grösse:\t", format_num(e->mbytes), "MB", sep);
 
-  /* buffer_putm(b, "URL:\t", url , sep, NULL);
-   buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, NULL);
-   buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);*/
+  /* buffer_putm(b, "URL:\t", url , sep);
+   buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);
+   buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep);*/
 
 //  buffer_put(b, "\n", 1);
 
@@ -588,10 +604,10 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "%p\n", str_istr("[", "blah"));
   fflush(stderr);
 
-//  buffer_putm(buffer_2, "min_length: ", format_time(min_length), "\n", NULL);
+//  buffer_putm(buffer_2, "min_length: ", format_time(min_length), "\n");
 
 
-  /*   if (optind >= argc) {
+  /*   if(optind >= argc) {
          fprintf(stderr,
                  "Nach den Optionen wurde ein Argument erwartet\n");
          exit(EXIT_FAILURE);
@@ -603,9 +619,9 @@ int main(int argc, char *argv[]) {
 
 
   argv0 = argv[0];
-  
+
   if(argv0[str_rchr(argv0, '/')] != '\0')
     argv0 += str_rchr(argv0, '/') + 1;
-  
+
   return parse_mediathek_list(read_mediathek_list(mediathek_url));
 }

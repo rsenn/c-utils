@@ -1,85 +1,97 @@
-/*  Routines for reading/writing Intel INHX8M and INHX32 files
+/* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
+#ifndef IO_H
+#define IO_H
 
-    Copyright 2002 Brandon Fosdick (BSD License)
-*/
+/* http://cr.yp.to/lib/io.html */
 
-#ifndef INTELHEXH
-#define INTELHEXH
+#include "uint64.h"
+#include "taia.h"
 
-#include <iostream>
-#include <map>
-#include <vector>
-
-#ifdef _MSC_VER
-#include <io.h>
-#else
-#include <unistd.h>
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-namespace intelhex
-{
+#define HAVE_PREAD
+#define HAVE_SENDFILE
+#define HAVE_UINT128
 
-    #define    HEX_FORMAT_INHX8M    0x01
-    #define    HEX_FORMAT_INHX32    0x02
+/* like open(s,O_RDONLY) */
+/* return 1 if ok, 0 on error */
+int io_readfile(int64* d,const char* s);
+/* like open(s,O_WRONLY|O_CREAT|O_TRUNC,0600) */
+/* return 1 if ok, 0 on error */
+int io_createfile(int64* d,const char* s);
+/* like open(s,O_RDWR) */
+/* return 1 if ok, 0 on error */
+int io_readwritefile(int64* d,const char* s);
+/* like open(s,O_WRONLY|O_APPEND|O_CREAT,0600) */
+/* return 1 if ok, 0 on error */
+int io_appendfile(int64* d,const char* s);
+/* like pipe(d) */
+/* return 1 if ok, 0 on error */
+int io_pipe(int64* d);
+/* like socketpair() */
+/* return 1 if ok, 0 on error */
+int io_socketpair(int64* d);
 
-    class   hex_data;
-    typedef hex_data container;
-    typedef uint32_t address_type;
-    typedef uint8_t value_type;
+/* non-blocking read(), -1 for EAGAIN and -3+errno for other errors */
+int64 io_tryread(int64 d,char* buf,int64 len);
 
-    //The data set that results from parsing a hex file
-    struct hex_data
-    {
-    //Each line of the hex file generates a block of memory at a particular address
-    typedef    std::vector<value_type>    data_container;        //Element container
-    typedef    std::map<address_type, data_container> container;   //List of data blocks
+/* blocking read(), with -3 instead of -1 for errors */
+int64 io_waitread(int64 d,char* buf,int64 len);
 
-    typedef    container::iterator    iterator;
-    typedef    container::reverse_iterator    reverse_iterator;
-    typedef    data_container::size_type    size_type;
-    private:
-    value_type  _fill;        // Value returned for unset addresses
-    char    format;                //Format of the parsed file (necessary?)
-    bool    segment_addr_rec;        // Uses/Has a segment address record
-    bool    linear_addr_rec;        // Uses/Has a linear address record
-    container   blocks;            // List of data blocks
+/* non-blocking write(), -1 for EAGAIN and -3+errno for other errors */
+int64 io_trywrite(int64 d,const char* buf,int64 len);
 
-    public:
-    hex_data() : _fill(0), segment_addr_rec(false), linear_addr_rec(false) {}
-    hex_data(const std::string &s) : _fill(0), segment_addr_rec(false), linear_addr_rec(false)
-    {
-        load(s);
-    }
-    iterator    begin() { return blocks.begin(); }
-    iterator    end() { return blocks.end(); }
+/* blocking write(), with -3 instead of -1 for errors */
+int64 io_waitwrite(int64 d,const char* buf,int64 len);
 
-    void    compact();        // Merge adjacent blocks
-    void    clear();        //Delete everything
-    void    erase(address_type);    // Erase a single element
-    void     erase(address_type first, address_type last);  // Erase [first, last]
-    value_type  fill()  { return _fill; }
-    void        fill(value_type f)  { _fill = f; }
-    size_type   size();
-    size_type   size_below_addr(address_type);
-    size_type   size_in_range(address_type, address_type);    //number of words in [lo, hi)
-    address_type   max_addr_below(address_type);
+/* modify timeout attribute of file descriptor */
+void io_timeout(int64 d,tai6464 t);
 
-    address_type   min_address() const;    // Lowest address
-    address_type   max_address() const;    // Highest address
+/* like io_tryread but will return -2,errno=ETIMEDOUT if d has a timeout
+ * associated and it is passed without input being there */
+int64 io_tryreadtimeout(int64 d,char* buf,int64 len);
 
-    bool    is_set(address_type);
+/* like io_trywrite but will return -2,errno=ETIMEDOUT if d has a timeout
+ * associated and it is passed without being able to write */
+int64 io_trywritetimeout(int64 d,const char* buf,int64 len);
 
-    value_type& operator[](address_type);    //Array access operator
-    value_type  get(address_type);        // Return the value at address
-    void    set(address_type, value_type);    // Set the value at address
+void io_wantread(int64 d);
+void io_wantwrite(int64 d);
+void io_dontwantread(int64 d);
+void io_dontwantwrite(int64 d);
 
-    void    load(const std::string&);    // Load from a file
-    void    read(std::istream &);            // Read data from an input stream
-    void    write(const char *);            //Save hex data to a hex file
-    void    write(std::ostream &);            //Write all data to an output stream
-    void    tidy(size_type length);            // Make things pretty
-    };
+void io_wait();
+void io_waituntil(tai6464 t);
+int64 io_waituntil2(int64 milliseconds);
+void io_check();
 
-    bool compare(hex_data&, hex_data&, value_type, address_type, address_type);
-}
-#endif
+/* signal that read/accept/whatever returned EAGAIN */
+/* needed for SIGIO and epoll */
+void io_eagain(int64 d);  /* do not use, API was a bad idea */
+#define HAVE_EAGAIN_READWRITE
+void io_eagain_read(int64 d);	/* use these ones */
+void io_eagain_write(int64 d);
+
+/* return next descriptor from io_wait that can be read from */
+int64 io_canread();
+/* return next descriptor from io_wait that can be written to */
+int64 io_canwrite();
+
+/* return next descriptor with expired timeout */
+int64 io_timeouted();
+
+/* is this fd over its timeout? */
+int io_timedout(int64 d);
+
+/* 1 means: have IO_FD_CANWRITE, IO_FD_BLOCK and IO_FD_NONBLOCK,
+ * will be incremented if API is extended in the future */
+#define HAVE_IO_FD_FLAGS 1
+enum io_fd_flags {
+  IO_FD_CANWRITE=1,	/* new TCP connection, we know it's writable */
+  IO_FD_BLOCK=2,	/* skip the fcntl, assume fd is set to blocking */
+  IO_FD_NONBLOCK=4,	/* skip the fcntl, assume fd is set to non-blocking */
+};
+
+/* put d on internal data structure, return 1 on success, 0 on e

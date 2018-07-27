@@ -20,6 +20,7 @@ extern "C" {
 /* interpret src as ASCII decimal number, write number to dest and
  * return the number of bytes that were parsed */
 size_t scan_ulong(const char* src, unsigned long* dest);
+size_t scan_ulongn(const char *src, size_t n, unsigned long int *dest);
 
 /* interpret src as ASCII hexadecimal number, write number to dest and
  * return the number of bytes that were parsed */
@@ -87,6 +88,19 @@ size_t scan_asn1dertag(const char* in, size_t len, unsigned long long* n) __pure
 /* a few internal function that might be useful independently */
 /* convert from hex ASCII, return 0 to 15 for success or -1 for failure */
 int scan_fromhex(unsigned char c);
+
+size_t scan_8long(const char *src, unsigned long *dest);
+size_t scan_8longlong(const char *src, unsigned long long *dest);
+size_t scan_8longn(const char *src, size_t n, unsigned long *dest);
+size_t scan_int(const char *src, int *dest);
+size_t scan_long(const char *src, long *dest);
+size_t scan_longlong(const char *src, signed long long *dest);
+size_t scan_longn(const char *src, size_t n, long *dest);
+size_t scan_pb_tag(const char *in, size_t len, size_t *fieldno, unsigned char *type);
+size_t scan_pb_type0_sint(const char *in, size_t len, signed long long *l);
+size_t scan_varint(const char *in, size_t len, unsigned long long *n);
+
+size_t scan_xmlescape(const char *src, char *dest);
 
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@
 
 # include <sys/types.h>
 
-# include "arrray.h"
+# include "array.h"
 
 # ifdef __cplusplus
 extern "C"
@@ -28,22 +28,22 @@ extern "C"
   #define strarray_at(l,pos) *array_get(&(l)->a, sizeof(char*), pos)
 
   void strarray_push(strarray* sa, char *str);
-  voiid strarray_pushd(strarray* sa, const char *str);
+  void strarray_pushd(strarray* sa, const char *str);
 
 //    //int64 strarray_index_of (strarray * sl, const char *str);
 //
 //  int strarray_push (strarray * sl, const char *str);
-//  
+//
 //  int strarray_pushm (strarray * sl, ...);
 //
 //  int strarray_pushb (strarray * sl, const char *s, size_t n);
 //
 //  int strarray_push_sa (strarray * sl, const stralloc * sa);
-//	
+//
 //	int strarray_push_unique(strarray *sl, const char *s);
 //
 //  int strarray_cat (strarray * sl, const strarray* l);
-//  
+//
 //  void strarray_dump (buffer * out, const strarray * sl);
 //
 //  char** strarray_to_argv(const strarray* sl);

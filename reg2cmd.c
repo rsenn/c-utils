@@ -2,7 +2,7 @@
 #include "config.h"
 #endif
 
-#ifndef _WIN32
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <unistd.h>
 #else
 #include <io.h>
@@ -17,14 +17,15 @@
 #include <libgen.h>
 #endif
 
-#include "stralloc.h"
-#include "buffer.h"
-#include "open.h"
-#include "fmt.h"
-#include "byte.h"
-#include "str.h"
-#include "scan.h"
-#include "uint64.h"
+#include "lib/io_internal.h"
+#include "lib/stralloc.h"
+#include "lib/buffer.h"
+#include "lib/open.h"
+#include "lib/fmt.h"
+#include "lib/byte.h"
+#include "lib/str.h"
+#include "lib/scan.h"
+#include "lib/uint64.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX
@@ -34,19 +35,19 @@
 #define MAXIMUM_PATH_LENGTH _MAX_PATH
 #endif
 
-INLINE static char *mystr_basename(const char *path) {
+static char *mystr_basename(const char *path) {
   char *r = strrchr(path, '/');
   return r ? r + 1 : (char *)path;
 }
 
 static int force = 0, shortroot = 0;
 
-INLINE static char hexchar(char value) {
+static char hexchar(char value) {
   static const char hchars[] = "0123456789abcdef";
   return hchars[(unsigned int)((unsigned char)value & 0xf)];
 }
 
-static INLINE char char_tolower(char ch) {
+static char char_tolower(char ch) {
   if(ch >= 'A' && ch <= 'Z')
     ch += 0x20;
   return ch;
@@ -82,20 +83,20 @@ typedef enum {
   ROOT_HKCC,
 } regroot_t;
 
-static const char* registry_roots[] = { 
+static const char* registry_roots[] = {
   "HKEY_LOCAL_MACHINE",
-  "HKEY_CURRENT_USER", 
-  "HKEY_CLASSES_ROOT", 
-  "HKEY_USERS", 
-  "HKEY_CURRENT_CONFIG", 
+  "HKEY_CURRENT_USER",
+  "HKEY_CLASSES_ROOT",
+  "HKEY_USERS",
+  "HKEY_CURRENT_CONFIG",
 };
 
-static const char* registry_roots_short[] = { 
+static const char* registry_roots_short[] = {
   "HKLM",
-  "HKCU", 
-  "HKCR", 
-  "HKU", 
-  "HKCC", 
+  "HKCU",
+  "HKCR",
+  "HKU",
+  "HKCC",
 };
 
 typedef enum {
@@ -197,7 +198,7 @@ int reg2cmd() {
         continue;
       }
     }
-    
+
     #define KEY_EQ(a,b) !str_diffn(a,b,str_len(b))
 
     if(key[0]) {
@@ -210,7 +211,7 @@ int reg2cmd() {
       int inquote;
       static stralloc subkey;
       stralloc_zero(&subkey);
-      
+
       if(KEY_EQ(key, "HKLM") || KEY_EQ(key, "HKEY_LOCAL_MACHINE"))
 		rr = ROOT_HKLM;
 	  else if(KEY_EQ(key, "HKCU") || KEY_EQ(key, "HKEY_CURRENT_USER"))
@@ -221,13 +222,13 @@ int reg2cmd() {
 		rr = ROOT_HKU;
 	  else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_CONFIG"))
 		rr = ROOT_HKCC;
-		
+
 	  char* o = strchr(key, '\\');
 	  if(o) {
 	    ++o;
 	    stralloc_copys(&subkey, o);
 	  }
-        
+
 
       keystart = (line.s[0] == '"' ? 1 : 0);
       inquote = keystart;
@@ -302,12 +303,12 @@ int reg2cmd() {
         buffer_flush(buffer_2);
         exit(2);
       }
-      
+
       buffer_puts(buffer_1, (rt == REGISTRY_DELETE) ? "reg delete \"" : "reg add \"");
       buffer_puts(buffer_1, (shortroot ? registry_roots_short : registry_roots)[rr]);
       buffer_puts(buffer_1, "\\");
       buffer_putsa(buffer_1, &subkey);
-      
+
       buffer_puts(buffer_1, "\" ");
 
       if(force)

@@ -1,128 +1,3872 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>dirlist</name>
+	<name>dirlist-RelWithDebInfo@dirlist</name>
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
+			<name>org.eclipse.cdt.make.core.makeBuilder</name>
 			<triggers>clean,full,incremental,</triggers>
 			<arguments>
+				<dictionary>
+					<key>org.eclipse.cdt.core.errorOutputParser</key>
+					<value>org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser;</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.append_environment</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.autoBuildTarget</key>
+					<value>all</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.build.arguments</key>
+					<value></value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.build.command</key>
+					<value>C:/msys64/usr/bin/make.exe</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.build.location</key>
+					<value>C:/Users/roman/Documents/Sources/dirlist</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.build.target.auto</key>
+					<value>all</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.build.target.clean</key>
+					<value>clean</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.build.target.inc</key>
+					<value>all</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.buildArguments</key>
+					<value></value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.buildLocation</key>
+					<value>C:/Users/roman/Documents/Sources/dirlist</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.cleanBuildTarget</key>
+					<value>clean</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.contents</key>
+					<value>org.eclipse.cdt.make.core.activeConfigSettings</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.enableAutoBuild</key>
+					<value>false</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.enableCleanBuild</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.enableFullBuild</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.enabledIncrementalBuild</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.environment</key>
+					<value>VERBOSE=1|CMAKE_NO_VERBOSE=1|</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.fullBuildTarget</key>
+					<value>all</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.stopOnError</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.useDefaultBuildCmd</key>
+					<value>false</value>
+				</dictionary>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.cdt.managedbuilder.core.ScannerConfigBuilder</name>
-			<triggers>full,incremental,</triggers>
+			<name>org.eclipse.cdt.make.core.ScannerConfigBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.eclipse.cdt.core.cnature</nature>
+		<nature>org.eclipse.cdt.make.core.makeNature</nature>
+		<nature>org.eclipse.cdt.make.core.ScannerConfigNature</nature>
 		<nature>org.eclipse.cdt.core.ccnature</nature>
-		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
-		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
+		<nature>org.eclipse.cdt.core.cnature</nature>
 	</natures>
-	<filteredResources>
-		<filter>
-			<id>1483997803953</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.p1</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997803966</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.pre</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997803975</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.pri</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997804016</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.d</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997804019</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.o</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997804022</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.as</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997804105</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.sdb</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997804148</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.cmf</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997804193</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.sym</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997804236</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.obj</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1483997804282</id>
-			<name></name>
-			<type>6</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.rlf</arguments>
-			</matcher>
-		</filter>
-	</filteredResources>
+	<linkedResources>
+		<link>
+			<name>[Subprojects]</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] access/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] compiler-wrapper/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] count-depth/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] decode-ls-lR/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] eagle-init-brd/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] hexedit/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] httptest/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] impgen/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] list-r/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] main/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-list/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-parser/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] ntldd/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] opensearch-dump/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] pathtool/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] plsconv/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] rdir-test/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] reg2cmd/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] regfilter/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] torrent-progress/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest2/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest3/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] time/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] access/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] access/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] access/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] access/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] access/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] access/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] compiler-wrapper/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] compiler-wrapper/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] compiler-wrapper/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] compiler-wrapper/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] compiler-wrapper/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] compiler-wrapper/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] count-depth/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] count-depth/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] count-depth/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] count-depth/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] count-depth/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] count-depth/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] decode-ls-lR/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] decode-ls-lR/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] decode-ls-lR/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] decode-ls-lR/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] decode-ls-lR/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] decode-ls-lR/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] eagle-init-brd/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] eagle-init-brd/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] eagle-init-brd/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] eagle-init-brd/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] eagle-init-brd/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] eagle-init-brd/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] hexedit/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] hexedit/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] hexedit/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] hexedit/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] hexedit/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] hexedit/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] httptest/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] httptest/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] httptest/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] httptest/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] httptest/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] httptest/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] impgen/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] impgen/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] impgen/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] impgen/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] impgen/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] impgen/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] list-r/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] list-r/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] list-r/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] list-r/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] list-r/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] list-r/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] main/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] main/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] main/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] main/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] main/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] main/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-list/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-list/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-list/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-list/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-list/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-list/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-parser/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-parser/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-parser/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-parser/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-parser/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-parser/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] ntldd/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] ntldd/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] ntldd/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] ntldd/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] ntldd/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] ntldd/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] opensearch-dump/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] opensearch-dump/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] opensearch-dump/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] opensearch-dump/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] opensearch-dump/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] opensearch-dump/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] pathtool/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] pathtool/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] pathtool/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] pathtool/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] pathtool/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] pathtool/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] plsconv/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] plsconv/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] plsconv/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] plsconv/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] plsconv/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] plsconv/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] rdir-test/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] rdir-test/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] rdir-test/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] rdir-test/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] rdir-test/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] rdir-test/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] reg2cmd/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] reg2cmd/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] reg2cmd/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] reg2cmd/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] reg2cmd/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] reg2cmd/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] regfilter/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] regfilter/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] regfilter/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] regfilter/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] regfilter/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] regfilter/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] torrent-progress/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] torrent-progress/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] torrent-progress/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] torrent-progress/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] torrent-progress/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] torrent-progress/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest2/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest2/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest2/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest2/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest2/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest2/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest3/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest3/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest3/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest3/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest3/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest3/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] time/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] time/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] time/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] time/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] time/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] time/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Object Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Object Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] access/Source Files/access.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/access.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] compiler-wrapper/Source Files/compiler-wrapper.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/compiler-wrapper.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] count-depth/Source Files/count-depth.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/count-depth.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] decode-ls-lR/Source Files/decode-ls-lR.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/decode-ls-lR.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] eagle-init-brd/Source Files/eagle-init-brd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/eagle-init-brd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] hexedit/Source Files/hexedit.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/hexedit.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] httptest/Source Files/httptest.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/httptest.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] impgen/Source Files/impgen.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/impgen.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] list-r/Source Files/list-r.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/list-r.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] main/Source Files/main.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/main.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-list/Source Files/mediathek-list.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/mediathek-list.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] mediathek-parser/Source Files/mediathek-parser.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/mediathek-parser.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] ntldd/Source Files/libntldd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/libntldd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] ntldd/Source Files/ntldd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/ntldd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] opensearch-dump/Source Files/opensearch-dump.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/opensearch-dump.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] pathtool/Source Files/pathtool.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/pathtool.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] plsconv/Source Files/plsconv.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/plsconv.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] rdir-test/Source Files/rdir-test.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/rdir-test.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] reg2cmd/Source Files/reg2cmd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/reg2cmd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] regfilter/Source Files/regfilter.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/regfilter.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] torrent-progress/Source Files/torrent-progress.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/torrent-progress.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest/Source Files/xmltest.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/xmltest.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest2/Source Files/xmltest2.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/xmltest2.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] xmltest3/Source Files/xmltest3.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/xmltest3.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Header Files/array.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_allocate.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_allocate.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_bytes.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_bytes.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_cat.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_cat.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_cat0.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_cat0.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_catb.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_catb.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_cate.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_cate.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_cats.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_cats.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_cats0.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_cats0.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_equal.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_equal.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_fail.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_fail.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_get.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_get.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_length.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_length.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_reset.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_reset.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_start.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_start.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_trunc.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_trunc.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/array_truncate.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/array/array_truncate.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] array/Source Files/umult64.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/umult64.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Header Files/buffer.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_0.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_0.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_0small.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_0small.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_1.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_1.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_1small.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_1small.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_2.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_2.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_close.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_close.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_default.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_default.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_dummyread.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_dummyread.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_dummyreadmmap.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_dummyreadmmap.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_dump.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_dump.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_feed.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_feed.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_flush.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_flush.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_free.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_free.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_fromarray.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_fromarray.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_frombuf.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_frombuf.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_fromsa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_fromsa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_fromstr.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_fromstr.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_get.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_get.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_get_new_token_sa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_get_new_token_sa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_get_new_token_sa_pred.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_get_new_token_sa_pred.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_get_token.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_get_token.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_get_token_pred.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_get_token_pred.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_get_token_sa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_get_token_sa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_get_token_sa_pred.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_get_token_sa_pred.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_get_until.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_get_until.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_getc.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_getc.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_getline.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_getline.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_getline_sa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_getline_sa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_getn.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_getn.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_getnewline_sa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_getnewline_sa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_init.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_init.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_init_free.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_init_free.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_mmapprivate.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_mmapprivate.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_mmapread.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_mmapread.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_mmapread_fd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_mmapread_fd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_munmap.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_munmap.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_peek.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_peek.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_prefetch.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_prefetch.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_put.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_put.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_put8long.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_put8long.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putalign.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putalign.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putc.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putc.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_puterror.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_puterror.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_puterror2.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_puterror2.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putflush.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putflush.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putlong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putlong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putlonglong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putlonglong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putm_internal.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putm_internal.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putm_internal_flush.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putm_internal_flush.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putnlflush.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putnlflush.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putnspace.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putnspace.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_puts.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_puts.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putsa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putsa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putsaflush.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putsaflush.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putsalign.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putsalign.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putsflush.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putsflush.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putspace.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putspace.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putuint64.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putuint64.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putulong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putulong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putulonglong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putulonglong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_putxlong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_putxlong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_read_fd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_read_fd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_seek.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_seek.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_skip_until.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_skip_until.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_stubborn.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_stubborn.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_stubborn2.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_stubborn2.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_tosa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_tosa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] buffer/Source Files/buffer_truncfile.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/buffer/buffer_truncfile.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Header Files/byte.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/byte.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Source Files/byte_chr.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/byte/byte_chr.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Source Files/byte_copy.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/byte/byte_copy.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Source Files/byte_copyr.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/byte/byte_copyr.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Source Files/byte_diff.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/byte/byte_diff.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Source Files/byte_fill.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/byte/byte_fill.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Source Files/byte_rchr.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/byte/byte_rchr.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] byte/Source Files/byte_zero.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/byte/byte_zero.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Header Files/dir.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/dir.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Header Files/dir_internal.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/dir_internal.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Source Files/dir_close.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/dir/dir_close.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Source Files/dir_name.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/dir/dir_name.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Source Files/dir_open.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/dir/dir_open.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Source Files/dir_read.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/dir/dir_read.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Source Files/dir_time.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/dir/dir_time.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] dir/Source Files/dir_type.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/dir/dir_type.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Header Files/fmt.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_8long.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_8long.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_8longlong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_8longlong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_asn1derlength.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_asn1derlength.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_asn1dertag.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_asn1dertag.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_double.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_double.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_escapecharc.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_escapecharc.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_escapecharhtml.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_escapecharhtml.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_escapecharquotedprintable.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_escapecharquotedprintable.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_escapecharquotedprintableutf8.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_escapecharquotedprintableutf8.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_escapecharxml.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_escapecharxml.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_fill.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_fill.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_httpdate.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_httpdate.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_human.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_human.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_humank.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_humank.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_iso8601.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_iso8601.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_long.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_long.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_longlong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_longlong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_minus.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_minus.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_pad.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_pad.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_plusminus.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_plusminus.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_str.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_str.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_strm_internal.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_strm_internal.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_strn.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_strn.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_tohex.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_tohex.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_uint64.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_uint64.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_ulong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_ulong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_ulong0.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_ulong0.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_ulonglong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_ulonglong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_utf8.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_utf8.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_xlong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_xlong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_xlonglong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_xlonglong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] fmt/Source Files/fmt_xmlescape.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/fmt/fmt_xmlescape.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Header Files/hmap.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Header Files/hmap_internal.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap_internal.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_add.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_add.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_add_tuple_with_data.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_add_tuple_with_data.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_delete.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_delete.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_destroy.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_destroy.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_free_data.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_free_data.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_init.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_init.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_internal.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_internal.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_is_locate.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_is_locate.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_print_list.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_print_list.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_print_table.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_print_table.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_print_tree.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_print_tree.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_search.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_search.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_set.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_set.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] hmap/Source Files/hmap_truncate.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/hmap/hmap_truncate.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Header Files/http.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/http.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Source Files/http_get.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/http/http_get.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Source Files/http_init.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/http/http_init.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Source Files/http_readable.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/http/http_readable.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Source Files/http_sendreq.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/http/http_sendreq.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] http/Source Files/http_writeable.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/http/http_writeable.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/Header Files/iarray.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/iarray.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/Source Files/iarray_allocate.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/iarray/iarray_allocate.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/Source Files/iarray_get.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/iarray/iarray_get.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] iarray/Source Files/iarray_init.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/iarray/iarray_init.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Header Files/io.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Header Files/io_internal.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io_internal.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_appendfile.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_appendfile.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_block.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_block.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_canread.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_canread.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_canwrite.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_canwrite.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_check.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_check.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_close.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_close.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_closeonexec.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_closeonexec.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_createfile.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_createfile.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_debugstring.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_debugstring.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_dontwantread.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_dontwantread.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_dontwantwrite.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_dontwantwrite.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_eagain.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_eagain.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_eagain_read.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_eagain_read.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_eagain_write.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_eagain_write.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_fd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_fd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_finishandshutdown.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_finishandshutdown.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_getcookie.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_getcookie.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_mmapwritefile.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_mmapwritefile.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_nonblock.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_nonblock.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_pipe.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_pipe.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_readfile.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_readfile.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_readwritefile.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_readwritefile.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_sendfile.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_sendfile.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_setcookie.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_setcookie.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_sigpipe.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_sigpipe.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_socketpair.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_socketpair.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_timedout.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_timedout.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_timeout.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_timeout.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_timeouted.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_timeouted.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_tryread.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_tryread.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_tryreadtimeout.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_tryreadtimeout.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_trywrite.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_trywrite.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_trywritetimeout.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_trywritetimeout.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_wait.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_wait.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_waitread.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_waitread.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_waituntil.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_waituntil.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_waituntil2.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_waituntil2.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_waitwrite.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_waitwrite.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_wantread.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_wantread.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/io_wantwrite.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/io/io_wantwrite.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] io/Source Files/iopause.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/iopause.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Header Files/list.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_add_after.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_add_after.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_add_before.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_add_before.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_find.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_find.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_find_remove.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_find_remove.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_init.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_init.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_length.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_length.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_move_head.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_move_head.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_move_tail.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_move_tail.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_push.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_push.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_remove.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_remove.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_swap.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_swap.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] list/Source Files/list_unshift.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/list/list_unshift.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Header Files/mmap.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/mmap.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Source Files/mmap_map.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/mmap/mmap_map.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Source Files/mmap_private.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/mmap/mmap_private.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Source Files/mmap_read.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/mmap/mmap_read.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Source Files/mmap_read_fd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/mmap/mmap_read_fd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] mmap/Source Files/mmap_unmap.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/mmap/mmap_unmap.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/Header Files/ndelay.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/ndelay.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/Source Files/ndelay_off.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/ndelay/ndelay_off.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] ndelay/Source Files/ndelay_on.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/ndelay/ndelay_on.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Header Files/open.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/open.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Source Files/open_append.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/open/open_append.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Source Files/open_read.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/open/open_read.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Source Files/open_rw.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/open/open_rw.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] open/Source Files/open_trunc.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/open/open_trunc.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Header Files/playlist.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/playlist.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Source Files/playlist_init.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/playlist/playlist_init.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Source Files/playlist_m3u.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/playlist/playlist_m3u.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Source Files/playlist_pls.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/playlist/playlist_pls.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Source Files/playlist_read.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/playlist/playlist_read.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Source Files/playlist_write_entry.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/playlist/playlist_write_entry.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Source Files/playlist_write_finish.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/playlist/playlist_write_finish.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Source Files/playlist_write_start.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/playlist/playlist_write_start.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] playlist/Source Files/playlist_xspf.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/playlist/playlist_xspf.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/Header Files/rdir.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/rdir.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/Source Files/rdir_close.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/rdir/rdir_close.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/Source Files/rdir_open.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/rdir/rdir_open.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] rdir/Source Files/rdir_read.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/rdir/rdir_read.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Header Files/scan.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files/scan_double.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan/scan_double.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files/scan_fromhex.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan/scan_fromhex.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files/scan_uint.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan/scan_uint.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files/scan_ulong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan/scan_ulong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files/scan_ulonglong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan/scan_ulonglong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files/scan_ulongn.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan/scan_ulongn.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files/scan_ushort.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan/scan_ushort.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files/scan_xlong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan/scan_xlong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] scan/Source Files/scan_xlonglong.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/scan/scan_xlonglong.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Header Files/socket.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_connect4.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_connect4.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_connect6.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_connect6.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_connected.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_connected.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_ip4loopback.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_ip4loopback.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_noipv6.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_noipv6.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_tcp4.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_tcp4.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_tcp4b.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_tcp4b.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_tcp6.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_tcp6.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_tcp6b.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_tcp6b.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_v4mappedprefix.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_v4mappedprefix.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] socket/Source Files/socket_v6loopback.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/socket/socket_v6loopback.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Header Files/str.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/isleap.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/isleap.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_basename.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_basename.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_case_diff.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_case_diff.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_case_diffn.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_case_diffn.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_case_equal.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_case_equal.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_case_start.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_case_start.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_cat.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_cat.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_chr.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_chr.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_copy.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_copy.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_copyb.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_copyb.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_decamelize.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_decamelize.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_diff.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_diff.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_diffn.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_diffn.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_dup.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_dup.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_equal.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_equal.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_find.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_find.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_findb.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_findb.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_istr.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_istr.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_len.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_len.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_lower.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_lower.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_ptime.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_ptime.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_rchr.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_rchr.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_start.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_start.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/str_tok.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/str/str_tok.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] str/Source Files/time_table_spd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/time_table_spd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Header Files/stralloc.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_append.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_append.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_append_sa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_append_sa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_cat.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_cat.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_catb.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_catb.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_catc.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_catc.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_catlong0.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_catlong0.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_cats.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_cats.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_catulong0.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_catulong0.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_copy.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_copy.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_copyb.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_copyb.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_copys.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_copys.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_decamelize.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_decamelize.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_diffs.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_diffs.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_free.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_free.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_init.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_init.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_insertb.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_insertb.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_move.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_move.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_nul.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_nul.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_ready.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_ready.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_readyplus.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_readyplus.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_remove.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_remove.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_trunc.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_trunc.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_write.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_write.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] stralloc/Source Files/stralloc_zero.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/stralloc/stralloc_zero.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/Header Files/strarray.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strarray.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/Source Files/strarray_push.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strarray/strarray_push.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strarray/Source Files/strarray_pushd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strarray/strarray_pushd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Header Files/strlist.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_at.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_at.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_cat.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_cat.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_count.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_count.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_dump.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_dump.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_index_of.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_index_of.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_join.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_join.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_push.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_push.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_push_sa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_push_sa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_push_tokens.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_push_tokens.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_push_unique.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_push_unique.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_pushb.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_pushb.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_pushm_internal.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_pushm_internal.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_pushsa.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_pushsa.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_range.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_range.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_shift.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_shift.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_sort.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_sort.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_to_argv.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_to_argv.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] strlist/Source Files/strlist_unshift.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/strlist/strlist_unshift.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Header Files/tai.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/tai.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Source Files/tai_add.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/tai/tai_add.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Source Files/tai_now.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/tai/tai_now.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Source Files/tai_pack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/tai/tai_pack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Source Files/tai_sub.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/tai/tai_sub.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Source Files/tai_uint.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/tai/tai_uint.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] tai/Source Files/tai_unpack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/tai/tai_unpack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Header Files/taia.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_add.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_add.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_addsec.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_addsec.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_approx.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_approx.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_frac.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_frac.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_half.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_half.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_less.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_less.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_now.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_now.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_pack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_pack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_sub.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_sub.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_tai.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_tai.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_uint.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_uint.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] taia/Source Files/taia_unpack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/taia/taia_unpack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] time/Source Files/time_table_spd.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/time_table_spd.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Header Files/uint16.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint16.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Source Files/uint16_pack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint16/uint16_pack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Source Files/uint16_pack_big.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint16/uint16_pack_big.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Source Files/uint16_unpack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint16/uint16_unpack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint16/Source Files/uint16_unpack_big.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint16/uint16_unpack_big.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Header Files/uint32.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint32.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Source Files/uint32_pack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint32/uint32_pack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Source Files/uint32_pack_big.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint32/uint32_pack_big.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Source Files/uint32_unpack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint32/uint32_unpack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint32/Source Files/uint32_unpack_big.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint32/uint32_unpack_big.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Header Files/uint64.h</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint64.h</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Source Files/uint64_pack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint64/uint64_pack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Source Files/uint64_pack_big.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint64/uint64_pack_big.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Source Files/uint64_unpack.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint64/uint64_unpack.c</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] uint64/Source Files/uint64_unpack_big.c</name>
+			<type>1</type>
+			<location>/mnt/Newx20Data/Sources/archpkg/buzztrax/C::/Users/roman/Documents/Sources/dirlist/lib/uint64/uint64_unpack_big.c</location>
+		</link>
+	</linkedResources>
 </projectDescription>

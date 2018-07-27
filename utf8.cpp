@@ -100,7 +100,7 @@ size_t wcstou8s( char *pu, const wchar_t *pw, size_t count )
 	while( (w = *pw++) )
 	{
 		int ulen=wcu8len(w);
-		
+
 		if( ulen>=0 )
 		{
 			if( (clen+wcu8len(w))<=count ) { clen+=wctou8( pu, w ); pu+=ulen; }

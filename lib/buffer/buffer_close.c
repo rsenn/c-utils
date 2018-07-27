@@ -1,0 +1,12 @@
+#if defined(_WIN32) || defined(_WIN64)
+#include "../io_internal.h"
+#else
+#include <unistd.h>
+#endif
+#include "../buffer.h"
+
+void
+buffer_close(buffer* b) {
+  if(b->fd > 2) close(b->fd);
+  if(b->deinit) b->deinit(b);
+}

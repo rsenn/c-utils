@@ -5,9 +5,15 @@
 /* for size_t: */
 //#include <stddef.h>
 /* for uint32 */
+#if defined(__MSYS__)
+typedef __SIZE_TYPE__ size_t;
+#elif !defined(_MSC_VER)
+#include <stdint.h>
+#endif // !defined(_MSC_VER)
 
 /* for time_t: */
 #include <sys/types.h>
+
 
 #include "uint32.h"
 #include "uint64.h"
@@ -16,8 +22,6 @@
 extern "C" {
 #endif
 
-#define FMT_INT  21 /* enough space to hold -2^63 in decimal, plus \0 */
-#define FMT_UINT 20 /* enough space to hold 2^64 - 1 in decimal, plus \0 */
 #define FMT_LONG  41 /* enough space to hold -2^127 in decimal, plus \0 */
 #define FMT_ULONG 40 /* enough space to hold 2^128 - 1 in decimal, plus \0 */
 #define FMT_8LONG 44 /* enough space to hold 2^128 - 1 in octal, plus \0 */
@@ -120,7 +124,16 @@ size_t fmt_strm_internal(char* dest, ...);
 
 size_t fmt_uint64(char* dest, uint64 i);
 
-size_t fmt_escapecharquotedprintable(char *dest, uint32_t ch);
+size_t fmt_escapecharquotedprintable(char *dest, unsigned int ch);
+size_t fmt_escapecharquotedprintableutf8(char *dest, unsigned int ch);
+
+unsigned int fmt_hexb(void *out, const void *d, register unsigned int len);
+size_t fmt_xmlescape(char *dest, unsigned int ch);
+size_t fmt_escapecharc(char *dest, unsigned int ch);
+
+size_t fmt_escapecharshell(char *dest, uint32 ch);
+char fmt_tohex(char c);
+size_t fmt_repeat(char *dest, const char *src, int n);
 
 #ifdef __cplusplus
 }

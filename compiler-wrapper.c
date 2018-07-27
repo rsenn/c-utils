@@ -1,16 +1,15 @@
 #include <ctype.h>
 #include <stdlib.h>
-#include <malloc.h>
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
+#include <unistd.h>
 #endif
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include <process.h>
 #define mkdir _mkdir
 #else
@@ -18,12 +17,14 @@
 #endif
 #include <sys/stat.h>
 
-#include "strlist.h"
-#include "str.h"
-#include "byte.h"
-#include "fmt.h"
-#include "buffer.h"
-#include "dir_internal.h"
+#include "lib/strlist.h"
+#include "lib/str.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
+#include "lib/buffer.h"
+#include "lib/dir_internal.h"
+
+#define mytolower(c) ((c)>='A'&&(c)<='Z'?(c)+0x20:(c))
 
 static char* argv0;
 static buffer* debug_buf, *err_buf;
@@ -34,7 +35,7 @@ typedef enum {
   PICC18 = 2,
   XC8 = 3,
 } compiler_type;
-const char const* compiler_strs[] = { "sdcc", "picc", "picc18", "xc8" };
+const char* compiler_strs[] = { "sdcc", "picc", "picc18", "xc8" };
 
 typedef enum {
   COMPILE_ASSEMBLE_LINK = 0,
@@ -44,7 +45,7 @@ typedef enum {
 
 } operation_mode;
 
-const char const* opmode_strs[] = { "compile,assemble,link", "preprocess", "compile", "compile,assemble" };
+const char* opmode_strs[] = { "compile,assemble,link", "preprocess", "compile", "compile,assemble" };
 static strlist args;
 static int i, n;
 
@@ -127,7 +128,7 @@ process_option(const char* optstr, const char*  nextopt, int* i) {
     stralloc_copys(&output_dir, nextopt);
     ++*i;
     return 0;
-  } else if(!str_diff(optstr, "pass1") || (str_len(optstr) == 1 && tolower(*optstr) == 'c')) {
+  } else if(!str_diff(optstr, "pass1") || (str_len(optstr) == 1 && mytolower(*optstr) == 'c')) {
     mode = COMPILE_AND_ASSEMBLE;
   } else if(!str_diff(optstr, "S") || (str_len(optstr) == 1 && toupper(*optstr) == 'S')) {
     mode = COMPILE;
@@ -165,7 +166,7 @@ process_option(const char* optstr, const char*  nextopt, int* i) {
   } else if(*optstr == 'O') {
     if(optstr[1] == 's')
       optsize = 1;
-    else 
+    else
       optlevel = atoi(&optstr[1]) * 3;
   } else if(*optstr == 'o') {
 
@@ -197,7 +198,7 @@ strlist_execve(const strlist* sl) {
   char* p = av[0];
   av[0] = str_basename(p);
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   return spawnv(P_WAIT, p, av);
 #else
   int pid = vfork();
@@ -346,7 +347,7 @@ read_arguments() {
     strlist_push_unique(&defines, "__DEBUG=1");
   } else {
     strlist_push_unique(&defines, "NDEBUG=1");
-    strlist_push_unique(&defines, "__NDEBUG=1");    
+    strlist_push_unique(&defines, "__NDEBUG=1");
   }
 
   if(optsize) {
@@ -402,7 +403,7 @@ execute_cmd() {
     strlist_pushm(&cmd, "-D", strlist_at(&defines, i));
   }
   if(type == PICC || type == PICC18 || type == XC8) {
-          char nbuf[FMT_UINT+1];
+          char nbuf[FMT_ULONG];
 
     strlist_pushm(&cmd, "--chip=", chip.s, 0);
 
@@ -430,26 +431,26 @@ if(mode != PREPROCESS) {
 
 
     if(optlevel) {
-       nbuf[fmt_uint(nbuf, optlevel)] = '\0';
+       nbuf[fmt_ulong(nbuf, optlevel)] = '\0';
       strlist_pushm(&cmd, "--opt=default,+asm,", debug ? "+debug,":"", optsize ? "-speed,+space,":"-space,+speed,", nbuf, NULL);
-    } 
+    }
 
      if(warn) {
-       nbuf[fmt_uint(nbuf, warn)] = '\0';
+       nbuf[fmt_ulong(nbuf, warn)] = '\0';
       strlist_pushm(&cmd, "--warn=",nbuf,NULL);
     }
     if(debug) strlist_push(&cmd, "-G");
-    
+
     if(ident_len != 0) {
-      nbuf[fmt_uint(nbuf, ident_len)] = '\0';
+      nbuf[fmt_ulong(nbuf, ident_len)] = '\0';
       strlist_pushm(&cmd, "-N",nbuf, NULL);
     }
     if(fltbits != 0) {
-      nbuf[fmt_uint(nbuf, fltbits)] = '\0';
+      nbuf[fmt_ulong(nbuf, fltbits)] = '\0';
       strlist_pushm(&cmd, "--float=",nbuf, NULL);
     }
     if(dblbits != 0) {
-      nbuf[fmt_uint(nbuf, dblbits)] = '\0';
+      nbuf[fmt_ulong(nbuf, dblbits)] = '\0';
       strlist_pushm(&cmd, "--double=",nbuf, NULL);
     }
 
@@ -562,7 +563,7 @@ if(mode != PREPROCESS) {
 
 void
 print_strlist(buffer* b, const strlist* sl, const char* separator, const char* quot) {
-  size_t n = strlist_count(sl);
+  ssize_t n = strlist_count(sl);
   int i;
   buffer_puts(b, " (#");
   buffer_putlong(b, n);

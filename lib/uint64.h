@@ -10,10 +10,16 @@
 #endif // !defined(_MSC_VER)
 
 #ifdef __MSYS__
-#define __MS_types__
+# ifndef __MS_types__
+#  define __MS_types__
+# endif
 #include <sys/types.h>
 #ifdef __BIT_TYPES_DEFINED__
 #define uint64_t u_int64_t
+#define int64_t long long
+#else
+#define uint64_t unsigned __int64
+#define int64_t __int64
 #endif
 #endif
 
@@ -23,6 +29,19 @@
 #define int64_t INT64
 #endif
 
+#ifdef __GNUC__
+# ifndef uint64_t
+#  ifdef __UINT64_TYPE__
+#   define uint64_t __UINT64_TYPE__
+#  elif defined __INT64_TYPE__
+#   define uint64_t unsigned __INT64_TYPE__
+#  endif
+# endif
+# ifndef int64_t
+#  define int64_t __INT64_TYPE__
+# endif
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,7 +49,7 @@ extern "C" {
 typedef uint64_t uint64;
 typedef int64_t int64;
 
-#if (defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT64_MACROS)
+#if(defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT64_MACROS)
 #define uint64_pack(out, in) ( * (uint64 *)(out) = (in))
 #define uint64_unpack(in, out) ( * (out) = *(uint64 *)(in))
 #define uint64_read(in) ( * (uint64 *)(in))
