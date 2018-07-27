@@ -2,11 +2,11 @@
 #include <stdint.h>
 
 unsigned int
-byte_case_start(register const void* x1, unsigned int len, register const void* x2) {
-  register const unsigned char* s;
-  register const unsigned char* t;
-  register int x;
-  register int y;
+byte_case_start(const void* x1, unsigned int len, const void* x2) {
+  const unsigned char* s;
+  const unsigned char* t;
+  int x;
+  int y;
   s = x1;
   t = x2;
   for(;;) {
@@ -14,16 +14,13 @@ byte_case_start(register const void* x1, unsigned int len, register const void* 
     if(y >= 'A' && y <= 'Z') { /* upper case */
       y += 'a' - 'A';
     }
-    if(!y)
-      return 1;
-    if(!len)
-      return 0;
+    if(!y) return 1;
+    if(!len) return 0;
     --len;
     x = *s++;
     if(x >= 'A' && x <= 'Z') { /* upper case */
       x += 'a' - 'A';
     }
-    if(x != y)
-      return 0;
+    if(x != y) return 0;
   }
 }

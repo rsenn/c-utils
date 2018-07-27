@@ -4,15 +4,15 @@
 
 int
 cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_len) {
-  uint8_t* p = map->root;
+  unsigned char* p = map->root;
   if(p == NULL || key == NULL) {
     return 0;
   }
-  const uint8_t* key_bytes = (const uint8_t*)key;
+  const unsigned char* key_bytes = (const unsigned char*)key;
 
   while(IS_INTERNAL_NODE(p)) {
     struct cbmap_internal_node* q = GET_INTERNAL_NODE(p);
-    uint8_t c = 0;
+    unsigned char c = 0;
     if(q->byte < key_len) {
       c = key_bytes[q->byte];
     }

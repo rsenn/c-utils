@@ -189,3 +189,6 @@ export (LIBS)
 export (QMAKE_EXTRA_TARGETS)
 }
 
+SOURCES += \
+    $$PWD/../../../../../home/roman/Sources/rsenn/dirlist/lib/xml/xml_find_element_attr.c
+

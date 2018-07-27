@@ -2,9 +2,9 @@
 //#include "../haveuint128.h"
 
 size_t scan_ulongn(const char* src, size_t n, unsigned long int* dest) {
-  register const char *tmp = src;
-  register unsigned long int l = 0;
-  register unsigned char c;
+  const char *tmp = src;
+  unsigned long int l = 0;
+  unsigned char c;
   /* Since the conditions can be computed at compile time, the compiler
    * should only emit code for one of the implementations, depending on
    * which architecture the code is compiled for. */

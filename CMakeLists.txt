@@ -5,10 +5,45 @@ project(dirlist)
 
 set(BUILD_SHARED_LIBS FALSE)
 
-include( CheckCCompilerFlag )
-include( CheckCXXCompilerFlag )
-include( CheckLibraryExists )
+include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
+include(CheckFunctionExists)
+include(CheckIncludeFile)
+include(CheckLibraryExists)
+include(CheckTypeSize)
+include(FindBZip2)
+include(FindLibXml2)
+include(FindPkgConfig)
+include(FindZLIB)
+include(UsePkgConfig)
 
+
+set(ignored_files
+  "\\\\.git.*"
+  "\\\\.o"
+  "\\\\.log"
+  "build/.*"
+  "\\\\.swp\\\\$"
+  "~\\\\$"
+  "fuse_hidden"
+  "core\\\\.[0-9]"
+  "\\\\.vscode"
+  "\\\\.codelite"
+  "\\\\.settings"
+  "CMakeFiles\\\\/"
+  "\\\\.user"
+)
+
+set(DIRLIST_VERSION 1.0)
+set(CPACK_SOURCE_GENERATOR TXZ)
+set(CPACK_SOURCE_IGNORE_FILES ${ignored_files})
+set(CPACK_SOURCE_PACKAGE_FILE_NAME dirlist-${DIRLIST_VERSION})
+set(CPACK_PACKAGE_NAME dirlist)
+set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
+set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL;/")
+
+
+include(CPack)
 
 #include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
 
@@ -19,8 +54,6 @@ include( CheckLibraryExists )
 
 add_definitions( -g  )
 
-include( FindPkgConfig )
-include( UsePkgConfig )
 
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
 #set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O0 -Wall")
@@ -55,13 +88,10 @@ endif(CXX_COMPILER_SUPPORTS_GGDB)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
-#include( FindBoost )
-#include(CMakeDetermineCompileFeatures)
-#include(CheckCXX11Features)
 
 #pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
+include_directories("${CMAKE_SOURCE_DIR}")
 
-include(FindLibXml2)
 if(LIBXML2_FOUND)
   link_libraries(${LIBXML2_LIBRARIES})
   include_directories(${LIBXML2_INCLUDE_DIR})
@@ -74,13 +104,11 @@ if(LIBLZMA_FOUND)
   include_directories(${LIBLZMA_INCLUDE_DIRS})
 endif(LIBLZMA_FOUND)
 
-include(FindZLIB)
 if(ZLIB_FOUND)
   link_libraries(${ZLIB_LIBRARIES})
   include_directories(${ZLIB_INCLUDE_DIRS})
 endif(ZLIB_FOUND)
 
-include(FindBZip2)
 if(BZIP2_FOUND)
   link_libraries(${BZIP2_LIBRARIES})
   include_directories(${BZIP2_INCLUDE_DIR})
@@ -110,7 +138,6 @@ if(HAS_CXX11_AUTO AND HAS_CXX11_NULLPTR AND HAS_CXX11_LAMBDA AND HAS_CXX11_STATI
 endif()
 
 
-include( CheckIncludeFile )
 
 check_include_file(inttypes.h HAVE_INTTYPES_H)
 check_include_file(sys/types.h HAVE_SYS_TYPES_H)
@@ -124,7 +151,6 @@ check_include_file(boost/foreach.hpp HAVE_BOOST_FOREACH_HPP)
 check_include_file(xtr1common HAVE_XTR1COMMON)
 check_include_file(initializer_list HAVE_INITIALIZER_LIST)
 
-include( CheckTypeSize )
 
 check_type_size(loff_t LOFF_T)
 check_type_size(lloff_t LLOFF_T)
@@ -135,7 +161,6 @@ if(NOT SOCKLEN_T)
 #  add_definitions(-Dsocklen_t=int)
 endif()
 
-include( CheckFunctionExists )
 
 check_function_exists(alloca HAVE_ALLOCA_FUNC)
 
@@ -226,7 +251,6 @@ if(NOT HAVE_GETOPT_LONG_FUNC OR NOT HAVE_GETOPT_FUNC)
 endif()
 
 
-include( FindPkgConfig )
 
 pkg_search_module(
                 LIBXML2
@@ -285,9 +309,11 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3
-eagle-gen-cmds
+access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3 xmltest4
+eagle-gen-cmds eagle-to-circuit
 )
+
+set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})
 
 set(CXXPROGRAMS #kbd-adjacency
 #ls-R
@@ -336,7 +362,9 @@ endforeach()
 
 
 #
-foreach(ARCHIVE array buffer cb cbmap byte dir fmt hmap http iarray io list mmap ndelay open playlist rdir scan socket str stralloc strarray strlist tai taia time uint16 uint32 uint64)
+set(LIBSUBDIRS array buffer byte case cb cbmap dir fmt hmap http iarray io list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia uint16 uint32 uint64 xml textbuf charbuf)
+
+foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
   file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
   if(NOT MODSOURCES)
@@ -365,7 +393,7 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   endif()
 endif()
 
-set(COMMON_LIBS strlist array stralloc buffer mmap open fmt scan str byte)
+set(COMMON_LIBS strlist array buffer stralloc scan str byte mmap open fmt )
 
 foreach(PROGRAM ${PROGRAMS})
   if("${PROGRAM}" STREQUAL ntldd)
@@ -398,14 +426,16 @@ endif()
 list(APPEND LIBXML2_LIBRARIES ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
 
 target_link_libraries(compiler-wrapper dir)
-target_link_libraries(eagle-init-brd hmap ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
-target_link_libraries(eagle-gen-cmds cbmap hmap ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
+target_link_libraries(eagle-init-brd xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
+target_link_libraries(eagle-gen-cmds cbmap hmap ${COMMON_LIBS} ${LIBXML2_LIBRARIES} ${MATH_LIBRARY})
+target_link_libraries(eagle-to-circuit cbmap xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
-target_link_libraries(plsconv playlist  buffer byte fmt scan str stralloc ${LIBXML2_LIBRARIES})
-target_link_libraries(xmltest ${LIBXML2_LIBRARIES})
-target_link_libraries(xmltest2 ${LIBXML2_LIBRARIES})
-target_link_libraries(xmltest3 ${LIBXML2_LIBRARIES})
-target_link_libraries(httptest http io socket taia tai iarray ndelay socket buffer byte scan str stralloc uint16  ${SOCKET_LIB})
+target_link_libraries(plsconv playlist xml hmap buffer byte fmt scan str stralloc)
+target_link_libraries(xmltest xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(xmltest2 xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(xmltest3 xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(xmltest4 xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(httptest http io socket taia tai iarray ndelay ${SOCKET_LIB} uint16 ${COMMON_LIBS})
 target_link_libraries(mediathek-parser mmap open)
 target_link_libraries(ntldd open)
 target_link_libraries(hexedit open)

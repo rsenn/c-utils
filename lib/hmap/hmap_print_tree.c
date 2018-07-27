@@ -22,7 +22,7 @@ hmap_print_tree_tuple(HMAP_DB* my_hmap_db) {
           case HMAP_DATA_TYPE_INT64:
             printf("index[%d][%p] key[%s], data[%ld]\n", ptr_list_tuple->index, ptr_list_tuple, ptr_list_tuple->key, ptr_list_tuple->vals.val_int64);
             break;
-          case HMAP_DATA_TYPE_UNIT64:
+          case HMAP_DATA_TYPE_UINT64:
             printf("index[%d][%p] key[%s], data[%lu]\n", ptr_list_tuple->index, ptr_list_tuple, ptr_list_tuple->key, ptr_list_tuple->vals.val_uint64);
             break;
           case HMAP_DATA_TYPE_DOUBLE:

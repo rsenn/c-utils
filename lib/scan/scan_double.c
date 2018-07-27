@@ -2,13 +2,14 @@
 
 #ifdef __GNUC__
 static inline int isdigit(int c) { return(c >= '0' && c <= '9'); }
+//#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #else
 #include <ctype.h>
 #endif
 
 size_t scan_double(const char *in, double *dest) {
   double d = 0;
-  register const char *c = in;
+  const char *c = in;
   char neg = 0;
   switch(*c) {
   case '-': neg = 1;

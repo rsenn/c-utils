@@ -100,6 +100,8 @@ size_t scan_pb_tag(const char *in, size_t len, size_t *fieldno, unsigned char *t
 size_t scan_pb_type0_sint(const char *in, size_t len, signed long long *l);
 size_t scan_varint(const char *in, size_t len, unsigned long long *n);
 
+size_t scan_xmlescape(const char *src, char *dest);
+
 #ifdef __cplusplus
 }
 #endif

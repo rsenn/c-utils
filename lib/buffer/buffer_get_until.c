@@ -7,7 +7,7 @@ buffer_get_until(buffer* b, char* x, size_t len, const char* charset, size_t set
   size_t blen;
 
   for(blen = 0; blen < len;) {
-    register int r;
+    int r;
     if((r = buffer_getc(b, x)) < 0) return r;
     if(r == 0) {
       *x = 0;

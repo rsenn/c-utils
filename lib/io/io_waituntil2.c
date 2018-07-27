@@ -377,42 +377,42 @@ dopoll:
 //    fprintf(stderr,"o=%p, e->or=%p, e->ow=%p, e->os=%p\n",o,&e->or,&e->ow,&e->os);
 //    fprintf(stderr,"e->readqueued=%d, e->writequeued=%d, e->acceptqueued=%d, e->connectqueued=%d, e->sendfilequeued=%d\n",    e->readqueued, e->writequeued, e->acceptqueued, e->connectqueued, e->sendfilequeued);
     if(o == &e-> or && e->readqueued == 1) {
-    e->readqueued = 2;
-    e->canread = 1;
-    e->bytes_read = numberofbytes;
-    e->next_read = first_readable;
-    first_readable = x;
+      e->readqueued = 2;
+      e->canread = 1;
+      e->bytes_read = numberofbytes;
+      e->next_read = first_readable;
+      first_readable = x;
 //      printf("read %lu bytes on fd %lu: %p\n",numberofbytes,x,e);
-  } else if(o == &e->ow && e->writequeued == 1) {
-    e->writequeued = 2;
-    e->canwrite = 1;
-    e->bytes_written = numberofbytes;
-    e->next_write = first_writeable;
-    first_writeable = x;
-  } else if(o == &e-> or && e->acceptqueued == 1) {
-    e->acceptqueued = 2;
-    e->canread = 1;
-    e->next_read = first_readable;
-    first_readable = x;
-  } else if(o == &e->ow && e->connectqueued == 1) {
-    e->connectqueued = 2;
-    e->canwrite = 1;
-    e->next_write = first_writeable;
-    first_writeable = x;
-  } else if(o == &e->os && e->sendfilequeued == 1) {
-    e->sendfilequeued = 2;
-    e->canwrite = 1;
-    e->bytes_written = numberofbytes;
-    e->next_write = first_writeable;
-    first_writeable = x;
-  }
-  return 1;
-} else {
-  /* either the overlapped I/O request failed or we timed out */
-  DWORD err;
-  io_entry* e;
+    } else if(o == &e->ow && e->writequeued == 1) {
+      e->writequeued = 2;
+      e->canwrite = 1;
+      e->bytes_written = numberofbytes;
+      e->next_write = first_writeable;
+      first_writeable = x;
+    } else if(o == &e-> or && e->acceptqueued == 1) {
+      e->acceptqueued = 2;
+      e->canread = 1;
+      e->next_read = first_readable;
+      first_readable = x;
+    } else if(o == &e->ow && e->connectqueued == 1) {
+      e->connectqueued = 2;
+      e->canwrite = 1;
+      e->next_write = first_writeable;
+      first_writeable = x;
+    } else if(o == &e->os && e->sendfilequeued == 1) {
+      e->sendfilequeued = 2;
+      e->canwrite = 1;
+      e->bytes_written = numberofbytes;
+      e->next_write = first_writeable;
+      first_writeable = x;
+    }
+    return 1;
+  } else {
+    /* either the overlapped I/O request failed or we timed out */
+    DWORD err;
+    io_entry* e;
 //    fprintf(stderr," failure, o=%p.\n",o);
-  if(!o) return 0;	/* timeout */
+    if(!o) return 0;	/* timeout */
     /* we got a completion packet for a failed I/O operation */
     err = GetLastError();
     if(err == WAIT_TIMEOUT) return 0;	/* or maybe not */

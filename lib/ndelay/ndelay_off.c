@@ -14,9 +14,9 @@
 
 int ndelay_off(int fd) {
 #if defined(_WIN32) || defined(_WIN64)
-  unsigned long i=1;
-  return winsock2errno(ioctlsocket( fd, FIONBIO, &i));
+  unsigned long i = 1;
+  return winsock2errno(ioctlsocket(fd, FIONBIO, &i));
 #else
-  return fcntl(fd,F_SETFL,fcntl(fd,F_GETFL,0) & ~O_NDELAY);
+  return fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~O_NDELAY);
 #endif
 }

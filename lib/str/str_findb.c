@@ -1,16 +1,15 @@
 #include "../byte.h"
-#include "../byte.h"
 #include "../str.h"
 /*
   return index to first occurance of data,
   otherwise return str_len(s)
 */
-unsigned int str_findb(const void *p1, const void *what, unsigned int len)
-{
-  register unsigned int i;
-  register unsigned int s_len;
-  register unsigned int last;
-  register const char *s;
+unsigned int
+str_findb(const void* p1, const void* what, unsigned int len) {
+  unsigned int i;
+  unsigned int s_len;
+  unsigned int last;
+  const char* s;
   s = p1;
   s_len = str_len(s);
   if(s_len < len) return s_len;

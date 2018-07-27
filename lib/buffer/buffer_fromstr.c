@@ -2,7 +2,7 @@
 #include "../str.h"
 
 ssize_t
-buffer_dummyread() {
+buffer_dummyread_fromstr() {
   return 0;
 }
 
@@ -13,5 +13,5 @@ buffer_fromstr(buffer* b, char* s, size_t len) {
   b->n = len;
   b->a = b->n + 1;
   b->fd = -1;
-  b->op = buffer_dummyread;
+  b->op = buffer_dummyread_fromstr;
 }

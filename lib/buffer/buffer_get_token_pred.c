@@ -8,7 +8,7 @@ buffer_get_token_pred(buffer* b, char* x, size_t len, string_predicate p, void* 
   unsigned int blen;
 
   for(blen = 0; blen < len; ++blen) {
-    register ssize_t r;
+    ssize_t r;
     if((r = buffer_getc(b, x)) < 0) return r;
     if(r == 0) {
       break;

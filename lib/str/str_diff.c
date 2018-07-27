@@ -5,15 +5,14 @@
  * equal to, or greater than the string b[0], b[1], ..., b[m-1]=='\0'.
  * When the strings are different, str_diff does not read bytes past the
  * first difference. */
-int str_diff(const char* a, const char* b) {
-  register const unsigned char *s = (const unsigned char *)a;
-  register const unsigned char *t = (const unsigned char *)b;
-  register int j;
+int
+str_diff(const char* a, const char* b) {
+  const unsigned char* s = (const unsigned char*)a;
+  const unsigned char* t = (const unsigned char*)b;
+  int j;
   for(;;) {
-    if((j = (*s - *t)))
-      break;
-    if(!*t)
-      break;
+    if((j = (*s - *t))) break;
+    if(!*t) break;
     ++s;
     ++t;
   }

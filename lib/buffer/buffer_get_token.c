@@ -26,7 +26,7 @@ buffer_get_token(buffer* b, char* x, size_t len, const char* charset, size_t set
     }
   } else {
     for(blen = 0; blen < len; ++blen) {
-      register ssize_t r;
+      ssize_t r;
       if((r = buffer_getc(b, x)) < 0) return r;
       if(r == 0) {
         *x = 0;

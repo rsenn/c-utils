@@ -19,6 +19,7 @@ cfg() {
       -DBUILD_SHARED_LIBS=OFF \
       -DENABLE_PIC=OFF ;;
   esac
+  : ${generator:="Unix Makefiles"}
 
  (mkdir -p $builddir
   relsrcdir=`realpath --relative-to "$builddir" .`

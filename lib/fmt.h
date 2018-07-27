@@ -127,9 +127,16 @@ size_t fmt_uint64(char* dest, uint64 i);
 size_t fmt_escapecharquotedprintable(char *dest, unsigned int ch);
 size_t fmt_escapecharquotedprintableutf8(char *dest, unsigned int ch);
 
+unsigned int fmt_hexb(void *out, const void *d, register unsigned int len);
+size_t fmt_xmlescape(char *dest, unsigned int ch);
+size_t fmt_escapecharc(char *dest, unsigned int ch);
+
+size_t fmt_escapecharshell(char *dest, uint32 ch);
+char fmt_tohex(char c);
+size_t fmt_repeat(char *dest, const char *src, int n);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-char fmt_tohex(char c);

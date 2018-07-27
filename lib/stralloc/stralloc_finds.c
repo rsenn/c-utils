@@ -4,6 +4,6 @@
   return index to first occurance of data,
   otherwise return sa->len
 */
-unsigned int stralloc_finds(const stralloc *sa, register const char *what) {
+unsigned int stralloc_finds(const stralloc *sa, const char *what) {
   return stralloc_findb(sa, what, str_len(what));
 }

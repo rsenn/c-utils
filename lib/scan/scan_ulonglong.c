@@ -1,9 +1,9 @@
 #include "../scan.h"
 
 size_t scan_ulonglong(const char *src, unsigned long long *dest) {
-  register const char *tmp = src;
-  register unsigned long long l = 0;
-  register unsigned char c;
+  const char *tmp = src;
+  unsigned long long l = 0;
+  unsigned char c;
   while((c = (unsigned char)(*tmp - '0')) < 10) {
     unsigned long long n;
     /* division is very slow on most architectures */

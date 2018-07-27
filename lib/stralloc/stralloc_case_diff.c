@@ -3,7 +3,7 @@
 #include "../stralloc.h"
 
 int stralloc_case_diff(const stralloc *sa1, const stralloc *sa2) {
-  register unsigned int len;
+  unsigned int len;
   int r;
   /*
     get shortest len

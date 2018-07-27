@@ -59,6 +59,8 @@ int
 cbmap_delete(cbmap_t map, void* key, size_t key_len);
 
 /** Visits keys and values after a given key prefix */
+int cbmap_visit(uint8_t *top, cbmap_visitor visitor_fn, void *user_data);
+
 int
 cbmap_visit_prefix(cbmap_t map, uint8_t* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data);
 

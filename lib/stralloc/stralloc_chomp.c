@@ -3,7 +3,7 @@
 int stralloc_chomp(stralloc* sa) {
   size_t max = sa->len;
   if(max > 0) {
-    register char x;
+    char x;
     --max;
     x = sa->s[max];
     if(x == '\n' || x == '\r') {

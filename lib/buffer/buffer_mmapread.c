@@ -1,8 +1,8 @@
 #include "../buffer.h"
 #include "../mmap.h"
 
-/*static*/ ssize_t
-op() {
+static ssize_t
+op(int fd, void* buf, size_t len, void* arg) {
   return 0;
 }
 

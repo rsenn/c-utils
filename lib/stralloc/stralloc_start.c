@@ -2,8 +2,8 @@
 #include "../byte.h"
 #include "../stralloc.h"
 
-unsigned int stralloc_start(register const stralloc *sa, register const stralloc *prefix) {
-  register unsigned int len;
+unsigned int stralloc_start(const stralloc *sa, const stralloc *prefix) {
+  unsigned int len;
   len = prefix->len;
   return (sa->len >= len) && byte_equal(prefix->s, len, sa->s);
 }

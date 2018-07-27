@@ -5,8 +5,8 @@
 
 unsigned int stralloc_qp_encode(stralloc *out, const stralloc *in) {
   static stralloc tmp = { 0, 0, 0 };
-  register unsigned int i;
-  register unsigned int len;
+  unsigned int i;
+  unsigned int len;
   char ch;
   unsigned char hex[2];
 

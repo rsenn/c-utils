@@ -8,7 +8,7 @@ int main() {
   int r = rdir_open(&rd, "/etc");
 
   while((s = rdir_read(&rd))) {
-    buffer_putm(buffer_1, s, "\n", NULL);
+    buffer_putm(buffer_1, s, "\n");
     buffer_flush(buffer_1);
 
   }

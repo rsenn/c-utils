@@ -19,8 +19,8 @@ struct cbmap {
 /** mark - cbmap_data_node : holds keys and values */
 
 struct cbmap_data_node {
-  uint8_t* key;
-  uint8_t* value;
+  unsigned char* key;
+  unsigned char* value;
   size_t key_len;
   size_t value_len;
 };
@@ -34,9 +34,9 @@ struct cbmap_internal_node {
   /* The two branches */
   void* branch[2];
   /* The number of the byte where the bits differ */
-  uint32_t byte;
+  unsigned int byte;
   /* All ones but the branching bit, that is set to 0 */
-  uint8_t otherbits;
+  unsigned char otherbits;
 };
 
 #define KEY_COMPARE(k1, k2, len) memcmp(k1, k2, len)

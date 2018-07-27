@@ -397,7 +397,7 @@ main(int argc, char* argv[]) {
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {
     switch(opt) {
-      case 'c': csv++; break;
+      case 'c': csv = true; break;
       case 'd': debug++; break;
       case 'l': lowq++; break;
       case 'f': datetime_format = optarg; break;

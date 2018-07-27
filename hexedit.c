@@ -36,7 +36,7 @@ patch(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
 int
 main(int argc, char* argv[]) {
 
-  p = mmap_private(argv[1], &n);
+  p = (unsigned char*)mmap_private(argv[1], &n);
 
 	patch(p, 0x00076608, 0x90, 0xeb);
   patch(p, 0x0023f89c, 0xdf, 0x75);

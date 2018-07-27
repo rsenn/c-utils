@@ -2,7 +2,7 @@
 
 /* WARNING: this only works if compiled with -fomit - frame - pointer */
 void umult64() {
-  asm volatile(
+  __asm__ volatile(
     "xchgq %rdx,%rsi\n"
     "movq %rdi,%rax\n"
     "mulq %rdx\n"

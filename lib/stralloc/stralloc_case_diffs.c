@@ -4,8 +4,8 @@
 #include "../stralloc.h"
 
 int stralloc_case_diffs(const stralloc *sa, const char *s) {
-  register unsigned int len;
-  register unsigned int s_len;
+  unsigned int len;
+  unsigned int s_len;
   int r;
 
   s_len = str_len(s);

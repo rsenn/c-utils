@@ -25,7 +25,7 @@ putline(const char* what, const char* b, ssize_t l, buffer* buf) {
     buffer_puts(buffer_1, b);
   else {
     while(l-- > 0)
-    buffer_put(buffer_1, b++, 1);
+      buffer_put(buffer_1, b++, 1);
   }
   buffer_puts(buffer_1, " (bytes in recvb: ");
   buffer_putulong(buffer_1, buf->n - buf->p);
@@ -37,8 +37,8 @@ static int
 boundary_predicate(stralloc* sa, void* arg) {
   stralloc* pred = arg;
   if(pred->len >= sa->len) {
-     if(!byte_diff(&sa->s[sa->len - pred->len], pred->len, pred->s))
-       return 1;
+    if(!byte_diff(&sa->s[sa->len - pred->len], pred->len, pred->s))
+      return 1;
   }
   return 0;
 }
@@ -126,7 +126,7 @@ http_readable(http* h) {
           stralloc_zero(&r->data);
 
           if(!buffer_get_token_sa_pred(&recvb, &r->data, boundary_predicate, &r->boundary)) {
-                   putline("Boundary", r->data.s, r->data.len, &recvb);
+            putline("Boundary", r->data.s, r->data.len, &recvb);
 
           }
 

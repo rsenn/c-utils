@@ -2,9 +2,9 @@
 #include <stdint.h>
 
 void
-byte_lower(void* s, register unsigned int len) {
-  register unsigned char c;
-  register unsigned char* x;
+byte_lower(void* s, unsigned int len) {
+  unsigned char c;
+  unsigned char* x;
   x = s;
   while(len) {
     --len;

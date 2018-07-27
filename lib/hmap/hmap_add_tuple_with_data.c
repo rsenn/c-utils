@@ -2,7 +2,7 @@
 #include "hmap_internal.c"
 
 int
-hmap_add_tuple_with_data(HMAP_DB** hmap_db, void* key, int k_len, void* data) {
+hmap_add_tuple_with_data(HMAP_DB** hmap_db, void* key, size_t k_len, void* data) {
 
   VALIDATE_DB(*hmap_db, key, k_len);
 
@@ -29,7 +29,7 @@ hmap_add_tuple_with_data(HMAP_DB** hmap_db, void* key, int k_len, void* data) {
       root_tuple->data = data;
       root_tuple->data_len = -1;
 
-      HMAP_DEBUG("add[%d] primary data[%s]\n", index, (char*)root_tuple->data);
+      HMAP_DUMP("add[%d] primary data[%s]\n", index, (char*)root_tuple->data);
       memcpy(root_tuple->key, key, k_len);
       root_tuple->key[k_len] = 0;
       root_tuple->key_len = k_len;
@@ -53,7 +53,7 @@ hmap_add_tuple_with_data(HMAP_DB** hmap_db, void* key, int k_len, void* data) {
       new_tuple->data = data;
       new_tuple->data_len = -1;
 
-      HMAP_DEBUG("add[%d] secondary data[%s]\n", index, (char*)new_tuple->data);
+      HMAP_DUMP("add[%d] secondary data[%s]\n", index, (char*)new_tuple->data);
       memcpy(new_tuple->key, key, k_len);
       new_tuple->key[k_len] = 0;
       new_tuple->key_len = k_len;
