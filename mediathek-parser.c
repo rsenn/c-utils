@@ -19,7 +19,7 @@ static const char* file_path = "filme.json"; //"C:/Users/roman/.mediathek3/filme
 static const char delimiters[] = "\"";
 //static char  inbuf[16384];
 
-char *strptime(const char *s, const char *format, struct tm *tm);
+char *str_ptime(const char *s, const char *format, struct tm *tm);
 
 /*
 int
@@ -226,7 +226,7 @@ process_entry(const array* a) {
     stralloc_catc(&datetime, ' ');
     stralloc_cats(&datetime, av[5]);
     stralloc_nul(&datetime);
-    if(strptime(datetime.s, "%d.%m.%Y %H:%M:%S", &tm) == NULL) {
+    if(str_ptime(datetime.s, "%d.%m.%Y %H:%M:%S", &tm) == NULL) {
       t = 0;
     } else {
       t = mktime(&tm);

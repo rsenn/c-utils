@@ -52,6 +52,12 @@ char *str_istr(char *s, char *find);
 char *str_tok(char *s, const char *delim, char **ptrptr);
 char *str_dup(const char *s);
 
+struct tm;
+
+char* str_ptime(const char* s,const char* format, struct tm* tm);
+
+char*
+str_basename(char* s) ;
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 

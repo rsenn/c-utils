@@ -502,7 +502,7 @@ $(BUILDDIR)scan.a: $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_ulongn.o $(BUILDDIR
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)open.a: $(BUILDDIR)open_append.o $(BUILDDIR)open_read.o $(BUILDDIR)open_rw.o $(BUILDDIR)open_trunc.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
-$(BUILDDIR)str.a: $(BUILDDIR)str_chr.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_len.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_tok.o $(BUILDDIR)str_dup.o
+$(BUILDDIR)str.a: $(BUILDDIR)str_chr.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_len.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_tok.o $(BUILDDIR)str_dup.o $(BUILDDIR)str_basename.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
 $(BUILDDIR)dir.a: $(BUILDDIR)dir_close.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_time.o $(BUILDDIR)dir_name.o $(BUILDDIR)dir_type.o $(BUILDDIR)utf8.o
 	$(CROSS_COMPILE)$(AR) rcs $@ $^
@@ -576,13 +576,13 @@ ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
-$(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)str.a $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)strptime.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
+$(BUILDDIR)mediathek-parser$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)array.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)str.a $(BUILDDIR)strlist.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)str_ptime.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
 endif
 
-$(BUILDDIR)mediathek-list$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)array.a $(BUILDDIR)strlist.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)strptime.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
+$(BUILDDIR)mediathek-list$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)array.a $(BUILDDIR)strlist.a $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a  $(BUILDDIR)scan.a $(BUILDDIR)str.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)str_ptime.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	$(CROSS_COMPILE)$(STRIP) --strip-all $@
