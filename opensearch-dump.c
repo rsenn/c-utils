@@ -1,19 +1,18 @@
 #include "lib/buffer.h"
 #include "lib/stralloc.h"
 #include <stdbool.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
+#include "lib/xml.h"
 
 static stralloc url, templ;
 static char sep = '?';
 
 static void
-print_attr_names(xmlElement* elm) {
+print_attr_names(xmlnode* elm) {
   bool param = !strcmp((const char*)elm->name, "Param");
-  xmlAttribute* attr_p;
-  for(attr_p = (xmlAttribute*)elm->attributes; attr_p; attr_p = (xmlAttribute*)attr_p->next) {
-    const char* content = (const char*)xmlNodeGetContent((xmlNodePtr)attr_p);
-    bool name = !strcmp((const char*)attr_p->name, "name");
+  TUPLE* attr_p;
+  for(attr_p = (TUPLE*)elm->attributes; attr_p; attr_p = (TUPLE*)attr_p->next) {
+    const char* content = (const char*)xml_content((xmlnode*)attr_p);
+    bool name = !strcmp((const char*)attr_p->key, "name");
     if(param) {
       stralloc_catb(&url, name ? &sep : "=", 1);
       stralloc_cats(&url, content);
@@ -23,7 +22,7 @@ print_attr_names(xmlElement* elm) {
        buffer_puts(buffer_2, attr_p->name);
        buffer_puts(buffer_2, param ? "=" : "\n  attribute value: ");
        buffer_puts(buffer_2, content);*/
-    if(!strcmp((const char*)attr_p->name, "template")) {
+    if(!strcmp((const char*)attr_p->key, "template")) {
       stralloc_copys(&templ, content);
       //templ = content;
     }
@@ -38,18 +37,16 @@ print_attr_names(xmlElement* elm) {
  * that are siblings or children of a given xml node.
  */
 static void
-print_element_names(xmlNode* a_node) {
-  xmlNode* cur_node = NULL;
+print_element_names(xmlnode* a_node) {
+  xmlnode* cur_node = NULL;
   size_t i;
   stralloc_init(&url);
   stralloc_init(&templ);
   a_node = a_node->children;
   for(cur_node = a_node; cur_node; cur_node = cur_node->next) {
-    if(cur_node->type == XML_ELEMENT_NODE) {
-      xmlElement* elm = (xmlElement*)cur_node;
-      xmlNs* ns = cur_node->ns;
-      const char* nsStr = ns ? (const char*)ns->prefix : NULL;
-      /*    buffer_puts(buffer_2, "node type: Element, name: ");
+    if(cur_node->type == XML_ELEMENT) {
+      xmlnode* elm = (xmlnode*)cur_node;
+     /*    buffer_puts(buffer_2, "node type: Element, name: ");
           if(nsStr) {
             buffer_puts(buffer_2, nsStr);
             buffer_put(buffer_2, ":", 1);
@@ -60,11 +57,11 @@ print_element_names(xmlNode* a_node) {
       //      print_element_names(elm->children);
       if(!strcmp((const char*)elm->name, "Url")) {
         print_attr_names(elm);
-        xmlNode* child_node = NULL;
+        xmlnode* child_node = NULL;
         for(child_node = elm->children; child_node; child_node = child_node->next) {
           //    if(child_node->type == XML_ELEMENT_NODE)
           {
-            print_attr_names((xmlElement*)child_node);
+            print_attr_names((xmlnode*)child_node);
           }
         }
       }
@@ -104,16 +101,19 @@ print_element_names(xmlNode* a_node) {
 
 int
 parse_xml(const char* filename) {
-  xmlDoc* doc = NULL;
-  xmlNode* root_element = NULL;
-  /*
-   * this initialize the library and check potential ABI mismatches
-   * between the version it was compiled for and the actual shared
-   * library used.
-   */
-  LIBXML_TEST_VERSION
+  xmlnode* doc = NULL;
+  xmlnode* root_element = NULL;
+
+
+
   /*parse the file and get the DOM */
-  doc = xmlReadFile(filename, NULL, 0);
+
+
+  buffer input;
+  buffer_mmapprivate(&input, filename);
+
+  doc = xml_read_tree(&input);
+
   if(doc == NULL) {
     buffer_puts(buffer_2, "error: could not parse file ");
     buffer_puts(buffer_2, filename);
@@ -121,10 +121,10 @@ parse_xml(const char* filename) {
     return -1;
   }
   /*Get the root element node */
-  root_element = xmlDocGetRootElement(doc);
+  root_element = doc;
   print_element_names(root_element);
   /*free the document */
-  xmlFreeDoc(doc);
+  xml_free(doc);
   /*
    *Free the global variables that may
    *have been allocated by the parser.
@@ -147,6 +147,5 @@ main(int argc, char** argv) {
     if(ret == -1)
       return 1;
   }
-  xmlCleanupParser();
   return 0;
 }

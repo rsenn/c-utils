@@ -12,7 +12,6 @@ include(CheckIncludeFile)
 include(CheckLibraryExists)
 include(CheckTypeSize)
 include(FindBZip2)
-include(FindLibXml2)
 include(FindPkgConfig)
 include(FindZLIB)
 include(UsePkgConfig)
@@ -89,13 +88,7 @@ endif(CXX_COMPILER_SUPPORTS_GGDB)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
 
-#pkg_search_module(LIBXML2 libxml-2.0 libxml2 libxml)
 include_directories("${CMAKE_SOURCE_DIR}")
-
-if(LIBXML2_FOUND)
-  link_libraries(${LIBXML2_LIBRARIES})
-  include_directories(${LIBXML2_INCLUDE_DIR})
-endif(LIBXML2_FOUND)
 
 #pkg_search_module(LIBLZMA liblzma)
 include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
@@ -250,15 +243,6 @@ if(NOT HAVE_GETOPT_LONG_FUNC OR NOT HAVE_GETOPT_FUNC)
   set(GETOPT_SOURCES ${CMAKE_SOURCE_DIR}/lib/getopt.c)
 endif()
 
-
-
-pkg_search_module(
-                LIBXML2
-                libxml-2.0
-                #REQUIRED
-)
-
-
 #check_library_exists(m, atan2 "" HAVE_MATH_LIBRARY)
 check_library_exists(m roundf "" HAVE_MATH_LIBRARY)
 
@@ -273,16 +257,9 @@ endif(HAVE_MATH_LIBRARY)
 
 
 
-#find_package(libxml2)
 #include_directories( "${CMAKE_SOURCE_DIR}/lib" )
 include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" )
 include_directories( ${Iconv_INCLUDE_DIR} )
-
-#if(LIBXML2_LIBRARIES MATCHES static)
-#  option(STATIC_LINK "Compile as static libraries" ON)
-#else()
-#  option(STATIC_LINK "Compile as static libraries" OFF)
-#endif()
 
 if(STATIC_LINK)
   add_definitions(-DNOLIBTOOL=1 -DLIBXML_STATIC=1)
@@ -290,13 +267,6 @@ else(STATIC_LINK)
   add_definitions(-DPIC=1)
 endif(STATIC_LINK)
 
-
-#include_directories( ${LIBXML2_INCLUDE_DIR} )
-set(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
-
-if(LIBXML2_INCLUDE_DIR)
-  include_directories(${Iconv_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR}/libxml)
-endif()
 
 if(USE_READDIR)
   add_definitions(-DUSE_READDIR=1)
@@ -417,8 +387,6 @@ endforeach(PROGRAM)
 target_link_libraries(list-r dir ${COMMON_LIBS})
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
-  string(REGEX REPLACE "/lib/xml2.lib" "/bin/xml2.dll" LIBXML2_DLL "${LIBXML2_LIBRARIES}" "${Iconv_LIBRARIES}")
-
 IF(MSVC OR WIN32 OR WIN64)
   SET(SOCKET_LIB ws2_32)
 endif()
@@ -429,7 +397,7 @@ target_link_libraries(compiler-wrapper dir)
 target_link_libraries(eagle-init-brd xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
 target_link_libraries(eagle-gen-cmds cbmap xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
 target_link_libraries(eagle-to-circuit cbmap xml hmap charbuf textbuf ${COMMON_LIBS})
-target_link_libraries(opensearch-dump ${LIBXML2_LIBRARIES})
+target_link_libraries(opensearch-dump xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(plsconv playlist xml hmap buffer byte fmt scan str stralloc)
 target_link_libraries(xmltest xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(xmltest2 xml hmap charbuf textbuf ${COMMON_LIBS})

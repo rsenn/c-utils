@@ -1080,6 +1080,8 @@ $(BUILDDIR)xml_read_callback.o: lib/xml/xml_read_callback.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_read_tree.o: lib/xml/xml_read_tree.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_root_element.o: lib/xml/xml_root_element.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_textnode.o: lib/xml/xml_textnode.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)libntldd.o: libntldd.c

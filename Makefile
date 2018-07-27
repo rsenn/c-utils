@@ -136,12 +136,14 @@ PREFIX := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs |sed -n 's,.*:\s\+=\?
 endif
 #$(info PREFIX: $(PREFIX))
 
+ifeq ($(SYSROOT),)
 ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
 SYSROOT := $(subst /bin/,,$(CROSS_COMPILE))
 else
 SYSROOT := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs|sed -n "/^lib/ { s|.*:\s\+|| ; s|^=|| ; /;/ { s|.*;|;| }; /;/! { s|.*:|| } ; s|^;|| ; s|/lib.*|| ; s|/mingw$$|| ; s|/usr$$|| ; p }")
 endif
 $(info SYSROOT: $(SYSROOT))
+endif
 
 
 prefix ?= $(PREFIX)
@@ -177,8 +179,10 @@ else
   P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/sys*root/*/lib/pkgconfig)
   ifeq ($(call file-exists,$(P)),1)
   PKG_CONFIG_PATH := $(P)
+  ifeq ($(SYSROOT),)
   SYSROOT := $(dir $(subst /lib/pkgconfig,,$(P)))
 $(info SYSROOT=$(SYSROOT))
+  endif
   endif
 endif
 endif
@@ -619,14 +623,14 @@ CFLAGS += @$(FLAGS_FILE)
 
 ifeq ($(SYSROOT),)
 
-ifeq ($(call file-exists,/$(HOST)/sys-root),1)
-SYSROOT := /$(HOST)/sys-root
+ifeq ($(call file-exists,/opt/$(HOST)/sys-root),1)
+SYSROOT := /opt/$(HOST)/sys-root
 else
-ifeq ($(call file-exists,/$(HOST)/sys-root),1)
-SYSROOT := /$(HOST)/sys-root
+ifeq ($(call file-exists,/usr/$(HOST)/sys-root),1)
+SYSROOT := /usr/$(HOST)/sys-root
 else 
-ifeq ($(call file-exists,/$(HOST)/sysroot),1)
-SYSROOT := /$(HOST)/sysroot
+ifeq ($(call file-exists,/usr/$(HOST)/sysroot),1)
+SYSROOT := /usr/$(HOST)/sysroot
 else 
 ifeq ($(call file-exists,/opt/$(HOST)/sysroot),1)
 SYSROOT := /opt/$(HOST)/sys-root
@@ -636,7 +640,6 @@ endif
 endif
 
 endif
-
 
 ifneq ($(SYSROOT),)
 FLAGS += --sysroot=$(SYSROOT)

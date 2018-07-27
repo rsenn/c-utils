@@ -121,7 +121,7 @@ struct net {
 };
 
 const char* document = "<doc/>";
-static const char* xq = "//net";
+const char* xq = "//net";
 void node_print(xmlnode* node);
 int node_depth(xmlnode* node);
 int str_ischarset(const char* s, const char* set);
@@ -132,7 +132,7 @@ void print_element_attrs(xmlnode* a_node);
 int dump_net(const void* key, size_t key_len, const void* value,
              size_t value_len, void* user_data);
 
-static cbmap_t devicesets, packages, parts, nets, symbols;
+cbmap_t devicesets, packages, parts, nets, symbols;
 /**
  * Reads a real-number value from the element/attribute given
  */

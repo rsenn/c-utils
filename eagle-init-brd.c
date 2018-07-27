@@ -15,19 +15,24 @@
 
 #define END_OF_LINE "; "
 //#define END_OF_LINE ";\n"
+void        after_element(const char*);
+void        on_attribute_decl(void*, const char*, const char*, int, int, const char*);
+void        on_characters(void*, const char*, int);
+void        on_end_element(void*, const char*);
+void        on_start_element_ns(void*, const char*, const char*, const char*, int, const char**, int, int, const char**);
+void        on_start_element(void*, const char*, HMAP_DB*);
 
-
-static int
+int
 xml_callback(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
 
-static int
+int
 xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
-static stralloc element_name, character_buf;
-static float const unit_factor = 25.4, scale_factor = 0.666666, grid_mils = 100;
-static float min_x = 0.0, max_x = 0.0, min_y = 0.0, max_y = 0.0;
-static void
+stralloc element_name, character_buf;
+float const unit_factor = 25.4, scale_factor = 0.666666, grid_mils = 100;
+float min_x = 0.0, max_x = 0.0, min_y = 0.0, max_y = 0.0;
+void
 update_minmax_xy(float x, float y) {
 
   if(x < min_x) min_x = x;
@@ -39,12 +44,12 @@ update_minmax_xy(float x, float y) {
   if(y > max_y) max_y = y;
 };
 
-static xmlnode* xmldoc = NULL;
-static HMAP_DB* hashmap = NULL;
-static TUPLE* ptr_tuple = NULL;
-static HMAP_DB *instances_db = NULL, *parts_db = NULL;
-static void hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*));
-static void update_part(const char*, float, float, float);
+xmlnode* xmldoc = NULL;
+HMAP_DB* hashmap = NULL;
+TUPLE* ptr_tuple = NULL;
+HMAP_DB *instances_db = NULL, *parts_db = NULL;
+void hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*));
+void update_part(const char*, float, float, float);
 #define NAMELEN 8
 typedef struct part {
   char name[NAMELEN];
@@ -68,7 +73,7 @@ round_to_mil(float val, float mil) {
 }
 
 /* ----------------------------------------------------------------------- */
-static size_t
+size_t
 str_copyn(char* out, const char* in, size_t n) {
   strncpy(out, in, n);
   out[n] = '\0';
@@ -76,7 +81,7 @@ str_copyn(char* out, const char* in, size_t n) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 each_part(part_t* p) {
 
   if(p->device[0] == '\0' && p->value[0] == '\0') return;
@@ -99,7 +104,7 @@ each_part(part_t* p) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 dump_part(part_t const* p) {
   printf("dump_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%.2f,"
          "y=%.2f,rot=%.0f}\n",
@@ -114,7 +119,7 @@ dump_part(part_t const* p) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 dump_instance(instance_t const* i) {
   printf("dump_instance \"%s:%s\" x=%.2f, y=%.2f, rot=%.f\n",
          i->part,
@@ -153,7 +158,7 @@ get_instance(const char* part, const char* gate) {
 }
 
 /* ----------------------------------------------------------------------- */
-static instance_t*
+instance_t*
 create_instance(
   const char* part, const char* gate, float x, float y, float rot) {
 #if DEBUG
@@ -187,7 +192,7 @@ create_instance(
 }
 
 /* ----------------------------------------------------------------------- */
-static part_t*
+part_t*
 create_part(const char* name,
             const char* library,
             const char* deviceset,
@@ -223,7 +228,7 @@ create_part(const char* name,
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 update_part(const char* name, float x, float y, float rot) {
   part_t* p = get_part(name);
 
@@ -270,7 +275,7 @@ update_part(const char* name, float x, float y, float rot) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 attr_list(stralloc* sa, HMAP_DB* hmap) {
   TUPLE* p;
 
@@ -289,7 +294,7 @@ attr_list(stralloc* sa, HMAP_DB* hmap) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
   TUPLE* t;
 
@@ -302,7 +307,7 @@ hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 print_list(HMAP_DB* hmap) {
   TUPLE* p;
 
@@ -321,7 +326,7 @@ print_list(HMAP_DB* hmap) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 print_attributes(xmlnode* e) {
 
   HMAP_DB* hmap = e->attributes;
@@ -337,7 +342,7 @@ print_attributes(xmlnode* e) {
 }
 
 /* ----------------------------------------------------------------------- */
-static const char*
+const char*
 get_attribute(xmlnode* e, const char* name) {
   TUPLE* t;
 
@@ -348,7 +353,7 @@ get_attribute(xmlnode* e, const char* name) {
 }
 
 /* ----------------------------------------------------------------------- */
-static int
+int
 get_attribute_sa(stralloc* sa, xmlnode* n, const char* name) {
   TUPLE* t;
 
@@ -362,7 +367,7 @@ get_attribute_sa(stralloc* sa, xmlnode* n, const char* name) {
 }
 
 /* ----------------------------------------------------------------------- */
-static int
+int
 get_attribute_double(double* d, xmlnode* e, const char* name) {
   stralloc sa;
   stralloc_init(&sa);
@@ -375,7 +380,7 @@ get_attribute_double(double* d, xmlnode* e, const char* name) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 cat_attributes(stralloc* sa, xmlnode* e) {
   HMAP_DB* hmap = e->attributes;
   TUPLE* a;
@@ -392,7 +397,7 @@ cat_attributes(stralloc* sa, xmlnode* e) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 process_instance(xmlnode* e) {
   double x = 0.0, y = 0.0, rotate = 0.0;
   stralloc part, gate, rot;
@@ -423,7 +428,7 @@ process_instance(xmlnode* e) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 process_part(xmlnode* e) {
   stralloc name, library, deviceset, device, value;
   stralloc_init(&name);
@@ -441,7 +446,7 @@ process_part(xmlnode* e) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 print_element_names(xmlnode* a_node) {
   xmlnode* n = NULL;
 
@@ -469,20 +474,20 @@ print_element_names(xmlnode* a_node) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 set_element_name(const char* name) {
   stralloc_copys(&element_name, name);
 }
 
 /* ----------------------------------------------------------------------- */
-static const char*
+const char*
 get_element_name() {
   stralloc_nul(&element_name);
   return element_name.s ? element_name.s : "(null)";
 }
 
 /* ----------------------------------------------------------------------- */
-static const char*
+const char*
 get_characters() {
   stralloc_nul(&character_buf);
   return character_buf.s ? character_buf.s : "";
@@ -521,7 +526,7 @@ parse_xmlfile(const char* filename, xmlnode** p_doc) {
 
 ///* ----------------------------------------------------------------------- */
 
-static int
+int
 xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
 
   stralloc_nul(name);
@@ -535,7 +540,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 on_attribute_decl(void* ctx,
                   const char* elem,
                   const char* fullname,
@@ -571,7 +576,7 @@ on_start_element(void* ctx, const char* name, HMAP_DB* attrs) {
 }
 
 /* ----------------------------------------------------------------------- */
-static void
+void
 on_start_element_ns(void* ctx,
                     const char* name,
                     const char* prefix,
@@ -658,7 +663,7 @@ on_characters(void* ctx, const char* ch, int len) {
   free(chars);
 }
 
-static const char*
+const char*
 mystr_basename(const char* filename) {
   char* s1 = strrchr(filename, '\\');
   char* s2 = strrchr(filename, '/');
@@ -669,7 +674,7 @@ mystr_basename(const char* filename) {
   return 0;
 }
 
-static int
+int
 xml_callback(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs){
 
 

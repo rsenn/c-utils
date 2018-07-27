@@ -87,7 +87,7 @@ struct net {
   array contacts; /**<  list of struct ref */
 };
 const char* document = "<doc/>";
-static const char* xq = "net";
+const char* xq = "net";
 
 void node_print(xmlnode* node);
 int node_depth(xmlnode* node);
@@ -98,7 +98,7 @@ void print_attrs(xmlnode* a_node);
 void print_element_attrs(xmlnode* a_node);
 int dump_net(const void* k, size_t ksz, const void* v, size_t vsz, void* p);
 
-static cbmap_t devicesets, packages, parts, nets, symbols;
+cbmap_t devicesets, packages, parts, nets, symbols;
 
 /**
  * Reads a real-number v from the element/attribute given

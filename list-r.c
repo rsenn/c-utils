@@ -8,7 +8,6 @@
 #define INTERNAL_STRINGIFY(VALUE) #VALUE
 #define STRINGIFY(VALUE) INTERNAL_STRINGIFY(VALUE)
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -46,6 +45,9 @@
 #include "lib/fmt.h"
 #include "lib/uint64.h"
 #include "lib/dir_internal.h"
+#include "lib/io_internal.h"
+
+extern int errno;
 
 #if defined(_WIN32) || defined(__MINGW64__)
 #define MINGW 1
