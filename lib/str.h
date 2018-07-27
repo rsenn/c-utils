@@ -67,6 +67,12 @@ unsigned int str_find(const void *s, const void *what);
 unsigned int str_findb(const void *p1, const void *what, unsigned int len);
 void str_lower(void *str);
 
+struct tm;
+
+char* str_ptime(const char* s,const char* format, struct tm* tm);
+
+char*
+str_basename(char* s) ;
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 
