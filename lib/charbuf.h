@@ -21,17 +21,17 @@ typedef struct {
 
 #define CHARBUF_INIT(op, fd) { '\0', 0, (op), (fd) }
 
-int charbuf_get(charbuf *b);
-int charbuf_getc(charbuf *b, char* ch);
-int charbuf_peek(charbuf *b);
-int charbuf_peekc(charbuf *b, char* ch);
-int charbuf_skip(charbuf *b);
-int charbuf_nextc(charbuf *b, char* ch);
-int charbuf_skip_until(charbuf *b, char c);
+int charbuf_skip_pred(charbuf*, int (*pred)(int));
+int  charbuf_getc(charbuf*, char*);
+int  charbuf_get(charbuf*);
+void charbuf_init(charbuf*, read_fn*, int);
+int  charbuf_nextc(charbuf*, char*);
+int  charbuf_peekc(charbuf*, char*);
+int  charbuf_peek(charbuf*);
+int  charbuf_skip_until(charbuf*, char);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* defined CHARBUF_H */
-int charbuf_skip_pred(charbuf*, int (*pred)(void));

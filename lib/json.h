@@ -1,7 +1,7 @@
 #ifndef LIB_JSON_H_
 #define LIB_JSON_H_
 
-#include "buffer.h"
+#include "charbuf.h"
 #include "hmap.h"
 #include "slist.h"
 #include "uint64.h"
@@ -27,15 +27,16 @@ typedef struct {
     char boolv : 1;
     int64 intv;
     double doublev;
-    char* stringv;
-    slist* listv;
+    stralloc stringv;
+    slist listv;
     HMAP_DB* dictv;
   };
 } jsonval;
 
 typedef struct {
-  buffer* b;
+  charbuf* b;
   jsonval* doc;
+  jsonval** loc;
 } jsonreader;
 
 #define node_is_closing(n) ((n)->name[0] == '/')

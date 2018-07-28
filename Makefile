@@ -1004,7 +1004,7 @@ $(BUILDDIR)libtextbuf.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libtextbuf.so: $(addprefix $(BUILDDIR),textbuf_init.pic.o textbuf_read.pic.o textbuf_free.pic.o is_textbuf.pic.o textbuf_line.pic.o textbuf_column.pic.o)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
-$(BUILDDIR)charbuf.a: $(addprefix $(BUILDDIR),charbuf_get.o charbuf_getc.o charbuf_peek.o charbuf_peekc.o charbuf_skip.o charbuf_nextc.o)
+$(BUILDDIR)charbuf.a: $(call add-sources,lib/charbuf/*.c)
 	$(AR) rcs $@ $^
 $(BUILDDIR)libcharbuf.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libcharbuf.so: $(addprefix $(BUILDDIR),charbuf_get.pic.o charbuf_getc.pic.o charbuf_peek.pic.o charbuf_peekc.pic.o charbuf_skip.pic.o charbuf_nextc.pic.o)

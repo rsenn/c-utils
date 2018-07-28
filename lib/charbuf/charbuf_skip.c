@@ -1,4 +1,4 @@
-#include "lib/charbuf.h"
+#include "../charbuf.h"
 
 int
 charbuf_skip(charbuf* b) {

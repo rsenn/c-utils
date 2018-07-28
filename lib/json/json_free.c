@@ -2,8 +2,7 @@
 #include <stdlib.h>
 
 static size_t
-json_free_node(jsonval* node) {
-}
+json_free_node(jsonval* node) {}
 
 void
 json_free(jsonval* node) {
