@@ -12,7 +12,7 @@
 #include "array.h"
 #include "iarray.h"
 #include "taia.h"
-#include "lib/io.h"
+#include "io.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <io.h>
