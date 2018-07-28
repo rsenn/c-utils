@@ -67,6 +67,8 @@ check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
 check-include-exists = $(shell $(call cmds-exitcode,$(cmds-include-exists)))
 
 clean-target = $(patsubst %,$$(BUILDDIR)%,$(patsubst $$(BUILDDIR)%,%,$(patsubst $(BUILDDIR)%,%,$(1))))
+clean-lib = $(patsubst lib%.so,%,$(call clean-target,$(1)))
+flags-lib = $(if $(1),-L$$(BUILDDIR:%/=%) $(patsubst %,-l%,$(call clean-lib,$(1))),)
 
 set-var = $(eval $(1) := $(2))
 append-var = $(eval $(1) += $(2))
@@ -77,7 +79,8 @@ is-object = $(if $(filter %.o,$(1)),$(2),$(3))
 is-archive = $(if $(filter %.a,$(1)),$(2),$(3))
 
 define target-tmpl = 
-$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)
+$(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))
+)$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)
 	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))
 endef
 
