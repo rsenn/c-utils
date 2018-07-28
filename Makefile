@@ -25,19 +25,49 @@ file-exists = $(shell test -e "$(1)" 2>/dev/null >/dev/null && echo 1)
 
 OS ?= $(shell uname -o | tr "[[:upper:]]" "[[:lower:]]")
 
-define cmds-function-exists =
+define cmds-try-compile =
 set -e; 
-echo "extern int $(1)();
+NAME=test_$$RANDOM;
+echo "$(1)" >$$NAME.c;
+$(CROSS_COMPILE)$(CC) -o $$NAME $$NAME.c;
+endef
+define prog-check-include =
+#include <$(1)>
 int main() {
-  $(1)();
   return 0;
-}" >test_$(1).c;
+}
+endef
+
+define cmds-include-exists =
+set -e; \
+trap 'rm -f "$$NAME" "$$NAME.c"' EXIT; \
+NAME=test_$(1); \
+NAME=$${NAME%.*}_h; \
+(echo -e "#include <$(1)>\n"; \
+echo -e "\n"; \
+echo -e "int main() {"; \
+echo -e "  return 0;"; \
+echo -e "}") >$$NAME.c; \
+$(CROSS_COMPILE)$(CC) -o $$NAME $$NAME.c
+endef
+
+define cmds-function-exists =
+set -e;  \
+trap 'rm -f "test_$(1)" "test_$(1).c"' EXIT; \
+(echo "extern int $(1)();"; \
+echo "int main() {"; \
+echo "  $(1)();"; \
+echo "  return 0;"; \
+echo "}") >test_$(1).c; \
 $(CROSS_COMPILE)$(CC) -o test_$(1) test_$(1).c;
 endef
 cmds-exitcode = ($(1)) 2>&1 >>check.log && echo 1 || echo 0
 
 check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
+check-include-exists = $(shell $(call cmds-exitcode,$(cmds-include-exists)))
 
+HAVE_ERRNO_H := $(call check-include-exists,errno.h)
+$(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
 
 HAVE_LSEEK64 := $(call check-function-exists,lseek64)
 HAVE_LSEEK := $(call check-function-exists,lseek)
@@ -588,6 +618,9 @@ endif
 endif
 endif
 endif
+endif
+ifeq ($(HAVE_ERRNO_H),1)
+  DEFS += HAVE_ERRNO_H=1
 endif
 
 ifeq ($(LSEEK),)

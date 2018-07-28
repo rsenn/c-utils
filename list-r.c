@@ -47,7 +47,11 @@
 #include "lib/dir_internal.h"
 #include "lib/io_internal.h"
 
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#else
 extern int errno;
+#endif
 
 #if defined(_WIN32) || defined(__MINGW64__)
 #define MINGW 1
