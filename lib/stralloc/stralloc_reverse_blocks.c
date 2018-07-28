@@ -1,7 +1,7 @@
 /* ISC license. */
 
-#include <string.h>
 #include "../stralloc.h"
+#include "../byte.h"
 
 void stralloc_reverse_blocks(stralloc *sa, size_t size) {
   size_t n = sa->len / (size << 1) ;

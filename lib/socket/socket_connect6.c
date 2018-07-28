@@ -1,4 +1,5 @@
 #include "../socket_internal.h"
+#include "../ip6.h"
 #include "../byte.h"
 #include "../uint16.h"
 #include "../uint32.h"

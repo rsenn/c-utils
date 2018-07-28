@@ -2,11 +2,11 @@
 #include <stdlib.h>
 
 static size_t
-json_free_node(jsonnode* node) {
+json_free_node(jsonval* node) {
 }
 
 void
-json_free(jsonnode* node) {
+json_free(jsonval* node) {
   size_t num = json_free_node(node);
 
 #ifdef DEBUG

@@ -21,7 +21,7 @@ put_str_escaped(buffer* b, const char* str) {
 }
 
 void
-json_dump(jsonnode* n, buffer* b) {
+json_dump(jsonval* n, buffer* b) {
     //stralloc path;
     //stralloc_init(&path);
 
@@ -48,7 +48,7 @@ main(int argc, char* argv[1]) {
 
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.json");
 
-  jsonnode* doc = json_read_tree(&infile);
+  jsonval* doc = json_read_tree(&infile);
 
   //  json_print(doc);
 

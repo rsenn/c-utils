@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <stdlib.h>
 #include "../buffer.h"
 #include "../fmt.h"
 

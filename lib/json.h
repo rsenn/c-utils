@@ -23,7 +23,7 @@ typedef enum {
 
 typedef struct {
   jsondata type;
-  union tag {
+  union {
     char boolv : 1;
     int64 intv;
     double doublev;
@@ -31,11 +31,11 @@ typedef struct {
     slist* listv;
     HMAP_DB* dictv;
   };
-} jsonnode;
+} jsonval;
 
-typedef struct jsonreader {
+typedef struct {
   buffer* b;
-  jsonnode* doc;
+  jsonval* doc;
 } jsonreader;
 
 #define node_is_closing(n) ((n)->name[0] == '/')
@@ -48,12 +48,18 @@ typedef int(json_read_callback_fn)(jsonreader* r,
 
 typedef int(json_predicate_fn)();
 
-jsonnode* json_newnode(jsondata type);
-void      json_reader_init(jsonreader* r, buffer* b);
-void      json_read_callback(jsonreader* r, json_read_callback_fn* fn);
-jsonnode* json_read_tree(buffer* b);
+void     json_free(jsonval*);
+jsonval* json_newnode(jsondata);
+void     json_reader_init(jsonreader*, buffer*);
+void     json_read_callback(jsonreader*, json_read_callback_fn*);
+jsonval* json_read_tree(buffer*);
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* LIB_JSON_H_ */
+void     json_free(jsonval*);
+jsonval* json_newnode(jsondata);
+void     json_reader_init(jsonreader*, buffer*);
+void     json_read_callback(jsonreader*, json_read_callback_fn*);
+jsonval* json_read_tree(buffer*);

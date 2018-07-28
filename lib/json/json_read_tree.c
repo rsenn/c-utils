@@ -11,7 +11,7 @@ json_read_value(jsonreader* reader, jsondata id, stralloc* name, stralloc* value
   return 1;
 }
 
-jsonnode*
+jsonval*
 json_read_tree(buffer* b) {
   jsonreader r;
   json_reader_init(&r, b);

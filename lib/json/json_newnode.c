@@ -2,11 +2,11 @@
 #include "../json.h"
 #include <stdlib.h>
 
-jsonnode*
+jsonval*
 json_newnode(jsondata type) {
-  jsonnode* ret;
-  if((ret = malloc(sizeof(jsonnode)))) {
-    byte_zero(ret, sizeof(jsonnode));
+  jsonval* ret;
+  if((ret = malloc(sizeof(jsonval)))) {
+    byte_zero(ret, sizeof(jsonval));
     ret->type = type;
   }
   return ret;

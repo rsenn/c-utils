@@ -1,3 +1,4 @@
+#include <stdlib.h>
 /* ISC license. */
 
 #include "../stralloc.h"
