@@ -991,6 +991,13 @@ $(BUILDDIR)libxml.so: $(addprefix $(BUILDDIR), $(patsubst %.c,%.pic.o,$(notdir $
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 
+$(BUILDDIR)json.a: $(addprefix $(BUILDDIR), $(patsubst %.c,%.o,$(notdir $(wildcard lib/json/*.c))))
+	$(AR) rcs $@ $^
+$(BUILDDIR)libjson.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
+$(BUILDDIR)libjson.so: $(addprefix $(BUILDDIR), $(patsubst %.c,%.pic.o,$(notdir $(wildcard lib/json/*.c))))
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+
+
 $(BUILDDIR)textbuf.a: $(addprefix $(BUILDDIR),textbuf_init.o textbuf_read.o textbuf_free.o is_textbuf.o textbuf_line.o textbuf_column.o)
 	$(AR) rcs $@ $^
 $(BUILDDIR)libtextbuf.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
