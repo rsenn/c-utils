@@ -307,7 +307,7 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
 access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3 xmltest4
-eagle-gen-cmds eagle-to-circuit buffertest
+eagle-gen-cmds eagle-to-circuit buffertest jsontest
 )
 
 set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})
@@ -359,7 +359,43 @@ endforeach()
 
 
 #
-set(LIBSUBDIRS array buffer byte case cb cbmap dir fmt hmap http iarray io list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia uint16 uint32 uint64 xml textbuf charbuf)
+set(LIBSUBDIRS
+  array
+  buffer
+  byte
+  case
+  cb
+  cbmap
+  dir
+  fmt
+  hmap
+  http
+  iarray
+  io
+  list
+  map
+  mmap
+  ndelay
+  open
+  pe
+  playlist
+  rdir
+  scan
+  socket
+  str
+  stralloc
+  strarray
+  strlist
+  tai
+  taia
+  uint16
+  uint32
+  uint64
+  xml
+  textbuf
+  charbuf
+  json
+)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -436,6 +472,7 @@ target_link_libraries(xmltest xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(xmltest2 xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(xmltest3 xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(xmltest4 xml hmap charbuf textbuf ${COMMON_LIBS})
+target_link_libraries(jsontest json hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(httptest http io socket taia tai iarray ndelay ${SOCKET_LIB} uint16 ${COMMON_LIBS})
 target_link_libraries(mediathek-parser mmap open)
 target_link_libraries(ntldd open)
