@@ -735,7 +735,6 @@ $(OBJDIR):
 
 $(BUILDDIR)array.a: $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILDDIR)array_cat0.o $(BUILDDIR)array_catb.o $(BUILDDIR)array_cat.o $(BUILDDIR)array_cate.o $(BUILDDIR)array_cats0.o $(BUILDDIR)array_cats.o $(BUILDDIR)array_equal.o $(BUILDDIR)array_fail.o $(BUILDDIR)array_get.o $(BUILDDIR)array_length.o $(BUILDDIR)array_reset.o $(BUILDDIR)array_start.o $(BUILDDIR)array_truncate.o $(BUILDDIR)array_trunc.o $(BUILDDIR)umult64.o
 	$(AR) rcs $@ $^
-$(BUILDDIR)libarray.so: CFLAGS += -fPIC
 $(BUILDDIR)libarray.so: LDFLAGS += -shared
 $(BUILDDIR)libarray.so: $(BUILDDIR)array_allocate.pic.o $(BUILDDIR)array_bytes.pic.o $(BUILDDIR)array_cat0.pic.o $(BUILDDIR)array_catb.pic.o $(BUILDDIR)array_cat.pic.o $(BUILDDIR)array_cate.pic.o $(BUILDDIR)array_cats0.pic.o $(BUILDDIR)array_cats.pic.o $(BUILDDIR)array_equal.pic.o $(BUILDDIR)array_fail.pic.o $(BUILDDIR)array_get.pic.o $(BUILDDIR)array_length.pic.o $(BUILDDIR)array_reset.pic.o $(BUILDDIR)array_start.pic.o $(BUILDDIR)array_truncate.pic.o $(BUILDDIR)array_trunc.pic.o $(BUILDDIR)umult64.pic.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -749,7 +748,6 @@ ifeq ($(HAVE_LIBLZMA),1)
 $(BUILDDIR)libbuffer.so: EXTRA_LIBS += -llzma
 endif
 $(BUILDDIR)libbuffer.so: LIBS = -L$(BUILDDIR:%/=%) -lmmap -lstralloc -lstr -larray
-$(BUILDDIR)libbuffer.so: CFLAGS += -fPIC
 $(BUILDDIR)libbuffer.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libbuffer.so: $(call add-sources,lib/buffer/buffer*.c,.pic.o) | $(call add-libdeps,mmap stralloc str array)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -757,7 +755,6 @@ $(BUILDDIR)libbuffer.so: $(call add-sources,lib/buffer/buffer*.c,.pic.o) | $(cal
 $(BUILDDIR)byte.a: $(BUILDDIR)byte_case_diff.o $(BUILDDIR)byte_case_equal.o $(BUILDDIR)byte_case_start.o $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_count.o $(BUILDDIR)byte_diff.o $(BUILDDIR)byte_equal.o $(BUILDDIR)byte_fill.o $(BUILDDIR)byte_lower.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_upper.o $(BUILDDIR)byte_zero.o $(BUILDDIR)byte_fmt.o $(BUILDDIR)byte_fmt_pred.o $(BUILDDIR)byte_scan.o
 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libbyte.so: CFLAGS += -fPIC
 $(BUILDDIR)libbyte.so: LDFLAGS += -shared
 $(BUILDDIR)libbyte.so: $(BUILDDIR)byte_case_diff.pic.o $(BUILDDIR)byte_case_equal.pic.o $(BUILDDIR)byte_case_start.pic.o $(BUILDDIR)byte_chr.pic.o $(BUILDDIR)byte_copy.pic.o $(BUILDDIR)byte_copyr.pic.o $(BUILDDIR)byte_count.pic.o $(BUILDDIR)byte_diff.pic.o $(BUILDDIR)byte_equal.pic.o $(BUILDDIR)byte_fill.pic.o $(BUILDDIR)byte_lower.pic.o $(BUILDDIR)byte_rchr.pic.o $(BUILDDIR)byte_upper.pic.o $(BUILDDIR)byte_zero.pic.o $(BUILDDIR)byte_fmt.pic.o $(BUILDDIR)byte_fmt_pred.pic.o $(BUILDDIR)byte_scan.pic.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -765,7 +762,6 @@ $(BUILDDIR)libbyte.so: $(BUILDDIR)byte_case_diff.pic.o $(BUILDDIR)byte_case_equa
 $(BUILDDIR)cbmap.a: $(builddir)alloc.o $(builddir)cbmap_count.o $(builddir)cbmap_data_node_destroy.o $(builddir)cbmap_delete.o $(builddir)cbmap_destroy.o $(builddir)cbmap_get.o $(builddir)cbmap_insert.o $(builddir)cbmap_internal_node.o $(builddir)cbmap_new.o $(builddir)cbmap_visit.o $(builddir)cbmap_visit_all.o
 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libcbmap.so: CFLAGS += -fPIC
 $(BUILDDIR)libcbmap.so: LDFLAGS += -shared
 $(BUILDDIR)libcbmap.so: $(builddir)alloc.pic.o $(builddir)cbmap_count.pic.o $(builddir)cbmap_data_node_destroy.pic.o $(builddir)cbmap_delete.pic.o $(builddir)cbmap_destroy.pic.o $(builddir)cbmap_get.pic.o $(builddir)cbmap_insert.pic.o $(builddir)cbmap_internal_node.pic.o $(builddir)cbmap_new.pic.o $(builddir)cbmap_visit.pic.o $(builddir)cbmap_visit_all.pic.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -773,14 +769,12 @@ $(BUILDDIR)libcbmap.so: $(builddir)alloc.pic.o $(builddir)cbmap_count.pic.o $(bu
 
 $(BUILDDIR)dir.a: $(BUILDDIR)dir_close.o $(BUILDDIR)dir_name.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_time.o $(BUILDDIR)dir_type.o  $(BUILDDIR)utf8.o
 	$(AR) rcs $@ $^
-$(BUILDDIR)libdir.so: CFLAGS += -fPIC
 $(BUILDDIR)libdir.so: LDFLAGS += -shared
 $(BUILDDIR)libdir.so: $(BUILDDIR)dir_close.pic.o $(BUILDDIR)dir_name.pic.o $(BUILDDIR)dir_open.pic.o $(BUILDDIR)dir_read.pic.o $(BUILDDIR)dir_time.pic.o $(BUILDDIR)dir_type.pic.o  $(BUILDDIR)utf8.pic.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)fmt.a: $(BUILDDIR)fmt_8long.o $(BUILDDIR)fmt_8longlong.o $(BUILDDIR)fmt_asn1derlength.o $(BUILDDIR)fmt_asn1dertag.o $(BUILDDIR)fmt_double.o $(BUILDDIR)fmt_escapecharshell.o $(BUILDDIR)fmt_escapecharc.o $(BUILDDIR)fmt_escapecharhtml.o $(BUILDDIR)fmt_escapecharquotedprintable.o $(BUILDDIR)fmt_escapecharquotedprintableutf8.o $(BUILDDIR)fmt_escapecharxml.o $(BUILDDIR)fmt_fill.o $(BUILDDIR)fmt_httpdate.o $(BUILDDIR)fmt_human.o $(BUILDDIR)fmt_humank.o $(BUILDDIR)fmt_iso8601.o $(BUILDDIR)fmt_long.o $(BUILDDIR)fmt_longlong.o $(BUILDDIR)fmt_minus.o $(BUILDDIR)fmt_pad.o $(BUILDDIR)fmt_plusminus.o $(BUILDDIR)fmt_str.o $(BUILDDIR)fmt_strm_internal.o $(BUILDDIR)fmt_strn.o $(BUILDDIR)fmt_tohex.o $(BUILDDIR)fmt_uint64.o $(BUILDDIR)fmt_ulong0.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)fmt_ulonglong.o $(BUILDDIR)fmt_utf8.o $(BUILDDIR)fmt_xlong.o $(BUILDDIR)fmt_xlonglong.o $(BUILDDIR)fmt_xmlescape.o $(BUILDDIR)fmt_repeat.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libfmt.so: CFLAGS += -fPIC
 $(BUILDDIR)libfmt.so: LDFLAGS += -shared
 $(BUILDDIR)libfmt.so: LIBS = 
 $(BUILDDIR)libfmt.so: $(call add-sources,lib/fmt/*.c,.pic.o)
@@ -788,14 +782,12 @@ $(BUILDDIR)libfmt.so: $(call add-sources,lib/fmt/*.c,.pic.o)
 
 $(BUILDDIR)hmap.a: $(call add-sources,lib/hmap/hmap*.c)
 	$(AR) rcs $@ $^
-$(BUILDDIR)libhmap.so: CFLAGS += -fPIC
 $(BUILDDIR)libhmap.so: LDFLAGS += -shared
 $(BUILDDIR)libhmap.so: $(patsubst %.c,$(BUILDDIR)%.pic.o,$(notdir $(wildcard lib/hmap/hmap*.c)))
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)iarray.a: $(BUILDDIR)iarray_allocate.o $(BUILDDIR)iarray_get.o $(BUILDDIR)iarray_init.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libiarray.so: CFLAGS += -fPIC
 $(BUILDDIR)libiarray.so: LDFLAGS += -shared
 $(BUILDDIR)libiarray.so: LIBS = 
 $(BUILDDIR)libiarray.so: $(call add-sources,lib/iarray/*.c)
@@ -803,7 +795,6 @@ $(BUILDDIR)libiarray.so: $(call add-sources,lib/iarray/*.c)
 
 $(BUILDDIR)io.a: $(BUILDDIR)io_appendfile.o $(BUILDDIR)io_block.o $(BUILDDIR)io_canread.o $(BUILDDIR)io_canwrite.o $(BUILDDIR)io_check.o $(BUILDDIR)io_close.o $(BUILDDIR)io_closeonexec.o $(BUILDDIR)io_createfile.o $(BUILDDIR)io_debugstring.o $(BUILDDIR)io_dontwantread.o $(BUILDDIR)io_dontwantwrite.o $(BUILDDIR)io_eagain.o $(BUILDDIR)io_eagain_read.o $(BUILDDIR)io_eagain_write.o $(BUILDDIR)io_fd.o $(BUILDDIR)io_finishandshutdown.o $(BUILDDIR)io_getcookie.o $(BUILDDIR)io_mmapwritefile.o $(BUILDDIR)io_nonblock.o $(BUILDDIR)io_pipe.o $(BUILDDIR)io_readfile.o $(BUILDDIR)io_readwritefile.o $(BUILDDIR)io_sendfile.o $(BUILDDIR)io_setcookie.o $(BUILDDIR)io_sigpipe.o $(BUILDDIR)io_socketpair.o $(BUILDDIR)io_timedout.o $(BUILDDIR)io_timeout.o $(BUILDDIR)io_timeouted.o $(BUILDDIR)io_tryread.o $(BUILDDIR)io_tryreadtimeout.o $(BUILDDIR)io_trywrite.o $(BUILDDIR)io_trywritetimeout.o $(BUILDDIR)io_wait.o $(BUILDDIR)io_waitread.o $(BUILDDIR)io_waituntil2.o $(BUILDDIR)io_waituntil.o $(BUILDDIR)io_waitwrite.o $(BUILDDIR)io_wantread.o $(BUILDDIR)io_wantwrite.o  $(BUILDDIR)iopause.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libio.so: CFLAGS += -fPIC
 $(BUILDDIR)libio.so: LDFLAGS += -shared
 $(BUILDDIR)libio.so: LIBS = -L$(BUILDDIR:%/=%) -liarray
 $(BUILDDIR)libio.so: $(call add-sources,lib/io/*.c lib/io*.c,.pic.o) | $(call add-libdeps,iarray)
@@ -812,35 +803,30 @@ $(BUILDDIR)libio.so: $(call add-sources,lib/io/*.c lib/io*.c,.pic.o) | $(call ad
 $(BUILDDIR)mmap.a: $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_private.o $(BUILDDIR)mmap_read.o $(BUILDDIR)mmap_read_fd.o $(BUILDDIR)mmap_unmap.o 
 	$(AR) rcs $@ $^
 $(BUILDDIR)libmmap.so: LIBS = -L$(BUILDDIR:%/=%) -lopen
-$(BUILDDIR)libmmap.so: CFLAGS += -fPIC
 $(BUILDDIR)libmmap.so: LDFLAGS += -shared
 $(BUILDDIR)libmmap.so: $(call add-sources,lib/mmap/*.c,.pic.o) | $(BUILDDIR)libopen.so
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)ndelay.a: $(BUILDDIR)ndelay_on.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libndelay.so: CFLAGS += -fPIC
 $(BUILDDIR)libndelay.so: LDFLAGS += -shared
 $(BUILDDIR)libndelay.so: $(BUILDDIR)ndelay_on.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)open.a: $(BUILDDIR)open_append.o $(BUILDDIR)open_read.o $(BUILDDIR)open_rw.o $(BUILDDIR)open_trunc.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libopen.so: CFLAGS += -fPIC
 $(BUILDDIR)libopen.so: LDFLAGS += -shared
 $(BUILDDIR)libopen.so: $(BUILDDIR)open_append.pic.o $(BUILDDIR)open_read.pic.o $(BUILDDIR)open_rw.pic.o $(BUILDDIR)open_trunc.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)rdir.a: $(BUILDDIR)rdir_close.o $(BUILDDIR)rdir_open.o $(BUILDDIR)rdir_read.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)librdir.so: CFLAGS += -fPIC
 $(BUILDDIR)librdir.so: LDFLAGS += -shared
 $(BUILDDIR)librdir.so: $(BUILDDIR)rdir_close.pic.o $(BUILDDIR)rdir_open.pic.o $(BUILDDIR)rdir_read.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)case.a: $(BUILDDIR)case_diffb.o $(BUILDDIR)case_diffs.o $(BUILDDIR)case_lowerb.o $(BUILDDIR)case_lowers.o $(BUILDDIR)case_starts.o
 	$(AR) rcs $@ $^
-$(BUILDDIR)libcase.so: CFLAGS += -fPIC
 $(BUILDDIR)libcase.so: LDFLAGS += -shared
 $(BUILDDIR)libcase.so: LIBS = 
 $(BUILDDIR)libcase.so: $(BUILDDIR)case_diffb.pic.o $(BUILDDIR)case_diffs.pic.o $(BUILDDIR)case_lowerb.pic.o $(BUILDDIR)case_lowers.pic.o $(BUILDDIR)case_starts.pic.o
@@ -848,7 +834,6 @@ $(BUILDDIR)libcase.so: $(BUILDDIR)case_diffb.pic.o $(BUILDDIR)case_diffs.pic.o $
 
 $(BUILDDIR)scan.a: $(BUILDDIR)scan_8int.o $(BUILDDIR)scan_8long.o $(BUILDDIR)scan_8longlong.o $(BUILDDIR)scan_8longn.o $(BUILDDIR)scan_8short.o $(BUILDDIR)scan_asn1derlength.o $(BUILDDIR)scan_asn1dertag.o $(BUILDDIR)scan_charsetnskip.o $(BUILDDIR)scan_double.o $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_httpdate.o $(BUILDDIR)scan_int.o $(BUILDDIR)scan_iso8601.o $(BUILDDIR)scan_long.o $(BUILDDIR)scan_longlong.o $(BUILDDIR)scan_longn.o $(BUILDDIR)scan_netstring.o $(BUILDDIR)scan_noncharsetnskip.o $(BUILDDIR)scan_nonwhitenskip.o $(BUILDDIR)scan_pb_tag.o $(BUILDDIR)scan_pb_type0_sint.o $(BUILDDIR)scan_pb_type1_fixed64.o $(BUILDDIR)scan_pb_type5_fixed32.o $(BUILDDIR)scan_plusminus.o $(BUILDDIR)scan_short.o $(BUILDDIR)scan_uint.o $(BUILDDIR)scan_ulong.o $(BUILDDIR)scan_ulonglong.o $(BUILDDIR)scan_ulongn.o $(BUILDDIR)scan_ushort.o $(BUILDDIR)scan_utf8.o $(BUILDDIR)scan_varint.o $(BUILDDIR)scan_whitenskip.o $(BUILDDIR)scan_xint.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_xlonglong.o $(BUILDDIR)scan_xlongn.o $(BUILDDIR)scan_xshort.o $(BUILDDIR)scan_xmlescape.o
 	$(AR) rcs $@ $^
-$(BUILDDIR)libscan.so: CFLAGS += -fPIC
 $(BUILDDIR)libscan.so: LDFLAGS += -shared
 $(BUILDDIR)libscan.so: LIBS = -L$(BUILDDIR:%/=%) -lcase
 $(BUILDDIR)libscan.so: $(call add-sources,lib/scan/*.c,.pic.o) | $(call add-libdeps,case)
@@ -856,7 +841,6 @@ $(BUILDDIR)libscan.so: $(call add-sources,lib/scan/*.c,.pic.o) | $(call add-libd
 
 $(BUILDDIR)socket.a: $(BUILDDIR)socket_connect4.o $(BUILDDIR)socket_connect6.o $(BUILDDIR)socket_connected.o $(BUILDDIR)socket_ip4loopback.o $(BUILDDIR)socket_noipv6.o $(BUILDDIR)socket_tcp4b.o $(BUILDDIR)socket_tcp4.o $(BUILDDIR)socket_tcp6b.o $(BUILDDIR)socket_tcp6.o $(BUILDDIR)socket_v4mappedprefix.o $(BUILDDIR)socket_v6loopback.o  $(BUILDDIR)winsock2errno.o $(BUILDDIR)winsock_init.o
 	$(AR) rcs $@ $^
-$(BUILDDIR)libsocket.so: CFLAGS += -fPIC
 $(BUILDDIR)libsocket.so: LDFLAGS += -shared
 $(BUILDDIR)libsocket.so: $(BUILDDIR)socket_connect4.pic.o $(BUILDDIR)socket_connect6.pic.o $(BUILDDIR)socket_connected.pic.o $(BUILDDIR)socket_ip4loopback.pic.o $(BUILDDIR)socket_noipv6.pic.o $(BUILDDIR)socket_tcp4b.pic.o $(BUILDDIR)socket_tcp4.pic.o $(BUILDDIR)socket_tcp6b.pic.o $(BUILDDIR)socket_tcp6.pic.o $(BUILDDIR)socket_v4mappedprefix.pic.o $(BUILDDIR)socket_v6loopback.pic.o  $(BUILDDIR)winsock2errno.pic.o $(BUILDDIR)winsock_init.pic.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -864,21 +848,18 @@ $(BUILDDIR)libsocket.so: $(BUILDDIR)socket_connect4.pic.o $(BUILDDIR)socket_conn
 $(BUILDDIR)stralloc.a: $(BUILDDIR)stralloc_0.o $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_append_sa.o $(BUILDDIR)stralloc_buffer.o $(BUILDDIR)stralloc_case_diff.o $(BUILDDIR)stralloc_case_diffs.o $(BUILDDIR)stralloc_case_end.o $(BUILDDIR)stralloc_case_equal.o $(BUILDDIR)stralloc_case_equals.o $(BUILDDIR)stralloc_case_start.o $(BUILDDIR)stralloc_case_starts.o $(BUILDDIR)stralloc_cat.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_cathexb.o $(BUILDDIR)stralloc_catint.o $(BUILDDIR)stralloc_catint0.o $(BUILDDIR)stralloc_catlong.o $(BUILDDIR)stralloc_catlong0.o $(BUILDDIR)stralloc_catm_internal.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_catuint.o $(BUILDDIR)stralloc_catuint0.o $(BUILDDIR)stralloc_catulong.o $(BUILDDIR)stralloc_catulong0.o $(BUILDDIR)stralloc_catxlong.o $(BUILDDIR)stralloc_chomp.o $(BUILDDIR)stralloc_chop.o $(BUILDDIR)stralloc_chr.o $(BUILDDIR)stralloc_copy.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_count.o $(BUILDDIR)stralloc_decamelize.o $(BUILDDIR)stralloc_diff.o $(BUILDDIR)stralloc_diffb.o $(BUILDDIR)stralloc_diffs.o $(BUILDDIR)stralloc_ends.o $(BUILDDIR)stralloc_endb.o $(BUILDDIR)stralloc_ends.o $(BUILDDIR)stralloc_equal.o $(BUILDDIR)stralloc_equalb.o $(BUILDDIR)stralloc_equals.o $(BUILDDIR)stralloc_erase.o $(BUILDDIR)stralloc_find.o $(BUILDDIR)stralloc_findb.o $(BUILDDIR)stralloc_finds.o $(BUILDDIR)stralloc_free.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_insertb.o $(BUILDDIR)stralloc_lower.o $(BUILDDIR)stralloc_move.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_rchr.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)stralloc_remove.o $(BUILDDIR)stralloc_replace.o $(BUILDDIR)stralloc_replace_non_printable.o $(BUILDDIR)stralloc_start.o $(BUILDDIR)stralloc_startb.o $(BUILDDIR)stralloc_starts.o $(BUILDDIR)stralloc_trim.o $(BUILDDIR)stralloc_trunc.o $(BUILDDIR)stralloc_write.o $(BUILDDIR)stralloc_zero.o $(BUILDDIR)stralloc_fmt.o $(BUILDDIR)stralloc_fmt_call.o $(BUILDDIR)stralloc_scan.o   $(BUILDDIR)stralloc_subst.o 
 	$(AR) rcs $@ $^
 $(BUILDDIR)libstralloc.so: LIBS = -L$(BUILDDIR:%/=%) -lfmt 
-$(BUILDDIR)libstralloc.so: CFLAGS += -fPIC
 #$(BUILDDIR)libstralloc.so: LDFLAGS += -shared
 $(BUILDDIR)libstralloc.so: $(call add-sources,lib/stralloc/*.c,.pic.o) | $(BUILDDIR)libfmt.so
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)strarray.a: $(BUILDDIR)strarray_push.o $(BUILDDIR)strarray_pushd.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libstrarray.so: CFLAGS += -fPIC
 $(BUILDDIR)libstrarray.so: LDFLAGS += -shared
 $(BUILDDIR)libstrarray.so: $(BUILDDIR)strarray_push.pic.o $(BUILDDIR)strarray_pushd.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)str.a: $(BUILDDIR)str_basename.o $(BUILDDIR)str_case_diff.o $(BUILDDIR)str_case_diffn.o $(BUILDDIR)str_case_equal.o $(BUILDDIR)str_case_start.o $(BUILDDIR)str_cat.o $(BUILDDIR)str_chr.o $(BUILDDIR)str_copy.o $(BUILDDIR)str_copyb.o $(BUILDDIR)str_decamelize.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_dup.o $(BUILDDIR)str_ndup.o $(BUILDDIR)str_equal.o $(BUILDDIR)str_find.o $(BUILDDIR)str_findb.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_len.o $(BUILDDIR)str_lower.o $(BUILDDIR)str_ptime.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_start.o $(BUILDDIR)str_tok.o
 	$(AR) rcs $@ $^
-$(BUILDDIR)libstr.so: CFLAGS += -fPIC
 $(BUILDDIR)libstr.so: LDFLAGS += -shared
 $(BUILDDIR)libstr.so: LIBS = 
 $(BUILDDIR)libstr.so: $(call add-sources,lib/str/*.c lib/isleap.c lib/strptime.c lib/time_table_spd.c,.pic.o)
@@ -886,41 +867,35 @@ $(BUILDDIR)libstr.so: $(call add-sources,lib/str/*.c lib/isleap.c lib/strptime.c
 
 $(BUILDDIR)strlist.a: $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_cat.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_index_of.o $(BUILDDIR)strlist_join.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_push.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_pushsa.o $(BUILDDIR)strlist_push_tokens.o $(BUILDDIR)strlist_push_unique.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)strlist_sort.o $(BUILDDIR)strlist_to_argv.o  $(BUILDDIR)strlist_unshift.o $(BUILDDIR)strlist_range.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libstrlist.so: CFLAGS += -fPIC
 $(BUILDDIR)libstrlist.so: LDFLAGS += -shared
 $(BUILDDIR)libstrlist.so: $(BUILDDIR)strlist_at.pic.o $(BUILDDIR)strlist_cat.pic.o $(BUILDDIR)strlist_count.pic.o $(BUILDDIR)strlist_dump.pic.o $(BUILDDIR)strlist_index_of.pic.o $(BUILDDIR)strlist_join.pic.o $(BUILDDIR)strlist_pushb.pic.o $(BUILDDIR)strlist_push.pic.o $(BUILDDIR)strlist_pushm_internal.pic.o $(BUILDDIR)strlist_push_sa.pic.o $(BUILDDIR)strlist_pushsa.pic.o $(BUILDDIR)strlist_push_tokens.pic.o $(BUILDDIR)strlist_push_unique.pic.o $(BUILDDIR)strlist_shift.pic.o $(BUILDDIR)strlist_sort.pic.o $(BUILDDIR)strlist_to_argv.pic.o  $(BUILDDIR)strlist_unshift.pic.o $(BUILDDIR)strlist_range.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)time.a: $(BUILDDIR)time_table_spd.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libtime.so: CFLAGS += -fPIC
 $(BUILDDIR)libtime.so: LDFLAGS += -shared
 $(BUILDDIR)libtime.so: $(BUILDDIR)time_table_spd.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)uint16.a: $(BUILDDIR)uint16_pack_big.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libuint16.so: CFLAGS += -fPIC
 $(BUILDDIR)libuint16.so: LDFLAGS += -shared
 $(BUILDDIR)libuint16.so: $(BUILDDIR)uint16_pack_big.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)uint32.a: $(BUILDDIR)uint32_pack_big.o $(BUILDDIR)uint32_pack.o $(BUILDDIR)uint32_unpack_big.o $(BUILDDIR)uint32_unpack.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libuint32.so: CFLAGS += -fPIC
 $(BUILDDIR)libuint32.so: LDFLAGS += -shared
 $(BUILDDIR)libuint32.so: $(BUILDDIR)uint32_pack_big.pic.o $(BUILDDIR)uint32_pack.pic.o $(BUILDDIR)uint32_unpack_big.pic.o $(BUILDDIR)uint32_unpack.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 $(BUILDDIR)tai.a: $(BUILDDIR)tai_add.o $(BUILDDIR)tai_now.o $(BUILDDIR)tai_pack.o $(BUILDDIR)tai_sub.o $(BUILDDIR)tai_uint.o $(BUILDDIR)tai_unpack.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libtai.so: CFLAGS += -fPIC
 $(BUILDDIR)libtai.so: LIBS = 
 $(BUILDDIR)libtai.so: $(call add-sources,lib/tai/*.c,.pic.o)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)taia.a: $(BUILDDIR)taia_add.o $(BUILDDIR)taia_addsec.o $(BUILDDIR)taia_approx.o $(BUILDDIR)taia_frac.o $(BUILDDIR)taia_half.o $(BUILDDIR)taia_less.o $(BUILDDIR)taia_now.o $(BUILDDIR)taia_pack.o $(BUILDDIR)taia_sub.o $(BUILDDIR)taia_tai.o $(BUILDDIR)taia_uint.o $(BUILDDIR)taia_unpack.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libtaia.so: CFLAGS += -fPIC
 $(BUILDDIR)libtaia.so: LDFLAGS += -shared
 $(BUILDDIR)libtaia.so: LIBS = -L$(BUILDDIR:%/=%) -ltai
 $(BUILDDIR)libtaia.so: $(call add-sources,lib/taia/*.c,.pic.o) | $(call add-libdeps,tai)
@@ -928,14 +903,12 @@ $(BUILDDIR)libtaia.so: $(call add-sources,lib/taia/*.c,.pic.o) | $(call add-libd
 
 $(BUILDDIR)http.a: $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_readable.o $(BUILDDIR)http_sendreq.o $(BUILDDIR)http_writeable.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libhttp.so: CFLAGS += -fPIC
 $(BUILDDIR)libhttp.so: LDFLAGS += -shared
 $(BUILDDIR)libhttp.so: $(BUILDDIR)http_get.pic.o $(BUILDDIR)http_init.pic.o $(BUILDDIR)http_readable.pic.o $(BUILDDIR)http_sendreq.pic.o $(BUILDDIR)http_writeable.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)pe.a: $(BUILDDIR)pe_offsets.o 
 	$(AR) rcs $@ $^
-$(BUILDDIR)libpe.so: CFLAGS += -fPIC
 $(BUILDDIR)libpe.so: LDFLAGS += -shared
 $(BUILDDIR)libpe.so: $(BUILDDIR)pe_offsets.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -943,28 +916,24 @@ $(BUILDDIR)libpe.so: $(BUILDDIR)pe_offsets.pic.o
 
 $(BUILDDIR)list.a: $(call add-sources,lib/list_*.c)
 	$(AR) rcs $@ $^
-$(BUILDDIR)liblist.so: CFLAGS += -fPIC
 $(BUILDDIR)liblist.so: LDFLAGS += -shared
 $(BUILDDIR)liblist.so: $(patsubst %.c,$(BUILDDIR)%.pic.o,$(notdir $(wildcard lib/list_*.c)))
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)playlist.a: $(addprefix $(BUILDDIR),playlist_m3u.o playlist_init.o playlist_pls.o playlist_xspf.o playlist_read.o playlist_write_start.o playlist_write_entry.o playlist_write_finish.o )
 	$(AR) rcs $@ $^
-$(BUILDDIR)libplaylist.so: CFLAGS += -fPIC
 $(BUILDDIR)libplaylist.so: LDFLAGS += -shared
 $(BUILDDIR)libplaylist.so: $(addprefix $(BUILDDIR),playlist_m3u.pic.o playlist_init.pic.o playlist_pls.pic.o playlist_xspf.pic.o playlist_read.pic.o playlist_write_start.pic.o playlist_write_entry.pic.o playlist_write_finish.pic.o )
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)map.a: $(addprefix $(BUILDDIR),map_deinit.o map_get.o map_iter.o map_next.o map_remove.o map_set.o)
 	$(AR) rcs $@ $^
-$(BUILDDIR)libmap.so: CFLAGS += -fPIC
 $(BUILDDIR)libmap.so: LDFLAGS += -shared
 $(BUILDDIR)libmap.so: $(addprefix $(BUILDDIR),map_deinit.pic.o map_get.pic.o map_iter.pic.o map_next.pic.o map_remove.pic.o map_set.pic.o)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)xml.a: $(addprefix $(BUILDDIR), $(patsubst %.c,%.o,$(notdir $(wildcard lib/xml/*.c))))
 	$(AR) rcs $@ $^
-$(BUILDDIR)libxml.so: CFLAGS += -fPIC
 $(BUILDDIR)libxml.so: LDFLAGS += -shared
 $(BUILDDIR)libxml.so: $(addprefix $(BUILDDIR), $(patsubst %.c,%.pic.o,$(notdir $(wildcard lib/xml/*.c))))
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -972,14 +941,12 @@ $(BUILDDIR)libxml.so: $(addprefix $(BUILDDIR), $(patsubst %.c,%.pic.o,$(notdir $
 
 $(BUILDDIR)textbuf.a: $(addprefix $(BUILDDIR),textbuf_init.o textbuf_read.o textbuf_free.o is_textbuf.o textbuf_line.o textbuf_column.o)
 	$(AR) rcs $@ $^
-$(BUILDDIR)libtextbuf.so: CFLAGS += -fPIC
 $(BUILDDIR)libtextbuf.so: LDFLAGS += -shared
 $(BUILDDIR)libtextbuf.so: $(addprefix $(BUILDDIR),textbuf_init.pic.o textbuf_read.pic.o textbuf_free.pic.o is_textbuf.pic.o textbuf_line.pic.o textbuf_column.pic.o)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)charbuf.a: $(addprefix $(BUILDDIR),charbuf_get.o charbuf_getc.o charbuf_peek.o charbuf_peekc.o charbuf_skip.o charbuf_nextc.o)
 	$(AR) rcs $@ $^
-$(BUILDDIR)libcharbuf.so: CFLAGS += -fPIC
 $(BUILDDIR)libcharbuf.so: LDFLAGS += -shared
 $(BUILDDIR)libcharbuf.so: $(addprefix $(BUILDDIR),charbuf_get.pic.o charbuf_getc.pic.o charbuf_peek.pic.o charbuf_peekc.pic.o charbuf_skip.pic.o charbuf_nextc.pic.o)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -shared -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -1284,6 +1251,9 @@ inst-slackpkg: slackpkg
   done
 
 -include Makefile.deps
+
+$(BUILDDIR)/%.pic.o: CFLAGS += -fPIC
+
 
 #$(PROGRAM_OBJECTS): CFLAGS += -Ilib
 #$(PROGRAM_OBJECTS): CPPFLAGS += -Ilib
