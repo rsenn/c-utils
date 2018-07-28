@@ -719,6 +719,13 @@ endef
 
 CFLAGS += @$(FLAGS_FILE)
 
+ifneq ($(SYSROOT),)
+ifneq ($(call file-exists,$(SYSROOT)),1)
+SYSROOT :=
+endif
+endif
+
+
 ifeq ($(SYSROOT),)
 
 ifeq ($(call file-exists,/opt/$(HOST)/sys-root),1)
@@ -740,8 +747,12 @@ endif
 endif
 
 ifneq ($(SYSROOT),)
+ifeq ($(call file-exists,$(SYSROOT)),1)
 FLAGS += --sysroot=$(SYSROOT)
 endif
+endif
+
+
 $(info CFLAGS: $(CFLAGS))
 $(info CXXFLAGS: $(CXXFLAGS))
 $(info LDFLAGS: $(LDFLAGS))
@@ -899,7 +910,7 @@ $(BUILDDIR)libstrarray.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libstrarray.so: $(BUILDDIR)strarray_push.pic.o $(BUILDDIR)strarray_pushd.pic.o 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
-$(BUILDDIR)str.a: $(BUILDDIR)str_basename.o $(BUILDDIR)str_case_diff.o $(BUILDDIR)str_case_diffn.o $(BUILDDIR)str_case_equal.o $(BUILDDIR)str_case_start.o $(BUILDDIR)str_cat.o $(BUILDDIR)str_chr.o $(BUILDDIR)str_copy.o $(BUILDDIR)str_copyb.o $(BUILDDIR)str_decamelize.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_dup.o $(BUILDDIR)str_ndup.o $(BUILDDIR)str_equal.o $(BUILDDIR)str_find.o $(BUILDDIR)str_findb.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_len.o $(BUILDDIR)str_lower.o $(BUILDDIR)str_ptime.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_start.o $(BUILDDIR)str_tok.o
+$(BUILDDIR)str.a: $(call add-sources,lib/str/*.c) 
 	$(AR) rcs $@ $^
 $(BUILDDIR)libstr.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libstr.so: LIBS = 

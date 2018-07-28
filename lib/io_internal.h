@@ -176,7 +176,7 @@ struct eventpacket {
 };
 
 #if defined(_WIN32) || defined(_WIN64)
-extern int open();
+//extern int open();
 extern int read();
 extern int write();
 extern int close();

@@ -11,6 +11,8 @@ extern "C" {
 typedef SIZE_T size_t;
 typedef SSIZE_T ssize_t;
 
+typedef SSIZE_T socklen_t;
+
 /* set errno to WSAGetLastError() */
 int winsock2errno(long l);
 void __winsock_init(void);
