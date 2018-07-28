@@ -98,6 +98,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 include_directories("${CMAKE_SOURCE_DIR}")
 
 #pkg_search_module(LIBLZMA liblzma)
+include(${CMAKE_SOURCE_DIR}/CheckAlloca.cmake)
 include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 
 
