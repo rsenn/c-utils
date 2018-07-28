@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "../buffer.h"
 
 #ifdef HAVE_ZLIB
@@ -16,7 +17,7 @@ buffer_zlib(int fd, void* data, size_t n, buffer* b) {
   char tmpbuf[1024];
 
   z->avail_in = buffer_get(ctx->in, tmpbuf, sizeof(tmpbuf));
-  z->next_in = tmpbuf;
+  z->next_in = (void*)tmpbuf;
   z->next_out = data;
   z->avail_out = n;
 
@@ -42,7 +43,7 @@ buffer_deflate(buffer* b, buffer* in) {
   z->zfree = Z_NULL;
   z->opaque = Z_NULL;
 
-  b->op = &buffer_zlib;
+  b->op = (void*)&buffer_zlib;
   b->p = b->n = 0;
   b->cookie = ctx;
 
