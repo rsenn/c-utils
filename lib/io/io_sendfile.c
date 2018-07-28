@@ -1,15 +1,18 @@
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
+#define _LARGEFILE64_SOURCE
 #define _FILE_OFFSET_BITS 64
 #include "../io_internal.h"
-#include "../socket_internal.h"
-/* #include "../havebsdsf.h" */
-/* #include "../havesendfile.h" */
+#include "../socket.h"
+
+//#include <mswsock.h>
+
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif
 
 #if defined(HAVE_BSDSENDFILE)
 #define SENDFILE 1
-#include <sys/types.h>
-#include <sys/socket.h>
+
 
 int64 io_sendfile(int64 s, int64 fd, uint64 off, uint64 n) {
   off_t sbytes;
@@ -29,10 +32,6 @@ int64 io_sendfile(int64 s, int64 fd, uint64 off, uint64 n) {
 
 #ifdef __hpux__
 
-#define _LARGEFILE64_SOURCE
-#include <sys/types.h>
-#include <sys/socket.h>
-
 int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   long long r = sendfile64(out, in, off, bytes, 0, 0);
   if(r == -1 && errno != EAGAIN) r = -3;
@@ -48,9 +47,6 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 
 #elif defined (__sun__) && defined(__svr4__)
 
-#define _LARGEFILE64_SOURCE
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/sendfile.h>
 
 int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
@@ -68,10 +64,6 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 }
 
 #elif defined(_AIX)
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <errno.h>
 
 int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   struct sf_parms p;
@@ -138,10 +130,11 @@ int64 io_sendfile(int64 s, int64 fd, uint64 off, uint64 n) {
 }
 #endif
 
-#elif defined(_WIN32)
+#elif defined(_WIN32) || defined(_WIN64)
 
-//#include <windows.h>
-//#include <mswsock.h>
+#ifndef TF_USE_KERNEL_APC
+#define TF_USE_KERNEL_APC 0x20
+#endif
 
 int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   io_entry* e = iarray_get(io_getfds(), out);

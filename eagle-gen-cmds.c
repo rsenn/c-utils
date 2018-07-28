@@ -489,10 +489,9 @@ getparts(xmlnode* doc) {
 
   xmlnodeset_iter_t it, e;
 
-  for(it = begin(&ns), e = end(&ns); !iterator_equal(&ns, it, e);
-      iterator_increment(&ns, it)) {
-    xmlnode* node = iterator_dereference(&ns, it);
- strlist_push(&ret, NODE_PROPERTY(node, "name"));
+  for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
+      xmlnode* node = *it;
+    strlist_push(&ret, NODE_PROPERTY(node, "name"));
   }
 
   return ret;
@@ -507,11 +506,8 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
 
   xmlnodeset_iter_t it, e;
 
-  for(it = begin(ns), e = end(ns); !iterator_equal(ns, it, e);
-      iterator_increment(ns, it)) {
-    xmlnode* node = iterator_dereference(ns, it);
-    fn(node);
-  }
+  for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it)
+    fn(*it);
 }
 
 /**
@@ -911,10 +907,8 @@ xpath_query(xmlnode* doc, const char* q) {
 
   xmlnodeset_iter_t it, e;
 
-  for(it = begin(&ns), e = end(&ns); !iterator_equal(&ns, it, e);
-      iterator_increment(&ns, it)) {
-    xmlnode* node = iterator_dereference(&ns, it);
-
+  for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
+    xmlnode* node = *it;
     print_element_name(node);
     print_element_attrs(node);
     buffer_putnlflush(buffer_1);

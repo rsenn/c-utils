@@ -410,11 +410,8 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
 
   xmlnodeset_iter_t it, e;
 
-  for(it = begin(ns), e = end(ns); !iterator_equal(ns, it, e);
-      iterator_increment(ns, it)) {
-    xmlnode* node = iterator_dereference(ns, it);
-    fn(node);
-  }
+  for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it)
+    fn(*it);
 }
 
 /*
@@ -804,9 +801,8 @@ main(int argc, char* argv[]) {
   xmlnodeset_iter_t it, e;
 
   size_t i = 0;
-  for(it = begin(&ns), e = end(&ns); !iterator_equal(&ns, it, e);
-      iterator_increment(&ns, it)) {
-    xmlnode* n = iterator_dereference(&ns, it);
+  for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
+    xmlnode* n = *it;
 
     buffer_puts(buffer_1, "NODESET[");
     buffer_putlong(buffer_1, i++);
@@ -819,7 +815,7 @@ main(int argc, char* argv[]) {
   ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "C1");
   xml_print_nodeset(&ns, buffer_1);
 
-  buffer_putlong(buffer_1, size(&ns));
+  buffer_putlong(buffer_1, xmlnodeset_size(&ns));
   buffer_putnlflush(buffer_1);
 
   ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "R1");

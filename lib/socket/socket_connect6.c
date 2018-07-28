@@ -1,16 +1,7 @@
-#if !(defined(_WIN32) || defined(_WIN64))
-#include <sys/socket.h>
-#include <sys/param.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#endif
-#include "../windoze.h"
-#include <errno.h>
+#include "../socket.h"
 #include "../byte.h"
-#include "../socket_internal.h"
-#include "../ip6.h"
+#include "../uint16.h"
 #include "../uint32.h"
-#include "../ip4.h"
 
 int socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
 #ifdef LIBC_HAS_IP6
@@ -20,8 +11,8 @@ int socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
 #endif
     if(ip6_isv4mapped(ip))
       return winsock2errno(socket_connect4(s, ip + 12, port));
-    if(byte_equal(ip, 16, V6loopback))
-      return winsock2errno(socket_connect4(s, ip4loopback, port));
+    if(byte_equal(ip, 16, socket_ip6loopback()))
+      return winsock2errno(socket_connect4(s, socket_ip4loopback(), port));
 #ifdef LIBC_HAS_IP6
   }
   byte_zero(&sa, sizeof sa);

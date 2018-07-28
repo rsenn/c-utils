@@ -1,12 +1,5 @@
-#include <sys/types.h>
-#if !(defined(_WIN32) || defined(_WIN64))
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
-#include "../windoze.h"
-
+#include "../socket.h"
 #include "../byte.h"
-#include "../socket_internal.h"
 #include "../uint16.h"
 #include "../uint32.h"
 

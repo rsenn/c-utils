@@ -48,9 +48,10 @@ endif()
 # Avoid using old codebase
 if (LIBLZMA_LIBRARY)
    include(CheckLibraryExists)
-   CHECK_LIBRARY_EXISTS(${LIBLZMA_LIBRARY} lzma_auto_decoder "" LIBLZMA_HAS_AUTO_DECODER)
-   CHECK_LIBRARY_EXISTS(${LIBLZMA_LIBRARY} lzma_easy_encoder "" LIBLZMA_HAS_EASY_ENCODER)
-   CHECK_LIBRARY_EXISTS(${LIBLZMA_LIBRARY} lzma_lzma_preset "" LIBLZMA_HAS_LZMA_PRESET)
+   check_library_exists(${LIBLZMA_LIBRARY} lzma_code "" LIBLZMA_FOUND)
+#   check_library_exists(${LIBLZMA_LIBRARY} lzma_auto_decoder "" LIBLZMA_HAS_AUTO_DECODER)
+#   check_library_exists(${LIBLZMA_LIBRARY} lzma_easy_encoder "" LIBLZMA_HAS_EASY_ENCODER)
+#   check_library_exists(${LIBLZMA_LIBRARY} lzma_lzma_preset "" LIBLZMA_HAS_LZMA_PRESET)
 endif ()
 
 #include(FindPackageHandleStandardArgs)

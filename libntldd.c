@@ -406,7 +406,7 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
     loaded_image->mapped_address = (char*)dhdr;
     loaded_image->file_header = (pe_nt_headers64*)(loaded_image->mapped_address + dhdr->e_lfanew);
     loaded_image->number_of_sections = loaded_image->file_header->file_header.number_of_sections;
-    loaded_image->module_name = basename(name);
+    loaded_image->module_name = str_basename(name);
     loaded_image->sections = (section_header*) &((pe_nt_headers64*)loaded_image->file_header)[1];
     success = 1;
   }

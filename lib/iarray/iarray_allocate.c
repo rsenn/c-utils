@@ -6,11 +6,13 @@
 #include <unistd.h>
 #endif
 #include "../iarray.h"
+
 #ifdef __dietlibc__
-#include <sys/atomic.h>
+# include <sys/atomic.h>
+#elif defined(_MSC_VER)
+# define __CAS(ptr,oldval,newval) InterlockedCompareExchange(ptr,newval,oldval)
 #else
-#define __CAS(ptr, oldval, newval)                                             \
-  __sync_val_compare_and_swap(ptr, oldval, newval)
+# define __CAS(ptr,oldval,newval) __sync_val_compare_and_swap(ptr,oldval,newval)
 #endif
 
 static iarray_page*

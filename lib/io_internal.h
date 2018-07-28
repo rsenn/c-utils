@@ -11,13 +11,18 @@
 
 #include "array.h"
 #include "iarray.h"
-#include "io.h"
+#include "taia.h"
+#include "lib/io.h"
+
 #if defined(_WIN32) || defined(_WIN64)
 #include <io.h>
-#define read _read
-#define write _write
-#define open _open
-#define close _close
+//#define read _read
+//#define write _write
+//#define open _open
+//#define close _close
+#define popen _popen
+#define lseek lseek64
+#define llseek lseek64
 #include "socket.h"
 my_extern HANDLE io_comport;
 #elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
@@ -31,11 +36,7 @@ my_extern HANDLE io_comport;
 #endif
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
-#include <io.h>
-#define lseek lseek64
-#define llseek lseek64
-#else
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/time.h>
 #include <unistd.h>
 #endif
@@ -173,6 +174,13 @@ struct eventpacket {
   int fd;
   enum { CANREAD, CANWRITE, TIMEOUT } what;
 };
+
+#if defined(_WIN32) || defined(_WIN64)
+extern int open();
+extern int read();
+extern int write();
+extern int close();
+#endif
 
 #define debug_printf(x)
 #endif

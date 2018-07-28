@@ -10,6 +10,8 @@ typedef int socklen_t;
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <winsock.h>
+//#include <mswsock.h>
+
 //#include <ws2tcpip.h>
 
 #ifndef EWOULDBLOCK

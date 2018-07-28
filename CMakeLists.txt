@@ -16,6 +16,12 @@ include(FindPkgConfig)
 include(FindZLIB)
 include(UsePkgConfig)
 
+include(${CMAKE_SOURCE_DIR}/CheckC11Generics.cmake)
+include(${CMAKE_SOURCE_DIR}/CheckSizeTypes.cmake)
+include(${CMAKE_SOURCE_DIR}/CheckAlloca.cmake)
+include(${CMAKE_SOURCE_DIR}/CheckDynStack.cmake)
+include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
+
 if(NOT ENABLE_SHARED)
   set(BUILD_SHARED_LIBS FALSE)
 else(NOT ENABLE_SHARED)
@@ -104,11 +110,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 include_directories("${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 
 #pkg_search_module(LIBLZMA liblzma)
-include(${CMAKE_SOURCE_DIR}/CheckC11Generics.cmake)
-include(${CMAKE_SOURCE_DIR}/CheckSizeTypes.cmake)
-include(${CMAKE_SOURCE_DIR}/CheckAlloca.cmake)
-include(${CMAKE_SOURCE_DIR}/CheckDynStack.cmake)
-include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
+
 
 
 if(LIBLZMA_FOUND)
@@ -394,7 +396,7 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   endif()
 endif()
 
-set(COMMON_LIBS strlist array buffer stralloc scan str byte mmap open fmt )
+set(COMMON_LIBS strlist buffer array stralloc scan str byte mmap open fmt )
 
 foreach(PROGRAM ${PROGRAMS})
   if("${PROGRAM}" STREQUAL ntldd)
@@ -425,7 +427,7 @@ endif()
 list(APPEND ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
 
 target_link_libraries(compiler-wrapper dir)
-target_link_libraries(buffertest charbuf textbuf ${COMMON_LIBS} ${LIBLZMA_LIBRARIES})
+target_link_libraries(buffertest ${COMMON_LIBS} ${LIBLZMA_LIBRARIES})
 target_link_libraries(eagle-init-brd xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
 target_link_libraries(eagle-gen-cmds cbmap xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
 target_link_libraries(eagle-to-circuit cbmap xml hmap charbuf textbuf ${COMMON_LIBS})
@@ -439,7 +441,7 @@ target_link_libraries(httptest http io socket taia tai iarray ndelay ${SOCKET_LI
 target_link_libraries(mediathek-parser mmap open)
 target_link_libraries(ntldd open)
 target_link_libraries(hexedit open)
-target_link_libraries(impgen open)
+target_link_libraries(impgen open uint32)
 
 
 #target_link_libraries(eagle-init-brd)
