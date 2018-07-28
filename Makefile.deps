@@ -210,9 +210,13 @@ $(BUILDDIR)buffer_dummyreadmmap.o: lib/buffer_dummyreadmmap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)iarray_allocate.o: lib/iarray/iarray_allocate.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)iarray_free.o: lib/iarray/iarray_free.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)iarray_get.o: lib/iarray/iarray_get.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)iarray_init.o: lib/iarray/iarray_init.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)iarray_length.o: lib/iarray/iarray_length.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_mmapwritefile.o: lib/io/io_mmapwritefile.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -624,13 +628,13 @@ $(BUILDDIR)stralloc_move.o: lib/stralloc/stralloc_move.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_nul.o: lib/stralloc/stralloc_nul.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_qp_encode.o: lib/stralloc/stralloc_qp_encode.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_rchr.o: lib/stralloc/stralloc_rchr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_ready.o: lib/stralloc/stralloc_ready.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_readyplus.o: lib/stralloc/stralloc_readyplus.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_long.o: lib/fmt/fmt_long.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_8long.o: lib/fmt/fmt_8long.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -665,8 +669,6 @@ $(BUILDDIR)fmt_human.o: lib/fmt/fmt_human.c
 $(BUILDDIR)fmt_humank.o: lib/fmt/fmt_humank.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_iso8601.o: lib/fmt/fmt_iso8601.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_long.o: lib/fmt/fmt_long.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_longlong.o: lib/fmt/fmt_longlong.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1460,11 +1462,17 @@ $(BUILDDIR)buffer_dummyreadmmap.pic.o: lib/buffer_dummyreadmmap.c
 $(BUILDDIR)iarray_allocate.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)iarray_allocate.pic.o: lib/iarray/iarray_allocate.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)iarray_free.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)iarray_free.pic.o: lib/iarray/iarray_free.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)iarray_get.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)iarray_get.pic.o: lib/iarray/iarray_get.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)iarray_init.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)iarray_init.pic.o: lib/iarray/iarray_init.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)iarray_length.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)iarray_length.pic.o: lib/iarray/iarray_length.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_mmapwritefile.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)io_mmapwritefile.pic.o: lib/io/io_mmapwritefile.c
@@ -2081,9 +2089,6 @@ $(BUILDDIR)stralloc_move.pic.o: lib/stralloc/stralloc_move.c
 $(BUILDDIR)stralloc_nul.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)stralloc_nul.pic.o: lib/stralloc/stralloc_nul.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_qp_encode.pic.o: CFLAGS += -fPIC
-$(BUILDDIR)stralloc_qp_encode.pic.o: lib/stralloc/stralloc_qp_encode.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_rchr.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)stralloc_rchr.pic.o: lib/stralloc/stralloc_rchr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -2092,6 +2097,9 @@ $(BUILDDIR)stralloc_ready.pic.o: lib/stralloc/stralloc_ready.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_readyplus.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)stralloc_readyplus.pic.o: lib/stralloc/stralloc_readyplus.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_long.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)fmt_long.pic.o: lib/fmt/fmt_long.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_8long.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)fmt_8long.pic.o: lib/fmt/fmt_8long.c
@@ -2143,9 +2151,6 @@ $(BUILDDIR)fmt_humank.pic.o: lib/fmt/fmt_humank.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_iso8601.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)fmt_iso8601.pic.o: lib/fmt/fmt_iso8601.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_long.pic.o: CFLAGS += -fPIC
-$(BUILDDIR)fmt_long.pic.o: lib/fmt/fmt_long.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_longlong.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)fmt_longlong.pic.o: lib/fmt/fmt_longlong.c
@@ -2857,10 +2862,4 @@ $(BUILDDIR)mediathek-list.pic.o: mediathek-list.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mediathek-parser.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)mediathek-parser.pic.o: mediathek-parser.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)umult64.pic.o: CFLAGS += -fPIC
-$(BUILDDIR)umult64.pic.o: lib/umult64.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)umult64.pic.o: CFLAGS += -fPIC
-$(BUILDDIR)umult64.pic.o: lib/umult64.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
