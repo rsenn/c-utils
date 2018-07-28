@@ -920,6 +920,9 @@ endif
 ifeq ($(HAVE_ZLIB),1)
 $(BUILDDIR)buffertest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += -lz
 endif
+ifeq ($(HAVE_LIBLZMA),1)
+$(BUILDDIR)buffertest$(M64_)$(EXESUFFIX)$(EXEEXT): LIBS += -llzma
+endif
 $(BUILDDIR)buffertest$(M64_)$(EXESUFFIX)$(EXEEXT): $(BUILDDIR)buffertest.o $(BUILDDIR)array.a $(BUILDDIR)charbuf.a $(BUILDDIR)textbuf.a $(BUILDDIR)hmap.a $(BUILDDIR)buffer.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a $(BUILDDIR)stralloc.a $(BUILDDIR)byte.a $(BUILDDIR)scan.a $(BUILDDIR)fmt.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)

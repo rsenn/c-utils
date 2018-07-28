@@ -5,7 +5,7 @@
 #include <lzma.h>
 
 typedef struct {
-  lzma_stream z;
+  lzma_stream strm;
   lzma_action a;
   buffer* in;
   char buf[1024];
@@ -14,7 +14,7 @@ typedef struct {
 ssize_t
 buffer_zlib(int fd, void* data, size_t n, buffer* b) {
   lzma_ctx* ctx = b->cookie;
-  lzma_stream* strm = &ctx->z;
+  lzma_stream* strm = &ctx->strm;
   char tmpbuf[1024];
 
   strm->next_in = tmpbuf;
@@ -36,14 +36,20 @@ buffer_zlib(int fd, void* data, size_t n, buffer* b) {
 }
 
 int
-buffer_deflate(buffer* b, buffer* in) {
+buffer_lzma(buffer* b, buffer* in) {
 
   lzma_ctx* ctx = calloc(1, sizeof(lzma_ctx));
   if(ctx == NULL) return 0;
 
   ctx->in = in;
 
-  lzma_stream* z = &ctx->z;
+    lzma_ret ret = lzma_stream_decoder(
+                           &ctx->strm, UINT64_MAX, LZMA_CONCATENATED);
+
+  if(ret != LZMA_OK)
+    return 0;
+
+  lzma_stream* strm = &ctx->strm;
 
   b->op = &buffer_zlib;
   b->p = b->n = 0;
@@ -51,11 +57,6 @@ buffer_deflate(buffer* b, buffer* in) {
 
   b->x = ctx->buf;
   b->a = sizeof(ctx->buf);
-
-  int ret = deflateInit(&ctx->z, 3);
-
-  if(ret != LZMA_OK)
-    return 0;
 
   return 1;
 }
