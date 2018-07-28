@@ -372,6 +372,11 @@ foreach(ARCHIVE ${LIBSUBDIRS})
   set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
 endforeach(ARCHIVE)
 
+target_link_libraries(scan case)
+target_link_libraries(taia tai)
+target_link_libraries(io iarray)
+target_link_libraries(buffer mmap stralloc str array)
+
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   if(NOT UNIX)
     set(X64 "-x64")

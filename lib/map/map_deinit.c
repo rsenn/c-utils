@@ -1,6 +1,7 @@
 #include "../map_internal.h"
 
-void map_deinit_(map_base_t* m) {
+void
+map_deinit_(map_base_t* m) {
   map_node_t *next, *node;
   int i;
   i = m->nbuckets;
