@@ -170,10 +170,21 @@ void*
 get_or_create(cbmap_t m, char* name, size_t datasz) {
   void* ptr = get(m, name, datasz);
   if(!ptr) {
+ #ifdef HAVE_ALLOCA
     char* data = alloca(datasz);
+ #elif defined(HAVE_DYNSTACK)
+    char data[datasz];
+ #else
+    char* data = malloc(datasz);
+ #endif
     byte_zero(data, datasz);
+
     if(cbmap_insert(m, name, str_len(name) + 1, data, datasz))
       ptr = get(m, name, datasz);
+      
+ #if !defined(HAVE_ALLOCA) && !defined(HAVE_DYNSTACK)
+    free(data);
+ #endif
   }
   return ptr;
 }

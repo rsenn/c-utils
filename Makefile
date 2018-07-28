@@ -1,4 +1,4 @@
-DEBUG = 1
+/DEBUG = 1
 DEBUG = 1
 LARGEFILE = 1
 WARNINGS = all no-unused-variable
@@ -873,7 +873,7 @@ $(BUILDDIR)libcase.so: LIBS =
 $(BUILDDIR)libcase.so: $(BUILDDIR)case_diffb.pic.o $(BUILDDIR)case_diffs.pic.o $(BUILDDIR)case_lowerb.pic.o $(BUILDDIR)case_lowers.pic.o $(BUILDDIR)case_starts.pic.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
-$(BUILDDIR)scan.a: $(BUILDDIR)scan_8int.o $(BUILDDIR)scan_8long.o $(BUILDDIR)scan_8longlong.o $(BUILDDIR)scan_8longn.o $(BUILDDIR)scan_8short.o $(BUILDDIR)scan_asn1derlength.o $(BUILDDIR)scan_asn1dertag.o $(BUILDDIR)scan_charsetnskip.o $(BUILDDIR)scan_double.o $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_httpdate.o $(BUILDDIR)scan_int.o $(BUILDDIR)scan_iso8601.o $(BUILDDIR)scan_long.o $(BUILDDIR)scan_longlong.o $(BUILDDIR)scan_longn.o $(BUILDDIR)scan_netstring.o $(BUILDDIR)scan_noncharsetnskip.o $(BUILDDIR)scan_nonwhitenskip.o $(BUILDDIR)scan_pb_tag.o $(BUILDDIR)scan_pb_type0_sint.o $(BUILDDIR)scan_pb_type1_fixed64.o $(BUILDDIR)scan_pb_type5_fixed32.o $(BUILDDIR)scan_plusminus.o $(BUILDDIR)scan_short.o $(BUILDDIR)scan_uint.o $(BUILDDIR)scan_ulong.o $(BUILDDIR)scan_ulonglong.o $(BUILDDIR)scan_ulongn.o $(BUILDDIR)scan_ushort.o $(BUILDDIR)scan_utf8.o $(BUILDDIR)scan_varint.o $(BUILDDIR)scan_whitenskip.o $(BUILDDIR)scan_xint.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_xlonglong.o $(BUILDDIR)scan_xlongn.o $(BUILDDIR)scan_xshort.o $(BUILDDIR)scan_xmlescape.o
+$(BUILDDIR)scan.a: $(call add-sources,lib/scan/*.c)
 	$(AR) rcs $@ $^
 $(BUILDDIR)libscan.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libscan.so: LIBS = -L$(BUILDDIR:%/=%) -lcase
@@ -1162,7 +1162,7 @@ endif
 
 $(BUILDDIR)hexedit$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)hexedit$(M64_)$(EXEEXT): CPPFLAGS += -Dhexedit_VERSION_MAJOR=0 -Dhexedit_VERSION_MINOR=2
-$(BUILDDIR)hexedit$(M64_)$(EXEEXT): $(BUILDDIR)hexedit.o $(call add-library, mmap buffer byte fmt str open uint32)
+$(BUILDDIR)hexedit$(M64_)$(EXEEXT): $(BUILDDIR)hexedit.o $(call add-library, mmap buffer byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

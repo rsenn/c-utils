@@ -1,10 +1,13 @@
+//#undef _ATTRIBUTE
+//#define _ATTRIBUTE(x) 
+//#include <stdlib.h>
+#include <time.h>
+
 #include "../byte.h"
-#define __deprecated__
+//#define __deprecated__(x) 
 #include "../byte.h"
 #include "../case.h"
 #include "../scan.h"
-#include <stdlib.h>
-#include <time.h>
 
 #ifdef sgi
 extern char** environ;

@@ -1,5 +1,7 @@
 #include "lib/mmap.h"
 #include "lib/buffer.h"
+#include "lib/uint64.h"
+#include "lib/scan.h"
 
 char hexdigits[] = "0123456789abcdef";
 
@@ -33,16 +35,54 @@ patch(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
   buffer_putnlflush(buffer_2);
 }
 
+void
+usage(const char* av0) {
+buffer_putm(buffer_2, "Usage: ", av0, " <file> [edit-specifier]\n"
+  "\n"
+  "  [edit-specifier] is <address>=<value>\n"
+  "\n");
+  buffer_putnlflush(buffer_2);
+}
+
+
 int
 main(int argc, char* argv[]) {
 
-  p = (unsigned char*)mmap_private(argv[1], &n);
+  unsigned long long addr = 0;
+  int s_cmp = 0, s_set = 0;
+  long long val_cmp = 0, val_set = 0;
+    
+  int index = 1;
+  
+  if(argc <= index) {
+    usage(argv[0]);
+    return 1;
+  }
 
-	patch(p, 0x00076608, 0x90, 0xeb);
-  patch(p, 0x0023f89c, 0xdf, 0x75);
-  patch(p, 0x00076626, 0x8b, 0x75);
-  patch(p, 0x000b23c9, 0x10, 0x85);
-  patch(p, 0x00076609, 0x48, 0x2a);
+  p = (unsigned char*)mmap_private(argv[index], &n);
+
+  while(++index < argc) {
+   char* spec = argv[index];
+   char sym = spec[0],*s = &spec[1];
+  
+   if(sym == '@') {
+     scan_xlonglong(s, &addr);
+   } else if(sym == '?') {
+     s_cmp = (scan_xlonglong(s, &val_cmp) + 1) / 2;
+   } else if(sym == '=') {
+     s_set = (scan_xlonglong(s, &val_set) + 1) / 2;
+   } else {
+   buffer_putm(buffer_2, "ERROR: ", spec, "\n");
+   buffer_putnlflush(buffer_2);
+   return 2;
+   }
+  }
+
+	//patch(p, 0x00076608, 0x90, 0xeb);
+  //patch(p, 0x0023f89c, 0xdf, 0x75);
+  //patch(p, 0x00076626, 0x8b, 0x75);
+  //patch(p, 0x000b23c9, 0x10, 0x85);
+  //patch(p, 0x00076609, 0x48, 0x2a);
 
   mmap_unmap(p, n);
 }

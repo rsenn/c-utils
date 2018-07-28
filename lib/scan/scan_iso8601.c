@@ -1,9 +1,10 @@
-#define __deprecated__
+#undef __deprecated__
+#define __deprecated__(x) 
+#include <time.h>
+
 #include "../byte.h"
 #include "../case.h"
 #include "../scan.h"
-#include <stdlib.h>
-#include <time.h>
 
 #ifdef sgi
 extern char** environ;

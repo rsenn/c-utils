@@ -6,6 +6,8 @@
 
 #ifdef __unix__
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 #endif
 
 #include "uint16.h"
