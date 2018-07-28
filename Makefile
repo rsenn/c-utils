@@ -72,6 +72,9 @@ $(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
 HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
 $(info HAVE_ZLIB=$(HAVE_ZLIB))
 
+HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
+$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
+
 
 HAVE_LSEEK64 := $(call check-function-exists,lseek64)
 HAVE_LSEEK := $(call check-function-exists,lseek)
@@ -625,6 +628,9 @@ endif
 endif
 ifeq ($(HAVE_ZLIB),1)
   DEFS += HAVE_ZLIB=1
+endif
+ifeq ($(HAVE_LIBLZMA),1)
+  DEFS += HAVE_LIBLZMA=1
 endif
 ifeq ($(HAVE_ERRNO_H),1)
   DEFS += HAVE_ERRNO_H=1
