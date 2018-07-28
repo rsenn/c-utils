@@ -1,4 +1,4 @@
-#include "../charbuf.h"
+#include "lib/charbuf.h"
 
 void
 charbuf_init(charbuf* b, read_fn* op, int fd) {

@@ -1,6 +1,8 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H 1
 
+#ifdef HAVE_C11_GENERICS
+
 #include "array.h"
 #include "stralloc.h"
 #include "hmap.h"
@@ -66,4 +68,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* defined(HAVE_C11_GENERICS) */
+
 #endif /* defined ITERATOR_H */

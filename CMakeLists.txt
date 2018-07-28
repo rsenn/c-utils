@@ -101,9 +101,11 @@ endif(CXX_COMPILER_SUPPORTS_GGDB)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
 
-include_directories("${CMAKE_SOURCE_DIR}")
+include_directories("${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 
 #pkg_search_module(LIBLZMA liblzma)
+include(${CMAKE_SOURCE_DIR}/CheckC11Generics.cmake)
+include(${CMAKE_SOURCE_DIR}/CheckSizeTypes.cmake)
 include(${CMAKE_SOURCE_DIR}/CheckAlloca.cmake)
 include(${CMAKE_SOURCE_DIR}/CheckDynStack.cmake)
 include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
@@ -278,7 +280,7 @@ endif(HAVE_MATH_LIBRARY)
 
 
 #include_directories( "${CMAKE_SOURCE_DIR}/lib" )
-include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" )
+include_directories( "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 include_directories( ${Iconv_INCLUDE_DIR} )
 
 if(STATIC_LINK)
@@ -407,7 +409,7 @@ foreach(PROGRAM ${PROGRAMS})
 
   set_target_properties(${PROGRAM} PROPERTIES
     OUTPUT_NAME "${PROGRAM}${X64}"
-    INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/lib;${LIBXML2_INCLUDE_DIR};${CMAKE_BINARY_DIR}"
+    INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/lib;${CMAKE_SOURCE_DIR}/lib;${LIBXML2_INCLUDE_DIR};${CMAKE_BINARY_DIR}"
     )
   target_link_libraries(${PROGRAM} ${COMMON_LIBS})
   install(TARGETS ${PROGRAM} DESTINATION bin)

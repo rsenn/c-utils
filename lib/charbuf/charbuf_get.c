@@ -1,4 +1,4 @@
-#include "../charbuf.h"
+#include "lib/charbuf.h"
 
 int
 charbuf_get(charbuf* b) {

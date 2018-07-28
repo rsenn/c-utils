@@ -1,14 +1,17 @@
 #ifndef CHARBUF_H
 #define CHARBUF_H
 
-#include <sys/types.h>
-
-#ifdef _MSC_VER
-typedef SSIZE_T ssize_t;
-#endif
+@SIZE_TYPES_INCLUDE_FILES@
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifdef  _MSC_VER
+#include <windows.h>
+#undef ssize_t
+//#define ssize_t SSIZE_T
+typedef SSIZE_T ssize_t;
 #endif
 
 typedef ssize_t (read_fn)(int fd, void* buf, size_t n);
@@ -38,4 +41,5 @@ int charbuf_skip_until(charbuf *b, char c);
 #ifdef __cplusplus
 }
 #endif
+
 #endif /* defined CHARBUF_H */

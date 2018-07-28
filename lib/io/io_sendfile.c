@@ -140,8 +140,8 @@ int64 io_sendfile(int64 s, int64 fd, uint64 off, uint64 n) {
 
 #elif defined(_WIN32)
 
-#include <windows.h>
-#include <mswsock.h>
+//#include <windows.h>
+//#include <mswsock.h>
 
 int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   io_entry* e = iarray_get(io_getfds(), out);

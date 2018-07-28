@@ -41,14 +41,13 @@ endef
 define cmds-include-exists =
 set -e; \
 trap 'rm -f "$$NAME" "$$NAME.c"' EXIT; \
-NAME=test_$(1); \
-NAME=$${NAME%.*}_h; \
+NAME=test_$(subst .,_,$(subst /,_,$(1))); \
 (echo -e "#include <$(1)>\n"; \
 echo -e "\n"; \
 echo -e "int main() {"; \
 echo -e "  return 0;"; \
 echo -e "}") >$$NAME.c; \
-$(CROSS_COMPILE)$(CC) -o $$NAME $$NAME.c
+$(CROSS_COMPILE)$(CC) -c -o $$NAME $$NAME.c
 endef
 
 define cmds-function-exists =
@@ -61,7 +60,7 @@ echo "  return 0;"; \
 echo "}") >test_$(1).c; \
 $(CROSS_COMPILE)$(CC) -o test_$(1) test_$(1).c $(2);
 endef
-cmds-exitcode = ($(1)) 2>&1 >>check.log && echo 1 || echo 0
+cmds-exitcode = ($(1)) >>check.log 2>&1 && echo 1 || echo 0
 
 check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
 check-include-exists = $(shell $(call cmds-exitcode,$(cmds-include-exists)))
@@ -96,6 +95,27 @@ endif
 
 add-sources = $(patsubst %.c,$(BUILDDIR)%$(if $(2),$(2),.o),$(notdir $(wildcard $(1))))
 add-libdeps = $(patsubst %,$(BUILDDIR)lib%.so,$(1))
+
+header-to-var = $(shell echo "$(subst /,_,$(subst .,_,$(1)))" | tr "[[:lower:]]" "[[:upper:]]")
+
+define cmd-check-header =
+HAVE_$(call header-to-var,$(1)) := $$(call check-include-exists,$(1))
+$$(info HAVE_$(call header-to-var,$(1))=$$(HAVE_$(call header-to-var,$(1))))
+endef
+check-header = $(info $(call cmd-check-header,$(1)))
+
+HAVE_SYS_TYPES_H := $(call check-include-exists,sys/types.h)
+$(info HAVE_SYS_TYPES_H=$(HAVE_SYS_TYPES_H))
+HAVE_INTTYPES_H := $(call check-include-exists,inttypes.h)
+$(info HAVE_INTTYPES_H=$(HAVE_INTTYPES_H))
+HAVE_VCRUNTIME_H := $(call check-include-exists,vcruntime.h)
+$(info HAVE_VCRUNTIME_H=$(HAVE_VCRUNTIME_H))
+HAVE_STDINT_H := $(call check-include-exists,stdint.h)
+$(info HAVE_STDINT_H=$(HAVE_STDINT_H))
+HAVE_STDDEF_H := $(call check-include-exists,stddef.h)
+$(info HAVE_STDDEF_H=$(HAVE_STDDEF_H))
+
+
 
 HAVE_ERRNO_H := $(call check-include-exists,errno.h)
 $(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
