@@ -213,6 +213,8 @@ int buffer_puts_escaped(buffer *b, const char *x);
 
 int buffer_freshen(buffer *b);
 
+int buffer_truncfile(buffer* b, const char* fn);
+
 int buffer_deflate(buffer*, buffer*);
 int buffer_lzma(buffer*, buffer*, int compress);
 
