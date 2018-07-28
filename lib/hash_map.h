@@ -12,6 +12,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Comparator function to determine whether `*l` and `*r` are equal.
  * @return Negative if `*l` is less than `*r`; zero if `*l` is equal to `*r`; positive if `*l` is greater than `*r`.
@@ -122,5 +126,7 @@ void hash_map_clear(hash_map *map);
  */
 bool hash_map_contains_key(hash_map *map, void *key);
 
+#ifdef __cplusplus
+}
 #endif
-
+#endif

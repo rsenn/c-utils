@@ -53,18 +53,19 @@ if (LIBLZMA_LIBRARY)
    CHECK_LIBRARY_EXISTS(${LIBLZMA_LIBRARY} lzma_lzma_preset "" LIBLZMA_HAS_LZMA_PRESET)
 endif ()
 
-include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibLZMA  REQUIRED_VARS  LIBLZMA_INCLUDE_DIR
-                                                          LIBLZMA_LIBRARY
-                                                          LIBLZMA_HAS_AUTO_DECODER
-                                                          LIBLZMA_HAS_EASY_ENCODER
-                                                          LIBLZMA_HAS_LZMA_PRESET
-                                           VERSION_VAR    LIBLZMA_VERSION_STRING
-                                 )
+#include(FindPackageHandleStandardArgs)
+#FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibLZMA  REQUIRED_VARS  LIBLZMA_INCLUDE_DIR
+#                                                          LIBLZMA_LIBRARY
+#                                                          LIBLZMA_HAS_AUTO_DECODER
+#                                                          LIBLZMA_HAS_EASY_ENCODER
+#                                                          LIBLZMA_HAS_LZMA_PRESET
+#                                           VERSION_VAR    LIBLZMA_VERSION_STRING
+#                                 )
 
 if (LIBLZMA_FOUND)
     set(LIBLZMA_LIBRARIES ${LIBLZMA_LIBRARY})
     set(LIBLZMA_INCLUDE_DIRS ${LIBLZMA_INCLUDE_DIR})
+    add_definitions(-DHAVE_LIBLZMA=1)
 endif ()
 
 mark_as_advanced( LIBLZMA_INCLUDE_DIR LIBLZMA_LIBRARY )

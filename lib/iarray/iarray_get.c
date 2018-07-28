@@ -1,6 +1,7 @@
 #include "../iarray.h"
 
-void* iarray_get(iarray* ia, size_t pos) {
+void*
+iarray_get(iarray* ia, size_t pos) {
   size_t index;
   iarray_page* p = ia->pages[pos % (sizeof(ia->pages) / sizeof(ia->pages[0]))];
   pos /= sizeof(ia->pages) / sizeof(ia->pages[0]);

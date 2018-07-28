@@ -4,8 +4,12 @@
 
 /* for size_t: */
 #include <stddef.h>
+#include <inttypes.h>
+#include <stdint.h>
+
 /* for ssize_t: */
 #include <sys/types.h>
+
 /* for str_len */
 #include <string.h>
 #include "uint64.h"
@@ -17,13 +21,6 @@ extern "C" {
 
 #ifdef _MSC_VER
 typedef SSIZE_T ssize_t;
-#endif
-
-#ifdef __MSYS__
-#define ssize_t  int
-//#define ssize_t  __PTRDIFF_TYPE__
-#elif defined __GNUC__
-#define ssize_t __INTPTR_TYPE__
 #endif
 
 typedef ssize_t (buffer_op_sys)(int fd, void* buf, size_t len);

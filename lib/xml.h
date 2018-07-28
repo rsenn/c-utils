@@ -7,7 +7,9 @@
 #include "stralloc.h"
 #include "textbuf.h"
 
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 #define __inl static inline
 
 typedef enum xmlnodeid {
@@ -98,4 +100,7 @@ __inl ptrdiff_t xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) { return 
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* LIB_XML_H_ */

@@ -10,6 +10,10 @@
 
 #include <string.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define MAP_VERSION "0.1.0"
 
 struct map_node_t;
@@ -74,6 +78,7 @@ typedef map_t(char) map_char_t;
 typedef map_t(float) map_float_t;
 typedef map_t(double) map_double_t;
 
+#ifdef __cplusplus
+}
 #endif
-
-
+#endif

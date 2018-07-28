@@ -1,6 +1,6 @@
 #include <stdarg.h>
-#include <sys/types.h>
 #include "../stralloc.h"
+#include "../buffer.h"
 
 size_t
 stralloc_fmt_call(stralloc* out, size_t (*fmt_function)(), ...) {

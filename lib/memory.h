@@ -8,6 +8,10 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef TEST
 extern int __malloc_counter;
 #endif
@@ -28,4 +32,7 @@ void *safe_malloc(size_t size);
  */
 void safe_free(void *ptr);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

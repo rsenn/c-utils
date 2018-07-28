@@ -4,6 +4,10 @@
 #include "buffer.h"
 #include "uint64.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
   uint64 line;
   uint64 column;
@@ -18,4 +22,7 @@ void     textbuf_init  (buffer*, buffer*, size_t);
 uint64   textbuf_line  (buffer*);
 ssize_t  textbuf_read  (int, char*, size_t, void*);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* defined TEXTBUF_H */

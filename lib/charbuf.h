@@ -3,6 +3,14 @@
 
 #include <sys/types.h>
 
+#ifdef _MSC_VER
+typedef SSIZE_T ssize_t;
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef ssize_t (read_fn)(int fd, void* buf, size_t n);
 
 typedef struct {
@@ -27,4 +35,7 @@ int charbuf_nextc(charbuf *b, char* ch);
 
 int charbuf_skip_until(charbuf *b, char c);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* defined CHARBUF_H */

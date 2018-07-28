@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Handles allocation (and copying) of keys and values */
 typedef void* (*cbmap_allocator_fn)(void* data, size_t data_len);
 
@@ -68,4 +72,7 @@ cbmap_visit_prefix(cbmap_t map, uint8_t* key_prefix, size_t key_prefix_len, cbma
 int
 cbmap_visit_all(cbmap_t map, cbmap_visitor visitor_fn, void* user_data);
 
+#ifdef __cplusplus
+}
+#endif
 #endif // _CBMAP_H

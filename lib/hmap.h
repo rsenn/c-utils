@@ -6,6 +6,10 @@
 #include "stralloc.h"
 #include "buffer.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define MAP_BUCKET 1024
 #define MAX_SIZE_KEY 1024
 
@@ -148,4 +152,7 @@ int hmap_set_stralloc(HMAP_DB **hmap_db, const stralloc *key, const stralloc *da
 void hmap_dump(HMAP_DB *my_hmap_db, buffer*);
 #endif
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* defined HMAP_H */

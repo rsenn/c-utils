@@ -17,6 +17,10 @@
 #include <pthread.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* The basic data structure is a static array of pointers to pages.
  * Each page also contains a next pointer to form a linked list.
  * To get to element n, you take n % the number of elements in the
@@ -49,4 +53,7 @@ size_t iarray_length(iarray* ia);
  * being freed! */
 void iarray_free(iarray* ia);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

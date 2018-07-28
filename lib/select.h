@@ -10,7 +10,13 @@
 /* braindead BSD uses bzero in FD_ZERO but doesn't #include string.h */
 #include <string.h>
 
-extern int select();
-
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+extern int select();
+
+#ifdef __cplusplus
+}
+#endif
+#endif

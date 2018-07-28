@@ -6,6 +6,10 @@
 #include "uint32.h"
 #include "uint64.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
   unsigned char* x;
   size_t n;
@@ -359,4 +363,7 @@ pe_opthdr_ptr(const void*);
 int32
 pe_opthdr_offset(const void*, pe_opthdr_field);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* defined PE_H */

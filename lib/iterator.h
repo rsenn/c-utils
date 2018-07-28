@@ -6,6 +6,10 @@
 #include "hmap.h"
 #include "xml.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define size(container) _Generic((container), \
     stralloc*: stralloc_length, \
     array*: array_length, \
@@ -59,4 +63,7 @@
     HMAP_DB*: hmap_last \
   )(container,it)
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* defined ITERATOR_H */

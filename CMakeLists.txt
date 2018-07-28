@@ -58,10 +58,16 @@ include(CPack)
   add_definitions(-D_FILE_OFFSET_BITS=64)
 #endif(WIN32 OR WIN64)
 
+if(NOT MSVC)
 add_definitions( -g  )
+endif(NOT MSVC)
 
 
-set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
+set(CMAKE_C_FLAGS_DEBUG "-Wall -DDEBUG ${CMAKE_C_FLAGS_DEBUG}")
+
+if(NOT MSVC)
+set(CMAKE_C_FLAGS_DEBUG "-g -O0 ${CMAKE_C_FLAGS_DEBUG}")
+endif(NOT MSVC)
 #set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O0 -Wall")
 
 CHECK_C_COMPILER_FLAG("-ggdb" C_COMPILER_SUPPORTS_GGDB)
@@ -99,6 +105,7 @@ include_directories("${CMAKE_SOURCE_DIR}")
 
 #pkg_search_module(LIBLZMA liblzma)
 include(${CMAKE_SOURCE_DIR}/CheckAlloca.cmake)
+include(${CMAKE_SOURCE_DIR}/CheckDynStack.cmake)
 include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 
 
@@ -149,7 +156,6 @@ check_include_file(sys/types.h HAVE_SYS_TYPES_H)
 check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(stdbool.h HAVE_STDBOOL_H)
 check_include_file(libgen.h HAVE_LIBGEN_H)
-check_include_file(alloca.h HAVE_ALLOCA_H)
 check_include_file(sys/stat.h HAVE_SYS_STAT_H)
 check_include_file(sys/mman.h HAVE_SYS_MMAN_H)
 #check_include_file(boost/foreach.hpp HAVE_BOOST_FOREACH_HPP)
@@ -170,8 +176,6 @@ if(NOT SOCKLEN_T)
 #  add_definitions(-Dsocklen_t=int)
 endif()
 
-
-check_function_exists(alloca HAVE_ALLOCA_FUNC)
 
 foreach(FUNC posix_memalign aligned_alloc _aligned_malloc)
   string(TOUPPER "HAVE_${FUNC}_FUNC" DEF)
@@ -290,6 +294,10 @@ endif(USE_READDIR)
 
 configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
                "${CMAKE_BINARY_DIR}/config.h")
+
+configure_file("${CMAKE_SOURCE_DIR}/lib/buffer.h.cmake" "${CMAKE_BINARY_DIR}/lib/buffer.h")
+configure_file("${CMAKE_SOURCE_DIR}/lib/charbuf.h.cmake" "${CMAKE_BINARY_DIR}/lib/charbuf.h")
+
 
 file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.h")
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)

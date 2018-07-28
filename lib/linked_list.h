@@ -9,6 +9,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Function to deallocate data pointers. For automatically allocated
  * memory, pass in `NULL` to call nothing. For memory allocated with
@@ -81,4 +85,7 @@ void linked_list_free(linked_list *list);
  */
 size_t linked_list_size(linked_list *list);
 
+#ifdef __cplusplus
+}
+#endif
 #endif
