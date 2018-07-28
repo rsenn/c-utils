@@ -213,6 +213,8 @@ int buffer_puts_escaped(buffer *b, const char *x);
 
 int buffer_freshen(buffer *b);
 
+int buffer_deflate(buffer*, buffer*);
+
 #ifdef __cplusplus
 }
 #endif
