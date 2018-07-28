@@ -2643,3 +2643,45 @@ $(BUILDDIR)xml_root_element.pic.o: lib/xml/xml_root_element.c
 $(BUILDDIR)xml_textnode.pic.o: CFLAGS += -fPIC
 $(BUILDDIR)xml_textnode.pic.o: lib/xml/xml_textnode.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_dummyreadmmap.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)buffer_dummyreadmmap.pic.o: lib/buffer_dummyreadmmap.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)critbit.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)critbit.pic.o: lib/critbit.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fnmatch.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)fnmatch.pic.o: lib/fnmatch.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)getopt.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)getopt.pic.o: lib/getopt.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hash_map.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)hash_map.pic.o: lib/hash_map.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_passfd.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)io_passfd.pic.o: lib/io_passfd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)iopause.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)iopause.pic.o: lib/iopause.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)isleap.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)isleap.pic.o: lib/isleap.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)linked_list.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)linked_list.pic.o: lib/linked_list.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)memory.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)memory.pic.o: lib/memory.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strptime.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)strptime.pic.o: lib/strptime.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)time_table_spd.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)time_table_spd.pic.o: lib/time_table_spd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)umult64.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)umult64.pic.o: lib/umult64.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)utf8.pic.o: CFLAGS += -fPIC
+$(BUILDDIR)utf8.pic.o: lib/utf8.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
