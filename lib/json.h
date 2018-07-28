@@ -17,8 +17,8 @@ typedef enum {
   JSON_INT,
   JSON_DOUBLE,
   JSON_STRING,
-  JSON_LIST,
-  JSON_DICT,
+  JSON_ARRAY,
+  JSON_OBJECT,
 } jsondata;
 
 typedef struct {

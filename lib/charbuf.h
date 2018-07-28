@@ -34,3 +34,4 @@ int charbuf_skip_until(charbuf *b, char c);
 #endif
 
 #endif /* defined CHARBUF_H */
+int charbuf_skip_pred(charbuf*, int (*pred)(void));
