@@ -60,7 +60,7 @@ void byte_lower(void *s, register unsigned int len);
 
 #ifdef STRALLOC_H
 size_t byte_fmt(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch));
-size_t byte_fmt_pred(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch), int (*pred)(int));
+size_t stralloc_fmt_pred(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch), int (*pred)(int));
 
 size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));
 #endif

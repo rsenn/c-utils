@@ -14,15 +14,14 @@ int stralloc_ready(stralloc* sa, size_t len) {
   if(sa->s && sa->a >= len)
     return 1;
   if(sa->a == 0 || sa->s == NULL) {
-    if(!(tmp = malloc(wanted)))
+    wanted = sa->len;
+    if(!(tmp = str_ndup(sa->s, wanted)))
       return 0;
-    if(sa->s)
-      byte_copy(tmp, sa->len, sa->s);
   } else {
     if(!(tmp = realloc(sa->s, wanted)))
       return 0;
   }
-  sa->a = wanted;
+    sa->a = wanted;
   sa->s = tmp;
   return 1;
 }

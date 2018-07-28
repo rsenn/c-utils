@@ -13,5 +13,5 @@ fmt_pred(int c) {
 
 size_t
 xml_escape(const char* s, size_t n, stralloc* out) {
-  return byte_fmt_pred(s, n, out, fmt_xmlescape, &fmt_pred);
+  return stralloc_fmt_pred(s, n, out, fmt_xmlescape, &fmt_pred);
 }

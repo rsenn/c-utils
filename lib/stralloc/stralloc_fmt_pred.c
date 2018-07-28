@@ -1,7 +1,7 @@
 #include "../stralloc.h"
 
 size_t
-byte_fmt_pred(const char* in, size_t in_len, stralloc* out, size_t (*fmt_function)(char*,unsigned int ch), int (*pred)(int)) {
+stralloc_fmt_pred(const char* in, size_t in_len, stralloc* out, size_t (*fmt_function)(char*,unsigned int ch), int (*pred)(int)) {
   size_t i;
   stralloc_zero(out);
   for(i = 0; i < in_len; ++i) {

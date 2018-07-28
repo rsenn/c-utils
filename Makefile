@@ -804,11 +804,11 @@ $(BUILDDIR)libbuffer.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libbuffer.so: $(call add-sources,lib/buffer/buffer*.c,.pic.o) | $(call add-libdeps,mmap stralloc str array)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
-$(BUILDDIR)byte.a: $(BUILDDIR)byte_case_diff.o $(BUILDDIR)byte_case_equal.o $(BUILDDIR)byte_case_start.o $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_count.o $(BUILDDIR)byte_diff.o $(BUILDDIR)byte_equal.o $(BUILDDIR)byte_fill.o $(BUILDDIR)byte_lower.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_upper.o $(BUILDDIR)byte_zero.o $(BUILDDIR)byte_fmt.o $(BUILDDIR)byte_fmt_pred.o $(BUILDDIR)byte_scan.o
+$(BUILDDIR)byte.a: $(call add-sources,lib/byte/*.c)
 
 	$(AR) rcs $@ $^
 $(BUILDDIR)libbyte.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
-$(BUILDDIR)libbyte.so: $(BUILDDIR)byte_case_diff.pic.o $(BUILDDIR)byte_case_equal.pic.o $(BUILDDIR)byte_case_start.pic.o $(BUILDDIR)byte_chr.pic.o $(BUILDDIR)byte_copy.pic.o $(BUILDDIR)byte_copyr.pic.o $(BUILDDIR)byte_count.pic.o $(BUILDDIR)byte_diff.pic.o $(BUILDDIR)byte_equal.pic.o $(BUILDDIR)byte_fill.pic.o $(BUILDDIR)byte_lower.pic.o $(BUILDDIR)byte_rchr.pic.o $(BUILDDIR)byte_upper.pic.o $(BUILDDIR)byte_zero.pic.o $(BUILDDIR)byte_fmt.pic.o $(BUILDDIR)byte_fmt_pred.pic.o $(BUILDDIR)byte_scan.pic.o
+$(BUILDDIR)libbyte.so: $(BUILDDIR)byte_case_diff.pic.o $(BUILDDIR)byte_case_equal.pic.o $(BUILDDIR)byte_case_start.pic.o $(BUILDDIR)byte_chr.pic.o $(BUILDDIR)byte_copy.pic.o $(BUILDDIR)byte_copyr.pic.o $(BUILDDIR)byte_count.pic.o $(BUILDDIR)byte_diff.pic.o $(BUILDDIR)byte_equal.pic.o $(BUILDDIR)byte_fill.pic.o $(BUILDDIR)byte_lower.pic.o $(BUILDDIR)byte_rchr.pic.o $(BUILDDIR)byte_upper.pic.o $(BUILDDIR)byte_zero.pic.o $(BUILDDIR)byte_fmt.pic.o $(BUILDDIR)stralloc_fmt_pred.pic.o $(BUILDDIR)byte_scan.pic.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)cbmap.a: $(builddir)alloc.o $(builddir)cbmap_count.o $(builddir)cbmap_data_node_destroy.o $(builddir)cbmap_delete.o $(builddir)cbmap_destroy.o $(builddir)cbmap_get.o $(builddir)cbmap_insert.o $(builddir)cbmap_internal_node.o $(builddir)cbmap_new.o $(builddir)cbmap_visit.o $(builddir)cbmap_visit_all.o
@@ -897,7 +897,7 @@ $(BUILDDIR)libsocket.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libsocket.so: $(BUILDDIR)socket_connect4.pic.o $(BUILDDIR)socket_connect6.pic.o $(BUILDDIR)socket_connected.pic.o $(BUILDDIR)socket_ip4loopback.pic.o $(BUILDDIR)socket_noipv6.pic.o $(BUILDDIR)socket_tcp4b.pic.o $(BUILDDIR)socket_tcp4.pic.o $(BUILDDIR)socket_tcp6b.pic.o $(BUILDDIR)socket_tcp6.pic.o $(BUILDDIR)socket_v4mappedprefix.pic.o $(BUILDDIR)socket_v6loopback.pic.o  $(BUILDDIR)winsock2errno.pic.o $(BUILDDIR)winsock_init.pic.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
-$(BUILDDIR)stralloc.a: $(BUILDDIR)stralloc_0.o $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_append_sa.o $(BUILDDIR)stralloc_buffer.o $(BUILDDIR)stralloc_case_diff.o $(BUILDDIR)stralloc_case_diffs.o $(BUILDDIR)stralloc_case_end.o $(BUILDDIR)stralloc_case_equal.o $(BUILDDIR)stralloc_case_equals.o $(BUILDDIR)stralloc_case_start.o $(BUILDDIR)stralloc_case_starts.o $(BUILDDIR)stralloc_cat.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_cathexb.o $(BUILDDIR)stralloc_catint.o $(BUILDDIR)stralloc_catint0.o $(BUILDDIR)stralloc_catlong.o $(BUILDDIR)stralloc_catlong0.o $(BUILDDIR)stralloc_catm_internal.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_catuint.o $(BUILDDIR)stralloc_catuint0.o $(BUILDDIR)stralloc_catulong.o $(BUILDDIR)stralloc_catulong0.o $(BUILDDIR)stralloc_catxlong.o $(BUILDDIR)stralloc_chomp.o $(BUILDDIR)stralloc_chop.o $(BUILDDIR)stralloc_chr.o $(BUILDDIR)stralloc_copy.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_count.o $(BUILDDIR)stralloc_decamelize.o $(BUILDDIR)stralloc_diff.o $(BUILDDIR)stralloc_diffb.o $(BUILDDIR)stralloc_diffs.o $(BUILDDIR)stralloc_ends.o $(BUILDDIR)stralloc_endb.o $(BUILDDIR)stralloc_ends.o $(BUILDDIR)stralloc_equal.o $(BUILDDIR)stralloc_equalb.o $(BUILDDIR)stralloc_equals.o $(BUILDDIR)stralloc_erase.o $(BUILDDIR)stralloc_find.o $(BUILDDIR)stralloc_findb.o $(BUILDDIR)stralloc_finds.o $(BUILDDIR)stralloc_free.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_insertb.o $(BUILDDIR)stralloc_lower.o $(BUILDDIR)stralloc_move.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_rchr.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)stralloc_remove.o $(BUILDDIR)stralloc_replace.o $(BUILDDIR)stralloc_replace_non_printable.o $(BUILDDIR)stralloc_start.o $(BUILDDIR)stralloc_startb.o $(BUILDDIR)stralloc_starts.o $(BUILDDIR)stralloc_trim.o $(BUILDDIR)stralloc_trunc.o $(BUILDDIR)stralloc_write.o $(BUILDDIR)stralloc_zero.o $(BUILDDIR)stralloc_fmt.o $(BUILDDIR)stralloc_fmt_call.o $(BUILDDIR)stralloc_scan.o   $(BUILDDIR)stralloc_subst.o 
+$(BUILDDIR)stralloc.a: $(call add-sources,lib/stralloc/stralloc*.c)
 	$(AR) rcs $@ $^
 $(BUILDDIR)libstralloc.so: LIBS = -L$(BUILDDIR:%/=%) -lfmt 
 $(BUILDDIR)libstralloc.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
@@ -1011,7 +1011,7 @@ $(BUILDDIR)libcharbuf.so: $(addprefix $(BUILDDIR),charbuf_get.pic.o charbuf_getc
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
-$(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(call add-library, buffer str stralloc byte)
+$(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(call add-library, buffer stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)count-depth.o: count-depth.c
@@ -1025,28 +1025,28 @@ $(BUILDDIR)fnmatch.o: fnmatch.c
 
 
 $(BUILDDIR)list-r.o: list-r.c
-$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(call add-library, open array buffer  stralloc byte rdir dir fmt str)
+$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(call add-library, open array buffer  byte stralloc rdir dir fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)rdir-test.o: rdir-test.c
-$(BUILDDIR)rdir-test$(M64_)$(EXEEXT): $(BUILDDIR)rdir-test.o $(BUILDDIR)fnmatch.o $(call add-library, rdir dir array buffer  stralloc byte fmt str)
+$(BUILDDIR)rdir-test$(M64_)$(EXEEXT): $(BUILDDIR)rdir-test.o $(BUILDDIR)fnmatch.o $(call add-library, rdir dir array buffer  byte stralloc fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)reg2cmd.o: reg2cmd.c
-$(BUILDDIR)reg2cmd$(M64_)$(EXEEXT): $(BUILDDIR)reg2cmd.o $(call add-library, buffer fmt scan str stralloc byte)
+$(BUILDDIR)reg2cmd$(M64_)$(EXEEXT): $(BUILDDIR)reg2cmd.o $(call add-library, buffer fmt scan stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)regfilter.o: regfilter.c
-$(BUILDDIR)regfilter$(M64_)$(EXEEXT): $(BUILDDIR)regfilter.o $(call add-library, buffer fmt scan str stralloc byte)
+$(BUILDDIR)regfilter$(M64_)$(EXEEXT): $(BUILDDIR)regfilter.o $(call add-library, buffer fmt scan stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1059,13 +1059,13 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array buffer fmt mmap open  str strlist stralloc byte)
+$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array buffer fmt mmap open  strlist stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array strlist buffer fmt mmap open  scan str stralloc byte)
+$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array strlist buffer fmt mmap open  scan stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1102,7 +1102,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)jsontest$(M64_)$(EXEEXT): $(BUILDDIR)jsontest.o $(call add-library, json array charbuf textbuf hmap buffer mmap open stralloc byte scan fmt fmt str)
+$(BUILDDIR)jsontest$(M64_)$(EXEEXT): $(BUILDDIR)jsontest.o $(call add-library, json array charbuf textbuf hmap buffer mmap open stralloc str byte scan fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1135,7 +1135,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)access.o: access.c
-$(BUILDDIR)access$(M64_)$(EXEEXT): $(BUILDDIR)access.o $(call add-library, open array buffer  stralloc byte rdir dir fmt str)
+$(BUILDDIR)access$(M64_)$(EXEEXT): $(BUILDDIR)access.o $(call add-library, open array buffer  byte stralloc rdir dir fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1143,14 +1143,14 @@ endif
 
 #$(BUILDDIR)opensearch-dump$(M64_)$(EXEEXT): INCLUDES += $(ICONV_CFLAGS)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXEEXT): LIBS += $(ICONV_LIBS) $(OTHERLIBS)
-$(BUILDDIR)opensearch-dump$(M64_)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(call add-library, buffer str stralloc byte)
+$(BUILDDIR)opensearch-dump$(M64_)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(call add-library, buffer stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(call add-library, xml hmap buffer mmap open scan fmt str stralloc byte)
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(call add-library, xml hmap buffer mmap open scan fmt stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

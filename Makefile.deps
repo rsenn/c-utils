@@ -4,23 +4,15 @@ $(BUILDDIR)buffertest.o: buffertest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)CMakeCCompilerId.o: Builds/CodeLite-dirlist/CMakeFiles/3.11.1/CompilerIdC/CMakeCCompilerId.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)LLOFF_T.o: Builds/CodeLite-dirlist/CMakeFiles/CheckTypeSize/LLOFF_T.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)LOFF_T.o: Builds/CodeLite-dirlist/CMakeFiles/CheckTypeSize/LOFF_T.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)OFF64_T.o: Builds/CodeLite-dirlist/CMakeFiles/CheckTypeSize/OFF64_T.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)SOCKLEN_T.o: Builds/CodeLite-dirlist/CMakeFiles/CheckTypeSize/SOCKLEN_T.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)feature_tests.o: Builds/CodeLite-dirlist/CMakeFiles/feature_tests.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)LLOFF_T.o: CMakeFiles/CheckTypeSize/LLOFF_T.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)LOFF_T.o: CMakeFiles/CheckTypeSize/LOFF_T.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)OFF64_T.o: CMakeFiles/CheckTypeSize/OFF64_T.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)feature_tests.o: CMakeFiles/feature_tests.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)compiler-wrapper.o: compiler-wrapper.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -261,8 +253,6 @@ $(BUILDDIR)byte_equal.o: lib/byte/byte_equal.c
 $(BUILDDIR)byte_fill.o: lib/byte/byte_fill.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_fmt.o: lib/byte/byte_fmt.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_fmt_pred.o: lib/byte/byte_fmt_pred.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_lower.o: lib/byte/byte_lower.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -571,6 +561,8 @@ $(BUILDDIR)iopause.o: lib/iopause.c
 $(BUILDDIR)io_passfd.o: lib/io_passfd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)isleap.o: lib/isleap.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)json_free.o: lib/json/json_free.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)json_newnode.o: lib/json/json_newnode.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -919,6 +911,8 @@ $(BUILDDIR)stralloc_finds.o: lib/stralloc/stralloc_finds.c
 $(BUILDDIR)stralloc_fmt.o: lib/stralloc/stralloc_fmt.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_fmt_call.o: lib/stralloc/stralloc_fmt_call.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_fmt_pred.o: lib/stralloc/stralloc_fmt_pred.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_free.o: lib/stralloc/stralloc_free.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
