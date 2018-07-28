@@ -92,6 +92,8 @@ include_directories("${CMAKE_SOURCE_DIR}")
 
 #pkg_search_module(LIBLZMA liblzma)
 include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
+
+
 if(LIBLZMA_FOUND)
   link_libraries(${LIBLZMA_LIBRARIES})
   include_directories(${LIBLZMA_INCLUDE_DIRS})
@@ -140,10 +142,14 @@ check_include_file(libgen.h HAVE_LIBGEN_H)
 check_include_file(alloca.h HAVE_ALLOCA_H)
 check_include_file(sys/stat.h HAVE_SYS_STAT_H)
 check_include_file(sys/mman.h HAVE_SYS_MMAN_H)
-check_include_file(boost/foreach.hpp HAVE_BOOST_FOREACH_HPP)
-check_include_file(xtr1common HAVE_XTR1COMMON)
-check_include_file(initializer_list HAVE_INITIALIZER_LIST)
+#check_include_file(boost/foreach.hpp HAVE_BOOST_FOREACH_HPP)
+#check_include_file(xtr1common HAVE_XTR1COMMON)
+check_include_file(errno.h HAVE_ERRNO_H)
+#check_include_file(initializer_list HAVE_INITIALIZER_LIST)
 
+if(HAVE_ERRNO_H)
+  add_definitions(-DHAVE_ERRNO_H=1)
+endif()
 
 check_type_size(loff_t LOFF_T)
 check_type_size(lloff_t LLOFF_T)
@@ -280,7 +286,7 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
 access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3 xmltest4
-eagle-gen-cmds eagle-to-circuit
+eagle-gen-cmds eagle-to-circuit buffertest
 )
 
 set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})
@@ -391,9 +397,10 @@ IF(MSVC OR WIN32 OR WIN64)
   SET(SOCKET_LIB ws2_32)
 endif()
 
-list(APPEND LIBXML2_LIBRARIES ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
+list(APPEND ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
 
 target_link_libraries(compiler-wrapper dir)
+target_link_libraries(buffertest charbuf textbuf ${COMMON_LIBS} ${LIBLZMA_LIBRARIES})
 target_link_libraries(eagle-init-brd xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
 target_link_libraries(eagle-gen-cmds cbmap xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
 target_link_libraries(eagle-to-circuit cbmap xml hmap charbuf textbuf ${COMMON_LIBS})
@@ -409,12 +416,6 @@ target_link_libraries(ntldd open)
 target_link_libraries(hexedit open)
 target_link_libraries(impgen open)
 
-
-#if(STATIC_LINK)
-#  install(FILES ${LIBXML2_LIBRARIES} DESTINATION lib)
-#else()
-#  install(FILES ${LIBXML2_DLL} DESTINATION bin)
-#endif()
 
 #target_link_libraries(eagle-init-brd)
 
