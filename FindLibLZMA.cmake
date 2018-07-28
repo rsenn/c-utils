@@ -32,6 +32,7 @@
 find_path(LIBLZMA_INCLUDE_DIR lzma.h )
 find_library(LIBLZMA_LIBRARY lzma)
 
+
 if(LIBLZMA_INCLUDE_DIR AND EXISTS "${LIBLZMA_INCLUDE_DIR}/lzma/version.h")
     file(STRINGS "${LIBLZMA_INCLUDE_DIR}/lzma/version.h" LIBLZMA_HEADER_CONTENTS REGEX "#define LZMA_VERSION_[A-Z]+ [0-9]+")
 
@@ -48,7 +49,9 @@ endif()
 # Avoid using old codebase
 if (LIBLZMA_LIBRARY)
    include(CheckLibraryExists)
-   check_library_exists(${LIBLZMA_LIBRARY} lzma_code "" LIBLZMA_FOUND)
+   set(LIBLZMA_FOUND TRUE)
+
+#   check_library_exists(${LIBLZMA_LIBRARY} lzma_code "" LIBLZMA_FOUND)
 #   check_library_exists(${LIBLZMA_LIBRARY} lzma_auto_decoder "" LIBLZMA_HAS_AUTO_DECODER)
 #   check_library_exists(${LIBLZMA_LIBRARY} lzma_easy_encoder "" LIBLZMA_HAS_EASY_ENCODER)
 #   check_library_exists(${LIBLZMA_LIBRARY} lzma_lzma_preset "" LIBLZMA_HAS_LZMA_PRESET)
@@ -66,7 +69,7 @@ endif ()
 if (LIBLZMA_FOUND)
     set(LIBLZMA_LIBRARIES ${LIBLZMA_LIBRARY})
     set(LIBLZMA_INCLUDE_DIRS ${LIBLZMA_INCLUDE_DIR})
-    add_definitions(-DHAVE_LIBLZMA=1)
+    add_definitions(-DHAVE_LIBLZMA=1 -DLIBLZMA_STATIC=1 -DLZMA_API_STATIC=1)
 endif ()
 
 mark_as_advanced( LIBLZMA_INCLUDE_DIR LIBLZMA_LIBRARY )

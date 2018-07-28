@@ -28,8 +28,6 @@ else(NOT ENABLE_SHARED)
   set(BUILD_SHARED_LIBS TRUE)
 endif(NOT ENABLE_SHARED)
 
-
-
 set(ignored_files
   "\\\\.git.*"
   "\\\\.o"
@@ -63,10 +61,11 @@ include(CPack)
 #if(WIN32 OR MSYS OR CYGWIN)
   add_definitions(-D_FILE_OFFSET_BITS=64)
 #endif(WIN32 OR WIN64)
-
-if(NOT MSVC)
+if(MSVC)
+add_definitions(-wd4706)
+else(MSVC)
 add_definitions( -g  )
-endif(NOT MSVC)
+endif(MSVC)
 
 
 set(CMAKE_C_FLAGS_DEBUG "-Wall -DDEBUG ${CMAKE_C_FLAGS_DEBUG}")
@@ -427,7 +426,7 @@ endif()
 list(APPEND ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
 
 target_link_libraries(compiler-wrapper dir)
-target_link_libraries(buffertest ${COMMON_LIBS} ${LIBLZMA_LIBRARIES})
+target_link_libraries(buffertest ${COMMON_LIBS} ${LIBLZMA_LIBRARY})
 target_link_libraries(eagle-init-brd xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
 target_link_libraries(eagle-gen-cmds cbmap xml hmap charbuf textbuf ${COMMON_LIBS} ${MATH_LIBRARY})
 target_link_libraries(eagle-to-circuit cbmap xml hmap charbuf textbuf ${COMMON_LIBS})
