@@ -16,6 +16,13 @@ include(FindPkgConfig)
 include(FindZLIB)
 include(UsePkgConfig)
 
+if(NOT ENABLE_SHARED)
+  set(BUILD_SHARED_LIBS FALSE)
+else(NOT ENABLE_SHARED)
+  set(BUILD_SHARED_LIBS TRUE)
+endif(NOT ENABLE_SHARED)
+
+
 
 set(ignored_files
   "\\\\.git.*"
@@ -361,7 +368,7 @@ foreach(ARCHIVE ${LIBSUBDIRS})
   if(ARCHIVE STREQUAL dir)
     list(APPEND MODSOURCES lib/fnmatch.c)
   endif()
-  add_library("${ARCHIVE}" STATIC ${MODSOURCES} ${MODHEADERS})
+  add_library("${ARCHIVE}" ${MODSOURCES} ${MODHEADERS})
   set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
 endforeach(ARCHIVE)
 
