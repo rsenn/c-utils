@@ -48,7 +48,10 @@ typedef int(json_read_callback_fn)(jsonreader* r,
 
 typedef int(json_predicate_fn)();
 
-void json_reader_init(jsonreader*, buffer*);
+jsonnode* json_newnode(jsondata type);
+void      json_reader_init(jsonreader* r, buffer* b);
+void      json_read_callback(jsonreader* r, json_read_callback_fn* fn);
+jsonnode* json_read_tree(buffer* b);
 
 #ifdef __cplusplus
 }

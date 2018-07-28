@@ -22,18 +22,18 @@ put_str_escaped(buffer* b, const char* str) {
 
 void
 json_dump(jsonnode* n, buffer* b) {
-    stralloc path;
-    stralloc_init(&path);
+    //stralloc path;
+    //stralloc_init(&path);
 
-    json_path(n, &path);
-    buffer_putsa(b, &path);
+    //json_path(n, &path);
+    //buffer_putsa(b, &path);
 
-    if(n->type == JSON_STRING) {
-      buffer_puts(b, " \"");
+    //if(n->type == JSON_STRING) {
+    //  buffer_puts(b, " \"");
      // put_str_escaped(b, n->name);
-      buffer_puts(b, "\"");
+    //  buffer_puts(b, "\"");
 
-    }
+    //}
 
     buffer_putnlflush(b);
 

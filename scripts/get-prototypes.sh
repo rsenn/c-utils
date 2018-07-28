@@ -107,7 +107,7 @@ get_prototypes() {
     exec 7>/dev/null
   fi
 
-  CPROTO_OUT=`cproto -D__{value,x,y}= -p "$@"  | sed "\\|^/|d ;; $EXPR"`
+  CPROTO_OUT=`cproto -D_Noreturn= -D__{value,x,y}= -p "$@"  | sed "\\|^/|d ;; $EXPR"`
  
   IFS=" "
   while read_proto; do

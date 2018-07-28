@@ -1,5 +1,5 @@
 #ifndef SLIST_H
-#define SLIST_H
+#define SLIST_H 1
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -39,10 +39,6 @@ void slist_unshift(slist*, slink*);
       (n) = (void*)((slink*)m), \
       (m) = (void*)((slink*)n) != NULL ? (void*)((slink*)n)->next : NULL)
 
-
-/* aliases for backwards compatibility */
-#define slist_foreach           slist_foreach
-#define slist_foreach_safe      slist_foreach_safe
 
 #ifdef __cplusplus
 }
