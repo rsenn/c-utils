@@ -97,11 +97,13 @@ include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 if(LIBLZMA_FOUND)
   link_libraries(${LIBLZMA_LIBRARIES})
   include_directories(${LIBLZMA_INCLUDE_DIRS})
+  add_definitions(-DHAVE_LIBLZMA=1)
 endif(LIBLZMA_FOUND)
 
 if(ZLIB_FOUND)
   link_libraries(${ZLIB_LIBRARIES})
   include_directories(${ZLIB_INCLUDE_DIRS})
+  add_definitions(-DHAVE_ZLIB=1)
 endif(ZLIB_FOUND)
 
 if(BZIP2_FOUND)
