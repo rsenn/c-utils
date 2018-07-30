@@ -1040,7 +1040,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(call echo-target,elfwrsec,$(BUILDDIR)elfwrsec.o $(call add-library,mmap open))
+$(call echo-target,elfwrsec,$(BUILDDIR)elfwrsec.o $(call add-library,buffer mmap open))
 #$(call add-target,elfwrsec,$(BUILDDIR)elfwrsec.o $(call add-library,mmap open))
 
 ifeq ($(HAVE_ZLIB),1)
@@ -1263,7 +1263,7 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 $(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
 
 
-$(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)mmap.a $(BUILDDIR)open.a 
+$(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

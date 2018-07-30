@@ -80,7 +80,7 @@ int buffer_putsflush(buffer* b, const char* x);
 
 int buffer_putm_internal(buffer*b, ...);
 int buffer_putm_internal_flush(buffer*b, ...);
-#define buffer_putm(b, ...) buffer_putm_internal(b, __VA_ARGS__, (char*)0)
+#define buffer_putm(...) buffer_putm_internal(__VA_ARGS__, (char*)0)
 #define buffer_putmflush(b, ...) buffer_putm_internal_flush(b, __VA_ARGS__, (char*)0)
 
 int buffer_putspace(buffer* b);
@@ -205,6 +205,7 @@ int buffer_putnspace(buffer *b,  int n);
 
 int buffer_putptr(buffer *b, void *ptr);
 int buffer_putulong0(buffer *b, unsigned long l, int pad);
+int buffer_putxlong0(buffer* b, unsigned long l, int pad);
 
 int buffer_skipspace(buffer *b);
 int buffer_skip_pred(buffer *b, int (*pred)(int));
