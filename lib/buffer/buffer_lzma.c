@@ -39,7 +39,7 @@ buffer_lzmaread_op(int fd, void* data, size_t n, buffer* b) {
     ret = lzma_code(strm, ctx->a);
   } while(ctx->a == LZMA_FINISH && ret != LZMA_STREAM_END);
 
-  if( //strm->avail_out == 0 
+  if( // strm->avail_out == 0
       ret == LZMA_OK || ret == LZMA_STREAM_END) {
 
     ctx->b->p += a - strm->avail_in;
@@ -99,8 +99,8 @@ buffer_lzma_close(buffer* b) {
   strm->avail_in = b->n - b->p;
 
   do {
-  strm->next_out = (uint8_t*)&other->x[other->p];
-  strm->avail_out = a = other->a - other->p;
+    strm->next_out = (uint8_t*)&other->x[other->p];
+    strm->avail_out = a = other->a - other->p;
 
     ret = lzma_code(strm, ctx->a);
   } while(ret != LZMA_STREAM_END);
@@ -108,7 +108,7 @@ buffer_lzma_close(buffer* b) {
   other->p += a - strm->avail_out;
 
   buffer_flush(other);
- 
+
   b->deinit = 0;
   buffer_close(b);
 }

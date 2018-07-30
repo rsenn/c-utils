@@ -42,17 +42,17 @@ again:
 static void
 buffer_deflate_close(buffer* b) {
   deflate_ctx* ctx = b->cookie;
- 
+
   int ret, wr;
-  
-  do { 
+
+  do {
     ctx->z.next_out = &ctx->other->x[ctx->other->p];
     ctx->z.avail_out = ctx->other->a - ctx->other->p;
 
-    ret = deflate(&ctx->z, Z_FINISH);   
+    ret = deflate(&ctx->z, Z_FINISH);
 
-   wr = (ctx->other->a - ctx->other->p) - ctx->z.avail_out;
-   ctx->other->p += wr;
+    wr = (ctx->other->a - ctx->other->p) - ctx->z.avail_out;
+    ctx->other->p += wr;
 
   } while(ret == Z_OK);
 
@@ -81,8 +81,8 @@ buffer_deflate(buffer* b, buffer* out, int level) {
   b->cookie = ctx;
   b->deinit = &buffer_deflate_close;
 
-  int ret = deflateInit2(&ctx->z, level, Z_DEFLATED, 15+16, 8, Z_DEFAULT_STRATEGY);
-  //int ret = deflateInit2(&ctx->z, level, Z_DEFLATED, 8+16, 8, Z_DEFAULT_STRATEGY);
+  int ret = deflateInit2(&ctx->z, level, Z_DEFLATED, 15 + 16, 8, Z_DEFAULT_STRATEGY);
+  // int ret = deflateInit2(&ctx->z, level, Z_DEFLATED, 8+16, 8, Z_DEFAULT_STRATEGY);
   //
   byte_zero(&ctx->hdr, sizeof(gz_header));
   ctx->hdr.text = 0;
