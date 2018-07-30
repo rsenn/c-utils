@@ -20,14 +20,14 @@ main(int argc, char* argv[])  {
   buffer input,  output, compress, decompress;
   buffer_mmapprivate(&input, argv[1] ? argv[1] : "/mnt/Newx20Data/Sources/gettext-0.19.8.1.tar.xz");
 
-  buffer_truncfile(&output, "test.lzma");
+  buffer_truncfile(&output, "output.lzma");
 
   buffer_lzma(&decompress, &input, 0);
-
   buffer_lzma(&compress, &output, 1);
 
-
   buffer_copy(&compress, &decompress);
+
+  buffer_flush(&compress);
   buffer_close(&compress);
 
   return 0;

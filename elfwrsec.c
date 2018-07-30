@@ -44,9 +44,10 @@ get_p_type(int type) {
 
 void
 print_flags(const char* const flagset[], int flags) {
+  size_t shift;
   int prev = 0;
 
-  for(size_t shift = 0; flagset[shift]; ++shift) {
+  for(shift = 0; flagset[shift]; ++shift) {
     if(flags & (1 << shift)) {
       if(prev) buffer_puts(buffer_1, " | ");
       buffer_puts(buffer_1, flagset[shift]);
@@ -117,10 +118,10 @@ process32(Elf32_Ehdr* hdr) {
 
 int
 process64(Elf64_Ehdr* hdr) {
-
   Elf64_Shdr* shdrs = (Elf64_Shdr*)((char*)base + hdr->e_shoff);
+  int i;
 
-  for(int i = 0; i < hdr->e_shnum; ++i) {
+  for(i = 0; i < hdr->e_shnum; ++i) {
     const char* name = strtab_shdr64() + shdrs[i].sh_name;
 
     if(str_equal(name, section)) {
@@ -132,7 +133,7 @@ process64(Elf64_Ehdr* hdr) {
 
   Elf64_Phdr* phdrs = (Elf64_Phdr*)((char*)base + hdr->e_phoff);
 
-  for(int i = 0; i < hdr->e_phnum; ++i) {
+  for(i = 0; i < hdr->e_phnum; ++i) {
 
     if(!(phdrs[i].p_flags & PF_W)) {
       print_phdr64(&phdrs[i]);

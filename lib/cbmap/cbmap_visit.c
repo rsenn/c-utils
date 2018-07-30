@@ -5,8 +5,9 @@
 int
 cbmap_visit(unsigned char* top, cbmap_visitor visitor_fn, void* user_data) {
   if(IS_INTERNAL_NODE(top)) {
+    int direction;
     struct cbmap_internal_node* q = GET_INTERNAL_NODE(top);
-    for(int direction = 0; direction < 2; ++direction) {
+    for(direction = 0; direction < 2; ++direction) {
       if(cbmap_visit(q->branch[direction], visitor_fn, user_data) != 1) {
         return 0;
       }
@@ -37,8 +38,9 @@ cbmap_visit_prefix(cbmap_t map, unsigned char* key_prefix, size_t key_prefix_len
       top = p;
     }
   }
+  size_t i;
   struct cbmap_data_node* data = GET_DATA_NODE(p);
-  for(size_t i = 0; i < key_prefix_len; i++) {
+  for(i = 0; i < key_prefix_len; i++) {
     if(data->key[i] != key_prefix[i]) {
       return 1;
     }

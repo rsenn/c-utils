@@ -1,8 +1,7 @@
 #include "../buffer.h"
 #include "../json.h"
-#include "../stralloc.h"
 #include "../slist.h"
-
+#include "../stralloc.h"
 
 static void json_print_list(jsonval*, buffer*, int);
 static void
@@ -40,19 +39,20 @@ json_print_val(jsonval* val, buffer* b, int depth) {
       break;
     }
     case JSON_ARRAY: {
+      slink* ptr;
       buffer_puts(b, "[\n");
-           buffer_putnspace(b, 2 * (depth+1));
+      buffer_putnspace(b, 2 * (depth + 1));
 
-      for(slink* ptr = val->listv.root; ptr; ptr = ptr->next) {
-         json_print_val((jsonval*)&ptr[1], b, depth + 1);
-         if(ptr->next) { 
-           buffer_puts(b, ",\n");
-           buffer_putnspace(b, 2 * (depth + 1));
-         }
+      for(ptr = val->listv.root; ptr; ptr = ptr->next) {
+        json_print_val((jsonval*)&ptr[1], b, depth + 1);
+        if(ptr->next) {
+          buffer_puts(b, ",\n");
+          buffer_putnspace(b, 2 * (depth + 1));
+        }
       }
 
       buffer_puts(b, "\n");
-           buffer_putnspace(b, 2 * depth);
+      buffer_putnspace(b, 2 * depth);
       buffer_puts(b, "]");
       break;
     }

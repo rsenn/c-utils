@@ -66,7 +66,7 @@ extern int errno;
 #include <shlwapi.h>
 #include <io.h>
 #endif
-#ifndef _MSC_VER
+#ifdef HAVE_SYS_FCNTL_H
 #include <sys/fcntl.h>
 #endif
 

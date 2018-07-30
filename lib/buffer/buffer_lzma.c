@@ -123,9 +123,8 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   b->cookie = ctx;
   b->deinit = &buffer_lzma_close;
 
-  lzma_ret ret =
-      compress ? lzma_stream_encoder(&ctx->strm, filters, LZMA_CHECK_CRC64)
-               : lzma_stream_decoder(&ctx->strm, UINT64_MAX, LZMA_CONCATENATED);
+  lzma_ret ret = compress ? lzma_stream_encoder(&ctx->strm, filters, LZMA_CHECK_CRC64)
+                          : lzma_stream_decoder(&ctx->strm, UINT64_MAX, LZMA_CONCATENATED);
 
   if(ret != LZMA_OK) return 0;
 
