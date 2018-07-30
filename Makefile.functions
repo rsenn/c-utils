@@ -2,6 +2,7 @@ define target-tmpl =
 $(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))
 )$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)
 	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))
+$(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(NL)	$$(STRIP) $$@$(NL)endif$(NL))
 endef
 
 define cmds-try-compile =
@@ -56,9 +57,10 @@ def-var = $(eval $(cmd-set-var))
 def-function-exists = $(call def-var,HAVE_$(1),$(call check-function-exists,$(2),$(3)),$(DEFINES_FILE))
 def-include-exists = $(call def-var,HAVE_$(1),$(call check-include-exists,$(1)),$(DEFINES_FILE))
 
-clean-lib = $(patsubst lib%.so,%,$(call clean-target,$(1)))
+clean-lib = $(patsubst %.a,%,$(patsubst lib%.a,%,$(patsubst -l%,%,$(patsubst lib%.so,%,$(patsubst $(BUILDDIR)%,%,$(patsubst $$(BUILDDIR)%,%,$(1)))))))
+clean-builddir = $(patsubst $$(BUILDDIR)%,%,$(patsubst $(BUILDDIR)%,%,$(1)))
 
-clean-target = $(patsubst %,$$(BUILDDIR)%,$(patsubst $$(BUILDDIR)%,%,$(patsubst $(BUILDDIR)%,%,$(1))))
+clean-target = $(BUILDDIR)$(call clean-builddir,$(1))$(call is-archive,$(1),,$(_M64)$(EXEEXT))
 
 cmds-exitcode = ($(1)) >>check.log 2>&1 && echo 1 || echo 0
 
@@ -93,4 +95,3 @@ append-target-var = $(eval $(call clean-target,$(1)): $(2) += $(3))
 
 
 create-target = $(eval $(call target-tmpl,$(1),$(2),$(3)))
-

@@ -308,6 +308,7 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 set(PROGRAMS
 access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3 xmltest4
 eagle-gen-cmds eagle-to-circuit buffertest jsontest
+elfwrsec
 )
 
 set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})

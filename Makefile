@@ -27,13 +27,10 @@ include Makefile.functions
 
 
 
-
-
-
 ifeq ($(SHARED),1)
-add-library = $(patsubst %,$(BUILDDIR)lib%.so,$(1))
+add-library = $(patsubst %,$(BUILDDIR)lib%.so,$(call clean-lib,$(1)))
 else
-add-library = $(patsubst %,$(BUILDDIR)%.a,$(1))
+add-library = $(patsubst %,$(BUILDDIR)%.a,$(call clean-lib,$(1)))
 endif
 
 
@@ -547,7 +544,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec)
 
 
  #opensearch-dump 
@@ -1043,6 +1040,9 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
+$(call echo-target,elfwrsec,$(BUILDDIR)elfwrsec.o $(call add-library,mmap open))
+#$(call add-target,elfwrsec,$(BUILDDIR)elfwrsec.o $(call add-library,mmap open))
+
 ifeq ($(HAVE_ZLIB),1)
 $(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += -lz
 endif
@@ -1263,4 +1263,9 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 $(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
 
 
-#$(call echo-target,test.o,blah.c,$(CROSS_COMPILE)$(CC))
+$(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)mmap.a $(BUILDDIR)open.a 
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
