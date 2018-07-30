@@ -4,7 +4,6 @@
 #include "charbuf.h"
 #include "hmap.h"
 #include "slist.h"
-#include "uint64.h"
 #include <sys/types.h>
 
 #ifdef __cplusplus
@@ -25,7 +24,7 @@ typedef struct {
   jsondata type;
   union {
     char boolv : 1;
-    int64 intv;
+    long long intv;
     double doublev;
     stralloc stringv;
     slist listv;
@@ -51,17 +50,14 @@ typedef int(json_predicate_fn)();
 
 void     json_free(jsonval*);
 jsonval* json_newnode(jsondata);
-void     json_reader_init(jsonreader*, charbuf*);
-void     json_read_callback(jsonreader*, json_read_callback_fn*);
-jsonval* json_read_tree(charbuf*);
-void     json_free(jsonval*);
-jsonval* json_newnode(jsondata);
-int      json_parse_array(jsonval*, charbuf*);
-int      json_parse_object(jsonval*, charbuf*);
-int      json_parse_string(jsonval*, charbuf*);
-int      json_parse(jsonval*, charbuf*);
-void     json_reader_init(jsonreader*, charbuf*);
-void     json_read_callback(jsonreader*, json_read_callback_fn*);
+int      json_parse_array(jsonval*, charbuf* b);
+int      json_parse_getsa(charbuf*, stralloc* sa);
+int      json_parse_object(jsonval*, charbuf* b);
+int      json_parse_string(jsonval*, charbuf* b);
+int      json_parse(jsonval*, charbuf* b);
+void     json_print(jsonval*, buffer* b);
+void     json_reader_init(jsonreader*, charbuf* b);
+void     json_read_callback(jsonreader*, json_read_callback_fn* fn);
 jsonval* json_read_tree(charbuf*);
 
 #ifdef __cplusplus

@@ -318,6 +318,8 @@ $(BUILDDIR)json_newnode.o: lib/json/json_newnode.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)json_parse.o: lib/json/json_parse.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)json_print.o: lib/json/json_print.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)json_reader_init.o: lib/json/json_reader_init.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)json_read_callback.o: lib/json/json_read_callback.c

@@ -2,14 +2,8 @@
 #include "../fmt.h"
 #include "../json.h"
 #include "../scan.h"
-
 static int
-json_read_value(jsonreader* reader,
-                jsondata id,
-                stralloc* name,
-                stralloc* value,
-                HMAP_DB** attrs) {
-
+json_read_value(jsonreader* reader, jsondata id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   return 1;
 }
 

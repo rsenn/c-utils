@@ -18,30 +18,10 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(str, str_len(str), &esc, fmt_escapecharc, iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), fmt_escapecharc, iscntrl);
   buffer_putsa(b, &esc);
 }
 
-void
-json_dump(jsonval* n, buffer* b) {
-    //stralloc path;
-    //stralloc_init(&path);
-
-    //json_path(n, &path);
-    //buffer_putsa(b, &path);
-
-    //if(n->type == JSON_STRING) {
-    //  buffer_puts(b, " \"");
-     // put_str_escaped(b, n->name);
-    //  buffer_puts(b, "\"");
-
-    //}
-
-    buffer_putnlflush(b);
-
-    //if(n->children) json_dump(n->children, b);
-
-}
 
 int
 main(int argc, char* argv[1]) {
@@ -57,6 +37,8 @@ main(int argc, char* argv[1]) {
   charbuf_init(&infile, &read, fd); 
 
   jsonval* doc = json_read_tree(&infile);
+
+  json_print(doc, buffer_1);
 
   charbuf_close(&infile);
   //  json_print(doc);
