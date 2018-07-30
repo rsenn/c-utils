@@ -51,32 +51,31 @@ typedef int(xml_read_callback_fn)(xmlreader *r, xmlnodeid id, stralloc *name,
 
 typedef int(xml_predicate_fn)();
 
-xmlnode*    xml_attrnode(const char*, size_t, const char*, size_t);
-int         xml_content_sa(xmlnode*, stralloc*);
+xmlnode*    xml_attrnode(const char*, size_t name_len, const char* value, size_t value_len);
+int         xml_content_sa(xmlnode*, stralloc* sa);
 const char* xml_content(xmlnode*);
-void        xml_debug(xmlnode*, buffer*);
-size_t      xml_escape(const char*, size_t, stralloc*);
-xmlnodeset  xml_find_all(xmlnode*, xml_predicate_fn*, ...);
-xmlnode*    xml_find_element_attr(xmlnode*, const char*, const char*, const char*);
-xmlnode*    xml_find_element(xmlnode*, const char*);
-xmlnode*    xml_find_pred(xmlnode*, xml_predicate_fn*, ...);
+void        xml_debug(xmlnode*, buffer* b);
+size_t      xml_escape(const char*, size_t n, stralloc* out);
+xmlnodeset  xml_find_all(xmlnode*, int (*pred)(void), ...);
+xmlnode*    xml_find_element_attr(xmlnode*, const char* tag, const char* attr, const char* value);
+xmlnode*    xml_find_element(xmlnode*, const char* tag);
+xmlnode*    xml_find_pred(xmlnode*, int (*pred)(xmlnode*, void* ), ...);
 void        xml_free(xmlnode*);
-char*       xml_get_attribute(xmlnode*, const char*);
+char*       xml_get_attribute(xmlnode*, const char* attr);
 xmlnode*    xml_get_document(xmlnode*);
-int         xml_has_attribute(xmlnode*, const char*);
-int         xml_match_name_and_attr(xmlnode*, const char*, const char*, const char*);
-int         xml_match_name(xmlnode*, const char*, const char*, const char*);
+int         xml_has_attribute(xmlnode*, const char* attr);
+int         xml_match_name_and_attr();
+int         xml_match_name();
 xmlnode*    xml_newnode(xmlnodeid);
-int         xml_path(const xmlnode*, stralloc*);
-void        xml_print_attributes(xmlnode*, buffer*, const char*, const char*, const char*);
-void        xml_print_nodeset(const xmlnodeset*, buffer*);
-void        xml_print(xmlnode*, buffer*);
-void        xml_reader_init(xmlreader*, buffer*);
-void        xml_read_callback(xmlreader*, xml_read_callback_fn*);
+int         xml_path(const xmlnode*, stralloc* out);
+void        xml_print_attributes(xmlnode*, buffer* b, const char* sep, const char* eq, const char* quot);
+void        xml_print_nodeset(const xmlnodeset*, buffer* b);
+void        xml_print(xmlnode*, buffer* b);
+void        xml_reader_init(xmlreader*, buffer* b);
+void        xml_read_callback(xmlreader*, xml_read_callback_fn* fn);
 xmlnode*    xml_read_tree(buffer*);
 xmlnode*    xml_root_element(xmlnode*);
-xmlnode*    xml_textnode(const char*, size_t);
-
+xmlnode*    xml_textnode(const char*, size_t len);
 
 #define xml_attributes(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 

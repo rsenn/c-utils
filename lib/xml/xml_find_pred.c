@@ -1,5 +1,5 @@
-#include <stdarg.h>
 #include "../xml.h"
+#include <stdarg.h>
 
 xmlnode*
 xml_find_pred(xmlnode* node, int (*pred)(xmlnode*, void*), ...) {

@@ -888,9 +888,13 @@ $(BUILDDIR)strlist_at.o: lib/strlist/strlist_at.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_cat.o: lib/strlist/strlist_cat.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_contains.o: lib/strlist/strlist_contains.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_count.o: lib/strlist/strlist_count.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_dump.o: lib/strlist/strlist_dump.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_froms.o: lib/strlist/strlist_froms.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_index_of.o: lib/strlist/strlist_index_of.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

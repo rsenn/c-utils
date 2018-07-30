@@ -27,16 +27,12 @@ fmt_xmlescape(char* dest, unsigned int ch) {
     x = buf;
   } else
     switch(ch) {
-    case '&':
-      x = "&amp;";
-      n = 5;
-      break;
-    case '<':
-      x = "&lt;";
-      n = 4;
-      break;
-    default:
-      return fmt_utf8(dest, ch);
+      case '<': x = "&lt;"; n = 4; break;
+      case '>': x = "&gt;"; n = 4; break;
+      case '"': x = "&quot;"; n = 6; break;
+      case '\'': x = "&apos;"; n = 6; break;
+      case '&': x = "&amp;"; n = 5; break;
+      default: return fmt_utf8(dest, ch);
     }
   if(dest) {
     size_t i;

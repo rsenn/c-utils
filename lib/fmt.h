@@ -135,8 +135,8 @@ size_t fmt_escapecharshell(char *dest, uint32 ch);
 char fmt_tohex(char c);
 size_t fmt_repeat(char *dest, const char *src, int n);
 
+size_t       fmt_escapecharxml(char*, unsigned int ch);
 #ifdef __cplusplus
 }
 #endif
-
-#endif
+#endif /* defined FMT_H */

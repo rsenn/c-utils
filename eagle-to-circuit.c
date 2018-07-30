@@ -11,6 +11,7 @@
 #endif
 #include "lib/array.h"
 #include "lib/buffer.h"
+#include "lib/fmt.h"
 #include "lib/byte.h"
 #include "lib/cb.h"
 #include "lib/cbmap.h"
@@ -665,7 +666,17 @@ print_element_content(xmlnode* node) {
   char* s;
   if((s = node->name)) {
     if(str_isspace(s)) s = "";
-    if(str_len(s)) buffer_putm(buffer_1, " \"", s, "\"");
+
+    if(str_len(s)) {
+  stralloc sa;
+  stralloc_init(&sa);
+  xml_escape(s, str_len(s), &sa);
+  //stralloc_fmt(&sa, s, str_len(s), fmt_escapecharxml);
+      buffer_puts(buffer_1, " \"");
+      buffer_putsa(buffer_1, &sa);
+      buffer_puts(buffer_1,  "\"");
+      stralloc_free(&sa);
+    }
   }
 }
 
