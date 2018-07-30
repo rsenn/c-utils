@@ -126,7 +126,7 @@ process64(Elf64_Ehdr* hdr) {
 
     if(str_equal(name, section)) {
       print_shdr64(&shdrs[i]);
-      
+
       shdrs[i].sh_flags |= SHF_WRITE;
     }
   }
@@ -137,7 +137,7 @@ process64(Elf64_Ehdr* hdr) {
 
     if(!(phdrs[i].p_flags & PF_W)) {
       print_phdr64(&phdrs[i]);
-     
+
       phdrs[i].p_flags |= PF_W;
     }
   }
