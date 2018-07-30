@@ -46,6 +46,7 @@ main(int argc, char* argv[])  {
   buffer_lzma(&inflate, &infile, 0);
 
   buffer_copy(buffer_1, &inflate);
+  buffer_flush(buffer_1);
 
   return 0;
 }
