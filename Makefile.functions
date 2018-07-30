@@ -55,14 +55,19 @@ cmd-set-var = $(call header-to-var,$(1)) := $(2)
 def-var = $(eval $(cmd-set-var))
 
 def-function-exists = $(call def-var,HAVE_$(1),$(call check-function-exists,$(2),$(3)),$(DEFINES_FILE))
-def-include-exists = $(call def-var,HAVE_$(1),$(call check-include-exists,$(1)),$(DEFINES_FILE))
+
+#def-include-exists = $(call def-var,HAVE_$(1),$(call check-include-exists,$(1)),$(DEFINES_FILE))
+define def-include-exists = 
+$(call def-var,HAVE_$(1),$(call check-include-exists,$(1)),$(DEFINES_FILE))
+$(if $(HAVE_$(call header-to-var)),$(call append-var,DEFS,HAVE_$(call header-to-var)=1))
+endef
 
 clean-lib = $(patsubst %.a,%,$(patsubst lib%.a,%,$(patsubst -l%,%,$(patsubst lib%.so,%,$(patsubst $(BUILDDIR)%,%,$(patsubst $$(BUILDDIR)%,%,$(1)))))))
 clean-builddir = $(patsubst $$(BUILDDIR)%,%,$(patsubst $(BUILDDIR)%,%,$(1)))
 
 clean-target = $(BUILDDIR)$(call clean-builddir,$(1))$(call is-archive,$(1),,$(_M64)$(EXEEXT))
 
-cmds-exitcode = ($(1)) >>check.log 2>&1 && echo 1 || echo 0
+cmds-exitcode = (set -x; $(1)) >>check.log 2>&1 && echo 1 || echo 0
 
 define cmd-check-header =
 HAVE_$(call header-to-var,$(1)) := $$(call check-include-exists,$(1))

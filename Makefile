@@ -40,16 +40,13 @@ DEFINES_FILE := Makefile.defines
 
 $(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
 
-#HAVE_SYS_TYPES_H := $(call check-include-exists,sys/types.h)
 $(info HAVE_SYS_TYPES_H=$(HAVE_SYS_TYPES_H))
-#HAVE_INTTYPES_H := $(call check-include-exists,inttypes.h)
 $(info HAVE_INTTYPES_H=$(HAVE_INTTYPES_H))
-#HAVE_VCRUNTIME_H := $(call check-include-exists,vcruntime.h)
 $(info HAVE_VCRUNTIME_H=$(HAVE_VCRUNTIME_H))
-#HAVE_STDINT_H := $(call check-include-exists,stdint.h)
 $(info HAVE_STDINT_H=$(HAVE_STDINT_H))
-#HAVE_STDDEF_H := $(call check-include-exists,stddef.h)
 $(info HAVE_STDDEF_H=$(HAVE_STDDEF_H))
+$(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
+
 
 
 $(call def-function-exists,ZLIB,deflate,-lz)
@@ -74,7 +71,12 @@ PATH = /c/git-sdk-64/usr/bin
 MAKE = c:/git-sdk-64/usr/bin/make
 endif
 
-CC = gcc
+ifeq ($(CC),)
+  CC := gcc
+endif
+ifeq ($(CC),cc)
+  CC := gcc
+endif
 CXX = g++
 
 BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
