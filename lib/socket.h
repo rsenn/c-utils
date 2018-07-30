@@ -106,8 +106,8 @@ int socket_quickack(int s,int value);
 ssize_t socket_fastopen_connect4(int s,const char* ip,uint16 port,const char* buf,size_t len);
 ssize_t socket_fastopen_connect6(int s,const char* ip,uint16 port,uint32 scope_id,const char* buf,size_t len);
 
-const unsigned char* socket_ip6loopback();
-const unsigned char* socket_ip4loopback();
+const char* socket_ip6loopback();
+const char* socket_ip4loopback();
 
 #ifdef __cplusplus
 }

@@ -1,0 +1,89 @@
+define target-tmpl = 
+$(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))
+)$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)
+	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))
+endef
+
+define cmds-try-compile =
+set -e; 
+NAME=test_$$RANDOM;
+echo "$(1)" >$$NAME.c;
+$(CROSS_COMPILE)$(CC) -o $$NAME $$NAME.c;
+endef
+
+define prog-check-include =
+#include <$(1)>
+int main() {
+  return 0;
+}
+endef
+
+define cmds-include-exists =
+set -e; \
+trap 'rm -f "$$NAME" "$$NAME.c"' EXIT; \
+NAME=test_$(subst .,_,$(subst /,_,$(1))); \
+(echo -e "#include <$(1)>\n"; \
+echo -e "\n"; \
+echo -e "int main() {"; \
+echo -e "  return 0;"; \
+echo -e "}") >$$NAME.c; \
+$(CROSS_COMPILE)$(CC) -c -o $$NAME $$NAME.c
+endef
+
+define cmds-function-exists =
+set -e;  \
+trap 'rm -f "test_$(1)" "test_$(1).c"' EXIT; \
+(echo "extern int $(1)();"; \
+echo "int main() {"; \
+echo "  $(1)();"; \
+echo "  return 0;"; \
+echo "}") >test_$(1).c; \
+$(CROSS_COMPILE)$(CC) -o test_$(1) test_$(1).c $(2);
+endef
+
+add-libdeps = $(patsubst %,$(BUILDDIR)lib%.so,$(1))
+
+add-sources = $(patsubst %.c,$(BUILDDIR)%$(if $(2),$(2),.o),$(notdir $(wildcard $(1))))
+
+check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
+
+check-include-exists = $(shell $(call cmds-exitcode,$(cmds-include-exists)))
+
+clean-lib = $(patsubst lib%.so,%,$(call clean-target,$(1)))
+
+clean-target = $(patsubst %,$$(BUILDDIR)%,$(patsubst $$(BUILDDIR)%,%,$(patsubst $(BUILDDIR)%,%,$(1))))
+
+cmds-exitcode = ($(1)) >>check.log 2>&1 && echo 1 || echo 0
+
+define cmd-check-header =
+HAVE_$(call header-to-var,$(1)) := $$(call check-include-exists,$(1))
+$$(info HAVE_$(call header-to-var,$(1))=$$(HAVE_$(call header-to-var,$(1))))
+endef
+
+cmd-exists = $(shell type "$(1)" 2>/dev/null >/dev/null && echo 1)
+
+echo-target = $(info $(call target-tmpl,$(1),$(2),$(3)))
+
+file-exists = $(shell test -e "$(1)" 2>/dev/null >/dev/null && echo 1)
+
+flags-lib = $(if $(1),-L$$(BUILDDIR:%/=%) $(patsubst %,-l%,$(call clean-lib,$(1))),)
+
+define get-compiler-defs =
+echo | $(CROSS_COMPILE)$(CC) $(1) -dM -E - | grep "^#define"
+endef
+
+header-to-var = $(shell echo "$(subst /,_,$(subst .,_,$(1)))" | tr "[[:lower:]]" "[[:upper:]]")
+
+is-archive = $(if $(filter %.a,$(1)),$(2),$(3))
+
+is-object = $(if $(filter %.o,$(1)),$(2),$(3))
+
+set-var = $(eval $(1) := $(2))
+append-var = $(eval $(1) += $(2))
+set-target-var = $(eval $(call clean-target,$(1)): $(2) := $(3))
+append-target-var = $(eval $(call clean-target,$(1)): $(2) += $(3))
+
+
+
+create-target = $(eval $(call target-tmpl,$(1),$(2),$(3)))
+

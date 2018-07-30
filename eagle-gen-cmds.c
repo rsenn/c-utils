@@ -48,8 +48,7 @@
 
 #define NODE_NAME(n) ((n)->name)
 #define NODE_IS_ELEMENT(n) (((xmlnode*)(n))->type == XML_ELEMENT)
-#define NODE_ATTRIBUTES(n)                                                     \
-  (void*)(NODE_IS_ELEMENT(n) ? ((xmlnode*)(n))->attributes : NULL)
+#define NODE_ATTRIBUTES(n) (NODE_IS_ELEMENT(n) ? ((const xmlnode*)(n))->attributes : NULL)
 #define NODE_CONTENT(n) (xml_content(n))
 #define NODE_CHILDREN(n) ((xmlnode*)(n))->children
 //#define NODE_ATTRIBUTES(n) ((xmlnode*)(n))->attributes
@@ -795,7 +794,7 @@ print_element_attrs(xmlnode* a_node) {
 
 void
 print_element_content(xmlnode* node) {
-  char* s;
+  const char* s;
 
   if((s = NODE_CONTENT(node))) {
     if(str_isspace(s)) s = "";

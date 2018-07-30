@@ -1090,6 +1090,8 @@ $(BUILDDIR)cbmap_visit.o: lib/cbmap/cbmap_visit.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)cbmap_visit_all.o: lib/cbmap/cbmap_visit_all.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_close.o: lib/charbuf/charbuf_close.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)charbuf_get.o: lib/charbuf/charbuf_get.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)charbuf_getc.o: lib/charbuf/charbuf_getc.c

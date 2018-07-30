@@ -525,7 +525,7 @@ parse_xmlfile(const char* filename, xmlnode** p_doc) {
 
   *p_doc = xml_read_tree(&input);
 
-  return *p_doc;
+  return !!*p_doc;
 }
 
 ///* ----------------------------------------------------------------------- */
@@ -562,7 +562,7 @@ on_start_element(void* ctx, const char* name, HMAP_DB** attrs) {
   set_element_name((const char*)name);
 
   if(attrs) {
-    numAttrs = hmap_size(attrs);
+    numAttrs = hmap_size(*attrs);
   }
   printf("<%s> %d\n", name, numAttrs);
 

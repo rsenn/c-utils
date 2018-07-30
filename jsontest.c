@@ -1,16 +1,18 @@
-#include "lib/buffer.h"
+#include "lib/charbuf.h"
+#include "lib/mmap.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
 #include "lib/hmap.h"
 #include "lib/iterator.h"
 #include "lib/stralloc.h"
 #include "lib/json.h"
+#include "lib/io_internal.h"
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>
 
-static buffer infile;
-static buffer b;
+static charbuf infile;
+//static buffer b;
 
 void
 put_str_escaped(buffer* b, const char* str) {
@@ -46,10 +48,17 @@ main(int argc, char* argv[1]) {
   stralloc tmp;
   stralloc_init(&tmp);
 
-  buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.json");
+  int fd = open_read("../dirlist/test.json");
+  //size_t sz;
+  //char* map = mmap_private( argc > 1 ? argv[1] : "../dirlist/test.json", &sz);;
+  
+  //buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.json");
+  //
+  charbuf_init(&infile, &read, fd); 
 
   jsonval* doc = json_read_tree(&infile);
 
+  charbuf_close(&infile);
   //  json_print(doc);
 
   // json_debug(doc, buffer_1);
@@ -57,5 +66,4 @@ main(int argc, char* argv[1]) {
 
   json_free(doc);
 
-  buffer_close(&b);
 }

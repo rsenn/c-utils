@@ -17,91 +17,27 @@ endif
 $(info PKG_CONFIG_PATH=$(PKG_CONFIG_PATH))
 
 #file-exists = $(shell echo "Checking for $(1) ..." 1>&2; test -e "$(1)" && echo 1)
-cmd-exists = $(shell type "$(1)" 2>/dev/null >/dev/null && echo 1)
-file-exists = $(shell test -e "$(1)" 2>/dev/null >/dev/null && echo 1)
 
 #$(info ROOTNAME=$(ROOTNAME))
 #$(info SYSNAME=$(SYSNAME))
 
 OS ?= $(shell uname -o | tr "[[:upper:]]" "[[:lower:]]")
 
-define cmds-try-compile =
-set -e; 
-NAME=test_$$RANDOM;
-echo "$(1)" >$$NAME.c;
-$(CROSS_COMPILE)$(CC) -o $$NAME $$NAME.c;
-endef
-define prog-check-include =
-#include <$(1)>
-int main() {
-  return 0;
-}
-endef
+include Makefile.functions
 
-define cmds-include-exists =
-set -e; \
-trap 'rm -f "$$NAME" "$$NAME.c"' EXIT; \
-NAME=test_$(subst .,_,$(subst /,_,$(1))); \
-(echo -e "#include <$(1)>\n"; \
-echo -e "\n"; \
-echo -e "int main() {"; \
-echo -e "  return 0;"; \
-echo -e "}") >$$NAME.c; \
-$(CROSS_COMPILE)$(CC) -c -o $$NAME $$NAME.c
-endef
 
-define cmds-function-exists =
-set -e;  \
-trap 'rm -f "test_$(1)" "test_$(1).c"' EXIT; \
-(echo "extern int $(1)();"; \
-echo "int main() {"; \
-echo "  $(1)();"; \
-echo "  return 0;"; \
-echo "}") >test_$(1).c; \
-$(CROSS_COMPILE)$(CC) -o test_$(1) test_$(1).c $(2);
-endef
-cmds-exitcode = ($(1)) >>check.log 2>&1 && echo 1 || echo 0
 
-check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
-check-include-exists = $(shell $(call cmds-exitcode,$(cmds-include-exists)))
 
-clean-target = $(patsubst %,$$(BUILDDIR)%,$(patsubst $$(BUILDDIR)%,%,$(patsubst $(BUILDDIR)%,%,$(1))))
-clean-lib = $(patsubst lib%.so,%,$(call clean-target,$(1)))
-flags-lib = $(if $(1),-L$$(BUILDDIR:%/=%) $(patsubst %,-l%,$(call clean-lib,$(1))),)
-
-set-var = $(eval $(1) := $(2))
-append-var = $(eval $(1) += $(2))
-set-target-var = $(eval $(call clean-target,$(1)): $(2) := $(3))
-append-target-var = $(eval $(call clean-target,$(1)): $(2) += $(3))
-
-is-object = $(if $(filter %.o,$(1)),$(2),$(3))
-is-archive = $(if $(filter %.a,$(1)),$(2),$(3))
-
-define target-tmpl = 
-$(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))
-)$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)
-	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))
-endef
-
-create-target = $(eval $(call target-tmpl,$(1),$(2),$(3)))
-echo-target = $(info $(call target-tmpl,$(1),$(2),$(3)))
 
 
 ifeq ($(SHARED),1)
 add-library = $(patsubst %,$(BUILDDIR)lib%.so,$(1))
-  else
+else
 add-library = $(patsubst %,$(BUILDDIR)%.a,$(1))
 endif
 
-add-sources = $(patsubst %.c,$(BUILDDIR)%$(if $(2),$(2),.o),$(notdir $(wildcard $(1))))
-add-libdeps = $(patsubst %,$(BUILDDIR)lib%.so,$(1))
 
-header-to-var = $(shell echo "$(subst /,_,$(subst .,_,$(1)))" | tr "[[:lower:]]" "[[:upper:]]")
 
-define cmd-check-header =
-HAVE_$(call header-to-var,$(1)) := $$(call check-include-exists,$(1))
-$$(info HAVE_$(call header-to-var,$(1))=$$(HAVE_$(call header-to-var,$(1))))
-endef
 check-header = $(info $(call cmd-check-header,$(1)))
 
 HAVE_SYS_TYPES_H := $(call check-include-exists,sys/types.h)
@@ -275,9 +211,6 @@ $(info SYSROOT=$(SYSROOT))
 endif
 endif
 
-define get-compiler-defs =
-echo | $(CROSS_COMPILE)$(CC) $(1) -dM -E - | grep "^#define"
-endef
 
 C11_COMPILER_DEFS := $(shell $(call get-compiler-defs,-std=c11))
 #$(info C11_COMPILER_DEFS: $(C11_COMPILER_DEFS))

@@ -15,6 +15,10 @@
 #include "uint64.h"
 #include "str.h"
 
+#ifdef __unix__
+#include <unistd.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
