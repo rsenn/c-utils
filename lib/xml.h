@@ -44,7 +44,7 @@ typedef struct xmlnodeset {
   size_t size;
 } xmlnodeset;
 
-#define node_is_closing(n) ((n)->name[0] == '/')
+#define node_is_closing(n) ((n)->type == XML_ELEMENT && (n)->name[0] == '/')
 
 typedef int(xml_read_callback_fn)(xmlreader *r, xmlnodeid id, stralloc *name,
                                   stralloc *value, HMAP_DB **attrs);

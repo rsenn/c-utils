@@ -9,6 +9,8 @@ xml_match_name(xmlnode* node,
   (void)attr;
   (void)value;
 
+  if(node->name == NULL) return 0;
+
   char* ptr = NULL;
   char* s = str_tok((char*)name, "|", &ptr);
 
@@ -26,6 +28,10 @@ xml_match_name_and_attr(xmlnode* node,
                         const char* name,
                         const char* attr,
                         const char* value) {
+
+  if(node->name == NULL) return 0;
+  if(!xml_has_attribute(node, attr)) return 0;
+
   if(str_equal(node->name, name)) {
     const char* a = xml_get_attribute(node, attr);
     if(a && str_equal(a, value)) return 1;

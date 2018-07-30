@@ -59,8 +59,8 @@ const char* pattern;
 const char* string;
 int flags;
 {
-  register const char* p = pattern, *n = string;
-  register char c;
+  const char* p = pattern, *n = string;
+  char c;
 
   /* Note that this evalutes C many times.  */
 # define FOLD(c)	((flags & FNM_CASEFOLD) && ISUPPER (c) ? tolower (c) : (c))
@@ -113,7 +113,7 @@ int flags;
 
       case '[': {
           /* Nonzero if the sense of the character class is inverted.  */
-          register int not;
+          int not;
 
           if(*n == '\0')
             return FNM_NOMATCH;
@@ -128,7 +128,7 @@ int flags;
 
           c = *p++;
           for(;;) {
-            register char cstart = c, cend = c;
+            char cstart = c, cend = c;
 
             if(!(flags & FNM_NOESCAPE) && c == '\\')
               cstart = cend = *p++;

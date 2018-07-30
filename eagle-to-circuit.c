@@ -807,7 +807,7 @@ main(int argc, char* argv[]) {
 
   //  xml_find_element(doc, "package");
 
-  xml_print(doc, buffer_1);
+  xml_print(doc->children, buffer_1);
 
   xmlnodeset ns;
 

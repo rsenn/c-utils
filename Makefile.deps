@@ -720,6 +720,8 @@ $(BUILDDIR)fmt_xlonglong.o: lib/fmt/fmt_xlonglong.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_xmlescape.o: lib/fmt/fmt_xmlescape.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fnmatch.o: lib/fnmatch.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_case_diff.o: lib/byte/byte_case_diff.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_case_equal.o: lib/byte/byte_case_equal.c
@@ -763,8 +765,6 @@ $(BUILDDIR)dir_read.o: lib/dir/dir_read.c
 $(BUILDDIR)dir_time.o: lib/dir/dir_time.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dir_type.o: lib/dir/dir_type.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fnmatch.o: lib/fnmatch.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)hmap_add.o: lib/hmap/hmap_add.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1130,8 +1130,6 @@ $(BUILDDIR)pathtool.o: pathtool.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)plsconv.o: plsconv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)torrent-progress.o: torrent-progress.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)rdir-test.o: rdir-test.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)reg2cmd.o: reg2cmd.c
@@ -1139,6 +1137,8 @@ $(BUILDDIR)reg2cmd.o: reg2cmd.c
 $(BUILDDIR)regfilter.o: regfilter.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)test_1771.o: test_1771.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)torrent-progress.o: torrent-progress.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xmltest.o: xmltest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

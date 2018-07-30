@@ -44,7 +44,7 @@ static inline void uint16_unpack(const char* in, uint16* out) {
 }
 
 static inline uint16 uint16_get(const void* ptr) {
-  register const char* in = ptr;
+  const char* in = ptr;
   return *(uint16 *)in;
 }
 
@@ -59,7 +59,7 @@ uint16 uint16_read_big(const char* in);
 
 static inline uint16
 uint16_get(const void* ptr) {
-  register const char* in = ptr;
+  const char* in = ptr;
   return (in[0] << 8) | (in[1]);
 }
 

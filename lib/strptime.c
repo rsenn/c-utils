@@ -30,7 +30,7 @@ static int getint(const char** s,int max) {
 
 char* strptime(const char* s,const char* format, struct tm* tm) {
   int i,j;
-  register time_t  day;
+  time_t  day;
   while(*format) {
     switch (*format) {
     case ' ': case '\t':

@@ -53,7 +53,7 @@ static inline void uint32_unpack(const char* in, uint32* out) {
 }
 
 static inline uint32 uint32_get(const void* ptr) {
-  register const char* in = ptr;
+  const char* in = ptr;
   return *(uint32 *)in;
 }
 
@@ -68,7 +68,7 @@ uint32 uint32_read_big(const char* in);
 
 static inline uint32
 uint32_get(const void* ptr) {
-  register const char* in = ptr;
+  const char* in = ptr;
   return (in[0] << 24) | (in[1] << 16) | (in[2] << 8) | (in[3]);
 }
 
