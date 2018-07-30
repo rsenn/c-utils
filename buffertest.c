@@ -18,13 +18,16 @@ buffer_copy(buffer* out, buffer* in) {
 int
 main(int argc, char* argv[])  {
   buffer input,  output, compress, decompress;
-  buffer_mmapprivate(&input, argv[1] ? argv[1] : "/mnt/Newx20Data/Sources/gettext-0.19.8.1.tar.xz");
+ // buffer_mmapprivate(&input, argv[1] ? argv[1] : "/mnt/Newx20Data/Sources/gettext-0.19.8.1.tar.xz");
 
   buffer_truncfile(&output, "output.lzma");
 
-  buffer_lzma(&decompress, &input, 0);
+  //buffer_lzma(&decompress, &input, 0);
   //buffer_lzma(&compress, &output, 1);
- buffer_deflate(&compress, &output, 3);
+
+ 
+  //buffer_deflate(&compress, &output, 3);
+  buffer_lzma(&compress, &output, 1);
 
 //  buffer_copy(&compress, &decompress);
 //
@@ -35,8 +38,12 @@ main(int argc, char* argv[])  {
   buffer_flush(&compress);
   buffer_close(&compress);
 
-  buffer_mmapprivate(&infile, "output.lzma");
-  buffer_inflate(&inflate, &infile);
+  if(buffer_mmapprivate(&infile, "output.lzma") < 0) {
+    buffer_putsflush(buffer_2, "ERROR\n");
+    return 1;
+  }
+
+  buffer_lzma(&inflate, &infile, 0);
 
   buffer_copy(buffer_1, &inflate);
 

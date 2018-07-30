@@ -59,12 +59,12 @@ buffer_lzmawrite_op(int fd, void* data, size_t n, buffer* b) {
   lzma_stream* strm = &ctx->strm;
   lzma_ret ret;
   buffer* other = ctx->b;
-  ssize_t r, a = other->a - other->n;
+  ssize_t r, a = other->a - other->p;
   int eof = 0;
 
   strm->next_in = data;
   strm->avail_in = n;
-  strm->next_out = (uint8_t*)&other->x[other->n];
+  strm->next_out = (uint8_t*)&other->x[other->p];
   strm->avail_out = a;
 
   ctx->a = LZMA_RUN;
@@ -92,18 +92,26 @@ buffer_lzma_close(buffer* b) {
   buffer* other = ctx->b;
   lzma_stream* strm = &ctx->strm;
   lzma_ret ret;
-  ssize_t a = other->a - other->n;
+  ssize_t a;
 
   ctx->a = LZMA_FINISH;
 
   strm->next_in = (uint8_t*)&b->x[b->p];
   strm->avail_in = b->n - b->p;
-  strm->next_out = (uint8_t*)&other->x[other->n];
-  strm->avail_out = a;
 
   do {
+  strm->next_out = (uint8_t*)&other->x[other->p];
+  strm->avail_out = a = other->a - other->p;
+
     ret = lzma_code(strm, ctx->a);
   } while(ret != LZMA_STREAM_END);
+
+  other->p += a - strm->avail_out;
+
+  buffer_flush(other);
+ 
+  b->deinit = 0;
+  buffer_close(b);
 }
 
 int
