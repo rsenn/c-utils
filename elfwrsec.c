@@ -2,31 +2,51 @@
 #include "lib/mmap.h"
 #include <elf.h>
 
-static const char* const s_flags[] = {"SHF_WRITE", "SHF_ALLOC", "SHF_EXECINSTR", "SHF_UNKNOWN_3", "SHF_MERGE", "SHF_STRINGS", "SHF_INFO_LINK", "SHF_LINK_ORDER", "SHF_OS_NONCONFORMING", "SHF_GROUP", "SHF_TLS", "SHF_COMPRESSED", 0 };
-static const char* const p_flags[] = { "PF_X", "PF_W", "PF_R", 0 };
+static const char* const s_flags[] = {"SHF_WRITE",
+                                      "SHF_ALLOC",
+                                      "SHF_EXECINSTR",
+                                      "SHF_UNKNOWN_3",
+                                      "SHF_MERGE",
+                                      "SHF_STRINGS",
+                                      "SHF_INFO_LINK",
+                                      "SHF_LINK_ORDER",
+                                      "SHF_OS_NONCONFORMING",
+                                      "SHF_GROUP",
+                                      "SHF_TLS",
+                                      "SHF_COMPRESSED",
+                                      0};
+static const char* const p_flags[] = {"PF_X", "PF_W", "PF_R", 0};
 static size_t size;
 static void* base;
+static const char* section = ".rodata";
 
 const char*
 get_p_type(int type) {
-  static const char* const p_types[] = { "PT_NULL   ", "PT_LOAD   ", "PT_DYNAMIC", "PT_INTERP ", "PT_NOTE   ", "PT_SHLIB  ", "PT_PHDR   ", "PT_TLS    ", "PT_NUM    " };
+  static const char* const p_types[] = {"PT_NULL   ",
+                                        "PT_LOAD   ",
+                                        "PT_DYNAMIC",
+                                        "PT_INTERP ",
+                                        "PT_NOTE   ",
+                                        "PT_SHLIB  ",
+                                        "PT_PHDR   ",
+                                        "PT_TLS    ",
+                                        "PT_NUM    "};
 
-   if(type < (int)(sizeof(p_types) / sizeof(p_types[0])))
-     return p_types[type];
+  if(type < (int)(sizeof(p_types) / sizeof(p_types[0]))) return p_types[type];
 
-   if(type >= 0x6474e550 && type <= 0x6474e552) {
-       static const char* const gnu_p_types[] = { "PT_GNU_EH_FRAME", "PT_GNU_STACK", "PT_GNU_RELRO" };
-       return gnu_p_types[type % 3];
-   }
+  if(type >= 0x6474e550 && type <= 0x6474e552) {
+    static const char* const gnu_p_types[] = {"PT_GNU_EH_FRAME", "PT_GNU_STACK", "PT_GNU_RELRO"};
+    return gnu_p_types[type % 3];
+  }
 
-   return "(unknown)";
+  return "(unknown)";
 }
 
 void
 print_flags(const char* const flagset[], int flags) {
   int prev = 0;
 
-  for(size_t shift = 0; flagset[shift];  ++shift) {
+  for(size_t shift = 0; flagset[shift]; ++shift) {
     if(flags & (1 << shift)) {
       if(prev) buffer_puts(buffer_1, " | ");
       buffer_puts(buffer_1, flagset[shift]);
@@ -36,52 +56,56 @@ print_flags(const char* const flagset[], int flags) {
 }
 
 int
-print_phdr64() {
-
-  static const char* const p_types[] = { "PT_NULL   ", "PT_LOAD   ", "PT_DYNAMIC", "PT_INTERP ", "PT_NOTE   ", "PT_SHLIB  ", "PT_PHDR   ", "PT_TLS    ", "PT_NUM    " };
+print_phdr64(Elf64_Phdr* phdr) {
   Elf64_Ehdr* ehdr = (Elf64_Ehdr*)base;
-  Elf64_Phdr* phdr = (Elf64_Phdr*)((char*)base + ehdr->e_phoff);
-  int phnum = ehdr->e_phnum;
+  Elf64_Phdr* phdrs = (Elf64_Phdr*)((char*)base + ehdr->e_phoff);
 
-//  Elf64_Phdr* ph_strtab = &phdr[ehdr->e_phstrndx];
-//  const char* const ph_strtab_p = (char*)base + ph_strtab->ph_offset;
+  buffer_putlong(buffer_1, phdr - phdrs);
 
-  for(int i = 0; i < phnum; ++i) {
-    buffer_putlong(buffer_1, i);
-    
-    buffer_putm(buffer_1, ": type=", get_p_type(phdr[i].p_type));
-    buffer_puts(buffer_1, ", offset="); buffer_putxlong0(buffer_1, phdr[i].p_offset, 8);
-    buffer_puts(buffer_1, ", vaddr="); buffer_putxlong0(buffer_1, phdr[i].p_vaddr, 8);
-    buffer_puts(buffer_1, ", paddr="); buffer_putxlong0(buffer_1, phdr[i].p_paddr, 8);
-    buffer_puts(buffer_1, ", filesz="); buffer_putulong(buffer_1, phdr[i].p_filesz);
-    buffer_puts(buffer_1, ", memsz="); buffer_putulong(buffer_1, phdr[i].p_memsz);
-    buffer_puts(buffer_1, ", flags="); print_flags(p_flags, phdr[i].p_flags);
+  buffer_puts(buffer_1, ": type=");
+  buffer_putspad(buffer_1, get_p_type(phdr->p_type), 16);
+  buffer_puts(buffer_1, ", offset=");
+  buffer_putxlong0(buffer_1, phdr->p_offset, 8);
+  buffer_puts(buffer_1, ", vaddr=");
+  buffer_putxlong0(buffer_1, phdr->p_vaddr, 8);
+  buffer_puts(buffer_1, ", paddr=");
+  buffer_putxlong0(buffer_1, phdr->p_paddr, 8);
+  buffer_puts(buffer_1, ", filesz=");
+  buffer_putulong(buffer_1, phdr->p_filesz);
+  buffer_puts(buffer_1, ", memsz=");
+  buffer_putulong(buffer_1, phdr->p_memsz);
+  buffer_puts(buffer_1, ", flags=");
+  print_flags(p_flags, phdr->p_flags);
 
-    buffer_putnlflush(buffer_1);
-  }
+  buffer_putnlflush(buffer_1);
 
   return 0;
 }
 
+const char*
+strtab_shdr64() {
+  Elf64_Ehdr* ehdr = (Elf64_Ehdr*)base;
+  Elf64_Shdr* shdrs = (Elf64_Shdr*)((char*)ehdr + ehdr->e_shoff);
+  Elf64_Shdr* sh_strtab = &shdrs[ehdr->e_shstrndx];
+  return (char*)ehdr + sh_strtab->sh_offset;
+}
+
 int
-print_shdr64() {
+print_shdr64(Elf64_Shdr* shdr) {
 
   Elf64_Ehdr* ehdr = (Elf64_Ehdr*)base;
-  Elf64_Shdr* shdr = (Elf64_Shdr*)((char*)base + ehdr->e_shoff);
+  Elf64_Shdr* shdrs = (Elf64_Shdr*)((char*)base + ehdr->e_shoff);
+
   int shnum = ehdr->e_shnum;
 
-  Elf64_Shdr* sh_strtab = &shdr[ehdr->e_shstrndx];
-  const char* const sh_strtab_p = (char*)base + sh_strtab->sh_offset;
-
-  for(int i = 0; i < shnum; ++i) {
-    buffer_putlong(buffer_1, i);
-    buffer_puts(buffer_1, ": ");
-    buffer_putlong(buffer_1, shdr[i].sh_name);
-    buffer_puts(buffer_1, " '");
-    buffer_putspad(buffer_1, sh_strtab_p + shdr[i].sh_name, 16);
-    buffer_puts(buffer_1, "', flags="); print_flags(s_flags, shdr[i].sh_flags);
-    buffer_putnlflush(buffer_1);
-  }
+  buffer_putlong(buffer_1, shdr - shdrs);
+  buffer_puts(buffer_1, ": ");
+  buffer_putlong(buffer_1, shdr->sh_name);
+  buffer_puts(buffer_1, " '");
+  buffer_putspad(buffer_1, &strtab_shdr64()[shdr->sh_name], 16);
+  buffer_puts(buffer_1, "', flags=");
+  print_flags(s_flags, shdr->sh_flags);
+  buffer_putnlflush(buffer_1);
 
   return 0;
 }
@@ -94,19 +118,35 @@ process32(Elf32_Ehdr* hdr) {
 int
 process64(Elf64_Ehdr* hdr) {
 
-  char* ptr = (char*)hdr + hdr->e_shoff;
+  Elf64_Shdr* shdrs = (Elf64_Shdr*)((char*)base + hdr->e_shoff);
 
-  for(int i = 0; i < hdr->e_shnum; ++i) { Elf64_Shdr* shdr = (Elf64_Shdr*)(ptr + (i * hdr->e_shentsize)); }
-  print_phdr64();
-  print_shdr64();
+  for(int i = 0; i < hdr->e_shnum; ++i) {
+    const char* name = strtab_shdr64() + shdrs[i].sh_name;
+
+    if(str_equal(name, section)) {
+      print_shdr64(&shdrs[i]);
+      
+      shdrs[i].sh_flags |= SHF_WRITE;
+    }
+  }
+
+  Elf64_Phdr* phdrs = (Elf64_Phdr*)((char*)base + hdr->e_phoff);
+
+  for(int i = 0; i < hdr->e_phnum; ++i) {
+
+    if(!(phdrs[i].p_flags & PF_W)) {
+      print_phdr64(&phdrs[i]);
+     
+      phdrs[i].p_flags |= PF_W;
+    }
+  }
 
   return 0;
 }
 
 int
-main(int argc, char* argv[]) {
-
-  base = mmap_private(argv[1], &size);
+elfwrsec(const char* file) {
+  base = mmap_shared(file, &size);
 
   Elf64_Ehdr* header = base;
 
@@ -115,4 +155,15 @@ main(int argc, char* argv[]) {
   mmap_unmap(base, size);
 
   return ret;
+}
+
+int
+main(int argc, char* argv[]) {
+
+  const char* fn = NULL;
+
+  if(argc > 1) fn = argv[1];
+  if(argc > 2) section = argv[2];
+
+  return elfwrsec(fn);
 }
