@@ -23,9 +23,13 @@ main(int argc, char* argv[])  {
   buffer_truncfile(&output, "output.lzma");
 
   buffer_lzma(&decompress, &input, 0);
-  buffer_lzma(&compress, &output, 1);
+  //buffer_lzma(&compress, &output, 1);
+ buffer_deflate(&compress, &output, 3);
 
-  buffer_copy(&compress, &decompress);
+//  buffer_copy(&compress, &decompress);
+//
+
+buffer_puts(&compress, "This is a test\n"); 
 
   buffer_flush(&compress);
   buffer_close(&compress);

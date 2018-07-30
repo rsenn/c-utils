@@ -17,12 +17,13 @@ static ssize_t
 buffer_lzmaread_op(int fd, void* data, size_t n, buffer* b) {
   lzma_ctx* ctx = b->cookie;
   lzma_stream* strm = &ctx->strm;
+  lzma_ret ret;
   ssize_t r;
   size_t a;
   int eof = 0;
 
   if((r = buffer_prefetch(ctx->b, LZMA_BLOCK_SIZE)) > 0) {
-    if(r < LZMA_BLOCK_SIZE) eof = 1;
+    // if(r < LZMA_BLOCK_SIZE) eof = 1;
   } else {
     return r;
   }
@@ -36,7 +37,9 @@ buffer_lzmaread_op(int fd, void* data, size_t n, buffer* b) {
 
   ctx->a = !eof ? LZMA_RUN : LZMA_FINISH;
 
-  lzma_ret ret = lzma_code(strm, ctx->a);
+  do {
+    ret = lzma_code(strm, ctx->a);
+  } while(ctx->a == LZMA_FINISH && ret != LZMA_STREAM_END);
 
   if(strm->avail_out == 0 || ret == LZMA_STREAM_END) {
 
@@ -54,6 +57,7 @@ static ssize_t
 buffer_lzmawrite_op(int fd, void* data, size_t n, buffer* b) {
   lzma_ctx* ctx = b->cookie;
   lzma_stream* strm = &ctx->strm;
+  lzma_ret ret;
   buffer* other = ctx->b;
   ssize_t r, a = other->a - other->n;
   int eof = 0;
@@ -65,7 +69,7 @@ buffer_lzmawrite_op(int fd, void* data, size_t n, buffer* b) {
 
   ctx->a = LZMA_RUN;
 
-  lzma_ret ret = lzma_code(strm, ctx->a);
+  ret = lzma_code(strm, ctx->a);
 
   if(strm->avail_in == 0 || ret == LZMA_STREAM_END) {
     r = n - strm->avail_in;
@@ -87,6 +91,7 @@ buffer_lzma_close(buffer* b) {
   lzma_ctx* ctx = b->cookie;
   buffer* other = ctx->b;
   lzma_stream* strm = &ctx->strm;
+  lzma_ret ret;
   ssize_t a = other->a - other->n;
 
   ctx->a = LZMA_FINISH;
@@ -96,14 +101,18 @@ buffer_lzma_close(buffer* b) {
   strm->next_out = (uint8_t*)&other->x[other->n];
   strm->avail_out = a;
 
-  lzma_ret ret = lzma_code(strm, ctx->a);
+  do {
+    ret = lzma_code(strm, ctx->a);
+  } while(ret != LZMA_STREAM_END);
 }
 
 int
 buffer_lzma(buffer* b, buffer* other, int compress) {
 
   lzma_options_lzma opt_lzma2;
-  if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) { return 0; }
+  if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) {
+    return 0;
+  }
 
   lzma_filter filters[] = {
       {.id = LZMA_FILTER_X86, .options = NULL},

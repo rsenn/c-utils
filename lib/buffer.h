@@ -217,12 +217,14 @@ int buffer_freshen(buffer *b);
 
 int buffer_truncfile(buffer* b, const char* fn);
 
-int buffer_deflate(buffer*, buffer*);
 int buffer_lzma(buffer*, buffer*, int compress);
 
 int buffer_putnc(buffer* b, char c, int ntimes);
 
 int buffer_putspad(buffer* b, const char* x, size_t pad);
+
+int buffer_deflate(buffer* b, buffer* out, int level);
+int buffer_inflate(buffer* b, buffer* in);
 
 #ifdef __cplusplus
 }
