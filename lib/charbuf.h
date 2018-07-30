@@ -21,6 +21,7 @@ typedef struct {
 
 #define CHARBUF_INIT(op, fd) { '\0', 0, (op), (fd) }
 
+void charbuf_close(charbuf*);
 int  charbuf_getc(charbuf*, char*);
 int  charbuf_get(charbuf*);
 void charbuf_init(charbuf*, read_fn*, int);

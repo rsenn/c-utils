@@ -40,26 +40,27 @@ endif
 
 check-header = $(info $(call cmd-check-header,$(1)))
 
-HAVE_SYS_TYPES_H := $(call check-include-exists,sys/types.h)
+$(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
+
+#HAVE_SYS_TYPES_H := $(call check-include-exists,sys/types.h)
 $(info HAVE_SYS_TYPES_H=$(HAVE_SYS_TYPES_H))
-HAVE_INTTYPES_H := $(call check-include-exists,inttypes.h)
+#HAVE_INTTYPES_H := $(call check-include-exists,inttypes.h)
 $(info HAVE_INTTYPES_H=$(HAVE_INTTYPES_H))
-HAVE_VCRUNTIME_H := $(call check-include-exists,vcruntime.h)
+#HAVE_VCRUNTIME_H := $(call check-include-exists,vcruntime.h)
 $(info HAVE_VCRUNTIME_H=$(HAVE_VCRUNTIME_H))
-HAVE_STDINT_H := $(call check-include-exists,stdint.h)
+#HAVE_STDINT_H := $(call check-include-exists,stdint.h)
 $(info HAVE_STDINT_H=$(HAVE_STDINT_H))
-HAVE_STDDEF_H := $(call check-include-exists,stddef.h)
+#HAVE_STDDEF_H := $(call check-include-exists,stddef.h)
 $(info HAVE_STDDEF_H=$(HAVE_STDDEF_H))
 
 
+$(call def-function-exists,ZLIB,deflate,-lz)
 
-HAVE_ERRNO_H := $(call check-include-exists,errno.h)
-$(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
-
-HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
+#HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
 $(info HAVE_ZLIB=$(HAVE_ZLIB))
 
-HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
+$(call def-function-exists,LIBLZMA,lzma_code,-llzma)
+#HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
 $(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
 
 

@@ -6,7 +6,7 @@
 #include "lib/iterator.h"
 #include "lib/stralloc.h"
 #include "lib/json.h"
-#include "lib/io_internal.h"
+#include "lib/open.h"
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>

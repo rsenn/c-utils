@@ -22,7 +22,7 @@
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
-
+#include "lib/hmap.h"
 #include "lib/xml.h"
 
 #ifdef _MSC_VER
@@ -48,8 +48,8 @@
 
 #define NODE_NAME(n) ((n)->name)
 #define NODE_IS_ELEMENT(n) (((xmlnode*)(n))->type == XML_ELEMENT)
-#define NODE_ATTRIBUTES(n) (NODE_IS_ELEMENT(n) ? ((const xmlnode*)(n))->attributes : NULL)
-#define NODE_CONTENT(n) (xml_content(n))
+#define NODE_ATTRIBUTES(n) (NODE_IS_ELEMENT(n) ? &((xmlnode*)(n))->attributes : NULL)
+#define NODE_CONTENT(n) (char*)(xml_content(n))
 #define NODE_CHILDREN(n) ((xmlnode*)(n))->children
 //#define NODE_ATTRIBUTES(n) ((xmlnode*)(n))->attributes
 #define NODE_PROPERTY(n, p)    xml_get_attribute(n, p)
@@ -126,7 +126,7 @@ int node_depth(xmlnode* node);
 int str_ischarset(const char* s, const char* set);
 int str_isfloat(const char* s);
 int str_isspace(const char* s);
-void print_attrs(xmlnode* a_node);
+void print_attrs(HMAP_DB* a_node);
 void print_element_attrs(xmlnode* a_node);
 int dump_net(const void* key, size_t key_len, const void* value,
              size_t value_len, void* user_data);
@@ -771,15 +771,16 @@ print_element_name(xmlnode* a_node) {
  *  print_element_attrs: Prints all element attributes to stdout
  */
 void
-print_attrs(xmlnode* a) {
+print_attrs(HMAP_DB* a) {
 
   //  if(!NODE_IS_ELEMENT(a_node))
   //    return;
 
-  for(; a; a = a->next) {
-    char* v = NODE_CONTENT(a);
-    buffer_putm(buffer_1, " ", NODE_NAME(a), str_isdoublenum(v) ? "=" : "=\"",
+  for(TUPLE* t = a->list_tuple; t; t = t->next) {
+    char* v = t->vals.val_chars;
+    buffer_putm(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"",
                 v, str_isdoublenum(v) ? "" : "\"");
+    if(t->next == a->list_tuple) break;
   }
 }
 
@@ -788,7 +789,7 @@ print_element_attrs(xmlnode* a_node) {
 
   if(NODE_IS_ELEMENT(a_node)) {
     xmlnode* e = (xmlnode*)a_node;
-    print_attrs(NODE_ATTRIBUTES(e));
+    print_attrs(*NODE_ATTRIBUTES(e));
   }
 }
 
@@ -932,7 +933,7 @@ xpath_query(xmlnode* doc, const char* q) {
       stralloc_init(&query);
       const char* elem_name = &q[2];
       elem_name = "*";
-      for(TUPLE* a = NODE_ATTRIBUTES(node); a; a = hmap_next(node->attributes, a)) {
+      for(TUPLE* a = (*NODE_ATTRIBUTES(node))->list_tuple; a; a = hmap_next(node->attributes, a)) {
         const char* attr_name = a->key;
         const char* v = a->vals.val_chars;
 

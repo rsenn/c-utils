@@ -2,7 +2,9 @@
 #include <stdlib.h>
 
 static size_t
-json_free_node(jsonval* node) {}
+json_free_node(jsonval* node) {
+  return 0;
+}
 
 void
 json_free(jsonval* node) {
