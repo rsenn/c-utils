@@ -14,7 +14,7 @@ json_read_value(jsonreader* reader,
 }
 
 jsonval*
-json_read_tree(buffer* b) {
+json_read_tree(charbuf* b) {
   jsonreader r;
   json_reader_init(&r, b);
   *r.loc = json_newnode(JSON_NONE);

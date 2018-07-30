@@ -450,6 +450,9 @@ void
 print_element_names(xmlnode* a_node) {
   xmlnode* n = NULL;
 
+  if(a_node->type == XML_DOCUMENT)
+    a_node = a_node->children;
+
   for(n = a_node; n; n = n->next) {
     if(n->type == XML_ELEMENT) {
       stralloc attrs;
@@ -468,8 +471,9 @@ print_element_names(xmlnode* a_node) {
       }
       stralloc_free(&attrs);
       //      print_attributes(e);
+      if(n->children)
+        print_element_names(n->children);
     }
-    print_element_names(n->children);
   }
 }
 
@@ -708,10 +712,10 @@ main(int argc, char* argv[]) {
 
   //xml_read_callback(&rd, xml_callback);
 
-  xmlnode* doc = xml_read_tree(&input);
+  xmldoc = xml_read_tree(&input);
 
   /* Get the root element node */
-  //root_element = xmlDocGetRootElement(xmldoc);
+  root_element = xmldoc->children;
 
 
   print_element_names(root_element);
@@ -729,6 +733,6 @@ main(int argc, char* argv[]) {
 
   buffer_flush(buffer_1);
   /* free up the resulting document */
-  xml_free(doc);
+  xml_free(xmldoc);
   return 0;
 }

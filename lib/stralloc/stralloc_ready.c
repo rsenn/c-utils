@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "../stralloc.h"
-#include "../str.h"
+#include "../byte.h"
 
 /* stralloc_ready makes sure that sa has enough space allocated to hold
  * len bytes: If sa is not allocated, stralloc_ready allocates at least
@@ -14,9 +14,9 @@ int stralloc_ready(stralloc* sa, size_t len) {
   if(sa->s && sa->a >= len)
     return 1;
   if(sa->a == 0 || sa->s == NULL) {
-    wanted = sa->len;
-    if(!(tmp = str_ndup(sa->s, wanted)))
+    if(!(tmp = malloc(wanted)))
       return 0;
+    byte_zero(tmp,wanted);
   } else {
     if(!(tmp = realloc(sa->s, wanted)))
       return 0;

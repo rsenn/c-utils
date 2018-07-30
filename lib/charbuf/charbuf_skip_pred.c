@@ -9,5 +9,5 @@ charbuf_skip_pred(charbuf* b, int (*pred)(int)) {
     if((r = charbuf_skip(b)) <= 0) break;
     ++n;
   }
-  return r;
+  return n;
 }

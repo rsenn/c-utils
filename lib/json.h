@@ -51,9 +51,9 @@ typedef int(json_predicate_fn)();
 
 void     json_free(jsonval*);
 jsonval* json_newnode(jsondata);
-void     json_reader_init(jsonreader*, buffer*);
+void     json_reader_init(jsonreader*, charbuf*);
 void     json_read_callback(jsonreader*, json_read_callback_fn*);
-jsonval* json_read_tree(buffer*);
+jsonval* json_read_tree(charbuf*);
 
 #ifdef __cplusplus
 }
@@ -61,6 +61,6 @@ jsonval* json_read_tree(buffer*);
 #endif /* LIB_JSON_H_ */
 void     json_free(jsonval*);
 jsonval* json_newnode(jsondata);
-void     json_reader_init(jsonreader*, buffer*);
+void     json_reader_init(jsonreader*, charbuf*);
 void     json_read_callback(jsonreader*, json_read_callback_fn*);
-jsonval* json_read_tree(buffer*);
+jsonval* json_read_tree(charbuf*);
