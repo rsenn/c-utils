@@ -222,6 +222,8 @@ int buffer_lzma(buffer*, buffer*, int compress);
 
 int buffer_putnc(buffer* b, char c, int ntimes);
 
+int buffer_putspad(buffer* b, const char* x, size_t pad);
+
 #ifdef __cplusplus
 }
 #endif

@@ -14,9 +14,7 @@
 
 int
 buffer_putnspace(buffer* b, int n) {
-  if(n <= 0) return 0;
-
-  {
+  if(n > 0) {
     int ret;
     char* space =
 #ifdef HAVE_ALLOCA_FUNC
@@ -31,4 +29,5 @@ buffer_putnspace(buffer* b, int n) {
 #endif
     return ret;
   }
+  return 0;
 }

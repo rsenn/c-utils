@@ -2,8 +2,38 @@
 #include "lib/mmap.h"
 #include <elf.h>
 
+static const char* const s_flags[] = {"SHF_WRITE", "SHF_ALLOC", "SHF_EXECINSTR", "SHF_UNKNOWN_3", "SHF_MERGE", "SHF_STRINGS", "SHF_INFO_LINK", "SHF_LINK_ORDER", "SHF_OS_NONCONFORMING", "SHF_GROUP", "SHF_TLS", "SHF_COMPRESSED", 0 };
+static const char* const p_flags[] = { "PF_X", "PF_W", "PF_R", 0 };
 static size_t size;
 static void* base;
+
+const char*
+get_p_type(int type) {
+  static const char* const p_types[] = { "PT_NULL   ", "PT_LOAD   ", "PT_DYNAMIC", "PT_INTERP ", "PT_NOTE   ", "PT_SHLIB  ", "PT_PHDR   ", "PT_TLS    ", "PT_NUM    " };
+
+   if(type < (int)(sizeof(p_types) / sizeof(p_types[0])))
+     return p_types[type];
+
+   if(type >= 0x6474e550 && type <= 0x6474e552) {
+       static const char* const gnu_p_types[] = { "PT_GNU_EH_FRAME", "PT_GNU_STACK", "PT_GNU_RELRO" };
+       return gnu_p_types[type % 3];
+   }
+
+   return "(unknown)";
+}
+
+void
+print_flags(const char* const flagset[], int flags) {
+  int prev = 0;
+
+  for(size_t shift = 0; flagset[shift];  ++shift) {
+    if(flags & (1 << shift)) {
+      if(prev) buffer_puts(buffer_1, " | ");
+      buffer_puts(buffer_1, flagset[shift]);
+      ++prev;
+    }
+  }
+}
 
 int
 print_phdr64() {
@@ -19,12 +49,13 @@ print_phdr64() {
   for(int i = 0; i < phnum; ++i) {
     buffer_putlong(buffer_1, i);
     
-    buffer_putm(buffer_1, ": type=", p_types[phdr[i].p_type]);
-    buffer_puts(buffer_1, ", offset="); buffer_putxlong0(buffer_1, phdr[i].p_offset, 10);
-    buffer_puts(buffer_1, ", vaddr="); buffer_putxlong0(buffer_1, phdr[i].p_vaddr, 10);
-    buffer_puts(buffer_1, ", paddr="); buffer_putxlong0(buffer_1, phdr[i].p_paddr, 10);
-    buffer_puts(buffer_1, ", filesz="); buffer_putxlong0(buffer_1, phdr[i].p_filesz, 10);
-    buffer_puts(buffer_1, ", memsz="); buffer_putxlong0(buffer_1, phdr[i].p_memsz, 10);
+    buffer_putm(buffer_1, ": type=", get_p_type(phdr[i].p_type));
+    buffer_puts(buffer_1, ", offset="); buffer_putxlong0(buffer_1, phdr[i].p_offset, 8);
+    buffer_puts(buffer_1, ", vaddr="); buffer_putxlong0(buffer_1, phdr[i].p_vaddr, 8);
+    buffer_puts(buffer_1, ", paddr="); buffer_putxlong0(buffer_1, phdr[i].p_paddr, 8);
+    buffer_puts(buffer_1, ", filesz="); buffer_putulong(buffer_1, phdr[i].p_filesz);
+    buffer_puts(buffer_1, ", memsz="); buffer_putulong(buffer_1, phdr[i].p_memsz);
+    buffer_puts(buffer_1, ", flags="); print_flags(p_flags, phdr[i].p_flags);
 
     buffer_putnlflush(buffer_1);
   }
@@ -46,7 +77,9 @@ print_shdr64() {
     buffer_putlong(buffer_1, i);
     buffer_puts(buffer_1, ": ");
     buffer_putlong(buffer_1, shdr[i].sh_name);
-    buffer_putm(buffer_1, " '", sh_strtab_p + shdr[i].sh_name, "'");
+    buffer_puts(buffer_1, " '");
+    buffer_putspad(buffer_1, sh_strtab_p + shdr[i].sh_name, 16);
+    buffer_puts(buffer_1, "', flags="); print_flags(s_flags, shdr[i].sh_flags);
     buffer_putnlflush(buffer_1);
   }
 
