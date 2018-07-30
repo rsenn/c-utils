@@ -826,6 +826,8 @@ $(BUILDDIR)mmap_read.o: lib/mmap/mmap_read.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_read_fd.o: lib/mmap/mmap_read_fd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_shared.o: lib/mmap/mmap_shared.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_unmap.o: lib/mmap/mmap_unmap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_basename.o: lib/str/str_basename.c

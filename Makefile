@@ -784,7 +784,7 @@ $(BUILDDIR)libio.so: LIBS = -L$(BUILDDIR:%/=%) -liarray
 $(BUILDDIR)libio.so: $(call add-sources,lib/io/*.c lib/io*.c,.pic.o) | $(call add-libdeps,iarray)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
-$(BUILDDIR)mmap.a: $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_private.o $(BUILDDIR)mmap_read.o $(BUILDDIR)mmap_read_fd.o $(BUILDDIR)mmap_unmap.o 
+$(BUILDDIR)mmap.a: $(call add-sources,lib/mmap/*.c)
 	$(AR) rcs $@ $^
 $(BUILDDIR)libmmap.so: LIBS = -L$(BUILDDIR:%/=%) -lopen
 $(BUILDDIR)libmmap.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
