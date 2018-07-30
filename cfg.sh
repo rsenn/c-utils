@@ -32,7 +32,7 @@ cfg() {
     -DCMAKE_BUILD_TYPE="${TYPE:-RelWithDebInfo}" \
     ${CC:+-DCMAKE_C_COMPILER="$CC"} \
     ${CXX:+-DCMAKE_CXX_COMPILER="$CXX"} \
-    ${PKG_CONFIG:+-DCMAKE_PKG_CONFIG_EXECUTABLE="$PKG_CONFIG"} \
+    ${PKG_CONFIG:+-DPKG_CONFIG_EXECUTABLE="$PKG_CONFIG"} \
     ${TOOLCHAIN:+-DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN"} \
     ${CC:+-DCMAKE_C_COMPILER="$CC"} \
     ${CXX:+-DCMAKE_CXX_COMPILER="$CXX"} \
@@ -59,7 +59,7 @@ cfg-android ()
     )
 }
 
-diet-cfg() {
+cfg-diet() {
  (build=$(${CC:-gcc} -dumpmachine)
   host=${build/-gnu/-dietlibc}
   builddir=build/$host
@@ -77,7 +77,7 @@ diet-cfg() {
     "$@")
 }
 
-musl-cfg() {
+cfg-musl() {
  (build=$(${CC:-gcc} -dumpmachine)
   host=${build/-gnu/-musl}
   host=${host/-pc-/-}
@@ -96,7 +96,7 @@ musl-cfg() {
     "$@")
 }
 
-mingw-cfg() {
+cfg-mingw() {
  (build=$(gcc -dumpmachine)
   host=${build%%-*}-w64-mingw32
   prefix=/usr/$host/sys-root/mingw
@@ -107,4 +107,19 @@ mingw-cfg() {
   libdir=$prefix/lib \
   cfg \
     "$@")
+}
+cfg-termux() 
+{
+  (builddir=build/termux
+    cfg \
+  -DCMAKE_INSTALL_PREFIX=/data/data/com.termux/files/usr \
+  -DCMAKE_VERBOSE_MAKEFILE=TRUE \
+  -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android-cmake/android.cmake} \
+  -DANDROID_NATIVE_API_LEVEL=21 \
+  -DPKG_CONFIG_EXECUTABLE=arm-linux-androideabi-pkg-config \
+  -DCMAKE_PREFIX_PATH=/data/data/com.termux/files/usr \
+  -DCMAKE_MAKE_PROGRAM=/usr/bin/make \
+   -DCMAKE_MODULE_PATH="/data/data/com.termux/files/usr/lib/cmake" \
+   "$@"
+    )
 }
