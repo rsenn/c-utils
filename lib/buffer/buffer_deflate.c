@@ -1,4 +1,5 @@
 #include "../buffer.h"
+#include "../byte.h"
 #include <stdlib.h>
 
 #ifdef HAVE_ZLIB

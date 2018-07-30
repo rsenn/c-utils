@@ -30,10 +30,10 @@ int
 xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
 stralloc element_name, character_buf;
-float const unit_factor = 25.4, scale_factor = 0.666666, grid_mils = 100;
-float min_x = 0.0, max_x = 0.0, min_y = 0.0, max_y = 0.0;
+double const unit_factor = 25.4, scale_factor = 0.666666, grid_mils = 100;
+double min_x = 0.0, max_x = 0.0, min_y = 0.0, max_y = 0.0;
 void
-update_minmax_xy(float x, float y) {
+update_minmax_xy(double x, double y) {
 
   if(x < min_x) min_x = x;
 
@@ -49,7 +49,7 @@ HMAP_DB* hashmap = NULL;
 TUPLE* ptr_tuple = NULL;
 HMAP_DB *instances_db = NULL, *parts_db = NULL;
 void hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*));
-void update_part(const char*, float, float, float);
+void update_part(const char*, double, double, double);
 #define NAMELEN 8
 typedef struct part {
   char name[NAMELEN];
@@ -57,19 +57,19 @@ typedef struct part {
   char deviceset[NAMELEN];
   char device[NAMELEN];
   char value[NAMELEN];
-  float x, y, rot;
+  double x, y, rot;
 } part_t;
 typedef struct instance {
   char part[NAMELEN];
   char gate[NAMELEN];
-  float x, y;
-  float rot;
+  double x, y;
+  double rot;
 } instance_t;
 /* ----------------------------------------------------------------------- */
-inline static float
-round_to_mil(float val, float mil) {
-  float factor = (1000.0f / mil);
-  return roundf(val * factor) / factor;
+inline static double
+round_to_mil(double val, double mil) {
+  double factor = (1000.0f / mil);
+  return round(val * factor) / factor;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -160,7 +160,7 @@ get_instance(const char* part, const char* gate) {
 /* ----------------------------------------------------------------------- */
 instance_t*
 create_instance(
-  const char* part, const char* gate, float x, float y, float rot) {
+  const char* part, const char* gate, double x, double y, double rot) {
 #if DEBUG
   printf("create_instance{part=%s,gate=%s,x=%.2f,y=%.2f,rot=%.f}\n",
          part,
@@ -229,7 +229,7 @@ create_part(const char* name,
 
 /* ----------------------------------------------------------------------- */
 void
-update_part(const char* name, float x, float y, float rot) {
+update_part(const char* name, double x, double y, double rot) {
   part_t* p = get_part(name);
 
   if(p == NULL) return;
@@ -254,7 +254,7 @@ update_part(const char* name, float x, float y, float rot) {
   } else {
     p->x += x;
     p->x /= 2;
-    p->x = roundf(p->x * 100) / 100;
+    p->x = round(p->x * 100) / 100;
   }
 
   if(p->y == 0.0 || isnan(p->y)) {
@@ -262,14 +262,14 @@ update_part(const char* name, float x, float y, float rot) {
   } else {
     p->y += y;
     p->y /= 2;
-    p->y = roundf(p->y * 100) / 100;
+    p->y = round(p->y * 100) / 100;
   }
 
   if(p->rot == 0.0 || isnan(p->rot)) {
     p->rot = rot;
   } else {
     p->rot += rot; // p->rot /= 2;
-    p->rot = roundf(p->rot);
+    p->rot = round(p->rot);
   }
   update_minmax_xy(p->x, p->y);
 }

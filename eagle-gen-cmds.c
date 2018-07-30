@@ -46,10 +46,6 @@
 
 #include <stdio.h>
 
-//#define NODE_IS_ELEMENT(n) (((xmlnode*)(n))->type == XML_ELEMENT)
-//#define NODE_ATTRIBUTES(n) (NODE_IS_ELEMENT(n) ? &((xmlnode*)(n))->attributes : NULL)
-//#define NODE_CHILDREN(n) ((xmlnode*)(n))->children
-//#define NODE_ATTRIBUTES(n) ((xmlnode*)(n))->attributes
 
 struct pad {
   stralloc name;
@@ -854,7 +850,6 @@ print_element_children(xmlnode* a_node) {
 //  HMAP_DB* hash;
 //  hmap_init(1024, &hash);
 
-//  for(ptr = NODE_ATTRIBUTES(elm); ptr; ptr = ptr->next) {
 //    char* name = ptr->name;
 //    if(name && str_len(name)) {
 //      char* content = xml_get_attribute(elm, name);
