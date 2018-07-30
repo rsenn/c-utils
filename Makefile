@@ -38,7 +38,8 @@ endif
 
 
 
-check-header = $(info $(call cmd-check-header,$(1)))
+#check-header = $(info $(call cmd-check-header,$(1)))
+DEFINES_FILE := Makefile.defines
 
 $(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
 
@@ -725,7 +726,7 @@ $(BUILDDIR)libarray.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libarray.so: $(BUILDDIR)array_allocate.pic.o $(BUILDDIR)array_bytes.pic.o $(BUILDDIR)array_cat0.pic.o $(BUILDDIR)array_catb.pic.o $(BUILDDIR)array_cat.pic.o $(BUILDDIR)array_cate.pic.o $(BUILDDIR)array_cats0.pic.o $(BUILDDIR)array_cats.pic.o $(BUILDDIR)array_equal.pic.o $(BUILDDIR)array_fail.pic.o $(BUILDDIR)array_get.pic.o $(BUILDDIR)array_length.pic.o $(BUILDDIR)array_reset.pic.o $(BUILDDIR)array_start.pic.o $(BUILDDIR)array_truncate.pic.o $(BUILDDIR)array_trunc.pic.o $(BUILDDIR)umult64.pic.o
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
-$(BUILDDIR)buffer.a: $(call add-sources,lib/buffer/buffer*.c)
+$(BUILDDIR)buffer.a: $(call add-sources,lib/buffer/*.c)
 	$(AR) rcs $@ $^
 ifeq ($(HAVE_ZLIB),1)
 $(BUILDDIR)libbuffer.so: EXTRA_LIBS += -lz

@@ -93,7 +93,7 @@ int64 filesize(int fd) {
   sz = GetFileSize((HANDLE)(size_t)fd, &fszH);
   sz |= ((int64)fszH) << 32;
 #else
-  uint64 pos, end;
+  off_t pos, end;
   //if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1;
   if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t) - 1) return -1;
   //if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1;
@@ -181,7 +181,7 @@ next:
     uint64 fsize, i;
     uint64 iterations, remain;
     int map_blocks = 1024;
-    int map_size = (BLOCK_SIZE * map_blocks);
+    uint64 map_size = (BLOCK_SIZE * map_blocks);
 
     fd = open_read(argv[ai]);
       fprintf(stderr, "open_read(%s) = %d\n", argv[ai], fd);

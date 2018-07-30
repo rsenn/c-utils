@@ -577,7 +577,7 @@ dump_package(const void* key, size_t key_len, const void* value,
 
   buffer_puts(buffer_1, " [");
 
-  for(size_t i = 0; i < array_length(&pkg->pads, sizeof(struct pad)); ++i) {
+  for(int64 i = 0; i < array_length(&pkg->pads, sizeof(struct pad)); ++i) {
     const struct pad* p = array_get(&pkg->pads, sizeof(struct pad), i);
 
     buffer_putspace(buffer_1);

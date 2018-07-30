@@ -116,7 +116,7 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   ctx->b = other;
 
   buffer_init(b,
-              (buffer_op_sys*)(compress ? &buffer_lzmawrite_op : &buffer_lzmaread_op),
+              (buffer_op_sys*)(compress ? (void*)&buffer_lzmawrite_op : (void*)&buffer_lzmaread_op),
               -1,
               ctx->buf,
               sizeof(ctx->buf));

@@ -312,7 +312,7 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
             add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
-          if(oith);
+          if(oith) {}
           imp->orig_address = thunk_data_u1_function(oith, j, cfg);
           if(cfg->on_self) {
             imp->address = impaddress;

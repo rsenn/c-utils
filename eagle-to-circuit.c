@@ -170,21 +170,21 @@ void*
 get_or_create(cbmap_t m, char* name, size_t datasz) {
   void* ptr = get(m, name, datasz);
   if(!ptr) {
- #ifdef HAVE_ALLOCA
+#ifdef HAVE_ALLOCA
     char* data = alloca(datasz);
- #elif defined(HAVE_DYNSTACK)
+#elif defined(HAVE_DYNSTACK)
     char data[datasz];
- #else
+#else
     char* data = malloc(datasz);
- #endif
+#endif
     byte_zero(data, datasz);
 
     if(cbmap_insert(m, name, str_len(name) + 1, data, datasz))
       ptr = get(m, name, datasz);
-      
- #if !defined(HAVE_ALLOCA) && !defined(HAVE_DYNSTACK)
+
+#if !defined(HAVE_ALLOCA) && !defined(HAVE_DYNSTACK)
     free(data);
- #endif
+#endif
   }
   return ptr;
 }
@@ -291,9 +291,8 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     bool is_pin = str_equal(nn, "pinref");
     if(str_diff(nn, is_pin ? "pinref" : "contactref")) continue;
     char* part_name = xml_get_attribute(node, is_pin ? "part" : "element");
-    struct ref* r = array_allocate(&n->contacts,
-                                   sizeof(struct ref),
-                                   (*index)++);
+    struct ref* r =
+        array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
     r->part = get(parts, part_name, sizeof(struct part));
     print_name_value(buffer_2, nn, part_name);
     buffer_putnlflush(buffer_2);
@@ -421,8 +420,7 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
 
   xmlnodeset_iter_t it, e;
 
-  for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it)
-    fn(*it);
+  for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it) fn(*it);
 }
 
 /*
@@ -454,11 +452,15 @@ nodeset_topleft(xmlnodeset* s, double* x, double* y) {
 void
 tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
   xmlnode* node = elem->children;
+  
   if(node == 0) return;
+  
   while(node && node->type != XML_ELEMENT && str_diff(node->name, elems))
     node = node->next;
+  
   *x = get_double(node, "x");
   *y = get_double(node, "y");
+  
   while((node = node->next)) {
     if(node->type != XML_ELEMENT || str_diff(node->name, elems)) continue;
     double nx = get_double(node, "x");
@@ -471,14 +473,17 @@ tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
 int
 dump_package(const void* k, size_t ksz, const void* v, size_t vsz, void* p) {
   const struct package* pkg = v;
+  
   buffer_puts(buffer_1, "dump_package: ");
   buffer_putsa(buffer_1, &pkg->name);
   buffer_puts(buffer_1, " [");
-  for(size_t i = 0; i < array_length(&pkg->pads, sizeof(struct pad)); ++i) {
+  
+  for(int64 i = 0; i < array_length(&pkg->pads, sizeof(struct pad)); ++i) {
     const struct pad* p = array_get(&pkg->pads, sizeof(struct pad), i);
     buffer_putspace(buffer_1);
     buffer_putsa(buffer_1, &p->name);
   }
+  
   buffer_puts(buffer_1, " ]");
   buffer_putnlflush(buffer_1);
   //  int i = 0;
@@ -726,8 +731,8 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
 
-  xml_predicate_fn* pred = name ? (void*)xml_match_name_and_attr
-                                : (void*)xml_match_name;
+  xml_predicate_fn* pred =
+      name ? (void*)xml_match_name_and_attr : (void*)xml_match_name;
 
   xmlnodeset xr = xml_find_all(doc, pred, elem_name, "name", name);
 
