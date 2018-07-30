@@ -103,7 +103,7 @@ buffer_inflate(buffer* b, buffer* in) {
   b->x = ctx->buf;
   b->a = sizeof(ctx->buf);
 
-  int ret = inflateInit(&ctx->z);
+  int ret = inflateInit2(&ctx->z, 15 + 32);
 
   if(ret != Z_OK) return 0;
 

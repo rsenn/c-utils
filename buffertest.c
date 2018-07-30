@@ -28,11 +28,17 @@ main(int argc, char* argv[])  {
 
 //  buffer_copy(&compress, &decompress);
 //
+  buffer inflate, infile;
 
-buffer_puts(&compress, "This is a test\n"); 
+  buffer_puts(&compress, "This is a test\n"); 
 
   buffer_flush(&compress);
   buffer_close(&compress);
+
+  buffer_mmapprivate(&infile, "output.lzma");
+  buffer_inflate(&inflate, &infile);
+
+  buffer_copy(buffer_1, &inflate);
 
   return 0;
 }
