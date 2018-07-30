@@ -1263,7 +1263,7 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 $(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
 
 
-$(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a 
+$(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

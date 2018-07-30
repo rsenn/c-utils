@@ -192,6 +192,8 @@ $(BUILDDIR)buffer_putm_internal.o: lib/buffer/buffer_putm_internal.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putm_internal_flush.o: lib/buffer/buffer_putm_internal_flush.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_putnc.o: lib/buffer/buffer_putnc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putnlflush.o: lib/buffer/buffer_putnlflush.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putnspace.o: lib/buffer/buffer_putnspace.c

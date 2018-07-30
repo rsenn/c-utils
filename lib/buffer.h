@@ -220,6 +220,8 @@ int buffer_truncfile(buffer* b, const char* fn);
 int buffer_deflate(buffer*, buffer*);
 int buffer_lzma(buffer*, buffer*, int compress);
 
+int buffer_putnc(buffer* b, char c, int ntimes);
+
 #ifdef __cplusplus
 }
 #endif
