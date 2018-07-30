@@ -1,12 +1,9 @@
-#include <sys/types.h>
-
-#if !(defined(_WIN32) || defined(_WIN64))
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
 #include "../windoze.h"
-#include <errno.h>
+#include "../socket_internal.h"
 #include "../io_internal.h"
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
 
 int io_socketpair(int64* d) {
   int fds[2];

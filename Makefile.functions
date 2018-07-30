@@ -9,7 +9,7 @@ define cmds-try-compile =
 set -e; 
 NAME=test_$$RANDOM;
 echo "$(1)" >$$NAME.c;
-$(CROSS_COMPILE)$(CC) -o $$NAME $$NAME.c;
+$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) -o $$NAME $$NAME.c;
 endef
 
 define prog-check-include =
@@ -28,7 +28,7 @@ echo -e "\n"; \
 echo -e "int main() {"; \
 echo -e "  return 0;"; \
 echo -e "}") >$$NAME.c; \
-$(CROSS_COMPILE)$(CC) -c -o $$NAME $$NAME.c
+$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) -c -o $$NAME $$NAME.c
 endef
 
 define cmds-function-exists =
@@ -39,7 +39,7 @@ echo "int main() {"; \
 echo "  $(1)();"; \
 echo "  return 0;"; \
 echo "}") >test_$(1).c; \
-$(CROSS_COMPILE)$(CC) -o test_$(1) test_$(1).c $(2);
+$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) -o test_$(1) test_$(1).c $(2);
 endef
 
 add-libdeps = $(patsubst %,$(BUILDDIR)lib%.so,$(1))

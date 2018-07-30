@@ -16,7 +16,7 @@ buffer_put_escaped(buffer* b, const char* x, size_t len) {
   int ret;
   stralloc e;
   stralloc_init(&e);
-  stralloc_fmt_pred(x, len, &e, &fmt_escapecharshell, &escaped_pred);
+  stralloc_fmt_pred(&e, x, len, (stralloc_fmt_fn*)&fmt_escapecharshell, (int(*)())&escaped_pred);
   ret = buffer_putsa(b, &e);
   stralloc_free(&e);
   return ret;

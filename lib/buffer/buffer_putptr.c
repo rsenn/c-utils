@@ -9,7 +9,7 @@ buffer_putptr(buffer* b, void* ptr) {
     return buffer_puts(b, "(null)");
 
   char buf[FMT_XLONG + 1];
-  size_t n = fmt_xlonglong(buf, (unsigned long long)ptr);
+  size_t n = fmt_xlonglong(buf, (unsigned long long)(uintptr_t)ptr);
   buf[n] = '\0';
   buffer_put(b, "0x", 2);
   while(n++ < ptr_size_2)

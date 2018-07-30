@@ -8,8 +8,15 @@
 extern "C" {
 # endif
 
+#ifndef _SIZE_T_DEFINED
+#define _SIZE_T_DEFINED 1
 typedef SIZE_T size_t;
+#endif
+
+#ifndef _SSIZE_T_DEFINED
+#define _SSIZE_T_DEFINED 1
 typedef SSIZE_T ssize_t;
+#endif
 
 typedef SSIZE_T socklen_t;
 

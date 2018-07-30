@@ -1,6 +1,7 @@
 #include "../buffer.h"
 #include "../byte.h"
 #include <stdlib.h>
+#include <time.h>
 
 #ifdef HAVE_ZLIB
 #include <zlib.h>
@@ -47,7 +48,7 @@ buffer_deflate_close(buffer* b) {
   int ret, wr;
 
   do {
-    ctx->z.next_out = &ctx->other->x[ctx->other->p];
+    ctx->z.next_out = (void*)&ctx->other->x[ctx->other->p];
     ctx->z.avail_out = ctx->other->a - ctx->other->p;
 
     ret = deflate(&ctx->z, Z_FINISH);
@@ -78,7 +79,7 @@ buffer_deflate(buffer* b, buffer* out, int level) {
 
   byte_zero(b, sizeof(buffer));
 
-  buffer_init(b, &buffer_deflate_write, -1, ctx->buf, sizeof(ctx->buf));
+  buffer_init(b, (buffer_op_fn*)&buffer_deflate_write, -1, ctx->buf, sizeof(ctx->buf));
   b->cookie = ctx;
   b->deinit = &buffer_deflate_close;
 
@@ -89,8 +90,8 @@ buffer_deflate(buffer* b, buffer* out, int level) {
   ctx->hdr.text = 0;
   ctx->hdr.time = time(NULL);
   ctx->hdr.os = 1;
-  ctx->hdr.name = "test.c";
-  ctx->hdr.name_max = str_len(ctx->hdr.name) + 1;
+  ctx->hdr.name = (void*)"test.c";
+  ctx->hdr.name_max = str_len((char*)ctx->hdr.name) + 1;
 
   deflateSetHeader(&ctx->z, &ctx->hdr);
 

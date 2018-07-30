@@ -28,12 +28,14 @@ main(int argc, char* argv[])  {
 
   buffer_truncfile(&output, "output.lzma");
 
+#ifdef HAVE_LIBLZMA
   buffer_lzma(&decompress, &input, 0);
   buffer_lzma(&compress, &output, 1);
 
   buffer_puts(&compress, "lzma compressed test text\n"); 
   buffer_flush(&compress);
   buffer_close(&compress);
+#endif
  
   //buffer_deflate(&compress, &output, 3);
 
@@ -43,6 +45,7 @@ main(int argc, char* argv[])  {
   
   buffer_truncfile(&gzout, "output.gz");
 
+#ifdef HAVE_ZLIB
   buffer_deflate(&deflate, &gzout, 9);
 
   buffer_puts(&deflate, "gzipp'd test text\n\nblah blah blah\n"); 
@@ -57,7 +60,9 @@ main(int argc, char* argv[])  {
   buffer_inflate(&inflate, &gzin);
 
   buffer_copy(buffer_1, &inflate);
+#endif
   buffer_flush(buffer_1);
+
 
   return 0;
 }

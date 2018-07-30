@@ -23,8 +23,15 @@ $(info PKG_CONFIG_PATH=$(PKG_CONFIG_PATH))
 
 OS ?= $(shell uname -o | tr "[[:upper:]]" "[[:lower:]]")
 
-include Makefile.functions
+ifeq ($(CC),)
+  CC := gcc
+endif
+ifeq ($(CC),cc)
+  CC := gcc
+endif
 
+CXX = g++
+include Makefile.functions
 
 
 ifeq ($(SHARED),1)
@@ -70,14 +77,6 @@ ifeq ($SUBLIME_FILENAME),None)
 PATH = /c/git-sdk-64/usr/bin
 MAKE = c:/git-sdk-64/usr/bin/make
 endif
-
-ifeq ($(CC),)
-  CC := gcc
-endif
-ifeq ($(CC),cc)
-  CC := gcc
-endif
-CXX = g++
 
 BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 ifneq ($(CC),$(subst m32,,$(CC)))
@@ -268,6 +267,9 @@ endif
 ifeq ($(OS),msys)
 EXEEXT = .exe
 STATIC_LIBGCC := 1
+endif
+ifeq ($(OS),cygwin)
+EXEEXT = .exe
 endif
 ifeq ($(OS),mingw)
 EXEEXT = .exe

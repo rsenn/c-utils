@@ -7,6 +7,8 @@ static void json_print_list(jsonval*, buffer*, int);
 static void
 json_print_val(jsonval* val, buffer* b, int depth) {
   switch(val->type) {
+    case JSON_NONE:
+      break;
     case JSON_STRING:
       buffer_puts(b, "\"");
       buffer_putsa(b, &val->stringv);
