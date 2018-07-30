@@ -54,13 +54,17 @@ jsonval* json_newnode(jsondata);
 void     json_reader_init(jsonreader*, charbuf*);
 void     json_read_callback(jsonreader*, json_read_callback_fn*);
 jsonval* json_read_tree(charbuf*);
+void     json_free(jsonval*);
+jsonval* json_newnode(jsondata);
+int      json_parse_array(jsonval*, charbuf*);
+int      json_parse_object(jsonval*, charbuf*);
+int      json_parse_string(jsonval*, charbuf*);
+int      json_parse(jsonval*, charbuf*);
+void     json_reader_init(jsonreader*, charbuf*);
+void     json_read_callback(jsonreader*, json_read_callback_fn*);
+jsonval* json_read_tree(charbuf*);
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* LIB_JSON_H_ */
-void     json_free(jsonval*);
-jsonval* json_newnode(jsondata);
-void     json_reader_init(jsonreader*, charbuf*);
-void     json_read_callback(jsonreader*, json_read_callback_fn*);
-jsonval* json_read_tree(charbuf*);

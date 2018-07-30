@@ -10,7 +10,7 @@ xml_match_name(xmlnode* node,
   (void)value;
 
   char* ptr = NULL;
-  char* s = str_tok(name, "|", &ptr);
+  char* s = str_tok((char*)name, "|", &ptr);
 
   do {
 

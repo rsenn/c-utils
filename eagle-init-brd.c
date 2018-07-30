@@ -20,7 +20,7 @@ void        on_attribute_decl(void*, const char*, const char*, int, int, const c
 void        on_characters(void*, const char*, int);
 void        on_end_element(void*, const char*);
 void        on_start_element_ns(void*, const char*, const char*, const char*, int, const char**, int, int, const char**);
-void        on_start_element(void*, const char*, HMAP_DB*);
+void        on_start_element(void*, const char*, HMAP_DB**);
 
 int
 xml_callback(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
@@ -541,6 +541,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
   } else if(id == XML_ELEMENT) {
     on_start_element(reader, name->s, attrs);
   }
+  return 1;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -556,18 +557,21 @@ on_attribute_decl(void* ctx,
 
 /* ----------------------------------------------------------------------- */
 void
-on_start_element(void* ctx, const char* name, HMAP_DB* attrs) {
+on_start_element(void* ctx, const char* name, HMAP_DB** attrs) {
   int i, numAttrs = 0;
   set_element_name((const char*)name);
 
   if(attrs) {
-    numAttrs = hmap_size(&attrs);
+    numAttrs = hmap_size(attrs);
   }
   printf("<%s> %d\n", name, numAttrs);
 
-  for(i = 0; i < numAttrs; ++i) {
-    char *attr = ((char**)attrs)[i << 1],
-          *value = ((char**)attrs)[(i << 1) + 1];
+  TUPLE* t = (*attrs)->list_tuple;
+
+    for(i = 0; i < numAttrs; ++i) {
+    
+    char *attr = t->key, *value = t->vals.val_chars;
+
     printf("<%s> %d/%d: %s=\"%s\"\n", name, i, numAttrs, attr, value);
     hmap_add(&hashmap,
              attr,
@@ -682,6 +686,7 @@ int
 xml_callback(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs){
 
 
+  return 1;
 }
 
 /* ----------------------------------------------------------------------- */

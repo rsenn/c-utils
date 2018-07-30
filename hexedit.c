@@ -51,8 +51,8 @@ int
 main(int argc, char* argv[]) {
 
   unsigned long long addr = 0;
-  int s_cmp = 0, s_set = 0;
-  long long val_cmp = 0, val_set = 0;
+  size_t s_cmp = 0, s_set = 0;
+  unsigned long long val_cmp = 0, val_set = 0;
 
   int index = 1;
 

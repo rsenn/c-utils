@@ -36,7 +36,7 @@ typedef struct buffer {
   buffer_op_proto* op; /* use read(2) or write(2) */
   void* cookie;			/* used internally by the to-stralloc buffers,  and for buffer chaining */
   void (*deinit)();	/* called to munmap/free cleanup,  with a pointer to the buffer as argument */
-  int fd;		/* passed as first argument to op */
+  int64 fd;		/* passed as first argument to op */
 } buffer;
 
 #define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (void*)(op),  NULL,  NULL,  (fd) }

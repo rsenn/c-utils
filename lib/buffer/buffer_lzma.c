@@ -51,7 +51,7 @@ buffer_lzmaread_op(int fd, void* data, size_t n, buffer* b) {
 }
 
 static ssize_t
-buffer_lzmawrite_op(int fd, const void* data, size_t n, buffer* b) {
+buffer_lzmawrite_op(int fd, void* data, size_t n, buffer* b) {
   lzma_ctx* ctx = b->cookie;
   lzma_stream* strm = &ctx->strm;
   buffer* other = ctx->b;
@@ -91,7 +91,7 @@ buffer_lzma_close(buffer* b) {
 
   ctx->a = LZMA_FINISH;
 
-  strm->next_in = &b->x[b->p];
+  strm->next_in = (uint8_t*)&b->x[b->p];
   strm->avail_in = b->n - b->p;
   strm->next_out = (uint8_t*)&other->x[other->n];
   strm->avail_out = a;
@@ -116,7 +116,7 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   ctx->b = other;
 
   buffer_init(b,
-              compress ? &buffer_lzmawrite_op : &buffer_lzmaread_op,
+              (buffer_op_sys*)(compress ? &buffer_lzmawrite_op : &buffer_lzmaread_op),
               -1,
               ctx->buf,
               sizeof(ctx->buf));

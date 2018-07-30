@@ -4,10 +4,14 @@
 
 /* for size_t: */
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef int8_t int8;
+typedef uint8_t uint8;
 
 #ifndef __pure__
 #define __pure__
