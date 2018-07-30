@@ -329,15 +329,16 @@ print_list(HMAP_DB* hmap) {
 void
 print_attributes(xmlnode* e) {
 
-  HMAP_DB* hmap = e->attributes;
   TUPLE* a;
 
-  for(a = hmap->list_tuple; a; a = hmap_next(hmap, a)) {
+  for(a = xml_attributes(e); a; a = hmap_next(e->attributes, a)) {
     buffer_put(buffer_1, a->key, a->key_len);
     buffer_puts(buffer_1, "=\"");
     buffer_puts(buffer_1, a->vals.val_chars);
     buffer_putnlflush(buffer_1);
 
+    if(a->next == xml_attributes(e))
+      break;
   }
 }
 
@@ -382,10 +383,9 @@ get_attribute_double(double* d, xmlnode* e, const char* name) {
 /* ----------------------------------------------------------------------- */
 void
 cat_attributes(stralloc* sa, xmlnode* e) {
-  HMAP_DB* hmap = e->attributes;
   TUPLE* a;
 
-  for(a = hmap->list_tuple; a; a = hmap_next(hmap, a)) {
+  for(a = xml_attributes(e); a; a = hmap_next(e->attributes, a)) {
 
     const char* value = (const char*)a->vals.val_chars;
     stralloc_cats(sa, "\n  ");
@@ -393,6 +393,9 @@ cat_attributes(stralloc* sa, xmlnode* e) {
     stralloc_cats(sa, "=\"");
     if(value) stralloc_cats(sa, value);
     stralloc_catb(sa, "\"", 1);
+
+    if(a->next == xml_attributes(e))
+      break;
   }
 }
 
