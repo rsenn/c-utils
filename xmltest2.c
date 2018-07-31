@@ -59,34 +59,34 @@ main(int argc, char* argv[1]) {
   /*    */
   /*    */
 
-  xmlnode* n = xml_find_element(doc, "signals");
+  xmlnode* n = xml_find_element(doc, "text");
 
   xml_print(n, buffer_1);
 
   xmlnode* n2;
 
-  if((n2 = xml_find_element_attr(doc, "signal", "name", "N$11"))) {
-    xml_print(n2, buffer_1);
-    xml_path(n2, &tmp);
-    buffer_putsa(buffer_1, &tmp);
-    buffer_putnlflush(buffer_1);
-  }
+//  if((n2 = xml_find_element_attr(doc, "signal", "name", "N$11"))) {
+//    xml_print(n2, buffer_1);
+//    xml_path(n2, &tmp);
+//    buffer_putsa(buffer_1, &tmp);
+//    buffer_putnlflush(buffer_1);
+//  }
+//
+//  if((n2 = xml_find_element_attr(doc, "element", "name", "C1"))) {
+//    xml_print(n2, buffer_1);
+//    xml_path(n2, &tmp);
+//    buffer_putsa(buffer_1, &tmp);
+//    buffer_putnlflush(buffer_1);
+//  }
+//
+//  if((n2 = xml_find_element_attr(doc, "element", "name", "R1"))) {
+//    xml_print(n2, buffer_1);
+//    xml_path(n2, &tmp);
+//    buffer_putsa(buffer_1, &tmp);
+//    buffer_putnlflush(buffer_1);
+//  }
 
-  if((n2 = xml_find_element_attr(doc, "element", "name", "C1"))) {
-    xml_print(n2, buffer_1);
-    xml_path(n2, &tmp);
-    buffer_putsa(buffer_1, &tmp);
-    buffer_putnlflush(buffer_1);
-  }
-
-  if((n2 = xml_find_element_attr(doc, "element", "name", "R1"))) {
-    xml_print(n2, buffer_1);
-    xml_path(n2, &tmp);
-    buffer_putsa(buffer_1, &tmp);
-    buffer_putnlflush(buffer_1);
-  }
-
-  xml_debug(doc, buffer_2);
+//  xml_debug(doc, buffer_2);
 
   xml_free(doc);
 
