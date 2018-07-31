@@ -63,7 +63,11 @@ $(info HAVE_ZLIB=$(HAVE_ZLIB))
 
 $(call def-function-exists,LIBLZMA,lzma_code,-llzma)
 #HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
-$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
+
+$(call def-function-exists,SIGWAITINFO,sigwaitinfo,)
+$(info HAVE_SIGWAITINFO=$(HAVE_SIGWAITINFO))
+$(call def-function-exists,SIGTIMEDWAIT,sigtimedwait,)
+$(info HAVE_SIGTIMEDWAIT=$(HAVE_SIGTIMEDWAIT))
 
 
 HAVE_LSEEK64 := $(call check-function-exists,lseek64)

@@ -1,27 +1,49 @@
 #include "../hmap_internal.h"
 
 static void
-hmap_print(HMAP_DB* my_hmap_db) {
+hmap_print(HMAP_DB* hmap) {
   int i = 0;
-  TUPLE* my_tuple = NULL;
-  my_tuple = my_hmap_db->tuple;
-  for(i = 0; i < my_hmap_db->bucket_size; i++) {
-    switch(my_tuple->data_type) {
-      case HMAP_DATA_TYPE_INT: printf("index[%d][%p] key[%s], data[%d]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_int); break;
-      case HMAP_DATA_TYPE_UINT: printf("index[%d][%p] key[%s], data[%u]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_uint); break;
-      case HMAP_DATA_TYPE_INT64: printf("index[%d][%p] key[%s], data[%ld]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_int64); break;
-      case HMAP_DATA_TYPE_UINT64: printf("index[%d][%p] key[%s], data[%lu]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_uint64); break;
-      case HMAP_DATA_TYPE_DOUBLE: printf("index[%d][%p] key[%s], data[%f]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_double); break;
-      case HMAP_DATA_TYPE_CHARS: printf("index[%d][%p] key[%s], data[%s]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_chars); break;
-      case HMAP_DATA_TYPE_CUSTOM: printf("index[%d][%p] key[%s], data[%p]\n", i, my_tuple, my_tuple->key, my_tuple->vals.val_custom); break;
+  TUPLE* t = NULL;
+  t = hmap->tuple;
+  for(i = 0; i < hmap->bucket_size; i++) {
+    buffer_puts(buffer_1, "index[");
+    buffer_putlong(buffer_1, t->index);
+    buffer_puts(buffer_1, "][");
+    buffer_putptr(buffer_1, t);
+    buffer_puts(buffer_1, "] key[");
+    buffer_put(buffer_1, t->key, t->key_len);
+    buffer_puts(buffer_1, "], data[");
+
+    switch(t->data_type) {
+      case HMAP_DATA_TYPE_INT:
+        buffer_putlong(buffer_1, t->vals.val_int);
+        break;
+      case HMAP_DATA_TYPE_UINT:
+        buffer_putulong(buffer_1, t->vals.val_uint);
+        break;
+      case HMAP_DATA_TYPE_INT64:
+        buffer_putlonglong(buffer_1, t->vals.val_int64);
+        break;
+      case HMAP_DATA_TYPE_UINT64:
+        buffer_putulonglong(buffer_1, t->vals.val_uint64);
+        break;
+      case HMAP_DATA_TYPE_DOUBLE:
+        buffer_putdouble(buffer_1, t->vals.val_double);
+        break;
+      case HMAP_DATA_TYPE_CHARS:
+        buffer_put(buffer_1, t->vals.val_chars, t->data_len);
+        break;
+      case HMAP_DATA_TYPE_CUSTOM:
+        buffer_putptr(buffer_1, t->vals.val_custom);
+        break;
     }
-    my_tuple++;
+    t++;
   }
 }
 
 int
-hmap_print_table(HMAP_DB* my_hmap_db) {
-  if(my_hmap_db == NULL) return HMAP_DB_EMPTY;
-  hmap_print(my_hmap_db);
+hmap_print_table(HMAP_DB* hmap) {
+  if(hmap == NULL) return HMAP_DB_EMPTY;
+  hmap_print(hmap);
   return HMAP_SUCCESS;
 }

@@ -14,7 +14,7 @@
 #include "../byte.h"
 #endif
 #ifdef HAVE_SIGIO
-#include <sys/poll.h>
+#include <poll.h>
 #endif
 #ifdef HAVE_DEVPOLL
 #include <sys/types.h>
@@ -91,7 +91,7 @@ void io_wantread_really(int64 d, io_entry* e) {
       e->acceptqueued = 1;
     }
   } else if(!e->wantread) {
-    if(ReadFile((HANDLE)d, e->inbuf, sizeof(e->inbuf), &e->errorcode, &e-> or)) {
+    if(ReadFile((HANDLE)(uintptr_t)d, e->inbuf, sizeof(e->inbuf), &e->errorcode, &e-> or)) {
 queueread:
       /* had something to read immediately.  Damn! */
       e->readqueued = 0;

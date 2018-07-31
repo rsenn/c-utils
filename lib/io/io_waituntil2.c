@@ -4,12 +4,14 @@
 #define _XOPEN_SOURCE
 #endif
 #endif
-#ifdef HAVE_SIGIO
+
+#if defined(HAVE_SIGIO) || defined(__unix__) || defined(HAVE_SIGNAL_H)
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
 #include <signal.h>
 #endif
+
 #if defined(_WIN32) || defined(_WIN64)
 #else
 #endif
@@ -39,6 +41,8 @@
 
 #ifdef DEBUG
 #include <stdio.h>
+#else
+#define printf(...)
 #endif
 
 #ifndef EPOLLRDNORM
@@ -366,7 +370,7 @@ dopoll:
   LPOVERLAPPED o;
   if(first_readable != -1 || first_writeable != -1) {
 //    fprintf(stderr,"io_waituntil2() returning immediately because first_readable(%p) or first_writeable(%p) are set\n",first_readable,first_writeable);
-    return;
+    return 1;
   }
 //  fprintf(stderr,"Calling GetQueuedCompletionStatus %p...",io_comport);
   if(GetQueuedCompletionStatus(io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {

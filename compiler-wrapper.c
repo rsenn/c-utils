@@ -11,7 +11,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <process.h>
-#define mkdir _mkdir
+//#define mkdir _mkdir
 #else
 #include <sys/wait.h>
 #endif

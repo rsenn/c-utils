@@ -150,7 +150,7 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
       bytes -= e->bytes_written;
       e->os.Offset = off;
       e->os.OffsetHigh = (off >> 32);
-      TransmitFile(out, (HANDLE)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
+      TransmitFile((uintptr_t)out, (HANDLE)(uintptr_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
     }
     return e->bytes_written;
   } else {
@@ -158,9 +158,10 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
     e->os.Offset = off;
     e->os.OffsetHigh = (off >> 32);
     /* we always write at most 64k, so timeout handling is possible */
-    if(!TransmitFile(out, (HANDLE)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
+    if(!TransmitFile((uintptr_t)out, (HANDLE)(uintptr_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
       return -3;
   }
+  return e->bytes_written;
 }
 
 #else

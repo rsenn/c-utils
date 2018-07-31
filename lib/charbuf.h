@@ -16,15 +16,15 @@ typedef struct {
   char ch;
   unsigned char p:1;
   read_fn* op;
-  int fd;
+  int64 fd;
 } charbuf;
 
 #define CHARBUF_INIT(op, fd) { '\0', 0, (op), (fd) }
 
+void charbuf_init(charbuf*, read_fn*, int64);
 void charbuf_close(charbuf*);
 int  charbuf_getc(charbuf*, char*);
 int  charbuf_get(charbuf*);
-void charbuf_init(charbuf*, read_fn*, int);
 int  charbuf_nextc(charbuf*, char*);
 int  charbuf_peekc(charbuf*, char*);
 int  charbuf_peek(charbuf*);

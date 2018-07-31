@@ -39,7 +39,7 @@ int64 io_tryread(int64 d, char* buf, int64 len) {
               /* queue next read */
               if(len > sizeof(e->inbuf)) len = sizeof(e->inbuf);
               //	fprintf(stderr,"Queueing ReadFile on handle %p...",d);
-              if(ReadFile((HANDLE)d, e->inbuf, len, 0, &e-> or)) {
+              if(ReadFile((HANDLE)(uintptr_t)d, e->inbuf, len, 0, &e-> or)) {
                   //	  fprintf(stderr," got immediate answer\n");
                   e->canread = 1;
                   e->readqueued = 2;
@@ -63,7 +63,7 @@ int64 io_tryread(int64 d, char* buf, int64 len) {
   if(!e->readqueued) {
       //    fprintf(stderr,"!e->readqueued\n");
       if(len > sizeof(e->inbuf)) len = sizeof(e->inbuf);
-      if(ReadFile((HANDLE)d, e->inbuf, len, 0, &e-> or)) {
+      if(ReadFile((HANDLE)(uintptr_t)d, e->inbuf, len, 0, &e-> or)) {
           e->readqueued = 1;
           //      fprintf(stderr,"ReadFile returned nonzero\n");
         } else {

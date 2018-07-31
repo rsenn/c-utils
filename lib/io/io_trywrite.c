@@ -22,7 +22,7 @@ int64 io_trywrite(int64 d, const char* buf, int64 len) {
   if(!e->nonblock) {
     DWORD written;
 //    fprintf(stderr,"Socket is in blocking mode, just calling WriteFile...");
-    if(WriteFile((HANDLE)d, buf, len, &written, 0)) {
+    if(WriteFile((HANDLE)(uintptr_t)d, buf, len, &written, 0)) {
 //      fprintf(stderr," OK, got %u bytes.\n",written);
       return written;
     } else {
@@ -47,7 +47,7 @@ int64 io_trywrite(int64 d, const char* buf, int64 len) {
       return e->bytes_written;
     } else {
 //      fprintf(stderr,"io_trywrite: queueing write...");
-      if(WriteFile((HANDLE)d, buf, len, &e->errorcode, &e->ow)) {
+      if(WriteFile((HANDLE)(uintptr_t)d, buf, len, &e->errorcode, &e->ow)) {
 //	fprintf(stderr," worked unexpectedly, error %d\n",e->errorcode);
         return e->errorcode; /* should not happen */
       } else if(GetLastError() == ERROR_IO_PENDING) {

@@ -50,10 +50,6 @@ usage(const char* av0) {
 int
 main(int argc, char* argv[]) {
 
-  unsigned long long addr = 0;
-  size_t s_cmp = 0, s_set = 0;
-  unsigned long long val_cmp = 0, val_set = 0;
-
   int index = 1;
 
   if(argc <= index) {
@@ -64,15 +60,19 @@ main(int argc, char* argv[]) {
   p = (unsigned char*)mmap_private(argv[index], &n);
 
   while(++index < argc) {
+    unsigned long long addr = 0;
+    unsigned long long val_cmp = 0, val_set = 0;
+    //size_t s_cmp = 0, s_set = 0;
+
     char* spec = argv[index];
     char sym = spec[0], *s = &spec[1];
 
     if(sym == '@') {
       scan_xlonglong(s, &addr);
     } else if(sym == '?') {
-      s_cmp = (scan_xlonglong(s, &val_cmp) + 1) / 2;
+     // s_cmp = (scan_xlonglong(s, &val_cmp) + 1) / 2;
     } else if(sym == '=') {
-      s_set = (scan_xlonglong(s, &val_set) + 1) / 2;
+      //s_set = (scan_xlonglong(s, &val_set) + 1) / 2;
     } else {
       buffer_putm(buffer_2, "ERROR: ", spec, "\n");
       buffer_putnlflush(buffer_2);

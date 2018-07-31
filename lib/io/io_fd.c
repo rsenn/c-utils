@@ -161,7 +161,7 @@ static io_entry* io_fd_internal(int64 d, int flags) {
 #if defined(_WIN32) || defined(_WIN64)
   if(io_comport) {
 //    fprintf(stderr,"Queueing %p at completion port %p...",d,io_comport);
-    if(CreateIoCompletionPort((HANDLE)d, io_comport, (ULONG_PTR)d, 0) == 0) {
+    if(CreateIoCompletionPort((HANDLE)(uintptr_t)d, io_comport, (ULONG_PTR)(uintptr_t)d, 0) == 0) {
 //      fprintf(stderr," failed!\n");
       errno = EBADF;
       return 0;

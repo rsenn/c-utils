@@ -20,7 +20,7 @@ int64 io_mmapwritefile(int64 out, int64 in, uint64 off, uint64 bytes, io_write_c
     const char* c;
     unsigned long left;
 #if defined(_WIN32) || defined(_WIN64)
-    if(!e->mh) e->mh = CreateFileMapping(in, 0, PAGE_READONLY, 0, 0, NULL);
+    if(!e->mh) e->mh = CreateFileMapping((HANDLE)(intptr_t)in, 0, PAGE_READONLY, 0, 0, NULL);
     if(!e->mh) goto readwrite;
 #endif
     do {

@@ -18,7 +18,7 @@ typedef SIZE_T size_t;
 typedef SSIZE_T ssize_t;
 #endif
 
-typedef SSIZE_T socklen_t;
+typedef int socklen_t;
 
 /* set errno to WSAGetLastError() */
 int winsock2errno(long l);

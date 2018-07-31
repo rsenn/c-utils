@@ -12,7 +12,7 @@ extern "C" {
 #define IOPAUSE_POLL
 
 #include <sys/types.h>
-#include <sys/poll.h>
+#include <poll.h>
 
 typedef struct pollfd iopause_fd;
 #define IOPAUSE_READ POLLIN

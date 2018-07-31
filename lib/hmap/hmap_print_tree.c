@@ -1,52 +1,63 @@
 #include "../hmap_internal.h"
 
 static void
-hmap_print_tree_tuple(HMAP_DB* my_hmap_db) {
+hmap_print_tree_tuple(HMAP_DB* hmap) {
   int i = 0;
-  TUPLE *root_tuple, *ptr_list_tuple;
-  for(; i < my_hmap_db->bucket_size; i++) {
-    ptr_list_tuple = root_tuple = (my_hmap_db->tuple + i);
+  TUPLE *root_tuple, *t;
+  for(; i < hmap->bucket_size; i++) {
+    t = root_tuple = (hmap->tuple + i);
     if(root_tuple == NULL) {
       continue;
     }
-    printf("index[%d]\n", ptr_list_tuple->index);
-    while(ptr_list_tuple) {
-      if(ptr_list_tuple->key_len > 0) {
-        switch(ptr_list_tuple->data_type) {
+    printf("index[%d]\n", t->index);
+    while(t) {
+      if(t->key_len > 0) {
+        buffer_puts(buffer_1, "index[");
+        buffer_putlong(buffer_1, t->index);
+        buffer_puts(buffer_1, "][");
+        buffer_putptr(buffer_1, t);
+        buffer_puts(buffer_1, "] key[");
+        buffer_put(buffer_1, t->key, t->key_len);
+        buffer_puts(buffer_1, "], data[");
+
+        switch(t->data_type) {
           case HMAP_DATA_TYPE_INT:
-            printf("index[%d][%p] key[%s], data[%d]\n", ptr_list_tuple->index, ptr_list_tuple, ptr_list_tuple->key, ptr_list_tuple->vals.val_int);
+            buffer_putlong(buffer_1, t->vals.val_int);
             break;
           case HMAP_DATA_TYPE_UINT:
-            printf("index[%d][%p] key[%s], data[%u]\n", ptr_list_tuple->index, ptr_list_tuple, ptr_list_tuple->key, ptr_list_tuple->vals.val_uint);
+            buffer_putulong(buffer_1, t->vals.val_uint);
             break;
           case HMAP_DATA_TYPE_INT64:
-            printf("index[%d][%p] key[%s], data[%ld]\n", ptr_list_tuple->index, ptr_list_tuple, ptr_list_tuple->key, ptr_list_tuple->vals.val_int64);
+            buffer_putlonglong(buffer_1, t->vals.val_int64);
             break;
           case HMAP_DATA_TYPE_UINT64:
-            printf("index[%d][%p] key[%s], data[%lu]\n", ptr_list_tuple->index, ptr_list_tuple, ptr_list_tuple->key, ptr_list_tuple->vals.val_uint64);
+            buffer_putulonglong(buffer_1, t->vals.val_uint64);
             break;
           case HMAP_DATA_TYPE_DOUBLE:
-            printf("index[%d][%p] key[%s], data[%f]\n", ptr_list_tuple->index, ptr_list_tuple, ptr_list_tuple->key, ptr_list_tuple->vals.val_double);
+            buffer_putdouble(buffer_1, t->vals.val_double);
             break;
           case HMAP_DATA_TYPE_CHARS:
-            printf("index[%d][%p] key[%s], data[%s]\n", ptr_list_tuple->index, ptr_list_tuple, ptr_list_tuple->key, ptr_list_tuple->vals.val_chars);
+            buffer_put(buffer_1, t->vals.val_chars, t->data_len);
             break;
           case HMAP_DATA_TYPE_CUSTOM:
-            printf("index[%d][%p] key[%s], data[%p]\n", ptr_list_tuple->index, ptr_list_tuple, ptr_list_tuple->key, ptr_list_tuple->vals.val_custom);
+            buffer_putptr(buffer_1, t->vals.val_custom);
             break;
         }
+
+        buffer_putsflush(buffer_1, "]\n");
+
+        if(t->hash_next == root_tuple) {
+          break;
+        }
+        t = t->hash_next;
       }
-      if(ptr_list_tuple->hash_next == root_tuple) {
-        break;
-      }
-      ptr_list_tuple = ptr_list_tuple->hash_next;
     }
   }
 }
 
 int
-hmap_print_tree(HMAP_DB* my_hmap_db) {
-  if(my_hmap_db == NULL) return HMAP_DB_EMPTY;
-  hmap_print_tree_tuple(my_hmap_db);
+hmap_print_tree(HMAP_DB* hmap) {
+  if(hmap == NULL) return HMAP_DB_EMPTY;
+  hmap_print_tree_tuple(hmap);
   return HMAP_SUCCESS;
 }

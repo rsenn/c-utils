@@ -12,7 +12,7 @@
 #include "../byte.h"
 #endif
 #ifdef HAVE_SIGIO
-#include <sys/poll.h>
+#include <poll.h>
 #endif
 #ifdef HAVE_DEVPOLL
 #include <sys/types.h>
@@ -24,6 +24,7 @@
 #include <assert.h>
 #else
 #define assert(x)
+#define printf(...)
 #endif
 
 /* IDEA: if someone calls io_dontwantwrite, do not do the syscall to
@@ -90,7 +91,7 @@ void io_wantwrite_really(int64 d, io_entry* e) {
     e->next_write = first_writeable;
     e->canwrite = 1;
     first_writeable = d;
-    printf("queueing write, setting first_writeable to %lld\n", d);
+    debug_printf(("queueing write, setting first_writeable to %ld\n", (long)d));
   }
 #endif
   e->wantwrite = 1;
