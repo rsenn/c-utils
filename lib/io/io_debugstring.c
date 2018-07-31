@@ -56,7 +56,7 @@ unsigned int io_debugstring(int64 s, char* buf, unsigned int bufsize) {
   i += fmt_str(buf + i, " next_write ");
   i += fmt_long(buf + i, e->next_write);
   i += fmt_str(buf + i, " cookie ");
-  i += fmt_xlonglong(buf + i, (unsigned long long)e->cookie);
+  i += fmt_xlonglong(buf + i, (unsigned long long)(uintptr_t)e->cookie);
   buf[i] = 0;
   return i;
 }

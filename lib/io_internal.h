@@ -25,15 +25,19 @@
 #define llseek lseek64
 #include "socket.h"
 my_extern HANDLE io_comport;
+
 #elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
-#define HAVE_EPOLL 1
-#define HAVE_SIGIO
-#ifdef HAVE_SIGIO
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#include <signal.h>
-#endif
+//#define HAVE_EPOLL 1
+#define HAVE_SIGIO 1
+
+ #ifdef HAVE_SIGIO
+  #ifndef _GNU_SOURCE
+   #define _GNU_SOURCE
+  #endif
+  #undef _POSIX_C_SOURCE
+  #define _POSIX_C_SOURCE  199309L
+ #include <signal.h>
+ #endif
 #endif
 
 #if !(defined(_WIN32) || defined(_WIN64))

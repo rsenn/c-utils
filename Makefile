@@ -54,7 +54,8 @@ $(info HAVE_STDINT_H=$(HAVE_STDINT_H))
 $(info HAVE_STDDEF_H=$(HAVE_STDDEF_H))
 $(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
 
-
+$(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
+$(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
 
 $(call def-function-exists,ZLIB,deflate,-lz)
 
@@ -64,10 +65,20 @@ $(info HAVE_ZLIB=$(HAVE_ZLIB))
 $(call def-function-exists,LIBLZMA,lzma_code,-llzma)
 #HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
 
-$(call def-function-exists,SIGWAITINFO,sigwaitinfo,)
-$(info HAVE_SIGWAITINFO=$(HAVE_SIGWAITINFO))
-$(call def-function-exists,SIGTIMEDWAIT,sigtimedwait,)
-$(info HAVE_SIGTIMEDWAIT=$(HAVE_SIGTIMEDWAIT))
+#$(call def-function-exists,EPOLL,epoll_wait,)
+#$(info HAVE_EPOLL=$(HAVE_EPOLL))
+
+$(call def-function-exists,KQUEUE,kevent,)
+$(info HAVE_KQUEUE=$(HAVE_KQUEUE))
+
+$(call def-function-exists,POLL,poll,)
+$(info HAVE_POLL=$(HAVE_POLL))
+
+#$(call def-function-exists,SIGWAITINFO,sigwaitinfo,)
+#$(info HAVE_SIGWAITINFO=$(HAVE_SIGWAITINFO))
+
+$(call def-function-exists,SIGIO,sigtimedwait,)
+$(info HAVE_SIGIO=$(HAVE_SIGIO))
 
 
 HAVE_LSEEK64 := $(call check-function-exists,lseek64)

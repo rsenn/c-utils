@@ -1,33 +1,25 @@
-#include "../io_internal.h"
 #ifdef HAVE_EPOLL
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
 #endif
-#endif
-
-#if defined(HAVE_SIGIO) || defined(__unix__) || defined(HAVE_SIGNAL_H)
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#include <signal.h>
-#endif
-
-#if defined(_WIN32) || defined(_WIN64)
-#else
-#endif
-#if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
-#else
-#include <poll.h>
-#endif
-#include <errno.h>
-#ifdef HAVE_KQUEUE
-#include <sys/event.h>
-#endif
-#ifdef HAVE_EPOLL
 #include <inttypes.h>
 #include <sys/epoll.h>
 #endif
+
+#include "../io_internal.h"
+
+#if defined(_WIN32) || defined(_WIN64)
+#include "../windoze.h"
+#else
+#include <poll.h>
+#endif
+
+#include <errno.h>
+
+#ifdef HAVE_KQUEUE
+#include <sys/event.h>
+#endif
+
 #ifdef HAVE_DEVPOLL
 #include <sys/types.h>
 #include <sys/socket.h>
