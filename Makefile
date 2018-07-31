@@ -283,7 +283,7 @@ ifeq ($(OS),msys)
 EXEEXT = .exe
 STATIC_LIBGCC := 1
 endif
-ifeq ($(OS),cygwin)
+ifeq ($(KERN),cygwin)
 EXEEXT = .exe
 endif
 ifeq ($(OS),mingw)
@@ -298,6 +298,10 @@ EXEEXT = .exe
 endif
 BOOST_LIBS = boost_random
 
+$(info SYS: $(SYS))
+$(info KERN: $(KERN))
+$(info ARCH: $(ARCH))
+$(info OS: $(OS))
 $(info Host: $(HOST))
 $(info Build: $(BUILD))
 
