@@ -601,25 +601,25 @@ DEFS += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
 #CPPFLAGS += -DUSE_READDIR=1
 ifneq ($(HAVE_LSEEK64),)
-LSEEK = lseek64
+io_seek = lseek64
 else
 ifeq ($(HAVE_LSEEK),1)
-LSEEK = lseek
+io_seek = lseek
 else
 ifeq ($(HAVE__LLSEEK),1)
-LSEEK = _llseek
+io_seek = _llseek
 else
 ifeq ($(HAVE_LLSEEK),1)
-LSEEK = llseek
+io_seek = llseek
 else
 ifeq ($(HAVE__LSEEK),1)
-LSEEK = _lseek
+io_seek = _lseek
 else
 ifeq ($(HAVE__LSEEKI64),1)
-LSEEK = _lseeki64
+io_seek = _lseeki64
 else
 ifeq ($(HAVE_LSEEK),1)
-LSEEK = lseek
+io_seek = lseek
 endif
 endif
 endif
@@ -639,11 +639,11 @@ ifeq ($(HAVE_ERRNO_H),1)
 DEFS += HAVE_ERRNO_H=1
 endif
 
-ifeq ($(LSEEK),)
-LSEEK := lseek
+ifeq ($(io_seek),)
+io_seek := lseek
 endif
-ifneq ($(LSEEK),)
-DEFS += LSEEK=$(LSEEK)
+ifneq ($(io_seek),)
+DEFS += io_seek=$(io_seek)
 endif
 ifeq ($(HAVE_POSIX_MEMALIGN),1)
 DEFS += HAVE_POSIX_MEMALIGN=1

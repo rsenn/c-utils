@@ -46,4 +46,4 @@ SOURCES = lib/array/array_allocate.c lib/array/array_bytes.c lib/array/array_cat
 include(deployment.pri)
 qtcAddDeployment()
 
-DEFINES += LSEEK=lseek64
+DEFINES += io_seek=lseek64

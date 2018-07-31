@@ -13,4 +13,4 @@ include(deployment.pri)
 qtcAddDeployment()
 
 SOURCES = hexedit.c
-DEFINES += LSEEK=lseek64
+DEFINES += io_seek=lseek64

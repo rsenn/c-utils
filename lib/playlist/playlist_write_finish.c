@@ -1,19 +1,11 @@
-#include "../io_internal.h"
+#include "../io.h"
 #include <sys/types.h>
-#if defined(_WIN32) || defined(_WIN64)
-#else
-#include <unistd.h>
-#endif
 
 #include <stdio.h>
 
 #include "../playlist.h"
 #include "../byte.h"
 #include "../fmt.h"
-
-#if !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__dietlibc__) && !defined(__APPLE__)
-#define lseek lseek64
-#endif
 
 int
 playlist_write_finish(buffer* b, playlist* pl) {
@@ -30,12 +22,12 @@ playlist_write_finish(buffer* b, playlist* pl) {
 
       buffer_flush(b);
 
-      LSEEK(b->fd, pl->num_items_pos, 0);
+      io_seek(b->fd, pl->num_items_pos, 0);
 
       buffer_put(b, lenbuf, sizeof(lenbuf));
       buffer_flush(b);
 
-      LSEEK(b->fd, 0, SEEK_END);
+      io_seek(b->fd, 0, SEEK_END);
 
       break;
     }

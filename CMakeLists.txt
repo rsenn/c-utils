@@ -53,9 +53,9 @@ set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
 set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL;/")
 
 
-include(CPack)
+#include(CPack)
 
-#include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
+include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
 
 
 #if(WIN32 OR MSYS OR CYGWIN)
@@ -170,8 +170,8 @@ if(HAVE_ERRNO_H)
   add_definitions(-DHAVE_ERRNO_H=1)
 endif()
 
-check_type_size(loff_t LOFF_T)
-check_type_size(lloff_t LLOFF_T)
+#check_type_size(loff_t LOFF_T)
+#check_type_size(lloff_t LLOFF_T)
 check_type_size(off64_t OFF64_T)
 check_type_size(socklen_t SOCKLEN_T)
 
@@ -231,8 +231,8 @@ if(HAVE_setmode_FUNC)
  add_definitions(-DHAVE_SETMODE=1)
  endif()
 
- #foreach(SEEK_FN LSEEK64 _LLSEEK _LLSEEKI64 LLSEEK LSEEK)
- foreach(SEEK_FN LSEEK LLSEEK _LLSEEKI64 _LLSEEK LSEEK64)
+ #foreach(SEEK_FN LSEEK64 _LLSEEK _LLSEEKI64 LLSEEK io_seek)
+ foreach(SEEK_FN io_seek LLSEEK _LLSEEKI64 _LLSEEK LSEEK64)
   if(HAVE_${SEEK_FN}_FUNC)
     string(TOLOWER "${SEEK_FN}" SEEK_FUNCTION)
 
@@ -246,19 +246,19 @@ link_libraries(ws2_32)
 endif(HAVE_WS2_32_LIBRARY)
 
 if(SEEK_FUNCTION)
-  add_definitions(-DLSEEK=${SEEK_FUNCTION})
+  add_definitions(-Dio_seek=${SEEK_FUNCTION})
 endif(SEEK_FUNCTION)
 #if(HAVE_lseek64_FUNC)
-#  add_definitions(-DLSEEK=lseek64)
+#  add_definitions(-Dio_seek=lseek64)
 #elseif(HAVE__llseek_FUNC)
-#  add_definitions(-DLSEEK=_llseek)
+#  add_definitions(-Dio_seek=_llseek)
 #elseif(HAVE__lseeki64_FUNC)
-#  add_definitions(-DLSEEK=_lseeki64)
+#  add_definitions(-Dio_seek=_lseeki64)
 #elseif(HAVE_llseek_FUNC)
-#  add_definitions(-DLSEEK=llseek)
+#  add_definitions(-Dio_seek=llseek)
 #
 #elseif(HAVE_LSEEK)
-#  add_definitions(-DLSEEK=lseek)
+#  add_definitions(-Dio_seek=lseek)
 #endif()
 
 check_function_exists(free HAVE_free_FUNC)

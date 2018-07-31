@@ -45,4 +45,4 @@ SOURCES = impgen.c lib/buffer/buffer_0.c lib/buffer/buffer_0small.c lib/buffer/b
 include(deployment.pri)
 qtcAddDeployment()
 
-DEFINES += LSEEK=lseek64
+DEFINES += io_seek=lseek64

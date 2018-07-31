@@ -7,7 +7,7 @@ TARGET = xmltest4
 
 INCLUDEPATH += . $$PWD/lib
 
-DEFINES += LSEEK=lseek64 _LARGEFILE64_SOURCE=1
+DEFINES += io_seek=lseek64 _LARGEFILE64_SOURCE=1
 
 contains(CONFIG,debug) {
   DEFINES += DEBUG=1
