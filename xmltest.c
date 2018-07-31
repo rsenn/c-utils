@@ -27,13 +27,25 @@ const char* node_types[] = {
   "XML_TEXT",
 };
 
+static int depth = 0;
+
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+  xmlnode* n;
 
+  if(id != XML_ELEMENT) return 1;
+  
+  if(reader->closing) --depth;
+  
+  //for(n = *reader->ptr; n; n = n->parent)   ++depth;
+  //
+  buffer_putm(buffer_1, node_types[id], " \"", name ? name->s : "", "\"");
+  
+  if(value)
+    buffer_putm(buffer_1, ", value=", value ? value->s : "");
 
-  if(id == XML_ATTRIBUTE) return 1;
-
-  buffer_putm(buffer_1, "node type=", node_types[id], ", name=", name ? name->s : "", ", value=", value ? value->s : "");
+  buffer_puts(buffer_1, ", depth=");
+  buffer_putlong(buffer_1, depth);
 
   buffer_puts(buffer_1, ", closing=");
   buffer_putlong(buffer_1, reader->closing);
@@ -42,6 +54,8 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
   buffer_putlong(buffer_1, reader->self_closing);
 
   buffer_putnlflush(buffer_1);
+
+  if(!reader->closing && !reader->self_closing) ++depth;
 
   return 1;
 }
