@@ -380,43 +380,7 @@ endforeach()
 
 
 #
-set(LIBSUBDIRS
-  array
-  buffer
-  byte
-  case
-  cb
-  cbmap
-  dir
-  fmt
-  hmap
-  http
-  iarray
-  io
-  list
-  map
-  mmap
-  ndelay
-  open
-  pe
-  playlist
-  rdir
-  scan
-  socket
-  str
-  stralloc
-  strarray
-  strlist
-  tai
-  taia
-  uint16
-  uint32
-  uint64
-  xml
-  textbuf
-  charbuf
-  json
-)
+set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir fmt hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -461,8 +425,7 @@ foreach(PROGRAM ${PROGRAMS})
     set(EXTRA_SOURCES )
   endif("${PROGRAM}" STREQUAL ntldd)
 
-  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES} ${GETOPT_SOURCES})
-#  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
+  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES} ${GETOPT_SOURCES}) #  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
  # list(APPEND ${PROGRAM}_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR})
 
   set_target_properties(${PROGRAM} PROPERTIES
