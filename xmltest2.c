@@ -49,8 +49,13 @@ int
 main(int argc, char* argv[1]) {
   stralloc tmp;
   stralloc_init(&tmp);
+  const char* elem_name = "text"; 
 
+  
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
+
+  if(argc > 2)
+    elem_name = argv[2];
 
   xmlnode* doc = xml_read_tree(&infile);
 
@@ -59,11 +64,28 @@ main(int argc, char* argv[1]) {
   /*    */
   /*    */
 
-  xmlnode* n = xml_find_element(doc, "text");
+//  xmlnode* n = xml_find_element(doc, elem_name);
+//
+//  xml_print(n, buffer_1);
+//
+//  xmlnode* n2;
 
-  xml_print(n, buffer_1);
+xmlnodeset ns = xml_find_all(doc, xml_match_name, elem_name);
+  xml_print_nodeset(&ns, buffer_1);
 
-  xmlnode* n2;
+  xmlnodeset_iter_t it, e;
+
+  size_t i = 0;
+  for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
+    xmlnode* n = *it;
+
+    buffer_puts(buffer_1, "NODESET[");
+    buffer_putlong(buffer_1, i++);
+    buffer_puts(buffer_1, "]: ");
+
+    xml_debug(n, buffer_1);
+    buffer_putnlflush(buffer_1);
+  }
 
 //  if((n2 = xml_find_element_attr(doc, "signal", "name", "N$11"))) {
 //    xml_print(n2, buffer_1);
