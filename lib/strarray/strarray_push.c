@@ -1,6 +1,8 @@
 #include "../strarray.h"
+#include "../array.h"
 
-void
-strarray_push(strarray* a, char* s) {
-  array_catb(a, &s, sizeof(s));
+int
+strarray_push(strarray* arr, char* s) {
+  array_catb(&arr->a, (void*)&s, sizeof(char*));
+   return arr->a.allocated != -1;
 }

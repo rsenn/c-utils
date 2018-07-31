@@ -1,8 +1,12 @@
 #include "../strarray.h"
+#include "../str.h"
 
-void
-strarray_pushd(strarray* a, const char* s) {
-  char* d = str_dup(s);
-  array_catb(a, &d, sizeof(d));
+int
+strarray_pushd(strarray* arr, const char* s) {
+  char* d;
+
+  if((d = str_dup(s))) {
+    array_catb(arr, (void*)&d, sizeof(char*));
+ }
+  return  !!d;
 }
-d

@@ -25,7 +25,6 @@ xml_dump(xmlnode* n, buffer* b) {
   do {
     stralloc path;
     stralloc_init(&path);
-
     xml_path(n, &path);
     buffer_putsa(b, &path);
 
@@ -33,36 +32,24 @@ xml_dump(xmlnode* n, buffer* b) {
       buffer_puts(b, " \"");
       put_str_escaped(b, n->name);
       buffer_puts(b, "\"");
-
     } else if(n->type == XML_ELEMENT) {
       xml_print_attributes(n, b, ", ", ":", "");
     }
-
     buffer_putnlflush(b);
-
     if(n->children) xml_dump(n->children, b);
-
   } while((n = n->next));
 }
 
 int
+
 main(int argc, char* argv[1]) {
   stralloc tmp;
   stralloc_init(&tmp);
-
-  buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
-
+  buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../an-tronics/eagle/40106-4069-Synth.brd");
   xmlnode* doc = xml_read_tree(&infile);
 
-  /*    */
-
-  /*    */
-  /*    */
-
   xmlnode* n = xml_find_element(doc, "signals");
-
   xml_print(n, buffer_1);
-
   xmlnode* n2;
 
   if((n2 = xml_find_element_attr(doc, "signal", "name", "N$11"))) {
@@ -85,10 +72,8 @@ main(int argc, char* argv[1]) {
     buffer_putsa(buffer_1, &tmp);
     buffer_putnlflush(buffer_1);
   }
-
   xml_debug(doc, buffer_2);
-
   xml_free(doc);
-
   buffer_close(&b);
 }
+

@@ -1,13 +1,12 @@
-#include <ctype.h>
-#include "../xml.h"
-#include "../stralloc.h"
-#include "../fmt.h"
 #include "../byte.h"
+#include "../fmt.h"
+#include "../stralloc.h"
+#include "../xml.h"
+#include <ctype.h>
 
 static int
 fmt_pred(int c) {
-  if(isalpha(c) || isdigit(c) || c == ' ')
-    return 0;
+  if(isalpha(c) || isdigit(c) || c == ' ') return 0;
   return 1;
 }
 

@@ -1,7 +1,8 @@
 #include "../array.h"
 #include "../byte.h"
 
-void array_catb(array* to, const char* from, uint64 len) {
+void
+array_catb(array* to, const char* from, uint64 len) {
   long l;
   if(!len) return;
   if(to->allocated < 0) return;

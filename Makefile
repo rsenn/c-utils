@@ -855,10 +855,10 @@ $(BUILDDIR)libstralloc.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libstralloc.so: $(call add-sources,lib/stralloc/*.c,.pic.o) | $(BUILDDIR)libfmt.so
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
-$(BUILDDIR)strarray.a: $(BUILDDIR)strarray_push.o $(BUILDDIR)strarray_pushd.o 
+$(BUILDDIR)strarray.a: $(call add-sources,lib/strarray/*.c)
 	$(AR) rcs $@ $^
 $(BUILDDIR)libstrarray.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
-$(BUILDDIR)libstrarray.so: $(BUILDDIR)strarray_push.pic.o $(BUILDDIR)strarray_pushd.pic.o 
+$(BUILDDIR)libstrarray.so: $(call add-sources,lib/strarray/*.c,.pic.o)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)str.a: $(call add-sources,lib/str/*.c) 
@@ -1104,7 +1104,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(call add-library, xml hmap buffer mmap open scan fmt stralloc str byte)
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(call add-library, strarray xml hmap buffer mmap open scan fmt stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1112,7 +1112,7 @@ endif
 
 #$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): CFLAGS += $(ICONV_CFLAGS)
 $(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): LIBS += $(ICONV_LIBS) $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(call add-library, cbmap xml hmap array buffer strlist stralloc mmap open scan fmt str byte)
+$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(call add-library, strarray cbmap xml hmap array buffer strlist stralloc mmap open scan fmt str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

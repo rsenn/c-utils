@@ -1,6 +1,5 @@
 #include "../xml.h"
 #include <stdlib.h>
-
 static size_t
 xml_free_node(xmlnode* node) {
   size_t n = 0;
@@ -16,7 +15,6 @@ xml_free_node(xmlnode* node) {
 void
 xml_free(xmlnode* node) {
   size_t num = xml_free_node(node);
-
 #ifdef DEBUG
   buffer_puts(buffer_2, "nodes free'd: ");
   buffer_putulong(buffer_2, num);

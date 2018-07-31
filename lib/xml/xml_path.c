@@ -3,6 +3,7 @@
 static int
 xml_path_out(const xmlnode* node, stralloc* out) {
   size_t n = 0;
+
   if(node->parent) {
     n += xml_path_out(node->parent, out);
   }

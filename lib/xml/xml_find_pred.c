@@ -8,6 +8,7 @@ xml_find_pred(xmlnode* node, int (*pred)(xmlnode*, void*), ...) {
   void* ptr = va_arg(args, void*);
   do {
     if(pred(node, ptr)) return node;
+
     if(node->children) {
       xmlnode* r = xml_find_pred(node->children, pred, ptr);
       if(r) return r;

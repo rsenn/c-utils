@@ -8,10 +8,8 @@
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>
-
 static buffer infile;
 static buffer b;
-
 void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
@@ -25,7 +23,6 @@ xml_dump(xmlnode* n, buffer* b) {
   do {
     stralloc path;
     stralloc_init(&path);
-
     xml_path(n, &path);
     buffer_putsa(b, &path);
 
@@ -33,84 +30,38 @@ xml_dump(xmlnode* n, buffer* b) {
       buffer_puts(b, " \"");
       put_str_escaped(b, n->name);
       buffer_puts(b, "\"");
-
     } else if(n->type == XML_ELEMENT) {
       xml_print_attributes(n, b, ", ", ":", "");
     }
-
     buffer_putnlflush(b);
-
     if(n->children) xml_dump(n->children, b);
-
   } while((n = n->next));
 }
 
 int
+
 main(int argc, char* argv[1]) {
   stralloc tmp;
   stralloc_init(&tmp);
-  const char* elem_name = "text"; 
-
-  
+  const char* elem_name = "text";
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
-
   if(argc > 2)
     elem_name = argv[2];
-
   xmlnode* doc = xml_read_tree(&infile);
-
-  /*    */
-
-  /*    */
-  /*    */
-
-//  xmlnode* n = xml_find_element(doc, elem_name);
-//
-//  xml_print(n, buffer_1);
-//
-//  xmlnode* n2;
-
 xmlnodeset ns = xml_find_all(doc, xml_match_name, elem_name);
   xml_print_nodeset(&ns, buffer_1);
-
   xmlnodeset_iter_t it, e;
-
   size_t i = 0;
+
   for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
     xmlnode* n = *it;
-
     buffer_puts(buffer_1, "NODESET[");
     buffer_putlong(buffer_1, i++);
     buffer_puts(buffer_1, "]: ");
-
     xml_debug(n, buffer_1);
     buffer_putnlflush(buffer_1);
   }
-
-//  if((n2 = xml_find_element_attr(doc, "signal", "name", "N$11"))) {
-//    xml_print(n2, buffer_1);
-//    xml_path(n2, &tmp);
-//    buffer_putsa(buffer_1, &tmp);
-//    buffer_putnlflush(buffer_1);
-//  }
-//
-//  if((n2 = xml_find_element_attr(doc, "element", "name", "C1"))) {
-//    xml_print(n2, buffer_1);
-//    xml_path(n2, &tmp);
-//    buffer_putsa(buffer_1, &tmp);
-//    buffer_putnlflush(buffer_1);
-//  }
-//
-//  if((n2 = xml_find_element_attr(doc, "element", "name", "R1"))) {
-//    xml_print(n2, buffer_1);
-//    xml_path(n2, &tmp);
-//    buffer_putsa(buffer_1, &tmp);
-//    buffer_putnlflush(buffer_1);
-//  }
-
-//  xml_debug(doc, buffer_2);
-
   xml_free(doc);
-
   buffer_close(&b);
 }
+

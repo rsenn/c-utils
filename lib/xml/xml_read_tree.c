@@ -2,7 +2,6 @@
 #include "../fmt.h"
 #include "../scan.h"
 #include "../xml.h"
-
 static size_t
 xml_unescape(const stralloc* in, stralloc* out) {
   return byte_scan(in->s, in->len, out, scan_xmlescape);
@@ -10,6 +9,7 @@ xml_unescape(const stralloc* in, stralloc* out) {
 
 static int
 xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+
   switch(id) {
     case XML_ATTRIBUTE: {
 #ifdef XML_DEBUG
@@ -36,8 +36,10 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
       buffer_putm(buffer_2, "reading element '", name->s, "'");
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
+
       if(reader->closing) {
         xmlnode* parent = reader->parent;
+
         if(parent) {
           reader->ptr = &parent->next;
           reader->parent = parent->parent;
@@ -55,6 +57,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
         node->name = name->s;
         name->s = NULL;
         if(reader->parent) node->parent = reader->parent;
+
         if(reader->self_closing) {
           *(reader->ptr) = node;
           reader->ptr = &node->next;
