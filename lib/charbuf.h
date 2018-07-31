@@ -4,6 +4,10 @@
 #include <stddef.h>
 #include <sys/types.h>
 
+#ifdef __unix__
+#include <unistd.h>
+#endif
+
 #include "windoze.h"
 
 #ifdef __cplusplus
@@ -16,12 +20,12 @@ typedef struct {
   char ch;
   unsigned char p:1;
   read_fn* op;
-  int64 fd;
+  intptr_t fd;
 } charbuf;
 
 #define CHARBUF_INIT(op, fd) { '\0', 0, (op), (fd) }
 
-void charbuf_init(charbuf*, read_fn*, int64);
+void charbuf_init(charbuf*, read_fn*, intptr_t);
 void charbuf_close(charbuf*);
 int  charbuf_getc(charbuf*, char*);
 int  charbuf_get(charbuf*);

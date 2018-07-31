@@ -97,7 +97,8 @@ last_error_str() {
                     NULL))
     return 0;
   snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
-  /* OutputDebugString(tmpbuf); /* or otherwise log it */ */
+  /* or otherwise log it */
+  //OutputDebugString(tmpbuf);
   LocalFree(err);
   return tmpbuf;
 }

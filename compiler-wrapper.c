@@ -363,8 +363,8 @@ read_arguments() {
   DUMP_LIST(debug_buf, opts, "\n\t", "");
   DUMP_LIST(debug_buf, params, "\n\t", "");
 
-  //  strlist_foreach(&longopts, process_option);
-  //  strlist_foreach(&opts, process_option);
+  /*    */
+  /*    */
 
   DUMP_VALUE("output file", buffer_putsa, &output_file);
   DUMP_VALUE("mode", buffer_puts, opmode_strs[mode]);
@@ -387,7 +387,7 @@ execute_cmd() {
   strlist cmd;
   strlist_init(&cmd);
 
-  //  strlist_unshift(&cmd, "-v");
+  /*    */
 
   strlist_cat(&cmd, &opts);
   stralloc_0(&chip);
@@ -472,7 +472,7 @@ if(mode != PREPROCESS) {
       default: {
           break;
         }
-        //  case COMPILE_ASSEMBLE_LINK: { break; }
+        /*          */
     }
 
     if(output_file.len > 0) {
@@ -568,7 +568,7 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
   buffer_puts(b, " (#");
   buffer_putlong(b, n);
   buffer_puts(b, "):");
-  // buffer_put(b, separator, 1);
+  /*    */
   buffer_puts(b, separator);
 
   for(i = 0; i < n; ++i) {
@@ -605,7 +605,7 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
 
   }
   buffer_puts(b, "\n");
-  //  buffer_put(b, separator, 1);
+  /*    */
   buffer_flush(b);
 }
 

@@ -9,5 +9,5 @@ xml_reader_init(xmlreader* r, buffer *b) {
   r->ptr = &r->doc->children;
 
   r->b = b;
-//  textbuf_init(&r->b, b, XML_READ_BUFFER);
+/*  */
 }

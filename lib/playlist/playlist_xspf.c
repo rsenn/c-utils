@@ -74,5 +74,5 @@ playlist_xspf(playlist* pls, buffer* b) {
   pls->type = XSPF;
 
   pls->reader = (int (*)(playlist*))xspf_reader;
-  // xspf_reader(pls->ptr);
+  /*    */
 }

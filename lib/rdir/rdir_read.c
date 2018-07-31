@@ -21,7 +21,7 @@ rdir_read(rdir_t* pd) {
 
     buffer_puts(buffer_2, "&d->sa.s[d->sa.len] = ");
     buffer_puts(buffer_2, &d->sa.s[d->sa.len]);
-    buffer_puts(buffer_2, " // ");
+    buffer_puts(buffer_2, " /* "); */
     buffer_puts(buffer_2, strchr(&d->sa.s[d->sa.len], '/'));
     buffer_putnlflush(buffer_2);
 

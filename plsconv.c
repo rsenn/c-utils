@@ -137,7 +137,7 @@ main(int argc, char *argv[]) {
 
 //buffer_init(&outfile, write, open_trunc("playlist.out"), outbuf, sizeof(outbuf));
   buffer_init(&outfile, (buffer_op_ptr)&write, out_fd, outbuf, sizeof(outbuf));
-// outfile.deinit  = &buffer_close;
+/*  */
 
   playlist_write_start(&outfile, &pls1);
 

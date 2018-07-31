@@ -23,7 +23,7 @@ buffer_lzmaread_op(int fd, void* data, size_t n, buffer* b) {
   int eof = 0;
 
   if((r = buffer_prefetch(ctx->b, LZMA_BLOCK_SIZE)) > 0) {
-    // if(r < LZMA_BLOCK_SIZE) eof = 1;
+    /*      */
   } else {
     return r;
   }
@@ -39,7 +39,7 @@ buffer_lzmaread_op(int fd, void* data, size_t n, buffer* b) {
     ret = lzma_code(strm, ctx->a);
   } while(ctx->a == LZMA_FINISH && ret != LZMA_STREAM_END);
 
-  if( // strm->avail_out == 0
+  if( /* strm->avail_out == 0 */
       ret == LZMA_OK || ret == LZMA_STREAM_END) {
 
     ctx->b->p += a - strm->avail_in;

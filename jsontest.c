@@ -41,10 +41,10 @@ main(int argc, char* argv[1]) {
   json_print(doc, buffer_1);
 
   charbuf_close(&infile);
-  //  json_print(doc);
+  /*    */
 
-  // json_debug(doc, buffer_1);
-  // json_print(doc, buffer_1);
+  /*    */
+  /*    */
 
   json_free(doc);
 

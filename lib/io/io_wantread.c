@@ -39,7 +39,7 @@ void io_wantread_really(int64 d, io_entry* e) {
 #ifdef HAVE_EPOLL
   if(io_waitmode == EPOLL) {
     struct epoll_event x;
-    byte_zero(&x, sizeof(x));	// to shut up valgrind
+    byte_zero(&x, sizeof(x)); /* to shut up valgrind */
     x.events = EPOLLIN;
     if(e->kernelwantwrite) x.events |= EPOLLOUT;
     x.data.fd = d;
@@ -72,7 +72,7 @@ void io_wantread_really(int64 d, io_entry* e) {
       p.events = POLLIN;
       switch(poll(&p, 1, 0)) {
       case 1: e->canread = 1; break;
-//      case 0: e->canread=0; break;
+/*  */
       case -1: return;
       }
     }

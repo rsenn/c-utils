@@ -3,7 +3,7 @@
 #include "memory.h"
 
 void linked_list_init(linked_list *list, linked_list_destructor free_data) {
-	// Allocate a sentinel node
+	/* 	 */
 	linked_list_node *sentinel = safe_malloc(sizeof(linked_list_node));
 	sentinel->next = NULL;
 	list->head = sentinel;

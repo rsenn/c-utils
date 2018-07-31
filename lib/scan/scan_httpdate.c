@@ -70,8 +70,8 @@ scan_httpdate(const char* in, time_t* t) {
   c += scan_ulong(c, &tmp);
   x.tm_mday = (int)tmp;
   while(*c == ' ')
-    ++c; // work around crappy sqlite download httpd
-         //  ++c;
+    ++c; /* work around crappy sqlite download httpd */
+         /*           */
   for(i = 0; i < 12; ++i)
     if(case_equalb(c, 3, months + i * 3)) {
       x.tm_mon = i;

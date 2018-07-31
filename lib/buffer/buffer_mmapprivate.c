@@ -17,6 +17,6 @@ buffer_mmapprivate(buffer* b, const char* filename) {
   b->fd = -1;
   b->op = buffer_dummyreadmmap;
   b->deinit = buffer_munmap;
-  //  b->todo = (b->n ? MUNMAP : 0);
+  /*    */
   return 0;
 }

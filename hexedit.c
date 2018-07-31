@@ -70,7 +70,7 @@ main(int argc, char* argv[]) {
     if(sym == '@') {
       scan_xlonglong(s, &addr);
     } else if(sym == '?') {
-     // s_cmp = (scan_xlonglong(s, &val_cmp) + 1) / 2;
+     /*       */
     } else if(sym == '=') {
       //s_set = (scan_xlonglong(s, &val_set) + 1) / 2;
     } else {
@@ -82,16 +82,16 @@ main(int argc, char* argv[]) {
 
   /* Sublime Text 3176 */
 
-  patch(p, 0x3985A, 0x00, 0x01); // Persistent License Check
+  patch(p, 0x3985A, 0x00, 0x01); /* Persistent License Check */
   patch(p, 0x3A073, 0x38, 0x08);
-  patch(p, 0x3A074, 0x00, 0x01); // Initial License Check
-  patch(p, 0x792FB, 0x57, 0xC3); // Software Update Prompt
+  patch(p, 0x3A074, 0x00, 0x01); /* Initial License Check */
+  patch(p, 0x792FB, 0x57, 0xC3); /* Software Update Prompt */
 
-  // patch(p, 0x00076608, 0x90, 0xeb);
-  // patch(p, 0x0023f89c, 0xdf, 0x75);
-  // patch(p, 0x00076626, 0x8b, 0x75);
-  // patch(p, 0x000b23c9, 0x10, 0x85);
-  // patch(p, 0x00076609, 0x48, 0x2a);
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
 
   mmap_unmap(p, n);
 }

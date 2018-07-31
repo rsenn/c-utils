@@ -34,7 +34,7 @@ int64 io_canread() {
     debug_printf(("io_canread: dequeue %lld from normal read queue (next is %ld)\n", r, first_readable));
 
 #if defined(_WIN32) || defined(_WIN64)
-//    printf("event on %d: wr %d rq %d aq %d\n",(int)r,e->wantread,e->readqueued,e->acceptqueued);
+/*  */
 #endif
 
     if(e->wantread &&

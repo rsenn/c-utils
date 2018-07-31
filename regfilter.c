@@ -242,7 +242,7 @@ int reg2cmd() {
           if(keystart > 0) {
             keyend--;
           }
-          //          line.s[keyend] = '\0';
+          /*            */
           break;
         }
         if(line.s[keyend] == '"')
@@ -345,7 +345,7 @@ int reg2cmd() {
 		buffer_puts(buffer_1, " /d ");
 
 		switch (rt) {
-		// case REGISTRY_BINARY:
+		/* 		 */
 		case REGISTRY_EXPAND_SZ: {
 		  buffer_putc(buffer_1, '"');
 		  for(pos = valuestart; pos < valueend; pos++) {

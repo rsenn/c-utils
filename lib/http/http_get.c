@@ -24,7 +24,7 @@ http_get(http* h, const char* location) {
   if(a.s_addr == 0) return 0;
 
   byte_copy(h->addr, sizeof(h->addr), &a.s_addr);
-  //  uint32_pack_big(h->addr, a.s_addr);
+  /*    */
 
   buffer_putsa(buffer_1, &h->host);
   buffer_puts(buffer_1, " (");
@@ -35,12 +35,12 @@ http_get(http* h, const char* location) {
   buffer_putulong(buffer_1, (a.s_addr >> 16) & 0xff);
   buffer_puts(buffer_1, ".");
   buffer_putulong(buffer_1, (a.s_addr >> 24) & 0xff);
-  //  buffer_puts(buffer_1, ", ");
-  //  buffer_putsa(buffer_1, &h->addr);
+  /*    */
+  /*    */
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
 
-  //  h->addr.len = str_len(h->addr.s);
+  /*    */
 
   h->sock = socket_tcp4();
   io_nonblock(h->sock);
@@ -51,7 +51,7 @@ http_get(http* h, const char* location) {
     free(h->request);
     h->request = NULL;
   }
-  //  for(r = &h->request; *r && (*r)->next; r = &(*r)->next)  {}
+  /*    */
 
   {
     http_request** r = &h->request;

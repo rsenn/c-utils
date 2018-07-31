@@ -54,10 +54,10 @@ main(int argc, char* argv[1]) {
 
   xmlnode* doc = xml_read_tree(&infile);
 
-  //  xml_print(doc);
+  /*    */
 
-  // xml_debug(doc, buffer_1);
-  // xml_print(doc, buffer_1);
+  /*    */
+  /*    */
 
   xmlnode* n = xml_find_element(doc, "signals");
 

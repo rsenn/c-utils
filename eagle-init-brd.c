@@ -96,7 +96,7 @@ each_part(part_t* p) {
       while(angle < 0) angle += 360;
       while(angle > 360) angle -= 360;
       printf("ROTATE =R%d '%s'" END_OF_LINE, angle % 360, p->name);
-      // printf("ROTATE =R0 '%s'" END_OF_LINE, p->name);
+      /*        */
     }
   }
   /*  printf("each_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
@@ -179,7 +179,7 @@ create_instance(
   i = malloc(sizeof(instance_t));
 
   if(i == NULL) return NULL;
-  // memset(i, 0, sizeof(instance_t));
+  /*    */
   str_copyn(i->part, part, sizeof(i->part) - 1);
   str_copyn(i->gate, gate, sizeof(i->gate) - 1);
   i->x = x;
@@ -187,7 +187,7 @@ create_instance(
   i->rot = rot;
   hmap_add(&instances_db, key.s, key.len, 1, HMAP_DATA_TYPE_CUSTOM, i);
   update_part(part, x, y, rot);
-  // dump_instance(i);
+  /*    */
   return i;
 }
 
@@ -214,7 +214,7 @@ create_part(const char* name,
   p = malloc(sizeof(part_t));
 
   if(p == NULL) return NULL;
-  // memset(p, 0, spzeof(part_t));
+  /*    */
   str_copyn(p->name, name, sizeof(p->name) - 1);
   str_copyn(p->library, library ? library : "", sizeof(p->library) - 1);
   str_copyn(p->deviceset, deviceset ? deviceset : "", sizeof(p->deviceset) - 1);
@@ -268,7 +268,7 @@ update_part(const char* name, double x, double y, double rot) {
   if(p->rot == 0.0 || isnan(p->rot)) {
     p->rot = rot;
   } else {
-    p->rot += rot; // p->rot /= 2;
+    p->rot += rot; /* p->rot /= 2; */
     p->rot = round(p->rot);
   }
   update_minmax_xy(p->x, p->y);
@@ -469,11 +469,11 @@ print_element_names(xmlnode* a_node) {
       } else if(!str_diff((const char*)e->name, "part")) {
         process_part(e);
       } else {
-        //        printf("<%s%s>%s</%s>\n", e->name, attrs.s, value ? value :
-        //        "", e->name);
+        /*          */
+        /*          */
       }
       stralloc_free(&attrs);
-      //      print_attributes(e);
+      /*        */
       if(n->children)
         print_element_names(n->children);
     }
@@ -614,10 +614,10 @@ on_end_element(void* ctx, const char* name) {
 /* ----------------------------------------------------------------------- */
 //static void
 //on_end_element_ns(void* ctx,
-//                  const char* name,
-//                  const char* prefix,
-//                  const char* URI) {
-//  after_element((const char*)name);
+/*  */
+/*  */
+/*  */
+/*  */
 //}
 
 /* ----------------------------------------------------------------------- */
@@ -716,7 +716,7 @@ main(int argc, char* argv[]) {
 
 
   //xmlreader rd;
- // xml_reader_init(&rd, &input);
+ /*   */
 
   //xml_read_callback(&rd, xml_callback);
 
@@ -730,7 +730,7 @@ main(int argc, char* argv[]) {
 
 
     print_list(instances_db);
-  //  print_list(parts_db);
+  /*    */
   {
     const part_t* tmp = get_part("IC1");
     if(tmp) dump_part(tmp);

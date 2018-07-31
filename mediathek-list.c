@@ -247,7 +247,7 @@ format_datetime(size_t t, const char* fmt) {
   time_t tm = t;
   /*size_t n =*/ strftime(buf, sizeof(buf), fmt, localtime(&tm));
 
-  return buf; //  buffer_put(b, buf, n);
+  return buf; /*  buffer_put(b, buf, n); */
 }
 
 char*
@@ -394,7 +394,7 @@ parse_entry(strlist* sl) {
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6));  /* duration */
 
-//  buffer_putm(buffer_2, "dr: ", format_time(dr), " (", strlist_at(sl, 6), ")\n");
+/*  */
 
   if((unsigned)dr < min_length)
     return NULL;
@@ -439,7 +439,7 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
    buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);
    buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep);*/
 
-//  buffer_put(b, "\n", 1);
+/*  */
 
   buffer_putnlflush(b);
 }
@@ -503,7 +503,7 @@ parse_mediathek_list(int fd) {
     strlist_init(&sl);
     split_fields(&sl, &prev, buf2, ret);
 
-//    strlist_dump(buffer_2, &sl);
+/*  */
     if((e = parse_entry(&sl))) {
       total++;
       if(debug > 2)
@@ -575,7 +575,7 @@ int main(int argc, char *argv[]) {
     strlist_push(&include, argv[optind++]);
   }
 
-// strlist_push_tokens(&include, "blah|test|haha", "|");
+/*  */
 
 
   /* if(strlist_count(&include) == 0)
@@ -597,7 +597,7 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "%p\n", str_istr("[", "blah"));
   fflush(stderr);
 
-//  buffer_putm(buffer_2, "min_length: ", format_time(min_length), "\n");
+/*  */
 
 
   /*   if(optind >= argc) {

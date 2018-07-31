@@ -119,7 +119,7 @@ last_error_str () {
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 					 NULL,
 					 errCode,
-					 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+					 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
 					 (LPTSTR) &err,
 					 0,
 					 NULL))
@@ -127,7 +127,7 @@ last_error_str () {
 
   snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
 
-  //OutputDebugString(buffer); // or otherwise log it
+  //OutputDebugString(buffer); /* or otherwise log it */
   LocalFree(err);
   return buffer;
 #else
@@ -243,8 +243,8 @@ next:
       if(remain >= map_size)
         remain -= map_size;
     }
-    //   buffer_putulong(buffer_1, blocks);
-    //   buffer_putnlflush(buffer_1);
+    /*      */
+    /*      */
     nonzero_blocks = all_blocks - zero_blocks;
     percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
 

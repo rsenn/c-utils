@@ -102,7 +102,7 @@ http_readable(http* h) {
 
         unsigned long n, p;
 
-        //   putline("Line", line, -r->line, &recvb);
+        /*          */
 
         if(r->part < CHUNKS && line[str_chr(line, ':')] == ':') {
           /*  if(r->part == HEADER)*/ putline("Header", line, ret, &recvb);
@@ -135,7 +135,7 @@ http_readable(http* h) {
 
         } else if(r->part == CHUNKS && (p = scan_xlong(line, &n)) > 0) {
 
-          //       putline("Chunk", line, -r->chnk, &recvb);
+          /*            */
 
           if(n == 0) {
             r->status = DONE;
@@ -153,7 +153,7 @@ http_readable(http* h) {
 
           } else {
             r->ptr = sptr;
-            return; // goto again;
+            return; /* goto again; */
           }
 
           ssize_t n = buffer_getline(&recvb, line, sizeof(line));

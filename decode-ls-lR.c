@@ -95,7 +95,7 @@ int decode_ls_lR() {
 
 
 
-    if(len < 0) // || buffer[0] == '\0')
+    if(len < 0) /* || buffer[0] == '\0') */
       break;
 
     if(len == 0 && buffer[0] != '\n') {

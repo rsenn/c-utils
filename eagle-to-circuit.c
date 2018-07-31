@@ -40,9 +40,9 @@ struct package {
   stralloc name;
   array pads; /**< list of struct pad */
 };
-// struct pinlist {
-//  stralloc name;
-//  array pins;
+/*  */
+/*  */
+/*  */
 //};
 struct pin {
   stralloc name;
@@ -190,12 +190,12 @@ get_or_create(cbmap_t m, char* name, size_t datasz) {
   return ptr;
 }
 
-// struct package*
-// get_package(const char* name) {
-//  struct package* ret = NULL;
-//  size_t len;
-//  cbmap_get(packages, (void*)name, str_len(name)+1, (void**)&ret, &len);
-//  return ret;
+/*  */
+/*  */
+/*  */
+/*  */
+/*  */
+/*  */
 //}
 /**
  * Index a cbmap
@@ -236,7 +236,7 @@ build_part(xmlnode* part) {
   char* name = xml_get_attribute(part, "name");
   char* pkgname = xml_get_attribute(part, "package");
   if(!name || str_len(name) == 0) return;
-  //    return;
+  /*    */
   struct part p;
   byte_zero(&p, sizeof(struct part));
   stralloc_copys(&p.name, name);
@@ -301,7 +301,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     if(r->part->pkg) {
       r->pin = package_pin(r->part->pkg, xml_get_attribute(node, "pad"));
     }
-    //    stralloc_copys(&r->part->name, part_name);
+    /*      */
     print_name_value(buffer_2, nn, part_name);
     buffer_putc(buffer_2, '\t');
     print_element_attrs(node);
@@ -491,28 +491,28 @@ dump_package(const void* k, size_t ksz, const void* v, size_t vsz, void* p) {
   
   buffer_puts(buffer_1, " ]");
   buffer_putnlflush(buffer_1);
-  //  int i = 0;
-  //  double dx, dy;
-  //  tree_topleft(elem, "pad", &dx, &dy);
-  //  char* name = str_dup(xml_get_attribute(elem, "name"));
-  //  str_lower(name);
-  //  buffer_puts(buffer_1, name);
-  //  buffer_puts(buffer_1, "\t");
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
   //
-  //  for(node = elem->children; node; node = node->next) {
+  /*    */
   //
-  //    if(!str_diff(node->name, "pad")) {
-  //      double xpos = round((get_double(node, "x") - dx) / 0.254) * 0.1;
-  //      double ypos = round((get_double(node, "y") - dy) / 0.254) * 0.1;
-  //      buffer_putdouble(buffer_1, xpos);
-  //      buffer_puts(buffer_1, ",");
-  //      buffer_putdouble(buffer_1, ypos);
-  //      if(node->next)
-  //        buffer_puts(buffer_1, " ");
-  //      ++i;
-  //    }
-  //  }
-  //  buffer_putnlflush(buffer_1);
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
   return 1;
 }
 
@@ -527,10 +527,10 @@ dump_part(const void* k, size_t ksz, const void* v, size_t vsz, void* p) {
     buffer_putsa(buffer_2, &ptr->pkg->name);
   }
   cbmap_visit_all(nets, dump_net, ptr);
-  //  if(ptr->dev) {
-  //    buffer_puts(buffer_2, " device: ");
-  //    buffer_putsa(buffer_2, &ptr->dev->name);
-  //  }
+  /*    */
+  /*    */
+  /*    */
+  /*    */
   if(ptr->dset) {
     buffer_puts(buffer_2, " deviceset: ");
     buffer_putsa(buffer_2, &ptr->dset->name);
@@ -554,12 +554,12 @@ dump_net(const void* k, size_t ksz, const void* v, size_t vsz, void* u) {
   struct net* n = (struct net*)v;
   struct part* p = u;
   struct ref* rc;
-  //  if(!net_connects(n, p, ))
-  //  buffer* b = buffer_2;
+  /*    */
+  /*    */
   if(!(rc = net_connects(n, p, -1))) return 1;
-  //  buffer_puts(b, "net['");
-  //  buffer_putsa(b, &n->name);
-  //  buffer_puts(b, "']:");
+  /*    */
+  /*    */
+  /*    */
   int64 i, len = array_length(&n->contacts, sizeof(struct ref));
   for(i = 0; i < len; ++i) {
     struct ref* r = array_get(&n->contacts, sizeof(struct ref), i);
@@ -759,10 +759,10 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
     print_element_name(node);
     print_element_attrs(node);
     buffer_putnlflush(buffer_1);
-    //    if(!str_diff(node->name, "package")) {
-    //      dump_package((xmlnode*)node);
-    //      continue;
-    //    }
+    /*      */
+    /*      */
+    /*      */
+    /*      */
     print_element_children(node);
     buffer_putnlflush(buffer_1);
     if(0) {
@@ -822,7 +822,7 @@ main(int argc, char* argv[]) {
 
   xmlnode* doc = xml_read_tree(&input);
 
-  //  xml_find_element(doc, "package");
+  /*    */
 
   xml_print(doc->children, buffer_1);
 
@@ -860,21 +860,21 @@ main(int argc, char* argv[]) {
   ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "L1");
   xml_print_nodeset(&ns, buffer_1);
 
-  //  xml_query(doc, xq);
-  //  xml_foreach(doc, "//package", build_package);
-  //  buffer_puts(buffer_2, "items in packages: ");
-  //  buffer_putulong(buffer_2, cbmap_count(packages));
-  //  buffer_putnlflush(buffer_2);
-  //  xml_foreach(doc, "//deviceset", build_deviceset);
-  //  xml_foreach(doc, "//part | //element", build_part);
-  //  buffer_puts(buffer_2, "items in parts: ");
-  //  buffer_putulong(buffer_2, cbmap_count(parts));
-  //  buffer_putnlflush(buffer_2);
-  //  xml_foreach(doc, "//net | //signal", build_nets);
-  //  xml_foreach(doc, "//symbol", build_sym);
-  //  cbmap_visit_all(packages,  dump_package, "package");
-  //  cbmap_visit_all(parts,  dump_part, "part");
-  //  cbmap_visit_all(nets, dump_net, "nets");
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
+  /*    */
   /*
    * Cleanup function for the XML library.
    */

@@ -40,7 +40,7 @@ void io_dontwantwrite_really(int64 d, io_entry* e) {
 #ifdef HAVE_EPOLL
   if(io_waitmode == EPOLL) {
     struct epoll_event x;
-    byte_zero(&x, sizeof(x));  // to shut up valgrind
+    byte_zero(&x, sizeof(x));  /* to shut up valgrind */
     x.events = 0;
     if(e->wantread) x.events |= EPOLLIN;
     x.data.fd = d;

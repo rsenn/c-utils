@@ -24,7 +24,7 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
       //xml_escape(node->name, str_len(node->name), &text);
       buffer_puts(b, "text \"");
 
-//      buffer_put_escaped(b, node->name, str_len(node->name));
+/*  */
 
       buffer_putsa(b, &text);
       buffer_puts(b, "\"\n");
@@ -49,9 +49,9 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
         xml_debug_nodelist(node->children, b, depth + 1);
       }
       buffer_putnspace(b, depth * 2);
-//      buffer_puts(b, "\n");
-//      buffer_putnspace(b, depth * 2);
-//      buffer_puts(b, "] }");
+/*  */
+/*  */
+/*  */
     } else if(node->name[0] == '/' || (node->next && node_is_closing(node->next)))  {
       buffer_puts(b, " ");
     } else {

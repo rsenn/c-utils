@@ -79,25 +79,25 @@ int main(int argc, char* argv[]) {
   buffer_putsa(buffer_1, &h.response->data);
   buffer_putnlflush(buffer_1);
 
-  //  stralloc line;
-//  stralloc_init(&line);
+  /*    */
+/*  */
 
-//  io_block(h.sock);
+/*  */
 
-//  while((ret = buffer_getline_sa(&in, &line))) {
-//    buffer_puts(buffer_2, "Line: ");
-//    buffer_putsa(buffer_2, &line);
-//    buffer_puts(buffer_2, " (len==");
-//    buffer_putlong(buffer_2, line.len);
-//    buffer_puts(buffer_2, ")");
+/*  */
+/*  */
+/*  */
+/*  */
+/*  */
+/*  */
 //
-//    stralloc_zero(&line);
+/*  */
 
-//    if(line.len > 0 && line.s[0] == '\0')
-//      break;
+/*  */
+/*  */
 
-//    //if(last_errno == EAGAIN)      break;
-//  }
+/*  */
+/*  */
 
   return 0;
 }
