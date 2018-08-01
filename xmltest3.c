@@ -8,14 +8,12 @@
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>
-
 static buffer infile, b;
-
 void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int(*)())&iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -40,6 +38,7 @@ xml_dump(xmlnode* n, buffer* b) {
 }
 
 int
+
 main(int argc, char* argv[1]) {
   stralloc tmp;
   stralloc_init(&tmp);
@@ -73,4 +72,3 @@ main(int argc, char* argv[1]) {
   xml_free(doc);
   buffer_close(&b);
 }
-

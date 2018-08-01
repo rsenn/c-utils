@@ -8,15 +8,13 @@
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>
-
 static buffer infile;
 static buffer b;
-
 void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int(*)())&iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -47,7 +45,6 @@ main(int argc, char* argv[1]) {
   stralloc_init(&tmp);
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../an-tronics/eagle/40106-4069-Synth.brd");
   xmlnode* doc = xml_read_tree(&infile);
-
   xmlnode* n = xml_find_element(doc, "signals");
   xml_print(n, buffer_1);
   xmlnode* n2;
@@ -76,4 +73,3 @@ main(int argc, char* argv[1]) {
   xml_free(doc);
   buffer_close(&b);
 }
-

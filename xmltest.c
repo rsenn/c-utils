@@ -1,10 +1,10 @@
+#include "lib/xml.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
 #include "lib/hmap.h"
 #include "lib/iterator.h"
 #include "lib/stralloc.h"
-#include "lib/xml.h"
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>
@@ -14,15 +14,15 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int(*)())&iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
   buffer_putsa(b, &esc);
 }
 
 const char* node_types[] = {
-  "(null)",
-  "XML_DOCUMENT",
-  "XML_ELEMENT",
-  "XML_TEXT",
+    "(null)",
+    "XML_DOCUMENT",
+    "XML_ELEMENT",
+    "XML_TEXT",
 };
 static int depth = 0;
 int
@@ -31,8 +31,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
   if(id != XML_ELEMENT) return 1;
   if(reader->closing) --depth;
   buffer_putm(buffer_1, node_types[id], " \"", name ? name->s : "", "\"");
-  if(value)
-    buffer_putm(buffer_1, ", value=", value ? value->s : "");
+  if(value) buffer_putm(buffer_1, ", value=", value ? value->s : "");
   buffer_puts(buffer_1, ", depth=");
   buffer_putlong(buffer_1, depth);
   buffer_puts(buffer_1, ", closing=");
@@ -53,4 +52,3 @@ main(int argc, char* argv[1]) {
   xml_read_callback(&r, xml_read_function);
   buffer_close(&b);
 }
-
