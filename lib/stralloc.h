@@ -209,6 +209,8 @@ size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, ...);
 size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, stralloc_fmt_fn*, int (*pred)());
 size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, stralloc_fmt_fn*);
 
+int stralloc_catdouble(stralloc*, double d, int prec);
+
 #ifdef __cplusplus
 }
 #endif

@@ -11,6 +11,7 @@
 #include "lib/scan.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
+#include "lib/strlist.h"
 #include "lib/xml.h"
 
 #define END_OF_LINE "; "
@@ -26,6 +27,8 @@ int xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, H
 stralloc element_name, character_buf;
 double const unit_factor = 25.4, scale_factor = 0.666666, grid_mils = 100;
 double min_x = 0.0, max_x = 0.0, min_y = 0.0, max_y = 0.0;
+static strlist cmds;
+
 void
 update_minmax_xy(double x, double y) {
   if(x < min_x) min_x = x;
@@ -84,7 +87,7 @@ dump_instance(instance_t const* i) {
 }
 
 /* ----------------------------------------------------------------------- */
-inline static double
+double
 round_to_mil(double val, double mil) {
   double factor = (1000.0f / mil);
   return round(val * factor) / factor;
@@ -100,26 +103,54 @@ str_copyn(char* out, const char* in, size_t n) {
 
 /* ----------------------------------------------------------------------- */
 void
+output_move(const char* name, double x, double y) {
+  stralloc cmd;
+  stralloc_init(&cmd);
+
+  stralloc_catm(&cmd, "MOVE ", name, " (");
+  stralloc_catdouble(&cmd, x, 1);
+  stralloc_catc(&cmd, ' ');
+  stralloc_catdouble(&cmd, y, 1);
+  stralloc_catc(&cmd, ')');
+
+
+  buffer_putsa(buffer_1, &cmd);
+  buffer_putnlflush(buffer_1);
+
+  strlist_push_sa(&cmds, &cmd);
+  stralloc_free(&cmd);
+}
+
+/* ----------------------------------------------------------------------- */
+void
+output_rotate(const char* name, long angle) {
+  stralloc cmd;
+  stralloc_init(&cmd);
+
+  stralloc_cats(&cmd, "ROTATE =R");
+  stralloc_catlong(&cmd, angle % 360);
+  stralloc_catm(&cmd, " '", name, "'");
+
+  buffer_putsa(buffer_1, &cmd);
+  buffer_putnlflush(buffer_1);
+
+  strlist_push_sa(&cmds, &cmd);
+  stralloc_free(&cmd);
+}
+
+/* ----------------------------------------------------------------------- */
+void
 each_part(part_t* p) {
   if(p->device[0] != '\0' || p->value[0] != '\0') {
 
-    buffer_putm(buffer_1, "MOVE ", p->name, " (");
-    buffer_putdouble(buffer_1, p->x - min_x);
-    buffer_putc(buffer_1, ' ');
-    buffer_putdouble(buffer_1, p->y - min_y);
-    buffer_putc(buffer_1, ')');
-    buffer_putnlflush(buffer_1);
-
+    output_move(p->name, p->x - min_x, p->y - min_y);
 
     if(fabs(p->rot) >= 0.1) {
       int angle = (int)((p->rot / 90)) * 90.0;
       while(angle < 0) angle += 360;
       while(angle > 360) angle -= 360;
 
-      buffer_puts(buffer_1, "ROTATE =R");
-      buffer_putlong(buffer_1, angle % 360);
-      buffer_putm(buffer_1, " '", p->name, "'");
-      buffer_putnlflush(buffer_1);
+      output_rotate(p->name, angle);
     }
   }
 
@@ -128,9 +159,8 @@ each_part(part_t* p) {
 #endif
 }
 
-
 /* ----------------------------------------------------------------------- */
-inline static part_t*
+part_t*
 get_part(const char* part) {
   TUPLE* ptr_tuple = NULL;
   part_t* p = NULL;
@@ -140,7 +170,7 @@ get_part(const char* part) {
 }
 
 /* ----------------------------------------------------------------------- */
-inline static const instance_t*
+const instance_t*
 get_instance(const char* part, const char* gate) {
   stralloc key;
   stralloc_init(&key);
@@ -271,11 +301,8 @@ hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
 //  if(hmap == NULL) return;
 //  for(p = hmap->list_tuple; p; p = p->next) {
 //    if(p->data_type == HMAP_DATA_TYPE_CHARS) {
-//      /* printf("index[%d][%p] key[%s], data[%s]\n", p->index, p,  p->key,
 //       * p->vals.val_chars); */
-//      printf("key=\"%s\",data=\"%s\"\n", p->key, p->vals.val_chars);
 //    } else if(p->data_type == HMAP_DATA_TYPE_CUSTOM) {
-//      printf("key=\"%s\",data=%p\n", p->key, p->vals.val_custom);
 //    }
 //    if(p->next == hmap->list_tuple) break;
 //  }
@@ -474,7 +501,6 @@ after_element(const char* name) {
   stralloc_init(&saa);
   attr_list(&saa, hashmap);
   stralloc_nul(&saa);
-//  if(saa.len) printf("<%s> attrs:%s\n", get_element_name(), saa.s);
   stralloc_free(&saa);
   hmap_destroy(&hashmap);
   hmap_init(1024, &hashmap);
@@ -511,7 +537,6 @@ on_characters(void* ctx, const char* ch, int len) {
   }
   if(str_len(escaped) > 0) {
     stralloc_cats(&character_buf, escaped);
-    /*printf("<%s> [%s]\n", get_element_name(), escaped); */
   }
   free(escaped);
   free(chars);
@@ -560,6 +585,13 @@ main(int argc, char* argv[]) {
   /*hmap_foreach(parts_db, &dump_part);*/
   hmap_foreach(parts_db, (void*)&each_part);
   buffer_flush(buffer_1);
+
+  stralloc out;
+  stralloc_init(&out);
+  strlist_joins(&cmds, &out, "; ");
+  buffer_putsa(buffer_1, &out);
+  buffer_putnlflush(buffer_1);
+
   /* free up the resulting document */
   xml_free(xmldoc);
   return 0;

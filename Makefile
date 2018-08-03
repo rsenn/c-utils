@@ -1108,7 +1108,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(call add-library, strarray xml hmap buffer mmap open scan fmt stralloc str byte)
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(call add-library, strarray strlist xml hmap buffer mmap open scan stralloc fmt str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

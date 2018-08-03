@@ -536,6 +536,8 @@ $(BUILDDIR)stralloc_catb.o: lib/stralloc/stralloc_catb.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_catc.o: lib/stralloc/stralloc_catc.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catdouble.o: lib/stralloc/stralloc_catdouble.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_cathexb.o: lib/stralloc/stralloc_cathexb.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_catint.o: lib/stralloc/stralloc_catint.c
@@ -915,6 +917,8 @@ $(BUILDDIR)strlist_froms.o: lib/strlist/strlist_froms.c
 $(BUILDDIR)strlist_index_of.o: lib/strlist/strlist_index_of.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_join.o: lib/strlist/strlist_join.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_joins.o: lib/strlist/strlist_joins.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_push.o: lib/strlist/strlist_push.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

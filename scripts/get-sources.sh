@@ -43,8 +43,8 @@ get_sources() {
 
   if [ -n "$UPDATE" -a -e "$UPDATE" ]; then
     ( sed -i \
-     -e "/^SOURCES =/ { /\\$/ { :lp1; N; /\\$/ b lp1; s,\\\n\s*,,g }; s|=.*|= $(filter "*.c" $FILES)|; }" \
-     -e "/^HEADERS =/ { /\\$/ { :lp2; N; /\\$/ b lp2; s,\\\n\s*,,g }; s|=.*|= $(filter "*.h" $FILES)|; }" \
+     -e "/^SOURCES =/ { /\\\\\$/ { :lp1; N; /\\\\\$/ b lp1; s,\\\\\\n\\s*,,g }; s|=.*|= $(filter "*.c" $FILES)|; }" \
+     -e "/^HEADERS =/ { /\\\\\$/ { :lp2; N; /\\\\\$/ b lp2; s,\\\\\\n\\s*,,g }; s|=.*|= $(filter "*.h" $FILES)|; }" \
      $UPDATE)
 
   elif [ "${QMAKE:-false}" = true ]; then

@@ -51,6 +51,7 @@ int     strlist_unshift(strlist*, const char* s);
 int strlist_contains_sa(strlist*, const stralloc* sa);
 int strlist_push_sa(strlist*, const stralloc* sa);
 int strlist_push_unique_sa(strlist*, const stralloc* sa);
+void strlist_joins(const strlist*, stralloc* sa, const char* delim);
 #endif
 
 # ifdef __cplusplus
