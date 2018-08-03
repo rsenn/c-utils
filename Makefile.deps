@@ -898,6 +898,8 @@ $(BUILDDIR)strarray_pushd.o: lib/strarray/strarray_pushd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strarray_push_sa.o: lib/strarray/strarray_push_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_set.o: lib/strarray/strarray_set.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strarray_to_argv.o: lib/strarray/strarray_to_argv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_at.o: lib/strlist/strlist_at.c

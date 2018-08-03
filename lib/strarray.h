@@ -29,6 +29,7 @@ char* strarray_pop(strarray*, char* s);
 int   strarray_pushb(strarray*, const char* b, size_t n);
 int   strarray_pushd(strarray*, const char* s);
 int   strarray_push(strarray*, char* s);
+int   strarray_set(strarray*, size_t index, const char* s);
 
 #ifdef STRALLOC_H
 int strarray_push_sa (strarray * a, const stralloc * sa);

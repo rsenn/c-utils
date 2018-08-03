@@ -15,7 +15,6 @@
 #include "lib/xml.h"
 
 #define END_OF_LINE "; "
-//#define END_OF_LINE ";\n"
 void after_element(const char*);
 void on_attribute_decl(void*, const char*, const char*, int, int, const char*);
 void on_characters(void*, const char*, int);
@@ -163,22 +162,6 @@ get_part(const char* part) {
 }
 
 /* ----------------------------------------------------------------------- */
-//const instance_t*
-//get_instance(const char* part, const char* gate) {
-//  stralloc key;
-//  stralloc_init(&key);
-//  stralloc_copys(&key, part);
-//  stralloc_cats(&key, ":");
-//  stralloc_cats(&key, gate);
-//  stralloc_nul(&key);
-//  TUPLE* ptr_tuple = NULL;
-//  instance_t* i = NULL;
-//  hmap_search(instances_db, key.s, key.len, &ptr_tuple);
-//  if(ptr_tuple) i = ptr_tuple->vals.val_custom;
-//  return i;
-//}
-
-/* ----------------------------------------------------------------------- */
 instance_t*
 create_instance(const char* part, const char* gate, double x, double y, double rot) {
   int ret;
@@ -258,23 +241,6 @@ update_part(const char* name, double x, double y, double rot) {
   dump_part(p);
 #endif
 }
-
-/* ----------------------------------------------------------------------- */
-//void
-//attr_list(stralloc* sa, HMAP_DB* hmap) {
-//  TUPLE* p;
-//  if(hmap == NULL) return;
-//  for(p = hmap->list_tuple; p; p = p->next) {
-//    if(p->data_type == HMAP_DATA_TYPE_CHARS) {
-//      stralloc_catb(sa, " ", 1);
-//      stralloc_cats(sa, p->key);
-//      stralloc_cats(sa, "=\"");
-//      stralloc_cats(sa, p->vals.val_chars);
-//      stralloc_cats(sa, "\"");
-//    }
-//    if(p->next == hmap->list_tuple) break;
-//  }
-//}
 
 /* ----------------------------------------------------------------------- */
 void
@@ -382,130 +348,11 @@ print_element_names(xmlnode* a_node) {
 }
 
 /* ----------------------------------------------------------------------- */
-//void
-//set_element_name(const char* name) {
-//  stralloc_copys(&element_name, name);
-//}
-
-/* ----------------------------------------------------------------------- */
-//const char*
-//get_element_name() {
-//  stralloc_nul(&element_name);
-//  return element_name.s ? element_name.s : "(null)";
-//}
-
-/* ----------------------------------------------------------------------- */
 int read_xmlfile(const char* filename);
 int parse_xmlfile(const char* filename, xmlnode** p_doc);
 
 
 /* ----------------------------------------------------------------------- */
-//int
-//parse_xmlfile(const char* filename, xmlnode** p_doc) {
-//  buffer input;
-//  buffer_mmapprivate(&input, filename);
-//  *p_doc = xml_read_tree(&input);
-//  return !!*p_doc;
-//}
-
-///* ----------------------------------------------------------------------- */
-//int
-//xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
-//  stralloc_nul(name);
-//  if(reader->closing && id == XML_ELEMENT) {
-//    on_end_element(reader, name->s);
-//  } else if(id == XML_TEXT) {
-//    on_characters(reader, name->s, name->len);
-//  } else if(id == XML_ELEMENT) {
-//    on_start_element(reader, name->s, attrs);
-//  }
-//  return 1;
-//}
-
-/* ----------------------------------------------------------------------- */
-//void
-//on_start_element(void* ctx, const char* name, HMAP_DB** attrs) {
-//  int i, numAttrs = 0;
-//  set_element_name((const char*)name);
-//  if(attrs) {
-//    numAttrs = hmap_size(*attrs);
-//  }
-//  buffer_putm(buffer_1, "<", name, "> ");
-//  buffer_putlong(buffer_1, numAttrs);
-//  buffer_putnlflush(buffer_1);
-
-//  TUPLE* t = (*attrs)->list_tuple;
-//  for(i = 0; i < numAttrs; ++i) {
-//    char *attr = t->key, *value = t->vals.val_chars;
-
-//    buffer_putm(buffer_1, "<", name, "> ");
-//    buffer_putlong(buffer_1, i);
-//    buffer_putc(buffer_1, '/');
-//    buffer_putlong(buffer_1, numAttrs);
-//    buffer_putm(buffer_1, ": ", attr, "=\"", value, "\"\n");
-
-//    hmap_add(&hashmap, attr, str_len(attr), 1, HMAP_DATA_TYPE_CHARS, value, str_len(value));
-//  }
-//}
-
-/* ----------------------------------------------------------------------- */
-//void
-//on_end_element(void* ctx, const char* name) {
-//  after_element((const char*)name);
-//}
-
-/* ----------------------------------------------------------------------- */
-// static void
-// on_end_element_ns(void* ctx,
-//}
-/* ----------------------------------------------------------------------- */
-//void
-//after_element(const char* name) {
-//  stralloc saa;
-//  stralloc_init(&saa);
-//  attr_list(&saa, hashmap);
-//  stralloc_nul(&saa);
-//  stralloc_free(&saa);
-//  hmap_destroy(&hashmap);
-//  hmap_init(1024, &hashmap);
-//  stralloc_zero(&character_buf);
-//}
-
-/* ----------------------------------------------------------------------- */
-//size_t
-//str_escapen(char* out, const char* in, size_t n) {
-//  size_t i;
-//  for(i = 0; i < n; ++i, ++out) {
-//    if(in[i] == '\n') {
-//      *out = '\\';
-//      *++out = 'n';
-//    } else {
-//      *out = in[i];
-//    }
-//  }
-//  *out = '\0';
-//  return i;
-//}
-
-/* ----------------------------------------------------------------------- */
-//void
-//on_characters(void* ctx, const char* ch, int len) {
-//  char* chars = str_ndup(ch, len);
-//  char* escaped = malloc(len * 2 + 1);
-//  int i;
-//  str_copyn(chars, (const char*)ch, len);
-//  str_escapen(escaped, chars, len);
-//  for(i = len - 1; i >= 0; --i) {
-//    if(!isspace(escaped[i])) break;
-//    escaped[i] = '\0';
-//  }
-//  if(str_len(escaped) > 0) {
-//    stralloc_cats(&character_buf, escaped);
-//  }
-//  free(escaped);
-//  free(chars);
-//}
-
 const char*
 mystr_basename(const char* filename) {
   char* s1 = strrchr(filename, '\\');
@@ -554,4 +401,3 @@ main(int argc, char* argv[]) {
   xml_free(xmldoc);
   return 0;
 }
-

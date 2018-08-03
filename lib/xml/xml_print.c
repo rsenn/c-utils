@@ -16,7 +16,10 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
   }
   if(!closing) buffer_putnspace(b, depth * 2);
   buffer_putm(b, "<", node->name);
-  if(node->attributes) xml_print_attributes(node, b, " ", "=", "\"");
+  if(node->attributes) {
+    buffer_putc(b,' ');
+    xml_print_attributes(node, b, " ", "=", "\"");
+  }
 
   if(node->children) {
     buffer_puts(b, ">");

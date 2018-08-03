@@ -23,6 +23,7 @@
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
+#include "lib/strarray.h"
 #include "lib/xml.h"
 #ifdef _MSC_VER
 #define alloca _alloca
@@ -106,6 +107,8 @@ void print_attrs(HMAP_DB* a_node);
 void print_element_attrs(xmlnode* a_node);
 int dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
 cbmap_t devicesets, packages, parts, nets, symbols;
+static array layers;
+
 /**
  * Reads a real-number value from the element/attribute given
  */
@@ -228,6 +231,15 @@ package_pin(struct package* pkg, const char* name) {
     if(p->name.len == nlen && !str_diffn(p->name.s, name, str_len(name))) return i;
   }
   return -1;
+}
+void
+build_layers(xmlnode* layer) {
+  int num = atoi(xml_get_attribute(layer, "number"));
+  char** p = array_allocate(&layers, sizeof(char*), num);
+
+  *p = str_dup(xml_get_attribute(layer, "name"));
+//  xml_print(layer, buffer_1);
+
 }
 
 /**
@@ -793,7 +805,19 @@ main(int argc, char* argv[]) {
   match_foreach(doc, "symbol", build_sym);
   cbmap_visit_all(packages, dump_package, "package");
   cbmap_visit_all(parts, dump_part, "part");
-  cbmap_visit_all(nets, dump_net, "nets");
+
+  match_foreach(doc, "layer", build_layers);
+
+  for(size_t i = 0; i < array_length(&layers, sizeof(char*)); ++i) {
+    buffer_puts(buffer_2, "layer ");
+    buffer_putlong(buffer_2, i);
+    const char* name = *(char**)array_get(&layers, sizeof(char*), i);
+    buffer_putm(buffer_2, " \"", name ? name : "", "\"");
+    buffer_putnlflush(buffer_2);
+  }
+
+//  cbmap_visit_all(nets, dump_net, "nets");
+
   /*
    * Cleanup function for the XML library.
    */
