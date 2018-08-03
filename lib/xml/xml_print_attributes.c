@@ -23,7 +23,7 @@ xml_print_attributes(xmlnode* node, buffer* b, const char* sep, const char* eq, 
         buffer_putulonglong(b, tpl->vals.val_uint64);
         break;
       case HMAP_DATA_TYPE_DOUBLE:
-        buffer_putdouble(b, tpl->vals.val_double);
+        buffer_putdouble(b, tpl->vals.val_double, 15);
         break;
       case HMAP_DATA_TYPE_CHARS:
         buffer_put(b, tpl->vals.val_chars, tpl->data_len);

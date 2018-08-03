@@ -28,7 +28,7 @@ hmap_dump(HMAP_DB* hmap, buffer* b) {
         buffer_putulonglong(b, tuple->vals.val_uint64);
         break;
       case HMAP_DATA_TYPE_DOUBLE:
-        buffer_putdouble(b, tuple->vals.val_double);
+        buffer_putdouble(b, tuple->vals.val_double, 15);
         break;
       case HMAP_DATA_TYPE_CHARS:
         buffer_putm(b, "\"", tuple->vals.val_chars, "\"");

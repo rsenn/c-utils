@@ -34,7 +34,7 @@ hmap_print_tree_tuple(HMAP_DB* hmap) {
             buffer_putulonglong(buffer_1, t->vals.val_uint64);
             break;
           case HMAP_DATA_TYPE_DOUBLE:
-            buffer_putdouble(buffer_1, t->vals.val_double);
+            buffer_putdouble(buffer_1, t->vals.val_double, 15);
             break;
           case HMAP_DATA_TYPE_CHARS:
             buffer_put(buffer_1, t->vals.val_chars, t->data_len);

@@ -15,7 +15,7 @@ json_print_val(jsonval* val, buffer* b, int depth) {
       buffer_puts(b, "\"");
       break;
     case JSON_DOUBLE:
-      buffer_putdouble(b, val->doublev);
+      buffer_putdouble(b, val->doublev, 15);
       break;
     case JSON_BOOL:
       buffer_puts(b, val->boolv ? "true" : "false");

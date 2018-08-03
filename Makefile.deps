@@ -1050,6 +1050,8 @@ $(BUILDDIR)xml_free.o: lib/xml/xml_free.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_get_attribute.o: lib/xml/xml_get_attribute.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_get_attribute_sa.o: lib/xml/xml_get_attribute_sa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_get_document.o: lib/xml/xml_get_document.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_has_attribute.o: lib/xml/xml_has_attribute.c

@@ -301,27 +301,13 @@ hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
 //  }
 //}
 
-/* ----------------------------------------------------------------------- */
-int
-get_attribute_sa(stralloc* sa, xmlnode* n, const char* name) {
-  TUPLE* t;
-  if(hmap_search(n->attributes, (char*)name, str_len(name), &t) == HMAP_SUCCESS) {
-    stralloc_copyb(sa, t->vals.val_chars, t->data_len);
-    if(sa->len > 0 && sa->s[sa->len - 1] == '\0') --sa->len;
-    return 1;
-  }
-  return 0;
-}
 
 /* ----------------------------------------------------------------------- */
 int
 get_attribute_double(double* d, xmlnode* e, const char* name) {
-  stralloc sa;
-  stralloc_init(&sa);
-  if(!get_attribute_sa(&sa, e, name)) return 0;
-  stralloc_nul(&sa);
-  if(scan_double(sa.s, d) == sa.len) return 1;
-  return 0;
+  char* value;
+  if(!(value = xml_get_attribute(e, name))) return 0;
+  return value[scan_double(value, d)] != '\0';
 }
 
 /* ----------------------------------------------------------------------- */
@@ -345,11 +331,11 @@ process_instance(xmlnode* e) {
   double x = 0.0, y = 0.0, rotate = 0.0;
   stralloc part, gate, rot;
   stralloc_init(&part);
-  get_attribute_sa(&part, e, "part");
+  xml_get_attribute_sa(e, &part, "part");
   stralloc_init(&gate);
-  get_attribute_sa(&gate, e, "gate");
+  xml_get_attribute_sa(e, &gate, "gate");
   stralloc_init(&rot);
-  get_attribute_sa(&rot, e, "rot");
+  xml_get_attribute_sa(e, &rot, "rot");
   if(rot.len > 0) {
     const char* r = rot.s;
     while(*r && !isdigit(*r)) ++r;
@@ -373,15 +359,15 @@ void
 process_part(xmlnode* e) {
   stralloc name, library, deviceset, device, value;
   stralloc_init(&name);
-  get_attribute_sa(&name, e, "name");
+  xml_get_attribute_sa(e, &name, "name");
   stralloc_init(&library);
-  get_attribute_sa(&library, e, "library");
+  xml_get_attribute_sa(e, &library, "library");
   stralloc_init(&deviceset);
-  get_attribute_sa(&deviceset, e, "deviceset");
+  xml_get_attribute_sa(e, &deviceset, "deviceset");
   stralloc_init(&device);
-  get_attribute_sa(&device, e, "device");
+  xml_get_attribute_sa(e, &device, "device");
   stralloc_init(&value);
-  get_attribute_sa(&value, e, "value");
+  xml_get_attribute_sa(e, &value, "value");
   part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s);
 }
 
@@ -560,22 +546,16 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
     return 1;
   }
-  /*   if(read_xmlfile(f)) {*/
+
   buffer input;
   buffer_mmapprivate(&input, filename);
-  // xmlreader rd;
-  // xml_read_callback(&rd, xml_callback);
+
   xmldoc = xml_read_tree(&input);
+
   /* Get the root element node */
   root_element = xmldoc->children;
   print_element_names(root_element);
-//  print_list(instances_db);
-  {
-    const part_t* tmp = get_part("IC1");
-    if(tmp) dump_part(tmp);
-  }
-  /*hmap_foreach(instances_db, &dump_instance);*/
-  /*hmap_foreach(parts_db, &dump_part);*/
+
   hmap_foreach(parts_db, (void*)&each_part);
   buffer_flush(buffer_1);
 

@@ -76,6 +76,7 @@ void        xml_read_callback(xmlreader*, xml_read_callback_fn* fn);
 xmlnode*    xml_read_tree(buffer*);
 xmlnode*    xml_root_element(xmlnode*);
 xmlnode*    xml_textnode(const char*, size_t len);
+int         xml_get_attribute_sa(xmlnode*, stralloc* sa, const char* name);
 
 #define xml_attributes(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 
