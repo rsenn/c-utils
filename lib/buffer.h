@@ -139,7 +139,7 @@ int buffer_putlong(buffer *b, signed long int l);
 int buffer_putlonglong(buffer* b, signed long long int l);
 int buffer_putulonglong(buffer* b, unsigned long long int l);
 
-int buffer_putdouble(buffer *b, double d);
+int buffer_putdouble(buffer *b, double d, int prec);
 
 int buffer_puterror(buffer* b);
 int buffer_puterror2(buffer* b,  int errnum);

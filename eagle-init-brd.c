@@ -65,11 +65,11 @@ dump_part(part_t const* p) {
   buffer_putm(buffer_2, "dump_part{name=", p->name, ",library=", p->library, ",deviceset", p->deviceset, ",device=", p->device, ",value=", p->value);
 
   buffer_puts(buffer_2, ",x=");
-  buffer_putdouble(buffer_2, p->x);
+  buffer_putdouble(buffer_2, p->x, 1);
   buffer_puts(buffer_2, ",y=");
-  buffer_putdouble(buffer_2, p->y);
+  buffer_putdouble(buffer_2, p->y, 1);
   buffer_puts(buffer_2, ",rot=");
-  buffer_putdouble(buffer_2, p->rot);
+  buffer_putdouble(buffer_2, p->rot, 0);
   buffer_putnlflush(buffer_2);
 }
 
@@ -78,11 +78,11 @@ void
 dump_instance(instance_t const* i) {
   buffer_putm(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"");
   buffer_puts(buffer_2, " x=");
-  buffer_putdouble(buffer_2, i->x);
+  buffer_putdouble(buffer_2, i->x, 2);
   buffer_puts(buffer_2, ", y=");
-  buffer_putdouble(buffer_2, i->y);
+  buffer_putdouble(buffer_2, i->y, 2);
   buffer_puts(buffer_2, ", rot=");
-  buffer_putdouble(buffer_2, i->rot);
+  buffer_putdouble(buffer_2, i->rot, 0);
   buffer_putnlflush(buffer_2);
 }
 
@@ -108,14 +108,10 @@ output_move(const char* name, double x, double y) {
   stralloc_init(&cmd);
 
   stralloc_catm(&cmd, "MOVE ", name, " (");
-  stralloc_catdouble(&cmd, x, 1);
+  stralloc_catdouble(&cmd, x, 2);
   stralloc_catc(&cmd, ' ');
-  stralloc_catdouble(&cmd, y, 1);
+  stralloc_catdouble(&cmd, y, 2);
   stralloc_catc(&cmd, ')');
-
-
-  buffer_putsa(buffer_1, &cmd);
-  buffer_putnlflush(buffer_1);
 
   strlist_push_sa(&cmds, &cmd);
   stralloc_free(&cmd);
@@ -130,9 +126,6 @@ output_rotate(const char* name, long angle) {
   stralloc_cats(&cmd, "ROTATE =R");
   stralloc_catlong(&cmd, angle % 360);
   stralloc_catm(&cmd, " '", name, "'");
-
-  buffer_putsa(buffer_1, &cmd);
-  buffer_putnlflush(buffer_1);
 
   strlist_push_sa(&cmds, &cmd);
   stralloc_free(&cmd);

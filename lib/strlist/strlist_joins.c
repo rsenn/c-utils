@@ -7,10 +7,9 @@ strlist_joins(const strlist* sl, stralloc* sa, const char* delim) {
 
   for(i = 0; i < sl->sa.len; i +=  n + 1) {
     n = str_len(&sl->sa.s[i]);
-    stralloc_catb(sa, &sl->sa.s[i], n);
-    if(n + 1 < sl->sa.len)
+    if(i > 0)
       stralloc_cats(sa, delim);
-    return 1;
+    stralloc_catb(sa, &sl->sa.s[i], n);
   }
   return 0;
 }
