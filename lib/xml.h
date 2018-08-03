@@ -59,7 +59,7 @@ size_t      xml_escape(const char*, size_t n, stralloc* out);
 xmlnodeset  xml_find_all(xmlnode*, int (*pred)(void), ...);
 xmlnode*    xml_find_element_attr(xmlnode*, const char* tag, const char* attr, const char* value);
 xmlnode*    xml_find_element(xmlnode*, const char* tag);
-xmlnode*    xml_find_pred(xmlnode*, int (*pred)(xmlnode*, void* ), ...);
+xmlnode*    xml_find_pred(xmlnode*, int (*pred)(xmlnode*, void* ), void* pthread_rwlockattr_t);
 void        xml_free(xmlnode*);
 char*       xml_get_attribute(xmlnode*, const char* attr);
 xmlnode*    xml_get_document(xmlnode*);
@@ -77,6 +77,9 @@ xmlnode*    xml_read_tree(buffer*);
 xmlnode*    xml_root_element(xmlnode*);
 xmlnode*    xml_textnode(const char*, size_t len);
 int         xml_get_attribute_sa(xmlnode*, stralloc* sa, const char* name);
+xmlnode*    xml_remove(xmlnode**);
+void        xml_delete(xmlnode*);
+void        xml_add_child(xmlnode*, xmlnode* node);
 
 #define xml_attributes(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 

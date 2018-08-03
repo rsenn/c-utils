@@ -33,7 +33,7 @@ void array_reset(array* x);
 void array_fail(array* x);
 int array_equal(const array* const x,const array* const y);
 void array_cat(array* to,const array* const from);
-void array_catb(array* to,const char* from,uint64 len);
+void array_catb(array* to,const void* from,uint64 len);
 void array_cats(array* to,const char* from);
 void array_cats0(array* to,const char* from);
 void array_cat0(array* to);

@@ -22,8 +22,8 @@
 #include "lib/scan.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
-#include "lib/strlist.h"
 #include "lib/strarray.h"
+#include "lib/strlist.h"
 #include "lib/xml.h"
 #ifdef _MSC_VER
 #define alloca _alloca
@@ -42,7 +42,6 @@
  * copy: see Copyright for the status of this software.
  */
 #include <stdio.h>
-
 
 struct pad {
   stralloc name;
@@ -92,6 +91,10 @@ struct ref {
     int pin;
   };
 };
+typedef struct wire {
+  double x1, y1, x2, y2;
+} wire, rect;
+
 struct net {
   stralloc name;
   array contacts; /**<  list of struct ref */
@@ -107,7 +110,10 @@ void print_attrs(HMAP_DB* a_node);
 void print_element_attrs(xmlnode* a_node);
 int dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
 cbmap_t devicesets, packages, parts, nets, symbols;
-static array layers;
+static strarray layers;
+static int measures_layer = -1;
+static array wires;
+static rect bounds;
 
 /**
  * Reads a real-number value from the element/attribute given
@@ -163,6 +169,23 @@ get_child(xmlnode* node, const char* name) {
     if(!str_diff(node->name, name)) return node;
   }
   return NULL;
+}
+
+wire
+get_wire(xmlnode* node) {
+  wire ret;
+  ret.x1 = get_double(node, "x1");
+  ret.y1 = get_double(node, "y1");
+  ret.x2 = get_double(node, "x2");
+  ret.y2 = get_double(node, "y2");
+
+  stralloc p;
+  stralloc_init(&p);
+  xml_path(node, &p);
+  buffer_putsa(buffer_2, &p);
+  buffer_putnlflush(buffer_2);
+
+  return ret;
 }
 
 /**
@@ -232,14 +255,37 @@ package_pin(struct package* pkg, const char* name) {
   }
   return -1;
 }
+
 void
 build_layers(xmlnode* layer) {
   int num = atoi(xml_get_attribute(layer, "number"));
-  char** p = array_allocate(&layers, sizeof(char*), num);
 
-  *p = str_dup(xml_get_attribute(layer, "name"));
-//  xml_print(layer, buffer_1);
+  strarray_set(&layers, num, xml_get_attribute(layer, "name"));
+  //  xml_print(layer, buffer_1);
+}
 
+void
+update_bounds(double x, double y) {
+  if(x < bounds.x1) bounds.x1 = x;
+  if(x > bounds.x2) bounds.x2 = x;
+  if(y < bounds.y1) bounds.y1 = y;
+  if(y > bounds.y2) bounds.y2 = x;
+}
+
+void
+check_wire(xmlnode* node) {
+  int layer = atoi(xml_get_attribute(node, "layer"));
+  wire w = get_wire(node);
+
+  if(layer == measures_layer) {
+
+    array_catb(&wires, &w, sizeof(wire));
+
+    xml_delete(node);
+  } else {
+    update_bounds(w.x1, w.y1);
+    update_bounds(w.x2, w.y2);
+  }
 }
 
 /**
@@ -787,6 +833,8 @@ main(int argc, char* argv[]) {
   } else if(argv[2]) {
     xq = argv[2];
   }
+
+  const char* base = str_basename(argv[1]);
   buffer input;
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
@@ -803,20 +851,41 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
   match_foreach(doc, "net|signal", build_nets);
   match_foreach(doc, "symbol", build_sym);
-  cbmap_visit_all(packages, dump_package, "package");
-  cbmap_visit_all(parts, dump_part, "part");
+  // cbmap_visit_all(packages, dump_package, "package");
+  // cbmap_visit_all(parts, dump_part, "part");
 
   match_foreach(doc, "layer", build_layers);
 
-  for(size_t i = 0; i < array_length(&layers, sizeof(char*)); ++i) {
-    buffer_puts(buffer_2, "layer ");
-    buffer_putlong(buffer_2, i);
-    const char* name = *(char**)array_get(&layers, sizeof(char*), i);
-    buffer_putm(buffer_2, " \"", name ? name : "", "\"");
-    buffer_putnlflush(buffer_2);
-  }
+  //  for(size_t i = 0; i < array_length(&layers.a, sizeof(char*)); ++i) {
+  //    buffer_puts(buffer_2, "layer ");
+  //    buffer_putlong(buffer_2, i);
+  //    const char* name = *(char**)array_get(&layers.a, sizeof(char*), i);
+  //    buffer_putm(buffer_2, " \"", name ? name : "", "\"");
+  //    buffer_putnlflush(buffer_2);
+  //  }
 
-//  cbmap_visit_all(nets, dump_net, "nets");
+  measures_layer = strarray_index_of(&layers, "Measures");
+
+  buffer_puts(buffer_2, "Measures layer: ");
+  buffer_putlong(buffer_2, measures_layer);
+  buffer_putnlflush(buffer_2);
+
+  match_foreach(doc, "wire", check_wire);
+
+  xmlnode* plain = xml_find_element(doc, "plain");
+
+
+
+  xml_print(plain, buffer_2);
+
+
+
+  buffer out;
+  buffer_truncfile(&out, base);
+
+  xml_print(doc, &out);
+
+  //  cbmap_visit_all(nets, dump_net, "nets");
 
   /*
    * Cleanup function for the XML library.
@@ -827,4 +896,3 @@ main(int argc, char* argv[]) {
    */
   return (0);
 }
-

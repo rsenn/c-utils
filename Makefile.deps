@@ -1036,6 +1036,8 @@ $(BUILDDIR)xml_content_sa.o: lib/xml/xml_content_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_debug.o: lib/xml/xml_debug.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_delete.o: lib/xml/xml_delete.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_escape.o: lib/xml/xml_escape.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_find_all_pred.o: lib/xml/xml_find_all_pred.c
@@ -1073,6 +1075,8 @@ $(BUILDDIR)xml_reader_init.o: lib/xml/xml_reader_init.c
 $(BUILDDIR)xml_read_callback.o: lib/xml/xml_read_callback.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_read_tree.o: lib/xml/xml_read_tree.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_remove.o: lib/xml/xml_remove.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_root_element.o: lib/xml/xml_root_element.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

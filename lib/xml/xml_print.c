@@ -39,10 +39,10 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
     closing = 1;
   }
 
-  if(node->next && depth == 0) {
-    xmlnode* next = node->next;
-    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);
-  }
+//  if(node->next && depth == 0) {
+//    xmlnode* next = node->next;
+//    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);
+//  }
   (closing ? buffer_putnlflush : buffer_flush)(b);
 }
 
@@ -55,5 +55,10 @@ xml_print_list(xmlnode* node, buffer* b, int depth) {
 
 void
 xml_print(xmlnode* node, buffer* b) {
+  if(node->type == XML_DOCUMENT) {
+    buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+    node = node->children;
+  }
+
   (node->parent ? xml_print_node : xml_print_list)(node, b, 0);
 }
