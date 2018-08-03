@@ -1,6 +1,5 @@
 ﻿#include <ctype.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -73,40 +72,58 @@ str_copyn(char* out, const char* in, size_t n) {
 /* ----------------------------------------------------------------------- */
 void
 each_part(part_t* p) {
-  if(p->device[0] == '\0' && p->value[0] == '\0') return;
-  {
-    printf("MOVE %s (%.2f %.2f)" END_OF_LINE, p->name, p->x - min_x, p->y - min_y);
-    fflush(stdout);
+  if(p->device[0] != '\0' || p->value[0] != '\0') {
+
+    buffer_putm(buffer_1, "MOVE ", p->name, " (");
+    buffer_putdouble(buffer_1, p->x - min_x);
+    buffer_putc(buffer_1, ' ');
+    buffer_putdouble(buffer_1, p->y - min_y);
+    buffer_putc(buffer_1, ')');
+    buffer_putnlflush(buffer_1);
+
+
     if(fabs(p->rot) >= 0.1) {
       int angle = (int)((p->rot / 90)) * 90.0;
       while(angle < 0) angle += 360;
       while(angle > 360) angle -= 360;
-      printf("ROTATE =R%d '%s'" END_OF_LINE, angle % 360, p->name);
+
+      buffer_puts(buffer_1, "ROTATE =R");
+      buffer_putlong(buffer_1, angle % 360);
+      buffer_putm(buffer_1, " '", p->name, "'");
+      buffer_putnlflush(buffer_1);
     }
   }
-  /*  printf("each_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n",
-      p->name, p->library, p->deviceset, p->device, p->value);*/
+
+#ifdef DEBUG
+  dump_part(p);
+#endif
 }
 
 /* ----------------------------------------------------------------------- */
 void
 dump_part(part_t const* p) {
-  printf("dump_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%.2f,"
-         "y=%.2f,rot=%.0f}\n",
-         p->name,
-         p->library,
-         p->deviceset,
-         p->device,
-         p->value,
-         p->x,
-         p->y,
-         p->rot);
+  buffer_putm(buffer_2, "dump_part{name=", p->name, ",library=", p->library, ",deviceset", p->deviceset, ",device=", p->device, ",value=", p->value);
+
+  buffer_puts(buffer_2, ",x=");
+  buffer_putdouble(buffer_2, p->x);
+  buffer_puts(buffer_2, ",y=");
+  buffer_putdouble(buffer_2, p->y);
+  buffer_puts(buffer_2, ",rot=");
+  buffer_putdouble(buffer_2, p->rot);
+  buffer_putnlflush(buffer_2);
 }
 
 /* ----------------------------------------------------------------------- */
 void
 dump_instance(instance_t const* i) {
-  printf("dump_instance \"%s:%s\" x=%.2f, y=%.2f, rot=%.f\n", i->part, i->gate, i->x, i->y, i->rot);
+  buffer_putm(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"");
+  buffer_puts(buffer_2, " x=");
+  buffer_putdouble(buffer_2, i->x);
+  buffer_puts(buffer_2, ", y=");
+  buffer_putdouble(buffer_2, i->y);
+  buffer_puts(buffer_2, ", rot=");
+  buffer_putdouble(buffer_2, i->rot);
+  buffer_putnlflush(buffer_2);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -138,9 +155,6 @@ get_instance(const char* part, const char* gate) {
 /* ----------------------------------------------------------------------- */
 instance_t*
 create_instance(const char* part, const char* gate, double x, double y, double rot) {
-#if DEBUG
-  printf("create_instance{part=%s,gate=%s,x=%.2f,y=%.2f,rot=%.f}\n", part, gate, x, y, rot);
-#endif
   int ret;
   stralloc key;
   instance_t* i;
@@ -157,6 +171,9 @@ create_instance(const char* part, const char* gate, double x, double y, double r
   i->rot = rot;
   hmap_add(&instances_db, key.s, key.len, 1, HMAP_DATA_TYPE_CUSTOM, i);
   update_part(part, x, y, rot);
+#ifdef DEBUG
+  dump_instance(i);
+#endif
   return i;
 }
 
@@ -166,9 +183,6 @@ create_part(const char* name, const char* library, const char* deviceset, const 
   if(value == NULL) value = "";
     /*if(deviceset == NULL) deviceset = "";
     if(device == NULL) device = "";*/
-#if DEBUG
-  printf("create_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s}\n", name, library, deviceset, device, value);
-#endif
   part_t* p;
   p = malloc(sizeof(part_t));
   if(p == NULL) return NULL;
@@ -181,6 +195,9 @@ create_part(const char* name, const char* library, const char* deviceset, const 
   p->y = 0.0;
   p->rot = 0.0;
   hmap_add(&parts_db, (char*)name, str_len(name), 1, HMAP_DATA_TYPE_CUSTOM, p);
+#ifdef DEBUG
+  dump_part(p);
+#endif
   return p;
 }
 
@@ -189,21 +206,7 @@ void
 update_part(const char* name, double x, double y, double rot) {
   part_t* p = get_part(name);
   if(p == NULL) return;
-#if DEBUG
-  printf("update_part{name=%s,library=%s,deviceset=%s,device=%s,value=%s,x=%."
-         "2f,y=%.2f,rot=%.0f}[%.2f,%.2f,%.2f]\n",
-         p->name,
-         p->library,
-         p->deviceset,
-         p->device,
-         p->value,
-         p->x,
-         p->y,
-         p->rot,
-         x,
-         y,
-         rot);
-#endif
+
   if(p->x == 0.0 || isnan(p->x)) {
     p->x = x;
   } else {
@@ -225,6 +228,9 @@ update_part(const char* name, double x, double y, double rot) {
     p->rot = round(p->rot);
   }
   update_minmax_xy(p->x, p->y);
+#ifdef DEBUG
+  dump_part(p);
+#endif
 }
 
 /* ----------------------------------------------------------------------- */
@@ -256,21 +262,21 @@ hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
 }
 
 /* ----------------------------------------------------------------------- */
-void
-print_list(HMAP_DB* hmap) {
-  TUPLE* p;
-  if(hmap == NULL) return;
-  for(p = hmap->list_tuple; p; p = p->next) {
-    if(p->data_type == HMAP_DATA_TYPE_CHARS) {
-      /* printf("index[%d][%p] key[%s], data[%s]\n", p->index, p,  p->key,
-       * p->vals.val_chars); */
-      printf("key=\"%s\",data=\"%s\"\n", p->key, p->vals.val_chars);
-    } else if(p->data_type == HMAP_DATA_TYPE_CUSTOM) {
-      printf("key=\"%s\",data=%p\n", p->key, p->vals.val_custom);
-    }
-    if(p->next == hmap->list_tuple) break;
-  }
-}
+//void
+//print_list(HMAP_DB* hmap) {
+//  TUPLE* p;
+//  if(hmap == NULL) return;
+//  for(p = hmap->list_tuple; p; p = p->next) {
+//    if(p->data_type == HMAP_DATA_TYPE_CHARS) {
+//      /* printf("index[%d][%p] key[%s], data[%s]\n", p->index, p,  p->key,
+//       * p->vals.val_chars); */
+//      printf("key=\"%s\",data=\"%s\"\n", p->key, p->vals.val_chars);
+//    } else if(p->data_type == HMAP_DATA_TYPE_CUSTOM) {
+//      printf("key=\"%s\",data=%p\n", p->key, p->vals.val_custom);
+//    }
+//    if(p->next == hmap->list_tuple) break;
+//  }
+//}
 
 /* ----------------------------------------------------------------------- */
 int
@@ -430,11 +436,20 @@ on_start_element(void* ctx, const char* name, HMAP_DB** attrs) {
   if(attrs) {
     numAttrs = hmap_size(*attrs);
   }
-  printf("<%s> %d\n", name, numAttrs);
+  buffer_putm(buffer_1, "<", name, "> ");
+  buffer_putlong(buffer_1, numAttrs);
+  buffer_putnlflush(buffer_1);
+
   TUPLE* t = (*attrs)->list_tuple;
   for(i = 0; i < numAttrs; ++i) {
     char *attr = t->key, *value = t->vals.val_chars;
-    printf("<%s> %d/%d: %s=\"%s\"\n", name, i, numAttrs, attr, value);
+
+    buffer_putm(buffer_1, "<", name, "> ");
+    buffer_putlong(buffer_1, i);
+    buffer_putc(buffer_1, '/');
+    buffer_putlong(buffer_1, numAttrs);
+    buffer_putm(buffer_1, ": ", attr, "=\"", value, "\"\n");
+
     hmap_add(&hashmap, attr, str_len(attr), 1, HMAP_DATA_TYPE_CHARS, value, str_len(value));
   }
 }
@@ -456,7 +471,7 @@ after_element(const char* name) {
   stralloc_init(&saa);
   attr_list(&saa, hashmap);
   stralloc_nul(&saa);
-  if(saa.len) printf("<%s> attrs:%s\n", get_element_name(), saa.s);
+//  if(saa.len) printf("<%s> attrs:%s\n", get_element_name(), saa.s);
   stralloc_free(&saa);
   hmap_destroy(&hashmap);
   hmap_init(1024, &hashmap);
@@ -533,7 +548,7 @@ main(int argc, char* argv[]) {
   /* Get the root element node */
   root_element = xmldoc->children;
   print_element_names(root_element);
-  print_list(instances_db);
+//  print_list(instances_db);
   {
     const part_t* tmp = get_part("IC1");
     if(tmp) dump_part(tmp);
