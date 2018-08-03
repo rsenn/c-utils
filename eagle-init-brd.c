@@ -54,6 +54,35 @@ typedef struct instance {
   double x, y;
   double rot;
 } instance_t;
+
+
+/* ----------------------------------------------------------------------- */
+void
+dump_part(part_t const* p) {
+  buffer_putm(buffer_2, "dump_part{name=", p->name, ",library=", p->library, ",deviceset", p->deviceset, ",device=", p->device, ",value=", p->value);
+
+  buffer_puts(buffer_2, ",x=");
+  buffer_putdouble(buffer_2, p->x);
+  buffer_puts(buffer_2, ",y=");
+  buffer_putdouble(buffer_2, p->y);
+  buffer_puts(buffer_2, ",rot=");
+  buffer_putdouble(buffer_2, p->rot);
+  buffer_putnlflush(buffer_2);
+}
+
+/* ----------------------------------------------------------------------- */
+void
+dump_instance(instance_t const* i) {
+  buffer_putm(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"");
+  buffer_puts(buffer_2, " x=");
+  buffer_putdouble(buffer_2, i->x);
+  buffer_puts(buffer_2, ", y=");
+  buffer_putdouble(buffer_2, i->y);
+  buffer_puts(buffer_2, ", rot=");
+  buffer_putdouble(buffer_2, i->rot);
+  buffer_putnlflush(buffer_2);
+}
+
 /* ----------------------------------------------------------------------- */
 inline static double
 round_to_mil(double val, double mil) {
@@ -99,32 +128,6 @@ each_part(part_t* p) {
 #endif
 }
 
-/* ----------------------------------------------------------------------- */
-void
-dump_part(part_t const* p) {
-  buffer_putm(buffer_2, "dump_part{name=", p->name, ",library=", p->library, ",deviceset", p->deviceset, ",device=", p->device, ",value=", p->value);
-
-  buffer_puts(buffer_2, ",x=");
-  buffer_putdouble(buffer_2, p->x);
-  buffer_puts(buffer_2, ",y=");
-  buffer_putdouble(buffer_2, p->y);
-  buffer_puts(buffer_2, ",rot=");
-  buffer_putdouble(buffer_2, p->rot);
-  buffer_putnlflush(buffer_2);
-}
-
-/* ----------------------------------------------------------------------- */
-void
-dump_instance(instance_t const* i) {
-  buffer_putm(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"");
-  buffer_puts(buffer_2, " x=");
-  buffer_putdouble(buffer_2, i->x);
-  buffer_puts(buffer_2, ", y=");
-  buffer_putdouble(buffer_2, i->y);
-  buffer_puts(buffer_2, ", rot=");
-  buffer_putdouble(buffer_2, i->rot);
-  buffer_putnlflush(buffer_2);
-}
 
 /* ----------------------------------------------------------------------- */
 inline static part_t*
