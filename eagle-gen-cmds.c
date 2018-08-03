@@ -917,10 +917,24 @@ main(int argc, char* argv[]) {
   xml_add_child(plain, right);
   xml_add_child(plain, bottom);
 
-  xmlnode* polygon = xml_find_element(doc, "polygon");
+  xmlnode* gnd_signal = xml_find_element_attr(doc, "signal", "name", "GND");
+  xmlnode* polygon = xml_find_element(gnd_signal, "polygon");
 
-  xml_free(polygon->children);
-  polygon->children = NULL;
+  if(polygon == NULL) {
+    polygon = xml_element("polygon");
+
+    xml_set_attribute(polygon, "width", "0.254");
+    xml_set_attribute(polygon, "layer", "16");
+    xml_set_attribute(polygon, "isolate", "1.27");
+    xml_set_attribute(polygon, "thermals", "yes");
+
+    xml_add_child(gnd_signal, polygon);
+  }
+
+  if(polygon->children) {
+    xml_free(polygon->children);
+    polygon->children = NULL;
+  }
 
   xmlnode* n;
   n = xml_element("vertex");
