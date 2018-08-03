@@ -24,24 +24,14 @@
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/xml.h"
+
 #ifdef _MSC_VER
 #define alloca _alloca
 #endif
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327950288
 #endif
-/**
- * section: Parsing
- * synopsis: Parse an XML document in memory to a tree and free it
- * purpose: Demonstrate the use of xmlReadMemory() to read an XML file
- *          into a tree and and xml_free() to free the resulting tree
- * usage: parse3
- * test: parse3
- * author: Daniel Veillard
- * copy: see Copyright for the status of this software.
- */
-#include <stdio.h>
-
 
 struct pad {
   stralloc name;
@@ -136,20 +126,6 @@ get_int(xmlnode* node, const char* key) {
     if(!scan_long(istr, &ret)) ret = INT_MAX;
   }
   return ret;
-}
-
-/**
- * Gets a parent element by name.
- */
-xmlnode*
-get_parent(void* n, const char* parent) {
-  xmlnode* node = n;
-
-  for(node = n; node; node = node->parent) {
-    if(node->name == NULL) continue;
-    if(str_equal(node->name, parent)) break;
-  }
-  return (xmlnode*)node;
 }
 
 /**
@@ -442,46 +418,6 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
   for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it) fn(*it);
 }
 
-/**
- * Get the top-leftmost x and y coordinate from a set of nodes.
- */
-void
-nodeset_topleft(xmlnodeset* s, double* x, double* y) {
-  int i, len = xmlnodeset_size(s);
-  if(len == 0) return;
-  xmlnode* node = xmlnodeset_item(s, 0);
-  *x = get_double(node, "x");
-  *y = get_double(node, "y");
-
-  for(i = 1; i < len; ++i) {
-    node = xmlnodeset_item(s, i);
-    double nx = get_double(node, "x");
-    double ny = get_double(node, "y");
-    if(nx < *x) *x = nx;
-    if(ny < *y) *y = ny;
-  }
-}
-
-/**
- * get extrema from x/y attrs
- */
-void
-tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
-  xmlnode* node = elem->children;
-  if(node == 0) return;
-  while(node && node->type != XML_ELEMENT && str_diff(node->name, elems)) node = node->next;
-  *x = get_double(node, "x");
-  *y = get_double(node, "y");
-
-  while((node = node->next)) {
-    if(node->type != XML_ELEMENT || str_diff(node->name, elems)) continue;
-    double nx = get_double(node, "x");
-    double ny = get_double(node, "y");
-    if(nx < *x) *x = nx;
-    if(ny < *y) *y = ny;
-  }
-}
-
 int
 dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
@@ -580,18 +516,6 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
   }
   return 1;
 }
-
-/**
- *  node_print: Prints XML node
- */
-void
-node_print(xmlnode* node) {
-  buffer_putm(buffer_1, "<", node->name);
-  print_element_attrs(node);
-  buffer_putm(buffer_1, ">");
-  buffer_putnlflush(buffer_1);
-}
-
 /**
  *  hashmap_dump: Gets depth of node in hierarchy
  */
@@ -610,11 +534,6 @@ str_ischarset(const char* s, const char* set) {
     ++s;
   }
   return 1;
-}
-
-int
-str_isfloat(const char* s) {
-  return str_ischarset(s, "0123456789.-+Ee");
 }
 
 int
@@ -725,11 +644,6 @@ print_element_names(xmlnode* node) {
   }
 }
 
-int
-buffer_read(void* ptr, char* buf, int len) {
-  return buffer_get(ptr, buf, len);
-}
-
 void
 match_query(xmlnode* doc, const char* q) {
   print_name_value(buffer_1, "XPath query", q);
@@ -789,7 +703,6 @@ match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
 }
 
 int
-
 main(int argc, char* argv[]) {
   devicesets = cbmap_new();
   packages = cbmap_new();
