@@ -1028,6 +1028,8 @@ $(BUILDDIR)umult64.o: lib/umult64.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)utf8.o: lib/utf8.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_add_child.o: lib/xml/xml_add_child.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_attrnode.o: lib/xml/xml_attrnode.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_content.o: lib/xml/xml_content.c
@@ -1037,6 +1039,8 @@ $(BUILDDIR)xml_content_sa.o: lib/xml/xml_content_sa.c
 $(BUILDDIR)xml_debug.o: lib/xml/xml_debug.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_delete.o: lib/xml/xml_delete.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_element.o: lib/xml/xml_element.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_escape.o: lib/xml/xml_escape.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1060,6 +1064,8 @@ $(BUILDDIR)xml_get_document.o: lib/xml/xml_get_document.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_has_attribute.o: lib/xml/xml_has_attribute.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_insert.o: lib/xml/xml_insert.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_newnode.o: lib/xml/xml_newnode.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_path.o: lib/xml/xml_path.c
@@ -1079,6 +1085,10 @@ $(BUILDDIR)xml_read_tree.o: lib/xml/xml_read_tree.c
 $(BUILDDIR)xml_remove.o: lib/xml/xml_remove.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_root_element.o: lib/xml/xml_root_element.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_set_attribute.o: lib/xml/xml_set_attribute.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)xml_set_attribute_double.o: lib/xml/xml_set_attribute_double.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_textnode.o: lib/xml/xml_textnode.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

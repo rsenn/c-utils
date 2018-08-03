@@ -80,6 +80,9 @@ int         xml_get_attribute_sa(xmlnode*, stralloc* sa, const char* name);
 xmlnode*    xml_remove(xmlnode**);
 void        xml_delete(xmlnode*);
 void        xml_add_child(xmlnode*, xmlnode* node);
+void        xml_set_attribute_double(xmlnode*, const char* a, double d);
+void        xml_set_attribute(xmlnode*, const char* a, const char* v);
+xmlnode*    xml_element(const char*);
 
 #define xml_attributes(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 

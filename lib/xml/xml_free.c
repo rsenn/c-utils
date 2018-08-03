@@ -3,12 +3,15 @@
 static size_t
 xml_free_node(xmlnode* node) {
   size_t n = 0;
+  xmlnode* next;
   do {
     if(node->children) n += xml_free_node(node->children);
     if(node->name) free(node->name);
     if(node->attributes) hmap_destroy(&node->attributes);
     ++n;
-  } while((node = node->next));
+    next = node->next;
+    free(node);
+  } while((node = next));
   return n;
 }
 

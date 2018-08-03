@@ -111,9 +111,9 @@ void print_element_attrs(xmlnode* a_node);
 int dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
 cbmap_t devicesets, packages, parts, nets, symbols;
 static strarray layers;
-static int measures_layer = -1;
+static int measures_layer = -1, bottom_layer = -1;
 static array wires;
-static rect bounds;
+static rect bounds = {DBL_MAX, DBL_MAX, DBL_MAX, DBL_MAX};
 
 /**
  * Reads a real-number value from the element/attribute given
@@ -266,10 +266,10 @@ build_layers(xmlnode* layer) {
 
 void
 update_bounds(double x, double y) {
-  if(x < bounds.x1) bounds.x1 = x;
-  if(x > bounds.x2) bounds.x2 = x;
-  if(y < bounds.y1) bounds.y1 = y;
-  if(y > bounds.y2) bounds.y2 = x;
+  if(x < bounds.x1 || bounds.x1 == DBL_MAX) bounds.x1 = x;
+  if(x > bounds.x2 || bounds.x2 == DBL_MAX) bounds.x2 = x;
+  if(y < bounds.y1 || bounds.y1 == DBL_MAX) bounds.y1 = y;
+  if(y > bounds.y2 || bounds.y2 == DBL_MAX) bounds.y2 = y;
 }
 
 void
@@ -282,7 +282,7 @@ check_wire(xmlnode* node) {
     array_catb(&wires, &w, sizeof(wire));
 
     xml_delete(node);
-  } else {
+  } else if(layer == bottom_layer) {
     update_bounds(w.x1, w.y1);
     update_bounds(w.x2, w.y2);
   }
@@ -865,20 +865,82 @@ main(int argc, char* argv[]) {
   //  }
 
   measures_layer = strarray_index_of(&layers, "Measures");
+  bottom_layer = strarray_index_of(&layers, "Bottom");
 
   buffer_puts(buffer_2, "Measures layer: ");
   buffer_putlong(buffer_2, measures_layer);
   buffer_putnlflush(buffer_2);
 
   match_foreach(doc, "wire", check_wire);
+  bounds.x1 -= 2.54;
+  bounds.x2 += 2.54;
+  bounds.y1 -= 2.54;
+  bounds.y2 += 2.54;
+
+  bounds.x1 = round(100 * bounds.x1) / 100;
+  bounds.y1 = round(100 * bounds.y1) / 100;
+  bounds.x2 = round(100 * bounds.x2) / 100;
+  bounds.y2 = round(100 * bounds.y2) / 100;
 
   xmlnode* plain = xml_find_element(doc, "plain");
 
+  xmlnode* left = xml_element("wire");
+  xml_set_attribute_double(left, "x1", bounds.x1);
+  xml_set_attribute_double(left, "x2", bounds.x1);
+  xml_set_attribute_double(left, "y1", bounds.y1);
+  xml_set_attribute_double(left, "y2", bounds.y2);
+  xml_set_attribute_double(left, "layer", measures_layer);
 
+  xmlnode* right = xml_element("wire");
+  xml_set_attribute_double(right, "x1", bounds.x2);
+  xml_set_attribute_double(right, "x2", bounds.x2);
+  xml_set_attribute_double(right, "y1", bounds.y1);
+  xml_set_attribute_double(right, "y2", bounds.y2);
+  xml_set_attribute_double(right, "layer", measures_layer);
+
+  xmlnode* bottom = xml_element("wire");
+  xml_set_attribute_double(bottom, "x1", bounds.x1);
+  xml_set_attribute_double(bottom, "x2", bounds.x2);
+  xml_set_attribute_double(bottom, "y1", bounds.y1);
+  xml_set_attribute_double(bottom, "y2", bounds.y1);
+  xml_set_attribute_double(bottom, "layer", measures_layer);
+
+  xmlnode* top = xml_element("wire");
+  xml_set_attribute_double(top, "x1", bounds.x1);
+  xml_set_attribute_double(top, "x2", bounds.x2);
+  xml_set_attribute_double(top, "y1", bounds.y2);
+  xml_set_attribute_double(top, "y2", bounds.y2);
+  xml_set_attribute_double(top, "layer", measures_layer);
+
+  xml_add_child(plain, left);
+  xml_add_child(plain, top);
+  xml_add_child(plain, right);
+  xml_add_child(plain, bottom);
+
+  xmlnode* polygon = xml_find_element(doc, "polygon");
+
+  xml_free(polygon->children);
+  polygon->children = NULL;
+
+  xmlnode* n;
+  n = xml_element("vertex");
+  xml_set_attribute_double(n, "x", bounds.x1);
+  xml_set_attribute_double(n, "y", bounds.y2);
+  xml_add_child(polygon, n);
+  n = xml_element("vertex");
+  xml_set_attribute_double(n, "x", bounds.x1);
+  xml_set_attribute_double(n, "y", bounds.y1);
+  xml_add_child(polygon, n);
+  n = xml_element("vertex");
+  xml_set_attribute_double(n, "x", bounds.x2);
+  xml_set_attribute_double(n, "y", bounds.y1);
+  xml_add_child(polygon, n);
+  n = xml_element("vertex");
+  xml_set_attribute_double(n, "x", bounds.x2);
+  xml_set_attribute_double(n, "y", bounds.y2);
+  xml_add_child(polygon, n);
 
   xml_print(plain, buffer_2);
-
-
 
   buffer out;
   buffer_truncfile(&out, base);
