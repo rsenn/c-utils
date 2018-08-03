@@ -1,22 +1,13 @@
-#include <stdlib.h>
-#include <stdlib.h>
 #include "../buffer.h"
 #include "../fmt.h"
 
 int
 buffer_putulong0(buffer* b, unsigned long l, int pad) {
-
-#ifdef HAVE_ALLOCA
-	char* buf = alloca(FMT_ULONG + pad);
-#elif defined(HAVE_DYNSTACK)
-  char buf[FMT_ULONG+pad];
-#else	
-	char* buf = malloc(FMT_ULONG + pad);
-#endif
-  int ret = buffer_put(b, buf, fmt_ulong0(buf, l, pad));
-
-#if !defined(HAVE_ALLOCA) && !defined(HAVE_DYNSTACK)
-  free(buf);
-#endif
-  return ret;
+  char buf[FMT_ULONG];
+  size_t n = fmt_ulong(buf, l);
+  if(n < pad) {
+    if(buffer_putnspace(b, pad - n) < 0)
+      return -1;
+  }
+  return buffer_put(b, buf, n);
 }

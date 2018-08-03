@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 
+#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
 
@@ -13,6 +13,7 @@
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/xml.h"
+
 
 #define END_OF_LINE "; "
 //#define END_OF_LINE ";\n"
@@ -27,6 +28,7 @@ int xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, H
 stralloc element_name, character_buf;
 double const unit_factor = 25.4, scale_factor = 0.666666, grid_mils = 100;
 double min_x = 0.0, max_x = 0.0, min_y = 0.0, max_y = 0.0;
+
 void
 update_minmax_xy(double x, double y) {
   if(x < min_x) min_x = x;
@@ -34,13 +36,16 @@ update_minmax_xy(double x, double y) {
   if(x > max_x) max_x = x;
   if(y > max_y) max_y = y;
 };
+
 xmlnode* xmldoc = NULL;
 HMAP_DB* hashmap = NULL;
 TUPLE* ptr_tuple = NULL;
 HMAP_DB *instances_db = NULL, *parts_db = NULL;
 void hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*));
 void update_part(const char*, double, double, double);
+
 #define NAMELEN 8
+
 typedef struct part {
   char name[NAMELEN];
   char library[NAMELEN];
@@ -49,12 +54,14 @@ typedef struct part {
   char value[NAMELEN];
   double x, y, rot;
 } part_t;
+
 typedef struct instance {
   char part[NAMELEN];
   char gate[NAMELEN];
   double x, y;
   double rot;
 } instance_t;
+
 /* ----------------------------------------------------------------------- */
 inline static double
 round_to_mil(double val, double mil) {
@@ -644,3 +651,4 @@ main(int argc, char* argv[]) {
   xml_free(xmldoc);
   return 0;
 }
+

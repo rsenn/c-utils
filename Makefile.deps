@@ -904,6 +904,8 @@ $(BUILDDIR)strlist_cat.o: lib/strlist/strlist_cat.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_contains.o: lib/strlist/strlist_contains.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_contains_sa.o: lib/strlist/strlist_contains_sa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_count.o: lib/strlist/strlist_count.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_dump.o: lib/strlist/strlist_dump.c
@@ -927,6 +929,8 @@ $(BUILDDIR)strlist_push_sa.o: lib/strlist/strlist_push_sa.c
 $(BUILDDIR)strlist_push_tokens.o: lib/strlist/strlist_push_tokens.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_push_unique.o: lib/strlist/strlist_push_unique.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_push_unique_sa.o: lib/strlist/strlist_push_unique_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_range.o: lib/strlist/strlist_range.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

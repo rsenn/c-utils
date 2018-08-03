@@ -31,9 +31,9 @@ do_recv(int s, void* buf, size_t len, void* ptr) {
   return ret;
 }
 
-static const char* const url_host = "127.0.0.1";
-static const char* const url_location = "/.*.jpeg";
-static const uint16 url_port = 8000;
+static const char* const url_host = "193.247.32.15";
+static const char* const url_location = "/";
+static const uint16 url_port = 80;
 
 int main(int argc, char* argv[]) {
 

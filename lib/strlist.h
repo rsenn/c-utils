@@ -47,6 +47,12 @@ int     strlist_shift(strlist*, const char** strp);
 size_t  strlist_sort(strlist*);
 int     strlist_unshift(strlist*, const char* s);
 
+#ifdef STRALLOC_H
+int strlist_contains_sa(strlist*, const stralloc* sa);
+int strlist_push_sa(strlist*, const stralloc* sa);
+int strlist_push_unique_sa(strlist*, const stralloc* sa);
+#endif
+
 # ifdef __cplusplus
 }
 # endif

@@ -24,7 +24,6 @@
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/xml.h"
-
 #ifdef _MSC_VER
 #define alloca _alloca
 #endif
@@ -42,6 +41,7 @@
  * copy: see Copyright for the status of this software.
  */
 #include <stdio.h>
+
 
 struct pad {
   stralloc name;
@@ -245,11 +245,11 @@ build_part(xmlnode* part) {
   if(val) stralloc_copys(&p.value, val);
   p.x = get_double(part, "x") / 0.127;
   p.y = get_double(part, "y") / 0.127;
+
   if(pkgname && str_len(pkgname)) {
     p.pkg = get_entry(packages, pkgname);
-    assert(p.pkg);
   }
-  
+  assert(p.pkg);
   size_t pins = array_length(&p.pkg->pads, sizeof(struct net*));
   p.pins = calloc(sizeof(struct net*), pins);
   char* dsname = xml_get_attribute(part, "deviceset");
@@ -612,6 +612,7 @@ print_element_name(xmlnode* a_node) {
   if(a_node->parent) {
     xmlnode* p = a_node->parent;
     const char* pn = p->name;
+
     if(pn && !str_diffn(pn, name, str_len(name))) {
       p = p->parent;
     }
@@ -674,11 +675,6 @@ print_element_children(xmlnode* a_node) {
 }
 
 /**
- *  hashmap_dump: Outputs hashmap to stdout
- */
-//}
-//}
-/**
  * print_element_names:
  * @a_node: the initial xml node to consider.
  *
@@ -692,6 +688,7 @@ print_element_names(xmlnode* node) {
   for(; node; node = node->next) {
     if(node->type != XML_ELEMENT) continue;
     print_element_name(node);
+
     if(node_depth(node) >= 1) {
       print_element_attrs(node);
     }
@@ -781,26 +778,22 @@ main(int argc, char* argv[]) {
   buffer input;
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
-  
   xmlnode* doc = xml_read_tree(&input);
   match_query(doc, xq);
   match_foreach(doc, "package", build_package);
   buffer_puts(buffer_2, "items in packages: ");
   buffer_putulong(buffer_2, cbmap_count(packages));
   buffer_putnlflush(buffer_2);
-
   match_foreach(doc, "deviceset", build_deviceset);
   match_foreach(doc, "part|element", build_part);
   buffer_puts(buffer_2, "items in parts: ");
   buffer_putulong(buffer_2, cbmap_count(parts));
   buffer_putnlflush(buffer_2);
-
   match_foreach(doc, "net|signal", build_nets);
   match_foreach(doc, "symbol", build_sym);
   cbmap_visit_all(packages, dump_package, "package");
   cbmap_visit_all(parts, dump_part, "part");
   cbmap_visit_all(nets, dump_net, "nets");
-
   /*
    * Cleanup function for the XML library.
    */
@@ -810,3 +803,4 @@ main(int argc, char* argv[]) {
    */
   return (0);
 }
+
