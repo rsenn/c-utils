@@ -16,6 +16,10 @@ PKG_CONFIG_PATH := $(subst /bin,/lib/pkgconfig,$(CROSS_COMPILE))
 endif
 $(info PKG_CONFIG_PATH=$(PKG_CONFIG_PATH))
 
+define NL = 
+
+endef
+
 #file-exists = $(shell echo "Checking for $(1) ..." 1>&2; test -e "$(1)" && echo 1)
 
 #$(info ROOTNAME=$(ROOTNAME))
@@ -559,7 +563,8 @@ CPPFLAGS += $(patsubst %,-D%,$(DEFS))
 LIB_SRC = $(wildcard *_*.c umult*.c)
 LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 
-pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upper:]]:/\),\n-I\1,g ; /^-I$$/d"))
+pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upper:]]:/\),\
+-I\1,g ; /^-I$$/d"))
 
 #$(info ICONV_CFLAGS: $(ICONV_CFLAGS))
 #$(info ICONV_LIBS: $(ICONV_LIBS))
@@ -669,7 +674,7 @@ FLAGS += $(patsubst %,-W%,$(WARNINGS)) $(patsubst %,-D%,$(DEFS))
 FLAGS += $(CPPFLAGS)
 FLAGS := $(sort $(FLAGS))
 
-FLAGS_FILE := $(patsubst %/,%,$(dir $(patsubst %/,%,$(BUILDDIR))))/Debug.flags
+FLAGS_FILE := $(patsubst %/,%,$(dir $(patsubst %/,%,$(BUILDDIR))))/$(notdir $(patsubst %/,%,$(BUILDDIR))).flags
 
 SPACE := $(DUMMY) $(DUMMY)
 define NL
@@ -721,11 +726,23 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-all: $(BUILDDIR) $(FLAGS_FILE) \
+all: $(BUILDDIR) $(BUILDDIR)haveerrno.h $(FLAGS_FILE) \
    $(PROGRAMS)
 
+$(BUILDDIR)tryerrno.c:
+	echo "int main() {\
+errno = 0;\
+return 0;\
+}" >$(BUILDDIR)tryerrno.c
+
+$(BUILDDIR)haveerrno.h: $(BUILDDIR)tryerrno.c
+	$(CROSS_COMPILE)$(CC) -include errno.h -c -o $(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFS += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
+
+FLAGS += -include $(BUILDDIR)haveerrno.h
+
 $(FLAGS_FILE): $(BUILDDIR)
-	$(file >$@,$(subst $(SPACE),$(NL),$(FLAGS)))
+	$(file >$@,$(subst $(SPACE),\
+,$(FLAGS)))
 
 all-release:
 	$(MAKE) DEBUG=0 all
@@ -1297,3 +1314,4 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
+-include $(BUILDDIR)defines.make
