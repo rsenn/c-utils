@@ -1,5 +1,3 @@
-#include "../cb_internal.h"
-
 int
 cb_erase(critbit_tree* cb, const void* key, size_t keylen) {
   void** iter = NULL;
