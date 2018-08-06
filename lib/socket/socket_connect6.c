@@ -3,6 +3,7 @@
 #include "../byte.h"
 #include "../uint16.h"
 #include "../uint32.h"
+#include <errno.h>
 
 int socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
 #ifdef LIBC_HAS_IP6

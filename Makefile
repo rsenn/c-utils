@@ -54,6 +54,11 @@ $(info HAVE_STDINT_H=$(HAVE_STDINT_H))
 $(info HAVE_STDDEF_H=$(HAVE_STDDEF_H))
 $(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
 
+ifeq ($(call check-include-exists,errno.h),1)
+DEFS += HAVE_ERRNO_H=1
+endif
+
+#$(call def-include-exists,errno.h,HAVE_ERRNO_H)
 $(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
 $(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
 

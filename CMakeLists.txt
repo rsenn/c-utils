@@ -55,7 +55,7 @@ set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NA
 
 #include(CPack)
 
-include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
+#include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
 
 
 #if(WIN32 OR MSYS OR CYGWIN)
