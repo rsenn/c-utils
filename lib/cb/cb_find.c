@@ -1,3 +1,4 @@
+#include "../cb_internal.h"
 static void*
 cb_find_top_i(const critbit_tree* cb, const void* key, size_t keylen) {
   void *ptr, *top = 0;

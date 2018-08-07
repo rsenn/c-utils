@@ -1,3 +1,4 @@
+#include "../cb_internal.h"
 static int
 cb_foreach_i(void* ptr, const void* key, size_t keylen, int (*match_cb)(const void* match, const void* key, size_t keylen, void*), void* data) {
   int result = 0;

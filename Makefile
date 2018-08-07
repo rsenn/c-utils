@@ -362,8 +362,8 @@ else
   endif
 endif
 
-vpath lib lib/array lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR)
-VPATH = lib:lib/array:lib/buffer:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR)
+vpath lib lib/array lib/cb lib/cbmap lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR)
+VPATH = lib:lib/array:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR)
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
 ifneq ($(OS),msys)
@@ -726,7 +726,9 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-all: $(BUILDDIR) $(BUILDDIR)haveerrno.h $(FLAGS_FILE) \
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array buffer byte case cb cbmap charbuf dir fmt hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf time uint16 uint32 xml)
+
+all: $(BUILDDIR) $(BUILDDIR)haveerrno.h $(FLAGS_FILE) $(MODULES) \
    $(PROGRAMS)
 
 $(BUILDDIR)tryerrno.c:
@@ -766,6 +768,12 @@ $(BUILDDIR)array.a: $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILD
 	$(AR) rcs $@ $^
 $(BUILDDIR)libarray.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libarray.so: $(BUILDDIR)array_allocate.pic.o $(BUILDDIR)array_bytes.pic.o $(BUILDDIR)array_cat0.pic.o $(BUILDDIR)array_catb.pic.o $(BUILDDIR)array_cat.pic.o $(BUILDDIR)array_cate.pic.o $(BUILDDIR)array_cats0.pic.o $(BUILDDIR)array_cats.pic.o $(BUILDDIR)array_equal.pic.o $(BUILDDIR)array_fail.pic.o $(BUILDDIR)array_get.pic.o $(BUILDDIR)array_length.pic.o $(BUILDDIR)array_reset.pic.o $(BUILDDIR)array_start.pic.o $(BUILDDIR)array_truncate.pic.o $(BUILDDIR)array_trunc.pic.o $(BUILDDIR)umult64.pic.o
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+
+$(BUILDDIR)cb.a: $(call add-sources,lib/cb/*.c)
+	$(AR) rcs $@ $^
+$(BUILDDIR)libcb.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
+$(BUILDDIR)libcb.so: $(call add-sources,lib/cb/*.c,.pic.o)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)buffer.a: $(call add-sources,lib/buffer/*.c)
@@ -985,6 +993,12 @@ $(BUILDDIR)charbuf.a: $(call add-sources,lib/charbuf/*.c)
 	$(AR) rcs $@ $^
 $(BUILDDIR)libcharbuf.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
 $(BUILDDIR)libcharbuf.so: $(addprefix $(BUILDDIR),charbuf_get.pic.o charbuf_getc.pic.o charbuf_peek.pic.o charbuf_peekc.pic.o charbuf_skip.pic.o charbuf_nextc.pic.o)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+
+$(BUILDDIR)gpio.a: $(call add-sources,lib/gpio/*.c)
+	$(AR) rcs $@ $^
+$(BUILDDIR)libgpio.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
+$(BUILDDIR)libgpio.so: $(call add-sources,lib/gpio/*.c,.pic.o)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c

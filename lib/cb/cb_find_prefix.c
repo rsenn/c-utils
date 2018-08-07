@@ -1,3 +1,4 @@
+#include "../cb_internal.h"
 static int
 cb_find_prefix_i(void* ptr, const void* key, size_t keylen, void** results, int numresults, int* offset, int next) {
   assert(next <= numresults);

@@ -33,6 +33,8 @@ int open_write(const char* filename);
  * Return file handle or -1 on error. */
 int open_rw(const char* filename);
 
+int open_rwsync(const char *filename);
+
 #ifdef __cplusplus
 }
 #endif

@@ -62,10 +62,10 @@ cfg-android ()
 cfg-diet() {
  (build=$(${CC:-gcc} -dumpmachine)
   host=${build/-gnu/-dietlibc}
-  builddir=build/$host
-  prefix=/opt/diet
-  libdir=/opt/diet/lib-${host%%-*}
-  bindir=/opt/diet/bin-${host%%-*}
+  : ${builddir=build/$host}
+  : ${prefix=/opt/diet}
+  : ${libdir=/opt/diet/lib-${host%%-*}}
+  : ${bindir=/opt/diet/bin-${host%%-*}}
   
   CC="diet-gcc" \
   PKG_CONFIG="$host-pkg-config" \
