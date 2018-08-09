@@ -218,6 +218,7 @@ int buffer_freshen(buffer *b);
 int buffer_truncfile(buffer* b, const char* fn);
 
 int buffer_lzma(buffer*, buffer*, int compress);
+int buffer_bz2(buffer*, buffer*, int compress);
 
 int buffer_putnc(buffer* b, char c, int ntimes);
 

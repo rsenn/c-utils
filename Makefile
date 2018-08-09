@@ -68,11 +68,14 @@ $(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
 
 $(call def-function-exists,ZLIB,deflate,-lz)
 
-#HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
+HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
 $(info HAVE_ZLIB=$(HAVE_ZLIB))
 
-$(call def-function-exists,LIBLZMA,lzma_code,-llzma)
-#HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
+HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
+$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
+
+HAVE_LIBBZ2 := $(call check-function-exists,BZ2_bzCompress,-lbz2)
+$(info HAVE_LIBBZ2=$(HAVE_LIBBZ2))
 
 #$(call def-function-exists,EPOLL,epoll_wait,)
 #$(info HAVE_EPOLL=$(HAVE_EPOLL))
@@ -169,8 +172,10 @@ endif
 ifneq ($(CC),$(subst m32,,$(CC)))
 HOST := $(subst x86_64,i386,$(HOST))
 endif
+ifneq ($(HOST),$(subst linux,,$(HOST)))
 ifneq ($(HOST),$(subst -pc-,-,$(HOST)))
 HOST := $(subst -pc-,-,$(HOST))
+endif
 endif
 ifeq ($(USE_DIET),1)
 HOST := $(subst -diet-,-,$(HOST))
@@ -292,6 +297,10 @@ ifeq ($(OS),msys)
 EXEEXT = .exe
 STATIC_LIBGCC := 1
 endif
+ifneq ($(HOST),$(subst msys,,$(HOST)))
+EXEEXT = .exe
+STATIC_LIBGCC := 1
+endif
 ifeq ($(KERN),cygwin)
 EXEEXT = .exe
 endif
@@ -352,10 +361,10 @@ ifneq (${builddir},)
 BUILDDIR = ${builddir}/$(BUILD_TYPE)/
 else
 ifneq ($(HOST),$(BUILD))
-  BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
+  BUILDDIR = build/$(HOST)/$(BUILD_TYPE)/
 else
 #	ifeq ($(CROSS_COMPILE),)
-	BUILDDIR = build/$(TOOLCHAIN)/$(BUILD_TYPE)/
+	BUILDDIR = build/$(HOST)/$(BUILD_TYPE)/
 #	else
 #	BUILDDIR = build/$(patsubst %-,%,$(CROSS_COMPILE))/$(BUILD_TYPE)/
 #	endif
@@ -577,7 +586,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat)
 
 
  #opensearch-dump 
@@ -645,9 +654,15 @@ endif
 
 ifeq ($(HAVE_ZLIB),1)
 DEFS += HAVE_ZLIB=1
+LIBS = -lz
 endif
 ifeq ($(HAVE_LIBLZMA),1)
 DEFS += HAVE_LIBLZMA=1
+LIBLZMA = -llzma
+endif
+ifeq ($(HAVE_LIBBZ2),1)
+DEFS += HAVE_LIBBZ2=1
+LIBBZ2 = -lbz2
 endif
 ifeq ($(HAVE_ERRNO_H),1)
 DEFS += HAVE_ERRNO_H=1
@@ -783,6 +798,9 @@ $(BUILDDIR)libbuffer.so: EXTRA_LIBS += -lz
 endif
 ifeq ($(HAVE_LIBLZMA),1)
 $(BUILDDIR)libbuffer.so: EXTRA_LIBS += -llzma
+endif
+ifeq ($(HAVE_LIBBZ2),1)
+$(BUILDDIR)libbuffer.so: EXTRA_LIBS += -lbz2
 endif
 $(BUILDDIR)libbuffer.so: LIBS = -L$(BUILDDIR:%/=%) -lmmap -lstralloc -lstr -larray
 $(BUILDDIR)libbuffer.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
@@ -1009,7 +1027,7 @@ $(BUILDDIR)count-depth.o: count-depth.c
 $(BUILDDIR)count-depth$(M64_)$(EXEEXT): $(BUILDDIR)count-depth.o $(call add-library, buffer byte fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)fnmatch.o: fnmatch.c
@@ -1019,84 +1037,84 @@ $(BUILDDIR)list-r.o: list-r.c
 $(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(call add-library, open array buffer  byte stralloc rdir dir fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)rdir-test.o: rdir-test.c
 $(BUILDDIR)rdir-test$(M64_)$(EXEEXT): $(BUILDDIR)rdir-test.o $(BUILDDIR)fnmatch.o $(call add-library, rdir dir array buffer  byte stralloc fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)reg2cmd.o: reg2cmd.c
 $(BUILDDIR)reg2cmd$(M64_)$(EXEEXT): $(BUILDDIR)reg2cmd.o $(call add-library, buffer fmt scan stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)regfilter.o: regfilter.c
 $(BUILDDIR)regfilter$(M64_)$(EXEEXT): $(BUILDDIR)regfilter.o $(call add-library, buffer fmt scan stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
 $(BUILDDIR)torrent-progress$(M64_)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(call add-library, buffer fmt mmap open str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array buffer fmt mmap open  strlist stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array strlist buffer fmt mmap open  scan stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS)
 $(BUILDDIR)httptest$(M64_)$(EXEEXT): $(BUILDDIR)httptest.o $(call add-library, http socket io iarray array ndelay uint16 buffer fmt mmap open  scan stralloc str byte   taia  uint32 )
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)xmltest$(M64_)$(EXEEXT): $(BUILDDIR)xmltest.o $(call add-library, xml array charbuf textbuf hmap buffer mmap open stralloc byte scan fmt fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)xmltest2$(M64_)$(EXEEXT): $(BUILDDIR)xmltest2.o $(call add-library, xml strlist array charbuf textbuf hmap buffer mmap open stralloc byte scan fmt fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)xmltest3$(M64_)$(EXEEXT): $(BUILDDIR)xmltest3.o $(call add-library, xml strlist array charbuf textbuf hmap buffer mmap open stralloc byte scan fmt fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)xmltest4$(M64_)$(EXEEXT): $(BUILDDIR)xmltest4.o $(call add-library, cbmap xml array strlist charbuf textbuf hmap buffer mmap open stralloc byte scan fmt fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)jsontest$(M64_)$(EXEEXT): $(BUILDDIR)jsontest.o $(call add-library, json array charbuf textbuf hmap buffer mmap open stralloc str byte scan fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(call echo-target,elfwrsec,$(BUILDDIR)elfwrsec.o $(call add-library,buffer mmap open))
@@ -1108,10 +1126,20 @@ endif
 ifeq ($(HAVE_LIBLZMA),1)
 $(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += -llzma
 endif
+ifeq ($(HAVE_LIBBZ2),1)
+$(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += -lbz2
+endif
 $(BUILDDIR)buffertest$(M64_)$(EXEEXT): $(BUILDDIR)buffertest.o $(call add-library, array charbuf textbuf hmap buffer mmap open stralloc byte scan fmt fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
+endif
+
+$(BUILDDIR)ccat$(M64_)$(EXEEXT): LIBS += $(LIBZ) $(LIBLZMA) $(LIBBZ2)
+$(BUILDDIR)ccat$(M64_)$(EXEEXT): $(BUILDDIR)ccat.o $(call add-library, array charbuf textbuf hmap buffer mmap open stralloc byte scan fmt fmt str)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)plsconv$(M64_)$(EXEEXT): LIBS += -lm
@@ -1119,20 +1147,20 @@ $(BUILDDIR)plsconv$(M64_)$(EXEEXT): LIBS += -lm
 $(BUILDDIR)plsconv$(M64_)$(EXEEXT): $(BUILDDIR)plsconv.o $(call add-library,  playlist xml hmap stralloc  buffer mmap open str fmt scan  byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) 
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)pathtool$(M64_)$(EXEEXT): $(BUILDDIR)pathtool.o $(call add-library, strlist stralloc buffer mmap open str fmt scan byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)access.o: access.c
 $(BUILDDIR)access$(M64_)$(EXEEXT): $(BUILDDIR)access.o $(call add-library, open array buffer  byte stralloc rdir dir fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 #$(BUILDDIR)opensearch-dump$(M64_)$(EXEEXT): INCLUDES += $(ICONV_CFLAGS)
@@ -1140,7 +1168,7 @@ $(BUILDDIR)opensearch-dump$(M64_)$(EXEEXT): LIBS += $(ICONV_LIBS) $(OTHERLIBS)
 $(BUILDDIR)opensearch-dump$(M64_)$(EXEEXT): $(BUILDDIR)opensearch-dump.o $(call add-library, buffer stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
@@ -1193,42 +1221,42 @@ endif
 $(BUILDDIR)compiler-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, dir strlist stralloc buffer fmt str  byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXEEXT): DEFS += XC8_WRAPPER=1
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer str byte fmt dir)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)picc-wrapper$(M64_)$(EXEEXT): DEFS += PICC_WRAPPER=1
 $(BUILDDIR)picc-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer str byte fmt dir)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)picc18-wrapper$(M64_)$(EXEEXT): DEFS += PICC18_WRAPPER=1
 $(BUILDDIR)picc18-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer str byte fmt dir)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)sdcc-wrapper$(M64_)$(EXEEXT): DEFS += SDCC_WRAPPER=1
 $(BUILDDIR)sdcc-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer str byte fmt dir)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 ifeq ($(DO_CXX),1)
 $(BUILDDIR)piccfghex.o: piccfghex.cpp
 $(BUILDDIR)piccfghex$(M64_)$(EXEEXT): $(BUILDDIR)piccfghex.o $(BUILDDIR)intelhex.o
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 $(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
@@ -1237,7 +1265,7 @@ $(BUILDDIR)mediathek-parser-cpp.o: mediathek-parser.cpp
 $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser-cpp.o
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -1247,7 +1275,7 @@ $(BUILDDIR)kbd-adjacency.o: kbd-adjacency.cpp
 $(BUILDDIR)kbd-adjacency$(M64_)$(EXEEXT): $(BUILDDIR)kbd-adjacency.o $(LIB_OBJ)
 	$(CROSS_COMPILE)$(CXX) $(LDFLAGS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 endif
 ifeq ($(BUILDDIR),)
@@ -1325,7 +1353,7 @@ $(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
 $(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
+	$(CROSS_COMPILE)$(STRIP) $@
 endif
 
 -include $(BUILDDIR)defines.make

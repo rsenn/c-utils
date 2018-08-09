@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include "lib/str.h"
 #include "lib/buffer.h"
 
 int
@@ -15,8 +17,43 @@ buffer_copy(buffer* out, buffer* in) {
   return n;
 }
 
+void
+usage(const char* argv0) {
+  buffer_putm(buffer_1, "Usage: ", argv0, " [-o output] [input or stdin]\n\n",
+              "Supported types are:"
+#ifdef HAVE_ZLIB
+" gz"
+#endif
+#ifdef HAVE_LIBBZ2
+" bz2"
+#endif
+#ifdef HAVE_LIBLZMA
+" lzma xz"
+#endif
+ "\n");
+  buffer_flush(buffer_1);
+  exit(0);
+}
+
 int
 main(int argc, char* argv[])  {
+  int opt;
+  const char* out_file = NULL;
+
+  while((opt = getopt(argc, argv, "h")) != -1) {
+    switch(opt) {
+    case 'o':
+      out_file = optarg;
+      break;
+    case 'h':
+      usage(str_basename(argv[0]));
+      exit(EXIT_SUCCESS);
+    default: /* '?' */
+      buffer_putm(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n");
+      exit(EXIT_FAILURE);
+    } 
+  } 
+
   buffer input,  output, compress, decompress;
   const char* filename =  argv[1] ? argv[1] : "/mnt/Newx20Data/Sources/gettext-0.19.8.1.tar.xz";
   
