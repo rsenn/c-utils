@@ -1,6 +1,7 @@
-#include <stdlib.h>
-#include "lib/str.h"
 #include "lib/buffer.h"
+#include "lib/str.h"
+#include <stdbool.h>
+#include <stdlib.h>
 
 int
 buffer_copy(buffer* out, buffer* in) {
@@ -8,10 +9,9 @@ buffer_copy(buffer* out, buffer* in) {
   char tmp[1024];
 
   while((r = buffer_get(in, tmp, sizeof(tmp))) > 0) {
-     buffer_put(out, tmp, r);
+    buffer_put(out, tmp, r);
 
-     n += r;
-
+    n += r;
   }
   buffer_flush(out);
   return n;
@@ -19,94 +19,154 @@ buffer_copy(buffer* out, buffer* in) {
 
 void
 usage(const char* argv0) {
-  buffer_putm(buffer_1, "Usage: ", argv0, " [-o output] [input or stdin]\n\n",
+  buffer_putm(buffer_1,
+              "Usage: ",
+              argv0,
+              " [-o output] [infile or stdin]\n\n"
+              "  -1 ... -9           compression level; default is 3\n"
+              "\n"
               "Supported types are:"
 #ifdef HAVE_ZLIB
-" gz"
+              " gz"
 #endif
 #ifdef HAVE_LIBBZ2
-" bz2"
+              " bz2"
 #endif
 #ifdef HAVE_LIBLZMA
-" lzma xz"
+              " lzma xz"
 #endif
- "\n");
+              "\n");
   buffer_flush(buffer_1);
   exit(0);
 }
 
+typedef enum compression_type {
+  C_UNKNOWN = 0,
+  C_GZ,
+  C_BZ2,
+  C_LZMA,
+  C_XZ,
+} compression_type;
+
+compression_type
+compression_from_ext(const char* ext) {
+  if(str_case_equal(ext, "gz") || str_case_equal(ext, "tgz")) return C_GZ;
+
+  if(str_case_equal(ext, "bz2") || str_case_equal(ext, "tbz2") || str_case_equal(ext, "tbz")) return C_BZ2;
+
+  if(str_case_equal(ext, "xz") || str_case_equal(ext, "txz")) return C_XZ;
+
+  if(str_case_equal(ext, "lzma")) return C_LZMA;
+
+  return C_UNKNOWN;
+}
+
+compression_type
+compression_from_filename(const char* fn) {
+  const char* ext = fn + str_rchr(fn, '.');
+  if(*ext) return compression_from_ext(++ext);
+  return C_UNKNOWN;
+}
+
 int
-main(int argc, char* argv[])  {
+main(int argc, char* argv[]) {
   int opt;
-  const char* out_file = NULL;
+  int level = 3;
+  bool decompress = false;
+  const char* in_filename = "-";
+  const char* out_filename = "-";
+  compression_type in_type = C_UNKNOWN;
+  compression_type out_type = C_UNKNOWN;
+  buffer *input, *output;
 
-  while((opt = getopt(argc, argv, "h")) != -1) {
+  while((opt = getopt(argc, argv, "123456789dt:o:h")) != -1) {
     switch(opt) {
-    case 'o':
-      out_file = optarg;
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        level = opt - '0';
+        break;
+      case 'd':
+        decompress = true;
+        break;
+      case 't':
+        in_type = compression_from_ext(optarg);
+        break;
+      case 'o':
+        out_filename = optarg;
+        break;
+      case 'h':
+        usage(str_basename(argv[0]));
+        exit(EXIT_SUCCESS);
+      default: /* '?' */
+        buffer_putm(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n");
+        exit(EXIT_FAILURE);
+    }
+  }
+
+  buffer infile, outfile;
+
+  if(argv[1]) in_filename = argv[1];
+
+  if(str_equal(in_filename, "-")) {
+    input = buffer_0;
+  } else {
+    if(buffer_mmapprivate(&infile, in_filename) < 0) {
+      buffer_putm(buffer_2, "ERROR opening: ", in_filename);
+      buffer_putnlflush(buffer_2);
+      return 1;
+    }
+    input = &infile;
+    if(in_type == C_UNKNOWN) { 
+      in_type = compression_from_filename(in_filename);
+      if(in_type != C_UNKNOWN)
+        decompress = true;
+    }
+  }
+
+  if(str_equal(out_filename, "-")) {
+    output = buffer_1;
+  } else {
+    if(buffer_truncfile(&outfile, out_filename) < 0) {
+      buffer_putm(buffer_2, "ERROR opening: ", in_filename);
+      buffer_putnlflush(buffer_2);
+      return 1;
+    }
+    output = &outfile;
+    if(out_type == C_UNKNOWN) out_type = compression_from_filename(out_filename);
+  }
+
+  compression_type type = decompress ? in_type : out_type;
+  buffer cbuf;
+
+  switch(type) {
+    case C_GZ:
+      if(decompress)
+        buffer_inflate(&cbuf, input);
+      else
+        buffer_deflate(&cbuf, input, level);
       break;
-    case 'h':
-      usage(str_basename(argv[0]));
-      exit(EXIT_SUCCESS);
-    default: /* '?' */
-      buffer_putm(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n");
+    case C_BZ2:
+      buffer_bz2(&cbuf, input, decompress ? 0 : level);
+      break;
+    case C_XZ:
+    case C_LZMA:
+      buffer_lzma(&cbuf, input, decompress ? 0 : level);
+      break;
+    default:
+      buffer_putm(buffer_2, "ERROR: Unable to detect compression type from ", in_filename);
+      buffer_putnlflush(buffer_2);
       exit(EXIT_FAILURE);
-    } 
-  } 
-
-  buffer input,  output, compress, decompress;
-  const char* filename =  argv[1] ? argv[1] : "/mnt/Newx20Data/Sources/gettext-0.19.8.1.tar.xz";
-  
-  if(buffer_mmapprivate(&input, filename) < 0) {
-    buffer_putm(buffer_2, "ERROR opening: ", filename);
-    buffer_putnlflush(buffer_2);
-    return 1;
   }
 
-  buffer_truncfile(&output, "output.lzma");
-
-#if defined(HAVE_LIBBZ2)
-  buffer_bz2(&decompress, &input, 0);
-  buffer_bz2(&compress, &output, 1);
-
-  buffer_puts(&compress, "bz2 compressed test text\n"); 
-  buffer_flush(&compress);
-  buffer_close(&compress);
-#elif defined(HAVE_LIBLZMA)
-  buffer_lzma(&decompress, &input, 0);
-  buffer_lzma(&compress, &output, 1);
-
-  buffer_puts(&compress, "lzma compressed test text\n"); 
-  buffer_flush(&compress);
-  buffer_close(&compress);
-#endif
- 
-  //buffer_deflate(&compress, &output, 3);
-
-  buffer_copy(buffer_1, &decompress);
-//
-  buffer deflate, gzout, inflate, gzin;
-  
-  buffer_truncfile(&gzout, "output.gz");
-
-#ifdef HAVE_ZLIB
-  buffer_deflate(&deflate, &gzout, 9);
-
-  buffer_puts(&deflate, "gzipp'd test text\n\nblah blah blah\n"); 
-  buffer_flush(&deflate);
-  buffer_close(&deflate);
-
-  if(buffer_mmapprivate(&gzin, "output.gz") < 0) {
-    buffer_putsflush(buffer_2, "ERROR\n");
-    return 1;
-  }
-
-  buffer_inflate(&inflate, &gzin);
-
-  buffer_copy(buffer_1, &inflate);
-#endif
-  buffer_flush(buffer_1);
-
+  buffer_copy(output, &cbuf);
+  buffer_flush(output);
 
   return 0;
 }

@@ -39,8 +39,8 @@ buffer_bzread_op(int fd, void* data, size_t n, buffer* b) {
     ret = BZ2_bzDecompress(strm);
   } while(ctx->a == BZ_FINISH && ret != BZ_STREAM_END);
 
-  if( /* strm->avail_out == 0 */
-      ret == BZ_OK || ret == BZ_STREAM_END) {
+  if(/* strm->avail_out == 0 */
+     ret == BZ_OK || ret == BZ_STREAM_END) {
 
     ctx->b->p += a - strm->avail_in;
 
@@ -129,8 +129,7 @@ buffer_bz2(buffer* b, buffer* other, int compress) {
   b->cookie = ctx;
   b->deinit = &buffer_bz_close;
 
-  int ret = compress ? BZ2_bzCompressInit(&ctx->strm, compress, 0, 1)
-                          : BZ2_bzDecompressInit(&ctx->strm, 0, 0);
+  int ret = compress ? BZ2_bzCompressInit(&ctx->strm, compress, 0, 1) : BZ2_bzDecompressInit(&ctx->strm, 0, 0);
 
   if(ret != BZ_OK) return 0;
 
