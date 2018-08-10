@@ -1,4 +1,5 @@
 #include "../xml.h"
+#include "../str.h"
 #include "../fmt.h"
 
 void

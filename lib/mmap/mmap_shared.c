@@ -3,12 +3,14 @@
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 #else
+#include <unistd.h>
 #include <sys/mman.h>
 #endif
 #include "../open.h"
 #include "../mmap.h"
 
-extern char* mmap_shared(const char* filename,size_t * filesize) {
+char*
+mmap_shared(const char* filename,size_t * filesize) {
 #if defined(_WIN32) || defined(_WIN64)
   HANDLE fd,m;
   char* map;

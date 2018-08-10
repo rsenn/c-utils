@@ -34,3 +34,39 @@ from_external_node(void* ptr, void** key, size_t* keylen) {
   memcpy(keylen, bytes, sizeof(size_t));
   *key = bytes + sizeof(size_t);
 }
+
+static int
+cb_less(const struct critbit_node* a, const struct critbit_node* b) {
+  return a->byte < b->byte || (a->byte == b->byte && a->mask < b->mask);
+}
+
+static void*
+make_external_node(const void* key, size_t keylen) {
+  char* data = (char*)malloc(sizeof(size_t) + keylen);
+#ifndef NDEBUG
+  ptrdiff_t numvalue = (char*)data - (char*)0;
+  assert((numvalue & 1) == 0);
+#endif
+  assert(keylen);
+  memcpy(data, &keylen, sizeof(size_t));
+  memcpy(data + sizeof(size_t), key, keylen);
+  return (void*)(data + 1);
+}
+
+static struct critbit_node*
+make_internal_node(void) {
+  struct critbit_node* node = (struct critbit_node*)malloc(sizeof(struct critbit_node));
+  return node;
+}
+
+static void
+cb_free_node(void* ptr) {
+  if(decode_pointer(&ptr) == INTERNAL_NODE) {
+    struct critbit_node* node = (struct critbit_node*)ptr;
+    cb_free_node(node->child[0]);
+    cb_free_node(node->child[1]);
+    free(node);
+  } else {
+    free(ptr);
+  }
+}

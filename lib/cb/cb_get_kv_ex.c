@@ -1,4 +1,5 @@
 #include "../cb_internal.h"
+#include "../str.h"
 void
 cb_get_kv_ex(void* kv, void** value) {
   char* key = (char*)kv;

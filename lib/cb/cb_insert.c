@@ -1,4 +1,5 @@
 #include "../cb_internal.h"
+
 int
 cb_insert(critbit_tree* cb, const void* key, size_t keylen) {
   assert(cb);
