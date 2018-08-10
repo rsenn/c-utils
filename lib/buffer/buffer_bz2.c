@@ -93,7 +93,10 @@ buffer_bz_close(buffer* b) {
   int ret;
   ssize_t a;
 
-  ctx->a = BZ_FINISH;
+  
+  ctx->a = BZ_FLUSH;
+
+again:
 
   strm->next_in = (char*)&b->x[b->p];
   strm->avail_in = b->n - b->p;
@@ -103,6 +106,12 @@ buffer_bz_close(buffer* b) {
     strm->avail_out = a = other->a - other->p;
 
     ret = BZ2_bzCompress(strm, ctx->a);
+
+    if(ret == BZ_FLUSH_OK)
+      ctx->a = BZ_FINISH;
+    if(ret == BZ_FINISH_OK)
+      break;
+
   } while(ret != BZ_STREAM_END);
 
   other->p += a - strm->avail_out;

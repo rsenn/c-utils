@@ -227,6 +227,9 @@ int buffer_putspad(buffer* b, const char* x, size_t pad);
 int buffer_deflate(buffer* b, buffer* out, int level);
 int buffer_inflate(buffer* b, buffer* in);
 
+int  buffer_gunzip(buffer*, const char* filename);
+int  buffer_gzip(buffer*, const char* filename, int level);
+
 #ifdef __cplusplus
 }
 #endif

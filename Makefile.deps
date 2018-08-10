@@ -54,6 +54,8 @@ $(BUILDDIR)buffer_2.o: lib/buffer/buffer_2.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_bz2.o: lib/buffer/buffer_bz2.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_bzip.o: lib/buffer/buffer_bzip.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_close.o: lib/buffer/buffer_close.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_default.o: lib/buffer/buffer_default.c
@@ -141,6 +143,8 @@ $(BUILDDIR)buffer_get_token_sa.o: lib/buffer/buffer_get_token_sa.c
 $(BUILDDIR)buffer_get_token_sa_pred.o: lib/buffer/buffer_get_token_sa_pred.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_get_until.o: lib/buffer/buffer_get_until.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_gzip.o: lib/buffer/buffer_gzip.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_inflate.o: lib/buffer/buffer_inflate.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1221,6 +1225,8 @@ $(BUILDDIR)impgen.o: impgen.c
 $(BUILDDIR)compiler-wrapper.o: compiler-wrapper.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)count-depth.o: count-depth.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)ccat.o: ccat.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)map.o: map.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

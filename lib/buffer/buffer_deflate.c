@@ -51,7 +51,7 @@ buffer_deflate_close(buffer* b) {
     ctx->z.next_out = (void*)&ctx->other->x[ctx->other->p];
     ctx->z.avail_out = ctx->other->a - ctx->other->p;
 
-    ret = deflate(&ctx->z, Z_FINISH);
+    ret = deflate(&ctx->z, Z_SYNC_FLUSH);
 
     wr = (ctx->other->a - ctx->other->p) - ctx->z.avail_out;
     ctx->other->p += wr;

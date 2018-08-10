@@ -112,7 +112,7 @@ main(int argc, char* argv[]) {
 
   buffer infile, outfile;
 
-  if(argv[1]) in_filename = argv[1];
+  if(argv[optind]) in_filename = argv[optind];
 
   if(str_equal(in_filename, "-")) {
     input = buffer_0;
@@ -123,10 +123,9 @@ main(int argc, char* argv[]) {
       return 1;
     }
     input = &infile;
-    if(in_type == C_UNKNOWN) { 
+    if(in_type == C_UNKNOWN) {
       in_type = compression_from_filename(in_filename);
-      if(in_type != C_UNKNOWN)
-        decompress = true;
+      if(in_type != C_UNKNOWN) decompress = true;
     }
   }
 
@@ -134,7 +133,7 @@ main(int argc, char* argv[]) {
     output = buffer_1;
   } else {
     if(buffer_truncfile(&outfile, out_filename) < 0) {
-      buffer_putm(buffer_2, "ERROR opening: ", in_filename);
+      buffer_putm(buffer_2, "ERROR opening: ", out_filename);
       buffer_putnlflush(buffer_2);
       return 1;
     }
@@ -150,14 +149,14 @@ main(int argc, char* argv[]) {
       if(decompress)
         buffer_inflate(&cbuf, input);
       else
-        buffer_deflate(&cbuf, input, level);
+        buffer_deflate(&cbuf, output, level);
       break;
     case C_BZ2:
-      buffer_bz2(&cbuf, input, decompress ? 0 : level);
+      buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level);
       break;
     case C_XZ:
     case C_LZMA:
-      buffer_lzma(&cbuf, input, decompress ? 0 : level);
+      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level);
       break;
     default:
       buffer_putm(buffer_2, "ERROR: Unable to detect compression type from ", in_filename);
@@ -165,8 +164,18 @@ main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
   }
 
-  buffer_copy(output, &cbuf);
-  buffer_flush(output);
+  if(decompress == false && output == buffer_1) {
+    buffer_putsflush(buffer_2, "ERROR: Won't write compressed data to a terminal\n");
+    exit(EXIT_FAILURE);
+  }
+
+  if(decompress) {
+    buffer_copy(output, &cbuf);
+    buffer_flush(output);
+  } else {
+    buffer_copy(&cbuf, input);
+    buffer_flush(&cbuf);
+  }
 
   return 0;
 }
