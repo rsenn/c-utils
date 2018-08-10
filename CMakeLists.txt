@@ -130,7 +130,13 @@ if(BZIP2_FOUND)
 endif(BZIP2_FOUND)
 
 #pkg_search_module(LIBZ zlib)
-#pkg_search_module(LIBBZ2 libbz2 bzip2)
+pkg_search_module(LIBBZ2 libbz2 bzip2)
+
+if(LIBBZ2_FOUND)
+  add_definitions(-DHAVE_LIBBZ2=1)
+endif(LIBBZ2_FOUND)
+
+
 #check_library_exists(LIBMSWSOCK ws2_32 HAVE_MSWSOCK)
 check_library_exists(ws2_32 socket "" HAVE_MSWSOCK)
 
@@ -327,7 +333,7 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
 access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3 xmltest4
-eagle-gen-cmds eagle-to-circuit buffertest jsontest
+eagle-gen-cmds eagle-to-circuit buffertest jsontest ccat ziptest
 )
 
 if(NOT MSVC)
