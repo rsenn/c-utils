@@ -228,7 +228,13 @@ int buffer_deflate(buffer* b, buffer* out, int level);
 int buffer_inflate(buffer* b, buffer* in);
 
 int  buffer_gunzip(buffer*, const char* filename);
+int  buffer_gunzip_fd(buffer*, int fd);
 int  buffer_gzip(buffer*, const char* filename, int level);
+int  buffer_gzip_fd(buffer*, int fd, int level);
+int  buffer_bunzip(buffer*, const char* filename);
+int  buffer_bunzip_fd(buffer*, int fd);
+int  buffer_bzip(buffer*, const char* filename, int level);
+int  buffer_bzip_fd(buffer*, int fd, int level);
 
 #ifdef __cplusplus
 }
