@@ -44,3 +44,5 @@ SOURCES = lib/array/array_allocate.c lib/array/array_length.c lib/array/array_st
 
 
 DEFINES += io_seek=lseek64
+
+DEFINES += HAVE_ERRNO_H=1

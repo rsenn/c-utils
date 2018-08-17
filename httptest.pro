@@ -46,3 +46,5 @@ SOURCES = httptest.c lib/buffer/buffer_1.c  lib/buffer/buffer_get_token_sa_pred.
 
 DISTFILES += \
 
+
+DEFINES += HAVE_ERRNO_H=1

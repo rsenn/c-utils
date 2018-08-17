@@ -18,3 +18,5 @@ SOURCES = compiler-wrapper.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buf
 
 
 
+
+DEFINES += HAVE_ERRNO_H=1
