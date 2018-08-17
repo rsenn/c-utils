@@ -1,20 +1,23 @@
 #define _XOPEN_SOURCE 1
-#include "lib/io_internal.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
-#include "lib/strlist.h"
-#include "lib/str.h"
-#include "lib/scan.h"
 #include "lib/fmt.h"
+#include "lib/io_internal.h"
+#include "lib/scan.h"
+#include "lib/str.h"
+#include "lib/strlist.h"
+#include "lib/strarray.h"
+#include "lib/slist.h"
+#include "lib/http.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
 
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <getopt.h>
 
 #define BUFSIZE 65535
 
@@ -32,6 +35,16 @@ http://verteiler4.mediathekview.de/Filmliste-akt.xz
 http://verteiler5.mediathekview.de/Filmliste-akt.xz
 http://verteiler6.mediathekview.de/Filmliste-akt.xz
 */
+const char* const mediathek_urls[] = {
+  "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
+  "http://mediathekview.jankal.me/Filmliste-akt.xz",
+  "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
+};
 
 const char* const mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
 
@@ -39,9 +52,9 @@ static unsigned long min_length;
 static int debug;
 static strlist include, exclude;
 
-
-//static
-ssize_t buffer_dummyread(int fd, char* b, size_t n) {
+// static
+ssize_t
+buffer_dummyread(int fd, char* b, size_t n) {
   (void)fd;
   (void)b;
   (void)n;
@@ -54,8 +67,7 @@ count_field_lengths(strlist* sl, int lengths[21]) {
   for(i = 0; i < 21; i++) {
     const char* s = strlist_at(sl, i);
     if(s) {
-      if(str_len(s) >= (unsigned)lengths[i])
-        lengths[i] = str_len(s);
+      if(str_len(s) >= (unsigned)lengths[i]) lengths[i] = str_len(s);
     }
   }
 }
@@ -64,15 +76,14 @@ int
 split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
   int ret = 0;
   char buf2[4096];
-  char *p = buf;
-  char *end = buf + n;
+  char* p = buf;
+  char* end = buf + n;
 
   strlist_zero(sl);
 
   for(;;) {
     size_t n = 0;
-    while(p < end && *p != '"')
-      ++p;
+    while(p < end && *p != '"') ++p;
 
     if(p == end) break;
 
@@ -80,7 +91,7 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 
     while(p < end) {
 
-      if(*p == '\\' && p[1] == '"')	{
+      if(*p == '\\' && p[1] == '"') {
         ++p;
       } else {
         if(*p == '"') {
@@ -107,9 +118,13 @@ void
 process_status(void) {
   /* display interesting process IDs  */
 #if !(defined(_WIN32) || defined(_WIN64))
-  fprintf(stderr, "process %s: pid=%d, ppid=%d, pgid=%d, fg pgid=%dn\n",
-          argv0, (int)getpid(), (int)getppid(),
-          (int)getpgrp(), (int)tcgetpgrp(STDIN_FILENO));
+  fprintf(stderr,
+          "process %s: pid=%d, ppid=%d, pgid=%d, fg pgid=%dn\n",
+          argv0,
+          (int)getpid(),
+          (int)getppid(),
+          (int)getpgrp(),
+          (int)tcgetpgrp(STDIN_FILENO));
 #endif
 }
 
@@ -155,9 +170,9 @@ read_mediathek_list(const char* url) {
   stralloc_cats(&cmd, "| xzcat");
   stralloc_0(&cmd);
 
-  static FILE *pfd;
+  static FILE* pfd;
 
-  if((pfd  = popen(cmd.s, "r")) == NULL) return -1;
+  if((pfd = popen(cmd.s, "r")) == NULL) return -1;
 
   return fileno(pfd);
 }
@@ -189,7 +204,7 @@ parse_time(const char* s) {
 char*
 format_num(time_t num) {
   static char buf[FMT_LONG];
-  memset(buf, 0,  sizeof(buf));
+  memset(buf, 0, sizeof(buf));
   buf[fmt_ulonglong(buf, num)] = '\0';
   return buf;
 }
@@ -225,8 +240,7 @@ time_t
 parse_datetime(const char* s, const char* fmt) {
   struct tm tm_s;
   memset(&tm_s, 0, sizeof(struct tm));
-  if(str_ptime(s, fmt, &tm_s) == s)
-    return 0;
+  if(str_ptime(s, fmt, &tm_s) == s) return 0;
   return mktime(&tm_s);
 }
 
@@ -234,7 +248,7 @@ time_t
 parse_anydate(const char* s) {
   const char* fmt;
   size_t len = str_len(s);
-  if(len != 8) //len - str_rchr(s, '.') == 4)
+  if(len != 8) // len - str_rchr(s, '.') == 4)
     fmt = "%d.%m.%Y";
   else
     fmt = "%Y%m%d";
@@ -245,7 +259,7 @@ char*
 format_datetime(size_t t, const char* fmt) {
   static char buf[1024];
   time_t tm = t;
-  /*size_t n =*/ strftime(buf, sizeof(buf), fmt, localtime(&tm));
+  /*size_t n =*/strftime(buf, sizeof(buf), fmt, localtime(&tm));
 
   return buf; /*  buffer_put(b, buf, n); */
 }
@@ -288,17 +302,24 @@ new_mediathek_entry() {
 }
 
 mediathek_entry_t*
-create_mediathek_entry(const char* ch, const char* tpc, const char* tit, const char* dsc, const char* ur, const char* ln) {
+create_mediathek_entry(
+    const char* ch, const char* tpc, const char* tit, const char* dsc, const char* ur, const char* ln) {
   mediathek_entry_t* e = new_mediathek_entry();
   if(e == NULL) return NULL;
 
-  stralloc_copys(&e->channel, ch); stralloc_0(&e->channel);
-  stralloc_copys(&e->topic, tpc); stralloc_0(&e->topic);
-  stralloc_copys(&e->title, tit); stralloc_0(&e->title);
+  stralloc_copys(&e->channel, ch);
+  stralloc_0(&e->channel);
+  stralloc_copys(&e->topic, tpc);
+  stralloc_0(&e->topic);
+  stralloc_copys(&e->title, tit);
+  stralloc_0(&e->title);
 
-  stralloc_copys(&e->desc, dsc ? dsc : ""); stralloc_0(&e->desc);
-  stralloc_copys(&e->url, ur ? ur : ""); stralloc_0(&e->url);
-  stralloc_copys(&e->link, ln ? ln : ""); stralloc_0(&e->link);
+  stralloc_copys(&e->desc, dsc ? dsc : "");
+  stralloc_0(&e->desc);
+  stralloc_copys(&e->url, ur ? ur : "");
+  stralloc_0(&e->url);
+  stralloc_copys(&e->link, ln ? ln : "");
+  stralloc_0(&e->link);
 
   return e;
 }
@@ -316,7 +337,6 @@ delete_mediathek_entry(mediathek_entry_t* e) {
 }
 
 static mediathek_entry_t* e;
-
 
 /* returns 1 if all tokens match */
 int
@@ -392,31 +412,33 @@ parse_entry(strlist* sl) {
   time_t dt = parse_anydate(strlist_at(sl, 4));
 
   time_t tm = parse_time(strlist_at(sl, 5));
-  time_t dr = parse_time(strlist_at(sl, 6));  /* duration */
+  time_t dr = parse_time(strlist_at(sl, 6)); /* duration */
 
-/*  */
+  /*  */
 
-  if((unsigned)dr < min_length)
-    return NULL;
+  if((unsigned)dr < min_length) return NULL;
 
   unsigned int mbytes = 0;
-  const char *mb = strlist_at(sl, 7);
+  const char* mb = strlist_at(sl, 7);
   if(mb) scan_uint(mb, &mbytes);
 
   const char* desc = strlist_at(sl, 8);
   const char* url = strlist_at(sl, 9);
   const char* link = strlist_at(sl, 10);
 
-  ret = create_mediathek_entry(
-          strlist_at(sl, 1), strlist_at(sl, 2), strlist_at(sl, 3),
+  ret = create_mediathek_entry(strlist_at(sl, 1),
+                               strlist_at(sl, 2),
+                               strlist_at(sl, 3),
 
-          desc, url, link
+                               desc,
+                               url,
+                               link
 
-        );
+  );
 
   if(ret) {
     ret->tm = dt + tm;
-    ret->dr =  dr;
+    ret->dr = dr;
     ret->mbytes = mbytes;
   }
   return ret;
@@ -439,7 +461,7 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
    buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);
    buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep);*/
 
-/*  */
+  /*  */
 
   buffer_putnlflush(b);
 }
@@ -495,20 +517,17 @@ parse_mediathek_list(int fd) {
 
         ret += ret2;
         ret2 = buffer_get_token(&b, &buf2[ret], sizeof(buf2) - ret, "]", 1);
-        if(ret2 > 0)
-          ret += ret2;
+        if(ret2 > 0) ret += ret2;
       }
     }
 
     strlist_init(&sl);
     split_fields(&sl, &prev, buf2, ret);
 
-/*  */
+    /*  */
     if((e = parse_entry(&sl))) {
       total++;
-      if(debug > 2)
-        print_entry(buffer_2, e);
-
+      if(debug > 2) print_entry(buffer_2, e);
 
       if(match_toklists(&sl)) {
         matched++;
@@ -517,7 +536,6 @@ parse_mediathek_list(int fd) {
           buffer_put(buffer_1, ",\n", 2);
           buffer_flush(buffer_1);
         }
-
 
         output_entry(buffer_1, &sl);
         prevout = sl;
@@ -544,7 +562,8 @@ parse_mediathek_list(int fd) {
   return 0;
 }
 
-int main(int argc, char *argv[]) {
+int
+main(int argc, char* argv[]) {
 
   int opt;
 
@@ -552,21 +571,21 @@ int main(int argc, char *argv[]) {
 
   while((opt = getopt(argc, argv, "dt:i:x:")) != -1) {
     switch(opt) {
-    case 'd':
-      debug++;
-      break;
-    case 't':
-      min_length  = parse_time(optarg);
-      break;
-    case 'i':
-      strlist_push(&include, optarg);
-      break;
-    case 'x':
-      strlist_push(&exclude, optarg);
-      break;
-    default: /* '?' */
-      buffer_putm(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n");
-      exit(EXIT_FAILURE);
+      case 'd':
+        debug++;
+        break;
+      case 't':
+        min_length = parse_time(optarg);
+        break;
+      case 'i':
+        strlist_push(&include, optarg);
+        break;
+      case 'x':
+        strlist_push(&exclude, optarg);
+        break;
+      default: /* '?' */
+        buffer_putm(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n");
+        exit(EXIT_FAILURE);
     }
   }
 
@@ -575,15 +594,13 @@ int main(int argc, char *argv[]) {
     strlist_push(&include, argv[optind++]);
   }
 
-/*  */
-
+  /*  */
 
   /* if(strlist_count(&include) == 0)
      strlist_push(&include, "");*/
 
   strlist_dump(buffer_2, &include);
   strlist_dump(buffer_2, &exclude);
-
 
   /*  stralloc sa;
     stralloc_init(&sa);
@@ -597,8 +614,7 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "%p\n", str_istr("[", "blah"));
   fflush(stderr);
 
-/*  */
-
+  /*  */
 
   /*   if(optind >= argc) {
          fprintf(stderr,
@@ -610,11 +626,9 @@ int main(int argc, char *argv[]) {
   strlist_dumpx[1] = '\n';
   strlist_dumpx[2] = '\t';
 
-
   argv0 = argv[0];
 
-  if(argv0[str_rchr(argv0, '/')] != '\0')
-    argv0 += str_rchr(argv0, '/') + 1;
+  if(argv0[str_rchr(argv0, '/')] != '\0') argv0 += str_rchr(argv0, '/') + 1;
 
   return parse_mediathek_list(read_mediathek_list(mediathek_url));
 }

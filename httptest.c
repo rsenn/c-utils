@@ -31,8 +31,12 @@ do_recv(int s, void* buf, size_t len, void* ptr) {
   return ret;
 }
 
-static const char* const url_host = "193.247.32.15";
-static const char* const url_location = "/";
+/*
+ *  URL: http://verteiler1.mediathekview.de/Filmliste-akt.xz
+ */
+
+static const char* const url_host = "5.1.76.111";
+static const char* const url_location = "/Filmliste-akt.xz";
 static const uint16 url_port = 80;
 
 int main(int argc, char* argv[]) {
@@ -43,7 +47,7 @@ int main(int argc, char* argv[]) {
   char inbuf[8192];
   int ret;
 
-  http_init(&h, url_host,url_port);
+  http_init(&h, url_host, url_port);
   ret = http_get(&h, url_location);
 
   buffer_init(&in, (void*)do_recv, h.sock, inbuf, sizeof(inbuf));
