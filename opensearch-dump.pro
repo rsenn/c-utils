@@ -15,6 +15,4 @@ SOURCES = lib/buffer/buffer_0.c lib/buffer/buffer_0small.c lib/buffer/buffer_1.c
 HEADERS = lib/buffer.h lib/stralloc.h 
 
 
-include(deployment.pri)
-qtcAddDeployment()
 

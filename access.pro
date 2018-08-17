@@ -9,8 +9,6 @@ INCLUDEPATH += . $$PWD/lib
 
 HEADERS = 
 
-include(deployment.pri)
-qtcAddDeployment()
 
 
 SOURCES = access.c
