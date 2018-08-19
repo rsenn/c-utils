@@ -32,9 +32,9 @@
 #ifdef __GNUC__
 # ifndef uint64_t
 #  ifdef __UINT64_TYPE__
-#   define uint64_t __UINT64_TYPE__
+typedef __UINT64_TYPE__ uint64_t;
 #  elif defined __INT64_TYPE__
-#   define uint64_t unsigned __INT64_TYPE__
+typedef unsigned __INT64_TYPE__ uint64_t;
 #  endif
 # endif
 # ifndef int64_t

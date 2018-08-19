@@ -74,7 +74,7 @@ HAVE_$(call header-to-var,$(1)) := $$(call check-include-exists,$(1))
 $$(info HAVE_$(call header-to-var,$(1))=$$(HAVE_$(call header-to-var,$(1))))
 endef
 
-cmd-exists = $(shell type "$(1)" 2>/dev/null >/dev/null && echo 1)
+cmd-exists = $(shell set -x; type "$(1)" >/dev/null && echo 1 || echo 0)
 
 echo-target = $(info $(call target-tmpl,$(1),$(2),$(3)))
 
