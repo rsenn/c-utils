@@ -23,6 +23,7 @@
 
 extern char strlist_dumpx[5];
 
+static const char* dt_fmt = "%Y%m%d %H:%M";
 const char* argv0;
 
 /*
@@ -453,7 +454,7 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
   buffer_putm(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep);
   buffer_putm(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep);
 
-  buffer_putm(b, "Datum:\t", format_datetime(e->tm, "%Y%m%d %H:%M"), sep);
+  buffer_putm(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep);
   buffer_putm(b, "Dauer:\t", format_time(e->dr), sep);
   buffer_putm(b, "Grösse:\t", format_num(e->mbytes), "MB", sep);
 
@@ -569,8 +570,11 @@ main(int argc, char* argv[]) {
 
   min_length = 0;
 
-  while((opt = getopt(argc, argv, "dt:i:x:")) != -1) {
+  while((opt = getopt(argc, argv, "F:dt:i:x:")) != -1) {
     switch(opt) {
+      case 'F':
+        dt_fmt = optarg;
+        break;
       case 'd':
         debug++;
         break;
