@@ -1,4 +1,4 @@
-httcfg() {
+cfg() {
   : ${build:=`gcc -dumpmachine`}
   [ -n "$build" ] && build=${build//-pc-/-}
 
