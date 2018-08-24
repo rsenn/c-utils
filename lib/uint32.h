@@ -28,10 +28,10 @@
 
 #ifdef __GNUC__
 #ifndef uint32_t
-#define uint32_t __UINT32_TYPE__
+typedef __UINT32_TYPE__ uint32_t;
 #endif
 #ifndef int32_t
-#define int32_t __INT32_TYPE__
+typedef __INT32_TYPE__ int32_t;
 #endif
 #endif
 
