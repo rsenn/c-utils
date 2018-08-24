@@ -71,7 +71,7 @@ long alt_firstwrite;
 #endif
 
 /* put d on internal data structure, return 1 on success, 0 on error */
-static io_entry* io_fd_internal(int64 d, int flags) {
+static io_entry* io_fd_internal(fd_t d, int flags) {
   io_entry* e;
 #if !(defined(_WIN32) || defined(_WIN64))
   long r;
@@ -172,18 +172,18 @@ static io_entry* io_fd_internal(int64 d, int flags) {
   return e;
 }
 
-int io_fd(int64 d) {
+int io_fd(fd_t d ){
   io_entry* e = io_fd_internal(d, 0);
   return !!e;
 }
 
-int io_fd_canwrite(int64 d) {
+int io_fd_canwrite(fd_t d ){
   io_entry* e = io_fd_internal(d, 0);
   if(e) e->canwrite = 1;
   return !!e;
 }
 
-int io_fd_flags(int64 d, int flags) {
+int io_fd_flags(fd_t d, int flags) {
   io_entry* e = io_fd_internal(d, flags);
   if(e && (flags & IO_FD_CANWRITE)) e->canwrite = 1;
   return !!e;

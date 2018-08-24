@@ -35,7 +35,7 @@
  * Now, if someone calls io_wantwrite, we might be in the situation that
  * canwrite is already set.  In that case, just enqueue the fd. */
 
-void io_wantwrite_really(int64 d, io_entry* e) {
+void io_wantwrite_really(fd_t d, io_entry* e) {
   int newfd;
   assert(!e->kernelwantwrite);	/* we should not be here if we already told the kernel we want to write */
   newfd = (!e->kernelwantread);
@@ -98,7 +98,7 @@ void io_wantwrite_really(int64 d, io_entry* e) {
   e->kernelwantwrite = 1;
 }
 
-void io_wantwrite(int64 d) {
+void io_wantwrite(fd_t d ){
   io_entry* e = iarray_get(io_getfds(), d);
   if(!e) return;
   if(e->wantwrite && e->kernelwantwrite) return;

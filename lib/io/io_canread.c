@@ -7,7 +7,7 @@
 #if defined(_WIN32) || defined(_WIN64)
 #endif
 
-void io_wantread_really(int64 d, io_entry* e);
+void io_wantread_really(fd_t d, io_entry* e);
 
 int64 io_canread() {
   io_entry* e;

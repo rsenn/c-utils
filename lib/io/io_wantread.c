@@ -31,7 +31,7 @@
 #define assert(x)
 #endif
 
-void io_wantread_really(int64 d, io_entry* e) {
+void io_wantread_really(fd_t d, io_entry* e) {
   int newfd;
   assert(!e->kernelwantread);
   newfd = !e->kernelwantwrite;
@@ -115,7 +115,7 @@ queueread:
   e->kernelwantread = 1;
 }
 
-void io_wantread(int64 d) {
+void io_wantread(fd_t d ){
   io_entry* e = iarray_get(io_getfds(), d);
   if(!e || e->wantread) return;
   if(e->canread) {

@@ -14,7 +14,7 @@ buffer_bzip_close(buffer* b) {
 }
 
 static ssize_t
-buffer_bunzip_read(int fd, void* x, size_t n, void* b) {
+buffer_bunzip_read(fd_t fd, void* x, size_t n, void* b) {
   BZFILE* f = ((buffer*)b)->cookie;
   return BZ2_bzread(f, x, n);
 }
@@ -25,8 +25,7 @@ buffer_bunzip(buffer* b, const char* filename) {
   if((f = BZ2_bzopen(filename, "rb")) == NULL) return -1;
   b->fd = -1;
   b->cookie = f;
-  b->n = 
-  b->p = 0;
+  b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
   b->deinit = buffer_bzip_close;
@@ -34,14 +33,13 @@ buffer_bunzip(buffer* b, const char* filename) {
 }
 
 int
-buffer_bunzip_fd(buffer* b, int fd) {
+buffer_bunzip_fd(buffer* b, fd_t fd) {
   BZFILE* f;
   if((f = BZ2_bzdopen(fd, "rb")) == NULL) return -1;
   b->fd = -1;
   b->cookie = f;
   b->op = &buffer_bunzip_read;
-  b->n = 
-  b->p = 0;
+  b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
   b->deinit = buffer_bzip_close;
@@ -49,21 +47,20 @@ buffer_bunzip_fd(buffer* b, int fd) {
 }
 
 static ssize_t
-buffer_bzip_write(int fd, void* x, size_t n, void* b) {
+buffer_bzip_write(fd_t fd, void* x, size_t n, void* b) {
   BZFILE* f = ((buffer*)b)->cookie;
   return BZ2_bzwrite(f, x, n);
 }
 
 int
 buffer_bzip(buffer* b, const char* filename, int level) {
-  char mode[4] = { 'w', 'b', '0' + (level % 10), '\0' };
+  char mode[4] = {'w', 'b', '0' + (level % 10), '\0'};
   BZFILE* f;
   if((f = BZ2_bzopen(filename, mode)) == NULL) return -1;
   b->fd = -1;
   b->cookie = f;
   b->op = &buffer_bzip_write;
-  b->n = 
-  b->p = 0;
+  b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
   b->deinit = buffer_bzip_close;
@@ -71,15 +68,14 @@ buffer_bzip(buffer* b, const char* filename, int level) {
 }
 
 int
-buffer_bzip_fd(buffer* b, int fd, int level) {
-  char mode[4] = { 'w', 'b', '0' + (level % 10), '\0' };
+buffer_bzip_fd(buffer* b, fd_t fd, int level) {
+  char mode[4] = {'w', 'b', '0' + (level % 10), '\0'};
   BZFILE* f;
   if((f = BZ2_bzdopen(fd, mode)) == NULL) return -1;
   b->fd = -1;
   b->cookie = f;
   b->op = &buffer_bzip_write;
-  b->n = 
-  b->p = 0;
+  b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
   b->deinit = buffer_bzip_close;

@@ -15,7 +15,7 @@
 /* So we assume io_trywrite is not used so much and do the overlapping
  * stuff on I/O batches. */
 
-int64 io_trywrite(int64 d, const char* buf, int64 len) {
+int64 io_trywrite(fd_t d, const char* buf, int64 len) {
   io_entry* e = iarray_get(io_getfds(), d);
   int r;
   if(!e) { errno = EBADF; return -3; }
@@ -68,7 +68,7 @@ int64 io_trywrite(int64 d, const char* buf, int64 len) {
 
 #else
 
-int64 io_trywrite(int64 d, const char* buf, int64 len) {
+int64 io_trywrite(fd_t d, const char* buf, int64 len) {
   long r;
   struct itimerval old, new;
   struct pollfd p;

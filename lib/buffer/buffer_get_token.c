@@ -8,7 +8,7 @@ ssize_t
 buffer_get_token(buffer* b, char* x, size_t len, const char* charset, size_t setlen) {
   size_t blen;
 
-  if((ssize_t)len < 0) len = (ssize_t)(((size_t) -1) >> 1);
+  if((ssize_t)len < 0) len = (ssize_t)(((size_t)-1) >> 1);
   if(setlen == 1) {
     for(blen = 0; blen < len;) {
       ssize_t n = buffer_feed(b);

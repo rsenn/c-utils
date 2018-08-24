@@ -1,17 +1,17 @@
 #include "../io_internal.h"
 #include "../iob.h"
-#include <sys/types.h>
+
 #if defined(_WIN32) || defined(_WIN64)
 #include "../windoze.h"
 #else
 #include <sys/mman.h>
-#endif
 #include <errno.h>
-/* #include "../havepread.h" */
+#endif
 
 #define BUFSIZE 16384
 
-int64 io_mmapwritefile(int64 out, int64 in, uint64 off, uint64 bytes, io_write_callback writecb) {
+int64
+io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback writecb) {
   char buf[BUFSIZE];
   ssize_t n, m;
   uint64 sent = 0;

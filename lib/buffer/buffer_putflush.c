@@ -14,7 +14,7 @@
 #define __unlikely(x) (x)
 #endif
 
-extern ssize_t buffer_stubborn(buffer_op_fn* op, int fd, const char* buf, size_t len, void* cookie);
+extern ssize_t buffer_stubborn(buffer_op_fn* op, fd_t fd, const char* buf, size_t len, void* cookie);
 
 int
 buffer_putflush(buffer* b, const char* x, size_t len) {
@@ -40,7 +40,7 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
       if((size_t)w < v[0].iov_len) {
         if(buffer_stubborn(b->op, b->fd, v[0].iov_base + w, v[0].iov_len - w, b) ||
 
-            buffer_stubborn(b->op, b->fd, v[1].iov_base, v[0].iov_len, b))
+           buffer_stubborn(b->op, b->fd, v[1].iov_base, v[0].iov_len, b))
           return -1;
       } else {
         w -= v[0].iov_len;

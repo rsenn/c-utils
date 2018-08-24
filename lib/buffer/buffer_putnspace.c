@@ -18,9 +18,9 @@ buffer_putnspace(buffer* b, int n) {
     int ret;
     char* space =
 #ifdef HAVE_ALLOCA_FUNC
-      alloca(n);
+        alloca(n);
 #else
-      malloc(n);
+        malloc(n);
 #endif
     byte_fill(space, n, ' ');
     ret = buffer_put(b, space, n);

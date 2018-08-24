@@ -4,28 +4,24 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-#ifdef __unix__
-#include <unistd.h>
-#endif
-
-#include "windoze.h"
+#include "io.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef ssize_t (read_fn)(int fd, void* buf, size_t n);
+typedef ssize_t (read_fn)(fd_t fd, void* buf, size_t n);
 
 typedef struct {
   char ch;
   unsigned char p:1;
   read_fn* op;
-  intptr_t fd;
+  fd_t fd;
 } charbuf;
 
 #define CHARBUF_INIT(op, fd) { '\0', 0, (op), (fd) }
 
-void charbuf_init(charbuf*, read_fn*, intptr_t);
+void charbuf_init(charbuf*, read_fn*, fd_t);
 void charbuf_close(charbuf*);
 int  charbuf_getc(charbuf*, char*);
 int  charbuf_get(charbuf*);

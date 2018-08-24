@@ -11,12 +11,11 @@
 #endif
 
 int
-buffer_read_fd(buffer* b, int fd) {
+buffer_read_fd(buffer* b, fd_t fd) {
   struct stat st;
   if(fstat(fd, &st) == -1) return -1;
 
-  if((st.st_mode & S_IFMT) == S_IFREG)
-    return buffer_mmapread_fd(b, fd);
+  if((st.st_mode & S_IFMT) == S_IFREG) return buffer_mmapread_fd(b, fd);
 
   b->fd = fd;
 

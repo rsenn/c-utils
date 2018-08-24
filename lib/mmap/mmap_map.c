@@ -18,7 +18,7 @@ intptr_t __cdecl __declspec(dllimport) _get_osfhandle(int _FileHandle);
 #endif
 
 char*
-mmap_map(int fd, size_t sz, uint64 offset) {
+mmap_map(fd_t fd, size_t sz, uint64 offset) {
 #if defined(_WIN32) || defined(_WIN64)
   HANDLE h = (HANDLE)_get_osfhandle(fd);
   HANDLE m;

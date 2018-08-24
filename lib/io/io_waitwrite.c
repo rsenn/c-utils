@@ -11,7 +11,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 
-int64 io_waitwrite(int64 d, const char* buf, int64 len) {
+int64 io_waitwrite(fd_t d, const char* buf, int64 len) {
   long r;
   io_entry* e = iarray_get(io_getfds(), d);
   if(!e) { errno = EBADF; return -3; }
@@ -31,7 +31,7 @@ int64 io_waitwrite(int64 d, const char* buf, int64 len) {
 
 #else
 
-int64 io_waitwrite(int64 d, const char* buf, int64 len) {
+int64 io_waitwrite(fd_t d, const char* buf, int64 len) {
   long r;
   struct pollfd p;
   io_entry* e = iarray_get(io_getfds(), d);

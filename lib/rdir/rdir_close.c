@@ -2,10 +2,11 @@
 #include "config.h"
 #endif
 
-#include "../rdir.h"
 #include "../dir.h"
+#include "../rdir.h"
 
-void rdir_close(rdir_t* d) {
+void
+rdir_close(rdir_t* d) {
   dir_close(&d->dir);
-  //free(d->rdir_int);
+  // free(d->rdir_int);
 }

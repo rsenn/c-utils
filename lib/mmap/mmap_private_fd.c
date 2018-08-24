@@ -15,7 +15,7 @@
 #endif
 
 char*
-mmap_private_fd(int fd, size_t* filesize) {
+mmap_private_fd(fd_t fd, size_t* filesize) {
 #if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
   HANDLE m;
   char* map;

@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #if (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__)
 #include <io.h>

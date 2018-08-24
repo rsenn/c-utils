@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "../io_internal.h"
 
-int io_readfile(int64* d, const char* s) {
+int io_readfile(fd_t* d, const char* s) {
   long fd = open(s, O_RDONLY);
   if(fd != -1) {
     *d = fd;

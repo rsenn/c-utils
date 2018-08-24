@@ -19,7 +19,7 @@
 char mmap_empty[] = {0};
 
 char*
-mmap_read_fd(int fd, size_t* filesize) {
+mmap_read_fd(fd_t fd, size_t* filesize) {
 #if defined(_WIN32) || defined(_WIN32) || defined(__MSYS__)
   HANDLE m;
   char* map;

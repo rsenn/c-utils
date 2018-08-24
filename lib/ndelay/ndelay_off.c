@@ -12,7 +12,7 @@
 #define O_NDELAY O_NONBLOCK
 #endif
 
-int ndelay_off(int fd) {
+int ndelay_off(fd_t fd) {
 #if defined(_WIN32) || defined(_WIN64)
   unsigned long i = 1;
   return winsock2errno(ioctlsocket(fd, FIONBIO, &i));

@@ -16,7 +16,7 @@
  * is finished, and then return the data we actually read the next time
  * we are called. */
 
-int64 io_tryread(int64 d, char* buf, int64 len) {
+int64 io_tryread(fd_t d, char* buf, int64 len) {
   io_entry* e = iarray_get(io_getfds(), d);
   if(!e) { errno = EBADF; return -3; }
   if(len < 0) { errno = EINVAL; return -3; }
@@ -76,7 +76,7 @@ int64 io_tryread(int64 d, char* buf, int64 len) {
 
 #else
 
-int64 io_tryread(int64 d, char* buf, int64 len) {
+int64 io_tryread(fd_t d, char* buf, int64 len) {
   long r;
   struct itimerval old, new;
   struct pollfd p;

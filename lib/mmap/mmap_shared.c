@@ -30,7 +30,7 @@ mmap_shared(const char* filename, size_t* filesize) {
   CloseHandle(fd);
   return map;
 #else
-  int fd = open_rw(filename);
+  fd_t fd = open_rw(filename);
   char* map;
   if(fd >= 0) {
     register off_t o = lseek(fd, 0, SEEK_END);

@@ -2,7 +2,7 @@
 #include "../stralloc.h"
 
 static ssize_t
-dummyreadwrite(int fd, void* buf, size_t len, void* arg) {
+dummyreadwrite(fd_t fd, void* buf, size_t len, void* arg) {
   (void)fd;
   (void)buf;
   (void)len;

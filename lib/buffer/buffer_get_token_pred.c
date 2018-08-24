@@ -1,7 +1,7 @@
-#include "../stralloc.h"
 #include "../buffer.h"
 #include "../byte.h"
 #include "../scan.h"
+#include "../stralloc.h"
 
 ssize_t
 buffer_get_token_pred(buffer* b, char* x, size_t len, string_predicate p, void* arg) {

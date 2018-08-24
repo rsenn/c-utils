@@ -31,7 +31,7 @@
  * not interested.  In the typical protocol case of "write request, read
  * reply", this should save a lot of syscalls. */
 
-void io_dontwantwrite_really(int64 d, io_entry* e) {
+void io_dontwantwrite_really(fd_t d, io_entry* e) {
   int newfd;
   (void)d;
   assert(e->kernelwantwrite);
@@ -70,7 +70,7 @@ void io_dontwantwrite_really(int64 d, io_entry* e) {
   e->kernelwantwrite = 0;
 }
 
-void io_dontwantwrite(int64 d) {
+void io_dontwantwrite(fd_t d ){
   io_entry* e = iarray_get(io_getfds(), d);
   if(e) {
     if(e->canwrite)

@@ -15,7 +15,7 @@
 #define O_NDELAY O_NONBLOCK
 #endif
 
-void io_block(int64 d) {
+void io_block(fd_t d ){
   io_entry* e = iarray_get(io_getfds(), d);
 #if defined(_WIN32) || defined(_WIN64)
   unsigned long i = 0;

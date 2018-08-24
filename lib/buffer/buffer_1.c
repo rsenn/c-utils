@@ -2,8 +2,8 @@
 #include <unistd.h>
 #endif
 
-#include "../io_internal.h"
 #include "../buffer.h"
+#include "../io_internal.h"
 #if defined(_WIN32) || defined(_WIN64)
 #include "../io_internal.h"
 #endif

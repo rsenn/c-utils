@@ -18,9 +18,9 @@ extern "C" {
 typedef SSIZE_T ssize_t;
 #endif
 
-typedef ssize_t (buffer_op_sys)(int fd, void* buf, size_t len);
-typedef ssize_t (buffer_op_proto)(int fd, void* buf, size_t len, void* arg);
-typedef ssize_t (buffer_op_fn)(/*int fd, void* buf, size_t len, void* arg*/);
+typedef ssize_t (buffer_op_sys)(fd_t fd, void* buf, size_t len);
+typedef ssize_t (buffer_op_proto)(fd_t fd, void* buf, size_t len, void* arg);
+typedef ssize_t (buffer_op_fn)(/*fd_t fd, void* buf, size_t len, void* arg*/);
 typedef buffer_op_fn* buffer_op_ptr;
 
 typedef struct buffer {
@@ -31,7 +31,7 @@ typedef struct buffer {
   buffer_op_proto* op; /* use read(2) or write(2) */
   void* cookie;			/* used internally by the to-stralloc buffers,  and for buffer chaining */
   void (*deinit)();	/* called to munmap/free cleanup,  with a pointer to the buffer as argument */
-  int fd;		/* passed as first argument to op */
+  fd_t fd;		/* passed as first argument to op */
 } buffer;
 
 #define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (void*)(op),  NULL,  NULL,  (fd) }
@@ -40,18 +40,18 @@ typedef struct buffer {
 #define BUFFER_INSIZE 8192
 #define BUFFER_OUTSIZE 8192
 
-void buffer_init(buffer* b, buffer_op_sys*, int fd, char* y, size_t ylen);
-void buffer_init_free(buffer* b, buffer_op_sys*, int fd, char* y, size_t ylen);
+void buffer_init(buffer* b, buffer_op_sys*, fd_t fd, char* y, size_t ylen);
+void buffer_init_free(buffer* b, buffer_op_sys*, fd_t fd, char* y, size_t ylen);
 void buffer_free(void* buf);
 void buffer_munmap(void* buf);
 int buffer_mmapread(buffer* b, const char* filename);
-int buffer_mmapread_fd(buffer *b,  int fd);
+int buffer_mmapread_fd(buffer *b,  fd_t fd);
 int buffer_mmapprivate(buffer* b, const char* filename);
 void buffer_close(buffer* b);
 
 /* reading from an fd... if it is a regular file,  then  buffer_mmapread_fd is called,
    otherwise  buffer_init(&b,  read,  fd,  malloc(8192),  8192) */
-int buffer_read_fd(buffer* b,  int fd);
+int buffer_read_fd(buffer* b,  fd_t fd);
 
 int buffer_flush(buffer* b);
 int buffer_put(buffer* b, const char* x, size_t len);

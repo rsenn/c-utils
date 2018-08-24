@@ -27,9 +27,13 @@ void __winsock_init(void);
 #if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
 static inline size_t
 getpagesize() {
-  SYSTEM_INFO si;
-  GetNativeSystemInfo(&si);
-  return si.dwPageSize;
+  static DWORD cachedPageSize = 0;
+  if(cachedPageSize == 0) {
+    SYSTEM_INFO si;
+    GetNativeSystemInfo(&si);
+    cachedPageSize = si.dwPageSize;
+  }
+  return cachedPageSize; 
 }
 #endif
 

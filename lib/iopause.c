@@ -41,7 +41,7 @@ iopause(iopause_fd* x,
     fd_set rfds;
     fd_set wfds;
     int nfds;
-    int fd;
+    fd_t fd;
 
     FD_ZERO(&rfds);
     FD_ZERO(&wfds);

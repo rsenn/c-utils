@@ -14,13 +14,13 @@ extern "C" {
 typedef SSIZE_T ssize_t;
 #endif
 
-typedef ssize_t (read_fn)(int fd, void* buf, size_t n);
+typedef ssize_t (read_fn)(fd_t fd, void* buf, size_t n);
 
 typedef struct {
   char ch;
   size_t p;
   read_fn* op;
-  int fd;
+  fd_t fd;
 } charbuf;
 
 

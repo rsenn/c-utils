@@ -3,7 +3,7 @@
 #include "../fmt.h"
 #include <time.h>
 
-unsigned int io_debugstring(int64 s, char* buf, unsigned int bufsize) {
+unsigned int io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   struct timeval tv;
   unsigned int i;
   io_entry* e;

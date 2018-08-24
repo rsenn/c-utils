@@ -25,7 +25,7 @@
 #define assert(x)
 #endif
 
-void io_dontwantread_really(int64 d, io_entry* e) {
+void io_dontwantread_really(fd_t d, io_entry* e) {
   int newfd;
   (void)d;
   assert(e->kernelwantread);
@@ -64,7 +64,7 @@ void io_dontwantread_really(int64 d, io_entry* e) {
   e->kernelwantread = 0;
 }
 
-void io_dontwantread(int64 d) {
+void io_dontwantread(fd_t d ){
   io_entry* e = iarray_get(io_getfds(), d);
   if(e) {
     if(e->canread)

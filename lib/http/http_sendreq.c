@@ -3,7 +3,7 @@
 #include "../io_internal.h"
 #include "../socket.h"
 static ssize_t
-do_send(int64 s, const void* buf, size_t len) {
+do_send(fd_t s, const void* buf, size_t len) {
   return send(s, buf, len, 0);
 }
 

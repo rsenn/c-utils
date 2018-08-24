@@ -6,7 +6,7 @@
 #if defined(_WIN32) || defined(_WIN64)
 #include "io_internal.h"
 #include <errno.h>
-int io_passfd(int64 sock,int64 fd) {
+int io_passfd(fd_t sock,fd_t fd) {
   errno=EINVAL;
   return -1;
 }
@@ -40,7 +40,7 @@ union fdmsg {
   char buf[1000];
 };
 
-int io_passfd(int64 sock,int64 fd) {
+int io_passfd(fd_t sock,fd_t fd) {
   struct msghdr msg;
   struct iovec  iov;
 #ifdef CMSG_FIRSTHDR

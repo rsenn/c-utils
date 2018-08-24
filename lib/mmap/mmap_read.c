@@ -30,7 +30,7 @@ mmap_read(const char* filename, size_t* filesize) {
   CloseHandle(fd);
   return map;
 #else
-  int fd = open_read(filename);
+  fd_t fd = open_read(filename);
   char* map;
   if(fd >= 0) {
     *filesize = io_seek(fd, 0, SEEK_END);

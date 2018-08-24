@@ -2,6 +2,8 @@
 #ifndef IOPAUSE_H
 #define IOPAUSE_H
 
+#include "io.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,7 +29,7 @@ extern void iopause(iopause_fd *,unsigned int,struct taia *,struct taia *);
 /* sysdep: -poll */
 
 typedef struct {
-  int fd;
+  fd_t fd;
   short events;
   short revents;
 } iopause_fd;

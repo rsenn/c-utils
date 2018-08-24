@@ -14,7 +14,7 @@ typedef struct {
 } deflate_ctx;
 
 static ssize_t
-buffer_deflate_write(int fd, const void* data, size_t n, buffer* b) {
+buffer_deflate_write(fd_t fd, const void* data, size_t n, buffer* b) {
   deflate_ctx* ctx = b->cookie;
   z_stream* z = &ctx->z;
 

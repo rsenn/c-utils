@@ -14,7 +14,7 @@
 #define SENDFILE 1
 
 
-int64 io_sendfile(int64 s, int64 fd, uint64 off, uint64 n) {
+int64 io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
   off_t sbytes;
   int r = sendfile(fd, s, off, n, 0, &sbytes, 0);
   if(r == -1) {
@@ -100,7 +100,7 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 _syscall4(int, sendfile, int, out, int, in, long *, offset, unsigned long, count)
 #endif
 
-int64 io_sendfile(int64 s, int64 fd, uint64 off, uint64 n) {
+int64 io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
   off_t o = off;
   io_entry* e = iarray_get(io_getfds(), s);
   off_t i;
@@ -136,7 +136,8 @@ int64 io_sendfile(int64 s, int64 fd, uint64 off, uint64 n) {
 #define TF_USE_KERNEL_APC 0x20
 #endif
 
-int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
+int64
+io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
   io_entry* e = iarray_get(io_getfds(), out);
   if(!e) { errno = EBADF; return -3; }
   if(e->sendfilequeued == 1) {
@@ -168,11 +169,12 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 
 #include "../iob.h"
 
-static int64 writecb(int64 s, const void* buf, uint64 n) {
+static int64 writecb(fd_t s, const void* buf, uint64 n) {
   return write(s, buf, n);
 }
 
-int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
+int64
+io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
   return io_mmapwritefile(out, in, off, bytes, writecb);
 }
 

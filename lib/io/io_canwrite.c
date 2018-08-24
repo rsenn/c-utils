@@ -1,7 +1,7 @@
 #include <errno.h>
 #include "../io_internal.h"
 
-void io_wantwrite_really(int64 d, io_entry* e);
+void io_wantwrite_really(fd_t d, io_entry* e);
 
 int64 io_canwrite() {
   io_entry* e;

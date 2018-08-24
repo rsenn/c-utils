@@ -14,7 +14,7 @@ typedef struct {
 } lzma_ctx;
 
 static ssize_t
-buffer_lzmaread_op(int fd, void* data, size_t n, buffer* b) {
+buffer_lzmaread_op(fd_t fd, void* data, size_t n, buffer* b) {
   lzma_ctx* ctx = b->cookie;
   lzma_stream* strm = &ctx->strm;
   lzma_ret ret;
@@ -39,8 +39,8 @@ buffer_lzmaread_op(int fd, void* data, size_t n, buffer* b) {
     ret = lzma_code(strm, ctx->a);
   } while(ctx->a == LZMA_FINISH && ret != LZMA_STREAM_END);
 
-  if( /* strm->avail_out == 0 */
-      ret == LZMA_OK || ret == LZMA_STREAM_END) {
+  if(/* strm->avail_out == 0 */
+     ret == LZMA_OK || ret == LZMA_STREAM_END) {
 
     ctx->b->p += a - strm->avail_in;
 
@@ -53,7 +53,7 @@ buffer_lzmaread_op(int fd, void* data, size_t n, buffer* b) {
 }
 
 static ssize_t
-buffer_lzmawrite_op(int fd, void* data, size_t n, buffer* b) {
+buffer_lzmawrite_op(fd_t fd, void* data, size_t n, buffer* b) {
   lzma_ctx* ctx = b->cookie;
   lzma_stream* strm = &ctx->strm;
   lzma_ret ret;

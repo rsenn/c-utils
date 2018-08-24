@@ -1,5 +1,5 @@
-#include "../stralloc.h"
 #include "../buffer.h"
+#include "../stralloc.h"
 
 int
 buffer_getline_sa(buffer* b, stralloc* sa) {

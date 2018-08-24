@@ -6,10 +6,10 @@
 #endif
 #include "../io_internal.h"
 
-extern void io_dontwantread_really(int64 d, io_entry* e);
-extern void io_dontwantwrite_really(int64 d, io_entry* e);
+extern void io_dontwantread_really(fd_t d, io_entry* e);
+extern void io_dontwantwrite_really(fd_t d, io_entry* e);
 
-void io_close(int64 d) {
+void io_close(fd_t d ){
   io_entry* e;
   if((e = iarray_get(io_getfds(), d))) {
     e->inuse = 0;

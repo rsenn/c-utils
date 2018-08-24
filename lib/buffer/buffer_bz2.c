@@ -14,7 +14,7 @@ typedef struct {
 } bz_ctx;
 
 static ssize_t
-buffer_bzread_op(int fd, void* data, size_t n, buffer* b) {
+buffer_bzread_op(fd_t fd, void* data, size_t n, buffer* b) {
   bz_ctx* ctx = b->cookie;
   bz_stream* strm = &ctx->strm;
   int ret;
@@ -53,7 +53,7 @@ buffer_bzread_op(int fd, void* data, size_t n, buffer* b) {
 }
 
 static ssize_t
-buffer_bzwrite_op(int fd, void* data, size_t n, buffer* b) {
+buffer_bzwrite_op(fd_t fd, void* data, size_t n, buffer* b) {
   bz_ctx* ctx = b->cookie;
   bz_stream* strm = &ctx->strm;
   int ret;
@@ -93,10 +93,7 @@ buffer_bz_close(buffer* b) {
   int ret;
   ssize_t a;
 
-  
   ctx->a = BZ_FLUSH;
-
-again:
 
   strm->next_in = (char*)&b->x[b->p];
   strm->avail_in = b->n - b->p;
@@ -107,10 +104,8 @@ again:
 
     ret = BZ2_bzCompress(strm, ctx->a);
 
-    if(ret == BZ_FLUSH_OK)
-      ctx->a = BZ_FINISH;
-    if(ret == BZ_FINISH_OK)
-      break;
+    if(ret == BZ_FLUSH_OK) ctx->a = BZ_FINISH;
+    if(ret == BZ_FINISH_OK) break;
 
   } while(ret != BZ_STREAM_END);
 

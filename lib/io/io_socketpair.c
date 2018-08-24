@@ -6,8 +6,8 @@
 #endif
 
 int
-io_socketpair(int64* d) {
-  int fds[2];
+io_socketpair(fd_t* d) {
+  fd_t fds[2];
   __winsock_init();
 #ifdef AF_UNIX
   if(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1)

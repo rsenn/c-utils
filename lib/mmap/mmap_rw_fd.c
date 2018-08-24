@@ -17,7 +17,7 @@
 extern char mmap_empty[];
 
 char*
-mmap_rw_fd(int fd, size_t* filesize) {
+mmap_rw_fd(fd_t fd, size_t* filesize) {
 #if defined(_WIN32) || defined(_WIN64) || defined(__MSYS__)
   HANDLE m;
   char* map;

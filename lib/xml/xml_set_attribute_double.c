@@ -1,6 +1,7 @@
 #include "../xml.h"
 #include "../str.h"
 #include "../fmt.h"
+#include "../byte.h"
 
 void
 xml_set_attribute_double(xmlnode* node, const char* a, double d) {

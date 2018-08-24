@@ -45,7 +45,7 @@
 #endif
 
 #if 0
-static void handleevent(int fd, int readable, int writable, int error) {
+static void handleevent(fd_t fd, int readable, int writable, int error) {
   io_entry* e = array_get(io_getfds(), sizeof(io_entry), fd);
   if(e) {
     int curevents = 0, newevents;

@@ -7,5 +7,5 @@ buffer_peekc(buffer* b, char* c) {
     *c = b->x[b->p];
     return 1;
   }
- return r;
+  return r;
 }
