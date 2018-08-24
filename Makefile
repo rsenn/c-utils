@@ -340,7 +340,11 @@ ifeq ($(HOST2),w64)
 HOST2 := $(SYSNAME)
 endif
 ifeq ($(HOST2),)
+ifneq ($(KERN),)
+HOST2 := $(KERN)
+else
 HOST2 := pc
+endif
 endif
 #ifneq ($(SYSNAME),)
 #HOST := $(subst w64,$(SYSNAME),$(HOST))
