@@ -26,6 +26,8 @@ char* mmap_read(const char *filename,size_t* filesize);
  * map. */
 char* mmap_private(const char *filename,size_t* filesize);
 
+char* mmap_private_fd(int fd, size_t* filesize);
+
 /* open file for writing, mmap whole file shared, close file, write
  * length of map in filesize and return pointer to map. */
 char* mmap_shared(const char *filename,size_t* filesize);

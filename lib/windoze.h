@@ -24,6 +24,15 @@ typedef int socklen_t;
 int winsock2errno(long l);
 void __winsock_init(void);
 
+#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
+static inline size_t
+getpagesize() {
+  SYSTEM_INFO si;
+  GetNativeSystemInfo(&si);
+  return si.dwPageSize;
+}
+#endif
+
 # ifdef __cplusplus
 }
 # endif
@@ -31,4 +40,5 @@ void __winsock_init(void);
 #  define winsock2errno(fnord) (fnord)
 #  define __winsock_init()
 # endif /* defined(_WIN32) || defined(_WIN64) */
+
 #endif /* defined(WINDOZE_H) */

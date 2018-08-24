@@ -6,10 +6,10 @@
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
+#include "lib/getopt.h"
 
 #include <ctype.h>
 #include <errno.h>
-#include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

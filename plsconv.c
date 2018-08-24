@@ -4,8 +4,8 @@
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/io_internal.h"
+#include "lib/getopt.h"
 
-#include <getopt.h>
 #include <stdio.h>
 
 /*extern ssize_t write();

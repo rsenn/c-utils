@@ -9,12 +9,12 @@
 #include "lib/strarray.h"
 #include "lib/slist.h"
 #include "lib/http.h"
+#include "lib/getopt.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
 
-#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

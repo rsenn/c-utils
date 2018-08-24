@@ -1,5 +1,7 @@
 #include "lib/buffer.h"
 #include "lib/str.h"
+#include "lib/getopt.h"
+
 #include <stdbool.h>
 #include <stdlib.h>
 

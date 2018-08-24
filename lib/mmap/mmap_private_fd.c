@@ -1,28 +1,24 @@
-#include <stdio.h>
-#ifndef WIN32
-#include <unistd.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif
-#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
-#include <windows.h>
-#else
-#include <sys/mman.h>
-#endif
-#include "../io_internal.h"
+
 #include "../mmap.h"
 #include "../open.h"
 
+#if defined(_WIN32) || defined(_WIN32) || defined(__MSYS__)
+#include <windows.h>
+#else
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#endif
+
 char*
-mmap_private(const char* filename, size_t* filesize) {
+mmap_private_fd(int fd, size_t* filesize) {
 #if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
-  HANDLE fd, m;
+  HANDLE m;
   char* map;
-  fd = CreateFile(filename,
-                  GENERIC_WRITE | GENERIC_READ,
-                  FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                  0,
-                  OPEN_EXISTING,
-                  FILE_ATTRIBUTE_NORMAL,
-                  0);
   if(fd == INVALID_HANDLE_VALUE) return 0;
   m = CreateFileMapping(fd, 0, PAGE_WRITECOPY, 0, 0, NULL);
   map = 0;
@@ -32,7 +28,6 @@ mmap_private(const char* filename, size_t* filesize) {
   CloseHandle(fd);
   return map;
 #else
-  int fd = open_read(filename);
   char* map;
   if(fd >= 0) {
     *filesize = io_seek(fd, 0, SEEK_END);
