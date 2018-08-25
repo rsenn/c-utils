@@ -1,25 +1,13 @@
 #include "lib/buffer.h"
-#include "lib/byte.h"
-#include "lib/fmt.h"
 #include "lib/hmap.h"
-#include "lib/iterator.h"
 #include "lib/stralloc.h"
 #include "lib/xml.h"
-#include <assert.h>
+#include "lib/io.h"
 #include <ctype.h>
-#include <sys/types.h>
 
 static buffer infile, b;
 static int depth = 0, prev_closing = 0;
 static stralloc prev_element;
-
-void
-put_str_escaped(buffer* b, const char* str) {
-  stralloc esc;
-  stralloc_init(&esc);
-  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
-  buffer_putsa(b, &esc);
-}
 
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
