@@ -28,40 +28,48 @@
 #ifdef _MSC_VER
 #define alloca _alloca
 #endif
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327950288
 #endif
+
 struct pad {
   stralloc name;
   double x, y;
 };
+
 struct package {
   stralloc name;
   array pads; /**< list of struct pad */
 };
-//};
+
 struct pin {
   stralloc name;
   double x, y, r;
   bool visible;
 };
+
 struct symbol {
   stralloc name;
   array pins; /**< list of struct pin */
 };
+
 struct pinmapping {
   struct package* pkg;
   array map;
 };
+
 struct gate {
   stralloc name;
   stralloc symbol;
 };
+
 struct deviceset {
   stralloc name;
   array gates;     /**< list of struct gate */
   cbmap_t devices; /**< map of struct pinmapping */
 };
+
 struct part {
   stralloc name;
   stralloc v;
@@ -757,7 +765,6 @@ xml_foreach(xmlnode* doc, const char* elem, void (*fn)(xmlnode*)) {
 }
 
 int
-
 main(int argc, char* argv[]) {
   devicesets = cbmap_new();
   packages = cbmap_new();

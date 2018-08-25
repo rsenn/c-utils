@@ -2,8 +2,7 @@
 #include "../xml.h"
 
 void
-xml_print_attributes(xmlnode* node, buffer* b, const char* sep, const char* eq, const char* quot) {
-  HMAP_DB* db = node->attributes;
+xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, const char* quot) {
   TUPLE* tpl = db->list_tuple;
 
   while(tpl) {
@@ -33,7 +32,7 @@ xml_print_attributes(xmlnode* node, buffer* b, const char* sep, const char* eq, 
         break;
     }
     buffer_puts(b, quot);
-    if(tpl->next == node->attributes->list_tuple) break;
+    if(tpl->next == db->list_tuple) break;
     tpl = tpl->next;
   }
 }

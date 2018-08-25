@@ -1,7 +1,7 @@
 #include "../hmap_internal.h"
 
 size_t
-wmhmap_size(HMAP_DB* my_hmap_db) {
+hmap_size(HMAP_DB* my_hmap_db) {
   size_t ret = 0;
   if(my_hmap_db == NULL) return 0;
   TUPLE* ptr_list_tuple = my_hmap_db->list_tuple;

@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>
+
 static buffer infile, b;
 void
 put_str_escaped(buffer* b, const char* str) {
@@ -38,7 +39,6 @@ xml_dump(xmlnode* n, buffer* b) {
 }
 
 int
-
 main(int argc, char* argv[1]) {
   stralloc tmp;
   stralloc_init(&tmp);

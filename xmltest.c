@@ -24,7 +24,9 @@ const char* node_types[] = {
     "XML_ELEMENT",
     "XML_TEXT",
 };
+
 static int depth = 0;
+
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   xmlnode* n;
