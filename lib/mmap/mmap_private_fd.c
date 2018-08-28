@@ -5,7 +5,7 @@
 #include "../mmap.h"
 #include "../open.h"
 
-#if defined(_WIN32) || defined(_WIN32) || defined(__MSYS__)
+#if (defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__) || defined(__MINGW64__)) && !defined(__CYGWIN__) && !defined(__MSYS__)
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -16,7 +16,7 @@
 
 char*
 mmap_private_fd(fd_t fd, size_t* filesize) {
-#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__) || defined(__MINGW64__)) && !defined(__CYGWIN__) && !defined(__MSYS__)
   HANDLE m;
   char* map;
   if(fd == INVALID_HANDLE_VALUE) return 0;

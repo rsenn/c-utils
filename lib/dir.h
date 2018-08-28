@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#if defined(_WIN32) || defined(__MSYS__)
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #define PATHSEP_C '\\'
 #define PATHSEP_S "\\"
 #define IS_PATHSEP(c) ((c) == '\\'||(c) == '/')

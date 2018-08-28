@@ -8,11 +8,11 @@ static char sep = '?';
 
 static void
 print_attr_names(xmlnode* elm) {
-  bool param = !strcmp((const char*)elm->name, "Param");
+  bool param = !str_diff((const char*)elm->name, "Param");
   TUPLE* attr_p;
   for(attr_p = (TUPLE*)elm->attributes; attr_p; attr_p = (TUPLE*)attr_p->next) {
     const char* content = (const char*)xml_content((xmlnode*)attr_p);
-    bool name = !strcmp((const char*)attr_p->key, "name");
+    bool name = !str_diff((const char*)attr_p->key, "name");
     if(param) {
       stralloc_catb(&url, name ? &sep : "=", 1);
       stralloc_cats(&url, content);
@@ -22,7 +22,7 @@ print_attr_names(xmlnode* elm) {
        buffer_puts(buffer_2, attr_p->name);
        buffer_puts(buffer_2, param ? "=" : "\n  attribute value: ");
        buffer_puts(buffer_2, content);*/
-    if(!strcmp((const char*)attr_p->key, "template")) {
+    if(!str_diff((const char*)attr_p->key, "template")) {
       stralloc_copys(&templ, content);
       //templ = content;
     }
@@ -55,7 +55,7 @@ print_element_names(xmlnode* a_node) {
           buffer_puts(buffer_2, ", value: ");
       */
       /*        */
-      if(!strcmp((const char*)elm->name, "Url")) {
+      if(!str_diff((const char*)elm->name, "Url")) {
         print_attr_names(elm);
         xmlnode* child_node = NULL;
         for(child_node = elm->children; child_node; child_node = child_node->next) {
@@ -65,7 +65,7 @@ print_element_names(xmlnode* a_node) {
           }
         }
       }
-      /*        if(!strcmp(elm->name, "Url") || !strcmp(elm->name, "Param")) {
+      /*        if(!str_diff(elm->name, "Url") || !str_diff(elm->name, "Param")) {
                 print_attr_names(elm);
               }*/
       /*        */

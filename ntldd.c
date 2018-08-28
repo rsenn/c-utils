@@ -150,28 +150,28 @@ int main(int argc, char **argv) {
   sp.path = calloc(1, sizeof(char*));
 
   for(i = 1; i < argc; i++) {
-    if(strcmp(argv[i], "--version") == 0)
+    if(str_equal(argv[i], "--version"))
       printversion();
-    else if(strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--verbose") == 0)
+    else if(str_equal(argv[i], "-v") || str_equal(argv[i], "--verbose"))
       verbose = 1;
-    else if(strcmp(argv[i], "-u") == 0 || strcmp(argv[i], "--unused") == 0)
+    else if(str_equal(argv[i], "-u") || str_equal(argv[i], "--unused"))
       unused = 1;
-    else if(strcmp(argv[i], "-d") == 0 ||
-            strcmp(argv[i], "--data-relocs") == 0)
+    else if(str_equal(argv[i], "-d") ||
+            str_equal(argv[i], "--data-relocs"))
       datarelocs = 1;
-    else if(strcmp(argv[i], "-r") == 0 ||
-            strcmp(argv[i], "--function-relocs") == 0)
+    else if(str_equal(argv[i], "-r") ||
+            str_equal(argv[i], "--function-relocs"))
       functionrelocs = 1;
-    else if(strcmp(argv[i], "-R") == 0 ||
-            strcmp(argv[i], "--recursive") == 0)
+    else if(str_equal(argv[i], "-R") ||
+            str_equal(argv[i], "--recursive"))
       recursive = 1;
-    else if(strcmp(argv[i], "-e") == 0 ||
-            strcmp(argv[i], "--list-exports") == 0)
+    else if(str_equal(argv[i], "-e") ||
+            str_equal(argv[i], "--list-exports"))
       list_exports = 1;
-    else if(strcmp(argv[i], "-i") == 0 ||
-            strcmp(argv[i], "--list-imports") == 0)
+    else if(str_equal(argv[i], "-i") ||
+            str_equal(argv[i], "--list-imports"))
       list_imports = 1;
-    else if((strcmp(argv[i], "-D") == 0 || strcmp(argv[i], "--search-dir") == 0) && i < argc - 1) {
+    else if((str_equal(argv[i], "-D") || str_equal(argv[i], "--search-dir")) && i < argc - 1) {
       char* add_dirs = argv[i + 1];
       if(*add_dirs == '"')
         add_dirs++;
@@ -193,11 +193,11 @@ int main(int argc, char **argv) {
         sep = strchr(add_dirs, ';');
       } while(1);
       i++;
-    } else if(strcmp(argv[i], "--help") == 0) {
+    } else if(str_equal(argv[i], "--help")) {
       printhelp(argv[0]);
       skip = 1;
       break;
-    } else if(strcmp(argv[i], "--") == 0) {
+    } else if(str_equal(argv[i], "--")) {
       files = 1;
     } else if(str_len(argv[i]) > 1 && argv[i][0] == '-' && (argv[i][1] == '-' ||
               str_len(argv[i]) == 2) && !files) {

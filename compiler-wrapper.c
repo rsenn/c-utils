@@ -294,13 +294,13 @@ read_arguments() {
   if(msg_format.len == 0) stralloc_copys(&msg_format, "\n%f:%l: advisory: (%n) %s");
 
 
-  if(!strncasecmp(argv0, "sdcc", 4)) {
+  if(!str_case_diffn(argv0, "sdcc", 4)) {
     type = SDCC;
     if(compiler.len == 0) stralloc_copys(&compiler, "C:/Program Files/SDCC");
-  } else if(!strncasecmp(argv0, "picc18", 6)) {
+  } else if(!str_case_diffn(argv0, "picc18", 6)) {
     type = PICC18;
     if(compiler.len == 0) get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18", &compiler);
-  } else if(!strncasecmp(argv0, "picc", 4)) {
+  } else if(!str_case_diffn(argv0, "picc", 4)) {
     type = PICC;
     if(compiler.len == 0) get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
   } else if(strstr(argv0, "xc8") != NULL) {

@@ -539,7 +539,7 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
     if(self->imports[i].mapped == NULL && self->imports[i].dll != NULL && (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
       struct dep_tree_element *dll = self->imports[i].dll;
       for(j = 0; j < dll->exports_len; j++) {
-        if((self->imports[i].name != NULL && dll->exports[j].name != NULL && strcmp(self->imports[i].name, dll->exports[j].name) == 0) ||
+        if((self->imports[i].name != NULL && dll->exports[j].name != NULL && str_equal(self->imports[i].name, dll->exports[j].name)) ||
             (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 && self->imports[i].ordinal == dll->exports[j].ordinal)) {
           self->imports[i].mapped = &dll->exports[j];
           break;

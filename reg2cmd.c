@@ -276,9 +276,9 @@ int reg2cmd() {
         if(line.s[valueend - 1] == '"')
           valueend--;
 
-      } else if(!strncmp(&line.s[valuestart], "-", 1)) {
+      } else if(!str_diffn(&line.s[valuestart], "-", 1)) {
         rt = REGISTRY_DELETE;
-      } else if(!strncmp(&line.s[valuestart], "hex", 3)) {
+      } else if(!str_diffn(&line.s[valuestart], "hex", 3)) {
         rt = REGISTRY_BINARY;
 
         while(line.s[valuestart] != ':' && valuestart < valueend)
@@ -286,12 +286,12 @@ int reg2cmd() {
 
         valuestart++;
 
-      } else if(!strncmp(&line.s[valuestart], "dword:", 6)) {
+      } else if(!str_diffn(&line.s[valuestart], "dword:", 6)) {
         unsigned long ul;
         scan_xlong(&line.s[valuestart + 6], &ul);
         word = ul;
         rt = REGISTRY_DWORD;
-      } else if(!strncmp(&line.s[valuestart], "qword:", 6)) {
+      } else if(!str_diffn(&line.s[valuestart], "qword:", 6)) {
         unsigned long long ull;
         scan_xlonglong(&line.s[valuestart + 6], &ull);
         word = ull;

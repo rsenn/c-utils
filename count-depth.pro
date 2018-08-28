@@ -20,7 +20,7 @@ CONFIG -= qt
 INCLUDEPATH += . $$PWD/lib
 
 HEADERS = lib/buffer.h lib/byte.h lib/fmt.h
-SOURCES = count-depth.c lib/buffer/buffer_0.c lib/buffer/buffer_1.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_getc.c lib/buffer/buffer_getline.c lib/buffer/buffer_get_token.c lib/buffer/buffer_put.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn2.c lib/buffer/buffer_stubborn.c lib/byte/byte_chr.c lib/fmt/fmt_ulong.c
+SOURCES = count-depth.c lib/buffer/buffer_0.c lib/buffer/buffer_1.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get_token.c lib/buffer/buffer_getc.c lib/buffer/buffer_getline.c lib/buffer/buffer_put.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/byte/byte_chr.c lib/fmt/fmt_ulong.c
 
 
 

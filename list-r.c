@@ -465,7 +465,7 @@ list_dir_internal(stralloc* dir, char type) {
     unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
     uint64 size = 0, mtime = 0;
     dir->len = l;
-    if(strcmp(name, "") == 0 || strcmp(name, ".") == 0 || strcmp(name, "..") == 0) {
+    if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, "..")) {
       continue;
     }
     stralloc_readyplus(dir, str_len(name) + 1);
@@ -617,28 +617,28 @@ main(int argc, char* argv[]) {
   setmode(STDOUT_FILENO, O_BINARY);
 #endif
   while(argi < argc) {
-    if(!strcmp(argv[argi], "-l") || !strcmp(argv[argi], "--list")) {
+    if(!str_diff(argv[argi], "-l") || !str_diff(argv[argi], "--list")) {
       opt_list = 1;
-    } else if(!strcmp(argv[argi], "-n") || !strcmp(argv[argi], "--numeric")) {
+    } else if(!str_diff(argv[argi], "-n") || !str_diff(argv[argi], "--numeric")) {
       opt_numeric = 1;
-    } else if(!strcmp(argv[argi], "-r") || !strcmp(argv[argi], "--relative")) {
+    } else if(!str_diff(argv[argi], "-r") || !str_diff(argv[argi], "--relative")) {
       relative = 1;
-    } else if(!strcmp(argv[argi], "-o") || !strcmp(argv[argi], "--output")) {
+    } else if(!str_diff(argv[argi], "-o") || !str_diff(argv[argi], "--output")) {
       buffer_1->fd = io_err_check(open_trunc(argv[argi + 1]));
       /* buffer_mmapread(buffer_1, argv[argi+1]); */
       ++argi;
-    } else if(!strcmp(argv[argi], "-x") || !strcmp(argv[argi], "--exclude")) {
+    } else if(!str_diff(argv[argi], "-x") || !str_diff(argv[argi], "--exclude")) {
       char* s = argv[argi + 1];
       array_catb(&exclude_masks, (void*)&s, sizeof(char*));
-    } else if(!strncmp(argv[argi], "-x", 2)) {
+    } else if(!str_diffn(argv[argi], "-x", 2)) {
       char* s = argv[argi] + 2;
       array_catb(&exclude_masks, (void*)&s, sizeof(char*));
-    } else if(!strncmp(argv[argi], "--exclude=", 10)) {
+    } else if(!str_diffn(argv[argi], "--exclude=", 10)) {
       char* s = argv[argi] + 10;
       array_catb(&exclude_masks, (void*)&s, sizeof(char*));
-    } else if(!strcmp(argv[argi], "--relative")) {
+    } else if(!str_diff(argv[argi], "--relative")) {
       relative = 1;
-    } else if(!strcmp(argv[argi], "-t") || !strcmp(argv[argi], "--time - style")) {
+    } else if(!str_diff(argv[argi], "-t") || !str_diff(argv[argi], "--time - style")) {
       argi++;
       opt_timestyle = argv[argi];
     } else {
