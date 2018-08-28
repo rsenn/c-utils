@@ -24,21 +24,20 @@ usage(const char* argv0) {
   buffer_putm(buffer_1,
               "Usage: ",
               argv0,
-              " [-o output] [infile or stdin]\n\n"
-              "  -1 ... -9           compression level; default is 3\n"
-              "\n"
-              "Supported types are:"
-#ifdef HAVE_ZLIB
-              " gz"
+              " [-o output] [infile or stdin]\n\n",
+              "  -1 ... -9           compression level; default is 3\n",
+              "\n",
+              "Supported types are:");
+#if HAVE_LIBZ
+  buffer_puts(buffer_1, " gz");
 #endif
-#ifdef HAVE_LIBBZ2
-              " bz2"
+#if HAVE_LIBBZ2
+  buffer_puts(buffer_1, " bz2");
 #endif
-#ifdef HAVE_LIBLZMA
-              " lzma xz"
+#if HAVE_LIBLZMA
+  buffer_puts(buffer_1, " lzma xz");
 #endif
-              "\n");
-  buffer_flush(buffer_1);
+  buffer_putnlflush(buffer_1);
   exit(0);
 }
 

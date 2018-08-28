@@ -590,7 +590,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgconf)
 
 
  #opensearch-dump 
@@ -1226,6 +1226,14 @@ endif
 $(BUILDDIR)hexedit$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)hexedit$(M64_)$(EXEEXT): CPPFLAGS += -Dhexedit_VERSION_MAJOR=0 -Dhexedit_VERSION_MINOR=2
 $(BUILDDIR)hexedit$(M64_)$(EXEEXT): $(BUILDDIR)hexedit.o $(call add-library, mmap buffer byte scan fmt str open uint32)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	#$(STRIP) $@
+endif
+
+$(BUILDDIR)pkgconf$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
+$(BUILDDIR)pkgconf$(M64_)$(EXEEXT): CPPFLAGS += -Dpkgconf_VERSION_MAJOR=0 -Dpkgconf_VERSION_MINOR=2
+$(BUILDDIR)pkgconf$(M64_)$(EXEEXT): $(BUILDDIR)pkgconf.o $(call add-library, mmap buffer byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

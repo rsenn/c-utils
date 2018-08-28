@@ -9,6 +9,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#ifdef _MSC_VER
+typedef SSIZE_T ssize_t;
+#endif
+
 
 typedef ssize_t (read_fn)(fd_t fd, void* buf, size_t n);
 

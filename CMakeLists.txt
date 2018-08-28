@@ -116,13 +116,17 @@ if(LIBLZMA_FOUND)
   link_libraries(${LIBLZMA_LIBRARIES})
   include_directories(${LIBLZMA_INCLUDE_DIRS})
   add_definitions(-DHAVE_LIBLZMA=1)
-endif(LIBLZMA_FOUND)
+else()
+  add_definitions(-DHAVE_LIBLZMA=0)
+endif()
 
 if(ZLIB_FOUND)
   link_libraries(${ZLIB_LIBRARIES})
   include_directories(${ZLIB_INCLUDE_DIRS})
   add_definitions(-DHAVE_ZLIB=1)
-endif(ZLIB_FOUND)
+else()
+  add_definitions(-DHAVE_ZLIB=0)
+endif()
 
 if(BZIP2_FOUND)
   link_libraries(${BZIP2_LIBRARIES})
@@ -132,9 +136,11 @@ endif(BZIP2_FOUND)
 #pkg_search_module(LIBZ zlib)
 pkg_search_module(LIBBZ2 libbz2 bzip2)
 
-if(LIBBZ2_FOUND)
+if(LIBBZ2_FOUND OR BZIP2_FOUND)
   add_definitions(-DHAVE_LIBBZ2=1)
-endif(LIBBZ2_FOUND)
+else()
+  add_definitions(-DHAVE_LIBBZ2=0)
+endif()
 
 
 #check_library_exists(LIBMSWSOCK ws2_32 HAVE_MSWSOCK)
@@ -333,7 +339,7 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
 access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3 xmltest4
-eagle-gen-cmds eagle-to-circuit buffertest jsontest ccat ziptest
+eagle-gen-cmds eagle-to-circuit buffertest jsontest ccat ziptest pkgconf
 )
 
 if(NOT MSVC)
