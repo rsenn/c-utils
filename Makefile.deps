@@ -2,6 +2,8 @@ $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dnsip.o: dnsip.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dnsname.o: dnsname.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)eagle-gen-cmds.o: eagle-gen-cmds.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)jsontest.o: jsontest.c
@@ -1467,6 +1469,8 @@ $(BUILDDIR)plsconv.o: plsconv.c
 $(BUILDDIR)access.o: access.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffertest.o: buffertest.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)test_net_if_h.o: test_net_if_h.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
