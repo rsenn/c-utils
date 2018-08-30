@@ -11,22 +11,30 @@ byte_count(const void* s, unsigned int n, char c) {
   ch = (unsigned char)c;
   for(;;) {
     if(!n) break;
-    if(*t == ch) { ++count; }
+    if(*t == ch) {
+      ++count;
+    }
     ++t;
     --n;
 
     if(!n) break;
-    if(*t == ch) { ++count; }
+    if(*t == ch) {
+      ++count;
+    }
     ++t;
     --n;
 
     if(!n) break;
-    if(*t == ch) { ++count; }
+    if(*t == ch) {
+      ++count;
+    }
     ++t;
     --n;
 
     if(!n) break;
-    if(*t == ch) { ++count; }
+    if(*t == ch) {
+      ++count;
+    }
     ++t;
     --n;
   }
