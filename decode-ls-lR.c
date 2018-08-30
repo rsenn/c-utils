@@ -4,20 +4,14 @@
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 #define _FILE_OFFSET_BITS 64
-
-#if !(defined(_WIN32) || defined(_WIN64))
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
-#include <fcntl.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <string.h>
-
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <time.h>
+#include <fcntl.h>
+#include <limits.h>
 
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
@@ -25,6 +19,7 @@
 #include "lib/fmt.h"
 #include "lib/byte.h"
 #include "lib/str.h"
+#include "lib/io_internal.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX

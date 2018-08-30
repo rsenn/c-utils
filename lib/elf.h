@@ -4,9 +4,10 @@
 /* Standard ELF types.  */
 
 #include <inttypes.h>
-#include <endian.h>
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Type for a 16-bit quantity.  */
 typedef uint16_t Elf32_Half;
@@ -2465,6 +2466,8 @@ typedef uint32_t Elf_Symndx;
 
 #define __ELF_NATIVE_CLASS __WORDSIZE
 
-__END_DECLS
+#ifdef __cplusplus
+};
+#endif
 
 #endif	/* elf.h */
