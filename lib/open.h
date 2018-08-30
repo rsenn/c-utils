@@ -35,6 +35,10 @@ int open_rw(const char* filename);
 
 int open_rwsync(const char *filename);
 
+#ifdef STRALLOC_H
+int openreadclose(const char* fn, stralloc* sa, size_t bufsize);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

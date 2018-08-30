@@ -6,14 +6,14 @@ $(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(NL)	$$(STRIP) $$@$(NL)endif$(NL))
 endef
 
 define lib-tmpl =
-$$(BUILDDIR)$(1).a: $$(call add-sources,lib/$(1)/*.c)
+$$(BUILDDIR)$(1).a: $$(call add-sources,lib/$(1)/*.c $(2))
 	$$(AR) rcs $$@ $$^
 $$(BUILDDIR)lib$(1).so: LDFLAGS += -shared -Wl,-rpath=$$(BUILDDIR:%/=%)
-$$(BUILDDIR)lib$(1).so: $$(call add-sources,lib/$(1)/*.c,.pic.o)
+$$(BUILDDIR)lib$(1).so: $$(call add-sources,lib/$(1)/*.c $(2),.pic.o)
 	$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(EXTRA_LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)
 endef
 
-lib-target = $(eval $(call lib-tmpl,$(1)))
+lib-target = $(eval $(call lib-tmpl,$(1),$(2)))
 
 define cmds-try-compile =
 set -e; 
@@ -31,31 +31,40 @@ endef
 
 define cmds-include-exists =
 set -e; \
-trap 'rm -f "$$NAME" "$$NAME.c"' EXIT; \
 NAME=test_$(subst .,_,$(subst /,_,$(1))); \
 (echo -e "#include <$(1)>\n"; \
 echo -e "\n"; \
 echo -e "int main() {"; \
 echo -e "  return 0;"; \
 echo -e "}") >$$NAME.c; \
-$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) -c -o $$NAME $$NAME.c
+$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) -c -o $$NAME $$NAME.c && R=0 || R=1; \
+rm -f "$$NAME" "$$NAME.c"; exit $$R
+endef
+
+define cmds-try-compile =
+set -e;  \
+NAME=$$RANDOM; \
+(echo -e "$(1)") >test_$$NAME.c; \
+if $(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS) -o test_$$NAME test_$$NAME.c $(2); then R=0; else R=1; fi; \
+rm -f "test_$$NAME" "test_$$NAME.c"; exit $$R
 endef
 
 define cmds-function-exists =
 set -e;  \
-trap 'rm -f "test_$(1)" "test_$(1).c"' EXIT; \
 (echo "extern int $(1)();"; \
 echo "int main() {"; \
 echo "  $(1)();"; \
 echo "  return 0;"; \
 echo "}") >test_$(1).c; \
-$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS) -o test_$(1) test_$(1).c $(2);
+if $(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS) -o test_$(1) test_$(1).c $(2); then R=0; else R=1; fi; \
+rm -f "test_$(1)" "test_$(1).c"; exit $$R
 endef
 
 add-libdeps = $(patsubst %,$(BUILDDIR)lib%.so,$(1))
 
 add-sources = $(patsubst %.c,$(BUILDDIR)%$(if $(2),$(2),.o),$(notdir $(wildcard $(1))))
 
+check-try-compile = $(shell $(call cmds-exitcode,$(cmds-try-compile)))
 check-function-exists = $(shell $(call cmds-exitcode,$(cmds-function-exists)))
 
 check-include-exists = $(shell $(call cmds-exitcode,$(cmds-include-exists)))
@@ -77,7 +86,7 @@ clean-builddir = $(patsubst $$(BUILDDIR)%,%,$(patsubst $(BUILDDIR)%,%,$(1)))
 
 clean-target = $(BUILDDIR)$(call clean-builddir,$(1))$(call is-archive,$(1),,$(_M64)$(EXEEXT))
 
-cmds-exitcode = (set -x; $(1)) >>check.log 2>&1 && echo 1 || echo 
+cmds-exitcode = (set -x;  $(1)) >>checks.log 2>&1 && echo 1 || echo 
 
 define cmd-check-header =
 HAVE_$(call header-to-var,$(1)) := $$(call check-include-exists,$(1))

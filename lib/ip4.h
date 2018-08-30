@@ -2,6 +2,8 @@
 #ifndef IP4_H
 #define IP4_H
 
+#include <sys/types.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
