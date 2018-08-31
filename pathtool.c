@@ -27,7 +27,7 @@ pathtool(const char* arg) {
   stralloc sa;
   strlist path;
 
-  strlist_init(&path);
+  strlist_init(&path, '\0');
   strlist_from_path(&path, arg);
 
   stralloc_init(&sa);

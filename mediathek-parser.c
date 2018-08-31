@@ -349,14 +349,14 @@ process_input(buffer* input) {
   static array arr;
   strlist fields;
   stralloc_init(&sa);
-  strlist_init(&fields);
+  strlist_init(&fields, '\0');
 
   if(csv == false) buffer_puts(buffer_1, "#EXTM3U\r\n");
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
 
-    strlist_init(&fields);
+    strlist_init(&fields, '\0');
     array_trunc(&arr);
 
     ret = read_line(sa.s, sa.len, &fields, &arr);

@@ -18,7 +18,7 @@ xml_tag_pred(xmlnode* node, void* ptr) {
 xmlnode*
 xml_find_element(xmlnode* node, const char* tag) {
   strlist names;
-  strlist_init(&names);
+  strlist_init(&names, '\0');
   strlist_froms(&names, tag, '|');
   return xml_find_pred(node, &xml_tag_pred, &names);
 }

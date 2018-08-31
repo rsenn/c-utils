@@ -234,6 +234,8 @@ int  buffer_bunzip_fd(buffer*, fd_t fd);
 int  buffer_bzip(buffer*, const char* filename, int level);
 int  buffer_bzip_fd(buffer*, fd_t fd, int level);
 
+int buffer_get_until(buffer* b, char* x, size_t len, const char* charset, size_t setlen);
+
 #ifdef __cplusplus
 }
 #endif

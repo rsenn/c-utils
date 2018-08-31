@@ -832,16 +832,6 @@ $(OBJDIR):
 
 
 
-	$(AR) rcs $@ $^
-$(BUILDDIR)libbyte.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
-$(BUILDDIR)libbyte.so: $(BUILDDIR)byte_case_diff.pic.o $(BUILDDIR)byte_case_equal.pic.o $(BUILDDIR)byte_case_start.pic.o $(BUILDDIR)byte_chr.pic.o $(BUILDDIR)byte_copy.pic.o $(BUILDDIR)byte_copyr.pic.o $(BUILDDIR)byte_count.pic.o $(BUILDDIR)byte_diff.pic.o $(BUILDDIR)byte_equal.pic.o $(BUILDDIR)byte_fill.pic.o $(BUILDDIR)byte_lower.pic.o $(BUILDDIR)byte_rchr.pic.o $(BUILDDIR)byte_upper.pic.o $(BUILDDIR)byte_zero.pic.o $(BUILDDIR)byte_fmt.pic.o $(BUILDDIR)stralloc_fmt_pred.pic.o $(BUILDDIR)byte_scan.pic.o
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
-
-	$(AR) rcs $@ $^
-$(BUILDDIR)libcbmap.so: LDFLAGS += -shared -Wl,-rpath=$(BUILDDIR:%/=%)
-$(BUILDDIR)libcbmap.so: $(builddir)alloc.pic.o $(builddir)cbmap_count.pic.o $(builddir)cbmap_data_node_destroy.pic.o $(builddir)cbmap_delete.pic.o $(builddir)cbmap_destroy.pic.o $(builddir)cbmap_get.pic.o $(builddir)cbmap_insert.pic.o $(builddir)cbmap_internal_node.pic.o $(builddir)cbmap_new.pic.o $(builddir)cbmap_visit.pic.o $(builddir)cbmap_visit_all.pic.o
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
-
 $(call lib-target,array,lib/umult64.c)
 $(call lib-target,buffer)
 $(call lib-target,byte)
@@ -861,7 +851,8 @@ $(call lib-target,list)
 $(call lib-target,map)
 $(call lib-target,mmap)
 $(call lib-target,ndelay)
-$(call lib-target,open,lib/open/openreadclose.c)
+$(call lib-target,path)
+$(call lib-target,open)
 $(call lib-target,pe)
 $(call lib-target,playlist)
 $(call lib-target,rdir)
@@ -1103,7 +1094,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)pkgconf$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
-$(BUILDDIR)pkgconf$(M64_)$(EXEEXT): $(BUILDDIR)pkgconf.o $(call add-library, mmap buffer byte scan fmt str open uint32)
+$(BUILDDIR)pkgconf$(M64_)$(EXEEXT): $(BUILDDIR)pkgconf.o $(call add-library, path dir strlist stralloc mmap buffer byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

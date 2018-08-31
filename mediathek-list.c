@@ -346,7 +346,7 @@ match_tokens(char* toks, const char* str) {
   size_t i;
   int ret = 1;
   strlist t;
-  strlist_init(&t);
+  strlist_init(&t, '\0');
   strlist_push_tokens(&t, toks, "/+,|*;");
 
   for(i = 0; i < strlist_count(&t); ++i) {
@@ -498,8 +498,8 @@ parse_mediathek_list(int fd) {
   strlist prev, prevout, sl;
   buffer b = BUFFER_INIT(read, fd, buf, sizeof(buf));
 
-  strlist_init(&prev);
-  strlist_init(&prevout);
+  strlist_init(&prev, '\0');
+  strlist_init(&prevout, '\0');
 
   buffer_put(buffer_1, "{\n", 2);
 
@@ -519,7 +519,7 @@ parse_mediathek_list(int fd) {
       }
     }
 
-    strlist_init(&sl);
+    strlist_init(&sl, '\0');
     split_fields(&sl, &prev, buf2, ret);
 
     if((e = parse_entry(&sl))) {

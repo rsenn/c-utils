@@ -379,7 +379,7 @@ void
 execute_cmd() {
 
   strlist cmd;
-  strlist_init(&cmd);
+  strlist_init(&cmd, '\0');
 
   strlist_cat(&cmd, &opts);
   stralloc_0(&chip);
@@ -620,7 +620,7 @@ stralloc_init(&err_format);
 stralloc_init(&warn_format);
 stralloc_init(&msg_format);
 
-strlist_init(&args);
+strlist_init(&args, '\0');
 
   for(i = 1; i < argc; ++i) {
     strlist_push(&args, argv[i]);

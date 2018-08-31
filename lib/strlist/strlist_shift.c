@@ -1,19 +1,17 @@
-#include "../strlist.h"
 #include "../str.h"
+#include "../byte.h"
+#include "../strlist.h"
 
 int
 strlist_shift(strlist* sl, const char** strp) {
-  strlist newl;
-  size_t i, n = strlist_count(sl);
-  if(n <= 0) return -1;
+  size_t offs;
+  if(sl->sa.len == 0) return 0;
 
-  *strp = (const char*)str_dup(strlist_at(sl, 0));
-  strlist_init(&newl);
+  offs = byte_chr(sl->sa.s, sl->sa.len, sl->sep);
 
-  for(i = 1; i < n; ++i) {
-    strlist_push(&newl, strlist_at(sl, i));
-  }
-  strlist_free(sl);
-  *sl = newl;
-  return n-1;
+  *strp = str_ndup(sl->sa.s, offs);
+
+  byte_copyr(sl->sa.s, sl->sa.len - offs, &sl->sa.s[offs]);
+  sl->sa.len -= offs;
+  return 1;
 }

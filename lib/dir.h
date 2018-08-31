@@ -31,7 +31,7 @@ enum
   D_TIME_MODIFICATION,
 };
 
-struct dir_s { void* dir_int; };
+typedef struct dir_s { void* dir_int; } dir_t;
 
 int dir_open(struct dir_s* d, const char* p);
 char* dir_read(struct dir_s* d);

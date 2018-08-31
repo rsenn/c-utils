@@ -1,18 +1,49 @@
 #include "lib/buffer.h"
 #include "lib/getopt.h"
+#include "lib/path.h"
+#include "lib/strlist.h"
+#include "lib/dir.h"
 #include <stdbool.h>
+#include <stdlib.h>
 
 static struct {
- bool version;
- bool cflags;
- bool libs;
- const char* path;
+  bool version;
+  bool cflags;
+  bool libs;
+  bool list;
+  strlist path;
+  stralloc self;
 } cmd;
+
+
 
 void
 pkg_conf(const char* module) {
 
 
+  if(cmd.list) {
+     int i, n = strlist_count(&cmd.path);
+     stralloc path;
+     stralloc_init(&path);
+
+     for(i = 0; i < n; ++i) {
+         const char *entry, *dir = strlist_at(&cmd.path, i);
+         dir_t d;
+         dir_open(&d, dir);
+
+         stralloc_copys(&path, dir);
+
+         while((entry = dir_read(&d))) {
+             stralloc_catm(&path, "/", entry);
+
+
+             buffer_putsa(buffer_1, &path);
+             buffer_putnlflush(buffer_1);
+         }
+
+     }
+
+  }
 
 }
 
@@ -23,37 +54,51 @@ main(int argc, char* argv[]) {
   const char* rel_to = NULL;
   int index = 0;
   struct option opts[] = {
-      {"version", 0, NULL, 'v'},
+     {"modversion", 0, NULL, 'm'},
       {"cflags", 0, NULL, 'i'},
       {"libs", 0, NULL, 'l'},
+      {"list-all", 0, NULL, 'a'},
   };
 
   for(;;) {
-    c = getopt_long_only(argc, argv, "", opts, &index);
+    c = getopt_long(argc, argv, "mila", opts, &index);
     if(c == -1) break;
 
     switch(c) {
-      case 'v':
-        cmd.version = TRUE;
-        break;
-      case 'i':
-        cmd.cflags = TRUE;
-        break;
-      case 'l':
-        cmd.libs = TRUE;
-        break;
+      case 'm': cmd.version = true; break;
+      case 'i': cmd.cflags = true; break;
+      case 'l': cmd.libs = true; break;
+      case 'a': cmd.list = true; break;
       default:
         break;
     }
   }
 
-  cmd.path = getenv("PKG_CONFIG_PATH");
+  path_readlink("/proc/self/exe", &cmd.self);
 
-  if(cmd.path == NULL || str_equal(cmd.path, "")) {
-      cmd.path = "/usr/lib/pkgconfig:/usr/share/pkgconfig";
+  strlist_froms(&cmd.path, getenv("PKG_CONFIG_PATH"), ':');
+
+  if(strlist_count(&cmd.path) == 0) {
+    stralloc prefix;
+    stralloc_init(&prefix);
+    stralloc_copy(&prefix, &cmd.self);
+    size_t len = stralloc_finds(&prefix, "/bin");
+
+    if(len == prefix.len) {
+      stralloc_copys(&prefix, "/usr");
+      len = prefix.len;
+    }
+    prefix.len = len;
+    stralloc_cats(&prefix, "/lib/pkgconfig");
+    strlist_push_sa(&cmd.path, &prefix);
+    prefix.len = len;
+    stralloc_cats(&prefix, "/share/pkgconfig");
+    strlist_push_sa(&cmd.path, &prefix);
   }
 
-  while(optind < argc )
-      pkg_conf(argv[optind]++);
+  buffer_puts(buffer_2, "PKG_CONFIG_PATH is ");
+  buffer_putsa(buffer_2, &cmd.path.sa);
+  buffer_putnlflush(buffer_2);
 
+  while(optind < argc) pkg_conf(argv[optind]++);
 }

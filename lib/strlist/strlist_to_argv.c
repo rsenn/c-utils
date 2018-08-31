@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include "../strlist.h"
+#include <stdlib.h>
 
 char**
 strlist_to_argv(const strlist* sl) {
@@ -8,10 +8,9 @@ strlist_to_argv(const strlist* sl) {
   if(v == NULL) return NULL;
 
   while(i < n) {
-     v[i] = strlist_at(sl, i);
-     i++;
+    v[i] = strlist_at(sl, i);
+    i++;
   }
-  //v[i] = NULL;
+  // v[i] = NULL;
   return v;
 }
-

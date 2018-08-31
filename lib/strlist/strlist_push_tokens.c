@@ -1,13 +1,12 @@
-#include <stdlib.h>
 #include "../str.h"
 #include "../strlist.h"
+#include <stdlib.h>
 
 void
 strlist_push_tokens(strlist* sl, const char* s, const char* delim) {
   char *p = NULL, *tok;
 
-  if((s = str_dup(s)) == NULL)
-    return;
+  if((s = str_dup(s)) == NULL) return;
 
   if((tok = str_tok((char*)s, delim, &p)) != NULL) {
     do {

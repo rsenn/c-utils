@@ -397,7 +397,7 @@ strlist
 
 getparts(xmlnode* doc) {
   strlist ret;
-  strlist_init(&ret);
+  strlist_init(&ret, '\0');
   xmlnodeset ns = getnodeset(doc, "part|element");
   xmlnodeset_iter_t it, e;
 
@@ -709,7 +709,7 @@ main(int argc, char* argv[]) {
   parts = cbmap_new();
   nets = cbmap_new();
   symbols = cbmap_new();
-  strlist_init(&connections);
+  strlist_init(&connections, '\0');
 
   if(!argv[1]) {
     argv[1] = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";

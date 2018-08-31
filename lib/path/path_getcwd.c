@@ -1,4 +1,3 @@
-#include "../path.h"
 #include "../str.h"
 #include "../stralloc.h"
 
@@ -9,30 +8,25 @@
 #include "../config.h"
 #endif
 
-#define START ((PATH_MAX + 1) >> 7)
+#ifdef HAVE_LINUX_LIMITS_H
+#include <linux/limits.h>
+#endif
 
-/* read the link into a stralloc
+/* get current working directory into a stralloc
  * ----------------------------------------------------------------------- */
-int
-path_readlink(const char* path, stralloc* sa) {
+void
+path_getcwd(stralloc* sa, unsigned long start) {
   /* do not allocate PATH_MAX from the beginning,
      most paths will be smaller */
-  unsigned long n = (START ? START : 32);
-  int sz;
+  size_t n = (start ? start : PATH_MAX / 16);
 
   do {
     /* reserve some space */
-    n <<= 1;
     stralloc_ready(sa, n);
-    sz = readlink(path, sa->s, n);
+    n += PATH_MAX / 8;
     /* repeat until we have reserved enough space */
-  } while(sz == n);
+  } while(getcwd(sa->s, sa->a) == NULL);
 
   /* now truncate to effective length */
-  if(sz >= 0) {
-    stralloc_trunc(sa, sz);
-    return 0;
-  }
-
-  return -1;
+  stralloc_trunc(sa, str_len(sa->s));
 }

@@ -1,5 +1,5 @@
-#include "../strlist.h"
 #include "../byte.h"
+#include "../strlist.h"
 
 void
 strlist_join(const strlist* sl, stralloc* sa, char delim) {
@@ -8,11 +8,9 @@ strlist_join(const strlist* sl, stralloc* sa, char delim) {
   byte_copy(sa->s, sl->sa.len, sl->sa.s);
   sa->len = sl->sa.len;
 
-  if(sa->s[sa->len - 1] == '\0')
-    sa->len--;
+  if(sa->s[sa->len - 1] == sl->sep) sa->len--;
 
   for(i = 0; i < sa->len; ++i) {
-    if(sa->s[i] == '\0')
-      sa->s[i] = delim;
+    if(sa->s[i] == sl->sep) sa->s[i] = delim;
   }
 }

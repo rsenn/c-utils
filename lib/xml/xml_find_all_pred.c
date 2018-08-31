@@ -32,7 +32,7 @@ xml_find_all(xmlnode* node, int (*pred)(), ...) {
   xmlnodeset ret;
   array a;
   strlist names;
-  strlist_init(&names);
+  strlist_init(&names, '\0');
   strlist_froms(&names, ptr[0], '|');
   byte_zero(&a, sizeof(array));
   xml_find_all_predicate(node, &a, pred, &names, ptr[1], ptr[2]);

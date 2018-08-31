@@ -477,7 +477,7 @@ strlist
 
 getparts(xmlnode* doc) {
   strlist ret;
-  strlist_init(&ret);
+  strlist_init(&ret, '\0');
   xmlnodeset ns = getnodeset(doc, "part|element");
   xmlnodeset_iter_t it, e;
 

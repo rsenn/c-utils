@@ -11,14 +11,13 @@ strlist_sort(strlist* sl) {
     size_t len;
     char* str = &sl->sa.s[p];
 
-    if(sl->sa.s[p] == '\0')
-      break;
+    if(sl->sa.s[p] == sl->sep) break;
 
     len = str_len(&sl->sa.s[p]);
 
-    stralloc_catb(&ptrs, (const char *) & str, sizeof(str));
+    stralloc_catb(&ptrs, (const char*)&str, sizeof(str));
     p += len;
-     ++l;
+    ++l;
   }
   return l;
 }

@@ -1,9 +1,9 @@
-#include "../strlist.h"
 #include "../byte.h"
 #include "../str.h"
+#include "../strlist.h"
 
 int
 strlist_pushsa(strlist* sl, const stralloc* sa) {
-    stralloc_cat((stralloc*)sl, (stralloc*)(stralloc*)sa);
-    return stralloc_catb((stralloc*)sl, "\0", 1);
+  if(sl->sa.len) stralloc_catb((stralloc*)sl, &sl->sep, 1);
+  return stralloc_cat((stralloc*)sl, (stralloc*)(stralloc*)sa);
 }

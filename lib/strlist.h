@@ -17,11 +17,12 @@ extern "C"
 typedef struct strlist
 {
   stralloc sa;
+  char sep;
 } strlist;
 
 /* strlist_init will initialize a strlist. */
-# define strlist_zero(l) stralloc_zero(&(l)->sa)
-# define strlist_init(l) stralloc_init(&(l)->sa)
+# define strlist_zero(l) byte_zero((l), sizeof((l)))
+# define strlist_init(l,s)  stralloc_init(&(l)->sa); (l)->sep = (s);
 # define strlist_free(l) stralloc_free(&(l)->sa)
 
 #define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char *)0)

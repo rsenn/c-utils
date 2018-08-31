@@ -403,7 +403,7 @@ strlist
 getparts(xmlnode* doc, const char* elem_name) {
   size_t i, n;
   strlist ret;
-  strlist_init(&ret);
+  strlist_init(&ret, '\0');
   xmlnodeset nodes = xml_find_all(doc, xml_match_name, elem_name);
   if((n = xmlnodeset_size(&nodes)) == 0) return ret;
 
