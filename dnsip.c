@@ -2,8 +2,8 @@
 #include "lib/dns.h"
 #include "lib/errmsg.h"
 #include "lib/ip4.h"
-#include <string.h>
 #include <errno.h>
+#include <string.h>
 
 int
 main(int argc, char* argv[]) {
