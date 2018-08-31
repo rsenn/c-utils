@@ -14,7 +14,7 @@ socket_listen(int s, unsigned int backlog) {
   io_entry* e;
   int r = listen(s, backlog);
   if(r == -1) return winsock2errno(-1);
-  e = array_get(&io_fds, sizeof(io_entry), s);
+  e = array_get(io_getfds(), sizeof(io_entry), s);
   if(e && e->inuse) {
     e->listened = 1;
     if(e->wantread) {
