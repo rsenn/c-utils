@@ -1,8 +1,8 @@
 #include "lib/buffer.h"
+#include "lib/dir.h"
 #include "lib/getopt.h"
 #include "lib/path.h"
 #include "lib/strlist.h"
-#include "lib/dir.h"
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -15,37 +15,31 @@ static struct {
   stralloc self;
 } cmd;
 
+void
+pkg_list() {
+  int i, n = strlist_count(&cmd.path);
+  stralloc path;
+  stralloc_init(&path);
 
+  for(i = 0; i < n; ++i) {
+    const char *entry;
+    dir_t d;
+
+    path = strlist_at_sa(&cmd.path, i);
+    stralloc_0(&path);
+    dir_open(&d, path.s);
+
+    while((entry = dir_read(&d))) {
+      stralloc_catm(&path, "/", entry);
+
+      buffer_putsa(buffer_1, &path);
+      buffer_putnlflush(buffer_1);
+    }
+  }
+}
 
 void
-pkg_conf(const char* module) {
-
-
-  if(cmd.list) {
-     int i, n = strlist_count(&cmd.path);
-     stralloc path;
-     stralloc_init(&path);
-
-     for(i = 0; i < n; ++i) {
-         const char *entry, *dir = strlist_at(&cmd.path, i);
-         dir_t d;
-         dir_open(&d, dir);
-
-         stralloc_copys(&path, dir);
-
-         while((entry = dir_read(&d))) {
-             stralloc_catm(&path, "/", entry);
-
-
-             buffer_putsa(buffer_1, &path);
-             buffer_putnlflush(buffer_1);
-         }
-
-     }
-
-  }
-
-}
+pkg_conf(const char* module) {}
 
 int
 main(int argc, char* argv[]) {
@@ -54,7 +48,7 @@ main(int argc, char* argv[]) {
   const char* rel_to = NULL;
   int index = 0;
   struct option opts[] = {
-     {"modversion", 0, NULL, 'm'},
+      {"modversion", 0, NULL, 'm'},
       {"cflags", 0, NULL, 'i'},
       {"libs", 0, NULL, 'l'},
       {"list-all", 0, NULL, 'a'},
@@ -65,10 +59,18 @@ main(int argc, char* argv[]) {
     if(c == -1) break;
 
     switch(c) {
-      case 'm': cmd.version = true; break;
-      case 'i': cmd.cflags = true; break;
-      case 'l': cmd.libs = true; break;
-      case 'a': cmd.list = true; break;
+      case 'm':
+        cmd.version = true;
+        break;
+      case 'i':
+        cmd.cflags = true;
+        break;
+      case 'l':
+        cmd.libs = true;
+        break;
+      case 'a':
+        cmd.list = true;
+        break;
       default:
         break;
     }
@@ -100,5 +102,10 @@ main(int argc, char* argv[]) {
   buffer_putsa(buffer_2, &cmd.path.sa);
   buffer_putnlflush(buffer_2);
 
-  while(optind < argc) pkg_conf(argv[optind]++);
+  if(cmd.list) {
+    pkg_list();
+
+  } else {
+    while(optind < argc) pkg_conf(argv[optind]++);
+  }
 }

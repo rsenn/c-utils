@@ -29,6 +29,7 @@ typedef struct strlist
 
 char**  strlist_to_argv(const strlist*);
 char*   strlist_at(const strlist*, size_t i);
+stralloc strlist_at_sa(const strlist* sl, size_t i);
 int     strlist_cat(strlist*, const strlist* l);
 int     strlist_contains(strlist*, const char* s);
 size_t  strlist_count(const strlist*);
