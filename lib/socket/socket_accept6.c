@@ -9,7 +9,7 @@
 #include "../socket.h"
 #include "../windoze.h"
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include "../io_internal.h"
 #include <errno.h>
 #include <mswsock.h>
@@ -27,7 +27,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   socklen_t dummy = sizeof sa;
   int fd;
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   io_entry* e = array_get(&io_fds, sizeof(io_entry), s);
   if(e && e->inuse) {
     int sa2len;
@@ -75,7 +75,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
 #endif
     fd = accept(s, (struct sockaddr*)&sa, &dummy);
     if(fd == -1) return winsock2errno(-1);
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   }
 #endif
 

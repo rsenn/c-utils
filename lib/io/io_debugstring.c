@@ -1,9 +1,10 @@
-#include "../io_internal.h"
-#include "../iarray.h"
 #include "../fmt.h"
+#include "../iarray.h"
+#include "../io_internal.h"
 #include <time.h>
 
-unsigned int io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
+unsigned int
+io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   struct timeval tv;
   unsigned int i;
   io_entry* e;

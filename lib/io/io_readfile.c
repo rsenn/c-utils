@@ -2,10 +2,11 @@
 #if defined(_WIN32) || defined(_WIN64)
 #else
 #endif
-#include <fcntl.h>
 #include "../io_internal.h"
+#include <fcntl.h>
 
-int io_readfile(fd_t* d, const char* s) {
+int
+io_readfile(fd_t* d, const char* s) {
   long fd = open(s, O_RDONLY);
   if(fd != -1) {
     *d = fd;

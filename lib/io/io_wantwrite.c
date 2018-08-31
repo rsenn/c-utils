@@ -1,23 +1,23 @@
-#include <fcntl.h>
-#include <errno.h>
-#include <stdio.h>
 #include "../io_internal.h"
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
 #ifdef HAVE_KQUEUE
-#include <sys/types.h>
 #include <sys/event.h>
+#include <sys/types.h>
 #endif
 #ifdef HAVE_EPOLL
+#include "../byte.h"
 #include <inttypes.h>
 #include <sys/epoll.h>
-#include "../byte.h"
 #endif
 #ifdef HAVE_SIGIO
 #include <poll.h>
 #endif
 #ifdef HAVE_DEVPOLL
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/devpoll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #endif
 
 #ifdef DEBUG
@@ -35,9 +35,10 @@
  * Now, if someone calls io_wantwrite, we might be in the situation that
  * canwrite is already set.  In that case, just enqueue the fd. */
 
-void io_wantwrite_really(fd_t d, io_entry* e) {
+void
+io_wantwrite_really(fd_t d, io_entry* e) {
   int newfd;
-  assert(!e->kernelwantwrite);  /* we should not be here if we already told the kernel we want to write */
+  assert(!e->kernelwantwrite); /* we should not be here if we already told the kernel we want to write */
   newfd = (!e->kernelwantread);
   io_wanted_fds += newfd;
 #ifdef HAVE_EPOLL
@@ -55,7 +56,8 @@ void io_wantwrite_really(fd_t d, io_entry* e) {
     struct kevent kev;
     struct timespec ts;
     EV_SET(&kev, d, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, 0);
-    ts.tv_sec = 0; ts.tv_nsec = 0;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 0;
     kevent(io_master, &kev, 1, 0, 0, &ts);
   }
 #endif
@@ -74,9 +76,14 @@ void io_wantwrite_really(fd_t d, io_entry* e) {
     p.fd = d;
     p.events = POLLOUT;
     switch(poll(&p, 1, 0)) {
-    case 1: e->canwrite = 1; break;
-    case 0: e->canwrite = 0; break;
-    case -1: return;
+      case 1:
+        e->canwrite = 1;
+        break;
+      case 0:
+        e->canwrite = 0;
+        break;
+      case -1:
+        return;
     }
     if(e->canwrite) {
       debug_printf(("io_wantwrite: enqueueing %lld in normal write queue before %ld\n", d, first_readable));
@@ -98,7 +105,8 @@ void io_wantwrite_really(fd_t d, io_entry* e) {
   e->kernelwantwrite = 1;
 }
 
-void io_wantwrite(fd_t d ){
+void
+io_wantwrite(fd_t d) {
   io_entry* e = iarray_get(io_getfds(), d);
   if(!e) return;
   if(e->wantwrite && e->kernelwantwrite) return;
@@ -109,5 +117,8 @@ void io_wantwrite(fd_t d ){
     return;
   }
   /* the harder case: do as before */
-  if(!e->kernelwantwrite) io_wantwrite_really(d, e); else e->wantwrite = 1;
+  if(!e->kernelwantwrite)
+    io_wantwrite_really(d, e);
+  else
+    e->wantwrite = 1;
 }

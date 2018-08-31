@@ -5,12 +5,14 @@
  * not fit into an unsigned short (as opposed to not fitting in an
  * unsigned long) */
 
-size_t scan_ushort(const char* src, unsigned short* dest) {
+size_t
+scan_ushort(const char* src, unsigned short* dest) {
   if(sizeof(unsigned short) == sizeof(unsigned int)) {
     /* a good optimizing compiler should remove the else clause when not
      * needed */
     return scan_uint(src, (unsigned int*)dest);
-  } if(sizeof(unsigned short) < sizeof(unsigned long)) {
+  }
+  if(sizeof(unsigned short) < sizeof(unsigned long)) {
     /* this is the regular case */
     const char* cur;
     unsigned short l;
@@ -20,7 +22,7 @@ size_t scan_ushort(const char* src, unsigned short* dest) {
       l = tmp;
     }
     if(cur > src) *dest = l;
-    return(size_t)(cur - src);
+    return (size_t)(cur - src);
   } else {
     /* the C standard says that sizeof(short) <= sizeof(unsigned int) <=
      * sizeof(unsigned long); this can never happen. Provoke a compile

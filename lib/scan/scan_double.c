@@ -1,20 +1,28 @@
 #include "../scan.h"
 
 #ifdef __GNUC__
-static inline int isdigit(int c) { return(c >= '0' && c <= '9'); }
+static inline int
+isdigit(int c) {
+  return (c >= '0' && c <= '9');
+}
 //#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #else
 #include <ctype.h>
 #endif
 
-size_t scan_double(const char *in, double *dest) {
+size_t
+scan_double(const char* in, double* dest) {
   double d = 0;
-  const char *c = in;
+  const char* c = in;
   char neg = 0;
   switch(*c) {
-  case '-': neg = 1;
-  case '+': c++; break;
-  default: break;
+    case '-':
+      neg = 1;
+    case '+':
+      c++;
+      break;
+    default:
+      break;
   }
   while(isdigit(*c)) {
     d = d * 10 + (*c - '0');
@@ -32,25 +40,30 @@ size_t scan_double(const char *in, double *dest) {
     char neg = 0;
     if(c[1] < '0') {
       switch(*c) {
-      case '-': neg = 1;
-      case '+': c++; break;
-      default:
-        d = 0;
-        c = in;
-        goto done;
+        case '-':
+          neg = 1;
+        case '+':
+          c++;
+          break;
+        default:
+          d = 0;
+          c = in;
+          goto done;
       }
     }
-    while(isdigit(*++c))
-      exp = exp * 10 + (*c - '0');
+    while(isdigit(*++c)) exp = exp * 10 + (*c - '0');
     if(neg)
-      while(exp) {  /* XXX: this introduces rounding errors */
-        d /= 10; --exp;
-      } else
-      while(exp) {  /* XXX: this introduces rounding errors */
-        d *= 10; --exp;
+      while(exp) { /* XXX: this introduces rounding errors */
+        d /= 10;
+        --exp;
+      }
+    else
+      while(exp) { /* XXX: this introduces rounding errors */
+        d *= 10;
+        --exp;
       }
   }
 done:
   *dest = (neg ? -d : d);
-  return(size_t)(c - in);
+  return (size_t)(c - in);
 }

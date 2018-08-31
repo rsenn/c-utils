@@ -1,8 +1,9 @@
-#include <stdint.h>
 #include "../stralloc.h"
 #include <ctype.h>
+#include <stdint.h>
 
-void stralloc_replace_non_printable(stralloc *sa, char ch) {
+void
+stralloc_replace_non_printable(stralloc* sa, char ch) {
   unsigned int i;
   char c;
   for(i = 0; i < sa->len; ++i) {

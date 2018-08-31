@@ -1,8 +1,8 @@
 #include "../errmsg.h"
 #include "../errmsg_internal.h"
-#include <str.h>
+#include "../str.h"
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 
 void
 errmsg_puts(int fd, const char* s) {

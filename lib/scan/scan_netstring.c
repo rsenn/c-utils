@@ -8,14 +8,15 @@
  *   return 0
  * Note: *dest will point inside the input buffer!
  */
-size_t scan_netstring(const char* in, size_t len, char** dest, size_t* slen) {
+size_t
+scan_netstring(const char* in, size_t len, char** dest, size_t* slen) {
   unsigned long l;
   size_t n = scan_ulongn(in, len, &l);
-  if(!n ||  /* did not start with a number */
-      n + 2 + l < l || /* overflow */
-      n + 2 + l > len || /* longer than we have input data */
-      in[n] != ':' || /* syntax error */
-      in[n + l + 1] != ',')
+  if(!n ||              /* did not start with a number */
+     n + 2 + l < l ||   /* overflow */
+     n + 2 + l > len || /* longer than we have input data */
+     in[n] != ':' ||    /* syntax error */
+     in[n + l + 1] != ',')
     return 0;
   *dest = (char*)in + n + 1;
   *slen = l;

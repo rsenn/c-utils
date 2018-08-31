@@ -1,25 +1,25 @@
 #if defined(_WIN32) || defined(_WIN64)
 #else
 #endif
-#include <fcntl.h>
-#include <errno.h>
 #include "../io_internal.h"
+#include <errno.h>
+#include <fcntl.h>
 #ifdef HAVE_KQUEUE
-#include <sys/types.h>
 #include <sys/event.h>
+#include <sys/types.h>
 #endif
 #ifdef HAVE_EPOLL
+#include "../byte.h"
 #include <inttypes.h>
 #include <sys/epoll.h>
-#include "../byte.h"
 #endif
 #ifdef HAVE_SIGIO
 #include <poll.h>
 #endif
 #ifdef HAVE_DEVPOLL
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/devpoll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #endif
 #if defined(_WIN32) || defined(_WIN64)
 #include <winsock.h>
@@ -31,7 +31,8 @@
 #define assert(x)
 #endif
 
-void io_wantread_really(fd_t d, io_entry* e) {
+void
+io_wantread_really(fd_t d, io_entry* e) {
   int newfd;
   assert(!e->kernelwantread);
   newfd = !e->kernelwantwrite;
@@ -51,7 +52,8 @@ void io_wantread_really(fd_t d, io_entry* e) {
     struct kevent kev;
     struct timespec ts;
     EV_SET(&kev, d, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
-    ts.tv_sec = 0; ts.tv_nsec = 0;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 0;
     kevent(io_master, &kev, 1, 0, 0, &ts);
   }
 #endif
@@ -71,8 +73,11 @@ void io_wantread_really(fd_t d, io_entry* e) {
       p.fd = d;
       p.events = POLLIN;
       switch(poll(&p, 1, 0)) {
-      case 1: e->canread = 1; break;
-      case -1: return;
+        case 1:
+          e->canread = 1;
+          break;
+        case -1:
+          return;
       }
     }
     if(e->canread) {
@@ -86,12 +91,12 @@ void io_wantread_really(fd_t d, io_entry* e) {
   if(e->listened) {
     if(e->next_accept == 0) e->next_accept = socket(AF_INET, SOCK_STREAM, 0);
     if(e->next_accept != -1) {
-      AcceptEx(d, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e-> or);
+      AcceptEx(d, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or);
       e->acceptqueued = 1;
     }
   } else if(!e->wantread) {
-    if(ReadFile((HANDLE)(uintptr_t)d, e->inbuf, sizeof(e->inbuf), &e->errorcode, &e-> or)) {
-queueread:
+    if(ReadFile((HANDLE)(uintptr_t)d, e->inbuf, sizeof(e->inbuf), &e->errorcode, &e->or)) {
+    queueread:
       /* had something to read immediately.  Damn! */
       e->readqueued = 0;
       e->canread = 1;
@@ -114,7 +119,8 @@ queueread:
   e->kernelwantread = 1;
 }
 
-void io_wantread(fd_t d ){
+void
+io_wantread(fd_t d) {
   io_entry* e = iarray_get(io_getfds(), d);
   if(!e || e->wantread) return;
   if(e->canread) {
@@ -124,5 +130,8 @@ void io_wantread(fd_t d ){
     return;
   }
   /* the harder case: do as before */
-  if(!e->kernelwantread) io_wantread_really(d, e); else e->wantread = 1;
+  if(!e->kernelwantread)
+    io_wantread_really(d, e);
+  else
+    e->wantread = 1;
 }

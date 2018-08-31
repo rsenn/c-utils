@@ -13,7 +13,8 @@
 #if defined(HAVE_BSDSENDFILE)
 #define SENDFILE 1
 
-int64 io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
+int64
+io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
   off_t sbytes;
   int r = sendfile(fd, s, off, n, 0, &sbytes, 0);
   if(r == -1) {
@@ -31,7 +32,8 @@ int64 io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 
 #ifdef __hpux__
 
-int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
+int64
+io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   long long r = sendfile64(out, in, off, bytes, 0, 0);
   if(r == -1 && errno != EAGAIN) r = -3;
   if(r != bytes) {
@@ -44,11 +46,12 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   return r;
 }
 
-#elif defined (__sun__) && defined(__svr4__)
+#elif defined(__sun__) && defined(__svr4__)
 
 #include <sys/sendfile.h>
 
-int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
+int64
+io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   off64_t o = off;
   long long r = sendfile64(out, in, &o, bytes);
   if(r == -1 && errno != EAGAIN) r = -3;
@@ -64,7 +67,8 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 
 #elif defined(_AIX)
 
-int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
+int64
+io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   struct sf_parms p;
   int destfd = out;
   p.header_data = 0;
@@ -83,7 +87,8 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
       }
     }
     return p.bytes_sent;
-  } if(errno == EAGAIN)
+  }
+  if(errno == EAGAIN)
     return -1;
   else
     return -3;
@@ -96,10 +101,11 @@ int64 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 #elif defined(__dietlibc__)
 #include <sys/sendfile.h>
 #else
-_syscall4(int, sendfile, int, out, int, in, long *, offset, unsigned long, count)
+_syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)
 #endif
 
-int64 io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
+int64
+io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
   off_t o = off;
   io_entry* e = iarray_get(io_getfds(), s);
   off_t i;
@@ -138,19 +144,23 @@ int64 io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 int64
 io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
   io_entry* e = iarray_get(io_getfds(), out);
-  if(!e) { errno = EBADF; return -3; }
+  if(!e) {
+    errno = EBADF;
+    return -3;
+  }
   if(e->sendfilequeued == 1) {
     /* we called TransmitFile, and it returned. */
     e->sendfilequeued = 2;
     errno = e->errorcode;
     if(e->bytes_written == -1) return -1;
-    if(e->bytes_written != bytes) {  /* we wrote less than caller wanted to write */
-      e->sendfilequeued = 1;  /* so queue next request */
+    if(e->bytes_written != bytes) { /* we wrote less than caller wanted to write */
+      e->sendfilequeued = 1;        /* so queue next request */
       off += e->bytes_written;
       bytes -= e->bytes_written;
       e->os.Offset = off;
       e->os.OffsetHigh = (off >> 32);
-      TransmitFile((uintptr_t)out, (HANDLE)(uintptr_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
+      TransmitFile(
+          (uintptr_t)out, (HANDLE)(uintptr_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
     }
     return e->bytes_written;
   } else {
@@ -158,7 +168,8 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
     e->os.Offset = off;
     e->os.OffsetHigh = (off >> 32);
     /* we always write at most 64k, so timeout handling is possible */
-    if(!TransmitFile((uintptr_t)out, (HANDLE)(uintptr_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
+    if(!TransmitFile(
+           (uintptr_t)out, (HANDLE)(uintptr_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
       return -3;
   }
   return e->bytes_written;
@@ -168,7 +179,8 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
 
 #include "../iob.h"
 
-static int64 writecb(fd_t s, const void* buf, uint64 n) {
+static int64
+writecb(fd_t s, const void* buf, uint64 n) {
   return write(s, buf, n);
 }
 

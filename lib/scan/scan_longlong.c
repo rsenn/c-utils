@@ -1,8 +1,9 @@
 #include "../scan.h"
 
-static const unsigned long maxlong = ((unsigned long) -1) >> 1;
+static const unsigned long maxlong = ((unsigned long)-1) >> 1;
 
-size_t scan_longlong(const char* src, signed long long* dest) {
+size_t
+scan_longlong(const char* src, signed long long* dest) {
   size_t i, o;
   unsigned long long l;
   char c = src[0];
@@ -15,5 +16,6 @@ size_t scan_longlong(const char* src, signed long long* dest) {
     }
     if(i + o) *dest = (signed long long)(c == '-' ? -l : l);
     return i + o;
-  } return 0;
+  }
+  return 0;
 }

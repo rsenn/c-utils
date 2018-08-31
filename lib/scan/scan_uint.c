@@ -5,7 +5,8 @@
  * not fit into an unsigned int (as opposed to not fitting in an
  * unsigned long) */
 
-size_t scan_uint(const char* src, unsigned int* dest) {
+size_t
+scan_uint(const char* src, unsigned int* dest) {
   if(sizeof(unsigned int) == sizeof(unsigned long)) {
     /* a good optimizing compiler should remove the else clause when not
      * needed */
@@ -19,7 +20,7 @@ size_t scan_uint(const char* src, unsigned int* dest) {
       l = tmp;
     }
     if(cur > src) *dest = l;
-    return(size_t)(cur - src);
+    return (size_t)(cur - src);
 #ifdef __GNUC__
   } else {
     /* the C standard says that sizeof(short) <= sizeof(unsigned int) <=

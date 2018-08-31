@@ -2,6 +2,8 @@
 #ifndef OPEN_H
 #define OPEN_H
 
+#include "windoze.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

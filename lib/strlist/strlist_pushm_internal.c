@@ -1,7 +1,8 @@
-#include <stdarg.h>
 #include "../strlist.h"
+#include <stdarg.h>
 
-int strlist_pushm_internal(strlist* sl, ...) {
+int
+strlist_pushm_internal(strlist* sl, ...) {
   stralloc sa;
   va_list a;
   const char* s;
@@ -15,4 +16,3 @@ int strlist_pushm_internal(strlist* sl, ...) {
   va_end(a);
   return strlist_push_sa(sl, &sa);
 }
-

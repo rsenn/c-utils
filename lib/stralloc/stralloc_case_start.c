@@ -1,8 +1,8 @@
 #include "../byte.h"
-#include "../byte.h"
 #include "../stralloc.h"
 
-unsigned int stralloc_case_start(const stralloc *sa, const stralloc *prefix) {
+unsigned int
+stralloc_case_start(const stralloc* sa, const stralloc* prefix) {
   unsigned int prefix_len;
   prefix_len = prefix->len;
   if(sa->len < prefix_len) return 0;

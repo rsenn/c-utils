@@ -1,5 +1,5 @@
 #include <sys/types.h>
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include "../io_internal.h"
 #include <mswsock.h>
 #else
@@ -10,7 +10,7 @@
 
 int
 socket_listen(int s, unsigned int backlog) {
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   io_entry* e;
   int r = listen(s, backlog);
   if(r == -1) return winsock2errno(-1);

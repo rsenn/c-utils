@@ -1,9 +1,9 @@
 #include "../byte.h"
-#include "../byte.h"
 #include "../str.h"
 #include "../stralloc.h"
 
-int stralloc_case_diffs(const stralloc *sa, const char *s) {
+int
+stralloc_case_diffs(const stralloc* sa, const char* s) {
   unsigned int len;
   unsigned int s_len;
   int r;

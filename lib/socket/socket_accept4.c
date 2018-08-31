@@ -6,7 +6,7 @@
 #include "../socket.h"
 #include "../windoze.h"
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include "../io_internal.h"
 #include <errno.h>
 #include <mswsock.h>
@@ -20,7 +20,7 @@ socket_accept4(int s, char* ip, uint16* port) {
   socklen_t len = sizeof si;
   int fd;
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   io_entry* e = array_get(&io_fds, sizeof(io_entry), s);
   if(e && e->inuse) {
     int sa2len;
@@ -69,7 +69,7 @@ socket_accept4(int s, char* ip, uint16* port) {
 
     if((fd = accept(s, (void*)&si, &len)) == -1) return winsock2errno(-1);
 
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
   }
 #endif
   if(ip) *(uint32*)ip = *(uint32*)&si.sin_addr;

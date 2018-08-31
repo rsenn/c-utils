@@ -1,9 +1,9 @@
-#include <buffer.h>
-#include <dns.h>
-#include <errmsg.h>
-#include <errno.h>
-#include <ip4.h>
+#include "lib/buffer.h"
+#include "lib/dns.h"
+#include "lib/errmsg.h"
+#include "lib/ip4.h"
 #include <string.h>
+#include <errno.h>
 
 int
 main(int argc, char* argv[]) {

@@ -1,6 +1,7 @@
 #include "../scan.h"
 
-size_t scan_varint(const char* in, size_t len, unsigned long long* n) {
+size_t
+scan_varint(const char* in, size_t len, unsigned long long* n) {
   size_t i;
   unsigned long long l;
   if(len == 0) return 0;
@@ -17,7 +18,9 @@ size_t scan_varint(const char* in, size_t len, unsigned long long* n) {
 
 size_t scan_pb_type0_int(const char* dest, size_t len, unsigned long long* l)
 #ifdef __GNUC__
-__attribute__((alias("scan_varint")));
+    __attribute__((alias("scan_varint")));
 #else
-{ return scan_varint(dest, len, l); }
+{
+  return scan_varint(dest, len, l);
+}
 #endif

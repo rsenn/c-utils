@@ -1,3 +1,5 @@
+#include "../windoze.h"
+#include "../stralloc.h"
 #include "../byte.h"
 #include "../dns.h"
 #include "../open.h"
@@ -5,7 +7,7 @@
 #include "../taia.h"
 #include <stdlib.h>
 #include <unistd.h>
-#ifdef __MINGW32__
+#if defined(_WIN32) || defined(_WIN64)
 #include <winsock2.h>
 #endif
 

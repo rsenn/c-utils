@@ -3,8 +3,8 @@
 #else
 #include <poll.h>
 #endif
-#include <errno.h>
 #include "../io_internal.h"
+#include <errno.h>
 
 #if defined(_WIN32) || defined(_WIN64)
 
@@ -15,10 +15,14 @@
 /* So we assume io_trywrite is not used so much and do the overlapping
  * stuff on I/O batches. */
 
-int64 io_trywrite(fd_t d, const char* buf, int64 len) {
+int64
+io_trywrite(fd_t d, const char* buf, int64 len) {
   io_entry* e = iarray_get(io_getfds(), d);
   int r;
-  if(!e) { errno = EBADF; return -3; }
+  if(!e) {
+    errno = EBADF;
+    return -3;
+  }
   if(!e->nonblock) {
     DWORD written;
     if(WriteFile((HANDLE)(uintptr_t)d, buf, len, &written, 0)) {
@@ -58,23 +62,32 @@ int64 io_trywrite(fd_t d, const char* buf, int64 len) {
 
 #else
 
-int64 io_trywrite(fd_t d, const char* buf, int64 len) {
+int64
+io_trywrite(fd_t d, const char* buf, int64 len) {
   long r;
   struct itimerval old, new;
   struct pollfd p;
   io_entry* e = iarray_get(io_getfds(), d);
   io_sigpipe();
-  if(!e) { errno = EBADF; return -3; }
+  if(!e) {
+    errno = EBADF;
+    return -3;
+  }
   if(!e->nonblock) {
     p.fd = d;
-    if(p.fd != d) { errno = EBADF; return -3; }  /* catch overflow */
+    if(p.fd != d) {
+      errno = EBADF;
+      return -3;
+    } /* catch overflow */
     p.events = POLLOUT;
     switch(poll(&p, 1, 0)) {
-    case -1: return -3;
-    case 0: errno = EAGAIN;
-      e->canwrite = 0;
-      e->next_write = -1;
-      return -1;
+      case -1:
+        return -3;
+      case 0:
+        errno = EAGAIN;
+        e->canwrite = 0;
+        e->next_write = -1;
+        return -1;
     }
     new.it_interval.tv_usec = 10000;
     new.it_interval.tv_sec = 0;
@@ -88,8 +101,7 @@ int64 io_trywrite(fd_t d, const char* buf, int64 len) {
   }
   if(r == -1) {
     if(errno == EINTR) errno = EAGAIN;
-    if(errno != EAGAIN)
-      r = -3;
+    if(errno != EAGAIN) r = -3;
   }
   if(r != len) {
     e->canwrite = 0;

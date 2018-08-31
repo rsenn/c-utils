@@ -1,15 +1,15 @@
+#include "../dir_internal.h"
 #include "../str.h"
 #include <assert.h>
-#include "../dir_internal.h"
 
 #if USE_WIDECHAR
 #include "../utf8.h"
 #endif
 
-int dir_open(struct dir_s* d, const char* p) {
+int
+dir_open(struct dir_s* d, const char* p) {
   int ret;
-  if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))
-    return 1;
+  if(!(d->dir_int = malloc(sizeof(struct dir_internal_s)))) return 1;
 #if USE_READDIR
   ret = ((dir_INTERNAL(d)->dir_handle = opendir(p)) == NULL) ? -1 : 0;
 #else
@@ -34,11 +34,11 @@ int dir_open(struct dir_s* d, const char* p) {
 #endif
     dir_INTERNAL(d)->first = 1;
 
-    ret = (dir_INTERNAL(d)->dir_handle ==  (intptr_t)INVALID_HANDLE_VALUE);
+    ret = (dir_INTERNAL(d)->dir_handle == (intptr_t)INVALID_HANDLE_VALUE);
   }
 #endif
 
-  //assert(dir_INTERNAL(d)->dir_handle);
+  // assert(dir_INTERNAL(d)->dir_handle);
 
   return ret;
 }

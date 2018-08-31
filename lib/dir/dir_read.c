@@ -1,5 +1,5 @@
-#include <assert.h>
 #include "../dir_internal.h"
+#include <assert.h>
 
 #if USE_READDIR
 #include <dirent.h>
@@ -7,7 +7,8 @@
 #include <windows.h>
 #endif
 
-char* dir_read(struct dir_s* d) {
+char*
+dir_read(struct dir_s* d) {
   char* ret = 0;
 #if USE_READDIR
   assert(dir_INTERNAL(d)->dir_handle);

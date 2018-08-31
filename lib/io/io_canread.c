@@ -1,21 +1,23 @@
 #if defined(_WIN32) || defined(_WIN64)
 #else
 #endif
-#include <errno.h>
 #include "../io_internal.h"
+#include <errno.h>
 
 #if defined(_WIN32) || defined(_WIN64)
 #endif
 
 void io_wantread_really(fd_t d, io_entry* e);
 
-int64 io_canread() {
+int64
+io_canread() {
   io_entry* e;
   if(first_readable == -1)
 #if defined(HAVE_SIGIO)
   {
     if(alt_firstread >= 0 && (e = iarray_get(io_getfds(), alt_firstread)) && e->canread) {
-      debug_printf(("io_canread: normal read queue is empty, swapping in alt read queue (starting with %ld)\n", alt_firstread));
+      debug_printf(
+          ("io_canread: normal read queue is empty, swapping in alt read queue (starting with %ld)\n", alt_firstread));
       first_readable = alt_firstread;
       alt_firstread = -1;
     } else
@@ -38,11 +40,11 @@ int64 io_canread() {
 
     if(e->wantread &&
 #if defined(_WIN32) || defined(_WIN64)
-        (e->canread || e->acceptqueued == 1 || e->readqueued == 1)
+       (e->canread || e->acceptqueued == 1 || e->readqueued == 1)
 #else
-        e->canread
+       e->canread
 #endif
-      ) {
+    ) {
 #if defined(HAVE_SIGIO)
       e->next_read = alt_firstread;
       alt_firstread = r;
@@ -50,8 +52,7 @@ int64 io_canread() {
       if(io_waitmode != _SIGIO)
 #endif
         e->canread = 0;
-      if(!e->kernelwantread)
-        io_wantread_really(r, e);
+      if(!e->kernelwantread) io_wantread_really(r, e);
       return r;
     }
   }

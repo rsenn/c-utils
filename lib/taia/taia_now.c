@@ -1,12 +1,13 @@
-#include <sys/types.h>
 #include "../taia.h"
+#include <sys/types.h>
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 #else
 #include <sys/time.h>
 #endif
 
-void taia_now(struct taia *t) {
+void
+taia_now(struct taia* t) {
 #if defined(_WIN32) || defined(_WIN64)
   union {
     FILETIME f;
@@ -21,7 +22,7 @@ void taia_now(struct taia *t) {
   t->atto = 0;
 #else
   struct timeval now;
-  gettimeofday(&now, (struct timezone *) 0);
+  gettimeofday(&now, (struct timezone*)0);
   tai_unix(&t->sec, now.tv_sec);
   t->nano = (uint32)(1000 * now.tv_usec + 500);
   t->atto = 0;

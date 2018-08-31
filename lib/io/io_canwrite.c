@@ -1,15 +1,17 @@
-#include <errno.h>
 #include "../io_internal.h"
+#include <errno.h>
 
 void io_wantwrite_really(fd_t d, io_entry* e);
 
-int64 io_canwrite() {
+int64
+io_canwrite() {
   io_entry* e;
   if(first_writeable == -1)
 #if defined(HAVE_SIGIO)
   {
     if(alt_firstwrite >= 0 && (e = iarray_get(io_getfds(), alt_firstwrite)) && e->canwrite) {
-      debug_printf(("io_canwrite: normal write queue is empty, swapping in alt write queue (starting with %ld)\n", alt_firstwrite));
+      debug_printf(("io_canwrite: normal write queue is empty, swapping in alt write queue (starting with %ld)\n",
+                    alt_firstwrite));
       first_writeable = alt_firstwrite;
       alt_firstwrite = -1;
     } else
@@ -28,11 +30,11 @@ int64 io_canwrite() {
     debug_printf(("io_canwrite: dequeue %lld from normal write queue (next is %ld)\n", r, first_writeable));
     if(e->wantwrite &&
 #if defined(_WIN32) || defined(_WIN64)
-        (e->canwrite || e->sendfilequeued == 1)
+       (e->canwrite || e->sendfilequeued == 1)
 #else
-        e->canwrite
+       e->canwrite
 #endif
-      ) {
+    ) {
 #if defined(HAVE_SIGIO)
       e->next_write = alt_firstwrite;
       alt_firstwrite = r;
@@ -40,8 +42,7 @@ int64 io_canwrite() {
       if(io_waitmode != _SIGIO)
 #endif
         e->canwrite = 0;
-      if(!e->kernelwantwrite)
-        io_wantwrite_really(r, e);
+      if(!e->kernelwantwrite) io_wantwrite_really(r, e);
       return r;
     }
   }

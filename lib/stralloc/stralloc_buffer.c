@@ -1,7 +1,8 @@
-#include "../stralloc.h"
 #include "../buffer.h"
+#include "../stralloc.h"
 
-int main() {
+int
+main() {
   static stralloc sa;
   /* static makes sure sa is initialized and empty;
    * use stralloc_init to initialize and stralloc_copys(&sa,"") to empty */

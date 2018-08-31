@@ -3,10 +3,11 @@
 #else
 #endif
 
-#include <fcntl.h>
 #include "../io_internal.h"
+#include <fcntl.h>
 
-int io_appendfile(fd_t* d, const char* s) {
+int
+io_appendfile(fd_t* d, const char* s) {
   long fd = open(s, O_WRONLY | O_APPEND | O_CREAT, 0600);
   if(fd != -1) {
     *d = fd;

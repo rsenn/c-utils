@@ -1,6 +1,7 @@
 #include "../stralloc.h"
 
-int stralloc_chomp(stralloc* sa) {
+int
+stralloc_chomp(stralloc* sa) {
   size_t max = sa->len;
   if(max > 0) {
     char x;

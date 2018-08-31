@@ -1,22 +1,22 @@
 #if defined(_WIN32) || defined(_WIN64)
 #else
 #endif
-#include <fcntl.h>
-#include <errno.h>
 #include "../io_internal.h"
+#include <errno.h>
+#include <fcntl.h>
 #ifdef HAVE_KQUEUE
-#include <sys/types.h>
 #include <sys/event.h>
+#include <sys/types.h>
 #endif
 #ifdef HAVE_EPOLL
+#include "../byte.h"
 #include <inttypes.h>
 #include <sys/epoll.h>
-#include "../byte.h"
 #endif
 #ifdef HAVE_DEVPOLL
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/devpoll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #endif
 
 #ifdef DEBUG
@@ -25,7 +25,8 @@
 #define assert(x)
 #endif
 
-void io_dontwantread_really(fd_t d, io_entry* e) {
+void
+io_dontwantread_really(fd_t d, io_entry* e) {
   int newfd;
   (void)d;
   assert(e->kernelwantread);
@@ -34,7 +35,7 @@ void io_dontwantread_really(fd_t d, io_entry* e) {
 #ifdef HAVE_EPOLL
   if(io_waitmode == EPOLL) {
     struct epoll_event x;
-    byte_zero(&x, sizeof(x));  /* to shut up valgrind */
+    byte_zero(&x, sizeof(x)); /* to shut up valgrind */
     x.events = 0;
     if(e->kernelwantwrite) x.events |= EPOLLOUT;
     x.data.fd = d;
@@ -46,7 +47,8 @@ void io_dontwantread_really(fd_t d, io_entry* e) {
     struct kevent kev;
     struct timespec ts;
     EV_SET(&kev, d, EVFILT_READ, EV_DELETE, 0, 0, 0);
-    ts.tv_sec = 0; ts.tv_nsec = 0;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 0;
     kevent(io_master, &kev, 1, 0, 0, &ts);
   }
 #endif
@@ -64,11 +66,11 @@ void io_dontwantread_really(fd_t d, io_entry* e) {
   e->kernelwantread = 0;
 }
 
-void io_dontwantread(fd_t d ){
+void
+io_dontwantread(fd_t d) {
   io_entry* e = iarray_get(io_getfds(), d);
   if(e) {
-    if(e->canread)
-      io_dontwantread_really(d, e);
+    if(e->canread) io_dontwantread_really(d, e);
     e->wantread = 0;
   }
 }

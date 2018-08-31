@@ -1,7 +1,8 @@
-#include "../stralloc.h"
 #include "../fmt.h"
+#include "../stralloc.h"
 
-unsigned int stralloc_cathexb(stralloc *sa, const void *d, unsigned int n) {
+unsigned int
+stralloc_cathexb(stralloc* sa, const void* d, unsigned int n) {
   unsigned int len;
   len = n << 1;
   if(!stralloc_readyplus(sa, len)) return 0;

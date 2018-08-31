@@ -1,6 +1,7 @@
 #include "../io_internal.h"
 
-int64 io_timeouted() {
+int64
+io_timeouted() {
   tai6464 now;
   static size_t ptr;
   io_entry* e;
@@ -13,12 +14,12 @@ int64 io_timeouted() {
     if(e && e->inuse && e->timeout.sec.x && taia_less(&e->timeout, &now)) {
       /* we have a timeout */
       if((e->canread && e->wantread) || (e->canwrite && e->wantwrite))
-        continue;  /* don't count it if we can signal something else */
+        continue; /* don't count it if we can signal something else */
       return ptr;
     }
   }
-  ptr = -1;  /* this is for really pathological cases, where more
-  	   connections come in all the time and so the timeout
-  	   handling does not trigger initially */
+  ptr = -1; /* this is for really pathological cases, where more
+      connections come in all the time and so the timeout
+      handling does not trigger initially */
   return -1;
 }

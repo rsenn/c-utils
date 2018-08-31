@@ -47,7 +47,7 @@ dns_random_init(const char data[128]) {
   for(i = 0; i < 4; ++i) uint32_unpack(tpack + 4 * i, in + 4 + i);
 
   in[8] = getpid();
-#ifndef __MINGW32__
+#if !defined(_WIN32) && !defined(_WIN64)
   in[9] = getppid();
 #endif
   /* more space in 10 and 11, but this is probably enough */

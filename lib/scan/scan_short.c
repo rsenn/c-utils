@@ -1,17 +1,22 @@
 #include "../scan.h"
 
-static const unsigned short maxshort = ((unsigned short) -1) >> 1;
+static const unsigned short maxshort = ((unsigned short)-1) >> 1;
 
-size_t scan_short(const char* src, short* dest) {
-  const char *tmp;
+size_t
+scan_short(const char* src, short* dest) {
+  const char* tmp;
   short l;
   unsigned char c;
   int neg;
   int ok;
-  tmp = src; l = 0; ok = neg = 0;
+  tmp = src;
+  l = 0;
+  ok = neg = 0;
   switch(*tmp) {
-  case '-': neg = 1;
-  case '+': ++tmp;
+    case '-':
+      neg = 1;
+    case '+':
+      ++tmp;
   }
   while((c = (unsigned char)(*tmp - '0')) < 10) {
     unsigned short int n;
@@ -22,7 +27,8 @@ size_t scan_short(const char* src, short* dest) {
      * however, multiplication and division are expensive.
      * so instead of *10 we do (l<<3) (i.e. *8) + (l<<1) (i.e. *2)
      * and check for overflow on all the intermediate steps */
-    n = (unsigned short)(l << 3); if((n >> 3) != (unsigned short)l) break;
+    n = (unsigned short)(l << 3);
+    if((n >> 3) != (unsigned short)l) break;
     if(n + (l << 1) < n) break;
     n = (unsigned short)(n + (l << 1));
     if(n + c < n) break;
