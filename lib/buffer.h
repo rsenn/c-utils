@@ -32,14 +32,14 @@ typedef ssize_t (buffer_op_fn)(/*fd_t fd, void* buf, size_t len, void* arg*/);
 typedef buffer_op_fn* buffer_op_ptr;
 
 typedef struct buffer {
-  char *x;		/* actual buffer space */
-  size_t p;		/* current position */
-  size_t n;		/* current size of string in buffer */
-  size_t a;		/* allocated buffer size */
+  char *x;  	/* actual buffer space */
+  size_t p;  	/* current position */
+  size_t n;  	/* current size of string in buffer */
+  size_t a;  	/* allocated buffer size */
   buffer_op_proto* op; /* use read(2) or write(2) */
-  void* cookie;			/* used internally by the to-stralloc buffers,  and for buffer chaining */
-  void (*deinit)();	/* called to munmap/free cleanup,  with a pointer to the buffer as argument */
-  fd_t fd;		/* passed as first argument to op */
+  void* cookie;  		/* used internally by the to-stralloc buffers,  and for buffer chaining */
+  void (*deinit)();  /* called to munmap/free cleanup,  with a pointer to the buffer as argument */
+  fd_t fd;  	/* passed as first argument to op */
 } buffer;
 
 #define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (void*)(op),  NULL,  NULL,  (fd) }
@@ -120,7 +120,6 @@ int buffer_skipn(buffer *b, size_t n);
 
 int buffer_prefetch(buffer *b, size_t n);
 
-
 #define buffer_PEEK(s) ( (s)->x + (s)->p )
 #define buffer_SEEK(s, len) ( (s)->p += (len) )
 
@@ -185,16 +184,16 @@ int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*)
 
 /* make a buffer from a stralloc.
  * Do not change the stralloc after this! */
-void buffer_fromsa(buffer* b, const stralloc* sa);	/* read from sa */
-int buffer_tosa(buffer*b, stralloc* sa);		/* write to sa,  auto-growing it */
+void buffer_fromsa(buffer* b, const stralloc* sa);  /* read from sa */
+int buffer_tosa(buffer*b, stralloc* sa);  	/* write to sa,  auto-growing it */
 
 int buffer_gettok_sa(buffer *b, stralloc *sa, const char *charset, size_t setlen);
 #endif
 
-void buffer_frombuf(buffer* b, const char* x, size_t l);	/* buffer reads from static buffer */
+void buffer_frombuf(buffer* b, const char* x, size_t l);  /* buffer reads from static buffer */
 
 #ifdef ARRAY_H
-void buffer_fromarray(buffer* b, array* a);	/* buffer reads from array */
+void buffer_fromarray(buffer* b, array* a);  /* buffer reads from array */
 #endif
 void buffer_dump(buffer *out,  buffer *b);
 

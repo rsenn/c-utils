@@ -83,23 +83,23 @@ int main(int argc, char* argv[])
         printf("old value: 0x%04X\n", config_reg);
 */
 
-		if(hex.size()) {
-		uint32_t addr, v;
-		  intelhex::hex_data::iterator it = --hex.end();
+  	if(hex.size()) {
+  	uint32_t addr, v;
+  	  intelhex::hex_data::iterator it = --hex.end();
 
-		  addr = it->first / 2;
-		  v = get16(hex, addr);
-		  printf("block %08X[%d]: %s\n", addr, it->second.size(), implode(it->second, ' ').c_str());
+  	  addr = it->first / 2;
+  	  v = get16(hex, addr);
+  	  printf("block %08X[%d]: %s\n", addr, it->second.size(), implode(it->second, ' ').c_str());
 
-		  if(newval != -1) {
+  	  if(newval != -1) {
 
-//			  hex.erase(it->first, it->first+1);
-			  set16(hex, addr, newval);
-			  //hex.set(0x4010, 0x3f);
-			  printf("new value: 0x%04X\n", newval);
-			  hex.write(filename.c_str());
-			}
-		}
+//  		  hex.erase(it->first, it->first+1);
+  		  set16(hex, addr, newval);
+  		  //hex.set(0x4010, 0x3f);
+  		  printf("new value: 0x%04X\n", newval);
+  		  hex.write(filename.c_str());
+  		}
+  	}
     }
 
     return 0;

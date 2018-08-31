@@ -88,7 +88,6 @@ struct dir_internal_s {
 #endif
 #endif
 
-
 #define dir_INTERNAL(d) ((struct dir_internal_s *)((d)->dir_int))
 
 #if USE_READDIR

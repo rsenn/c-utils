@@ -13,7 +13,6 @@
 #if defined(HAVE_BSDSENDFILE)
 #define SENDFILE 1
 
-
 int64 io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
   off_t sbytes;
   int r = sendfile(fd, s, off, n, 0, &sbytes, 0);
@@ -145,8 +144,8 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
     e->sendfilequeued = 2;
     errno = e->errorcode;
     if(e->bytes_written == -1) return -1;
-    if(e->bytes_written != bytes) {	/* we wrote less than caller wanted to write */
-      e->sendfilequeued = 1;	/* so queue next request */
+    if(e->bytes_written != bytes) {  /* we wrote less than caller wanted to write */
+      e->sendfilequeued = 1;  /* so queue next request */
       off += e->bytes_written;
       bytes -= e->bytes_written;
       e->os.Offset = off;

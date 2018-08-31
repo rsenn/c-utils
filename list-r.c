@@ -156,7 +156,7 @@ get_file_owner(const char* path) {
   /* Check GetLastError for CreateFile error code. */
   if(hFile == INVALID_HANDLE_VALUE) {
     dwErrorCode = GetLastError();
-    /* 		snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode); */
+    /*   	snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode); */
     return 0;
   }
   /* Get the owner SID of the file. */
@@ -164,7 +164,7 @@ get_file_owner(const char* path) {
   /* Check GetLastError for GetSecurityInfo error condition. */
   if(dwRtnCode != ERROR_SUCCESS) {
     dwErrorCode = GetLastError();
-    /* 	snprintf(tmpbuf, sizeof(tmpbuf), "GetSecurityInfo error = %d\n", dwErrorCode); */
+    /*   snprintf(tmpbuf, sizeof(tmpbuf), "GetSecurityInfo error = %d\n", dwErrorCode); */
     return 0;
   }
   if(ConvertSidToStringSid(pSidOwner, &strsid)) {

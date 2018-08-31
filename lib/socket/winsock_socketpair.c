@@ -79,7 +79,6 @@ error:
   return SOCKET_ERROR;
 }
 
-
 /*
  * Create a sync-async socketpair using the protocol specified,
  * returning a synchronous socket and an asynchronous socket.

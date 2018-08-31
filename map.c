@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2014 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -17,7 +17,6 @@ struct map_node_t {
   /* char value[]; */
 };
 
-
 static unsigned map_hash(const char *str) {
   unsigned hash = 5381;
   while (*str) {
@@ -25,7 +24,6 @@ static unsigned map_hash(const char *str) {
   }
   return hash;
 }
-
 
 static map_node_t *map_newnode(const char *key, void *value, int vsize) {
   map_node_t *node;
@@ -40,13 +38,11 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
   return node;
 }
 
-
 static int map_bucketidx(map_base_t *m, unsigned hash) {
   /* If the implementation is changed to allow a non-power-of-2 bucket count,
    * the line below should be changed to use mod instead of AND */
   return hash & (m->nbuckets - 1);
 }
-
 
 static void map_addnode(map_base_t *m, map_node_t *node) {
   int n = map_bucketidx(m, node->hash);
@@ -54,11 +50,10 @@ static void map_addnode(map_base_t *m, map_node_t *node) {
   m->buckets[n] = node;
 }
 
-
 static int map_resize(map_base_t *m, int nbuckets) {
   map_node_t *nodes, *node, *next;
   map_node_t **buckets;
-  int i; 
+  int i;
   /* Chain all nodes together */
   nodes = NULL;
   i = m->nbuckets;
@@ -91,7 +86,6 @@ static int map_resize(map_base_t *m, int nbuckets) {
   return (buckets == NULL) ? -1 : 0;
 }
 
-
 static map_node_t **map_getref(map_base_t *m, const char *key) {
   unsigned hash = map_hash(key);
   map_node_t **next;
@@ -106,7 +100,6 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
   }
   return NULL;
 }
-
 
 void map_deinit_(map_base_t *m) {
   map_node_t *next, *node;
@@ -123,12 +116,10 @@ void map_deinit_(map_base_t *m) {
   free(m->buckets);
 }
 
-
 void *map_get_(map_base_t *m, const char *key) {
   map_node_t **next = map_getref(m, key);
   return next ? (*next)->value : NULL;
 }
-
 
 int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
   int n, err;
@@ -155,7 +146,6 @@ int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
   return -1;
 }
 
-
 void map_remove_(map_base_t *m, const char *key) {
   map_node_t *node;
   map_node_t **next = map_getref(m, key);
@@ -167,14 +157,12 @@ void map_remove_(map_base_t *m, const char *key) {
   }
 }
 
-
 map_iter_t map_iter_(void) {
   map_iter_t iter;
   iter.bucketidx = -1;
   iter.node = NULL;
   return iter;
 }
-
 
 const char *map_next_(map_base_t *m, map_iter_t *iter) {
   if (iter->node) {

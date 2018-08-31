@@ -83,9 +83,5 @@ size_t u8stowcs( wchar_t *pw, const char *pu, size_t count );
 #endif
 
 
-
-
-
 #endif // __UTF8_h__
-
 

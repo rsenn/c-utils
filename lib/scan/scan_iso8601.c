@@ -1,5 +1,5 @@
 #undef __deprecated__
-#define __deprecated__(x) 
+#define __deprecated__(x)
 #include <stdlib.h>
 #include <time.h>
 

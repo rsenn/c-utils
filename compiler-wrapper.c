@@ -268,7 +268,7 @@ read_arguments() {
       stralloc_copys(&output_file, str_basename(output.s));
       if(strchr(output.s, '/') || strchr(output.s, '\\')) {
         stralloc_copys(&output_dir, output.s);
-		output_dir.len = str_rchr(output.s, '/');
+  	output_dir.len = str_rchr(output.s, '/');
       }
       continue;
     } else if(!str_diffn("--", s, 2)) {
@@ -292,7 +292,6 @@ read_arguments() {
   if(err_format.len == 0) stralloc_copys(&err_format, "\n%f:%l: error: (%n) %s");
   if(warn_format.len == 0) stralloc_copys(&warn_format, "\n%f:%l: warning: (%n) %s");
   if(msg_format.len == 0) stralloc_copys(&msg_format, "\n%f:%l: advisory: (%n) %s");
-
 
   if(!str_case_diffn(argv0, "sdcc", 4)) {
     type = SDCC;
@@ -341,7 +340,6 @@ read_arguments() {
     }
   }
 
-
   if(debug) {
     strlist_push_unique(&defines, "DEBUG=1");
     strlist_push_unique(&defines, "__DEBUG=1");
@@ -363,7 +361,6 @@ read_arguments() {
   DUMP_LIST(debug_buf, opts, "\n\t", "");
   DUMP_LIST(debug_buf, params, "\n\t", "");
 
-
   DUMP_VALUE("output file", buffer_putsa, &output_file);
   DUMP_VALUE("mode", buffer_puts, opmode_strs[mode]);
   DUMP_VALUE("chip", buffer_putsa, &chip);
@@ -378,13 +375,11 @@ read_arguments() {
   DUMP_VALUE("ident len", buffer_putlong, ident_len);
 }
 
-
 void
 execute_cmd() {
 
   strlist cmd;
   strlist_init(&cmd);
-
 
   strlist_cat(&cmd, &opts);
   stralloc_0(&chip);
@@ -425,7 +420,6 @@ if(mode != PREPROCESS) {
       stralloc_0(&msg_format); strlist_pushm(&cmd, "--msgformat=", msg_format.s, 0);
     }
     strlist_push(&cmd, "--mode=PRO");
-
 
     if(optlevel) {
        nbuf[fmt_ulong(nbuf, optlevel)] = '\0';

@@ -24,22 +24,22 @@ typedef void (*linked_list_destructor)(const void *data);
  * Linked list node structure
  */
 typedef struct _linked_list_node {
-	/** Pointer to the next node */
-	struct _linked_list_node *next;
-	/** Pointer to data */
-	void *data;
+  /** Pointer to the next node */
+  struct _linked_list_node *next;
+  /** Pointer to data */
+  void *data;
 } linked_list_node;
 
 /**
  * Linked list object
  */
 typedef struct {
-	/** Pointer to sentinel node */
-	linked_list_node *head;
-	/** Function used to free data */
-	linked_list_destructor free_data;
-	/** Size of the linked_list */
-	size_t size;
+  /** Pointer to sentinel node */
+  linked_list_node *head;
+  /** Function used to free data */
+  linked_list_destructor free_data;
+  /** Size of the linked_list */
+  size_t size;
 } linked_list;
 
 /**

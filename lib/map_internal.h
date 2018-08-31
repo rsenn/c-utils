@@ -21,7 +21,6 @@ static unsigned map_hash(const char *str) {
   return hash;
 }
 
-
 static map_node_t *map_newnode(const char *key, void *value, int vsize) {
   map_node_t *node;
   int ksize = str_len(key) + 1;
@@ -35,13 +34,11 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
   return node;
 }
 
-
 static int map_bucketidx(map_base_t *m, unsigned hash) {
   /* If the implementation is changed to allow a non-power-of-2 bucket count,
    * the line below should be changed to use mod instead of AND */
   return hash & (m->nbuckets - 1);
 }
-
 
 static void map_addnode(map_base_t *m, map_node_t *node) {
   int n = map_bucketidx(m, node->hash);
@@ -49,11 +46,10 @@ static void map_addnode(map_base_t *m, map_node_t *node) {
   m->buckets[n] = node;
 }
 
-
 static int map_resize(map_base_t *m, int nbuckets) {
   map_node_t *nodes, *node, *next;
   map_node_t **buckets;
-  int i; 
+  int i;
   /* Chain all nodes together */
   nodes = NULL;
   i = m->nbuckets;
@@ -85,5 +81,4 @@ static int map_resize(map_base_t *m, int nbuckets) {
   /* Return error code if realloc() failed */
   return (buckets == NULL) ? -1 : 0;
 }
-
 

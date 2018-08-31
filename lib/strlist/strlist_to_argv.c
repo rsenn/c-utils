@@ -15,4 +15,3 @@ strlist_to_argv(const strlist* sl) {
   return v;
 }
 
-

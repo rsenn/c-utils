@@ -40,8 +40,8 @@ cbmap_mem_memalign(void** p, size_t alignment, size_t size) {
   if(!a) {
     CBM_DEBUG_ALLOCATIONS += 1;
     CBM_DEBUG_ALLOCATED_BYTES += size;
-  } 
-  
+  }
+
   return a;
 }
 
@@ -143,7 +143,7 @@ cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const cha
     CBM_DEBUG_ALLOCATIONS += 1;
     CBM_DEBUG_ALLOCATED_BYTES += (unsigned int)size;
   }
-  
+
 #ifdef DEBUG
   printf("%p     CBM_MEM_ALIGNED %-20s (%03d): Allocated %g bytes\n", *memptr, file, line, (float)size);
 #endif

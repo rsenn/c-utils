@@ -398,12 +398,12 @@ dopoll:
     /* either the overlapped I/O request failed or we timed out */
     DWORD err;
     io_entry* e;
-    if(!o) return 0;	/* timeout */
+    if(!o) return 0;  /* timeout */
     /* we got a completion packet for a failed I/O operation */
     err = GetLastError();
-    if(err == WAIT_TIMEOUT) return 0;	/* or maybe not */
+    if(err == WAIT_TIMEOUT) return 0;  /* or maybe not */
     e = iarray_get(io_getfds(), x);
-    if(!e) return 0;	/* WTF?! */
+    if(!e) return 0;  /* WTF?! */
     e->errorcode = err;
     if(o == &e-> or && (e->readqueued || e->acceptqueued)) {
       if(e->readqueued) e->readqueued = 2;

@@ -102,7 +102,6 @@ __inl xmlnode* xmlnodeset_iter_ref(xmlnode*** itp) { return *(*itp); }
 __inl int xmlnodeset_iter_eq(xmlnode*** itp1, xmlnode*** itp2) { return (*itp1) == (*itp2); }
 __inl ptrdiff_t xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) { return (*itp2) - (*itp1); }
 
-
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48
 

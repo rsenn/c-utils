@@ -11,7 +11,6 @@
 extern "C" {
 #endif
 
-
 struct http_request_s;
 
 typedef struct http_request_s {
@@ -55,10 +54,8 @@ int http_sendreq(http *h);
 void http_readable();
 void http_writeable();
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif /* defined HTTP_H */

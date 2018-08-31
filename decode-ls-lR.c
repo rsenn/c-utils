@@ -88,8 +88,6 @@ int decode_ls_lR() {
     buffer[0] = '\0';
     len = buffer_getline(buffer_0, buffer, sizeof(buffer));
 
-
-
     if(len < 0) /* || buffer[0] == '\0') */
       break;
 
@@ -98,7 +96,6 @@ int decode_ls_lR() {
       //buffer_puts(buffer_2, "len == 0!!!\n");
       //buffer_flush(buffer_2);
       break;
-
 
     }
 

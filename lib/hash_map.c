@@ -103,7 +103,6 @@ hash_map_put(hash_map* map, void* key, void* value) {
     head = head->next;
   }
 
-
   hash_map_pair* pair = (hash_map_pair*)safe_malloc(sizeof(hash_map_pair));
   pair->key = key;
   pair->value = value;

@@ -175,7 +175,6 @@ int buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
 /* same, but clear sa first */
 int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
 
-
 /* make a buffer from a stralloc.
  * Do not change the stralloc after this! */
 void buffer_fromsa(buffer* b, const stralloc* sa);
@@ -192,10 +191,8 @@ static inline size_t stralloc_length(const stralloc* sa) { return sa->len; }
 #define stralloc_iterator_distance(it1, it2) ((it2) - (it1))
 #define stralloc_is_last(sa, ptr) ((sa)->len > 0 && ((sa)->s + (sa)->len - 1) == (ptr))
 
-
 static inline void stralloc_iterator_increment(char** it) { ++(*it); }
 static inline int stralloc_iterator_equal(char** it1, char** it2) { return it1 == it2; }
-
 
 #ifdef BYTE_H
 size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));

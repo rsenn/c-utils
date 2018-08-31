@@ -66,7 +66,6 @@ typedef struct search_paths_t {
   char** path;
 } search_paths;
 
-
 typedef struct build_tree_config_t {
   int datarelocs;
   int functionrelocs;
@@ -81,6 +80,5 @@ typedef struct build_tree_config_t {
 
 int
 build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root, struct dep_tree_element *self);
-
 
 #endif

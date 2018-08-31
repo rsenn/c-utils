@@ -52,7 +52,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
           io_entry* f = array_get(&io_fds, sizeof(io_entry), fd);
           if(f) {
             f->nonblock = 1;
-            //	    printf("setting fd %lu to non-blocking\n",(int)fd);
+            //      printf("setting fd %lu to non-blocking\n",(int)fd);
           }
         }
       }

@@ -14,7 +14,6 @@ typedef __SIZE_TYPE__ size_t;
 /* for time_t: */
 #include <sys/types.h>
 
-
 #include "uint32.h"
 #include "uint64.h"
 

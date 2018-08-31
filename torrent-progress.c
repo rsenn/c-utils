@@ -117,13 +117,13 @@ last_error_str () {
 
    SetLastError(0);
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-					 NULL,
-					 errCode,
-					 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
-					 (LPTSTR) &err,
-					 0,
-					 NULL))
-	  return 0;
+  				 NULL,
+  				 errCode,
+  				 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
+  				 (LPTSTR) &err,
+  				 0,
+  				 NULL))
+    return 0;
 
   snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
 
@@ -131,7 +131,7 @@ last_error_str () {
   LocalFree(err);
   return buffer;
 #else
-	return strerror(errno);
+  return strerror(errno);
 #endif
 }
 
@@ -210,17 +210,17 @@ next:
     for(i = 0; i < iterations; i++) {
       size_t msz =  (remain >= map_size ? map_size : (size_t)remain);
       uint64 mofs =  (uint64)map_size * i;
-	  size_t z, blocks;
+    size_t z, blocks;
 
       char* m = mmap_map(fd, msz, mofs);
 
-	  if(m == NULL) {
-		  fprintf(stderr, "mmap_map(%d, "FMT_SIZE_T", "FMT_OFFS_T") failed: %s\n", fd, (size_t)msz, (size_t)mofs, last_error_str());
-		  exit(2);
-	  }
+    if(m == NULL) {
+  	  fprintf(stderr, "mmap_map(%d, "FMT_SIZE_T", "FMT_OFFS_T") failed: %s\n", fd, (size_t)msz, (size_t)mofs, last_error_str());
+  	  exit(2);
+    }
 
       z = 0;
-	  blocks = msz / BLOCK_SIZE;
+    blocks = msz / BLOCK_SIZE;
 
       all_blocks += blocks;
 

@@ -77,7 +77,7 @@ int64 io_tryread(fd_t d, char* buf, int64 len) {
   if(!e) { errno = EBADF; return -3; }
   if(!e->nonblock) {
       p.fd = d;
-      if(p.fd != d) { errno = EBADF; return -3; }	/* catch integer truncation */
+      if(p.fd != d) { errno = EBADF; return -3; }  /* catch integer truncation */
       p.events = POLLIN;
       switch(poll(&p, 1, 0)) {
         case -1: return -3;

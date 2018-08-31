@@ -190,7 +190,6 @@ struct dep_tree_element *process_dep(build_tree_config* cfg, soff_entry *soffs, 
   return child;
 }
 
-
 /*
 struct export_table_item *find_export_forward (struct dep_tree_element *self, char *dllname, char *export_name, uint32 export_ordinal)
 {
@@ -412,9 +411,6 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
   }
 
 
-
-
-
   /*MapAndLoad(name, path, loaded_image, FALSE, TRUE);
   if(!success && errno == ENOENT)
     success = MapAndLoad(name, path, loaded_image, TRUE, TRUE);
@@ -478,7 +474,6 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
   if(cfg->machine_type == -1)
     cfg->machine_type = (int)loaded_image.file_header->file_header.machine;
   img = &loaded_image;
-
 
   push_stack(cfg->stack, cfg->stack_len, cfg->stack_size, name);
 

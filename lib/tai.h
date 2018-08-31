@@ -26,7 +26,6 @@ typedef struct tai {
   uint64 x;
 } tai64;
 
-
 #define tai_unix(t,u) ((void) ((t)->x = 4611686018427387914ULL + (uint64) (u)))
 
 /* tai_now puts the current time into t. More precisely: tai_now puts

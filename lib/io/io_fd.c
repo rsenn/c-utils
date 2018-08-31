@@ -77,7 +77,7 @@ static io_entry* io_fd_internal(fd_t d, int flags) {
   long r;
   if((flags & (IO_FD_BLOCK | IO_FD_NONBLOCK)) == 0) {
     if((r = fcntl(d, F_GETFL, 0)) == -1)
-      return 0;	/* file descriptor not open */
+      return 0;  /* file descriptor not open */
   } else if(flags & IO_FD_NONBLOCK)
     r = O_NDELAY;
   else
@@ -114,7 +114,7 @@ static io_entry* io_fd_internal(fd_t d, int flags) {
     if(io_master != -1) io_waitmode = EPOLL;
 #endif
 #if defined(HAVE_KQUEUE)
-    if(io_waitmode == UNDECIDED) {	/* who knows, maybe someone supports both one day */
+    if(io_waitmode == UNDECIDED) {  /* who knows, maybe someone supports both one day */
       io_master = kqueue();
       if(io_master != -1) io_waitmode = KQUEUE;
     }

@@ -30,6 +30,5 @@ int main(int argc,char **argv)
 
   buffer_flush(buffer_1);
 
-
   return 0;
 }

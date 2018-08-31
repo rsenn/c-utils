@@ -36,7 +36,7 @@ int64 io_waitread(fd_t d, char* buf, int64 len) {
   if(e->nonblock) {
 again:
     p.fd = d;
-    if(p.fd != d) { errno = EBADF; return -3; }	/* catch overflow */
+    if(p.fd != d) { errno = EBADF; return -3; }  /* catch overflow */
     p.events = POLLIN;
     switch(poll(&p, 1, -1)) {
     case -1: if(errno == EAGAIN) goto again; return -3;

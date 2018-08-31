@@ -57,7 +57,6 @@ typedef struct instance {
   double rot;
 } instance_t;
 
-
 /* ----------------------------------------------------------------------- */
 void
 dump_part(part_t const* p) {
@@ -350,7 +349,6 @@ print_element_names(xmlnode* a_node) {
 /* ----------------------------------------------------------------------- */
 int read_xmlfile(const char* filename);
 int parse_xmlfile(const char* filename, xmlnode** p_doc);
-
 
 /* ----------------------------------------------------------------------- */
 const char*

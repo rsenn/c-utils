@@ -15,5 +15,4 @@ int main() {
   rdir_close(&rd);
   return 0;
 
-
 }

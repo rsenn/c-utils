@@ -27,7 +27,7 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
       if(e->mmapped) {
         /* did we already map the right chunk? */
         if(off >= e->mapofs && off < e->mapofs + e->maplen)
-          goto mapok;	/* ok; mmapped the right chunk*/
+          goto mapok;  /* ok; mmapped the right chunk*/
 #if defined(_WIN32) || defined(_WIN64)
         UnmapViewOfFile(e->mmapped);
 #else

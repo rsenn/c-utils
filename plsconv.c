@@ -125,7 +125,6 @@ main(int argc, char *argv[]) {
 
   playlist_settype(&pls1, outtype);
 
-
   if(out_file != NULL) {
     out_fd = open_trunc(out_file);
     if(out_fd == -1) {

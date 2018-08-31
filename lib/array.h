@@ -11,14 +11,14 @@ extern "C" {
 
 typedef struct {
   char* p;
-  int64 allocated;	/* in bytes */
-  uint64 initialized;	/* in bytes */
+  int64 allocated;  /* in bytes */
+  uint64 initialized;  /* in bytes */
 
   /* p and allocated nonzero: array is allocated */
   /* p and allocated zero: array is unallocated */
   /* p zero and allocated < 0: array is failed */
 
-  size_t headroom;	/* the actual pointer for free() and realloc() is p-headroom */
+  size_t headroom;  /* the actual pointer for free() and realloc() is p-headroom */
 } array;
 
 void* array_allocate(array* x,uint64 membersize,int64 pos);
@@ -48,7 +48,6 @@ void array_chop(array* x,uint64 membersize,uint64 members);
 static inline void array_iterator_increment(void** it, uint64 membersize) { char** i = (char**)it; (*i) += membersize; }
 static inline int array_iterator_equal(void** it1, void** it2) { char **p1 = (char**)it1, **p2 = (char**)it2; return p1 == p2; }
 static inline void* array_iterator_dereference(void** it) { return *it; }
-
 
 #ifdef __cplusplus
 }

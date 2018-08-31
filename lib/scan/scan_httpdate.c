@@ -1,10 +1,10 @@
 //#undef _ATTRIBUTE
-//#define _ATTRIBUTE(x) 
+//#define _ATTRIBUTE(x)
 #include <stdlib.h>
 #include <time.h>
 
 #include "../byte.h"
-//#define __deprecated__(x) 
+//#define __deprecated__(x)
 #include "../byte.h"
 #include "../case.h"
 #include "../scan.h"

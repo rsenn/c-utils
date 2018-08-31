@@ -39,7 +39,6 @@ void slist_unshift(slist*, slink*);
       (n) = (void*)((slink*)m), \
       (m) = (void*)((slink*)n) != NULL ? (void*)((slink*)n)->next : NULL)
 
-
 #ifdef __cplusplus
 }
 #endif

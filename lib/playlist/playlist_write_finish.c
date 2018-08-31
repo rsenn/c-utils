@@ -19,7 +19,6 @@ playlist_write_finish(buffer* b, playlist* pl) {
       byte_fill(lenbuf, sizeof(lenbuf), ' ');
       lenbuf[fmt_ulong(lenbuf, pl->count)] = '\n';
 
-
       buffer_flush(b);
 
       io_seek(b->fd, pl->num_items_pos, 0);

@@ -33,7 +33,7 @@ getpagesize() {
     GetNativeSystemInfo(&si);
     cachedPageSize = si.dwPageSize;
   }
-  return cachedPageSize; 
+  return cachedPageSize;
 }
 #endif
 

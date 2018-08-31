@@ -123,7 +123,6 @@ typedef struct {
   uint32 characteristics; /* section_characteristics */
 } pe_section_header;
 
-
 #define PE_NUMBEROF_DIRECTORY_ENTRIES 16
 
 /* r_eference: http://msdn.microsoft.com/en-us/library/windows/desktop/ms680339(v=vs.85).aspx */
@@ -252,8 +251,8 @@ typedef struct {
 typedef struct {
   char name[PE_SIZEOF_SHORT_NAME];
   union {
-	uint32 physical_address;
-	uint32 virtual_size;
+  uint32 physical_address;
+  uint32 virtual_size;
   } misc;
   uint32 virtual_address;
   uint32 size_of_raw_data;
@@ -295,7 +294,6 @@ typedef struct {
 //  uint32 first_thunk;
 //} pe_import_descriptor;
 
-
 typedef struct {
   uint32 signature;
   pe_file_header file_header;
@@ -310,7 +308,6 @@ typedef struct {
 } pe_nt_headers32;
 
 */
-
 
 typedef struct {
   char*              module_name;         /* 0x00 (PSTR) */
@@ -348,7 +345,6 @@ typedef struct {
 #define PE_FILE_MACHINE_R4000      0x166
 #define PE_FILE_MACHINE_SH3        0x1a2
 #define PE_FILE_MACHINE_SH3E       0x01a4
-
 
 #define PE_DIRECTORY_ENTRY_DELAY_IMPORT 13
 #define PE_DIRECTORY_ENTRY_EXPORT 0

@@ -101,10 +101,7 @@ parse_xml(const char* filename) {
   xmlnode* doc = NULL;
   xmlnode* root_element = NULL;
 
-
-
   /*parse the file and get the DOM */
-
 
   buffer input;
   buffer_mmapprivate(&input, filename);

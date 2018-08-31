@@ -109,6 +109,5 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_1);
   }
 
-
   return 0;
 }

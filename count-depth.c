@@ -56,9 +56,9 @@ int main(int argc, char* argv[]) {
   int argi = 1;
 
   while(argi < argc) {
-    /*		if(!str_diff(argv[argi], "-l") || !str_diff(argv[argi], "--list")) {
-    			opt_list = 1;
-    		} else*/ {
+    /*  	if(!str_diff(argv[argi], "-l") || !str_diff(argv[argi], "--list")) {
+      		opt_list = 1;
+      	} else*/ {
       break;
     }
     argi++;

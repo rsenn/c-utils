@@ -67,7 +67,7 @@ int64 io_trywrite(fd_t d, const char* buf, int64 len) {
   if(!e) { errno = EBADF; return -3; }
   if(!e->nonblock) {
     p.fd = d;
-    if(p.fd != d) { errno = EBADF; return -3; }	/* catch overflow */
+    if(p.fd != d) { errno = EBADF; return -3; }  /* catch overflow */
     p.events = POLLOUT;
     switch(poll(&p, 1, 0)) {
     case -1: return -3;

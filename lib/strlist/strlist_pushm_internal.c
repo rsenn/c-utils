@@ -16,4 +16,3 @@ int strlist_pushm_internal(strlist* sl, ...) {
   return strlist_push_sa(sl, &sa);
 }
 
-

@@ -8,7 +8,6 @@ typedef struct cbmap_allocator {
   cbmap_deallocator_fn free;
 } * cbmap_allocator_t;
 
-
 struct cbmap {
   void* root;
   size_t count;

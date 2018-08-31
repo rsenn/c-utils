@@ -10,7 +10,7 @@ void io_waituntil(tai6464 t) {
   else {
     taia_sub(&diff, &t, &now);
     if(!umult64(diff.sec.x, 1000, &x) || (y = x + diff.nano / 1000000) < x)
-      y = -1;	/* overflow; wait indefinitely */
+      y = -1;  /* overflow; wait indefinitely */
     if(!y && diff.nano) y = 1;
   }
   io_waituntil2(y);

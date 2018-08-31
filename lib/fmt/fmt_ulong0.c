@@ -18,6 +18,6 @@ fmt_ulong0(char* dest, unsigned long i, size_t pad) {
     fmt_ulong(dest, i);
     return len;
   }
- 
+
   return len < pad ? pad : len;
 }

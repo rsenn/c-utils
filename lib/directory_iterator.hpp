@@ -13,9 +13,9 @@ public:
   typedef struct dir_s handle_type;
   typedef char *retcode_type;
 
-	static const size_t buffer_size = 4096;
+  static const size_t buffer_size = 4096;
 
-	directory_iterator() : m_retcode(0) {}
+  directory_iterator() : m_retcode(0) {}
   directory_iterator(const string& path, const string& filter = "*");
   ~directory_iterator();
 
@@ -24,9 +24,9 @@ public:
 
   directory_iterator
   operator++(int) {
-  	directory_iterator temp = *this;
-  	++*this;
-  	return temp;
+    directory_iterator temp = *this;
+    ++*this;
+    return temp;
   }
 
   bool
@@ -34,12 +34,12 @@ public:
 
   bool
   operator!=(const directory_iterator& other) const {
-  	return !(*this == other);
+    return !(*this == other);
   }
 
   const string&
   operator*() const {
-  	return m_buffer;
+    return m_buffer;
   }
 
   handle_type
@@ -59,15 +59,15 @@ private:
   int
   requested_buffer_length();
 
-	bool
-	is_allocated() const;
+  bool
+  is_allocated() const;
 
   void
   allocate(const size_t size = buffer_size);
 
-	handle_type m_handle;
-	string m_buffer;
-	char *m_retcode;
+  handle_type m_handle;
+  string m_buffer;
+  char *m_retcode;
 };
 
 //} // end of namespace util

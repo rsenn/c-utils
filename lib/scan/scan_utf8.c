@@ -4,16 +4,16 @@ size_t scan_utf8(const char* in, size_t len, unsigned int* num) {
   unsigned int i, k, m;
   const char* orig = in;
   if(len == 0) return 0;
-  i = (*(unsigned char*)in++);	/* grab first byte */
-  if(i >= 0xfe ||		/* 0xfe and 0xff are invalid encodings in utf-8 for the first byte */
-      (i & 0xc0) == 0x80) return 0;	/* first bits being 10 marks continuation chars, invalid sequence for first byte */
-  for(k = 0; i & 0x80; i <<= 1, ++k);	/* count leading 1 bits */
+  i = (*(unsigned char*)in++);  /* grab first byte */
+  if(i >= 0xfe ||  	/* 0xfe and 0xff are invalid encodings in utf-8 for the first byte */
+      (i & 0xc0) == 0x80) return 0;  /* first bits being 10 marks continuation chars, invalid sequence for first byte */
+  for(k = 0; i & 0x80; i <<= 1, ++k);  /* count leading 1 bits */
   if(!k) {
     if(num) *num = i;
     return 1;
   }
   if(k > len) return 0;
-  i = (i & 0xff) >> k;		/* mask the leading 1 bits */
+  i = (i & 0xff) >> k;  	/* mask the leading 1 bits */
   /* The next part is a little tricky.
    * UTF-8 says that the encoder has to choose the most efficient
    * encoding, and the decoder has to reject other encodings.  The
@@ -45,7 +45,7 @@ size_t scan_utf8(const char* in, size_t len, unsigned int* num) {
     i = (i << 6) | ((*in++) & 0x3f);
     --k;
   }
-  if(i < m) return 0;	/* if the encoded value was less than m, reject */
+  if(i < m) return 0;  /* if the encoded value was less than m, reject */
   if(num) *num = i;
   return (size_t)(in - orig);
 }
