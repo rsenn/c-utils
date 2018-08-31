@@ -2,7 +2,7 @@
 #ifndef OPEN_H
 #define OPEN_H
 
-#include "windoze.h"
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,6 +40,7 @@ int open_rwsync(const char *filename);
 #ifdef STRALLOC_H
 int openreadclose(const char* fn, stralloc* sa, size_t bufsize);
 
+#include "windoze.h"
 ssize_t readclose_append(int fd, stralloc* sa, size_t bufsize);
 ssize_t readclose(int fd, stralloc* sa, size_t bufsize);
 #endif

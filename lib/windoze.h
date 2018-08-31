@@ -1,7 +1,7 @@
 #ifndef WINDOZE_H
 #define WINDOZE_H 1
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64) || defined(__MSYS__)
 # include <io.h>
 # include <windows.h>
 # ifdef __cplusplus
