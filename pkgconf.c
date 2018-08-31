@@ -1,7 +1,20 @@
 #include "lib/buffer.h"
 #include "lib/getopt.h"
+#include <stdbool.h>
 
-static int version = 0, cflags = 0, libs = 0;
+static struct {
+ bool version;
+ bool cflags;
+ bool libs;
+ const char* path;
+} cmd;
+
+void
+pkg_conf(const char* module) {
+
+
+
+}
 
 int
 main(int argc, char* argv[]) {
@@ -21,16 +34,26 @@ main(int argc, char* argv[]) {
 
     switch(c) {
       case 'v':
-        version = 1;
+        cmd.version = TRUE;
         break;
       case 'i':
-        cflags = 1;
+        cmd.cflags = TRUE;
         break;
       case 'l':
-        libs = 1;
+        cmd.libs = TRUE;
         break;
       default:
         break;
     }
   }
+
+  cmd.path = getenv("PKG_CONFIG_PATH");
+
+  if(cmd.path == NULL || str_equal(cmd.path, "")) {
+      cmd.path = "/usr/lib/pkgconfig:/usr/share/pkgconfig";
+  }
+
+  while(optind < argc )
+      pkg_conf(argv[optind]++);
+
 }

@@ -15,5 +15,5 @@ PKGCONFIG += zlib
 DEFINES += HAVE_ZLIB=1
 
 
-SOURCES = pkgconf.c
+SOURCES = lib/socket/init.c pkgconf.c
 HEADERS = 
