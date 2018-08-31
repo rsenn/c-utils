@@ -338,8 +338,7 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-access compiler-wrapper count-depth decode-ls-lR eagle-init-brd hexedit httptest impgen list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool plsconv rdir-test reg2cmd regfilter torrent-progress xmltest xmltest2 xmltest3 xmltest4
-eagle-gen-cmds eagle-to-circuit buffertest jsontest ccat ziptest pkgconf
+  access buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname eagle-gen-cmds eagle-init-brd eagle-to-circuit hexedit httptest impgen jsontest list-r main mediathek-list mediathek-parser ntldd opensearch-dump pathtool pkgconf plsconv rdir-test reg2cmd regfilter torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest
 )
 
 if(NOT MSVC)
@@ -395,7 +394,7 @@ endforeach()
 
 
 #
-set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir fmt hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 xml)
+set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir dns errmsg fmt gpio hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
