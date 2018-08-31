@@ -98,6 +98,12 @@ DEFS += LIBC_HAS_IP6=1
 endif
 $(info LIBC_HAS_IP6=$(LIBC_HAS_IP6))
 
+HAVE_ALLOCA := $(call check-function-exists,alloca,,alloca.h)
+ifeq ($(HAVE_ALLOCA),1)
+DEFS += HAVE_ALLOCA=1
+endif
+$(info HAVE_ALLOCA=$(HAVE_ALLOCA))
+
 
 
 #$(call def-include-exists,errno.h,HAVE_ERRNO_H)

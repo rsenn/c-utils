@@ -51,7 +51,7 @@ endef
 
 define cmds-function-exists =
 set -e;  \
-(echo "extern int $(1)();"; \
+(echo "$(if $(3),#include <$(3)>,extern int $(1)();)"; \
 echo "int main() {"; \
 echo "  $(1)();"; \
 echo "  return 0;"; \
