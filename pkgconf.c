@@ -22,18 +22,28 @@ pkg_list() {
   stralloc_init(&path);
 
   for(i = 0; i < n; ++i) {
-    const char *entry;
+    const char* entry;
     dir_t d;
 
     path = strlist_at_sa(&cmd.path, i);
-    stralloc_0(&path);
+    size_t len = path.len;
+    stralloc_nul(&path);
     dir_open(&d, path.s);
 
     while((entry = dir_read(&d))) {
+
       stralloc_catm(&path, "/", entry);
 
-      buffer_putsa(buffer_1, &path);
-      buffer_putnlflush(buffer_1);
+      if(stralloc_endb(&path, ".pc", 3)) {
+
+        path.len -= 3;
+        stralloc_nul(&path);
+
+        buffer_puts(buffer_1, path_basename(path.s));
+        buffer_putnlflush(buffer_1);
+      }
+
+      path.len = len;
     }
   }
 }
