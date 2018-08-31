@@ -1,4 +1,3 @@
-#include "../sh.h"
 #include "../vartab.h"
 #include <stdlib.h>
 

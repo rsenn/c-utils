@@ -394,7 +394,7 @@ endforeach()
 
 
 #
-set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir dns errmsg fmt gpio hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
+set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir dns errmsg fmt gpio hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 vartab xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -414,6 +414,9 @@ foreach(ARCHIVE ${LIBSUBDIRS})
   endif()
   if(ARCHIVE STREQUAL dir)
     list(APPEND MODSOURCES lib/fnmatch.c)
+  endif()
+  if(ARCHIVE STREQUAL io)
+    list(APPEND MODSOURCES lib/iopause.c)
   endif()
   add_library("${ARCHIVE}" ${MODSOURCES} ${MODHEADERS})
   set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
@@ -466,6 +469,7 @@ target_link_libraries(eagle-gen-cmds strarray cbmap xml hmap charbuf textbuf ${C
 target_link_libraries(eagle-to-circuit cbmap xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(opensearch-dump xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(plsconv playlist xml hmap buffer byte fmt scan str stralloc)
+target_link_libraries(xmlpp cbmap strarray xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(xmltest cbmap strarray xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(xmltest2 cbmap strarray xml hmap charbuf textbuf ${COMMON_LIBS})
 target_link_libraries(xmltest3 cbmap strarray xml hmap charbuf textbuf ${COMMON_LIBS})
@@ -476,6 +480,8 @@ target_link_libraries(mediathek-parser mmap open)
 target_link_libraries(ntldd open)
 target_link_libraries(hexedit open)
 target_link_libraries(impgen open uint32)
+target_link_libraries(dnsip dns byte case fmt io open socket ndelay errmsg str stralloc taia uint16 ${COMMON_LIBS})
+target_link_libraries(dnsname dns byte case fmt io open socket ndelay errmsg str stralloc taia uint16 ${COMMON_LIBS})
 
 
 #target_link_libraries(eagle-init-brd)

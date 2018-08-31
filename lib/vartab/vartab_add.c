@@ -1,4 +1,3 @@
-#include "../debug.h"
 #include "../fd.h"
 #include "../var.h"
 #include "../vartab.h"
