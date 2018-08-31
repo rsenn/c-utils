@@ -39,7 +39,6 @@ vartab_add(struct vartab* vartab, struct var* var, struct search* context) {
     context->global = 1;
 
     /*  context->pos = &varlist;*/
-    /* */
     /* then we search forward again until the next entry is bigger */
     if(var_hsearch(context) == 0LL) {
 #ifdef DEBUG

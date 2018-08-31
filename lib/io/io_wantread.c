@@ -72,7 +72,6 @@ void io_wantread_really(fd_t d, io_entry* e) {
       p.events = POLLIN;
       switch(poll(&p, 1, 0)) {
       case 1: e->canread = 1; break;
-/*  */
       case -1: return;
       }
     }

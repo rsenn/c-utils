@@ -14,9 +14,7 @@ static ssize_t
 buffer_inflate_read(fd_t fd, void* data, size_t n, buffer* b) {
   inflate_ctx* ctx = b->cookie;
   z_stream* z = &ctx->z;
-  /*    */
 
-  /*    */
   z->avail_in = ctx->other->n - ctx->other->p;
   z->next_in = (void*)&ctx->other->x[ctx->other->p];
   z->next_out = data;

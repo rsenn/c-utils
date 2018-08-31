@@ -31,7 +31,6 @@ cbmap_mem_memalign(void** p, size_t alignment, size_t size) {
 #elif defined(HAVE__ALIGNED_MALLOC)
   a = !(*p = _aligned_malloc(size, alignment));
 //#elif defined(_WIN32) || defined(_WIN64)
-/*  */
 #elif HAVE_POSIX_MEMALIGN
   a = posix_memalign(p, alignment, size);
 #else
@@ -134,7 +133,6 @@ cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const cha
 #elif defined(HAVE__ALIGNED_MALLOC)
   result = !(*memptr = _aligned_malloc(size, alignment));
 //#elif defined(_WIN32) || defined(_WIN64)
-/*  */
 #elif HAVE_POSIX_MEMALIGN
   result = posix_memalign(memptr, alignment, size);
 #else

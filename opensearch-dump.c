@@ -54,12 +54,10 @@ print_element_names(xmlnode* a_node) {
           buffer_puts(buffer_2, elm->name);
           buffer_puts(buffer_2, ", value: ");
       */
-      /*        */
       if(!str_diff((const char*)elm->name, "Url")) {
         print_attr_names(elm);
         xmlnode* child_node = NULL;
         for(child_node = elm->children; child_node; child_node = child_node->next) {
-          /*            */
           {
             print_attr_names((xmlnode*)child_node);
           }
@@ -68,7 +66,6 @@ print_element_names(xmlnode* a_node) {
       /*        if(!str_diff(elm->name, "Url") || !str_diff(elm->name, "Param")) {
                 print_attr_names(elm);
               }*/
-      /*        */
     }
   }
   stralloc newurl;

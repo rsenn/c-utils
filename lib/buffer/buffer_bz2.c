@@ -23,7 +23,6 @@ buffer_bzread_op(fd_t fd, void* data, size_t n, buffer* b) {
   int eof = 0;
 
   if((r = buffer_prefetch(ctx->b, BZ_BLOCK_SIZE)) > 0) {
-    /*      */
   } else {
     return r;
   }

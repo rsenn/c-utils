@@ -416,7 +416,6 @@ parse_entry(strlist* sl) {
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6)); /* duration */
 
-  /*  */
 
   if((unsigned)dr < min_length) return NULL;
 
@@ -463,7 +462,6 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
    buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);
    buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep);*/
 
-  /*  */
 
   buffer_putnlflush(b);
 }
@@ -526,7 +524,6 @@ parse_mediathek_list(int fd) {
     strlist_init(&sl);
     split_fields(&sl, &prev, buf2, ret);
 
-    /*  */
     if((e = parse_entry(&sl))) {
       total++;
       if(debug > 2) print_entry(buffer_2, e);
@@ -599,7 +596,6 @@ main(int argc, char* argv[]) {
     strlist_push(&include, argv[optind++]);
   }
 
-  /*  */
 
   /* if(strlist_count(&include) == 0)
      strlist_push(&include, "");*/
@@ -619,7 +615,6 @@ main(int argc, char* argv[]) {
   fprintf(stderr, "%p\n", str_istr("[", "blah"));
   fflush(stderr);
 
-  /*  */
 
   /*   if(optind >= argc) {
          fprintf(stderr,

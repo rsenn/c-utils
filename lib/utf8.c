@@ -1,31 +1,13 @@
 //=---------------------------------------------------------------------=
 //
-/*  */
 //
-/*  */
-/*  */
-/*  */
-/*  */
-/*  */
 //
-/*  */
-/*  */
-/*  */
-/*  */
 //
-/*  */
-/*  */
 //
-/*  */
-/*  */
-/*  */
 //
 //=--
 #include "utf8.h"
 
-/*  */
-/*  */
-/*  */
 int
 wctou8(char* m, wchar_t w) {
   /* Unicode Table 3-5. UTF-8 Bit Distribution
@@ -62,8 +44,6 @@ wctou8(char* m, wchar_t w) {
     return -1;
 }
 
-/*  */
-/*  */
 int
 wcu8len(const wchar_t w) {
   if(!(w & ~0x7f)) return 1;
@@ -73,8 +53,6 @@ wcu8len(const wchar_t w) {
   return -1; /* error */
 }
 
-/*  */
-/*  */
 int
 wcsu8slen(const wchar_t* pw) {
   int len = 0;
@@ -95,8 +73,6 @@ wcsu8slen(const wchar_t* pw) {
   return len;
 }
 
-/*  */
-/*  */
 size_t
 wcstou8s(char* pu, const wchar_t* pw, size_t count) {
   int len = wcsu8slen(pw);
@@ -115,7 +91,6 @@ wcstou8s(char* pu, const wchar_t* pw, size_t count) {
       } else
         break;
     } else {
-      /*        */
       if((clen + 6) <= count) {
         *pu++ = '&';
         *pu++ = '#';
@@ -131,9 +106,6 @@ wcstou8s(char* pu, const wchar_t* pw, size_t count) {
   return (size_t)clen;
 }
 
-/*  */
-/*  */
-/*  */
 int
 u8len(const char* u, size_t count) {
   if(0 == count) return 0;
@@ -154,8 +126,6 @@ u8len(const char* u, size_t count) {
     return -1;
 }
 
-/*  */
-/*  */
 int
 u8towc(wchar_t* w, const char* u, size_t count) {
   /* assert */ if(NULL == w)
@@ -193,8 +163,6 @@ u8towc(wchar_t* w, const char* u, size_t count) {
     return -1;
 }
 
-/*  */
-/*  */
 int
 u8swcslen(const char* pu) {
   int len = 0;
@@ -221,8 +189,6 @@ u8swcslen(const char* pu) {
   return len;
 }
 
-/*  */
-/*  */
 size_t
 u8stowcs(wchar_t* pw, const char* pu, size_t count) {
   size_t clen = 0;

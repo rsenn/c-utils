@@ -9,8 +9,6 @@
  * Note: *dest will point inside the input buffer!
  */
 size_t scan_netstring(const char* in, size_t len, char** dest, size_t* slen) {
-  /*    */
-  /*    */
   unsigned long l;
   size_t n = scan_ulongn(in, len, &l);
   if(!n ||  /* did not start with a number */

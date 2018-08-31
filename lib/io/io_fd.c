@@ -140,9 +140,7 @@ static io_entry* io_fd_internal(fd_t d, int flags) {
     io_comport = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
     if(io_comport) {
       io_waitmode = COMPLETIONPORT;
-/*  */
     } else {
-/*  */
       errno = EINVAL;
       return 0;
     }
@@ -160,13 +158,10 @@ static io_entry* io_fd_internal(fd_t d, int flags) {
 #endif
 #if defined(_WIN32) || defined(_WIN64)
   if(io_comport) {
-/*  */
     if(CreateIoCompletionPort((HANDLE)(uintptr_t)d, io_comport, (ULONG_PTR)(uintptr_t)d, 0) == 0) {
-/*  */
       errno = EBADF;
       return 0;
     }
-/*  */
   }
 #endif
   return e;

@@ -21,17 +21,13 @@ int64 io_trywrite(fd_t d, const char* buf, int64 len) {
   if(!e) { errno = EBADF; return -3; }
   if(!e->nonblock) {
     DWORD written;
-/*  */
     if(WriteFile((HANDLE)(uintptr_t)d, buf, len, &written, 0)) {
-/*  */
       return written;
     } else {
-/*  */
       return winsock2errno(-3);
     }
   } else {
     if(e->writequeued && !e->canwrite) {
-/*  */
       errno = EAGAIN;
       return -1;
     }
@@ -39,25 +35,19 @@ int64 io_trywrite(fd_t d, const char* buf, int64 len) {
       e->canwrite = 0;
       e->next_write = -1;
       if(e->errorcode) {
-/*  */
         errno = winsock2errno(e->errorcode);
         return -3;
       }
-/*  */
       return e->bytes_written;
     } else {
-/*  */
       if(WriteFile((HANDLE)(uintptr_t)d, buf, len, &e->errorcode, &e->ow)) {
-/*  */
         return e->errorcode; /* should not happen */
       } else if(GetLastError() == ERROR_IO_PENDING) {
-/*  */
         e->writequeued = 1;
         errno = EAGAIN;
         e->errorcode = 0;
         return -1;
       } else {
-/*  */
         winsock2errno(-1);
         e->errorcode = errno;
         return -3;

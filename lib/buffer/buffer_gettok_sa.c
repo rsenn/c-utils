@@ -7,7 +7,6 @@ int
 buffer_gettok_sa(buffer* b, stralloc* sa, const char* charset, size_t setlen) {
   size_t i;
 
-  /*  */
 
   for(i = 0;; ++i) {
     char c;

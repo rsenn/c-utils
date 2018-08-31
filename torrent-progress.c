@@ -243,8 +243,6 @@ next:
       if(remain >= map_size)
         remain -= map_size;
     }
-    /*      */
-    /*      */
     nonzero_blocks = all_blocks - zero_blocks;
     percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
 

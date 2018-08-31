@@ -70,7 +70,6 @@ main(int argc, char* argv[]) {
     if(sym == '@') {
       scan_xlonglong(s, &addr);
     } else if(sym == '?') {
-     /*       */
     } else if(sym == '=') {
       //s_set = (scan_xlonglong(s, &val_set) + 1) / 2;
     } else {
@@ -87,11 +86,6 @@ main(int argc, char* argv[]) {
   patch(p, 0x3A074, 0x00, 0x01); /* Initial License Check */
   patch(p, 0x792FB, 0x57, 0xC3); /* Software Update Prompt */
 
-  /*    */
-  /*    */
-  /*    */
-  /*    */
-  /*    */
 
   mmap_unmap(p, n);
 }

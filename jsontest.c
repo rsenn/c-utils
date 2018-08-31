@@ -42,10 +42,7 @@ main(int argc, char* argv[1]) {
   json_print(doc, buffer_1);
 
   charbuf_close(&infile);
-  /*    */
 
-  /*    */
-  /*    */
 
   json_free(doc);
 

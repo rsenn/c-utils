@@ -84,7 +84,6 @@ buffer_deflate(buffer* b, buffer* out, int level) {
   b->deinit = &buffer_deflate_close;
 
   int ret = deflateInit2(&ctx->z, level, Z_DEFLATED, 15 + 16, 8, Z_DEFAULT_STRATEGY);
-  /*    */
   //
   byte_zero(&ctx->hdr, sizeof(gz_header));
   ctx->hdr.text = 0;

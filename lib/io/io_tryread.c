@@ -38,19 +38,15 @@ int64 io_tryread(fd_t d, char* buf, int64 len) {
           if(len > x) {
               /* queue next read */
               if(len > sizeof(e->inbuf)) len = sizeof(e->inbuf);
-              /*                */
               if(ReadFile((HANDLE)(uintptr_t)d, e->inbuf, len, 0, &e-> or)) {
-                  /*                    */
                   e->canread = 1;
                   e->readqueued = 2;
                   e->next_write = first_writeable;
                   first_writeable = d;
                 } else if((e->errorcode = GetLastError()) == ERROR_IO_PENDING) {
-                  /*                    */
                   e->readqueued = 1;
                   e->errorcode = 0;
                 } else {
-                  /*                    */
                   e->canread = 1;
                   e->readqueued = 2;
                   e->next_write = first_writeable;
@@ -61,13 +57,10 @@ int64 io_tryread(fd_t d, char* buf, int64 len) {
       return x;
     }
   if(!e->readqueued) {
-      /*        */
       if(len > sizeof(e->inbuf)) len = sizeof(e->inbuf);
       if(ReadFile((HANDLE)(uintptr_t)d, e->inbuf, len, 0, &e-> or)) {
           e->readqueued = 1;
-          /*            */
         } else {
-          /*            */
         }
     }
   errno = EAGAIN;

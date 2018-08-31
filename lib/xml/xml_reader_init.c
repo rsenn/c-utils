@@ -6,5 +6,4 @@ xml_reader_init(xmlreader* r, buffer* b) {
   r->doc = xml_newnode(XML_DOCUMENT);
   r->ptr = &r->doc->children;
   r->b = b;
-  /*  */
 }

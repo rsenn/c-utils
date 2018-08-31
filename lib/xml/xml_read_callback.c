@@ -60,7 +60,6 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     if((n = buffer_gettok_sa(b, &tag, " \t\r\v/>", 6)) < 0) return;
     stralloc_nul(&tag);
     buffer_skipspace(b);
-    /*  */
 
     while(isalpha(*(s = buffer_peek(b)))) {
       char ch;
@@ -79,7 +78,6 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       if(quoted && buffer_skipc(b) < 0) return;
       stralloc_nul(&attr);
       stralloc_nul(&val);
-      /*    */
       hmap_set(&r->attrmap, attr.s, attr.len, val.s, val.len + 1);
       if(!fn(r, XML_ATTRIBUTE, &attr, &val, NULL)) return;
       buffer_skipspace(b);

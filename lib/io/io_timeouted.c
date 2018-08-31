@@ -9,7 +9,6 @@ int64 io_timeouted() {
   ++ptr;
   if(ptr > alen) ptr = 0;
   e = iarray_get(io_getfds(), ptr);
-/*  */
   for(; ptr <= alen; ++ptr, e = iarray_get(io_getfds(), ptr)) {
     if(e && e->inuse && e->timeout.sec.x && taia_less(&e->timeout, &now)) {
       /* we have a timeout */

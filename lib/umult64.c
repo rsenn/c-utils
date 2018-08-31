@@ -42,11 +42,7 @@ umult64(uint64 a, uint64 b, uint64* c) {
   uint32 bhi = b >> 32;
   uint32 blo = (b & 0xffffffff);
 
-  /*    */
-  /*    */
-  /*    */
 
-  /*    */
   if(ahi && bhi) return 0;
 
   a = (uint64)(ahi)*blo + (uint64)(alo)*bhi;

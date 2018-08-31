@@ -9,8 +9,6 @@ void
 buffer_dump(buffer* out, buffer* b) {
   char xlong[FMT_LONG + FMT_LONG + FMT_LONG];
   unsigned long n;
-  /*    */
-  /*    */
 
 #define RED "\033[1;31m"
 #define GREEN "\033[1;32m"
@@ -42,7 +40,6 @@ buffer_dump(buffer* out, buffer* b) {
     buffer_puts(out, "*sa");
   } else {
     n = fmt_long(xlong, b->fd);
-    /*     */
     buffer_put(out, xlong, n);
   }
   buffer_puts(out, ", op=");

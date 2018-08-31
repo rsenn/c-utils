@@ -73,7 +73,6 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
   char tokbuf[65536];
 
   array_trunc(x);
-  /*    */
 
   if((n = byte_chr(p, end - p, '\n')) != (unsigned)(end - p)) end = p + n;
 
@@ -95,9 +94,7 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
         char** a = array_allocate(x, sizeof(char*), pos++);
         tokbuf[i] = '\0';
         *a++ = str_dup(tokbuf);
-        /*          */
 
-        /*          */
         i = 0;
         continue;
         /*while(++p < end && *p != '"')
@@ -109,7 +106,6 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
     tokbuf[i++] = *p;
   }
 
-  /*    */
   return p - s;
 }
 
@@ -290,8 +286,6 @@ process_entry(const array* a) {
   while(ac > 0) {
     --ac;
     if(av[ac]) free(av[ac]);
-    /*      */
-    /*      */
   }
 }
 

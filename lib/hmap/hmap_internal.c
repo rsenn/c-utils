@@ -50,23 +50,9 @@
 
 //inline int
 //hmap_cmp(void* v1, int v1_len, void* v2, int v2_len) {
-/*  */
-/*  */
-/*  */
-/*  */
 //}
 
 //inline int
 //hash(void* key, unsigned int len) {
-/*  */
 
-/*  */
-/*  */
-/*  */
-/*  */
-/*  */
-/*  */
-/*  */
-/*  */
-/*  */
 //}

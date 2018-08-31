@@ -29,8 +29,6 @@ mmap_map(fd_t fd, size_t sz, uint64 offset) {
   map = 0;
   if(m) {
     map = MapViewOfFile(m, FILE_MAP_COPY, (offset >> 32), offset & 0xffffffff, sz);
-    /*  */
-    /*  */
 
     CloseHandle(m);
   }

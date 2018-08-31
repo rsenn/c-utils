@@ -6,5 +6,4 @@ json_reader_init(jsonreader* r, charbuf* b) {
   r->doc = json_newnode(JSON_NONE);
   r->b = b;
   r->loc = &r->doc;
-  /*    */
 }

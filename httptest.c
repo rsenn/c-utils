@@ -83,25 +83,11 @@ int main(int argc, char* argv[]) {
   buffer_putsa(buffer_1, &h.response->data);
   buffer_putnlflush(buffer_1);
 
-  /*    */
-/*  */
 
-/*  */
 
-/*  */
-/*  */
-/*  */
-/*  */
-/*  */
-/*  */
 //
-/*  */
 
-/*  */
-/*  */
 
-/*  */
-/*  */
 
   return 0;
 }

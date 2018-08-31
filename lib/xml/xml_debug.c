@@ -19,7 +19,6 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
       stralloc_subst(&text, node->name, str_len(node->name), "\n", space.s);
       // xml_escape(node->name, str_len(node->name), &text);
       buffer_puts(b, "text \"");
-      /*  */
       buffer_putsa(b, &text);
       buffer_puts(b, "\"\n");
       stralloc_free(&text);

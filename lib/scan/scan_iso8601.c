@@ -61,7 +61,6 @@ scan_iso8601(const char* in, struct timespec* t) {
 
   x.tm_wday = x.tm_yday = x.tm_isdst = 0;
 
-/*  */
 #if defined(__dietlibc__) || defined(__GLIBC__)
   t->tv_sec = timegm(&x);
 #elif defined(__MINGW32__)

@@ -258,7 +258,6 @@ int64 io_waituntil2(int64 milliseconds) {
         }
 #ifdef DEBUG
       } else {
-/*  */
 #endif
       }
     }
@@ -298,7 +297,6 @@ int64 io_waituntil2(int64 milliseconds) {
         }
 #ifdef DEBUG
       } else {
-/*  */
 #endif
       }
     }
@@ -347,7 +345,6 @@ int64 io_waituntil2(int64 milliseconds) {
           }
 #ifdef DEBUG
         } else {
-/*  */
 #endif
         }
       }
@@ -361,24 +358,18 @@ dopoll:
   ULONG_PTR x;
   LPOVERLAPPED o;
   if(first_readable != -1 || first_writeable != -1) {
-/*  */
     return 1;
   }
-/*  */
   if(GetQueuedCompletionStatus(io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
     io_entry* e = iarray_get(io_getfds(), x);
-/*  */
     if(!e) return 0;
     e->errorcode = 0;
-/*  */
-/*  */
     if(o == &e-> or && e->readqueued == 1) {
       e->readqueued = 2;
       e->canread = 1;
       e->bytes_read = numberofbytes;
       e->next_read = first_readable;
       first_readable = x;
-/*  */
     } else if(o == &e->ow && e->writequeued == 1) {
       e->writequeued = 2;
       e->canwrite = 1;
@@ -407,7 +398,6 @@ dopoll:
     /* either the overlapped I/O request failed or we timed out */
     DWORD err;
     io_entry* e;
-/*  */
     if(!o) return 0;	/* timeout */
     /* we got a completion packet for a failed I/O operation */
     err = GetLastError();
