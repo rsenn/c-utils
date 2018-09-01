@@ -21,12 +21,11 @@ reduce(stralloc* sa) {
   for(i = 0; i < sa->len; ++i) {
     if(sa->s[i] == '-' && isdigit(sa->s[i + 1])) {
 
-     size_t k = i + 1; 
+      size_t k = i + 1;
 
-       while(isdigit(sa->s[k])) ++k;
+      while(isdigit(sa->s[k])) ++k;
 
-       if(!str_diffn(&sa->s[k], ".so", 3))
-           break;
+      if(!str_diffn(&sa->s[k], ".so", 3)) break;
 
       byte_copy(&sa->s[i], sa->len - j, &sa->s[j]);
       sa->len -= j - i;

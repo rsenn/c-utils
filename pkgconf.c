@@ -1,17 +1,17 @@
+#include "lib/algorithm.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/cbmap.h"
 #include "lib/dir.h"
 #include "lib/errmsg.h"
 #include "lib/getopt.h"
+#include "lib/iterator.h"
 #include "lib/path.h"
 #include "lib/slist.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
-#include "lib/iterator.h"
-#include "lib/algorithm.h"
 #include <ctype.h>
 #include <stdlib.h>
 #include <wordexp.h>
@@ -280,7 +280,7 @@ pkg_list() {
   slist_init(&pkgs);
 
   stralloc_init(&path);
-        stralloc_init(&line);
+  stralloc_init(&line);
 
   for(i = 0; i < n; ++i) {
     const char* entry;
@@ -323,11 +323,10 @@ pkg_list() {
 
           buffer_putsa(buffer_1, &line);
           buffer_putnlflush(buffer_1);
-          
+
           slist_pushs(&pkgs, line.s);
           line.s = NULL;
           line.a = 0;
-
         }
 
         pkg_free(&pf);
@@ -337,11 +336,7 @@ pkg_list() {
     }
   }
 
-  slist_foreach(&pkgs, it) {
-
-
-
-  }
+  slist_foreach(&pkgs, it) {}
 }
 
 /**
@@ -447,9 +442,7 @@ main(int argc, char* argv[]) {
     if(c == -1) break;
 
     switch(c) {
-      case 'h':
-        usage(argv[0]);
-        return 0;
+      case 'h': usage(argv[0]); return 0;
       case PRINT_VERSION:
       case PRINT_CFLAGS:
       case PRINT_LIBS:
@@ -459,9 +452,7 @@ main(int argc, char* argv[]) {
       case 'l':
         if(!cmd.code) cmd.code = LIST_ALL;
         break;
-      default:
-        usage(argv[0]);
-        return 1;
+      default: usage(argv[0]); return 1;
     }
   }
 
