@@ -30,11 +30,45 @@ reduce(stralloc* sa) {
 }
 
 int
+mklink(char* target, char* link) {
+  struct stat st;
+
+  if(stat(target, &st) == -1) {
+    carpsys("stat failed");
+    return -1;
+  }
+
+  if(lstat(link, &st) != -1) unlink(link);
+
+  return symlink(path_basename(target), link);
+}
+
+int
+mklink_sa(stralloc* target, stralloc* link) {
+  size_t i;
+
+  stralloc_nul(target);
+  stralloc_nul(link);
+
+  if(stralloc_rchr(target, '/') == target->len && (i = stralloc_rchr(link, '/')) != link->len) {
+    size_t len = i + 1;
+    stralloc_insertb(target, link->s, 0, len);
+  }
+
+  buffer_putsa(buffer_2, link);
+  buffer_puts(buffer_2, " -> ");
+  buffer_putsa(buffer_2, target);
+  buffer_putnlflush(buffer_2);
+
+  stralloc_nul(target);
+  mklink(target->s, link->s);
+}
+
+int
 sln(const char* path) {
   stralloc s, d;
   char* to;
   ssize_t i;
-  struct stat st;
   stralloc_init(&s);
   stralloc_copys(&s, path);
 
@@ -53,22 +87,14 @@ sln(const char* path) {
     stralloc_nul(&s);
     stralloc_nul(&d);
 
-    if(stat(s.s, &st) != -1) {
-
-      if(lstat(d.s, &st) != -1) unlink(d.s);
-
-      symlink(path_basename(s.s), d.s);
-    } else {
-      errmsg_warnsys("stat failed");
-      return 1;
+    if(mklink_sa(&s, &d) == -1) {
+      diesys(2, "symlink failed", NULL);
     }
-
     stralloc_copy(&s, &d);
   }
 
   return 0;
 }
-
 int
 main(int argc, char* argv[]) {
   for(int i = 1; i < argc; ++i) {
@@ -94,10 +120,11 @@ main(int argc, char* argv[]) {
           if(ret == 0 || link.s[0] == '\0') break;
           stralloc_chomp(&link);
 
-          buffer_putsa(buffer_2, &link);
-          buffer_puts(buffer_2, " -> ");
-          buffer_putsa(buffer_2, &target);
-          buffer_putnlflush(buffer_2);
+          mklink_sa(&target, &link);
+
+          if(!stralloc_endb(&link, ".so", 3)) {
+            if(sln(link.s)) return 1;
+          }
         }
 
         buffer_close(&in);

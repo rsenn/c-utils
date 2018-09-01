@@ -21,6 +21,10 @@ char* path_gethome(int uid);
 int   path_readlink(const char* path, stralloc* sa);
 int   path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
 
+#define path_isabs(p) ((p)[0] == '/') 
+#define path_isrel(p) ((p)[0] != '/') 
+#define path_isname(p) ((p)[str_chr((p), '/')] != '\0')
+
 #ifdef __cplusplus
 }
 #endif
