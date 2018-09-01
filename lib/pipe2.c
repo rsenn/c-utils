@@ -1,4 +1,4 @@
-#ifndef HAVE_PIPE2
+#if 1 //ndef HAVE_PIPE2
 
 #include "io_internal.h"
 #include <errno.h>
@@ -21,7 +21,14 @@ pipe2(int fd[2], int flags) {
   tmp[1] = fd[1];
 
   /* Check the supported flags.  */
-  if((flags & ~(O_CLOEXEC | O_BINARY | O_TEXT)) != 0) {
+  if((flags & ~(O_CLOEXEC 
+#ifdef O_BINARY
+          | O_BINARY 
+#endif
+#ifdef O_TEXT
+          | O_TEXT
+#endif
+          )) != 0) {
     errno = EINVAL;
     return -1;
   }
