@@ -9,7 +9,7 @@ buffer_mmapread(buffer* b, const char* filename) {
   b->p = 0;
   b->a = b->n;
   b->fd = -1;
-  b->op = buffer_dummyreadmmap;
+  b->op = (void*)&buffer_dummyreadmmap;
   b->deinit = buffer_munmap;
   return 0;
 }

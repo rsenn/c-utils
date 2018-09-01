@@ -3,6 +3,7 @@
 
 #include "uint64.h"
 #include "array.h"
+#include "byte.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,5 +1,5 @@
-#include "../open.h"
 #include "../stralloc.h"
+#include "../open.h"
 #include <errno.h>
 
 int

@@ -68,7 +68,7 @@ int
 wordexp_sa(const char* s, stralloc* sa) {
   wordexp_t wx;
   char** w;
-  int i;
+  size_t i;
 
   if(wordexp(s, &wx, WRDE_NOCMD | WRDE_UNDEF)) return 0;
 
@@ -220,6 +220,10 @@ pkg_set(pkg* p) {
 
 static int
 visit_unset(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+  (void)key_len;
+  (void)value;
+  (void)value_len;
+  (void)user_data;
   unsetenv(key);
   return 1;
 }

@@ -25,7 +25,7 @@ You can call buffer_init again at any time. Note that this discards the
 currently buffered string.
 .SH EXAMPLE
   #include <buffer.h>
-  #include <open.h>
+  #include "../open.h"
 
   char buf[4096];
   int fd=open_read("/etc/services");

@@ -12,6 +12,8 @@
 #include <time.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "lib/stralloc.h"
 #include "lib/buffer.h"

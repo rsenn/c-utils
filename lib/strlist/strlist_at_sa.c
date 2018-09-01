@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../strlist.h"
 
 stralloc

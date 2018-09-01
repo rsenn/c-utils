@@ -6,6 +6,7 @@
 #endif
 
 #include "../buffer.h"
+#include "../stralloc.h"
 #include "../open.h"
 
 int

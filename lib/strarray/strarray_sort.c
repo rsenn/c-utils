@@ -3,5 +3,5 @@
 
 void
 strarray_sort(strarray* arr, int (*compare)(char*,char*)) {
-  qsort(strarray_start(arr), strarray_size(arr), sizeof(char*), compare);
+  qsort(strarray_start(arr), strarray_size(arr), sizeof(char*), (void*)compare);
 }
