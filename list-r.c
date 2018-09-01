@@ -242,9 +242,7 @@ is_junction_point(const char* fn) {
       /* Tag values come from */
       /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx */
       switch(FindFileData.dwReserved0) {
-        case IO_REPARSE_TAG_MOUNT_POINT:
-          /* ocb.error_filename(fn, "Junction point, skipping"); */
-          break;
+        case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction point, skipping"); */ break;
         case IO_REPARSE_TAG_SYMLINK:
           /* TODO: Maybe have the option to follow symbolic links? */
           /* ocb.error_filename(fn, "Symbolic link, skipping"); */
@@ -343,30 +341,18 @@ mode_str(stralloc* out, int mode) {
   char mchars[10];
   switch(mode & S_IFMT) {
 #ifdef S_IFLNK
-    case S_IFLNK:
-      mchars[0] = 'l';
-      break;
+    case S_IFLNK: mchars[0] = 'l'; break;
 #endif
-    case S_IFDIR:
-      mchars[0] = 'd';
-      break;
-    case S_IFCHR:
-      mchars[0] = 'c';
-      break;
+    case S_IFDIR: mchars[0] = 'd'; break;
+    case S_IFCHR: mchars[0] = 'c'; break;
 #ifdef S_IFBLK
-    case S_IFBLK:
-      mchars[0] = 'b';
-      break;
+    case S_IFBLK: mchars[0] = 'b'; break;
 #endif
 #ifdef S_IFIFO
-    case S_IFIFO:
-      mchars[0] = 'i';
-      break;
+    case S_IFIFO: mchars[0] = 'i'; break;
 #endif
 #ifdef S_IFSOCK
-    case S_IFSOCK:
-      mchars[0] = 's';
-      break;
+    case S_IFSOCK: mchars[0] = 's'; break;
 #endif
     case S_IFREG:
     default:
