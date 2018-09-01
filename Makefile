@@ -1094,6 +1094,9 @@ ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
+ifeq ($(USE_DIET),1)
+$(BUILDDIR)pkgconf$(M64_)$(EXEEXT): LIBS += -lcompat -lpthread
+endif
 $(BUILDDIR)pkgconf$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)pkgconf$(M64_)$(EXEEXT): $(BUILDDIR)pkgconf.o $(call add-library, slist cbmap path dir buffer errmsg strarray strlist stralloc array mmap byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
@@ -1101,6 +1104,9 @@ ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
+ifneq ($(DIET),)
+$(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += -lcompat 
+endif
 $(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)sln$(M64_)$(EXEEXT): $(BUILDDIR)sln.o $(call add-library, slist cbmap path dir buffer errmsg strarray strlist stralloc array mmap byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
