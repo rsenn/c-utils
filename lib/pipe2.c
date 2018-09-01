@@ -82,7 +82,7 @@ pipe2(int fd[2], int flags) {
       goto fail;
   }
 
-#if O_BINARY
+#if 0 //O_BINARY
   if(flags & O_BINARY) {
     set_binary_mode(fd[1], O_BINARY);
     set_binary_mode(fd[0], O_BINARY);
