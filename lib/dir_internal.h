@@ -18,7 +18,7 @@
 #if USE_READDIR
 # include <dirent.h>
 #else
-# ifdef _WIN32
+# if defined(_WIN32) || defined(__MSYS__)
 #  include <windows.h>
 # endif
 # include <limits.h>

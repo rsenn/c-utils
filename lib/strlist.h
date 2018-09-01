@@ -4,6 +4,7 @@
 # include <sys/types.h>
 
 # include "stralloc.h"
+# include "byte.h"
 # include "uint64.h"
 # include "buffer.h"
 

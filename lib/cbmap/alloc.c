@@ -31,10 +31,12 @@ cbmap_mem_memalign(void** p, size_t alignment, size_t size) {
 #elif defined(HAVE__ALIGNED_MALLOC)
   a = !(*p = _aligned_malloc(size, alignment));
 //#elif defined(_WIN32) || defined(_WIN64)
-#elif HAVE_POSIX_MEMALIGN
-  a = posix_memalign(p, alignment, size);
+//#elif HAVE_POSIX_MEMALIGN
+//  a = posix_memalign(p, alignment, size);
 #else
-  a = !(*p = malloc(size));
+  a = !(*p = memalign_alloc(p, alignment, size));
+//#else
+//  a = !(*p = malloc(size));
 #endif
 
   if(!a) {
@@ -120,7 +122,7 @@ cbmap_mem_debug_free(const void* ptr, const char* file, int line) {
 #ifdef DEBUG
     printf("%p --- CBM_MEM_FREE   %-20s (%03d): Deallocating\n", ptr, file, line);
 #endif
-    free((void*)ptr);
+    memalign_free((void*)ptr);
   }
 }
 
@@ -133,10 +135,12 @@ cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const cha
 #elif defined(HAVE__ALIGNED_MALLOC)
   result = !(*memptr = _aligned_malloc(size, alignment));
 //#elif defined(_WIN32) || defined(_WIN64)
-#elif HAVE_POSIX_MEMALIGN
-  result = posix_memalign(memptr, alignment, size);
-#else
-  result = !(*memptr = malloc(size));
+//#elif HAVE_POSIX_MEMALIGN
+//  result = posix_memalign(memptr, alignment, size);
+#else 
+  result = !(*memptr = memalign_alloc(alignment, size));
+//#else
+//  result = !(*memptr = malloc(size));
 #endif
 
   if(!result) {

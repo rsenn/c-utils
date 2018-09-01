@@ -1,5 +1,5 @@
-#ifndef NEMO_ENV_H
-#define NEMO_ENV_H
+#ifndef ENV_H
+#define ENV_H
 
 #ifdef __cplusplus
 extern "C" {

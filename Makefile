@@ -449,12 +449,15 @@ DEFS += INLINE=inline
 #DEFS += PATH_MAX=4096
 ifeq ($(READDIR),)
 ifeq ($(SYS),mingw32)
-DEFS += USE_READDIR=0
+#DEFS += USE_READDIR=0
+READDIR :=1
 else
-ifeq ($(SYS),msys)	
-DEFS += USE_READDIR=0
+ifeq ($(SYS),msys)
+  READDIR := 0
+#DEFS += USE_READDIR=0
 else
-DEFS += USE_READDIR=1
+  READDIR := 1
+#DEFS += USE_READDIR=1
 endif
 endif
 endif
@@ -476,11 +479,16 @@ endif
 ifeq ($(WIN32),1)
 WIDECHAR := 1
 endif
+ifeq ($(SYS),msys)
+WIDECHAR := 0
+READDIR := 0
+endif
 ifeq ($(WIDECHAR),)
 WIDECHAR := 0
 endif
 
 DEFS += USE_WIDECHAR=$(WIDECHAR)
+DEFS += USE_READDIR=$(READDIR)
 ifeq ($(LARGEFILE),1)
 DEFS += _FILE_OFFSET_BITS=64
 DEFS += _LARGEFILE_SOURCE=1
@@ -684,7 +692,8 @@ VPATH = $(BUILDDIR):.:lib:src
 ##$(info STATIC: $(STATIC))
 ##$(info TRIPLET: $(TRIPLET))
 ifeq ($(OS),darwin)
-DEFS += USE_READDIR=1
+  READDIR := 1
+#DEFS += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
 #CPPFLAGS += -DUSE_READDIR=1
 ifneq ($(HAVE_LSEEK64),)
@@ -848,7 +857,7 @@ $(call lib-target,buffer)
 $(call lib-target,byte)
 $(call lib-target,case)
 $(call lib-target,cb)
-$(call lib-target,cbmap)
+$(call lib-target,cbmap,lib/memalign.c)
 $(call lib-target,charbuf)
 $(call lib-target,dir,lib/utf8.c)
 $(call lib-target,env,lib/setenv.c lib/getenv.c)
