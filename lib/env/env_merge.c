@@ -2,7 +2,6 @@
 
 #include "../env.h"
 #include <errno.h>
-#include <skalibs/bytestr.h>
 #include <string.h>
 
 size_t

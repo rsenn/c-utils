@@ -1,5 +1,5 @@
 #include "../env.h"
-#include "str.h"
+#include "../str.h"
 
 char*
 env_pick(void) {
