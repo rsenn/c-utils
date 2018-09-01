@@ -53,7 +53,7 @@ define cmds-function-exists =
 set -e;  \
 (echo "$(if $(3),#include <$(3)>,extern int $(1)();)"; \
 echo "int main() {"; \
-echo "  $(1)();"; \
+echo "  void *ptr = &$(1);"; \
 echo "  return 0;"; \
 echo "}") >test_$(1).c; \
 if $(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS) -o test_$(1) test_$(1).c $(2); then R=0; else R=1; fi; \

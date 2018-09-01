@@ -1,5 +1,5 @@
-#if defined(_WIN32) || defined(_WIN64)
-#include "../socket_internal.h"
+#if defined(_WIN32) || defined(_WIN64) || defined(__MSYS__) || defined(__CYGWIN__)
+#include <winsock2.h>
 #include "../windoze.h"
 
 void

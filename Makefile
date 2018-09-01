@@ -294,7 +294,11 @@ endif
 #$(info SYS: $(SYS))
 
 
-
+USE_WINSOCK := $(call check-function-exists,WSAStartup,-lws2_32,winsock2.h)
+$(info USE_WINSOCK=$(USE_WINSOCK))
+ifeq ($(USE_WINSOCK),1)
+WINSOCK_LIB = -lws2_32
+endif
 
 $(call def-function-exists,ZLIB,deflate,-lz)
 
@@ -869,7 +873,7 @@ $(call lib-target,time)
 $(call lib-target,uint16)
 $(call lib-target,uint32)
 $(call lib-target,xml)
-$(call lib-target,socket)
+$(call lib-target,socket,lib/socket/winsock2errno.c lib/socket/winsock_init.c)
 $(call lib-target,errmsg)
 $(call lib-target,dns)
 
@@ -934,7 +938,8 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS)
+$(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB) 
+$(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) 
 $(BUILDDIR)httptest$(M64_)$(EXEEXT): $(BUILDDIR)httptest.o $(call add-library, http socket io iarray array ndelay uint16 buffer fmt mmap open  scan stralloc str byte   taia  uint32 )
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
@@ -1080,14 +1085,14 @@ ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
-$(BUILDDIR)dnsip$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
+$(BUILDDIR)dnsip$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)dnsip$(M64_)$(EXEEXT): $(BUILDDIR)dnsip.o $(call add-library, dns io socket ndelay errmsg taia tai open buffer case fmt scan stralloc byte str uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
-$(BUILDDIR)dnsname$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
+$(BUILDDIR)dnsname$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)dnsname$(M64_)$(EXEEXT): $(BUILDDIR)dnsname.o $(call add-library, dns io socket ndelay errmsg taia tai open buffer case fmt scan stralloc byte str uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
