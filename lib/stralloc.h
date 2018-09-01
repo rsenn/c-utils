@@ -212,6 +212,9 @@ size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, stralloc_fmt_fn*);
 
 int stralloc_catdouble(stralloc*, double d, int prec);
 
+unsigned int stralloc_chr(const stralloc* sa, char c);
+unsigned int stralloc_rchr(const stralloc* sa, char c);
+
 #ifdef __cplusplus
 }
 #endif

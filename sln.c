@@ -1,0 +1,109 @@
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/errmsg.h"
+#include "lib/path.h"
+#include <ctype.h>
+#include <sys/stat.h>
+
+int
+reduce(stralloc* sa) {
+  ssize_t i, j;
+  j = stralloc_finds(sa, ".so");
+
+  for(i = sa->len - 1; i >= 0; --i) {
+    if(!(isdigit(sa->s[i]) || sa->s[i] == '.')) break;
+    if(i == j + 3 || sa->s[i] == '.') {
+      sa->len = i;
+      return 1;
+    }
+  }
+
+  for(i = 0; i < sa->len; ++i) {
+    if(sa->s[i] == '-' && isdigit(sa->s[i + 1])) {
+      byte_copy(&sa->s[i], sa->len - j, &sa->s[j]);
+      sa->len -= j - i;
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+int
+sln(const char* path) {
+  stralloc s, d;
+  char* to;
+  ssize_t i;
+  struct stat st;
+  stralloc_init(&s);
+  stralloc_copys(&s, path);
+
+  stralloc_init(&d);
+  stralloc_copy(&d, &s);
+
+  while(reduce(&d)) {
+
+    buffer_puts(buffer_2, "'");
+    buffer_putsa(buffer_2, &d);
+    buffer_puts(buffer_2, "' -> '");
+    buffer_putsa(buffer_2, &s);
+    buffer_puts(buffer_2, "'\n");
+    buffer_flush(buffer_2);
+
+    stralloc_nul(&s);
+    stralloc_nul(&d);
+
+    if(stat(s.s, &st) != -1) {
+
+      if(lstat(d.s, &st) != -1) unlink(d.s);
+
+      symlink(path_basename(s.s), d.s);
+    } else {
+      errmsg_warnsys("stat failed");
+      return 1;
+    }
+
+    stralloc_copy(&s, &d);
+  }
+
+  return 0;
+}
+
+int
+main(int argc, char* argv[]) {
+  for(int i = 1; i < argc; ++i) {
+    const char* a = argv[i];
+    int i = str_rchr(a, '.');
+
+    if(str_equal(&a[i], ".list")) {
+      buffer in;
+      if(!buffer_mmapread(&in, a)) {
+        stralloc target, link;
+        ssize_t ret;
+        stralloc_init(&target);
+        stralloc_init(&link);
+
+        for(;;) {
+          if((ret = buffer_get_new_token_sa(&in, &target, " \t\v", 2)) < 0) break;
+
+          if(ret == 0 || target.s[0] == '\0') break;
+          if(target.len > 0) --target.len;
+
+          if((ret = buffer_get_new_token_sa(&in, &link, "\r\n", 2)) < 0) break;
+
+          if(ret == 0 || link.s[0] == '\0') break;
+          stralloc_chomp(&link);
+
+          buffer_putsa(buffer_2, &link);
+          buffer_puts(buffer_2, " -> ");
+          buffer_putsa(buffer_2, &target);
+          buffer_putnlflush(buffer_2);
+        }
+
+        buffer_close(&in);
+      }
+    } else {
+      if(sln(argv[i])) return 1;
+    }
+  }
+}
