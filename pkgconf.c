@@ -5,10 +5,11 @@
 #include "lib/errmsg.h"
 #include "lib/getopt.h"
 #include "lib/path.h"
+#include "lib/str.h"
+#include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
 #include <ctype.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <wordexp.h>
 
