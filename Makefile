@@ -98,6 +98,12 @@ DEFS += LIBC_HAS_IP6=1
 endif
 $(info LIBC_HAS_IP6=$(LIBC_HAS_IP6))
 
+HAVE_PIPE2 := $(call check-function-exists,pipe2)
+ifeq ($(HAVE_PIPE2),1)
+DEFS += HAVE_PIPE2=1
+endif
+$(info HAVE_PIPE2=$(HAVE_PIPE2))
+
 HAVE_ALLOCA := $(call check-function-exists,alloca,,alloca.h)
 ifeq ($(HAVE_ALLOCA),1)
 DEFS += HAVE_ALLOCA=1
@@ -331,6 +337,7 @@ HAVE_LSEEK64 := $(call check-function-exists,lseek64)
 HAVE_LSEEK := $(call check-function-exists,lseek)
 HAVE_LLSEEK := $(call check-function-exists,llseek)
 HAVE_POSIX_MEMALIGN := $(call check-function-exists,posix_memalign)
+$(info HAVE_POSIX_MEMALIGN=$(HAVE_POSIX_MEMALIGN))
 
 $(info HAVE_LSEEK64=$(HAVE_LSEEK64) HAVE_LSEEK=$(HAVE_LSEEK64)  HAVE_LLSEEK=$(HAVE_LLSEEK64))
 #$(info llseek: $(call check-function-exists,llseek))
@@ -856,7 +863,7 @@ $(call lib-target,list)
 $(call lib-target,map)
 $(call lib-target,mmap)
 $(call lib-target,ndelay)
-$(call lib-target,path,lib/*link.c)
+$(call lib-target,path,lib/*link.c lib/wordexp.c lib/wordfree.c lib/pipe2.c)
 $(call lib-target,open)
 $(call lib-target,pe)
 $(call lib-target,playlist)

@@ -410,6 +410,8 @@ $(BUILDDIR)path_realpath.o: lib/path/path_realpath.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_offsets.o: lib/pe/pe_offsets.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pipe2.o: lib/pipe2.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)playlist_init.o: lib/playlist/playlist_init.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)playlist_m3u.o: lib/playlist/playlist_m3u.c
@@ -858,12 +860,6 @@ $(BUILDDIR)dns_txt.o: lib/dns/dns_txt.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)env_addmodif.o: lib/env/env_addmodif.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_find.o: lib/env/env_find.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_from_array.o: lib/env/env_from_array.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_from_string.o: lib/env/env_from_string.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)env_get.o: lib/env/env_get.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)env_get2.o: lib/env/env_get2.c
@@ -872,19 +868,13 @@ $(BUILDDIR)env_len.o: lib/env/env_len.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)env_make.o: lib/env/env_make.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_make_array.o: lib/env/env_make_array.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)env_merge.o: lib/env/env_merge.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)env_pick.o: lib/env/env_pick.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)env_put.o: lib/env/env_put.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_set.o: lib/env/env_set.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)env_string.o: lib/env/env_string.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_unset.o: lib/env/env_unset.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)errmsg_iam.o: lib/errmsg/errmsg_iam.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -971,6 +961,8 @@ $(BUILDDIR)fmt_xlonglong.o: lib/fmt/fmt_xlonglong.c
 $(BUILDDIR)fmt_xmlescape.o: lib/fmt/fmt_xmlescape.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fnmatch.o: lib/fnmatch.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)getenv.o: lib/getenv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)getopt.o: lib/getopt.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
