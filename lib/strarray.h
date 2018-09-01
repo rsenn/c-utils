@@ -38,6 +38,8 @@ int   strarray_set(strarray*, size_t index, const char* s);
 int strarray_push_sa (strarray * a, const stralloc * sa);
 #endif
 
+void strarray_sort(strarray*, int (*)(char* , char* ));
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,7 +1,8 @@
+#include <stdlib.h>
+#include "../str.h"
 #include "../strarray.h"
 
 void
-strarray_sort(strarray* arr) {
-  char** strarray_start(arr);
-  qsort(strarray_start(arr), strarray_size(arr), sizeof(char*), &str_diff);
+strarray_sort(strarray* arr, int (*compare)(char*,char*)) {
+  qsort(strarray_start(arr), strarray_size(arr), sizeof(char*), compare);
 }
