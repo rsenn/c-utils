@@ -61,7 +61,7 @@ mklink_sa(stralloc* target, stralloc* link) {
   buffer_putnlflush(buffer_2);
 
   stralloc_nul(target);
-  mklink(target->s, link->s);
+  return mklink(target->s, link->s);
 }
 
 int
