@@ -18,7 +18,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
   buffer_putm(b, "<", node->name);
   if(node->attributes && node->attributes->tuple_count) {
     buffer_putc(b,' ');
-    xml_print_attributes(node, b, " ", "=", "\"");
+    xml_print_attributes(node->attributes, b, " ", "=", "\"");
   }
 
   if(node->children) {

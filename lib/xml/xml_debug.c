@@ -27,7 +27,7 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
     buffer_putm(b, "element[", node_is_closing(node) ? &node->name[1] : node->name);
     buffer_putm(b, "] ");
     buffer_putm(b, node_is_closing(node) ? " closing" : NULL);
-    if(node->attributes) xml_print_attributes(node, b, " ", "=", "'");
+    if(node->attributes) xml_print_attributes(node->attributes, b, " ", "=", "'");
 
     if(node->children) {
       buffer_puts(b, " ");

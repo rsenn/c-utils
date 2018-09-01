@@ -14,7 +14,7 @@ xml_print_nodeset(const xmlnodeset* ns, buffer* b) {
     xml_path(ns->nodes[i], &nodepath);
     buffer_putsa(b, &nodepath);
     buffer_puts(b, "[@");
-    xml_print_attributes(ns->nodes[i], b, ",", "=", "\"");
+    xml_print_attributes(ns->nodes[i]->attributes, b, ",", "=", "\"");
     buffer_puts(b, "]");
     buffer_putnlflush(b);
   }

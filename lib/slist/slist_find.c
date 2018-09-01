@@ -1,13 +1,13 @@
 #include <stdlib.h>
 #include "../slist.h"
 
-slink*
+slink**
 slist_find(slist *l, int (*pred)(void *)) {
-  slink *p;
+  slink **p;
 
   /* Loop through all links until we find the pointer */
   slist_foreach(l, p) {
-    if(pred(&p[1]))
+    if(pred(&(*p)[1]))
       return p;
   }
 

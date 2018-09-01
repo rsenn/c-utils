@@ -33,7 +33,7 @@ xml_dump(xmlnode* n, buffer* b) {
       put_str_escaped(b, n->name);
       buffer_puts(b, "\"");
     } else if(n->type == XML_ELEMENT) {
-      xml_print_attributes(n, b, ", ", ":", "");
+      xml_print_attributes(n->attributes, b, ", ", ":", "");
     }
     buffer_putnlflush(b);
     if(n->children) xml_dump(n->children, b);

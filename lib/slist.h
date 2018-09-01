@@ -19,14 +19,14 @@ typedef struct slink {
 void   slist_add_after(slist* l, slink* p, slink* after);
 void   slist_add_before(slist* l, slink* p, slink* before);
 slink* slist_find_delete(slist* l, int (*pred)(void* ));
-slink* slist_find(slist* l, int (*pred)(void* ));
+slink** slist_find(slist* l, int (*pred)(void* ));
 void   slist_init(slist* l);
 size_t slist_length(slist* l);
 void   slist_move_head(slist* from, slist* to);
 void   slist_move_tail(slist* from, slist* to);
 void   slist_push(slist* l, slink* p);
 int    slist_pushs(slist* l, const char* s);
-slink* slist_remove(slist* l, slink* p);
+slink* slist_remove(slist* l, slink** p);
 slink* slist_unshift(slist* l);
 
 #define slist_foreach(slist, n) \
