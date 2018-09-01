@@ -297,12 +297,11 @@ pkg_list() {
           buffer_puts(buffer_1, path_basename(path.s));
 
           if(pkg_read(&pc, &pf)) {
-            stralloc desc;
-            stralloc_init(&desc);
+            const char* desc;
 
-            if(pkg_expand(&pf, "description", &desc)) {
+            if((desc = pkg_get(&pf, "Description"))) {
               buffer_puts(buffer_1, " - ");
-              buffer_putsa(buffer_1, &desc);
+              buffer_puts(buffer_1, desc);
             }
           }
 
