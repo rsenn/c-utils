@@ -395,7 +395,7 @@ pkg_conf(strarray* modules) {
       pkg_set(&pf);
 
       if(!pkg_expand(&pf, fn, &value)) {
-        errmsg_warn("Expanding ", pkgname, "::", fn);
+        errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
         buffer_flush(buffer_1);
         pkg_unset(&pf);
         pkg_free(&pf);

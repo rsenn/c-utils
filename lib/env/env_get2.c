@@ -1,7 +1,7 @@
 /* ISC license. */
 
 #include "../env.h"
-#include <skalibs/bytestr.h>
+#include "../str.h"
 #include <string.h>
 
 char const*

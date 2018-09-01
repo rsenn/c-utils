@@ -1,6 +1,7 @@
 /* ISC license. */
 
 #include "../env.h"
+#include "../str.h"
 #include <errno.h>
 #include <string.h>
 

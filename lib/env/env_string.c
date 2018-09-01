@@ -1,7 +1,7 @@
 /* ISC license. */
 
 #include "../env.h"
-#include <skalibs/stralloc.h>
+#include "../stralloc.h"
 
 int
 env_string(stralloc* sa, char const* const* envp, size_t envlen) {

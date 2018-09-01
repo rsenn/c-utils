@@ -1,7 +1,7 @@
 /* ISC license. */
 
 #include "../env.h"
-#include <skalibs/stralloc.h>
+#include "../stralloc.h"
 #include <sys/types.h>
 
 int

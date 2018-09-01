@@ -8,8 +8,8 @@ No known patent problems.
 
 #include "../env.h"
 #include "alloc.h"
-#include "byte.h"
-#include "str.h"
+#include "../byte.h"
+#include "../str.h"
 
 static unsigned int env_isinit = 0; /* if env_isinit: */
 static unsigned int ea;             /* environ is a pointer to ea+1 char*'s. */

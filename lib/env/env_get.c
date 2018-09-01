@@ -1,6 +1,5 @@
 /* ISC license. */
 
-#include <skalibs/posixplz.h>
 #include <stdlib.h>
 
 char const*
