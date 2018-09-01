@@ -13,15 +13,16 @@
 #include <wordexp.h>
 
 typedef enum {
-  PRINT_VERSION = 1 << 0,
-  PRINT_CFLAGS = 1 << 1,
-  PRINT_LIBS = 1 << 2,
-  PRINT_PATH = 1 << 3,
-  LIST_ALL = 1 << 4,
-} code;
+  PRINT_VERSION = 1,
+  PRINT_CFLAGS,
+  PRINT_LIBS,
+  PRINT_REQUIRES,
+  PRINT_PATH,
+  LIST_ALL,
+} id;
 
 static struct {
-  int code : 5;
+  id code;
   strlist path;
   stralloc self;
 } cmd;
@@ -36,6 +37,7 @@ static const char* const field_names[] = {
     "Version",
     "Cflags",
     "Libs",
+    "Requires",
 };
 
 /**
@@ -339,41 +341,32 @@ pkg_conf(strarray* modules) {
   stralloc value;
   stralloc_init(&value);
 
-  for(int j = 0; j <= PRINT_LIBS; ++j) {
-    int bit = 1 << j;
+  for(int i = 0; i < strarray_size(modules); ++i) {
+    const char* pkgname = strarray_at(modules, i);
+    pkg pf;
+    byte_zero(&pf, sizeof(pf));
 
-    if(bit == LIST_ALL) break;
-    if((cmd.code & bit) == 0) continue;
+    if(!pkg_open(pkgname, &pf)) continue;
 
-    for(int i = 0; i < strarray_size(modules); ++i) {
-      const char* pkgname = strarray_at(modules, i);
-      pkg pf;
-
-      if(!pkg_open(pkgname, &pf)) continue;
-
-      if(cmd.code == PRINT_PATH) {
-          if(value.len)
-            stralloc_catc(&value, '\n');
-          stralloc_cat(&value, &pf.name);
-        continue;
-      }
+    if(cmd.code == PRINT_PATH) {
+      if(value.len) stralloc_catc(&value, '\n');
+      stralloc_cat(&value, &pf.name);
+    } else {
+      const char* fn = field_names[cmd.code - 1];
 
       pkg_set(&pf);
 
-      const char* fn = field_names[j];
-
       if(!pkg_expand(&pf, fn, &value)) {
-
         errmsg_warn("Expanding ", pkgname, "::", fn);
         buffer_flush(buffer_1);
+        pkg_unset(&pf);
+        pkg_free(&pf);
         return 0;
-        //      buffer_putsa(buffer_1, &value);
-        //      buffer_putnlflush(buffer_1);
       }
-
-      pkg_unset(&pf);
-      pkg_free(&pf);
     }
+
+    pkg_unset(&pf);
+    pkg_free(&pf);
   }
 
   buffer_putsa(buffer_1, &value);
@@ -381,11 +374,24 @@ pkg_conf(strarray* modules) {
   return 1;
 }
 
+void
+usage(char* progname) {
+  buffer_putm(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n");
+  buffer_puts(buffer_1, "Options\n");
+  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
+  buffer_puts(buffer_1, "  --cflags                          print required CFLAGS to stdout\n");
+  buffer_puts(buffer_1, "  --libs                            print required linker flags to stdout\n");
+  buffer_puts(buffer_1, "  --path                            show the exact filenames for any matching .pc files\n");
+  buffer_puts(buffer_1, "  --modversion                      print the specified module's version to stdout\n");
+  buffer_putnlflush(buffer_1);
+}
+
 int
 main(int argc, char* argv[]) {
   int c;
   int index = 0;
   struct option opts[] = {
+      {"help", 0, NULL, 'h'},
       {"modversion", 0, NULL, 'm'},
       {"cflags", 0, NULL, 'i'},
       {"libs", 0, NULL, 'l'},
@@ -394,17 +400,21 @@ main(int argc, char* argv[]) {
   };
 
   for(;;) {
-    c = getopt_long(argc, argv, "milpa", opts, &index);
+    c = getopt_long(argc, argv, "hmilpa", opts, &index);
     if(c == -1) break;
 
     switch(c) {
-      case 'm': if(!cmd.code) cmd.code |= PRINT_VERSION; break;
-      case 'i': if(!cmd.code) cmd.code |= PRINT_CFLAGS; break;
-      case 'l': if(!cmd.code) cmd.code |= PRINT_LIBS; break;
-      case 'p': if(!cmd.code) cmd.code |= PRINT_PATH; break;
-      case 'a': if(!cmd.code) cmd.code |= LIST_ALL; break;
+      case 'h':
+        usage(argv[0]);
+        return 0;
+      case 'm': if(!cmd.code) cmd.code = PRINT_VERSION; break;
+      case 'i': if(!cmd.code) cmd.code = PRINT_CFLAGS; break;
+      case 'l': if(!cmd.code) cmd.code = PRINT_LIBS; break;
+      case 'p': if(!cmd.code) cmd.code = PRINT_PATH; break;
+      case 'a': if(!cmd.code) cmd.code = LIST_ALL; break;
       default:
-        break;
+        usage(argv[0]);
+        return 1;
     }
   }
 
@@ -437,7 +447,7 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(cmd.code & LIST_ALL) {
+  if(cmd.code & (1 << LIST_ALL)) {
     pkg_list();
     return 0;
 
