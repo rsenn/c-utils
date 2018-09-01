@@ -5,10 +5,13 @@
 #include "lib/errmsg.h"
 #include "lib/getopt.h"
 #include "lib/path.h"
+#include "lib/slist.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
+#include "lib/iterator.h"
+#include "lib/algorithm.h"
 #include <ctype.h>
 #include <stdlib.h>
 #include <wordexp.h>
@@ -266,9 +269,14 @@ pkg_init(pkg* pf, const char* fn) {
  */
 void
 pkg_list() {
+  slist pkgs;
+  stralloc path, line;
   int i, n = strlist_count(&cmd.path);
-  stralloc path;
+
+  slist_init(&pkgs);
+
   stralloc_init(&path);
+        stralloc_init(&line);
 
   for(i = 0; i < n; ++i) {
     const char* entry;
@@ -285,6 +293,7 @@ pkg_list() {
 
       if(stralloc_endb(&path, ".pc", 3)) {
 
+        stralloc line;
         buffer pc;
         pkg pf;
 
@@ -295,18 +304,26 @@ pkg_list() {
           path.len -= 3;
           stralloc_nul(&path);
 
-          buffer_puts(buffer_1, path_basename(path.s));
+          stralloc_copys(&line, path_basename(path.s));
 
           if(pkg_read(&pc, &pf)) {
             const char* desc;
 
             if((desc = pkg_get(&pf, "Description"))) {
-              buffer_puts(buffer_1, " - ");
-              buffer_puts(buffer_1, desc);
+              stralloc_cats(&line, " - ");
+              stralloc_cats(&line, desc);
             }
           }
 
+          stralloc_nul(&line);
+
+          buffer_putsa(buffer_1, &line);
           buffer_putnlflush(buffer_1);
+          
+          slist_pushs(&pkgs, line.s);
+          line.s = NULL;
+          line.a = 0;
+
         }
 
         pkg_free(&pf);
@@ -314,6 +331,10 @@ pkg_list() {
 
       path.len = len;
     }
+  }
+
+  for_each(&pkgs) {
+
   }
 }
 

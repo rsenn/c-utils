@@ -857,6 +857,7 @@ $(call lib-target,pe)
 $(call lib-target,playlist)
 $(call lib-target,rdir)
 $(call lib-target,scan)
+$(call lib-target,slist)
 $(call lib-target,str)
 $(call lib-target,stralloc)
 $(call lib-target,strarray)
@@ -1094,7 +1095,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)pkgconf$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
-$(BUILDDIR)pkgconf$(M64_)$(EXEEXT): $(BUILDDIR)pkgconf.o $(call add-library, cbmap path dir buffer errmsg strarray strlist stralloc array mmap byte scan fmt str open uint32)
+$(BUILDDIR)pkgconf$(M64_)$(EXEEXT): $(BUILDDIR)pkgconf.o $(call add-library, slist cbmap path dir buffer errmsg strarray strlist stralloc array mmap byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

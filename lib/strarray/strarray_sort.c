@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include "../str.h"
 #include "../strarray.h"
 
 void
