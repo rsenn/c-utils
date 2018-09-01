@@ -800,7 +800,7 @@ $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
 MODULES += $(patsubst %,$(BUILDDIR)%.a,array buffer byte case cb cbmap charbuf dir fmt hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf time uint16 uint32 xml dns errmsg)
 
-all: $(BUILDDIR) $(BUILDDIR)haveerrno.h $(FLAGS_FILE) $(MODULES) \
+all: $(BUILDDIR) $(FLAGS_FILE) $(BUILDDIR)haveerrno.h $(FLAGS_FILE) $(MODULES) \
    $(PROGRAMS)
 
 $(BUILDDIR)tryerrno.c:
@@ -1215,7 +1215,7 @@ endif
 clean:
 	$(RM) -f $(OBJECTS) list-r.o list-r$(M64_)$(EXEEXT)
 
-install: $(PROGRAMS)
+install: all 
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(PROGRAMS) $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(bindir)
