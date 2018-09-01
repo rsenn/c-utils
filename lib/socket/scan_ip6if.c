@@ -2,7 +2,7 @@
 #include "../ip6.h"
 #include "../socket.h"
 #include <ctype.h>
-#include <alloca.h>
+//#include <alloca.h>
 
 size_t
 scan_ip6if(const char* src, char* ip, uint32* scope_id) {

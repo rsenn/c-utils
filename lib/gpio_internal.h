@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <sys/mman.h>
+#include "mmap.h"
 #include <unistd.h>
 
 /* Physical addresses */

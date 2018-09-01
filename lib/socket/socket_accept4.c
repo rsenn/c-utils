@@ -21,7 +21,7 @@ socket_accept4(int s, char* ip, uint16* port) {
   int fd;
 
 #if defined(_WIN32) || defined(_WIN64)
-  io_entry* e = array_get(&io_fds, sizeof(io_entry), s);
+  io_entry* e = array_get(io_getfds(), sizeof(io_entry), s);
   if(e && e->inuse) {
     int sa2len;
     fd = -1;
@@ -42,7 +42,7 @@ socket_accept4(int s, char* ip, uint16* port) {
       e->next_accept = 0;
       if(e->nonblock) {
         if(io_fd(fd)) {
-          io_entry* f = array_get(&io_fds, sizeof(io_entry), fd);
+          io_entry* f = array_get(io_getfds(), sizeof(io_entry), fd);
           if(f) {
             f->nonblock = 1;
             //      printf("setting fd %lu to non-blocking\n",(int)fd);

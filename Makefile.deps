@@ -432,6 +432,8 @@ $(BUILDDIR)rdir_open.o: lib/rdir/rdir_open.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)rdir_read.o: lib/rdir/rdir_read.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)readlink.o: lib/readlink.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_8int.o: lib/scan/scan_8int.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_8long.o: lib/scan/scan_8long.c
@@ -1188,6 +1190,8 @@ $(BUILDDIR)strlist_unshift.o: lib/strlist/strlist_unshift.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strptime.o: lib/strptime.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)symlink.o: lib/symlink.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)tai_add.o: lib/tai/tai_add.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)tai_now.o: lib/tai/tai_now.c
@@ -1335,6 +1339,8 @@ $(BUILDDIR)vartab_push.o: lib/vartab/vartab_push.c
 $(BUILDDIR)vartab_root.o: lib/vartab/vartab_root.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)vartab_search.o: lib/vartab/vartab_search.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)wordexp.o: lib/wordexp.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_add_child.o: lib/xml/xml_add_child.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1519,6 +1525,10 @@ $(BUILDDIR)plsconv.o: plsconv.c
 $(BUILDDIR)access.o: access.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffertest.o: buffertest.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)test_18816.o: test_18816.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)test_7890.o: test_7890.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

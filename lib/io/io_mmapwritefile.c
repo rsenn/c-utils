@@ -5,8 +5,8 @@
 #include "../windoze.h"
 #else
 #include <sys/mman.h>
-#include <errno.h>
 #endif
+#include <errno.h>
 
 #define BUFSIZE 16384
 
@@ -58,7 +58,7 @@ mapok:
         if(m < 0) {
           io_eagain(out);
           if(errno != EAGAIN) {
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__) || defined(__MSYS__))
             UnmapViewOfFile(e->mmapped);
 #else
             munmap(e->mmapped, e->maplen);

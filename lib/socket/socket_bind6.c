@@ -3,6 +3,8 @@
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <netinet/in.h>
 #include <sys/socket.h>
+#else
+#include <winsock.h>
 #endif
 #include "../byte.h"
 #include "../ip6.h"

@@ -444,11 +444,11 @@ ifeq ($(READDIR),)
 ifeq ($(SYS),mingw32)
 DEFS += USE_READDIR=0
 else
-#ifeq ($(SYS),msys)	
-#DEFS += USE_READDIR=0
-#else
+ifeq ($(SYS),msys)	
+DEFS += USE_READDIR=0
+else
 DEFS += USE_READDIR=1
-#endif
+endif
 endif
 endif
 ifeq ($(WIN32),)
@@ -843,7 +843,7 @@ $(call lib-target,case)
 $(call lib-target,cb)
 $(call lib-target,cbmap)
 $(call lib-target,charbuf)
-$(call lib-target,dir)
+$(call lib-target,dir,lib/utf8.c)
 $(call lib-target,fmt)
 $(call lib-target,gpio)
 $(call lib-target,hmap)
@@ -855,7 +855,7 @@ $(call lib-target,list)
 $(call lib-target,map)
 $(call lib-target,mmap)
 $(call lib-target,ndelay)
-$(call lib-target,path)
+$(call lib-target,path,lib/*link.c)
 $(call lib-target,open)
 $(call lib-target,pe)
 $(call lib-target,playlist)

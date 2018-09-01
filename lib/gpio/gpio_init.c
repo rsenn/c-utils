@@ -21,14 +21,13 @@ gpio_init() {
     buffer_putnlflush(buffer_1);
     return false;
   }
-
+#if !(defined(_WIN32) || defined(_WIN64))
   mem_map = mmap(NULL,                   /* Local mapping start address (NULL means don't care). */
                  BLOCK_SIZE,             /* Mapped memory block size. */
                  PROT_READ | PROT_WRITE, /* Enable read and write. */
                  MAP_SHARED,             /* No exclusive access. */
                  mem_dev,
                  GPIO_BASE); /* Offset to GPIO peripheral. */
-
   close(mem_dev);
   mem_dev = -1;
 
@@ -37,6 +36,7 @@ gpio_init() {
     buffer_putnlflush(buffer_1);
     return false;
   }
+#endif
 
   gpio = (volatile unsigned*)mem_map;
   return true;

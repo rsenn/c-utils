@@ -14,7 +14,7 @@
 #include "lib/strlist.h"
 #include <ctype.h>
 #include <stdlib.h>
-#include <wordexp.h>
+#include "lib/wordexp.h"
 
 typedef enum {
   PRINT_VERSION = 1,

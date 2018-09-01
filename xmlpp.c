@@ -51,7 +51,7 @@ main(int argc, char* argv[]) {
   if(argc > 1)
     buffer_mmapprivate(&infile, argv[1]);
   else
-    buffer_read_fd(&infile, STDIN_FILENO);
+    buffer_read_fd(&infile, 0);
 
   xmlreader r;
   xml_reader_init(&r, &infile);
