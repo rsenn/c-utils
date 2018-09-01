@@ -136,8 +136,9 @@ pkg_free(pkg* p) {
 int
 pkg_read(buffer* b, pkg* p) {
 
-  stralloc line;
-  stralloc_init(&line);
+  stralloc name, value;
+  stralloc_init(&name);
+  stralloc_init(&value);
 
   p->vars = cbmap_new();
   p->fields = cbmap_new();
@@ -145,37 +146,43 @@ pkg_read(buffer* b, pkg* p) {
   for(;;) {
     int ret;
     char sep, ch;
-    stralloc name;
-    stralloc_init(&name);
 
     while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
 
-    if((ret = buffer_get_new_token_sa(b, &name, ":=\r\n", 4)) == -1) return 0;
+    if((ret = buffer_get_new_token_sa(b, &name, ":=\r\n", 4)) == -1) goto fail;
     stralloc_chomp(&name);
     if(name.len > 0 && name.s[0] == '#') continue;
-    if(name.s[0] == '\0') break;
+    if(ret == 1 && isspace(name.s[0])) continue;
+
+    if(ret == 0 || name.s[0] == '\0') break;
     if(name.len > 1) {
       sep = name.s[--name.len];
     }
 
     while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
 
-    stralloc_zero(&line);
-    if((ret = buffer_getline_sa(b, &line)) == -1) return 0;
+    stralloc_zero(&value);
+    if((ret = buffer_getline_sa(b, &value)) == -1) goto fail;
 
-    if(line.s[0] == '\0') break;
+    if(value.s[0] == '\0') break;
 
     if(name.len) {
-      stralloc_trim(&line, "\r\n\t \0", 5);
-      stralloc_nul(&line);
+      stralloc_trim(&value, "\r\n\t \0", 5);
+      stralloc_nul(&value);
       stralloc_nul(&name);
 
-      cbmap_insert(sep == '=' ? p->vars : p->fields, name.s, name.len + 1, line.s, line.len + 1);
+      cbmap_insert(sep == '=' ? p->vars : p->fields, name.s, name.len + 1, value.s, value.len + 1);
     }
   }
 
   buffer_close(b);
   return 1;
+
+fail:
+  stralloc_free(&name);
+  stralloc_free(&value);
+  buffer_close(b);
+  return 0;
 }
 
 static int
@@ -247,6 +254,12 @@ pkg_dump(buffer* b, pkg* pf) {
   cbmap_visit_all(pf->fields, visit_dump, b);
 }
 
+void
+pkg_init(pkg* pf, const char* fn) {
+  byte_zero(pf, sizeof(pkg));
+  stralloc_copys(&pf->name, fn);
+}
+
 /**
  * @brief pkg_list List all packages
  */
@@ -275,24 +288,27 @@ pkg_list() {
         pkg pf;
 
         stralloc_nul(&path);
-        if(buffer_mmapread(&pc, path.s)) continue;
+        pkg_init(&pf, path.s);
 
-        path.len -= 3;
-        stralloc_nul(&path);
+        if(!buffer_mmapread(&pc, path.s)) {
+          path.len -= 3;
+          stralloc_nul(&path);
 
-        buffer_puts(buffer_1, path_basename(path.s));
+          buffer_puts(buffer_1, path_basename(path.s));
 
-        if(pkg_read(&pc, &pf)) {
-          stralloc desc;
-          stralloc_init(&desc);
+          if(pkg_read(&pc, &pf)) {
+            stralloc desc;
+            stralloc_init(&desc);
 
-          if(pkg_expand(&pf, "description", &desc)) {
-            buffer_puts(buffer_1, " - ");
-            buffer_putsa(buffer_1, &desc);
+            if(pkg_expand(&pf, "description", &desc)) {
+              buffer_puts(buffer_1, " - ");
+              buffer_putsa(buffer_1, &desc);
+            }
           }
+
+          buffer_putnlflush(buffer_1);
         }
 
-        buffer_putnlflush(buffer_1);
         pkg_free(&pf);
       }
 
@@ -392,11 +408,11 @@ main(int argc, char* argv[]) {
   int index = 0;
   struct option opts[] = {
       {"help", 0, NULL, 'h'},
-      {"modversion", 0, NULL, 'm'},
-      {"cflags", 0, NULL, 'i'},
-      {"libs", 0, NULL, 'l'},
-      {"path", 0, NULL, 'p'},
-      {"list-all", 0, NULL, 'a'},
+      {"modversion", 0, NULL, PRINT_VERSION},
+      {"cflags", 0, NULL, PRINT_CFLAGS},
+      {"libs", 0, NULL, PRINT_LIBS},
+      {"path", 0, NULL, PRINT_PATH},
+      {"list-all", 0, NULL, 'l'},
   };
 
   for(;;) {
@@ -407,11 +423,15 @@ main(int argc, char* argv[]) {
       case 'h':
         usage(argv[0]);
         return 0;
-      case 'm': if(!cmd.code) cmd.code = PRINT_VERSION; break;
-      case 'i': if(!cmd.code) cmd.code = PRINT_CFLAGS; break;
-      case 'l': if(!cmd.code) cmd.code = PRINT_LIBS; break;
-      case 'p': if(!cmd.code) cmd.code = PRINT_PATH; break;
-      case 'a': if(!cmd.code) cmd.code = LIST_ALL; break;
+      case PRINT_VERSION:
+      case PRINT_CFLAGS:
+      case PRINT_LIBS:
+      case PRINT_PATH:
+        if(!cmd.code) cmd.code = c;
+        break;
+      case 'l':
+        if(!cmd.code) cmd.code = LIST_ALL;
+        break;
       default:
         usage(argv[0]);
         return 1;
@@ -447,7 +467,7 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(cmd.code & (1 << LIST_ALL)) {
+  if(cmd.code == LIST_ALL) {
     pkg_list();
     return 0;
 
