@@ -1,10 +1,12 @@
 #ifndef H_IOCTLCMD
 #define H_IOCTLCMD 1
 
-#ifndef _WINDOWS
+#if !defined(_WIN32) && !defined(_WIN64)
 typedef UCHAR BYTE;
 typedef USHORT WORD;
 typedef ULONG DWORD;
+#else
+#include <windows.h>
 #endif
 
 #ifndef REPARSE_DATA_BUFFER_HEADER_SIZE

@@ -798,7 +798,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array buffer byte case cb cbmap charbuf dir fmt hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf time uint16 uint32 xml dns errmsg)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array buffer byte case cb cbmap charbuf dir fmt hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf time uint16 uint32 xml dns errmsg env)
 
 all: $(BUILDDIR) $(FLAGS_FILE) $(BUILDDIR)haveerrno.h $(FLAGS_FILE) $(MODULES) \
    $(PROGRAMS)
@@ -844,6 +844,7 @@ $(call lib-target,cb)
 $(call lib-target,cbmap)
 $(call lib-target,charbuf)
 $(call lib-target,dir,lib/utf8.c)
+$(call lib-target,env)
 $(call lib-target,fmt)
 $(call lib-target,gpio)
 $(call lib-target,hmap)

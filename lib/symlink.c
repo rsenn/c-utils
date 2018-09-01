@@ -13,7 +13,7 @@
 
 #define SE_CREATE_SYMBOLIC_LINK_NAME TEXT("SeCreateSymbolicLinkPrivilege")
 
-BOOL
+static BOOL
 AcquireSymlinkPriv(LPCTSTR lpLinkName) {
   HANDLE hToken;
   TOKEN_PRIVILEGES TokenPriv;
@@ -38,7 +38,7 @@ AcquireSymlinkPriv(LPCTSTR lpLinkName) {
   return result;
 }
 
-BOOL
+static BOOL
 CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lpsa) {
   union REPARSE_DATA_BUFFER_UNION u;
   HANDLE hFile;
@@ -162,7 +162,7 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
   return TRUE;
 }
 
-BOOL
+static BOOL
 CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lpsa) {
   union REPARSE_DATA_BUFFER_UNION u;
   HANDLE hFile;
@@ -232,7 +232,7 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
 }
 
 int
-_ntfs_junction(const char* oldpath, const char* newpath) {
+junction(const char* oldpath, const char* newpath) {
   return CreateJunction(newpath, oldpath, NULL);
 }
 

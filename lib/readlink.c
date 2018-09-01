@@ -5,13 +5,12 @@
 #include <windows.h>
 #include <winioctl.h>
 
-//#include "EXTERN.h"
-//#include "XSUB.h"
-//#include "perl.h"
+#ifndef Newx
+#  define Newx(v,n,t)                    v = (t*)malloc((n)); 
+#endif
 
-BOOL get_ntfs_reparse_data(LinkPath, u) CONST TCHAR* LinkPath;
-union REPARSE_DATA_BUFFER_UNION* u;
-{
+static BOOL
+get_reparse_data(CONST TCHAR* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
   HANDLE hFile;
   DWORD returnedLength;
 
@@ -44,11 +43,11 @@ union REPARSE_DATA_BUFFER_UNION* u;
   return TRUE;
 }
 
-char* readlink(LinkPath) CONST TCHAR* LinkPath;
-{
+char*
+readlink(CONST TCHAR* LinkPath) {
   union REPARSE_DATA_BUFFER_UNION u;
 
-  if(!get_ntfs_reparse_data(LinkPath, &u)) {
+  if(!get_reparse_data(LinkPath, &u)) {
     return NULL;
   }
 
@@ -87,20 +86,21 @@ char* readlink(LinkPath) CONST TCHAR* LinkPath;
   return NULL;
 }
 
-DWORD _ntfs_reparse_tag(LinkPath) CONST TCHAR* LinkPath;
-{
+static DWORD
+reparse_tag(CONST TCHAR* LinkPath) {
   union REPARSE_DATA_BUFFER_UNION u;
 
-  if(!get_ntfs_reparse_data(LinkPath, &u)) {
+  if(!get_reparse_data(LinkPath, &u)) {
     return 0;
   }
 
   return u.iobuf.ReparseTag;
 }
 
-BOOL _is_ntfs_symlink(LinkPath) CONST TCHAR* LinkPath;
-{ return _ntfs_reparse_tag(LinkPath) == IO_REPARSE_TAG_SYMLINK; }
+BOOL is_symlink(LinkPath) CONST TCHAR* LinkPath;
+{ return reparse_tag(LinkPath) == IO_REPARSE_TAG_SYMLINK; }
 
-BOOL _is_ntfs_junction(LinkPath) CONST TCHAR* LinkPath;
-{ return _ntfs_reparse_tag(LinkPath) == IO_REPARSE_TAG_MOUNT_POINT; }
+BOOL is_junction(LinkPath) CONST TCHAR* LinkPath;
+{ return reparse_tag(LinkPath) == IO_REPARSE_TAG_MOUNT_POINT; }
+
 #endif // defined(_WIN32) || defined(_WIN64)
