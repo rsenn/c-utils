@@ -333,7 +333,9 @@ pkg_list() {
     }
   }
 
-  for_each(&pkgs) {
+  slist_foreach(&pkgs, it) {
+
+
 
   }
 }

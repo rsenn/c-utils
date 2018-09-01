@@ -30,27 +30,14 @@ slink* slist_remove(slist* l, slink* p);
 slink* slist_unshift(slist* l);
 
 #define slist_foreach(slist, n) \
-  for((n) = (void*)(slist)->root; \
-      (n) != NULL; \
-      (n) = (void*)(((slink*)n)->next))
-
-/* n is set to the current slink and n->next is backupped
-   into m before loop body for safe walk-throught when
-   slinks get deleted */
-#define slist_foreach_safe(slist, n, m) \
-  for((n) = (void*)(slist)->root, \
-      (m) = (void*)((slink*)n) != NULL ? (void*)((slink*)n)->next : NULL; \
-      (n) != NULL; \
-      (n) = (void*)((slink*)m), \
-      (m) = (void*)((slink*)n) != NULL ? (void*)((slink*)n)->next : NULL)
-
-#define slist_iterator() slink**
+  for(slink** n = slist_begin(slist); n != slist_end(slist); slist_iterator_increment(slist, &n))
 
 static inline slink** slist_begin(slist* l) { return &l->root; }
 static inline slink** slist_end(slist* l) { slink** p = &l->root; while(*p) p = &(*p)->next; return p; }
 
 static inline int slist_iterator_first(slist* l, slink** p) { return l->root == *p; }
-static inline int slist_iterator_last(slist* l, slink** p) { return (*p)->next == NULL; }
+static inline int slist_iterator_last(slist* l, slink** p) { slink* ptr = (*p);  return ptr->next == NULL; }
+static inline int slist_iterator_end(slist* l, slink** p) { return (*p)->next == NULL; }
 
 static inline void slist_iterator_increment(slist* l, slink*** p) { *p = &(**p)->next; }
 static inline slink* slist_iterator_dereference(slist* l, slink** p) { return *p; }
