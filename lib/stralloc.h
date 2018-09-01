@@ -127,6 +127,8 @@ int stralloc_chop(stralloc* sa);
 /* remove trailing "\r\n", "\n" or "\r".  Return number of removed chars (0, 1 or 2) */
 int stralloc_chomp(stralloc* sa);
 
+void stralloc_trim(stralloc* sa, const char* trimchars, unsigned int trimcharslen);
+
 int stralloc_decamelize(stralloc *sa, stralloc *to);
 
 int stralloc_case_diff(const stralloc *sa1, const stralloc *sa2);

@@ -1,7 +1,7 @@
 /*#define  _POSIX_SOURCE*/
 /**/
 /*#ifdef HAVE_CONFIG_H*/
-/*# include "../config.h"*/
+/*# include "config.h"*/
 /*#endif*/
 
 #include <errno.h>
@@ -25,7 +25,7 @@
 #include "../stralloc.h"
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #ifndef HAVE_LSTAT
 #define lstat stat
 #endif

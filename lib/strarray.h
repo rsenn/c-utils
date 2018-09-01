@@ -24,6 +24,8 @@ typedef struct {
 #define strarray_at(l, pos) (*(char**)array_get(&(l)->a, sizeof(char*), pos))
 
 char* *strarray_to_argv(strarray*);
+int strarray_from_argv(int argc, char* argv[], strarray* arr);
+
 int64 strarray_index_of(strarray*, const char* s);
 char* strarray_pop(strarray*, char* s);
 int   strarray_pushb(strarray*, const char* b, size_t n);

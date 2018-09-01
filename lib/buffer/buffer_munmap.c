@@ -13,4 +13,6 @@ buffer_munmap(void* buf) {
 #else
   munmap(b->x, b->a);
 #endif
+  b->x = NULL;
+  b->a = 0;
 }

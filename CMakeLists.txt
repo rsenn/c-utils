@@ -394,7 +394,7 @@ endforeach()
 
 
 #
-set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir dns errmsg fmt gpio hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 xml)
+set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir dns errmsg fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -519,6 +519,8 @@ target_link_libraries(xmltest2 buffer fmt playlist str stralloc xml)
 target_link_libraries(xmltest3 buffer fmt playlist str stralloc xml)
 target_link_libraries(xmltest4 array buffer byte cbmap scan str stralloc strlist xml)
 target_link_libraries(ziptest buffer playlist str)
+target_link_libraries(pkgconf buffer byte cbmap dir path str stralloc strlist)
+
 
 
 #target_link_libraries(eagle-init-brd)
