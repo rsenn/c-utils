@@ -1,12 +1,12 @@
-#include <stdlib.h>
-#include "tree.h"
 #include "expand.h"
+#include <stdlib.h>
 
 /* expand an assignment list
  * ----------------------------------------------------------------------- */
-int expand_vars(union node *vars, union node **nptr) {
-  union node *var;
-  union node *n;
+int
+expand_vars(union node* vars, union node** nptr) {
+  union node* var;
+  union node* n;
   int ret = 0;
 
   *nptr = NULL;
@@ -16,14 +16,11 @@ int expand_vars(union node *vars, union node **nptr) {
       nptr = &n;
       ret++;
     }
-    
+
     expand_unescape(&n->narg.stra);
-    
-    if(n)
-      nptr = &n->list.next;
+
+    if(n) nptr = &n->list.next;
   }
-  
+
   return ret;
 }
-
-

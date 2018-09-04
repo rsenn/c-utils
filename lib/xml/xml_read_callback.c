@@ -1,4 +1,4 @@
-﻿#include "../byte.h"
+#include "../byte.h"
 #include "../stralloc.h"
 #include "../xml.h"
 #include <ctype.h>
