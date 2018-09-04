@@ -1,6 +1,7 @@
 #include "../buffer.h"
 #include "../open.h"
 #include "../gpio_internal.h"
+#include <sys/mman.h>
 
 volatile unsigned int* gpio = NULL; /* See gpio_init(). */
 

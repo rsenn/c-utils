@@ -1,4 +1,3 @@
-#include "../shell.h"
 #include "../vartab.h"
 #include <assert.h>
 

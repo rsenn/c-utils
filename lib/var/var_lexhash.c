@@ -1,4 +1,3 @@
-#include "../fd.h"
 #include "../fmt.h"
 #include "../var.h"
 

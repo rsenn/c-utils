@@ -1,4 +1,3 @@
-#include "../shell.h"
 #include "../var.h"
 
 /* unset a variable
@@ -8,7 +7,7 @@ var_unset(char* v) {
   struct var* var;
 
   /* find the variable */
-  if((var = var_search(v, NULL)) == NULL) return;
+  if((var = var_search(varstack, v, NULL)) == NULL) return;
 
   do {
     /*    if(var->child &&

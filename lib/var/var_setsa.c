@@ -22,7 +22,7 @@ var_setsa(stralloc* sa, int flags) {
   stralloc_nul(sa);
 
   /* find/create new variable on top vartab */
-  var = var_create(sa->s, flags);
+  var = var_create(varstack, sa->s, flags);
 
   /* now check how we set the value, there are 4 possibilities */
   if(var->flags & V_FREESTR) {

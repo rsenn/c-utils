@@ -1,5 +1,3 @@
-#include "../sh.h"
-#include "../shell.h"
 #include "../vartab.h"
 
 /* create a new var on top vartab, possibly overwriting an old one
@@ -8,18 +6,18 @@
  * if found on a
  * ----------------------------------------------------------------------- */
 struct var*
-var_create(const char* v, int flags) {
+var_create(struct vartab* varstack, const char* v, int flags) {
   struct search ctx;
   struct var* newvar;
   struct var* oldvar;
 
-  vartab_hash(sh->varstack, v, &ctx);
-  if((oldvar = var_search(v, &ctx))) {
+  vartab_hash(varstack, v, &ctx);
+  if((oldvar = var_search(varstack, v, &ctx))) {
     /* if we have the V_INIT flag and the var was found return NULL */
     if(flags & V_INIT) return NULL;
 
     /* if variable was found on topmost level -> immediately return it */
-    if(oldvar->table == sh->varstack) return oldvar;
+    if(oldvar->table == varstack) return oldvar;
   }
 
   newvar = shell_alloc(sizeof(struct var));
@@ -37,7 +35,7 @@ var_create(const char* v, int flags) {
   }
 
   /* finally add it to the bucket and to the global list */
-  vartab_add(sh->varstack, newvar, &ctx);
+  vartab_add(varstack, newvar, &ctx);
 
   return newvar;
 }

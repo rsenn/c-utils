@@ -1,4 +1,3 @@
-#include "../parse.h"
 
 /* get length of a variable + value without ansi escape sequences */
 unsigned long

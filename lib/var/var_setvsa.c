@@ -15,7 +15,7 @@ var_setvsa(const char* name, stralloc* sa, int flags) {
   struct var* var;
 
   /* find/create new variable on top vartab */
-  var = var_create(name, flags);
+  var = var_create(varstack, name, flags);
 
   /* variable has a stralloc of which we have control */
   if(var->flags & V_FREESTR) {

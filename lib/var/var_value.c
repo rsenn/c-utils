@@ -3,6 +3,6 @@
 /* get a variable value
  * ----------------------------------------------------------------------- */
 const char*
-var_value(const char* v, unsigned long* plen) {
-  return var_vdefault(v, "", plen);
+var_value(struct vartab* varstack, const char* v, unsigned long* plen) {
+  return var_vdefault(varstack, v, "", plen);
 }

@@ -6,8 +6,15 @@ cfg() {
   : ${prefix:=/usr}
   : ${libdir:=$prefix/lib}
   [ -d "$libdir/$host" ] && libdir=$libdir/$host
- 
+
+  if [ -e "$TOOLCHAIN" ]; then
+    cmakebuild=$(basename "$TOOLCHAIN" .cmake)
+    cmakebuild=${cmakebuild%.toolchain}
+    cmakebuild=${cmakebuild#toolchain-}
+    : ${builddir=build/$cmakebuild}
+  else
  : ${builddir=build/$host}
+fi
 
   case $(uname -o) in
    # MSys|MSYS|Msys) SYSTEM="MSYS" ;;

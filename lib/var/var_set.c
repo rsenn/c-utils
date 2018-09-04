@@ -9,7 +9,7 @@ var_set(char* v, int flags) {
   struct var* var;
 
   /* find/create the variable */
-  if((var = var_create(v, flags)) == NULL) return var;
+  if((var = var_create(varstack, v, flags)) == NULL) return var;
 
   /* free if it was a previously allocated string */
   if(var->sa.a) stralloc_free(&var->sa);

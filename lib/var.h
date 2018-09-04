@@ -49,20 +49,20 @@ extern unsigned long var_exported;
 VAR_HASH var_hsearch(struct search *context);
 char **var_export(char **dest);
 
-const char *var_get(const char *v, unsigned long *offset);
+const char *var_get(struct vartab*, const char *v, unsigned long *offset);
 const char *var_setvint(const char *v, int i, int flags);
 const char *var_setvsa(const char *name, stralloc *sa, int flags);
-const char *var_value(const char *v, unsigned long *plen);
-const char *var_vdefault(const char *v, const char *def, unsigned long *lenp);
+const char *var_value(struct vartab*, const char *v, unsigned long *plen);
+const char *var_vdefault(struct vartab*, const char *v, const char *def, unsigned long *lenp);
 
 int var_chflg(char *v, int flags, int set);
 int var_valid(const char *v);
 
 struct var *var_copys(const char *s, int flags);
-struct var *var_create(const char *v, int flags);
+struct var *var_create(struct vartab*, const char *v, int flags);
 struct var *var_import(const char *v, int flags, struct var *var);
 struct var *var_init(const char *v, struct var *var, struct search *context);
-struct var *var_search(const char *v, struct search *context);
+struct var *var_search(struct vartab*, const char *v, struct search *context);
 struct var *var_set(char *v, int flags);
 struct var *var_setsa(stralloc *sa, int flags);
 

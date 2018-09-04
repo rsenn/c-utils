@@ -821,7 +821,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array buffer byte case cb cbmap charbuf dir fmt hmap http iarray io json list map mmap ndelay open pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf time uint16 uint32 xml dns errmsg env)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array buffer byte case cb cbmap charbuf dir dns env errmsg fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 all: $(BUILDDIR) $(FLAGS_FILE) $(BUILDDIR)haveerrno.h $(FLAGS_FILE) $(MODULES) \
    $(PROGRAMS)
@@ -896,6 +896,9 @@ $(call lib-target,textbuf)
 $(call lib-target,time)
 $(call lib-target,uint16)
 $(call lib-target,uint32)
+$(call lib-target,uint64)
+$(call lib-target,var)
+$(call lib-target,vartab)
 $(call lib-target,xml)
 $(call lib-target,socket,lib/socket/winsock2errno.c lib/socket/winsock_init.c)
 $(call lib-target,errmsg)

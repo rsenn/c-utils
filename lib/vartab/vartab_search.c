@@ -1,5 +1,3 @@
-#include "../fd.h"
-#include "../sh.h"
 #include "../vartab.h"
 
 /* try to find a var on a table
@@ -18,7 +16,7 @@ vartab_search(struct vartab* vartab, const char* v, struct search* context) {
     /* FIXME: exact match should be assumed from here because there
        is no way to evaluate the search context */
     struct search ctx;
-    vartab_hash(sh->varstack, v, &ctx);
+    vartab_hash(varstack, v, &ctx);
     return vartab_search(vartab, v, &ctx);
   }
 
@@ -56,9 +54,9 @@ vartab_search(struct vartab* vartab, const char* v, struct search* context) {
       context->closest = context->pos;
     }
 
-    /*  buffer_puts(&fd_out->w, "bsearch: ");
-      buffer_puts(&fd_out->w, context->name);
-      buffer_putnlflush(&fd_out->w);*/
+    /*  buffer_puts(&buffer_1, "bsearch: ");
+      buffer_puts(&buffer_1, context->name);
+      buffer_putnlflush(&buffer_1);*/
 
     /* check for a binary search match and return if we already have
        a closer match */

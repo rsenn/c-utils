@@ -1,6 +1,3 @@
-#include "../fd.h"
-#include "../parse.h"
-#include "../sh.h"
 #include "../str.h"
 #include "../vartab.h"
 #include <assert.h>
@@ -14,22 +11,22 @@ var_import(const char* v, int flags, struct var* var) {
   struct var* newvar;
 
   /* we should be in the root to import vars */
-  assert(sh->varstack == &vartab_root);
+  assert(varstack == &vartab_root);
 
   /* variable name must be valid! */
   if(!var_valid(v)) return var;
 
   /* search if the var already exists */
-  vartab_hash(sh->varstack, v, &ctx);
+  vartab_hash(varstack, v, &ctx);
 
-  if(!(newvar = var_search(v, &ctx))) {
+  if(!(newvar = var_search(varstack, v, &ctx))) {
     /* if not we take the supplied var struct,  */
     newvar = var;
     var = NULL;
     var_init(v, newvar, &ctx);
 
     /* ...and then add it to the table */
-    vartab_add(sh->varstack, newvar, &ctx);
+    vartab_add(varstack, newvar, &ctx);
   } else if(flags & V_INIT)
     return var;
 

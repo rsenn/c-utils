@@ -5,7 +5,7 @@ var_copys(const char* s, int flags) {
   struct var* var;
 
   /* find/create the variable */
-  if((var = var_create(s, flags)) == NULL) return NULL;
+  if((var = var_create(varstack, s, flags)) == NULL) return NULL;
 
   /* initialize stralloc if it was a non-allocated string */
   if(var->sa.a == 0) stralloc_init(&var->sa);
