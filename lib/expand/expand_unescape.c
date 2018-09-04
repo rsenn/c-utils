@@ -1,5 +1,7 @@
-#include "../parse.h"
+#include "../expand.h"
 #include "../stralloc.h"
+
+#define expand_isesc(c) ((c) == '[' || (c) == '\\' || (c) == ']')
 
 /* in-place unescape
  * ----------------------------------------------------------------------- */
@@ -9,7 +11,7 @@ expand_unescape(stralloc* sa) {
 
   for(s = d = 0; s < sa->len; s++) {
     /* skip backslash */
-    if(sa->s[s] == '\\' && parse_isesc(sa->s[s + 1])) s++;
+    if(sa->s[s] == '\\' && expand_isesc(sa->s[s + 1])) s++;
 
     /* damn, string shouldn't end here */
     if(s == sa->len) break;

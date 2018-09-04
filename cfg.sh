@@ -10,7 +10,7 @@ cfg() {
   if [ -e "$TOOLCHAIN" ]; then
     cmakebuild=$(basename "$TOOLCHAIN" .cmake)
     cmakebuild=${cmakebuild%.toolchain}
-    cmakebuild=${cmakebuild#toolchain-}
+    cmakebuild=cmake-${cmakebuild#toolchain-}
     : ${builddir=build/$cmakebuild}
   else
  : ${builddir=build/$host}

@@ -1,4 +1,5 @@
-#include "expand.h"
+#include "../expand.h"
+#include "../tree.h"
 #include <stdlib.h>
 
 /* expand an assignment list

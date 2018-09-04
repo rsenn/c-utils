@@ -1,5 +1,5 @@
 #include "../tree.h"
-#include "expand.h"
+#include "../expand.h"
 #include <stdlib.h>
 
 /* expand all parts of an N_ARG node

@@ -9,18 +9,19 @@
 #include "../mingw-glob.h"
 #endif
 
-#include "../expand.h"
 #include "../var.h"
+#include "../vartab.h"
+#include "../expand.h"
 #include <stdlib.h>
 
 /* perform glob() expansion on the current argument
  * ----------------------------------------------------------------------- */
 union node*
-expand_glob(union node** nptr, int flags) {
+expand_glob(union node** nptr, struct vartab* varstack, int flags) {
   union node* n;
   glob_t glb;
   int ret;
-  const char* ifs = var_vdefault("IFS", IFS_DEFAULT, NULL);
+  const char* ifs = var_vdefault(varstack, "IFS", IFS_DEFAULT, NULL);
 
   if(!(n = *nptr)) return n;
 

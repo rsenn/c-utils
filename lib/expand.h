@@ -63,15 +63,17 @@ union node *expand_arg(struct narg *narg, union node **nptr, int flags);
 int expand_args(union node *args, union node **nptr, int flags);
 void expand_argv(union node *args, char **argv);
 union node *expand_arith(struct nargarith *arith, union node **nptr, int flags);
-union node* expand_cat(struct vartab* varstack, const char* b, unsigned int len, union node** nptr, int flags);
 void expand_catsa(union node *node, stralloc *sa, int flags);
 union node *expand_command(struct nargcmd *cmd, union node **nptr, int flags);
 void expand_copysa(union node *node, stralloc *sa, int flags);
 void expand_escape(stralloc *sa, const char *b, unsigned int n);
-union node *expand_glob(union node **nptr, int flags);
-union node *expand_param(struct nargparam *param, union node **nptr, int flags);
 void expand_unescape(stralloc *sa);
 int expand_vars(union node *vars, union node **nptr);
 
+#ifdef VARTAB_H
+union node* expand_cat(struct vartab* varstack, const char* b, unsigned int len, union node** nptr, int flags);
+union node* expand_glob(union node** nptr, struct vartab* varstack, int flags);
+union node* expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack, char* argv[], int exitcode, int flags);
+#endif
 
 #endif /* EXPAND_H */
