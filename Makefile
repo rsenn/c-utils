@@ -455,7 +455,7 @@ DEFS += INLINE=inline
 ifeq ($(READDIR),)
 ifeq ($(SYS),mingw32)
 #DEFS += USE_READDIR=0
-READDIR :=1
+READDIR :=0
 else
 ifeq ($(SYS),msys)
   READDIR := 0
@@ -466,6 +466,9 @@ else
 endif
 endif
 endif
+
+$(info READDIR: $(READDIR))
+
 ifeq ($(WIN32),)
 ifeq ($(SYS),mingw32)
 WIN32 := 1
