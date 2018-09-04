@@ -7,9 +7,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
+//#include <sys/wait.h>
 #include <unistd.h>
-#include <wordexp.h>
+#include "wordexp.h"
+
+#ifndef SIGKILL
+#define SIGKILL SIGTERM
+#endif
+
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0
+#endif
 
 static void
 reap(pid_t pid) {
@@ -108,10 +116,13 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
     goto nospace;
   }
   if(!pid) {
-    if(p[1] == 1)
+    if(p[1] == 1) {
+#ifdef F_SETFD
       fcntl(1, F_SETFD, 0);
-    else
+#endif
+    } else {
       dup2(p[1], 1);
+    }
     execl("/bin/sh", "sh", "-c", "eval \"printf %s\\\\\\\\0 x $1 $2\"", "sh", s, redir, (char*)0);
     _exit(1);
   }

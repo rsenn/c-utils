@@ -247,6 +247,11 @@ else
   SYSROOT := $(dir $(subst /lib/pkgconfig,,$(P)))
 $(info SYSROOT=$(SYSROOT))
   endif
+  else
+  P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/lib/pkgconfig)
+  ifeq ($(call file-exists,$(P)),1)
+  PKG_CONFIG_PATH := $(P)
+  endif
   endif
 endif
 endif
@@ -792,6 +797,8 @@ SYSROOT := /usr/$(HOST)/sysroot
 else 
 ifeq ($(call file-exists,/opt/$(HOST)/sysroot),1)
 SYSROOT := /opt/$(HOST)/sys-root
+else
+SYSROOT := /usr/$(HOST)
 endif
 endif
 endif
