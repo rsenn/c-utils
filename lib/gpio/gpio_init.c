@@ -1,7 +1,10 @@
 #include "../buffer.h"
 #include "../open.h"
 #include "../gpio_internal.h"
+
+#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/mman.h>
+#endif
 
 volatile unsigned int* gpio = NULL; /* See gpio_init(). */
 

@@ -569,7 +569,7 @@ target_link_libraries(xmltest2 buffer fmt playlist str stralloc xml)
 target_link_libraries(xmltest3 buffer fmt playlist str stralloc xml)
 target_link_libraries(xmltest4 array buffer byte cbmap scan str stralloc strlist xml)
 target_link_libraries(ziptest buffer playlist str)
-target_link_libraries(pkgconf array buffer byte cbmap dir errmsg path playlist slist str stralloc strarray strlist)
+target_link_libraries(pkgconf array buffer byte cbmap dir errmsg env path playlist slist str stralloc strarray strlist)
 target_link_libraries(sln buffer byte errmsg path playlist str stralloc)
 
 
