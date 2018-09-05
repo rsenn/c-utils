@@ -10,9 +10,6 @@
 extern "C" {
 #endif
 
-typedef int8_t int8;
-typedef uint8_t uint8;
-
 #ifndef __pure__
 #define __pure__
 #endif
