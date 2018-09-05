@@ -49,8 +49,8 @@ env_unsetlen(const char* s, size_t len) {
   }
 }
 
-size_t
-env_unset(const char* s) {
+static size_t
+_env_unset(const char* s) {
   if(!env_isinit) {
     if(!env_init()) return 0;
   }
