@@ -5,6 +5,8 @@
 #include <ctype.h>
 #include <sys/stat.h>
 
+extern int symlink(const char*, const char*);
+
 int
 reduce(stralloc* sa) {
   ssize_t i, j;

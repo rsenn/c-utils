@@ -1,4 +1,5 @@
 #include "../dns.h"
+#include "../uint16.h"
 
 int
 dns_ip4_packet(stralloc* out, const char* buf, unsigned int len) {

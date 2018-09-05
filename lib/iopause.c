@@ -1,10 +1,11 @@
-#include "iopause.h"
-#include "taia.h"
 #if defined(_WIN32) || defined(_WIN64)
-#include <winsock.h>
+#include <winsock2.h>
+#include <windows.h>
 #else
 #include "select.h"
 #endif
+#include "iopause.h"
+#include "taia.h"
 
 void
 iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* stamp) {

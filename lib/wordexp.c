@@ -20,7 +20,8 @@
 #define O_CLOEXEC 0
 #endif
 
-extern ssize_t getdelim(char** lineptr, size_t* n, int delim, FILE* stream);
+extern ssize_t getdelim(char**, size_t*, int, FILE*);
+extern int pipe2(int[2], int);
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
 typedef _sigset_t sigset_t;
