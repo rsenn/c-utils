@@ -279,10 +279,26 @@ if(NOT HAVE_MSWSOCK_LIBRARY)
   check_library_exists(ws2_32 _WSAStartup "" HAVE_MSWSOCK_LIBRARY)
 endif(NOT HAVE_MSWSOCK_LIBRARY)
 
-if(HAVE_MSWSOCK_LIBRARY)
+if(HAVE_MSWSOCK_LIBRARY OR MINGW OR MINGW32 OR MINGW64 OR MSVC)
   set(LIBMSWSOCK ws2_32)
-  link_libraries(${LIBMSWSOCK})
-endif(HAVE_MSWSOCK_LIBRARY)
+  #link_libraries(${LIBMSWSOCK})
+endif()
+
+
+IF(MSVC OR WIN32 OR WIN64)
+  SET(SOCKET_LIB ws2_32)
+endif()
+
+#list(APPEND ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
+
+if(MINGW OR MINGW32 OR MINGW64 OR MSVC OR WIN32 OR WIN64)
+  if(NOT LIBMSWSOCK)
+    set(LIBMSWSOCK ws2_32)
+  endif()
+  #link_libraries(${LIBMSWSOCK})
+endif()
+
+
 
 if(SEEK_FUNCTION)
   add_definitions(-Dio_seek=${SEEK_FUNCTION})
@@ -422,7 +438,7 @@ endforeach()
 
 
 #
-set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir dns errmsg fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 xml slist)
+set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -469,7 +485,9 @@ foreach(ARCHIVE ${LIBSUBDIRS})
   set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
 endforeach(ARCHIVE)
 
-target_link_libraries(io ${LIBMSWSOCK})
+foreach(NETLIB dns http io ndelay socket)
+  target_link_libraries(${NETLIB} ${LIBMSWSOCK})
+endforeach()
 
 target_link_libraries(array byte str)
 target_link_libraries(buffer array byte fmt mmap open str stralloc)
@@ -528,13 +546,6 @@ endforeach(PROGRAM)
 
 target_link_libraries(list-r dir ${COMMON_LIBS})
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
-
-IF(MSVC OR WIN32 OR WIN64)
-  SET(SOCKET_LIB ws2_32)
-endif()
-
-#list(APPEND ${LIBMSWSOCK} ${LIBLZMA_LIBRARY} ${LIBZ_LIBRARY} ${LIBBZ2_LIBRARY})
-
 
 target_link_libraries(buffertest buffer playlist str)
 target_link_libraries(ccat buffer str)
