@@ -4,8 +4,8 @@
 #include "../str.h"
 #include <string.h>
 
-char const*
-env_get2(char const* const* envp, char const* s) {
+const char*
+env_get2(const char* const* envp, const char* s) {
   size_t len, i;
   if(!s) return 0;
   len = strlen(s);

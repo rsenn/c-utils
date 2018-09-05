@@ -203,7 +203,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
   //  wordexp_sa(value, &v);
   stralloc_nul(&v);
 
-  setenv(key, v.s, 1);
+  env_set(key, v.s);
 
   return 1;
 }
@@ -224,7 +224,7 @@ visit_unset(const void* key, size_t key_len, const void* value, size_t value_len
   (void)value;
   (void)value_len;
   (void)user_data;
-  unsetenv(key);
+  env_unset(key);
   return 1;
 }
 

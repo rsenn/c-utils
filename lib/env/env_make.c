@@ -5,7 +5,7 @@
 #include <string.h>
 
 int
-env_make(char const** v, size_t argc, char const* s, size_t len) {
+env_make(const char** v, size_t argc, const char* s, size_t len) {
   while(argc--) {
     size_t n = strlen(s) + 1;
     if(n > len) return (errno = EINVAL, 0);

@@ -3,11 +3,21 @@
 #define IP6_H
 
 #include "byte.h"
+#include "uint8.h"
 #include "uint32.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** IPv6 address structure. */
+typedef struct {
+  /** 128-bit IPv6 address, represented as 16 8-bit \c unsigned \c chars. */
+  uint8 addr[16];
+} ipv6addr;
+/** IPv6 port number. */
+typedef uint16 ipv6port;
+
 
 size_t scan_ip6(const char* src,char* ip);
 size_t fmt_ip6(char* dest,const char* ip);

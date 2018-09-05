@@ -45,7 +45,12 @@ mklink(char* target, char* link) {
     return -1;
   }
 
-  if(lstat(link, &st) != -1) unlink(link);
+#if !((defined(_WIN32) || defined(_WIN64)) && !(defined(__MSYS__) || defined(__CYGWIN__)))
+  if(lstat(link, &st) != -1)
+#endif
+  {
+    unlink(link);
+  }
 
   return symlink(path_basename(target), link);
 }

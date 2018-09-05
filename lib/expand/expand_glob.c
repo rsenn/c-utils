@@ -3,15 +3,11 @@
 #include "../config.h"
 #endif
 
-#include <glob.h>
-
-#if defined(__MINGW32__) || defined(__MINGW64__)
-#include "../mingw-glob.h"
-#endif
-
+#include "../glob.h"
 #include "../var.h"
 #include "../vartab.h"
 #include "../expand.h"
+
 #include <stdlib.h>
 
 /* perform glob() expansion on the current argument

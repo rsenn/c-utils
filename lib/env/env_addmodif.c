@@ -5,7 +5,7 @@
 #include <sys/types.h>
 
 int
-env_addmodif(stralloc* sa, char const* s, char const* t) {
+env_addmodif(stralloc* sa, const char* s, const char* t) {
   size_t oldlen = sa->len;
   if(!s) return 1;
   if(!stralloc_cats(sa, s)) return 0;

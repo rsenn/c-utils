@@ -1,10 +1,10 @@
-#include "../windoze.h"
-#include "../stralloc.h"
 #include "../byte.h"
 #include "../dns.h"
 #include "../open.h"
 #include "../str.h"
+#include "../stralloc.h"
 #include "../taia.h"
+#include "../windoze.h"
 #include <stdlib.h>
 #include <unistd.h>
 #if defined(_WIN32) || defined(_WIN64)

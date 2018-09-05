@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-char const*
-env_get(char const* s) {
+const char*
+env_get(const char* s) {
   return getenv(s);
 }

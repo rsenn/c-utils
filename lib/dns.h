@@ -5,6 +5,8 @@
 #include "iopause.h"
 #include "stralloc.h"
 #include "taia.h"
+#include "ip4.h"
+#include "ip6.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,6 +46,27 @@ struct dns_transmit {
   unsigned int scope_id;
   char qtype[2];
 };
+
+union dns_result_rrs { 
+  void* __ptr;
+  ipv4addr* ip4;                                                                                                                
+  ipv6addr* ip6;
+  struct dns_mx* mx;
+  char** name;
+};
+
+/** DNS query results. */
+struct dns_result {
+  /** The number of results present. */
+  int count;
+  /** The record type of the results. */
+  int type;
+  /** The individual record arrays. */
+  union dns_result_rrs rr;
+  /** Internal use buffer pointer. */
+  void* __buffer;
+};
+
 
 void dns_random_init(const char*);
 unsigned int dns_random(unsigned int);

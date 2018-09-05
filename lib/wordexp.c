@@ -9,6 +9,7 @@
 #include <string.h>
 //#include <sys/wait.h>
 #include <unistd.h>
+#include <sys/types.h>
 #include "wordexp.h"
 
 #ifndef SIGKILL
@@ -19,11 +20,23 @@
 #define O_CLOEXEC 0
 #endif
 
+extern ssize_t getdelim(char** lineptr, size_t* n, int delim, FILE* stream);
+
+#if defined(__MINGW32__) || defined(__MINGW64__)
+typedef _sigset_t sigset_t;
+#endif
+
+#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__MSYS__) || defined(__CYGWIN__))
+#define WINDOWS_NATIVE 1
+#endif 
+
 static void
 reap(pid_t pid) {
+#if !WINDOWS_NATIVE
   int status;
   while(waitpid(pid, &status, 0) < 0 && errno == EINTR)
     ;
+#endif
 }
 
 static char*
@@ -107,9 +120,14 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
   }
 
   if(pipe2(p, O_CLOEXEC) < 0) goto nospace;
+
+#if !WINDOWS_NATIVE
   //__block_all_sigs(&set);
   pid = fork();
   //__restore_sigs(&set);
+#else
+  pid = -1;
+#endif
   if(pid < 0) {
     close(p[0]);
     close(p[1]);
@@ -131,7 +149,9 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
   f = fdopen(p[0], "r");
   if(!f) {
     close(p[0]);
+#if !WINDOWS_NATIVE
     kill(pid, SIGKILL);
+#endif
     reap(pid);
     goto nospace;
   }

@@ -2,11 +2,21 @@
 #ifndef IP4_H
 #define IP4_H
 
+#include "uint8.h"
+#include "uint16.h"
 #include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** IPv4 address structure. */
+typedef struct {
+  /** 32-bit IPv4 address, represented as 4 8-bit \c unsigned \c chars. */
+  uint8 addr[4];
+} ipv4addr;
+/** IPv4 port number. */
+typedef uint16 ipv4port;
 
 size_t scan_ip4(const char *src,char *ip);
 size_t fmt_ip4(char *dest,const char *ip);

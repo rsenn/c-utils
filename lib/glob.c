@@ -1,3 +1,5 @@
+#if(defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__) || defined(__MSYS__))
+
 /*
  * Includes
  */
@@ -318,3 +320,4 @@ globfree(glob_t* pglob) {
   }
 }
 
+#endif /* (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__) || defined(__MSYS__)) */

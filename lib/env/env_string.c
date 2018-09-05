@@ -4,7 +4,7 @@
 #include "../stralloc.h"
 
 int
-env_string(stralloc* sa, char const* const* envp, size_t envlen) {
+env_string(stralloc* sa, const char* const* envp, size_t envlen) {
   size_t salen = sa->len;
   size_t i = 0;
   for(; i < envlen; i++) {

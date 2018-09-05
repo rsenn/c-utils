@@ -11,6 +11,14 @@
 #include <io.h>
 #endif
 
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0
+#endif
+
+#ifndef O_NONBLOCK
+#define O_NONBLOCK 0
+#endif
+
 int
 pipe2(int fd[2], int flags) {
   /* Mingw _pipe() corrupts fd on failure; also, if we succeed at
@@ -47,7 +55,7 @@ pipe2(int fd[2], int flags) {
      functions defined by the gnulib module 'nonblocking'.  */
 #ifndef PIPE2_NDELAY_OFF
   if(flags & O_NONBLOCK) {
-    if(ndelay_on(fd[0], true) != 0 || ndelay_on(fd[1], true) != 0) goto fail;
+    if(ndelay_on(fd[0]) != 0 || ndelay_on(fd[1]) != 0) goto fail;
   }
 #else
   { verify(O_NONBLOCK == 0); }
