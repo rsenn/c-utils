@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #endif
 #include "../socket.h"
+#include "../uint64.h"
 #include "../windoze.h"
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -18,7 +19,7 @@ int
 socket_accept4(int s, char* ip, uint16* port) {
   struct sockaddr_in si;
   socklen_t len = sizeof si;
-  int fd;
+  int64 fd;
 
 #if defined(_WIN32) || defined(_WIN64)
   io_entry* e = array_get(io_getfds(), sizeof(io_entry), s);
@@ -45,7 +46,7 @@ socket_accept4(int s, char* ip, uint16* port) {
           io_entry* f = array_get(io_getfds(), sizeof(io_entry), fd);
           if(f) {
             f->nonblock = 1;
-            //      printf("setting fd %lu to non-blocking\n",(int)fd);
+            //      printf("setting fd %lu to non-blocking\n",(int64)fd);
           }
         }
       }

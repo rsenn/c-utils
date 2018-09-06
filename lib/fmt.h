@@ -9,7 +9,7 @@
 typedef __SIZE_TYPE__ size_t;
 #elif !defined(_MSC_VER)
 #include <stdint.h>
-#endif // !defined(_MSC_VER)
+#endif /* !defined(_MSC_VER) */
 
 /* for time_t: */
 #include <sys/types.h>

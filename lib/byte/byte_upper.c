@@ -1,5 +1,4 @@
 #include "../byte.h"
-#include <stdint.h>
 
 void
 byte_upper(void* s, unsigned int len) {

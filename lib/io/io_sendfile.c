@@ -70,7 +70,7 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 int64
 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   struct sf_parms p;
-  int destfd = out;
+  int64 destfd = out;
   p.header_data = 0;
   p.header_length = 0;
   p.file_descriptor = in;

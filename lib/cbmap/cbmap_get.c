@@ -5,22 +5,26 @@
 int
 cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_len) {
   unsigned char* p = map->root;
+  const unsigned char* key_bytes = (const unsigned char*)key;
+  struct cbmap_data_node* data;
+  
   if(p == NULL || key == NULL) {
     return 0;
   }
-  const unsigned char* key_bytes = (const unsigned char*)key;
 
   while(IS_INTERNAL_NODE(p)) {
     struct cbmap_internal_node* q = GET_INTERNAL_NODE(p);
-    unsigned char c = 0;
+    unsigned char c = 0; 
+      int direction;
+ 
     if(q->byte < key_len) {
       c = key_bytes[q->byte];
     }
-    const int direction = (1 + (q->otherbits | c)) >> 8;
+direction = (1 + (q->otherbits | c)) >> 8;
     p = q->branch[direction];
   }
 
-  struct cbmap_data_node* data = (struct cbmap_data_node*)p;
+  data = (struct cbmap_data_node*)p;
   if(data->key_len == key_len) {
     if(KEY_COMPARE(data->key, key, key_len) == 0) {
       *value = (void*)data->value;

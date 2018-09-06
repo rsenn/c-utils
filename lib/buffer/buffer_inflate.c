@@ -1,4 +1,5 @@
 #include "../buffer.h"
+#include "../windoze.h"
 #include <stdlib.h>
 
 #ifdef HAVE_ZLIB
@@ -12,6 +13,8 @@ typedef struct {
 
 static ssize_t
 buffer_inflate_read(fd_t fd, void* data, size_t n, buffer* b) {
+  int ret;
+  ssize_t have;
   inflate_ctx* ctx = b->cookie;
   z_stream* z = &ctx->z;
 
@@ -20,24 +23,26 @@ buffer_inflate_read(fd_t fd, void* data, size_t n, buffer* b) {
   z->next_out = data;
   z->avail_out = n;
 
-  int ret = inflate(&ctx->z, 0);
+  ret = inflate(&ctx->z, 0);
 
   if(ret == Z_STREAM_ERROR) return -1;
 
-  ssize_t have = n - z->avail_out;
+  have = n - z->avail_out;
 
   return have;
 }
 
 int
 buffer_inflate(buffer* b, buffer* in) {
-
+  int ret;
+  z_stream* z;
+  
   inflate_ctx* ctx = calloc(1, sizeof(inflate_ctx));
   if(ctx == NULL) return 0;
 
   ctx->other = in;
 
-  z_stream* z = &ctx->z;
+  z = &ctx->z;
   z->zalloc = Z_NULL;
   z->zfree = Z_NULL;
   z->opaque = Z_NULL;
@@ -49,7 +54,7 @@ buffer_inflate(buffer* b, buffer* in) {
   b->x = ctx->buf;
   b->a = sizeof(ctx->buf);
 
-  int ret = inflateInit2(&ctx->z, 15 + 32);
+  ret = inflateInit2(&ctx->z, 15 + 32);
 
   if(ret != Z_OK) return 0;
 

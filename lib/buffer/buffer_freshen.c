@@ -8,10 +8,11 @@ ssize_t buffer_stubborn_read(ssize_t (*)(), int, void*, size_t, void*);
 
 int
 buffer_freshen(buffer* b) {
+  size_t bytes;
   assert(b->op != buffer_dummyread);
   assert(b->op != buffer_dummyreadmmap);
 
-  size_t bytes = b->n - b->p;
+  bytes = b->n - b->p;
   if(b->p > 0 && bytes) {
     byte_copy(b->x, b->n - b->p, &b->x[b->p]);
     b->n -= b->p;

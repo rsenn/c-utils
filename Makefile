@@ -372,6 +372,9 @@ endif
 ifeq ($(OS),mingw)
 EXEEXT = .exe
 STATIC_LIBGCC := 1
+ifeq ($(ARCH),x86_64)
+M64_ := -x64
+endif
 endif
 ifeq ($(OS),cygwin)
 EXEEXT = .exe

@@ -1,7 +1,6 @@
 #define _FILE_OFFSET_BITS 64
 #include "../open.h"
 #include <fcntl.h>
-#include <unistd.h>
 
 #ifndef O_NDELAY
 #define O_NDELAY 0

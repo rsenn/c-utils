@@ -7,7 +7,7 @@
 #endif
 #if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <stdint.h>
-#endif // !defined(_MSC_VER)
+#endif /* !defined(_MSC_VER) */
 
 #ifdef __MSYS__
 # ifndef __MS_types__
@@ -78,7 +78,7 @@ uint64 uint64_read_big(const char* in);
 # ifndef PRIx64
 #  define PRIx64 "I64x"
 # endif
-#endif // _WIN32 && _MSC_VER
+#endif /* _WIN32 && _MSC_VER */
 
 #if defined(_WIN32) && defined(_MSC_VER)
 // for older MSVC: "unsigned __int64 -> double" conversion not implemented (why?-)
@@ -88,7 +88,7 @@ __inline double uint64_to_double(uint64_t ull) {
 }
 #else
 # define uint64_to_double(ull) ((double)(ull))
-#endif // _WIN32 && _MSC_VER && TSCI2_OS_WIN32
+#endif /* _WIN32 && _MSC_VER && TSCI2_OS_WIN32 */
 
 #ifdef __cplusplus
 }

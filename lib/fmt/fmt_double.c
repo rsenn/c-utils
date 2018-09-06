@@ -5,9 +5,7 @@ fmt_double(char* dest, double d, int maxlen, int prec) {
   union {
     double d;
     unsigned long long x;
-  } __u = {
-      .d = d,
-  };
+  } __u =  { d };
   /* step 1: extract sign, mantissa and exponent */
   signed int s = __u.x >> 63;
   signed long e = ((__u.x >> 52) & ((1 << 11) - 1)) - 1023;

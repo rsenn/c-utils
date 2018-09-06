@@ -4,8 +4,10 @@
 
 /* for size_t: */
 #include <stddef.h>
+#ifndef _MSC_VER
 #include <inttypes.h>
 #include <stdint.h>
+#endif
 
 /* for ssize_t: */
 #include <sys/types.h>

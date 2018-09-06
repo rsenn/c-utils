@@ -3,7 +3,6 @@
 #include <float.h>
 #include <limits.h>
 #include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
@@ -55,7 +54,7 @@ struct package {
 struct pin {
   stralloc name;
   double x, y, r;
-  bool visible;
+  int visible;
 };
 struct symbol {
   stralloc name;
@@ -174,12 +173,12 @@ get_child(xmlnode* node, const char* name) {
 wire
 get_wire(xmlnode* node) {
   wire ret;
+  stralloc p;
   ret.x1 = get_double(node, "x1");
   ret.y1 = get_double(node, "y1");
   ret.x2 = get_double(node, "x2");
   ret.y2 = get_double(node, "y2");
 
-  stralloc p;
   stralloc_init(&p);
   xml_path(node, &p);
   buffer_putsa(buffer_2, &p);
@@ -293,13 +292,15 @@ check_wire(xmlnode* node) {
  */
 void
 build_part(xmlnode* part) {
+  char *val, *dsname;
   char* name = xml_get_attribute(part, "name");
   char* pkgname = xml_get_attribute(part, "package");
-  if(!name || str_len(name) == 0) return;
+  size_t pins;
   struct part p;
+  if(!name || str_len(name) == 0) return;
   byte_zero(&p, sizeof(struct part));
   stralloc_copys(&p.name, name);
-  char* val = xml_get_attribute(part, "value");
+  val = xml_get_attribute(part, "value");
   if(val) stralloc_copys(&p.value, val);
   p.x = get_double(part, "x") / 0.127;
   p.y = get_double(part, "y") / 0.127;
@@ -308,9 +309,9 @@ build_part(xmlnode* part) {
     p.pkg = get_entry(packages, pkgname);
   }
   assert(p.pkg);
-  size_t pins = array_length(&p.pkg->pads, sizeof(struct net*));
+  pins = array_length(&p.pkg->pads, sizeof(struct net*));
   p.pins = calloc(sizeof(struct net*), pins);
-  char* dsname = xml_get_attribute(part, "deviceset");
+  dsname = xml_get_attribute(part, "deviceset");
   if(dsname) p.dset = get_entry(devicesets, dsname);
   cbmap_insert(parts, (void*)name, str_len(name) + 1, &p, sizeof(struct part));
 }
@@ -320,19 +321,22 @@ build_part(xmlnode* part) {
  */
 void
 build_sym(xmlnode* part) {
-  xmlnode* pin;
+  size_t i = 0;
+ struct symbol* sym;
+ xmlnode* pin;
   char* name = xml_get_attribute(part, "name");
   if(!name || str_len(name) == 0) return;
-  struct symbol* sym = get_or_create(symbols, name, sizeof(struct symbol));
+   sym = get_or_create(symbols, name, sizeof(struct symbol));
   stralloc_copys(&sym->name, name);
-  size_t i = 0;
 
   for(pin = part->children; pin; pin = pin->next) {
+    char* pin_name;
+    struct pin* p;
     if(pin->type != XML_ELEMENT) continue;
     if(str_diff(pin->name, "pin")) continue;
-    char* pin_name = xml_get_attribute(pin, "name");
+    pin_name = xml_get_attribute(pin, "name");
     if(pin_name == NULL) continue;
-    struct pin* p = array_allocate(&sym->pins, sizeof(struct ref), i++);
+    p = array_allocate(&sym->pins, sizeof(struct ref), i++);
     byte_zero(p, sizeof(struct ref));
     stralloc_copys(&p->name, pin_name);
     p->x = get_double(pin, "x");
@@ -349,17 +353,20 @@ void
 build_reflist(xmlnode* node, struct net* n, int* index) {
 
   for(; node; node = node->next) {
+    char* nn, *part_name;
+    struct ref* r;
+    int is_pin;
     if(node->type != XML_ELEMENT) continue;
-    char* nn = node->name;
+   nn = node->name;
 
     if(str_equal(nn, "segment")) {
       build_reflist(node->children, n, index);
       continue;
     }
-    bool is_pin = str_equal(nn, "pinref");
+    is_pin = str_equal(nn, "pinref");
     if(str_diff(nn, is_pin ? "pinref" : "contactref")) continue;
-    char* part_name = xml_get_attribute(node, is_pin ? "part" : "element");
-    struct ref* r = array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
+    part_name = xml_get_attribute(node, is_pin ? "part" : "element");
+    r = array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
     r->part = get(parts, part_name, sizeof(struct part));
     print_name_value(buffer_2, nn, part_name);
     buffer_putnlflush(buffer_2);
@@ -808,15 +815,15 @@ match_query(xmlnode* doc, const char* q) {
 /**
  * Executes XPath query and for every resulting element calls a function
  */
-bool
+int
 match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
   xmlnodeset ns = getnodeset(doc, q);
 
   if(xmlnodeset_size(&ns)) {
     for_set(&ns, fn);
-    return true;
+    return 1;
   }
-  return false;
+  return 0;
 }
 
 int

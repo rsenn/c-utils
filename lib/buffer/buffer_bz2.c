@@ -118,7 +118,7 @@ buffer_bz_close(buffer* b) {
 
 int
 buffer_bz2(buffer* b, buffer* other, int compress) {
-
+  int ret;
   bz_ctx* ctx = calloc(1, sizeof(bz_ctx));
   if(ctx == NULL) return 0;
 
@@ -132,7 +132,7 @@ buffer_bz2(buffer* b, buffer* other, int compress) {
   b->cookie = ctx;
   b->deinit = &buffer_bz_close;
 
-  int ret = compress ? BZ2_bzCompressInit(&ctx->strm, compress, 0, 1) : BZ2_bzDecompressInit(&ctx->strm, 0, 0);
+  ret = compress ? BZ2_bzCompressInit(&ctx->strm, compress, 0, 1) : BZ2_bzDecompressInit(&ctx->strm, 0, 0);
 
   if(ret != BZ_OK) return 0;
 

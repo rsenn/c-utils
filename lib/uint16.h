@@ -4,7 +4,7 @@
 
 #if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <inttypes.h>
-#endif // !defined(_MSC_VER)
+#endif /* !defined(_MSC_VER) */
 #if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <stdint.h>
 #endif
@@ -35,20 +35,20 @@ typedef int16_t int16;
 
 #if(defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT16_MACROS)
 
-static inline void uint16_pack(char* out, uint16 in) {
+static void uint16_pack(char* out, uint16 in) {
   *(uint16 *)out = in;
 }
 
-static inline void uint16_unpack(const char* in, uint16* out) {
+static void uint16_unpack(const char* in, uint16* out) {
   *out = *(uint16 *)in;
 }
 
-static inline uint16 uint16_get(const void* ptr) {
+static uint16 uint16_get(const void* ptr) {
   const char* in = ptr;
   return *(uint16 *)in;
 }
 
-static inline uint16 uint16_read(const char* in) {
+static uint16 uint16_read(const char* in) {
   return *(uint16 *)in;
 }
 
@@ -57,13 +57,13 @@ void uint16_unpack_big(const char* in, uint16* out);
 uint16 uint16_read_big(const char* in);
 #else
 
-static inline uint16
+static uint16
 uint16_get(const void* ptr) {
   const char* in = ptr;
   return (in[0] << 8) | (in[1]);
 }
 
-static inline uint16
+static uint16
 uint16_read(const char* in) {
   return (in[0] << 8) | (in[1]);
 }

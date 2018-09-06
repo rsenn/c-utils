@@ -1,9 +1,9 @@
-#include <unistd.h>
 #include <errno.h>
 #include "../open.h"
 #include "../stralloc.h"
+#include "../uint64.h"
 
-ssize_t readclose_append(int fd,stralloc *sa,size_t bufsize)
+ssize_t readclose_append(int64 fd,stralloc *sa,size_t bufsize)
 {
   ssize_t r;
   for (;;) {
@@ -15,7 +15,7 @@ ssize_t readclose_append(int fd,stralloc *sa,size_t bufsize)
   }
 }
 
-ssize_t readclose(int fd,stralloc *sa,size_t bufsize)
+ssize_t readclose(int64 fd,stralloc *sa,size_t bufsize)
 {
   if (!stralloc_copys(sa,"")) { close(fd); return -1; }
   return readclose_append(fd,sa,bufsize);

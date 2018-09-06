@@ -1,8 +1,8 @@
 #ifndef _CBMAP_H
 #define _CBMAP_H
 
-#include <stdint.h>
 #include <stdlib.h>
+#include "uint8.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,10 +63,10 @@ int
 cbmap_delete(cbmap_t map, void* key, size_t key_len);
 
 /** Visits keys and values after a given key prefix */
-int cbmap_visit(uint8_t *top, cbmap_visitor visitor_fn, void *user_data);
+int cbmap_visit(uint8 *top, cbmap_visitor visitor_fn, void *user_data);
 
 int
-cbmap_visit_prefix(cbmap_t map, uint8_t* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data);
+cbmap_visit_prefix(cbmap_t map, uint8* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data);
 
 /** Visits all keys and values */
 int
@@ -75,4 +75,4 @@ cbmap_visit_all(cbmap_t map, cbmap_visitor visitor_fn, void* user_data);
 #ifdef __cplusplus
 }
 #endif
-#endif // _CBMAP_H
+#endif /* _CBMAP_H */

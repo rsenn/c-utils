@@ -52,7 +52,7 @@ readlink(CONST TCHAR* LinkPath) {
   }
 
   switch(u.iobuf.ReparseTag) {
-    case IO_REPARSE_TAG_MOUNT_POINT: { // Junction
+    case IO_REPARSE_TAG_MOUNT_POINT: { /* Junction */
       char* retval;
       unsigned int len = u.iobuf.MountPointReparseBuffer.SubstituteNameLength;
 
@@ -67,7 +67,7 @@ readlink(CONST TCHAR* LinkPath) {
       retval += 4;
       return retval;
     }
-    case IO_REPARSE_TAG_SYMLINK: { // Symlink
+    case IO_REPARSE_TAG_SYMLINK: { /* Symlink */
       char* retval;
       unsigned int len = u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength;
 
@@ -103,4 +103,4 @@ BOOL is_symlink(LinkPath) CONST TCHAR* LinkPath;
 BOOL is_junction(LinkPath) CONST TCHAR* LinkPath;
 { return reparse_tag(LinkPath) == IO_REPARSE_TAG_MOUNT_POINT; }
 
-#endif // defined(_WIN32) || defined(_WIN64)
+#endif /* defined(_WIN32) || defined(_WIN64) */

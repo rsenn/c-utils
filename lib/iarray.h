@@ -35,7 +35,7 @@ extern "C" {
  */
 typedef struct _iarray_page {
   struct _iarray_page* next;
-  char data[];
+  char data[0];
 } iarray_page;
 
 typedef struct {

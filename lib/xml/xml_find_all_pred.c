@@ -22,21 +22,15 @@ xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), void* arg1, void*
 }
 
 xmlnodeset
-xml_find_all(xmlnode* node, int (*pred)(), ...) {
-  va_list args;
-  va_start(args, pred);
-  char* ptr[3];
-  ptr[0] = va_arg(args, char*);
-  ptr[1] = va_arg(args, char*);
-  ptr[2] = va_arg(args, char*);
-  xmlnodeset ret;
+xml_find_all(xmlnode* node, int (*pred)(), void* ptr[3]) {
+   xmlnodeset ret;
   array a;
-  strlist names;
+  strlist names; 
+
   strlist_init(&names, '\0');
   strlist_froms(&names, ptr[0], '|');
   byte_zero(&a, sizeof(array));
   xml_find_all_predicate(node, &a, pred, &names, ptr[1], ptr[2]);
-  va_end(args);
   ret.nodes = array_start(&a);
   ret.size = array_length(&a, sizeof(xmlnode*));
   return ret;

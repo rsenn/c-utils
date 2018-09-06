@@ -7,6 +7,7 @@
 #include "../byte.h"
 #include "../ip6.h"
 #include "../socket.h"
+#include "../uint64.h"
 #include "../windoze.h"
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -25,7 +26,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   struct sockaddr_in sa;
 #endif
   socklen_t dummy = sizeof sa;
-  int fd;
+  int64 fd;
 
 #if defined(_WIN32) || defined(_WIN64)
   io_entry* e = array_get(io_getfds(), sizeof(io_entry), s);
@@ -52,7 +53,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
           io_entry* f = array_get(io_getfds(), sizeof(io_entry), fd);
           if(f) {
             f->nonblock = 1;
-            //      printf("setting fd %lu to non-blocking\n",(int)fd);
+            //      printf("setting fd %lu to non-blocking\n",(int64)fd);
           }
         }
       }

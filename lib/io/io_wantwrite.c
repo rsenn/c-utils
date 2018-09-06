@@ -37,7 +37,7 @@
 
 void
 io_wantwrite_really(fd_t d, io_entry* e) {
-  int newfd;
+  int64 newfd;
   assert(!e->kernelwantwrite); /* we should not be here if we already told the kernel we want to write */
   newfd = (!e->kernelwantread);
   io_wanted_fds += newfd;

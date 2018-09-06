@@ -18,6 +18,8 @@ buffer_copy(buffer* out, buffer* in) {
 int
 main(int argc, char* argv[])  {
   buffer input,  output, compress, decompress;
+  buffer deflate, gzout, inflate, gzin;
+
   const char* filename =  argv[1] ? argv[1] : "/mnt/Newx20Data/Sources/gettext-0.19.8.1.tar.xz";
 
   if(buffer_mmapprivate(&input, filename) < 0) {
@@ -48,7 +50,6 @@ main(int argc, char* argv[])  {
 
   buffer_copy(buffer_1, &decompress);
 //
-  buffer deflate, gzout, inflate, gzin;
 
   buffer_truncfile(&gzout, "output.gz");
 

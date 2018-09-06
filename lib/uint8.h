@@ -3,7 +3,7 @@
 
 #if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <inttypes.h>
-#endif // !defined(_MSC_VER)
+#endif /* !defined(_MSC_VER) */
 #if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <stdint.h>
 #endif

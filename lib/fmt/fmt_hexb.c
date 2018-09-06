@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include "../fmt.h"
 
 unsigned int

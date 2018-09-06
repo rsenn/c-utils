@@ -33,7 +33,7 @@
 
 void
 io_dontwantwrite_really(fd_t d, io_entry* e) {
-  int newfd;
+  int64 newfd;
   (void)d;
   assert(e->kernelwantwrite);
   newfd = !e->kernelwantread;

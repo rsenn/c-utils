@@ -3,6 +3,7 @@
 #define OPEN_H
 
 #include <sys/types.h>
+#include "windoze.h"
 
 #ifdef __cplusplus
 extern "C" {

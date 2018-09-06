@@ -22,8 +22,8 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
   }
 
   if(node->children) {
-    buffer_puts(b, ">");
     int only_text_children = (node->children->type == XML_TEXT);
+    buffer_puts(b, ">");
 
     if(only_text_children) {
       xml_print_list(node->children, b, 0);

@@ -7,7 +7,7 @@ char strlist_dumpx[5] = {',', '\n', '\t', '\0'};
 
 void
 strlist_dump(buffer* out, const strlist* sl) {
-  const char* s;
+  const char *s, *end;
   size_t i = 0, n = strlist_count(sl);
   buffer_puts(out, "strlist[");
   buffer_putulong0(out, n, 3);
@@ -17,7 +17,7 @@ strlist_dump(buffer* out, const strlist* sl) {
     return;
   }
   buffer_puts(out, "]{\n\t0:\"");
-  const char* end = sl->sa.s + sl->sa.len;
+  end = sl->sa.s + sl->sa.len;
   for(s = sl->sa.s; s < end; ++s) {
     while(*s) {
       char chrs[64] = {'\\', *s, '\0'};

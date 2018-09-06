@@ -21,7 +21,7 @@ AcquireSymlinkPriv(LPCTSTR lpLinkName) {
 
   if(!LookupPrivilegeValue(NULL, SE_CREATE_SYMBOLIC_LINK_NAME, &TokenPriv.Privileges[0].Luid)) {
     //
-    // Windows XP
+    /* Windows XP */
     //
     return TRUE;
   }
@@ -240,4 +240,4 @@ int
 symlink(const char* oldpath, const char* newpath) {
   return CreateSymlink(newpath, oldpath, NULL);
 }
-#endif // defined(_WIN32) || defined(_WIN64)
+#endif /* defined(_WIN32) || defined(_WIN64) */

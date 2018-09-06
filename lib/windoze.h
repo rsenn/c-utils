@@ -25,7 +25,7 @@ int winsock2errno(long l);
 void __winsock_init(void);
 
 #if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
-static inline size_t
+static size_t
 getpagesize() {
   static DWORD cachedPageSize = 0;
   if(cachedPageSize == 0) {

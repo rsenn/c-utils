@@ -99,11 +99,11 @@ int    hmap_truncate(HMAP_DB** hmap_db);
 #define hmap_last(hmap_db, tuple)  ((hmap_db)->list_tuple == (tuple)->next)
 #define hmap_next(hmap_db, tuple) (hmap_last(hmap_db, tuple) ? NULL : (tuple)->next)
 
-static inline TUPLE* hmap_begin(HMAP_DB* hmap) { return hmap->list_tuple; }
+static TUPLE* hmap_begin(HMAP_DB* hmap) { return hmap->list_tuple; }
 
-static inline void hmap_iterator_increment(TUPLE** t) { *t = (*t)->next; }
-static inline int hmap_iterator_equal(TUPLE** t1, TUPLE** t2) { return (*t1) == (*t2); }
-static inline TUPLE* hmap_iterator_dereference(TUPLE** it) { return *it; }
+static void hmap_iterator_increment(TUPLE** t) { *t = (*t)->next; }
+static int hmap_iterator_equal(TUPLE** t1, TUPLE** t2) { return (*t1) == (*t2); }
+static TUPLE* hmap_iterator_dereference(TUPLE** it) { return *it; }
 
 //#define hmap_end(hmap_db) (&((hmap_db)->list_tuple->prev->next))
 //#define hmap_end(hmap_db) ((hmap_db)->list_tuple ? &((hmap_db)->list_tuple->prev->next) : NULL)
@@ -111,7 +111,7 @@ static inline TUPLE* hmap_iterator_dereference(TUPLE** it) { return *it; }
 #define hmap_iterator_increment(it) ((it) = &(*(it))->next)
 #define hmap_iterator_decrement(it) ((it) = &(*(it))->prev)
 #define hmap_iterator_dereference(it_ptr) (*(it_ptr))
-static inline int
+static int
 hmap_iterator_distance(TUPLE** it1, TUPLE** it2) {
   TUPLE *a = *it1;
   TUPLE *b = *it2;

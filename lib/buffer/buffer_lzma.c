@@ -114,18 +114,19 @@ buffer_lzma_close(buffer* b) {
 
 int
 buffer_lzma(buffer* b, buffer* other, int compress) {
+  lzma_ret ret;
+  lzma_ctx* ctx;
+    lzma_options_lzma opt_lzma2;
+  lzma_filter filters[] = {
+      { LZMA_FILTER_X86,  NULL},
+      { LZMA_FILTER_LZMA2,  &opt_lzma2},
+      { LZMA_VLI_UNKNOWN,  NULL},
+  };
 
-  lzma_options_lzma opt_lzma2;
   if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) {
     return 0;
   }
-
-  lzma_filter filters[] = {
-      {.id = LZMA_FILTER_X86, .options = NULL},
-      {.id = LZMA_FILTER_LZMA2, .options = &opt_lzma2},
-      {.id = LZMA_VLI_UNKNOWN, .options = NULL},
-  };
-  lzma_ctx* ctx = calloc(1, sizeof(lzma_ctx));
+  ctx = calloc(1, sizeof(lzma_ctx));
   if(ctx == NULL) return 0;
 
   ctx->b = other;
@@ -138,7 +139,7 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   b->cookie = ctx;
   b->deinit = &buffer_lzma_close;
 
-  lzma_ret ret = compress ? lzma_stream_encoder(&ctx->strm, filters, LZMA_CHECK_CRC64)
+  ret = compress ? lzma_stream_encoder(&ctx->strm, filters, LZMA_CHECK_CRC64)
                           : lzma_stream_decoder(&ctx->strm, UINT64_MAX, LZMA_CONCATENATED);
 
   if(ret != LZMA_OK) return 0;

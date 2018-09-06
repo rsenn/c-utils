@@ -33,7 +33,7 @@
 
 void
 io_wantread_really(fd_t d, io_entry* e) {
-  int newfd;
+  int64 newfd;
   assert(!e->kernelwantread);
   newfd = !e->kernelwantwrite;
   io_wanted_fds += newfd;

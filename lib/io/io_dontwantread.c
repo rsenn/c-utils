@@ -27,7 +27,7 @@
 
 void
 io_dontwantread_really(fd_t d, io_entry* e) {
-  int newfd;
+  int64 newfd;
   (void)d;
   assert(e->kernelwantread);
   newfd = !e->kernelwantwrite;

@@ -13,7 +13,7 @@ struct critbit_node {
 #define EXTERNAL_NODE 0
 #define INTERNAL_NODE 1
 
-static inline int
+static int
 decode_pointer(void** ptr) {
   ptrdiff_t numvalue = (char*)*ptr - (char*)0;
   if(numvalue & 1) {
@@ -23,7 +23,7 @@ decode_pointer(void** ptr) {
   return INTERNAL_NODE;
 }
 
-static inline void
+static void
 from_external_node(void* ptr, void** key, size_t* keylen) {
   unsigned char* bytes = (unsigned char*)ptr;
 #ifndef NDEBUG

@@ -1,5 +1,7 @@
-#include <stdint.h>
 #include <stdlib.h>
+#ifndef _MSC_VER
+#include <stdint.h>
+#endif
 
 #include "memalign.h"
 

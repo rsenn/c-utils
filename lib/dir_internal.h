@@ -7,7 +7,7 @@
 
 #ifdef _MSC_VER
 #include <crtdefs.h>
-#endif // _MSC_VER
+#endif /* _MSC_VER */
 
 #ifndef USE_READDIR
 #ifdef __unix__
@@ -56,31 +56,31 @@ struct dir_internal_s {
 
 #ifndef _S_IFDIR
 #define _S_IFDIR  0040000 /* directory */
-#endif // !defined(_S_IFDIR)
+#endif /* !defined(_S_IFDIR) */
 
 #ifndef _S_IFCHR
 #define _S_IFCHR  0020000 /* character special */
-#endif // !defined(_S_IFCHR)
+#endif /* !defined(_S_IFCHR) */
 
 #ifndef S_IFBLK
 #define S_IFBLK  0060000 /* block special */
-#endif // !defined(S_IFBLK)
+#endif /* !defined(S_IFBLK) */
 
 #ifndef S_IFREG
 #define S_IFREG  0100000 /* regular */
-#endif // !defined(S_IFREG)
+#endif /* !defined(S_IFREG) */
 
 #ifndef S_IFLNK
 #define S_IFLNK  0120000 /* symbolic link */
-#endif // !defined(S_IFLNK)
+#endif /* !defined(S_IFLNK) */
 
 #ifndef S_IFSOCK
 #define S_IFSOCK 0140000 /* socket */
-#endif // !defined(S_IFSOCK)
+#endif /* !defined(S_IFSOCK) */
 
 #ifndef S_IFIFO
 #define S_IFIFO  0010000 /* fifo */
-#endif // !defined(S_IFIFO)
+#endif /* !defined(S_IFIFO) */
 
 #if USE_READDIR
 #ifndef _WIN32
@@ -127,4 +127,4 @@ struct dir_internal_s {
 #define dir_ISLINK(d) (!!(dir_ATTRS(d) & 0x08))
 #endif
 
-#endif // _DIR_INTERNAL_H__
+#endif /* _DIR_INTERNAL_H__ */

@@ -32,4 +32,4 @@ time_t rdir_time(struct rdir_s* d, int time_type);
 }
 #endif
 
-#endif // _RDIR_H__
+#endif /* _RDIR_H__ */

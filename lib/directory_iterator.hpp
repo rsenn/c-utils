@@ -70,6 +70,6 @@ private:
   char *m_retcode;
 };
 
-//} // end of namespace util
+//} /* end of namespace util */
 
-#endif // DIRECTORY_ITERATOR_HPP_
+#endif /* DIRECTORY_ITERATOR_HPP_ */

@@ -3,19 +3,21 @@
 int
 cbmap_delete(cbmap_t map, void* key, size_t key_len) {
   unsigned char* p = map->root;
-  if(p == NULL || key == NULL) {
-    return 0;
-  }
   const unsigned char* key_bytes = (const unsigned char*)key;
   void** wherep = &map->root;
   void** whereq = NULL;
   struct cbmap_internal_node* q = NULL;
   int direction = 0;
+    struct cbmap_data_node* data;
 
+  if(p == NULL || key == NULL) {
+    return 0;
+  }
+  
   while(IS_INTERNAL_NODE(p)) {
+    unsigned char c = 0;
     whereq = wherep;
     q = GET_INTERNAL_NODE(p);
-    unsigned char c = 0;
     if(q->byte < key_len) {
       c = key_bytes[q->byte];
     }
@@ -24,7 +26,7 @@ cbmap_delete(cbmap_t map, void* key, size_t key_len) {
     p = *wherep;
   }
 
-  struct cbmap_data_node* data = (struct cbmap_data_node*)p;
+data = (struct cbmap_data_node*)p;
   if(data->key_len != key_len || KEY_COMPARE(data->key, key, key_len) != 0) {
     return NOT_FOUND;
   }

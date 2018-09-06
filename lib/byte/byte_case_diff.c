@@ -1,5 +1,4 @@
 #include "../byte.h"
-#include <stdint.h>
 
 int
 byte_case_diff(const void* x1, unsigned int len, const void* x2) {

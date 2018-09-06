@@ -29,5 +29,5 @@ int   path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd)
 }
 #endif
 
-#endif // _PATH_H__
+#endif /* _PATH_H__ */
 /* path_time.c */

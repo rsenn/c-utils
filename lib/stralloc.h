@@ -184,7 +184,7 @@ void buffer_fromsa(buffer* b, const stralloc* sa);
 
 size_t stralloc_scan(stralloc *out, const stralloc *in, size_t (*scan_function)(const char *, char *));
 
-static inline size_t stralloc_length(const stralloc* sa) { return sa->len; }
+static size_t stralloc_length(const stralloc* sa) { return sa->len; }
 
 #define stralloc_begin(sa) ((sa)->s)
 #define stralloc_end(sa) ((sa)->s + (sa)->len)
@@ -195,8 +195,8 @@ static inline size_t stralloc_length(const stralloc* sa) { return sa->len; }
 
 unsigned int stralloc_endb(const stralloc* sa, const void* suffix, unsigned int len);
 
-static inline void stralloc_iterator_increment(char** it) { ++(*it); }
-static inline int stralloc_iterator_equal(char** it1, char** it2) { return it1 == it2; }
+static void stralloc_iterator_increment(char** it) { ++(*it); }
+static int stralloc_iterator_equal(char** it1, char** it2) { return it1 == it2; }
 
 #ifdef BYTE_H
 size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));
@@ -206,7 +206,7 @@ int stralloc_insertb(stralloc *sa, const char *s, size_t pos, size_t n);
 int stralloc_subst(stralloc *out, const char *b, size_t len, const char *from, const char *to);
 
 typedef size_t (stralloc_fmt_fn)();
-size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, ...);
+size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
 size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, stralloc_fmt_fn*, int (*pred)());
 size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, stralloc_fmt_fn*);
 

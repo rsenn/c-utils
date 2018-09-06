@@ -1,6 +1,5 @@
 #include "../str.h"
 #include "alloc.h"
-#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 

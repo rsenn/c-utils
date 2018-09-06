@@ -63,17 +63,18 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
 
     while(isalpha(*(s = buffer_peek(b)))) {
       char ch;
+      int quoted = 0;
+      const char* charset;
       stralloc_zero(&attr);
       stralloc_zero(&val);
       if((n = buffer_gettok_sa(b, &attr, "=", 1)) < 0) break;
       if(buffer_skipc(b) < 0) return;
-      int quoted = 0;
 
       if(*buffer_peek(b) == '"') {
         if(buffer_skipc(b) < 0) return;
         quoted = 1;
       }
-      const char* charset = quoted ? "\"" : "/> \t\r\n\v";
+     charset = quoted ? "\"" : "/> \t\r\n\v";
       if((n = buffer_gettok_sa(b, &val, charset, str_len(charset))) < 0) break;
       if(quoted && buffer_skipc(b) < 0) return;
       stralloc_nul(&attr);

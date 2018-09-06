@@ -117,4 +117,4 @@ fail : {
 #endif
 }
 
-#endif // HAVE_PIPE2
+#endif /* HAVE_PIPE2 */

@@ -275,7 +275,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
   char udpbuf[513];
   unsigned char ch;
   int r;
-  int fd;
+  int64 fd;
 
   errno = EIO;
   fd = d->s1 - 1;

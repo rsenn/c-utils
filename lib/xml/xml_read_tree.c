@@ -19,11 +19,12 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
       break;
     }
     case XML_TEXT: {
+      xmlnode* tnode;
       stralloc text;
       stralloc_init(&text);
       xml_unescape(value, &text);
       stralloc_nul(&text);
-      xmlnode* tnode = xml_newnode(XML_TEXT);
+      tnode = xml_newnode(XML_TEXT);
       tnode->name = text.s;
       tnode->parent = reader->parent;
       *reader->ptr = tnode;
@@ -38,13 +39,13 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
 #endif /* defined XML_DEBUG */
 
       if(reader->closing) {
-        xmlnode* parent = reader->parent;
+        xmlnode *node, *parent = reader->parent;
 
         if(parent) {
           reader->ptr = &parent->next;
           reader->parent = parent->parent;
         }
-        xmlnode* node = xml_newnode(XML_ELEMENT);
+        node = xml_newnode(XML_ELEMENT);
         *reader->ptr = node;
         reader->ptr = &node->next;
         stralloc_insertb(name, "/", 0, 1);
