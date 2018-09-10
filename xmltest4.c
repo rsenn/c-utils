@@ -721,7 +721,8 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
   xml_predicate_fn* pred = name ? (void*)xml_match_name_and_attr : (void*)xml_match_name;
-  xmlnodeset xr = xml_find_all(doc, pred, elem_name, "name", name);
+  const char* av[4] = { elem_name, "name", name, NULL };
+  xmlnodeset xr = xml_find_all(doc, pred, av);
   if((n = xmlnodeset_size(&xr)) == 0) return;
 
   for(i = 0; i < n; ++i) {
@@ -796,16 +797,22 @@ main(int argc, char* argv[]) {
     xml_debug(n, buffer_1);
     buffer_putnlflush(buffer_1);
   }
-
-  ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "C1");
+  const char* args[4] = { "element", "name", NULL, NULL };
+  args[2] = "C1";
+  ns = xml_find_all(doc, xml_match_name_and_attr, args);
   xml_print_nodeset(&ns, buffer_1);
   buffer_putlong(buffer_1, xmlnodeset_size(&ns));
   buffer_putnlflush(buffer_1);
-  ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "R1");
+  args[2] = "R1";
+  ns = xml_find_all(doc, xml_match_name_and_attr, args);
   xml_print_nodeset(&ns, buffer_1);
-  ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "T1");
+  args[2] = "T1";
+  ns = xml_find_all(doc, xml_match_name_and_attr, args);
   xml_print_nodeset(&ns, buffer_1);
-  ns = xml_find_all(doc, xml_match_name_and_attr, "element", "name", "L1");
+
+
+  args[2] = "L1";
+  ns = xml_find_all(doc, xml_match_name_and_attr, args);
   xml_print_nodeset(&ns, buffer_1);
   /*
    * Cleanup function for the XML library.
