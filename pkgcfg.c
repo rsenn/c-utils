@@ -417,9 +417,9 @@ pkg_conf(strarray* modules) {
 
       pkg_set(&pf);
 
-      //#if 1 //def DEBUG
+#ifdef DEBUG
       pkg_dump(buffer_2, &pf);
-      //#endif
+#endif
 
       if(!pkg_expand(&pf, fn, &value)) {
         errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
