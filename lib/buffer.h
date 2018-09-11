@@ -4,7 +4,7 @@
 
 /* for size_t: */
 #include <stddef.h>
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <inttypes.h>
 #include <stdint.h>
 #endif

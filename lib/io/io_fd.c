@@ -158,7 +158,7 @@ io_fd_internal(fd_t d, int flags) {
 #endif
 #if defined(_WIN32) || defined(_WIN64)
   if(io_comport) {
-    if(CreateIoCompletionPort((HANDLE)(uintptr_t)d, io_comport, (ULONG_PTR)(uintptr_t)d, 0) == 0) {
+    if(CreateIoCompletionPort((HANDLE)(size_t)d, io_comport, (ULONG_PTR)(size_t)d, 0) == 0) {
       errno = EBADF;
       return 0;
     }

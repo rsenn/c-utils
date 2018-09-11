@@ -30,7 +30,7 @@ slink* slist_remove(slist* l, slink** p);
 slink* slist_unshift(slist* l);
 
 #define slist_foreach(slist, n) \
-  for(slink** n = slist_begin(slist); n != slist_end(slist); slist_iterator_increment(slist, &n))
+  slink** n; for(n = slist_begin(slist); n != slist_end(slist); slist_iterator_increment(slist, &n))
 
 static slink** slist_begin(slist* l) { return &l->root; }
 static slink** slist_end(slist* l) { slink** p = &l->root; while(*p) p = &(*p)->next; return p; }

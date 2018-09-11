@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 ssize_t
 getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {

@@ -45,7 +45,7 @@ io_tryread(fd_t d, char* buf, int64 len) {
       if(len > x) {
         /* queue next read */
         if(len > sizeof(e->inbuf)) len = sizeof(e->inbuf);
-        if(ReadFile((HANDLE)(uintptr_t)d, e->inbuf, len, 0, &e->or)) {
+        if(ReadFile((HANDLE)(size_t)d, e->inbuf, len, 0, &e->or)) {
           e->canread = 1;
           e->readqueued = 2;
           e->next_write = first_writeable;
@@ -65,7 +65,7 @@ io_tryread(fd_t d, char* buf, int64 len) {
   }
   if(!e->readqueued) {
     if(len > sizeof(e->inbuf)) len = sizeof(e->inbuf);
-    if(ReadFile((HANDLE)(uintptr_t)d, e->inbuf, len, 0, &e->or)) {
+    if(ReadFile((HANDLE)(size_t)d, e->inbuf, len, 0, &e->or)) {
       e->readqueued = 1;
     } else {
     }

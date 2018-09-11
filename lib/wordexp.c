@@ -3,7 +3,6 @@
 #include <limits.h>
 #include <pthread.h>
 #include <signal.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -114,7 +113,7 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
 
   i = wc;
   if(flags & WRDE_DOOFFS) {
-    if(we->we_offs > SIZE_MAX / sizeof(void*) / 4) goto nospace;
+    if(we->we_offs > SSIZE_MAX / sizeof(void*) / 4) goto nospace;
     i += we->we_offs;
   } else {
     we->we_offs = 0;
@@ -202,7 +201,7 @@ nospace:
 }
 
 int
-wordexp(const char* restrict s, wordexp_t* restrict we, int flags) {
+wordexp(const char* s, wordexp_t* we, int flags) {
   int r, cs;
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
   r = do_wordexp(s, we, flags);

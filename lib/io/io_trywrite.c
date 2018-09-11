@@ -25,7 +25,7 @@ io_trywrite(fd_t d, const char* buf, int64 len) {
   }
   if(!e->nonblock) {
     DWORD written;
-    if(WriteFile((HANDLE)(uintptr_t)d, buf, len, &written, 0)) {
+    if(WriteFile((HANDLE)(size_t)d, buf, len, &written, 0)) {
       return written;
     } else {
       return winsock2errno(-3);
@@ -44,7 +44,7 @@ io_trywrite(fd_t d, const char* buf, int64 len) {
       }
       return e->bytes_written;
     } else {
-      if(WriteFile((HANDLE)(uintptr_t)d, buf, len, &e->errorcode, &e->ow)) {
+      if(WriteFile((HANDLE)(size_t)d, buf, len, &e->errorcode, &e->ow)) {
         return e->errorcode; /* should not happen */
       } else if(GetLastError() == ERROR_IO_PENDING) {
         e->writequeued = 1;

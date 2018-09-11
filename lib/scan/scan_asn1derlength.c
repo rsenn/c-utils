@@ -24,7 +24,7 @@
 size_t scan_asn1derlengthvalue(const char* src, size_t len, unsigned long long* value) {
   unsigned int i, c = *src;
   unsigned long long l;
-  if(len == 0 || len >= -(uintptr_t)src) return 0;
+  if(len == 0 || len >= -(size_t)src) return 0;
   if((c & 0x80) == 0) {
     *value = c;
     return 1;

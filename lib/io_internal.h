@@ -1,6 +1,10 @@
 #ifndef IO_INTERNAL_H
 #define IO_INTERNAL_H 1
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <winsock2.h>
+#endif
+
 #ifndef my_extern
 #if defined(_WIN32) || defined(_WIN64)
 #define my_extern extern __declspec(dllexport)

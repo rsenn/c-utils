@@ -1,3 +1,6 @@
+#if defined(_WIN32) || defined(_WIN64)
+#include <winsock2.h>
+#endif
 #include "../byte.h"
 #include "../dns.h"
 #include "../open.h"
@@ -7,9 +10,6 @@
 #include "../windoze.h"
 #include <stdlib.h>
 #include <unistd.h>
-#if defined(_WIN32) || defined(_WIN64)
-#include <winsock2.h>
-#endif
 
 static stralloc data;
 

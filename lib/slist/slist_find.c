@@ -3,7 +3,6 @@
 
 slink**
 slist_find(slist *l, int (*pred)(void *)) {
-  slink **p;
 
   /* Loop through all links until we find the pointer */
   slist_foreach(l, p) {

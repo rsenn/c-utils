@@ -1,10 +1,12 @@
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__)
+#include <winsock2.h>
+#endif
 #define _LARGEFILE64_SOURCE
 #define _FILE_OFFSET_BITS 64
 #include "../io_internal.h"
 #include "../socket.h"
 
-//#include <mswsock.h>
 
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
@@ -135,7 +137,7 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 }
 #endif
 
-#elif defined(_WIN32) || defined(_WIN64)
+#elif (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__)
 
 #ifndef TF_USE_KERNEL_APC
 #define TF_USE_KERNEL_APC 0x20
@@ -160,7 +162,7 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
       e->os.Offset = off;
       e->os.OffsetHigh = (off >> 32);
       TransmitFile(
-          (uintptr_t)out, (HANDLE)(uintptr_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
+          (size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
     }
     return e->bytes_written;
   } else {
@@ -169,7 +171,7 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
     e->os.OffsetHigh = (off >> 32);
     /* we always write at most 64k, so timeout handling is possible */
     if(!TransmitFile(
-           (uintptr_t)out, (HANDLE)(uintptr_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
+           (size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
       return -3;
   }
   return e->bytes_written;

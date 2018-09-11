@@ -1,3 +1,6 @@
+#if defined(_WIN32) || defined(_WIN64) || defined(__MSYS__) || defined(__CYGWIN__)
+#include <winsock2.h>
+#endif
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <netinet/in.h>
 #include <sys/socket.h>

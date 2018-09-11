@@ -1,6 +1,7 @@
 #include "cbmap.h"
 #include "cbmap/alloc.h"
 #include <string.h>
+#include <sys/types.h>
 
 /** A pair of allocation and deallocation functions */
 typedef struct cbmap_allocator {
@@ -50,8 +51,8 @@ struct cbmap_internal_node {
 
 /** mark - cbmap */
 
-#define IS_INTERNAL_NODE(p) (1 & (intptr_t)(p))
-#define GET_INTERNAL_NODE(p) ((struct cbmap_internal_node*)(((intptr_t)(p)) - 1))
+#define IS_INTERNAL_NODE(p) (1 & (size_t)(p))
+#define GET_INTERNAL_NODE(p) ((struct cbmap_internal_node*)(((size_t)(p)) - 1))
 
 #define IS_DATA_NODE(p) (!(IS_INTERNAL_NODE(p)))
 #define GET_DATA_NODE(p) ((struct cbmap_data_node*)(p))

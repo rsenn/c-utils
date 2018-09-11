@@ -1,3 +1,6 @@
+#if defined(_WIN32) || defined(_WIN64) || defined(__MSYS__) || defined(__CYGWIN__)
+#include <winsock2.h>
+#endif
 #include <sys/param.h>
 #include <sys/types.h>
 #if !defined(_WIN32) && !defined(_WIN64)

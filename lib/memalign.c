@@ -1,18 +1,15 @@
 #include <stdlib.h>
-#ifndef _MSC_VER
-#include <stdint.h>
-#endif
-
+#include <sys/types.h>
 #include "memalign.h"
 
 void*
 memalign_alloc(size_t boundary, size_t size) {
   void** place = NULL;
-  uintptr_t addr = 0;
-  void* ptr = (void*)malloc(boundary + size + sizeof(uintptr_t));
+  size_t addr = 0;
+  void* ptr = (void*)malloc(boundary + size + sizeof(size_t));
   if(!ptr) return NULL;
 
-  addr = ((uintptr_t)ptr + sizeof(uintptr_t) + boundary) & ~(boundary - 1);
+  addr = ((size_t)ptr + sizeof(size_t) + boundary) & ~(boundary - 1);
   place = (void**)addr;
   place[-1] = ptr;
 

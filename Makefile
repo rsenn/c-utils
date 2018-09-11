@@ -781,7 +781,11 @@ define NL
 
 endef
 
+ifneq ($(KERN),msys)
 CFLAGS += @$(FLAGS_FILE)
+else
+CFLAGS += $(shell cat $(FLAGS_FILE))
+endif
 
 ifneq ($(SYSROOT),)
 ifneq ($(call file-exists,$(SYSROOT)),1)
