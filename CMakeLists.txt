@@ -324,6 +324,15 @@ check_function_exists(readdir HAVE_readdir_FUNC)
 check_function_exists(getdents64 HAVE_getdents64_FUNC)
 check_function_exists(getdents HAVE_getdents_FUNC)
 
+check_function_exists(wordexp HAVE_WORDEXP)
+if(HAVE_WORDEXP)
+  add_definitions(-DHAVE_WORDEXP=1)
+endif()
+
+check_function_exists(posix_memalign HAVE_POSIX_MEMALIGN)
+if(HAVE_POSIX_MEMALIGN)
+  add_definitions(-DHAVE_POSIX_MEMALIGN=1)
+endif()
 
 if(HAVE_lstat_FUNC)
 if(NOT MINGW AND NOT MSYS)
