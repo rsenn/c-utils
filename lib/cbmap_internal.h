@@ -3,6 +3,10 @@
 #include <string.h>
 #include <sys/types.h>
 
+#ifndef PAGE_SIZE
+#define PAGE_SIZE 4096
+#endif
+
 /** A pair of allocation and deallocation functions */
 typedef struct cbmap_allocator {
   cbmap_allocator_fn malloc;

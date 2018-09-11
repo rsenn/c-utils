@@ -12,9 +12,9 @@
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
+#include "lib/wordexp.h"
 #include <ctype.h>
 #include <stdlib.h>
-#include "lib/wordexp.h"
 
 typedef enum {
   PRINT_VERSION = 1,
@@ -70,7 +70,7 @@ wordexp_sa(const char* s, stralloc* sa) {
   char** w;
   size_t i;
 
-  if(wordexp(s, &wx, WRDE_NOCMD | WRDE_UNDEF)) return 0;
+  if(wordexp(s, &wx, WRDE_NOCMD | WRDE_SHOWERR)) return 0;
 
   w = wx.we_wordv;
 
@@ -174,6 +174,11 @@ pkg_read(buffer* b, pkg* p) {
       stralloc_trim(&value, "\r\n\t \0", 5);
       stralloc_nul(&value);
       stralloc_nul(&name);
+#if 0 // def DEBUG
+      buffer_putm(buffer_2, "Name: ", name.s, "\n");
+      buffer_putm(buffer_2, "Value: ", value.s, "\n");
+      buffer_flush(buffer_2);
+#endif
 
       cbmap_insert(sep == '=' ? p->vars : p->fields, name.s, name.len + 1, value.s, value.len + 1);
     }
@@ -200,7 +205,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
   stralloc_init(&v);
   if(value_len && ((char*)value)[value_len - 1] == '\0') --value_len;
   stralloc_catb(&v, value, value_len);
-  //  wordexp_sa(value, &v);
+  wordexp_sa(value, &v);
   stralloc_nul(&v);
 
   env_set(key, v.s);
@@ -238,13 +243,21 @@ pkg_unset(pkg* p) {
   return cbmap_visit_all(p->vars, &visit_unset, p);
 }
 
+typedef struct {
+  buffer* b;
+  const char* m;
+} dump_t;
+
 static int
 visit_dump(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
-  buffer_put(user_data, key, key_len - 1);
-  buffer_puts(user_data, isupper(((char*)key)[0]) ? ": " : "=\"");
-  buffer_put(user_data, value, value_len - 1);
-  buffer_puts(user_data, isupper(((char*)key)[0]) ? "" : "\"");
-  buffer_putnlflush(user_data);
+  dump_t* ptr = user_data;
+  buffer_put(ptr->b, ptr->m, str_len(ptr->m) - 3);
+  buffer_puts(ptr->b, " ");
+  buffer_put(ptr->b, key, key_len - 1);
+  buffer_puts(ptr->b, isupper(((char*)key)[0]) ? ": " : "=\"");
+  buffer_put(ptr->b, value, value_len - 1);
+  buffer_puts(ptr->b, isupper(((char*)key)[0]) ? "\n" : "\"\n");
+  buffer_flush(ptr->b);
   return 1;
 }
 
@@ -255,11 +268,12 @@ visit_dump(const void* key, size_t key_len, const void* value, size_t value_len,
  */
 void
 pkg_dump(buffer* b, pkg* pf) {
+  dump_t dump_st = {b, str_basename(pf->name.s)};
   buffer_putsa(b, &pf->name);
   buffer_putnlflush(b);
 
-  cbmap_visit_all(pf->vars, visit_dump, b);
-  cbmap_visit_all(pf->fields, visit_dump, b);
+  cbmap_visit_all(pf->vars, &visit_dump, &dump_st);
+  cbmap_visit_all(pf->fields, &visit_dump, &dump_st);
 }
 
 void
@@ -348,7 +362,7 @@ pkg_list() {
 int
 pkg_open(const char* pkgname, pkg* pf) {
   buffer pc;
-  int i, n = strlist_count(&cmd.path);
+  int ret, i, n = strlist_count(&cmd.path);
 
   stralloc_init(&pf->name);
 
@@ -366,8 +380,9 @@ pkg_open(const char* pkgname, pkg* pf) {
 
   if(pc.x == NULL) return 0;
 
-  pkg_read(&pc, pf);
-  return 1;
+  ret = pkg_read(&pc, pf);
+
+  return ret;
 }
 
 /**
@@ -393,6 +408,10 @@ pkg_conf(strarray* modules) {
       const char* fn = field_names[cmd.code - 1];
 
       pkg_set(&pf);
+
+      //#if 1 //def DEBUG
+      pkg_dump(buffer_2, &pf);
+      //#endif
 
       if(!pkg_expand(&pf, fn, &value)) {
         errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
