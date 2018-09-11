@@ -104,6 +104,12 @@ DEFS += HAVE_PIPE2=1
 endif
 $(info HAVE_PIPE2=$(HAVE_PIPE2))
 
+HAVE_WORDEXP := $(call check-function-exists,wordexp)
+ifeq ($(HAVE_WORDEXP),1)
+DEFS += HAVE_WORDEXP=1
+endif
+$(info HAVE_WORDEXP=$(HAVE_WORDEXP))
+
 HAVE_ALLOCA := $(call check-function-exists,alloca,,alloca.h)
 ifeq ($(HAVE_ALLOCA),1)
 DEFS += HAVE_ALLOCA=1

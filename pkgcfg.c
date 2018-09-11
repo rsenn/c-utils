@@ -70,7 +70,7 @@ wordexp_sa(const char* s, stralloc* sa) {
   char** w;
   size_t i;
 
-  if(wordexp(s, &wx,  WRDE_SHOWERR)) return 0;
+  if(wordexp(s, &wx,  WRDE_NOCMD | WRDE_UNDEF)) return 0;
 
   w = wx.we_wordv;
 
@@ -205,10 +205,17 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
   stralloc_init(&v);
   if(value_len && ((char*)value)[value_len - 1] == '\0') --value_len;
   stralloc_catb(&v, value, value_len);
-  wordexp_sa(value, &v);
-  stralloc_nul(&v);
 
+  // wordexp_sa(value, &v);
+
+#ifdef DEBUG
+  buffer_putm(buffer_2, "ENV SET ", key, "=");
+  buffer_putsa(buffer_2, &v);
+  buffer_putnlflush(buffer_2);
+#endif
+  stralloc_nul(&v);
   env_set(key, v.s);
+ // setenv(key, v.s, 1);
 
   return 1;
 }
@@ -229,6 +236,7 @@ visit_unset(const void* key, size_t key_len, const void* value, size_t value_len
   (void)value;
   (void)value_len;
   (void)user_data;
+  //unsetenv(key);
   env_unset(key);
   return 1;
 }

@@ -1,3 +1,4 @@
+#ifndef HAVE_WORDEXP
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -218,3 +219,4 @@ wordfree(wordexp_t* we) {
   we->we_wordv = 0;
   we->we_wordc = 0;
 }
+#endif
