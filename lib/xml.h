@@ -61,7 +61,7 @@ int         xml_content_sa(xmlnode*, stralloc* sa);
 const char* xml_content(xmlnode*);
 void        xml_debug(xmlnode*, buffer* b);
 size_t      xml_escape(const char*, size_t n, stralloc* out);
-xmlnodeset  xml_find_all(xmlnode*, int (*pred)(void), void* ptr[4]);
+xmlnodeset  xml_find_all(xmlnode*, int (*pred)(void), const void* ptr[4]);
 xmlnode*    xml_find_element_attr(xmlnode*, const char* tag, const char* attr, const char* value);
 xmlnode*    xml_find_element(xmlnode*, const char* tag);
 xmlnode*    xml_find_pred(xmlnode*, int (*pred)(xmlnode*, void* ), void* pthread_rwlockattr_t);

@@ -404,7 +404,8 @@ getparts(xmlnode* doc, const char* elem_name) {
   size_t i, n;
   strlist ret;
   strlist_init(&ret, '\0');
-  xmlnodeset nodes = xml_find_all(doc, xml_match_name, elem_name);
+  const void* args[4] = { elem_name, NULL };
+  xmlnodeset nodes = xml_find_all(doc, xml_match_name, args);
   if((n = xmlnodeset_size(&nodes)) == 0) return ret;
 
   for(i = 0; i < n; ++i) {
@@ -721,7 +722,7 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
   xml_predicate_fn* pred = name ? (void*)xml_match_name_and_attr : (void*)xml_match_name;
-  const char* av[4] = { elem_name, "name", name, NULL };
+  const void* av[4] = { elem_name, "name", name, NULL };
   xmlnodeset xr = xml_find_all(doc, pred, av);
   if((n = xmlnodeset_size(&xr)) == 0) return;
 
@@ -756,7 +757,8 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
  */
 bool
 xml_foreach(xmlnode* doc, const char* elem, void (*fn)(xmlnode*)) {
-  xmlnodeset xpo = xml_find_all(doc, xml_match_name, elem);
+  const void* args[] = { elem, NULL };
+  xmlnodeset xpo = xml_find_all(doc, xml_match_name, args);
 
   if(!xmlnodeset_empty(&xpo)) {
     for_set(&xpo, fn);
@@ -784,7 +786,8 @@ main(int argc, char* argv[]) {
   xmlnode* doc = xml_read_tree(&input);
   xml_print(doc->children, buffer_1);
   xmlnodeset ns;
-  ns = xml_find_all(doc, xml_match_name, "package");
+  const void* av[] = { "package", NULL };
+  ns = xml_find_all(doc, xml_match_name, av);
   xml_print_nodeset(&ns, buffer_1);
   xmlnodeset_iter_t it, e;
   size_t i = 0;
@@ -797,7 +800,7 @@ main(int argc, char* argv[]) {
     xml_debug(n, buffer_1);
     buffer_putnlflush(buffer_1);
   }
-  const char* args[4] = { "element", "name", NULL, NULL };
+  const void* args[4] = { "element", "name", NULL, NULL };
   args[2] = "C1";
   ns = xml_find_all(doc, xml_match_name_and_attr, args);
   xml_print_nodeset(&ns, buffer_1);

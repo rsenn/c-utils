@@ -5,7 +5,7 @@
 #include <stdarg.h>
 
 static int
-xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), void* arg1, void* arg2, void* arg3, void* arg4) {
+xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), const void* arg1, const void* arg2, const void* arg3, const void* arg4) {
   do {
 
     if(pred(node, arg1, arg2, arg3)) {
@@ -22,7 +22,7 @@ xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), void* arg1, void*
 }
 
 xmlnodeset
-xml_find_all(xmlnode* node, int (*pred)(), void* ptr[4]) {
+xml_find_all(xmlnode* node, int (*pred)(), const void* ptr[4]) {
    xmlnodeset ret;
   array a;
   strlist names; 
