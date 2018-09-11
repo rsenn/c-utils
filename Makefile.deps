@@ -1576,7 +1576,7 @@ $(BUILDDIR)mediathek-parser.o: mediathek-parser.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pathtool.o: pathtool.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)pkgconf.o: pkgconf.c
+$(BUILDDIR)pkgcfg.o: pkgcfg.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)plsconv.o: plsconv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

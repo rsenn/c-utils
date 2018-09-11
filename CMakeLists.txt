@@ -382,7 +382,7 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-  access buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname eagle-gen-cmds eagle-init-brd eagle-to-circuit hexedit httptest impgen jsontest list-r main mediathek-list mediathek-parser ntldd pathtool pkgconf plsconv rdir-test reg2cmd regfilter torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest sln
+  access buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname eagle-gen-cmds eagle-init-brd eagle-to-circuit hexedit httptest impgen jsontest list-r main mediathek-list mediathek-parser ntldd pathtool pkgcfg plsconv rdir-test reg2cmd regfilter torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest sln
 )
 
 if(NOT MSVC)
@@ -580,7 +580,7 @@ target_link_libraries(xmltest2 buffer fmt playlist str stralloc xml)
 target_link_libraries(xmltest3 buffer fmt playlist str stralloc xml)
 target_link_libraries(xmltest4 array buffer byte cbmap scan str stralloc strlist xml)
 target_link_libraries(ziptest buffer playlist str)
-target_link_libraries(pkgconf array buffer byte cbmap dir errmsg env path playlist slist str stralloc strarray strlist)
+target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path playlist slist str stralloc strarray strlist)
 target_link_libraries(sln buffer byte errmsg path playlist str stralloc)
 
 
