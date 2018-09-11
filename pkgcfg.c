@@ -70,7 +70,7 @@ wordexp_sa(const char* s, stralloc* sa) {
   char** w;
   size_t i;
 
-  if(wordexp(s, &wx, WRDE_NOCMD | WRDE_SHOWERR)) return 0;
+  if(wordexp(s, &wx,  WRDE_SHOWERR)) return 0;
 
   w = wx.we_wordv;
 
