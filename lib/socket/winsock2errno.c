@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #if WINDOWS || defined(__MSYS__) || defined(__CYGWIN__)
 #include <winsock2.h>
 #include <errno.h>

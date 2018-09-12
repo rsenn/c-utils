@@ -1,17 +1,17 @@
-#include <stdio.h>
-#include <sys/types.h>
-#if WINDOWS
-#include <windows.h>
-#else
-#include <sys/mman.h>
-#include <unistd.h>
-#endif
+#include "../io.h"
 #include "../mmap.h"
 #include "../open.h"
+#include "../windoze.h"
+#if WINDOWS_NATIVE
+#include <windows.h>
+#else
+#include <unistd.h>
+#include <sys/mman.h>
+#endif
 
 char*
 mmap_shared(const char* filename, size_t* filesize) {
-#if WINDOWS
+#if WINDOWS_NATIVE
   HANDLE fd, m;
   char* map;
   fd = CreateFile(filename,

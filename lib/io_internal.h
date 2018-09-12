@@ -1,5 +1,7 @@
 #ifndef IO_INTERNAL_H
 #define IO_INTERNAL_H 1
+
+#include "windoze.h"
 /*
 #if WINDOWS
 #include <winsock2.h>
@@ -45,8 +47,10 @@ my_extern HANDLE io_comport;
 #endif
 
 #if !defined(WINDOWS)
+#if defined(__unix__) || defined(__linux__)
 #include <sys/time.h>
 #include <unistd.h>
+#endif
 #endif
 
 #ifndef io_seek

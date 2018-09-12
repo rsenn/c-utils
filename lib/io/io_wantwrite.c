@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../io_internal.h"
 #include <errno.h>
 #include <fcntl.h>

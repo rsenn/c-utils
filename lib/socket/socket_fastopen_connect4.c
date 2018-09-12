@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../socket.h"
 #if WINDOWS
 #include <windows.h>

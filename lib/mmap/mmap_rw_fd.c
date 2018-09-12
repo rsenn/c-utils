@@ -1,24 +1,19 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
+#include "../io.h"
 #include "../mmap.h"
 #include "../open.h"
-
-#if defined(_WIN32) || defined(_WIN32) || defined(__MSYS__)
+#include "../windoze.h"
+#if WINDOWS_NATIVE
 #include <windows.h>
 #else
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
+#include <sys/mman.h>
 #endif
 
 extern char mmap_empty[];
 
 char*
 mmap_rw_fd(fd_t fd, size_t* filesize) {
-#if WINDOWS || defined(__MSYS__)
+#if WINDOWS_NATIVE
   HANDLE m;
   char* map;
   m = CreateFileMapping((HANDLE)(size_t)fd, 0, PAGE_READWRITE, 0, 0, NULL);

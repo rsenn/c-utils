@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #define _FILE_OFFSET_BITS 64
 #if WINDOWS
 #include <io.h>

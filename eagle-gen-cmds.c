@@ -393,15 +393,17 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
  */
 void
 build_nets(xmlnode* node) {
-  xmlnode* sn;
+ int i;
+    struct net* ptr;
+    xmlnode* sn;
   char *sign, *name = node->name;
   assert(str_equal(name, "net") || str_equal(name, "signal"));
   if(!(sign = xml_get_attribute(node, "name"))) return;
   print_name_value(buffer_2, name, sign);
   buffer_putnlflush(buffer_2);
-  struct net* ptr = get_or_create(nets, sign, sizeof(struct net));
+  ptr = get_or_create(nets, sign, sizeof(struct net));
   stralloc_copys(&ptr->name, sign);
-  int i = 0;
+  i = 0;
   build_reflist(node->children, ptr, &i);
 }
 
@@ -411,16 +413,17 @@ build_nets(xmlnode* node) {
 void
 build_package(xmlnode* set) {
   xmlnode* node;
-  char* name = xml_get_attribute(set, "name");
+  char *pn, *name = xml_get_attribute(set, "name");
   struct package pkg;
   byte_zero(&pkg, sizeof(struct package));
   stralloc_copys(&pkg.name, name);
 
   for(node = set->children; node; node = node->next) {
-    if(node->type != XML_ELEMENT || str_diff(node->name, "pad")) continue;
-    char* pn = xml_get_attribute(node, "name");
+    struct pad p; 
+     if(node->type != XML_ELEMENT || str_diff(node->name, "pad")) continue;
+     pn = xml_get_attribute(node, "name");
     if(!pn || str_len(pn) == 0) continue;
-    struct pad p;
+  
     byte_zero(&p, sizeof(struct pad));
     p.x = get_double(node, "x");
     p.y = get_double(node, "y");
@@ -435,20 +438,21 @@ build_package(xmlnode* set) {
  */
 void
 build_deviceset(xmlnode* set) {
-  xmlnode* node;
+  struct deviceset d;
+   xmlnode *gates, *devices, *node;
   char* name = xml_get_attribute(set, "name");
   print_name_value(buffer_2, "deviceset", name);
   buffer_putnlflush(buffer_2);
-  struct deviceset d;
+ 
   byte_zero(&d, sizeof(struct deviceset));
   stralloc_copys(&d.name, name);
   d.devices = cbmap_new();
-  xmlnode* gates = get_child(set, "gates");
-  xmlnode* devices = get_child(set, "devices");
+  gates = get_child(set, "gates");
+  devices = get_child(set, "devices");
 
   for(node = gates->children; node; node = node->next) {
-    if(node->type != XML_ELEMENT) continue;
     struct gate g;
+    if(node->type != XML_ELEMENT) continue;
     byte_zero(&g, sizeof(struct gate));
     stralloc_copys(&g.name, xml_get_attribute(node, "name"));
     stralloc_copys(&g.symbol, xml_get_attribute(node, "symbol"));
@@ -456,14 +460,16 @@ build_deviceset(xmlnode* set) {
   }
 
   for(node = devices->children; node; node = node->next) {
-    if(node->type != XML_ELEMENT) continue;
+    char *name, *package;
     struct pinmapping pm;
-    char* name = xml_get_attribute(node, "name");
-    if(!name || str_len(name) == 0) continue;
-    char* package = xml_get_attribute(node, "package");
-    byte_zero(&pm, sizeof(struct pinmapping));
-    struct package* pkg;
+     struct package* pkg;
     size_t len;
+     if(node->type != XML_ELEMENT) continue;
+     name = xml_get_attribute(node, "name");
+    if(!name || str_len(name) == 0) continue;
+     package = xml_get_attribute(node, "package");
+    byte_zero(&pm, sizeof(struct pinmapping));
+  
     cbmap_get(packages, package, str_len(package), (void**)&pkg, &len);
     pm.pkg = pkg;
     cbmap_insert(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
@@ -487,11 +493,12 @@ getnodeset(void* n, const char* xpath) {
 strlist
 
 getparts(xmlnode* doc) {
+  xmlnodeset ns;
+xmlnodeset_iter_t it, e;
   strlist ret;
   strlist_init(&ret, '\0');
-  xmlnodeset ns = getnodeset(doc, "part|element");
-  xmlnodeset_iter_t it, e;
-
+  ns = getnodeset(doc, "part|element");
+  
   for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
     xmlnode* node = *it;
     strlist_push(&ret, xml_get_attribute(node, "name"));
@@ -504,8 +511,8 @@ getparts(xmlnode* doc) {
  */
 void
 for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
-  if(!ns) return;
   xmlnodeset_iter_t it, e;
+  if(!ns) return;
   for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it) fn(*it);
 }
 
@@ -514,16 +521,18 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
  */
 void
 nodeset_topleft(xmlnodeset* s, double* x, double* y) {
+  xmlnode* node;
   int i, len = xmlnodeset_size(s);
   if(len == 0) return;
-  xmlnode* node = xmlnodeset_item(s, 0);
+  node = xmlnodeset_item(s, 0);
   *x = get_double(node, "x");
   *y = get_double(node, "y");
 
   for(i = 1; i < len; ++i) {
+  double nx,ny;
     node = xmlnodeset_item(s, i);
-    double nx = get_double(node, "x");
-    double ny = get_double(node, "y");
+    nx = get_double(node, "x");
+    ny = get_double(node, "y");
     if(nx < *x) *x = nx;
     if(ny < *y) *y = ny;
   }
@@ -541,9 +550,10 @@ tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
   *y = get_double(node, "y");
 
   while((node = node->next)) {
+  double nx,ny;
     if(node->type != XML_ELEMENT || str_diff(node->name, elems)) continue;
-    double nx = get_double(node, "x");
-    double ny = get_double(node, "y");
+    nx = get_double(node, "x");
+     ny = get_double(node, "y");
     if(nx < *x) *x = nx;
     if(ny < *y) *y = ny;
   }
@@ -604,8 +614,9 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
   struct net* n = (struct net*)value;
   struct part* p = user_data;
   struct ref* rc;
+  int64 i, len;
   if(!(rc = net_connects(n, p, -1))) return 1;
-  int64 i, len = array_length(&n->contacts, sizeof(struct ref));
+  len = array_length(&n->contacts, sizeof(struct ref));
 
   for(i = 0; i < len; ++i) {
     struct ref* r = array_get(&n->contacts, sizeof(struct ref), i);
@@ -774,10 +785,11 @@ buffer_read(void* ptr, char* buf, int len) {
 
 void
 match_query(xmlnode* doc, const char* q) {
-  print_name_value(buffer_1, "XPath query", q);
-  buffer_putnlflush(buffer_1);
-  xmlnodeset ns = getnodeset(doc, q);
+   xmlnodeset ns;
   xmlnodeset_iter_t it, e;
+   print_name_value(buffer_1, "XPath query", q);
+  buffer_putnlflush(buffer_1);
+ ns = getnodeset(doc, q);
 
   for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
     xmlnode* node = *it;
@@ -789,12 +801,13 @@ match_query(xmlnode* doc, const char* q) {
 
     if(0) { //! str_diff(q, xq)) {
       TUPLE* a;
+      const char* elem_name = &q[2];
       stralloc query;
       stralloc_init(&query);
-      const char* elem_name = &q[2];
       elem_name = "*";
 
       for(a = xml_attributes(node); a; a = hmap_next(node->attributes, a)) {
+        strlist part_names;
         const char* attr_name = a->key;
         const char* v = a->vals.val_chars;
         if(!v || str_len(v) == 0) continue;
@@ -809,7 +822,7 @@ match_query(xmlnode* doc, const char* q) {
         stralloc_copym(&query, "", elem_name, "[@", attr_name, "='", v, "']", NULL);
         stralloc_0(&query);
         match_query(doc, query.s);
-        strlist part_names = getparts(doc);
+         part_names = getparts(doc);
         strlist_dump(buffer_1, &part_names);
       }
     }
@@ -833,7 +846,12 @@ match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
 int
 
 main(int argc, char* argv[]) {
-  devicesets = cbmap_new();
+   buffer input, out;
+  const char* base;
+    xmlnode* doc;
+    
+  xmlnode* plain, *left, *right, *bottom, *top, * gnd_signal, *polygon, *n;
+    devicesets = cbmap_new();
   packages = cbmap_new();
   parts = cbmap_new();
   nets = cbmap_new();
@@ -845,11 +863,10 @@ main(int argc, char* argv[]) {
     xq = argv[2];
   }
 
-  const char* base = str_basename(argv[1]);
-  buffer input;
+ base = str_basename(argv[1]);
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
-  xmlnode* doc = xml_read_tree(&input);
+ doc = xml_read_tree(&input);
   match_query(doc, xq);
   match_foreach(doc, "package", build_package);
   buffer_puts(buffer_2, "items in packages: ");
@@ -893,30 +910,31 @@ main(int argc, char* argv[]) {
   bounds.x2 = round(100 * bounds.x2) / 100;
   bounds.y2 = round(100 * bounds.y2) / 100;
 
-  xmlnode* plain = xml_find_element(doc, "plain");
+  
+  plain = xml_find_element(doc, "plain");
 
-  xmlnode* left = xml_element("wire");
+   left = xml_element("wire");
   xml_set_attribute_double(left, "x1", bounds.x1);
   xml_set_attribute_double(left, "x2", bounds.x1);
   xml_set_attribute_double(left, "y1", bounds.y1);
   xml_set_attribute_double(left, "y2", bounds.y2);
   xml_set_attribute_double(left, "layer", measures_layer);
 
-  xmlnode* right = xml_element("wire");
+   right = xml_element("wire");
   xml_set_attribute_double(right, "x1", bounds.x2);
   xml_set_attribute_double(right, "x2", bounds.x2);
   xml_set_attribute_double(right, "y1", bounds.y1);
   xml_set_attribute_double(right, "y2", bounds.y2);
   xml_set_attribute_double(right, "layer", measures_layer);
 
-  xmlnode* bottom = xml_element("wire");
+    bottom = xml_element("wire");
   xml_set_attribute_double(bottom, "x1", bounds.x1);
   xml_set_attribute_double(bottom, "x2", bounds.x2);
   xml_set_attribute_double(bottom, "y1", bounds.y1);
   xml_set_attribute_double(bottom, "y2", bounds.y1);
   xml_set_attribute_double(bottom, "layer", measures_layer);
 
-  xmlnode* top = xml_element("wire");
+  top = xml_element("wire");
   xml_set_attribute_double(top, "x1", bounds.x1);
   xml_set_attribute_double(top, "x2", bounds.x2);
   xml_set_attribute_double(top, "y1", bounds.y2);
@@ -928,8 +946,8 @@ main(int argc, char* argv[]) {
   xml_add_child(plain, right);
   xml_add_child(plain, bottom);
 
-  xmlnode* gnd_signal = xml_find_element_attr(doc, "signal", "name", "GND");
-  xmlnode* polygon = xml_find_element(gnd_signal, "polygon");
+   gnd_signal = xml_find_element_attr(doc, "signal", "name", "GND");
+  polygon = xml_find_element(gnd_signal, "polygon");
 
   if(polygon == NULL) {
     polygon = xml_element("polygon");
@@ -947,7 +965,6 @@ main(int argc, char* argv[]) {
     polygon->children = NULL;
   }
 
-  xmlnode* n;
   n = xml_element("vertex");
   xml_set_attribute_double(n, "x", bounds.x1);
   xml_set_attribute_double(n, "y", bounds.y2);
@@ -967,7 +984,6 @@ main(int argc, char* argv[]) {
 
   xml_print(plain, buffer_2);
 
-  buffer out;
   buffer_truncfile(&out, base);
 
   xml_print(doc, &out);

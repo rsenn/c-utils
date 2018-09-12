@@ -1,15 +1,13 @@
-#include <stdio.h>
-#ifndef WIN32
-#include <unistd.h>
-#endif
-#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
-#include <windows.h>
-#else
-#include <sys/mman.h>
-#endif
-#include "../io_internal.h"
+#include "../io.h"
 #include "../mmap.h"
 #include "../open.h"
+#include "../windoze.h"
+#if WINDOWS_NATIVE
+#include <windows.h>
+#else
+#include <unistd.h>
+#include <sys/mman.h>
+#endif
 
 char*
 mmap_private(const char* filename, size_t* filesize) {

@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../env.h"
 
 #if WINDOWS_NATIVE
@@ -9,7 +10,8 @@ env_unset(const char* name) {
 #if WINDOWS_NATIVE
   return SetEnvironmentVariable(name, "");
 #else
-  return unsetenv(name) == 0;
+  unsetenv(name);
+  return 1;
 #endif
 }
 

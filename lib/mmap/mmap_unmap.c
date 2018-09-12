@@ -1,17 +1,17 @@
-#include <sys/types.h>
-
-#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
-#include <windows.h>
-#else
-#include <sys/mman.h>
-#include <unistd.h>
-#endif
+#include "../io.h"
 #include "../mmap.h"
 #include "../open.h"
+#include "../windoze.h"
+#if WINDOWS_NATIVE
+#include <windows.h>
+#else
+#include <unistd.h>
+#include <sys/mman.h>
+#endif
 
 int
 mmap_unmap(void* mapped, size_t maplen) {
-#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
+#if WINDOWS_NATIVE
   (void)maplen;
   return UnmapViewOfFile(mapped) ? 0 : -1;
 #else

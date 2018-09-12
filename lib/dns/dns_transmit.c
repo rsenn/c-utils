@@ -1,8 +1,10 @@
-#include <sys/types.h>
-#if WINDOWS
+#include "../windoze.h"
+#if WINDOWS_NATIVE
 #include <winsock2.h>
 #else
+#include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #endif
 #include "../byte.h"
 #include "../dns.h"
@@ -11,7 +13,6 @@
 #include "../uint16.h"
 #include <errno.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 static int
 serverwantstcp(const char* buf, unsigned int len) {

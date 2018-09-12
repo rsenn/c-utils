@@ -1,10 +1,11 @@
+#include "../windoze.h"
 #include "../str.h"
 #include "alloc.h"
 #include "../cbmap_internal.h"
 #include <stdio.h>
 #include <string.h>
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <crtdbg.h>
 #endif
 

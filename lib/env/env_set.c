@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../env.h"
 
 #if WINDOWS_NATIVE

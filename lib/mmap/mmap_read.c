@@ -1,17 +1,17 @@
-#include "../io_internal.h"
-#include <stdio.h>
-#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
-#include <windows.h>
-#else
-#include <sys/mman.h>
-#include <unistd.h>
-#endif
+#include "../io.h"
 #include "../mmap.h"
 #include "../open.h"
+#include "../windoze.h"
+#if WINDOWS_NATIVE
+#include <windows.h>
+#else
+#include <unistd.h>
+#include <sys/mman.h>
+#endif
 
 extern char*
 mmap_read(const char* filename, size_t* filesize) {
-#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
+#if WINDOWS_NATIVE
   HANDLE fd, m;
   char* map;
   fd = CreateFile(filename,

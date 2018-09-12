@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #if WINDOWS
 #include "../io_internal.h"
 #else

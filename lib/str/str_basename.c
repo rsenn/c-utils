@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../str.h"
 
 #if WINDOWS

@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include <sys/types.h>
 #if WINDOWS
 #include <windows.h>
