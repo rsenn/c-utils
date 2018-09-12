@@ -3,7 +3,6 @@
 #include <float.h>
 #include <limits.h>
 #include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
@@ -46,7 +45,7 @@ struct package {
 struct pin {
   stralloc name;
   double x, y, r;
-  bool visible;
+  int visible;
 };
 
 struct symbol {
@@ -290,7 +289,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
       build_reflist(node->children, n, index);
       continue;
     }
-    bool is_pin = str_equal(nn, "pinref");
+    int is_pin = str_equal(nn, "pinref");
     if(str_diff(nn, is_pin ? "pinref" : "contactref")) continue;
     char* part_name = xml_get_attribute(node, is_pin ? "part" : "element");
     struct ref* r = array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
@@ -755,16 +754,16 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
 /**
  * Executes XPath query and for every resulting element calls a function
  */
-bool
+int
 xml_foreach(xmlnode* doc, const char* elem, void (*fn)(xmlnode*)) {
   const void* args[] = { elem, NULL };
   xmlnodeset xpo = xml_find_all(doc, xml_match_name, args);
 
   if(!xmlnodeset_empty(&xpo)) {
     for_set(&xpo, fn);
-    return true;
+    return 1;
   }
-  return false;
+  return 0;
 }
 
 int

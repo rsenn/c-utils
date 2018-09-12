@@ -1,6 +1,6 @@
 #include "../gpio_internal.h"
 
-bool
+int
 gpio_read(int const pin_nr) {
   assert(gpio != NULL);
 

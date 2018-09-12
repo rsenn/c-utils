@@ -2,9 +2,10 @@
 #ifndef UINT32_H
 #define UINT32_H
 
-#if !defined(_MSC_VER) && !defined(__MSYS__)
+#if HAVE_INTTYPES_H
 #include <inttypes.h>
 #endif
+
 #if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <stdint.h>
 #endif /* !defined(_MSC_VER) */
@@ -42,22 +43,26 @@ extern "C" {
 typedef uint32_t uint32;
 typedef int32_t int32;
 
-#if(defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT32_MACROS)
+#if !defined(NO_UINT32_MACROS)
 
-static void uint32_pack(char* out, uint32 in) {
+static inline void
+uint32_pack(char* out, uint32 in) {
   *(uint32 *)out = in;
 }
 
-static void uint32_unpack(const char* in, uint32* out) {
+static inline void
+uint32_unpack(const char* in, uint32* out) {
   *out = *(uint32 *)in;
 }
 
-static uint32 uint32_get(const void* ptr) {
+static inline uint32
+uint32_get(const void* ptr) {
   const char* in = ptr;
   return *(uint32 *)in;
 }
 
-static uint32 uint32_read(const char* in) {
+static inline uint32
+uint32_read(const char* in) {
   return *(uint32 *)in;
 }
 
@@ -66,13 +71,13 @@ void uint32_unpack_big(const char* in, uint32* out);
 uint32 uint32_read_big(const char* in);
 #else
 
-static uint32
+static inline uint32
 uint32_get(const void* ptr) {
   const char* in = ptr;
   return (in[0] << 24) | (in[1] << 16) | (in[2] << 8) | (in[3]);
 }
 
-static uint32
+static inline uint32
 uint32_read(const char* in) {
   return (in[0] << 24) | (in[1] << 16) | (in[2] << 8) | (in[3]);
 }
@@ -89,5 +94,4 @@ uint32 uint32_read_big(const char* in);
 #ifdef __cplusplus
 }
 #endif
-
 #endif

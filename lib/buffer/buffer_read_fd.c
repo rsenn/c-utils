@@ -7,7 +7,6 @@
 #if WINDOWS
 #include "../windoze.h"
 #else
-#include <unistd.h>
 #endif
 
 int

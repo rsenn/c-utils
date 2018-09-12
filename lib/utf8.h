@@ -1,12 +1,13 @@
 #ifndef _UTF8
 #define _UTF8 1
 
+#include <stdlib.h>
+#include <sys/types.h>
+#include <wchar.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdlib.h>
-#include <wchar.h>
 
 int    u8len(const char*, size_t count);
 size_t u8stowcs(wchar_t*, const char* pu, size_t count);

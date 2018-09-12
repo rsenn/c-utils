@@ -1,8 +1,6 @@
-#include "../str.h"
-#include "../stralloc.h"
+#include "../path_internal.h"
 
 #include <limits.h>
-#include <unistd.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

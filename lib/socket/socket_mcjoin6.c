@@ -1,18 +1,10 @@
-#include "../socket.h"
 #include "../windoze.h"
-#include <sys/param.h>
-#include <sys/types.h>
-#if !defined(_WIN32) && !defined(_WIN64)
-#include <netinet/in.h>
-#include <sys/socket.h>
-#else
+#include "../ip6.h"
+#include "../socket.h"
+
 #ifdef IPV6_JOIN_GROUP
 #define LIBC_HAS_IP6
 #endif
-#endif
-#include "../byte.h"
-#include "../ip6.h"
-#include <errno.h>
 
 #ifndef IPV6_ADD_MEMBERSHIP
 #ifdef IPV6_JOIN_GROUP

@@ -1,3 +1,4 @@
+#include "windoze.h"
 #if WINDOWS
 #include <winsock2.h>
 #include <windows.h>

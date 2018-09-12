@@ -9,7 +9,6 @@
 #include "../taia.h"
 #include "../windoze.h"
 #include <stdlib.h>
-#include <unistd.h>
 
 static stralloc data;
 

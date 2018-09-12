@@ -1,11 +1,11 @@
-#include <fcntl.h>
-#include <sys/types.h>
-
+#include "../windoze.h"
 #include "../ndelay.h"
 
 #if WINDOWS
-#include "../windoze.h"
 #include <winsock.h>
+#else
+#include <fcntl.h>
+#include <sys/types.h>
 #endif
 
 #ifndef O_NDELAY

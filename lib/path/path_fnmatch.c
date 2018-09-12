@@ -1,5 +1,5 @@
 
-#include "../path.h"
+#include "../path_internal.h"
 
 /*#include "../buffer.h"*/
 

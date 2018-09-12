@@ -1,5 +1,7 @@
+#include "../windoze.h"
 #if WINDOWS_NATIVE
 #include <winsock2.h>
+typedef int socklen_t;
 #else
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -7,7 +9,6 @@
 #endif
 #include "../socket.h"
 #include "../uint64.h"
-#include "../windoze.h"
 
 #if WINDOWS_NATIVE
 #include "../io_internal.h"

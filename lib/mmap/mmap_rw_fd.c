@@ -5,8 +5,8 @@
 #if WINDOWS_NATIVE
 #include <windows.h>
 #else
-#include <unistd.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #endif
 
 extern char mmap_empty[];

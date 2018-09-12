@@ -2,7 +2,6 @@
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <unistd.h>
 #endif
 #include "../windoze.h"
 

@@ -1,11 +1,10 @@
-#include <sys/param.h>
+#include "../windoze.h"
 #include <sys/types.h>
-#if !defined(_WIN32) && !defined(_WIN64)
+#if !WINDOWS_NATIVE
 #include <netinet/in.h>
 #include <sys/socket.h>
 #endif
 #include "../socket.h"
-#include "../windoze.h"
 
 int
 socket_broadcast(int s) {

@@ -92,9 +92,10 @@ http_readable(http* h) {
       r->line++;
 
       if(ret >= 0) {
-        while(ret > 0 && is_space(line[ret - 1])) ret--;
-        line[ret] = '\0';
         unsigned long n, p;
+         while(ret > 0 && is_space(line[ret - 1])) ret--;
+        line[ret] = '\0';
+       
 
         if(r->part < CHUNKS && line[str_chr(line, ':')] == ':') {
           /*  if(r->part == HEADER)*/ putline("Header", line, ret, &recvb);
@@ -119,6 +120,7 @@ http_readable(http* h) {
             putline("Boundary", r->data.s, r->data.len, &recvb);
           }
         } else if(r->part == CHUNKS && (p = scan_xlong(line, &n)) > 0) {
+          ssize_t n;
 
           if(n == 0) {
             r->status = DONE;
@@ -135,7 +137,7 @@ http_readable(http* h) {
             r->ptr = sptr;
             return; /* goto again; */
           }
-          ssize_t n = buffer_getline(&recvb, line, sizeof(line));
+        n = buffer_getline(&recvb, line, sizeof(line));
           putline("Newline", "", -n, &recvb);
           if(recvb.n - recvb.p <= 0) return;
           continue;

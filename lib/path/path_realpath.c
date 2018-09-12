@@ -1,9 +1,9 @@
-#include "../byte.h"
-#include "../str.h"
-#include "../stralloc.h"
-
+#include "../path_internal.h"
 #include <errno.h>
-#include <limits.h>
+
+#ifndef ENAMETOOLONG
+#define ENAMETOOLONG 91
+#endif
 
 extern int path_canonicalize(const char* path, stralloc* sa, int symbolic);
 

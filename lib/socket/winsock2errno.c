@@ -1,9 +1,11 @@
 #include "../windoze.h"
-#if WINDOWS || defined(__MSYS__) || defined(__CYGWIN__)
-#include <winsock2.h>
-#include <errno.h>
 
-int winsock2errno(long l) {
+#if WINDOWS_NATIVE
+#include "../socket.h"
+#include <errno.h>
+#undef winsock2errno
+int
+winsock2errno(long l) {
   long x;
   if(l == -1)
     switch((x = WSAGetLastError())) {

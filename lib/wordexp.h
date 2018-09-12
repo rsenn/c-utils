@@ -1,11 +1,21 @@
 #ifndef	_WORDEXP_H
 #define	_WORDEXP_H
+
+#include <stdlib.h>
 #include <sys/types.h>
+#include "windoze.h"
+#if WINDOWS_NATIVE
+#include <windows.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifndef _SSIZE_T_DEFINED
+#define _SSIZE_T_DEFINED 1
+typedef SSIZE_T ssize_t;
+#endif
 
 #define WRDE_DOOFFS  1
 #define WRDE_APPEND  2

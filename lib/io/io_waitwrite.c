@@ -1,8 +1,5 @@
 #include "../windoze.h"
-#if WINDOWS
-#else
-#endif
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <windows.h>
 #else
 #include <poll.h>
@@ -10,7 +7,7 @@
 #include "../io_internal.h"
 #include <errno.h>
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 
 int64
 io_waitwrite(fd_t d, const char* buf, int64 len) {

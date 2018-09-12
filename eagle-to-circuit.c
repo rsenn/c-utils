@@ -212,13 +212,13 @@ package_pin(struct package* pkg, const char* name) {
  */
 void
 build_part(xmlnode* part) {
-  char* name = xml_get_attribute(part, "name");
+  struct part p;
+  char *val, * name = xml_get_attribute(part, "name");
   char* pkgname = xml_get_attribute(part, "package");
   if(!name || str_len(name) == 0) return;
-  struct part p;
   byte_zero(&p, sizeof(struct part));
   stralloc_copys(&p.name, name);
-  char* val = xml_get_attribute(part, "value");
+ val = xml_get_attribute(part, "value");
   if(val) stralloc_copys(&p.value, val);
   p.x = get_double(part, "x") / 0.127;
   p.y = get_double(part, "y") / 0.127;

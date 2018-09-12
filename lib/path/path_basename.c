@@ -1,6 +1,6 @@
 /* from dietlibc by felix leitner, adapted to libowfat */
 
-#include "../path.h"
+#include "../path_internal.h"
 #include "../str.h"
 
 /*

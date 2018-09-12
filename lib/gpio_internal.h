@@ -4,7 +4,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "mmap.h"
-#include <unistd.h>
 
 /* Physical addresses */
 #define BCM2835_PERI_BASE 0x20000000 /* Raspi 1 */

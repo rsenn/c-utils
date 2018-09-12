@@ -1,6 +1,13 @@
-#include "../socket_internal.h"
+#include "../windoze.h"
+#if WINDOWS_NATIVE 
+#include <winsock.h>
+#else
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#endif
 #include "../ip6.h"
-#include "../byte.h"
+#include "../socket.h"
 #include "../uint16.h"
 #include "../uint32.h"
 #include <errno.h>

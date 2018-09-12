@@ -3,7 +3,6 @@
 #include "lib/io_internal.h"
 #include "lib/getopt.h"
 
-#include <stdbool.h>
 #include <stdlib.h>
 
 int
@@ -75,7 +74,7 @@ int
 main(int argc, char* argv[]) {
   int opt;
   int level = 3;
-  bool decompress = false;
+  int decompress = 0;
   const char* in_filename = "-";
   const char* out_filename = "-";
   compression_type in_type = C_UNKNOWN;
@@ -96,7 +95,7 @@ main(int argc, char* argv[]) {
         level = opt - '0';
         break;
       case 'd':
-        decompress = true;
+        decompress = 1;
         break;
       case 't':
         in_type = compression_from_ext(optarg);
@@ -128,7 +127,7 @@ main(int argc, char* argv[]) {
     input = &infile;
     if(in_type == C_UNKNOWN) {
       in_type = compression_from_filename(in_filename);
-      if(in_type != C_UNKNOWN) decompress = true;
+      if(in_type != C_UNKNOWN) decompress = 1;
     }
   }
 
@@ -184,7 +183,7 @@ main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
   }
 
-  if(decompress == false && output == buffer_1) {
+  if(decompress == 0 && output == buffer_1) {
     buffer_putsflush(buffer_2, "ERROR: Won't write compressed data to a terminal\n");
     exit(EXIT_FAILURE);
   }

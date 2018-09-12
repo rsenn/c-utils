@@ -1,7 +1,7 @@
 #include "../gpio_internal.h"
 
 void
-gpio_write(int const pin_nr, bool const high) {
+gpio_write(int const pin_nr, int const high) {
   assert(gpio != NULL);
 
   if(high) {

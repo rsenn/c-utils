@@ -4,7 +4,6 @@
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <unistd.h>
 #endif
 #include "../byte.h"
 #include "../dns.h"

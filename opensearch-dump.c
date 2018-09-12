@@ -1,6 +1,5 @@
 #include "lib/buffer.h"
 #include "lib/stralloc.h"
-#include <stdbool.h>
 #include "lib/xml.h"
 
 static stralloc url, templ;
@@ -8,11 +7,11 @@ static char sep = '?';
 
 static void
 print_attr_names(xmlnode* elm) {
-  bool param = !str_diff((const char*)elm->name, "Param");
+  int param = !str_diff((const char*)elm->name, "Param");
   TUPLE* attr_p;
   for(attr_p = (TUPLE*)elm->attributes; attr_p; attr_p = (TUPLE*)attr_p->next) {
     const char* content = (const char*)xml_content((xmlnode*)attr_p);
-    bool name = !str_diff((const char*)attr_p->key, "name");
+    int name = !str_diff((const char*)attr_p->key, "name");
     if(param) {
       stralloc_catb(&url, name ? &sep : "=", 1);
       stralloc_cats(&url, content);

@@ -1,12 +1,6 @@
-#include <sys/param.h>
-#include <sys/types.h>
-#if !defined(_WIN32) && !defined(_WIN64)
-#include <netinet/in.h>
-#include <sys/socket.h>
-#endif
-#include "../byte.h"
-#include "../socket.h"
 #include "../windoze.h"
+#include "../ip4.h"
+#include "../socket.h"
 
 int
 socket_mcjoin4(int s, const char ip[4], const char _interface[4]) {

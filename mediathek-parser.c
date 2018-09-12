@@ -1,5 +1,5 @@
 #include "lib/getopt.h"
-#include "lib/io.h"
+#include "lib/io_internal.h"
 #include "lib/array.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
@@ -10,7 +10,6 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -18,7 +17,7 @@
 
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
-static bool csv = false;
+static int csv = 0;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
@@ -57,14 +56,12 @@ parse_predicate(const char* x, size_t len)
 
 int
 read_line(const char* s, size_t len, strlist* fields, array* x) {
+const char *end= s + len, *p = s;
   int64 pos = 0;
-
-  (void)fields;
-
-  const char *end = s + len, *p = s;
   int quoted = 0 /*, escaped = 0*/;
   size_t n, i = 0;
   char tokbuf[65536];
+  (void)fields;
 
   array_trunc(x);
 
@@ -84,8 +81,8 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
         i = 0;
         continue;
       } else {
-        quoted = 0;
         char** a = array_allocate(x, sizeof(char*), pos++);
+        quoted = 0;
         tokbuf[i] = '\0';
         *a++ = str_dup(tokbuf);
 
@@ -165,10 +162,10 @@ cleanup_text(char* t) {
 char*
 cleanup_domain(stralloc* d) {
   size_t i;
+  const char* remove_parts[] = {"ondemand", "storage", "files", "stream", "mvideos", "online", 0};
   d->len = byte_rchr(d->s, d->len, '.');
   for(i = 0; i < d->len; ++i) d->s[i] = toupper(d->s[i]);
   stralloc_nul(d);
-  const char* remove_parts[] = {"ondemand", "storage", "files", "stream", "mvideos", "online", 0};
 
   for(i = 0; remove_parts[i]; ++i) {
     char *s2, *s = strtok(d->s, remove_parts[i]);
@@ -189,7 +186,8 @@ process_entry(const array* a) {
   size_t ac = array_length(a, sizeof(char*));
 
   if(ac >= 21 && !str_diff(av[0], "X")) {
-    stralloc datetime;
+      char timebuf[256];
+  stralloc datetime;
     struct tm tm;
     time_t t;
     unsigned d;
@@ -266,7 +264,6 @@ process_entry(const array* a) {
         dump_pair(buffer_2, "url_lo.n", av[13]);
         dump_pair(buffer_2, "url_lo.s", url_lo.s);
     */
-    char timebuf[256];
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
 
@@ -300,7 +297,7 @@ put_quoted_string(const char* str) {
 void
 output_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
 
-  if(csv == false) {
+  if(csv == 0) {
     buffer_puts(buffer_1, "#EXTINF:");
     buffer_putulong(buffer_1, duration);
     buffer_put(buffer_1, ",|", 2);
@@ -345,7 +342,7 @@ process_input(buffer* input) {
   stralloc_init(&sa);
   strlist_init(&fields, '\0');
 
-  if(csv == false) buffer_puts(buffer_1, "#EXTM3U\r\n");
+  if(csv == 0) buffer_puts(buffer_1, "#EXTM3U\r\n");
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
@@ -386,7 +383,7 @@ main(int argc, char* argv[]) {
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {
     switch(opt) {
-      case 'c': csv = true; break;
+      case 'c': csv = 1; break;
       case 'd': debug++; break;
       case 'l': lowq++; break;
       case 'f': datetime_format = optarg; break;

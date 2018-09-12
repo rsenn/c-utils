@@ -77,7 +77,7 @@ long alt_firstwrite;
 static io_entry*
 io_fd_internal(fd_t d, int flags) {
   io_entry* e;
-#if !WINDOWS_PLAIN
+#if !WINDOWS
   long r;
   if((flags & (IO_FD_BLOCK | IO_FD_NONBLOCK)) == 0) {
     if((r = fcntl(d, F_GETFL, 0)) == -1) return 0; /* file descriptor not open */

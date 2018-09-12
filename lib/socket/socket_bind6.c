@@ -1,15 +1,15 @@
-#include <errno.h>
-#include <sys/types.h>
-#if !defined(_WIN32) && !defined(_WIN64)
-#include <netinet/in.h>
-#include <sys/socket.h>
-#else
+#include "../windoze.h"
+#if WINDOWS_NATIVE 
 #include <winsock.h>
+#else
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #endif
 #include "../byte.h"
 #include "../ip6.h"
 #include "../socket.h"
-#include "../windoze.h"
+#include <errno.h>
 
 int
 socket_bind6(int s, const char ip[16], uint16 port, uint32 scope_id) {

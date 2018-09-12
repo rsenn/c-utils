@@ -8,7 +8,6 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
 /*#ifdef __USE_FILE_OFFSET64*/
 /*#undef lstat*/

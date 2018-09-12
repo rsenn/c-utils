@@ -1,6 +1,7 @@
 #ifndef ENV_H
 #define ENV_H
 
+#include <stdlib.h>
 #include <sys/types.h>
 
 #ifdef __cplusplus

@@ -1,5 +1,7 @@
-#if defined _WIN32 || defined _WIN64
+#include "../windoze.h"
 
+#if WINDOWS_NATIVE
+#include <winsock2.h>
 #include "../socket_internal.h"
 
 /*
@@ -75,16 +77,16 @@ error:
  */
 int
 wsa_sync_async_socketpair(int af, int type, int proto, SOCKET* syncSocket, SOCKET* asyncSocket) {
+  SOCKET listen_sock, sock1, sock2;
+  SOCKADDR_IN addr1, addr2;
+  int err, addr1_len, addr2_len;
+
   assert(af == AF_INET && type == SOCK_STREAM && (proto == IPPROTO_IP || proto == IPPROTO_TCP));
 
-  SOCKET listen_sock;
-  SOCKET sock1 = INVALID_SOCKET;
-  SOCKET sock2 = INVALID_SOCKET;
-  SOCKADDR_IN addr1;
-  SOCKADDR_IN addr2;
-  int err;
-  int addr1_len = sizeof(addr1);
-  int addr2_len = sizeof(addr2);
+  sock1 = INVALID_SOCKET;
+   sock2 = INVALID_SOCKET;
+addr1_len  = sizeof(addr1);
+addr2_len = sizeof(addr2);
 
   if((listen_sock = socket(af, type, proto)) == INVALID_SOCKET) goto error;
 

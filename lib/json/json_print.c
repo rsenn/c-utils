@@ -27,12 +27,13 @@ json_print_val(jsonval* val, buffer* b, int depth) {
       TUPLE* t = hmap_begin(val->dictv);
       buffer_puts(b, "{\n");
       for(; t; t = t->next) {
+              int last;
         buffer_putnspace(b, 2 * (depth + 1));
         buffer_putc(b, '"');
         buffer_put(b, t->key, t->key_len);
         buffer_puts(b, "\": ");
         json_print_val(t->vals.val_custom, b, depth + 1);
-        int last = t->next == hmap_begin(val->dictv);
+        last = t->next == hmap_begin(val->dictv);
         buffer_puts(b, last ? "\n" : ",\n");
         if(last) break;
       }

@@ -1,7 +1,9 @@
-#include <sys/param.h>
-#include <sys/types.h>
-#if !defined(_WIN32) && !defined(_WIN64)
+#include "../windoze.h"
+#if WINDOWS_NATIVE 
+#include <winsock.h>
+#else
 #include <netinet/in.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #endif
 #include "../byte.h"

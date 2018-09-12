@@ -25,10 +25,12 @@ put_str_escaped(buffer* b, const char* str) {
 
 int
 main(int argc, char* argv[1]) {
+  int fd;
+   jsonval* doc;
   stralloc tmp;
   stralloc_init(&tmp);
 
-  int fd = open_read("../dirlist/test.json");
+fd = open_read("../dirlist/test.json");
   //size_t sz;
   //char* map = mmap_private( argc > 1 ? argv[1] : "../dirlist/test.json", &sz);;
 
@@ -36,7 +38,7 @@ main(int argc, char* argv[1]) {
   //
   charbuf_init(&infile, &read, fd);
 
-  jsonval* doc = json_read_tree(&infile);
+  doc = json_read_tree(&infile);
 
   json_print(doc, buffer_1);
 

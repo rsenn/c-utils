@@ -1,5 +1,4 @@
 #if !(defined(_WIN32) || defined(_WIN64))
-#include <unistd.h>
 #else
 #include "../io_internal.h"
 #endif

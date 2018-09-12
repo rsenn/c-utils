@@ -1,15 +1,13 @@
-#if WINDOWS
-#else
-#endif
-
-#include <fcntl.h>
-#include <errno.h>
+#include "../windoze.h"
 #include "../io_internal.h"
 
-#if WINDOWS
-//#include <winsock.h>
-#include "../windoze.h"
+#if WINDOWS_PLAIN
+#include <winsock.h>
+#else
+#include <fcntl.h>
 #endif
+
+#include <errno.h>
 
 #ifndef O_NDELAY
 #define O_NDELAY O_NONBLOCK

@@ -1,5 +1,9 @@
 #include "../socket_internal.h"
 #include "../windoze.h"
+#if WINDOWS_NATIVE 
+#include <winsock.h>
+typedef int socklen_t;
+#endif
 
 int
 socket_connected(int s) {

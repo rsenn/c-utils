@@ -1,6 +1,7 @@
 #include "../windoze.h"
 #if WINDOWS
 #include <windows.h>
+#include <winsock.h>
 #else
 #include <poll.h>
 #endif

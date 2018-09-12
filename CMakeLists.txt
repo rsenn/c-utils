@@ -57,7 +57,9 @@ set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NA
 
 #include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
 
-
+if(MSVC)
+add_definitions(-Dinline=__inline)
+endif(MSVC)
 #if(WIN32 OR MSYS OR CYGWIN)
   add_definitions(-D_FILE_OFFSET_BITS=64)
 #endif(WIN32 OR WIN64)

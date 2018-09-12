@@ -1,5 +1,10 @@
 #include "../io_internal.h"
+#include "../windoze.h"
 #include <errno.h>
+
+#if WINDOWS && !defined(ETIMEDOUT)
+#define ETIMEDOUT WSAETIMEDOUT 
+#endif
 
 int64
 io_trywritetimeout(fd_t d, const char* buf, int64 len) {

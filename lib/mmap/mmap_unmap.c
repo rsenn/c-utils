@@ -5,7 +5,6 @@
 #if WINDOWS_NATIVE
 #include <windows.h>
 #else
-#include <unistd.h>
 #include <sys/mman.h>
 #endif
 

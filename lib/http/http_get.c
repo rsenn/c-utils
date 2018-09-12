@@ -10,9 +10,12 @@
 #include <stdlib.h>
 int
 http_get(http* h, const char* location) {
-  struct hostent* he;
+  int ret;
+   struct hostent* he;
   struct in_addr a;
-  stralloc_0(&h->host);
+   uint32 serial = 0;
+
+ stralloc_0(&h->host);
   h->host.len = str_len(h->host.s);
   he = gethostbyname(h->host.s);
   if(he == NULL) return 0;
@@ -32,7 +35,6 @@ http_get(http* h, const char* location) {
   buffer_putnlflush(buffer_1);
   h->sock = socket_tcp4();
   io_nonblock(h->sock);
-  uint32 serial = 0;
 
   if(h->request) {
     serial = h->request->serial + 1;
@@ -56,7 +58,7 @@ http_get(http* h, const char* location) {
     stralloc_init(&((*r)->data));
     stralloc_init(&((*r)->boundary));
   }
-  int ret = socket_connect4(h->sock, h->addr, h->port);
+ ret = socket_connect4(h->sock, h->addr, h->port);
 
   if(ret == -1) {
 

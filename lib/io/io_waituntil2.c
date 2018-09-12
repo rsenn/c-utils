@@ -7,10 +7,13 @@
 #endif
 
 #include "../io_internal.h"
-
-#if WINDOWS
 #include "../windoze.h"
-#else
+
+#if WINDOWS_NATIVE
+#include <windows.h>
+#endif
+
+#if !WINDOWS
 #include <poll.h>
 #endif
 
@@ -360,6 +363,7 @@ io_waituntil2(int64 milliseconds) {
   }
 dopoll:
 #endif
+{
 #if WINDOWS
   DWORD numberofbytes;
   ULONG_PTR x;
@@ -474,4 +478,5 @@ dopoll:
   }
   return i;
 #endif
+}
 }

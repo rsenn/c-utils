@@ -1,7 +1,6 @@
 #include "../socket.h"
 #include "../windoze.h"
 #include <errno.h>
-#include <sys/param.h>
 #include <sys/types.h>
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <netinet/in.h>

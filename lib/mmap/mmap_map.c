@@ -6,7 +6,6 @@
 #else
 #include <sys/mman.h>
 #include <sys/types.h>
-#include <unistd.h>
 #endif
 #include "../mmap.h"
 #include "../open.h"

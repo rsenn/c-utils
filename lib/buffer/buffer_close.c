@@ -2,7 +2,6 @@
 #if WINDOWS
 #include "../io_internal.h"
 #else
-#include <unistd.h>
 #endif
 #include "../buffer.h"
 

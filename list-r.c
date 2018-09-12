@@ -12,7 +12,6 @@
 #define snprintf _snprintf
 #endif
 #ifdef HAVE_STDBOOL_H
-#include <stdbool.h>
 #endif
 #ifdef HAVE_STDINT_H
 #include <stdint.h>

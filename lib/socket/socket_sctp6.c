@@ -1,6 +1,5 @@
 #include "../ndelay.h"
 #include "../socket.h"
-#include <unistd.h>
 
 int
 socket_sctp6(void) {

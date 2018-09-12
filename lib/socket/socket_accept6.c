@@ -1,9 +1,11 @@
+#include "../windoze.h"
 #if WINDOWS_NATIVE
 #include <winsock.h>
+typedef int socklen_t;
+#define EAGAIN EWOULDBLOCK
 #endif
-#include <sys/param.h>
 #include <sys/types.h>
-#if !defined(_WIN32) && !defined(_WIN64)
+#if !WINDOWS
 #include <netinet/in.h>
 #include <sys/socket.h>
 #endif
@@ -12,7 +14,6 @@
 #include "../ip6.h"
 #include "../socket.h"
 #include "../uint64.h"
-#include "../windoze.h"
 /*
 #if WINDOWS
 #include <errno.h>

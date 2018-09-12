@@ -203,7 +203,8 @@ int reg2cmd() {
 
     if(key[0]) {
       int has_newline = 0, has_expansion = 0;
-      const char *type;
+    char* o;
+        const char *type;
       int keystart, keyend, valuestart = 0, valueend;
       regtype_t rt = 0;
       regroot_t rr = -1;
@@ -223,8 +224,7 @@ int reg2cmd() {
     else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_CONFIG"))
   	rr = ROOT_HKCC;
 
-    char* o = strchr(key, '\\');
-    if(o) {
+    if((o  = strchr(key, '\\'))) {
       ++o;
       stralloc_copys(&subkey, o);
     }

@@ -2,13 +2,12 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 //#include <sys/wait.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <sys/types.h>
 #include "wordexp.h"
 
@@ -18,6 +17,14 @@
 
 #ifndef O_CLOEXEC
 #define O_CLOEXEC 0
+#endif
+
+#if WINDOWS_NATIVE
+typedef int pid_t;
+#endif
+
+#ifndef SSIZE_MAX
+#define SSIZE_MAX LONG_MAX
 #endif
 
 extern ssize_t getdelim(char**, size_t*, int, FILE*);
@@ -43,7 +50,8 @@ reap(pid_t pid) {
 static char*
 getword(FILE* f) {
   char* s = 0;
-  return getdelim(&s, (size_t[1]){0}, 0, f) < 0 ? 0 : s;
+  size_t a[1] = { 0 };
+  return getdelim(&s, a, 0, f) < 0 ? 0 : s;
 }
 
 static int
@@ -59,7 +67,9 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
   char** wv = 0;
   int p[2];
   pid_t pid;
+#if !WINDOWS_NATIVE
   sigset_t set;
+#endif
 
   if(flags & WRDE_REUSE) wordfree(we);
 
@@ -204,9 +214,9 @@ nospace:
 int
 wordexp(const char* s, wordexp_t* we, int flags) {
   int r, cs;
-  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
+  //pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
   r = do_wordexp(s, we, flags);
-  pthread_setcancelstate(cs, 0);
+  //pthread_setcancelstate(cs, 0);
   return r;
 }
 

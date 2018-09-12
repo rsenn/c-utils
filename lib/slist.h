@@ -36,12 +36,12 @@ static slink** slist_begin(slist* l) { return &l->root; }
 static slink** slist_end(slist* l) { slink** p = &l->root; while(*p) p = &(*p)->next; return p; }
 
 static int slist_iterator_first(slist* l, slink** p) { return l->root == *p; }
-static int slist_iterator_last(slist* l, slink** p) { (void)l; slink* ptr = (*p);  return ptr->next == NULL; }
+static int slist_iterator_last(slist* l, slink** p) {  slink* ptr = (*p);  (void)l; return ptr->next == NULL; }
 static int slist_iterator_end(slist* l, slink** p) { (void)l; return (*p)->next == NULL; }
 
 static void slist_iterator_increment(slist* l, slink*** p) { (void)l; *p = &(**p)->next; }
 static slink* slist_iterator_dereference(slist* l, slink** p) { (void)l; return *p; }
-static size_t slist_iterator_distance(slist* l, slink** from, slink** to) { (void)l; size_t i; while(*from && from != to) { from = &(*from)->next; ++i; }; return i; }
+static size_t slist_iterator_distance(slist* l, slink** from, slink** to) {  size_t i; (void)l; while(*from && from != to) { from = &(*from)->next; ++i; }; return i; }
 static int slist_iterator_equal(slist* l, slink** it1, slink** it2) { (void)l; return *it1 == *it2; }
 
 #ifdef __cplusplus

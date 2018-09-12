@@ -101,12 +101,13 @@ json_parse_object(jsonval* j, charbuf* b) {
     charbuf_skip(b);
     hmap_init(1024, &j->dictv);
     for(;;) {
+          jsonval* member;
       stralloc_zero(&key);
       if(!json_parse_getsa(b, &key)) return 0;
       charbuf_skip_pred(b, &isspace);
       if(charbuf_peek(b) != ':') return 0;
       charbuf_skip(b);
-      jsonval* member = json_newnode(JSON_NONE);
+     member = json_newnode(JSON_NONE);
       hmap_add(&j->dictv, key.s, key.len, 1, HMAP_DATA_TYPE_CUSTOM, member);
       if(!json_parse(member, b)) return 0;
       charbuf_skip_pred(b, &isspace);

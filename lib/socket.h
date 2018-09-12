@@ -6,18 +6,34 @@
 
 #ifdef __unix__
 #include <sys/socket.h>
+#include <sys/param.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #endif
 
 #include "uint16.h"
 #include "uint32.h"
+
 #include "windoze.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#if WINDOWS_NATIVE
+typedef int socklen_t;
+#if !defined(_SSIZE_T_DEFINED)
+#define _SSIZE_T_DEFINED 1
+typedef long ssize_t;
+#endif
+
+#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
+#define ETIMEDOUT WSAETIMEDOUT
+#define EWOULDBLOCK WSAEWOULDBLOCK
+#define EINPROGRESS WSAEINPROGRESS
+#define ECONNREFUSED WSAECONNREFUSED
+
+#endif
 int socket_tcp4(void);
 int socket_tcp4b(void);
 int socket_udp4(void);

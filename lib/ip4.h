@@ -2,6 +2,7 @@
 #ifndef IP4_H
 #define IP4_H
 
+#include <stdlib.h>
 #include <sys/types.h>
 
 #ifdef __cplusplus

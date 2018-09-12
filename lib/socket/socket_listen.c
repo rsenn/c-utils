@@ -1,12 +1,12 @@
-#if WINDOWS_NATIVE
-#include <winsock2.h>
+#include "../windoze.h"
+#if WINDOWS_NATIVE 
+#include <winsock.h>
 #else
+#include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #endif
 #include "../io_internal.h"
-#include "../socket.h"
-#include "../windoze.h"
 
 int
 socket_listen(int s, unsigned int backlog) {

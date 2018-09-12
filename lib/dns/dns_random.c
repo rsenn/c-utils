@@ -1,7 +1,6 @@
 #include "../dns.h"
 #include "../taia.h"
 #include "../uint32.h"
-#include <unistd.h>
 
 static uint32 seed[32];
 static uint32 in[12];
