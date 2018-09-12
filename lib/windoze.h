@@ -13,8 +13,8 @@ extern "C" {
 typedef SIZE_T size_t;
 #endif
 
-#ifndef _SSIZE_T_DEFINED
-#define _SSIZE_T_DEFINED 1
+#ifndef __ssize_t_defined
+#define __ssize_t_defined 1
 typedef SSIZE_T ssize_t;
 #endif
 

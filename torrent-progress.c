@@ -8,6 +8,7 @@
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 
+#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>

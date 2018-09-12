@@ -4,19 +4,20 @@
 
 #include "../mmap.h"
 #include "../open.h"
+#include "../windoze.h"
 
-#if(defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__) || defined(__MINGW64__)) && !defined(__CYGWIN__) &&     \
-    !defined(__MSYS__)
+#if WINDOWS_NATIVE
 #include <windows.h>
 #else
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 #endif
 
 char*
 mmap_private_fd(fd_t fd, size_t* filesize) {
-#if(defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__) || defined(__MINGW64__)) && !defined(__CYGWIN__) &&     \
+#if WINDOWS_NATIVE
     !defined(__MSYS__)
   HANDLE m;
   char* map;

@@ -1,11 +1,12 @@
+#include "../windoze.h"
 #include "../io.h"
 #include "../mmap.h"
 #include "../open.h"
-#include "../windoze.h"
 #if WINDOWS_NATIVE
 #include <windows.h>
 #else
 #include <sys/mman.h>
+#include <unistd.h>
 #endif
 
 char*

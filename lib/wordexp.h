@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include "windoze.h"
+
 #if WINDOWS_NATIVE
 #include <windows.h>
 #endif
@@ -12,8 +13,8 @@
 extern "C" {
 #endif
 
-#ifndef _SSIZE_T_DEFINED
-#define _SSIZE_T_DEFINED 1
+#ifndef __ssize_t_defined
+#define __ssize_t_defined 1
 typedef SSIZE_T ssize_t;
 #endif
 

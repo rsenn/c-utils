@@ -1,5 +1,10 @@
+#include "../windoze.h"
 #include "../io.h"
 #include "../playlist.h"
+
+#if !WINDOWS
+#include <unistd.h>
+#endif
 
 int
 playlist_write_start(buffer* b, playlist* pl) {

@@ -43,9 +43,9 @@ int open_rwsync(const char *filename);
 int openreadclose(const char* fn, stralloc* sa, size_t bufsize);
 
 #include "windoze.h"
-#if WINDOWS_NATIVE && !defined(_SSIZE_T_DEFINED)
+#if WINDOWS_NATIVE && !defined(__ssize_t_defined)
 #include <windows.h>
-#define _SSIZE_T_DEFINED 1
+#define __ssize_t_defined 1
 typedef SSIZE_T ssize_t;
 #endif
 ssize_t readclose_append(int64 fd, stralloc* sa, size_t bufsize);

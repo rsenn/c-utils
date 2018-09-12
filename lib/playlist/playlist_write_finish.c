@@ -1,11 +1,14 @@
+#include "../windoze.h"
 #include "../io.h"
-#include <sys/types.h>
-
-#include <stdio.h>
-
 #include "../playlist.h"
 #include "../byte.h"
 #include "../fmt.h"
+
+#include <sys/types.h>
+
+#if !WINDOWS
+#include <unistd.h>
+#endif
 
 int
 playlist_write_finish(buffer* b, playlist* pl) {

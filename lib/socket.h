@@ -24,8 +24,8 @@ extern "C" {
 #if WINDOWS_NATIVE
 #include <Windows.h>
 typedef int socklen_t;
-#if !defined(_SSIZE_T_DEFINED)
-#define _SSIZE_T_DEFINED 1
+#if !defined(__ssize_t_defined)
+#define __ssize_t_defined 1
 typedef SSIZE_T ssize_t;
 #endif
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
