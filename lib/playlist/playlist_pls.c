@@ -6,12 +6,12 @@
 
 static int
 pls_reader(playlist* pl) {
-  static playlist_entry entry;
+  int ret;
+    static playlist_entry entry;
   buffer* inbuf = pl->ptr;
   stralloc line;
   stralloc_init(&line);
-  int ret = buffer_getline_sa(inbuf, &line);
-  if(ret) {
+  if(( ret = buffer_getline_sa(inbuf, &line))) {
     uint32 index2, index;
     index2 = index = 0;
     while(line.len > 1 &&

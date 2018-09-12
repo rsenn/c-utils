@@ -61,9 +61,10 @@ xspf_reader(playlist* pl) {
 
 void
 playlist_xspf(playlist* pls, buffer* b) {
-  xmlreader rd;
+   track* t;
+    xmlreader rd;
   xml_reader_init(&rd, b);
-  track* t = malloc(sizeof(track));
+t = malloc(sizeof(track));
   if(t == NULL) return;
 
   byte_zero(t, sizeof(track));

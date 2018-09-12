@@ -6,12 +6,12 @@
 
 static int
 m3u_reader(playlist* pl) {
+int ret;
   static playlist_entry entry;
   buffer* inbuf = pl->ptr;
   stralloc line;
   stralloc_init(&line);
-  int ret = buffer_getline_sa(inbuf, &line);
-  if(ret) {
+  if((ret = buffer_getline_sa(inbuf, &line))) {
     while(line.len > 1 &&
           (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == '\n'))
       line.len--;

@@ -6,7 +6,8 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <sys/stat.h>
-#include <sys/time.h>
+
+//#include <sys/time.h>
 #include <time.h>
 #include <fcntl.h>
 #include <limits.h>
