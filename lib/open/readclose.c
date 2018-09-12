@@ -1,7 +1,7 @@
-#include <errno.h>
+#include "../uint64.h"
 #include "../stralloc.h"
 #include "../open.h"
-#include "../uint64.h"
+#include <errno.h>
 
 ssize_t readclose_append(int64 fd,stralloc *sa,size_t bufsize)
 {

@@ -3,6 +3,10 @@
 #include "../io_internal.h"
 #include <time.h>
 
+#if defined(__unix__) || defined(__linux__)
+#include <sys/time.h>
+#endif
+
 unsigned int
 io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   struct timeval tv;

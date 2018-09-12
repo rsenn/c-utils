@@ -4,6 +4,7 @@
 
 #include <sys/types.h>
 #include "windoze.h"
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,11 +44,12 @@ int openreadclose(const char* fn, stralloc* sa, size_t bufsize);
 
 #include "windoze.h"
 #if WINDOWS_NATIVE && !defined(_SSIZE_T_DEFINED)
+#include <windows.h>
 #define _SSIZE_T_DEFINED 1
-typedef long ssize_t;
+typedef SSIZE_T ssize_t;
 #endif
-ssize_t readclose_append(int fd, stralloc* sa, size_t bufsize);
-ssize_t readclose(int fd, stralloc* sa, size_t bufsize);
+ssize_t readclose_append(int64 fd, stralloc* sa, size_t bufsize);
+ssize_t readclose(int64 fd, stralloc* sa, size_t bufsize);
 #endif
 
 #ifdef __cplusplus

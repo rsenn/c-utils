@@ -1,7 +1,7 @@
 #include "../windoze.h"
 #include "../io_internal.h"
 
-#if WINDOWS_PLAIN
+#if WINDOWS_NATIVE
 #include <winsock.h>
 #else
 #include <fcntl.h>
@@ -15,7 +15,7 @@
 
 void io_block(fd_t d ){
   io_entry* e = iarray_get(io_getfds(), d);
-#if WINDOWS
+#if WINDOWS_NATIVE
   unsigned long i = 0;
   if(ioctlsocket(d, FIONBIO, &i) == 0)
     if(e) e->nonblock = 0;

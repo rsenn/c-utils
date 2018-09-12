@@ -2,7 +2,8 @@
 #include "../sig.h"
 
 #if !WINDOWS_NATIVE
-typedef _sigset_t sigset_t;
+#include <signal.h>
+//typedef _sigset_t sigset_t;
 #endif
 
 /* block SIGINT and SIGCHILD before forking a child
