@@ -393,7 +393,7 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-  access buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname eagle-gen-cmds eagle-init-brd eagle-to-circuit hexedit httptest impgen jsontest list-r main mediathek-list mediathek-parser ntldd pathtool pkgcfg plsconv rdir-test reg2cmd regfilter torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest sln
+  access buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname eagle-gen-cmds eagle-init-brd eagle-to-circuit hexedit httptest impgen jsontest list-r mediathek-list mediathek-parser ntldd pathtool pkgcfg plsconv rdir-test reg2cmd regfilter torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest sln
 )
 
 if(NOT MSVC)
@@ -558,7 +558,8 @@ endforeach(PROGRAM)
 target_link_libraries(list-r dir ${COMMON_LIBS})
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
-target_link_libraries(buffertest buffer playlist str)
+target_link_libraries(access buffer str)
+target_link_libraries(buffertest buffer str)
 target_link_libraries(ccat buffer str)
 target_link_libraries(compiler-wrapper buffer byte dir fmt str stralloc strlist)
 target_link_libraries(count-depth buffer)
@@ -585,14 +586,14 @@ target_link_libraries(rdir-test buffer rdir)
 target_link_libraries(reg2cmd buffer scan str stralloc)
 target_link_libraries(regfilter buffer scan str stralloc)
 target_link_libraries(torrent-progress buffer mmap open)
-target_link_libraries(xmlpp buffer hmap playlist stralloc xml)
-target_link_libraries(xmltest buffer fmt playlist str stralloc xml)
-target_link_libraries(xmltest2 buffer fmt playlist str stralloc xml)
-target_link_libraries(xmltest3 buffer fmt playlist str stralloc xml)
+target_link_libraries(xmlpp buffer hmap  stralloc xml)
+target_link_libraries(xmltest buffer fmt  str stralloc xml)
+target_link_libraries(xmltest2 buffer fmt  str stralloc xml)
+target_link_libraries(xmltest3 buffer fmt  str stralloc xml)
 target_link_libraries(xmltest4 array buffer byte cbmap scan str stralloc strlist xml)
-target_link_libraries(ziptest buffer playlist str)
-target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path playlist slist str stralloc strarray strlist)
-target_link_libraries(sln buffer byte errmsg path playlist str stralloc)
+target_link_libraries(ziptest buffer  str)
+target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path  slist str stralloc strarray strlist)
+target_link_libraries(sln buffer byte errmsg path  str stralloc)
 
 
 
