@@ -400,10 +400,11 @@ pkg_open(const char* pkgname, pkg* pf) {
  */
 int
 pkg_conf(strarray* modules) {
+  int i;
   stralloc value;
   stralloc_init(&value);
 
-  for(int i = 0; i < strarray_size(modules); ++i) {
+  for(i = 0; i < strarray_size(modules); ++i) {
     const char* pkgname = strarray_at(modules, i);
     pkg pf;
     byte_zero(&pf, sizeof(pf));
