@@ -27,7 +27,6 @@ typedef int socklen_t;
 #define _SSIZE_T_DEFINED 1
 typedef long ssize_t;
 #endif
-
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
 #define ETIMEDOUT WSAETIMEDOUT
 #define EWOULDBLOCK WSAEWOULDBLOCK
@@ -35,6 +34,7 @@ typedef long ssize_t;
 #define ECONNREFUSED WSAECONNREFUSED
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
 #endif
+
 int socket_tcp4(void);
 int socket_tcp4b(void);
 int socket_udp4(void);

@@ -4,6 +4,16 @@
 #include <winsock2.h>
 #include <errno.h>
 #undef winsock2errno
+
+#if WINDOWS_NATIVE
+#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
+#define ETIMEDOUT WSAETIMEDOUT
+#define EWOULDBLOCK WSAEWOULDBLOCK
+#define EINPROGRESS WSAEINPROGRESS
+#define ECONNREFUSED WSAECONNREFUSED
+#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
+#endif
+
 int
 winsock2errno(long l) {
   long x;
