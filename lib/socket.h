@@ -15,6 +15,7 @@
 #include "uint32.h"
 
 #include "windoze.h"
+#include <errno.h>
 
 #ifdef __cplusplus
 extern "C" {
