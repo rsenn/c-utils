@@ -3,7 +3,7 @@
 #include "../str.h"
 #include "../uint64.h"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 
 void
 errmsg_puts(int64 fd, const char* s) {

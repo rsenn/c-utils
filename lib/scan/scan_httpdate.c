@@ -99,7 +99,7 @@ done:
   x.tm_wday = x.tm_yday = x.tm_isdst = 0;
 #if defined(__dietlibc__) || defined(__GLIBC__)
   *t = timegm(&x);
-#elif defined(_WIN32) || defined(_WIN64)
+#elif WINDOWS
   *t = mktime(&x);
 #else
   {

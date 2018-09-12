@@ -27,7 +27,7 @@ extern int pipe2(int[2], int);
 typedef _sigset_t sigset_t;
 #endif
 
-#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__MSYS__) || defined(__CYGWIN__))
+#if WINDOWS_NATIVE
 #define WINDOWS_NATIVE 1
 #endif 
 

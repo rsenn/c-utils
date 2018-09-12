@@ -1,6 +1,6 @@
 #include "../taia.h"
 #include <sys/types.h>
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <windows.h>
 #else
 #include <sys/time.h>
@@ -8,7 +8,7 @@
 
 void
 taia_now(struct taia* t) {
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   union {
     FILETIME f;
     unsigned long long l;

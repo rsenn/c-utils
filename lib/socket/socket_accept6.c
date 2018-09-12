@@ -1,5 +1,5 @@
-#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__MSYS__) || defined(__CYGWIN__))
-#include <winsock2.h>
+#if WINDOWS_NATIVE
+#include <winsock.h>
 #endif
 #include <sys/param.h>
 #include <sys/types.h>
@@ -7,19 +7,18 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #endif
+#include "../io_internal.h"
 #include "../byte.h"
 #include "../ip6.h"
 #include "../socket.h"
 #include "../uint64.h"
 #include "../windoze.h"
-
-#if defined(_WIN32) || defined(_WIN64)
-#include "../io_internal.h"
+/*
+#if WINDOWS
 #include <errno.h>
-#include <mswsock.h>
 #include <stdio.h>
 #include <windows.h>
-#endif
+#endif*/
 
 int
 socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
@@ -31,7 +30,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   socklen_t dummy = sizeof sa;
   int64 fd;
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
   io_entry* e = array_get(io_getfds(), sizeof(io_entry), s);
   if(e && e->inuse) {
     int sa2len;
@@ -79,7 +78,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
 #endif
     fd = accept(s, (struct sockaddr*)&sa, &dummy);
     if(fd == -1) return winsock2errno(-1);
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
   }
 #endif
 
@@ -95,11 +94,11 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   }
   if(ip) byte_copy(ip, 16, (char*)&sa.sin6_addr);
   if(port) uint16_unpack_big((char*)&sa.sin6_port, port);
-#ifdef LIBC_HAS_SCOPE_ID
+# ifdef LIBC_HAS_SCOPE_ID
   if(scope_id) *scope_id = sa.sin6_scope_id;
-#else
+# else
   if(scope_id) *scope_id = 0;
-#endif
+# endif
 
   return fd;
 #else

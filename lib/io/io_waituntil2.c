@@ -8,7 +8,7 @@
 
 #include "../io_internal.h"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include "../windoze.h"
 #else
 #include <poll.h>
@@ -360,7 +360,7 @@ io_waituntil2(int64 milliseconds) {
   }
 dopoll:
 #endif
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   DWORD numberofbytes;
   ULONG_PTR x;
   LPOVERLAPPED o;

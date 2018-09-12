@@ -11,7 +11,7 @@ No known patent problems.
 #include "../byte.h"
 #include "../str.h"
 
-#if !((defined(_WIN32) || defined(_WIN64)) && !(defined(__MSYS__) || defined(__CYGWIN__)))
+#if !WINDOWS_NATIVE
 static size_t env_isinit = 0; /* if env_isinit: */
 static size_t ea;             /* environ is a pointer to ea+1 char*'s. */
 static size_t en;             /* the first en of those are ALLOCATED. environ[en] is 0. */

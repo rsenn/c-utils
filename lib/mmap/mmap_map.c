@@ -1,6 +1,6 @@
 #include <sys/types.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include "../io_internal.h"
 #include <stdio.h>
 #include <windows.h>
@@ -19,7 +19,7 @@ intptr_t __cdecl __declspec(dllimport) _get_osfhandle(int _FileHandle);
 
 char*
 mmap_map(fd_t fd, size_t sz, uint64 offset) {
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   HANDLE h = (HANDLE)_get_osfhandle(fd);
   HANDLE m;
   DWORD szl, szh;

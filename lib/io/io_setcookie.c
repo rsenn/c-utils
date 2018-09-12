@@ -1,5 +1,5 @@
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #else
 #endif
 #include "../io_internal.h"

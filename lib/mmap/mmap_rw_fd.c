@@ -18,7 +18,7 @@ extern char mmap_empty[];
 
 char*
 mmap_rw_fd(fd_t fd, size_t* filesize) {
-#if defined(_WIN32) || defined(_WIN64) || defined(__MSYS__)
+#if WINDOWS || defined(__MSYS__)
   HANDLE m;
   char* map;
   m = CreateFileMapping((HANDLE)(size_t)fd, 0, PAGE_READWRITE, 0, 0, NULL);

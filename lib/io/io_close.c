@@ -1,5 +1,5 @@
 #include <sys/types.h>
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <windows.h>
 #else
 #include <sys/mman.h>
@@ -17,7 +17,7 @@ void io_close(fd_t d ){
     if(e->kernelwantread) io_dontwantread_really(d, e);
     if(e->kernelwantwrite) io_dontwantwrite_really(d, e);
     if(e->mmapped) {
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
       UnmapViewOfFile(e->mmapped);
       CloseHandle(e->mh);
 #else

@@ -3,7 +3,7 @@
 #define cmsghdr wsacmsghdr
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include "io_internal.h"
 #include <errno.h>
 int

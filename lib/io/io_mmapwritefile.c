@@ -1,7 +1,7 @@
 #include "../io_internal.h"
 #include "../iob.h"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include "../windoze.h"
 #else
 #include <sys/mman.h>
@@ -19,7 +19,7 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
   if(e) {
     const char* c;
     unsigned long left;
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
     if(!e->mh) e->mh = CreateFileMapping((HANDLE)(size_t)in, 0, PAGE_READONLY, 0, 0, NULL);
     if(!e->mh) goto readwrite;
 #endif
@@ -28,7 +28,7 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
         /* did we already map the right chunk? */
         if(off >= e->mapofs && off < e->mapofs + e->maplen)
           goto mapok;  /* ok; mmapped the right chunk*/
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
         UnmapViewOfFile(e->mmapped);
 #else
         munmap(e->mmapped, e->maplen);
@@ -39,7 +39,7 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
         e->maplen = off + bytes - e->mapofs;
       else
         e->maplen = 0x10000;
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
       if((e->mmapped = MapViewOfFile(e->mh, FILE_MAP_READ, (DWORD)(e->mapofs >> 32),
                                      (DWORD)e->mapofs, e->maplen)) == 0)
 #else
@@ -82,7 +82,7 @@ mapok:
       }
     } while(bytes);
     if(e->mmapped) {
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
       UnmapViewOfFile(e->mmapped);
 #else
       munmap(e->mmapped, e->maplen);

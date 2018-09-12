@@ -29,7 +29,7 @@ io_canwrite() {
     e->next_write = -1;
     debug_printf(("io_canwrite: dequeue %lld from normal write queue (next is %ld)\n", r, first_writeable));
     if(e->wantwrite &&
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
        (e->canwrite || e->sendfilequeued == 1)
 #else
        e->canwrite

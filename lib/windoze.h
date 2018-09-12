@@ -1,7 +1,7 @@
 #ifndef WINDOZE_H
 #define WINDOZE_H 1
 
-#if defined(_WIN32) || defined(_WIN64) || defined(__MSYS__)
+#if WINDOWS || defined(__MSYS__)
 # include <io.h>
 # include <windows.h>
 # ifdef __cplusplus
@@ -43,6 +43,13 @@ getpagesize() {
 # else
 #  define winsock2errno(fnord) (fnord)
 #  define __winsock_init()
-# endif /* defined(_WIN32) || defined(_WIN64) */
+# endif /* WINDOWS */
+
+#if defined(_WIN32) || defined(_WIN64)
+# if !(defined(__MSYS__) || defined(__CYGWIN__))
+#  define WINDOWS_NATIVE 1
+# endif
+# define WINDOWS 1
+#endif
 
 #endif /* defined(WINDOZE_H) */

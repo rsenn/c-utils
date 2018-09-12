@@ -92,7 +92,7 @@ io_wantwrite_really(fd_t d, io_entry* e) {
     }
   }
 #endif
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   printf("e->wantwrite == %d\n", e->wantwrite);
   if(!e->wantwrite) {
     e->next_write = first_writeable;

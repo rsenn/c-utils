@@ -33,7 +33,7 @@ MSDN Magazine articles
 
 #include <string.h>
 #include <stdio.h>
-#include <stdint.h>
+//#include <stdint.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <limits.h>
@@ -46,6 +46,7 @@ MSDN Magazine articles
 
 #define FALSE 0
 #define TRUE 1
+typedef size_t uintptr_t;
 
 #ifndef MAX_PATH
 #define MAX_PATH PATH_MAX

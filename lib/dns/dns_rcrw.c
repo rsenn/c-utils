@@ -1,4 +1,4 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <winsock2.h>
 #endif
 #include "../byte.h"

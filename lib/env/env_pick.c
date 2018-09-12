@@ -3,7 +3,7 @@
 
 char*
 env_pick(void) {
-#if !((defined(_WIN32) || defined(_WIN64)) && !(defined(__MSYS__) || defined(__CYGWIN__)))
+#if !WINDOWS_NATIVE
   return environ[0];
 #endif
 }

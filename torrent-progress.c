@@ -8,24 +8,12 @@
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 
-#if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
-#include <io.h>
-#else
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#if !(defined(_WIN32) || defined(_WIN64))
-#include <sys/mman.h>
-#endif
 
 #ifndef PRIu64
 #define PRIu64 "lu"
@@ -38,7 +26,7 @@
 #include "lib/open.h"
 #include "lib/mmap.h"
 #include "lib/uint64.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 
 #if defined(__x86_64__) && defined(__linux)
 #define lseek lseek64
@@ -191,8 +179,8 @@ next:
     remain = fsize;
 
     if(verbose)
-        fprintf(stderr, "memory map size: %lukB (0x%016lx) iterations: %"PRIu64" (end offset: 0x%"PRIx64")\n",
-                (long)(map_size / 1024), (long)map_size, iterations, fsize);
+        fprintf(stderr, "memory map size: %lukB (0x%016lx) iterations: %llu (end offset: 0x%llx)\n",
+                (long)(map_size / 1024), (long)map_size, (unsigned long long)iterations, (long long)fsize);
 
     //(uint64)map_size * iterations);
     //mmap_private(argv[ai], &fsize);

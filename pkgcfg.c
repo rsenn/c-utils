@@ -12,6 +12,7 @@
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
+#include "lib/env.h"
 #include "lib/wordexp.h"
 #include <ctype.h>
 #include <stdlib.h>

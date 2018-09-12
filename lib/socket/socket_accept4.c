@@ -1,7 +1,6 @@
-#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__MSYS__) || defined(__CYGWIN__))
+#if WINDOWS_NATIVE
 #include <winsock2.h>
-#endif
-#if !defined(_WIN32) && !defined(_WIN64)
+#else
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -10,7 +9,7 @@
 #include "../uint64.h"
 #include "../windoze.h"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
 #include "../io_internal.h"
 #include <errno.h>
 #include <mswsock.h>
@@ -24,7 +23,7 @@ socket_accept4(int s, char* ip, uint16* port) {
   socklen_t len = sizeof si;
   int64 fd;
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
   io_entry* e = array_get(io_getfds(), sizeof(io_entry), s);
   if(e && e->inuse) {
     int sa2len;
@@ -73,7 +72,7 @@ socket_accept4(int s, char* ip, uint16* port) {
 
     if((fd = accept(s, (void*)&si, &len)) == -1) return winsock2errno(-1);
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
   }
 #endif
   if(ip) *(uint32*)ip = *(uint32*)&si.sin_addr;

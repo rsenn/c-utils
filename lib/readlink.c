@@ -1,4 +1,4 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 
 #include "ioctlcmd.h"
 #include <stdio.h>
@@ -103,4 +103,4 @@ BOOL is_symlink(LinkPath) CONST TCHAR* LinkPath;
 BOOL is_junction(LinkPath) CONST TCHAR* LinkPath;
 { return reparse_tag(LinkPath) == IO_REPARSE_TAG_MOUNT_POINT; }
 
-#endif /* defined(_WIN32) || defined(_WIN64) */
+#endif /* WINDOWS */

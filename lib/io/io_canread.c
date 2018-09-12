@@ -1,10 +1,10 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #else
 #endif
 #include "../io_internal.h"
 #include <errno.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #endif
 
 void io_wantread_really(fd_t d, io_entry* e);
@@ -35,11 +35,11 @@ io_canread() {
     e->next_read = -1;
     debug_printf(("io_canread: dequeue %lld from normal read queue (next is %ld)\n", r, first_readable));
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #endif
 
     if(e->wantread &&
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
        (e->canread || e->acceptqueued == 1 || e->readqueued == 1)
 #else
        e->canread

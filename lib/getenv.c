@@ -1,4 +1,4 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 
 #include <stdlib.h>
 #include <windows.h>

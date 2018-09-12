@@ -1,4 +1,4 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 
 #include "ioctlcmd.h"
 #include <fcntl.h>
@@ -240,4 +240,4 @@ int
 symlink(const char* oldpath, const char* newpath) {
   return CreateSymlink(newpath, oldpath, NULL);
 }
-#endif /* defined(_WIN32) || defined(_WIN64) */
+#endif /* WINDOWS */

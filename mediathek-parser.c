@@ -1,4 +1,5 @@
-#include "lib/io_internal.h"
+#include "lib/getopt.h"
+#include "lib/io.h"
 #include "lib/array.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
@@ -6,7 +7,6 @@
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
-#include "lib/getopt.h"
 
 #include <ctype.h>
 #include <errno.h>
@@ -15,12 +15,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-
-#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__)
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
 
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";

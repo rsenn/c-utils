@@ -1,11 +1,11 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #else
 #endif
 #include "../io_internal.h"
 
 int
 io_pipe(fd_t* d) {
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   HANDLE fds[2];
   if(CreatePipe(fds, fds + 1, 0, 0) == 0) return 0;
 #else

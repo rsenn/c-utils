@@ -1,4 +1,4 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <windows.h>
 #else
 #include <poll.h>
@@ -7,7 +7,7 @@
 #include "../io_internal.h"
 #include <errno.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 /* In Windows, I/O works differently. */
 /* Instead of calling read until it says EAGAIN, you call read in
  * overlapping mode, and then wait for it to finish.

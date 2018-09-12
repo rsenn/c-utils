@@ -8,7 +8,7 @@
 #include "taia.h"
 #include "uint64.h"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 typedef size_t fd_t;
 #else
 typedef int fd_t;

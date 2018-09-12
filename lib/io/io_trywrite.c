@@ -1,4 +1,4 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <windows.h>
 #else
 #include <poll.h>
@@ -6,7 +6,7 @@
 #include "../io_internal.h"
 #include <errno.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 
 /* All the Unix trickery is unsupported on Windows.  Instead, one is
  * supposed to do the whole write in overlapping mode and then get

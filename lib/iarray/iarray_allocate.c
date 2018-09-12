@@ -1,6 +1,6 @@
+#include "../windoze.h"
 #include "../likely.h"
-#include <stdlib.h>
-#if !(defined(_WIN32) || defined(_WIN64))
+#if !WINDOWS_NATIVE
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -9,7 +9,7 @@
 
 #ifdef __dietlibc__
 # include <sys/atomic.h>
-#elif defined(_MSC_VER)
+#elif WINDOWS
 # define __CAS(ptr,oldval,newval) InterlockedCompareExchange(ptr,newval,oldval)
 #else
 # define __CAS(ptr,oldval,newval) __sync_val_compare_and_swap(ptr,oldval,newval)
@@ -17,7 +17,7 @@
 
 static iarray_page*
 new_page(size_t pagesize) {
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   void* x = malloc(pagesize);
   if(x == 0) return 0;
 #else
@@ -54,7 +54,7 @@ iarray_allocate(iarray* ia, size_t pos) {
     p = &(*p)->next;
   }
   if(newpage)
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
     free(newpage);
 #else
     munmap(newpage, ia->bytesperpage);

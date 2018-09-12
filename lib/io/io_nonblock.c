@@ -1,11 +1,11 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #else
 #endif
 #include <fcntl.h>
 #include <errno.h>
 #include "../io_internal.h"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <winsock.h>
 #include "../windoze.h"
 #endif
@@ -16,7 +16,7 @@
 
 void io_nonblock(fd_t d ){
   io_entry* e = iarray_get(io_getfds(), d);
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   unsigned long i = 1;
   if(ioctlsocket(d, FIONBIO, &i) == 0)
     if(e) e->nonblock = 1;

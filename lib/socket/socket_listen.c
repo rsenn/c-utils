@@ -1,19 +1,16 @@
-#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__MSYS__) || defined(__CYGWIN__))
+#if WINDOWS_NATIVE
 #include <winsock2.h>
-#endif
-#include <sys/types.h>
-#if defined(_WIN32) || defined(_WIN64)
-#include "../io_internal.h"
-#include <mswsock.h>
 #else
+#include <sys/types.h>
 #include <sys/socket.h>
 #endif
+#include "../io_internal.h"
 #include "../socket.h"
 #include "../windoze.h"
 
 int
 socket_listen(int s, unsigned int backlog) {
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
   io_entry* e;
   int r = listen(s, backlog);
   if(r == -1) return winsock2errno(-1);

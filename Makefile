@@ -110,6 +110,18 @@ DEFS += HAVE_WORDEXP=1
 endif
 $(info HAVE_WORDEXP=$(HAVE_WORDEXP))
 
+HAVE_FNMATCH := $(call check-function-exists,fnmatch)
+ifeq ($(HAVE_FNMATCH),1)
+DEFS += HAVE_FNMATCH=1
+endif
+$(info HAVE_FNMATCH=$(HAVE_FNMATCH))
+
+HAVE_ROUND := $(call check-function-exists,round)
+ifeq ($(HAVE_ROUND),1)
+DEFS += HAVE_ROUND=1
+endif
+$(info HAVE_ROUND=$(HAVE_ROUND))
+
 HAVE_ALLOCA := $(call check-function-exists,alloca,,alloca.h)
 ifeq ($(HAVE_ALLOCA),1)
 DEFS += HAVE_ALLOCA=1
@@ -906,7 +918,7 @@ $(call lib-target,sig)
 $(call lib-target,slist)
 $(call lib-target,str)
 $(call lib-target,stralloc)
-$(call lib-target,strarray)
+$(call lib-target,strarray,lib/fnmatch.c)
 $(call lib-target,strlist)
 $(call lib-target,tai)
 $(call lib-target,taia)
@@ -937,7 +949,7 @@ $(BUILDDIR)fnmatch.o: fnmatch.c
 
 
 $(BUILDDIR)list-r.o: list-r.c
-$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(call add-library, open array buffer  byte stralloc rdir dir fmt str)
+$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)fnmatch.o $(call add-library,strarray open array buffer  byte stralloc rdir dir fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

@@ -1,5 +1,5 @@
 #define _FILE_OFFSET_BITS 64
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <io.h>
 #else
 #endif

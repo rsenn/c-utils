@@ -4,7 +4,7 @@
 
 #include "../buffer.h"
 #include "../io_internal.h"
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include "../io_internal.h"
 #endif
 

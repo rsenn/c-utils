@@ -1,7 +1,7 @@
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #else
 #endif
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <windows.h>
 #else
 #include <poll.h>
@@ -9,7 +9,7 @@
 #include "../io_internal.h"
 #include <errno.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 
 int64
 io_waitwrite(fd_t d, const char* buf, int64 len) {

@@ -42,7 +42,8 @@
    it is simpler to just do this in the source for each such file.  */
 
 //#if defined (_LIBC) || !defined (__GNU_LIBRARY__)
-#if defined(_WIN32) || defined(__MINGW64__) || defined(_MSC_VER)
+//#if defined(_WIN32) || defined(__MINGW64__) || defined(_MSC_VER)
+#if !defined(HAVE_FNMATCH)
 
 #ifndef errno
 extern int errno;

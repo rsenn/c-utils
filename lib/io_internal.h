@@ -1,12 +1,12 @@
 #ifndef IO_INTERNAL_H
 #define IO_INTERNAL_H 1
-
-#if defined(_WIN32) || defined(_WIN64)
+/*
+#if WINDOWS
 #include <winsock2.h>
-#endif
+#endif*/
 
 #ifndef my_extern
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #define my_extern extern __declspec(dllexport)
 #else
 #define my_extern extern
@@ -18,7 +18,7 @@
 #include "taia.h"
 #include "io.h"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <io.h>
 //#define read _read
 //#define write _write
@@ -27,7 +27,7 @@
 #define popen _popen
 #define lseek lseek64
 #define llseek lseek64
-#include "socket.h"
+//#include "socket.h"
 my_extern HANDLE io_comport;
 
 #elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
@@ -44,7 +44,7 @@ my_extern HANDLE io_comport;
  #endif
 #endif
 
-#if !(defined(_WIN32) || defined(_WIN64))
+#if !defined(WINDOWS)
 #include <sys/time.h>
 #include <unistd.h>
 #endif
@@ -96,7 +96,7 @@ typedef struct {
   unsigned int kernelwantread : 1; /* did we tell the kernel we want to read/write? */
   unsigned int kernelwantwrite : 1;
   unsigned int epolladded : 1;
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   unsigned int readqueued : 2;
   unsigned int writequeued : 2;
   unsigned int acceptqueued : 2;
@@ -110,13 +110,13 @@ typedef struct {
   void* mmapped;
   long maplen;
   uint64 mapofs;
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   OVERLAPPED or, ow, os; /* overlapped for read+accept, write+connect, sendfile */
   HANDLE /* fd, */ mh;
   char inbuf[8192];
   int bytes_read, bytes_written;
   DWORD errorcode;
-  SOCKET next_accept;
+  int64 next_accept;
 #endif
 } io_entry;
 
@@ -150,7 +150,7 @@ my_extern enum __io_waitmode {
   ,
   DEVPOLL
 #endif
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   ,
   COMPLETIONPORT
 #endif
@@ -183,7 +183,7 @@ struct eventpacket {
   enum { CANREAD, CANWRITE, TIMEOUT } what;
 };
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
 //extern int open();
 extern int read();
 extern int write();

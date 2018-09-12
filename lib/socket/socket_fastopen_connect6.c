@@ -1,5 +1,5 @@
 #include "../socket.h"
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <windows.h>
 #else
 #include <sys/socket.h>

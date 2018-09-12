@@ -1,4 +1,4 @@
-﻿#include <ctype.h>
+#include <ctype.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +13,8 @@
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/xml.h"
+
+#include "round.c"
 
 #define END_OF_LINE "; "
 void after_element(const char*);

@@ -1,6 +1,8 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+#include "../windoze.h"
+#include "../array.h"
 #include <errno.h>
 #define my_extern
 #include "../io_internal.h"
@@ -20,9 +22,8 @@
 #include <inttypes.h>
 #include <sys/epoll.h>
 #endif
-#if defined(_WIN32) || defined(_WIN64)
-#else
-#endif
+
+
 #ifdef HAVE_DEVPOLL
 #include <sys/devpoll.h>
 #include <sys/socket.h>
@@ -31,7 +32,7 @@
 
 #ifdef __dietlibc__
 #include <sys/atomic.h>
-#elif defined(_MSC_VER)
+#elif WINDOWS
 #define __CAS(ptr, oldval, newval) InterlockedCompareExchange(ptr, newval, oldval)
 #else
 #define __CAS(ptr, oldval, newval) __sync_val_compare_and_swap(ptr, oldval, newval)
@@ -39,13 +40,13 @@
 
 #ifdef __APPLE__
 #define EXPORT __attribute__((visibility("default")))
-#elif defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__) || defined(__MSYS__)
+#elif WINDOWS
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <stdio.h>
 extern HANDLE io_comport;
 #endif
@@ -76,7 +77,7 @@ long alt_firstwrite;
 static io_entry*
 io_fd_internal(fd_t d, int flags) {
   io_entry* e;
-#if !(defined(_WIN32) || defined(_WIN64))
+#if !WINDOWS_PLAIN
   long r;
   if((flags & (IO_FD_BLOCK | IO_FD_NONBLOCK)) == 0) {
     if((r = fcntl(d, F_GETFL, 0)) == -1) return 0; /* file descriptor not open */
@@ -103,7 +104,7 @@ io_fd_internal(fd_t d, int flags) {
   if(e->inuse) return e;
   byte_zero(e, sizeof(io_entry));
   e->inuse = 1;
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   e->mh = 0;
 #else
   if(r & O_NDELAY) e->nonblock = 1;
@@ -136,7 +137,7 @@ io_fd_internal(fd_t d, int flags) {
         io_waitmode = _SIGIO;
     }
 #endif
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
     io_comport = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
     if(io_comport) {
       io_waitmode = COMPLETIONPORT;
@@ -156,7 +157,7 @@ io_fd_internal(fd_t d, int flags) {
     fcntl(d, F_SETFL, fcntl(d, F_GETFL) | O_NONBLOCK | O_ASYNC);
   }
 #endif
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   if(io_comport) {
     if(CreateIoCompletionPort((HANDLE)(size_t)d, io_comport, (ULONG_PTR)(size_t)d, 0) == 0) {
       errno = EBADF;

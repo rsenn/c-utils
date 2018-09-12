@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <sys/types.h>
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #include <windows.h>
 #else
 #include <sys/mman.h>
@@ -11,7 +11,7 @@
 
 char*
 mmap_shared(const char* filename, size_t* filesize) {
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
   HANDLE fd, m;
   char* map;
   fd = CreateFile(filename,

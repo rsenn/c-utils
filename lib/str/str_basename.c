@@ -1,6 +1,6 @@
 #include "../str.h"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS
 #define PATH_LASTSEP(p) str_rchrs((p), "\\/", 2)
 #else
 #define PATH_LASTSEP(p) str_rchr((p), '/')

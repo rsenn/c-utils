@@ -3,9 +3,9 @@
 #include <string.h>
 #include <time.h>
 
-//#if(defined(__MSYS__) && __MSYS__ == 1)
-//#define isblank(c) ((c) == ' ' || (c) == '\t')
-//#endif
+#ifndef isblank
+#define isblank(c) ((c) == ' ' || (c) == '\t')
+#endif
 
 int
 isleap(int year);
