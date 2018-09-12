@@ -1,7 +1,7 @@
 #include "../windoze.h"
 
-#if WINDOWS_NATIVE
-#include "../socket.h"
+#if WINDOWS
+#include <winsock2.h>
 #include <errno.h>
 #undef winsock2errno
 int

@@ -33,7 +33,7 @@ typedef long ssize_t;
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #define EINPROGRESS WSAEINPROGRESS
 #define ECONNREFUSED WSAECONNREFUSED
-
+#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
 #endif
 int socket_tcp4(void);
 int socket_tcp4b(void);
