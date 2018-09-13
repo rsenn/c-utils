@@ -16,8 +16,7 @@ dir_open(struct dir_s* d, const char* p) {
   {
     char path[MAXIMUM_PATH_LENGTH + 1];
     size_t len;
-    strncpy(path, p, sizeof(path) - 1);
-    path[MAXIMUM_PATH_LENGTH] = '\0';
+    str_copyn(path, p, sizeof(path) - 1);
     len = str_len(path);
     strncat(path, (len > 0 && (path[len - 1] == '\\' || path[len - 1] == '/')) ? "*" : "\\*", sizeof(path) - 1);
 

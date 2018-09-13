@@ -230,6 +230,8 @@ endif
 
 prefix ?= $(PREFIX)
 bindir = ${prefix}/bin
+mandir = ${prefix}/share/man
+man3dir = $(mandir)/man3
 ifneq ($(HOST),)
 TRIPLET := $(subst -, ,$(HOST))
 endif
@@ -308,6 +310,9 @@ OS := $(shell echo $(word 3,$(TRIPLET)) |sed "s|[0-9].*||")
 KERN := $(word 2,$(TRIPLET))
 SYS := $(word 3,$(TRIPLET))
 W := 4
+ifeq ($(KERN),pc)
+KERN := $(SYS)
+endif
 ifeq ($(SYS),pc)
 SYS := $(word $(W),$(TRIPLET))
 W := 5
@@ -687,8 +692,8 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnsip dnsname sln)
-
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln)
+MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump 
 LIBSOURCES = $(wildcard lib/*/*.c) 
@@ -834,9 +839,11 @@ endif
 
 endif
 
+ifneq ($(SYS),msys)
 ifneq ($(SYSROOT),)
 ifeq ($(call file-exists,$(SYSROOT)),1)
 FLAGS += --sysroot=$(SYSROOT)
+endif
 endif
 endif
 
@@ -1142,6 +1149,13 @@ ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
+$(BUILDDIR)dnstest$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS) $(WINSOCK_LIB)
+$(BUILDDIR)dnstest$(M64_)$(EXEEXT): $(BUILDDIR)dnstest.o $(call add-library, dns io socket ndelay errmsg taia tai open buffer case fmt scan stralloc byte str uint32 uint16)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	#$(STRIP) $@
+endif
+
 $(BUILDDIR)dnsip$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)dnsip$(M64_)$(EXEEXT): $(BUILDDIR)dnsip.o $(call add-library, dns io socket ndelay errmsg taia tai open buffer case fmt scan stralloc byte str uint32 uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
@@ -1275,7 +1289,10 @@ clean:
 install: all 
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(PROGRAMS) $(DESTDIR)$(bindir)
-	$(INSTALL) -d $(DESTDIR)$(bindir)
+	$(INSTALL) -d $(DESTDIR)$(man3dir)
+	$(INSTALL) -m 644 $(MAN3) $(DESTDIR)$(man3dir)
+	cd $(DESTDIR)/$(man3dir) && \
+		gzip -3 -f $(notdir $(MAN3))
 
 install-release:
 	$(MAKE) DEBUG=0 install

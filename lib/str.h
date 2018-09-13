@@ -15,6 +15,7 @@ extern "C" {
 /* str_copy copies leading bytes from in to out until \0.
  * return number of copied bytes. */
 size_t str_copy(char* out, const char* in);
+unsigned int str_copyn(void* p1, const void* p2, unsigned int max);
 
 /* str_diff returns negative, 0, or positive, depending on whether the
  * string a[0], a[1], ..., a[n] == '\0' is lexicographically smaller than,

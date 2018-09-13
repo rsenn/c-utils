@@ -36,7 +36,7 @@ VALIDATE_DB(*hmap_db, key, k_len);
       HMAP_DUMP("Primary :> ");
       HMAP_SET_DATA();
 
-      memcpy(new_tuple->key, key, k_len);
+      byte_copy(new_tuple->key, k_len, key);
       new_tuple->key[k_len] = 0;
       new_tuple->key_len = k_len;
       new_tuple->index = index;
@@ -58,7 +58,7 @@ VALIDATE_DB(*hmap_db, key, k_len);
       HMAP_DUMP("Secondary :> ");
       HMAP_SET_DATA();
 
-      memcpy(new_tuple->key, key, k_len);
+      byte_copy(new_tuple->key, k_len, key);
       new_tuple->key[k_len] = 0;
       new_tuple->key_len = k_len;
       new_tuple->index = index;

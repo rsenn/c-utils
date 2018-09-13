@@ -1,7 +1,7 @@
 #include "../str.h"
 
 unsigned int
-str_copyb(void* p1, const void* p2, unsigned int max) {
+str_copyn(void* p1, const void* p2, unsigned int max) {
   unsigned int len;
   char* s;
   const char* t;
@@ -14,5 +14,6 @@ str_copyb(void* p1, const void* p2, unsigned int max) {
     ++t;
     ++len;
   }
+  *s = '\0';
   return len;
 }

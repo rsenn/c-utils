@@ -7,8 +7,7 @@ str_rchrs(const char* in, char needles[], size_t nn) {
   for(;;) {
     if(!*in) break;
     for(i = 0; i < nn; ++i) {
-      if(*in == needles[i])
-        found = in;
+      if(*in == needles[i]) found = in;
     }
     ++in;
   }

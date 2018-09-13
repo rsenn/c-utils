@@ -23,7 +23,7 @@ buffer_put(buffer* b, const char* buf, size_t len) {
       return 0;
     }
   }
-  memcpy(b->x + b->p, buf, len);
+  byte_copy(b->x + b->p, len, buf);
   b->p += len;
   return 0;
 }

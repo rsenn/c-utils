@@ -24,7 +24,7 @@ hash_map_init(hash_map* map, size_t capacity, hash_map_comparator comparator, ha
   map->size = 0;
 
   map->table = (linked_list**)safe_malloc(sizeof(linked_list*) * map->capacity);
-  memset(map->table, 0, sizeof(linked_list*) * map->capacity);
+  byte_zero(map->table, sizeof(linked_list*) * map->capacity);
 
   if(comparator) {
     map->comparator = comparator;

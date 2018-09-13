@@ -1,4 +1,4 @@
-#include <string.h>
+#include "../byte.h"
 
 #define HMAP_SET_DATA() \
   { \
@@ -31,11 +31,8 @@
           free(new_tuple); \
           return HMAP_ALLOCATED_ERROR; \
         } \
-        if(memcpy(new_tuple->vals.val_chars, data, d_len) == NULL) { \
-          free(new_tuple->vals.val_chars); \
-          free(new_tuple); \
-          return HMAP_FAILED; \
-        } \
+        byte_copy(new_tuple->vals.val_chars, d_len, data); \
+        \
         ((char*)new_tuple->vals.val_chars)[d_len] = 0; \
         new_tuple->data_len = d_len; \
         HMAP_DUMP("add[%d] data[%s]\n", index, (char*)new_tuple->vals.val_chars); \

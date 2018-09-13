@@ -8,7 +8,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <string.h>
+#include "byte.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +33,7 @@ typedef struct {
   struct { map_base_t base; T *ref; T tmp; }
 
 #define map_init(m)\
-  memset(m, 0, sizeof(*(m)))
+  byte_zero(m, sizeof(*(m)))
 
 #define map_deinit(m)\
   map_deinit_(&(m)->base)

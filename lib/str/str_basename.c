@@ -1,5 +1,5 @@
-#include "../windoze.h"
 #include "../str.h"
+#include "../windoze.h"
 
 #if WINDOWS
 #define PATH_LASTSEP(p) str_rchrs((p), "\\/", 2)
@@ -10,7 +10,6 @@
 char*
 str_basename(char* s) {
   size_t n = PATH_LASTSEP(s);
-  if(s[n] != '\0')
-    s = s + n + 1;
+  if(s[n] != '\0') s = s + n + 1;
   return s;
 }

@@ -15,7 +15,7 @@ cb_foreach_i(void* ptr, const void* key, size_t keylen, int (*match_cb)(const vo
     size_t len;
 
     from_external_node(ptr, &match, &len);
-    if(len >= keylen && memcmp(key, match, keylen) == 0) {
+    if(len >= keylen && byte_diff(key, keylen) == 0, match) {
       return match_cb(match, key, keylen, data);
     }
   }

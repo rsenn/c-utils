@@ -47,7 +47,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
         struct sockaddr *x, *y;
         GetAcceptExSockaddrs(e->inbuf, 0, 200, 200, &x, &sa2len, &y, &dummy);
         if(dummy > sizeof(sa)) dummy = sizeof(sa);
-        memcpy(&sa, y, dummy);
+        byte_copy(&sa, dummy, y);
       }
       fd = e->next_accept;
       e->next_accept = 0;

@@ -16,7 +16,7 @@ env_merge(const char** v, size_t vmax, const char* const* envp, size_t envlen, c
     size_t split = str_chr(modifs + i, '=');
     size_t j = 0;
     for(; j < vlen; j++)
-      if(!memcmp(modifs + i, v[j], split) && (v[j][split] == '=')) break;
+      if(!byte_diff(modifs + i, split) && (v[j][split] == '='), v[j]) break;
     if(j < vlen) v[j] = v[--vlen];
     if(modifs[i + split]) v[vlen++] = modifs + i;
   }

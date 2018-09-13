@@ -1,10 +1,10 @@
-#include "lib/buffer.h"
 #include "lib/http.h"
+#include "lib/buffer.h"
+#include "lib/byte.h"
 #include "lib/io.h"
 #include "lib/iopause.h"
-#include "lib/taia.h"
-#include "lib/byte.h"
 #include "lib/socket.h"
+#include "lib/taia.h"
 #include <errno.h>
 
 static int last_errno = 0;
@@ -23,10 +23,10 @@ do_recv(int s, void* buf, size_t len, void* ptr) {
   if(ret == -1) {
     last_errno = errno;
     errno = 0;
-/*    if(errno == EAGAIN) {
-      errno = 0;
-      ret = -1;
-    }*/
+    /*    if(errno == EAGAIN) {
+          errno = 0;
+          ret = -1;
+        }*/
   }
   return ret;
 }
@@ -39,7 +39,8 @@ static const char* const url_host = "5.1.76.111";
 static const char* const url_location = "/Filmliste-akt.xz";
 static const uint16 url_port = 80;
 
-int main(int argc, char* argv[]) {
+int
+main(int argc, char* argv[]) {
 
   http h;
   iopause_fd iop;
@@ -58,7 +59,7 @@ int main(int argc, char* argv[]) {
 
   byte_zero(&iop, sizeof(iop));
   iop.fd = h.sock;
-  iop.events = /*IOPAUSE_READ|*/IOPAUSE_WRITE;
+  iop.events = /*IOPAUSE_READ|*/ IOPAUSE_WRITE;
 
   set_timeouts(10);
   iopause(&iop, 1, &deadline, &stamp);
@@ -66,7 +67,7 @@ int main(int argc, char* argv[]) {
   http_sendreq(&h);
 
   for(;;) {
-   iop.events = IOPAUSE_READ;
+    iop.events = IOPAUSE_READ;
 
     set_timeouts(10);
     iopause(&iop, 1, &deadline, &stamp);
@@ -74,8 +75,7 @@ int main(int argc, char* argv[]) {
     if(iop.revents & IOPAUSE_READ) {
       http_readable(&h);
 
-      if(h.response->status == DONE )
-        break;
+      if(h.response->status == DONE) break;
     }
   }
 

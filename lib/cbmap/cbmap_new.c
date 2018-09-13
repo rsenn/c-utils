@@ -24,7 +24,7 @@ cbmap_default_allocator(void* data, size_t data_len) {
   if(data_copy == NULL) {
     return NULL;
   }
-  memcpy(data_copy, data, data_len);
+  byte_copy(data_copy, data_len, data);
   return data_copy;
 }
 

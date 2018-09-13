@@ -2,27 +2,27 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include <sys/types.h>
-
-#ifdef __unix__
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/param.h>
-#include <sys/socket.h>
-#endif
+#include "windoze.h"
 
 #include "uint16.h"
 #include "uint32.h"
 
-#include "windoze.h"
 #include <errno.h>
+
+#if !WINDOWS_NATIVE
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/socket.h>
+//#include <netinet/in.h>
+//#include <netdb.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #if WINDOWS_NATIVE
-#include <Windows.h>
+#include <windows.h>
 typedef int socklen_t;
 #if !defined(__ssize_t_defined)
 #define __ssize_t_defined 1

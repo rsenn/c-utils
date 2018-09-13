@@ -107,7 +107,7 @@ cbmap_mem_mem_dup(const void* p, size_t size, const char* file, int line) {
   if(result != NULL) {
     CBM_DEBUG_ALLOCATIONS += 1;
     CBM_DEBUG_ALLOCATED_BYTES += size;
-    memcpy(result, p, size);
+    byte_copy(result, size, p);
   }
 #ifdef DEBUG
   printf("%p     CBM_MEM_DUP    %-20s (%03d): Allocated %g bytes\n", result, file, line, (float)size);

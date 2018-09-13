@@ -86,16 +86,15 @@ http_readable(http* h) {
         return;
       }
 
-        putline("Line", line, 0, &recvb);
+      putline("Line", line, 0, &recvb);
 
       r->ptr = recvb.p;
       r->line++;
 
       if(ret >= 0) {
         unsigned long n, p;
-         while(ret > 0 && is_space(line[ret - 1])) ret--;
+        while(ret > 0 && is_space(line[ret - 1])) ret--;
         line[ret] = '\0';
-       
 
         if(r->part < CHUNKS && line[str_chr(line, ':')] == ':') {
           /*  if(r->part == HEADER)*/ putline("Header", line, ret, &recvb);
@@ -137,7 +136,7 @@ http_readable(http* h) {
             r->ptr = sptr;
             return; /* goto again; */
           }
-        n = buffer_getline(&recvb, line, sizeof(line));
+          n = buffer_getline(&recvb, line, sizeof(line));
           putline("Newline", "", -n, &recvb);
           if(recvb.n - recvb.p <= 0) return;
           continue;

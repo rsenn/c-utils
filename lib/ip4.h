@@ -4,10 +4,26 @@
 
 #include <stdlib.h>
 #include <sys/types.h>
+#include "uint8.h"
+#include "uint16.h"
+#include "uint32.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** IPv4 address */
+typedef union {
+  /** 32-bit IPv4 address, represented as 4 8-bit \c unsigned \c chars. */
+  uint8 addr[4];
+  uint32 s_addr;
+} ipv4addr;
+/** IPv4 port number. */
+typedef uint16 ipv4port;
+
+extern const ipv4addr IPV4ADDR_ANY;
+extern const ipv4addr IPV4ADDR_BROADCAST;
+extern const ipv4addr IPV4ADDR_LOOPBACK;
 
 size_t scan_ip4(const char *src,char *ip);
 size_t fmt_ip4(char *dest,const char *ip);

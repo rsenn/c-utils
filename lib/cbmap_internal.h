@@ -43,8 +43,8 @@ struct cbmap_internal_node {
   unsigned char otherbits;
 };
 
-#define KEY_COMPARE(k1, k2, len) memcmp(k1, k2, len)
-#define VALUE_COMPARE(k1, k2, len) memcmp(k1, k2, len)
+#define KEY_COMPARE(k1, k2, len) byte_diff(k1, len, k2)
+#define VALUE_COMPARE(k1, k2, len) byte_diff(k1, len, k2)
 
 /* Return values */
 #define INSERT_OUT_OF_MEMORY 0

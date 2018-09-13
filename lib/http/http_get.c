@@ -3,23 +3,26 @@
 #include "../http.h"
 #include "../io.h"
 #include "../io_internal.h"
+#include "../ip4.h"
 #include "../socket.h"
 #include "../str.h"
 
 #include <errno.h>
 #include <stdlib.h>
+#include <netdb.h>
+
 int
 http_get(http* h, const char* location) {
   int ret;
-   struct hostent* he;
-  struct in_addr a;
-   uint32 serial = 0;
+  struct hostent* he;
+  ipv4addr a;
+  uint32 serial = 0;
 
- stralloc_0(&h->host);
+  stralloc_0(&h->host);
   h->host.len = str_len(h->host.s);
   he = gethostbyname(h->host.s);
   if(he == NULL) return 0;
-  a = *((struct in_addr**)(he->h_addr_list))[0];
+  a = *((ipv4addr**)(he->h_addr_list))[0];
   if(a.s_addr == 0) return 0;
   byte_copy(h->addr, sizeof(h->addr), &a.s_addr);
   buffer_putsa(buffer_1, &h->host);
@@ -58,7 +61,7 @@ http_get(http* h, const char* location) {
     stralloc_init(&((*r)->data));
     stralloc_init(&((*r)->boundary));
   }
- ret = socket_connect4(h->sock, h->addr, h->port);
+  ret = socket_connect4(h->sock, h->addr, h->port);
 
   if(ret == -1) {
 

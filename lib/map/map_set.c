@@ -7,7 +7,7 @@ map_set_(map_base_t* m, const char* key, void* value, int vsize) {
   /* Find & replace existing node */
   next = map_getref(m, key);
   if(next) {
-    memcpy((*next)->value, value, vsize);
+    byte_copy((*next)->value, vsize, value);
     return 0;
   }
   /* Add new node */

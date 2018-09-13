@@ -31,7 +31,7 @@ from_external_node(void* ptr, void** key, size_t* keylen) {
   assert(numvalue && (numvalue & 1) == 0);
   assert(key && keylen);
 #endif
-  memcpy(keylen, bytes, sizeof(size_t));
+  byte_copy(keylen, sizeof(size_t), bytes);
   *key = bytes + sizeof(size_t);
 }
 
@@ -48,8 +48,8 @@ make_external_node(const void* key, size_t keylen) {
   assert((numvalue & 1) == 0);
 #endif
   assert(keylen);
-  memcpy(data, &keylen, sizeof(size_t));
-  memcpy(data + sizeof(size_t), key, keylen);
+  byte_copy(data, sizeof(size_t), &keylen);
+  byte_copy(data + sizeof(size_t), keylen, key);
   return (void*)(data + 1);
 }
 

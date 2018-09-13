@@ -26,7 +26,7 @@ wsa_socketpair(int af, int type, int proto, SOCKET sock[2]) {
 
   if((listen_sock = socket(af, type, proto)) == INVALID_SOCKET) goto error;
 
-  memset((void*)&addr1, 0, sizeof(addr1));
+  byte_zero((void*)&addr1, sizeof(addr1));
   addr1.sin_family = af;
   addr1.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
   addr1.sin_port = 0;
@@ -90,7 +90,7 @@ addr2_len = sizeof(addr2);
 
   if((listen_sock = socket(af, type, proto)) == INVALID_SOCKET) goto error;
 
-  memset((void*)&addr1, 0, sizeof(addr1));
+  byte_zero((void*)&addr1, sizeof(addr1));
   addr1.sin_family = af;
   addr1.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
   addr1.sin_port = 0;

@@ -40,7 +40,7 @@ socket_accept4(int s, char* ip, uint16* port) {
         struct sockaddr *x, *y;
         GetAcceptExSockaddrs(e->inbuf, 0, 200, 200, &x, &sa2len, &y, &len);
         if(len > sizeof(si)) len = sizeof(si);
-        memcpy(&si, y, len);
+        byte_copy(&si, len, y);
       }
       fd = e->next_accept;
       e->next_accept = 0;

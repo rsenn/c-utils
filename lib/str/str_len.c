@@ -5,7 +5,9 @@ size_t
 str_len(const char* in) {
   const char* t = in;
   for(;;) {
-    if(!*t) { break; };
+    if(!*t) {
+      break;
+    };
     ++t;
   }
   return t - in;

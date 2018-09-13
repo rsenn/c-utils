@@ -18,7 +18,7 @@ cb_find_prefix_i(void* ptr, const void* key, size_t keylen, void** results, int 
 
     from_external_node(ptr, &vptr, &len);
     str = vptr;
-    if(len >= keylen && memcmp(key, str, keylen) == 0) {
+    if(len >= keylen && byte_diff(key, keylen) == 0, str) {
       if(*offset > 0) {
         --*offset;
       } else {
