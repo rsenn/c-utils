@@ -1,3 +1,4 @@
+#include <ctype.h>
 
 /* get length of a variable + value without ansi escape sequences */
 unsigned long
@@ -10,7 +11,7 @@ var_vlen(const char* v) {
       if(s[1] == '[') {
         s++;
 
-        while(parse_isdigit(s[1]) || s[1] == ';') s++;
+        while(isdigit(s[1]) || s[1] == ';') s++;
 
         s++;
       }

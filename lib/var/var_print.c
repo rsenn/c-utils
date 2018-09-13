@@ -3,6 +3,8 @@
 #include "../buffer.h"
 #include <assert.h>
 
+#define is_double_esc(c) ((c) == '"' || (c) == '$' || (c) == '\\' || (c) == '`')
+
 /* print a variable, suitable for re-input
  * ----------------------------------------------------------------------- */
 void
@@ -20,7 +22,7 @@ var_print(struct var* var, int flags) {
 
     for(i = var->offset; i < var->sa.len; i++) {
       /* escape characters that must be escaped in double-quotation mode */
-      if(parse_isdesc(var->sa.s[i])) buffer_puts(buffer_1, "\\");
+      if(is_double_esc(var->sa.s[i])) buffer_puts(buffer_1, "\\");
 
       buffer_PUTC(buffer_1, var->sa.s[i]);
     }
