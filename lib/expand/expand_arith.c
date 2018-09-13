@@ -1,3 +1,5 @@
+#include "../tree.h"
+#include "../expand.h"
 
 /* expand an arithmetic expression
  * ----------------------------------------------------------------------- */

@@ -59,21 +59,21 @@ extern char expand_ifs[4];
 union node;
 struct narg;
 
-union node *expand_arg(struct narg *narg, union node **nptr, int flags);
-int expand_args(union node *args, union node **nptr, int flags);
-void expand_argv(union node *args, char **argv);
-union node *expand_arith(struct nargarith *arith, union node **nptr, int flags);
-void expand_catsa(union node *node, stralloc *sa, int flags);
-union node *expand_command(struct nargcmd *cmd, union node **nptr, int flags);
-void expand_copysa(union node *node, stralloc *sa, int flags);
-void expand_escape(stralloc *sa, const char *b, unsigned int n);
-void expand_unescape(stralloc *sa);
-int expand_vars(union node *vars, union node **nptr);
+void        expand_argv(union node*, char** argv);
+union node* expand_arith(struct nargarith*, union node** nptr, int flags);
+void        expand_escape(stralloc*, const char* b, unsigned int n);
+void        expand_unescape(stralloc*);
 
 #ifdef VARTAB_H
-union node* expand_cat(struct vartab* varstack, const char* b, unsigned int len, union node** nptr, int flags);
-union node* expand_glob(union node** nptr, struct vartab* varstack, int flags);
-union node* expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack, char* argv[], int exitcode, int flags);
+union node* expand_arg(struct narg*, union node** nptr, struct vartab*, char* argv[], int exitcode, int flags);
+union node* expand_cat(const char*, unsigned int, union node** nptr, struct vartab*, int flags);
+void        expand_catsa(union node*, stralloc*, struct vartab*, char* argv[], int exitcode, int flags);
+union node* expand_glob(union node**, struct vartab* varstack, int flags);
+union node* expand_param(struct nargparam*, union node**, struct vartab*, char* argv[], int exitcode, int flags);
+int         expand_vars(union node*, union node**, struct vartab*, char *argv[], int exitcode);
+int         expand_args(union node*, union node**, struct vartab*, char* argv[], int exitcode, int flags);
+void        expand_copysa(union node*, stralloc*, struct vartab*, char* argv[], int exitcode, int flags);
+union node* expand_command(struct nargcmd*, union node**, struct vartab*, int flags);
 #endif
 
 #endif /* EXPAND_H */

@@ -1,5 +1,6 @@
-#include "../expand.h"
+#include "../tree.h"
 #include "../stralloc.h"
+#include "../expand.h"
 
 #define expand_isesc(c) ((c) == '[' || (c) == '\\' || (c) == ']')
 

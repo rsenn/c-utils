@@ -1,3 +1,5 @@
+#include "../memalign.h"
+#include "../byte.h"
 #include "../windoze.h"
 #include "../str.h"
 #include "alloc.h"
@@ -35,7 +37,7 @@ cbmap_mem_memalign(void** p, size_t alignment, size_t size) {
 #elif HAVE_POSIX_MEMALIGN
   a = posix_memalign(p, alignment, size);
 #else
-  a = !(*p = memalign_alloc(PAGE_SIZE, alignment, size));
+  a = !(*p = memalign_alloc(alignment, size));
 //#else
 //  a = !(*p = malloc(size));
 #endif

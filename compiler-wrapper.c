@@ -198,7 +198,7 @@ strlist_execve(const strlist* sl) {
   char* p = av[0];
   av[0] = str_basename(p);
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
   return spawnv(P_WAIT, p, av);
 #else
   int pid = vfork();

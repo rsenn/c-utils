@@ -1,3 +1,5 @@
+#include "../vartab.h"
+#include "../stralloc.h"
 #include "../tree.h"
 #include "../expand.h"
 #include <stdlib.h>
@@ -5,7 +7,7 @@
 /* expand all parts of an N_ARG node
  * ----------------------------------------------------------------------- */
 union node*
-expand_arg(struct narg* narg, union node** nptr, int flags) {
+expand_arg(struct narg* narg, union node** nptr, struct vartab* varstack, char *argv[], int exitcode, int flags) {
   union node* n = *nptr;
   union node* subarg;
 
@@ -23,13 +25,13 @@ expand_arg(struct narg* narg, union node** nptr, int flags) {
       case N_ARGARITH: n = expand_arith(&subarg->nargarith, nptr, lflags); break;
 
       /* parameter substitution */
-      case N_ARGPARAM: n = expand_param(&subarg->nargparam, nptr, lflags); break;
+      case N_ARGPARAM: n = expand_param(&subarg->nargparam, nptr, varstack, argv, exitcode, lflags); break;
 
       /* command substitution */
-      case N_ARGCMD: n = expand_command(&subarg->nargcmd, nptr, lflags); break;
+      case N_ARGCMD: n = expand_command(&subarg->nargcmd, nptr, varstack, lflags); break;
 
       /* constant string */
-      default: n = expand_cat(subarg->nargstr.stra.s, subarg->nargstr.stra.len, nptr, lflags); break;
+      default: n = expand_cat(subarg->nargstr.stra.s, subarg->nargstr.stra.len, nptr, varstack, lflags); break;
     }
 
     if(n) nptr = &n;

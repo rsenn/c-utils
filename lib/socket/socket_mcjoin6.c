@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../windoze.h"
 #include "../ip6.h"
 #include "../socket.h"

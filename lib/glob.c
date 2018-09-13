@@ -216,7 +216,7 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
 
         buffer = new_buffer;
 
-        (void)memmove(new_buffer + cbPointers, new_buffer, cbAlloc);
+        (void)byte_copyr(new_buffer + cbPointers, cbAlloc, new_buffer);
 
         /* Handle the offsets. */
         begin = (char**)new_buffer;

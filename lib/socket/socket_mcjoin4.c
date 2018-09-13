@@ -1,6 +1,7 @@
 #include "../windoze.h"
 #include "../ip4.h"
 #include "../socket.h"
+#include "../byte.h"
 
 int
 socket_mcjoin4(int s, const char ip[4], const char _interface[4]) {

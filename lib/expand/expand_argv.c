@@ -1,6 +1,5 @@
-#include "../expand.h"
 #include "../tree.h"
-#include <stdlib.h>
+#include "../expand.h"
 
 /* expand argument vector
  * ----------------------------------------------------------------------- */

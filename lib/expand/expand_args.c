@@ -1,3 +1,5 @@
+#include "../vartab.h"
+#include "../stralloc.h"
 #include "../tree.h"
 #include "../expand.h"
 
@@ -5,7 +7,7 @@
  * returns count of argument nodes
  * ----------------------------------------------------------------------- */
 int
-expand_args(union node* args, union node** nptr, int flags) {
+expand_args(union node* args, union node** nptr, struct vartab* varstack, char *argv[], int exitcode, int flags) {
   union node* arg;
   union node* n;
   int ret = 0;
@@ -13,7 +15,7 @@ expand_args(union node* args, union node** nptr, int flags) {
   *nptr = NULL;
 
   for(arg = args; arg; arg = arg->list.next) {
-    if((n = expand_arg(&arg->narg, nptr, flags))) {
+    if((n = expand_arg(&arg->narg, nptr, varstack, argv, exitcode, flags))) {
       nptr = &n;
       ret++;
     }
@@ -21,7 +23,7 @@ expand_args(union node* args, union node** nptr, int flags) {
     if(n == NULL) continue;
 
     if(n->narg.flag & X_GLOB) {
-      if((n = expand_glob(nptr, n->narg.flag & ~X_GLOB))) {
+      if((n = expand_glob(nptr, varstack, n->narg.flag & ~X_GLOB))) {
         nptr = &n;
         ret++;
       }

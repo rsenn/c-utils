@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../cb_internal.h"
 static int
 cb_find_prefix_i(void* ptr, const void* key, size_t keylen, void** results, int numresults, int* offset, int next) {
@@ -18,7 +19,7 @@ cb_find_prefix_i(void* ptr, const void* key, size_t keylen, void** results, int 
 
     from_external_node(ptr, &vptr, &len);
     str = vptr;
-    if(len >= keylen && byte_diff(key, keylen) == 0, str) {
+    if(len >= keylen && byte_diff(key, keylen, str) == 0, str) {
       if(*offset > 0) {
         --*offset;
       } else {

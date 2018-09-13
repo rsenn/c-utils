@@ -1,14 +1,15 @@
-#include "../expand.h"
+#include "../vartab.h"
+#include "../stralloc.h"
 #include "../str.h"
 #include "../var.h"
-#include "../vartab.h"
 #include "../tree.h"
+#include "../expand.h"
 #include <stdlib.h>
 
 /* concatenate <len> bytes from <b> to the argument list pointed to by <nptr>
  * ----------------------------------------------------------------------- */
 union node*
-expand_cat(struct vartab* varstack, const char* b, unsigned int len, union node** nptr, int flags) {
+expand_cat(const char* b, unsigned int len, union node** nptr, struct vartab* varstack, int flags) {
   union node* n = *nptr;
   const char* ifs = NULL;
   unsigned int i, x;
@@ -50,7 +51,7 @@ expand_cat(struct vartab* varstack, const char* b, unsigned int len, union node*
       stralloc_nul(&n->narg.stra);
 
       if(flags & X_GLOB) {
-        if((n = expand_glob(nptr, flags & ~X_GLOB))) nptr = &n;
+        if((n = expand_glob(nptr, varstack, flags & ~X_GLOB))) nptr = &n;
       } else {
         expand_unescape(&n->narg.stra);
         n->narg.flag &= ~X_GLOB;

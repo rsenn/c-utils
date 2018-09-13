@@ -43,6 +43,7 @@ MSDN Magazine articles
 #include "lib/mmap.h"
 #include "lib/str.h"
 #include "lib/pe.h"
+#include "lib/byte.h"
 
 #define FALSE 0
 #define TRUE 1

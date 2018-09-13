@@ -1,3 +1,4 @@
+#include "../vartab.h"
 #include "../tree.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -5,7 +6,6 @@
 
 #include "../glob.h"
 #include "../var.h"
-#include "../vartab.h"
 #include "../expand.h"
 
 #include <stdlib.h>

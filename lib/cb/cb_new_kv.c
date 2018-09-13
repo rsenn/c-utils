@@ -3,9 +3,9 @@ size_t
 cb_new_kv(const char* key, size_t keylen, const void* value, size_t len, void* out) {
   char* dst = (char*)out;
   if(dst != key) {
-    memmove(dst, key, keylen);
+    byte_copyr(dst, keylen, key);
   }
   dst[keylen] = 0;
-  memmove(dst + keylen + 1, value, len);
+  byte_copyr(dst + keylen + 1, len, value);
   return len + keylen + 1;
 }

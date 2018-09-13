@@ -13,8 +13,9 @@
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/socket.h>
-//#include <netinet/in.h>
-//#include <netdb.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
 #endif
 
 #ifdef __cplusplus

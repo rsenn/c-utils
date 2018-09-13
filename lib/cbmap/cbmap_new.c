@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../cbmap_internal.h"
 
 /** mark - cbmap_new */

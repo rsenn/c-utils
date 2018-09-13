@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../socket.h"
 
 #include <sys/types.h>

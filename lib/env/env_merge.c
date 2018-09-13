@@ -1,3 +1,4 @@
+#include "../byte.h"
 /* ISC license. */
 
 #include "../env.h"
@@ -16,7 +17,7 @@ env_merge(const char** v, size_t vmax, const char* const* envp, size_t envlen, c
     size_t split = str_chr(modifs + i, '=');
     size_t j = 0;
     for(; j < vlen; j++)
-      if(!byte_diff(modifs + i, split) && (v[j][split] == '='), v[j]) break;
+      if(!byte_diff(modifs + i, split, v[j]) && (v[j][split] == '=')) break;
     if(j < vlen) v[j] = v[--vlen];
     if(modifs[i + split]) v[vlen++] = modifs + i;
   }

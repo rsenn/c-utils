@@ -1,8 +1,8 @@
+#include "byte.h"
 #include "hmap.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 //#define HMAP_DUMP(...) do {printf( __VA_ARGS__ );}while(0)
 

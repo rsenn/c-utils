@@ -121,7 +121,7 @@ last_error_str() {
 
   snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
 
-  /* OutputDebugString(buffer); /* or otherwise log it */ */
+  /* OutputDebugString(buffer);  or otherwise log it */
   LocalFree(err);
   return buffer;
 #else

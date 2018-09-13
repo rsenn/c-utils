@@ -5,6 +5,10 @@
 #include <errno.h>
 #endif
 
+#if !WINDOWS_NATIVE
+#include <netinet/in.h>
+#endif
+
 int
 io_socketpair(fd_t* d) {
   fd_t fds[2];

@@ -1,9 +1,15 @@
+#include "../windoze.h"
 #include "../socket.h"
 #include "../byte.h"
 #include "../uint16.h"
 #include "../uint32.h"
 
-int socket_connect4(int s, const char *ip, uint16 port) {
+#if !WINDOWS_NATIVE
+#include <netinet/in.h>
+#endif
+
+int
+socket_connect4(int s, const char *ip, uint16 port) {
   struct sockaddr_in si;
   byte_zero(&si, sizeof(si));
   si.sin_family = AF_INET;

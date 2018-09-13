@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../map_internal.h"
 
 int

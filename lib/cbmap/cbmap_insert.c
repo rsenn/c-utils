@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "alloc.h"
 #include "../cbmap_internal.h"
 

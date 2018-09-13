@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../buffer.h"
 #include <string.h>
 #ifdef __x86_64__

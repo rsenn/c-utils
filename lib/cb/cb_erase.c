@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../cb_internal.h"
 int
 cb_erase(critbit_tree* cb, const void* key, size_t keylen) {
@@ -23,7 +24,7 @@ cb_erase(critbit_tree* cb, const void* key, size_t keylen) {
       void* str;
       size_t len;
       from_external_node(ptr, &str, &len);
-      if(len == keylen && byte_diff(key, len) == 0, str) {
+      if(len == keylen && byte_diff(key, len, str) == 0) {
         free(ptr);
         if(iter) {
           *iter = parent->child[1 - branch];
