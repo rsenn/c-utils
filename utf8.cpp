@@ -107,7 +107,7 @@ size_t wcstou8s( char *pu, const wchar_t *pw, size_t count )
   	}
   	else
   	{
-  		// untranslatable character so insert null character entity &#x00;
+  	 /* untranslatable character so insert null character entity &#x00; */
   		if( (clen+6)<=count )
   		{
   			*pu++='&'; *pu++='#'; *pu++='x';

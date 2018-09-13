@@ -17,7 +17,7 @@ safe_malloc(size_t size) {
   }
 
 #ifdef TEST
-  // printf("malloc: %p, counter: %d\n", ptr, __malloc_counter);
+  /* printf("malloc: %p, counter: %d\n", ptr, __malloc_counter); */
   __malloc_counter++;
 #endif
 
@@ -29,6 +29,6 @@ safe_free(void* ptr) {
   free(ptr);
 #ifdef TEST
   __malloc_counter--;
-  // printf("free: %p, counter: %d\n", ptr, __malloc_counter);
+  /* printf("free: %p, counter: %d\n", ptr, __malloc_counter); */
 #endif
 }

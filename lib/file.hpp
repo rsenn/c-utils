@@ -49,6 +49,6 @@ protected:
   int m_retcode;
 };
 
-//} // end of namespace util
+//} /* end of namespace util */
 
 #endif

@@ -70,7 +70,7 @@ expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack
         /* $[0-9] arg subst */
       case S_ARG: {
         if(param->numb == 0) {
-        //  stralloc_cats(&value, sh_argv0);
+        /*  stralloc_cats(&value, sh_argv0); */
         } else if(param->numb - 1 < argc) {
           stralloc_cats(&value, argv[param->numb - 1]);
         }

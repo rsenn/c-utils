@@ -18,5 +18,5 @@ xml_print_nodeset(const xmlnodeset* ns, buffer* b) {
     buffer_puts(b, "]");
     buffer_putnlflush(b);
   }
-  // buffer_flush(b);
+  /* buffer_flush(b); */
 }

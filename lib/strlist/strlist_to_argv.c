@@ -11,6 +11,6 @@ strlist_to_argv(const strlist* sl) {
     v[i] = strlist_at(sl, i);
     i++;
   }
-  // v[i] = NULL;
+  /* v[i] = NULL; */
   return v;
 }

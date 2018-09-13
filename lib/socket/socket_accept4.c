@@ -49,7 +49,7 @@ socket_accept4(int s, char* ip, uint16* port) {
           io_entry* f = array_get(io_getfds(), sizeof(io_entry), fd);
           if(f) {
             f->nonblock = 1;
-            //      printf("setting fd %lu to non-blocking\n",(int64)fd);
+            /*      printf("setting fd %lu to non-blocking\n",(int64)fd); */
           }
         }
       }

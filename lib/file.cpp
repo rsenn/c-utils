@@ -51,4 +51,4 @@ file::put_line(const char* s) {
   write("\r\n", 2);
 }
 
-//} // end of namespace util
+//} /* end of namespace util */

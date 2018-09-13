@@ -62,4 +62,4 @@ directory_iterator::allocate(const size_t size) {
   m_buffer.reserve(size + 1);
 }
 
-//} // end of namespace util
+//} /* end of namespace util */

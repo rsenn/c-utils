@@ -38,11 +38,11 @@ namespace intelhex
     typedef    container::reverse_iterator    reverse_iterator;
     typedef    data_container::size_type    size_type;
     private:
-    value_type  _fill;        // Value returned for unset addresses
+    value_type  _fill;        /* Value returned for unset addresses */
     char    format;                //Format of the parsed file (necessary?)
-    bool    segment_addr_rec;        // Uses/Has a segment address record
-    bool    linear_addr_rec;        // Uses/Has a linear address record
-    container   blocks;            // List of data blocks
+    bool    segment_addr_rec;        /* Uses/Has a segment address record */
+    bool    linear_addr_rec;        /* Uses/Has a linear address record */
+    container   blocks;            /* List of data blocks */
 
     public:
     hex_data() : _fill(0), segment_addr_rec(false), linear_addr_rec(false) {}
@@ -53,10 +53,10 @@ namespace intelhex
     iterator    begin() { return blocks.begin(); }
     iterator    end() { return blocks.end(); }
 
-    void    compact();        // Merge adjacent blocks
+    void    compact();        /* Merge adjacent blocks */
     void    clear();        //Delete everything
-    void    erase(address_type);    // Erase a single element
-    void     erase(address_type first, address_type last);  // Erase [first, last]
+    void    erase(address_type);    /* Erase a single element */
+    void     erase(address_type first, address_type last);  /* Erase [first, last] */
     value_type  fill()  { return _fill; }
     void        fill(value_type f)  { _fill = f; }
     size_type   size();
@@ -64,20 +64,20 @@ namespace intelhex
     size_type   size_in_range(address_type, address_type);    //number of words in [lo, hi)
     address_type   max_addr_below(address_type);
 
-    address_type   min_address() const;    // Lowest address
-    address_type   max_address() const;    // Highest address
+    address_type   min_address() const;    /* Lowest address */
+    address_type   max_address() const;    /* Highest address */
 
     bool    is_set(address_type);
 
     value_type& operator[](address_type);    //Array access operator
-    value_type  get(address_type);        // Return the value at address
-    void    set(address_type, value_type);    // Set the value at address
+    value_type  get(address_type);        /* Return the value at address */
+    void    set(address_type, value_type);    /* Set the value at address */
 
-    void    load(const std::string&);    // Load from a file
-    void    read(std::istream &);            // Read data from an input stream
+    void    load(const std::string&);    /* Load from a file */
+    void    read(std::istream &);            /* Read data from an input stream */
     void    write(const char *);            //Save hex data to a hex file
     void    write(std::ostream &);            //Write all data to an output stream
-    void    tidy(size_type length);            // Make things pretty
+    void    tidy(size_type length);            /* Make things pretty */
     };
 
     bool compare(hex_data&, hex_data&, value_type, address_type, address_type);

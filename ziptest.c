@@ -173,10 +173,10 @@ main(int argc, char* argv[]) {
           buffer_bzip(&cbuf, out_filename, level);
       }
       break;
-      //    case C_XZ:
-      //    case C_LZMA:
-      //      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level);
-      //      break;
+      /*    case C_XZ: */
+      /*    case C_LZMA: */
+      /*      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); */
+      /*      break; */
     default:
       buffer_putm(buffer_2, "ERROR: Unable to detect compression type from ", in_filename);
       buffer_putnlflush(buffer_2);

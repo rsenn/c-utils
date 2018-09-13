@@ -2,14 +2,14 @@
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
+#include "lib/getopt.h"
+#include "lib/http.h"
 #include "lib/io_internal.h"
 #include "lib/scan.h"
-#include "lib/str.h"
-#include "lib/strlist.h"
-#include "lib/strarray.h"
 #include "lib/slist.h"
-#include "lib/http.h"
-#include "lib/getopt.h"
+#include "lib/str.h"
+#include "lib/strarray.h"
+#include "lib/strlist.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -38,14 +38,14 @@ http://verteiler5.mediathekview.de/Filmliste-akt.xz
 http://verteiler6.mediathekview.de/Filmliste-akt.xz
 */
 const char* const mediathek_urls[] = {
-  "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
-  "http://mediathekview.jankal.me/Filmliste-akt.xz",
-  "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
+    "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
+    "http://mediathekview.jankal.me/Filmliste-akt.xz",
+    "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
 const char* const mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
@@ -250,7 +250,7 @@ time_t
 parse_anydate(const char* s) {
   const char* fmt;
   size_t len = str_len(s);
-  if(len != 8) // len - str_rchr(s, '.') == 4)
+  if(len != 8) /* len - str_rchr(s, '.') == 4) */
     fmt = "%d.%m.%Y";
   else
     fmt = "%Y%m%d";
@@ -568,24 +568,12 @@ main(int argc, char* argv[]) {
 
   while((opt = getopt(argc, argv, "F:dt:i:x:")) != -1) {
     switch(opt) {
-      case 'F':
-        dt_fmt = optarg;
-        break;
-      case 'd':
-        debug++;
-        break;
-      case 't':
-        min_length = parse_time(optarg);
-        break;
-      case 'i':
-        strlist_push(&include, optarg);
-        break;
-      case 'x':
-        strlist_push(&exclude, optarg);
-        break;
-      default: /* '?' */
-        buffer_putm(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n");
-        exit(EXIT_FAILURE);
+      case 'F': dt_fmt = optarg; break;
+      case 'd': debug++; break;
+      case 't': min_length = parse_time(optarg); break;
+      case 'i': strlist_push(&include, optarg); break;
+      case 'x': strlist_push(&exclude, optarg); break;
+      default: /* '?' */ buffer_putm(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n"); exit(EXIT_FAILURE);
     }
   }
 

@@ -33,7 +33,7 @@
 #define lseek lseek64
 #endif
 
-#define BLOCK_SIZE 1024 // 262144
+#define BLOCK_SIZE 1024 /* 262144 */
 #if defined(__APPLE__) || defined(__MSYS__)
 typedef off_t offset_type;
 #elif defined(__CYGWIN__)
@@ -88,9 +88,9 @@ filesize(int fd) {
   sz |= ((int64)fszH) << 32;
 #else
   off_t pos, end;
-  // if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1;
+  /* if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1; */
   if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t)-1) return -1;
-  // if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1;
+  /* if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1; */
   if((end = lseek(fd, 0, SEEK_END)) == (off_t)-1) return -1;
 
   sz = end;
@@ -121,7 +121,7 @@ last_error_str() {
 
   snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
 
-  // OutputDebugString(buffer); /* or otherwise log it */
+  /* OutputDebugString(buffer); /* or otherwise log it */ */
   LocalFree(err);
   return buffer;
 #else
@@ -191,7 +191,7 @@ next:
               (long long)fsize);
 
     //(uint64)map_size * iterations);
-    // mmap_private(argv[ai], &fsize);
+    /* mmap_private(argv[ai], &fsize); */
 
     /*struct stat st;
     infile.fd = open_read(argv[1]);
@@ -201,8 +201,8 @@ next:
             fstat(infile.fd, &st);
     fsize = st.st_size;*/
 
-    // buffer_puts(buffer_1, "fsize #"); buffer_putulong(buffer_1, fsize);; buffer_puts(buffer_1, ", blocks #");
-    // buffer_putulong(buffer_1, blocks); buffer_putnlflush(buffer_1);
+    /* buffer_puts(buffer_1, "fsize #"); buffer_putulong(buffer_1, fsize);; buffer_puts(buffer_1, ", blocks #"); */
+    /* buffer_putulong(buffer_1, blocks); buffer_putnlflush(buffer_1); */
 
     for(i = 0; i < iterations; i++) {
       size_t msz = (remain >= map_size ? map_size : (size_t)remain);
@@ -226,12 +226,12 @@ next:
 
       all_blocks += blocks;
 
-      // int remain = msz - (blocks * BLOCK_SIZE);
+      /* int remain = msz - (blocks * BLOCK_SIZE); */
       for(bi = 0; bi < blocks; bi++) {
-        // get_block(m);
+        /* get_block(m); */
 
         z += check_block_zero(&m[bi * BLOCK_SIZE], BLOCK_SIZE);
-        // fprintf(stderr, "block #%lu\n", bi); fflush(stderr);
+        /* fprintf(stderr, "block #%lu\n", bi); fflush(stderr); */
       }
 
       if(verbose)

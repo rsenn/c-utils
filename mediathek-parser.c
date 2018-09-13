@@ -1,8 +1,8 @@
-#include "lib/getopt.h"
-#include "lib/io_internal.h"
 #include "lib/array.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
+#include "lib/getopt.h"
+#include "lib/io_internal.h"
 #include "lib/open.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
@@ -12,8 +12,8 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
+#include <time.h>
 
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
@@ -21,7 +21,13 @@ static int csv = 0;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
-void output_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description);
+void output_entry(const char* sender,
+                  const char* thema,
+                  const char* title,
+                  unsigned duration,
+                  const char* datetime,
+                  const char* url,
+                  const char* description);
 /*
 int
 parse_predicate(const char* x, size_t len)
@@ -56,7 +62,7 @@ parse_predicate(const char* x, size_t len)
 
 int
 read_line(const char* s, size_t len, strlist* fields, array* x) {
-const char *end= s + len, *p = s;
+  const char *end = s + len, *p = s;
   int64 pos = 0;
   int quoted = 0 /*, escaped = 0*/;
   size_t n, i = 0;
@@ -186,16 +192,18 @@ process_entry(const array* a) {
   size_t ac = array_length(a, sizeof(char*));
 
   if(ac >= 21 && !str_diff(av[0], "X")) {
-      char timebuf[256];
-  stralloc datetime;
+    char timebuf[256];
+    stralloc datetime;
     struct tm tm;
     time_t t;
     unsigned d;
 
-    char *sender = av[1], *thema = av[2], *title = av[3] /*, *date = av[4], *time = av[5]*/, *duration = av[6], /**grcoee = av[7],*/ *description = av[8],
+    char *sender = av[1], *thema = av[2], *title = av[3] /*, *date = av[4], *time = av[5]*/, *duration = av[6],
+         /**grcoee = av[7],*/ *description = av[8],
          *url = av[9] /*, *website = av[10], *untertitel = av[11], *urlrtmp = av[12]*/,
-         *url_klein =
-           av[13] /*, *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17], *url_history = av[18], *geo = av[19], *neu = av[20]*/;
+         *url_klein = av[13] /*, *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17],
+                                *url_history = av[18], *geo = av[19], *neu = av[20]*/
+        ;
 
     /*    char* title = av[8];
         char* date = av[4];
@@ -295,7 +303,13 @@ put_quoted_string(const char* str) {
 }
 
 void
-output_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
+output_entry(const char* sender,
+             const char* thema,
+             const char* title,
+             unsigned duration,
+             const char* datetime,
+             const char* url,
+             const char* description) {
 
   if(csv == 0) {
     buffer_puts(buffer_1, "#EXTINF:");
@@ -375,10 +389,10 @@ main(int argc, char* argv[]) {
   buffer b;
 
   struct option opts[] = {
-    {"csv", 0, NULL, 'c'},
-    {"debug", 0, NULL, 'd'},
-    {"low", 0, NULL, 'l'},
-    {"format", 1, NULL, 'F'},
+      {"csv", 0, NULL, 'c'},
+      {"debug", 0, NULL, 'd'},
+      {"low", 0, NULL, 'l'},
+      {"format", 1, NULL, 'F'},
   };
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {

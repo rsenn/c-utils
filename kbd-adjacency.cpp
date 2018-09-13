@@ -104,7 +104,7 @@ make_adjacency_matrix() {
   m['p'] = m['P'] = range_to_v("oO0'üטציlL");
   m['ü'] = m['ט'] = range_to_v("pP'האצי");
 
-  //	m['a'] = m['A'] = range_to_v("qQwWsSyY<>");
+  /* m['a'] = m['A'] = range_to_v("qQwWsSyY<>"); */
   m['a'] = m['A'] = range_to_v("qQwWsSyY");
   m['s'] = m['S'] = range_to_v("aAwWeEdDxXyY");
   m['d'] = m['D'] = range_to_v("sSeErRfFcCxX");

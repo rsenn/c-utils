@@ -43,7 +43,7 @@ buffer_dump(buffer* out, buffer* b) {
     buffer_put(out, xlong, n);
   }
   buffer_puts(out, ", op=");
-  // buffer_putspace(out);
+  /* buffer_putspace(out); */
 
   if(b->op == (void*)read)
     buffer_puts(out, "<read>  ");
@@ -56,8 +56,8 @@ buffer_dump(buffer* out, buffer* b) {
   else if(b->op == NULL)
     buffer_puts(out, "NULL    ");
   else {
-    // n = fmt_xlong(xlong, (long long)(intptr_t)b->op);
-    buffer_putptr(out, b->op); // xlong, n);
+    /* n = fmt_xlong(xlong, (long long)(intptr_t)b->op); */
+    buffer_putptr(out, b->op); /* xlong, n); */
   }
   buffer_puts(out, " ]");
   buffer_putnlflush(out);

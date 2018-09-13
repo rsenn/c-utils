@@ -62,7 +62,17 @@ typedef struct instance {
 /* ----------------------------------------------------------------------- */
 void
 dump_part(part_t const* p) {
-  buffer_putm(buffer_2, "dump_part{name=", p->name, ",library=", p->library, ",deviceset", p->deviceset, ",device=", p->device, ",value=", p->value);
+  buffer_putm(buffer_2,
+              "dump_part{name=",
+              p->name,
+              ",library=",
+              p->library,
+              ",deviceset",
+              p->deviceset,
+              ",device=",
+              p->device,
+              ",value=",
+              p->value);
 
   buffer_puts(buffer_2, ",x=");
   buffer_putdouble(buffer_2, p->x, 1);
@@ -191,8 +201,8 @@ create_instance(const char* part, const char* gate, double x, double y, double r
 part_t*
 create_part(const char* name, const char* library, const char* deviceset, const char* device, const char* value) {
   if(value == NULL) value = "";
-    /*if(deviceset == NULL) deviceset = "";
-    if(device == NULL) device = "";*/
+  /*if(deviceset == NULL) deviceset = "";
+  if(device == NULL) device = "";*/
   part_t* p;
   p = malloc(sizeof(part_t));
   if(p == NULL) return NULL;

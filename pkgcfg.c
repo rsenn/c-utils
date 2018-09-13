@@ -3,6 +3,7 @@
 #include "lib/byte.h"
 #include "lib/cbmap.h"
 #include "lib/dir.h"
+#include "lib/env.h"
 #include "lib/errmsg.h"
 #include "lib/getopt.h"
 #include "lib/iterator.h"
@@ -12,7 +13,6 @@
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
-#include "lib/env.h"
 #include "lib/wordexp.h"
 #include <ctype.h>
 #include <stdlib.h>
@@ -71,7 +71,7 @@ wordexp_sa(const char* s, stralloc* sa) {
   char** w;
   size_t i;
 
-  if(wordexp(s, &wx,  WRDE_NOCMD | WRDE_UNDEF)) return 0;
+  if(wordexp(s, &wx, WRDE_NOCMD | WRDE_UNDEF)) return 0;
 
   w = wx.we_wordv;
 
@@ -175,7 +175,7 @@ pkg_read(buffer* b, pkg* p) {
       stralloc_trim(&value, "\r\n\t \0", 5);
       stralloc_nul(&value);
       stralloc_nul(&name);
-#if 0 // def DEBUG
+#if 0 /* def DEBUG */
       buffer_putm(buffer_2, "Name: ", name.s, "\n");
       buffer_putm(buffer_2, "Value: ", value.s, "\n");
       buffer_flush(buffer_2);
@@ -207,7 +207,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
   if(value_len && ((char*)value)[value_len - 1] == '\0') --value_len;
   stralloc_catb(&v, value, value_len);
 
-  // wordexp_sa(value, &v);
+  /* wordexp_sa(value, &v); */
 
 #ifdef DEBUG
   buffer_putm(buffer_2, "ENV SET ", key, "=");
@@ -216,7 +216,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
 #endif
   stralloc_nul(&v);
   env_set(key, v.s);
- // setenv(key, v.s, 1);
+  /* setenv(key, v.s, 1); */
 
   return 1;
 }
@@ -237,7 +237,7 @@ visit_unset(const void* key, size_t key_len, const void* value, size_t value_len
   (void)value;
   (void)value_len;
   (void)user_data;
-  //unsetenv(key);
+  /* unsetenv(key); */
   env_unset(key);
   return 1;
 }

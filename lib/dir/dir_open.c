@@ -38,7 +38,7 @@ dir_open(struct dir_s* d, const char* p) {
   }
 #endif
 
-  // assert(dir_INTERNAL(d)->dir_handle);
+  /* assert(dir_INTERNAL(d)->dir_handle); */
 
   return ret;
 }

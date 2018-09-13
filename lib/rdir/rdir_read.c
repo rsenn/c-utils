@@ -15,9 +15,9 @@ rdir_read(rdir_t* pd) {
   rdir_t* d = pd;
 
   if(d->sa.s && strchr(&d->sa.s[d->sa.len], '/')
-     // dir_type(&d->dir) == D_DIRECTORY && d->sa.s
+     /* dir_type(&d->dir) == D_DIRECTORY && d->sa.s */
   ) {
-    // if(dir_type(&d->dir) == D_DIRECTORY && d->sa.s) {
+    /* if(dir_type(&d->dir) == D_DIRECTORY && d->sa.s) { */
 
     buffer_puts(buffer_2, "&d->sa.s[d->sa.len] = ");
     buffer_puts(buffer_2, &d->sa.s[d->sa.len]);
@@ -25,7 +25,7 @@ rdir_read(rdir_t* pd) {
     buffer_puts(buffer_2, strchr(&d->sa.s[d->sa.len], '/'));
     buffer_putnlflush(buffer_2);
 
-    // if(str_diff(&d->sa.s[d->sa.len], "./") && str_diff(&d->sa.s[d->sa.len], "../"))
+    /* if(str_diff(&d->sa.s[d->sa.len], "./") && str_diff(&d->sa.s[d->sa.len], "../")) */
     rdir_read_r(d);
   }
 
@@ -46,15 +46,15 @@ rdir_read(rdir_t* pd) {
       return d->sa.s;
 
     } else if(d->prev) {
-      // d->prev->sa.s = d->sa.s;
-      // d->prev->sa.a = d->sa.a;
+      /* d->prev->sa.s = d->sa.s; */
+      /* d->prev->sa.a = d->sa.a; */
       stralloc_free(&d->sa);
       dir_close(&d->dir);
       byte_copy(d, sizeof(rdir_t), d->prev);
       free(d->prev);
-      // byte_copy(d, sizeof(rdir_t), d->prev);
+      /* byte_copy(d, sizeof(rdir_t), d->prev); */
 
-      // stralloc_0(&d->sa);
+      /* stralloc_0(&d->sa); */
       //*d = *d->prev;
 
       continue;
@@ -86,5 +86,5 @@ rdir_read_r(rdir_t* d) {
   buffer_puts(buffer_2, d->sa.s);
   buffer_putnlflush(buffer_2);
 
-  // return rdir_read(rdn);
+  /* return rdir_read(rdn); */
 }

@@ -8,5 +8,5 @@
 void
 rdir_close(rdir_t* d) {
   dir_close(&d->dir);
-  // free(d->rdir_int);
+  /* free(d->rdir_int); */
 }

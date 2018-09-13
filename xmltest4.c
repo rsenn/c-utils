@@ -644,7 +644,7 @@ print_element_content(xmlnode* node) {
       stralloc sa;
       stralloc_init(&sa);
       xml_escape(s, str_len(s), &sa);
-      // stralloc_fmt(&sa, s, str_len(s), fmt_escapecharxml);
+      /* stralloc_fmt(&sa, s, str_len(s), fmt_escapecharxml); */
       buffer_puts(buffer_1, " \"");
       buffer_putsa(buffer_1, &sa);
       buffer_puts(buffer_1, "\"");

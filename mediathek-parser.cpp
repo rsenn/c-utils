@@ -19,7 +19,7 @@
 struct dateparser {
   dateparser(std::string fmt)
   {
-    // set format
+    /* set format */
     using namespace boost::local_time;
     local_time_input_facet* input_facet = new local_time_input_facet();
     input_facet->format(fmt.c_str());
@@ -37,7 +37,7 @@ struct dateparser {
     if(ok) {
       auto tm = to_tm(pt);
       year    = tm.tm_year;
-      month   = tm.tm_mon + 1; // for 1-based (1:jan, .. 12:dec)
+      month   = tm.tm_mon + 1; /* for 1-based (1:jan, .. 12:dec) */
       day     = tm.tm_mday;
       hour    = tm.tm_hour;
       min     = tm.tm_min;
@@ -99,9 +99,9 @@ print(boost::property_tree::ptree::value_type& v/* boost::property_tree::ptree c
     else
       std::cout << value;
 
-    //        std::cout << (value.find(',')==std::string::npos ? value : std::quoted(value));
+    /*        std::cout << (value.find(',')==std::string::npos ? value : std::quoted(value)); */
 
-    //  std::cout << '(';print(it->second); std::cout << ')';
+    /*  std::cout << '(';print(it->second); std::cout << ')'; */
 
     if(++it != end)
       std::cout << ",";
@@ -120,7 +120,7 @@ int main()
     dateparser d_parser("%d.%m.%Y");
     dateparser t_parser("%H:%M:%S");
 
-    // send your JSON above to the parser below, but populate ss first
+    /* send your JSON above to the parser below, but populate ss first */
 
     while(std::getline(input_stream, line) && ++lineno < 4) {
       ptree pt;
@@ -128,8 +128,8 @@ int main()
 
       boost::trim_if(line, boost::is_any_of(",\r"));
       ss << "{ " << line << " }";
-      //  ss .str(line);
-      //  ss.str(line);
+      /*  ss .str(line); */
+      /*  ss.str(line); */
 
       std::cerr << "Line: " << line << std::endl;
 
@@ -149,19 +149,19 @@ int main()
         std::cerr << parse_error.what() << std::endl;
       }
     }
-    //    std::for_each(pt.begin(), pt.end(), print);
+    /*    std::for_each(pt.begin(), pt.end(), print); */
 
     /*  BOOST_FOREACH(boost::property_tree::ptree::value_type & v, pt.get_child("particles.electron")) {
-        assert(v.first.empty()); // array elements have no names
+        assert(v.first.empty()); /* array elements have no names */
         std::cout << v.second.data() << std::endl;
-        // etc
+        /* etc */
       }*/
     /*
         boost::property_tree::basic_ptree<std::string,std::string>::const_iterator iter = pt.begin(),iterEnd = pt.end();
     for(;iter != iterEnd;++iter)
     {
-         iter->first; // Your key, at this level it will be "electron", "proton", "proton"
-         iter->second; // The object at each step {"pos": [0,0,0], "vel": [0,0,0]}, etc.
+         iter->first; /* Your key, at this level it will be "electron", "proton", "proton" */
+         iter->second; /* The object at each step {"pos": [0,0,0], "vel": [0,0,0]}, etc. */
     }*/
     return EXIT_SUCCESS;
   } catch(std::exception& e) {
