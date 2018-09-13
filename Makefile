@@ -222,7 +222,7 @@ ifeq ($(SYSROOT),)
 ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
 SYSROOT := $(subst /bin/,,$(CROSS_COMPILE))
 else
-SYSROOT := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs|sed -n "/^lib/ { s|.*:\s\+|| ; s|^=|| ; /;/ { s|.*;|;| }; /;/! { s|.*:|| } ; s|^;|| ; s|/lib.*|| ; s|/mingw$$|| ; s|/usr$$|| ; p }")
+SYSROOT := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs|sed -n "/^lib/ { s|.*:\s\+|| ; s|^=|| ; /;/ { s|.*;|;| }; /;/! { s|.*:|| } ; s|^;|| ; s|/lib.*|| ; s|/mingw$$|| ; s|/usr$$|| ; s|/$$||; p }")
 endif
 $(info SYSROOT: $(SYSROOT))
 endif
@@ -533,7 +533,9 @@ WARNINGS += no-strict-aliasing
 
 STRIP ?= strip
 
+ifneq ($(NOPIPE),1)
 CFLAGS = -pipe
+endif
 
 CFLAGS_Prof = -pg -O2 
 CFLAGS_Debug = -g -ggdb -O0
@@ -804,7 +806,12 @@ define NL
 
 endef
 
-ifneq ($(KERN),msys)
+ifeq ($(KERN),msys)
+NO_AT ?= 1
+endif
+
+
+ifneq ($(NO_AT),1)
 CFLAGS += @$(FLAGS_FILE)
 else
 CFLAGS += $(shell cat $(FLAGS_FILE))
@@ -831,12 +838,18 @@ else
 ifeq ($(call file-exists,/opt/$(HOST)/sysroot),1)
 SYSROOT := /opt/$(HOST)/sys-root
 else
+  ifneq ($(HOST),)
 SYSROOT := /usr/$(HOST)
+  endif
 endif
 endif
 endif
 endif
 
+endif
+
+ifeq ($(SYSROOT),/usr/)
+  SYSROOT := 
 endif
 
 ifneq ($(SYS),msys)

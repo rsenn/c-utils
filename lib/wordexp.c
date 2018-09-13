@@ -7,8 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <sys/wait.h>
-//#include <unistd.h>
 #include <sys/types.h>
 #include "wordexp.h"
 
@@ -35,8 +33,9 @@ extern int pipe2(int[2], int);
 typedef _sigset_t sigset_t;
 #endif
 
-#if WINDOWS_NATIVE
-#define WINDOWS_NATIVE 1
+#if !WINDOWS_NATIVE
+#include <sys/wait.h>
+#include <unistd.h>
 #endif 
 
 static void
