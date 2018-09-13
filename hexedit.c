@@ -57,7 +57,7 @@ main(int argc, char* argv[]) {
     return 1;
   }
 
-  p = (unsigned char*)mmap_private(argv[index], &n);
+  p = (unsigned char*)mmap_shared(argv[index], &n);
 
   while(++index < argc) {
     unsigned long long addr = 0;
@@ -80,6 +80,12 @@ main(int argc, char* argv[]) {
   }
 
   /* Sublime Text 3176 */
+  patch(p, 0xeb83, 0x00, 0x01); /* Persistent License Check */
+  patch(p, 0xd539, 0x00, 0x01); /* Initial License Check */
+  patch(p, 0xd538, 0x38, 0x08);
+  patch(p, 0x460b5, 0x53, 0xC3); /* Software Update Prompt */
+
+
 
   patch(p, 0x3985A, 0x00, 0x01); /* Persistent License Check */
   patch(p, 0x3A073, 0x38, 0x08);
