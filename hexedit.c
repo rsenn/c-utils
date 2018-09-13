@@ -1,5 +1,5 @@
-#include "lib/mmap.h"
 #include "lib/buffer.h"
+#include "lib/mmap.h"
 #include "lib/scan.h"
 #include "lib/uint64.h"
 
@@ -62,7 +62,7 @@ main(int argc, char* argv[]) {
   while(++index < argc) {
     unsigned long long addr = 0;
     unsigned long long val_cmp = 0, val_set = 0;
-    //size_t s_cmp = 0, s_set = 0;
+    // size_t s_cmp = 0, s_set = 0;
 
     char* spec = argv[index];
     char sym = spec[0], *s = &spec[1];
@@ -71,7 +71,7 @@ main(int argc, char* argv[]) {
       scan_xlonglong(s, &addr);
     } else if(sym == '?') {
     } else if(sym == '=') {
-      //s_set = (scan_xlonglong(s, &val_set) + 1) / 2;
+      // s_set = (scan_xlonglong(s, &val_set) + 1) / 2;
     } else {
       buffer_putm(buffer_2, "ERROR: ", spec, "\n");
       buffer_putnlflush(buffer_2);
@@ -80,12 +80,32 @@ main(int argc, char* argv[]) {
   }
 
   /* Sublime Text 3176 */
+
+  /* Linux x32 */
+  patch(p, 0xD779, 0x00, 0x01);
+  patch(p, 0xC068, 0x38, 0x08);
+  patch(p, 0xC069, 0x00, 0x01);
+  patch(p, 0x482C5, 0x83, 0xC3);
+  patch(p, 0x482C6, 0xEC, 0x90);
+  patch(p, 0x482C7, 0x0C, 0x90);
+
+  /* Linux x64 */
   patch(p, 0xeb83, 0x00, 0x01); /* Persistent License Check */
   patch(p, 0xd539, 0x00, 0x01); /* Initial License Check */
   patch(p, 0xd538, 0x38, 0x08);
   patch(p, 0x460b5, 0x53, 0xC3); /* Software Update Prompt */
 
+  /* Windows x86 */
+  patch(p, 0x267CA, 0x00, 0x01);
+  patch(p, 0x26C4F, 0x38, 0x08);
+  patch(p, 0x26C50, 0x00, 0x01);
+  patch(p, 0x50AFA, 0x55, 0xC3);
 
+  /* Windows x64 */
+  patch(p, 0x3985A, 0x00, 0x01);
+  patch(p, 0x3A073, 0x38, 0x08);
+  patch(p, 0x3A074, 0x00, 0x01);
+  patch(p, 0x792FB, 0x57, 0xC3);
 
   patch(p, 0x3985A, 0x00, 0x01); /* Persistent License Check */
   patch(p, 0x3A073, 0x38, 0x08);

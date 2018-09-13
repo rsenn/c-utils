@@ -15,18 +15,16 @@
 			"file": "lib/utf8.c",
 			"settings":
 			{
-				"buffer_size": 6085,
+				"buffer_size": 4325,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "#include <unistd.h>\n#include <stdlib.h>\n#include <sys/wait.h>\n#include <signal.h>\n#include \"buffer.h\"\n#include \"strlist.h\"\n#include \"str.h\"\n\nconst char* const mediathek_url = \"http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz\";\n\nstatic ssize_t\nbuffer_dummyread(int fd, char* b, size_t n) { return 0; }\n\nvoid\ncount_field_lengths(strlist* sl, int lengths[21])\n{\n  int i;\n  for(i = 0; i < 21; i++) {\n    const char* s = strlist_at(sl, i);\n    if(s) {\n      if(str_len(s) >= lengths[i])\n        lengths[i] = str_len(s);\n    }\n  }\n}\n\nint\nsplit_fields(strlist* sl, char* buf, size_t n)\n{\n  int ret = 0;\n  char buf2[4096];\n  char *p = buf;\n  char *end = buf + n;\n\n  strlist_zero(sl);\n\n  for(;;) {\n    \n    size_t n = 0;\n    while(p < end && *p != '\"')\n      ++p;\n\n    if(p == end) break;\n\n    ++p;\n\n    while(p < end) {\n\n      if(*p == '\\\\' && p[1] == '\"')\t{ ++p; } else {\n        if(*p == '\"') { ++p; break; }\n      }\n\n      buf2[n++] = *p++;\n    }\n\n    strlist_pushb(sl, buf2, n);\n    ret++;\n  }\n\n  strlist_dump(buffer_2, sl);\n  return ret;\n}\n\nint\nget_mediathek_list(const char* url)\n{\n  int status;\n  int xzpid;\n  int xzpipe[2];\n  int clpipe[2];\n  int clpid;\n\n  if(pipe(xzpipe) != 0) return -1;\n  if(pipe(clpipe) != 0) return -1;\n\n  if((xzpid = fork()) == 0) {\n\n    close(STDOUT_FILENO);\n    dup(xzpipe[1]);\n    close(STDIN_FILENO);\n    dup(clpipe[0]);\n\n    execlp(\"xzcat\", \"xzcat\", NULL);\n    exit(1);\n  }\n\n  if((clpid = fork()) == 0) {\n\n    close(STDOUT_FILENO);\n    dup(clpipe[1]);\n\n    execlp(\"curl\", \"curl\", \"-s\", url, NULL);\n    exit(1);\n  }\n\n  {\n    char buf[1024];\n    char buf2[16384];\n    ssize_t ret, ret2;\n    strlist sl;\n    buffer b = BUFFER_INIT(read, xzpipe[0], buf, sizeof(buf));\n\n    strlist_init(&sl);\n\n    while((ret = buffer_get_token(&b, buf2, sizeof(buf2), \"]\", 1)) > 0) {\n\n      for(;;) {\n        buf2[ret++] = ']';\n        ret2 = buffer_get(&b, &buf2[ret], 1);\n        if(ret2 > 0) {\n\n          if(buf2[ret] == ',') break;\n\n          ret += ret2;\n          ret2 = buffer_get_token(&b, &buf2[ret], sizeof(buf2) - ret, \"]\", 1);\n          if(ret2 > 0)\n            ret += ret2;\n        }\n      }\n\n      split_fields(&sl, buf2, ret);\n    }\n\n    buffer_flush(buffer_1);\n  }\n\n  kill(xzpid, SIGKILL);\n  waitpid(xzpid, &status, WNOHANG);\n  kill(clpid, SIGKILL);\n  waitpid(clpid, &status, WNOHANG);\n  return 0;\n}\n\nint main()\n{\n  get_mediathek_list(mediathek_url);\n}\n\n",
 			"file": "mediathek-list.c",
-			"file_size": 2393,
-			"file_write_time": 131485461226003622,
 			"settings":
 			{
-				"buffer_size": 2398,
+				"buffer_size": 13117,
+				"encoding": "Western (Windows 1252)",
 				"line_ending": "Unix"
 			}
 		},
@@ -34,29 +32,7 @@
 			"file": "count-depth.c",
 			"settings":
 			{
-				"buffer_size": 1388,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "[\n\t{ \"keys\": [\"alt+f5\"], \"command\": \"schemr_list_schemes\" },\n\t{ \"keys\": [\"alt+f7\"], \"command\": \"schemr_cycle_schemes\", \"args\": {\"direction\": \"prev\"}},\n\t{ \"keys\": [\"alt+f8\"], \"command\": \"schemr_cycle_schemes\", \"args\": {\"direction\": \"next\"}},\n\t{ \"keys\": [\"alt+f10\"], \"command\": \"schemr_cycle_schemes\", \"args\": {\"direction\": \"rand\"}},\n\n\t{ \"keys\": [\"shift+alt+f5\"], \"command\": \"schemr_list_favorite_schemes\" },\n\t{ \"keys\": [\"shift+alt+f7\"], \"command\": \"schemr_cycle_favorite_schemes\", \"args\": {\"direction\": \"prev\"}},\n\t{ \"keys\": [\"shift+alt+f8\"], \"command\": \"schemr_cycle_favorite_schemes\", \"args\": {\"direction\": \"next\"}},\n\t{ \"keys\": [\"shift+alt+f10\"], \"command\": \"schemr_cycle_favorite_schemes\", \"args\": {\"direction\": \"rand\"}}\n]\n",
-			"file": "/home/roman/.config/sublime-text-3/Packages/Schemr/Default (Linux).sublime-keymap",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 724,
-				"line_ending": "Unix",
-				"read_only": true,
-				"scratch": true
-			}
-		},
-		{
-			"file": "/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
-			"settings":
-			{
-				"buffer_size": 967,
-				"encoding": "UTF-8",
+				"buffer_size": 1430,
 				"line_ending": "Unix"
 			}
 		}
@@ -109,9 +85,13 @@
 	"command_palette":
 	{
 		"height": 363.0,
-		"last_filter": "Package Control: ",
+		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"install",
+				"Package Control: Advanced Install Package"
+			],
 			[
 				"Package Control: ",
 				"Package Control: List Packages"
@@ -119,10 +99,6 @@
 			[
 				"Remove",
 				"Package Control: Remove Package"
-			],
-			[
-				"install",
-				"Package Control: Advanced Install Package"
 			],
 			[
 				"make",
@@ -176,6 +152,8 @@
 	],
 	"file_history":
 	[
+		"/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/roman/.config/sublime-text-3/Packages/Schemr/Default (Linux).sublime-keymap",
 		"/home/roman/.config/sublime-text-3/Packages/User/Package Control.sublime-settings",
 		"/home/roman/.config/sublime-text-3/Packages/Package Control/Package Control.sublime-settings",
 		"/home/roman/Sources/dirlist/lib/utf8.h",
@@ -301,13 +279,11 @@
 		"/E/Sources/pictest/timer.c",
 		"/E/Sources/pictest/knapsack.rb",
 		"/E/Sources/pictest/adc.c",
-		"/E/Sources/pictest/pictest.h",
-		"/E/Sources/pictest/pictest.cbp",
-		"/E/Sources/LC-meter-16f876a+n3310display/uart.h"
+		"/E/Sources/pictest/pictest.h"
 	],
 	"find":
 	{
-		"height": 21.0
+		"height": 22.977022977
 	},
 	"find_in_files":
 	{
@@ -461,15 +437,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6085,
+						"buffer_size": 4325,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5753,
-								5761
+								0,
+								0
 							]
 						],
 						"settings":
@@ -573,10 +549,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 430.0,
+						"translation.y": 429.57042957,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -585,7 +561,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2398,
+						"buffer_size": 13117,
 						"regions":
 						{
 						},
@@ -603,7 +579,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 156.0,
+						"translation.y": 155.844155844,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -615,15 +591,15 @@
 					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 1388,
+						"buffer_size": 1430,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1388,
-								1388
+								1349,
+								1349
 							]
 						],
 						"settings":
@@ -633,66 +609,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 469.0,
+						"translation.y": 468.531468531,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/home/roman/.config/sublime-text-3/Packages/Schemr/Default (Linux).sublime-keymap",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 724,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								724,
-								724
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 967,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								493,
-								493
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -700,11 +620,11 @@
 	],
 	"incremental_find":
 	{
-		"height": 21.0
+		"height": 22.977022977
 	},
 	"input":
 	{
-		"height": 29.0
+		"height": 35.968031968
 	},
 	"layout":
 	{
@@ -749,7 +669,7 @@
 	"project": "dirlist.sublime-project",
 	"replace":
 	{
-		"height": 62.0
+		"height": 41.958041958
 	},
 	"save_all_on_build": true,
 	"select_file":
