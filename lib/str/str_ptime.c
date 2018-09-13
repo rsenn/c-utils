@@ -70,8 +70,8 @@ str_ptime(const char* s, const char* format, struct tm* tm) {
           case 'B':
           case 'h':
             for(i = 0; i < 12; ++i) {
-              if(strncasecmp(s, months[i], j = str_len(months[i])))
-                if(strncasecmp(s, months[i], j = 3)) j = 0;
+              if(str_case_diffn(s, months[i], j = str_len(months[i])))
+                if(str_case_diffn(s, months[i], j = 3)) j = 0;
               if(j) {
                 break;
               };

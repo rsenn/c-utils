@@ -12,7 +12,7 @@ str_istr(char* s, char* find) {
       do {
         if((sc = *s++) == 0) return NULL;
       } while(sc != c);
-    } while(strncasecmp(s, find, len) != 0);
+    } while(str_case_diffn(s, find, len) != 0);
     s--;
   }
   return s;

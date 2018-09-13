@@ -192,7 +192,7 @@ int reg2cmd() {
 
       if(end) {
         size_t keylen = end - &line.s[1];
-        memcpy(key, &line.s[1], keylen);
+        byte_copy(key, keylen, &line.s[1]);
         key[keylen] = '\0';
         stralloc_zero(&line);
         continue;

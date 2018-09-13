@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
   int files_count = 0;
 
   search_paths sp;
-  memset(&sp, 0, sizeof(sp));
+  byte_zero(&sp, sizeof(sp));
   sp.path = calloc(1, sizeof(char*));
 
   for(i = 1; i < argc; i++) {
@@ -186,7 +186,7 @@ int main(int argc, char **argv) {
           if(p)
             *p = '\0';
         }
-        sp.path[sp.count - 1] = strdup(add_dirs);
+        sp.path[sp.count - 1] = str_dup(add_dirs);
         add_dirs = sep + 1;
         if(!sep)
           break;
@@ -218,29 +218,29 @@ Try `ntldd --help' for more information\n", argv[i]);
     sp.path = realloc(sp.path, sp.count * sizeof(char*));
     for(i = 0; i < files_count; ++i) {
       char buff[MAX_PATH];
-      strcpy(buff, argv[files_start + i]);
+      str_copy(buff, argv[files_start + i]);
       char* p = strrchr(buff, '\\');
       if(!p)
         p = strrchr(buff, '/');
       if(p++)
         *p = '\0';
 
-      sp.path[sp.count - files_count + i] = strdup(buff);
+      sp.path[sp.count - files_count + i] = str_dup(buff);
     }
     int multiple = files_start + 1 < argc;
     struct dep_tree_element root;
-    memset(&root, 0, sizeof(struct dep_tree_element));
+    byte_zero(&root, sizeof(struct dep_tree_element));
     for(i = files_start; i < argc; i++) {
       struct dep_tree_element *child = (struct dep_tree_element *) malloc(sizeof(struct dep_tree_element));
-      memset(child, 0, sizeof(struct dep_tree_element));
-      child->module = strdup(argv[i]);
+      byte_zero(child, sizeof(struct dep_tree_element));
+      child->module = str_dup(argv[i]);
 
       add_dep(&root, child);
       char **stack = NULL;
       uint64 stack_len = 0;
       uint64 stack_size = 0;
       build_tree_config cfg;
-      memset(&cfg, 0, sizeof(cfg));
+      byte_zero(&cfg, sizeof(cfg));
       cfg.machine_type = -1;
       cfg.on_self = 0;
       cfg.datarelocs = datarelocs;

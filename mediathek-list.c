@@ -206,7 +206,7 @@ parse_time(const char* s) {
 char*
 format_num(time_t num) {
   static char buf[FMT_LONG];
-  memset(buf, 0, sizeof(buf));
+  byte_zero(buf, sizeof(buf));
   buf[fmt_ulonglong(buf, num)] = '\0';
   return buf;
 }
@@ -241,7 +241,7 @@ format_time(time_t ti) {
 time_t
 parse_datetime(const char* s, const char* fmt) {
   struct tm tm_s;
-  memset(&tm_s, 0, sizeof(struct tm));
+  byte_zero(&tm_s, sizeof(struct tm));
   if(str_ptime(s, fmt, &tm_s) == s) return 0;
   return mktime(&tm_s);
 }

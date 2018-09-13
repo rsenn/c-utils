@@ -31,10 +31,10 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
   int voffset = ksize + ((sizeof(void*) - ksize) % sizeof(void*));
   node = malloc(sizeof(*node) + voffset + vsize);
   if (!node) return NULL;
-  memcpy(node + 1, key, ksize);
+  byte_copy(node + 1, ksize, key);
   node->hash = map_hash(key);
   node->value = ((char*) (node + 1)) + voffset;
-  memcpy(node->value, value, vsize);
+  byte_copy(node->value, vsize, value);
   return node;
 }
 
@@ -73,7 +73,7 @@ static int map_resize(map_base_t *m, int nbuckets) {
     m->nbuckets = nbuckets;
   }
   if (m->buckets) {
-    memset(m->buckets, 0, sizeof(*m->buckets) * m->nbuckets);
+    byte_zero(m->buckets, sizeof(*m->buckets) * m->nbuckets);
     /* Re-add nodes to buckets */
     node = nodes;
     while (node) {
@@ -127,7 +127,7 @@ int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
   /* Find & replace existing node */
   next = map_getref(m, key);
   if (next) {
-    memcpy((*next)->value, value, vsize);
+    byte_copy((*next)->value, vsize, value);
     return 0;
   }
   /* Add new node */

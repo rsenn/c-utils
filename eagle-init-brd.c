@@ -104,14 +104,6 @@ round_to_mil(double val, double mil) {
 }
 
 /* ----------------------------------------------------------------------- */
-size_t
-str_copyn(char* out, const char* in, size_t n) {
-  strncpy(out, in, n);
-  out[n] = '\0';
-  return str_len(out);
-}
-
-/* ----------------------------------------------------------------------- */
 void
 output_move(const char* name, double x, double y) {
   stralloc cmd;

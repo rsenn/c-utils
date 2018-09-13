@@ -1152,6 +1152,8 @@ $(BUILDDIR)str_copy.o: lib/str/str_copy.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_copyb.o: lib/str/str_copyb.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)str_copyn.o: lib/str/str_copyn.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_decamelize.o: lib/str/str_decamelize.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_diff.o: lib/str/str_diff.c

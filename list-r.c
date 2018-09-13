@@ -454,7 +454,7 @@ list_dir_internal(stralloc* dir, char type) {
       continue;
     }
     stralloc_readyplus(dir, str_len(name) + 1);
-    strcpy(dir->s + dir->len, name);
+    str_copy(dir->s + dir->len, name);
     dir->len += str_len(name);
 #ifndef PLAIN_WINDOWS
     if(lstat(dir->s, &st) != -1) {

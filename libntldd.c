@@ -103,7 +103,7 @@ resize_array(void **data, uint64_t *data_size, size_t sizeof_data) {
   uint64_t new_size = (*data_size) > 0 ? (*data_size) * 2 : 64;
   void *new_data;
   new_data = realloc(*data, new_size * sizeof_data);
-  memset(((unsigned char *) new_data) + (*data_size * sizeof_data), 0, (new_size - (*data_size)) * sizeof_data);
+  byte_zero(((unsigned char *) new_data) + (*data_size * sizeof_data), (new_size - (*data_size)) * sizeof_data);
   *data = new_data;
   *data_size = new_size;
 }
@@ -177,9 +177,9 @@ struct dep_tree_element *process_dep(build_tree_config* cfg, soff_entry *soffs, 
     find_dep(root, dllname, &child);
   if(found < 0) {
     child = (struct dep_tree_element *) malloc(sizeof(struct dep_tree_element));
-    memset(child, 0, sizeof(struct dep_tree_element));
+    byte_zero(child, sizeof(struct dep_tree_element));
     if(deep == 0) {
-      child->module = strdup(dllname);
+      child->module = str_dup(dllname);
 
       add_dep(self, child);
     }
@@ -213,7 +213,7 @@ push_stack(char ***stack, uint64_t *stack_len, uint64_t *stack_size, char *name)
   if(*stack_len >= *stack_size) {
     resize_stack(stack, stack_size);
   }
-  (*stack)[*stack_len] = strdup(name);
+  (*stack)[*stack_len] = str_dup(name);
   (*stack_len) += 1;
 }
 
@@ -254,7 +254,7 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
       char *export_module = map_pointer(soffs, soffs_len, ied->name, NULL);
       if(export_module != NULL) {
         if(self->export_module == NULL)
-          self->export_module = strdup(export_module);
+          self->export_module = str_dup(export_module);
       }
     }
     if(ied && ied->number_of_functions > 0) {
@@ -263,7 +263,7 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
       int section = -1;
       self->exports_len = ied->number_of_functions;
       self->exports = (struct export_table_item *) malloc(sizeof(struct export_table_item) * self->exports_len);
-      memset(self->exports, 0, sizeof(struct export_table_item) * self->exports_len);
+      byte_zero(self->exports, sizeof(struct export_table_item) * self->exports_len);
       addrs = (uint32 *)map_pointer(soffs, soffs_len, ied->address_of_functions, NULL);
       ords = (uint16 *)map_pointer(soffs, soffs_len, ied->address_of_name_ordinals, NULL);
       names = (uint32 *)map_pointer(soffs, soffs_len, ied->address_of_names, NULL);
@@ -272,7 +272,7 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
         if(names[i] != 0) {
           char *s_name = (char *)map_pointer(soffs, soffs_len, names[i], NULL);
           if(s_name != NULL)
-            self->exports[ords[i]].name = strdup(s_name);
+            self->exports[ords[i]].name = str_dup(s_name);
         }
       }
       for(i = 0; i < ied->number_of_functions; i++) {
@@ -281,7 +281,7 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
             find_section_by_raw_data(img, addrs[i]);
           if((idata->virtual_address <= addrs[i]) && (idata->virtual_address + idata->size > addrs[i])) {
             self->exports[i].address = NULL;
-            self->exports[i].forward_str = strdup((char *)map_pointer(soffs, soffs_len, addrs[i], NULL));
+            self->exports[i].forward_str = str_dup((char *)map_pointer(soffs, soffs_len, addrs[i], NULL));
           } else
             self->exports[i].address = map_pointer(soffs, soffs_len, addrs[i], &section);
           self->exports[i].ordinal = i + ied->base;
@@ -322,7 +322,7 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
           } else if(oith) {
             pe_import_by_name *byname = (pe_import_by_name *)map_pointer(soffs, soffs_len, imp->orig_address, NULL);
             if(byname != NULL)
-              imp->name = strdup((char *) byname->name);
+              imp->name = str_dup((char *) byname->name);
           }
         }
       }
@@ -364,7 +364,7 @@ static void build_dep_tree32or64(pe_loaded_image *img, build_tree_config* cfg, s
           } else if(oith) {
             pe_import_by_name *byname = (pe_import_by_name *)map_pointer(soffs, soffs_len, imp->orig_address, NULL);
             if(byname != NULL)
-              imp->name = strdup((char *) byname->name);
+              imp->name = str_dup((char *) byname->name);
           }
         }
       }
@@ -447,7 +447,7 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
     /*if(GetModuleFileNameA(hmod, modpath, MAX_PATH) == 0)
       return 1;*/
     if(self->resolved_module == NULL)
-      self->resolved_module = strdup(modpath);
+      self->resolved_module = str_dup(modpath);
 
     dos = (pe_dos_header *) hmod;
     loaded_image.file_header = (pe_nt_headers64 *)((char *) hmod + dos->e_lfanew);
@@ -470,7 +470,7 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
       return 1;
     }
     if(self->resolved_module == NULL)
-      self->resolved_module = strdup(loaded_image.module_name);
+      self->resolved_module = str_dup(loaded_image.module_name);
   }
   if(cfg->machine_type == -1)
     cfg->machine_type = (int)loaded_image.file_header->file_header.machine;
@@ -514,7 +514,7 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
     {
       char *forward_str_copy = NULL, *export_name = NULL, *rdot = NULL;
       uint32 export_ordinal = 0;
-      forward_str_copy = strdup (self->exports[i]->forward_str);
+      forward_str_copy = str_dup (self->exports[i]->forward_str);
       rdot = strrchr (forward_str_copy, '.');
       if(rdot != NULL && rdot[1] != 0)
       {
