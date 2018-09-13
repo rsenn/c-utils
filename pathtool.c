@@ -1,3 +1,4 @@
+#include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/strlist.h"
 #include "lib/getopt.h"
@@ -37,6 +38,25 @@ pathtool(const char* arg) {
   buffer_putnlflush(buffer_1);
 }
 
+void
+usage(const char* av0) {
+  buffer_putm(buffer_1,
+              "Usage: ",
+              av0,
+              " <path...>\n",
+              "\n",
+              "Options:\n",
+              "\n",
+              "  --help                     Show this help\n",
+              "  -r DIR, --relative-to=DIR  Print the resolved path relative to DIR\n",
+              "  -s SEP, --separator=SEP    Use SEP as directory separator\n",
+              "  -w, --windows              Print Windows form of path(s) (C:\\WINNT)\n",
+              "  -m, --mixed                Like --windows, but with regular slashes (C:/WINNT)\n",
+              "  -u, --unix       (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n",
+              "\n");
+  buffer_flush(buffer_1);
+}
+
 int
 main(int argc, char* argv[]) {
   int c;
@@ -44,6 +64,7 @@ main(int argc, char* argv[]) {
   const char* rel_to = NULL;
   int index = 0;
   struct option opts[] = {
+    { "help", 0, NULL, 'h' },
     { "relative-to", 1, NULL, 'r' },
     { "separator", 1, NULL, 's' },
     { "mixed", 0, NULL, 'm' },
@@ -52,11 +73,14 @@ main(int argc, char* argv[]) {
   };
 
   for(;;) {
-    c = getopt_long(argc, argv, "r:s:muw", opts, &index);
+    c = getopt_long(argc, argv, "hr:s:muw", opts, &index);
     if(c == -1)
       break;
 
     switch(c) {
+    case 'h':
+      usage(argv[0]);
+      return 0;
     case 'r':
       rel_to = optarg;
       break;
@@ -72,6 +96,9 @@ main(int argc, char* argv[]) {
     case 'w':
       format = WINDOWS;
       break;
+    default:
+      usage(argv[0]);
+      return 1;
     }
   }
 
