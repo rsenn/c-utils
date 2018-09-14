@@ -6,35 +6,48 @@
 #include "../ip4.h"
 #include "../socket.h"
 #include "../str.h"
+#include "../dns.h"
+#include "../errmsg.h"
 
 #include <errno.h>
 #include <stdlib.h>
-
-#include <netdb.h>
 
 int
 http_get(http* h, const char* location) {
   int ret;
   struct hostent* he;
-  ipv4addr a;
+  ipv4addr* a;
+  stralloc dns;
   uint32 serial = 0;
 
-  stralloc_0(&h->host);
-  h->host.len = str_len(h->host.s);
-  he = gethostbyname(h->host.s);
+  stralloc_nul(&h->host);
+
+  stralloc_init(&dns);
+  if(dns_ip4(&dns, &h->host) == -1) {
+    errmsg_warnsys("ERROR: resolving ", h->host.s, ": ", NULL);
+    return 0;
+    }
+
+  a = (void*)dns.s;
+
+/*  he = gethostbyname(h->host.s);
   if(he == NULL) return 0;
   a = *((ipv4addr**)(he->h_addr_list))[0];
   if(a.iaddr == 0) return 0;
-  byte_copy(h->addr, sizeof(h->addr), &a.iaddr);
+
+*/
+  byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
+
+
   buffer_putsa(buffer_1, &h->host);
   buffer_puts(buffer_1, " (");
-  buffer_putulong(buffer_1, a.iaddr & 0xff);
+  buffer_putulong(buffer_1, a->iaddr & 0xff);
   buffer_puts(buffer_1, ".");
-  buffer_putulong(buffer_1, (a.iaddr >> 8) & 0xff);
+  buffer_putulong(buffer_1, (a->iaddr >> 8) & 0xff);
   buffer_puts(buffer_1, ".");
-  buffer_putulong(buffer_1, (a.iaddr >> 16) & 0xff);
+  buffer_putulong(buffer_1, (a->iaddr >> 16) & 0xff);
   buffer_puts(buffer_1, ".");
-  buffer_putulong(buffer_1, (a.iaddr >> 24) & 0xff);
+  buffer_putulong(buffer_1, (a->iaddr >> 24) & 0xff);
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
   h->sock = socket_tcp4();
@@ -62,7 +75,7 @@ http_get(http* h, const char* location) {
     stralloc_init(&((*r)->data));
     stralloc_init(&((*r)->boundary));
   }
-  ret = socket_connect4(h->sock, h->addr, h->port);
+  ret = socket_connect4(h->sock, h->addr.addr, h->port);
 
   if(ret == -1) {
 

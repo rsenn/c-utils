@@ -1023,7 +1023,7 @@ endif
 
 $(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB) 
 $(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) 
-$(BUILDDIR)httptest$(M64_)$(EXEEXT): $(BUILDDIR)httptest.o $(call add-library, http socket io iarray array ndelay uint16 buffer fmt mmap open  scan stralloc str byte   taia  uint32 )
+$(BUILDDIR)httptest$(M64_)$(EXEEXT): $(BUILDDIR)httptest.o $(call add-library,http dns errmsg socket io case taia tai iarray array ndelay uint16 buffer fmt mmap open  scan stralloc str byte   taia  uint32 )
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

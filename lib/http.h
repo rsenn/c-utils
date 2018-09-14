@@ -6,6 +6,7 @@
 #include "uint64.h"
 #include "stralloc.h"
 #include "io.h"
+#include "ip4.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,9 +42,9 @@ typedef struct http_response_s {
 
 typedef struct {
   fd_t sock;
-  uint16 port;
   stralloc host;
-  char addr[4];
+  ipv4addr addr;
+  ipv4port port;
   http_request* request;
   http_response* response;
 } http;
