@@ -74,9 +74,8 @@ typedef off64_t offset_type;
 extern ssize_t read();
 extern ssize_t write();
 */
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <io.h>
-extern ssize_t read();
 #endif
 
 int64

@@ -1,10 +1,9 @@
-#include "lib/stralloc.h"
-#include "lib/strlist.h"
-#include "lib/path.h"
 #include "lib/buffer.h"
 #include "lib/getopt.h"
-
-#include <stdlib.h>
+#include "lib/path.h"
+#include "lib/stralloc.h"
+#include "lib/strlist.h"
+#include "lib/errmsg.h"
 
 typedef enum {
   MIXED = 0,
@@ -22,39 +21,39 @@ static stralloc cwd;
 void
 strlist_from_path(strlist* sl, const char* p) {
   strlist_zero(sl);
-  //strlist_push(sl, "");
+  // strlist_push(sl, "");
   strlist_push_tokens(sl, p, delims.s);
 }
 
-void
-pathtool(const char* arg) {
-  stralloc sa;
+int
+pathtool(const char* arg, stralloc* sa) {
   strlist path;
 
-  stralloc_init(&sa);
+  stralloc_init(sa);
 
   if(absolute) {
-    path_realpath(arg, &sa, 1, &cwd);
+    path_realpath(arg, sa, 1, &cwd);
   } else {
-    stralloc_copys(&sa, arg);
+    stralloc_copys(sa, arg);
   }
-  stralloc_nul(&sa);
+  stralloc_nul(sa);
 
   strlist_init(&path, '\0');
-  strlist_from_path(&path, sa.s);
+  strlist_from_path(&path, sa->s);
 
-  stralloc_zero(&sa);
+  stralloc_zero(sa);
 
-  strlist_join(&path, &sa, separator[0]);
+  strlist_join(&path, sa, separator[0]);
 
-  buffer_putsa(buffer_1, &sa);
-  buffer_putnlflush(buffer_1);
+  return 1;
 }
 
 void
 usage(const char* av0) {
   buffer_putm(buffer_1,
-              "Usage: ", av0, " [OPTIONS] <path...>\n",
+              "Usage: ",
+              str_basename(av0),
+              " [OPTIONS] <path...>\n",
               "\n",
               "Options:\n",
               "\n",
@@ -76,19 +75,18 @@ main(int argc, char* argv[]) {
   const char* rel_to = NULL;
   int index = 0;
   struct option opts[] = {
-    { "help", 0, NULL, 'h' },
-    { "relative-to", 1, NULL, 'r' },
-    { "separator", 1, NULL, 's' },
-    { "mixed", 0, NULL, 'm' },
-    { "unix", 0, NULL, 'u' },
-    { "windows", 0, NULL, 'w' },
-    { "absolute", 0, NULL, 'a' },
+      {"help", 0, NULL, 'h'},
+      {"relative-to", 1, NULL, 'r'},
+      {"separator", 1, NULL, 's'},
+      {"mixed", 0, NULL, 'm'},
+      {"unix", 0, NULL, 'u'},
+      {"windows", 0, NULL, 'w'},
+      {"absolute", 0, NULL, 'a'},
   };
 
   for(;;) {
     c = getopt_long(argc, argv, "ahr:s:muw", opts, &index);
-    if(c == -1)
-      break;
+    if(c == -1) break;
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
@@ -117,11 +115,23 @@ main(int argc, char* argv[]) {
   }
 
   if(rel_to) {
-    strlist_from_path(&relative_to, rel_to);
+    stralloc rel;
+    stralloc_init(&rel);
+    if(pathtool(rel_to, &rel)) {
+      stralloc_copy(&relative_to, &rel);
+    } else {
+      errmsg_warnsys(str_basename(argv[0]), ": relative to", NULL);
+    }
   }
 
   while(optind < argc) {
-    pathtool(argv[optind++]);
+    stralloc sa;
+    stralloc_init(&sa);
+
+    if(pathtool(argv[optind++], &sa)) {
+      buffer_putsa(buffer_1, &sa);
+      buffer_putnlflush(buffer_1);
+    }
   }
 
   return 0;

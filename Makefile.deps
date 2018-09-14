@@ -398,9 +398,11 @@ $(BUILDDIR)readclose.o: lib/open/readclose.c lib/uint64.h lib/stralloc.h lib/ope
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_basename.o: lib/path/path_basename.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h lib/str.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)path_canonicalize.o: lib/path/path_canonicalize.c lib/byte.h lib/str.h lib/windoze.h lib/path.h lib/stralloc.h
+$(BUILDDIR)path_canonicalize.o: lib/path/path_canonicalize.c lib/byte.h lib/path.h lib/stralloc.h lib/str.h lib/windoze.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_dirname.o: lib/path/path_dirname.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_exists.o: lib/path/path_exists.c lib/path.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_fnmatch.o: lib/path/path_fnmatch.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1592,7 +1594,7 @@ $(BUILDDIR)mediathek-list.o: mediathek-list.c lib/buffer.h lib/uint64.h lib/str.
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mediathek-parser.o: mediathek-parser.c lib/array.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/getopt.h lib/io_internal.h lib/windoze.h lib/array.h lib/open.h lib/str.h lib/stralloc.h lib/strlist.h lib/stralloc.h lib/byte.h lib/buffer.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)pathtool.o: pathtool.c lib/stralloc.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/path.h lib/buffer.h lib/getopt.h
+$(BUILDDIR)pathtool.o: pathtool.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/getopt.h lib/path.h lib/stralloc.h lib/stralloc.h lib/strlist.h lib/byte.h lib/buffer.h lib/errmsg.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)access.o: access.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

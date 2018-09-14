@@ -1,15 +1,17 @@
+#include "lib/windoze.h"
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
 
-#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
+#if !WINDOWS_NATIVE
 #include <libgen.h>
 #include <unistd.h>
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
 #include <process.h>
 #define mkdir(file,mode) mkdir(file)
 #else

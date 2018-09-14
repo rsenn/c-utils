@@ -16,7 +16,7 @@ extern "C" {
 typedef union {
   /** 32-bit IPv4 address, represented as 4 8-bit \c unsigned \c chars. */
   uint8 addr[4];
-  uint32 s_addr;
+  uint32 iaddr;
 } ipv4addr;
 /** IPv4 port number. */
 typedef uint16 ipv4port;

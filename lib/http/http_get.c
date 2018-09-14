@@ -9,6 +9,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+
 #include <netdb.h>
 
 int
@@ -23,17 +24,17 @@ http_get(http* h, const char* location) {
   he = gethostbyname(h->host.s);
   if(he == NULL) return 0;
   a = *((ipv4addr**)(he->h_addr_list))[0];
-  if(a.s_addr == 0) return 0;
-  byte_copy(h->addr, sizeof(h->addr), &a.s_addr);
+  if(a.iaddr == 0) return 0;
+  byte_copy(h->addr, sizeof(h->addr), &a.iaddr);
   buffer_putsa(buffer_1, &h->host);
   buffer_puts(buffer_1, " (");
-  buffer_putulong(buffer_1, a.s_addr & 0xff);
+  buffer_putulong(buffer_1, a.iaddr & 0xff);
   buffer_puts(buffer_1, ".");
-  buffer_putulong(buffer_1, (a.s_addr >> 8) & 0xff);
+  buffer_putulong(buffer_1, (a.iaddr >> 8) & 0xff);
   buffer_puts(buffer_1, ".");
-  buffer_putulong(buffer_1, (a.s_addr >> 16) & 0xff);
+  buffer_putulong(buffer_1, (a.iaddr >> 16) & 0xff);
   buffer_puts(buffer_1, ".");
-  buffer_putulong(buffer_1, (a.s_addr >> 24) & 0xff);
+  buffer_putulong(buffer_1, (a.iaddr >> 24) & 0xff);
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
   h->sock = socket_tcp4();

@@ -29,12 +29,24 @@ typedef int socklen_t;
 #define __ssize_t_defined 1
 typedef SSIZE_T ssize_t;
 #endif
+#ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
+#endif
+#ifndef ETIMEDOUT
 #define ETIMEDOUT WSAETIMEDOUT
+#endif
+#ifndef EWOULDBLOCK
 #define EWOULDBLOCK WSAEWOULDBLOCK
+#endif
+#ifndef EINPROGRESS
 #define EINPROGRESS WSAEINPROGRESS
+#endif
+#ifndef ECONNREFUSED
 #define ECONNREFUSED WSAECONNREFUSED
+#endif
+#ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
+#endif
 #endif
 
 int socket_tcp4(void);

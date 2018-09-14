@@ -10,5 +10,5 @@ path_num(const char* p, size_t len, int n) {
     if(--n <= 0) break;
   }
 
-  return s - p; 
+  return s - p;
 }

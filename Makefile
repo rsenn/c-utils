@@ -934,7 +934,7 @@ $(call lib-target,list)
 $(call lib-target,map)
 $(call lib-target,mmap)
 $(call lib-target,ndelay)
-$(call lib-target,path,lib/readlink.c lib/symlink.c lib/wordexp.c lib/pipe2.c lib/getdelim.c)
+$(call lib-target,path,lib/readlink.c lib/symlink.c lib/fork.c lib/wordexp.c lib/pipe2.c lib/getdelim.c)
 $(call lib-target,open)
 $(call lib-target,pe)
 $(call lib-target,playlist)
@@ -1105,7 +1105,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)pathtool$(M64_)$(EXEEXT): $(BUILDDIR)pathtool.o $(call add-library,path strlist stralloc buffer mmap open str fmt scan byte)
+$(BUILDDIR)pathtool$(M64_)$(EXEEXT): $(BUILDDIR)pathtool.o $(call add-library,errmsg path strlist stralloc buffer mmap open str fmt scan byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

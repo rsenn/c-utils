@@ -18,10 +18,6 @@
 #define O_CLOEXEC 0
 #endif
 
-#if WINDOWS_NATIVE
-typedef int pid_t;
-#endif
-
 #ifndef SSIZE_MAX
 #define SSIZE_MAX LONG_MAX
 #endif
@@ -39,7 +35,7 @@ typedef _sigset_t sigset_t;
 #endif 
 
 static void
-reap(pid_t pid) {
+reap(int pid) {
 #if !WINDOWS_NATIVE
   int status;
   while(waitpid(pid, &status, 0) < 0 && errno == EINTR)
@@ -66,7 +62,7 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
   size_t wc = 0;
   char** wv = 0;
   int p[2];
-  pid_t pid;
+  int pid;
 #if !WINDOWS_NATIVE
   sigset_t set;
 #endif

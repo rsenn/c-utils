@@ -10,13 +10,12 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <unistd.h>
 #include <sys/stat.h>
 
 #include "../byte.h"
+#include "../path.h"
 #include "../str.h"
 #include "../windoze.h"
-#include "../path.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -109,20 +108,20 @@ start:
       /* read the link, return if failed and then nul-terminate the buffer */
       if((n = readlink(sa->s, buf, PATH_MAX)) == -1) return 0;
 
-      //buf[n] = '\0';
+      // buf[n] = '\0';
 
       /* if the symlink is absolute we clear the stralloc,
          set the path to buf and repeat the whole procedure */
       if(path_issep(buf[0])) {
-        str_copyn(&buf[n], path , PATH_MAX - n );
+        str_copyn(&buf[n], path, PATH_MAX - n);
         stralloc_zero(sa);
 
         path = buf;
         goto start;
-      
+
         /* if the symlink is relative we remove the symlink path
          component and recurse */
-    } else {
+      } else {
 
         sa->len = path_right(sa->s, sa->len);
 
@@ -132,7 +131,7 @@ start:
         str_copyn(buf, sa->s, sizeof(buf));
 
         stralloc_zero(sa);
-        
+
         if(!path_canonicalize(buf, sa, symbolic)) return 0;
       }
     }

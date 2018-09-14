@@ -18,7 +18,6 @@
 char*
 mmap_private_fd(fd_t fd, size_t* filesize) {
 #if WINDOWS_NATIVE
-    !defined(__MSYS__)
   HANDLE m;
   char* map;
   if(fd == INVALID_HANDLE_VALUE) return 0;

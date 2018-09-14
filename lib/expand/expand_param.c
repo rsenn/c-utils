@@ -7,7 +7,6 @@
 #include "../tree.h"
 #include "../expand.h"
 #include "../errmsg.h"
-#include <unistd.h>
 
 union node*
 expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack, char* argv[], int exitcode, int flags) {
