@@ -116,6 +116,12 @@ DEFS += HAVE_FNMATCH=1
 endif
 $(info HAVE_FNMATCH=$(HAVE_FNMATCH))
 
+HAVE_LSTAT := $(call check-function-exists,lstat)
+ifeq ($(HAVE_LSTAT),1)
+DEFS += HAVE_LSTAT=1
+endif
+$(info HAVE_LSTAT=$(HAVE_LSTAT))
+
 HAVE_ROUND := $(call check-function-exists,round)
 ifeq ($(HAVE_ROUND),1)
 DEFS += HAVE_ROUND=1
@@ -892,7 +898,7 @@ $(FLAGS_FILE): $(BUILDDIR)
 all-release:
 	$(MAKE) DEBUG=0 all
 
-PROGRAM_OBJECTS = $(patsubst %,$(BUILDDIR)%.o,$(wildcard *.c))
+PROGRAM_OBJECTS = $(patsubst %.c,$(BUILDDIR)%.o,$(wildcard *.c))
 #$(patsubst %,%.o,$(PROGRAMS))
 
 CPPFLAGS := -I.
@@ -1099,7 +1105,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)pathtool$(M64_)$(EXEEXT): $(BUILDDIR)pathtool.o $(call add-library, strlist stralloc buffer mmap open str fmt scan byte)
+$(BUILDDIR)pathtool$(M64_)$(EXEEXT): $(BUILDDIR)pathtool.o $(call add-library,path strlist stralloc buffer mmap open str fmt scan byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1335,7 +1341,7 @@ $(BUILDDIR)/%.pic.o: CFLAGS += -fPIC
 $(PROGRAMS):  #CPPFLAGS += -I.
 #$(PROGRAMS): CPPFLAGS += -Ilib
 
-$(info PROGRAM_OBJECTS=$(PROGRAM_OBJECTS))
+$(info PROGRAMS=$(subst $(SPACE),$(NL)    ,$(shell ls -td -- $(PROGRAMS))))
 
 
 $(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a 

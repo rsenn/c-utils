@@ -107,11 +107,10 @@ endif(CXX_COMPILER_SUPPORTS_GGDB)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
-
-include_directories("${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
+include_directories("${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
 
 #pkg_search_module(LIBLZMA liblzma)
-
 
 
 if(LIBLZMA_FOUND)
@@ -203,9 +202,9 @@ if(NOT SOCKLEN_T)
 endif()
 
 
-foreach(FUNC posix_memalign aligned_alloc _aligned_malloc)
-  string(TOUPPER "HAVE_${FUNC}_FUNC" DEF)
-  check_function_exists(func ${DEF})
+foreach(FUNC posix_memalign aligned_alloc _aligned_malloc alloca fnmatch inet_pton llseek lseek lseek64 lstat pipe2 round wordexp WSAStartup)
+  string(TOUPPER "HAVE_${FUNC}" DEF)
+  check_function_exists(${FUNC} ${DEF})
   if(${DEF})
     add_definitions(-D${DEF}=1)
   endif()
@@ -252,7 +251,6 @@ endif()
 if(HAVE_INET_PTON)
 # message(IPv6 support: yes)
 # add_definitions(-DLIBC_HAS_IP6=1)
-  set(LIBMSWSOCK ws2_32)
 endif()
 
 if(NOT HAVE_strncasecmp_FUNC AND HAVE_strnicmp_FUNC)
@@ -580,7 +578,7 @@ target_link_libraries(list-r array buffer dir fmt open str stralloc)
 target_link_libraries(mediathek-list buffer byte fmt open scan str stralloc strlist)
 target_link_libraries(mediathek-parser array buffer byte open playlist str stralloc)
 target_link_libraries(ntldd str)
-target_link_libraries(pathtool buffer stralloc strlist)
+target_link_libraries(pathtool path buffer stralloc strlist)
 target_link_libraries(plsconv buffer byte open playlist str stralloc)
 target_link_libraries(rdir-test buffer rdir)
 target_link_libraries(reg2cmd buffer scan str stralloc)

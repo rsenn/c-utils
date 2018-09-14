@@ -398,7 +398,7 @@ $(BUILDDIR)readclose.o: lib/open/readclose.c lib/uint64.h lib/stralloc.h lib/ope
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_basename.o: lib/path/path_basename.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h lib/str.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)path_canonicalize.o: lib/path/path_canonicalize.c lib/byte.h lib/str.h lib/stralloc.h
+$(BUILDDIR)path_canonicalize.o: lib/path/path_canonicalize.c lib/byte.h lib/str.h lib/windoze.h lib/path.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_dirname.o: lib/path/path_dirname.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h lib/str.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -408,9 +408,19 @@ $(BUILDDIR)path_getcwd.o: lib/path/path_getcwd.c lib/path_internal.h lib/str.h l
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_gethome.o: lib/path/path_gethome.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/path_internal.h lib/path.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_len.o: lib/path/path_len.c lib/path.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_len_s.o: lib/path/path_len_s.c lib/path.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_readlink.o: lib/path/path_readlink.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h lib/str.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_realpath.o: lib/path/path_realpath.c lib/byte.h lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_right.o: lib/path/path_right.c lib/path.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_skip.o: lib/path/path_skip.c lib/path.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_skips.o: lib/path/path_skips.c lib/path.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_offsets.o: lib/pe/pe_offsets.c lib/pe.h lib/uint16.h lib/uint32.h lib/uint64.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -906,15 +916,15 @@ $(BUILDDIR)expand_arg.o: lib/expand/expand_arg.c lib/vartab.h lib/uint64.h lib/v
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)expand_args.o: lib/expand/expand_args.c lib/vartab.h lib/uint64.h lib/var.h lib/stralloc.h lib/vartab.h lib/stralloc.h lib/tree.h lib/expand.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_argv.o: lib/expand/expand_argv.c lib/expand.h lib/stralloc.h lib/tree.h lib/uint64.h
+$(BUILDDIR)expand_argv.o: lib/expand/expand_argv.c lib/tree.h lib/stralloc.h lib/uint64.h lib/expand.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_arith.o: lib/expand/expand_arith.c
+$(BUILDDIR)expand_arith.o: lib/expand/expand_arith.c lib/tree.h lib/stralloc.h lib/uint64.h lib/expand.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)expand_cat.o: lib/expand/expand_cat.c lib/vartab.h lib/uint64.h lib/var.h lib/stralloc.h lib/vartab.h lib/stralloc.h lib/str.h lib/var.h lib/tree.h lib/expand.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)expand_catsa.o: lib/expand/expand_catsa.c lib/vartab.h lib/uint64.h lib/var.h lib/stralloc.h lib/vartab.h lib/byte.h lib/tree.h lib/expand.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_command.o: lib/expand/expand_command.c lib/tree.h lib/stralloc.h lib/uint64.h lib/vartab.h lib/var.h lib/vartab.h lib/expand.h
+$(BUILDDIR)expand_command.o: lib/expand/expand_command.c lib/stralloc.h lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/tree.h lib/stralloc.h lib/vartab.h lib/var.h lib/vartab.h lib/expand.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)expand_copysa.o: lib/expand/expand_copysa.c lib/vartab.h lib/uint64.h lib/var.h lib/stralloc.h lib/vartab.h lib/tree.h lib/byte.h lib/expand.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -924,7 +934,7 @@ $(BUILDDIR)expand_glob.o: lib/expand/expand_glob.c lib/vartab.h lib/uint64.h lib
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)expand_param.o: lib/expand/expand_param.c lib/vartab.h lib/uint64.h lib/var.h lib/stralloc.h lib/vartab.h lib/stralloc.h lib/fmt.h lib/uint32.h lib/str.h lib/var.h lib/fnmatch.h lib/tree.h lib/expand.h lib/errmsg.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_unescape.o: lib/expand/expand_unescape.c lib/expand.h lib/stralloc.h lib/stralloc.h
+$(BUILDDIR)expand_unescape.o: lib/expand/expand_unescape.c lib/tree.h lib/stralloc.h lib/uint64.h lib/stralloc.h lib/expand.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)expand_vars.o: lib/expand/expand_vars.c lib/vartab.h lib/uint64.h lib/var.h lib/stralloc.h lib/vartab.h lib/tree.h lib/expand.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1578,7 +1588,7 @@ $(BUILDDIR)mediathek-list.o: mediathek-list.c lib/buffer.h lib/uint64.h lib/str.
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mediathek-parser.o: mediathek-parser.c lib/array.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/getopt.h lib/io_internal.h lib/windoze.h lib/array.h lib/open.h lib/str.h lib/stralloc.h lib/strlist.h lib/stralloc.h lib/byte.h lib/buffer.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)pathtool.o: pathtool.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/strlist.h lib/stralloc.h lib/byte.h lib/buffer.h lib/getopt.h
+$(BUILDDIR)pathtool.o: pathtool.c lib/stralloc.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/path.h lib/buffer.h lib/getopt.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)access.o: access.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1602,7 +1612,7 @@ $(BUILDDIR)xmltest4.o: xmltest4.c lib/array.h lib/uint64.h lib/buffer.h lib/str.
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ziptest.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/str.h lib/io_internal.h lib/windoze.h lib/array.h lib/getopt.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hexedit.o: hexedit.c lib/mmap.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/buffer.h lib/str.h lib/scan.h lib/uint64.h
+$(BUILDDIR)hexedit.o: hexedit.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/mmap.h lib/scan.h lib/uint64.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)httptest.o: httptest.c lib/http.h lib/uint16.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/buffer.h lib/str.h lib/byte.h lib/io.h lib/iopause.h lib/socket.h lib/windoze.h lib/taia.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

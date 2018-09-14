@@ -5,9 +5,10 @@ char*
 str_tok(char* s, const char* delims, char** ptrptr) {
   char* ret;
 
-  if(s == NULL) s = *ptrptr;
-
-  while(*s && strchr(delims, *s)) ++s;
+  if(s == NULL) { 
+    s = *ptrptr;
+    while(*s && strchr(delims, *s)) ++s;
+  }
 
   if(*s == '\0') return NULL;
 
