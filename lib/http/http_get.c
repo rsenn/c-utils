@@ -30,12 +30,6 @@ http_get(http* h, const char* location) {
 
   a = (void*)dns.s;
 
-/*  he = gethostbyname(h->host.s);
-  if(he == NULL) return 0;
-  a = *((ipv4addr**)(he->h_addr_list))[0];
-  if(a.iaddr == 0) return 0;
-
-*/
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 
 

@@ -8,7 +8,9 @@
 #include "../windoze.h"
 #include <ctype.h>
 #include <errno.h>
+
 #define is_space(c) ((c) == ' ' || (c) == '\t' || (c) == '\r' || (c) == '\n')
+
 ssize_t
 buffer_dummyread() {
   return 0;

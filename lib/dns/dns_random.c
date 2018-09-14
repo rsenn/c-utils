@@ -1,6 +1,11 @@
+#include "../windoze.h"
 #include "../dns.h"
 #include "../taia.h"
 #include "../uint32.h"
+
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#endif
 
 static uint32 seed[32];
 static uint32 in[12];
