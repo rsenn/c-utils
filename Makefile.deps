@@ -380,7 +380,7 @@ $(BUILDDIR)ndelay_off.o: lib/ndelay/ndelay_off.c lib/windoze.h lib/ndelay.h lib/
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ndelay_on.o: lib/ndelay/ndelay_on.c lib/windoze.h lib/ndelay.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)openreadclose.o: lib/open/openreadclose.c lib/stralloc.h lib/open.h lib/windoze.h lib/uint64.h lib/uint64.h
+$(BUILDDIR)openreadclose.o: lib/open/openreadclose.c lib/windoze.h lib/stralloc.h lib/open.h lib/windoze.h lib/uint64.h lib/uint64.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)open_append.o: lib/open/open_append.c lib/windoze.h lib/open.h lib/windoze.h lib/uint64.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -394,7 +394,7 @@ $(BUILDDIR)open_trunc.o: lib/open/open_trunc.c lib/windoze.h lib/open.h lib/wind
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)open_write.o: lib/open/open_write.c lib/open.h lib/windoze.h lib/uint64.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)readclose.o: lib/open/readclose.c lib/uint64.h lib/stralloc.h lib/open.h lib/windoze.h lib/uint64.h
+$(BUILDDIR)readclose.o: lib/open/readclose.c lib/open.h lib/windoze.h lib/uint64.h lib/windoze.h lib/stralloc.h lib/uint64.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_basename.o: lib/path/path_basename.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h lib/str.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -402,7 +402,7 @@ $(BUILDDIR)path_canonicalize.o: lib/path/path_canonicalize.c lib/byte.h lib/path
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_dirname.o: lib/path/path_dirname.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h lib/str.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)path_exists.o: lib/path/path_exists.c lib/path.h lib/stralloc.h
+$(BUILDDIR)path_exists.o: lib/path/path_exists.c lib/windoze.h lib/path.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_fnmatch.o: lib/path/path_fnmatch.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -866,7 +866,7 @@ $(BUILDDIR)dns_nd6.o: lib/dns/dns_nd6.c lib/byte.h lib/dns.h lib/iopause.h lib/i
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dns_packet.o: lib/dns/dns_packet.c lib/dns.h lib/iopause.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_random.o: lib/dns/dns_random.c lib/dns.h lib/iopause.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/stralloc.h lib/taia.h lib/uint32.h
+$(BUILDDIR)dns_random.o: lib/dns/dns_random.c lib/windoze.h lib/dns.h lib/iopause.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/stralloc.h lib/taia.h lib/uint32.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dns_rcip.o: lib/dns/dns_rcip.c lib/byte.h lib/dns.h lib/iopause.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/stralloc.h lib/ip4.h lib/uint8.h lib/uint16.h lib/ip6.h lib/byte.h lib/open.h lib/windoze.h lib/taia.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1016,6 +1016,8 @@ $(BUILDDIR)fmt_xmlescape.o: lib/fmt/fmt_xmlescape.c lib/fmt.h lib/uint32.h lib/u
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fnmatch.o: lib/fnmatch.c lib/fnmatch.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fork.o: lib/fork.c lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)getdelim.o: lib/getdelim.c lib/wordexp.h lib/windoze.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)getenv.o: lib/getenv.c lib/windoze.h
@@ -1126,15 +1128,15 @@ $(BUILDDIR)hmap_size.o: lib/hmap/hmap_size.c lib/hmap_internal.h lib/byte.h lib/
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)hmap_truncate.o: lib/hmap/hmap_truncate.c lib/hmap_internal.h lib/byte.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_get.o: lib/http/http_get.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/http.h lib/uint16.h lib/stralloc.h lib/io.h lib/io_internal.h lib/windoze.h lib/array.h lib/ip4.h lib/uint8.h lib/socket.h lib/str.h
+$(BUILDDIR)http_get.o: lib/http/http_get.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/http.h lib/uint16.h lib/stralloc.h lib/ip4.h lib/uint8.h lib/io.h lib/io_internal.h lib/windoze.h lib/array.h lib/ip4.h lib/socket.h lib/str.h lib/dns.h lib/iopause.h lib/errmsg.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_init.o: lib/http/http_init.c lib/http.h lib/uint16.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h
+$(BUILDDIR)http_init.o: lib/http/http_init.c lib/http.h lib/uint16.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/ip4.h lib/uint8.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_readable.o: lib/http/http_readable.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/http.h lib/uint16.h lib/stralloc.h lib/io_internal.h lib/windoze.h lib/array.h lib/scan.h lib/socket.h lib/str.h lib/windoze.h
+$(BUILDDIR)http_readable.o: lib/http/http_readable.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/http.h lib/uint16.h lib/stralloc.h lib/ip4.h lib/uint8.h lib/io_internal.h lib/windoze.h lib/array.h lib/scan.h lib/socket.h lib/str.h lib/windoze.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_sendreq.o: lib/http/http_sendreq.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/http.h lib/uint16.h lib/stralloc.h lib/io_internal.h lib/windoze.h lib/array.h lib/socket.h
+$(BUILDDIR)http_sendreq.o: lib/http/http_sendreq.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/http.h lib/uint16.h lib/stralloc.h lib/ip4.h lib/uint8.h lib/io_internal.h lib/windoze.h lib/array.h lib/socket.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_writeable.o: lib/http/http_writeable.c lib/http.h lib/uint16.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h
+$(BUILDDIR)http_writeable.o: lib/http/http_writeable.c lib/http.h lib/uint16.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/ip4.h lib/uint8.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_map.o: lib/mmap/mmap_map.c lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/windoze.h lib/mmap.h lib/io.h lib/open.h lib/windoze.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1226,6 +1228,8 @@ $(BUILDDIR)strarray_to_argv.o: lib/strarray/strarray_to_argv.c lib/strarray.h li
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_at.o: lib/strlist/strlist_at.c lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_at_n.o: lib/strlist/strlist_at_n.c lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_at_sa.o: lib/strlist/strlist_at_sa.c lib/byte.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_cat.o: lib/strlist/strlist_cat.c lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
@@ -1265,6 +1269,8 @@ $(BUILDDIR)strlist_push_unique_sa.o: lib/strlist/strlist_push_unique_sa.c lib/st
 $(BUILDDIR)strlist_range.o: lib/strlist/strlist_range.c lib/stralloc.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_shift.o: lib/strlist/strlist_shift.c lib/byte.h lib/str.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_shift_n.o: lib/strlist/strlist_shift_n.c lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_sort.o: lib/strlist/strlist_sort.c lib/str.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1580,7 +1586,7 @@ $(BUILDDIR)xmltest.o: xmltest.c lib/xml.h lib/buffer.h lib/uint64.h lib/str.h li
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xmltest2.o: xmltest2.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/fmt.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/stralloc.h lib/xml.h lib/hmap.h lib/textbuf.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)compiler-wrapper.o: compiler-wrapper.c lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/str.h lib/byte.h lib/fmt.h lib/buffer.h lib/dir_internal.h lib/dir.h
+$(BUILDDIR)compiler-wrapper.o: compiler-wrapper.c lib/windoze.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/str.h lib/byte.h lib/fmt.h lib/buffer.h lib/dir_internal.h lib/dir.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)count-depth.o: count-depth.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/fmt.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1590,15 +1596,17 @@ $(BUILDDIR)ccat.o: ccat.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarra
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)map.o: map.c lib/map.h lib/byte.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mediathek-list.o: mediathek-list.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/fmt.h lib/getopt.h lib/http.h lib/uint16.h lib/stralloc.h lib/io_internal.h lib/windoze.h lib/array.h lib/scan.h lib/slist.h lib/str.h lib/strarray.h lib/byte.h lib/strlist.h lib/buffer.h
+$(BUILDDIR)mediathek-list.o: mediathek-list.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/fmt.h lib/getopt.h lib/http.h lib/uint16.h lib/stralloc.h lib/ip4.h lib/uint8.h lib/io_internal.h lib/windoze.h lib/array.h lib/scan.h lib/slist.h lib/str.h lib/strarray.h lib/byte.h lib/strlist.h lib/buffer.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mediathek-parser.o: mediathek-parser.c lib/array.h lib/uint64.h lib/buffer.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/getopt.h lib/io_internal.h lib/windoze.h lib/array.h lib/open.h lib/str.h lib/stralloc.h lib/strlist.h lib/stralloc.h lib/byte.h lib/buffer.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)pathtool.o: pathtool.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/getopt.h lib/path.h lib/stralloc.h lib/stralloc.h lib/strlist.h lib/byte.h lib/buffer.h lib/errmsg.h
+$(BUILDDIR)pathtool.o: pathtool.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/errmsg.h lib/getopt.h lib/path.h lib/stralloc.h lib/stralloc.h lib/strlist.h lib/byte.h lib/buffer.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)access.o: access.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffertest.o: buffertest.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)test_11463.o: test_11463.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)test_21616.o: test_21616.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1620,7 +1628,7 @@ $(BUILDDIR)ziptest.o: ziptest.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)hexedit.o: hexedit.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/mmap.h lib/scan.h lib/uint64.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)httptest.o: httptest.c lib/http.h lib/uint16.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/buffer.h lib/str.h lib/byte.h lib/io.h lib/iopause.h lib/socket.h lib/windoze.h lib/taia.h
+$(BUILDDIR)httptest.o: httptest.c lib/http.h lib/uint16.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/ip4.h lib/uint8.h lib/buffer.h lib/str.h lib/byte.h lib/io.h lib/iopause.h lib/socket.h lib/windoze.h lib/taia.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)impgen.o: impgen.c lib/byte.h lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/mmap.h lib/open.h lib/windoze.h lib/uint16.h lib/uint32.h lib/pe.h lib/uint16.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
