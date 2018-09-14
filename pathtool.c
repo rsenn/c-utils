@@ -46,7 +46,7 @@ pathtool(const char* arg, stralloc* sa) {
   stralloc_zero(sa);
 
   if(relative_to.sa.s) {
-    stralloc rel;
+    strlist rel;
     size_t n1 = strlist_count(&path);
     size_t n2 = strlist_count(&relative_to);
     size_t i, n = max(n1, n2);
@@ -56,17 +56,19 @@ pathtool(const char* arg, stralloc* sa) {
       char* s1 = strlist_at_n(&path, i, &l1);
       char* s2 = strlist_at_n(&relative_to, i, &l2);
 
+#if 1
       buffer_puts(buffer_2, "REL ");
       buffer_put(buffer_2, s1, l1);
       buffer_puts(buffer_2, " ");
       buffer_put(buffer_2, s2, l2);
       buffer_putnlflush(buffer_2);
+#endif
 
       if(l1 != l2) break;
       if(byte_diff(s1, l1, s2)) break;
     }
 
-    stralloc_init(&rel);
+    strlist_init(&rel, '\0');
 
     while(n2-- > i) {
       strlist_push(&rel, "..");
@@ -87,7 +89,7 @@ pathtool(const char* arg, stralloc* sa) {
 }
 
 void
-usage(const char* av0) {
+usage(char* av0) {
   buffer_putm(buffer_1,
               "Usage: ",
               str_basename(av0),
@@ -154,7 +156,10 @@ main(int argc, char* argv[]) {
 
   if(rel_to) {
     stralloc rel;
+
     stralloc_init(&rel);
+    absolute = 1;
+
     if(pathtool(rel_to, &rel)) {
       stralloc_copy(&relative_to.sa, &rel);
       relative_to.sep = separator[0];
