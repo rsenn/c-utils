@@ -7,7 +7,6 @@
 #include <fcntl.h>
 
 #if !WINDOWS_NATIVE
-#include <libgen.h>
 #include <unistd.h>
 #endif
 

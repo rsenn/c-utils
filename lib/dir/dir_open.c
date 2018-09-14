@@ -28,11 +28,11 @@ dir_open(struct dir_s* d, const char* p) {
       wpath[wlen] = '\0';
       dir_INTERNAL(d)->dir_handle = (intptr_t)FindFirstFileW(wpath, &dir_INTERNAL(d)->dir_finddata);
     }
+    dir_INTERNAL(d)->tmpname = NULL;
 #else
     dir_INTERNAL(d)->dir_handle = (intptr_t)FindFirstFileA(path, &dir_INTERNAL(d)->dir_finddata);
 #endif
     dir_INTERNAL(d)->first = 1;
-    dir_INTERNAL(d)->tmpname = NULL;
     
     ret = (dir_INTERNAL(d)->dir_handle == (intptr_t)INVALID_HANDLE_VALUE);
   }

@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include "wordexp.h"
 
+#ifndef HAVE_GETDELIM
+
 ssize_t
 getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
   size_t i;
@@ -35,3 +37,4 @@ getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
   (*lineptr)[i] = 0;
   return i;
 }
+#endif

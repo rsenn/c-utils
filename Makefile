@@ -122,6 +122,12 @@ DEFS += HAVE_LSTAT=1
 endif
 $(info HAVE_LSTAT=$(HAVE_LSTAT))
 
+HAVE_GETDELIM := $(call check-function-exists,getdelim)
+ifeq ($(HAVE_GETDELIM),1)
+DEFS += HAVE_GETDELIM=1
+endif
+$(info HAVE_GETDELIM=$(HAVE_GETDELIM))
+
 HAVE_ROUND := $(call check-function-exists,round)
 ifeq ($(HAVE_ROUND),1)
 DEFS += HAVE_ROUND=1
