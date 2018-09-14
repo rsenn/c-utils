@@ -15,8 +15,7 @@ extern "C"
 
 /* strlist is the internal data structure all functions are working on.
  */
-typedef struct strlist
-{
+typedef struct strlist_s {
   stralloc sa;
   char sep;
 } strlist;

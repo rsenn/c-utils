@@ -18,7 +18,7 @@ extern "C" {
  * a is the allocated length of the string.
  */
 
-typedef struct stralloc {
+typedef struct stralloc_s {
   char* s;
   size_t len;
   size_t a;

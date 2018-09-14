@@ -22,9 +22,11 @@ size_t path_len_s(const char* s);
 size_t path_len(const char* s, size_t n);
 int    path_readlink(const char* path, stralloc* sa);
 int    path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
+size_t path_right(const char* s, size_t n);
 size_t path_skips(const char* s);
 size_t path_skip(const char* s, size_t n);
-size_t path_right(const char* s, size_t n);
+size_t path_num(const char* p, size_t len, int n);
+size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
 
 #define path_issep(c) ((c) == '/' || (c) == '\\')
 
@@ -37,16 +39,3 @@ size_t path_right(const char* s, size_t n);
 #endif
 
 #endif /* _PATH_H__ */
-char*  path_basename(char* path);
-int    path_canonicalize(const char* path, stralloc* sa, int symbolic);
-char*  path_dirname(char* path);
-int    path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
-void   path_getcwd(stralloc* sa, unsigned long start);
-char*  path_gethome(int uid);
-size_t path_len_s(const char* s);
-size_t path_len(const char* s, size_t n);
-int    path_readlink(const char* path, stralloc* sa);
-int    path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
-size_t path_right(const char* s, size_t n);
-size_t path_skips(const char* s);
-size_t path_skip(const char* s, size_t n);

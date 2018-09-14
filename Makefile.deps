@@ -412,6 +412,10 @@ $(BUILDDIR)path_len.o: lib/path/path_len.c lib/path.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_len_s.o: lib/path/path_len_s.c lib/path.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_num.o: lib/path/path_num.c lib/path.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_num_sa.o: lib/path/path_num_sa.c lib/path.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_readlink.o: lib/path/path_readlink.c lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h lib/str.h lib/stralloc.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_realpath.o: lib/path/path_realpath.c lib/byte.h lib/path_internal.h lib/str.h lib/path.h lib/stralloc.h
@@ -1582,7 +1586,7 @@ $(BUILDDIR)tryerrno.o: Debug/tryerrno.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ccat.o: ccat.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/str.h lib/getopt.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)map.o: ./map.c
+$(BUILDDIR)map.o: map.c lib/map.h lib/byte.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mediathek-list.o: mediathek-list.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/byte.h lib/fmt.h lib/getopt.h lib/http.h lib/uint16.h lib/stralloc.h lib/io_internal.h lib/windoze.h lib/array.h lib/scan.h lib/slist.h lib/str.h lib/strarray.h lib/byte.h lib/strlist.h lib/buffer.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

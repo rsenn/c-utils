@@ -535,6 +535,8 @@ endif()
 
 set(COMMON_LIBS strlist buffer array stralloc scan str byte mmap open fmt )
 
+file(GLOB LIBHEADERS lib/*.h)
+
 foreach(PROGRAM ${PROGRAMS})
   if("${PROGRAM}" STREQUAL ntldd)
     set(EXTRA_SOURCES libntldd.c)
@@ -542,7 +544,7 @@ foreach(PROGRAM ${PROGRAMS})
     set(EXTRA_SOURCES )
   endif("${PROGRAM}" STREQUAL ntldd)
 
-  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES} ${GETOPT_SOURCES}) #  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
+  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES} ${GETOPT_SOURCES} ${LIBHEADERS}) #  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
  # list(APPEND ${PROGRAM}_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR})
 
   set_target_properties(${PROGRAM} PROPERTIES
