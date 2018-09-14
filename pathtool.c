@@ -27,6 +27,36 @@ strlist_from_path(strlist* sl, const char* p) {
   strlist_push_tokens(sl, p, delims.s);
 }
 
+#if defined(__CYGWIN__) || defined(__MSYS__)
+#include <sys/cygwin.h>
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
+void
+pathconv(const char* path, stralloc* sa) {
+  stralloc_ready(sa, MAX_PATH);
+
+  switch(format) {
+    case MIXED:
+    case WINDOWS:
+      cygwin_conv_to_win32_path(path, sa->s);
+      sa->len = str_len(sa->s);
+      break;
+    case UNIX:
+      cygwin_conv_to_posix_path(path, sa->s);
+      sa->len = str_len(sa->s);
+      break;
+  }
+
+  if(format == MIXED) {
+    size_t i;
+    for(i = 0; i < sa->len; ++i) {
+      if(sa->s[i] == '\\') sa->s[i] = '/';
+    }
+  }
+}
+#endif
+
 int
 pathtool(const char* arg, stralloc* sa) {
   strlist path;
@@ -39,6 +69,17 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_copys(sa, arg);
   }
   stralloc_nul(sa);
+
+#if defined(__CYGWIN__) || defined(__MSYS__)
+  {
+    stralloc tmp;
+    stralloc_init(&tmp);
+    pathconv(sa->s, &tmp);
+    stralloc_copy(sa, &tmp);
+    stralloc_nul(sa);
+    stralloc_free(&tmp);
+  }
+#endif
 
   strlist_init(&path, '\0');
   strlist_from_path(&path, sa->s);
