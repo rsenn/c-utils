@@ -172,7 +172,7 @@ main(int argc, char* argv[]) {
   };
 
   for(;;) {
-    c = getopt_long(argc, argv, "ahr:s:muw", opts, &index);
+    c = getopt_long(argc, argv, "afhr:s:muw", opts, &index);
     if(c == -1) break;
 
     switch(c) {

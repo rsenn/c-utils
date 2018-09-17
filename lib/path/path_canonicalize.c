@@ -88,7 +88,8 @@ start:
     if(*path == '\0') break;
 
     /* begin a new path component */
-    stralloc_catc(sa, '/');
+    if(sa->len && sa->s[sa->len - 1] != '/')
+      stralloc_catc(sa, '/');
 
     /* look for the next path separator and then copy the component */
     n = path_len_s(path);
@@ -115,6 +116,7 @@ start:
       if(path_issep(buf[0])) {
         str_copyn(&buf[n], path, PATH_MAX - n);
         stralloc_zero(sa);
+        stralloc_catc(sa, '/');
 
         path = buf;
         goto start;
