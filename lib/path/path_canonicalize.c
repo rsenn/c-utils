@@ -12,6 +12,7 @@
 #include <limits.h>
 #include <sys/stat.h>
 
+#include "../buffer.h"
 #include "../byte.h"
 #include "../path.h"
 #include "../str.h"
@@ -124,15 +125,28 @@ start:
         /* if the symlink is relative we remove the symlink path
          component and recurse */
       } else {
-
+//        size_t l = path_len_s(buf);
+//
         sa->len = path_right(sa->s, sa->len);
+//
+//        stralloc_catc(sa, '/');
+//        stralloc_catb(sa, buf, l);
+//        stralloc_nul(sa);
+       
+        buf[n] = '\0';
+        //str_copyn(buf, buf+l+1, sizeof(buf));
 
-        stralloc_catc(sa, '/');
-        stralloc_catb(sa, buf, n);
-        stralloc_nul(sa);
-        str_copyn(buf, sa->s, sizeof(buf));
+        //stralloc_zero(sa);
 
-        stralloc_zero(sa);
+        buffer_puts(buffer_2, "recursive path_canonicalize(\"");
+        buffer_puts(buffer_2, buf);
+        buffer_puts(buffer_2, "\", \"");
+        buffer_putsa(buffer_2, sa);
+        buffer_puts(buffer_2, "\", ");
+        buffer_putlong(buffer_2, symbolic);
+        buffer_puts(buffer_2, ")");
+        buffer_putnlflush(buffer_2);
+
 
         if(!path_canonicalize(buf, sa, symbolic)) return 0;
       }
