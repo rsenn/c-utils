@@ -17,7 +17,7 @@ static strlist relative_to;
 static char separator[2];
 static stralloc delims;
 static path_format format = MIXED;
-static int absolute = 0;
+static int absolute = 0, canonical = 0;
 static stralloc cwd;
 
 void
@@ -65,6 +65,8 @@ pathtool(const char* arg, stralloc* sa) {
 
   if(absolute) {
     path_realpath(arg, sa, 1, &cwd);
+  } else if(canonical) {
+    path_canonicalize(arg, sa, 1);
   } else {
     stralloc_copys(sa, arg);
   }
@@ -138,13 +140,16 @@ usage(char* av0) {
               "\n",
               "Options:\n",
               "\n",
-              "  --help                 Show this help\n",
+              "  -h, --help             Show this help\n",
               "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
               "  -s, --separator SEP    Use SEP as directory separator\n",
               "  -w, --windows          Print Windows form of path(s) (C:\\WINNT)\n",
               "  -m, --mixed            Like --windows, but with regular slashes (C:/WINNT)\n",
               "  -u, --unix   (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n",
               "  -a, --absolute         Output absolute path\n",
+              "  -f, --canonicalize     Canonicalize by following every symlink in\n"
+              "                         every component of the given name recursively;\n"
+              "                         all but the last component must exist\n",
               "\n");
   buffer_flush(buffer_1);
 }
@@ -163,6 +168,7 @@ main(int argc, char* argv[]) {
       {"unix", 0, NULL, 'u'},
       {"windows", 0, NULL, 'w'},
       {"absolute", 0, NULL, 'a'},
+      {"canonicalize", 0, NULL, 'f'},
   };
 
   for(;;) {
@@ -177,6 +183,7 @@ main(int argc, char* argv[]) {
       case 'u': format = UNIX; break;
       case 'w': format = WINDOWS; break;
       case 'a': absolute = 1; break;
+      case 'f': canonical = 1; break;
       default: usage(argv[0]); return 1;
     }
   }
