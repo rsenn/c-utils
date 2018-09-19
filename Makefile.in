@@ -98,6 +98,13 @@ $(PROGRAMS): LIBS += $(ZLIB_LIBS) $(BZLIB_LIBS) $(LIBLZMA_LIBS)
 
 ntldd$(EXEEXT): libntldd.o
 
+.PHONY: clean
+clean: clean-library clean-programs
 
-clean:
-	$(RM) $(LIB_OBJECTS) $(PROGRAM_OBJECTS) $(PROGRAMS) libowcarb.a
+.PHONY: clean-library
+clean-library:
+	$(RM) $(LIB_OBJECTS) libowcarb.a
+
+.PHONY: clean-programs
+clean-programs:
+	$(RM) $(PROGRAM_OBJECTS) $(PROGRAMS) 
