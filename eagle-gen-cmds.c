@@ -1000,8 +1000,12 @@ main(int argc, char* argv[]) {
 
     for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
     xmlnode* node = *it;
+    double x1,x2,y1,y2;
 
-    xml_get_attribut
+    x1 = xml_get_attribute_double(node, "x1");
+    x2 = xml_get_attribute_double(node, "x2");
+    y1 = xml_get_attribute_double(node, "y1");
+    y2 = xml_get_attribute_double(node, "y2");
       }
 
    // xml_print_nodeset(&wires, buffer_1);
