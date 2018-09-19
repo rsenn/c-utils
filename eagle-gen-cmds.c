@@ -14,6 +14,7 @@
 #include "lib/byte.h"
 #include "lib/cb.h"
 #include "lib/cbmap.h"
+#include "lib/errmsg.h"
 #include "lib/fmt.h"
 #include "lib/hmap.h"
 #include "lib/iterator.h"
@@ -921,6 +922,11 @@ main(int argc, char* argv[]) {
   bounds.y2 = round(100 * bounds.y2) / 100;
 
   plain = xml_find_element(doc, "plain");
+
+  if(plain->type != XML_ELEMENT) {
+errmsg_warn("element 'plain'");
+exit(1);
+    }
 
   left = xml_element("wire");
   xml_set_attribute_double(left, "x1", bounds.x1);

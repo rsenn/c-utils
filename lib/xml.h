@@ -116,6 +116,11 @@ xmlnodeset xml_find_all_1(xmlnode*, int (*pred)(void), void*);
 xmlnodeset xml_find_all_2(xmlnode*, int (*pred)(void), void*, void*);
 xmlnodeset xml_find_all_3(xmlnode*, int (*pred)(void), void*, void*, void*);
 
+xmlnode* xml_find_element(xmlnode*, const char* tag);
+xmlnode* xml_find_pred_n(xmlnode*, int (*pred)(xmlnode*, void* ), int n, ...);
+xmlnode* xml_pfind_pred(xmlnode*, int (*pred)(void), void* vptr[]);
+
+
 #ifdef __cplusplus
 }
 #endif
