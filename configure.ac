@@ -12,7 +12,7 @@ AC_CANONICAL_BUILD
 AC_PROG_CC
 AC_PROG_RANLIB
 AC_PROG_INSTALL
-AC_LANG_C
+AC_LANG([C])
 AC_EXEEXT
 
 AC_HEADER_STDC
@@ -31,10 +31,10 @@ AC_FUNC_LSTAT
 dnl AC_FUNC_MMAP
 dnl AC_FUNC_STRERROR_R
 
-AC_INLINE
+AC_C_INLINE
 AC_C_INLINE
 
-AC_OFF_T
+AC_TYPE_OFF_T
 AC_TYPE_OFF_T
 
 AC_TYPE_INT64_T
@@ -42,7 +42,14 @@ AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UNSIGNED_LONG_LONG_INT
 
-AC_LONG_64_BITS
+AC_DIAGNOSE([obsolete],[your code should no longer depend upon `LONG_64_BITS', but upon
+`SIZEOF_LONG_INT == 8'.  Remove this warning and the `AC_DEFINE' when
+you adjust the code.])dnl
+AC_CHECK_SIZEOF([long int])
+test $ac_cv_sizeof_long_int = 8 &&
+  AC_DEFINE([LONG_64_BITS],[1],[Define to 1 if `sizeof (long int)' = 8.  Obsolete, use
+	     `SIZEOF_LONG_INT'.])
+
 
 AC_TYPE_INT8_T
 AC_TYPE_UINT8_T
@@ -76,6 +83,23 @@ AC_CHECK_ZLIB
 AC_CHECK_BZLIB
 AC_CHECK_LZMADEC
 
+dnl Check for configuration options:
+# --enable-debug/--disable-debug
+AC_ARG_ENABLE([debug],
+  [AS_HELP_STRING([--enable-debug], [build with debugging support [default=no]])],
+  [], [enable_debug=no])
+AS_IF([test "x$enable_debug" != "xno"],
+  [AC_DEFINE([DEBUG], [1], [Enable debugging support.])],
+  [AC_DEFINE([NDEBUG], [1], [Disable assertions.])])
+AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" != "xno"])
+
+# --enable-widechar/--disable-widechar
+AC_ARG_ENABLE([widechar],
+  [AS_HELP_STRING([--disable-widechar], [omit support for wide char])])
+AS_IF([test "x$enable_widechar" == "xno"],
+  [AC_DEFINE([DISABLE_WIDECHAR], 1, [Define to disable wide car support.])])
+
 AC_CONFIG_HEADERS([config.h])
-AC_OUTPUT([Makefile])
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
 
