@@ -1,10 +1,10 @@
+#include "lib/getopt.h"
 #include "lib/playlist.h"
 #include "lib/open.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/io_internal.h"
-#include "lib/getopt.h"
 
 #include <stdio.h>
 

@@ -1,6 +1,6 @@
+#include "lib/getopt.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
-#include "lib/getopt.h"
 #include "lib/path.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
@@ -160,7 +160,7 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char* rel_to = NULL;
   int index = 0;
-  struct option opts[] = {
+  struct longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"relative-to", 1, NULL, 'r'},
       {"separator", 1, NULL, 's'},

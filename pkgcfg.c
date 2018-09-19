@@ -1,3 +1,4 @@
+#include "lib/getopt.h"
 #include "lib/algorithm.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
@@ -5,7 +6,6 @@
 #include "lib/dir.h"
 #include "lib/env.h"
 #include "lib/errmsg.h"
-#include "lib/getopt.h"
 #include "lib/iterator.h"
 #include "lib/path.h"
 #include "lib/slist.h"
@@ -457,7 +457,7 @@ int
 main(int argc, char* argv[]) {
   int c;
   int index = 0;
-  struct option opts[] = {
+  struct longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"modversion", 0, NULL, PRINT_VERSION},
       {"cflags", 0, NULL, PRINT_CFLAGS},

@@ -388,7 +388,7 @@ main(int argc, char* argv[]) {
   char inbuf[8192];
   buffer b;
 
-  struct option opts[] = {
+  struct longopt opts[] = {
       {"csv", 0, NULL, 'c'},
       {"debug", 0, NULL, 'd'},
       {"low", 0, NULL, 'l'},
