@@ -96,7 +96,7 @@ struct ref {
 };
 typedef struct wire {
   double x1, y1, x2, y2;
-} wire, rect;
+} wire;
 
 struct net {
   stralloc name;
@@ -116,7 +116,7 @@ cbmap_t devicesets, packages, parts, nets, symbols;
 static strarray layers;
 static int measures_layer = -1, bottom_layer = -1;
 static array wires;
-static rect bounds = {DBL_MAX, DBL_MAX, DBL_MAX, DBL_MAX};
+static wire bounds = {DBL_MAX, DBL_MAX, DBL_MAX, DBL_MAX};
 
 /**
  * Reads a real-number value from the element/attribute given
@@ -266,14 +266,30 @@ build_layers(xmlnode* layer) {
   strarray_set(&layers, num, xml_get_attribute(layer, "name"));
   /*  xml_print(layer, buffer_1); */
 }
+typedef struct {
+  double x,y;
+} pt;
+
+union line {
+  struct {
+  double x1, y1;
+  double x2, y2;
+  };
+  pt p[2];
+};
+
+typedef union line rect;
+
 
 void
-update_bounds(double x, double y) {
-  if(x < bounds.x1 || bounds.x1 == DBL_MAX) bounds.x1 = x;
-  if(x > bounds.x2 || bounds.x2 == DBL_MAX) bounds.x2 = x;
-  if(y < bounds.y1 || bounds.y1 == DBL_MAX) bounds.y1 = y;
-  if(y > bounds.y2 || bounds.y2 == DBL_MAX) bounds.y2 = y;
+update_bounds(rect* r, double x, double y) {
+  if(x < r->x1 || r->x1 == DBL_MAX) r->x1 = x;
+  if(x > r->x2 || r->x2 == DBL_MAX) r->x2 = x;
+  if(y < r->y1 || r->y1 == DBL_MAX) r->y1 = y;
+  if(y > r->y2 || r->y2 == DBL_MAX) r->y2 = y;
 }
+
+static rect wire_bounds;
 
 void
 check_wire(xmlnode* node) {
@@ -286,8 +302,8 @@ check_wire(xmlnode* node) {
 
     xml_delete(node);
   } else if(layer == bottom_layer) {
-    update_bounds(w.x1, w.y1);
-    update_bounds(w.x2, w.y2);
+    update_bounds(&wire_bounds, w.x1, w.y1);
+    update_bounds(&wire_bounds, w.x2, w.y2);
   }
 }
 
@@ -1001,6 +1017,7 @@ main(int argc, char* argv[]) {
     xmlnodeset_iter_t it, e;
     xmlnodeset ns;
     stralloc layer_str;
+    rect extent;
     //    tree_topleft(doc, "wire", &right_x, &top_y);
     stralloc_init(&layer_str);
 
@@ -1009,6 +1026,8 @@ main(int argc, char* argv[]) {
     buffer_putm(buffer_2, "layer str: ", layer_str.s);
     buffer_putnlflush(buffer_2);
 
+
+    byte_zero(&extent, sizeof(extent));
     ns = xml_find_all_3(doc, xml_match_name_and_attr, "wire", "layer", layer_str.s);
 
     for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
@@ -1016,14 +1035,13 @@ main(int argc, char* argv[]) {
       double x1, x2, y1, y2;
       const char* layer = xml_get_attribute(node, "layer");
 
-      x1 = (xml_get_attribute_double(node, "x1"));
-      x2 = (xml_get_attribute_double(node, "x2"));
-      y1 = (xml_get_attribute_double(node, "y1"));
-      y2 = (xml_get_attribute_double(node, "y2") / 2.54 * 100)  / 100;
+      update_bounds(&extent, get_double(node, "x1"), get_double(node, "y1"));
+      update_bounds(&extent, get_double(node, "x2"), get_double(node, "y2"));
 
-      print_xy(buffer_2, layer, x1, y1);
-      print_xy(buffer_2, layer, x2, y2);
+//      print_xy(buffer_2, layer, x1, y1);
     }
+    print_xy(buffer_2, "extent.1", extent.x1, extent.y1);
+    print_xy(buffer_2, "extent.2", extent.x2, extent.y2);
 
     // xml_print_nodeset(&wires, buffer_1);
 
