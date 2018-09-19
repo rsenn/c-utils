@@ -311,7 +311,7 @@ AC_DEFINE_UNQUOTED([HAVE_SENDFILE],[1],[Define if you have sendfile()])],
 [AC_MSG_RESULT([no])])
 
 AC_DEFUN([AC_CHECK_EPOLL], [
-AC_MSG_CHECKING([for epoll()m4_if([$2],[ using $2],[])])
+AC_MSG_CHECKING(m4_if([$2],[for epoll using $2],[for epoll]))
 m4_if([$2],[saved_LIBS="$LIBS"
 LIBS="$2"],[])
 AC_LINK_IFELSE([#include <inttypes.h>
