@@ -81,7 +81,7 @@ AC_CHECK_FUNC([WSAStartup],[AC_DEFINE_UNQUOTED([HAVE_WSASTARTUP],[1],[Define thi
 
 AC_CHECK_ZLIB
 AC_CHECK_BZLIB
-AC_CHECK_LZMADEC
+AC_CHECK_LIBLZMA
 
 dnl Check for configuration options:
 # --enable-debug/--disable-debug
