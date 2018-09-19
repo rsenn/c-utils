@@ -1,3 +1,8 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* defined(HAVE_CONFIG_H) */
+
+
 #include "../io_internal.h"
 #include "../iob.h"
 #include "../windoze.h"
