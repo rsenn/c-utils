@@ -86,4 +86,5 @@ dnl     DIET=""
      AC_MSG_RESULT([$DIETVERSION])
    fi
  fi
+])
 
