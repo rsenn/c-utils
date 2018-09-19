@@ -118,17 +118,286 @@ AS_IF([test "x$enable_readdir" = "xyes" -o "x$enable_readdir" != "xno"],
   ])
 ])
 
+dnl
+dnl  OS feature checks
+dnl 
 
 AC_COMPILE_IFELSE([#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
 int main() {
   struct sockaddr_in6 sa;
   sa.sin6_family = PF_INET6;
   (void)sa;
   return 0;
 }], [AC_DEFINE_UNQUOTED([LIBC_HAS_IP6],[1],[Define this if you have IPv6 support])])
+
+
+AC_COMPILE_IFELSE([#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+int main() {
+  struct sockaddr_in6 sa;
+  sa.sin6_family = PF_INET6;
+  sa.sin6_scope_id = 23;
+  (void)sa;
+  return 0;
+}], [AC_DEFINE_UNQUOTED([LIBC_HAS_SCOPE_ID],[1],[Define this if you have scope id support])])
+
+AC_COMPILE_IFELSE([#include <sys/types.h>
+#include <sys/socket.h>
+#include <net/if.h>
+int main() {
+  static char ifname[IFNAMSIZ];
+  char *tmp=if_indextoname(0,ifname);
+  (void)tmp;
+  return 0;
+}],[AC_DEFINE_UNQUOTED([HAVE_N2I],[1],[Define this if you have if_indextoname])])
+
+AC_COMPILE_IFELSE([#include <sys/event.h>
+#include <sys/time.h>
+#include <sys/types.h>
+int
+main() {
+  int kq = kqueue();
+  struct kevent kev;
+  struct timespec ts;
+  if(kq == -1) return 111;
+  EV_SET(&kev, 0 /* fd */, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
+  ts.tv_sec = 0;
+  ts.tv_nsec = 0;
+  if(kevent(kq, &kev, 1, 0, 0, &ts) == -1) return 111;
+  {
+    struct kevent events[100];
+    int i, n;
+    ts.tv_sec = 1;
+    ts.tv_nsec = 0;
+    switch(n = kevent(kq, 0, 0, events, 100, &ts)) {
+    case -1: return 111;
+    case 0: puts("no data on fd #0"); break;
+    }
+    for(i = 0; i < n; ++i) {
+      printf("ident %d, filter %d, flags %d, fflags %d, data %d\n",
+             events[i].ident,
+             events[i].filter,
+             events[i].flags,
+             events[i].fflags,
+             events[i].data);
+    }
+  }
+  return 0;
+}], [AC_DEFINE_UNQUOTED([HAVE_KQUEUE],[1],[Define this if you have kqueue support])])
+
+AC_COMPILE_IFELSE([#define SENDFILE 1
+#include <errno.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+int
+main() {
+  struct sf_hdtr hdr;
+  struct iovec v[17 + 23];
+  int r, fd = 1;
+  off_t sbytes;
+  hdr.headers = v;
+  hdr.hdr_cnt = 17;
+  hdr.trailers = v + 17;
+  hdr.trl_cnt = 23;
+  r = sendfile(0, 1, 37, 42, &hdr, &sbytes, 0);
+  (void)r;
+  return 0;
+}], [AC_DEFINE_UNQUOTED([HAVE_BSDSENDFILE],[1],[Define this if you have a BSD compatible sendfile()])])
+
+AC_COMPILE_IFELSE([#ifdef __hpux__
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+int
+main() {
+  /* sbsize_t sendfile(int s, int fd, off_t offset, bsize_t nbytes,
+                       const struct iovec *hdtrl, int flags); */
+  struct iovec x[2];
+  int fd = open("havesendfile.c", 0);
+  x[0].iov_base = "header";
+  x[0].iov_len = 6;
+  x[1].iov_base = "footer";
+  x[1].iov_len = 6;
+  sendfile(1 /* dest socket */, fd /* src file */, 0 /* offset */, 23 /* nbytes */, x, 0);
+  perror("sendfile");
+  return 0;
+}
+#elif defined(__sun__) && defined(__svr4__)
+#include <stdio.h>
+#include <sys/sendfile.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+int
+main() {
+  off_t o;
+  o = 0;
+  sendfile(1 /* dest */, 0 /* src */, &o, 23 /* nbytes */);
+  perror("sendfile");
+  return 0;
+}
+#elif defined(_AIX)
+#define _FILE_OFFSET_BITS 64
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+int
+main() {
+  int fd = open("havesendfile.c", 0);
+  struct sf_parms p;
+  int destfd = 1;
+  p.header_data = "header";
+  p.header_length = 6;
+  p.file_descriptor = fd;
+  p.file_offset = 0;
+  p.file_bytes = 23;
+  p.trailer_data = "footer";
+  p.trailer_length = 6;
+  if(send_file(&destfd, &p, 0) >= 0) printf("sent %lu bytes.\n", p.bytes_sent);
+  return 0;
+}
+#elif defined(__linux__)
+#define _FILE_OFFSET_BITS 64
+#include <sys/types.h>
+#include <unistd.h>
+#if defined(__GLIBC__)
+#include <sys/sendfile.h>
+#elif defined(__dietlibc__)
+#include <sys/sendfile.h>
+#else
+#include <linux/unistd.h>
+_syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)
+#endif
+#include <stdio.h>
+int
+main() {
+  int fd = open("havesendfile.c", 0);
+  off_t o = 0;
+  off_t r = sendfile(1, fd, &o, 23);
+  if(r != -1) printf("sent %llu bytes.\n", r);
+  return 0;
+}
+#else
+#error unsupported architecture
+/* stupid fucking IRIX c99 does not signal #error via a non-zero exit
+ * code!  ARGH!  So insert a parse error */
+#include rumpelstilzchen
+)
+#endif], [AC_DEFINE_UNQUOTED([HAVE_SENDFILE],[1],[Define if you have sendfile()])])
+
+AC_DEFUN([AC_CHECK_EPOLL], [
+AC_MSG_CHECKING([for epoll()AS_IF([$2],[ using $2],[])])
+AS_IF([$2],[saved_LIBS="$LIBS"
+LIBS="$2"])
+AC_LINK_IFELSE([#include <inttypes.h>
+#include <stdio.h>
+#include <sys/epoll.h>
+int
+main() {
+  int efd = epoll_create(10);
+  struct epoll_event x;
+  if(efd == -1) return 111;
+  x.events = EPOLLIN;
+  x.data.fd = 0;
+  if(epoll_ctl(efd, EPOLL_CTL_ADD, 0 /* fd */, &x) == -1) return 111;
+  {
+    int n;
+    struct epoll_event y[100];
+    if((n = epoll_wait(efd, y, 100, 1000)) == -1) return 111;
+    if(n > 0) printf("event %d on fd #%d\n", y[0].events, y[0].data.fd);
+  }
+  return 0;
+}], [AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([HAVE_EPOLL],[AS_IF([$1],[$1],[1])],[Define if you have epoll()])
+$3
+],[AC_MSG_RESULT([no])
+$4])
+AS_IF([$2],[LIBS="$saved_LIBS"])
+])
+
+AC_CHECK_EPOLL([1],[],[],[AC_CHECK_EPOLL([2],[-lepoll])])
+
+AC_COMPILE_IFELSE([#include <fcntl.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <poll.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
+#include <sys/devpoll.h>
+#include <sys/errno.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+main() {
+  int fd = open("/dev/poll", O_RDWR);
+  struct pollfd p[100];
+  int i, r;
+  dvpoll_t timeout;
+  p[0].fd = 0;
+  p[0].events = POLLIN;
+  write(fd, p, sizeof(struct pollfd));
+  timeout.dp_timeout = 100; /* milliseconds? */
+  timeout.dp_nfds = 1;
+  timeout.dp_fds = p;
+  r = ioctl(fd, DP_POLL, &timeout);
+  for(i = 0; i < r; ++i) printf("event %d on fd #%d\n", p[i].revents, p[i].fd);
+}], [AC_DEFINE_UNQUOTED([HAVE_SENDFILE],[1],[Define if you have devpoll])])
+
+AC_COMPILE_IFELSE([#define _GNU_SOURCE
+#include <fcntl.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/poll.h>
+#include <sys/types.h>
+int
+main() {
+  int signum = SIGRTMIN + 1;
+  sigset_t ss;
+  sigemptyset(&ss);
+  sigaddset(&ss, signum);
+  sigaddset(&ss, SIGIO);
+  sigprocmask(SIG_BLOCK, &ss, 0);
+  fcntl(0 /* fd */, F_SETOWN, getpid());
+  fcntl(0 /* fd */, F_SETSIG, signum);
+#if defined(O_ONESIGFD) && defined(F_SETAUXFL)
+  fcntl(0 /* fd */, F_SETAUXFL, O_ONESIGFD);
+#endif
+  fcntl(0 /* fd */, F_SETFL, fcntl(0 /* fd */, F_GETFL) | O_NONBLOCK | O_ASYNC);
+  {
+    siginfo_t info;
+    struct timespec timeout;
+    int r;
+    timeout.tv_sec = 1;
+    timeout.tv_nsec = 0;
+    switch((r = sigtimedwait(&ss, &info, &timeout))) {
+    case SIGIO:
+      /* signal queue overflow */
+      signal(signum, SIG_DFL);
+      /* do poll */
+      break;
+    default:
+      if(r == signum) {
+        printf("event %c%c on fd #%d\n",
+               info.si_band & POLLIN ? 'r' : '-',
+               info.si_band & POLLOUT ? 'w' : '-',
+               info.si_fd);
+      }
+    }
+  }
+  return 0;
+}], [AC_DEFINE_UNQUOTED([HAVE_SIGIO],[1],[Define this if you have sigio support])])
+
+AC_COMPILE_IFELSE([__uint128_t tmp;
+], [AC_DEFINE_UNQUOTED([HAVE_UINT128],[1],[Define this if you have the __uint128_t type])])
+
 
 
 AC_CONFIG_HEADERS([config.h])
