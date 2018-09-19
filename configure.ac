@@ -109,8 +109,14 @@ AS_IF([test "x$enable_widechar" == "xyes"],
 # --enable-readdir/--disable-readdir
 AC_ARG_ENABLE([readdir],
   [AS_HELP_STRING([--enable-readdir], [include support for readdir])])
-AS_IF([test "x$enable_readdir" == "xyes"],
-  [AC_DEFINE_UNQUOTED([USE_READDIR], 1, [Define to enable readdir support.])])
+  
+  
+AS_IF([test "x$enable_readdir" = "xyes" -o "x$enable_readdir" != "xno"],
+  [
+  AC_CHECK_FUNC([readdir],[
+    AC_DEFINE_UNQUOTED([USE_READDIR], 1, [Define to enable readdir support.])
+  ])
+])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])
