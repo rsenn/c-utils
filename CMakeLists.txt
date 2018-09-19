@@ -113,8 +113,9 @@ endif(CXX_COMPILER_SUPPORTS_GGDB)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
-include_directories("${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+include_directories("${CMAKE_BINARY_DIR}")
+include_directories("${CMAKE_SOURCE_DIR}")
+#include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
 
 #pkg_search_module(LIBLZMA liblzma)
 
