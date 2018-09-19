@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* defined(HAVE_CONFIG_H) */
+
 #if USE_READDIR || !(defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
 #include <dirent.h>
 #endif

@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* defined(HAVE_CONFIG_H) */
+
 #include "../fmt.h"
 #include "../iarray.h"
 #include "../io_internal.h"

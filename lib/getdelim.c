@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* defined(HAVE_CONFIG_H) */
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <stdio.h>
