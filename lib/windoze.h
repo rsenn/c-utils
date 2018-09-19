@@ -42,7 +42,7 @@ getpagesize() {
 }
 # endif
 # else
-#  define winsock2errno(fnord) (fnord)
+//#  define winsock2errno(fnord) (fnord)
 #  define __winsock_init()
 # endif /* WINDOWS */
 

@@ -56,7 +56,7 @@ int winsock2errno(long ret) {
   if(ret == -1) {
     return errno;
   }
-  return l;
+  return ret;
 }
   
 #endif
