@@ -775,14 +775,17 @@ endif
 
 ifeq ($(HAVE_ZLIB),1)
 DEFS += HAVE_ZLIB=1
+CPPFLAGS += -DHAVE_ZLIB=1
 LIBS = -lz
 endif
 ifeq ($(HAVE_LIBLZMA),1)
 DEFS += HAVE_LIBLZMA=1
+CPPFLAGS += -DHAVE_LIBLZMA=1
 LIBLZMA = -llzma
 endif
 ifeq ($(HAVE_LIBBZ2),1)
 DEFS += HAVE_LIBBZ2=1
+CPPFLAGS += -DHAVE_LIBBZ2=1
 LIBBZ2 = -lbz2
 endif
 ifeq ($(HAVE_ERRNO_H),1)
