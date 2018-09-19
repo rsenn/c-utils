@@ -60,11 +60,11 @@ set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NA
 if(MSVC)
 add_definitions(-Dinline=__inline)
 
-##message("MSVC version: ${MSVC_VERSION}")
   if(MSVC_VERSION STREQUAL 1500)
+    message("Visual Studio 2008 disable warnings")
     add_definitions(/wd4013 /wd4024 /wd4047 /wd4100 /wd4201 /wd4244 /wd4255 /wd4668 /wd4706 /wd4820 /wd4996)
-endif()
-
+    add_definitions(-wd4018 -wd4022 -wd4028 -wd4057 -wd4101 -wd4131 -wd4189 -wd4200 -wd4206 -wd4214 -wd4242 -wd4245 -wd4273 -wd4333 -wd4389 -wd4700 -wd4702 -wd4716)
+   endif()
 endif(MSVC)
 #if(WIN32 OR MSYS OR CYGWIN)
   add_definitions(-D_FILE_OFFSET_BITS=64)
