@@ -119,49 +119,51 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
     return FALSE;
   }
 
-  WCHAR lpTargetName_w[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
-  WCHAR namebuf_w[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
+  {
+    WCHAR lpTargetName_w[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
+    WCHAR namebuf_w[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
 #ifdef UNICODE
-  lstrcpyn(lpTargetName_w, lpTargetName, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
-  lstrcpyn(namebuf_w, namebuf, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
+    lstrcpyn(lpTargetName_w, lpTargetName, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
+    lstrcpyn(namebuf_w, namebuf, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
 #else
-  MultiByteToWideChar(CP_ACP, 0, lpTargetName, -1, lpTargetName_w, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
-  MultiByteToWideChar(CP_ACP, 0, namebuf, -1, namebuf_w, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
+    MultiByteToWideChar(CP_ACP, 0, lpTargetName, -1, lpTargetName_w, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
+    MultiByteToWideChar(CP_ACP, 0, namebuf, -1, namebuf_w, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
 #endif
 
-  u.iobuf.ReparseTag = IO_REPARSE_TAG_SYMLINK;
-  u.iobuf.Reserved = 0;
+    u.iobuf.ReparseTag = IO_REPARSE_TAG_SYMLINK;
+    u.iobuf.Reserved = 0;
 
-  u.iobuf.SymbolicLinkReparseBuffer.PrintNameOffset = 0;
-  u.iobuf.SymbolicLinkReparseBuffer.PrintNameLength = wcslen(lpTargetName_w) * sizeof(WCHAR);
+    u.iobuf.SymbolicLinkReparseBuffer.PrintNameOffset = 0;
+    u.iobuf.SymbolicLinkReparseBuffer.PrintNameLength = wcslen(lpTargetName_w) * sizeof(WCHAR);
 
-  byte_copy((char*)u.iobuf.SymbolicLinkReparseBuffer.PathBuffer + u.iobuf.SymbolicLinkReparseBuffer.PrintNameOffset,
-            u.iobuf.SymbolicLinkReparseBuffer.PrintNameLength,
-            lpTargetName_w);
+    byte_copy((char*)u.iobuf.SymbolicLinkReparseBuffer.PathBuffer + u.iobuf.SymbolicLinkReparseBuffer.PrintNameOffset,
+              u.iobuf.SymbolicLinkReparseBuffer.PrintNameLength,
+              lpTargetName_w);
 
-  u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset =
-    u.iobuf.SymbolicLinkReparseBuffer.PrintNameOffset + u.iobuf.SymbolicLinkReparseBuffer.PrintNameLength;
-  u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength = wcslen(namebuf_w) * sizeof(WCHAR);
+    u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset =
+        u.iobuf.SymbolicLinkReparseBuffer.PrintNameOffset + u.iobuf.SymbolicLinkReparseBuffer.PrintNameLength;
+    u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength = wcslen(namebuf_w) * sizeof(WCHAR);
 
-  byte_copy((char*)u.iobuf.SymbolicLinkReparseBuffer.PathBuffer +
-            u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset,
-            u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength,
-            namebuf_w);
+    byte_copy((char*)u.iobuf.SymbolicLinkReparseBuffer.PathBuffer +
+                  u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset,
+              u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength,
+              namebuf_w);
 
-  u.iobuf.SymbolicLinkReparseBuffer.Flags = isRelative ? 1 : 0;
-  u.iobuf.ReparseDataLength = 12 + u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset +
-                              u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength;
-  cb = 8 + u.iobuf.ReparseDataLength;
+    u.iobuf.SymbolicLinkReparseBuffer.Flags = isRelative ? 1 : 0;
+    u.iobuf.ReparseDataLength = 12 + u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset +
+                                u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength;
+    cb = 8 + u.iobuf.ReparseDataLength;
 
-  if(!DeviceIoControl(hFile, FSCTL_SET_REPARSE_POINT, &u.iobuf, cb, NULL, 0, &cb, NULL)) {
+    if(!DeviceIoControl(hFile, FSCTL_SET_REPARSE_POINT, &u.iobuf, cb, NULL, 0, &cb, NULL)) {
+
+      CloseHandle(hFile);
+      deletefunc(lpLinkName);
+      return FALSE;
+    }
 
     CloseHandle(hFile);
-    deletefunc(lpLinkName);
-    return FALSE;
+    return TRUE;
   }
-
-  CloseHandle(hFile);
-  return TRUE;
 }
 
 static BOOL
@@ -188,7 +190,7 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   if(!lstrcpyn(u.iobuf.MountPointReparseBuffer.PathBuffer, namebuf, MAXIMUM_REPARSE_DATA_BUFFER_SIZE))
 #else
   if(!MultiByteToWideChar(
-        CP_ACP, 0, namebuf, -1, u.iobuf.MountPointReparseBuffer.PathBuffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE))
+         CP_ACP, 0, namebuf, -1, u.iobuf.MountPointReparseBuffer.PathBuffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE))
 #endif
   {
     return FALSE;
@@ -219,7 +221,7 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   byte_zero((char*)u.iobuf.MountPointReparseBuffer.PathBuffer + u.iobuf.MountPointReparseBuffer.SubstituteNameLength,
             4);
   u.iobuf.ReparseDataLength =
-    8 + u.iobuf.MountPointReparseBuffer.PrintNameOffset + u.iobuf.MountPointReparseBuffer.PrintNameLength + 2;
+      8 + u.iobuf.MountPointReparseBuffer.PrintNameOffset + u.iobuf.MountPointReparseBuffer.PrintNameLength + 2;
   cb = 8 + u.iobuf.ReparseDataLength;
   if(!DeviceIoControl(hFile, FSCTL_SET_REPARSE_POINT, &u.iobuf, cb, NULL, 0, &cb, NULL)) {
 
