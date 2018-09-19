@@ -122,6 +122,7 @@ dnl
 dnl  OS feature checks
 dnl 
 
+AC_MSG_CHECKING([for IPv6 support])
 AC_COMPILE_IFELSE([#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -130,9 +131,12 @@ int main() {
   sa.sin6_family = PF_INET6;
   (void)sa;
   return 0;
-}], [AC_DEFINE_UNQUOTED([LIBC_HAS_IP6],[1],[Define this if you have IPv6 support])])
+}], [AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([LIBC_HAS_IP6],[1],[Define this if you have IPv6 support])],
+[AC_MSG_RESULT([no])])
 
 
+AC_MSG_CHECKING([for IP scope id support])
 AC_COMPILE_IFELSE([#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -142,8 +146,11 @@ int main() {
   sa.sin6_scope_id = 23;
   (void)sa;
   return 0;
-}], [AC_DEFINE_UNQUOTED([LIBC_HAS_SCOPE_ID],[1],[Define this if you have scope id support])])
+}], [AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([LIBC_HAS_SCOPE_ID],[1],[Define this if you have scope id support])],
+[AC_MSG_RESULT([no])])
 
+AC_MSG_CHECKING([for if_indextoname])
 AC_COMPILE_IFELSE([#include <sys/types.h>
 #include <sys/socket.h>
 #include <net/if.h>
@@ -152,8 +159,11 @@ int main() {
   char *tmp=if_indextoname(0,ifname);
   (void)tmp;
   return 0;
-}],[AC_DEFINE_UNQUOTED([HAVE_N2I],[1],[Define this if you have if_indextoname])])
+}],[AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([HAVE_N2I],[1],[Define this if you have if_indextoname])],
+[AC_MSG_RESULT([no])])
 
+AC_MSG_CHECKING([for kqueue support])
 AC_COMPILE_IFELSE([#include <sys/event.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -186,8 +196,11 @@ main() {
     }
   }
   return 0;
-}], [AC_DEFINE_UNQUOTED([HAVE_KQUEUE],[1],[Define this if you have kqueue support])])
+}], [AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([HAVE_KQUEUE],[1],[Define this if you have kqueue support])],
+[AC_MSG_RESULT([no])])
 
+AC_MSG_CHECKING([for BSD compatible sendfile])
 AC_COMPILE_IFELSE([#define SENDFILE 1
 #include <errno.h>
 #include <netinet/in.h>
@@ -208,8 +221,11 @@ main() {
   r = sendfile(0, 1, 37, 42, &hdr, &sbytes, 0);
   (void)r;
   return 0;
-}], [AC_DEFINE_UNQUOTED([HAVE_BSDSENDFILE],[1],[Define this if you have a BSD compatible sendfile()])])
+}], [AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([HAVE_BSDSENDFILE],[1],[Define this if you have a BSD compatible sendfile()])],
+[AC_MSG_RESULT([no])])
 
+AC_MSG_CHECKING([for sendfile])
 AC_COMPILE_IFELSE([#ifdef __hpux__
 #include <stdio.h>
 #include <sys/socket.h>
@@ -290,7 +306,9 @@ main() {
  * code!  ARGH!  So insert a parse error */
 #include rumpelstilzchen
 )
-#endif], [AC_DEFINE_UNQUOTED([HAVE_SENDFILE],[1],[Define if you have sendfile()])])
+#endif], [AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([HAVE_SENDFILE],[1],[Define if you have sendfile()])],
+[AC_MSG_RESULT([no])])
 
 AC_DEFUN([AC_CHECK_EPOLL], [
 AC_MSG_CHECKING([for epoll()AS_IF([$2],[ using $2],[])])
@@ -324,6 +342,7 @@ AS_IF([$2],[LIBS="$saved_LIBS"])
 
 AC_CHECK_EPOLL([1],[],[],[AC_CHECK_EPOLL([2],[-lepoll])])
 
+AC_MSG_CHECKING([for devpoll])
 AC_COMPILE_IFELSE([#include <fcntl.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -349,8 +368,11 @@ main() {
   timeout.dp_fds = p;
   r = ioctl(fd, DP_POLL, &timeout);
   for(i = 0; i < r; ++i) printf("event %d on fd #%d\n", p[i].revents, p[i].fd);
-}], [AC_DEFINE_UNQUOTED([HAVE_SENDFILE],[1],[Define if you have devpoll])])
+}], [AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([HAVE_DEVPOLL],[1],[Define if you have devpoll])],
+[AC_MSG_RESULT([no])])
 
+AC_MSG_CHECKING([for SIGIO support])
 AC_COMPILE_IFELSE([#define _GNU_SOURCE
 #include <fcntl.h>
 #include <signal.h>
@@ -393,11 +415,12 @@ main() {
     }
   }
   return 0;
-}], [AC_DEFINE_UNQUOTED([HAVE_SIGIO],[1],[Define this if you have sigio support])])
+}], [AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([HAVE_SIGIO],[1],[Define this if you have sigio support])],
+[AC_MSG_RESULT([no])])
 
 AC_COMPILE_IFELSE([__uint128_t tmp;
 ], [AC_DEFINE_UNQUOTED([HAVE_UINT128],[1],[Define this if you have the __uint128_t type])])
-
 
 
 AC_CONFIG_HEADERS([config.h])
