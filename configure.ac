@@ -118,6 +118,19 @@ AS_IF([test "x$enable_readdir" = "xyes" -o "x$enable_readdir" != "xno"],
   ])
 ])
 
+
+AC_COMPILE_IFELSE([#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+int main() {
+  struct sockaddr_in6 sa;
+  sa.sin6_family = PF_INET6;
+  (void)sa;
+  return 0;
+}], [AC_DEFINE_UNQUOTED([LIBC_HAS_IP6],[1],[Define this if you have IPv6 support])])
+
+
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
