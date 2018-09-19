@@ -13,9 +13,10 @@
 extern "C" {
 #endif
 
-#if !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
+#if !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED) && !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
 #define __ssize_t_defined 1
 #define _SSIZE_T_DECLARED 1
+#define _SSIZE_T_DEFINED 1
 typedef SSIZE_T ssize_t;
 #endif
 
