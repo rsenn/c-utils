@@ -97,7 +97,8 @@ AC_ARG_ENABLE([debug],
   
 AS_IF([test "x$enable_debug" != "xno"],
   [AC_DEFINE([DEBUG], [1], [Enable debugging support.]) 
-CFLAGS=`echo "$CFLAGS" | sed 's/-O2/-O0/g ;; s/-g[0-9]* /-g3 -ggdb3 /g'`
+dnl CFLAGS=`echo "$CFLAGS" | sed 's/-O2/-O0/g ;; s/-g[0-9]* /-g3 -ggdb3 /g'`
+CFLAGS="-g3 -ggdb3 -O0"
 ],
   [AC_DEFINE([NDEBUG], [1], [Disable assertions.])])
 AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" != "xno"])
