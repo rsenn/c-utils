@@ -2,6 +2,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
@@ -378,6 +379,8 @@ read_arguments() {
 
 void
 execute_cmd() {
+ 
+size_t i,n;
 
   strlist cmd;
   strlist_init(&cmd, '\0');
@@ -386,7 +389,7 @@ execute_cmd() {
   stralloc_0(&chip);
   strlist_cat(&cmd, &longopts);
 
-  size_t i, n = strlist_count(&includedirs);
+  n = strlist_count(&includedirs);
   for(i = 0; i < n; ++i) {
     strlist_pushm(&cmd, "-I", strlist_at(&includedirs, i));
   }

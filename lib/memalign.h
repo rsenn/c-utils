@@ -1,6 +1,7 @@
 #ifndef MEMALIGN_H
 #define MEMALIGN_H
 
+#include <stdlib.h>
 #include <sys/types.h>
 
 #ifdef __cplusplus

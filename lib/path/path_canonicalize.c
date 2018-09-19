@@ -151,17 +151,18 @@ start:
         buffer_puts(buffer_2, ")");
         buffer_putnlflush(buffer_2);
 
-
         if(!path_canonicalize(buf, sa, symbolic)) return 0;
       }
     }
 #endif
 
+#ifdef S_ISDIR
     /* it isn't a directory :( */
     if(!S_ISDIR(st.st_mode)) {
       errno = ENOTDIR;
       return 0;
     }
+ #endif
   }
 
   if(sa->len == 0) stralloc_catc(sa, '/');

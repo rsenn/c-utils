@@ -556,7 +556,7 @@ foreach(PROGRAM ${PROGRAMS})
 
   set_target_properties(${PROGRAM} PROPERTIES
     OUTPUT_NAME "${PROGRAM}${X64}"
-    INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/lib;${CMAKE_SOURCE_DIR}/lib;${LIBXML2_INCLUDE_DIR};${CMAKE_BINARY_DIR}"
+    INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR};${CMAKE_SOURCE_DIR}"
     )
 #  target_link_libraries(${PROGRAM} ${COMMON_LIBS})
   install(TARGETS ${PROGRAM} DESTINATION bin)
@@ -599,7 +599,7 @@ target_link_libraries(xmltest2 buffer fmt  str stralloc xml)
 target_link_libraries(xmltest3 buffer fmt  str stralloc xml)
 target_link_libraries(xmltest4 array buffer byte cbmap scan str stralloc strlist xml)
 target_link_libraries(ziptest buffer  str)
-target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path  slist str stralloc strarray strlist)
+target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path ndelay socket slist str stralloc strarray strlist)
 target_link_libraries(sln buffer byte errmsg path  str stralloc)
 
 
