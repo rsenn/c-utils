@@ -311,8 +311,8 @@ AC_DEFINE_UNQUOTED([HAVE_SENDFILE],[1],[Define if you have sendfile()])],
 [AC_MSG_RESULT([no])])
 
 AC_DEFUN([AC_CHECK_EPOLL], [
-AC_MSG_CHECKING(m4_if([$2],[for epoll using $2],[for epoll]))
-m4_if([$2],[saved_LIBS="$LIBS"
+AC_MSG_CHECKING(m4_ifval([$2],[for epoll using $2],[for epoll]))
+m4_ifval([$2],[saved_LIBS="$LIBS"
 LIBS="$2"],[])
 AC_LINK_IFELSE([#include <inttypes.h>
 #include <stdio.h>
@@ -333,11 +333,11 @@ main() {
   }
   return 0;
 }], [AC_MSG_RESULT([yes])
-AC_DEFINE_UNQUOTED([HAVE_EPOLL],[m4_if([$1],[$1],[1])],[Define if you have epoll()])
+AC_DEFINE_UNQUOTED([HAVE_EPOLL],[m4_ifval([$1],[$1],[1])],[Define if you have epoll()])
 $3
 ],[AC_MSG_RESULT([no])
 $4])
-m4_if([$2],[LIBS="$saved_LIBS"],[])
+m4_ifval([$2],[LIBS="$saved_LIBS"],[])
 ])
 
 AC_CHECK_EPOLL([1],[],[],[AC_CHECK_EPOLL([2],[-lepoll])])
