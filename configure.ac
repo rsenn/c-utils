@@ -8,6 +8,9 @@ dnl parsing options
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
 
+AM_DEP_TRACK
+AM_MAINTAINER_MODE
+
 # Checks for programs.
 AC_PROG_CC
 AM_PROG_AR
