@@ -1017,10 +1017,10 @@ exit(1);
       double x1, x2, y1, y2;
       const char* layer = xml_get_attribute(node, "layer");
 
-      x1 = round(xml_get_attribute_double(node, "x1") / 2.54);
-      x2 = round(xml_get_attribute_double(node, "x2") / 2.54);
-      y1 = round(xml_get_attribute_double(node, "y1") / 2.54);
-      y2 = round(xml_get_attribute_double(node, "y2") / 2.54);
+      x1 = round(xml_get_attribute_double(node, "x1") / 0.254);
+      x2 = round(xml_get_attribute_double(node, "x2") / 0.254);
+      y1 = round(xml_get_attribute_double(node, "y1") / 0.254);
+      y2 = round(xml_get_attribute_double(node, "y2") / 0.254);
 
       print_xy(buffer_2, layer, x1, y1);
       print_xy(buffer_2, layer, x2, y2);
