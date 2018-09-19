@@ -69,10 +69,10 @@ AC_TYPE_UINTMAX_T
 AC_TYPE_INTPTR_T
 AC_TYPE_UINTPTR_T
 
-AC_CHECK_FUNC([posix_memalign],[AC_DEFINE_UNQUOTED([HAVE_POSIX_MEMALIGN],[1],[Define this if you have the posix_memalign() function])])
-AC_CHECK_FUNC([aligned_alloc],[AC_DEFINE_UNQUOTED([HAVE_ALIGNED_ALLOC],[1],[Define this if you have the aligned_alloc() function])])
-AC_CHECK_FUNC([_aligned_malloc],[AC_DEFINE_UNQUOTED([HAVE__ALIGNED_MALLOC],[1],[Define this if you have the _aligned_malloc() function])])
-AC_CHECK_FUNC([alloca],[AC_DEFINE_UNQUOTED([HAVE_ALLOCA],[1],[Define this if you have the alloca() function])])
+dnl AC_CHECK_FUNC([posix_memalign],[AC_DEFINE_UNQUOTED([HAVE_POSIX_MEMALIGN],[1],[Define this if you have the posix_memalign() function])])
+dnl AC_CHECK_FUNC([aligned_alloc],[AC_DEFINE_UNQUOTED([HAVE_ALIGNED_ALLOC],[1],[Define this if you have the aligned_alloc() function])])
+dnl AC_CHECK_FUNC([_aligned_malloc],[AC_DEFINE_UNQUOTED([HAVE__ALIGNED_MALLOC],[1],[Define this if you have the _aligned_malloc() function])])
+dnl AC_CHECK_FUNC([alloca],[AC_DEFINE_UNQUOTED([HAVE_ALLOCA],[1],[Define this if you have the alloca() function])])
 AC_CHECK_FUNC([fnmatch],[AC_DEFINE_UNQUOTED([HAVE_FNMATCH],[1],[Define this if you have the fnmatch() function])])
 AC_CHECK_FUNC([inet_pton],[AC_DEFINE_UNQUOTED([HAVE_INET_PTON],[1],[Define this if you have the inet_pton() function])])
 AC_CHECK_FUNC([llseek],[AC_DEFINE_UNQUOTED([HAVE_LLSEEK],[1],[Define this if you have the llseek() function])])
@@ -81,10 +81,9 @@ AC_CHECK_FUNC([lseek64],[AC_DEFINE_UNQUOTED([HAVE_LSEEK64],[1],[Define this if y
 AC_CHECK_FUNC([lstat],[AC_DEFINE_UNQUOTED([HAVE_LSTAT],[1],[Define this if you have the lstat() function])])
 AC_CHECK_FUNC([pipe2],[AC_DEFINE_UNQUOTED([HAVE_PIPE2],[1],[Define this if you have the pipe2() function])])
 AC_CHECK_FUNC([getdelim],[AC_DEFINE_UNQUOTED([HAVE_GETDELIM],[1],[Define this if you have the getdelim() function])])
-AC_CHECK_FUNC([n2i],[AC_DEFINE_UNQUOTED([HAVE_N2I],[1],[Define this if you have the n2i() function])])
 AC_CHECK_FUNC([round],[AC_DEFINE_UNQUOTED([HAVE_ROUND],[1],[Define this if you have the round() function])])
 AC_CHECK_FUNC([wordexp],[AC_DEFINE_UNQUOTED([HAVE_WORDEXP],[1],[Define this if you have the wordexp() function])])
-AC_CHECK_FUNC([WSAStartup],[AC_DEFINE_UNQUOTED([HAVE_WSASTARTUP],[1],[Define this if you have the WSAStartup() function])])
+dnl AC_CHECK_FUNC([WSAStartup],[AC_DEFINE_UNQUOTED([HAVE_WSASTARTUP],[1],[Define this if you have the WSAStartup() function])])
 
 AC_CHECK_ZLIB
 AC_CHECK_BZLIB
@@ -122,6 +121,9 @@ dnl
 dnl  OS feature checks
 dnl 
 
+dnl ---------------------------------------------------------------------------
+dnl Checking for IPv6
+dnl ---------------------------------------------------------------------------
 AC_MSG_CHECKING([for IPv6 support])
 AC_COMPILE_IFELSE([#include <sys/types.h>
 #include <sys/socket.h>
@@ -135,7 +137,9 @@ int main() {
 AC_DEFINE_UNQUOTED([LIBC_HAS_IP6],[1],[Define this if you have IPv6 support])],
 [AC_MSG_RESULT([no])])
 
-
+dnl ---------------------------------------------------------------------------
+dnl Checking for scope id
+dnl ---------------------------------------------------------------------------
 AC_MSG_CHECKING([for IP scope id support])
 AC_COMPILE_IFELSE([#include <sys/types.h>
 #include <sys/socket.h>
@@ -150,6 +154,9 @@ int main() {
 AC_DEFINE_UNQUOTED([LIBC_HAS_SCOPE_ID],[1],[Define this if you have scope id support])],
 [AC_MSG_RESULT([no])])
 
+dnl ---------------------------------------------------------------------------
+dnl Checking for if_indextoname
+dnl ---------------------------------------------------------------------------
 AC_MSG_CHECKING([for if_indextoname])
 AC_COMPILE_IFELSE([#include <sys/types.h>
 #include <sys/socket.h>
@@ -163,6 +170,9 @@ int main() {
 AC_DEFINE_UNQUOTED([HAVE_N2I],[1],[Define this if you have if_indextoname])],
 [AC_MSG_RESULT([no])])
 
+dnl ---------------------------------------------------------------------------
+dnl Checking for kqueue
+dnl ---------------------------------------------------------------------------
 AC_MSG_CHECKING([for kqueue support])
 AC_COMPILE_IFELSE([#include <sys/event.h>
 #include <sys/time.h>
@@ -200,6 +210,9 @@ main() {
 AC_DEFINE_UNQUOTED([HAVE_KQUEUE],[1],[Define this if you have kqueue support])],
 [AC_MSG_RESULT([no])])
 
+dnl ---------------------------------------------------------------------------
+dnl Checking for BSD sendfile
+dnl ---------------------------------------------------------------------------
 AC_MSG_CHECKING([for BSD compatible sendfile])
 AC_COMPILE_IFELSE([#define SENDFILE 1
 #include <errno.h>
@@ -225,6 +238,9 @@ main() {
 AC_DEFINE_UNQUOTED([HAVE_BSDSENDFILE],[1],[Define this if you have a BSD compatible sendfile()])],
 [AC_MSG_RESULT([no])])
 
+dnl ---------------------------------------------------------------------------
+dnl Checking for sendfile
+dnl ---------------------------------------------------------------------------
 AC_MSG_CHECKING([for sendfile])
 AC_COMPILE_IFELSE([#ifdef __hpux__
 #include <stdio.h>
@@ -310,6 +326,9 @@ main() {
 AC_DEFINE_UNQUOTED([HAVE_SENDFILE],[1],[Define if you have sendfile()])],
 [AC_MSG_RESULT([no])])
 
+dnl ---------------------------------------------------------------------------
+dnl Checking for epoll
+dnl ---------------------------------------------------------------------------
 AC_DEFUN([AC_CHECK_EPOLL], [
 AC_MSG_CHECKING(m4_ifval([$2],[for epoll using $2],[for epoll]))
 m4_ifval([$2],[saved_LIBS="$LIBS"
@@ -342,6 +361,9 @@ m4_ifval([$2],[LIBS="$saved_LIBS"],[])
 
 AC_CHECK_EPOLL([1],[],[],[AC_CHECK_EPOLL([2],[-lepoll])])
 
+dnl ---------------------------------------------------------------------------
+dnl Checking for devpoll
+dnl ---------------------------------------------------------------------------
 AC_MSG_CHECKING([for devpoll])
 AC_COMPILE_IFELSE([#include <fcntl.h>
 #include <netdb.h>
@@ -372,6 +394,9 @@ main() {
 AC_DEFINE_UNQUOTED([HAVE_DEVPOLL],[1],[Define if you have devpoll])],
 [AC_MSG_RESULT([no])])
 
+dnl ---------------------------------------------------------------------------
+dnl Checking for sigio
+dnl ---------------------------------------------------------------------------
 AC_MSG_CHECKING([for SIGIO support])
 AC_COMPILE_IFELSE([#define _GNU_SOURCE
 #include <fcntl.h>
@@ -419,8 +444,14 @@ main() {
 AC_DEFINE_UNQUOTED([HAVE_SIGIO],[1],[Define this if you have sigio support])],
 [AC_MSG_RESULT([no])])
 
+dnl ---------------------------------------------------------------------------
+dnl Checking for __uint128_t
+dnl ---------------------------------------------------------------------------
+AC_MSG_CHECKING([for __uint128_t type])
 AC_COMPILE_IFELSE([__uint128_t tmp;
-], [AC_DEFINE_UNQUOTED([HAVE_UINT128],[1],[Define this if you have the __uint128_t type])])
+], [AC_MSG_RESULT([yes])
+AC_DEFINE_UNQUOTED([HAVE_UINT128],[1],[Define this if you have the __uint128_t type])],
+[AC_MSG_RESULT([no])])
 
 
 AC_CONFIG_HEADERS([config.h])
