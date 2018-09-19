@@ -6,7 +6,7 @@
  * Released under the MIT license
  * https://github.com/takamin/win-c/blob/master/LICENSE
  */
-#include "getopt.h"
+#include "lib/getopt.h"
 #include <stdio.h>
 #include <string.h>
 
