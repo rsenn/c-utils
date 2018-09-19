@@ -184,7 +184,7 @@ void buffer_fromsa(buffer* b, const stralloc* sa);
 
 size_t stralloc_scan(stralloc *out, const stralloc *in, size_t (*scan_function)(const char *, char *));
 
-static size_t stralloc_length(const stralloc* sa) { return sa->len; }
+inline static size_t stralloc_length(const stralloc* sa) { return sa->len; }
 
 #define stralloc_begin(sa) ((sa)->s)
 #define stralloc_end(sa) ((sa)->s + (sa)->len)
@@ -195,8 +195,8 @@ static size_t stralloc_length(const stralloc* sa) { return sa->len; }
 
 unsigned int stralloc_endb(const stralloc* sa, const void* suffix, unsigned int len);
 
-static void stralloc_iterator_increment(char** it) { ++(*it); }
-static int stralloc_iterator_equal(char** it1, char** it2) { return it1 == it2; }
+inline static void stralloc_iterator_increment(char** it) { ++(*it); }
+inline static int stralloc_iterator_equal(char** it1, char** it2) { return it1 == it2; }
 
 #ifdef BYTE_H
 size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));

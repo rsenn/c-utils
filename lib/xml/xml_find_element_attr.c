@@ -16,6 +16,5 @@ xml_tag_attr_value_pred(xmlnode* node, const char* tag, const char* attr, const 
 
 xmlnode*
 xml_find_element_attr(xmlnode* node, const char* tag, const char* attr, const char* value) {
-  struct tag_attr_value tav = {tag, attr, value};
-  return xml_find_pred_n(node, xml_tag_attr_value_pred, 3, tag, attr, value);
+  return xml_find_pred_3(node, xml_tag_attr_value_pred, tag, attr, value);
 }

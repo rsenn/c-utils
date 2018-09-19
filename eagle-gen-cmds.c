@@ -484,8 +484,7 @@ build_deviceset(xmlnode* set) {
 xmlnodeset
 
 getnodeset(void* n, const char* xpath) {
-  const void* args[] = {xpath, NULL};
-  return xml_pfind_all(n, xml_match_name, args);
+  return xml_find_all_1(n, xml_match_name, xpath);
 }
 
 /**
@@ -843,16 +842,10 @@ match_query(xmlnode* doc, const char* q) {
 /**
  * Executes XPath query and for every resulting element calls a function
  */
-int
-match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
-  xmlnodeset ns = getnodeset(doc, q);
-
-  if(xmlnodeset_size(&ns)) {
-    for_set(&ns, fn);
-    return 1;
-  }
-  return 0;
-}
+#define match_foreach(doc, q, fn) do { \
+  xmlnodeset ns = getnodeset(doc, q); \
+  if(xmlnodeset_size(&ns)) { for_set(&ns, fn); } \
+} while(0);
 
 int
 
@@ -916,17 +909,17 @@ main(int argc, char* argv[]) {
   bounds.y1 -= 2.54;
   bounds.y2 += 2.54;
 
-  bounds.x1 = round(100 * bounds.x1) / 100;
-  bounds.y1 = round(100 * bounds.y1) / 100;
-  bounds.x2 = round(100 * bounds.x2) / 100;
-  bounds.y2 = round(100 * bounds.y2) / 100;
+  bounds.x1 = roundl(100 * bounds.x1) / 100;
+  bounds.y1 = roundl(100 * bounds.y1) / 100;
+  bounds.x2 = roundl(100 * bounds.x2) / 100;
+  bounds.y2 = roundl(100 * bounds.y2) / 100;
 
   plain = xml_find_element(doc, "plain");
 
   if(plain->type != XML_ELEMENT) {
-errmsg_warn("element 'plain'");
-exit(1);
-    }
+    errmsg_warn("element 'plain'");
+    exit(1);
+  }
 
   left = xml_element("wire");
   xml_set_attribute_double(left, "x1", bounds.x1);
@@ -1007,20 +1000,26 @@ exit(1);
     double top_y, right_x;
     xmlnodeset_iter_t it, e;
     xmlnodeset ns;
-    const char* args[] = {"wire", NULL};
-    tree_topleft(doc, "wire", &right_x, &top_y);
+    stralloc layer_str;
+    //    tree_topleft(doc, "wire", &right_x, &top_y);
+    stralloc_init(&layer_str);
 
-    ns = xml_pfind_all(doc, xml_match_name, args);
+    stralloc_catlong(&layer_str, bottom_layer);
+    stralloc_nul(&layer_str);
+    buffer_putm(buffer_2, "layer str: ", layer_str.s);
+    buffer_putnlflush(buffer_2);
+
+    ns = xml_find_all_3(doc, xml_match_name_and_attr, "wire", "layer", layer_str.s);
 
     for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
       xmlnode* node = *it;
       double x1, x2, y1, y2;
       const char* layer = xml_get_attribute(node, "layer");
 
-      x1 = round(xml_get_attribute_double(node, "x1") / 0.254);
-      x2 = round(xml_get_attribute_double(node, "x2") / 0.254);
-      y1 = round(xml_get_attribute_double(node, "y1") / 0.254);
-      y2 = round(xml_get_attribute_double(node, "y2") / 0.254);
+      x1 = (xml_get_attribute_double(node, "x1"));
+      x2 = (xml_get_attribute_double(node, "x2"));
+      y1 = (xml_get_attribute_double(node, "y1"));
+      y2 = (xml_get_attribute_double(node, "y2") / 2.54 * 100)  / 100;
 
       print_xy(buffer_2, layer, x1, y1);
       print_xy(buffer_2, layer, x2, y2);
