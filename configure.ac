@@ -77,6 +77,8 @@ AC_CHECK_FUNC([lseek],[AC_DEFINE_UNQUOTED([HAVE_LSEEK],[1],[Define this if you h
 AC_CHECK_FUNC([lseek64],[AC_DEFINE_UNQUOTED([HAVE_LSEEK64],[1],[Define this if you have the lseek64() function])])
 AC_CHECK_FUNC([lstat],[AC_DEFINE_UNQUOTED([HAVE_LSTAT],[1],[Define this if you have the lstat() function])])
 AC_CHECK_FUNC([pipe2],[AC_DEFINE_UNQUOTED([HAVE_PIPE2],[1],[Define this if you have the pipe2() function])])
+AC_CHECK_FUNC([getdelim],[AC_DEFINE_UNQUOTED([HAVE_GETDELIM],[1],[Define this if you have the getdelim() function])])
+AC_CHECK_FUNC([n2i],[AC_DEFINE_UNQUOTED([HAVE_N2I],[1],[Define this if you have the n2i() function])])
 AC_CHECK_FUNC([round],[AC_DEFINE_UNQUOTED([HAVE_ROUND],[1],[Define this if you have the round() function])])
 AC_CHECK_FUNC([wordexp],[AC_DEFINE_UNQUOTED([HAVE_WORDEXP],[1],[Define this if you have the wordexp() function])])
 AC_CHECK_FUNC([WSAStartup],[AC_DEFINE_UNQUOTED([HAVE_WSASTARTUP],[1],[Define this if you have the WSAStartup() function])])
@@ -97,9 +99,15 @@ AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" != "xno"])
 
 # --enable-widechar/--disable-widechar
 AC_ARG_ENABLE([widechar],
-  [AS_HELP_STRING([--disable-widechar], [omit support for wide char])])
-AS_IF([test "x$enable_widechar" == "xno"],
-  [AC_DEFINE([DISABLE_WIDECHAR], 1, [Define to disable wide car support.])])
+  [AS_HELP_STRING([--enable-widechar], [include support for wide char])])
+AS_IF([test "x$enable_widechar" == "xyes"],
+  [AC_DEFINE_UNQUOTED([USE_WIDECHAR], 1, [Define to enable wide car support.])])
+
+# --enable-readdir/--disable-readdir
+AC_ARG_ENABLE([readdir],
+  [AS_HELP_STRING([--enable-readdir], [include support for readdir])])
+AS_IF([test "x$enable_readdir" == "xyes"],
+  [AC_DEFINE_UNQUOTED([USE_READDIR], 1, [Define to enable readdir support.])])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])
