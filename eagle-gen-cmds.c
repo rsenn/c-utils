@@ -989,8 +989,22 @@ main(int argc, char* argv[]) {
 
   {
     double top_y, right_x;
+    xmlnodeset_iter_t it, e;
+    xmlnodeset ns;
+    const char* args[] = { "wire", NULL };
     tree_topleft(doc, "wire", &right_x, &top_y);
 
+
+    ns = xml_find_all(doc, xml_match_name, args);
+
+
+    for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
+    xmlnode* node = *it;
+
+    xml_get_attribut
+      }
+
+   // xml_print_nodeset(&wires, buffer_1);
 
     buffer_puts(buffer_2, "top_y: ");
     buffer_putdouble(buffer_2, top_y, 1);

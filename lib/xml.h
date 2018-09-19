@@ -82,6 +82,7 @@ xmlnode*    xml_read_tree(buffer*);
 xmlnode*    xml_root_element(xmlnode*);
 xmlnode*    xml_textnode(const char*, size_t len);
 int         xml_get_attribute_sa(xmlnode*, stralloc* sa, const char* name);
+double      xml_get_attribute_double(xmlnode*, const char* attr);
 xmlnode*    xml_remove(xmlnode**);
 void        xml_delete(xmlnode*);
 void        xml_add_child(xmlnode*, xmlnode* node);
