@@ -90,6 +90,24 @@ AC_CHECK_BZLIB([AC_DEFINE_UNQUOTED([HAVE_LIBBZ2],[1],[Define if you have libbz2]
 AC_CHECK_LIBLZMA([AC_DEFINE_UNQUOTED([HAVE_LIBLZMA],[1],[Define if you have liblzma])])
 
 dnl Check for configuration options:
+dnl ---------------------------------------------------------------------------
+
+AC_ARG_ENABLE([size-opt],
+[  --enable-size-opt        optimize by size (default)
+  --disable-size-opt       disable optimization by size
+],
+[case "$enableval" in
+  yes) ac_cv_size_opt=yes ;;
+	*) ac_cv_size_opt=no ;;
+esac])
+
+if test "$ac_cv_size_opt" = yes; then
+	AX_CHECK_COMPILE_FLAG([-mpreferred-stack-boundary=4], [CFLAGS="$CFLAGS -mpreferred-stack-boundary=4"])
+	AX_CHECK_COMPILE_FLAG([-falign-functions=4], [CFLAGS="$CFLAGS -falign-functions=4"])
+	AX_CHECK_COMPILE_FLAG([-falign-jumps=1], [CFLAGS="$CFLAGS -falign-jumps=1"])
+	AX_CHECK_COMPILE_FLAG([-falign-loops=1], [CFLAGS="$CFLAGS -falign-loops=1"])
+fi
+
 # --enable-debug/--disable-debug
 AC_ARG_ENABLE([debug],
   [AS_HELP_STRING([--enable-debug], [build with debugging support [default=no]])],
