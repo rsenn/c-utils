@@ -484,7 +484,7 @@ xmlnodeset
 
 getnodeset(void* n, const char* xpath) {
   const void* args[] = {xpath, NULL};
-  return xml_find_all(n, xml_match_name, args);
+  return xml_pfind_all(n, xml_match_name, args);
 }
 
 /**
@@ -778,6 +778,16 @@ print_element_names(xmlnode* node) {
   }
 }
 
+void
+print_xy(buffer* b, const char* name, double x, double y) {
+  buffer_puts(b, name);
+  buffer_puts(b, ": x=");
+  buffer_putdouble(b, x, 4);
+  buffer_puts(b, ", y=");
+  buffer_putdouble(b, y, 4);
+  buffer_putnlflush(b);
+}
+
 int
 buffer_read(void* ptr, char* buf, int len) {
   return buffer_get(ptr, buf, len);
@@ -991,24 +1001,26 @@ main(int argc, char* argv[]) {
     double top_y, right_x;
     xmlnodeset_iter_t it, e;
     xmlnodeset ns;
-    const char* args[] = { "wire", NULL };
+    const char* args[] = {"wire", NULL};
     tree_topleft(doc, "wire", &right_x, &top_y);
 
-
-    ns = xml_find_all(doc, xml_match_name, args);
-
+    ns = xml_pfind_all(doc, xml_match_name, args);
 
     for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
-    xmlnode* node = *it;
-    double x1,x2,y1,y2;
+      xmlnode* node = *it;
+      double x1, x2, y1, y2;
+      const char* layer = xml_get_attribute(node, "layer");
 
-    x1 = xml_get_attribute_double(node, "x1");
-    x2 = xml_get_attribute_double(node, "x2");
-    y1 = xml_get_attribute_double(node, "y1");
-    y2 = xml_get_attribute_double(node, "y2");
-      }
+      x1 = round(xml_get_attribute_double(node, "x1") / 2.54);
+      x2 = round(xml_get_attribute_double(node, "x2") / 2.54);
+      y1 = round(xml_get_attribute_double(node, "y1") / 2.54);
+      y2 = round(xml_get_attribute_double(node, "y2") / 2.54);
 
-   // xml_print_nodeset(&wires, buffer_1);
+      print_xy(buffer_2, layer, x1, y1);
+      print_xy(buffer_2, layer, x2, y2);
+    }
+
+    // xml_print_nodeset(&wires, buffer_1);
 
     buffer_puts(buffer_2, "top_y: ");
     buffer_putdouble(buffer_2, top_y, 1);

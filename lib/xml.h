@@ -61,10 +61,8 @@ int         xml_content_sa(xmlnode*, stralloc* sa);
 const char* xml_content(xmlnode*);
 void        xml_debug(xmlnode*, buffer* b);
 size_t      xml_escape(const char*, size_t n, stralloc* out);
-xmlnodeset  xml_find_all(xmlnode*, int (*pred)(void), const void* ptr[4]);
 xmlnode*    xml_find_element_attr(xmlnode*, const char* tag, const char* attr, const char* value);
 xmlnode*    xml_find_element(xmlnode*, const char* tag);
-xmlnode*    xml_find_pred(xmlnode*, int (*pred)(xmlnode*, void* ), void* pthread_rwlockattr_t);
 void        xml_free(xmlnode*);
 char*       xml_get_attribute(xmlnode*, const char* attr);
 xmlnode*    xml_get_document(xmlnode*);
@@ -110,6 +108,13 @@ __inl ptrdiff_t xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) { return 
 
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48
+
+xmlnode* xml_find_pred(xmlnode*, int (*pred)(xmlnode*, void* ), ...);
+xmlnodeset xml_find_all(xmlnode*, int (*pred)(xmlnode*, void* ), ...);
+xmlnodeset xml_pfind_all(xmlnode*, int (*pred)(xmlnode*, void* ), void* args[]);
+xmlnodeset xml_find_all_1(xmlnode*, int (*pred)(void), void*);
+xmlnodeset xml_find_all_2(xmlnode*, int (*pred)(void), void*, void*);
+xmlnodeset xml_find_all_3(xmlnode*, int (*pred)(void), void*, void*, void*);
 
 #ifdef __cplusplus
 }
