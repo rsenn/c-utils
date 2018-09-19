@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "../json.h"
 #include <stdlib.h>
 static size_t

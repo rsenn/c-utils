@@ -1,3 +1,11 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 /* Copyright (C) 1991, 1992, 1993 Free Software Foundation, Inc.
 
    NOTE: The canonical source of this file is maintained with the GNU C

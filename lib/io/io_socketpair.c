@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "../io_internal.h"
 #include "../socket_internal.h"
 #include "../windoze.h"
