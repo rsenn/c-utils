@@ -149,9 +149,9 @@ BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 ifneq ($(CC),$(subst m32,,$(CC)))
 BUILD := $(subst x86_64,i386,$(BUILD))
 endif
-ifneq ($(BUILD),$(subst -pc-,-,$(BUILD)))
-BUILD := $(subst -pc-,-,$(BUILD))
-endif
+#ifneq ($(BUILD),$(subst -pc-,-,$(BUILD)))
+#BUILD := $(subst -pc-,-,$(BUILD))
+#endif
 
 CCVER := $(shell $(CROSS_COMPILE)$(CC) -dumpversion)
 CXXVER := $(shell $(CROSS_COMPILE)$(CXX) -dumpversion)
@@ -214,9 +214,9 @@ ifneq ($(CC),$(subst m32,,$(CC)))
 HOST := $(subst x86_64,i386,$(HOST))
 endif
 ifneq ($(HOST),$(subst linux,,$(HOST)))
-ifneq ($(HOST),$(subst -pc-,-,$(HOST)))
-HOST := $(subst -pc-,-,$(HOST))
-endif
+#ifneq ($(HOST),$(subst -pc-,-,$(HOST)))
+#HOST := $(subst -pc-,-,$(HOST))
+#endif
 endif
 ifeq ($(USE_DIET),1)
 HOST := $(subst -diet-,-,$(HOST))
