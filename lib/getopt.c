@@ -42,7 +42,7 @@ postpone_noopt(int argc, char* const argv[], int index) {
 }
 
 static int
-_getopt_(int argc, char* const argv[], const char* optstring, const struct option* longopts, int* longindex) {
+_getopt_(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
   while(1) {
     int c;
     const char* optptr = 0;
@@ -88,7 +88,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct optio
           int spec_len = (pos_eq == NULL ? str_len(spec_long) : pos_eq - spec_long);
           int index_search = 0;
           int index_found = -1;
-          const struct option* optdef = 0;
+          const struct longopt* optdef = 0;
           while(longopts->name != 0) {
             if(strncmp(spec_long, longopts->name, spec_len) == 0) {
               if(optdef != 0) {
@@ -203,13 +203,13 @@ getopt(int argc, char* const argv[], const char* optstring) {
 }
 
 int
-getopt_long(int argc, char* const argv[], const char* optstring, const struct option* longopts, int* longindex) {
+getopt_long(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
   return _getopt_(argc, argv, optstring, longopts, longindex);
 }
 /********************************************************
 int getopt_long_only(int argc, char* const argv[],
         const char* optstring,
-        const struct option* longopts, int* longindex)
+        const struct longopt* longopts, int* longindex)
 {
     return -1;
 }

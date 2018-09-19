@@ -44,7 +44,8 @@ hash_map_init(hash_map* map, size_t capacity, hash_map_comparator comparator, ha
 
 void
 hash_map_free(hash_map* map) {
-  for(size_t i = 0; i < map->capacity; i++) {
+  size_t i;
+  for(i = 0; i < map->capacity; i++) {
     if(map->table[i]) {
       linked_list_free(map->table[i]);
     }
@@ -156,7 +157,8 @@ hash_map_keys(hash_map* map) {
 
 void
 hash_map_clear(hash_map* map) {
-  for(size_t i = 0; i < map->capacity; i++) {
+  size_t i;
+  for(i = 0; i < map->capacity; i++) {
     linked_list* list = map->table[i];
 
     if(list) {

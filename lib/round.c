@@ -1,4 +1,3 @@
-
 #ifndef HAVE_ROUND
 #include <float.h>
 
@@ -8,6 +7,8 @@
 #define EPS DBL_EPSILON
 #endif
 static const double toint = 1 / EPS;
+
+#include "lib/uint64.h"
 
 double
 round(double x) {
