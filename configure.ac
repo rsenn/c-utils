@@ -94,8 +94,11 @@ dnl Check for configuration options:
 AC_ARG_ENABLE([debug],
   [AS_HELP_STRING([--enable-debug], [build with debugging support [default=no]])],
   [], [enable_debug=no])
+  
 AS_IF([test "x$enable_debug" != "xno"],
-  [AC_DEFINE([DEBUG], [1], [Enable debugging support.])],
+  [AC_DEFINE([DEBUG], [1], [Enable debugging support.]) 
+CFLAGS=`echo "$CFLAGS" | sed 's|-O2|-O0|g ;; s|-g[0-9]*|-g3 -ggdb3|g'
+],
   [AC_DEFINE([NDEBUG], [1], [Disable assertions.])])
 AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" != "xno"])
 
