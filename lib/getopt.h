@@ -6,8 +6,8 @@
  * Released under the MIT license
  * https://github.com/takamin/win-c/blob/master/LICENSE
  */
-#ifndef __GETOPT_H__
-#define __GETOPT_H__ 1
+#ifndef GETOPT_H
+#define GETOPT_H 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,4 +43,4 @@ int getopt_long(int argc, char *const argv[], const char *optstring,
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif /* __GETOPT_H__ */
+#endif /* GETOPT_H */

@@ -49,4 +49,14 @@ winsock2errno(long l) {
     }
   return l;
 }
+#else
+#include <errno.h>
+
+int winsock2errno(long ret) {
+  if(ret == -1) {
+    return errno;
+  }
+  return l;
+}
+  
 #endif
