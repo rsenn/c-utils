@@ -558,7 +558,7 @@ if(mode != PREPROCESS) {
 void
 print_strlist(buffer* b, const strlist* sl, const char* separator, const char* quot) {
   ssize_t n = strlist_count(sl);
-  int i;
+  int i, need_quote;
   buffer_puts(b, " (#");
   buffer_putlong(b, n);
   buffer_puts(b, "):");
@@ -572,7 +572,7 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
       if(i > 0)
         buffer_puts(b, separator);
 
-      int need_quote = 0;
+      need_quote = 0;
 
       if(str_len(quot)) {
         while(*s) {

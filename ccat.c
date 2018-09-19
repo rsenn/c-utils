@@ -77,6 +77,7 @@ main(int argc, char* argv[]) {
   const char* out_filename = "-";
   compression_type in_type = C_UNKNOWN;
   compression_type out_type = C_UNKNOWN;
+  buffer infile, outfile;
   buffer *input, *output;
 
   while((opt = getopt(argc, argv, "123456789dt:o:h")) != -1) {
@@ -110,8 +111,6 @@ main(int argc, char* argv[]) {
     }
   }
 
-  buffer infile, outfile;
-
   if(argv[optind]) in_filename = argv[optind];
 
   if(str_equal(in_filename, "-")) {
@@ -141,41 +140,43 @@ main(int argc, char* argv[]) {
     if(out_type == C_UNKNOWN) out_type = compression_from_filename(out_filename);
   }
 
-  compression_type type = decompress ? in_type : out_type;
-  buffer cbuf;
+ {
+	  compression_type type = decompress ? in_type : out_type;
+	  buffer cbuf;
 
-  switch(type) {
-    case C_GZ:
-      if(decompress)
-        buffer_inflate(&cbuf, input);
-      else
-        buffer_deflate(&cbuf, output, level);
-      break;
-    case C_BZ2:
-      buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level);
-      break;
-    case C_XZ:
-    case C_LZMA:
-      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level);
-      break;
-    default:
-      buffer_putm(buffer_2, "ERROR: Unable to detect compression type from ", in_filename);
-      buffer_putnlflush(buffer_2);
-      exit(EXIT_FAILURE);
-  }
+	  switch(type) {
+		case C_GZ:
+		  if(decompress)
+			buffer_inflate(&cbuf, input);
+		  else
+			buffer_deflate(&cbuf, output, level);
+		  break;
+		case C_BZ2:
+		  buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level);
+		  break;
+		case C_XZ:
+		case C_LZMA:
+		  buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level);
+		  break;
+		default:
+		  buffer_putm(buffer_2, "ERROR: Unable to detect compression type from ", in_filename);
+		  buffer_putnlflush(buffer_2);
+		  exit(EXIT_FAILURE);
+	  }
 
-  if(decompress == 0 && output == buffer_1) {
-    buffer_putsflush(buffer_2, "ERROR: Won't write compressed data to a terminal\n");
-    exit(EXIT_FAILURE);
-  }
+	  if(decompress == 0 && output == buffer_1) {
+		buffer_putsflush(buffer_2, "ERROR: Won't write compressed data to a terminal\n");
+		exit(EXIT_FAILURE);
+	  }
 
-  if(decompress) {
-    buffer_copy(output, &cbuf);
-    buffer_flush(output);
-  } else {
-    buffer_copy(&cbuf, input);
-    buffer_flush(&cbuf);
-  }
+	  if(decompress) {
+		buffer_copy(output, &cbuf);
+		buffer_flush(output);
+	  } else {
+		buffer_copy(&cbuf, input);
+		buffer_flush(&cbuf);
+	  }
+	 }
 
   return 0;
 }

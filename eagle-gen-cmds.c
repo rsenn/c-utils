@@ -987,6 +987,19 @@ main(int argc, char* argv[]) {
 
   xml_print(doc, &out);
 
+  {
+    double top_y, right_x;
+    tree_topleft(doc, "wire", &right_x, &top_y);
+
+
+    buffer_puts(buffer_2, "top_y: ");
+    buffer_putdouble(buffer_2, top_y, 1);
+    buffer_putnlflush(buffer_2);
+    buffer_puts(buffer_2, "right_x: ");
+    buffer_putdouble(buffer_2, right_x, 1);
+    buffer_putnlflush(buffer_2);
+  }
+
   /*  cbmap_visit_all(nets, dump_net, "nets"); */
 
   /*

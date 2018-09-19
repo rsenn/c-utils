@@ -124,7 +124,7 @@ AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" != "xno"])
 # --enable-widechar/--disable-widechar
 AC_ARG_ENABLE([widechar],
   [AS_HELP_STRING([--enable-widechar], [include support for wide char])])
-AS_IF([test "x$enable_widechar" == "xyes"],
+AS_IF([test "x$enable_widechar" = "xyes"],
   [AC_DEFINE_UNQUOTED([USE_WIDECHAR], 1, [Define to enable wide car support.])])
 
 # --enable-readdir/--disable-readdir
