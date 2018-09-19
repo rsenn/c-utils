@@ -95,7 +95,7 @@ dnl Check for configuration options:
 AC_ARG_ENABLE([debug],
   [AS_HELP_STRING([--enable-debug], [build with debugging support [default=no]])],
   [], [enable_debug=no])
-m4_if([test "x$enable_debug" != "xno"],
+AS_IF([test "x$enable_debug" != "xno"],
   [AC_DEFINE([DEBUG], [1], [Enable debugging support.])],
   [AC_DEFINE([NDEBUG], [1], [Disable assertions.])])
 AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" != "xno"])
@@ -103,7 +103,7 @@ AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" != "xno"])
 # --enable-widechar/--disable-widechar
 AC_ARG_ENABLE([widechar],
   [AS_HELP_STRING([--enable-widechar], [include support for wide char])])
-m4_if([test "x$enable_widechar" == "xyes"],
+AS_IF([test "x$enable_widechar" == "xyes"],
   [AC_DEFINE_UNQUOTED([USE_WIDECHAR], 1, [Define to enable wide car support.])])
 
 # --enable-readdir/--disable-readdir
@@ -111,7 +111,7 @@ AC_ARG_ENABLE([readdir],
   [AS_HELP_STRING([--enable-readdir], [include support for readdir])])
   
   
-m4_if([test "x$enable_readdir" = "xyes" -o "x$enable_readdir" != "xno"],
+AS_IF([test "x$enable_readdir" = "xyes" -o "x$enable_readdir" != "xno"],
   [
   AC_CHECK_FUNC([readdir],[
     AC_DEFINE_UNQUOTED([USE_READDIR], 1, [Define to enable readdir support.])
@@ -313,7 +313,7 @@ AC_DEFINE_UNQUOTED([HAVE_SENDFILE],[1],[Define if you have sendfile()])],
 AC_DEFUN([AC_CHECK_EPOLL], [
 AC_MSG_CHECKING([for epoll()m4_if([$2],[ using $2],[])])
 m4_if([$2],[saved_LIBS="$LIBS"
-LIBS="$2"])
+LIBS="$2"],[])
 AC_LINK_IFELSE([#include <inttypes.h>
 #include <stdio.h>
 #include <sys/epoll.h>
@@ -337,7 +337,7 @@ AC_DEFINE_UNQUOTED([HAVE_EPOLL],[m4_if([$1],[$1],[1])],[Define if you have epoll
 $3
 ],[AC_MSG_RESULT([no])
 $4])
-m4_if([$2],[LIBS="$saved_LIBS"])
+m4_if([$2],[LIBS="$saved_LIBS"],[])
 ])
 
 AC_CHECK_EPOLL([1],[],[],[AC_CHECK_EPOLL([2],[-lepoll])])
