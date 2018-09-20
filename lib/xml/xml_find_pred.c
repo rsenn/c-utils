@@ -1,15 +1,15 @@
 #include "../xml.h"
+#include "../strlist.h"
 #include <stdarg.h>
 
-xmlnode*
-xml_pfind_pred(xmlnode* node, int (*pred)(), void* vptr[]) {
+static xmlnode*
+xml_find_predicate(xmlnode* node, int (*pred)(), void* vptr[]) {
   do {
-    if(pred(node, vptr[0], vptr[1], vptr[2], vptr[3])) break;
+    if(pred(node, vptr[0], vptr[1], vptr[2])) break;
 
     if(node->children) {
       xmlnode* r;
-
-      if((r = xml_pfind_pred(node->children, pred, vptr))) return r;
+      if((r = xml_find_predicate(node->children, pred, vptr))) return r;
     }
   } while((node = node->next));
 
@@ -17,8 +17,35 @@ xml_pfind_pred(xmlnode* node, int (*pred)(), void* vptr[]) {
 }
 
 xmlnode*
+xml_pfind_pred(xmlnode* node, int (*pred)(/*xmlnode*,void*,void*,void**/), void* ptr[]) {
+  xmlnode* ret;
+  strlist names, attrs, values;
+  strlist_init(&names, '\0');
+  strlist_init(&attrs, '\0');
+  strlist_init(&values, '\0');
+  if(ptr[0]) {
+    strlist_froms(&names, ptr[0], '|');
+    ptr[0] = &names;
+  }
+  if(ptr[1]) {
+    strlist_froms(&attrs, ptr[1], '|');
+    ptr[1] = &attrs;
+  }
+  if(ptr[2]) {
+    strlist_froms(&values, ptr[2], '|');
+    ptr[2] = &values;
+  }
+  ret = xml_find_predicate(node, pred, ptr);
+  if(names.sa.a) strlist_free(&names);
+  if(attrs.sa.a) strlist_free(&attrs);
+  if(values.sa.a) strlist_free(&values);
+  return ret;
+}
+
+
+xmlnode*
 xml_find_pred_1(xmlnode* node, int (*pred)(/*xmlnode*,void*,*/), void* arg) {
-  void* vptr[] = {arg, NULL};
+  void* vptr[] = {arg, NULL, NULL};
   return xml_pfind_pred(node, pred, vptr);
 }
 
@@ -27,10 +54,9 @@ xml_find_pred_2(xmlnode* node, int (*pred)(/*xmlnode*,void*,void**/), void* a0, 
   void* vptr[] = {a0, a1, NULL};
   return xml_pfind_pred(node, pred, vptr);
 }
-
 xmlnode*
-xml_find_pred_3(xmlnode* node, int (*pred)(/*xmlnode*,void*,void*,void**/), void* a0, void* a1, void* a2) {
-  void* vptr[] = {a0, a1, a2, NULL};
+xml_find_pred_3(xmlnode* node, int (*pred)(/*xmlnode*,void*,void**/), void* a0, void* a1, void* a2) {
+  void* vptr[] = {a0, a1, a2};
   return xml_pfind_pred(node, pred, vptr);
 }
 

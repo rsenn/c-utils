@@ -2,6 +2,8 @@
 #include "../strlist.h"
 #include "../xml.h"
 
+int xml_has_attr(xmlnode* node, void* n, strlist* attrs);
+
 int
 xml_tag_pred(xmlnode* node, void* arg) {
 
@@ -18,10 +20,10 @@ xml_tag_pred(xmlnode* node, void* arg) {
 
 xmlnode*
 xml_find_element(xmlnode* node, const char* tag) {
-  void* vptr[4] = {0, 0, 0, 0};
-  strlist names;
-  strlist_init(&names, '\0');
-  strlist_froms(&names, tag, '|');
-  vptr[0] = &names;
-  return xml_pfind_pred(node, &xml_tag_pred, vptr);
+  return xml_find_pred_1(node, &xml_tag_pred, tag);
+}
+
+xmlnode*
+xml_find_attr(xmlnode* node, const char* attr) {
+  return xml_find_pred_2(node, &xml_has_attr, NULL, attr);
 }

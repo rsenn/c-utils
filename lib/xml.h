@@ -121,9 +121,10 @@ xmlnode* xml_find_pred_1(xmlnode*, int (*pred)(), void* arg);
 xmlnode* xml_find_pred_2(xmlnode*, int (*pred)(), void* a0, void* a1);
 xmlnode* xml_find_pred_3(xmlnode*, int (*pred)(), void* a0, void* a1, void* a2);
 
+xmlnode*   xml_pfind_pred(xmlnode*, int (*pred)(void), void* ptr[]);
+
 xmlnode* xml_find_element(xmlnode*, const char* tag);
 xmlnode* xml_find_pred_n(xmlnode*, int (*pred)(xmlnode*, void* ), int n, ...);
-xmlnode* xml_pfind_pred(xmlnode*, int (*pred)(), void* vptr[]);
 
 int xml_has_attribute_n(xmlnode*, const char* b, size_t n);
 int xml_has_attribute(xmlnode*, const char* attr);
