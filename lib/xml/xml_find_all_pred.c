@@ -22,7 +22,7 @@ xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), void* vptr[]) {
 }
 
 xmlnodeset
-xml_pfind_all(xmlnode* node, int (*pred)(), void* ptr[]) {
+xml_pfind_all(xmlnode* node, int (*pred)(), void* ptr[4]) {
    xmlnodeset ret;
   array a;
   strlist names; 
