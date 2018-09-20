@@ -1265,7 +1265,8 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
 
       byte_zero(&extent, sizeof(extent));
-      ns = xml_find_all_3(doc, xml_match_name_and_attr, "wire", "layer", layer_str.s);
+     // ns = xml_find_with_attrs(doc, "x|y|x1|y1|x2|y2");
+      ns = xml_find_all_attrs(doc, "x|y|x1|y1");
 
       int n = xmlnodeset_size(&ns);
 

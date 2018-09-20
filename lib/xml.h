@@ -126,6 +126,13 @@ xmlnode* xml_pfind_pred(xmlnode*, int (*pred)(), void* vptr[]);
 int xml_has_attribute_n(xmlnode*, const char* b, size_t n);
 int xml_has_attribute(xmlnode*, const char* attr);
 
+#ifdef STRLIST_H
+xmlnode* xml_find_with_attrs_l(xmlnode*, const strlist* attrs);
+#endif
+
+xmlnode* xml_find_with_attrs(xmlnode*, const char* attrs);
+xmlnodeset xml_find_all_attrs(xmlnode*, const char* attrs);
+
 #ifdef __cplusplus
 }
 #endif

@@ -37,3 +37,14 @@ xml_find_with_attrs(xmlnode* node, const char* attrs) {
   strlist_free(&attrlist);
   return r;
 }
+
+xmlnodeset
+xml_find_all_attrs(xmlnode* node, const char* attrs) {
+  xmlnodeset r;
+  strlist attrlist;
+  strlist_init(&attrlist, '|');
+  strlist_froms(&attrlist, attrs, '|');
+  r = xml_find_all_1(node, xml_has_attr, &attrlist);
+  strlist_free(&attrlist);
+  return r;
+}
