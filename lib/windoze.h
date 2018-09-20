@@ -16,29 +16,20 @@
 extern "C" {
 # endif
 
-#ifndef _SIZE_T_DEFINED
-#define _SIZE_T_DEFINED 1
+#  ifndef _SIZE_T_DEFINED
+#  define _SIZE_T_DEFINED 1
 typedef SIZE_T size_t;
-#endif
+#  endif
 
-#if !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED)
-#define __ssize_t_defined 1
-#define _SSIZE_T_DECLARED 1
+#  if !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED)
+#  define __ssize_t_defined 1
+#  define _SSIZE_T_DECLARED 1
 typedef SSIZE_T ssize_t;
-#endif
+#  endif
 
 typedef int socklen_t;
 
-#if WINDOWS_NATIVE
-/* set errno to WSAGetLastError() */
-int winsock2errno(long l);
-void __winsock_init(void);
-#else
-#  define winsock2errno(fnord) (fnord)
-#  define __winsock_init()
-#endif
-
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
+#  if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
 static size_t
 getpagesize() {
   static DWORD cachedPageSize = 0;
@@ -49,11 +40,18 @@ getpagesize() {
   }
   return cachedPageSize;
 }
-#endif
+#  endif
 
-# ifdef __cplusplus
+#  ifdef __cplusplus
 }
-# endif
+#  endif
 # endif /* WINDOWS */
-
+# if WINDOWS_NATIVE
+/* set errno to WSAGetLastError() */
+int winsock2errno(long l);
+void __winsock_init(void);
+# else
+#  define winsock2errno(fnord) (fnord)
+#  define __winsock_init()
+# endif
 #endif /* defined(WINDOZE_H) */

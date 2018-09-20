@@ -1,9 +1,9 @@
 makefile_in() {
 
-  PROGRAMS=$( echo $(grep -l 'main(' *.c | sed 's|\.c$||; /test_/d; s,$,$(EXEEXT),' ))
-  LIB_SOURCES=$(find lib -name "*.c")
-  LIB_OBJECTS=$(echo "$LIB_SOURCES" | sed 's|\.c|.o|; s|.*/||')
-  cat <<EOF
+	PROGRAMS=$( echo $(grep -l 'main(' *.c | sed 's|\.c$||; /test_/d; s,$,$(EXEEXT),' ))
+	LIB_SOURCES=$(find lib -name "*.c")
+	LIB_OBJECTS=$(echo "$LIB_SOURCES" | sed 's|\.c|.o|; s|.*/||')
+	cat <<EOF
 srcdir = @srcdir@
 builddir = @builddir@
 top_srcdir = @top_srcdir@
@@ -44,6 +44,7 @@ ECHO_T = @ECHO_T@
 
 EXEEXT = @EXEEXT@
 
+INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -114,10 +115,16 @@ clean-library:
 .PHONY: clean-programs
 clean-programs:
 	\$(RM) \$(PROGRAM_OBJECTS) \$(PROGRAMS) 
+
+.PHONY: install
+install: install-programs
+
+.PHONY: install-programs
+install-programs:
+	\$(INSTALL_PROGRAM) -d \$(DESTDIR)\$(bindir)
+	\$(INSTALL_PROGRAM) -m 755 \$(PROGRAMS) \$(DESTDIR)\$(bindir)
+
 EOF
 }
 
-
 makefile_in
-
-
