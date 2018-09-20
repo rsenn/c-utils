@@ -37,7 +37,7 @@ cfg() {
   : ${generator:="Unix Makefiles"}
 
  (mkdir -p $builddir
-  relsrcdir=`realpath --relative-to "$builddir" .`
+  : ${relsrcdir=`realpath --relative-to "$builddir" .`}
   set -x
   cd $builddir
   ${CMAKE:-cmake} -Wno-dev \
