@@ -355,8 +355,11 @@ build_deviceset(xmlnode* set) {
   xmlnode *node, *gates, *devices;
   struct deviceset d;
   char* name = xml_get_attribute(set, "name");
+
+#ifdef DEBUG_REFLIST
   print_name_value(buffer_2, "deviceset", name);
   buffer_putnlflush(buffer_2);
+#endif
   byte_zero(&d, sizeof(struct deviceset));
   stralloc_copys(&d.name, name);
   d.devices = cbmap_new();

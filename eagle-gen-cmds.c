@@ -16,6 +16,7 @@
 #include "lib/cbmap.h"
 #include "lib/errmsg.h"
 #include "lib/fmt.h"
+#include "lib/getopt.h"
 #include "lib/hmap.h"
 #include "lib/iterator.h"
 #include "lib/mmap.h"
@@ -33,6 +34,10 @@
 #endif
 
 #include "lib/round.c"
+#define iround(f) ((double)((long)(f)))
+
+#define mm2in(mm) ((mm) / 25.4)
+#define in2mm(in) ((mm)*25.4)
 
 /**
  * section: Parsing
@@ -94,14 +99,34 @@ struct ref {
     int pin;
   };
 };
-typedef struct wire {
+typedef struct pos {
+  double x,y;
+} xy;
+struct wire {
   double x1, y1, x2, y2;
-} wire;
+};
+typedef struct wire wire;
+//typedef struct wire rect;
 
+typedef struct pos point;
+typedef struct pos xy;
+
+union vec2 {
+  struct {
+    double x1, y1;
+    double x2, y2;
+  };
+  point p[2];
+  struct {
+    point a, b;
+  };
+};
+typedef union vec2 rect;
 struct net {
   stralloc name;
   array contacts; /**<  list of struct ref */
 };
+
 const char* document = "<doc/>";
 const char* xq = "net";
 void node_print(xmlnode* node);
@@ -117,6 +142,25 @@ static strarray layers;
 static int measures_layer = -1, bottom_layer = -1;
 static array wires;
 static wire bounds = {DBL_MAX, DBL_MAX, DBL_MAX, DBL_MAX};
+
+
+static int do_list_layers, do_draw_measures;
+static const char* current_layer = "Bottom";
+
+static rect wire_bounds;
+static xy translate;
+static rect contour;
+
+static const char* base;
+
+
+static inline struct pos xy_neg(const struct pos p) {
+  struct pos r = { -p.x, -p.y }; return r;
+}
+static inline void xy_add(struct pos* d, const struct pos p) {
+  d->x += p.x;
+  d->y += p.y;
+}
 
 /**
  * Reads a real-number value from the element/attribute given
@@ -183,11 +227,12 @@ get_wire(xmlnode* node) {
   ret.x2 = get_double(node, "x2");
   ret.y2 = get_double(node, "y2");
 
+#ifdef DEBUG_REFLIST
   stralloc_init(&p);
   xml_path(node, &p);
   buffer_putsa(buffer_2, &p);
   buffer_putnlflush(buffer_2);
-
+#endif
   return ret;
 }
 
@@ -238,12 +283,17 @@ get_entry(cbmap_t map, const char* key) {
   cbmap_get(map, (void*)key, len, &ret, &len);
   return ret;
 }
+void
+print_base(buffer* b) {
+buffer_putm(b, base, ": ");
+}
 
 /**
  * Outputs name/value pair
  */
 void
 print_name_value(buffer* b, const char* name, const char* value) {
+  print_base(b);
   buffer_putm(b, name, ": ", value ? value : "(null)");
 }
 
@@ -266,30 +316,22 @@ build_layers(xmlnode* layer) {
   strarray_set(&layers, num, xml_get_attribute(layer, "name"));
   /*  xml_print(layer, buffer_1); */
 }
-typedef struct {
-  double x,y;
-} pt;
-
-union line {
-  struct {
-  double x1, y1;
-  double x2, y2;
-  };
-  pt p[2];
-};
-
-typedef union line rect;
 
 
 void
-update_bounds(rect* r, double x, double y) {
+rect_translate(rect* r, struct pos p) {
+  xy_add(&r->a, p);
+  xy_add(&r->b, p);
+}
+
+void
+rect_update(rect* r, double x, double y) {
   if(x < r->x1 || r->x1 == DBL_MAX) r->x1 = x;
   if(x > r->x2 || r->x2 == DBL_MAX) r->x2 = x;
   if(y < r->y1 || r->y1 == DBL_MAX) r->y1 = y;
   if(y > r->y2 || r->y2 == DBL_MAX) r->y2 = y;
 }
 
-static rect wire_bounds;
 
 void
 check_wire(xmlnode* node) {
@@ -301,9 +343,9 @@ check_wire(xmlnode* node) {
     array_catb(&wires, &w, sizeof(wire));
 
     xml_delete(node);
-  } else if(layer == bottom_layer) {
-    update_bounds(&wire_bounds, w.x1, w.y1);
-    update_bounds(&wire_bounds, w.x2, w.y2);
+  } else if(layer == bottom_layer || layer == get_layer(current_layer)) {
+    rect_update(&wire_bounds, w.x1, w.y1);
+    rect_update(&wire_bounds, w.x2, w.y2);
   }
 }
 
@@ -388,16 +430,22 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     part_name = xml_get_attribute(node, is_pin ? "part" : "element");
     r = array_allocate(&n->contacts, sizeof(struct ref), (*index)++);
     r->part = get(parts, part_name, sizeof(struct part));
+
+#ifdef DEBUG_REFLIST
     print_name_value(buffer_2, nn, part_name);
     buffer_putnlflush(buffer_2);
+#endif
 
     if(r->part->pkg) {
       r->pin = package_pin(r->part->pkg, xml_get_attribute(node, "pad"));
     }
-    print_name_value(buffer_2, nn, part_name);
+
+#ifdef DEBUG_REFLIST
+   print_name_value(buffer_2, nn, part_name);
     buffer_putc(buffer_2, '\t');
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
+#endif
   }
 }
 
@@ -416,8 +464,12 @@ build_nets(xmlnode* node) {
   char *sign, *name = node->name;
   assert(str_equal(name, "net") || str_equal(name, "signal"));
   if(!(sign = xml_get_attribute(node, "name"))) return;
+
+#ifdef DEBUG_REFLIST
   print_name_value(buffer_2, name, sign);
   buffer_putnlflush(buffer_2);
+#endif
+
   ptr = get_or_create(nets, sign, sizeof(struct net));
   stralloc_copys(&ptr->name, sign);
   i = 0;
@@ -458,8 +510,11 @@ build_deviceset(xmlnode* set) {
   struct deviceset d;
   xmlnode *gates, *devices, *node;
   char* name = xml_get_attribute(set, "name");
+
+#ifdef DEBUG_REFLIST
   print_name_value(buffer_2, "deviceset", name);
   buffer_putnlflush(buffer_2);
+#endif
 
   byte_zero(&d, sizeof(struct deviceset));
   stralloc_copys(&d.name, name);
@@ -796,12 +851,44 @@ print_element_names(xmlnode* node) {
 
 void
 print_xy(buffer* b, const char* name, double x, double y) {
+  print_base(b);
   buffer_puts(b, name);
   buffer_puts(b, ": x=");
   buffer_putdouble(b, x, 4);
   buffer_puts(b, ", y=");
   buffer_putdouble(b, y, 4);
   buffer_putnlflush(b);
+}
+
+void
+print_rect(buffer* b, const char* name, const rect* r) {
+  print_base(b);
+  buffer_putm(b, name, ": ");
+  buffer_puts(b, "(");
+  buffer_putdouble(b, r->x1, 4);
+  buffer_puts(b, ",");
+  buffer_putdouble(b, r->y1, 4);
+  buffer_puts(b, "|");
+  buffer_putdouble(b, r->x2, 4);
+  buffer_puts(b, ",");
+  buffer_putdouble(b, r->y2, 4);
+  buffer_puts(b, ")");
+  buffer_putnlflush(b);
+}
+
+void
+print_script(buffer* b, xmlnode* e) {
+
+  if(!str_equal(e->name, "wire")) {
+
+
+      buffer_putm(b, "Wire ", xml_get_attribute(e, "layer"), " ",
+                  "(", xml_get_attribute(e,  "x1"), " ",  xml_get_attribute(e,  "y1"), ") (",
+                 xml_get_attribute(e,  "x2"), " ",  xml_get_attribute(e,  "y2"), ");");
+      buffer_putnlflush(b);
+
+
+    }
 }
 
 int
@@ -813,8 +900,11 @@ void
 match_query(xmlnode* doc, const char* q) {
   xmlnodeset ns;
   xmlnodeset_iter_t it, e;
+
+#ifdef DEBUG_QUERY
   print_name_value(buffer_1, "XPath query", q);
   buffer_putnlflush(buffer_1);
+#endif
   ns = getnodeset(doc, q);
 
   for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
@@ -855,82 +945,11 @@ match_query(xmlnode* doc, const char* q) {
   }
 }
 
-/**
- * Executes XPath query and for every resulting element calls a function
- */
-#define match_foreach(doc, q, fn) do { \
-  xmlnodeset ns = getnodeset(doc, q); \
-  if(xmlnodeset_size(&ns)) { for_set(&ns, fn); } \
-} while(0);
+void
+draw_measures(xmlnode* doc) {
+  xmlnode *left, *right, *bottom, *top, *gnd_signal, *polygon, *n;
 
-int
-
-main(int argc, char* argv[]) {
-  buffer input, out;
-  const char* base;
-  xmlnode* doc;
-
-  xmlnode *plain, *left, *right, *bottom, *top, *gnd_signal, *polygon, *n;
-  devicesets = cbmap_new();
-  packages = cbmap_new();
-  parts = cbmap_new();
-  nets = cbmap_new();
-  symbols = cbmap_new();
-
-  if(!argv[1]) {
-    argv[1] = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
-  } else if(argv[2]) {
-    xq = argv[2];
-  }
-
-  base = str_basename(argv[1]);
-  buffer_mmapprivate(&input, argv[1]);
-  buffer_skip_until(&input, "\r\n", 2);
-  doc = xml_read_tree(&input);
-  match_query(doc, xq);
-  match_foreach(doc, "package", build_package);
-  buffer_puts(buffer_2, "items in packages: ");
-  buffer_putulong(buffer_2, cbmap_count(packages));
-  buffer_putnlflush(buffer_2);
-  match_foreach(doc, "deviceset", build_deviceset);
-  match_foreach(doc, "part|element", build_part);
-  buffer_puts(buffer_2, "items in parts: ");
-  buffer_putulong(buffer_2, cbmap_count(parts));
-  buffer_putnlflush(buffer_2);
-  match_foreach(doc, "net|signal", build_nets);
-  match_foreach(doc, "symbol", build_sym);
-  /* cbmap_visit_all(packages, dump_package, "package"); */
-  /* cbmap_visit_all(parts, dump_part, "part"); */
-
-  match_foreach(doc, "layer", build_layers);
-
-  /*  for(size_t i = 0; i < array_length(&layers.a, sizeof(char*)); ++i) { */
-  /*    buffer_puts(buffer_2, "layer "); */
-  /*    buffer_putlong(buffer_2, i); */
-  /*    const char* name = *(char**)array_get(&layers.a, sizeof(char*), i); */
-  /*    buffer_putm(buffer_2, " \"", name ? name : "", "\""); */
-  /*    buffer_putnlflush(buffer_2); */
-  /*  } */
-
-  measures_layer = strarray_index_of(&layers, "Measures");
-  bottom_layer = strarray_index_of(&layers, "Bottom");
-
-  buffer_puts(buffer_2, "Measures layer: ");
-  buffer_putlong(buffer_2, measures_layer);
-  buffer_putnlflush(buffer_2);
-
-  match_foreach(doc, "wire", check_wire);
-  bounds.x1 -= 2.54;
-  bounds.x2 += 2.54;
-  bounds.y1 -= 2.54;
-  bounds.y2 += 2.54;
-
-  bounds.x1 = roundl(100 * bounds.x1) / 100;
-  bounds.y1 = roundl(100 * bounds.y1) / 100;
-  bounds.x2 = roundl(100 * bounds.x2) / 100;
-  bounds.y2 = roundl(100 * bounds.y2) / 100;
-
-  plain = xml_find_element(doc, "plain");
+  xmlnode* plain = xml_find_element(doc, "plain");
 
   if(plain->type != XML_ELEMENT) {
     errmsg_warn("element 'plain'");
@@ -1005,60 +1024,234 @@ main(int argc, char* argv[]) {
   xml_set_attribute_double(n, "x", bounds.x2);
   xml_set_attribute_double(n, "y", bounds.y2);
   xml_add_child(polygon, n);
+}
 
-  xml_print(plain, buffer_2);
+/**
+ * Executes XPath query and for every resulting element calls a function
+ */
+#define match_foreach(doc, q, fn)                                                                                      \
+  do {                                                                                                                 \
+    xmlnodeset ns = getnodeset(doc, q);                                                                                \
+    if(xmlnodeset_size(&ns)) {                                                                                         \
+      for_set(&ns, fn);                                                                                                \
+    }                                                                                                                  \
+  } while(0);
 
-  buffer_truncfile(&out, base);
+void
+usage(char* progname) {
+  buffer_putm(buffer_1, "Usage: ", progname, " [OPTIONS] [PACKAGES...]\n");
+  buffer_puts(buffer_1, "Options\n");
+  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
+  buffer_puts(buffer_1, "  --layer, -l NUM       Layer name/number\n");
+  buffer_puts(buffer_1, "  --layers, -L          List layers\n");
+  buffer_puts(buffer_1, "  --draw, -d            Draw measures\n");
+  buffer_putnlflush(buffer_1);
+}
 
-  xml_print(doc, &out);
+int
+get_layer(const char* str) {
+  long i, n = strarray_size(&layers);
 
-  {
-    double top_y, right_x;
-    xmlnodeset_iter_t it, e;
-    xmlnodeset ns;
-    stralloc layer_str;
-    rect extent;
-    //    tree_topleft(doc, "wire", &right_x, &top_y);
-    stralloc_init(&layer_str);
-
-    stralloc_catlong(&layer_str, bottom_layer);
-    stralloc_nul(&layer_str);
-    buffer_putm(buffer_2, "layer str: ", layer_str.s);
-    buffer_putnlflush(buffer_2);
-
-
-    byte_zero(&extent, sizeof(extent));
-    ns = xml_find_all_3(doc, xml_match_name_and_attr, "wire", "layer", layer_str.s);
-
-    for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
-      xmlnode* node = *it;
-      double x1, x2, y1, y2;
-      const char* layer = xml_get_attribute(node, "layer");
-
-      update_bounds(&extent, get_double(node, "x1"), get_double(node, "y1"));
-      update_bounds(&extent, get_double(node, "x2"), get_double(node, "y2"));
-
-//      print_xy(buffer_2, layer, x1, y1);
-    }
-    print_xy(buffer_2, "extent.1", extent.x1, extent.y1);
-    print_xy(buffer_2, "extent.2", extent.x2, extent.y2);
-
-    // xml_print_nodeset(&wires, buffer_1);
-
-    buffer_puts(buffer_2, "top_y: ");
-    buffer_putdouble(buffer_2, top_y, 1);
-    buffer_putnlflush(buffer_2);
-    buffer_puts(buffer_2, "right_x: ");
-    buffer_putdouble(buffer_2, right_x, 1);
-    buffer_putnlflush(buffer_2);
+  if((i = strarray_index_of(&layers, str)) < n) {
+    return i;
   }
 
-  /*  cbmap_visit_all(nets, dump_net, "nets"); */
+  if(scan_long(str, &i) > 0) return i;
+  return -1;
+}
 
-  /*
-   * Cleanup function for the XML library.
-   */
-  xml_free(doc);
+int
+main(int argc, char* argv[]) {
+  int c;
+  int index = 0;
+  struct longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"layer", 1, NULL, 'l'},
+      {"layers", 0, NULL, 'L'},
+      {"draw", 0, NULL, 'd'},
+  };
+
+  for(;;) {
+    c = getopt_long(argc, argv, "Ldhl:", opts, &index);
+    if(c == -1) break;
+
+    switch(c) {
+      case 'h': usage(argv[0]); return 0;
+      case 'L': do_list_layers = 1; break;
+      case 'd': do_draw_measures = 1; break;
+      case 'l': current_layer = optarg; break;
+      default: usage(argv[0]); return 1;
+    }
+  }
+
+  {
+    buffer input, out;
+    xmlnode* doc;
+
+    xmlnode *plain, *left, *right, *bottom, *top, *gnd_signal, *polygon, *n;
+    devicesets = cbmap_new();
+    packages = cbmap_new();
+    parts = cbmap_new();
+    nets = cbmap_new();
+    symbols = cbmap_new();
+
+    if(!argv[optind]) {
+      argv[optind] = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
+    } else if(argv[optind + 1]) {
+      xq = argv[optind + 1];
+    }
+
+    base = str_basename(argv[optind]);
+    buffer_mmapprivate(&input, argv[optind]);
+    buffer_skip_until(&input, "\r\n", 2);
+    doc = xml_read_tree(&input);
+
+    match_foreach(doc, "layer", build_layers);
+
+    if(do_list_layers) {
+
+      size_t i, n = strarray_size(&layers);
+      for(i = 0; i < n; ++i) {
+        const char* s = strarray_at(&layers, i);
+
+        if(s) {
+          stralloc num;
+          stralloc_init(&num);
+          stralloc_catlong(&num, i);
+          stralloc_nul(&num);
+
+          print_name_value(buffer_2, num.s, s);
+          buffer_putnlflush(buffer_2);
+        }
+      }
+
+      return 0;
+    }
+
+    match_query(doc, xq);
+
+    match_foreach(doc, "package", build_package);
+
+    print_base(buffer_2);
+    buffer_puts(buffer_2, "items in packages: ");
+    buffer_putulong(buffer_2, cbmap_count(packages));
+    buffer_putnlflush(buffer_2);
+
+    match_foreach(doc, "deviceset", build_deviceset);
+    match_foreach(doc, "part|element", build_part);
+
+    print_base(buffer_2);
+    buffer_puts(buffer_2, "items in parts: ");
+    buffer_putulong(buffer_2, cbmap_count(parts));
+    buffer_putnlflush(buffer_2);
+
+    match_foreach(doc, "net|signal", build_nets);
+    match_foreach(doc, "symbol", build_sym);
+
+    /* cbmap_visit_all(packages, dump_package, "package"); */
+    /* cbmap_visit_all(parts, dump_part, "part"); */
+
+    /*  for(size_t i = 0; i < array_length(&layers.a, sizeof(char*)); ++i) { */
+    /*    buffer_puts(buffer_2, "layer "); */
+    /*    buffer_putlong(buffer_2, i); */
+    /*    const char* name = *(char**)array_get(&layers.a, sizeof(char*), i); */
+    /*    buffer_putm(buffer_2, " \"", name ? name : "", "\""); */
+    /*    buffer_putnlflush(buffer_2); */
+    /*  } */
+
+    measures_layer = strarray_index_of(&layers, "Measures");
+    bottom_layer = strarray_index_of(&layers, "Bottom");
+
+    print_base(buffer_2);
+    buffer_puts(buffer_2, "Measures layer: ");
+    buffer_putlong(buffer_2, measures_layer);
+    buffer_putnlflush(buffer_2);
+
+    match_foreach(doc, "wire", check_wire);
+    bounds.x1 -= 2.54;
+    bounds.x2 += 2.54;
+    bounds.y1 -= 2.54;
+    bounds.y2 += 2.54;
+
+    bounds.x1 = iround(100 * bounds.x1) / 100;
+    bounds.y1 = iround(100 * bounds.y1) / 100;
+    bounds.x2 = iround(100 * bounds.x2) / 100;
+    bounds.y2 = iround(100 * bounds.y2) / 100;
+
+    if(do_draw_measures) {
+
+      draw_measures(doc);
+
+      buffer_truncfile(&out, base);
+
+      xml_print(doc, &out);
+    }
+
+    {
+      double top_y, right_x;
+      xmlnodeset_iter_t it, e;
+      xmlnodeset ns;
+      stralloc layer_str;
+      rect extent;
+      //    tree_topleft(doc, "wire", &right_x, &top_y);
+      stralloc_init(&layer_str);
+
+      stralloc_catlong(&layer_str, get_layer(current_layer));
+      stralloc_nul(&layer_str);
+
+      print_base(buffer_2);
+      buffer_putm(buffer_2, "layer str: ", layer_str.s);
+      buffer_putnlflush(buffer_2);
+
+      byte_zero(&extent, sizeof(extent));
+      ns = xml_find_all_3(doc, xml_match_name_and_attr, "wire", "layer", layer_str.s);
+
+      for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
+        xmlnode* node = *it;
+        double x1, x2, y1, y2;
+        const char* layer = xml_get_attribute(node, "layer");
+
+        rect_update(&extent, get_double(node, "x1"), get_double(node, "y1"));
+        rect_update(&extent, get_double(node, "x2"), get_double(node, "y2"));
+
+        print_script(buffer_1, node);
+
+        //      print_xy(buffer_2, layer, x1, y1);
+      }
+      print_rect(buffer_2, "extent", &extent);
+
+
+      translate = xy_neg(extent.a);
+
+
+      print_xy(buffer_2, "translate", translate.x, translate.y);
+
+      contour = extent;
+      rect_translate(&contour, translate);
+
+      print_rect(buffer_2, "contour", &contour);
+
+
+      /*    print_xy(buffer_2, "extent.1", extent.x1, extent.y1);
+          print_xy(buffer_2, "extent.2", extent.x2, extent.y2);
+      */
+      // xml_print_nodeset(&wires, buffer_1);
+
+//      buffer_puts(buffer_2, "top_y: ");
+//      buffer_putdouble(buffer_2, top_y, 1);
+//      buffer_putnlflush(buffer_2);
+//      buffer_puts(buffer_2, "right_x: ");
+//      buffer_putdouble(buffer_2, right_x, 1);
+//      buffer_putnlflush(buffer_2);
+    }
+
+    /*  cbmap_visit_all(nets, dump_net, "nets"); */
+
+    /*
+     * Cleanup function for the XML library.
+     */
+    xml_free(doc);
+  }
   /*
    * this is to debug memory for regression tests
    */
