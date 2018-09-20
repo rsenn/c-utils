@@ -24,7 +24,9 @@ xml_match_name_and_attr(xmlnode* node, strlist* names, const char* attr, const c
 
 int
 xml_has_attr(xmlnode* node, strlist* names) {
-  const char *str = strlist_at(names, 0), *e = strlist_end(names);
+  const char *str = strlist_at(names, 0);
+  const char *e = strlist_end(names);
+
   if(node->name == NULL) return 0;
 
   while(str < e) {

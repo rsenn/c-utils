@@ -23,6 +23,17 @@ xml_find_element_attr(xmlnode* node, const char* tag, const char* attr, const ch
 }
 
 xmlnode*
-xml_find_with_attrs(xmlnode* node, const strlist* attrs) {
+xml_find_with_attrs_l(xmlnode* node, const strlist* attrs) {
   return xml_find_pred_1(node, xml_has_attr, attrs);
+}
+
+xmlnode*
+xml_find_with_attrs(xmlnode* node, const char* attrs) {
+  xmlnode* r;
+  strlist attrlist;
+  strlist_init(&attrlist, '|');
+  strlist_froms(&attrlist, attrs, '|');
+  r = xml_find_with_attrs_l(node, &attrlist);
+  strlist_free(&attrlist);
+  return r;
 }
