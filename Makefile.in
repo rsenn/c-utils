@@ -87,7 +87,7 @@ libowcarb.a: $(LIB_OBJECTS)
 
 $(PROGRAMS): %$(EXEEXT): %.o
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
-	
+
 
 $(PROGRAMS): LIBS += -L$(builddir) -lowcarb
 
@@ -107,4 +107,4 @@ clean-library:
 
 .PHONY: clean-programs
 clean-programs:
-	$(RM) $(PROGRAM_OBJECTS) $(PROGRAMS) 
+	$(RM) $(PROGRAM_OBJECTS) $(PROGRAMS)

@@ -3,7 +3,7 @@ INSTALL = install
 CC = gcc
 CXX = g++
 #CPPFLAGS = -I/usr/include/libowfat
-#CPPFLAGS = -I. -D__USE_BSD=1 
+#CPPFLAGS = -I. -D__USE_BSD=1
 CPPFLAGS = -I.  -DPATHLEN=4096 -DUSE_READDIR=1 -DINLINE=__inline__ -DUSE_READDIR=1
 CFLAGS = -g -O2 -Wall
 CXXFLAGS = $(CFLAGS)
@@ -16,7 +16,7 @@ prefix := `$(CC)  -print-search-dirs|sed -n "s|^[^:]*: =\?\(/\?[^/]\+\)/.*|\1|p"
 bindir = ${prefix}/bin
 
 #EXTRA_DEP = $(EXTRA_MODULES:%=%.o)
-EXTRA_MODULES = 
+EXTRA_MODULES =
 SOURCES = strlist_append.c strlist_append_unique.c strlist_sort.c
 LIB_SOURCES = strlist_append.c strlist_append_unique.c strlist_sort.c
 

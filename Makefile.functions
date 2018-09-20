@@ -1,9 +1,11 @@
-define target-tmpl = 
-$(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))
-)$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)
-	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))
-$(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(NL)	$$(STRIP) $$@$(NL)endif$(NL))
+define nl =
+
+
 endef
+#$(info nl: A$(nl)A)
+
+target-tmpl := $(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))$(nl))$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)$(nl)	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))$(nl)$(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(NL)	$$(STRIP) $$@$(NL)endif$(NL))$(nl)
+
 
 define lib-tmpl =
 $$(BUILDDIR)$(1).a: $$(call add-sources,lib/$(1)/*.c $(2))
@@ -16,7 +18,7 @@ endef
 lib-target = $(eval $(call lib-tmpl,$(1),$(2)))
 
 define cmds-try-compile =
-set -e; 
+set -e;
 NAME=test_$$RANDOM;
 echo "$(1)" >$$NAME.c;
 $(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS)  -o $$NAME $$NAME.c;
@@ -76,7 +78,7 @@ def-var = $(eval $(cmd-set-var))
 def-function-exists = $(call def-var,HAVE_$(1),$(call check-function-exists,$(2),$(3)),$(DEFINES_FILE))
 
 #def-include-exists = $(call def-var,HAVE_$(1),$(call check-include-exists,$(1)),$(DEFINES_FILE))
-define def-include-exists = 
+define def-include-exists =
 $(call def-var,$(if $(2),$(2),HAVE_$(1)),$(call check-include-exists,$(1)),$(DEFINES_FILE))
 $(if $($(if $(2),$(2),HAVE_$(call header-to-var))),$(call append-var,DEFS,$(if $(2),$(2),HAVE_$(call header-to-var))=1))
 endef
@@ -86,7 +88,7 @@ clean-builddir = $(patsubst $$(BUILDDIR)%,%,$(patsubst $(BUILDDIR)%,%,$(1)))
 
 clean-target = $(BUILDDIR)$(call clean-builddir,$(1))$(call is-archive,$(1),,$(_M64)$(EXEEXT))
 
-cmds-exitcode = (set -x;  $(1)) >>checks.log 2>&1 && echo 1 || echo 
+cmds-exitcode = (set -x;  $(1)) >>checks.log 2>&1 && echo 1 || echo
 
 define cmd-check-header =
 HAVE_$(call header-to-var,$(1)) := $$(call check-include-exists,$(1))
@@ -102,7 +104,7 @@ file-exists = $(shell test -e "$(1)" 2>/dev/null >/dev/null && echo 1)
 flags-lib = $(if $(1),-L$$(BUILDDIR:%/=%) $(patsubst %,-l%,$(call clean-lib,$(1))),)
 
 define get-compiler-defs =
-echo | $(CROSS_COMPILE)$(CC) $(1) -dM -E - | grep "^#define"
+echo | $(CROSS_COMPILE)$(CC) $(1) -dM -E - | grep "^.define"
 endef
 
 header-to-var = $(shell echo "$(subst /,_,$(subst .,_,$(1)))" | tr "[[:lower:]]" "[[:upper:]]")

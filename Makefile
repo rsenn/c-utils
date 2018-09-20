@@ -14,9 +14,9 @@ endif
 ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
 PKG_CONFIG_PATH := $(subst /bin,/lib/pkgconfig,$(CROSS_COMPILE))
 endif
-$(info PKG_CONFIG_PATH=$(PKG_CONFIG_PATH))
+#$(info PKG_CONFIG_PATH=$(PKG_CONFIG_PATH))
 
-define NL = 
+define NL =
 
 endef
 
@@ -50,19 +50,19 @@ DEFINES_FILE := Makefile.defines
 
 $(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
 
-$(info HAVE_SYS_TYPES_H=$(HAVE_SYS_TYPES_H))
-$(info HAVE_INTTYPES_H=$(HAVE_INTTYPES_H))
-$(info HAVE_VCRUNTIME_H=$(HAVE_VCRUNTIME_H))
-$(info HAVE_STDINT_H=$(HAVE_STDINT_H))
-$(info HAVE_STDDEF_H=$(HAVE_STDDEF_H))
-$(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
+#$(info HAVE_SYS_TYPES_H=$(HAVE_SYS_TYPES_H))
+#$(info HAVE_INTTYPES_H=$(HAVE_INTTYPES_H))
+#$(info HAVE_VCRUNTIME_H=$(HAVE_VCRUNTIME_H))
+#$(info HAVE_STDINT_H=$(HAVE_STDINT_H))
+#$(info HAVE_STDDEF_H=$(HAVE_STDDEF_H))
+#$(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
 
 define NL =
 $(EMPTY)
 $(EMPTY)
 endef
 
-define CHECK_SCOPE_ID = 
+define CHECK_SCOPE_ID =
 #include <sys/types.h>\n
 #include <sys/socket.h>\n
 #include <netinet/in.h>\n
@@ -80,7 +80,7 @@ HAVE_SCOPE := $(call check-try-compile,$(CHECK_SCOPE_ID))
 ifeq ($(HAVE_SCOPE),1)
 DEFS += LIBC_HAS_SCOPE_ID=1
 endif
-$(info HAVE_SCOPE=$(HAVE_SCOPE))
+#$(info HAVE_SCOPE=$(HAVE_SCOPE))
 
 ifeq ($(call check-include-exists,errno.h),1)
 DEFS += HAVE_ERRNO_H=1
@@ -90,61 +90,61 @@ HAVE_N2I := $(call check-include-exists,net/if.h)
 ifeq ($(HAVE_N2I),1)
 DEFS += HAVE_N2I=1
 endif
-$(info HAVE_N2I=$(HAVE_N2I))
+#$(info HAVE_N2I=$(HAVE_N2I))
 
 LIBC_HAS_IP6 := $(call check-function-exists,inet_pton)
 ifeq ($(LIBC_HAS_IP6),1)
 DEFS += LIBC_HAS_IP6=1
 endif
-$(info LIBC_HAS_IP6=$(LIBC_HAS_IP6))
+#$(info LIBC_HAS_IP6=$(LIBC_HAS_IP6))
 
 HAVE_PIPE2 := $(call check-function-exists,pipe2)
 ifeq ($(HAVE_PIPE2),1)
 DEFS += HAVE_PIPE2=1
 endif
-$(info HAVE_PIPE2=$(HAVE_PIPE2))
+#$(info HAVE_PIPE2=$(HAVE_PIPE2))
 
 HAVE_WORDEXP := $(call check-function-exists,wordexp)
 ifeq ($(HAVE_WORDEXP),1)
 DEFS += HAVE_WORDEXP=1
 endif
-$(info HAVE_WORDEXP=$(HAVE_WORDEXP))
+#$(info HAVE_WORDEXP=$(HAVE_WORDEXP))
 
 HAVE_FNMATCH := $(call check-function-exists,fnmatch)
 ifeq ($(HAVE_FNMATCH),1)
 DEFS += HAVE_FNMATCH=1
 endif
-$(info HAVE_FNMATCH=$(HAVE_FNMATCH))
+#$(info HAVE_FNMATCH=$(HAVE_FNMATCH))
 
 HAVE_LSTAT := $(call check-function-exists,lstat)
 ifeq ($(HAVE_LSTAT),1)
 DEFS += HAVE_LSTAT=1
 endif
-$(info HAVE_LSTAT=$(HAVE_LSTAT))
+#$(info HAVE_LSTAT=$(HAVE_LSTAT))
 
 HAVE_GETDELIM := $(call check-function-exists,getdelim)
 ifeq ($(HAVE_GETDELIM),1)
 DEFS += HAVE_GETDELIM=1
 endif
-$(info HAVE_GETDELIM=$(HAVE_GETDELIM))
+#$(info HAVE_GETDELIM=$(HAVE_GETDELIM))
 
 HAVE_ROUND := $(call check-function-exists,round)
 ifeq ($(HAVE_ROUND),1)
 DEFS += HAVE_ROUND=1
 endif
-$(info HAVE_ROUND=$(HAVE_ROUND))
+#$(info HAVE_ROUND=$(HAVE_ROUND))
 
 HAVE_ALLOCA := $(call check-function-exists,alloca,,alloca.h)
 ifeq ($(HAVE_ALLOCA),1)
 DEFS += HAVE_ALLOCA=1
 endif
-$(info HAVE_ALLOCA=$(HAVE_ALLOCA))
+#$(info HAVE_ALLOCA=$(HAVE_ALLOCA))
 
 
 
 #$(call def-include-exists,errno.h,HAVE_ERRNO_H)
 $(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
-$(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
+#$(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
 BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 ifneq ($(CC),$(subst m32,,$(CC)))
 BUILD := $(subst x86_64,i386,$(BUILD))
@@ -171,9 +171,9 @@ ifneq ($(CROSS_COMPILE),$(subst musl,,$(CROSS_COMPILE)))
 USE_MUSL := 1
 endif
 
-$(info PREFIX: $(PREFIX))
-$(info DIET: $(DIET))
-$(info USE_DIET: $(USE_DIET))
+#$(info PREFIX: $(PREFIX))
+#$(info DIET: $(DIET))
+#$(info USE_DIET: $(USE_DIET))
 ifneq ($(USE_DIET),1)
 ifeq ($(word 1,(CROSS_COMPILE)),diet)
 USE_DIET := 1
@@ -203,11 +203,10 @@ ifeq ($(USE_MUSL),1)
     HOST := $(subst gnu,musl,$(BUILD))
 else
 ifeq ($(USE_DIET),1)
-    HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||')
-    #HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$|| ;; s|^\([^-]*\)-\([^-]*\)-\([^-]*\)-gnu|\1-\2-\3-diet| ;; s|^\([^-]*\)-\([^-]*\)-\([^-]*\)|\1-diet-\3|' )
+HOST := $( shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
 else
-    HOST := $(shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
-    endif
+HOST := $( shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
+endif
 endif
 endif
 ifneq ($(CC),$(subst m32,,$(CC)))
@@ -224,20 +223,21 @@ HOST := $(subst gnu,dietlibc,$(HOST))
 endif
 #$(info USE_DIET: $(USE_DIET))
 #$(info MINGW: $(MINGW))
-$(info HOST: $(HOST))
+#$(info HOST: $(HOST))
 ifeq ($(PREFIX),)
 PREFIX := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs |sed -n 's,.*:\s\+=\?,,; s,/bin.*,,p ; s,/lib.*,,p' |head -n1 )
 endif
 #$(info PREFIX: $(PREFIX))
 
-ifeq ($(SYSROOT),)
-ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
-SYSROOT := $(subst /bin/,,$(CROSS_COMPILE))
-else
-SYSROOT := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs|sed -n "/^lib/ { s|.*:\s\+|| ; s|^=|| ; /;/ { s|.*;|;| }; /;/! { s|.*:|| } ; s|^;|| ; s|/lib.*|| ; s|/mingw$$|| ; s|/usr$$|| ; s|/$$||; p }")
-endif
-$(info SYSROOT: $(SYSROOT))
-endif
+#ifeq ($(SYSROOT),)
+#ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
+#SYSROOT := $(subst /bin/,,$(CROSS_COMPILE))
+#else
+#SYSROOT = $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs | sed -n "/^lib/ { s|.*:\s\+|| ; s|^=|| ; /;/ { s|.*;|;| }; /;/! { s|.*:|| } ; s|^;|| ; s|/lib.*|| ; s|/mingw$$|| ; s|/usr$$|| ; s|/$$||; p }"  )
+#
+#endif
+#$(info SYSROOT: $(SYSROOT))
+#endif
 
 
 prefix ?= $(PREFIX)
@@ -277,7 +277,7 @@ else
   PKG_CONFIG_PATH := $(P)
   ifeq ($(SYSROOT),)
   SYSROOT := $(dir $(subst /lib/pkgconfig,,$(P)))
-$(info SYSROOT=$(SYSROOT))
+#$(info SYSROOT=$(SYSROOT))
   endif
   else
   P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/lib/pkgconfig)
@@ -310,12 +310,12 @@ ifeq ($(call cmd-exists,$(CROSS_COMPILE)$(STRIP)),1)
 STRIP := $(CROSS_COMPILE)$(STRIP)
 endif
 
-$(info PKG_CONFIG: $(PKG_CONFIG))
-$(info PKG_CONFIG_PATH: $(PKG_CONFIG_PATH))
+#$(info PKG_CONFIG: $(PKG_CONFIG))
+#$(info PKG_CONFIG_PATH: $(PKG_CONFIG_PATH))
 
 #PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env $(if $(SYSROOT),PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,),)$(PKG_CONFIG)
 PKG_CONFIG_CMD := $(if $(SYSROOT)$(PKG_CONFIG_PATH),env  ,)$(if $(PKG_CONFIG_PATH),PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ,)$(PKG_CONFIG)
-$(info PKG_CONFIG_CMD: $(PKG_CONFIG_CMD))
+#$(info PKG_CONFIG_CMD: $(PKG_CONFIG_CMD))
 ifneq ($(TRIPLET),)
 ARCH := $(word 1,$(TRIPLET))
 OS := $(shell echo $(word 3,$(TRIPLET)) |sed "s|[0-9].*||")
@@ -341,7 +341,7 @@ endif
 
 
 USE_WINSOCK := $(call check-function-exists,WSAStartup,-lws2_32,winsock2.h)
-$(info USE_WINSOCK=$(USE_WINSOCK))
+#$(info USE_WINSOCK=$(USE_WINSOCK))
 ifeq ($(USE_WINSOCK),1)
 WINSOCK_LIB = -lws2_32
 endif
@@ -349,37 +349,37 @@ endif
 $(call def-function-exists,ZLIB,deflate,-lz)
 
 HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
-$(info HAVE_ZLIB=$(HAVE_ZLIB))
+#$(info HAVE_ZLIB=$(HAVE_ZLIB))
 
 HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
-$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
+#$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
 
 HAVE_LIBBZ2 := $(call check-function-exists,BZ2_bzCompress,-lbz2)
-$(info HAVE_LIBBZ2=$(HAVE_LIBBZ2))
+#$(info HAVE_LIBBZ2=$(HAVE_LIBBZ2))
 
 #$(call def-function-exists,EPOLL,epoll_wait,)
 #$(info HAVE_EPOLL=$(HAVE_EPOLL))
 
 $(call def-function-exists,KQUEUE,kevent,)
-$(info HAVE_KQUEUE=$(HAVE_KQUEUE))
+#$(info HAVE_KQUEUE=$(HAVE_KQUEUE))
 
 $(call def-function-exists,POLL,poll,)
-$(info HAVE_POLL=$(HAVE_POLL))
+#$(info HAVE_POLL=$(HAVE_POLL))
 
 #$(call def-function-exists,SIGWAITINFO,sigwaitinfo,)
 #$(info HAVE_SIGWAITINFO=$(HAVE_SIGWAITINFO))
 
 $(call def-function-exists,SIGIO,sigtimedwait,)
-$(info HAVE_SIGIO=$(HAVE_SIGIO))
+#$(info HAVE_SIGIO=$(HAVE_SIGIO))
 
 
 HAVE_LSEEK64 := $(call check-function-exists,lseek64)
 HAVE_LSEEK := $(call check-function-exists,lseek)
 HAVE_LLSEEK := $(call check-function-exists,llseek)
 HAVE_POSIX_MEMALIGN := $(call check-function-exists,posix_memalign)
-$(info HAVE_POSIX_MEMALIGN=$(HAVE_POSIX_MEMALIGN))
+#$(info HAVE_POSIX_MEMALIGN=$(HAVE_POSIX_MEMALIGN))
 
-$(info HAVE_LSEEK64=$(HAVE_LSEEK64) HAVE_LSEEK=$(HAVE_LSEEK64)  HAVE_LLSEEK=$(HAVE_LLSEEK64))
+#$(info HAVE_LSEEK64=$(HAVE_LSEEK64) HAVE_LSEEK=$(HAVE_LSEEK64)  HAVE_LLSEEK=$(HAVE_LLSEEK64))
 #$(info llseek: $(call check-function-exists,llseek))
 ifeq ($SUBLIME_FILENAME),None)
 PATH = /c/git-sdk-64/usr/bin
@@ -419,12 +419,12 @@ EXEEXT = .exe
 endif
 BOOST_LIBS = boost_random
 
-$(info SYS: $(SYS))
-$(info KERN: $(KERN))
-$(info ARCH: $(ARCH))
-$(info OS: $(OS))
-$(info Host: $(HOST))
-$(info Build: $(BUILD))
+#$(info SYS: $(SYS))
+#$(info KERN: $(KERN))
+#$(info ARCH: $(ARCH))
+#$(info OS: $(OS))
+#$(info Host: $(HOST))
+#$(info Build: $(BUILD))
 
 HOST1 := $(word 1,$(subst -, ,$(HOST)))
 HOST2 := $(word 2,$(subst -, ,$(HOST)))
@@ -435,7 +435,7 @@ HOST3 := $(subst $(HOST1)-$(HOST2)-,,$(HOST))
 #$(info HOST1=$(HOST1), HOST2=$(HOST2), HOST3=$(HOST3))
 
 #ifneq ($(SYSNAME),)
-#BUILDDIR := $(subst w64,$(SYSNAME),$(BUILDDIR))
+#BUILDDIR = $(subst w64,$(SYSNAME),$(BUILDDIR))
 #endif
 ifeq ($(HOST2),pc)
 HOST2 := $(SYSNAME)
@@ -480,6 +480,7 @@ endif
 
 vpath lib lib/array lib/cb lib/cbmap lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR)
 VPATH = lib:lib/array:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR)
+
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
 ifneq ($(OS),msys)
@@ -505,7 +506,7 @@ endif
 endif
 endif
 
-$(info READDIR: $(READDIR))
+#$(info READDIR: $(READDIR))
 
 ifeq ($(WIN32),)
 ifeq ($(SYS),mingw32)
@@ -549,7 +550,7 @@ ifneq ($(NOPIPE),1)
 CFLAGS = -pipe
 endif
 
-CFLAGS_Prof = -pg -O2 
+CFLAGS_Prof = -pg -O2
 CFLAGS_Debug = -g -ggdb -O0
 CFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
 CFLAGS_RelWithDebInfo = -g -ggdb -O2
@@ -559,7 +560,7 @@ CXXFLAGS = -pipe
 
 CXXFLAGS += -std=c++11
 
-CXXFLAGS_Prof = -pg -O2 
+CXXFLAGS_Prof = -pg -O2
 CXXFLAGS_Debug = -g -ggdb -O0
 CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
 CXXFLAGS_RelWithDebInfo = -g -ggdb -O2
@@ -584,7 +585,7 @@ endif
 endif
 endif
 
-$(info BUILDDIR: \
+#$(info BUILDDIR: \
   )
 #$(info builddir: $(builddir))
 ifeq ($(BUILD_TYPE),Prof)
@@ -627,8 +628,8 @@ ifneq ($(STATIC),1)
 STATIC := 0
 endif
 
-$(info DIET: $(DIET))
-$(info STATIC: $(STATIC))
+#$(info DIET: $(DIET))
+#$(info STATIC: $(STATIC))
 ifeq ($(HOST),)
 HOST := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 endif
@@ -639,7 +640,7 @@ ifneq ($(MINGW),1)
 MINGW := 0
 endif
 ifeq ($(MINGW),1)
-LDFLAGS += -static-libgcc 
+LDFLAGS += -static-libgcc
 DEFS += open=_open read=_read write=_write close=_close
 #LDFLAGS += -static-lib{asan,gfortran,lsan,tsan,ubsan}
 WIN32 := 1
@@ -709,11 +710,11 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln)
 MAN3 = $(wildcard lib/*/*.3)
 
- #opensearch-dump 
-LIBSOURCES = $(wildcard lib/*/*.c) 
+ #opensearch-dump
+LIBSOURCES = $(wildcard lib/*/*.c)
 ifeq ($(DO_CXX),1)
 PROGRAMS += \
-  piccfghex$(M64_)$(EXEEXT)   
+  piccfghex$(M64_)$(EXEEXT)
 #  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXEEXT)
 endif
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
@@ -846,10 +847,10 @@ SYSROOT := /opt/$(HOST)/sys-root
 else
 ifeq ($(call file-exists,/usr/$(HOST)/sys-root),1)
 SYSROOT := /usr/$(HOST)/sys-root
-else 
+else
 ifeq ($(call file-exists,/usr/$(HOST)/sysroot),1)
 SYSROOT := /usr/$(HOST)/sysroot
-else 
+else
 ifeq ($(call file-exists,/opt/$(HOST)/sysroot),1)
 SYSROOT := /opt/$(HOST)/sys-root
 else
@@ -864,7 +865,7 @@ endif
 endif
 
 ifeq ($(SYSROOT),/usr/)
-  SYSROOT := 
+  SYSROOT :=
 endif
 
 ifneq ($(SYS),msys)
@@ -874,7 +875,6 @@ FLAGS += --sysroot=$(SYSROOT)
 endif
 endif
 endif
-
 
 $(info CFLAGS: $(CFLAGS))
 $(info CXXFLAGS: $(CXXFLAGS))
@@ -886,8 +886,11 @@ $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
 MODULES += $(patsubst %,$(BUILDDIR)%.a,array buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
-all: $(BUILDDIR) $(FLAGS_FILE) $(FLAGS_FILE) $(MODULES) \
-   $(PROGRAMS)
+
+$(info BUILDDIR: $(BUILDDIR))
+
+
+all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
 
 #$(BUILDDIR)tryerrno.c:
 #	echo "int main() {\
@@ -912,14 +915,18 @@ PROGRAM_OBJECTS = $(patsubst %.c,$(BUILDDIR)%.o,$(wildcard *.c))
 
 CPPFLAGS := -I.
 
+.PHONY: builddir
+builddir: $(BUILDDIR) $(OBJDIR)
+	-mkdir -p $(BUILDDIR) || mkdir $(BUILDDIR)
+	-md $(subst /,\,$(BUILDDIR))
+
 $(BUILDDIR):
 	-mkdir -p $(BUILDDIR) || mkdir $(BUILDDIR)
 	-md $(subst /,\,$(BUILDDIR))
-	
+
 $(OBJDIR):
 	-mkdir -p $(OBJDIR) || mkdir $(OBJDIR)
 	-md $(subst /,\,$(OBJDIR))
-
 
 
 $(call lib-target,array,lib/umult64.c)
@@ -1030,8 +1037,8 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB) 
-$(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) 
+$(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
+$(BUILDDIR)httptest$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS)
 $(BUILDDIR)httptest$(M64_)$(EXEEXT): $(BUILDDIR)httptest.o $(call add-library,http dns errmsg socket io case taia tai iarray array ndelay uint16 buffer fmt mmap open  scan stralloc str byte   taia  uint32 )
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
@@ -1051,7 +1058,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)xmltest2$(M64_)$(EXEEXT): $(BUILDDIR)xmltest2.o $(call add-library, xml strlist array charbuf textbuf hmap buffer mmap open stralloc byte scan fmt fmt str)
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) 
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
@@ -1109,7 +1116,7 @@ endif
 $(BUILDDIR)plsconv$(M64_)$(EXEEXT): LIBS += -lm
 #$(BUILDDIR)plsconv$(M64_)$(EXEEXT): CFLAGS +=
 $(BUILDDIR)plsconv$(M64_)$(EXEEXT): $(BUILDDIR)plsconv.o $(call add-library,  playlist xml hmap stralloc buffer mmap open str fmt scan  byte)
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) 
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
@@ -1145,14 +1152,14 @@ endif
 #$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): CFLAGS += $(ICONV_CFLAGS)
 $(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): LIBS += $(ICONV_LIBS) $(OTHERLIBS) -lm
 $(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(call add-library, errmsg path strarray cbmap xml hmap array buffer strlist stralloc mmap open scan fmt str byte)
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
 $(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
 $(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): $(BUILDDIR)eagle-to-circuit.o $(call add-library, errmsg path cbmap xml array charbuf textbuf hmap strlist buffer mmap open stralloc byte scan fmt fmt str)
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
@@ -1209,7 +1216,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 ifneq ($(DIET),)
-$(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += -lcompat 
+$(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += -lcompat
 endif
 $(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)sln$(M64_)$(EXEEXT): $(BUILDDIR)sln.o $(call add-library, slist cbmap path dir buffer errmsg strarray strlist stralloc array mmap byte scan fmt str open uint32)
@@ -1310,7 +1317,7 @@ endif
 clean:
 	$(RM) -f $(OBJECTS) list-r.o list-r$(M64_)$(EXEEXT)
 
-install: all 
+install: all
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(PROGRAMS) $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(man3dir)
@@ -1350,10 +1357,10 @@ $(BUILDDIR)/%.pic.o: CFLAGS += -fPIC
 $(PROGRAMS):  #CPPFLAGS += -I.
 #$(PROGRAMS): CPPFLAGS += -Ilib
 
-$(info PROGRAMS=$(subst $(SPACE),$(NL)    ,$(shell ls -td -- $(PROGRAMS))))
+#$(info PROGRAMS=$(subst $(SPACE),$(NL)    ,$(shell ls -td -- $(PROGRAMS))))
 
 
-$(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a 
+$(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
