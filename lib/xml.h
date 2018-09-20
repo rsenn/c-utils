@@ -66,7 +66,6 @@ xmlnode*    xml_find_element(xmlnode*, const char* tag);
 void        xml_free(xmlnode*);
 char*       xml_get_attribute(xmlnode*, const char* attr);
 xmlnode*    xml_get_document(xmlnode*);
-int         xml_has_attribute(xmlnode*, const char* attr);
 int         xml_match_name_and_attr();
 int         xml_match_name();
 xmlnode*    xml_newnode(xmlnodeid);
@@ -124,6 +123,8 @@ xmlnode* xml_find_element(xmlnode*, const char* tag);
 xmlnode* xml_find_pred_n(xmlnode*, int (*pred)(xmlnode*, void* ), int n, ...);
 xmlnode* xml_pfind_pred(xmlnode*, int (*pred)(), void* vptr[]);
 
+int xml_has_attribute_n(xmlnode*, const char* b, size_t n);
+int xml_has_attribute(xmlnode*, const char* attr);
 
 #ifdef __cplusplus
 }

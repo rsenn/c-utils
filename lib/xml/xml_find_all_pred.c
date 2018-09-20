@@ -23,14 +23,14 @@ xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), void* vptr[]) {
 
 xmlnodeset
 xml_pfind_all(xmlnode* node, int (*pred)(), void* ptr[4]) {
-   xmlnodeset ret;
+  xmlnodeset ret;
   array a;
-  strlist names; 
+  strlist names;
 
   strlist_init(&names, '\0');
   strlist_froms(&names, ptr[0], '|');
   byte_zero(&a, sizeof(array));
- ptr[0] = &names;
+  ptr[0] = &names;
   xml_find_all_predicate(node, &a, pred, ptr);
   ret.nodes = array_start(&a);
   ret.size = array_length(&a, sizeof(xmlnode*));
@@ -39,25 +39,24 @@ xml_pfind_all(xmlnode* node, int (*pred)(), void* ptr[4]) {
 
 xmlnodeset
 xml_find_all_3(xmlnode* node, int (*pred)(), void* a1, void* a2, void* a3) {
- void* vptr[] = { a1, a2, a3, NULL};
+  void* vptr[] = {a1, a2, a3, NULL};
   return xml_pfind_all(node, pred, vptr);
 }
 
 xmlnodeset
 xml_find_all_2(xmlnode* node, int (*pred)(), void* a1, void* a2) {
- void* vptr[] = { a1, a2, NULL, NULL};
+  void* vptr[] = {a1, a2, NULL, NULL};
   return xml_pfind_all(node, pred, vptr);
 }
 
 xmlnodeset
 xml_find_all_1(xmlnode* node, int (*pred)(), void* a1) {
- void* vptr[] = { a1, NULL, NULL, NULL};
+  void* vptr[] = {a1, NULL, NULL, NULL};
   return xml_pfind_all(node, pred, vptr);
 }
 
-
-//xmlnodeset
-//xml_pfind_all(xmlnode* node, int (*pred)(), ...) {
+// xmlnodeset
+// xml_pfind_all(xmlnode* node, int (*pred)(), ...) {
 //  xmlnodeset ret;
 //  va_list args;
 //  va_start(args, pred);

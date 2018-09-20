@@ -51,6 +51,11 @@ int     strlist_shift_n(strlist* sl, size_t i);
 size_t  strlist_sort(strlist*);
 int     strlist_unshift(strlist*, const char* s);
 
+#define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
+
+
+#define __strlist_foreach(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl)-str, (sl)->sep))
+
 #ifdef STRALLOC_H
 int strlist_contains_sa(strlist*, const stralloc* sa);
 int strlist_push_sa(strlist*, const stralloc* sa);

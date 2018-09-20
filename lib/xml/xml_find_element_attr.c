@@ -1,4 +1,7 @@
+#include "../strlist.h"
 #include "../xml.h"
+
+extern int xml_has_attr(xmlnode* node, strlist* names);
 
 struct tag_attr_value {
   const char *t, *a, *v;
@@ -17,4 +20,9 @@ xml_tag_attr_value_pred(xmlnode* node, const char* tag, const char* attr, const 
 xmlnode*
 xml_find_element_attr(xmlnode* node, const char* tag, const char* attr, const char* value) {
   return xml_find_pred_3(node, xml_tag_attr_value_pred, tag, attr, value);
+}
+
+xmlnode*
+xml_find_with_attrs(xmlnode* node, const strlist* attrs) {
+  return xml_find_pred_1(node, xml_has_attr, attrs);
 }

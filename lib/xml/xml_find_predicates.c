@@ -21,3 +21,16 @@ xml_match_name_and_attr(xmlnode* node, strlist* names, const char* attr, const c
   }
   return 0;
 }
+
+int
+xml_has_attr(xmlnode* node, strlist* names) {
+  const char *str = strlist_at(names, 0), *e = strlist_end(names);
+  if(node->name == NULL) return 0;
+
+  while(str < e) {
+    size_t n = byte_chr(str, e - str, names->sep);
+    if(xml_has_attribute_n(node, str, n)) return 1;
+    e += n;
+  }
+  return 0;
+}

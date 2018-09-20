@@ -100,13 +100,13 @@ struct ref {
   };
 };
 typedef struct pos {
-  double x,y;
+  double x, y;
 } xy;
 struct wire {
   double x1, y1, x2, y2;
 };
 typedef struct wire wire;
-//typedef struct wire rect;
+// typedef struct wire rect;
 
 typedef struct pos point;
 typedef struct pos xy;
@@ -143,7 +143,6 @@ static int measures_layer = -1, bottom_layer = -1;
 static array wires;
 static wire bounds = {DBL_MAX, DBL_MAX, DBL_MAX, DBL_MAX};
 
-
 static int do_list_layers, do_draw_measures;
 static const char* current_layer = "Bottom";
 
@@ -153,11 +152,13 @@ static rect contour;
 
 static const char* base;
 
-
-static inline struct pos xy_neg(const struct pos p) {
-  struct pos r = { -p.x, -p.y }; return r;
+static inline struct pos
+xy_neg(const struct pos p) {
+  struct pos r = {-p.x, -p.y};
+  return r;
 }
-static inline void xy_add(struct pos* d, const struct pos p) {
+static inline void
+xy_add(struct pos* d, const struct pos p) {
   d->x += p.x;
   d->y += p.y;
 }
@@ -285,7 +286,7 @@ get_entry(cbmap_t map, const char* key) {
 }
 void
 print_base(buffer* b) {
-buffer_putm(b, base, ": ");
+  buffer_putm(b, base, ": ");
 }
 
 /**
@@ -317,7 +318,6 @@ build_layers(xmlnode* layer) {
   /*  xml_print(layer, buffer_1); */
 }
 
-
 void
 rect_translate(rect* r, struct pos p) {
   xy_add(&r->a, p);
@@ -331,7 +331,6 @@ rect_update(rect* r, double x, double y) {
   if(y < r->y1 || r->y1 == DBL_MAX) r->y1 = y;
   if(y > r->y2 || r->y2 == DBL_MAX) r->y2 = y;
 }
-
 
 void
 check_wire(xmlnode* node) {
@@ -441,7 +440,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     }
 
 #ifdef DEBUG_REFLIST
-   print_name_value(buffer_2, nn, part_name);
+    print_name_value(buffer_2, nn, part_name);
     buffer_putc(buffer_2, '\t');
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
@@ -861,34 +860,96 @@ print_xy(buffer* b, const char* name, double x, double y) {
 }
 
 void
+print_vertex(buffer* b, const struct pos v) {
+  buffer_putc(b, '(');
+  buffer_putdouble(b, v.x, 4);
+  buffer_putspace(b);
+  buffer_putdouble(b, v.y, 4);
+  buffer_putc(b, ')');
+}
+
+void
 print_rect(buffer* b, const char* name, const rect* r) {
-  print_base(b);
-  buffer_putm(b, name, ": ");
-  buffer_puts(b, "(");
-  buffer_putdouble(b, r->x1, 4);
-  buffer_puts(b, ",");
-  buffer_putdouble(b, r->y1, 4);
-  buffer_puts(b, "|");
-  buffer_putdouble(b, r->x2, 4);
-  buffer_puts(b, ",");
-  buffer_putdouble(b, r->y2, 4);
-  buffer_puts(b, ")");
-  buffer_putnlflush(b);
+  print_vertex(b, r->a);
+  buffer_putspace(b);
+  print_vertex(b, r->b);
+}
+
+void
+print_xml_xy(buffer* b, xmlnode* e) {
+  buffer_putm(b, "(", xml_get_attribute(e, "x"), " ", xml_get_attribute(e, "y"), ")");
+}
+
+void
+print_xml_rect(buffer* b, xmlnode* e) {
+  buffer_putm(b,
+              "(",
+              xml_get_attribute(e, "x1"),
+              " ",
+              xml_get_attribute(e, "y1"),
+              ") (",
+              xml_get_attribute(e, "x2"),
+              " ",
+              xml_get_attribute(e, "y2"),
+              ")");
+  buffer_flush(b);
 }
 
 void
 print_script(buffer* b, xmlnode* e) {
 
-  if(!str_equal(e->name, "wire")) {
+  if(str_equal(e->name, "wire")) {
+    buffer_putm(b, "Wire ", xml_get_attribute(e, "width"), " ");
+    print_xml_rect(b, e);
 
+  } else if(str_equal(e->name, "via")) {
+    buffer_putm(b,
+                "Via '",
+                xml_get_attribute(e->parent, "name"),
+                "' ",
+                xml_get_attribute(e, "extent"),
+                " ",
+                xml_get_attribute(e, "shape"),
+                " ");
+    print_xml_xy(b, e);
+  } else if(str_equal(e->name, "pad")) {
+    buffer_putm(b,
+                "Pad '",
+                xml_get_attribute(e, "name"),
+                "'",
+                " ",
+                xml_get_attribute(e, "diameter"),
+                " ",
+                xml_get_attribute(e, "shape"),
+                " ",
+                xml_get_attribute(e, "orientation"),
+                " ");
+    print_xml_xy(b, e);
 
-      buffer_putm(b, "Wire ", xml_get_attribute(e, "layer"), " ",
-                  "(", xml_get_attribute(e,  "x1"), " ",  xml_get_attribute(e,  "y1"), ") (",
-                 xml_get_attribute(e,  "x2"), " ",  xml_get_attribute(e,  "y2"), ");");
-      buffer_putnlflush(b);
+  } else if(str_equal(e->name, "hole")) {
+    buffer_putm(b, "Hole ", xml_get_attribute(e, "diameter"), " ");
+    print_xml_xy(b, e);
+  } else if(str_equal(e->name, "circle")) {
+    buffer_putm(b, "Circle ", xml_get_attribute(e, "width"), " ");
+    print_xml_xy(b, e);
+  } else if(str_equal(e->name, "text")) {
+    stralloc align;
+    stralloc_init(&align);
+    const char* a = xml_get_attribute(e, "align");
+    // xml_get_attribute_sa(e, &align, "align");
 
+    stralloc_subst(&align, a, str_len(a), "-", " ");
+    stralloc_nul(&align);
+    buffer_putm(b, "CHANGE ALIGN ", align.s, "; ");
 
-    }
+    buffer_putm(b, "Text '", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ");
+
+    print_xml_xy(b, e);
+  } else {
+    buffer_putm(buffer_2, "No such element: ", e->name);
+    buffer_putnlflush(buffer_2);
+  }
+  buffer_putnlflush(b);
 }
 
 int
@@ -1206,6 +1267,8 @@ main(int argc, char* argv[]) {
       byte_zero(&extent, sizeof(extent));
       ns = xml_find_all_3(doc, xml_match_name_and_attr, "wire", "layer", layer_str.s);
 
+      int n = xmlnodeset_size(&ns);
+
       for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
         xmlnode* node = *it;
         double x1, x2, y1, y2;
@@ -1218,11 +1281,11 @@ main(int argc, char* argv[]) {
 
         //      print_xy(buffer_2, layer, x1, y1);
       }
+      buffer_flush(buffer_1);
+
       print_rect(buffer_2, "extent", &extent);
 
-
       translate = xy_neg(extent.a);
-
 
       print_xy(buffer_2, "translate", translate.x, translate.y);
 
@@ -1231,18 +1294,17 @@ main(int argc, char* argv[]) {
 
       print_rect(buffer_2, "contour", &contour);
 
-
       /*    print_xy(buffer_2, "extent.1", extent.x1, extent.y1);
           print_xy(buffer_2, "extent.2", extent.x2, extent.y2);
       */
       // xml_print_nodeset(&wires, buffer_1);
 
-//      buffer_puts(buffer_2, "top_y: ");
-//      buffer_putdouble(buffer_2, top_y, 1);
-//      buffer_putnlflush(buffer_2);
-//      buffer_puts(buffer_2, "right_x: ");
-//      buffer_putdouble(buffer_2, right_x, 1);
-//      buffer_putnlflush(buffer_2);
+      //      buffer_puts(buffer_2, "top_y: ");
+      //      buffer_putdouble(buffer_2, top_y, 1);
+      //      buffer_putnlflush(buffer_2);
+      //      buffer_puts(buffer_2, "right_x: ");
+      //      buffer_putdouble(buffer_2, right_x, 1);
+      //      buffer_putnlflush(buffer_2);
     }
 
     /*  cbmap_visit_all(nets, dump_net, "nets"); */
