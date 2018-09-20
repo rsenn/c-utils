@@ -1336,13 +1336,13 @@ main(int argc, char* argv[]) {
                 if(str_equal(named->name, "signal")) {
                     if(current_signal == NULL || str_diff(name, current_signal)) {
                         current_signal = name;
+
+                        buffer_puts(buffer_1, "# ");
+                        xml_path(named, &path);
+                        buffer_putsa(buffer_1, &path);
+                        buffer_puts(buffer_1, "[@");
                       }
                   }
-
-                buffer_puts(buffer_1, "# ");
-                xml_path(named, &path);
-                buffer_putsa(buffer_1, &path);
-                buffer_puts(buffer_1, "[@");
 
                 xml_print_attributes(named->attributes, buffer_1, ", @", "=", "'");
                 buffer_putnlflush(buffer_1);

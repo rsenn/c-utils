@@ -136,8 +136,13 @@ xmlnode* xml_find_with_attrs_l(xmlnode*, const strlist* attrs);
 xmlnode* xml_find_with_attrs(xmlnode*, const char* attrs);
 xmlnodeset xml_find_all_attrs(xmlnode*, const char* attrs);
 
+
+xmlnode* xml_find_parent_attr(xmlnode*, const char* attrs);
+xmlnode* xml_find_parent_pred_1(xmlnode*, int (*pred)(void), void* arg);
+xmlnode* xml_find_parent_pred_2(xmlnode*, int (*pred)(void), void* a0, void* a1);
+xmlnode* xml_find_parent_pred_3(xmlnode*, int (*pred)(void), void* a0, void* a1, void* a2);
 xmlnode* xml_find_parent(xmlnode*, const char* tag);
-xmlnode* xml_pfind_parent(xmlnode*, int (*pred)(void), void* ptr[4]);
+xmlnode* xml_pfind_parent(xmlnode*, int (*pred)(void), void* ptr[]);
 
 
 #ifdef __cplusplus
