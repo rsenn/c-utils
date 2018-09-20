@@ -91,6 +91,8 @@ xmlnode*    xml_element(const char*);
 
 #define xmlnodeset_item(ns, i) ((ns)->nodes[i])
 
+#define xmlnodeset_clear(ns) byte_zero((ns), sizeof(xmlnodeset))
+
 __inl xmlnode** xmlnodeset_begin(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[0] : NULL; }
 __inl xmlnode** xmlnodeset_end(const xmlnodeset* ns) { return ns->nodes ? &ns->nodes[ns->size] : NULL; }
 
@@ -101,7 +103,7 @@ typedef xmlnode** xmlnodeset_iter_t;
 
 __inl void xmlnodeset_iter_pp(xmlnode*** itp) { ++(*itp); }
 __inl void xmlnodeset_iter_mm(xmlnode*** itp) { --(*itp); }
-__inl xmlnode* xmlnodeset_iter_ref(xmlnode*** itp) { return *(*itp); }
+__inl xmlnode* xmlnodeset_iter_ref(xmlnode*const* const itp) { return *(itp); }
 __inl int xmlnodeset_iter_eq(xmlnode*** itp1, xmlnode*** itp2) { return (*itp1) == (*itp2); }
 __inl ptrdiff_t xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) { return (*itp2) - (*itp1); }
 
@@ -132,6 +134,10 @@ xmlnode* xml_find_with_attrs_l(xmlnode*, const strlist* attrs);
 
 xmlnode* xml_find_with_attrs(xmlnode*, const char* attrs);
 xmlnodeset xml_find_all_attrs(xmlnode*, const char* attrs);
+
+xmlnode* xml_find_parent(xmlnode*, const char* tag);
+xmlnode* xml_pfind_parent(xmlnode*, int (*pred)(void), void* ptr[4]);
+
 
 #ifdef __cplusplus
 }

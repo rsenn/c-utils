@@ -42,6 +42,8 @@ void array_cate(array* to,const array* const from,int64 pos,int64 stop);
 void array_shift(array* x,uint64 membersize,uint64 members);
 void array_chop(array* x,uint64 membersize,uint64 members);
 
+#define array_init(ns) byte_zero((ns), sizeof(array))
+
 #define array_failed(x) (array_bytes(x)==-1)
 #define array_unallocated(x) (array_bytes(x)==0)
 

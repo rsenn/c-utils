@@ -42,9 +42,12 @@ xmlnodeset
 xml_find_all_attrs(xmlnode* node, const char* attrs) {
   xmlnodeset r;
   strlist attrlist;
+  xmlnodeset_clear(&r);
   strlist_init(&attrlist, '|');
-  strlist_froms(&attrlist, attrs, '|');
-  r = xml_find_all_1(node, xml_has_attr, &attrlist);
+ // strlist_froms(&attrlist, attrs, '|');
+  stralloc_copys(&attrlist.sa, attrs);
+
+  r = xml_find_all_2(node, xml_has_attr, NULL, &attrlist);
   strlist_free(&attrlist);
   return r;
 }

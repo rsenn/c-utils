@@ -23,16 +23,17 @@ xml_match_name_and_attr(xmlnode* node, strlist* names, const char* attr, const c
 }
 
 int
-xml_has_attr(xmlnode* node, strlist* names) {
-  const char *str = strlist_at(names, 0);
-  const char *e = strlist_end(names);
+xml_has_attr(xmlnode* node, void* n, strlist* attrs) {
+  const char* str = strlist_at(attrs, 0);
+  const char* e = strlist_end(attrs);
 
   if(node->name == NULL) return 0;
 
   while(str < e) {
-    size_t n = byte_chr(str, e - str, names->sep);
+    size_t n = byte_chr(str, e - str, attrs->sep);
     if(xml_has_attribute_n(node, str, n)) return 1;
-    e += n;
+    str += n;
+    if(str < e) ++str;
   }
   return 0;
 }

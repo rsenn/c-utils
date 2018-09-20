@@ -145,12 +145,15 @@ static wire bounds = {DBL_MAX, DBL_MAX, DBL_MAX, DBL_MAX};
 
 static int do_list_layers, do_draw_measures;
 static const char* current_layer = "Bottom";
+static const char* current_signal = NULL;
 
 static rect wire_bounds;
 static xy translate;
 static rect contour;
 
 static const char* base;
+static int active_layer = -1;
+static stralloc current_alignment;
 
 static inline struct pos
 xy_neg(const struct pos p) {
@@ -295,7 +298,8 @@ print_base(buffer* b) {
 void
 print_name_value(buffer* b, const char* name, const char* value) {
   print_base(b);
-  buffer_putm(b, name, ": ", value ? value : "(null)");
+  if(name) buffer_putm(b, name, ": ");
+  buffer_puts(b, value ? value : "(null)");
 }
 
 int
@@ -308,6 +312,39 @@ package_pin(struct package* pkg, const char* name) {
     if(p->name.len == nlen && !str_diffn(p->name.s, name, str_len(name))) return i;
   }
   return -1;
+}
+
+int
+get_layer(const char* str) {
+  long i, n = strarray_size(&layers);
+
+  if((i = strarray_index_of(&layers, str)) < n) return i;
+
+  if((i = layer_id(str)) != -1) return i;
+  if(scan_long(str, &i) > 0) return i;
+
+  return -1;
+}
+
+const char*
+layer_name(int i) {
+  return strarray_at(&layers, i);
+}
+
+int
+layer_id(const char* str) {
+  int id = -1;
+  if(scan_uint(str, &id)) {
+    if(id >= 0 && id < strarray_size(&layers)) return id;
+  }
+  return -1;
+}
+
+const char*
+layer_by_id(const char* str) {
+  int id;
+  if((id = get_layer(str)) != -1) return layer_name(id);
+  return NULL;
 }
 
 void
@@ -554,7 +591,7 @@ build_deviceset(xmlnode* set) {
 xmlnodeset
 
 getnodeset(void* n, const char* xpath) {
-  return xml_find_all_1(n, xml_match_name, xpath);
+  return xml_find_all_1(n, xml_match_name, (void*)xpath);
 }
 
 /**
@@ -850,13 +887,20 @@ print_element_names(xmlnode* node) {
 
 void
 print_xy(buffer* b, const char* name, double x, double y) {
-  print_base(b);
-  buffer_puts(b, name);
-  buffer_puts(b, ": x=");
+  if(name) {
+    print_base(b);
+    buffer_putm(b, name, ": ");
+  }
+  buffer_puts(b, "(");
   buffer_putdouble(b, x, 4);
-  buffer_puts(b, ", y=");
+  buffer_puts(b, " ");
   buffer_putdouble(b, y, 4);
-  buffer_putnlflush(b);
+  buffer_puts(b, ")");
+
+  if(name)
+    buffer_putnlflush(b);
+  else
+    buffer_flush(b);
 }
 
 void
@@ -870,9 +914,14 @@ print_vertex(buffer* b, const struct pos v) {
 
 void
 print_rect(buffer* b, const char* name, const rect* r) {
+  if(name) {
+    print_base(b);
+    buffer_putm(b, name, ": ");
+  }
   print_vertex(b, r->a);
   buffer_putspace(b);
   print_vertex(b, r->b);
+  if(name) buffer_putnlflush(b);
 }
 
 void
@@ -882,73 +931,81 @@ print_xml_xy(buffer* b, xmlnode* e) {
 
 void
 print_xml_rect(buffer* b, xmlnode* e) {
-  buffer_putm(b,
-              "(",
-              xml_get_attribute(e, "x1"),
-              " ",
-              xml_get_attribute(e, "y1"),
-              ") (",
-              xml_get_attribute(e, "x2"),
-              " ",
-              xml_get_attribute(e, "y2"),
-              ")");
+  buffer_putm(b, "(", xml_get_attribute(e, "x1"), " ", xml_get_attribute(e, "y1"), ") (", xml_get_attribute(e, "x2"), " ", xml_get_attribute(e, "y2"), ")");
   buffer_flush(b);
 }
 
 void
 print_script(buffer* b, xmlnode* e) {
+  stralloc cmd;
+  stralloc_init(&cmd);
+  if(e->name) stralloc_copys(&cmd, e->name);
+  if(cmd.len) cmd.s[0] = toupper(cmd.s[0]);
+  stralloc_append(&cmd, " ");
+  stralloc_nul(&cmd);
 
-  if(str_equal(e->name, "wire")) {
-    buffer_putm(b, "Wire ", xml_get_attribute(e, "width"), " ");
-    print_xml_rect(b, e);
+  if(xml_has_attribute(e, "layer")) {
+    int layer = get_layer(xml_get_attribute(e, "layer"));
+    if(layer != -1 && layer != active_layer) {
+      buffer_putm(b, "Layer ", layer_name(layer), "; ");
+      active_layer = layer;
+    }
+    }
 
-  } else if(str_equal(e->name, "via")) {
-    buffer_putm(b,
-                "Via '",
-                xml_get_attribute(e->parent, "name"),
-                "' ",
-                xml_get_attribute(e, "extent"),
-                " ",
-                xml_get_attribute(e, "shape"),
-                " ");
-    print_xml_xy(b, e);
-  } else if(str_equal(e->name, "pad")) {
-    buffer_putm(b,
-                "Pad '",
-                xml_get_attribute(e, "name"),
-                "'",
-                " ",
-                xml_get_attribute(e, "diameter"),
-                " ",
-                xml_get_attribute(e, "shape"),
-                " ",
-                xml_get_attribute(e, "orientation"),
-                " ");
-    print_xml_xy(b, e);
-
-  } else if(str_equal(e->name, "hole")) {
-    buffer_putm(b, "Hole ", xml_get_attribute(e, "diameter"), " ");
-    print_xml_xy(b, e);
-  } else if(str_equal(e->name, "circle")) {
-    buffer_putm(b, "Circle ", xml_get_attribute(e, "width"), " ");
-    print_xml_xy(b, e);
-  } else if(str_equal(e->name, "text")) {
+  if(xml_has_attribute(e, "align")) {
     stralloc align;
     stralloc_init(&align);
-    const char* a = xml_get_attribute(e, "align");
+    const char* a;
     // xml_get_attribute_sa(e, &align, "align");
 
-    stralloc_subst(&align, a, str_len(a), "-", " ");
-    stralloc_nul(&align);
-    buffer_putm(b, "CHANGE ALIGN ", align.s, "; ");
+    if((a = xml_get_attribute(e, "align"))) {
+      stralloc_subst(&align, a, str_len(a), "-", " ");
+      if(align.len) {
+        if(!stralloc_case_equal(&align, &current_alignment)) {
+          stralloc_copy(&current_alignment, &align);
+          stralloc_nul(&current_alignment);
+          buffer_putm(b, "CHANGE ALIGN ", current_alignment.s, "; ");
+        }
+      }
+    }
+  }
 
-    buffer_putm(b, "Text '", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ");
+  if(str_equal(e->name, "wire")) {
+      buffer_putsa(b, &cmd);
+    if(signal)  buffer_putm(b, "'", xml_get_attribute(signal, "name"), "' ");
+    buffer_putm(b, xml_get_attribute(e, "width"), " ");
+
+    print_xml_rect(b, e);
+  } else if(str_equal(e->name, "via")) {
+      buffer_putsa(b, &cmd);
+      if(signal)  buffer_putm(b, "'", xml_get_attribute(signal, "name"), "' ");
+
+    buffer_putm(b,  xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ");
+    print_xml_xy(b, e);
+  } else if(str_equal(e->name, "pad")) {
+    buffer_putm(b, cmd.s, "'", xml_get_attribute(e, "name"), "'", " ", xml_get_attribute(e, "diameter"), " ", xml_get_attribute(e, "shape"), " ", xml_get_attribute(e, "orientation"), " ");
+    print_xml_xy(b, e);
+  } else if(str_equal(e->name, "hole")) {
+    buffer_putm(b, cmd.s, xml_get_attribute(e, "diameter"), " ");
+    print_xml_xy(b, e);
+  } else if(str_equal(e->name, "circle")) {
+    buffer_putm(b, cmd.s, xml_get_attribute(e, "width"), " ");
+    print_xml_xy(b, e);
+  } else if(str_equal(e->name, "rectangle")) {
+    buffer_putm(b, cmd.s, xml_get_attribute(e, "orientation"), " ");
+    print_xml_rect(b, e);
+  } else if(str_equal(e->name, "text")) {
+
+    buffer_putm(b, cmd.s, "'", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ");
 
     print_xml_xy(b, e);
   } else {
     buffer_putm(buffer_2, "No such element: ", e->name);
     buffer_putnlflush(buffer_2);
+    return;
   }
+  buffer_putc(b, ';');
+
   buffer_putnlflush(b);
 }
 
@@ -978,15 +1035,15 @@ match_query(xmlnode* doc, const char* q) {
 
     if(0) { //! str_diff(q, xq)) {
       TUPLE* a;
-      const char* elem_name = &q[2];
+      char* elem_name = (char*)&q[2];
       stralloc query;
       stralloc_init(&query);
       elem_name = "*";
 
       for(a = xml_attributes(node); a; a = hmap_next(node->attributes, a)) {
         strlist part_names;
-        const char* attr_name = a->key;
-        const char* v = a->vals.val_chars;
+        char* attr_name = a->key;
+        char* v = a->vals.val_chars;
         if(!v || str_len(v) == 0) continue;
 
         if(!str_diff(attr_name, "name")) {
@@ -1107,18 +1164,6 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --layers, -L          List layers\n");
   buffer_puts(buffer_1, "  --draw, -d            Draw measures\n");
   buffer_putnlflush(buffer_1);
-}
-
-int
-get_layer(const char* str) {
-  long i, n = strarray_size(&layers);
-
-  if((i = strarray_index_of(&layers, str)) < n) {
-    return i;
-  }
-
-  if(scan_long(str, &i) > 0) return i;
-  return -1;
 }
 
 int
@@ -1265,19 +1310,41 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
 
       byte_zero(&extent, sizeof(extent));
-     // ns = xml_find_with_attrs(doc, "x|y|x1|y1|x2|y2");
+      // ns = xml_find_with_attrs(doc, "x|y|x1|y1|x2|y2");
       ns = xml_find_all_attrs(doc, "x|y|x1|y1");
 
       int n = xmlnodeset_size(&ns);
 
       for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
-        xmlnode* node = *it;
+        xmlnode* node = xmlnodeset_iter_ref(it);
         double x1, x2, y1, y2;
-        const char* layer = xml_get_attribute(node, "layer");
+        const char* layer = NULL;
+        stralloc path;
+        stralloc_init(&path);
+
+        if(xml_has_attribute(node, "layer")) layer = xml_get_attribute(node, "layer");
 
         rect_update(&extent, get_double(node, "x1"), get_double(node, "y1"));
         rect_update(&extent, get_double(node, "x2"), get_double(node, "y2"));
 
+        buffer_puts(buffer_1, "# ");
+        xml_path(node, &path);
+        buffer_putsa(buffer_1, &path);
+        buffer_putnlflush(buffer_1);
+
+
+{
+        xmlnode *signal;
+
+        if((signal = xml_find_parent(e, "signal"))) {
+            const char* signal_name = xml_get_attribute(signal, "name");
+
+
+            if(current_signal == NULL || str_diff(signal_name, current_signal)) {
+                current_signal = signal_name;
+              }
+
+}
         print_script(buffer_1, node);
 
         //      print_xy(buffer_2, layer, x1, y1);

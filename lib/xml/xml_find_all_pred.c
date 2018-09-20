@@ -26,11 +26,13 @@ xml_pfind_all(xmlnode* node, int (*pred)(), void* ptr[4]) {
   xmlnodeset ret;
   array a;
   strlist names;
-
+  array_init(&a);
   strlist_init(&names, '\0');
-  strlist_froms(&names, ptr[0], '|');
-  byte_zero(&a, sizeof(array));
-  ptr[0] = &names;
+  if(ptr[0]) {
+    strlist_froms(&names, ptr[0], '|');
+    byte_zero(&a, sizeof(array));
+    ptr[0] = &names;
+  }
   xml_find_all_predicate(node, &a, pred, ptr);
   ret.nodes = array_start(&a);
   ret.size = array_length(&a, sizeof(xmlnode*));
