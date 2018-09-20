@@ -1315,8 +1315,13 @@ install: all
 	$(INSTALL) -m 755 $(PROGRAMS) $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(man3dir)
 	$(INSTALL) -m 644 $(MAN3) $(DESTDIR)$(man3dir)
-	cd $(DESTDIR)/$(man3dir) && \
+	@echo "gzip -3 -f $(DESTDIR)$(man3dir)/*.3" 1>&2; cd $(DESTDIR)$(man3dir) && \
 		gzip -3 -f $(notdir $(MAN3))
+#	@echo 'DESTDIR="$(DESTDIR)"' 1>&2
+#	@echo 'bindir="$(bindir)"' 1>&2
+#	@echo 'man3dir="$(man3dir)"' 1>&2
+#	@echo 'MAN3="$(MAN3)"' 1>&2
+#	@echo 'prefix="$(prefix)"' 1>&2
 
 install-release:
 	$(MAKE) DEBUG=0 install

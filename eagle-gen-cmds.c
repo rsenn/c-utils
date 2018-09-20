@@ -1070,7 +1070,7 @@ draw_measures(xmlnode* doc) {
   xmlnode* plain = xml_find_element(doc, "plain");
 
   if(plain->type != XML_ELEMENT) {
-    errmsg_warn("element 'plain'");
+    buffer_putsflush(buffer_2,"element 'plain'\n");
     exit(1);
   }
 

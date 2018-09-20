@@ -91,7 +91,8 @@ AC_CHECK_LIBLZMA([AC_DEFINE_UNQUOTED([HAVE_LIBLZMA],[1],[Define if you have libl
 
 if test "x$host_os" = "xmingw32"; then
   MINGW=yes
-  LIBS="$LIBS -lws2_32"
+  EXTRA_LIBS="$LIBS -lws2_32"
+  AC_SUBST([EXTRA_LIBS])
 fi
 
 dnl Check for configuration options:
