@@ -2,12 +2,14 @@
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
 
+#include "../windoze.h"
+
+#if !WINDOWS_NATIVE
 #include <sys/types.h>
-#if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "../windoze.h"
+
 #include <errno.h>
 #include "../socket_internal.h"
 #include "../ndelay.h"
@@ -26,7 +28,10 @@ int socket_tcp6b(void) {
 #ifdef LIBC_HAS_IP6
   int s;
 
+#if WINDOWS_NATIVE
   __winsock_init();
+#endif
+
   if(noipv6) goto compat;
   s = winsock2errno(socket(PF_INET6, SOCK_STREAM, 0));
   if(s == -1) {

@@ -89,6 +89,11 @@ AC_CHECK_ZLIB([AC_DEFINE_UNQUOTED([HAVE_ZLIB],[1],[Define if you have zlib])])
 AC_CHECK_BZLIB([AC_DEFINE_UNQUOTED([HAVE_LIBBZ2],[1],[Define if you have libbz2])])
 AC_CHECK_LIBLZMA([AC_DEFINE_UNQUOTED([HAVE_LIBLZMA],[1],[Define if you have liblzma])])
 
+if test "x$host_os" = "xmingw32"; then
+  MINGW=yes
+  LIBS="$LIBS -lws2_32"
+fi
+
 dnl Check for configuration options:
 dnl ---------------------------------------------------------------------------
 
@@ -131,7 +136,9 @@ AS_IF([test "x$enable_widechar" = "xyes"],
 AC_ARG_ENABLE([readdir],
   [AS_HELP_STRING([--enable-readdir], [include support for readdir])])
   
-  
+ 
+AS_IF([test "x$MINGW" = "xyes"], [enable_readdir=no])
+
 AS_IF([test "x$enable_readdir" = "xyes" -o "x$enable_readdir" != "xno"],
   [
   AC_CHECK_FUNC([readdir],[

@@ -1,18 +1,29 @@
 #include "../windoze.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <winsock2.h>
 #include <errno.h>
 #undef winsock2errno
 
-#if WINDOWS_NATIVE
+#ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
+#endif /* !defined(EPROTONOSUPPORT) */
+ 
+#ifndef ETIMEDOUT
 #define ETIMEDOUT WSAETIMEDOUT
+#endif /* !defined(ETIMEDOUT) */
+ 
+#ifndef EWOULDBLOCK
 #define EWOULDBLOCK WSAEWOULDBLOCK
+#endif /* !defined(EWOULDBLOCK) */
+ 
+#ifndef EINPROGRESS
 #define EINPROGRESS WSAEINPROGRESS
+#endif /* !defined(EINPROGRESS) */
+ 
+#ifndef ECONNREFUSED
 #define ECONNREFUSED WSAECONNREFUSED
-#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
-#endif
+#endif /* !defined(ECONNREFUSED) */
 
 int
 winsock2errno(long l) {
@@ -49,14 +60,12 @@ winsock2errno(long l) {
     }
   return l;
 }
-#else
+/*#else
 #include <errno.h>
-
 int winsock2errno(long ret) {
   if(ret == -1) {
     return errno;
   }
   return ret;
-}
-  
+}*/
 #endif

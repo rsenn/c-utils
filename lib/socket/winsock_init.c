@@ -1,6 +1,7 @@
-#if WINDOWS || defined(__MSYS__) || defined(__CYGWIN__)
-#include <winsock2.h>
 #include "../windoze.h"
+
+#if WINDOWS_NATIVE
+#include <winsock2.h>
 
 void
 __winsock_init(void) {

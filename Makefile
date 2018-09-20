@@ -886,20 +886,20 @@ $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
 MODULES += $(patsubst %,$(BUILDDIR)%.a,array buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
-all: $(BUILDDIR) $(FLAGS_FILE) $(BUILDDIR)haveerrno.h $(FLAGS_FILE) $(MODULES) \
+all: $(BUILDDIR) $(FLAGS_FILE) $(FLAGS_FILE) $(MODULES) \
    $(PROGRAMS)
 
-$(BUILDDIR)tryerrno.c:
-	echo "int main() {\
-errno = 0;\
-return 0;\
-}" >$(BUILDDIR)tryerrno.c
+#$(BUILDDIR)tryerrno.c:
+#	echo "int main() {\
+#errno = 0;\
+#return 0;\
+#}" >$(BUILDDIR)tryerrno.c
 
-$(BUILDDIR)haveerrno.h: $(BUILDDIR)tryerrno.c
-	$(CROSS_COMPILE)$(CC) -include errno.h -c -o $(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFS += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
-
-FLAGS += -include $(BUILDDIR)haveerrno.h
-
+#$(BUILDDIR)haveerrno.h: $(BUILDDIR)tryerrno.c
+#	$(CROSS_COMPILE)$(CC) -include errno.h -c -o $(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFS += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
+#
+#FLAGS += -include $(BUILDDIR)haveerrno.h
+#
 $(FLAGS_FILE): $(BUILDDIR)
 	$(file >$@,$(subst $(SPACE),\
 ,$(FLAGS)))
