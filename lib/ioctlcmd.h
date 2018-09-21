@@ -1,7 +1,7 @@
 #ifndef H_IOCTLCMD
 #define H_IOCTLCMD 1
 
-#if !defined(_WIN32) && !defined(_WIN64)
+#if !WINDOWS_NATIVE
 typedef UCHAR BYTE;
 typedef USHORT WORD;
 typedef ULONG DWORD;

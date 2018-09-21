@@ -1365,3 +1365,35 @@ ifeq ($(DO_STRIP),1)
 endif
 
 -include $(BUILDDIR)defines.make
+# DO NOT DELETE
+expand_command.o: lib/expand/expand_command.c lib/expand/../stralloc.h \
+ /usr/lib/gcc/i686-pc-cygwin/7.3.0/include/stddef.h \
+ lib/expand/../buffer.h /usr/include/inttypes.h /usr/include/newlib.h \
+ /usr/include/_newlib_version.h /usr/include/sys/config.h \
+ /usr/include/machine/ieeefp.h /usr/include/sys/features.h \
+ /usr/include/cygwin/config.h /usr/include/sys/_intsup.h \
+ /usr/include/_ansi.h /usr/lib/gcc/i686-pc-cygwin/7.3.0/include/stdint.h \
+ /usr/include/stdint.h /usr/include/machine/_default_types.h \
+ /usr/include/sys/_stdint.h /usr/include/xlocale.h \
+ /usr/include/sys/types.h /usr/include/_ansi.h /usr/include/sys/cdefs.h \
+ /usr/include/machine/_types.h /usr/include/sys/_types.h \
+ /usr/include/sys/lock.h /usr/include/machine/endian.h \
+ /usr/include/machine/_endian.h /usr/include/bits/endian.h \
+ /usr/include/sys/select.h /usr/include/sys/_sigset.h \
+ /usr/include/sys/_timeval.h /usr/include/sys/timespec.h \
+ /usr/include/sys/_timespec.h /usr/include/sys/_pthreadtypes.h \
+ /usr/include/machine/types.h /usr/include/endian.h \
+ /usr/include/bits/byteswap.h /usr/include/bits/wordsize.h \
+ /usr/include/sys/sysmacros.h lib/expand/../uint64.h lib/expand/../str.h \
+ lib/expand/../io.h lib/expand/../windoze.h lib/expand/../iarray.h \
+ /usr/include/pthread.h /usr/include/signal.h /usr/include/sys/signal.h \
+ /usr/include/cygwin/signal.h /usr/include/sys/ucontext.h \
+ /usr/include/sched.h /usr/include/sys/sched.h /usr/include/time.h \
+ /usr/include/sys/reent.h /usr/include/machine/time.h \
+ /usr/include/cygwin/time.h lib/expand/../taia.h lib/expand/../tai.h \
+ lib/expand/../uint32.h /usr/include/unistd.h /usr/include/sys/unistd.h \
+ /usr/include/getopt.h lib/expand/../tree.h /usr/include/stdlib.h \
+ /usr/include/machine/stdlib.h /usr/include/alloca.h \
+ /usr/include/cygwin/stdlib.h /usr/include/cygwin/wait.h \
+ lib/expand/../stralloc.h lib/expand/../vartab.h lib/expand/../var.h \
+ lib/expand/../vartab.h lib/expand/../expand.h

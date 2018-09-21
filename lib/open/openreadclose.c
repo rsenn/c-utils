@@ -1,4 +1,3 @@
-#include "../windoze.h"
 
 #include "../stralloc.h"
 #include "../open.h"

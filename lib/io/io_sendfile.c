@@ -1,16 +1,16 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
+#include "../socket.h"
+
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
-#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__)
-#include <winsock2.h>
-#endif
+
 #define _LARGEFILE64_SOURCE
 #define _FILE_OFFSET_BITS 64
 #include "../io_internal.h"
-#include "../socket.h"
-
 
 #ifdef HAVE_ERRNO_H
 #include <errno.h>

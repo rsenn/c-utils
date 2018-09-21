@@ -1,14 +1,12 @@
 #include <stdlib.h>
-#if !defined(_WIN32) && !defined(_WIN64)
-#include <sys/mman.h>
-#endif
 #include "../iarray.h"
+#include "../mmap.h"
 
 static void
 freechain(iarray_page* p, size_t pagesize) {
   while(p) {
     iarray_page* n = p->next;
-    munmap(p, pagesize);
+    mmap_unmap(p, pagesize);
     p = n;
   }
 }

@@ -1,11 +1,7 @@
 #include "../windoze.h"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "../io_internal.h"
 #include "../socket_internal.h"
+
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif

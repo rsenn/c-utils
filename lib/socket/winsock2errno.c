@@ -1,10 +1,12 @@
+#define _WINSOCKAPI_
 #include "../windoze.h"
-
 
 #if WINDOWS_NATIVE
 #include <winsock2.h>
 #include <errno.h>
 #undef winsock2errno
+
+#include "../buffer.h"
 
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT

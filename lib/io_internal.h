@@ -1,10 +1,7 @@
 #ifndef IO_INTERNAL_H
 #define IO_INTERNAL_H 1
 
-/*
-#if WINDOWS
-#include <winsock2.h>
-#endif*/
+#include "windoze.h"
 
 #ifndef my_extern
 #if WINDOWS

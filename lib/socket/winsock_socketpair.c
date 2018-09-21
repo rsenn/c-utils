@@ -1,3 +1,4 @@
+#define _WINSOCKAPI_
 #include "../windoze.h"
 
 #include "../byte.h"

@@ -2,13 +2,12 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
+#include "windoze.h"
 
-#include "uint16.h"
-#include "uint32.h"
-
-#include <errno.h>
-
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+//#define _WINSOCKAPI_
+//#include <winsock2.h>
+#else
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/socket.h>
@@ -17,6 +16,11 @@
 #include <unistd.h>
 #endif
 
+#include "uint16.h"
+#include "uint32.h"
+
+#include <errno.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,11 +28,19 @@ extern "C" {
 #if WINDOWS_NATIVE
 #include <windows.h>
 typedef int socklen_t;
-#if !defined(__ssize_t_defined) && !defined(_SSIZE_T_DEFINED)
+
+#if WINDOWS && !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED) && !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
 #define __ssize_t_defined 1
+#define _SSIZE_T_DECLARED 1
 #define _SSIZE_T_DEFINED 1
-typedef SSIZE_T ssize_t;
+#ifdef _WIN32
+typedef __int32 ssize_t;
 #endif
+#ifdef _WIN64
+typedef __int64 ssize_t;
+#endif
+#endif
+
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
 #endif

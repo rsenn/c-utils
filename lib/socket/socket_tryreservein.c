@@ -1,7 +1,7 @@
 #include "../windoze.h"
 
 #include <sys/types.h>
-#if !defined(_WIN32) && !defined(_WIN64)
+#if !WINDOWS_NATIVE
 #include <sys/socket.h>
 #endif
 #include "../socket.h"

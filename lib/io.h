@@ -4,6 +4,7 @@
 
 /* http://cr.yp.to/lib/io.html */
 
+#include "windoze.h"
 #include "iarray.h"
 #include "taia.h"
 #include "uint64.h"

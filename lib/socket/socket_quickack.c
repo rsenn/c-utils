@@ -1,5 +1,5 @@
 #include "../socket.h"
-#if !defined(_WIN32) && !defined(_WIN64)
+#if !WINDOWS_NATIVE
 #include <netinet/tcp.h>
 #include <sys/socket.h>
 #include <sys/types.h>

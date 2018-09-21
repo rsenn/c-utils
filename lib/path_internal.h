@@ -4,6 +4,8 @@
 #include "config.h"
 #endif
 
+#include "windoze.h"
+
 #ifdef HAVE_LINUX_LIMITS_H
 #include <linux/limits.h>
 #endif

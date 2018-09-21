@@ -1,7 +1,9 @@
+#include "windoze.h"
 
-#if WINDOWS_PLAIN
+#if WINDOWS_NATIVE
 #include <winsock2.h>
-#include <windows.h>
+//#define _WINSOCKAPI_
+//#include <windows.h>
 #else
 #include "select.h"
 #endif

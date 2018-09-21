@@ -1,9 +1,12 @@
 #ifndef SELECT_H
 #define SELECT_H
 
+#include "windoze.h"
+
 /* sysdep: +sysselect */
 
 #include <sys/types.h>
+
 #if !WINDOWS_NATIVE
 #include <sys/time.h>
 #endif

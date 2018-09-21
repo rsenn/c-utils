@@ -8,10 +8,6 @@
 # define WINDOWS 1
 #endif
 
-#if WINDOWS_NATIVE
-#include <winsock2.h>
-#endif
-
 #if WINDOWS || defined(__MSYS__)
 
 # include <io.h>
@@ -25,11 +21,15 @@ extern "C" {
 typedef SIZE_T size_t;
 #endif
 
-#if !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED)
+#if WINDOWS && !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED) && !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
 #define __ssize_t_defined 1
 #define _SSIZE_T_DECLARED 1
 #define _SSIZE_T_DEFINED 1
-typedef SSIZE_T ssize_t;
+#ifdef _WIN64
+typedef __int64 ssize_t;
+#elif defined(_WIN32)
+typedef __int32 ssize_t;
+#endif
 #endif
 
 typedef int socklen_t;

@@ -2,7 +2,9 @@
 #include "config.h"
 #endif
 
-#if !(defined(_WIN32) || defined(_WIN64))
+#include "lib/windoze.h"
+
+#if !WINDOWS
 #include <unistd.h>
 #else
 #include <io.h>
