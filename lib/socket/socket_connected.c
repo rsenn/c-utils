@@ -1,5 +1,6 @@
-#include "../socket_internal.h"
 #include "../windoze.h"
+
+#include "../socket_internal.h"
 #if WINDOWS_NATIVE 
 #include <winsock.h>
 typedef int socklen_t;

@@ -1,4 +1,3 @@
-#include "windoze.h"
 
 #if WINDOWS
 

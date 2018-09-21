@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -20,7 +22,6 @@
 #include "../byte.h"
 #include "../path.h"
 #include "../str.h"
-#include "../windoze.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

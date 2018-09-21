@@ -14,7 +14,6 @@
  * from the use of this software.
  */
  
- #include "windoze.h"
  
  #if WINDOWS_NATIVE
 

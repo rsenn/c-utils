@@ -1,8 +1,9 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
 
-#include "../windoze.h"
 #if WINDOWS_NATIVE
 #include <winsock.h>
 typedef int socklen_t;

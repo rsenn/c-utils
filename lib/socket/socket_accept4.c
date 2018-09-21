@@ -1,5 +1,6 @@
-#include "../byte.h"
 #include "../windoze.h"
+
+#include "../byte.h"
 #if WINDOWS_NATIVE
 #include <winsock2.h>
 typedef int socklen_t;

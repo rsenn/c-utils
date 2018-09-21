@@ -2,7 +2,6 @@
 #include "config.h"
 #endif
 
-#include "windoze.h"
 #ifndef HAVE_WORDEXP
 #include <errno.h>
 #include <fcntl.h>

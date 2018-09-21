@@ -1,5 +1,6 @@
-#include "../io.h"
 #include "../windoze.h"
+
+#include "../io.h"
 #if WINDOWS_NATIVE
 #include <stdio.h>
 #include <windows.h>

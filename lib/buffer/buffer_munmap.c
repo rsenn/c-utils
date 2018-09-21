@@ -1,4 +1,5 @@
 #include "../windoze.h"
+
 #include "../buffer.h"
 #if WINDOWS
 #include <windows.h>

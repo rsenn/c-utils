@@ -1,7 +1,6 @@
 #ifndef IO_INTERNAL_H
 #define IO_INTERNAL_H 1
 
-#include "windoze.h"
 /*
 #if WINDOWS
 #include <winsock2.h>

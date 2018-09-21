@@ -3,7 +3,6 @@
 #define OPEN_H
 
 #include <sys/types.h>
-#include "windoze.h"
 #include "uint64.h"
 
 #ifdef __cplusplus
@@ -42,7 +41,6 @@ int open_rwsync(const char *filename);
 #ifdef STRALLOC_H
 int openreadclose(const char* fn, stralloc* sa, size_t bufsize);
 
-#include "windoze.h"
 #if WINDOWS_NATIVE && !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED)
 #include <windows.h>
 #define __ssize_t_defined 1

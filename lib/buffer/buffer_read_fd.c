@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #define _LARGEFILE64_SOURCE
 #include "../buffer.h"
 #include "../io_internal.h"
@@ -5,7 +7,6 @@
 #include <sys/stat.h>
 
 #if WINDOWS
-#include "../windoze.h"
 #else
 #endif
 

@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #include <sys/types.h>
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <netinet/in.h>
@@ -5,7 +7,6 @@
 #endif
 #include "../byte.h"
 #include "../socket.h"
-#include "../windoze.h"
 
 int
 socket_mcleave4(int s, const char ip[4]) {

@@ -1,4 +1,5 @@
 #include "../windoze.h"
+
 #include "../path.h"
 
 #if !WINDOWS_NATIVE

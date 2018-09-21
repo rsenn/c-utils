@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
@@ -10,7 +12,6 @@
 #include "../byte.h"
 #include "../ip6.h"
 #include "../socket.h"
-#include "../windoze.h"
 
 ssize_t
 socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* scope_id) {

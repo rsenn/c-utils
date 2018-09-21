@@ -1,5 +1,6 @@
-#include "../io_internal.h"
 #include "../windoze.h"
+
+#include "../io_internal.h"
 #include <errno.h>
 
 #if WINDOWS && !defined(ETIMEDOUT)

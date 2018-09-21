@@ -1,9 +1,10 @@
+#include "../windoze.h"
+
 #include <sys/types.h>
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <sys/socket.h>
 #endif
 #include "../socket.h"
-#include "../windoze.h"
 
 int
 socket_bind4_reuse(int s, const char* ip, uint16 port) {

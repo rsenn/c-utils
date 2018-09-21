@@ -13,7 +13,6 @@
 #include "stralloc.h"
 
 #ifndef PATH_MAX
-#include "windoze.h"
 #if WINDOWS_NATIVE
 #include <windows.h>
 #endif

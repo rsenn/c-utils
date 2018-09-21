@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #if WINDOWS
 #else
 #endif
@@ -7,7 +9,6 @@
 
 #if WINDOWS
 #include <winsock.h>
-#include "../windoze.h"
 #endif
 
 #ifndef O_NDELAY

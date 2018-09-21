@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #include "../byte.h"
 #include "../socket.h"
 
@@ -8,7 +10,6 @@
 #include <sys/socket.h>
 #endif
 #include "../socket.h"
-#include "../windoze.h"
 #include <string.h>
 
 void

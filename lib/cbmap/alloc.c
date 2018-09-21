@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -16,7 +18,6 @@
 
 #include "../memalign.h"
 #include "../byte.h"
-#include "../windoze.h"
 #include "../str.h"
 #include "alloc.h"
 #include "../cbmap_internal.h"

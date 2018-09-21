@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
@@ -8,7 +10,6 @@
 #include <sys/socket.h>
 #endif
 #include "../socket.h"
-#include "../windoze.h"
 
 int
 socket_mcloop6(int s, char loop) {

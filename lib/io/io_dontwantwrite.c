@@ -1,8 +1,9 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include "../windoze.h"
 #if WINDOWS
 #else
 #endif

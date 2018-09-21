@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <sys/types.h>
+
 #include "windoze.h"
 
 #if WINDOWS_NATIVE
@@ -13,11 +14,16 @@
 extern "C" {
 #endif
 
-#if !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED) && !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
+#if WINDOWS && !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED) && !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
 #define __ssize_t_defined 1
 #define _SSIZE_T_DECLARED 1
 #define _SSIZE_T_DEFINED 1
-typedef SSIZE_T ssize_t;
+#ifdef _WIN32
+typedef __int32 ssize_t;
+#endif
+#ifdef _WIN64
+typedef __int64 ssize_t;
+#endif
 #endif
 
 #define WRDE_DOOFFS  1
@@ -40,7 +46,7 @@ typedef struct {
 #define WRDE_CMDSUB  4
 #define WRDE_SYNTAX  5
 
-int wordexp (const char *__restrict, wordexp_t *__restrict, int);
+int wordexp (const char *, wordexp_t *, int);
 void wordfree (wordexp_t *);
 
 #ifdef __cplusplus

@@ -1,10 +1,11 @@
+#include "../windoze.h"
+
 #include <sys/types.h>
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <netinet/in.h>
 #include <sys/socket.h>
 #endif
 #include "../socket.h"
-#include "../windoze.h"
 
 ssize_t
 socket_recv4(int s, char* buf, size_t len, char ip[4], uint16* port) {

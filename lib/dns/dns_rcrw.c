@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #if WINDOWS
 #include <winsock2.h>
 #endif
@@ -7,7 +9,6 @@
 #include "../str.h"
 #include "../stralloc.h"
 #include "../taia.h"
-#include "../windoze.h"
 #include <stdlib.h>
 
 static stralloc data;

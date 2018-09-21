@@ -1,4 +1,5 @@
 #include "../windoze.h"
+
 #include "../io_internal.h"
 
 #if WINDOWS_NATIVE

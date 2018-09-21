@@ -8,6 +8,10 @@
 # define WINDOWS 1
 #endif
 
+#if WINDOWS_NATIVE
+#include <winsock2.h>
+#endif
+
 #if WINDOWS || defined(__MSYS__)
 
 # include <io.h>
@@ -21,15 +25,21 @@ extern "C" {
 typedef SIZE_T size_t;
 #endif
 
-#if !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED)
+#if !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED)
 #define __ssize_t_defined 1
 #define _SSIZE_T_DECLARED 1
+#define _SSIZE_T_DEFINED 1
 typedef SSIZE_T ssize_t;
 #endif
 
 typedef int socklen_t;
 
 #if WINDOWS_NATIVE
+
+#ifndef PATH_MAX
+#define PATH_MAX MAX_PATH
+#endif
+
 /* set errno to WSAGetLastError() */
 int winsock2errno(long l);
 void __winsock_init(void);

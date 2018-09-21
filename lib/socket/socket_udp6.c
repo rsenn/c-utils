@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
@@ -9,7 +11,6 @@
 #endif
 #include "../ndelay.h"
 #include "../socket.h"
-#include "../windoze.h"
 #include <errno.h>
 
 #ifndef EAFNOSUPPORT

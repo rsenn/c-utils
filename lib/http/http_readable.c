@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #include "../buffer.h"
 #include "../byte.h"
 #include "../http.h"
@@ -5,7 +7,6 @@
 #include "../scan.h"
 #include "../socket.h"
 #include "../str.h"
-#include "../windoze.h"
 #include <ctype.h>
 #include <errno.h>
 

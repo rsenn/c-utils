@@ -1,6 +1,7 @@
+#include "../windoze.h"
+
 #if WINDOWS
 #include "../socket.h"
-#include "../windoze.h"
 
 void
 __winsock_init(void) {

@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #include <sys/types.h>
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <netinet/in.h>
@@ -5,7 +7,6 @@
 #endif
 #include "../byte.h"
 #include "../socket.h"
-#include "../windoze.h"
 
 ssize_t
 socket_send4_flag(int s, const char* buf, size_t len, const char ip[4], uint16 port, int flag) {

@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -7,7 +9,6 @@
 #include "../socket.h"
 #include "../uint16.h"
 #include "../uint32.h"
-#include "../windoze.h"
 
 int
 socket_bind4(int s, const char* ip, uint16 port) {

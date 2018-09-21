@@ -1,5 +1,6 @@
 #include "../windoze.h"
 
+
 #if WINDOWS_NATIVE
 #include <winsock2.h>
 #include <errno.h>
@@ -31,10 +32,10 @@ winsock2errno(long l) {
   if(l == -1)
     switch((x = WSAGetLastError())) {
     case WSANOTINITIALISED:
-      printf("WSANOTINITIALISED!\n");
+	  buffer_putsflush(buffer_1, "WSANOTINITIALISED!\n");
       exit(111);
     case WSAENETDOWN:
-      printf("WSAENETDOWN!\n");
+	  buffer_putsflush(buffer_1, "WSAENETDOWN!\n");
       exit(111);
     case WSAEINTR:
       errno = EINTR; break;

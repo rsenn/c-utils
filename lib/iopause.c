@@ -1,5 +1,5 @@
-#include "windoze.h"
-#if WINDOWS
+
+#if WINDOWS_PLAIN
 #include <winsock2.h>
 #include <windows.h>
 #else

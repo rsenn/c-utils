@@ -1,10 +1,11 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "../mmap.h"
 #include "../open.h"
-#include "../windoze.h"
 
 #if WINDOWS_NATIVE
 #include <windows.h>

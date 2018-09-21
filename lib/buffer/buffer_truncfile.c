@@ -1,12 +1,13 @@
-#include <stdlib.h>
-#if !(defined(_WIN32) || defined(_WIN64))
-#else
-#include "../io_internal.h"
-#endif
-
+#include "../windoze.h"
 #include "../buffer.h"
-#include "../stralloc.h"
 #include "../open.h"
+#include "../stralloc.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 int
 buffer_truncfile(buffer* b, const char* fn) {

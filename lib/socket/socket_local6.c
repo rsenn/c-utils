@@ -1,8 +1,11 @@
+#include "../windoze.h"
+
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
 
-#include "../windoze.h"
 #if WINDOWS_NATIVE 
 #include <winsock.h>
 #else
@@ -14,7 +17,6 @@
 #include "../ip6.h"
 #include "../socket.h"
 #include "../uint32.h"
-#include "../windoze.h"
 
 int
 socket_local6(int s, char ip[16], uint16* port, uint32* scope_id) {

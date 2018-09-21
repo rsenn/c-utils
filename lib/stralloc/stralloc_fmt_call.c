@@ -1,6 +1,7 @@
+#include "../windoze.h"
+
 #include "../buffer.h"
 #include "../stralloc.h"
-#include "../windoze.h"
 #include <stdarg.h>
 
 size_t

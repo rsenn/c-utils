@@ -2,7 +2,6 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include "windoze.h"
 
 #include "uint16.h"
 #include "uint32.h"

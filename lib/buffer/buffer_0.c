@@ -1,6 +1,8 @@
-#if !(defined(_WIN32) || defined(_WIN64))
-#else
+#include "../windoze.h"
+#if WINDOWS_NATIVE
 #include "../io_internal.h"
+#else
+#include <unistd.h>
 #endif
 #include "../buffer.h"
 

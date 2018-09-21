@@ -1,9 +1,10 @@
+#include "../windoze.h"
+
 #include <sys/types.h>
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <netinet/in.h>
 #include <sys/socket.h>
 #endif
-#include "../windoze.h"
 
 #include "../ndelay.h"
 #include "../socket.h"

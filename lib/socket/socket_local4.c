@@ -1,4 +1,7 @@
 #include "../windoze.h"
+
+#include "../windoze.h"
+
 #if WINDOWS_NATIVE 
 #include <winsock.h>
 #else
@@ -8,7 +11,6 @@
 #endif
 #include "../byte.h"
 #include "../socket.h"
-#include "../windoze.h"
 
 int
 socket_local4(int s, char ip[4], uint16* port) {

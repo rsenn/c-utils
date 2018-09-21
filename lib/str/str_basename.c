@@ -1,5 +1,6 @@
-#include "../str.h"
 #include "../windoze.h"
+
+#include "../str.h"
 
 #if WINDOWS
 #define PATH_LASTSEP(p) str_rchrs((p), "\\/", 2)
