@@ -139,10 +139,10 @@ else()
   add_definitions(-DHAVE_ZLIB=0)
 endif()
 
-if(BZIP2_FOUND)
+#if(BZIP2_FOUND)
   link_libraries(${BZIP2_LIBRARIES})
   include_directories(${BZIP2_INCLUDE_DIR})
-endif(BZIP2_FOUND)
+#endif(BZIP2_FOUND)
 
 #pkg_search_module(LIBZ zlib)
 pkg_search_module(LIBBZ2 libbz2 bzip2)
