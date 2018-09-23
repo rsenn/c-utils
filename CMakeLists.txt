@@ -539,7 +539,7 @@ target_link_libraries(xml array buffer byte fmt hmap scan str stralloc strlist)
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   if(NOT UNIX)
-    set(X64 "-x64")
+#    set(X64 "-x64")
   endif()
 endif()
 

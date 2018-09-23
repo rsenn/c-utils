@@ -66,6 +66,10 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
 #if !WINDOWS_NATIVE
   if(symbolic) stat_fn = lstat;
 #endif
+  if(path_issep(*path)) {
+    stralloc_catc(sa, '/');
+    path++;
+  }
 
 start:
 #endif

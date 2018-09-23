@@ -65,13 +65,22 @@ pathtool(const char* arg, stralloc* sa) {
 
   stralloc_init(sa);
 
+  buffer_putm(buffer_2, "arg: ", arg);
+  buffer_putnlflush(buffer_2);
   if(absolute) {
     path_realpath(arg, sa, 1, &cwd);
+    buffer_putsflush(buffer_2, "path_realpath");
   } else if(canonical) {
     path_canonicalize(arg, sa, 1);
+    buffer_putsflush(buffer_2, "path_canonicalize");
   } else {
     stralloc_copys(sa, arg);
   }
+
+  buffer_puts(buffer_2, ": ");
+  buffer_putsa(buffer_2, arg);
+  buffer_putnlflush(buffer_2);
+  
   stralloc_nul(sa);
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
