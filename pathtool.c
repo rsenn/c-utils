@@ -6,12 +6,14 @@
 #include "lib/strlist.h"
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
-
+/*
 typedef enum {
-  MIXED = 0,
-  UNIX = 1,
-  WINDOWS = 2,
-} path_format;
+  MIXED, UNIX, WINDOWS
+} path_format;*/
+typedef int path_format;
+#define MIXED 0
+#define UNIX 1
+#define WINDOWS 2
 
 static strlist relative_to;
 static char separator[2];

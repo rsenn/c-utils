@@ -3,7 +3,7 @@
 #define BUFFER_H
 
 /* for size_t: */
-#include <stddef.h>
+//#include <stddef.h>
 #if !defined(_MSC_VER) && !defined(__MSYS__)
 #include <inttypes.h>
 #include <stdint.h>

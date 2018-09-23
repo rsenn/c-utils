@@ -2,6 +2,7 @@
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
 
+#include "../windoze.h"
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
 #include <net/if.h>
