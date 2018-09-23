@@ -40,11 +40,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
-#ifdef HAVE_ERRNO_H
 #include <errno.h>
-#else
-extern int errno;
-#endif
 #if defined(_WIN32) || defined(__MINGW64__)
 #define MINGW 1
 #endif
