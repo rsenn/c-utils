@@ -9,12 +9,15 @@
 #endif
 
 #if WINDOWS || defined(__MSYS__)
-
 # include <io.h>
 # include <windows.h>
+#endif
+
 # ifdef __cplusplus
 extern "C" {
 # endif
+
+#if WINDOWS || defined(__MSYS__)
 
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED 1
@@ -34,6 +37,21 @@ typedef __int32 ssize_t;
 
 typedef int socklen_t;
 
+#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
+static size_t
+getpagesize() {
+  static DWORD cachedPageSize = 0;
+  if(cachedPageSize == 0) {
+    SYSTEM_INFO si;
+    GetNativeSystemInfo(&si);
+    cachedPageSize = si.dwPageSize;
+  }
+  return cachedPageSize;
+}
+#endif
+
+# endif /* WINDOWS */
+
 #if WINDOWS_NATIVE
 
 #ifndef PATH_MAX
@@ -48,22 +66,9 @@ void __winsock_init(void);
 #  define __winsock_init()
 #endif
 
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
-static size_t
-getpagesize() {
-  static DWORD cachedPageSize = 0;
-  if(cachedPageSize == 0) {
-    SYSTEM_INFO si;
-    GetNativeSystemInfo(&si);
-    cachedPageSize = si.dwPageSize;
-  }
-  return cachedPageSize;
-}
-#endif
-
 # ifdef __cplusplus
 }
 # endif
-# endif /* WINDOWS */
+
 
 #endif /* defined(WINDOZE_H) */
