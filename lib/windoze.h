@@ -38,7 +38,7 @@ typedef __int32 ssize_t;
 typedef int socklen_t;
 
 #if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
-static size_t
+inline static size_t
 getpagesize() {
   static DWORD cachedPageSize = 0;
   if(cachedPageSize == 0) {
