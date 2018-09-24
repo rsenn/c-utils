@@ -33,17 +33,17 @@ http_get(http* h, const char* location) {
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 
 
-  buffer_putsa(buffer_1, &h->host);
-  buffer_puts(buffer_1, " (");
-  buffer_putulong(buffer_1, a->iaddr & 0xff);
-  buffer_puts(buffer_1, ".");
-  buffer_putulong(buffer_1, (a->iaddr >> 8) & 0xff);
-  buffer_puts(buffer_1, ".");
-  buffer_putulong(buffer_1, (a->iaddr >> 16) & 0xff);
-  buffer_puts(buffer_1, ".");
-  buffer_putulong(buffer_1, (a->iaddr >> 24) & 0xff);
-  buffer_puts(buffer_1, ")");
-  buffer_putnlflush(buffer_1);
+  buffer_putsa(buffer_2, &h->host);
+  buffer_puts(buffer_2, " (");
+  buffer_putulong(buffer_2, a->iaddr & 0xff);
+  buffer_puts(buffer_2, ".");
+  buffer_putulong(buffer_2, (a->iaddr >> 8) & 0xff);
+  buffer_puts(buffer_2, ".");
+  buffer_putulong(buffer_2, (a->iaddr >> 16) & 0xff);
+  buffer_puts(buffer_2, ".");
+  buffer_putulong(buffer_2, (a->iaddr >> 24) & 0xff);
+  buffer_puts(buffer_2, ")");
+  buffer_putnlflush(buffer_2);
   h->sock = socket_tcp4();
   io_nonblock(h->sock);
 

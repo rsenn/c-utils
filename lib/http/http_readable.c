@@ -18,22 +18,21 @@ buffer_dummyread() {
 }
 
 static void
-
 putline(const char* what, const char* b, ssize_t l, buffer* buf) {
-  buffer_puts(buffer_1, what);
-  buffer_puts(buffer_1, "[");
-  buffer_putulong(buffer_1, l <= 0 ? -l : l);
-  buffer_puts(buffer_1, "]");
-  buffer_puts(buffer_1, ": ");
+  buffer_puts(buffer_2, what);
+  buffer_puts(buffer_2, "[");
+  buffer_putulong(buffer_2, l <= 0 ? -l : l);
+  buffer_puts(buffer_2, "]");
+  buffer_puts(buffer_2, ": ");
   if(l <= 0)
-    buffer_puts(buffer_1, b);
+    buffer_puts(buffer_2, b);
   else {
-    while(l-- > 0) buffer_put(buffer_1, b++, 1);
+    while(l-- > 0) buffer_put(buffer_2, b++, 1);
   }
-  buffer_puts(buffer_1, " (bytes in recvb: ");
-  buffer_putulong(buffer_1, buf->n - buf->p);
-  buffer_puts(buffer_1, ")");
-  buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_2, " (bytes in recvb: ");
+  buffer_putulong(buffer_2, buf->n - buf->p);
+  buffer_puts(buffer_2, ")");
+  buffer_putnlflush(buffer_2);
 }
 
 static int
@@ -85,11 +84,11 @@ http_readable(http* h) {
       ret = buffer_getline(&recvb, line, sizeof(line));
 
       if(ret == 0 && line[0] == '\0') {
-        putline("Again", line, 0, &recvb);
+     //   putline("Again", line, 0, &recvb);
         return;
       }
 
-      putline("Line", line, 0, &recvb);
+    //  putline("Line", line, 0, &recvb);
 
       r->ptr = recvb.p;
       r->line++;
@@ -131,16 +130,16 @@ http_readable(http* h) {
             stralloc_readyplus(&r->data, n);
             buffer_get(&recvb, &r->data.s[r->data.len], n);
             r->data.len += n;
-            buffer_puts(buffer_1, "data len=");
-            buffer_putulong(buffer_1, r->data.len);
-            buffer_putnlflush(buffer_1);
+            buffer_puts(buffer_2, "data len=");
+            buffer_putulong(buffer_2, r->data.len);
+            buffer_putnlflush(buffer_2);
             r->chnk++;
           } else {
             r->ptr = sptr;
             return; /* goto again; */
           }
           n = buffer_getline(&recvb, line, sizeof(line));
-          putline("Newline", "", -n, &recvb);
+          //putline("Newline", "", -n, &recvb);
           if(recvb.n - recvb.p <= 0) return;
           continue;
         }
