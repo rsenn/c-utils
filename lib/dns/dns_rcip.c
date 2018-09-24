@@ -1,11 +1,11 @@
 #include "../windoze.h"
+#include "../socket.h"
 #include "../byte.h"
 #include "../dns.h"
 #include "../ip4.h"
 #include "../ip6.h"
 #include "../open.h"
 #include "../taia.h"
-#include "../socket.h"
 #include <stdlib.h>
 #if WINDOWS
 #include <windows.h>
