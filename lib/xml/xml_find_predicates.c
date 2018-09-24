@@ -23,7 +23,7 @@ xml_match_name_and_attr(xmlnode* node, strlist* names, const char* attr, const c
 }
 
 int
-xml_has_attr(xmlnode* node, void* n, strlist* attrs) {
+xml_has_attr(xmlnode* node, const void* n, strlist* attrs) {
   const char* str = strlist_at(attrs, 0);
   const char* e = strlist_end(attrs);
 

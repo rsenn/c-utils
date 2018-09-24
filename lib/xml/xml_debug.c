@@ -9,7 +9,7 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
     if(!closing) buffer_putnspace(b, depth * 2);
 
     if(node->type == XML_TEXT) {
-      void* av[4] = { " ", depth * 2 + 6  };
+      const void* av[4] = { " ", depth * 2 + 6  };
       stralloc space, text;
       stralloc_init(&space);
       stralloc_init(&text);

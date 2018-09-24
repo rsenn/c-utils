@@ -754,8 +754,7 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
  */
 int
 xml_foreach(xmlnode* doc, const char* elem, void (*fn)(xmlnode*)) {
-  const void* args[] = { elem, NULL };
-  xmlnodeset xpo = xml_pfind_all(doc, xml_match_name, args);
+  xmlnodeset xpo = xml_find_all_1(doc, xml_match_name, elem);
 
   if(!xmlnodeset_empty(&xpo)) {
     for_set(&xpo, fn);
@@ -783,8 +782,7 @@ main(int argc, char* argv[]) {
   xmlnode* doc = xml_read_tree(&input);
   xml_print(doc->children, buffer_1);
   xmlnodeset ns;
-  const void* av[] = { "package", NULL };
-  ns = xml_pfind_all(doc, xml_match_name, av);
+  ns = xml_find_all_1(doc, xml_match_name, "package");
   xml_print_nodeset(&ns, buffer_1);
   xmlnodeset_iter_t it, e;
   size_t i = 0;

@@ -1,4 +1,5 @@
 #include "../xml.h"
+#include "../scan.h"
 
 double
 xml_get_attribute_double(xmlnode* node, const char* attr) {

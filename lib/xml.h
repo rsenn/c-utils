@@ -41,7 +41,7 @@ typedef struct xmlreader {
   HMAP_DB* attrmap;
   int closing : 1;
   int self_closing : 1;
-  void* data;
+  const void* data;
 } xmlreader;
 
 typedef struct xmlnodeset {
@@ -110,21 +110,19 @@ __inl ptrdiff_t xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) { return 
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48
 
-xmlnode* xml_find_pred(xmlnode*, int (*pred)(xmlnode*, void* ), ...);
-xmlnodeset xml_find_all(xmlnode*, int (*pred)(xmlnode*, void* ), ...);
-xmlnodeset xml_pfind_all(xmlnode*, int (*pred)(xmlnode*, void* ), void* args[]);
-xmlnodeset xml_find_all_1(xmlnode*, int (*pred)(), void*);
-xmlnodeset xml_find_all_2(xmlnode*, int (*pred)(), void*, void*);
-xmlnodeset xml_find_all_3(xmlnode*, int (*pred)(), void*, void*, void*);
+xmlnode* xml_find_pred(xmlnode*, int (*pred)(xmlnode*, const void* ), ...);
+xmlnodeset xml_find_all(xmlnode*, int (*pred)(xmlnode*, const void* ), ...);
+xmlnodeset xml_find_all_1(xmlnode*, int (*pred)(), const void*);
+xmlnodeset xml_find_all_2(xmlnode*, int (*pred)(), const void*, const void*);
+xmlnodeset xml_find_all_3(xmlnode*, int (*pred)(), const void*, const void*, const void*);
 
-xmlnode* xml_find_pred_1(xmlnode*, int (*pred)(), void* arg);
-xmlnode* xml_find_pred_2(xmlnode*, int (*pred)(), void* a0, void* a1);
-xmlnode* xml_find_pred_3(xmlnode*, int (*pred)(), void* a0, void* a1, void* a2);
+xmlnode* xml_find_pred_1(xmlnode*, int (*pred)(), const void* arg);
+xmlnode* xml_find_pred_2(xmlnode*, int (*pred)(), const void* a0, const void* a1);
+xmlnode* xml_find_pred_3(xmlnode*, int (*pred)(), const void* a0, const void* a1, const void* a2);
 
-xmlnode*   xml_pfind_pred(xmlnode*, int (*pred)(void), void* ptr[]);
 
 xmlnode* xml_find_element(xmlnode*, const char* tag);
-xmlnode* xml_find_pred_n(xmlnode*, int (*pred)(xmlnode*, void* ), int n, ...);
+xmlnode* xml_find_pred_n(xmlnode*, int (*pred)(xmlnode*, const void* ), int n, ...);
 
 int xml_has_attribute_n(xmlnode*, const char* b, size_t n);
 int xml_has_attribute(xmlnode*, const char* attr);
@@ -138,11 +136,10 @@ xmlnodeset xml_find_all_attrs(xmlnode*, const char* attrs);
 
 
 xmlnode* xml_find_parent_attr(xmlnode*, const char* attrs);
-xmlnode* xml_find_parent_pred_1(xmlnode*, int (*pred)(void), void* arg);
-xmlnode* xml_find_parent_pred_2(xmlnode*, int (*pred)(void), void* a0, void* a1);
-xmlnode* xml_find_parent_pred_3(xmlnode*, int (*pred)(void), void* a0, void* a1, void* a2);
+xmlnode* xml_find_parent_pred_1(xmlnode*, int (*pred)(void), const void* arg);
+xmlnode* xml_find_parent_pred_2(xmlnode*, int (*pred)(void), const void* a0, const void* a1);
+xmlnode* xml_find_parent_pred_3(xmlnode*, int (*pred)(void), const void* a0, const void* a1, const void* a2);
 xmlnode* xml_find_parent(xmlnode*, const char* tag);
-xmlnode* xml_pfind_parent(xmlnode*, int (*pred)(void), void* ptr[]);
 
 
 #ifdef __cplusplus

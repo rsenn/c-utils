@@ -8,12 +8,12 @@
 #define max(a, b) ((a) > (b) ? (a) : (b))
 /*
 typedef enum {
-  MIXED, UNIX, WINDOWS
+  MIXED, UNIX, WIN
 } path_format;*/
 typedef int path_format;
 #define MIXED 0
 #define UNIX 1
-#define WINDOWS 2
+#define WIN 2
 
 static strlist relative_to;
 static char separator[2];
@@ -40,7 +40,7 @@ pathconv(const char* path, stralloc* sa) {
 
   switch(format) {
     case MIXED:
-    case WINDOWS:
+    case WIN:
       cygwin_conv_to_win32_path(path, sa->s);
       sa->len = str_len(sa->s);
       break;
@@ -193,7 +193,7 @@ main(int argc, char* argv[]) {
       case 's': separator[0] = optarg[0]; break;
       case 'm': format = MIXED; break;
       case 'u': format = UNIX; break;
-      case 'w': format = WINDOWS; break;
+      case 'w': format = WIN; break;
       case 'a': absolute = 1; break;
       case 'f': canonical = 1; break;
       default: usage(argv[0]); return 1;
@@ -218,7 +218,7 @@ main(int argc, char* argv[]) {
     switch(format) {
       case UNIX:
       case MIXED: separator[0] = '/'; break;
-      case WINDOWS: separator[0] = '\\'; break;
+      case WIN: separator[0] = '\\'; break;
     }
   }
 

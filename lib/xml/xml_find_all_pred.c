@@ -5,7 +5,7 @@
 #include <stdarg.h>
 
 static int
-xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), void* vptr[]) {
+xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), const void* vptr[]) {
   do {
 
     if(pred(node, vptr[0], vptr[1], vptr[2])) {
@@ -22,7 +22,7 @@ xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), void* vptr[]) {
 }
 
 xmlnodeset
-xml_pfind_all(xmlnode* node, int (*pred)(), void* ptr[4]) {
+xml_pfind_all(xmlnode* node, int (*pred)(), const void* ptr[4]) {
   xmlnodeset ret;
   array a;
   strlist names;
@@ -40,20 +40,20 @@ xml_pfind_all(xmlnode* node, int (*pred)(), void* ptr[4]) {
 }
 
 xmlnodeset
-xml_find_all_3(xmlnode* node, int (*pred)(), void* a1, void* a2, void* a3) {
-  void* vptr[] = {a1, a2, a3, NULL};
+xml_find_all_3(xmlnode* node, int (*pred)(), const void* a1, const void* a2, const void* a3) {
+  const void* vptr[] = {a1, a2, a3, NULL};
   return xml_pfind_all(node, pred, vptr);
 }
 
 xmlnodeset
-xml_find_all_2(xmlnode* node, int (*pred)(), void* a1, void* a2) {
-  void* vptr[] = {a1, a2, NULL, NULL};
+xml_find_all_2(xmlnode* node, int (*pred)(), const void* a1, const void* a2) {
+  const void* vptr[] = {a1, a2, NULL, NULL};
   return xml_pfind_all(node, pred, vptr);
 }
 
 xmlnodeset
-xml_find_all_1(xmlnode* node, int (*pred)(), void* a1) {
-  void* vptr[] = {a1, NULL, NULL, NULL};
+xml_find_all_1(xmlnode* node, int (*pred)(), const void* a1) {
+  const void* vptr[] = {a1, NULL, NULL, NULL};
   return xml_pfind_all(node, pred, vptr);
 }
 

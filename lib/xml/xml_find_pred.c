@@ -3,7 +3,7 @@
 #include <stdarg.h>
 
 static xmlnode*
-xml_find_predicate(xmlnode* node, int (*pred)(), void* vptr[]) {
+xml_find_predicate(xmlnode* node, int (*pred)(), const void* vptr[]) {
   do {
     if(pred(node, vptr[0], vptr[1], vptr[2])) break;
 
@@ -17,7 +17,7 @@ xml_find_predicate(xmlnode* node, int (*pred)(), void* vptr[]) {
 }
 
 xmlnode*
-xml_pfind_pred(xmlnode* node, int (*pred)(/*xmlnode*,void*,void*,void**/), void* ptr[]) {
+xml_pfind_pred(xmlnode* node, int (*pred)(/*xmlnode*,const void*,const void*,const void**/), const void* ptr[]) {
   xmlnode* ret;
   strlist names, attrs, values;
   strlist_init(&names, '\0');
@@ -44,34 +44,34 @@ xml_pfind_pred(xmlnode* node, int (*pred)(/*xmlnode*,void*,void*,void**/), void*
 
 
 xmlnode*
-xml_find_pred_1(xmlnode* node, int (*pred)(/*xmlnode*,void*,*/), void* arg) {
-  void* vptr[] = {arg, NULL, NULL};
+xml_find_pred_1(xmlnode* node, int (*pred)(/*xmlnode*,const void*,*/), const void* arg) {
+  const void* vptr[] = {arg, NULL, NULL};
   return xml_pfind_pred(node, pred, vptr);
 }
 
 xmlnode*
-xml_find_pred_2(xmlnode* node, int (*pred)(/*xmlnode*,void*,void**/), void* a0, void* a1) {
-  void* vptr[] = {a0, a1, NULL};
+xml_find_pred_2(xmlnode* node, int (*pred)(/*xmlnode*,const void*,const void**/), const void* a0, const void* a1) {
+  const void* vptr[] = {a0, a1, NULL};
   return xml_pfind_pred(node, pred, vptr);
 }
 xmlnode*
-xml_find_pred_3(xmlnode* node, int (*pred)(/*xmlnode*,void*,void**/), void* a0, void* a1, void* a2) {
-  void* vptr[] = {a0, a1, a2};
+xml_find_pred_3(xmlnode* node, int (*pred)(/*xmlnode*,const void*,const void**/), const void* a0, const void* a1, const void* a2) {
+  const void* vptr[] = {a0, a1, a2};
   return xml_pfind_pred(node, pred, vptr);
 }
 
 xmlnode*
-xml_vfind_pred_n(xmlnode* node, int (*pred)(xmlnode*, void*), int n, va_list args) {
-  void* vptr[4];
+xml_vfind_pred_n(xmlnode* node, int (*pred)(xmlnode*, const void*), int n, va_list args) {
+  const void* vptr[4];
   int i;
   for(i = 0; i < n; ++i) {
-    vptr[i] = va_arg(args, void*);
+    vptr[i] = va_arg(args, const void*);
   }
   return xml_pfind_pred(node, pred, vptr);
 }
 
 xmlnode*
-xml_find_pred_n(xmlnode* node, int (*pred)(xmlnode*, void*), int n, ...) {
+xml_find_pred_n(xmlnode* node, int (*pred)(xmlnode*, const void*), int n, ...) {
   xmlnode* ret;
   va_list args;
   va_start(args, pred);

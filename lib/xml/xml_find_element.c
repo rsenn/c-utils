@@ -2,10 +2,10 @@
 #include "../strlist.h"
 #include "../xml.h"
 
-int xml_has_attr(xmlnode* node, void* n, strlist* attrs);
+int xml_has_attr(xmlnode* node, const void* n, strlist* attrs);
 
 int
-xml_tag_pred(xmlnode* node, void* arg) {
+xml_tag_pred(xmlnode* node, const void* arg) {
 
 //  stralloc p;
 //  stralloc_init(&p);
