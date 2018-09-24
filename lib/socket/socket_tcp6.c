@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
@@ -29,6 +31,6 @@ int socket_tcp6(void) {
 #endif
   s = socket_tcp6b();
   if(s == -1) return -1;
-  if(ndelay_on(s) == -1) { close(s); return -1; }
+  if(ndelay_on(s) == -1) { closesocket(s); return -1; }
   return s;
 }

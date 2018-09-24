@@ -1,3 +1,5 @@
+#include "../windoze.h"
+
 #include <sys/types.h>
 #if !(defined(_WIN32) || defined(_WIN64))
 #include <sys/socket.h>
@@ -14,6 +16,6 @@ int socket_tcp4(void) {
 #endif
   s = socket_tcp4b();
   if(s == -1) return -1;
-  if(ndelay_on(s) == -1) { close(s); return -1; }
+  if(ndelay_on(s) == -1) { closesocket(s); return -1; }
   return s;
 }

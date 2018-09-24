@@ -86,7 +86,7 @@ queryfree(struct dns_transmit* d) {
 static void
 socketfree(struct dns_transmit* d) {
   if(!d->s1) return;
-  close(d->s1 - 1);
+  closesocket(d->s1 - 1);
   d->s1 = 0;
 }
 

@@ -1,6 +1,6 @@
 #include "windoze.h"
 
-#if WINDOWS_NATIVE
+#if WINDOWS
 
 #include "ioctlcmd.h"
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #endif
 
 static BOOL
-get_reparse_data(CONST TCHAR* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
+get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
   HANDLE hFile;
   DWORD returnedLength;
 
@@ -45,8 +45,9 @@ get_reparse_data(CONST TCHAR* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
   return TRUE;
 }
 
+#if WINDOWS_NATIVE
 char*
-readlink(CONST TCHAR* LinkPath) {
+readlink(const char* LinkPath) {
   union REPARSE_DATA_BUFFER_UNION u;
 
   if(!get_reparse_data(LinkPath, &u)) {
@@ -87,9 +88,10 @@ readlink(CONST TCHAR* LinkPath) {
 
   return NULL;
 }
+#endif
 
 static DWORD
-reparse_tag(CONST TCHAR* LinkPath) {
+reparse_tag(const char* LinkPath) {
   union REPARSE_DATA_BUFFER_UNION u;
 
   if(!get_reparse_data(LinkPath, &u)) {
@@ -99,10 +101,10 @@ reparse_tag(CONST TCHAR* LinkPath) {
   return u.iobuf.ReparseTag;
 }
 
-BOOL is_symlink(LinkPath) CONST TCHAR* LinkPath;
+int is_symlink(const char* LinkPath)
 { return reparse_tag(LinkPath) == IO_REPARSE_TAG_SYMLINK; }
 
-BOOL is_junction(LinkPath) CONST TCHAR* LinkPath;
+BOOL is_junction(LinkPath) const char* LinkPath;
 { return reparse_tag(LinkPath) == IO_REPARSE_TAG_MOUNT_POINT; }
 
 #endif /* WINDOWS */

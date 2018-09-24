@@ -78,7 +78,7 @@ pathtool(const char* arg, stralloc* sa) {
   }
 
   buffer_puts(buffer_2, ": ");
-  buffer_putsa(buffer_2, arg);
+  buffer_putsa(buffer_2, sa);
   buffer_putnlflush(buffer_2);
   
   stralloc_nul(sa);
@@ -167,6 +167,7 @@ usage(char* av0) {
 
 int
 main(int argc, char* argv[]) {
+  stralloc tmp;
   int c;
   int digit_optind = 0;
   const char* rel_to = NULL;
@@ -198,8 +199,11 @@ main(int argc, char* argv[]) {
       default: usage(argv[0]); return 1;
     }
   }
-
-  path_getcwd(&cwd, 64);
+ 
+  stralloc_init(&tmp);
+  path_getcwd(&tmp, 64);
+  stralloc_nul(&tmp);
+  pathconv(tmp.s, &cwd);
 
   stralloc_catb(&delims, "/\\", 2);
   stralloc_catb(&delims, separator, 1);

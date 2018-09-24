@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../buffer.h"
 #include "../fmt.h"
 #include "../str.h"

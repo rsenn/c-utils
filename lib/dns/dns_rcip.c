@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../byte.h"
 #include "../dns.h"
 #include "../ip4.h"
@@ -5,6 +6,11 @@
 #include "../open.h"
 #include "../taia.h"
 #include <stdlib.h>
+#if WINDOWS
+#include <windows.h>
+#include <iphlpapi.h>
+#include <winsock2.h>
+#endif
 
 static stralloc data;
 
@@ -14,8 +20,37 @@ init(char ip[256]) {
   unsigned long int j;
   int iplen = 0;
   char* x;
+#if WINDOWS
+  FIXED_INFO *pFixedInfo;
+  ULONG ulOutBufLen;
+#endif
 
   x = getenv("DNSCACHEIP");
+
+#if WINDOWS
+
+
+#define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
+#define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
+  if(!x) {
+    /* Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable */
+
+    pFixedInfo = (FIXED_INFO *) MALLOC(sizeof(FIXED_INFO));
+    if(pFixedInfo) {
+      ulOutBufLen = sizeof(FIXED_INFO);
+      if(GetNetworkParams(pFixedInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
+        FREE(pFixedInfo);
+        pFixedInfo = (FIXED_INFO *) MALLOC(ulOutBufLen);
+      }
+    }
+    if(pFixedInfo) {
+      if(GetNetworkParams(pFixedInfo, &ulOutBufLen) == NO_ERROR) {
+        x = pFixedInfo->DnsServerList.IpAddress.String;
+      }
+    }
+  }
+#endif
+
   if(x)
     while(iplen <= 60) {
       if(*x == '.')
@@ -30,7 +65,7 @@ init(char ip[256]) {
 
   if(!iplen) {
     i = openreadclose("/etc/resolv.conf", &data, 64);
-    if(i == (unsigned long int)-1) return -1;
+    if(i == (unsigned long int) -1) return -1;
     if(i) {
       if(!stralloc_append(&data, "\n")) return -1;
       i = 0;

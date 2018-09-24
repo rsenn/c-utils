@@ -1,7 +1,7 @@
 #ifndef WINDOZE_H
 #define WINDOZE_H 1
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
 # if !(defined(__MSYS__) || defined(__CYGWIN__))
 #  define WINDOWS_NATIVE 1
 # endif
@@ -64,6 +64,7 @@ void __winsock_init(void);
 #else
 #  define winsock2errno(fnord) (fnord)
 #  define __winsock_init()
+#  define closesocket(s) close(s)
 #endif
 
 # ifdef __cplusplus

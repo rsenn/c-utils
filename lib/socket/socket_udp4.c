@@ -22,7 +22,7 @@ socket_udp4(void) {
   int s;
   s = socket_udp4b();
   if(s != -1 && ndelay_on(s) == -1) {
-    close(s);
+    closesocket(s);
     return -1;
   }
   return s;

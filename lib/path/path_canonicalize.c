@@ -30,6 +30,30 @@
 #endif
 #endif
 
+#if WINDOWS
+int is_symlink(const char*);
+static int
+is_link(const char* path) {
+  if(is_symlink(path)) return 1;
+#ifdef  HAVE_LSTAT
+  {
+  struct stat st;
+  if(lstat(path, &st) != -1)
+       return S_ISLNK(st.st_mode);
+  }
+#endif
+  return 0;
+}
+#elif defined(HAVE_LSTAT)
+static int
+is_link(const char* path) {
+  struct stat st;
+  if(lstat(path, &st) == -1)
+    return 0;
+   return S_ISLNK(st.st_mode);
+}
+#endif
+
 //#define lstat lstat64
 
 #define issep(c) ((c) == '/' || (c) == '\\')
@@ -104,16 +128,18 @@ start:
     /* look for the next path separator and then copy the component */
     n = path_len_s(path);
     stralloc_catb(sa, path, n);
+    if(n == 2 && path[1] == ':')
+    stralloc_catc(sa, '/');
     stralloc_nul(sa);
 
     path += n;
 
     /* now stat() the thing to verify it */
-    if(stat_fn(sa->s, &st) == -1) return 0;
+    byte_zero(&st, sizeof(st));
+   if(stat_fn(sa->s, &st) == -1) return 0;
 
-#ifdef HAVE_LSTAT
     /* is it a symbolic link? */
-    if(S_ISLNK(st.st_mode)) {
+    if(is_link(sa->s)) {
       ret++;
 
       /* read the link, return if failed and then nul-terminate the buffer */
@@ -159,7 +185,6 @@ start:
         if(!path_canonicalize(buf, sa, symbolic)) return 0;
       }
     }
-#endif
 
 #ifdef S_ISDIR
     /* it isn't a directory :( */
