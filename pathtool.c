@@ -203,7 +203,12 @@ main(int argc, char* argv[]) {
   stralloc_init(&tmp);
   path_getcwd(&tmp, 64);
   stralloc_nul(&tmp);
+
+#if defined(__CYGWIN__) || defined(__MSYS__)
   pathconv(tmp.s, &cwd);
+#else
+  stralloc_copy(&cwd, &tmp);
+#endif
 
   stralloc_catb(&delims, "/\\", 2);
   stralloc_catb(&delims, separator, 1);

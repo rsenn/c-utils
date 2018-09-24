@@ -11,6 +11,8 @@
 # ifndef __MS_types__
 #  define __MS_types__
 # endif
+#undef __BSD_VISIBLE
+#define __BSD_VISIBLE 0
 #include <sys/types.h>
 #ifdef __BIT_TYPES_DEFINED__
 #define uint64_t u_int64_t

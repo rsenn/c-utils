@@ -84,11 +84,12 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   struct stat st;
   int ret = 1;
   int (*stat_fn)() = stat;
-#ifdef HAVE_LSTAT
   char buf[PATH_MAX + 1];
+#ifdef HAVE_LSTAT
 
 #if !WINDOWS_NATIVE
   if(symbolic) stat_fn = lstat;
+#endif
 #endif
   if(path_issep(*path)) {
     stralloc_catc(sa, '/');
@@ -96,7 +97,6 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   }
 
 start:
-#endif
   /* loop once for every /path/component/
      we canonicalize absolute paths, so we must always have a '/' here */
   while(*path) {

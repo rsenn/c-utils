@@ -5,7 +5,7 @@
 #endif
 
 #if WINDOWS
-#else
+#define __INSIDE_CYGWIN_NET__ 1
 #endif
 #include "../io_internal.h"
 #include <errno.h>

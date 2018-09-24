@@ -1648,3 +1648,5 @@ $(BUILDDIR)sln.o: sln.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)torrent-progress.o: torrent-progress.c lib/buffer.h lib/uint64.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/io.h lib/mmap.h lib/open.h lib/windoze.h lib/uint64.h lib/windoze.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_absolute.o: lib/path/path_absolute.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
