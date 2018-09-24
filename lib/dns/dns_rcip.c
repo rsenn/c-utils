@@ -5,11 +5,11 @@
 #include "../ip6.h"
 #include "../open.h"
 #include "../taia.h"
+#include "../socket.h"
 #include <stdlib.h>
 #if WINDOWS
 #include <windows.h>
 #include <iphlpapi.h>
-#include <winsock2.h>
 #endif
 
 static stralloc data;

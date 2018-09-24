@@ -12,10 +12,6 @@
 #include <errno.h>
 #include "../io_internal.h"
 
-#if WINDOWS_NATIVE
-#include <winsock2.h>
-#endif
-
 #ifndef O_NDELAY
 #define O_NDELAY O_NONBLOCK
 #endif
