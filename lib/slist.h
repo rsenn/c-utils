@@ -32,17 +32,17 @@ slink* slist_unshift(slist* l);
 #define slist_foreach(slist, n) \
   slink** n; for(n = slist_begin(slist); n != slist_end(slist); slist_iterator_increment(slist, &n))
 
-static slink** slist_begin(slist* l) { return &l->root; }
-static slink** slist_end(slist* l) { slink** p = &l->root; while(*p) p = &(*p)->next; return p; }
+inline static slink** slist_begin(slist* l) { return &l->root; }
+inline static slink** slist_end(slist* l) { slink** p = &l->root; while(*p) p = &(*p)->next; return p; }
 
-static int slist_iterator_first(slist* l, slink** p) { return l->root == *p; }
-static int slist_iterator_last(slist* l, slink** p) {  slink* ptr = (*p);  (void)l; return ptr->next == NULL; }
-static int slist_iterator_end(slist* l, slink** p) { (void)l; return (*p)->next == NULL; }
+inline static int slist_iterator_first(slist* l, slink** p) { return l->root == *p; }
+inline static int slist_iterator_last(slist* l, slink** p) {  slink* ptr = (*p);  (void)l; return ptr->next == NULL; }
+inline static int slist_iterator_end(slist* l, slink** p) { (void)l; return (*p)->next == NULL; }
 
-static void slist_iterator_increment(slist* l, slink*** p) { (void)l; *p = &(**p)->next; }
-static slink* slist_iterator_dereference(slist* l, slink** p) { (void)l; return *p; }
-static size_t slist_iterator_distance(slist* l, slink** from, slink** to) {  size_t i; (void)l; while(*from && from != to) { from = &(*from)->next; ++i; }; return i; }
-static int slist_iterator_equal(slist* l, slink** it1, slink** it2) { (void)l; return *it1 == *it2; }
+inline static void slist_iterator_increment(slist* l, slink*** p) { (void)l; *p = &(**p)->next; }
+inline static slink* slist_iterator_dereference(slist* l, slink** p) { (void)l; return *p; }
+inline static size_t slist_iterator_distance(slist* l, slink** from, slink** to) {  size_t i; (void)l; while(*from && from != to) { from = &(*from)->next; ++i; }; return i; }
+inline static int slist_iterator_equal(slist* l, slink** it1, slink** it2) { (void)l; return *it1 == *it2; }
 
 #ifdef __cplusplus
 }

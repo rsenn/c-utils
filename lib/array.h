@@ -47,9 +47,9 @@ void array_chop(array* x,uint64 membersize,uint64 members);
 #define array_failed(x) (array_bytes(x)==-1)
 #define array_unallocated(x) (array_bytes(x)==0)
 
-static void array_iterator_increment(void** it, uint64 membersize) { char** i = (char**)it; (*i) += membersize; }
-static int array_iterator_equal(void** it1, void** it2) { char **p1 = (char**)it1, **p2 = (char**)it2; return p1 == p2; }
-static void* array_iterator_dereference(void** it) { return *it; }
+inline static void array_iterator_increment(void** it, uint64 membersize) { char** i = (char**)it; (*i) += membersize; }
+inline static int array_iterator_equal(void** it1, void** it2) { char **p1 = (char**)it1, **p2 = (char**)it2; return p1 == p2; }
+inline static void* array_iterator_dereference(void** it) { return *it; }
 
 #ifdef __cplusplus
 }
