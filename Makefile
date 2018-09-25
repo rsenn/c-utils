@@ -704,7 +704,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln bsdiffcat)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
@@ -1282,6 +1282,14 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 endif
+
+$(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
+$(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): $(BUILDDIR)bsdiffcat.o $(call add-library, strlist stralloc errmsg buffer mmap open dir str byte fmt)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
 ifeq ($(BUILDDIR),)
 .c.o:
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<

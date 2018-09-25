@@ -142,6 +142,7 @@ int buffer_prefetch(buffer *b, size_t n);
 int buffer_putulong(buffer *b, unsigned long int l);
 int buffer_put8long(buffer *b, unsigned long int l);
 int buffer_putxlong(buffer *b, unsigned long int l);
+int buffer_putxlonglong(buffer *b, unsigned long long int l);
 int buffer_putlong(buffer *b, signed long int l);
 
 int buffer_putlonglong(buffer* b, signed long long int l);
@@ -209,6 +210,7 @@ void buffer_dump(buffer *out,  buffer *b);
 
 int buffer_putc(buffer *b,  char c);
 int buffer_putuint64(buffer *b,  uint64 i);
+int buffer_putint64(buffer*, int64 i);
 int buffer_putnspace(buffer *b,  int n);
 
 int buffer_putptr(buffer *b, void *ptr);

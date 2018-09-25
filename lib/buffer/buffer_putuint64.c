@@ -4,5 +4,5 @@
 int
 buffer_putuint64(buffer* b, uint64 i) {
   char buf[FMT_ULONG];
-  return buffer_put(b, buf, fmt_uint64(buf, i));
+  return buffer_put(b, buf, fmt_ulonglong(buf, i));
 }
