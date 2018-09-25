@@ -1070,7 +1070,7 @@ draw_measures(xmlnode* doc) {
   xmlnode* plain = xml_find_element(doc, "plain");
 
   if(plain->type != XML_ELEMENT) {
-    buffer_putsflush(buffer_2,"element 'plain'\n");
+    buffer_putsflush(buffer_2, "element 'plain'\n");
     exit(1);
   }
 
@@ -1316,42 +1316,42 @@ main(int argc, char* argv[]) {
       int n = xmlnodeset_size(&ns);
 
       for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
-          xmlnode* node = xmlnodeset_iter_ref(it);
-          double x1, x2, y1, y2;
-          const char* layer = NULL;
+        xmlnode* node = xmlnodeset_iter_ref(it);
+        double x1, x2, y1, y2;
+        const char* layer = NULL;
 
-          if(xml_has_attribute(node, "layer")) layer = xml_get_attribute(node, "layer");
+        if(xml_has_attribute(node, "layer")) layer = xml_get_attribute(node, "layer");
 
-          rect_update(&extent, get_double(node, "x1"), get_double(node, "y1"));
-          rect_update(&extent, get_double(node, "x2"), get_double(node, "y2"));
+        rect_update(&extent, get_double(node, "x1"), get_double(node, "y1"));
+        rect_update(&extent, get_double(node, "x2"), get_double(node, "y2"));
 
-          {
-            xmlnode* named = node;
+        {
+          xmlnode* named = node;
 
-            while((named = xml_find_parent_attr(named, "name"))) {
-                const char* name = xml_get_attribute(named, "name");
-                stralloc path;
-                stralloc_init(&path);
+          while((named = xml_find_parent_attr(named, "name"))) {
+            const char* name = xml_get_attribute(named, "name");
+            stralloc path;
+            stralloc_init(&path);
 
-                if(str_equal(named->name, "signal")) {
-                    if(current_signal == NULL || str_diff(name, current_signal)) {
-                        current_signal = name;
+            if(str_equal(named->name, "signal")) {
+              if(current_signal == NULL || str_diff(name, current_signal)) {
+                current_signal = name;
 
-                        buffer_puts(buffer_1, "# ");
-                        xml_path(named, &path);
-                        buffer_putsa(buffer_1, &path);
-                        buffer_puts(buffer_1, "[@");
-                      }
-                  }
-
-                xml_print_attributes(named->attributes, buffer_1, ", @", "=", "'");
-                buffer_putnlflush(buffer_1);
+                buffer_puts(buffer_1, "# ");
+                xml_path(named, &path);
+                buffer_putsa(buffer_1, &path);
+                buffer_puts(buffer_1, "[@");
               }
+            }
 
-            //      print_xy(buffer_2, layer, x1, y1);
+            xml_print_attributes(named->attributes, buffer_1, ", @", "=", "'");
+            buffer_putnlflush(buffer_1);
           }
-          print_script(buffer_1, node);
+
+          //      print_xy(buffer_2, layer, x1, y1);
         }
+        print_script(buffer_1, node);
+      }
       buffer_flush(buffer_1);
 
       print_rect(buffer_2, "extent", &extent);
@@ -1363,30 +1363,30 @@ main(int argc, char* argv[]) {
       contour = extent;
       rect_translate(&contour, translate);
 
-        print_rect(buffer_2, "contour", &contour);
+      print_rect(buffer_2, "contour", &contour);
 
-        /*    print_xy(buffer_2, "extent.1", extent.x1, extent.y1);
-            print_xy(buffer_2, "extent.2", extent.x2, extent.y2);
-        */
-        // xml_print_nodeset(&wires, buffer_1);
+      /*    print_xy(buffer_2, "extent.1", extent.x1, extent.y1);
+          print_xy(buffer_2, "extent.2", extent.x2, extent.y2);
+      */
+      // xml_print_nodeset(&wires, buffer_1);
 
-        //      buffer_puts(buffer_2, "top_y: ");
-        //      buffer_putdouble(buffer_2, top_y, 1);
-        //      buffer_putnlflush(buffer_2);
-        //      buffer_puts(buffer_2, "right_x: ");
-        //      buffer_putdouble(buffer_2, right_x, 1);
-        //      buffer_putnlflush(buffer_2);
-      }
-
-      /*  cbmap_visit_all(nets, dump_net, "nets"); */
-
-      /*
-       * Cleanup function for the XML library.
-       */
-      xml_free(doc);
+      //      buffer_puts(buffer_2, "top_y: ");
+      //      buffer_putdouble(buffer_2, top_y, 1);
+      //      buffer_putnlflush(buffer_2);
+      //      buffer_puts(buffer_2, "right_x: ");
+      //      buffer_putdouble(buffer_2, right_x, 1);
+      //      buffer_putnlflush(buffer_2);
     }
+
+    /*  cbmap_visit_all(nets, dump_net, "nets"); */
+
     /*
-     * this is to debug memory for regression tests
+     * Cleanup function for the XML library.
      */
-    return (0);
+    xml_free(doc);
   }
+  /*
+   * this is to debug memory for regression tests
+   */
+  return (0);
+}
