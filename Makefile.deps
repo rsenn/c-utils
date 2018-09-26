@@ -706,6 +706,8 @@ $(BUILDDIR)socket_bind6_reuse.o: ./lib/socket/socket_bind6_reuse.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)socket_broadcast.o: ./lib/socket/socket_broadcast.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_filename.o: ./lib/stralloc/mmap_filename.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_0.o: ./lib/stralloc/stralloc_0.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_catlong0.o: ./lib/stralloc/stralloc_catlong0.c
@@ -1047,8 +1049,6 @@ $(BUILDDIR)http_readable.o: ./lib/http/http_readable.c
 $(BUILDDIR)http_sendreq.o: ./lib/http/http_sendreq.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)http_writeable.o: ./lib/http/http_writeable.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_filename.o: ./lib/mmap/mmap_filename.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_map.o: ./lib/mmap/mmap_map.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

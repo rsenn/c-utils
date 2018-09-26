@@ -1,4 +1,6 @@
 #include "lib/buffer.h"
+#include "lib/stralloc.h"
+#include "lib/mmap.h"
 
 int
 buffer_copy(buffer* out, buffer* in) {
@@ -19,14 +21,22 @@ int
 main(int argc, char* argv[])  {
   buffer input,  output, compress, decompress;
   buffer deflate, gzout, inflate, gzin;
+  stralloc fname;
 
-  const char* filename =  argv[1] ? argv[1] : "/mnt/Newx20Data/Sources/gettext-0.19.8.1.tar.xz";
+  const char* filename =  argv[1] ? argv[1] : "/home/roman/Sources/file-5.34.tar.xz";
 
   if(buffer_mmapprivate(&input, filename) < 0) {
     buffer_putm(buffer_2, "ERROR opening: ", filename);
     buffer_putnlflush(buffer_2);
     return 1;
   }
+
+  stralloc_init(&fname);
+  mmap_filename(input.x, &fname);
+
+  buffer_puts(buffer_2, "Filename: ");
+  buffer_putsa(buffer_2, &fname);
+  buffer_putnlflush(buffer_2);
 
   buffer_truncfile(&output, "output.lzma");
 
