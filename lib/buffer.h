@@ -216,6 +216,7 @@ int buffer_putnspace(buffer *b,  int n);
 int buffer_putptr(buffer *b, void *ptr);
 int buffer_putulong0(buffer *b, unsigned long l, int pad);
 int buffer_putxlong0(buffer* b, unsigned long l, int pad);
+int buffer_putxlonglong0(buffer* b, unsigned long long l, int pad);
 
 int buffer_skipspace(buffer *b);
 int buffer_skip_pred(buffer *b, int (*pred)(int));

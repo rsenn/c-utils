@@ -84,6 +84,8 @@ $(BUILDDIR)buffer_putxlong0.o: ./lib/buffer/buffer_putxlong0.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putxlonglong.o: ./lib/buffer/buffer_putxlonglong.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_putxlonglong0.o: ./lib/buffer/buffer_putxlonglong0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_put_escaped.o: ./lib/buffer/buffer_put_escaped.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_read_fd.o: ./lib/buffer/buffer_read_fd.c
