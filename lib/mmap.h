@@ -33,6 +33,8 @@ char* mmap_private_fd(fd_t fd, size_t* filesize);
  * length of map in filesize and return pointer to map. */
 char* mmap_shared(const char *filename,size_t* filesize);
 
+char* mmap_shared_fd(fd_t fd,size_t* filesize);
+
 /* unmap a mapped region */
 int mmap_unmap(void* mapped,size_t maplen);
 

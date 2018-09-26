@@ -1062,6 +1062,8 @@ $(BUILDDIR)mmap_rw_fd.o: ./lib/mmap/mmap_rw_fd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_shared.o: ./lib/mmap/mmap_shared.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_shared_fd.o: ./lib/mmap/mmap_shared_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_unmap.o: ./lib/mmap/mmap_unmap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_basename.o: ./lib/str/str_basename.c
