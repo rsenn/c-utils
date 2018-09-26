@@ -1048,6 +1048,8 @@ $(BUILDDIR)http_sendreq.o: ./lib/http/http_sendreq.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)http_writeable.o: ./lib/http/http_writeable.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_filename.o: ./lib/mmap/mmap_filename.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_map.o: ./lib/mmap/mmap_map.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_private.o: ./lib/mmap/mmap_private.c
