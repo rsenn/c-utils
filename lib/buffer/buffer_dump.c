@@ -1,7 +1,7 @@
-#include "../windoze.h"
 #include "../buffer.h"
 #include "../fmt.h"
 #include "../io_internal.h"
+#include "../windoze.h"
 
 #if WINDOWS
 #include <io.h>

@@ -6,7 +6,7 @@ extern ssize_t buffer_dummyreadmmap();
 extern void buffer_munmap(void* buf);
 
 int
-buffer_mmapprivate_fd(buffer* b, int fd) {
+buffer_mmapprivate_fd(buffer* b, fd_t fd) {
   if(!(b->x = mmap_private_fd(fd, &b->n))) return -1;
   b->p = 0;
   b->a = b->n;

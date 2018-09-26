@@ -15,6 +15,10 @@
 #endif
 #endif
 
+#ifndef USE_READDIR
+#define USE_READDIR 0
+#endif
+
 #if USE_READDIR
 # include <dirent.h>
 #else

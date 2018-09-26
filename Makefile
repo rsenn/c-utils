@@ -537,8 +537,12 @@ ifeq ($(WIDECHAR),)
 WIDECHAR := 0
 endif
 
+ifneq ($(WIDECHAR),)
 DEFS += USE_WIDECHAR=$(WIDECHAR)
+endif
+ifneq ($(READDIR),)
 DEFS += USE_READDIR=$(READDIR)
+endif
 ifeq ($(LARGEFILE),1)
 DEFS += _FILE_OFFSET_BITS=64
 DEFS += _LARGEFILE_SOURCE=1
@@ -1290,8 +1294,8 @@ endif
 endif
 
 $(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): $(BUILDDIR)bsdiffcat.o $(call add-library, array strlist stralloc errmsg buffer mmap open dir str byte fmt)
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
+$(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): $(BUILDDIR)bsdiffcat.o $(call add-library, array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif

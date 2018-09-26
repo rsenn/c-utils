@@ -2,7 +2,6 @@
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
 
-
 #include "../buffer.h"
 #include "../byte.h"
 #include <stdlib.h>
@@ -20,7 +19,7 @@ typedef struct {
 
 static ssize_t
 buffer_deflate_write(fd_t fd, const void* data, size_t n, buffer* b) {
-  ssize_t have; 
+  ssize_t have;
   int ret;
   deflate_ctx* ctx = b->cookie;
   z_stream* z = &ctx->z;
@@ -41,7 +40,7 @@ again:
 
   if(ret == Z_STREAM_ERROR) return -1;
 
-   have = n - z->avail_in;
+  have = n - z->avail_in;
 
   ctx->other->p += (ctx->other->a - ctx->other->p) - z->avail_out;
 

@@ -1,5 +1,5 @@
-#include "../byte.h"
 #include "../buffer.h"
+#include "../byte.h"
 #include "../fmt.h"
 #include "../str.h"
 #include <float.h>
@@ -19,9 +19,9 @@ buffer_putdouble(buffer* b, double d, int prec) {
   if(n > 0 && buf[n - 1] == '.') --n;
 
   if(n == 2 && byte_equal(buf, 2, "-0")) {
-      buf[0] = '0';
-      n = 1;
-    }
+    buf[0] = '0';
+    n = 1;
+  }
 
   return buffer_put(b, buf, n);
 }

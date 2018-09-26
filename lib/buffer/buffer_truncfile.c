@@ -1,7 +1,7 @@
-#include "../windoze.h"
 #include "../buffer.h"
 #include "../open.h"
 #include "../stralloc.h"
+#include "../windoze.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>

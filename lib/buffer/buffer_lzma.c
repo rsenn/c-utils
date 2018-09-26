@@ -2,7 +2,6 @@
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
 
-
 #include "../buffer.h"
 #include <stdlib.h>
 
@@ -121,11 +120,11 @@ int
 buffer_lzma(buffer* b, buffer* other, int compress) {
   lzma_ret ret;
   lzma_ctx* ctx;
-    lzma_options_lzma opt_lzma2;
+  lzma_options_lzma opt_lzma2;
   lzma_filter filters[] = {
-      { LZMA_FILTER_X86,  NULL},
-      { LZMA_FILTER_LZMA2,  &opt_lzma2},
-      { LZMA_VLI_UNKNOWN,  NULL},
+      {LZMA_FILTER_X86, NULL},
+      {LZMA_FILTER_LZMA2, &opt_lzma2},
+      {LZMA_VLI_UNKNOWN, NULL},
   };
 
   if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) {
@@ -145,7 +144,7 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   b->deinit = &buffer_lzma_close;
 
   ret = compress ? lzma_stream_encoder(&ctx->strm, filters, LZMA_CHECK_CRC64)
-                          : lzma_stream_decoder(&ctx->strm, UINT64_MAX, LZMA_CONCATENATED);
+                 : lzma_stream_decoder(&ctx->strm, UINT64_MAX, LZMA_CONCATENATED);
 
   if(ret != LZMA_OK) return 0;
 

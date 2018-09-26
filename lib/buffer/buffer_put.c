@@ -1,5 +1,5 @@
-#include "../byte.h"
 #include "../buffer.h"
+#include "../byte.h"
 #include <string.h>
 #ifdef __x86_64__
 #include <x86intrin.h>
