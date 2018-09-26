@@ -33,22 +33,22 @@ extern "C" {
 typedef uint16_t uint16;
 typedef int16_t int16;
 
-#if(defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT16_MACROS)
+#if (defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT16_MACROS)
 
-static void uint16_pack(char* out, uint16 in) {
+inline static void uint16_pack(char* out, uint16 in) {
   *(uint16 *)out = in;
 }
 
-static void uint16_unpack(const char* in, uint16* out) {
+inline static void uint16_unpack(const char* in, uint16* out) {
   *out = *(uint16 *)in;
 }
 
-static uint16 uint16_get(const void* ptr) {
+inline static uint16 uint16_get(const void* ptr) {
   const char* in = ptr;
   return *(uint16 *)in;
 }
 
-static uint16 uint16_read(const char* in) {
+inline static uint16 uint16_read(const char* in) {
   return *(uint16 *)in;
 }
 
@@ -57,24 +57,25 @@ void uint16_unpack_big(const char* in, uint16* out);
 uint16 uint16_read_big(const char* in);
 #else
 
-static uint16
+#if !defined(NO_UINT16_MACROS)
+inline static uint16
 uint16_get(const void* ptr) {
   const char* in = ptr;
   return (in[0] << 8) | (in[1]);
 }
 
-static uint16
+inline static uint16
 uint16_read(const char* in) {
   return (in[0] << 8) | (in[1]);
 }
+#endif
 
 void uint16_pack(char* out, uint16 in);
 void uint16_pack_big(char* out, uint16 in);
 void uint16_unpack(const char* in, uint16* out);
 void uint16_unpack_big(const char* in, uint16* out);
-uint16 uint16_read(const char* in);
-uint16 uint16_read_big(const char* in);
-
+uint16 uint16_read_big(const char*);
+uint16 uint16_read(const char*);
 #endif
 
 #ifdef __cplusplus

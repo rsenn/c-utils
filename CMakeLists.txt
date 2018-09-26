@@ -15,6 +15,7 @@ include(FindBZip2)
 include(FindPkgConfig)
 include(FindZLIB)
 include(UsePkgConfig)
+include(TestBigEndian)
 
 include(${CMAKE_SOURCE_DIR}/CheckC11Generics.cmake)
 include(${CMAKE_SOURCE_DIR}/CheckSizeTypes.cmake)
@@ -118,6 +119,15 @@ include_directories("${CMAKE_SOURCE_DIR}")
 #include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
 
 #pkg_search_module(LIBLZMA liblzma)
+
+TEST_BIG_ENDIAN(BIG_ENDIAN)
+
+if(BIG_ENDIAN)
+  add_definitions(-D__BIG_ENDIAN__=1)
+else(BIG_ENDIAN)
+  add_definitions(-D__LITTLE_ENDIAN__=1)
+endif(BIG_ENDIAN)
+
 
 
 if(LIBLZMA_FOUND)
