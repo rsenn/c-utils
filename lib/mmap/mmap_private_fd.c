@@ -27,7 +27,7 @@ mmap_private_fd(fd_t fd, size_t* filesize) {
   if(m)
     if((map = MapViewOfFile(m, FILE_MAP_COPY, 0, 0, 0))) *filesize = GetFileSize(fd, NULL);
   CloseHandle(m);
-  CloseHandle(fd);
+//  CloseHandle(fd);
   return map;
 #else
   char* map;
@@ -35,7 +35,7 @@ mmap_private_fd(fd_t fd, size_t* filesize) {
     *filesize = io_seek(fd, 0, SEEK_END);
     map = (char*)mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
     if(map == (char*)-1) map = 0;
-    close(fd);
+//    close(fd);
     return map;
   }
   return 0;

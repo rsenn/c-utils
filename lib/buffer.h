@@ -65,6 +65,9 @@ void buffer_munmap(void* buf);
 int buffer_mmapread(buffer* b, const char* filename);
 int buffer_mmapread_fd(buffer *b, fd_t fd);
 int buffer_mmapprivate(buffer* b, const char* filename);
+int buffer_mmapprivate_fd(buffer* b, fd_t fd);
+int buffer_mmapshared(buffer* b, const char* filename);
+int buffer_mmapshared_fd(buffer* b, fd_t fd);
 void buffer_close(buffer* b);
 
 /* reading from an fd... if it is a regular file,  then  buffer_mmapread_fd is called,

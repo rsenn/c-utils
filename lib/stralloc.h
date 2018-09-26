@@ -108,6 +108,7 @@ int stralloc_diffs(const stralloc* a, const char* b) __pure__;
 int stralloc_nul(stralloc* sa);
 
 /* stralloc_catulong0 appends a '0' padded ASCII representation of in */
+int stralloc_catulong(stralloc* sa, unsigned long int in);
 int stralloc_catulong0(stralloc* sa, unsigned long int in, size_t n);
 
 /* stralloc_catlong0 appends a '0' padded ASCII representation of in */

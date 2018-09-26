@@ -180,9 +180,13 @@ $(BUILDDIR)buffer_lzma.o: ./lib/buffer/buffer_lzma.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_mmapprivate.o: ./lib/buffer/buffer_mmapprivate.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_mmapprivate_fd.o: ./lib/buffer/buffer_mmapprivate_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_mmapread.o: ./lib/buffer/buffer_mmapread.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_mmapread_fd.o: ./lib/buffer/buffer_mmapread_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_mmapshared_fd.o: ./lib/buffer/buffer_mmapshared_fd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_munmap.o: ./lib/buffer/buffer_munmap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -303,6 +307,8 @@ $(BUILDDIR)io_debugstring.o: ./lib/io/io_debugstring.c
 $(BUILDDIR)io_dontwantread.o: ./lib/io/io_dontwantread.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_dontwantwrite.o: ./lib/io/io_dontwantwrite.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_dup.o: ./lib/io/io_dup.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_eagain.o: ./lib/io/io_eagain.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

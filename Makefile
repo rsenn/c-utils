@@ -140,6 +140,12 @@ DEFS += HAVE_ALLOCA=1
 endif
 #$(info HAVE_ALLOCA=$(HAVE_ALLOCA))
 
+HAVE_SENDFILE := $(call check-function-exists,sendfile)
+ifeq ($(HAVE_SENDFILE),1)
+DEFS += HAVE_SENDFILE=1
+endif
+#$(info HAVE_SENDFILE=$(HAVE_SENDFILE))
+
 
 
 #$(call def-include-exists,errno.h,HAVE_ERRNO_H)
@@ -1175,7 +1181,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)hexedit$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
-$(BUILDDIR)hexedit$(M64_)$(EXEEXT): $(BUILDDIR)hexedit.o $(call add-library, mmap buffer byte scan fmt str open uint32)
+$(BUILDDIR)hexedit$(M64_)$(EXEEXT): $(BUILDDIR)hexedit.o $(call add-library, path stralloc errmsg io iarray array buffer mmap open byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
