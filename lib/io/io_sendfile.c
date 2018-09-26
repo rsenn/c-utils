@@ -15,6 +15,9 @@
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
+#ifdef __aarch64__
+#include <asm/unistd.h>
+#endif
 
 #if defined(HAVE_BSDSENDFILE)
 #define SENDFILE 1
