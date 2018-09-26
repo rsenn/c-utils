@@ -90,89 +90,101 @@ bsdiff_read_header(buffer* b, bsdiff_header* hdr) {
   return 1;
 }
 
-int64
-bsdiff_read_ctrl(buffer* b, array* a) {
-  bsdiff_control ctrl;
-  buffer bctrl;
-  buffer_bz2(&bctrl, b, 0);
+int
+bsdiff_read_ctrl(buffer* b, bsdiff_control* ctrl) {
+    byte_zero(ctrl, sizeof(ctrl));
 
-  for(;;) {
-    byte_zero(&ctrl, sizeof(ctrl));
-
-    if(!buffer_getint64(&bctrl, &ctrl.add_len)) break;
-    if(!buffer_getint64(&bctrl, &ctrl.extra_len)) break;
-    if(!buffer_getint64(&bctrl, &ctrl.seek_off)) break;
-
-    array_catb(a, &ctrl, sizeof(ctrl));
-  }
-  return array_length(a, sizeof(ctrl));
+    if(!buffer_getint64(b, &ctrl->add_len)) return 0;
+    if(!buffer_getint64(b, &ctrl->extra_len)) return 0;
+    if(!buffer_getint64(b, &ctrl->seek_off)) return 0;
+    return 1;
 }
 
 int64
-bsdiff_read_data(buffer* data, buffer* extra, bsdiff_control* rec, int64 n) {
-  buffer bdata, bextra;
+bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
+  bsdiff_control rec;
+  buffer bctrl, bdata, bextra;
   int64 i;
   int64 r = 0, w = 0;
 
+  buffer_bz2(&bctrl, ctrl, 0);
   buffer_bz2(&bdata, data, 0);
   buffer_bz2(&bextra, extra, 0);
 
-  for(i = 0; i < n; ++i) {
-    uint64 dlen = rec[i].add_len;
+  for(;;) {
+    uint64 len; 
+    if(!bsdiff_read_ctrl(&bctrl, &rec)) break;
 
-    debug_int("add_len", rec[i].add_len);
-    debug_int("extra_len", rec[i].extra_len);
-    debug_int("seek_off", rec[i].seek_off);
 
-    if(dlen) {
-      char* ptr = malloc(dlen);
+    debug_int("add_len", rec.add_len);
+    debug_int("extra_len", rec.extra_len);
+    debug_int("seek_off", rec.seek_off);
 
-      if(buffer_get(&bdata, ptr, dlen) != dlen) {
-        free(ptr);
+    if((len = rec.add_len)) {
+      char* add = malloc(len);
+
+      if(buffer_get(&bdata, add, len) != len) {
+        free(add);
         break;
       }
-      output_hex(ptr, dlen, r, '+');
+      if(!old.x)
+        output_hex(add, len, r, '+');
 
       if(old.x) {
-        char* src = malloc(dlen);
+        char* src = malloc(len);
         int64 j;
-        if(buffer_get(&old, src, dlen) != dlen) {
-          free(ptr);
+        if(buffer_get(&old, src, len) != len) {
+          free(add);
           free(src);
           break;
         }
-        for(j = 0; j < dlen; ++j) {
-          ptr[j] += src[j];
+        for(j = 0; j < len; ++j) {
+
+          char to, from = src[j]; 
+
+          to = add[j] += src[j];
+
+          if(from != to && !new.x) {
+            buffer_puts(buffer_1, "  patch(p, 0x");
+            buffer_putxlonglong0(buffer_1, w + j, 8);
+            buffer_puts(buffer_1, ", 0x");
+            buffer_putxlong0(buffer_1, (unsigned long)(unsigned char)from, 2);
+            buffer_puts(buffer_1, ", 0x");
+            buffer_putxlong0(buffer_1, (unsigned long)(unsigned char)to, 2);
+            buffer_puts(buffer_1, ");");
+            buffer_putnlflush(buffer_1);
+          }
         }
           free(src);
 
         if(new.x) {
-          buffer_put(&new, ptr, dlen);
+          buffer_put(&new, add, len);
         }
       }
 
-      free(ptr);
-      r += dlen;
-      w += dlen;
+      free(add);
+      r += len;
+      w += len;
     }
 
-    if(rec[i].extra_len) {
-      char* ptr = malloc(rec[i].extra_len);
-      if(buffer_get(&bextra, ptr, rec[i].extra_len) != rec[i].extra_len) {
-        free(ptr);
+    if((len = rec.extra_len)) {
+      char* extra = malloc(len);
+      if(buffer_get(&bextra, extra, len) != len) {
+        free(extra);
         break;
       }
 
-      if(new.x) buffer_put(&new, ptr, rec[i].extra_len);
+      if(new.x) buffer_put(&new, extra, len);
 
-      output_hex(ptr, rec[i].extra_len, w, ' ');
-      free(ptr);
+      if(!old.x)
+        output_hex(extra, len, w, ' ');
+      free(extra);
 
-      w += rec[i].extra_len;
+      w += len;
     }
 
-    r += rec[i].seek_off;
-    if(old.x) old.p += rec[i].seek_off;
+    r += rec.seek_off;
+    if(old.x) old.p += rec.seek_off;
   }
 
   if(old.x) {
@@ -206,11 +218,7 @@ main(int argc, char* argv[]) {
     if(buffer_mmapread_fd(&old, buffer_0->fd)) byte_zero(&old, sizeof(old));
   }
 
-  if(!new.x) {
-    if(isatty(buffer_1->fd)) {
-      buffer_putsflush(buffer_2, "ERROR: won't write binary data to terminal\n");
-      return 1;
-    }
+  if(!new.x && !isatty(buffer_1->fd)) {
     new = *buffer_1;
     buffer_1 = buffer_2;
   }
@@ -228,10 +236,10 @@ main(int argc, char* argv[]) {
       debug_int("data_len", h.data_len);
       debug_int("new_size", h.new_size);
 
-      int64 n = bsdiff_read_ctrl(&patch, &records);
-      debug_int("n", n);
+//      int64 n = bsdiff_read_ctrl(&patch, &records);
+//      debug_int("n", n);
 
-      bsdiff_read_data(&data, &extra, array_start(&records), n);
+      bsdiff_read(&patch, &data, &extra);
 
     } else {
       errmsg_infosys(str_basename(argv[0]), ": ", "read header", ": ", NULL);
