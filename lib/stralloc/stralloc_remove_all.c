@@ -1,5 +1,5 @@
-#include "stralloc.h"
-#include "byte.h"
+#include "../stralloc.h"
+#include "../byte.h"
 
 void stralloc_remove_all(stralloc *sa, register const char *delchars, register unsigned int delcharslen)
 {

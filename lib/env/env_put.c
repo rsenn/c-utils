@@ -2,14 +2,12 @@
 
 /* env.c, envread.c, env.h: environ library
 Daniel J. Bernstein, djb@silverton.berkeley.edu.
-Depends on str.h, alloc.h.
 Requires environ.
 19960113: rewrite. warning: interface is different.
 No known patent problems.
 */
 
 #include "../env.h"
-#include "alloc.h"
 #include "../byte.h"
 #include "../str.h"
 
@@ -20,7 +18,7 @@ static size_t en;             /* the first en of those are ALLOCATED. environ[en
 
 static inline void
 env_goodbye(size_t i) {
-  alloc_free(environ[i]);
+  free(environ[i]);
   environ[i] = environ[--en];
   environ[en] = 0;
 }
@@ -68,12 +66,12 @@ env_expand(void) {
 
   if(en != ea) return 1;
 
-  newenviron = (char**)alloc((size_t)((ea + EXPAND + 1) * sizeof(char*)));
+  newenviron = (char**)malloc((size_t)((ea + EXPAND + 1) * sizeof(char*)));
   if(!newenviron) return 0;
   ea += 30;
 
   byte_copy((char*)newenviron, (size_t)((en + 1) * sizeof(char*)), (char*)environ);
-  alloc_free((void*)environ);
+  free((void*)environ);
   environ = newenviron;
   return 1;
 }
@@ -106,11 +104,11 @@ env_put(const char* s) {
   if(!env_isinit) {
     if(!env_init()) return 0;
   }
-  u = alloc(str_len(s) + 1);
+  u = malloc(str_len(s) + 1);
   if(!u) return 0;
   str_copy(u, s);
   if(!env_add(u)) {
-    alloc_free(u);
+    free(u);
     return 0;
   }
   return 1;
@@ -125,14 +123,14 @@ env_putb(const char* s, const char* t, size_t n) {
     if(!env_init()) return 0;
   }
   slen = str_len(s);
-  u = alloc(slen + n + 2);
+  u = malloc(slen + n + 2);
   if(!u) return 0;
   str_copy(u, s);
   u[slen] = '=';
   byte_copy(u + slen + 1, n, t);
   u[slen + 1 + n] = '\0';
   if(!env_add(u)) {
-    alloc_free(u);
+    free(u);
     return 0;
   }
   return 1;
@@ -152,15 +150,15 @@ env_init(void) {
     ;
   }
   ea = en + 10;
-  newenviron = (char**)alloc((size_t)((ea + 1) * sizeof(char*)));
+  newenviron = (char**)malloc((size_t)((ea + 1) * sizeof(char*)));
   if(!newenviron) return 0;
   for(en = 0; environ[en]; ++en) {
-    newenviron[en] = alloc(str_len(environ[en]) + 1);
+    newenviron[en] = malloc(str_len(environ[en]) + 1);
     if(!newenviron[en]) {
       for(i = 0; i < en; ++i) {
-        alloc_free(newenviron[i]);
+        free(newenviron[i]);
       }
-      alloc_free((char*)newenviron);
+      free((char*)newenviron);
       return 0;
     }
     str_copy(newenviron[en], environ[en]);

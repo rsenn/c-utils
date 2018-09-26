@@ -4,22 +4,11 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "alloc.h"
 
 #include "../memalign.h"
 #include "../byte.h"
 #include "../str.h"
-#include "alloc.h"
 #include "../cbmap_internal.h"
 #include <stdio.h>
 #include <string.h>

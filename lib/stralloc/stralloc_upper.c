@@ -1,5 +1,5 @@
-#include "byte.h"
-#include "stralloc.h"
+#include "../byte.h"
+#include "../stralloc.h"
 
 void stralloc_upper(register stralloc *sa)
 {
