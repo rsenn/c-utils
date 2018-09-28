@@ -7,6 +7,7 @@
 
 #if WINDOWS_NATIVE
 #include <windows.h>
+#include <psapi.h>
 #else
 #include <unistd.h>
 #include <limits.h>

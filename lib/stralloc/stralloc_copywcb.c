@@ -9,7 +9,7 @@ int
 stralloc_copywcb(stralloc* sa, const wchar_t* buf, size_t len) {
   size_t i, n = 0;
   for(i = 0; buf[i]; ++i) 
-    n += wcu8len(buf[i];
+    n += wcu8len(buf[i]);
 
   if(stralloc_ready(sa, n)) {
     sa->len = n;

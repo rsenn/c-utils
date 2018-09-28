@@ -597,7 +597,7 @@ target_link_libraries(eagle-to-circuit array buffer byte cbmap scan str stralloc
 if(NOT MSVC)
 target_link_libraries(elfwrsec buffer mmap str)
 endif()
-target_link_libraries(hexedit buffer mmap scan)
+target_link_libraries(hexedit  errmsg buffer path stralloc str mmap open scan)
 target_link_libraries(httptest buffer byte http dns errmsg io taia ${LIBIPHLPAPI})
 target_link_libraries(impgen buffer byte mmap)
 target_link_libraries(jsontest buffer charbuf fmt json open str stralloc)

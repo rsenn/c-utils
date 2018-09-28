@@ -23,7 +23,7 @@
 //#define open _open
 //#define close _close
 #define popen _popen
-#define lseek lseek64
+//#define lseek lseek64
 #define llseek lseek64
 //#include "socket.h"
 my_extern HANDLE io_comport;

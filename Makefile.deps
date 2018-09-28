@@ -44,16 +44,6 @@ $(BUILDDIR)array_trunc.o: ./lib/array/array_trunc.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)array_truncate.o: ./lib/array/array_truncate.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_1.o: ./lib/buffer/buffer_1.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_1small.o: ./lib/buffer/buffer_1small.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_2.o: ./lib/buffer/buffer_2.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_bz2.o: ./lib/buffer/buffer_bz2.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_bzip.o: ./lib/buffer/buffer_bzip.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_close.o: ./lib/buffer/buffer_close.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_copy.o: ./lib/buffer/buffer_copy.c
@@ -162,8 +152,6 @@ $(BUILDDIR)buffer_gettok_sa.o: ./lib/buffer/buffer_gettok_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_get_new_token_sa.o: ./lib/buffer/buffer_get_new_token_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_0small.o: ./lib/buffer/buffer_0small.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_get_new_token_sa_pred.o: ./lib/buffer/buffer_get_new_token_sa_pred.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_get_token.o: ./lib/buffer/buffer_get_token.c
@@ -239,6 +227,18 @@ $(BUILDDIR)buffer_puts_escaped.o: ./lib/buffer/buffer_puts_escaped.c
 $(BUILDDIR)buffer_putuint64.o: ./lib/buffer/buffer_putuint64.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_0.o: ./lib/buffer/buffer_0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_0small.o: ./lib/buffer/buffer_0small.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_1.o: ./lib/buffer/buffer_1.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_1small.o: ./lib/buffer/buffer_1small.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_2.o: ./lib/buffer/buffer_2.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_bz2.o: ./lib/buffer/buffer_bz2.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_bzip.o: ./lib/buffer/buffer_bzip.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_dummyreadmmap.o: ./lib/buffer_dummyreadmmap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -748,6 +748,10 @@ $(BUILDDIR)stralloc_copyb.o: ./lib/stralloc/stralloc_copyb.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_copys.o: ./lib/stralloc/stralloc_copys.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_copywcb.o: ./lib/stralloc/stralloc_copywcb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_copywcs.o: ./lib/stralloc/stralloc_copywcs.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_count.o: ./lib/stralloc/stralloc_count.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_decamelize.o: ./lib/stralloc/stralloc_decamelize.c
@@ -811,8 +815,6 @@ $(BUILDDIR)stralloc_diff.o: ./lib/stralloc/stralloc_diff.c
 $(BUILDDIR)stralloc_diffb.o: ./lib/stralloc/stralloc_diffb.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_diffs.o: ./lib/stralloc/stralloc_diffs.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_end.o: ./lib/stralloc/stralloc_end.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_endb.o: ./lib/stralloc/stralloc_endb.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
