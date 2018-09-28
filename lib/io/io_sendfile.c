@@ -111,6 +111,9 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 #include <sys/sendfile.h>
 #else
 #ifdef __aarch64__
+#ifndef __NR_sendfile
+#define __NR_sendfile 71
+#endif
 #define sendfile(x...) syscall(__NR_sendfile64, x)
 #else
 _syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)

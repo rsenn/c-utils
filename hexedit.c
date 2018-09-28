@@ -72,11 +72,17 @@ buffer_backup(buffer* b) {
   stralloc_nul(&backup);
   stralloc_nul(&orig);
   
+#if WINDOWS_NATIVE
+  if(CopyFileA(orig.s, backup.s, FALSE) != TRUE) return -1;
+
+  if((fd = open_rw(orig.s)) == -1) return -1;
+#else
   if(rename(orig.s, backup.s) ==  -1) return -1;
 
   if((fd = open_rw(orig.s)) == -1) return -1;
-
+  
   if(io_sendfile(fd, b->fd, 0, size) == -1) return -1;
+#endif  
 
   buffer_close(b);
 
