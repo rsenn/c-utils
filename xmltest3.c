@@ -43,32 +43,34 @@ main(int argc, char* argv[1]) {
   stralloc tmp;
   stralloc_init(&tmp);
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../an-tronics/eagle/40106-4069-Synth.brd");
-  xmlnode* doc = xml_read_tree(&infile);
-  xmlnode* n = xml_find_element(doc, "signals");
-  xml_print(n, buffer_1);
-  xmlnode* n2;
+  {
+    xmlnode* doc = xml_read_tree(&infile);
+    xmlnode* n = xml_find_element(doc, "signals");
+    xmlnode* n2;
+    xml_print(n, buffer_1);
 
-  if((n2 = xml_find_element_attr(doc, "signal", "name", "N$1"))) {
-    xml_print(n2, buffer_1);
-    xml_path(n2, &tmp);
-    buffer_putsa(buffer_1, &tmp);
-    buffer_putnlflush(buffer_1);
-  }
+    if((n2 = xml_find_element_attr(doc, "signal", "name", "N$1"))) {
+      xml_print(n2, buffer_1);
+      xml_path(n2, &tmp);
+      buffer_putsa(buffer_1, &tmp);
+      buffer_putnlflush(buffer_1);
+    }
 
-  if((n2 = xml_find_element_attr(doc, "element", "name", "C1"))) {
-    xml_print(n2, buffer_1);
-    xml_path(n2, &tmp);
-    buffer_putsa(buffer_1, &tmp);
-    buffer_putnlflush(buffer_1);
-  }
+    if((n2 = xml_find_element_attr(doc, "element", "name", "C1"))) {
+      xml_print(n2, buffer_1);
+      xml_path(n2, &tmp);
+      buffer_putsa(buffer_1, &tmp);
+      buffer_putnlflush(buffer_1);
+    }
 
-  if((n2 = xml_find_element_attr(doc, "element", "name", "R1"))) {
-    xml_print(n2, buffer_1);
-    xml_path(n2, &tmp);
-    buffer_putsa(buffer_1, &tmp);
-    buffer_putnlflush(buffer_1);
+    if((n2 = xml_find_element_attr(doc, "element", "name", "R1"))) {
+      xml_print(n2, buffer_1);
+      xml_path(n2, &tmp);
+      buffer_putsa(buffer_1, &tmp);
+      buffer_putnlflush(buffer_1);
+    }
+    xml_debug(doc, buffer_2);
+    xml_free(doc);
+    buffer_close(&b);
   }
-  xml_debug(doc, buffer_2);
-  xml_free(doc);
-  buffer_close(&b);
 }

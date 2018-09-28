@@ -39,10 +39,7 @@ typedef struct pkg_s {
 } pkg;
 
 static const char* const field_names[] = {
-    "Version",
-    "Cflags",
-    "Libs",
-    "Requires",
+    "Version", "Cflags", "Libs", "Requires",
 };
 
 /**
@@ -105,18 +102,20 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
 
   if((s = pkg_get(pf, key)) == NULL) return 0;
 
-  stralloc v;
-  stralloc_init(&v);
-  stralloc_copys(&v, s);
+  {
+    stralloc v;
+    stralloc_init(&v);
+    stralloc_copys(&v, s);
 
-  for(;;) {
-    stralloc_nul(&v);
-    if(!wordexp_sa(v.s, out)) return 0;
-    if(stralloc_finds(out, "${") == out->len) break;
+    for(;;) {
+      stralloc_nul(&v);
+      if(!wordexp_sa(v.s, out)) return 0;
+      if(stralloc_finds(out, "${") == out->len) break;
 
-    stralloc_free(&v);
-    v = *out;
-    stralloc_init(out);
+      stralloc_free(&v);
+      v = *out;
+      stralloc_init(out);
+    }
   }
 
   return 1;
@@ -207,7 +206,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
   if(value_len && ((char*)value)[value_len - 1] == '\0') --value_len;
   stralloc_catb(&v, value, value_len);
 
-  /* wordexp_sa(value, &v); */
+/* wordexp_sa(value, &v); */
 
 #ifdef DEBUG
   buffer_putm(buffer_2, "ENV SET ", key, "=");
@@ -297,6 +296,7 @@ pkg_init(pkg* pf, const char* fn) {
 void
 pkg_list() {
   slist pkgs;
+  slink** it;
   stralloc path, line;
   int i, n = strlist_count(&cmd.path);
 
@@ -310,52 +310,54 @@ pkg_list() {
     dir_t d;
 
     path = strlist_at_sa(&cmd.path, i);
-    size_t len = path.len;
-    stralloc_nul(&path);
-    dir_open(&d, path.s);
+    {
+      size_t len = path.len;
+      stralloc_nul(&path);
+      dir_open(&d, path.s);
 
-    while((entry = dir_read(&d))) {
+      while((entry = dir_read(&d))) {
 
-      stralloc_catm(&path, "/", entry);
+        stralloc_catm(&path, "/", entry);
 
-      if(stralloc_endb(&path, ".pc", 3)) {
+        if(stralloc_endb(&path, ".pc", 3)) {
 
-        stralloc line;
-        buffer pc;
-        pkg pf;
+          stralloc line;
+          buffer pc;
+          pkg pf;
 
-        stralloc_nul(&path);
-        pkg_init(&pf, path.s);
-
-        if(!buffer_mmapread(&pc, path.s)) {
-          path.len -= 3;
           stralloc_nul(&path);
+          pkg_init(&pf, path.s);
 
-          stralloc_copys(&line, path_basename(path.s));
+          if(!buffer_mmapread(&pc, path.s)) {
+            path.len -= 3;
+            stralloc_nul(&path);
 
-          if(pkg_read(&pc, &pf)) {
-            const char* desc;
+            stralloc_copys(&line, path_basename(path.s));
 
-            if((desc = pkg_get(&pf, "Description"))) {
-              stralloc_cats(&line, " - ");
-              stralloc_cats(&line, desc);
+            if(pkg_read(&pc, &pf)) {
+              const char* desc;
+
+              if((desc = pkg_get(&pf, "Description"))) {
+                stralloc_cats(&line, " - ");
+                stralloc_cats(&line, desc);
+              }
             }
+
+            stralloc_nul(&line);
+
+            buffer_putsa(buffer_1, &line);
+            buffer_putnlflush(buffer_1);
+
+            slist_pushs(&pkgs, line.s);
+            line.s = NULL;
+            line.a = 0;
           }
 
-          stralloc_nul(&line);
-
-          buffer_putsa(buffer_1, &line);
-          buffer_putnlflush(buffer_1);
-
-          slist_pushs(&pkgs, line.s);
-          line.s = NULL;
-          line.a = 0;
+          pkg_free(&pf);
         }
 
-        pkg_free(&pf);
+        path.len = len;
       }
-
-      path.len = len;
     }
   }
 
@@ -493,18 +495,20 @@ main(int argc, char* argv[]) {
     stralloc prefix;
     stralloc_init(&prefix);
     stralloc_copy(&prefix, &cmd.self);
-    size_t len = stralloc_finds(&prefix, "/bin");
+    {
+      size_t len = stralloc_finds(&prefix, "/bin");
 
-    if(len == prefix.len) {
-      stralloc_copys(&prefix, "/usr");
-      len = prefix.len;
+      if(len == prefix.len) {
+        stralloc_copys(&prefix, "/usr");
+        len = prefix.len;
+      }
+      prefix.len = len;
+      stralloc_cats(&prefix, "/lib/pkgconfig");
+      strlist_push_sa(&cmd.path, &prefix);
+      prefix.len = len;
+      stralloc_cats(&prefix, "/share/pkgconfig");
+      strlist_push_sa(&cmd.path, &prefix);
     }
-    prefix.len = len;
-    stralloc_cats(&prefix, "/lib/pkgconfig");
-    strlist_push_sa(&cmd.path, &prefix);
-    prefix.len = len;
-    stralloc_cats(&prefix, "/share/pkgconfig");
-    strlist_push_sa(&cmd.path, &prefix);
   }
 
 #ifdef PKGCONF_DEBUG

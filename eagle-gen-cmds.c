@@ -99,9 +99,7 @@ struct ref {
     int pin;
   };
 };
-typedef struct pos {
-  double x, y;
-} xy;
+typedef struct pos { double x, y; } xy;
 struct wire {
   double x1, y1, x2, y2;
 };
@@ -931,7 +929,16 @@ print_xml_xy(buffer* b, xmlnode* e) {
 
 void
 print_xml_rect(buffer* b, xmlnode* e) {
-  buffer_putm(b, "(", xml_get_attribute(e, "x1"), " ", xml_get_attribute(e, "y1"), ") (", xml_get_attribute(e, "x2"), " ", xml_get_attribute(e, "y2"), ")");
+  buffer_putm(b,
+              "(",
+              xml_get_attribute(e, "x1"),
+              " ",
+              xml_get_attribute(e, "y1"),
+              ") (",
+              xml_get_attribute(e, "x2"),
+              " ",
+              xml_get_attribute(e, "y2"),
+              ")");
   buffer_flush(b);
 }
 
@@ -953,9 +960,9 @@ print_script(buffer* b, xmlnode* e) {
   }
 
   if(xml_has_attribute(e, "align")) {
+    const char* a;
     stralloc align;
     stralloc_init(&align);
-    const char* a;
     // xml_get_attribute_sa(e, &align, "align");
 
     if((a = xml_get_attribute(e, "align"))) {
@@ -983,7 +990,18 @@ print_script(buffer* b, xmlnode* e) {
     buffer_putm(b, xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ");
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "pad")) {
-    buffer_putm(b, cmd.s, "'", xml_get_attribute(e, "name"), "'", " ", xml_get_attribute(e, "diameter"), " ", xml_get_attribute(e, "shape"), " ", xml_get_attribute(e, "orientation"), " ");
+    buffer_putm(b,
+                cmd.s,
+                "'",
+                xml_get_attribute(e, "name"),
+                "'",
+                " ",
+                xml_get_attribute(e, "diameter"),
+                " ",
+                xml_get_attribute(e, "shape"),
+                " ",
+                xml_get_attribute(e, "orientation"),
+                " ");
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "hole")) {
     buffer_putm(b, cmd.s, xml_get_attribute(e, "diameter"), " ");
@@ -1171,10 +1189,7 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   struct longopt opts[] = {
-      {"help", 0, NULL, 'h'},
-      {"layer", 1, NULL, 'l'},
-      {"layers", 0, NULL, 'L'},
-      {"draw", 0, NULL, 'd'},
+      {"help", 0, NULL, 'h'}, {"layer", 1, NULL, 'l'}, {"layers", 0, NULL, 'L'}, {"draw", 0, NULL, 'd'},
   };
 
   for(;;) {
@@ -1294,6 +1309,7 @@ main(int argc, char* argv[]) {
     }
 
     {
+      int n;
       double top_y, right_x;
       xmlnodeset_iter_t it, e;
       xmlnodeset ns;
@@ -1313,7 +1329,7 @@ main(int argc, char* argv[]) {
       // ns = xml_find_with_attrs(doc, "x|y|x1|y1|x2|y2");
       ns = xml_find_all_attrs(doc, "x|y|x1|y1");
 
-      int n = xmlnodeset_size(&ns);
+      n = xmlnodeset_size(&ns);
 
       for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
         xmlnode* node = xmlnodeset_iter_ref(it);

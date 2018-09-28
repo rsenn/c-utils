@@ -19,10 +19,7 @@ put_str_escaped(buffer* b, const char* str) {
 }
 
 const char* node_types[] = {
-    "(null)",
-    "XML_DOCUMENT",
-    "XML_ELEMENT",
-    "XML_TEXT",
+    "(null)", "XML_DOCUMENT", "XML_ELEMENT", "XML_TEXT",
 };
 
 static int depth = 0;
@@ -48,8 +45,8 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
 int
 
 main(int argc, char* argv[1]) {
-  buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
   xmlreader r;
+  buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
   xml_reader_init(&r, &infile);
   xml_read_callback(&r, xml_read_function);
   buffer_close(&b);

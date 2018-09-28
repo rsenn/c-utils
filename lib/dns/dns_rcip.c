@@ -1,15 +1,15 @@
 #include "../windoze.h"
-#include "../socket.h"
 #include "../byte.h"
 #include "../dns.h"
 #include "../ip4.h"
 #include "../ip6.h"
 #include "../open.h"
+#include "../socket.h"
 #include "../taia.h"
 #include <stdlib.h>
 #if WINDOWS
-#include <windows.h>
 #include <iphlpapi.h>
+#include <windows.h>
 #endif
 
 static stralloc data;
@@ -21,7 +21,7 @@ init(char ip[256]) {
   int iplen = 0;
   char* x;
 #if WINDOWS
-  FIXED_INFO *pFixedInfo;
+  FIXED_INFO* pFixedInfo;
   ULONG ulOutBufLen;
 #endif
 
@@ -29,18 +29,17 @@ init(char ip[256]) {
 
 #if WINDOWS
 
-
 #define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
   if(!x) {
     /* Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable */
 
-    pFixedInfo = (FIXED_INFO *) MALLOC(sizeof(FIXED_INFO));
+    pFixedInfo = (FIXED_INFO*)MALLOC(sizeof(FIXED_INFO));
     if(pFixedInfo) {
       ulOutBufLen = sizeof(FIXED_INFO);
       if(GetNetworkParams(pFixedInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
         FREE(pFixedInfo);
-        pFixedInfo = (FIXED_INFO *) MALLOC(ulOutBufLen);
+        pFixedInfo = (FIXED_INFO*)MALLOC(ulOutBufLen);
       }
     }
     if(pFixedInfo) {
@@ -65,7 +64,7 @@ init(char ip[256]) {
 
   if(!iplen) {
     i = openreadclose("/etc/resolv.conf", &data, 64);
-    if(i == (unsigned long int) -1) return -1;
+    if(i == (unsigned long int)-1) return -1;
     if(i) {
       if(!stralloc_append(&data, "\n")) return -1;
       i = 0;

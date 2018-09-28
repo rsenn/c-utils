@@ -118,7 +118,7 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 
 void
 process_status(void) {
-  /* display interesting process IDs  */
+/* display interesting process IDs  */
 #if !(defined(_WIN32) || defined(_WIN64))
   fprintf(stderr,
           "process %s: pid=%d, ppid=%d, pgid=%d, fg pgid=%dn\n",
@@ -172,11 +172,13 @@ read_mediathek_list(const char* url) {
   stralloc_cats(&cmd, "| xzcat");
   stralloc_0(&cmd);
 
-  static FILE* pfd;
+  {
+    static FILE* pfd;
 
-  if((pfd = popen(cmd.s, "r")) == NULL) return -1;
+    if((pfd = popen(cmd.s, "r")) == NULL) return -1;
 
-  return fileno(pfd);
+    return fileno(pfd);
+  }
 }
 
 /* Parses a time in HH:MM:SS format and returns seconds */
@@ -417,31 +419,34 @@ parse_entry(strlist* sl) {
   time_t dr = parse_time(strlist_at(sl, 6)); /* duration */
 
   if((unsigned)dr < min_length) return NULL;
+  {
+    unsigned int mbytes = 0;
+    const char* mb = strlist_at(sl, 7);
+    if(mb) scan_uint(mb, &mbytes);
 
-  unsigned int mbytes = 0;
-  const char* mb = strlist_at(sl, 7);
-  if(mb) scan_uint(mb, &mbytes);
+    {
+      const char* desc = strlist_at(sl, 8);
+      const char* url = strlist_at(sl, 9);
+      const char* link = strlist_at(sl, 10);
 
-  const char* desc = strlist_at(sl, 8);
-  const char* url = strlist_at(sl, 9);
-  const char* link = strlist_at(sl, 10);
+      ret = create_mediathek_entry(strlist_at(sl, 1),
+                                   strlist_at(sl, 2),
+                                   strlist_at(sl, 3),
 
-  ret = create_mediathek_entry(strlist_at(sl, 1),
-                               strlist_at(sl, 2),
-                               strlist_at(sl, 3),
+                                   desc,
+                                   url,
+                                   link
 
-                               desc,
-                               url,
-                               link
+                                   );
 
-  );
-
-  if(ret) {
-    ret->tm = dt + tm;
-    ret->dr = dr;
-    ret->mbytes = mbytes;
+      if(ret) {
+        ret->tm = dt + tm;
+        ret->dr = dr;
+        ret->mbytes = mbytes;
+      }
+      return ret;
+    }
   }
-  return ret;
 }
 
 void

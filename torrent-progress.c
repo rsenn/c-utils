@@ -1,6 +1,12 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#include "lib/windoze.h"
+
+#if WINDOWS_NATIVE
+#define snprintf _snprintf
+#endif
+
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 #define _FILE_OFFSET_BITS 64
@@ -94,7 +100,7 @@ filesize(int fd) {
 
   sz = end;
   lseek(fd, pos, SEEK_SET);
-  //_llseek(fd, pos >> 32, pos & 0xffffffff,  &pos, SEEK_SET);
+//_llseek(fd, pos >> 32, pos & 0xffffffff,  &pos, SEEK_SET);
 #endif
   return sz;
 }

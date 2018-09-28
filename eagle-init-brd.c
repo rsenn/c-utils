@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <float.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,9 +13,14 @@
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
+#include "lib/windoze.h"
 #include "lib/xml.h"
 
 #include "lib/round.c"
+
+#if WINDOWS_NATIVE
+#define isnan(x) _isnan(x)
+#endif
 
 #define END_OF_LINE "; "
 void after_element(const char*);
@@ -192,11 +198,11 @@ create_instance(const char* part, const char* gate, double x, double y, double r
 /* ----------------------------------------------------------------------- */
 part_t*
 create_part(const char* name, const char* library, const char* deviceset, const char* device, const char* value) {
+  part_t* p;
   if(value == NULL) value = "";
   /*if(deviceset == NULL) deviceset = "";
   if(device == NULL) device = "";*/
-  part_t* p;
-  p = malloc(sizeof(part_t));
+  p = malloc(sizeof(*p));
   if(p == NULL) return NULL;
   str_copyn(p->name, name, sizeof(p->name) - 1);
   str_copyn(p->library, library ? library : "", sizeof(p->library) - 1);
@@ -301,11 +307,13 @@ process_instance(xmlnode* e) {
   y /= unit_factor;*/
   /*x *= scale_factor;
   y *= scale_factor;*/
-  instance_t* newinst = create_instance(part.s,
-                                        gate.s,
-                                        round_to_mil(x * scale_factor / unit_factor, grid_mils),
-                                        round_to_mil(y * scale_factor / unit_factor, grid_mils),
-                                        rotate);
+  {
+    instance_t* newinst = create_instance(part.s,
+                                          gate.s,
+                                          round_to_mil(x * scale_factor / unit_factor, grid_mils),
+                                          round_to_mil(y * scale_factor / unit_factor, grid_mils),
+                                          rotate);
+  }
 }
 
 /* ----------------------------------------------------------------------- */
@@ -322,7 +330,7 @@ process_part(xmlnode* e) {
   xml_get_attribute_sa(e, &device, "device");
   stralloc_init(&value);
   xml_get_attribute_sa(e, &value, "value");
-  part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s);
+  { part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s); }
 }
 
 /* ----------------------------------------------------------------------- */
@@ -380,26 +388,29 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
     return 1;
   }
+  {
 
-  buffer input;
-  buffer_mmapprivate(&input, filename);
+    buffer input;
+    buffer_mmapprivate(&input, filename);
 
-  xmldoc = xml_read_tree(&input);
+    xmldoc = xml_read_tree(&input);
 
-  /* Get the root element node */
-  root_element = xmldoc->children;
-  print_element_names(root_element);
+    /* Get the root element node */
+    root_element = xmldoc->children;
+    print_element_names(root_element);
 
-  hmap_foreach(parts_db, (void*)&each_part);
-  buffer_flush(buffer_1);
+    hmap_foreach(parts_db, (void*)&each_part);
+    buffer_flush(buffer_1);
+  }
+  {
+    stralloc out;
+    stralloc_init(&out);
+    strlist_joins(&cmds, &out, "; ");
+    buffer_putsa(buffer_1, &out);
+    buffer_putnlflush(buffer_1);
 
-  stralloc out;
-  stralloc_init(&out);
-  strlist_joins(&cmds, &out, "; ");
-  buffer_putsa(buffer_1, &out);
-  buffer_putnlflush(buffer_1);
-
-  /* free up the resulting document */
-  xml_free(xmldoc);
-  return 0;
+    /* free up the resulting document */
+    xml_free(xmldoc);
+    return 0;
+  }
 }

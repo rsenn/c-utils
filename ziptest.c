@@ -1,7 +1,7 @@
 #include "lib/getopt.h"
 #include "lib/buffer.h"
-#include "lib/str.h"
 #include "lib/io_internal.h"
+#include "lib/str.h"
 
 #include <stdlib.h>
 
@@ -29,15 +29,15 @@ usage(const char* argv0) {
               "\n",
               "Supported types are:");
 #ifdef HAVE_ZLIB
-              buffer_puts(buffer_1, " gz");
+  buffer_puts(buffer_1, " gz");
 #endif
 #ifdef HAVE_LIBBZ2
-              buffer_puts(buffer_1," bz2");
+  buffer_puts(buffer_1, " bz2");
 #endif
 #ifdef HAVE_LIBLZMA
-              buffer_puts(buffer_1," lzma xz");
+  buffer_puts(buffer_1, " lzma xz");
 #endif
-              buffer_puts(buffer_1,"\n");
+  buffer_puts(buffer_1, "\n");
   buffer_flush(buffer_1);
   exit(0);
 }
@@ -79,7 +79,10 @@ main(int argc, char* argv[]) {
   const char* out_filename = "-";
   compression_type in_type = C_UNKNOWN;
   compression_type out_type = C_UNKNOWN;
+  buffer infile, outfile;
   buffer *input, *output;
+  compression_type type;
+  buffer cbuf;
 
   while((opt = getopt(argc, argv, "123456789dt:o:h")) != -1) {
     switch(opt) {
@@ -91,28 +94,16 @@ main(int argc, char* argv[]) {
       case '6':
       case '7':
       case '8':
-      case '9':
-        level = opt - '0';
-        break;
-      case 'd':
-        decompress = 1;
-        break;
-      case 't':
-        in_type = compression_from_ext(optarg);
-        break;
-      case 'o':
-        out_filename = optarg;
-        break;
-      case 'h':
-        usage(str_basename(argv[0]));
-        exit(EXIT_SUCCESS);
+      case '9': level = opt - '0'; break;
+      case 'd': decompress = 1; break;
+      case 't': in_type = compression_from_ext(optarg); break;
+      case 'o': out_filename = optarg; break;
+      case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
       default: /* '?' */
         buffer_putm(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n");
         exit(EXIT_FAILURE);
     }
   }
-
-  buffer infile, outfile;
 
   if(argv[optind]) in_filename = argv[optind];
 
@@ -143,8 +134,7 @@ main(int argc, char* argv[]) {
     if(out_type == C_UNKNOWN) out_type = compression_from_filename(out_filename);
   }
 
-  compression_type type = decompress ? in_type : out_type;
-  buffer cbuf;
+  type = decompress ? in_type : out_type;
 
   switch(type) {
     case C_GZ:
@@ -173,10 +163,10 @@ main(int argc, char* argv[]) {
           buffer_bzip(&cbuf, out_filename, level);
       }
       break;
-      /*    case C_XZ: */
-      /*    case C_LZMA: */
-      /*      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); */
-      /*      break; */
+    /*    case C_XZ: */
+    /*    case C_LZMA: */
+    /*      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); */
+    /*      break; */
     default:
       buffer_putm(buffer_2, "ERROR: Unable to detect compression type from ", in_filename);
       buffer_putnlflush(buffer_2);

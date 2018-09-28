@@ -1,8 +1,8 @@
 #include "lib/buffer.h"
 #include "lib/hmap.h"
+#include "lib/io.h"
 #include "lib/stralloc.h"
 #include "lib/xml.h"
-#include "lib/io.h"
 #include <ctype.h>
 
 static buffer infile, b;
@@ -48,12 +48,13 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
 
 int
 main(int argc, char* argv[]) {
+  xmlreader r;
+
   if(argc > 1)
     buffer_mmapprivate(&infile, argv[1]);
   else
     buffer_read_fd(&infile, 0);
 
-  xmlreader r;
   xml_reader_init(&r, &infile);
   xml_read_callback(&r, xml_read_function);
   buffer_putnlflush(buffer_1);
