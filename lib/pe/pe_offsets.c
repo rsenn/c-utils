@@ -48,7 +48,7 @@ pe_opthdr_ptr(const void* ptr) {
 int32
 pe_opthdr_offset(const void* ptr, pe_opthdr_field field) {
   pe_type t = uint16_get((uint16*)pe_opthdr_ptr(ptr));
-  if(t != MAGIC_PE32 && t != MAGIC_PE64)
+  if(t != PE_MAGIC_PE32 && t != PE_MAGIC_PE64)
     return -1;
-  return pe_offsets[(int)field][t == MAGIC_PE64  ? 1 : 0];
+  return pe_offsets[(int)field][t == PE_MAGIC_PE64  ? 1 : 0];
 }

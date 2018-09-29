@@ -1,32 +1,32 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 
-#include <glib.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
+#include "lib/uint32.h"
+#include "lib/mmap.h"
+#include "lib/macho.h"
 #include <stdio.h>
 #include <string.h>
 
 int
 main(int argc, char** argv) {
-  gchar* content;
-  gsize length;
-  gsize offset;
-  uint32_t i, n_commands;
-  uint32_t section_index = 0, text_section_index = 0;
+  char* content;
+  size_t length;
+  size_t offset;
+  uint32 i, n_commands;
+  uint32 section_index = 0, text_section_index = 0;
 
   if(argc < 2) {
-    g_print("Usage: %s XXX.dylib\n", argv[0]);
+    printf("Usage: %s XXX.macho_dylib\n", argv[0]);
     return 0;
   }
 
-  g_file_get_contents(argv[1], &content, &length, NULL);
+  content = mmap_private(argv[1], &length);
 
   {
-    struct mach_header* header;
+    macho_mach_header* header;
 
-    header = (struct mach_header*)content;
-    if(header->magic != MH_MAGIC) {
-      g_print("not Mach-O 32\n");
+    header = (macho_mach_header*)content;
+    if(header->magic != MACHO_MH_MAGIC) {
+      printf("not Mach-O 32\n");
       return -1;
     }
 
@@ -35,49 +35,49 @@ main(int argc, char** argv) {
   }
 
   for(i = 0; i < n_commands; i++) {
-    struct load_command* load;
+    macho_load_command* load;
 
-    load = (struct load_command*)(content + offset);
+    load = (macho_load_command*)(content + offset);
     switch(load->cmd) {
-      case LC_SEGMENT: {
-        struct segment_command* segment;
-        struct section* section;
-        gint j;
+      case MACHO_LC_SEGMENT: {
+        macho_segment_command* segment;
+        macho_section* section;
+        int j;
 
-        segment = (struct segment_command*)(content + offset);
-        if(!g_str_equal(segment->segname, "__TEXT")) {
+        segment = (macho_segment_command*)(content + offset);
+        if(!!strcmp(segment->segname, "__TEXT")) {
           section_index += segment->nsects;
           break;
         }
 
-        section = (struct section*)(content + offset + sizeof(*segment));
+        section = (macho_section*)(content + offset + sizeof(macho_segment_command));
         for(j = 0; j < segment->nsects; j++, section++) {
           section_index++;
-          if(g_str_equal(section->sectname, "__text")) text_section_index = section_index;
+          if(!strcmp(section->sectname, "__text")) text_section_index = section_index;
         }
         break;
       }
-      case LC_SYMTAB: {
-        struct symtab_command* table;
-        struct nlist* symbol;
-        gchar* string_table;
-        gint j;
+      case MACHO_LC_SYMTAB: {
+        macho_symtab_command* table;
+        macho_nlist* symbol;
+        char* string_table;
+        int j;
 
-        table = (struct symtab_command*)(content + offset);
-        symbol = (struct nlist*)(content + table->symoff);
+        table = (macho_symtab_command*)(content + offset);
+        symbol = (macho_nlist*)(content + table->symoff);
         string_table = content + table->stroff;
         for(j = 0; j < table->nsyms; j++, symbol++) {
-          gboolean defined_in_section = FALSE;
+          _Bool defined_in_section = FALSE;
 
-          if((symbol->n_type & N_TYPE) == N_SECT) defined_in_section = TRUE;
+          if((symbol->n_type & MACHO_N_TYPE) == MACHO_N_SECT) defined_in_section = TRUE;
 
-          if(defined_in_section && symbol->n_sect == text_section_index && symbol->n_type & N_EXT) {
-            gchar* name;
-            int32_t string_offset;
+          if(defined_in_section && symbol->n_sect == text_section_index && symbol->n_type & MACHO_N_EXT) {
+            char* name;
+            int32 string_offset;
 
-            string_offset = symbol->n_un.n_strx;
+            string_offset = symbol->n_strx;
             name = string_table + string_offset;
-            g_print("found: %s\n", name + 1);
+            printf("found: %s\n", name + 1);
           }
         }
         break;
@@ -87,7 +87,7 @@ main(int argc, char** argv) {
     offset += load->cmdsize;
   }
 
-  g_free(content);
+  free(content);
 
   return 0;
 }

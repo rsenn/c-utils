@@ -1,15 +1,16 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <windows.h>
+#include "lib/pe.h"
 
 int
 main(int argc, char** argv) {
   char* content = NULL;
-  IMAGE_NT_HEADERS* nt_headers;
-  IMAGE_SECTION_HEADER* text_section = NULL;
-  IMAGE_SECTION_HEADER* edata_section = NULL;
+  pe32_nt_headers* nt_headers;
+  pe_section_header* text_section = NULL;
+  pe_section_header* edata_section = NULL;
 
   if(argc < 2) {
     printf("Usage: %s XXX.dll\n", argv[0]);
@@ -45,30 +46,30 @@ main(int argc, char** argv) {
   }
 
   {
-    IMAGE_DOS_HEADER* dos_header;
+    pe_dos_header* dos_header;
 
-    dos_header = (IMAGE_DOS_HEADER*)content;
-    nt_headers = (IMAGE_NT_HEADERS*)(content + dos_header->e_lfanew);
-    if(nt_headers->Signature != IMAGE_NT_SIGNATURE) {
+    dos_header = (pe_dos_header*)content;
+    nt_headers = (pe32_nt_headers*)(content + dos_header->e_lfanew);
+    if(nt_headers->signature != PE_NT_SIGNATURE) {
       printf("not PE\n");
       return -1;
     }
 
-    if(!(nt_headers->FileHeader.Characteristics & IMAGE_FILE_DLL)) {
+    if(!(nt_headers->file_header.characteristics & PE_FILE_DLL)) {
       printf("not DLL\n");
       return -1;
     }
   }
 
   {
-    WORD i;
-    IMAGE_SECTION_HEADER* first_section;
+    int i;
+    pe_section_header* first_section;
 
-    first_section = IMAGE_FIRST_SECTION(nt_headers);
-    for(i = 0; i < nt_headers->FileHeader.NumberOfSections; i++) {
+    first_section = PE_FIRST_SECTION(nt_headers);
+    for(i = 0; i < nt_headers->file_header.number_of_sections; i++) {
       const char* section_name;
 
-      section_name = (const char*)((first_section + i)->Name);
+      section_name = (const char*)((first_section + i)->name);
       if(strcmp(".edata", section_name) == 0) {
         edata_section = first_section + i;
       } else if(strcmp(".text", section_name) == 0) {
@@ -88,23 +89,23 @@ main(int argc, char** argv) {
   }
 
   {
-    WORD i;
-    IMAGE_EXPORT_DIRECTORY* export_directory;
+    int i;
+    pe_export_directory* export_directory;
     const char* base_address;
-    ULONG* name_addresses;
-    ULONG* function_addresses;
-    DWORD min_text_section_address, max_text_section_address;
+    uint64* name_addresses;
+    uint64* function_addresses;
+    uint64 min_text_section_address, max_text_section_address;
 
-    export_directory = (IMAGE_EXPORT_DIRECTORY*)(content + edata_section->PointerToRawData);
+    export_directory = (pe_export_directory*)(content + edata_section->pointer_to_raw_data);
 
-    base_address = content + edata_section->PointerToRawData - edata_section->VirtualAddress;
-    name_addresses = (ULONG*)(base_address + export_directory->AddressOfNames);
-    function_addresses = (ULONG*)(base_address + export_directory->AddressOfFunctions);
-    min_text_section_address = text_section->VirtualAddress;
-    max_text_section_address = min_text_section_address + text_section->SizeOfRawData;
-    for(i = 0; i < export_directory->NumberOfNames; i++) {
+    base_address = content + edata_section->pointer_to_raw_data - edata_section->virtual_address;
+    name_addresses = (uint64*)(base_address + export_directory->address_of_names);
+    function_addresses = (uint64*)(base_address + export_directory->address_of_functions);
+    min_text_section_address = text_section->virtual_address;
+    max_text_section_address = min_text_section_address + text_section->size_of_raw_data;
+    for(i = 0; i < export_directory->number_of_names; i++) {
       const char* name;
-      DWORD function_address;
+      uint64 function_address;
 
       name = base_address + name_addresses[i];
       function_address = function_addresses[i];

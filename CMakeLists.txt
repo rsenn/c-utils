@@ -419,7 +419,7 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-  access buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname eagle-gen-cmds eagle-init-brd eagle-to-circuit hexedit httptest impgen jsontest list-r mediathek-list mediathek-parser ntldd pathtool pkgcfg plsconv rdir-test reg2cmd regfilter torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest sln
+  access binfmttest bsdiffcat buffertest ccat count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elfwrsec hexedit httptest impgen jsontest list-r macho32list main mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest
 )
 
 if(NOT MSVC)
@@ -589,17 +589,16 @@ target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 target_link_libraries(access buffer str)
 target_link_libraries(buffertest buffer str ${LIBPSAPI})
 target_link_libraries(ccat buffer str)
-target_link_libraries(compiler-wrapper buffer byte dir fmt str stralloc strlist)
+#target_link_libraries(compiler-wrapper buffer byte dir fmt str stralloc strlist)
 target_link_libraries(count-depth buffer)
 target_link_libraries(decode-ls-lR buffer byte playlist str stralloc)
 target_link_libraries(dnsip buffer dns errmsg socket str stralloc ${LIBIPHLPAPI})
 target_link_libraries(dnsname buffer dns errmsg socket ${LIBIPHLPAPI})
+target_link_libraries(dnstest buffer dns errmsg socket ${LIBIPHLPAPI})
 target_link_libraries(eagle-gen-cmds array buffer byte cbmap scan str stralloc strarray strlist xml ${MATH_LIBRARY})
 target_link_libraries(eagle-init-brd buffer hmap scan str stralloc strlist xml ${MATH_LIBRARY})
 target_link_libraries(eagle-to-circuit array buffer byte cbmap scan str stralloc strlist xml)
-if(NOT MSVC)
 target_link_libraries(elfwrsec buffer mmap str)
-endif()
 target_link_libraries(hexedit  errmsg buffer path stralloc str mmap open scan)
 target_link_libraries(httptest buffer byte http dns errmsg io taia ${LIBIPHLPAPI})
 target_link_libraries(impgen buffer byte mmap)
@@ -623,6 +622,11 @@ target_link_libraries(ziptest buffer  str)
 target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path ndelay socket slist str stralloc strarray strlist)
 target_link_libraries(sln buffer byte errmsg path  str stralloc)
 
+target_link_libraries(bsdiffcat errmsg uint64 uint32 uint16 buffer mmap open)
+target_link_libraries(binfmttest binfmt errmsg uint64 uint32 uint16 buffer mmap open)
+target_link_libraries(elf64list errmsg uint64 uint32 uint16 buffer mmap open)
+target_link_libraries(macho32list errmsg uint64 uint32 uint16 buffer mmap open)
+target_link_libraries(pelist errmsg uint64 uint32 uint16 buffer mmap open)
 
 
 

@@ -228,7 +228,7 @@ static uint64_t thunk_data_u1_function(void *thunk_array, uint32 index, build_tr
   if(cfg->machine_type == PE_FILE_MACHINE_I386)
     return ((pe_thunk_data32 *) thunk_array)[index].u1.function;
   else
-    return ((pe_thunk_data64 *) thunk_array)[index].u1.function;
+    return ((pe64_thunk_data *) thunk_array)[index].u1.function;
 }
 
 static void *opt_header_get_dd_entry(void *opt_header, uint32 entry_type, build_tree_config *cfg) {
@@ -405,10 +405,10 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
 
   if(dhdr) {
     loaded_image->mapped_address = (char*)dhdr;
-    loaded_image->file_header = (pe_nt_headers64*)(loaded_image->mapped_address + dhdr->e_lfanew);
+    loaded_image->file_header = (pe64_nt_headers*)(loaded_image->mapped_address + dhdr->e_lfanew);
     loaded_image->number_of_sections = loaded_image->file_header->file_header.number_of_sections;
     loaded_image->module_name = str_basename(name);
-    loaded_image->sections = (section_header*) &((pe_nt_headers64*)loaded_image->file_header)[1];
+    loaded_image->sections = (section_header*) &((pe64_nt_headers*)loaded_image->file_header)[1];
     success = 1;
   }
 
@@ -451,8 +451,8 @@ build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root
       self->resolved_module = str_dup(modpath);
 
     dos = (pe_dos_header *) hmod;
-    loaded_image.file_header = (pe_nt_headers64 *)((char *) hmod + dos->e_lfanew);
-    loaded_image.sections = (section_header *)((char *) hmod + dos->e_lfanew + sizeof(pe_nt_headers64));
+    loaded_image.file_header = (pe64_nt_headers *)((char *) hmod + dos->e_lfanew);
+    loaded_image.sections = (section_header *)((char *) hmod + dos->e_lfanew + sizeof(pe64_nt_headers));
     loaded_image.number_of_sections = loaded_image.file_header->file_header.number_of_sections;
     loaded_image.mapped_address = (void *) hmod;
     if(cfg->machine_type != -1 && (int)loaded_image.file_header->file_header.machine != cfg->machine_type)

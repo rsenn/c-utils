@@ -76,12 +76,12 @@ main(int argc, char* argv[]) {
     /* size_t o = pe_opthdr_offset(dll, PE_OPTHDR_NUMBER_OF_RVA_AND_SIZES); */
 
     /*fprintf(stderr, "o=%08x, type=%d (0x%3x)\n", o, type, type); */
-    num_entries = uint32_get(&dll[opthdr_ofs + (type == MAGIC_PE64 ? 108 : 92)]);
+    num_entries = uint32_get(&dll[opthdr_ofs + (type == PE_MAGIC_PE64 ? 108 : 92)]);
 
     if(num_entries < 1)  /* no exports */
       return 1;
 
-    datadir = (pe_data_directory*)((unsigned char*)opt_hdr_32 + (type == MAGIC_PE64 ? 112 : 96));
+    datadir = (pe_data_directory*)((unsigned char*)opt_hdr_32 + (type == PE_MAGIC_PE64 ? 112 : 96));
 
     export_rva = uint32_get(&datadir->virtual_address);
     export_size = uint32_get(&datadir->size);

@@ -3,9 +3,9 @@
 #endif
 #include "lib/windoze.h"
 
-#if WINDOWS_NATIVE
-#define snprintf _snprintf
-#endif
+//#if WINDOWS_NATIVE
+//#define snprintf _snprintf
+//#endif
 
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
