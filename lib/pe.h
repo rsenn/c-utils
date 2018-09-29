@@ -197,13 +197,12 @@ typedef struct {
   uint32 number_of_rva_and_sizes;
   pe_data_directory data_directory[PE_NUMBEROF_DIRECTORY_ENTRIES];
 } pe64_opt_header;
-/*
+
 typedef struct {
   pe_dos_header      dos_hdr;
   uint32             signature;
   pe_coff_header*    coff_hdr;
   void*              optional_hdr_ptr;
-  pe_optional_header optional_hdr;
   uint32             num_directories;
   void*              directories_ptr;
   uint16             num_sections;
@@ -211,7 +210,7 @@ typedef struct {
   uint64             entrypoint;
   uint64             imagebase;
 } pe_file_t;
-*/
+
 typedef enum {
   PE_MAGIC_ROM = 0x107,
   PE_MAGIC_PE32 = 0x10b,
@@ -311,13 +310,13 @@ typedef struct {
 
 typedef struct {
   char* module_name;            /* 0x00 (PSTR) */
-  int64 h_file;                /* 0x08 (HANDLE) */
-  char* mapped_address;         /* 0x10 (unsigned char*) */
-  pe64_nt_headers* coff_header; /* 0x18 (pe64_nt_headers*) */
+  uint64             h_file;              /* 0x08 (HANDLE) */
+  char*              base;      /* 0x10 (PUCHAR) */
+  pe64_nt_headers*   file_header;         /* 0x18 (PIMAGE_NT_HEADERS64) */
   uint64 last_rva_section;      /* 0x20 (pe_section_header) */
-  uint64 number_of_sections;    /* 0x28 (unsigned long) */
-  section_header* sections;     /* 0x30 (pe_section_header) */
-  uint32 characteristics;       /* 0x38 (unsigned long) */
+  uint64             number_of_sections;  /* 0x28 (ULONG) */
+  pe_section_header* sections;     /* 0x30 (pe_section_header) */
+  uint32             characteristics;     /* 0x38 (ULONG) */
   char f_system_image;          /* 0x3c (BOOLEAN) */
   char fdos_image;              /* 0x3d (BOOLEAN) */
   char f_read_only;             /* 0x3e (BOOLEAN) */

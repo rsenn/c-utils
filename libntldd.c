@@ -224,12 +224,12 @@ pop_stack(char*** stack, uint64_t* stack_len, uint64_t* stack_size, char* name) 
   (*stack_len) -= 1;
 }
 
-static uint64_t
+static uint64
 thunk_data_u1_function(void* thunk_array, uint32 index, build_tree_config* cfg) {
   if(cfg->machine_type == PE_FILE_MACHINE_I386)
-    return ((pe_thunk_data32*)thunk_array)[index].u1.function;
+    return ((uint32*)thunk_array)[index];
   else
-    return ((pe64_thunk_data*)thunk_array)[index].u1.function;
+    return ((uint64*)thunk_array)[index];
 }
 
 static void*
@@ -247,7 +247,7 @@ build_dep_tree32or64(pe_loaded_image* img,
                      struct dep_tree_element* self,
                      soff_entry* soffs,
                      int soffs_len) {
-  pe32_data_directory* idata;
+  pe_data_directory* idata;
   pe_import_descriptor* iid;
   pe_export_directory* ied;
   pe_delayload_descriptor* idd;
@@ -401,18 +401,18 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
   loaded_image->size_of_image = sz;
 
   if(dhdr) {
-    loaded_image->mapped_address = (char*)dhdr;
-    loaded_image->file_header = (pe64_nt_headers*)(loaded_image->mapped_address + dhdr->e_lfanew);
-    loaded_image->number_of_sections = loaded_image->file_header->file_header.number_of_sections;
+    loaded_image->base = (char*)dhdr;
+    loaded_image->file_header = (pe64_nt_headers*)(loaded_image->base + dhdr->e_lfanew);
+    loaded_image->number_of_sections = loaded_image->file_header->coff_header.number_of_sections;
     loaded_image->module_name = str_basename(name);
-    loaded_image->sections = (section_header*)&((pe64_nt_headers*)loaded_image->file_header)[1];
+    loaded_image->sections = pe_header_sections(loaded_image->base, NULL);
     success = 1;
   }
 
   /*MapAndLoad(name, path, loaded_image, FALSE, TRUE);
   if(!success && errno == ENOENT)
     success = MapAndLoad(name, path, loaded_image, TRUE, TRUE);
-  if(success && required_machine_type != -1 && (int)loaded_image->file_header->file_header.machine !=
+  if(success && required_machine_type != -1 && (int)loaded_image->file_header->coff_header.machine !=
   required_machine_type) {
     UnMapAndLoad(loaded_image);
     return FALSE;
@@ -447,10 +447,10 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
 
     dos = (pe_dos_header*)hmod;
     loaded_image.file_header = (pe64_nt_headers*)((char*)hmod + dos->e_lfanew);
-    loaded_image.sections = (section_header*)((char*)hmod + dos->e_lfanew + sizeof(pe64_nt_headers));
-    loaded_image.number_of_sections = loaded_image.file_header->file_header.number_of_sections;
-    loaded_image.mapped_address = (void*)hmod;
-    if(cfg->machine_type != -1 && (int)loaded_image.file_header->file_header.machine != cfg->machine_type) return 1;
+    loaded_image.sections = (pe_section_header*)((char*)hmod + dos->e_lfanew + sizeof(pe64_nt_headers));
+    loaded_image.number_of_sections = loaded_image.file_header->coff_header.number_of_sections;
+    loaded_image.base = (void*)hmod;
+    if(cfg->machine_type != -1 && (int)loaded_image.file_header->coff_header.machine != cfg->machine_type) return 1;
   } else {
     success = FALSE;
     for(i = 0; i < cfg->search_paths->count && !success; ++i) {
@@ -463,12 +463,12 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
     }
     if(self->resolved_module == NULL) self->resolved_module = str_dup(loaded_image.module_name);
   }
-  if(cfg->machine_type == -1) cfg->machine_type = (int)loaded_image.file_header->file_header.machine;
+  if(cfg->machine_type == -1) cfg->machine_type = (int)loaded_image.file_header->coff_header.machine;
   img = &loaded_image;
 
   push_stack(cfg->stack, cfg->stack_len, cfg->stack_size, name);
 
-  self->mapped_address = loaded_image.mapped_address;
+  self->mapped_address = loaded_image.base;
 
   self->flags |= DEPTREE_PROCESSED;
 
@@ -476,11 +476,11 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   soffs = (soff_entry*)malloc(sizeof(soff_entry) * (soffs_len + 1));
   for(i = 0; i < img->number_of_sections; i++) {
     soffs[i].start = img->sections[i].virtual_address;
-    soffs[i].end = soffs[i].start + img->sections[i].misc.virtual_size;
+    soffs[i].end = soffs[i].start + img->sections[i].virtual_size;
     if(cfg->on_self)
-      soffs[i].off = img->mapped_address /* + img->sections[i].virtual_address*/;
+      soffs[i].off = img->base /* + img->sections[i].virtual_address*/;
     else if(img->sections[i].pointer_to_raw_data != 0)
-      soffs[i].off = img->mapped_address + img->sections[i].pointer_to_raw_data - img->sections[i].virtual_address;
+      soffs[i].off = img->base + img->sections[i].pointer_to_raw_data - img->sections[i].virtual_address;
     else
       soffs[i].off = NULL;
   }
@@ -492,7 +492,7 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   free(soffs);
 
   if(!cfg->on_self) {
-    mmap_unmap(loaded_image.mapped_address, loaded_image.size_of_image);
+    mmap_unmap(loaded_image.base, loaded_image.size_of_image);
   }
 
   /* Not sure if a forwarded export warrants an import. If it doesn't, then the dll to which the export is forwarded

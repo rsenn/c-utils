@@ -24,7 +24,7 @@ typedef uint16 elf64_versym;
 
 #define ELF_STRUCT_OFFSETS(st, field) ELF_FIELD_OFFSET(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFSET(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
 
-#define ELF_GET(ptr, st, field) elf_get_value(ptr, ELF_FIELD_OFFSET(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFSET(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
+#define ELF_GET(elf, ptr, st, field) elf_get_value(elf, ptr, ELF_FIELD_OFFSET(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFSET(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
 
 
 typedef struct {
@@ -2436,7 +2436,7 @@ to two GOT entries for GD symbol */
 #define ELF_64(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64)
 
 uint8* elf_header_ident(void* elf);
-uint64 elf_get_value(void* elf, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+uint64 elf_get_value(void* elf, void* ptr,unsigned off32, unsigned size32, unsigned off64, unsigned size64);
 uint8* elf_header_ident(void* elf);
 void*  elf_header_sections(void* elf);
 range  elf_program_headers(void* elf);
