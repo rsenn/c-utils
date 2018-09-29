@@ -29,36 +29,36 @@ elf_offset2rva(uint8* base, int64 off) {
 void
 elf_print_data_directory(buffer* b, elf_data_directory* data_dir) {
   buffer_puts(b, "virtual_address: 0x");
-  buffer_putxlonglong0(b, data_dir->virtual_address, sizeof(data_dir->virtual_address) * 2);
+  buffer_putxlonglong0(b, data_dir->virtual_address, ELF_BITS(base) / 4);
   buffer_puts(b, " size: 0x");
-  buffer_putxlonglong0(b, data_dir->size, sizeof(data_dir->size) * 2);
+  buffer_putxlonglong0(b, data_dir->size, ELF_BITS(base) / 4);
   buffer_putnlflush(b);
 }
 
 void
 elf_print_export_directory(buffer* b, elf_export_directory* export_dir) {
   buffer_puts(b, "characteristics: ");
-  buffer_putxlonglong0(b, export_dir->characteristics, sizeof(export_dir->characteristics) * 2);
+  buffer_putxlonglong0(b, export_dir->characteristics, ELF_BITS(base) / 4);
   buffer_puts(b, "\ntime_date_stamp: ");
-  buffer_putxlonglong0(b, export_dir->time_date_stamp, sizeof(export_dir->time_date_stamp) * 2);
+  buffer_putxlonglong0(b, export_dir->time_date_stamp, ELF_BITS(base) / 4);
   buffer_puts(b, "\nmajor_version: ");
-  buffer_putxlonglong0(b, export_dir->major_version, sizeof(export_dir->major_version) * 2);
+  buffer_putxlonglong0(b, export_dir->major_version, ELF_BITS(base) / 4);
   buffer_puts(b, "\nminor_version: ");
-  buffer_putxlonglong0(b, export_dir->minor_version, sizeof(export_dir->minor_version) * 2);
+  buffer_putxlonglong0(b, export_dir->minor_version, ELF_BITS(base) / 4);
   buffer_puts(b, "\nname: ");
-  buffer_putxlonglong0(b, export_dir->name, sizeof(export_dir->name) * 2);
+  buffer_putxlonglong0(b, export_dir->name, ELF_BITS(base) / 4);
   buffer_puts(b, "\nbase: ");
-  buffer_putxlonglong0(b, export_dir->base, sizeof(export_dir->base) * 2);
+  buffer_putxlonglong0(b, export_dir->base, ELF_BITS(base) / 4);
   buffer_puts(b, "\nnumber_of_functions: ");
-  buffer_putxlonglong0(b, export_dir->number_of_functions, sizeof(export_dir->number_of_functions) * 2);
+  buffer_putxlonglong0(b, export_dir->number_of_functions, ELF_BITS(base) / 4);
   buffer_puts(b, "\nnumber_of_names: ");
-  buffer_putxlonglong0(b, export_dir->number_of_names, sizeof(export_dir->number_of_names) * 2);
+  buffer_putxlonglong0(b, export_dir->number_of_names, ELF_BITS(base) / 4);
   buffer_puts(b, "\naddress_of_functions: ");
-  buffer_putxlonglong0(b, export_dir->address_of_functions, sizeof(export_dir->address_of_functions) * 2);
+  buffer_putxlonglong0(b, export_dir->address_of_functions, ELF_BITS(base) / 4);
   buffer_puts(b, "\naddress_of_names: ");
-  buffer_putxlonglong0(b, export_dir->address_of_names, sizeof(export_dir->address_of_names) * 2);
+  buffer_putxlonglong0(b, export_dir->address_of_names, ELF_BITS(base) / 4);
   buffer_puts(b, "\naddress_of_name_ordinals: ");
-  buffer_putxlonglong0(b, export_dir->address_of_name_ordinals, sizeof(export_dir->address_of_name_ordinals) * 2);
+  buffer_putxlonglong0(b, export_dir->address_of_name_ordinals, ELF_BITS(base) / 4);
   buffer_putnlflush(b);
 }
 
@@ -160,19 +160,10 @@ main(int argc, char** argv) {
   {
     char elf64 = elf_header_ident(base)[ELF_EI_CLASS] == ELF_ELFCLASS64;
 
-    if(nt_headers->signature != PE_NT_SIGNATURE) {
-      buffer_putsflush(buffer_2, "not PE\n");
-      return -1;
-    }
 
-    if(!(nt_headers->coff_header.characteristics & PE_FILE_DLL)) {
-      buffer_putsflush(buffer_2, "not DLL\n");
-      return -1;
-    }
-    // elf_dump_sections(base);
-
-    elf_dump_exports(base);
-    elf_dump_imports(base);
+    uint64 x = ELF_GET(base, ehdr, e_shentsize);
+  elf_dump_sections(base);
+/*    elf_dump_imports(base);*/
   }
 
   mmap_unmap(base, filesize);
@@ -183,29 +174,33 @@ main(int argc, char** argv) {
 void
 elf_dump_sections(uint8* base) {
   int i, n;
-  elf_section_header* sections = elf_header_sections(base, &n);
+  range sections = elf_section_headers(base);
+  void* section;
 
   buffer_putspad(buffer_1, "section name", 16);
   buffer_putspace(buffer_1);
-  buffer_putspad(buffer_1, "vsize", sizeof(sections[i].physical_address) * 2);
+  buffer_putspad(buffer_1, "vsize", ELF_BITS(base) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "rva", sizeof(sections[i].virtual_address) * 2);
+  buffer_putspad(buffer_1, "rva", ELF_BITS(base) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "rawsize", sizeof(sections[i].size_of_raw_data) * 2);
+  buffer_putspad(buffer_1, "rawsize", ELF_BITS(base) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "pointer", sizeof(sections[i].pointer_to_raw_data) * 2);
+  buffer_putspad(buffer_1, "pointer", ELF_BITS(base) / 4);
   buffer_putnlflush(buffer_1);
 
-  for(i = 0; i < n; i++) {
-    buffer_putspad(buffer_1, sections[i].name, 16);
+  range_foreach(&sections, section) {
+    uint32 name = ELF_GET(section, shdr, sh_name);
+
+    buffer_putspad(buffer_1, 
+    &(elf_strtab(base)[name]), 64);
+    /*buffer_puts(buffer_1, " 0x");
+    buffer_putxlonglong0(buffer_1, sections[i].physical_address, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, sections[i].physical_address, sizeof(sections[i].physical_address) * 2);
+    buffer_putxlonglong0(buffer_1, sections[i].virtual_address, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, sections[i].virtual_address, sizeof(sections[i].virtual_address) * 2);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, sections[i].size_of_raw_data, sizeof(sections[i].size_of_raw_data) * 2);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, sections[i].pointer_to_raw_data, sizeof(sections[i].pointer_to_raw_data) * 2);
+    buffer_putxlonglong0(buffer_1, sections[i].size_of_raw_data, ELF_BITS(base) / 4);
+    jbuffer_puts(buffer_1, " 0x");
+    buffer_putxlonglong0(buffer_1, sections[i].pointer_to_raw_data, ELF_BITS(base) / 4);*/
     buffer_putnlflush(buffer_1);
   }
 }

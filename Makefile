@@ -891,7 +891,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 
 $(info BUILDDIR: $(BUILDDIR))
@@ -945,6 +945,7 @@ $(call lib-target,cb)
 $(call lib-target,cbmap,lib/memalign.c)
 $(call lib-target,charbuf)
 $(call lib-target,dir,lib/utf8.c)
+$(call lib-target,elf)
 $(call lib-target,env,lib/setenv.c lib/getenv.c)
 $(call lib-target,expand,lib/glob.c)
 $(call lib-target,fmt)
@@ -1090,7 +1091,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(call echo-target,elfwrsec,$(BUILDDIR)elfwrsec.o $(call add-library,buffer mmap open))
+$(call echo-target,elfwrsec,$(BUILDDIR)elfwrsec.o $(call add-library,elf range buffer mmap open))
 #$(call add-target,elfwrsec,$(BUILDDIR)elfwrsec.o $(call add-library,mmap open))
 
 ifeq ($(HAVE_ZLIB),1)
@@ -1420,10 +1421,5 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 #$(info PROGRAMS=$(subst $(SPACE),$(NL)    ,$(shell ls -td -- $(PROGRAMS))))
 
 
-$(BUILDDIR)elfwrsec$(EXEEXT): $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
-ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
-endif
 
 -include $(BUILDDIR)defines.make

@@ -83,13 +83,6 @@ print_phdr64(elf64_phdr* phdr) {
   return 0;
 }
 
-const char*
-strtab_shdr64() {
-  elf64_ehdr* ehdr = (elf64_ehdr*)base;
-  elf64_shdr* shdrs = (elf64_shdr*)((char*)ehdr + ehdr->e_shoff);
-  elf64_shdr* sh_strtab = &shdrs[ehdr->e_shstrndx];
-  return (char*)ehdr + sh_strtab->sh_offset;
-}
 
 int
 print_shdr64(elf64_shdr* shdr) {
@@ -103,7 +96,7 @@ print_shdr64(elf64_shdr* shdr) {
   buffer_puts(buffer_1, ": ");
   buffer_putlong(buffer_1, shdr->sh_name);
   buffer_puts(buffer_1, " '");
-  buffer_putspad(buffer_1, &strtab_shdr64()[shdr->sh_name], 16);
+  buffer_putspad(buffer_1, &elf_strtab(ehdr)[shdr->sh_name], 16);
   buffer_puts(buffer_1, "', flags=");
   print_flags(s_flags, shdr->sh_flags);
   buffer_putnlflush(buffer_1);
@@ -123,7 +116,7 @@ process64(elf64_ehdr* hdr) {
   int i;
 
   for(i = 0; i < hdr->e_shnum; ++i) {
-    const char* name = strtab_shdr64() + shdrs[i].sh_name;
+    const char* name = elf_strtab(hdr) + shdrs[i].sh_name;
 
     if(str_equal(name, section)) {
       print_shdr64(&shdrs[i]);

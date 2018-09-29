@@ -5,6 +5,7 @@
 #include "uint16.h"
 #include "uint32.h"
 #include "uint64.h"
+#include "range.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,6 +18,14 @@ typedef uint16 elf64_versym;
 /* The ELF file header.  This appears at the start of every ELF file.  */
 
 #define ELF_EI_NIDENT (16)
+
+#define ELF_FIELD_OFFSET(type, field) ((uintptr_t)(uint8*)&(((type*)0)->field))
+#define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
+
+#define ELF_STRUCT_OFFSETS(st, field) ELF_FIELD_OFFSET(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFSET(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
+
+#define ELF_GET(ptr, st, field) elf_get_value(ptr, ELF_FIELD_OFFSET(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFSET(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
+
 
 typedef struct {
   uint8 e_ident[ELF_EI_NIDENT]; /* Magic number and other info */
@@ -2422,9 +2431,20 @@ to two GOT entries for GD symbol */
 
 #define __ELF_NATIVE_CLASS __WORDSIZE
 
+#define ELF_BITS(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64 ? 64 : 32)
+#define ELF_32(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS32)
+#define ELF_64(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64)
+
+uint8* elf_header_ident(void* elf);
+uint64 elf_get_value(void* elf, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+uint8* elf_header_ident(void* elf);
+void*  elf_header_sections(void* elf);
+range  elf_program_headers(void* elf);
+range  elf_section_headers(void* elf);
+const char*  elf_strtab(void* elf);
+
 #ifdef __cplusplus
 };
 #endif
 
 #endif /* elf.h */
-uint8* elf_header_ident(void* elf);
