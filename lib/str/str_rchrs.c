@@ -2,14 +2,14 @@
 
 size_t
 str_rchrs(const char* in, char needles[], size_t nn) {
-  const char* found = NULL;
+  const char *s = in, *found = NULL;
   size_t i;
   for(;;) {
-    if(!*in) break;
+    if(!*s) break;
     for(i = 0; i < nn; ++i) {
-      if(*in == needles[i]) found = in;
+      if(*s == needles[i]) found = s;
     }
-    ++in;
+    ++s;
   }
   return (size_t)((found ? found : in) - in);
 }

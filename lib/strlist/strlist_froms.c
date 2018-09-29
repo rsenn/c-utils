@@ -3,9 +3,17 @@
 
 void
 strlist_froms(strlist* sl, const char* s, char delim) {
-  strlist_init(sl, delim);
+  size_t i;
+//  strlist_init(sl, delim);
 
   if(s == NULL) return;
 
-  stralloc_copys(&sl->sa, s);
+  if(sl->sa.len)
+    stralloc_catc(&sl->sa, sl->sep);
+
+  stralloc_cats(&sl->sa, s);
+  for(i = 0; i < sl->sa.len; ++i) {
+    if(sl->sa.s[i] == delim)
+      sl->sa.s[i] = sl->sep;
+  }
 }

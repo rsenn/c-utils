@@ -198,23 +198,20 @@ print_image_links(int first,
   return 0;
 }
 void
-add_path(search_paths* sp, const char* path) {
-        char s = (strchr(path, '\\') && strchr(path, ':') && strchr(path, ";")) ? ';' : ':';
-        char* sep = strchr(path, s);
-      if(*path == '"') path++;
-        do {
-          if(sep) *sep = '\0';
-          sp->count++;
-          sp->path = (char**)realloc(sp->path, sp->count * sizeof(char*));
-          if(!sep) {
-            char* p = strrchr(path, '"');
-            if(p) *p = '\0';
-          }
-          sp->path[sp->count - 1] = str_dup(path);
-          path = sep + 1;
-          if(!sep) break;
-          sep = strchr(path, s);
-        } while(1);
+add_path(strlist* sp, const char* path) {
+  char s = (strchr(path, '\\') && strchr(path, ':') && strchr(path, ";")) ? ';' : ':';
+  stralloc dir;
+  strlist tmp;
+  stralloc_init(&dir);
+  strlist_init(&tmp, '\0');
+  strlist_froms(&tmp, path, s);
+
+  __strlist_foreach(&tmp, path) {
+  stralloc_copys(&dir, path);
+  stralloc_catc(&dir, path[0]);
+  strlist_push_unique_sa(sp, &dir);
+  }
+  strlist_free(&tmp);
 }
 
 int
@@ -232,9 +229,10 @@ main(int argc, char** argv) {
   int files_start = -1;
   int files_count = 0;
 
-  search_paths sp;
-  byte_zero(&sp, sizeof(sp));
-  sp.path = calloc(1, sizeof(char*));
+  strlist sp;
+  strlist_init(&sp, '\0');
+  // byte_zero(&sp, sizeof(sp));
+  // sp.path = calloc(1, sizeof(char*));
 
   for(i = 1; i < argc; i++) {
     if(str_equal(argv[i], "--version"))
@@ -276,24 +274,21 @@ main(int argc, char** argv) {
   }
   {
     const char* pathenv = getenv("PATH");
-    if(pathenv)
-      add_path(&sp, pathenv);
+    if(pathenv) add_path(&sp, pathenv);
   }
 
   if(!skip && files_start > 0) {
     files_count = argc - files_start;
-    sp.count += files_count;
-    sp.path = realloc(sp.path, sp.count * sizeof(char*));
     for(i = 0; i < files_count; ++i) {
       char* p;
       char buff[MAX_PATH];
-      str_copy(buff, argv[files_start + i]);
-      p = strrchr(buff, '\\');
-      if(!p) p = strrchr(buff, '/');
-      if(p++) *p = '\0';
-
-      sp.path[sp.count - files_count + i] = str_dup(buff);
+      str_copyn(buff, argv[files_start + i], sizeof(buff));
+      p = str_basename(buff);
+      if(p) *p = '\0';
+      strlist_push_unique(&sp, buff);
     }
+    buffer_puts(buffer_2, "PATH=");
+    strlist_dump(buffer_2, &sp);
     {
       int multiple = files_start + 1 < argc;
       struct dep_tree_element root;

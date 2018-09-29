@@ -5,6 +5,7 @@
 #include "lib/uint32.h"
 #include "lib/uint64.h"
 #include "lib/pe.h"
+#include "lib/strlist.h"
 
 #ifdef __unix__
 #define stricmp strcasecmp
@@ -61,11 +62,6 @@ clear_dep_status(struct dep_tree_element *self, uint64 flags);
 void
 add_dep(struct dep_tree_element *parent, struct dep_tree_element *child);
 
-typedef struct search_paths_t {
-  unsigned count;
-  char** path;
-} search_paths;
-
 typedef struct build_tree_config_t {
   int datarelocs;
   int functionrelocs;
@@ -75,7 +71,7 @@ typedef struct build_tree_config_t {
   uint64 *stack_len;
   uint64 *stack_size;
   int machine_type;
-  search_paths* search_paths;
+  strlist* search_paths;
 } build_tree_config;
 
 int

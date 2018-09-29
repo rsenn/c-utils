@@ -1740,3 +1740,7 @@ $(BUILDDIR)ziptest.o: ./ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)elf_section_type.o: lib/elf/elf_section_type.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_split.o: lib/path/path_split.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_split.o: lib/path/path_split.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

@@ -42,8 +42,8 @@ MSDN Magazine articles
 #include "lib/mmap.h"
 #include "lib/pe.h"
 #include "lib/str.h"
-#include "lib/uint64.h"
 #include "lib/stralloc.h"
+#include "lib/uint64.h"
 #include "libntldd.h"
 
 #define FALSE 0
@@ -399,7 +399,7 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
   size_t sz;
   stralloc sa;
   pe_dos_header* dhdr;
- 
+
   stralloc_init(&sa);
   if(path) stralloc_copys(&sa, path);
   stralloc_cats(&sa, name);
@@ -439,7 +439,7 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   }
 
   if(cfg->on_self) {
-    //if(self->resolved_module == NULL)    self->resolved_module = str_dup(name);
+    // if(self->resolved_module == NULL)    self->resolved_module = str_dup(name);
 
     dos = (pe_dos_header*)hmod;
     loaded_image.file_header = (pe64_nt_headers*)((char*)hmod + dos->e_lfanew);
@@ -448,17 +448,17 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
     loaded_image.base = (void*)hmod;
     if(cfg->machine_type != -1 && (int)loaded_image.file_header->coff_header.machine != cfg->machine_type) return 1;
   } else {
+    const char* dir;
     success = FALSE;
-    for(i = 0; i < cfg->search_paths->count && !success; ++i) {
-      success = try_map_and_load(name, cfg->search_paths->path[i], &loaded_image, cfg->machine_type);
+    __strlist_foreach(cfg->search_paths, dir) { 
+      success = try_map_and_load(name, dir, &loaded_image, cfg->machine_type);
     }
     if(!success) success = try_map_and_load(name, NULL, &loaded_image, cfg->machine_type);
     if(!success) {
       self->flags |= DEPTREE_UNRESOLVED;
       return 1;
     }
-    if(self->resolved_module == NULL)
-      self->resolved_module = str_dup(loaded_image.module_name);
+    if(self->resolved_module == NULL) self->resolved_module = str_dup(loaded_image.module_name);
   }
   if(cfg->machine_type == -1) cfg->machine_type = (int)loaded_image.file_header->coff_header.machine;
   img = &loaded_image;
