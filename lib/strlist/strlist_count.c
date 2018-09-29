@@ -7,7 +7,10 @@ strlist_count(const strlist* sl) {
   if(sl->sa.len == 0) return 0;
 
   for(p = 0; p < sl->sa.len; ++p) {
-    if(sl->sa.s[p] == sl->sep) ++l;
+    if(sl->sa.s[p] == sl->sep) {
+      if(p + 1 == sl->sa.len) return l;
+      ++l;
+    }
   }
   return l;
 }

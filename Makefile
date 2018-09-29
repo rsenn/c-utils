@@ -485,8 +485,8 @@ else
   endif
 endif
 
-vpath lib lib/array lib/cb lib/cbmap lib/binfmt lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR)
-VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR)
+vpath lib lib/array lib/cb lib/cbmap lib/binfmt lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR) tests
+VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR):tests
 
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
@@ -1423,3 +1423,4 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 
 
 -include $(BUILDDIR)defines.make
+-include Makefile.tests

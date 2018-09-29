@@ -17,6 +17,8 @@ strlist_push(strlist* sl, const char* s) {
     } else {
       byte_copy(&sl->sa.s[sl->sa.len], n, s);
       sl->sa.len += n;
+      sl->sa.s[sl->sa.len] = sl->sep;
+      sl->sa.len++;
     }
     return 1;
   }

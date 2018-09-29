@@ -30,6 +30,7 @@ MSDN Magazine articles
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/uint64.h"
+#include "lib/getopt.h"
 
 //#include <winnt.h>
 
@@ -207,9 +208,9 @@ add_path(strlist* sp, const char* path) {
   strlist_froms(&tmp, path, s);
 
   __strlist_foreach(&tmp, path) {
-  stralloc_copys(&dir, path);
-  stralloc_catc(&dir, path[0]);
-  strlist_push_unique_sa(sp, &dir);
+    stralloc_copys(&dir, path);
+    stralloc_catc(&dir, path[0]);
+    strlist_push_unique_sa(sp, &dir);
   }
   strlist_free(&tmp);
 }
@@ -228,12 +229,47 @@ main(int argc, char** argv) {
   int list_imports = 0;
   int files_start = -1;
   int files_count = 0;
+  int c;
+  int digit_optind = 0;
+  const char* rel_to = NULL;
+  int index = 0;
+  struct longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+   {"verbose", 0, &verbose, 'v'},
+  {"unused", 0, &unused, 'u'},
+  {"data-relocs", 0, &datarelocs, 'd'},
+  {"function-relocs", 0, &functionrelocs, 'r'},
+  {"recursive", 0, &recursive, 'R'},
+  {"list-exports", 0, &list_exports, 'e'},
+  {"list-imports", 0, &list_imports, 'i'},
+  {"version", 0, NULL, 'V'},
+
+  };
+
 
   strlist sp;
   strlist_init(&sp, '\0');
   // byte_zero(&sp, sizeof(sp));
   // sp.path = calloc(1, sizeof(char*));
-
+  for(;;) {
+    c = getopt_long(argc, argv, "hvudrRei", opts, &index);
+    if(c == -1) break;
+    switch(c) {
+      case 'h': usage(argv[0]); return 0;
+      case 'v':
+      case 'u':
+      case 'd':
+      case 'r':
+      case 'R':
+      case 'e':
+      case 'i':
+                break;
+      case 'V':
+      printversion(); break;
+      default: usage(argv[0]); return 1;
+    }
+  }
+/*
   for(i = 1; i < argc; i++) {
     if(str_equal(argv[i], "--version"))
       printversion();
@@ -271,7 +307,9 @@ main(int argc, char** argv) {
       files_start = i;
       break;
     }
-  }
+  }*/
+  skip = 0;
+      files_start = optind;
   {
     const char* pathenv = getenv("PATH");
     if(pathenv) add_path(&sp, pathenv);

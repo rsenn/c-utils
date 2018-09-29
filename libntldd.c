@@ -404,6 +404,13 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
   if(path) stralloc_copys(&sa, path);
   stralloc_cats(&sa, name);
   stralloc_nul(&sa);
+
+#ifdef DEBUG_OPEN
+  buffer_puts(buffer_2, "Filename: ");
+  buffer_puts(buffer_2, sa.s);
+  buffer_putnlflush(buffer_2);
+#endif
+
   dhdr = (pe_dos_header*)mmap_read(sa.s, &sz);
 
   loaded_image->size_of_image = sz;
@@ -450,8 +457,9 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   } else {
     const char* dir;
     success = FALSE;
-    __strlist_foreach(cfg->search_paths, dir) { 
-      success = try_map_and_load(name, dir, &loaded_image, cfg->machine_type);
+    __strlist_foreach(cfg->search_paths, dir) {
+      success = try_map_and_load(str_basename(name), dir, &loaded_image, cfg->machine_type);
+      if(success) break;
     }
     if(!success) success = try_map_and_load(name, NULL, &loaded_image, cfg->machine_type);
     if(!success) {
