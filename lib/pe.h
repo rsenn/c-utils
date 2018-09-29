@@ -1,24 +1,28 @@
 #ifndef PE_H
 #define PE_H
 
-#include <sys/types.h>
 #include "uint16.h"
 #include "uint32.h"
 #include "uint64.h"
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct {
+  union {
   unsigned char* x;
+  struct pe_dos_header* dos;
+  };
   size_t n;
+  struct pe_nt_header* nt;
 } pe_file;
 
 typedef struct {
   uint32 virtual_address;
   uint32 size;
-} pe_data_directory,pe32_data_directory;
+} pe_data_directory, pe32_data_directory;
 
 typedef struct {
   uint64 virtual_address;
@@ -51,8 +55,8 @@ typedef struct {
 } pe_import_descriptor;
 
 typedef struct {
-  uint16  hint;
-    unsigned char   name[1];
+  uint16 hint;
+  unsigned char name[1];
 } pe_import_by_name;
 
 typedef struct {
@@ -72,7 +76,7 @@ typedef struct {
   uint32 time_date_stamp;
 } pe_delayload_descriptor;
 
-typedef struct {
+typedef struct pe_dos_header {
   uint16 e_magic;
   uint16 e_cblp;
   uint16 e_cp;
@@ -120,7 +124,7 @@ typedef struct {
   uint32 pointer_to_linenumbers; /* deprecated */
   uint16 number_of_relocations;
   uint16 number_of_linenumbers; /* deprecated */
-  uint32 characteristics; /* section_characteristics */
+  uint32 characteristics;       /* section_characteristics */
 } pe_section_header;
 
 #define PE_NUMBEROF_DIRECTORY_ENTRIES 16
@@ -208,51 +212,49 @@ typedef struct {
 } pe_file_t;
 */
 typedef enum {
-  MAGIC_ROM   = 0x107,
-  MAGIC_PE32  = 0x10b,
-  MAGIC_PE64  = 0x20b /* PE32+ */
+  MAGIC_ROM = 0x107,
+  MAGIC_PE32 = 0x10b,
+  MAGIC_PE64 = 0x20b /* PE32+ */
 } pe_type;
 
 typedef enum {
-  PE_OPTHDR_MAGIC                          =  0,
-  PE_OPTHDR_SIZE_OF_CODE                   =  1,
-  PE_OPTHDR_SIZE_OF_INITIALIZED_DATA       =  2,
-  PE_OPTHDR_SIZE_OF_UNINITIALIZED_DATA     =  3,
-  PE_OPTHDR_ADDRESS_OF_ENTRY_POINT         =  4,
-  PE_OPTHDR_BASE_OF_CODE                   =  5,
-  PE_OPTHDR_IMAGE_BASE                     =  6,
-  PE_OPTHDR_SECTION_ALIGNMENT              =  7,
-  PE_OPTHDR_FILE_ALIGNMENT                 =  8,
-  PE_OPTHDR_MAJOR_OPERATING_SYSTEM_VERSION =  9,
+  PE_OPTHDR_MAGIC = 0,
+  PE_OPTHDR_SIZE_OF_CODE = 1,
+  PE_OPTHDR_SIZE_OF_INITIALIZED_DATA = 2,
+  PE_OPTHDR_SIZE_OF_UNINITIALIZED_DATA = 3,
+  PE_OPTHDR_ADDRESS_OF_ENTRY_POINT = 4,
+  PE_OPTHDR_BASE_OF_CODE = 5,
+  PE_OPTHDR_IMAGE_BASE = 6,
+  PE_OPTHDR_SECTION_ALIGNMENT = 7,
+  PE_OPTHDR_FILE_ALIGNMENT = 8,
+  PE_OPTHDR_MAJOR_OPERATING_SYSTEM_VERSION = 9,
   PE_OPTHDR_MINOR_OPERATING_SYSTEM_VERSION = 10,
-  PE_OPTHDR_MAJOR_IMAGE_VERSION            = 11,
-  PE_OPTHDR_MINOR_IMAGE_VERSION            = 12,
-  PE_OPTHDR_MAJOR_SUBSYSTEM_VERSION        = 13,
-  PE_OPTHDR_MINOR_SUBSYSTEM_VERSION        = 14,
-  PE_OPTHDR_RESERVED1                      = 15,
-  PE_OPTHDR_SIZE_OF_IMAGE                  = 16,
-  PE_OPTHDR_SIZE_OF_HEADERS                = 17,
-  PE_OPTHDR_CHECKSUM                       = 18,
-  PE_OPTHDR_DLL_CHARACTERISTICS            = 19,
-  PE_OPTHDR_SIZE_OF_STACK_RESERVE          = 20,
-  PE_OPTHDR_SIZE_OF_STACK_COMMIT           = 21,
-  PE_OPTHDR_SIZE_OF_HEAP_RESERVE           = 22,
-  PE_OPTHDR_SIZE_OF_HEAP_COMMIT            = 23,
-  PE_OPTHDR_LOADER_FLAGS                   = 24,
-  PE_OPTHDR_NUMBER_OF_RVA_AND_SIZES        = 25,
-  PE_OPTHDR_BASE_OF_DATA                   = 26,
+  PE_OPTHDR_MAJOR_IMAGE_VERSION = 11,
+  PE_OPTHDR_MINOR_IMAGE_VERSION = 12,
+  PE_OPTHDR_MAJOR_SUBSYSTEM_VERSION = 13,
+  PE_OPTHDR_MINOR_SUBSYSTEM_VERSION = 14,
+  PE_OPTHDR_RESERVED1 = 15,
+  PE_OPTHDR_SIZE_OF_IMAGE = 16,
+  PE_OPTHDR_SIZE_OF_HEADERS = 17,
+  PE_OPTHDR_CHECKSUM = 18,
+  PE_OPTHDR_DLL_CHARACTERISTICS = 19,
+  PE_OPTHDR_SIZE_OF_STACK_RESERVE = 20,
+  PE_OPTHDR_SIZE_OF_STACK_COMMIT = 21,
+  PE_OPTHDR_SIZE_OF_HEAP_RESERVE = 22,
+  PE_OPTHDR_SIZE_OF_HEAP_COMMIT = 23,
+  PE_OPTHDR_LOADER_FLAGS = 24,
+  PE_OPTHDR_NUMBER_OF_RVA_AND_SIZES = 25,
+  PE_OPTHDR_BASE_OF_DATA = 26,
 } pe_opthdr_field;
 
-typedef struct {
-  uint64 flink, blink;
-} list_entry;
+typedef struct { uint64 flink, blink; } list_entry;
 
-#define  PE_SIZEOF_SHORT_NAME 8
+#define PE_SIZEOF_SHORT_NAME 8
 typedef struct {
   char name[PE_SIZEOF_SHORT_NAME];
   union {
-  uint32 physical_address;
-  uint32 virtual_size;
+    uint32 physical_address;
+    uint32 virtual_size;
   } misc;
   uint32 virtual_address;
   uint32 size_of_raw_data;
@@ -282,7 +284,7 @@ typedef struct {
   } u1;
 } pe_thunk_data32;
 
-//typedef struct {
+// typedef struct {
 //  union {
 //    uint32 characteristics;
 //    uint32 original_first_thunk;
@@ -310,54 +312,51 @@ typedef struct {
 */
 
 typedef struct {
-  char*              module_name;         /* 0x00 (PSTR) */
-  uint64             h_file;              /* 0x08 (HANDLE) */
-  char*              mapped_address;      /* 0x10 (PUCHAR) */
-  pe_nt_headers64*   file_header;         /* 0x18 (PIMAGE_NT_HEADERS64) */
-  uint64             last_rva_section;    /* 0x20 (pe_section_header) */
-  uint64             number_of_sections;  /* 0x28 (ULONG) */
-  section_header*    sections;            /* 0x30 (pe_section_header) */
-  uint32             characteristics;     /* 0x38 (ULONG) */
-  char               f_system_image;      /* 0x3c (BOOLEAN) */
-  char               fdos_image;          /* 0x3d (BOOLEAN) */
-  char               f_read_only;         /* 0x3e (BOOLEAN) */
-  char               version;             /* 0x3f (UCHAR) */
-  list_entry         links;                       /* 0x40 (LIST_ENTRY) */
-  uint64             size_of_image;       /* 0x50 (ULONG) */
+  char* module_name;            /* 0x00 (PSTR) */
+  uint64 h_file;                /* 0x08 (HANDLE) */
+  char* mapped_address;         /* 0x10 (PUCHAR) */
+  pe_nt_headers64* file_header; /* 0x18 (PIMAGE_NT_HEADERS64) */
+  uint64 last_rva_section;      /* 0x20 (pe_section_header) */
+  uint64 number_of_sections;    /* 0x28 (ULONG) */
+  section_header* sections;     /* 0x30 (pe_section_header) */
+  uint32 characteristics;       /* 0x38 (ULONG) */
+  char f_system_image;          /* 0x3c (BOOLEAN) */
+  char fdos_image;              /* 0x3d (BOOLEAN) */
+  char f_read_only;             /* 0x3e (BOOLEAN) */
+  char version;                 /* 0x3f (UCHAR) */
+  list_entry links;             /* 0x40 (LIST_ENTRY) */
+  uint64 size_of_image;         /* 0x50 (ULONG) */
 } pe_loaded_image;
 
 //
 // Image architectures
 //
-#define PE_FILE_MACHINE_AM33       0x1d3
-#define PE_FILE_MACHINE_AMD64      0x8664
-#define PE_FILE_MACHINE_ARM        0x1c0
-#define PE_FILE_MACHINE_ARMV7      0x1c4
-#define PE_FILE_MACHINE_EBC        0xebc
-#define PE_FILE_MACHINE_I386       0x14c
-#define PE_FILE_MACHINE_IA64       0x200
-#define PE_FILE_MACHINE_M32R       0x9041
-#define PE_FILE_MACHINE_MIPS16     0x266
-#define PE_FILE_MACHINE_MIPSFPU    0x366
-#define PE_FILE_MACHINE_MIPSFPU16  0x466
-#define PE_FILE_MACHINE_POWERPC    0x1f0
-#define PE_FILE_MACHINE_POWERPCFP  0x1f1
-#define PE_FILE_MACHINE_R4000      0x166
-#define PE_FILE_MACHINE_SH3        0x1a2
-#define PE_FILE_MACHINE_SH3E       0x01a4
+#define PE_FILE_MACHINE_AM33 0x1d3
+#define PE_FILE_MACHINE_AMD64 0x8664
+#define PE_FILE_MACHINE_ARM 0x1c0
+#define PE_FILE_MACHINE_ARMV7 0x1c4
+#define PE_FILE_MACHINE_EBC 0xebc
+#define PE_FILE_MACHINE_I386 0x14c
+#define PE_FILE_MACHINE_IA64 0x200
+#define PE_FILE_MACHINE_M32R 0x9041
+#define PE_FILE_MACHINE_MIPS16 0x266
+#define PE_FILE_MACHINE_MIPSFPU 0x366
+#define PE_FILE_MACHINE_MIPSFPU16 0x466
+#define PE_FILE_MACHINE_POWERPC 0x1f0
+#define PE_FILE_MACHINE_POWERPCFP 0x1f1
+#define PE_FILE_MACHINE_R4000 0x166
+#define PE_FILE_MACHINE_SH3 0x1a2
+#define PE_FILE_MACHINE_SH3E 0x01a4
 
 #define PE_DIRECTORY_ENTRY_DELAY_IMPORT 13
 #define PE_DIRECTORY_ENTRY_EXPORT 0
 #define PE_DIRECTORY_ENTRY_IMPORT 1
 
-pe_file_header*
-pe_filehdr_ptr(const void*);
+pe_file_header* pe_filehdr_ptr(const void*);
 
-void*
-pe_opthdr_ptr(const void*);
+void* pe_opthdr_ptr(const void*);
 
-int32
-pe_opthdr_offset(const void*, pe_opthdr_field);
+int32 pe_opthdr_offset(const void*, pe_opthdr_field);
 
 #ifdef __cplusplus
 }

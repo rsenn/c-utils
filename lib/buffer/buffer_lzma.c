@@ -3,6 +3,7 @@
 #endif /* defined(HAVE_CONFIG_H) */
 
 #include "../buffer.h"
+#include "../uint8.h"
 #include <stdlib.h>
 
 #ifdef HAVE_LIBLZMA
@@ -31,7 +32,7 @@ buffer_lzmaread_op(fd_t fd, void* data, size_t n, buffer* b) {
     return r;
   }
 
-  strm->next_in = (uint8_t*)&ctx->b->x[ctx->b->p];
+  strm->next_in = (uint8*)&ctx->b->x[ctx->b->p];
   strm->avail_in = a = ctx->b->n - ctx->b->p;
   strm->next_out = data;
   strm->avail_out = n;
@@ -66,7 +67,7 @@ buffer_lzmawrite_op(fd_t fd, void* data, size_t n, buffer* b) {
 
   strm->next_in = data;
   strm->avail_in = n;
-  strm->next_out = (uint8_t*)&other->x[other->p];
+  strm->next_out = (uint8*)&other->x[other->p];
   strm->avail_out = a;
 
   ctx->a = LZMA_RUN;
@@ -98,11 +99,11 @@ buffer_lzma_close(buffer* b) {
 
   ctx->a = LZMA_FINISH;
 
-  strm->next_in = (uint8_t*)&b->x[b->p];
+  strm->next_in = (uint8*)&b->x[b->p];
   strm->avail_in = b->n - b->p;
 
   do {
-    strm->next_out = (uint8_t*)&other->x[other->p];
+    strm->next_out = (uint8*)&other->x[other->p];
     strm->avail_out = a = other->a - other->p;
 
     ret = lzma_code(strm, ctx->a);

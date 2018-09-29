@@ -485,8 +485,8 @@ else
   endif
 endif
 
-vpath lib lib/array lib/cb lib/cbmap lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR)
-VPATH = lib:lib/array:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR)
+vpath lib lib/array lib/cb lib/cbmap lib/binfmt lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR)
+VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR)
 
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
@@ -714,7 +714,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln bsdiffcat)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln bsdiffcat binfmttest elf64list macho32list pelist)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
@@ -891,7 +891,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 
 $(info BUILDDIR: $(BUILDDIR))
@@ -937,6 +937,7 @@ $(OBJDIR):
 
 
 $(call lib-target,array,lib/umult64.c)
+$(call lib-target,binfmt)
 $(call lib-target,buffer)
 $(call lib-target,byte)
 $(call lib-target,case)
@@ -1301,6 +1302,35 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
+$(BUILDDIR)binfmttest$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
+$(BUILDDIR)binfmttest$(M64_)$(EXEEXT): $(BUILDDIR)binfmttest.o $(call add-library, binfmt pe array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)elf64list$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
+$(BUILDDIR)elf64list$(M64_)$(EXEEXT): $(BUILDDIR)elf64list.o $(call add-library, binfmt pe array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)macho32list$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
+$(BUILDDIR)macho32list$(M64_)$(EXEEXT): $(BUILDDIR)macho32list.o $(call add-library, binfmt pe array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)pelist$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
+$(BUILDDIR)pelist$(M64_)$(EXEEXT): $(BUILDDIR)pelist.o $(call add-library, binfmt pe array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+
 ifeq ($(BUILDDIR),)
 .c.o:
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
@@ -1381,42 +1411,10 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 #$(info PROGRAMS=$(subst $(SPACE),$(NL)    ,$(shell ls -td -- $(PROGRAMS))))
 
 
-$(BUILDDIR)elfwrsec: $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a
+$(BUILDDIR)elfwrsec$(EXEEXT): $(BUILDDIR)elfwrsec.o $(BUILDDIR)buffer.a $(BUILDDIR)fmt.a $(BUILDDIR)str.a $(BUILDDIR)byte.a $(BUILDDIR)mmap.a $(BUILDDIR)open.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 -include $(BUILDDIR)defines.make
-# DO NOT DELETE
-expand_command.o: lib/expand/expand_command.c lib/expand/../stralloc.h \
- /usr/lib/gcc/i686-pc-cygwin/7.3.0/include/stddef.h \
- lib/expand/../buffer.h /usr/include/inttypes.h /usr/include/newlib.h \
- /usr/include/_newlib_version.h /usr/include/sys/config.h \
- /usr/include/machine/ieeefp.h /usr/include/sys/features.h \
- /usr/include/cygwin/config.h /usr/include/sys/_intsup.h \
- /usr/include/_ansi.h /usr/lib/gcc/i686-pc-cygwin/7.3.0/include/stdint.h \
- /usr/include/stdint.h /usr/include/machine/_default_types.h \
- /usr/include/sys/_stdint.h /usr/include/xlocale.h \
- /usr/include/sys/types.h /usr/include/_ansi.h /usr/include/sys/cdefs.h \
- /usr/include/machine/_types.h /usr/include/sys/_types.h \
- /usr/include/sys/lock.h /usr/include/machine/endian.h \
- /usr/include/machine/_endian.h /usr/include/bits/endian.h \
- /usr/include/sys/select.h /usr/include/sys/_sigset.h \
- /usr/include/sys/_timeval.h /usr/include/sys/timespec.h \
- /usr/include/sys/_timespec.h /usr/include/sys/_pthreadtypes.h \
- /usr/include/machine/types.h /usr/include/endian.h \
- /usr/include/bits/byteswap.h /usr/include/bits/wordsize.h \
- /usr/include/sys/sysmacros.h lib/expand/../uint64.h lib/expand/../str.h \
- lib/expand/../io.h lib/expand/../windoze.h lib/expand/../iarray.h \
- /usr/include/pthread.h /usr/include/signal.h /usr/include/sys/signal.h \
- /usr/include/cygwin/signal.h /usr/include/sys/ucontext.h \
- /usr/include/sched.h /usr/include/sys/sched.h /usr/include/time.h \
- /usr/include/sys/reent.h /usr/include/machine/time.h \
- /usr/include/cygwin/time.h lib/expand/../taia.h lib/expand/../tai.h \
- lib/expand/../uint32.h /usr/include/unistd.h /usr/include/sys/unistd.h \
- /usr/include/getopt.h lib/expand/../tree.h /usr/include/stdlib.h \
- /usr/include/machine/stdlib.h /usr/include/alloca.h \
- /usr/include/cygwin/stdlib.h /usr/include/cygwin/wait.h \
- lib/expand/../stralloc.h lib/expand/../vartab.h lib/expand/../var.h \
- lib/expand/../vartab.h lib/expand/../expand.h

@@ -57,9 +57,9 @@ print_flags(const char* const flagset[], int flags) {
 }
 
 int
-print_phdr64(Elf64_Phdr* phdr) {
-  Elf64_Ehdr* ehdr = (Elf64_Ehdr*)base;
-  Elf64_Phdr* phdrs = (Elf64_Phdr*)((char*)base + ehdr->e_phoff);
+print_phdr64(elf64_phdr* phdr) {
+  elf64_ehdr* ehdr = (elf64_ehdr*)base;
+  elf64_phdr* phdrs = (elf64_phdr*)((char*)base + ehdr->e_phoff);
 
   buffer_putlong(buffer_1, phdr - phdrs);
 
@@ -85,17 +85,17 @@ print_phdr64(Elf64_Phdr* phdr) {
 
 const char*
 strtab_shdr64() {
-  Elf64_Ehdr* ehdr = (Elf64_Ehdr*)base;
-  Elf64_Shdr* shdrs = (Elf64_Shdr*)((char*)ehdr + ehdr->e_shoff);
-  Elf64_Shdr* sh_strtab = &shdrs[ehdr->e_shstrndx];
+  elf64_ehdr* ehdr = (elf64_ehdr*)base;
+  elf64_shdr* shdrs = (elf64_shdr*)((char*)ehdr + ehdr->e_shoff);
+  elf64_shdr* sh_strtab = &shdrs[ehdr->e_shstrndx];
   return (char*)ehdr + sh_strtab->sh_offset;
 }
 
 int
-print_shdr64(Elf64_Shdr* shdr) {
+print_shdr64(elf64_shdr* shdr) {
 
-  Elf64_Ehdr* ehdr = (Elf64_Ehdr*)base;
-  Elf64_Shdr* shdrs = (Elf64_Shdr*)((char*)base + ehdr->e_shoff);
+  elf64_ehdr* ehdr = (elf64_ehdr*)base;
+  elf64_shdr* shdrs = (elf64_shdr*)((char*)base + ehdr->e_shoff);
 
   int shnum = ehdr->e_shnum;
 
@@ -112,13 +112,13 @@ print_shdr64(Elf64_Shdr* shdr) {
 }
 
 int
-process32(Elf32_Ehdr* hdr) {
+process32(elf32_ehdr* hdr) {
   return 0;
 }
 
 int
-process64(Elf64_Ehdr* hdr) {
-  Elf64_Shdr* shdrs = (Elf64_Shdr*)((char*)base + hdr->e_shoff);
+process64(elf64_ehdr* hdr) {
+  elf64_shdr* shdrs = (elf64_shdr*)((char*)base + hdr->e_shoff);
   int i;
 
   for(i = 0; i < hdr->e_shnum; ++i) {
@@ -127,18 +127,18 @@ process64(Elf64_Ehdr* hdr) {
     if(str_equal(name, section)) {
       print_shdr64(&shdrs[i]);
 
-      shdrs[i].sh_flags |= SHF_WRITE;
+      shdrs[i].sh_flags |= ELF_SHF_WRITE;
     }
   }
 
-  Elf64_Phdr* phdrs = (Elf64_Phdr*)((char*)base + hdr->e_phoff);
+  elf64_phdr* phdrs = (elf64_phdr*)((char*)base + hdr->e_phoff);
 
   for(i = 0; i < hdr->e_phnum; ++i) {
 
-    if(!(phdrs[i].p_flags & PF_W)) {
+    if(!(phdrs[i].p_flags & ELF_PF_W)) {
       print_phdr64(&phdrs[i]);
 
-      phdrs[i].p_flags |= PF_W;
+      phdrs[i].p_flags |= ELF_PF_W;
     }
   }
 
@@ -149,9 +149,9 @@ int
 elfwrsec(const char* file) {
   base = mmap_shared(file, &size);
 
-  Elf64_Ehdr* header = base;
+  elf64_ehdr* header = base;
 
-  int ret = (header->e_ident[EI_CLASS] == ELFCLASS64 ? process64(base) : process32(base));
+  int ret = (header->e_ident[ELF_EI_CLASS] == ELF_ELFCLASS64 ? process64(base) : process32(base));
 
   mmap_unmap(base, size);
 
