@@ -4,7 +4,7 @@
 #include "uint16.h"
 #include "uint32.h"
 #include "uint64.h"
-#include <sys/types.h>
+#include "uint8.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,8 +12,8 @@ extern "C" {
 
 typedef struct {
   union {
-  unsigned char* x;
-  struct pe_dos_header* dos;
+    unsigned char* x;
+    struct pe_dos_header* dos;
   };
   size_t n;
   struct pe_nt_header* nt;
@@ -22,7 +22,7 @@ typedef struct {
 typedef struct {
   uint32 virtual_address;
   uint32 size;
-} pe_data_directory, pe32_data_directory;
+} pe32_data_directory;
 
 typedef struct {
   uint64 virtual_address;
@@ -308,7 +308,6 @@ typedef struct {
   pe32_opt_header optional_header;
 } pe32_nt_headers;
 
-
 typedef struct {
   char* module_name;            /* 0x00 (PSTR) */
   uint64 h_file;                /* 0x08 (HANDLE) */
@@ -329,65 +328,69 @@ typedef struct {
 //
 // Image architectures
 //
-#define PE_FILE_MACHINE_UNKNOWN         0
-#define PE_FILE_MACHINE_I386            0x014c
-#define PE_FILE_MACHINE_R3000           0x0162
-#define PE_FILE_MACHINE_R4000           0x0166
-#define PE_FILE_MACHINE_R10000          0x0168
-#define PE_FILE_MACHINE_WCEMIPSV2       0x0169
-#define PE_FILE_MACHINE_ALPHA           0x0184
-#define PE_FILE_MACHINE_SH3             0x01a2
-#define PE_FILE_MACHINE_SH3DSP          0x01a3
-#define PE_FILE_MACHINE_SH3E            0x01a4
-#define PE_FILE_MACHINE_SH4             0x01a6
-#define PE_FILE_MACHINE_SH5             0x01a8
-#define PE_FILE_MACHINE_ARM             0x01c0
-#define PE_FILE_MACHINE_ARMV7           0x01c4
-#define PE_FILE_MACHINE_ARMNT           0x01c4
-#define PE_FILE_MACHINE_ARM64           0xaa64
-#define PE_FILE_MACHINE_THUMB           0x01c2
-#define PE_FILE_MACHINE_AM33            0x01d3
-#define PE_FILE_MACHINE_POWERPC         0x01F0
-#define PE_FILE_MACHINE_POWERPCFP       0x01f1
-#define PE_FILE_MACHINE_IA64            0x0200
-#define PE_FILE_MACHINE_MIPS16          0x0266
-#define PE_FILE_MACHINE_ALPHA64         0x0284
-#define PE_FILE_MACHINE_MIPSFPU         0x0366
-#define PE_FILE_MACHINE_MIPSFPU16       0x0466
-#define PE_FILE_MACHINE_AXP64           PE_FILE_MACHINE_ALPHA64
-#define PE_FILE_MACHINE_TRICORE         0x0520
-#define PE_FILE_MACHINE_CEF             0x0CEF
-#define PE_FILE_MACHINE_EBC             0x0EBC
-#define PE_FILE_MACHINE_AMD64           0x8664
-#define PE_FILE_MACHINE_M32R            0x9041
-#define PE_FILE_MACHINE_CEE             0xc0ee
+#define PE_FILE_MACHINE_UNKNOWN 0
+#define PE_FILE_MACHINE_I386 0x014c
+#define PE_FILE_MACHINE_R3000 0x0162
+#define PE_FILE_MACHINE_R4000 0x0166
+#define PE_FILE_MACHINE_R10000 0x0168
+#define PE_FILE_MACHINE_WCEMIPSV2 0x0169
+#define PE_FILE_MACHINE_ALPHA 0x0184
+#define PE_FILE_MACHINE_SH3 0x01a2
+#define PE_FILE_MACHINE_SH3DSP 0x01a3
+#define PE_FILE_MACHINE_SH3E 0x01a4
+#define PE_FILE_MACHINE_SH4 0x01a6
+#define PE_FILE_MACHINE_SH5 0x01a8
+#define PE_FILE_MACHINE_ARM 0x01c0
+#define PE_FILE_MACHINE_ARMV7 0x01c4
+#define PE_FILE_MACHINE_ARMNT 0x01c4
+#define PE_FILE_MACHINE_ARM64 0xaa64
+#define PE_FILE_MACHINE_THUMB 0x01c2
+#define PE_FILE_MACHINE_AM33 0x01d3
+#define PE_FILE_MACHINE_POWERPC 0x01F0
+#define PE_FILE_MACHINE_POWERPCFP 0x01f1
+#define PE_FILE_MACHINE_IA64 0x0200
+#define PE_FILE_MACHINE_MIPS16 0x0266
+#define PE_FILE_MACHINE_ALPHA64 0x0284
+#define PE_FILE_MACHINE_MIPSFPU 0x0366
+#define PE_FILE_MACHINE_MIPSFPU16 0x0466
+#define PE_FILE_MACHINE_AXP64 PE_FILE_MACHINE_ALPHA64
+#define PE_FILE_MACHINE_TRICORE 0x0520
+#define PE_FILE_MACHINE_CEF 0x0CEF
+#define PE_FILE_MACHINE_EBC 0x0EBC
+#define PE_FILE_MACHINE_AMD64 0x8664
+#define PE_FILE_MACHINE_M32R 0x9041
+#define PE_FILE_MACHINE_CEE 0xc0ee
 
-#define PE_FILE_RELOCS_STRIPPED         0x0001
-#define PE_FILE_EXECUTABLE_IMAGE        0x0002
-#define PE_FILE_LINE_NUMS_STRIPPED      0x0004
-#define PE_FILE_LOCAL_SYMS_STRIPPED     0x0008
-#define PE_FILE_AGGRESIVE_WS_TRIM       0x0010
-#define PE_FILE_LARGE_ADDRESS_AWARE     0x0020
-#define PE_FILE_BYTES_REVERSED_LO       0x0080
-#define PE_FILE_32BIT_MACHINE           0x0100
-#define PE_FILE_DEBUG_STRIPPED          0x0200
+#define PE_FILE_RELOCS_STRIPPED 0x0001
+#define PE_FILE_EXECUTABLE_IMAGE 0x0002
+#define PE_FILE_LINE_NUMS_STRIPPED 0x0004
+#define PE_FILE_LOCAL_SYMS_STRIPPED 0x0008
+#define PE_FILE_AGGRESIVE_WS_TRIM 0x0010
+#define PE_FILE_LARGE_ADDRESS_AWARE 0x0020
+#define PE_FILE_BYTES_REVERSED_LO 0x0080
+#define PE_FILE_32BIT_MACHINE 0x0100
+#define PE_FILE_DEBUG_STRIPPED 0x0200
 #define PE_FILE_REMOVABLE_RUN_FROM_SWAP 0x0400
-#define PE_FILE_NET_RUN_FROM_SWAP       0x0800
-#define PE_FILE_SYSTEM                  0x1000
-#define PE_FILE_DLL                     0x2000
-#define PE_FILE_UP_SYSTEM_ONLY          0x4000
-#define PE_FILE_BYTES_REVERSED_HI       0x8000
+#define PE_FILE_NET_RUN_FROM_SWAP 0x0800
+#define PE_FILE_SYSTEM 0x1000
+#define PE_FILE_DLL 0x2000
+#define PE_FILE_UP_SYSTEM_ONLY 0x4000
+#define PE_FILE_BYTES_REVERSED_HI 0x8000
 
-#define PE_NT_SIGNATURE                 0x00004550
-#define PE_NT_OPTIONAL_HDR32_MAGIC      0x10b
-#define PE_NT_OPTIONAL_HDR64_MAGIC      0x20b
+#define PE_NT_SIGNATURE 0x00004550
+#define PE_NT_OPTIONAL_HDR32_MAGIC 0x10b
+#define PE_NT_OPTIONAL_HDR64_MAGIC 0x20b
 //#define PE_NT_OPTIONAL_HDR_MAGIC        PE_NT_OPTIONAL_HDR64_MAGIC
-#define PE_NT_OPTIONAL_HDR_MAGIC        PE_NT_OPTIONAL_HDR32_MAGIC
+#define PE_NT_OPTIONAL_HDR_MAGIC PE_NT_OPTIONAL_HDR32_MAGIC
 
-#define PE_FIELD_OFFSET(type, field)    ((long)(long*)&(((type *)0)->field))
+#define PE_FIELD_OFFSET(type, field) ((uintptr_t)(uint8*)&(((type*)0)->field))
 
-#define PE_FIRST_SECTION(ntheader) ((pe_section_header*) ((unsigned long*)ntheader + PE_FIELD_OFFSET(pe32_nt_headers,optional_header) + ((pe32_nt_headers*)(ntheader))->file_header.size_of_optional_header))
-
+#define PE32_FIRST_SECTION(ntheader)                                                                                   \
+  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe32_nt_headers, optional_header) +                         \
+                        ((pe32_nt_headers*)(ntheader))->file_header.size_of_optional_header))
+#define PE64_FIRST_SECTION(ntheader)                                                                                   \
+  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe64_nt_headers, optional_header) +                         \
+                        ((pe64_nt_headers*)(ntheader))->file_header.size_of_optional_header))
 
 #define PE_DIRECTORY_ENTRY_DELAY_IMPORT 13
 #define PE_DIRECTORY_ENTRY_EXPORT 0

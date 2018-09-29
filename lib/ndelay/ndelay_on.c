@@ -1,8 +1,6 @@
 #include "../windoze.h"
-
 #include "../ndelay.h"
-
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <winsock.h>
 #else
 #include <fcntl.h>
@@ -15,7 +13,7 @@
 
 int
 ndelay_on(fd_t fd) {
-#if WINDOWS
+#if WINDOWS_NATIVE
   unsigned long i = 0;
   return winsock2errno(ioctlsocket(fd, FIONBIO, &i));
 #else

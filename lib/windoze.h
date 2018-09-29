@@ -1,30 +1,31 @@
 #ifndef WINDOZE_H
 #define WINDOZE_H 1
 
-#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
-# if !(defined(__MSYS__) || defined(__CYGWIN__))
-#  define WINDOWS_NATIVE 1
-# endif
-# define WINDOWS 1
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__) || defined(__MSYS__)
+#if !(defined(__MSYS__) || defined(__CYGWIN__))
+#define WINDOWS_NATIVE 1
+#endif
+#define WINDOWS 1
 #endif
 
-#if WINDOWS || defined(__MSYS__)
-# include <io.h>
-# include <windows.h>
+#if WINDOWS || defined(__CYGWIN__) || defined(__MSYS__)
+#include <io.h>
+#include <windows.h>
 #endif
 
-# ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
-# endif
+#endif
 
-#if WINDOWS || defined(__MSYS__)
+#if WINDOWS || defined(__CYGWIN__) || defined(__MSYS__)
 
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED 1
 typedef SIZE_T size_t;
 #endif
 
-#if WINDOWS && !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED) && !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
+#if WINDOWS && !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED) &&             \
+    !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
 #define __ssize_t_defined 1
 #define _SSIZE_T_DECLARED 1
 #define _SSIZE_T_DEFINED 1
@@ -50,7 +51,7 @@ getpagesize() {
 }
 #endif
 
-# endif /* WINDOWS */
+#endif /* WINDOWS */
 
 #if WINDOWS_NATIVE
 
@@ -62,14 +63,13 @@ getpagesize() {
 int winsock2errno(long l);
 void __winsock_init(void);
 #else
-#  define winsock2errno(fnord) (fnord)
-#  define __winsock_init()
-#  define closesocket(s) close(s)
+#define winsock2errno(fnord) (fnord)
+#define __winsock_init()
+#define closesocket(s) close(s)
 #endif
 
-# ifdef __cplusplus
+#ifdef __cplusplus
 }
-# endif
-
+#endif
 
 #endif /* defined(WINDOZE_H) */

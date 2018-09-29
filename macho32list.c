@@ -1,8 +1,8 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 
 #include "lib/uint32.h"
-#include "lib/mmap.h"
 #include "lib/macho.h"
+#include "lib/mmap.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -67,9 +67,9 @@ main(int argc, char** argv) {
         symbol = (macho_nlist*)(content + table->symoff);
         string_table = content + table->stroff;
         for(j = 0; j < table->nsyms; j++, symbol++) {
-          _Bool defined_in_section = FALSE;
+          int defined_in_section = 0;
 
-          if((symbol->n_type & MACHO_N_TYPE) == MACHO_N_SECT) defined_in_section = TRUE;
+          if((symbol->n_type & MACHO_N_TYPE) == MACHO_N_SECT) defined_in_section = 1;
 
           if(defined_in_section && symbol->n_sect == text_section_index && symbol->n_type & MACHO_N_EXT) {
             char* name;

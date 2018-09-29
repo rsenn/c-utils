@@ -21,9 +21,9 @@
 #include "lib/buffer.h"
 #include "lib/mmap.h"
 #include "lib/open.h"
+#include "lib/pe.h"
 #include "lib/uint16.h"
 #include "lib/uint32.h"
-#include "lib/pe.h"
 
 int
 main(int argc, char* argv[]) {
@@ -40,22 +40,20 @@ main(int argc, char* argv[]) {
     pe_dos_header* dos_hdr;
     pe32_opt_header* opt_hdr_32;
     /*pe64_opt_header* opt_hdr_64; */
-    pe_data_directory* datadir;
+    pe32_data_directory* datadir;
     pe_type type;
 
     filename = argv[optarg];
 
     dll = mmap_read(filename, &dllsz);
-    if(dll == NULL)
-      return 1;
+    if(dll == NULL) return 1;
 
     dos_hdr = (pe_dos_header*)dll;
 
     dll_name = filename;
 
     for(i = 0; filename[i]; i++)
-      if(filename[i] == '/' || filename[i] == '\\'  || filename[i] == ':')
-        dll_name = filename + i + 1;
+      if(filename[i] == '/' || filename[i] == '\\' || filename[i] == ':') dll_name = filename + i + 1;
 
     pe_header_offset = uint32_get(&dos_hdr->e_lfanew);
 
@@ -78,10 +76,10 @@ main(int argc, char* argv[]) {
     /*fprintf(stderr, "o=%08x, type=%d (0x%3x)\n", o, type, type); */
     num_entries = uint32_get(&dll[opthdr_ofs + (type == PE_MAGIC_PE64 ? 108 : 92)]);
 
-    if(num_entries < 1)  /* no exports */
+    if(num_entries < 1) /* no exports */
       return 1;
 
-    datadir = (pe_data_directory*)((unsigned char*)opt_hdr_32 + (type == PE_MAGIC_PE64 ? 112 : 96));
+    datadir = (pe32_data_directory*)((unsigned char*)opt_hdr_32 + (type == PE_MAGIC_PE64 ? 112 : 96));
 
     export_rva = uint32_get(&datadir->virtual_address);
     export_size = uint32_get(&datadir->size);
@@ -93,14 +91,13 @@ main(int argc, char* argv[]) {
     for(i = 0; i < nsections; i++) {
       char sname[8];
       uint32 vaddr, vsize, fptr, secptr1 = secptr + 40 * i;
-      vaddr =  uint32_get(&dll[secptr1 + 12]);
+      vaddr = uint32_get(&dll[secptr1 + 12]);
       vsize = uint32_get(&dll[secptr1 + 16]);
       fptr = uint32_get(&dll[secptr1 + 20]);
       byte_copy(sname, 8, &dll[secptr1]);
       if(vaddr <= export_rva && vaddr + vsize > export_rva) {
         expptr = fptr + (export_rva - vaddr);
-        if(export_rva + export_size > vaddr + vsize)
-          export_size = vsize - (export_rva - vaddr);
+        if(export_rva + export_size > vaddr + vsize) export_size = vsize - (export_rva - vaddr);
         break;
       }
     }

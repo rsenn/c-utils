@@ -1,6 +1,6 @@
 #include "lib/buffer.h"
-#include "lib/mmap.h"
 #include "lib/elf.h"
+#include "lib/mmap.h"
 
 static const char* const s_flags[] = {"SHF_WRITE",
                                       "SHF_ALLOC",
@@ -119,6 +119,7 @@ process32(elf32_ehdr* hdr) {
 int
 process64(elf64_ehdr* hdr) {
   elf64_shdr* shdrs = (elf64_shdr*)((char*)base + hdr->e_shoff);
+  elf64_phdr* phdrs = (elf64_phdr*)((char*)base + hdr->e_phoff);
   int i;
 
   for(i = 0; i < hdr->e_shnum; ++i) {
@@ -130,8 +131,6 @@ process64(elf64_ehdr* hdr) {
       shdrs[i].sh_flags |= ELF_SHF_WRITE;
     }
   }
-
-  elf64_phdr* phdrs = (elf64_phdr*)((char*)base + hdr->e_phoff);
 
   for(i = 0; i < hdr->e_phnum; ++i) {
 
@@ -147,11 +146,12 @@ process64(elf64_ehdr* hdr) {
 
 int
 elfwrsec(const char* file) {
-  base = mmap_shared(file, &size);
+  int ret;
+  elf64_ehdr* header;
 
-  elf64_ehdr* header = base;
+  header = base = mmap_shared(file, &size);
 
-  int ret = (header->e_ident[ELF_EI_CLASS] == ELF_ELFCLASS64 ? process64(base) : process32(base));
+  ret = (header->e_ident[ELF_EI_CLASS] == ELF_ELFCLASS64 ? process64(base) : process32(base));
 
   mmap_unmap(base, size);
 

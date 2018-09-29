@@ -15,7 +15,7 @@ print_attr_names(xmlnode* elm) {
     if(param) {
       stralloc_catb(&url, name ? &sep : "=", 1);
       stralloc_cats(&url, content);
-      sep  = '&';
+      sep = '&';
     }
     /*   buffer_puts(buffer_2,  "\n  attribute name: ");
        buffer_puts(buffer_2, attr_p->name);
@@ -23,7 +23,7 @@ print_attr_names(xmlnode* elm) {
        buffer_puts(buffer_2, content);*/
     if(!str_diff((const char*)attr_p->key, "template")) {
       stralloc_copys(&templ, content);
-      //templ = content;
+      // templ = content;
     }
   }
 }
@@ -45,21 +45,19 @@ print_element_names(xmlnode* a_node) {
   for(cur_node = a_node; cur_node; cur_node = cur_node->next) {
     if(cur_node->type == XML_ELEMENT) {
       xmlnode* elm = (xmlnode*)cur_node;
-     /*    buffer_puts(buffer_2, "node type: Element, name: ");
-          if(nsStr) {
-            buffer_puts(buffer_2, nsStr);
-            buffer_put(buffer_2, ":", 1);
-          }
-          buffer_puts(buffer_2, elm->name);
-          buffer_puts(buffer_2, ", value: ");
-      */
+      /*    buffer_puts(buffer_2, "node type: Element, name: ");
+           if(nsStr) {
+             buffer_puts(buffer_2, nsStr);
+             buffer_put(buffer_2, ":", 1);
+           }
+           buffer_puts(buffer_2, elm->name);
+           buffer_puts(buffer_2, ", value: ");
+       */
       if(!str_diff((const char*)elm->name, "Url")) {
-        print_attr_names(elm);
         xmlnode* child_node = NULL;
+        print_attr_names(elm);
         for(child_node = elm->children; child_node; child_node = child_node->next) {
-          {
-            print_attr_names((xmlnode*)child_node);
-          }
+          { print_attr_names((xmlnode*)child_node); }
         }
       }
       /*        if(!str_diff(elm->name, "Url") || !str_diff(elm->name, "Param")) {
@@ -67,32 +65,34 @@ print_element_names(xmlnode* a_node) {
               }*/
     }
   }
-  stralloc newurl;
-  stralloc_init(&newurl);
-  stralloc_copy(&newurl, &templ);
-  stralloc_cat(&newurl, &url);
-  stralloc_copy(&url, &newurl);
-  stralloc_zero(&newurl);
-  /* buffer_puts(buffer_1, "url: ");
-    buffer_putsa(buffer_1, &url);
-    buffer_putnlflush(buffer_1);*/
-  for(i = 0; i < url.len; ++i) {
-    if(url.s[i] == '{') {
-      /*  buffer_put(buffer_2, &url.s[i], 13);
-        buffer_putnlflush(buffer_2); */
-      stralloc_cats(&newurl, "%s");
-      while(++i < url.len) {
-        if(url.s[i] == '}') {
-          break;
+  {
+    stralloc newurl;
+    stralloc_init(&newurl);
+    stralloc_copy(&newurl, &templ);
+    stralloc_cat(&newurl, &url);
+    stralloc_copy(&url, &newurl);
+    stralloc_zero(&newurl);
+    /* buffer_puts(buffer_1, "url: ");
+      buffer_putsa(buffer_1, &url);
+      buffer_putnlflush(buffer_1);*/
+    for(i = 0; i < url.len; ++i) {
+      if(url.s[i] == '{') {
+        /*  buffer_put(buffer_2, &url.s[i], 13);
+          buffer_putnlflush(buffer_2); */
+        stralloc_cats(&newurl, "%s");
+        while(++i < url.len) {
+          if(url.s[i] == '}') {
+            break;
+          }
         }
+        continue;
       }
-      continue;
+      stralloc_catb(&newurl, &url.s[i], 1);
     }
-    stralloc_catb(&newurl, &url.s[i], 1);
+    buffer_puts(buffer_1, "newurl: ");
+    buffer_putsa(buffer_1, &newurl);
+    buffer_putnlflush(buffer_1);
   }
-  buffer_puts(buffer_1, "newurl: ");
-  buffer_putsa(buffer_1, &newurl);
-  buffer_putnlflush(buffer_1);
 }
 
 int
@@ -133,12 +133,10 @@ parse_xml(const char* filename) {
 int
 main(int argc, char** argv) {
   int ai;
-  if(argc < 2)
-    return 1;
+  if(argc < 2) return 1;
   for(ai = 1; ai < argc; ++ai) {
     int ret = parse_xml(argv[ai]);
-    if(ret == -1)
-      return 1;
+    if(ret == -1) return 1;
   }
   return 0;
 }

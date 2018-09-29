@@ -32,6 +32,7 @@
 #include "lib/io.h"
 #include "lib/mmap.h"
 #include "lib/open.h"
+#include "lib/stralloc.h"
 #include "lib/uint64.h"
 #include "lib/windoze.h"
 
@@ -109,10 +110,9 @@ static const char*
 last_error_str() {
 #if defined(_WIN32) || defined(_WIN64)
   DWORD errCode = GetLastError();
-  static char buffer[1024];
+  static stralloc buffer;
   char* err;
-  buffer[0] = '\0';
-  if(errCode == 0) return buffer;
+  if(errCode == 0) return NULL;
 
   SetLastError(0);
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -124,11 +124,13 @@ last_error_str() {
                     NULL))
     return 0;
 
-  snprintf(buffer, sizeof(buffer), "ERROR: %s\n", err);
+  stralloc_copys(&buffer, "ERROR: ");
+  stralloc_cats(&buffer, err);
+  stralloc_nul(&buffer);
 
   /* OutputDebugString(buffer);  or otherwise log it */
   LocalFree(err);
-  return buffer;
+  return buffer.s;
 #else
   return strerror(errno);
 #endif

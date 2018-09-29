@@ -32,15 +32,16 @@
 #include "lib/dir_internal.h"
 #include "lib/fmt.h"
 #include "lib/fnmatch.h"
+#include "lib/getopt.h"
 #include "lib/io_internal.h"
 #include "lib/open.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/uint64.h"
+#include <errno.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
-#include <errno.h>
 #if defined(_WIN32) || defined(__MINGW64__)
 #define MINGW 1
 #endif
@@ -93,7 +94,7 @@ last_error_str() {
     return 0;
   snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
   /* or otherwise log it */
-  //OutputDebugString(tmpbuf);
+  // OutputDebugString(tmpbuf);
   LocalFree(err);
   return tmpbuf;
 }
@@ -248,18 +249,19 @@ is_junction_point(const char* fn) {
         case 0x80000013:
           /* This is the reparse point for Data Deduplication */
           /* See */
-          /* http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx */
+          /* http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
+           */
           /* Unfortunately the compiler doesn't have this value defined yet. */
           status = 0;
           break;
         case IO_REPARSE_TAG_SIS:
           /* Single Instance Storage */
           /* "is a system's ability to keep one copy of content that multiple users or computers share" */
-          /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx */
+          /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
+           */
           status = 0;
           break;
-        default:
-          break;
+        default: break;
       }
     }
     /* We don't error check this call as there's nothing to do differently */
@@ -284,7 +286,7 @@ make_num(stralloc* out, size_t num, size_t width) {
 
 static void
 print_strarray(buffer* b, array* a) {
-  size_t i, n = array_length(a, sizeof(char*));
+  size_t i, n = array_length(a, sizeof(char *));
   char** x = array_start(a);
   for(i = 0; i < n; ++i) {
     char* s = x[i];
@@ -297,7 +299,7 @@ print_strarray(buffer* b, array* a) {
 
 static int
 fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
-  size_t i, n = array_length(a, sizeof(char*));
+  size_t i, n = array_length(a, sizeof(char *));
   char** x = array_start(a);
   int ret = FNM_NOMATCH;
   for(i = 0; i < n; ++i) {
@@ -350,60 +352,67 @@ mode_str(stralloc* out, int mode) {
     case S_IFSOCK: mchars[0] = 's'; break;
 #endif
     case S_IFREG:
-    default:
-      mchars[0] = '-';
-      break;
+    default: mchars[0] = '-'; break;
   }
 #ifdef S_IRUSR
-  if(mode & S_IRUSR) mchars[1] = 'r';
+  if(mode & S_IRUSR)
+    mchars[1] = 'r';
   else
 #endif
     mchars[1] = '-';
 
 #ifdef S_IWUSR
-  if(mode & S_IWUSR) mchars[2] = 'w';
+  if(mode & S_IWUSR)
+    mchars[2] = 'w';
   else
 #endif
     mchars[2] = '-';
 
 #ifdef S_IXUSR
-  if(mode & S_IXUSR) mchars[3] = 'x';
+  if(mode & S_IXUSR)
+    mchars[3] = 'x';
   else
 #endif
     mchars[3] = '-';
 
 #ifdef S_IRGRP
-  if(mode & S_IRGRP) mchars[4] = 'r';
+  if(mode & S_IRGRP)
+    mchars[4] = 'r';
   else
 #endif
     mchars[4] = '-';
 
 #ifdef S_IWGRP
-  if(mode & S_IWGRP) mchars[5] = 'w';
+  if(mode & S_IWGRP)
+    mchars[5] = 'w';
   else
 #endif
     mchars[5] = '-';
 
 #ifdef S_IXGRP
-  if(mode & S_IXGRP) mchars[6] = 'x';
+  if(mode & S_IXGRP)
+    mchars[6] = 'x';
   else
 #endif
     mchars[6] = '-';
 
 #ifdef S_IROTH
-  if(mode & S_IROTH) mchars[7] = 'r';
+  if(mode & S_IROTH)
+    mchars[7] = 'r';
   else
 #endif
     mchars[7] = '-';
 
 #ifdef S_IWOTH
-  if(mode & S_IWOTH) mchars[8] = 'w';
+  if(mode & S_IWOTH)
+    mchars[8] = 'w';
   else
 #endif
     mchars[8] = '-';
 
 #ifdef S_IXOTH
-  if(mode & S_IXOTH) mchars[9] = 'x';
+  if(mode & S_IXOTH)
+    mchars[9] = 'x';
   else
 #endif
     mchars[9] = '-';
@@ -589,44 +598,95 @@ write_err_check(int fd, const void* buf, size_t len) {
   return ret;
 }
 
+void
+usage(const char* argv0) {
+  buffer_putm(buffer_1,
+              "Usage: ",
+              str_basename(argv0),
+              " [-o output] [infile or stdin]\n\n",
+              "  -1 ... -9           compression level; default is 3\n",
+              "\n",
+              "Options\n",
+              "  -h, --help                show this help\n",
+              "  -l, --list                long list\n",
+              "  -n, --numeric             numeric user/group\n",
+              "  -r, --relative            relative path\n",
+              "  -o, --output     FILE     write output to FILE\n",
+              "  -x, --exclude    PATTERN  exclude entries matching PATTERN\n",
+              "  -t, --time-style FORMAT   format time according to FORMAT\n");
+  buffer_putnlflush(buffer_1);
+}
+
 int
 main(int argc, char* argv[]) {
   stralloc dir = {0, 0, 0};
   int relative = 0;
   int argi = 1;
-#if(defined(_WIN32) || defined(_WIN64)) && !defined(__CYGWIN__) && !defined(__MSYS__)
+  int c;
+  int digit_optind = 0;
+  const char* rel_to = NULL;
+  int index = 0;
+  struct longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"list", 0, &opt_list, 'l'},
+      {"numeric", 0, &opt_numeric, 'n'},
+      {"relative", 0, &relative, 'r'},
+      {"output", 1, NULL, 'o'},
+      {"exclude", 1, NULL, 'x'},
+      {"time-style", 1, NULL, 't'},
+  };
+
+#if WINDOWS && defined(O_BINARY)
   setmode(STDOUT_FILENO, O_BINARY);
 #endif
-  while(argi < argc) {
-    if(!str_diff(argv[argi], "-l") || !str_diff(argv[argi], "--list")) {
-      opt_list = 1;
-    } else if(!str_diff(argv[argi], "-n") || !str_diff(argv[argi], "--numeric")) {
-      opt_numeric = 1;
-    } else if(!str_diff(argv[argi], "-r") || !str_diff(argv[argi], "--relative")) {
-      relative = 1;
-    } else if(!str_diff(argv[argi], "-o") || !str_diff(argv[argi], "--output")) {
-      buffer_1->fd = io_err_check(open_trunc(argv[argi + 1]));
-      /* buffer_mmapread(buffer_1, argv[argi+1]); */
-      ++argi;
-    } else if(!str_diff(argv[argi], "-x") || !str_diff(argv[argi], "--exclude")) {
-      char* s = argv[argi + 1];
-      array_catb(&exclude_masks, (void*)&s, sizeof(char*));
-    } else if(!str_diffn(argv[argi], "-x", 2)) {
-      char* s = argv[argi] + 2;
-      array_catb(&exclude_masks, (void*)&s, sizeof(char*));
-    } else if(!str_diffn(argv[argi], "--exclude=", 10)) {
-      char* s = argv[argi] + 10;
-      array_catb(&exclude_masks, (void*)&s, sizeof(char*));
-    } else if(!str_diff(argv[argi], "--relative")) {
-      relative = 1;
-    } else if(!str_diff(argv[argi], "-t") || !str_diff(argv[argi], "--time - style")) {
-      argi++;
-      opt_timestyle = argv[argi];
-    } else {
-      break;
+
+  for(;;) {
+    c = getopt_long(argc, argv, "hlnro:x:t:", opts, &index);
+    if(c == -1) break;
+
+    switch(c) {
+      case 'h': usage(argv[0]); return 0;
+      case 'x': {
+        char* s = optarg;
+        array_catb(&exclude_masks, (void*)&s, sizeof(char*));
+        break;
+      }
+      case 'o': {
+        buffer_1->fd = io_err_check(open_trunc(optarg));
+        break;
+      }
+      case 't': {
+        opt_timestyle = optarg;
+        break;
+      }
+      case 'l':
+      case 'n':
+      case 'r':
+      default: usage(argv[0]); return 1;
     }
-    argi++;
   }
+  /*
+    while(argi < argc) {
+      if(!str_diff(argv[argi], "-l") || !str_diff(argv[argi], "--list")) {
+        opt_list = 1;
+      } else if(!str_diff(argv[argi], "-n") || !str_diff(argv[argi], "--numeric")) {
+        opt_numeric = 1;
+      } else if(!str_diff(argv[argi], "-r") || !str_diff(argv[argi], "--relative")) {
+        relative = 1;
+      } else if(!str_diff(argv[argi], "-o") || !str_diff(argv[argi], "--output")) {
+        buffer_1->fd = io_err_check(open_trunc(argv[argi + 1]));
+        ++argi;
+      } else if(!str_diff(argv[argi], "--relative")) {
+        relative = 1;
+      } else if(!str_diff(argv[argi], "-t") || !str_diff(argv[argi], "--time-style")) {
+        argi++;
+        opt_timestyle = argv[argi];
+      } else {
+        break;
+      }
+      argi++;
+    }
+    */
   array_catb(&exclude_masks, "\0\0\0\0\0\0\0\0", sizeof(char**));
   print_strarray(buffer_2, &exclude_masks);
   if(argi < argc) {
