@@ -40,7 +40,7 @@ main(int argc, char* argv[]) {
     pe_dos_header* dos_hdr;
     pe32_opt_header* opt_hdr_32;
     /*pe64_opt_header* opt_hdr_64; */
-    pe32_data_directory* datadir;
+    pe_data_directory* datadir;
     pe_type type;
 
     filename = argv[optarg];
@@ -79,7 +79,7 @@ main(int argc, char* argv[]) {
     if(num_entries < 1) /* no exports */
       return 1;
 
-    datadir = (pe32_data_directory*)((unsigned char*)opt_hdr_32 + (type == PE_MAGIC_PE64 ? 112 : 96));
+    datadir = (pe_data_directory*)((unsigned char*)opt_hdr_32 + (type == PE_MAGIC_PE64 ? 112 : 96));
 
     export_rva = uint32_get(&datadir->virtual_address);
     export_size = uint32_get(&datadir->size);
