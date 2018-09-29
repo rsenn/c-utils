@@ -4,17 +4,10 @@
 #include "lib/mmap.h"
 #include "lib/pe.h"
 #include "lib/str.h"
+#include <assert.h>
 #include <stdlib.h>
-#include <string.h>
 
-void pe_dump_sections(uint8* content);
-
-void*
-pe_rva2ptr(void* base, uint32 rva) {
-  int64 off = pe_rva2offset(base, rva);
-  if(off == -1) return NULL;
-  return (uint8*)base + off;
-}
+void pe_dump_sections(uint8* base);
 
 uint32
 pe_offset2rva(uint8* base, int64 off) {
@@ -24,12 +17,22 @@ pe_offset2rva(uint8* base, int64 off) {
   if((uint32)off < sections[0].pointer_to_raw_data) return off;
 
   for(i = 0; i < n; i++) {
-    uint32 start = sections[i].pointer_to_raw_data;
-    uint32 end = start + sections[i].size_of_raw_data;
+    uint32 start, size;
+    uint32_unpack(&sections[i].pointer_to_raw_data, &start);
+    uint32_unpack(&sections[i].size_of_raw_data, &size);
 
-    if((uint32)off >= start && (uint32)off < end) return (uint32)off - start + sections[i].virtual_address;
+    if((uint32)off >= start && (uint32)off < start + size) return (uint32)off - start + sections[i].virtual_address;
   }
   return 0;
+}
+
+void
+pe_print_data_directory(buffer* b, pe_data_directory* data_dir) {
+  buffer_puts(b, "virtual_address: 0x");
+  buffer_putxlonglong0(b, data_dir->virtual_address, sizeof(data_dir->virtual_address) * 2);
+  buffer_puts(b, " size: 0x");
+  buffer_putxlonglong0(b, data_dir->size, sizeof(data_dir->size) * 2);
+  buffer_putnlflush(b);
 }
 
 void
@@ -60,29 +63,87 @@ pe_print_export_directory(buffer* b, pe_export_directory* export_dir) {
 }
 
 void
-pe_dump_exports(uint8* content) {
+pe_dump_exports(uint8* base) {
   int i;
-  pe_data_directory* export_dir = &pe_header_datadir(content)[PE_DIRECTORY_ENTRY_EXPORT];
+  pe_data_directory* export_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_EXPORT];
   pe_section_header* text;
   uint32 fnaddr, *nameptr, *fnptr, mintextptr, maxtextptr;
 
-  pe_export_directory* exports = pe_rva2ptr(content, export_dir->virtual_address);
+  pe_export_directory* exports = pe_rva2ptr(base, export_dir->virtual_address);
   // pe_print_export_directory(buffer_1, exports);
 
-  if(!(text = pe_get_section(content, ".text"))) {
+  if(!(text = pe_get_section(base, ".text"))) {
     buffer_putsflush(buffer_2, "no .text section\n");
     return;
   }
 
-  nameptr = (uint32*)pe_rva2ptr(content, exports->address_of_names);
-  fnptr = (uint32*)pe_rva2ptr(content, exports->address_of_functions);
+  nameptr = (uint32*)pe_rva2ptr(base, exports->address_of_names);
+  fnptr = (uint32*)pe_rva2ptr(base, exports->address_of_functions);
   mintextptr = text->virtual_address;
   maxtextptr = mintextptr + text->size_of_raw_data;
 
   for(i = 0; i < exports->number_of_names; i++) {
     fnaddr = fnptr[i];
     if(mintextptr < fnaddr && fnaddr < maxtextptr) {
-      buffer_puts(buffer_1, pe_rva2ptr(content, nameptr[i]));
+      buffer_puts(buffer_1, pe_rva2ptr(base, nameptr[i]));
+      buffer_putnlflush(buffer_1);
+    }
+  }
+}
+
+void
+pe_dump_imports(uint8* base) {
+  int i, j, n;
+  pe_data_directory* import_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_IMPORT];
+
+//  pe_print_data_directory(buffer_2, import_dir);
+  pe_import_descriptor* imports = pe_rva2ptr(base, import_dir->virtual_address);
+
+  n = import_dir->size / sizeof(pe_import_descriptor) - 1;
+  
+/*  buffer_puts(buffer_2, "imports: ");
+  buffer_putulong(buffer_2, n);
+  buffer_putnlflush(buffer_2);*/
+
+  buffer_putspad(buffer_1, "symbol", 64);
+  buffer_putspace(buffer_1);
+  buffer_putspad(buffer_1, "ordinal", 5);
+  buffer_putnspace(buffer_1, 3);
+  buffer_puts(buffer_1, "dll");
+  buffer_putnlflush(buffer_1);
+
+  for(i = 0; i < n && imports[i].original_first_thunk; ++i) {
+    const char* name = pe_rva2ptr(base, uint32_get(&imports[i].name));
+    
+    if(name[0] == '\0') break;
+
+    uint32 thunk = uint32_get(&imports[i].original_first_thunk);
+
+    for(j = 0;; ++j) {
+      const char* sym = NULL;
+      uint16 ordinal;
+      int64 rva;
+
+      if(!(rva = pe_thunk(base, thunk, j))) break;
+
+      if(rva < 0) {
+        rva <<= 1;
+        rva >>= 1;
+        ordinal = rva;
+      } else {
+        pe_import_by_name* name_import;
+
+        if((name_import = pe_rva2ptr(base, rva))) {
+          sym = name_import->name;
+          ordinal = uint16_get(&name_import->hint);
+        }
+      }
+
+      buffer_putspad(buffer_1, sym ? sym : "", 64);
+      buffer_putnspace(buffer_1, 3);
+      buffer_putulong0(buffer_1, ordinal, 5);
+      buffer_putnspace(buffer_1, 3);
+      buffer_puts(buffer_1, name);
       buffer_putnlflush(buffer_1);
     }
   }
@@ -90,7 +151,7 @@ pe_dump_exports(uint8* content) {
 
 int
 main(int argc, char** argv) {
-  uint8* content = NULL;
+  uint8* base = NULL;
   size_t filesize;
 
   if(argc < 2) {
@@ -99,10 +160,10 @@ main(int argc, char** argv) {
     return 0;
   }
 
-  content = (uint8*)mmap_private(argv[1], &filesize);
+  base = (uint8*)mmap_private(argv[1], &filesize);
 
   {
-    pe32_nt_headers* nt_headers = pe_header_nt(content);
+    pe32_nt_headers* nt_headers = pe_header_nt(base);
 
     if(nt_headers->signature != PE_NT_SIGNATURE) {
       buffer_putsflush(buffer_2, "not PE\n");
@@ -113,20 +174,21 @@ main(int argc, char** argv) {
       buffer_putsflush(buffer_2, "not DLL\n");
       return -1;
     }
-    // pe_dump_sections(content);
+    // pe_dump_sections(base);
 
-    pe_dump_exports(content);
+    pe_dump_exports(base);
+    pe_dump_imports(base);
   }
 
-  mmap_unmap(content, filesize);
+  mmap_unmap(base, filesize);
 
   return 0;
 }
 
 void
-pe_dump_sections(uint8* content) {
+pe_dump_sections(uint8* base) {
   int i, n;
-  pe_section_header* sections = pe_header_sections(content, &n);
+  pe_section_header* sections = pe_header_sections(base, &n);
 
   buffer_putspad(buffer_1, "section name", 16);
   buffer_putspace(buffer_1);

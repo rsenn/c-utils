@@ -1715,3 +1715,9 @@ $(BUILDDIR)pe_get_section.o: lib/pe/pe_get_section.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_rva2offset.o: lib/pe/pe_rva2offset.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_rva2ptr.o: lib/pe/pe_rva2ptr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_rva2ptr.o: lib/pe/pe_rva2ptr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_thunk.o: lib/pe/pe_thunk.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
