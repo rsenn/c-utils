@@ -1738,3 +1738,5 @@ $(BUILDDIR)xmltest4.o: ./xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ./ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_section_type.o: lib/elf/elf_section_type.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

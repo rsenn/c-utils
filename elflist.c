@@ -53,6 +53,8 @@ elf_dump_sections(uint8* base) {
   buffer_putspad(buffer_1, "offset", ELF_BITS(base) / 4);
   buffer_putnspace(buffer_1, 3);
   buffer_putspad(buffer_1, "align", ELF_BITS(base) / 4);
+  buffer_putnspace(buffer_1, 3);
+  buffer_puts(buffer_1, "type");
   buffer_putnlflush(buffer_1);
 
   range_foreach(&sections, section) {
@@ -61,6 +63,7 @@ elf_dump_sections(uint8* base) {
     uint64 size = ELF_GET(base, section, shdr, sh_size);
     uint64 offs = ELF_GET(base, section, shdr, sh_offset);
     uint64 align = ELF_GET(base, section, shdr, sh_addralign);
+    uint32 type = ELF_GET(base, section, shdr, sh_type) % ELF_SHT_NUM;
 
     if(!name && !addr && !size) continue;
 
@@ -74,11 +77,8 @@ elf_dump_sections(uint8* base) {
     buffer_putxlonglong0(buffer_1, offs, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
     buffer_putxlonglong0(buffer_1, align, ELF_BITS(base) / 4);
-    /*
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, sections[i].size_of_raw_data, ELF_BITS(base) / 4);
-    jbuffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, sections[i].pointer_to_raw_data, ELF_BITS(base) / 4);*/
+    buffer_putspace(buffer_1);
+    buffer_puts(buffer_1, elf_section_type(type));
     buffer_putnlflush(buffer_1);
   }
 }

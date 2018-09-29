@@ -2442,6 +2442,7 @@ void*  elf_header_sections(void* elf);
 range  elf_program_headers(void* elf);
 range  elf_section_headers(void* elf);
 const char*  elf_strtab(void* elf);
+const char* elf_section_type(int i);
 
 #ifdef __cplusplus
 };
