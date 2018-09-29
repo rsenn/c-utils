@@ -2427,3 +2427,4 @@ to two GOT entries for GD symbol */
 #endif
 
 #endif /* elf.h */
+uint8* elf_header_ident(void* elf);
