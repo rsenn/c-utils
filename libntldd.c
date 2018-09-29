@@ -43,6 +43,7 @@ MSDN Magazine articles
 #include "lib/pe.h"
 #include "lib/str.h"
 #include "lib/uint64.h"
+#include "lib/stralloc.h"
 #include "libntldd.h"
 
 #define FALSE 0
@@ -396,7 +397,14 @@ char
 try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int required_machine_type) {
   char success = 0;
   size_t sz;
-  pe_dos_header* dhdr = (pe_dos_header*)mmap_read(name, &sz);
+  stralloc sa;
+  pe_dos_header* dhdr;
+ 
+  stralloc_init(&sa);
+  if(path) stralloc_copys(&sa, path);
+  stralloc_cats(&sa, name);
+  stralloc_nul(&sa);
+  dhdr = (pe_dos_header*)mmap_read(sa.s, &sz);
 
   loaded_image->size_of_image = sz;
 
@@ -404,19 +412,12 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
     loaded_image->base = (char*)dhdr;
     loaded_image->file_header = (pe64_nt_headers*)(loaded_image->base + dhdr->e_lfanew);
     loaded_image->number_of_sections = loaded_image->file_header->coff_header.number_of_sections;
-    loaded_image->module_name = str_basename(name);
+    loaded_image->module_name = str_dup(sa.s);
     loaded_image->sections = pe_header_sections(loaded_image->base, NULL);
     success = 1;
   }
 
-  /*MapAndLoad(name, path, loaded_image, FALSE, TRUE);
-  if(!success && errno == ENOENT)
-    success = MapAndLoad(name, path, loaded_image, TRUE, TRUE);
-  if(success && required_machine_type != -1 && (int)loaded_image->file_header->coff_header.machine !=
-  required_machine_type) {
-    UnMapAndLoad(loaded_image);
-    return FALSE;
-  }*/
+  stralloc_free(&sa);
 
   return success;
 }
@@ -438,12 +439,7 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   }
 
   if(cfg->on_self) {
-    char modpath[MAX_PATH];
-    /*success = GetModuleHandleExA(0x2, name, &hmod);*/
-    if(!success) return 1;
-    /*if(GetModuleFileNameA(hmod, modpath, MAX_PATH) == 0)
-      return 1;*/
-    if(self->resolved_module == NULL) self->resolved_module = str_dup(modpath);
+    //if(self->resolved_module == NULL)    self->resolved_module = str_dup(name);
 
     dos = (pe_dos_header*)hmod;
     loaded_image.file_header = (pe64_nt_headers*)((char*)hmod + dos->e_lfanew);
@@ -461,7 +457,8 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
       self->flags |= DEPTREE_UNRESOLVED;
       return 1;
     }
-    if(self->resolved_module == NULL) self->resolved_module = str_dup(loaded_image.module_name);
+    if(self->resolved_module == NULL)
+      self->resolved_module = str_dup(loaded_image.module_name);
   }
   if(cfg->machine_type == -1) cfg->machine_type = (int)loaded_image.file_header->coff_header.machine;
   img = &loaded_image;

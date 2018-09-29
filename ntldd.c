@@ -197,6 +197,25 @@ print_image_links(int first,
   }
   return 0;
 }
+void
+add_path(search_paths* sp, const char* path) {
+        char s = (strchr(path, '\\') && strchr(path, ':') && strchr(path, ";")) ? ';' : ':';
+        char* sep = strchr(path, s);
+      if(*path == '"') path++;
+        do {
+          if(sep) *sep = '\0';
+          sp->count++;
+          sp->path = (char**)realloc(sp->path, sp->count * sizeof(char*));
+          if(!sep) {
+            char* p = strrchr(path, '"');
+            if(p) *p = '\0';
+          }
+          sp->path[sp->count - 1] = str_dup(path);
+          path = sep + 1;
+          if(!sep) break;
+          sep = strchr(path, s);
+        } while(1);
+}
 
 int
 main(int argc, char** argv) {
@@ -236,24 +255,8 @@ main(int argc, char** argv) {
       list_imports = 1;
     else if((str_equal(argv[i], "-D") || str_equal(argv[i], "--search-dir")) && i < argc - 1) {
       char* add_dirs = argv[i + 1];
-      if(*add_dirs == '"') add_dirs++;
-      {
-        char* sep = strchr(add_dirs, ';');
-        do {
-          if(sep) *sep = '\0';
-          sp.count++;
-          sp.path = (char**)realloc(sp.path, sp.count * sizeof(char*));
-          if(!sep) {
-            char* p = strrchr(add_dirs, '"');
-            if(p) *p = '\0';
-          }
-          sp.path[sp.count - 1] = str_dup(add_dirs);
-          add_dirs = sep + 1;
-          if(!sep) break;
-          sep = strchr(add_dirs, ';');
-        } while(1);
-        i++;
-      }
+      add_path(&sp, add_dirs);
+      i++;
     } else if(str_equal(argv[i], "--help")) {
       printhelp(argv[0]);
       skip = 1;
@@ -270,6 +273,11 @@ main(int argc, char** argv) {
       files_start = i;
       break;
     }
+  }
+  {
+    const char* pathenv = getenv("PATH");
+    if(pathenv)
+      add_path(&sp, pathenv);
   }
 
   if(!skip && files_start > 0) {
