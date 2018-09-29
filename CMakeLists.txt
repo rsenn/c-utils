@@ -622,7 +622,7 @@ target_link_libraries(ziptest buffer  str)
 target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path ndelay socket slist str stralloc strarray strlist)
 target_link_libraries(sln buffer byte errmsg path  str stralloc)
 
-target_link_libraries(opensearch-dump errmsg uint64 uint32 uint16 buffer mmap open)
+target_link_libraries(opensearch-dump xml errmsg uint64 uint32 uint16 buffer mmap open)
 target_link_libraries(bsdiffcat errmsg uint64 uint32 uint16 buffer mmap open)
 target_link_libraries(binfmttest binfmt errmsg uint64 uint32 uint16 buffer mmap open)
 target_link_libraries(elf64list errmsg uint64 uint32 uint16 buffer mmap open)
