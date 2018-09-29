@@ -1,6 +1,5 @@
 /* ISC license. */
 
-#include <skalibs/djbunix.h>
 #include <sys/wait.h>
 
 pid_t

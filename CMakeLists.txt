@@ -419,7 +419,7 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-  access binfmttest bsdiffcat buffertest ccat count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elfwrsec hexedit httptest impgen jsontest list-r macho32list main mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest
+  access binfmttest bsdiffcat buffertest ccat count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elfwrsec hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest
 )
 
 if(NOT MSVC)
@@ -475,7 +475,7 @@ endforeach()
 
 
 #
-set(LIBSUBDIRS array buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
+set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -622,6 +622,7 @@ target_link_libraries(ziptest buffer  str)
 target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path ndelay socket slist str stralloc strarray strlist)
 target_link_libraries(sln buffer byte errmsg path  str stralloc)
 
+target_link_libraries(opensearch-dump errmsg uint64 uint32 uint16 buffer mmap open)
 target_link_libraries(bsdiffcat errmsg uint64 uint32 uint16 buffer mmap open)
 target_link_libraries(binfmttest binfmt errmsg uint64 uint32 uint16 buffer mmap open)
 target_link_libraries(elf64list errmsg uint64 uint32 uint16 buffer mmap open)

@@ -1,6 +1,5 @@
 /* ISC license. */
 
-#include <skalibs/djbunix.h>
 
 unsigned int
 wait_reap() {

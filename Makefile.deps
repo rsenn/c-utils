@@ -1712,3 +1712,17 @@ $(BUILDDIR)xmltest4.o: ./xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ./ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)wait_nointr.o: lib/wait/wait_nointr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)wait_pid_nohang.o: lib/wait/wait_pid_nohang.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)wait_pids_nohang.o: lib/wait/wait_pids_nohang.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)wait_reap.o: lib/wait/wait_reap.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)waitn.o: lib/wait/waitn.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)waitn_reap.o: lib/wait/waitn_reap.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)waitpid_nointr.o: lib/wait/waitpid_nointr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
