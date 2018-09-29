@@ -10,6 +10,6 @@ pe_get_section(void* base, const char* name) {
       return &sections[i];
   }
 
-  return NULL;
+  return 0;
 }
 

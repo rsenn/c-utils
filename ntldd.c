@@ -26,9 +26,10 @@ MSDN Magazine articles
 //#include <windows.h>
 
 //#include "lib/imagehlp.h"
-#include "lib/uint64.h"
+#include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/str.h"
+#include "lib/uint64.h"
 
 //#include <winnt.h>
 
@@ -46,18 +47,21 @@ MSDN Magazine articles
 
 void
 printversion() {
-  printf("ntldd %d.%d\n\
+  buffer_puts(buffer_1, "ntldd ");
+  buffer_putlong(buffer_1, NTLDD_VERSION_MAJOR);
+  buffer_puts(buffer_1, ".");
+  buffer_putlong(buffer_1, NTLDD_VERSION_MINOR);
+  buffer_puts(buffer_1, " \n\
 Copyright (C) 2010-2015 LRN\n\
 This is free software; see the source for conditions. There is NO\n\
 warranty; not event for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
-Written by LRN.",
-         NTLDD_VERSION_MAJOR,
-         NTLDD_VERSION_MINOR);
+Written by LRN.");
+  buffer_putnlflush(buffer_1);
 }
 
 void
 printhelp(char* argv0) {
-  printf("Usage: %s [OPTION]... FILE...\n\
+  buffer_putm(buffer_1, "Usage: ", argv0, " [OPTION]... FILE...\n\
 OPTIONS:\n\
 --version         Displays version\n\
 -v, --verbose         Does not work\n\
@@ -73,8 +77,8 @@ OPTIONS:\n\
 \n\
 Use -- option to pass filenames that start with `--' or `-'\n\
 For bug reporting instructions, please see:\n\
-<somewhere>.",
-         argv0);
+<somewhere>.");
+  buffer_putnlflush(buffer_1);
 }
 
 int
@@ -96,38 +100,70 @@ print_image_links(int first,
     for(i = 0; i < self->exports_len; i++) {
       struct export_table_item* item = &self->exports[i];
 
-      printf("%*s[%u] %s (0x%lx)%s%s <%d>\n",
-             depth,
-             depth > 0 ? " " : "",
-             item->ordinal,
-             item->name,
-             (long)item->address_offset,
-             item->forward_str ? " ->" : "",
-             item->forward_str ? item->forward_str : "",
-             item->section_index);
+      buffer_putnspace(buffer_1, depth * 2);
+      buffer_puts(buffer_1, "[");
+      buffer_putulong0(buffer_1, item->ordinal, 3);
+      buffer_puts(buffer_1, "] ");
+      buffer_putspad(buffer_1, item->name, 16);
+      buffer_puts(buffer_1, " (0x");
+      buffer_putxlonglong0(buffer_1, item->address_offset, 8);
+      buffer_putm(buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <");
+      buffer_putulong(buffer_1, item->section_index);
+      buffer_puts(buffer_1, ">");
+      buffer_putnlflush(buffer_1);
+      /*
+            printf("%*s[%u] %s (0x%lx)%s%s <%d>\n",
+                   depth,
+                   depth > 0 ? " " : "",
+                   item->ordinal,
+                   item->name,
+                   (long)item->address_offset,
+                   item->forward_str ? " ->" : "",
+                   item->forward_str ? item->forward_str : "",
+                   item->section_index);*/
     }
     return 0;
   }
   if(self->flags & DEPTREE_UNRESOLVED) {
-    if(!first)
-      printf(" => not found\n");
-    else
-      fprintf(stderr, "%s: not found\n", self->module);
+    if(!first) {
+      buffer_putsflush(buffer_1, " => not found\n");
+    } else {
+      buffer_putm(buffer_2, self->module, ": not found\n");
+      buffer_flush(buffer_2);
+    }
     unresolved = 1;
   }
 
   if(!unresolved && !first) {
-    if(str_case_diff(self->module, self->resolved_module) == 0)
-      printf(" (0x%p)\n", self->mapped_address);
-    else
-      printf(" => %s (0x%p)\n", self->resolved_module, self->mapped_address);
+    if(str_case_diff(self->module, self->resolved_module) == 0) {
+      buffer_puts(buffer_1, " (0x");
+      buffer_putxlonglong0(buffer_1, self->mapped_address, 8);
+    } else {
+      buffer_putm(buffer_1, " => ", self->resolved_module, " (0x");
+      buffer_putxlonglong0(buffer_1, self->mapped_address, 8);
+    }
+    buffer_putsflush(buffer_1, ")\n");
   }
 
   if(list_imports) {
     for(i = 0; i < self->imports_len; i++) {
       struct import_table_item* item = &self->imports[i];
 
-      printf("\t%*s%llx %llx %3d %s %s %s\n",
+      buffer_puts(buffer_1, "\t");
+      buffer_putnspace(buffer_1, depth * 2);
+      buffer_putxlonglong0(buffer_1, item->orig_address, 8);
+      buffer_putspace(buffer_1);
+      buffer_putxlonglong0(buffer_1, item->address, 8);
+      buffer_putspace(buffer_1);
+      buffer_putulong0(buffer_1, item->ordinal, 3);
+      buffer_putspace(buffer_1);
+      buffer_puts(buffer_1, item->name ? item->name : "<NULL>");
+      buffer_putspace(buffer_1);
+      buffer_puts(buffer_1, item->mapped ? "" : "<UNRESOLVED>");
+      buffer_putspace(buffer_1);
+      buffer_puts(buffer_1, item->dll == NULL ? "<MODULE MISSING>" : item->dll->module ? item->dll->module : "<NULL>");
+      buffer_putnlflush(buffer_1);
+      /*printf("\t%*s%llx %llx %3d %s %s %s\n",
              depth,
              depth > 0 ? " " : "",
              (long long)item->orig_address,
@@ -135,7 +171,7 @@ print_image_links(int first,
              item->ordinal,
              item->name ? item->name : "<NULL>",
              item->mapped ? "" : "<UNRESOLVED>",
-             item->dll == NULL ? "<MODULE MISSING>" : item->dll->module ? item->dll->module : "<NULL>");
+             item->dll == NULL ? "<MODULE MISSING>" : item->dll->module ? item->dll->module : "<NULL>");*/
     }
   }
 
@@ -144,7 +180,8 @@ print_image_links(int first,
   if(first || recursive) {
     for(i = 0; i < self->childs_len; i++) {
       if(!(self->childs[i]->flags & DEPTREE_VISITED)) {
-        printf("\t%*s%s", depth, depth > 0 ? " " : "", self->childs[i]->module);
+        buffer_putnspace(buffer_1, depth * 2);
+        buffer_puts(buffer_1, self->childs[i]->module);
         print_image_links(0,
                           verbose,
                           unused,
@@ -224,10 +261,8 @@ main(int argc, char** argv) {
     } else if(str_equal(argv[i], "--")) {
       files = 1;
     } else if(str_len(argv[i]) > 1 && argv[i][0] == '-' && (argv[i][1] == '-' || str_len(argv[i]) == 2) && !files) {
-      fprintf(stderr,
-              "Unrecognized option `%s'\n\
-Try `ntldd --help' for more information\n",
-              argv[i]);
+      buffer_putm(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
+      buffer_putnlflush(buffer_2);
       skip = 1;
       break;
     } else if(files_start < 0) {
@@ -283,7 +318,10 @@ Try `ntldd --help' for more information\n",
 
       clear_dep_status(&root, DEPTREE_VISITED | DEPTREE_PROCESSED);
       for(i = files_start; i < argc; i++) {
-        if(multiple) printf("%s:\n", argv[i]);
+        if(multiple) {
+          buffer_puts(buffer_1, argv[i]);
+          buffer_putsflush(buffer_1, ":\n");
+        }
         print_image_links(1,
                           verbose,
                           unused,
