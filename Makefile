@@ -891,7 +891,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab wait xml)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 
 $(info BUILDDIR: $(BUILDDIR))
@@ -979,7 +979,7 @@ $(call lib-target,uint32)
 $(call lib-target,uint64)
 $(call lib-target,var)
 $(call lib-target,vartab)
-$(call lib-target,wait)
+#$(call lib-target,wait)
 $(call lib-target,xml)
 $(call lib-target,socket,lib/socket/winsock2errno.c lib/socket/winsock_init.c)
 $(call lib-target,errmsg)
@@ -1028,7 +1028,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)torrent-progress.o: torrent-progress.c
-$(BUILDDIR)torrent-progress$(M64_)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(call add-library, buffer fmt mmap open str byte)
+$(BUILDDIR)torrent-progress$(M64_)$(EXEEXT): $(BUILDDIR)torrent-progress.o $(call add-library, buffer stralloc fmt mmap open str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

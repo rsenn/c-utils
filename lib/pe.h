@@ -11,23 +11,9 @@ extern "C" {
 #endif
 
 typedef struct {
-  union {
-    unsigned char* x;
-    struct pe_dos_header* dos;
-  };
-  size_t n;
-  struct pe_nt_header* nt;
-} pe_file;
-
-typedef struct {
   uint32 virtual_address;
   uint32 size;
-} pe32_data_directory;
-
-typedef struct {
-  uint64 virtual_address;
-  uint64 size;
-} pe64_data_directory;
+} pe_data_directory;
 
 typedef struct {
   uint32 characteristics;
@@ -106,17 +92,17 @@ typedef struct {
   uint32 number_of_symbols;
   uint16 size_of_optional_header;
   uint16 characteristics; /* image_characteristics */
-} pe_file_header;
+} pe_coff_header;
 
 #define PE_SECTION_NAME_SIZE 8
 
 /* Quoting pecoff_v8.docx: "Entries in the section table are numbered starting from one (1)". */
 typedef struct {
-  unsigned char name[PE_SECTION_NAME_SIZE]; /* TODO: Should we use char instead? */
+  char name[PE_SECTION_NAME_SIZE]; /* TODO: Should we use char instead? */
   union {
     uint32 physical_address; /* same value as next field */
     uint32 virtual_size;
-  } misc;
+  };
   uint32 virtual_address;
   uint32 size_of_raw_data;
   uint32 pointer_to_raw_data;
@@ -126,6 +112,21 @@ typedef struct {
   uint16 number_of_linenumbers; /* deprecated */
   uint32 characteristics;       /* section_characteristics */
 } pe_section_header;
+
+#define PE_DIRECTORY_ENTRY_EXPORT          0
+#define PE_DIRECTORY_ENTRY_IMPORT          1
+#define PE_DIRECTORY_ENTRY_RESOURCE        2
+#define PE_DIRECTORY_ENTRY_EXCEPTION       3
+#define PE_DIRECTORY_ENTRY_SECURITY        4
+#define PE_DIRECTORY_ENTRY_BASERELOC       5
+#define PE_DIRECTORY_ENTRY_DEBUG           6
+#define PE_DIRECTORY_ENTRY_ARCHITECTURE    7
+#define PE_DIRECTORY_ENTRY_GLOBALPTR       8
+#define PE_DIRECTORY_ENTRY_TLS             9
+#define PE_DIRECTORY_ENTRY_LOAD_CONFIG    10
+#define PE_DIRECTORY_ENTRY_BOUND_IMPORT   11
+#define PE_DIRECTORY_ENTRY_COMHEADER      14
+
 
 #define PE_NUMBEROF_DIRECTORY_ENTRIES 16
 
@@ -161,7 +162,7 @@ typedef struct {
   uint32 size_of_heap_commit;
   uint32 loader_flags;
   uint32 number_of_rva_and_sizes;
-  pe32_data_directory data_directory[PE_NUMBEROF_DIRECTORY_ENTRIES];
+  pe_data_directory data_directory[PE_NUMBEROF_DIRECTORY_ENTRIES];
 } pe32_opt_header;
 
 typedef struct {
@@ -194,13 +195,13 @@ typedef struct {
   uint64 size_of_heap_commit;
   uint32 loader_flags; /* must be zero */
   uint32 number_of_rva_and_sizes;
-  pe64_data_directory data_directory[PE_NUMBEROF_DIRECTORY_ENTRIES];
+  pe_data_directory data_directory[PE_NUMBEROF_DIRECTORY_ENTRIES];
 } pe64_opt_header;
 /*
 typedef struct {
   pe_dos_header      dos_hdr;
   uint32             signature;
-  pe_file_header*    coff_hdr;
+  pe_coff_header*    coff_hdr;
   void*              optional_hdr_ptr;
   pe_optional_header optional_hdr;
   uint32             num_directories;
@@ -298,21 +299,21 @@ typedef struct {
 
 typedef struct {
   uint32 signature;
-  pe_file_header file_header;
+  pe_coff_header coff_header;
   pe64_opt_header optional_header;
 } pe64_nt_headers;
 
 typedef struct {
   uint32 signature;
-  pe_file_header file_header;
+  pe_coff_header coff_header;
   pe32_opt_header optional_header;
 } pe32_nt_headers;
 
 typedef struct {
   char* module_name;            /* 0x00 (PSTR) */
-  uint64 h_file;                /* 0x08 (HANDLE) */
+  int64 h_file;                /* 0x08 (HANDLE) */
   char* mapped_address;         /* 0x10 (unsigned char*) */
-  pe64_nt_headers* file_header; /* 0x18 (pe64_nt_headers*) */
+  pe64_nt_headers* coff_header; /* 0x18 (pe64_nt_headers*) */
   uint64 last_rva_section;      /* 0x20 (pe_section_header) */
   uint64 number_of_sections;    /* 0x28 (unsigned long) */
   section_header* sections;     /* 0x30 (pe_section_header) */
@@ -366,6 +367,11 @@ typedef struct {
 #define PE_FILE_LINE_NUMS_STRIPPED 0x0004
 #define PE_FILE_LOCAL_SYMS_STRIPPED 0x0008
 #define PE_FILE_AGGRESIVE_WS_TRIM 0x0010
+#define PE_FILE_RELOCS_STRIPPED 0x0001
+#define PE_FILE_EXECUTABLE_IMAGE 0x0002
+#define PE_FILE_LINE_NUMS_STRIPPED 0x0004
+#define PE_FILE_LOCAL_SYMS_STRIPPED 0x0008
+#define PE_FILE_AGGRESIVE_WS_TRIM 0x0010
 #define PE_FILE_LARGE_ADDRESS_AWARE 0x0020
 #define PE_FILE_BYTES_REVERSED_LO 0x0080
 #define PE_FILE_32BIT_MACHINE 0x0100
@@ -387,20 +393,24 @@ typedef struct {
 
 #define PE32_FIRST_SECTION(ntheader)                                                                                   \
   ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe32_nt_headers, optional_header) +                         \
-                        ((pe32_nt_headers*)(ntheader))->file_header.size_of_optional_header))
+                        ((pe32_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
 #define PE64_FIRST_SECTION(ntheader)                                                                                   \
   ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe64_nt_headers, optional_header) +                         \
-                        ((pe64_nt_headers*)(ntheader))->file_header.size_of_optional_header))
+                        ((pe64_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
 
 #define PE_DIRECTORY_ENTRY_DELAY_IMPORT 13
 #define PE_DIRECTORY_ENTRY_EXPORT 0
 #define PE_DIRECTORY_ENTRY_IMPORT 1
 
-pe_file_header* pe_filehdr_ptr(const void*);
-
-void* pe_opthdr_ptr(const void*);
-
-int32 pe_opthdr_offset(const void*, pe_opthdr_field);
+uint32*            pe_header_sig(void* pe);
+void*              pe_header_nt(void* pe);
+pe32_nt_headers*   pe_header_nt32(void* pe);
+pe64_nt_headers*   pe_header_nt64(void* pe);
+pe_coff_header*    pe_header_coff(void* pe);
+void*              pe_header_opt(void* pe);
+pe32_opt_header*   pe_header_opt32(void* pe);
+pe64_opt_header*   pe_header_opt64(void* pe);
+pe_section_header* pe_header_sections(void* pe, int* nsections);
 
 #ifdef __cplusplus
 }

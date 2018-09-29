@@ -12,9 +12,7 @@ $(BUILDDIR)compiler-wrapper.o: ./compiler-wrapper.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)count-depth.o: ./count-depth.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)tryerrno.o: ./Debug/tryerrno.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)tryerrno.o: ./debug/tryerrno.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)decode-ls-lR.o: ./decode-ls-lR.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -98,9 +96,7 @@ $(BUILDDIR)buffer_default.o: ./lib/buffer/buffer_default.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_deflate.o: ./lib/buffer/buffer_deflate.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_dummyread.o: ./lib/buffer/buffer_dummyread.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_dummyreadmmap.o: ./lib/buffer/buffer_dummyreadmmap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_dump.o: ./lib/buffer/buffer_dump.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -272,7 +268,6 @@ $(BUILDDIR)buffer_truncfile.o: ./lib/buffer/buffer_truncfile.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_write.o: ./lib/buffer/buffer_write.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_dummyreadmmap.o: ./lib/buffer_dummyreadmmap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_case_diff.o: ./lib/byte/byte_case_diff.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -710,13 +705,9 @@ $(BUILDDIR)io_timeout.o: ./lib/io/io_timeout.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_timeouted.o: ./lib/io/io_timeouted.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_tryread.o: ./lib/io/io_tryread.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_tryreadtimeout.o: ./lib/io/io_tryreadtimeout.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_trywrite.o: ./lib/io/io_trywrite.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_trywritetimeout.o: ./lib/io/io_trywritetimeout.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_wait.o: ./lib/io/io_wait.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -880,7 +871,6 @@ $(BUILDDIR)playlist_pls.o: ./lib/playlist/playlist_pls.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)playlist_read.o: ./lib/playlist/playlist_read.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)playlist_write_entry.o: ./lib/playlist/playlist_write_entry.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)playlist_write_finish.o: ./lib/playlist/playlist_write_finish.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1114,7 +1104,6 @@ $(BUILDDIR)socket_tcp6.o: ./lib/socket/socket_tcp6.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)socket_tcp6b.o: ./lib/socket/socket_tcp6b.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)socket_tryreservein.o: ./lib/socket/socket_tryreservein.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)socket_udp4.o: ./lib/socket/socket_udp4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1580,19 +1569,12 @@ $(BUILDDIR)vartab_root.o: ./lib/vartab/vartab_root.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)vartab_search.o: ./lib/vartab/vartab_search.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)waitn.o: ./lib/wait/waitn.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)waitn_reap.o: ./lib/wait/waitn_reap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)waitpid_nointr.o: ./lib/wait/waitpid_nointr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)wait_nointr.o: ./lib/wait/wait_nointr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)wait_pids_nohang.o: ./lib/wait/wait_pids_nohang.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)wait_pid_nohang.o: ./lib/wait/wait_pid_nohang.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)wait_reap.o: ./lib/wait/wait_reap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)wordexp.o: ./lib/wordexp.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1712,17 +1694,20 @@ $(BUILDDIR)xmltest4.o: ./xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ./ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)wait_nointr.o: lib/wait/wait_nointr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)wait_pid_nohang.o: lib/wait/wait_pid_nohang.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)wait_pids_nohang.o: lib/wait/wait_pids_nohang.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)wait_reap.o: lib/wait/wait_reap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)waitn.o: lib/wait/waitn.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)waitn_reap.o: lib/wait/waitn_reap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)waitpid_nointr.o: lib/wait/waitpid_nointr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_absolute.o: lib/path/path_absolute.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_filehdr_ptr.o: lib/pe/pe_filehdr_ptr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_opthdr_offset.o: lib/pe/pe_opthdr_offset.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_opthdr_ptr.o: lib/pe/pe_opthdr_ptr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_header.o: lib/pe/pe_header.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
