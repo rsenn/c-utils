@@ -402,16 +402,19 @@ typedef struct {
 #define PE_DIRECTORY_ENTRY_EXPORT 0
 #define PE_DIRECTORY_ENTRY_IMPORT 1
 
-uint32*            pe_header_sig(void* pe);
-void*              pe_header_nt(void* pe);
-pe32_nt_headers*   pe_header_nt32(void* pe);
-pe64_nt_headers*   pe_header_nt64(void* pe);
-pe_coff_header*    pe_header_coff(void* pe);
-void*              pe_header_opt(void* pe);
-pe32_opt_header*   pe_header_opt32(void* pe);
-pe64_opt_header*   pe_header_opt64(void* pe);
-pe_section_header* pe_header_sections(void* pe, int* nsections);
+uint32*            pe_header_sig(void*);
+void*              pe_header_nt(void*);
+pe32_nt_headers*   pe_header_nt32(void*);
+pe64_nt_headers*   pe_header_nt64(void*);
+pe_coff_header*    pe_header_coff(void*);
+void*              pe_header_opt(void*);
+pe32_opt_header*   pe_header_opt32(void*);
+pe64_opt_header*   pe_header_opt64(void*);
+pe_section_header* pe_header_sections(void*, int* nsections);
+pe_data_directory* pe_header_datadir(void*);
 
+pe_section_header* pe_get_section(void* base, const char* name);
+int64              pe_rva2offset(void* base, uint32 rva);
 #ifdef __cplusplus
 }
 #endif

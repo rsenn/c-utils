@@ -1711,3 +1711,7 @@ $(BUILDDIR)pe_opthdr_ptr.o: lib/pe/pe_opthdr_ptr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_header.o: lib/pe/pe_header.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_get_section.o: lib/pe/pe_get_section.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_rva2offset.o: lib/pe/pe_rva2offset.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
