@@ -95,16 +95,10 @@ void
 pe_dump_imports(uint8* base) {
   int i, j, n;
   pe_data_directory* import_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_IMPORT];
-
-//  pe_print_data_directory(buffer_2, import_dir);
   pe_import_descriptor* imports = pe_rva2ptr(base, import_dir->virtual_address);
 
-  n = import_dir->size / sizeof(pe_import_descriptor) - 1;
+  //n = import_dir->size / sizeof(pe_import_descriptor) - 1;
   
-/*  buffer_puts(buffer_2, "imports: ");
-  buffer_putulong(buffer_2, n);
-  buffer_putnlflush(buffer_2);*/
-
   buffer_putspad(buffer_1, "symbol", 64);
   buffer_putspace(buffer_1);
   buffer_putspad(buffer_1, "ordinal", 5);
@@ -112,7 +106,7 @@ pe_dump_imports(uint8* base) {
   buffer_puts(buffer_1, "dll");
   buffer_putnlflush(buffer_1);
 
-  for(i = 0; i < n && imports[i].original_first_thunk; ++i) {
+  for(i = 0; imports[i].original_first_thunk; ++i) {
     const char* name = pe_rva2ptr(base, uint32_get(&imports[i].name));
     
     if(name[0] == '\0') break;
