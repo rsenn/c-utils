@@ -1,5 +1,6 @@
 #include "../elf.h"
 #include "../range.h"
+#include "../byte.h"
 
 range
 elf_dynamic_section(void* elf) {

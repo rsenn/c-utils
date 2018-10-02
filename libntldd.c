@@ -99,8 +99,8 @@ find_section_by_raw_data(pe_loaded_image* img, uint32 address) {
 }
 
 void
-resize_array(void** data, uint64_t* data_size, size_t sizeof_data) {
-  uint64_t new_size = (*data_size) > 0 ? (*data_size) * 2 : 64;
+resize_array(void** data, uint64* data_size, size_t sizeof_data) {
+  uint64 new_size = (*data_size) > 0 ? (*data_size) * 2 : 64;
   void* new_data;
   new_data = realloc(*data, new_size * sizeof_data);
   byte_zero(((unsigned char*)new_data) + (*data_size * sizeof_data), (new_size - (*data_size)) * sizeof_data);
@@ -135,7 +135,7 @@ add_import(struct dep_tree_element* self) {
 int
 find_dep(struct dep_tree_element* root, char* name, struct dep_tree_element** result) {
   int ret = -1;
-  uint64_t i;
+  uint64 i;
   if(root->flags & DEPTREE_VISITED) {
     return -2;
   }
@@ -203,15 +203,15 @@ export_ordinal)
 */
 
 int
-clear_dep_status(struct dep_tree_element* self, uint64_t flags) {
-  uint64_t i;
+clear_dep_status(struct dep_tree_element* self, uint64 flags) {
+  uint64 i;
   for(i = 0; i < self->childs_len; i++) clear_dep_status(self->childs[i], flags);
   self->flags &= ~flags;
   return 0;
 }
 
 void
-push_stack(char*** stack, uint64_t* stack_len, uint64_t* stack_size, char* name) {
+push_stack(char*** stack, uint64* stack_len, uint64* stack_size, char* name) {
   if(*stack_len >= *stack_size) {
     resize_stack(stack, stack_size);
   }
@@ -220,7 +220,7 @@ push_stack(char*** stack, uint64_t* stack_len, uint64_t* stack_size, char* name)
 }
 
 void
-pop_stack(char*** stack, uint64_t* stack_len, uint64_t* stack_size, char* name) {
+pop_stack(char*** stack, uint64* stack_len, uint64* stack_size, char* name) {
   (*stack)[*stack_len] = NULL;
   (*stack_len) -= 1;
 }
@@ -307,7 +307,7 @@ build_dep_tree32or64(pe_loaded_image* img,
                  iid[i].first_thunk;
           i++) {
         struct dep_tree_element* dll;
-        uint64_t impaddress;
+        uint64 impaddress;
         dll = process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 0);
         if(dll == NULL) continue;
         ith = (void*)map_pointer(soffs, soffs_len, iid[i].first_thunk, NULL);
@@ -341,7 +341,7 @@ build_dep_tree32or64(pe_loaded_image* img,
                  idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++) {
         struct dep_tree_element* dll;
-        uint64_t impaddress;
+        uint64 impaddress;
         dll = process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 0);
         if(dll == NULL) continue;
         if(idd[i].attributes.all_attributes & 0x00000001) {

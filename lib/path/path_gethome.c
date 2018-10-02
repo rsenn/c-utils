@@ -1,5 +1,6 @@
 #include "../buffer.h"
 #include "../path_internal.h"
+#include "../scan.h"
 
 /* get home directory into a char buf not smaller than PATH_MAX + 1 chars
  * ----------------------------------------------------------------------- */
