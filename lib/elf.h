@@ -628,7 +628,7 @@ typedef struct {
 #define ELF_DT_PROCNUM ELF_DT_MIPS_NUM /* Most used by any processor */
 
 /* DT_* entries which fall between ELF_DT_VALRNGHI & ELF_DT_VALRNGLO use the
-   Dyn.d_un.d_val field of the Elf*_Dyn structure.  This follows Sun's
+   Dyn.d_un.d_val field of the Elf*_dyn structure.  This follows Sun's
    approach.  */
 #define ELF_DT_VALRNGLO 0x6ffffd00
 #define ELF_DT_GNU_PRELINKED 0x6ffffdf5  /* Prelinking timestamp */
@@ -649,7 +649,7 @@ typedef struct {
 #define ELF_DT_VALNUM 12
 
 /* DT_* entries which fall between ELF_DT_ADDRRNGHI & ELF_DT_ADDRRNGLO use the
-   Dyn.d_un.d_ptr field of the Elf*_Dyn structure.
+   Dyn.d_un.d_ptr field of the Elf*_dyn structure.
 
    If any adjustment is made to the ELF object after it has been
    built these entries will need to be adjusted.  */
@@ -852,7 +852,7 @@ typedef struct {
     void* a_ptr;         /* Pointer value */
     void (*a_fcn)(void); /* Function pointer value */
   } a_un;
-} Elf32_auxv_t;
+} elf32_auxv_t;
 
 typedef struct {
   long int a_type; /* Entry type */
@@ -861,7 +861,7 @@ typedef struct {
     void* a_ptr;         /* Pointer value */
     void (*a_fcn)(void); /* Function pointer value */
   } a_un;
-} Elf64_auxv_t;
+} elf64_auxv_t;
 
 /* Legal values for a_type (entry type).  */
 
@@ -1325,7 +1325,7 @@ typedef union {
     uint32 gt_g_value; /* If this value were used for -G */
     uint32 gt_bytes;   /* This many bytes would be used */
   } gt_entry;          /* Subsequent entries in section */
-} Elf32_gptab;
+} elf32_gptab;
 
 /* Entry found in sections of type ELF_SHT_MIPS_REGINFO.  */
 
@@ -1344,9 +1344,9 @@ typedef struct {
   uint16 section; /* Section header index of section affected,
               0 for global options.  */
   uint32 info;    /* Kind-specific information.  */
-} Elf_Options;
+} elf_options;
 
-/* Values for `kind' field in Elf_Options.  */
+/* Values for `kind' field in elf_options.  */
 
 #define ELF_ODK_NULL 0       /* Undefined.  */
 #define ELF_ODK_REGINFO 1    /* Register usage information.  */
@@ -1358,7 +1358,7 @@ typedef struct {
 #define ELF_ODK_HWAND 7      /* HW workarounds.  'AND' bits when merging. */
 #define ELF_ODK_HWOR 8       /* HW workarounds.  'OR' bits when merging.  */
 
-/* Values for `info' in Elf_Options for ELF_ODK_EXCEPTIONS entries.  */
+/* Values for `info' in elf_options for ELF_ODK_EXCEPTIONS entries.  */
 
 #define ELF_OEX_FPU_MIN 0x1f   /* FPE's which MUST be enabled.  */
 #define ELF_OEX_FPU_MAX 0x1f00 /* FPE's which MAY be enabled.  */
@@ -1374,7 +1374,7 @@ typedef struct {
 #define ELF_OEX_FPU_UFLO 0x02
 #define ELF_OEX_FPU_INEX 0x01
 
-/* Masks for `info' in Elf_Options for an ELF_ODK_HWPATCH entry.  */
+/* Masks for `info' in elf_options for an ELF_ODK_HWPATCH entry.  */
 
 #define ELF_OHW_R4KEOP 0x1    /* R4000 end-of-page patch.  */
 #define ELF_OHW_R8KPFETCH 0x2 /* may need R8000 prefetch patch.  */
@@ -1390,7 +1390,7 @@ typedef struct {
 typedef struct {
   uint32 hwp_flags1; /* Extra flags.  */
   uint32 hwp_flags2; /* Extra flags.  */
-} Elf_Options_Hw;
+} elf_options_hw;
 
 /* Masks for `info' in ElfOptions for ELF_ODK_HWAND and ELF_ODK_HWOR entries.  */
 
@@ -2441,8 +2441,10 @@ uint8* elf_header_ident(void* elf);
 void*  elf_header_sections(void* elf);
 range  elf_program_headers(void* elf);
 range  elf_section_headers(void* elf);
-const char*  elf_strtab(void* elf);
+const char*  elf_shstrtab(void* elf);
 const char* elf_section_type(int i);
+int elf_section_index(void* elf, const char* sname);
+void* elf_section_offset(void* elf, int sn);
 
 #ifdef __cplusplus
 };

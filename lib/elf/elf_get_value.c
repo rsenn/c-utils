@@ -18,7 +18,7 @@ elf_get_value(void* elf, void* ptr, unsigned off32, unsigned size32, unsigned of
     case 8: ret = uint64_read(&p[off]); break;
     case 4: ret = uint32_read(&p[off]); break;
     case 2: ret = uint16_read(&p[off]); break;
-    case 1: ret = p[off32]; break;
-}
- return ret;
+    case 1: ret = p[off]; break;
+  }
+  return ret;
 }

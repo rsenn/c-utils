@@ -38,23 +38,38 @@ main(int argc, char** argv) {
 }
 
 void
-elf_dump_symbols(uint8* base, uint8* tab, size_t size) {
+elf_dump_symbols(uint8* base, uint8* tab, size_t size, const char* stname) {
   range symtab;
-  symtab.start = tab; 
-  symtab.end = tab + size; 
+  symtab.start = tab;
+  symtab.end = tab + size;
   symtab.elem_size = ELF_BITS(base) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
   void* symbol;
+  int si = elf_section_index(base, stname);
+  const char* strtab = elf_section_offset(base, si);
+  static const char* const binding_types[] = {"LOCAL", "GLOBAL", "WEAK"};
+  static const char* const symbol_types[] = {"NOTYPE", "OBJECT", "FUNC", "SECTION", "FILE", "COMMON", "TLS"};
 
   range_foreach(&symtab, symbol) {
-	    uint32 name = ELF_GET(base, symbol, sym, st_name);
-       uint64 value = ELF_GET(base, symbol, sym, st_value);
-       uint64 size = ELF_GET(base, symbol, sym, st_size);
-       uint8 info = ELF_GET(base, symbol, sym, st_info);
+    uint32 name = ELF_GET(base, symbol, sym, st_name);
+    uint64 value = ELF_GET(base, symbol, sym, st_value);
+    uint64 size = ELF_GET(base, symbol, sym, st_size);
+    uint8 info = ELF_GET(base, symbol, sym, st_info);
 
-	   if(!name && !value && !size) continue;
-   
-    buffer_putspad(buffer_1, &(elf_strtab(base)[name]), 32);
-	buffer_putnlflush(buffer_1);
+    if(!name) continue;
+
+    buffer_putspad(buffer_1, &(strtab[name]), 32);
+    /*buffer_puts(buffer_1, "0x");
+    buffer_putxlong0(buffer_1, name, 8);
+   */ buffer_puts(buffer_1, " 0x");
+    buffer_putxlonglong0(buffer_1, value, ELF_BITS(base) / 4);
+    buffer_puts(buffer_1, " 0x");
+    buffer_putxlonglong0(buffer_1, size, ELF_BITS(base) / 4);
+    buffer_putspace(buffer_1);
+    buffer_puts(buffer_1, binding_types[ELF_ELF32_ST_BIND(info)]);
+    buffer_putspace(buffer_1);
+    buffer_puts(buffer_1, symbol_types[ELF_ELF32_ST_TYPE(info)]);
+
+    buffer_putnlflush(buffer_1);
   }
 }
 
@@ -64,7 +79,7 @@ elf_dump_sections(uint8* base) {
   range sections = elf_section_headers(base);
   void* section;
 
-  buffer_putspad(buffer_1, "section name", 32);
+  buffer_putspad(buffer_1, "section name", 16);
   buffer_putspace(buffer_1);
   buffer_putspad(buffer_1, "addr", ELF_BITS(base) / 4);
   buffer_putnspace(buffer_1, 3);
@@ -87,7 +102,7 @@ elf_dump_sections(uint8* base) {
 
     if(!name && !addr && !size) continue;
 
-    buffer_putspad(buffer_1, &(elf_strtab(base)[name]), 32);
+    buffer_putspad(buffer_1, &(elf_shstrtab(base)[name]), 16);
     buffer_puts(buffer_1, " 0x");
     buffer_putxlonglong0(buffer_1, addr, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
@@ -100,8 +115,8 @@ elf_dump_sections(uint8* base) {
     buffer_puts(buffer_1, elf_section_type(type));
     buffer_putnlflush(buffer_1);
 
-    if(type == ELF_SHT_SYMTAB) {
-      elf_dump_symbols(base, base + offs, size);
+    if(type == ELF_SHT_SYMTAB || type == ELF_SHT_DYNSYM) {
+      elf_dump_symbols(base, base + offs, size, type == ELF_SHT_SYMTAB ? ".strtab" : ".dynstr");
     }
   }
 }
@@ -144,5 +159,3 @@ elf_dump_segments(uint8* base) {
     buffer_putnlflush(buffer_1);
   }
 }
-
-

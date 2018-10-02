@@ -1744,3 +1744,9 @@ $(BUILDDIR)eagle-gen-cmds.o: ./eagle-gen-cmds.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)test_strlist.o: tests/test_strlist.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_shstrtab.o: lib/elf/elf_shstrtab.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_section_index.o: lib/elf/elf_section_index.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_section_offset.o: lib/elf/elf_section_offset.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
