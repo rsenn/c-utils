@@ -24,12 +24,16 @@ main(int argc, char** argv) {
   base = (uint8*)mmap_private(argv[1], &filesize);
 
   {
-    char elf64 = elf_header_ident(base)[ELF_EI_CLASS] == ELF_ELFCLASS64;
-
-    uint64 x = ELF_GET(base, base, ehdr, e_shentsize);
+	const char* interp = elf_get_section(base, ".interp", NULL);
+	
     elf_dump_sections(base);
     elf_dump_segments(base);
     elf_dump_dynamic(base);
+	
+	if(interp) {
+		buffer_putm(buffer_1, "Interpreter: ", interp);
+		buffer_putnlflush(buffer_1);
+	}
     /*    elf_dump_imports(base);*/
   }
 
@@ -63,6 +67,8 @@ elf_dump_dynamic(uint8* base) {
       dynstrtab = base + ELF_GET(base, entry, dyn, d_un.d_val);
       break;
     }
+
+    if(tag == ELF_DT_NULL) break;
   }
 
   range_foreach(&dyn, entry) {

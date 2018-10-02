@@ -2447,6 +2447,7 @@ int elf_section_index(void* elf, const char* sname);
 void* elf_section_offset(void* elf, int sn);
 size_t elf_section_size(void* elf, int sn);
 range elf_dynamic_section(void* elf);
+void*  elf_get_section(void* elf, const char* name, size_t* szp);
 
 #ifdef __cplusplus
 };

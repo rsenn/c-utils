@@ -13,5 +13,3 @@ elf_dynamic_section(void* elf) {
   }
   return dyn;
 }
-
-
