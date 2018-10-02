@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+void elf_dump_dynamic(uint8* base);
 void elf_dump_sections(uint8* base);
 void elf_dump_segments(uint8* base);
 
