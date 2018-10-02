@@ -1750,3 +1750,7 @@ $(BUILDDIR)elf_section_index.o: lib/elf/elf_section_index.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)elf_section_offset.o: lib/elf/elf_section_offset.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_section_size.o: lib/elf/elf_section_size.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_dynamic_section.o: lib/elf/elf_dynamic_section.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

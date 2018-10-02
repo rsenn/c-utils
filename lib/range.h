@@ -28,8 +28,6 @@ range_init(range* r, void* start, size_t n_elem, size_t elem_size) {
 static inline void* range_start(const range* r) { return r->start; }
 static inline void* range_end(const range* r) { return r->end; }
 
-static inline void* range_distance(const range* r) { return r->end; }
-
 static inline void*
 range_index(range* r, size_t i) {
   return r->start + r->elem_size * i;

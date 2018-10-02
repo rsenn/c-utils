@@ -2445,6 +2445,8 @@ const char*  elf_shstrtab(void* elf);
 const char* elf_section_type(int i);
 int elf_section_index(void* elf, const char* sname);
 void* elf_section_offset(void* elf, int sn);
+size_t elf_section_size(void* elf, int sn);
+range elf_dynamic_section(void* elf);
 
 #ifdef __cplusplus
 };

@@ -29,12 +29,64 @@ main(int argc, char** argv) {
     uint64 x = ELF_GET(base, base, ehdr, e_shentsize);
     elf_dump_sections(base);
     elf_dump_segments(base);
+    elf_dump_dynamic(base);
     /*    elf_dump_imports(base);*/
   }
 
   mmap_unmap(base, filesize);
 
   return 0;
+}
+void
+elf_dump_dynamic(uint8* base) {
+
+  int di = elf_section_index(base, ".dynamic");
+  range dyn;
+  void* entry;
+  const char* dynstrtab = NULL;
+  static const char* const dynamic_types[] = {"NULL",       "NEEDED",     "PLTRELSZ",      "PLTGOT",         "HASH",
+                                              "STRTAB",     "SYMTAB",     "RELA",          "RELASZ",         "RELAENT",
+                                              "STRSZ",      "SYMENT",     "INIT",          "FINI",           "SONAME",
+                                              "RPATH",      "SYMBOLIC",   "REL",           "RELSZ",          "RELENT",
+                                              "PLTREL",     "DEBUG",      "TEXTREL",       "JMPREL",         "BIND_NOW",
+                                              "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ",  "FINI_ARRAYSZ",   "RUNPATH",
+                                              "FLAGS",      "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"};
+
+  if(di == -1) return;
+
+  dyn = elf_dynamic_section(base);
+
+  range_foreach(&dyn, entry) {
+    int64 tag = ELF_GET(base, entry, dyn, d_tag);
+
+    if(tag == ELF_DT_STRTAB) {
+      dynstrtab = base + ELF_GET(base, entry, dyn, d_un.d_val);
+      break;
+    }
+  }
+
+  range_foreach(&dyn, entry) {
+    int64 tag = ELF_GET(base, entry, dyn, d_tag);
+    uint64 val = ELF_GET(base, entry, dyn, d_un.d_val);
+
+    if(tag >= ELF_DT_NUM) {
+      buffer_puts(buffer_1, "0x");
+      buffer_putxlonglong0(buffer_1, tag, ELF_BITS(base) / 4);
+    } else {
+      buffer_putspad(buffer_1, dynamic_types[tag % ELF_DT_NUM], 18);
+    }
+
+    if(tag == ELF_DT_NEEDED) {
+      buffer_putspace(buffer_1);
+      buffer_puts(buffer_1, &dynstrtab[val]);
+    } else {
+      buffer_puts(buffer_1, " 0x");
+      buffer_putxlonglong0(buffer_1, val, ELF_BITS(base) / 4);
+    }
+    buffer_putnlflush(buffer_1);
+
+    if(tag == ELF_DT_NULL) break;
+  }
 }
 
 void
