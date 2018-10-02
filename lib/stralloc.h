@@ -216,6 +216,11 @@ int stralloc_catdouble(stralloc*, double d, int prec);
 unsigned int stralloc_chr(const stralloc* sa, char c);
 unsigned int stralloc_rchr(const stralloc* sa, char c);
 
+int  stralloc_copywcb(stralloc* sa, const wchar_t* buf, size_t len);
+int  stralloc_copywcs(stralloc* sa, const wchar_t* buf);
+
+int stralloc_shrink(stralloc* sa);
+
 #ifdef __cplusplus
 }
 #endif

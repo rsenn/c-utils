@@ -7,6 +7,7 @@
  * https://github.com/takamin/win-c/blob/master/LICENSE
  */
 #include "lib/getopt.h"
+#include "lib/buffer.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -93,7 +94,9 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
             if(strncmp(spec_long, longopts->name, spec_len) == 0) {
               if(optdef != 0) {
                 if(opterr) {
-                  fprintf(stderr, "ambiguous option: %s\n", spec_long);
+                  buffer_putm(buffer_2, "ambiguous option: ", spec_long);
+				               buffer_putnlflush(buffer_2);
+
                 }
                 return '?';
               }
@@ -105,7 +108,9 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
           }
           if(optdef == 0) {
             if(opterr) {
-              fprintf(stderr, "no such a option: %s\n", spec_long);
+              buffer_putm(buffer_2, 
+              "no such a option: ", spec_long);
+             buffer_putnlflush(buffer_2);
             }
             return '?';
           }
@@ -114,7 +119,8 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
               optarg = 0;
               if(pos_eq != 0) {
                 if(opterr) {
-                  fprintf(stderr, "no argument for %s\n", optdef->name);
+                  buffer_putm(buffer_2, "no argument for ", optdef->name);
+				      buffer_putnlflush(buffer_2);
                 }
                 return '?';
               }
@@ -146,7 +152,9 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
     if(optptr == NULL) {
       optopt = c;
       if(opterr) {
-        fprintf(stderr, "%s: invalid option -- %c\n", argv[0], c);
+        buffer_putm(buffer_2, argv[0], ": invalid option -- ");
+		buffer_putc(buffer_2, c);
+		buffer_putnlflush(buffer_2);
       }
       ++nextchar;
       return '?';
@@ -169,9 +177,11 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
         } else {
           optopt = c;
           if(opterr) {
-            fprintf(stderr, "%s: option requires an argument -- %c\n", argv[0], c);
+            buffer_putm(buffer_2, argv[0], ": option requires an argument -- ");
+				buffer_putc(buffer_2, c);
+		buffer_putnlflush(buffer_2);
           }
-          if(optstring[0] == ':' || (optstring[0] == '-' || optstring[0] == '+') && optstring[1] == ':') {
+          if(optstring[0] == ':' || ((optstring[0] == '-' || optstring[0] == '+') && optstring[1] == ':')) {
             c = ':';
           } else {
             c = '?';

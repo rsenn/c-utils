@@ -7,11 +7,13 @@ strlist_shift(strlist* sl, const char** strp) {
   size_t offs;
   if(sl->sa.len == 0) return 0;
 
-  offs = byte_chr(sl->sa.s, sl->sa.len, sl->sep);
+  offs = strlist_at(sl, 1) - sl->sa.s;
 
-  *strp = str_ndup(sl->sa.s, offs);
+  sl->sa.s[offs - 1] = '\0';
 
-  byte_copyr(sl->sa.s, sl->sa.len - offs, &sl->sa.s[offs]);
-  sl->sa.len -= offs;
+  *strp = str_ndup(sl->sa.s, offs-1);
+  
+  byte_copy(sl->sa.s, sl->sa.len - offs , &sl->sa.s[offs ]);
+  sl->sa.len -= offs ;
   return 1;
 }

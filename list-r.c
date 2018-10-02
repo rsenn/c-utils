@@ -16,6 +16,7 @@
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
+#include "lib/getopt.h"
 #if !(defined(_WIN32) || defined(_WIN64))
 #include <dirent.h>
 #include <unistd.h>
@@ -32,7 +33,6 @@
 #include "lib/dir_internal.h"
 #include "lib/fmt.h"
 #include "lib/fnmatch.h"
-#include "lib/getopt.h"
 #include "lib/io_internal.h"
 #include "lib/open.h"
 #include "lib/str.h"

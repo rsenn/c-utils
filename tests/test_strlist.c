@@ -68,16 +68,56 @@ TEST(at_n) {
  * stralloc strlist_at_sa(const strlist* sl, size_t i);
  */
 TEST(at_sa) {
+  stralloc sa;
   strlist sl;
   strlist_init(&sl, '\0');
+  strlist_push(&sl, "1");
+  strlist_push(&sl, "12");
+  strlist_push(&sl, "123");
+  strlist_push(&sl, "1234");
+
+  sa = strlist_at_sa(&sl, 0);
+  ASSERT_EQ(0, !stralloc_equals(&sa, "1"));
+  sa = strlist_at_sa(&sl, 1);
+  ASSERT_EQ(0, !stralloc_equals(&sa, "12"));
+  sa = strlist_at_sa(&sl, 2);
+  ASSERT_EQ(0, !stralloc_equals(&sa, "123"));
+  sa = strlist_at_sa(&sl, 3);
+  ASSERT_EQ(0, !stralloc_equals(&sa, "1234"));
 }
 
 /*
  * int strlist_cat(strlist* sl, const strlist* l);
  */
 TEST(cat) {
-  strlist sl;
-  strlist_init(&sl, '\0');
+  stralloc sa;
+  strlist sl1, sl2;
+  stralloc_init(&sa);
+
+  strlist_init(&sl1, ',');
+  strlist_init(&sl2, '\0');
+
+  strlist_push(&sl1, "blah");
+  strlist_push(&sl1, "l33t");
+
+  strlist_push(&sl2, "1234");
+  strlist_push(&sl2, "8192");
+
+  strlist_cat(&sl1, &sl2);
+
+  buffer_putsa(buffer_1, &sl1.sa);
+  buffer_putnlflush(buffer_1);
+  
+//ASSERT_EQ(0, !str_equal(strlist_at(&sl1, 2), "1234"));
+  strlist_join(&sl1, &sa, '|');
+
+  buffer_putsa(buffer_1, &sa);
+  buffer_putnlflush(buffer_1);
+  
+  ASSERT_EQ(0, !stralloc_equals(&sa, "blah|l33t|1234|8192"));
+  
+  ASSERT_EQ(4, strlist_count(&sl1));
+
 }
 
 /*
@@ -86,14 +126,35 @@ TEST(cat) {
 TEST(contains) {
   strlist sl;
   strlist_init(&sl, '\0');
+  strlist_push(&sl, "1");
+  strlist_push(&sl, "12");
+  strlist_push(&sl, "123");
+  strlist_push(&sl, "1234");
+
+  ASSERT_EQ(0, !strlist_contains(&sl, "12"));
+  ASSERT_EQ(0, strlist_contains(&sl, "4321"));
+  ASSERT_EQ(0, strlist_contains(&sl, "43210"));
 }
 
 /*
  * int strlist_contains_sa(strlist* sl, const stralloc* sa);
  */
 TEST(contains_sa) {
+  stralloc sa;
   strlist sl;
+  stralloc_init(&sa);
   strlist_init(&sl, '\0');
+  strlist_push(&sl, "1");
+  strlist_push(&sl, "12");
+  strlist_push(&sl, "123");
+  strlist_push(&sl, "1234");
+
+  stralloc_copys(&sa, "12");
+  ASSERT_EQ(0, !strlist_contains_sa(&sl, &sa));
+  stralloc_copys(&sa, "4321");
+  ASSERT_EQ(0, strlist_contains_sa(&sl, &sa));
+  stralloc_copys(&sa, "12340");
+  ASSERT_EQ(0, strlist_contains_sa(&sl, &sa));
 }
 
 /*
@@ -110,6 +171,14 @@ TEST(dump) {
 TEST(froms) {
   strlist sl;
   strlist_init(&sl, '\0');
+  strlist_froms(&sl, "blah|l33t|1234|8192", '|');
+
+  ASSERT_EQ(4, strlist_count(&sl));
+
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 0), "blah"));
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 1), "l33t"));
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 2), "1234"));
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 3), "8192"));
 }
 
 /*
@@ -118,22 +187,53 @@ TEST(froms) {
 TEST(index_of) {
   strlist sl;
   strlist_init(&sl, '\0');
+  strlist_froms(&sl, "blah|l33t|1234|8192", '|');
+
+  ASSERT_EQ(15, strlist_index_of(&sl, "8192"));
+  ASSERT_EQ(10, strlist_index_of(&sl, "1234"));
+  ASSERT_EQ(5, strlist_index_of(&sl, "l33t"));
+  ASSERT_EQ(0, strlist_index_of(&sl, "blah"));
 }
 
 /*
  * void strlist_join(const strlist* sl, stralloc* sa, char delim);
  */
 TEST(join) {
+  stralloc sa;
   strlist sl;
+  stralloc_init(&sa);
+  
   strlist_init(&sl, '\0');
+  strlist_push(&sl, "water");
+  strlist_push(&sl, "soil");
+  strlist_push(&sl, "air");
+  strlist_push(&sl, "fire");
+
+
+  strlist_join(&sl, &sa, ',');
+
+  ASSERT_EQ(0, !stralloc_equals(&sa, "water,soil,air,fire"));
+
 }
 
 /*
  * void strlist_joins(const strlist* sl, stralloc* sa, const char* delim);
  */
 TEST(joins) {
+  stralloc sa;
   strlist sl;
+  stralloc_init(&sa);
+  
   strlist_init(&sl, '\0');
+  strlist_push(&sl, "water");
+  strlist_push(&sl, "soil");
+  strlist_push(&sl, "air");
+  strlist_push(&sl, "fire");
+
+
+  strlist_joins(&sl, &sa, "; ");
+
+  ASSERT_EQ(0, !stralloc_equals(&sa, "water; soil; air; fire"));
 }
 
 /*
@@ -142,14 +242,33 @@ TEST(joins) {
 TEST(push) {
   strlist sl;
   strlist_init(&sl, '\0');
+  
+  ASSERT_EQ(0, strlist_count(&sl));
+  strlist_push(&sl, "water");
+  ASSERT_EQ(1, strlist_count(&sl));
+  strlist_push(&sl, "soil");
+  ASSERT_EQ(2, strlist_count(&sl));
+  strlist_push(&sl, "air");
+  ASSERT_EQ(3, strlist_count(&sl));
+  strlist_push(&sl, "fire");
+  ASSERT_EQ(4, strlist_count(&sl));
 }
 
 /*
  * int strlist_push_sa(strlist* sl, const stralloc* sa);
  */
 TEST(push_sa) {
+  stralloc sa;
   strlist sl;
-  strlist_init(&sl, '\0');
+  stralloc_init(&sa);
+  
+  strlist_init(&sl, '|');
+
+  stralloc_copys(&sa, "stralloc");
+  strlist_push_sa(&sl, &sa);
+  strlist_push_sa(&sl, &sa);
+  
+  ASSERT_EQ(0, !stralloc_equals(&sl.sa, "stralloc|stralloc"));
 }
 
 /*
@@ -158,6 +277,11 @@ TEST(push_sa) {
 TEST(push_tokens) {
   strlist sl;
   strlist_init(&sl, '\0');
+  
+  strlist_push_tokens(&sl, "blah, l33t, 1234, 8192", ", ");
+
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 3), "8192"));
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 2), "1234"));
 }
 
 /*
@@ -166,70 +290,199 @@ TEST(push_tokens) {
 TEST(push_unique) {
   strlist sl;
   strlist_init(&sl, '\0');
+  
+  ASSERT_EQ(0, strlist_count(&sl));
+  strlist_push_unique(&sl, "strlist");
+  ASSERT_EQ(1, strlist_count(&sl));
+  strlist_push_unique(&sl, "stralloc");
+  ASSERT_EQ(2, strlist_count(&sl));
+  strlist_push_unique(&sl, "stralloc");
+  ASSERT_EQ(2, strlist_count(&sl));
+  strlist_push_unique(&sl, "str");
+  ASSERT_EQ(3, strlist_count(&sl));
+  strlist_push_unique(&sl, "stralloc");
+  ASSERT_EQ(3, strlist_count(&sl));
 }
 
 /*
  * int strlist_push_unique_sa(strlist* sl, const stralloc* sa);
  */
 TEST(push_unique_sa) {
+  stralloc sa;
   strlist sl;
-  strlist_init(&sl, '\0');
+  stralloc_init(&sa);
+  
+  strlist_init(&sl, '|');
+
+  ASSERT_EQ(0, strlist_count(&sl));
+  stralloc_copys(&sa, "stralloc");
+  strlist_push_unique_sa(&sl, &sa);
+  ASSERT_EQ(1, strlist_count(&sl));
+  strlist_push_unique_sa(&sl, &sa);
+  ASSERT_EQ(1, strlist_count(&sl));
+  stralloc_copys(&sa, "strlist");
+  strlist_push_unique_sa(&sl, &sa);
+  ASSERT_EQ(2, strlist_count(&sl));
+  stralloc_copys(&sa, "str");
+  strlist_push_unique_sa(&sl, &sa);
+  ASSERT_EQ(3, strlist_count(&sl));
+  stralloc_copys(&sa, "stralloc");
+  strlist_push_unique_sa(&sl, &sa);
+  ASSERT_EQ(3, strlist_count(&sl));
 }
 
 /*
  * int strlist_pushb(strlist* sl, const char* s, size_t n);
  */
 TEST(pushb) {
+  stralloc sa;
   strlist sl;
+  stralloc_init(&sa);
   strlist_init(&sl, '\0');
+
+  strlist_pushb(&sl, "bebe", 4);
+  strlist_pushb(&sl, "bebe", 3);
+  strlist_pushb(&sl, "bebe", 2);
+  strlist_pushb(&sl, "bebe", 1);
+
+  strlist_joins(&sl, &sa, "; ");
+  buffer_putsa(buffer_1, &sa);
+  buffer_putnlflush(buffer_1);
+  
+
+  ASSERT_EQ(0, !stralloc_equals(&sa, "bebe; beb; be; b"));
 }
 
 /*
  * int strlist_pushm_internal(strlist* sl, ...);
  */
-TEST(pushm_internal) {
+TEST(pushm) {
+  stralloc sa;
   strlist sl;
+  stralloc_init(&sa);
   strlist_init(&sl, '\0');
-}
 
-/*
- * int strlist_pushsa(strlist* sl, const stralloc* sa);
- */
-TEST(pushsa) {
-  strlist sl;
-  strlist_init(&sl, '\0');
+  strlist_pushm(&sl, "abcd", "abc", "ab", "a");
+
+  strlist_joins(&sl, &sa, " | ");
+  
+  ASSERT_EQ(0, !stralloc_equals(&sa, "abcd | abc | ab | a"));
 }
 
 /*
  * strlist strlist_range(const strlist* sl, size_t from, size_t to);
  */
 TEST(range) {
-  strlist sl;
+  stralloc sa;
+  strlist sl, r;
   strlist_init(&sl, '\0');
+  strlist_init(&r, '\0');
+
+  strlist_pushm(&sl, "abcdefg", "abcdef", "abcde", "abcd", "abc", "ab", "a");
+
+  r = strlist_range(&sl, 2, 5);
+
+  ASSERT_EQ(3, strlist_count(&r));
+  
+  stralloc_init(&sa);
+
+  strlist_joins(&r, &sa, ", ");
+
+  ASSERT_EQ(0, !stralloc_equals(&sa, "abcde, abcd, abc"));
 }
 
 /*
  * int strlist_shift(strlist* sl, const char** strp);
  */
 TEST(shift) {
+  const char* s;
+  stralloc sa;
   strlist sl;
-  strlist_init(&sl, '\0');
+  strlist_init(&sl, ',');
+  
+  strlist_push(&sl, "water");
+  strlist_push(&sl, "soil");
+  strlist_push(&sl, "air");
+  strlist_push(&sl, "fire");
+  
+  stralloc_init(&sa);
+
+  strlist_joins(&sl, &sa, ", ");
+  ASSERT_EQ(0, !stralloc_equals(&sa, "water, soil, air, fire"));
+
+  strlist_shift(&sl, &s);
+
+  stralloc_zero(&sa);
+  strlist_joins(&sl, &sa, ", ");
+  
+  ASSERT_EQ(0, !stralloc_equals(&sa, "soil, air, fire"));
+  ASSERT_EQ(0, !str_equal(s, "water"));
+
+  strlist_shift(&sl, &s);
+
+  stralloc_zero(&sa);
+  strlist_joins(&sl, &sa, ", ");
+  
+  ASSERT_EQ(0, !stralloc_equals(&sa, "air, fire"));
+  ASSERT_EQ(0, !str_equal(s, "soil"));
 }
 
 /*
  * int strlist_shift_n(strlist* sl, size_t i);
  */
 TEST(shift_n) {
+  const char* s;
+  stralloc sa;
   strlist sl;
-  strlist_init(&sl, '\0');
+  strlist_init(&sl, ',');
+  
+  strlist_push(&sl, "water");
+  strlist_push(&sl, "soil");
+  strlist_push(&sl, "air");
+  strlist_push(&sl, "fire");
+  
+  stralloc_init(&sa);
+
+  strlist_joins(&sl, &sa, ", ");
+  ASSERT_EQ(0, !stralloc_equals(&sa, "water, soil, air, fire"));
+
+  strlist_shift_n(&sl, 2);
+
+  stralloc_zero(&sa);
+  strlist_joins(&sl, &sa, ", ");
+  ASSERT_EQ(0, !stralloc_equals(&sa, "air, fire"));
+
+  strlist_shift_n(&sl, 1);
+
+  stralloc_zero(&sa);
+  strlist_joins(&sl, &sa, ", ");
+  ASSERT_EQ(0, !stralloc_equals(&sa, "fire"));
 }
 
 /*
  * size_t strlist_sort(strlist* sl);
  */
 TEST(sort) {
+  const char* s;
+  stralloc sa;
   strlist sl;
-  strlist_init(&sl, '\0');
+  strlist_init(&sl, ',');
+  
+  strlist_push(&sl, "water");
+  strlist_push(&sl, "soil");
+  strlist_push(&sl, "air");
+  strlist_push(&sl, "fire");
+  
+ strlist_sort(&sl);
+
+  stralloc_init(&sa);
+
+  strlist_joins(&sl, &sa, ", ");
+
+  buffer_puts(buffer_1, "stralloc: ");
+  buffer_putsa(buffer_1, &sl.sa);
+  buffer_putnlflush(buffer_1);
+  
 }
 
 /*
@@ -267,8 +520,7 @@ START() {
   RUN(push_unique);
   RUN(push_unique_sa);
   RUN(pushb);
-  RUN(pushm_internal);
-  RUN(pushsa);
+  RUN(pushm);
   RUN(range);
   RUN(shift);
   RUN(shift_n);

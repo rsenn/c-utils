@@ -4,23 +4,7 @@
 
 int
 strlist_push(strlist* sl, const char* s) {
-  size_t n = str_len(s);
-  if(stralloc_readyplus(&sl->sa, n + 1)) {
-    if(sl->sa.len) {
-      if(sl->sa.s[sl->sa.len - 1] != sl->sep) {
-        sl->sa.s[sl->sa.len] = sl->sep;
-        ++sl->sa.len;
-      }
-    }
-    if(n == 0) {
-      sl->sa.s[sl->sa.len++] = sl->sep;
-    } else {
-      byte_copy(&sl->sa.s[sl->sa.len], n, s);
-      sl->sa.len += n;
-      sl->sa.s[sl->sa.len] = sl->sep;
-      sl->sa.len++;
-    }
-    return 1;
-  }
-  return 0;
+  if(sl->sa.len)
+    stralloc_catc(&sl->sa, sl->sep);
+  return stralloc_cats(&sl->sa, s);
 }

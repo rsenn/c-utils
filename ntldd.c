@@ -26,11 +26,11 @@ MSDN Magazine articles
 //#include <windows.h>
 
 //#include "lib/imagehlp.h"
+#include "lib/getopt.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/uint64.h"
-#include "lib/getopt.h"
 
 //#include <winnt.h>
 
@@ -255,7 +255,7 @@ main(int argc, char** argv) {
     c = getopt_long(argc, argv, "hvudrRei", opts, &index);
     if(c == -1) break;
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
+      case 'h': /*usage(argv[0]); */ return 0;
       case 'v':
       case 'u':
       case 'd':
@@ -266,7 +266,7 @@ main(int argc, char** argv) {
                 break;
       case 'V':
       printversion(); break;
-      default: usage(argv[0]); return 1;
+      default: /*usage(argv[0]);*/ return 1;
     }
   }
 /*

@@ -120,7 +120,11 @@ include_directories("${CMAKE_SOURCE_DIR}")
 
 #pkg_search_module(LIBLZMA liblzma)
 
-TEST_BIG_ENDIAN(BIG_ENDIAN)
+if(MINGW OR CYGWIN OR MSYS OR WIN32)
+  set(BIG_ENDIAN FALSE)
+else(MINGW OR CYGWIN OR MSYS OR WIN32)
+  TEST_BIG_ENDIAN(BIG_ENDIAN)
+endif(MINGW OR CYGWIN OR MSYS OR WIN32)
 
 if(BIG_ENDIAN)
   add_definitions(-D__BIG_ENDIAN__=1)
@@ -179,7 +183,7 @@ endif(NOT HAVE_MSWSOCK)
 if(HAVE_MSWSOCK)
   set(LIBMSWSOCK ws2_32)
 endif()
-if(MINGW OR WIN32 OR WIN64)
+if(MINGW OR MINGW32 OR WIN32 OR WIN64)
   set(LIBIPHLPAPI iphlpapi)
   set(LIBPSAPI psapi)
 endif()
@@ -421,10 +425,6 @@ set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 set(PROGRAMS
   access binfmttest bsdiffcat buffertest ccat count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elfwrsec hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest elflist
 )
-
-if(NOT MSVC)
-set(PROGRAMS ${PROGRAMS} elfwrsec)
-endif(NOT MSVC)
 
 set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})
 

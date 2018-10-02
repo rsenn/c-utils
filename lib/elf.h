@@ -19,7 +19,7 @@ typedef uint16 elf64_versym;
 
 #define ELF_EI_NIDENT (16)
 
-#define ELF_FIELD_OFFSET(type, field) ((uintptr_t)(uint8*)&(((type*)0)->field))
+#define ELF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
 #define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
 
 #define ELF_STRUCT_OFFSETS(st, field) ELF_FIELD_OFFSET(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFSET(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
@@ -936,15 +936,15 @@ typedef struct {
 /* Known names of notes.  */
 
 /* Solaris entries in the note section have this name.  */
-#define ELF_ELF_NOTE_SOLARIS "SUNW Solaris"
+#define ELF_NOTE_SOLARIS "SUNW Solaris"
 
 /* Note entries for GNU systems have this name.  */
-#define ELF_ELF_NOTE_GNU "GNU"
+#define ELF_NOTE_GNU "GNU"
 
 /* Defined types of notes for Solaris.  */
 
 /* Value of descriptor (one word) is desired pagesize for the binary.  */
-#define ELF_ELF_NOTE_PAGESIZE_HINT 1
+#define ELF_NOTE_PAGESIZE_HINT 1
 
 /* Defined note types for GNU systems.  */
 
@@ -954,14 +954,14 @@ typedef struct {
    word 2: minor version of the ABI
    word 3: subminor version of the ABI
 */
-#define ELF_ELF_NOTE_ABI 1
+#define ELF_NOTE_ABI 1
 
-/* Known OSes.  These value can appear in word 0 of an ELF_ELF_NOTE_ABI
+/* Known OSes.  These value can appear in word 0 of an ELF_NOTE_ABI
    note section entry.  */
-#define ELF_ELF_NOTE_OS_LINUX 0
-#define ELF_ELF_NOTE_OS_GNU 1
-#define ELF_ELF_NOTE_OS_SOLARIS2 2
-#define ELF_ELF_NOTE_OS_FREEBSD 3
+#define ELF_NOTE_OS_LINUX 0
+#define ELF_NOTE_OS_GNU 1
+#define ELF_NOTE_OS_SOLARIS2 2
+#define ELF_NOTE_OS_FREEBSD 3
 
 /* Move records.  */
 typedef struct {

@@ -3,16 +3,13 @@
 
 int
 strlist_pushm_internal(strlist* sl, ...) {
-  stralloc sa;
   va_list a;
   const char* s;
-  stralloc_init(&sa);
   va_start(a, sl);
-  while((s = va_arg(a, const char*)))
-    if(stralloc_cats(&sa, s) == 0) {
-      va_end(a);
+  while((s = va_arg(a, const char*))) {
+    if(strlist_push(sl, s) == 0)
       return 0;
-    }
+}
   va_end(a);
-  return strlist_push_sa(sl, &sa);
+  return 1;
 }

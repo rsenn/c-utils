@@ -9,6 +9,7 @@
 
 #ifndef GETOPT_H
 #define GETOPT_H 1
+#define __GETOPT_H__ 1
 
 #ifdef __cplusplus
 extern "C" {

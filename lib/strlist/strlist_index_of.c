@@ -9,7 +9,9 @@ strlist_index_of(strlist* sl, const char* str) {
   const char* s = sl->sa.s;
   for(p = 0; p < sl->sa.len;) {
     size_t l2 = byte_chr(&sl->sa.s[p], sl->sa.len - p, sl->sep);
-    if((l2 == 0 && p + 1 == sl->sa.len) || (l == l2 && byte_equal(&sl->sa.s[p], l2, str))) return p;
+    if((l2 == 0 && p + 1 == sl->sa.len)) break;
+    
+    if((l == l2 && byte_equal(&sl->sa.s[p], l2, str))) return p;
 
     p += l2 + 1;
   }
