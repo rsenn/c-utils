@@ -23,7 +23,7 @@
 			"file": "lib/pe.h",
 			"settings":
 			{
-				"buffer_size": 13719,
+				"buffer_size": 14233,
 				"line_ending": "Unix"
 			}
 		},
@@ -47,7 +47,7 @@
 			"file": "pelist.c",
 			"settings":
 			{
-				"buffer_size": 9475,
+				"buffer_size": 9647,
 				"line_ending": "Unix"
 			}
 		},
@@ -63,7 +63,7 @@
 			"file": "pathtool.c",
 			"settings":
 			{
-				"buffer_size": 6435,
+				"buffer_size": 6431,
 				"line_ending": "Unix"
 			}
 		}
@@ -594,7 +594,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13719,
+						"buffer_size": 14233,
 						"regions":
 						{
 						},
@@ -684,7 +684,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9475,
+						"buffer_size": 9647,
 						"regions":
 						{
 						},
@@ -742,7 +742,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6435,
+						"buffer_size": 6431,
 						"regions":
 						{
 						},
