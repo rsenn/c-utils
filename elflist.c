@@ -98,10 +98,7 @@ elf_dump_dynamic(uint8* base) {
 
 void
 elf_dump_symbols(uint8* base, uint8* tab, size_t size, const char* stname) {
-  range symtab;
-  symtab.start = tab;
-  symtab.end = tab + size;
-  symtab.elem_size = ELF_BITS(base) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
+  range symtab = {  tab, tab + size, symtab.elem_size = ELF_BITS(base) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym) };
   void* symbol;
   int si = elf_section_index(base, stname);
   const char* strtab = elf_section_offset(base, si);

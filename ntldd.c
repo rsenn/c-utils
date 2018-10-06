@@ -23,27 +23,27 @@ Code is mostly written after
 MSDN Magazine articles
 */
 
-//#include <windows.h>
-
-//#include "lib/imagehlp.h"
 #include "lib/getopt.h"
+#include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/uint64.h"
-
-//#include <winnt.h>
+#include "lib/windoze.h"
 
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <inttypes.h>
 
 #include "libntldd.h"
 
 #ifndef MAX_PATH
 #define MAX_PATH PATH_MAX
+#endif
+
+#ifndef RRF_RT_ANY
+#define RRF_RT_ANY 0xffff
 #endif
 
 void
@@ -198,9 +198,46 @@ print_image_links(int first,
   }
   return 0;
 }
+
+#if WINDOWS
+/* registry_query("HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment", "Path",
+ */
+int
+registry_query(const char* key, const char* value, stralloc* sa) {
+  HKEY hkey;
+  DWORD ret, rkey, type;
+
+  if(!str_diffn(key, "HKCU", 4) || !str_diffn(key, "HKEY_CURRENT_USER", 17)) {
+    rkey = HKEY_CURRENT_USER;
+  } else if(!str_diffn(key, "HKLM", 4) || !str_diffn(key, "HKEY_LOCAL_MACHINE", 19)) {
+    rkey = HKEY_LOCAL_MACHINE;
+  } else if(!str_diffn(key, "HKCR", 4) || !str_diffn(key, "HKEY_CLASSES_ROOT", 17)) {
+    rkey = HKEY_LOCAL_MACHINE;
+  } else if(!str_diffn(key, "HKU", 3) || !str_diffn(key, "HKEY_USERS", 10)) {
+    rkey = HKEY_LOCAL_MACHINE;
+  }
+ 
+  /*DWORD ret = RegOpenKeyA(rkey, strchr(key, '\\') + 1, &hkey);
+  if(ret == ERROR_SUCCESS)*/ {
+    stralloc_ready(sa, PATH_MAX + 1);
+    sa->len = sa->a;
+    ret = RegGetValueA(rkey, strchr(key, '\\') + 1, "Path", RRF_RT_ANY, &type, sa->s, &sa->len);
+    if(ret == ERROR_SUCCESS) return sa->len;
+  }
+  return 0;
+}
+
 void
 add_path(strlist* sp, const char* path) {
-  char s = (strchr(path, '\\') && strchr(path, ':') && strchr(path, ";")) ? ';' : ':';
+  char s = ':';
+  const char* sep = &path[0];
+
+  if(sep[1] == ':' && (sep[2] == '\\' || sep[2] == '/')) {
+    sep += 2;
+    s = ';';
+  }
+
+{
   stralloc dir;
   strlist tmp;
   stralloc_init(&dir);
@@ -209,11 +246,13 @@ add_path(strlist* sp, const char* path) {
 
   __strlist_foreach(&tmp, path) {
     stralloc_copys(&dir, path);
-    stralloc_catc(&dir, path[0]);
+    stralloc_catc(&dir, *sep);
     strlist_push_unique_sa(sp, &dir);
   }
   strlist_free(&tmp);
+  }
 }
+#endif
 
 int
 main(int argc, char** argv) {
@@ -235,17 +274,17 @@ main(int argc, char** argv) {
   int index = 0;
   struct longopt opts[] = {
       {"help", 0, NULL, 'h'},
-   {"verbose", 0, &verbose, 'v'},
-  {"unused", 0, &unused, 'u'},
-  {"data-relocs", 0, &datarelocs, 'd'},
-  {"function-relocs", 0, &functionrelocs, 'r'},
-  {"recursive", 0, &recursive, 'R'},
-  {"list-exports", 0, &list_exports, 'e'},
-  {"list-imports", 0, &list_imports, 'i'},
-  {"version", 0, NULL, 'V'},
+      {"verbose", 0, &verbose, 'v'},
+      {"unused", 0, &unused, 'u'},
+      {"data-relocs", 0, &datarelocs, 'd'},
+      {"function-relocs", 0, &functionrelocs, 'r'},
+      {"recursive", 0, &recursive, 'R'},
+      {"list-exports", 0, &list_exports, 'e'},
+      {"list-imports", 0, &list_imports, 'i'},
+      {"version", 0, NULL, 'V'},
 
+      {"search-dir", 0, NULL, 'D'},
   };
-
 
   strlist sp;
   strlist_init(&sp, '\0');
@@ -255,65 +294,53 @@ main(int argc, char** argv) {
     c = getopt_long(argc, argv, "hvudrRei", opts, &index);
     if(c == -1) break;
     switch(c) {
-      case 'h': /*usage(argv[0]); */ return 0;
+      case 'h':
+        printhelp(argv[0]);
+        skip = 1;
+        break;
+
       case 'v':
       case 'u':
       case 'd':
       case 'r':
       case 'R':
       case 'e':
-      case 'i':
-                break;
-      case 'V':
-      printversion(); break;
-      default: /*usage(argv[0]);*/ return 1;
+      case 'i': break;
+      case 'D': {
+        add_path(&sp, optarg);
+        break;
+      }
+
+      case 'V': printversion(); break;
+      default:
+        buffer_putm(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
+        buffer_putnlflush(buffer_2);
+        return 1;
     }
   }
-/*
-  for(i = 1; i < argc; i++) {
-    if(str_equal(argv[i], "--version"))
-      printversion();
-    else if(str_equal(argv[i], "-v") || str_equal(argv[i], "--verbose"))
-      verbose = 1;
-    else if(str_equal(argv[i], "-u") || str_equal(argv[i], "--unused"))
-      unused = 1;
-    else if(str_equal(argv[i], "-d") || str_equal(argv[i], "--data-relocs"))
-      datarelocs = 1;
-    else if(str_equal(argv[i], "-r") || str_equal(argv[i], "--function-relocs"))
-      functionrelocs = 1;
-    else if(str_equal(argv[i], "-R") || str_equal(argv[i], "--recursive"))
-      recursive = 1;
-    else if(str_equal(argv[i], "-e") || str_equal(argv[i], "--list-exports"))
-      list_exports = 1;
-    else if(str_equal(argv[i], "-i") || str_equal(argv[i], "--list-imports"))
-      list_imports = 1;
-    else if((str_equal(argv[i], "-D") || str_equal(argv[i], "--search-dir")) && i < argc - 1) {
-      char* add_dirs = argv[i + 1];
-      add_path(&sp, add_dirs);
-      i++;
-    } else if(str_equal(argv[i], "--help")) {
-      printhelp(argv[0]);
-      skip = 1;
-      break;
-    } else if(str_equal(argv[i], "--")) {
-      files = 1;
-    } else if(str_len(argv[i]) > 1 && argv[i][0] == '-' && (argv[i][1] == '-' || str_len(argv[i]) == 2) && !files) {
-      buffer_putm(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
-      buffer_putnlflush(buffer_2);
-      skip = 1;
-      break;
-    } else if(files_start < 0) {
-      skip = 0;
-      files_start = i;
-      break;
-    }
-  }*/
+
   skip = 0;
-      files_start = optind;
+  files_start = optind;
   {
     const char* pathenv = getenv("PATH");
+
+    buffer_putm(buffer_2, "PATH=", pathenv);
+    buffer_putnlflush(buffer_2);
+
     if(pathenv) add_path(&sp, pathenv);
   }
+
+#if WINDOWS
+  {
+    stralloc rpath;
+    stralloc_init(&rpath);
+    if(registry_query("HKCU\\Environment", "Path", &rpath)) {
+      buffer_puts(buffer_2, "Registry path: ");
+      buffer_putsa(buffer_2, &rpath);
+      buffer_putnlflush(buffer_2);
+    }
+  }
+#endif
 
   if(!skip && files_start > 0) {
     files_count = argc - files_start;
@@ -325,8 +352,10 @@ main(int argc, char** argv) {
       if(p) *p = '\0';
       strlist_push_unique(&sp, buff);
     }
-    buffer_puts(buffer_2, "PATH=");
+    buffer_puts(buffer_2, "pathlist=");
     strlist_dump(buffer_2, &sp);
+    buffer_putnlflush(buffer_2);
+
     {
       int multiple = files_start + 1 < argc;
       struct dep_tree_element root;

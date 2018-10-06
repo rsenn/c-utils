@@ -1,7 +1,7 @@
 #ifndef UINT8_H
 #define UINT8_H
 
-#if !defined(_MSC_VER) && !defined(__MSYS__)
+#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
 #endif /* !defined(_MSC_VER) */
 #if !defined(_MSC_VER) && !defined(__MSYS__)

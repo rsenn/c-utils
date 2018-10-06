@@ -1,3 +1,7 @@
+#ifdef HAVE_LIBBZ2
+#include <bzlib.h>
+#endif
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
@@ -6,8 +10,6 @@
 #include <stdlib.h>
 
 #ifdef HAVE_LIBBZ2
-#include <bzlib.h>
-
 static void
 buffer_bzip_close(buffer* b) {
   BZFILE* f;

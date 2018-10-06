@@ -6,7 +6,7 @@
 #include <inttypes.h>
 #endif
 
-#if !defined(_MSC_VER) && !defined(__MSYS__)
+#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <stdint.h>
 #endif /* !defined(_MSC_VER) */
 

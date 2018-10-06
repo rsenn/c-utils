@@ -16,7 +16,7 @@
 #include "taia.h"
 #include "io.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <io.h>
 //#define read _read
 //#define write _write

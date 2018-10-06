@@ -3,9 +3,9 @@
 #define UINT16_H
 
 #if !defined(_MSC_VER) && !defined(__MSYS__)
+#if !defined(__CYGWIN__)
 #include <inttypes.h>
-#endif /* !defined(_MSC_VER) */
-#if !defined(_MSC_VER) && !defined(__MSYS__)
+#endif
 #include <stdint.h>
 #endif
 

@@ -1,4 +1,5 @@
 #include "lib/getopt.h"
+#include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
 #include "lib/path.h"
@@ -18,7 +19,7 @@ typedef int path_format;
 static strlist relative_to;
 static char separator[2];
 static stralloc delims;
-static path_format format = MIXED;
+static path_format format;
 static int absolute = 0, canonical = 0;
 static stralloc cwd;
 
@@ -34,6 +35,12 @@ strlist_from_path(strlist* sl, const char* p) {
 #ifndef MAX_PATH
 #define MAX_PATH 260
 #endif
+
+#ifdef HAVE_CYGWIN_CONV_PATH
+#define cygwin_conv_to_win32_path(from, to) cygwin_conv_path(CCP_POSIX_TO_WIN_A, (from), (to), MAX_PATH)
+#define cygwin_conv_to_posix_path(from, to) cygwin_conv_path(CCP_WIN_A_TO_POSIX, (from), (to), MAX_PATH)
+#endif
+
 void
 pathconv(const char* path, stralloc* sa) {
   stralloc_ready(sa, MAX_PATH);
@@ -65,21 +72,29 @@ pathtool(const char* arg, stralloc* sa) {
 
   stralloc_init(sa);
 
+#ifdef DEBUG_OUTPUT
   buffer_putm(buffer_2, "arg: ", arg);
   buffer_putnlflush(buffer_2);
+#endif
   if(absolute) {
     path_realpath(arg, sa, 1, &cwd);
+#ifdef DEBUG_OUTPUT
     buffer_putsflush(buffer_2, "path_realpath");
+#endif
   } else if(canonical) {
     path_canonicalize(arg, sa, 1);
+#ifdef DEBUG_OUTPUT
     buffer_putsflush(buffer_2, "path_canonicalize");
+#endif
   } else {
     stralloc_copys(sa, arg);
   }
 
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, ": ");
   buffer_putsa(buffer_2, sa);
   buffer_putnlflush(buffer_2);
+#endif
   
   stralloc_nul(sa);
 
@@ -110,7 +125,7 @@ pathtool(const char* arg, stralloc* sa) {
       char* s1 = strlist_at_n(&path, i, &l1);
       char* s2 = strlist_at_n(&relative_to, i, &l2);
 
-#if 1
+#ifdef DEBUG_OUTPUT
       buffer_puts(buffer_2, "REL ");
       buffer_put(buffer_2, s1, l1);
       buffer_puts(buffer_2, " ");
@@ -182,6 +197,14 @@ main(int argc, char* argv[]) {
       {"absolute", 0, NULL, 'a'},
       {"canonicalize", 0, NULL, 'f'},
   };
+
+#if WINDOWS_NATIVE
+  format = WIN;
+#elif defined(WINDOWS) && !(defined(__CYGWIN__) || defined(__MSYS__))
+  format = MIXED;
+#else
+  format = UNIX;
+#endif
 
   for(;;) {
     c = getopt_long(argc, argv, "afhr:s:muw", opts, &index);

@@ -1756,3 +1756,9 @@ $(BUILDDIR)elf_dynamic_section.o: lib/elf/elf_dynamic_section.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)elf_get_section.o: lib/elf/elf_get_section.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_get_datadir.o: lib/pe/pe_get_datadir.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_offset2rva.o: lib/pe/pe_offset2rva.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)popen.o: lib/popen.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

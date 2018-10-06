@@ -3,8 +3,10 @@
 #define UINT64_H
 
 #if !defined(_MSC_VER) && !defined(__MSYS__)
+#if !defined(__CYGWIN__)
 #include <inttypes.h>
 #include <stdint.h>
+#endif
 #endif /* !defined(_MSC_VER) */
 
 #ifdef __MSYS__
@@ -18,8 +20,8 @@
 #define uint64_t u_int64_t
 #define int64_t long long
 #else
-#define uint64_t unsigned __int64
-#define int64_t __int64
+typedef unsigned long long uint64_t;
+typedef long long int64_t;
 #endif
 #endif
 
@@ -38,7 +40,11 @@ typedef unsigned __INT64_TYPE__ uint64_t;
 #  endif
 # endif
 # ifndef int64_t
-#  define int64_t __INT64_TYPE__
+//#  define int64_t __int64
+#ifndef _INT64_T_DECLARED
+#define _INT64_T_DECLARED
+typedef long long int64_t;
+#endif
 # endif
 #endif
 

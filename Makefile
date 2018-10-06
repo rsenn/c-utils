@@ -146,6 +146,17 @@ DEFS += HAVE_SENDFILE=1
 endif
 #$(info HAVE_SENDFILE=$(HAVE_SENDFILE))
 
+HAVE_CYGWIN_CONV_PATH := $(call check-function-exists,cygwin_conv_path)
+ifeq ($(HAVE_CYGWIN_CONV_PATH),1)
+DEFS += HAVE_CYGWIN_CONV_PATH=1
+endif
+#$(info HAVE_CYGWIN_CONV_PATH=$(HAVE_CYGWIN_CONV_PATH))
+
+HAVE_POPEN := $(call check-function-exists,popen)
+ifeq ($(HAVE_POPEN),1)
+DEFS += HAVE_POPEN=1
+endif
+#$(info HAVE_POPEN=$(HAVE_POPEN))
 
 
 #$(call def-include-exists,errno.h,HAVE_ERRNO_H)
@@ -158,6 +169,8 @@ endif
 #ifneq ($(BUILD),$(subst -pc-,-,$(BUILD)))
 #BUILD := $(subst -pc-,-,$(BUILD))
 #endif
+
+$(info BUILD: $(BUILD))
 
 CCVER := $(shell $(CROSS_COMPILE)$(CC) -dumpversion)
 CXXVER := $(shell $(CROSS_COMPILE)$(CXX) -dumpversion)
@@ -194,6 +207,9 @@ MINGW := 0
 endif
 ifeq ($(word 3,$(subst -, ,$(BUILD))),msys)
 MSYS := 1
+ifeq ($(shell grep -q msys-1.0.dll /bin/sh.exe && echo 1),1)
+BUILD := $(subst msys,msys1,$(BUILD))
+endif
 else
 MSYS := 0
 endif
@@ -356,11 +372,12 @@ endif
 USE_WINSOCK := $(call check-function-exists,WSAStartup,-lws2_32,winsock2.h)
 #$(info USE_WINSOCK=$(USE_WINSOCK))
 ifeq ($(USE_WINSOCK),1)
-WINSOCK_LIB = -lws2_32
+WINSOCK_LIB = -lws2_32 -lmswsock
 IPHLPAPI_LIB = -liphlpapi
 endif
 ifeq ($(MSYS),1)
 #WINSOCK_LIB = -lws2_32
+ADVAPI32_LIB = -ladvapi32
 IPHLPAPI_LIB = -liphlpapi
 endif
 
@@ -536,7 +553,7 @@ ifeq ($(WIN32),)
 WIN32 := 0
 endif
 ifeq ($(WIN32),1)
-OTHERLIBS := -lws2_32
+OTHERLIBS := -lws2_32 -lmswsock
 endif
 ifeq ($(WIN32),1)
 WIDECHAR := 1
@@ -840,7 +857,7 @@ define NL
 
 endef
 
-ifeq ($(KERN),msys)
+ifneq ($(HOST),($(subst msys1,,$(HOST))))
 NO_AT ?= 1
 endif
 
@@ -888,7 +905,7 @@ endif
 
 ifneq ($(SYS),msys)
 ifneq ($(SYSROOT),)
-ifeq ($(call file-exists,$(SYSROOT)),1)
+ifeq ($(call file-exists,$(SYSROOT)/include),1)
 FLAGS += --sysroot=$(SYSROOT)
 endif
 endif
@@ -1052,7 +1069,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array strlist buffer fmt mmap open  scan stralloc str byte)
+$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)popen.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array strlist buffer fmt mmap open  scan stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1195,15 +1212,15 @@ ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
-$(BUILDDIR)ntldd$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
+$(BUILDDIR)ntldd$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS) $(ADVAPI32_LIB)
 $(BUILDDIR)ntldd$(M64_)$(EXEEXT): CPPFLAGS += -DNTLDD_VERSION_MAJOR=0 -DNTLDD_VERSION_MINOR=2
-$(BUILDDIR)ntldd$(M64_)$(EXEEXT): $(BUILDDIR)ntldd.o $(BUILDDIR)libntldd.o $(call add-library, pe mmap strlist buffer stralloc fmt str byte open uint32)
+$(BUILDDIR)ntldd$(M64_)$(EXEEXT): $(BUILDDIR)ntldd.o $(BUILDDIR)libntldd.o $(BUILDDIR)getopt.o $(call add-library, pe mmap strlist buffer stralloc fmt str byte open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
-$(BUILDDIR)hexedit$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
+$(BUILDDIR)hexedit$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)hexedit$(M64_)$(EXEEXT): $(BUILDDIR)hexedit.o $(call add-library, path stralloc errmsg io iarray array buffer mmap open byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)

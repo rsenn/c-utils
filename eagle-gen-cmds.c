@@ -1,3 +1,21 @@
+#include "lib/getopt.h"
+#include "lib/array.h"
+#include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/cb.h"
+#include "lib/cbmap.h"
+#include "lib/errmsg.h"
+#include "lib/fmt.h"
+#include "lib/hmap.h"
+#include "lib/iterator.h"
+#include "lib/mmap.h"
+#include "lib/scan.h"
+#include "lib/str.h"
+#include "lib/stralloc.h"
+#include "lib/strarray.h"
+#include "lib/strlist.h"
+#include "lib/xml.h"
+
 #include <assert.h>
 #include <ctype.h>
 #include <float.h>
@@ -9,23 +27,6 @@
 #include <libgen.h>
 #endif
 
-#include "lib/array.h"
-#include "lib/buffer.h"
-#include "lib/byte.h"
-#include "lib/cb.h"
-#include "lib/cbmap.h"
-#include "lib/errmsg.h"
-#include "lib/fmt.h"
-#include "lib/getopt.h"
-#include "lib/hmap.h"
-#include "lib/iterator.h"
-#include "lib/mmap.h"
-#include "lib/scan.h"
-#include "lib/str.h"
-#include "lib/stralloc.h"
-#include "lib/strarray.h"
-#include "lib/strlist.h"
-#include "lib/xml.h"
 #ifdef _MSC_VER
 #define alloca _alloca
 #endif
@@ -107,7 +108,6 @@ typedef struct wire wire;
 // typedef struct wire rect;
 
 typedef struct pos point;
-typedef struct pos xy;
 
 union vec2 {
   struct {
