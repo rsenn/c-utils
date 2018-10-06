@@ -16,7 +16,7 @@ char*  path_basename(char* path);
 int    path_canonicalize(const char* path, stralloc* sa, int symbolic);
 char*  path_dirname(char* path);
 int    path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
-void   path_getcwd(stralloc* sa, unsigned long start);
+void   path_getcwd(stralloc* sa);
 char*  path_gethome(int uid);
 size_t path_len_s(const char* s);
 size_t path_len(const char* s, size_t n);

@@ -73,6 +73,12 @@ uint64 uint64_read_big(const char* in);
 
 #endif
 
+inline static uint64
+uint64_get(const void* ptr) {
+  const char* in = ptr;
+  return *(uint64 *)in;
+}
+
 #if defined(_WIN32) && defined(_MSC_VER)
 // for older MSVC
 # ifndef PRId64

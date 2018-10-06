@@ -1764,3 +1764,25 @@ $(BUILDDIR)popen.o: lib/popen.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_expand.o: lib/stralloc/stralloc_expand.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_insert.o: lib/stralloc/stralloc_insert.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_inserts.o: lib/stralloc/stralloc_inserts.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_prepend.o: lib/stralloc/stralloc_prepend.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_prependb.o: lib/stralloc/stralloc_prependb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_prepends.o: lib/stralloc/stralloc_prepends.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_prepends.o: lib/stralloc/stralloc_prepends.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_prepend_sa.o: lib/strlist/strlist_prepend_sa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_prependb.o: lib/strlist/strlist_prependb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_prepends.o: lib/strlist/strlist_prepends.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_append_sa.o: lib/strlist/strlist_append_sa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_get_value.o: lib/pe/pe_get_value.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

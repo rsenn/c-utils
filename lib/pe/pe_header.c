@@ -15,14 +15,12 @@ pe_header_sig(void* pe) {
 
 pe32_nt_headers*
 pe_header_nt32(void* pe) {
-  pe32_nt_headers* nthdr = pe_header_nt(pe);
-  return nthdr->optional_header.magic == PE_MAGIC_PE32 ? nthdr : 0;
+  return PE_32(pe) ? pe_header_nt(pe) : 0;
 }
 
 pe64_nt_headers*
 pe_header_nt64(void* pe) {
-  pe64_nt_headers* nthdr = pe_header_nt(pe);
-  return nthdr->optional_header.magic == PE_MAGIC_PE64 ? nthdr : 0;
+  return PE_64(pe) ? pe_header_nt(pe) : 0;
 }
 
 pe_coff_header*
@@ -40,13 +38,13 @@ pe_header_opt(void* pe) {
 pe32_opt_header*
 pe_header_opt32(void* pe) {
   pe32_opt_header* hdr = pe_header_opt(pe);
-  return hdr->magic == PE_MAGIC_PE32 ? hdr : 0;
+  return PE_32(pe) ? hdr : 0;
 }
 
 pe64_opt_header*
 pe_header_opt64(void* pe) {
   pe64_opt_header* hdr = pe_header_opt(pe);
-  return hdr->magic == PE_MAGIC_PE64 ? hdr : 0;
+  return PE_64(pe) ? hdr : 0;
 }
 
 pe_section_header*
@@ -66,5 +64,5 @@ pe_header_sections(void* pe, int* nsections) {
 pe_data_directory*
 pe_header_datadir(void* pe) {
   uint8* opthdr = pe_header_opt(pe);
-  return (pe_data_directory*)(*(uint16*)opthdr == PE_MAGIC_PE32 ? opthdr + 96 : opthdr + 112);
+  return PE_32(pe) ? opthdr + 96 : opthdr + 112;
 }

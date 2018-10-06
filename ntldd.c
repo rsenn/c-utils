@@ -27,8 +27,8 @@ MSDN Magazine articles
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/str.h"
+#include "lib/stralloc.h"
 #include "lib/uint64.h"
-#include "lib/windoze.h"
 #include "lib/windoze.h"
 
 #include <limits.h>
@@ -46,6 +46,8 @@ MSDN Magazine articles
 #define RRF_RT_ANY 0xffff
 #endif
 
+static stralloc cwd;
+
 #if defined(__CYGWIN__) || defined(__MSYS__)
 #include <sys/cygwin.h>
 #ifndef MAX_PATH
@@ -53,7 +55,8 @@ MSDN Magazine articles
 #endif
 
 #ifdef HAVE_CYGWIN_CONV_PATH
-#define cygwin_conv_to_full_posix_path(from, to) cygwin_conv_path(CCP_WIN_A_TO_POSIX|CCP_ABSOLUTE, (from), (to), MAX_PATH)
+#define cygwin_conv_to_full_posix_path(from, to)                                                                       \
+  cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, (from), (to), MAX_PATH)
 #endif
 
 void
@@ -273,8 +276,10 @@ add_path(strlist* sp, const char* path) {
     __strlist_foreach(&tmp, path) {
       pathconv(path, &dir);
 
-      if(dir.s[0] == '/')
-        sep = dir.s;
+      if(dir.s[0] == '/') sep = dir.s;
+
+      stralloc_nul(&dir);
+      if(!path_absolute(dir.s)) stralloc_prepend(&dir, &cwd);
 
       if(!stralloc_endb(&dir, sep, 1)) stralloc_catc(&dir, *sep);
 
@@ -320,6 +325,10 @@ main(int argc, char** argv) {
 
   strlist sp;
   strlist_init(&sp, '\0');
+
+  path_getcwd(&cwd);
+  stralloc_append(&cwd, cwd.s);
+
   // byte_zero(&sp, sizeof(sp));
   // sp.path = calloc(1, sizeof(char*));
   for(;;) {

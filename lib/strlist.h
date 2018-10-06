@@ -51,6 +51,11 @@ int     strlist_shift_n(strlist* sl, size_t i);
 size_t  strlist_sort(strlist*);
 int     strlist_unshift(strlist*, const char* s);
 
+int strlist_prepends(strlist* sl, const char* s);
+int strlist_prependb(strlist* sl, const char* b, size_t n);
+int strlist_prepend_sa(strlist* sl, const stralloc* sa);
+int strlist_append_sa(strlist* sl, const stralloc* sa);
+
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
 

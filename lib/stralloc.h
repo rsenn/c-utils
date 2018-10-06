@@ -203,7 +203,10 @@ inline static int stralloc_iterator_equal(char** it1, char** it2) { return it1 =
 size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));
 #endif
 
-int stralloc_insertb(stralloc *sa, const char *s, size_t pos, size_t n);
+int stralloc_insertb(stralloc* sa, const char* s, size_t pos, size_t n);
+int stralloc_inserts(stralloc* sa, const char* s, size_t pos);
+int stralloc_insert(stralloc* sa, const stralloc* other, size_t pos);
+
 int stralloc_subst(stralloc *out, const char *b, size_t len, const char *from, const char *to);
 
 typedef size_t (stralloc_fmt_fn)();
@@ -220,6 +223,10 @@ int  stralloc_copywcb(stralloc* sa, const wchar_t* buf, size_t len);
 int  stralloc_copywcs(stralloc* sa, const wchar_t* buf);
 
 int stralloc_shrink(stralloc* sa);
+
+int stralloc_prependb(stralloc* sa, const char* s, size_t n);
+int stralloc_prepends(stralloc* sa, const char* s);
+int stralloc_prepend(stralloc* sa, const stralloc* other);
 
 #ifdef __cplusplus
 }

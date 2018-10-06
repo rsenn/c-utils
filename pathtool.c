@@ -225,7 +225,7 @@ main(int argc, char* argv[]) {
   }
  
   stralloc_init(&tmp);
-  path_getcwd(&tmp, 64);
+  path_getcwd(&tmp);
   stralloc_nul(&tmp);
 
 #if defined(__CYGWIN__) || defined(__MSYS__)

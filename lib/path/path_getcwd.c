@@ -17,10 +17,10 @@
 /* get current working directory into a stralloc
  * ----------------------------------------------------------------------- */
 void
-path_getcwd(stralloc* sa, unsigned long start) {
+path_getcwd(stralloc* sa) {
   /* do not allocate PATH_MAX from the beginning,
      most paths will be smaller */
-  size_t n = (start ? start : PATH_MAX / 16);
+  size_t n = PATH_MAX / 16;
 
   do {
     /* reserve some space */
