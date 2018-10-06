@@ -1762,3 +1762,5 @@ $(BUILDDIR)pe_offset2rva.o: lib/pe/pe_offset2rva.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)popen.o: lib/popen.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_expand.o: lib/stralloc/stralloc_expand.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

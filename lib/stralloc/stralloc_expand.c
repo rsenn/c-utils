@@ -2,22 +2,28 @@
 #include "../stralloc.H"
 
 int
-stralloc_expand(stralloc* sa, const char* s) {
+stralloc_expand(stralloc* sa) {
 #if WINDOWS
-  size_t n = str_len(s) * 2 + 4;
+  const char* s;
+  size_t n;
+  stralloc_nul(sa);
+  s = sa->s;
+  n = sa->len * 2 + 4;
+
+  sa->s = sa->len = sa->a = 0;
 
   do {
     /* reserve some space */
     stralloc_ready(sa, n);
     /* repeat until we have reserved enough space */
-  } while((n = ExpandEnvironmentStrings(s, sa->s, sa->len)) > sa->len);
+  } while((n = ExpandEnvironmentStrings(s, sa->s, sa->a)) > sa->a);
 
   /* now truncate to effective length */
   if(n > 0)
     stralloc_trunc(sa, n - 1);
 
+  free(s);
+
   return n;
-#else
-  return stralloc_copys(sa, s);
 #endif
 }

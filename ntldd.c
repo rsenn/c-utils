@@ -46,6 +46,29 @@ MSDN Magazine articles
 #define RRF_RT_ANY 0xffff
 #endif
 
+#if defined(__CYGWIN__) || defined(__MSYS__)
+#include <sys/cygwin.h>
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
+
+#ifdef HAVE_CYGWIN_CONV_PATH
+#define cygwin_conv_to_full_posix_path(from, to) cygwin_conv_path(CCP_WIN_A_TO_POSIX|CCP_ABSOLUTE, (from), (to), MAX_PATH)
+#endif
+
+void
+pathconv(const char* path, stralloc* sa) {
+  stralloc_ready(sa, MAX_PATH);
+  cygwin_conv_to_full_posix_path(path, sa->s);
+  sa->len = str_len(sa->s);
+}
+#else
+void
+pathconv(const char* path, stralloc* sa) {
+  stralloc_copys(sa, path);
+}
+#endif
+
 void
 printversion() {
   buffer_puts(buffer_1, "ntldd ");
@@ -222,8 +245,10 @@ registry_query(const char* key, const char* value, stralloc* sa) {
     stralloc_ready(sa, PATH_MAX + 1);
     sa->len = sa->a;
     ret = RegGetValueA(rkey, strchr(key, '\\') + 1, "Path", RRF_RT_ANY, &type, sa->s, &sa->len);
-    if(ret == ERROR_SUCCESS)
-    return sa->len  = str_len(sa->s);
+    if(ret == ERROR_SUCCESS) {
+      if(type = REG_EXPAND_SZ) stralloc_expand(sa);
+      return sa->len = str_len(sa->s);
+    }
   }
   return 0;
 }
@@ -246,14 +271,17 @@ add_path(strlist* sp, const char* path) {
     strlist_froms(&tmp, path, s);
 
     __strlist_foreach(&tmp, path) {
-      stralloc_copys(&dir, path);
+      pathconv(path, &dir);
 
-      if(!stralloc_endb(&dir, sep, 1))
-        stralloc_catc(&dir, *sep);
+      if(dir.s[0] == '/')
+        sep = dir.s;
+
+      if(!stralloc_endb(&dir, sep, 1)) stralloc_catc(&dir, *sep);
 
       strlist_push_unique_sa(sp, &dir);
     }
     strlist_free(&tmp);
+    stralloc_free(&dir);
   }
 }
 #endif
@@ -340,7 +368,9 @@ main(int argc, char** argv) {
   {
     stralloc rpath;
     stralloc_init(&rpath);
-    const char* const keys[] = {  "HKCU\\Environment", "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment", 0 };
+    const char* const keys[] = {"HKCU\\Environment",
+                                "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
+                                0};
     int kidx;
 
     for(kidx = 0; keys[kidx]; ++kidx) {
