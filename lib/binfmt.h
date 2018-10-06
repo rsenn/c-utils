@@ -2,6 +2,7 @@
 #define BINFMT_H 1
 
 #include "uint8.h"
+#include "uint32.h"
 #include "uint64.h"
 #include "range.h"
 
@@ -28,7 +29,7 @@ typedef enum {
 
 typedef struct {
 	const char* name;
-	uint64 addr:
+	uint64 addr;
 	uint64 offs;
 	uint64 size;
 	uint32 flags;

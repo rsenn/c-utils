@@ -1195,6 +1195,7 @@ main(int argc, char* argv[]) {
   for(;;) {
     c = getopt_long(argc, argv, "Ldhl:", opts, &index);
     if(c == -1) break;
+    if(c == 0) continue;
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;

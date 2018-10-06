@@ -396,6 +396,8 @@ main(int argc, char* argv[]) {
   };
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {
+    if(opt == 0) continue;
+
     switch(opt) {
       case 'c': csv = 1; break;
       case 'd': debug++; break;

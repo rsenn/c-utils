@@ -25,16 +25,16 @@ main(int argc, char** argv) {
   base = (uint8*)mmap_private(argv[1], &filesize);
 
   {
-	const char* interp = elf_get_section(base, ".interp", NULL);
-	
+    const char* interp = elf_get_section(base, ".interp", NULL);
+
     elf_dump_sections(base);
     elf_dump_segments(base);
     elf_dump_dynamic(base);
-	
-	if(interp) {
-		buffer_putm(buffer_1, "Interpreter: ", interp);
-		buffer_putnlflush(buffer_1);
-	}
+
+    if(interp) {
+      buffer_putm(buffer_1, "Interpreter: ", interp);
+      buffer_putnlflush(buffer_1);
+    }
     /*    elf_dump_imports(base);*/
   }
 
@@ -98,7 +98,7 @@ elf_dump_dynamic(uint8* base) {
 
 void
 elf_dump_symbols(uint8* base, uint8* tab, size_t size, const char* stname) {
-  range symtab = {  tab, tab + size, symtab.elem_size = ELF_BITS(base) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym) };
+  range symtab = {tab, tab + size, symtab.elem_size = ELF_BITS(base) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym)};
   void* symbol;
   int si = elf_section_index(base, stname);
   const char* strtab = elf_section_offset(base, si);
@@ -116,7 +116,7 @@ elf_dump_symbols(uint8* base, uint8* tab, size_t size, const char* stname) {
     buffer_putspad(buffer_1, &(strtab[name]), 32);
     /*buffer_puts(buffer_1, "0x");
     buffer_putxlong0(buffer_1, name, 8);
-   */ buffer_puts(buffer_1, " 0x");
+    */ buffer_puts(buffer_1, " 0x");
     buffer_putxlonglong0(buffer_1, value, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
     buffer_putxlonglong0(buffer_1, size, ELF_BITS(base) / 4);

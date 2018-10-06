@@ -19,10 +19,11 @@
 char*
 mmap_private_fd(fd_t fd, size_t* filesize) {
 #if WINDOWS_NATIVE
+  HANDLE h = _get_osfhandle(fd);
   HANDLE m;
   char* map;
-  if(fd == INVALID_HANDLE_VALUE) return 0;
-  m = CreateFileMapping(fd, 0, PAGE_WRITECOPY, 0, 0, NULL);
+  if(h == INVALID_HANDLE_VALUE) return 0;
+  m = CreateFileMapping(h, 0, PAGE_WRITECOPY, 0, 0, NULL);
   map = 0;
   if(m)
     if((map = MapViewOfFile(m, FILE_MAP_COPY, 0, 0, 0))) *filesize = GetFileSize(fd, NULL);

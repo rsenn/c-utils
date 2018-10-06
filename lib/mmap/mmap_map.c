@@ -2,8 +2,8 @@
 
 #include "../io.h"
 #if WINDOWS_NATIVE
-#include <stdio.h>
 #include <windows.h>
+#include <io.h>
 #else
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -11,10 +11,6 @@
 #include "../mmap.h"
 #include "../open.h"
 //#include "../uint64.h"
-
-#ifdef __MINGW64__
-intptr_t __cdecl __declspec(dllimport) _get_osfhandle(int _FileHandle);
-#endif
 
 char*
 mmap_map(fd_t fd, size_t sz, uint64 offset) {

@@ -1,10 +1,10 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 
 #include "lib/elf.h"
+#include "lib/mmap.h"
 #include "lib/uint16.h"
 #include "lib/uint32.h"
 #include "lib/uint64.h"
-#include "lib/mmap.h"
 #include <stdio.h>
 #include <string.h>
 

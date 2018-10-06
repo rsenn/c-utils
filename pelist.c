@@ -103,7 +103,7 @@ pe_dump_imports(uint8* base) {
 
   for(i = 0; imports[i].original_first_thunk; ++i) {
     const char* name = pe_rva2ptr(base, uint32_get(&imports[i].name));
- uint32 thunk;
+    uint32 thunk;
     if(name[0] == '\0') break;
 
     thunk = uint32_get(&imports[i].original_first_thunk);
@@ -148,7 +148,6 @@ pe_dump_imports(uint8* base) {
   }
 }
 
-
 void
 usage(char* av0) {
   buffer_putm(buffer_1,
@@ -159,12 +158,12 @@ usage(char* av0) {
               "Options:\n",
               "\n",
               "  -h, --help              Show this help\n",
-			  "  -i, --imports           List imports\n",
-			  "  -e, --exports           List exports\n",
-			  "  -d, --deps              List DLL dependencies\n",
-			  "  -s, --sections          List PE32 sections\n",
-			  "  -E, --export-directory  Print export directory\n",
-			  "  -D, --data-directory    Print data directory\n",
+              "  -i, --imports           List imports\n",
+              "  -e, --exports           List exports\n",
+              "  -d, --deps              List DLL dependencies\n",
+              "  -s, --sections          List PE32 sections\n",
+              "  -E, --export-directory  Print export directory\n",
+              "  -D, --data-directory    Print data directory\n",
               "\n");
   buffer_flush(buffer_1);
 }
@@ -174,21 +173,21 @@ main(int argc, char** argv) {
   uint8* base = NULL;
   size_t filesize;
 
-  int index, c;
+  int c, index = 0;
 
-  struct longopt opts[] = {
-      {"help", 0, NULL, 'h'},
-      {"imports", 0, &list_imports, 'i'},
-      {"exports", 0, &list_exports, 'e'},
-      {"deps", 0, &list_deps, 'd'},
-      {"sections", 0, &list_sections, 's'},
-      {"export-directory", 0, &print_export_dir, 'E'},
-      {"data-directory", 0, &print_data_dir, 'D'},
-  };
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"imports", 0, &list_imports, 'i'},
+                           {"exports", 0, &list_exports, 'e'},
+                           {"deps", 0, &list_deps, 'd'},
+                           {"sections", 0, &list_sections, 's'},
+                           {"export-directory", 0, &print_export_dir, 'E'},
+                           {"data-directory", 0, &print_data_dir, 'D'},
+                           {NULL, 0, NULL, 0}};
 
   for(;;) {
-    c = getopt_long(argc, argv, "hieds", opts, &index);
+    c = getopt_long(argc, argv, "hiedsED", opts, &index);
     if(c == -1) break;
+    if(c == '\0') continue;
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
@@ -199,45 +198,51 @@ main(int argc, char** argv) {
       case 'E':
       case 'D': break;
       default: {
-		  usage(argv[0]);
+        usage(argv[0]);
         return 1;
       }
     }
   }
 
-  base = (uint8*)mmap_private(argv[1], &filesize);
+  for(; argv[optind]; ++optind) {
+    base = (uint8*)mmap_private(argv[optind], &filesize);
 
-  {
-    pe32_nt_headers* nt_headers = pe_header_nt(base);
+    if(base) {
+      pe32_nt_headers* nt_headers = pe_header_nt(base);
 
-    if(nt_headers->signature != PE_NT_SIGNATURE) {
-      buffer_putsflush(buffer_2, "not PE\n");
-      return -1;
-    }
+      if(nt_headers->signature != PE_NT_SIGNATURE) {
+        buffer_putsflush(buffer_2, "not PE\n");
+        return -1;
+      }
 
-    // if(!(nt_headers->coff_header.characteristics & PE_FILE_DLL)) {
-    // buffer_putsflush(buffer_2, "not DLL\n");
-    // return -1;
-    // }
-    if(list_sections) pe_dump_sections(base);
+      // if(!(nt_headers->coff_header.characteristics & PE_FILE_DLL)) {
+      // buffer_putsflush(buffer_2, "not DLL\n");
+      // return -1;
+      // }
+      if(list_sections) pe_dump_sections(base);
 
-    if(list_exports) pe_dump_exports(base);
-    if(list_imports) pe_dump_imports(base);
+      if(list_exports) pe_dump_exports(base);
+      if(list_imports) pe_dump_imports(base);
 
-    if(print_export_dir) {
-      pe_data_directory* data_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_EXPORT];
-      pe_export_directory* export_dir = pe_rva2ptr(base, data_dir->virtual_address);
+      if(print_export_dir) {
+        pe_data_directory* data_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_EXPORT];
+        pe_export_directory* export_dir = pe_rva2ptr(base, data_dir->virtual_address);
 
-      pe_print_export_directory(buffer_2, export_dir);
-    }
-    if(print_data_dir) {
-      pe_data_directory* data_dir = pe_header_datadir(base);
+        pe_print_export_directory(buffer_2, export_dir);
+      }
+      if(print_data_dir) {
+        pe_data_directory* data_dir = pe_header_datadir(base);
 
-      pe_print_data_directory(buffer_2,  data_dir);
+        pe_print_data_directory(buffer_2, data_dir);
+      }
+
+      mmap_unmap(base, filesize);
+    } else {
+      buffer_putm(buffer_2, "ERROR: No such file or directory '", argv[optind], "'");
+      buffer_putnlflush(buffer_2);
+      return 127;
     }
   }
-
-  mmap_unmap(base, filesize);
 
   return 0;
 }

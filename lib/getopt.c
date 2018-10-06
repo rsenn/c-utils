@@ -6,6 +6,8 @@
  * Released under the MIT license
  * https://github.com/takamin/win-c/blob/master/LICENSE
  */
+#if !defined(HAVE_GETOPT) || !defined(HAVE_GETOPT_LONG)
+
 #include "lib/getopt.h"
 #include "lib/buffer.h"
 #include <stdio.h>
@@ -207,15 +209,20 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
   return -1;
 }
 
+#ifndef HAVE_GETOPT
 int
 getopt(int argc, char* const argv[], const char* optstring) {
   return _getopt_(argc, argv, optstring, 0, 0);
 }
+#endif
 
+#ifndef HAVE_GETOPT_LONG
 int
 getopt_long(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
   return _getopt_(argc, argv, optstring, longopts, longindex);
 }
+#endif
+
 /********************************************************
 int getopt_long_only(int argc, char* const argv[],
         const char* optstring,
@@ -224,3 +231,4 @@ int getopt_long_only(int argc, char* const argv[],
     return -1;
 }
 ********************************************************/
+#endif /* !defined(HAVE_GETOPT) || !defined(HAVE_GETOPT_LONG) */

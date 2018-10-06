@@ -1,5 +1,4 @@
 #include "../windoze.h"
-
 #include "../io.h"
 #include "../mmap.h"
 #include "../open.h"
@@ -12,7 +11,7 @@
 
 char*
 mmap_private(const char* filename, size_t* filesize) {
-#if defined(_WIN32) || defined(_WIN32) || defined(__MINGW64__) || defined(_WIN64)
+#if WINDOWS_NATIVE
   HANDLE fd, m;
   char* map;
   fd = CreateFile(filename,

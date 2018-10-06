@@ -24,11 +24,11 @@ MSDN Magazine articles
 */
 
 #include "lib/getopt.h"
-#include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/uint64.h"
+#include "lib/windoze.h"
 #include "lib/windoze.h"
 
 #include <limits.h>
@@ -216,13 +216,14 @@ registry_query(const char* key, const char* value, stralloc* sa) {
   } else if(!str_diffn(key, "HKU", 3) || !str_diffn(key, "HKEY_USERS", 10)) {
     rkey = HKEY_LOCAL_MACHINE;
   }
- 
+
   /*DWORD ret = RegOpenKeyA(rkey, strchr(key, '\\') + 1, &hkey);
   if(ret == ERROR_SUCCESS)*/ {
     stralloc_ready(sa, PATH_MAX + 1);
     sa->len = sa->a;
     ret = RegGetValueA(rkey, strchr(key, '\\') + 1, "Path", RRF_RT_ANY, &type, sa->s, &sa->len);
-    if(ret == ERROR_SUCCESS) return sa->len;
+    if(ret == ERROR_SUCCESS)
+    return sa->len  = str_len(sa->s);
   }
   return 0;
 }
@@ -237,19 +238,22 @@ add_path(strlist* sp, const char* path) {
     s = ';';
   }
 
-{
-  stralloc dir;
-  strlist tmp;
-  stralloc_init(&dir);
-  strlist_init(&tmp, '\0');
-  strlist_froms(&tmp, path, s);
+  {
+    stralloc dir;
+    strlist tmp;
+    stralloc_init(&dir);
+    strlist_init(&tmp, '\0');
+    strlist_froms(&tmp, path, s);
 
-  __strlist_foreach(&tmp, path) {
-    stralloc_copys(&dir, path);
-    stralloc_catc(&dir, *sep);
-    strlist_push_unique_sa(sp, &dir);
-  }
-  strlist_free(&tmp);
+    __strlist_foreach(&tmp, path) {
+      stralloc_copys(&dir, path);
+
+      if(!stralloc_endb(&dir, sep, 1))
+        stralloc_catc(&dir, *sep);
+
+      strlist_push_unique_sa(sp, &dir);
+    }
+    strlist_free(&tmp);
   }
 }
 #endif
@@ -293,6 +297,8 @@ main(int argc, char** argv) {
   for(;;) {
     c = getopt_long(argc, argv, "hvudrRei", opts, &index);
     if(c == -1) break;
+    if(c == 0) continue;
+
     switch(c) {
       case 'h':
         printhelp(argv[0]);
@@ -334,10 +340,18 @@ main(int argc, char** argv) {
   {
     stralloc rpath;
     stralloc_init(&rpath);
-    if(registry_query("HKCU\\Environment", "Path", &rpath)) {
-      buffer_puts(buffer_2, "Registry path: ");
-      buffer_putsa(buffer_2, &rpath);
-      buffer_putnlflush(buffer_2);
+    const char* const keys[] = {  "HKCU\\Environment", "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment", 0 };
+    int kidx;
+
+    for(kidx = 0; keys[kidx]; ++kidx) {
+      if(registry_query(keys[kidx], "Path", &rpath)) {
+        buffer_putm(buffer_2, "Registry path [", keys[kidx], "]: ");
+        buffer_putsa(buffer_2, &rpath);
+        buffer_putnlflush(buffer_2);
+
+        stralloc_nul(&rpath);
+        add_path(&sp, rpath.s);
+      }
     }
   }
 #endif
