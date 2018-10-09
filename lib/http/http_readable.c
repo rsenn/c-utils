@@ -72,9 +72,9 @@ http_readable(http* h) {
         recvb.x = r->body.s;
       }
       if(ret == 0)
-        r->status = CLOSED;
+        r->status = HTTP_STATUS_CLOSED;
       else if(err != 0)
-        r->status = ERR;
+        r->status = HTTP_STATUS_ERROR;
       break;
     }
 
@@ -84,11 +84,11 @@ http_readable(http* h) {
       ret = buffer_getline(&recvb, line, sizeof(line));
 
       if(ret == 0 && line[0] == '\0') {
-     //   putline("Again", line, 0, &recvb);
+        //   putline("Again", line, 0, &recvb);
         return;
       }
 
-    //  putline("Line", line, 0, &recvb);
+      //  putline("Line", line, 0, &recvb);
 
       r->ptr = recvb.p;
       r->line++;
@@ -98,9 +98,9 @@ http_readable(http* h) {
         while(ret > 0 && is_space(line[ret - 1])) ret--;
         line[ret] = '\0';
 
-        if(r->part < CHUNKS && line[str_chr(line, ':')] == ':') {
-          /*  if(r->part == HEADER)*/ putline("Header", line, ret, &recvb);
-          r->part = HEADER;
+        if(r->status < HTTP_RECV_DATA && line[str_chr(line, ':')] == ':') {
+          /*  if(r->status == HTTP_RECV_HEADER)*/ putline("Header", line, ret, &recvb);
+          r->status = HTTP_RECV_HEADER;
 
           if(!str_diffn(line, "Content-Type: multipart", 23)) {
             static const char* const boundstr = "boundary=";
@@ -111,20 +111,20 @@ http_readable(http* h) {
             }
           }
         } else {
-          if(r->part == HEADER) r->part = CHUNKS;
+          if(r->status == HTTP_RECV_HEADER) r->status = HTTP_RECV_DATA;
         }
 
-        if(r->part == CHUNKS && r->boundary.len) {
+        if(r->status == HTTP_RECV_DATA && r->boundary.len) {
           stralloc_zero(&r->data);
 
           if(!buffer_get_token_sa_pred(&recvb, &r->data, boundary_predicate, &r->boundary)) {
             putline("Boundary", r->data.s, r->data.len, &recvb);
           }
-        } else if(r->part == CHUNKS && (p = scan_xlong(line, &n)) > 0) {
+        } else if(r->status == HTTP_RECV_DATA && (p = scan_xlong(line, &n)) > 0) {
           ssize_t n;
 
           if(n == 0) {
-            r->status = DONE;
+            r->status = HTTP_STATUS_FINISH;
             return;
           } else if(recvb.n - recvb.p >= n) {
             stralloc_readyplus(&r->data, n);
@@ -144,7 +144,7 @@ http_readable(http* h) {
           continue;
         }
 
-        if(!r->part) {
+        if(!r->status) {
           putline("Response", line, ret, &recvb);
         }
       }

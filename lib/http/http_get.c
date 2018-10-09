@@ -26,7 +26,7 @@ http_get(http* h, const char* location) {
   if(dns_ip4(&dns, &h->host) == -1) {
     errmsg_warnsys("ERROR: resolving ", h->host.s, ": ", NULL);
     return 0;
-    }
+  }
 
   a = (void*)dns.s;
 
@@ -44,8 +44,8 @@ http_get(http* h, const char* location) {
   buffer_putulong(buffer_2, (a->iaddr >> 24) & 0xff);
   buffer_puts(buffer_2, ")");
   buffer_putnlflush(buffer_2);
-  h->sock = socket_tcp4();
-  io_nonblock(h->sock);
+
+  http_socket(h);
 
   if(h->request) {
     serial = h->request->serial + 1;

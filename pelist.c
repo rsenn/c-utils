@@ -16,7 +16,9 @@ void pe_dump_sections(uint8* base);
 void
 pe_print_data_directory(buffer* b, uint8* base, pe_data_directory* data_dir) {
   buffer_puts(b, "virtual_address: 0x");
-  buffer_putxlonglong0(b, pe_rva2ptr(base, uint32_get(&data_dir->virtual_address)), sizeof(data_dir->virtual_address) * 2);
+  buffer_putxlonglong0(b,
+                       pe_rva2ptr(base, uint32_get(&data_dir->virtual_address)),
+                       sizeof(data_dir->virtual_address) * 2);
   buffer_puts(b, " size: 0x");
   buffer_putxlonglong0(b, uint32_get(&data_dir->size), sizeof(data_dir->size) * 2);
   buffer_putnlflush(b);
@@ -41,11 +43,17 @@ pe_print_export_directory(buffer* b, uint8* base, pe_export_directory* export_di
   buffer_puts(b, "\nnumber_of_names: ");
   buffer_putulong(b, uint32_get(&export_dir->number_of_names));
   buffer_puts(b, "\naddress_of_functions: ");
-  buffer_putxlong0(b, pe_rva2ptr(base, uint32_get(&export_dir->address_of_functions)), sizeof(export_dir->address_of_functions) * 2);
+  buffer_putxlong0(b,
+                   pe_rva2ptr(base, uint32_get(&export_dir->address_of_functions)),
+                   sizeof(export_dir->address_of_functions) * 2);
   buffer_puts(b, "\naddress_of_names: ");
-  buffer_putxlong0(b, pe_rva2ptr(base, uint32_get(&export_dir->address_of_names)), sizeof(export_dir->address_of_names) * 2);
+  buffer_putxlong0(b,
+                   pe_rva2ptr(base, uint32_get(&export_dir->address_of_names)),
+                   sizeof(export_dir->address_of_names) * 2);
   buffer_puts(b, "\naddress_of_name_ordinals: ");
-  buffer_putxlong0(b, pe_rva2ptr(base, uint32_get(&export_dir->address_of_name_ordinals)), sizeof(export_dir->address_of_name_ordinals) * 2);
+  buffer_putxlong0(b,
+                   pe_rva2ptr(base, uint32_get(&export_dir->address_of_name_ordinals)),
+                   sizeof(export_dir->address_of_name_ordinals) * 2);
   buffer_putnlflush(b);
 }
 
@@ -281,7 +289,9 @@ pe_dump_sections(uint8* base) {
     buffer_puts(buffer_1, " 0x");
     buffer_putxlonglong0(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, uint32_get(&sections[i].pointer_to_raw_data), sizeof(sections[i].pointer_to_raw_data) * 2);
+    buffer_putxlonglong0(buffer_1,
+                         uint32_get(&sections[i].pointer_to_raw_data),
+                         sizeof(sections[i].pointer_to_raw_data) * 2);
     buffer_putnlflush(buffer_1);
   }
 }

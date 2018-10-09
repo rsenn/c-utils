@@ -75,7 +75,7 @@ main(int argc, char* argv[]) {
     if(iop.revents & IOPAUSE_READ) {
       http_readable(&h);
 
-      if(h.response->status == DONE) break;
+      if(h.response->status == HTTP_STATUS_FINISH) break;
     }
   }
 

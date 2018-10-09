@@ -1786,3 +1786,7 @@ $(BUILDDIR)strlist_append_sa.o: lib/strlist/strlist_append_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_get_value.o: lib/pe/pe_get_value.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)http_socket.o: lib/http/http_socket.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_write_fd.o: lib/buffer/buffer_write_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

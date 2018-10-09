@@ -70,6 +70,8 @@
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static array exclude_masks;
+static char opt_separator = PATHSEP_C;
+
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_relative = NULL;
 static const char* opt_timestyle = "%b %2e %H:%M";
@@ -534,7 +536,7 @@ list_dir_internal(stralloc* dir, char type) {
       stralloc_catb(&pre, " ", 1);
     }
     /* fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d)); */
-    if(is_dir) stralloc_cats(dir, PATHSEP_S);
+    if(is_dir) stralloc_catc(dir, opt_separator);
     if(dir->len > MAXIMUM_PATH_LENGTH) {
       buffer_puts(buffer_2, "ERROR: Directory ");
       buffer_putsa(buffer_2, dir);
@@ -634,6 +636,9 @@ main(int argc, char* argv[]) {
       {"output", 1, NULL, 'o'},
       {"exclude", 1, NULL, 'x'},
       {"time-style", 1, NULL, 't'},
+#if defined(_WIN32) ||  defined(_WIN64)
+      {"separator", 1, NULL, 's'},
+#endif
   };
 
 #if WINDOWS && defined(O_BINARY)
@@ -658,6 +663,10 @@ main(int argc, char* argv[]) {
       }
       case 't': {
         opt_timestyle = optarg;
+        break;
+      }
+      case 's': {
+        opt_separator = optarg[0];
         break;
       }
       case 'l':

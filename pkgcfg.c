@@ -174,7 +174,7 @@ pkg_read(buffer* b, pkg* p) {
       stralloc_trim(&value, "\r\n\t \0", 5);
       stralloc_nul(&value);
       stralloc_nul(&name);
-#if 0 /* def DEBUG */
+#ifdef DEBUG_OUTPUT
       buffer_putm(buffer_2, "Name: ", name.s, "\n");
       buffer_putm(buffer_2, "Value: ", value.s, "\n");
       buffer_flush(buffer_2);
@@ -208,7 +208,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
 
 /* wordexp_sa(value, &v); */
 
-#ifdef DEBUG
+#ifdef DEBUG_OUTPUT
   buffer_putm(buffer_2, "ENV SET ", key, "=");
   buffer_putsa(buffer_2, &v);
   buffer_putnlflush(buffer_2);
@@ -325,6 +325,7 @@ pkg_list() {
           buffer pc;
           pkg pf;
 
+          stralloc_init(&line);
           stralloc_nul(&path);
           pkg_init(&pf, path.s);
 
@@ -332,7 +333,7 @@ pkg_list() {
             path.len -= 3;
             stralloc_nul(&path);
 
-            stralloc_copys(&line, path_basename(path.s));
+            stralloc_copys(&line, str_basename(path.s));
 
             if(pkg_read(&pc, &pf)) {
               const char* desc;
