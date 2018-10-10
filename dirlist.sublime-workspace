@@ -47,15 +47,18 @@
 			"file": "pelist.c",
 			"settings":
 			{
-				"buffer_size": 9647,
+				"buffer_size": 9857,
 				"line_ending": "Unix"
 			}
 		},
 		{
+			"contents": "# Sample configuration file for Polipo. -*-sh-*-\n\n# You should not need to use a configuration file; all configuration\n# variables have reasonable defaults.  If you want to use one, you\n# can copy this to /etc/polipo/config or to ~/.polipo and modify.\n\n# This file only contains some of the configuration variables; see the\n# list given by ``polipo -v'' and the manual for more.\n\n\n### Basic configuration\n### *******************\n\n# Uncomment one of these if you want to allow remote clients to\n# connect:\n\n# proxyAddress = \"::0\"        # both IPv4 and IPv6\n# proxyAddress = \"0.0.0.0\"    # IPv4 only\n\n# If you do that, you'll want to restrict the set of hosts allowed to\n# connect:\n\n# allowedClients = 127.0.0.1, 134.157.168.57\n# allowedClients = 127.0.0.1, 134.157.168.0/24\n\n# Uncomment this if you want your Polipo to identify itself by\n# something else than the host name:\n\n# proxyName = \"polipo.example.org\"\n\n# Uncomment this if there's only one user using this instance of Polipo:\n\n# cacheIsShared = false\n\n# Uncomment this if you want to use a parent proxy:\n\n# parentProxy = \"squid.example.org:3128\"\n\n# Uncomment this if you want to use a parent SOCKS proxy:\n\nsocksParentProxy = \"localhost:9050\"\nsocksProxyType = socks5\n\n# Uncomment this if you want to scrub private information from the log:\n\n# scrubLogs = true\n\n\n### Memory\n### ******\n\n# Uncomment this if you want Polipo to use a ridiculously small amount\n# of memory (a hundred C-64 worth or so):\n\n# chunkHighMark = 819200\n# objectHighMark = 128\n\n# Uncomment this if you've got plenty of memory:\n\n# chunkHighMark = 50331648\n# objectHighMark = 16384\n\n\n### On-disk data\n### ************\n\n# Uncomment this if you want to disable the on-disk cache:\n\n# diskCacheRoot = \"\"\n\n# Uncomment this if you want to put the on-disk cache in a\n# non-standard location:\n\n# diskCacheRoot = \"~/.polipo-cache/\"\n\n# Uncomment this if you want to disable the local web server:\n\n# localDocumentRoot = \"\"\n\n# Uncomment this if you want to enable the pages under /polipo/index?\n# and /polipo/servers?.  This is a serious privacy leak if your proxy\n# is shared.\n\n# disableIndexing = false\n# disableServersList = false\n\n\n### Domain Name System\n### ******************\n\n# Uncomment this if you want to contact IPv4 hosts only (and make DNS\n# queries somewhat faster):\n\n# dnsQueryIPv6 = no\n\n# Uncomment this if you want Polipo to prefer IPv4 to IPv6 for\n# double-stack hosts:\n\n# dnsQueryIPv6 = reluctantly\n\n# Uncomment this to disable Polipo's DNS resolver and use the system's\n# default resolver instead.  If you do that, Polipo will freeze during\n# every DNS query:\n\n# dnsUseGethostbyname = yes\n\n\n### HTTP\n### ****\n\n# Uncomment this if you want to enable detection of proxy loops.\n# This will cause your hostname (or whatever you put into proxyName\n# above) to be included in every request:\n\n# disableVia=false\n\n# Uncomment this if you want to slightly reduce the amount of\n# information that you leak about yourself:\n\n# censoredHeaders = from, accept-language\n# censorReferer = maybe\n\n# Uncomment this if you're paranoid.  This will break a lot of sites,\n# though:\n\n# censoredHeaders = set-cookie, cookie, cookie2, from, accept-language\n# censorReferer = true\n\n# Uncomment this if you want to use Poor Man's Multiplexing; increase\n# the sizes if you're on a fast line.  They should each amount to a few\n# seconds' worth of transfer; if pmmSize is small, you'll want\n# pmmFirstSize to be larger.\n\n# Note that PMM is somewhat unreliable.\n\n# pmmFirstSize = 16384\n# pmmSize = 8192\n\n# Uncomment this if your user-agent does something reasonable with\n# Warning headers (most don't):\n\n# relaxTransparency = maybe\n\n# Uncomment this if you never want to revalidate instances for which\n# data is available (this is not a good idea):\n\n# relaxTransparency = yes\n\n# Uncomment this if you have no network:\n\n# proxyOffline = yes\n\n# Uncomment this if you want to avoid revalidating instances with a\n# Vary header (this is not a good idea):\n\n# mindlesslyCacheVary = true\n\n# Uncomment this if you want to add a no-transform directive to all\n# outgoing requests.\n\n# alwaysAddNoTransform = true\n ",
 			"file": "/B/Programs/polipo/config",
+			"file_size": 4104,
+			"file_write_time": 131697905140000000,
 			"settings":
 			{
-				"buffer_size": 4104,
+				"buffer_size": 4105,
 				"line_ending": "Unix"
 			}
 		},
@@ -684,7 +687,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9647,
+						"buffer_size": 9857,
 						"regions":
 						{
 						},
@@ -714,15 +717,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4104,
+						"buffer_size": 4105,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4104,
-								4104
+								4105,
+								4105
 							]
 						],
 						"settings":

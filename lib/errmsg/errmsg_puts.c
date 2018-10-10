@@ -9,12 +9,12 @@
 
 void
 errmsg_puts(int64 fd, const char* s) {
-  return write(fd, s, str_len(s));
+  write(fd, s, str_len(s));
 }
 
 void
 errmsg_flush(int64 fd) {
-  return 0;
+  return ;
 }
 
 #else
