@@ -1,6 +1,42 @@
+$(BUILDDIR)access.o: ./access.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)binfmttest.o: ./binfmttest.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)bsdiffcat.o: ./bsdiffcat.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffertest.o: ./buffertest.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)ccat.o: ./ccat.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)compiler-wrapper.o: ./compiler-wrapper.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)count-depth.o: ./count-depth.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)decode-ls-lR.o: ./decode-ls-lR.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dnsip.o: ./dnsip.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dnsname.o: ./dnsname.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dnstest.o: ./dnstest.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)eagle-gen-cmds.o: ./eagle-gen-cmds.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)eagle-init-brd.o: ./eagle-init-brd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)eagle-to-circuit.o: ./eagle-to-circuit.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf64list.o: ./elf64list.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elflist.o: ./elflist.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elfwrsec.o: ./elfwrsec.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hexedit.o: ./hexedit.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)httptest.o: ./httptest.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)impgen.o: ./impgen.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)jsontest.o: ./jsontest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -40,6 +76,20 @@ $(BUILDDIR)array_truncate.o: ./lib/array/array_truncate.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)binfmt_open.o: ./lib/binfmt/binfmt_open.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_0.o: ./lib/buffer/buffer_0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_0small.o: ./lib/buffer/buffer_0small.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_1.o: ./lib/buffer/buffer_1.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_1small.o: ./lib/buffer/buffer_1small.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_2.o: ./lib/buffer/buffer_2.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_bz2.o: ./lib/buffer/buffer_bz2.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_bzip.o: ./lib/buffer/buffer_bzip.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_close.o: ./lib/buffer/buffer_close.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_copy.o: ./lib/buffer/buffer_copy.c
@@ -61,68 +111,6 @@ $(BUILDDIR)buffer_flush.o: ./lib/buffer/buffer_flush.c
 $(BUILDDIR)buffer_free.o: ./lib/buffer/buffer_free.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_freshen.o: ./lib/buffer/buffer_freshen.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putulong.o: ./lib/buffer/buffer_putulong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putulong0.o: ./lib/buffer/buffer_putulong0.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putulonglong.o: ./lib/buffer/buffer_putulonglong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putxlong.o: ./lib/buffer/buffer_putxlong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putxlong0.o: ./lib/buffer/buffer_putxlong0.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putxlonglong.o: ./lib/buffer/buffer_putxlonglong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putxlonglong0.o: ./lib/buffer/buffer_putxlonglong0.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_put_escaped.o: ./lib/buffer/buffer_put_escaped.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_read.o: ./lib/buffer/buffer_read.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_read_fd.o: ./lib/buffer/buffer_read_fd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_seek.o: ./lib/buffer/buffer_seek.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_skipc.o: ./lib/buffer/buffer_skipc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_skipn.o: ./lib/buffer/buffer_skipn.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_skipspace.o: ./lib/buffer/buffer_skipspace.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_skip_pred.o: ./lib/buffer/buffer_skip_pred.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_skip_until.o: ./lib/buffer/buffer_skip_until.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_stubborn.o: ./lib/buffer/buffer_stubborn.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_stubborn2.o: ./lib/buffer/buffer_stubborn2.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_tosa.o: ./lib/buffer/buffer_tosa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_truncfile.o: ./lib/buffer/buffer_truncfile.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_write.o: ./lib/buffer/buffer_write.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_put.o: ./lib/buffer/buffer_put.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_put8long.o: ./lib/buffer/buffer_put8long.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putalign.o: ./lib/buffer/buffer_putalign.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putc.o: ./lib/buffer/buffer_putc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putdouble.o: ./lib/buffer/buffer_putdouble.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_puterror.o: ./lib/buffer/buffer_puterror.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_puterror2.o: ./lib/buffer/buffer_puterror2.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putflush.o: ./lib/buffer/buffer_putflush.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putint64.o: ./lib/buffer/buffer_putint64.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_putlong.o: ./lib/buffer/buffer_putlong.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_fromarray.o: ./lib/buffer/buffer_fromarray.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -190,6 +178,26 @@ $(BUILDDIR)buffer_peekc.o: ./lib/buffer/buffer_peekc.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_prefetch.o: ./lib/buffer/buffer_prefetch.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_put.o: ./lib/buffer/buffer_put.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_put8long.o: ./lib/buffer/buffer_put8long.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_putalign.o: ./lib/buffer/buffer_putalign.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_putc.o: ./lib/buffer/buffer_putc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_putdouble.o: ./lib/buffer/buffer_putdouble.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_puterror.o: ./lib/buffer/buffer_puterror.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_puterror2.o: ./lib/buffer/buffer_puterror2.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_putflush.o: ./lib/buffer/buffer_putflush.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_putint64.o: ./lib/buffer/buffer_putint64.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_putlong.o: ./lib/buffer/buffer_putlong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putlonglong.o: ./lib/buffer/buffer_putlonglong.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putm_internal.o: ./lib/buffer/buffer_putm_internal.c
@@ -222,21 +230,441 @@ $(BUILDDIR)buffer_puts_escaped.o: ./lib/buffer/buffer_puts_escaped.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_putuint64.o: ./lib/buffer/buffer_putuint64.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_0.o: ./lib/buffer/buffer_0.c
+$(BUILDDIR)buffer_putulong.o: ./lib/buffer/buffer_putulong.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_0small.o: ./lib/buffer/buffer_0small.c
+$(BUILDDIR)buffer_putulong0.o: ./lib/buffer/buffer_putulong0.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_1.o: ./lib/buffer/buffer_1.c
+$(BUILDDIR)buffer_putulonglong.o: ./lib/buffer/buffer_putulonglong.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_1small.o: ./lib/buffer/buffer_1small.c
+$(BUILDDIR)buffer_putxlong.o: ./lib/buffer/buffer_putxlong.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_2.o: ./lib/buffer/buffer_2.c
+$(BUILDDIR)buffer_putxlong0.o: ./lib/buffer/buffer_putxlong0.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_bz2.o: ./lib/buffer/buffer_bz2.c
+$(BUILDDIR)buffer_putxlonglong.o: ./lib/buffer/buffer_putxlonglong.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_bzip.o: ./lib/buffer/buffer_bzip.c
+$(BUILDDIR)buffer_putxlonglong0.o: ./lib/buffer/buffer_putxlonglong0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_put_escaped.o: ./lib/buffer/buffer_put_escaped.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_read.o: ./lib/buffer/buffer_read.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_read_fd.o: ./lib/buffer/buffer_read_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_seek.o: ./lib/buffer/buffer_seek.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_skipc.o: ./lib/buffer/buffer_skipc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_skipn.o: ./lib/buffer/buffer_skipn.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_skipspace.o: ./lib/buffer/buffer_skipspace.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_skip_pred.o: ./lib/buffer/buffer_skip_pred.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_skip_until.o: ./lib/buffer/buffer_skip_until.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_stubborn.o: ./lib/buffer/buffer_stubborn.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_stubborn2.o: ./lib/buffer/buffer_stubborn2.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_tosa.o: ./lib/buffer/buffer_tosa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_truncfile.o: ./lib/buffer/buffer_truncfile.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_write.o: ./lib/buffer/buffer_write.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)buffer_write_fd.o: ./lib/buffer/buffer_write_fd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_dummyreadmmap.o: ./lib/buffer_dummyreadmmap.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_case_diff.o: ./lib/byte/byte_case_diff.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_case_equal.o: ./lib/byte/byte_case_equal.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_case_start.o: ./lib/byte/byte_case_start.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_chr.o: ./lib/byte/byte_chr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_copy.o: ./lib/byte/byte_copy.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_copyr.o: ./lib/byte/byte_copyr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_count.o: ./lib/byte/byte_count.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_diff.o: ./lib/byte/byte_diff.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_equal.o: ./lib/byte/byte_equal.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_fill.o: ./lib/byte/byte_fill.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_fmt.o: ./lib/byte/byte_fmt.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_lower.o: ./lib/byte/byte_lower.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_rchr.o: ./lib/byte/byte_rchr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_scan.o: ./lib/byte/byte_scan.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_upper.o: ./lib/byte/byte_upper.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_zero.o: ./lib/byte/byte_zero.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)case_diffb.o: ./lib/case/case_diffb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)case_diffs.o: ./lib/case/case_diffs.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)case_lowerb.o: ./lib/case/case_lowerb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)case_lowers.o: ./lib/case/case_lowers.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)case_starts.o: ./lib/case/case_starts.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cb_clear.o: ./lib/cb/cb_clear.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cb_erase.o: ./lib/cb/cb_erase.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cb_find.o: ./lib/cb/cb_find.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cb_find_prefix.o: ./lib/cb/cb_find_prefix.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cb_foreach.o: ./lib/cb/cb_foreach.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cb_get_kv.o: ./lib/cb/cb_get_kv.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cb_get_kv_ex.o: ./lib/cb/cb_get_kv_ex.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cb_insert.o: ./lib/cb/cb_insert.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cb_new_kv.o: ./lib/cb/cb_new_kv.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)alloc.o: ./lib/cbmap/alloc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_count.o: ./lib/cbmap/cbmap_count.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_data_node_destroy.o: ./lib/cbmap/cbmap_data_node_destroy.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_delete.o: ./lib/cbmap/cbmap_delete.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_destroy.o: ./lib/cbmap/cbmap_destroy.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_get.o: ./lib/cbmap/cbmap_get.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_insert.o: ./lib/cbmap/cbmap_insert.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_internal_node.o: ./lib/cbmap/cbmap_internal_node.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_new.o: ./lib/cbmap/cbmap_new.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_visit.o: ./lib/cbmap/cbmap_visit.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)cbmap_visit_all.o: ./lib/cbmap/cbmap_visit_all.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_close.o: ./lib/charbuf/charbuf_close.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_get.o: ./lib/charbuf/charbuf_get.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_getc.o: ./lib/charbuf/charbuf_getc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_init.o: ./lib/charbuf/charbuf_init.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_nextc.o: ./lib/charbuf/charbuf_nextc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_peek.o: ./lib/charbuf/charbuf_peek.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_peekc.o: ./lib/charbuf/charbuf_peekc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_skip.o: ./lib/charbuf/charbuf_skip.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_skip_pred.o: ./lib/charbuf/charbuf_skip_pred.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)charbuf_skip_until.o: ./lib/charbuf/charbuf_skip_until.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dir_close.o: ./lib/dir/dir_close.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dir_name.o: ./lib/dir/dir_name.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dir_open.o: ./lib/dir/dir_open.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dir_read.o: ./lib/dir/dir_read.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dir_time.o: ./lib/dir/dir_time.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dir_type.o: ./lib/dir/dir_type.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_dfd.o: ./lib/dns/dns_dfd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_domain.o: ./lib/dns/dns_domain.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_dtda.o: ./lib/dns/dns_dtda.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_ip4.o: ./lib/dns/dns_ip4.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_ip6.o: ./lib/dns/dns_ip6.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_ipq.o: ./lib/dns/dns_ipq.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_ipq6.o: ./lib/dns/dns_ipq6.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_mx.o: ./lib/dns/dns_mx.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_name.o: ./lib/dns/dns_name.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_nd.o: ./lib/dns/dns_nd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_nd6.o: ./lib/dns/dns_nd6.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_packet.o: ./lib/dns/dns_packet.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_random.o: ./lib/dns/dns_random.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_rcip.o: ./lib/dns/dns_rcip.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_rcrw.o: ./lib/dns/dns_rcrw.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_resolve.o: ./lib/dns/dns_resolve.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_sortip.o: ./lib/dns/dns_sortip.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_sortip6.o: ./lib/dns/dns_sortip6.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_transmit.o: ./lib/dns/dns_transmit.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dns_txt.o: ./lib/dns/dns_txt.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_dynamic_section.o: ./lib/elf/elf_dynamic_section.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_get_section.o: ./lib/elf/elf_get_section.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_get_value.o: ./lib/elf/elf_get_value.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_header.o: ./lib/elf/elf_header.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_program_headers.o: ./lib/elf/elf_program_headers.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_section_headers.o: ./lib/elf/elf_section_headers.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_section_index.o: ./lib/elf/elf_section_index.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_section_offset.o: ./lib/elf/elf_section_offset.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_section_size.o: ./lib/elf/elf_section_size.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_section_type.o: ./lib/elf/elf_section_type.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)elf_shstrtab.o: ./lib/elf/elf_shstrtab.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_addmodif.o: ./lib/env/env_addmodif.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_get.o: ./lib/env/env_get.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_get2.o: ./lib/env/env_get2.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_len.o: ./lib/env/env_len.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_make.o: ./lib/env/env_make.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_merge.o: ./lib/env/env_merge.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_pick.o: ./lib/env/env_pick.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_put.o: ./lib/env/env_put.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_set.o: ./lib/env/env_set.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_string.o: ./lib/env/env_string.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)env_unset.o: ./lib/env/env_unset.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)errmsg_iam.o: ./lib/errmsg/errmsg_iam.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)errmsg_info.o: ./lib/errmsg/errmsg_info.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)errmsg_infosys.o: ./lib/errmsg/errmsg_infosys.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)errmsg_puts.o: ./lib/errmsg/errmsg_puts.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)errmsg_warn.o: ./lib/errmsg/errmsg_warn.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)errmsg_warnsys.o: ./lib/errmsg/errmsg_warnsys.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)errmsg_write.o: ./lib/errmsg/errmsg_write.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_arg.o: ./lib/expand/expand_arg.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_args.o: ./lib/expand/expand_args.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_argv.o: ./lib/expand/expand_argv.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_arith.o: ./lib/expand/expand_arith.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_cat.o: ./lib/expand/expand_cat.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_catsa.o: ./lib/expand/expand_catsa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_command.o: ./lib/expand/expand_command.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_copysa.o: ./lib/expand/expand_copysa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_escape.o: ./lib/expand/expand_escape.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_glob.o: ./lib/expand/expand_glob.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_param.o: ./lib/expand/expand_param.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_unescape.o: ./lib/expand/expand_unescape.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)expand_vars.o: ./lib/expand/expand_vars.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_8long.o: ./lib/fmt/fmt_8long.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_8longlong.o: ./lib/fmt/fmt_8longlong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_asn1derlength.o: ./lib/fmt/fmt_asn1derlength.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_asn1dertag.o: ./lib/fmt/fmt_asn1dertag.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_double.o: ./lib/fmt/fmt_double.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_escapecharc.o: ./lib/fmt/fmt_escapecharc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_escapecharhtml.o: ./lib/fmt/fmt_escapecharhtml.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_escapecharquotedprintable.o: ./lib/fmt/fmt_escapecharquotedprintable.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_escapecharquotedprintableutf8.o: ./lib/fmt/fmt_escapecharquotedprintableutf8.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_escapecharshell.o: ./lib/fmt/fmt_escapecharshell.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_escapecharxml.o: ./lib/fmt/fmt_escapecharxml.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_fill.o: ./lib/fmt/fmt_fill.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_hexb.o: ./lib/fmt/fmt_hexb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_httpdate.o: ./lib/fmt/fmt_httpdate.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_human.o: ./lib/fmt/fmt_human.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_humank.o: ./lib/fmt/fmt_humank.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_iso8601.o: ./lib/fmt/fmt_iso8601.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_long.o: ./lib/fmt/fmt_long.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_longlong.o: ./lib/fmt/fmt_longlong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_minus.o: ./lib/fmt/fmt_minus.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_pad.o: ./lib/fmt/fmt_pad.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_plusminus.o: ./lib/fmt/fmt_plusminus.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_repeat.o: ./lib/fmt/fmt_repeat.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_str.o: ./lib/fmt/fmt_str.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_strm_internal.o: ./lib/fmt/fmt_strm_internal.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_strn.o: ./lib/fmt/fmt_strn.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_tohex.o: ./lib/fmt/fmt_tohex.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_uint64.o: ./lib/fmt/fmt_uint64.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_ulong.o: ./lib/fmt/fmt_ulong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_ulong0.o: ./lib/fmt/fmt_ulong0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_ulonglong.o: ./lib/fmt/fmt_ulonglong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_utf8.o: ./lib/fmt/fmt_utf8.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_xlong.o: ./lib/fmt/fmt_xlong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_xlonglong.o: ./lib/fmt/fmt_xlonglong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_xmlescape.o: ./lib/fmt/fmt_xmlescape.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fnmatch.o: ./lib/fnmatch.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fork.o: ./lib/fork.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)getdelim.o: ./lib/getdelim.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)getenv.o: ./lib/getenv.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)getopt.o: ./lib/getopt.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)glob.o: ./lib/glob.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_init.o: ./lib/gpio/gpio_init.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_read.o: ./lib/gpio/gpio_read.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_set_input_pull.o: ./lib/gpio/gpio_set_input_pull.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_set_input_pull_down.o: ./lib/gpio/gpio_set_input_pull_down.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_set_input_pull_up.o: ./lib/gpio/gpio_set_input_pull_up.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_set_input_resistor_pull.o: ./lib/gpio/gpio_set_input_resistor_pull.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_set_output.o: ./lib/gpio/gpio_set_output.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_set_pin_mode.o: ./lib/gpio/gpio_set_pin_mode.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_short_wait.o: ./lib/gpio/gpio_short_wait.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)gpio_write.o: ./lib/gpio/gpio_write.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hash_map.o: ./lib/hash_map.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_add.o: ./lib/hmap/hmap_add.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_add_tuple_with_data.o: ./lib/hmap/hmap_add_tuple_with_data.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_delete.o: ./lib/hmap/hmap_delete.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_destroy.o: ./lib/hmap/hmap_destroy.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_dump.o: ./lib/hmap/hmap_dump.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_free_data.o: ./lib/hmap/hmap_free_data.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_init.o: ./lib/hmap/hmap_init.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_internal.o: ./lib/hmap/hmap_internal.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_is_locate.o: ./lib/hmap/hmap_is_locate.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_print_list.o: ./lib/hmap/hmap_print_list.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_print_table.o: ./lib/hmap/hmap_print_table.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_print_tree.o: ./lib/hmap/hmap_print_tree.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_search.o: ./lib/hmap/hmap_search.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_set.o: ./lib/hmap/hmap_set.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_set_chars.o: ./lib/hmap/hmap_set_chars.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_set_stralloc.o: ./lib/hmap/hmap_set_stralloc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_size.o: ./lib/hmap/hmap_size.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_truncate.o: ./lib/hmap/hmap_truncate.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)http_get.o: ./lib/http/http_get.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)http_init.o: ./lib/http/http_init.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)http_readable.o: ./lib/http/http_readable.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)http_sendreq.o: ./lib/http/http_sendreq.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)http_socket.o: ./lib/http/http_socket.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)http_writeable.o: ./lib/http/http_writeable.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)iarray_allocate.o: ./lib/iarray/iarray_allocate.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -261,6 +689,30 @@ $(BUILDDIR)io_check.o: ./lib/io/io_check.c
 $(BUILDDIR)io_close.o: ./lib/io/io_close.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_closeonexec.o: ./lib/io/io_closeonexec.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_createfile.o: ./lib/io/io_createfile.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_debugstring.o: ./lib/io/io_debugstring.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_dontwantread.o: ./lib/io/io_dontwantread.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_dontwantwrite.o: ./lib/io/io_dontwantwrite.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_dup.o: ./lib/io/io_dup.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_eagain.o: ./lib/io/io_eagain.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_eagain_read.o: ./lib/io/io_eagain_read.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_eagain_write.o: ./lib/io/io_eagain_write.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_fd.o: ./lib/io/io_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_finishandshutdown.o: ./lib/io/io_finishandshutdown.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_getcookie.o: ./lib/io/io_getcookie.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)io_mmapwritefile.o: ./lib/io/io_mmapwritefile.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_nonblock.o: ./lib/io/io_nonblock.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -305,30 +757,6 @@ $(BUILDDIR)io_waitwrite.o: ./lib/io/io_waitwrite.c
 $(BUILDDIR)io_wantread.o: ./lib/io/io_wantread.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_wantwrite.o: ./lib/io/io_wantwrite.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_createfile.o: ./lib/io/io_createfile.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_debugstring.o: ./lib/io/io_debugstring.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_dontwantread.o: ./lib/io/io_dontwantread.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_dontwantwrite.o: ./lib/io/io_dontwantwrite.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_dup.o: ./lib/io/io_dup.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_eagain.o: ./lib/io/io_eagain.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_eagain_read.o: ./lib/io/io_eagain_read.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_eagain_write.o: ./lib/io/io_eagain_write.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_fd.o: ./lib/io/io_fd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_finishandshutdown.o: ./lib/io/io_finishandshutdown.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_getcookie.o: ./lib/io/io_getcookie.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)io_mmapwritefile.o: ./lib/io/io_mmapwritefile.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)iopause.o: ./lib/iopause.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -394,6 +822,24 @@ $(BUILDDIR)memalign.o: ./lib/memalign.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)memory.o: ./lib/memory.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_map.o: ./lib/mmap/mmap_map.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_private.o: ./lib/mmap/mmap_private.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_private_fd.o: ./lib/mmap/mmap_private_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_read.o: ./lib/mmap/mmap_read.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_read_fd.o: ./lib/mmap/mmap_read_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_rw_fd.o: ./lib/mmap/mmap_rw_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_shared.o: ./lib/mmap/mmap_shared.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_shared_fd.o: ./lib/mmap/mmap_shared_fd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_unmap.o: ./lib/mmap/mmap_unmap.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ndelay_off.o: ./lib/ndelay/ndelay_off.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ndelay_on.o: ./lib/ndelay/ndelay_on.c
@@ -450,9 +896,15 @@ $(BUILDDIR)path_skips.o: ./lib/path/path_skips.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_split.o: ./lib/path/path_split.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_get_datadir.o: ./lib/pe/pe_get_datadir.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_get_section.o: ./lib/pe/pe_get_section.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_get_value.o: ./lib/pe/pe_get_value.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_header.o: ./lib/pe/pe_header.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)pe_offset2rva.o: ./lib/pe/pe_offset2rva.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_rva2offset.o: ./lib/pe/pe_rva2offset.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -477,6 +929,8 @@ $(BUILDDIR)playlist_write_finish.o: ./lib/playlist/playlist_write_finish.c
 $(BUILDDIR)playlist_write_start.o: ./lib/playlist/playlist_write_start.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)playlist_xspf.o: ./lib/playlist/playlist_xspf.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)popen.o: ./lib/popen.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)rdir_close.o: ./lib/rdir/rdir_close.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -503,6 +957,24 @@ $(BUILDDIR)scan_asn1derlength.o: ./lib/scan/scan_asn1derlength.c
 $(BUILDDIR)scan_asn1dertag.o: ./lib/scan/scan_asn1dertag.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_charsetnskip.o: ./lib/scan/scan_charsetnskip.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_double.o: ./lib/scan/scan_double.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_fromhex.o: ./lib/scan/scan_fromhex.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_httpdate.o: ./lib/scan/scan_httpdate.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_int.o: ./lib/scan/scan_int.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_long.o: ./lib/scan/scan_long.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_longlong.o: ./lib/scan/scan_longlong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_longn.o: ./lib/scan/scan_longn.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_netstring.o: ./lib/scan/scan_netstring.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_noncharsetnskip.o: ./lib/scan/scan_noncharsetnskip.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_nonwhitenskip.o: ./lib/scan/scan_nonwhitenskip.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -545,24 +1017,6 @@ $(BUILDDIR)scan_xlongn.o: ./lib/scan/scan_xlongn.c
 $(BUILDDIR)scan_xmlescape.o: ./lib/scan/scan_xmlescape.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_xshort.o: ./lib/scan/scan_xshort.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_double.o: ./lib/scan/scan_double.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_fromhex.o: ./lib/scan/scan_fromhex.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_httpdate.o: ./lib/scan/scan_httpdate.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_int.o: ./lib/scan/scan_int.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_long.o: ./lib/scan/scan_long.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_longlong.o: ./lib/scan/scan_longlong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_longn.o: ./lib/scan/scan_longn.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_netstring.o: ./lib/scan/scan_netstring.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)scan_noncharsetnskip.o: ./lib/scan/scan_noncharsetnskip.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)setenv.o: ./lib/setenv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -615,6 +1069,20 @@ $(BUILDDIR)scan_ip6.o: ./lib/socket/scan_ip6.c
 $(BUILDDIR)scan_ip6if.o: ./lib/socket/scan_ip6if.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_ip6_flat.o: ./lib/socket/scan_ip6_flat.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)socket_accept4.o: ./lib/socket/socket_accept4.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)socket_accept6.o: ./lib/socket/socket_accept6.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)socket_bind4.o: ./lib/socket/socket_bind4.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)socket_bind4_reuse.o: ./lib/socket/socket_bind4_reuse.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)socket_bind6.o: ./lib/socket/socket_bind6.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)socket_bind6_reuse.o: ./lib/socket/socket_bind6_reuse.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)socket_broadcast.o: ./lib/socket/socket_broadcast.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)socket_connect4.o: ./lib/socket/socket_connect4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -708,402 +1176,6 @@ $(BUILDDIR)winsock_init.o: ./lib/socket/winsock_init.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)winsock_socketpair.o: ./lib/socket/winsock_socketpair.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)socket_accept4.o: ./lib/socket/socket_accept4.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)socket_accept6.o: ./lib/socket/socket_accept6.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)socket_bind4.o: ./lib/socket/socket_bind4.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)socket_bind4_reuse.o: ./lib/socket/socket_bind4_reuse.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)socket_bind6.o: ./lib/socket/socket_bind6.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)socket_bind6_reuse.o: ./lib/socket/socket_bind6_reuse.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)socket_broadcast.o: ./lib/socket/socket_broadcast.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_filename.o: ./lib/stralloc/mmap_filename.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_0.o: ./lib/stralloc/stralloc_0.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catlong0.o: ./lib/stralloc/stralloc_catlong0.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catm_internal.o: ./lib/stralloc/stralloc_catm_internal.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_cats.o: ./lib/stralloc/stralloc_cats.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catuint.o: ./lib/stralloc/stralloc_catuint.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catuint0.o: ./lib/stralloc/stralloc_catuint0.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catulong.o: ./lib/stralloc/stralloc_catulong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catulong0.o: ./lib/stralloc/stralloc_catulong0.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catxlong.o: ./lib/stralloc/stralloc_catxlong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_chomp.o: ./lib/stralloc/stralloc_chomp.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_chop.o: ./lib/stralloc/stralloc_chop.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_chr.o: ./lib/stralloc/stralloc_chr.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_copy.o: ./lib/stralloc/stralloc_copy.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_copyb.o: ./lib/stralloc/stralloc_copyb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_copys.o: ./lib/stralloc/stralloc_copys.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_copywcb.o: ./lib/stralloc/stralloc_copywcb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_copywcs.o: ./lib/stralloc/stralloc_copywcs.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_count.o: ./lib/stralloc/stralloc_count.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_decamelize.o: ./lib/stralloc/stralloc_decamelize.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_free.o: ./lib/stralloc/stralloc_free.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_init.o: ./lib/stralloc/stralloc_init.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_insertb.o: ./lib/stralloc/stralloc_insertb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_lower.o: ./lib/stralloc/stralloc_lower.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_move.o: ./lib/stralloc/stralloc_move.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_nul.o: ./lib/stralloc/stralloc_nul.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_rchr.o: ./lib/stralloc/stralloc_rchr.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_ready.o: ./lib/stralloc/stralloc_ready.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_readyplus.o: ./lib/stralloc/stralloc_readyplus.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_ready_tuned.o: ./lib/stralloc/stralloc_ready_tuned.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_remove.o: ./lib/stralloc/stralloc_remove.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_remove_all.o: ./lib/stralloc/stralloc_remove_all.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_replace.o: ./lib/stralloc/stralloc_replace.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_replace_non_printable.o: ./lib/stralloc/stralloc_replace_non_printable.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_reverse.o: ./lib/stralloc/stralloc_reverse.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_reverse_blocks.o: ./lib/stralloc/stralloc_reverse_blocks.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_scan.o: ./lib/stralloc/stralloc_scan.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_shrink.o: ./lib/stralloc/stralloc_shrink.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_start.o: ./lib/stralloc/stralloc_start.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_startb.o: ./lib/stralloc/stralloc_startb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_starts.o: ./lib/stralloc/stralloc_starts.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_subst.o: ./lib/stralloc/stralloc_subst.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_trim.o: ./lib/stralloc/stralloc_trim.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_trunc.o: ./lib/stralloc/stralloc_trunc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_upper.o: ./lib/stralloc/stralloc_upper.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_write.o: ./lib/stralloc/stralloc_write.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_zero.o: ./lib/stralloc/stralloc_zero.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_diff.o: ./lib/stralloc/stralloc_diff.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_diffb.o: ./lib/stralloc/stralloc_diffb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_diffs.o: ./lib/stralloc/stralloc_diffs.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_endb.o: ./lib/stralloc/stralloc_endb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_ends.o: ./lib/stralloc/stralloc_ends.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_equal.o: ./lib/stralloc/stralloc_equal.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_equalb.o: ./lib/stralloc/stralloc_equalb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_equals.o: ./lib/stralloc/stralloc_equals.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_erase.o: ./lib/stralloc/stralloc_erase.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_find.o: ./lib/stralloc/stralloc_find.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_findb.o: ./lib/stralloc/stralloc_findb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_finds.o: ./lib/stralloc/stralloc_finds.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_fmt.o: ./lib/stralloc/stralloc_fmt.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_fmt_call.o: ./lib/stralloc/stralloc_fmt_call.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_fmt_pred.o: ./lib/stralloc/stralloc_fmt_pred.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_append.o: ./lib/stralloc/stralloc_append.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_append_sa.o: ./lib/stralloc/stralloc_append_sa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_buffer.o: ./lib/stralloc/stralloc_buffer.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_case_diff.o: ./lib/stralloc/stralloc_case_diff.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_case_diffs.o: ./lib/stralloc/stralloc_case_diffs.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_case_end.o: ./lib/stralloc/stralloc_case_end.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_case_equal.o: ./lib/stralloc/stralloc_case_equal.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_case_equals.o: ./lib/stralloc/stralloc_case_equals.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_case_start.o: ./lib/stralloc/stralloc_case_start.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_case_starts.o: ./lib/stralloc/stralloc_case_starts.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_cat.o: ./lib/stralloc/stralloc_cat.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catb.o: ./lib/stralloc/stralloc_catb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catc.o: ./lib/stralloc/stralloc_catc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catdouble.o: ./lib/stralloc/stralloc_catdouble.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_cathexb.o: ./lib/stralloc/stralloc_cathexb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catint.o: ./lib/stralloc/stralloc_catint.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catint0.o: ./lib/stralloc/stralloc_catint0.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_catlong.o: ./lib/stralloc/stralloc_catlong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_dfd.o: ./lib/dns/dns_dfd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_domain.o: ./lib/dns/dns_domain.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_dtda.o: ./lib/dns/dns_dtda.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_ip4.o: ./lib/dns/dns_ip4.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_ip6.o: ./lib/dns/dns_ip6.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_ipq.o: ./lib/dns/dns_ipq.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_ipq6.o: ./lib/dns/dns_ipq6.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_mx.o: ./lib/dns/dns_mx.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_name.o: ./lib/dns/dns_name.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_nd.o: ./lib/dns/dns_nd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_nd6.o: ./lib/dns/dns_nd6.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_packet.o: ./lib/dns/dns_packet.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_random.o: ./lib/dns/dns_random.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_rcip.o: ./lib/dns/dns_rcip.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_rcrw.o: ./lib/dns/dns_rcrw.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_resolve.o: ./lib/dns/dns_resolve.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_sortip.o: ./lib/dns/dns_sortip.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_sortip6.o: ./lib/dns/dns_sortip6.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_transmit.o: ./lib/dns/dns_transmit.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dns_txt.o: ./lib/dns/dns_txt.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_get_value.o: ./lib/elf/elf_get_value.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_header.o: ./lib/elf/elf_header.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_program_headers.o: ./lib/elf/elf_program_headers.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_section_headers.o: ./lib/elf/elf_section_headers.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_section_type.o: ./lib/elf/elf_section_type.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_strtab.o: ./lib/elf/elf_strtab.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_addmodif.o: ./lib/env/env_addmodif.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_get.o: ./lib/env/env_get.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_get2.o: ./lib/env/env_get2.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_len.o: ./lib/env/env_len.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_make.o: ./lib/env/env_make.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_merge.o: ./lib/env/env_merge.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_pick.o: ./lib/env/env_pick.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_put.o: ./lib/env/env_put.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_set.o: ./lib/env/env_set.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_string.o: ./lib/env/env_string.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)env_unset.o: ./lib/env/env_unset.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)errmsg_iam.o: ./lib/errmsg/errmsg_iam.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)errmsg_info.o: ./lib/errmsg/errmsg_info.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)errmsg_infosys.o: ./lib/errmsg/errmsg_infosys.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)errmsg_puts.o: ./lib/errmsg/errmsg_puts.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)errmsg_warn.o: ./lib/errmsg/errmsg_warn.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)errmsg_warnsys.o: ./lib/errmsg/errmsg_warnsys.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)errmsg_write.o: ./lib/errmsg/errmsg_write.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_case_diff.o: ./lib/byte/byte_case_diff.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_case_equal.o: ./lib/byte/byte_case_equal.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_case_start.o: ./lib/byte/byte_case_start.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_chr.o: ./lib/byte/byte_chr.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_copy.o: ./lib/byte/byte_copy.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_copyr.o: ./lib/byte/byte_copyr.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_count.o: ./lib/byte/byte_count.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_diff.o: ./lib/byte/byte_diff.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_equal.o: ./lib/byte/byte_equal.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_fill.o: ./lib/byte/byte_fill.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_fmt.o: ./lib/byte/byte_fmt.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_lower.o: ./lib/byte/byte_lower.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_rchr.o: ./lib/byte/byte_rchr.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_scan.o: ./lib/byte/byte_scan.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_upper.o: ./lib/byte/byte_upper.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)byte_zero.o: ./lib/byte/byte_zero.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dir_close.o: ./lib/dir/dir_close.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dir_name.o: ./lib/dir/dir_name.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dir_open.o: ./lib/dir/dir_open.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dir_read.o: ./lib/dir/dir_read.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dir_time.o: ./lib/dir/dir_time.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dir_type.o: ./lib/dir/dir_type.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_arg.o: ./lib/expand/expand_arg.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_args.o: ./lib/expand/expand_args.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_argv.o: ./lib/expand/expand_argv.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_arith.o: ./lib/expand/expand_arith.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_cat.o: ./lib/expand/expand_cat.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_catsa.o: ./lib/expand/expand_catsa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_command.o: ./lib/expand/expand_command.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_copysa.o: ./lib/expand/expand_copysa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_escape.o: ./lib/expand/expand_escape.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_glob.o: ./lib/expand/expand_glob.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_param.o: ./lib/expand/expand_param.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_unescape.o: ./lib/expand/expand_unescape.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)expand_vars.o: ./lib/expand/expand_vars.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_add.o: ./lib/hmap/hmap_add.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_add_tuple_with_data.o: ./lib/hmap/hmap_add_tuple_with_data.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_delete.o: ./lib/hmap/hmap_delete.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_destroy.o: ./lib/hmap/hmap_destroy.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_dump.o: ./lib/hmap/hmap_dump.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_free_data.o: ./lib/hmap/hmap_free_data.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_init.o: ./lib/hmap/hmap_init.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_internal.o: ./lib/hmap/hmap_internal.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_is_locate.o: ./lib/hmap/hmap_is_locate.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_print_list.o: ./lib/hmap/hmap_print_list.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_print_table.o: ./lib/hmap/hmap_print_table.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_print_tree.o: ./lib/hmap/hmap_print_tree.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_search.o: ./lib/hmap/hmap_search.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_set.o: ./lib/hmap/hmap_set.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_set_chars.o: ./lib/hmap/hmap_set_chars.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_set_stralloc.o: ./lib/hmap/hmap_set_stralloc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_size.o: ./lib/hmap/hmap_size.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hmap_truncate.o: ./lib/hmap/hmap_truncate.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_get.o: ./lib/http/http_get.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_init.o: ./lib/http/http_init.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_readable.o: ./lib/http/http_readable.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_sendreq.o: ./lib/http/http_sendreq.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_writeable.o: ./lib/http/http_writeable.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_map.o: ./lib/mmap/mmap_map.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_private.o: ./lib/mmap/mmap_private.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_private_fd.o: ./lib/mmap/mmap_private_fd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_read.o: ./lib/mmap/mmap_read.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_read_fd.o: ./lib/mmap/mmap_read_fd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_rw_fd.o: ./lib/mmap/mmap_rw_fd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_shared.o: ./lib/mmap/mmap_shared.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_shared_fd.o: ./lib/mmap/mmap_shared_fd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)mmap_unmap.o: ./lib/mmap/mmap_unmap.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_basename.o: ./lib/str/str_basename.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_case_diff.o: ./lib/str/str_case_diff.c
@@ -1156,6 +1228,176 @@ $(BUILDDIR)str_start.o: ./lib/str/str_start.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_tok.o: ./lib/str/str_tok.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)mmap_filename.o: ./lib/stralloc/mmap_filename.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_0.o: ./lib/stralloc/stralloc_0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_append.o: ./lib/stralloc/stralloc_append.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_buffer.o: ./lib/stralloc/stralloc_buffer.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_diff.o: ./lib/stralloc/stralloc_case_diff.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_diffs.o: ./lib/stralloc/stralloc_case_diffs.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_end.o: ./lib/stralloc/stralloc_case_end.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_equal.o: ./lib/stralloc/stralloc_case_equal.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_equals.o: ./lib/stralloc/stralloc_case_equals.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_start.o: ./lib/stralloc/stralloc_case_start.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_starts.o: ./lib/stralloc/stralloc_case_starts.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_cat.o: ./lib/stralloc/stralloc_cat.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catb.o: ./lib/stralloc/stralloc_catb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catc.o: ./lib/stralloc/stralloc_catc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catdouble.o: ./lib/stralloc/stralloc_catdouble.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_cathexb.o: ./lib/stralloc/stralloc_cathexb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catint.o: ./lib/stralloc/stralloc_catint.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catint0.o: ./lib/stralloc/stralloc_catint0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catlong.o: ./lib/stralloc/stralloc_catlong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catlong0.o: ./lib/stralloc/stralloc_catlong0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catm_internal.o: ./lib/stralloc/stralloc_catm_internal.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_cats.o: ./lib/stralloc/stralloc_cats.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catuint.o: ./lib/stralloc/stralloc_catuint.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catuint0.o: ./lib/stralloc/stralloc_catuint0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catulong.o: ./lib/stralloc/stralloc_catulong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catulong0.o: ./lib/stralloc/stralloc_catulong0.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catxlong.o: ./lib/stralloc/stralloc_catxlong.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_chomp.o: ./lib/stralloc/stralloc_chomp.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_chop.o: ./lib/stralloc/stralloc_chop.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_chr.o: ./lib/stralloc/stralloc_chr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_copy.o: ./lib/stralloc/stralloc_copy.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_copyb.o: ./lib/stralloc/stralloc_copyb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_copys.o: ./lib/stralloc/stralloc_copys.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_copywcb.o: ./lib/stralloc/stralloc_copywcb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_copywcs.o: ./lib/stralloc/stralloc_copywcs.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_count.o: ./lib/stralloc/stralloc_count.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_decamelize.o: ./lib/stralloc/stralloc_decamelize.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_diff.o: ./lib/stralloc/stralloc_diff.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_diffb.o: ./lib/stralloc/stralloc_diffb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_diffs.o: ./lib/stralloc/stralloc_diffs.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_endb.o: ./lib/stralloc/stralloc_endb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_ends.o: ./lib/stralloc/stralloc_ends.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_equal.o: ./lib/stralloc/stralloc_equal.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_equalb.o: ./lib/stralloc/stralloc_equalb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_equals.o: ./lib/stralloc/stralloc_equals.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_erase.o: ./lib/stralloc/stralloc_erase.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_expand.o: ./lib/stralloc/stralloc_expand.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_find.o: ./lib/stralloc/stralloc_find.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_findb.o: ./lib/stralloc/stralloc_findb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_finds.o: ./lib/stralloc/stralloc_finds.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_fmt.o: ./lib/stralloc/stralloc_fmt.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_fmt_call.o: ./lib/stralloc/stralloc_fmt_call.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_fmt_pred.o: ./lib/stralloc/stralloc_fmt_pred.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_free.o: ./lib/stralloc/stralloc_free.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_init.o: ./lib/stralloc/stralloc_init.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_insert.o: ./lib/stralloc/stralloc_insert.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_insertb.o: ./lib/stralloc/stralloc_insertb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_inserts.o: ./lib/stralloc/stralloc_inserts.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_lower.o: ./lib/stralloc/stralloc_lower.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_move.o: ./lib/stralloc/stralloc_move.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_nul.o: ./lib/stralloc/stralloc_nul.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_prepend.o: ./lib/stralloc/stralloc_prepend.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_prependb.o: ./lib/stralloc/stralloc_prependb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_prepends.o: ./lib/stralloc/stralloc_prepends.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_rchr.o: ./lib/stralloc/stralloc_rchr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_ready.o: ./lib/stralloc/stralloc_ready.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_readyplus.o: ./lib/stralloc/stralloc_readyplus.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_ready_tuned.o: ./lib/stralloc/stralloc_ready_tuned.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_remove.o: ./lib/stralloc/stralloc_remove.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_remove_all.o: ./lib/stralloc/stralloc_remove_all.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_replace.o: ./lib/stralloc/stralloc_replace.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_replace_non_printable.o: ./lib/stralloc/stralloc_replace_non_printable.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_reverse.o: ./lib/stralloc/stralloc_reverse.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_reverse_blocks.o: ./lib/stralloc/stralloc_reverse_blocks.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_scan.o: ./lib/stralloc/stralloc_scan.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_shrink.o: ./lib/stralloc/stralloc_shrink.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_start.o: ./lib/stralloc/stralloc_start.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_startb.o: ./lib/stralloc/stralloc_startb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_starts.o: ./lib/stralloc/stralloc_starts.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_subst.o: ./lib/stralloc/stralloc_subst.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_trim.o: ./lib/stralloc/stralloc_trim.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_trunc.o: ./lib/stralloc/stralloc_trunc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_upper.o: ./lib/stralloc/stralloc_upper.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_write.o: ./lib/stralloc/stralloc_write.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_zero.o: ./lib/stralloc/stralloc_zero.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strarray_from_argv.o: ./lib/strarray/strarray_from_argv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strarray_index_of.o: ./lib/strarray/strarray_index_of.c
@@ -1176,111 +1418,7 @@ $(BUILDDIR)strarray_sort.o: ./lib/strarray/strarray_sort.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strarray_to_argv.o: ./lib/strarray/strarray_to_argv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_8long.o: ./lib/fmt/fmt_8long.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_8longlong.o: ./lib/fmt/fmt_8longlong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_asn1derlength.o: ./lib/fmt/fmt_asn1derlength.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_asn1dertag.o: ./lib/fmt/fmt_asn1dertag.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_longlong.o: ./lib/fmt/fmt_longlong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_minus.o: ./lib/fmt/fmt_minus.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_pad.o: ./lib/fmt/fmt_pad.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_plusminus.o: ./lib/fmt/fmt_plusminus.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_repeat.o: ./lib/fmt/fmt_repeat.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_str.o: ./lib/fmt/fmt_str.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_strm_internal.o: ./lib/fmt/fmt_strm_internal.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_double.o: ./lib/fmt/fmt_double.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_escapecharc.o: ./lib/fmt/fmt_escapecharc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_escapecharhtml.o: ./lib/fmt/fmt_escapecharhtml.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_escapecharquotedprintable.o: ./lib/fmt/fmt_escapecharquotedprintable.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_escapecharquotedprintableutf8.o: ./lib/fmt/fmt_escapecharquotedprintableutf8.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_escapecharshell.o: ./lib/fmt/fmt_escapecharshell.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_escapecharxml.o: ./lib/fmt/fmt_escapecharxml.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_fill.o: ./lib/fmt/fmt_fill.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_hexb.o: ./lib/fmt/fmt_hexb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_httpdate.o: ./lib/fmt/fmt_httpdate.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_human.o: ./lib/fmt/fmt_human.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_humank.o: ./lib/fmt/fmt_humank.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_iso8601.o: ./lib/fmt/fmt_iso8601.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_long.o: ./lib/fmt/fmt_long.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_strn.o: ./lib/fmt/fmt_strn.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_tohex.o: ./lib/fmt/fmt_tohex.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_uint64.o: ./lib/fmt/fmt_uint64.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_ulong.o: ./lib/fmt/fmt_ulong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_ulong0.o: ./lib/fmt/fmt_ulong0.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_ulonglong.o: ./lib/fmt/fmt_ulonglong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_utf8.o: ./lib/fmt/fmt_utf8.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_xlong.o: ./lib/fmt/fmt_xlong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_xlonglong.o: ./lib/fmt/fmt_xlonglong.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fmt_xmlescape.o: ./lib/fmt/fmt_xmlescape.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fnmatch.o: ./lib/fnmatch.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)fork.o: ./lib/fork.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)getdelim.o: ./lib/getdelim.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)getenv.o: ./lib/getenv.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)getopt.o: ./lib/getopt.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)glob.o: ./lib/glob.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_init.o: ./lib/gpio/gpio_init.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_read.o: ./lib/gpio/gpio_read.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_set_input_pull.o: ./lib/gpio/gpio_set_input_pull.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_set_input_pull_down.o: ./lib/gpio/gpio_set_input_pull_down.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_set_input_pull_up.o: ./lib/gpio/gpio_set_input_pull_up.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_set_input_resistor_pull.o: ./lib/gpio/gpio_set_input_resistor_pull.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_set_output.o: ./lib/gpio/gpio_set_output.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_set_pin_mode.o: ./lib/gpio/gpio_set_pin_mode.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_short_wait.o: ./lib/gpio/gpio_short_wait.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)gpio_write.o: ./lib/gpio/gpio_write.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hash_map.o: ./lib/hash_map.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)strlist_pushsa.o: ./lib/strlist/strlist_pushsa.c
+$(BUILDDIR)strlist_append_sa.o: ./lib/strlist/strlist_append_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_at.o: ./lib/strlist/strlist_at.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1305,6 +1443,12 @@ $(BUILDDIR)strlist_index_of.o: ./lib/strlist/strlist_index_of.c
 $(BUILDDIR)strlist_join.o: ./lib/strlist/strlist_join.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_joins.o: ./lib/strlist/strlist_joins.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_prependb.o: ./lib/strlist/strlist_prependb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_prepends.o: ./lib/strlist/strlist_prepends.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_prepend_sa.o: ./lib/strlist/strlist_prepend_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_push.o: ./lib/strlist/strlist_push.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1522,26 +1666,6 @@ $(BUILDDIR)xml_content_sa.o: ./lib/xml/xml_content_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_debug.o: ./lib/xml/xml_debug.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_print_attributes.o: ./lib/xml/xml_print_attributes.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_print_nodeset.o: ./lib/xml/xml_print_nodeset.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_reader_init.o: ./lib/xml/xml_reader_init.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_read_callback.o: ./lib/xml/xml_read_callback.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_read_tree.o: ./lib/xml/xml_read_tree.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_remove.o: ./lib/xml/xml_remove.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_root_element.o: ./lib/xml/xml_root_element.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_set_attribute.o: ./lib/xml/xml_set_attribute.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_set_attribute_double.o: ./lib/xml/xml_set_attribute_double.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xml_textnode.o: ./lib/xml/xml_textnode.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_delete.o: ./lib/xml/xml_delete.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_element.o: ./lib/xml/xml_element.c
@@ -1580,99 +1704,33 @@ $(BUILDDIR)xml_path.o: ./lib/xml/xml_path.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_print.o: ./lib/xml/xml_print.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)case_diffb.o: ./lib/case/case_diffb.c
+$(BUILDDIR)xml_print_attributes.o: ./lib/xml/xml_print_attributes.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)case_diffs.o: ./lib/case/case_diffs.c
+$(BUILDDIR)xml_print_nodeset.o: ./lib/xml/xml_print_nodeset.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)case_lowerb.o: ./lib/case/case_lowerb.c
+$(BUILDDIR)xml_reader_init.o: ./lib/xml/xml_reader_init.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)case_lowers.o: ./lib/case/case_lowers.c
+$(BUILDDIR)xml_read_callback.o: ./lib/xml/xml_read_callback.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)case_starts.o: ./lib/case/case_starts.c
+$(BUILDDIR)xml_read_tree.o: ./lib/xml/xml_read_tree.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cb_clear.o: ./lib/cb/cb_clear.c
+$(BUILDDIR)xml_remove.o: ./lib/xml/xml_remove.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cb_erase.o: ./lib/cb/cb_erase.c
+$(BUILDDIR)xml_root_element.o: ./lib/xml/xml_root_element.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cb_find.o: ./lib/cb/cb_find.c
+$(BUILDDIR)xml_set_attribute.o: ./lib/xml/xml_set_attribute.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cb_find_prefix.o: ./lib/cb/cb_find_prefix.c
+$(BUILDDIR)xml_set_attribute_double.o: ./lib/xml/xml_set_attribute_double.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cb_foreach.o: ./lib/cb/cb_foreach.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cb_get_kv.o: ./lib/cb/cb_get_kv.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cb_get_kv_ex.o: ./lib/cb/cb_get_kv_ex.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cb_insert.o: ./lib/cb/cb_insert.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cb_new_kv.o: ./lib/cb/cb_new_kv.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)alloc.o: ./lib/cbmap/alloc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_count.o: ./lib/cbmap/cbmap_count.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_data_node_destroy.o: ./lib/cbmap/cbmap_data_node_destroy.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_delete.o: ./lib/cbmap/cbmap_delete.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_destroy.o: ./lib/cbmap/cbmap_destroy.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_get.o: ./lib/cbmap/cbmap_get.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_insert.o: ./lib/cbmap/cbmap_insert.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_internal_node.o: ./lib/cbmap/cbmap_internal_node.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_new.o: ./lib/cbmap/cbmap_new.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_visit.o: ./lib/cbmap/cbmap_visit.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)cbmap_visit_all.o: ./lib/cbmap/cbmap_visit_all.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_close.o: ./lib/charbuf/charbuf_close.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_get.o: ./lib/charbuf/charbuf_get.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_getc.o: ./lib/charbuf/charbuf_getc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_init.o: ./lib/charbuf/charbuf_init.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_nextc.o: ./lib/charbuf/charbuf_nextc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_peek.o: ./lib/charbuf/charbuf_peek.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_peekc.o: ./lib/charbuf/charbuf_peekc.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_skip.o: ./lib/charbuf/charbuf_skip.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_skip_pred.o: ./lib/charbuf/charbuf_skip_pred.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)charbuf_skip_until.o: ./lib/charbuf/charbuf_skip_until.c
+$(BUILDDIR)xml_textnode.o: ./lib/xml/xml_textnode.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)libntldd.o: ./libntldd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)ntldd.o: ./ntldd.c
+$(BUILDDIR)list-r.o: ./list-r.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)opensearch-dump.o: ./opensearch-dump.c
+$(BUILDDIR)macho32list.o: ./macho32list.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)CMakeCCompilerId.o: ./CMakeFiles/3.11.1/CompilerIdC/CMakeCCompilerId.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)rdir-test.o: ./rdir-test.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)reg2cmd.o: ./reg2cmd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)regfilter.o: ./regfilter.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xmlpp.o: ./xmlpp.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xmltest.o: ./xmltest.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)xmltest2.o: ./xmltest2.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)compiler-wrapper.o: ./compiler-wrapper.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)ccat.o: ./ccat.c
+$(BUILDDIR)main.o: ./main.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)map.o: ./map.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1680,113 +1738,43 @@ $(BUILDDIR)mediathek-list.o: ./mediathek-list.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mediathek-parser.o: ./mediathek-parser.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)ntldd.o: ./ntldd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)opensearch-dump.o: ./opensearch-dump.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pathtool.o: ./pathtool.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)pelist.o: ./pelist.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)access.o: ./access.c
+$(BUILDDIR)pkgcfg.o: ./pkgcfg.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)binfmttest.o: ./binfmttest.c
+$(BUILDDIR)plsconv.o: ./plsconv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)bsdiffcat.o: ./bsdiffcat.c
+$(BUILDDIR)rdir-test.o: ./rdir-test.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffertest.o: ./buffertest.c
+$(BUILDDIR)reg2cmd.o: ./reg2cmd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)regfilter.o: ./regfilter.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)sln.o: ./sln.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)test_strlist.o: ./tests/test_strlist.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)test_23375.o: ./test_23375.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)test_24467.o: ./test_24467.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)eagle-init-brd.o: ./eagle-init-brd.c
+$(BUILDDIR)torrent-progress.o: ./torrent-progress.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)eagle-to-circuit.o: ./eagle-to-circuit.c
+$(BUILDDIR)xmlpp.o: ./xmlpp.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf64list.o: ./elf64list.c
+$(BUILDDIR)xmltest.o: ./xmltest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elflist.o: ./elflist.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elfwrsec.o: ./elfwrsec.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)list-r.o: ./list-r.c
+$(BUILDDIR)xmltest2.o: ./xmltest2.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xmltest3.o: ./xmltest3.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xmltest4.o: ./xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ./ziptest.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)hexedit.o: ./hexedit.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)httptest.o: ./httptest.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)impgen.o: ./impgen.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)count-depth.o: ./count-depth.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)tryerrno.o: ./Debug/tryerrno.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)pkgcfg.o: ./pkgcfg.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)plsconv.o: ./plsconv.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)sln.o: ./sln.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)torrent-progress.o: ./torrent-progress.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dnsname.o: ./dnsname.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)dnstest.o: ./dnstest.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)macho32list.o: ./macho32list.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)main.o: ./main.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)eagle-gen-cmds.o: ./eagle-gen-cmds.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)test_strlist.o: tests/test_strlist.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_shstrtab.o: lib/elf/elf_shstrtab.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_section_index.o: lib/elf/elf_section_index.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_section_offset.o: lib/elf/elf_section_offset.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_section_size.o: lib/elf/elf_section_size.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_dynamic_section.o: lib/elf/elf_dynamic_section.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)elf_get_section.o: lib/elf/elf_get_section.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)pe_get_datadir.o: lib/pe/pe_get_datadir.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)pe_offset2rva.o: lib/pe/pe_offset2rva.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)popen.o: lib/popen.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_expand.o: lib/stralloc/stralloc_expand.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_insert.o: lib/stralloc/stralloc_insert.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_inserts.o: lib/stralloc/stralloc_inserts.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_prepend.o: lib/stralloc/stralloc_prepend.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_prependb.o: lib/stralloc/stralloc_prependb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_prepends.o: lib/stralloc/stralloc_prepends.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)stralloc_prepends.o: lib/stralloc/stralloc_prepends.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)strlist_prepend_sa.o: lib/strlist/strlist_prepend_sa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)strlist_prependb.o: lib/strlist/strlist_prependb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)strlist_prepends.o: lib/strlist/strlist_prepends.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)strlist_append_sa.o: lib/strlist/strlist_append_sa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)pe_get_value.o: lib/pe/pe_get_value.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)http_socket.o: lib/http/http_socket.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)buffer_write_fd.o: lib/buffer/buffer_write_fd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

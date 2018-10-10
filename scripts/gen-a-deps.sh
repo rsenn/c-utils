@@ -2,6 +2,8 @@
 
 : ${BUILDDIR='$(BUILDDIR)'}
 : ${EXEEXT='$(EXEEXT)'}
+: ${OBJEXT=.o}
+: ${LIBEXT=.a}
 : ${A_CMD='$(AR) rcs $@ $^'}
 : ${COMPILE_CMD='$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $^'}
 : ${LINK_CMD='$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^'}
@@ -54,7 +56,7 @@ sort_var() {
 get_objs() {
   [ $# -gt 0 ] && {
   strings "$@" |
-  sed -n  "\\|^\([[:alnum:]_]\+\)\.o| { s|^\([[:alnum:]_]\+\)\.o.*|\1.o|; \\|lib/|! s|^|lib/|; p }"
+  sed -n  "\\|^\([[:alnum:]_]\+\)\\$OBJEXT| { s|^\([[:alnum:]_]\+\)\\$OBJEXT.*|\1$OBJEXT|; \\|lib/|! s|^|lib/|; p }"
 
   } ||
     echo
@@ -63,19 +65,19 @@ count() {
   echo $#
 }
 get_srcs() {
-  ( match_expr "($X_SRC)" $SOURCES)
+  (list $SOURCES | grep -E "$X_SRC")
 }
-# c_o_entry <.a-file> <objects>
+# c_o_entry <$LIBEXT-file> <objects>
 c_o_entry() {
   (A=$1; S="$2"
   SRCDIR=${S%/%*}
   shift 2
   pushv O "$A:"
-  pushv O "${BUILDDIR}%.o:" "$S"
+  pushv O "${BUILDDIR}%$OBJEXT:" "$S"
   [ -n "$COMPILE_CMD" ] && O="$O$NL$TAB${COMPILE_CMD}"
   echo "$O$NL")
 }
-# a_entry <.a-file> <objects>
+# a_entry <$LIBEXT-file> <objects>
 a_entry() {
   (A=$1; O="${BUILDDIR}$A:"
   shift
@@ -89,7 +91,7 @@ dump() {
 gen_a_deps() {
   IFS="
   "
-  [ $# -gt 0 ] || set -- build/*/*/*.a
+  [ $# -gt 0 ] || set -- build/*/*/*$LIBEXT
   A_LIBS="$*"
   set -- $(find . lib/ lib/*/ -follow -maxdepth 1 -name "*.c" | sed 's|^\./||'|sort -fu)
   SOURCES="$*"
@@ -123,9 +125,9 @@ gen_a_deps() {
     IFS=" ""
     "
       #SRCS=$(strings $EXE | sed ' s|\.[co]||p' -n|sort -fu)
-      #OBJS=$(echo "$SRCS" | sed -n "/\.[co]/ { s|\\.[co]|| ; s|.*/||; s|^|${BUILDDIR}|; s|\$|.o|; p; }"|sort -fu)
+      #OBJS=$(echo "$SRCS" | sed -n "/\.[co]/ { s|\\.[co]|| ; s|.*/||; s|^|${BUILDDIR}|; s|\$|$OBJEXT|; p; }"|sort -fu)
       O="${BUILDDIR}$P:"
-      set -- $(list ${LIBS} | sed "s|.*/||; s|^|${BUILDDIR}| ; s|\$|.a|" | sort -fu)
+      set -- $(list ${LIBS} | sed "s|.*/||; s|^|${BUILDDIR}| ; s|\$|$LIBEXT|" | sort -fu)
 
     #  O="$O $*"
       [ "$LINK_CMD" ] && O="$O$NL$TAB${LINK_CMD}"
@@ -164,11 +166,11 @@ echo "$NL$O"
           ( F=$(find $SRCDIR -maxdepth 1 -name "*.c")
           IFS=" ""
       "
-          OBJS=$(echo "$F" |  sed "s|\.c$|.o|; s|^\.[/\\\\]|| ; s|.*[/\\\\]||; s|^|${BUILDDIR}|" )
+          OBJS=$(echo "$F" |  sed "s|\.c$|$OBJEXT|; s|^\.[/\\\\]|| ; s|.*[/\\\\]||; s|^|${BUILDDIR}|" )
           set -- $OBJS
       O=
         pushv O "$@: \\$NL$TAB"
-        pushv O "${BUILDDIR}%.o":
+        pushv O "${BUILDDIR}%$OBJEXT":
         SRC=$SRCDIR/%.c
         SRC=${SRC#./}
         pushv O "$SRC"
@@ -183,9 +185,9 @@ echo "$NL$O"
     for A_LIB in $LIB_NAMES; do
       (
       NAME=${A_LIB##*/}
-      NAME=${NAME%.a}
-      LIBEXPR="${NAME}\.a"
-      FILES=$( list $A_LIBS | grep -E "(^|.*/)$NAME\.a\$")
+      NAME=${NAME%$LIBEXT}
+      LIBEXPR="${NAME}\\$LIBEXT"
+      FILES=$( list $A_LIBS | grep -E "(^|.*/)$NAME\\$LIBEXT\$")
       dump FILES
     IFS=" ""
     "
@@ -196,34 +198,40 @@ echo "$NL$O"
         N_OBJ=$(count $OBJS)
         debug "$A_LIB:" $N_OBJ objects  
       if [ "${N_OBJ:-0}" -gt 0 ] ; then
-        X_SRC=$(echo "$X" |sed "s|(\(.*\))|\1|; s,[^ |]\+/,,g; s|\\.o|.c|g; s|\.c|\\.c|g")
+        X_SRC=$(echo "$X" |sed "s|(\(.*\))|\1|; s,[^ |]\+/,,g; s|\\$OBJEXT|.c|g")
         dump X_SRC
 
+       
         SRCS=$(match_expr "($X_SRC)" $SOURCES)
-        
         N_SRCS=$(count $SRCS)
 
         debug "$A_LIB:" $N_SRCS "sources." 1>&2
         [ "$N_SRCS" -gt 0 ] &&
         dump SRCS
 
-      #c_o_entry "%.o" "$SRCDIR/%.c"
+      #c_o_entry "%$OBJEXT" "$SRCDIR/%.c"
       [ "$N_OBJ" -ge 0  ] &&
-        a_entry  ${A_LIB##*/} $(list $SRCS| sed "s|lib/[^ /]*/||g ; s|lib/||g ; s|\\.c|.o|")
+        a_entry  ${A_LIB##*/} $(list $SRCS| sed "s|lib/[^ /]*/||g ; s|lib/||g ; s|\\.c|$OBJEXT|")
       fi
       )
     done
   }
 IFS=" $NL"
+ PROGRAMS=$(grep 'main\s*(.*)' *.c -l |xargs grep -E '#include "(lib/|)' -l | sed 's|\.c$||')
+  dump PROGRAMS
+
+  [ -n "$objext" ] && OBJEXT=$objext
+  [ -n "$libext" ] && LIBEXT=$libext
+  echo "CC = ${CC:-gcc}"
+  echo "AR = ${AR:-ar}"
+  echo "CFLAGS = ${CFLAGS:--Os}"
+  [ -n "$exeext" ] && echo "EXEEXT = ${exeext}"
  O=
  pushv O "all:" 
  #pushv O $(list $LIBS |sed "s|.*/|| "|sort -u) 
  pushv O $(list $PROGRAMS |sed "s|.*/|| ; s|^|${BUILDDIR}| ; s|\$|${EXEEXT}|") 
  echo "$O$NL"
   
- PROGRAMS=$(grep 'main\s*(.*)' *.c -l |xargs grep -E '#include "(lib/|)' -l | sed 's|\.c$||')
-  dump PROGRAMS
-
   a_lib_rules 
  per_srcdir_rules
   all_programs_rules

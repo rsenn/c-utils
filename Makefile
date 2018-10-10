@@ -936,6 +936,7 @@ MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap ch
 
 $(info BUILDDIR: $(BUILDDIR))
 
+CFLAGS := $(subst -O2,-Os,$(CFLAGS))
 
 all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
 
@@ -1453,6 +1454,7 @@ inst-slackpkg: slackpkg
   done
 
 -include Makefile.deps
+-include Makefile.a
 
 $(BUILDDIR)/%.pic.o: CFLAGS += -fPIC
 
