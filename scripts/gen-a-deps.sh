@@ -14,14 +14,30 @@ DEFVAR="DEFINES += HAVE_"
 DEFVAR="DEFS += -DHAVE_"
 
 TAB="	"
-NL="
+CR=""
+LF="
 "
+NL="$LF"
 IFS="
 "
+BS="\\"
+FS="/"
 
 match_expr() {  
   (EXPR="^(|\.[/\\\\]|.*[\\\\/])$1\$";  debug "match '$EXPR'"; shift; IFS="$NL"; echo "$*" |  ${GREP-grep} -E "$EXPR" );
 }
+
+indir() {
+ (B=; : ${S=" "}; for ARG; do 
+  case "$BUILDDIR" in
+    */) B="${B:+$B$S}$BUILDDIR$ARG" ;; 
+    *) B="${B:+$B$S}$BUILDDIR/$ARG" ;; 
+  esac
+done
+echo "$B")
+}
+
+
 list() {
  (IFS=" $IFS"; set -- $*; IFS="$NL"; echo "$*"); }
 
@@ -90,14 +106,14 @@ if [ "$GNU" = true ]; then
    #[ -n "$A_LIBS"] && pushv O "\\${NL}$TAB"$(sort_args $A_LIBS)
 
    [ -n "$LINK_CMD" ] && O="$O$NL$TAB$(link_cmd)"
-      echo "$NL$O$NL"
+   output_cmd "$O"
 else
 
    for PROG in $PROGRAMS; do 
-     OUT="${BUILDDIR}$PROG${EXEEXT}"
-     OBJ="${BUILDDIR}${PROG}$OBJEXT"
+     OUT=$(indir "$PROG${EXEEXT}")
+     OBJ=$(indir "${PROG}$OBJEXT")
      DEPS="$OBJ${LIBS:+ $(implode ' ' $LIBS)}"
-     echo "$OUT: $DEPS$NL$TAB$(link_cmd)$NL"
+     output_cmd "$OUT: $DEPS$NL$TAB$(link_cmd)$NL"
    done
      
 fi
@@ -106,7 +122,9 @@ fi
 
  }
 
-
+output_cmd() {
+  (IFS=" "; CMD="$*"; echo "${CMD//$FS/$BS}")
+}
 a_cmd() {
   (CMD=${A_CMD//"{OBJS}"/$OBJS}
   CMD=${CMD//"{LIB}"/$LIB}
@@ -132,17 +150,16 @@ c_o_entry() {
     pushv O "$A:"
     pushv O "${BUILDDIR}%$OBJEXT:" "$S"
     [ -n "$COMPILE_CMD" ] && O="$O$NL$TAB$(compile_cmd)"
-    echo "$O$NL")
+    output_cmd "$NL$O")
 }
 # a_entry <$LIBEXT-file> <objects>
 a_entry() {
-  (LIB=${BUILDDIR}$1; O="$LIB:"
+  (LIB=$(indir "$1"); O="$LIB:"
     shift
-    OBJS=
-    for OBJ; do OBJS="${OBJS:+$OBJS }${BUILDDIR}$OBJ"; done
+    OBJS=$(indir "$@")
     O="$O $OBJS"
     [ -n "$A_CMD" ] && O="$O$NL$TAB$(a_cmd)"
-    echo "$NL$O")
+    output_cmd "$NL$O")
 }
 dump() {
   eval "(IFS=\" \$NL\$IFS\"; debug \"\$1:\" \$$1 )"
@@ -192,13 +209,13 @@ gen_a_deps() {
         "
         #SRCS=$(strings $EXE | sed ' s|\.[co]||p' -n|sort -fu)
         #OBJS=$(echo "$SRCS" | sed -n "/\.[co]/ { s|\\.[co]|| ; s|.*/||; s|^|${BUILDDIR}|; s|\$|$OBJEXT|; p; }"|sort -fu)
-        OUT="${BUILDDIR}$P"
+        OUT=$(inpath "$P")
         O=$OUT
         set -- $(list ${LIBS} | sed "s|.*/||; s|^|${BUILDDIR}| ; s|\$|$LIBEXT|" | sort -fu)
 
       #  O="$O $*"
       [ "$LINK_CMD" ] && O="$O$NL$TAB$(link_cmd)"
-      echo "$NL$O")
+      output_cmd "$O")
     done
 
     O=
@@ -223,15 +240,15 @@ gen_a_deps() {
         SRC=${SRC#./}
         pushv O "${BUILDDIR}%$OBJEXT:${SRC:+ $SRC}"
         [ -n "$COMPILE_CMD" ] && O="$O$NL$TAB$(compile_cmd)"
-        echo "$NL$O")
+        output_cmd "$O")
     done
   }
   all_sources_rules() {
     for SRC in $SOURCES; do
     OBJ=${SRC%.c}
     OBJ=${OBJ##*/}
-    OBJ=${BUILDDIR}${OBJ}$OBJEXT
-    echo "$OBJ: $SRC$NL$TAB$(compile_cmd)$NL"
+    OBJ=$(indir "${OBJ}$OBJEXT")
+    output_cmd "$OBJ: $SRC$NL$TAB$(compile_cmd)"
     done
     }
 
@@ -240,7 +257,7 @@ gen_a_deps() {
     dump LIBS
     for A_LIB in $LIB_NAMES; do
       ( NAME=${A_LIB##*/}
-        NAME=${NAME%.${LIBEXT}}
+        NAME=${NAME%.*}
         LIBEXPR="${NAME}\.(${LIBEXT}|lib|a)"
         FILES=$( match_expr "$LIBEXPR" $A_LIBS)
         dump FILES
@@ -261,14 +278,15 @@ gen_a_deps() {
 
           N_SRCS=$(count $SRCS)
 
-          #debug "$A_LIB:" $N_SRCS "sources." 1>&2
+          LIB=${A_LIB%.*}.$LIBEXT
+
+          debug "$LIB:" "($N_SRCS sources)" 1>&2
           [ "$N_SRCS" -gt 0 ] &&
           dump SRCS
 
-
         #c_o_entry "%$OBJEXT" "$SRCDIR/%.c"
         [ "$N_OBJ" -ge 0  ] &&
-        a_entry  ${A_LIB##*/} $(list $SRCS| sed "s|lib/[^ /]*/||g ; s|lib/||g ; s|\\.c|$OBJEXT|")
+        a_entry  ${LIB} $(list $SRCS| sed "s|lib/[^ /]*/||g ; s|lib/||g ; s|\\.c|$OBJEXT|")
       fi
       )
     done
@@ -288,8 +306,13 @@ gen_a_deps() {
   else
     pushv O "CCLD ?= ${CCLD:-\$(CC)}"
   fi
-  pushv O "AR = ${AR:-ar}"
+ if  [ -n "$TLIB" ]; then
+   pushv O "LIB = ${TLIB}"
+  A_CMD=${A_CMD//tlib/'$(LIB)'}
+  fi
+  [ -n "$AR" ] && pushv O "AR = ${AR:-ar}"
   pushv O "CFLAGS = ${CFLAGS:--Os}"
+  pushv O "DEFS = ${DEFS}"
   pushv O "CPPFLAGS = ${CPPFLAGS}"
   [ -n "$exeext" ] && pushv O "EXEEXT = ${exeext}"
   [ -n "$builddir" ] && pushv O "BUILDDIR = ${builddir%/}/"
@@ -314,9 +337,9 @@ gen_a_deps() {
 : output_cond_defs
   SEP=$NL$NL
 
-  pushv O "all:"  ${BUILDDIR} $(list $PROGRAMS |sed "s|.*/|| ; s|^|${BUILDDIR}| ; s|\$|${EXEEXT}|")
-  pushv O "${BUILDDIR}:$NL$TAB@mkdir -p \$@ || mkdir \$@"
-  echo "$O"
+  pushv O "all:"  ${BUILDDIR%[/\\]} $(list $PROGRAMS |sed "s|.*/|| ; s|^|${BUILDDIR}| ; s|\$|${EXEEXT}|")
+  pushv O "${BUILDDIR%/}:$NL$TAB@mkdir -p \"${BUILDDIR%/}\" || mkdir \"${BUILDDIR%/}\""
+  output_cmd "$O"
   unset SEP
 
 #  all_program_rules
@@ -352,15 +375,18 @@ gen_bcc32_makefile() {
     # A_CMD='(cd $(BUILDDIR); for OBJ in $(notdir $^); do echo tlib /u /A /C $(notdir $@) $$OBJ 1>&2;  tlib /u /A /C $(notdir $@) $$OBJ; done)'
 
     A_CMD='tlib @&&|
-/p512  /a "${LIB}" {OBJS}
+/p512 /a "{LIB}" {OBJS}
 |'
 :  ${builddir=build/bcc/Debug/}
 
+    NL="$CR$LF" \
     LIBEXT=lib \
     OBJEXT=.obj \
     EXEEXT=.exe \
     CC="bcc32c" \
     CFLAGS="-O" \
+    TLIB="tlib" \
+    DEFS="-DHAVE_ERRNO_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_LINUX_LIMITS_H=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDINT_H=1 -DHAVE_SYS_FCNTL_H=1" \
     gen_a_deps "$@" |tee ${OUT:-Makefile.bcc32})
 }
 case $1 in
