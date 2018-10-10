@@ -11,7 +11,7 @@
 DEFVAR="DEFINES += HAVE_"
 DEFVAR="DEFS += -DHAVE_"
 
-TAB="   "
+TAB="	"
 NL="
 "
 IFS="
@@ -178,7 +178,7 @@ COND_DEFS="$*"
 
           ( F=$(find $SRCDIR -maxdepth 1 -name "*.c")
           IFS=" ""
-      "
+"
           OBJS=$(echo "$F" |  sed "s|\.c$|$OBJEXT|; s|^\.[/\\\\]|| ; s|.*[/\\\\]||; s|^|${BUILDDIR}|" )
           set -- $OBJS
       O=
@@ -201,7 +201,7 @@ COND_DEFS="$*"
       FILES=$( match_expr "$NAME\.a" $A_LIBS)
       dump FILES
     IFS=" ""
-    "
+ "
       OBJS=$(IFS="$NL "; get_objs $FILES |sort -u)
       X=$(set -- $OBJS; IFS="|"; echo "($*)")
       dump OBJS
@@ -299,6 +299,10 @@ isin() {
   done;
   exit 1 )
 }
-gen_a_deps "$@"
+gen_bcc32_makefile() { 
+CC="bcc32c" CFLAGS="-G -O" link="ilink32"  builddir=build/bcc/Debug/ gen_a_deps "$@" |tee Makefile.bcc32; }
+case $1 in
+  -bcc)  shift; gen_bcc32_makefile "$@" ;;
+  *) gen_a_deps "$@" ;;
+esac
 
-gen-bcc32-makefile() { CC="bcc32c" CFLAGS="-G -O" link="ilink32"  builddir=build/bcc/Debug/ gen_a_deps build/*/*/*.a  2>debug.log |tee Makefile.bcc32; }
