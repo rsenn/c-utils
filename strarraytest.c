@@ -12,7 +12,7 @@ main(int argc, char* argv[])  {
    strarray_from_argv(sizeof(headers) / sizeof(headers[0]), headers, &sarr);
 
    strarray_removesuffixs(&sarr, ".h");
-   strarray_joints(&sarr, &sa, ", ");
+   strarray_joins(&sarr, &sa, ", ");
    buffer_puts(buffer_1, &sa);
    buffer_putnlflush(buffer_1);
 

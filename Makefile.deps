@@ -1,0 +1,30 @@
+$(BUILDDIR)strarray_appends.o: lib/strarray/strarray_appends.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_from_argv.o: lib/strarray/strarray_from_argv.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_index_of.o: lib/strarray/strarray_index_of.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_joins.o: lib/strarray/strarray_joins.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_pop.o: lib/strarray/strarray_pop.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_prepends.o: lib/strarray/strarray_prepends.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_push.o: lib/strarray/strarray_push.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_push_sa.o: lib/strarray/strarray_push_sa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_pushb.o: lib/strarray/strarray_pushb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_pushd.o: lib/strarray/strarray_pushd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_removeprefixs.o: lib/strarray/strarray_removeprefixs.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_removesuffixs.o: lib/strarray/strarray_removesuffixs.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_set.o: lib/strarray/strarray_set.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_sort.o: lib/strarray/strarray_sort.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_to_argv.o: lib/strarray/strarray_to_argv.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

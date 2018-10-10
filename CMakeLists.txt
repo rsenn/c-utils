@@ -426,7 +426,7 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-  access binfmttest bsdiffcat buffertest ccat count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elfwrsec hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest elflist
+  access binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list main mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest
 )
 
 set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})
@@ -636,6 +636,7 @@ target_link_libraries(binfmttest binfmt errmsg uint64 uint32 uint16 buffer mmap 
 target_link_libraries(elf64list errmsg uint64 uint32 uint16 buffer mmap open)
 target_link_libraries(macho32list errmsg uint64 uint32 uint16 buffer mmap open)
 target_link_libraries(pelist pe errmsg uint64 uint32 uint16 buffer mmap open)
+target_link_libraries(strarraytest strarray stralloc array buffer str)
 
 
 

@@ -1,1 +1,111 @@
-HAVE_LIBLZMA := 1
+ifneq ($(TIME_H),)
+DEFINES += HAVE_TIME_H="$(TIME_H)"
+endif
+ifneq ($(ALIGNED_ALLOC),)
+DEFINES += HAVE_ALIGNED_ALLOC="$(ALIGNED_ALLOC)"
+endif
+ifneq ($(ALLOCA),)
+DEFINES += HAVE_ALLOCA="$(ALLOCA)"
+endif
+ifneq ($(BSDSENDFILE),)
+DEFINES += HAVE_BSDSENDFILE="$(BSDSENDFILE)"
+endif
+ifneq ($(C11_GENERICS),)
+DEFINES += HAVE_C11_GENERICS="$(C11_GENERICS)"
+endif
+ifneq ($(CYGWIN_CONV_PATH),)
+DEFINES += HAVE_CYGWIN_CONV_PATH="$(CYGWIN_CONV_PATH)"
+endif
+ifneq ($(DEVPOLL),)
+DEFINES += HAVE_DEVPOLL="$(DEVPOLL)"
+endif
+ifneq ($(DYNSTACK),)
+DEFINES += HAVE_DYNSTACK="$(DYNSTACK)"
+endif
+ifneq ($(EAGAIN_READWRITE),)
+DEFINES += HAVE_EAGAIN_READWRITE="$(EAGAIN_READWRITE)"
+endif
+ifneq ($(EPOLL),)
+DEFINES += HAVE_EPOLL="$(EPOLL)"
+endif
+ifneq ($(FNMATCHGETDELIM),)
+DEFINES += HAVE_FNMATCHGETDELIM="$(FNMATCHGETDELIM)"
+endif
+ifneq ($(GETOPT),)
+DEFINES += HAVE_GETOPT="$(GETOPT)"
+endif
+ifneq ($(GETOPT_LONG),)
+DEFINES += HAVE_GETOPT_LONG="$(GETOPT_LONG)"
+endif
+ifneq ($(GLOB),)
+DEFINES += HAVE_GLOB="$(GLOB)"
+endif
+ifneq ($(IO_FD_FLAGS),)
+DEFINES += HAVE_IO_FD_FLAGS="$(IO_FD_FLAGS)"
+endif
+ifneq ($(IO_QUEUEFORREAD),)
+DEFINES += HAVE_IO_QUEUEFORREAD="$(IO_QUEUEFORREAD)"
+endif
+ifneq ($(KQUEUE),)
+DEFINES += HAVE_KQUEUE="$(KQUEUE)"
+endif
+ifneq ($(LOCALTIME_R),)
+DEFINES += HAVE_LOCALTIME_R="$(LOCALTIME_R)"
+endif
+ifneq ($(LSTAT),)
+DEFINES += HAVE_LSTAT="$(LSTAT)"
+endif
+ifneq ($(N2I),)
+DEFINES += HAVE_N2I="$(N2I)"
+endif
+ifneq ($(PIPE2),)
+DEFINES += HAVE_PIPE2="$(PIPE2)"
+endif
+ifneq ($(POPEN),)
+DEFINES += HAVE_POPEN="$(POPEN)"
+endif
+ifneq ($(POSIX_MEMALIGN),)
+DEFINES += HAVE_POSIX_MEMALIGN="$(POSIX_MEMALIGN)"
+endif
+ifneq ($(PREAD),)
+DEFINES += HAVE_PREAD="$(PREAD)"
+endif
+ifneq ($(ROUND),)
+DEFINES += HAVE_ROUND="$(ROUND)"
+endif
+ifneq ($(SENDFILE),)
+DEFINES += HAVE_SENDFILE="$(SENDFILE)"
+endif
+ifneq ($(SIGIO),)
+DEFINES += HAVE_SIGIO="$(SIGIO)"
+endif
+ifneq ($(SOCKET_FASTOPEN),)
+DEFINES += HAVE_SOCKET_FASTOPEN="$(SOCKET_FASTOPEN)"
+endif
+ifneq ($(UINT128),)
+DEFINES += HAVE_UINT128="$(UINT128)"
+endif
+ifneq ($(WORDEXP),)
+DEFINES += HAVE_WORDEXP="$(WORDEXP)"
+endif
+ifneq ($(ZLIB),)
+DEFINES += HAVE_ZLIB="$(ZLIB)"
+endif
+ifneq ($(STDINT_H),)
+DEFINES += HAVE_STDINT_H="$(STDINT_H)"
+endif
+ifneq ($(ALLOCA_H),)
+DEFINES += HAVE_ALLOCA_H="$(ALLOCA_H)"
+endif
+ifneq ($(CONFIG_H),)
+DEFINES += HAVE_CONFIG_H="$(CONFIG_H)"
+endif
+ifneq ($(ERRNO_H),)
+DEFINES += HAVE_ERRNO_H="$(ERRNO_H)"
+endif
+ifneq ($(INTTYPES_H),)
+DEFINES += HAVE_INTTYPES_H="$(INTTYPES_H)"
+endif
+ifneq ($(LINUX_LIMITS_H),)
+DEFINES += HAVE_LINUX_LIMITS_H="$(LINUX_LIMITS_H)"
+endif
