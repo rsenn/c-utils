@@ -81,7 +81,7 @@ all_program_rules() {
     set -- $(echo  "$PROGRAMS"|  sed "s|^|${BUILDDIR}| ; s|\$|${EXEEXT}|")
     IFS=" $NL"
     O=
-    pushv O "$@: ${BUILDDIR}%: ${BUILDDIR}%.o${LIBS:+ $(implode ' ' $LIBS)}"
+    pushv O "$@: ${BUILDDIR}%${EXEEXT}: ${BUILDDIR}%.o${LIBS:+ $(implode ' ' $LIBS)}"
    #[ -n "$A_LIBS"] && pushv O "\\${NL}$TAB"$(sort_args $A_LIBS)
 
   [ -n "$LINK_CMD" ] && O="$O$NL$TAB${LINK_CMD}"
@@ -300,7 +300,14 @@ isin() {
   exit 1 )
 }
 gen_bcc32_makefile() { 
-CC="bcc32c" CFLAGS="-G -O" link="ilink32"  builddir=build/bcc/Debug/ gen_a_deps "$@" |tee Makefile.bcc32; }
+( : A_CMD='LIB -out:$@ $^' 
+A_CMD='(cd $(BUILDDIR); for OBJ in $(notdir $^); do echo tlib /u /A /C $(notdir $@) $$OBJ 1>&2;  tlib /u /A /C $(notdir $@) $$OBJ; done)'
+unset A_CMD
+  CC="bcc32c" \
+    CFLAGS="-G -O" \
+    link="ilink32"  \
+    builddir=build/bcc/Debug/ gen_a_deps "$@" |tee ${OUT:-Makefile.bcc32})
+  }
 case $1 in
   -bcc)  shift; gen_bcc32_makefile "$@" ;;
   *) gen_a_deps "$@" ;;

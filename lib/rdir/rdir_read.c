@@ -68,19 +68,21 @@ void
 rdir_read_r(rdir_t* d) {
   rdir_t* rdn = malloc(sizeof(rdir_t));
   byte_copy(rdn, sizeof(rdir_t), d);
+  rdn->sa.len = d->sa.len;
   byte_zero(d, sizeof(rdir_t));
   d->prev = rdn;
 
-  stralloc_copys(&d->sa, rdn->sa.s);
+  d->sa = rdn->sa;
+//stralloc_copy(&d->sa, &rdn->sa);
   stralloc_0(&d->sa);
 
   if(dir_open(&d->dir, d->sa.s)) {
+    rdn->sa.s = d->sa.s;
+    rdn->sa.a = d->sa.a;
     byte_copy(d, sizeof(rdir_t), rdn);
     free(rdn);
     return;
   }
-
-  d->sa.len = str_len(d->sa.s);
 
   buffer_puts(buffer_2, "entering ");
   buffer_puts(buffer_2, d->sa.s);

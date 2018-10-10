@@ -1,7 +1,9 @@
 #ifndef _DIR_H__
 #define _DIR_H__
 
+#ifdef HAVE_TIME_H
 #include <time.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
