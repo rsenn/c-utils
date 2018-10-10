@@ -41,8 +41,13 @@ int strarray_push_sa (strarray * a, const stralloc * sa);
 
 void strarray_sort(strarray*, int (*)(char* , char* ));
 
+int strarray_appends(strarray* arr, const char* s);
+int strarray_prepends(strarray* arr, const char* s);
+int strarray_removeprefixs(strarray* arr, const char* s);
+int strarray_removesuffixs(strarray* arr, const char* s);
+
 #ifdef __cplusplus
 }
 #endif
 #endif /* defined(STRARRAY_H) */
-int strarray_appends(strarray* arr, const char* s);
+int strarray_joins(strarray* arr, stralloc* sa, const char* sep);
