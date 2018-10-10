@@ -855,6 +855,7 @@ endif
 #CFLAGS += $(DEFS:%=-D%)
 #
 #$(info DEFS: $(DEFS))
+DEFS += $(DEFINES:%=-D%)
 
 
 FLAGS += $(patsubst %,-W%,$(WARNINGS)) $(patsubst %,-D%,$(DEFS))
@@ -872,6 +873,7 @@ endef
 ifneq ($(HOST),($(subst msys1,,$(HOST))))
 NO_AT ?= 1
 endif
+
 
 
 ifneq ($(NO_AT),1)
@@ -937,8 +939,6 @@ MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap ch
 $(info BUILDDIR: $(BUILDDIR))
 
 CFLAGS := $(subst -O2,-Os,$(CFLAGS))
-
-DEFS += $(DEFINES:%=-D%)
 
 all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
 

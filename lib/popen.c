@@ -31,6 +31,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+ #include "windoze.h"
 
 #if !defined( HAVE_POPEN) //|| (defined(__CYGWIN__) && defined(__amd64__))
 #include <errno.h>
@@ -38,8 +39,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 //#include <strings.h>
+#ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
+#if WINDOWS_NATIVE
+#include <io.h>
+#include <process.h>
+#else
 #include <unistd.h>
+#endif
 
 static int* pids;
 
@@ -106,15 +114,21 @@ pclose(FILE* iop) {
    */
   if(pids == NULL || pids[fdes = fileno(iop)] == 0) return (-1);
   (void)fclose(iop);
-  sigemptyset(&nmask);
+ #if defined(HAVE_SIGEMPTYSET) && defined(HAVE_SIGADDSET) && defined(HAVE_SIGPROCMASK)
+   sigemptyset(&nmask);
   sigaddset(&nmask, SIGINT);
   sigaddset(&nmask, SIGQUIT);
   sigaddset(&nmask, SIGHUP);
   (void)sigprocmask(SIG_BLOCK, &nmask, &omask);
+#endif
+#ifdef HAVE_WAITPID
   do {
     pid = waitpid(pids[fdes], (int*)&pstat, 0);
   } while(pid == -1 && errno == EINTR);
+#endif
+ #if defined(HAVE_SIGEMPTYSET) && defined(HAVE_SIGADDSET) && defined(HAVE_SIGPROCMASK)
   (void)sigprocmask(SIG_SETMASK, &omask, NULL);
+#endif
   pids[fdes] = 0;
   return (pid == -1 ? -1 : pstat);
 }

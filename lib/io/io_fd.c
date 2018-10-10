@@ -53,7 +53,7 @@
 
 #if WINDOWS
 #include <stdio.h>
-extern HANDLE io_comport;
+HANDLE io_comport;
 #endif
 static iarray io_fds;
 

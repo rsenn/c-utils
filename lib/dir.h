@@ -1,10 +1,6 @@
 #ifndef _DIR_H__
 #define _DIR_H__
 
-#ifdef HAVE_TIME_H
-#include <time.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,7 +37,7 @@ void dir_close(struct dir_s* d);
 
 char* dir_name(struct dir_s* d);
 int dir_type(struct dir_s* d);
-time_t dir_time(struct dir_s* d, int time_type);
+//unsigned long dir_time(struct dir_s* d, int time_type);
 
 #ifdef __cplusplus
 }

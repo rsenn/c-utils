@@ -11,7 +11,7 @@ include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckLibraryExists)
 include(CheckTypeSize)
-include(FindBZip2)
+include(${CMAKE_CURRENT_SOURCE_DIR}/FindBZip2.cmake)
 include(FindPkgConfig)
 include(FindZLIB)
 include(UsePkgConfig)
@@ -230,7 +230,7 @@ if(NOT SOCKLEN_T)
 endif()
 
 
-foreach(FUNC posix_memalign aligned_alloc _aligned_malloc alloca fnmatch inet_pton llseek lseek lseek64 lstat pipe2 round wordexp WSAStartup popen cygwin_conv_path)
+foreach(FUNC posix_memalign aligned_alloc _aligned_malloc alloca fnmatch inet_pton llseek lseek lseek64 lstat pipe2 round wordexp WSAStartup popen cygwin_conv_path sigemptyset sigaddset sigprocmask waitpid)
   string(TOUPPER "HAVE_${FUNC}" DEF)
   check_function_exists(${FUNC} ${DEF})
   if(${DEF})
@@ -426,7 +426,7 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-  access binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list main mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest
+  access binfmttest bsdiffcat buffertest ccat count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest
 )
 
 set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})
