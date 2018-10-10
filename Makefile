@@ -703,7 +703,9 @@ PKG_CONFIG += --static
 ifeq ($(MINGW)$(STATIC),10)
 LDFLAGS += -static-libgcc -static-libstdc++
 else
+ifeq ($(STATIC),1)
 LDFLAGS += -static
+endif
 endif
 endif
 ifeq ($(WIN32),1)
@@ -866,6 +868,7 @@ FLAGS += $(patsubst %,-W%,$(WARNINGS))
 FLAGS += $(CPPFLAGS)
 FLAGS := $(sort $(FLAGS))
 
+CFLAGS := $(subst -O2,-Os,$(CFLAGS))
 FLAGS_FILE := $(patsubst %/,%,$(dir $(patsubst %/,%,$(BUILDDIR))))/$(notdir $(patsubst %/,%,$(BUILDDIR))).flags
 
 SPACE := $(DUMMY) $(DUMMY)
@@ -875,16 +878,18 @@ define NL
 endef
 
 ifneq ($(HOST),($(subst msys1,,$(HOST))))
-NO_AT ?= 1
+  NO_AT := 1
 endif
-
-
 
 ifneq ($(NO_AT),1)
 CFLAGS += @$(FLAGS_FILE)
 else
 CFLAGS += $(shell cat $(FLAGS_FILE))
 endif
+
+$(info FLAGS=$(FLAGS))
+$(info CFLAGS=$(CFLAGS))
+$(info @FLAGS_FILE: $(shell cat $(FLAGS_FILE)))
 
 ifneq ($(SYSROOT),)
 ifneq ($(call file-exists,$(SYSROOT)),1)
@@ -937,12 +942,11 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab wait xml)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 
 $(info BUILDDIR: $(BUILDDIR))
 
-CFLAGS := $(subst -O2,-Os,$(CFLAGS))
 
 all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
 
