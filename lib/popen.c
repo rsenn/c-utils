@@ -103,7 +103,7 @@ popen(const char* program, const char* type) {
 int
 pclose(FILE* iop) {
   int fdes;
-  sigset_t omask, nmask;
+
   int pstat;
   int pid;
 
@@ -114,12 +114,15 @@ pclose(FILE* iop) {
    */
   if(pids == NULL || pids[fdes = fileno(iop)] == 0) return (-1);
   (void)fclose(iop);
+ {
  #if defined(HAVE_SIGEMPTYSET) && defined(HAVE_SIGADDSET) && defined(HAVE_SIGPROCMASK)
+  sigset_t omask, nmask;
    sigemptyset(&nmask);
   sigaddset(&nmask, SIGINT);
   sigaddset(&nmask, SIGQUIT);
   sigaddset(&nmask, SIGHUP);
   (void)sigprocmask(SIG_BLOCK, &nmask, &omask);
+
 #endif
 #ifdef HAVE_WAITPID
   do {
@@ -129,6 +132,7 @@ pclose(FILE* iop) {
  #if defined(HAVE_SIGEMPTYSET) && defined(HAVE_SIGADDSET) && defined(HAVE_SIGPROCMASK)
   (void)sigprocmask(SIG_SETMASK, &omask, NULL);
 #endif
+  } 
   pids[fdes] = 0;
   return (pid == -1 ? -1 : pstat);
 }
