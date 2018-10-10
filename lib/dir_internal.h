@@ -36,6 +36,13 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 #ifndef MAXIMUM_PATH_LENGTH
 //#define MAXIMUM_PATH_LENGTH _MAX_PATH
 #define MAXIMUM_PATH_LENGTH 4095

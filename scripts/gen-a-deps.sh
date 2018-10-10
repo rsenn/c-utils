@@ -3,19 +3,27 @@
 : ${BUILDDIR='$(BUILDDIR)'}
 : ${EXEEXT='$(EXEEXT)'}
 : ${OBJEXT=.o}
-: ${LIBEXT=.a}
+
 : ${A_CMD='$(AR) rcs $@ $^'}
-: ${COMPILE_CMD='$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $^'}
-: ${LINK_CMD='$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^'}
+: ${COMPILE_CMD='$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $^'}
+: ${LINK_CMD='$(CCLD) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)'}
+
+DEFVAR="DEFINES += HAVE_"
+DEFVAR="DEFS += -DHAVE_"
+
 TAB="	"
 NL="
 "
 IFS="
  "
+
 match_expr() {  (EXPR="^(|\.[/\\\\]|.*[\\\\/])$1\$";  shift; IFS="$NL"; echo "$*" |  grep -E "$EXPR" ); }
  list() {
    (IFS=" $IFS"; set -- $*; IFS="$NL"; echo "$*"); }
 
+   dirnames() {
+     (IFS="$NL"; echo "$*" |sed "\\|[/\\\\]|! s|.*|.|; s|/[^/]*$||")
+   }
 debug() {
   [ "$DEBUG" = true ] && echo "$@" 1>&2
 }
@@ -46,8 +54,7 @@ count() {
   echo $#
 }
 sort_args() {
-  (IFS="
-"; echo "$*" | sort -fu)
+  (IFS="$NL$IFS"; echo "$*" | sort -fu)
 
 }
 sort_var() {
@@ -56,7 +63,7 @@ sort_var() {
 get_objs() {
   [ $# -gt 0 ] && {
   strings "$@" |
-  sed -n  "\\|^\([[:alnum:]_]\+\)\\$OBJEXT| { s|^\([[:alnum:]_]\+\)\\$OBJEXT.*|\1$OBJEXT|; \\|lib/|! s|^|lib/|; p }"
+  sed -n  "\\|^\([[:alnum:]_]\+\)\\.[co]| { s|^\([[:alnum:]_]\+\)\\.[oc].*|\1.o|; \\|lib/|! s|^|lib/|; p }"
 
   } ||
     echo
@@ -67,11 +74,28 @@ count() {
 get_srcs() {
   (list $SOURCES | grep -E "$X_SRC")
 }
+
+all_program_rules() {
+  IFS="$NL "
+
+    set -- $(echo  "$PROGRAMS"|  sed "s|^|${BUILDDIR}| ; s|\$|${EXEEXT}|")
+    IFS=" $NL"
+    O=
+    pushv O "$@: ${BUILDDIR}%: ${BUILDDIR}%.o${LIBS:+ $(implode ' ' $LIBS)}"
+   #[ -n "$A_LIBS"] && pushv O "\\${NL}$TAB"$(sort_args $A_LIBS)
+
+  [ -n "$LINK_CMD" ] && O="$O$NL$TAB${LINK_CMD}"
+
+  echo "$NL$O$NL"
+
+
+}
 # c_o_entry <$LIBEXT-file> <objects>
 c_o_entry() {
   (A=$1; S="$2"
   SRCDIR=${S%/%*}
   shift 2
+  O=
   pushv O "$A:"
   pushv O "${BUILDDIR}%$OBJEXT:" "$S"
   [ -n "$COMPILE_CMD" ] && O="$O$NL$TAB${COMPILE_CMD}"
@@ -93,7 +117,11 @@ gen_a_deps() {
   "
   [ $# -gt 0 ] || set -- build/*/*/*$LIBEXT
   A_LIBS="$*"
+set -- ALIGNED_ALLOC ALLOCA BSDSENDFILE C11_GENERICS CYGWIN_CONV_PATH DEVPOLL DYNSTACK EAGAIN_READWRITE EPOLL FNMATCH GETDELIM GETOPT GETOPT_LONG GLOB IO_FD_FLAGS IO_QUEUEFORREAD KQUEUE LIBBZ2 LIBLZMA LIBZ LOCALTIME_R LSTAT N2I PIPE2 POPEN POSIX_MEMALIGN PREAD ROUND SENDFILE SIGIO SOCKET_FASTOPEN UINT128 WORDEXP ZLIB STDINT_H \
+  ALLOCA_H CONFIG_H ERRNO_H INTTYPES_H LINUX_LIMITS_H
+COND_DEFS="$*"
   set -- $(find . lib/ lib/*/ -follow -maxdepth 1 -name "*.c" | sed 's|^\./||'|sort -fu)
+
   SOURCES="$*"
   dump SOURCES
   SRCDIRS=
@@ -113,6 +141,8 @@ gen_a_deps() {
   LIBS=$(sort_args $A_LIBS | sed 's|.*/||' |sort -u| sed "s|^|${BUILDDIR}|" ) 
 
 
+  dump LIBS
+  dump LIB_NAMES
   dump A_LIBS
   dump PROGRAMS
   dump LIB_DIRS
@@ -140,24 +170,7 @@ gen_a_deps() {
     O="$O:"
     pushv LIBS
   }
-all_program_rules() {
-O=
-IFS="$NL "
-
-  set -- $(echo  "$PROGRAMS"|  sed "s|^|${BUILDDIR}| ; s|\$|${EXEEXT}|")
-  IFS=" $NL"
-O="$*: ${BUILDDIR}%: %.c"
-IFS="$NL "
-[ -n "$LINK_CMD" ] && O="$O$NL$TAB${LINK_CMD}"
-echo "$NL$O"
-
-  O=
-  pushv O "$@:" "\\${NL}${TAB}"  $(sort_args $LIBS)
-  echo "$NL$O"
-
-
-}
-  SRCDIRS=`echo  "$*" | sort -u`
+  SRCDIRS=`dirnames $SOURCES | sort -u`  
 
   dump SRCDIRS  
     per_srcdir_rules() {
@@ -170,10 +183,9 @@ echo "$NL$O"
           set -- $OBJS
       O=
         pushv O "$@: \\$NL$TAB"
-        pushv O "${BUILDDIR}%$OBJEXT":
         SRC=$SRCDIR/%.c
         SRC=${SRC#./}
-        pushv O "$SRC"
+        pushv O "${BUILDDIR}%$OBJEXT:${SRC:+ $SRC}"
           [ -n "$COMPILE_CMD" ] && O="$O$NL$TAB${COMPILE_CMD}"
           echo "$NL$O")
       done
@@ -183,31 +195,32 @@ echo "$NL$O"
     dump LIB_NAMES 
     dump LIBS 
     for A_LIB in $LIB_NAMES; do
-      (
-      NAME=${A_LIB##*/}
-      NAME=${NAME%$LIBEXT}
-      LIBEXPR="${NAME}\\$LIBEXT"
-      FILES=$( list $A_LIBS | grep -E "(^|.*/)$NAME\\$LIBEXT\$")
+    ( NAME=${A_LIB##*/}
+      NAME=${NAME%.a}
+      LIBEXPR="${NAME}\.a"
+      FILES=$( match_expr "$NAME\.a" $A_LIBS)
       dump FILES
     IFS=" ""
     "
-      OBJS=$(get_objs $FILES |sort -u)
+      OBJS=$(IFS="$NL "; get_objs $FILES |sort -u)
       X=$(set -- $OBJS; IFS="|"; echo "($*)") 
       dump OBJS
-      dump X
+#      dump X
         N_OBJ=$(count $OBJS)
         debug "$A_LIB:" $N_OBJ objects  
       if [ "${N_OBJ:-0}" -gt 0 ] ; then
-        X_SRC=$(echo "$X" |sed "s|(\(.*\))|\1|; s,[^ |]\+/,,g; s|\\$OBJEXT|.c|g")
-        dump X_SRC
+        X_SRC=$(echo "$X" |sed "s|(\(.*\))|\1|; s,[^ |]\+/,,g; s|\.o|.c|g")
+        #dump X_SRC
 
        
-        SRCS=$(match_expr "($X_SRC)" $SOURCES)
+        SRCS=$(ls -d -- $(match_expr "($X_SRC)" $SOURCES ) 2>/dev/null| sort -u)
+        
         N_SRCS=$(count $SRCS)
 
-        debug "$A_LIB:" $N_SRCS "sources." 1>&2
+        #debug "$A_LIB:" $N_SRCS "sources." 1>&2
         [ "$N_SRCS" -gt 0 ] &&
         dump SRCS
+    
 
       #c_o_entry "%$OBJEXT" "$SRCDIR/%.c"
       [ "$N_OBJ" -ge 0  ] &&
@@ -220,21 +233,47 @@ IFS=" $NL"
  PROGRAMS=$(grep 'main\s*(.*)' *.c -l |xargs grep -E '#include "(lib/|)' -l | sed 's|\.c$||')
   dump PROGRAMS
 
+O=
+SEP=$NL
   [ -n "$objext" ] && OBJEXT=$objext
   [ -n "$libext" ] && LIBEXT=$libext
-  echo "CC = ${CC:-gcc}"
-  echo "AR = ${AR:-ar}"
-  echo "CFLAGS = ${CFLAGS:--Os}"
-  [ -n "$exeext" ] && echo "EXEEXT = ${exeext}"
- O=
- pushv O "all:" 
- #pushv O $(list $LIBS |sed "s|.*/|| "|sort -u) 
- pushv O $(list $PROGRAMS |sed "s|.*/|| ; s|^|${BUILDDIR}| ; s|\$|${EXEEXT}|") 
- echo "$O$NL"
-  
-  a_lib_rules 
+  pushv O "CC = ${CC:-gcc}"
+  if [  -n "$link" ]; then
+     pushv O "LINK = ${link}"
+     pushv O "CCLD = \$(LINK)"
+   else
+  pushv O "CCLD ?= ${CCLD:-\$(CC)}"
+  fi
+  pushv O "AR = ${AR:-ar}"
+  pushv O "CFLAGS = ${CFLAGS:--Os}"
+ pushv O "CPPFLAGS = ${CPPFLAGS}"
+  [ -n "$exeext" ] && pushv O "EXEEXT = ${exeext}"
+  [ -n "$builddir" ] && pushv O "BUILDDIR = ${builddir%/}/"
+SEP=$NL 
+ if [ "$COND_DEFS" ]; then
+   var_get() {   eval "echo \"\${$1}\"";   }
+   var_isset() {   eval "test \"\${$1+set}\" = set";   }
+   for COND in $COND_DEFS; do
+   if var_isset "$COND"; then  
+     pushv COND_VARS "$COND = 1"
+    else
+     pushv COND_VARS "#$COND ="
+   fi
+    pushv COND_IFDEFS "ifneq (\$($COND),)${NL}$DEFVAR${COND}=\"\$($COND)\"${NL}endif"
+   done
+
+ fi
+SEP=$NL$NL 
+pushv O "$COND_VARS${NL}${NL}$COND_IFDEFS"
+ 
+pushv O "all:"  ${BUILDDIR} $(list $PROGRAMS |sed "s|.*/|| ; s|^|${BUILDDIR}| ; s|\$|${EXEEXT}|") 
+pushv O "${BUILDDIR}:$NL$TAB@mkdir -p \$@ || mkdir \$@"
+ echo "$O"
+  unset SEP
+
+ all_program_rules
  per_srcdir_rules
-  all_programs_rules
+ a_lib_rules 
 }
 pushv_unique() { 
  v=$1 s IFS=${IFS%${IFS#?}};
@@ -249,7 +288,7 @@ pushv_unique() {
 }
 
 pushv() { 
-  eval "shift;IFS=\" \$NL\$IFS\";$1=\"\${$1:+\$$1 }\$*\""
+  eval "shift;IFS=\" \$NL\$IFS\";$1=\"\${$1:+\$$1\${SEP-" "}}\$*\""
 }
 
 isin() { 
