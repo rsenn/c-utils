@@ -754,7 +754,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln bsdiffcat binfmttest elf64list macho32list pelist elflist genmakefile)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln bsdiffcat binfmttest elf64list macho32list pelist elflist genmakefile strarraytest)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
@@ -1384,6 +1384,14 @@ $(BUILDDIR)elflist$(M64_)$(EXEEXT): $(BUILDDIR)elflist.o $(call add-library, bin
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
+
+$(BUILDDIR)strarraytest$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
+$(BUILDDIR)strarraytest$(M64_)$(EXEEXT): $(BUILDDIR)strarraytest.o $(call add-library, binfmt elf array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
 
 $(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
 $(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library, binfmt elf array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)

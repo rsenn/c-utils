@@ -45,3 +45,4 @@ void strarray_sort(strarray*, int (*)(char* , char* ));
 }
 #endif
 #endif /* defined(STRARRAY_H) */
+int strarray_appends(strarray* arr, const char* s);
