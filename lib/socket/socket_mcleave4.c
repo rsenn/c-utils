@@ -10,8 +10,12 @@
 
 int
 socket_mcleave4(int s, const char ip[4]) {
+#ifdef IP_DROP_MEMBERSHIP
   struct ip_mreq opt;
   byte_copy(&opt.imr_multiaddr.s_addr, 4, ip);
   byte_zero(&opt.imr_interface.s_addr, 4);
   return winsock2errno(setsockopt(s, IPPROTO_IP, IP_DROP_MEMBERSHIP, &opt, sizeof opt));
+#else
+  return -1;
+#endif
 }

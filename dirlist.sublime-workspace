@@ -12,61 +12,51 @@
 	"buffers":
 	[
 		{
-			"file": "lib/utf8.c",
+			"file": "scripts/gen-a-deps.sh",
 			"settings":
 			{
-				"buffer_size": 4325,
+				"buffer_size": 8821,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/pe.h",
+			"file": "rdir-test.c",
 			"settings":
 			{
-				"buffer_size": 14233,
+				"buffer_size": 262,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "elflist.c",
+			"file": "lib/rdir.h",
 			"settings":
 			{
-				"buffer_size": 7467,
+				"buffer_size": 572,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "elf64list.c",
+			"file": "lib/rdir/rdir_close.c",
 			"settings":
 			{
-				"buffer_size": 3336,
+				"buffer_size": 171,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "pelist.c",
+			"file": "lib/rdir/rdir_open.c",
 			"settings":
 			{
-				"buffer_size": 9857,
+				"buffer_size": 206,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "# Sample configuration file for Polipo. -*-sh-*-\n\n# You should not need to use a configuration file; all configuration\n# variables have reasonable defaults.  If you want to use one, you\n# can copy this to /etc/polipo/config or to ~/.polipo and modify.\n\n# This file only contains some of the configuration variables; see the\n# list given by ``polipo -v'' and the manual for more.\n\n\n### Basic configuration\n### *******************\n\n# Uncomment one of these if you want to allow remote clients to\n# connect:\n\n# proxyAddress = \"::0\"        # both IPv4 and IPv6\n# proxyAddress = \"0.0.0.0\"    # IPv4 only\n\n# If you do that, you'll want to restrict the set of hosts allowed to\n# connect:\n\n# allowedClients = 127.0.0.1, 134.157.168.57\n# allowedClients = 127.0.0.1, 134.157.168.0/24\n\n# Uncomment this if you want your Polipo to identify itself by\n# something else than the host name:\n\n# proxyName = \"polipo.example.org\"\n\n# Uncomment this if there's only one user using this instance of Polipo:\n\n# cacheIsShared = false\n\n# Uncomment this if you want to use a parent proxy:\n\n# parentProxy = \"squid.example.org:3128\"\n\n# Uncomment this if you want to use a parent SOCKS proxy:\n\nsocksParentProxy = \"localhost:9050\"\nsocksProxyType = socks5\n\n# Uncomment this if you want to scrub private information from the log:\n\n# scrubLogs = true\n\n\n### Memory\n### ******\n\n# Uncomment this if you want Polipo to use a ridiculously small amount\n# of memory (a hundred C-64 worth or so):\n\n# chunkHighMark = 819200\n# objectHighMark = 128\n\n# Uncomment this if you've got plenty of memory:\n\n# chunkHighMark = 50331648\n# objectHighMark = 16384\n\n\n### On-disk data\n### ************\n\n# Uncomment this if you want to disable the on-disk cache:\n\n# diskCacheRoot = \"\"\n\n# Uncomment this if you want to put the on-disk cache in a\n# non-standard location:\n\n# diskCacheRoot = \"~/.polipo-cache/\"\n\n# Uncomment this if you want to disable the local web server:\n\n# localDocumentRoot = \"\"\n\n# Uncomment this if you want to enable the pages under /polipo/index?\n# and /polipo/servers?.  This is a serious privacy leak if your proxy\n# is shared.\n\n# disableIndexing = false\n# disableServersList = false\n\n\n### Domain Name System\n### ******************\n\n# Uncomment this if you want to contact IPv4 hosts only (and make DNS\n# queries somewhat faster):\n\n# dnsQueryIPv6 = no\n\n# Uncomment this if you want Polipo to prefer IPv4 to IPv6 for\n# double-stack hosts:\n\n# dnsQueryIPv6 = reluctantly\n\n# Uncomment this to disable Polipo's DNS resolver and use the system's\n# default resolver instead.  If you do that, Polipo will freeze during\n# every DNS query:\n\n# dnsUseGethostbyname = yes\n\n\n### HTTP\n### ****\n\n# Uncomment this if you want to enable detection of proxy loops.\n# This will cause your hostname (or whatever you put into proxyName\n# above) to be included in every request:\n\n# disableVia=false\n\n# Uncomment this if you want to slightly reduce the amount of\n# information that you leak about yourself:\n\n# censoredHeaders = from, accept-language\n# censorReferer = maybe\n\n# Uncomment this if you're paranoid.  This will break a lot of sites,\n# though:\n\n# censoredHeaders = set-cookie, cookie, cookie2, from, accept-language\n# censorReferer = true\n\n# Uncomment this if you want to use Poor Man's Multiplexing; increase\n# the sizes if you're on a fast line.  They should each amount to a few\n# seconds' worth of transfer; if pmmSize is small, you'll want\n# pmmFirstSize to be larger.\n\n# Note that PMM is somewhat unreliable.\n\n# pmmFirstSize = 16384\n# pmmSize = 8192\n\n# Uncomment this if your user-agent does something reasonable with\n# Warning headers (most don't):\n\n# relaxTransparency = maybe\n\n# Uncomment this if you never want to revalidate instances for which\n# data is available (this is not a good idea):\n\n# relaxTransparency = yes\n\n# Uncomment this if you have no network:\n\n# proxyOffline = yes\n\n# Uncomment this if you want to avoid revalidating instances with a\n# Vary header (this is not a good idea):\n\n# mindlesslyCacheVary = true\n\n# Uncomment this if you want to add a no-transform directive to all\n# outgoing requests.\n\n# alwaysAddNoTransform = true\n ",
-			"file": "/B/Programs/polipo/config",
-			"file_size": 4104,
-			"file_write_time": 131697905140000000,
+			"file": "lib/rdir/rdir_read.c",
 			"settings":
 			{
-				"buffer_size": 4105,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pathtool.c",
-			"settings":
-			{
-				"buffer_size": 6431,
+				"buffer_size": 2097,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -123,15 +113,19 @@
 		"selected_items":
 		[
 			[
+				"install",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"package",
+				"Package Control: Discover Packages"
+			],
+			[
 				"Package Control: ",
 				"Package Control: List Packages"
 			],
 			[
 				"insta",
-				"Package Control: Advanced Install Package"
-			],
-			[
-				"install",
 				"Package Control: Advanced Install Package"
 			],
 			[
@@ -151,10 +145,6 @@
 				"Package Control: Advanced Install Package"
 			],
 			[
-				"package",
-				"Preferences: Package Control Settings – Default"
-			],
-			[
 				"",
 				"About"
 			]
@@ -163,7 +153,7 @@
 	},
 	"console":
 	{
-		"height": 312.0,
+		"height": 219.0,
 		"history":
 		[
 			"schemr",
@@ -187,6 +177,13 @@
 	],
 	"file_history":
 	[
+		"/D/Sources/rsenn/dirlist/lib/utf8.c",
+		"/D/Sources/rsenn/dirlist/lib/pe.h",
+		"/D/Sources/rsenn/dirlist/elflist.c",
+		"/D/Sources/rsenn/dirlist/elf64list.c",
+		"/D/Sources/rsenn/dirlist/pelist.c",
+		"/D/Sources/rsenn/dirlist/pathtool.c",
+		"/B/Programs/polipo/config",
 		"/D/Sources/rsenn/dirlist/mediathek-list.c",
 		"/D/Sources/rsenn/dirlist/count-depth.c",
 		"/D/Sources/rsenn/dirlist/decode-ls-lR.c",
@@ -307,14 +304,7 @@
 		"/E/Sources/pictest/config-16f628a.h",
 		"/E/Sources/pictest/files.list",
 		"/E/Sources/pictest/Makefile.vars",
-		"/E/Sources/pictest/Makefile.common",
-		"/E/Sources/pictest/Makefile.htc",
-		"/E/Sources/pictest/Makefile.mcc18",
-		"/E/Sources/pictest/Makefile.xc8",
-		"/E/Sources/pictest/lib/ds18b20.h",
-		"/E/Sources/pictest/baud.sh",
-		"/E/Sources/pictest/device.h",
-		"/E/Sources/pictest/timer.c"
+		"/E/Sources/pictest/Makefile.common"
 	],
 	"find":
 	{
@@ -469,11 +459,11 @@
 			[
 				{
 					"buffer": 0,
-					"file": "lib/utf8.c",
+					"file": "scripts/gen-a-deps.sh",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4325,
+						"buffer_size": 8821,
 						"regions":
 						{
 						},
@@ -486,148 +476,24 @@
 						],
 						"settings":
 						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-									"1":
-									[
-										5803,
-										5804
-									]
-								},
-								"icon":
-								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/round_bracket.png",
-										"brackethighlighter.default"
-									]
-								},
-								"open":
-								{
-									"1":
-									[
-										5761,
-										5762
-									]
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"incomplete_sync": null,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 430.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "lib/pe.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 14233,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3540.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "elflist.c",
+					"buffer": 1,
+					"file": "rdir-test.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7467,
+						"buffer_size": 262,
 						"regions":
 						{
 						},
@@ -640,9 +506,7 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -652,12 +516,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "elf64list.c",
+					"buffer": 2,
+					"file": "lib/rdir.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3336,
+						"buffer_size": 572,
 						"regions":
 						{
 						},
@@ -670,9 +534,7 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -682,12 +544,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "pelist.c",
+					"buffer": 3,
+					"file": "lib/rdir/rdir_close.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9857,
+						"buffer_size": 171,
 						"regions":
 						{
 						},
@@ -700,12 +562,38 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 384.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/rdir/rdir_open.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 206,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -713,47 +601,19 @@
 				},
 				{
 					"buffer": 5,
-					"file": "/B/Programs/polipo/config",
+					"file": "lib/rdir/rdir_read.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4105,
+						"buffer_size": 2097,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4105,
-								4105
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 1523.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "pathtool.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6431,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
+								612,
+								612
 							]
 						],
 						"settings":
@@ -763,10 +623,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 54.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]

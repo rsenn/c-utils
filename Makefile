@@ -525,8 +525,8 @@ else
   endif
 endif
 
-vpath lib lib/array lib/cb lib/cbmap lib/binfmt lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR) tests
-VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR):tests
+vpath lib lib/array lib/binfmt lib/buffer lib/byte lib/case lib/cb lib/cbmap lib/charbuf lib/dir lib/dns lib/elf lib/env lib/errmsg lib/expand lib/fmt lib/gpio lib/hmap lib/http lib/iarray lib/io lib/json lib/list lib/map lib/mmap lib/ndelaylib/open lib/path lib/pe lib/playlist lib/rdir lib/scan lib/sig lib/slist lib/socket lib/str lib/stralloc lib/strarray lib/strlist lib/tai lib/taia lib/textbuf lib/uint16 lib/uint32 lib/uint64 lib/var lib/vartab lib/wait lib/xml $(BUILDDIR) tests
+VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/byte:lib/case:lib/cb:lib/cbmap:lib/charbuf:lib/dir:lib/dns:lib/elf:lib/env:lib/errmsg:lib/expand:lib/fmt:lib/gpio:lib/hmap:lib/http:lib/iarray:lib/io:lib/json:lib/list:lib/map:lib/mmap:lib/ndelay:lib/open:lib/path:lib/pe:lib/playlist:lib/rdir:lib/scan:lib/sig:lib/slist:lib/socket:lib/str:lib/stralloc:lib/strarray:lib/strlist:lib/tai:lib/taia:lib/textbuf:lib/uint16:lib/uint32:lib/uint64:lib/var:lib/vartab:lib/wait:lib/xml:$(BUILDDIR):tests
 
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
@@ -662,8 +662,10 @@ MINSIZE := 0
 endif
 ifeq ($(DEBUG),1)
 DEFINES += DEBUG=1
+CFLAGS += -g3 -ggdb -O0
 else
 DEFINES += NDEBUG=1
+CFLAGS += -g -Os -fomit-frame-pointer
 endif
 
 FLAGS += $(CFLAGS_$(BUILD_TYPE))
@@ -735,7 +737,6 @@ WARNINGS += no-unused-function
 
 
 #CFLAGS = $(patsubst %,-W%,$(WARNINGS))
-CPPFLAGS += $(patsubst %,-D%,$(DEFS))
 
 LIB_SRC = $(wildcard *_*.c umult*.c)
 LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
@@ -855,10 +856,13 @@ endif
 #CFLAGS += $(DEFS:%=-D%)
 #
 #$(info DEFS: $(DEFS))
-DEFS += $(DEFINES:%=-D%)
+DEFS += $(patsubst %,-D%,$(DEFINES))
+DEFS := $(patsubst -D-D%,-D%,$(patsubst %,-D%,$(DEFS)))
+DEFS := $(sort $(DEFS))
 
+CPPFLAGS += $(DEFS)
 
-FLAGS += $(patsubst %,-W%,$(WARNINGS)) $(patsubst %,-D%,$(DEFS))
+FLAGS += $(patsubst %,-W%,$(WARNINGS)) 
 FLAGS += $(CPPFLAGS)
 FLAGS := $(sort $(FLAGS))
 
@@ -933,7 +937,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab wait xml)
 
 
 $(info BUILDDIR: $(BUILDDIR))
@@ -1011,6 +1015,7 @@ $(call lib-target,scan)
 $(call lib-target,sig)
 $(call lib-target,slist)
 $(call lib-target,str)
+$(call lib-target,strarray)
 $(call lib-target,stralloc)
 $(call lib-target,strarray,lib/fnmatch.c)
 $(call lib-target,strlist)
@@ -1035,7 +1040,8 @@ $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(call add-li
 
 $(BUILDDIR)count-depth.o: count-depth.c
 $(BUILDDIR)count-depth$(M64_)$(EXEEXT): $(BUILDDIR)count-depth.o $(call add-library, buffer byte fmt)
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+	
+	(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif

@@ -5,10 +5,11 @@
 int
 strarray_joins(strarray* arr, stralloc* sa, const char* sep) {
   size_t i, n = strarray_size(arr);
-  for(i = 0; i <n; ++i) {
-    char** p = array_get(arr, sizeof(char*), i);
+  char** p = array_start(arr);
     stralloc_zero(sa);
-    stralloc_cats(&sa, *p);
+
+  for(i = 0; i <n; ++i) {
+    stralloc_cats(&sa, p[i]);
     if(i + 1 < n)
       stralloc_cats(&sa, sep);
   }
