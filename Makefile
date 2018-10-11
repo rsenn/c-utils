@@ -333,6 +333,7 @@ C11_COMPILER_DEFS := $(shell $(call get-compiler-defs,-std=c11))
 ifneq ($(C11_COMPILER_DEFS),)
 CC += -std=c11
 endif
+NO_AT := 1
 endif
 
 

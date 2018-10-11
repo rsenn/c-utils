@@ -6,23 +6,48 @@
 : ${LIBEXT=a}
 : ${PATHSEP="/"}
 
-: ${A_CMD='$(AR) rcs {LIB} {OBJS}'}
+: ${A_CMD='$(AR) rcs {OUT} {DEPS}'}
 
-: ${COMPILE_CMD='$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o {OBJ} {DEPS}'}
-: ${LINK_CMD='$(CCLD) $(CFLAGS) $(LDFLAGS) -o {OUTPUT} {DEPS} $(LIBS) $(EXTRA_LIBS)'}
+: ${COMPILE_CMD='$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o {OUT} {DEPS}'}
+: ${LINK_CMD='$(CCLD) $(CFLAGS) $(LDFLAGS) -o {OUT} {DEPS} $(LIBS) $(EXTRA_LIBS)'}
+
+
 
 DEFVAR="DEFINES += HAVE_"
 DEFVAR="DEFS += -DHAVE_"
 
 TAB="	"
-CR=""
-LF="
-"
+CR=$'\r'
+LF=$'\n'
 NL="$LF"
-IFS="
-"
+IFS="$LF$CR "
 BS="\\"
 FS="/"
+
+pushv_unique() {
+ v=$1 s IFS=${IFS%${IFS#?}};
+ shift;
+ for s in "$@"; do
+  if eval "! isin \$s \${$v}"; then
+    pushv "$v" "$s";
+  else
+    return 1;
+  fi
+done
+}
+
+pushv() {
+  eval "shift;IFS=\" \$NL\$IFS\";$1=\"\${$1:+\$$1\${SEP-" "}}\$*\""
+}
+
+isin() {
+ (needle="$1";
+  while [ "$#" -gt 1 ]; do
+    shift;
+    test "$needle" = "$1" && exit 0;
+  done;
+  exit 1 )
+}
 
 match_expr() {  
   (EXPR="^(|\.[/\\\\]|.*[\\\\/])$1\$";  debug "match '$EXPR'"; shift; IFS="$NL"; echo "$*" |  ${GREP-grep} -E "$EXPR" );
@@ -40,7 +65,7 @@ echo "$B")
 
 
 list() {
- (IFS=" $IFS"; set -- $*; IFS="$NL"; echo "$*"); }
+ (IFS=" $IFS"; set -- $*; IFS="$LF"; echo "$*"); }
 
  dirnames() {
    (IFS="$NL"; echo "$*" |sed "\\|[/\\\\]|! s|.*|.|; s|/[^/]*$||")
@@ -130,19 +155,25 @@ pathfmt() {
   (IFS=" "; echo "${*//$FS/$PATHSEP}")
 }
 a_cmd() {
-  (CMD=${A_CMD//"{OBJS}"/"$(pathfmt $OBJS)"}
-  CMD=${CMD//"{LIB}"/"$(pathfmt "$LIB")"}
+  ([ -n "$DEPPARAM" ] && DEPS="$DEPPARAM" || DEPS=$(pathfmt $OBJS)
+  CMD=${A_CMD//"{DEPS}"/"$DEPS"}
+  [ -n "$OUTPARAM" ] && OUT="$OUTPARAM" || OUT=$(pathfmt "$LIB")
+  CMD=${CMD//"{OUT}"/"$OUT"}
    echo "$CMD")
 }
 
 compile_cmd() {
-  (CMD=${COMPILE_CMD//"{DEPS}"/"$(pathfmt "$SRC")"}
-  CMD=${CMD//"{OBJ}"/"$(pathfmt "$OBJ")"}
+  ([ -n "$SRCPARAM" ] && SRCS="$SRCPARAM" || SRCS=$(pathfmt $SRC)
+  CMD=${COMPILE_CMD//"{DEPS}"/"$SRCS"}
+  [ -n "$OUTPARAM" ] && OUT="$OUTPARAM" || OUT=$(pathfmt "$OUT")
+  CMD=${CMD//"{OUT}"/"$OUT"}
    echo "$CMD")
 }
 link_cmd() {
-  (CMD=${LINK_CMD//"{DEPS}"/"$(pathfmt $DEPS)"}
-  CMD=${CMD//"{OUTPUT}"/"$(pathfmt "$OUT")"}
+  ([ -n "$DEPPARAM" ] && DEPS="$DEPPARAM" || DEPS=$(pathfmt $DEPS)
+  CMD=${LINK_CMD//"{DEPS}"/"$DEPS"}
+  [ -n "$OUTPARAM" ] && OUT="$OUTPARAM" || OUT=$(pathfmt "$OUT")
+  CMD=${CMD//"{OUT}"/"$OUT"}
    echo "$CMD")
 }
 # c_o_entry <$LIBEXT-file> <objects>
@@ -214,7 +245,7 @@ gen_a_deps() {
         #SRCS=$(strings $EXE | sed ' s|\.[co]||p' -n|sort -fu)
         #OBJS=$(echo "$SRCS" | sed -n "/\.[co]/ { s|\\.[co]|| ; s|.*/||; s|^|${BUILDDIR}|; s|\$|$OBJEXT|; p; }"|sort -fu)
         OUT=$(inpath "$P")
-        O=$(patfmt $OUT)
+        O=$(pathfmt $OUT)
         set -- $(list ${LIBS} | sed "s|.*/||; s|^|${BUILDDIR}| ; s|\$|$LIBEXT|" | sort -fu)
 
         O="$O $(pathfmt "$@")"
@@ -237,24 +268,25 @@ gen_a_deps() {
         pushv O "$@: \\$NL$TAB"
         SRC=$SRCDIR/%.c
         SRC=${SRC#./}
-        pushv O "${BUILDDIR}%$OBJEXT:${SRC:+ $SRC}"
+        pushv O "${BUILDDIR}%$OBJEXT:${SRC:+ $(pathfmt $SRC)}"
         [ -n "$COMPILE_CMD" ] && O="$O$NL$TAB$(compile_cmd)"
         output_cmd "$O")
     done
   }
   all_sources_rules() {
     for SRC in $SOURCES; do
+    dump SRC
       OBJ=${SRC%.c}
       OBJ=${OBJ##*/}
       OBJ=$(indir "${OBJ}$OBJEXT")
-      output_cmd "$(pathfmt $OBJ): $SRC$NL$TAB$(compile_cmd)"
+      output_cmd "$(pathfmt $OBJ): $(pathfmt $SRC)$NL$TAB$(compile_cmd)"
     done
   }
 
   a_lib_rules() {
     dump LIB_NAMES
     dump LIBS
-    for A_LIB in $LIB_NAMES; do
+    for A_LIB in $LIBS; do
       ( NAME=${A_LIB##*/}
         NAME=${NAME%.*}
         LIBEXPR="${NAME}\.(${LIBEXT}|lib|a)"
@@ -285,7 +317,7 @@ gen_a_deps() {
 
         #c_o_entry "%$OBJEXT" "$SRCDIR/%.c"
         [ "$N_OBJ" -ge 0  ] &&
-        a_entry  ${LIB} $(list $SRCS| sed "s|lib/[^ /]*/||g ; s|lib/||g ; s|\\.c|$OBJEXT|")
+        a_entry  ${OUT} $(list $SRCS| sed "s|lib/[^ /]*/||g ; s|lib/||g ; s|\\.c|$OBJEXT|")
       fi
       )
     done
@@ -336,49 +368,27 @@ gen_a_deps() {
 : output_cond_defs
   SEP=$NL$NL
 
-  pushv O "all:"  $(pathfmt ${BUILDDIR%[/\\]}) $(pathfmt $(list $PROGRAMS |sed "s|.*/|| ; s|^|${BUILDDIR}| ; s|\$|${EXEEXT}|"))
+  pushv O "all:"  $(pathfmt ${BUILDDIR%[/\\]}) $(pathfmt $(echo "$PROGRAMS" |sed "s|.*/|| ; s|.*|${BUILDDIR}&${EXEEXT}|"))
   pushv O "$(pathfmt ${BUILDDIR%/}):$NL$TAB@mkdir \"$(pathfmt ${BUILDDIR%/})\""
   output_cmd "$O"
   unset SEP
 
-  all_program_rules
+     all_program_rules
   all_sources_rules #per_srcdir_rules
   a_lib_rules
-}
-pushv_unique() {
- v=$1 s IFS=${IFS%${IFS#?}};
- shift;
- for s in "$@"; do
-  if eval "! isin \$s \${$v}"; then
-    pushv "$v" "$s";
-  else
-    return 1;
-  fi
-done
-}
 
-pushv() {
-  eval "shift;IFS=\" \$NL\$IFS\";$1=\"\${$1:+\$$1\${SEP-" "}}\$*\""
-}
-
-isin() {
- (needle="$1";
-  while [ "$#" -gt 1 ]; do
-    shift;
-    test "$needle" = "$1" && exit 0;
-  done;
-  exit 1 )
-}
+} 
 gen_bcc32_makefile() { 
   ( # A_CMD='LIB -out:$@ $^' 
     # A_CMD='(cd $(BUILDDIR); for OBJ in $(notdir $^); do echo tlib /u /A /C $(notdir $@) $$OBJ 1>&2;  tlib /u /A /C $(notdir $@) $$OBJ; done)'
 
     A_CMD='tlib @&&|
-/p512 /a "{LIB}" {OBJS}
+/p512 /a "{OUT}" {DEPS}
 |'
 
 :  ${BUILDDIR=build/bcc32/Debug/}
 
+  OUTPARAM='$@' \
     PATHSEP="\\" \
     NL="$CR$LF" \
     LIBEXT=lib \
