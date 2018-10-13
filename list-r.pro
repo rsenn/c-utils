@@ -37,9 +37,9 @@ mingw | mingw32 | mingw64 {
 
 INCLUDEPATH += . $$PWD/lib
 
-HEADERS = 
+HEADERS = lib/array.h lib/buffer.h lib/byte.h lib/dir.h lib/fmt.h lib/open.h lib/str.h lib/stralloc.h
 
 
-SOURCES = 
+SOURCES = lib/array/array_allocate.c lib/array/array_catb.c lib/array/array_fail.c lib/array/array_length.c lib/array/array_start.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putc.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_puts.c lib/buffer/buffer_putsa.c lib/buffer/buffer_stubborn.c lib/byte/byte_copy.c lib/byte/byte_zero.c lib/cbmap/alloc.c lib/dir/dir_close.c lib/dir/dir_open.c lib/dir/dir_read.c lib/dir/dir_type.c lib/fmt/fmt_uint64.c lib/fnmatch.c lib/open/open_trunc.c lib/str/str_copy.c lib/str/str_diff.c lib/str/str_diffn.c lib/str/str_len.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_cats.c lib/stralloc/stralloc_copyb.c lib/stralloc/stralloc_copys.c lib/stralloc/stralloc_init.c lib/stralloc/stralloc_nul.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c lib/time_table_spd.c lib/umult64.c list-r.c
 
 DEFINES += HAVE_ERRNO_H=1

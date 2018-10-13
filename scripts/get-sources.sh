@@ -18,7 +18,11 @@ get_sources() {
     esac
   done
   echo QMAKE=$QMAKE 1>&2
-  SOURCE_FILES=`readelf -a "$1" | sed -n 's|.*ABS\s\([^ ]\+\)|\1|p' | sort -u`
+  case "$1" in
+    *.exe)  SOURCE_FILES=$(IFS="
+"; set -- $(strings "$1" | sed -n "/\.c\$/ { s|.*/||; p }" | sort -fu); IFS="|"; grep -E "(^|/)$*" files.list) ;;
+*) SOURCE_FILES=$(readelf -a "$1" | sed -n 's|.*ABS\s\([^ ]\+\)|\1|p' | sort -u)  ;;
+  esac
   [ -n "$SOURCE_FILES" ] || SOURCE_FILES=`ls -d $(strings "$1" | grep '\.c$' ) 2>/dev/null  |sort -u`
   isin() {
     A=$1; shift
