@@ -370,14 +370,21 @@ if(HAVE_POSIX_MEMALIGN)
 endif()
 
 if(HAVE_lstat_FUNC)
-if(NOT MINGW AND NOT MSYS)
+if(NOT MINGW)
   if(HAVE_opendir_FUNC AND HAVE_readdir_FUNC)
     set(USE_READDIR TRUE)
   else(HAVE_opendir_FUNC AND HAVE_readdir_FUNC)
     set(USE_READDIR FALSE)
   endif(HAVE_opendir_FUNC AND HAVE_readdir_FUNC)
-  endif()
+endif()
 endif(HAVE_lstat_FUNC)
+
+IF(WIN32 OR WIN64 OR MSVC)
+  IF(NOT USE_READDIR)
+    SET(USE_WIDECHAR TRUE)
+  ENDIF(NOT USE_READDIR)
+ENDIF(WIN32 OR WIN64 OR MSVC)
+
 
 check_function_exists(getopt_long HAVE_getopt_long_FUNC)
 check_function_exists(getopt HAVE_getopt_FUNC)
@@ -414,6 +421,9 @@ endif(STATIC_LINK)
 if(USE_READDIR)
   add_definitions(-DUSE_READDIR=1)
 endif(USE_READDIR)
+if(USE_WIDECHAR)
+  add_definitions(-DUSE_WIDECHAR=1)
+endif(USE_WIDECHAR)
 
 configure_file("${CMAKE_SOURCE_DIR}/config.h.cmake"
                "${CMAKE_BINARY_DIR}/config.h")
