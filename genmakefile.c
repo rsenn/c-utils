@@ -12,7 +12,7 @@ c_to_o(const char* in) {
   stralloc out;
   stralloc_init(&out);
 
-  stralloc_copys(&out, path_basename(in));
+  stralloc_copys(&out, str_basename(in));
 
   if(stralloc_endb(&out, ".c", 2))
     out.len -= 2;
@@ -58,7 +58,7 @@ void
 usage(const char* argv0) {
   buffer_putm(buffer_1,
               "Usage: ",
-              path_basename(argv0),
+              str_basename(argv0),
               " [sources...]\n",
               "\n",
               "Options\n",

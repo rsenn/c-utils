@@ -426,7 +426,8 @@ file(GLOB COMMON_C_SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" "*_*.c" "umult*.c" "*.
 set(COMMON_CXX_SOURCES lib/directory_iterator.cpp lib/file.cpp lib/intelhex.cpp)
 
 set(PROGRAMS
-  access binfmttest bsdiffcat buffertest ccat count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest
+  genmakefile list-r rdir-test ntldd strarraytest httptest pkgcfg pelist pathtool mediathek-parser eagle-gen-cmds mediathek-list macho32list elflist elf64list impgen elfwrsec torrent-progress opensearch-dump xmltest4 ziptest xmltest xmltest2 xmltest3 xmlpp regfilter sln plsconv reg2cmd hexedit jsontest eagle-to-circuit eagle-init-brd decode-ls-lR dnsip dnsname dnstest buffertest ccat count-depth bsdiffcat binfmttest access
+
 )
 
 set(CPACK_PACKAGE_EXECUTABLES ${PROGRAMS})
@@ -595,11 +596,11 @@ foreach(PROGRAM ${PROGRAMS})
 endforeach(PROGRAM)
 
 target_link_libraries(list-r dir ${COMMON_LIBS})
-target_link_libraries(genmakefile rdir dir ${COMMON_LIBS})
+target_link_libraries(genmakefile strarray rdir dir ${COMMON_LIBS})
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
 target_link_libraries(access buffer str)
-target_link_libraries(buffertest buffer str ${LIBPSAPI})
+target_link_libraries(buffertest ${COMMON_LIBS} ${LIBPSAPI})
 target_link_libraries(ccat buffer str)
 #target_link_libraries(compiler-wrapper buffer byte dir fmt str stralloc strlist)
 target_link_libraries(count-depth buffer)
@@ -612,7 +613,7 @@ target_link_libraries(eagle-init-brd buffer hmap scan str stralloc strlist xml $
 target_link_libraries(eagle-to-circuit array buffer byte cbmap scan str stralloc strlist xml)
 target_link_libraries(elfwrsec elf buffer mmap str uint64 uint32)
 target_link_libraries(elflist elf buffer mmap str uint64 uint32 uint16)
-target_link_libraries(hexedit  errmsg buffer path stralloc str mmap open scan)
+target_link_libraries(hexedit io iarray errmsg buffer path stralloc str mmap open scan)
 target_link_libraries(httptest buffer byte http dns errmsg io taia ${LIBIPHLPAPI})
 target_link_libraries(impgen buffer byte mmap)
 target_link_libraries(jsontest buffer charbuf fmt json open str stralloc)
