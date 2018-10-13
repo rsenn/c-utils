@@ -1,5 +1,5 @@
-#include "../strarray.h"
 #include "../stralloc.h"
+#include "../strarray.h"
 
 int
 strarray_push_sa(strarray* arr, const stralloc* sa) {

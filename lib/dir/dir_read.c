@@ -15,9 +15,11 @@ char*
 dir_read(struct dir_s* d) {
   char* ret = 0;
 #if USE_READDIR
+  struct dirent* de;
   assert(dir_INTERNAL(d)->dir_handle);
 
-  if((dir_INTERNAL(d)->dir_entry = readdir(dir_INTERNAL(d)->dir_handle)) != 0) {
+  if((de = readdir(dir_INTERNAL(d)->dir_handle)) != 0) {
+     dir_INTERNAL(d)->dir_entry = de;
     ret = dir_NAME(d);
   }
 #else

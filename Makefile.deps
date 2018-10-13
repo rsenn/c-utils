@@ -1826,3 +1826,5 @@ $(BUILDDIR)tstheap.o: ./duma_2_5_15/tstheap.c
 	$(COMPILE) -o $@ $<
 $(BUILDDIR)eagle-gen-cmds.o: ./eagle-gen-cmds.c
 	$(COMPILE) -o $@ $<
+$(BUILDDIR)strarray_transform.o: lib/strarray/strarray_transform.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

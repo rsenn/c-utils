@@ -1,5 +1,5 @@
-#include "../strarray.h"
 #include "../str.h"
+#include "../strarray.h"
 
 int
 strarray_pushd(strarray* arr, const char* s) {
@@ -7,6 +7,6 @@ strarray_pushd(strarray* arr, const char* s) {
 
   if((d = str_dup(s))) {
     array_catb(&arr->a, (void*)&d, sizeof(char*));
- }
-  return  !!d;
+  }
+  return !!d;
 }

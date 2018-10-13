@@ -1,6 +1,6 @@
-#include "../strarray.h"
 #include "../array.h"
 #include "../str.h"
+#include "../strarray.h"
 
 int
 strarray_set(strarray* arr, size_t index, const char* s) {

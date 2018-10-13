@@ -41,7 +41,7 @@ typedef unsigned __INT64_TYPE__ uint64_t;
 # endif
 # ifndef int64_t
 //#  define int64_t __int64
-#if !defined(_INT64_T_DECLARED) && !defined(__int64_t_defined) && !defined(__int8_t_defined) && !defined(_BITS_STDINT_INTN_H)
+#if !defined(_INT64_T_DECLARED) && !defined(__int64_t_defined) && !defined(__int8_t_defined) && !defined(_BITS_STDINT_INTN_H) && (!defined(__dietlibc__) && !defined(_INTTYPES_H))
 #define __int64_t_defined
 #define _INT64_T_DECLARED
 typedef long long int64_t;

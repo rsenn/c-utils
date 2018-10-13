@@ -1,9 +1,27 @@
-#include "lib/getopt.h"
-#include "lib/rdir.h"
-#include "lib/strarray.h"
 #include "lib/buffer.h"
+#include "lib/getopt.h"
+#include "lib/path.h"
+#include "lib/rdir.h"
+#include "lib/str.h"
+#include "lib/strarray.h"
 
 static strarray srcs;
+
+char*
+c_to_o(const char* in) {
+  stralloc out;
+  stralloc_init(&out);
+
+  stralloc_copys(&out, path_basename(in));
+
+  if(stralloc_endb(&out, ".c", 2))
+    out.len -= 2;
+
+  stralloc_cats(&out, ".o");
+
+  stralloc_nul(&out);
+  return out.s;
+}
 
 void
 get_sources(const char* basedir, strarray* sources) {
@@ -11,14 +29,21 @@ get_sources(const char* basedir, strarray* sources) {
   rdir_t rdir;
   if(!rdir_open(&rdir, basedir)) {
     const char* s;
+    stralloc sa;
+    stralloc_init(&sa);
 
     while((s = rdir_read(&rdir))) {
-      strarray_push(sources, s);
+      stralloc_copys(&sa, s);
+
+      if(stralloc_endb(&sa, ".c", 2)) strarray_push(sources, s);
     }
+
+    stralloc_free(&sa);
   }
 }
 
-void strarray_dump(buffer*b, const strarray* arr) {
+void
+strarray_dump(buffer* b, const strarray* arr) {
   char **p = strarray_begin(arr), **e = strarray_end(arr);
 
   while(p < e) {
@@ -72,7 +97,11 @@ main(int argc, char* argv[]) {
 
     ++optind;
   }
-  strarray_dump(buffer_1, &srcs);
+  // strarray_dump(buffer_1, &srcs);
+
+  strarray_transform(&srcs, c_to_o);
+  /*strarray_removesuffixs(&srcs, ".c");
+  strarray_appends(&srcs, ".o");*/
 
   strarray_joins(&srcs, &sa, " ");
   buffer_putsa(buffer_1, &sa);

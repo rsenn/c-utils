@@ -54,3 +54,4 @@ int strarray_removesuffixs(strarray* arr, const char* s);
 #endif
 #endif /* defined(STRARRAY_H) */
 int strarray_joins(strarray* arr, stralloc* sa, const char* sep);
+int strarray_transform(strarray*, char* (*pred)(const char*));

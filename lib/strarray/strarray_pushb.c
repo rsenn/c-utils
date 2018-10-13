@@ -1,5 +1,5 @@
-#include "../strarray.h"
 #include "../str.h"
+#include "../strarray.h"
 
 int
 strarray_pushb(strarray* arr, const char* b, size_t n) {
