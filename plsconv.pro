@@ -8,7 +8,7 @@ CONFIG += link_pkgconfig
 
 TARGET = plsconv
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 DEFINES += io_seek=lseek64
 

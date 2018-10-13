@@ -1,9 +1,9 @@
+#include "../windoze.h"
 #include "../buffer.h"
 #include "../open.h"
 #include "../stralloc.h"
-#include "../windoze.h"
 
-#if WINDOWS_NATIVE
+#if WINDOWS
 #include <io.h>
 #else
 #include <unistd.h>

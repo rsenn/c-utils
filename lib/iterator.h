@@ -4,6 +4,7 @@
 #ifdef HAVE_C11_GENERICS
 
 #include "array.h"
+#include "strarray.h"
 #include "stralloc.h"
 
 #ifdef __cplusplus
@@ -12,16 +13,18 @@ extern "C" {
 
 #define size(container) _Generic((container), \
     stralloc*: stralloc_length, \
-    array*: array_length, \
+    array*: array_length \
   )(container)
 
 #define begin(container) _Generic((container), \
     array*: array_start, \
+    strarray*: strarray_begin, \
     slist*: slist_begin \
   )(container)
 
 #define end(container) _Generic((container), \
     array*: array_end, \
+    strarray*: strarray_end \
   )(container)
 
 #define iterator_increment(container, it) _Generic((container), \

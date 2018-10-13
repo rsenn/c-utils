@@ -6,7 +6,7 @@ CONFIG += link_pkgconfig
 
 TARGET = buffertest
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 PKGCONFIG += liblzma
 DEFINES += HAVE_LIBLZMA=1

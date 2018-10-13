@@ -6,7 +6,7 @@ CONFIG += link_dnsnameig
 
 TARGET = dnsname
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 PKGCONFIG += liblzma
 DEFINES += HAVE_LIBLZMA=1

@@ -8,7 +8,7 @@ CONFIG += link_pkgconfig
 
 TARGET = pathtool
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 HEADERS = lib/buffer.h lib/byte.h lib/errmsg.h lib/fmt.h lib/path.h lib/str.h lib/stralloc.h lib/strlist.h
 

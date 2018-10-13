@@ -5,7 +5,7 @@ CONFIG -= qt
 
 TARGET = access
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 HEADERS = 
 

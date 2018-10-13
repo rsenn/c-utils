@@ -1,5 +1,5 @@
 #include "../windoze.h"
-#include "../stralloc.H"
+#include "../stralloc.h"
 
 int
 stralloc_expand(stralloc* sa) {

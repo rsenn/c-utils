@@ -44,17 +44,17 @@ mingw | mingw32 | mingw64 {
   #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 #win32: LIBXML2_DIR = e:/Libraries/libxml2-2.9.4/vs2015-x86
 #win64: LIBXML2_DIR = e:/Libraries/libxml2-2.9.4/vs2015-x64
 
 #DEFINES += LIBXML_STATIC=1
-#INCLUDEPATH += $$LIBXML2_DIR/include $$LIBXML2_DIR/include/libxml $$PWD/lib
+#INCLUDEPATH += $$LIBXML2_DIR/include $$LIBXML2_DIR/include/libxml
 #!unix: LIBS += $$LIBXML2_DIR/lib/xml2.lib
 
 #WIN_ICONV_DIR = e:/Libraries/win-iconv-0.0.6/x86_64-w64-mingw32
-#INCLUDEPATH += $$WIN_ICONV_DIR/include $$PWD/lib
+#INCLUDEPATH += $$WIN_ICONV_DIR/include
 
 DEFINES += io_seek=lseek64 _LARGEFILE64_SOURCE=1
 

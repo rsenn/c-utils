@@ -80,14 +80,14 @@ INCLUDES = -I$(top_srcdir) -I$(top_builddir)
 all: libowcarb.a $(PROGRAMS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEFS) -c $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(INCLUDES) $(DEFS) -c $<
 
 libowcarb.a: $(LIB_OBJECTS)
-	$(AR) rc $@ $^
-	$(RANLIB) $@
+	$(CROSS_COMPILE)$(AR) rc $@ $^
+	$(CROSS_COMPILE)$(RANLIB) $@
 
 $(PROGRAMS): %$(EXEEXT): %.o
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 	
 
 $(PROGRAMS): LIBS += -L$(builddir) -lowcarb

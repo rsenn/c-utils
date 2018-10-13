@@ -35,7 +35,7 @@ mingw | mingw32 | mingw64 {
   #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 HEADERS = lib/buffer.h lib/byte.h lib/case.h lib/dns.h lib/errmsg.h lib/fmt.h lib/ndelay.h lib/open.h lib/scan.h lib/socket.h lib/str.h lib/stralloc.h lib/tai.h lib/taia.h lib/uint16.h
 

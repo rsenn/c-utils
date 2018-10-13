@@ -33,8 +33,8 @@ endif
 ifeq ($(CC),cc)
   CC := gcc
 endif
-
-CXX = g++
+#
+#CXX = g++
 include Makefile.functions
 
 
@@ -170,6 +170,13 @@ DEFINES += HAVE_GETOPT_LONG=1
 endif
 #$(info HAVE_GETOPT_LONG=$(HAVE_GETOPT_LONG))
 
+HAVE_PSAPI := $(call check-function-exists,GetMappedFileNameA,-lpsapi,windows.h psapi.h)
+ifeq ($(HAVE_PSAPI),1)
+DEFINES += HAVE_PSAPI=1
+LIBPSAPI = -lpsapi
+endif
+$(info HAVE_PSAPI=$(HAVE_PSAPI))
+
 
 #$(call def-include-exists,errno.h,HAVE_ERRNO_H)
 $(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
@@ -302,9 +309,9 @@ endif
 ifeq ($(PROF),1)
 BUILDTYPE := prof
 endif
-ifeq ($(HOST),$(BUILD))
-CROSS_COMPILE :=
-endif
+#ifeq ($(HOST),$(BUILD))
+#CROSS_COMPILE :=
+#endif
 
 PKG_CONFIG := pkg-config
 ifneq ($(CROSS_COMPILE),)
@@ -595,7 +602,7 @@ WARNINGS += no-strict-aliasing
 STRIP ?= strip
 
 ifneq ($(NOPIPE),1)
-CFLAGS = -pipe
+CFLAGS += -pipe
 endif
 
 CFLAGS_Prof = -pg -O2
@@ -604,8 +611,7 @@ CFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
 CFLAGS_RelWithDebInfo = -g -ggdb -O2
 CFLAGS_Release = -g -fomit-frame-pointer -O2
 
-CXXFLAGS = -pipe
-
+CXXFLAGS += -pipe
 CXXFLAGS += -std=c++11
 
 CXXFLAGS_Prof = -pg -O2
@@ -645,25 +651,25 @@ ifeq ($(BUILD_TYPE),Debug)
 DEBUG := 1
 RELEASE := 0
 MINSIZE := 0
-CFLAGS := $(CFLAGS_Debug)
+CFLAGS += $(CFLAGS_Debug)
 endif
 ifeq ($(BUILD_TYPE),RelWithDebInfo)
 DEBUG := 1
 RELEASE := 1
 MINSIZE := 0
-CFLAGS := $(CFLAGS_RelWithDebInfo)
+CFLAGS += $(CFLAGS_RelWithDebInfo)
 endif
 ifeq ($(BUILD_TYPE),MinSizeRel)
 DEBUG := 0
 RELEASE := 1
 MINSIZE := 1
-CFLAGS := $(CFLAGS_MinSizeRel)
+CFLAGS += $(CFLAGS_MinSizeRel)
 endif
 ifeq ($(BUILD_TYPE),Release)
 DEBUG := 0
 RELEASE := 1
 MINSIZE := 0
-CFLAGS := $(CFLAGS_Release)
+CFLAGS += $(CFLAGS_Release)
 endif
 
 ifeq ($(DEBUG),1)
@@ -679,9 +685,9 @@ INCLUDES += -I.
 ifneq ($(CFLAGS),)
 FLAGS += $(CFLAGS)
 endif
-ifneq ($(CFLAGS_$(BUILD_TYPE)),)
-FLAGS += $(CFLAGS_$(BUILD_TYPE))
-endif
+#ifneq ($(CFLAGS_$(BUILD_TYPE)),)
+#FLAGS += $(CFLAGS_$(BUILD_TYPE))
+#endif
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 ifeq ($(USE_DIET),1)
 STATIC := 1
@@ -880,7 +886,7 @@ DEFS := $(sort $(DEFS))
 
 CPPFLAGS += $(DEFS)
 
-CFLAGS := $(subst -O2,-Os,$(CFLAGS))
+#CFLAGS := $(subst -O2,-Os,$(CFLAGS))
 
 FLAGS += $(patsubst %,-W%,$(WARNINGS)) 
 FLAGS += $(CPPFLAGS)
@@ -894,19 +900,10 @@ define NL
 
 endef
 
-ifneq ($(HOST),($(subst msys1,,$(HOST))))
+ifneq ($(HOST),$(subst msys1,,$(HOST)))
   NO_AT ?= 1
 endif
 
-ifneq ($(NO_AT),1)
-CFLAGS := @$(FLAGS_FILE)
-CPPFLAGS := 
-INCLUDES := 
-endif
-
-$(info FLAGS=$(FLAGS))
-$(info CFLAGS=$(CFLAGS))
-$(info @FLAGS_FILE: $(shell cat $(FLAGS_FILE)))
 
 ifneq ($(SYSROOT),)
 ifneq ($(call file-exists,$(SYSROOT)),1)
@@ -963,7 +960,20 @@ $(info CROSS_COMPILE: $(CROSS_COMPILE))
 MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 $(info BUILDDIR: $(BUILDDIR))
+$(info NO_AT: $(NO_AT))
 
+COMPILE := $(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c
+
+ifneq ($(NO_AT),1)
+COMPILE := $(CROSS_COMPILE)$(CC) @$(FLAGS_FILE) -c
+CPPFLAGS := 
+INCLUDES := 
+endif
+
+$(info COMPILE=$(COMPILE))
+$(info FLAGS=$(FLAGS))
+$(info CFLAGS=$(CFLAGS))
+$(info @FLAGS_FILE: $(shell cat $(FLAGS_FILE)))
 
 all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
 
@@ -1062,7 +1072,7 @@ $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(call add-li
 $(BUILDDIR)count-depth.o: count-depth.c
 $(BUILDDIR)count-depth$(M64_)$(EXEEXT): $(BUILDDIR)count-depth.o $(call add-library, buffer byte fmt)
 	
-	(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
@@ -1177,7 +1187,7 @@ endif
 ifeq ($(HAVE_LIBBZ2),1)
 $(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += -lbz2
 endif
-$(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += -lpsapi
+$(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += $(LIBPSAPI)
 $(BUILDDIR)buffertest$(M64_)$(EXEEXT): $(BUILDDIR)buffertest.o $(call add-library, array charbuf textbuf hmap stralloc buffer mmap open byte scan fmt fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
@@ -1423,7 +1433,7 @@ endif
 
 
 $(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library, binfmt elf array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library, rdir strarray path array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1432,10 +1442,10 @@ endif
 
 ifeq ($(BUILDDIR),)
 .c.o:
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
+	$(COMPILE) $<
 
 %.o: %.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
+	$(COMPILE) $<
 
 .cpp.o:
 	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<
@@ -1444,18 +1454,18 @@ ifeq ($(BUILDDIR),)
 	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<
 else
 .c.o:
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$@ $<
+	$(COMPILE) $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$@ $<
 
 $(BUILDDIR)%.o: lib/%.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
+	$(COMPILE) $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst lib/%.c,%.o,$<) $<
 
 $(BUILDDIR)%.o: %.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
+	$(COMPILE) $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
 
 .cpp.o:
 	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<
 
-$(BUILDDIR)%.o: %.cpp
+
 	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CXXFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst %.cpp,%.o,$<) $<
 endif
 
@@ -1498,7 +1508,7 @@ inst-slackpkg: slackpkg
   done
 
 -include Makefile.deps
--include Makefile.a
+#-include Makefile.a
 
 $(BUILDDIR)/%.pic.o: CFLAGS += -fPIC
 

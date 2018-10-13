@@ -3,6 +3,8 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+QMAKE_CXX = gcc
+
 *msvc* {
   DEFINES += INLINE=__inline
   DEFINES += _CRT_NONSTDC_NO_DEPRECATE=1
@@ -35,59 +37,15 @@ mingw | mingw32 | mingw64 {
   #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
-HEADERS = \ 
-    lib/buffer/buffer_close.3 \
-    lib/buffer/buffer_feed.3 \
-    lib/buffer/buffer_flush.3 \
-    lib/buffer/buffer_fromarray.3 \
-    lib/buffer/buffer_frombuf.3 \
-    lib/buffer/buffer_fromsa.3 \
-    lib/buffer/buffer_get.3 \
-    lib/buffer/buffer_get_new_token_sa.3 \
-    lib/buffer/buffer_get_new_token_sa_pred.3 \
-    lib/buffer/buffer_get_token.3 \
-    lib/buffer/buffer_get_token_pred.3 \
-    lib/buffer/buffer_get_token_sa.3 \
-    lib/buffer/buffer_get_token_sa_pred.3 \
-    lib/buffer/buffer_getc.3 \
-    lib/buffer/buffer_getline.3 \
-    lib/buffer/buffer_getline_sa.3 \
-    lib/buffer/buffer_getn.3 \
-    lib/buffer/buffer_getnewline_sa.3 \
-    lib/buffer/buffer_init.3 \
-    lib/buffer/buffer_init_free.3 \
-    lib/buffer/buffer_mmapread.3 \
-    lib/buffer/buffer_peek.3 \
-    lib/buffer/buffer_put.3 \
-    lib/buffer/buffer_put8long.3 \
-    lib/buffer/buffer_putalign.3 \
-    lib/buffer/buffer_puterror.3 \
-    lib/buffer/buffer_puterror2.3 \
-    lib/buffer/buffer_putflush.3 \
-    lib/buffer/buffer_putlong.3 \
-    lib/buffer/buffer_putlonglong.3 \
-    lib/buffer/buffer_putnlflush.3 \
-    lib/buffer/buffer_puts.3 \
-    lib/buffer/buffer_putsa.3 \
-    lib/buffer/buffer_putsaflush.3 \
-    lib/buffer/buffer_putsalign.3 \
-    lib/buffer/buffer_putsflush.3 \
-    lib/buffer/buffer_putspace.3 \
-    lib/buffer/buffer_putulong.3 \
-    lib/buffer/buffer_putulonglong.3 \
-    lib/buffer/buffer_putxlong.3 \
-    lib/buffer/buffer_seek.3 \
-    lib/buffer/buffer_tosa.3
+HEADERS =
 
 
 SOURCES = \ 
     genmakefile.c \
     lib/buffer/buffer_0.c \
-    lib/buffer/buffer_0small.c \
     lib/buffer/buffer_1.c \
-    lib/buffer/buffer_1small.c \
     lib/buffer/buffer_2.c \
     lib/buffer/buffer_bz2.c \
     lib/buffer/buffer_bzip.c \
@@ -125,7 +83,6 @@ SOURCES = \
     lib/buffer/buffer_init.c \
     lib/buffer/buffer_init_free.c \
     lib/buffer/buffer_lzma.c \
-    lib/buffer/buffer_mmap.c \
     lib/buffer/buffer_mmapprivate.c \
     lib/buffer/buffer_mmapprivate_fd.c \
     lib/buffer/buffer_mmapread.c \
@@ -182,6 +139,40 @@ SOURCES = \
     lib/buffer/buffer_tosa.c \
     lib/buffer/buffer_truncfile.c \
     lib/buffer/buffer_write.c \
-    lib/buffer/buffer_write_fd.c
+    lib/buffer/buffer_write_fd.c \
+    lib/strarray/strarray_appends.c \
+    lib/strarray/strarray_from_argv.c \
+    lib/strarray/strarray_index_of.c \
+    lib/strarray/strarray_joins.c \
+    lib/strarray/strarray_pop.c \
+    lib/strarray/strarray_prepends.c \
+    lib/strarray/strarray_push.c \
+    lib/strarray/strarray_push_sa.c \
+    lib/strarray/strarray_pushb.c \
+    lib/strarray/strarray_pushd.c \
+    lib/strarray/strarray_removeprefixs.c \
+    lib/strarray/strarray_removesuffixs.c \
+    lib/strarray/strarray_set.c \
+    lib/strarray/strarray_sort.c \
+    lib/strarray/strarray_to_argv.c \
+    lib/rdir/rdir_close.c \
+    lib/rdir/rdir_open.c \
+    lib/rdir/rdir_read.c \
+    lib/byte/byte_case_diff.c \
+    lib/byte/byte_case_equal.c \
+    lib/byte/byte_case_start.c \
+    lib/byte/byte_chr.c \
+    lib/byte/byte_copy.c \
+    lib/byte/byte_copyr.c \
+    lib/byte/byte_count.c \
+    lib/byte/byte_diff.c \
+    lib/byte/byte_equal.c \
+    lib/byte/byte_fill.c \
+    lib/byte/byte_fmt.c \
+    lib/byte/byte_lower.c \
+    lib/byte/byte_rchr.c \
+    lib/byte/byte_scan.c \
+    lib/byte/byte_upper.c \
+    lib/byte/byte_zero.c
 
 DEFINES += HAVE_ERRNO_H=1

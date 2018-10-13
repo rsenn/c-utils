@@ -5,7 +5,7 @@ CONFIG -= qt
 
 TARGET = hexedit
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 HEADERS = lib/array.h lib/buffer.h lib/byte.h lib/errmsg.h lib/fmt.h lib/iarray.h lib/io.h lib/mmap.h lib/open.h lib/path.h lib/scan.h lib/str.h lib/stralloc.h
 

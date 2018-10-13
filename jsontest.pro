@@ -5,7 +5,7 @@ CONFIG -= qt
 
 TARGET = jsontest
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 HEADERS = lib/buffer.h lib/byte.h lib/charbuf.h lib/fmt.h lib/hmap.h lib/json.h lib/open.h lib/scan.h lib/str.h lib/stralloc.h
 

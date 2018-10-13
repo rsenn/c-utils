@@ -17,7 +17,7 @@ CONFIG -= qt
   QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare
 }
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 HEADERS = lib/buffer.h lib/byte.h lib/fmt.h lib/mmap.h lib/open.h lib/str.h
 

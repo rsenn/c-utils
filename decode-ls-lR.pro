@@ -17,7 +17,7 @@ CONFIG -= qt
   #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 HEADERS = lib/buffer.h lib/byte.h lib/str.h lib/stralloc.h
 

@@ -12,7 +12,7 @@
 #endif
 static const double toint = 1 / EPS;
 
-#include "lib/uint64.h"
+#include "uint64.h"
 
 double
 round(double x) {

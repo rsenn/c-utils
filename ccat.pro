@@ -6,7 +6,7 @@ CONFIG += link_pkgconfig
 
 TARGET = ziptest
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 PKGCONFIG += zlib
 DEFINES += HAVE_ZLIB=1

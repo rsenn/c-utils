@@ -7,7 +7,7 @@ CONFIG += link_pkgconfig
 TARGET = pkgcfg
 QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 PKGCONFIG += liblzma
 DEFINES += HAVE_LIBLZMA=1

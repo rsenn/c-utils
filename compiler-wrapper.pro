@@ -9,7 +9,7 @@ unix: DEFINES += USE_READDIR=1
 
 DEFINES += USE_WIDECHAR=1
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 
 HEADERS = lib/buffer.h lib/byte.h lib/dir.h lib/fmt.h lib/str.h lib/stralloc.h lib/strlist.h

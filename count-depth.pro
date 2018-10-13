@@ -17,7 +17,7 @@ CONFIG -= qt
   QMAKE_CFLAGS_WARN_ON += -Wno-unused-parameter
 }
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 HEADERS = 
 SOURCES = 

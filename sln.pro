@@ -7,7 +7,7 @@ CONFIG += link_slnig
 TARGET = sln
 QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 PKGCONFIG += liblzma
 DEFINES += HAVE_LIBLZMA=1

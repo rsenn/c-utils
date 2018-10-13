@@ -19,12 +19,14 @@ dir_open(struct dir_s* d, const char* p) {
   ret = ((dir_INTERNAL(d)->dir_handle = opendir(p)) == NULL) ? -1 : 0;
 #else
   {
-	  HANDLE h;
+    HANDLE h;
     char path[MAXIMUM_PATH_LENGTH + 1];
     size_t len;
     str_copyn(path, p, sizeof(path) - 1);
     len = str_len(path);
-    strncat(path, (len > 0 && (path[len - 1] == '\\' || path[len - 1] == DIRSEP_C)) ? "\\*" : "\\\\*", sizeof(path) - 1);
+    strncat(path,
+            (len > 0 && (path[len - 1] == '\\' || path[len - 1] == DIRSEP_C)) ? "\\*" : "\\\\*",
+            sizeof(path) - 1);
 
 #if USE_WIDECHAR
     {
@@ -39,13 +41,13 @@ dir_open(struct dir_s* d, const char* p) {
     h = FindFirstFileA(path, &dir_INTERNAL(d)->dir_finddata);
 #endif
     dir_INTERNAL(d)->first = 1;
-	dir_INTERNAL(d)->dir_handle = h;
+    dir_INTERNAL(d)->dir_handle = h;
     ret = (h == INVALID_HANDLE_VALUE);
 
-/*	if(ret) {
-		DWORD error = GetLastError();
-		printf("ERROR: %s\n", last_error_str());
-	}*/
+    /*	if(ret) {
+            DWORD error = GetLastError();
+            printf("ERROR: %s\n", last_error_str());
+        }*/
   }
 #endif
 

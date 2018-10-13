@@ -6,7 +6,7 @@ CONFIG += link_dnsipig
 
 TARGET = dnsip
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 PKGCONFIG += liblzma
 DEFINES += HAVE_LIBLZMA=1

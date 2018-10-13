@@ -2,9 +2,9 @@ define nl =
 
 
 endef
-#$(info nl: A$(nl)A)
+$(info nl: A$(nl)A)
 
-target-tmpl := $(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))$(nl))$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)$(nl)	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))$(nl)$(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(NL)	$$(STRIP) $$@$(NL)endif$(NL))$(nl)
+target-tmpl := $(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))$(nl))$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)$(nl)	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))$(nl)$(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(nl)	$$(STRIP) $$@$(nl)endif$(nl))$(nl)
 
 
 define lib-tmpl =
@@ -53,7 +53,7 @@ endef
 
 define cmds-function-exists =
 set -e;  \
-(echo "$(if $(3),#include <$(3)>,extern int $(1)();)"; \
+($(if $(3),$(foreach H,$(3),echo "#include <$(H)>";),echo "extern int $(1)();";) \
 echo "int main() {"; \
 echo "  void *ptr = &$(1);"; \
 echo "  return 0;"; \

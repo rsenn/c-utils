@@ -3,6 +3,7 @@
 
 int
 strarray_push(strarray* arr, char* s) {
-  array_catb(&arr->a, (void*)&s, sizeof(char*));
+  char* d = str_dup(s);
+  array_catb(&arr->a, (void*)&d, sizeof(char*));
    return arr->a.allocated != -1;
 }

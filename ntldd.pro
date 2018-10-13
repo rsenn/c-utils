@@ -5,7 +5,7 @@ CONFIG -= qt
 
 TARGET = ntldd
 
-INCLUDEPATH += . $$PWD/lib
+INCLUDEPATH += .
 
 HEADERS = lib/byte.h lib/mmap.h lib/open.h lib/str.h
 
