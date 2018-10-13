@@ -5,25 +5,23 @@
 extern "C" {
 #endif
 
-#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && !defined(__CYGWIN__)
-#define PATHSEP_C '\\'
-#define PATHSEP_S "\\"
-#define IS_PATHSEP(c) ((c) == '\\'||(c) == '/')
+#if(defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && !defined(__CYGWIN__)
+#define DIRSEP_C '\\'
+#define DIRSEP_S "\\"
+#define IS_DIRSEP(c) ((c) == '\\' || (c) == '/')
 #else
-#define PATHSEP_C '/'
-#define PATHSEP_S "/"
-#define IS_PATHSEP(c) ((c) == '/')
+#define DIRSEP_C '/'
+#define DIRSEP_S "/"
+#define IS_DIRSEP(c) ((c) == '/')
 #endif
 
-enum
-{
+enum {
   D_FILE = 0x20,
   D_DIRECTORY = 0x10,
   D_SYMLINK = 0x08,
 };
 
-enum
-{
+enum {
   D_TIME_CREATION,
   D_TIME_ACCESS,
   D_TIME_MODIFICATION,
@@ -37,7 +35,7 @@ void dir_close(struct dir_s* d);
 
 char* dir_name(struct dir_s* d);
 int dir_type(struct dir_s* d);
-//unsigned long dir_time(struct dir_s* d, int time_type);
+// unsigned long dir_time(struct dir_s* d, int time_type);
 
 #ifdef __cplusplus
 }

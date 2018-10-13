@@ -2,7 +2,7 @@
 
 const char*
 elf_section_type(int i) {
-  static const char*const types[] = {"<NULL>",
+  static const char*const types[] = {"<0>",
                                 "PROGBITS",
                                 "SYMTAB",
                                 "STRTAB",

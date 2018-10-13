@@ -1,92 +1,84 @@
+#include "../rdir.h"
 #include "../buffer.h"
 #include "../byte.h"
 #include "../dir_internal.h"
-#include "../rdir.h"
-#include "../str.h"
-#include <stdlib.h>
-#include <string.h>
+#include "../stralloc.h"
+#include <assert.h>
 
 void rdir_read_r(rdir_t* d);
+static void rdir_push(rdir_t* d);
+static void rdir_pop(rdir_t* d);
 
 char*
-rdir_read(rdir_t* pd) {
+rdir_read(rdir_t* d) {
   size_t len;
   char* s;
-  rdir_t* d = pd;
-
-  if(d->sa.s && strchr(&d->sa.s[d->sa.len], '/')
-     /* dir_type(&d->dir) == D_DIRECTORY && d->sa.s */
-  ) {
-    /* if(dir_type(&d->dir) == D_DIRECTORY && d->sa.s) { */
-
-    buffer_puts(buffer_2, "&d->sa.s[d->sa.len] = ");
-    buffer_puts(buffer_2, &d->sa.s[d->sa.len]);
-    buffer_puts(buffer_2, " // ");
-    buffer_puts(buffer_2, strchr(&d->sa.s[d->sa.len], '/'));
-    buffer_putnlflush(buffer_2);
-
-    /* if(str_diff(&d->sa.s[d->sa.len], "./") && str_diff(&d->sa.s[d->sa.len], "../")) */
-    rdir_read_r(d);
-  }
 
   for(;;) {
     if((s = dir_read(&d->dir))) {
+      int type = dir_type(&d->dir);
       if(!(str_diff(s, "..") && str_diff(s, "."))) continue;
 
-      if(d->sa.s[d->sa.len - 1] != '/') {
-        stralloc_catc(&d->sa, '/');
+      if(d->sa.s[d->sa.len - 1] != DIRSEP_C) {
+        stralloc_catc(&d->sa, DIRSEP_C);
       }
       len = d->sa.len;
+
+      if(type == D_DIRECTORY) rdir_push(d);
+
       stralloc_cats(&d->sa, s);
+      stralloc_nul(&d->sa);
 
-      if(dir_type(&d->dir) == D_DIRECTORY) stralloc_catc(&d->sa, '/');
+      if(type == D_DIRECTORY) {
+#ifdef DEBUG_OUTPUT
+        buffer_puts(buffer_2, "entering ");
+        buffer_puts(buffer_2, d->sa.s);
+        buffer_putnlflush(buffer_2);
+#endif
 
-      stralloc_0(&d->sa);
-      d->sa.len = len;
+        dir_open(&d->dir, d->sa.s);
+      } else {
+        d->sa.len = len;
+      }
+
       return d->sa.s;
 
-    } else if(d->prev) {
-      /* d->prev->sa.s = d->sa.s; */
-      /* d->prev->sa.a = d->sa.a; */
-      stralloc_free(&d->sa);
+    } else {
       dir_close(&d->dir);
-      byte_copy(d, sizeof(rdir_t), d->prev);
-      free(d->prev);
-      /* byte_copy(d, sizeof(rdir_t), d->prev); */
 
-      /* stralloc_0(&d->sa); */
-      //*d = *d->prev;
+      if(d->prev) {
+        rdir_pop(d);
 
-      continue;
+        continue;
+      } else {
+        break;
+      }
     }
   }
 
   return NULL;
 }
 
-void
-rdir_read_r(rdir_t* d) {
+static void
+rdir_push(rdir_t* d) {
   rdir_t* rdn = malloc(sizeof(rdir_t));
   byte_copy(rdn, sizeof(rdir_t), d);
-  rdn->sa.len = d->sa.len;
   byte_zero(d, sizeof(rdir_t));
   d->prev = rdn;
 
   d->sa = rdn->sa;
-//stralloc_copy(&d->sa, &rdn->sa);
-  stralloc_0(&d->sa);
+}
 
-  if(dir_open(&d->dir, d->sa.s)) {
-    rdn->sa.s = d->sa.s;
-    rdn->sa.a = d->sa.a;
-    byte_copy(d, sizeof(rdir_t), rdn);
-    free(rdn);
-    return;
-  }
+static void
+rdir_pop(rdir_t* d) {
+  stralloc sa;
+  assert(d->prev);
 
-  buffer_puts(buffer_2, "entering ");
-  buffer_puts(buffer_2, d->sa.s);
-  buffer_putnlflush(buffer_2);
+  sa = d->sa;
+  sa.len = d->prev->sa.len;
 
-  /* return rdir_read(rdn); */
+  rdir_t* prev = d->prev;
+  byte_copy(d, sizeof(rdir_t), prev);
+  d->sa = sa;
+  free(prev);
 }

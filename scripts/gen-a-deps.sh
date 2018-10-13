@@ -56,7 +56,7 @@ match_expr() {
 indir() {
  (B=; : ${S=" "}; for ARG; do 
   case "$BUILDDIR" in
-    */) B="${B:+$B$S}$BUILDDIR$ARG" ;; 
+    */ | *")") B="${B:+$B$S}$BUILDDIR$ARG" ;; 
     *) B="${B:+$B$S}$BUILDDIR/$ARG" ;; 
   esac
 done
@@ -165,7 +165,9 @@ a_cmd() {
 compile_cmd() {
   ([ -n "$SRCPARAM" ] && SRCS="$SRCPARAM" || SRCS=$(pathfmt $SRC)
   CMD=${COMPILE_CMD//"{DEPS}"/"$SRCS"}
-  [ -n "$OUTPARAM" ] && OUT="$OUTPARAM" || OUT=$(pathfmt "$OUT")
+  [ -n "$OUTPARAM" ] && OUT="$OUTPARAM" ||   {
+  [ -n "$OBJ" ] && OUT=$(pathfmt "$OBJ") || OUT=$(pathfmt "$OUT")
+ }
   CMD=${CMD//"{OUT}"/"$OUT"}
    echo "$CMD")
 }
@@ -189,7 +191,7 @@ c_o_entry() {
 }
 # a_entry <$LIBEXT-file> <objects>
 a_entry() {
-  (LIB=$(indir "$1"); O="$(pathfmt "$LIB"):"
+  (LIB=$(indir "$1"); OUT=$LIB; O="$(pathfmt "$LIB"):"
     shift
     OBJS=$(indir "$@")
     O="$O $(pathfmt $OBJS)"
@@ -244,7 +246,7 @@ gen_a_deps() {
         "
         #SRCS=$(strings $EXE | sed ' s|\.[co]||p' -n|sort -fu)
         #OBJS=$(echo "$SRCS" | sed -n "/\.[co]/ { s|\\.[co]|| ; s|.*/||; s|^|${BUILDDIR}|; s|\$|$OBJEXT|; p; }"|sort -fu)
-        OUT=$(inpath "$P")
+        OUT="$BUILDDIR$P"
         O=$(pathfmt $OUT)
         set -- $(list ${LIBS} | sed "s|.*/||; s|^|${BUILDDIR}| ; s|\$|$LIBEXT|" | sort -fu)
 
@@ -258,6 +260,9 @@ gen_a_deps() {
 
   dump SRCDIRS
   per_srcdir_rules() {
+    (SRCPARAM='$<'
+    OUTPARAM='$@'
+
     for SRCDIR in $SRCDIRS; do
       ( F=$(${FIND-find} $SRCDIR -maxdepth 1 -name "*.c")
         IFS=" ""
@@ -271,7 +276,7 @@ gen_a_deps() {
         pushv O "${BUILDDIR}%$OBJEXT:${SRC:+ $(pathfmt $SRC)}"
         [ -n "$COMPILE_CMD" ] && O="$O$NL$TAB$(compile_cmd)"
         output_cmd "$O")
-    done
+      done)
   }
   all_sources_rules() {
     for SRC in $SOURCES; do
@@ -279,6 +284,7 @@ gen_a_deps() {
       OBJ=${SRC%.c}
       OBJ=${OBJ##*/}
       OBJ=$(indir "${OBJ}$OBJEXT")
+      OUT=$OBJ
       output_cmd "$(pathfmt $OBJ): $(pathfmt $SRC)$NL$TAB$(compile_cmd)"
     done
   }
@@ -286,7 +292,7 @@ gen_a_deps() {
   a_lib_rules() {
     dump LIB_NAMES
     dump LIBS
-    for A_LIB in $LIBS; do
+    for A_LIB in $A_LIBS; do
       ( NAME=${A_LIB##*/}
         NAME=${NAME%.*}
         LIBEXPR="${NAME}\.(${LIBEXT}|lib|a)"
@@ -317,7 +323,7 @@ gen_a_deps() {
 
         #c_o_entry "%$OBJEXT" "$SRCDIR/%.c"
         [ "$N_OBJ" -ge 0  ] &&
-        a_entry  ${OUT} $(list $SRCS| sed "s|lib/[^ /]*/||g ; s|lib/||g ; s|\\.c|$OBJEXT|")
+        a_entry  "${LIB##*/}" $(list $SRCS| sed "s|lib/[^ /]*/||g ; s|lib/||g ; s|\\.c|$OBJEXT|")
       fi
       )
     done
@@ -346,7 +352,11 @@ gen_a_deps() {
   pushv O "DEFS = ${DEFS}"
   pushv O "CPPFLAGS = ${CPPFLAGS}"
   [ -n "$exeext" ] && pushv O "EXEEXT = ${exeext}"
-  [ -n "$builddir" ] && pushv O "BUILDDIR = ${builddir%/}/"
+  #[ -n "$builddir" ] && pushv O "BUILDDIR = ${builddir%/}/"
+  [ -n "$builddir" ] && {
+    pushv O "BUILDDIR = ${builddir%/}/"
+     BUILDDIR='$(BUILDDIR)'
+}
 
   output_cond_defs() {
   SEP=$NL
@@ -374,7 +384,8 @@ gen_a_deps() {
   unset SEP
 
      all_program_rules
-  all_sources_rules #per_srcdir_rules
+     [ "$GNU" = true ] && per_srcdir_rules ||
+  all_sources_rules 
   a_lib_rules
 
 } 
@@ -402,6 +413,6 @@ gen_bcc32_makefile() {
 }
 case $1 in
   -bcc)  shift; gen_bcc32_makefile "$@" ;;
-*) gen_a_deps "$@" ;;
+*) : ${GNU=true};  gen_a_deps "$@" ;;
 esac
 

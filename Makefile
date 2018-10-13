@@ -333,7 +333,7 @@ C11_COMPILER_DEFS := $(shell $(call get-compiler-defs,-std=c11))
 ifneq ($(C11_COMPILER_DEFS),)
 CC += -std=c11
 endif
-NO_AT := 1
+#NO_AT := 1
 endif
 
 
@@ -394,7 +394,7 @@ ADVAPI32_LIB = -ladvapi32
 IPHLPAPI_LIB = -liphlpapi
 endif
 
-$(call def-function-exists,ZLIB,deflate,-lz)
+#$(call def-function-exists,ZLIB,deflate,-lz)
 
 HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
 #$(info HAVE_ZLIB=$(HAVE_ZLIB))
@@ -645,22 +645,27 @@ ifeq ($(BUILD_TYPE),Debug)
 DEBUG := 1
 RELEASE := 0
 MINSIZE := 0
+CFLAGS := $(CFLAGS_Debug)
 endif
 ifeq ($(BUILD_TYPE),RelWithDebInfo)
 DEBUG := 1
 RELEASE := 1
 MINSIZE := 0
+CFLAGS := $(CFLAGS_RelWithDebInfo)
 endif
 ifeq ($(BUILD_TYPE),MinSizeRel)
 DEBUG := 0
 RELEASE := 1
 MINSIZE := 1
+CFLAGS := $(CFLAGS_MinSizeRel)
 endif
 ifeq ($(BUILD_TYPE),Release)
 DEBUG := 0
 RELEASE := 1
 MINSIZE := 0
+CFLAGS := $(CFLAGS_Release)
 endif
+
 ifeq ($(DEBUG),1)
 DEFINES += DEBUG=1
 CFLAGS += -g3 -ggdb -O0
@@ -669,7 +674,14 @@ DEFINES += NDEBUG=1
 CFLAGS += -g -Os -fomit-frame-pointer
 endif
 
+INCLUDES += -I.
+
+ifneq ($(CFLAGS),)
+FLAGS += $(CFLAGS)
+endif
+ifneq ($(CFLAGS_$(BUILD_TYPE)),)
 FLAGS += $(CFLAGS_$(BUILD_TYPE))
+endif
 CXXFLAGS += $(CXXFLAGS_$(BUILD_TYPE))
 ifeq ($(USE_DIET),1)
 STATIC := 1
@@ -697,6 +709,7 @@ WIN32 := 1
 endif
 ifeq ($(CYGWIN),1)
 WIN32 := 1
+NO_AT := 0
 endif
 ifeq ($(STATIC),1)
 #LDFLAGS += -static
@@ -774,6 +787,8 @@ vpath $(BUILDDIR) lib src
 
 VPATH = $(BUILDDIR):.:lib:src
 
+$(info BUILD_TYPE: $(BUILD_TYPE))
+$(info FLAGS: $(FLAGS))
 #$(info Programs: $(PROGRAMS))
 
 ##$(info ARCH: $(ARCH))
@@ -865,11 +880,12 @@ DEFS := $(sort $(DEFS))
 
 CPPFLAGS += $(DEFS)
 
+CFLAGS := $(subst -O2,-Os,$(CFLAGS))
+
 FLAGS += $(patsubst %,-W%,$(WARNINGS)) 
 FLAGS += $(CPPFLAGS)
 FLAGS := $(sort $(FLAGS))
 
-CFLAGS := $(subst -O2,-Os,$(CFLAGS))
 FLAGS_FILE := $(patsubst %/,%,$(dir $(patsubst %/,%,$(BUILDDIR))))/$(notdir $(patsubst %/,%,$(BUILDDIR))).flags
 
 SPACE := $(DUMMY) $(DUMMY)
@@ -879,13 +895,13 @@ define NL
 endef
 
 ifneq ($(HOST),($(subst msys1,,$(HOST))))
-  NO_AT := 1
+  NO_AT ?= 1
 endif
 
 ifneq ($(NO_AT),1)
-CFLAGS += @$(FLAGS_FILE)
-else
-CFLAGS += $(shell cat $(FLAGS_FILE))
+CFLAGS := @$(FLAGS_FILE)
+CPPFLAGS := 
+INCLUDES := 
 endif
 
 $(info FLAGS=$(FLAGS))
@@ -935,6 +951,7 @@ endif
 endif
 endif
 
+$(info FLAGS: $(FLAGS))
 $(info CFLAGS: $(CFLAGS))
 $(info CXXFLAGS: $(CXXFLAGS))
 $(info LDFLAGS: $(LDFLAGS))
@@ -944,7 +961,6 @@ $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
 MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
-
 
 $(info BUILDDIR: $(BUILDDIR))
 

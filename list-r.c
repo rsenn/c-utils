@@ -70,7 +70,7 @@
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static array exclude_masks;
-static char opt_separator = PATHSEP_C;
+static char opt_separator = DIRSEP_C;
 
 static int opt_list = 0, opt_numeric = 0;
 static const char* opt_relative = NULL;
@@ -435,7 +435,7 @@ list_dir_internal(stralloc* dir, char type) {
 #endif
   char *name, *s;
   (void)type;
-  while(dir->len > 1 && IS_PATHSEP(dir->s[dir->len - 1])) dir->len--;
+  while(dir->len > 1 && IS_DIRSEP(dir->s[dir->len - 1])) dir->len--;
   stralloc_nul(dir);
 #ifndef PLAIN_WINDOWS
   if(root_dev == 0) {
@@ -451,7 +451,7 @@ list_dir_internal(stralloc* dir, char type) {
     buffer_flush(buffer_2);
     goto end;
   }
-  if(dir->s[dir->len - 1] != PATHSEP_C) stralloc_cats(dir, PATHSEP_S);
+  if(dir->s[dir->len - 1] != DIRSEP_C) stralloc_cats(dir, DIRSEP_S);
   l = dir->len;
   while((name = dir_read(&d))) {
     unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
@@ -548,7 +548,7 @@ list_dir_internal(stralloc* dir, char type) {
     }
     s = dir->s;
     len = dir->len;
-    if(len >= 2 && s[0] == '.' && IS_PATHSEP(s[1])) {
+    if(len >= 2 && s[0] == '.' && IS_DIRSEP(s[1])) {
       len -= 2;
       s += 2;
     }

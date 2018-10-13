@@ -255,6 +255,7 @@ registry_query(const char* key, const char* value, stralloc* sa) {
   }
   return 0;
 }
+#endif
 
 void
 add_path(strlist* sp, const char* path) {
@@ -289,7 +290,6 @@ add_path(strlist* sp, const char* path) {
     stralloc_free(&dir);
   }
 }
-#endif
 
 int
 main(int argc, char** argv) {
@@ -375,12 +375,12 @@ main(int argc, char** argv) {
 
 #if WINDOWS
   {
-    stralloc rpath;
-    stralloc_init(&rpath);
     const char* const keys[] = {"HKCU\\Environment",
                                 "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
                                 0};
     int kidx;
+    stralloc rpath;
+    stralloc_init(&rpath);
 
     for(kidx = 0; keys[kidx]; ++kidx) {
       if(registry_query(keys[kidx], "Path", &rpath)) {

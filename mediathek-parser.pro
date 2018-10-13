@@ -37,10 +37,10 @@ mingw | mingw32 | mingw64 {
 
 INCLUDEPATH += . $$PWD/lib
 
-HEADERS = lib/array.h lib/buffer.h lib/byte.h lib/fmt.h lib/mmap.h lib/open.h lib/str.h lib/stralloc.h
+HEADERS = 
 
 
-SOURCES = lib/array/array_allocate.c lib/array/array_length.c lib/array/array_start.c lib/array/array_trunc.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_close.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get_token_sa.c lib/buffer/buffer_getc.c lib/buffer/buffer_getline_sa.c lib/buffer/buffer_init.c lib/buffer/buffer_mmapprivate.c lib/buffer/buffer_mmapread.c lib/buffer/buffer_munmap.c lib/buffer/buffer_put.c lib/buffer/buffer_putc.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_rchr.c lib/byte/byte_zero.c lib/fmt/fmt_long.c lib/fmt/fmt_ulong.c lib/isleap.c lib/mmap/mmap_private.c lib/mmap/mmap_read.c lib/open/open_read.c lib/socket/init.c lib/str/str_case_diffn.c lib/str/str_chr.c lib/str/str_diff.c lib/str/str_dup.c lib/str/str_len.c lib/str/str_ptime.c lib/stralloc/stralloc_append.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_catc.c lib/stralloc/stralloc_cats.c lib/stralloc/stralloc_copyb.c lib/stralloc/stralloc_copys.c lib/stralloc/stralloc_free.c lib/stralloc/stralloc_init.c lib/stralloc/stralloc_nul.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c lib/stralloc/stralloc_zero.c lib/time_table_spd.c lib/umult64.c mediathek-parser.c
+SOURCES = 
 
 
 DEFINES += io_seek=lseek64

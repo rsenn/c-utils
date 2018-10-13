@@ -578,8 +578,12 @@ foreach(PROGRAM ${PROGRAMS})
   else("${PROGRAM}" STREQUAL ntldd)
     set(EXTRA_SOURCES )
   endif("${PROGRAM}" STREQUAL ntldd)
+  
+  if("${PROGRAM}" STREQUAL "ccat" OR "${PROGRAM}" STREQUAL "eagle-gen-cmds" OR "${PROGRAM}" STREQUAL "genmakefile" OR "${PROGRAM}" STREQUAL "list-r" OR "${PROGRAM}" STREQUAL "mediathek-list" OR "${PROGRAM}" STREQUAL "mediathek-parser" OR "${PROGRAM}" STREQUAL "ntldd" OR "${PROGRAM}" STREQUAL "pathtool" OR "${PROGRAM}" STREQUAL "pelist" OR "${PROGRAM}" STREQUAL "pkgcfg" OR "${PROGRAM}" STREQUAL "plsconv" OR "${PROGRAM}" STREQUAL "strarraytest" OR "${PROGRAM}" STREQUAL "ziptest")
+    list(APPEND EXTRA_SOURCES ${GETOPT_SOURCES})
+  endif()
 
-  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES} ${GETOPT_SOURCES} ${LIBHEADERS}) #  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
+  add_executable(${PROGRAM} ${PROGRAM}.c ${EXTRA_SOURCES} ${LIBHEADERS}) #  get_target_property(${PROGRAM}_INCLUDE_DIRECTORIES ${PROGRAM} INCLUDE_DIRECTORIES)
  # list(APPEND ${PROGRAM}_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR})
 
   set_target_properties(${PROGRAM} PROPERTIES
@@ -591,6 +595,7 @@ foreach(PROGRAM ${PROGRAMS})
 endforeach(PROGRAM)
 
 target_link_libraries(list-r dir ${COMMON_LIBS})
+target_link_libraries(genmakefile rdir dir ${COMMON_LIBS})
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
 target_link_libraries(access buffer str)

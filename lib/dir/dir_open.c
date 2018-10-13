@@ -9,6 +9,7 @@
 #if USE_WIDECHAR
 #include "../utf8.h"
 #endif
+static const char* last_error_str();
 
 int
 dir_open(struct dir_s* d, const char* p) {
@@ -18,11 +19,12 @@ dir_open(struct dir_s* d, const char* p) {
   ret = ((dir_INTERNAL(d)->dir_handle = opendir(p)) == NULL) ? -1 : 0;
 #else
   {
+	  HANDLE h;
     char path[MAXIMUM_PATH_LENGTH + 1];
     size_t len;
     str_copyn(path, p, sizeof(path) - 1);
     len = str_len(path);
-    strncat(path, (len > 0 && (path[len - 1] == '\\' || path[len - 1] == '/')) ? "*" : "\\*", sizeof(path) - 1);
+    strncat(path, (len > 0 && (path[len - 1] == '\\' || path[len - 1] == DIRSEP_C)) ? "\\*" : "\\\\*", sizeof(path) - 1);
 
 #if USE_WIDECHAR
     {
@@ -30,15 +32,20 @@ dir_open(struct dir_s* d, const char* p) {
       wchar_t wpath[wlen + 1];
       u8stowcs(wpath, path, wlen);
       wpath[wlen] = '\0';
-      dir_INTERNAL(d)->dir_handle = (intptr_t)FindFirstFileW(wpath, &dir_INTERNAL(d)->dir_finddata);
+      h = (intptr_t)FindFirstFileW(wpath, &dir_INTERNAL(d)->dir_finddata);
     }
     dir_INTERNAL(d)->tmpname = NULL;
 #else
-    dir_INTERNAL(d)->dir_handle = (intptr_t)FindFirstFileA(path, &dir_INTERNAL(d)->dir_finddata);
+    h = FindFirstFileA(path, &dir_INTERNAL(d)->dir_finddata);
 #endif
     dir_INTERNAL(d)->first = 1;
-    
-    ret = (dir_INTERNAL(d)->dir_handle == (intptr_t)INVALID_HANDLE_VALUE);
+	dir_INTERNAL(d)->dir_handle = h;
+    ret = (h == INVALID_HANDLE_VALUE);
+
+/*	if(ret) {
+		DWORD error = GetLastError();
+		printf("ERROR: %s\n", last_error_str());
+	}*/
   }
 #endif
 
@@ -46,3 +53,28 @@ dir_open(struct dir_s* d, const char* p) {
 
   return ret;
 }
+
+#if !USE_READDIR
+static const char*
+last_error_str() {
+  DWORD errCode = GetLastError();
+  static char tmpbuf[1024];
+  char* err;
+  tmpbuf[0] = '\0';
+  if(errCode == 0) return tmpbuf;
+  SetLastError(0);
+  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                    NULL,
+                    errCode,
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
+                    (LPTSTR)&err,
+                    0,
+                    NULL))
+    return 0;
+  _snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
+  /* or otherwise log it */
+  // OutputDebugString(tmpbuf);
+  LocalFree(err);
+  return tmpbuf;
+}
+#endif
