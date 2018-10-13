@@ -1828,3 +1828,5 @@ $(BUILDDIR)eagle-gen-cmds.o: ./eagle-gen-cmds.c
 	$(COMPILE) -o $@ $<
 $(BUILDDIR)strarray_transform.o: lib/strarray/strarray_transform.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)dir_path.o: lib/dir/dir_path.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

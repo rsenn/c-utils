@@ -15,7 +15,8 @@
 #endif
 
 char*
-dir_name(struct dir_s* d) {
+dir_name(struct dir_s* d)
+{
 #if !USE_READDIR && USE_WIDECHAR
   size_t n = wcstombs(NULL, dir_INTERNAL(d)->dir_finddata.cFileName, 1);
   if(dir_INTERNAL(d)->tmpname) free(dir_INTERNAL(d)->tmpname);

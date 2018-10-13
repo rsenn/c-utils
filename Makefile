@@ -1081,7 +1081,7 @@ $(BUILDDIR)fnmatch.o: fnmatch.c
 
 
 $(BUILDDIR)list-r.o: list-r.c
-$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)getopt.o $(BUILDDIR)fnmatch.o $(call add-library,strarray open array buffer  byte stralloc rdir dir fmt str)
+$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)getopt.o $(BUILDDIR)fnmatch.o $(call add-library,strarray open array rdir dir buffer byte stralloc fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1223,7 +1223,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)access.o: access.c
-$(BUILDDIR)access$(M64_)$(EXEEXT): $(BUILDDIR)access.o $(call add-library, open array buffer  byte stralloc rdir dir fmt str)
+$(BUILDDIR)access$(M64_)$(EXEEXT): $(BUILDDIR)access.o $(call add-library, open array  rdir dir buffer byte stralloc fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1327,28 +1327,28 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXEEXT): DEFINES += XC8_WRAPPER=1
-$(BUILDDIR)xc8-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer dir str byte fmt)
+$(BUILDDIR)xc8-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist dir stralloc buffer str byte fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)picc-wrapper$(M64_)$(EXEEXT): DEFINES += PICC_WRAPPER=1
-$(BUILDDIR)picc-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer dir str byte fmt)
+$(BUILDDIR)picc-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist dir stralloc buffer str byte fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)picc18-wrapper$(M64_)$(EXEEXT): DEFINES += PICC18_WRAPPER=1
-$(BUILDDIR)picc18-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer dir str byte fmt)
+$(BUILDDIR)picc18-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist dir stralloc buffer str byte fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)sdcc-wrapper$(M64_)$(EXEEXT): DEFINES += SDCC_WRAPPER=1
-$(BUILDDIR)sdcc-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer dir str byte fmt)
+$(BUILDDIR)sdcc-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist dir stralloc buffer str byte fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1382,35 +1382,35 @@ endif
 endif
 
 $(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): $(BUILDDIR)bsdiffcat.o $(call add-library, array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): $(BUILDDIR)bsdiffcat.o $(call add-library, array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)binfmttest$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)binfmttest$(M64_)$(EXEEXT): $(BUILDDIR)binfmttest.o $(call add-library, binfmt pe array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)binfmttest$(M64_)$(EXEEXT): $(BUILDDIR)binfmttest.o $(call add-library, binfmt pe array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)elf64list$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)elf64list$(M64_)$(EXEEXT): $(BUILDDIR)elf64list.o $(call add-library, binfmt pe array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)elf64list$(M64_)$(EXEEXT): $(BUILDDIR)elf64list.o $(call add-library, binfmt pe array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)macho32list$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)macho32list$(M64_)$(EXEEXT): $(BUILDDIR)macho32list.o $(call add-library, binfmt pe array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)macho32list$(M64_)$(EXEEXT): $(BUILDDIR)macho32list.o $(call add-library, binfmt pe array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)pelist$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)pelist$(M64_)$(EXEEXT): $(BUILDDIR)pelist.o $(BUILDDIR)getopt.o $(call add-library, binfmt pe array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)pelist$(M64_)$(EXEEXT): $(BUILDDIR)pelist.o $(BUILDDIR)getopt.o $(call add-library, binfmt pe array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1418,14 +1418,14 @@ endif
 
 
 $(BUILDDIR)elflist$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)elflist$(M64_)$(EXEEXT): $(BUILDDIR)elflist.o $(call add-library, binfmt elf array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)elflist$(M64_)$(EXEEXT): $(BUILDDIR)elflist.o $(call add-library, binfmt elf array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)strarraytest$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)strarraytest$(M64_)$(EXEEXT): $(BUILDDIR)strarraytest.o $(call add-library, strarray array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)strarraytest$(M64_)$(EXEEXT): $(BUILDDIR)strarraytest.o $(call add-library, strarray array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1433,7 +1433,7 @@ endif
 
 
 $(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library, rdir strarray path array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library, rdir strarray path array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

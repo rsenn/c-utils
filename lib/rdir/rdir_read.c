@@ -72,12 +72,12 @@ rdir_push(rdir_t* d) {
 static void
 rdir_pop(rdir_t* d) {
   stralloc sa;
-  assert(d->prev);
+  rdir_t* prev = d->prev;
+  assert(prev);
 
   sa = d->sa;
   sa.len = d->prev->sa.len;
 
-  rdir_t* prev = d->prev;
   byte_copy(d, sizeof(rdir_t), prev);
   d->sa = sa;
   free(prev);

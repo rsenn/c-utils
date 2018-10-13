@@ -61,8 +61,9 @@ struct dir_internal_s {
 #else
   WIN32_FIND_DATAA dir_finddata;
 #endif
-  intptr_t dir_handle;
+  HANDLE dir_handle;
   int first;
+  void* dir_path;
 #endif
 };
 

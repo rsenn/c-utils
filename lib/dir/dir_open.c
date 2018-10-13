@@ -4,6 +4,7 @@
 
 #include "../dir_internal.h"
 #include "../str.h"
+#include "../stralloc.h"
 #include <assert.h>
 
 #if USE_WIDECHAR
@@ -12,42 +13,50 @@
 static const char* last_error_str();
 
 int
-dir_open(struct dir_s* d, const char* p) {
+dir_open(struct dir_s* d, const char* p)
+{
   int ret;
   if(!(d->dir_int = malloc(sizeof(struct dir_internal_s)))) return 1;
 #if USE_READDIR
   ret = ((dir_INTERNAL(d)->dir_handle = opendir(p)) == NULL) ? -1 : 0;
 #else
   {
+    stralloc path;
     HANDLE h;
-    char path[MAXIMUM_PATH_LENGTH + 1];
-    size_t len;
-    str_copyn(path, p, sizeof(path) - 1);
-    len = str_len(path);
-    strncat(path,
-            (len > 0 && (path[len - 1] == '\\' || path[len - 1] == DIRSEP_C)) ? "\\*" : "\\\\*",
-            sizeof(path) - 1);
+    stralloc_init(&path);
+    stralloc_copys(&path, p);
+    
+   if(path.len > 0 && path.s[path.len - 1] != '\\')
+   stralloc_catc(&path, '\\');
+   stralloc_catc(&path, '*');
+   stralloc_nul(&path);
+
+   dir_INTERNAL(d)->dir_path = path.s;
 
 #if USE_WIDECHAR
-    {
-      size_t wlen = u8swcslen(path);
-      wchar_t wpath[wlen + 1];
-      u8stowcs(wpath, path, wlen);
+  {
+    size_t wlen = u8swcslen(path.s);
+      wchar_t* wpath = malloc((wlen + 1) * sizeof(wchar_t));
+
+      u8stowcs(wpath, path.s, wlen);
+      free(path.s);
+
       wpath[wlen] = '\0';
+      dir_INTERNAL(d)->dir_path = wpath;
       h = (intptr_t)FindFirstFileW(wpath, &dir_INTERNAL(d)->dir_finddata);
     }
     dir_INTERNAL(d)->tmpname = NULL;
 #else
-    h = FindFirstFileA(path, &dir_INTERNAL(d)->dir_finddata);
+    h = FindFirstFileA(path.s, &dir_INTERNAL(d)->dir_finddata);
 #endif
     dir_INTERNAL(d)->first = 1;
     dir_INTERNAL(d)->dir_handle = h;
     ret = (h == INVALID_HANDLE_VALUE);
 
-    /*	if(ret) {
-            DWORD error = GetLastError();
-            printf("ERROR: %s\n", last_error_str());
-        }*/
+    /*  if(ret) {
+       DWORD error = GetLastError();
+       printf("ERROR: %s\n", last_error_str());
+    }*/
   }
 #endif
 
@@ -58,7 +67,8 @@ dir_open(struct dir_s* d, const char* p) {
 
 #if !USE_READDIR
 static const char*
-last_error_str() {
+last_error_str()
+{
   DWORD errCode = GetLastError();
   static char tmpbuf[1024];
   char* err;

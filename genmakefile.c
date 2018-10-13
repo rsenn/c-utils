@@ -1,5 +1,5 @@
-#include "lib/buffer.h"
 #include "lib/getopt.h"
+#include "lib/buffer.h"
 #include "lib/path.h"
 #include "lib/rdir.h"
 #include "lib/str.h"
