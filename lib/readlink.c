@@ -46,47 +46,49 @@ get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
 }
 
 #if WINDOWS_NATIVE
-char*
-readlink(const char* LinkPath) {
+ssize_t
+readlink(const char* LinkPath, char* buf, size_t maxlen) {
   union REPARSE_DATA_BUFFER_UNION u;
+  wchar_t *wbuf = NULL;
+  unsigned int u8len, len, wlen;
 
   if(!get_reparse_data(LinkPath, &u)) {
-    return NULL;
+    return -1;
   }
 
   switch(u.iobuf.ReparseTag) {
     case IO_REPARSE_TAG_MOUNT_POINT: { /* Junction */
-      char* retval;
-      unsigned int len = u.iobuf.MountPointReparseBuffer.SubstituteNameLength;
-
-      Newx(retval, len + sizeof(WCHAR), char);
-
-      sprintf(retval,
-              "%.*S",
-              u.iobuf.MountPointReparseBuffer.SubstituteNameLength / sizeof(WCHAR),
-              u.iobuf.MountPointReparseBuffer.PathBuffer +
-                  u.iobuf.MountPointReparseBuffer.SubstituteNameOffset / sizeof(WCHAR));
-
-      retval += 4;
-      return retval;
+      wbuf = u.iobuf.MountPointReparseBuffer.PathBuffer +
+                    u.iobuf.MountPointReparseBuffer.SubstituteNameOffset / sizeof(wchar_t);
+      wlen = u.iobuf.MountPointReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
+      break;
     }
     case IO_REPARSE_TAG_SYMLINK: { /* Symlink */
-      char* retval;
-      unsigned int len = u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength;
-
-      Newx(retval, len + sizeof(WCHAR), char);
-
-      sprintf(retval,
-              "%.*S",
-              u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength / sizeof(WCHAR),
-              u.iobuf.SymbolicLinkReparseBuffer.PathBuffer +
-                  u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset / sizeof(WCHAR));
-
-      return retval;
+      wbuf = u.iobuf.SymbolicLinkReparseBuffer.PathBuffer +
+                  u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset / sizeof(WCHAR);
+      wlen = u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
+      break;
     }
   }
 
-  return NULL;
+  if(!wbuf) return NULL;
+
+  for(len = 0; len < wlen; ++len) {
+    u8len += wcu8len(wbuf[len]);
+
+    if(u8len >= maxlen) 
+      break;
+  }
+  if(u8len > maxlen) {
+    len--;
+  }
+
+  u8len = wcstou8s(buf, wbuf, len);
+  if(u8len >= maxlen)
+    u8len = maxlen - 1;
+
+  buf[u8len] = '\0';
+  return u8len;
 }
 #endif
 
@@ -104,7 +106,7 @@ reparse_tag(const char* LinkPath) {
 int is_symlink(const char* LinkPath)
 { return reparse_tag(LinkPath) == IO_REPARSE_TAG_SYMLINK; }
 
-BOOL is_junction(LinkPath) const char* LinkPath;
+char is_junction(const char* LinkPath) 
 { return reparse_tag(LinkPath) == IO_REPARSE_TAG_MOUNT_POINT; }
 
 #endif /* WINDOWS */

@@ -25,7 +25,7 @@
 extern char strlist_dumpx[5];
 
 static const char* dt_fmt = "%Y%m%d %H:%M";
-const char* argv0;
+char* argv0;
 
 /*
 http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz

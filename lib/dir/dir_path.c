@@ -1,5 +1,6 @@
-#include "../dir_internal.h"
 #include "../stralloc.h"
+#include "../dir.h"
+#include "../dir_internal.h"
 
 void
 dir_path(struct dir_s* d, stralloc* sa) {

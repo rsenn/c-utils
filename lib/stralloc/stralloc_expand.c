@@ -4,7 +4,7 @@
 int
 stralloc_expand(stralloc* sa) {
 #if WINDOWS
-  const char* s;
+  char* s;
   size_t n;
   stralloc_nul(sa);
   s = sa->s;

@@ -601,7 +601,7 @@ write_err_check(int fd, const void* buf, size_t len) {
 }
 
 void
-usage(const char* argv0) {
+usage(char* argv0) {
   buffer_putm(buffer_1,
               "Usage: ",
               str_basename(argv0),

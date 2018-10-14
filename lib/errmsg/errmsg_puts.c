@@ -6,6 +6,7 @@
 #include "../uint64.h"
 
 #if WINDOWS
+#include <io.h>
 
 void
 errmsg_puts(int64 fd, const char* s) {

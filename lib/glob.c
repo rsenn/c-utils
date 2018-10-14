@@ -5,6 +5,8 @@
  */
 
 #include "glob.h"
+#include "byte.h"
+#include "str.h"
 
 #include <errno.h>
 #include <stdlib.h>

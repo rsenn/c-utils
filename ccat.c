@@ -19,7 +19,7 @@ buffer_copy(buffer* out, buffer* in) {
 }
 
 void
-usage(const char* argv0) {
+usage(char* argv0) {
   buffer_putm(buffer_1,
               "Usage: ",
               argv0,

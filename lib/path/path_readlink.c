@@ -1,3 +1,4 @@
+#include "../readlink.h"
 #include "../path_internal.h"
 #include "../str.h"
 #include "../stralloc.h"

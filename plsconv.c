@@ -42,7 +42,7 @@ playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 lengt
 }
 
 void
-usage(const char* argv0) {
+usage(char* argv0) {
   buffer_putm(buffer_1,
               "Usage: ",
               argv0,

@@ -55,7 +55,7 @@ strarray_dump(buffer* b, const strarray* arr) {
 }
 
 void
-usage(const char* argv0) {
+usage(char* argv0) {
   buffer_putm(buffer_1,
               "Usage: ",
               str_basename(argv0),

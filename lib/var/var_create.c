@@ -20,7 +20,7 @@ var_create(struct vartab* varstack, const char* v, int flags) {
     if(oldvar->table == varstack) return oldvar;
   }
 
-  newvar = shell_alloc(sizeof(struct var));
+  newvar = malloc(sizeof(struct var));
   newvar->flags |= V_FREE;
   var_init(v, newvar, &ctx);
 

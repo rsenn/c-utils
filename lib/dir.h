@@ -37,6 +37,10 @@ char* dir_name(struct dir_s* d);
 int dir_type(struct dir_s* d);
 // unsigned long dir_time(struct dir_s* d, int time_type);
 
+#ifdef STRALLOC_H
+void dir_path(struct dir_s* d, stralloc* sa);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

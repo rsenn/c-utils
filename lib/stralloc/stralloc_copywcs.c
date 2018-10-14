@@ -3,6 +3,6 @@
 
 extern int
 stralloc_copywcs(stralloc* sa, const wchar_t* buf) {
-  return stralloc_copywb(sa, buf, wcslen(buf));
+  return stralloc_copywcb(sa, buf, wcslen(buf));
 }
 

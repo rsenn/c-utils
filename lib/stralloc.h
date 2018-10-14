@@ -234,3 +234,4 @@ int stralloc_prepend(stralloc* sa, const stralloc* other);
 
 #endif
 unsigned int stralloc_ends(const stralloc* sa, const stralloc* suffix);
+int stralloc_expand(stralloc* sa);

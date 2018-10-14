@@ -23,13 +23,14 @@ Code is mostly written after
 MSDN Magazine articles
 */
 
+#include "lib/windoze.h"
 #include "lib/getopt.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/uint64.h"
-#include "lib/windoze.h"
+#include "lib/path.h"
 
 #include <limits.h>
 #include <stdio.h>

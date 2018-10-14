@@ -81,3 +81,6 @@ void http_writeable();
 #endif
 
 #endif /* defined HTTP_H */
+ssize_t http_recv(fd_t fd, void* buf, size_t len, void* b);
+ssize_t http_send(fd_t fd, void* buf, size_t len, void* b);
+int     http_socket(http* h);

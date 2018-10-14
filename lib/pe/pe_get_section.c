@@ -1,4 +1,5 @@
 #include "../pe.h"
+#include "../str.h"
 
 pe_section_header*
 pe_get_section(void* base, const char* name) {

@@ -257,3 +257,4 @@ int buffer_get_until(buffer* b, char* x, size_t len, const char* charset, size_t
 #endif
 
 #endif
+int buffer_write_fd(buffer* b, fd_t fd);

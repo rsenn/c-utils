@@ -3,6 +3,7 @@
 #if WINDOWS
 #include <windows.h>
 #include <winsock.h>
+#include <io.h>
 #else
 #include <poll.h>
 #endif
