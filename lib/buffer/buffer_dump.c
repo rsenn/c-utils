@@ -63,7 +63,7 @@ buffer_dump(buffer* out, buffer* b) {
   else if(b->op == NULL)
     buffer_puts(out, "NULL    ");
   else {
-    /* n = fmt_xlong(xlong, (long long)(intptr_t)b->op); */
+    /* n = fmt_xlong(xlong, (int64)(intptr_t)b->op); */
     buffer_putptr(out, b->op); /* xlong, n); */
   }
   buffer_puts(out, " ]");

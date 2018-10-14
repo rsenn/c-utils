@@ -93,8 +93,14 @@ int buffer_putsflush(buffer* b, const char* x);
 
 int buffer_putm_internal(buffer*b, ...);
 int buffer_putm_internal_flush(buffer*b, ...);
+
+#ifdef __BORLANDC__
+#define buffer_putm(args) buffer_putm_internal(args, (char*)0)
+#define buffer_putmflush(b, args) buffer_putm_internal_flush(b, args, (char*)0)
+#else
 #define buffer_putm(...) buffer_putm_internal(__VA_ARGS__, (char*)0)
 #define buffer_putmflush(b, ...) buffer_putm_internal_flush(b, __VA_ARGS__, (char*)0)
+#endif
 
 int buffer_putspace(buffer* b);
 int buffer_putnlflush(buffer* b); /* put \n and flush */
@@ -146,11 +152,11 @@ int buffer_prefetch(buffer *b, size_t n);
 int buffer_putulong(buffer *b, unsigned long int l);
 int buffer_put8long(buffer *b, unsigned long int l);
 int buffer_putxlong(buffer *b, unsigned long int l);
-int buffer_putxlonglong(buffer *b, unsigned long long int l);
+int buffer_putxint64(buffer *b, uint64 l);
 int buffer_putlong(buffer *b, signed long int l);
 
-int buffer_putlonglong(buffer* b, signed long long int l);
-int buffer_putulonglong(buffer* b, unsigned long long int l);
+int buffer_putint64(buffer* b, int64 l);
+int buffer_putuint64(buffer* b, uint64 l);
 
 int buffer_putdouble(buffer *b, double d, int prec);
 
@@ -220,7 +226,7 @@ int buffer_putnspace(buffer *b,  int n);
 int buffer_putptr(buffer *b, void *ptr);
 int buffer_putulong0(buffer *b, unsigned long l, int pad);
 int buffer_putxlong0(buffer* b, unsigned long l, int pad);
-int buffer_putxlonglong0(buffer* b, unsigned long long l, int pad);
+int buffer_putxint640(buffer* b, uint64 l, int pad);
 
 int buffer_skipspace(buffer *b);
 int buffer_skip_pred(buffer *b, int (*pred)(int));
