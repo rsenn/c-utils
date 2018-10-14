@@ -8,7 +8,7 @@ char*
 path_gethome(int uid) {
   buffer b;
   long id;
-  unsigned long n;
+  size_t n;
   static char home[PATH_MAX + 1];
 
   /* try to read /etc/passwd */

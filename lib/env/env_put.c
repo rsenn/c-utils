@@ -11,7 +11,14 @@ No known patent problems.
 #include "../byte.h"
 #include "../str.h"
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+
+int
+env_put(const char* name, const char* value) {
+  return !!_putenv_s(name, value);
+}
+
+#else
 static size_t env_isinit = 0; /* if env_isinit: */
 static size_t ea;             /* environ is a pointer to ea+1 char*'s. */
 static size_t en;             /* the first en of those are ALLOCATED. environ[en] is 0. */

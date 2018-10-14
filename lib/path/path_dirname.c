@@ -19,7 +19,7 @@ static char* dot = ".";
 #define EOL (char)0
 char*
 path_dirname(char* path) {
-  unsigned long i;
+  size_t i;
   if(path == NULL) return dot;
   for(;;) {
     i = str_rchr(path, SLASH);

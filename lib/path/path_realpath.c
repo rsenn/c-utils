@@ -19,7 +19,7 @@ path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd) {
     char buf[PATH_MAX + 1];
 
     /* check whether the name fits */
-    unsigned long n;
+    size_t n;
     n = str_len(path);
 
     if(cwd->len + n + 1 > PATH_MAX) {

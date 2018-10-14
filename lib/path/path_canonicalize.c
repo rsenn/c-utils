@@ -80,7 +80,7 @@ is_link(const char* path) {
 int
 path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   size_t l1, l2;
-  unsigned long n;
+  size_t n;
   struct stat st;
   int ret = 1;
   int (*stat_fn)() = stat;

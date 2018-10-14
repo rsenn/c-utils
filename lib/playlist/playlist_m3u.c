@@ -19,8 +19,8 @@ int ret;
     line.len -= 1;
     if(!str_diffn(line.s, "#EXTM3U", 7)) {
     } else if(!str_diffn(line.s, "#EXTINF", 7)) {
-      unsigned long len;
-      uint32 index = 8;
+      size_t len;
+      size_t index = 8;
       index += scan_ulong(&line.s[index], &len);
       entry.length = len;
       index++;
