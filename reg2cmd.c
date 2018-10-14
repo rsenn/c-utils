@@ -452,7 +452,7 @@ int main(int argc, char *argv[]) {
     buffer_puts(buffer_2, "' ...\n");
     buffer_flush(buffer_2);
 
-    if((buffer_0->fd = open(argv[argi], O_RDONLY)) < 0)
+    if((buffer_0->fd = open_read(argv[argi])) < 0)
       usage(argv[0]);
 
     argi++;
@@ -462,7 +462,7 @@ int main(int argc, char *argv[]) {
     buffer_puts(buffer_2, argv[argi]);
     buffer_puts(buffer_2, "' ...\n");
     buffer_flush(buffer_2);
-    if((buffer_1->fd = open(argv[argi], O_CREAT | O_TRUNC | O_WRONLY, 0644)) <
+    if((buffer_1->fd = open_trunc(argv[argi])) <
         0)
       usage(argv[0]);
 

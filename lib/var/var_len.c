@@ -1,4 +1,4 @@
-unsigned long
+size_t
 var_len(const char* v) {
   register const char* s = v;
   for(;;) {

@@ -14,8 +14,7 @@ c_to_o(const char* in) {
 
   stralloc_copys(&out, str_basename(in));
 
-  if(stralloc_endb(&out, ".c", 2))
-    out.len -= 2;
+  if(stralloc_endb(&out, ".c", 2)) out.len -= 2;
 
   stralloc_cats(&out, ".o");
 

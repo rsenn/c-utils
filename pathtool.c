@@ -1,10 +1,10 @@
 #include "lib/getopt.h"
-#include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
 #include "lib/path.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
+#include "lib/windoze.h"
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 /*
@@ -77,7 +77,7 @@ pathtool(const char* arg, stralloc* sa) {
   buffer_putnlflush(buffer_2);
 #endif
   if(absolute) {
-    path_realpath(arg, sa, 1, &cwd);
+    path_realpath(arg, sa, 0, &cwd);
 #ifdef DEBUG_OUTPUT
     buffer_putsflush(buffer_2, "path_realpath");
 #endif
@@ -95,7 +95,7 @@ pathtool(const char* arg, stralloc* sa) {
   buffer_putsa(buffer_2, sa);
   buffer_putnlflush(buffer_2);
 #endif
-  
+
   stralloc_nul(sa);
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
@@ -223,7 +223,7 @@ main(int argc, char* argv[]) {
       default: usage(argv[0]); return 1;
     }
   }
- 
+
   stralloc_init(&tmp);
   path_getcwd(&tmp);
   stralloc_nul(&tmp);

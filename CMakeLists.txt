@@ -222,8 +222,10 @@ endif()
 
 #check_type_size(loff_t LOFF_T)
 #check_type_size(lloff_t LLOFF_T)
-check_type_size(off64_t OFF64_T)
-check_type_size(socklen_t SOCKLEN_T)
+check_type_size(off64_t SIZEOF_OFF64_T)
+check_type_size(socklen_t SIZEOF_SOCKLEN_T)
+check_type_size(size_t SIZEOF_SIZE_T)
+check_type_size(long SIZEOF_LONG)
 
 if(NOT SOCKLEN_T)
 #  add_definitions(-Dsocklen_t=int)

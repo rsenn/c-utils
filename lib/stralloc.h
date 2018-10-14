@@ -235,3 +235,5 @@ int stralloc_prepend(stralloc* sa, const stralloc* other);
 #endif
 unsigned int stralloc_ends(const stralloc* sa, const stralloc* suffix);
 int stralloc_expand(stralloc* sa);
+int stralloc_catwcb(stralloc* sa, const wchar_t* buf, size_t len);
+int stralloc_catwcs(stralloc* sa, const wchar_t* buf);

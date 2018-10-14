@@ -79,3 +79,14 @@
 /* Define this if you have the readdir() function */
 #cmakedefine HAVE_READDIR_FUNC 1
 
+/* size of the `off64_t' type */
+#define SIZEOF_OFF64_T @SIZEOF_OFF64_T@
+
+/* size of the `socklen_t' type */
+#define SIZEOF_SOCKLEN_T @SIZEOF_SOCKLEN_T@
+
+/* size of the `size_t' type */
+#define SIZEOF_SIZE_T @SIZEOF_SIZE_T@
+
+/* size of the `long' type */
+#define SIZEOF_LONG @SIZEOF_LONG@

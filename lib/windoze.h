@@ -29,10 +29,14 @@ typedef SIZE_T size_t;
 #define __ssize_t_defined 1
 #define _SSIZE_T_DECLARED 1
 #define _SSIZE_T_DEFINED 1
-#ifdef _WIN64
+#ifdef _MSC_VER
+typedef SSIZE_T ssize_t;
+#elif defined(_WIN64)
 typedef __int64 ssize_t;
 #elif defined(_WIN32)
 typedef __int32 ssize_t;
+#else
+typedef _ssize_t ssize_t;
 #endif
 #endif
 
