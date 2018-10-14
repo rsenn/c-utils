@@ -13,10 +13,47 @@ No known patent problems.
 
 #if WINDOWS_NATIVE
 
+#ifdef _MSC_VER
 int
-env_put(const char* name, const char* value) {
+env_put2(const char* name, const char* value) {
   return !!_putenv_s(name, value);
 }
+
+int
+env_put(const char* s) {
+  size_t namelen = str_chr(s, '=');
+  char *name, *value;
+  int ret;
+  if(s[namelen] == '\0') return 0;
+  value = &s[namelen+1];
+  name = str_ndup(s, namelen);
+  ret = env_put2(name, value);
+  free(name);
+  return ret;
+}
+#else
+	
+int
+env_put(const char* s) {
+	return !putenv(s);
+}
+
+int
+env_put2(const char* name, const char* value) {
+	size_t len = str_len(name) + str_len(value) + 2;
+	char* tmp;
+	int ret = 0;
+	if((tmp =  malloc(len))) {
+		str_copy(tmp, name);
+		str_cat(tmp, "=");
+		str_cat(tmp, value);
+		ret = env_put(tmp);
+		free(tmp);
+	}
+	return ret;
+}
+
+#endif
 
 #else
 static size_t env_isinit = 0; /* if env_isinit: */
@@ -105,7 +142,7 @@ env_add(char* s) {
   return 1;
 }
 
-size_t
+int
 env_put(const char* s) {
   char* u;
   if(!env_isinit) {
@@ -121,7 +158,7 @@ env_put(const char* s) {
   return 1;
 }
 
-size_t
+int
 env_putb(const char* s, const char* t, size_t n) {
   char* u;
   size_t slen;
@@ -143,7 +180,7 @@ env_putb(const char* s, const char* t, size_t n) {
   return 1;
 }
 
-size_t
+int
 env_put2(const char* s, const char* t) {
   return env_putb(s, t, str_len(t));
 }

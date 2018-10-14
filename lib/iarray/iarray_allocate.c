@@ -10,9 +10,13 @@
 #ifdef __dietlibc__
 # include <sys/atomic.h>
 #elif WINDOWS
-# define __CAS(ptr,oldval,newval) InterlockedCompareExchange(ptr,newval,oldval)
+# define __CAS(val,oldval,newval) InterlockedCompareExchange(val,newval,oldval)
+# define __CAS_PTR(ptr,oldptr,newptr) InterlockedCompareExchangePointer(ptr,newptr,oldptr)
+#elif defined(__GNUC__)
+# define __CAS(val,oldval,newval) __sync_val_compare_and_swap(val,oldval,newval)
+# define __CAS_PTR(ptr,oldptr,newptr) __sync_ptr_compare_and_swap(ptr,oldptr,newptr)
 #else
-# define __CAS(ptr,oldval,newval) __sync_val_compare_and_swap(ptr,oldval,newval)
+# warning No atomic operations
 #endif
 
 static iarray_page*
@@ -48,7 +52,7 @@ iarray_allocate(iarray* ia, size_t pos) {
     if(!*p) {
       if(!newpage)
         if(!(newpage = new_page(ia->bytesperpage))) return 0;
-      if(__CAS(p, 0, newpage) == 0) newpage = 0;
+      if(__CAS_PTR(p, 0, newpage) == 0) newpage = 0;
     }
     if(index + ia->elemperpage > pos) break;
     p = &(*p)->next;
@@ -61,7 +65,7 @@ iarray_allocate(iarray* ia, size_t pos) {
 #endif
   {
     size_t l;
-    do { l = __CAS(&ia->len, prevlen, realpos); } while(l < realpos);
+    do { l = __CAS_PTR(&ia->len, prevlen, realpos); } while(l < realpos);
   }
-  return &(*p)->data[(pos - index) * ia->elemsize];
+  return &iarray_data(*p)[(pos - index) * ia->elemsize];
 }

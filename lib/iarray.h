@@ -21,6 +21,12 @@
 extern "C" {
 #endif
 
+#ifdef __BORLANDC__
+#define iarray_data(page) ((char*)(page)+sizeof(iarray_page*))
+#else
+#define iarray_data(page) (page)->data
+#endif
+
 /* The basic data structure is a static array of pointers to pages.
  * Each page also contains a next pointer to form a linked list.
  * To get to element n, you take n % the number of elements in the
@@ -35,12 +41,15 @@ extern "C" {
  */
 typedef struct _iarray_page {
   struct _iarray_page* next;
+#ifndef __BORLANDC__
   char data[0];
+#endif
 } iarray_page;
 
 typedef struct {
   iarray_page* pages[16];
-  size_t elemsize,elemperpage,bytesperpage,len;
+  size_t elemsize,elemperpage,bytesperpage;
+  volatile unsigned long len;
 } iarray;
 
 void iarray_init(iarray* ia,size_t elemsize);

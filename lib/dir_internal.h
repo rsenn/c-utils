@@ -28,12 +28,6 @@
 #include <limits.h>
 #endif
 
-#ifdef __MSYS__
-#define intptr_t __PTRDIFF_TYPE__
-#elif defined(__BORLANDC__)
-#define intptr_t size_t
-#endif
-
 //#include <stddef.h>
 #include <limits.h>
 #include <stdlib.h>

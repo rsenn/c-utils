@@ -8,7 +8,9 @@ fmt_8long(char* dest, unsigned long i) {
   if(dest)
     for(tmp = i, dest += len;;) {
       *--dest = (char)((tmp & 7) + '0');
-      if(!(tmp >>= 3)) { break; };
+      if(!(tmp >>= 3)) {
+        break;
+      };
     }
   return len;
 }

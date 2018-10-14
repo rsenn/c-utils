@@ -16,30 +16,14 @@ fmt_escapecharc(char* dest, uint32 ch) {
   char c;
   if(ch > 0xff) return 0;
   switch(ch) {
-    case '\a':
-      c = 'a';
-      goto doescape;
-    case '\b':
-      c = 'b';
-      goto doescape;
-    case 0x1b:
-      c = 'e';
-      goto doescape;
-    case '\f':
-      c = 'f';
-      goto doescape;
-    case '\n':
-      c = 'n';
-      goto doescape;
-    case '\r':
-      c = 'r';
-      goto doescape;
-    case '\t':
-      c = 't';
-      goto doescape;
-    case '\v':
-      c = 'v';
-      goto doescape;
+    case '\a': c = 'a'; goto doescape;
+    case '\b': c = 'b'; goto doescape;
+    case 0x1b: c = 'e'; goto doescape;
+    case '\f': c = 'f'; goto doescape;
+    case '\n': c = 'n'; goto doescape;
+    case '\r': c = 'r'; goto doescape;
+    case '\t': c = 't'; goto doescape;
+    case '\v': c = 'v'; goto doescape;
     case '\\':
       c = '\\';
     doescape:

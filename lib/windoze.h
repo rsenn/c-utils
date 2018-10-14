@@ -40,8 +40,6 @@ typedef _ssize_t ssize_t;
 #endif
 #endif
 
-typedef int socklen_t;
-
 #if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
 inline static size_t
 getpagesize() {

@@ -3,13 +3,12 @@
 #define FMT_H
 
 /* for size_t: */
-//#include <stddef.h>
-/* for uint32 */
-#if defined(__MSYS__)
-typedef __SIZE_TYPE__ size_t;
-#elif !defined(_MSC_VER)
+#include <stddef.h>
+
+#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
+#include <inttypes.h>
 #include <stdint.h>
-#endif /* !defined(_MSC_VER) */
+#endif
 
 /* for time_t: */
 #include <sys/types.h>
@@ -21,11 +20,24 @@ typedef __SIZE_TYPE__ size_t;
 extern "C" {
 #endif
 
-#define FMT_LONG  41 /* enough space to hold -2^127 in decimal, plus \0 */
-#define FMT_ULONG 40 /* enough space to hold 2^128 - 1 in decimal, plus \0 */
-#define FMT_8LONG 44 /* enough space to hold 2^128 - 1 in octal, plus \0 */
-#define FMT_XLONG 33 /* enough space to hold 2^128 - 1 in hexadecimal, plus \0 */
-#define FMT_LEN ((char *) 0) /* convenient abbreviation */
+/*#if WINDOWS && !defined(__size_t_defined) && !defined(_SIZE_T_DECLARED) && !defined(_SIZE_T_DEFINED) &&
+!defined(__DEFINED_size_t) && !defined(__dietlibc__)
+#define __size_t_defined 1
+#define _SIZE_T_DECLARED 1
+#define _SIZE_T_DEFINED 1
+#ifdef _WIN32
+typedef unsigned __int32 size_t;
+#endif
+#ifdef _WIN64
+typedef unsigned __int64 size_t;
+#endif
+#endif*/
+
+#define FMT_LONG 41        /* enough space to hold -2^127 in decimal, plus \0 */
+#define FMT_ULONG 40       /* enough space to hold 2^128 - 1 in decimal, plus \0 */
+#define FMT_8LONG 44       /* enough space to hold 2^128 - 1 in octal, plus \0 */
+#define FMT_XLONG 33       /* enough space to hold 2^128 - 1 in hexadecimal, plus \0 */
+#define FMT_LEN ((char*)0) /* convenient abbreviation */
 
 /* The formatting routines do not append \0!
  * Use them like this: buf[fmt_ulong(buf, number)] = 0; */
@@ -46,10 +58,6 @@ size_t fmt_xlong(char* dest, unsigned long src);
  * If dest is not NULL, write result to dest */
 size_t fmt_8long(char* dest, unsigned long src);
 
-size_t fmt_longlong(char* dest, signed long long src);
-size_t fmt_ulonglong(char* dest, unsigned long long src);
-size_t fmt_xlonglong(char* dest, unsigned long long src);
-
 #define fmt_uint(dest, src) fmt_ulong(dest, src)
 #define fmt_int(dest, src) fmt_long(dest, src)
 #define fmt_xint(dest, src) fmt_xlong(dest, src)
@@ -57,7 +65,7 @@ size_t fmt_xlonglong(char* dest, unsigned long long src);
 
 /* Like fmt_ulong, but prepend '0' while length is smaller than padto.
  * Does not truncate! */
-size_t fmt_ulong0(char *, unsigned long src, size_t padto);
+size_t fmt_ulong0(char*, unsigned long src, size_t padto);
 
 #define fmt_uint0(buf, src, padto) fmt_ulong0(buf, src, padto)
 
@@ -94,47 +102,72 @@ size_t fmt_pad(char* dest, const char* src, size_t srclen, size_t padlen, size_t
 size_t fmt_fill(char* dest, size_t srclen, size_t padlen, size_t maxlen);
 
 /* 1 -> "1", 4900 -> "4.9k", 2300000 -> "2.3M" */
-size_t fmt_human(char* dest, unsigned long long l);
+size_t fmt_human(char* dest, uint64 l);
 
 /* 1 -> "1", 4900 -> "4.8k", 2300000 -> "2.2M" */
-size_t fmt_humank(char* dest, unsigned long long l);
+size_t fmt_humank(char* dest, uint64 l);
 
 /* "Sun, 06 Nov 1994 08:49:37 GMT" */
 size_t fmt_httpdate(char* dest, time_t t);
 
 #define FMT_UTF8 5
 #define FMT_ASN1LENGTH 17 /* enough space to hold 2^128 - 1 */
-#define FMT_ASN1TAG 19 /* enough space to hold 2^128 - 1 */
+#define FMT_ASN1TAG 19    /* enough space to hold 2^128 - 1 */
 /* some variable length encodings for integers */
-size_t fmt_utf8(char* dest, uint32 n);  /* can store 0 - 0x7fffffff */
-size_t fmt_asn1derlength(char* dest, unsigned long long l);  /* 0 - 0x7f: 1 byte, above that 1 + bytes_needed bytes */
-size_t fmt_asn1dertag(char* dest, unsigned long long l);  /* 1 byte for each 7 bits; upper bit = more bytes coming */
+size_t fmt_utf8(char* dest, uint32 n);                      /* can store 0 - 0x7fffffff */
+size_t fmt_asn1derlength(char* dest, uint64 l); /* 0 - 0x7f: 1 byte, above that 1 + bytes_needed bytes */
+size_t fmt_asn1dertag(char* dest, uint64 l);    /* 1 byte for each 7 bits; upper bit = more bytes coming */
 
 /* internal functions, may be independently useful */
 char fmt_tohex(char c);
 
-#define fmt_strm(b, ...) fmt_strm_internal(b, __VA_ARGS__, (char *)0)
+#ifdef __BORLANDC__
+#define fmt_strm(b, args) fmt_strm_internal(b, args, (char*)0)
+#else
+#define fmt_strm(b, ...) fmt_strm_internal(b, __VA_ARGS__, (char*)0)
+#endif
+
 size_t fmt_strm_internal(char* dest, ...);
 
 #ifndef MAX_ALLOCA
 #define MAX_ALLOCA 100000
 #endif
-#define fmt_strm_alloca(a, ...) ({ size_t len = fmt_strm((char *)0, a,__VA_ARGS__) + 1; char* c = (len<MAX_ALLOCA?alloca(len):0); if(c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; c;})
+
+#ifdef __BORLANDC__
+#define fmt_strm_alloca(a, args)                                                                                        \
+  ({                                                                                                                   \
+    size_t len = fmt_strm((char*)0, a, args) + 1;                                                               \
+    char* c = (len < MAX_ALLOCA ? alloca(len) : 0);                                                                    \
+    if(c) c[fmt_strm(c, a, args)] = 0;                                                                          \
+    c;                                                                                                                 \
+  })
+#else
+#define fmt_strm_alloca(a, ...)                                                                                        \
+  ({                                                                                                                   \
+    size_t len = fmt_strm((char*)0, a, __VA_ARGS__) + 1;                                                               \
+    char* c = (len < MAX_ALLOCA ? alloca(len) : 0);                                                                    \
+    if(c) c[fmt_strm(c, a, __VA_ARGS__)] = 0;                                                                          \
+    c;                                                                                                                 \
+  })
+#endif
 
 size_t fmt_uint64(char* dest, uint64 i);
+size_t fmt_int64(char* dest, int64 i);
+size_t fmt_xint64(char* dest, uint64 x);
+size_t fmt_octal(char* dest, uint64 o);
 
-size_t fmt_escapecharquotedprintable(char *dest, unsigned int ch);
-size_t fmt_escapecharquotedprintableutf8(char *dest, unsigned int ch);
+size_t fmt_escapecharquotedprintable(char* dest, unsigned int ch);
+size_t fmt_escapecharquotedprintableutf8(char* dest, unsigned int ch);
 
-unsigned int fmt_hexb(void *out, const void *d, unsigned int len);
-size_t fmt_xmlescape(char *dest, unsigned int ch);
-size_t fmt_escapecharc(char *dest, unsigned int ch);
+unsigned int fmt_hexb(void* out, const void* d, unsigned int len);
+size_t fmt_xmlescape(char* dest, unsigned int ch);
+size_t fmt_escapecharc(char* dest, unsigned int ch);
 
-size_t fmt_escapecharshell(char *dest, uint32 ch);
+size_t fmt_escapecharshell(char* dest, uint32 ch);
 char fmt_tohex(char c);
-size_t fmt_repeat(char *dest, const char *src, int n);
+size_t fmt_repeat(char* dest, const char* src, int n);
 
-size_t       fmt_escapecharxml(char*, unsigned int ch);
+size_t fmt_escapecharxml(char*, unsigned int ch);
 #ifdef __cplusplus
 }
 #endif

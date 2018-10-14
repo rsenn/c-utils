@@ -1,8 +1,8 @@
 CC = bcc32c
 CCLD = $(CC)
 LIB = tlib
-CFLAGS = -O
-DEFS = -DHAVE_ERRNO_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_LINUX_LIMITS_H=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDINT_H=1 -DHAVE_SYS_FCNTL_H=1
+CFLAGS = -v -O -O1 -d -dc
+DEFS = -DHAVE_ERRNO_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDINT_H=1 -DHAVE_SYS_FCNTL_H=1
 CPPFLAGS = 
 COMPILE = $(CC) $(CFLAGS) $(DEFS) $(CPPFLAGS) -c
 LIBS = build\bcc32\Debug\array.lib build\bcc32\Debug\binfmt.lib build\bcc32\Debug\buffer.lib build\bcc32\Debug\byte.lib build\bcc32\Debug\case.lib build\bcc32\Debug\cb.lib build\bcc32\Debug\cbmap.lib build\bcc32\Debug\charbuf.lib build\bcc32\Debug\dir.lib build\bcc32\Debug\dns.lib build\bcc32\Debug\elf.lib build\bcc32\Debug\env.lib build\bcc32\Debug\errmsg.lib build\bcc32\Debug\expand.lib build\bcc32\Debug\fmt.lib build\bcc32\Debug\gpio.lib build\bcc32\Debug\hmap.lib build\bcc32\Debug\http.lib build\bcc32\Debug\iarray.lib build\bcc32\Debug\io.lib build\bcc32\Debug\json.lib build\bcc32\Debug\list.lib build\bcc32\Debug\map.lib build\bcc32\Debug\mmap.lib build\bcc32\Debug\ndelay.lib build\bcc32\Debug\open.lib build\bcc32\Debug\path.lib build\bcc32\Debug\pe.lib build\bcc32\Debug\playlist.lib build\bcc32\Debug\rdir.lib build\bcc32\Debug\scan.lib build\bcc32\Debug\sig.lib build\bcc32\Debug\slist.lib build\bcc32\Debug\socket.lib build\bcc32\Debug\str.lib build\bcc32\Debug\stralloc.lib build\bcc32\Debug\strarray.lib build\bcc32\Debug\strlist.lib build\bcc32\Debug\tai.lib build\bcc32\Debug\taia.lib build\bcc32\Debug\textbuf.lib build\bcc32\Debug\uint16.lib build\bcc32\Debug\uint32.lib build\bcc32\Debug\uint64.lib build\bcc32\Debug\var.lib build\bcc32\Debug\vartab.lib $(LIBS)

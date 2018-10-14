@@ -73,15 +73,17 @@ endif(MSVC)
 if(MSVC)
 add_definitions(-wd4706)
 else(MSVC)
-add_definitions( -g  )
+  if(CMAKE_COMPILER_IS_GNUCC OR GNU)
+    add_definitions( -g  )
+  endif(CMAKE_COMPILER_IS_GNUCC OR GNU)
 endif(MSVC)
 
 
 set(CMAKE_C_FLAGS_DEBUG "-Wall -DDEBUG ${CMAKE_C_FLAGS_DEBUG}")
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT BORLAND)
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 ${CMAKE_C_FLAGS_DEBUG}")
-endif(NOT MSVC)
+endif(NOT MSVC AND NOT BORLAND)
 #set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O0 -Wall")
 
 CHECK_C_COMPILER_FLAG("-ggdb" C_COMPILER_SUPPORTS_GGDB)
@@ -101,16 +103,16 @@ if(C_COMPILER_SUPPORTS_GGDB)
   set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -ggdb")
 endif(C_COMPILER_SUPPORTS_GGDB)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
+#set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -DDEBUG")
 #set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O0 -Wall")
 
-CHECK_CXX_COMPILER_FLAG("-ggdb" CXX_COMPILER_SUPPORTS_GGDB)
-
-if(CXX_COMPILER_SUPPORTS_GGDB)
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -ggdb")
-endif(CXX_COMPILER_SUPPORTS_GGDB)
-
+#CHECK_CXX_COMPILER_FLAG("-ggdb" CXX_COMPILER_SUPPORTS_GGDB)
+#
+#if(CXX_COMPILER_SUPPORTS_GGDB)
+#  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb")
+#  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -ggdb")
+#endif(CXX_COMPILER_SUPPORTS_GGDB)
+#
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules")
 
@@ -222,10 +224,22 @@ endif()
 
 #check_type_size(loff_t LOFF_T)
 #check_type_size(lloff_t LLOFF_T)
-check_type_size(off64_t SIZEOF_OFF64_T)
-check_type_size(socklen_t SIZEOF_SOCKLEN_T)
-check_type_size(size_t SIZEOF_SIZE_T)
-check_type_size(long SIZEOF_LONG)
+
+
+function(check_type NAME VAR)
+  check_type_size("${NAME}" SIZEOF_${VAR})
+  if(SIZEOF_${VAR} GREATER 0)
+    set(HAVE_${VAR}_TYPE 1)
+  elseif(SIZEOF_${VAR} GREATER 0)
+    set(HAVE_${VAR}_TYPE 0)
+  endif(SIZEOF_${VAR} GREATER 0)
+endfunction(check_type NAME)
+
+check_type("off64_t" OFF64_T)
+check_type("socklen_t" SOCKLEN_T)
+check_type("size_t" SIZE_T)
+check_type("long" LONG)
+check_type("long long" LONG_LONG)
 
 if(NOT SOCKLEN_T)
 #  add_definitions(-Dsocklen_t=int)
@@ -239,6 +253,7 @@ foreach(FUNC posix_memalign aligned_alloc _aligned_malloc alloca fnmatch inet_pt
     add_definitions(-D${DEF}=1)
   endif()
 endforeach()
+
 
 function(check_fn NAME)
   string(TOUPPER "HAVE_${NAME}" HAVE_${NAME}_VAR)
@@ -451,11 +466,11 @@ set(CXXPROGRAMS #kbd-adjacency
 
 if(MSVC)
 #  add_definitions(-Dinline=__force_inline)
-  add_definitions(/DINLINE=__inline)
+  add_definitions(/Dinline=__inline)
   add_definitions(/wo4005)
   add_definitions(/W0)
 else()
-  add_definitions(-DINLINE=inline)
+  add_definitions(-Dinline=__inline)
 endif()
 
 if(CXX11)

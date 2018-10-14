@@ -2,11 +2,13 @@
 #ifndef UINT16_H
 #define UINT16_H
 
-#if !defined(_MSC_VER) && !defined(__MSYS__)
-#if !defined(__CYGWIN__)
+#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
 #include <inttypes.h>
-#endif
 #include <stdint.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 #ifdef __MSYS__
@@ -20,14 +22,10 @@
 # endif
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #include <windows.h>
 #define uint16_t UINT16
 #define int16_t INT16
-#endif
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
 typedef uint16_t uint16;

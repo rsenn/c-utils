@@ -18,9 +18,9 @@ size_t      env_len(const char* const* e);
 int         env_make(const char** v, size_t argc, const char* s, size_t len);
 size_t      env_merge(const char** v, size_t vmax, const char* const* envp, size_t envlen, const char* modifs, size_t modiflen);
 char*       env_pick(void);
-size_t      env_put2(const char* s, const char* t);
-size_t      env_putb(const char* s, const char* t, size_t n);
-size_t      env_put(const char* s);
+int         env_put2(const char* s, const char* t);
+int         env_putb(const char* s, const char* t, size_t n);
+int         env_put(const char* s);
 int         env_set(const char* name, const char* value);
 int         env_unset(const char* name);
 

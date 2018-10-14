@@ -5,7 +5,8 @@
 /* for size_t: */
 #include <stddef.h>
 
-#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
+#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
+#include <inttypes.h>
 #include <stdint.h>
 #endif
 

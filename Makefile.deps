@@ -1830,3 +1830,7 @@ $(BUILDDIR)strarray_transform.o: lib/strarray/strarray_transform.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)dir_path.o: lib/dir/dir_path.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catwcb.o: lib/stralloc/stralloc_catwcb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_catwcs.o: lib/stralloc/stralloc_catwcs.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

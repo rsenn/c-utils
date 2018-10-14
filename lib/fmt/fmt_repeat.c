@@ -1,6 +1,6 @@
 #include "../fmt.h"
-#include "../str.h"
 #include "../byte.h"
+#include "../str.h"
 
 size_t
 fmt_repeat(char* dest, const char* src, int n) {

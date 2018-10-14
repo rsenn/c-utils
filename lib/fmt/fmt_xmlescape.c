@@ -14,9 +14,7 @@ fmt_xmlescape(char* dest, unsigned int ch) {
   this includes all code points in supplementary planes, including
   non-characters.
   */
-  if(ch == 0 || (ch >= 0xd780 && ch <= 0xdfff) || ch == 0xfffe ||
-     ch == 0xffff || ch > 0x10ffff)
-    return 0;
+  if(ch == 0 || (ch >= 0xd780 && ch <= 0xdfff) || ch == 0xfffe || ch == 0xffff || ch > 0x10ffff) return 0;
   if((ch & 0x7f) < 20 && ch != 9 && ch != 0xa && ch != 0xd && ch != 0x85) {
     char buf[6];
     buf[0] = '&';
@@ -27,11 +25,26 @@ fmt_xmlescape(char* dest, unsigned int ch) {
     x = buf;
   } else
     switch(ch) {
-      case '<': x = "&lt;"; n = 4; break;
-      case '>': x = "&gt;"; n = 4; break;
-      case '"': x = "&quot;"; n = 6; break;
-      case '\'': x = "&apos;"; n = 6; break;
-      case '&': x = "&amp;"; n = 5; break;
+      case '<':
+        x = "&lt;";
+        n = 4;
+        break;
+      case '>':
+        x = "&gt;";
+        n = 4;
+        break;
+      case '"':
+        x = "&quot;";
+        n = 6;
+        break;
+      case '\'':
+        x = "&apos;";
+        n = 6;
+        break;
+      case '&':
+        x = "&amp;";
+        n = 5;
+        break;
       default: return fmt_utf8(dest, ch);
     }
   if(dest) {

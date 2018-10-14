@@ -1,6 +1,7 @@
 #include "../fmt.h"
 
-size_t fmt_utf8(char *dest, unsigned int n) {
+size_t
+fmt_utf8(char* dest, unsigned int n) {
   size_t i, j;
   if(n <= 0x7f) {
     if(dest) *dest = (char)n;
@@ -23,4 +24,3 @@ size_t fmt_utf8(char *dest, unsigned int n) {
   /* we were asked to encode a value that cannot be encoded */
   return 0;
 }
-

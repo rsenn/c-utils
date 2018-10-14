@@ -1,14 +1,15 @@
-/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
+	/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
 #ifndef UINT32_H
 #define UINT32_H
 
-#if HAVE_INTTYPES_H
+#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
 #include <inttypes.h>
+#include <stdint.h>
 #endif
 
-#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
-#include <stdint.h>
-#endif /* !defined(_MSC_VER) */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef __MSYS__
 # ifndef __MS_types__
@@ -21,7 +22,7 @@
 # endif
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 # include <windows.h>
 # define uint32_t UINT32
 # define int32_t INT32
@@ -34,10 +35,6 @@ typedef __UINT32_TYPE__ uint32_t;
 #ifndef int32_t
 typedef __INT32_TYPE__ int32_t;
 #endif
-#endif
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
 typedef uint32_t uint32;

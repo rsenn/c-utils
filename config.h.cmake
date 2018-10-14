@@ -81,12 +81,19 @@
 
 /* size of the `off64_t' type */
 #define SIZEOF_OFF64_T @SIZEOF_OFF64_T@
+#cmakedefine HAVE_OFF64_T_TYPE 1
 
 /* size of the `socklen_t' type */
 #define SIZEOF_SOCKLEN_T @SIZEOF_SOCKLEN_T@
+#cmakedefine HAVE_SOCKLEN_T_TYPE 1
 
 /* size of the `size_t' type */
 #define SIZEOF_SIZE_T @SIZEOF_SIZE_T@
+#cmakedefine HAVE_SIZE_T_TYPE 1
 
 /* size of the `long' type */
 #define SIZEOF_LONG @SIZEOF_LONG@
+
+/* size of the `long long' type */
+#define SIZEOF_LONGLONG @SIZEOF_LONGLONG@
+#cmakedefine HAVE_LONGLONG_TYPE 1

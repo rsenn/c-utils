@@ -1,12 +1,12 @@
 #include "../fmt.h"
 
 size_t
-fmt_humank(char* dest, unsigned long long l) {
+fmt_humank(char* dest, uint64 l) {
   char unit;
   size_t i;
   if(l < 1000) return fmt_ulong(dest, l);
-  if(l > 1024 * 1024 * 1024 * 1024ull) {
-    l = (l + (1024 * 1024 * 1024 * 1024ull / 20)) / (1024 * 1024 * 1024 * 1024ull / 10);
+  if(l > 1024 * 1024 * 1024 * 1024) {
+    l = (l + (1024 * 1024 * 1024 * 1024 / 20)) / (1024 * 1024 * 1024 * 1024 / 10);
     unit = 'T';
   } else if(l > 1024 * 1024 * 1024) {
     l = (l + (1024 * 1024 * 1024 / 20)) / (1024 * 1024 * 1024 / 10);

@@ -16,12 +16,15 @@ char mmap_empty[] = {0};
 char*
 mmap_read_fd(fd_t fd, size_t* filesize) {
 #if WINDOWS_NATIVE
-  HANDLE h = _get_osfhandle(fd);
+  HANDLE h = (HANDLE)_get_osfhandle(fd);
   HANDLE m;
   char* map;
   m = CreateFileMapping(h, 0, PAGE_READONLY, 0, 0, NULL);
   map = 0;
-  if(m) map = MapViewOfFile(m, FILE_MAP_READ, 0, 0, 0);
+  if(m) {
+    if((map = MapViewOfFile(m, FILE_MAP_READ, 0, 0, 0)))
+          *filesize = GetFileSize((HANDLE)fd, NULL);
+  }
   CloseHandle(m);
   return map;
 #else

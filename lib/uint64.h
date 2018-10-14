@@ -2,12 +2,14 @@
 #ifndef UINT64_H
 #define UINT64_H
 
-#if !defined(_MSC_VER) && !defined(__MSYS__)
-#if !defined(__CYGWIN__)
+#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
 #include <inttypes.h>
 #include <stdint.h>
 #endif
-#endif /* !defined(_MSC_VER) */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef __MSYS__
 # ifndef __MS_types__
@@ -25,7 +27,7 @@ typedef long long int64_t;
 #endif
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #include <windows.h>
 #define uint64_t UINT64
 #define int64_t INT64
@@ -41,16 +43,12 @@ typedef unsigned __INT64_TYPE__ uint64_t;
 # endif
 # ifndef int64_t
 //#  define int64_t __int64
-#if !defined(_INT64_T_DECLARED) && !defined(__int64_t_defined) && !defined(__int8_t_defined) && !defined(_BITS_STDINT_INTN_H) && (!defined(__dietlibc__) && !defined(_INTTYPES_H))
-#define __int64_t_defined
-#define _INT64_T_DECLARED
+#  if !defined(_INT64_T_DECLARED) && !defined(__int64_t_defined) && !defined(__int8_t_defined) && !defined(_BITS_STDINT_INTN_H) && (!defined(__dietlibc__) && !defined(_INTTYPES_H))
+#   define __int64_t_defined
+#   define _INT64_T_DECLARED
 typedef long long int64_t;
-#endif
+#  endif
 # endif
-#endif
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
 typedef uint64_t uint64;

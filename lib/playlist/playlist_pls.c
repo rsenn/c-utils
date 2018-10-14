@@ -21,7 +21,7 @@ pls_reader(playlist* pl) {
     if(!str_diffn(&line.s[index], "Number", 6)) {
     } else if(line.s[index] == '[') {
     } else if((index2 = str_chr(&line.s[index], '=')) > 0) {
-      size_t trackno = 0;
+      unsigned long trackno = 0;
       index = index2;
       index2++;
       do { index--; } while(isdigit(line.s[index]) && index > 0);
@@ -33,7 +33,7 @@ pls_reader(playlist* pl) {
         stralloc_copys(&entry.title, &line.s[index2]);
         stralloc_0(&entry.title);
       } else if(!str_diffn(&line.s[index], "Length", 6)) {
-        size_t len;
+        unsigned long len;
         scan_ulong(&line.s[index2], &len);
         entry.length = len;
       }

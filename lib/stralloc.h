@@ -74,8 +74,13 @@ int stralloc_trunc(stralloc* sa, size_t n);
 /* like stralloc_cats but can cat more than one string at once */
 int stralloc_catm_internal(stralloc* sa, ...);
 
+#ifdef __BORLANDC__
+#define stralloc_catm(sa, args) stralloc_catm_internal(sa, args, (char *)0)
+#define stralloc_copym(sa, args) (stralloc_zero(sa), stralloc_catm_internal(sa, args, (char *)0))
+#else
 #define stralloc_catm(sa, ...) stralloc_catm_internal(sa, __VA_ARGS__, (char *)0)
 #define stralloc_copym(sa, ...) (stralloc_zero(sa), stralloc_catm_internal(sa, __VA_ARGS__, (char *)0))
+#endif
 
 /* stralloc_cat is analogous to stralloc_copy */
 int stralloc_cat(stralloc* sa, const stralloc* in);

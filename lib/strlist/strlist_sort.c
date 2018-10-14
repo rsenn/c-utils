@@ -2,6 +2,9 @@
 #include "../strlist.h"
 #include <string.h>
 
+
+typedef int (cmp_fn_t)(const void *, const void *);
+
 size_t
 strlist_sort(strlist* sl) {
   size_t p, l = 0;
@@ -19,7 +22,7 @@ strlist_sort(strlist* sl) {
     p += len;
   }
 
-  qsort(ptrs, l, sizeof(char*), &strcmp);
+  qsort(ptrs, l, sizeof(char*), (cmp_fn_t*)&strcmp);
   stralloc_init(&sl->sa);
 
  for(p = 0; p < l; ++p) {
