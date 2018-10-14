@@ -81,7 +81,7 @@ http_readable(http* h) {
     for(;;) {
       char line[1024];
       size_t sptr = r->ptr;
-      ret = buffer_getline(&recvb, line, sizeof(line));
+      ret = buffer_getline(&recvb, line, sizeof(line)-1);
 
       if(ret == 0 && line[0] == '\0') {
         //   putline("Again", line, 0, &recvb);
@@ -98,7 +98,7 @@ http_readable(http* h) {
         while(ret > 0 && is_space(line[ret - 1])) ret--;
         line[ret] = '\0';
 
-        if(r->status < HTTP_RECV_DATA && line[str_chr(line, ':')] == ':') {
+        if(r->status < HTTP_RECV_DATA && str_chr(line, ':') < ret) {
           /*  if(r->status == HTTP_RECV_HEADER)*/ putline("Header", line, ret, &recvb);
           r->status = HTTP_RECV_HEADER;
 
@@ -121,8 +121,7 @@ http_readable(http* h) {
             putline("Boundary", r->data.s, r->data.len, &recvb);
           }
         } else if(r->status == HTTP_RECV_DATA && (p = scan_xlong(line, &n)) > 0) {
-          ssize_t n;
-
+          
           if(n == 0) {
             r->status = HTTP_STATUS_FINISH;
             return;
@@ -139,7 +138,7 @@ http_readable(http* h) {
             return; /* goto again; */
           }
           n = buffer_getline(&recvb, line, sizeof(line));
-          //putline("Newline", "", -n, &recvb);
+          // putline("Newline", "", -n, &recvb);
           if(recvb.n - recvb.p <= 0) return;
           continue;
         }

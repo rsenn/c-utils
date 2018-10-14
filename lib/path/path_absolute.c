@@ -1,5 +1,6 @@
 #include "../windoze.h"
 #include "../path.h"
+#include "../str.h"
 #include <ctype.h>
 
 int

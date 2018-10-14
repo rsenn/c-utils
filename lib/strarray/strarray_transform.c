@@ -1,6 +1,7 @@
 #include "../str.h"
 #include "../stralloc.h"
 #include "../strarray.h"
+#include <stdlib.h>
 
 int
 strarray_transform(strarray* arr, char* (*pred)(const char*)) {

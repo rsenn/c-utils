@@ -1,13 +1,13 @@
 #include "../buffer.h"
 #include "../byte.h"
+#include "../dns.h"
+#include "../errmsg.h"
 #include "../http.h"
 #include "../io.h"
 #include "../io_internal.h"
 #include "../ip4.h"
 #include "../socket.h"
 #include "../str.h"
-#include "../dns.h"
-#include "../errmsg.h"
 
 #include <errno.h>
 #include <stdlib.h>
@@ -31,7 +31,6 @@ http_get(http* h, const char* location) {
   a = (void*)dns.s;
 
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
-
 
   buffer_putsa(buffer_2, &h->host);
   buffer_puts(buffer_2, " (");
