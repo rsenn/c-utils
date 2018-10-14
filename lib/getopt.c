@@ -96,7 +96,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
             if(strncmp(spec_long, longopts->name, spec_len) == 0) {
               if(optdef != 0) {
                 if(opterr) {
-                  buffer_putm(buffer_2, "ambiguous option: ", spec_long);
+                  buffer_putm_2(buffer_2, "ambiguous option: ", spec_long);
 				               buffer_putnlflush(buffer_2);
 
                 }
@@ -110,7 +110,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
           }
           if(optdef == 0) {
             if(opterr) {
-              buffer_putm(buffer_2, 
+              buffer_putm_2(buffer_2, 
               "no such a option: ", spec_long);
              buffer_putnlflush(buffer_2);
             }
@@ -121,7 +121,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
               optarg = 0;
               if(pos_eq != 0) {
                 if(opterr) {
-                  buffer_putm(buffer_2, "no argument for ", optdef->name);
+                  buffer_putm_2(buffer_2, "no argument for ", optdef->name);
 				      buffer_putnlflush(buffer_2);
                 }
                 return '?';
@@ -154,7 +154,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
     if(optptr == NULL) {
       optopt = c;
       if(opterr) {
-        buffer_putm(buffer_2, argv[0], ": invalid option -- ");
+        buffer_putm_2(buffer_2, argv[0], ": invalid option -- ");
 		buffer_putc(buffer_2, c);
 		buffer_putnlflush(buffer_2);
       }
@@ -179,7 +179,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
         } else {
           optopt = c;
           if(opterr) {
-            buffer_putm(buffer_2, argv[0], ": option requires an argument -- ");
+            buffer_putm_2(buffer_2, argv[0], ": option requires an argument -- ");
 				buffer_putc(buffer_2, c);
 		buffer_putnlflush(buffer_2);
           }

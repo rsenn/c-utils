@@ -16,11 +16,11 @@ void pe_dump_sections(uint8* base);
 void
 pe_print_data_directory(buffer* b, uint8* base, pe_data_directory* data_dir) {
   buffer_puts(b, "virtual_address: 0x");
-  buffer_putxlonglong0(b,
+  buffer_putxint640(b,
                        pe_rva2ptr(base, uint32_get(&data_dir->virtual_address)),
                        sizeof(data_dir->virtual_address) * 2);
   buffer_puts(b, " size: 0x");
-  buffer_putxlonglong0(b, uint32_get(&data_dir->size), sizeof(data_dir->size) * 2);
+  buffer_putxint640(b, uint32_get(&data_dir->size), sizeof(data_dir->size) * 2);
   buffer_putnlflush(b);
 }
 
@@ -255,7 +255,7 @@ main(int argc, char** argv) {
 
       mmap_unmap(base, filesize);
     } else {
-      buffer_putm(buffer_2, "ERROR: No such file or directory '", argv[optind], "'");
+      buffer_putm_3(buffer_2, "ERROR: No such file or directory '", argv[optind], "'");
       buffer_putnlflush(buffer_2);
       return 127;
     }
@@ -283,13 +283,13 @@ pe_dump_sections(uint8* base) {
   for(i = 0; i < n; i++) {
     buffer_putspad(buffer_1, sections[i].name, 16);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
+    buffer_putxint640(buffer_1, uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, uint32_get(&sections[i].virtual_address), sizeof(sections[i].virtual_address) * 2);
+    buffer_putxint640(buffer_1, uint32_get(&sections[i].virtual_address), sizeof(sections[i].virtual_address) * 2);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
+    buffer_putxint640(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1,
+    buffer_putxint640(buffer_1,
                          uint32_get(&sections[i].pointer_to_raw_data),
                          sizeof(sections[i].pointer_to_raw_data) * 2);
     buffer_putnlflush(buffer_1);

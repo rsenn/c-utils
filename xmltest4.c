@@ -210,7 +210,7 @@ get_entry(cbmap_t map, const char* k) {
  */
 void
 print_name_value(buffer* b, const char* name, const char* v) {
-  buffer_putm(b, name, ": ", v ? v : "(null)");
+  buffer_putm_3(b, name, ": ", v ? v : "(null)");
 }
 
 int
@@ -562,7 +562,7 @@ dump_net(const void* k, size_t ksz, const void* v, size_t vsz, void* u) {
  */
 void
 node_print(xmlnode* node) {
-  buffer_putm(buffer_1, "<", node->name);
+  buffer_putm_2(buffer_1, "<", node->name);
   print_element_attrs(node);
   buffer_putm(buffer_1, ">");
   buffer_putnlflush(buffer_1);
@@ -623,9 +623,9 @@ print_element_name(xmlnode* a_node) {
   if(!(name = a_node->name)) return;
 
   if(str_diff(name, "eagle") && str_diff(name, "drawing")) {
-    buffer_putm(buffer_1, a_node->parent ? "/" : "", name);
+    buffer_putm_2(buffer_1, a_node->parent ? "/" : "", name);
     if(!(name = xml_get_attribute(a_node, "name"))) return;
-    if(str_len(name)) buffer_putm(buffer_1, "[@name='", name, "']");
+    if(str_len(name)) buffer_putm_3(buffer_1, "[@name='", name, "']");
   }
 }
 
@@ -639,7 +639,7 @@ print_attrs(xmlnode* node) {
   for(a = xml_attributes(node); a; a = a->next) {
     char* v = a->vals.val_chars;
     const char* quot = str_isdoublenum(v) ? "" : "\"";
-    buffer_putm(buffer_1, " ", a->key_len, "=", quot, v, quot);
+    buffer_putm_6(buffer_1, " ", a->key_len, "=", quot, v, quot);
   }
 }
 
@@ -737,8 +737,8 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
   size_t i, n;
   xml_predicate_fn* pred;
   xmlnodeset xr;
-  buffer_putm(buffer_1, "XML query (element=", elem_name);
-  if(name) buffer_putm(buffer_1, ", name=", name);
+  buffer_putm_2(buffer_1, "XML query (element=", elem_name);
+  if(name) buffer_putm_3(buffer_1, ", name=", name);
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
   pred = name ? (void*)xml_match_name_and_attr : (void*)xml_match_name;

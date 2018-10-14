@@ -41,7 +41,7 @@ size_t scan_long(const char* src, signed long* dest);
 size_t scan_int64(const char* src, int64* dest);
 size_t scan_uint64(const char* src, uint64* dest);
 size_t scan_xint64(const char* src, uint64* dest);
-size_t scan_8int64(const char* src, uint64* dest);
+size_t scan_octal(const char* src, uint64* dest);
 
 size_t scan_uint(const char* src, unsigned int* dest);
 size_t scan_xint(const char* src, unsigned int* dest);
@@ -94,7 +94,7 @@ size_t scan_asn1dertag(const char* in, size_t len, uint64* n) __pure__;
 int scan_fromhex(unsigned char c);
 
 size_t scan_8long(const char *src, unsigned long *dest);
-size_t scan_8int64(const char *src, uint64 *dest);
+size_t scan_octal(const char *src, uint64 *dest);
 size_t scan_8longn(const char *src, size_t n, unsigned long *dest);
 size_t scan_int(const char *src, int *dest);
 size_t scan_long(const char *src, long *dest);

@@ -60,9 +60,9 @@ array_allocate(array* x, uint64 membersize, int64 pos) {
     if(__unlikely(wanted >= (uint64)x->allocated)) {
       /* round up a little */
       if(membersize < 8)
-        wanted = (wanted + 127) & (-128ll); /* round up to multiple of 128 */
+        wanted = (wanted + 127) & (int64)(-128); /* round up to multiple of 128 */
       else
-        wanted = (wanted + 4095) & (-4096ll); /* round up to 4k pages */
+        wanted = (wanted + 4095) & (int64)(-4096); /* round up to 4k pages */
 
       if(__unlikely(wanted < 128)) return 0; /* overflow during rounding */
 

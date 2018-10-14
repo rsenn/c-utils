@@ -175,8 +175,8 @@ pkg_read(buffer* b, pkg* p) {
       stralloc_nul(&value);
       stralloc_nul(&name);
 #ifdef DEBUG_OUTPUT
-      buffer_putm(buffer_2, "Name: ", name.s, "\n");
-      buffer_putm(buffer_2, "Value: ", value.s, "\n");
+      buffer_putm_3(buffer_2, "Name: ", name.s, "\n");
+      buffer_putm_3(buffer_2, "Value: ", value.s, "\n");
       buffer_flush(buffer_2);
 #endif
 
@@ -209,7 +209,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
 /* wordexp_sa(value, &v); */
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm(buffer_2, "ENV SET ", key, "=");
+  buffer_putm_3(buffer_2, "ENV SET ", key, "=");
   buffer_putsa(buffer_2, &v);
   buffer_putnlflush(buffer_2);
 #endif
@@ -446,7 +446,7 @@ pkg_conf(strarray* modules) {
 
 void
 usage(char* progname) {
-  buffer_putm(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n");
+  buffer_putm_3(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n");
   buffer_puts(buffer_1, "Options\n");
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --cflags                          print required CFLAGS to stdout\n");
@@ -514,7 +514,7 @@ main(int argc, char* argv[]) {
   }
 
 #ifdef PKGCONF_DEBUG
-  buffer_putm(buffer_2, path_basename(argv[0]), ": ");
+  buffer_putm_2(buffer_2, path_basename(argv[0]), ": ");
   buffer_puts(buffer_2, "PKG_CONFIG_PATH is ");
   buffer_putsa(buffer_2, &cmd.path.sa);
   buffer_putnlflush(buffer_2);

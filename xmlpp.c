@@ -26,7 +26,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
         buffer_putnspace(buffer_1, depth * 2);
       }
 
-      buffer_putm(buffer_1, "<", reader->closing ? "/" : "", name->s);
+      buffer_putm_3(buffer_1, "<", reader->closing ? "/" : "", name->s);
 
       if(attrs && hmap_size(*attrs)) {
         buffer_putspace(buffer_1);

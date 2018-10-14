@@ -32,7 +32,7 @@ enum hmap_error_enum {
 
 enum hmap_tuple_type { HMAP_TUPLE_PRIMARY = 0, HMAP_TUPLE_SECONDARY };
 
-enum hmap_data_type {
+typedef enum hmap_data_type {
   HMAP_DATA_TYPE_INT = 0,
   HMAP_DATA_TYPE_UINT,
   HMAP_DATA_TYPE_INT64,

@@ -89,7 +89,7 @@ Written by LRN.");
 
 void
 printhelp(char* argv0) {
-  buffer_putm(buffer_1, "Usage: ", argv0, " [OPTION]... FILE...\n\
+  buffer_putm_3(buffer_1, "Usage: ", argv0, " [OPTION]... FILE...\n\
 OPTIONS:\n\
 --version         Displays version\n\
 -v, --verbose         Does not work\n\
@@ -134,8 +134,8 @@ print_image_links(int first,
       buffer_puts(buffer_1, "] ");
       buffer_putspad(buffer_1, item->name, 16);
       buffer_puts(buffer_1, " (0x");
-      buffer_putxlonglong0(buffer_1, item->address_offset, 8);
-      buffer_putm(buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <");
+      buffer_putxint640(buffer_1, item->address_offset, 8);
+      buffer_putm_3(buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <");
       buffer_putulong(buffer_1, item->section_index);
       buffer_puts(buffer_1, ">");
       buffer_putnlflush(buffer_1);
@@ -156,7 +156,7 @@ print_image_links(int first,
     if(!first) {
       buffer_putsflush(buffer_1, " => not found\n");
     } else {
-      buffer_putm(buffer_2, self->module, ": not found\n");
+      buffer_putm_2(buffer_2, self->module, ": not found\n");
       buffer_flush(buffer_2);
     }
     unresolved = 1;
@@ -165,10 +165,10 @@ print_image_links(int first,
   if(!unresolved && !first) {
     if(str_case_diff(self->module, self->resolved_module) == 0) {
       buffer_puts(buffer_1, " (0x");
-      buffer_putxlonglong0(buffer_1, self->mapped_address, 8);
+      buffer_putxint640(buffer_1, self->mapped_address, 8);
     } else {
-      buffer_putm(buffer_1, " => ", self->resolved_module, " (0x");
-      buffer_putxlonglong0(buffer_1, self->mapped_address, 8);
+      buffer_putm_3(buffer_1, " => ", self->resolved_module, " (0x");
+      buffer_putxint640(buffer_1, self->mapped_address, 8);
     }
     buffer_putsflush(buffer_1, ")\n");
   }
@@ -179,9 +179,9 @@ print_image_links(int first,
 
       buffer_puts(buffer_1, "\t");
       buffer_putnspace(buffer_1, depth * 2);
-      buffer_putxlonglong0(buffer_1, item->orig_address, 8);
+      buffer_putxint640(buffer_1, item->orig_address, 8);
       buffer_putspace(buffer_1);
-      buffer_putxlonglong0(buffer_1, item->address, 8);
+      buffer_putxint640(buffer_1, item->address, 8);
       buffer_putspace(buffer_1);
       buffer_putulong0(buffer_1, item->ordinal, 3);
       buffer_putspace(buffer_1);
@@ -357,7 +357,7 @@ main(int argc, char** argv) {
 
       case 'V': printversion(); break;
       default:
-        buffer_putm(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
+        buffer_putm_4(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
         buffer_putnlflush(buffer_2);
         return 1;
     }
@@ -368,7 +368,7 @@ main(int argc, char** argv) {
   {
     const char* pathenv = getenv("PATH");
 
-    buffer_putm(buffer_2, "PATH=", pathenv);
+    buffer_putm_2(buffer_2, "PATH=", pathenv);
     buffer_putnlflush(buffer_2);
 
     if(pathenv) add_path(&sp, pathenv);
@@ -385,7 +385,7 @@ main(int argc, char** argv) {
 
     for(kidx = 0; keys[kidx]; ++kidx) {
       if(registry_query(keys[kidx], "Path", &rpath)) {
-        buffer_putm(buffer_2, "Registry path [", keys[kidx], "]: ");
+        buffer_putm_3(buffer_2, "Registry path [", keys[kidx], "]: ");
         buffer_putsa(buffer_2, &rpath);
         buffer_putnlflush(buffer_2);
 

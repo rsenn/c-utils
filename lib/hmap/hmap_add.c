@@ -34,7 +34,7 @@ VALIDATE_DB(*hmap_db, key, k_len);
     if(root_tuple->key_len == 0) { /* Reuse record */
       new_tuple = root_tuple;
 
-      HMAP_DUMP("Primary :> ");
+      HMAP_DUMP("Primary :> ", 0, 0);
       HMAP_SET_DATA();
 
       byte_copy(new_tuple->key, k_len, key);
@@ -56,7 +56,7 @@ VALIDATE_DB(*hmap_db, key, k_len);
       if(new_tuple == NULL) {
         return HMAP_ALLOCATED_ERROR;
       }
-      HMAP_DUMP("Secondary :> ");
+      HMAP_DUMP("Secondary :> ", 0, 0);
       HMAP_SET_DATA();
 
       byte_copy(new_tuple->key, k_len, key);

@@ -18,7 +18,7 @@
 #endif
 
 #ifndef DEBUG
-#define printf(...)
+#define printf(args)
 #endif
 
 static unsigned int CBM_DEBUG_ALLOCATIONS = 0;

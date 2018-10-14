@@ -209,7 +209,7 @@ char*
 format_num(time_t num) {
   static char buf[FMT_LONG];
   byte_zero(buf, sizeof(buf));
-  buf[fmt_ulonglong(buf, num)] = '\0';
+  buf[fmt_uint64(buf, num)] = '\0';
   return buf;
 }
 
@@ -361,7 +361,7 @@ match_tokens(char* toks, const char* str) {
   }
 
   if(ret && debug > 1) {
-    buffer_putm(buffer_2, "token list '", toks, "' matched '", str, "'.");
+    buffer_putm_5(buffer_2, "token list '", toks, "' matched '", str, "'.");
     buffer_putnlflush(buffer_2);
   }
 
@@ -454,17 +454,17 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm(b, "Kanal:\t", e->channel.s /*strlist_at(sl, 1)*/, sep);
-  buffer_putm(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep);
-  buffer_putm(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep);
+  buffer_putm_4(b, "Kanal:\t", e->channel.s /*strlist_at(sl, 1)*/, sep);
+  buffer_putm_4(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep);
+  buffer_putm_4(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep);
 
-  buffer_putm(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep);
-  buffer_putm(b, "Dauer:\t", format_time(e->dr), sep);
-  buffer_putm(b, "Grösse:\t", format_num(e->mbytes), "MB", sep);
+  buffer_putm_4(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep);
+  buffer_putm_3(b, "Dauer:\t", format_time(e->dr), sep);
+  buffer_putm_4(b, "Grösse:\t", format_num(e->mbytes), "MB", sep);
 
-  /* buffer_putm(b, "URL:\t", url , sep);
-   buffer_putm(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);
-   buffer_putm(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep);*/
+  /* buffer_putm_3(b, "URL:\t", url , sep);
+   buffer_putm_5(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);
+   buffer_putm_5(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep);*/
 
   buffer_putnlflush(b);
 }
@@ -578,7 +578,7 @@ main(int argc, char* argv[]) {
       case 't': min_length = parse_time(optarg); break;
       case 'i': strlist_push(&include, optarg); break;
       case 'x': strlist_push(&exclude, optarg); break;
-      default: /* '?' */ buffer_putm(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n"); exit(EXIT_FAILURE);
+      default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n"); exit(EXIT_FAILURE);
     }
   }
 

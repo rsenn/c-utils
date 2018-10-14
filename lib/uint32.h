@@ -2,7 +2,9 @@
 #ifndef UINT32_H
 #define UINT32_H
 
-#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
+#if defined(__BORLANDC__)
+#include <systypes.h>
+#elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
 #include <stdint.h>
 #endif
@@ -11,6 +13,7 @@
 extern "C" {
 #endif
 
+#ifndef __BORLANDC__
 #ifdef __MSYS__
 # ifndef __MS_types__
 #  define __MS_types__
@@ -22,7 +25,7 @@ extern "C" {
 # endif
 #endif
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(_MSC_VER)
 # include <windows.h>
 # define uint32_t UINT32
 # define int32_t INT32
@@ -39,6 +42,7 @@ typedef __INT32_TYPE__ int32_t;
 
 typedef uint32_t uint32;
 typedef int32_t int32;
+#endif
 
 #if !defined(NO_UINT32_MACROS)
 

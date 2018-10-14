@@ -1,6 +1,6 @@
 #include "../scan.h"
 
-size_t scan_8int64(const char *src, uint64 *dest) {
+size_t scan_octal(const char *src, uint64 *dest) {
   /* make a copy of src so we can return the number of bytes we progressed */
   const char *tmp = src;
   uint64 l = 0;

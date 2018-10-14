@@ -225,12 +225,12 @@ main(int argc, char* argv[]) {
     char sym = spec[0], *s = &spec[1];
 
     if(sym == '@') {
-      scan_xlonglong(s, &addr);
+      scan_xint64(s, &addr);
     } else if(sym == '?') {
     } else if(sym == '=') {
-      // s_set = (scan_xlonglong(s, &val_set) + 1) / 2;
+      // s_set = (scan_xint64(s, &val_set) + 1) / 2;
     } else {
-      buffer_putm(buffer_2, "ERROR: ", spec, "\n");
+      buffer_putm_3(buffer_2, "ERROR: ", spec, "\n");
       buffer_putnlflush(buffer_2);
       return 2;
     }

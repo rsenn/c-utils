@@ -11,7 +11,7 @@ hmap_set_chars(HMAP_DB** hmap_db, const char* key, const char* data) {
   assert(str_len(data));
 
 #ifdef HMAP_DEBUG
-  buffer_putm(buffer_2, __FUNCTION__, "(");
+  buffer_putm_internal(buffer_2, __FUNCTION__, "(", 0);
   buffer_putptr(buffer_2, hmap_db);
   buffer_putm(buffer_2, ", \"", key, "\", \"", data, "\")");
   buffer_putnlflush(buffer_2);

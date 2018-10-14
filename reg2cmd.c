@@ -291,7 +291,7 @@ int reg2cmd() {
         rt = REGISTRY_DWORD;
       } else if(!str_diffn(&line.s[valuestart], "qword:", 6)) {
         unsigned long long ull;
-        scan_xlonglong(&line.s[valuestart + 6], &ull);
+        scan_xint64(&line.s[valuestart + 6], &ull);
         word = ull;
         rt = REGISTRY_QWORD;
       } else {

@@ -13,7 +13,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
   switch(id) {
     case XML_ATTRIBUTE: {
 #ifdef XML_DEBUG
-      buffer_putm(buffer_2, "reading attribute '", name->s, "' value '", value->s, "'");
+      buffer_putm_internal(buffer_2, "reading attribute '", name->s, "' value '", value->s, "'", 0);
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
       break;
@@ -34,7 +34,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
     case XML_ELEMENT:
     default: {
 #ifdef XML_DEBUG
-      buffer_putm(buffer_2, "reading element '", name->s, "'");
+      buffer_putm_internal(buffer_2, "reading element '", name->s, "'", 0);
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
 

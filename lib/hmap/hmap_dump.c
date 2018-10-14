@@ -4,7 +4,7 @@
 #define put_tuple(t) \
   buffer_put(b, "#", 1); \
   buffer_putulong0(b, (t)->index, 5); \
-  buffer_putm(b, " ", (t)->key, "=");
+  buffer_putm_internal(b, " ", (t)->key, "=", NULL);
 
 void
 hmap_dump(HMAP_DB* hmap, buffer* b) {
@@ -31,7 +31,7 @@ hmap_dump(HMAP_DB* hmap, buffer* b) {
         buffer_putdouble(b, tuple->vals.val_double, 15);
         break;
       case HMAP_DATA_TYPE_CHARS:
-        buffer_putm(b, "\"", tuple->vals.val_chars, "\"");
+        buffer_putm_internal(b, "\"", tuple->vals.val_chars, "\"", NULL);
         break;
       case HMAP_DATA_TYPE_CUSTOM:
         buffer_putptr(b, tuple->vals.val_custom);

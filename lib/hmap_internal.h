@@ -7,15 +7,14 @@
 //#define HMAP_DUMP(...) do {printf( __VA_ARGS__ );}while(0)
 
 #if defined(HMAP_DEBUG) && !defined(NDEBUG)
-#include "buffer.h"
-
-#define HMAP_DUMP(...) \
-  do { \
-    fprintf(stderr, __VA_ARGS__); \
-    fflush(stderr); \
-  } while(0)
+# include "buffer.h"
+# ifdef __BORLANDC__
+#  define HMAP_DUMP(a1,a2,a3) do { fprintf(stderr, a1,a2,a3); fflush(stderr); } while(0)
+# else
+#  define HMAP_DUMP(...) do { fprintf(stderr, __VA_ARGS__); fflush(stderr); } while(0)
+# endif
 #else
-#define HMAP_DUMP(...)
+# define HMAP_DUMP(a1,a2,a3)
 #endif
 
 #define VALIDATE_DB(_hdb, _key, _klen) \

@@ -26,9 +26,9 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
       stralloc_free(&text);
       continue;
     }
-    buffer_putm(b, "element[", node_is_closing(node) ? &node->name[1] : node->name);
-    buffer_putm(b, "] ");
-    buffer_putm(b, node_is_closing(node) ? " closing" : NULL);
+    buffer_putm_internal(b, "element[", node_is_closing(node) ? &node->name[1] : node->name, 0);
+    buffer_putm_internal(b, "] ", 0);
+    buffer_putm_internal(b, node_is_closing(node) ? " closing" : NULL, 0);
     if(node->attributes) xml_print_attributes(node->attributes, b, " ", "=", "'");
 
     if(node->children) {

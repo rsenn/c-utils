@@ -403,7 +403,7 @@ main(int argc, char* argv[]) {
       case 'd': debug++; break;
       case 'l': lowq++; break;
       case 'f': datetime_format = optarg; break;
-      default: /* '?' */ buffer_putm(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n"); exit(EXIT_FAILURE);
+      default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n"); exit(EXIT_FAILURE);
     }
   }
 

@@ -391,62 +391,62 @@ size_t i,n;
 
   n = strlist_count(&includedirs);
   for(i = 0; i < n; ++i) {
-    strlist_pushm(&cmd, "-I", strlist_at(&includedirs, i));
+    strlist_pushm_internal(&cmd, "-I", strlist_at(&includedirs, i), 0);
   }
 
   n = strlist_count(&defines);
   for(i = 0; i < n; ++i) {
-    strlist_pushm(&cmd, "-D", strlist_at(&defines, i));
+    strlist_pushm_internal(&cmd, "-D", strlist_at(&defines, i), 0);
   }
   if(type == PICC || type == PICC18 || type == XC8) {
           char nbuf[FMT_ULONG];
 
-    strlist_pushm(&cmd, "--chip=", chip.s, 0);
+    strlist_pushm_internal(&cmd, "--chip=", chip.s, 0);
 
 if(mode != PREPROCESS) {
 
     if(runtime.len > 0) {
-      stralloc_0(&runtime); strlist_pushm(&cmd, "--runtime=", runtime.s, 0);
+      stralloc_0(&runtime); strlist_pushm_internal(&cmd, "--runtime=", runtime.s, 0);
     }
     if(optimization.len > 0) {
-      stralloc_0(&optimization); strlist_pushm(&cmd, "--opt=", optimization.s, 0);
+      stralloc_0(&optimization); strlist_pushm_internal(&cmd, "--opt=", optimization.s, 0);
     }
     if(debugger.len > 0) {
-      stralloc_0(&debugger); strlist_pushm(&cmd, "--debugger=", debugger.s, 0);
+      stralloc_0(&debugger); strlist_pushm_internal(&cmd, "--debugger=", debugger.s, 0);
     }
     if(err_format.len > 0) {
-      stralloc_0(&err_format); strlist_pushm(&cmd, "--errformat=", err_format.s, 0);
+      stralloc_0(&err_format); strlist_pushm_internal(&cmd, "--errformat=", err_format.s, 0);
     }
     if(warn_format.len > 0) {
-      stralloc_0(&warn_format); strlist_pushm(&cmd, "--warnformat=", warn_format.s, 0);
+      stralloc_0(&warn_format); strlist_pushm_internal(&cmd, "--warnformat=", warn_format.s, 0);
     }
     if(msg_format.len > 0) {
-      stralloc_0(&msg_format); strlist_pushm(&cmd, "--msgformat=", msg_format.s, 0);
+      stralloc_0(&msg_format); strlist_pushm_internal(&cmd, "--msgformat=", msg_format.s, 0);
     }
     strlist_push(&cmd, "--mode=PRO");
 
     if(optlevel) {
        nbuf[fmt_ulong(nbuf, optlevel)] = '\0';
-      strlist_pushm(&cmd, "--opt=default,+asm,", debug ? "+debug,":"", optsize ? "-speed,+space,":"-space,+speed,", nbuf, NULL);
+      strlist_pushm_internal(&cmd, "--opt=default,+asm,", debug ? "+debug,":"", optsize ? "-speed,+space,":"-space,+speed,", nbuf, NULL);
     }
 
      if(warn) {
        nbuf[fmt_ulong(nbuf, warn)] = '\0';
-      strlist_pushm(&cmd, "--warn=",nbuf,NULL);
+      strlist_pushm_internal(&cmd, "--warn=",nbuf,NULL);
     }
     if(debug) strlist_push(&cmd, "-G");
 
     if(ident_len != 0) {
       nbuf[fmt_ulong(nbuf, ident_len)] = '\0';
-      strlist_pushm(&cmd, "-N",nbuf, NULL);
+      strlist_pushm_internal(&cmd, "-N",nbuf, NULL);
     }
     if(fltbits != 0) {
       nbuf[fmt_ulong(nbuf, fltbits)] = '\0';
-      strlist_pushm(&cmd, "--float=",nbuf, NULL);
+      strlist_pushm_internal(&cmd, "--float=",nbuf, NULL);
     }
     if(dblbits != 0) {
       nbuf[fmt_ulong(nbuf, dblbits)] = '\0';
-      strlist_pushm(&cmd, "--double=",nbuf, NULL);
+      strlist_pushm_internal(&cmd, "--double=",nbuf, NULL);
     }
 
   }
@@ -479,10 +479,10 @@ if(mode != PREPROCESS) {
       }
       stralloc_cat(&outf, &output_file);
       stralloc_0(&outf);
-      strlist_pushm(&cmd, "-O", outf.s, 0);
+      strlist_pushm_internal(&cmd, "-O", outf.s, 0);
     } else if(output_dir.len > 0) {
       stralloc_0(&output_dir);
-      strlist_pushm(&cmd, "--outdir=", output_dir.s, 0);
+      strlist_pushm_internal(&cmd, "--outdir=", output_dir.s, 0);
     }
 
   } else if(type == SDCC) {
@@ -494,10 +494,10 @@ if(mode != PREPROCESS) {
 
     if(get_machine(&chip, &machine) == 0) {
       stralloc_0(&machine);
-      strlist_pushm(&cmd, "-m", machine.s, 0);
+      strlist_pushm_internal(&cmd, "-m", machine.s, 0);
     }
 
-    strlist_pushm(&cmd, "-p", chip.s, 0);
+    strlist_pushm_internal(&cmd, "-p", chip.s, 0);
 
     switch(mode) {
       case PREPROCESS: {
@@ -518,7 +518,7 @@ if(mode != PREPROCESS) {
     }
 
     if(debug) {
-      strlist_pushm(&cmd, "--debug", "--debug-xtra", 0);
+      strlist_pushm_internal(&cmd, "--debug", "--debug-xtra", 0);
     }
     if(output_dir.len > 0) {
       stralloc_copy(&outp, &output_dir);

@@ -14,7 +14,7 @@ hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len) {
       root_tuple->key[0] = 0;
       root_tuple->key_len = 0;
       if(hmap_free_data(ptr_tuple) != HMAP_SUCCESS) {
-        HMAP_DUMP("Warnning: cannot free data\n");
+        HMAP_DUMP("Warnning: cannot free data\n", 0, 0);
       }
       if(root_tuple->data != NULL) {
         free(root_tuple->data);
@@ -24,7 +24,7 @@ hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len) {
     } else {
       HDB_HASH_REMOVE(root_tuple, ptr_tuple);
       if(hmap_free_data(ptr_tuple) != HMAP_SUCCESS) {
-        HMAP_DUMP("Warnning: cannot free data\n");
+        HMAP_DUMP("Warnning: cannot free data\n", 0, 0);
       }
       if(ptr_tuple->data != NULL) {
         free(ptr_tuple->data);

@@ -2,7 +2,9 @@
 #ifndef UINT16_H
 #define UINT16_H
 
-#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
+#if defined(__BORLANDC__)
+#include <systypes.h>
+#elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
 #include <stdint.h>
 #endif
@@ -11,6 +13,7 @@
 extern "C" {
 #endif
 
+#ifndef __BORLANDC__
 #ifdef __MSYS__
 # ifndef __MS_types__
 #  define __MS_types__
@@ -18,18 +21,28 @@ extern "C" {
 # include <sys/types.h>
 # ifdef __BIT_TYPES_DEFINED__
 #  define uint16_t u_int16_t
-#  define int16_t short
+#  define int16_t int
 # endif
 #endif
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#include <windows.h>
-#define uint16_t UINT16
-#define int16_t INT16
+#if defined(_MSC_VER)
+# include <windows.h>
+# define uint16_t UINT16
+# define int16_t INT16
+#endif
+
+#ifdef __GNUC__
+#ifndef uint16_t
+typedef __UINT16_TYPE__ uint16_t;
+#endif
+#ifndef int16_t
+typedef __INT16_TYPE__ int16_t;
+#endif
 #endif
 
 typedef uint16_t uint16;
 typedef int16_t int16;
+#endif
 
 #if (defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT16_MACROS)
 

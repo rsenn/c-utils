@@ -92,7 +92,7 @@ dump_part(part_t const* p) {
 /* ----------------------------------------------------------------------- */
 void
 dump_instance(instance_t const* i) {
-  buffer_putm(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"");
+  buffer_putm_5(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"");
   buffer_puts(buffer_2, " x=");
   buffer_putdouble(buffer_2, i->x, 2);
   buffer_puts(buffer_2, ", y=");
@@ -384,7 +384,7 @@ main(int argc, char* argv[]) {
   if(argc > 1) {
     filename = argv[1];
   } else {
-    buffer_putm(buffer_2, "Usage: ", mystr_basename(argv[0]), " <filename>");
+    buffer_putm_3(buffer_2, "Usage: ", mystr_basename(argv[0]), " <filename>");
     buffer_putnlflush(buffer_2);
     return 1;
   }

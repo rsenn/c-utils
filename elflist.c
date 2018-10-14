@@ -17,7 +17,7 @@ main(int argc, char** argv) {
   size_t filesize;
 
   if(argc < 2) {
-    buffer_putm(buffer_1, "Usage: ", str_basename(argv[0]), " XXX.dll\n");
+    buffer_putm_3(buffer_1, "Usage: ", str_basename(argv[0]), " XXX.dll\n");
     buffer_flush(buffer_1);
     return 0;
   }
@@ -32,7 +32,7 @@ main(int argc, char** argv) {
     elf_dump_dynamic(base);
 
     if(interp) {
-      buffer_putm(buffer_1, "Interpreter: ", interp);
+      buffer_putm_2(buffer_1, "Interpreter: ", interp);
       buffer_putnlflush(buffer_1);
     }
     /*    elf_dump_imports(base);*/
@@ -78,7 +78,7 @@ elf_dump_dynamic(uint8* base) {
 
     if(tag >= ELF_DT_NUM) {
       buffer_puts(buffer_1, "0x");
-      buffer_putxlonglong0(buffer_1, tag, ELF_BITS(base) / 4);
+      buffer_putxint640(buffer_1, tag, ELF_BITS(base) / 4);
     } else {
       buffer_putspad(buffer_1, dynamic_types[tag % ELF_DT_NUM], 18);
     }
@@ -88,7 +88,7 @@ elf_dump_dynamic(uint8* base) {
       buffer_puts(buffer_1, &dynstrtab[val]);
     } else {
       buffer_puts(buffer_1, " 0x");
-      buffer_putxlonglong0(buffer_1, val, ELF_BITS(base) / 4);
+      buffer_putxint640(buffer_1, val, ELF_BITS(base) / 4);
     }
     buffer_putnlflush(buffer_1);
 
@@ -117,9 +117,9 @@ elf_dump_symbols(uint8* base, uint8* tab, size_t size, const char* stname) {
     /*buffer_puts(buffer_1, "0x");
     buffer_putxlong0(buffer_1, name, 8);
     */ buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, value, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, value, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, size, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, size, ELF_BITS(base) / 4);
     buffer_putspace(buffer_1);
     buffer_puts(buffer_1, binding_types[ELF_ELF32_ST_BIND(info)]);
     buffer_putspace(buffer_1);
@@ -160,13 +160,13 @@ elf_dump_sections(uint8* base) {
 
     buffer_putspad(buffer_1, &(elf_shstrtab(base)[name]), 16);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, addr, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, addr, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, size, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, size, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, offs, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, offs, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, align, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, align, ELF_BITS(base) / 4);
     buffer_putspace(buffer_1);
     buffer_puts(buffer_1, elf_section_type(type));
     buffer_putnlflush(buffer_1);
@@ -203,13 +203,13 @@ elf_dump_segments(uint8* base) {
     if(!paddr && !vaddr && !filesz) continue;
 
     buffer_puts(buffer_1, "0x");
-    buffer_putxlonglong0(buffer_1, paddr, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, paddr, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, vaddr, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, vaddr, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, filesz, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, filesz, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, memsz, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, memsz, ELF_BITS(base) / 4);
     buffer_putm(
         buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-");
     buffer_putnlflush(buffer_1);

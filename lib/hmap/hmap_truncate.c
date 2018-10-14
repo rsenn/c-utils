@@ -6,7 +6,7 @@ hmap_truncate(HMAP_DB** hmap_db) {
   while(ptr_list_tuple) {
     HDB_LIST_REMOVE((*hmap_db)->list_tuple, ptr_list_tuple);
     if(hmap_free_data(ptr_list_tuple) != HMAP_SUCCESS) {
-      HMAP_DUMP("Warnning: cannot free data\n");
+      HMAP_DUMP("Warnning: cannot free data\n", 0, 0);
     }
     if(ptr_list_tuple->data) {
       free(ptr_list_tuple->data);

@@ -1,7 +1,7 @@
 #include "../fmt.h"
 
 size_t
-fmt_utf8(char* dest, unsigned int n) {
+fmt_utf8(char* dest, uint32 n) {
   size_t i, j;
   if(n <= 0x7f) {
     if(dest) *dest = (char)n;

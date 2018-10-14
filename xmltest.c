@@ -29,8 +29,8 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
   xmlnode* n;
   if(id != XML_ELEMENT) return 1;
   if(reader->closing) --depth;
-  buffer_putm(buffer_1, node_types[id], " \"", name ? name->s : "", "\"");
-  if(value) buffer_putm(buffer_1, ", value=", value ? value->s : "");
+  buffer_putm_4(buffer_1, node_types[id], " \"", name ? name->s : "", "\"");
+  if(value) buffer_putm_3(buffer_1, ", value=", value ? value->s : "");
   buffer_puts(buffer_1, ", depth=");
   buffer_putlong(buffer_1, depth);
   buffer_puts(buffer_1, ", closing=");

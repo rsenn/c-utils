@@ -25,7 +25,11 @@ typedef struct strlist_s {
 # define strlist_init(l,s)  stralloc_init(&(l)->sa); (l)->sep = (s);
 # define strlist_free(l) stralloc_free(&(l)->sa)
 
+#ifdef __BORLANDC__
+#define strlist_pushm(sa, args) strlist_pushm_internal(sa, args, (char *)0)
+#else
 #define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char *)0)
+#endif
 
 char**  strlist_to_argv(const strlist*);
 char*   strlist_at(const strlist*, size_t i);
