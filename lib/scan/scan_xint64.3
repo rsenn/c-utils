@@ -1,0 +1,17 @@
+.TH scan_xint64 3
+.SH NAME
+scan_xint64 \- parse an uint64eger in hexadecimal ASCII representation
+.SH SYNTAX
+.B #include <scan.h>
+
+size_t \fBscan_xint64\fP(const char *\fIsrc\fR,uint64* \fIdest\fR);
+.SH DESCRIPTION
+scan_xint64 parses an uint64eger in hexadecimal ASCII
+representation from \fIsrc\fR and writes the result into \fIdest\fR. It
+returns the number of bytes read from \fIsrc\fR.
+
+scan_xint64 understands both upper and lower case letters.
+
+scan_xint64 does not expect or understand a "0x" prefix.
+.SH "SEE ALSO"
+fmt_xint64(3)

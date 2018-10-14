@@ -11,6 +11,7 @@
 #include <sys/types.h>
 
 #include "uint32.h"
+#include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,10 +38,10 @@ size_t scan_8long(const char* src, unsigned long* dest);
  * and return the number of bytes that were parsed */
 size_t scan_long(const char* src, signed long* dest);
 
-size_t scan_longlong(const char* src, signed long long* dest);
-size_t scan_ulonglong(const char* src, unsigned long long* dest);
-size_t scan_xlonglong(const char* src, unsigned long long* dest);
-size_t scan_8longlong(const char* src, unsigned long long* dest);
+size_t scan_int64(const char* src, int64* dest);
+size_t scan_uint64(const char* src, uint64* dest);
+size_t scan_xint64(const char* src, uint64* dest);
+size_t scan_8int64(const char* src, uint64* dest);
 
 size_t scan_uint(const char* src, unsigned int* dest);
 size_t scan_xint(const char* src, unsigned int* dest);
@@ -85,23 +86,23 @@ size_t scan_httpdate(const char* in, time_t* t) __pure__;
 
 /* some variable length encodings for integers */
 size_t scan_utf8(const char* in, size_t len, uint32* n) __pure__;
-size_t scan_asn1derlength(const char* in, size_t len, unsigned long long* n) __pure__;
-size_t scan_asn1dertag(const char* in, size_t len, unsigned long long* n) __pure__;
+size_t scan_asn1derlength(const char* in, size_t len, uint64* n) __pure__;
+size_t scan_asn1dertag(const char* in, size_t len, uint64* n) __pure__;
 
 /* a few internal function that might be useful independently */
 /* convert from hex ASCII, return 0 to 15 for success or -1 for failure */
 int scan_fromhex(unsigned char c);
 
 size_t scan_8long(const char *src, unsigned long *dest);
-size_t scan_8longlong(const char *src, unsigned long long *dest);
+size_t scan_8int64(const char *src, uint64 *dest);
 size_t scan_8longn(const char *src, size_t n, unsigned long *dest);
 size_t scan_int(const char *src, int *dest);
 size_t scan_long(const char *src, long *dest);
-size_t scan_longlong(const char *src, signed long long *dest);
+size_t scan_int64(const char *src, int64 *dest);
 size_t scan_longn(const char *src, size_t n, long *dest);
 size_t scan_pb_tag(const char *in, size_t len, size_t *fieldno, unsigned char *type);
-size_t scan_pb_type0_sint(const char *in, size_t len, signed long long *l);
-size_t scan_varint(const char *in, size_t len, unsigned long long *n);
+size_t scan_pb_type0_sint(const char *in, size_t len, int64 *l);
+size_t scan_varint(const char *in, size_t len, uint64 *n);
 
 size_t scan_xmlescape(const char *src, char *dest);
 

@@ -127,8 +127,8 @@ int buffer_put8long(buffer *b, unsigned long int l);
 int buffer_putxlong(buffer *b, unsigned long int l);
 int buffer_putlong(buffer *b, signed long int l);
 
-int buffer_putlonglong(buffer* b, signed long long int l);
-int buffer_putulonglong(buffer* b, unsigned long long int l);
+int buffer_putint64(buffer* b, signed long long int l);
+int buffer_putuint64(buffer* b, unsigned long long int l);
 
 int buffer_putdouble(buffer *b, double d);
 

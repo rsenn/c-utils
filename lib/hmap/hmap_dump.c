@@ -22,10 +22,10 @@ hmap_dump(HMAP_DB* hmap, buffer* b) {
         buffer_putulong(b, tuple->vals.val_uint);
         break;
       case HMAP_DATA_TYPE_INT64:
-        buffer_putlonglong(b, tuple->vals.val_int64);
+        buffer_putint64(b, tuple->vals.val_int64);
         break;
       case HMAP_DATA_TYPE_UINT64:
-        buffer_putulonglong(b, tuple->vals.val_uint64);
+        buffer_putuint64(b, tuple->vals.val_uint64);
         break;
       case HMAP_DATA_TYPE_DOUBLE:
         buffer_putdouble(b, tuple->vals.val_double, 15);

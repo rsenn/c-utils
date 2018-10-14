@@ -30,12 +30,12 @@ mmap_filename(void* map, stralloc* sa) {
     char* p = line;
     unsigned long long start, end;
 
-    p += scan_xlonglong(p, &start);
+    p += scan_xint64(p, &start);
     if(*p == '-') {
       char* e = line + n;
       int i = 4;
       ++p;
-      p += scan_xlonglong(p, &end);
+      p += scan_xint64(p, &end);
 
       while(i--) {
         p += scan_whitenskip(p, e - p);

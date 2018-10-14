@@ -1,9 +1,9 @@
 #include "../scan.h"
 
-size_t scan_8longlong(const char *src, unsigned long long *dest) {
+size_t scan_8int64(const char *src, uint64 *dest) {
   /* make a copy of src so we can return the number of bytes we progressed */
   const char *tmp = src;
-  unsigned long long l = 0;
+  uint64 l = 0;
   unsigned char c;
   /* *tmp - '0' can be negative, but casting to unsigned char makes
    * those cases positive and large; that means we only need one

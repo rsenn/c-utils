@@ -122,12 +122,12 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   lzma_ret ret;
   lzma_ctx* ctx;
   lzma_options_lzma opt_lzma2;
-  lzma_filter filters[] = {
-      {LZMA_FILTER_X86, NULL},
-      {LZMA_FILTER_LZMA2, &opt_lzma2},
-      {LZMA_VLI_UNKNOWN, NULL},
-  };
-
+  lzma_filter filters[3];
+  
+  filters[0].id = LZMA_FILTER_X86; filter[0].options =  NULL;
+  filters[1].id = LZMA_FILTER_LZMA2; filter[1].options =  &opt_lzma2;
+  filters[2].id = LZMA_VLI_UNKNOWN;
+  
   if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) {
     return 0;
   }

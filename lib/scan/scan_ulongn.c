@@ -14,7 +14,7 @@ scan_ulongn(const char* src, size_t n, unsigned long int* dest) {
    * should only emit code for one of the implementations, depending on
    * which architecture the code is compiled for. */
 #ifdef HAVE_UINT128
-  if(sizeof(unsigned long) == sizeof(unsigned long long) && sizeof(unsigned long) < sizeof(__uint128_t)) {
+  if(sizeof(unsigned long) == sizeof(uint64) && sizeof(unsigned long) < sizeof(__uint128_t)) {
     /* implementation for 64-bit platforms with gcc */
     for(; n-- > 0 && (c = (unsigned char)(*tmp - '0')) < 10; ++tmp) {
       __uint128_t L = (__uint128_t)l * 10 + c;
@@ -25,10 +25,10 @@ scan_ulongn(const char* src, size_t n, unsigned long int* dest) {
     return (size_t)(tmp - src);
   } else
 #endif
-      if(sizeof(unsigned long) < sizeof(unsigned long long)) {
+      if(sizeof(unsigned long) < sizeof(uint64)) {
     /* implementation for 32-bit platforms */
     for(; n-- > 0 && (c = (unsigned char)(*tmp - '0')) < 10; ++tmp) {
-      unsigned long long L = (unsigned long long)l * 10 + c;
+      uint64 L = (uint64)l * 10 + c;
       if((unsigned long)L != L) break;
       l = (unsigned long)L;
     }

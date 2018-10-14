@@ -8,9 +8,9 @@
  *   5 -> 0x05
  *   0xc2 -> 0x81 0x42 */
 
-size_t scan_asn1dertag(const char* src, size_t len, unsigned long long* length) {
+size_t scan_asn1dertag(const char* src, size_t len, uint64* length) {
   size_t n;
-  unsigned long long l = 0;
+  uint64 l = 0;
   if(len == 0 || (unsigned char)src[0] == 0x80) return 0; /* catch non-minimal encoding */
   for(n = 0; n < len; ++n) {
     /* make sure we can represent the stored number in l */

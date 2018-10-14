@@ -59,8 +59,9 @@ buffer_gzip_write(fd_t fd, void* x, size_t n, void* b) {
 
 int
 buffer_gzip(buffer* b, const char* filename, int level) {
-  char mode[4] = {'w', 'b', '0' + (level % 10), '\0'};
   gzFile f;
+  char mode[4] = "wb0";
+  mode[2] = '0' + (level % 10);
   if((f = gzopen(filename, mode)) == NULL) return -1;
   b->fd = -1;
   b->cookie = f;
@@ -74,8 +75,9 @@ buffer_gzip(buffer* b, const char* filename, int level) {
 
 int
 buffer_gzip_fd(buffer* b, fd_t fd, int level) {
-  char mode[4] = {'w', 'b', '0' + (level % 10), '\0'};
   gzFile f;
+  char mode[4] = "wb0";
+  mode[2] = '0' + (level % 10);
   if((f = gzdopen(fd, mode)) == NULL) return -1;
   b->fd = -1;
   b->cookie = f;

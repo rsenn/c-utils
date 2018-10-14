@@ -1,12 +1,12 @@
 #include "../scan.h"
 
 size_t
-scan_ulonglong(const char* src, unsigned long long* dest) {
+scan_uint64(const char* src, uint64* dest) {
   const char* tmp = src;
-  unsigned long long l = 0;
+  uint64 l = 0;
   unsigned char c;
   while((c = (unsigned char)(*tmp - '0')) < 10) {
-    unsigned long long n;
+    uint64 n;
     /* division is very slow on most architectures */
     n = l << 3;
     if((n >> 3) != l) break;

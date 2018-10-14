@@ -4,7 +4,7 @@ scan_asn1derlength \- decode an unsigned integer from ASN.1 DER length encoding
 .SH SYNTAX
 .B #include <scan.h>
 
-size_t \fBscan_asn1derlength\fP(const char *\fIsrc\fR,size_t \fIlen\fR,unsigned long long *\fIdest\fR);
+size_t \fBscan_asn1derlength\fP(const char *\fIsrc\fR,size_t \fIlen\fR,uint64 *\fIdest\fR);
 .SH DESCRIPTION
 scan_asn1derlength decodes an unsigned integer in ASN.1 DER length encoding
 from a memory area holding binary data.  It writes the decode value in

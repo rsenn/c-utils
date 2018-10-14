@@ -21,7 +21,7 @@ json_print_val(jsonval* val, buffer* b, int depth) {
       buffer_puts(b, val->boolv ? "true" : "false");
       break;
     case JSON_INT:
-      buffer_putlonglong(b, val->intv);
+      buffer_putint64(b, val->intv);
       break;
     case JSON_OBJECT: {
       TUPLE* t = hmap_begin(val->dictv);

@@ -80,13 +80,13 @@ var_dump(struct var* var) {
   buffer_putspace(buffer_1);
 
   /* lexical hash */
-  n = fmt_xlonglong(numbuf, var->lexhash);
+  n = fmt_xint64(numbuf, var->lexhash);
   buffer_putnspace(buffer_1, 16 - n);
   buffer_put(buffer_1, numbuf, n);
   buffer_putspace(buffer_1);
 
   /* randomized hash */
-  n = fmt_xlonglong(numbuf, var->rndhash);
+  n = fmt_xint64(numbuf, var->rndhash);
   buffer_putnspace(buffer_1, 16 - n);
   buffer_put(buffer_1, numbuf, n);
   buffer_putnlflush(buffer_1);
