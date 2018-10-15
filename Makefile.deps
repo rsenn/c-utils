@@ -1802,3 +1802,15 @@ $(BUILDDIR)buffer_putxint64.o: lib/buffer/buffer_putxint64.c
 	$(COMPILE) -o $@ $<
 $(BUILDDIR)fmt_int64.o: lib/fmt/fmt_int64.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_octal.o: lib/fmt/fmt_octal.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)fmt_xint64.o: lib/fmt/fmt_xint64.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_xint64.o: lib/scan/scan_xint64.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_uint64.o: lib/scan/scan_uint64.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_octal.o: lib/scan/scan_octal.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)scan_int64.o: lib/scan/scan_int64.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

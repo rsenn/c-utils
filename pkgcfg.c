@@ -525,10 +525,14 @@ main(int argc, char* argv[]) {
     pkg_list();
     return 0;
 
-  } else {
+  } else if(optind < argc) {
     strarray modules;
     strarray_from_argv(argc - optind, &argv[optind], &modules);
-
     return !pkg_conf(&modules);
+
+  } else {
+    buffer_puts(buffer_2, "Must specify package names on the command line");
+    buffer_putnlflush(buffer_2);
+    return 1;
   }
 }

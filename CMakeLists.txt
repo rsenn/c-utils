@@ -559,6 +559,9 @@ foreach(ARCHIVE ${LIBSUBDIRS})
   set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
 endforeach(ARCHIVE)
 
+
+add_definitions(-DPIPE2_NDELAY_OFF=1)
+
 foreach(NETLIB dns http io ndelay socket)
   target_link_libraries(${NETLIB} ${LIBMSWSOCK})
 endforeach()
@@ -663,7 +666,7 @@ target_link_libraries(xmltest2 buffer fmt  str stralloc xml)
 target_link_libraries(xmltest3 buffer fmt  str stralloc xml)
 target_link_libraries(xmltest4 array buffer byte cbmap scan str stralloc strlist xml)
 target_link_libraries(ziptest buffer str ${LIBBZ2_LIBRARY} )
-target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path slist str stralloc strarray strlist)
+target_link_libraries(pkgcfg array buffer byte cbmap dir errmsg env path ndelay slist str stralloc strarray strlist)
 target_link_libraries(sln buffer byte errmsg path  str stralloc)
 
 target_link_libraries(opensearch-dump xml errmsg uint64 uint32 uint16 buffer mmap open)
