@@ -17,8 +17,14 @@ main(int argc, char** argv) {
   if(*argv) ++argv;
 
   while(*argv) {
-    if(!ip4_scan(*argv, ip)) diesys(111, "unable to parse IP address ", *argv);
-    if(dns_name4(&out, ip) == -1) diesys(111, "unable to find host name for ", *argv, ": ");
+    if(!ip4_scan(*argv, ip)) {
+      errmsg_warnsys("unable to parse IP address ", *argv, 0);
+      return 111;
+    }
+    if(dns_name4(&out, ip) == -1) {
+      errmsg_warnsys("unable to find host name for ", *argv, ": ", 0);
+      return 111;
+    }
 
     buffer_put(buffer_1, out.s, out.len);
     buffer_puts(buffer_1, "\n");

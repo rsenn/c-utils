@@ -43,14 +43,14 @@ playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 lengt
 
 void
 usage(char* argv0) {
-  buffer_putm(buffer_1,
+  buffer_putm_internal(buffer_1,
               "Usage: ",
               argv0,
               " [-f type] [-t type] [-o output] [input or stdin]\n\n",
               "  -f type  Input type\n"
               "  -t type  Output type\n"
               "\n"
-              "Supported types are: m3u pls xspf\n");
+              "Supported types are: m3u pls xspf\n", 0);
   buffer_flush(buffer_1);
   exit(0);
 }

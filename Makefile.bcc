@@ -5,7 +5,7 @@ CFLAGS = -v -O -O1 -d -dc
 DEFS = -DHAVE_ERRNO_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDINT_H=1 -DHAVE_SYS_FCNTL_H=1 -DHAVE_ZLIB=1 -DHAVE_LIBLZMA=1 -DHAVE_LIBBZ2=1
 CPPFLAGS = 
 COMPILE = $(CC) $(CFLAGS) $(DEFS) $(CPPFLAGS) -c
-LIBS = array.lib binfmt.lib buffer.lib byte.lib case.lib cb.lib cbmap.lib charbuf.lib dir.lib dns.lib elf.lib env.lib errmsg.lib expand.lib fmt.lib gpio.lib hmap.lib http.lib iarray.lib io.lib json.lib list.lib map.lib mmap.lib ndelay.lib open.lib path.lib pe.lib playlist.lib rdir.lib scan.lib sig.lib slist.lib socket.lib str.lib stralloc.lib strarray.lib strlist.lib tai.lib taia.lib textbuf.lib uint16.lib uint32.lib uint64.lib var.lib vartab.lib
+LIBS = array.lib binfmt.lib buffer.lib byte.lib case.lib cb.lib cbmap.lib charbuf.lib dir.lib dns.lib elf.lib env.lib errmsg.lib expand.lib fmt.lib gpio.lib hmap.lib http.lib iarray.lib io.lib json.lib list.lib map.lib mmap.lib ndelay.lib open.lib path.lib pe.lib playlist.lib rdir.lib scan.lib sig.lib slist.lib socket.lib str.lib stralloc.lib strarray.lib strlist.lib tai.lib taia.lib textbuf.lib uint16.lib uint32.lib uint64.lib var.lib vartab.lib xml.lib
 EXTRA_LIBS = bz2.lib lzma.lib zlib.lib lzma.lib zlib.lib
 
 all: build\bcc32\Debug build\bcc32\Debug\array.lib build\bcc32\Debug\binfmt.lib build\bcc32\Debug\buffer.lib build\bcc32\Debug\byte.lib build\bcc32\Debug\case.lib build\bcc32\Debug\cb.lib build\bcc32\Debug\cbmap.lib build\bcc32\Debug\charbuf.lib build\bcc32\Debug\dir.lib build\bcc32\Debug\dns.lib build\bcc32\Debug\elf.lib build\bcc32\Debug\env.lib build\bcc32\Debug\errmsg.lib build\bcc32\Debug\expand.lib build\bcc32\Debug\fmt.lib build\bcc32\Debug\gpio.lib build\bcc32\Debug\hmap.lib build\bcc32\Debug\http.lib build\bcc32\Debug\iarray.lib build\bcc32\Debug\io.lib build\bcc32\Debug\json.lib build\bcc32\Debug\list.lib build\bcc32\Debug\map.lib build\bcc32\Debug\mmap.lib build\bcc32\Debug\ndelay.lib build\bcc32\Debug\open.lib build\bcc32\Debug\path.lib build\bcc32\Debug\pe.lib build\bcc32\Debug\playlist.lib build\bcc32\Debug\rdir.lib build\bcc32\Debug\scan.lib build\bcc32\Debug\sig.lib build\bcc32\Debug\slist.lib build\bcc32\Debug\socket.lib build\bcc32\Debug\str.lib build\bcc32\Debug\stralloc.lib build\bcc32\Debug\strarray.lib build\bcc32\Debug\strlist.lib build\bcc32\Debug\tai.lib build\bcc32\Debug\taia.lib build\bcc32\Debug\textbuf.lib build\bcc32\Debug\uint16.lib build\bcc32\Debug\uint32.lib build\bcc32\Debug\uint64.lib build\bcc32\Debug\var.lib build\bcc32\Debug\vartab.lib build\bcc32\Debug\binfmttest.exe build\bcc32\Debug\bsdiffcat.exe build\bcc32\Debug\buffertest.exe build\bcc32\Debug\ccat.exe build\bcc32\Debug\compiler-wrapper.exe build\bcc32\Debug\count-depth.exe build\bcc32\Debug\decode-ls-lR.exe build\bcc32\Debug\dnsip.exe build\bcc32\Debug\dnsname.exe build\bcc32\Debug\dnstest.exe build\bcc32\Debug\eagle-gen-cmds.exe build\bcc32\Debug\eagle-init-brd.exe build\bcc32\Debug\eagle-to-circuit.exe build\bcc32\Debug\elf64list.exe build\bcc32\Debug\elflist.exe build\bcc32\Debug\elfwrsec.exe build\bcc32\Debug\genmakefile.exe build\bcc32\Debug\hexedit.exe build\bcc32\Debug\httptest.exe build\bcc32\Debug\impgen.exe build\bcc32\Debug\jsontest.exe build\bcc32\Debug\list-r.exe build\bcc32\Debug\macho32list.exe build\bcc32\Debug\mediathek-list.exe build\bcc32\Debug\mediathek-parser.exe build\bcc32\Debug\ntldd.exe build\bcc32\Debug\opensearch-dump.exe build\bcc32\Debug\pathtool.exe build\bcc32\Debug\pelist.exe build\bcc32\Debug\pkgcfg.exe build\bcc32\Debug\plsconv.exe build\bcc32\Debug\rdir-test.exe build\bcc32\Debug\reg2cmd.exe build\bcc32\Debug\regfilter.exe build\bcc32\Debug\sln.exe build\bcc32\Debug\strarraytest.exe build\bcc32\Debug\torrent-progress.exe build\bcc32\Debug\xmlpp.exe build\bcc32\Debug\xmltest.exe build\bcc32\Debug\xmltest2.exe build\bcc32\Debug\xmltest3.exe build\bcc32\Debug\xmltest4.exe build\bcc32\Debug\ziptest.exe
@@ -63,10 +63,8 @@ build\bcc32\Debug\dnstest.exe: build\bcc32\Debug\dnstest.obj
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\eagle-gen-cmds.exe: build\bcc32\Debug\eagle-gen-cmds.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\eagle-gen-cmds.obj -tWC -L build\bcc32\Debug @&&|
- $(LIBS) $(EXTRA_LIBS)
-|
+build\bcc32\Debug\eagle-gen-cmds.exe: build\bcc32\Debug\eagle-gen-cmds.obj build\bcc32\Debug\getopt.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\eagle-gen-cmds.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug $(LIBS) $(EXTRA_LIBS)
 
 build\bcc32\Debug\eagle-init-brd.exe: build\bcc32\Debug\eagle-init-brd.obj
 	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\eagle-init-brd.obj -tWC -L build\bcc32\Debug @&&|
@@ -93,8 +91,8 @@ build\bcc32\Debug\elfwrsec.exe: build\bcc32\Debug\elfwrsec.obj
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\genmakefile.exe: build\bcc32\Debug\genmakefile.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\genmakefile.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\genmakefile.exe: build\bcc32\Debug\genmakefile.obj build\bcc32\Debug\getopt.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\genmakefile.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
@@ -118,8 +116,8 @@ build\bcc32\Debug\jsontest.exe: build\bcc32\Debug\jsontest.obj
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\list-r.exe: build\bcc32\Debug\list-r.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\list-r.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\list-r.exe: build\bcc32\Debug\list-r.obj build\bcc32\Debug\getopt.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\list-r.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
@@ -128,18 +126,18 @@ build\bcc32\Debug\macho32list.exe: build\bcc32\Debug\macho32list.obj
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\mediathek-list.exe: build\bcc32\Debug\mediathek-list.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\mediathek-list.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\mediathek-list.exe: build\bcc32\Debug\mediathek-list.obj build\bcc32\Debug\getopt.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\mediathek-list.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\mediathek-parser.exe: build\bcc32\Debug\mediathek-parser.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\mediathek-parser.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\mediathek-parser.exe: build\bcc32\Debug\mediathek-parser.obj build\bcc32\Debug\getopt.obj 
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\mediathek-parser.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\ntldd.exe: build\bcc32\Debug\ntldd.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\ntldd.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\ntldd.exe: build\bcc32\Debug\ntldd.obj build\bcc32\Debug\getopt.obj build\bcc32\Debug\libntldd.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\ntldd.obj build\bcc32\Debug\getopt.obj build\bcc32\Debug\libntldd.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
@@ -148,23 +146,23 @@ build\bcc32\Debug\opensearch-dump.exe: build\bcc32\Debug\opensearch-dump.obj
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\pathtool.exe: build\bcc32\Debug\pathtool.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\pathtool.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\pathtool.exe: build\bcc32\Debug\pathtool.obj build\bcc32\Debug\getopt.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\pathtool.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\pelist.exe: build\bcc32\Debug\pelist.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\pelist.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\pelist.exe: build\bcc32\Debug\pelist.obj build\bcc32\Debug\getopt.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\pelist.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\pkgcfg.exe: build\bcc32\Debug\pkgcfg.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\pkgcfg.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\pkgcfg.exe: build\bcc32\Debug\pkgcfg.obj build\bcc32\Debug\getopt.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\pkgcfg.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\plsconv.exe: build\bcc32\Debug\plsconv.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\plsconv.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\plsconv.exe: build\bcc32\Debug\plsconv.obj build\bcc32\Debug\getopt.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\plsconv.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
@@ -223,8 +221,8 @@ build\bcc32\Debug\xmltest4.exe: build\bcc32\Debug\xmltest4.obj
  $(LIBS) $(EXTRA_LIBS)
 |
 
-build\bcc32\Debug\ziptest.exe: build\bcc32\Debug\ziptest.obj
-	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\ziptest.obj -tWC -L build\bcc32\Debug @&&|
+build\bcc32\Debug\ziptest.exe: build\bcc32\Debug\ziptest.obj build\bcc32\Debug\getopt.obj
+	$(CC) $(CFLAGS) $(LDFLAGS) -e$@ build\bcc32\Debug\ziptest.obj build\bcc32\Debug\getopt.obj -tWC -L build\bcc32\Debug @&&|
  $(LIBS) $(EXTRA_LIBS)
 |
 
@@ -1652,6 +1650,8 @@ build\bcc32\Debug\strarray_sort.obj: lib\strarray\strarray_sort.c
 	$(COMPILE) -o $@ lib\strarray\strarray_sort.c
 build\bcc32\Debug\strarray_to_argv.obj: lib\strarray\strarray_to_argv.c
 	$(COMPILE) -o $@ lib\strarray\strarray_to_argv.c
+build\bcc32\Debug\strarray_transform.obj: lib\strarray\strarray_transform.c
+	$(COMPILE) -o $@ lib\strarray\strarray_transform.c
 build\bcc32\Debug\strlist_append_sa.obj: lib\strlist\strlist_append_sa.c
 	$(COMPILE) -o $@ lib\strlist\strlist_append_sa.c
 build\bcc32\Debug\strlist_at.obj: lib\strlist\strlist_at.c
@@ -2214,9 +2214,9 @@ build\bcc32\Debug\socket.lib: build\bcc32\Debug\fmt_ip4.obj build\bcc32\Debug\fm
 |
 
 
-build\bcc32\Debug\str.lib: build\bcc32\Debug\str_basename.obj build\bcc32\Debug\str_case_diff.obj build\bcc32\Debug\str_case_diffn.obj build\bcc32\Debug\str_case_equal.obj build\bcc32\Debug\str_case_start.obj build\bcc32\Debug\str_cat.obj build\bcc32\Debug\str_chr.obj build\bcc32\Debug\str_copy.obj build\bcc32\Debug\str_copyb.obj build\bcc32\Debug\str_copyn.obj build\bcc32\Debug\str_decamelize.obj build\bcc32\Debug\str_diff.obj build\bcc32\Debug\str_diffn.obj build\bcc32\Debug\str_dup.obj build\bcc32\Debug\str_equal.obj build\bcc32\Debug\str_find.obj build\bcc32\Debug\str_findb.obj build\bcc32\Debug\str_istr.obj build\bcc32\Debug\str_len.obj build\bcc32\Debug\str_lower.obj build\bcc32\Debug\str_ndup.obj build\bcc32\Debug\str_ptime.obj build\bcc32\Debug\str_rchr.obj build\bcc32\Debug\str_rchrs.obj build\bcc32\Debug\str_start.obj build\bcc32\Debug\str_tok.obj
+build\bcc32\Debug\str.lib: build\bcc32\Debug\str_basename.obj build\bcc32\Debug\str_case_diff.obj build\bcc32\Debug\str_case_diffn.obj build\bcc32\Debug\str_case_equal.obj build\bcc32\Debug\str_case_start.obj build\bcc32\Debug\str_cat.obj build\bcc32\Debug\str_chr.obj build\bcc32\Debug\str_copy.obj build\bcc32\Debug\str_copyb.obj build\bcc32\Debug\str_copyn.obj build\bcc32\Debug\str_decamelize.obj build\bcc32\Debug\str_diff.obj build\bcc32\Debug\str_diffn.obj build\bcc32\Debug\str_dup.obj build\bcc32\Debug\str_equal.obj build\bcc32\Debug\str_find.obj build\bcc32\Debug\str_findb.obj build\bcc32\Debug\str_istr.obj build\bcc32\Debug\str_len.obj build\bcc32\Debug\str_lower.obj build\bcc32\Debug\str_ndup.obj build\bcc32\Debug\str_ptime.obj build\bcc32\Debug\str_rchr.obj build\bcc32\Debug\str_rchrs.obj build\bcc32\Debug\str_start.obj build\bcc32\Debug\str_tok.obj build\bcc32\Debug\isleap.obj build\bcc32\Debug\time_table_spd.obj
 	tlib @&&|
-/a /u "$@" build\bcc32\Debug\str_basename.obj build\bcc32\Debug\str_case_diff.obj build\bcc32\Debug\str_case_diffn.obj build\bcc32\Debug\str_case_equal.obj build\bcc32\Debug\str_case_start.obj build\bcc32\Debug\str_cat.obj build\bcc32\Debug\str_chr.obj build\bcc32\Debug\str_copy.obj build\bcc32\Debug\str_copyb.obj build\bcc32\Debug\str_copyn.obj build\bcc32\Debug\str_decamelize.obj build\bcc32\Debug\str_diff.obj build\bcc32\Debug\str_diffn.obj build\bcc32\Debug\str_dup.obj build\bcc32\Debug\str_equal.obj build\bcc32\Debug\str_find.obj build\bcc32\Debug\str_findb.obj build\bcc32\Debug\str_istr.obj build\bcc32\Debug\str_len.obj build\bcc32\Debug\str_lower.obj build\bcc32\Debug\str_ndup.obj build\bcc32\Debug\str_ptime.obj build\bcc32\Debug\str_rchr.obj build\bcc32\Debug\str_rchrs.obj build\bcc32\Debug\str_start.obj build\bcc32\Debug\str_tok.obj
+/a /u "$@" build\bcc32\Debug\str_basename.obj build\bcc32\Debug\str_case_diff.obj build\bcc32\Debug\str_case_diffn.obj build\bcc32\Debug\str_case_equal.obj build\bcc32\Debug\str_case_start.obj build\bcc32\Debug\str_cat.obj build\bcc32\Debug\str_chr.obj build\bcc32\Debug\str_copy.obj build\bcc32\Debug\str_copyb.obj build\bcc32\Debug\str_copyn.obj build\bcc32\Debug\str_decamelize.obj build\bcc32\Debug\str_diff.obj build\bcc32\Debug\str_diffn.obj build\bcc32\Debug\str_dup.obj build\bcc32\Debug\str_equal.obj build\bcc32\Debug\str_find.obj build\bcc32\Debug\str_findb.obj build\bcc32\Debug\str_istr.obj build\bcc32\Debug\str_len.obj build\bcc32\Debug\str_lower.obj build\bcc32\Debug\str_ndup.obj build\bcc32\Debug\str_ptime.obj build\bcc32\Debug\str_rchr.obj build\bcc32\Debug\str_rchrs.obj build\bcc32\Debug\str_start.obj build\bcc32\Debug\str_tok.obj build\bcc32\Debug\isleap.obj build\bcc32\Debug\time_table_spd.obj
 |
 
 
@@ -2226,9 +2226,9 @@ build\bcc32\Debug\stralloc.lib: build\bcc32\Debug\mmap_filename.obj build\bcc32\
 |
 
 
-build\bcc32\Debug\strarray.lib: build\bcc32\Debug\fnmatch.obj build\bcc32\Debug\strarray_appends.obj build\bcc32\Debug\strarray_from_argv.obj build\bcc32\Debug\strarray_index_of.obj build\bcc32\Debug\strarray_joins.obj build\bcc32\Debug\strarray_pop.obj build\bcc32\Debug\strarray_prepends.obj build\bcc32\Debug\strarray_push.obj build\bcc32\Debug\strarray_push_sa.obj build\bcc32\Debug\strarray_pushb.obj build\bcc32\Debug\strarray_pushd.obj build\bcc32\Debug\strarray_removeprefixs.obj build\bcc32\Debug\strarray_removesuffixs.obj build\bcc32\Debug\strarray_set.obj build\bcc32\Debug\strarray_sort.obj build\bcc32\Debug\strarray_to_argv.obj
+build\bcc32\Debug\strarray.lib: build\bcc32\Debug\fnmatch.obj build\bcc32\Debug\strarray_appends.obj build\bcc32\Debug\strarray_from_argv.obj build\bcc32\Debug\strarray_index_of.obj build\bcc32\Debug\strarray_joins.obj build\bcc32\Debug\strarray_pop.obj build\bcc32\Debug\strarray_prepends.obj build\bcc32\Debug\strarray_push.obj build\bcc32\Debug\strarray_push_sa.obj build\bcc32\Debug\strarray_pushb.obj build\bcc32\Debug\strarray_pushd.obj build\bcc32\Debug\strarray_removeprefixs.obj build\bcc32\Debug\strarray_removesuffixs.obj build\bcc32\Debug\strarray_set.obj build\bcc32\Debug\strarray_sort.obj build\bcc32\Debug\strarray_to_argv.obj build\bcc32\Debug\strarray_transform.obj
 	tlib @&&|
-/a /u "$@" build\bcc32\Debug\fnmatch.obj build\bcc32\Debug\strarray_appends.obj build\bcc32\Debug\strarray_from_argv.obj build\bcc32\Debug\strarray_index_of.obj build\bcc32\Debug\strarray_joins.obj build\bcc32\Debug\strarray_pop.obj build\bcc32\Debug\strarray_prepends.obj build\bcc32\Debug\strarray_push.obj build\bcc32\Debug\strarray_push_sa.obj build\bcc32\Debug\strarray_pushb.obj build\bcc32\Debug\strarray_pushd.obj build\bcc32\Debug\strarray_removeprefixs.obj build\bcc32\Debug\strarray_removesuffixs.obj build\bcc32\Debug\strarray_set.obj build\bcc32\Debug\strarray_sort.obj build\bcc32\Debug\strarray_to_argv.obj
+/a /u "$@" build\bcc32\Debug\fnmatch.obj build\bcc32\Debug\strarray_appends.obj build\bcc32\Debug\strarray_from_argv.obj build\bcc32\Debug\strarray_index_of.obj build\bcc32\Debug\strarray_joins.obj build\bcc32\Debug\strarray_pop.obj build\bcc32\Debug\strarray_prepends.obj build\bcc32\Debug\strarray_push.obj build\bcc32\Debug\strarray_push_sa.obj build\bcc32\Debug\strarray_pushb.obj build\bcc32\Debug\strarray_pushd.obj build\bcc32\Debug\strarray_removeprefixs.obj build\bcc32\Debug\strarray_removesuffixs.obj build\bcc32\Debug\strarray_set.obj build\bcc32\Debug\strarray_sort.obj build\bcc32\Debug\strarray_to_argv.obj build\bcc32\Debug\strarray_transform.obj
 |
 
 

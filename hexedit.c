@@ -184,13 +184,13 @@ patch_apply(unsigned char* x, size_t n, patch_t* p) {
 
 void
 usage(const char* av0) {
-  buffer_putm(buffer_2,
+  buffer_putm_internal(buffer_2,
               "Usage: ",
               av0,
               " <file> [edit-specifier]\n"
               "\n"
               "  [edit-specifier] is <address>=<value>\n"
-              "\n");
+              "\n", 0);
   buffer_putnlflush(buffer_2);
 }
 
@@ -209,8 +209,10 @@ main(int argc, char* argv[]) {
     return 1;
   }
 
-  if((fd = open_read(argv[index])) == -1 || buffer_mmapread_fd(&file, fd))
-    diesys(1, str_basename(argv[0]), ": opening file: ", argv[index]);
+  if((fd = open_read(argv[index])) == -1 || buffer_mmapread_fd(&file, fd)) {
+    errmsg_warnsys(str_basename(argv[0]), ": opening file: ", argv[index], 0);
+    return 1;
+  }
 
   x = (unsigned char*)file.x;
   n = file.n;

@@ -210,8 +210,8 @@ elf_dump_segments(uint8* base) {
     buffer_putxint640(buffer_1, filesz, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
     buffer_putxint640(buffer_1, memsz, ELF_BITS(base) / 4);
-    buffer_putm(
-        buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-");
+    buffer_putm_internal(
+        buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-", 0);
     buffer_putnlflush(buffer_1);
   }
 }

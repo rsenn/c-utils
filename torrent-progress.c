@@ -48,7 +48,7 @@ typedef loff_t offset_type;
 #elif defined(_MSC_VER)
 typedef LONG64 offset_type;
 #else
-typedef off64_t offset_type;
+typedef int64 offset_type;
 #endif
 
 #if __MINGW64__

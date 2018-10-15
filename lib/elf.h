@@ -846,7 +846,7 @@ typedef struct {
    interpreter, so we don't fully specify them here.  */
 
 typedef struct {
-  int32_t a_type; /* Entry type */
+  int32 a_type; /* Entry type */
   union {
     long int a_val;      /* Integer value */
     void* a_ptr;         /* Pointer value */

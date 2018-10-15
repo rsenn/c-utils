@@ -80,7 +80,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
         }
         break;
       } else {
-        if(strcmp(argv[optind], "--") == 0) {
+        if(str_diff(argv[optind], "--") == 0) {
           optind++;
           break;
         }
@@ -93,7 +93,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
           int index_found = -1;
           const struct longopt* optdef = 0;
           while(longopts->name != 0) {
-            if(strncmp(spec_long, longopts->name, spec_len) == 0) {
+            if(str_diffn(spec_long, longopts->name, spec_len) == 0) {
               if(optdef != 0) {
                 if(opterr) {
                   buffer_putm_2(buffer_2, "ambiguous option: ", spec_long);

@@ -454,13 +454,13 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm_4(b, "Kanal:\t", e->channel.s /*strlist_at(sl, 1)*/, sep);
-  buffer_putm_4(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep);
-  buffer_putm_4(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep);
+  buffer_putm_internal(b, "Kanal:\t", e->channel.s /*strlist_at(sl, 1)*/, sep, 0);
+  buffer_putm_internal(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep, 0);
+  buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, 0);
 
-  buffer_putm_4(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep);
-  buffer_putm_3(b, "Dauer:\t", format_time(e->dr), sep);
-  buffer_putm_4(b, "Grösse:\t", format_num(e->mbytes), "MB", sep);
+  buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, 0);
+  buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, 0);
+  buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, 0);
 
   /* buffer_putm_3(b, "URL:\t", url , sep);
    buffer_putm_5(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);

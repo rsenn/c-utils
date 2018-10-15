@@ -44,7 +44,7 @@ xml_find_all_attrs(xmlnode* node, const char* attrs) {
   strlist attrlist;
   xmlnodeset_clear(&r);
   strlist_init(&attrlist, '|');
- // strlist_froms(&attrlist, attrs, '|');
+  // strlist_froms(&attrlist, attrs, '|');
   stralloc_copys(&attrlist.sa, attrs);
 
   r = xml_find_all_2(node, xml_has_attr, NULL, &attrlist);

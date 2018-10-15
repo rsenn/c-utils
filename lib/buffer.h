@@ -96,17 +96,17 @@ int buffer_putm_internal_flush(buffer*b, ...);
 
 #ifdef __BORLANDC__
 #define buffer_putm(b, args) buffer_putm_internal(b, args, (char*)0)
+#define buffer_putmflush(b, args) buffer_putm_internal_flush(b, args, (char*)0)
+#else
+#define buffer_putm(...) buffer_putm_internal(__VA_ARGS__, (char*)0)
+#define buffer_putmflush(b, ...) buffer_putm_internal_flush(b, __VA_ARGS__, (char*)0)
+#endif
 #define buffer_putm_2(b, a1, a2) buffer_putm_internal(b, a1, a2, (char*)0)
 #define buffer_putm_3(b, a1, a2, a3) buffer_putm_internal(b, a1, a2, a3, (char*)0)
 #define buffer_putm_4(b, a1, a2, a3, a4) buffer_putm_internal(b, a1, a2, a3, a4, (char*)0)
 #define buffer_putm_5(b, a1, a2, a3, a4, a5) buffer_putm_internal(b, a1, a2, a3, a4, a5, (char*)0)
 #define buffer_putm_6(b, a1, a2, a3, a4, a5, a6) buffer_putm_internal(b, a1, a2, a3, a4, a5, a6, (char*)0)
 #define buffer_putm_7(b, a1, a2, a3, a4, a5, a6, a7) buffer_putm_internal(b, a1, a2, a3, a4, a5, a6, a7, (char*)0)
-#define buffer_putmflush(b, args) buffer_putm_internal_flush(b, args, (char*)0)
-#else
-#define buffer_putm(...) buffer_putm_internal(__VA_ARGS__, (char*)0)
-#define buffer_putmflush(b, ...) buffer_putm_internal_flush(b, __VA_ARGS__, (char*)0)
-#endif
 
 int buffer_putspace(buffer* b);
 int buffer_putnlflush(buffer* b); /* put \n and flush */

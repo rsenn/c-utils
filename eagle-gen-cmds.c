@@ -139,7 +139,7 @@ cbmap_t devicesets, packages, parts, nets, symbols;
 static strarray layers;
 static int measures_layer = -1, bottom_layer = -1;
 static array wires;
-static wire bounds = {DBL_MAX, DBL_MAX, DBL_MAX, DBL_MAX};
+static wire bounds;
 
 static int do_list_layers, do_draw_measures;
 static const char* current_layer = "Bottom";
@@ -155,7 +155,9 @@ static stralloc current_alignment;
 
 static inline struct pos
 xy_neg(const struct pos p) {
-  struct pos r = {-p.x, -p.y};
+  struct pos r;
+  r.x = -p.x;
+  r.y = -p.y;
   return r;
 }
 static inline void
@@ -746,7 +748,7 @@ void
 node_print(xmlnode* node) {
   buffer_putm_2(buffer_1, "<", node->name);
   print_element_attrs(node);
-  buffer_putm(buffer_1, ">");
+  buffer_puts(buffer_1, ">");
   buffer_putnlflush(buffer_1);
 }
 
@@ -1071,7 +1073,8 @@ match_query(xmlnode* doc, const char* q) {
           elem_name = attr_name;
           attr_name = "name";
         }
-        stralloc_copym_internal(&query, "", elem_name, "[@", attr_name, "='", v, "']", NULL);
+        stralloc_zero(&query);
+        stralloc_catm_internal(&query, "", elem_name, "[@", attr_name, "='", v, "']", NULL);
         stralloc_0(&query);
         match_query(doc, query.s);
         part_names = getparts(doc);
@@ -1189,7 +1192,11 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   struct longopt opts[] = {
-      {"help", 0, NULL, 'h'}, {"layer", 1, NULL, 'l'}, {"layers", 0, NULL, 'L'}, {"draw", 0, NULL, 'd'},
+      {"help", 0, NULL, 'h'},
+      {"layer", 1, NULL, 'l'},
+      {"layers", 0, NULL, 'L'},
+      {"draw", 0, NULL, 'd'},
+      {0}
   };
 
   for(;;) {
@@ -1205,6 +1212,8 @@ main(int argc, char* argv[]) {
       default: usage(argv[0]); return 1;
     }
   }
+  
+  bounds.x1 = bounds.y1 = bounds.x2 = bounds.y2 = DBL_MAX;
 
   {
     buffer input, out;

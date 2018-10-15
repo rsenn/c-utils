@@ -23,7 +23,10 @@ main(int argc, char* argv[]) {
       buffer_putsflush(buffer_2, "out of memory\n");
       return 111;
     }
-    if(dns_ip4(&out, &fqdn) == -1) diesys(111, "unable to find IP address for ", *argv);
+    if(dns_ip4(&out, &fqdn) == -1) {
+      errmsg_warnsys("unable to find IP address for ", *argv, 0);
+      return 111;
+    }
 
     for(i = 0; i + 4 <= out.len; i += 4) {
       if(i) buffer_puts(buffer_1, " ");

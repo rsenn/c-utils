@@ -159,7 +159,7 @@ pathtool(const char* arg, stralloc* sa) {
 
 void
 usage(char* av0) {
-  buffer_putm(buffer_1,
+  buffer_putm_internal(buffer_1,
               "Usage: ",
               str_basename(av0),
               " [OPTIONS] <path...>\n",
@@ -176,7 +176,7 @@ usage(char* av0) {
               "  -f, --canonicalize     Canonicalize by following every symlink in\n"
               "                         every component of the given name recursively;\n"
               "                         all but the last component must exist\n",
-              "\n");
+              "\n", 0);
   buffer_flush(buffer_1);
 }
 
@@ -196,6 +196,7 @@ main(int argc, char* argv[]) {
       {"windows", 0, NULL, 'w'},
       {"absolute", 0, NULL, 'a'},
       {"canonicalize", 0, NULL, 'f'},
+      {0}
   };
 
 #if WINDOWS_NATIVE

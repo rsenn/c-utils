@@ -8,8 +8,7 @@ int xml_tag_pred(xmlnode* node, const void* arg);
 static xmlnode*
 xml_find_parent_predicate(xmlnode* node, int (*pred)(), const void* vptr[]) {
   while((node = node->parent)) {
-    if(pred(node, vptr[0], vptr[1], vptr[2]))
-      break;
+    if(pred(node, vptr[0], vptr[1], vptr[2])) break;
   }
   return node;
 }
@@ -36,21 +35,36 @@ xml_pfind_parent(xmlnode* node, int (*pred)(), const void* ptr[]) {
 
 xmlnode*
 xml_find_parent_pred_1(xmlnode* node, int (*pred)(/*xmlnode*,const void*,*/), const void* arg) {
-  const void* vptr[] = {arg, NULL, NULL};
+  const void* vptr[4];
+  vptr[0] = arg;
+  vptr[1] = NULL;
+  vptr[2] = NULL;
+  vptr[3] = NULL;
   return xml_pfind_parent(node, pred, vptr);
 }
 
 xmlnode*
-xml_find_parent_pred_2(xmlnode* node, int (*pred)(/*xmlnode*,const void*,const void**/), const void* a0, const void* a1) {
-  const void* vptr[] = {a0, a1, NULL};
+xml_find_parent_pred_2(xmlnode* node,
+                       int (*pred)(/*xmlnode*,const void*,const void**/),
+                       const void* a0,
+                       const void* a1) {
+  const void* vptr[4];
+  vptr[0] = a0;
+  vptr[1] = a1;
+  vptr[2] = NULL;
+  vptr[3] = NULL;
   return xml_pfind_parent(node, pred, vptr);
 }
 xmlnode*
-xml_find_parent_pred_3(xmlnode* node, int (*pred)(/*xmlnode*,const void*,const void**/), const void* a0, const void* a1, const void* a2) {
-  const void* vptr[] = {a0, a1, a2};
+xml_find_parent_pred_3(
+    xmlnode* node, int (*pred)(/*xmlnode*,const void*,const void**/), const void* a0, const void* a1, const void* a2) {
+  const void* vptr[4];
+  vptr[0] = a0;
+  vptr[1] = a1;
+  vptr[2] = a2;
+  vptr[3] = NULL;
   return xml_pfind_parent(node, pred, vptr);
 }
-
 
 xmlnode*
 xml_find_parent(xmlnode* node, const char* tag) {

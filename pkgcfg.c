@@ -317,7 +317,7 @@ pkg_list() {
 
       while((entry = dir_read(&d))) {
 
-        stralloc_catm(&path, "/", entry);
+        stralloc_catm_internal(&path, "/", entry, 0);
 
         if(stralloc_endb(&path, ".pc", 3)) {
 
@@ -382,7 +382,7 @@ pkg_open(const char* pkgname, pkg* pf) {
 
     stralloc path = strlist_at_sa(&cmd.path, i);
 
-    stralloc_catm(&path, "/", pkgname, ".pc");
+    stralloc_catm_internal(&path, "/", pkgname, ".pc", 0);
     stralloc_nul(&path);
 
     stralloc_copy(&pf->name, &path);
@@ -467,6 +467,7 @@ main(int argc, char* argv[]) {
       {"libs", 0, NULL, PRINT_LIBS},
       {"path", 0, NULL, PRINT_PATH},
       {"list-all", 0, NULL, 'l'},
+	  {0},
   };
 
   for(;;) {

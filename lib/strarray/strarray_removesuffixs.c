@@ -9,7 +9,8 @@ strarray_removesuffixs(strarray* arr, const char* s) {
   char** p = array_start(arr);
   for(i = 0; i < n; ++i) {
     size_t len = str_len(*p);
-    stralloc sa = {*p, len, len + 1};
+    stralloc sa;
+    sa.s = *p; sa.len = len; sa.a = len + 1;
     if(stralloc_endb(&sa, s, slen)) {
       sa.len -= slen;
     }

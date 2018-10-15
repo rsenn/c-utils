@@ -320,8 +320,8 @@ main(int argc, char** argv) {
       {"list-exports", 0, &list_exports, 'e'},
       {"list-imports", 0, &list_imports, 'i'},
       {"version", 0, NULL, 'V'},
-
       {"search-dir", 0, NULL, 'D'},
+      {0}
   };
 
   strlist sp;

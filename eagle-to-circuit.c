@@ -691,7 +691,8 @@ match_query(xmlnode* doc, const char* q) {
           elem_name = attr_name;
           attr_name = "name";
         }
-        stralloc_copym_internal(&query, "", elem_name, "[@", attr_name, "='", v, "']", NULL);
+        stralloc_zero(&query);
+        stralloc_catm_internal(&query, "", elem_name, "[@", attr_name, "='", v, "']", NULL);
         stralloc_0(&query);
         match_query(doc, query.s);
         part_names = getparts(doc);

@@ -1045,8 +1045,7 @@ $(call lib-target,rdir)
 $(call lib-target,scan)
 $(call lib-target,sig)
 $(call lib-target,slist)
-$(call lib-target,str)
-$(call lib-target,strarray)
+$(call lib-target,str,lib/isleap.c lib/time_table_spd.c)
 $(call lib-target,stralloc,lib/utf8.c)
 $(call lib-target,strarray,lib/fnmatch.c)
 $(call lib-target,strlist)
@@ -1115,13 +1114,13 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)getopt.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array buffer fmt mmap open  strlist stralloc str byte)
+$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)getopt.o $(call add-library, array buffer fmt mmap open  strlist stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)getopt.o $(BUILDDIR)popen.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, array strlist buffer fmt mmap open  scan stralloc str byte)
+$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)getopt.o $(BUILDDIR)popen.o $(call add-library, array strlist buffer fmt mmap open  scan stralloc str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

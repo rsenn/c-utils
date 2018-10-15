@@ -7,6 +7,10 @@
 #endif
 #include "../iarray.h"
 
+#ifdef __BORLANDC__
+#define InterlockedCompareExchangePointer InterlockedCompareExchange
+#endif
+
 #ifdef __dietlibc__
 # include <sys/atomic.h>
 #elif WINDOWS

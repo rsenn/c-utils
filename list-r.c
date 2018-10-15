@@ -53,9 +53,6 @@
 #include <shlwapi.h>
 #include <windows.h>
 #endif
-#ifdef HAVE_SYS_FCNTL_H
-#include <sys/fcntl.h>
-#endif
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0
@@ -602,7 +599,7 @@ write_err_check(int fd, const void* buf, size_t len) {
 
 void
 usage(char* argv0) {
-  buffer_putm(buffer_1,
+  buffer_putm_internal(buffer_1,
               "Usage: ",
               str_basename(argv0),
               " [-o output] [infile or stdin]\n\n",
@@ -615,7 +612,7 @@ usage(char* argv0) {
               "  -r, --relative            relative path\n",
               "  -o, --output     FILE     write output to FILE\n",
               "  -x, --exclude    PATTERN  exclude entries matching PATTERN\n",
-              "  -t, --time-style FORMAT   format time according to FORMAT\n");
+              "  -t, --time-style FORMAT   format time according to FORMAT\n", 0);
   buffer_putnlflush(buffer_1);
 }
 
@@ -639,6 +636,7 @@ main(int argc, char* argv[]) {
 #if defined(_WIN32) ||  defined(_WIN64)
       {"separator", 1, NULL, 's'},
 #endif
+      {0}
   };
 
 #if WINDOWS && defined(O_BINARY)

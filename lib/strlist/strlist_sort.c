@@ -2,7 +2,6 @@
 #include "../strlist.h"
 #include <string.h>
 
-
 typedef int (cmp_fn_t)(const void *, const void *);
 
 size_t

@@ -564,7 +564,7 @@ void
 node_print(xmlnode* node) {
   buffer_putm_2(buffer_1, "<", node->name);
   print_element_attrs(node);
-  buffer_putm(buffer_1, ">");
+  buffer_puts(buffer_1, ">");
   buffer_putnlflush(buffer_1);
 }
 
@@ -738,7 +738,7 @@ xml_query(xmlnode* doc, const char* elem_name, const char* name) {
   xml_predicate_fn* pred;
   xmlnodeset xr;
   buffer_putm_2(buffer_1, "XML query (element=", elem_name);
-  if(name) buffer_putm_3(buffer_1, ", name=", name);
+  if(name) buffer_putm_2(buffer_1, ", name=", name);
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
   pred = name ? (void*)xml_match_name_and_attr : (void*)xml_match_name;

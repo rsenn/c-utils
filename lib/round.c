@@ -15,14 +15,17 @@ static const double toint = 1 / EPS;
 #include "uint64.h"
 
 double
-round(double x) {
+round(double x) { 
+ int e;
+ double y;
   union {
     double f;
     uint64 i;
-  } u = {x};
-  int e = u.i >> 52 & 0x7ff;
-  double y;
-
+  } u;
+  
+  u.f = x;
+  e = u.i >> 52 & 0x7ff;
+  
   if(e >= 0x3ff + 52) return x;
   if(u.i >> 63) x = -x;
   if(e < 0x3ff - 1) {

@@ -68,7 +68,7 @@ typedef struct instance {
 /* ----------------------------------------------------------------------- */
 void
 dump_part(part_t const* p) {
-  buffer_putm(buffer_2,
+  buffer_putm_internal(buffer_2,
               "dump_part{name=",
               p->name,
               ",library=",
@@ -78,7 +78,7 @@ dump_part(part_t const* p) {
               ",device=",
               p->device,
               ",value=",
-              p->value);
+              p->value, 0);
 
   buffer_puts(buffer_2, ",x=");
   buffer_putdouble(buffer_2, p->x, 1);
@@ -115,7 +115,7 @@ output_move(const char* name, double x, double y) {
   stralloc cmd;
   stralloc_init(&cmd);
 
-  stralloc_catm(&cmd, "MOVE ", name, " (");
+  stralloc_catm_internal(&cmd, "MOVE ", name, " (", 0);
   stralloc_catdouble(&cmd, x, 2);
   stralloc_catc(&cmd, ' ');
   stralloc_catdouble(&cmd, y, 2);
@@ -133,7 +133,7 @@ output_rotate(const char* name, long angle) {
 
   stralloc_cats(&cmd, "ROTATE =R");
   stralloc_catlong(&cmd, angle % 360);
-  stralloc_catm(&cmd, " '", name, "'");
+  stralloc_catm_internal(&cmd, " '", name, "'", 0);
 
   strlist_push_sa(&cmds, &cmd);
   stralloc_free(&cmd);

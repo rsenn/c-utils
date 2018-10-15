@@ -55,13 +55,14 @@ strarray_dump(buffer* b, const strarray* arr) {
 
 void
 usage(char* argv0) {
-  buffer_putm(buffer_1,
+  buffer_putm_internal(buffer_1,
               "Usage: ",
               str_basename(argv0),
               " [sources...]\n",
               "\n",
               "Options\n",
-              "  -h, --help                show this help\n");
+              "  -h, --help                show this help\n",
+              0);
   buffer_putnlflush(buffer_1);
 }
 
@@ -74,6 +75,7 @@ main(int argc, char* argv[]) {
   int index = 0;
   struct longopt opts[] = {
       {"help", 0, NULL, 'h'},
+      {0}
   };
 
   for(;;) {

@@ -43,7 +43,7 @@ mklink(char* target, char* link) {
   struct stat st;
 
   if(stat(target, &st) == -1) {
-    carpsys("stat failed");
+    errmsg_warnsys("stat failed", 0);
     return -1;
   }
 
@@ -102,7 +102,8 @@ sln(const char* path) {
     stralloc_nul(&d);
 
     if(mklink_sa(&s, &d) == -1) {
-      diesys(2, "symlink failed", NULL);
+      errmsg_warnsys("symlink failed", NULL);
+      exit(2); 
     }
     stralloc_copy(&s, &d);
   }

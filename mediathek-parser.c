@@ -393,6 +393,7 @@ main(int argc, char* argv[]) {
       {"debug", 0, NULL, 'd'},
       {"low", 0, NULL, 'l'},
       {"format", 1, NULL, 'F'},
+      {0},
   };
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {

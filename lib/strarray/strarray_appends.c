@@ -8,7 +8,9 @@ strarray_appends(strarray* arr, const char* s) {
   char** p = strarray_begin(arr);
   for(i = 0; i < n; ++i) {
     size_t len = str_len(*p);
-    stralloc sa = { *p, len, len};
+    stralloc sa;
+    sa.s = *p;
+    sa.len = sa.a = len;
     if(!stralloc_cats(&sa, s)) return 0;
     stralloc_nul(&sa);
     *p++ = sa.s;

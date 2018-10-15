@@ -163,7 +163,7 @@ pe_dump_imports(uint8* base) {
 
 void
 usage(char* av0) {
-  buffer_putm(buffer_1,
+  buffer_putm_internal(buffer_1,
               "Usage: ",
               str_basename(av0),
               " [OPTIONS] <file...>\n",
@@ -177,7 +177,7 @@ usage(char* av0) {
               "  -s, --sections          List PE32 sections\n",
               "  -E, --export-directory  Print export directory\n",
               "  -D, --data-directory    Print data directory\n",
-              "\n");
+              "\n", 0);
   buffer_flush(buffer_1);
 }
 
@@ -188,14 +188,16 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"imports", 0, &list_imports, 'i'},
-                           {"exports", 0, &list_exports, 'e'},
-                           {"deps", 0, &list_deps, 'd'},
-                           {"sections", 0, &list_sections, 's'},
-                           {"export-directory", 0, &print_export_dir, 'E'},
-                           {"data-directory", 0, &print_data_dir, 'D'},
-                           {NULL, 0, NULL, 0}};
+  struct longopt opts[] = {
+    {"help", 0, NULL, 'h'},
+    {"imports", 0, &list_imports, 'i'},
+    {"exports", 0, &list_exports, 'e'},
+    {"deps", 0, &list_deps, 'd'},
+    {"sections", 0, &list_sections, 's'},
+    {"export-directory", 0, &print_export_dir, 'E'},
+    {"data-directory", 0, &print_data_dir, 'D'},
+    {0}
+  };
 
   for(;;) {
     c = getopt_long(argc, argv, "hiedsED", opts, &index);

@@ -8,7 +8,8 @@ strarray_prepends(strarray* arr, const char* s) {
   for(i = 0; i < n; ++i) {
     char** p = array_get(arr, sizeof(char*), i);
     size_t len = str_len(*p);
-    stralloc sa = {*p, len, len};
+    stralloc sa;
+    sa.s = *p; sa.len = sa.a = len;
     if(!stralloc_prepend(&sa, s)) return 0;
     stralloc_nul(&sa);
     *p = sa.s;
