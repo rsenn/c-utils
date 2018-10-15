@@ -55,7 +55,8 @@ elf_dump_dynamic(uint8* base) {
                                               "RPATH",      "SYMBOLIC",   "REL",           "RELSZ",          "RELENT",
                                               "PLTREL",     "DEBUG",      "TEXTREL",       "JMPREL",         "BIND_NOW",
                                               "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ",  "FINI_ARRAYSZ",   "RUNPATH",
-                                              "FLAGS",      "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"};
+                                              "FLAGS",      "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"
+                                             };
 
   if(di == -1) return;
 
@@ -214,7 +215,7 @@ elf_dump_segments(uint8* base) {
     buffer_puts(buffer_1, " 0x");
     buffer_putxint640(buffer_1, memsz, ELF_BITS(base) / 4);
     buffer_putm_internal(
-        buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-", 0);
+      buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-", 0);
     buffer_putnlflush(buffer_1);
   }
 }

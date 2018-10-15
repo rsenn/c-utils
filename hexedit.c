@@ -34,22 +34,22 @@ buffer_filename(buffer* b, stralloc* sa) {
   stralloc_zero(sa);
   stralloc_nul(sa);
 
-#ifdef F_GETPATH  
-  stralloc_ready(sa, MAXPATHLEN+1);
+#ifdef F_GETPATH
+  stralloc_ready(sa, MAXPATHLEN + 1);
 
   fcntl(b->fd, F_GETPATH, sa->s);
   stralloc(b->fd, F_GETPATH, sa->s);
   stralloc_shrink(sa);
 #else
   {
-  stralloc procp;
-  stralloc_init(&procp);
-  stralloc_cats(&procp, "/proc/");
-  stralloc_catulong(&procp, getpid());
-  stralloc_cats(&procp, "/fd/");
-  stralloc_catulong(&procp, b->fd);
-  stralloc_nul(&procp);
-  path_readlink(procp.s, sa);
+    stralloc procp;
+    stralloc_init(&procp);
+    stralloc_cats(&procp, "/proc/");
+    stralloc_catulong(&procp, getpid());
+    stralloc_cats(&procp, "/fd/");
+    stralloc_catulong(&procp, b->fd);
+    stralloc_nul(&procp);
+    path_readlink(procp.s, sa);
   }
 #endif
 }
@@ -71,7 +71,7 @@ buffer_backup(buffer* b) {
   stralloc_cats(&backup, ".orig");
   stralloc_nul(&backup);
   stralloc_nul(&orig);
-  
+
 #if WINDOWS_NATIVE
   if(CopyFileA(orig.s, backup.s, FALSE) != TRUE) return -1;
 
@@ -80,9 +80,9 @@ buffer_backup(buffer* b) {
   if(rename(orig.s, backup.s) ==  -1) return -1;
 
   if((fd = open_rw(orig.s)) == -1) return -1;
-  
+
   if(io_sendfile(fd, b->fd, 0, size) == -1) return -1;
-#endif  
+#endif
 
   buffer_close(b);
 
@@ -185,12 +185,12 @@ patch_apply(unsigned char* x, size_t n, patch_t* p) {
 void
 usage(const char* av0) {
   buffer_putm_internal(buffer_2,
-              "Usage: ",
-              av0,
-              " <file> [edit-specifier]\n"
-              "\n"
-              "  [edit-specifier] is <address>=<value>\n"
-              "\n", 0);
+                       "Usage: ",
+                       av0,
+                       " <file> [edit-specifier]\n"
+                       "\n"
+                       "  [edit-specifier] is <address>=<value>\n"
+                       "\n", 0);
   buffer_putnlflush(buffer_2);
 }
 
@@ -299,7 +299,7 @@ main(int argc, char* argv[]) {
   patch(x, 0x0051fc14, 0x74, 0xeb);
 
   if((p = patch_find(x, n))) {
-    int check = patch_check(x, n, p); 
+    int check = patch_check(x, n, p);
 
     buffer_puts(buffer_2,  check == 1 ? "Already patched: " : "Found patch: ");
     buffer_puts(buffer_2, p->name);

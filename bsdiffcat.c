@@ -92,12 +92,12 @@ bsdiff_read_header(buffer* b, bsdiff_header* hdr) {
 
 int
 bsdiff_read_ctrl(buffer* b, bsdiff_control* ctrl) {
-    byte_zero(ctrl, sizeof(ctrl));
+  byte_zero(ctrl, sizeof(ctrl));
 
-    if(!buffer_getint64(b, &ctrl->add_len)) return 0;
-    if(!buffer_getint64(b, &ctrl->extra_len)) return 0;
-    if(!buffer_getint64(b, &ctrl->seek_off)) return 0;
-    return 1;
+  if(!buffer_getint64(b, &ctrl->add_len)) return 0;
+  if(!buffer_getint64(b, &ctrl->extra_len)) return 0;
+  if(!buffer_getint64(b, &ctrl->seek_off)) return 0;
+  return 1;
 }
 
 int64
@@ -112,7 +112,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
   buffer_bz2(&bextra, extra, 0);
 
   for(;;) {
-    uint64 len; 
+    uint64 len;
     if(!bsdiff_read_ctrl(&bctrl, &rec)) break;
 
 
@@ -140,7 +140,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
         }
         for(j = 0; j < len; ++j) {
 
-          char to, from = src[j]; 
+          char to, from = src[j];
 
           to = add[j] += src[j];
 
@@ -155,7 +155,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
             buffer_putnlflush(buffer_1);
           }
         }
-          free(src);
+        free(src);
 
         if(new.x) {
           buffer_put(&new, add, len);

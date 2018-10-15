@@ -69,16 +69,16 @@ typedef struct instance {
 void
 dump_part(part_t const* p) {
   buffer_putm_internal(buffer_2,
-              "dump_part{name=",
-              p->name,
-              ",library=",
-              p->library,
-              ",deviceset",
-              p->deviceset,
-              ",device=",
-              p->device,
-              ",value=",
-              p->value, 0);
+                       "dump_part{name=",
+                       p->name,
+                       ",library=",
+                       p->library,
+                       ",deviceset",
+                       p->deviceset,
+                       ",device=",
+                       p->device,
+                       ",value=",
+                       p->value, 0);
 
   buffer_puts(buffer_2, ",x=");
   buffer_putdouble(buffer_2, p->x, 1);

@@ -46,7 +46,7 @@ vartab_add(struct vartab* vartab, struct var* var, struct search* context) {
 #ifdef DEBUG
       unsigned long dist =
 #endif
-          var_bsearch(context);
+        var_bsearch(context);
 
       /* there must not be a full match, otherwise this means that
          the variable is already in the list which it should not! */

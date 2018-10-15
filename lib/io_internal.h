@@ -32,14 +32,14 @@ my_extern HANDLE io_comport;
 //#define HAVE_EPOLL 1
 #define HAVE_SIGIO 1
 
- #ifdef HAVE_SIGIO
-  #ifndef _GNU_SOURCE
-   #define _GNU_SOURCE
-  #endif
-  #undef _POSIX_C_SOURCE
-  #define _POSIX_C_SOURCE  199309L
- #include <signal.h>
- #endif
+#ifdef HAVE_SIGIO
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE  199309L
+#include <signal.h>
+#endif
 #endif
 
 #if !defined(WINDOWS)

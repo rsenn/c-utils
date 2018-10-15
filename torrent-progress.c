@@ -95,9 +95,9 @@ filesize(int fd) {
 #else
   off_t pos, end;
   /* if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1; */
-  if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t)-1) return -1;
+  if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t) - 1) return -1;
   /* if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1; */
-  if((end = lseek(fd, 0, SEEK_END)) == (off_t)-1) return -1;
+  if((end = lseek(fd, 0, SEEK_END)) == (off_t) - 1) return -1;
 
   sz = end;
   lseek(fd, pos, SEEK_SET);
@@ -164,11 +164,11 @@ main(int argc, char* argv[]) {
     if(av[0] != '-') break;
 
     switch(av[1]) {
-      case 'F': fraction = 0; break;
-      case 'v': verbose++; break;
-      case 'S': space = 0; break;
-      case '-': ++ai; goto next;
-      default: goto next;
+    case 'F': fraction = 0; break;
+    case 'v': verbose++; break;
+    case 'S': space = 0; break;
+    case '-': ++ai; goto next;
+    default: goto next;
     }
   }
 next:
@@ -190,15 +190,15 @@ next:
     remain = fsize;
 
     if(verbose) {
-		buffer_puts(buffer_2, "memory map size: ");
-		buffer_putuong(buffer_2, map_size / 1024);
-		buffer_puts(buffer_2, "kB (0x");
-		buffer_putxlong(buffer_2, map_size);
-		buffer_puts(buffer_2, ") iterations: ");
-		buffer_putuint64(buffer_2, iterations);
-		buffer_puts(buffer_2, " (end offset: 0x");
-		buffer_putxuint64(buffer_2, fsize);
-		buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_2, "memory map size: ");
+      buffer_putuong(buffer_2, map_size / 1024);
+      buffer_puts(buffer_2, "kB (0x");
+      buffer_putxlong(buffer_2, map_size);
+      buffer_puts(buffer_2, ") iterations: ");
+      buffer_putuint64(buffer_2, iterations);
+      buffer_puts(buffer_2, " (end offset: 0x");
+      buffer_putxuint64(buffer_2, fsize);
+      buffer_putnlflush(buffer_2);
     }
 
     //(uint64)map_size * iterations);

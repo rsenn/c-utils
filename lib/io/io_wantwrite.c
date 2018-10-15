@@ -75,14 +75,14 @@ io_wantwrite_really(fd_t d, io_entry* e) {
     p.fd = d;
     p.events = POLLOUT;
     switch(poll(&p, 1, 0)) {
-      case 1:
-        e->canwrite = 1;
-        break;
-      case 0:
-        e->canwrite = 0;
-        break;
-      case -1:
-        return;
+    case 1:
+      e->canwrite = 1;
+      break;
+    case 0:
+      e->canwrite = 0;
+      break;
+    case -1:
+      return;
     }
     if(e->canwrite) {
       debug_printf(("io_wantwrite: enqueueing %lld in normal write queue before %ld\n", d, first_readable));

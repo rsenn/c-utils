@@ -44,22 +44,22 @@ void tai_now(struct tai *);
 
 /* tai_add adds a to b modulo 2^64 and puts the result into t. The
  * inputs and output may overlap. */
-void tai_add(struct tai *,const struct tai *,const struct tai *);
+void tai_add(struct tai *, const struct tai *, const struct tai *);
 /* tai_sub subtracts b from a modulo 2^64 and puts the result into t.
  * The inputs and output may overlap. */
-void tai_sub(struct tai *,const struct tai *,const struct tai *);
+void tai_sub(struct tai *, const struct tai *, const struct tai *);
 /* tai_less returns 1 if a is less than b, 0 otherwise. */
 #define tai_less(t,u) ((t)->x < (u)->x)
 
 #define TAI_PACK 8
 /* tai_pack converts a TAI64 label from internal format in t to external
  * TAI64 format in buf. */
-void tai_pack(char *,const struct tai *);
+void tai_pack(char *, const struct tai *);
 /* tai_unpack converts a TAI64 label from external TAI64 format in buf
  * to internal format in t. */
-void tai_unpack(const char *,struct tai *);
+void tai_unpack(const char *, struct tai *);
 
-void tai_uint(struct tai *,unsigned int);
+void tai_uint(struct tai *, unsigned int);
 
 #ifdef __cplusplus
 }

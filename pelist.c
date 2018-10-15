@@ -17,8 +17,8 @@ void
 pe_print_data_directory(buffer* b, uint8* base, pe_data_directory* data_dir) {
   buffer_puts(b, "virtual_address: 0x");
   buffer_putxint640(b,
-                       (int64)pe_rva2ptr(base, uint32_get(&data_dir->virtual_address)),
-                       sizeof(data_dir->virtual_address) * 2);
+                    (int64)pe_rva2ptr(base, uint32_get(&data_dir->virtual_address)),
+                    sizeof(data_dir->virtual_address) * 2);
   buffer_puts(b, " size: 0x");
   buffer_putxint640(b, uint32_get(&data_dir->size), sizeof(data_dir->size) * 2);
   buffer_putnlflush(b);
@@ -164,20 +164,20 @@ pe_dump_imports(uint8* base) {
 void
 usage(char* av0) {
   buffer_putm_internal(buffer_1,
-              "Usage: ",
-              str_basename(av0),
-              " [OPTIONS] <file...>\n",
-              "\n",
-              "Options:\n",
-              "\n",
-              "  -h, --help              Show this help\n",
-              "  -i, --imports           List imports\n",
-              "  -e, --exports           List exports\n",
-              "  -d, --deps              List DLL dependencies\n",
-              "  -s, --sections          List PE32 sections\n",
-              "  -E, --export-directory  Print export directory\n",
-              "  -D, --data-directory    Print data directory\n",
-              "\n", 0);
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] <file...>\n",
+                       "\n",
+                       "Options:\n",
+                       "\n",
+                       "  -h, --help              Show this help\n",
+                       "  -i, --imports           List imports\n",
+                       "  -e, --exports           List exports\n",
+                       "  -d, --deps              List DLL dependencies\n",
+                       "  -s, --sections          List PE32 sections\n",
+                       "  -E, --export-directory  Print export directory\n",
+                       "  -D, --data-directory    Print data directory\n",
+                       "\n", 0);
   buffer_flush(buffer_1);
 }
 
@@ -205,17 +205,17 @@ main(int argc, char** argv) {
     if(c == '\0') continue;
 
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
-      case 'i':
-      case 'e':
-      case 'd':
-      case 's':
-      case 'E':
-      case 'D': break;
-      default: {
-        usage(argv[0]);
-        return 1;
-      }
+    case 'h': usage(argv[0]); return 0;
+    case 'i':
+    case 'e':
+    case 'd':
+    case 's':
+    case 'E':
+    case 'D': break;
+    default: {
+      usage(argv[0]);
+      return 1;
+    }
     }
   }
 
@@ -292,8 +292,8 @@ pe_dump_sections(uint8* base) {
     buffer_putxint640(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     buffer_puts(buffer_1, " 0x");
     buffer_putxint640(buffer_1,
-                         uint32_get(&sections[i].pointer_to_raw_data),
-                         sizeof(sections[i].pointer_to_raw_data) * 2);
+                      uint32_get(&sections[i].pointer_to_raw_data),
+                      sizeof(sections[i].pointer_to_raw_data) * 2);
     buffer_putnlflush(buffer_1);
   }
 }

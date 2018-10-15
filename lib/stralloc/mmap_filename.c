@@ -16,7 +16,7 @@
 int
 mmap_filename(void* map, stralloc* sa) {
 #if WINDOWS_NATIVE
-  stralloc_ready(sa, MAX_PATH+1);
+  stralloc_ready(sa, MAX_PATH + 1);
   sa->len = GetMappedFileNameA(GetCurrentProcess(), map, sa->s, sa->a);
   return sa->len > 0;
 #else

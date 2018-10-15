@@ -38,14 +38,14 @@ http://verteiler5.mediathekview.de/Filmliste-akt.xz
 http://verteiler6.mediathekview.de/Filmliste-akt.xz
 */
 const char* const mediathek_urls[] = {
-    "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
-    "http://mediathekview.jankal.me/Filmliste-akt.xz",
-    "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
+  "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
+  "http://mediathekview.jankal.me/Filmliste-akt.xz",
+  "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
 const char* const mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
@@ -118,7 +118,7 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 
 void
 process_status(void) {
-/* display interesting process IDs  */
+  /* display interesting process IDs  */
 #if !(defined(_WIN32) || defined(_WIN64))
   fprintf(stderr,
           "process %s: pid=%d, ppid=%d, pgid=%d, fg pgid=%dn\n",
@@ -307,7 +307,7 @@ new_mediathek_entry() {
 
 mediathek_entry_t*
 create_mediathek_entry(
-    const char* ch, const char* tpc, const char* tit, const char* dsc, const char* ur, const char* ln) {
+  const char* ch, const char* tpc, const char* tit, const char* dsc, const char* ur, const char* ln) {
   mediathek_entry_t* e = new_mediathek_entry();
   if(e == 0) return 0;
 
@@ -437,7 +437,7 @@ parse_entry(strlist* sl) {
                                    url,
                                    link
 
-                                   );
+                                  );
 
       if(ret) {
         ret->tm = dt + tm;
@@ -574,12 +574,12 @@ main(int argc, char* argv[]) {
 
   while((opt = getopt(argc, argv, "F:dt:i:x:")) != -1) {
     switch(opt) {
-      case 'F': dt_fmt = optarg; break;
-      case 'd': debug++; break;
-      case 't': min_length = parse_time(optarg); break;
-      case 'i': strlist_push(&include, optarg); break;
-      case 'x': strlist_push(&exclude, optarg); break;
-      default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n"); exit(EXIT_FAILURE);
+    case 'F': dt_fmt = optarg; break;
+    case 'd': debug++; break;
+    case 't': min_length = parse_time(optarg); break;
+    case 'i': strlist_push(&include, optarg); break;
+    case 'x': strlist_push(&exclude, optarg); break;
+    default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n"); exit(EXIT_FAILURE);
     }
   }
 

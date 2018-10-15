@@ -101,7 +101,7 @@ int64
 get_file_size(char* path) {
   LARGE_INTEGER size;
   HANDLE hFile = CreateFileA(
-      path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+                   path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE) return -1; /* error condition, could call GetLastError to find out more */
   if(!GetFileSizeEx(hFile, &size)) {
     CloseHandle(hFile);
@@ -117,7 +117,7 @@ get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
   HANDLE hFile = CreateFileA(
-      path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+                   path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE) return -1; /* error condition, could call GetLastError to find out more */
   if(!GetFileTime(hFile, &c, &la, &lw)) {
     CloseHandle(hFile);
@@ -236,30 +236,30 @@ is_junction_point(const char* fn) {
       /* Tag values come from */
       /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx */
       switch(FindFileData.dwReserved0) {
-        case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction point, skipping"); */ break;
-        case IO_REPARSE_TAG_SYMLINK:
-          /* TODO: Maybe have the option to follow symbolic links? */
-          /* ocb.error_filename(fn, "Symbolic link, skipping"); */
-          break;
-        /* TODO: Use label for deduplication reparse point */
-        /*         when the compiler supports it */
-        /*      case IO_REPARSE_TAG_DEDUP: */
-        case 0x80000013:
-          /* This is the reparse point for Data Deduplication */
-          /* See */
-          /* http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
-           */
-          /* Unfortunately the compiler doesn't have this value defined yet. */
-          status = 0;
-          break;
-        case IO_REPARSE_TAG_SIS:
-          /* Single Instance Storage */
-          /* "is a system's ability to keep one copy of content that multiple users or computers share" */
-          /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
-           */
-          status = 0;
-          break;
-        default: break;
+      case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction point, skipping"); */ break;
+      case IO_REPARSE_TAG_SYMLINK:
+        /* TODO: Maybe have the option to follow symbolic links? */
+        /* ocb.error_filename(fn, "Symbolic link, skipping"); */
+        break;
+      /* TODO: Use label for deduplication reparse point */
+      /*         when the compiler supports it */
+      /*      case IO_REPARSE_TAG_DEDUP: */
+      case 0x80000013:
+        /* This is the reparse point for Data Deduplication */
+        /* See */
+        /* http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
+         */
+        /* Unfortunately the compiler doesn't have this value defined yet. */
+        status = 0;
+        break;
+      case IO_REPARSE_TAG_SIS:
+        /* Single Instance Storage */
+        /* "is a system's ability to keep one copy of content that multiple users or computers share" */
+        /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
+         */
+        status = 0;
+        break;
+      default: break;
       }
     }
     /* We don't error check this call as there's nothing to do differently */
@@ -336,21 +336,21 @@ mode_str(stralloc* out, int mode) {
   char mchars[10];
   switch(mode & S_IFMT) {
 #ifdef S_IFLNK
-    case S_IFLNK: mchars[0] = 'l'; break;
+  case S_IFLNK: mchars[0] = 'l'; break;
 #endif
-    case S_IFDIR: mchars[0] = 'd'; break;
-    case S_IFCHR: mchars[0] = 'c'; break;
+  case S_IFDIR: mchars[0] = 'd'; break;
+  case S_IFCHR: mchars[0] = 'c'; break;
 #ifdef S_IFBLK
-    case S_IFBLK: mchars[0] = 'b'; break;
+  case S_IFBLK: mchars[0] = 'b'; break;
 #endif
 #ifdef S_IFIFO
-    case S_IFIFO: mchars[0] = 'i'; break;
+  case S_IFIFO: mchars[0] = 'i'; break;
 #endif
 #ifdef S_IFSOCK
-    case S_IFSOCK: mchars[0] = 's'; break;
+  case S_IFSOCK: mchars[0] = 's'; break;
 #endif
-    case S_IFREG:
-    default: mchars[0] = '-'; break;
+  case S_IFREG:
+  default: mchars[0] = '-'; break;
   }
 #ifdef S_IRUSR
   if(mode & S_IRUSR)
@@ -505,7 +505,7 @@ list_dir_internal(stralloc* dir, char type) {
     }
 #else
     size =
-        ((uint64)(dir_INTERNAL(&d)->dir_finddata.nFileSizeHigh) << 32) + dir_INTERNAL(&d)->dir_finddata.nFileSizeLow;
+      ((uint64)(dir_INTERNAL(&d)->dir_finddata.nFileSizeHigh) << 32) + dir_INTERNAL(&d)->dir_finddata.nFileSizeLow;
     mtime = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
 #endif
 #endif
@@ -599,19 +599,19 @@ write_err_check(int fd, const void* buf, size_t len) {
 void
 usage(char* argv0) {
   buffer_putm_internal(buffer_1,
-              "Usage: ",
-              str_basename(argv0),
-              " [-o output] [infile or stdin]\n\n",
-              "  -1 ... -9           compression level; default is 3\n",
-              "\n",
-              "Options\n",
-              "  -h, --help                show this help\n",
-              "  -l, --list                long list\n",
-              "  -n, --numeric             numeric user/group\n",
-              "  -r, --relative            relative path\n",
-              "  -o, --output     FILE     write output to FILE\n",
-              "  -x, --exclude    PATTERN  exclude entries matching PATTERN\n",
-              "  -t, --time-style FORMAT   format time according to FORMAT\n", 0);
+                       "Usage: ",
+                       str_basename(argv0),
+                       " [-o output] [infile or stdin]\n\n",
+                       "  -1 ... -9           compression level; default is 3\n",
+                       "\n",
+                       "Options\n",
+                       "  -h, --help                show this help\n",
+                       "  -l, --list                long list\n",
+                       "  -n, --numeric             numeric user/group\n",
+                       "  -r, --relative            relative path\n",
+                       "  -o, --output     FILE     write output to FILE\n",
+                       "  -x, --exclude    PATTERN  exclude entries matching PATTERN\n",
+                       "  -t, --time-style FORMAT   format time according to FORMAT\n", 0);
   buffer_putnlflush(buffer_1);
 }
 
@@ -624,17 +624,17 @@ main(int argc, char* argv[]) {
   const char* rel_to = 0;
   int index = 0;
   struct longopt opts[] = {
-      {"help", 0, 0, 'h'},
-      {"list", 0, &opt_list, 'l'},
-      {"numeric", 0, &opt_numeric, 'n'},
-      {"relative", 0, &opt_relative, 'r'},
-      {"output", 1, 0, 'o'},
-      {"exclude", 1, 0, 'x'},
-      {"time-style", 1, 0, 't'},
+    {"help", 0, 0, 'h'},
+    {"list", 0, &opt_list, 'l'},
+    {"numeric", 0, &opt_numeric, 'n'},
+    {"relative", 0, &opt_relative, 'r'},
+    {"output", 1, 0, 'o'},
+    {"exclude", 1, 0, 'x'},
+    {"time-style", 1, 0, 't'},
 #if WINDOWS
-      {"separator", 1, 0, 's'},
+    {"separator", 1, 0, 's'},
 #endif
-      {0}
+    {0}
   };
 
 #if WINDOWS && defined(O_BINARY)
@@ -645,30 +645,30 @@ main(int argc, char* argv[]) {
     c = getopt_long(argc, argv, "hlnro:x:t:", opts, &index);
     if(c == -1) break;
     if(c == 0) continue;
-    
+
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
-      case 'x': {
-        char* s = optarg;
-        array_catb(&exclude_masks, (void*)&s, sizeof(char*));
-        break;
-      }
-      case 'o': {
-        buffer_1->fd = io_err_check(open_trunc(optarg));
-        break;
-      }
-      case 't': {
-        opt_timestyle = optarg;
-        break;
-      }
-      case 's': {
-        opt_separator = optarg[0];
-        break;
-      }
-      case 'l':
-      case 'n':
-      case 'r':
-      default: usage(argv[0]); return 1;
+    case 'h': usage(argv[0]); return 0;
+    case 'x': {
+      char* s = optarg;
+      array_catb(&exclude_masks, (void*)&s, sizeof(char*));
+      break;
+    }
+    case 'o': {
+      buffer_1->fd = io_err_check(open_trunc(optarg));
+      break;
+    }
+    case 't': {
+      opt_timestyle = optarg;
+      break;
+    }
+    case 's': {
+      opt_separator = optarg[0];
+      break;
+    }
+    case 'l':
+    case 'n':
+    case 'r':
+    default: usage(argv[0]); return 1;
     }
   }
   /*

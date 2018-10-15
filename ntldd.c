@@ -304,18 +304,18 @@ main(int argc, char** argv) {
   int digit_optind = 0;
   const char* rel_to = 0;
   int index = 0;
-   const struct longopt opts[] = {
-      {"help", 0, 0, 'h'},
-      {"verbose", 0, &verbose, 'v'},
-      {"unused", 0, &unused, 'u'},
-      {"data-relocs", 0, &datarelocs, 'd'},
-      {"function-relocs", 0, &functionrelocs, 'r'},
-      {"recursive", 0, &recursive, 'R'},
-      {"list-exports", 0, &list_exports, 'e'},
-      {"list-imports", 0, &list_imports, 'i'},
-      {"version", 0, 0, 'V'},
-      {"search-dir", 0, 0, 'D'},
-      {0}
+  const struct longopt opts[] = {
+    {"help", 0, 0, 'h'},
+    {"verbose", 0, &verbose, 'v'},
+    {"unused", 0, &unused, 'u'},
+    {"data-relocs", 0, &datarelocs, 'd'},
+    {"function-relocs", 0, &functionrelocs, 'r'},
+    {"recursive", 0, &recursive, 'R'},
+    {"list-exports", 0, &list_exports, 'e'},
+    {"list-imports", 0, &list_imports, 'i'},
+    {"version", 0, 0, 'V'},
+    {"search-dir", 0, 0, 'D'},
+    {0}
   };
 
   strlist sp;
@@ -332,28 +332,28 @@ main(int argc, char** argv) {
     if(c == 0) continue;
 
     switch(c) {
-      case 'h':
-        printhelp(argv[0]);
-        skip = 1;
-        break;
+    case 'h':
+      printhelp(argv[0]);
+      skip = 1;
+      break;
 
-      case 'v':
-      case 'u':
-      case 'd':
-      case 'r':
-      case 'R':
-      case 'e':
-      case 'i': break;
-      case 'D': {
-        add_path(&sp, optarg);
-        break;
-      }
+    case 'v':
+    case 'u':
+    case 'd':
+    case 'r':
+    case 'R':
+    case 'e':
+    case 'i': break;
+    case 'D': {
+      add_path(&sp, optarg);
+      break;
+    }
 
-      case 'V': printversion(); break;
-      default:
-        buffer_putm_4(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
-        buffer_putnlflush(buffer_2);
-        return 1;
+    case 'V': printversion(); break;
+    default:
+      buffer_putm_4(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
+      buffer_putnlflush(buffer_2);
+      return 1;
     }
   }
 
@@ -372,7 +372,8 @@ main(int argc, char** argv) {
   {
     const char* const keys[] = {"HKCU\\Environment",
                                 "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
-                                0};
+                                0
+                               };
     int kidx;
     stralloc rpath;
     stralloc_init(&rpath);

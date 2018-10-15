@@ -173,7 +173,7 @@ process_dep(build_tree_config* cfg,
     /* TODO: find a better way to identify api stubs. Versioninfo, maybe? */
     return NULL;
   }
-  for(i = (int64)*cfg->stack_len - 1; i >= 0; i--) {
+  for(i = (int64) * cfg->stack_len - 1; i >= 0; i--) {
     if((*cfg->stack)[i] && str_case_diff((*cfg->stack)[i], dllname) == 0) return NULL;
     if(i == 0) break;
   }
@@ -304,7 +304,7 @@ build_dep_tree32or64(pe_loaded_image* img,
     iid = (pe_import_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
-                 iid[i].first_thunk;
+          iid[i].first_thunk;
           i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
@@ -337,8 +337,8 @@ build_dep_tree32or64(pe_loaded_image* img,
     idd = (pe_delayload_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
-                 idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
-                 idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
+          idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
+          idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
@@ -374,7 +374,7 @@ build_dep_tree32or64(pe_loaded_image* img,
     iid = (pe_import_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
-                 iid[i].first_thunk;
+          iid[i].first_thunk;
           i++)
 
         process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 1);
@@ -385,8 +385,8 @@ build_dep_tree32or64(pe_loaded_image* img,
     idd = (pe_delayload_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
-                 idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
-                 idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
+          idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
+          idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++)
 
         process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 1);
@@ -528,13 +528,13 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   */
   for(i = 0; i < self->imports_len; i++) {
     if(self->imports[i].mapped == NULL && self->imports[i].dll != NULL &&
-       (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
+        (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
       struct dep_tree_element* dll = self->imports[i].dll;
       for(j = 0; j < dll->exports_len; j++) {
         if((self->imports[i].name != NULL && dll->exports[j].name != NULL &&
             str_equal(self->imports[i].name, dll->exports[j].name)) ||
-           (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 &&
-            self->imports[i].ordinal == dll->exports[j].ordinal)) {
+            (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 &&
+             self->imports[i].ordinal == dll->exports[j].ordinal)) {
           self->imports[i].mapped = &dll->exports[j];
           break;
         }

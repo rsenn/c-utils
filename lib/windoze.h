@@ -71,7 +71,7 @@ void __winsock_init(void);
 #endif
 
 #ifndef ENOSYS
- #define ENOSYS 1052
+#define ENOSYS 1052
 #endif /* ENOSYS */
 
 #ifdef __cplusplus

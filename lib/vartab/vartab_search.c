@@ -50,7 +50,7 @@ vartab_search(struct vartab* vartab, const char* v, struct search* context) {
        full match :) */
     if(dist < context->hdist) {
       context->hdist = dist;
-      context->bdist = (VAR_HASH)-1;
+      context->bdist = (VAR_HASH) - 1;
       context->closest = context->pos;
     }
 

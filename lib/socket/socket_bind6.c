@@ -4,7 +4,7 @@
 #include "config.h"
 #endif /* defined(HAVE_CONFIG_H) */
 
-#if WINDOWS_NATIVE 
+#if WINDOWS_NATIVE
 #include <winsock.h>
 #else
 #include <netinet/in.h>
@@ -42,7 +42,7 @@ socket_bind6(int s, const char* ip, uint16 port, uint32 scope_id) {
 
   return winsock2errno(bind(s, (struct sockaddr*)&sa, sizeof sa));
 #else
-  errno = EPROTONOSUPPORT;
-  return -1;
+    errno = EPROTONOSUPPORT;
+    return -1;
 #endif
 }

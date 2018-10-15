@@ -39,7 +39,7 @@ typedef struct pkg_s {
 } pkg;
 
 static const char* const field_names[] = {
-    "Version", "Cflags", "Libs", "Requires",
+  "Version", "Cflags", "Libs", "Requires",
 };
 
 /**
@@ -206,7 +206,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
   if(value_len && ((char*)value)[value_len - 1] == '\0') --value_len;
   stralloc_catb(&v, value, value_len);
 
-/* wordexp_sa(value, &v); */
+  /* wordexp_sa(value, &v); */
 
 #ifdef DEBUG_OUTPUT
   buffer_putm_3(buffer_2, "ENV SET ", key, "=");
@@ -463,13 +463,13 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   struct longopt opts[] = {
-      {"help", 0, NULL, 'h'},
-      {"modversion", 0, NULL, PRINT_VERSION},
-      {"cflags", 0, NULL, PRINT_CFLAGS},
-      {"libs", 0, NULL, PRINT_LIBS},
-      {"path", 0, NULL, PRINT_PATH},
-      {"list-all", 0, NULL, 'l'},
-	  {0},
+    {"help", 0, NULL, 'h'},
+    {"modversion", 0, NULL, PRINT_VERSION},
+    {"cflags", 0, NULL, PRINT_CFLAGS},
+    {"libs", 0, NULL, PRINT_LIBS},
+    {"path", 0, NULL, PRINT_PATH},
+    {"list-all", 0, NULL, 'l'},
+    {0},
   };
 
   for(;;) {
@@ -478,17 +478,17 @@ main(int argc, char* argv[]) {
     if(c == 0) continue;
 
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
-      case PRINT_VERSION:
-      case PRINT_CFLAGS:
-      case PRINT_LIBS:
-      case PRINT_PATH:
-        if(!cmd.code) cmd.code = c;
-        break;
-      case 'l':
-        if(!cmd.code) cmd.code = LIST_ALL;
-        break;
-      default: usage(argv[0]); return 1;
+    case 'h': usage(argv[0]); return 0;
+    case PRINT_VERSION:
+    case PRINT_CFLAGS:
+    case PRINT_LIBS:
+    case PRINT_PATH:
+      if(!cmd.code) cmd.code = c;
+      break;
+    case 'l':
+      if(!cmd.code) cmd.code = LIST_ALL;
+      break;
+    default: usage(argv[0]); return 1;
     }
   }
 

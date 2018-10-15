@@ -111,8 +111,8 @@ typedef enum {
 } regtype_t;
 
 const char *regtype_strings[] = {
-    "REG_NONE",  "REG_SZ",    "REG_MULTI_SZ", "REG_EXPAND_SZ",
-    "REG_DWORD", "REG_QWORD", "REG_BINARY",
+  "REG_NONE",  "REG_SZ",    "REG_MULTI_SZ", "REG_EXPAND_SZ",
+  "REG_DWORD", "REG_QWORD", "REG_BINARY",
 };
 
 int reg2cmd() {
@@ -132,7 +132,7 @@ int reg2cmd() {
 
     if(lineno == 1) {
       if(((unsigned char)buffer[0] == 0xff &&
-           (unsigned char)buffer[1] == 0xfe) ||
+          (unsigned char)buffer[1] == 0xfe) ||
           (buffer[0] == 0x00 || buffer[1] == 0x00)) {
         unicode = 1;
       }
@@ -199,12 +199,12 @@ int reg2cmd() {
       }
     }
 
-    #define KEY_EQ(a,b) !str_diffn(a,b,str_len(b))
+#define KEY_EQ(a,b) !str_diffn(a,b,str_len(b))
 
     if(key[0]) {
       int has_newline = 0, has_expansion = 0;
-    char* o;
-        const char *type;
+      char* o;
+      const char *type;
       int keystart, keyend, valuestart = 0, valueend;
       regtype_t rt = 0;
       regroot_t rr = -1;
@@ -214,20 +214,20 @@ int reg2cmd() {
       stralloc_zero(&subkey);
 
       if(KEY_EQ(key, "HKLM") || KEY_EQ(key, "HKEY_LOCAL_MACHINE"))
-  	rr = ROOT_HKLM;
-    else if(KEY_EQ(key, "HKCU") || KEY_EQ(key, "HKEY_CURRENT_USER"))
-  	rr = ROOT_HKCU;
-    else if(KEY_EQ(key, "HKCR") || KEY_EQ(key, "HKEY_CLASSES_ROOT"))
-  	rr = ROOT_HKCR;
-    else if(KEY_EQ(key, "HKU") || KEY_EQ(key, "HKEY_USERS"))
-  	rr = ROOT_HKU;
-    else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_CONFIG"))
-  	rr = ROOT_HKCC;
+        rr = ROOT_HKLM;
+      else if(KEY_EQ(key, "HKCU") || KEY_EQ(key, "HKEY_CURRENT_USER"))
+        rr = ROOT_HKCU;
+      else if(KEY_EQ(key, "HKCR") || KEY_EQ(key, "HKEY_CLASSES_ROOT"))
+        rr = ROOT_HKCR;
+      else if(KEY_EQ(key, "HKU") || KEY_EQ(key, "HKEY_USERS"))
+        rr = ROOT_HKU;
+      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_CONFIG"))
+        rr = ROOT_HKCC;
 
-    if((o  = strchr(key, '\\'))) {
-      ++o;
-      stralloc_copys(&subkey, o);
-    }
+      if((o  = strchr(key, '\\'))) {
+        ++o;
+        stralloc_copys(&subkey, o);
+      }
 
       keystart = (line.s[0] == '"' ? 1 : 0);
       inquote = keystart;
@@ -321,11 +321,11 @@ int reg2cmd() {
       }
 
       has_newline =
-          (find_char('\n', &line.s[valuestart], valueend - valuestart) ||
-           find_char('\r', &line.s[valuestart], valueend - valuestart));
+        (find_char('\n', &line.s[valuestart], valueend - valuestart) ||
+         find_char('\r', &line.s[valuestart], valueend - valuestart));
 
       has_expansion =
-          (find_char('%', &line.s[valuestart], valueend - valuestart) >= 2);
+        (find_char('%', &line.s[valuestart], valueend - valuestart) >= 2);
 
       if(has_expansion && rt == REGISTRY_SZ)
         rt = REGISTRY_EXPAND_SZ;
@@ -337,63 +337,63 @@ int reg2cmd() {
       else
         type = regtype_strings[rt];
 
-    if(rt != REGISTRY_DELETE) {
-  	buffer_puts(buffer_1, "/t ");
-  	buffer_puts(buffer_1, type);
+      if(rt != REGISTRY_DELETE) {
+        buffer_puts(buffer_1, "/t ");
+        buffer_puts(buffer_1, type);
 
-  	buffer_puts(buffer_1, " /d ");
+        buffer_puts(buffer_1, " /d ");
 
-  	switch (rt) {
-  	case REGISTRY_EXPAND_SZ: {
-  	  buffer_putc(buffer_1, '"');
-  	  for(pos = valuestart; pos < valueend; pos++) {
-  		if(line.s[pos] == '%')
-  		  buffer_putc(buffer_1, '^');
-  		buffer_putc(buffer_1, line.s[pos]);
-  	  }
-  	  buffer_putc(buffer_1, '"');
-  	  break;
-  	}
-  	case REGISTRY_SZ: {
-  	  buffer_putc(buffer_1, '"');
-  	  if(has_newline) {
-  		for(pos = valuestart; pos < valueend; pos++) {
-  		  buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
-  		  buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] & 0x0f));
-  		}
-  	  } else {
-  		buffer_put(buffer_1, &line.s[valuestart], valueend - valuestart);
-  	  }
-  	  buffer_putc(buffer_1, '"');
-  	  break;
-  	}
-  	case REGISTRY_DWORD: {
-  	  buffer_putuint64(buffer_1, word);
-  	  break;
-  	}
-  	case REGISTRY_QWORD: {
-  	  buffer_putuint64(buffer_1, word);
-  	  break;
-  	}
-  	case REGISTRY_BINARY: {
-  	  buffer_putc(buffer_1, '"');
-  	  for(pos = valuestart; pos < valueend; pos++) {
-  		if(scan_fromhex(line.s[pos]) != -1)
-  		  buffer_putc(buffer_1, char_tolower(line.s[pos]));
-  	  }
-  	  buffer_putc(buffer_1, '"');
-  	  break;
-  	}
-  	default: {
-  	  buffer_puts(buffer_2, "Unhandled type: ");
-  	  buffer_puts(buffer_2, regtype_strings[rt]);
-  	  buffer_puts(buffer_2, "\n");
-  	  buffer_flush(buffer_2);
-  	  exit(2);
-  	  break;
-  	}
-  	}
-    }
+        switch(rt) {
+        case REGISTRY_EXPAND_SZ: {
+          buffer_putc(buffer_1, '"');
+          for(pos = valuestart; pos < valueend; pos++) {
+            if(line.s[pos] == '%')
+              buffer_putc(buffer_1, '^');
+            buffer_putc(buffer_1, line.s[pos]);
+          }
+          buffer_putc(buffer_1, '"');
+          break;
+        }
+        case REGISTRY_SZ: {
+          buffer_putc(buffer_1, '"');
+          if(has_newline) {
+            for(pos = valuestart; pos < valueend; pos++) {
+              buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
+              buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] & 0x0f));
+            }
+          } else {
+            buffer_put(buffer_1, &line.s[valuestart], valueend - valuestart);
+          }
+          buffer_putc(buffer_1, '"');
+          break;
+        }
+        case REGISTRY_DWORD: {
+          buffer_putuint64(buffer_1, word);
+          break;
+        }
+        case REGISTRY_QWORD: {
+          buffer_putuint64(buffer_1, word);
+          break;
+        }
+        case REGISTRY_BINARY: {
+          buffer_putc(buffer_1, '"');
+          for(pos = valuestart; pos < valueend; pos++) {
+            if(scan_fromhex(line.s[pos]) != -1)
+              buffer_putc(buffer_1, char_tolower(line.s[pos]));
+          }
+          buffer_putc(buffer_1, '"');
+          break;
+        }
+        default: {
+          buffer_puts(buffer_2, "Unhandled type: ");
+          buffer_puts(buffer_2, regtype_strings[rt]);
+          buffer_puts(buffer_2, "\n");
+          buffer_flush(buffer_2);
+          exit(2);
+          break;
+        }
+        }
+      }
 
       buffer_puts(buffer_1, "\r\n");
       buffer_flush(buffer_1);
@@ -432,7 +432,7 @@ int main(int argc, char *argv[]) {
   for(argi = 1; argi < argc; argi++) {
     char *arg = argv[argi];
     if(arg[0] == '-') {
-      switch (arg[1]) {
+      switch(arg[1]) {
       case 'f':
         force++;
         break;

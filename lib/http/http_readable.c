@@ -82,7 +82,7 @@ http_readable(http* h) {
     for(;;) {
       char line[1024];
       size_t sptr = r->ptr;
-      ret = buffer_getline(&recvb, line, sizeof(line)-1);
+      ret = buffer_getline(&recvb, line, sizeof(line) - 1);
 
       if(ret == 0 && line[0] == '\0') {
         //   putline("Again", line, 0, &recvb);
@@ -122,7 +122,7 @@ http_readable(http* h) {
             putline("Boundary", r->data.s, r->data.len, &recvb);
           }
         } else if(r->status == HTTP_RECV_DATA && (p = scan_xlong(line, &n)) > 0) {
-          
+
           if(n == 0) {
             r->status = HTTP_STATUS_FINISH;
             return;

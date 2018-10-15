@@ -5,8 +5,8 @@ unsigned long
 vartab_hash(struct vartab* vartab, const char* v, struct search* context) {
   context->global = 0;
   context->name = v;
-  context->hdist = (VAR_HASH)-1;
-  context->bdist = (VAR_HASH)-1;
+  context->hdist = (VAR_HASH) - 1;
+  context->bdist = (VAR_HASH) - 1;
   context->exact = 0;
   context->closest = NULL;
   var_lexhash(v, &context->lexhash);

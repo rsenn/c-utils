@@ -65,12 +65,12 @@ static void handleevent(fd_t fd, int readable, int writable, int error) {
       buffer_puts(buffer_2, "got unexpected read event on fd #");
       buffer_putlong(buffer_2, fd);
       buffer_putnlflush(buffer_2);
-      }
+    }
     if(writable && !e->kernelwantwrite) {
       buffer_puts(buffer_2, "got unexpected write event on fd #");
       buffer_putlong(buffer_2, fd);
       buffer_putnlflush(buffer_2);
-      }
+    }
 #endif
 
     if(error) {
@@ -337,157 +337,157 @@ io_waituntil2(int64 milliseconds) {
       r = sigtimedwait(&io_ss, &info, &ts);
     }
     switch(r) {
-      case SIGIO:
-        /* signal queue overflow */
-        signal(io_signum, SIG_DFL);
-        goto dopoll;
-      default:
-        if(r == io_signum) {
-          io_entry* e = iarray_get(io_getfds(), info.si_fd);
-          if(e) {
-            if(info.si_band & (POLLERR | POLLHUP)) {
-              /* error; signal whatever app is looking for */
-              if(e->wantread) info.si_band |= POLLIN;
-              if(e->wantwrite) info.si_band |= POLLOUT;
-            }
-            if(info.si_band & POLLIN && !e->canread) {
-              debug_printf(
-                  ("io_waituntil2: enqueueing %ld in normal read queue before %ld\n", info.si_fd, first_readable));
-              e->canread = 1;
-              e->next_read = first_readable;
-              first_readable = info.si_fd;
-            }
-            if(info.si_band & POLLOUT && !e->canwrite) {
-              debug_printf(
-                  ("io_waituntil2: enqueueing %ld in normal write queue before %ld\n", info.si_fd, first_writeable));
-              e->canwrite = 1;
-              e->next_write = first_writeable;
-              first_writeable = info.si_fd;
-            }
-#ifdef DEBUG
-          } else {
-#endif
+    case SIGIO:
+      /* signal queue overflow */
+      signal(io_signum, SIG_DFL);
+      goto dopoll;
+    default:
+      if(r == io_signum) {
+        io_entry* e = iarray_get(io_getfds(), info.si_fd);
+        if(e) {
+          if(info.si_band & (POLLERR | POLLHUP)) {
+            /* error; signal whatever app is looking for */
+            if(e->wantread) info.si_band |= POLLIN;
+            if(e->wantwrite) info.si_band |= POLLOUT;
           }
+          if(info.si_band & POLLIN && !e->canread) {
+            debug_printf(
+              ("io_waituntil2: enqueueing %ld in normal read queue before %ld\n", info.si_fd, first_readable));
+            e->canread = 1;
+            e->next_read = first_readable;
+            first_readable = info.si_fd;
+          }
+          if(info.si_band & POLLOUT && !e->canwrite) {
+            debug_printf(
+              ("io_waituntil2: enqueueing %ld in normal write queue before %ld\n", info.si_fd, first_writeable));
+            e->canwrite = 1;
+            e->next_write = first_writeable;
+            first_writeable = info.si_fd;
+          }
+#ifdef DEBUG
+        } else {
+#endif
         }
+      }
     }
     return 1;
   }
 dopoll:
 #endif
-{
+  {
 #if WINDOWS
-  DWORD numberofbytes;
-  ULONG_PTR x;
-  LPOVERLAPPED o;
-  if(first_readable != -1 || first_writeable != -1) {
-    return 1;
-  }
-  if(GetQueuedCompletionStatus(io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
-    io_entry* e = iarray_get(io_getfds(), x);
-    if(!e) return 0;
-    e->errorcode = 0;
-    if(o == &e->or &&e->readqueued == 1) {
-      e->readqueued = 2;
-      e->canread = 1;
-      e->bytes_read = numberofbytes;
-      e->next_read = first_readable;
-      first_readable = x;
-    } else if(o == &e->ow && e->writequeued == 1) {
-      e->writequeued = 2;
-      e->canwrite = 1;
-      e->bytes_written = numberofbytes;
-      e->next_write = first_writeable;
-      first_writeable = x;
-    } else if(o == &e->or &&e->acceptqueued == 1) {
-      e->acceptqueued = 2;
-      e->canread = 1;
-      e->next_read = first_readable;
-      first_readable = x;
-    } else if(o == &e->ow && e->connectqueued == 1) {
-      e->connectqueued = 2;
-      e->canwrite = 1;
-      e->next_write = first_writeable;
-      first_writeable = x;
-    } else if(o == &e->os && e->sendfilequeued == 1) {
-      e->sendfilequeued = 2;
-      e->canwrite = 1;
-      e->bytes_written = numberofbytes;
-      e->next_write = first_writeable;
-      first_writeable = x;
+    DWORD numberofbytes;
+    ULONG_PTR x;
+    LPOVERLAPPED o;
+    if(first_readable != -1 || first_writeable != -1) {
+      return 1;
     }
-    return 1;
-  } else {
-    /* either the overlapped I/O request failed or we timed out */
-    DWORD err;
-    io_entry* e;
-    if(!o) return 0; /* timeout */
-    /* we got a completion packet for a failed I/O operation */
-    err = GetLastError();
-    if(err == WAIT_TIMEOUT) return 0; /* or maybe not */
-    e = iarray_get(io_getfds(), x);
-    if(!e) return 0; /* WTF?! */
-    e->errorcode = err;
-    if(o == &e->or &&(e->readqueued || e->acceptqueued)) {
-      if(e->readqueued)
+    if(GetQueuedCompletionStatus(io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
+      io_entry* e = iarray_get(io_getfds(), x);
+      if(!e) return 0;
+      e->errorcode = 0;
+      if(o == &e-> or && e->readqueued == 1) {
         e->readqueued = 2;
-      else if(e->acceptqueued)
+        e->canread = 1;
+        e->bytes_read = numberofbytes;
+        e->next_read = first_readable;
+        first_readable = x;
+      } else if(o == &e->ow && e->writequeued == 1) {
+        e->writequeued = 2;
+        e->canwrite = 1;
+        e->bytes_written = numberofbytes;
+        e->next_write = first_writeable;
+        first_writeable = x;
+      } else if(o == &e-> or && e->acceptqueued == 1) {
         e->acceptqueued = 2;
-      e->canread = 1;
-      e->bytes_read = -1;
-      e->next_read = first_readable;
-      first_readable = x;
-    } else if((o == &e->ow || o == &e->os) && (e->writequeued || e->connectqueued || e->sendfilequeued)) {
-      if(o == &e->ow) {
-        if(e->writequeued)
-          e->writequeued = 2;
-        else if(e->connectqueued)
-          e->connectqueued = 2;
-      } else if(o == &e->os)
+        e->canread = 1;
+        e->next_read = first_readable;
+        first_readable = x;
+      } else if(o == &e->ow && e->connectqueued == 1) {
+        e->connectqueued = 2;
+        e->canwrite = 1;
+        e->next_write = first_writeable;
+        first_writeable = x;
+      } else if(o == &e->os && e->sendfilequeued == 1) {
         e->sendfilequeued = 2;
-      e->canwrite = 1;
-      e->bytes_written = -1;
-      e->next_write = first_writeable;
-      first_writeable = x;
+        e->canwrite = 1;
+        e->bytes_written = numberofbytes;
+        e->next_write = first_writeable;
+        first_writeable = x;
+      }
+      return 1;
+    } else {
+      /* either the overlapped I/O request failed or we timed out */
+      DWORD err;
+      io_entry* e;
+      if(!o) return 0; /* timeout */
+      /* we got a completion packet for a failed I/O operation */
+      err = GetLastError();
+      if(err == WAIT_TIMEOUT) return 0; /* or maybe not */
+      e = iarray_get(io_getfds(), x);
+      if(!e) return 0; /* WTF?! */
+      e->errorcode = err;
+      if(o == &e-> or && (e->readqueued || e->acceptqueued)) {
+        if(e->readqueued)
+          e->readqueued = 2;
+        else if(e->acceptqueued)
+          e->acceptqueued = 2;
+        e->canread = 1;
+        e->bytes_read = -1;
+        e->next_read = first_readable;
+        first_readable = x;
+      } else if((o == &e->ow || o == &e->os) && (e->writequeued || e->connectqueued || e->sendfilequeued)) {
+        if(o == &e->ow) {
+          if(e->writequeued)
+            e->writequeued = 2;
+          else if(e->connectqueued)
+            e->connectqueued = 2;
+        } else if(o == &e->os)
+          e->sendfilequeued = 2;
+        e->canwrite = 1;
+        e->bytes_written = -1;
+        e->next_write = first_writeable;
+        first_writeable = x;
+      }
+      return 1;
     }
-    return 1;
-  }
 #else
-  struct pollfd* p;
-  for(i = r = 0; (size_t)i < iarray_length(io_getfds()); ++i) {
-    io_entry* e = iarray_get(io_getfds(), i);
-    if(!e) return -1;
-    e->canread = e->canwrite = 0;
-    if(e->wantread || e->wantwrite) {
-      if((p = array_allocate(&io_pollfds, sizeof(struct pollfd), r))) {
-        p->fd = i;
-        p->events = (e->wantread ? POLLIN : 0) + (e->wantwrite ? POLLOUT : 0);
-        ++r;
-      } else
-        return -1;
+    struct pollfd* p;
+    for(i = r = 0; (size_t)i < iarray_length(io_getfds()); ++i) {
+      io_entry* e = iarray_get(io_getfds(), i);
+      if(!e) return -1;
+      e->canread = e->canwrite = 0;
+      if(e->wantread || e->wantwrite) {
+        if((p = array_allocate(&io_pollfds, sizeof(struct pollfd), r))) {
+          p->fd = i;
+          p->events = (e->wantread ? POLLIN : 0) + (e->wantwrite ? POLLOUT : 0);
+          ++r;
+        } else
+          return -1;
+      }
     }
-  }
-  p = array_start(&io_pollfds);
-  if((i = poll(array_start(&io_pollfds), r, milliseconds)) < 1) return -1;
-  for(j = r - 1; j >= 0; --j) {
-    io_entry* e = iarray_get(io_getfds(), p->fd);
-    if(p->revents & (POLLERR | POLLHUP | POLLNVAL)) {
-      /* error; signal whatever app is looking for */
-      if(e->wantread) p->revents |= POLLIN;
-      if(e->wantwrite) p->revents |= POLLOUT;
+    p = array_start(&io_pollfds);
+    if((i = poll(array_start(&io_pollfds), r, milliseconds)) < 1) return -1;
+    for(j = r - 1; j >= 0; --j) {
+      io_entry* e = iarray_get(io_getfds(), p->fd);
+      if(p->revents & (POLLERR | POLLHUP | POLLNVAL)) {
+        /* error; signal whatever app is looking for */
+        if(e->wantread) p->revents |= POLLIN;
+        if(e->wantwrite) p->revents |= POLLOUT;
+      }
+      if(!e->canread && (p->revents & POLLIN)) {
+        e->canread = 1;
+        e->next_read = first_readable;
+        first_readable = p->fd;
+      }
+      if(!e->canwrite && (p->revents & POLLOUT)) {
+        e->canwrite = 1;
+        e->next_write = first_writeable;
+        first_writeable = p->fd;
+      }
+      p++;
     }
-    if(!e->canread && (p->revents & POLLIN)) {
-      e->canread = 1;
-      e->next_read = first_readable;
-      first_readable = p->fd;
-    }
-    if(!e->canwrite && (p->revents & POLLOUT)) {
-      e->canwrite = 1;
-      e->next_write = first_writeable;
-      first_writeable = p->fd;
-    }
-    p++;
-  }
-  return i;
+    return i;
 #endif
-}
+  }
 }
