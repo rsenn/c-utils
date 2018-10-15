@@ -39,11 +39,7 @@
 #include <write12.h>
 #endif
 
-#ifdef DEBUG
-#include <stdio.h>
-#else
-#define printf(...)
-#endif
+
 
 #ifndef EPOLLRDNORM
 #define EPOLLRDNORM 0
@@ -65,10 +61,16 @@ static void handleevent(fd_t fd, int readable, int writable, int error) {
     if(e->kernelwantwrite) curevents |= POLLOUT;
 
 #ifdef DEBUG
-    if(readable && !e->kernelwantread)
-      printf("got unexpected read event on fd #%d\n", fd);
-    if(writable && !e->kernelwantwrite)
-      printf("got unexpected write event on fd #%d\n", fd);
+    if(readable && !e->kernelwantread) {
+      buffer_puts(buffer_2, "got unexpected read event on fd #");
+      buffer_putlong(buffer_2, fd);
+      buffer_putnlflush(buffer_2);
+      }
+    if(writable && !e->kernelwantwrite) {
+      buffer_puts(buffer_2, "got unexpected write event on fd #");
+      buffer_putlong(buffer_2, fd);
+      buffer_putnlflush(buffer_2);
+      }
 #endif
 
     if(error) {
@@ -147,9 +149,9 @@ io_waituntil2(int64 milliseconds) {
 
 #ifdef DEBUG
         if((y[i].events & (EPOLLIN | EPOLLPRI | EPOLLRDNORM | EPOLLRDBAND)) && !e->kernelwantread)
-          printf("got unexpected read event on fd #%d\n", y[i].data.fd);
+          DEBUG_MSG("got unexpected read event on fd #", y[i].data.fd);
         if((y[i].events & EPOLLOUT) && !e->kernelwantwrite)
-          printf("got unexpected write event on fd #%d\n", y[i].data.fd);
+          DEBUG_MSG("got unexpected write event on fd #", y[i].data.fd);
 #endif
 
         if(y[i].events & (POLLERR | POLLHUP)) {

@@ -4,6 +4,7 @@
 #include "charbuf.h"
 #include "hmap.h"
 #include "slist.h"
+#include "uint64.h"
 #include <sys/types.h>
 
 #ifdef __cplusplus
@@ -24,7 +25,7 @@ typedef struct {
   jsondata type;
   union {
     char boolv : 1;
-    long long intv;
+    int64 intv;
     double doublev;
     stralloc stringv;
     slist listv;

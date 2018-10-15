@@ -165,10 +165,10 @@ print_image_links(int first,
   if(!unresolved && !first) {
     if(str_case_diff(self->module, self->resolved_module) == 0) {
       buffer_puts(buffer_1, " (0x");
-      buffer_putxint640(buffer_1, self->mapped_address, 8);
+      buffer_putxint640(buffer_1, (int64)self->mapped_address, 8);
     } else {
       buffer_putm_3(buffer_1, " => ", self->resolved_module, " (0x");
-      buffer_putxint640(buffer_1, self->mapped_address, 8);
+      buffer_putxint640(buffer_1, (int64)self->mapped_address, 8);
     }
     buffer_putsflush(buffer_1, ")\n");
   }
@@ -185,11 +185,11 @@ print_image_links(int first,
       buffer_putspace(buffer_1);
       buffer_putulong0(buffer_1, item->ordinal, 3);
       buffer_putspace(buffer_1);
-      buffer_puts(buffer_1, item->name ? item->name : "<NULL>");
+      buffer_puts(buffer_1, item->name ? item->name : "<0>");
       buffer_putspace(buffer_1);
       buffer_puts(buffer_1, item->mapped ? "" : "<UNRESOLVED>");
       buffer_putspace(buffer_1);
-      buffer_puts(buffer_1, item->dll == NULL ? "<MODULE MISSING>" : item->dll->module ? item->dll->module : "<NULL>");
+      buffer_puts(buffer_1, item->dll == 0 ? "<MODULE MISSING>" : item->dll->module ? item->dll->module : "<0>");
       buffer_putnlflush(buffer_1);
       /*printf("\t%*s%llx %llx %3d %s %s %s\n",
              depth,
@@ -197,9 +197,9 @@ print_image_links(int first,
              (long long)item->orig_address,
              (long long)item->address,
              item->ordinal,
-             item->name ? item->name : "<NULL>",
+             item->name ? item->name : "<0>",
              item->mapped ? "" : "<UNRESOLVED>",
-             item->dll == NULL ? "<MODULE MISSING>" : item->dll->module ? item->dll->module : "<NULL>");*/
+             item->dll == 0 ? "<MODULE MISSING>" : item->dll->module ? item->dll->module : "<0>");*/
     }
   }
 
@@ -295,23 +295,17 @@ add_path(strlist* sp, const char* path) {
 int
 main(int argc, char** argv) {
   int i;
-  int verbose = 0;
-  int unused = 0;
-  int datarelocs = 0;
-  int functionrelocs = 0;
+  static int verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0, recursive = 0, list_exports = 0, list_imports = 0;
   int skip = 0;
   int files = 0;
-  int recursive = 0;
-  int list_exports = 0;
-  int list_imports = 0;
   int files_start = -1;
   int files_count = 0;
   int c;
   int digit_optind = 0;
-  const char* rel_to = NULL;
+  const char* rel_to = 0;
   int index = 0;
-  struct longopt opts[] = {
-      {"help", 0, NULL, 'h'},
+   const struct longopt opts[] = {
+      {"help", 0, 0, 'h'},
       {"verbose", 0, &verbose, 'v'},
       {"unused", 0, &unused, 'u'},
       {"data-relocs", 0, &datarelocs, 'd'},
@@ -319,8 +313,8 @@ main(int argc, char** argv) {
       {"recursive", 0, &recursive, 'R'},
       {"list-exports", 0, &list_exports, 'e'},
       {"list-imports", 0, &list_imports, 'i'},
-      {"version", 0, NULL, 'V'},
-      {"search-dir", 0, NULL, 'D'},
+      {"version", 0, 0, 'V'},
+      {"search-dir", 0, 0, 'D'},
       {0}
   };
 
@@ -421,7 +415,7 @@ main(int argc, char** argv) {
 
         add_dep(&root, child);
         {
-          char** stack = NULL;
+          char** stack = 0;
           uint64 stack_len = 0;
           uint64 stack_size = 0;
           build_tree_config cfg;

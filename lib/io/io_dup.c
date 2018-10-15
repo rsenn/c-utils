@@ -18,7 +18,7 @@ io_dup(int64 fd) {
                     0,
                     FALSE,
                     DUPLICATE_SAME_ACCESS);
-  return h;
+  return (int64)(void*)h;
 #else
   return dup(fd);
 #endif

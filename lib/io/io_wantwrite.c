@@ -26,13 +26,6 @@
 #include <sys/types.h>
 #endif
 
-#ifdef DEBUG
-#include <assert.h>
-#else
-#define assert(x)
-#define printf(...)
-#endif
-
 /* IDEA: if someone calls io_dontwantwrite, do not do the syscall to
  * tell the kernel about it.  Only when a write event comes in and the
  * user has told us he does not want them, THEN tell the kernel we are

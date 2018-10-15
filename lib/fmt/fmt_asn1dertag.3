@@ -4,7 +4,7 @@ fmt_asn1dertag \- encode unsigned integer like ASN.1 DER tag
 .SH SYNTAX
 .B #include <fmt.h>
 
-size_t \fBfmt_asn1dertag\fP(char *\fIdest\fR,unsigned long long \fIsource\fR);
+size_t \fBfmt_asn1dertag\fP(char *\fIdest\fR,uint64 \fIsource\fR);
 .SH DESCRIPTION
 fmt_asn1dertag encodes an unsigned integer using the ASN.1 DER for
 encoding tag.  This takes one byte for every 7 bits in the number.

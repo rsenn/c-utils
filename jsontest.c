@@ -36,7 +36,7 @@ fd = open_read("../dirlist/test.json");
 
   //buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.json");
   //
-  charbuf_init(&infile, &read, fd);
+  charbuf_init(&infile, (read_fn*)&read, fd);
 
   doc = json_read_tree(&infile);
 

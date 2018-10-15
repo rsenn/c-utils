@@ -276,7 +276,9 @@ visit_dump(const void* key, size_t key_len, const void* value, size_t value_len,
  */
 void
 pkg_dump(buffer* b, pkg* pf) {
-  dump_t dump_st = {b, str_basename(pf->name.s)};
+  dump_t dump_st;
+  dump_st.b = b;
+  dump_st.m = str_basename(pf->name.s);
   buffer_putsa(b, &pf->name);
   buffer_putnlflush(b);
 

@@ -166,14 +166,14 @@ process_dep(build_tree_config* cfg,
             int deep) {
   struct dep_tree_element* child = NULL;
   int found;
-  int64_t i;
+  int64 i;
   char* dllname = (char*)map_pointer(soffs, soffs_len, name, NULL);
   if(dllname == NULL) return NULL;
   if(str_len(dllname) > 10 && str_case_diffn("api-ms-win", dllname, 10) == 0) {
     /* TODO: find a better way to identify api stubs. Versioninfo, maybe? */
     return NULL;
   }
-  for(i = (int64_t)*cfg->stack_len - 1; i >= 0; i--) {
+  for(i = (int64)*cfg->stack_len - 1; i >= 0; i--) {
     if((*cfg->stack)[i] && str_case_diff((*cfg->stack)[i], dllname) == 0) return NULL;
     if(i == 0) break;
   }

@@ -54,7 +54,8 @@ http_readable(http* h) {
     char recvbuf[8192];
     int err;
     http_response* r = h->response;
-    buffer recvb = BUFFER_INIT(buffer_dummyread, -1, r->body.s, r->body.len);
+    buffer recvb;
+    buffer_init(&recvb, buffer_dummyread, -1, r->body.s, r->body.len);
     recvb.p = r->ptr;
 
     for(;;) {

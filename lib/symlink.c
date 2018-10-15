@@ -16,6 +16,10 @@
 
 #define SE_CREATE_SYMBOLIC_LINK_NAME TEXT("SeCreateSymbolicLinkPrivilege")
 
+#ifndef INVALID_FILE_ATTRIBUTES
+#define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
+#endif
+
 static BOOL
 AcquireSymlinkPriv(LPCTSTR lpLinkName) {
   HANDLE hToken;

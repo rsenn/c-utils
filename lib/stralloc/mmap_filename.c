@@ -28,7 +28,7 @@ mmap_filename(void* map, stralloc* sa) {
 
   while((n = buffer_getline(&b, line, sizeof(line))) > 0) {
     char* p = line;
-    unsigned long long start, end;
+    uint64 start, end;
 
     p += scan_xint64(p, &start);
     if(*p == '-') {
@@ -43,7 +43,7 @@ mmap_filename(void* map, stralloc* sa) {
       }
       p += scan_whitenskip(p, e - p);
 
-      if((unsigned long long)map >= start && (unsigned long long)map < end) {
+      if((uint64)map >= start && (uint64)map < end) {
         stralloc_copyb(sa, p, e - p);
         ret = 1;
         break;

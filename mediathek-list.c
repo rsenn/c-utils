@@ -150,7 +150,7 @@ read_mediathek_list(const char* url) {
       close(STDIN_FILENO);
       dup(clpipe[0]);
 
-      execlp("xzcat", "xzcat", NULL);
+      execlp("xzcat", "xzcat", 0);
       exit(1);
     }
 
@@ -159,7 +159,7 @@ read_mediathek_list(const char* url) {
       close(STDOUT_FILENO);
       dup(clpipe[1]);
 
-      execlp("curl", "curl", "-s", url, NULL);
+      execlp("curl", "curl", "-s", url, 0);
       exit(1);
     }
 
@@ -175,7 +175,7 @@ read_mediathek_list(const char* url) {
   {
     static FILE* pfd;
 
-    if((pfd = popen(cmd.s, "r")) == NULL) return -1;
+    if((pfd = popen(cmd.s, "r")) == 0) return -1;
 
     return fileno(pfd);
   }
@@ -188,7 +188,7 @@ parse_time(const char* s) {
   unsigned short n;
   size_t l;
 
-  if(s == NULL) return 0;
+  if(s == 0) return 0;
 
   for(;;) {
     l = scan_ushort(s, &n);
@@ -275,9 +275,9 @@ make_url(const char* base, const char* trail) {
   unsigned int n = 0;
   size_t i;
 
-  if(trail == NULL) return NULL;
+  if(trail == 0) return 0;
   i = scan_uint(trail, &n);
-  if(trail[i] != '|') return NULL;
+  if(trail[i] != '|') return 0;
   stralloc_copyb(&url, base, n);
 
   stralloc_cats(&url, &trail[++i]);
@@ -300,7 +300,7 @@ typedef struct mediathek_entry {
 mediathek_entry_t*
 new_mediathek_entry() {
   mediathek_entry_t* e = malloc(sizeof(mediathek_entry_t));
-  if(e == NULL) return NULL;
+  if(e == 0) return 0;
   byte_zero(e, sizeof(mediathek_entry_t));
   return e;
 }
@@ -309,7 +309,7 @@ mediathek_entry_t*
 create_mediathek_entry(
     const char* ch, const char* tpc, const char* tit, const char* dsc, const char* ur, const char* ln) {
   mediathek_entry_t* e = new_mediathek_entry();
-  if(e == NULL) return NULL;
+  if(e == 0) return 0;
 
   stralloc_copys(&e->channel, ch);
   stralloc_0(&e->channel);
@@ -354,7 +354,7 @@ match_tokens(char* toks, const char* str) {
   for(i = 0; i < strlist_count(&t); ++i) {
     char* tok = strlist_at(&t, i);
 
-    if(str_istr((char*)str, tok) == NULL) {
+    if(str_istr((char*)str, tok) == 0) {
       ret = 0;
       break;
     }
@@ -418,7 +418,7 @@ parse_entry(strlist* sl) {
   time_t tm = parse_time(strlist_at(sl, 5));
   time_t dr = parse_time(strlist_at(sl, 6)); /* duration */
 
-  if((unsigned)dr < min_length) return NULL;
+  if((unsigned)dr < min_length) return 0;
   {
     unsigned int mbytes = 0;
     const char* mb = strlist_at(sl, 7);
@@ -501,7 +501,8 @@ parse_mediathek_list(int fd) {
   size_t matched = 0, total = 0;
   ssize_t ret, ret2;
   strlist prev, prevout, sl;
-  buffer b = BUFFER_INIT(read, fd, buf, sizeof(buf));
+  buffer b;
+  buffer_init(&b, (buffer_op_sys*)&read, fd, buf, sizeof(buf));
 
   strlist_init(&prev, '\0');
   strlist_init(&prevout, '\0');
@@ -544,7 +545,7 @@ parse_mediathek_list(int fd) {
       }
 
       delete_mediathek_entry(e);
-      e = NULL;
+      e = 0;
     }
 
     prev = sl;

@@ -37,7 +37,7 @@ io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   i += fmt_str(buf + i, ": ");
   if(bufsize - i < 100) return 0;
   i += fmt_str(buf + i, "timeout ");
-  i += fmt_long(buf + i, e->timeout.sec.x - 4611686018427387914ULL - tv.tv_sec);
+  i += fmt_uint64(buf + i, e->timeout.sec.x - (uint64)4611686018427387914 - tv.tv_sec);
   i += fmt_str(buf + i, ".");
   i += fmt_ulong(buf + i, e->timeout.nano);
   i += fmt_str(buf + i, " ");
@@ -53,11 +53,11 @@ io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   if(e->epolladded) i += fmt_str(buf + i, "ea ");
   if(e->mmapped) {
     i += fmt_str(buf + i, "mmap(");
-    i += fmt_xlong(buf + i, (unsigned long long)(size_t)e->mmapped);
+    i += fmt_xint64(buf + i, (uint64)e->mmapped);
     i += fmt_str(buf + i, ",");
     i += fmt_xlong(buf + i, (unsigned long)e->maplen);
     i += fmt_str(buf + i, "@");
-    i += fmt_xint64(buf + i, (unsigned long)e->mapofs);
+    i += fmt_xlong(buf + i, (unsigned long)e->mapofs);
   }
   if(bufsize - i < 100) return 0;
   i += fmt_str(buf + i, "next_read ");
@@ -65,7 +65,7 @@ io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   i += fmt_str(buf + i, " next_write ");
   i += fmt_long(buf + i, e->next_write);
   i += fmt_str(buf + i, " cookie ");
-  i += fmt_xint64(buf + i, (unsigned long long)(size_t)e->cookie);
+  i += fmt_xint64(buf + i, (uint64)e->cookie);
   buf[i] = 0;
   return i;
 }

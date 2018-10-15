@@ -1,10 +1,10 @@
 .TH fmt_xint64 3
 .SH NAME
-fmt_xint64 \- write a hexadecimal ASCII representation of an unsigned long long integer
+fmt_xint64 \- write a hexadecimal ASCII representation of an uint64 integer
 .SH SYNTAX
 .B #include <fmt.h>
 
-size_t \fBfmt_xint64\fP(char *\fIdest\fR,unsigned long long \fIsource\fR);
+size_t \fBfmt_xint64\fP(char *\fIdest\fR,uint64 \fIsource\fR);
 .SH DESCRIPTION
 fmt_xint64 writes an ASCII representation ('0' to '9' and 'a' to 'f',
 base 16) of \fIsource\fR to \fIdest\fR and returns the number of bytes

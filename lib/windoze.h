@@ -70,6 +70,10 @@ void __winsock_init(void);
 #define closesocket(s) close(s)
 #endif
 
+#ifndef ENOSYS
+ #define ENOSYS 1052
+#endif /* ENOSYS */
+
 #ifdef __cplusplus
 }
 #endif

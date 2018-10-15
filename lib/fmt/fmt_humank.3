@@ -4,7 +4,7 @@ fmt_humank \- write a human readable ASCII representation of a long integer
 .SH SYNTAX
 .B #include <fmt.h>
 
-size_t \fBfmt_humank\fP(char *\fIdest\fR,unsigned long long \fIsource\fR);
+size_t \fBfmt_humank\fP(char *\fIdest\fR,uint64 \fIsource\fR);
 .SH DESCRIPTION
 fmt_humank writes a human readable ASCII representation of \fIsource\fR
 to \fIdest\fR and returns the number of bytes written.  The result
@@ -16,7 +16,7 @@ fmt_humank does not append \\0.
 If \fIdest\fR equals FMT_LEN (i.e. is zero), fmt_humank returns the number
 of bytes it would have written.
 
-The output of fmt_humank can not exceed 11 (assuming unsigned long long
+The output of fmt_humank can not exceed 11 (assuming uint64
 has 64 bits).
 .SH "SEE ALSO"
 fmt_human(3), scan_humank(3)

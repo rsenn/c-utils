@@ -39,7 +39,7 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
         munmap(e->mmapped, e->maplen);
 #endif
       }
-      e->mapofs = off & 0xffffffffffff0000ull;
+      e->mapofs = off & (uint64)0xffffffffffff0000;
       if(e->mapofs + 0x10000 > off + bytes)
         e->maplen = off + bytes - e->mapofs;
       else

@@ -17,7 +17,7 @@ void
 pe_print_data_directory(buffer* b, uint8* base, pe_data_directory* data_dir) {
   buffer_puts(b, "virtual_address: 0x");
   buffer_putxint640(b,
-                       pe_rva2ptr(base, uint32_get(&data_dir->virtual_address)),
+                       (int64)pe_rva2ptr(base, uint32_get(&data_dir->virtual_address)),
                        sizeof(data_dir->virtual_address) * 2);
   buffer_puts(b, " size: 0x");
   buffer_putxint640(b, uint32_get(&data_dir->size), sizeof(data_dir->size) * 2);
@@ -44,15 +44,15 @@ pe_print_export_directory(buffer* b, uint8* base, pe_export_directory* export_di
   buffer_putulong(b, uint32_get(&export_dir->number_of_names));
   buffer_puts(b, "\naddress_of_functions: ");
   buffer_putxlong0(b,
-                   pe_rva2ptr(base, uint32_get(&export_dir->address_of_functions)),
+                   (unsigned long)pe_rva2ptr(base, uint32_get(&export_dir->address_of_functions)),
                    sizeof(export_dir->address_of_functions) * 2);
   buffer_puts(b, "\naddress_of_names: ");
   buffer_putxlong0(b,
-                   pe_rva2ptr(base, uint32_get(&export_dir->address_of_names)),
+                   (unsigned long)pe_rva2ptr(base, uint32_get(&export_dir->address_of_names)),
                    sizeof(export_dir->address_of_names) * 2);
   buffer_puts(b, "\naddress_of_name_ordinals: ");
   buffer_putxlong0(b,
-                   pe_rva2ptr(base, uint32_get(&export_dir->address_of_name_ordinals)),
+                   (unsigned long)pe_rva2ptr(base, uint32_get(&export_dir->address_of_name_ordinals)),
                    sizeof(export_dir->address_of_name_ordinals) * 2);
   buffer_putnlflush(b);
 }

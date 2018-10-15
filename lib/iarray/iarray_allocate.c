@@ -8,7 +8,7 @@
 #include "../iarray.h"
 
 #ifdef __BORLANDC__
-#define InterlockedCompareExchangePointer InterlockedCompareExchange
+#define InterlockedCompareExchangePointer(ptr,newptr,oldptr) InterlockedCompareExchange((long*)ptr,(long)newptr,(long)oldptr)
 #endif
 
 #ifdef __dietlibc__

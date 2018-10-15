@@ -1,5 +1,6 @@
 #include "../windoze.h"
 
+#include "../uint64.h"
 #include "../taia.h"
 #include <sys/types.h>
 #if WINDOWS
@@ -13,12 +14,12 @@ taia_now(struct taia* t) {
 #if WINDOWS
   union {
     FILETIME f;
-    unsigned long long l;
+    uint64 l;
   } fnord;
   GetSystemTimeAsFileTime(&fnord.f);
   /* 64-bit value representing the number of 100-nanosecond intervals
    * since January 1, 1601 (UTC) */
-  fnord.l -= ((long long)(1970 - 1601)) * 365 * 24 * 60 * 60;
+  fnord.l -= ((int64)(1970 - 1601)) * 365 * 24 * 60 * 60;
   t->sec.x = fnord.l / 10000000;
   t->nano = ((fnord.l + 5) / 10) % 1000000;
   t->atto = 0;

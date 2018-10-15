@@ -189,13 +189,17 @@ next:
     iterations = (((fsize + map_size + 1) / map_size) + 7) >> 3;
     remain = fsize;
 
-    if(verbose)
-      fprintf(stderr,
-              "memory map size: %lukB (0x%016lx) iterations: %llu (end offset: 0x%llx)\n",
-              (long)(map_size / 1024),
-              (long)map_size,
-              (unsigned long long)iterations,
-              (long long)fsize);
+    if(verbose) {
+		buffer_puts(buffer_2, "memory map size: ");
+		buffer_putuong(buffer_2, map_size / 1024);
+		buffer_puts(buffer_2, "kB (0x");
+		buffer_putxlong(buffer_2, map_size);
+		buffer_puts(buffer_2, ") iterations: ");
+		buffer_putuint64(buffer_2, iterations);
+		buffer_puts(buffer_2, " (end offset: 0x");
+		buffer_putxuint64(buffer_2, fsize);
+		buffer_putnlflush(buffer_2);
+    }
 
     //(uint64)map_size * iterations);
     /* mmap_private(argv[ai], &fsize); */

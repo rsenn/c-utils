@@ -399,7 +399,7 @@ main(int argc, char* argv[]) {
     root_element = xmldoc->children;
     print_element_names(root_element);
 
-    hmap_foreach(parts_db, (void*)&each_part);
+    hmap_foreach(parts_db, (void(*)(void*))&each_part);
     buffer_flush(buffer_1);
   }
   {

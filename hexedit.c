@@ -219,8 +219,8 @@ main(int argc, char* argv[]) {
   //x = (unsigned char*)mmap_shared(argv[index], &n);
 
   while(++index < argc) {
-    unsigned long long addr = 0;
-    unsigned long long val_cmp = 0, val_set = 0;
+    uint64 addr = 0;
+    uint64 val_cmp = 0, val_set = 0;
     // size_t s_cmp = 0, s_set = 0;
 
     char* spec = argv[index];
