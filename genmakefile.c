@@ -303,7 +303,7 @@ output_rule(buffer* b, rule_t* rule) {
   int num_deps = strlist_count(&rule->deps);
 
   if(num_deps == 0 && str_diffn(rule->name, builddir.sa.s, builddir.sa.len)) {
-    buffer_putm_internal(b, ".PHONY: ", rule->name, "\n");
+    buffer_putm_internal(b, ".PHONY: ", rule->name, "\n", 0);
   }
 
   buffer_puts(b, rule->name);
@@ -898,17 +898,17 @@ main(int argc, char* argv[]) {
 
     link_rules(rules, &srcs);
 
-    output_all_vars(buffer_1, vars);
-    output_all_rules(buffer_1, rules);
-
     if((rule = get_rule("clean"))) {
       strlist_push(&builddir, "*");
 
-      stralloc_copys(&delete_command, "DEL /F ");
+      stralloc_copys(&delete_command, "DEL /F /Q ");
       stralloc_cat(&delete_command, &builddir.sa);
 
       rule->cmd = &delete_command;
     }
+
+    output_all_vars(buffer_1, vars);
+    output_all_rules(buffer_1, rules);
 
     //   hmap_dump(sourcedirs, buffer_1);
 

@@ -1222,8 +1222,6 @@ $(BUILDDIR)str_start.o: lib/str/str_start.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)str_tok.o: lib/str/str_tok.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)time_table_spd.o: lib/str/time_table_spd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_filename.o: lib/stralloc/mmap_filename.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_0.o: lib/stralloc/stralloc_0.c
@@ -1661,8 +1659,6 @@ $(BUILDDIR)wait_pids_nohang.o: lib/wait/wait_pids_nohang.c
 $(BUILDDIR)wait_pid_nohang.o: lib/wait/wait_pid_nohang.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)wait_reap.o: lib/wait/wait_reap.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)wordexp.o: lib/wordexp.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_add_child.o: lib/xml/xml_add_child.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
