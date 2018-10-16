@@ -1,14 +1,16 @@
-#include "windoze.h"
+#include "../windoze.h"
+#include "../iopause.h"
+#include "../taia.h"
+//#include "../socket.h"
 
 #if WINDOWS_NATIVE
+#include <winsock.h>
 //#include <winsock2.h>
 //#define _WINSOCKAPI_
 //#include <windows.h>
 #else
-#include "select.h"
+#include "../select.h"
 #endif
-#include "iopause.h"
-#include "taia.h"
 
 void
 iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* stamp) {

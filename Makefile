@@ -1053,7 +1053,7 @@ $(call lib-target,sig)
 $(call lib-target,slist)
 $(call lib-target,str,lib/isleap.c lib/time_table_spd.c)
 $(call lib-target,stralloc,lib/utf8.c)
-$(call lib-target,strarray,lib/fnmatch.c)
+$(call lib-target,strarray)
 $(call lib-target,strlist)
 $(call lib-target,tai)
 $(call lib-target,taia)
@@ -1081,9 +1081,6 @@ $(BUILDDIR)count-depth$(M64_)$(EXEEXT): $(BUILDDIR)count-depth.o $(call add-libr
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
-
-$(BUILDDIR)fnmatch.o: fnmatch.c
-
 
 $(BUILDDIR)list-r.o: list-r.c
 $(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)getopt.o $(BUILDDIR)fnmatch.o $(call add-library,strarray open array rdir dir buffer byte stralloc fmt str)

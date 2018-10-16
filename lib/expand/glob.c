@@ -1,12 +1,9 @@
-#if(defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__) || defined(__MSYS__))
+#include "../windoze.h"
+#if WINDOWS_NATIVE && !defined(__MINGW32__) && !defined(__MINGW64__)
 
-/*
- * Includes
- */
-
-#include "glob.h"
-#include "byte.h"
-#include "str.h"
+#include "../glob.h"
+#include "../byte.h"
+#include "../str.h"
 
 #include <errno.h>
 #include <stdlib.h>
@@ -19,12 +16,12 @@
  */
 
 static char const*
-strrpbrk(char const* string, char const* strCharSet) {
+strrpbrk(char const* s, char const* charset) {
   char* part = NULL;
   char const* pch;
 
-  for(pch = strCharSet; *pch; ++pch) {
-    char* p = strrchr(string, *pch);
+  for(pch = charset; *pch; ++pch) {
+    char* p = strrchr(s, *pch);
 
     if(NULL != p) {
       if(NULL == part) {
@@ -239,7 +236,7 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
           for(begin = pp, next_str = buffer + cbPointers; begin != end; --end) {
             *(end - 1) = next_str;
 
-            /* Find the next string. */
+            /* Find the next s. */
             next_str += 1 + lstrlenA(next_str);
           }
         } else {
@@ -247,7 +244,7 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
           for(begin = pp, next_str = buffer + cbPointers; begin != end; ++begin) {
             *begin = next_str;
 
-            /* Find the next string. */
+            /* Find the next s. */
             next_str += 1 + lstrlenA(next_str);
           }
           *begin = NULL;
@@ -322,4 +319,4 @@ globfree(glob_t* pglob) {
   }
 }
 
-#endif /* (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__) || defined(__MSYS__)) */
+#endif

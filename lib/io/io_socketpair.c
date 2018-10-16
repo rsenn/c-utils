@@ -6,7 +6,9 @@
 #include <errno.h>
 #endif
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+#include <winsock.h>
+#else
 #include <netinet/in.h>
 #endif
 

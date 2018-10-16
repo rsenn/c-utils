@@ -1,6 +1,6 @@
 #include "../xml.h"
 
-static int
+static size_t
 xml_path_out(const xmlnode* node, stralloc* out) {
   size_t n = 0;
 
@@ -19,5 +19,5 @@ xml_path_out(const xmlnode* node, stralloc* out) {
 int
 xml_path(const xmlnode* node, stralloc* out) {
   stralloc_zero(out);
-  return xml_path_out(node, out);
+  return xml_path_out(node, out) != 0;
 }

@@ -8,4 +8,3 @@ slist_shift(slink **list) {
   link->next = NULL;
   return link;
 }
-

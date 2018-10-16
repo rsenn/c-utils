@@ -1,13 +1,11 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
-
+#include "../windoze.h"
 #include "../fmt.h"
 #include "../iarray.h"
 #include "../io_internal.h"
-#include <time.h>
 
-#if defined(__unix__) || defined(__linux__)
+#if WINDOWS_NATIVE
+#include <winsock.h>
+#else
 #include <sys/time.h>
 #endif
 

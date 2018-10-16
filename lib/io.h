@@ -10,7 +10,7 @@
 #include "uint64.h"
 
 #if WINDOWS
-typedef size_t fd_t;
+typedef INT_PTR fd_t;
 #else
 typedef int fd_t;
 #endif

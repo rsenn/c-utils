@@ -2,6 +2,7 @@
 
 #if WINDOWS_NATIVE
 #include <windows.h>
+#include <winsock.h>
 #include <io.h>
 #else
 #include <poll.h>

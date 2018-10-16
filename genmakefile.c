@@ -12,13 +12,19 @@
 #include "lib/scan.h"
 
 #if WINDOWS
-#define OBJEXT_DEFAULT ".obj"
-#define LIBEXT_DEFAULT ".lib"
-#define EXEEXT_DEFAULT ".exe"
+#define DEFAULT_OBJEXT ".obj"
+#define DEFAULT_LIBEXT ".lib"
+#define DEFAULT_EXEEXT ".exe"
 #else
-#define OBJEXT_DEFAULT ".o"
-#define LIBEXT_DEFAULT ".a"
-#define EXEEXT_DEFAULT ""
+#define DEFAULT_OBJEXT ".o"
+#define DEFAULT_LIBEXT ".a"
+#define DEFAULT_EXEEXT ""
+#endif
+
+#if WINDOWS_NATIVE
+#define DEFAULT_PATHSEP '\\'
+#else
+#define DEFAULT_PATHSEP '/'
 #endif
 
 typedef struct {
@@ -41,10 +47,11 @@ typedef void (linklib_fmt)(const char*, stralloc*);
 
 static strarray srcs;
 static stralloc compile_command, lib_command, link_command, mkdir_command;
-static const char* objext = OBJEXT_DEFAULT;
-static const char* libext = LIBEXT_DEFAULT;
-static const char* binext = EXEEXT_DEFAULT;
+static const char* objext = DEFAULT_OBJEXT;
+static const char* libext = DEFAULT_LIBEXT;
+static const char* binext = DEFAULT_EXEEXT;
 static stralloc builddir;
+static char pathsep = DEFAULT_PATHSEP;
 
 static HMAP_DB *rules, *vars;
 
@@ -163,6 +170,26 @@ rule_t*
 get_rule_sa(stralloc* name) {
   stralloc_nul(name);
   return get_rule(name->s);
+}
+
+/**
+ * Add a path to a strlist
+ */
+void
+add_path(strlist* list, const char* path) {
+  size_t i, len = str_len(path);
+
+  strlist_push(list, path);
+
+  for(i = list->sa.len - len; i < list->sa.len; ++i) {
+    if(list->sa.s[i] == '/' || list->sa.s[i] == '\\')
+      list->sa.s[i] = pathsep;
+  }
+}
+void
+add_path_sa(strlist* list, stralloc* path) {
+  stralloc_nul(path);
+  add_path(list, path->s);
 }
 
 /**
@@ -408,7 +435,7 @@ compile_rules(HMAP_DB* rules, strarray* sources) {
     src_to_obj(*srcfile, &obj);
 
     if((rule = get_rule_sa(&obj))) {
-      strlist_push(&rule->deps, *srcfile);
+      add_path(&rule->deps, *srcfile);
 
       rule->cmd = &compile_command;
     }
@@ -418,7 +445,7 @@ compile_rules(HMAP_DB* rules, strarray* sources) {
 }
 
 /**
- * Generate compile rules for every source file given
+ * Generate compile rules for every source file with a main()
  */
 void
 link_rules(HMAP_DB* rules, strarray* sources) {
@@ -438,10 +465,10 @@ link_rules(HMAP_DB* rules, strarray* sources) {
     change_ext(str_basename(*srcfile), &bin, binext);
 
     rule = get_rule("all");
-    strlist_push_sa(&rule->deps, &bin);
+    add_path_sa(&rule->deps, &bin);
 
     if((rule = get_rule_sa(&bin))) {
-      strlist_push_sa(&rule->deps, &obj);
+      add_path_sa(&rule->deps, &obj);
 
       get_rules_by_cmd(&lib_command, &rule->deps);
 
@@ -459,9 +486,9 @@ link_rules(HMAP_DB* rules, strarray* sources) {
 void
 lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   TUPLE* t;
-  stralloc libname, objname;
-  stralloc_init(&libname);
-  stralloc_init(&objname);
+  stralloc lib, obj;
+  stralloc_init(&lib);
+  stralloc_init(&obj);
 
   hmap_foreach(srcdirs, t) {
     sourcedir_t* srcdir = hmap_data(t);
@@ -470,27 +497,27 @@ lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
 
     if(str_equal(base, "lib") || base[0] == '\0') continue;
 
-    stralloc_zero(&libname);
-    stralloc_cat(&libname, &builddir);
-    stralloc_cats(&libname, base);
-    stralloc_cats(&libname, libext);
+    stralloc_zero(&lib);
+    stralloc_cat(&lib, &builddir);
+    stralloc_cats(&lib, base);
+    stralloc_cats(&lib, libext);
 
-    if((rule = get_rule_sa(&libname))) {
+    if((rule = get_rule_sa(&lib))) {
       sourcefile_t* pfile;
       strlist_init(&rule->deps, ' ');
 
       slist_foreach(srcdir->sources, pfile) {
-        src_to_obj(pfile->name, &objname);
+        src_to_obj(pfile->name, &obj);
 
-        strlist_push_sa(&rule->deps, &objname);
+        add_path_sa(&rule->deps, &obj);
       }
 
       rule->cmd = &lib_command;
     }
   }
 
-  stralloc_free(&libname);
-  stralloc_free(&objname);
+  stralloc_free(&lib);
+  stralloc_free(&obj);
 }
 
 /**
@@ -583,9 +610,9 @@ set_type(const char* type) {
   stralloc_cats(&builddir, type);
   stralloc_cats(&builddir, "\\");
 
-  stralloc_copys(&mkdir_command, "if not exist \"$@\" mkdir \"$@\"");
+  stralloc_copys(&mkdir_command, "IF NOT EXIST \"$@\" MKDIR \"$@\"");
 
-  if(str_equal(type, "gnu")) {
+  if(str_start(type, "gnu") || str_start(type, "gcc")) {
 
     /*
      * GNU GCC compatible compilers
@@ -601,63 +628,83 @@ set_type(const char* type) {
 
     format_linklib_fn = &format_linklib_switch;
 
-  } else if(str_equal(type, "msvc")) {
-
-    set_var("CC", "cl");
-    set_var("LIB", "lib");
-    set_var("LINK", "link");
-
-    stralloc_copys(&link_command, "$(LINK) /OUT:$@ @<<\n\t\t$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)\n<<");
-    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
-
-  } else if(str_equal(type, "bcc55") || str_equal(type, "bcc32")) {
+  } else
 
     /*
-     * Borland C++ Builder
+     * Visual C++ compiler
      */
+    if(str_start(type, "msvc") || str_start(type, "icl")) {
 
-    push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
+      set_var("CC", "cl");
+      set_var("LIB", "lib");
+      set_var("LINK", "link");
 
-    if(str_equal(type, "bcc32")) {
-      set_var("CC", "bcc32c");
-      set_var("CXX", "bcc32x");
+      stralloc_copys(&link_command, "$(LINK) /OUT:$@ @<<\n\t\t$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)\n<<");
+      stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
-      stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o $@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS)\n|");
-    } else {
-      set_var("CC", "bcc32");
-      set_var("CXX", "bcc32");
+      /*
+       * Intel C++ compiler
+       */
+      if(str_start(type, "icl")) {
+        set_var("CC", "icl");
+        set_var("CXX", "icl");
 
-      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
-      stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -e$@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS)\n|");
-    }
-    set_var("LINK", "ilink32");
-    set_var("LIB", "tlib");
+        set_var("LINK", "xilink");
+        set_var("LIB", "xilib");
 
-    push_var("CFLAGS", "-q -tWC -tWM -O1 -ff -fp");
+        push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
+      }
+    } else
 
-    push_var("CPPFLAGS", "-Dinline=__inline");
+      /*
+       * Borland C++ Builder
+       */
+      if(str_start(type, "bcc")) {
 
-    push_var("LIBS", "cw32.lib import32.lib");
+        push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
 
-    stralloc_copys(&lib_command, "$(LIB) @&&|\n\t/a /u \"$@\" $^\n|");
+        if(!str_find(type, "55")) {
+          set_var("CC", "bcc32c");
+          set_var("CXX", "bcc32x");
 
-  } else if(str_equal(type, "lcc")) {
-    /*
-     * LCC compiler
-     */
+          stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o $@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS)\n|");
+        } else {
+          set_var("CC", "bcc32");
+          set_var("CXX", "bcc32");
 
-    set_var("CC", "lcc");
+          stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
+          stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -e$@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS)\n|");
+        }
 
-  } else if(str_equal(type, "tcc")) {
-    /*
-     * Tiny CC compiler
-     */
+        set_var("LINK", "ilink32");
+        set_var("LIB", "tlib");
 
-    set_var("CC", "tcc");
+        push_var("CFLAGS", "-q -tWC -tWM -O1 -ff -fp");
+        push_var("CPPFLAGS", "-Dinline=__inline");
 
-  } else {
-    return 0;
-  }
+        push_var("LIBS", "cw32.lib import32.lib");
+
+        stralloc_copys(&lib_command, "$(LIB) @&&|\n\t/a /u \"$@\" $^\n|");
+
+      } else
+
+        /*
+         * LCC compiler
+         */
+        if(str_start(type, "lcc")) {
+
+          set_var("CC", "lcc");
+
+        } else
+
+          /*
+           * Tiny CC compiler
+           */
+          if(str_start(type, "tcc")) {
+            set_var("CC", "tcc");
+
+          } else
+            return 0;
 
   push_lib("EXTRA_LIBS", "ws2_32");
   push_lib("EXTRA_LIBS", "iphlpapi");
@@ -729,7 +776,7 @@ main(int argc, char* argv[]) {
       if((rule = get_rule_sa(&builddir))) {
         rule->cmd = &mkdir_command;
 
-        strlist_push_sa(&all->deps, &builddir);
+        add_path_sa(&all->deps, &builddir);
       }
     }
 

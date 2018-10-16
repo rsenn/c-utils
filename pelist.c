@@ -17,7 +17,7 @@ void
 pe_print_data_directory(buffer* b, uint8* base, pe_data_directory* data_dir) {
   buffer_puts(b, "virtual_address: 0x");
   buffer_putxint640(b,
-                    (int64)pe_rva2ptr(base, uint32_get(&data_dir->virtual_address)),
+                    pe_rva2offset(base, uint32_get(&data_dir->virtual_address)),
                     sizeof(data_dir->virtual_address) * 2);
   buffer_puts(b, " size: 0x");
   buffer_putxint640(b, uint32_get(&data_dir->size), sizeof(data_dir->size) * 2);
@@ -44,15 +44,15 @@ pe_print_export_directory(buffer* b, uint8* base, pe_export_directory* export_di
   buffer_putulong(b, uint32_get(&export_dir->number_of_names));
   buffer_puts(b, "\naddress_of_functions: ");
   buffer_putxlong0(b,
-                   (unsigned long)pe_rva2ptr(base, uint32_get(&export_dir->address_of_functions)),
+                   pe_rva2offset(base, uint32_get(&export_dir->address_of_functions)),
                    sizeof(export_dir->address_of_functions) * 2);
   buffer_puts(b, "\naddress_of_names: ");
   buffer_putxlong0(b,
-                   (unsigned long)pe_rva2ptr(base, uint32_get(&export_dir->address_of_names)),
+                   pe_rva2offset(base, uint32_get(&export_dir->address_of_names)),
                    sizeof(export_dir->address_of_names) * 2);
   buffer_puts(b, "\naddress_of_name_ordinals: ");
   buffer_putxlong0(b,
-                   (unsigned long)pe_rva2ptr(base, uint32_get(&export_dir->address_of_name_ordinals)),
+                   pe_rva2offset(base, uint32_get(&export_dir->address_of_name_ordinals)),
                    sizeof(export_dir->address_of_name_ordinals) * 2);
   buffer_putnlflush(b);
 }
@@ -177,7 +177,8 @@ usage(char* av0) {
                        "  -s, --sections          List PE32 sections\n",
                        "  -E, --export-directory  Print export directory\n",
                        "  -D, --data-directory    Print data directory\n",
-                       "\n", 0);
+                       "\n",
+                       0);
   buffer_flush(buffer_1);
 }
 
@@ -188,16 +189,14 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {
-    {"help", 0, NULL, 'h'},
-    {"imports", 0, &list_imports, 'i'},
-    {"exports", 0, &list_exports, 'e'},
-    {"deps", 0, &list_deps, 'd'},
-    {"sections", 0, &list_sections, 's'},
-    {"export-directory", 0, &print_export_dir, 'E'},
-    {"data-directory", 0, &print_data_dir, 'D'},
-    {0}
-  };
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"imports", 0, &list_imports, 'i'},
+                           {"exports", 0, &list_exports, 'e'},
+                           {"deps", 0, &list_deps, 'd'},
+                           {"sections", 0, &list_sections, 's'},
+                           {"export-directory", 0, &print_export_dir, 'E'},
+                           {"data-directory", 0, &print_data_dir, 'D'},
+                           {0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "hiedsED", opts, &index);
@@ -205,17 +204,17 @@ main(int argc, char** argv) {
     if(c == '\0') continue;
 
     switch(c) {
-    case 'h': usage(argv[0]); return 0;
-    case 'i':
-    case 'e':
-    case 'd':
-    case 's':
-    case 'E':
-    case 'D': break;
-    default: {
-      usage(argv[0]);
-      return 1;
-    }
+      case 'h': usage(argv[0]); return 0;
+      case 'i':
+      case 'e':
+      case 'd':
+      case 's':
+      case 'E':
+      case 'D': break;
+      default: {
+        usage(argv[0]);
+        return 1;
+      }
     }
   }
 
