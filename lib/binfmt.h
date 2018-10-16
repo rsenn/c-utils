@@ -50,6 +50,5 @@ int binfmt_open(binfmt_file*, const char* filename);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* defined(BINFMT_H) */
+#endif
 

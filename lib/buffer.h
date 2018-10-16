@@ -2,17 +2,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-/* for size_t: */
-#include <stddef.h>
-
-#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
-#include <inttypes.h>
-#include <stdint.h>
-#endif
-
-/* for ssize_t: */
-#include <sys/types.h>
-
+#include "typedefs.h"
 #include "uint64.h"
 #include "str.h"
 #include "io.h"
@@ -23,18 +13,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#if WINDOWS && !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED) && !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
-#define __ssize_t_defined 1
-#define _SSIZE_T_DECLARED 1
-#define _SSIZE_T_DEFINED 1
-#ifdef _WIN32
-typedef __int32 ssize_t;
-#endif
-#ifdef _WIN64
-typedef __int64 ssize_t;
-#endif
 #endif
 
 typedef ssize_t (buffer_op_sys)(fd_t fd, void* buf, size_t len);

@@ -3,7 +3,7 @@
 #define BYTE_H
 
 /* for size_t: */
-#include <stddef.h>
+#include "typedefs.h"
 
 #if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
 #include <inttypes.h>
@@ -52,11 +52,8 @@ void byte_fill(void *out, size_t len, int c);
 
 int byte_case_diff(const void *x1, unsigned int len, const void *x2);
 unsigned int byte_case_equal(const void *s, unsigned int len, const void *t);
-void byte_copyr(void *out, size_t len, const void *in);
 unsigned int byte_count(const void *s, unsigned int n, char c);
-int byte_diff(const void *a, size_t len, const void *b);
 unsigned int byte_equal(const void *s, unsigned int n, const void *t);
-void byte_fill(void *out, size_t len, int c);
 void byte_lower(void *s, unsigned int len);
 void byte_upper(void* s, unsigned int len);
 

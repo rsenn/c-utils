@@ -25,7 +25,6 @@
 #define popen _popen
 //#define lseek lseek64
 #define llseek lseek64
-//#include "socket.h"
 my_extern HANDLE io_comport;
 
 #elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)

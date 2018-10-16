@@ -27,7 +27,7 @@ io_passfd(fd_t sock, fd_t fd) {
 #endif
 #include "io_internal.h"
 #include <errno.h>
-#include <stddef.h>
+#include "typedefs.h"
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>

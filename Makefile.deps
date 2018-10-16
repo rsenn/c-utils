@@ -756,8 +756,6 @@ $(BUILDDIR)io_wantread.o: lib/io/io_wantread.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_wantwrite.o: lib/io/io_wantwrite.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)iopause.o: lib/iopause.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)io_passfd.o: lib/io_passfd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)json_free.o: lib/json/json_free.c
@@ -1793,4 +1791,6 @@ $(BUILDDIR)fnmatch.o: lib/strarray/fnmatch.c
 $(BUILDDIR)glob.o: lib/strarray/glob.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strarray_glob.o: lib/strarray/strarray_glob.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)iopause.o: lib/io/iopause.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

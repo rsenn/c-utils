@@ -2,7 +2,7 @@
 #ifndef STRALLOC_H
 #define STRALLOC_H
 
-#include <stddef.h>
+#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C" {

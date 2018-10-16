@@ -38,7 +38,6 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#include <strings.h>
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif

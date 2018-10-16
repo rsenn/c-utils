@@ -2,36 +2,13 @@
 #ifndef FMT_H
 #define FMT_H
 
-/* for size_t: */
-#include <stddef.h>
-
-#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
-#include <inttypes.h>
-#include <stdint.h>
-#endif
-
-/* for time_t: */
-#include <sys/types.h>
-
+#include "typedefs.h"
 #include "uint32.h"
 #include "uint64.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/*#if WINDOWS && !defined(__size_t_defined) && !defined(_SIZE_T_DECLARED) && !defined(_SIZE_T_DEFINED) &&
-!defined(__DEFINED_size_t) && !defined(__dietlibc__)
-#define __size_t_defined 1
-#define _SIZE_T_DECLARED 1
-#define _SIZE_T_DEFINED 1
-#ifdef _WIN32
-typedef unsigned __int32 size_t;
-#endif
-#ifdef _WIN64
-typedef unsigned __int64 size_t;
-#endif
-#endif*/
 
 #define FMT_LONG 41        /* enough space to hold -2^127 in decimal, plus \0 */
 #define FMT_ULONG 40       /* enough space to hold 2^128 - 1 in decimal, plus \0 */

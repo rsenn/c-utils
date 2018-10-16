@@ -2,7 +2,7 @@
 #ifndef CASE_H
 #define CASE_H
 
-#include <stddef.h>
+#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C" {

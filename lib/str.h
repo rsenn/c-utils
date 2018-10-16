@@ -2,7 +2,7 @@
 #ifndef STR_H
 #define STR_H
 
-#include <stddef.h>
+#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,10 +49,6 @@ char *str_istr(char *s, char *find);
 char *str_tok(char *s, const char *delim, char **ptrptr);
 char *str_dup(const char *s);
 char *str_ndup(const char *s, size_t n);
-
-struct tm;
-
-char* str_ptime(const char* s,const char* format, struct tm* tm);
 
 char* str_basename(const char* s);
 

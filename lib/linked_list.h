@@ -7,7 +7,7 @@
 #define LINKED_LIST_H
 
 #include <stdbool.h>
-#include <stddef.h>
+#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C" {

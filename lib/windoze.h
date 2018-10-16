@@ -8,7 +8,11 @@
 #define WINDOWS 1
 #endif
 
-#if WINDOWS || defined(__CYGWIN__) || defined(__MSYS__)
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#define MINGW 1
+#endif
+
+#if WINDOWS
 #include <io.h>
 #include <windows.h>
 #endif
@@ -17,30 +21,7 @@
 extern "C" {
 #endif
 
-#if WINDOWS || defined(__CYGWIN__) || defined(__MSYS__)
-
-#ifndef _SIZE_T_DEFINED
-#define _SIZE_T_DEFINED 1
-typedef SIZE_T size_t;
-#endif
-
-#if WINDOWS && !defined(__ssize_t_defined) && !defined(_SSIZE_T_DECLARED) && !defined(_SSIZE_T_DEFINED) &&             \
-    !defined(__DEFINED_ssize_t) && !defined(__dietlibc__)
-#define __ssize_t_defined 1
-#define _SSIZE_T_DECLARED 1
-#define _SSIZE_T_DEFINED 1
-#ifdef _MSC_VER
-typedef SSIZE_T ssize_t;
-#elif defined(_WIN64)
-typedef __int64 ssize_t;
-#elif defined(_WIN32)
-typedef __int32 ssize_t;
-#else
-typedef _ssize_t ssize_t;
-#endif
-#endif
-
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
+#if WINDOWS_NATIVE
 inline static size_t
 getpagesize() {
   static DWORD cachedPageSize = 0;
@@ -51,15 +32,9 @@ getpagesize() {
   }
   return cachedPageSize;
 }
-#endif
-
-#endif /* WINDOWS */
+#endif /* WINDOWS_NATIVE */
 
 #if WINDOWS_NATIVE
-
-#if defined(__MINGW32__) || defined(__MINGW64__)
-#define MINGW 1
-#endif
 
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
@@ -81,6 +56,5 @@ void __winsock_init(void);
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* defined(WINDOZE_H) */
 

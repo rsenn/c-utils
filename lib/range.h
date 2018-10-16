@@ -1,8 +1,7 @@
 #ifndef RANGE_H
 #define RANGE_H 1
 
-#include <stddef.h>
-#include <sys/types.h>
+#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C" {

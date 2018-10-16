@@ -4,7 +4,7 @@
 
 /* for size_t: */
 #if defined(__BORLANDC__ ) || defined(HAVE_STDDEF_H)
-#include <stddef.h>
+#include "typedefs.h"
 #endif
 
 /* for time_t: */

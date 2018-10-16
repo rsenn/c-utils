@@ -10,7 +10,7 @@
  */
 
 #include "uint64.h"
-#include <stddef.h>
+#include "typedefs.h"
 #ifdef _WIN32
 #include <windows.h>
 #else
