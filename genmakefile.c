@@ -604,14 +604,14 @@ set_type(const char* type) {
 
   } else if(str_equal(type, "msvc")) {
 
-      set_var("CC", "cl");
-      set_var("LIB", "lib");
-      set_var("LINK", "link");
+    set_var("CC", "cl");
+    set_var("LIB", "lib");
+    set_var("LINK", "link");
 
-      stralloc_copys(&link_command, "$(LINK) /OUT:$@ @<<\n\t\t$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)\n<<");
-      stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
+    stralloc_copys(&link_command, "$(LINK) /OUT:$@ @<<\n\t\t$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)\n<<");
+    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
- } else if(str_equal(type, "bcc55") || str_equal(type, "bcc32")) {
+  } else if(str_equal(type, "bcc55") || str_equal(type, "bcc32")) {
 
     /*
      * Borland C++ Builder
@@ -628,8 +628,8 @@ set_type(const char* type) {
       set_var("CC", "bcc32");
       set_var("CXX", "bcc32");
 
-     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
-     stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -e$@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS)\n|");
+      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
+      stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -e$@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS)\n|");
     }
     set_var("LINK", "ilink32");
     set_var("LIB", "tlib");
