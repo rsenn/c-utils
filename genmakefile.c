@@ -13,7 +13,7 @@
 #if WINDOWS
 #define OBJEXT_DEFAULT ".obj"
 #define LIBEXT_DEFAULT ".lib"
-#define EXEEXT_DEFAULT ".bin"
+#define EXEEXT_DEFAULT ".exe"
 #else
 #define OBJEXT_DEFAULT ".o"
 #define LIBEXT_DEFAULT ".a"
@@ -218,7 +218,8 @@ get_sources(const char* basedir, strarray* sources) {
   if(!rdir_open(&rdir, basedir)) {
     const char* s;
 
-    while((s = rdir_read(&rdir))) add_source(s, sources);
+    while((s = rdir_read(&rdir)))
+      add_source(s, sources);
   }
 }
 
@@ -285,7 +286,7 @@ dump_sourcedirs(buffer* b, HMAP_DB* sourcedirs) {
  * Generate compile rules for every source file given
  */
 void
-compile_rules(buffer* b, strarray* sources) {
+compile_rules(HMAP_DB* rules, strarray* sources) {
   char** srcfile;
   stralloc obj;
   stralloc_init(&obj);
@@ -299,8 +300,6 @@ compile_rules(buffer* b, strarray* sources) {
       strlist_push(&rule->deps, *srcfile);
 
       rule->cmd = &compile_command;
-
-      output_rule(b, rule);
     }
   }
 
@@ -311,7 +310,7 @@ compile_rules(buffer* b, strarray* sources) {
  * Generate compile rules for every source file given
  */
 void
-link_rules(buffer* b, strarray* sources) {
+link_rules(HMAP_DB* rules, strarray* sources) {
   char** srcfile;
   stralloc obj, bin;
   stralloc_init(&obj);
@@ -320,7 +319,7 @@ link_rules(buffer* b, strarray* sources) {
    strarray_foreach(sources, srcfile) {
     rule_t* rule;
 
-    if(!has_main(*srcfile)) continue;
+    if(has_main(*srcfile) != 1) continue;
 
     c_to_o(*srcfile, &obj);
     stralloc_copy(&bin, &obj);
@@ -330,12 +329,13 @@ link_rules(buffer* b, strarray* sources) {
       stralloc_nul(&bin);
     }
 
+    rule = get_rule("all");
+    strlist_push(&rule->deps, bin.s);
+
     if((rule = get_rule(bin.s))) {
       strlist_push(&rule->deps, obj.s);
 
       rule->cmd = &link_command;
-
-      output_rule(b, rule);
     }
   }
 
@@ -347,7 +347,7 @@ link_rules(buffer* b, strarray* sources) {
  * Generate compile rules for every library given
  */
 void
-lib_rules(buffer* b, HMAP_DB* srcdirs) {
+lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   TUPLE* t;
   stralloc libname, objname;
   stralloc_init(&libname);
@@ -379,13 +379,20 @@ lib_rules(buffer* b, HMAP_DB* srcdirs) {
       }
 
       rule->cmd = &lib_command;
-
-      output_rule(b, rule);
     }
   }
 
   stralloc_free(&libname);
   stralloc_free(&objname);
+}
+
+void
+output_all_rules(buffer* b, HMAP_DB* hmap) {
+  TUPLE* t;
+
+  for(t = hmap_begin(hmap); t; t = hmap_next(hmap, t)) {
+    output_rule(b, t->vals.val_custom);
+  }
 }
 
 void
@@ -458,6 +465,8 @@ main(int argc, char* argv[]) {
 
   {
     HMAP_DB* sourcedirs;
+    rule_t* rule = get_rule("all");
+
     hmap_init(1024, &sourcedirs);
 
     while(optind < argc) {
@@ -470,10 +479,12 @@ main(int argc, char* argv[]) {
     }
     populate_sourcedirs(&srcs, sourcedirs);
 
-    if(cmd_objs) compile_rules(buffer_1, &srcs);
-    lib_rules(buffer_1, sourcedirs);
+    if(cmd_objs) compile_rules(rules, &srcs);
+    lib_rules(rules, sourcedirs);
 
-    link_rules(buffer_1, &srcs);
+    link_rules(rules, &srcs)
+
+      output_all_rules(buffer_1);
 
     hmap_destroy(&sourcedirs);
   }
