@@ -1818,3 +1818,11 @@ $(BUILDDIR)hmap_get.o: lib/hmap/hmap_get.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strarray_each.o: lib/strarray/strarray_each.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)slist_unshifts.o: lib/slist/slist_unshifts.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)slist_shift.o: lib/slist/slist_shift.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_each.o: lib/strarray/strarray_each.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)slist_shifts.o: lib/slist/slist_shifts.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

@@ -46,7 +46,7 @@ json_print_val(jsonval* val, buffer* b, int depth) {
       buffer_puts(b, "[\n");
       buffer_putnspace(b, 2 * (depth + 1));
 
-      for(ptr = val->listv.root; ptr; ptr = ptr->next) {
+      for(ptr = val->listv; ptr; ptr = ptr->next) {
         json_print_val((jsonval*)&ptr[1], b, depth + 1);
         if(ptr->next) {
           buffer_puts(b, ",\n");

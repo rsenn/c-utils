@@ -139,7 +139,6 @@ pkg_free(pkg* p) {
  */
 int
 pkg_read(buffer* b, pkg* p) {
-
   stralloc name, value;
   stralloc_init(&name);
   stralloc_init(&value);
@@ -297,7 +296,7 @@ pkg_init(pkg* pf, const char* fn) {
  */
 void
 pkg_list() {
-  slist pkgs;
+  slink* pkgs;
   slink** it;
   stralloc path, line;
   int i, n = strlist_count(&cmd.path);
@@ -318,11 +317,9 @@ pkg_list() {
       dir_open(&d, path.s);
 
       while((entry = dir_read(&d))) {
-
         stralloc_catm_internal(&path, "/", entry, 0);
 
         if(stralloc_endb(&path, ".pc", 3)) {
-
           stralloc line;
           buffer pc;
           pkg pf;
@@ -381,7 +378,6 @@ pkg_open(const char* pkgname, pkg* pf) {
   stralloc_init(&pf->name);
 
   for(i = 0; i < n; ++i) {
-
     stralloc path = strlist_at_sa(&cmd.path, i);
 
     stralloc_catm_internal(&path, "/", pkgname, ".pc", 0);
@@ -526,12 +522,10 @@ main(int argc, char* argv[]) {
   if(cmd.code == LIST_ALL) {
     pkg_list();
     return 0;
-
   } else if(optind < argc) {
     strarray modules;
     strarray_from_argv(argc - optind, &argv[optind], &modules);
     return !pkg_conf(&modules);
-
   } else {
     buffer_puts(buffer_2, "Must specify package names on the command line");
     buffer_putnlflush(buffer_2);

@@ -69,7 +69,7 @@ json_parse_bool(jsonval* j, charbuf* b) {
 int
 json_parse_array(jsonval* j, charbuf* b) {
   if(charbuf_peek(b) == '[') {
-    slink** ptr = &j->listv.root;
+    slink** ptr = &j->listv;
     j->type = JSON_ARRAY;
 
     charbuf_skip(b);

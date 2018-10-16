@@ -121,7 +121,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
       byte_zero(&newdir, sizeof(newdir));
 
       newdir.n_sources = 1;
-      newdir.sources.root = &pfile->link;
+      newdir.sources = &pfile->link;
 
       hmap_set(&sourcedirs, dir.s, dir.len, &newdir, sizeof(newdir));
     }
