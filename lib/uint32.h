@@ -41,7 +41,10 @@ typedef __INT32_TYPE__ int32_t;
 #endif
 
 typedef uint32_t uint32;
+#ifndef _WINSOCK2API_
 typedef int32_t int32;
+#endif
+
 #endif
 
 #if !defined(NO_UINT32_MACROS)

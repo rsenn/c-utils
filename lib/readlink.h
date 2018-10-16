@@ -1,6 +1,7 @@
 #ifndef READLINK_H
 #define READLINK_H 1
 
+#include "typedefs.h"
 #include "windoze.h"
 
 #if WINDOWS_NATIVE

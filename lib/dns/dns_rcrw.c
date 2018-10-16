@@ -1,4 +1,4 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../windoze.h"
 
 #if WINDOWS

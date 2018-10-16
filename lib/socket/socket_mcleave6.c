@@ -1,17 +1,8 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
-#include <errno.h>
-#include <sys/types.h>
-#if !WINDOWS_NATIVE
-#include <netinet/in.h>
-#include <sys/socket.h>
-#else
-#ifdef IPV6_LEAVE_GROUP
-#define LIBC_HAS_IP6
-#endif
-#endif
 #include "../byte.h"
 #include "../ip6.h"
+#include <errno.h>
 
 #ifndef IPV6_DROP_MEMBERSHIP
 #ifdef IPV6_LEAVE_GROUP

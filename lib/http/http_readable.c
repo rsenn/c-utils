@@ -1,3 +1,5 @@
+#define USE_WS2_32 1
+#include "../socket.h"
 #include "../windoze.h"
 
 #include "../buffer.h"
@@ -5,7 +7,6 @@
 #include "../http.h"
 #include "../io_internal.h"
 #include "../scan.h"
-#include "../socket.h"
 #include "../str.h"
 #include <ctype.h>
 #include <errno.h>

@@ -1,4 +1,4 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 #include "../ip6.h"
 #include "../uint16.h"
@@ -6,11 +6,6 @@
 #include "../byte.h"
 #include <errno.h>
 
-#if !WINDOWS_NATIVE 
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#endif
 
 int socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
 #ifdef LIBC_HAS_IP6

@@ -1,4 +1,5 @@
 #include "../windoze.h"
+#include "../typedefs.h"
 
 #if WINDOWS
 

@@ -1,12 +1,6 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 
-
-#if WINDOWS_NATIVE
-#else
-#include <sys/types.h>
-#include <sys/socket.h>
-#endif
 #include "../byte.h"
 #include "../dns.h"
 #include "../ip6.h"
@@ -336,7 +330,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have connection to curserver on TCP socket s
     have sent pos bytes of query
     */
-    r = write(fd, d->query + d->pos, d->querylen - d->pos);
+    r = send(fd, d->query + d->pos, d->querylen - d->pos, 0);
     if(r <= 0) return nexttcp(d);
     d->pos += r;
     if(d->pos == d->querylen) {
@@ -354,7 +348,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have sent entire query to curserver on TCP socket s
     pos not defined
     */
-    r = read(fd, &ch, 1);
+    r = recv(fd, &ch, 1, 0);
     if(r <= 0) return nexttcp(d);
     d->packetlen = ch;
     d->tcpstate = 4;
@@ -367,7 +361,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     pos not defined
     have received one byte of packet length into packetlen
     */
-    r = read(fd, &ch, 1);
+    r = recv(fd, &ch, 1, 0);
     if(r <= 0) return nexttcp(d);
     d->packetlen <<= 8;
     d->packetlen += ch;
@@ -388,7 +382,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     packet is allocated
     have received pos bytes of packet
     */
-    r = read(fd, d->packet + d->pos, d->packetlen - d->pos);
+    r = recv(fd, d->packet + d->pos, d->packetlen - d->pos, 0);
     if(r <= 0) return nexttcp(d);
     d->pos += r;
     if(d->pos < d->packetlen) return 0;

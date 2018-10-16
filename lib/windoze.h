@@ -22,23 +22,13 @@ extern "C" {
 #endif
 
 #if WINDOWS_NATIVE
-inline static size_t
-getpagesize() {
-  static DWORD cachedPageSize = 0;
-  if(cachedPageSize == 0) {
-    SYSTEM_INFO si;
-    GetNativeSystemInfo(&si);
-    cachedPageSize = si.dwPageSize;
-  }
-  return cachedPageSize;
-}
-#endif /* WINDOWS_NATIVE */
+size_t getpagesize();
 
-#if WINDOWS_NATIVE
-
+#define getpid() GetCurrentProcessId()
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
-#endif
+
+#endif /* WINDOWS_NATIVE */
 
 /* set errno to WSAGetLastError() */
 int winsock2errno(long l);
@@ -48,10 +38,6 @@ void __winsock_init(void);
 #define __winsock_init()
 #define closesocket(s) close(s)
 #endif
-
-#ifndef ENOSYS
-#define ENOSYS 1052
-#endif /* ENOSYS */
 
 #ifdef __cplusplus
 }

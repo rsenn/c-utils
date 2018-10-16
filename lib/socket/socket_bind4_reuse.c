@@ -1,9 +1,6 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 #include <sys/types.h>
-#if !WINDOWS_NATIVE
-#include <sys/socket.h>
-#endif
 
 int
 socket_bind4_reuse(int s, const char* ip, uint16 port) {

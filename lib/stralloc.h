@@ -3,6 +3,7 @@
 #define STRALLOC_H
 
 #include "typedefs.h"
+#include <wchar.h>
 
 #ifdef __cplusplus
 extern "C" {

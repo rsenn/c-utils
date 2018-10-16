@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../vartab.h"
 #include "../stralloc.h"
 #include "../fmt.h"
@@ -156,7 +157,7 @@ expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack
         union node* tmpnode = NULL;
 
         n = expand_arg(&param->word->narg, &tmpnode, varstack, argv, exitcode, flags);
-       carp((n && n->narg.stra.s) ? n->narg.stra.s : "parameter null or not set");
+       errmsg_warn((n && n->narg.stra.s) ? n->narg.stra.s : "parameter null or not set", 0);
         if(tmpnode) tree_free(tmpnode);
       }
       break;

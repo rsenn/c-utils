@@ -1,8 +1,8 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 #include "../ndelay.h"
-#if WINDOWS_NATIVE
-#else
+
+#if !WINDOWS_NATIVE
 #include <fcntl.h>
 #include <sys/types.h>
 #endif

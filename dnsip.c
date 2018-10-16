@@ -1,3 +1,5 @@
+#define USE_WS2_32 1
+#include "lib/socket.h"
 #include "lib/buffer.h"
 #include "lib/dns.h"
 #include "lib/errmsg.h"

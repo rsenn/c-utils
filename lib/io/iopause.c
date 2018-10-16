@@ -1,13 +1,9 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
+#include "../select.h"
+#include "../io.h"
 #include "../iopause.h"
 #include "../taia.h"
-
-#if WINDOWS_NATIVE
-//#include <windows.h>
-#else
-#include "../select.h"
-#endif
 
 void
 iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* stamp) {

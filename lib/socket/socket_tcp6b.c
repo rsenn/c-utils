@@ -1,13 +1,8 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 
 
 
-#if !WINDOWS_NATIVE
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
 
 #include <errno.h>
 #include "../socket_internal.h"

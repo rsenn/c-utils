@@ -2,13 +2,18 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
+#if defined(_WIN32) || defined(_WIN64)
+#if USE_WS2_32 
+#include <winsock2.h>
+#else
+#include <winsock.h>
+#endif
+#endif
+
 #include "typedefs.h"
 #include "windoze.h"
 
-#if WINDOWS_NATIVE
-#define _WINSOCKAPI_
-#include <winsock2.h>
-#else
+#if !WINDOWS_NATIVE
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -18,8 +23,6 @@
 
 #include "uint16.h"
 #include "uint32.h"
-
-#include <errno.h>
 
 #ifdef __cplusplus
 extern "C" {

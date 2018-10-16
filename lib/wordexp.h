@@ -2,8 +2,7 @@
 #define	_WORDEXP_H
 
 #include <stdlib.h>
-#include <sys/types.h>
-
+#include "typedefs.h"
 #include "windoze.h"
 
 #if WINDOWS_NATIVE

@@ -1,10 +1,6 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 #include <sys/types.h>
-#if !WINDOWS_NATIVE
-#include <net/if.h>
-#include <sys/socket.h>
-#endif
 
 uint32
 socket_getifidx(const char* ifname) {

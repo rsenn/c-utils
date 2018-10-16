@@ -4,11 +4,11 @@
 #include "windoze.h"
 
 #ifndef my_extern
-#if WINDOWS
-#define my_extern extern __declspec(dllexport)
-#else
-#define my_extern extern
-#endif
+# if WINDOWS
+#  define my_extern extern __declspec(dllexport)
+# else
+#  define my_extern extern
+# endif
 #endif
 
 #include "array.h"
@@ -17,29 +17,30 @@
 #include "io.h"
 
 #if WINDOWS_NATIVE
-#include <io.h>
+# include <io.h>
 //#define read _read
 //#define write _write
 //#define open _open
 //#define close _close
-#define popen _popen
+# define popen _popen
 //#define lseek lseek64
-#define llseek lseek64
+# define llseek lseek64
 my_extern HANDLE io_comport;
 
-#elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
+# elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
 //#define HAVE_EPOLL 1
-#define HAVE_SIGIO 1
+# define HAVE_SIGIO 1
 
-#ifdef HAVE_SIGIO
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#undef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE  199309L
-#include <signal.h>
-#endif
-#endif
+# ifdef HAVE_SIGIO
+#  ifndef _GNU_SOURCE
+#   define _GNU_SOURCE
+#  endif
+#  undef _POSIX_C_SOURCE
+#  define _POSIX_C_SOURCE  199309L
+#  include <signal.h>
+# endif
+
+#endif /* WINDOWS_NATIVE */
 
 #if !defined(WINDOWS)
 #if defined(__unix__) || defined(__linux__)
@@ -47,6 +48,8 @@ my_extern HANDLE io_comport;
 #include <unistd.h>
 #endif
 #endif
+
+#include <errno.h>
 
 #ifndef io_seek
 #warning No io_seek() function defined, defaulting to lseek

@@ -1,10 +1,6 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 #include <sys/types.h>
-#if !WINDOWS_NATIVE
-#include <netinet/in.h>
-#include <sys/socket.h>
-#endif
 
 ssize_t
 socket_recv4(int s, char* buf, size_t len, char ip[4], uint16* port) {

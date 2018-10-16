@@ -3,12 +3,7 @@
 #define SCAN_H
 
 /* for size_t: */
-#if defined(__BORLANDC__ ) || defined(HAVE_STDDEF_H)
 #include "typedefs.h"
-#endif
-
-/* for time_t: */
-#include <sys/types.h>
 
 #include "uint32.h"
 #include "uint64.h"

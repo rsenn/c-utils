@@ -1,24 +1,9 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
-#if WINDOWS_NATIVE
-typedef int socklen_t;
-#else
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#endif
-
+#include "../io_internal.h"
 #include "../ip6.h"
 #include "../uint64.h"
 #include "../byte.h"
-
-#if WINDOWS_NATIVE
-#include "../io_internal.h"
-#include <errno.h>
-#include <mswsock.h>
-#include <stdio.h>
-#include <windows.h>
-#endif
 
 int
 socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {

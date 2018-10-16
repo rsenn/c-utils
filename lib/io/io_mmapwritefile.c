@@ -1,13 +1,13 @@
 #include "../windoze.h"
-
-
-
 #include "../io_internal.h"
 #include "../iob.h"
+
 #if !WINDOWS_NATIVE
 #include <sys/mman.h>
 #include <unistd.h>
 #endif
+
+#include <stdio.h>
 #include <errno.h>
 
 #define BUFSIZE 16384

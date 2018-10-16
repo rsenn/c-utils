@@ -1,7 +1,9 @@
+#define USE_WS2_32 1
+#include "../socket.h"
 #include "../buffer.h"
 #include "../http.h"
 #include "../io_internal.h"
-#include "../socket.h"
+
 static ssize_t
 do_send(fd_t s, const void* buf, size_t len) {
   return send(s, buf, len, 0);

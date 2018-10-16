@@ -590,8 +590,6 @@ $(BUILDDIR)fork.o: lib/fork.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)getenv.o: lib/getenv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)getopt.o: lib/getopt.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)gpio_init.o: lib/gpio/gpio_init.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)gpio_read.o: lib/gpio/gpio_read.c

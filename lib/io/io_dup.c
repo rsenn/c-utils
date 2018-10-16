@@ -9,7 +9,7 @@
 int64
 io_dup(int64 fd) {
 #if WINDOWS_NATIVE
-  HANDLE h = -1;
+  HANDLE h = INVALID_HANDLE_VALUE;
 
   DuplicateHandle(GetCurrentProcess(),
                   (HANDLE)fd,

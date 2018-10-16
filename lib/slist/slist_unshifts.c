@@ -1,4 +1,5 @@
 #include "../slist.h"
+#include "../str.h"
 
 int
 slist_unshifts(slink** list, const char* s) {
@@ -10,6 +11,6 @@ slist_unshifts(slink** list, const char* s) {
   n->next = *list;
   *list = n;
 
-  *(const char**)(&n[1]) = str_dup(s);
+  *((const char**)&n[1]) = str_dup(s);
   return 1;
 }

@@ -1,4 +1,5 @@
 #include "../slist.h"
+#include "../str.h"
 
 int
 slist_pushs(slink** list, const char* s) {
@@ -14,6 +15,6 @@ slist_pushs(slink** list, const char* s) {
   *ptr = n;
   
   n[0].next = NULL;
-  *(const char**)(&n[1]) = str_dup(s);
+  *((const char**)&n[1]) = str_dup(s);
   return 1;
 }

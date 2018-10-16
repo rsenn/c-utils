@@ -26,6 +26,10 @@
 #include <windows.h>
 #include <winnt.h>
 
+#ifndef ENOSYS
+#define ENOSYS 1052
+#endif /* ENOSYS */
+
 #ifdef __MINGW32__
 typedef struct _CLIENT_ID {
   PVOID UniqueProcess;

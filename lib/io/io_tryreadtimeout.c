@@ -1,10 +1,12 @@
-#include "../windoze.h"
-
+#include "../socket.h"
 #include "../io_internal.h"
+
 #include <errno.h>
 
-#if WINDOWS && !defined(ETIMEDOUT)
-#define ETIMEDOUT WSAETIMEDOUT 
+#if WINDOWS_NATIVE
+# ifndef ETIMEDOUT
+#  define ETIMEDOUT WSAETIMEDOUT 
+# endif
 #endif
 
 int64

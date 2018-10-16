@@ -1,6 +1,13 @@
+#include "../windoze.h"
 #include "../playlist.h"
 #include "../str.h"
 #include "../byte.h"
+
+#if WINDOWS
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 int
 playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {

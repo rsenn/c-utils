@@ -1,5 +1,5 @@
-#include "../windoze.h"
 #include "../socket.h"
+#define USE_WS2_32 1
 #include "../buffer.h"
 #include "../http.h"
 #include "../io.h"

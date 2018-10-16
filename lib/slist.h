@@ -75,7 +75,7 @@ slist_iterator_dereference(slink** list, slink** p) {
 }
 inline static size_t
 slist_iterator_distance(slink** list, slink** from, slink** to) {
-  size_t i;
+  size_t i = 0;
   (void)list;
   while(*from && from != to) {
     from = &(*from)->next;

@@ -1,12 +1,13 @@
-
+#include "../windoze.h"
 #include "../path_internal.h"
 
-#include <limits.h>
-
-
-#ifdef HAVE_LINUX_LIMITS_H
-#include <linux/limits.h>
+#if WINDOWS_NATIVE
+#include <direct.h>
+#else
+#include <unistd.h>
 #endif
+
+#include <limits.h>
 
 /* get current working directory into a stralloc
  * ----------------------------------------------------------------------- */

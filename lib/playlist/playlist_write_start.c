@@ -1,9 +1,10 @@
 #include "../windoze.h"
-
 #include "../io.h"
 #include "../playlist.h"
 
-#if !WINDOWS
+#if WINDOWS
+#include <io.h>
+#else
 #include <unistd.h>
 #endif
 

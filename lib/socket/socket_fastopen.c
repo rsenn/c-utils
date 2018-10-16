@@ -1,11 +1,10 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
-#if !WINDOWS_NATIVE
-#include <netinet/tcp.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#endif
 #include <errno.h>
+
+#ifndef ENOSYS
+#define ENOSYS 1052
+#endif /* ENOSYS */
 
 int
 socket_fastopen(int s) {

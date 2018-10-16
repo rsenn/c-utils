@@ -1,6 +1,5 @@
 #include "../socket.h"
 
-
 #if WINDOWS
 #define __INSIDE_CYGWIN_NET__ 1
 #endif

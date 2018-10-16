@@ -1,3 +1,5 @@
+#define USE_WS2_32 1
+#include "../socket.h"
 #include "../buffer.h"
 #include "../byte.h"
 #include "../dns.h"
@@ -6,7 +8,6 @@
 #include "../io.h"
 #include "../io_internal.h"
 #include "../ip4.h"
-#include "../socket.h"
 #include "../str.h"
 
 #include <errno.h>

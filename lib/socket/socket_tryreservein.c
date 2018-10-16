@@ -1,9 +1,6 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 #include <sys/types.h>
-#if !WINDOWS_NATIVE
-#include <sys/socket.h>
-#endif
 
 void
 socket_tryreservein(int s, int size) {

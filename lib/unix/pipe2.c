@@ -1,11 +1,9 @@
-
 #if 1 //ndef HAVE_PIPE2
 
-#include "io_internal.h"
+#include "../io_internal.h"
+#include "../ndelay.h"
 #include <errno.h>
 #include <fcntl.h>
-
-#include "ndelay.h"
 
 #if defined(_WIN32) && !(defined(__CYGWIN__) || defined(__MSYS__))
 #include <io.h>

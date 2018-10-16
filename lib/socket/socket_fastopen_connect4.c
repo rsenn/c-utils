@@ -1,11 +1,5 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
-#if WINDOWS
-#include <windows.h>
-#else
-#include <sys/socket.h>
-#include <sys/types.h>
-#endif
 #include <errno.h>
 
 ssize_t

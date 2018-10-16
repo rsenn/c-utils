@@ -1,14 +1,9 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 #include "../byte.h"
 #include "../uint16.h"
 #include "../uint32.h"
 
-#if !WINDOWS_NATIVE
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#endif
 
 int
 socket_bind4(int s, const char* ip, uint16 port) {

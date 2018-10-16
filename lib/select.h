@@ -1,7 +1,7 @@
 #ifndef SELECT_H
 #define SELECT_H
 
-#include "windoze.h"
+#include "socket.h"
 
 /* sysdep: +sysselect */
 
@@ -9,8 +9,8 @@
 
 #if !WINDOWS_NATIVE
 #include <sys/time.h>
-#endif
 #include <sys/select.h>
+#endif
 
 /* braindead BSD uses bzero in FD_ZERO but doesn't #include string.h */
 #include <string.h>
@@ -19,7 +19,9 @@
 extern "C" {
 #endif
 
+#if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
 extern int select();
+#endif
 
 #ifdef __cplusplus
 }

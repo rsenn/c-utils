@@ -1,4 +1,4 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 #include "../ip4.h"
 #include "../byte.h"

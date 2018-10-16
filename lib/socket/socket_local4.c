@@ -1,12 +1,7 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 #include "../byte.h"
 
-#if !WINDOWS_NATIVE 
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#endif
 
 int
 socket_local4(int s, char ip[4], uint16* port) {

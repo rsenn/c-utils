@@ -1,5 +1,6 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
+#define _WINSOCKAPI_
 #include "../http.h"
 #include "../byte.h"
 

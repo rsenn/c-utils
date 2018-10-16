@@ -1,4 +1,4 @@
-#define _WINSOCKAPI_
+#define USE_WS2_32 1
 #include "../socket.h"
 const unsigned char
 V6loopback[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 };
