@@ -898,8 +898,6 @@ $(BUILDDIR)stralloc_fmt_pred.o: lib/stralloc/stralloc_fmt_pred.c
 	$(COMPILE) -o $@ $<
 $(BUILDDIR)stralloc_append.o: lib/stralloc/stralloc_append.c
 	$(COMPILE) -o $@ $<
-$(BUILDDIR)stralloc_buffer.o: lib/stralloc/stralloc_buffer.c
-	$(COMPILE) -o $@ $<
 $(BUILDDIR)stralloc_case_diff.o: lib/stralloc/stralloc_case_diff.c
 	$(COMPILE) -o $@ $<
 $(BUILDDIR)stralloc_case_diffs.o: lib/stralloc/stralloc_case_diffs.c
@@ -1822,11 +1820,15 @@ $(BUILDDIR)slist_unshifts.o: lib/slist/slist_unshifts.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)slist_shift.o: lib/slist/slist_shift.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)strarray_each.o: lib/strarray/strarray_each.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)slist_shifts.o: lib/slist/slist_shifts.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)slist_push.o: lib/slist/slist_push.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)slist_unshifts.o: lib/slist/slist_unshifts.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)str_end.o: lib/str/str_end.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_findb.o: lib/byte/byte_findb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)byte_finds.o: lib/byte/byte_finds.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

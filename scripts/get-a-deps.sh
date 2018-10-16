@@ -4,6 +4,11 @@
 pushv() {
     eval "shift;$1=\"\${$1+\"\$$1\${IFS%\"\${IFS#?}\"}\"}\$*\""
 }
+pushv_unique() {
+  eval "shift; while [ \$# -gt 0 ]; do
+    isin \$1 \${$1} || pushv $1 \$1; done"
+}
+
 isin() {
  (needle="$1";
   while [ "$#" -gt 1 ]; do
@@ -12,6 +17,36 @@ isin() {
   done;
   exit 1)
 }
+  get_undefined() {
+   (EXPR=; for ARG; do
+   pushv EXPR "s|^$(basename "$1") U ||p" 
+ done;  sed -n "$EXPR" "$NMFILE")
+  }
+
+get_providers() {
+ (IFS="|"; X="\\.a T ($*)\$"
+ command grep -E "$X" "$NMFILE"  | sed 's, [^ ] .*,,' | sort -u)
+}
+
+get_deps() {
+  (IFS="
+"; N=$#; for ARG; do
+(undef=$(get_undefined "$ARG")
+ [ "$N" -gt 1 ] && OUT="$ARG:"
+(set -- $(get_providers $undef)
+ for PROVIDER; do
+   [ "$PROVIDER" != "$ARG" ] && OUT="${OUT:+$OUT${S:- }}$PROVIDER"
+ done
+ echo "$OUT"))
+done)
+}
+get_deps_r() {
+  eval "while [ \$# -gt 1 ]; do 
+  pushv_unique $1 \$(S=' ' get_deps \$1)
+done"
+}
+
+
 
 get_a_deps() {
 
@@ -19,6 +54,7 @@ get_a_deps() {
     case "$1" in
       --cmake | -c) CMAKE=true; shift ;;
       --direct | -d) DIRECT=true; shift ;;
+      --debug | -x) DEBUG=true; shift ;;
       *) break ;;
     esac
   done
@@ -33,7 +69,9 @@ get_a_deps() {
   set -- $(find "$DIR" -mindepth 1 -maxdepth 2 -name "*.[ao]")
 
   NMFILE=`mktemp`
-  trap 'rm -f "$NMFILE"' EXIT
+
+  [ "$DEBUG" != true ] && 
+    trap 'rm -f "$NMFILE"' EXIT
 
   parse-nm() {
     while read -r LIB OBJ SYM; do
@@ -53,7 +91,7 @@ get_a_deps() {
 
   
   ${NM-nm} -A "$@"   |
-    sed -n "/ _/! { s|:[^ :]*\.o||;  s|.*/\([^ ]*\.[ao]\):.* \([UT]\) \(.*\)|\1 \2 \3|p }" >"$NMFILE"
+    sed -n " s|:[^ :]*\.o||;  s|.*/\([^ ]*\.[ao]\):.* \([UT]\) \(.*\)|\1 \2 \3|p" >"$NMFILE"
 
 
   unset DEPS

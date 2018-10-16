@@ -36,7 +36,7 @@ char* mmap_shared(const char *filename,size_t* filesize);
 char* mmap_shared_fd(fd_t fd,size_t* filesize);
 
 /* unmap a mapped region */
-int mmap_unmap(void* mapped,size_t maplen);
+int mmap_unmap(void* mapped, size_t maplen);
 
 #ifdef STRALLOC_H
 int mmap_filename(void* map, stralloc* sa);

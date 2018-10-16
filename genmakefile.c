@@ -2,6 +2,7 @@
 #include "lib/buffer.h"
 #include "lib/getopt.h"
 #include "lib/hmap.h"
+#include "lib/mmap.h"
 #include "lib/path.h"
 #include "lib/rdir.h"
 #include "lib/slist.h"
@@ -12,7 +13,7 @@
 #if WINDOWS
 #define OBJEXT_DEFAULT ".obj"
 #define LIBEXT_DEFAULT ".lib"
-#define EXEEXT_DEFAULT ".exe"
+#define EXEEXT_DEFAULT ".bin"
 #else
 #define OBJEXT_DEFAULT ".o"
 #define LIBEXT_DEFAULT ".a"
@@ -32,42 +33,79 @@ typedef struct {
 typedef struct {
   const char* name;
   strlist deps;
-  stralloc cmd;
+  stralloc* cmd;
 } rule_t;
 
 static strarray srcs;
 static stralloc compile_command, lib_command, link_command;
 static const char* objext = OBJEXT_DEFAULT;
 static const char* libext = LIBEXT_DEFAULT;
-static const char* exeext = EXEEXT_DEFAULT;
+static const char* binext = EXEEXT_DEFAULT;
 
 static HMAP_DB* rules;
 
+/**
+ * Checks if the given source file contains a main() function
+ */
 int
 has_main(const char* filename) {
   char* m;
   size_t i, n;
   if((m = mmap_read(filename, &n))) {
-     size_t i = 0;
-     int ret = 0;
-     do {
-       i += byte_finds(m + i, n - i, "main");
-       if(i == n) break;
-       i += 4;
-       if(!isspace(m[i - 5])) continue;
-       i += scan_whitenskip(m + i, n - i);
+    size_t i = 0;
+    int ret = 0;
+    do {
+      i += byte_finds(m + i, n - i, "main");
+      if(i == n) break;
+      i += 4;
+      if(!isspace(m[i - 5])) continue;
+      i += scan_whitenskip(m + i, n - i);
       if(i == n) break;
       if(m[i] == '(') {
         ret = 1;
         break;
       }
-     }
-     mmap_unmap(m, n);
-     return ret;
+    } while(i < n);
+    mmap_unmap(m, n);
+    return ret;
   }
   return -1;
 }
 
+/**
+ * Get rule command with substitutions
+ */
+void
+rule_command(rule_t* rule, stralloc* out) {
+  size_t i;
+  stralloc* in = rule->cmd;
+
+  for(i = 0; i < in->len; ++i) {
+    const char* p = &in->s[i];
+
+    if(i + 2 <= in->len && *p == '$' && str_chr("@^<", p[1]) < 3) {
+      switch(p[1]) {
+      case '@': {
+        stralloc_cats(out, rule->name);
+        break;
+      }
+      case '^': {
+        stralloc_cat(out, &rule->deps.sa);
+        break;
+      }
+      case '<': {
+        size_t n;
+        const char* s = strlist_at_n(&rule->deps, 0, &n);
+        stralloc_catb(out, s, n);
+        break;
+      }
+      }
+      ++i;
+    } else {
+      if(!stralloc_append(out, p)) return 0;
+    }
+  }
+}
 
 /**
  * Find or create rule
@@ -105,14 +143,25 @@ output_rule(buffer* b, rule_t* rule) {
   buffer_puts(b, ": ");
   buffer_putsa(b, &rule->deps.sa);
 
-  if(rule->cmd.len) {
+  if(rule->cmd) {
+    stralloc cmd;
+    stralloc_init(&cmd);
+
+    rule_command(rule, &cmd);
+
     buffer_puts(b, "\n\t");
-    buffer_putsa(b, &rule->cmd);
+    buffer_putsa(b, &cmd);
+    buffer_putc(b, '\n');
+
+    stralloc_free(&cmd);
   }
 
   buffer_putnlflush(b);
 }
 
+/**
+ * Create new source file entry.
+ */
 sourcefile_t*
 new_source(const char* name) {
   sourcefile_t* ret;
@@ -169,8 +218,7 @@ get_sources(const char* basedir, strarray* sources) {
   if(!rdir_open(&rdir, basedir)) {
     const char* s;
 
-    while((s = rdir_read(&rdir)))
-      add_source(s, sources);
+    while((s = rdir_read(&rdir))) add_source(s, sources);
   }
 }
 
@@ -247,21 +295,51 @@ compile_rules(buffer* b, strarray* sources) {
 
     c_to_o(*srcfile, &obj);
 
-
     if((rule = get_rule(obj.s))) {
-
       strlist_push(&rule->deps, *srcfile);
 
-      stralloc_copy(&rule->cmd, &compile_command);
-      stralloc_catc(&rule->cmd, ' ');
-      stralloc_copys(&rule->cmd, *srcfile);
-      stralloc_catc(&rule->cmd, ' ');
-      stralloc_cat(&rule->cmd, &rule->deps.sa);
+      rule->cmd = &compile_command;
 
       output_rule(b, rule);
     }
   }
 
+  stralloc_free(&obj);
+}
+
+/**
+ * Generate compile rules for every source file given
+ */
+void
+link_rules(buffer* b, strarray* sources) {
+  char** srcfile;
+  stralloc obj, bin;
+  stralloc_init(&obj);
+  stralloc_init(&bin);
+
+   strarray_foreach(sources, srcfile) {
+    rule_t* rule;
+
+    if(!has_main(*srcfile)) continue;
+
+    c_to_o(*srcfile, &obj);
+    stralloc_copy(&bin, &obj);
+    if(stralloc_endb(&bin, objext, str_len(objext))) {
+      bin.len -= str_len(objext);
+      stralloc_cats(&bin, binext);
+      stralloc_nul(&bin);
+    }
+
+    if((rule = get_rule(bin.s))) {
+      strlist_push(&rule->deps, obj.s);
+
+      rule->cmd = &link_command;
+
+      output_rule(b, rule);
+    }
+  }
+
+  stralloc_free(&bin);
   stralloc_free(&obj);
 }
 
@@ -300,11 +378,7 @@ lib_rules(buffer* b, HMAP_DB* srcdirs) {
         strlist_push_sa(&rule->deps, &objname);
       }
 
-      stralloc_copy(&rule->cmd, &lib_command);
-      stralloc_catc(&rule->cmd, ' ');
-      stralloc_cat(&rule->cmd, &libname);
-      stralloc_catc(&rule->cmd, ' ');
-      stralloc_cat(&rule->cmd, &rule->deps.sa);
+      rule->cmd = &lib_command;
 
       output_rule(b, rule);
     }
@@ -347,13 +421,14 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"objext", 0, NULL, 'O'},
-                           {"exeext", 0, NULL, 'E'},
-                           {"libext", 0, NULL, 'L'},
-                           {"create-libs", 0, &cmd_libs, 'l'},
-                           {"create-objs", 0, &cmd_objs, 'o'},
-                           {"create-bins", 0, &cmd_bins, 'b'},
-                           {0}};
+    {"objext", 0, NULL, 'O'},
+    {"exeext", 0, NULL, 'B'},
+    {"libext", 0, NULL, 'L'},
+    {"create-libs", 0, &cmd_libs, 'l'},
+    {"create-objs", 0, &cmd_objs, 'o'},
+    {"create-bins", 0, &cmd_bins, 'b'},
+    {0}
+  };
 
   for(;;) {
     c = getopt_long(argc, argv, "h", opts, &index);
@@ -361,11 +436,11 @@ main(int argc, char* argv[]) {
     if(c == 0) continue;
 
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
-      case 'O': objext = optarg; break;
-      case 'E': exeext = optarg; break;
-      case 'L': libext = optarg; break;
-      default: usage(argv[0]); return 1;
+    case 'h': usage(argv[0]); return 0;
+    case 'O': objext = optarg; break;
+    case 'B': binext = optarg; break;
+    case 'L': libext = optarg; break;
+    default: usage(argv[0]); return 1;
     }
   }
 
@@ -377,45 +452,31 @@ main(int argc, char* argv[]) {
   strarray_init(&srcs);
   stralloc_init(&sa);
 
-  stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c");
-  stralloc_copys(&lib_command, "$(LIB)");
-  stralloc_copys(&link_command, "$(LINK) $(LDFLAGS)");
+  stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
+  stralloc_copys(&lib_command, "$(LIB) $@ $^");
+  stralloc_copys(&link_command, "$(LINK) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)");
 
-  while(optind < argc) {
+  {
     HMAP_DB* sourcedirs;
-
-    /*    strarray srcdirs;
-        strarray_init(&srcdirs);
-    */
-    get_sources(argv[optind], &srcs);
-
     hmap_init(1024, &sourcedirs);
 
-    //  strarray_transform(&srcs, &srcdirs, &dirname_alloc);
+    while(optind < argc) {
+      if(str_end(argv[optind], ".c"))
+        add_source(argv[optind], &srcs);
+      else
+        get_sources(argv[optind], &srcs);
 
-    if(cmd_objs)
-      compile_rules(buffer_1, &srcs);
-
+      ++optind;
+    }
     populate_sourcedirs(&srcs, sourcedirs);
 
-    //    dump_sourcedirs(buffer_1, sourcedirs);
-
+    if(cmd_objs) compile_rules(buffer_1, &srcs);
     lib_rules(buffer_1, sourcedirs);
-    // strarray_dump(buffer_1, &srcdirs);
+
+    link_rules(buffer_1, &srcs);
 
     hmap_destroy(&sourcedirs);
-
-    ++optind;
   }
-  /*strarray_dump(buffer_1, &srcs);
-
-    strarray_transform(&srcs, c_to_o);
-   strarray_removesuffixs(&srcs, ".c");
-    strarray_appends(&srcs, ".o");
-
-    strarray_joins(&srcs, &sa, " ");
-    buffer_putsa(buffer_1, &sa);
-    buffer_putnlflush(buffer_1);*/
 
   return 0;
 }

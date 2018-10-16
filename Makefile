@@ -1432,7 +1432,7 @@ endif
 
 
 $(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library, rdir strarray path array strlist dir stralloc errmsg hmap slist buffer mmap open str byte fmt uint64 uint32)
+$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library,strarray slist rdir dir path strlist hmap buffer mmap open stralloc scan fmt str byte array)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

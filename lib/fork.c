@@ -111,26 +111,4 @@ fork(void) {
   return -1;
 }
 
-#ifdef __TEST__
-int
-main(int argc, const char* argv[]) {
-  pid_t pid = fork();
-
-  switch(pid) {
-    case 0: {
-      FILE* f = fopen("C:/Users/nenolod/Documents/forktest.dat", "w");
-      fprintf(f, "ok\n");
-      fclose(f);
-      break;
-    }
-    default:
-      printf("child %d\n", pid);
-      while(1) {
-        Sleep(1000);
-      }
-      break;
-  }
-}
-#endif
-
 #endif
