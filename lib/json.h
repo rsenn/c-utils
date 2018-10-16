@@ -28,7 +28,7 @@ typedef struct {
     int64 intv;
     double doublev;
     stralloc stringv;
-    slist listv;
+    slink* listv;
     HMAP_DB* dictv;
   };
 } jsonval;

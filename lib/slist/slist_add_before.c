@@ -1,12 +1,10 @@
 #include "../slist.h"
 
 void
-slist_add_before(slist *l, slink *p, slink *before) {
-  slink** ptr = &l->root;
+slist_add_before(slink** l, slink* p, slink* before) {
+    while(*l && before && *l != before)
+      l = &(*l)->next;
 
-  while(*ptr && *ptr != before)
-    ptr = &(*ptr)->next;
-  
-  p->next = *ptr;
-  *ptr = p;
+    p->next = *l;
+    *l = p;
 }

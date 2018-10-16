@@ -1,6 +1,7 @@
 #ifndef RANGE_H
 #define RANGE_H 1
 
+#include <stddef.h>
 #include <sys/types.h>
 
 #ifdef __cplusplus

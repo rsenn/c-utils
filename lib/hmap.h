@@ -67,7 +67,6 @@ typedef struct tuple {
     struct tuple* val_tuple;
     void* val_custom;
   } vals;
-
 } TUPLE;
 
 typedef struct hmap_db {
@@ -95,6 +94,7 @@ int    hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc*
 int    hmap_set(HMAP_DB** hmap_db, void* key, size_t k_len, void* data, size_t d_len);
 size_t hmap_size(HMAP_DB* my_hmap_db);
 int    hmap_truncate(HMAP_DB** hmap_db);
+void* hmap_get(HMAP_DB* db, const char* key, size_t keylen);
 
 #define hmap_last(hmap_db, tuple)  ((hmap_db)->list_tuple == (tuple)->next)
 #define hmap_next(hmap_db, tuple) (hmap_last(hmap_db, tuple) ? NULL : (tuple)->next)
@@ -153,3 +153,4 @@ void hmap_dump(HMAP_DB *my_hmap_db, buffer*);
 }
 #endif
 #endif /* defined HMAP_H */
+

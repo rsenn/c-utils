@@ -629,7 +629,7 @@ foreach(PROGRAM ${PROGRAMS})
 endforeach(PROGRAM)
 
 target_link_libraries(list-r dir ${COMMON_LIBS})
-target_link_libraries(genmakefile strarray rdir dir ${COMMON_LIBS})
+target_link_libraries(genmakefile strarray rdir dir path hmap slist ${COMMON_LIBS})
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
 target_link_libraries(access buffer str)

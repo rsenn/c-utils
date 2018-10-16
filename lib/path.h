@@ -14,7 +14,7 @@ extern "C" {
 
 char*  path_basename(char* path);
 int    path_canonicalize(const char* path, stralloc* sa, int symbolic);
-char*  path_dirname(char* path);
+char*  path_dirname(char* path, stralloc* dir);
 int    path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
 void   path_getcwd(stralloc* sa);
 char*  path_gethome(int uid);

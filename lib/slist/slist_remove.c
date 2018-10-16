@@ -2,9 +2,9 @@
 #include "../slist.h"
 
 slink*
-slist_remove(slist *l, slink **p) {
+slist_remove(slink **p) {
   slink* ret = *p;
-  *p = (*p)->next;
+  *p = ret->next;
   ret->next = NULL;
   return ret;
 }

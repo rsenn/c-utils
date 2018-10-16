@@ -2,6 +2,6 @@
 #include "../byte.h"
 
 void
-slist_init(slist* l) {
-  byte_zero(l, sizeof(slist));
+slist_init(slink** list) {
+  *list = NULL;
 }

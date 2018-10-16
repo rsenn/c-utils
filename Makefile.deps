@@ -1814,3 +1814,7 @@ $(BUILDDIR)scan_octal.o: lib/scan/scan_octal.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_int64.o: lib/scan/scan_int64.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)hmap_get.o: lib/hmap/hmap_get.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_each.o: lib/strarray/strarray_each.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

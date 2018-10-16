@@ -86,7 +86,10 @@ void uint16_pack_big(char* out, uint16 in);
 void uint16_unpack(const char* in, uint16* out);
 void uint16_unpack_big(const char* in, uint16* out);
 uint16 uint16_read_big(const char*);
+
+#ifdef NO_UINT16_MACROS
 uint16 uint16_read(const char*);
+#endif
 #endif
 
 #ifdef __cplusplus

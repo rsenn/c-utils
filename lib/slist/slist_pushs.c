@@ -1,11 +1,19 @@
 #include "../slist.h"
 
-void
-slist_push(slist *l, slink *p) {
-  slink** ptr = &l->root;
+int
+slist_pushs(slink** list, const char* s) {
+  slink** ptr = *list;
+  slink* n;
+  
+  if((n = malloc(sizeof(slink*)+sizeof(char*))) == NULL)
+    return 0;
 
   while(*ptr)
     ptr = &(*ptr)->next;
 
-  *ptr = p;
+  *ptr = n;
+  
+  n[0].next = NULL;
+  *(const char**)(&n[1]) = str_dup(s);
+  return 1;
 }

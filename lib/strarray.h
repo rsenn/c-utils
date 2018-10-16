@@ -28,6 +28,8 @@ typedef struct {
 
 #define strarray_at(l, pos) (*(char**)array_get(&(l)->a, sizeof(char*), pos))
 
+#define strarray_foreach(a, ptr) for(ptr = strarray_begin(a); ptr != strarray_end(a); ++ptr)
+
 char* *strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);
 
@@ -49,9 +51,10 @@ int strarray_prepends(strarray* arr, const char* s);
 int strarray_removeprefixs(strarray* arr, const char* s);
 int strarray_removesuffixs(strarray* arr, const char* s);
 
+int strarray_joins(strarray* arr, stralloc* sa, const char* sep);
+int strarray_transform(strarray* in,  strarray* out, char* (*pred)(const char*));
+
 #ifdef __cplusplus
 }
 #endif
-#endif /* defined(STRARRAY_H) */
-int strarray_joins(strarray* arr, stralloc* sa, const char* sep);
-int strarray_transform(strarray*, char* (*pred)(const char*));
+#endif /* defined(STRARRAY_H) */int strarray_each(strarray* arr, void (*pred)(char** ));

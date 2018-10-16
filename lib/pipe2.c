@@ -60,8 +60,8 @@ pipe2(int fd[2], int flags) {
   if(flags & O_NONBLOCK) {
     if(ndelay_on(fd[0]) != 0 || ndelay_on(fd[1]) != 0) goto fail;
   }
-#else
-  { verify(O_NONBLOCK == 0); }
+/*#else
+   { verify(O_NONBLOCK == 0); }*/
 #endif
 
   return 0;

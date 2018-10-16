@@ -1,5 +1,3 @@
-/* from dietlibc by felix leitner, adapted to libowfat */
-
 #include "../path_internal.h"
 #include "../str.h"
 /*
@@ -14,28 +12,25 @@
         ""             "."            "."
 */
 
-static char* dot = ".";
-#define SLASH '/'
-#define EOL (char)0
+static const char* const dot = ".";
+#define PATHSEP_S "\\/"
+
 char*
-path_dirname(char* path) {
+path_dirname(char* path, stralloc* dir) {
   size_t i;
-  if(path == NULL) return dot;
-  for(;;) {
-    i = str_rchr(path, SLASH);
-    if(path[i] == '\0') return dot; /* no slashes */
+  stralloc_zero(dir);
 
-    if(path[i + 1] == EOL && i) {
-      /* remove trailing slashes */
-      while(path[i] == SLASH && i) path[i--] = EOL;
-      continue;
-    }
+  i = str_rchrs(path, PATHSEP_S, 2);
 
-    if(i)
-      while(path[i] == SLASH) path[i--] = EOL; /* slashes in the middle */
-    else
-      path[1] = EOL; /* slash is first symbol */
+  if(path == NULL || path[i] == '\0') {
+    stralloc_copys(dir, dot);
+  } else {
+    /* remove trailing slashes */
+    while(i > 0 && str_chr(PATHSEP_S, path[i - 1]) < 2) --i;
 
-    return path;
+    stralloc_copyb(dir, path, i);
   }
+
+  stralloc_nul(dir);
+  return dir->s;
 }
