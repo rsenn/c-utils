@@ -1,9 +1,13 @@
-/* ISC license. */
+#include "../wait.h"
+#include "../windoze.h"
 
+#if !WINDOWS_NATIVE
+#include <sys/types.h>
 #include <sys/wait.h>
+#endif
 
 int
-waitn_reap(pid_t* pids, unsigned int len) {
+waitn_reap(int* pids, unsigned int len) {
   unsigned int n = 0;
   while(len) {
     int w;

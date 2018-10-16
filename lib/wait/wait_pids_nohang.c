@@ -1,13 +1,19 @@
-/* ISC license. */
+#include "../wait.h"
+#include "../windoze.h"
 
+#if !WINDOWS_NATIVE
+#include <sys/types.h>
 #include <sys/wait.h>
+#endif
 
 int
-wait_pids_nohang(pid_t const* pids, unsigned int len, int* wstat) {
+wait_pids_nohang(int const* pids, unsigned int len, int* wstat) {
+#if WINDOWS_NATIVE
+#else
   for(;;) {
     int w;
-    pid_t r = wait_nohang(&w);
-    if(!r || (r == (pid_t)-1)) return (int)r;
+    int r = wait_nohang(&w);
+    if(!r || (r == (int)-1)) return (int)r;
     {
       unsigned int i = 0;
       for(; i < len; i++)
@@ -18,4 +24,6 @@ wait_pids_nohang(pid_t const* pids, unsigned int len, int* wstat) {
       }
     }
   }
+  return -1;
+#endif
 }

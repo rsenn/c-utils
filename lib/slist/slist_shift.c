@@ -2,10 +2,10 @@
 #include "../slist.h"
 
 slink*
-slist_shift(slink **link) {
-  slink* next = (*link)->next;
-  *link = next;
-  (*link)->next = NULL;
-  return *link;
+slist_shift(slink **list) {
+  slink* link = *list;
+  *list = link->next;
+  link->next = NULL;
+  return link;
 }
 

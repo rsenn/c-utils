@@ -7,9 +7,9 @@ hmap_size(HMAP_DB* my_hmap_db) {
   if(my_hmap_db == NULL) return 0;
   ptr_list_tuple = my_hmap_db->list_tuple;
   while(ptr_list_tuple) {
-    if(ptr_list_tuple->next == my_hmap_db->list_tuple)
-      break;
+    if(ptr_list_tuple->next == my_hmap_db->list_tuple) break;
     ptr_list_tuple = ptr_list_tuple->next;
     ++ret;
   }
-  return ret;}
+  return ret;
+}

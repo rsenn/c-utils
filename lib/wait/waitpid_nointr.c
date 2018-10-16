@@ -1,13 +1,20 @@
-/* ISC license. */
-
-#include <errno.h>
+#include "../wait.h"
+#include "../windoze.h"
+#if WINDOWS_NATIVE
+#include <windows.h>
+#else
 #include <sys/wait.h>
+#endif
+#include <errno.h>
 
-pid_t
-waitpid_nointr(pid_t pid, int* wstat, int flags) {
-  pid_t r;
-  do
+int
+waitpid_nointr(int pid, int* wstat, int flags) {
+#if WINDOWS_NATIVE
+#else
+  int r;
+  do {
     r = waitpid(pid, wstat, flags);
-  while((r == (pid_t)-1) && (errno == EINTR));
+  } while((r == (int)-1) && (errno == EINTR));
   return r;
+#endif
 }

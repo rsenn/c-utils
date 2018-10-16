@@ -37,7 +37,7 @@ int64 strarray_index_of(strarray*, const char* s);
 char* strarray_pop(strarray*, char* s);
 int   strarray_pushb(strarray*, const char* b, size_t n);
 int   strarray_pushd(strarray*, const char* s);
-int   strarray_push(strarray*, char* s);
+int   strarray_push(strarray*, const char* s);
 int   strarray_set(strarray*, size_t index, const char* s);
 
 #ifdef STRALLOC_H
@@ -52,9 +52,11 @@ int strarray_removeprefixs(strarray* arr, const char* s);
 int strarray_removesuffixs(strarray* arr, const char* s);
 
 int strarray_joins(strarray* arr, stralloc* sa, const char* sep);
+
 int strarray_transform(strarray* in,  strarray* out, char* (*pred)(const char*));
+int strarray_each(strarray* arr, void (*pred)(char** ));
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* defined(STRARRAY_H) */int strarray_each(strarray* arr, void (*pred)(char** ));
+#endif /* defined(STRARRAY_H) */

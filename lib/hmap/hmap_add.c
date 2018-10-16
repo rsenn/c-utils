@@ -4,8 +4,8 @@
 #include <string.h>
 
 int
-hmap_add(HMAP_DB** hmap_db, void* key, size_t k_len, int dup_flag, int data_type, ...) {
-  
+hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int data_type, ...) {
+
   TUPLE *new_tuple = NULL, *ptr_tuple = NULL, *root_tuple = NULL;
   int r = 0;
   size_t d_len = 0;
@@ -14,7 +14,7 @@ hmap_add(HMAP_DB** hmap_db, void* key, size_t k_len, int dup_flag, int data_type
 
   int index = hash(key, k_len) % (*hmap_db)->bucket_size;
 
-VALIDATE_DB(*hmap_db, key, k_len);
+  VALIDATE_DB(*hmap_db, key, k_len);
 
   va_start(args, data_type);
   r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);

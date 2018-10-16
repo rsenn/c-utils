@@ -1,3 +1,4 @@
+#include "../wait.h"
 #include "../windoze.h"
 #if WINDOWS_NATIVE
 #include <windows.h>
@@ -6,15 +7,15 @@
 #endif
 #include <errno.h>
 
-pid_t
+int
 wait_nointr(int* wstat) {
 #if WINDOWS_NATIVE
   return -1;
 #else
-  pid_t r;
+  int r;
   do {
     r = wait(wstat);
-  } while((r == (pid_t)-1) && (errno == EINTR));
+  } while((r == (int)-1) && (errno == EINTR));
   return r;
 #endif
 }

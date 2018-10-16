@@ -4,11 +4,11 @@
 #include <string.h>
 
 int
-hmap_search(HMAP_DB* hmap_db, void* key, size_t k_len, TUPLE** data) {
+hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data) {
   int index = hash(key, k_len) % hmap_db->bucket_size;
   TUPLE* ptr_tuple = (hmap_db->tuple + index);
   TUPLE* ptr_hash_tuple = NULL;
-TUPLE* itr_tuple ;
+  TUPLE* itr_tuple;
 
   VALIDATE_DB(hmap_db, key, k_len);
 

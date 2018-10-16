@@ -1,13 +1,17 @@
-/* ISC license. */
+#include "../wait.h"
+#include "../windoze.h"
 
+#if !WINDOWS_NATIVE
+#include <sys/types.h>
 #include <sys/wait.h>
+#endif
 
 int
-waitn(pid_t* pids, unsigned int n) {
+waitn(int* pids, unsigned int n) {
   while(n) {
     int wstat;
     unsigned int i = 0;
-    pid_t pid = wait_nointr(&wstat);
+    int pid = wait_nointr(&wstat);
     if(pid < 0) return 0;
     for(; i < n; i++)
       if(pid == pids[i]) break;

@@ -9,8 +9,8 @@
 #endif
 
 char*
-str_basename(char* s) {
+str_basename(const char* s) {
   size_t n = PATH_LASTSEP(s);
   if(n && s[n] != '\0') s = s + n + 1;
-  return s;
+  return (char*)s;
 }

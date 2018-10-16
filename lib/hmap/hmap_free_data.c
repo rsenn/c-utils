@@ -38,4 +38,3 @@ hmap_free_data(TUPLE* tuple) {
   }
   return HMAP_SUCCESS;
 }
-

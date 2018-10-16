@@ -47,7 +47,7 @@ xmlnode* xmldoc = NULL;
 HMAP_DB* hashmap = NULL;
 TUPLE* ptr_tuple = NULL;
 HMAP_DB *instances_db = NULL, *parts_db = NULL;
-void hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*));
+void hmap_each(HMAP_DB* hmap, void (*foreach_fn)(void*));
 void update_part(const char*, double, double, double);
 #define NAMELEN 8
 typedef struct part {
@@ -253,7 +253,7 @@ update_part(const char* name, double x, double y, double rot) {
 
 /* ----------------------------------------------------------------------- */
 void
-hmap_foreach(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
+hmap_each(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
   TUPLE* t;
   if(hmap == NULL) return;
   for(t = hmap->list_tuple; t; t = t->next) {
@@ -399,7 +399,7 @@ main(int argc, char* argv[]) {
     root_element = xmldoc->children;
     print_element_names(root_element);
 
-    hmap_foreach(parts_db, (void(*)(void*))&each_part);
+    hmap_each(parts_db, (void(*)(void*))&each_part);
     buffer_flush(buffer_1);
   }
   {

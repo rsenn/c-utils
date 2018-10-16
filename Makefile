@@ -48,139 +48,11 @@ endif
 #check-header = $(info $(call cmd-check-header,$(1)))
 DEFINES_FILE := Makefile.defines
 
-$(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
-
-#$(info HAVE_SYS_TYPES_H=$(HAVE_SYS_TYPES_H))
-#$(info HAVE_INTTYPES_H=$(HAVE_INTTYPES_H))
-#$(info HAVE_VCRUNTIME_H=$(HAVE_VCRUNTIME_H))
-#$(info HAVE_STDINT_H=$(HAVE_STDINT_H))
-#$(info HAVE_STDDEF_H=$(HAVE_STDDEF_H))
-#$(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
-
 define NL =
 $(EMPTY)
 $(EMPTY)
 endef
 
-define CHECK_SCOPE_ID =
-#include <sys/types.h>\n
-#include <sys/socket.h>\n
-#include <netinet/in.h>\n
-\n
-int main() {\n
-  struct sockaddr_in6 sa;\n
-  sa.sin6_family = PF_INET6;\n
-  sa.sin6_scope_id = 23;\n
-  (void)sa;\n
-  return 0;\n
-}\n
-endef
-
-HAVE_SCOPE := $(call check-try-compile,$(CHECK_SCOPE_ID))
-ifeq ($(HAVE_SCOPE),1)
-DEFINES += LIBC_HAS_SCOPE_ID=1
-endif
-#$(info HAVE_SCOPE=$(HAVE_SCOPE))
-
-ifeq ($(call check-include-exists,errno.h),1)
-DEFINES += HAVE_ERRNO_H=1
-endif
-
-HAVE_N2I := $(call check-include-exists,net/if.h)
-ifeq ($(HAVE_N2I),1)
-DEFINES += HAVE_N2I=1
-endif
-#$(info HAVE_N2I=$(HAVE_N2I))
-
-LIBC_HAS_IP6 := $(call check-function-exists,inet_pton)
-ifeq ($(LIBC_HAS_IP6),1)
-DEFINES += LIBC_HAS_IP6=1
-endif
-#$(info LIBC_HAS_IP6=$(LIBC_HAS_IP6))
-
-HAVE_PIPE2 := $(call check-function-exists,pipe2)
-ifeq ($(HAVE_PIPE2),1)
-DEFINES += HAVE_PIPE2=1
-endif
-#$(info HAVE_PIPE2=$(HAVE_PIPE2))
-
-HAVE_WORDEXP := $(call check-function-exists,wordexp)
-ifeq ($(HAVE_WORDEXP),1)
-DEFINES += HAVE_WORDEXP=1
-endif
-#$(info HAVE_WORDEXP=$(HAVE_WORDEXP))
-
-HAVE_FNMATCH := $(call check-function-exists,fnmatch)
-ifeq ($(HAVE_FNMATCH),1)
-DEFINES += HAVE_FNMATCH=1
-endif
-#$(info HAVE_FNMATCH=$(HAVE_FNMATCH))
-
-HAVE_LSTAT := $(call check-function-exists,lstat)
-ifeq ($(HAVE_LSTAT),1)
-DEFINES += HAVE_LSTAT=1
-endif
-#$(info HAVE_LSTAT=$(HAVE_LSTAT))
-
-HAVE_GETDELIM := $(call check-function-exists,getdelim)
-ifeq ($(HAVE_GETDELIM),1)
-DEFINES += HAVE_GETDELIM=1
-endif
-#$(info HAVE_GETDELIM=$(HAVE_GETDELIM))
-
-HAVE_ROUND := $(call check-function-exists,round)
-ifeq ($(HAVE_ROUND),1)
-DEFINES += HAVE_ROUND=1
-endif
-#$(info HAVE_ROUND=$(HAVE_ROUND))
-
-HAVE_ALLOCA := $(call check-function-exists,alloca,,alloca.h)
-ifeq ($(HAVE_ALLOCA),1)
-DEFINES += HAVE_ALLOCA=1
-endif
-#$(info HAVE_ALLOCA=$(HAVE_ALLOCA))
-
-HAVE_SENDFILE := $(call check-function-exists,sendfile)
-ifeq ($(HAVE_SENDFILE),1)
-DEFINES += HAVE_SENDFILE=1
-endif
-#$(info HAVE_SENDFILE=$(HAVE_SENDFILE))
-
-HAVE_CYGWIN_CONV_PATH := $(call check-function-exists,cygwin_conv_path)
-ifeq ($(HAVE_CYGWIN_CONV_PATH),1)
-DEFINES += HAVE_CYGWIN_CONV_PATH=1
-endif
-#$(info HAVE_CYGWIN_CONV_PATH=$(HAVE_CYGWIN_CONV_PATH))
-
-HAVE_POPEN := $(call check-function-exists,popen)
-ifeq ($(HAVE_POPEN),1)
-DEFINES += HAVE_POPEN=1
-endif
-#$(info HAVE_POPEN=$(HAVE_POPEN))
-
-HAVE_GETOPT := $(call check-function-exists,getopt)
-ifeq ($(HAVE_GETOPT),1)
-DEFINES += HAVE_GETOPT=1
-endif
-#$(info HAVE_GETOPT=$(HAVE_GETOPT))
-
-HAVE_GETOPT_LONG := $(call check-function-exists,getopt_long)
-ifeq ($(HAVE_GETOPT_LONG),1)
-DEFINES += HAVE_GETOPT_LONG=1
-endif
-#$(info HAVE_GETOPT_LONG=$(HAVE_GETOPT_LONG))
-
-HAVE_PSAPI := $(call check-function-exists,GetMappedFileNameA,-lpsapi,windows.h psapi.h)
-ifeq ($(HAVE_PSAPI),1)
-DEFINES += HAVE_PSAPI=1
-LIBPSAPI = -lpsapi
-endif
-$(info HAVE_PSAPI=$(HAVE_PSAPI))
-
-
-#$(call def-include-exists,errno.h,HAVE_ERRNO_H)
-$(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
-#$(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
 BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 ifneq ($(CC),$(subst m32,,$(CC)))
 BUILD := $(subst x86_64,i386,$(BUILD))
@@ -402,37 +274,14 @@ IPHLPAPI_LIB = -liphlpapi
 endif
 
 #$(call def-function-exists,ZLIB,deflate,-lz)
+$(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
 
-HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
-#$(info HAVE_ZLIB=$(HAVE_ZLIB))
-
-HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
-#$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
-
-HAVE_LIBBZ2 := $(call check-function-exists,BZ2_bzCompress,-lbz2)
-$(info HAVE_LIBBZ2=$(HAVE_LIBBZ2))
-
-#$(call def-function-exists,EPOLL,epoll_wait,)
-#$(info HAVE_EPOLL=$(HAVE_EPOLL))
-
-$(call def-function-exists,KQUEUE,kevent,)
-#$(info HAVE_KQUEUE=$(HAVE_KQUEUE))
-
-$(call def-function-exists,POLL,poll,)
-#$(info HAVE_POLL=$(HAVE_POLL))
-
-#$(call def-function-exists,SIGWAITINFO,sigwaitinfo,)
-#$(info HAVE_SIGWAITINFO=$(HAVE_SIGWAITINFO))
-
-$(call def-function-exists,SIGIO,sigtimedwait,)
-#$(info HAVE_SIGIO=$(HAVE_SIGIO))
-
-
-HAVE_LSEEK64 := $(call check-function-exists,lseek64)
-HAVE_LSEEK := $(call check-function-exists,lseek)
-HAVE_LLSEEK := $(call check-function-exists,llseek)
-HAVE_POSIX_MEMALIGN := $(call check-function-exists,posix_memalign)
-#$(info HAVE_POSIX_MEMALIGN=$(HAVE_POSIX_MEMALIGN))
+#$(info HAVE_SYS_TYPES_H=$(HAVE_SYS_TYPES_H))
+#$(info HAVE_INTTYPES_H=$(HAVE_INTTYPES_H))
+#$(info HAVE_VCRUNTIME_H=$(HAVE_VCRUNTIME_H))
+#$(info HAVE_STDINT_H=$(HAVE_STDINT_H))
+#$(info HAVE_STDDEF_H=$(HAVE_STDDEF_H))
+#$(info HAVE_ERRNO_H=$(HAVE_ERRNO_H))
 
 #$(info HAVE_LSEEK64=$(HAVE_LSEEK64) HAVE_LSEEK=$(HAVE_LSEEK64)  HAVE_LLSEEK=$(HAVE_LLSEEK64))
 #$(info llseek: $(call check-function-exists,llseek))
@@ -766,6 +615,10 @@ LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
 pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upper:]]:/\),\
 -I\1,g ; /^-I$$/d"))
 
+FLAGS_FILE := $(patsubst %/,%,$(dir $(patsubst %/,%,$(BUILDDIR))))/$(notdir $(patsubst %/,%,$(BUILDDIR))).flags
+
+ifneq ($(call file-exists,$(FLAGS_FILE)),1)
+
 #$(info ICONV_CFLAGS: $(ICONV_CFLAGS))
 #$(info ICONV_LIBS: $(ICONV_LIBS))
 
@@ -775,43 +628,158 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #ifeq ($(STATIC),1)
 #endif
 #
+define CHECK_SCOPE_ID =
+#include <sys/types.h>\n
+#include <sys/socket.h>\n
+#include <netinet/in.h>\n
+\n
+int main() {\n
+  struct sockaddr_in6 sa;\n
+  sa.sin6_family = PF_INET6;\n
+  sa.sin6_scope_id = 23;\n
+  (void)sa;\n
+  return 0;\n
+}\n
+endef
 
-
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln bsdiffcat binfmttest elf64list macho32list pelist elflist genmakefile strarraytest)
-MAN3 = $(wildcard lib/*/*.3)
-
- #opensearch-dump
-LIBSOURCES = $(wildcard lib/*/*.c)
-ifeq ($(DO_CXX),1)
-PROGRAMS += \
-  piccfghex$(M64_)$(EXEEXT)
-#  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXEEXT)
+HAVE_SCOPE := $(call check-try-compile,$(CHECK_SCOPE_ID))
+ifeq ($(HAVE_SCOPE),1)
+DEFINES += LIBC_HAS_SCOPE_ID=1
 endif
-OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
+#$(info HAVE_SCOPE=$(HAVE_SCOPE))
 
-vpath $(BUILDDIR) lib src
+ifeq ($(call check-include-exists,errno.h),1)
+DEFINES += HAVE_ERRNO_H=1
+endif
 
-VPATH = $(BUILDDIR):.:lib:src
+HAVE_N2I := $(call check-include-exists,net/if.h)
+ifeq ($(HAVE_N2I),1)
+DEFINES += HAVE_N2I=1
+endif
+#$(info HAVE_N2I=$(HAVE_N2I))
 
-$(info BUILD_TYPE: $(BUILD_TYPE))
-$(info FLAGS: $(FLAGS))
-#$(info Programs: $(PROGRAMS))
+LIBC_HAS_IP6 := $(call check-function-exists,inet_pton)
+ifeq ($(LIBC_HAS_IP6),1)
+DEFINES += LIBC_HAS_IP6=1
+endif
+#$(info LIBC_HAS_IP6=$(LIBC_HAS_IP6))
 
-##$(info ARCH: $(ARCH))
-##$(info BUILD: $(BUILD))
-##$(info BUILDDIR: \
-  )
-##$(info BUILDTYPE: $(BUILDTYPE))
-##$(info CCVER: $(CCVER))
-##$(info CROSS_COMPILE: $(CROSS_COMPILE))
-##$(info CXXVER: $(CXXVER))
-##$(info HOST: $(HOST))
-##$(info TOOLCHAIN: $(TOOLCHAIN))
-##$(info KERN: $(KERN))
-##$(info M64: $(M64))
-##$(info OS: $(OS))
-##$(info STATIC: $(STATIC))
-##$(info TRIPLET: $(TRIPLET))
+HAVE_PIPE2 := $(call check-function-exists,pipe2)
+ifeq ($(HAVE_PIPE2),1)
+DEFINES += HAVE_PIPE2=1
+endif
+#$(info HAVE_PIPE2=$(HAVE_PIPE2))
+
+HAVE_WORDEXP := $(call check-function-exists,wordexp)
+ifeq ($(HAVE_WORDEXP),1)
+DEFINES += HAVE_WORDEXP=1
+endif
+#$(info HAVE_WORDEXP=$(HAVE_WORDEXP))
+
+HAVE_FNMATCH := $(call check-function-exists,fnmatch)
+ifeq ($(HAVE_FNMATCH),1)
+DEFINES += HAVE_FNMATCH=1
+endif
+#$(info HAVE_FNMATCH=$(HAVE_FNMATCH))
+
+HAVE_LSTAT := $(call check-function-exists,lstat)
+ifeq ($(HAVE_LSTAT),1)
+DEFINES += HAVE_LSTAT=1
+endif
+#$(info HAVE_LSTAT=$(HAVE_LSTAT))
+
+HAVE_GETDELIM := $(call check-function-exists,getdelim)
+ifeq ($(HAVE_GETDELIM),1)
+DEFINES += HAVE_GETDELIM=1
+endif
+#$(info HAVE_GETDELIM=$(HAVE_GETDELIM))
+
+HAVE_ROUND := $(call check-function-exists,round)
+ifeq ($(HAVE_ROUND),1)
+DEFINES += HAVE_ROUND=1
+endif
+#$(info HAVE_ROUND=$(HAVE_ROUND))
+
+HAVE_ALLOCA := $(call check-function-exists,alloca,,alloca.h)
+ifeq ($(HAVE_ALLOCA),1)
+DEFINES += HAVE_ALLOCA=1
+endif
+#$(info HAVE_ALLOCA=$(HAVE_ALLOCA))
+
+HAVE_SENDFILE := $(call check-function-exists,sendfile)
+ifeq ($(HAVE_SENDFILE),1)
+DEFINES += HAVE_SENDFILE=1
+endif
+#$(info HAVE_SENDFILE=$(HAVE_SENDFILE))
+
+HAVE_CYGWIN_CONV_PATH := $(call check-function-exists,cygwin_conv_path)
+ifeq ($(HAVE_CYGWIN_CONV_PATH),1)
+DEFINES += HAVE_CYGWIN_CONV_PATH=1
+endif
+#$(info HAVE_CYGWIN_CONV_PATH=$(HAVE_CYGWIN_CONV_PATH))
+
+HAVE_POPEN := $(call check-function-exists,popen)
+ifeq ($(HAVE_POPEN),1)
+DEFINES += HAVE_POPEN=1
+endif
+#$(info HAVE_POPEN=$(HAVE_POPEN))
+
+HAVE_GETOPT := $(call check-function-exists,getopt)
+ifeq ($(HAVE_GETOPT),1)
+DEFINES += HAVE_GETOPT=1
+endif
+#$(info HAVE_GETOPT=$(HAVE_GETOPT))
+
+HAVE_GETOPT_LONG := $(call check-function-exists,getopt_long)
+ifeq ($(HAVE_GETOPT_LONG),1)
+DEFINES += HAVE_GETOPT_LONG=1
+endif
+#$(info HAVE_GETOPT_LONG=$(HAVE_GETOPT_LONG))
+
+HAVE_PSAPI := $(call check-function-exists,GetMappedFileNameA,-lpsapi,windows.h psapi.h)
+ifeq ($(HAVE_PSAPI),1)
+DEFINES += HAVE_PSAPI=1
+LIBPSAPI = -lpsapi
+endif
+$(info HAVE_PSAPI=$(HAVE_PSAPI))
+
+
+#$(call def-include-exists,errno.h,HAVE_ERRNO_H)
+$(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
+#$(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
+
+HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
+#$(info HAVE_ZLIB=$(HAVE_ZLIB))
+
+HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
+#$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
+
+HAVE_LIBBZ2 := $(call check-function-exists,BZ2_bzCompress,-lbz2)
+$(info HAVE_LIBBZ2=$(HAVE_LIBBZ2))
+
+#$(call def-function-exists,EPOLL,epoll_wait,)
+#$(info HAVE_EPOLL=$(HAVE_EPOLL))
+
+$(call def-function-exists,KQUEUE,kevent,)
+#$(info HAVE_KQUEUE=$(HAVE_KQUEUE))
+
+$(call def-function-exists,POLL,poll,)
+#$(info HAVE_POLL=$(HAVE_POLL))
+
+#$(call def-function-exists,SIGWAITINFO,sigwaitinfo,)
+#$(info HAVE_SIGWAITINFO=$(HAVE_SIGWAITINFO))
+
+$(call def-function-exists,SIGIO,sigtimedwait,)
+#$(info HAVE_SIGIO=$(HAVE_SIGIO))
+
+
+HAVE_LSEEK64 := $(call check-function-exists,lseek64)
+HAVE_LSEEK := $(call check-function-exists,lseek)
+HAVE_LLSEEK := $(call check-function-exists,llseek)
+HAVE_POSIX_MEMALIGN := $(call check-function-exists,posix_memalign)
+#$(info HAVE_POSIX_MEMALIGN=$(HAVE_POSIX_MEMALIGN))
+
+
 ifeq ($(OS),darwin)
   READDIR := 1
 #DEFINES += USE_READDIR=1
@@ -892,8 +860,6 @@ FLAGS += $(patsubst %,-W%,$(WARNINGS))
 FLAGS += $(CPPFLAGS)
 FLAGS := $(sort $(FLAGS))
 
-FLAGS_FILE := $(patsubst %/,%,$(dir $(patsubst %/,%,$(BUILDDIR))))/$(notdir $(patsubst %/,%,$(BUILDDIR))).flags
-
 SPACE := $(DUMMY) $(DUMMY)
 define NL
 
@@ -948,6 +914,57 @@ endif
 endif
 endif
 
+else
+
+ifneq ($(NO_AT),1)
+COMPILE := $(CROSS_COMPILE)$(CC) @$(FLAGS_FILE) -c
+CPPFLAGS := 
+INCLUDES := 
+endif
+
+# no flags file
+endif
+
+$(info COMPILE=$(COMPILE))
+$(info FLAGS=$(FLAGS))
+$(info CFLAGS=$(CFLAGS))
+$(info @FLAGS_FILE: $(shell cat $(FLAGS_FILE)))
+
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),list-r count-depth decode-ls-lR reg2cmd regfilter torrent-progress mediathek-parser mediathek-list xc8-wrapper picc-wrapper picc18-wrapper sdcc-wrapper rdir-test httptest xmlpp xmltest xmltest2 xmltest3 xmltest4 plsconv compiler-wrapper impgen pathtool ntldd hexedit eagle-init-brd eagle-gen-cmds eagle-to-circuit buffertest jsontest elfwrsec ccat ziptest pkgcfg dnstest dnsip dnsname sln bsdiffcat binfmttest elf64list macho32list pelist elflist genmakefile strarraytest)
+MAN3 = $(wildcard lib/*/*.3)
+
+ #opensearch-dump
+LIBSOURCES = $(wildcard lib/*/*.c)
+ifeq ($(DO_CXX),1)
+PROGRAMS += \
+  piccfghex$(M64_)$(EXEEXT)
+#  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXEEXT)
+endif
+OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
+
+vpath $(BUILDDIR) lib src
+
+VPATH = $(BUILDDIR):.:lib:src
+
+$(info BUILD_TYPE: $(BUILD_TYPE))
+$(info FLAGS: $(FLAGS))
+#$(info Programs: $(PROGRAMS))
+
+##$(info ARCH: $(ARCH))
+##$(info BUILD: $(BUILD))
+##$(info BUILDDIR: \
+  )
+##$(info BUILDTYPE: $(BUILDTYPE))
+##$(info CCVER: $(CCVER))
+##$(info CROSS_COMPILE: $(CROSS_COMPILE))
+##$(info CXXVER: $(CXXVER))
+##$(info HOST: $(HOST))
+##$(info TOOLCHAIN: $(TOOLCHAIN))
+##$(info KERN: $(KERN))
+##$(info M64: $(M64))
+##$(info OS: $(OS))
+##$(info STATIC: $(STATIC))
+##$(info TRIPLET: $(TRIPLET))
 $(info FLAGS: $(FLAGS))
 $(info CFLAGS: $(CFLAGS))
 $(info CXXFLAGS: $(CXXFLAGS))
@@ -963,17 +980,6 @@ $(info BUILDDIR: $(BUILDDIR))
 $(info NO_AT: $(NO_AT))
 
 COMPILE := $(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c
-
-ifneq ($(NO_AT),1)
-COMPILE := $(CROSS_COMPILE)$(CC) @$(FLAGS_FILE) -c
-CPPFLAGS := 
-INCLUDES := 
-endif
-
-$(info COMPILE=$(COMPILE))
-$(info FLAGS=$(FLAGS))
-$(info CFLAGS=$(CFLAGS))
-$(info @FLAGS_FILE: $(shell cat $(FLAGS_FILE)))
 
 all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
 
