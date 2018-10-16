@@ -1,8 +1,8 @@
-#include "windoze.h"
+#include "../windoze.h"
 
 #if WINDOWS
 
-#include "ioctlcmd.h"
+#include "../ioctlcmd.h"
 #include <stdio.h>
 #include <windows.h>
 #include <winioctl.h>

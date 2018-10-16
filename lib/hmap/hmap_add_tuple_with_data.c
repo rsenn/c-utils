@@ -1,6 +1,6 @@
 #include "../byte.h"
 #include "../hmap_internal.h"
-#include "hmap_internal.c"
+#include "../hmap_internal.c"
 
 int
 hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data) {

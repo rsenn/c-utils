@@ -6,7 +6,7 @@
 //
 //
 //=--
-#include "utf8.h"
+#include "../utf8.h"
 
 int
 wctou8(char* m, wchar_t w) {

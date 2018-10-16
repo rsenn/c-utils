@@ -29,7 +29,7 @@
 #include "config.h"
 #endif
 
-#include "fnmatch.h"
+#include "../fnmatch.h"
 #include <ctype.h>
 #include <errno.h>
 

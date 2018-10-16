@@ -20,7 +20,7 @@ umult64() {
 
 #else
 
-#include "safemult.h"
+#include "../safemult.h"
 
 #if(defined(__GNUC__) && (defined(__x86_64__)) || defined(__ia64__) || defined(__powerpc64__) || defined(__alpha__) || \
     defined(__mips64__) || defined(__sparc64__))

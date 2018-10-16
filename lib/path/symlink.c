@@ -1,9 +1,9 @@
-#include "windoze.h"
-#include "byte.h"
+#include "../windoze.h"
+#include "../byte.h"
 
 #if WINDOWS_NATIVE
 
-#include "ioctlcmd.h"
+#include "../ioctlcmd.h"
 #include <fcntl.h>
 #include <io.h>
 #include <locale.h>

@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include "wordexp.h"
+#include "../wordexp.h"
 
 #ifndef HAVE_GETDELIM
 
