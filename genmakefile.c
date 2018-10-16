@@ -579,9 +579,6 @@ set_type(const char* type) {
   push_var("CFLAGS", "-O2");
   push_var("DEFS", "-DHAVE_ERRNO_H=1");
 
-  push_lib("EXTRA_LIBS", "ws2_32");
-  push_lib("EXTRA_LIBS", "iphlpapi");
-
   stralloc_copys(&builddir, "build\\");
   stralloc_cats(&builddir, type);
   stralloc_cats(&builddir, "\\");
@@ -601,6 +598,8 @@ set_type(const char* type) {
 
     stralloc_copys(&lib_command, "$(AR) rcs $@ $^");
     stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)");
+
+    format_linklib_fn = &format_linklib_switch;
 
   } else if(str_equal(type, "msvc")) {
 
@@ -659,6 +658,10 @@ set_type(const char* type) {
   } else {
     return 0;
   }
+
+  push_lib("EXTRA_LIBS", "ws2_32");
+  push_lib("EXTRA_LIBS", "iphlpapi");
+
   return 1;
 }
 
@@ -674,16 +677,16 @@ main(int argc, char* argv[]) {
     {"objext", 0, NULL, 'O'},
     {"exeext", 0, NULL, 'B'},
     {"libext", 0, NULL, 'L'},
-    {"create-libs", 0, &cmd_libs, 'l'},
-    {"create-objs", 0, &cmd_objs, 'o'},
-    {"create-bins", 0, &cmd_bins, 'b'},
+    {"create-libs", 0, &cmd_libs, 0},
+    {"create-objs", 0, &cmd_objs, 0},
+    {"create-bins", 0, &cmd_bins, 0},
     {"builddir", 0, 0, 'd'},
     {"type", 0, 0, 't'},
     {0}
   };
 
   for(;;) {
-    c = getopt_long(argc, argv, "hO:B:L:lobd:t:", opts, &index);
+    c = getopt_long(argc, argv, "hO:B:L:d:t:", opts, &index);
     if(c == -1) break;
     if(c == 0) continue;
 
