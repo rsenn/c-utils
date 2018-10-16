@@ -587,7 +587,7 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   endif()
 endif()
 
-set(COMMON_LIBS strlist buffer array stralloc scan str byte mmap open fmt )
+set(COMMON_LIBS unix strlist buffer array stralloc scan str byte mmap open fmt )
 
 file(GLOB LIBHEADERS lib/*.h)
 

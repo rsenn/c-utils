@@ -1,5 +1,5 @@
-#include "../windoze.h"
-
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
 #include <netinet/in.h>
@@ -7,7 +7,6 @@
 #endif
 
 #include "../ndelay.h"
-#include "../socket.h"
 
 int
 socket_udp4b(void) {

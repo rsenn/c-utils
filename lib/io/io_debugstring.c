@@ -4,7 +4,6 @@
 #include "../io_internal.h"
 
 #if WINDOWS_NATIVE
-#include <winsock.h>
 #else
 #include <sys/time.h>
 #endif

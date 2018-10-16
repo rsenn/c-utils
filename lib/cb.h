@@ -1,4 +1,3 @@
-
 /*
 Copyright (c) 2012, Enno Rehling <enno@eressea.de>
 Permission to use, copy, modify, and/or distribute this software for any

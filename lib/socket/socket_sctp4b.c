@@ -1,12 +1,11 @@
-#include "../windoze.h"
-
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
 #include <netinet/in.h>
 #include <sys/socket.h>
 #endif
 #include "../ndelay.h"
-#include "../socket.h"
 #include <errno.h>
 
 #ifndef EPROTONOSUPPORT

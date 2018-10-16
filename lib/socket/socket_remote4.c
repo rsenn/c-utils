@@ -1,12 +1,11 @@
-#include "../windoze.h"
-
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
 #include <netinet/in.h>
 #include <sys/socket.h>
 #endif
 #include "../byte.h"
-#include "../socket.h"
 
 int
 socket_remote4(int s, char ip[4], uint16* port) {

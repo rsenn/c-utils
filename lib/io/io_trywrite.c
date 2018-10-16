@@ -1,8 +1,5 @@
-#include "../windoze.h"
+#include "../socket.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
 
 #if WINDOWS
 #include <windows.h>

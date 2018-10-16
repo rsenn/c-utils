@@ -1,4 +1,4 @@
-#include "../windoze.h"
+#include "../socket.h"
 #include "../io_internal.h"
 #include "../socket_internal.h"
 
@@ -7,7 +7,6 @@
 #endif
 
 #if WINDOWS_NATIVE
-#include <winsock.h>
 #else
 #include <netinet/in.h>
 #endif

@@ -1,6 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #if 1 //ndef HAVE_PIPE2
 

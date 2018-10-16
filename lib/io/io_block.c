@@ -1,9 +1,8 @@
-#include "../windoze.h"
+#include "../socket.h"
 
 #include "../io_internal.h"
 
 #if WINDOWS_NATIVE
-#include <winsock.h>
 #else
 #include <fcntl.h>
 #endif

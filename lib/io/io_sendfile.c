@@ -1,11 +1,5 @@
-#include "../windoze.h"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
+#define _WINSOCKAPI_
 #include "../socket.h"
-
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
 
 #define _LARGEFILE64_SOURCE

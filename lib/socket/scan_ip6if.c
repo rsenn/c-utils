@@ -1,6 +1,7 @@
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include "../byte.h"
 #include "../ip6.h"
-#include "../socket.h"
 #include <ctype.h>
 //#include <alloca.h>
 

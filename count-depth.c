@@ -1,6 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #define _LARGEFILE_SOURCE 1
 #define _GNU_SOURCE 1
 #define _FILE_OFFSET_BITS 64

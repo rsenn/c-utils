@@ -1,14 +1,8 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "../path_internal.h"
 
 #include <limits.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #ifdef HAVE_LINUX_LIMITS_H
 #include <linux/limits.h>

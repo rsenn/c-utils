@@ -1,8 +1,5 @@
-#include "../windoze.h"
+#include "../socket.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "../io_internal.h"
 #include <errno.h>

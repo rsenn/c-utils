@@ -1,8 +1,5 @@
-#include "../windoze.h"
+#include "../socket.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #if WINDOWS
 #define __INSIDE_CYGWIN_NET__ 1
@@ -28,7 +25,6 @@
 #include <sys/types.h>
 #endif
 #if WINDOWS
-#include <winsock.h>
 #endif
 
 #ifdef DEBUG

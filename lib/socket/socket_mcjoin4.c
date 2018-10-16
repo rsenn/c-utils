@@ -1,7 +1,6 @@
-#include "../windoze.h"
-
-#include "../ip4.h"
+#define _WINSOCKAPI_
 #include "../socket.h"
+#include "../ip4.h"
 #include "../byte.h"
 
 int

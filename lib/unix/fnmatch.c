@@ -1,10 +1,4 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 /* Copyright (C) 1991, 1992, 1993 Free Software Foundation, Inc.
 
@@ -25,9 +19,6 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "../fnmatch.h"
 #include <ctype.h>

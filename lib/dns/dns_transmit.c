@@ -1,9 +1,8 @@
 #define _WINSOCKAPI_
-#include "../windoze.h"
+#include "../socket.h"
 
 
 #if WINDOWS_NATIVE
-#include <winsock2.h>
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -11,7 +10,6 @@
 #include "../byte.h"
 #include "../dns.h"
 #include "../ip6.h"
-#include "../socket.h"
 #include "../uint16.h"
 #include <errno.h>
 #include <stdlib.h>

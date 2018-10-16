@@ -1,8 +1,5 @@
-#include "../windoze.h"
+#include "../socket.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE

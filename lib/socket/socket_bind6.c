@@ -1,4 +1,4 @@
-#include "../windoze.h"
+#define _WINSOCKAPI_
 #include "../socket.h"
 #include "../byte.h"
 #include "../ip6.h"

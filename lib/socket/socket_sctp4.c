@@ -1,7 +1,6 @@
-#include "../windoze.h"
-
-#include "../ndelay.h"
+#define _WINSOCKAPI_
 #include "../socket.h"
+#include "../ndelay.h"
 
 int
 socket_sctp4(void) {

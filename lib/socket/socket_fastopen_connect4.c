@@ -1,5 +1,4 @@
-#include "../windoze.h"
-
+#define _WINSOCKAPI_
 #include "../socket.h"
 #if WINDOWS
 #include <windows.h>

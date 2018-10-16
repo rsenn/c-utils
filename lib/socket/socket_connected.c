@@ -1,8 +1,8 @@
-#include "../windoze.h"
+#define _WINSOCKAPI_
+#include "../socket.h"
 
 #include "../socket_internal.h"
 #if WINDOWS_NATIVE 
-#include <winsock.h>
 typedef int socklen_t;
 #endif
 

@@ -1,10 +1,9 @@
-#include "../windoze.h"
-
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
 #include <sys/socket.h>
 #endif
-#include "../socket.h"
 
 int
 socket_bind4_reuse(int s, const char* ip, uint16 port) {

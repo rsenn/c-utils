@@ -1,6 +1,7 @@
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include "../fmt.h"
 #include "../ip6.h"
-#include "../socket.h"
 #include "../str.h"
 
 size_t

@@ -1,16 +1,11 @@
-#include "../windoze.h"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
-
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
 #include <netinet/in.h>
 #include <sys/socket.h>
 #endif
 #include "../ndelay.h"
-#include "../socket.h"
 #include <errno.h>
 
 #ifndef EAFNOSUPPORT

@@ -1,10 +1,9 @@
 #define _WINSOCKAPI_
-#include "../windoze.h"
+#include "../socket.h"
 
 #include "../byte.h"
 
 #if WINDOWS_NATIVE
-#include <winsock2.h>
 #include "../socket_internal.h"
 
 /*

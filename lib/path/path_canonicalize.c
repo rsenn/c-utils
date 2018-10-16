@@ -1,9 +1,5 @@
 #include "../readlink.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #define _MISC_SOURCE 1
 #define _GNU_SOURCE 1
 #define _POSIX_SOURCE 1
@@ -23,11 +19,12 @@
 #include "../path.h"
 #include "../str.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#if !WINDOWS_NATIVE
+#define HAVE_LSTAT 1
+#endif
+
 #ifndef HAVE_LSTAT
 #define lstat stat
-#endif
 #endif
 
 #if WINDOWS

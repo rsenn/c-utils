@@ -1,7 +1,6 @@
-#include "../windoze.h"
-
-#include "../byte.h"
+#define _WINSOCKAPI_
 #include "../socket.h"
+#include "../byte.h"
 
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
@@ -9,7 +8,6 @@
 #include <netinet/tcp.h>
 #include <sys/socket.h>
 #endif
-#include "../socket.h"
 #include <string.h>
 
 void

@@ -1,6 +1,6 @@
-#include "../windoze.h"
-#include "../byte.h"
+#define _WINSOCKAPI_
 #include "../socket.h"
+#include "../byte.h"
 
 #if !WINDOWS_NATIVE 
 #include <netinet/in.h>

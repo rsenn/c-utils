@@ -1,8 +1,6 @@
-#include "../windoze.h"
+#define _WINSOCKAPI_
+#include "../socket.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
 
 
 #if !WINDOWS_NATIVE

@@ -1,3 +1,4 @@
+#define _WINSOCKAPI_
 #include "../socket.h"
 #if !WINDOWS_NATIVE
 #include <netinet/tcp.h>

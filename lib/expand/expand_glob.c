@@ -1,8 +1,5 @@
 #include "../vartab.h"
 #include "../tree.h"
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "../glob.h"
 #include "../var.h"

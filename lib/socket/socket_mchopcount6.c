@@ -1,11 +1,6 @@
-#include "../windoze.h"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
-
-#include "../ip6.h"
+#define _WINSOCKAPI_
 #include "../socket.h"
+#include "../ip6.h"
 
 #ifndef IPV6_MULTICAST_HOPS
 #undef LIBC_HAS_IP6

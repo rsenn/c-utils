@@ -1,9 +1,5 @@
-#include "../windoze.h"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
-
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
 #include <netinet/in.h>
@@ -12,7 +8,6 @@
 #include "../byte.h"
 #include "../ip4.h"
 #include "../ip6.h"
-#include "../socket.h"
 #include <errno.h>
 
 ssize_t

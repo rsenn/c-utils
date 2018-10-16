@@ -1,9 +1,4 @@
-#include "../windoze.h"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
-
+#define _WINSOCKAPI_
 #include "../socket.h"
 #include <errno.h>
 #include <sys/types.h>

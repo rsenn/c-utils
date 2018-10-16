@@ -1,10 +1,10 @@
-#include "../windoze.h"
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include "../byte.h"
 #include "../dns.h"
 #include "../ip4.h"
 #include "../ip6.h"
 #include "../open.h"
-#include "../socket.h"
 #include "../taia.h"
 #include <stdlib.h>
 #if WINDOWS

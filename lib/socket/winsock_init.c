@@ -1,9 +1,8 @@
 #define _WINSOCKAPI_
-#include "../windoze.h"
+#include "../socket.h"
 
 
 #if WINDOWS_NATIVE
-#include <winsock2.h>
 
 void
 __winsock_init(void) {

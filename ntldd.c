@@ -120,7 +120,7 @@ print_image_links(int first,
                   int list_exports,
                   int list_imports,
                   int depth) {
-  uint64 i;
+  size_t i;
   int unresolved = 0;
   self->flags |= DEPTREE_VISITED;
 

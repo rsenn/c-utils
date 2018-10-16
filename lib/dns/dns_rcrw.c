@@ -2,7 +2,6 @@
 #include "../windoze.h"
 
 #if WINDOWS
-#include <winsock2.h>
 #endif
 #include "../byte.h"
 #include "../dns.h"

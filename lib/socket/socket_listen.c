@@ -1,7 +1,7 @@
-#include "../windoze.h"
+#define _WINSOCKAPI_
+#include "../socket.h"
 
 #if WINDOWS_NATIVE 
-#include <winsock.h>
 #else
 #include <netinet/in.h>
 #include <sys/types.h>

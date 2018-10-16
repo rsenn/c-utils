@@ -1,3 +1,5 @@
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include "../http.h"
 #include "../byte.h"
 

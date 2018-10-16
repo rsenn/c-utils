@@ -1,14 +1,10 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
-
-#include "../windoze.h"
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
 #include <net/if.h>
 #include <sys/socket.h>
 #endif
-#include "../socket.h"
 
 #ifdef HAVE_N2I
 /* legacy BSD name */

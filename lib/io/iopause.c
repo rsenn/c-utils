@@ -1,12 +1,9 @@
-#include "../windoze.h"
+#define _WINSOCKAPI_
+#include "../socket.h"
 #include "../iopause.h"
 #include "../taia.h"
-//#include "../socket.h"
 
 #if WINDOWS_NATIVE
-#include <winsock.h>
-//#include <winsock2.h>
-//#define _WINSOCKAPI_
 //#include <windows.h>
 #else
 #include "../select.h"

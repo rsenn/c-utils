@@ -1,8 +1,6 @@
-#include "../windoze.h"
-
-#if WINDOWS_NATIVE
-#include <winsock2.h>
 #define _WINSOCKAPI_
+#include "../socket.h"
+#if WINDOWS_NATIVE
 typedef int socklen_t;
 #else
 #include <netinet/in.h>
@@ -10,7 +8,6 @@ typedef int socklen_t;
 #include <sys/types.h>
 #endif
 
-#include "../socket.h"
 #include "../ip6.h"
 #include "../uint64.h"
 #include "../byte.h"
