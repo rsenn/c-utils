@@ -614,7 +614,7 @@ target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
 target_link_libraries(access buffer str)
 target_link_libraries(buffertest ${COMMON_LIBS} ${LIBPSAPI})
-target_link_libraries(ccat buffer str)
+target_link_libraries(ccat buffer str ${COMMON_LIBS})
 #target_link_libraries(compiler-wrapper buffer byte dir fmt str stralloc strlist)
 target_link_libraries(count-depth buffer)
 target_link_libraries(decode-ls-lR buffer byte playlist str stralloc)
