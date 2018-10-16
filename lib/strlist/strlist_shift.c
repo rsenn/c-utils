@@ -11,9 +11,9 @@ strlist_shift(strlist* sl, const char** strp) {
 
   sl->sa.s[offs - 1] = '\0';
 
-  *strp = str_ndup(sl->sa.s, offs-1);
-  
-  byte_copy(sl->sa.s, sl->sa.len - offs , &sl->sa.s[offs ]);
-  sl->sa.len -= offs ;
+  *strp = str_ndup(sl->sa.s, offs - 1);
+
+  byte_copy(sl->sa.s, sl->sa.len - offs, &sl->sa.s[offs]);
+  sl->sa.len -= offs;
   return 1;
 }

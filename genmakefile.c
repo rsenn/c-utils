@@ -482,9 +482,9 @@ main(int argc, char* argv[]) {
     if(cmd_objs) compile_rules(rules, &srcs);
     lib_rules(rules, sourcedirs);
 
-    link_rules(rules, &srcs)
+    link_rules(rules, &srcs);
 
-      output_all_rules(buffer_1);
+      output_all_rules(buffer_1, rules);
 
     hmap_destroy(&sourcedirs);
   }

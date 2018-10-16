@@ -22,9 +22,9 @@ strlist_dump(buffer* out, const strlist* sl) {
     while(*s) {
       char chrs[64];
       char* p = &chrs[1];
- chrs[0] = '\\';
- chrs[1] = *s;
-  chrs[2] = '\0';
+      chrs[0] = '\\';
+      chrs[1] = *s;
+      chrs[2] = '\0';
       if(*p == '\n' || *p == '\r' || *p == '\0') {
         p[fmt_ulong(p, (unsigned long)(unsigned char)*p)] = '\0';
         --p;
