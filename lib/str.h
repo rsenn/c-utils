@@ -15,7 +15,7 @@ extern "C" {
 /* str_copy copies leading bytes from in to out until \0.
  * return number of copied bytes. */
 size_t str_copy(char* out, const char* in);
-unsigned int str_copyn(void* p1, const void* p2, unsigned int max);
+size_t str_copyn(void* p1, const void* p2, size_t max);
 
 /* str_diff returns negative, 0, or positive, depending on whether the
  * string a[0], a[1], ..., a[n] == '\0' is lexicographically smaller than,
@@ -60,13 +60,13 @@ str_basename(char* s) ;
 char *str_decamelize(const char *s);
 
 int str_case_diff(const void *p1, const void *p2);
-int str_case_diffn(const void *p1, const void *p2, unsigned int n);
-unsigned int str_case_equal(const void *s, const void *t);
-unsigned int str_case_start(const void *p1, const void *p2);
-unsigned int str_cat(void *p1, const void *p2);
-unsigned int str_copyb(void *p1, const void *p2, unsigned int max);
-unsigned int str_find(const void *s, const void *what);
-unsigned int str_findb(const void *p1, const void *what, unsigned int len);
+int str_case_diffn(const void *p1, const void *p2, size_t n);
+size_t str_case_equal(const void *s, const void *t);
+size_t str_case_start(const void *p1, const void *p2);
+size_t str_cat(void *p1, const void *p2);
+size_t str_copyb(void *p1, const void *p2, size_t max);
+size_t str_find(const void *s, const void *what);
+size_t str_findb(const void *p1, const void *what, size_t len);
 void str_lower(void *str);
 
 struct tm;
@@ -83,3 +83,4 @@ str_basename(char* s) ;
 #endif
 
 #endif
+int str_end(const char* a, const char* b);

@@ -1,8 +1,8 @@
 #include "../str.h"
 
-unsigned int
+size_t
 str_cat(void* p1, const void* p2) {
-  unsigned int len;
+  size_t len;
   char* s;
   const char* t;
   s = p1;

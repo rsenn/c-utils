@@ -1,7 +1,7 @@
 #include "../str.h"
 
 int
-str_case_diffn(const void* p1, const void* p2, unsigned int n) {
+str_case_diffn(const void* p1, const void* p2, size_t n) {
   int x;
   int y;
   const char* s;

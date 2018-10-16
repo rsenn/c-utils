@@ -1,6 +1,6 @@
 #include "../str.h"
 
-unsigned int
+size_t
 str_case_start(const void* p1, const void* p2) {
   int x;
   int y;

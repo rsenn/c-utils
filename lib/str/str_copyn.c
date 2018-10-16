@@ -1,8 +1,8 @@
 #include "../str.h"
 
-unsigned int
-str_copyn(void* p1, const void* p2, unsigned int max) {
-  unsigned int len;
+size_t
+str_copyn(void* p1, const void* p2, size_t max) {
+  size_t len;
   char* s;
   const char* t;
   s = p1;

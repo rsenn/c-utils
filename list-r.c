@@ -618,7 +618,6 @@ usage(char* argv0) {
 int
 main(int argc, char* argv[]) {
   stralloc dir = {0, 0, 0};
-  int argi = 1;
   int c;
   int digit_optind = 0;
   const char* rel_to = 0;
@@ -668,39 +667,40 @@ main(int argc, char* argv[]) {
     case 'l':
     case 'n':
     case 'r':
+      break;
     default: usage(argv[0]); return 1;
     }
   }
   /*
-    while(argi < argc) {
-      if(!str_diff(argv[argi], "-l") || !str_diff(argv[argi], "--list")) {
+    while(optind < argc) {
+      if(!str_diff(argv[optind], "-l") || !str_diff(argv[optind], "--list")) {
         opt_list = 1;
-      } else if(!str_diff(argv[argi], "-n") || !str_diff(argv[argi], "--numeric")) {
+      } else if(!str_diff(argv[optind], "-n") || !str_diff(argv[optind], "--numeric")) {
         opt_numeric = 1;
-      } else if(!str_diff(argv[argi], "-r") || !str_diff(argv[argi], "--relative")) {
+      } else if(!str_diff(argv[optind], "-r") || !str_diff(argv[optind], "--relative")) {
         relative = 1;
-      } else if(!str_diff(argv[argi], "-o") || !str_diff(argv[argi], "--output")) {
-        buffer_1->fd = io_err_check(open_trunc(argv[argi + 1]));
-        ++argi;
-      } else if(!str_diff(argv[argi], "--relative")) {
+      } else if(!str_diff(argv[optind], "-o") || !str_diff(argv[optind], "--output")) {
+        buffer_1->fd = io_err_check(open_trunc(argv[optind + 1]));
+        ++optind;
+      } else if(!str_diff(argv[optind], "--relative")) {
         relative = 1;
-      } else if(!str_diff(argv[argi], "-t") || !str_diff(argv[argi], "--time-style")) {
-        argi++;
-        opt_timestyle = argv[argi];
+      } else if(!str_diff(argv[optind], "-t") || !str_diff(argv[optind], "--time-style")) {
+        optind++;
+        opt_timestyle = argv[optind];
       } else {
         break;
       }
-      argi++;
+      optind++;
     }
     */
   array_catb(&exclude_masks, "\0\0\0\0\0\0\0\0", sizeof(char**));
   print_strarray(buffer_2, &exclude_masks);
-  if(argi < argc) {
-    while(argi < argc) {
-      if(opt_relative) opt_relative_to = argv[argi];
-      stralloc_copys(&dir, argv[argi]);
+  if(optind < argc) {
+    while(optind < argc) {
+      if(opt_relative) opt_relative_to = argv[optind];
+      stralloc_copys(&dir, argv[optind]);
       list_dir_internal(&dir, 0);
-      argi++;
+      optind++;
     }
   } else {
     stralloc_copys(&dir, ".");

@@ -58,6 +58,10 @@ int byte_diff(const void *a, size_t len, const void *b);
 unsigned int byte_equal(const void *s, unsigned int n, const void *t);
 void byte_fill(void *out, size_t len, int c);
 void byte_lower(void *s, unsigned int len);
+void byte_upper(void* s, unsigned int len);
+
+size_t byte_findb(const void* haystack, size_t hlen, const void* what, size_t wlen);
+size_t byte_finds(const void* haystack, size_t hlen, const char* what);
 
 #if defined(__i386__) || defined(__x86_64__)
 #define UNALIGNED_ACCESS_OK
@@ -73,4 +77,3 @@ size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_fun
 #endif
 
 #endif
-void byte_upper(void* s, unsigned int len);
