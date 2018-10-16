@@ -1,4 +1,5 @@
 #include "../windoze.h"
+#include "../typedefs.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>

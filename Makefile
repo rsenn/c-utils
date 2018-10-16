@@ -382,8 +382,8 @@ else
   endif
 endif
 
-vpath lib lib/array lib/binfmt lib/buffer lib/byte lib/case lib/cb lib/cbmap lib/charbuf lib/dir lib/dns lib/elf lib/env lib/errmsg lib/expand lib/fmt lib/gpio lib/hmap lib/http lib/iarray lib/io lib/json lib/list lib/map lib/mmap lib/ndelaylib/open lib/path lib/pe lib/playlist lib/rdir lib/scan lib/sig lib/slist lib/socket lib/str lib/stralloc lib/strarray lib/strlist lib/tai lib/taia lib/textbuf lib/uint16 lib/uint32 lib/uint64 lib/var lib/vartab lib/wait lib/xml $(BUILDDIR) tests
-VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/byte:lib/case:lib/cb:lib/cbmap:lib/charbuf:lib/dir:lib/dns:lib/elf:lib/env:lib/errmsg:lib/expand:lib/fmt:lib/gpio:lib/hmap:lib/http:lib/iarray:lib/io:lib/json:lib/list:lib/map:lib/mmap:lib/ndelay:lib/open:lib/path:lib/pe:lib/playlist:lib/rdir:lib/scan:lib/sig:lib/slist:lib/socket:lib/str:lib/stralloc:lib/strarray:lib/strlist:lib/tai:lib/taia:lib/textbuf:lib/uint16:lib/uint32:lib/uint64:lib/var:lib/vartab:lib/wait:lib/xml:$(BUILDDIR):tests
+vpath lib lib/array lib/binfmt lib/buffer lib/byte lib/case lib/cb lib/cbmap lib/charbuf lib/dir lib/dns lib/elf lib/env lib/errmsg lib/expand lib/fmt lib/gpio lib/hmap lib/http lib/iarray lib/io lib/json lib/list lib/map lib/mmap lib/ndelaylib/open lib/path lib/pe lib/playlist lib/range lib/rdir lib/scan lib/sig lib/slist lib/socket lib/str lib/stralloc lib/strarray lib/strlist lib/tai lib/taia lib/textbuf lib/uint16 lib/uint32 lib/uint64 lib/var lib/vartab lib/wait lib/xml $(BUILDDIR) tests
+VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/byte:lib/case:lib/cb:lib/cbmap:lib/charbuf:lib/dir:lib/dns:lib/elf:lib/env:lib/errmsg:lib/expand:lib/fmt:lib/gpio:lib/hmap:lib/http:lib/iarray:lib/io:lib/json:lib/list:lib/map:lib/mmap:lib/ndelay:lib/open:lib/path:lib/pe:lib/playlist:/ib/rdir:lib/scan:lib/sig:lib/slist:lib/socket:lib/str:lib/stralloc:lib/strarray:lib/strlist:lib/tai:lib/taia:lib/textbuf:lib/uint16:lib/uint32:lib/uint64:lib/var:lib/vartab:lib/wait:lib/xml:$(BUILDDIR):tests
 
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
@@ -617,7 +617,8 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 
 FLAGS_FILE := $(patsubst %/,%,$(dir $(patsubst %/,%,$(BUILDDIR))))/$(notdir $(patsubst %/,%,$(BUILDDIR))).flags
 
-ifneq ($(call file-exists,$(FLAGS_FILE)),1)
+ifneq (0,1)
+#$(call file-exists,$(FLAGS_FILE)),1)
 
 #$(info ICONV_CFLAGS: $(ICONV_CFLAGS))
 #$(info ICONV_LIBS: $(ICONV_LIBS))
@@ -917,13 +918,18 @@ endif
 else
 
 ifneq ($(NO_AT),1)
-COMPILE := $(CROSS_COMPILE)$(CC) @$(FLAGS_FILE) -c
+  COMPILe := $(CROSS_COMPILE)$(CC) @$(FLAGS_FILE) -c
 CPPFLAGS := 
 INCLUDES := 
+
+$(file >$@,$(subst $(SPACE),\
+,$(FLAGS)))
 endif
 
 # no flags file
 endif
+
+CC += @$(FLAGS_FILE)
 
 $(info COMPILE=$(COMPILE))
 $(info FLAGS=$(FLAGS))
@@ -974,7 +980,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 $(info BUILDDIR: $(BUILDDIR))
 $(info NO_AT: $(NO_AT))
@@ -983,26 +989,24 @@ COMPILE := $(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c
 
 all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
 
-#$(BUILDDIR)tryerrno.c:
-#	echo "int main() {\
-#errno = 0;\
-#return 0;\
-#}" >$(BUILDDIR)tryerrno.c
 
-#$(BUILDDIR)haveerrno.h: $(BUILDDIR)tryerrno.c
-#	$(CROSS_COMPILE)$(CC) -include errno.h -c -o $(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFINES += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
-#
-#FLAGS += -include $(BUILDDIR)haveerrno.h
-#
+
+
+
+
+
+
+
+
 $(FLAGS_FILE): $(BUILDDIR)
 	$(file >$@,$(subst $(SPACE),\
-,$(FLAGS)))
+	,$(FLAGS)))
 
 all-release:
 	$(MAKE) DEBUG=0 all
 
 PROGRAM_OBJECTS = $(patsubst %.c,$(BUILDDIR)%.o,$(wildcard *.c))
-#$(patsubst %,%.o,$(PROGRAMS))
+
 
 CPPFLAGS := -I.
 
@@ -1047,6 +1051,7 @@ $(call lib-target,path,lib/readlink.c lib/symlink.c lib/fork.c lib/wordexp.c lib
 $(call lib-target,open)
 $(call lib-target,pe)
 $(call lib-target,playlist)
+$(call lib-target,range)
 $(call lib-target,rdir)
 $(call lib-target,scan)
 $(call lib-target,sig)
@@ -1062,9 +1067,10 @@ $(call lib-target,time)
 $(call lib-target,uint16)
 $(call lib-target,uint32)
 $(call lib-target,uint64)
+$(call lib-target,unix)
 $(call lib-target,var)
 $(call lib-target,vartab)
-#$(call lib-target,wait)
+
 $(call lib-target,xml)
 $(call lib-target,socket,lib/socket/winsock2errno.c lib/socket/winsock_init.c)
 $(call lib-target,errmsg)
@@ -1117,13 +1123,13 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)getopt.o $(call add-library, array buffer fmt mmap open  strlist stralloc str byte)
+$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)getopt.o $(call add-library, array buffer fmt mmap open  strlist stralloc str unix byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)getopt.o $(BUILDDIR)popen.o $(call add-library, array strlist buffer fmt mmap open  scan stralloc str byte)
+$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)getopt.o $(BUILDDIR)popen.o $(call add-library, array strlist buffer fmt mmap open  scan stralloc str unix byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1420,7 +1426,7 @@ endif
 
 
 $(BUILDDIR)elflist$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)elflist$(M64_)$(EXEEXT): $(BUILDDIR)elflist.o $(call add-library, binfmt elf array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
+$(BUILDDIR)elflist$(M64_)$(EXEEXT): $(BUILDDIR)elflist.o $(call add-library, binfmt elf range array strlist dir stralloc errmsg buffer mmap open str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

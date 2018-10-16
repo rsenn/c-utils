@@ -7,7 +7,7 @@ strarray_to_argv(strarray* arr) {
   char** av;
   size_t n = strarray_size(arr);
   if((av = calloc(n + 1, sizeof(char*)))) {
-    byte_copy(av, sizeof(char*) * n, array_start(&arr->a));
+    byte_copy(av, sizeof(char*) * n, array_start((array*)arr));
   }
   return av;
 }

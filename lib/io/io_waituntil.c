@@ -1,5 +1,6 @@
-#include "../io_internal.h"
 #include "../safemult.h"
+#include "../io.h"
+#include "../taia.h"
 
 void
 io_waituntil(tai6464 t) {

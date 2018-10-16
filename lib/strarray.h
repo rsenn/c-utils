@@ -13,20 +13,28 @@ extern "C" {
 /* strarray is the internal data structure all functions are working on.
  */
 typedef struct {
-  array a;
+  char** p;
+  int64 allocated;  /* in bytes */
+  uint64 initialized;  /* in bytes */
+
+  /* p and allocated nonzero: array is allocated */
+  /* p and allocated zero: array is unallocated */
+  /* p zero and allocated < 0: array is failed */
+
+  size_t headroom;  /* the actual pointer for free() and realloc() is p-headroom */
 } strarray;
 
 /* strarray_init will initialize a strarray. */
-#define strarray_zero(l) array_trunc(&(l)->a, 0)
-#define strarray_init(l) byte_zero(&(l)->a, sizeof(array))
-#define strarray_free(l) array_free(&(l)->a)
+#define strarray_zero(l) array_trunc((array*)(l), 0)
+#define strarray_init(l) byte_zero((l), sizeof(strarray))
+#define strarray_free(l) array_reset((array*)(l))
 
-#define strarray_size(l) array_length(&(l)->a, sizeof(char*))
+#define strarray_size(l) array_length((array*)(l), sizeof(char*))
 
-#define strarray_begin(l) (char**)array_start(&(l)->a)
+#define strarray_begin(l) (char**)array_start((array*)(l))
 #define strarray_end(l) (strarray_begin(l)+strarray_size(l))
 
-#define strarray_at(l, pos) (*(char**)array_get(&(l)->a, sizeof(char*), pos))
+#define strarray_at(l, pos) (*(char**)array_get((array*)(l), sizeof(char*), pos))
 
 #define strarray_foreach(a, ptr) for(ptr = strarray_begin(a); ptr != strarray_end(a); ++ptr)
 
@@ -62,4 +70,3 @@ int strarray_glob(strarray* arr, const char* pattern);
 }
 #endif
 #endif /* defined(STRARRAY_H) */
-

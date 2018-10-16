@@ -2,10 +2,7 @@
 #ifndef UINT64_H
 #define UINT64_H
 
-#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
-#include <inttypes.h>
-#include <stdint.h>
-#endif
+#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C" {

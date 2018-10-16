@@ -1,15 +1,15 @@
 #include "lib/getopt.h"
-#include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/hmap.h"
 #include "lib/mmap.h"
 #include "lib/path.h"
 #include "lib/rdir.h"
+#include "lib/scan.h"
 #include "lib/slist.h"
 #include "lib/str.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
-#include "lib/scan.h"
+#include "lib/windoze.h"
 
 #if WINDOWS
 #define DEFAULT_OBJEXT ".obj"
@@ -43,15 +43,26 @@ typedef struct {
   stralloc* cmd;
 } rule_t;
 
-typedef void (linklib_fmt)(const char*, stralloc*);
+enum {
+  BUILD_TYPE_RELEASE = 0,
+  BUILD_TYPE_RELWITHDEBINFO,
+  BUILD_TYPE_MINSIZEREL,
+  BUILD_TYPE_DEBUG,
+};
+
+const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
+
+typedef void(linklib_fmt)(const char*, stralloc*);
 
 static strarray srcs;
 static stralloc compile_command, lib_command, link_command, mkdir_command;
 static const char* objext = DEFAULT_OBJEXT;
 static const char* libext = DEFAULT_LIBEXT;
 static const char* binext = DEFAULT_EXEEXT;
-static stralloc builddir;
+static strlist builddir;
 static char pathsep = DEFAULT_PATHSEP;
+
+static int build_type = BUILD_TYPE_DEBUG;
 
 static HMAP_DB *rules, *vars;
 
@@ -74,8 +85,7 @@ format_linklib_switch(const char* libname, stralloc* out) {
   stralloc_cats(out, "-l");
   stralloc_cats(out, libname);
 
-  if(stralloc_endb(out, "lib", 3))
-    out->len -= 3;
+  if(stralloc_endb(out, "lib", 3)) out->len -= 3;
 }
 
 /**
@@ -136,8 +146,7 @@ rule_command(rule_t* rule, stralloc* out) {
       }
       ++i;
     } else {
-      if(!stralloc_append(out, p))
-        break;
+      if(!stralloc_append(out, p)) break;
     }
   }
 }
@@ -185,10 +194,10 @@ add_path(strlist* list, const char* path) {
   strlist_push(list, path);
 
   for(i = list->sa.len - len; i < list->sa.len; ++i) {
-    if(list->sa.s[i] == '/' || list->sa.s[i] == '\\')
-      list->sa.s[i] = pathsep;
+    if(list->sa.s[i] == '/' || list->sa.s[i] == '\\') list->sa.s[i] = pathsep;
   }
 }
+
 void
 add_path_sa(strlist* list, stralloc* path) {
   stralloc_nul(path);
@@ -248,8 +257,7 @@ void
 push_lib(const char* name, const char* lib) {
   strlist* var = get_var(name);
 
-  if(var->sa.len)
-    stralloc_catc(&var->sa, var->sep);
+  if(var->sa.len) stralloc_catc(&var->sa, var->sep);
 
   format_linklib_fn(lib, &var->sa);
 }
@@ -259,8 +267,9 @@ with_lib(const char* lib) {
   stralloc def;
   stralloc_init(&def);
   stralloc_copys(&def, "-DHAVE_");
-  if(str_find(lib, "lib") == str_len(lib))
-    stralloc_cats(&def, "LIB");
+
+  if(str_find(lib, "lib") == str_len(lib)) stralloc_cats(&def, "LIB");
+
   stralloc_cats(&def, lib);
   stralloc_cats(&def, "=1");
   byte_upper(def.s, def.len);
@@ -346,7 +355,12 @@ char*
 src_to_obj(const char* in, stralloc* out) {
   stralloc_zero(out);
 
-  stralloc_cat(out, &builddir);
+  if(builddir.sa.len) {
+    stralloc_cat(out, &builddir.sa);
+
+    if(!stralloc_endb(out, &pathsep, 1))
+      stralloc_catc(out, pathsep);
+  }
 
   return change_ext(str_basename(in), out, objext);
 }
@@ -384,8 +398,7 @@ get_sources(const char* basedir, strarray* sources) {
   if(!rdir_open(&rdir, basedir)) {
     const char* s;
 
-    while((s = rdir_read(&rdir)))
-      add_source(s, sources);
+    while((s = rdir_read(&rdir))) add_source(s, sources);
   }
 }
 
@@ -486,7 +499,7 @@ link_rules(HMAP_DB* rules, strarray* sources) {
     src_to_obj(*srcfile, &obj);
 
     stralloc_zero(&bin);
-    change_ext(str_basename(*srcfile), &bin, binext);
+    change_ext(obj.s, &bin, binext);
 
     rule = get_rule("all");
     add_path_sa(&rule->deps, &bin);
@@ -522,7 +535,7 @@ lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     if(str_equal(base, "lib") || base[0] == '\0') continue;
 
     stralloc_zero(&lib);
-    stralloc_cat(&lib, &builddir);
+    stralloc_cat(&lib, &builddir.sa);
     stralloc_cats(&lib, base);
     stralloc_cats(&lib, libext);
 
@@ -569,9 +582,7 @@ void
 output_all_rules(buffer* b, HMAP_DB* hmap) {
   TUPLE* t;
 
-  hmap_foreach(hmap, t) {
-    output_rule(b, t->vals.val_custom);
-  }
+  hmap_foreach(hmap, t) { output_rule(b, t->vals.val_custom); }
 }
 
 void
@@ -630,10 +641,6 @@ set_type(const char* type) {
   push_var("CFLAGS", "-O2");
   push_var("DEFS", "-DHAVE_ERRNO_H=1");
 
-  stralloc_copys(&builddir, "build\\");
-  stralloc_cats(&builddir, type);
-  stralloc_cats(&builddir, "\\");
-
   stralloc_copys(&mkdir_command, "IF NOT EXIST \"$@\" MKDIR \"$@\"");
 
   if(str_start(type, "gnu") || str_start(type, "gcc")) {
@@ -655,7 +662,7 @@ set_type(const char* type) {
     /*
      * Visual C++ compiler
      */
-  } else    if(str_start(type, "msvc") || str_start(type, "icl")) {
+  } else if(str_start(type, "msvc") || str_start(type, "icl")) {
 
     set_var("CC", "cl");
     set_var("LIB", "lib");
@@ -675,6 +682,8 @@ set_type(const char* type) {
       set_var("LIB", "xilib");
 
       push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
+
+      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo$@ $<");
     }
 
     /*
@@ -682,21 +691,41 @@ set_type(const char* type) {
      */
   } else if(str_start(type, "bcc")) {
 
-    push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
+    pathsep = '\\';
 
-    push_var("CFLAGS", "-q -W -tWC -tWM -O2");
-   //push_var("CPPFLAGS", "-Dinline=__inline");
+    //    push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
 
+    push_var("CFLAGS", "-q -tWC -tWM -O2");
+    push_var("CPPFLAGS", "-Dinline=__inline");
+    push_var("LDFLAGS", "-q");
+
+    if(build_type == BUILD_TYPE_DEBUG) {
+      push_var("CFLAGS", "-w -w-use");
+    } else {
+      push_var("CFLAGS", "-O1 -r");
+    }
+
+    /* Embracadero C++ */
     if(str_find(type, "55") == str_len(type)) {
       set_var("CC", "bcc32c");
       set_var("CXX", "bcc32x");
 
+      /* C99 standard */
+      push_var("CFLAGS", "-An");
+
       stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o $@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)\n|");
+
+    /* Borland C++ Builder 5.5 */
     } else {
       set_var("CC", "bcc32");
       set_var("CXX", "bcc32");
 
       push_var("CFLAGS", "-ff -fp");
+
+      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+        push_var("CFLAGS", "-v -y");
+        push_var("LDFLAGS", "-v -y");
+      }
 
       stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
       stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -e$@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)\n|");
@@ -720,16 +749,22 @@ set_type(const char* type) {
     /*
      * Tiny CC compiler
      */
-  } else   if(str_start(type, "tcc")) {
+  } else if(str_start(type, "tcc")) {
+
     set_var("CC", "tcc");
 
+    push_var("CFLAGS", "-g -Wall");
+    push_var("CPPFLAGS", "-D__TCC__=1");
+
+    stralloc_copys(&lib_command, "$(CC) -ar rcs $@ $^");
+    stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)");
   } else {
     return 0;
   }
 
-   with_lib("zlib");
-   with_lib("bz2");
-   with_lib("lzma");
+  with_lib("zlib");
+  with_lib("bz2");
+  with_lib("lzma");
 
   push_lib("EXTRA_LIBS", "advapi32");
   push_lib("EXTRA_LIBS", "ws2_32");
@@ -748,16 +783,19 @@ main(int argc, char* argv[]) {
   const char* outdir = NULL;
   strarray args;
 
-  struct longopt opts[] = {
-    {"help", 0, NULL, 'h'},
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
     {"objext", 0, NULL, 'O'},
     {"exeext", 0, NULL, 'B'},
     {"libext", 0, NULL, 'L'},
-    {"create-libs", 0, &cmd_libs, 0},
-    {"create-objs", 0, &cmd_objs, 0},
-    {"create-bins", 0, &cmd_bins, 0},
+    {"create-libs", 0, &cmd_libs, 1},
+    {"create-objs", 0, &cmd_objs, 1},
+    {"create-bins", 0, &cmd_bins, 1},
     {"builddir", 0, 0, 'd'},
     {"type", 0, 0, 't'},
+    {"release", 0, &build_type, BUILD_TYPE_RELEASE},
+    {"relwithdebinfo", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},
+    {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
+    {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
     {0}
   };
 
@@ -782,42 +820,43 @@ main(int argc, char* argv[]) {
     cmd_libs = 1;
   }
 
-  if(!format_linklib_fn)
-    format_linklib_fn = &format_linklib_lib;
+  if(!format_linklib_fn) format_linklib_fn = &format_linklib_lib;
 
   if(!set_type(type)) {
     usage(argv[0]);
     return 2;
   }
 
-  if(outdir)
-    stralloc_copys(&builddir, outdir);
+  strlist_init(&builddir, pathsep);
+  strlist_push(&builddir, outdir ? outdir : "build");
+  strlist_push(&builddir, type);
+  strlist_push(&builddir, build_types[build_type]);
 
   strarray_init(&args);
   strarray_init(&srcs);
 
-   while(optind < argc) {
+  while(optind < argc) {
 #if WINDOWS_NATIVE && !MINGW
-     if(str_rchrs(argv[optind], "*?", 2) < str_len(argv[optind]))
-       strarray_glob(&args, argv[optind]);
-     else
+    if(str_rchrs(argv[optind], "*?", 2) < str_len(argv[optind]))
+      strarray_glob(&args, argv[optind]);
+    else
 #endif
-     strarray_push(&args, argv[optind]);
-     ++optind;
-   }
+      strarray_push(&args, argv[optind]);
+    ++optind;
+  }
 
   {
     char** arg;
     HMAP_DB* sourcedirs;
     rule_t* all = get_rule("all");
 
-    if(builddir.len) {
+    if(strlist_count(&builddir)) {
       rule_t* rule;
 
-      if((rule = get_rule_sa(&builddir))) {
+      if((rule = get_rule_sa(&builddir.sa))) {
         rule->cmd = &mkdir_command;
 
-        add_path_sa(&all->deps, &builddir);
+        add_path_sa(&all->deps, &builddir.sa);
       }
     }
 
@@ -840,7 +879,7 @@ main(int argc, char* argv[]) {
     output_all_vars(buffer_1, vars);
     output_all_rules(buffer_1, rules);
 
-//   hmap_dump(sourcedirs, buffer_1);
+    //   hmap_dump(sourcedirs, buffer_1);
 
     hmap_destroy(&sourcedirs);
   }

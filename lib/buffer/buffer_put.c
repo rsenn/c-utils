@@ -1,9 +1,6 @@
 #include "../buffer.h"
 #include "../byte.h"
 #include <string.h>
-#ifdef __x86_64__
-#include <x86intrin.h>
-#endif
 
 extern int buffer_stubborn(buffer_op_fn* op, fd_t fd, const char* buf, size_t len, void* cookie);
 

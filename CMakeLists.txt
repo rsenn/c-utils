@@ -506,7 +506,7 @@ endforeach()
 
 
 #
-set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 unix var vartab xml)
+set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 unix var vartab xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -569,6 +569,7 @@ target_link_libraries(open stralloc)
 target_link_libraries(path unix)
 target_link_libraries(pe uint64 uint32 uint16)
 target_link_libraries(playlist buffer byte fmt scan str stralloc xml)
+target_link_libraries(rdir dir)
 target_link_libraries(scan byte case str)
 target_link_libraries(socket byte fmt ndelay scan uint16)
 target_link_libraries(str byte stralloc)
