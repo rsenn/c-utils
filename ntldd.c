@@ -232,27 +232,36 @@ print_image_links(int first,
 int
 registry_query(const char* key, const char* value, stralloc* sa) {
   HKEY hkey;
-  DWORD ret, rkey, type;
+  DWORD len,ret, type;
+  typedef WINADVAPI LONG APIENTRY (reggetvalue_fn) (HKEY,LPCSTR,LPCSTR,DWORD,DWORD*,void*,DWORD*);
+  static reggetvalue_fn* api_fn;
 
-  if(!str_diffn(key, "HKCU", 4) || !str_diffn(key, "HKEY_CURRENT_USER", 17)) {
-    rkey = HKEY_CURRENT_USER;
-  } else if(!str_diffn(key, "HKLM", 4) || !str_diffn(key, "HKEY_LOCAL_MACHINE", 19)) {
-    rkey = HKEY_LOCAL_MACHINE;
-  } else if(!str_diffn(key, "HKCR", 4) || !str_diffn(key, "HKEY_CLASSES_ROOT", 17)) {
-    rkey = HKEY_LOCAL_MACHINE;
-  } else if(!str_diffn(key, "HKU", 3) || !str_diffn(key, "HKEY_USERS", 10)) {
-    rkey = HKEY_LOCAL_MACHINE;
+  if(!api_fn) {
+    HANDLE advapi;
+    if((advapi = LoadLibraryA("advapi32.dll")) != INVALID_HANDLE_VALUE)
+      api_fn = (reggetvalue_fn*)GetProcAddress(advapi, "RegGetValueA");
   }
 
-  /*DWORD ret = RegOpenKeyA(rkey, strchr(key, '\\') + 1, &hkey);
-  if(ret == ERROR_SUCCESS)*/ {
-    stralloc_ready(sa, PATH_MAX + 1);
-    sa->len = sa->a;
-    ret = RegGetValueA(rkey, strchr(key, '\\') + 1, "Path", RRF_RT_ANY, &type, sa->s, &sa->len);
-    if(ret == ERROR_SUCCESS) {
-      if(type = REG_EXPAND_SZ) stralloc_expand(sa);
-      return sa->len = str_len(sa->s);
-    }
+  if(!api_fn)
+    return -1;
+
+  if(!str_diffn(key, "HKCU", 4) || !str_diffn(key, "HKEY_CURRENT_USER", 17)) {
+    hkey = HKEY_CURRENT_USER;
+  } else if(!str_diffn(key, "HKLM", 4) || !str_diffn(key, "HKEY_LOCAL_MACHINE", 19)) {
+    hkey = HKEY_LOCAL_MACHINE;
+  } else if(!str_diffn(key, "HKCR", 4) || !str_diffn(key, "HKEY_CLASSES_ROOT", 17)) {
+    hkey = HKEY_LOCAL_MACHINE;
+  } else if(!str_diffn(key, "HKU", 3) || !str_diffn(key, "HKEY_USERS", 10)) {
+    hkey = HKEY_LOCAL_MACHINE;
+  }
+
+  stralloc_ready(sa, PATH_MAX + 1);
+  sa->len = sa->a;
+  ret = api_fn(hkey, strchr(key, '\\') + 1, value, RRF_RT_ANY, &type, sa->s, &len);
+  sa->len = len;
+  if(ret == ERROR_SUCCESS) {
+    if(type == REG_EXPAND_SZ) stralloc_expand(sa);
+    return sa->len = str_len(sa->s);
   }
   return 0;
 }

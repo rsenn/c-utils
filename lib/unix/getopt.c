@@ -8,8 +8,8 @@
  */
 #if !defined(HAVE_GETOPT) || !defined(HAVE_GETOPT_LONG)
 
-#include "getopt.h"
-#include "buffer.h"
+#include "../getopt.h"
+#include "../buffer.h"
 #include <stdio.h>
 #include <string.h>
 

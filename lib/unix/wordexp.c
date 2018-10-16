@@ -1,7 +1,5 @@
-#include "windoze.h"
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "../windoze.h"
+#include "../wordexp.h"
 
 #ifndef HAVE_WORDEXP
 #include <errno.h>
@@ -12,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include "wordexp.h"
 
 #if WINDOWS_NATIVE
 #include <process.h>

@@ -731,6 +731,7 @@ set_type(const char* type) {
    with_lib("bz2");
    with_lib("lzma");
 
+  push_lib("EXTRA_LIBS", "advapi32");
   push_lib("EXTRA_LIBS", "ws2_32");
   push_lib("EXTRA_LIBS", "iphlpapi");
   push_lib("EXTRA_LIBS", "psapi");
@@ -797,11 +798,12 @@ main(int argc, char* argv[]) {
 
    while(optind < argc) {
 #if WINDOWS_NATIVE && !MINGW
-     if(str_rchrs(argv[optind], "*?") < str_len(argv[optind]))
+     if(str_rchrs(argv[optind], "*?", 2) < str_len(argv[optind]))
        strarray_glob(&args, argv[optind]);
      else
 #endif
      strarray_push(&args, argv[optind]);
+     ++optind;
    }
 
   {

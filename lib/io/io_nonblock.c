@@ -4,6 +4,7 @@
 #undef __BSD_VISIBLE
 #define __BSD_VISIBLE 0
 #define _WINSOCKAPI_
+#include <winsock2.h>
 #ifndef FIONBIO
 #define FIONBIO     0x8004667e		 /* set/clear non-blocking i/o */
 #endif
