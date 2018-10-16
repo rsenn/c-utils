@@ -55,7 +55,7 @@ const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "D
 typedef void(linklib_fmt)(const char*, stralloc*);
 
 static strarray srcs;
-static stralloc compile_command, lib_command, link_command, mkdir_command;
+static stralloc compile_command, lib_command, link_command, mkdir_command, delete_command;
 static const char* objext = DEFAULT_OBJEXT;
 static const char* libext = DEFAULT_LIBEXT;
 static const char* binext = DEFAULT_EXEEXT;
@@ -300,9 +300,19 @@ get_rules_by_cmd(stralloc* cmd, strlist* deps) {
  */
 void
 output_rule(buffer* b, rule_t* rule) {
+  int num_deps = strlist_count(&rule->deps);
+
+  if(num_deps == 0 && str_diffn(rule->name, builddir.sa.s, builddir.sa.len)) {
+    buffer_putm_internal(b, ".PHONY: ", rule->name, "\n");
+  }
+
   buffer_puts(b, rule->name);
-  buffer_puts(b, ": ");
-  buffer_putsa(b, &rule->deps.sa);
+  buffer_putc(b, ':');
+
+  if(num_deps) {
+    buffer_putspace(b);
+    buffer_putsa(b, &rule->deps.sa);
+  }
 
   if(rule->cmd) {
     stralloc cmd;
@@ -645,6 +655,8 @@ set_type(const char* type) {
 
   if(str_start(type, "gnu") || str_start(type, "gcc")) {
 
+    libext = ".a";
+
     /*
      * GNU GCC compatible compilers
      */
@@ -715,7 +727,7 @@ set_type(const char* type) {
 
       stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o $@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)\n|");
 
-    /* Borland C++ Builder 5.5 */
+      /* Borland C++ Builder 5.5 */
     } else {
       set_var("CC", "bcc32");
       set_var("CXX", "bcc32");
@@ -750,6 +762,9 @@ set_type(const char* type) {
      * Tiny CC compiler
      */
   } else if(str_start(type, "tcc")) {
+
+    libext = ".a";
+    format_linklib_fn = &format_linklib_switch;
 
     set_var("CC", "tcc");
 
@@ -845,13 +860,20 @@ main(int argc, char* argv[]) {
     ++optind;
   }
 
-  {
+  /* No arguments given */
+  if(strarray_size(&args) == 0) {
+
+    buffer_putsflush(buffer_2, "ERROR: No arguments given\n\n");
+    usage(argv[0]);
+    return 1;
+
+  } else {
+    rule_t* rule;
     char** arg;
     HMAP_DB* sourcedirs;
     rule_t* all = get_rule("all");
 
     if(strlist_count(&builddir)) {
-      rule_t* rule;
 
       if((rule = get_rule_sa(&builddir.sa))) {
         rule->cmd = &mkdir_command;
@@ -878,6 +900,15 @@ main(int argc, char* argv[]) {
 
     output_all_vars(buffer_1, vars);
     output_all_rules(buffer_1, rules);
+
+    if((rule = get_rule("clean"))) {
+      strlist_push(&builddir, "*");
+
+      stralloc_copys(&delete_command, "DEL /F ");
+      stralloc_cat(&delete_command, &builddir.sa);
+
+      rule->cmd = &delete_command;
+    }
 
     //   hmap_dump(sourcedirs, buffer_1);
 
