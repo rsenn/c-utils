@@ -54,7 +54,7 @@ HANDLE io_comport;
 #endif
 static iarray io_fds;
 
-iarray*
+void*
 io_getfds() {
   return &io_fds;
 }

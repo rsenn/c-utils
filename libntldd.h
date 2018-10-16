@@ -77,17 +77,6 @@ typedef struct build_tree_config_t {
 int
 build_dep_tree(build_tree_config* cfg, char *name, struct dep_tree_element *root, struct dep_tree_element *self);
 
-static inline void*
-map_pointer(soff_entry* soffs, int soffs_len, uint32 in_ptr, int* section) {
-  int i;
-  for(i = 0; i < soffs_len; i++)
-    if(soffs[i].start <= in_ptr && soffs[i].end >= in_ptr) {
-      if(section != NULL) *section = i;
-      if(soffs[i].off) return (char*)soffs[i].off + in_ptr;
-    }
-  return NULL;
-}
-
 #define FALSE 0
 #define TRUE 1
 typedef size_t uintptr_t;
@@ -103,5 +92,16 @@ struct _soff_entry {
   uint32 end;
   void* off;
 };
+
+static inline void*
+map_pointer(soff_entry* soffs, int soffs_len, uint32 in_ptr, int* section) {
+  int i;
+  for(i = 0; i < soffs_len; i++)
+    if(soffs[i].start <= in_ptr && soffs[i].end >= in_ptr) {
+      if(section != NULL) *section = i;
+      if(soffs[i].off) return (char*)soffs[i].off + in_ptr;
+    }
+  return NULL;
+}
 
 #endif

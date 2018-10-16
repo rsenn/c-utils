@@ -1,17 +1,9 @@
 #define USE_WS2_32 1
 #include "../socket.h"
-
+#include "../io_internal.h"
 #include "../ip4.h"
 #include "../uint64.h"
 #include "../byte.h"
-
-#if WINDOWS_NATIVE
-#include "../io_internal.h"
-#include <errno.h>
-#include <mswsock.h>
-#include <stdio.h>
-#include <windows.h>
-#endif
 
 int
 socket_accept4(int s, char* ip, uint16* port) {
@@ -53,7 +45,7 @@ socket_accept4(int s, char* ip, uint16* port) {
     /* no accept queued, queue one now. */
     if(e->next_accept == 0) {
       e->next_accept = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-      if(e == -1) return winsock2errno(-1);
+      if(e == INVALID_HANDLE_VALUE) return winsock2errno(-1);
     }
     if(AcceptEx(s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or)) goto incoming;
     if(WSAGetLastError() != ERROR_IO_PENDING) return winsock2errno(-1);

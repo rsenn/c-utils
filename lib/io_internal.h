@@ -16,6 +16,8 @@
 #include "taia.h"
 #include "io.h"
 
+extern void* io_getfds();
+
 #if WINDOWS_NATIVE
 # include <io.h>
 //#define read _read
@@ -125,7 +127,6 @@ typedef struct {
 extern int io_multithreaded;
 extern int io_sockets[2];
 
-iarray* io_getfds();
 
 my_extern uint64 io_wanted_fds;
 my_extern array io_pollfds;

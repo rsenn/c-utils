@@ -1,12 +1,11 @@
-
-#define _GNU_SOURCE
+#include "../windoze.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include "../wordexp.h"
+#include <io.h>
 
-#ifndef HAVE_GETDELIM
+#if !defined(HAVE_GETDELIM) && !defined(__LCC__)
 
 ssize_t
 getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {

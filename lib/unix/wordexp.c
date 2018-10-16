@@ -13,6 +13,7 @@
 
 #if WINDOWS_NATIVE
 #include <process.h>
+#include <io.h>
 #endif
 
 #ifndef SIGKILL
@@ -27,7 +28,10 @@
 #define SSIZE_MAX LONG_MAX
 #endif
 
+#if !defined(HAVE_GETDELIM) && !defined(__LCC__)
 extern ssize_t getdelim(char**, size_t*, int, FILE*);
+#endif
+
 extern int pipe2(int[2], int);
 
 #if defined(__MINGW32__) || defined(__MINGW64__)

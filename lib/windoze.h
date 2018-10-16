@@ -24,7 +24,10 @@ extern "C" {
 #if WINDOWS_NATIVE
 size_t getpagesize();
 
+#if 0 // !MINGW
 #define getpid() GetCurrentProcessId()
+#endif
+
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
 

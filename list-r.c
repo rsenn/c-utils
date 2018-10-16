@@ -35,6 +35,7 @@
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/uint64.h"
+#include "lib/ioctlcmd.h"
 #include <errno.h>
 #include <string.h>
 #include <sys/stat.h>

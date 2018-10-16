@@ -10,7 +10,8 @@ stralloc_expand(stralloc* sa) {
   s = sa->s;
   n = sa->len * 2 + 4;
 
-  sa->s = sa->len = sa->a = 0;
+  sa->s = 0;
+  sa->len = sa->a = 0;
 
   do {
     /* reserve some space */

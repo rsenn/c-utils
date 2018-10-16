@@ -286,8 +286,11 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
         }
 
         /* Synthesis the pattern result. */
-        pp[0 + pglob->gl_offs] = str_copy((char*)(pp + 2 + pglob->gl_offs), effectivePattern);
-        pp[1 + pglob->gl_offs] = NULL;
+        
+        pp[pglob->gl_offs] = (char*)(pp + 2 + pglob->gl_offs);
+        pp[pglob->gl_offs + 1] = NULL;
+        
+        str_copy(pp[pglob->gl_offs], effectivePattern);
 
         /* Return results to caller. */
         pglob->gl_pathc = 1;

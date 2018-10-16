@@ -1,6 +1,8 @@
 #ifndef H_IOCTLCMD
 #define H_IOCTLCMD 1
 
+#include "windoze.h"
+
 #if !WINDOWS_NATIVE
 typedef UCHAR BYTE;
 typedef USHORT WORD;
@@ -51,6 +53,10 @@ typedef struct _REPARSE_DATA_BUFFER {
 #define IO_REPARSE_TAG_SYMLINK 0xA000000CL
 #endif
 
+#ifndef IO_REPARSE_TAG_SIS
+#define IO_REPARSE_TAG_SIS 0x80000007L
+#endif
+
 #undef FSCTL_SET_REPARSE_POINT
 #undef FSCTL_GET_REPARSE_POINT
 #undef FSCTL_DELETE_REPARSE_POINT
@@ -88,4 +94,3 @@ union REPARSE_DATA_BUFFER_UNION {
 };
 
 #endif
-

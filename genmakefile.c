@@ -684,8 +684,8 @@ set_type(const char* type) {
 
     push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
 
-    push_var("CFLAGS", "-q -tWC -tWM -O1");
-    push_var("CPPFLAGS", "-Dinline=__inline");
+    push_var("CFLAGS", "-q -W -tWC -tWM -O2");
+   //push_var("CPPFLAGS", "-Dinline=__inline");
 
     if(str_find(type, "55") == str_len(type)) {
       set_var("CC", "bcc32c");

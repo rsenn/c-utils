@@ -1,9 +1,10 @@
+#include <sys/stat.h>
+#include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/errmsg.h"
 #include "lib/path.h"
 #include <ctype.h>
-#include <sys/stat.h>
 
 extern int symlink(const char*, const char*);
 

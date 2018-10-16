@@ -175,7 +175,7 @@ read_mediathek_list(const char* url) {
   {
     static FILE* pfd;
 
-    if((pfd = popen(cmd.s, "r")) == 0) return -1;
+    if((pfd = (void*)popen(cmd.s, "r")) == 0) return -1;
 
     return fileno(pfd);
   }

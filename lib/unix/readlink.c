@@ -3,6 +3,7 @@
 
 #if WINDOWS
 
+#include "../utf8.h"
 #include "../ioctlcmd.h"
 #include <stdio.h>
 #include <windows.h>
@@ -24,14 +25,14 @@ get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
   }
 
   hFile =
-      CreateFile(LinkPath, 0, 0, NULL, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, NULL);
+      CreateFile(LinkPath, 0, 0, 0, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, 0);
 
   if(hFile == INVALID_HANDLE_VALUE) {
     return FALSE;
   }
 
   /* Get the link */
-  if(!DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, NULL, 0, &u->iobuf, 1024, &returnedLength, NULL)) {
+  if(!DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, 0, 0, &u->iobuf, 1024, &returnedLength, 0)) {
 
     CloseHandle(hFile);
     return FALSE;
@@ -50,7 +51,7 @@ get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
 ssize_t
 readlink(const char* LinkPath, char* buf, size_t maxlen) {
   union REPARSE_DATA_BUFFER_UNION u;
-  wchar_t *wbuf = NULL;
+  wchar_t *wbuf = 0;
   unsigned int u8len, len, wlen;
 
   if(!get_reparse_data(LinkPath, &u)) {
@@ -72,7 +73,7 @@ readlink(const char* LinkPath, char* buf, size_t maxlen) {
     }
   }
 
-  if(!wbuf) return NULL;
+  if(!wbuf) return 0;
 
   for(len = 0; len < wlen; ++len) {
     u8len += wcu8len(wbuf[len]);

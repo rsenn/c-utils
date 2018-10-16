@@ -62,7 +62,7 @@ buffer_backup(buffer* b) {
   stralloc_init(&orig);
   stralloc_init(&backup);
 
-  if(b->op == (void*)&buffer_dummyreadmmap) {
+  if(b->op == (buffer_op_proto*)&buffer_dummyreadmmap) {
     buffer_munmap(b);
   }
   buffer_filename(b, &orig);

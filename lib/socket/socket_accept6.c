@@ -1,4 +1,4 @@
-#define USE_WS2_32 1
+//#define USE_WS2_32 1
 #include "../socket.h"
 #include "../io_internal.h"
 #include "../ip6.h"
@@ -49,7 +49,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
     /* no accept queued, queue one now. */
     if(e->next_accept == 0) {
       e->next_accept = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-      if(e == -1) return winsock2errno(-1);
+      if(e == INVALID_HANDLE_VALUE) return winsock2errno(-1);
     }
     if(AcceptEx(s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or)) goto incoming;
     if(WSAGetLastError() != ERROR_IO_PENDING) return winsock2errno(-1);

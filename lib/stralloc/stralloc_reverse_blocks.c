@@ -3,6 +3,7 @@
 
 #include "../byte.h"
 #include "../stralloc.h"
+#include <stdlib.h>
 
 void
 stralloc_reverse_blocks(stralloc* sa, size_t size) {

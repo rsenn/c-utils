@@ -233,8 +233,8 @@ int
 registry_query(const char* key, const char* value, stralloc* sa) {
   HKEY hkey;
   DWORD len,ret, type;
-  typedef WINADVAPI LONG APIENTRY (reggetvalue_fn) (HKEY,LPCSTR,LPCSTR,DWORD,DWORD*,void*,DWORD*);
-  static reggetvalue_fn* api_fn;
+  typedef LONG (WINAPI* reggetvalue_fn) (HKEY,LPCSTR,LPCSTR,DWORD,DWORD*,void*,DWORD*);
+  static reggetvalue_fn api_fn;
 
   if(!api_fn) {
     HANDLE advapi;

@@ -33,6 +33,10 @@
  */
  #include "windoze.h"
 
+#ifdef __MSVCRT__
+#define HAVE_POPEN 1
+#endif
+
 #if !defined( HAVE_POPEN) //|| (defined(__CYGWIN__) && defined(__amd64__))
 #include <errno.h>
 #include <signal.h>
