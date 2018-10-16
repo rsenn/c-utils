@@ -1794,5 +1794,3 @@ $(BUILDDIR)glob.o: lib/strarray/glob.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strarray_glob.o: lib/strarray/strarray_glob.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)strarray_glob.o: lib/strarray/strarray_glob.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

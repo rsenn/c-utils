@@ -733,6 +733,7 @@ set_type(const char* type) {
 
   push_lib("EXTRA_LIBS", "ws2_32");
   push_lib("EXTRA_LIBS", "iphlpapi");
+  push_lib("EXTRA_LIBS", "psapi");
 
   return 1;
 }
@@ -744,6 +745,8 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   const char* outdir = NULL;
+  strarray args;
+
   struct longopt opts[] = {
     {"help", 0, NULL, 'h'},
     {"objext", 0, NULL, 'O'},
@@ -789,9 +792,20 @@ main(int argc, char* argv[]) {
   if(outdir)
     stralloc_copys(&builddir, outdir);
 
+  strarray_init(&args);
   strarray_init(&srcs);
 
+   while(optind < argc) {
+#if WINDOWS_NATIVE && !MINGW
+     if(str_rchrs(argv[optind], "*?") < str_len(argv[optind]))
+       strarray_glob(&args, argv[optind]);
+     else
+#endif
+     strarray_push(&args, argv[optind]);
+   }
+
   {
+    char** arg;
     HMAP_DB* sourcedirs;
     rule_t* all = get_rule("all");
 
@@ -807,13 +821,11 @@ main(int argc, char* argv[]) {
 
     hmap_init(1024, &sourcedirs);
 
-    while(optind < argc) {
-      if(str_end(argv[optind], ".c"))
-        add_source(argv[optind], &srcs);
+    strarray_foreach(&args, arg) {
+      if(str_end(*arg, ".c"))
+        add_source(*arg, &srcs);
       else
-        get_sources(argv[optind], &srcs);
-
-      ++optind;
+        get_sources(*arg, &srcs);
     }
 
     populate_sourcedirs(&srcs, sourcedirs);

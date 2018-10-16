@@ -57,6 +57,10 @@ getpagesize() {
 
 #if WINDOWS_NATIVE
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#define MINGW 1
+#endif
+
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
 #endif
