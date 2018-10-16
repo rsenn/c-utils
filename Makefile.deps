@@ -592,8 +592,6 @@ $(BUILDDIR)getenv.o: lib/getenv.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)getopt.o: lib/getopt.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)glob.o: lib/glob.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)gpio_init.o: lib/gpio/gpio_init.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)gpio_read.o: lib/gpio/gpio_read.c
@@ -1791,4 +1789,10 @@ $(BUILDDIR)xmltest4.o: xmltest4.c
 $(BUILDDIR)ziptest.o: ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)fnmatch.o: lib/strarray/fnmatch.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)glob.o: lib/strarray/glob.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_glob.o: lib/strarray/strarray_glob.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strarray_glob.o: lib/strarray/strarray_glob.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

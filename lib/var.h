@@ -78,3 +78,4 @@ void var_print(struct var *var, int flags);
 void var_unset(char *v);
 
 #endif /* VAR_H */
+

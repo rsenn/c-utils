@@ -56,7 +56,10 @@ int strarray_joins(strarray* arr, stralloc* sa, const char* sep);
 int strarray_transform(strarray* in,  strarray* out, char* (*pred)(const char*));
 int strarray_each(strarray* arr, void (*pred)(char** ));
 
+int strarray_glob(strarray* arr, const char* pattern);
+
 #ifdef __cplusplus
 }
 #endif
 #endif /* defined(STRARRAY_H) */
+

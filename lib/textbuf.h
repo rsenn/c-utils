@@ -26,3 +26,4 @@ ssize_t  textbuf_read  (fd_t, char*, size_t, void*);
 }
 #endif
 #endif /* defined TEXTBUF_H */
+

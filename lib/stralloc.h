@@ -233,12 +233,16 @@ int stralloc_prependb(stralloc* sa, const char* s, size_t n);
 int stralloc_prepends(stralloc* sa, const char* s);
 int stralloc_prepend(stralloc* sa, const stralloc* other);
 
+unsigned int stralloc_ends(const stralloc* sa, const stralloc* suffix);
+
+int stralloc_expand(stralloc* sa);
+
+int stralloc_catwcb(stralloc* sa, const wchar_t* buf, size_t len);
+int stralloc_catwcs(stralloc* sa, const wchar_t* buf);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-unsigned int stralloc_ends(const stralloc* sa, const stralloc* suffix);
-int stralloc_expand(stralloc* sa);
-int stralloc_catwcb(stralloc* sa, const wchar_t* buf, size_t len);
-int stralloc_catwcs(stralloc* sa, const wchar_t* buf);
+

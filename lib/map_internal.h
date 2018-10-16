@@ -86,3 +86,4 @@ map_resize(map_base_t* m, int nbuckets) {
   /* Return error code if realloc() failed */
   return (buckets == NULL) ? -1 : 0;
 }
+

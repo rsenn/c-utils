@@ -1,7 +1,12 @@
+#include "../windoze.h"
+#include "../socket.h"
 #include "../buffer.h"
 #include "../http.h"
 #include "../io.h"
-#include "../socket.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#endif
 
 ssize_t
 http_recv(fd_t fd, void* buf, size_t len, void* b) {

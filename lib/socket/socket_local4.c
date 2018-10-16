@@ -1,16 +1,12 @@
 #include "../windoze.h"
+#include "../byte.h"
+#include "../socket.h"
 
-#include "../windoze.h"
-
-#if WINDOWS_NATIVE 
-#include <winsock.h>
-#else
+#if !WINDOWS_NATIVE 
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #endif
-#include "../byte.h"
-#include "../socket.h"
 
 int
 socket_local4(int s, char ip[4], uint16* port) {

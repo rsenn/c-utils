@@ -146,3 +146,4 @@ xmlnode* xml_find_parent(xmlnode*, const char* tag);
 }
 #endif
 #endif /* LIB_XML_H_ */
+

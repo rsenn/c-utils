@@ -93,3 +93,4 @@ slist_iterator_equal(slink** list, slink** it1, slink** it2) {
 }
 #endif
 #endif /* defined(SLIST_H) */
+

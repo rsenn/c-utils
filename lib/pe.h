@@ -444,8 +444,10 @@ pe_section_header* pe_header_sections(void*, int* nsections);
 #define PE_64(pe) (PE_MAGIC(pe) == PE_MAGIC_PE64)
 #define PE_32(pe) (PE_MAGIC(pe) == PE_MAGIC_PE32)
 
+uint64 pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+
 #ifdef __cplusplus
 }
 #endif
 #endif /* defined PE_H */
-uint64 pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+

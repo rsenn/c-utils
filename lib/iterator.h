@@ -71,3 +71,4 @@ extern "C" {
 #endif /* defined(HAVE_C11_GENERICS) */
 
 #endif /* defined __ITERATOR_H */
+

@@ -566,3 +566,4 @@ typedef struct macho_nlist {
 #define MACHO_N_INDR  0xa             /* indirect */
 
 #endif
+

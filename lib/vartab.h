@@ -47,3 +47,4 @@ void vartab_print(int flags);
 void vartab_dump(struct vartab *vartab);
 
 #endif /* VARTAB_H */
+

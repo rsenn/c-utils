@@ -1,14 +1,14 @@
 #include "../windoze.h"
+#include "../socket.h"
+#include "../byte.h"
+#include "../uint16.h"
+#include "../uint32.h"
 
 #if !WINDOWS_NATIVE
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #endif
-#include "../byte.h"
-#include "../socket.h"
-#include "../uint16.h"
-#include "../uint32.h"
 
 int
 socket_bind4(int s, const char* ip, uint16 port) {

@@ -49,3 +49,4 @@ int  charbuf_skip(charbuf*);
 #endif
 
 #endif /* defined CHARBUF_H */
+

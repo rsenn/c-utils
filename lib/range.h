@@ -41,3 +41,4 @@ static inline void* range_next(range* r, void* ptr) { return (char*)ptr + r->ele
 }
 #endif
 #endif /* defined RANGE_H */
+

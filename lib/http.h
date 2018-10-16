@@ -76,11 +76,13 @@ int http_sendreq(http *h);
 void http_readable();
 void http_writeable();
 
+ssize_t http_recv(fd_t fd, void* buf, size_t len, void* b);
+ssize_t http_send(fd_t fd, void* buf, size_t len, void* b);
+int     http_socket(http* h);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* defined HTTP_H */
-ssize_t http_recv(fd_t fd, void* buf, size_t len, void* b);
-ssize_t http_send(fd_t fd, void* buf, size_t len, void* b);
-int     http_socket(http* h);
+

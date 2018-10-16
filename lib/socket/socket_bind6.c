@@ -1,19 +1,13 @@
 #include "../windoze.h"
+#include "../socket.h"
+#include "../byte.h"
+#include "../ip6.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
-
-#if WINDOWS_NATIVE
-#include <winsock.h>
-#else
+#if !WINDOWS_NATIVE
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #endif
-#include "../byte.h"
-#include "../ip6.h"
-#include "../socket.h"
 #include <errno.h>
 
 int

@@ -5,8 +5,8 @@
 #include "windoze.h"
 
 #if WINDOWS_NATIVE
-//#define _WINSOCKAPI_
-//#include <winsock2.h>
+#define _WINSOCKAPI_
+#include <winsock2.h>
 #else
 #include <sys/types.h>
 #include <sys/param.h>
@@ -156,3 +156,4 @@ const char* socket_ip4loopback();
 #endif
 
 #endif
+

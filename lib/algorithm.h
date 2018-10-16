@@ -15,3 +15,4 @@ extern "C" {
 }
 #endif
 #endif /* defined ALGORITHM_H */
+

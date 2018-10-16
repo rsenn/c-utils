@@ -77,3 +77,4 @@ union node* expand_command(struct nargcmd*, union node**, struct vartab*, int fl
 #endif
 
 #endif /* EXPAND_H */
+

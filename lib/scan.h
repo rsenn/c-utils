@@ -111,3 +111,4 @@ size_t scan_xmlescape(const char *src, char *dest);
 #endif
 
 #endif
+

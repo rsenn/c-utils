@@ -73,6 +73,9 @@ void
 format_linklib_switch(const char* libname, stralloc* out) {
   stralloc_cats(out, "-l");
   stralloc_cats(out, libname);
+
+  if(stralloc_endb(out, "lib", 3))
+    out->len -= 3;
 }
 
 /**
@@ -233,6 +236,11 @@ push_var(const char* name, const char* value) {
   strlist_push_unique(var, value);
 }
 
+void
+push_var_sa(const char* name, stralloc* value) {
+  strlist_push_unique_sa(get_var(name), value);
+}
+
 /**
  * Add library spec to variable
  */
@@ -244,6 +252,22 @@ push_lib(const char* name, const char* lib) {
     stralloc_catc(&var->sa, var->sep);
 
   format_linklib_fn(lib, &var->sa);
+}
+
+void
+with_lib(const char* lib) {
+  stralloc def;
+  stralloc_init(&def);
+  stralloc_copys(&def, "-DHAVE_");
+  if(str_find(lib, "lib") == str_len(lib))
+    stralloc_cats(&def, "LIB");
+  stralloc_cats(&def, lib);
+  stralloc_cats(&def, "=1");
+  byte_upper(def.s, def.len);
+
+  push_var_sa("DEFS", &def);
+
+  push_lib("LIBS", lib);
 }
 
 /**
@@ -628,83 +652,84 @@ set_type(const char* type) {
 
     format_linklib_fn = &format_linklib_switch;
 
-  } else
-
     /*
      * Visual C++ compiler
      */
-    if(str_start(type, "msvc") || str_start(type, "icl")) {
+  } else    if(str_start(type, "msvc") || str_start(type, "icl")) {
 
-      set_var("CC", "cl");
-      set_var("LIB", "lib");
-      set_var("LINK", "link");
+    set_var("CC", "cl");
+    set_var("LIB", "lib");
+    set_var("LINK", "link");
 
-      stralloc_copys(&link_command, "$(LINK) /OUT:$@ @<<\n\t\t$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)\n<<");
-      stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
+    stralloc_copys(&link_command, "$(LINK) /OUT:$@ @<<\n\t\t$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)\n<<");
+    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
-      /*
-       * Intel C++ compiler
-       */
-      if(str_start(type, "icl")) {
-        set_var("CC", "icl");
-        set_var("CXX", "icl");
+    /*
+     * Intel C++ compiler
+     */
+    if(str_start(type, "icl")) {
+      set_var("CC", "icl");
+      set_var("CXX", "icl");
 
-        set_var("LINK", "xilink");
-        set_var("LIB", "xilib");
+      set_var("LINK", "xilink");
+      set_var("LIB", "xilib");
 
-        push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
-      }
-    } else
+      push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
+    }
 
-      /*
-       * Borland C++ Builder
-       */
-      if(str_start(type, "bcc")) {
+    /*
+     * Borland C++ Builder
+     */
+  } else if(str_start(type, "bcc")) {
 
-        push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
+    push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
 
-        if(!str_find(type, "55")) {
-          set_var("CC", "bcc32c");
-          set_var("CXX", "bcc32x");
+    push_var("CFLAGS", "-q -tWC -tWM -O1");
+    push_var("CPPFLAGS", "-Dinline=__inline");
 
-          stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o $@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS)\n|");
-        } else {
-          set_var("CC", "bcc32");
-          set_var("CXX", "bcc32");
+    if(str_find(type, "55") == str_len(type)) {
+      set_var("CC", "bcc32c");
+      set_var("CXX", "bcc32x");
 
-          stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
-          stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -e$@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS)\n|");
-        }
+      stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o $@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)\n|");
+    } else {
+      set_var("CC", "bcc32");
+      set_var("CXX", "bcc32");
 
-        set_var("LINK", "ilink32");
-        set_var("LIB", "tlib");
+      push_var("CFLAGS", "-ff -fp");
 
-        push_var("CFLAGS", "-q -tWC -tWM -O1 -ff -fp");
-        push_var("CPPFLAGS", "-Dinline=__inline");
+      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
+      stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -e$@ @&&|\n$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)\n|");
+    }
 
-        push_var("LIBS", "cw32.lib import32.lib");
+    set_var("LINK", "ilink32");
+    set_var("LIB", "tlib");
 
-        stralloc_copys(&lib_command, "$(LIB) @&&|\n\t/a /u \"$@\" $^\n|");
+    push_lib("STDC_LIBS", "cw32");
+    push_lib("STDC_LIBS", "import32");
 
-      } else
+    stralloc_copys(&lib_command, "$(LIB) @&&|\n\t/a /u \"$@\" $^\n|");
 
-        /*
-         * LCC compiler
-         */
-        if(str_start(type, "lcc")) {
+    /*
+     * LCC compiler
+     */
+  } else if(str_start(type, "lcc")) {
 
-          set_var("CC", "lcc");
+    set_var("CC", "lcc");
 
-        } else
+    /*
+     * Tiny CC compiler
+     */
+  } else   if(str_start(type, "tcc")) {
+    set_var("CC", "tcc");
 
-          /*
-           * Tiny CC compiler
-           */
-          if(str_start(type, "tcc")) {
-            set_var("CC", "tcc");
+  } else {
+    return 0;
+  }
 
-          } else
-            return 0;
+   with_lib("zlib");
+   with_lib("bz2");
+   with_lib("lzma");
 
   push_lib("EXTRA_LIBS", "ws2_32");
   push_lib("EXTRA_LIBS", "iphlpapi");

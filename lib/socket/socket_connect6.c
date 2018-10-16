@@ -1,22 +1,16 @@
 #include "../windoze.h"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
-
+#include "../socket.h"
+#include "../ip6.h"
+#include "../uint16.h"
+#include "../uint32.h"
 #include "../byte.h"
-#if WINDOWS_NATIVE 
-#include <winsock.h>
-#else
+#include <errno.h>
+
+#if !WINDOWS_NATIVE 
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #endif
-#include "../ip6.h"
-#include "../socket.h"
-#include "../uint16.h"
-#include "../uint32.h"
-#include <errno.h>
 
 int socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
 #ifdef LIBC_HAS_IP6

@@ -172,3 +172,4 @@ size_t fmt_escapecharxml(char*, unsigned int ch);
 }
 #endif
 #endif /* defined FMT_H */
+

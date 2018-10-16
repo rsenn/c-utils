@@ -1,5 +1,4 @@
 #include "../windoze.h"
-
 #include "../socket.h"
 #include "../byte.h"
 #include "../uint16.h"

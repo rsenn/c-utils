@@ -97,3 +97,4 @@ uint16 uint16_read(const char*);
 #endif
 
 #endif
+

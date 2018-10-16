@@ -40,3 +40,4 @@ void gpio_write(int const pin_nr, int const high);
  */
 
 #endif
+

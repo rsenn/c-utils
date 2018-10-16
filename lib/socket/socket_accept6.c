@@ -1,30 +1,27 @@
 #include "../windoze.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
-
 #if WINDOWS_NATIVE
-#include <winsock.h>
+#include <winsock2.h>
+#define _WINSOCKAPI_
 typedef int socklen_t;
-#define EAGAIN EWOULDBLOCK
-#endif
-#include <sys/types.h>
-#if !WINDOWS
+#else
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #endif
-#include "../io_internal.h"
-#include "../byte.h"
-#include "../ip6.h"
+
 #include "../socket.h"
+#include "../ip6.h"
 #include "../uint64.h"
-/*
-#if WINDOWS
+#include "../byte.h"
+
+#if WINDOWS_NATIVE
+#include "../io_internal.h"
 #include <errno.h>
+#include <mswsock.h>
 #include <stdio.h>
 #include <windows.h>
-#endif*/
+#endif
 
 int
 socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
