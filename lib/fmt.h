@@ -111,20 +111,20 @@ size_t fmt_strm_internal(char* dest, ...);
 #endif
 
 #ifdef __BORLANDC__
-#define fmt_strm_alloca(a, args)                                                                                        \
-  ({                                                                                                                   \
-    size_t len = fmt_strm((char*)0, a, args) + 1;                                                               \
-    char* c = (len < MAX_ALLOCA ? alloca(len) : 0);                                                                    \
-    if(c) c[fmt_strm(c, a, args)] = 0;                                                                          \
-    c;                                                                                                                 \
+#define fmt_strm_alloca(a, args) \
+  ({ \
+    size_t len = fmt_strm((char*)0, a, args) + 1; \
+    char* c = (len < MAX_ALLOCA ? alloca(len) : 0); \
+    if(c) c[fmt_strm(c, a, args)] = 0; \
+    c; \
   })
 #else
-#define fmt_strm_alloca(a, ...)                                                                                        \
-  ({                                                                                                                   \
-    size_t len = fmt_strm((char*)0, a, __VA_ARGS__) + 1;                                                               \
-    char* c = (len < MAX_ALLOCA ? alloca(len) : 0);                                                                    \
-    if(c) c[fmt_strm(c, a, __VA_ARGS__)] = 0;                                                                          \
-    c;                                                                                                                 \
+#define fmt_strm_alloca(a, ...) \
+  ({ \
+    size_t len = fmt_strm((char*)0, a, __VA_ARGS__) + 1; \
+    char* c = (len < MAX_ALLOCA ? alloca(len) : 0); \
+    if(c) c[fmt_strm(c, a, __VA_ARGS__)] = 0; \
+    c; \
   })
 #endif
 
@@ -149,4 +149,3 @@ size_t fmt_escapecharxml(char*, unsigned int ch);
 }
 #endif
 #endif /* defined FMT_H */
-
