@@ -2,6 +2,7 @@
 #define _PATH_H__
 
 #include "stralloc.h"
+#include "str.h"
 
 #ifdef __cplusplus
 extern "C" {

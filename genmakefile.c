@@ -12,11 +12,17 @@
 #include "lib/strlist.h"
 #include "lib/windoze.h"
 
+#define MAX_CMD_LEN 8191
+
 #if WINDOWS
+#define MAX_CMD_LEN 1023
+
 #define DEFAULT_OBJEXT ".obj"
 #define DEFAULT_LIBEXT ".lib"
 #define DEFAULT_EXEEXT ".exe"
 #else
+#define MAX_CMD_LEN 8191
+
 #define DEFAULT_OBJEXT ".o"
 #define DEFAULT_LIBEXT ".a"
 #define DEFAULT_EXEEXT ""
@@ -97,10 +103,10 @@ scan_main(const char* x, size_t n) {
   while(n) {
     size_t i = byte_finds(x, n, "main");
     if(i + 5 >= n) return 0;
-    if(i > 4 && !isspace(x[i - 1])) continue;
     i += 4;
     x += i;
     n -= i;
+    if(i > 4 && !isspace(*(x - 5))) continue;
     if((i = scan_whitenskip(x, n)) == n) break;
     x += i;
     n -= i;
@@ -583,7 +589,7 @@ lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     const char* base = str_basename(t->key);
     rule_t* rule;
 
-    if(str_equal(base, "lib") || base[0] == '\0') continue;
+    if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0') continue;
 
     strlist_zero(&lib);
     strlist_push_sa(&lib, &builddir);
@@ -659,6 +665,7 @@ usage(char* argv0) {
                        "\n",
                        "Options\n",
                        "  -h, --help                show this help\n",
+                       "  -o, --output FILE         write to file\n"
                        "  -O, --objext EXT          object file extension\n",
                        "  -B, --exeext EXT          binary file extension\n",
                        "  -L, --libext EXT          library file extension\n",
@@ -838,7 +845,7 @@ main(int argc, char* argv[]) {
   static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
   int c;
   int ret = 0, index = 0;
-  const char* outdir = NULL;
+  const char *outfile = NULL, * outdir = NULL;
   strlist workdir;
   strarray args;
 
@@ -858,12 +865,13 @@ main(int argc, char* argv[]) {
                            {0}};
 
   for(;;) {
-    c = getopt_long(argc, argv, "hO:B:L:d:t:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:", opts, &index);
     if(c == -1) break;
     if(c == 0) continue;
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
+      case 'o': outfile = optarg; break;
       case 'O': objext = optarg; break;
       case 'B': binext = optarg; break;
       case 'L': libext = optarg; break;
@@ -874,6 +882,7 @@ main(int argc, char* argv[]) {
   }
 
   if(!cmd_bins && !cmd_libs && !cmd_objs) {
+    cmd_bins = 1;
     cmd_objs = 1;
     cmd_libs = 1;
   }
@@ -883,6 +892,12 @@ main(int argc, char* argv[]) {
   if(!set_type(type)) {
     usage(argv[0]);
     return 2;
+  }
+
+  if(outfile) {
+    int fd;
+    if((fd = open_trunc(outfile)) != -1)
+      buffer_1->fd = fd;
   }
 
   strlist_init(&workdir, pathsep);
@@ -969,7 +984,7 @@ main(int argc, char* argv[]) {
 
         if(rule->cmd == 0) continue;
 
-        if(delete_command.len - lineoffs + str_len(t->key) >= 8191) {
+        if(delete_command.len - lineoffs + str_len(t->key) >= MAX_CMD_LEN) {
           stralloc_cats(&delete_command, "\n\tDEL /F /Q");
           lineoffs = delete_command.len;
         }
