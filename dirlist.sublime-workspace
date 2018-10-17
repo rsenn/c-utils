@@ -15,25 +15,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 18982,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
-			"settings":
-			{
-				"buffer_size": 724,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "dirlist.sublime-project",
-			"settings":
-			{
-				"buffer_size": 2199,
+				"buffer_size": 19838,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -92,7 +74,7 @@
 		[
 			[
 				"Package Control: ",
-				"Package Control: Discover Packages"
+				"Package Control: Install Package"
 			],
 			[
 				"insta",
@@ -150,11 +132,14 @@
 	},
 	"expanded_folders":
 	[
-		"/D/Sources/rsenn/dirlist",
-		"/D/Sources/rsenn/dirlist/lib"
+		"/C/Users/roman/Desktop/dirlist",
+		"/C/Users/roman/Desktop/dirlist/lib",
+		"/C/Users/roman/Desktop/dirlist/lib/path"
 	],
 	"file_history":
 	[
+		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/Schemr/Default (Windows).sublime-keymap",
 		"/D/Sources/rsenn/dirlist/scripts/gen-a-deps.sh",
 		"/D/Sources/rsenn/dirlist/rdir-test.c",
@@ -280,9 +265,7 @@
 		"/C/Users/roman/Documents/pictest/src/config-18f25k50.h",
 		"/E/Sources/pictest/src/pictest.c",
 		"/E/Sources/pictest/build/vars.mk",
-		"/E/Sources/pictest/config-18f25k22.h",
-		"/E/Sources/pictest/config-16f876a.h",
-		"/E/Sources/pictest/pictest.c"
+		"/E/Sources/pictest/config-18f25k22.h"
 	],
 	"find":
 	{
@@ -443,15 +426,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 18982,
+						"buffer_size": 19838,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								15086,
-								15086
+								235,
+								235
 							]
 						],
 						"settings":
@@ -461,68 +444,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 8983.0,
+						"translation.y": 7463.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 724,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								365,
-								365
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "dirlist.sublime-project",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2199,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								97,
-								97
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
 					"type": "text"
 				}
 			]

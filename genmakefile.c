@@ -533,8 +533,9 @@ link_rules(HMAP_DB* rules, strarray* sources) {
 void
 lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   TUPLE* t;
-  stralloc lib, obj;
-  stralloc_init(&lib);
+  strlist lib;
+  stralloc obj;
+  strlist_init(&lib, pathsep);
   stralloc_init(&obj);
 
   hmap_foreach(srcdirs, t) {
@@ -544,12 +545,12 @@ lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
 
     if(str_equal(base, "lib") || base[0] == '\0') continue;
 
-    stralloc_zero(&lib);
-    stralloc_cat(&lib, &builddir.sa);
-    stralloc_cats(&lib, base);
-    stralloc_cats(&lib, libext);
+    strlist_zero(&lib);
+    strlist_push_sa(&lib, &builddir);
+    strlist_push(&lib, base);
+    stralloc_cats(&lib.sa, libext);
 
-    if((rule = get_rule_sa(&lib))) {
+    if((rule = get_rule_sa(&lib.sa))) {
       sourcefile_t* pfile;
       strlist_init(&rule->deps, ' ');
 
@@ -563,7 +564,7 @@ lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     }
   }
 
-  stralloc_free(&lib);
+  strlist_free(&lib);
   stralloc_free(&obj);
 }
 
@@ -631,7 +632,9 @@ usage(char* argv0) {
                        "     bcc55       Borland C++ Builder 5.5\n"
                        "     bcc32       Borland C++ Builder new\n"
                        "     lcc         lcc make\n"
+                       "     tcc         Tinycc make\n"
                        "     msvc        Visual C++ NMake\n"
+                       "     icl         Intel C++ NMake\n"
                        "\n",
                        0);
   buffer_putnlflush(buffer_1);
@@ -796,6 +799,7 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   const char* outdir = NULL;
+  strlist workdir;
   strarray args;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
@@ -835,17 +839,23 @@ main(int argc, char* argv[]) {
     cmd_libs = 1;
   }
 
-  if(!format_linklib_fn) format_linklib_fn = &format_linklib_lib;
+  if(!format_linklib_fn) format_linklib_fn = &format_linklib_lib; 
 
   if(!set_type(type)) {
     usage(argv[0]);
     return 2;
   }
 
+  strlist_init(&workdir, pathsep);
+  path_getcwd(&workdir.sa);
+
   strlist_init(&builddir, pathsep);
-  strlist_push(&builddir, outdir ? outdir : "build");
-  strlist_push(&builddir, type);
-  strlist_push(&builddir, build_types[build_type]);
+
+  if(!strlist_contains(&workdir, "build")) {
+    strlist_push(&builddir, outdir ? outdir : "build");
+    strlist_push(&builddir, type);
+    strlist_push(&builddir, build_types[build_type]);
+  }
 
   strarray_init(&args);
   strarray_init(&srcs);
@@ -894,15 +904,29 @@ main(int argc, char* argv[]) {
     populate_sourcedirs(&srcs, sourcedirs);
 
     if(cmd_objs) compile_rules(rules, &srcs);
-    lib_rules(rules, sourcedirs);
-
-    link_rules(rules, &srcs);
+    if(cmd_libs) lib_rules(rules, sourcedirs);
+    if(cmd_bins) link_rules(rules, &srcs);
 
     if((rule = get_rule("clean"))) {
-      strlist_push(&builddir, "*");
+      TUPLE* t;
 
-      stralloc_copys(&delete_command, "DEL /F /Q ");
-      stralloc_cat(&delete_command, &builddir.sa);
+      stralloc_copys(&delete_command, "DEL /F /Q");
+
+      hmap_foreach(rules, t) {
+        if(stralloc_equals(&builddir.sa, t->key))
+          continue;
+
+        rule = hmap_data(t);
+
+      if(strlist_count(&rule->deps) == 0)
+        continue;
+
+      if(rule->cmd == 0)
+        continue;
+
+        stralloc_catc(&delete_command, ' ');
+        stralloc_cats(&delete_command, t->key);
+      }
 
       rule->cmd = &delete_command;
     }
