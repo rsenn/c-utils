@@ -11,5 +11,5 @@ str_rchrs(const char* in, char needles[], size_t nn) {
     }
     ++s;
   }
-  return (size_t)((found ? found : in) - in);
+  return (size_t)((found ? found : s) - in);
 }

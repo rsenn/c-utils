@@ -1,4 +1,5 @@
 #include "lib/getopt.h"
+#include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/hmap.h"
 #include "lib/mmap.h"
@@ -92,28 +93,67 @@ format_linklib_switch(const char* libname, stralloc* out) {
  * Checks if the given source file contains a main() function
  */
 int
+scan_main(const char* x, size_t n) {
+  while(n) {
+    size_t i = byte_finds(x, n, "main");
+    if(i + 5 >= n) return 0;
+    if(i > 4 && !isspace(x[i - 1])) continue;
+    i += 4;
+    x += i;
+    n -= i;
+    if((i = scan_whitenskip(x, n)) == n) break;
+    x += i;
+    n -= i;
+    if(*x == '(') return 1;
+  }
+  return 0;
+}
+
+int
 has_main(const char* filename) {
-  char* m;
-  size_t i, n;
-  if((m = mmap_read(filename, &n))) {
-    size_t i = 0;
-    int ret = 0;
-    do {
-      i += byte_finds(m + i, n - i, "main");
-      if(i == n) break;
-      i += 4;
-      if(!isspace(m[i - 5])) continue;
-      i += scan_whitenskip(m + i, n - i);
-      if(i == n) break;
-      if(m[i] == '(') {
-        ret = 1;
-        break;
-      }
-    } while(i < n);
-    mmap_unmap(m, n);
+  char* x;
+  size_t n;
+  if((x = mmap_read(filename, &n))) {
+    int ret = scan_main(x, n);
+    mmap_unmap(x, n);
     return ret;
   }
   return -1;
+}
+
+/**
+ * Extract #include directives
+ */
+void
+extract_includes(const char* x, size_t n, strlist* includes) {
+  while(n) {
+    size_t i;
+    if((i = scan_charsetnskip(x, " \t\r", n)) == n) break;
+    x += i;
+    n -= i;
+    if(*x == '#') {
+      if((i = scan_charsetnskip(x, " \t\r", n) + 7) >= n) break;
+      x += i;
+      n -= i;
+      if(!str_diffn(x - 7, "include", 7)) {
+        if((i = scan_charsetnskip(x, " \t\r", n) + 1) >= n) break;
+        x += i;
+        n -= i;
+        quote = *(x - 1);
+        if(quote == '<' || quote == '"') {
+          char set[3];
+          set[0] = (quote == '<' ? '>' : '"');
+          set[1] = '\n';
+          set[2] = '\0';
+          if((i = scan_noncharsetnskip(x, set, n)) >= n) break;
+          strlist_pushb(includes, x, i);
+        }
+      }
+    }
+    if((i = byte_chr(x, '\n') + 1) >= n) break;
+    x += i;
+    n -= i;
+  }
 }
 
 /**
@@ -129,20 +169,20 @@ rule_command(rule_t* rule, stralloc* out) {
 
     if(i + 2 <= in->len && *p == '$' && str_chr("@^<", p[1]) < 3) {
       switch(p[1]) {
-      case '@': {
-        stralloc_cats(out, rule->name);
-        break;
-      }
-      case '^': {
-        stralloc_cat(out, &rule->deps.sa);
-        break;
-      }
-      case '<': {
-        size_t n;
-        const char* s = strlist_at_n(&rule->deps, 0, &n);
-        stralloc_catb(out, s, n);
-        break;
-      }
+        case '@': {
+          stralloc_cats(out, rule->name);
+          break;
+        }
+        case '^': {
+          stralloc_cat(out, &rule->deps.sa);
+          break;
+        }
+        case '<': {
+          size_t n;
+          const char* s = strlist_at_n(&rule->deps, 0, &n);
+          stralloc_catb(out, s, n);
+          break;
+        }
       }
       ++i;
     } else {
@@ -368,8 +408,7 @@ src_to_obj(const char* in, stralloc* out) {
   if(builddir.sa.len) {
     stralloc_cat(out, &builddir.sa);
 
-    if(!stralloc_endb(out, &pathsep, 1))
-      stralloc_catc(out, pathsep);
+    if(!stralloc_endb(out, &pathsep, 1)) stralloc_catc(out, pathsep);
   }
 
   return change_ext(str_basename(in), out, objext);
@@ -797,26 +836,25 @@ main(int argc, char* argv[]) {
   const char* type = "gnu";
   static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
   int c;
-  int index = 0;
+  int ret = 0, index = 0;
   const char* outdir = NULL;
   strlist workdir;
   strarray args;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
-    {"objext", 0, NULL, 'O'},
-    {"exeext", 0, NULL, 'B'},
-    {"libext", 0, NULL, 'L'},
-    {"create-libs", 0, &cmd_libs, 1},
-    {"create-objs", 0, &cmd_objs, 1},
-    {"create-bins", 0, &cmd_bins, 1},
-    {"builddir", 0, 0, 'd'},
-    {"type", 0, 0, 't'},
-    {"release", 0, &build_type, BUILD_TYPE_RELEASE},
-    {"relwithdebinfo", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},
-    {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
-    {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
-    {0}
-  };
+                           {"objext", 0, NULL, 'O'},
+                           {"exeext", 0, NULL, 'B'},
+                           {"libext", 0, NULL, 'L'},
+                           {"create-libs", 0, &cmd_libs, 1},
+                           {"create-objs", 0, &cmd_objs, 1},
+                           {"create-bins", 0, &cmd_bins, 1},
+                           {"builddir", 0, 0, 'd'},
+                           {"type", 0, 0, 't'},
+                           {"release", 0, &build_type, BUILD_TYPE_RELEASE},
+                           {"relwithdebinfo", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},
+                           {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
+                           {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
+                           {0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "hO:B:L:d:t:", opts, &index);
@@ -824,13 +862,13 @@ main(int argc, char* argv[]) {
     if(c == 0) continue;
 
     switch(c) {
-    case 'h': usage(argv[0]); return 0;
-    case 'O': objext = optarg; break;
-    case 'B': binext = optarg; break;
-    case 'L': libext = optarg; break;
-    case 'd': outdir = optarg; break;
-    case 't': type = optarg; break;
-    default: usage(argv[0]); return 1;
+      case 'h': usage(argv[0]); return 0;
+      case 'O': objext = optarg; break;
+      case 'B': binext = optarg; break;
+      case 'L': libext = optarg; break;
+      case 'd': outdir = optarg; break;
+      case 't': type = optarg; break;
+      default: usage(argv[0]); return 1;
     }
   }
 
@@ -839,7 +877,7 @@ main(int argc, char* argv[]) {
     cmd_libs = 1;
   }
 
-  if(!format_linklib_fn) format_linklib_fn = &format_linklib_lib; 
+  if(!format_linklib_fn) format_linklib_fn = &format_linklib_lib;
 
   if(!set_type(type)) {
     usage(argv[0]);
@@ -895,6 +933,14 @@ main(int argc, char* argv[]) {
     hmap_init(1024, &sourcedirs);
 
     strarray_foreach(&args, arg) {
+
+      if(!path_exists(*arg)) {
+        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", *arg, "\n");
+        buffer_flush(buffer_2);
+        ret = 127;
+        goto fail;
+      }
+
       if(str_end(*arg, ".c"))
         add_source(*arg, &srcs);
       else
@@ -913,16 +959,13 @@ main(int argc, char* argv[]) {
       stralloc_copys(&delete_command, "DEL /F /Q");
 
       hmap_foreach(rules, t) {
-        if(stralloc_equals(&builddir.sa, t->key))
-          continue;
+        if(stralloc_equals(&builddir.sa, t->key)) continue;
 
         rule = hmap_data(t);
 
-      if(strlist_count(&rule->deps) == 0)
-        continue;
+        if(strlist_count(&rule->deps) == 0) continue;
 
-      if(rule->cmd == 0)
-        continue;
+        if(rule->cmd == 0) continue;
 
         stralloc_catc(&delete_command, ' ');
         stralloc_cats(&delete_command, t->key);
@@ -931,6 +974,7 @@ main(int argc, char* argv[]) {
       rule->cmd = &delete_command;
     }
 
+  fail:
     output_all_vars(buffer_1, vars);
     output_all_rules(buffer_1, rules);
 
@@ -939,5 +983,5 @@ main(int argc, char* argv[]) {
     hmap_destroy(&sourcedirs);
   }
 
-  return 0;
+  return ret;
 }

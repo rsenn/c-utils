@@ -454,20 +454,20 @@ ifneq ($(NOPIPE),1)
 CFLAGS += -pipe
 endif
 
-CFLAGS_Prof = -pg -O2
+CFLAGS_Prof = -pg -Os
 CFLAGS_Debug = -g -ggdb -O0
 CFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
-CFLAGS_RelWithDebInfo = -g -ggdb -O2
-CFLAGS_Release = -g -fomit-frame-pointer -O2
+CFLAGS_RelWithDebInfo = -g -ggdb -Os
+CFLAGS_Release = -g -fomit-frame-pointer -Os
 
 CXXFLAGS += -pipe
 CXXFLAGS += -std=c++11
 
-CXXFLAGS_Prof = -pg -O2
+CXXFLAGS_Prof = -pg -Os
 CXXFLAGS_Debug = -g -ggdb -O0
 CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
-CXXFLAGS_RelWithDebInfo = -g -ggdb -O2
-CXXFLAGS_Release = -g -fomit-frame-pointer -O2
+CXXFLAGS_RelWithDebInfo = -g -ggdb -Os
+CXXFLAGS_Release = -g -fomit-frame-pointer -Os
 ifeq ($(BUILD_TYPE),)
 ifeq ($(PROF),1)
 BUILD_TYPE = Prof
@@ -855,7 +855,7 @@ DEFS := $(sort $(DEFS))
 
 CPPFLAGS += $(DEFS)
 
-#CFLAGS := $(subst -O2,-Os,$(CFLAGS))
+#CFLAGS := $(subst -Os,-Os,$(CFLAGS))
 
 FLAGS += $(patsubst %,-W%,$(WARNINGS)) 
 FLAGS += $(CPPFLAGS)
@@ -1246,7 +1246,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(call add-library, errmsg path unix strarray strlist xml hmap buffer mmap open scan stralloc fmt str byte)
+$(BUILDDIR)eagle-init-brd$(M64_)$(EXEEXT): $(BUILDDIR)eagle-init-brd.o $(call add-library, errmsg path strarray strlist xml hmap buffer mmap open scan stralloc fmt str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1254,14 +1254,14 @@ endif
 
 #$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): CFLAGS += $(ICONV_CFLAGS)
 $(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): LIBS += $(ICONV_LIBS) $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(BUILDDIR)getopt.o $(call add-library, errmsg path unix strarray cbmap xml hmap array buffer strlist stralloc mmap open scan fmt str byte)
+$(BUILDDIR)eagle-gen-cmds$(M64_)$(EXEEXT): $(BUILDDIR)eagle-gen-cmds.o $(BUILDDIR)getopt.o $(call add-library, errmsg path strarray cbmap xml hmap array buffer strlist stralloc mmap open scan fmt str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
 $(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): $(BUILDDIR)eagle-to-circuit.o $(call add-library, errmsg path unix cbmap xml array charbuf textbuf hmap strlist buffer mmap open stralloc byte scan fmt fmt str)
+$(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): $(BUILDDIR)eagle-to-circuit.o $(call add-library, errmsg path cbmap xml array charbuf textbuf hmap strlist buffer mmap open stralloc byte scan fmt fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1274,14 +1274,14 @@ endif
 
 $(BUILDDIR)ntldd$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS) $(ADVAPI32_LIB)
 $(BUILDDIR)ntldd$(M64_)$(EXEEXT): CPPFLAGS += -DNTLDD_VERSION_MAJOR=0 -DNTLDD_VERSION_MINOR=2
-$(BUILDDIR)ntldd$(M64_)$(EXEEXT): $(BUILDDIR)ntldd.o $(BUILDDIR)libntldd.o $(BUILDDIR)getopt.o $(call add-library, path unix pe mmap strlist buffer stralloc fmt str byte open uint32)
+$(BUILDDIR)ntldd$(M64_)$(EXEEXT): $(BUILDDIR)ntldd.o $(BUILDDIR)libntldd.o $(BUILDDIR)getopt.o $(call add-library, path pe mmap strlist buffer stralloc fmt str byte open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
 $(BUILDDIR)hexedit$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS) $(WINSOCK_LIB)
-$(BUILDDIR)hexedit$(M64_)$(EXEEXT): $(BUILDDIR)hexedit.o $(call add-library, path unix stralloc errmsg io iarray array buffer mmap open byte scan fmt str open uint32)
+$(BUILDDIR)hexedit$(M64_)$(EXEEXT): $(BUILDDIR)hexedit.o $(call add-library, path stralloc errmsg io iarray array buffer mmap open byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1312,7 +1312,7 @@ ifeq ($(USE_DIET),1)
 $(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += -lcompat -lpthread
 endif
 $(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
-$(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): $(BUILDDIR)pkgcfg.o $(BUILDDIR)getopt.o $(call add-library,env slist cbmap path unix dir buffer errmsg strarray strlist stralloc array mmap byte scan fmt str open uint32)
+$(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): $(BUILDDIR)pkgcfg.o $(BUILDDIR)getopt.o $(call add-library,env slist cbmap path dir buffer errmsg strarray strlist stralloc array mmap byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1322,7 +1322,7 @@ ifneq ($(DIET),)
 $(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += -lcompat
 endif
 $(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
-$(BUILDDIR)sln$(M64_)$(EXEEXT): $(BUILDDIR)sln.o $(call add-library, slist cbmap path unix dir buffer errmsg strarray strlist stralloc array mmap byte scan fmt str open uint32)
+$(BUILDDIR)sln$(M64_)$(EXEEXT): $(BUILDDIR)sln.o $(call add-library, slist cbmap path dir buffer errmsg strarray strlist stralloc array mmap byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1441,7 +1441,7 @@ endif
 
 
 $(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library,strarray slist rdir dir path unix strlist hmap buffer mmap open stralloc scan fmt str byte array)
+$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library,strarray slist rdir dir path strlist hmap buffer mmap open stralloc scan fmt str byte array)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

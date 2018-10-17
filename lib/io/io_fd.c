@@ -1,4 +1,4 @@
-#include "../socket.h"
+#include "../socket_internal.h"
 
 
 #ifndef _GNU_SOURCE

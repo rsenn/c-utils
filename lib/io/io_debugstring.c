@@ -1,4 +1,4 @@
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../fmt.h"
 #include "../iarray.h"
 #include "../io_internal.h"

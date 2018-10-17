@@ -1,5 +1,5 @@
 #define USE_WS2_32 1
-#include "../socket.h"
+#include "../socket_internal.h"
 #include <sys/types.h>
 #include "../byte.h"
 #include "../ip4.h"

@@ -1,5 +1,5 @@
 #define USE_WS2_32 1
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../select.h"
 #include "../io.h"
 #include "../iopause.h"

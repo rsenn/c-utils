@@ -6,7 +6,6 @@
 #include "uint64.h"
 #include "stralloc.h"
 #include "buffer.h"
-#include "io.h"
 #include "ip4.h"
 
 #ifdef __cplusplus

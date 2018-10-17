@@ -2,14 +2,13 @@
 #ifndef NDELAY_H
 #define NDELAY_H
 
-#include "io.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int ndelay_on(fd_t);
-int ndelay_off(fd_t);
+int ndelay_on(intptr_t);
+int ndelay_off(intptr_t);
 
 #ifdef __cplusplus
 }

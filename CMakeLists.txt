@@ -611,7 +611,7 @@ foreach(PROGRAM ${PROGRAMS})
 endforeach(PROGRAM)
 
 target_link_libraries(list-r dir ${COMMON_LIBS})
-target_link_libraries(genmakefile strarray slist dir rdir path strlist hmap xml case scan playlist open mmap fmt buffer stralloc str byte array unix)
+target_link_libraries(genmakefile buffer byte hmap mmap path rdir scan slist str stralloc strarray strlist)
 target_link_libraries(rdir-test rdir dir ${COMMON_LIBS})
 
 target_link_libraries(access buffer str)

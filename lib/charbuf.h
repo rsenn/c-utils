@@ -2,7 +2,6 @@
 #define CHARBUF_H
 
 #include "typedefs.h"
-#include "io.h"
 
 #ifdef __cplusplus
 extern "C" {

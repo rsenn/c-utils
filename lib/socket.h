@@ -2,54 +2,12 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#if defined(_WIN32) || defined(_WIN64)
-#if USE_WS2_32 
-#include <winsock2.h>
-#else
-#include <winsock.h>
-#endif
-#endif
-
 #include "typedefs.h"
-#include "windoze.h"
-
-#if !WINDOWS_NATIVE
-#include <sys/param.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <unistd.h>
-#endif
-
 #include "uint16.h"
 #include "uint32.h"
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#if WINDOWS_NATIVE
-#include <windows.h>
-typedef int socklen_t;
-
-#ifndef EPROTONOSUPPORT
-#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
-#endif
-#ifndef ETIMEDOUT
-#define ETIMEDOUT WSAETIMEDOUT
-#endif
-#ifndef EWOULDBLOCK
-#define EWOULDBLOCK WSAEWOULDBLOCK
-#endif
-#ifndef EINPROGRESS
-#define EINPROGRESS WSAEINPROGRESS
-#endif
-#ifndef ECONNREFUSED
-#define ECONNREFUSED WSAECONNREFUSED
-#endif
-#ifndef EPROTONOSUPPORT
-#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
-#endif
 #endif
 
 int socket_tcp4(void);

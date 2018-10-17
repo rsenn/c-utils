@@ -21,8 +21,8 @@ typedef struct strlist_s {
 } strlist;
 
 /* strlist_init will initialize a strlist. */
-# define strlist_zero(l) byte_zero((void*)(l), sizeof((l)))
-# define strlist_init(l,s)  stralloc_init(&(l)->sa); (l)->sep = (s);
+# define strlist_zero(l) stralloc_zero(&(l)->sa)
+# define strlist_init(l,s) stralloc_init(&(l)->sa), (l)->sep = (s);
 # define strlist_free(l) stralloc_free(&(l)->sa)
 
 #ifdef __BORLANDC__

@@ -1,5 +1,5 @@
 #define _WINSOCKAPI_
-#include "../socket.h"
+#include "../socket_internal.h"
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
 
 #define _LARGEFILE64_SOURCE

@@ -1,4 +1,4 @@
-#include "../socket.h"
+#include "../socket_internal.h"
 #define USE_WS2_32 1
 #include "../buffer.h"
 #include "../http.h"

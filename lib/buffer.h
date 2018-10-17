@@ -3,21 +3,14 @@
 #define BUFFER_H
 
 #include "typedefs.h"
-#include "uint64.h"
-#include "str.h"
-#include "io.h"
-
-#ifdef __unix__
-#include <unistd.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef ssize_t (buffer_op_sys)(fd_t fd, void* buf, size_t len);
-typedef ssize_t (buffer_op_proto)(fd_t fd, void* buf, size_t len, void* arg);
-typedef ssize_t (buffer_op_fn)(/*fd_t fd, void* buf, size_t len, void* arg*/);
+typedef ssize_t (buffer_op_sys)(intptr_t fd, void* buf, size_t len);
+typedef ssize_t (buffer_op_proto)(intptr_t fd, void* buf, size_t len, void* arg);
+typedef ssize_t (buffer_op_fn)(/*intptr_t fd, void* buf, size_t len, void* arg*/);
 typedef buffer_op_fn* buffer_op_ptr;
 
 typedef struct buffer {
@@ -28,7 +21,7 @@ typedef struct buffer {
   buffer_op_proto* op; /* use read(2) or write(2) */
   void* cookie;  		/* used internally by the to-stralloc buffers,  and for buffer chaining */
   void (*deinit)();  /* called to munmap/free cleanup,  with a pointer to the buffer as argument */
-  fd_t fd;  	/* passed as first argument to op */
+  intptr_t fd;  	/* passed as first argument to op */
 } buffer;
 
 #define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (void*)(op),  NULL,  NULL,  (fd) }
@@ -37,21 +30,21 @@ typedef struct buffer {
 #define BUFFER_INSIZE 8192
 #define BUFFER_OUTSIZE 8192
 
-void buffer_init(buffer* b, buffer_op_sys*, fd_t fd, char* y, size_t ylen);
-void buffer_init_free(buffer* b, buffer_op_sys*, fd_t fd, char* y, size_t ylen);
+void buffer_init(buffer* b, buffer_op_sys*, intptr_t fd, char* y, size_t ylen);
+void buffer_init_free(buffer* b, buffer_op_sys*, intptr_t fd, char* y, size_t ylen);
 void buffer_free(void* buf);
 void buffer_munmap(void* buf);
 int buffer_mmapread(buffer* b, const char* filename);
-int buffer_mmapread_fd(buffer *b, fd_t fd);
+int buffer_mmapread_fd(buffer *b, intptr_t fd);
 int buffer_mmapprivate(buffer* b, const char* filename);
-int buffer_mmapprivate_fd(buffer* b, fd_t fd);
+int buffer_mmapprivate_fd(buffer* b, intptr_t fd);
 int buffer_mmapshared(buffer* b, const char* filename);
-int buffer_mmapshared_fd(buffer* b, fd_t fd);
+int buffer_mmapshared_fd(buffer* b, intptr_t fd);
 void buffer_close(buffer* b);
 
 /* reading from an fd... if it is a regular file,  then  buffer_mmapread_fd is called,
    otherwise  buffer_init(&b,  read,  fd,  malloc(8192),  8192) */
-int buffer_read_fd(buffer* b,  fd_t fd);
+int buffer_read_fd(buffer* b,  intptr_t fd);
 
 int buffer_flush(buffer* b);
 int buffer_put(buffer* b, const char* x, size_t len);
@@ -65,8 +58,8 @@ int buffer_putsflush(buffer* b, const char* x);
 /* as a little gcc-specific hack,  if somebody calls buffer_puts with a
  * constant string,  where we know its length at compile-time,  call
  * buffer_put with the known length instead */
-//buffer_puts#define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, str_len(s)) : buffer_puts(b, s))
-#define buffer_putsflush(b, s) (__builtin_constant_p(s) ? buffer_putflush(b, s, str_len(s)) : buffer_putsflush(b, s))
+#define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, strlen(s)) : buffer_puts(b, s))
+#define buffer_putsflush(b, s) (__builtin_constant_p(s) ? buffer_putflush(b, s, strlen(s)) : buffer_putsflush(b, s))
 #endif
 
 int buffer_putm_internal(buffer*b, ...);
@@ -136,11 +129,7 @@ int buffer_prefetch(buffer *b, size_t n);
 int buffer_putulong(buffer *b, unsigned long int l);
 int buffer_put8long(buffer *b, unsigned long int l);
 int buffer_putxlong(buffer *b, unsigned long int l);
-int buffer_putxint64(buffer *b, uint64 l);
 int buffer_putlong(buffer *b, signed long int l);
-
-int buffer_putint64(buffer* b, int64 l);
-int buffer_putuint64(buffer* b, uint64 l);
 
 int buffer_putdouble(buffer *b, double d, int prec);
 
@@ -203,14 +192,11 @@ void buffer_fromarray(buffer* b, array* a);  /* buffer reads from array */
 void buffer_dump(buffer *out,  buffer *b);
 
 int buffer_putc(buffer *b,  char c);
-int buffer_putuint64(buffer *b,  uint64 i);
-int buffer_putint64(buffer*, int64 i);
 int buffer_putnspace(buffer *b,  int n);
 
 int buffer_putptr(buffer *b, void *ptr);
 int buffer_putulong0(buffer *b, unsigned long l, int pad);
 int buffer_putxlong0(buffer* b, unsigned long l, int pad);
-int buffer_putxint640(buffer* b, uint64 l, int pad);
 
 int buffer_skipspace(buffer *b);
 int buffer_skip_pred(buffer *b, int (*pred)(int));
@@ -233,21 +219,29 @@ int buffer_deflate(buffer* b, buffer* out, int level);
 int buffer_inflate(buffer* b, buffer* in);
 
 int  buffer_gunzip(buffer*, const char* filename);
-int  buffer_gunzip_fd(buffer*, fd_t fd);
+int  buffer_gunzip_fd(buffer*, intptr_t fd);
 int  buffer_gzip(buffer*, const char* filename, int level);
-int  buffer_gzip_fd(buffer*, fd_t fd, int level);
+int  buffer_gzip_fd(buffer*, intptr_t fd, int level);
 int  buffer_bunzip(buffer*, const char* filename);
-int  buffer_bunzip_fd(buffer*, fd_t fd);
+int  buffer_bunzip_fd(buffer*, intptr_t fd);
 int  buffer_bzip(buffer*, const char* filename, int level);
-int  buffer_bzip_fd(buffer*, fd_t fd, int level);
+int  buffer_bzip_fd(buffer*, intptr_t fd, int level);
 
 int buffer_get_until(buffer* b, char* x, size_t len, const char* charset, size_t setlen);
 
-int buffer_write_fd(buffer* b, fd_t fd);
+int buffer_write_fd(buffer* b, intptr_t fd);
+
+#ifdef UINT64_H
+int buffer_putint64(buffer* b, int64 l);
+int buffer_putuint64(buffer* b, uint64 l);
+int buffer_putxint64(buffer *b, uint64 l);
+int buffer_putuint64(buffer *b,  uint64 i);
+int buffer_putint64(buffer*, int64 i);
+int buffer_putxint640(buffer* b, uint64 l, int pad);
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-

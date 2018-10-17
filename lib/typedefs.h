@@ -24,6 +24,12 @@ extern "C" {
 typedef ptrdiff_t ssize_t;
 #endif
 
+#if defined(_WIN32) || defined(_WIN64) && !(defined(__CYGWIN__) || defined(__MSYS__))
+typedef intptr_t fd_t;
+#else
+typedef int fd_t,
+#endif
+
 #ifdef __cplusplus
 }
 #endif
