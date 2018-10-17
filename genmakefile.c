@@ -136,6 +136,7 @@ extract_includes(const char* x, size_t n, strlist* includes) {
       x += i;
       n -= i;
       if(!str_diffn(x - 7, "include", 7)) {
+        char quote;
         if((i = scan_charsetnskip(x, " \t\r", n) + 1) >= n) break;
         x += i;
         n -= i;
@@ -150,7 +151,7 @@ extract_includes(const char* x, size_t n, strlist* includes) {
         }
       }
     }
-    if((i = byte_chr(x, '\n') + 1) >= n) break;
+    if((i = byte_chr(x, '\n', n) + 1) >= n) break;
     x += i;
     n -= i;
   }
@@ -955,6 +956,7 @@ main(int argc, char* argv[]) {
 
     if((rule = get_rule("clean"))) {
       TUPLE* t;
+      size_t lineoffs = 0;
 
       stralloc_copys(&delete_command, "DEL /F /Q");
 
@@ -966,6 +968,11 @@ main(int argc, char* argv[]) {
         if(strlist_count(&rule->deps) == 0) continue;
 
         if(rule->cmd == 0) continue;
+
+        if(delete_command.len - lineoffs + str_len(t->key) >= 8191) {
+          stralloc_cats(&delete_command, "\n\tDEL /F /Q");
+          lineoffs = delete_command.len;
+        }
 
         stralloc_catc(&delete_command, ' ');
         stralloc_cats(&delete_command, t->key);

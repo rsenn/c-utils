@@ -12,38 +12,20 @@
 #define MINGW 1
 #endif
 
-#if WINDOWS
-#include <io.h>
+#if WINDOWS_NATIVE
 #include <windows.h>
+#include <io.h>
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if WINDOWS_NATIVE
-size_t getpagesize();
-
-#if 0 // !MINGW
-#define getpid() GetCurrentProcessId()
-#endif
-
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
-
-#endif /* WINDOWS_NATIVE */
-
-/* set errno to WSAGetLastError() */
-int winsock2errno(long l);
-void __winsock_init(void);
-#else
-#define winsock2errno(fnord) (fnord)
-#define __winsock_init()
-#define closesocket(s) close(s)
 #endif
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* defined(WINDOZE_H) */
-

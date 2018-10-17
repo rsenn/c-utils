@@ -15,8 +15,23 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 19838,
-				"encoding": "UTF-8",
+				"buffer_size": 21880,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "access.c",
+			"settings":
+			{
+				"buffer_size": 50,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/uint16.h",
+			"settings":
+			{
+				"buffer_size": 1966,
 				"line_ending": "Unix"
 			}
 		}
@@ -73,12 +88,24 @@
 		"selected_items":
 		[
 			[
-				"Package Control: ",
-				"Package Control: Install Package"
+				"ins",
+				"Package Control: Advanced Install Package"
 			],
 			[
 				"insta",
 				"Package Control: Advanced Install Package"
+			],
+			[
+				"in",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"Package Control: insta",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
 			],
 			[
 				"install",
@@ -116,6 +143,7 @@
 		"height": 219.0,
 		"history":
 		[
+			"Theme - Spacefunk, C++ Starting Kit",
 			"schemr",
 			"schemr_favorite_current_scheme",
 			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
@@ -133,13 +161,31 @@
 	"expanded_folders":
 	[
 		"/C/Users/roman/Desktop/dirlist",
-		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/path"
+		"/C/Users/roman/Desktop/dirlist/lib"
 	],
 	"file_history":
 	[
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/roman/Desktop/dirlist/CMakeLists.txt",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_exists.c",
+		"/C/Users/roman/Desktop/dirlist/lib/uint64.h",
+		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
+		"/C/Users/roman/Desktop/dirlist/lib/binfmt.h",
+		"/C/Users/roman/Desktop/dirlist/lib/windoze.h",
+		"/C/Users/roman/Desktop/unix.h",
+		"/C/Users/roman/Desktop/dirlist/lib/typedefs.h",
+		"/C/Users/roman/Desktop/dirlist/lib/socket.h",
+		"/C/Users/roman/Desktop/dirlist/lib/socket_internal.h",
+		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/CPrettify/user.cfg",
+		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/CPrettify.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
+		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Package Control.sublime-settings",
+		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/Package Control/Package Control.sublime-settings",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_num_sa.c",
+		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
+		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/CTags.sublime-settings",
+		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/CPrettify/CPrettify.sublime-settings",
+		"/D/Qt/qt-5.10.1-static-ltcg-msvc2017-x86_64/mkspecs/win32-msvc/qmake.conf",
+		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
 		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/Schemr/Default (Windows).sublime-keymap",
 		"/D/Sources/rsenn/dirlist/scripts/gen-a-deps.sh",
 		"/D/Sources/rsenn/dirlist/rdir-test.c",
@@ -246,30 +292,11 @@
 		"/F/Sources/PIC/picworks/soft_pwm_simple.X/soft_pwm_simple_main.c",
 		"/E/Sources/wiringOli/wiringOli/softPwm.c",
 		"/I/Programs/CooCox/CoIDE/repo/Examples/828_Soft Pwm/src/main.c",
-		"/F/Sources/rpi_SoftPwm/pwm.c",
-		"/F/Sources/lighthouse-attiny-softpwm/main.c",
-		"/E/Sources/wiringOli/wiringOli/softPwm.h",
-		"/C/Users/roman/Documents/lc-meter/src/display.c",
-		"/C/Users/roman/Documents/lc-meter/src/LC-meter.c",
-		"/C/Program Files (x86)/Sublime Text 3/Data/Packages/GitMode/GitMode.sublime-settings",
-		"/C/Program Files (x86)/Sublime Text 3/Data/Packages/User/GitMode.sublime-settings",
-		"/C/Program Files (x86)/Sublime Text 3/Data/Packages/BeautifyRuby/BeautifyRuby.sublime-settings",
-		"/C/Program Files (x86)/Sublime Text 3/Data/Packages/Ruby Debugger/Ruby Debugger.sublime-settings",
-		"/C/Users/roman/Documents/lc-meter/scripts/baud.sh",
-		"/C/Users/roman/Documents/lc-meter/scripts/calc-lc-tank.c",
-		"/C/Users/roman/Documents/pictest/src/config-12f1840.h",
-		"/C/Users/roman/Documents/pictest/src/pictest.c",
-		"/C/Users/roman/Documents/pictest/build/vars.mk",
-		"/C/Users/roman/Documents/pictest/src/config-18f252.h",
-		"/C/Users/roman/Documents/pictest/src/config-18f2550.h",
-		"/C/Users/roman/Documents/pictest/src/config-18f25k50.h",
-		"/E/Sources/pictest/src/pictest.c",
-		"/E/Sources/pictest/build/vars.mk",
-		"/E/Sources/pictest/config-18f25k22.h"
+		"/F/Sources/rpi_SoftPwm/pwm.c"
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 27.0
 	},
 	"find_in_files":
 	{
@@ -283,6 +310,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"\\",
+			"equal",
 			"-w",
 			"link_rules",
 			"data_dir",
@@ -374,6 +403,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"\\\\",
 			"ctrl+shift",
 			"ctrl",
 			"d->tmpname",
@@ -417,7 +447,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -426,15 +456,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 19838,
+						"buffer_size": 21880,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								235,
-								235
+								3263,
+								3265
 							]
 						],
 						"settings":
@@ -444,7 +474,63 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 7463.0,
+						"translation.y": 1820.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "access.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 50,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/uint16.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1966,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -455,7 +541,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 22.0
+		"height": 27.0
 	},
 	"input":
 	{
@@ -504,7 +590,7 @@
 	"project": "dirlist.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 50.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -542,7 +628,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 210.0,
+	"side_bar_width": 208.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

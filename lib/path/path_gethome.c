@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../buffer.h"
 #include "../path_internal.h"
 #include "../scan.h"

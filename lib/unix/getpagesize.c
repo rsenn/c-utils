@@ -1,6 +1,8 @@
-#include "../windoze.h"
+#include "../unix.h"
 
 #if WINDOWS_NATIVE
+#include <windows.h>
+
 size_t
 getpagesize() {
   static DWORD cachedPageSize = 0;

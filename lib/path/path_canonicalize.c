@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../readlink.h"
 
 #define _MISC_SOURCE 1
@@ -164,7 +165,7 @@ start:
 //        stralloc_catc(sa, '/');
 //        stralloc_catb(sa, buf, l);
 //        stralloc_nul(sa);
-       
+
         buf[n] = '\0';
         //str_copyn(buf, buf+l+1, sizeof(buf));
 

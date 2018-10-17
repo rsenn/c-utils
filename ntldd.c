@@ -39,6 +39,10 @@ MSDN Magazine articles
 
 #include "libntldd.h"
 
+#if WINDOWS
+#include <windows.h>
+#endif
+
 #ifndef MAX_PATH
 #define MAX_PATH PATH_MAX
 #endif

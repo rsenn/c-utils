@@ -2,12 +2,13 @@
 #ifndef UINT64_H
 #define UINT64_H
 
-#include "typedefs.h"
+//#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/*
 #ifdef __MSYS__
 # ifndef __MS_types__
 #  define __MS_types__
@@ -23,13 +24,18 @@ typedef unsigned long long uint64_t;
 typedef long long int64_t;
 #endif
 #endif
+*/
+#if defined(__UINT64_TYPE__) && defined(__INT64_TYPE__)
+typedef __UINT64_TYPE__ uint64;
+typedef __INT64_TYPE__ int64;
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
+#elif defined(_MSC_VER) || defined(__BORLANDC__)
 #include <windows.h>
-#define uint64_t UINT64
-#define int64_t INT64
-#endif
+typedef UINT64 uint64;
+typedef INT64 int64;
+#else 
 
+/*
 #ifdef __GNUC__
 # ifndef uint64_t
 #  ifdef __UINT64_TYPE__
@@ -47,11 +53,12 @@ typedef long long int64_t;
 #  endif
 # endif
 #endif
-
+*/
 typedef uint64_t uint64;
 typedef int64_t int64;
+#endif
 
-#if(defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT64_MACROS)
+#if (defined(__i386__) || defined(__x86_64__)) && !defined(NO_UINT64_MACROS)
 #define uint64_pack(out, in) ( * (uint64 *)(out) = (in))
 #define uint64_unpack(in, out) ( * (out) = *(uint64 *)(in))
 #define uint64_read(in) ( * (uint64 *)(in))
@@ -90,9 +97,9 @@ uint64_get(const void* ptr) {
 
 #if defined(_WIN32) && defined(_MSC_VER)
 // for older MSVC: "unsigned __int64 -> double" conversion not implemented (why?-)
-__inline double uint64_to_double(uint64_t ull) {
-  return ((int64_t)ull >= 0 ? (double)(int64_t)ull :
-    ((double)(int64_t)(ull - 9223372036854775808UI64)) + 9223372036854775808.0);
+__inline double uint64_to_double(uint64 ull) {
+  return ((int64)ull >= 0 ? (double)(int64)ull :
+    ((double)(int64)(ull - 9223372036854775808UI64)) + 9223372036854775808.0);
 }
 #else
 # define uint64_to_double(ull) ((double)(ull))

@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../readlink.h"
 #include "../path_internal.h"
 #include "../str.h"

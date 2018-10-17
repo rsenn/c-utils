@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../byte.h"
 #include "../path_internal.h"
 #include <errno.h>

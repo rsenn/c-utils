@@ -1,6 +1,11 @@
 #include "../windoze.h"
 #include "../stralloc.h"
 
+#if WINDOWS
+#include <windows.h>
+#endif
+
+
 int
 stralloc_expand(stralloc* sa) {
 #if WINDOWS

@@ -2,8 +2,17 @@
 #ifndef SOCKET_INTERNAL_H
 #define SOCKET_INTERNAL_H
 
-#include "socket.h"
+#if defined(_WIN32) || defined(_WIN64)
+#if USE_WS2_32
+#define _WINSOCKAPI_
+#include <winsock2.h>
+#else
+#include <winsock.h>
+#endif
+#endif
+
 #include "windoze.h"
+#include "socket.h"
 
 #if !WINDOWS_NATIVE
 #include <sys/param.h>
@@ -11,14 +20,6 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
-#endif
-
-#if defined(_WIN32) || defined(_WIN64)
-#if USE_WS2_32 
-#include <winsock2.h>
-#else
-#include <winsock.h>
-#endif
 #endif
 
 #ifdef HAVE_ERRNO_H
