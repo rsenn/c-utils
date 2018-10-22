@@ -12,8 +12,6 @@
 #include "lib/strlist.h"
 #include "lib/windoze.h"
 
-#define MAX_CMD_LEN 8191
-
 #if WINDOWS
 #define MAX_CMD_LEN 1023
 
@@ -675,13 +673,14 @@ usage(char* argv0) {
                        "  -d, --builddir            build directory\n",
                        "  -t, --type   TYPE         makefile type, one of:\n"
                        "\n"
-                       "     gnu         GNU make\n"
+                       "     gcc         GNU make\n"
                        "     bcc55       Borland C++ Builder 5.5\n"
                        "     bcc32       Borland C++ Builder new\n"
                        "     lcc         lcc make\n"
                        "     tcc         Tinycc make\n"
                        "     msvc        Visual C++ NMake\n"
                        "     icl         Intel C++ NMake\n"
+                       "     clang       LLVM NMake\n"
                        "\n",
                        0);
   buffer_putnlflush(buffer_1);
@@ -703,18 +702,26 @@ set_type(const char* type) {
 
   stralloc_copys(&mkdir_command, "IF NOT EXIST \"$@\" MKDIR \"$@\"");
 
-  if(str_start(type, "gnu") || str_start(type, "gcc")) {
+  if(str_start(type, "gnu") || str_start(type, "gcc") || str_start(type, "clang") || str_start(type, "llvm")) {
 
     libext = ".a";
+    objext = ".o";
 
     /*
      * GNU GCC compatible compilers
      */
 
+    if(str_start(type, "gnu") || str_start(type, "gcc")) {
     set_var("CC", "gcc");
     set_var("CXX", "g++");
 
     set_var("AR", "ar");
+    } else if(str_start(type, "clang") || str_start(type, "llvm")) {
+          set_var("CC", "clang");
+    set_var("CXX", "clang++");
+
+    set_var("AR", "llvm-ar");
+    }
 
     stralloc_copys(&lib_command, "$(AR) rcs $@ $^");
     stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS)");
@@ -730,7 +737,6 @@ set_type(const char* type) {
     set_var("LIB", "lib");
     set_var("LINK", "link");
 
-    stralloc_copys(&link_command, "$(LINK) /OUT:$@ @<<\n\t\t$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)\n<<");
     stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
     /*
@@ -746,6 +752,8 @@ set_type(const char* type) {
       push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
 
       stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo$@ $<");
+    } else {
+      stralloc_copys(&link_command, "$(LINK) /OUT:$@ @<<\n\t\t$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)\n<<");
     }
 
     /*

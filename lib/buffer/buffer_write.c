@@ -1,5 +1,6 @@
 #include "../windoze.h"
 #include "../buffer.h"
+
 #if WINDOWS_NATIVE
 #include <io.h>
 #else

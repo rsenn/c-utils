@@ -46,4 +46,3 @@ int    path_split(const char* p, strlist* sl);
 #endif
 
 #endif /* _PATH_H__ */
-

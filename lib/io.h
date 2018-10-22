@@ -9,7 +9,7 @@
 #include "taia.h"
 #include "uint64.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 typedef INT_PTR fd_t;
 #else
 typedef int fd_t;

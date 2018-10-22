@@ -3,11 +3,13 @@
 #include "../open.h"
 #include "../stralloc.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <io.h>
 #else
 #include <unistd.h>
 #endif
+
+#include <stdlib.h>
 
 int
 buffer_truncfile(buffer* b, const char* fn) {

@@ -1,9 +1,11 @@
 #include "../windoze.h"
 
-#if WINDOWS
-#include "../io_internal.h"
+#if WINDOWS_NATIVE
+#include <io.h>
 #else
+#include <unistd.h>
 #endif
+
 #include "../charbuf.h"
 
 void

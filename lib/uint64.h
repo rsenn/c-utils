@@ -2,7 +2,8 @@
 #ifndef UINT64_H
 #define UINT64_H
 
-//#include "typedefs.h"
+#include <stddef.h>
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,7 +26,11 @@ typedef long long int64_t;
 #endif
 #endif
 */
-#if defined(__UINT64_TYPE__) && defined(__INT64_TYPE__)
+#if defined(___int64_t_defined)
+typedef u_int64_t uint64;
+typedef int64_t int64;
+
+#elif defined(__UINT64_TYPE__) && defined(__INT64_TYPE__)
 typedef __UINT64_TYPE__ uint64;
 typedef __INT64_TYPE__ int64;
 

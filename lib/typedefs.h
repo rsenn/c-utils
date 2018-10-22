@@ -31,7 +31,7 @@ typedef ptrdiff_t intptr_t;
 #if defined(_WIN32) || defined(_WIN64) && !(defined(__CYGWIN__) || defined(__MSYS__))
 typedef intptr_t fd_t;
 #else
-typedef int fd_t,
+typedef int fd_t;
 #endif
 
 #ifdef __cplusplus

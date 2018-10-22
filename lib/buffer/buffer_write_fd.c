@@ -1,10 +1,14 @@
-#include "../windoze.h"
-
 #define _LARGEFILE64_SOURCE
+#include "../windoze.h"
 #include "../buffer.h"
-#include "../io_internal.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 #include <stdlib.h>
-#include <sys/stat.h>
 
 int
 buffer_write_fd(buffer* b, fd_t fd) {

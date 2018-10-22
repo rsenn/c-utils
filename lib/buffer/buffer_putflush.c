@@ -1,9 +1,14 @@
-#if !(defined(_WIN32) || defined(_WIN64))
-#include <errno.h>
-#include <sys/types.h>
+#include "../windoze.h"
+#include "../buffer.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
 #include <sys/uio.h>
 #endif
-#include "../buffer.h"
+
+#include <errno.h>
 
 #ifdef __dietlibc__
 #undef __unlikely
@@ -21,7 +26,7 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
    * optimize a bit */
   if(!b->p) /* if the buffer is empty, just call buffer_stubborn directly */
     return buffer_stubborn(b->op, b->fd, x, len, b);
-#if !(defined(_WIN32) || defined(_WIN64))
+#if !WINDOWS_NATIVE
   if(b->op == (buffer_op_fn*)&write) {
     struct iovec v[2];
     ssize_t w;

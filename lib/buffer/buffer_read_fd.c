@@ -2,13 +2,16 @@
 
 #define _LARGEFILE64_SOURCE
 #include "../buffer.h"
-#include "../io_internal.h"
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#if WINDOWS
+#if WINDOWS_NATIVE
+#include <io.h>
 #else
+#include <unistd.h>
 #endif
+
+#include <stdlib.h>
 
 int
 buffer_read_fd(buffer* b, fd_t fd) {
