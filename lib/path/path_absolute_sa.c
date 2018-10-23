@@ -17,5 +17,5 @@ path_absolute_sa(stralloc* sa) {
     stralloc_free(&tmp);
     return 1;
   }
-    return 0;
+  return 0;
 }

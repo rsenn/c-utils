@@ -33,7 +33,8 @@ path_relative(const char* path, const char* to, stralloc* rel) {
 
   if(!stralloc_ready(rel, PATH_MAX + 1)) return 0;
 
-  PathRelativePathToA((LPSTR)rel->s, (LPCSTR)t.sa.s, FILE_ATTRIBUTE_DIRECTORY, (LPCSTR)p.sa.s, FILE_ATTRIBUTE_DIRECTORY);
+  PathRelativePathToA(
+      (LPSTR)rel->s, (LPCSTR)t.sa.s, FILE_ATTRIBUTE_DIRECTORY, (LPCSTR)p.sa.s, FILE_ATTRIBUTE_DIRECTORY);
 
   rel->len = str_len(rel->s);
 
