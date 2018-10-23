@@ -1,4 +1,5 @@
 #include "../byte.h"
+#include "../stralloc.h"
 #include "../strlist.h"
 
 void

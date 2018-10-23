@@ -59,12 +59,17 @@ set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NA
 #include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
 
 if(MSVC)
-add_definitions(-Dinline=__inline)
+  set(WARNFLAGS "-W0")
+  add_definitions(-Dinline=__inline)
 
   if(MSVC_VERSION STREQUAL 1500)
+    # if(FALSE)
     message("Visual Studio 2008 disable warnings")
-    add_definitions(/wd4013 /wd4024 /wd4047 /wd4100 /wd4201 /wd4244 /wd4255 /wd4668 /wd4706 /wd4820 /wd4996)
-    add_definitions(-wd4018 -wd4022 -wd4028 -wd4057 -wd4101 -wd4131 -wd4189 -wd4200 -wd4206 -wd4214 -wd4242 -wd4245 -wd4273 -wd4333 -wd4389 -wd4700 -wd4702 -wd4716)
+    #set(WARNFLAGS "-W3 -wd4820 -wd4668 -wd4013 -wd4024 -wd4047 -wd4100 -wd4201 -wd4244 -wd4255 -wd4706 -wd4820 -wd4996")
+    set(WARNFLAGS "-W3 -wd4820 -wd4668")
+    #add_definitions(-wd4018 -wd4022 -wd4028 -wd4057 -wd4101 -wd4131 -wd4189 -wd4200 -wd4206 -wd4214 -wd4242 -wd4245 -wd4273 -wd4333 -wd4389 -wd4700 -wd4702 -wd4716)
+  else()
+      set(WARNFLAGS "-W3")
    endif()
 endif(MSVC)
 #if(WIN32 OR MSYS OR CYGWIN)
@@ -460,23 +465,20 @@ set(CXXPROGRAMS #kbd-adjacency
  #   piccfghex
  )
 
-if(MSVC)
-#  add_definitions(-Dinline=__force_inline)
-  add_definitions(/Dinline=__inline)
-  add_definitions(/wo4005)
-  add_definitions(/W0)
-else()
-  add_definitions(-Dinline=__inline)
-endif()
 
 if(CXX11)
 #  add_definitions(-DCXX11=1)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS} -DCXX11=1")
 endif()
 
-string(REGEX REPLACE "/W[0-9]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-string(REGEX REPLACE "/W[0-9]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+#string(REGEX REPLACE "[-/][Ww][A-Z0-9a-z]*" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+#string(REGEX REPLACE "[-/][Ww][A-Z0-9a-z]*" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
+   string(REGEX REPLACE "[-/][Ww][^ ]* " "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${WARNFLAGS}")
+   string(REGEX REPLACE "[-/][Ww][^ ]* " "" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+
+  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}  ${WARNFLAGS}")
 
 add_definitions(-DHAVE_CONFIG_H)
 

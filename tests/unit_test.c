@@ -36,19 +36,20 @@ unit_test_cleanup(struct unit_test* mu_) {
   if(mu_->faillog) fclose(mu_->faillog);
 }
 
-struct taia*
+/*struct taia*
 unit_test_gettime() {
   static tai6464 t;
   taia_now(&t);
   return &t;
-}
+}*/
 
 int
 unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
-  struct taia start;
+  struct taia start, end;
   taia_now(&start);
   func(mu_);
-  taia_sub(&mu_->elapsed, &start, unit_test_gettime());
+  taia_now(&end);
+  taia_sub(&mu_->elapsed, &end, &start);
 
   return (mu_->failure == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

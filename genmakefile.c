@@ -1203,10 +1203,6 @@ main(int argc, char* argv[]) {
                            {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
                            {0}};
 
-  strlist_init(&workdir, pathsep);
-  strlist_init(&outdir, pathsep);
-  strlist_init(&builddir, pathsep);
-
   for(;;) {
     c = getopt_long(argc, argv, "ho:O:B:L:d:t:", opts, &index);
     if(c == -1) break;
@@ -1236,6 +1232,10 @@ main(int argc, char* argv[]) {
     usage(argv[0]);
     return 2;
   }
+
+  strlist_init(&workdir, pathsep);
+  strlist_init(&outdir, pathsep);
+  strlist_init(&builddir, pathsep);
 
   if(outfile) {
     int fd;

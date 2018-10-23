@@ -12,10 +12,18 @@
 void
 taia_now(struct taia* t) {
 #if WINDOWS
-  union {
-    FILETIME f;
-    uint64 l;
-  } fnord;
+  LARGE_INTEGER ticks, freq;
+  if(QueryPerformanceFrequency(&freq)) {
+    if(QueryPerformanceCounter(&ticks)) {
+       const int microseconds = 1000000;
+       const int64 nanoseconds = microseconds * 1000;
+      t->sec.x = ticks.QuadPart / freq.QuadPart;
+    ticks.QuadPart %= freq.QuadPart;
+    t->nano = ticks.QuadPart * nanoseconds / freq.QuadPart;
+    t->atto = 0;
+    }
+  }
+#elif 0
   GetSystemTimeAsFileTime(&fnord.f);
   /* 64-bit value representing the number of 100-nanosecond intervals
    * since January 1, 1601 (UTC) */
