@@ -1,5 +1,5 @@
-#include "../windoze.h"
 #include "../byte.h"
+#include "../windoze.h"
 
 #if WINDOWS_NATIVE
 

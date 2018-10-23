@@ -1,5 +1,5 @@
-#include "../windoze.h"
 #include "../readlink.h"
+#include "../windoze.h"
 
 #define _MISC_SOURCE 1
 #define _GNU_SOURCE 1

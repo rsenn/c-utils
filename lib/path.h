@@ -46,3 +46,4 @@ int path_collapse(const char*, stralloc* out);
 
 #endif /* _PATH_H__ */
 int path_getsep(const char*);
+int path_canonical(const char*, stralloc* out);

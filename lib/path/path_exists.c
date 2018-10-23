@@ -1,5 +1,5 @@
-#include "../windoze.h"
 #include "../path_internal.h"
+#include "../windoze.h"
 
 #if !WINDOWS_NATIVE
 #include <sys/stat.h>

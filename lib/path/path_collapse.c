@@ -28,7 +28,7 @@ path_collapse(const char* path, stralloc* out) {
     strlist_pushb(&o, x, n);
     ++i;
   }
-  
+
   byte_copy(out, sizeof(stralloc), &o.sa);
   return strlist_count(&o);
 }

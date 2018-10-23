@@ -1,8 +1,8 @@
-#include "../windoze.h"
 #include "../path_internal.h"
 #include "../readlink.h"
 #include "../str.h"
 #include "../stralloc.h"
+#include "../windoze.h"
 
 #include <limits.h>
 

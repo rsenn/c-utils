@@ -1,6 +1,6 @@
-#include "../windoze.h"
 #include "../byte.h"
 #include "../path_internal.h"
+#include "../windoze.h"
 #include <errno.h>
 
 #ifndef ENAMETOOLONG

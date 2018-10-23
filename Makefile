@@ -273,7 +273,13 @@ KERNEL32_LIB = -lkernel32
 ADVAPI32_LIB = -ladvapi32
 IPHLPAPI_LIB = -liphlpapi
 endif
+
+ifeq ($(OS),mingw32)
 SHLWAPI_LIB = -lshlwapi
+endif
+ifeq ($(OS),msys)
+SHLWAPI_LIB = -lshlwapi
+endif
 
 #$(call def-function-exists,ZLIB,deflate,-lz)
 $(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))

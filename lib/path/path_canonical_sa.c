@@ -1,5 +1,4 @@
 #include "../path_internal.h"
-#include "../path_internal.h"
 
 int
 path_canonical_sa(stralloc* sa, stralloc* out) {

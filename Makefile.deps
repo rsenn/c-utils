@@ -1822,3 +1822,5 @@ $(BUILDDIR)stralloc_removesuffixb.o: lib/stralloc/stralloc_removesuffixb.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)stralloc_removesuffixs.o: lib/stralloc/stralloc_removesuffixs.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_canonical.o: lib/path/path_canonical.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

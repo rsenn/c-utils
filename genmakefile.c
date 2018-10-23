@@ -1,6 +1,5 @@
-#include "lib/windoze.h"
-#include "lib/getopt.h"
 #include "lib/buffer.h"
+#include "lib/getopt.h"
 #include "lib/hmap.h"
 #include "lib/mmap.h"
 #include "lib/open.h"
@@ -12,6 +11,7 @@
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
+#include "lib/windoze.h"
 
 #include <ctype.h>
 
@@ -690,8 +690,10 @@ target_deps_internal(buffer* b, rule_t* t, strlist* all, int depth) {
     if(strlist_push_unique(all, (*ptr)->name)) {
       buffer_puts(b, "# ");
       buffer_putnspace(b, depth * 2);
-      buffer_puts(b, (*ptr)->name);
+      buffer_puts(b, str_basename((*ptr)->name));
       buffer_putnlflush(b);
+
+      target_deps_internal(b, *ptr, all, depth + 1);
     }
   }
 }
@@ -718,15 +720,15 @@ output_rule(buffer* b, rule_t* rule) {
 
   if(array_length(&rule->deps, sizeof(rule_t*))) {
     target_deps(b, rule);
-/*    rule_t** r;
-    buffer_puts(b, "# Dependencies:\n");
-    array_foreach_t(&rule->deps, r) {
+    /*    rule_t** r;
+        buffer_puts(b, "# Dependencies:\n");
+        array_foreach_t(&rule->deps, r) {
 
-      buffer_puts(b, "#  ");
+          buffer_puts(b, "#  ");
 
-      buffer_puts(b, (*r)->name);
-      buffer_putnlflush(b);
-    }*/
+          buffer_puts(b, (*r)->name);
+          buffer_putnlflush(b);
+        }*/
   }
 
   if(num_deps == 0 && str_diffn(rule->name, builddir.sa.s, builddir.sa.len)) {
@@ -1051,6 +1053,10 @@ set_type(const char* type) {
      */
   } else if(str_start(type, "msvc") || str_start(type, "icl")) {
 
+    objext = ".obj";
+    binext = ".exe";
+    libext = ".lib";
+
     set_var("CC", "cl /nologo");
     set_var("LIB", "lib");
     set_var("LINK", "link");
@@ -1077,11 +1083,12 @@ set_type(const char* type) {
       //      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     }
 
-    stralloc_copys(&link_command, "$(LINK) -OUT:\"$@\" -INCREMENTAL -NOLOGO -MANIFEST "
-                                  "-MANIFESTFILE:Debug/genmk.exe.intermediate.manifest -DEBUG "
-                                  "-PDB:C:/Users/roman/Desktop/dirlist/genmk/Debug/genmk.pdb -SUBSYSTEM:CONSOLE "
-                                  "-DYNAMICBASE -NXCOMPAT -MACHINE:X86 -ERRORREPORT:PROMPT "
-                                  "@<<\n\t$(LDFLAGS)\n\t$^\n\t$(LDFLAGS) $(LIBS) $(EXTRA_LIBS)\n<<");
+    stralloc_copys(&link_command,
+                   "$(LINK) -OUT:\"$@\" -INCREMENTAL -NOLOGO -MANIFEST "
+                   "-MANIFESTFILE:Debug/genmk.exe.intermediate.manifest -DEBUG "
+                   "-PDB:C:/Users/roman/Desktop/dirlist/genmk/Debug/genmk.pdb -SUBSYSTEM:CONSOLE "
+                   "-DYNAMICBASE -NXCOMPAT -MACHINE:X86 -ERRORREPORT:PROMPT "
+                   "@<<\n\t$(LDFLAGS)\n\t$^\n\t$(LDFLAGS) $(LIBS) $(EXTRA_LIBS)\n<<");
 
     /*
      * Borland C++ Builder

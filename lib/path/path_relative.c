@@ -1,7 +1,7 @@
-#include "../windoze.h"
 #include "../path_internal.h"
 #include "../stralloc.h"
 #include "../strlist.h"
+#include "../windoze.h"
 
 #define MAX_NUM(a, b) ((a) > (b) ? (a) : (b))
 
@@ -52,10 +52,8 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
   strlist_init(&p, PATHSEP_C);
   strlist_init(&r, PATHSEP_C);
 
-  strlist_froms(&r, relative_to, PATHSEP_C);
-  path_absolute_sa(&r.sa);
-  strlist_froms(&p, path, PATHSEP_C);
-  path_absolute_sa(&p.sa);
+  path_canonical(relative_to, &r.sa);
+  path_canonical(path, &p.sa);
 
   {
     size_t n1 = strlist_count(&p);
