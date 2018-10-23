@@ -26,3 +26,10 @@
 #define PATH_MAX MAX_PATH
 #endif
 #endif
+
+#define path_issep(c) ((c) == '/' || (c) == '\\')
+
+#define path_isabs(p) (path_issep((p)[0]) || ((p)[1] == ':' && path_issep((p)[2])))
+#define path_isrel(p) (!path_isabs(p))
+#define path_isname(p) ((p)[str_chr((p), '/')] != '\0')
+

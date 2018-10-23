@@ -1,4 +1,4 @@
-#include "../path.h"
+#include "../path_internal.h"
 
 size_t
 path_skip(const char* s, size_t n) {

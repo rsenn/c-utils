@@ -36,15 +36,12 @@ int    path_relative(const char*, const char* to, stralloc* rel);
 int    path_split(const char* p, strlist* sl);
 #endif
 
-#define path_issep(c) ((c) == '/' || (c) == '\\')
-
-#define path_isabs(p) (path_issep((p)[0]) || ((p)[1] == ':' && path_issep((p)[2])))
-#define path_isrel(p) (!path_isabs(p))
-#define path_isname(p) ((p)[str_chr((p), '/')] != '\0')
+int path_canonical_sa(stralloc*, stralloc* out);
+int path_absolute_sa(stralloc*);
+int path_collapse(const char*, stralloc* out);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _PATH_H__ */int path_canonical_sa(stralloc*, stralloc* out);
-int path_absolute_sa(stralloc*);
+#endif /* _PATH_H__ */

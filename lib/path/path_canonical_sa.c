@@ -1,9 +1,11 @@
-#include "../path.h"
+#include "../path_internal.h"
 #include "../path_internal.h"
 
 int
 path_canonical_sa(stralloc* sa, stralloc* out) {
-  const char *s, *next;
+  stralloc_nul(sa);
+  return path_collapse(sa->s, out);
+/*  const char *s, *next;
   const char* e = sa->s + sa->len;
   size_t nextlen, len = path_len(sa->s, sa->len);
 
@@ -25,5 +27,5 @@ path_canonical_sa(stralloc* sa, stralloc* out) {
 
     if(out->len && out->s[out->len - 1] != PATHSEP_C) stralloc_catc(out, PATHSEP_C);
     stralloc_catb(out, s, len);
-  }
+  }*/
 }
