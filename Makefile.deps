@@ -1810,7 +1810,5 @@ $(BUILDDIR)strlist_indexofb.o: lib/strlist/strlist_indexofb.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_pushb_unique.o: lib/strlist/strlist_pushb_unique.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)path_absolute_sa.o: lib/path_absolute_sa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_absolute_sa.o: lib/path/path_absolute_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

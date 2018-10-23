@@ -91,7 +91,15 @@ debug_s(const char* name, const char* s) {
   buffer_puts(buffer_2, s);
   buffer_putnlflush(buffer_2);
 }
-
+void
+path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
+  stralloc_zero(out);
+  if(prefix->len) {
+    stralloc_cat(out, prefix);
+    stralloc_catc(out, pathsep);
+  }
+  stralloc_cats(out, path);
+}
 /**
  * Output library name (+".lib")
  */
@@ -679,7 +687,7 @@ includes_to_libs(const strlist* includes, strlist* libs) {
 
     stralloc_cats(&sa, libext);
 
-//    debug_sa("includes_to_libs", &sa);
+    //    debug_sa("includes_to_libs", &sa);
 
     if((rule = find_rule_sa(&sa))) {
       strlist_push(libs, rule->name);
@@ -697,8 +705,7 @@ target_ptrs(const strlist* targets, array* out) {
     rule_t* rule;
 
     if((rule = find_rule_b(x, n))) {
-      if(!array_find(out, sizeof(rule_t*), &rule))
-        array_catb(out, &rule, sizeof(rule_t*));
+      if(!array_find(out, sizeof(rule_t*), &rule)) array_catb(out, &rule, sizeof(rule_t*));
     } else {
       buffer_puts(buffer_2, "ERROR: rule '");
       buffer_put(buffer_2, x, n);
@@ -715,7 +722,7 @@ void
 link_rules(HMAP_DB* rules, strarray* sources) {
   rule_t* all;
   char** srcfile;
-  strlist incs,deps;
+  strlist incs, deps;
   stralloc obj, bin;
   strlist_init(&incs, '\0');
   strlist_init(&deps, ' ');
@@ -726,8 +733,8 @@ link_rules(HMAP_DB* rules, strarray* sources) {
   strarray_foreach(sources, srcfile) {
     rule_t *compile, *link;
 
-        strlist_zero(&incs);
-        strlist_zero(&deps);
+    strlist_zero(&incs);
+    strlist_zero(&deps);
 
     if(has_main(*srcfile) == 1) {
 
@@ -790,17 +797,6 @@ get_srcdir_b(const char* x, size_t n) {
   stralloc_free(&p);
   return ret;
 }
-
-void
-path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
-  stralloc_zero(out);
-  if(prefix->len) {
-    stralloc_cat(out, prefix);
-    stralloc_catc(out, pathsep);
-  }
-  stralloc_cats(out, path);
-}
-
 void
 path_prefix_b(const stralloc* prefix, const char* path, size_t n, stralloc* out) {
   stralloc_zero(out);
@@ -944,6 +940,7 @@ usage(char* argv0) {
                        "  -h, --help                show this help\n",
                        "  -o, --output FILE         write to file\n"
                        "  -O, --objext EXT          object file extension\n",
+
                        "  -B, --exeext EXT          binary file extension\n",
                        "  -L, --libext EXT          library file extension\n",
                        "  -l, --create-libs         create rules for libraries\n",
@@ -1197,7 +1194,11 @@ main(int argc, char* argv[]) {
     if((fd = open_trunc(outfile)) != -1) buffer_1->fd = fd;
 
     path_dirname(outfile, &outdir.sa);
-    path_absolute_sa(&outdir.sa);
+
+    if(stralloc_equals(&outdir.sa, "."))
+      stralloc_zero(&outdir.sa);
+    else
+      stralloc_catc(&outdir.sa, pathsep);
   }
 
   path_getcwd(&workdir.sa);
@@ -1222,25 +1223,27 @@ main(int argc, char* argv[]) {
   debug_sa("workdir", &workdir.sa);
   debug_sa("builddir", &builddir.sa);
 
-  path_relative(workdir.sa.s, outdir.sa.s, &tmp);
+  if(outdir.sa.len) {
+    path_relative(workdir.sa.s, outdir.sa.s, &tmp);
 
-  if(tmp.len) {
-    stralloc_catc(&tmp, pathsep);
-    stralloc_copy(&srcdir, &tmp);
-    debug_sa("srcdir: ", &srcdir);
+    if(tmp.len) {
+      stralloc_catc(&tmp, pathsep);
+      stralloc_copy(&srcdir, &tmp);
+      debug_sa("srcdir: ", &srcdir);
+    }
+    stralloc_zero(&tmp);
   }
-  stralloc_zero(&tmp);
 
   path_relative(builddir.sa.s, outdir.sa.s, &tmp);
+  /*
+    if(tmp.len) {
+      stralloc_catc(&tmp, pathsep);
+      stralloc_copy(&builddir.sa, &tmp);
+    }
+    stralloc_free(&tmp);
 
-  if(tmp.len) {
-    stralloc_catc(&tmp, pathsep);
-    stralloc_copy(&builddir.sa, &tmp);
-  }
-  stralloc_free(&tmp);
-
-  debug_sa("builddir: ", &builddir.sa);
-
+    debug_sa("builddir", &builddir.sa);
+  */
   strarray_init(&args);
   strarray_init(&srcs);
 
