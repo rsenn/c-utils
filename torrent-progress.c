@@ -31,12 +31,12 @@
 #define PRIx64 "lx"
 #endif
 
+#include "lib/uint64.h"
 #include "lib/buffer.h"
 #include "lib/io.h"
 #include "lib/mmap.h"
 #include "lib/open.h"
 #include "lib/stralloc.h"
-#include "lib/uint64.h"
 #include "lib/windoze.h"
 
 #if defined(__x86_64__) && defined(__linux)

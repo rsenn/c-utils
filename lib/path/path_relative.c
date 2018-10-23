@@ -3,7 +3,7 @@
 #include "../stralloc.h"
 #include "../strlist.h"
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
+#define MAX_NUM(a, b) ((a) > (b) ? (a) : (b))
 
 #if WINDOWS_NATIVE
 #include <shlwapi.h>
@@ -60,7 +60,7 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
   {
     size_t n1 = strlist_count(&p);
     size_t n2 = strlist_count(&r);
-    size_t i, n = max(n1, n2);
+    size_t i, n = MAX_NUM(n1, n2);
 
     for(i = 0; i < n; ++i) {
       size_t l1, l2;

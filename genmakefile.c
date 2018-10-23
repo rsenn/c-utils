@@ -1,3 +1,4 @@
+#include "lib/windoze.h"
 #include "lib/getopt.h"
 #include "lib/buffer.h"
 #include "lib/hmap.h"
@@ -11,7 +12,8 @@
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
-#include "lib/windoze.h"
+
+#include <ctype.h>
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -426,53 +428,6 @@ get_rules_by_cmd(stralloc* cmd, strlist* deps) {
 }
 
 /**
- * Output rule to buffer
- */
-void
-output_rule(buffer* b, rule_t* rule) {
-  int num_deps = strlist_count(&rule->prereq);
-
-  if(array_length(&rule->deps, sizeof(rule_t*))) {
-    rule_t** r;
-    buffer_puts(b, "# Dependencies:\n");
-    array_foreach_t(&rule->deps, r) {
-
-      buffer_puts(b, "#  ");
-
-      buffer_puts(b, (*r)->name);
-      buffer_putnlflush(b);
-    }
-  }
-
-  if(num_deps == 0 && str_diffn(rule->name, builddir.sa.s, builddir.sa.len)) {
-    buffer_putm_internal(b, ".PHONY: ", rule->name, "\n", 0);
-  }
-
-  buffer_puts(b, rule->name);
-  buffer_putc(b, ':');
-
-  if(num_deps) {
-    buffer_putspace(b);
-    buffer_putsa(b, &rule->prereq.sa);
-  }
-
-  if(rule->recipe) {
-    stralloc cmd;
-    stralloc_init(&cmd);
-
-    rule_command(rule, &cmd);
-
-    buffer_puts(b, "\n\t");
-    buffer_putsa(b, &cmd);
-    buffer_putc(b, '\n');
-
-    stralloc_free(&cmd);
-  }
-
-  buffer_putnlflush(b);
-}
-
-/**
  * Create new source file entry.
  */
 sourcefile_t*
@@ -696,6 +651,9 @@ includes_to_libs(const strlist* includes, strlist* libs) {
   stralloc_free(&sa);
 }
 
+/**
+ * Given a list of target names, outputs an array of pointers to those targets.
+ */
 void
 target_ptrs(const strlist* targets, array* out) {
   const char* x;
@@ -713,6 +671,81 @@ target_ptrs(const strlist* targets, array* out) {
       buffer_putnlflush(buffer_2);
     }
   }
+}
+
+void
+target_deps_internal(buffer* b, rule_t* t, strlist* all, int depth) {
+  rule_t** ptr;
+
+  array_foreach_t(&t->deps, ptr) {
+    if(strlist_push_unique(all, (*ptr)->name)) {
+      buffer_puts(b, "# ");
+      buffer_putnspace(b, depth * 2);
+      buffer_puts(b, (*ptr)->name);
+      buffer_putnlflush(b);
+    }
+  }
+}
+
+void
+target_deps(buffer* b, rule_t* t) {
+  strlist deplist;
+  strlist_init(&deplist, '\0');
+  strlist_push(&deplist, t->name);
+
+  buffer_putm_internal(b, "# Dependencies for '", t->name, "':\n", 0);
+
+  target_deps_internal(b, t, &deplist, 0);
+
+  strlist_free(&deplist);
+}
+
+/**
+ * Output rule to buffer
+ */
+void
+output_rule(buffer* b, rule_t* rule) {
+  int num_deps = strlist_count(&rule->prereq);
+
+  if(array_length(&rule->deps, sizeof(rule_t*))) {
+    target_deps(b, rule);
+/*    rule_t** r;
+    buffer_puts(b, "# Dependencies:\n");
+    array_foreach_t(&rule->deps, r) {
+
+      buffer_puts(b, "#  ");
+
+      buffer_puts(b, (*r)->name);
+      buffer_putnlflush(b);
+    }*/
+  }
+
+  if(num_deps == 0 && str_diffn(rule->name, builddir.sa.s, builddir.sa.len)) {
+    buffer_putm_internal(b, ".PHONY: ", rule->name, "\n", 0);
+  }
+
+  buffer_puts(b, rule->name);
+  buffer_putc(b, ':');
+
+  if(num_deps) {
+    buffer_putspace(b);
+    buffer_putsa(b, &rule->prereq.sa);
+  }
+
+  if(rule->recipe) {
+    stralloc cmd;
+    stralloc_init(&cmd);
+
+    rule_command(rule, &cmd);
+
+    buffer_puts(b, "\n\t");
+    buffer_putsa(b, &cmd);
+    buffer_putc(b, '\n');
+
+    stralloc_free(&cmd);
+  }
+
+  buffer_putnlflush(b);
 }
 
 /**
@@ -1035,7 +1068,11 @@ set_type(const char* type) {
       //      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     }
 
-    stralloc_copys(&link_command, "$(LINK) -OUT:\"$@\" -INCREMENTAL -NOLOGO -MANIFEST -MANIFESTFILE:Debug/genmk.exe.intermediate.manifest -DEBUG -PDB:C:/Users/roman/Desktop/dirlist/genmk/Debug/genmk.pdb -SUBSYSTEM:CONSOLE -DYNAMICBASE -NXCOMPAT -MACHINE:X86 -ERRORREPORT:PROMPT @<<\n\t$(LDFLAGS)\n\t$^\n\t$(LDFLAGS) $(LIBS) $(EXTRA_LIBS)\n<<");
+    stralloc_copys(&link_command, "$(LINK) -OUT:\"$@\" -INCREMENTAL -NOLOGO -MANIFEST "
+                                  "-MANIFESTFILE:Debug/genmk.exe.intermediate.manifest -DEBUG "
+                                  "-PDB:C:/Users/roman/Desktop/dirlist/genmk/Debug/genmk.pdb -SUBSYSTEM:CONSOLE "
+                                  "-DYNAMICBASE -NXCOMPAT -MACHINE:X86 -ERRORREPORT:PROMPT "
+                                  "@<<\n\t$(LDFLAGS)\n\t$^\n\t$(LDFLAGS) $(LIBS) $(EXTRA_LIBS)\n<<");
 
     /*
      * Borland C++ Builder
