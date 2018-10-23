@@ -13,9 +13,8 @@
  * implied.  In no event shall the authors be liable for any damages arising
  * from the use of this software.
  */
- 
- 
- #if WINDOWS_NATIVE
+
+#if WINDOWS_NATIVE
 
 #define _WIN32_WINNT 0x0600
 #define WIN32_LEAN_AND_MEAN

@@ -1,5 +1,5 @@
-#include "../strlist.h"
 #include "../byte.h"
+#include "../strlist.h"
 
 int
 strlist_prependb(strlist* sl, const char* b, size_t n) {

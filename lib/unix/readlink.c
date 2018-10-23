@@ -1,15 +1,15 @@
-#include "../windoze.h"
 #include "../typedefs.h"
+#include "../windoze.h"
 
 #if WINDOWS
+#include "../ioctlcmd.h"
+#include "../utf8.h"
+#include <stdio.h>
 #include <windows.h>
 #include <winioctl.h>
-#include "../utf8.h"
-#include "../ioctlcmd.h"
-#include <stdio.h>
 
 #ifndef Newx
-#  define Newx(v,n,t)                    v = (t*)malloc((n)); 
+#define Newx(v, n, t) v = (t*)malloc((n));
 #endif
 
 static BOOL
@@ -23,8 +23,7 @@ get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
     return FALSE;
   }
 
-  hFile =
-      CreateFile(LinkPath, 0, 0, 0, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, 0);
+  hFile = CreateFile(LinkPath, 0, 0, 0, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, 0);
 
   if(hFile == INVALID_HANDLE_VALUE) {
     return FALSE;
@@ -50,7 +49,7 @@ get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
 ssize_t
 readlink(const char* LinkPath, char* buf, size_t maxlen) {
   union REPARSE_DATA_BUFFER_UNION u;
-  wchar_t *wbuf = 0;
+  wchar_t* wbuf = 0;
   unsigned int u8len, len, wlen;
 
   if(!get_reparse_data(LinkPath, &u)) {
@@ -60,13 +59,13 @@ readlink(const char* LinkPath, char* buf, size_t maxlen) {
   switch(u.iobuf.ReparseTag) {
     case IO_REPARSE_TAG_MOUNT_POINT: { /* Junction */
       wbuf = u.iobuf.MountPointReparseBuffer.PathBuffer +
-                    u.iobuf.MountPointReparseBuffer.SubstituteNameOffset / sizeof(wchar_t);
+             u.iobuf.MountPointReparseBuffer.SubstituteNameOffset / sizeof(wchar_t);
       wlen = u.iobuf.MountPointReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
       break;
     }
     case IO_REPARSE_TAG_SYMLINK: { /* Symlink */
       wbuf = u.iobuf.SymbolicLinkReparseBuffer.PathBuffer +
-                  u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset / sizeof(WCHAR);
+             u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset / sizeof(WCHAR);
       wlen = u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
       break;
     }
@@ -77,16 +76,14 @@ readlink(const char* LinkPath, char* buf, size_t maxlen) {
   for(len = 0; len < wlen; ++len) {
     u8len += wcu8len(wbuf[len]);
 
-    if(u8len >= maxlen) 
-      break;
+    if(u8len >= maxlen) break;
   }
   if(u8len > maxlen) {
     len--;
   }
 
   u8len = wcstou8s(buf, wbuf, len);
-  if(u8len >= maxlen)
-    u8len = maxlen - 1;
+  if(u8len >= maxlen) u8len = maxlen - 1;
 
   buf[u8len] = '\0';
   return u8len;
@@ -104,10 +101,14 @@ reparse_tag(const char* LinkPath) {
   return u.iobuf.ReparseTag;
 }
 
-int is_symlink(const char* LinkPath)
-{ return reparse_tag(LinkPath) == IO_REPARSE_TAG_SYMLINK; }
+int
+is_symlink(const char* LinkPath) {
+  return reparse_tag(LinkPath) == IO_REPARSE_TAG_SYMLINK;
+}
 
-char is_junction(const char* LinkPath) 
-{ return reparse_tag(LinkPath) == IO_REPARSE_TAG_MOUNT_POINT; }
+char
+is_junction(const char* LinkPath) {
+  return reparse_tag(LinkPath) == IO_REPARSE_TAG_MOUNT_POINT;
+}
 
 #endif /* WINDOWS */

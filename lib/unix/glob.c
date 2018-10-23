@@ -1,8 +1,8 @@
 #include "../windoze.h"
 #if WINDOWS_NATIVE && !defined(__MINGW32__) && !defined(__MINGW64__)
 
-#include "../glob.h"
 #include "../byte.h"
+#include "../glob.h"
 #include "../str.h"
 
 #include <errno.h>
@@ -286,10 +286,10 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
         }
 
         /* Synthesis the pattern result. */
-        
+
         pp[pglob->gl_offs] = (char*)(pp + 2 + pglob->gl_offs);
         pp[pglob->gl_offs + 1] = NULL;
-        
+
         str_copy(pp[pglob->gl_offs], effectivePattern);
 
         /* Return results to caller. */

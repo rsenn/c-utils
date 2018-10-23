@@ -1,5 +1,5 @@
-#include "../strarray.h"
 #include "../glob.h"
+#include "../strarray.h"
 
 static int
 strarray_glob_error(const char* path, int err) {

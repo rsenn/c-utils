@@ -97,8 +97,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
               if(optdef != 0) {
                 if(opterr) {
                   buffer_putm_2(buffer_2, "ambiguous option: ", spec_long);
-				               buffer_putnlflush(buffer_2);
-
+                  buffer_putnlflush(buffer_2);
                 }
                 return '?';
               }
@@ -110,9 +109,8 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
           }
           if(optdef == 0) {
             if(opterr) {
-              buffer_putm_2(buffer_2, 
-              "no such a option: ", spec_long);
-             buffer_putnlflush(buffer_2);
+              buffer_putm_2(buffer_2, "no such a option: ", spec_long);
+              buffer_putnlflush(buffer_2);
             }
             return '?';
           }
@@ -122,7 +120,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
               if(pos_eq != 0) {
                 if(opterr) {
                   buffer_putm_2(buffer_2, "no argument for ", optdef->name);
-				      buffer_putnlflush(buffer_2);
+                  buffer_putnlflush(buffer_2);
                 }
                 return '?';
               }
@@ -155,8 +153,8 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
       optopt = c;
       if(opterr) {
         buffer_putm_2(buffer_2, argv[0], ": invalid option -- ");
-		buffer_putc(buffer_2, c);
-		buffer_putnlflush(buffer_2);
+        buffer_putc(buffer_2, c);
+        buffer_putnlflush(buffer_2);
       }
       ++nextchar;
       return '?';
@@ -180,8 +178,8 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
           optopt = c;
           if(opterr) {
             buffer_putm_2(buffer_2, argv[0], ": option requires an argument -- ");
-				buffer_putc(buffer_2, c);
-		buffer_putnlflush(buffer_2);
+            buffer_putc(buffer_2, c);
+            buffer_putnlflush(buffer_2);
           }
           if(optstring[0] == ':' || ((optstring[0] == '-' || optstring[0] == '+') && optstring[1] == ':')) {
             c = ':';

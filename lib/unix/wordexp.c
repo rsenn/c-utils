@@ -1,5 +1,5 @@
-#include "../windoze.h"
 #include "../wordexp.h"
+#include "../windoze.h"
 
 #ifndef HAVE_WORDEXP
 #include <errno.h>
@@ -12,8 +12,8 @@
 #include <sys/types.h>
 
 #if WINDOWS_NATIVE
-#include <process.h>
 #include <io.h>
+#include <process.h>
 #endif
 
 #ifndef SIGKILL
@@ -41,7 +41,7 @@ typedef _sigset_t sigset_t;
 #if !WINDOWS_NATIVE
 #include <sys/wait.h>
 #include <unistd.h>
-#endif 
+#endif
 
 static void
 reap(int pid) {
@@ -55,7 +55,7 @@ reap(int pid) {
 static char*
 getword(FILE* f) {
   char* s = 0;
-  size_t a[1] = { 0 };
+  size_t a[1] = {0};
   return getdelim(&s, a, 0, f) < 0 ? 0 : s;
 }
 
@@ -219,9 +219,9 @@ nospace:
 int
 wordexp(const char* s, wordexp_t* we, int flags) {
   int r, cs;
-  //pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
+  // pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
   r = do_wordexp(s, we, flags);
-  //pthread_setcancelstate(cs, 0);
+  // pthread_setcancelstate(cs, 0);
   return r;
 }
 

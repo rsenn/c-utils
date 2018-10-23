@@ -12,8 +12,7 @@ strarray_transform(strarray* in, strarray* out, char* (*pred)(const char*)) {
 
   d = array_start((array*)out);
 
-  for(i = 0; i < n; ++i)
-    *d++ = pred(*s++);
+  for(i = 0; i < n; ++i) *d++ = pred(*s++);
 
   return i;
 }

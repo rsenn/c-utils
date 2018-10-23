@@ -1,5 +1,5 @@
-#include "../strlist.h"
 #include "../str.h"
+#include "../strlist.h"
 
 int
 strlist_prepends(strlist* sl, const char* s) {

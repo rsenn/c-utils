@@ -1,10 +1,10 @@
-#include "../windoze.h"
 #include "../typedefs.h"
+#include "../windoze.h"
 #include <errno.h>
+#include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <io.h>
 
 #if !defined(HAVE_GETDELIM) && !defined(__LCC__)
 

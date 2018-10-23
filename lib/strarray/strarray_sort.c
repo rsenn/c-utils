@@ -1,7 +1,7 @@
 #include "../strarray.h"
 #include <stdlib.h>
 
-typedef int (cmp_fn_t)(const void *, const void *);
+typedef int(cmp_fn_t)(const void*, const void*);
 
 void
 strarray_sort(strarray* arr, int (*compare)(char*, char*)) {

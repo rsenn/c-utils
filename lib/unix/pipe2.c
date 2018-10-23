@@ -1,4 +1,4 @@
-#if 1 //ndef HAVE_PIPE2
+#if 1 // ndef HAVE_PIPE2
 
 #include "../io_internal.h"
 #include "../ndelay.h"
@@ -27,14 +27,14 @@ pipe2(int fd[2], int flags) {
   tmp[1] = fd[1];
 
   /* Check the supported flags.  */
-  if((flags & ~(O_CLOEXEC 
+  if((flags & ~(O_CLOEXEC
 #ifdef O_BINARY
-          | O_BINARY 
+                | O_BINARY
 #endif
 #ifdef O_TEXT
-          | O_TEXT
+                | O_TEXT
 #endif
-          )) != 0) {
+                )) != 0) {
     errno = EINVAL;
     return -1;
   }
@@ -88,7 +88,7 @@ pipe2(int fd[2], int flags) {
       goto fail;
   }
 
-#if 0 //O_BINARY
+#if 0 // O_BINARY
   if(flags & O_BINARY) {
     set_binary_mode(fd[1], O_BINARY);
     set_binary_mode(fd[0], O_BINARY);

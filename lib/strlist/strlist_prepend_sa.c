@@ -1,5 +1,5 @@
-#include "../strlist.h"
 #include "../byte.h"
+#include "../strlist.h"
 
 int
 strlist_prepend_sa(strlist* sl, const stralloc* sa) {
