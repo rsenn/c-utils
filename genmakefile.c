@@ -490,7 +490,14 @@ dirname_alloc(const char* p) {
 void
 add_source(const char* filename, strarray* sources) {
   if(str_end(filename, ".c")) {
-    strarray_push(sources, filename);
+    stralloc sa;
+    stralloc_init(&sa);
+    stralloc_copys(&sa, filename);
+    stralloc_replace(&sa, pathsep == '/' ? '\\' : '/', pathsep);
+
+    strarray_push_sa(sources, &sa);
+
+    stralloc_free(&sa);
   }
 }
 
@@ -504,7 +511,9 @@ get_sources(const char* basedir, strarray* sources) {
   if(!rdir_open(&rdir, basedir)) {
     const char* s;
 
-    while((s = rdir_read(&rdir))) add_source(s, sources);
+    while((s = rdir_read(&rdir))) {
+      add_source(s, sources);
+    }
   }
 }
 

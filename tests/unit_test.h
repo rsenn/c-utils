@@ -19,9 +19,10 @@
  * SOFTWARE.
  */
 
-#ifndef __MINUNIT_H__
-#define __MINUNIT_H__
+#ifndef UNIT_TEST_H
+#define UNIT_TEST_H
 
+#include "../lib/taia.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +44,6 @@
 typedef char bool;
 
 // APIs
-#define START() static void unit_test_execute(struct unit_test* mu_)
 #define TEST(name) static void name(struct unit_test* mu_)
 #define RUN(name)                                                                                                      \
   if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) {                                                                  \
@@ -106,7 +106,7 @@ default           : "%p")
   }
 
 struct unit_test {
-  double elapsed;
+  tai6464 elapsed;
   int success;
   int failure;
   FILE* testlog;
@@ -119,6 +119,12 @@ struct unit_testConf {
   bool x;
 };
 typedef void (*unit_test_func_t)(struct unit_test* mu_);
+
+#ifdef UNIT_TEST_STATIC_FUNCTIONS
+#define START() static void unit_test_execute(struct unit_test* mu_)
+
+#define TESTS(name) static void unit_test_execute_ ## name(struct unit_test* mu_)
+
 static void unit_test_execute(struct unit_test* mu_);
 
 static struct unit_testConf* muconf() {
@@ -134,18 +140,18 @@ unit_test_cleanup(struct unit_test* mu_) {
   if(mu_->faillog) fclose(mu_->faillog);
 }
 
-static double
+static struct taia*
 unit_test_gettime() {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  return tv.tv_sec + tv.tv_usec * 1e-6;
+  static tai6464 t;
+  taia_now(&t);
+  return &t;
 }
 
 static int
 unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
-  double start = unit_test_gettime();
+  taia6464 start = unit_test_gettime();
   func(mu_);
-  mu_->elapsed = unit_test_gettime() - start;
+  taia_sub(&mu_->elapsed, &start, unit_test_gettime());
   return (mu_->failure == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
@@ -279,5 +285,29 @@ mu_i.testlog =  unit_test_tmpfile();
   unit_test_cleanup(mu_);
   return rc;
 }
+#else
+
+#define START() void unit_test_execute(struct unit_test* mu_)
+#define TESTS(name) void unit_test_execute_ ## name(struct unit_test* mu_)
+#define EXEC(name) unit_test_execute_ ## name(mu_)
+
+void unit_test_execute(struct unit_test* mu_);
+
+int                   main(int argc, char** argv);
+struct unit_testConf* muconf(void);
+int                   unit_test_call(struct unit_test* mu_, unit_test_func_t func);
+void                  unit_test_cleanup(struct unit_test* mu_);
+void                  unit_test_copy(FILE* src, FILE* dst);
+bool                  unit_test_empty(FILE* file);
+struct taia*          unit_test_gettime(void);
+void                  unit_test_optparse(int argc, char** argv);
+int                   unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name);
+FILE*                 unit_test_tmpfile(void);
+void                  unit_test_usage(const char* cmd);
+
+extern FILE* muout;
+extern FILE* muerr;
+
 #endif
 
+#endif /* defined(UNIT_TEST_H) */
