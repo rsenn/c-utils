@@ -622,9 +622,9 @@ main(int argc, char* argv[]) {
   int index = 0;
   struct longopt opts[] = {
     {"help", 0, 0, 'h'},
-    {"list", 0, &opt_list, 'l'},
-    {"numeric", 0, &opt_numeric, 'n'},
-    {"relative", 0, &opt_relative, 'r'},
+    {"list", 0, &opt_list, 1},
+    {"numeric", 0, &opt_numeric, 1},
+    {"relative", 0, &opt_relative, 1},
     {"output", 1, 0, 'o'},
     {"exclude", 1, 0, 'x'},
     {"time-style", 1, 0, 't'},
@@ -662,10 +662,9 @@ main(int argc, char* argv[]) {
       opt_separator = optarg[0];
       break;
     }
-    case 'l':
-    case 'n':
-    case 'r':
-      break;
+    case 'l': opt_list = 1; break;
+    case 'n': opt_numeric = 1; break;
+    case 'r': opt_relative = 1; break;
     default: usage(argv[0]); return 1;
     }
   }
