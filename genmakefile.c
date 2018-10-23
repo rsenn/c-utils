@@ -1105,6 +1105,8 @@ set_type(const char* type) {
 
       /* Borland C++ Builder 5.5 */
     } else {
+      pathsep = '\\';
+
       set_var("CC", "bcc32");
       set_var("CXX", "bcc32");
 
