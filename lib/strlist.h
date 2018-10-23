@@ -63,7 +63,8 @@ int strlist_append_sa(strlist* sl, const stralloc* sa);
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
 
-#define __strlist_foreach(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl)-str, (sl)->sep) + 1)
+#define strlist_foreach(sl, str, n) for((str) = (sl)->sa.s; (n) = byte_chr((str), strlist_end(sl)-(str), (sl)->sep), (str) < strlist_end(sl); (str) +=  (n) + 1)
+#define strlist_foreach_s(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl)-str, (sl)->sep) + 1)
 
 #ifdef STRALLOC_H
 int strlist_contains_sa(strlist*, const stralloc* sa);
@@ -77,3 +78,5 @@ void strlist_joins(const strlist*, stralloc* sa, const char* delim);
 # endif
 #endif /* defined(STRLIST_H) */
 
+int64 strlist_indexofb(strlist* sl, const char* x, size_t n);
+int strlist_pushb_unique(strlist* sl, const char* x, size_t n);

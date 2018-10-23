@@ -453,7 +453,7 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   } else {
     const char* dir;
     success = FALSE;
-    __strlist_foreach(cfg->search_paths, dir) {
+    strlist_foreach_s(cfg->search_paths, dir) {
       success = try_map_and_load(str_basename(name), dir, &loaded_image, cfg->machine_type);
       if(success) break;
     }
@@ -761,7 +761,7 @@ add_path(strlist* sp, const char* path) {
     strlist_init(&tmp, '\0');
     strlist_froms(&tmp, path, s);
 
-    __strlist_foreach(&tmp, path) {
+    strlist_foreach_s(&tmp, path) {
       pathconv(path, &dir);
 
       if(dir.s[0] == '/') sep = dir.s;

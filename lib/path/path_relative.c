@@ -20,18 +20,20 @@ path_relative(const char* path, const char* to, stralloc* rel) {
   if(path[0] == '\0') path = ".";
   if(to[0] == '\0') to = ".";
 
-  if(!path_absolute(path) || !path_absolute(to)) path_getcwd(&cwd);
-
-  path_realpath(path, &p.sa, 1, &cwd);
-  path_realpath(to, &t.sa, 1, &cwd);
-
 #if WINDOWS
+  stralloc_copys(&p.sa, path);
+  path_absolute_sa(&p.sa);
+  stralloc_replace(&p.sa, '/', '\\');
   stralloc_nul(&p.sa);
+
+  stralloc_copys(&t.sa, to);
+  path_absolute_sa(&t.sa);
+  stralloc_replace(&t.sa, '/', '\\');
   stralloc_nul(&t.sa);
 
   if(!stralloc_ready(rel, PATH_MAX + 1)) return 0;
-  PathRelativePathToA(
-      (LPSTR)rel->s, (LPCSTR)t.sa.s, FILE_ATTRIBUTE_DIRECTORY, (LPCSTR)p.sa.s, FILE_ATTRIBUTE_DIRECTORY);
+
+  PathRelativePathToA((LPSTR)rel->s, (LPCSTR)t.sa.s, FILE_ATTRIBUTE_DIRECTORY, (LPCSTR)p.sa.s, FILE_ATTRIBUTE_DIRECTORY);
 
   rel->len = str_len(rel->s);
 
@@ -39,6 +41,11 @@ path_relative(const char* path, const char* to, stralloc* rel) {
 
   stralloc_shrink(rel);
 #else
+  if(!path_absolute(path) || !path_absolute(to)) path_getcwd(&cwd);
+
+  path_realpath(path, &p.sa, 1, &cwd);
+  path_realpath(to, &t.sa, 1, &cwd);
+
   len = strlist_count(&p);
   n = strlist_count(&t);
 

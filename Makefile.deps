@@ -1800,3 +1800,17 @@ $(BUILDDIR)ziptest.o: ./ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_relative.o: lib/path/path_relative.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)array_find.o: lib/array/array_find.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)array_indexof.o: lib/array/array_indexof.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_canonical_sa.o: lib/path/path_canonical_sa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_indexofb.o: lib/strlist/strlist_indexofb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_pushb_unique.o: lib/strlist/strlist_pushb_unique.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_absolute_sa.o: lib/path_absolute_sa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_absolute_sa.o: lib/path/path_absolute_sa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

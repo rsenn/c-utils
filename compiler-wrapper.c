@@ -186,7 +186,7 @@ process_option(const char* optstr, const char*  nextopt, int* i) {
 }
 
 void
-strlist_foreach(strlist* sl, void(*slptr)(const char*)) {
+strlist_each(strlist* sl, void(*slptr)(const char*)) {
   int i, n = strlist_count(sl);;
 
   for(n = strlist_count(sl), i = 0; i < n; ++i) {
