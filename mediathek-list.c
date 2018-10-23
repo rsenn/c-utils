@@ -615,7 +615,7 @@ main(int argc, char* argv[]) {
   /*  stralloc sa;
     stralloc_init(&sa);
 
-    strlist_join(&include, &sa, ',');
+    strlist_join(&include, &sa, ",");
 
     buffer_putsa(buffer_2, &sa);
     buffer_putnlflush(buffer_2);*/

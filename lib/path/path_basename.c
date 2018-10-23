@@ -1,8 +1,6 @@
 /* from dietlibc by felix leitner, adapted to libowfat */
-
 #include "../path_internal.h"
 #include "../str.h"
-
 /*
        path           dirname        basename
        "/usr/lib"     "/usr"         "lib"
@@ -12,7 +10,6 @@
        "."            "."            "."
        ".."           "."            ".."
 */
-
 char*
 path_basename(char* path) {
   unsigned int n;

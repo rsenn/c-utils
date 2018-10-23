@@ -76,6 +76,8 @@ endif(MSVC)
   add_definitions(-D_FILE_OFFSET_BITS=64)
 #endif(WIN32 OR WIN64)
 if(MSVC)
+include(${CMAKE_CURRENT_SOURCE_DIR}/SetMSVCStaticRuntime.cmake)
+
 add_definitions(-wd4706)
 else(MSVC)
   if(CMAKE_COMPILER_IS_GNUCC OR GNU)

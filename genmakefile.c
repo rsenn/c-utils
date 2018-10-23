@@ -493,7 +493,7 @@ add_source(const char* filename, strarray* sources) {
     stralloc sa;
     stralloc_init(&sa);
     stralloc_copys(&sa, filename);
-//    stralloc_replace(&sa, pathsep == '/' ? '\\' : '/', pathsep);
+    //    stralloc_replace(&sa, pathsep == '/' ? '\\' : '/', pathsep);
 
     strarray_push_sa(sources, &sa);
 
