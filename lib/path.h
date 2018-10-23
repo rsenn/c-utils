@@ -29,7 +29,7 @@ size_t path_skip(const char* s, size_t n);
 size_t path_num(const char* p, size_t len, int n);
 size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
 int    path_exists(const char* p);
-int    path_absolute(const char* p);
+int    path_is_absolute(const char* p);
 int    path_relative(const char*, const char* to, stralloc* rel);
 
 #ifdef STRLIST_H

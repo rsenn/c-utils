@@ -2,8 +2,8 @@
 
 /* XXX: breaks tai encapsulation */
 
-void taia_add(struct taia *t,const struct taia *u,const struct taia *v)
-{
+void
+taia_add(struct taia* t, const struct taia* u, const struct taia* v) {
   t->sec.x = u->sec.x + v->sec.x;
   t->nano = u->nano + v->nano;
   t->atto = u->atto + v->atto;

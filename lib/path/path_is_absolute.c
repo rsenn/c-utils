@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 int
-path_absolute(const char* p) {
+path_is_absolute(const char* p) {
   size_t len = str_len(p);
   if(len > 0 && p[0] == '/') return 1;
 #if WINDOWS

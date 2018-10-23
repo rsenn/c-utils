@@ -767,7 +767,7 @@ add_path(strlist* sp, const char* path) {
       if(dir.s[0] == '/') sep = dir.s;
 
       stralloc_nul(&dir);
-      if(!path_absolute(dir.s)) stralloc_prepend(&dir, &cwd);
+      if(!path_is_absolute(dir.s)) stralloc_prepend(&dir, &cwd);
 
       if(!stralloc_endb(&dir, sep, 1)) stralloc_catc(&dir, *sep);
 

@@ -1,5 +1,5 @@
-#include <ctype.h>
 #include "../stralloc.h"
+#include <ctype.h>
 
 int
 stralloc_decamelize(stralloc* sa, stralloc* to) {

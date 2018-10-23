@@ -1,6 +1,6 @@
 #include "../byte.h"
-#include "../utf8.h"
 #include "../stralloc.h"
+#include "../utf8.h"
 
 /* stralloc_copyb copies the string buf[0], buf[1], ..., buf[len - 1] into
  * sa, allocating space if necessary, and returns 1. If it runs out of
@@ -8,8 +8,7 @@
 int
 stralloc_copywcb(stralloc* sa, const wchar_t* buf, size_t len) {
   size_t i, n = 0;
-  for(i = 0; buf[i]; ++i) 
-    n += wcu8len(buf[i]);
+  for(i = 0; buf[i]; ++i) n += wcu8len(buf[i]);
 
   if(stralloc_ready(sa, n)) {
     sa->len = n;
@@ -18,4 +17,3 @@ stralloc_copywcb(stralloc* sa, const wchar_t* buf, size_t len) {
   }
   return 0;
 }
-

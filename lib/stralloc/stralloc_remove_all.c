@@ -1,17 +1,17 @@
-#include "../stralloc.h"
 #include "../byte.h"
+#include "../stralloc.h"
 
-void stralloc_remove_all(stralloc *sa, register const char *delchars, register unsigned int delcharslen)
-{
+void
+stralloc_remove_all(stralloc* sa, register const char* delchars, register unsigned int delcharslen) {
   register unsigned int i;
-  register char *x;
-  register char *t;
+  register char* x;
+  register char* t;
 
   t = x = sa->s;
-  if (!x) return;  /* safety */
+  if(!x) return; /* safety */
   i = sa->len;
-  while (i) {
-    if (byte_chr(delchars, delcharslen, *x) == delcharslen) {  /* good char found */
+  while(i) {
+    if(byte_chr(delchars, delcharslen, *x) == delcharslen) { /* good char found */
       *t++ = *x;
     }
     x++;

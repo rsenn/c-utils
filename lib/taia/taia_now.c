@@ -1,7 +1,7 @@
 #include "../windoze.h"
 
-#include "../uint64.h"
 #include "../taia.h"
+#include "../uint64.h"
 #include <sys/types.h>
 #if WINDOWS
 #include <windows.h>
@@ -15,12 +15,12 @@ taia_now(struct taia* t) {
   LARGE_INTEGER ticks, freq;
   if(QueryPerformanceFrequency(&freq)) {
     if(QueryPerformanceCounter(&ticks)) {
-       const int microseconds = 1000000;
-       const int64 nanoseconds = microseconds * 1000;
+      const int microseconds = 1000000;
+      const int64 nanoseconds = microseconds * 1000;
       t->sec.x = ticks.QuadPart / freq.QuadPart;
-    ticks.QuadPart %= freq.QuadPart;
-    t->nano = ticks.QuadPart * nanoseconds / freq.QuadPart;
-    t->atto = 0;
+      ticks.QuadPart %= freq.QuadPart;
+      t->nano = ticks.QuadPart * nanoseconds / freq.QuadPart;
+      t->atto = 0;
     }
   }
 #elif 0

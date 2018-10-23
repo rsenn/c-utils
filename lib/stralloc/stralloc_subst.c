@@ -1,6 +1,6 @@
-#include "../stralloc.h"
-#include "../str.h"
 #include "../byte.h"
+#include "../str.h"
+#include "../stralloc.h"
 
 int
 stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, const char* to) {

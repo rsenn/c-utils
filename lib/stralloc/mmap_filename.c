@@ -1,16 +1,16 @@
-#include "../windoze.h"
-#include "../mmap.h"
-#include "../stralloc.h"
 #include "../buffer.h"
-#include "../scan.h"
+#include "../mmap.h"
 #include "../open.h"
+#include "../scan.h"
+#include "../stralloc.h"
+#include "../windoze.h"
 
 #if WINDOWS_NATIVE
-#include <windows.h>
 #include <psapi.h>
+#include <windows.h>
 #else
-#include <unistd.h>
 #include <limits.h>
+#include <unistd.h>
 #endif
 
 int

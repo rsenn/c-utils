@@ -4,11 +4,11 @@
 #include "../lib/buffer.h"
 
 /*
- * int path_absolute(const char*);
+ * int path_is_absolute(const char*);
  */
 TEST(test_path_absolute) {
-  //ASSERT_EQ(0, !path_absolute("/test/path"));
-  //ASSERT_EQ(1, !path_absolute("test/path"));
+  //ASSERT_EQ(0, !path_is_absolute("/test/path"));
+  //ASSERT_EQ(1, !path_is_absolute("test/path"));
 }
 
 /*

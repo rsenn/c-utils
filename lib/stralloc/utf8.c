@@ -75,9 +75,9 @@ wcsu8slen(const wchar_t* pw) {
 
 size_t
 wcstou8s(char* pu, const wchar_t* pw, size_t count) {
-  size_t clen; 
-   wchar_t w;
- int len = wcsu8slen(pw);
+  size_t clen;
+  wchar_t w;
+  int len = wcsu8slen(pw);
 
   if(NULL == pu) return (size_t)len;
 
@@ -130,10 +130,9 @@ u8len(const char* u, size_t count) {
 int
 u8towc(wchar_t* w, const char* u, size_t count) {
   int len;
-  /* assert */ 
-  
-  if(NULL == w)
-    return -1;
+  /* assert */
+
+  if(NULL == w) return -1;
 
   len = u8len(u, 1);
 
