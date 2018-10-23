@@ -2,6 +2,8 @@
 #include "../io.h"
 #include "../playlist.h"
 
+#include <stdio.h>
+
 #if WINDOWS
 #include <io.h>
 #else

@@ -30,7 +30,7 @@ path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd) {
 
     /* copy current dir */
     byte_copy(buf, cwd->len, cwd->s);
-    buf[cwd->len] = '/';
+    buf[cwd->len] = PATHSEP_C;
     byte_copy(&buf[cwd->len + 1], n + 1, path);
 
     /* run canonicalize with the concatenated path */

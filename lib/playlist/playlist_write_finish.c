@@ -4,6 +4,7 @@
 #include "../byte.h"
 #include "../fmt.h"
 
+#include <stdio.h>
 #include <sys/types.h>
 
 #if WINDOWS

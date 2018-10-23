@@ -12,13 +12,13 @@
 
 int
 path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags) {
-  /*  buffer_puts(buffer_2, "fnmatch: ");
-    buffer_put(buffer_2, pattern, plen);
-    buffer_putspace(buffer_2);
-    buffer_put(buffer_2, string, slen);
-    buffer_putnlflush(buffer_2);*/
+/*  buffer_puts(buffer_2, "fnmatch: ");
+  buffer_put(buffer_2, pattern, plen);
+  buffer_putspace(buffer_2);
+  buffer_put(buffer_2, string, slen);
+  buffer_putnlflush(buffer_2);*/
 
-  /* label to jump back instead of recursion */
+/* label to jump back instead of recursion */
 start:
 
   /* when string is empty, only a pattern consisting of asteriks matches */

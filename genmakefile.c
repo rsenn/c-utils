@@ -1,13 +1,14 @@
 #include "lib/getopt.h"
-#include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/hmap.h"
 #include "lib/mmap.h"
+#include "lib/open.h"
 #include "lib/path.h"
 #include "lib/rdir.h"
 #include "lib/scan.h"
 #include "lib/slist.h"
 #include "lib/str.h"
+#include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
 #include "lib/windoze.h"
@@ -64,7 +65,8 @@ static stralloc compile_command, lib_command, link_command, mkdir_command, delet
 static const char* objext = DEFAULT_OBJEXT;
 static const char* libext = DEFAULT_LIBEXT;
 static const char* binext = DEFAULT_EXEEXT;
-static strlist builddir;
+static strlist builddir, outdir;
+static stralloc srcdir;
 static char pathsep = DEFAULT_PATHSEP;
 
 static int build_type = BUILD_TYPE_DEBUG;
@@ -240,6 +242,18 @@ add_path(strlist* list, const char* path) {
 
   for(i = list->sa.len - len; i < list->sa.len; ++i) {
     if(list->sa.s[i] == '/' || list->sa.s[i] == '\\') list->sa.s[i] = pathsep;
+  }
+}
+
+void
+add_srcpath(strlist* list, const char* path) {
+  size_t i, len = str_len(path);
+
+  if(srcdir.len) {
+    strlist_push_sa(list, &srcdir);
+    stralloc_cats(&list->sa, path);
+  } else {
+    strlist_push(list, path);
   }
 }
 
@@ -457,8 +471,8 @@ get_sources(const char* basedir, strarray* sources) {
 }
 
 /**
-  * Creates a hash-map of all source directories
-  */
+ * Creates a hash-map of all source directories
+ */
 void
 populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
   char** srcfile;
@@ -526,7 +540,7 @@ compile_rules(HMAP_DB* rules, strarray* sources) {
     src_to_obj(*srcfile, &obj);
 
     if((rule = get_rule_sa(&obj))) {
-      add_path(&rule->deps, *srcfile);
+      add_srcpath(&rule->deps, *srcfile);
 
       rule->cmd = &compile_command;
     }
@@ -590,7 +604,7 @@ lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0') continue;
 
     strlist_zero(&lib);
-    strlist_push_sa(&lib, &builddir);
+    strlist_push_sa(&lib, &builddir.sa);
     strlist_push(&lib, base);
     stralloc_cats(&lib.sa, libext);
 
@@ -712,15 +726,15 @@ set_type(const char* type) {
      */
 
     if(str_start(type, "gnu") || str_start(type, "gcc")) {
-    set_var("CC", "gcc");
-    set_var("CXX", "g++");
+      set_var("CC", "gcc");
+      set_var("CXX", "g++");
 
-    set_var("AR", "ar");
+      set_var("AR", "ar");
     } else if(str_start(type, "clang") || str_start(type, "llvm")) {
-          set_var("CC", "clang");
-    set_var("CXX", "clang++");
+      set_var("CC", "clang");
+      set_var("CXX", "clang++");
 
-    set_var("AR", "llvm-ar");
+      set_var("AR", "llvm-ar");
     }
 
     stralloc_copys(&lib_command, "$(AR) rcs $@ $^");
@@ -733,28 +747,33 @@ set_type(const char* type) {
      */
   } else if(str_start(type, "msvc") || str_start(type, "icl")) {
 
-    set_var("CC", "cl");
+    set_var("CC", "cl /nologo");
     set_var("LIB", "lib");
     set_var("LINK", "link");
+    push_var("CPPFLAGS", "-Dinline=__inline");
+    push_var("LDFLAGS",
+             "/DEBUG /DYNAMICBASE /INCREMENTAL /MANIFEST /manifest:embed2 /MANIFESTUAC:\"level=asInvoker "
+             "uiAccess=false\" /NXCOMPAT /TLBID:1");
 
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
     /*
      * Intel C++ compiler
      */
     if(str_start(type, "icl")) {
-      set_var("CC", "icl");
-      set_var("CXX", "icl");
+      set_var("CC", "icl /nologo");
+      set_var("CXX", "icl /nologo");
 
       set_var("LINK", "xilink");
       set_var("LIB", "xilib");
 
       push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
 
-      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo$@ $<");
-    } else {
-      stralloc_copys(&link_command, "$(LINK) /OUT:$@ @<<\n\t\t$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)\n<<");
+      //      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     }
+
+    stralloc_copys(&link_command, "$(LINK) /nologo /out:\"$@\" $(LDLFLAGS) @<<\n\t$^\n\t$(LIBS) $(EXTRA_LIBS)\n<<");
 
     /*
      * Borland C++ Builder
@@ -846,6 +865,15 @@ set_type(const char* type) {
 
   return 1;
 }
+static stralloc tmp;
+
+void
+debug_sa(const char* name, stralloc* sa) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_putsa(buffer_2, sa);
+  buffer_putnlflush(buffer_2);
+}
 
 int
 main(int argc, char* argv[]) {
@@ -853,7 +881,7 @@ main(int argc, char* argv[]) {
   static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
   int c;
   int ret = 0, index = 0;
-  const char *outfile = NULL, * outdir = NULL;
+  const char *outfile = NULL, *dir = NULL;
   strlist workdir;
   strarray args;
 
@@ -872,6 +900,10 @@ main(int argc, char* argv[]) {
                            {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
                            {0}};
 
+  strlist_init(&workdir, pathsep);
+  strlist_init(&outdir, pathsep);
+  strlist_init(&builddir, pathsep);
+
   for(;;) {
     c = getopt_long(argc, argv, "ho:O:B:L:d:t:", opts, &index);
     if(c == -1) break;
@@ -883,7 +915,7 @@ main(int argc, char* argv[]) {
       case 'O': objext = optarg; break;
       case 'B': binext = optarg; break;
       case 'L': libext = optarg; break;
-      case 'd': outdir = optarg; break;
+      case 'd': dir = optarg; break;
       case 't': type = optarg; break;
       default: usage(argv[0]); return 1;
     }
@@ -904,20 +936,51 @@ main(int argc, char* argv[]) {
 
   if(outfile) {
     int fd;
-    if((fd = open_trunc(outfile)) != -1)
-      buffer_1->fd = fd;
+    if((fd = open_trunc(outfile)) != -1) buffer_1->fd = fd;
+
+    path_dirname(outfile, &outdir.sa);
   }
 
-  strlist_init(&workdir, pathsep);
   path_getcwd(&workdir.sa);
 
-  strlist_init(&builddir, pathsep);
+  stralloc_nul(&outdir.sa);
+  stralloc_nul(&workdir.sa);
 
-  if(!strlist_contains(&workdir, "build")) {
-    strlist_push(&builddir, outdir ? outdir : "build");
+  if(strlist_contains(&outdir, "build")) {
+    path_relative(outdir.sa.s, workdir.sa.s, &builddir.sa);
+  } else if(!strlist_contains(&workdir, "build")) {
+    strlist_push(&builddir, dir ? dir : "build");
     strlist_push(&builddir, type);
-    strlist_push(&builddir, build_types[build_type]);
   }
+
+  strlist_push(&builddir, build_types[build_type]);
+
+  stralloc_nul(&outdir.sa);
+  stralloc_nul(&workdir.sa);
+  stralloc_nul(&builddir.sa);
+
+  debug_sa("outdir", &outdir.sa);
+  debug_sa("workdir", &workdir.sa);
+  debug_sa("builddir", &builddir.sa);
+
+  path_relative(workdir.sa.s, outdir.sa.s, &tmp);
+
+  if(tmp.len) {
+    stralloc_catc(&tmp, pathsep);
+    stralloc_copy(&srcdir, &tmp);
+    debug_sa("srcdir: ", &srcdir);
+  }
+  stralloc_zero(&tmp);
+
+  path_relative(builddir.sa.s, outdir.sa.s, &tmp);
+
+  if(tmp.len) {
+    stralloc_catc(&tmp, pathsep);
+    stralloc_copy(&builddir.sa, &tmp);
+  }
+  stralloc_free(&tmp);
+
+  debug_sa("builddir: ", &builddir.sa);
 
   strarray_init(&args);
   strarray_init(&srcs);
@@ -959,7 +1022,7 @@ main(int argc, char* argv[]) {
     strarray_foreach(&args, arg) {
 
       if(!path_exists(*arg)) {
-        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", *arg, "\n");
+        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", *arg, "\n", 0);
         buffer_flush(buffer_2);
         ret = 127;
         goto fail;

@@ -154,8 +154,8 @@ unit_test_run(struct unit_test* mu, unit_test_func_t func, const char* name) {
       .elapsed = 0, .success = 0, .failure = 0, .testlog = unit_test_tmpfile(), .faillog = unit_test_tmpfile()};
 
   if(!muconf->s) {
-    stdout = running->testlog;
-    stderr = running->testlog;
+    //stdout = running->testlog;
+    //stderr = running->testlog;
   }
 
   int rc = unit_test_call(running, func);

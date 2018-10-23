@@ -11,7 +11,7 @@
 void
 buffer_munmap(void* buf) {
   buffer* b = (buffer*)buf;
-#if WINDOWS
+#if WINDOWS_NATIVE
   UnmapViewOfFile(b->x);
 #else
   if(b->fd != -1) {

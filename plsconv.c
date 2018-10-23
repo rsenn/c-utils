@@ -1,3 +1,4 @@
+#include "lib/windoze.h"
 #include "lib/getopt.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
@@ -5,6 +6,12 @@
 #include "lib/open.h"
 #include "lib/playlist.h"
 #include "lib/str.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 #include <stdio.h>
 

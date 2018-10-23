@@ -4,6 +4,8 @@
 #include "lib/byte.h"
 #include "lib/errmsg.h"
 #include "lib/path.h"
+#include "lib/str.h"
+
 #include <ctype.h>
 
 extern int symlink(const char*, const char*);

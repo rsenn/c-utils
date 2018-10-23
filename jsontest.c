@@ -1,3 +1,4 @@
+#include "lib/windoze.h"
 #include "lib/charbuf.h"
 #include "lib/mmap.h"
 #include "lib/byte.h"
@@ -8,6 +9,14 @@
 #include "lib/json.h"
 #include "lib/open.h"
 #include "lib/io_internal.h"
+#include "lib/str.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>

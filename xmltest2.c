@@ -5,6 +5,7 @@
 #include "lib/iterator.h"
 #include "lib/stralloc.h"
 #include "lib/xml.h"
+#include "lib/str.h"
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>

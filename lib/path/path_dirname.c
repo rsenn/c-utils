@@ -16,7 +16,7 @@ static const char* const dot = ".";
 #define PATHSEP_S "\\/"
 
 char*
-path_dirname(char* path, stralloc* dir) {
+path_dirname(const char* path, stralloc* dir) {
   size_t i;
   stralloc_zero(dir);
 

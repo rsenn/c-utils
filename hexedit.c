@@ -8,6 +8,8 @@
 #include "lib/stralloc.h"
 #include "lib/open.h"
 #include "lib/path.h"
+#include "lib/str.h"
+
 #include <fcntl.h>
 #include <stdio.h>
 

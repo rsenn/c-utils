@@ -15,7 +15,7 @@ extern "C" {
 
 char*  path_basename(char* path);
 int    path_canonicalize(const char* path, stralloc* sa, int symbolic);
-char*  path_dirname(char* path, stralloc* dir);
+char*  path_dirname(const char* path, stralloc* dir);
 int    path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
 void   path_getcwd(stralloc* sa);
 char*  path_gethome(int uid);
@@ -30,6 +30,7 @@ size_t path_num(const char* p, size_t len, int n);
 size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
 int    path_exists(const char* p);
 int    path_absolute(const char* p);
+int    path_relative(const char*, const char* to, stralloc* rel);
 
 #ifdef STRLIST_H
 int    path_split(const char* p, strlist* sl);

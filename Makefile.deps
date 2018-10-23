@@ -1798,3 +1798,5 @@ $(BUILDDIR)xmltest4.o: ./xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ./ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_relative.o: lib/path/path_relative.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

@@ -1,8 +1,10 @@
 #define _XOPEN_SOURCE 1
-#include "lib/getopt.h"
+#define __POSIX_VISIBLE 199209
+#define __MISC_VISIBLE 1
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
+#include "lib/getopt.h"
 #include "lib/http.h"
 #include "lib/io_internal.h"
 #include "lib/scan.h"
@@ -15,12 +17,26 @@
 #include <libgen.h>
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 #define BUFSIZE 65535
+
+#if __BORLANDC__
+#undef popen
+void* __declspec(dllimport) popen(const char*, const char*);
+
+#define popen __popen_tmp
+#include <stdio.h>
+#undef popen
+#define popen _popen
+#endif
 
 extern char strlist_dumpx[5];
 
@@ -38,14 +54,14 @@ http://verteiler5.mediathekview.de/Filmliste-akt.xz
 http://verteiler6.mediathekview.de/Filmliste-akt.xz
 */
 const char* const mediathek_urls[] = {
-  "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
-  "http://mediathekview.jankal.me/Filmliste-akt.xz",
-  "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
-  "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
+    "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
+    "http://mediathekview.jankal.me/Filmliste-akt.xz",
+    "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
 const char* const mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
@@ -120,13 +136,15 @@ void
 process_status(void) {
   /* display interesting process IDs  */
 #if !(defined(_WIN32) || defined(_WIN64))
-  fprintf(stderr,
-          "process %s: pid=%d, ppid=%d, pgid=%d, fg pgid=%dn\n",
-          argv0,
-          (int)getpid(),
-          (int)getppid(),
-          (int)getpgrp(),
-          (int)tcgetpgrp(STDIN_FILENO));
+  buffer_putm_internal(buffer_2, "process ", argv0, ": pid=", 0);
+  buffer_putlong(buffer_2, getpid());
+  buffer_puts(buffer_2, ", ppid=");
+  buffer_putlong(buffer_2, getppid());
+  buffer_puts(buffer_2, ", pgrp=");
+  buffer_putlong(buffer_2, getpgrp());
+  buffer_puts(buffer_2, ", tcpgrp=");
+  buffer_putlong(buffer_2, tcgetpgrp(STDIN_FILENO));
+  buffer_putnlflush(buffer_2);
 #endif
 }
 
@@ -307,7 +325,7 @@ new_mediathek_entry() {
 
 mediathek_entry_t*
 create_mediathek_entry(
-  const char* ch, const char* tpc, const char* tit, const char* dsc, const char* ur, const char* ln) {
+    const char* ch, const char* tpc, const char* tit, const char* dsc, const char* ur, const char* ln) {
   mediathek_entry_t* e = new_mediathek_entry();
   if(e == 0) return 0;
 
@@ -437,7 +455,7 @@ parse_entry(strlist* sl) {
                                    url,
                                    link
 
-                                  );
+      );
 
       if(ret) {
         ret->tm = dt + tm;
@@ -574,12 +592,12 @@ main(int argc, char* argv[]) {
 
   while((opt = getopt(argc, argv, "F:dt:i:x:")) != -1) {
     switch(opt) {
-    case 'F': dt_fmt = optarg; break;
-    case 'd': debug++; break;
-    case 't': min_length = parse_time(optarg); break;
-    case 'i': strlist_push(&include, optarg); break;
-    case 'x': strlist_push(&exclude, optarg); break;
-    default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n"); exit(EXIT_FAILURE);
+      case 'F': dt_fmt = optarg; break;
+      case 'd': debug++; break;
+      case 't': min_length = parse_time(optarg); break;
+      case 'i': strlist_push(&include, optarg); break;
+      case 'x': strlist_push(&exclude, optarg); break;
+      default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n"); exit(EXIT_FAILURE);
     }
   }
 
@@ -601,10 +619,11 @@ main(int argc, char* argv[]) {
 
     buffer_putsa(buffer_2, &sa);
     buffer_putnlflush(buffer_2);*/
-
-  fprintf(stderr, "%p\n", str_istr("blah", ""));
-  fprintf(stderr, "%p\n", str_istr("[", "blah"));
-  fflush(stderr);
+  /*
+    fprintf(stderr, "%p\n", str_istr("blah", ""));
+    fprintf(stderr, "%p\n", str_istr("[", "blah"));
+    fflush(stderr);
+    */
 
   /*   if(optind >= argc) {
          fprintf(stderr,

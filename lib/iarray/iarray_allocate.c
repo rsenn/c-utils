@@ -13,12 +13,17 @@
 
 #ifdef __dietlibc__
 # include <sys/atomic.h>
-#elif WINDOWS
+#elif WINDOWS_NATIVE
 # define __CAS(val,oldval,newval) InterlockedCompareExchange(val,newval,oldval)
 # define __CAS_PTR(ptr,oldptr,newptr) InterlockedCompareExchangePointer(ptr,newptr,oldptr)
 #elif defined(__GNUC__)
 # define __CAS(val,oldval,newval) __sync_val_compare_and_swap(val,oldval,newval)
-# define __CAS_PTR(ptr,oldptr,newptr) __sync_ptr_compare_and_swap(ptr,oldptr,newptr)
+
+#if __SIZEOF_POINTER__ == 4
+# define __CAS_PTR(ptr,oldptr,newptr) __sync_val_compare_and_swap_4(ptr,oldptr,newptr)
+#else
+# define __CAS_PTR(ptr,oldptr,newptr) __sync_val_compare_and_swap_8(ptr,oldptr,newptr)
+#endif
 #else
 # warning No atomic operations
 #endif

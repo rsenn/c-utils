@@ -9,6 +9,7 @@
 #include <limits.h>
 #include "lib/buffer.h"
 #include "lib/fmt.h"
+#include "lib/str.h"
 
 #ifndef MAXIMUM_PATH_LENGTH
 #define MAXIMUM_PATH_LENGTH (4096 - 1)

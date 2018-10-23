@@ -15,6 +15,12 @@
 #include <string.h>
 #include <time.h>
 
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
 static int csv = 0;

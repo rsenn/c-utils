@@ -1,6 +1,7 @@
 #include "lib/buffer.h"
 #include "lib/elf.h"
 #include "lib/mmap.h"
+#include "lib/str.h"
 
 static const char* const s_flags[] = {"SHF_WRITE",
                                       "SHF_ALLOC",

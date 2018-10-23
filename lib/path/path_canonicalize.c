@@ -17,7 +17,7 @@
 
 #include "../buffer.h"
 #include "../byte.h"
-#include "../path.h"
+#include "../path_internal.h"
 #include "../str.h"
 
 #if !WINDOWS_NATIVE
@@ -33,11 +33,10 @@ int is_symlink(const char*);
 static int
 is_link(const char* path) {
   if(is_symlink(path)) return 1;
-#ifdef  HAVE_LSTAT
+#ifdef HAVE_LSTAT
   {
-  struct stat st;
-  if(lstat(path, &st) != -1)
-       return S_ISLNK(st.st_mode);
+    struct stat st;
+    if(lstat(path, &st) != -1) return S_ISLNK(st.st_mode);
   }
 #endif
   return 0;
@@ -46,9 +45,8 @@ is_link(const char* path) {
 static int
 is_link(const char* path) {
   struct stat st;
-  if(lstat(path, &st) == -1)
-    return 0;
-   return S_ISLNK(st.st_mode);
+  if(lstat(path, &st) == -1) return 0;
+  return S_ISLNK(st.st_mode);
 }
 #endif
 
@@ -90,7 +88,7 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
 #endif
 #endif
   if(path_issep(*path)) {
-    stralloc_catc(sa, '/');
+    stralloc_catc(sa, PATHSEP_C);
     path++;
   }
 
@@ -120,21 +118,19 @@ start:
     if(*path == '\0') break;
 
     /* begin a new path component */
-    if(sa->len && sa->s[sa->len - 1] != '/')
-      stralloc_catc(sa, '/');
+    if(sa->len && (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\')) stralloc_catc(sa, PATHSEP_C);
 
     /* look for the next path separator and then copy the component */
     n = path_len_s(path);
     stralloc_catb(sa, path, n);
-    if(n == 2 && path[1] == ':')
-    stralloc_catc(sa, '/');
+    if(n == 2 && path[1] == ':') stralloc_catc(sa, PATHSEP_C);
     stralloc_nul(sa);
 
     path += n;
 
     /* now stat() the thing to verify it */
     byte_zero(&st, sizeof(st));
-   if(stat_fn(sa->s, &st) == -1) return 0;
+    if(stat_fn(sa->s, &st) == -1) return 0;
 
     /* is it a symbolic link? */
     if(is_link(sa->s)) {
@@ -150,7 +146,7 @@ start:
       if(path_issep(buf[0])) {
         str_copyn(&buf[n], path, PATH_MAX - n);
         stralloc_zero(sa);
-        stralloc_catc(sa, '/');
+        stralloc_catc(sa, PATHSEP_C);
 
         path = buf;
         goto start;
@@ -158,18 +154,18 @@ start:
         /* if the symlink is relative we remove the symlink path
          component and recurse */
       } else {
-//        size_t l = path_len_s(buf);
-//
+        //        size_t l = path_len_s(buf);
+        //
         sa->len = path_right(sa->s, sa->len);
-//
-//        stralloc_catc(sa, '/');
-//        stralloc_catb(sa, buf, l);
-//        stralloc_nul(sa);
+        //
+        //        stralloc_catc(sa, PATHSEP_C);
+        //        stralloc_catb(sa, buf, l);
+        //        stralloc_nul(sa);
 
         buf[n] = '\0';
-        //str_copyn(buf, buf+l+1, sizeof(buf));
+        // str_copyn(buf, buf+l+1, sizeof(buf));
 
-        //stralloc_zero(sa);
+        // stralloc_zero(sa);
 
         buffer_puts(buffer_2, "recursive path_canonicalize(\"");
         buffer_puts(buffer_2, buf);
@@ -190,10 +186,10 @@ start:
       errno = ENOTDIR;
       return 0;
     }
- #endif
+#endif
   }
 
-  if(sa->len == 0) stralloc_catc(sa, '/');
+  if(sa->len == 0) stralloc_catc(sa, PATHSEP_C);
 
   return ret;
 }

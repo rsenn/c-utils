@@ -18,6 +18,12 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 #ifndef PRIu64
 #define PRIu64 "lu"
 #endif
@@ -180,7 +186,12 @@ next:
     uint64 map_size = (BLOCK_SIZE * map_blocks);
 
     fd = open_read(argv[ai]);
-    fprintf(stderr, "open_read(%s) = %d\n", argv[ai], fd);
+
+
+    buffer_putm_internal(buffer_2, "open_read(", argv[ai], ") = ", 0);
+    buffer_putlong(buffer_2, fd);
+    buffer_putnlflush(buffer_2);
+
     fsize = filesize(fd);
 
     iterations = (((fsize + map_size + 1) / map_size) + 7) >> 3;

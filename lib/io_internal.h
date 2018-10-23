@@ -18,7 +18,7 @@
 
 extern void* io_getfds();
 
-#if WINDOWS_NATIVE
+#if WINDOWS
 # include <windows.h>
 # include <io.h>
 //#define read _read

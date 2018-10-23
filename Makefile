@@ -269,9 +269,11 @@ IPHLPAPI_LIB = -liphlpapi
 endif
 ifeq ($(MSYS),1)
 #WINSOCK_LIB = -lws2_32
+KERNEL32_LIB = -lkernel32
 ADVAPI32_LIB = -ladvapi32
 IPHLPAPI_LIB = -liphlpapi
 endif
+SHLWAPI_LIB = -lshlwapi
 
 #$(call def-function-exists,ZLIB,deflate,-lz)
 $(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
@@ -296,6 +298,8 @@ ifneq ($(OS),linux)
 ifeq ($(ARCH),x86_64)
 M64 = 64
 endif
+else
+  READDIR := 1
 endif
 ifeq ($(OS),msys)
 EXEEXT = .exe
@@ -1123,12 +1127,14 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
+$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): LIBS += $(KERNEL32_LIB)
 $(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)getopt.o $(call add-library, array buffer fmt mmap open  strlist stralloc str unix byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
+$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): LIBS += $(KERNEL32_LIB)
 $(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)getopt.o $(BUILDDIR)popen.o $(call add-library, array strlist buffer fmt mmap open  scan stralloc str unix byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
@@ -1440,8 +1446,8 @@ ifeq ($(DO_STRIP),1)
 endif
 
 
-$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library,strarray slist rdir dir path strlist hmap buffer mmap open stralloc scan fmt str byte array)
+$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
+$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library,strarray slist rdir dir path strlist hmap buffer mmap open unix stralloc scan fmt str byte array)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

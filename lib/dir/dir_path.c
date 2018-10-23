@@ -1,5 +1,4 @@
 #include "../stralloc.h"
-#include "../dir.h"
 #include "../dir_internal.h"
 
 void
@@ -7,7 +6,7 @@ dir_path(struct dir_s* d, stralloc* sa) {
 #if USE_READDIR
   DIR* dh = dir_INTERNAL(d)->dir_handle;
 
-  stralloc_copys(sa, dh->__d_dirname);
+  //stralloc_copys(sa, dh->__d_dirname);
 #else
 #if USE_WIDECHAR
   stralloc_copywcs(sa, dir_INTERNAL(d)->dir_path);

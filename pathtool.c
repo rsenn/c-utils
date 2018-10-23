@@ -5,6 +5,7 @@
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/windoze.h"
+#include "lib/str.h"
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 /*

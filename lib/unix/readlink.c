@@ -2,12 +2,11 @@
 #include "../typedefs.h"
 
 #if WINDOWS
-
+#include <windows.h>
+#include <winioctl.h>
 #include "../utf8.h"
 #include "../ioctlcmd.h"
 #include <stdio.h>
-#include <windows.h>
-#include <winioctl.h>
 
 #ifndef Newx
 #  define Newx(v,n,t)                    v = (t*)malloc((n)); 

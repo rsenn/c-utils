@@ -1,11 +1,10 @@
 #include "../windoze.h"
-#include "../readlink.h"
 #include "../path_internal.h"
+#include "../readlink.h"
 #include "../str.h"
 #include "../stralloc.h"
 
 #include <limits.h>
-
 
 #define START ((PATH_MAX + 1) >> 7)
 
