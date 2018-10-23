@@ -3,12 +3,15 @@
 #include "../stralloc.h"
 #include "../strlist.h"
 
-#if WINDOWS
+#define max(a, b) ((a) > (b) ? (a) : (b))
+
+#if WINDOWS_NATIVE
 #include <shlwapi.h>
 #endif
 
 int
-path_relative(const char* path, const char* to, stralloc* rel) {
+path_relative(const char* path, const char* relative_to, stralloc* out) {
+#if 0 // WINDOWS_NATIVE
   size_t i, j, len, n;
   strlist p, t;
   stralloc cwd;
@@ -18,61 +21,77 @@ path_relative(const char* path, const char* to, stralloc* rel) {
   stralloc_zero(rel);
 
   if(path[0] == '\0') path = ".";
-  if(to[0] == '\0') to = ".";
+  if(relative_to[0] == '\0') relative_to = ".";
 
-#if WINDOWS
   stralloc_copys(&p.sa, path);
   path_absolute_sa(&p.sa);
   stralloc_replace(&p.sa, '/', '\\');
   stralloc_nul(&p.sa);
 
-  stralloc_copys(&t.sa, to);
+  stralloc_copys(&t.sa, relative_to);
   path_absolute_sa(&t.sa);
   stralloc_replace(&t.sa, '/', '\\');
   stralloc_nul(&t.sa);
 
-  if(!stralloc_ready(rel, PATH_MAX + 1)) return 0;
+  if(!stralloc_ready(out, PATH_MAX + 1)) return 0;
 
   PathRelativePathToA(
-      (LPSTR)rel->s, (LPCSTR)t.sa.s, FILE_ATTRIBUTE_DIRECTORY, (LPCSTR)p.sa.s, FILE_ATTRIBUTE_DIRECTORY);
+      (LPSTR)out->s, (LPCSTR)t.sa.s, FILE_ATTRIBUTE_DIRECTORY, (LPCSTR)p.sa.s, FILE_ATTRIBUTE_DIRECTORY);
 
-  rel->len = str_len(rel->s);
+  out->len = str_len(out->s);
 
-  if(rel->len >= 2 && rel->s[0] == '.' && rel->s[1] == '\\') stralloc_remove(rel, 0, 2);
+  if(out->len >= 2 && out->s[0] == '.' && out->s[1] == '\\') stralloc_remove(out, 0, 2);
 
-  stralloc_shrink(rel);
+  stralloc_shrink(out);
 #else
-  if(!path_absolute(path) || !path_absolute(to)) path_getcwd(&cwd);
 
-  path_realpath(path, &p.sa, 1, &cwd);
-  path_realpath(to, &t.sa, 1, &cwd);
+  strlist rel;
+  strlist p, r;
 
-  len = strlist_count(&p);
-  n = strlist_count(&t);
+  strlist_init(&rel, PATHSEP_C);
+  strlist_init(&p, PATHSEP_C);
+  strlist_init(&r, PATHSEP_C);
 
-  if(n < len) len = n;
+  strlist_froms(&r, relative_to, PATHSEP_C);
+  path_absolute_sa(&r.sa);
+  strlist_froms(&p, path, PATHSEP_C);
+  path_absolute_sa(&p.sa);
 
-  for(i = 0; i < len; ++i) {
+  {
+    size_t n1 = strlist_count(&p);
+    size_t n2 = strlist_count(&r);
+    size_t i, n = max(n1, n2);
 
-    stralloc sa1, sa2;
-    sa1 = strlist_at_sa(&p, i);
-    sa2 = strlist_at_sa(&t, i);
+    for(i = 0; i < n; ++i) {
+      size_t l1, l2;
+      char* s1 = strlist_at_n(&p, i, &l1);
+      char* s2 = strlist_at_n(&r, i, &l2);
 
-    if(stralloc_diff(&sa1, &sa2)) break;
-  }
-
-  for(j = i; j < n; ++j) {
-    if(rel->len) stralloc_catc(rel, PATHSEP_C);
-    stralloc_cats(rel, "..");
-  }
-
-  while(i < len) {
-    char* s = strlist_at_n(&p, i, &n);
-    if(rel->len) stralloc_catc(rel, PATHSEP_C);
-    stralloc_catb(rel, s, n);
-    ++i;
-  }
+#ifdef DEBUG_OUTPUT
+      buffer_puts(buffer_2, "REL ");
+      buffer_put(buffer_2, s1, l1);
+      buffer_puts(buffer_2, " ");
+      buffer_put(buffer_2, s2, l2);
+      buffer_putnlflush(buffer_2);
 #endif
-  stralloc_nul(rel);
+
+      if(l1 != l2) break;
+      if(byte_diff(s1, l1, s2)) break;
+    }
+
+    strlist_init(&rel, PATHSEP_C);
+
+    while(n2-- > i) {
+      strlist_push(&rel, "..");
+    }
+    while(i < n1) {
+      char* s = strlist_at_n(&p, i, &n);
+      strlist_pushb(&rel, s, n);
+      ++i;
+    }
+  }
+  strlist_join(&rel, out, PATHSEP_S);
+
+#endif
   return 1;
 }

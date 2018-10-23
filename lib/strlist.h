@@ -41,7 +41,7 @@ size_t  strlist_count(const strlist*);
 void    strlist_dump(buffer*, const strlist* sl);
 void    strlist_froms(strlist*, const char* s, char delim);
 int64   strlist_index_of(strlist*, const char* str);
-void    strlist_join(const strlist*, stralloc* sa, char delim);
+void    strlist_join(const strlist*, stralloc* sa, const char* delim);
 int     strlist_pushb(strlist*, const char* s, size_t n);
 int     strlist_pushm_internal(strlist*, ...);
 int     strlist_pushsa(strlist*, const stralloc* sa);
@@ -61,7 +61,6 @@ int strlist_prepend_sa(strlist* sl, const stralloc* sa);
 int strlist_append_sa(strlist* sl, const stralloc* sa);
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
-
 
 #define strlist_foreach(sl, str, n) for((str) = (sl)->sa.s; (n) = byte_chr((str), strlist_end(sl)-(str), (sl)->sep), (str) < strlist_end(sl); (str) +=  (n) + 1)
 #define strlist_foreach_s(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl)-str, (sl)->sep) + 1)

@@ -394,7 +394,7 @@ match_toklists(strlist* sl) {
   int ret = 0;
   size_t i, n;
   stralloc_init(&sa);
-  strlist_join(sl, &sa, '|');
+  strlist_join(sl, &sa, "|");
   stralloc_0(&sa);
 
   n = strlist_count(&include);

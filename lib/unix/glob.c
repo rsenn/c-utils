@@ -41,7 +41,7 @@ strrpbrk(char const* s, char const* charset) {
  * API functions
  */
 
-/* It gives you back the matched contents of your pattern, so for Win32, the
+/* It gives you back the matched contents of your pattern, so for Win32, th
  * directories must be included
  */
 

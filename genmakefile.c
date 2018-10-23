@@ -1035,7 +1035,7 @@ set_type(const char* type) {
       //      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     }
 
-    stralloc_copys(&link_command, "$(LINK) /nologo /out:\"$@\" $(LDLFLAGS) @<<\n\t$^\n\t$(LIBS) $(EXTRA_LIBS)\n<<");
+    stralloc_copys(&link_command, "$(LINK) -OUT:\"$@\" -INCREMENTAL -NOLOGO -MANIFEST -MANIFESTFILE:Debug/genmk.exe.intermediate.manifest -DEBUG -PDB:C:/Users/roman/Desktop/dirlist/genmk/Debug/genmk.pdb -SUBSYSTEM:CONSOLE -DYNAMICBASE -NXCOMPAT -MACHINE:X86 -ERRORREPORT:PROMPT @<<\n\t$(LDFLAGS)\n\t$^\n\t$(LDFLAGS) $(LIBS) $(EXTRA_LIBS)\n<<");
 
     /*
      * Borland C++ Builder

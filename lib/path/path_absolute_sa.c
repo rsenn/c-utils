@@ -3,19 +3,26 @@
 
 int
 path_absolute_sa(stralloc* sa) {
+  int ret = 0;
   stralloc_nul(sa);
 
   if(!path_isabs(sa->s)) {
+    stralloc tmp;
 
-    stralloc tmp = *sa;
-    sa->s = 0;
-    sa->a = sa->len = 0;
+    stralloc_init(&tmp);
+    stralloc_copy(&tmp, sa);
+
+    stralloc_zero(sa);
 
     path_getcwd(sa);
     stralloc_catc(sa, PATHSEP_C);
     stralloc_cat(sa, &tmp);
+
     stralloc_free(&tmp);
-    return 1;
+    ret = 1;
   }
-  return 0;
+  if(sa->len && path_issep(sa->s[sa->len - 1])) --sa->len;
+  stralloc_nul(sa);
+
+  return ret;
 }
