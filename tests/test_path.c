@@ -1,12 +1,7 @@
-#include "lib/unit_test.h"
-#include "lib/path.h"
-#include "lib/str.h"
-#include "lib/buffer.h"
-
 /*
  * int path_absolute(const char*);
  */
-TEST(absolute) {
+TEST(test_path_absolute) {
   ASSERT_EQ(0, !path_absolute("/test/path"));
   ASSERT_EQ(1, !path_absolute("test/path"));
 }
@@ -14,7 +9,7 @@ TEST(absolute) {
 /*
  * char* path_basename(char*);
  */
-TEST(basename) {
+TEST(test_path_basename) {
   ASSERT_EQ(0, str_diff("path", path_basename("/test/path")));
   ASSERT_EQ(0, str_diff("path", path_basename("test/path")));
   ASSERT_EQ(0, str_diff("path", path_basename("path")));
@@ -24,13 +19,15 @@ TEST(basename) {
 /*
  * int path_canonicalize(const char*, stralloc* sa, int symbolic);
  */
-TEST(canonicalize) {
+TEST(test_path_canonicalize) {
   stralloc sa;
   stralloc_init(&sa);
   
   path_canonicalize("/test/path/test1/test2/../..", &sa, 0);
   
+  buffer_puts(buffer_1, "\n\"");
   buffer_putsa(buffer_1, &sa);
+  buffer_puts(buffer_1, "\"");
   buffer_putnlflush(buffer_1);
   
   
@@ -40,7 +37,7 @@ TEST(canonicalize) {
 /*
  * char* path_dirname(char*, stralloc* dir);
  */
-TEST(dirname) {
+TEST(test_path_dirname) {
   stralloc sa;
   stralloc_init(&sa);
  
@@ -50,115 +47,157 @@ TEST(dirname) {
   ASSERT_EQ(0, !str_diff("test", path_dirname("/path/test", &sa)));
 }
 
+
 /*
- * int path_exists(const char*);
+ * int path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
  */
-TEST(exists) {
+
+TEST(test_path_fnmatch) {
 }
 
 /*
- * int path_fnmatch(const char*, unsigned int plen, const char* string, unsigned int slen, int flags);
+ * void path_getcwd(stralloc* sa);
  */
-TEST(fnmatch) {
+
+TEST(test_path_getcwd) {
 }
 
 /*
- * void path_getcwd(stralloc*);
+ * char* path_gethome(int uid);
  */
-TEST(getcwd) {
+
+TEST(test_path_gethome) {
 }
 
 /*
- * char* path_gethome(int);
+ * size_t path_len_s(const char* s);
  */
-TEST(gethome) {
+
+TEST(test_path_len_s) {
 }
 
 /*
- * size_t path_len_s(const char*);
+ * size_t path_len(const char* s, size_t n);
  */
-TEST(len_s) {
+
+TEST(test_path_len) {
 }
 
 /*
- * size_t path_len(const char*, size_t n);
+ * int path_readlink(const char* path, stralloc* sa);
  */
-TEST(len) {
+
+TEST(test_path_readlink) {
 }
 
 /*
- * size_t path_num_sa(const char*, size_t len, stralloc* sa, int n);
+ * size_t path_right(const char* s, size_t n);
  */
-TEST(num_sa) {
+
+TEST(test_path_right) {
 }
 
 /*
- * size_t path_num(const char*, size_t len, int n);
+ * size_t path_skips(const char* s);
  */
-TEST(num) {
+
+TEST(test_path_skips) {
 }
 
 /*
- * int path_readlink(const char*, stralloc* sa);
+ * size_t path_skip(const char* s, size_t n);
  */
-TEST(readlink) {
+
+TEST(test_path_skip) {
 }
 
 /*
- * int path_realpath(const char*, stralloc* sa, int symbolic, stralloc* cwd);
+ * size_t path_num(const char* p, size_t len, int n);
  */
-TEST(_realpath) {
+
+TEST(test_path_num) {
+}
+
+/*
+ * size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
+ */
+
+TEST(test_path_num_sa) {
+}
+
+/*
+ * int path_exists(const char* p);
+ */
+
+TEST(test_path_exists) {
 }
 
 /*
  * int path_relative(const char*, const char* to, stralloc* rel);
  */
-TEST(relative) {
+
+TEST(test_path_relative) {
 }
 
 /*
- * size_t path_right(const char*, size_t n);
+ * int path_split(const char* p, strlist* sl);
  */
-TEST(right) {
+
+TEST(test_path_split) {
 }
 
 /*
- * size_t path_skips(const char*);
+ * int path_canonical_sa(stralloc*, stralloc* out);
  */
-TEST(skips) {
+
+TEST(test_path_canonical_sa) {
 }
 
 /*
- * size_t path_skip(const char*, size_t n);
+ * int path_absolute_sa(stralloc*);
  */
-TEST(skip) {
+
+TEST(test_path_absolute_sa) {
 }
 
 /*
- * int path_split(const char*, strlist* sl);
+ * int path_collapse(const char*, stralloc* out);
  */
-TEST(split) {
+
+TEST(test_path_collapse) {
+
+  stralloc sa;
+  stralloc_init(&sa);
+
+  path_collapse("/this/is/a/test/dir/..", &sa);
+
+  buffer_puts(buffer_1, "\n\"");
+  buffer_putsa(buffer_1, &sa);
+  buffer_puts(buffer_1, "\"");
+  buffer_putnlflush(buffer_1);
+
+  ASSERT_SA_EQUALS(&sa, "/this/is/a/test");
 }
 
-START() {
-
-  RUN(absolute);
-  RUN(basename);
-  RUN(canonicalize);
-  RUN(dirname);
-  RUN(exists);
-  RUN(fnmatch);
-  RUN(getcwd);
-  RUN(gethome);
-  RUN(len_s);
-  RUN(len);
-  RUN(num_sa);
-  RUN(num);
-  RUN(readlink);
-  RUN(_realpath);
-  RUN(relative);
-  RUN(right);
-  RUN(skips);
-  RUN(skip);
-  RUN(split);
-}
+#define RUN_PATH_TESTS() \
+  RUN(test_path_basename); \
+  RUN(test_path_canonicalize); \
+  RUN(test_path_dirname); \
+  RUN(test_path_fnmatch); \
+  RUN(test_path_getcwd); \
+  RUN(test_path_gethome); \
+  RUN(test_path_len_s); \
+  RUN(test_path_len); \
+  RUN(test_path_readlink); \
+  RUN(test_path_right); \
+  RUN(test_path_skips); \
+  RUN(test_path_skip); \
+  RUN(test_path_num); \
+  RUN(test_path_num_sa); \
+  RUN(test_path_exists); \
+  RUN(test_path_absolute); \
+  RUN(test_path_relative); \
+  RUN(test_path_split); \
+  RUN(test_path_canonical_sa); \
+  RUN(test_path_absolute_sa); \
+  RUN(test_path_collapse)

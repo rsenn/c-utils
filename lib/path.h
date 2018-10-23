@@ -45,3 +45,4 @@ int path_collapse(const char*, stralloc* out);
 #endif
 
 #endif /* _PATH_H__ */
+int path_getsep(const char*);

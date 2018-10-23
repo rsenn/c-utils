@@ -5,10 +5,11 @@ int
 path_collapse(const char* path, stralloc* out) {
   const char* x;
   size_t i = 0, n;
+  char sep = path_getsep(path);
   strlist p, o;
-  strlist_init(&p, PATHSEP_C);
-  strlist_init(&o, PATHSEP_C);
-  strlist_froms(&p, path, PATHSEP_C == '\\' ? '/' : '\\');
+  strlist_init(&p, sep);
+  strlist_init(&o, sep);
+  strlist_froms(&p, path, sep == '\\' ? '/' : '\\');
 
   stralloc_zero(out);
   byte_copy(&o.sa, sizeof(stralloc), out);
@@ -27,7 +28,7 @@ path_collapse(const char* path, stralloc* out) {
     strlist_pushb(&o, x, n);
     ++i;
   }
-
+  
   byte_copy(out, sizeof(stralloc), &o.sa);
   return strlist_count(&o);
 }

@@ -2,6 +2,7 @@
 #include "../socket_internal.h"
 #include "../byte.h"
 #include "../ip6.h"
+#include <stdlib.h>
 #include <ctype.h>
 
 size_t

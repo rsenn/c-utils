@@ -1,11 +1,8 @@
-#include "lib/unit_test.h"
-#include "lib/strlist.h"
-
 
 /*
  * size_t strlist_count(const strlist* sl);
  */
-TEST(count) {
+TEST(test_strlist_count) {
   strlist sl;
   strlist_init(&sl, '\0');
   strlist_push(&sl, "1");
@@ -19,7 +16,7 @@ TEST(count) {
 /*
  * char* strlist_at(const strlist* sl, size_t i);
  */
-TEST(at) {
+TEST(test_strlist_at) {
   strlist sl;
   strlist_init(&sl, '\0');
   strlist_push(&sl, "1");
@@ -36,7 +33,7 @@ TEST(at) {
 /*
  * char* strlist_at_n(const strlist* sl, size_t i, size_t* n);
  */
-TEST(at_n) {
+TEST(test_strlist_at_n) {
   const char* s;
   size_t n;
   strlist sl;
@@ -67,7 +64,7 @@ TEST(at_n) {
 /*
  * stralloc strlist_at_sa(const strlist* sl, size_t i);
  */
-TEST(at_sa) {
+TEST(test_strlist_at_sa) {
   stralloc sa;
   strlist sl;
   strlist_init(&sl, '\0');
@@ -89,7 +86,7 @@ TEST(at_sa) {
 /*
  * int strlist_cat(strlist* sl, const strlist* l);
  */
-TEST(cat) {
+TEST(test_strlist_cat) {
   stralloc sa;
   strlist sl1, sl2;
   stralloc_init(&sa);
@@ -123,7 +120,7 @@ TEST(cat) {
 /*
  * int strlist_contains(strlist* sl, const char* s);
  */
-TEST(contains) {
+TEST(test_strlist_contains) {
   strlist sl;
   strlist_init(&sl, '\0');
   strlist_push(&sl, "1");
@@ -139,7 +136,7 @@ TEST(contains) {
 /*
  * int strlist_contains_sa(strlist* sl, const stralloc* sa);
  */
-TEST(contains_sa) {
+TEST(test_strlist_contains_sa) {
   stralloc sa;
   strlist sl;
   stralloc_init(&sa);
@@ -160,7 +157,7 @@ TEST(contains_sa) {
 /*
  * void strlist_dump(buffer* out, const strlist* sl);
  */
-TEST(dump) {
+TEST(test_strlist_dump) {
   strlist sl;
   strlist_init(&sl, '\0');
 }
@@ -168,7 +165,7 @@ TEST(dump) {
 /*
  * void strlist_froms(strlist* sl, const char* s, char delim);
  */
-TEST(froms) {
+TEST(test_strlist_froms) {
   strlist sl;
   strlist_init(&sl, '\0');
   strlist_froms(&sl, "blah|l33t|1234|8192", '|');
@@ -184,7 +181,7 @@ TEST(froms) {
 /*
  * int64 strlist_index_of(strlist* sl, const char* str);
  */
-TEST(index_of) {
+TEST(test_strlist_index_of) {
   strlist sl;
   strlist_init(&sl, '\0');
   strlist_froms(&sl, "blah|l33t|1234|8192", '|');
@@ -198,7 +195,7 @@ TEST(index_of) {
 /*
  * void strlist_join(const strlist* sl, stralloc* sa, char delim);
  */
-TEST(join) {
+TEST(test_strlist_join) {
   stralloc sa;
   strlist sl;
   stralloc_init(&sa);
@@ -219,7 +216,7 @@ TEST(join) {
 /*
  * void strlist_joins(const strlist* sl, stralloc* sa, const char* delim);
  */
-TEST(joins) {
+TEST(test_strlist_joins) {
   stralloc sa;
   strlist sl;
   stralloc_init(&sa);
@@ -239,7 +236,7 @@ TEST(joins) {
 /*
  * int strlist_push(strlist* sl, const char* s);
  */
-TEST(push) {
+TEST(test_strlist_push) {
   strlist sl;
   strlist_init(&sl, '\0');
   
@@ -257,7 +254,7 @@ TEST(push) {
 /*
  * int strlist_push_sa(strlist* sl, const stralloc* sa);
  */
-TEST(push_sa) {
+TEST(test_strlist_push_sa) {
   stralloc sa;
   strlist sl;
   stralloc_init(&sa);
@@ -274,7 +271,7 @@ TEST(push_sa) {
 /*
  * void strlist_push_tokens(strlist* sl, const char* s, const char* delim);
  */
-TEST(push_tokens) {
+TEST(test_strlist_push_tokens) {
   strlist sl;
   strlist_init(&sl, '\0');
   
@@ -287,7 +284,7 @@ TEST(push_tokens) {
 /*
  * int strlist_push_unique(strlist* sl, const char* s);
  */
-TEST(push_unique) {
+TEST(test_strlist_push_unique) {
   strlist sl;
   strlist_init(&sl, '\0');
   
@@ -307,7 +304,7 @@ TEST(push_unique) {
 /*
  * int strlist_push_unique_sa(strlist* sl, const stralloc* sa);
  */
-TEST(push_unique_sa) {
+TEST(test_strlist_push_unique_sa) {
   stralloc sa;
   strlist sl;
   stralloc_init(&sa);
@@ -334,7 +331,7 @@ TEST(push_unique_sa) {
 /*
  * int strlist_pushb(strlist* sl, const char* s, size_t n);
  */
-TEST(pushb) {
+TEST(test_strlist_pushb) {
   stralloc sa;
   strlist sl;
   stralloc_init(&sa);
@@ -356,13 +353,13 @@ TEST(pushb) {
 /*
  * int strlist_pushm_internal(strlist* sl, ...);
  */
-TEST(pushm) {
+TEST(test_strlist_pushm) {
   stralloc sa;
   strlist sl;
   stralloc_init(&sa);
   strlist_init(&sl, '\0');
 
-  strlist_pushm(&sl, "abcd", "abc", "ab", "a");
+  strlist_pushm_internal(&sl, "abcd", "abc", "ab", "a");
 
   strlist_joins(&sl, &sa, " | ");
   
@@ -372,7 +369,7 @@ TEST(pushm) {
 /*
  * strlist strlist_range(const strlist* sl, size_t from, size_t to);
  */
-TEST(range) {
+TEST(test_strlist_range) {
   stralloc sa;
   strlist sl, r;
   strlist_init(&sl, '\0');
@@ -394,7 +391,7 @@ TEST(range) {
 /*
  * int strlist_shift(strlist* sl, const char** strp);
  */
-TEST(shift) {
+TEST(test_strlist_shift) {
   const char* s;
   stralloc sa;
   strlist sl;
@@ -430,7 +427,7 @@ TEST(shift) {
 /*
  * int strlist_shift_n(strlist* sl, size_t i);
  */
-TEST(shift_n) {
+TEST(test_strlist_shift_n) {
   const char* s;
   stralloc sa;
   strlist sl;
@@ -462,7 +459,7 @@ TEST(shift_n) {
 /*
  * size_t strlist_sort(strlist* sl);
  */
-TEST(sort) {
+TEST(test_strlist_sort) {
   const char* s;
   stralloc sa;
   strlist sl;
@@ -488,7 +485,7 @@ TEST(sort) {
 /*
  * char* *strlist_to_argv(const strlist* sl);
  */
-TEST(to_argv) {
+TEST(test_strlist_to_argv) {
   strlist sl;
   strlist_init(&sl, '\0');
 }
@@ -496,35 +493,34 @@ TEST(to_argv) {
 /*
  * int strlist_unshift(strlist* sl, const char* s);
  */
-TEST(unshift) {
+TEST(test_strlist_unshift) {
   strlist sl;
   strlist_init(&sl, '\0');
 }
 
-START() {
-  RUN(at);
-  RUN(at_n);
-  RUN(at_sa);
-  RUN(cat);
-  RUN(contains);
-  RUN(contains_sa);
-  RUN(count);
-  RUN(dump);
-  RUN(froms);
-  RUN(index_of);
-  RUN(join);
-  RUN(joins);
-  RUN(push);
-  RUN(push_sa);
-  RUN(push_tokens);
-  RUN(push_unique);
-  RUN(push_unique_sa);
-  RUN(pushb);
-  RUN(pushm);
-  RUN(range);
-  RUN(shift);
-  RUN(shift_n);
-  RUN(sort);
-  RUN(to_argv);
-  RUN(unshift);
-}
+#define RUN_STRLIST_TESTS() \
+  RUN(test_strlist_at); \
+  RUN(test_strlist_at_n); \
+  RUN(test_strlist_at_sa); \
+  RUN(test_strlist_cat); \
+  RUN(test_strlist_contains); \
+  RUN(test_strlist_contains_sa); \
+  RUN(test_strlist_count); \
+  RUN(test_strlist_dump); \
+  RUN(test_strlist_froms); \
+  RUN(test_strlist_index_of); \
+  RUN(test_strlist_join); \
+  RUN(test_strlist_joins); \
+  RUN(test_strlist_push); \
+  RUN(test_strlist_push_sa); \
+  RUN(test_strlist_push_tokens); \
+  RUN(test_strlist_push_unique); \
+  RUN(test_strlist_push_unique_sa); \
+  RUN(test_strlist_pushb); \
+  RUN(test_strlist_pushm); \
+  RUN(test_strlist_range); \
+  RUN(test_strlist_shift); \
+  RUN(test_strlist_shift_n); \
+  RUN(test_strlist_sort); \
+  RUN(test_strlist_to_argv); \
+  RUN(test_strlist_unshift)

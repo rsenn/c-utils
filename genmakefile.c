@@ -638,7 +638,7 @@ includes_to_libs(const strlist* includes, strlist* libs) {
     rule_t* rule;
     stralloc_copyb(&sa, s, n);
     if(stralloc_endb(&sa, ".h", 2)) sa.len -= 2;
-    if(stralloc_ends(&sa, "_internal")) sa.len -= str_len("_internal");
+    if(stralloc_endb(&sa, "_internal", 9)) sa.len -= 9;
 
     stralloc_cats(&sa, libext);
 

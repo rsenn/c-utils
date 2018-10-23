@@ -729,3 +729,5 @@ foreach(CXXPROGRAM ${CXXPROGRAMS})
 #  add_executable( ${CXXPROGRAM} "${CMAKE_SOURCE_DIR}/${CXXPROGRAM}.cpp" ${COMMON_CXX_SOURCES} ${COMMON_C_SOURCES} )
   install(TARGETS ${CXXPROGRAM} DESTINATION bin)
 endforeach(CXXPROGRAM)
+
+add_subdirectory(tests)

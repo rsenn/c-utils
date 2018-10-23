@@ -1816,3 +1816,9 @@ $(BUILDDIR)path_collapse.o: lib/path/path_collapse.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_pop.o: lib/strlist/strlist_pop.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_getsep.o: lib/path/path_getsep.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_removesuffixb.o: lib/stralloc/stralloc_removesuffixb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)stralloc_removesuffixs.o: lib/stralloc/stralloc_removesuffixs.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

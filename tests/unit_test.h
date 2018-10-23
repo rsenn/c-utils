@@ -23,31 +23,51 @@
 #define __MINUNIT_H__
 
 #include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <winsock.h>
+#else
 #include <sys/time.h>
+#endif
+
+#ifndef TRUE
+#define TRUE (~(0))
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+typedef char bool;
 
 // APIs
 #define START() static void unit_test_execute(struct unit_test* mu_)
-#define TEST(name) static void name(struct unit_test* mu)
+#define TEST(name) static void name(struct unit_test* mu_)
 #define RUN(name)                                                                                                      \
   if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) {                                                                  \
     mu_->success++;                                                                                                    \
   } else {                                                                                                             \
     mu_->failure++;                                                                                                    \
-    if(muconf->x) return;                                                                                              \
+    if(muconf()->x) return;                                                                                              \
   }
 #define TESTLOG(...) fprintf(muerr, __VA_ARGS__)
 
 // Assertions
-#define ASSERT_EQ(x1, x2) unit_test_assert(mu, x1, x2, ==, !=)
-#define ASSERT_NE(x1, x2) unit_test_assert(mu, x1, x2, !=, ==)
-#define ASSERT_LT(x1, x2) unit_test_assert(mu, x1, x2, <, >=)
-#define ASSERT_LE(x1, x2) unit_test_assert(mu, x1, x2, <=, >)
-#define ASSERT_GT(x1, x2) unit_test_assert(mu, x1, x2, >, >=)
-#define ASSERT_GE(x1, x2) unit_test_assert(mu, x1, x2, >=, >)
+#define ASSERT_EQ(x1, x2) unit_test_assert(mu_, x1, x2, ==, !=)
+#define ASSERT_NE(x1, x2) unit_test_assert(mu_, x1, x2, !=, ==)
+#define ASSERT_LT(x1, x2) unit_test_assert(mu_, x1, x2, <, >=)
+#define ASSERT_LE(x1, x2) unit_test_assert(mu_, x1, x2, <=, >)
+#define ASSERT_GT(x1, x2) unit_test_assert(mu_, x1, x2, >, >=)
+#define ASSERT_GE(x1, x2) unit_test_assert(mu_, x1, x2, >=, >)
+
+#define ASSERT_STR_EQUAL(s1, s2) ASSERT_EQ(0, str_diff(s1, s2))
+#define ASSERT_STR_EQUAL_N(s1, s2, n) ASSERT_EQ(0, str_diffn(s1, s2, n))
+
+#define ASSERT_SA_EQUAL(sa1, sa2) ASSERT_EQ(0, stralloc_diff(sa1, sa2))
+#define ASSERT_SA_EQUALS(sa, s) ASSERT_EQ(0, stralloc_diffs(sa, s))
+#define ASSERT_SA_EQUALB(sa, x, n) ASSERT_EQ(0, stralloc_diffb(sa, x, n))
 
 // Colors
 #define BOLD(msg) "\033[1m" msg "\033[0m"
@@ -74,14 +94,14 @@ double            : "%lf" ,\
 long double       : "%Lf" ,\
 default           : "%p")
 
-#define unit_test_assert(mu, x1, x2, op, notop)                                                                          \
+#define unit_test_assert(mu_, x1, x2, op, notop)                                                                          \
   if(!((x1)op(x2))) {                                                                                                  \
-    fprintf((mu)->faillog, "  Assertion failed: ");                                                                    \
-    fprintf((mu)->faillog, unit_test_typespec(x1), x1);                                                                  \
-    fprintf((mu)->faillog, " " #notop " ");                                                                            \
-    fprintf((mu)->faillog, unit_test_typespec(x2), x2);                                                                  \
-    fprintf((mu)->faillog, " (%s:%d)\n", __FILE__, __LINE__);                                                          \
-    (mu)->failure++;                                                                                                   \
+    fprintf((mu_)->faillog, "  Assertion failed: ");                                                                    \
+    fprintf((mu_)->faillog, unit_test_typespec(x1), x1);                                                                  \
+    fprintf((mu_)->faillog, " " #notop " ");                                                                            \
+    fprintf((mu_)->faillog, unit_test_typespec(x2), x2);                                                                  \
+    fprintf((mu_)->faillog, " (%s:%d)\n", __FILE__, __LINE__);                                                          \
+    (mu_)->failure++;                                                                                                   \
     return;                                                                                                            \
   }
 
@@ -98,17 +118,20 @@ struct unit_testConf {
   bool v;
   bool x;
 };
-typedef void (*unit_test_func_t)(struct unit_test* mu);
-static void unit_test_execute(struct unit_test* mu);
+typedef void (*unit_test_func_t)(struct unit_test* mu_);
+static void unit_test_execute(struct unit_test* mu_);
 
-static struct unit_testConf* muconf = &(struct unit_testConf){.q = false, .s = false, .v = false, .x = false};
+static struct unit_testConf* muconf() {
+  static struct unit_testConf c = { /*.q =*/ FALSE, /*.s =*/ FALSE, /*.v =*/ FALSE, /*.x =*/  FALSE};
+  return &c;
+}
 static FILE* muout = NULL;
 static FILE* muerr = NULL;
 
 static void
-unit_test_cleanup(struct unit_test* mu) {
-  if(mu->testlog) fclose(mu->testlog);
-  if(mu->faillog) fclose(mu->faillog);
+unit_test_cleanup(struct unit_test* mu_) {
+  if(mu_->testlog) fclose(mu_->testlog);
+  if(mu_->faillog) fclose(mu_->faillog);
 }
 
 static double
@@ -119,17 +142,18 @@ unit_test_gettime() {
 }
 
 static int
-unit_test_call(struct unit_test* mu, unit_test_func_t func) {
+unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
   double start = unit_test_gettime();
-  func(mu);
-  mu->elapsed = unit_test_gettime() - start;
-  return (mu->failure == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+  func(mu_);
+  mu_->elapsed = unit_test_gettime() - start;
+  return (mu_->failure == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 static void
 unit_test_copy(FILE* src, FILE* dst) {
+  int c;
   rewind(src);
-  for(int c = getc(src); c != EOF; c = getc(src)) fputc(c, dst);
+  for(c = getc(src); c != EOF; c = getc(src)) fputc(c, dst);
 }
 
 static bool
@@ -149,34 +173,38 @@ unit_test_tmpfile() {
 }
 
 static int
-unit_test_run(struct unit_test* mu, unit_test_func_t func, const char* name) {
-  struct unit_test* running = &(struct unit_test){
-      .elapsed = 0, .success = 0, .failure = 0, .testlog = unit_test_tmpfile(), .faillog = unit_test_tmpfile()};
+unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
+  int rc;
+  static struct unit_test run;
+  struct unit_test* running = &run;
 
-  if(!muconf->s) {
+  run.testlog = unit_test_tmpfile();
+  run.faillog = unit_test_tmpfile();
+
+  if(!muconf()->s) {
     //stdout = running->testlog;
     //stderr = running->testlog;
   }
 
-  int rc = unit_test_call(running, func);
+  rc = unit_test_call(running, func);
 
   if(running->failure == 0) {
     TESTLOG(PASS("."));
-    if(muconf->v) TESTLOG(PASS("  %s\n"), name);
+    if(muconf()->v) TESTLOG(PASS("  %s\n"), name);
   } else {
     TESTLOG(FAIL("F"));
-    if(muconf->v) TESTLOG(FAIL("  %s\n"), name);
+    if(muconf()->v) TESTLOG(FAIL("  %s\n"), name);
   }
 
   if(!unit_test_empty(running->faillog)) {
-    fprintf(mu->testlog, FAIL("\nFAILURE") " in " BOLD("%s\n"), name);
-    unit_test_copy(running->faillog, mu->testlog);
+    fprintf(mu_->testlog, FAIL("\nFAILURE") " in " BOLD("%s\n"), name);
+    unit_test_copy(running->faillog, mu_->testlog);
   }
 
-  if(!muconf->q) {
+  if(!muconf()->q) {
     if(!unit_test_empty(running->testlog)) {
-      fprintf(mu->testlog, INFO("\nCAPTURED STDOUT/STDERR") " for " BOLD("%s\n"), name);
-      unit_test_copy(running->testlog, mu->testlog);
+      fprintf(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR") " for " BOLD("%s\n"), name);
+      unit_test_copy(running->testlog, mu_->testlog);
     }
   }
 
@@ -197,18 +225,19 @@ unit_test_usage(const char* cmd) {
 
 static void
 unit_test_optparse(int argc, char** argv) {
-  for(size_t i = 1; i < (size_t)argc; i++) {
+  size_t i, j;
+  for(i = 1; i < (size_t)argc; i++) {
     if(argv[i][0] != '-') {
       unit_test_usage(argv[0]);
       exit(EXIT_FAILURE);
     }
 
-    for(size_t j = 1; j < strlen(argv[i]); j++) {
+    for(j = 1; j < strlen(argv[i]); j++) {
       switch(argv[i][j]) {
-        case 's': muconf->s = true; break;
-        case 'v': muconf->v = true; break;
-        case 'x': muconf->x = true; break;
-        case 'q': muconf->q = true; break;
+        case 's': muconf()->s = TRUE; break;
+        case 'v': muconf()->v = TRUE; break;
+        case 'x': muconf()->x = TRUE; break;
+        case 'q': muconf()->q = TRUE; break;
         case 'h': unit_test_usage(argv[0]); exit(EXIT_SUCCESS);
         default:
           TESTLOG("%s: illegal option -- %c\n", argv[0], argv[i][j]);
@@ -221,28 +250,33 @@ unit_test_optparse(int argc, char** argv) {
 
 int
 main(int argc, char** argv) {
+  int rc;
+  static struct unit_test mu_i;
+  struct unit_test* mu_ = &mu_i;
+
+mu_i.testlog =  unit_test_tmpfile();
+
   muout = stdout;
   muerr = stderr;
 
   unit_test_optparse(argc, argv);
 
-  struct unit_test* mu = &(struct unit_test){.success = 0, .failure = 0, .testlog = unit_test_tmpfile(), .faillog = NULL};
-  int rc = unit_test_call(mu, unit_test_execute);
+  rc = unit_test_call(mu_, unit_test_execute);
 
-  if(!muconf->v) fputc('\n', muerr);
-  unit_test_copy(mu->testlog, muerr);
-  TESTLOG("\nRAN " BOLD("%d") " TESTS IN " BOLD("%4.3lf") "s\n", mu->success + mu->failure, mu->elapsed);
+  if(!muconf()->v) fputc('\n', muerr);
+  unit_test_copy(mu_->testlog, muerr);
+  TESTLOG("\nRAN " BOLD("%d") " TESTS IN " BOLD("%4.3lf") "s\n", mu_->success + mu_->failure, mu_->elapsed);
 
-  if((mu->success + mu->failure) > 0) {
+  if((mu_->success + mu_->failure) > 0) {
     TESTLOG("\n%s (SUCCESS: " PASS("%d") ", FAILURE: " FAIL("%d") ")\n",
-            (mu->failure == 0) ? PASS("OK") : FAIL("FAILED"),
-            mu->success,
-            mu->failure);
+            (mu_->failure == 0) ? PASS("OK") : FAIL("FAILED"),
+            mu_->success,
+            mu_->failure);
   } else {
     TESTLOG(FAIL("\nNO TESTS FOUND\n"));
   }
 
-  unit_test_cleanup(mu);
+  unit_test_cleanup(mu_);
   return rc;
 }
 #endif
