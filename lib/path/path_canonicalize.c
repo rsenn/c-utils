@@ -8,14 +8,14 @@
 #define _FILE_OFFSET_BITS 64
 //#define _LARGEFILE64_SOURCE 1
 #define _LARGEFILE_SOURCE 1
-#include <errno.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <sys/stat.h>
 #include "../buffer.h"
 #include "../byte.h"
 #include "../path_internal.h"
 #include "../str.h"
+#include <errno.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <sys/stat.h>
 #if !WINDOWS_NATIVE
 #define HAVE_LSTAT 1
 #endif

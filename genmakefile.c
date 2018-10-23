@@ -1006,6 +1006,23 @@ usage(char* argv0) {
   buffer_putnlflush(buffer_1);
 }
 
+char*
+path_wildcard(const char* path, stralloc* sa) {
+  const char* x;
+  size_t n, e;
+  stralloc_copys(sa, path);
+  stralloc_nul(sa);
+  x = path_basename(sa->s);
+  x = path_skip_separator(x);
+  n = x - sa->s;
+  e = byte_rchr(x, sa->len - n, '.');
+
+  stralloc_remove(sa, n, e);
+  stralloc_insertb(sa, "*", n, 1);
+  stralloc_nul(sa);
+  return sa->s;
+}
+
 /**
  * Set the build type
  */
@@ -1362,6 +1379,10 @@ main(int argc, char* argv[]) {
     if((rule = get_rule("clean"))) {
       TUPLE* t;
       size_t lineoffs = 0;
+      stralloc fn;
+      strlist delete_args;
+      stralloc_init(&fn);
+      strlist_init(&delete_args, '\0');
 
       stralloc_copys(&delete_command, "DEL /F /Q");
 
@@ -1374,13 +1395,14 @@ main(int argc, char* argv[]) {
 
         if(rule->recipe == 0) continue;
 
-        if(delete_command.len - lineoffs + str_len(t->key) >= MAX_CMD_LEN) {
-          stralloc_cats(&delete_command, "\n\tDEL /F /Q");
-          lineoffs = delete_command.len;
-        }
+        /*  if(delete_command.len - lineoffs + str_len(t->key) >= MAX_CMD_LEN) {
+            stralloc_cats(&delete_command, "\n\tDEL /F /Q");
+            lineoffs = delete_command.len;
+          }
 
-        stralloc_catc(&delete_command, ' ');
-        stralloc_cats(&delete_command, t->key);
+          stralloc_catc(&delete_command, ' ');
+          stralloc_cats(&delete_command, t->key);*/
+        strlist_push_unique(&delete_args, path_wildcard(t->key, &fn));
       }
 
       rule->recipe = &delete_command;

@@ -54,6 +54,7 @@ set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
 set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL;/")
 
 
+
 #include(CPack)
 
 #include( "${CMAKE_CURRENT_SOURCE_DIR}/Checks.cmake" )
@@ -76,7 +77,7 @@ endif(MSVC)
   add_definitions(-D_FILE_OFFSET_BITS=64)
 #endif(WIN32 OR WIN64)
 if(MSVC)
-include(${CMAKE_CURRENT_SOURCE_DIR}/SetMSVCStaticRuntime.cmake)
+#include(${CMAKE_CURRENT_SOURCE_DIR}/SetMSVCStaticRuntime.cmake)
 
 add_definitions(-wd4706)
 else(MSVC)
@@ -473,6 +474,23 @@ if(CXX11)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS} -DCXX11=1")
 endif()
 
+IF(BORLAND)
+	set(CompilerFlags
+			CMAKE_CXX_FLAGS
+			CMAKE_CXX_FLAGS_DEBUG
+			CMAKE_CXX_FLAGS_RELEASE
+			CMAKE_CXX_FLAGS_RELWITHDEBINFO
+			CMAKE_C_FLAGS
+			CMAKE_C_FLAGS_DEBUG
+			CMAKE_C_FLAGS_RELEASE
+			CMAKE_C_FLAGS_RELWITHDEBINFO
+			C_FLAGS
+			)
+	foreach(CompilerFlag ${CompilerFlags})
+	  string(REGEX REPLACE "[-/]Od" "-O" ${CompilerFlag} "${${CompilerFlag}}")
+	endforeach()
+
+ENDIF(BORLAND)
 #string(REGEX REPLACE "[-/][Ww][A-Z0-9a-z]*" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 #string(REGEX REPLACE "[-/][Ww][A-Z0-9a-z]*" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
@@ -548,6 +566,7 @@ foreach(NETLIB dns http io ndelay socket)
   target_link_libraries(${NETLIB} ${LIBMSWSOCK})
 endforeach()
 
+target_link_libraries(unix stralloc)
 target_link_libraries(array byte str)
 target_link_libraries(binfmt mmap byte)
 target_link_libraries(buffer array byte fmt mmap open str stralloc)
@@ -568,7 +587,7 @@ target_link_libraries(json buffer byte charbuf hmap scan stralloc)
 target_link_libraries(map str)
 target_link_libraries(mmap open ${LIBPSAPI})
 target_link_libraries(open stralloc)
-target_link_libraries(path unix)
+target_link_libraries(path unix strlist)
 target_link_libraries(pe uint64 uint32 uint16)
 target_link_libraries(playlist buffer byte fmt scan str stralloc xml)
 target_link_libraries(rdir dir)
