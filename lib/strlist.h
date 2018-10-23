@@ -72,10 +72,12 @@ int strlist_push_unique_sa(strlist*, const stralloc* sa);
 void strlist_joins(const strlist*, stralloc* sa, const char* delim);
 #endif
 
+int64 strlist_indexofb(strlist* sl, const char* x, size_t n);
+int strlist_pushb_unique(strlist* sl, const char* x, size_t n);int strlist_pop(strlist*);
+int strlist_pop(strlist*);
+
 # ifdef __cplusplus
 }
 # endif
 #endif /* defined(STRLIST_H) */
 
-int64 strlist_indexofb(strlist* sl, const char* x, size_t n);
-int strlist_pushb_unique(strlist* sl, const char* x, size_t n);int strlist_pop(strlist*);
