@@ -23,8 +23,9 @@
 #define UNIT_TEST_H
 
 #include "../lib/taia.h"
+#include "../lib/buffer.h"
 #include <math.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -52,7 +53,7 @@ typedef char bool;
     mu_->failure++;                                                                                                    \
     if(muconf()->x) return;                                                                                              \
   }
-#define TESTLOG(...) fprintf(muerr, __VA_ARGS__)
+#define TESTLOG(...) buffer_putm_internal(muerr, __VA_ARGS__, 0)
 
 // Assertions
 #define ASSERT_EQ(x1, x2) unit_test_assert(mu_, x1, x2, ==, !=)
@@ -69,11 +70,24 @@ typedef char bool;
 #define ASSERT_SA_EQUALS(sa, s) ASSERT_EQ(0, stralloc_diffs(sa, s))
 #define ASSERT_SA_EQUALB(sa, x, n) ASSERT_EQ(0, stralloc_diffb(sa, x, n))
 
+#include "../lib/windoze.h"
+
+#if WINDOWS_NATIVE
+#define NOCOLOR 1
+#endif
+
 // Colors
-#define BOLD(msg) "\033[1m" msg "\033[0m"
-#define PASS(msg) "\033[32m" msg "\033[0m"
-#define FAIL(msg) "\033[31m" msg "\033[0m"
-#define INFO(msg) "\033[34m" msg "\033[0m"
+#ifndef NOCOLOR
+#define BOLD(msg) "\033[1m", msg, "\033[0m"
+#define PASS(msg) "\033[32m", msg, "\033[0m"
+#define FAIL(msg) "\033[31m", msg, "\033[0m"
+#define INFO(msg) "\033[34m", msg, "\033[0m"
+#else
+#define BOLD(msg) msg
+#define PASS(msg) msg
+#define FAIL(msg) msg
+#define INFO(msg) msg
+#endif
 
 // Internals
 #define unit_test_typespec(code)                                                                                         \
@@ -96,11 +110,13 @@ default           : "%p")
 
 #define unit_test_assert(mu_, x1, x2, op, notop)                                                                          \
   if(!((x1)op(x2))) {                                                                                                  \
-    fprintf((mu_)->faillog, "  Assertion failed: ");                                                                    \
-    fprintf((mu_)->faillog, unit_test_typespec(x1), x1);                                                                  \
-    fprintf((mu_)->faillog, " " #notop " ");                                                                            \
-    fprintf((mu_)->faillog, unit_test_typespec(x2), x2);                                                                  \
-    fprintf((mu_)->faillog, " (%s:%d)\n", __FILE__, __LINE__);                                                          \
+    buffer_putsflush((mu_)->faillog, "  Assertion failed: ");                                                                    \
+    buffer_putm((mu_)->faillog, unit_test_typespec(x1), x1);                                                                  \
+    buffer_puts((mu_)->faillog, " " #notop " ");                                                                            \
+    buffer_putm((mu_)->faillog, unit_test_typespec(x2), x2);                                                                  \
+    buffer_putm((mu_)->faillog, " (",  __buffer__, ":"); buffer_putulong((mu_)->faillog, __LINE__);                                                          \
+    buffer_puts((mu_)->faillog, ")");                                                          \
+    buffer_putnlflush((mu_)->faillog);                                                          \
     (mu_)->failure++;                                                                                                   \
     return;                                                                                                            \
   }
@@ -109,8 +125,8 @@ struct unit_test {
   tai6464 elapsed;
   int success;
   int failure;
-  FILE* testlog;
-  FILE* faillog;
+  buffer* testlog;
+  buffer* faillog;
 };
 struct unit_testConf {
   bool q;
@@ -131,13 +147,13 @@ static struct unit_testConf* muconf() {
   static struct unit_testConf c = { /*.q =*/ FALSE, /*.s =*/ FALSE, /*.v =*/ FALSE, /*.x =*/  FALSE};
   return &c;
 }
-static FILE* muout = NULL;
-static FILE* muerr = NULL;
+static buffer* muout = NULL;
+static buffer* muerr = NULL;
 
 static void
 unit_test_cleanup(struct unit_test* mu_) {
-  if(mu_->testlog) fclose(mu_->testlog);
-  if(mu_->faillog) fclose(mu_->faillog);
+  if(mu_->testlog) buffer_close(mu_->testlog);
+  if(mu_->faillog) buffer_close(mu_->faillog);
 }
 
 static struct taia*
@@ -156,21 +172,21 @@ unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
 }
 
 static void
-unit_test_copy(FILE* src, FILE* dst) {
+unit_test_copy(buffer* src, buffer* dst) {
   int c;
   rewind(src);
-  for(c = getc(src); c != EOF; c = getc(src)) fputc(c, dst);
+  for(c = getc(src); c != EOF; c = getc(src)) buffer_putc(dst, c);
 }
 
 static bool
-unit_test_empty(FILE* file) {
+unit_test_empty(buffer* file) {
   fseek(file, 0, SEEK_END);
   return ftell(file) == 0;
 }
 
-static FILE*
+static buffer*
 unit_test_tmpfile() {
-  FILE* file = tmpfile();
+  buffer* file = tmpfile();
   if(file == NULL) {
     TESTLOG("ERROR: tmpfile failed\n");
     exit(EXIT_FAILURE);
@@ -269,7 +285,7 @@ mu_i.testlog =  unit_test_tmpfile();
 
   rc = unit_test_call(mu_, unit_test_execute);
 
-  if(!muconf()->v) fputc('\n', muerr);
+  if(!muconf()->v) buffer_putnlflush(muerr);
   unit_test_copy(mu_->testlog, muerr);
   TESTLOG("\nRAN " BOLD("%d") " TESTS IN " BOLD("%4.3lf") "s\n", mu_->success + mu_->failure, mu_->elapsed);
 
@@ -283,6 +299,8 @@ mu_i.testlog =  unit_test_tmpfile();
   }
 
   unit_test_cleanup(mu_);
+  buffer_flush(muerr);
+  buffer_flush(muout);
   return rc;
 }
 #else
@@ -297,16 +315,16 @@ int                   main(int argc, char** argv);
 struct unit_testConf* muconf(void);
 int                   unit_test_call(struct unit_test* mu_, unit_test_func_t func);
 void                  unit_test_cleanup(struct unit_test* mu_);
-void                  unit_test_copy(FILE* src, FILE* dst);
-bool                  unit_test_empty(FILE* file);
+void                  unit_test_copy(buffer* src, buffer* dst);
+bool                  unit_test_empty(buffer* file);
 struct taia*          unit_test_gettime(void);
 void                  unit_test_optparse(int argc, char** argv);
 int                   unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name);
-FILE*                 unit_test_tmpfile(void);
+buffer*               unit_test_tmpfile(void);
 void                  unit_test_usage(const char* cmd);
 
-extern FILE* muout;
-extern FILE* muerr;
+extern buffer* muout;
+extern buffer* muerr;
 
 #endif
 

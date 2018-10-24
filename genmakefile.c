@@ -1378,6 +1378,7 @@ main(int argc, char* argv[]) {
 
     if((rule = get_rule("clean"))) {
       TUPLE* t;
+      char* arg;
       size_t lineoffs = 0;
       stralloc fn;
       strlist delete_args;
@@ -1395,14 +1396,18 @@ main(int argc, char* argv[]) {
 
         if(rule->recipe == 0) continue;
 
-        /*  if(delete_command.len - lineoffs + str_len(t->key) >= MAX_CMD_LEN) {
-            stralloc_cats(&delete_command, "\n\tDEL /F /Q");
-            lineoffs = delete_command.len;
-          }
-
-          stralloc_catc(&delete_command, ' ');
-          stralloc_cats(&delete_command, t->key);*/
+        /*  */
         strlist_push_unique(&delete_args, path_wildcard(t->key, &fn));
+      }
+
+      strlist_foreach_s(&delete_args, arg) {
+        if(delete_command.len - lineoffs + str_len(t->key) >= MAX_CMD_LEN) {
+          stralloc_cats(&delete_command, "\n\tDEL /F /Q");
+          lineoffs = delete_command.len;
+        }
+
+        stralloc_catc(&delete_command, ' ');
+        stralloc_cats(&delete_command, arg);
       }
 
       rule->recipe = &delete_command;

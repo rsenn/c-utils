@@ -2082,3 +2082,9 @@ $(BUILDDIR)xmltest4.o: ./xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ./ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_getsep.o: lib/path/path_getsep.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_is_separator.o: lib/path/path_is_separator.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_skip_separator.o: lib/path/path_skip_separator.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

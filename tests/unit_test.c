@@ -19,6 +19,7 @@
  * SOFTWARE.
  */
 
+#include "../lib/buffer.h"
 #include "unit_test.h"
 
 #ifndef UNIT_TEST_STATIC_FUNCTIONS
@@ -27,13 +28,13 @@ struct unit_testConf* muconf() {
   static struct unit_testConf c = { /*.q =*/ FALSE, /*.s =*/ FALSE, /*.v =*/ FALSE, /*.x =*/  FALSE};
   return &c;
 }
-FILE* muout = NULL;
-FILE* muerr = NULL;
+buffer* muout = NULL;
+buffer* muerr = NULL;
 
 void
 unit_test_cleanup(struct unit_test* mu_) {
-  if(mu_->testlog) fclose(mu_->testlog);
-  if(mu_->faillog) fclose(mu_->faillog);
+  if(mu_->testlog) buffer_close(mu_->testlog);
+  if(mu_->faillog) buffer_close(mu_->faillog);
 }
 
 /*struct taia*
@@ -55,21 +56,19 @@ unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
 }
 
 void
-unit_test_copy(FILE* src, FILE* dst) {
-  int c;
-  rewind(src);
-  for(c = getc(src); c != EOF; c = getc(src)) fputc(c, dst);
+unit_test_copy(buffer* src, buffer* dst) {
+  buffer_copy(dst, src);
 }
 
 bool
-unit_test_empty(FILE* file) {
+unit_test_empty(buffer* file) {
   fseek(file, 0, SEEK_END);
   return ftell(file) == 0;
 }
 
-FILE*
+buffer*
 unit_test_tmpfile() {
-  FILE* file = tmpfile();
+  buffer* file = tmpfile();
   if(file == NULL) {
     TESTLOG("ERROR: tmpfile failed\n");
     exit(EXIT_FAILURE);
@@ -102,13 +101,13 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   }
 
   if(!unit_test_empty(running->faillog)) {
-    fprintf(mu_->testlog, FAIL("\nFAILURE") " in " BOLD("%s\n"), name);
+    buffer_putm(mu_->testlog, FAIL("\nFAILURE"), " in ", BOLD(name), "\n");
     unit_test_copy(running->faillog, mu_->testlog);
   }
 
   if(!muconf()->q) {
     if(!unit_test_empty(running->testlog)) {
-      fprintf(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR") " for " BOLD("%s\n"), name);
+      buffer_putm(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR"), " for ", BOLD(name), "\n");
       unit_test_copy(running->testlog, mu_->testlog);
     }
   }
@@ -161,14 +160,18 @@ main(int argc, char** argv) {
 
 mu_i.testlog =  unit_test_tmpfile();
 
-  muout = stdout;
-  muerr = stderr;
+  muout = buffer_1small;
+  muerr = buffer_2;
+
+#if WINDOWS_NATIVE || defined(_MSC_VER)
+  muerr = muout;
+#endif
 
   unit_test_optparse(argc, argv);
 
   rc = unit_test_call(mu_, unit_test_execute);
 
-  if(!muconf()->v) fputc('\n', muerr);
+  if(!muconf()->v) buffer_putc(muerr, '\n');
   unit_test_copy(mu_->testlog, muerr);
   TESTLOG("\nRAN " BOLD("%d") " TESTS IN " BOLD("%4.3lf") "s\n", mu_->success + mu_->failure, mu_->elapsed);
 
