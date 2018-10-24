@@ -15,7 +15,7 @@ char*
 path_basename(char* path) {
   unsigned int n;
 again:
-  n = str_rchr(path, '/');
+  n = str_rchrs(path, "/\\", 2);
   if(path[n] == '\0') return path;
   if(path[n + 1] == 0) {
     if(n == 0)

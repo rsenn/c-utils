@@ -1376,10 +1376,11 @@ main(int argc, char* argv[]) {
 
     deps_for_libs(rules);
 
+    /* Generate "clean" rule */
     if((rule = get_rule("clean"))) {
       TUPLE* t;
       char* arg;
-      size_t lineoffs = 0;
+      int32 lineoffs = 0;
       stralloc fn;
       strlist delete_args;
       stralloc_init(&fn);
@@ -1388,19 +1389,26 @@ main(int argc, char* argv[]) {
       stralloc_copys(&delete_command, "DEL /F /Q");
 
       hmap_foreach(rules, t) {
-        if(stralloc_equals(&builddir.sa, t->key)) continue;
+
+        /* Ignore the builddir rule */
+        if(stralloc_equals(&builddir.sa, t->key))
+          continue;
 
         rule = hmap_data(t);
 
-        if(strlist_count(&rule->prereq) == 0) continue;
+        /* If the rule has prerequisites and a recipe, it must be a producing rule */
+        if(strlist_count(&rule->prereq) && rule->recipe) {
 
-        if(rule->recipe == 0) continue;
+          /* If possible, transform file name into a wildcard pattern */
+          arg = path_wildcard(t->key, &fn);
 
-        /*  */
-        strlist_push_unique(&delete_args, path_wildcard(t->key, &fn));
+          /* Add to deletion list */
+          strlist_push_unique(&delete_args, arg);
+        }
       }
 
       strlist_foreach_s(&delete_args, arg) {
+
         if(delete_command.len - lineoffs + str_len(arg) >= MAX_CMD_LEN) {
           stralloc_cats(&delete_command, "\n\tDEL /F /Q");
           lineoffs = delete_command.len;
@@ -1408,6 +1416,9 @@ main(int argc, char* argv[]) {
 
         stralloc_catc(&delete_command, ' ');
         stralloc_cats(&delete_command, arg);
+
+        if(arg[str_chr(arg, '*')])
+          lineoffs = -MAX_CMD_LEN;
       }
 
       rule->recipe = &delete_command;
