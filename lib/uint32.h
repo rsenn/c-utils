@@ -96,7 +96,8 @@ uint32 uint32_read(const char* in);
 uint32 uint32_read_big(const char* in);
 
 uint32 uint32_random();
-
+int uint32_seed(const void*, unsigned long n);
+uint32 uint32_prng(uint32, uint32 seed);
 #endif
 
 #ifdef __cplusplus

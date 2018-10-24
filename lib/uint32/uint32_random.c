@@ -1,6 +1,7 @@
 #include "../open.h"
 #include "../uint32.h"
-#include <unistd.h>
+
+#define UINT32_POOLSIZE 16
 
 uint32 uint32_pool[UINT32_POOLSIZE];
 unsigned long uint32_seeds = 0;
