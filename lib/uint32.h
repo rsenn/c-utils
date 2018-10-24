@@ -104,3 +104,9 @@ uint32 uint32_prng(uint32, uint32 seed);
 }
 #endif
 #endif
+/* bit rotating macros */
+#define uint32_ror(v,c)      (((uint32)(v) >> (c)) | ((uint32)(v) << (32 - (c))))
+#define uint32_rol(v,c)      (((uint32)(v) << (c)) | ((uint32)(v) >> (32 - (c))))
+#define uint32_ror_safe(v,c) (((uint32)(v) >> uint32rc(c)) | ((uint32)(v) << (32 - uint32rc(c))))
+#define uint32_rol_safe(v,c) (((uint32)(v) << uint32rc(c)) | ((uint32)(v) >> (32 - uint32rc(c))))
+
