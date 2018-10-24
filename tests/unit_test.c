@@ -19,17 +19,24 @@
  * SOFTWARE.
  */
 
+#include "../lib/windoze.h"
 #include "../lib/buffer.h"
+#include "../lib/open.h"
 #include "unit_test.h"
 
 #ifndef UNIT_TEST_STATIC_FUNCTIONS
 
-struct unit_testConf* muconf() {
-  static struct unit_testConf c = { /*.q =*/ FALSE, /*.s =*/ FALSE, /*.v =*/ FALSE, /*.x =*/  FALSE};
+struct unit_testConf*
+muconf() {
+  static struct unit_testConf c = {/*.q =*/FALSE, /*.s =*/FALSE, /*.v =*/FALSE, /*.x =*/FALSE};
   return &c;
 }
-buffer* muout = NULL;
-buffer* muerr = NULL;
+static buffer *muout, *muerr;
+
+buffer*
+unit_test_getbuffer(int fileno) {
+  return fileno == 1 ? muout : muerr;
+}
 
 void
 unit_test_cleanup(struct unit_test* mu_) {
@@ -67,13 +74,15 @@ unit_test_empty(buffer* file) {
 }
 
 buffer*
-unit_test_tmpfile(buffer* b) {
-
-  buffer_init(b, write, open_temp(), malloc(1024), 1024);
-  if(b->fd == -1) {
-     TESTLOG("ERROR: tmpfile failed\n");
+unit_test_tmpfile(buffer* b, char* tmpl) {
+  int fd;
+  if((fd = open_temp(tmpl)) == -1) {
+    buffer_puts(muerr, "ERROR: tmpfile failed");
+    buffer_putnlflush(muerr);
     exit(EXIT_FAILURE);
   }
+  buffer_free(b);
+  buffer_init(b, write, fd, malloc(1024), 1024);
   return b;
 }
 
@@ -84,12 +93,12 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   struct unit_test* running = &run;
   static buffer testtmp, failtmp;
 
-  run.testlog = unit_test_tmpfile(&testtmp);
-  run.faillog = unit_test_tmpfile(&failtmp);
+  run.testlog = unit_test_tmpfile(&testtmp, "testlog-XXXXXX");
+  run.faillog = unit_test_tmpfile(&failtmp, "faillog-XXXXXX");
 
   if(!muconf()->s) {
-    //stdout = running->testlog;
-    //stderr = running->testlog;
+    buffer_1small = running->testlog;
+    buffer_2 = running->testlog;
   }
 
   rc = unit_test_call(running, func);
@@ -103,13 +112,13 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   }
 
   if(!unit_test_empty(running->faillog)) {
-    buffer_putm(mu_->testlog, FAIL("\nFAILURE"), " in ", BOLD(name), "\n");
+    buffer_putmflush(mu_->testlog, FAIL("\nFAILURE"), " in ", BOLD(name), "\n");
     unit_test_copy(running->faillog, mu_->testlog);
   }
 
   if(!muconf()->q) {
     if(!unit_test_empty(running->testlog)) {
-      buffer_putm(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR"), " for ", BOLD(name), "\n");
+      buffer_putmflush(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR"), " for ", BOLD(name), "\n");
       unit_test_copy(running->testlog, mu_->testlog);
     }
   }
@@ -161,10 +170,10 @@ main(int argc, char** argv) {
   struct unit_test* mu_ = &mu_i;
   static buffer testtmp;
 
-  mu_i.testlog =  unit_test_tmpfile(&testtmp);
-
   muout = buffer_1small;
   muerr = buffer_2;
+
+  mu_i.testlog = unit_test_tmpfile(&testtmp, "test-XXXXXX");
 
 #if WINDOWS_NATIVE || defined(_MSC_VER)
   muerr = muout;
@@ -175,6 +184,7 @@ main(int argc, char** argv) {
   rc = unit_test_call(mu_, unit_test_execute);
 
   if(!muconf()->v) buffer_putc(muerr, '\n');
+
   unit_test_copy(mu_->testlog, muerr);
   TESTLOG("\nRAN " BOLD("%d") " TESTS IN " BOLD("%4.3lf") "s\n", mu_->success + mu_->failure, mu_->elapsed);
 

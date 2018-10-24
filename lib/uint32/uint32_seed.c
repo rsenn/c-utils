@@ -15,13 +15,11 @@ uint32_seed(const void* p, unsigned long n) {
 
   if(n == 0) {
     int i;
-
-    fd = open_read("/dev/urandom");
-    i = read(fd, uint32_pool, sizeof(uint32_pool));
-
-    if(i > 0) uint32_bytes_seeded += i;
-
-    close(fd);
+    if((fd = open_read("/dev/urandom")) != -1) {
+      i = read(fd, uint32_pool, sizeof(uint32_pool));
+      if(i > 0) uint32_bytes_seeded += i;
+      close(fd);
+    }
   } else {
     const char* b = (const char*)p;
     char* x = (char*)uint32_pool;

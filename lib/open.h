@@ -45,10 +45,10 @@ ssize_t readclose_append(int64 fd, stralloc* sa, size_t bufsize);
 ssize_t readclose(int64 fd, stralloc* sa, size_t bufsize);
 #endif
 
+int open_temp(char*);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-int open_temp(char*);

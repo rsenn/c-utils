@@ -22,14 +22,16 @@
 #ifndef UNIT_TEST_H
 #define UNIT_TEST_H
 
-#include "../lib/taia.h"
 #include "../lib/buffer.h"
+#include "../lib/taia.h"
+#include "../lib/windoze.h"
 #include <math.h>
 //#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#if WINDOWS_NATIVE
+#include <io.h>
 #include <winsock.h>
 #else
 #include <sys/time.h>
@@ -47,13 +49,13 @@ typedef char bool;
 // APIs
 #define TEST(name) static void name(struct unit_test* mu_)
 #define RUN(name)                                                                                                      \
-  if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) {                                                                  \
+  if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) {                                                                \
     mu_->success++;                                                                                                    \
   } else {                                                                                                             \
     mu_->failure++;                                                                                                    \
-    if(muconf()->x) return;                                                                                              \
+    if(muconf()->x) return;                                                                                            \
   }
-#define TESTLOG(...) buffer_putm_internal(muerr, __VA_ARGS__, 0)
+#define TESTLOG(...) buffer_putmflush(muerr, __VA_ARGS__)
 
 // Assertions
 #define ASSERT_EQ(x1, x2) unit_test_assert(mu_, x1, x2, ==, !=)
@@ -90,7 +92,7 @@ typedef char bool;
 #endif
 
 // Internals
-#define unit_test_typespec(code)                                                                                         \
+#define unit_test_typespec(code)                                                                                       \
   _Generic((code),\
 char *            : "%s"  ,\
 signed char       : "%hhd",\
@@ -108,16 +110,17 @@ double            : "%lf" ,\
 long double       : "%Lf" ,\
 default           : "%p")
 
-#define unit_test_assert(mu_, x1, x2, op, notop)                                                                          \
+#define unit_test_assert(mu_, x1, x2, op, notop)                                                                       \
   if(!((x1)op(x2))) {                                                                                                  \
-    buffer_putsflush((mu_)->faillog, "  Assertion failed: ");                                                                    \
-    buffer_putm((mu_)->faillog, unit_test_typespec(x1), x1);                                                                  \
-    buffer_puts((mu_)->faillog, " " #notop " ");                                                                            \
-    buffer_putm((mu_)->faillog, unit_test_typespec(x2), x2);                                                                  \
-    buffer_putm((mu_)->faillog, " (",  __buffer__, ":"); buffer_putulong((mu_)->faillog, __LINE__);                                                          \
-    buffer_puts((mu_)->faillog, ")");                                                          \
-    buffer_putnlflush((mu_)->faillog);                                                          \
-    (mu_)->failure++;                                                                                                   \
+    buffer_putsflush((mu_)->faillog, "  Assertion failed: ");                                                          \
+    buffer_putm((mu_)->faillog, unit_test_typespec(x1), x1);                                                           \
+    buffer_puts((mu_)->faillog, " " #notop " ");                                                                       \
+    buffer_putm((mu_)->faillog, unit_test_typespec(x2), x2);                                                           \
+    buffer_putm((mu_)->faillog, " (", __buffer__, ":");                                                                \
+    buffer_putulong((mu_)->faillog, __LINE__);                                                                         \
+    buffer_puts((mu_)->faillog, ")");                                                                                  \
+    buffer_putnlflush((mu_)->faillog);                                                                                 \
+    (mu_)->failure++;                                                                                                  \
     return;                                                                                                            \
   }
 
@@ -139,12 +142,13 @@ typedef void (*unit_test_func_t)(struct unit_test* mu_);
 #ifdef UNIT_TEST_STATIC_FUNCTIONS
 #define START() static void unit_test_execute(struct unit_test* mu_)
 
-#define TESTS(name) static void unit_test_execute_ ## name(struct unit_test* mu_)
+#define TESTS(name) static void unit_test_execute_##name(struct unit_test* mu_)
 
 static void unit_test_execute(struct unit_test* mu_);
 
-static struct unit_testConf* muconf() {
-  static struct unit_testConf c = { /*.q =*/ FALSE, /*.s =*/ FALSE, /*.v =*/ FALSE, /*.x =*/  FALSE};
+static struct unit_testConf*
+muconf() {
+  static struct unit_testConf c = {/*.q =*/FALSE, /*.s =*/FALSE, /*.v =*/FALSE, /*.x =*/FALSE};
   return &c;
 }
 static buffer* muout = NULL;
@@ -204,8 +208,8 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   run.faillog = unit_test_tmpfile();
 
   if(!muconf()->s) {
-    //stdout = running->testlog;
-    //stderr = running->testlog;
+    // stdout = running->testlog;
+    // stderr = running->testlog;
   }
 
   rc = unit_test_call(running, func);
@@ -276,7 +280,7 @@ main(int argc, char** argv) {
   static struct unit_test mu_i;
   struct unit_test* mu_ = &mu_i;
 
-mu_i.testlog =  unit_test_tmpfile();
+  mu_i.testlog = unit_test_tmpfile();
 
   muout = stdout;
   muerr = stderr;
@@ -306,25 +310,24 @@ mu_i.testlog =  unit_test_tmpfile();
 #else
 
 #define START() void unit_test_execute(struct unit_test* mu_)
-#define TESTS(name) void unit_test_execute_ ## name(struct unit_test* mu_)
-#define EXEC(name) unit_test_execute_ ## name(mu_)
+#define TESTS(name) void unit_test_execute_##name(struct unit_test* mu_)
+#define EXEC(name) unit_test_execute_##name(mu_)
 
 void unit_test_execute(struct unit_test* mu_);
 
-int                   main(int argc, char** argv);
+int main(int argc, char** argv);
 struct unit_testConf* muconf(void);
-int                   unit_test_call(struct unit_test* mu_, unit_test_func_t func);
-void                  unit_test_cleanup(struct unit_test* mu_);
-void                  unit_test_copy(buffer* src, buffer* dst);
-bool                  unit_test_empty(buffer* file);
-struct taia*          unit_test_gettime(void);
-void                  unit_test_optparse(int argc, char** argv);
-int                   unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name);
-buffer*               unit_test_tmpfile(void);
-void                  unit_test_usage(const char* cmd);
+int unit_test_call(struct unit_test* mu_, unit_test_func_t func);
+void unit_test_cleanup(struct unit_test* mu_);
+void unit_test_copy(buffer* src, buffer* dst);
+bool unit_test_empty(buffer* file);
+struct taia* unit_test_gettime(void);
+void unit_test_optparse(int argc, char** argv);
+int unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name);
+buffer* unit_test_tmpfile(buffer*);
+void unit_test_usage(const char* cmd);
 
-extern buffer* muout;
-extern buffer* muerr;
+buffer* unit_test_getbuffer(int fileno);
 
 #endif
 

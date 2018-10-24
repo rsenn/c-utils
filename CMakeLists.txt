@@ -626,6 +626,8 @@ function(add_program PROG)
 
   add_executable(${PROG} ${PROG}.c ${INCLUDES})
   target_link_libraries(${PROG} ${ARGN})
+    install(TARGETS ${PROG} DESTINATION bin)
+
 endfunction(add_program PROG)
 
 set(PROGRAMS
@@ -647,7 +649,6 @@ set(PROGRAMS
 #    INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR};${CMAKE_SOURCE_DIR}"
 #    )
 ##  target_link_libraries(${PROGRAM} ${COMMON_LIBS})
-#  install(TARGETS ${PROGRAM} DESTINATION bin)
 #endforeach(PROGRAM)
 #
 #target_link_libraries(list-r dir ${COMMON_LIBS})
