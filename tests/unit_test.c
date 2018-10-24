@@ -67,13 +67,14 @@ unit_test_empty(buffer* file) {
 }
 
 buffer*
-unit_test_tmpfile() {
-  buffer* file = tmpfile();
-  if(file == NULL) {
-    TESTLOG("ERROR: tmpfile failed\n");
+unit_test_tmpfile(buffer* b) {
+
+  buffer_init(b, write, open_temp(), malloc(1024), 1024);
+  if(b->fd == -1) {
+     TESTLOG("ERROR: tmpfile failed\n");
     exit(EXIT_FAILURE);
   }
-  return file;
+  return b;
 }
 
 int
@@ -81,9 +82,10 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   int rc;
   static struct unit_test run;
   struct unit_test* running = &run;
+  static buffer testtmp, failtmp;
 
-  run.testlog = unit_test_tmpfile();
-  run.faillog = unit_test_tmpfile();
+  run.testlog = unit_test_tmpfile(&testtmp);
+  run.faillog = unit_test_tmpfile(&failtmp);
 
   if(!muconf()->s) {
     //stdout = running->testlog;
@@ -157,8 +159,9 @@ main(int argc, char** argv) {
   int rc;
   static struct unit_test mu_i;
   struct unit_test* mu_ = &mu_i;
+  static buffer testtmp;
 
-mu_i.testlog =  unit_test_tmpfile();
+  mu_i.testlog =  unit_test_tmpfile(&testtmp);
 
   muout = buffer_1small;
   muerr = buffer_2;

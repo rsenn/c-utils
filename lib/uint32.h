@@ -95,10 +95,11 @@ void uint32_unpack_big(const char* in, uint32* out);
 uint32 uint32_read(const char* in);
 uint32 uint32_read_big(const char* in);
 
+uint32 uint32_random();
+
 #endif
 
 #ifdef __cplusplus
 }
 #endif
 #endif
-

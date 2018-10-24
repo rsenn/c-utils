@@ -1092,6 +1092,8 @@ $(BUILDDIR)open_read.o: ./lib/open/open_read.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)open_rw.o: ./lib/open/open_rw.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)open_temp.o: ./lib/open/open_temp.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)open_trunc.o: ./lib/open/open_trunc.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)open_write.o: ./lib/open/open_write.c
@@ -1124,6 +1126,8 @@ $(BUILDDIR)path_getsep.o: ./lib/path/path_getsep.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_is_absolute.o: ./lib/path/path_is_absolute.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_is_separator.o: ./lib/path/path_is_separator.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_len.o: ./lib/path/path_len.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_len_s.o: ./lib/path/path_len_s.c
@@ -1143,6 +1147,8 @@ $(BUILDDIR)path_right.o: ./lib/path/path_right.c
 $(BUILDDIR)path_skip.o: ./lib/path/path_skip.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_skips.o: ./lib/path/path_skips.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)path_skip_separator.o: ./lib/path/path_skip_separator.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)path_split.o: ./lib/path/path_split.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
@@ -1824,6 +1830,8 @@ $(BUILDDIR)uint32_pack.o: ./lib/uint32/uint32_pack.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)uint32_pack_big.o: ./lib/uint32/uint32_pack_big.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)uint32_random.o: ./lib/uint32/uint32_random.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)uint32_read.o: ./lib/uint32/uint32_read.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)uint32_read_big.o: ./lib/uint32/uint32_read_big.c
@@ -2081,10 +2089,4 @@ $(BUILDDIR)xmltest3.o: ./xmltest3.c
 $(BUILDDIR)xmltest4.o: ./xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ./ziptest.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)path_getsep.o: lib/path/path_getsep.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)path_is_separator.o: lib/path/path_is_separator.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
-$(BUILDDIR)path_skip_separator.o: lib/path/path_skip_separator.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
