@@ -1401,7 +1401,7 @@ main(int argc, char* argv[]) {
       }
 
       strlist_foreach_s(&delete_args, arg) {
-        if(delete_command.len - lineoffs + str_len(t->key) >= MAX_CMD_LEN) {
+        if(delete_command.len - lineoffs + str_len(arg) >= MAX_CMD_LEN) {
           stralloc_cats(&delete_command, "\n\tDEL /F /Q");
           lineoffs = delete_command.len;
         }
