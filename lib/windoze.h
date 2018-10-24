@@ -13,8 +13,10 @@
 #endif
 
 #if WINDOWS_NATIVE
-#include <windows.h>
 #include <io.h>
+#endif
+#if WINDOWS
+#include <windows.h>
 #endif
 
 #ifdef __cplusplus
