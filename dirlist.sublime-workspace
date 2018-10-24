@@ -37,7 +37,8 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 32169,
+				"buffer_size": 33506,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -342,6 +343,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"get_inc",
+			"extract_inc",
+			"clean_rule",
+			"wildcard",
 			"realpath",
 			"absolute",
 			"\\",
@@ -548,15 +553,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 32169,
+						"buffer_size": 33506,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								31844,
-								31844
+								16965,
+								16965
 							]
 						],
 						"settings":
@@ -566,7 +571,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 17914.0,
+						"translation.y": 10777.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

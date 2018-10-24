@@ -139,6 +139,8 @@ struct unit_testConf {
 };
 typedef void (*unit_test_func_t)(struct unit_test* mu_);
 
+int unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name);
+
 #ifdef UNIT_TEST_STATIC_FUNCTIONS
 #define START() static void unit_test_execute(struct unit_test* mu_)
 
@@ -186,56 +188,6 @@ static bool
 unit_test_empty(buffer* file) {
   fseek(file, 0, SEEK_END);
   return ftell(file) == 0;
-}
-
-static buffer*
-unit_test_tmpfile() {
-  buffer* file = tmpfile();
-  if(file == NULL) {
-    TESTLOG("ERROR: tmpfile failed\n");
-    exit(EXIT_FAILURE);
-  }
-  return file;
-}
-
-static int
-unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
-  int rc;
-  static struct unit_test run;
-  struct unit_test* running = &run;
-
-  run.testlog = unit_test_tmpfile();
-  run.faillog = unit_test_tmpfile();
-
-  if(!muconf()->s) {
-    // stdout = running->testlog;
-    // stderr = running->testlog;
-  }
-
-  rc = unit_test_call(running, func);
-
-  if(running->failure == 0) {
-    TESTLOG(PASS("."));
-    if(muconf()->v) TESTLOG(PASS("  %s\n"), name);
-  } else {
-    TESTLOG(FAIL("F"));
-    if(muconf()->v) TESTLOG(FAIL("  %s\n"), name);
-  }
-
-  if(!unit_test_empty(running->faillog)) {
-    fprintf(mu_->testlog, FAIL("\nFAILURE") " in " BOLD("%s\n"), name);
-    unit_test_copy(running->faillog, mu_->testlog);
-  }
-
-  if(!muconf()->q) {
-    if(!unit_test_empty(running->testlog)) {
-      fprintf(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR") " for " BOLD("%s\n"), name);
-      unit_test_copy(running->testlog, mu_->testlog);
-    }
-  }
-
-  unit_test_cleanup(running);
-  return rc;
 }
 
 static void
@@ -323,8 +275,7 @@ void unit_test_copy(buffer* src, buffer* dst);
 bool unit_test_empty(buffer* file);
 struct taia* unit_test_gettime(void);
 void unit_test_optparse(int argc, char** argv);
-int unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name);
-buffer* unit_test_tmpfile(buffer*);
+buffer* unit_test_tmpfile(buffer* b, char* tmpl);
 void unit_test_usage(const char* cmd);
 
 buffer* unit_test_getbuffer(int fileno);
