@@ -12,8 +12,11 @@
 #define MINGW 1
 #endif
 
-#if WINDOWS_NATIVE
+#if WINDOWS
 #include <windows.h>
+#endif
+
+#if WINDOWS_NATIVE
 #include <io.h>
 #endif
 

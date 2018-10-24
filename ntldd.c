@@ -24,13 +24,13 @@ MSDN Magazine articles
 */
 
 #include "lib/windoze.h"
-#include "lib/getopt.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
+#include "lib/getopt.h"
+#include "lib/path.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/uint64.h"
-#include "lib/path.h"
 
 #include <limits.h>
 #include <stdio.h>
@@ -77,11 +77,10 @@ pathconv(const char* path, stralloc* sa) {
 }
 #endif
 
-
 /*****************************************************************************
  * Function find_section_by_raw_data
  *****************************************************************************/
- int
+int
 find_section_by_raw_data(pe_loaded_image* img, uint32 address) {
   unsigned long i;
   for(i = 0; i < img->number_of_sections; i++) {
@@ -94,7 +93,7 @@ find_section_by_raw_data(pe_loaded_image* img, uint32 address) {
 
 /*****************************************************************************
  * Function resize_array
- *****************************************************************************/void
+ *****************************************************************************/ void
 resize_array(void** data, uint64* data_size, size_t sizeof_data) {
   uint64 new_size = (*data_size) > 0 ? (*data_size) * 2 : 64;
   void* new_data;
@@ -169,7 +168,7 @@ process_dep(build_tree_config* cfg,
     /* TODO: find a better way to identify api stubs. Versioninfo, maybe? */
     return NULL;
   }
-  for(i = (int64) * cfg->stack_len - 1; i >= 0; i--) {
+  for(i = (int64)*cfg->stack_len - 1; i >= 0; i--) {
     if((*cfg->stack)[i] && str_case_diff((*cfg->stack)[i], dllname) == 0) return NULL;
     if(i == 0) break;
   }
@@ -300,7 +299,7 @@ build_dep_tree32or64(pe_loaded_image* img,
     iid = (pe_import_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
-          iid[i].first_thunk;
+                 iid[i].first_thunk;
           i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
@@ -333,8 +332,8 @@ build_dep_tree32or64(pe_loaded_image* img,
     idd = (pe_delayload_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
-          idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
-          idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
+                 idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
+                 idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
@@ -370,7 +369,7 @@ build_dep_tree32or64(pe_loaded_image* img,
     iid = (pe_import_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
-          iid[i].first_thunk;
+                 iid[i].first_thunk;
           i++)
 
         process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 1);
@@ -381,8 +380,8 @@ build_dep_tree32or64(pe_loaded_image* img,
     idd = (pe_delayload_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
-          idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
-          idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
+                 idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
+                 idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++)
 
         process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 1);
@@ -524,13 +523,13 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   */
   for(i = 0; i < self->imports_len; i++) {
     if(self->imports[i].mapped == NULL && self->imports[i].dll != NULL &&
-        (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
+       (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
       struct dep_tree_element* dll = self->imports[i].dll;
       for(j = 0; j < dll->exports_len; j++) {
         if((self->imports[i].name != NULL && dll->exports[j].name != NULL &&
             str_equal(self->imports[i].name, dll->exports[j].name)) ||
-            (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 &&
-             self->imports[i].ordinal == dll->exports[j].ordinal)) {
+           (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 &&
+            self->imports[i].ordinal == dll->exports[j].ordinal)) {
           self->imports[i].mapped = &dll->exports[j];
           break;
         }
@@ -709,8 +708,8 @@ print_image_links(int first,
 int
 registry_query(const char* key, const char* value, stralloc* sa) {
   HKEY hkey;
-  DWORD len,ret, type;
-  typedef LONG (WINAPI* reggetvalue_fn) (HKEY,LPCSTR,LPCSTR,DWORD,DWORD*,void*,DWORD*);
+  DWORD len, ret, type;
+  typedef LONG(WINAPI * reggetvalue_fn)(HKEY, LPCSTR, LPCSTR, DWORD, DWORD*, void*, DWORD*);
   static reggetvalue_fn api_fn;
 
   if(!api_fn) {
@@ -719,8 +718,7 @@ registry_query(const char* key, const char* value, stralloc* sa) {
       api_fn = (reggetvalue_fn*)GetProcAddress(advapi, "RegGetValueA");
   }
 
-  if(!api_fn)
-    return -1;
+  if(!api_fn) return -1;
 
   if(!str_diffn(key, "HKCU", 4) || !str_diffn(key, "HKEY_CURRENT_USER", 17)) {
     hkey = HKEY_CURRENT_USER;
@@ -781,7 +779,8 @@ add_path(strlist* sp, const char* path) {
 int
 main(int argc, char** argv) {
   int i;
-  static int verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0, recursive = 0, list_exports = 0, list_imports = 0;
+  static int verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0, recursive = 0, list_exports = 0,
+             list_imports = 0;
   int skip = 0;
   int files = 0;
   int files_start = -1;
@@ -790,19 +789,17 @@ main(int argc, char** argv) {
   int digit_optind = 0;
   const char* rel_to = 0;
   int index = 0;
-  const struct longopt opts[] = {
-    {"help", 0, 0, 'h'},
-    {"verbose", 0, &verbose, 'v'},
-    {"unused", 0, &unused, 'u'},
-    {"data-relocs", 0, &datarelocs, 'd'},
-    {"function-relocs", 0, &functionrelocs, 'r'},
-    {"recursive", 0, &recursive, 'R'},
-    {"list-exports", 0, &list_exports, 'e'},
-    {"list-imports", 0, &list_imports, 'i'},
-    {"version", 0, 0, 'V'},
-    {"search-dir", 0, 0, 'D'},
-    {0}
-  };
+  const struct longopt opts[] = {{"help", 0, 0, 'h'},
+                                 {"verbose", 0, &verbose, 'v'},
+                                 {"unused", 0, &unused, 'u'},
+                                 {"data-relocs", 0, &datarelocs, 'd'},
+                                 {"function-relocs", 0, &functionrelocs, 'r'},
+                                 {"recursive", 0, &recursive, 'R'},
+                                 {"list-exports", 0, &list_exports, 'e'},
+                                 {"list-imports", 0, &list_imports, 'i'},
+                                 {"version", 0, 0, 'V'},
+                                 {"search-dir", 0, 0, 'D'},
+                                 {0}};
 
   strlist sp;
   strlist_init(&sp, '\0');
@@ -818,28 +815,28 @@ main(int argc, char** argv) {
     if(c == 0) continue;
 
     switch(c) {
-    case 'h':
-      printhelp(argv[0]);
-      skip = 1;
-      break;
+      case 'h':
+        printhelp(argv[0]);
+        skip = 1;
+        break;
 
-    case 'v':
-    case 'u':
-    case 'd':
-    case 'r':
-    case 'R':
-    case 'e':
-    case 'i': break;
-    case 'D': {
-      add_path(&sp, optarg);
-      break;
-    }
+      case 'v':
+      case 'u':
+      case 'd':
+      case 'r':
+      case 'R':
+      case 'e':
+      case 'i': break;
+      case 'D': {
+        add_path(&sp, optarg);
+        break;
+      }
 
-    case 'V': printversion(); break;
-    default:
-      buffer_putm_4(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
-      buffer_putnlflush(buffer_2);
-      return 1;
+      case 'V': printversion(); break;
+      default:
+        buffer_putm_4(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
+        buffer_putnlflush(buffer_2);
+        return 1;
     }
   }
 
@@ -858,8 +855,7 @@ main(int argc, char** argv) {
   {
     const char* const keys[] = {"HKCU\\Environment",
                                 "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
-                                0
-                               };
+                                0};
     int kidx;
     stralloc rpath;
     stralloc_init(&rpath);

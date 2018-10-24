@@ -1,5 +1,12 @@
+#include "../windoze.h"
 #include "../open.h"
 #include "../uint32.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 #define UINT32_POOLSIZE 16
 
