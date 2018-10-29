@@ -86,7 +86,8 @@ find_section_by_raw_data(pe_loaded_image* img, uint32 address) {
   for(i = 0; i < img->number_of_sections; i++) {
     uint32 start = img->sections[i].virtual_address;
     uint32 end = start + img->sections[i].size_of_raw_data;
-    if(address >= start && address < end) return i;
+    if(address >= start && address < end)
+      return i;
   }
   return -1;
 }
@@ -137,7 +138,8 @@ find_dep(struct dep_tree_element* root, char* name, struct dep_tree_element** re
   root->flags |= DEPTREE_VISITED;
   for(i = 0; i < root->childs_len; i++) {
     if(str_case_diff(root->childs[i]->module, name) == 0) {
-      if(result != NULL) *result = root->childs[i];
+      if(result != NULL)
+        *result = root->childs[i];
       root->flags &= ~DEPTREE_VISITED;
       return (root->childs[i]->flags & DEPTREE_UNRESOLVED) ? 1 : 0;
     }
@@ -163,14 +165,17 @@ process_dep(build_tree_config* cfg,
   int found;
   int64 i;
   char* dllname = (char*)map_pointer(soffs, soffs_len, name, NULL);
-  if(dllname == NULL) return NULL;
+  if(dllname == NULL)
+    return NULL;
   if(str_len(dllname) > 10 && str_case_diffn("api-ms-win", dllname, 10) == 0) {
     /* TODO: find a better way to identify api stubs. Versioninfo, maybe? */
     return NULL;
   }
   for(i = (int64)*cfg->stack_len - 1; i >= 0; i--) {
-    if((*cfg->stack)[i] && str_case_diff((*cfg->stack)[i], dllname) == 0) return NULL;
-    if(i == 0) break;
+    if((*cfg->stack)[i] && str_case_diff((*cfg->stack)[i], dllname) == 0)
+      return NULL;
+    if(i == 0)
+      break;
   }
   found = find_dep(root, dllname, &child);
   if(found < 0) {
@@ -258,7 +263,8 @@ build_dep_tree32or64(pe_loaded_image* img,
     if(ied && ied->name != 0) {
       char* export_module = map_pointer(soffs, soffs_len, ied->name, NULL);
       if(export_module != NULL) {
-        if(self->export_module == NULL) self->export_module = str_dup(export_module);
+        if(self->export_module == NULL)
+          self->export_module = str_dup(export_module);
       }
     }
     if(ied && ied->number_of_functions > 0) {
@@ -275,7 +281,8 @@ build_dep_tree32or64(pe_loaded_image* img,
         self->exports[ords[i]].ordinal = ords[i] + ied->base;
         if(names[i] != 0) {
           char* s_name = (char*)map_pointer(soffs, soffs_len, names[i], NULL);
-          if(s_name != NULL) self->exports[ords[i]].name = str_dup(s_name);
+          if(s_name != NULL)
+            self->exports[ords[i]].name = str_dup(s_name);
         }
       }
       for(i = 0; i < ied->number_of_functions; i++) {
@@ -304,7 +311,8 @@ build_dep_tree32or64(pe_loaded_image* img,
         struct dep_tree_element* dll;
         uint64 impaddress;
         dll = process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 0);
-        if(dll == NULL) continue;
+        if(dll == NULL)
+          continue;
         ith = (void*)map_pointer(soffs, soffs_len, iid[i].first_thunk, NULL);
         oith = (void*)map_pointer(soffs, soffs_len, iid[i].original_first_thunk, NULL);
         for(j = 0; (impaddress = thunk_data_u1_function(ith, j, cfg)) != 0; j++) {
@@ -321,7 +329,8 @@ build_dep_tree32or64(pe_loaded_image* img,
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
             pe_import_by_name* byname = (pe_import_by_name*)map_pointer(soffs, soffs_len, imp->orig_address, NULL);
-            if(byname != NULL) imp->name = str_dup((char*)byname->name);
+            if(byname != NULL)
+              imp->name = str_dup((char*)byname->name);
           }
         }
       }
@@ -338,7 +347,8 @@ build_dep_tree32or64(pe_loaded_image* img,
         struct dep_tree_element* dll;
         uint64 impaddress;
         dll = process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 0);
-        if(dll == NULL) continue;
+        if(dll == NULL)
+          continue;
         if(idd[i].attributes.all_attributes & 0x00000001) {
           ith = (void*)map_pointer(soffs, soffs_len, idd[i].import_address_table_rva, NULL);
           oith = (void*)map_pointer(soffs, soffs_len, idd[i].import_name_table_rva, NULL);
@@ -350,7 +360,8 @@ build_dep_tree32or64(pe_loaded_image* img,
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
-          if(oith) imp->orig_address = thunk_data_u1_function(oith, j, cfg);
+          if(oith)
+            imp->orig_address = thunk_data_u1_function(oith, j, cfg);
           if(cfg->on_self) {
             imp->address = impaddress;
           }
@@ -358,7 +369,8 @@ build_dep_tree32or64(pe_loaded_image* img,
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
             pe_import_by_name* byname = (pe_import_by_name*)map_pointer(soffs, soffs_len, imp->orig_address, NULL);
-            if(byname != NULL) imp->name = str_dup((char*)byname->name);
+            if(byname != NULL)
+              imp->name = str_dup((char*)byname->name);
           }
         }
       }
@@ -396,7 +408,8 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
   pe_dos_header* dhdr;
 
   stralloc_init(&sa);
-  if(path) stralloc_copys(&sa, path);
+  if(path)
+    stralloc_copys(&sa, path);
   stralloc_cats(&sa, name);
   stralloc_nul(&sa);
 
@@ -448,22 +461,27 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
     loaded_image.sections = (pe_section_header*)((char*)hmod + dos->e_lfanew + sizeof(pe64_nt_headers));
     loaded_image.number_of_sections = loaded_image.file_header->coff_header.number_of_sections;
     loaded_image.base = (void*)hmod;
-    if(cfg->machine_type != -1 && (int)loaded_image.file_header->coff_header.machine != cfg->machine_type) return 1;
+    if(cfg->machine_type != -1 && (int)loaded_image.file_header->coff_header.machine != cfg->machine_type)
+      return 1;
   } else {
     const char* dir;
     success = FALSE;
     strlist_foreach_s(cfg->search_paths, dir) {
       success = try_map_and_load(str_basename(name), dir, &loaded_image, cfg->machine_type);
-      if(success) break;
+      if(success)
+        break;
     }
-    if(!success) success = try_map_and_load(name, NULL, &loaded_image, cfg->machine_type);
+    if(!success)
+      success = try_map_and_load(name, NULL, &loaded_image, cfg->machine_type);
     if(!success) {
       self->flags |= DEPTREE_UNRESOLVED;
       return 1;
     }
-    if(self->resolved_module == NULL) self->resolved_module = str_dup(loaded_image.module_name);
+    if(self->resolved_module == NULL)
+      self->resolved_module = str_dup(loaded_image.module_name);
   }
-  if(cfg->machine_type == -1) cfg->machine_type = (int)loaded_image.file_header->coff_header.machine;
+  if(cfg->machine_type == -1)
+    cfg->machine_type = (int)loaded_image.file_header->coff_header.machine;
   img = &loaded_image;
 
   push_stack(cfg->stack, cfg->stack_len, cfg->stack_size, name);
@@ -679,7 +697,8 @@ print_image_links(int first,
     }
   }
 
-  if(unresolved) return -1;
+  if(unresolved)
+    return -1;
 
   if(first || recursive) {
     for(i = 0; i < self->childs_len; i++) {
@@ -718,7 +737,8 @@ registry_query(const char* key, const char* value, stralloc* sa) {
       api_fn = (reggetvalue_fn*)GetProcAddress(advapi, "RegGetValueA");
   }
 
-  if(!api_fn) return -1;
+  if(!api_fn)
+    return -1;
 
   if(!str_diffn(key, "HKCU", 4) || !str_diffn(key, "HKEY_CURRENT_USER", 17)) {
     hkey = HKEY_CURRENT_USER;
@@ -735,7 +755,8 @@ registry_query(const char* key, const char* value, stralloc* sa) {
   ret = api_fn(hkey, strchr(key, '\\') + 1, value, RRF_RT_ANY, &type, sa->s, &len);
   sa->len = len;
   if(ret == ERROR_SUCCESS) {
-    if(type == REG_EXPAND_SZ) stralloc_expand(sa);
+    if(type == REG_EXPAND_SZ)
+      stralloc_expand(sa);
     return sa->len = str_len(sa->s);
   }
   return 0;
@@ -762,12 +783,15 @@ add_path(strlist* sp, const char* path) {
     strlist_foreach_s(&tmp, path) {
       pathconv(path, &dir);
 
-      if(dir.s[0] == '/') sep = dir.s;
+      if(dir.s[0] == '/')
+        sep = dir.s;
 
       stralloc_nul(&dir);
-      if(!path_is_absolute(dir.s)) stralloc_prepend(&dir, &cwd);
+      if(!path_is_absolute(dir.s))
+        stralloc_prepend(&dir, &cwd);
 
-      if(!stralloc_endb(&dir, sep, 1)) stralloc_catc(&dir, *sep);
+      if(!stralloc_endb(&dir, sep, 1))
+        stralloc_catc(&dir, *sep);
 
       strlist_push_unique_sa(sp, &dir);
     }
@@ -811,8 +835,10 @@ main(int argc, char** argv) {
   // sp.path = calloc(1, sizeof(char*));
   for(;;) {
     c = getopt_long(argc, argv, "hvudrRei", opts, &index);
-    if(c == -1) break;
-    if(c == 0) continue;
+    if(c == -1)
+      break;
+    if(c == 0)
+      continue;
 
     switch(c) {
       case 'h':
@@ -848,7 +874,8 @@ main(int argc, char** argv) {
     buffer_putm_2(buffer_2, "PATH=", pathenv);
     buffer_putnlflush(buffer_2);
 
-    if(pathenv) add_path(&sp, pathenv);
+    if(pathenv)
+      add_path(&sp, pathenv);
   }
 
 #if WINDOWS
@@ -880,7 +907,8 @@ main(int argc, char** argv) {
       char buff[MAX_PATH];
       str_copyn(buff, argv[files_start + i], sizeof(buff));
       p = str_basename(buff);
-      if(p) *p = '\0';
+      if(p)
+        *p = '\0';
       strlist_push_unique(&sp, buff);
     }
     buffer_puts(buffer_2, "pathlist=");

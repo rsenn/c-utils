@@ -53,7 +53,8 @@ typedef char bool;
     mu_->success++;                                                                                                    \
   } else {                                                                                                             \
     mu_->failure++;                                                                                                    \
-    if(muconf()->x) return;                                                                                            \
+    if(muconf_ptr()->x)                                                                                                    \
+      return;                                                                                                          \
   }
 #define TESTLOG(...) buffer_putmflush(muerr, __VA_ARGS__)
 
@@ -149,7 +150,7 @@ int unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name
 static void unit_test_execute(struct unit_test* mu_);
 
 static struct unit_testConf*
-muconf() {
+muconf_ptr() {
   static struct unit_testConf c = {/*.q =*/FALSE, /*.s =*/FALSE, /*.v =*/FALSE, /*.x =*/FALSE};
   return &c;
 }
@@ -158,8 +159,10 @@ static buffer* muerr = NULL;
 
 static void
 unit_test_cleanup(struct unit_test* mu_) {
-  if(mu_->testlog) buffer_close(mu_->testlog);
-  if(mu_->faillog) buffer_close(mu_->faillog);
+  if(mu_->testlog)
+    buffer_close(mu_->testlog);
+  if(mu_->faillog)
+    buffer_close(mu_->faillog);
 }
 
 static struct taia*
@@ -212,10 +215,10 @@ unit_test_optparse(int argc, char** argv) {
 
     for(j = 1; j < strlen(argv[i]); j++) {
       switch(argv[i][j]) {
-        case 's': muconf()->s = TRUE; break;
-        case 'v': muconf()->v = TRUE; break;
-        case 'x': muconf()->x = TRUE; break;
-        case 'q': muconf()->q = TRUE; break;
+        case 's': muconf_ptr()->s = TRUE; break;
+        case 'v': muconf_ptr()->v = TRUE; break;
+        case 'x': muconf_ptr()->x = TRUE; break;
+        case 'q': muconf_ptr()->q = TRUE; break;
         case 'h': unit_test_usage(argv[0]); exit(EXIT_SUCCESS);
         default:
           TESTLOG("%s: illegal option -- %c\n", argv[0], argv[i][j]);
@@ -227,7 +230,7 @@ unit_test_optparse(int argc, char** argv) {
 }
 
 int
-main(int argc, char** argv) {
+unit_test_main(int argc, char** argv) {
   int rc;
   static struct unit_test mu_i;
   struct unit_test* mu_ = &mu_i;
@@ -241,7 +244,8 @@ main(int argc, char** argv) {
 
   rc = unit_test_call(mu_, unit_test_execute);
 
-  if(!muconf()->v) buffer_putnlflush(muerr);
+  if(!muconf_ptr()->v)
+    buffer_putnlflush(muerr);
   unit_test_copy(mu_->testlog, muerr);
   TESTLOG("\nRAN " BOLD("%d") " TESTS IN " BOLD("%4.3lf") "s\n", mu_->success + mu_->failure, mu_->elapsed);
 
@@ -267,8 +271,9 @@ main(int argc, char** argv) {
 
 void unit_test_execute(struct unit_test* mu_);
 
-int main(int argc, char** argv);
-struct unit_testConf* muconf(void);
+#define unit_test_main main
+//int unit_test_main(int argc, char** argv);
+struct unit_testConf* muconf_ptr(void);
 int unit_test_call(struct unit_test* mu_, unit_test_func_t func);
 void unit_test_cleanup(struct unit_test* mu_);
 void unit_test_copy(buffer* src, buffer* dst);

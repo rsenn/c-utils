@@ -24,8 +24,10 @@
 extern "C" {
 #endif
 
+#if WINDOWS && !defined(PATH_MAX)
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
+#endif
 #endif
 
 #ifdef __cplusplus

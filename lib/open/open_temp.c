@@ -9,6 +9,7 @@
 #if WINDOWS_NATIVE
 #include <io.h>
 #else
+#include <limits.h>
 #include <unistd.h>
 #endif
 
@@ -17,6 +18,10 @@
 
 #ifndef O_NOFOLLOW
 #define O_NOFOLLOW 0
+#endif
+
+#ifndef O_BINARY
+#define O_BINARY 0
 #endif
 
 static char default_tmpl[PATH_MAX] = "temp-XXXXXX.txt";

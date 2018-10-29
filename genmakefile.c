@@ -145,7 +145,8 @@ format_linklib_switch(const char* libname, stralloc* out) {
   stralloc_cats(out, "-l");
   stralloc_cats(out, libname);
 
-  if(stralloc_endb(out, "lib", 3)) out->len -= 3;
+  if(stralloc_endb(out, "lib", 3))
+    out->len -= 3;
 }
 
 /**
@@ -155,15 +156,19 @@ int
 scan_main(const char* x, size_t n) {
   while(n) {
     size_t i = byte_finds(x, n, "main");
-    if(i + 5 >= n) return 0;
+    if(i + 5 >= n)
+      return 0;
     i += 4;
     x += i;
     n -= i;
-    if(i > 4 && !isspace(*(x - 5))) continue;
-    if((i = scan_whitenskip(x, n)) == n) break;
+    if(i > 4 && !isspace(*(x - 5)))
+      continue;
+    if((i = scan_whitenskip(x, n)) == n)
+      break;
     x += i;
     n -= i;
-    if(*x == '(') return 1;
+    if(*x == '(')
+      return 1;
   }
   return 0;
 }
@@ -187,18 +192,21 @@ void
 extract_includes(const char* x, size_t n, strlist* includes, int sys) {
   while(n) {
     size_t i;
-    if((i = scan_charsetnskip(x, " \t\r\n", n)) == n) break;
+    if((i = scan_charsetnskip(x, " \t\r\n", n)) == n)
+      break;
     x += i;
     n -= i;
     if(*x == '#') {
       x += 1;
       n -= 1;
-      if((i = scan_charsetnskip(x, " \t\r", n) + 7) >= n) break;
+      if((i = scan_charsetnskip(x, " \t\r", n) + 7) >= n)
+        break;
       x += i;
       n -= i;
       if(!str_diffn(x - 7, "include", 7)) {
         char quote;
-        if((i = scan_charsetnskip(x, " \t\r", n) + 1) >= n) break;
+        if((i = scan_charsetnskip(x, " \t\r", n) + 1) >= n)
+          break;
         x += i;
         n -= i;
         quote = *(x - 1);
@@ -207,7 +215,8 @@ extract_includes(const char* x, size_t n, strlist* includes, int sys) {
           set[0] = (quote == '<' ? '>' : '"');
           set[1] = '\n';
           set[2] = '\0';
-          if((i = scan_noncharsetnskip(x, set, n)) >= n) break;
+          if((i = scan_noncharsetnskip(x, set, n)) >= n)
+            break;
 
           strlist_pushb_unique(includes, x, i);
           x += i + 1;
@@ -215,7 +224,8 @@ extract_includes(const char* x, size_t n, strlist* includes, int sys) {
         }
       }
     }
-    if((i = byte_chr(x, n, '\n')) >= n) break;
+    if((i = byte_chr(x, n, '\n')) >= n)
+      break;
     x += i;
     n -= i;
   }
@@ -263,7 +273,8 @@ rule_command(target* rule, stralloc* out) {
       }
       ++i;
     } else {
-      if(!stralloc_append(out, p)) break;
+      if(!stralloc_append(out, p))
+        break;
     }
   }
 }
@@ -276,7 +287,8 @@ get_rule(const char* name) {
   target* ret = NULL;
   TUPLE* t;
 
-  if(rules == NULL) hmap_init(1024, &rules);
+  if(rules == NULL)
+    hmap_init(1024, &rules);
 
   if(hmap_search(rules, name, str_len(name) + 1, &t) == HMAP_SUCCESS) {
     ret = t->vals.val_custom;
@@ -307,8 +319,10 @@ find_rule(const char* needle) {
 
   hmap_foreach(rules, t) {
     const char* name = t->key;
-    if(str_equal(name, needle)) return t->vals.val_custom;
-    if(str_equal(str_basename(name), str_basename(needle))) return t->vals.val_custom;
+    if(str_equal(name, needle))
+      return t->vals.val_custom;
+    if(str_equal(str_basename(name), str_basename(needle)))
+      return t->vals.val_custom;
   }
   return 0;
 }
@@ -340,7 +354,8 @@ add_path(strlist* list, const char* path) {
   strlist_push(list, path);
 
   for(i = list->sa.len - len; i < list->sa.len; ++i) {
-    if(list->sa.s[i] == '/' || list->sa.s[i] == '\\') list->sa.s[i] = pathsep;
+    if(list->sa.s[i] == '/' || list->sa.s[i] == '\\')
+      list->sa.s[i] = pathsep;
   }
 }
 
@@ -369,7 +384,8 @@ strlist*
 get_var(const char* name) {
   TUPLE* t;
 
-  if(vars == NULL) hmap_init(1024, &vars);
+  if(vars == NULL)
+    hmap_init(1024, &vars);
 
   if(hmap_search(vars, name, str_len(name) + 1, &t) != HMAP_SUCCESS) {
     strlist var;
@@ -415,7 +431,8 @@ void
 push_lib(const char* name, const char* lib) {
   strlist* var = get_var(name);
 
-  if(var->sa.len) stralloc_catc(&var->sa, var->sep);
+  if(var->sa.len)
+    stralloc_catc(&var->sa, var->sep);
 
   format_linklib_fn(lib, &var->sa);
 }
@@ -426,7 +443,8 @@ with_lib(const char* lib) {
   stralloc_init(&def);
   stralloc_copys(&def, "-DHAVE_");
 
-  if(str_find(lib, "lib") == str_len(lib)) stralloc_cats(&def, "LIB");
+  if(str_find(lib, "lib") == str_len(lib))
+    stralloc_cats(&def, "LIB");
 
   stralloc_cats(&def, lib);
   stralloc_cats(&def, "=1");
@@ -491,7 +509,8 @@ src_to_obj(const char* in, stralloc* out) {
   if(builddir.sa.len) {
     stralloc_cat(out, &builddir.sa);
 
-    if(!stralloc_endb(out, &pathsep, 1)) stralloc_catc(out, pathsep);
+    if(!stralloc_endb(out, &pathsep, 1))
+      stralloc_catc(out, pathsep);
   }
 
   return change_ext(str_basename(in), out, objext);
@@ -505,7 +524,8 @@ dirname_alloc(const char* p) {
   size_t len = str_len(p);
   size_t pos = str_rchrs(p, "\\/", 2);
 
-  if(pos < len) return str_ndup(p, pos);
+  if(pos < len)
+    return str_ndup(p, pos);
 
   return str_dup(".");
 }
@@ -672,8 +692,10 @@ includes_to_libs(const strlist* includes, strlist* libs) {
   strlist_foreach(includes, s, n) {
     target* rule;
     stralloc_copyb(&sa, s, n);
-    if(stralloc_endb(&sa, ".h", 2)) sa.len -= 2;
-    if(stralloc_endb(&sa, "_internal", 9)) sa.len -= 9;
+    if(stralloc_endb(&sa, ".h", 2))
+      sa.len -= 2;
+    if(stralloc_endb(&sa, "_internal", 9))
+      sa.len -= 9;
 
     stralloc_cats(&sa, libext);
 
@@ -698,7 +720,8 @@ target_ptrs(const strlist* targets, array* out) {
     target* rule;
 
     if((rule = find_rule_b(x, n))) {
-      if(!array_find(out, sizeof(target*), &rule)) array_catb(out, &rule, sizeof(target*));
+      if(!array_find(out, sizeof(target*), &rule))
+        array_catb(out, &rule, sizeof(target*));
     } else {
       buffer_puts(buffer_2, "ERROR: rule '");
       buffer_put(buffer_2, x, n);
@@ -950,7 +973,8 @@ lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     const char *s, *base = str_basename(t->key);
     size_t n;
 
-    if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0') continue;
+    if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
+      continue;
 
     rule = lib_rule_for_srcdir(rules, srcdir, base);
   }
@@ -976,7 +1000,8 @@ clean_rule(HMAP_DB* rules) {
     hmap_foreach(rules, t) {
 
       /* Ignore the builddir rule */
-      if(stralloc_equals(&builddir.sa, t->key)) continue;
+      if(stralloc_equals(&builddir.sa, t->key))
+        continue;
 
       rule = hmap_data(t);
 
@@ -1001,7 +1026,8 @@ clean_rule(HMAP_DB* rules) {
       stralloc_catc(&delete_command, ' ');
       stralloc_cats(&delete_command, arg);
 
-      if(arg[str_chr(arg, '*')]) lineoffs = -MAX_CMD_LEN;
+      if(arg[str_chr(arg, '*')])
+        lineoffs = -MAX_CMD_LEN;
     }
 
     rule->recipe = &delete_command;
@@ -1331,8 +1357,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = getopt_long(argc, argv, "ho:O:B:L:d:t:", opts, &index);
-    if(c == -1) break;
-    if(c == 0) continue;
+    if(c == -1)
+      break;
+    if(c == 0)
+      continue;
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
@@ -1353,7 +1381,8 @@ main(int argc, char* argv[]) {
     cmd_libs = 1;
   }
 
-  if(!format_linklib_fn) format_linklib_fn = &format_linklib_lib;
+  if(!format_linklib_fn)
+    format_linklib_fn = &format_linklib_lib;
 
   if(!set_compiler(type)) {
     usage(argv[0]);
@@ -1366,7 +1395,8 @@ main(int argc, char* argv[]) {
 
   if(outfile) {
     int fd;
-    if((fd = open_trunc(outfile)) != -1) buffer_1->fd = fd;
+    if((fd = open_trunc(outfile)) != -1)
+      buffer_1->fd = fd;
 
     path_dirname(outfile, &outdir.sa);
 
@@ -1472,9 +1502,12 @@ main(int argc, char* argv[]) {
 
     populate_sourcedirs(&srcs, sourcedirs);
 
-    if(cmd_objs) compile_rules(rules, &srcs);
-    if(cmd_libs) lib_rules(rules, sourcedirs);
-    if(cmd_bins) link_rules(rules, &srcs);
+    if(cmd_objs)
+      compile_rules(rules, &srcs);
+    if(cmd_libs)
+      lib_rules(rules, sourcedirs);
+    if(cmd_bins)
+      link_rules(rules, &srcs);
 
     deps_for_libs(rules);
 

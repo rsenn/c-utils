@@ -26,10 +26,12 @@
 
 #ifndef UNIT_TEST_STATIC_FUNCTIONS
 
+static struct unit_testConf muconf = {/*.q =*/FALSE, /*.s =*/FALSE, /*.v =*/FALSE, /*.x =*/FALSE};
+
 struct unit_testConf*
-muconf() {
-  static struct unit_testConf c = {/*.q =*/FALSE, /*.s =*/FALSE, /*.v =*/FALSE, /*.x =*/FALSE};
-  return &c;
+muconf_ptr() {
+
+  return &muconf;
 }
 static buffer *muout, *muerr;
 
@@ -40,8 +42,10 @@ unit_test_getbuffer(int fileno) {
 
 void
 unit_test_cleanup(struct unit_test* mu_) {
-  if(mu_->testlog) buffer_close(mu_->testlog);
-  if(mu_->faillog) buffer_close(mu_->faillog);
+  if(mu_->testlog)
+    buffer_close(mu_->testlog);
+  if(mu_->faillog)
+    buffer_close(mu_->faillog);
 }
 
 /*struct taia*
@@ -96,7 +100,7 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   run.testlog = unit_test_tmpfile(&testtmp, "testlog-XXXXXX");
   run.faillog = unit_test_tmpfile(&failtmp, "faillog-XXXXXX");
 
-  if(!muconf()->s) {
+  if(!muconf_ptr()->s) {
     buffer_1small = running->testlog;
     buffer_2 = running->testlog;
   }
@@ -105,10 +109,12 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
 
   if(running->failure == 0) {
     TESTLOG(PASS("."));
-    if(muconf()->v) TESTLOG(PASS("  %s\n"), name);
+    if(muconf_ptr()->v)
+      TESTLOG(PASS("  %s\n"), name);
   } else {
     TESTLOG(FAIL("F"));
-    if(muconf()->v) TESTLOG(FAIL("  %s\n"), name);
+    if(muconf_ptr()->v)
+      TESTLOG(FAIL("  %s\n"), name);
   }
 
   if(!unit_test_empty(running->faillog)) {
@@ -116,7 +122,7 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
     unit_test_copy(running->faillog, mu_->testlog);
   }
 
-  if(!muconf()->q) {
+  if(!muconf_ptr()->q) {
     if(!unit_test_empty(running->testlog)) {
       buffer_putmflush(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR"), " for ", BOLD(name), "\n");
       unit_test_copy(running->testlog, mu_->testlog);
@@ -149,10 +155,10 @@ unit_test_optparse(int argc, char** argv) {
 
     for(j = 1; j < strlen(argv[i]); j++) {
       switch(argv[i][j]) {
-        case 's': muconf()->s = TRUE; break;
-        case 'v': muconf()->v = TRUE; break;
-        case 'x': muconf()->x = TRUE; break;
-        case 'q': muconf()->q = TRUE; break;
+        case 's': muconf_ptr()->s = TRUE; break;
+        case 'v': muconf_ptr()->v = TRUE; break;
+        case 'x': muconf_ptr()->x = TRUE; break;
+        case 'q': muconf_ptr()->q = TRUE; break;
         case 'h': unit_test_usage(argv[0]); exit(EXIT_SUCCESS);
         default:
           TESTLOG("%s: illegal option -- %c\n", argv[0], argv[i][j]);
@@ -164,7 +170,7 @@ unit_test_optparse(int argc, char** argv) {
 }
 
 int
-main(int argc, char** argv) {
+unit_test_main(int argc, char** argv) {
   int rc;
   static struct unit_test mu_i;
   struct unit_test* mu_ = &mu_i;
@@ -183,7 +189,8 @@ main(int argc, char** argv) {
 
   rc = unit_test_call(mu_, unit_test_execute);
 
-  if(!muconf()->v) buffer_putc(muerr, '\n');
+  if(!muconf_ptr()->v)
+    buffer_putc(muerr, '\n');
 
   unit_test_copy(mu_->testlog, muerr);
   TESTLOG("\nRAN " BOLD("%d") " TESTS IN " BOLD("%4.3lf") "s\n", mu_->success + mu_->failure, mu_->elapsed);
