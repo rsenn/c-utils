@@ -50,4 +50,5 @@ SOURCES = genmakefile.c lib/array/array_allocate.c lib/array/array_catb.c lib/ar
     lib/strarray/strarray_glob.c \
     lib/unix/glob.c \
     lib/str/str_copy.c \
-    lib/strlist/strlist_joins.c
+    lib/strlist/strlist_joins.c \
+    lib/strlist/strlist_unshift.c

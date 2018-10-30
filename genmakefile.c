@@ -36,6 +36,10 @@
 #define DEFAULT_PATHSEP '/'
 #endif
 
+#ifndef DEBUG_OUTPUT
+
+#endif
+
 typedef struct {
   enum { X86, ARM } arch;
   enum { _32, _64 } bits;
@@ -105,6 +109,19 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
 }
 
 void
+strarray_dump(buffer* b, const strarray* arr) {
+  char **p = strarray_begin(arr), **e = strarray_end(arr);
+
+  while(p < e) {
+    buffer_puts(b, *p);
+    buffer_putnlflush(b);
+    ++p;
+  }
+}
+
+#ifdef DEBUG_OUTPUT
+
+void
 debug_sa(const char* name, stralloc* sa) {
   buffer_puts(buffer_2, name);
   buffer_puts(buffer_2, ": ");
@@ -127,6 +144,16 @@ debug_int(const char* name, int i) {
   buffer_putlong(buffer_2, i);
   buffer_putnlflush(buffer_2);
 }
+#else
+#define debug_sa(x,y)
+#define debug_s(x,y)
+#define debug_int(x,y)
+#endif
+
+/**
+ * @defgroup path functions
+ * @{
+ */
 
 /**
  * @brief path_prefix_s Adds a prefix to the specified path
@@ -142,6 +169,53 @@ path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
     stralloc_catc(out, pathsep);
   }
   stralloc_cats(out, path);
+}
+
+/**
+ * @brief path_prefix_b Adds a prefix to the specified path
+ * @param prefix        Prefix to add
+ * @param x             The path buffer
+ * @param n             Length of path buffer
+ * @param out           Write output here
+ */
+void
+path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out) {
+  stralloc_zero(out);
+  if(prefix->len) {
+    stralloc_cat(out, prefix);
+    stralloc_catc(out, pathsep);
+  }
+  stralloc_catb(out, x, n);
+}
+
+/**
+ * Change file extension and concatenate it to out.
+ */
+char*
+path_extension(const char* in, stralloc* out, const char* ext) {
+  size_t extpos = str_rchr(in, '.');
+
+  stralloc_catb(out, in, extpos);
+  stralloc_cats(out, ext);
+  stralloc_nul(out);
+  return out->s;
+}
+
+/**
+ * Convert source file name to object file name
+ */
+char*
+path_object(const char* in, stralloc* out) {
+  stralloc_zero(out);
+
+  if(builddir.sa.len) {
+    stralloc_cat(out, &builddir.sa);
+
+    if(!stralloc_endb(out, &pathsep, 1))
+      stralloc_catc(out, pathsep);
+  }
+
+  return path_extension(str_basename(in), out, objext);
 }
 
 /**
@@ -166,6 +240,10 @@ path_wildcard(const char* path, stralloc* sa) {
   stralloc_nul(sa);
   return sa->s;
 }
+
+/**
+ * @}
+ */
 
 /**
  * Output library name (+".lib")
@@ -370,6 +448,9 @@ find_rule(const char* needle) {
 
     if(str_equal(str_basename(name), str_basename(needle)))
       return t->vals.val_custom;
+
+    if(t->next == rules->list_tuple)
+      break;
   }
   return 0;
 }
@@ -423,6 +504,68 @@ add_path_sa(strlist* list, stralloc* path) {
   stralloc_nul(path);
   add_path(list, path->s);
 }
+
+/**
+ * @defgroup source functions
+ * @{
+ */
+
+/**
+ * Create new source file entry.
+ */
+sourcefile*
+new_source(const char* name) {
+  sourcefile* ret;
+
+  if((ret = malloc(sizeof(sourcefile)))) {
+    byte_zero(ret, sizeof(sourcefile));
+    ret->name = str_dup(name);
+    return ret;
+  }
+  return 0;
+}
+
+/**
+ * Adds a source file to the given list.
+ */
+void
+add_source(const char* filename, strarray* sources) {
+  if(str_end(filename, ".c")) {
+    stralloc sa;
+    stralloc_init(&sa);
+    stralloc_copys(&sa, filename);
+    //    stralloc_replace(&sa, pathsep == '/' ? '\\' : '/', pathsep);
+
+    strarray_push_sa(sources, &sa);
+
+    stralloc_free(&sa);
+  }
+}
+
+/**
+ * Searches all source files in the given directory and creates a string-array.
+ */
+void
+get_sources(const char* basedir, strarray* sources) {
+  rdir_t rdir;
+
+  if(!rdir_open(&rdir, basedir)) {
+    const char* s;
+
+    while((s = rdir_read(&rdir))) {
+      add_source(s, sources);
+    }
+  }
+}
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup var functions
+ * @{
+ */
 
 /**
  * Find or create variable
@@ -503,6 +646,10 @@ with_lib(const char* lib) {
 }
 
 /**
+ * @}
+ */
+
+/**
  * Search rules by command
  */
 void
@@ -519,51 +666,6 @@ get_rules_by_cmd(stralloc* cmd, strlist* deps) {
 }
 
 /**
- * Create new source file entry.
- */
-sourcefile*
-new_source(const char* name) {
-  sourcefile* ret;
-
-  if((ret = malloc(sizeof(sourcefile)))) {
-    byte_zero(ret, sizeof(sourcefile));
-    ret->name = str_dup(name);
-    return ret;
-  }
-  return 0;
-}
-
-/**
- * Change file extension and concatenate it to out.
- */
-char*
-change_ext(const char* in, stralloc* out, const char* ext) {
-  size_t extpos = str_rchr(in, '.');
-
-  stralloc_catb(out, in, extpos);
-  stralloc_cats(out, ext);
-  stralloc_nul(out);
-  return out->s;
-}
-
-/**
- * Convert source file name to object file name
- */
-char*
-src_to_obj(const char* in, stralloc* out) {
-  stralloc_zero(out);
-
-  if(builddir.sa.len) {
-    stralloc_cat(out, &builddir.sa);
-
-    if(!stralloc_endb(out, &pathsep, 1))
-      stralloc_catc(out, pathsep);
-  }
-
-  return change_ext(str_basename(in), out, objext);
-}
-
-/**
  * Gets directory name from a file path (allocated).
  */
 char*
@@ -575,39 +677,6 @@ dirname_alloc(const char* p) {
     return str_ndup(p, pos);
 
   return str_dup(".");
-}
-
-/**
- * Adds a source file to the given list.
- */
-void
-add_source(const char* filename, strarray* sources) {
-  if(str_end(filename, ".c")) {
-    stralloc sa;
-    stralloc_init(&sa);
-    stralloc_copys(&sa, filename);
-    //    stralloc_replace(&sa, pathsep == '/' ? '\\' : '/', pathsep);
-
-    strarray_push_sa(sources, &sa);
-
-    stralloc_free(&sa);
-  }
-}
-
-/**
- * Searches all source files in the given directory and creates a string-array.
- */
-void
-get_sources(const char* basedir, strarray* sources) {
-  rdir_t rdir;
-
-  if(!rdir_open(&rdir, basedir)) {
-    const char* s;
-
-    while((s = rdir_read(&rdir))) {
-      add_source(s, sources);
-    }
-  }
 }
 
 /**
@@ -702,30 +771,6 @@ dump_sourcedirs(buffer* b, HMAP_DB* sourcedirs) {
 }
 
 /**
- * Generate compile rules for every source file given
- */
-void
-compile_rules(HMAP_DB* rules, strarray* sources) {
-  char** srcfile;
-  stralloc obj;
-  stralloc_init(&obj);
-
-  strarray_foreach(sources, srcfile) {
-    target* rule;
-
-    src_to_obj(*srcfile, &obj);
-
-    if((rule = get_rule_sa(&obj))) {
-      add_srcpath(&rule->prereq, *srcfile);
-
-      rule->recipe = &compile_command;
-    }
-  }
-
-  stralloc_free(&obj);
-}
-
-/**
  * Include list to library list
  */
 void
@@ -763,7 +808,9 @@ includes_to_libs(const strlist* includes, strlist* libs) {
 }
 
 /**
- * Given a list of target names, outputs an array of pointers to those targets.
+ * @brief target_ptrs  Given a list of target names, outputs an array of pointers to those targets.
+ * @param targets      Target names
+ * @param out          Output array
  */
 void
 target_ptrs(const strlist* targets, array* out) {
@@ -785,52 +832,93 @@ target_ptrs(const strlist* targets, array* out) {
   }
 }
 
-// void
-// target_deps_internal(buffer* b, target* t, strlist* all, int depth) {
-//  target** ptr;
-
-//  array_foreach_t(&t->deps, ptr) {
-//    if(strlist_push_unique(all, (*ptr)->name)) {
-//      buffer_puts(b, "# ");
-//      buffer_putnspace(b, depth * 2);
-//      buffer_puts(b, str_basename((*ptr)->name));
-//      buffer_putnlflush(b);
-
-//      target_deps_internal(b, *ptr, all, depth + 1);
-//    }
-//  }
-//}
-
+/**
+ * @brief target_dep_list_recursive   Lists all dependencies of a target
+ * @param l                           Output target names
+ * @param t                           Target
+ */
 void
-target_dep_list_recursive(strlist* l, target* t) {
+target_dep_list_recursive(strlist* l, target* t, int depth, strlist* hier) {
   target** ptr;
 
   array_foreach_t(&t->deps, ptr) {
-    if(!strlist_contains(l, (*ptr)->name)) {
-      strlist_push(l, (*ptr)->name);
+    const char* name = (*ptr)->name;
 
-      target_dep_list_recursive(l, *ptr);
+
+    if(!strlist_contains(hier, name)) {
+      strlist_push(hier, name);
+      target_dep_list_recursive(l, *ptr, depth + 1, hier);
+      strlist_pop(hier);
     }
+
+    if(depth >= 0) {
+      if(!strlist_contains(l, name))
+        strlist_unshift(l, name);
+    }
+
   }
 }
 
 void
 target_dep_list(strlist* l, target* t) {
+  strlist hier;
+  strlist_init(&hier, '\0');
+  strlist_push(&hier, t->name);
+
   strlist_zero(l);
-  target_dep_list_recursive(l, t);
+
+  target_dep_list_recursive(l, t, 0, &hier);
+  strlist_free(&hier);
 }
 
+/**
+ * @brief indirect_dep_list  List all indirect deps of a target
+ * @param l                  Output target names
+ * @param t                  Target
+ */
 void
-indirect_dep_list(strlist* l, target* t) {
+target_deps_indirect(strlist* l, target* t) {
   target** ptr;
+  strlist hier;
+  strlist_init(&hier, '\0');
+  strlist_push(&hier, t->name);
 
   strlist_push_unique(l, t->name);
 
   array_foreach_t(&t->deps, ptr) {
-    if(*ptr) target_dep_list_recursive(l, *ptr);
+    if(*ptr)
+      target_dep_list_recursive(l, *ptr, 0, &hier);
   }
 
   strlist_removes(l, t->name);
+  strlist_free(&hier);
+}
+
+void
+deps_indirect(strlist* l, const strlist* names) {
+  size_t n;
+  const char* x;
+  target* t;
+  strlist hier;
+  strlist_init(&hier, '\0');
+  strlist_foreach(names, x, n) {
+    if((t = find_rule_b(x, n))) {
+      strlist_pushb(&hier, x, n);
+      target_dep_list_recursive(l, t, -1, &hier);
+      strlist_zero(&hier);
+    }
+  }
+  strlist_free(&hier);
+}
+
+void
+deps_direct(strlist* l, const target* t) {
+  target** ptr;
+  array_foreach_t(&t->deps, ptr) {
+    if(*ptr) {
+         strlist_push(l, (*ptr)->name);
+    }
+  }
 }
 
 void
@@ -871,6 +959,11 @@ print_target_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, i
   //   strlist_trunc(hierlist, depth);
 }
 
+/**
+ * @brief print_target_deps  Prints dependency tree for a target
+ * @param b                  Output buffer
+ * @param t                  Target
+ */
 void
 print_target_deps(buffer* b, target* t) {
   const char* s;
@@ -890,6 +983,12 @@ print_target_deps(buffer* b, target* t) {
   strlist_free(&hierlist);
 }
 
+/**
+ * @brief remove_indirect_deps_recursive   Removes all indirect dependencies
+ * @param top                              Toplevel dependencies
+ * @param a                                Dependency layer array
+ * @param depth                            Recursion depth
+ */
 void
 remove_indirect_deps_recursive(array* top, array* a, int depth) {
   target **p, **found;
@@ -970,145 +1069,52 @@ output_rule(buffer* b, target* rule) {
 }
 
 /**
- * Generate compile rules for every source file with a main()
+ * @defgroup source dir functions
+ * @{
  */
-void
-link_rules(HMAP_DB* rules, strarray* sources) {
-  target* all;
-
-  const char* x;
-  char** srcfile;
-  strlist incs, libs, deps, indir;
-  stralloc obj, bin;
-  strlist_init(&incs, ' ');
-  strlist_init(&libs, '\0');
-  strlist_init(&deps, ' ');
-  strlist_init(&indir, ' ');
-  stralloc_init(&obj);
-  stralloc_init(&bin);
-  all = get_rule("all");
-
-  strarray_foreach(sources, srcfile) {
-    target *compile, *link;
-
-    strlist_zero(&incs);
-    strlist_zero(&libs);
-
-    if(has_main(*srcfile) == 1) {
-
-      src_to_obj(*srcfile, &obj);
-
-      if((compile = find_rule_sa(&obj))) {
-
-        get_includes(*srcfile, &incs, 0);
-
-        /*        stralloc_nul(&incs);
-                buffer_putm_internal(buffer_2, "rule '", compile->name, "' includes: ", incs.sa.s, 0);
-                buffer_putnlflush(buffer_2);
-        */
-        includes_to_libs(&incs, &libs);
-      }
-
-      stralloc_zero(&bin);
-      change_ext(obj.s, &bin, binext);
-
-      add_path_sa(&all->prereq, &bin);
-
-      if((link = get_rule_sa(&bin))) {
-        int nremoved;
-        add_path_sa(&link->prereq, &obj);
-
-        //  get_rules_by_cmd(&lib_command, &link->prereq);
-
-        link->recipe = &link_command;
-
-        target_ptrs(&libs, &link->deps);
-
-        indirect_dep_list(&indir, link);
-
-        debug_sa("indirect deps", &indir);
-
-
-
-/*        nremoved = remove_indirect_deps(&link->deps);
-        debug_int("indirect deps removed", nremoved);
-*/
-        print_target_deps(buffer_2, link);
-
-        //        strlist_zero(&deps);
-        target_dep_list_recursive(&link->prereq, link);
-
-/*
-
-strlist_foreach_s(&libs, x) {
-  target* lib = find_rule(x);
-
-  target_dep_list_recursive(&deps, lib);
-}
-target_ptrs(&deps, &link->deps);
-*/
-
-#if 0 // def DEBUG_OUTPUT
-        /*print_target_deps(buffer_2, link);
-        buffer_putm_internal(buffer_2, "Deps for executable '", link->name, "': ", 0);
-        buffer_putsa(buffer_2, &deps.sa);
-        buffer_putnlflush(buffer_2);*/
-#endif
-
-        /*
-                strlist_cat( &link->prereq, &deps);*/
-        /*
-                strlist_foreach_s(&libs, x) {
-
-                }*/
-        //      target_dep_list(&deps, compile);
-      }
-    }
-  }
-
-  stralloc_free(&bin);
-  stralloc_free(&obj);
-}
 
 /**
- * Get source dir
+ * @brief get_sourcedir  Searches for a source directory
+ * @param path           Path string
+ * @return               Pointer to sourcedir structure or NULL
  */
 sourcedir*
-get_srcdir(const char* path) {
+get_sourcedir(const char* path) {
   return hmap_get(sourcedirs, path, str_len(path) + 1);
 }
 
+/**
+ * @brief get_sourcedir_sa Searches for a source directory
+ * @param path             Path stralloc
+ * @return                 Pointer to sourcedir structure or NULL
+ */
 sourcedir*
-get_srcdir_sa(stralloc* path) {
+get_sourcedir_sa(stralloc* path) {
   stralloc_nul(path);
   return hmap_get(sourcedirs, path->s, path->len + 1);
 }
 
+/**
+ * @brief get_sourcedir_b  Searches for a source directory
+ * @param x                Path buffer
+ * @param n                Length of path
+ * @return               Pointer to sourcedir structure or NULL
+ */
 sourcedir*
-get_srcdir_b(const char* x, size_t n) {
+get_sourcedir_b(const char* x, size_t n) {
   sourcedir* ret;
   stralloc p;
   stralloc_init(&p);
   stralloc_copyb(&p, x, n);
-  ret = get_srcdir_sa(&p);
+  ret = get_sourcedir_sa(&p);
   stralloc_free(&p);
   return ret;
 }
-void
-path_prefix_b(const stralloc* prefix, const char* path, size_t n, stralloc* out) {
-  stralloc_zero(out);
-  if(prefix->len) {
-    stralloc_cat(out, prefix);
-    stralloc_catc(out, pathsep);
-  }
-  stralloc_catb(out, path, n);
-}
-
 /**
  * Generate lib rule for source dir
  */
 target*
-lib_rule_for_srcdir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
+lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
   target* rule;
   stralloc sa;
   stralloc_init(&sa);
@@ -1117,14 +1123,14 @@ lib_rule_for_srcdir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
   stralloc_cats(&sa, libext);
 
-  //  debug_sa("lib_rule_for_srcdir", &sa);
+  //  debug_sa("lib_rule_for_sourcedir", &sa);
 
   if((rule = get_rule_sa(&sa))) {
     sourcefile* pfile;
     strlist_init(&rule->prereq, ' ');
 
     slist_foreach(srcdir->sources, pfile) {
-      src_to_obj(pfile->name, &sa);
+      path_object(pfile->name, &sa);
 
       add_path_sa(&rule->prereq, &sa);
     }
@@ -1135,6 +1141,10 @@ lib_rule_for_srcdir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
   stralloc_free(&sa);
   return rule;
 }
+
+/**
+ * @}ü
+ */
 
 void
 deps_for_libs(HMAP_DB* rules) {
@@ -1168,7 +1178,7 @@ deps_for_libs(HMAP_DB* rules) {
 
       target_ptrs(&libs, &lib->deps);
 
-      print_target_deps(buffer_2, lib);
+      // print_target_deps(buffer_2, lib);
 
       strlist_free(&libs);
     }
@@ -1177,10 +1187,34 @@ deps_for_libs(HMAP_DB* rules) {
 }
 
 /**
+ * Generate compile rules for every source file given
+ */
+void
+gen_compile_rules(HMAP_DB* rules, strarray* sources) {
+  char** srcfile;
+  stralloc obj;
+  stralloc_init(&obj);
+
+  strarray_foreach(sources, srcfile) {
+    target* rule;
+
+    path_object(*srcfile, &obj);
+
+    if((rule = get_rule_sa(&obj))) {
+      add_srcpath(&rule->prereq, *srcfile);
+
+      rule->recipe = &compile_command;
+    }
+  }
+
+  stralloc_free(&obj);
+}
+
+/**
  * Generate compile rules for every library given
  */
 void
-lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
+gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   target* rule;
   TUPLE* t;
   stralloc inc;
@@ -1194,13 +1228,111 @@ lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
       continue;
 
-    rule = lib_rule_for_srcdir(rules, srcdir, base);
+    rule = lib_rule_for_sourcedir(rules, srcdir, base);
   }
   stralloc_free(&inc);
 }
 
+/**
+ * Generate compile rules for every source file with a main()
+ */
 void
-clean_rule(HMAP_DB* rules) {
+gen_link_rules(HMAP_DB* rules, strarray* sources) {
+  target* all;
+
+  const char* x;
+  char** srcfile;
+  strlist incs, libs, deps, indir;
+  stralloc obj, bin;
+  strlist_init(&incs, ' ');
+  strlist_init(&libs, '\0');
+  strlist_init(&deps, ' ');
+  strlist_init(&indir, ' ');
+  stralloc_init(&obj);
+  stralloc_init(&bin);
+  all = get_rule("all");
+
+  strarray_foreach(sources, srcfile) {
+    target *compile, *link;
+
+    strlist_zero(&incs);
+    strlist_zero(&libs);
+    strlist_zero(&deps);
+    strlist_zero(&indir);
+
+    if(has_main(*srcfile) == 1) {
+
+      path_object(*srcfile, &obj);
+
+      if((compile = find_rule_sa(&obj))) {
+
+        get_includes(*srcfile, &incs, 0);
+
+        /*        stralloc_nul(&incs);
+                buffer_putm_internal(buffer_2, "rule '", compile->name, "' includes: ", incs.sa.s, 0);
+                buffer_putnlflush(buffer_2);
+        */
+        includes_to_libs(&incs, &libs);
+      }
+
+      stralloc_zero(&bin);
+      path_extension(obj.s, &bin, binext);
+
+      add_path_sa(&all->prereq, &bin);
+
+      if((link = get_rule_sa(&bin))) {
+        int nremoved;
+        add_path_sa(&link->prereq, &obj);
+
+        //  get_rules_by_cmd(&lib_command, &link->prereq);
+
+        link->recipe = &link_command;
+
+        deps_indirect(&indir, &libs);
+        //        target_deps_indirect(&indir, link);
+
+        debug_sa("indirect deps", &indir);
+
+
+        target_ptrs(&libs, &link->deps);
+
+        deps_direct(&deps, link);
+        strlist_sub(&deps, &indir);
+
+        debug_sa("direct deps", &deps);
+
+          array_trunc(&link->deps);
+
+           target_ptrs(&deps, &link->deps);
+
+
+           strlist_zero(&deps);
+           target_dep_list(&deps, link);
+
+           debug_sa("final deps", &deps);
+
+           strlist_cat(&link->prereq, &deps);
+
+#if 0 // def DEBUG_OUTPUT
+        /*print_target_deps(buffer_2, link);
+        buffer_putm_internal(buffer_2, "Deps for executable '", link->name, "': ", 0);
+        buffer_putsa(buffer_2, &deps.sa);
+        buffer_putnlflush(buffer_2);*/
+#endif
+      }
+    }
+  }
+
+  strlist_free(&incs);
+  strlist_free(&libs);
+  strlist_free(&deps);
+  strlist_free(&indir);
+  stralloc_free(&bin);
+  stralloc_free(&obj);
+}
+
+void
+gen_clean_rule(HMAP_DB* rules) {
   target* rule;
 
   /* Generate "clean" rule */
@@ -1284,17 +1416,6 @@ output_all_rules(buffer* b, HMAP_DB* hmap) {
   TUPLE* t;
 
   hmap_foreach(hmap, t) { output_rule(b, t->vals.val_custom); }
-}
-
-void
-strarray_dump(buffer* b, const strarray* arr) {
-  char **p = strarray_begin(arr), **e = strarray_end(arr);
-
-  while(p < e) {
-    buffer_puts(b, *p);
-    buffer_putnlflush(b);
-    ++p;
-  }
 }
 
 /**
@@ -1782,18 +1903,18 @@ main(int argc, char* argv[]) {
     populate_sourcedirs(&srcs, sourcedirs);
 
     if(cmd_objs)
-      compile_rules(rules, &srcs);
+      gen_compile_rules(rules, &srcs);
 
     if(cmd_libs) {
-      lib_rules(rules, sourcedirs);
+      gen_lib_rules(rules, sourcedirs);
 
       deps_for_libs(rules);
     }
 
     if(cmd_bins)
-      link_rules(rules, &srcs);
+      gen_link_rules(rules, &srcs);
 
-    clean_rule(rules);
+    gen_clean_rule(rules);
 
     {
       TUPLE* t;
