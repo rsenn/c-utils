@@ -37,9 +37,9 @@ mingw | mingw32 | mingw64 {
 
 INCLUDEPATH += .
 
-HEADERS = 
+HEADERS = lib/array.h lib/buffer.h lib/byte.h lib/str.h lib/stralloc.h lib/strarray.h
 
 
-SOURCES = 
+SOURCES = lib/array/array_allocate.c lib/array/array_catb.c lib/array/array_fail.c lib/array/array_get.c lib/array/array_length.c lib/array/array_start.c lib/array/umult64.c lib/buffer/buffer_1.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_stubborn.c lib/byte/byte_copy.c lib/byte/byte_diff.c lib/byte/byte_equal.c lib/byte/byte_zero.c lib/socket/init.c lib/str/str_dup.c lib/str/str_len.c lib/stralloc/stralloc_append.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_cats.c lib/stralloc/stralloc_endb.c lib/stralloc/stralloc_init.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c lib/stralloc/stralloc_zero.c lib/strarray/strarray_from_argv.c lib/strarray/strarray_joins.c lib/strarray/strarray_push.c lib/strarray/strarray_removesuffixs.c strarraytest.c
 
 DEFINES += HAVE_ERRNO_H=1

@@ -13,7 +13,7 @@
 
 #ifdef __dietlibc__
 # include <sys/atomic.h>
-#elif WINDOWS_NATIVE
+#elif WINDOWS_NATIVE || defined(__MSYS__)
 # define __CAS(val,oldval,newval) InterlockedCompareExchange(val,newval,oldval)
 # define __CAS_PTR(ptr,oldptr,newptr) InterlockedCompareExchangePointer(ptr,newptr,oldptr)
 #elif defined(__GNUC__)

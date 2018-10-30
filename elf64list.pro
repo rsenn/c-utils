@@ -37,9 +37,9 @@ mingw | mingw32 | mingw64 {
 
 INCLUDEPATH += .
 
-HEADERS = 
+HEADERS = lib/mmap.h lib/open.h
 
 
-SOURCES = 
+SOURCES = elf64list.c lib/mmap/mmap_private.c lib/open/open_read.c lib/socket/init.c
 
 DEFINES += HAVE_ERRNO_H=1

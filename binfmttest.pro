@@ -37,9 +37,9 @@ mingw | mingw32 | mingw64 {
 
 INCLUDEPATH += .
 
-HEADERS = 
+HEADERS = lib/binfmt.h lib/byte.h lib/mmap.h lib/open.h
 
 
-SOURCES = 
+SOURCES = binfmttest.c lib/binfmt/binfmt_open.c lib/byte/byte_zero.c lib/mmap/mmap_private.c lib/open/open_read.c lib/socket/init.c
 
 DEFINES += HAVE_ERRNO_H=1

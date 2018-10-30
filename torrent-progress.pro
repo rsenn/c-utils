@@ -21,7 +21,7 @@ INCLUDEPATH += .
 
 HEADERS = lib/buffer.h lib/byte.h lib/fmt.h lib/mmap.h lib/open.h lib/str.h
 
-SOURCES = lib/buffer/buffer_1.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/byte/byte_copy.c lib/fmt/fmt_ulong.c lib/mmap/mmap_map.c lib/mmap/mmap_unmap.c lib/open/open_read.c lib/str/str_len.c torrent-progress.c
+SOURCES = lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_putuint64.c lib/buffer/buffer_putulong.c lib/buffer/buffer_putxint64.c lib/buffer/buffer_putxlong.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/byte/byte_copy.c lib/fmt/fmt_long.c lib/fmt/fmt_uint64.c lib/fmt/fmt_ulong.c lib/fmt/fmt_xint64.c lib/fmt/fmt_xlong.c lib/mmap/mmap_map.c lib/mmap/mmap_unmap.c lib/open/open_read.c lib/socket/init.c lib/str/str_len.c torrent-progress.c
 
 
 
