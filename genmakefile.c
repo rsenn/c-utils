@@ -741,7 +741,7 @@ includes_to_libs(const strlist* includes, strlist* libs) {
 
     stralloc_copys(&sa, libpfx);
     stralloc_catb(&sa, s, n);
-   // debug_sa("include", &sa);
+    // debug_sa("include", &sa);
 
     if(stralloc_endb(&sa, ".h", 2))
       sa.len -= 2;
@@ -754,7 +754,7 @@ includes_to_libs(const strlist* includes, strlist* libs) {
 
     if((rule = find_rule_sa(&sa))) {
 
-//debug_s("lib", rule->name);
+      // debug_s("lib", rule->name);
 
       strlist_push(libs, rule->name);
     }
@@ -804,7 +804,6 @@ target_ptrs(const strlist* targets, array* out) {
 void
 target_dep_list_recursive(strlist* l, target* t) {
   target** ptr;
-  //  strlist_push(l, t->name);
 
   array_foreach_t(&t->deps, ptr) {
     if(!strlist_contains(l, (*ptr)->name)) {
@@ -822,46 +821,73 @@ target_dep_list(strlist* l, target* t) {
 }
 
 void
-print_target_deps_r(buffer* b, target* t, strlist* deplist, int depth) {
-
+indirect_dep_list(strlist* l, target* t) {
   target** ptr;
+
+  strlist_push_unique(l, t->name);
+
+  array_foreach_t(&t->deps, ptr) {
+    if(*ptr) target_dep_list_recursive(l, *ptr);
+  }
+
+  strlist_removes(l, t->name);
+}
+
+void
+print_target_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, int depth) {
+  target** ptr;
+  size_t l = hierlist->sa.len;
+
+  /*if(strlist_contains(&hierlist, t->name))
+    return;
+  */
+  strlist_push(hierlist, t->name);
+  stralloc_nul(&hierlist->sa);
+
   array_foreach_t(&t->deps, ptr) {
     const char* name = (*ptr)->name;
 
-    if(strlist_push_unique(deplist, name)) {
+    if(strlist_contains(hierlist, name))
+      continue;
 
+    // strlist_push_unique(deplist, name);
+
+    {
       buffer_puts(b, "# ");
+      //   buffer_putsa(b, &hierlist->sa);
       buffer_putnspace(b, depth * 2);
 
       buffer_puts(b, str_basename(t->name));
       buffer_puts(b, " -> ");
       buffer_puts(b, str_basename(name));
       buffer_putnlflush(b);
-      // strlist_push(deplist, name);
 
-      print_target_deps_r(b, (*ptr), deplist, depth + 1);
+      if(strlist_push_unique(deplist, name))
+        print_target_deps_r(b, (*ptr), deplist, hierlist, depth + 1);
     }
   }
+
+  hierlist->sa.len = l;
+  //   strlist_trunc(hierlist, depth);
 }
 
 void
 print_target_deps(buffer* b, target* t) {
   const char* s;
   size_t n, nb;
-  strlist deplist;
+  strlist deplist, hierlist;
   strlist_init(&deplist, ' ');
+  strlist_init(&hierlist, ',');
 
   strlist_push(&deplist, t->name);
-  /*
-    target_dep_list(&deplist, t);
-    stralloc_nul(&deplist.sa);
-  */
+
   buffer_putm_internal(b, "# Dependencies for '", t->name, "':", 0);
   buffer_putnlflush(b);
 
-  print_target_deps_r(b, t, &deplist, 0);
+  print_target_deps_r(b, t, &deplist, &hierlist, 0);
 
   strlist_free(&deplist);
+  strlist_free(&hierlist);
 }
 
 void
@@ -871,7 +897,8 @@ remove_indirect_deps_recursive(array* top, array* a, int depth) {
   array_foreach_t(a, p) {
     target* t = *p;
 
-    if(t == NULL) continue;
+    if(t == NULL)
+      continue;
 
     if(depth > 0) {
       if((found = array_find(top, sizeof(target*), &t))) {
@@ -879,8 +906,8 @@ remove_indirect_deps_recursive(array* top, array* a, int depth) {
       }
     }
     if(a != &t->deps) {
-      if(depth < 10 && array_length(&t->deps, sizeof(target*)) > 0)
-      remove_indirect_deps_recursive(top, &t->deps, depth + 1);
+      if(depth < 100 && array_length(&t->deps, sizeof(target*)) > 0)
+        remove_indirect_deps_recursive(top, &t->deps, depth + 1);
     }
   }
 }
@@ -951,11 +978,12 @@ link_rules(HMAP_DB* rules, strarray* sources) {
 
   const char* x;
   char** srcfile;
-  strlist incs, libs, deps;
+  strlist incs, libs, deps, indir;
   stralloc obj, bin;
   strlist_init(&incs, ' ');
   strlist_init(&libs, '\0');
   strlist_init(&deps, ' ');
+  strlist_init(&indir, ' ');
   stralloc_init(&obj);
   stralloc_init(&bin);
   all = get_rule("all");
@@ -974,10 +1002,10 @@ link_rules(HMAP_DB* rules, strarray* sources) {
 
         get_includes(*srcfile, &incs, 0);
 
-        stralloc_nul(&incs);
-        buffer_putm_internal(buffer_2, "rule '", compile->name, "' includes: ", incs.sa.s, 0);
-        buffer_putnlflush(buffer_2);
-
+        /*        stralloc_nul(&incs);
+                buffer_putm_internal(buffer_2, "rule '", compile->name, "' includes: ", incs.sa.s, 0);
+                buffer_putnlflush(buffer_2);
+        */
         includes_to_libs(&incs, &libs);
       }
 
@@ -996,13 +1024,19 @@ link_rules(HMAP_DB* rules, strarray* sources) {
 
         target_ptrs(&libs, &link->deps);
 
-        nremoved = remove_indirect_deps(&link->deps);
+        indirect_dep_list(&indir, link);
+
+        debug_sa("indirect deps", &indir);
+
+
+
+/*        nremoved = remove_indirect_deps(&link->deps);
         debug_int("indirect deps removed", nremoved);
+*/
+        print_target_deps(buffer_2, link);
 
-       // print_target_deps(buffer_2, link);
-
-//        strlist_zero(&deps);
-//        target_dep_list(&deps, link);
+        //        strlist_zero(&deps);
+        target_dep_list_recursive(&link->prereq, link);
 
 /*
 
@@ -1125,7 +1159,7 @@ deps_for_libs(HMAP_DB* rules) {
 
       strlist_removes(&libs, lib->name);
 
-#if 0 //def DEBUG_OUTPUT
+#if 0 // def DEBUG_OUTPUT
       //print_target_deps(buffer_2, lib);
       buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
       buffer_putsa(buffer_2, &libs.sa);
@@ -1765,7 +1799,7 @@ main(int argc, char* argv[]) {
       TUPLE* t;
       hmap_foreach(rules, t) {
         target* tgt = hmap_data(t);
-        //print_target_deps(buffer_2, tgt);
+        // print_target_deps(buffer_2, tgt);
       }
     }
 

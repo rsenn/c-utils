@@ -241,13 +241,13 @@ int stralloc_expand(stralloc* sa);
 int stralloc_catwcb(stralloc* sa, const wchar_t* buf, size_t len);
 int stralloc_catwcs(stralloc* sa, const wchar_t* buf);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif
 
 int stralloc_remove(stralloc*, size_t pos, size_t n);
 void stralloc_replace(stralloc*, char before, char after);
 int stralloc_removesuffixs(stralloc*, const char* suffix);
 int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
+#ifdef __cplusplus
+}
+#endif
+
+#endif

@@ -1,5 +1,7 @@
 #include "../byte.h"
 
+typedef struct stralloc_s { char* s; size_t len, a; } stralloc;
+
 void stralloc_zero(stralloc*);
 int stralloc_readyplus(stralloc*, size_t);
 int stralloc_trunc(stralloc*, size_t);

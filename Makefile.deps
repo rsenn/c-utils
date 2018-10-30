@@ -1846,3 +1846,5 @@ $(BUILDDIR)strlist_indexofb.o: lib/strlist/strlist_indexofb.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_removes.o: lib/strlist/strlist_removes.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_trunc.o: lib/strlist/strlist_trunc.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

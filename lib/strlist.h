@@ -80,8 +80,10 @@ int   strlist_containsb(strlist*, const char* x, size_t len);
 int   strlist_removeb(strlist*, const char* x, size_t n);
 int   strlist_removes(strlist*, const char* s);
 
+int strlist_trunc(strlist*, size_t items);
+int strlist_sub(strlist*, const strlist* o);
+
 # ifdef __cplusplus
 }
 # endif
 #endif /* defined(STRLIST_H) */
-
