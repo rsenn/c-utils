@@ -35,11 +35,6 @@
 #else
 #define DEFAULT_PATHSEP '/'
 #endif
-#define DEBUG_OUTPUT 1
-
-#ifndef DEBUG_OUTPUT
-
-#endif
 
 typedef struct {
   enum { X86, ARM } arch;
@@ -143,7 +138,6 @@ debug_sl(const char* name, const strlist* l) {
   const char* x;
   stralloc tmp;
   stralloc_init(&tmp);
-
   strlist_foreach(l, x, n) {
     if(tmp.len)
       stralloc_catc(&tmp, ' ');
@@ -165,6 +159,7 @@ debug_int(const char* name, int i) {
 }
 #else
 #define debug_sa(x, y)
+#define debug_sl(x, y)
 #define debug_s(x, y)
 #define debug_int(x, y)
 #endif
@@ -1692,7 +1687,7 @@ set_compiler_type(const char* compiler) {
                 "$(LINK) -OUT:\"$@\" -INCREMENTAL -NOLOGO -MANIFEST "
                 "-MANIFESTFILE:Debug/genmk.exe.intermediate.manifest -DEBUG "
                 "-PDB:C:/Users/roman/Desktop/dirlist/genmk/Debug/genmk.pdb -SUBSYSTEM:CONSOLE "
-                "-DYNAMICBASE -NXCOMPAT -MACHINE:X86 -ERRORREPORT:PROMPT ",
+                "-DYNAMICBASE -NXCOMPAT -ERRORREPORT:PROMPT ",
                 "$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)");
 
     /*
@@ -1739,7 +1734,7 @@ set_compiler_type(const char* compiler) {
       }
 
       stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
-      set_command(&link_command, "$(CC) $(LDFLAGS) -e$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+      set_command(&link_command, "$(CC) $(LDFLAGS) -e\"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     }
 
     set_var("LINK", "ilink32");
