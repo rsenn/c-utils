@@ -25,8 +25,9 @@
 #include "../lib/buffer.h"
 #include "../lib/taia.h"
 #include "../lib/windoze.h"
+
 #include <math.h>
-//#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -34,6 +35,7 @@
 #include <io.h>
 #include <winsock.h>
 #else
+#include <unistd.h>
 #include <sys/time.h>
 #endif
 

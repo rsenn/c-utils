@@ -29,13 +29,15 @@
 #define BUFSIZE 65535
 
 #if __BORLANDC__
-#undef popen
+# undef popen
 void* __declspec(dllimport) popen(const char*, const char*);
 
-#define popen __popen_tmp
-#include <stdio.h>
-#undef popen
-#define popen _popen
+# define popen __popen_tmp
+# include <stdio.h>
+# undef popen
+# define popen _popen
+#else
+# include <stdio.h>
 #endif
 
 extern char strlist_dumpx[5];
