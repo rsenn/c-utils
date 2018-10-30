@@ -35,6 +35,7 @@
 #else
 #define DEFAULT_PATHSEP '/'
 #endif
+#define DEBUG_OUTPUT 1
 
 #ifndef DEBUG_OUTPUT
 
@@ -136,6 +137,24 @@ debug_s(const char* name, const char* s) {
   buffer_puts(buffer_2, s);
   buffer_putnlflush(buffer_2);
 }
+void
+debug_sl(const char* name, const strlist* l) {
+  size_t pos, n;
+  const char* x;
+  stralloc tmp;
+  stralloc_init(&tmp);
+
+  strlist_foreach(l, x, n) {
+    if(tmp.len)
+      stralloc_catc(&tmp, ' ');
+    if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
+      stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
+    else
+      stralloc_catb(&tmp, x, n);
+  }
+  debug_sa(name, &tmp);
+  stralloc_free(&tmp);
+}
 
 void
 debug_int(const char* name, int i) {
@@ -145,9 +164,9 @@ debug_int(const char* name, int i) {
   buffer_putnlflush(buffer_2);
 }
 #else
-#define debug_sa(x,y)
-#define debug_s(x,y)
-#define debug_int(x,y)
+#define debug_sa(x, y)
+#define debug_s(x, y)
+#define debug_int(x, y)
 #endif
 
 /**
@@ -844,18 +863,16 @@ target_dep_list_recursive(strlist* l, target* t, int depth, strlist* hier) {
   array_foreach_t(&t->deps, ptr) {
     const char* name = (*ptr)->name;
 
-
     if(!strlist_contains(hier, name)) {
       strlist_push(hier, name);
       target_dep_list_recursive(l, *ptr, depth + 1, hier);
       strlist_pop(hier);
-    }
 
-    if(depth >= 0) {
-      if(!strlist_contains(l, name))
-        strlist_unshift(l, name);
+      if(depth >= 0) {
+        if(!strlist_contains(l, name))
+           strlist_unshift(l, name);
+      }
     }
-
   }
 }
 
@@ -901,6 +918,7 @@ deps_indirect(strlist* l, const strlist* names) {
   target* t;
   strlist hier;
   strlist_init(&hier, '\0');
+
   strlist_foreach(names, x, n) {
     if((t = find_rule_b(x, n))) {
       strlist_pushb(&hier, x, n);
@@ -916,7 +934,7 @@ deps_direct(strlist* l, const target* t) {
   target** ptr;
   array_foreach_t(&t->deps, ptr) {
     if(*ptr) {
-         strlist_push(l, (*ptr)->name);
+      strlist_push(l, (*ptr)->name);
     }
   }
 }
@@ -1149,7 +1167,10 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 void
 deps_for_libs(HMAP_DB* rules) {
   TUPLE* t;
+  strlist deps, indir;
   stralloc sa;
+  strlist_init(&deps, '\0');
+  strlist_init(&indir, ' ');
   stralloc_init(&sa);
 
   hmap_foreach(sourcedirs, t) {
@@ -1165,10 +1186,24 @@ deps_for_libs(HMAP_DB* rules) {
       strlist libs;
       strlist_init(&libs, ' ');
 
+      //      debug_sl("includes", &srcdir->includes);
+
       includes_to_libs(&srcdir->includes, &libs);
 
-      strlist_removes(&libs, lib->name);
+      debug_s("library", lib->name);
 
+      strlist_removes(&libs, lib->name);
+      debug_sl("deps", &libs);
+
+      strlist_zero(&indir);
+      deps_indirect(&indir, &libs);
+
+      debug_sl("indir", &indir);
+      strlist_sub(&indir, &libs);
+
+      strlist_sub(&libs, &indir);
+
+      debug_sl("direct", &libs);
 #if 0 // def DEBUG_OUTPUT
       //print_target_deps(buffer_2, lib);
       buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
@@ -1184,6 +1219,37 @@ deps_for_libs(HMAP_DB* rules) {
     }
   }
   stralloc_free(&sa);
+}
+
+int
+target_add_dep(target* t, target* other) {
+
+  target** ptr;
+
+  if((ptr = array_find(&t->deps, sizeof(target*), &other)) == NULL) {
+    array_catb(&t->deps, &other, sizeof(other));
+
+    array_foreach_t(&other->deps, ptr) { target_add_dep(t, *ptr); }
+    return 1;
+  }
+  return 0;
+}
+
+void
+target_add_deps(target* t, const strlist* deps) {
+  const char* x;
+  size_t n;
+
+  strlist_foreach(deps, x, n) {
+    target *other, **ptr;
+
+    if(str_len(t->name) == n && !str_diffn(t->name, x, n))
+      continue;
+
+    if((other = find_rule_b(x, n))) {
+      target_add_dep(t, other);
+    }
+  }
 }
 
 /**
@@ -1245,7 +1311,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
   strlist incs, libs, deps, indir;
   stralloc obj, bin;
   strlist_init(&incs, ' ');
-  strlist_init(&libs, '\0');
+  strlist_init(&libs, ' ');
   strlist_init(&deps, ' ');
   strlist_init(&indir, ' ');
   stralloc_init(&obj);
@@ -1288,30 +1354,42 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         link->recipe = &link_command;
 
-        deps_indirect(&indir, &libs);
-        //        target_deps_indirect(&indir, link);
+        debug_s("program", link->name);
+        debug_sa("program libs", &libs);
 
-        debug_sa("indirect deps", &indir);
+        /*        deps_indirect(&indir, &libs);
+
+                strlist_sub(&libs, &indir);
+
+                target_add_deps(link, &libs);
+
+                strlist_zero(&deps);
+                target_dep_list(&deps, link);
 
 
-        target_ptrs(&libs, &link->deps);
+                debug_sa("final deps", &deps);
+        */
+
+        /*
+        strlist_zero(&deps);
+        strlist_cat(&deps, &libs);
 
         deps_direct(&deps, link);
+
+
         strlist_sub(&deps, &indir);
+             debug_sa("direct deps", &deps);
 
-        debug_sa("direct deps", &deps);
-
-          array_trunc(&link->deps);
-
-           target_ptrs(&deps, &link->deps);
+        array_trunc(&link->deps);
 
 
-           strlist_zero(&deps);
-           target_dep_list(&deps, link);
+        */
+        target_ptrs(&libs, &link->deps);
 
-           debug_sa("final deps", &deps);
+        strlist_zero(&deps);
+        target_dep_list(&deps, link);
 
-           strlist_cat(&link->prereq, &deps);
+        strlist_cat(&link->prereq, &deps);
 
 #if 0 // def DEBUG_OUTPUT
         /*print_target_deps(buffer_2, link);
