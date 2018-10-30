@@ -41,7 +41,7 @@ size_t  strlist_count(const strlist*);
 void    strlist_dump(buffer*, const strlist* sl);
 void    strlist_froms(strlist*, const char* s, char delim);
 int64   strlist_index_of(strlist*, const char* str);
-void    strlist_join(const strlist*, stralloc* sa, const char* delim);
+void    strlist_join(const strlist*, stralloc* sa, char delim);
 int     strlist_pushb(strlist*, const char* s, size_t n);
 int     strlist_pushm_internal(strlist*, ...);
 int     strlist_pushsa(strlist*, const stralloc* sa);
@@ -72,9 +72,12 @@ int strlist_push_unique_sa(strlist*, const stralloc* sa);
 void strlist_joins(const strlist*, stralloc* sa, const char* delim);
 #endif
 
-int64 strlist_indexofb(strlist* sl, const char* x, size_t n);
 int strlist_pushb_unique(strlist* sl, const char* x, size_t n);int strlist_pop(strlist*);
 int strlist_pop(strlist*);
+
+int64 strlist_indexofb(strlist*, const char* x, size_t n);
+int   strlist_containsb(strlist*, const char* x, size_t len);
+int   strlist_removeb(strlist*, const char* x, size_t n);
 
 # ifdef __cplusplus
 }

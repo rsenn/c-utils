@@ -790,11 +790,14 @@ target_ptrs(const strlist* targets, array* out) {
 void
 target_dep_list_recursive(strlist* l, target* t) {
   target** ptr;
-  strlist_push(l, t->name);
+//  strlist_push(l, t->name);
 
   array_foreach_t(&t->deps, ptr) {
-    if(!strlist_contains(l, (*ptr)->name))
+    if(!strlist_contains(l, (*ptr)->name)) {
+        strlist_push(l, (*ptr)->name);
+
       target_dep_list_recursive(l, *ptr);
+    }
   }
 }
 
@@ -878,10 +881,12 @@ output_rule(buffer* b, target* rule) {
 void
 link_rules(HMAP_DB* rules, strarray* sources) {
   target* all;
+  const char* x;
   char** srcfile;
-  strlist incs, deps;
+  strlist incs, libs, deps;
   stralloc obj, bin;
   strlist_init(&incs, ' ');
+  strlist_init(&libs, '\0');
   strlist_init(&deps, ' ');
   stralloc_init(&obj);
   stralloc_init(&bin);
@@ -891,7 +896,7 @@ link_rules(HMAP_DB* rules, strarray* sources) {
     target *compile, *link;
 
     strlist_zero(&incs);
-    strlist_zero(&deps);
+    strlist_zero(&libs);
 
     if(has_main(*srcfile) == 1) {
 
@@ -905,7 +910,8 @@ link_rules(HMAP_DB* rules, strarray* sources) {
         buffer_putm_internal(buffer_2, "rule '", compile->name, "' includes: ", incs.sa.s, 0);
         buffer_putnlflush(buffer_2);
 
-        includes_to_libs(&incs, &deps);
+        includes_to_libs(&incs, &libs);
+
       }
 
       stralloc_zero(&bin);
@@ -916,17 +922,42 @@ link_rules(HMAP_DB* rules, strarray* sources) {
       if((link = get_rule_sa(&bin))) {
         add_path_sa(&link->prereq, &obj);
 
-        get_rules_by_cmd(&lib_command, &link->prereq);
+      //  get_rules_by_cmd(&lib_command, &link->prereq);
 
         link->recipe = &link_command;
 
-#ifdef DEBUG_OUTPUT
-        buffer_putm_internal(buffer_2, "Deps for '", link->name, "': ", 0);
+
+        target_ptrs(&libs, &link->deps);
+
+
+        strlist_zero(&deps);
+        target_dep_list(&deps, link);
+
+
+        /*
+
+        strlist_foreach_s(&libs, x) {
+          target* lib = find_rule(x);
+
+          target_dep_list_recursive(&deps, lib);
+        }
+        target_ptrs(&deps, &link->deps);
+*/
+
+#if 1 //def DEBUG_OUTPUT
+        buffer_putm_internal(buffer_2, "Deps for executable '", link->name, "': ", 0);
         buffer_putsa(buffer_2, &deps.sa);
         buffer_putnlflush(buffer_2);
 #endif
 
-        target_ptrs(&deps, &link->deps);
+/*
+        strlist_cat( &link->prereq, &deps);*/
+/*
+        strlist_foreach_s(&libs, x) {
+
+        }*/
+        //      target_dep_list(&deps, compile);
+
       }
     }
   }
