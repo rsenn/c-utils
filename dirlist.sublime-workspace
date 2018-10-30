@@ -23,35 +23,43 @@
 			}
 		},
 		{
-			"contents": "#include \"../path_internal.h\"\n#include \"../strlist.h\"\n\nint\n   const char* x;\n  size_t i = 0, n;\n  char sep = path_getsep(path);\n  strlist p, o;\n  strlist_init(&p, sep);\n  strlist_init(&o, sep);\n  strlist_froms(&p, path, sep == '\\\\' ? '/' : '\\\\');\n  stralloc_zero(out);\n  byte_copy(&o.sa, sizeof(stralloc), out);\n  strlist_foreach(&p, x, n) {\n    if(i > 1) {\n      if(n == 2 && byte_equal(x, 2, \"..\")) {\n        strlist_pop(&o);\n        --i;\n        continue;\n      }\n    }\n    strlist_pushb(&o, x, n);\n    ++i;\n  }\n  byte_copy(out, sizeof(stralloc), &o.sa);\n  return i;\n}",
-			"file": "lib/path/path_collapse.c",
-			"file_size": 619,
-			"file_write_time": 131848008300072711,
-			"settings":
-			{
-				"buffer_size": 571,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 35561,
+				"buffer_size": 37184,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "{\n  // If you don't like `..` symbol on the top of each view that moves you to\n  // the parent directory and want to hide it you can set this to false\n  \"outline_show_parent\": true,\n\n  // If you want to see header (underlined full path) on top of file list\n  \"outline_header\": false,\n\n  // If you want to see full path in tab title and thus in window title\n  // if tab is focused\n  \"outline_show_full_path\": false,\n\n  // If true 'Send to Trash' command will confirm the action with a dialog box\n  \"outline_confirm_send2trash\": true,\n\n  // Showing hidden files by default\n  \"outline_show_hidden_files\": true,\n\n  // Customize the patterns used to determine if a file should be hidden\n  // e.g. [\".*\", \"__pycache__\", \"*.pyc\"]\n  \"outline_hidden_files_patterns\": [\".*\"],\n\n  // (ST3 Only) shows a FileBrowser or a jump list view in new window by default\n  // false: hijacking is disabled\n  // \"jump_list\": shows the project jump list\n  // \"outline\"    : shows a normal FileBrower view defaults to user directory\n  \"outline_hijack_new_window\": false,\n\n  // Path to git executable.\n  // Wildcards are supported, e.g. if you use GitHub for Windows it would be:\n  //     \"git_path\": \"~/Appdata/Local/GitHub/PortableGit_*/cmd/git.exe\"\n  // To disable git integration set to empty string:\n  //     \"git_path\": \"\"\n  \"git_path\": \"git\",\n\n  // Path to hg executable.\n  // Wildcards are supported, e.g. if you use TortoiseHg it would be:\n  //     \"hg_path\": \"%ProgramFiles%/TortoiseHg/hg.exe\"\n  // To disable hg integration set to empty string:\n  //     \"hg_path\": \"\"\n  \"hg_path\": \"hg\",\n\n  // true: the default, pressing Enter on a directory uses the current view.\n  // false: a new view is created.\n  \"outline_reuse_view\": true,\n\n  // true: Enable alphabetical sort in output.\n  // false: default because of losing parent dependences.\n  \"outline_alphabetical\": false,\n\n  // How should be positioned the Browse Mode view opened when jumping\n  // \"left\": the default, open the view on the left\n  // \"right\": open the view on the right\n  // true: take all space available\n  // false: don’t open any view\n  \"outline_open_on_jump\": \"left\",\n\n  // true: keep the active window if empty when jumping\n  // false: the default, always open a new window when jumping\n  \"outline_smart_jump\": false,\n\n  // Width for FileBrowser column (as sidebar) accepts float or int:\n  // float  0.1-0.9   put 1 is a window width, so e.g. 0.5 is half of window\n  // int    e.g. 99   pixels, if value will be more than current window width\n  //                  then value will be treated as 0.9\n  \"outline_width\": 0.3,\n\n  // Automatically disable Vintageous to avoid keybindings incompatibilities;\n  // note it is Vintageous setting, if it does not work you should report into\n  // appropriate repository https://github.com/guillermooo/Vintageous/issues\n  \"__vi_external_disable\": true,\n\n  // The rest of these settings are normal sublime settings to\n  // make FileBrowser views look more like a file browser than an editor\n  // This plugin does not change font and font size, but it's\n  // highly recommended to customize them in your user files.\n  \"color_scheme\": \"Packages/Outline/outline.hidden-tmTheme\",\n  \"line_numbers\": false,\n  \"word_wrap\": false,\n  \"spell_check\": false,\n  \"scroll_past_end\": false,\n  \"draw_indent_guides\": false,\n  \"fold_buttons\": false,\n  \"drag_text\": false,\n  \"highlight_line\": true,\n  \"margin\": 0,\n  \"tab_size\": 3,\n  \"rulers\": [],\n  \"caret_extra_width\": 0 // extra caret width causes partially hidden chars\n  // \"font_face\": \"comic sans\",\n  // \"font_size\": 13,\n}",
-			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings",
+			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 1406,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "[\n    {\n        \"command\": \"navigate_to_definition\",\n        \"keys\": [\"ctrl+t\", \"ctrl+t\"]\n    },\n    {\n        \"command\": \"navigate_to_definition\",\n        \"keys\": [\"ctrl+shift+period\"]\n    },\n    {\n        \"command\": \"search_for_definition\",\n        \"keys\": [\"ctrl+t\", \"ctrl+y\"]\n    },\n    {\n        \"command\": \"jump_prev\",\n        \"keys\": [\"ctrl+t\", \"ctrl+b\"]\n    },\n    {\n        \"command\": \"jump_prev\",\n        \"keys\": [\"ctrl+shift+comma\"]\n    },\n    {\n        \"command\": \"rebuild_tags\",\n        \"keys\": [\"ctrl+t\", \"ctrl+r\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"alt+s\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"args\": {\"type\": \"multi\"},\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"alt+shift+s\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"args\": {\"type\": \"lang\"},\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"ctrl+alt+shift+s\"]\n    },\n    { // override current default\n        \"command\": \"transpose\",\n        \"context\": [\n            { \"key\": \"num_selections\", \"operator\": \"not_equal\", \"operand\": 1 }\n        ],\n        \"keys\": [\"ctrl+t\"]\n    }\n]\n",
+			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
 			"file_size": -1,
 			"file_write_time": -1,
 			"settings":
 			{
-				"buffer_size": 3547,
+				"buffer_size": 1701,
 				"line_ending": "Windows",
 				"read_only": true,
 				"scratch": true
+			}
+		},
+		{
+			"contents": "[\n    {\n        \"command\": \"navigate_to_definition\",\n        \"keys\": [\"ctrl+t\", \"ctrl+t\"]\n    },\n    {\n        \"command\": \"navigate_to_definition\",\n        \"keys\": [\"ctrl+shift+period\"]\n    },\n    {\n        \"command\": \"search_for_definition\",\n        \"keys\": [\"ctrl+t\", \"ctrl+y\"]\n    },\n    {\n        \"command\": \"jump_prev\",\n        \"keys\": [\"ctrl+t\", \"ctrl+b\"]\n    },\n    {\n        \"command\": \"jump_prev\",\n        \"keys\": [\"ctrl+shift+comma\"]\n    },\n    {\n        \"command\": \"rebuild_tags\",\n        \"keys\": [\"ctrl+t\", \"ctrl+r\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"alt+s\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"args\": {\"type\": \"multi\"},\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"alt+shift+s\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"args\": {\"type\": \"lang\"},\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"ctrl+alt+shift+s\"]\n    },\n    { // override current default\n        \"command\": \"transpose\",\n        \"context\": [\n            { \"key\": \"num_selections\", \"operator\": \"not_equal\", \"operand\": 1 }\n        ],\n        \"keys\": [\"ctrl+t\"]\n    }\n]\n",
+			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 1701,
+				"line_ending": "Windows"
 			}
 		}
 	],
@@ -107,15 +115,19 @@
 		"selected_items":
 		[
 			[
+				"ins",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"pac",
+				"Package Control: Discover Packages"
+			],
+			[
 				"Package Control: ",
 				"Package Control: List Packages"
 			],
 			[
 				"adva",
-				"Package Control: Advanced Install Package"
-			],
-			[
-				"ins",
 				"Package Control: Advanced Install Package"
 			],
 			[
@@ -187,6 +199,12 @@
 	],
 	"file_history":
 	[
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CTags.sublime-settings",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Cscope/CscopeSublime.sublime-settings",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_collapse.c",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/outline.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/genmakefile/genmakefile.c",
@@ -200,7 +218,6 @@
 		"/C/Users/roman/Desktop/dirlist/CMakeLists.txt",
 		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_absolute_sa.c",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_collapse.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_dirname.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_exists.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_fnmatch.c",
@@ -309,12 +326,7 @@
 		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_count.c",
 		"/C/Users/roman/Documents/dirlist/lib/strlist_append.c",
 		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_dump.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_mmapread.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_mmapread_fd.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist_append_sa.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_get_token_sa.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_skip_until.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer.h"
+		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_mmapread.c"
 	],
 	"find":
 	{
@@ -479,7 +491,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -507,54 +519,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "lib/path/path_collapse.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 571,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								59,
-								59
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
 					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 35561,
+						"buffer_size": 37184,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								19694,
-								19694
+								20051,
+								20051
 							]
 						],
 						"settings":
@@ -564,19 +546,19 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 12513.0,
+						"translation.y": 12572.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings",
+					"buffer": 2,
+					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3547,
+						"buffer_size": 1406,
 						"regions":
 						{
 						},
@@ -584,7 +566,37 @@
 						[
 							[
 								0,
-								3547
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1701,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								1701
 							]
 						],
 						"settings":
@@ -596,6 +608,36 @@
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1701,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								368,
+								368
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
