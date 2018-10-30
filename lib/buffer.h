@@ -245,3 +245,4 @@ int buffer_putxint640(buffer* b, uint64 l, int pad);
 #endif
 
 #endif
+

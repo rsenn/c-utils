@@ -114,3 +114,4 @@ __inline double uint64_to_double(uint64 ull) {
 #endif
 
 #endif
+

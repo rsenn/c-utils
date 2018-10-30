@@ -34,3 +34,4 @@ extern "C" {
 }
 #endif
 #endif /* defined(WINDOZE_H) */
+

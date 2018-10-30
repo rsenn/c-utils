@@ -87,3 +87,4 @@ int strlist_sub(strlist*, const strlist* o);
 }
 # endif
 #endif /* defined(STRLIST_H) */
+

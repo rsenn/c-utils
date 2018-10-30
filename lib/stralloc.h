@@ -251,3 +251,4 @@ int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
 #endif
 
 #endif
+

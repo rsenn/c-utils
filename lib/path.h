@@ -49,3 +49,4 @@ int path_getsep(const char*);
 int path_canonical(const char*, stralloc* out);
 int   path_is_separator(char);
 char* path_skip_separator(const char*);
+

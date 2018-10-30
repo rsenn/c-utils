@@ -113,3 +113,4 @@ uint32 uint32_prng(uint32, uint32 seed);
 uint32 uint32_prng(uint32, uint32 seed);
 uint32 uint32_random(void);
 int    uint32_seed(const void*, unsigned long n);
+
