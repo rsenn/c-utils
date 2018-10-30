@@ -1,10 +1,15 @@
 #include "../typedefs.h"
 #include "../windoze.h"
 #include <errno.h>
-#include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 #if !defined(HAVE_GETDELIM) && !defined(__LCC__)
 

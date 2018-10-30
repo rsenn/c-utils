@@ -37,33 +37,21 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 33506,
-				"encoding": "UTF-8",
+				"buffer_size": 35561,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/path/path_skip_separator.c",
+			"contents": "{\n  // If you don't like `..` symbol on the top of each view that moves you to\n  // the parent directory and want to hide it you can set this to false\n  \"outline_show_parent\": true,\n\n  // If you want to see header (underlined full path) on top of file list\n  \"outline_header\": false,\n\n  // If you want to see full path in tab title and thus in window title\n  // if tab is focused\n  \"outline_show_full_path\": false,\n\n  // If true 'Send to Trash' command will confirm the action with a dialog box\n  \"outline_confirm_send2trash\": true,\n\n  // Showing hidden files by default\n  \"outline_show_hidden_files\": true,\n\n  // Customize the patterns used to determine if a file should be hidden\n  // e.g. [\".*\", \"__pycache__\", \"*.pyc\"]\n  \"outline_hidden_files_patterns\": [\".*\"],\n\n  // (ST3 Only) shows a FileBrowser or a jump list view in new window by default\n  // false: hijacking is disabled\n  // \"jump_list\": shows the project jump list\n  // \"outline\"    : shows a normal FileBrower view defaults to user directory\n  \"outline_hijack_new_window\": false,\n\n  // Path to git executable.\n  // Wildcards are supported, e.g. if you use GitHub for Windows it would be:\n  //     \"git_path\": \"~/Appdata/Local/GitHub/PortableGit_*/cmd/git.exe\"\n  // To disable git integration set to empty string:\n  //     \"git_path\": \"\"\n  \"git_path\": \"git\",\n\n  // Path to hg executable.\n  // Wildcards are supported, e.g. if you use TortoiseHg it would be:\n  //     \"hg_path\": \"%ProgramFiles%/TortoiseHg/hg.exe\"\n  // To disable hg integration set to empty string:\n  //     \"hg_path\": \"\"\n  \"hg_path\": \"hg\",\n\n  // true: the default, pressing Enter on a directory uses the current view.\n  // false: a new view is created.\n  \"outline_reuse_view\": true,\n\n  // true: Enable alphabetical sort in output.\n  // false: default because of losing parent dependences.\n  \"outline_alphabetical\": false,\n\n  // How should be positioned the Browse Mode view opened when jumping\n  // \"left\": the default, open the view on the left\n  // \"right\": open the view on the right\n  // true: take all space available\n  // false: don’t open any view\n  \"outline_open_on_jump\": \"left\",\n\n  // true: keep the active window if empty when jumping\n  // false: the default, always open a new window when jumping\n  \"outline_smart_jump\": false,\n\n  // Width for FileBrowser column (as sidebar) accepts float or int:\n  // float  0.1-0.9   put 1 is a window width, so e.g. 0.5 is half of window\n  // int    e.g. 99   pixels, if value will be more than current window width\n  //                  then value will be treated as 0.9\n  \"outline_width\": 0.3,\n\n  // Automatically disable Vintageous to avoid keybindings incompatibilities;\n  // note it is Vintageous setting, if it does not work you should report into\n  // appropriate repository https://github.com/guillermooo/Vintageous/issues\n  \"__vi_external_disable\": true,\n\n  // The rest of these settings are normal sublime settings to\n  // make FileBrowser views look more like a file browser than an editor\n  // This plugin does not change font and font size, but it's\n  // highly recommended to customize them in your user files.\n  \"color_scheme\": \"Packages/Outline/outline.hidden-tmTheme\",\n  \"line_numbers\": false,\n  \"word_wrap\": false,\n  \"spell_check\": false,\n  \"scroll_past_end\": false,\n  \"draw_indent_guides\": false,\n  \"fold_buttons\": false,\n  \"drag_text\": false,\n  \"highlight_line\": true,\n  \"margin\": 0,\n  \"tab_size\": 3,\n  \"rulers\": [],\n  \"caret_extra_width\": 0 // extra caret width causes partially hidden chars\n  // \"font_face\": \"comic sans\",\n  // \"font_size\": 13,\n}",
+			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings",
+			"file_size": -1,
+			"file_write_time": -1,
 			"settings":
 			{
-				"buffer_size": 122,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/path/path_is_separator.c",
-			"settings":
-			{
-				"buffer_size": 89,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/path/path_skip.c",
-			"settings":
-			{
-				"buffer_size": 205,
-				"line_ending": "Unix"
+				"buffer_size": 3547,
+				"line_ending": "Windows",
+				"read_only": true,
+				"scratch": true
 			}
 		}
 	],
@@ -119,6 +107,14 @@
 		"selected_items":
 		[
 			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
+			[
+				"adva",
+				"Package Control: Advanced Install Package"
+			],
+			[
 				"ins",
 				"Package Control: Advanced Install Package"
 			],
@@ -133,10 +129,6 @@
 			[
 				"Package Control: insta",
 				"Package Control: Advanced Install Package"
-			],
-			[
-				"Package Control: ",
-				"Package Control: Install Package"
 			],
 			[
 				"install",
@@ -191,20 +183,22 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/roman/Desktop/dirlist",
-		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/path",
-		"/C/Users/roman/Desktop/dirlist/lib/strlist"
+		"/C/Users/roman/Desktop/dirlist"
 	],
 	"file_history":
 	[
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/outline.sublime-settings",
+		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
+		"/C/Users/roman/Desktop/dirlist/genmakefile/genmakefile.c",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_skip_separator.c",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_is_separator.c",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_skip.c",
 		"/C/Users/roman/Desktop/dirlist/tests/CMakeLists.txt",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_is_absolute.c",
 		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push_unique.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_basename.c",
 		"/C/Users/roman/Desktop/dirlist/CMakeLists.txt",
 		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
-		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_absolute_sa.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_collapse.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_dirname.c",
@@ -320,12 +314,7 @@
 		"/C/Users/roman/Documents/dirlist/lib/strlist_append_sa.c",
 		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_get_token_sa.c",
 		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_skip_until.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer.h",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_prefetch.c",
-		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_zero.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_getc.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_get_token_sa_pred.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_get_token_pred.c"
+		"/C/Users/roman/Documents/dirlist/lib/buffer.h"
 	],
 	"find":
 	{
@@ -343,6 +332,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"delete_command",
+			"set_compiler",
+			"path_prefix_s",
+			"libext",
 			"get_inc",
 			"extract_inc",
 			"clean_rule",
@@ -514,7 +507,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -544,7 +537,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -553,15 +546,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 33506,
+						"buffer_size": 35561,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								16965,
-								16965
+								19694,
+								19694
 							]
 						],
 						"settings":
@@ -571,7 +564,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 10777.0,
+						"translation.y": 12513.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -579,11 +572,11 @@
 				},
 				{
 					"buffer": 3,
-					"file": "lib/path/path_skip_separator.c",
+					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 122,
+						"buffer_size": 3547,
 						"regions":
 						{
 						},
@@ -591,74 +584,18 @@
 						[
 							[
 								0,
-								0
+								3547
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/path/path_is_separator.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 89,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "lib/path/path_skip.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 205,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]

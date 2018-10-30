@@ -1,6 +1,11 @@
 #define USE_WS2_32 1
 #include "../socket_internal.h"
+#include "../windoze.h"
 #include <sys/types.h>
+
+#if !WINDOWS_NATIVE
+#include <net/if.h>
+#endif
 
 #ifdef HAVE_N2I
 /* legacy BSD name */
