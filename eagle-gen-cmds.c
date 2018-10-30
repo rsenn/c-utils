@@ -1168,12 +1168,12 @@ draw_measures(xmlnode* doc) {
 /**
  * Executes XPath query and for every resulting element calls a function
  */
-#define match_foreach(doc, q, fn)                                                                                      \
-  do {                                                                                                                 \
-    xmlnodeset ns = getnodeset(doc, q);                                                                                \
-    if(xmlnodeset_size(&ns)) {                                                                                         \
-      for_set(&ns, fn);                                                                                                \
-    }                                                                                                                  \
+#define match_foreach(doc, q, fn) \
+  do { \
+    xmlnodeset ns = getnodeset(doc, q); \
+    if(xmlnodeset_size(&ns)) { \
+      for_set(&ns, fn); \
+    } \
   } while(0);
 
 void

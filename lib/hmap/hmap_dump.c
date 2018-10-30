@@ -1,9 +1,9 @@
 #include "../hmap.h"
 #include "../buffer.h"
 
-#define put_tuple(t)                                                                                                   \
-  buffer_put(b, "#", 1);                                                                                               \
-  buffer_putulong0(b, (t)->index, 5);                                                                                  \
+#define put_tuple(t) \
+  buffer_put(b, "#", 1); \
+  buffer_putulong0(b, (t)->index, 5); \
   buffer_putm_internal(b, " ", (t)->key, "=", NULL);
 
 void

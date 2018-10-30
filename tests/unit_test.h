@@ -48,13 +48,13 @@ typedef char bool;
 
 // APIs
 #define TEST(name) static void name(struct unit_test* mu_)
-#define RUN(name)                                                                                                      \
-  if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) {                                                                \
-    mu_->success++;                                                                                                    \
-  } else {                                                                                                             \
-    mu_->failure++;                                                                                                    \
-    if(muconf_ptr()->x)                                                                                                    \
-      return;                                                                                                          \
+#define RUN(name) \
+  if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) { \
+    mu_->success++; \
+  } else { \
+    mu_->failure++; \
+    if(muconf_ptr()->x) \
+      return; \
   }
 #define TESTLOG(...) buffer_putmflush(muerr, __VA_ARGS__)
 
@@ -93,7 +93,7 @@ typedef char bool;
 #endif
 
 // Internals
-#define unit_test_typespec(code)                                                                                       \
+#define unit_test_typespec(code) \
   _Generic((code),\
 char *            : "%s"  ,\
 signed char       : "%hhd",\
@@ -111,18 +111,18 @@ double            : "%lf" ,\
 long double       : "%Lf" ,\
 default           : "%p")
 
-#define unit_test_assert(mu_, x1, x2, op, notop)                                                                       \
-  if(!((x1)op(x2))) {                                                                                                  \
-    buffer_putsflush((mu_)->faillog, "  Assertion failed: ");                                                          \
-    buffer_putm((mu_)->faillog, unit_test_typespec(x1), x1);                                                           \
-    buffer_puts((mu_)->faillog, " " #notop " ");                                                                       \
-    buffer_putm((mu_)->faillog, unit_test_typespec(x2), x2);                                                           \
-    buffer_putm((mu_)->faillog, " (", __buffer__, ":");                                                                \
-    buffer_putulong((mu_)->faillog, __LINE__);                                                                         \
-    buffer_puts((mu_)->faillog, ")");                                                                                  \
-    buffer_putnlflush((mu_)->faillog);                                                                                 \
-    (mu_)->failure++;                                                                                                  \
-    return;                                                                                                            \
+#define unit_test_assert(mu_, x1, x2, op, notop) \
+  if(!((x1)op(x2))) { \
+    buffer_putsflush((mu_)->faillog, "  Assertion failed: "); \
+    buffer_putm((mu_)->faillog, unit_test_typespec(x1), x1); \
+    buffer_puts((mu_)->faillog, " " #notop " "); \
+    buffer_putm((mu_)->faillog, unit_test_typespec(x2), x2); \
+    buffer_putm((mu_)->faillog, " (", __buffer__, ":"); \
+    buffer_putulong((mu_)->faillog, __LINE__); \
+    buffer_puts((mu_)->faillog, ")"); \
+    buffer_putnlflush((mu_)->faillog); \
+    (mu_)->failure++; \
+    return; \
   }
 
 struct unit_test {
