@@ -1,10 +1,7 @@
 #include "../windoze.h"
-
 #include "../likely.h"
-#if !WINDOWS_NATIVE
 #include <fcntl.h>
-#include <sys/mman.h>
-#endif
+
 #include "../iarray.h"
 
 #ifdef __BORLANDC__
@@ -28,9 +25,20 @@
 # warning No atomic operations
 #endif
 
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#include <sys/mman.h>
+#endif
+
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS 0x20
+
+#endif
+
+
 static iarray_page*
 new_page(size_t pagesize) {
-#if WINDOWS
+#if WINDOWS_NATIVE
   void* x = malloc(pagesize);
   if(x == 0) return 0;
 #else
