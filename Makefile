@@ -392,8 +392,8 @@ else
   endif
 endif
 
-vpath lib lib/array lib/binfmt lib/buffer lib/byte lib/case lib/cb lib/cbmap lib/charbuf lib/dir lib/dns lib/elf lib/env lib/errmsg lib/expand lib/fmt lib/gpio lib/hmap lib/http lib/iarray lib/io lib/json lib/list lib/map lib/mmap lib/ndelaylib/open lib/path lib/pe lib/playlist lib/range lib/rdir lib/scan lib/sig lib/slist lib/socket lib/str lib/stralloc lib/strarray lib/strlist lib/tai lib/taia lib/textbuf lib/uint16 lib/uint32 lib/uint64 lib/var lib/vartab lib/wait lib/xml $(BUILDDIR) tests
-VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/byte:lib/case:lib/cb:lib/cbmap:lib/charbuf:lib/dir:lib/dns:lib/elf:lib/env:lib/errmsg:lib/expand:lib/fmt:lib/gpio:lib/hmap:lib/http:lib/iarray:lib/io:lib/json:lib/list:lib/map:lib/mmap:lib/ndelay:lib/open:lib/path:lib/pe:lib/playlist:/ib/rdir:lib/scan:lib/sig:lib/slist:lib/socket:lib/str:lib/stralloc:lib/strarray:lib/strlist:lib/tai:lib/taia:lib/textbuf:lib/uint16:lib/uint32:lib/uint64:lib/var:lib/vartab:lib/wait:lib/xml:$(BUILDDIR):tests
+vpath lib lib/array lib/binfmt lib/buffer lib/byte lib/case lib/cb lib/cbmap lib/charbuf lib/dir lib/dns lib/elf lib/env lib/errmsg lib/expand lib/fmt lib/gpio lib/hmap lib/http lib/iarray lib/io lib/json lib/list lib/map lib/mmap lib/ndelaylib/open lib/path lib/pe lib/playlist lib/range lib/rdir lib/scan lib/sig lib/slist lib/socket lib/str lib/stralloc lib/strarray lib/strlist lib/tai lib/taia lib/textbuf lib/uint16 lib/uint32 lib/uint64 lib/var lib/vartab lib/wait lib/xml $(BUILDDIR) tests lib/process
+VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/byte:lib/case:lib/cb:lib/cbmap:lib/charbuf:lib/dir:lib/dns:lib/elf:lib/env:lib/errmsg:lib/expand:lib/fmt:lib/gpio:lib/hmap:lib/http:lib/iarray:lib/io:lib/json:lib/list:lib/map:lib/mmap:lib/ndelay:lib/open:lib/path:lib/pe:lib/playlist:/ib/rdir:lib/scan:lib/sig:lib/slist:lib/socket:lib/str:lib/stralloc:lib/strarray:lib/strlist:lib/tai:lib/taia:lib/textbuf:lib/uint16:lib/uint32:lib/uint64:lib/var:lib/vartab:lib/wait:lib/xml:$(BUILDDIR):tests:lib/process
 
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
@@ -990,7 +990,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml process)
 
 $(info BUILDDIR: $(BUILDDIR))
 $(info NO_AT: $(NO_AT))
@@ -1085,6 +1085,7 @@ $(call lib-target,xml)
 $(call lib-target,socket,lib/socket/winsock2errno.c lib/socket/winsock_init.c)
 $(call lib-target,errmsg)
 $(call lib-target,dns)
+$(call lib-target,process)
 
 $(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c
 $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(call add-library, buffer stralloc str byte)
