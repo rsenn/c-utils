@@ -1,5 +1,4 @@
 #include "../windoze.h"
-#include "../open.h"
 #include "../uint32.h"
 
 #if WINDOWS_NATIVE
@@ -9,6 +8,8 @@
 #endif
 
 #define UINT32_POOLSIZE 16
+
+int open_read(const char* filename);
 
 size_t uint32_bytes_seeded;
 

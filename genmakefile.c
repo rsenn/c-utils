@@ -867,15 +867,21 @@ print_target_deps(buffer* b, target* t) {
 void
 remove_indirect_deps_recursive(array* top, array* a, int depth) {
   target **p, **found;
+
   array_foreach_t(a, p) {
     target* t = *p;
+
+    if(t == NULL) continue;
+
     if(depth > 0) {
       if((found = array_find(top, sizeof(target*), &t))) {
         *found = NULL;
       }
     }
-    if(a != &t->deps && a != top)
+    if(a != &t->deps) {
+      if(depth < 10 && array_length(&t->deps, sizeof(target*)) > 0)
       remove_indirect_deps_recursive(top, &t->deps, depth + 1);
+    }
   }
 }
 
@@ -993,7 +999,7 @@ link_rules(HMAP_DB* rules, strarray* sources) {
         nremoved = remove_indirect_deps(&link->deps);
         debug_int("indirect deps removed", nremoved);
 
-        print_target_deps(buffer_2, link);
+       // print_target_deps(buffer_2, link);
 
 //        strlist_zero(&deps);
 //        target_dep_list(&deps, link);
@@ -1116,9 +1122,10 @@ deps_for_libs(HMAP_DB* rules) {
       strlist_init(&libs, ' ');
 
       includes_to_libs(&srcdir->includes, &libs);
+
       strlist_removes(&libs, lib->name);
 
-#if 1 //def DEBUG_OUTPUT
+#if 0 //def DEBUG_OUTPUT
       //print_target_deps(buffer_2, lib);
       buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
       buffer_putsa(buffer_2, &libs.sa);
@@ -1126,6 +1133,8 @@ deps_for_libs(HMAP_DB* rules) {
 #endif
 
       target_ptrs(&libs, &lib->deps);
+
+      print_target_deps(buffer_2, lib);
 
       strlist_free(&libs);
     }
@@ -1756,7 +1765,7 @@ main(int argc, char* argv[]) {
       TUPLE* t;
       hmap_foreach(rules, t) {
         target* tgt = hmap_data(t);
-        print_target_deps(buffer_2, tgt);
+        //print_target_deps(buffer_2, tgt);
       }
     }
 

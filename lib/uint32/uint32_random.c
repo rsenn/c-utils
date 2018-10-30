@@ -1,4 +1,3 @@
-#include "../open.h"
 #include "../uint32.h"
 
 #define UINT32_POOLSIZE 16
