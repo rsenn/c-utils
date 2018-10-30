@@ -26,7 +26,8 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 37184,
+				"buffer_size": 44844,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -36,19 +37,6 @@
 			{
 				"buffer_size": 1406,
 				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": "[\n    {\n        \"command\": \"navigate_to_definition\",\n        \"keys\": [\"ctrl+t\", \"ctrl+t\"]\n    },\n    {\n        \"command\": \"navigate_to_definition\",\n        \"keys\": [\"ctrl+shift+period\"]\n    },\n    {\n        \"command\": \"search_for_definition\",\n        \"keys\": [\"ctrl+t\", \"ctrl+y\"]\n    },\n    {\n        \"command\": \"jump_prev\",\n        \"keys\": [\"ctrl+t\", \"ctrl+b\"]\n    },\n    {\n        \"command\": \"jump_prev\",\n        \"keys\": [\"ctrl+shift+comma\"]\n    },\n    {\n        \"command\": \"rebuild_tags\",\n        \"keys\": [\"ctrl+t\", \"ctrl+r\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"alt+s\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"args\": {\"type\": \"multi\"},\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"alt+shift+s\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"args\": {\"type\": \"lang\"},\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"ctrl+alt+shift+s\"]\n    },\n    { // override current default\n        \"command\": \"transpose\",\n        \"context\": [\n            { \"key\": \"num_selections\", \"operator\": \"not_equal\", \"operand\": 1 }\n        ],\n        \"keys\": [\"ctrl+t\"]\n    }\n]\n",
-			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 1701,
-				"line_ending": "Windows",
-				"read_only": true,
-				"scratch": true
 			}
 		},
 		{
@@ -115,16 +103,16 @@
 		"selected_items":
 		[
 			[
+				"Package Control: ",
+				"Package Control: Discover Packages"
+			],
+			[
 				"ins",
 				"Package Control: Advanced Install Package"
 			],
 			[
 				"pac",
 				"Package Control: Discover Packages"
-			],
-			[
-				"Package Control: ",
-				"Package Control: List Packages"
 			],
 			[
 				"adva",
@@ -199,6 +187,7 @@
 	],
 	"file_history":
 	[
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CTags.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Cscope/CscopeSublime.sublime-settings",
@@ -325,8 +314,7 @@
 		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_index_of.c",
 		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_count.c",
 		"/C/Users/roman/Documents/dirlist/lib/strlist_append.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_dump.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_mmapread.c"
+		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_dump.c"
 	],
 	"find":
 	{
@@ -344,6 +332,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"for_li",
+			"gen_link",
 			"delete_command",
 			"set_compiler",
 			"path_prefix_s",
@@ -519,7 +509,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -528,15 +518,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 37184,
+						"buffer_size": 44844,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								20051,
-								20051
+								0,
+								24044
 							]
 						],
 						"settings":
@@ -546,7 +536,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 12572.0,
+						"translation.y": 15082.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -579,39 +569,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1701,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								1701
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
 					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
 					"semi_transient": false,
 					"settings":
@@ -637,7 +599,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -728,11 +690,11 @@
 	"settings":
 	{
 	},
-	"show_minimap": true,
+	"show_minimap": false,
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 244.0,
+	"side_bar_width": 249.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
