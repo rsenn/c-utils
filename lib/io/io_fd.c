@@ -11,7 +11,6 @@
 #undef my_extern
 #include "../byte.h"
 #ifdef HAVE_SIGIO
-#include <fcntl.h>
 #include <signal.h>
 #endif
 #include <fcntl.h>
@@ -52,6 +51,17 @@
 #include <stdio.h>
 HANDLE io_comport;
 #endif
+
+#include <fcntl.h>
+
+#ifndef F_SETSIG
+#define F_SETSIG        10      /* for sockets. */
+#define F_GETSIG        11      /* for sockets. */
+#endif
+
+
+
+
 static iarray io_fds;
 
 void*
