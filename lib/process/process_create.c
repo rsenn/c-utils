@@ -1,8 +1,18 @@
+#include "../windoze.h"
 #include "../io.h"
+#include "../strlist.h"
+
+#if WINDOWS_NATIVE
+#include <windows.h>
+#include <process.h>
+#include <io.h>
+#endif
 
 int
-process_create() {
-
+process_create(const char* filename, const char* argv) {
+#if WINDOWS_NATIVE
+  size_t i;
+  strlist joined_argv;
   fd_t pipes[3][2];
 
   PROCESS_INFORMATION piProcessInfo;
@@ -13,9 +23,12 @@ process_create() {
   SECURITY_ATTRIBUTES saAttr;
   BOOL retval = FALSE;
 
-  SECURITY_ATTRIBUTES saAttr;
+  strlist_init(&joined_argv, ' ');
 
-  ;
+  for(i = 0; argv[i]; ++i) {
+    strlist_push(&joined_argv, argv[i]);
+  }
+  stralloc_nul(&joined_argv.sa);
 
   saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
   saAttr.bInheritHandle = TRUE;
@@ -40,17 +53,19 @@ process_create() {
 
   /* Create the child process */
 
-  retval = CreateProcessA(filename,         // module name
-                          joined_argv,      // command line
-                                            /* TODO: should we set explicit security attributes? (#2046, comment 5) */
+  retval = CreateProcessA(filename,
+                          joined_argv.sa.s, 
                           &saAttr,          // process security attributes
                           NULL,             // primary thread security attributes
                           TRUE,             // handles are inherited
-                                            /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to make GetExitCodeProcess()
-                                             * work?) */
+                      /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to make GetExitCodeProcess() work?) */
                           CREATE_NO_WINDOW, // creation flags
                           NULL,
                           NULL,            // use parent's current directory
                           &siStartInfo,    // STARTUPINFO pointer
                           &piProcessInfo); // receives PROCESS_INFORMATION
+#else
+
+
+#endif
 }
