@@ -1838,3 +1838,11 @@ $(BUILDDIR)xmltest4.o: ./xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ./ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_containsb.o: lib/strlist/strlist_containsb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_removeb.o: lib/strlist/strlist_removeb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_indexofb.o: lib/strlist/strlist_indexofb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILDDIR)strlist_removes.o: lib/strlist/strlist_removes.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<

@@ -78,6 +78,7 @@ int strlist_pop(strlist*);
 int64 strlist_indexofb(strlist*, const char* x, size_t n);
 int   strlist_containsb(strlist*, const char* x, size_t len);
 int   strlist_removeb(strlist*, const char* x, size_t n);
+int   strlist_removes(strlist*, const char* s);
 
 # ifdef __cplusplus
 }
