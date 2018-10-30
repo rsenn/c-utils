@@ -9,23 +9,22 @@
 extern "C" {
 #endif
 
-/*
 #ifdef __MSYS__
 # ifndef __MS_types__
 #  define __MS_types__
 # endif
-#undef __BSD_VISIBLE
-#define __BSD_VISIBLE 0
-#include <sys/types.h>
-#ifdef __BIT_TYPES_DEFINED__
-#define uint64_t u_int64_t
-#define int64_t long long
-#else
+# undef __BSD_VISIBLE
+# define __BSD_VISIBLE 0
+# include <sys/types.h>
+# ifdef __BIT_TYPES_DEFINED__
+#  define uint64_t u_int64_t
+#  define int64_t long long
+# else
 typedef unsigned long long uint64_t;
 typedef long long int64_t;
+# endif
 #endif
-#endif
-*/
+
 #if defined(___int64_t_defined)
 typedef u_int64_t uint64;
 typedef int64_t int64;

@@ -8,12 +8,8 @@
 #include "iarray.h"
 #include "taia.h"
 #include "uint64.h"
+#include "typedefs.h"
 
-#if WINDOWS_NATIVE
-typedef INT_PTR fd_t;
-#else
-typedef int fd_t;
-#endif
 
 #ifdef __cplusplus
 extern "C" {

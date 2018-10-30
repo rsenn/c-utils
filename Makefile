@@ -212,7 +212,7 @@ C11_COMPILER_DEFS := $(shell $(call get-compiler-defs,-std=c11))
 ifneq ($(C11_COMPILER_DEFS),)
 CC += -std=c11
 endif
-#NO_AT := 1
+NO_AT := 1
 endif
 
 
@@ -928,7 +928,7 @@ endif
 else
 
 ifneq ($(NO_AT),1)
-  COMPILe := $(CROSS_COMPILE)$(CC) @$(FLAGS_FILE) -c
+  COMPILE := $(CROSS_COMPILE)$(CC) @$(FLAGS_FILE) -c
 CPPFLAGS := 
 INCLUDES := 
 
@@ -939,7 +939,7 @@ endif
 # no flags file
 endif
 
-CC += @$(FLAGS_FILE)
+#c:CC += @$(FLAGS_FILE)
 
 $(info COMPILE=$(COMPILE))
 $(info FLAGS=$(FLAGS))

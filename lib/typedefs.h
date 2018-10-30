@@ -19,12 +19,13 @@
 extern "C" {
 #endif
 
-#ifndef _SSIZE_T_DEFINED
+#if !defined(_SSIZE_T_DEFINED) && !(defined(_SYS_TYPES_H) && defined(__MSYS__))
 #define _SSIZE_T_DEFINED 1
 typedef ptrdiff_t ssize_t;
 #endif
 
-#ifdef __BORLANDC__
+#if defined(__BORLANDC__) || (defined(_SYS_TYPES_H) && defined(__MSYS__))
+
 typedef ptrdiff_t intptr_t;
 #endif
 
