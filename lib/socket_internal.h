@@ -14,7 +14,7 @@
 #include "windoze.h"
 #include "socket.h"
 
-#if !WINDOWS
+#if !WINDOWS_NATIVE
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

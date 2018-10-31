@@ -1,15 +1,6 @@
-#include "../windoze.h"
 #define USE_WS2_32 1
-
-#if WINDOWS
-#define _WINSOCKAPI_
-#include <winsock2.h>
-#endif
-
 #include "../socket_internal.h"
-
 #include <sys/types.h>
-
 #include "../byte.h"
 #include "../ip4.h"
 #include "../ip6.h"
