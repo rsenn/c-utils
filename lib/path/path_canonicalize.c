@@ -1,27 +1,36 @@
-#include "../readlink.h"
 #include "../windoze.h"
+#include "../path_internal.h"
+#include "../readlink.h"
+
+#define _XOPEN_SOURCE 1
+#define _XOPEN_SOURCE_EXTENDED 1
 #define _MISC_SOURCE 1
 #define _GNU_SOURCE 1
 #define _POSIX_SOURCE 1
 #define _POSIX_C_SOURCE 1
-#define _XOPEN_SOURCE 1
+
 #define _FILE_OFFSET_BITS 64
 //#define _LARGEFILE64_SOURCE 1
 #define _LARGEFILE_SOURCE 1
+
 #include "../buffer.h"
 #include "../byte.h"
-#include "../path_internal.h"
 #include "../str.h"
+
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#include <sys/stat.h>
+#define HAVE_LSTAT 1
+#endif
+
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <sys/stat.h>
-#if !WINDOWS_NATIVE
-#define HAVE_LSTAT 1
-#endif
+
 #ifndef HAVE_LSTAT
 #define lstat stat
 #endif
+
 #if WINDOWS
 int is_symlink(const char*);
 static int
