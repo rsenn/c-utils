@@ -1,18 +1,29 @@
+#include "../windoze.h"
 #include "../socket_internal.h"
 
+#ifndef _POSIX_SOURCE
+#define _POSIX_SOURCE
+#endif
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+
 #include "../array.h"
 #include <errno.h>
 #define my_extern
 #include "../io_internal.h"
 #undef my_extern
 #include "../byte.h"
+
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#endif
+
 #ifdef HAVE_SIGIO
 #include <signal.h>
 #endif
+
 #include <fcntl.h>
 #include <sys/types.h>
 

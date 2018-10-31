@@ -2,7 +2,7 @@
 
 #include "windoze.h"
 
-#ifdef HAVE_LINUX_LIMITS_H
+#ifdef __linux__
 #include <linux/limits.h>
 #endif
 

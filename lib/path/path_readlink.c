@@ -3,7 +3,9 @@
 #include "../str.h"
 #include "../stralloc.h"
 #include "../windoze.h"
+
 #include <limits.h>
+
 #define START ((PATH_MAX + 1) >> 7)
 /* read the link into a stralloc
  * ----------------------------------------------------------------------- */
