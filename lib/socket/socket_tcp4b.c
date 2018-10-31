@@ -1,9 +1,15 @@
+#include "../windoze.h"
 #define USE_WS2_32 1
-#include "../socket_internal.h"
 
-#include <sys/types.h>
+#if WINDOWS
+#define _WINSOCKAPI_
+#include <winsock2.h>
+#endif
+
 #include "../socket_internal.h"
 #include "../ndelay.h"
+
+#include <sys/types.h>
 
 int socket_tcp4b(void) {
   int s;

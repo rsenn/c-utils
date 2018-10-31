@@ -5,6 +5,7 @@
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
 #endif
+
 #include <inttypes.h>
 #include <sys/epoll.h>
 #endif
@@ -41,6 +42,7 @@
 #ifndef EPOLLRDNORM
 #define EPOLLRDNORM 0
 #endif
+
 #ifndef EPOLLRDBAND
 #define EPOLLRDNORM 0
 #endif
@@ -236,6 +238,7 @@ io_waituntil2(int64 milliseconds) {
         __write2(buf);
         __write2("!\n");
 #endif
+
 #endif
         epoll_ctl(io_master, EPOLL_CTL_DEL, y[i].data.fd, y + i);
       }
@@ -243,6 +246,7 @@ io_waituntil2(int64 milliseconds) {
     return n;
   }
 #endif
+
 #ifdef HAVE_KQUEUE
   if(io_waitmode == KQUEUE) {
     struct kevent y[100];
@@ -279,6 +283,7 @@ io_waituntil2(int64 milliseconds) {
     return n;
   }
 #endif
+
 #ifdef HAVE_DEVPOLL
   if(io_waitmode == DEVPOLL) {
     dvpoll_t timeout;
@@ -318,6 +323,7 @@ io_waituntil2(int64 milliseconds) {
     return n;
   }
 #endif
+
 #ifdef HAVE_SIGIO
   if(io_waitmode == _SIGIO) {
     siginfo_t info;

@@ -10,6 +10,7 @@
 #else
 #undef LIBC_HAS_IP6
 #endif
+
 #endif
 
 int

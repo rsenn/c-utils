@@ -31,6 +31,7 @@ pipe2(int fd[2], int flags) {
 #ifdef O_BINARY
                 | O_BINARY
 #endif
+
 #ifdef O_TEXT
                 | O_TEXT
 #endif

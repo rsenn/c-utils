@@ -1,9 +1,20 @@
+#include "../windoze.h"
 #define USE_WS2_32 1
+
+#if WINDOWS
+#define _WINSOCKAPI_
+#include <winsock2.h>
+#endif
+
 #include "../socket_internal.h"
-#include <sys/types.h>
 #include "../byte.h"
 #include "../ip6.h"
 #include "../uint32.h"
+
+#include <sys/types.h>
+#if !WINDOWS_NATIVE
+typedef int socketlen_t;
+#endif
 
 int
 socket_remote6(int s, char ip[16], uint16* port, uint32* scope_id) {
@@ -32,6 +43,7 @@ socket_remote6(int s, char ip[16], uint16* port, uint32* scope_id) {
 #else
   if(scope_id) *scope_id = 0;
 #endif
+
 #else
   if(ip) {
     byte_copy(ip, 12, V4mappedprefix);

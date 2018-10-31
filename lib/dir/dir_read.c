@@ -35,6 +35,7 @@ dir_read(struct dir_s* d)
 #else
   ret = dir_INTERNAL(d)->dir_finddata.cFileName;
 #endif
+
 #endif
   return ret;
 }

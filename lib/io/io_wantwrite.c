@@ -9,14 +9,17 @@
 #include <sys/event.h>
 #include <sys/types.h>
 #endif
+
 #ifdef HAVE_EPOLL
 #include "../byte.h"
 #include <inttypes.h>
 #include <sys/epoll.h>
 #endif
+
 #ifdef HAVE_SIGIO
 #include <poll.h>
 #endif
+
 #ifdef HAVE_DEVPOLL
 #include <sys/devpoll.h>
 #include <sys/socket.h>
@@ -47,6 +50,7 @@ io_wantwrite_really(fd_t d, io_entry* e) {
     epoll_ctl(io_master, e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, d, &x);
   }
 #endif
+
 #ifdef HAVE_KQUEUE
   if(io_waitmode == KQUEUE) {
     struct kevent kev;
@@ -57,6 +61,7 @@ io_wantwrite_really(fd_t d, io_entry* e) {
     kevent(io_master, &kev, 1, 0, 0, &ts);
   }
 #endif
+
 #ifdef HAVE_DEVPOLL
   if(io_waitmode == DEVPOLL) {
     struct pollfd x;
@@ -66,6 +71,7 @@ io_wantwrite_really(fd_t d, io_entry* e) {
     write(io_master, &x, sizeof(x));
   }
 #endif
+
 #ifdef HAVE_SIGIO
   if(io_waitmode == _SIGIO) {
     struct pollfd p;
@@ -88,6 +94,7 @@ io_wantwrite_really(fd_t d, io_entry* e) {
     }
   }
 #endif
+
 #if WINDOWS
   printf("e->wantwrite == %d\n", e->wantwrite);
   if(!e->wantwrite) {

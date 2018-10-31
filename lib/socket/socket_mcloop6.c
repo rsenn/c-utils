@@ -13,6 +13,7 @@ socket_mcloop6(int s, char loop) {
 #else
   return winsock2errno(setsockopt(s, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof loop));
 #endif
+
 #else
   return -1;
 #endif

@@ -14,7 +14,7 @@
 #include "windoze.h"
 #include "socket.h"
 
-#if !WINDOWS_NATIVE
+#if !WINDOWS
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -28,7 +28,6 @@
 
 #if WINDOWS_NATIVE
 #include <windows.h>
-typedef int socklen_t;
 
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
@@ -58,6 +57,12 @@ void __winsock_init(void);
 #define winsock2errno(fnord) (fnord)
 #define __winsock_init()
 #define closesocket(s) close(s)
+#endif
+
+#if WINDOWS
+# if !defined(_SYS_SOCKET_H)
+typedef int socklen_t;
+# endif
 #endif
 
 #endif

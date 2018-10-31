@@ -18,6 +18,7 @@ io_socketpair(fd_t* d) {
 #ifdef AF_UNIX
   if(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1)
 #endif
+
 #ifdef AF_INET6
     if(socketpair(AF_INET6, SOCK_STREAM, IPPROTO_TCP, fds) == -1)
 #endif

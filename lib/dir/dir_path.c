@@ -13,6 +13,7 @@ dir_path(struct dir_s* d, stralloc* sa) {
 #else
   stralloc_copys(sa, dir_INTERNAL(d)->dir_path);
 #endif
+
 #endif
   if(sa->len > 0 && sa->s[sa->len - 1] == '*') --sa->len;
 

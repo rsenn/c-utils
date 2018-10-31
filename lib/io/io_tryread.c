@@ -6,6 +6,7 @@
 #else
 #include <poll.h>
 #endif
+
 #include "../byte.h"
 #include "../io_internal.h"
 #include <errno.h>

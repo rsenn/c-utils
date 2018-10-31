@@ -30,6 +30,7 @@
 #ifdef HAVE_KQUEUE
 #include <sys/event.h>
 #endif
+
 #ifdef HAVE_EPOLL
 #include <inttypes.h>
 #include <sys/epoll.h>
@@ -87,10 +88,12 @@ enum __io_waitmode io_waitmode;
 #if defined(HAVE_KQUEUE) || defined(HAVE_EPOLL) || defined(HAVE_DEVPOLL)
 int io_master;
 #endif
+
 #if defined(HAVE_SIGIO)
 int io_signum;
 sigset_t io_ss;
 #endif
+
 #if defined(HAVE_SIGIO)
 long alt_firstread;
 long alt_firstwrite;
@@ -139,18 +142,21 @@ io_fd_internal(fd_t d, int flags) {
     io_master = epoll_create(1000);
     if(io_master != -1) io_waitmode = EPOLL;
 #endif
+
 #if defined(HAVE_KQUEUE)
     if(io_waitmode == UNDECIDED) { /* who knows, maybe someone supports both one day */
       io_master = kqueue();
       if(io_master != -1) io_waitmode = KQUEUE;
     }
 #endif
+
 #if defined(HAVE_DEVPOLL)
     if(io_waitmode == UNDECIDED) {
       io_master = open("/dev/poll", O_RDWR);
       if(io_master != -1) io_waitmode = DEVPOLL;
     }
 #endif
+
 #if defined(HAVE_SIGIO)
     alt_firstread = alt_firstwrite = -1;
     if(io_waitmode == UNDECIDED) {
@@ -160,6 +166,7 @@ io_fd_internal(fd_t d, int flags) {
         io_waitmode = _SIGIO;
     }
 #endif
+
 #if WINDOWS
     io_comport = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
     if(io_comport) {
@@ -180,6 +187,7 @@ io_fd_internal(fd_t d, int flags) {
     fcntl(d, F_SETFL, fcntl(d, F_GETFL) | O_NONBLOCK | O_ASYNC);
   }
 #endif
+
 #if WINDOWS
   if(io_comport) {
     if(CreateIoCompletionPort((HANDLE)(size_t)d, io_comport, (ULONG_PTR)(size_t)d, 0) == 0) {

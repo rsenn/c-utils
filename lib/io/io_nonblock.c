@@ -7,7 +7,9 @@
 #ifndef FIONBIO
 #define FIONBIO     0x8004667e		 /* set/clear non-blocking i/o */
 #endif
+
 #endif
+
 #include <fcntl.h>
 #include <errno.h>
 #include "../io_internal.h"

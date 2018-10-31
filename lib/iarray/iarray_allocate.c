@@ -21,6 +21,7 @@
 #else
 # define __CAS_PTR(ptr,oldptr,newptr) __sync_val_compare_and_swap_8(ptr,oldptr,newptr)
 #endif
+
 #else
 # warning No atomic operations
 #endif

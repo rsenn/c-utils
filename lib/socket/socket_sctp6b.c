@@ -7,9 +7,11 @@
 #ifndef EAFNOSUPPORT
 #define EAFNOSUPPORT EINVAL
 #endif
+
 #ifndef EPFNOSUPPORT
 #define EPFNOSUPPORT EAFNOSUPPORT
 #endif
+
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT EAFNOSUPPORT
 #endif
@@ -45,5 +47,6 @@ socket_sctp6b(void) {
 #else
   return socket_sctp4b();
 #endif
+
 #endif
 }

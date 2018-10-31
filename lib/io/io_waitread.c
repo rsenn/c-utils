@@ -1,15 +1,19 @@
-#include "../socket_internal.h"
-
-#if WINDOWS
+#include "../windoze.h"
+#include "../uint64.h"
+#if WINDOWS_NATIVE
+#include <winsock.h>
 #include <windows.h>
 #include <io.h>
 #else
 #include <poll.h>
 #endif
+
+#include "../socket_internal.h"
 #include "../io_internal.h"
+
 #include <errno.h>
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 
 int64
 io_waitread(fd_t d, char* buf, int64 len) {

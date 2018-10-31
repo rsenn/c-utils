@@ -5,6 +5,7 @@
 #else
 #include <unistd.h>
 #endif
+
 #include <limits.h>
 /* get current working directory into a stralloc
  * ----------------------------------------------------------------------- */
