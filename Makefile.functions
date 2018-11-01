@@ -80,7 +80,7 @@ def-function-exists = $(call def-var,HAVE_$(1),$(call check-function-exists,$(2)
 #def-include-exists = $(call def-var,HAVE_$(1),$(call check-include-exists,$(1)),$(DEFINES_FILE))
 define def-include-exists =
 $(call def-var,$(if $(2),$(2),HAVE_$(1)),$(call check-include-exists,$(1)),$(DEFINES_FILE))
-$(if $($(if $(2),$(2),HAVE_$(call header-to-var))),$(call append-var,DEFS,$(if $(2),$(2),HAVE_$(call header-to-var))=1))
+$(if $($(if $(2),$(2),HAVE_$(call header-to-var))),$(call append-var,DEFINES,$(if $(2),$(2),HAVE_$(call header-to-var))=1))
 endef
 
 clean-lib = $(patsubst %.a,%,$(patsubst lib%.a,%,$(patsubst -l%,%,$(patsubst lib%.so,%,$(patsubst $(BUILDDIR)%,%,$(patsubst $$(BUILDDIR)%,%,$(1)))))))

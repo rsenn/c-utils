@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 /* perform glob() expansion on the current argument
- * ----------------------------------------------------------------------- */
+ */
 union node*
 expand_glob(union node** nptr, struct vartab* varstack, int flags) {
   union node* n;

@@ -1,12 +1,15 @@
 #if 1 // ndef HAVE_PIPE2
 
+#include "../windoze.h"
 #include "../io_internal.h"
 #include "../ndelay.h"
 #include <errno.h>
 #include <fcntl.h>
 
-#if defined(_WIN32) && !(defined(__CYGWIN__) || defined(__MSYS__))
+#if WINDOWS_NATIVE
 #include <io.h>
+#else
+#include <unistd.h>
 #endif
 
 #ifndef O_CLOEXEC

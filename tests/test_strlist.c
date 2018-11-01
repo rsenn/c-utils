@@ -209,9 +209,9 @@ TEST(test_strlist_join) {
   strlist_push(&sl, "air");
   strlist_push(&sl, "fire");
 
-  strlist_join(&sl, &sa, ",");
+  strlist_join(&sl, &sa, ',');
 
-  // ASSERT_EQ(0, !stralloc_equals(&sa, "water,soil,air,fire"));
+   //ASSERT_EQ(0, !stralloc_equals(&sa, "water,soil,air,fire"));
 }
 
 /*

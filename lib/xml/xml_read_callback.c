@@ -1,6 +1,8 @@
 #include "../byte.h"
 #include "../stralloc.h"
 #include "../xml.h"
+#include "../str.h"
+
 #include <ctype.h>
 
 static int

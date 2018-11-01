@@ -1,6 +1,6 @@
 CC = gcc
 CXX = g++
-CFLAGS = -O2
+CFLAGS = -g3 -ggdb -O0
 DEFS = -DHAVE_ERRNO_H=1 -DHAVE_ZLIB=1 -DHAVE_LIBBZ2=1 -DHAVE_LIBLZMA=1
 AR = ar
 LIBS = -lz -lbz2 -llzma
@@ -11,27 +11,30 @@ all: all_tests
 %.o: %.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c $<
 
-all_tests: $(wildcard ../lib/byte/*.c)
-all_tests: $(wildcard ../lib/str/*.c)
-all_tests: $(wildcard ../lib/case/*.c)
-all_tests: $(wildcard ../lib/fmt/*.c)
-all_tests: $(wildcard ../lib/scan/*.c)
-all_tests: $(wildcard ../lib/open/*.c)
-all_tests: $(wildcard ../lib/mmap/*.c)
-all_tests: $(wildcard ../lib/uint16/*.c)
-all_tests: $(wildcard ../lib/uint32/*.c)
-all_tests: $(wildcard ../lib/uint64/*.c)
-all_tests: $(wildcard ../lib/tai/*.c)
-all_tests: $(wildcard ../lib/taia/*.c)
-all_tests: $(wildcard ../lib/array/*.c)
-all_tests: $(wildcard ../lib/stralloc/*.c)
-all_tests: $(wildcard ../lib/strlist/*.c)
-all_tests: $(wildcard ../lib/buffer/*.c)
-all_tests: $(wildcard ../lib/unix/*.c)
-all_tests: $(wildcard ../lib/path/*.c)
+DEPS := $(wildcard ../lib/byte/*.c)
+DEPS += $(wildcard ../lib/str/*.c)
+DEPS += $(wildcard ../lib/case/*.c)
+DEPS += $(wildcard ../lib/fmt/*.c)
+DEPS += $(wildcard ../lib/scan/*.c)
+DEPS += $(wildcard ../lib/open/*.c)
+DEPS += $(wildcard ../lib/mmap/*.c)
+DEPS += $(wildcard ../lib/uint16/*.c)
+DEPS += $(wildcard ../lib/uint32/*.c)
+DEPS += $(wildcard ../lib/uint64/*.c)
+DEPS += $(wildcard ../lib/tai/*.c)
+DEPS += $(wildcard ../lib/taia/*.c)
+DEPS += $(wildcard ../lib/array/*.c)
+DEPS += $(wildcard ../lib/stralloc/*.c)
+DEPS += $(wildcard ../lib/strlist/*.c)
+DEPS += $(wildcard ../lib/buffer/*.c)
+DEPS += $(wildcard ../lib/unix/*.c)
+DEPS += $(wildcard ../lib/path/*.c)
 
-all_tests: unit_test.o unit_test_runner.o unit_test.o test_strlist.o test_path.o 
-	$(CC) -o $@ $^
+deps.rsp:
+	$(file >deps.rsp,$(DEPS))
+
+all_tests: unit_test.o unit_test_runner.o unit_test.o test_strlist.o test_path.o | deps.rsp
+	$(CC) $(CFLAGS) -o $@ $^ @deps.rsp
 
 .PHONY: clean
 clean:

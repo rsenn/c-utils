@@ -1,7 +1,7 @@
 #include "../vartab.h"
 
 /* try to find a var on a table
- * ----------------------------------------------------------------------- */
+ */
 struct var*
 vartab_search(struct vartab* vartab, const char* v, struct search* context) {
   /* FIXME: we do not need to go so paranoid and horny after the closest

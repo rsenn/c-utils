@@ -12,51 +12,11 @@
 	"buffers":
 	[
 		{
-			"file": "lib/path/path_canonical.c",
+			"file": "lib/buffer/buffer_putulong.c",
 			"settings":
 			{
-				"buffer_size": 121,
+				"buffer_size": 167,
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "genmakefile.c",
-			"settings":
-			{
-				"buffer_size": 44804,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "\t\n{\n\t\"folders\":\n\t[\n\t\t{\n\t\t\t\"path\": \".\",\n            \"folder_exclude_patterns\": [ \".*\", \"Default\",\n            \"CMakeFiles\", \"CMakeModules\", \"MXC1321\", \"Schemr\", \"build\", \"config\", \"duma_2_5_15\", \"install\", \"libraries\", \"mkdir\", \"programs\", \"unix\", \"??\"\n ],\n            \n            \"file_exclude_patterns\": [ \n                \".*\",\n                \"*.stackdump\",\n                 \"*.o\",\n                \"*.d\",\n                \"*#*\",\n                \"*~\",\n                \"*.pui\",\n                \"*.log\",\n                \"*.out\",\n                \"*.d\",\n                \"*.p1\",\n                \"*.pre\",\n                \"*.sym\",\n                \"*.obj\",\n                \n                \"*.as\",\n                \"*.rlf\",\n                \"*.sdb\",\n                \"*.1\", \"*.104\", \"*.12058\", \"*.169f640\", \"*.a\", \"*.ac\", \"*.anjuta\", \"*.asc\", \"*.asm\", \"*.b#1\", \"*.b#2\", \"*.b#3\", \"*.bak\", \"*.bcc\", \"*.bcc32\", \"*.bcc55\", \"*.bin\", \"*.brd\", \"*.bsdiff\", \"*.bz2\", \"*.cbp\", \"*.cl\", \"*.clang-format\", \"*.clang-tidy\", \"*.cpp\", \"*.c~\", \"*.Debug\", \"*.def\", \"*.defines\", \"*.defs\", \"*.deps\", \"*.dfba675\", \"*.diff\", \"*.exe\", \"*.flags\", \"*.functions\", \"*.gdb_history\", \"*.geany\", \"*.gitattributes\", \"*.gitignore\", \"*.gnu\", \"*.gz\", \"*.hexdump\", \"*.in\", \"*.json\", \"*.lcc\", \"*.lib\", \"*.list\", \"*.lo\", \"*.log\", \"*.lzma\", \"*.m4\", \"*.mk\", \"*.msys\", \"*.o\", \"*.obj\", \"*.old\", \"*.orig\", \"*.out\",\"*.pdf\", \"*.pri\", \"*.pro\", \"*.Release\", \"*.s\", \"*.sch\", \"*.scr\", \"*.sed\", \"*.sh\", \"*.stackdump\", \"*.stash\", \"*.swp\", \"*.syms\", \"*.tar\", \"*.tds\", \"*.tests\", \"*.tgitconfig\", \"*.tml\", \"*.tmp\", \"*.user\", \"*.workspace\", \"*.x\", \"*.xml\", \"*.xml~\", \"*.xz\", \"*.zip\",\n                \"!\", \"bash\", \"bash32\", \"bash64\", \"configure\", \"dash\", \"eagle\", \"ls32\", \"sh\", \"srcs\", \"strings32\", \"t\", \"test\", \"ï*\"\n\n         ]\n\n            \n        }\n    ],\n  \"build_systems\":\n  [\n    {\n        \"name\": \"List\",\n        \"cmd\": [\"ls\"]\n    },\n    {\n        \"name\": \"Make\",\n        \"cmd\": [ \"c:/git-sdk-64/usr/bin/make\", \"-C\", \"${project_path:${folder}}\", \"PATH=/c/git-sdk-64/usr/bin\" ]\n    },\n    {\n        \"name\": \"Make clean\",\n        \"cmd\": [ \"c:/git-sdk-64/usr/bin/make\", \"-C\", \"${project_path:${folder}}\", \"PATH=/c/git-sdk-64/usr/bin\", \"clean\" ]\n    }\n]\n\n}\n",
-			"file": "dirlist.sublime-project",
-			"file_size": 2180,
-			"file_write_time": 131848004599590211,
-			"settings":
-			{
-				"buffer_size": 2196,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
-			"settings":
-			{
-				"buffer_size": 1406,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": "[\n    {\n        \"command\": \"navigate_to_definition\",\n        \"keys\": [\"ctrl+t\", \"ctrl+t\"]\n    },\n    {\n        \"command\": \"navigate_to_definition\",\n        \"keys\": [\"ctrl+shift+period\"]\n    },\n    {\n        \"command\": \"search_for_definition\",\n        \"keys\": [\"ctrl+t\", \"ctrl+y\"]\n    },\n    {\n        \"command\": \"jump_prev\",\n        \"keys\": [\"ctrl+t\", \"ctrl+b\"]\n    },\n    {\n        \"command\": \"jump_prev\",\n        \"keys\": [\"ctrl+shift+comma\"]\n    },\n    {\n        \"command\": \"rebuild_tags\",\n        \"keys\": [\"ctrl+t\", \"ctrl+r\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"alt+s\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"args\": {\"type\": \"multi\"},\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"alt+shift+s\"]\n    },\n    {\n        \"command\": \"show_symbols\",\n        \"args\": {\"type\": \"lang\"},\n        \"context\": [\n            {\n                \"key\": \"selector\",\n                \"match_all\": true,\n                \"operand\": \"source -source.css\",\n                \"operator\": \"equal\"\n            }\n        ],\n        \"keys\": [\"ctrl+alt+shift+s\"]\n    },\n    { // override current default\n        \"command\": \"transpose\",\n        \"context\": [\n            { \"key\": \"num_selections\", \"operator\": \"not_equal\", \"operand\": 1 }\n        ],\n        \"keys\": [\"ctrl+t\"]\n    }\n]\n",
-			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 1701,
-				"line_ending": "Windows"
 			}
 		}
 	],
@@ -112,6 +72,14 @@
 		"selected_items":
 		[
 			[
+				"insta",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"pac",
+				"Package Control: Discover Packages"
+			],
+			[
 				"Package Control: ",
 				"Package Control: Discover Packages"
 			],
@@ -120,15 +88,7 @@
 				"Package Control: Advanced Install Package"
 			],
 			[
-				"pac",
-				"Package Control: Discover Packages"
-			],
-			[
 				"adva",
-				"Package Control: Advanced Install Package"
-			],
-			[
-				"insta",
 				"Package Control: Advanced Install Package"
 			],
 			[
@@ -192,19 +152,27 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/roman/Desktop/dirlist"
+		"/C/Users/roman/Desktop/dirlist",
+		"/C/Users/roman/Desktop/dirlist/lib",
+		"/C/Users/roman/Desktop/dirlist/lib/buffer"
 	],
 	"file_history":
 	[
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
+		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CTags.sublime-settings",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Cscope/CscopeSublime.sublime-settings",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-mousemap",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_canonical.c",
+		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
+		"/C/Users/roman/Desktop/dirlist/pathtool.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
+		"/B/Programs/mplayer/mplayer/config",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Cscope/CscopeSublime.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_collapse.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/outline.sublime-settings",
-		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/genmakefile/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_skip_separator.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_is_separator.c",
@@ -214,7 +182,6 @@
 		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push_unique.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_basename.c",
 		"/C/Users/roman/Desktop/dirlist/CMakeLists.txt",
-		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_absolute_sa.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_dirname.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_exists.c",
@@ -318,16 +285,11 @@
 		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_pushb.c",
 		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_at.c",
 		"/C/Users/roman/Documents/dirlist/lib/strlist.h",
-		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_init.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_pushsa.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_index_of.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_count.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist_append.c",
-		"/C/Users/roman/Documents/dirlist/lib/buffer/buffer_dump.c"
+		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_init.c"
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 41.0
 	},
 	"find_in_files":
 	{
@@ -341,6 +303,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"strlist_ini",
 			"-F",
 			"-Fo",
 			"-o\\\\",
@@ -502,24 +465,24 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "lib/path/path_canonical.c",
+					"file": "lib/buffer/buffer_putulong.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 121,
+						"buffer_size": 167,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								121,
-								121
+								167,
+								167
 							]
 						],
 						"settings":
@@ -530,127 +493,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 44804,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								37650,
-								37650
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 22193.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "dirlist.sublime-project",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2196,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								667,
-								667
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1406,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1701,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								368,
-								368
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -745,7 +588,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 249.0,
+	"side_bar_width": 254.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

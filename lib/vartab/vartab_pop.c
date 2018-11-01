@@ -2,7 +2,7 @@
 #include <assert.h>
 
 /* discards current var context and gets the parent
- * ----------------------------------------------------------------------- */
+ */
 void
 vartab_pop(struct vartab* vartab) {
   assert(varstack == vartab);

@@ -1,6 +1,8 @@
 #include "../slist.h"
 #include "../str.h"
 
+#include <stdlib.h>
+
 int
 slist_pushs(slink** list, const char* s) {
   slink** ptr = *list;

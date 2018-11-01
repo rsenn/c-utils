@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 /* set a variable value
- * ----------------------------------------------------------------------- */
+ */
 const char*
 var_setvint(const char* v, int i, int flags) {
   struct var* var;

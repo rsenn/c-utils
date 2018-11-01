@@ -1,5 +1,6 @@
 #include "../xml.h"
 #include "../hmap.h"
+#include "../str.h"
 
 void
 xml_set_attribute(xmlnode* node, const char* a, const char* v) {

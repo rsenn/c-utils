@@ -1,6 +1,8 @@
 #include "../str.h"
 #include "../strlist.h"
+
 #include <string.h>
+#include <stdlib.h>
 
 typedef int(cmp_fn_t)(const void*, const void*);
 

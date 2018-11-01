@@ -3,7 +3,7 @@
 #define var_isname(c) (isalpha((c)) || isdigit((c)) || (c) == '_')
 
 /* check if it is a valid variable name
- * ----------------------------------------------------------------------- */
+ */
 int
 var_valid(const char* v) {
   register const char* s = v;

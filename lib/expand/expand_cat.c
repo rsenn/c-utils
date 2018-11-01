@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 /* concatenate <len> bytes from <b> to the argument list pointed to by <nptr>
- * ----------------------------------------------------------------------- */
+ */
 union node*
 expand_cat(const char* b, unsigned int len, union node** nptr, struct vartab* varstack, int flags) {
   union node* n = *nptr;

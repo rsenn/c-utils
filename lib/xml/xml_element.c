@@ -1,4 +1,5 @@
 #include "../xml.h"
+#include "../str.h"
 
 xmlnode*
 xml_element(const char* name) {

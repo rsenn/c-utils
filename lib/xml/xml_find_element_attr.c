@@ -1,5 +1,6 @@
 #include "../strlist.h"
 #include "../xml.h"
+#include "../str.h"
 
 extern int xml_has_attr(xmlnode* node, strlist* names);
 

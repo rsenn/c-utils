@@ -3,7 +3,7 @@
 #include <assert.h>
 
 /* push variable table to the stack
- * ----------------------------------------------------------------------- */
+ */
 void
 vartab_push(struct vartab* vartab) {
   /* zero it */

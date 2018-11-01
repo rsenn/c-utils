@@ -3,7 +3,7 @@
 
 /* set the flags if a variable is found on the current level
  * otherwise create a new one
- * ----------------------------------------------------------------------- */
+ */
 int
 var_chflg(char* v, int flags, int set) {
   struct var* var;

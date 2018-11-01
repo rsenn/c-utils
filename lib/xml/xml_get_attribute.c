@@ -1,4 +1,5 @@
 #include "../xml.h"
+#include "../str.h"
 
 char*
 xml_get_attribute(xmlnode* node, const char* attr) {

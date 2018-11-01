@@ -39,11 +39,11 @@ winsock2errno(long l) {
   if(l == -1)
     switch((x = WSAGetLastError())) {
     case WSANOTINITIALISED:
-	  buffer_putsflush(buffer_1, "WSANOTINITIALISED!\n");
+	  //buffer_putsflush(buffer_1, "WSANOTINITIALISED!\n");
       exit(111);
     case WSAENETDOWN:
-	  buffer_putsflush(buffer_1, "WSAENETDOWN!\n");
-      exit(111);
+	 // buffer_putsflush(buffer_1, "WSAENETDOWN!\n");
+      exit(112);
     case WSAEINTR:
       errno = EINTR; break;
     case WSAEBADF:

@@ -3,7 +3,9 @@
 #include "../byte.h"
 #include "../dir_internal.h"
 #include "../stralloc.h"
+
 #include <assert.h>
+#include <stdlib.h>
 
 void rdir_read_r(rdir_t* d);
 static void rdir_push(rdir_t* d);

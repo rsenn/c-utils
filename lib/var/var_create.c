@@ -1,10 +1,12 @@
 #include "../vartab.h"
 
+#include <stdlib.h>
+
 /* create a new var on top vartab, possibly overwriting an old one
  *
  * when a variable is found on the top table it is immediately returned,
  * if found on a
- * ----------------------------------------------------------------------- */
+ */
 struct var*
 var_create(struct vartab* varstack, const char* v, int flags) {
   struct search ctx;

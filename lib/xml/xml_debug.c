@@ -1,5 +1,7 @@
 #include "../fmt.h"
 #include "../xml.h"
+#include "../str.h"
+
 #include <assert.h>
 
 static void

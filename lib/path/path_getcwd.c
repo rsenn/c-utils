@@ -8,7 +8,7 @@
 
 #include <limits.h>
 /* get current working directory into a stralloc
- * ----------------------------------------------------------------------- */
+ */
 void
 path_getcwd(stralloc* sa) {
   stralloc_zero(sa);

@@ -5,7 +5,7 @@
 
 /* expand all arguments of an argument list
  * returns count of argument nodes
- * ----------------------------------------------------------------------- */
+ */
 int
 expand_args(union node* args, union node** nptr, struct vartab* varstack, char *argv[], int exitcode, int flags) {
   union node* arg;

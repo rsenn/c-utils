@@ -73,7 +73,7 @@ is_link(const char* path) {
  * canonicalizing functions like realpath() in libc, but there is a
  * path_realpath() function which provides similar behaviour and will
  * resolve relative paths to absolute ones.
- * ----------------------------------------------------------------------- */
+ */
 int
 path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   size_t l1, l2;

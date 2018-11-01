@@ -1,6 +1,8 @@
 #include "../byte.h"
 #include "../map_internal.h"
 
+#include <stdlib.h>
+
 int
 map_set_(map_base_t* m, const char* key, void* value, int vsize) {
   int n, err;

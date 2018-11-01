@@ -14,7 +14,7 @@
 #endif
 
 /* block SIGINT and SIGCHILD before forking a child
- * ----------------------------------------------------------------------- */
+ */
 void
 sig_block(void) {
 #if !WINDOWS_NATIVE

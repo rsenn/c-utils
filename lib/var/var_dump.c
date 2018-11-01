@@ -3,7 +3,7 @@
 #include "../buffer.h"
 
 /* dump a variable entry
- * ----------------------------------------------------------------------- */
+ */
 void
 var_dump(struct var* var) {
   char numbuf[FMT_XLONG * 2];

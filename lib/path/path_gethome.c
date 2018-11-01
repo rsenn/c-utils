@@ -3,7 +3,7 @@
 #include "../scan.h"
 #include "../windoze.h"
 /* get home directory into a char buf not smaller than PATH_MAX + 1 chars
- * ----------------------------------------------------------------------- */
+ */
 char*
 path_gethome(int uid) {
   buffer b;

@@ -5,7 +5,7 @@
 #define expand_isesc(c) ((c) == '[' || (c) == '\\' || (c) == ']')
 
 /* in-place unescape
- * ----------------------------------------------------------------------- */
+ */
 void
 expand_unescape(stralloc* sa) {
   unsigned int s, d;

@@ -1,4 +1,5 @@
 #include "../xml.h"
+#include "../str.h"
 
 int
 xml_has_attribute_n(xmlnode* node, const char* b, size_t n) {

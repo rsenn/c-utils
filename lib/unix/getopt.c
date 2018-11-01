@@ -10,6 +10,8 @@
 
 #include "../getopt.h"
 #include "../buffer.h"
+#include "../str.h"
+
 #include <stdio.h>
 #include <string.h>
 

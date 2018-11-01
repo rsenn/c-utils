@@ -2,7 +2,7 @@
 #include "../var.h"
 
 /* return the variable value if it is set, otherwise return def
- * ----------------------------------------------------------------------- */
+ */
 const char*
 var_vdefault(struct vartab* varstack, const char* v, const char* def, size_t* lenp) {
   struct var* var;

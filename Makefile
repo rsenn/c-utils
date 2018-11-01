@@ -78,95 +78,95 @@ endef
 
 HAVE_SCOPE := $(call check-try-compile,$(CHECK_SCOPE_ID))
 ifeq ($(HAVE_SCOPE),1)
-DEFS += LIBC_HAS_SCOPE_ID=1
+DEFINES += LIBC_HAS_SCOPE_ID=1
 endif
 #$(info HAVE_SCOPE=$(HAVE_SCOPE))
 
 ifeq ($(call check-include-exists,errno.h),1)
-DEFS += HAVE_ERRNO_H=1
+DEFINES += HAVE_ERRNO_H=1
 endif
 
 HAVE_N2I := $(call check-include-exists,net/if.h)
 ifeq ($(HAVE_N2I),1)
-DEFS += HAVE_N2I=1
+DEFINES += HAVE_N2I=1
 endif
 #$(info HAVE_N2I=$(HAVE_N2I))
 
 LIBC_HAS_IP6 := $(call check-function-exists,inet_pton)
 ifeq ($(LIBC_HAS_IP6),1)
-DEFS += LIBC_HAS_IP6=1
+DEFINES += LIBC_HAS_IP6=1
 endif
 #$(info LIBC_HAS_IP6=$(LIBC_HAS_IP6))
 
 HAVE_PIPE2 := $(call check-function-exists,pipe2)
 ifeq ($(HAVE_PIPE2),1)
-DEFS += HAVE_PIPE2=1
+DEFINES += HAVE_PIPE2=1
 endif
 #$(info HAVE_PIPE2=$(HAVE_PIPE2))
 
 HAVE_WORDEXP := $(call check-function-exists,wordexp)
 ifeq ($(HAVE_WORDEXP),1)
-DEFS += HAVE_WORDEXP=1
+DEFINES += HAVE_WORDEXP=1
 endif
 #$(info HAVE_WORDEXP=$(HAVE_WORDEXP))
 
 HAVE_FNMATCH := $(call check-function-exists,fnmatch)
 ifeq ($(HAVE_FNMATCH),1)
-DEFS += HAVE_FNMATCH=1
+DEFINES += HAVE_FNMATCH=1
 endif
 #$(info HAVE_FNMATCH=$(HAVE_FNMATCH))
 
 HAVE_LSTAT := $(call check-function-exists,lstat)
 ifeq ($(HAVE_LSTAT),1)
-DEFS += HAVE_LSTAT=1
+DEFINES += HAVE_LSTAT=1
 endif
 #$(info HAVE_LSTAT=$(HAVE_LSTAT))
 
 HAVE_GETDELIM := $(call check-function-exists,getdelim)
 ifeq ($(HAVE_GETDELIM),1)
-DEFS += HAVE_GETDELIM=1
+DEFINES += HAVE_GETDELIM=1
 endif
 #$(info HAVE_GETDELIM=$(HAVE_GETDELIM))
 
 HAVE_ROUND := $(call check-function-exists,round)
 ifeq ($(HAVE_ROUND),1)
-DEFS += HAVE_ROUND=1
+DEFINES += HAVE_ROUND=1
 endif
 #$(info HAVE_ROUND=$(HAVE_ROUND))
 
 HAVE_ALLOCA := $(call check-function-exists,alloca,,alloca.h)
 ifeq ($(HAVE_ALLOCA),1)
-DEFS += HAVE_ALLOCA=1
+DEFINES += HAVE_ALLOCA=1
 endif
 #$(info HAVE_ALLOCA=$(HAVE_ALLOCA))
 
 HAVE_SENDFILE := $(call check-function-exists,sendfile)
 ifeq ($(HAVE_SENDFILE),1)
-DEFS += HAVE_SENDFILE=1
+DEFINES += HAVE_SENDFILE=1
 endif
 #$(info HAVE_SENDFILE=$(HAVE_SENDFILE))
 
 HAVE_CYGWIN_CONV_PATH := $(call check-function-exists,cygwin_conv_path)
 ifeq ($(HAVE_CYGWIN_CONV_PATH),1)
-DEFS += HAVE_CYGWIN_CONV_PATH=1
+DEFINES += HAVE_CYGWIN_CONV_PATH=1
 endif
 #$(info HAVE_CYGWIN_CONV_PATH=$(HAVE_CYGWIN_CONV_PATH))
 
 HAVE_POPEN := $(call check-function-exists,popen)
 ifeq ($(HAVE_POPEN),1)
-DEFS += HAVE_POPEN=1
+DEFINES += HAVE_POPEN=1
 endif
 #$(info HAVE_POPEN=$(HAVE_POPEN))
 
 HAVE_GETOPT := $(call check-function-exists,getopt)
 ifeq ($(HAVE_GETOPT),1)
-DEFS += HAVE_GETOPT=1
+DEFINES += HAVE_GETOPT=1
 endif
 #$(info HAVE_GETOPT=$(HAVE_GETOPT))
 
 HAVE_GETOPT_LONG := $(call check-function-exists,getopt_long)
 ifeq ($(HAVE_GETOPT_LONG),1)
-DEFS += HAVE_GETOPT_LONG=1
+DEFINES += HAVE_GETOPT_LONG=1
 endif
 #$(info HAVE_GETOPT_LONG=$(HAVE_GETOPT_LONG))
 
@@ -328,9 +328,9 @@ endif
 endif
 
 ifneq ($(MSYS),1)
-C11_COMPILER_DEFS := $(shell $(call get-compiler-defs,-std=c11))
-#$(info C11_COMPILER_DEFS: $(C11_COMPILER_DEFS))
-ifneq ($(C11_COMPILER_DEFS),)
+C11_COMPILER_DEFINES := $(shell $(call get-compiler-defs,-std=c11))
+#$(info C11_COMPILER_DEFINES: $(C11_COMPILER_DEFINES))
+ifneq ($(C11_COMPILER_DEFINES),)
 CC += -std=c11
 endif
 endif
@@ -536,16 +536,16 @@ endif
 
 CPPFLAGS := -I.
 
-DEFS += INLINE=inline
-#DEFS += PATH_MAX=4096
+DEFINES += INLINE=inline
+#DEFINES += PATH_MAX=4096
 ifeq ($(READDIR),)
 ifeq ($(SYS),mingw32)
-#DEFS += USE_READDIR=0
+#DEFINES += USE_READDIR=0
 READDIR :=0
 else
 ifeq ($(SYS),msys)
   READDIR := 1
-#DEFS += USE_READDIR=0
+#DEFINES += USE_READDIR=0
 endif
 endif
 endif
@@ -578,16 +578,16 @@ WIDECHAR := 0
 endif
 
 ifneq ($(WIDECHAR),)
-DEFS += USE_WIDECHAR=$(WIDECHAR)
+DEFINES += USE_WIDECHAR=$(WIDECHAR)
 endif
 ifneq ($(READDIR),)
-DEFS += USE_READDIR=$(READDIR)
+DEFINES += USE_READDIR=$(READDIR)
 endif
 ifeq ($(LARGEFILE),1)
-DEFS += _FILE_OFFSET_BITS=64
-DEFS += _LARGEFILE_SOURCE=1
+DEFINES += _FILE_OFFSET_BITS=64
+DEFINES += _LARGEFILE_SOURCE=1
 endif
-DEFS += _GNU_SOURCE=1
+DEFINES += _GNU_SOURCE=1
 
 WARNINGS += no-strict-aliasing
 
@@ -661,9 +661,9 @@ RELEASE := 1
 MINSIZE := 0
 endif
 ifeq ($(DEBUG),1)
-DEFS += DEBUG=1
+DEFINES += DEBUG=1
 else
-DEFS += NDEBUG=1
+DEFINES += NDEBUG=1
 endif
 
 FLAGS += $(CFLAGS_$(BUILD_TYPE))
@@ -688,7 +688,7 @@ MINGW := 0
 endif
 ifeq ($(MINGW),1)
 LDFLAGS += -static-libgcc
-DEFS += open=_open read=_read write=_write close=_close
+DEFINES += open=_open read=_read write=_write close=_close
 #LDFLAGS += -static-lib{asan,gfortran,lsan,tsan,ubsan}
 WIN32 := 1
 endif
@@ -735,7 +735,7 @@ WARNINGS += no-unused-function
 
 
 #CFLAGS = $(patsubst %,-W%,$(WARNINGS))
-CPPFLAGS += $(patsubst %,-D%,$(DEFS))
+DEFS := $(patsubst %,-D%,$(DEFINES))
 
 LIB_SRC = $(wildcard *_*.c umult*.c)
 LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
@@ -789,7 +789,7 @@ VPATH = $(BUILDDIR):.:lib:src
 ##$(info TRIPLET: $(TRIPLET))
 ifeq ($(OS),darwin)
   READDIR := 1
-#DEFS += USE_READDIR=1
+#DEFINES += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
 #CPPFLAGS += -DUSE_READDIR=1
 ifneq ($(HAVE_LSEEK64),)
@@ -822,42 +822,42 @@ endif
 endif
 
 ifeq ($(HAVE_ZLIB),1)
-DEFS += HAVE_ZLIB=1
+DEFINES += HAVE_ZLIB=1
 CPPFLAGS += -DHAVE_ZLIB=1
 LIBS = -lz
 endif
 ifeq ($(HAVE_LIBLZMA),1)
-DEFS += HAVE_LIBLZMA=1
+DEFINES += HAVE_LIBLZMA=1
 CPPFLAGS += -DHAVE_LIBLZMA=1
 LIBLZMA = -llzma
 endif
 ifeq ($(HAVE_LIBBZ2),1)
-DEFS += HAVE_LIBBZ2=1
+DEFINES += HAVE_LIBBZ2=1
 CPPFLAGS += -DHAVE_LIBBZ2=1
 LIBBZ2 = -lbz2
 endif
 ifeq ($(HAVE_ERRNO_H),1)
-DEFS += HAVE_ERRNO_H=1
+DEFINES += HAVE_ERRNO_H=1
 endif
 
 ifeq ($(io_seek),)
 io_seek := lseek
 endif
 ifneq ($(io_seek),)
-DEFS += io_seek=$(io_seek)
+DEFINES += io_seek=$(io_seek)
 endif
 ifeq ($(HAVE_POSIX_MEMALIGN),1)
-DEFS += HAVE_POSIX_MEMALIGN=1
+DEFINES += HAVE_POSIX_MEMALIGN=1
 endif
 
 
 #CPPFLAGS += $(DEFS:%=-D%)
 #CFLAGS += $(DEFS:%=-D%)
 #
-#$(info DEFS: $(DEFS))
+#$(info DEFINES: $(DEFINES))
 
 
-FLAGS += $(patsubst %,-W%,$(WARNINGS)) $(patsubst %,-D%,$(DEFS))
+FLAGS += $(patsubst %,-W%,$(WARNINGS)) $(patsubst %,-D%,$(DEFINES))
 FLAGS += $(CPPFLAGS)
 FLAGS := $(sort $(FLAGS))
 
@@ -946,7 +946,7 @@ all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
 #}" >$(BUILDDIR)tryerrno.c
 
 #$(BUILDDIR)haveerrno.h: $(BUILDDIR)tryerrno.c
-#	$(CROSS_COMPILE)$(CC) -include errno.h -c -o $(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFS += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
+#	$(CROSS_COMPILE)$(CC) -include errno.h -c -o $(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFINES += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
 #
 #FLAGS += -include $(BUILDDIR)haveerrno.h
 #
@@ -1279,28 +1279,28 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)xc8-wrapper$(M64_)$(EXEEXT): DEFS += XC8_WRAPPER=1
+$(BUILDDIR)xc8-wrapper$(M64_)$(EXEEXT): DEFINES += XC8_WRAPPER=1
 $(BUILDDIR)xc8-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer dir str byte fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)picc-wrapper$(M64_)$(EXEEXT): DEFS += PICC_WRAPPER=1
+$(BUILDDIR)picc-wrapper$(M64_)$(EXEEXT): DEFINES += PICC_WRAPPER=1
 $(BUILDDIR)picc-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer dir str byte fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)picc18-wrapper$(M64_)$(EXEEXT): DEFS += PICC18_WRAPPER=1
+$(BUILDDIR)picc18-wrapper$(M64_)$(EXEEXT): DEFINES += PICC18_WRAPPER=1
 $(BUILDDIR)picc18-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer dir str byte fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)sdcc-wrapper$(M64_)$(EXEEXT): DEFS += SDCC_WRAPPER=1
+$(BUILDDIR)sdcc-wrapper$(M64_)$(EXEEXT): DEFINES += SDCC_WRAPPER=1
 $(BUILDDIR)sdcc-wrapper$(M64_)$(EXEEXT): $(BUILDDIR)compiler-wrapper.o $(call add-library, strlist stralloc buffer dir str byte fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)

@@ -64,7 +64,7 @@ enum nod_id {
 };
 
 /* 3.9.1 - simple command
- * ----------------------------------------------------------------------- */
+ */
 
 /* the simple command and the compound commands in 3.9.4 have the bgnd and
    rdir members in common, because they all can be redirected and put in
@@ -79,7 +79,7 @@ struct ncmd {
 };
 
 /* 3.9.2 - pipeline
- * ----------------------------------------------------------------------- */
+ */
 struct npipe {
   int         id;
   union node *next;
@@ -89,7 +89,7 @@ struct npipe {
 };
 
 /* 3.9.3 - lists
- * ----------------------------------------------------------------------- */
+ */
 
 /* AND-OR list */
 struct nandor {
@@ -112,7 +112,7 @@ struct nlist {
    need any further information */
 
 /* 3.9.4.1 - grouping compound
- * ----------------------------------------------------------------------- */
+ */
 struct ngrp {
   int         id;
   union node *next;
@@ -122,7 +122,7 @@ struct ngrp {
 };
 
 /* 3.9.4.2 - for loop
- * ----------------------------------------------------------------------- */
+ */
 struct nfor {
   int         id;
   union node *next;
@@ -134,7 +134,7 @@ struct nfor {
 };
 
 /* 3.9.4.3 - case conditional 
- * ----------------------------------------------------------------------- */
+ */
 struct ncase {
   int         id;
   union node *next;
@@ -152,7 +152,7 @@ struct ncasenode {
 };
 
 /* 3.9.4.4 - if conditional
- * ----------------------------------------------------------------------- */
+ */
 struct nif {
   int         id;
   union node *next;
@@ -165,7 +165,7 @@ struct nif {
 
 /* 3.9.4.5 while loop
  * 3.9.4.6 until loop
- * ----------------------------------------------------------------------- */
+ */
 struct nloop {
   int         id;
   union node *next;
@@ -176,7 +176,7 @@ struct nloop {
 };
 
 /* 3.9.5 function definition 
- * ----------------------------------------------------------------------- */
+ */
 struct nfunc {
   int         id;
   union node *next;
@@ -185,7 +185,7 @@ struct nfunc {
 };
 
 /* internally used nodes 
- * ----------------------------------------------------------------------- */
+ */
 struct list {
   enum nod_id  id;
   union node  *next;
@@ -196,7 +196,7 @@ struct list {
  * a word is either a redirection, an argument or an assignment.
  * the members nredir.file and nassign.args are themselves a narg.
  * 
- * ----------------------------------------------------------------------- */
+ */
 struct narg {
   int          id;
   union node  *next;
@@ -224,7 +224,7 @@ struct nassign {
 };
 
 /* argument (word) subnodes
- * ----------------------------------------------------------------------- */
+ */
 struct nargstr {
   int          id;
   union node  *next;
@@ -284,7 +284,7 @@ struct narithbinary
   union node *right;
 };
 
-/* ----------------------------------------------------------------------- */
+/*/
 union node {
   enum nod_id      id;
   struct list      list;

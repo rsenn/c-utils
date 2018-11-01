@@ -4,6 +4,11 @@
 #include "typedefs.h"
 #include "windoze.h"
 #include "getopt.h"
+#include "readlink.h"
+
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

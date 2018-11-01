@@ -1,7 +1,7 @@
 #include "../var.h"
 
 /* unset a variable
- * ----------------------------------------------------------------------- */
+ */
 void
 var_unset(char* v) {
   struct var* var;

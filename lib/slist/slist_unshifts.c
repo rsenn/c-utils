@@ -1,6 +1,8 @@
 #include "../slist.h"
 #include "../str.h"
 
+#include <stdlib.h>
+
 int
 slist_unshifts(slink** list, const char* s) {
   slink* n;

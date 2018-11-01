@@ -42,9 +42,9 @@ unit_test_getbuffer(int fileno) {
 
 void
 unit_test_cleanup(struct unit_test* mu_) {
-  if(mu_->testlog)
+  if(mu_->testlog != muout)
     buffer_close(mu_->testlog);
-  if(mu_->faillog)
+  if(mu_->faillog != muerr)
     buffer_close(mu_->faillog);
 }
 
@@ -68,13 +68,12 @@ unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
 
 void
 unit_test_copy(buffer* src, buffer* dst) {
-  buffer_copy(dst, src);
+//  buffer_copy(dst, src);
 }
 
 bool
 unit_test_empty(buffer* file) {
-  fseek(file, 0, SEEK_END);
-  return ftell(file) == 0;
+  return 1;
 }
 
 buffer*
@@ -100,21 +99,21 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   run.testlog = unit_test_tmpfile(&testtmp, "testlog-XXXXXX");
   run.faillog = unit_test_tmpfile(&failtmp, "faillog-XXXXXX");
 
-  if(!muconf_ptr()->s) {
+  /*if(!muconf_ptr()->s) {
     buffer_1small = running->testlog;
     buffer_2 = running->testlog;
-  }
+  }*/
 
   rc = unit_test_call(running, func);
 
   if(running->failure == 0) {
-    TESTLOG(PASS("."));
+    TESTLOG_STRS(PASS("."));
     if(muconf_ptr()->v)
-      TESTLOG(PASS("  %s\n"), name);
+      TESTLOG_STRS(PASS("  %s\n"), name);
   } else {
-    TESTLOG(FAIL("F"));
+    TESTLOG_STRS(FAIL("F"));
     if(muconf_ptr()->v)
-      TESTLOG(FAIL("  %s\n"), name);
+      TESTLOG_STRS(FAIL("  %s\n"), name);
   }
 
   if(!unit_test_empty(running->faillog)) {
@@ -135,7 +134,7 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
 
 void
 unit_test_usage(const char* cmd) {
-  TESTLOG("usage: %s [-qsvx]\n"
+  TESTLOG_STRS("usage: %s [-qsvx]\n"
           "Options:\n"
           "  -q  Quiet stdout.\n"
           "  -s  Disable to capture stdout.\n"
@@ -161,7 +160,7 @@ unit_test_optparse(int argc, char** argv) {
         case 'q': muconf_ptr()->q = TRUE; break;
         case 'h': unit_test_usage(argv[0]); exit(EXIT_SUCCESS);
         default:
-          TESTLOG("%s: illegal option -- %c\n", argv[0], argv[i][j]);
+          TESTLOG_STRS("%s: illegal option -- %c\n", argv[0], argv[i][j]);
           unit_test_usage(argv[0]);
           exit(EXIT_FAILURE);
       }
@@ -179,7 +178,8 @@ unit_test_main(int argc, char** argv) {
   muout = buffer_1small;
   muerr = buffer_2;
 
-  mu_i.testlog = unit_test_tmpfile(&testtmp, "test-XXXXXX");
+  mu_i.testlog = muout; //unit_test_tmpfile(&testtmp, "test-XXXXXX");
+  mu_i.faillog = muerr;
 
 #if WINDOWS_NATIVE || defined(_MSC_VER)
   muerr = muout;
@@ -193,15 +193,19 @@ unit_test_main(int argc, char** argv) {
     buffer_putc(muerr, '\n');
 
   unit_test_copy(mu_->testlog, muerr);
-  TESTLOG("\nRAN " BOLD("%d") " TESTS IN " BOLD("%4.3lf") "s\n", mu_->success + mu_->failure, mu_->elapsed);
+  TESTLOG_STRS("\nRAN "); TESTLOG_LONG(  mu_->success + mu_->failure); TESTLOG_STRS(" TESTS IN ");
+  //TESTLOG_DBL( mu_->elapsed); 
+  TESTLOG_STRS("\n"); 
+  
 
   if((mu_->success + mu_->failure) > 0) {
-    TESTLOG("\n%s (SUCCESS: " PASS("%d") ", FAILURE: " FAIL("%d") ")\n",
-            (mu_->failure == 0) ? PASS("OK") : FAIL("FAILED"),
-            mu_->success,
-            mu_->failure);
+           TESTLOG_STRS( "\n");
+           TESTLOG_STRS( (mu_->failure == 0) ? PASS("OK") : FAIL("FAILED"));
+           
+           TESTLOG_STRS(" (SUCCESS: "); TESTLOG_LONG(mu_->success); TESTLOG_STRS(", FAILURE: "); TESTLOG_LONG(mu_->failure); TESTLOG_STRS("\n");
+           
   } else {
-    TESTLOG(FAIL("\nNO TESTS FOUND\n"));
+    TESTLOG_STRS(FAIL("\nNO TESTS FOUND\n"));
   }
 
   unit_test_cleanup(mu_);

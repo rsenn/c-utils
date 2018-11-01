@@ -3,7 +3,9 @@
 #include "../playlist.h"
 #include "../scan.h"
 #include "../xml.h"
+
 #include <ctype.h>
+#include <stdlib.h>
 
 typedef struct {
   stralloc tag;

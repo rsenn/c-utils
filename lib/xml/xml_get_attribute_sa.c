@@ -1,6 +1,7 @@
 #include "../xml.h"
 #include "../stralloc.h"
 #include "../hmap.h"
+#include "../str.h"
 
 int
 xml_get_attribute_sa(xmlnode* n, stralloc* sa, const char* name) {

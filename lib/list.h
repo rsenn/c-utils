@@ -41,9 +41,9 @@ void list_unshift(list*, link*);
       (n) = (void*)((link*)m), \
       (m) = (void*)((link*)n) != NULL ? (void*)((link*)n)->next : NULL)
 
-/* ------------------------------------------------------------------------ *
+/*
  * Macros to walk through a list list from tail to head.                     *
- * ------------------------------------------------------------------------ */
+ */
 /* n is set to the current link*/
 #define list_foreach_up(list, n) \
   for((n) = (void*)(list)->tail; \

@@ -58,7 +58,9 @@ typedef char bool;
     if(muconf_ptr()->x) \
       return; \
   }
-#define TESTLOG(...) buffer_putmflush(muerr, __VA_ARGS__)
+#define TESTLOG_STRS(...) buffer_putmflush(muerr, __VA_ARGS__)
+#define TESTLOG_LONG(d) buffer_putlong(muerr, d), buffer_flush(muerr)
+#define TESTLOG_DBL(d) buffer_putdouble(muerr, d, 0), buffer_flush(muerr)
 
 // Assertions
 #define ASSERT_EQ(x1, x2) unit_test_assert(mu_, x1, x2, ==, !=)
@@ -119,7 +121,7 @@ default           : "%p")
     buffer_putm((mu_)->faillog, unit_test_typespec(x1), x1); \
     buffer_puts((mu_)->faillog, " " #notop " "); \
     buffer_putm((mu_)->faillog, unit_test_typespec(x2), x2); \
-    buffer_putm((mu_)->faillog, " (", __buffer__, ":"); \
+    buffer_putm((mu_)->faillog, " (", __FILE__, ":"); \
     buffer_putulong((mu_)->faillog, __LINE__); \
     buffer_puts((mu_)->faillog, ")"); \
     buffer_putnlflush((mu_)->faillog); \
@@ -182,89 +184,6 @@ unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
   return (mu_->failure == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-static void
-unit_test_copy(buffer* src, buffer* dst) {
-  int c;
-  rewind(src);
-  for(c = getc(src); c != EOF; c = getc(src)) buffer_putc(dst, c);
-}
-
-static bool
-unit_test_empty(buffer* file) {
-  fseek(file, 0, SEEK_END);
-  return ftell(file) == 0;
-}
-
-static void
-unit_test_usage(const char* cmd) {
-  TESTLOG("usage: %s [-qsvx]\n"
-          "Options:\n"
-          "  -q  Quiet stdout.\n"
-          "  -s  Disable to capture stdout.\n"
-          "  -v  Enalbe verbose mode.\n"
-          "  -x  Exit on first failure.\n",
-          cmd);
-}
-
-static void
-unit_test_optparse(int argc, char** argv) {
-  size_t i, j;
-  for(i = 1; i < (size_t)argc; i++) {
-    if(argv[i][0] != '-') {
-      unit_test_usage(argv[0]);
-      exit(EXIT_FAILURE);
-    }
-
-    for(j = 1; j < strlen(argv[i]); j++) {
-      switch(argv[i][j]) {
-        case 's': muconf_ptr()->s = TRUE; break;
-        case 'v': muconf_ptr()->v = TRUE; break;
-        case 'x': muconf_ptr()->x = TRUE; break;
-        case 'q': muconf_ptr()->q = TRUE; break;
-        case 'h': unit_test_usage(argv[0]); exit(EXIT_SUCCESS);
-        default:
-          TESTLOG("%s: illegal option -- %c\n", argv[0], argv[i][j]);
-          unit_test_usage(argv[0]);
-          exit(EXIT_FAILURE);
-      }
-    }
-  }
-}
-
-int
-unit_test_main(int argc, char** argv) {
-  int rc;
-  static struct unit_test mu_i;
-  struct unit_test* mu_ = &mu_i;
-
-  mu_i.testlog = unit_test_tmpfile();
-
-  muout = stdout;
-  muerr = stderr;
-
-  unit_test_optparse(argc, argv);
-
-  rc = unit_test_call(mu_, unit_test_execute);
-
-  if(!muconf_ptr()->v)
-    buffer_putnlflush(muerr);
-  unit_test_copy(mu_->testlog, muerr);
-  TESTLOG("\nRAN " BOLD("%d") " TESTS IN " BOLD("%4.3lf") "s\n", mu_->success + mu_->failure, mu_->elapsed);
-
-  if((mu_->success + mu_->failure) > 0) {
-    TESTLOG("\n%s (SUCCESS: " PASS("%d") ", FAILURE: " FAIL("%d") ")\n",
-            (mu_->failure == 0) ? PASS("OK") : FAIL("FAILED"),
-            mu_->success,
-            mu_->failure);
-  } else {
-    TESTLOG(FAIL("\nNO TESTS FOUND\n"));
-  }
-
-  unit_test_cleanup(mu_);
-  buffer_flush(muerr);
-  buffer_flush(muout);
-  return rc;
-}
 #else
 
 #define START() void unit_test_execute(struct unit_test* mu_)

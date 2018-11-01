@@ -1,14 +1,15 @@
+#include "../windoze.h"
+#include "../unix.h"
 #include "../path_internal.h"
 #include "../readlink.h"
 #include "../str.h"
 #include "../stralloc.h"
-#include "../windoze.h"
 
 #include <limits.h>
 
 #define START ((PATH_MAX + 1) >> 7)
 /* read the link into a stralloc
- * ----------------------------------------------------------------------- */
+ */
 int
 path_readlink(const char* path, stralloc* sa) {
   /* do not allocate PATH_MAX from the beginning,

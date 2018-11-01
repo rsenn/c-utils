@@ -1,8 +1,10 @@
 #include "../vartab.h"
 #include <assert.h>
 
+#include <stdlib.h>
+
 /* clean all vars on a variable table
- * ----------------------------------------------------------------------- */
+ */
 void
 vartab_cleanup(struct vartab* vartab) {
   unsigned int i;

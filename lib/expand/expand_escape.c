@@ -2,7 +2,7 @@
 #include "../stralloc.h"
 
 /* escape characters subject to glob() expansion
- * ----------------------------------------------------------------------- */
+ */
 void
 expand_escape(stralloc* sa, const char* b, unsigned int n) {
   while(n--) {

@@ -1757,6 +1757,7 @@ set_compiler_type(const char* compiler) {
      */
   } else if(str_start(compiler, "tcc")) {
 
+    pathsep = '\\';
     libext = ".a";
     format_linklib_fn = &format_linklib_switch;
 

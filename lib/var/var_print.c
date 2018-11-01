@@ -6,7 +6,7 @@
 #define is_double_esc(c) ((c) == '"' || (c) == '$' || (c) == '\\' || (c) == '`')
 
 /* print a variable, suitable for re-input
- * ----------------------------------------------------------------------- */
+ */
 void
 var_print(struct var* var, int flags) {
   if(flags & V_EXPORT) buffer_puts(buffer_1, "export ");

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 /* expand an assignment list
- * ----------------------------------------------------------------------- */
+ */
 int
 expand_vars(union node* vars, union node** nptr, struct vartab* varstack, char *argv[], int exitcode) {
   union node* var;

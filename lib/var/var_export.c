@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 /* export variables for execve()
- * ----------------------------------------------------------------------- */
+ */
 char**
 var_export(char** dest) {
   struct var* var;

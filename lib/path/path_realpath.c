@@ -9,7 +9,7 @@ extern int path_canonicalize(const char* path, stralloc* sa, int symbolic);
 /* if the <path> is relative and <cwd> is non-null then it is prepended
  * to the path, so it will work like path_canonicalize, except that
  * relative paths will be resolved to absolute ones.
- * ----------------------------------------------------------------------- */
+ */
 int
 path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd) {
   /* if its not absolute on the first recursion level then make it so */

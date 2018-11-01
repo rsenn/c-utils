@@ -9,7 +9,7 @@
  *
  * when the last checked variable was bigger than the wanted one
  * we return the hash distance from the wanted to bigger entry.
- * ----------------------------------------------------------------------- */
+ */
 VAR_HASH
 var_hsearch(struct search* context) {
   struct var* var;

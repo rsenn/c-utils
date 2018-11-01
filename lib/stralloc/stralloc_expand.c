@@ -5,6 +5,8 @@
 #include <windows.h>
 #endif
 
+#include <stdlib.h>
+
 int
 stralloc_expand(stralloc* sa) {
 #if WINDOWS

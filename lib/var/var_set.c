@@ -3,7 +3,7 @@
 #include "../var.h"
 
 /* set a variable
- * ----------------------------------------------------------------------- */
+ */
 struct var*
 var_set(char* v, int flags) {
   struct var* var;

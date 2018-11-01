@@ -2,7 +2,7 @@
 #include "../vartab.h"
 
 /* print all variables having the specified flags set
- * ----------------------------------------------------------------------- */
+ */
 void
 vartab_print(int flags) {
   struct var* var;

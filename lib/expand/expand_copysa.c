@@ -4,7 +4,7 @@
 #include "../expand.h"
 
 /* expand one N_ARG node to a stralloc (stralloc is overwritten!!!)
- * ----------------------------------------------------------------------- */
+ */
 void
 expand_copysa(union node* node, stralloc* sa, struct vartab* varstack, char* argv[], int exitcode, int flags) {
   union node tmpnode;

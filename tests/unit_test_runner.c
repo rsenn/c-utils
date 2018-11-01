@@ -6,11 +6,10 @@
 #include "test_path.c"
 #include "test_strlist.c"
 */
-TESTS(path);
 TESTS(strlist);
+TESTS(path);
 
 START() {
-
-  EXEC(path);
   EXEC(strlist);
+  EXEC(path);
 }

@@ -1,4 +1,5 @@
 #include "../stralloc.h"
+#include "../str.h"
 
 int
 stralloc_removesuffixs(stralloc* sa, const char* suffix) {

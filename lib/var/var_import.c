@@ -4,7 +4,7 @@
 
 /* add a new variable using the supplied var struct rather
  * than a malloced
- * ----------------------------------------------------------------------- */
+ */
 struct var*
 var_import(const char* v, int flags, struct var* var) {
   struct search ctx;

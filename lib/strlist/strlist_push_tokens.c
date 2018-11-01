@@ -4,14 +4,10 @@
 
 void
 strlist_push_tokens(strlist* sl, const char* s, const char* delim) {
-  char *p = NULL, *tok;
+  size_t p, n;
 
-  if((s = str_dup(s)) == NULL) return;
-
-  if((tok = str_tok((char*)s, delim, &p)) != NULL) {
-    do {
-      strlist_push(sl, tok);
-    } while((tok = str_tok(NULL, delim, &p)));
+  for(p = 0; s[p]; p += n) {
+  	n = str_find(s, delim);
+    strlist_pushb(sl, &s[p], n);
   }
-  free((char*)s);
 }

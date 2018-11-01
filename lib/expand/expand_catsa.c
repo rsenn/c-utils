@@ -4,7 +4,7 @@
 #include "../expand.h"
 
 /* expand one N_ARG nodes to a stralloc (appending)
- * ----------------------------------------------------------------------- */
+ */
 void
 expand_catsa(union node* node, stralloc* sa, struct vartab* varstack, char* argv[], int exitcode, int flags) {
   union node tmpnode;

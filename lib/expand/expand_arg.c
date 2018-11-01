@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 /* expand all parts of an N_ARG node
- * ----------------------------------------------------------------------- */
+ */
 union node*
 expand_arg(struct narg* narg, union node** nptr, struct vartab* varstack, char *argv[], int exitcode, int flags) {
   union node* n = *nptr;

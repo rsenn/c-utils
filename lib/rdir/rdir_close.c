@@ -1,6 +1,7 @@
-
 #include "../dir.h"
 #include "../rdir.h"
+
+#include <stdlib.h>
 
 void
 rdir_close(rdir_t* d) {

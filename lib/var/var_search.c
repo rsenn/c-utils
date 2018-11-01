@@ -1,7 +1,7 @@
 #include "../vartab.h"
 
 /* find a variable on any table
- * ----------------------------------------------------------------------- */
+ */
 struct var*
 var_search(struct vartab* varstack, const char* v, struct search* context) {
   struct vartab* vartab;

@@ -19,7 +19,7 @@
  * because the entropy is limited to the size of an size_t,
  * which usually means 5 1/3 character (if its 32-bit), so this case
  * would need further comparision using var_diff().
- * ----------------------------------------------------------------------- */
+ */
 
 /* this macro reduces 8-bit ascii to
    the POSIX shell variable name charset [0-9A-Z_a-z]

@@ -1,4 +1,5 @@
 #include "../array.h"
+#include "../byte.h"
 
 int64
 array_indexof(array* a, uint64 membersize, void* data) {

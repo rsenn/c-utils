@@ -9,7 +9,7 @@
  *
  * IMPORTANT: the name must be a valid posix shell variable name, or it will
  *            fuck up the whole var table!
- * ----------------------------------------------------------------------- */
+ */
 struct var*
 var_setsa(stralloc* sa, int flags) {
   struct var* var;
