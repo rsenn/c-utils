@@ -1,6 +1,7 @@
 #include "lib/getopt.h"
 #include "lib/buffer.h"
 #include "lib/str.h"
+#include "lib/unix.h"
 
 #include <stdlib.h>
 

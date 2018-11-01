@@ -28,7 +28,7 @@ extern void* io_getfds();
 # if WINDOWS_NATIVE
 #  define read _read
 #  define write _write
-#  define open _open
+//#  define open _open
 #  define close _close
 #  define popen _popen
 # endif

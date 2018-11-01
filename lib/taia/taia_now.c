@@ -1,6 +1,7 @@
 #include "../windoze.h"
 
 #include "../taia.h"
+#include "../tai.h" 
 #include "../uint64.h"
 #include <sys/types.h>
 #if WINDOWS
