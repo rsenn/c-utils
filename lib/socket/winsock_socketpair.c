@@ -1,17 +1,13 @@
-#include "../windoze.h"
 #define USE_WS2_32 1
 
-#if WINDOWS
-#define _WINSOCK2API_
-#include <winsock2.h>
-#endif
-
 #include "../socket_internal.h"
+/*#if WINDOWS_NATIVE
+#include <winsock.h>
+#endif*/
 
 #include "../byte.h"
 
 #if WINDOWS_NATIVE
-#include "../socket_internal.h"
 
 /*
  * Create a socketpair using the protocol specified

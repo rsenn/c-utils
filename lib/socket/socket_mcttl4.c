@@ -1,8 +1,7 @@
-#include "../windoze.h"
 #define USE_WS2_32 1
 
 #if WINDOWS_NATIVE
-#define _WINSOCK2API_
+#define _WINSOCKAPI_
 #include <winsock2.h>
 #endif
 

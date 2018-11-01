@@ -4,7 +4,9 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #if USE_WS2_32
+#ifndef _WINSOCKAPI_
 #define _WINSOCKAPI_
+#endif
 #include <winsock2.h>
 #else
 #include <winsock.h>
@@ -62,7 +64,7 @@ void __winsock_init(void);
 #endif
 
 #if WINDOWS
-# if !defined(_SYS_SOCKET_H) && !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
+# if !defined(_SYS_SOCKET_H)
 typedef int socklen_t;
 # endif
 #endif

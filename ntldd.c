@@ -31,6 +31,7 @@ MSDN Magazine articles
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/uint64.h"
+#include "lib/pe.h"
 
 #include <limits.h>
 #include <stdio.h>

@@ -68,7 +68,7 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
       ++i;
     }
   }
-  strlist_join(&rel, out, PATHSEP_S);
+  strlist_join(&rel, out, PATHSEP_C);
 #endif
   return 1;
 }

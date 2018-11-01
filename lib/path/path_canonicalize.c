@@ -19,10 +19,11 @@
 
 #if !WINDOWS_NATIVE
 #include <unistd.h>
-#include <sys/stat.h>
 #define HAVE_LSTAT 1
 #endif
 
+#include <sys/stat.h>
+#include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>

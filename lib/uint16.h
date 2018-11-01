@@ -71,13 +71,13 @@ uint16 uint16_read_big(const char* in);
 #if !defined(NO_UINT16_MACROS)
 inline static uint16
 uint16_get(const void* ptr) {
-  const char* in = ptr;
-  return (in[0] << 8) | (in[1]);
+  const unsigned char* in = ptr;
+  return ((uint16)in[0] << 8) | (in[1]);
 }
 
 inline static uint16
 uint16_read(const char* in) {
-  return (in[0] << 8) | (in[1]);
+  return ((uint16)in[0] << 8) | (in[1]);
 }
 #endif
 
