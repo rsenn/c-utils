@@ -4,7 +4,7 @@ define nl =
 endef
 $(info nl: A$(nl)A)
 
-target-tmpl := $(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))$(nl))$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)$(nl)	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))$(nl)$(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(nl)	$$(STRIP) $$@$(nl)endif$(nl))$(nl)
+target-tmpl := $(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))$(nl))$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)$(nl)	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(CPPFLAGS) $$(INCLUDES) $$(DEFS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))$(nl)$(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(nl)	$$(STRIP) $$@$(nl)endif$(nl))$(nl)
 
 
 define lib-tmpl =
@@ -12,7 +12,7 @@ $$(BUILDDIR)$(1).a: $$(call add-sources,lib/$(1)/*.c $(2))
 	$$(AR) rcs $$@ $$^
 $$(BUILDDIR)lib$(1).so: LDFLAGS += -shared -Wl,-rpath=$$(BUILDDIR:%/=%)
 $$(BUILDDIR)lib$(1).so: $$(call add-sources,lib/$(1)/*.c $(2),.pic.o)
-	$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(EXTRA_LDFLAGS) $$(CFLAGS) $$(EXTRA_CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)
+	$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(EXTRA_LDFLAGS) $$(CFLAGS) $$(CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)
 endef
 
 lib-target = $(eval $(call lib-tmpl,$(1),$(2)))

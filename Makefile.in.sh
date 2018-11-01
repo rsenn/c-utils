@@ -86,7 +86,7 @@ INCLUDES = -I\$(top_srcdir) -I\$(top_builddir)
 all: libowcarb.a \$(PROGRAMS)
 
 %.o: %.c
-	\$(CC) \$(CFLAGS) \$(INCLUDES) \$(DEFS) -c \$<
+	\$(CC) \$(CFLAGS) \$(CPPFLAGS) -c \$<
 
 libowcarb.a: \$(LIB_OBJECTS)
 	\$(AR) rc \$@ \$^

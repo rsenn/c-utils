@@ -83,7 +83,7 @@ wsa_sync_async_socketpair(int af, int type, int proto, SOCKET* syncSocket, SOCKE
   SOCKADDR_IN addr1, addr2;
   int err, addr1_len, addr2_len;
 
-  assert(af == AF_INET && type == SOCK_STREAM && (proto == IPPROTO_IP || proto == IPPROTO_TCP));
+  //assert(af == AF_INET && type == SOCK_STREAM && (proto == IPPROTO_IP || proto == IPPROTO_TCP));
 
   sock1 = INVALID_SOCKET;
    sock2 = INVALID_SOCKET;

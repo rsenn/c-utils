@@ -8,6 +8,10 @@
 //typedef _sigset_t sigset_t;
 #endif
 
+#ifndef SIG_BLOCK
+#define SIG_BLOCK 0
+#endif
+
 /* block SIGINT and SIGCHILD before forking a child
  * ----------------------------------------------------------------------- */
 void

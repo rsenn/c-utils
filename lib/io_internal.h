@@ -25,11 +25,13 @@ extern void* io_getfds();
 
 #if WINDOWS
 # include <windows.h>
-//#define read _read
-//#define write _write
-//#define open _open
-//#define close _close
-# define popen _popen
+# if WINDOWS_NATIVE
+#  define read _read
+#  define write _write
+#  define open _open
+#  define close _close
+#  define popen _popen
+# endif
 //#define lseek lseek64
 # define llseek lseek64
 my_extern HANDLE io_comport;

@@ -80,7 +80,7 @@ INCLUDES = -I$(top_srcdir) -I$(top_builddir)
 all: libowcarb.a $(PROGRAMS)
 
 %.o: %.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(INCLUDES) $(DEFS) -c $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 libowcarb.a: $(LIB_OBJECTS)
 	$(CROSS_COMPILE)$(AR) rc $@ $^

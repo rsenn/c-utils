@@ -37,6 +37,10 @@ strlist_from_path(strlist* sl, const char* p) {
 #define MAX_PATH 260
 #endif
 
+#if !defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)
+#define HAVE_CYGWIN_CONV_PATH 1
+#endif
+
 #ifdef HAVE_CYGWIN_CONV_PATH
 #define cygwin_conv_to_win32_path(from, to) cygwin_conv_path(CCP_POSIX_TO_WIN_A, (from), (to), MAX_PATH)
 #define cygwin_conv_to_posix_path(from, to) cygwin_conv_path(CCP_WIN_A_TO_POSIX, (from), (to), MAX_PATH)
@@ -110,7 +114,7 @@ pathtool(const char* arg, stralloc* sa) {
   }
 #endif
 
-  strlist_init(&path, '\0');
+  strlist_init(&path, separator[0]);
   strlist_from_path(&path, sa->s);
 
   stralloc_zero(sa);
@@ -138,7 +142,7 @@ pathtool(const char* arg, stralloc* sa) {
       if(byte_diff(s1, l1, s2)) break;
     }
 
-    strlist_init(&rel, '\0');
+    strlist_init(&rel, separator[0]);
 
     while(n2-- > i) {
       strlist_push(&rel, "..");

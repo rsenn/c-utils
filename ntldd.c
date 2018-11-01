@@ -59,6 +59,10 @@ static stralloc cwd;
 #define MAX_PATH 260
 #endif
 
+#if !defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)
+#define HAVE_CYGWIN_CONV_PATH 1
+#endif
+
 #ifdef HAVE_CYGWIN_CONV_PATH
 #define cygwin_conv_to_full_posix_path(from, to) \
   cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, (from), (to), MAX_PATH)

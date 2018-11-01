@@ -13,154 +13,154 @@ $(BUILDDIR)binfmttest$(EXEEXT) $(BUILDDIR)bsdiffcat$(EXEEXT) $(BUILDDIR)bufferte
 	$(CCLD) $(CFLAGS) $(LDFLAGS) -o   $(LIBS) $(EXTRA_LIBS)
 $(BUILDDIR)access.o $(BUILDDIR)binfmttest.o $(BUILDDIR)bsdiffcat.o $(BUILDDIR)buffertest.o $(BUILDDIR)ccat.o $(BUILDDIR)compiler-wrapper.o $(BUILDDIR)count-depth.o $(BUILDDIR)decode-ls-lR.o $(BUILDDIR)dnsip.o $(BUILDDIR)dnsname.o $(BUILDDIR)dnstest.o $(BUILDDIR)eagle-gen-cmds.o $(BUILDDIR)eagle-init-brd.o $(BUILDDIR)eagle-to-circuit.o $(BUILDDIR)elf64list.o $(BUILDDIR)elflist.o $(BUILDDIR)elfwrsec.o $(BUILDDIR)genmakefile.o $(BUILDDIR)hexedit.o $(BUILDDIR)httptest.o $(BUILDDIR)impgen.o $(BUILDDIR)jsontest.o $(BUILDDIR)libntldd.o $(BUILDDIR)list-r.o $(BUILDDIR)macho32list.o $(BUILDDIR)map.o $(BUILDDIR)mediathek-list.o $(BUILDDIR)mediathek-parser.o $(BUILDDIR)ntldd.o $(BUILDDIR)opensearch-dump.o $(BUILDDIR)pathtool.o $(BUILDDIR)pelist.o $(BUILDDIR)pkgcfg.o $(BUILDDIR)plsconv.o $(BUILDDIR)rdir-test.o $(BUILDDIR)reg2cmd.o $(BUILDDIR)regfilter.o $(BUILDDIR)sln.o $(BUILDDIR)strarraytest.o $(BUILDDIR)torrent-progress.o $(BUILDDIR)xmlpp.o $(BUILDDIR)xmltest.o $(BUILDDIR)xmltest2.o $(BUILDDIR)xmltest3.o $(BUILDDIR)xmltest4.o $(BUILDDIR)ziptest.o: \
 	 $(BUILDDIR)%.o: %.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)fnmatch.o $(BUILDDIR)fork.o $(BUILDDIR)getdelim.o $(BUILDDIR)getenv.o $(BUILDDIR)getopt.o $(BUILDDIR)glob.o $(BUILDDIR)hash_map.o $(BUILDDIR)iopause.o $(BUILDDIR)io_passfd.o $(BUILDDIR)isleap.o $(BUILDDIR)linked_list.o $(BUILDDIR)memalign.o $(BUILDDIR)memory.o $(BUILDDIR)pipe2.o $(BUILDDIR)popen.o $(BUILDDIR)readlink.o $(BUILDDIR)round.o $(BUILDDIR)setenv.o $(BUILDDIR)strptime.o $(BUILDDIR)symlink.o $(BUILDDIR)time_table_spd.o $(BUILDDIR)umult64.o $(BUILDDIR)utf8.o $(BUILDDIR)wordexp.o: \
 	 $(BUILDDIR)%.o: lib/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILDDIR)array_cat.o $(BUILDDIR)array_cat0.o $(BUILDDIR)array_catb.o $(BUILDDIR)array_cate.o $(BUILDDIR)array_cats.o $(BUILDDIR)array_cats0.o $(BUILDDIR)array_end.o $(BUILDDIR)array_equal.o $(BUILDDIR)array_fail.o $(BUILDDIR)array_get.o $(BUILDDIR)array_length.o $(BUILDDIR)array_reset.o $(BUILDDIR)array_start.o $(BUILDDIR)array_trunc.o $(BUILDDIR)array_truncate.o: \
 	 $(BUILDDIR)%.o: lib/array/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)binfmt_open.o: \
 	 $(BUILDDIR)%.o: lib/binfmt/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)buffer_0.o $(BUILDDIR)buffer_0small.o $(BUILDDIR)buffer_1.o $(BUILDDIR)buffer_1small.o $(BUILDDIR)buffer_2.o $(BUILDDIR)buffer_bz2.o $(BUILDDIR)buffer_bzip.o $(BUILDDIR)buffer_close.o $(BUILDDIR)buffer_copy.o $(BUILDDIR)buffer_default.o $(BUILDDIR)buffer_deflate.o $(BUILDDIR)buffer_dummyread.o $(BUILDDIR)buffer_dummyreadmmap.o $(BUILDDIR)buffer_dump.o $(BUILDDIR)buffer_feed.o $(BUILDDIR)buffer_flush.o $(BUILDDIR)buffer_free.o $(BUILDDIR)buffer_freshen.o $(BUILDDIR)buffer_fromarray.o $(BUILDDIR)buffer_frombuf.o $(BUILDDIR)buffer_fromsa.o $(BUILDDIR)buffer_fromstr.o $(BUILDDIR)buffer_get.o $(BUILDDIR)buffer_getc.o $(BUILDDIR)buffer_getline.o $(BUILDDIR)buffer_getline_sa.o $(BUILDDIR)buffer_getn.o $(BUILDDIR)buffer_getnewline_sa.o $(BUILDDIR)buffer_gettok_sa.o $(BUILDDIR)buffer_get_new_token_sa.o $(BUILDDIR)buffer_get_new_token_sa_pred.o $(BUILDDIR)buffer_get_token.o $(BUILDDIR)buffer_get_token_pred.o $(BUILDDIR)buffer_get_token_sa.o $(BUILDDIR)buffer_get_token_sa_pred.o $(BUILDDIR)buffer_get_until.o $(BUILDDIR)buffer_gzip.o $(BUILDDIR)buffer_inflate.o $(BUILDDIR)buffer_init.o $(BUILDDIR)buffer_init_free.o $(BUILDDIR)buffer_lzma.o $(BUILDDIR)buffer_mmap.o $(BUILDDIR)buffer_mmapprivate.o $(BUILDDIR)buffer_mmapprivate_fd.o $(BUILDDIR)buffer_mmapread.o $(BUILDDIR)buffer_mmapread_fd.o $(BUILDDIR)buffer_mmapshared_fd.o $(BUILDDIR)buffer_munmap.o $(BUILDDIR)buffer_peek.o $(BUILDDIR)buffer_peekc.o $(BUILDDIR)buffer_prefetch.o $(BUILDDIR)buffer_put.o $(BUILDDIR)buffer_put8long.o $(BUILDDIR)buffer_putalign.o $(BUILDDIR)buffer_putc.o $(BUILDDIR)buffer_putdouble.o $(BUILDDIR)buffer_puterror.o $(BUILDDIR)buffer_puterror2.o $(BUILDDIR)buffer_putflush.o $(BUILDDIR)buffer_putint64.o $(BUILDDIR)buffer_putlong.o $(BUILDDIR)buffer_putlonglong.o $(BUILDDIR)buffer_putm_internal.o $(BUILDDIR)buffer_putm_internal_flush.o $(BUILDDIR)buffer_putnc.o $(BUILDDIR)buffer_putnlflush.o $(BUILDDIR)buffer_putnspace.o $(BUILDDIR)buffer_putptr.o $(BUILDDIR)buffer_puts.o $(BUILDDIR)buffer_putsa.o $(BUILDDIR)buffer_putsaflush.o $(BUILDDIR)buffer_putsalign.o $(BUILDDIR)buffer_putsflush.o $(BUILDDIR)buffer_putspace.o $(BUILDDIR)buffer_putspad.o $(BUILDDIR)buffer_puts_escaped.o $(BUILDDIR)buffer_putuint64.o $(BUILDDIR)buffer_putulong.o $(BUILDDIR)buffer_putulong0.o $(BUILDDIR)buffer_putulonglong.o $(BUILDDIR)buffer_putxlong.o $(BUILDDIR)buffer_putxlong0.o $(BUILDDIR)buffer_putxlonglong.o $(BUILDDIR)buffer_putxlonglong0.o $(BUILDDIR)buffer_put_escaped.o $(BUILDDIR)buffer_read.o $(BUILDDIR)buffer_read_fd.o $(BUILDDIR)buffer_seek.o $(BUILDDIR)buffer_skipc.o $(BUILDDIR)buffer_skipn.o $(BUILDDIR)buffer_skipspace.o $(BUILDDIR)buffer_skip_pred.o $(BUILDDIR)buffer_skip_until.o $(BUILDDIR)buffer_stubborn.o $(BUILDDIR)buffer_stubborn2.o $(BUILDDIR)buffer_tosa.o $(BUILDDIR)buffer_truncfile.o $(BUILDDIR)buffer_write.o $(BUILDDIR)buffer_write_fd.o: \
 	 $(BUILDDIR)%.o: lib/buffer/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)byte_case_diff.o $(BUILDDIR)byte_case_equal.o $(BUILDDIR)byte_case_start.o $(BUILDDIR)byte_chr.o $(BUILDDIR)byte_copy.o $(BUILDDIR)byte_copyr.o $(BUILDDIR)byte_count.o $(BUILDDIR)byte_diff.o $(BUILDDIR)byte_equal.o $(BUILDDIR)byte_fill.o $(BUILDDIR)byte_fmt.o $(BUILDDIR)byte_lower.o $(BUILDDIR)byte_rchr.o $(BUILDDIR)byte_scan.o $(BUILDDIR)byte_upper.o $(BUILDDIR)byte_zero.o: \
 	 $(BUILDDIR)%.o: lib/byte/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)case_diffb.o $(BUILDDIR)case_diffs.o $(BUILDDIR)case_lowerb.o $(BUILDDIR)case_lowers.o $(BUILDDIR)case_starts.o: \
 	 $(BUILDDIR)%.o: lib/case/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)cb_clear.o $(BUILDDIR)cb_erase.o $(BUILDDIR)cb_find.o $(BUILDDIR)cb_find_prefix.o $(BUILDDIR)cb_foreach.o $(BUILDDIR)cb_get_kv.o $(BUILDDIR)cb_get_kv_ex.o $(BUILDDIR)cb_insert.o $(BUILDDIR)cb_new_kv.o: \
 	 $(BUILDDIR)%.o: lib/cb/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)alloc.o $(BUILDDIR)cbmap_count.o $(BUILDDIR)cbmap_data_node_destroy.o $(BUILDDIR)cbmap_delete.o $(BUILDDIR)cbmap_destroy.o $(BUILDDIR)cbmap_get.o $(BUILDDIR)cbmap_insert.o $(BUILDDIR)cbmap_internal_node.o $(BUILDDIR)cbmap_new.o $(BUILDDIR)cbmap_visit.o $(BUILDDIR)cbmap_visit_all.o: \
 	 $(BUILDDIR)%.o: lib/cbmap/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)charbuf_close.o $(BUILDDIR)charbuf_get.o $(BUILDDIR)charbuf_getc.o $(BUILDDIR)charbuf_init.o $(BUILDDIR)charbuf_nextc.o $(BUILDDIR)charbuf_peek.o $(BUILDDIR)charbuf_peekc.o $(BUILDDIR)charbuf_skip.o $(BUILDDIR)charbuf_skip_pred.o $(BUILDDIR)charbuf_skip_until.o: \
 	 $(BUILDDIR)%.o: lib/charbuf/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)dir_close.o $(BUILDDIR)dir_name.o $(BUILDDIR)dir_open.o $(BUILDDIR)dir_read.o $(BUILDDIR)dir_time.o $(BUILDDIR)dir_type.o: \
 	 $(BUILDDIR)%.o: lib/dir/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)dns_dfd.o $(BUILDDIR)dns_domain.o $(BUILDDIR)dns_dtda.o $(BUILDDIR)dns_ip4.o $(BUILDDIR)dns_ip6.o $(BUILDDIR)dns_ipq.o $(BUILDDIR)dns_ipq6.o $(BUILDDIR)dns_mx.o $(BUILDDIR)dns_name.o $(BUILDDIR)dns_nd.o $(BUILDDIR)dns_nd6.o $(BUILDDIR)dns_packet.o $(BUILDDIR)dns_random.o $(BUILDDIR)dns_rcip.o $(BUILDDIR)dns_rcrw.o $(BUILDDIR)dns_resolve.o $(BUILDDIR)dns_sortip.o $(BUILDDIR)dns_sortip6.o $(BUILDDIR)dns_transmit.o $(BUILDDIR)dns_txt.o: \
 	 $(BUILDDIR)%.o: lib/dns/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)elf_dynamic_section.o $(BUILDDIR)elf_get_section.o $(BUILDDIR)elf_get_value.o $(BUILDDIR)elf_header.o $(BUILDDIR)elf_program_headers.o $(BUILDDIR)elf_section_headers.o $(BUILDDIR)elf_section_index.o $(BUILDDIR)elf_section_offset.o $(BUILDDIR)elf_section_size.o $(BUILDDIR)elf_section_type.o $(BUILDDIR)elf_shstrtab.o: \
 	 $(BUILDDIR)%.o: lib/elf/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)env_addmodif.o $(BUILDDIR)env_get.o $(BUILDDIR)env_get2.o $(BUILDDIR)env_len.o $(BUILDDIR)env_make.o $(BUILDDIR)env_merge.o $(BUILDDIR)env_pick.o $(BUILDDIR)env_put.o $(BUILDDIR)env_set.o $(BUILDDIR)env_string.o $(BUILDDIR)env_unset.o: \
 	 $(BUILDDIR)%.o: lib/env/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)errmsg_iam.o $(BUILDDIR)errmsg_info.o $(BUILDDIR)errmsg_infosys.o $(BUILDDIR)errmsg_puts.o $(BUILDDIR)errmsg_warn.o $(BUILDDIR)errmsg_warnsys.o $(BUILDDIR)errmsg_write.o: \
 	 $(BUILDDIR)%.o: lib/errmsg/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)expand_arg.o $(BUILDDIR)expand_args.o $(BUILDDIR)expand_argv.o $(BUILDDIR)expand_arith.o $(BUILDDIR)expand_cat.o $(BUILDDIR)expand_catsa.o $(BUILDDIR)expand_command.o $(BUILDDIR)expand_copysa.o $(BUILDDIR)expand_escape.o $(BUILDDIR)expand_glob.o $(BUILDDIR)expand_param.o $(BUILDDIR)expand_unescape.o $(BUILDDIR)expand_vars.o: \
 	 $(BUILDDIR)%.o: lib/expand/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_8long.o $(BUILDDIR)fmt_8longlong.o $(BUILDDIR)fmt_asn1derlength.o $(BUILDDIR)fmt_asn1dertag.o $(BUILDDIR)fmt_double.o $(BUILDDIR)fmt_escapecharc.o $(BUILDDIR)fmt_escapecharhtml.o $(BUILDDIR)fmt_escapecharquotedprintable.o $(BUILDDIR)fmt_escapecharquotedprintableutf8.o $(BUILDDIR)fmt_escapecharshell.o $(BUILDDIR)fmt_escapecharxml.o $(BUILDDIR)fmt_fill.o $(BUILDDIR)fmt_hexb.o $(BUILDDIR)fmt_httpdate.o $(BUILDDIR)fmt_human.o $(BUILDDIR)fmt_humank.o $(BUILDDIR)fmt_iso8601.o $(BUILDDIR)fmt_long.o $(BUILDDIR)fmt_longlong.o $(BUILDDIR)fmt_minus.o $(BUILDDIR)fmt_pad.o $(BUILDDIR)fmt_plusminus.o $(BUILDDIR)fmt_repeat.o $(BUILDDIR)fmt_str.o $(BUILDDIR)fmt_strm_internal.o $(BUILDDIR)fmt_strn.o $(BUILDDIR)fmt_tohex.o $(BUILDDIR)fmt_uint64.o $(BUILDDIR)fmt_ulong.o $(BUILDDIR)fmt_ulong0.o $(BUILDDIR)fmt_ulonglong.o $(BUILDDIR)fmt_utf8.o $(BUILDDIR)fmt_xlong.o $(BUILDDIR)fmt_xlonglong.o $(BUILDDIR)fmt_xmlescape.o: \
 	 $(BUILDDIR)%.o: lib/fmt/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)gpio_init.o $(BUILDDIR)gpio_read.o $(BUILDDIR)gpio_set_input_pull.o $(BUILDDIR)gpio_set_input_pull_down.o $(BUILDDIR)gpio_set_input_pull_up.o $(BUILDDIR)gpio_set_input_resistor_pull.o $(BUILDDIR)gpio_set_output.o $(BUILDDIR)gpio_set_pin_mode.o $(BUILDDIR)gpio_short_wait.o $(BUILDDIR)gpio_write.o: \
 	 $(BUILDDIR)%.o: lib/gpio/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)hmap_add.o $(BUILDDIR)hmap_add_tuple_with_data.o $(BUILDDIR)hmap_delete.o $(BUILDDIR)hmap_destroy.o $(BUILDDIR)hmap_dump.o $(BUILDDIR)hmap_free_data.o $(BUILDDIR)hmap_init.o $(BUILDDIR)hmap_internal.o $(BUILDDIR)hmap_is_locate.o $(BUILDDIR)hmap_print_list.o $(BUILDDIR)hmap_print_table.o $(BUILDDIR)hmap_print_tree.o $(BUILDDIR)hmap_search.o $(BUILDDIR)hmap_set.o $(BUILDDIR)hmap_set_chars.o $(BUILDDIR)hmap_set_stralloc.o $(BUILDDIR)hmap_size.o $(BUILDDIR)hmap_truncate.o: \
 	 $(BUILDDIR)%.o: lib/hmap/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)http_get.o $(BUILDDIR)http_init.o $(BUILDDIR)http_readable.o $(BUILDDIR)http_sendreq.o $(BUILDDIR)http_socket.o $(BUILDDIR)http_writeable.o: \
 	 $(BUILDDIR)%.o: lib/http/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)iarray_allocate.o $(BUILDDIR)iarray_free.o $(BUILDDIR)iarray_get.o $(BUILDDIR)iarray_init.o $(BUILDDIR)iarray_length.o: \
 	 $(BUILDDIR)%.o: lib/iarray/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)io_appendfile.o $(BUILDDIR)io_block.o $(BUILDDIR)io_canread.o $(BUILDDIR)io_canwrite.o $(BUILDDIR)io_check.o $(BUILDDIR)io_close.o $(BUILDDIR)io_closeonexec.o $(BUILDDIR)io_createfile.o $(BUILDDIR)io_debugstring.o $(BUILDDIR)io_dontwantread.o $(BUILDDIR)io_dontwantwrite.o $(BUILDDIR)io_dup.o $(BUILDDIR)io_eagain.o $(BUILDDIR)io_eagain_read.o $(BUILDDIR)io_eagain_write.o $(BUILDDIR)io_fd.o $(BUILDDIR)io_finishandshutdown.o $(BUILDDIR)io_getcookie.o $(BUILDDIR)io_mmapwritefile.o $(BUILDDIR)io_nonblock.o $(BUILDDIR)io_pipe.o $(BUILDDIR)io_readfile.o $(BUILDDIR)io_readwritefile.o $(BUILDDIR)io_sendfile.o $(BUILDDIR)io_setcookie.o $(BUILDDIR)io_sigpipe.o $(BUILDDIR)io_socketpair.o $(BUILDDIR)io_timedout.o $(BUILDDIR)io_timeout.o $(BUILDDIR)io_timeouted.o $(BUILDDIR)io_tryread.o $(BUILDDIR)io_tryreadtimeout.o $(BUILDDIR)io_trywrite.o $(BUILDDIR)io_trywritetimeout.o $(BUILDDIR)io_wait.o $(BUILDDIR)io_waitread.o $(BUILDDIR)io_waituntil.o $(BUILDDIR)io_waituntil2.o $(BUILDDIR)io_waitwrite.o $(BUILDDIR)io_wantread.o $(BUILDDIR)io_wantwrite.o: \
 	 $(BUILDDIR)%.o: lib/io/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)json_free.o $(BUILDDIR)json_newnode.o $(BUILDDIR)json_parse.o $(BUILDDIR)json_print.o $(BUILDDIR)json_reader_init.o $(BUILDDIR)json_read_callback.o $(BUILDDIR)json_read_tree.o: \
 	 $(BUILDDIR)%.o: lib/json/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)list_add_after.o $(BUILDDIR)list_add_before.o $(BUILDDIR)list_find.o $(BUILDDIR)list_find_remove.o $(BUILDDIR)list_init.o $(BUILDDIR)list_length.o $(BUILDDIR)list_move_head.o $(BUILDDIR)list_move_tail.o $(BUILDDIR)list_push.o $(BUILDDIR)list_remove.o $(BUILDDIR)list_swap.o $(BUILDDIR)list_unshift.o: \
 	 $(BUILDDIR)%.o: lib/list/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)map_deinit.o $(BUILDDIR)map_get.o $(BUILDDIR)map_getref.o $(BUILDDIR)map_iter.o $(BUILDDIR)map_next.o $(BUILDDIR)map_remove.o $(BUILDDIR)map_set.o: \
 	 $(BUILDDIR)%.o: lib/map/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_map.o $(BUILDDIR)mmap_private.o $(BUILDDIR)mmap_private_fd.o $(BUILDDIR)mmap_read.o $(BUILDDIR)mmap_read_fd.o $(BUILDDIR)mmap_rw_fd.o $(BUILDDIR)mmap_shared.o $(BUILDDIR)mmap_shared_fd.o $(BUILDDIR)mmap_unmap.o: \
 	 $(BUILDDIR)%.o: lib/mmap/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)ndelay_off.o $(BUILDDIR)ndelay_on.o: \
 	 $(BUILDDIR)%.o: lib/ndelay/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)openreadclose.o $(BUILDDIR)open_append.o $(BUILDDIR)open_excl.o $(BUILDDIR)open_read.o $(BUILDDIR)open_rw.o $(BUILDDIR)open_trunc.o $(BUILDDIR)open_write.o $(BUILDDIR)readclose.o: \
 	 $(BUILDDIR)%.o: lib/open/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)path_absolute.o $(BUILDDIR)path_basename.o $(BUILDDIR)path_canonicalize.o $(BUILDDIR)path_dirname.o $(BUILDDIR)path_exists.o $(BUILDDIR)path_fnmatch.o $(BUILDDIR)path_getcwd.o $(BUILDDIR)path_gethome.o $(BUILDDIR)path_len.o $(BUILDDIR)path_len_s.o $(BUILDDIR)path_num.o $(BUILDDIR)path_num_sa.o $(BUILDDIR)path_readlink.o $(BUILDDIR)path_realpath.o $(BUILDDIR)path_right.o $(BUILDDIR)path_skip.o $(BUILDDIR)path_skips.o $(BUILDDIR)path_split.o: \
 	 $(BUILDDIR)%.o: lib/path/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)pe_get_datadir.o $(BUILDDIR)pe_get_section.o $(BUILDDIR)pe_get_value.o $(BUILDDIR)pe_header.o $(BUILDDIR)pe_offset2rva.o $(BUILDDIR)pe_rva2offset.o $(BUILDDIR)pe_rva2ptr.o $(BUILDDIR)pe_thunk.o: \
 	 $(BUILDDIR)%.o: lib/pe/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)playlist_init.o $(BUILDDIR)playlist_m3u.o $(BUILDDIR)playlist_pls.o $(BUILDDIR)playlist_read.o $(BUILDDIR)playlist_write_entry.o $(BUILDDIR)playlist_write_finish.o $(BUILDDIR)playlist_write_start.o $(BUILDDIR)playlist_xspf.o: \
 	 $(BUILDDIR)%.o: lib/playlist/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)rdir_close.o $(BUILDDIR)rdir_open.o $(BUILDDIR)rdir_read.o: \
 	 $(BUILDDIR)%.o: lib/rdir/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)scan_8int.o $(BUILDDIR)scan_8long.o $(BUILDDIR)scan_8longlong.o $(BUILDDIR)scan_8longn.o $(BUILDDIR)scan_8short.o $(BUILDDIR)scan_asn1derlength.o $(BUILDDIR)scan_asn1dertag.o $(BUILDDIR)scan_charsetnskip.o $(BUILDDIR)scan_double.o $(BUILDDIR)scan_fromhex.o $(BUILDDIR)scan_httpdate.o $(BUILDDIR)scan_int.o $(BUILDDIR)scan_long.o $(BUILDDIR)scan_longlong.o $(BUILDDIR)scan_longn.o $(BUILDDIR)scan_netstring.o $(BUILDDIR)scan_noncharsetnskip.o $(BUILDDIR)scan_nonwhitenskip.o $(BUILDDIR)scan_pb_tag.o $(BUILDDIR)scan_pb_type0_sint.o $(BUILDDIR)scan_pb_type1_fixed64.o $(BUILDDIR)scan_pb_type5_fixed32.o $(BUILDDIR)scan_plusminus.o $(BUILDDIR)scan_short.o $(BUILDDIR)scan_uint.o $(BUILDDIR)scan_ulong.o $(BUILDDIR)scan_ulonglong.o $(BUILDDIR)scan_ulongn.o $(BUILDDIR)scan_ushort.o $(BUILDDIR)scan_utf8.o $(BUILDDIR)scan_varint.o $(BUILDDIR)scan_whitenskip.o $(BUILDDIR)scan_xint.o $(BUILDDIR)scan_xlong.o $(BUILDDIR)scan_xlonglong.o $(BUILDDIR)scan_xlongn.o $(BUILDDIR)scan_xmlescape.o $(BUILDDIR)scan_xshort.o: \
 	 $(BUILDDIR)%.o: lib/scan/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)sig_block.o $(BUILDDIR)sig_unblock.o: \
 	 $(BUILDDIR)%.o: lib/sig/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)slist_add_after.o $(BUILDDIR)slist_add_before.o $(BUILDDIR)slist_find.o $(BUILDDIR)slist_find_remove.o $(BUILDDIR)slist_init.o $(BUILDDIR)slist_length.o $(BUILDDIR)slist_move_head.o $(BUILDDIR)slist_move_tail.o $(BUILDDIR)slist_push.o $(BUILDDIR)slist_pushs.o $(BUILDDIR)slist_remove.o $(BUILDDIR)slist_unshift.o: \
 	 $(BUILDDIR)%.o: lib/slist/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)fmt_ip4.o $(BUILDDIR)fmt_ip6.o $(BUILDDIR)fmt_ip6c.o $(BUILDDIR)fmt_ip6if.o $(BUILDDIR)fmt_ip6ifc.o $(BUILDDIR)fmt_ip6_flat.o $(BUILDDIR)init.o $(BUILDDIR)scan_ip4.o $(BUILDDIR)scan_ip6.o $(BUILDDIR)scan_ip6if.o $(BUILDDIR)scan_ip6_flat.o $(BUILDDIR)socket_accept4.o $(BUILDDIR)socket_accept6.o $(BUILDDIR)socket_bind4.o $(BUILDDIR)socket_bind4_reuse.o $(BUILDDIR)socket_bind6.o $(BUILDDIR)socket_bind6_reuse.o $(BUILDDIR)socket_broadcast.o $(BUILDDIR)socket_connect4.o $(BUILDDIR)socket_connect6.o $(BUILDDIR)socket_connected.o $(BUILDDIR)socket_deferaccept.o $(BUILDDIR)socket_fastopen.o $(BUILDDIR)socket_fastopen_connect4.o $(BUILDDIR)socket_fastopen_connect6.o $(BUILDDIR)socket_getifidx.o $(BUILDDIR)socket_getifname.o $(BUILDDIR)socket_ip4loopback.o $(BUILDDIR)socket_listen.o $(BUILDDIR)socket_local4.o $(BUILDDIR)socket_local6.o $(BUILDDIR)socket_mchopcount6.o $(BUILDDIR)socket_mcjoin4.o $(BUILDDIR)socket_mcjoin6.o $(BUILDDIR)socket_mcleave4.o $(BUILDDIR)socket_mcleave6.o $(BUILDDIR)socket_mcloop4.o $(BUILDDIR)socket_mcloop6.o $(BUILDDIR)socket_mcttl4.o $(BUILDDIR)socket_noipv6.o $(BUILDDIR)socket_quickack.o $(BUILDDIR)socket_recv4.o $(BUILDDIR)socket_recv6.o $(BUILDDIR)socket_remote4.o $(BUILDDIR)socket_remote6.o $(BUILDDIR)socket_sctp4.o $(BUILDDIR)socket_sctp4b.o $(BUILDDIR)socket_sctp6.o $(BUILDDIR)socket_sctp6b.o $(BUILDDIR)socket_send4.o $(BUILDDIR)socket_send6.o $(BUILDDIR)socket_tcp4.o $(BUILDDIR)socket_tcp4b.o $(BUILDDIR)socket_tcp6.o $(BUILDDIR)socket_tcp6b.o $(BUILDDIR)socket_tryreservein.o $(BUILDDIR)socket_udp4.o $(BUILDDIR)socket_udp6.o $(BUILDDIR)socket_v4mappedprefix.o $(BUILDDIR)socket_v6any.o $(BUILDDIR)socket_v6loopback.o $(BUILDDIR)winsock2errno.o $(BUILDDIR)winsock_init.o $(BUILDDIR)winsock_socketpair.o: \
 	 $(BUILDDIR)%.o: lib/socket/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)str_basename.o $(BUILDDIR)str_case_diff.o $(BUILDDIR)str_case_diffn.o $(BUILDDIR)str_case_equal.o $(BUILDDIR)str_case_start.o $(BUILDDIR)str_cat.o $(BUILDDIR)str_chr.o $(BUILDDIR)str_copy.o $(BUILDDIR)str_copyb.o $(BUILDDIR)str_copyn.o $(BUILDDIR)str_decamelize.o $(BUILDDIR)str_diff.o $(BUILDDIR)str_diffn.o $(BUILDDIR)str_dup.o $(BUILDDIR)str_equal.o $(BUILDDIR)str_find.o $(BUILDDIR)str_findb.o $(BUILDDIR)str_istr.o $(BUILDDIR)str_len.o $(BUILDDIR)str_lower.o $(BUILDDIR)str_ndup.o $(BUILDDIR)str_ptime.o $(BUILDDIR)str_rchr.o $(BUILDDIR)str_rchrs.o $(BUILDDIR)str_start.o $(BUILDDIR)str_tok.o: \
 	 $(BUILDDIR)%.o: lib/str/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)mmap_filename.o $(BUILDDIR)stralloc_0.o $(BUILDDIR)stralloc_append.o $(BUILDDIR)stralloc_case_diff.o $(BUILDDIR)stralloc_case_diffs.o $(BUILDDIR)stralloc_case_end.o $(BUILDDIR)stralloc_case_equal.o $(BUILDDIR)stralloc_case_equals.o $(BUILDDIR)stralloc_case_start.o $(BUILDDIR)stralloc_case_starts.o $(BUILDDIR)stralloc_cat.o $(BUILDDIR)stralloc_catb.o $(BUILDDIR)stralloc_catc.o $(BUILDDIR)stralloc_catdouble.o $(BUILDDIR)stralloc_cathexb.o $(BUILDDIR)stralloc_catint.o $(BUILDDIR)stralloc_catint0.o $(BUILDDIR)stralloc_catlong.o $(BUILDDIR)stralloc_catlong0.o $(BUILDDIR)stralloc_catm_internal.o $(BUILDDIR)stralloc_cats.o $(BUILDDIR)stralloc_catuint.o $(BUILDDIR)stralloc_catuint0.o $(BUILDDIR)stralloc_catulong.o $(BUILDDIR)stralloc_catulong0.o $(BUILDDIR)stralloc_catxlong.o $(BUILDDIR)stralloc_chomp.o $(BUILDDIR)stralloc_chop.o $(BUILDDIR)stralloc_chr.o $(BUILDDIR)stralloc_copy.o $(BUILDDIR)stralloc_copyb.o $(BUILDDIR)stralloc_copys.o $(BUILDDIR)stralloc_copywcb.o $(BUILDDIR)stralloc_copywcs.o $(BUILDDIR)stralloc_count.o $(BUILDDIR)stralloc_decamelize.o $(BUILDDIR)stralloc_diff.o $(BUILDDIR)stralloc_diffb.o $(BUILDDIR)stralloc_diffs.o $(BUILDDIR)stralloc_endb.o $(BUILDDIR)stralloc_ends.o $(BUILDDIR)stralloc_equal.o $(BUILDDIR)stralloc_equalb.o $(BUILDDIR)stralloc_equals.o $(BUILDDIR)stralloc_erase.o $(BUILDDIR)stralloc_expand.o $(BUILDDIR)stralloc_find.o $(BUILDDIR)stralloc_findb.o $(BUILDDIR)stralloc_finds.o $(BUILDDIR)stralloc_fmt.o $(BUILDDIR)stralloc_fmt_call.o $(BUILDDIR)stralloc_fmt_pred.o $(BUILDDIR)stralloc_free.o $(BUILDDIR)stralloc_init.o $(BUILDDIR)stralloc_insert.o $(BUILDDIR)stralloc_insertb.o $(BUILDDIR)stralloc_inserts.o $(BUILDDIR)stralloc_lower.o $(BUILDDIR)stralloc_move.o $(BUILDDIR)stralloc_nul.o $(BUILDDIR)stralloc_prepend.o $(BUILDDIR)stralloc_prependb.o $(BUILDDIR)stralloc_prepends.o $(BUILDDIR)stralloc_rchr.o $(BUILDDIR)stralloc_ready.o $(BUILDDIR)stralloc_readyplus.o $(BUILDDIR)stralloc_ready_tuned.o $(BUILDDIR)stralloc_remove.o $(BUILDDIR)stralloc_remove_all.o $(BUILDDIR)stralloc_replace.o $(BUILDDIR)stralloc_replace_non_printable.o $(BUILDDIR)stralloc_reverse.o $(BUILDDIR)stralloc_reverse_blocks.o $(BUILDDIR)stralloc_scan.o $(BUILDDIR)stralloc_shrink.o $(BUILDDIR)stralloc_start.o $(BUILDDIR)stralloc_startb.o $(BUILDDIR)stralloc_starts.o $(BUILDDIR)stralloc_subst.o $(BUILDDIR)stralloc_trim.o $(BUILDDIR)stralloc_trunc.o $(BUILDDIR)stralloc_upper.o $(BUILDDIR)stralloc_write.o $(BUILDDIR)stralloc_zero.o: \
 	 $(BUILDDIR)%.o: lib/stralloc/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)strarray_appends.o $(BUILDDIR)strarray_from_argv.o $(BUILDDIR)strarray_index_of.o $(BUILDDIR)strarray_joins.o $(BUILDDIR)strarray_pop.o $(BUILDDIR)strarray_prepends.o $(BUILDDIR)strarray_push.o $(BUILDDIR)strarray_pushb.o $(BUILDDIR)strarray_pushd.o $(BUILDDIR)strarray_push_sa.o $(BUILDDIR)strarray_removeprefixs.o $(BUILDDIR)strarray_removesuffixs.o $(BUILDDIR)strarray_set.o $(BUILDDIR)strarray_sort.o $(BUILDDIR)strarray_to_argv.o: \
 	 $(BUILDDIR)%.o: lib/strarray/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)strlist_append_sa.o $(BUILDDIR)strlist_at.o $(BUILDDIR)strlist_at_n.o $(BUILDDIR)strlist_at_sa.o $(BUILDDIR)strlist_cat.o $(BUILDDIR)strlist_contains.o $(BUILDDIR)strlist_contains_sa.o $(BUILDDIR)strlist_count.o $(BUILDDIR)strlist_dump.o $(BUILDDIR)strlist_froms.o $(BUILDDIR)strlist_index_of.o $(BUILDDIR)strlist_join.o $(BUILDDIR)strlist_joins.o $(BUILDDIR)strlist_prependb.o $(BUILDDIR)strlist_prepends.o $(BUILDDIR)strlist_prepend_sa.o $(BUILDDIR)strlist_push.o $(BUILDDIR)strlist_pushb.o $(BUILDDIR)strlist_pushm_internal.o $(BUILDDIR)strlist_push_sa.o $(BUILDDIR)strlist_push_tokens.o $(BUILDDIR)strlist_push_unique.o $(BUILDDIR)strlist_push_unique_sa.o $(BUILDDIR)strlist_range.o $(BUILDDIR)strlist_shift.o $(BUILDDIR)strlist_shift_n.o $(BUILDDIR)strlist_sort.o $(BUILDDIR)strlist_to_argv.o $(BUILDDIR)strlist_unshift.o: \
 	 $(BUILDDIR)%.o: lib/strlist/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)tai_add.o $(BUILDDIR)tai_now.o $(BUILDDIR)tai_pack.o $(BUILDDIR)tai_sub.o $(BUILDDIR)tai_uint.o $(BUILDDIR)tai_unpack.o: \
 	 $(BUILDDIR)%.o: lib/tai/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)taia_add.o $(BUILDDIR)taia_addsec.o $(BUILDDIR)taia_approx.o $(BUILDDIR)taia_frac.o $(BUILDDIR)taia_half.o $(BUILDDIR)taia_less.o $(BUILDDIR)taia_now.o $(BUILDDIR)taia_pack.o $(BUILDDIR)taia_sub.o $(BUILDDIR)taia_tai.o $(BUILDDIR)taia_uint.o $(BUILDDIR)taia_unpack.o: \
 	 $(BUILDDIR)%.o: lib/taia/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)is_textbuf.o $(BUILDDIR)textbuf_column.o $(BUILDDIR)textbuf_free.o $(BUILDDIR)textbuf_init.o $(BUILDDIR)textbuf_line.o $(BUILDDIR)textbuf_read.o: \
 	 $(BUILDDIR)%.o: lib/textbuf/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)uint16_pack.o $(BUILDDIR)uint16_pack_big.o $(BUILDDIR)uint16_read.o $(BUILDDIR)uint16_read_big.o $(BUILDDIR)uint16_unpack.o $(BUILDDIR)uint16_unpack_big.o: \
 	 $(BUILDDIR)%.o: lib/uint16/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)uint32_pack.o $(BUILDDIR)uint32_pack_big.o $(BUILDDIR)uint32_read.o $(BUILDDIR)uint32_read_big.o $(BUILDDIR)uint32_unpack.o $(BUILDDIR)uint32_unpack_big.o: \
 	 $(BUILDDIR)%.o: lib/uint32/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)uint64_pack.o $(BUILDDIR)uint64_pack_big.o $(BUILDDIR)uint64_read.o $(BUILDDIR)uint64_read_big.o $(BUILDDIR)uint64_unpack.o $(BUILDDIR)uint64_unpack_big.o: \
 	 $(BUILDDIR)%.o: lib/uint64/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)var_bsearch.o $(BUILDDIR)var_chflg.o $(BUILDDIR)var_cleanup.o $(BUILDDIR)var_copys.o $(BUILDDIR)var_count.o $(BUILDDIR)var_create.o $(BUILDDIR)var_dump.o $(BUILDDIR)var_export.o $(BUILDDIR)var_get.o $(BUILDDIR)var_hsearch.o $(BUILDDIR)var_import.o $(BUILDDIR)var_init.o $(BUILDDIR)var_len.o $(BUILDDIR)var_lexhash.o $(BUILDDIR)var_print.o $(BUILDDIR)var_rndhash.o $(BUILDDIR)var_search.o $(BUILDDIR)var_set.o $(BUILDDIR)var_setsa.o $(BUILDDIR)var_setvint.o $(BUILDDIR)var_setvsa.o $(BUILDDIR)var_unset.o $(BUILDDIR)var_valid.o $(BUILDDIR)var_value.o $(BUILDDIR)var_vdefault.o $(BUILDDIR)var_vlen.o: \
 	 $(BUILDDIR)%.o: lib/var/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)vartab_add.o $(BUILDDIR)vartab_cleanup.o $(BUILDDIR)vartab_dump.o $(BUILDDIR)vartab_hash.o $(BUILDDIR)vartab_pop.o $(BUILDDIR)vartab_print.o $(BUILDDIR)vartab_push.o $(BUILDDIR)vartab_root.o $(BUILDDIR)vartab_search.o: \
 	 $(BUILDDIR)%.o: lib/vartab/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)waitn.o $(BUILDDIR)waitn_reap.o $(BUILDDIR)waitpid_nointr.o $(BUILDDIR)wait_nointr.o $(BUILDDIR)wait_pids_nohang.o $(BUILDDIR)wait_pid_nohang.o $(BUILDDIR)wait_reap.o: \
 	 $(BUILDDIR)%.o: lib/wait/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 $(BUILDDIR)xml_add_child.o $(BUILDDIR)xml_attrnode.o $(BUILDDIR)xml_content.o $(BUILDDIR)xml_content_sa.o $(BUILDDIR)xml_debug.o $(BUILDDIR)xml_delete.o $(BUILDDIR)xml_element.o $(BUILDDIR)xml_escape.o $(BUILDDIR)xml_find_all_pred.o $(BUILDDIR)xml_find_element.o $(BUILDDIR)xml_find_element_attr.o $(BUILDDIR)xml_find_parent.o $(BUILDDIR)xml_find_pred.o $(BUILDDIR)xml_find_predicates.o $(BUILDDIR)xml_free.o $(BUILDDIR)xml_get_attribute.o $(BUILDDIR)xml_get_attribute_double.o $(BUILDDIR)xml_get_attribute_sa.o $(BUILDDIR)xml_get_document.o $(BUILDDIR)xml_has_attribute.o $(BUILDDIR)xml_insert.o $(BUILDDIR)xml_newnode.o $(BUILDDIR)xml_path.o $(BUILDDIR)xml_print.o $(BUILDDIR)xml_print_attributes.o $(BUILDDIR)xml_print_nodeset.o $(BUILDDIR)xml_reader_init.o $(BUILDDIR)xml_read_callback.o $(BUILDDIR)xml_read_tree.o $(BUILDDIR)xml_remove.o $(BUILDDIR)xml_root_element.o $(BUILDDIR)xml_set_attribute.o $(BUILDDIR)xml_set_attribute_double.o $(BUILDDIR)xml_textnode.o: \
 	 $(BUILDDIR)%.o: lib/xml/%.c
-	$(COMPILE) -o $@ $<
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 $(BUILDDIR)array.a: $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILDDIR)array_cat.o $(BUILDDIR)array_cat0.o $(BUILDDIR)array_catb.o $(BUILDDIR)array_cate.o $(BUILDDIR)array_cats.o $(BUILDDIR)array_cats0.o $(BUILDDIR)array_end.o $(BUILDDIR)array_equal.o $(BUILDDIR)array_fail.o $(BUILDDIR)array_get.o $(BUILDDIR)array_length.o $(BUILDDIR)array_reset.o $(BUILDDIR)array_start.o $(BUILDDIR)array_trunc.o $(BUILDDIR)array_truncate.o $(BUILDDIR)umult64.o
 	$(CROSS_COMPILE)$(AR) rcs $(BUILDDIR)array.a $(BUILDDIR)array_allocate.o $(BUILDDIR)array_bytes.o $(BUILDDIR)array_cat.o $(BUILDDIR)array_cat0.o $(BUILDDIR)array_catb.o $(BUILDDIR)array_cate.o $(BUILDDIR)array_cats.o $(BUILDDIR)array_cats0.o $(BUILDDIR)array_end.o $(BUILDDIR)array_equal.o $(BUILDDIR)array_fail.o $(BUILDDIR)array_get.o $(BUILDDIR)array_length.o $(BUILDDIR)array_reset.o $(BUILDDIR)array_start.o $(BUILDDIR)array_trunc.o $(BUILDDIR)array_truncate.o $(BUILDDIR)umult64.o
