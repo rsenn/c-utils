@@ -4,6 +4,7 @@
 #if WINDOWS
 #else
 #endif
+
 #include "../io_internal.h"
 #include <errno.h>
 #include <fcntl.h>
@@ -11,11 +12,13 @@
 #include <sys/event.h>
 #include <sys/types.h>
 #endif
+
 #ifdef HAVE_EPOLL
 #include "../byte.h"
 #include <inttypes.h>
 #include <sys/epoll.h>
 #endif
+
 #ifdef HAVE_DEVPOLL
 #include <sys/devpoll.h>
 #include <sys/socket.h>
@@ -45,6 +48,7 @@ io_dontwantread_really(fd_t d, io_entry* e) {
     epoll_ctl(io_master, e->kernelwantwrite ? EPOLL_CTL_MOD : EPOLL_CTL_DEL, d, &x);
   }
 #endif
+
 #ifdef HAVE_KQUEUE
   if(io_waitmode == KQUEUE) {
     struct kevent kev;
@@ -55,6 +59,7 @@ io_dontwantread_really(fd_t d, io_entry* e) {
     kevent(io_master, &kev, 1, 0, 0, &ts);
   }
 #endif
+
 #ifdef HAVE_DEVPOLL
   if(io_waitmode == DEVPOLL) {
     struct pollfd x;

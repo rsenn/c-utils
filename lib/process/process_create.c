@@ -7,6 +7,7 @@
 #include <process.h>
 #include <io.h>
 #endif
+
 #define PROCESS_STATUS_ERROR     -1       // process has entered an erroneous state
 
 

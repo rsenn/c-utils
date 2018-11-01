@@ -1,4 +1,11 @@
+#include "../windoze.h"
 #define USE_WS2_32 1
+
+#if WINDOWS_NATIVE
+#define _WINSOCK2API_
+#include <winsock2.h>
+#endif
+
 #include "../socket_internal.h"
 #include <sys/types.h>
 #include "../byte.h"
@@ -34,6 +41,7 @@ socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* sc
 #else
   if(scope_id) *scope_id = 0;
 #endif
+
 #else
   if(ip) {
     byte_copy(ip, 12, (char*)V4mappedprefix);

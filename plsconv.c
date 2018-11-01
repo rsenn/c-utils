@@ -1,5 +1,5 @@
 #include "lib/windoze.h"
-#include "lib/getopt.h"
+#include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/io_internal.h"

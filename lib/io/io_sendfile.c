@@ -9,6 +9,7 @@
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
+
 #ifdef __aarch64__
 #include <asm/unistd.h>
 #endif
@@ -108,10 +109,12 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 #ifndef __NR_sendfile
 #define __NR_sendfile 71
 #endif
+
 #define sendfile(x...) syscall(__NR_sendfile64, x)
 #else
 _syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)
 #endif
+
 #endif
 
 int64

@@ -1,6 +1,5 @@
 #include "../windoze.h"
-
-
+#include "../io_internal.h"
 #include "../mmap.h"
 #include "../open.h"
 
@@ -32,7 +31,7 @@ mmap_private_fd(fd_t fd, size_t* filesize) {
 #else
   char* map;
   if(fd >= 0) {
-    *filesize = io_seek(fd, 0, SEEK_END);
+    *filesize = lseek(fd, 0, SEEK_END);
     map = (char*)mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
     if(map == (char*)-1) map = 0;
 //    close(fd);

@@ -4,11 +4,10 @@
 #if WINDOWS
 #else
 #endif
+
 #include "../io_internal.h"
 #include <errno.h>
 
-#if WINDOWS
-#endif
 
 void io_wantread_really(fd_t d, io_entry* e);
 
@@ -38,8 +37,6 @@ io_canread() {
     e->next_read = -1;
     debug_printf(("io_canread: dequeue %lld from normal read queue (next is %ld)\n", r, first_readable));
 
-#if WINDOWS
-#endif
 
     if(e->wantread &&
 #if WINDOWS

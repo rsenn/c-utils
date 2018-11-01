@@ -7,14 +7,17 @@
 #include "../uint32.h"
 
 #if WINDOWS_NATIVE
-#include <io.h>
+# include <io.h>
 #else
-#include <limits.h>
-#include <unistd.h>
+# include <unistd.h>
+# ifdef __linux__
+#  include <linux/limits.h>
+# endif
 #endif
 
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 
 #ifndef O_NOFOLLOW
 #define O_NOFOLLOW 0

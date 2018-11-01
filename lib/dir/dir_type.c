@@ -1,6 +1,7 @@
 #if USE_READDIR || !(defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
 #include <dirent.h>
 #endif
+
 #include "../dir_internal.h"
 
 #if !defined(_DIRENT_HAVE_D_TYPE) && (defined(__MSYS__) || defined(__CYGWIN__))
@@ -24,9 +25,11 @@ dir_type(struct dir_s* d) {
 #ifndef DT_DIR
 #define DT_DIR 4
 #endif
+
 #ifndef DT_REG
 #define DT_REG 8
 #endif
+
 #ifndef DT_LNK
 #define DT_LNK 10
 #endif

@@ -14,7 +14,7 @@
 #include <stdint.h>
 #endif
 #include "lib/windoze.h"
-#include "lib/getopt.h"
+#include "lib/unix.h"
 #if !WINDOWS
 #include <dirent.h>
 #include <unistd.h>

@@ -1,4 +1,11 @@
+#include "../windoze.h"
 #define USE_WS2_32 1
+
+#if WINDOWS_NATIVE
+#define _WINSOCK2API_
+#include <winsock2.h>
+#endif
+
 #include "../socket_internal.h"
 
 #include "../socket_internal.h"

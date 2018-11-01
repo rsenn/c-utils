@@ -1,4 +1,4 @@
-#include "lib/getopt.h"
+#include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
 #include "lib/path.h"
@@ -153,10 +153,10 @@ pathtool(const char* arg, stralloc* sa) {
       ++i;
     }
 
-    strlist_join(&rel, sa, separator);
+    strlist_join(&rel, sa, separator[0]);
 
   } else {
-    strlist_join(&path, sa, separator);
+    strlist_join(&path, sa, separator[0]);
   }
 
   return 1;

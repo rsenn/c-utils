@@ -1,29 +1,35 @@
-#include "../socket_internal.h"
+#include "../windoze.h"
 
 #if WINDOWS
+#define _WINSOCKAPI_
+#include <winsock.h>
 #define __INSIDE_CYGWIN_NET__ 1
 #endif
+
 #include "../io_internal.h"
+#include "../socket_internal.h"
 #include <errno.h>
 #include <fcntl.h>
+
 #ifdef HAVE_KQUEUE
 #include <sys/event.h>
 #include <sys/types.h>
 #endif
+
 #ifdef HAVE_EPOLL
 #include "../byte.h"
 #include <inttypes.h>
 #include <sys/epoll.h>
 #endif
+
 #ifdef HAVE_SIGIO
 #include <poll.h>
 #endif
+
 #ifdef HAVE_DEVPOLL
 #include <sys/devpoll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#endif
-#if WINDOWS
 #endif
 
 #ifdef DEBUG
@@ -31,6 +37,15 @@
 #else
 #define assert(x)
 #endif
+
+#ifndef AF_INET
+#define AF_INET 2
+#endif
+
+#ifndef SOCK_STREAM
+#define SOCK_STREAM 1
+#endif
+
 
 void
 io_wantread_really(fd_t d, io_entry* e) {
@@ -48,6 +63,7 @@ io_wantread_really(fd_t d, io_entry* e) {
     epoll_ctl(io_master, e->kernelwantwrite ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, d, &x);
   }
 #endif
+
 #ifdef HAVE_KQUEUE
   if(io_waitmode == KQUEUE) {
     struct kevent kev;
@@ -58,6 +74,7 @@ io_wantread_really(fd_t d, io_entry* e) {
     kevent(io_master, &kev, 1, 0, 0, &ts);
   }
 #endif
+
 #ifdef HAVE_DEVPOLL
   if(io_waitmode == DEVPOLL) {
     struct pollfd x;
@@ -67,6 +84,7 @@ io_wantread_really(fd_t d, io_entry* e) {
     write(io_master, &x, sizeof(x));
   }
 #endif
+
 #ifdef HAVE_SIGIO
   if(io_waitmode == _SIGIO) {
     struct pollfd p;
@@ -88,6 +106,7 @@ io_wantread_really(fd_t d, io_entry* e) {
     }
   }
 #endif
+
 #if WINDOWS
   if(e->listened) {
     if(e->next_accept == 0) e->next_accept = socket(AF_INET, SOCK_STREAM, 0);

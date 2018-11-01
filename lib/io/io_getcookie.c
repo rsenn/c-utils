@@ -3,6 +3,7 @@
 #if WINDOWS
 #else
 #endif
+
 #include "../io_internal.h"
 
 void* io_getcookie(fd_t d ){

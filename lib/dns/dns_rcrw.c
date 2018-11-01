@@ -1,8 +1,7 @@
 #define USE_WS2_32 1
 #include "../windoze.h"
 
-#if WINDOWS
-#endif
+
 #include "../byte.h"
 #include "../dns.h"
 #include "../open.h"

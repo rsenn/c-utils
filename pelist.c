@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 
-#include "lib/getopt.h"
+#include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/mmap.h"
 #include "lib/pe.h"

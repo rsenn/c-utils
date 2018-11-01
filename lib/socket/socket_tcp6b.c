@@ -1,19 +1,24 @@
+#include "../windoze.h"
 #define USE_WS2_32 1
-#include "../socket_internal.h"
 
+#if WINDOWS_NATIVE
+#define _WINSOCK2API_
+#include <winsock2.h>
+#endif
 
-
-
-#include <errno.h>
 #include "../socket_internal.h"
 #include "../ndelay.h"
+
+#include <errno.h>
 
 #ifndef EAFNOSUPPORT
 #define EAFNOSUPPORT EINVAL
 #endif
+
 #ifndef EPFNOSUPPORT
 #define EPFNOSUPPORT EAFNOSUPPORT
 #endif
+
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT EAFNOSUPPORT
 #endif

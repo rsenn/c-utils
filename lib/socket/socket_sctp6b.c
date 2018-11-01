@@ -1,4 +1,11 @@
+#include "../windoze.h"
 #define USE_WS2_32 1
+
+#if WINDOWS
+#define _WINSOCK2API_
+#include <winsock2.h>
+#endif
+
 #include "../socket_internal.h"
 #include <sys/types.h>
 #include "../ndelay.h"
@@ -7,9 +14,11 @@
 #ifndef EAFNOSUPPORT
 #define EAFNOSUPPORT EINVAL
 #endif
+
 #ifndef EPFNOSUPPORT
 #define EPFNOSUPPORT EAFNOSUPPORT
 #endif
+
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT EAFNOSUPPORT
 #endif
@@ -45,5 +54,6 @@ socket_sctp6b(void) {
 #else
   return socket_sctp4b();
 #endif
+
 #endif
 }
