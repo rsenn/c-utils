@@ -149,10 +149,10 @@ pathtool(const char* arg, stralloc* sa) {
       ++i;
     }
 
-    strlist_join(&rel, sa, separator);
+    strlist_join(&rel, sa, separator[0]);
 
   } else {
-    strlist_join(&path, sa, separator);
+    strlist_join(&path, sa, separator[0]);
   }
 
   return 1;

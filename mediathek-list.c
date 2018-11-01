@@ -396,7 +396,7 @@ match_toklists(strlist* sl) {
   int ret = 0;
   size_t i, n;
   stralloc_init(&sa);
-  strlist_join(sl, &sa, "|");
+  strlist_join(sl, &sa, '|');
   stralloc_0(&sa);
 
   n = strlist_count(&include);
@@ -617,7 +617,7 @@ main(int argc, char* argv[]) {
   /*  stralloc sa;
     stralloc_init(&sa);
 
-    strlist_join(&include, &sa, ",");
+    strlist_join(&include, &sa, ',');
 
     buffer_putsa(buffer_2, &sa);
     buffer_putnlflush(buffer_2);*/
