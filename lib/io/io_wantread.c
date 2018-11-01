@@ -1,6 +1,7 @@
 #include "../windoze.h"
 
 #if WINDOWS
+#define _WINSOCKAPI_
 #include <winsock.h>
 #define __INSIDE_CYGWIN_NET__ 1
 #endif
@@ -36,6 +37,15 @@
 #else
 #define assert(x)
 #endif
+
+#ifndef AF_INET
+#define AF_INET 2
+#endif
+
+#ifndef SOCK_STREAM
+#define SOCK_STREAM 1
+#endif
+
 
 void
 io_wantread_really(fd_t d, io_entry* e) {

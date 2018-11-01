@@ -16,9 +16,11 @@
 
 #if !WINDOWS_NATIVE
 #include <sys/param.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
+# if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
+#  include <sys/socket.h>
+#  include <netinet/in.h>
+#  include <netdb.h>
+# endif
 #include <unistd.h>
 #endif
 
@@ -60,7 +62,7 @@ void __winsock_init(void);
 #endif
 
 #if WINDOWS
-# if !defined(_SYS_SOCKET_H)
+# if !defined(_SYS_SOCKET_H) && !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
 typedef int socklen_t;
 # endif
 #endif
