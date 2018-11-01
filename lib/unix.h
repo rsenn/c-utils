@@ -3,6 +3,7 @@
 
 #include "typedefs.h"
 #include "windoze.h"
+#include "getopt.h"
 
 #ifdef __cplusplus
 extern "C" {

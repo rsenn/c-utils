@@ -26,7 +26,7 @@ MSDN Magazine articles
 #include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
-#include "lib/getopt.h"
+#include "lib/unix.h"
 #include "lib/path.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"

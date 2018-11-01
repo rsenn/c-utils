@@ -1,4 +1,4 @@
-#include "lib/getopt.h"
+#include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
 #include "lib/path.h"

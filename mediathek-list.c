@@ -4,7 +4,7 @@
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
-#include "lib/getopt.h"
+#include "lib/unix.h"
 #include "lib/http.h"
 #include "lib/io_internal.h"
 #include "lib/scan.h"
