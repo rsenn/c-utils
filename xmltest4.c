@@ -406,7 +406,7 @@ main(int argc, char* argv[]) {
   buffer_skip_until(&input, "\r\n", 2);
   doc = xml_read_tree(&input);
   xml_print(doc->children, buffer_1);
-
+/*
   for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
     xmlnode* n = *it;
     buffer_puts(buffer_1, "NODESET[");
@@ -418,7 +418,7 @@ main(int argc, char* argv[]) {
   ns = xml_find_all_1(doc, xml_match_name, "Unit");
   xml_print_nodeset(&ns, buffer_1);
   buffer_putlong(buffer_1, xmlnodeset_size(&ns));
-  buffer_putnlflush(buffer_1);
+  buffer_putnlflush(buffer_1);*/
   /*
    * Cleanup function for the XML library.
    */

@@ -345,7 +345,7 @@ int reg2cmd() {
           for(pos = valuestart; pos < valueend; pos++) {
             if(line.s[pos] == '%')
               buffer_putc(buffer_1, '^');
-            buffer_putc(buffer_1, line.s[pos]);
+            buffer_PUTC(buffer_1, line.s[pos]);
           }
           buffer_putc(buffer_1, '"');
           break;

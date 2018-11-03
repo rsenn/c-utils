@@ -29,7 +29,7 @@ putsa(const char* name, stralloc* tag) {
     else if(tag->s[i] == '\t')
       buffer_puts(buffer_1, "\\t");
     else
-      buffer_putc(buffer_1, tag->s[i]);
+      buffer_PUTC(buffer_1, tag->s[i]);
   }
   buffer_putnlflush(buffer_1);
 }

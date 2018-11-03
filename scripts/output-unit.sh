@@ -1,7 +1,7 @@
 output-unit () 
 { 
     while [ $# -gt 0 ]; do
-        echo "                <Unit filename=\"$1\"><Option compilerVar=\"CC\" /></Unit>";
+        echo "                <Unit filename=\"$1\"><Option compilerVar=\"CC\"/></Unit>";
         shift;
     done
 }
@@ -11,7 +11,7 @@ output-cbp() {
   shift
   unset UNITS
   for UNIT; do
-    pushv UNITS "    <Unit filename=\"$UNIT\"><Option compilerVar=\"CC\" /></Unit>"
+    pushv UNITS "    <Unit filename=\"$UNIT\"><Option compilerVar=\"CC\"/></Unit>"
   done
 cat <<EOF
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -21,7 +21,6 @@ cat <<EOF
     <Option title="$NAME"/>
     <Option pch_mode="2"/>
     <Option compiler="gcc"/>
-    <Option virtualFolders="Lib/;"/>
     <Build>
       <Target title="Debug">
         <Option output="bin/Debug/$NAME" prefix_auto="1" extension_auto="1"/>
@@ -31,20 +30,24 @@ cat <<EOF
         <Compiler>
           <Add option="-Wextra"/>
           <Add option="-Wall"/>
-          <Add option="-g"/>
-          <Add option="-ggdb -O0"/>
+          <Add option="-g3"/>
+          <Add option="-ggdb"/>
+          <Add option="-O0"/>
           <Add option="-DINLINE=inline"/>
           <Add option="-DUSE_WIDECHAR=0"/>
           <Add option="-D_FILE_OFFSET_BITS=64"/>
           <Add option="-D_LARGEFILE_SOURCE=1"/>
           <Add option="-D_GNU_SOURCE=1"/>
           <Add option="-DDEBUG"/>
-          <!--           
-          <Add option="-g"/> //-->
+          <Add option="-DHAVE_LIBBZ2=1"/>
+          <Add option="-DHAVE_LIBLZMA=1"/>
+          <Add option="-DHAVE_ZLIB=1"/>
           <Add directory="."/>
-          <Add directory="lib"/>
         </Compiler>
         <Linker>
+          <Add library="z"/>
+          <Add library="bz2"/>
+          <Add library="lzma"/>
         </Linker>
       </Target>
       <Target title="Release">
@@ -64,12 +67,15 @@ cat <<EOF
           <Add option="-D_LARGEFILE_SOURCE=1"/>
           <Add option="-D_GNU_SOURCE=1"/>
           <Add option="-DNDEBUG=1"/>
-          <!--           
-          <Add option="-O2"/> //-->
+          <Add option="-DHAVE_LIBBZ2=1"/>
+          <Add option="-DHAVE_LIBLZMA=1"/>
+          <Add option="-DHAVE_ZLIB=1"/>
           <Add directory="."/>
-          <Add directory="lib"/>
         </Compiler>
         <Linker>
+          <Add library="z"/>
+          <Add library="bz2"/>
+          <Add library="lzma"/>
         </Linker>
       </Target>
     </Build>

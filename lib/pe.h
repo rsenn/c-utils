@@ -1,9 +1,10 @@
 #ifndef PE_H
 #define PE_H
 
-#include "uint16.h"
-#include "uint32.h"
+#include "typedefs.h"
 #include "uint64.h"
+#include "uint32.h"
+#include "uint16.h"
 #include "uint8.h"
 
 #ifdef __cplusplus
@@ -440,7 +441,7 @@ const char* pe_datadir_name(int);
 
 #define PE_SIZE(pe, st, field) \
   (PE_64(pe) ? PE_FIELD_SIZE(pe64_##st, field) : PE_FIELD_SIZE(pe32_##st, field))
-  
+
 #define PE_GET(pe, ptr, st, field) \
   pe_get_value(pe, \
                ptr, \

@@ -100,12 +100,12 @@ print(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
   buffer_putxlong(buffer_2, i);
   buffer_putspace(buffer_2);
   buffer_puts(buffer_2, "0x");
-  buffer_putc(buffer_2, hexdigits[from >> 4]);
-  buffer_putc(buffer_2, hexdigits[from & 0x0f]);
+  buffer_PUTC(buffer_2, hexdigits[from >> 4]);
+  buffer_PUTC(buffer_2, hexdigits[from & 0x0f]);
   buffer_putspace(buffer_2);
   buffer_puts(buffer_2, "0x");
-  buffer_putc(buffer_2, hexdigits[to >> 4]);
-  buffer_putc(buffer_2, hexdigits[to & 0x0f]);
+  buffer_PUTC(buffer_2, hexdigits[to >> 4]);
+  buffer_PUTC(buffer_2, hexdigits[to & 0x0f]);
 }
 
 void

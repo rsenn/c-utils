@@ -27,8 +27,11 @@ get_sources() {
 
   case "$1" in
     *.exe)  SOURCE_FILES=$(IFS="
-"; set -- $(strings "$1" | sed -n "/\.c\$/ { s|.*/||; p }" | sort -fu); IFS="|"; grep -E "(^|/)$*" files.list) ;;
-*) SOURCE_FILES=$(readelf -a "$1" | sed -n 's|.*ABS\s\([^ ]\+\)|\1|p' | sort -u)  ;;
+" 
+#set -- $(sed 's,[^[:print:]],\n,g' "$1" | sed -n "/\.c\$/ { s|.*/||; p }" | sort -fu); IFS="|"; grep -E "(^|/)$*" files.list)
+sed 's,[^[:print:]],\n,g' "$1" | sed -n "/\.c\$/ { s|.*/||; p }" | sort -fu)
+    ;;
+    *) SOURCE_FILES=$(readelf -a "$1" | sed -n 's|.*ABS\s\([^ ]\+\)|\1|p' | sort -u)  ;;
   esac
   [ -n "$SOURCE_FILES" ] || SOURCE_FILES=`ls -d $(strings "$1" | grep '\.c$' ) 2>/dev/null  |sort -u`
   isin() {

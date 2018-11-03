@@ -5,7 +5,6 @@
     <Option title="torrent-progress"/>
     <Option pch_mode="2"/>
     <Option compiler="gcc"/>
-    <Option virtualFolders="Lib/;"/>
     <Build>
       <Target title="Debug">
         <Option output="bin/Debug/torrent-progress" prefix_auto="1" extension_auto="1"/>
@@ -15,18 +14,19 @@
         <Compiler>
           <Add option="-Wextra"/>
           <Add option="-Wall"/>
-          <Add option="-g"/>
-          <Add option="-ggdb -O0"/>
+          <Add option="-g3"/>
+          <Add option="-ggdb"/>
+          <Add option="-O0"/>
           <Add option="-DINLINE=inline"/>
           <Add option="-DUSE_WIDECHAR=0"/>
           <Add option="-D_FILE_OFFSET_BITS=64"/>
           <Add option="-D_LARGEFILE_SOURCE=1"/>
           <Add option="-D_GNU_SOURCE=1"/>
           <Add option="-DDEBUG"/>
-          <!--           
-          <Add option="-g"/> //-->
+          <Add option="-DHAVE_LIBBZ2=1"/>
+          <Add option="-DHAVE_LIBLZMA=1"/>
+          <Add option="-DHAVE_ZLIB=1"/>
           <Add directory="."/>
-          <Add directory="lib"/>
         </Compiler>
         <Linker>
         </Linker>
@@ -48,10 +48,10 @@
           <Add option="-D_LARGEFILE_SOURCE=1"/>
           <Add option="-D_GNU_SOURCE=1"/>
           <Add option="-DNDEBUG=1"/>
-          <!--           
-          <Add option="-O2"/> //-->
+          <Add option="-DHAVE_LIBBZ2=1"/>
+          <Add option="-DHAVE_LIBLZMA=1"/>
+          <Add option="-DHAVE_ZLIB=1"/>
           <Add directory="."/>
-          <Add directory="lib"/>
         </Compiler>
         <Linker>
         </Linker>
@@ -60,7 +60,7 @@
     <Compiler>
       <Add option="-w"/>
     </Compiler>
-
+    <Unit filename="lib/buffer.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_1.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_2.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_feed.c"><Option compilerVar="CC" /></Unit>
@@ -70,7 +70,6 @@
     <Unit filename="lib/buffer/buffer_putflush.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_putlong.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_putm_internal.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/buffer/buffer_putnc.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_putnlflush.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_puts.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_putuint64.c"><Option compilerVar="CC" /></Unit>
@@ -79,15 +78,20 @@
     <Unit filename="lib/buffer/buffer_putxlong.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_stubborn.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_stubborn2.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/byte.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/byte/byte_copy.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/fmt.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/fmt/fmt_long.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/fmt/fmt_uint64.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/fmt/fmt_ulong.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/fmt/fmt_xint64.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/fmt/fmt_xlong.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/mmap.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/mmap/mmap_map.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/mmap/mmap_unmap.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/open.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/open/open_read.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/str/str_len.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="torrent-progress.c"><Option compilerVar="CC" /></Unit>
     <Extensions>

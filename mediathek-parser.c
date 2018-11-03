@@ -302,7 +302,7 @@ put_quoted_string(const char* str) {
     if(c == '"' || c == '\\') {
       buffer_puts(buffer_1, c == '\\' ? "\\\\" : "\"\"");
     } else {
-      buffer_putc(buffer_1, c);
+      buffer_PUTC(buffer_1, c);
     }
   }
   buffer_putc(buffer_1, '"');

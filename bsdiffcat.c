@@ -36,7 +36,7 @@ output_hex(const char* x, int64 n, int offset, char space) {
       buffer_putnspace(buffer_1, 2);
 
       for(j = 0; j < r; ++j) {
-        buffer_putc(buffer_1, space);
+        buffer_PUTC(buffer_1, space);
         buffer_putxlong0(buffer_1, (long)(unsigned long)(unsigned char)x[i + j], 2);
       }
       buffer_putnlflush(buffer_1);

@@ -155,7 +155,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
       optopt = c;
       if(opterr) {
         buffer_putm_2(buffer_2, argv[0], ": invalid option -- ");
-        buffer_putc(buffer_2, c);
+        buffer_PUTC(buffer_2, c);
         buffer_putnlflush(buffer_2);
       }
       ++nextchar;
@@ -180,7 +180,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
           optopt = c;
           if(opterr) {
             buffer_putm_2(buffer_2, argv[0], ": option requires an argument -- ");
-            buffer_putc(buffer_2, c);
+            buffer_PUTC(buffer_2, c);
             buffer_putnlflush(buffer_2);
           }
           if(optstring[0] == ':' || ((optstring[0] == '-' || optstring[0] == '+') && optstring[1] == ':')) {

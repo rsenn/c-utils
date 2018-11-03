@@ -19,8 +19,8 @@ extern "C" {
 # endif
 # include <sys/types.h>
 # ifdef __BIT_TYPES_DEFINED__
-#  define uint32_t u_int32_t
-#  define int32_t int
+typedef u_int32_t uint32;
+typedef int32_t int32;
 # endif
 
 #elif defined(_MSC_VER)

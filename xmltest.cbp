@@ -5,7 +5,6 @@
     <Option title="xmltest"/>
     <Option pch_mode="2"/>
     <Option compiler="gcc"/>
-    <Option virtualFolders="Lib/;"/>
     <Build>
       <Target title="Debug">
         <Option output="bin/Debug/xmltest" prefix_auto="1" extension_auto="1"/>
@@ -15,18 +14,19 @@
         <Compiler>
           <Add option="-Wextra"/>
           <Add option="-Wall"/>
-          <Add option="-g"/>
-          <Add option="-ggdb -O0"/>
+          <Add option="-g3"/>
+          <Add option="-ggdb"/>
+          <Add option="-O0"/>
           <Add option="-DINLINE=inline"/>
           <Add option="-DUSE_WIDECHAR=0"/>
           <Add option="-D_FILE_OFFSET_BITS=64"/>
           <Add option="-D_LARGEFILE_SOURCE=1"/>
           <Add option="-D_GNU_SOURCE=1"/>
           <Add option="-DDEBUG"/>
-          <!--           
-          <Add option="-g"/> //-->
+          <Add option="-DHAVE_LIBBZ2=1"/>
+          <Add option="-DHAVE_LIBLZMA=1"/>
+          <Add option="-DHAVE_ZLIB=1"/>
           <Add directory="."/>
-          <Add directory="lib"/>
         </Compiler>
         <Linker>
         </Linker>
@@ -48,10 +48,10 @@
           <Add option="-D_LARGEFILE_SOURCE=1"/>
           <Add option="-D_GNU_SOURCE=1"/>
           <Add option="-DNDEBUG=1"/>
-          <!--           
-          <Add option="-O2"/> //-->
+          <Add option="-DHAVE_LIBBZ2=1"/>
+          <Add option="-DHAVE_LIBLZMA=1"/>
+          <Add option="-DHAVE_ZLIB=1"/>
           <Add directory="."/>
-          <Add directory="lib"/>
         </Compiler>
         <Linker>
         </Linker>
@@ -60,7 +60,7 @@
     <Compiler>
       <Add option="-w"/>
     </Compiler>
-
+    <Unit filename="lib/buffer.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_1.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_close.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_dummyread.c"><Option compilerVar="CC" /></Unit>
@@ -78,7 +78,6 @@
     <Unit filename="lib/buffer/buffer_putflush.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_putlong.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_putm_internal.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/buffer/buffer_putnc.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_putnlflush.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_puts.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_putsa.c"><Option compilerVar="CC" /></Unit>
@@ -88,25 +87,31 @@
     <Unit filename="lib/buffer/buffer_skipspace.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_stubborn.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/buffer/buffer_stubborn2.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/byte.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/byte/byte_chr.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/byte/byte_copy.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/byte/byte_diff.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/byte/byte_zero.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/fmt.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/fmt/fmt_escapecharc.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/fmt/fmt_long.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/fmt/fmt_ulong.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/hmap.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/hmap/hmap_add.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/hmap/hmap_destroy.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/hmap/hmap_free_data.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/hmap/hmap_init.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/hmap/hmap_search.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/hmap/hmap_set.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/hmap/hmap_set_chars.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/hmap/hmap_truncate.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/mmap.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/mmap/mmap_private.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/open.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/open/open_read.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/str/str_chr.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/str/str_len.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/stralloc/stralloc_append.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/stralloc/stralloc_fmt_pred.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/stralloc/stralloc_init.c"><Option compilerVar="CC" /></Unit>
@@ -114,6 +119,7 @@
     <Unit filename="lib/stralloc/stralloc_ready.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/stralloc/stralloc_readyplus.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/stralloc/stralloc_zero.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/xml.h"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/xml/xml_newnode.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/xml/xml_read_callback.c"><Option compilerVar="CC" /></Unit>
     <Unit filename="lib/xml/xml_reader_init.c"><Option compilerVar="CC" /></Unit>
