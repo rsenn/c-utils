@@ -181,7 +181,9 @@ path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
   stralloc_zero(out);
   if(prefix->len) {
     stralloc_cat(out, prefix);
-    stralloc_catc(out, pathsep);
+
+    if(!stralloc_endb(prefix, &pathsep, 1))
+      stralloc_catc(out, pathsep);
   }
   stralloc_cats(out, path);
 }
@@ -198,7 +200,9 @@ path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out) {
   stralloc_zero(out);
   if(prefix->len) {
     stralloc_cat(out, prefix);
-    stralloc_catc(out, pathsep);
+    
+    if(!stralloc_endb(prefix, &pathsep, 1))
+      stralloc_catc(out, pathsep);
   }
   stralloc_catb(out, x, n);
 }
@@ -315,7 +319,7 @@ int
 has_main(const char* filename) {
   char* x;
   size_t n;
-  if((x = mmap_read(filename, &n))) {
+  if((x = (char*)mmap_read(filename, &n))) {
     int ret = scan_main(x, n);
     mmap_unmap(x, n);
     return ret;
@@ -400,6 +404,8 @@ rule_command(target* rule, stralloc* out) {
         }
         case '^': {
           stralloc_cat(out, &rule->prereq.sa);
+
+          stralloc_replace(out, pathsep == '/' ? '\\' : '/', pathsep);
           break;
         }
         case '<': {
@@ -866,7 +872,7 @@ target_dep_list_recursive(strlist* l, target* t, int depth, strlist* hier) {
 
       if(depth >= 0) {
         if(!strlist_contains(l, name))
-           strlist_unshift(l, name);
+          strlist_unshift(l, name);
       }
     }
   }

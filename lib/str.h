@@ -70,6 +70,8 @@ struct tm;
 char* str_ptime(const char* s,const char* format, struct tm* tm);
 
 char* str_basename(const char* s);
+
+int str_endb(const char* a, const char* x, size_t n);
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 
@@ -78,4 +80,3 @@ char* str_basename(const char* s);
 #endif
 
 #endif
-

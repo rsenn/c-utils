@@ -1860,3 +1860,5 @@ $(BUILDDIR)ziptest.o: ziptest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)pe_datadir_name.o: lib/pe/pe_datadir_name.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_endb.o: lib/str/str_endb.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
