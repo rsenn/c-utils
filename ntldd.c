@@ -24,14 +24,15 @@ MSDN Magazine articles
 */
 
 #include "lib/windoze.h"
+#include "lib/uint64.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/unix.h"
 #include "lib/path.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
-#include "lib/uint64.h"
 #include "lib/pe.h"
+#include "lib/mmap.h"
 
 #include <limits.h>
 #include <stdio.h>

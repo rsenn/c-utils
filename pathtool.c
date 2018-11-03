@@ -6,6 +6,7 @@
 #include "lib/strlist.h"
 #include "lib/windoze.h"
 #include "lib/str.h"
+#include "lib/byte.h"
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 /*

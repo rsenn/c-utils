@@ -2,6 +2,8 @@
 #include "../charbuf.h"
 #include "../json.h"
 #include "../scan.h"
+#include "../stralloc.h"
+
 #include <ctype.h>
 
 int

@@ -1,4 +1,5 @@
 #include "../strlist.h"
+#include "../byte.h"
 
 int
 strlist_shift_n(strlist* sl, size_t i) {

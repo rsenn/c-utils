@@ -18,7 +18,7 @@
 
 #include "lib/round.c"
 
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE && !defined(__TCC__)
 #define isnan(x) _isnan(x)
 #endif
 

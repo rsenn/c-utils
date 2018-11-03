@@ -15,6 +15,8 @@ pe_datadir_name(int i) {
     "TLS",
     "LOAD_CONFIG",
     "BOUND_IMPORT",
+    "IAT",
+    "DELAY_IMPORT",
     "COMHEADER",
   };
   return names[i];

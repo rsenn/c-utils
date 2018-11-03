@@ -1,6 +1,7 @@
 #include "../fmt.h"
 #include "../xml.h"
 #include "../str.h"
+#include "../stralloc.h"
 
 #include <assert.h>
 

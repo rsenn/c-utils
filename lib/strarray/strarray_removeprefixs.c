@@ -1,6 +1,7 @@
 #include "../str.h"
 #include "../stralloc.h"
 #include "../strarray.h"
+#include "../byte.h"
 
 int
 strarray_removeprefixs(strarray* arr, const char* s) {

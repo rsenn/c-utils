@@ -10,19 +10,66 @@
 #include <stdlib.h>
 
 int list_imports, list_exports, list_deps, list_sections;
-static int print_export_dir, print_data_dir;
+static int print_export_dir, print_data_dir, print_opt_header;
 
 void pe_dump_sections(uint8* base);
 
+#define PE_DUMP_FIELD(base, ptr, st, field) \
+  buffer_putspad(b, #field, 30), \
+  buffer_puts(b, " 0x"), \
+  buffer_putxint640(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), \
+  buffer_putnlflush(b)
+
 void
-pe_print_data_directory(buffer* b, uint8* base, pe_data_directory* data_dir) {
-  buffer_puts(b, "virtual_address: 0x");
-  buffer_putxint640(b,
-                    pe_rva2offset(base, uint32_get(&data_dir->virtual_address)),
-                    sizeof(data_dir->virtual_address) * 2);
-  buffer_puts(b, " size: 0x");
-  buffer_putxint640(b, uint32_get(&data_dir->size), sizeof(data_dir->size) * 2);
-  buffer_putnlflush(b);
+pe_dump_opthdr(buffer* b, uint8* base) {
+  void* opthdr = pe_header_opt(base);
+
+  PE_DUMP_FIELD(base, opthdr, opt_header, magic);
+  PE_DUMP_FIELD(base, opthdr, opt_header, major_linker_version);
+  PE_DUMP_FIELD(base, opthdr, opt_header, minor_linker_version);
+  PE_DUMP_FIELD(base, opthdr, opt_header, size_of_code);
+  PE_DUMP_FIELD(base, opthdr, opt_header, size_of_initialized_data);
+  PE_DUMP_FIELD(base, opthdr, opt_header, size_of_uninitialized_data);
+  PE_DUMP_FIELD(base, opthdr, opt_header, address_of_entry_point);
+  PE_DUMP_FIELD(base, opthdr, opt_header, base_of_code);
+  PE_DUMP_FIELD(base, opthdr, opt_header, image_base);
+  PE_DUMP_FIELD(base, opthdr, opt_header, section_alignment);
+  PE_DUMP_FIELD(base, opthdr, opt_header, file_alignment);
+  PE_DUMP_FIELD(base, opthdr, opt_header, major_operating_system_version);
+  PE_DUMP_FIELD(base, opthdr, opt_header, minor_operating_system_version);
+  PE_DUMP_FIELD(base, opthdr, opt_header, major_image_version);
+  PE_DUMP_FIELD(base, opthdr, opt_header, minor_image_version);
+  PE_DUMP_FIELD(base, opthdr, opt_header, major_subsystem_version);
+  PE_DUMP_FIELD(base, opthdr, opt_header, minor_subsystem_version);
+  PE_DUMP_FIELD(base, opthdr, opt_header, reserved1);
+  PE_DUMP_FIELD(base, opthdr, opt_header, size_of_image);
+  PE_DUMP_FIELD(base, opthdr, opt_header, size_of_headers);
+  PE_DUMP_FIELD(base, opthdr, opt_header, checksum);
+  PE_DUMP_FIELD(base, opthdr, opt_header, subsystem);
+  PE_DUMP_FIELD(base, opthdr, opt_header, dll_characteristics);
+  PE_DUMP_FIELD(base, opthdr, opt_header, size_of_stack_reserve);
+  PE_DUMP_FIELD(base, opthdr, opt_header, size_of_stack_commit);
+  PE_DUMP_FIELD(base, opthdr, opt_header, size_of_heap_reserve);
+  PE_DUMP_FIELD(base, opthdr, opt_header, size_of_heap_commit);
+  PE_DUMP_FIELD(base, opthdr, opt_header, loader_flags);
+  PE_DUMP_FIELD(base, opthdr, opt_header, number_of_rva_and_sizes);
+}
+
+
+void
+pe_print_data_directories(buffer* b, uint8* base, pe_data_directory* data_dirs, size_t n) {
+  size_t i;
+
+  for(i = 0; i < n; ++i) {
+    buffer_putspad(b, pe_datadir_name(i), 12);
+    buffer_putspace(b);
+    buffer_putxlong0(b,
+                      pe_rva2offset(base, uint32_get(&data_dirs[i].virtual_address)),
+                      sizeof(data_dirs[i].virtual_address) * 2);
+    buffer_putspace(b);
+    buffer_putxlong0(b, uint32_get(&data_dirs[i].size), sizeof(data_dirs[i].size) * 2);
+    buffer_putnlflush(b);
+  }
 }
 
 void
@@ -181,6 +228,7 @@ usage(char* av0) {
                        "  -s, --sections          List PE32 sections\n",
                        "  -E, --export-directory  Print export directory\n",
                        "  -D, --data-directory    Print data directory\n",
+                       "  -O, --optional-header   Print optional header\n",
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -200,10 +248,11 @@ main(int argc, char** argv) {
                            {"sections", 0, &list_sections, 's'},
                            {"export-directory", 0, &print_export_dir, 'E'},
                            {"data-directory", 0, &print_data_dir, 'D'},
+                           {"optional-header", 0, &print_opt_header, 'O'},
                            {0}};
 
   for(;;) {
-    c = getopt_long(argc, argv, "hiedsED", opts, &index);
+    c = getopt_long(argc, argv, "hiedsEDO", opts, &index);
     if(c == -1)
       break;
     if(c == '\0')
@@ -217,6 +266,7 @@ main(int argc, char** argv) {
       case 's': list_sections = 1; break;
       case 'E': print_export_dir = 1; break;
       case 'D': print_data_dir = 1; break;
+      case 'O': print_opt_header = 1; break;
       default: {
         usage(argv[0]);
         return 1;
@@ -242,6 +292,10 @@ main(int argc, char** argv) {
       // buffer_putsflush(buffer_2, "not DLL\n");
       // return -1;
       // }
+      //
+      if(print_opt_header)
+        pe_dump_opthdr(buffer_1, base);
+
       if(list_sections)
         pe_dump_sections(base);
       if(list_imports)
@@ -259,12 +313,10 @@ main(int argc, char** argv) {
         pe_print_export_directory(buffer_2, base, export_dir);
       }
       if(print_data_dir) {
-        size_t i, num_dirs;
+        size_t num_dirs;
         pe_data_directory* data_dir = pe_get_datadir(base, &num_dirs);
 
-        for(i = 0; i < num_dirs; ++i) {
-          pe_print_data_directory(buffer_2, base, &data_dir[i]);
-        }
+          pe_print_data_directories(buffer_2, base, data_dir, num_dirs);
       }
 
       mmap_unmap(base, filesize);
@@ -297,13 +349,13 @@ pe_dump_sections(uint8* base) {
   for(i = 0; i < n; i++) {
     buffer_putspad(buffer_1, sections[i].name, 16);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
+    buffer_putxlong0(buffer_1, uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, uint32_get(&sections[i].virtual_address), sizeof(sections[i].virtual_address) * 2);
+    buffer_putxlong0(buffer_1, uint32_get(&sections[i].virtual_address), sizeof(sections[i].virtual_address) * 2);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
+    buffer_putxlong0(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1,
+    buffer_putxlong0(buffer_1,
                       uint32_get(&sections[i].pointer_to_raw_data),
                       sizeof(sections[i].pointer_to_raw_data) * 2);
     buffer_putnlflush(buffer_1);

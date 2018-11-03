@@ -140,6 +140,8 @@ typedef struct {
 #define PE_DIRECTORY_ENTRY_TLS 9
 #define PE_DIRECTORY_ENTRY_LOAD_CONFIG 10
 #define PE_DIRECTORY_ENTRY_BOUND_IMPORT 11
+#define PE_DIRECTORY_ENTRY_IAT 12
+#define PE_DIRECTORY_ENTRY_DELAY_IMPORT 13
 #define PE_DIRECTORY_ENTRY_COMHEADER 14
 
 #define PE_NUMBEROF_DIRECTORY_ENTRIES 16
@@ -433,8 +435,8 @@ const char* pe_datadir_name(int);
   ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe64_nt_headers, optional_header) + \
                         ((pe64_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
 
-#define PE_FIELD(pe, ptr, st, field) \
-  (PE_64(pe) ? ((pe64_##st*)ptr)->field : ((pe32_##st*)ptr)->field)
+#define PE_SIZE(pe, st, field) \
+  (PE_64(pe) ? PE_FIELD_SIZE(pe64_##st, field) : PE_FIELD_SIZE(pe32_##st, field))
   
 #define PE_GET(pe, ptr, st, field) \
   pe_get_value(pe, \

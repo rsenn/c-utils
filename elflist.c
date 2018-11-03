@@ -55,10 +55,10 @@ elf_dump_dynamic(uint8* base) {
                                               "RPATH",      "SYMBOLIC",   "REL",           "RELSZ",          "RELENT",
                                               "PLTREL",     "DEBUG",      "TEXTREL",       "JMPREL",         "BIND_NOW",
                                               "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ",  "FINI_ARRAYSZ",   "RUNPATH",
-                                              "FLAGS",      "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"
-                                             };
+                                              "FLAGS",      "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"};
 
-  if(di == -1) return;
+  if(di == -1)
+    return;
 
   dyn = elf_dynamic_section(base);
 
@@ -70,7 +70,8 @@ elf_dump_dynamic(uint8* base) {
       break;
     }
 
-    if(tag == ELF_DT_NULL) break;
+    if(tag == ELF_DT_NULL)
+      break;
   }
 
   range_foreach(&dyn, entry) {
@@ -93,7 +94,8 @@ elf_dump_dynamic(uint8* base) {
     }
     buffer_putnlflush(buffer_1);
 
-    if(tag == ELF_DT_NULL) break;
+    if(tag == ELF_DT_NULL)
+      break;
   }
 }
 
@@ -115,7 +117,8 @@ elf_dump_symbols(uint8* base, uint8* tab, size_t size, const char* stname) {
     uint64 size = ELF_GET(base, symbol, sym, st_size);
     uint8 info = ELF_GET(base, symbol, sym, st_info);
 
-    if(!name) continue;
+    if(!name)
+      continue;
 
     buffer_putspad(buffer_1, &(strtab[name]), 32);
     /*buffer_puts(buffer_1, "0x");
@@ -160,7 +163,8 @@ elf_dump_sections(uint8* base) {
     uint64 align = ELF_GET(base, section, shdr, sh_addralign);
     uint32 type = ELF_GET(base, section, shdr, sh_type) % ELF_SHT_NUM;
 
-    if(!name && !addr && !size) continue;
+    if(!name && !addr && !size)
+      continue;
 
     buffer_putspad(buffer_1, &(elf_shstrtab(base)[name]), 16);
     buffer_puts(buffer_1, " 0x");
@@ -186,6 +190,8 @@ elf_dump_segments(uint8* base) {
   range segments = elf_program_headers(base);
   void* segment;
 
+  if(range_size(&segments) == 0) return;
+
   buffer_putspad(buffer_1, "paddr", ELF_BITS(base) / 4);
   buffer_putnspace(buffer_1, 3);
   buffer_putspad(buffer_1, "vaddr", ELF_BITS(base) / 4);
@@ -204,7 +210,8 @@ elf_dump_segments(uint8* base) {
     uint64 memsz = ELF_GET(base, segment, phdr, p_memsz);
     uint32 flags = ELF_GET(base, segment, phdr, p_flags);
 
-    if(!paddr && !vaddr && !filesz) continue;
+    if(!paddr && !vaddr && !filesz)
+      continue;
 
     buffer_puts(buffer_1, "0x");
     buffer_putxint640(buffer_1, paddr, ELF_BITS(base) / 4);
@@ -214,8 +221,12 @@ elf_dump_segments(uint8* base) {
     buffer_putxint640(buffer_1, filesz, ELF_BITS(base) / 4);
     buffer_puts(buffer_1, " 0x");
     buffer_putxint640(buffer_1, memsz, ELF_BITS(base) / 4);
-    buffer_putm_internal(
-      buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-", 0);
+    buffer_putm_internal(buffer_1,
+                         " ",
+                         (flags & ELF_PF_R) ? "r" : "-",
+                         (flags & ELF_PF_W) ? "w" : "-",
+                         (flags & ELF_PF_W) ? "x" : "-",
+                         0);
     buffer_putnlflush(buffer_1);
   }
 }

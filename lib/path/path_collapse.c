@@ -1,5 +1,6 @@
 #include "../path_internal.h"
 #include "../strlist.h"
+#include "../byte.h"
 
 int
 path_collapse(const char* path, stralloc* out) {

@@ -1,4 +1,5 @@
 #define USE_WS2_32 1
+
 #include "../socket_internal.h"
 #include "../byte.h"
 #include "../dns.h"
@@ -6,7 +7,10 @@
 #include "../ip6.h"
 #include "../open.h"
 #include "../taia.h"
+#include "../stralloc.h"
+
 #include <stdlib.h>
+
 #if WINDOWS
 #include <iphlpapi.h>
 #include <windows.h>

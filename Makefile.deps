@@ -1630,13 +1630,13 @@ $(BUILDDIR)getpagesize.o: lib/unix/getpagesize.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)glob.o: lib/unix/glob.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)isleap.o: lib/unix/isleap.c
+$(BUILDDIR)isleap.o: lib/str/isleap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)pipe2.o: lib/unix/pipe2.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)readlink.o: lib/unix/readlink.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)time_table_spd.o: lib/unix/time_table_spd.c
+$(BUILDDIR)time_table_spd.o: lib/str/time_table_spd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)wordexp.o: lib/unix/wordexp.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
@@ -1857,4 +1857,6 @@ $(BUILDDIR)xmltest3.o: xmltest3.c
 $(BUILDDIR)xmltest4.o: xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ziptest.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)pe_datadir_name.o: lib/pe/pe_datadir_name.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<

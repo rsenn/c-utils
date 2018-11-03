@@ -1,3 +1,6 @@
+#ifdef __TCC__
+#define HAVE_ROUND 1
+#endif
 
 #ifndef HAVE_ROUND
 #include <float.h>

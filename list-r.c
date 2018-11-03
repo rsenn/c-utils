@@ -98,10 +98,23 @@ last_error_str() {
 int64
 get_file_size(char* path) {
   LARGE_INTEGER size;
+    typedef LONG(WINAPI * getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
+  static getfilesizeex_fn api_fn;
+
   HANDLE hFile = CreateFileA(
                    path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE) return -1; /* error condition, could call GetLastError to find out more */
-  if(!GetFileSizeEx(hFile, &size)) {
+
+  if(!api_fn) {
+    HANDLE kernel;
+    if((kernel = LoadLibraryA("kernel32.dll")) != INVALID_HANDLE_VALUE)
+      api_fn = (getfilesizeex_fn*)GetProcAddress(kernel, "GetFileSizeEx");
+  }
+
+  if(!api_fn)
+    return -1;
+
+  if(!api_fn(hFile, &size)) {
     CloseHandle(hFile);
     return -1; /* error condition, could call GetLastError to find out more */
   }

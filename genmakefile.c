@@ -10,6 +10,7 @@
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
+#include "lib/uint32.h"
 #include "lib/windoze.h"
 
 #include <ctype.h>
@@ -1412,7 +1413,7 @@ gen_clean_rule(HMAP_DB* rules) {
   if((rule = get_rule("clean"))) {
     TUPLE* t;
     char* arg;
-    int32 cmdoffs, lineoffs = 0;
+    uint32 cmdoffs, lineoffs = 0;
     stralloc fn;
     strlist delete_args;
     stralloc_init(&fn);
@@ -1759,6 +1760,7 @@ set_compiler_type(const char* compiler) {
 
     pathsep = '\\';
     libext = ".a";
+    objext = ".o";
     format_linklib_fn = &format_linklib_switch;
 
     set_var("CC", "tcc");
