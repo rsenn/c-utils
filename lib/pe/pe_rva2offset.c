@@ -4,7 +4,7 @@ int64
 pe_rva2offset(void* base, uint32 rva) {
   int i, n;
   pe_section_header* sections = pe_header_sections(base, &n);
- 
+
   if(rva < sections[0].virtual_address)
     return rva;
 

@@ -55,7 +55,7 @@ pe_header_sections(void* pe, int* nsections) {
   uint16_unpack(&coff->size_of_optional_header, &optsize);
   if(nsections) {
     uint16 num;
-    uint16_unpack(&coff->number_of_sections, &num); 
+    uint16_unpack(&coff->number_of_sections, &num);
     *nsections = num;
   }
   return (pe_section_header*)(opthdr + optsize);

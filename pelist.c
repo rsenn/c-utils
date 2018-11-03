@@ -119,7 +119,8 @@ pe_dump_imports(uint8* base) {
   for(i = 0; imports[i].original_first_thunk; ++i) {
     const char* name = pe_rva2ptr(base, uint32_get(&imports[i].name));
     void* thunk;
-    if(name[0] == '\0') break;
+    if(name[0] == '\0')
+      break;
 
     thunk = pe_rva2ptr(base, uint32_get(&imports[i].first_thunk));
 
@@ -128,7 +129,8 @@ pe_dump_imports(uint8* base) {
       uint16 ordinal;
       int64 rva;
 
-      if(!(rva = pe_thunk(base, thunk, j))) break;
+      if(!(rva = pe_thunk(base, thunk, j)))
+        break;
 
       if(rva < 0) {
         rva <<= 1;
@@ -202,8 +204,10 @@ main(int argc, char** argv) {
 
   for(;;) {
     c = getopt_long(argc, argv, "hiedsED", opts, &index);
-    if(c == -1) break;
-    if(c == '\0') continue;
+    if(c == -1)
+      break;
+    if(c == '\0')
+      continue;
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
@@ -220,7 +224,8 @@ main(int argc, char** argv) {
     }
   }
 
-  if(!(list_deps | list_exports | list_imports | list_sections)) list_imports = list_exports = 1;
+  if(!(list_deps | list_exports | list_imports | list_sections))
+    list_imports = list_exports = 1;
 
   for(; argv[optind]; ++optind) {
     base = (uint8*)mmap_private(argv[optind], &filesize);
@@ -237,11 +242,14 @@ main(int argc, char** argv) {
       // buffer_putsflush(buffer_2, "not DLL\n");
       // return -1;
       // }
-      if(list_sections) pe_dump_sections(base);
-      if(list_imports) pe_dump_imports(base);
+      if(list_sections)
+        pe_dump_sections(base);
+      if(list_imports)
+        pe_dump_imports(base);
 
       if(nt_headers->coff_header.characteristics & PE_FILE_DLL) {
-        if(list_exports) pe_dump_exports(base);
+        if(list_exports)
+          pe_dump_exports(base);
       }
 
       if(print_export_dir) {
@@ -251,9 +259,12 @@ main(int argc, char** argv) {
         pe_print_export_directory(buffer_2, base, export_dir);
       }
       if(print_data_dir) {
-        pe_data_directory* data_dir = pe_header_datadir(base);
+        size_t i, num_dirs;
+        pe_data_directory* data_dir = pe_get_datadir(base, &num_dirs);
 
-        pe_print_data_directory(buffer_2, base, data_dir);
+        for(i = 0; i < num_dirs; ++i) {
+          pe_print_data_directory(buffer_2, base, &data_dir[i]);
+        }
       }
 
       mmap_unmap(base, filesize);

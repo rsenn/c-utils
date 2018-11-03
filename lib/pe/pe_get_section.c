@@ -13,4 +13,3 @@ pe_get_section(void* base, const char* name) {
 
   return 0;
 }
-

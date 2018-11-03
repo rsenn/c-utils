@@ -128,21 +128,19 @@ typedef struct {
 #define PE_SUBSYSTEM_XBOX 14
 #define PE_SUBSYSTEM_WINDOWS_BOOT_APPLICATION 16
 
-
-#define PE_DIRECTORY_ENTRY_EXPORT          0
-#define PE_DIRECTORY_ENTRY_IMPORT          1
-#define PE_DIRECTORY_ENTRY_RESOURCE        2
-#define PE_DIRECTORY_ENTRY_EXCEPTION       3
-#define PE_DIRECTORY_ENTRY_SECURITY        4
-#define PE_DIRECTORY_ENTRY_BASERELOC       5
-#define PE_DIRECTORY_ENTRY_DEBUG           6
-#define PE_DIRECTORY_ENTRY_ARCHITECTURE    7
-#define PE_DIRECTORY_ENTRY_GLOBALPTR       8
-#define PE_DIRECTORY_ENTRY_TLS             9
-#define PE_DIRECTORY_ENTRY_LOAD_CONFIG    10
-#define PE_DIRECTORY_ENTRY_BOUND_IMPORT   11
-#define PE_DIRECTORY_ENTRY_COMHEADER      14
-
+#define PE_DIRECTORY_ENTRY_EXPORT 0
+#define PE_DIRECTORY_ENTRY_IMPORT 1
+#define PE_DIRECTORY_ENTRY_RESOURCE 2
+#define PE_DIRECTORY_ENTRY_EXCEPTION 3
+#define PE_DIRECTORY_ENTRY_SECURITY 4
+#define PE_DIRECTORY_ENTRY_BASERELOC 5
+#define PE_DIRECTORY_ENTRY_DEBUG 6
+#define PE_DIRECTORY_ENTRY_ARCHITECTURE 7
+#define PE_DIRECTORY_ENTRY_GLOBALPTR 8
+#define PE_DIRECTORY_ENTRY_TLS 9
+#define PE_DIRECTORY_ENTRY_LOAD_CONFIG 10
+#define PE_DIRECTORY_ENTRY_BOUND_IMPORT 11
+#define PE_DIRECTORY_ENTRY_COMHEADER 14
 
 #define PE_NUMBEROF_DIRECTORY_ENTRIES 16
 
@@ -215,16 +213,16 @@ typedef struct {
 } pe64_opt_header;
 
 typedef struct {
-  pe_dos_header      dos_hdr;
-  uint32             signature;
-  pe_coff_header*    coff_hdr;
-  void*              optional_hdr_ptr;
-  uint32             num_directories;
-  void*              directories_ptr;
-  uint16             num_sections;
-  void*              sections_ptr;
-  uint64             entrypoint;
-  uint64             imagebase;
+  pe_dos_header dos_hdr;
+  uint32 signature;
+  pe_coff_header* coff_hdr;
+  void* optional_hdr_ptr;
+  uint32 num_directories;
+  void* directories_ptr;
+  uint16 num_sections;
+  void* sections_ptr;
+  uint64 entrypoint;
+  uint64 imagebase;
 } pe_file_t;
 
 typedef enum {
@@ -326,13 +324,13 @@ typedef struct {
 
 typedef struct {
   char* module_name;            /* 0x00 (PSTR) */
-  uint64             h_file;              /* 0x08 (HANDLE) */
-  char*              base;      /* 0x10 (PUCHAR) */
-  pe64_nt_headers*   file_header;         /* 0x18 (PIMAGE_NT_HEADERS64) */
+  uint64 h_file;                /* 0x08 (HANDLE) */
+  char* base;                   /* 0x10 (PUCHAR) */
+  pe64_nt_headers* file_header; /* 0x18 (PIMAGE_NT_HEADERS64) */
   uint64 last_rva_section;      /* 0x20 (pe_section_header) */
-  uint64             number_of_sections;  /* 0x28 (ULONG) */
-  pe_section_header* sections;     /* 0x30 (pe_section_header) */
-  uint32             characteristics;     /* 0x38 (ULONG) */
+  uint64 number_of_sections;    /* 0x28 (ULONG) */
+  pe_section_header* sections;  /* 0x30 (pe_section_header) */
+  uint32 characteristics;       /* 0x38 (ULONG) */
   char f_system_image;          /* 0x3c (BOOLEAN) */
   char fdos_image;              /* 0x3d (BOOLEAN) */
   char f_read_only;             /* 0x3e (BOOLEAN) */
@@ -404,27 +402,25 @@ typedef struct {
 //#define PE_NT_OPTIONAL_HDR_MAGIC        PE_NT_OPTIONAL_HDR64_MAGIC
 #define PE_NT_OPTIONAL_HDR_MAGIC PE_NT_OPTIONAL_HDR32_MAGIC
 
-#define PE_DIRECTORY_ENTRY_DELAY_IMPORT 13
-#define PE_DIRECTORY_ENTRY_EXPORT 0
-#define PE_DIRECTORY_ENTRY_IMPORT 1
+#define PE_TYPE(pe) ((pe_type) * (uint16*)pe_header_opt((pe)))
 
-#define PE_TYPE(pe) ((pe_type)*(uint16*)pe_header_opt((pe)))
-
-void*              pe_header_nt(void*);
-void*              pe_header_opt(void*);
-int64              pe_rva2offset(void*, uint32 rva);
-void*              pe_rva2ptr(void*, uint32 rva);
-uint32             pe_header_sig(void*);
-uint32             pe_offset2rva(uint8*, int64 off);
-uint64             pe_thunk(void*, void* ptr, int64 index);
-pe_coff_header*    pe_header_coff(void*);
-pe32_nt_headers*   pe_header_nt32(void*);
-pe64_nt_headers*   pe_header_nt64(void*);
-pe32_opt_header*   pe_header_opt32(void*);
-pe64_opt_header*   pe_header_opt64(void*);
+void* pe_header_nt(void*);
+void* pe_header_opt(void*);
+int64 pe_rva2offset(void*, uint32 rva);
+void* pe_rva2ptr(void*, uint32 rva);
+uint32 pe_header_sig(void*);
+uint32 pe_offset2rva(uint8*, int64 off);
+uint64 pe_thunk(void*, void* ptr, int64 index);
+pe_coff_header* pe_header_coff(void*);
+pe32_nt_headers* pe_header_nt32(void*);
+pe64_nt_headers* pe_header_nt64(void*);
+pe32_opt_header* pe_header_opt32(void*);
+pe64_opt_header* pe_header_opt64(void*);
 pe_section_header* pe_get_section(void*, const char* name);
 pe_data_directory* pe_header_datadir(void*);
 pe_section_header* pe_header_sections(void*, int* nsections);
+pe_data_directory* pe_get_datadir(void*, size_t* num);
+const char* pe_datadir_name(int);
 
 #define PE_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
 #define PE_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
@@ -437,8 +433,17 @@ pe_section_header* pe_header_sections(void*, int* nsections);
   ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe64_nt_headers, optional_header) + \
                         ((pe64_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
 
-#define PE_GET(pe, ptr, st, field) pe_get_value(pe, ptr, PE_FIELD_OFFSET(pe32_##st, field), PE_FIELD_SIZE(pe32_##st, field), PE_FIELD_OFFSET(pe64_##st, field), PE_FIELD_SIZE(pe64_##st, field))
-#define PE_MAGIC(pe) uint16_read(pe_header_opt(pe)) 
+#define PE_FIELD(pe, ptr, st, field) \
+  (PE_64(pe) ? ((pe64_##st*)ptr)->field : ((pe32_##st*)ptr)->field)
+  
+#define PE_GET(pe, ptr, st, field) \
+  pe_get_value(pe, \
+               ptr, \
+               PE_FIELD_OFFSET(pe32_##st, field), \
+               PE_FIELD_SIZE(pe32_##st, field), \
+               PE_FIELD_OFFSET(pe64_##st, field), \
+               PE_FIELD_SIZE(pe64_##st, field))
+#define PE_MAGIC(pe) uint16_read(pe_header_opt(pe))
 
 #define PE_BITS(pe) (PE_MAGIC(pe) == PE_MAGIC_PE64 ? 64 : 32)
 #define PE_64(pe) (PE_MAGIC(pe) == PE_MAGIC_PE64)
@@ -450,4 +455,3 @@ uint64 pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsign
 }
 #endif
 #endif /* defined PE_H */
-
