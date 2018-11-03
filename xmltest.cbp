@@ -23,14 +23,12 @@
           <Add option="-D_LARGEFILE_SOURCE=1"/>
           <Add option="-D_GNU_SOURCE=1"/>
           <Add option="-DDEBUG"/>
-          <Add option="-g"/>
+          <!--           
+          <Add option="-g"/> //-->
           <Add directory="."/>
           <Add directory="lib"/>
         </Compiler>
         <Linker>
-          <Add option="-static-libstdc++"/>
-          <Add option="-static-libgcc"/>
-          <Add library="xml2"/>
         </Linker>
       </Target>
       <Target title="Release">
@@ -50,25 +48,20 @@
           <Add option="-D_LARGEFILE_SOURCE=1"/>
           <Add option="-D_GNU_SOURCE=1"/>
           <Add option="-DNDEBUG=1"/>
-          <Add option="-O2"/>
+          <!--           
+          <Add option="-O2"/> //-->
           <Add directory="."/>
           <Add directory="lib"/>
         </Compiler>
         <Linker>
-          <Add option="-s"/>
-          <Add option="-static-libstdc++"/>
-          <Add option="-static-libgcc"/>
-          <Add library="xml2"/>
         </Linker>
       </Target>
     </Build>
     <Compiler>
       <Add option="-w"/>
-      <Add option="`pkg-config --cflags libxml-2.0`"/>
     </Compiler>
-    <Unit filename="xmltest.c">
-      <Option compilerVar="CC"/>
-    </Unit>
+
+    <Unit filename="lib/buffer/buffer_1.c lib/buffer/buffer_close.c lib/buffer/buffer_dummyread.c lib/buffer/buffer_dummyreadmmap.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_gettok_sa.c lib/buffer/buffer_mmapprivate.c lib/buffer/buffer_munmap.c lib/buffer/buffer_peek.c lib/buffer/buffer_peekc.c lib/buffer/buffer_prefetch.c lib/buffer/buffer_put.c lib/buffer/buffer_putc.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnc.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_putsa.c lib/buffer/buffer_skip_pred.c lib/buffer/buffer_skip_until.c lib/buffer/buffer_skipc.c lib/buffer/buffer_skipspace.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_diff.c lib/byte/byte_zero.c lib/fmt/fmt_escapecharc.c lib/fmt/fmt_long.c lib/fmt/fmt_ulong.c lib/hmap/hmap_add.c lib/hmap/hmap_destroy.c lib/hmap/hmap_free_data.c lib/hmap/hmap_init.c lib/hmap/hmap_search.c lib/hmap/hmap_set.c lib/hmap/hmap_set_chars.c lib/hmap/hmap_truncate.c lib/mmap/mmap_private.c lib/open/open_read.c lib/str/str_chr.c lib/str/str_len.c lib/stralloc/stralloc_append.c lib/stralloc/stralloc_fmt_pred.c lib/stralloc/stralloc_init.c lib/stralloc/stralloc_nul.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c lib/stralloc/stralloc_zero.c lib/xml/xml_newnode.c lib/xml/xml_read_callback.c lib/xml/xml_reader_init.c xmltest.c"><Option compilerVar="CC" /></Unit>
     <Extensions>
       <envvars/>
       <code_completion/>

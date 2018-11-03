@@ -10,14 +10,21 @@ filter() {
 get_sources() {
   while :; do
     case "$1" in
+      -c | --c-only ) C_ONLY=true; shift ;;
       -p | --pro | --qmake) QMAKE=true; shift ;;
       -u=* | --update=* | --*upd*=*) UPDATE=${1#*=}; shift ;;
       -u | --update | --*upd*) UPDATE=$2; shift 2 ;;
       -u*) UPDATE=${1#-?}; shift ;;
+      -x | --debug) DEBUG=true; shift ;;
       *) break ;;
     esac
   done
   echo QMAKE=$QMAKE 1>&2
+  if [ ! -e "$1" ]; then
+    set -- $(ls -td build/*/Debug/"$1".exe | head -n1)
+  fi
+  [ "$DEBUG" = true ] && echo "ARG:" $@ 1>&2
+
   case "$1" in
     *.exe)  SOURCE_FILES=$(IFS="
 "; set -- $(strings "$1" | sed -n "/\.c\$/ { s|.*/||; p }" | sort -fu); IFS="|"; grep -E "(^|/)$*" files.list) ;;
@@ -43,7 +50,11 @@ get_sources() {
       ;;
     esac
   done 
-  FILES=`find "$BASEDIR/" "(" "$@" ")" -and -not -wholename "*build/*" | sort -u | sed "s|$PWD/||"`
+  EXPR="s|$PWD/||"
+  if [ "$C_ONLY" = true ]; then
+    EXPR="$EXPR; \\|\.c$|! d"
+  fi
+  FILES=`find "$BASEDIR/" "(" "$@" ")" -and -not -wholename "*build/*" | sort -u | sed "$EXPR"`
 
   if [ -n "$UPDATE" -a -e "$UPDATE" ]; then
     ( sed -i \
@@ -55,7 +66,7 @@ get_sources() {
     echo SOURCES = $(filter "*.c" $FILES)
     echo HEADERS = $(filter "*.h" $FILES)
   else 
-    echo $FILES
+    echo "$FILES"
   fi
 }
 get_sources "$@"

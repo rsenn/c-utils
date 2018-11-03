@@ -28,7 +28,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
 
       buffer_putm_3(buffer_1, "<", reader->closing ? "/" : "", name->s);
 
-      if(attrs && hmap_size(*attrs)) {
+      if(attrs && *attrs && (*attrs)->list_tuple) {
         buffer_putspace(buffer_1);
         xml_print_attributes(*attrs, buffer_1, " ", "=", "\"");
       }
