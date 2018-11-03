@@ -18,6 +18,24 @@
 				"buffer_size": 167,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "lib/strlist/strlist_push_tokens.c",
+			"settings":
+			{
+				"buffer_size": 250,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strlist/strlist_push.c",
+			"settings":
+			{
+				"buffer_size": 296,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "",
@@ -154,7 +172,7 @@
 	[
 		"/C/Users/roman/Desktop/dirlist",
 		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/buffer"
+		"/C/Users/roman/Desktop/dirlist/lib/strlist"
 	],
 	"file_history":
 	[
@@ -465,7 +483,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -493,7 +511,63 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "lib/strlist/strlist_push_tokens.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 250,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								154,
+								154
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/strlist/strlist_push.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 296,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								296,
+								296
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"type": "text"
 				}
 			]

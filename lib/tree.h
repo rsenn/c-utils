@@ -284,7 +284,6 @@ struct narithbinary
   union node *right;
 };
 
-/*/
 union node {
   enum nod_id      id;
   struct list      list;

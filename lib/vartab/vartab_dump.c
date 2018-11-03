@@ -2,7 +2,6 @@
 #include "../vartab.h"
 #include "../buffer.h"
 
-/*/
 void
 vartab_dump(struct vartab* vartab) {
   unsigned int i;

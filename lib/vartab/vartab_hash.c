@@ -1,6 +1,5 @@
 #include "../vartab.h"
 
-/*/
 unsigned long
 vartab_hash(struct vartab* vartab, const char* v, struct search* context) {
   context->global = 0;

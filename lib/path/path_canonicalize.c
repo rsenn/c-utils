@@ -132,7 +132,7 @@ start:
       // buf[n] = '\0';
       /* if the symlink is absolute we clear the stralloc,
          set the path to buf and repeat the whole procedure */
-      if(path_issep(buf[0])) {
+      if(path_is_absolute(buf)) {
         str_copyn(&buf[n], path, PATH_MAX - n);
         stralloc_zero(sa);
         stralloc_catc(sa, PATHSEP_C);
@@ -141,28 +141,27 @@ start:
         /* if the symlink is relative we remove the symlink path
          component and recurse */
       } else {
-        //        size_t l = path_len_s(buf);
-        //
+        int rret;
+        
         sa->len = path_right(sa->s, sa->len);
-        //
-        //        stralloc_catc(sa, PATHSEP_C);
-        //        stralloc_catb(sa, buf, l);
-        //        stralloc_nul(sa);
         buf[n] = '\0';
-        // str_copyn(buf, buf+l+1, sizeof(buf));
-        // stralloc_zero(sa);
+        
         buffer_puts(buffer_2, "recursive path_canonicalize(\"");
         buffer_puts(buffer_2, buf);
         buffer_puts(buffer_2, "\", \"");
         buffer_putsa(buffer_2, sa);
         buffer_puts(buffer_2, "\", ");
         buffer_putlong(buffer_2, symbolic);
-        buffer_puts(buffer_2, ")");
+        buffer_puts(buffer_2, ") = ");
+        rret = path_canonicalize(buf, sa, symbolic);
+
+        buffer_putlong(buffer_2, rret);
         buffer_putnlflush(buffer_2);
-        if(!path_canonicalize(buf, sa, symbolic)) return 0;
+        if(!rret)
+          return 0;
       }
     }
-#ifdef S_ISDIR
+#if 0 //def S_ISDIR
     /* it isn't a directory :( */
     if(!S_ISDIR(st.st_mode)) {
       errno = ENOTDIR;

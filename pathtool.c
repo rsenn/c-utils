@@ -104,7 +104,7 @@ pathtool(const char* arg, stralloc* sa) {
   stralloc_nul(sa);
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
-  {
+  if(path_is_absolute(sa->s)) {
     stralloc tmp;
     stralloc_init(&tmp);
     pathconv(sa->s, &tmp);
