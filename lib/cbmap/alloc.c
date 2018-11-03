@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#if WINDOWS_NATIVE
+#if defined(WINDOWS_NATIVE) && defined(_MSC_VER)
 #include <crtdbg.h>
 #endif
 
@@ -143,7 +143,7 @@ cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const cha
 //#elif WINDOWS
 #elif HAVE_POSIX_MEMALIGN
   result = posix_memalign(memptr, alignment, size);
-#else 
+#else
   result = !(*memptr = memalign_alloc(alignment, size));
 //#else
 //  result = !(*memptr = malloc(size));

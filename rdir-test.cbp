@@ -29,6 +29,9 @@
           <Add directory="."/>
         </Compiler>
         <Linker>
+          <Add library="z"/>
+          <Add library="bz2"/>
+          <Add library="lzma"/>
         </Linker>
       </Target>
       <Target title="Release">
@@ -54,47 +57,50 @@
           <Add directory="."/>
         </Compiler>
         <Linker>
+          <Add library="z"/>
+          <Add library="bz2"/>
+          <Add library="lzma"/>
         </Linker>
       </Target>
     </Build>
     <Compiler>
       <Add option="-w"/>
     </Compiler>
-    <Unit filename="lib/buffer.h"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/buffer/buffer_1.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/buffer/buffer_flush.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/buffer/buffer_put.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/buffer/buffer_putm_internal.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/buffer/buffer_puts.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/buffer/buffer_stubborn.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/byte.h"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/byte/byte_copy.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/byte/byte_zero.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/dir.h"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/dir/dir_close.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/dir/dir_open.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/dir/dir_read.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/dir/dir_type.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/rdir.h"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/rdir/rdir_close.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/rdir/rdir_open.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/rdir/rdir_read.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/str.h"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/str/str_diff.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/str/str_len.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc.h"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_catb.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_catc.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_cats.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_copyb.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_copys.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_free.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_init.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_nul.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_ready.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/stralloc/stralloc_readyplus.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="lib/unix/fnmatch.c"><Option compilerVar="CC" /></Unit>
-    <Unit filename="rdir-test.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_1.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_flush.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_put.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putm_internal.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_puts.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_stubborn.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/byte.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/byte/byte_copy.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/byte/byte_zero.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/dir.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/dir/dir_close.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/dir/dir_open.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/dir/dir_read.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/dir/dir_type.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/rdir.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/rdir/rdir_close.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/rdir/rdir_open.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/rdir/rdir_read.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/str.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/str/str_diff.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/str/str_len.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_catb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_catc.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_cats.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_copyb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_copys.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_free.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_init.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_nul.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_ready.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/stralloc/stralloc_readyplus.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/unix/fnmatch.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="rdir-test.c"><Option compilerVar="CC"/></Unit>
     <Extensions>
       <envvars/>
       <code_completion/>
