@@ -61,7 +61,68 @@
       <Add option="-w"/>
     </Compiler>
 
-    <Unit filename="compiler-wrapper.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putnc.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_putsa.c lib/buffer/buffer_stubborn.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_copyr.c lib/byte/byte_diff.c lib/byte/byte_equal.c lib/byte/byte_rchr.c lib/byte/byte_zero.c lib/dir/dir_close.c lib/dir/dir_open.c lib/dir/dir_read.c lib/dir/dir_type.c lib/fmt/fmt_long.c lib/fmt/fmt_ulong.c lib/rdir/rdir_close.c lib/rdir/rdir_open.c lib/rdir/rdir_read.c lib/str/str_basename.c lib/str/str_case_diffn.c lib/str/str_diff.c lib/str/str_diffn.c lib/str/str_dup.c lib/str/str_len.c lib/str/str_rchr.c lib/str/str_rchrs.c lib/stralloc/stralloc_append.c lib/stralloc/stralloc_cat.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_catc.c lib/stralloc/stralloc_cats.c lib/stralloc/stralloc_catwcb.c lib/stralloc/stralloc_catwcs.c lib/stralloc/stralloc_copy.c lib/stralloc/stralloc_copyb.c lib/stralloc/stralloc_copys.c lib/stralloc/stralloc_copywcb.c lib/stralloc/stralloc_copywcs.c lib/stralloc/stralloc_init.c lib/stralloc/stralloc_insertb.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c lib/strlist/strlist_at.c lib/strlist/strlist_cat.c lib/strlist/strlist_count.c lib/strlist/strlist_index_of.c lib/strlist/strlist_push.c lib/strlist/strlist_push_sa.c lib/strlist/strlist_push_unique.c lib/strlist/strlist_pushm_internal.c lib/strlist/strlist_to_argv.c lib/strlist/strlist_unshift.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="compiler-wrapper.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_1.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_2.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_flush.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_put.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_putflush.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_putlong.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_putnc.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_putnlflush.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_puts.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_putsa.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/buffer/buffer_stubborn.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/byte/byte_chr.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/byte/byte_copy.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/byte/byte_copyr.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/byte/byte_diff.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/byte/byte_equal.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/byte/byte_rchr.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/byte/byte_zero.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/dir/dir_close.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/dir/dir_open.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/dir/dir_read.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/dir/dir_type.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/fmt/fmt_long.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/fmt/fmt_ulong.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/rdir/rdir_close.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/rdir/rdir_open.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/rdir/rdir_read.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str/str_basename.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str/str_case_diffn.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str/str_diff.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str/str_diffn.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str/str_dup.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str/str_len.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str/str_rchr.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/str/str_rchrs.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_append.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_cat.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_catb.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_catc.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_cats.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_catwcb.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_catwcs.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_copy.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_copyb.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_copys.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_copywcb.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_copywcs.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_init.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_insertb.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_ready.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/stralloc/stralloc_readyplus.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_at.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_cat.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_count.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_index_of.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_push.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_push_sa.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_push_unique.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_pushm_internal.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_to_argv.c"><Option compilerVar="CC" /></Unit>
+    <Unit filename="lib/strlist/strlist_unshift.c"><Option compilerVar="CC" /></Unit>
     <Extensions>
       <envvars/>
       <code_completion/>

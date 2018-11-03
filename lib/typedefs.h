@@ -15,11 +15,15 @@
 #include <stdint.h>
 #endif*/
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#include <stdint.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if !defined(_SSIZE_T_DEFINED) && !(defined(_SYS_TYPES_H) && defined(__MSYS__))
+#if !defined(_SSIZE_T_DEFINED) && !(defined(_SYS_TYPES_H) && defined(__MSYS__)) && !defined(_SSIZE_T_)
 #define _SSIZE_T_DEFINED 1
 typedef ptrdiff_t ssize_t;
 #endif
@@ -29,7 +33,7 @@ typedef ptrdiff_t ssize_t;
 typedef ptrdiff_t intptr_t;
 #endif
 
-#if defined(_WIN32) || defined(_WIN64) && !(defined(__CYGWIN__) || defined(__MSYS__))
+#if defined(_WIN32) || defined(__MINGW32__) || defined(_WIN64) && !(defined(__CYGWIN__) || defined(__MSYS__))
 typedef intptr_t fd_t;
 #else
 typedef int fd_t;

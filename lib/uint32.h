@@ -13,7 +13,6 @@
 extern "C" {
 #endif
 
-#ifndef __BORLANDC__
 #ifdef __MSYS__
 # ifndef __MS_types__
 #  define __MS_types__
@@ -23,27 +22,29 @@ extern "C" {
 #  define uint32_t u_int32_t
 #  define int32_t int
 # endif
-#endif
 
-#if defined(_MSC_VER)
+#elif defined(_MSC_VER)
 # include <windows.h>
 # define uint32_t UINT32
 # define int32_t INT32
-#endif
 
-#ifdef __GNUC__
-#ifndef uint32_t
-typedef __UINT32_TYPE__ uint32_t;
-#endif
-#ifndef int32_t
-typedef __INT32_TYPE__ int32_t;
-#endif
-#endif
-
+#elif defined(__MINGW32__) || defined(__MINGW64__)
 typedef uint32_t uint32;
-#if !defined(_WINSOCK2API_) || defined(__TCC__)
 typedef int32_t int32;
-#endif
+
+#elif defined(__GNUC__)
+# ifndef uint32_t
+typedef __UINT32_TYPE__ uint32_t;
+# endif
+# ifndef int32_t
+typedef __INT32_TYPE__ int32_t;
+# endif
+
+#elif !defined(__BORLANDC__)
+typedef uint32_t uint32;
+# if !defined(_WINSOCK2API_) || defined(__TCC__)
+typedef int32_t int32;
+# endif
 
 #endif
 

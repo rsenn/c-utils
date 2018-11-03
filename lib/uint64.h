@@ -2,8 +2,12 @@
 #ifndef UINT64_H
 #define UINT64_H
 
-#include <stddef.h>
-#include <sys/types.h>
+#if defined(__BORLANDC__)
+#include <systypes.h>
+#elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
+#include <inttypes.h>
+#include <stdint.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,27 +41,12 @@ typedef __INT64_TYPE__ int64;
 #include <windows.h>
 typedef UINT64 uint64;
 typedef INT64 int64;
-#else 
 
-/*
-#ifdef __GNUC__
-# ifndef uint64_t
-#  ifdef __UINT64_TYPE__
-typedef __UINT64_TYPE__ uint64_t;
-#  elif defined __INT64_TYPE__
-typedef unsigned __INT64_TYPE__ uint64_t;
-#  endif
-# endif
-# ifndef int64_t
-//#  define int64_t __int64
-#  if !defined(_INT64_T_DECLARED) && !defined(__int64_t_defined) && !defined(__int8_t_defined) && !defined(_BITS_STDINT_INTN_H) && (!defined(__dietlibc__) && !defined(_INTTYPES_H))
-#   define __int64_t_defined
-#   define _INT64_T_DECLARED
-typedef long long int64_t;
-#  endif
-# endif
-#endif
-*/
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+typedef uint64_t uint64;
+typedef int64_t int64;
+
+#elif defined(__BORLANDC__)
 typedef uint64_t uint64;
 typedef int64_t int64;
 #endif

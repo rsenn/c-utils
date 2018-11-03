@@ -8,12 +8,14 @@
 #include <inttypes.h>
 #include <stdint.h>
 #endif
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#include <stdint.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef __BORLANDC__
 #ifdef __MSYS__
 # ifndef __MS_types__
 #  define __MS_types__
@@ -23,23 +25,21 @@ extern "C" {
 #  define uint16_t u_int16_t
 #  define int16_t int
 # endif
-#endif
 
-#if defined(_MSC_VER)
+#elif defined(_MSC_VER)
 # include <windows.h>
 # define uint16_t UINT16
 # define int16_t INT16
-#endif
 
-#ifdef __GNUC__
+#elif defined(__GNUC__) && !defined(__MINGW32__)
 #ifndef uint16_t
 typedef __UINT16_TYPE__ uint16_t;
 #endif
 #ifndef int16_t
 typedef __INT16_TYPE__ int16_t;
 #endif
-#endif
 
+#elif !defined(__BORLANDC__)
 typedef uint16_t uint16;
 typedef int16_t int16;
 #endif
