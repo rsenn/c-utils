@@ -1,4 +1,5 @@
 #include "../xml.h"
+#include "../str.h"
 
 xmlnode*
 xml_attrnode(const char* name, size_t name_len, const char* value, size_t value_len) {

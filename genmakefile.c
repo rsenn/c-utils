@@ -200,7 +200,7 @@ path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out) {
   stralloc_zero(out);
   if(prefix->len) {
     stralloc_cat(out, prefix);
-    
+
     if(!stralloc_endb(prefix, &pathsep, 1))
       stralloc_catc(out, pathsep);
   }
@@ -392,6 +392,10 @@ void
 rule_command(target* rule, stralloc* out) {
   size_t i;
   stralloc* in = rule->recipe;
+  stralloc prereq;
+  stralloc_init(&prereq);
+  stralloc_copy(&prereq, &rule->prereq.sa);
+  stralloc_replace(&prereq, pathsep == '/' ? '\\' : '/', pathsep);
 
   for(i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
@@ -403,15 +407,13 @@ rule_command(target* rule, stralloc* out) {
           break;
         }
         case '^': {
-          stralloc_cat(out, &rule->prereq.sa);
 
-          stralloc_replace(out, pathsep == '/' ? '\\' : '/', pathsep);
+          stralloc_cat(out, &prereq);
           break;
         }
         case '<': {
-          size_t n;
-          const char* s = strlist_at_n(&rule->prereq, 0, &n);
-          stralloc_catb(out, s, n);
+          size_t n = stralloc_findb(&prereq, &rule->prereq.sep, 1);
+          stralloc_catb(out, prereq.s, n);
           break;
         }
       }
@@ -421,6 +423,7 @@ rule_command(target* rule, stralloc* out) {
         break;
     }
   }
+  stralloc_free(&prereq);
 }
 
 /**
@@ -1068,8 +1071,15 @@ output_rule(buffer* b, target* rule) {
   buffer_putc(b, ':');
 
   if(num_deps) {
+    stralloc prereq;
+    stralloc_init(&prereq);
+    stralloc_copy(&prereq, &rule->prereq.sa);
+    stralloc_replace(&prereq, pathsep == '/' ? '\\' : '/', pathsep);
+
     buffer_putspace(b);
-    buffer_putsa(b, &rule->prereq.sa);
+    buffer_putsa(b, &prereq);
+
+    stralloc_free(&prereq);
   }
 
   if(rule->recipe) {
@@ -1578,17 +1588,20 @@ set_make_type(const char* make, const char* compiler) {
   if(str_start(make, "bmake") || str_start(make, "borland")) {
 
     /* Borland C++ Builder Make */
+    pathsep = '\\';
     make_begin_inline = "@&&|\n\t";
     make_end_inline = "\n|";
 
   } else if(str_start(make, "nmake")) {
 
     /* Microsoft NMake */
+    pathsep = '\\';
     make_begin_inline = "@<<\n\t";
     make_end_inline = "\n<<";
 
   } else if(str_start(make, "gmake") || str_start(make, "gnu")) {
 
+    pathsep = '/';
     stralloc_copys(&mkdir_command, "test -d \"$@\" || mkdir -p \"$@\"");
     stralloc_copys(&delete_command, "rm -f");
 
@@ -1645,7 +1658,6 @@ set_compiler_type(const char* compiler) {
      */
   } else if(str_start(compiler, "msvc") || str_start(compiler, "icl")) {
 
-    pathsep = '\\';
     objext = ".obj";
     binext = ".exe";
     libext = ".lib";
@@ -1702,8 +1714,6 @@ set_compiler_type(const char* compiler) {
      */
   } else if(str_start(compiler, "bcc")) {
 
-    pathsep = '\\';
-
     //    push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
 
     push_var("CFLAGS", "-q -tWC -tWM -O2");
@@ -1728,8 +1738,6 @@ set_compiler_type(const char* compiler) {
 
       /* Borland C++ Builder 5.5 */
     } else {
-      pathsep = '\\';
-
       set_var("CC", "bcc32");
       set_var("CXX", "bcc32");
 
@@ -1764,7 +1772,6 @@ set_compiler_type(const char* compiler) {
      */
   } else if(str_start(compiler, "tcc")) {
 
-    pathsep = '\\';
     libext = ".a";
     objext = ".o";
     format_linklib_fn = &format_linklib_switch;

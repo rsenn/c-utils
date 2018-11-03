@@ -435,6 +435,9 @@ const char* pe_datadir_name(int);
   ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe64_nt_headers, optional_header) + \
                         ((pe64_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
 
+#define PE_OFFSET(pe, st, field) \
+  (PE_64(pe) ? PE_FIELD_OFFSET(pe64_##st, field) : PE_FIELD_OFFSET(pe32_##st, field))
+
 #define PE_SIZE(pe, st, field) \
   (PE_64(pe) ? PE_FIELD_SIZE(pe64_##st, field) : PE_FIELD_SIZE(pe32_##st, field))
   

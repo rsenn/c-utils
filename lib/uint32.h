@@ -41,7 +41,7 @@ typedef __INT32_TYPE__ int32_t;
 #endif
 
 typedef uint32_t uint32;
-#if !defined(_WINSOCK2API_) && !defined(__TCC__)
+#if !defined(_WINSOCK2API_) || defined(__TCC__)
 typedef int32_t int32;
 #endif
 

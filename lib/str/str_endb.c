@@ -1,4 +1,5 @@
 #include "../str.h"
+#include "../byte.h"
 
 int
 str_endb(const char* a, const char* x, size_t n) {
