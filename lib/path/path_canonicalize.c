@@ -145,18 +145,18 @@ start:
         
         sa->len = path_right(sa->s, sa->len);
         buf[n] = '\0';
-        
+/*        
         buffer_puts(buffer_2, "recursive path_canonicalize(\"");
         buffer_puts(buffer_2, buf);
         buffer_puts(buffer_2, "\", \"");
         buffer_putsa(buffer_2, sa);
         buffer_puts(buffer_2, "\", ");
         buffer_putlong(buffer_2, symbolic);
-        buffer_puts(buffer_2, ") = ");
+        buffer_puts(buffer_2, ") = ");*/
         rret = path_canonicalize(buf, sa, symbolic);
 
-        buffer_putlong(buffer_2, rret);
-        buffer_putnlflush(buffer_2);
+        /*buffer_putlong(buffer_2, rret);
+        buffer_putnlflush(buffer_2);*/
         if(!rret)
           return 0;
       }

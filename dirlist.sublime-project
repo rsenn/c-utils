@@ -5,7 +5,8 @@
 		{
 			"path": ".",
             "folder_exclude_patterns": [ ".*", "Default",
-            "CMakeFiles", "CMakeModules", "MXC1321", "Schemr", "build", "config", "duma_2_5_15", "install", "libraries", "mkdir", "programs", "unix", "??"
+            "CMakeFiles", "CMakeModules", "MXC1321", "Schemr", "build", "config", "duma_2_5_15", "install", "libraries", "mkdir", 
+            "programs", "unix"
  ],
             
             "file_exclude_patterns": [ 

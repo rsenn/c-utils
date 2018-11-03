@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 
 #include "lib/unix.h"
+#include "lib/uint64.h"
 #include "lib/buffer.h"
 #include "lib/mmap.h"
 #include "lib/pe.h"
@@ -26,6 +27,7 @@ pe_print_data_directory(buffer* b, uint8* base, pe_data_directory* data_dir) {
 
 void
 pe_print_export_directory(buffer* b, uint8* base, pe_export_directory* export_dir) {
+  const char* name = pe_rva2ptr(base, uint32_get(&export_dir->name));
   buffer_puts(b, "characteristics: ");
   buffer_putxlong0(b, export_dir->characteristics, sizeof(export_dir->characteristics) * 2);
   buffer_puts(b, "\ntime_date_stamp: ");
@@ -35,7 +37,7 @@ pe_print_export_directory(buffer* b, uint8* base, pe_export_directory* export_di
   buffer_puts(b, "\nminor_version: ");
   buffer_putulong(b, export_dir->minor_version);
   buffer_puts(b, "\nname: ");
-  buffer_puts(b, pe_rva2ptr(base, uint32_get(&export_dir->name)));
+  buffer_puts(b, name ? name : "(null)");
   buffer_puts(b, "\nbase: ");
   buffer_putulong(b, uint32_get(&export_dir->base));
   buffer_puts(b, "\nnumber_of_functions: ");
@@ -205,12 +207,12 @@ main(int argc, char** argv) {
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
-      case 'i':
-      case 'e':
-      case 'd':
-      case 's':
-      case 'E':
-      case 'D': break;
+      case 'i': list_imports = 1; break;
+      case 'e': list_exports = 1; break;
+      case 'd': list_deps = 1; break;
+      case 's': list_sections = 1; break;
+      case 'E': print_export_dir = 1; break;
+      case 'D': print_data_dir = 1; break;
       default: {
         usage(argv[0]);
         return 1;
