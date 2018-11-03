@@ -1,4 +1,5 @@
 #include "lib/xml.h"
+#include "lib/str.h"
 
 static void xml_print_list(xmlnode*, buffer*, int, const char*);
 

@@ -62,7 +62,7 @@ size_t str_case_start(const void *p1, const void *p2);
 size_t str_cat(void *p1, const void *p2);
 size_t str_copyb(void *p1, const void *p2, size_t max);
 size_t str_find(const void *s, const void *what);
-size_t str_findb(const void *p1, const void *what, size_t len);
+size_t str_findb(const char*, const char* x, size_t n);
 void str_lower(void *str);
 
 struct tm;

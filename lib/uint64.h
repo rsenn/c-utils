@@ -8,6 +8,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 #endif
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +47,7 @@ typedef INT64 int64;
 typedef uint64_t uint64;
 typedef int64_t int64;
 
-#elif defined(__BORLANDC__)
+#elif defined(__BORLANDC__) || defined(__TCC__)
 typedef uint64_t uint64;
 typedef int64_t int64;
 #endif

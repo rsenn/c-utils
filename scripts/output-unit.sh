@@ -68,6 +68,11 @@ cat <<EOF
       <Add library="z"/>
       <Add library="bz2"/>
       <Add library="lzma"/>
+      <Add library="advapi32"/>
+      <Add library="ws2_32"/>
+      <Add library="iphlpapi"/>
+      <Add library="psapi"/>
+      <Add library="shlwapi"/>
     </Linker>
 $UNITS
     <Extensions>

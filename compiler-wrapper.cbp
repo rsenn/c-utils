@@ -52,6 +52,11 @@
       <Add library="z"/>
       <Add library="bz2"/>
       <Add library="lzma"/>
+      <Add library="advapi32"/>
+      <Add library="ws2_32"/>
+      <Add library="iphlpapi"/>
+      <Add library="psapi"/>
+      <Add library="shlwapi"/>
     </Linker>
     <Unit filename="compiler-wrapper.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer.h"><Option compilerVar="CC"/></Unit>
