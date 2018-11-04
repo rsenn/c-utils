@@ -11,6 +11,18 @@
 #include <errno.h>
 #undef winsock2errno
 
+#ifndef EFAULT
+#define EFAULT 14
+#endif
+
+#ifndef ENAMETOOLONG 
+#define ENAMETOOLONG 91 /* File or path name too long */
+#endif
+
+#ifndef ENOTEMPTY
+#define ENOTEMPTY 90    /* Directory not empty */
+#endif
+
 #include "../buffer.h"
 
 #ifndef EPROTONOSUPPORT

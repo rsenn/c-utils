@@ -10,6 +10,10 @@
 #include "../io_internal.h"
 #include <errno.h>
 
+#ifndef EAGAIN
+#define EAGAIN 11
+#endif
+
 #if WINDOWS
 
 /* All the Unix trickery is unsupported on Windows.  Instead, one is

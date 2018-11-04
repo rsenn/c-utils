@@ -1765,7 +1765,10 @@ set_compiler_type(const char* compiler) {
      */
   } else if(str_start(compiler, "lcc")) {
 
-    set_var("CC", "lcc");
+    if(mach.bits == _64)
+      set_var("CC", "lcc64");
+    else
+      set_var("CC", "lcc");
 
     /*
      * Tiny CC compiler
@@ -1872,6 +1875,8 @@ main(int argc, char* argv[]) {
 
   if(compiler == NULL)
     compiler = "gcc";
+  else if(mach.bits == 0)
+    set_machine(compiler);
 
   if(!set_make_type(make, compiler) || !set_compiler_type(compiler)) {
     usage(argv[0]);

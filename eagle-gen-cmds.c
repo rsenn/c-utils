@@ -153,17 +153,17 @@ static const char* base;
 static int active_layer = -1;
 static stralloc current_alignment;
 
-static inline struct pos
+static struct pos
 xy_neg(const struct pos p) {
   struct pos r;
   r.x = -p.x;
   r.y = -p.y;
   return r;
 }
-static inline void
-xy_add(struct pos* d, const struct pos p) {
-  d->x += p.x;
-  d->y += p.y;
+static void
+xy_add(struct pos* d, const struct pos* p) {
+  d->x += p->x;
+  d->y += p->y;
 }
 
 /**
@@ -356,7 +356,7 @@ build_layers(xmlnode* layer) {
 }
 
 void
-rect_translate(rect* r, struct pos p) {
+rect_translate(rect* r, struct pos* p) {
   xy_add(&r->a, p);
   xy_add(&r->b, p);
 }
@@ -1387,7 +1387,7 @@ main(int argc, char* argv[]) {
       print_xy(buffer_2, "translate", translate.x, translate.y);
 
       contour = extent;
-      rect_translate(&contour, translate);
+      rect_translate(&contour, &translate);
 
       print_rect(buffer_2, "contour", &contour);
 

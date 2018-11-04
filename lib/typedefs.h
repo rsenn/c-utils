@@ -6,6 +6,11 @@
 
 /* for ssize_t: */
 #include <sys/types.h>
+
+#ifdef __LCC__
+#include <stdint.h>
+#endif
+
 /*
 #if defined(HAVE_INTTYPES_H) || defined(__LCC__) || (!defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__))
 #include <inttypes.h>

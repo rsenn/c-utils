@@ -61,6 +61,10 @@
 #define STDERR_FILENO 2
 #endif
 
+#ifndef S_IFMT
+#define S_IFMT         0170000
+#endif
+
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static array exclude_masks;

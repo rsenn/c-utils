@@ -11,6 +11,10 @@
 #include <ctype.h>
 #include <errno.h>
 
+#ifndef EAGAIN
+#define EAGAIN 11
+#endif
+
 #define is_space(c) ((c) == ' ' || (c) == '\t' || (c) == '\r' || (c) == '\n')
 
 ssize_t

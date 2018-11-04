@@ -10,6 +10,10 @@
 #include <stdio.h>
 #include <errno.h>
 
+#ifndef EAGAIN
+#define EAGAIN 11
+#endif
+
 #define BUFSIZE 16384
 
 int64

@@ -33,6 +33,9 @@
 #if WINDOWS_NATIVE
 #include <windows.h>
 
+#ifndef EAGAIN
+#define EAGAIN 11
+#endif
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
 #endif

@@ -83,7 +83,7 @@ iarray_allocate(iarray* ia, size_t pos) {
 #endif
   {
     size_t l;
-    do { l = __CAS_PTR(&ia->len, prevlen, realpos); } while(l < realpos);
+    do { l = __CAS(&ia->len, prevlen, realpos); } while(l < realpos);
   }
   return &iarray_data(*p)[(pos - index) * ia->elemsize];
 }

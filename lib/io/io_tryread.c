@@ -11,6 +11,10 @@
 #include "../io_internal.h"
 #include <errno.h>
 
+#ifndef EAGAIN
+#define EAGAIN 11
+#endif
+
 #if WINDOWS
 /* In Windows, I/O works differently. */
 /* Instead of calling read until it says EAGAIN, you call read in
