@@ -192,7 +192,7 @@ unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
 
 void unit_test_execute(struct unit_test* mu_);
 
-#define unit_test_main main
+//#define unit_test_main main
 //int unit_test_main(int argc, char** argv);
 struct unit_testConf* muconf_ptr(void);
 int unit_test_call(struct unit_test* mu_, unit_test_func_t func);

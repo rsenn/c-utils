@@ -1669,19 +1669,11 @@ set_compiler_type(const char* compiler) {
     set_var("LINK", "link");
     push_var("CPPFLAGS", "-Dinline=__inline");
 
-    push_var("LDFLAGS", "/NOLOGO /DYNAMICBASE /NXCOMPAT /INCREMENTAL:NO /SUBSYSTEM:CONSOLE");
-
-    if(mach.arch == ARM)
-      push_var("LDFLAGS", "/MACHINE:ARM");
-    else if(mach.bits == _64)
-      push_var("LDFLAGS", "/MACHINE:X64");
-    else if(mach.bits == _32)
-      push_var("LDFLAGS", "/MACHINE:X86");
 
     /*    push_var("LDFLAGS",
                  "/DEBUG /DYNAMICBASE /INCREMENTAL /NXCOMPAT /TLBID:1");
     */
-    push_var("LDFLAGS", "/MANIFEST /MANIFESTFILE:$@.embed.manifest");
+    push_var("LDFLAGS", "/SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT");
 
     //  push_var("LDFLAGS", "/MANIFEST /manifest:embed2 /MANIFESTUAC:\"level=asInvoker uiAccess=false\"");
 
@@ -1700,16 +1692,34 @@ set_compiler_type(const char* compiler) {
       set_var("LIB", "xilib");
 
       push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
+      
+      if(mach.bits == _64)
+        push_var("LDFLAGS", "/LIBPATH:\"%ROOT%\\compiler\\lib\\intel64\"");
+      else
+        push_var("LDFLAGS", "/LIBPATH:\"%ROOT%\\compiler\\lib\"");
 
       //      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     }
 
+    push_var("LDFLAGS", "/LIBPATH:\"%UniversalCRTSdkDir%lib\\%WindowsSDKLibVersion%ucrt\\$(MACHINE)\"");
+    push_var("LDFLAGS", "/LIBPATH:\"%WindowsSdkDir%lib\\%WindowsSDKLibVersion%um\\$(MACHINE)\"");
+    push_var("LDFLAGS", "/LIBPATH:\"%VCToolsInstallDir%lib\\$(MACHINE)\"");
+
+    push_var("LDFLAGS", "/INCREMENTAL /MANIFEST /manifest:embed /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\" /DEBUG");
+
+    if(mach.arch == ARM) {
+      push_var("LDFLAGS", "/MACHINE:ARM");
+      set_var("MACHINE", mach.bits == _64 ? "arm64" : "arm");
+    } else if(mach.bits == _64) {
+      push_var("LDFLAGS", "/MACHINE:X64");
+      set_var("MACHINE", "x64");
+    } else if(mach.bits == _32) {
+      push_var("LDFLAGS", "/MACHINE:X86");
+      set_var("MACHINE", "x86");
+    }
+    
     set_command(&link_command,
-                "$(LINK) -OUT:\"$@\" -INCREMENTAL -NOLOGO -MANIFEST "
-                "-MANIFESTFILE:Debug/genmk.exe.intermediate.manifest -DEBUG "
-                "-PDB:C:/Users/roman/Desktop/dirlist/genmk/Debug/genmk.pdb -SUBSYSTEM:CONSOLE "
-                "-DYNAMICBASE -NXCOMPAT -ERRORREPORT:PROMPT ",
-                "$(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)");
+                "$(LINK) /OUT:\"$@\" $(LDFLAGS) /PDB:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
 
     /*
      * Borland C++ Builder
