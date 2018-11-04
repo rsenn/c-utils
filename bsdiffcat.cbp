@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<CodeBlocks_project_file>
+  <FileVersion major="1" minor="6"/>
+  <Project>
+    <Option title="bsdiffcat"/>
+    <Option pch_mode="2"/>
+    <Option compiler="gcc"/>
+    <Build>
+      <Target title="Debug">
+        <Option output="bin/Debug/bsdiffcat" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Debug/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-Wextra"/>
+          <Add option="-Wall"/>
+          <Add option="-g3"/>
+          <Add option="-ggdb"/>
+          <Add option="-O0"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-DDEBUG"/>
+          <Add directory="."/>
+        </Compiler>
+      </Target>
+      <Target title="Release">
+        <Option output="bin/Release/bsdiffcat" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Release/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-w"/>
+          <Add option="-fomit-frame-pointer"/>
+          <Add option="-fexpensive-optimizations"/>
+          <Add option="-Os"/>
+          <Add option="-ffast-math"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-DNDEBUG=1"/>
+          <Add directory="."/>
+        </Compiler>
+      </Target>
+    </Build>
+    <Compiler>
+      <Add option="-DINLINE=inline"/>
+      <Add option="-D_FILE_OFFSET_BITS=64"/>
+      <Add option="-D_LARGEFILE_SOURCE=1"/>
+      <Add option="-D_GNU_SOURCE=1"/>
+      <Add option="-DHAVE_LIBBZ2=1"/>
+      <Add option="-DHAVE_LIBLZMA=1"/>
+      <Add option="-DHAVE_ZLIB=1"/>
+    </Compiler>
+    <Linker>
+      <Add library="z"/>
+      <Add library="bz2"/>
+      <Add library="lzma"/>
+      <Add library="advapi32"/>
+      <Add library="ws2_32"/>
+      <Add library="iphlpapi"/>
+      <Add library="psapi"/>
+      <Add library="shlwapi"/>
+    </Linker>
+    <Unit filename="bsdiffcat.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_0.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_1.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_2.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_bz2.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_close.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_dummyread.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_dummyreadmmap.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_feed.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_flush.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_free.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_get.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_init.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_mmapread.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_mmapread_fd.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_munmap.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_prefetch.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_put.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putc.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putflush.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putnc.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putnlflush.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putnspace.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_puts.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putxint640.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putxlong0.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_stubborn.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_stubborn2.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_truncfile.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/byte.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/byte/byte_copy.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/byte/byte_count.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/byte/byte_diff.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/byte/byte_fill.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/byte/byte_zero.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/errmsg.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/errmsg/errmsg_iam.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/errmsg/errmsg_infosys.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/errmsg/errmsg_puts.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/errmsg/errmsg_write.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_int64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_uint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_xint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_xlong.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/mmap.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/mmap/mmap_read.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/mmap/mmap_read_fd.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/open.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/open/open_read.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/open/open_trunc.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/str.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/str/str_basename.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/str/str_len.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/str/str_rchrs.c"><Option compilerVar="CC"/></Unit>
+    <Extensions>
+      <envvars/>
+      <code_completion/>
+      <lib_finder disable_auto="1"/>
+      <debugger/>
+    </Extensions>
+  </Project>
+</CodeBlocks_project_file>
