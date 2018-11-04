@@ -1,3 +1,6 @@
+#include <sys/stat.h>
+
+
 #include "../windoze.h"
 #include "../path_internal.h"
 #include "../readlink.h"
@@ -22,13 +25,19 @@
 #define HAVE_LSTAT 1
 #endif
 
-#include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
 
 #ifndef HAVE_LSTAT
 #define lstat stat
+#endif
+
+#ifndef _stat
+#define _stat stat
+#endif
+#ifdef __LCC__
+extern int stat(const char*,struct stat*);
 #endif
 
 #if WINDOWS
@@ -77,9 +86,9 @@ int
 path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   size_t l1, l2;
   size_t n;
-  struct stat st;
+  struct _stat st;
   int ret = 1;
-  int (*stat_fn)() = stat;
+  int (*stat_fn)(const char*,struct _stat*) = stat;
   char buf[PATH_MAX + 1];
 #ifdef HAVE_LSTAT
 #if !WINDOWS_NATIVE
