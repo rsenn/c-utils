@@ -12,28 +12,34 @@
 	"buffers":
 	[
 		{
-			"file": "lib/buffer/buffer_putulong.c",
+			"file": "lib/pe/pe_get_datadir.c",
 			"settings":
 			{
-				"buffer_size": 167,
+				"buffer_size": 280,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/strlist/strlist_push_tokens.c",
+			"file": "lib/pe.h",
 			"settings":
 			{
-				"buffer_size": 250,
-				"encoding": "UTF-8",
+				"buffer_size": 14086,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/strlist/strlist_push.c",
+			"file": "lib/pe/pe_rva2offset.c",
 			"settings":
 			{
-				"buffer_size": 296,
-				"encoding": "UTF-8",
+				"buffer_size": 442,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/pe/pe_thunk.c",
+			"settings":
+			{
+				"buffer_size": 386,
 				"line_ending": "Unix"
 			}
 		}
@@ -90,15 +96,15 @@
 		"selected_items":
 		[
 			[
+				"Package Control: ",
+				"Package Control: Advanced Install Package"
+			],
+			[
 				"insta",
 				"Package Control: Advanced Install Package"
 			],
 			[
 				"pac",
-				"Package Control: Discover Packages"
-			],
-			[
-				"Package Control: ",
 				"Package Control: Discover Packages"
 			],
 			[
@@ -172,16 +178,20 @@
 	[
 		"/C/Users/roman/Desktop/dirlist",
 		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/strlist"
+		"/C/Users/roman/Desktop/dirlist/lib/pe"
 	],
 	"file_history":
 	[
+		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
+		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push.c",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_canonicalize.c",
+		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push_tokens.c",
+		"/C/Users/roman/Desktop/dirlist/lib/buffer/buffer_putulong.c",
 		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CTags.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-mousemap",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_canonical.c",
-		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/pathtool.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
@@ -299,11 +309,7 @@
 		"/C/Users/roman/Documents/dirlist/lib/array/array_cats.c",
 		"/C/Users/roman/Documents/dirlist/dirlist.sublime-build",
 		"/C/Users/roman/Documents/dirlist/lib/array/array_reset.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_dump.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_pushb.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_at.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist.h",
-		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_init.c"
+		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_dump.c"
 	],
 	"find":
 	{
@@ -321,6 +327,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"_IMPORT",
+			"pe_export_directory",
 			"strlist_ini",
 			"-F",
 			"-Fo",
@@ -488,19 +496,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "lib/buffer/buffer_putulong.c",
+					"file": "lib/pe/pe_get_datadir.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 167,
+						"buffer_size": 280,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								167,
-								167
+								204,
+								204
 							]
 						],
 						"settings":
@@ -516,27 +524,29 @@
 				},
 				{
 					"buffer": 1,
-					"file": "lib/strlist/strlist_push_tokens.c",
+					"file": "lib/pe.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 250,
+						"buffer_size": 14086,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								154,
-								154
+								5929,
+								5929
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3219.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -544,30 +554,62 @@
 				},
 				{
 					"buffer": 2,
-					"file": "lib/strlist/strlist_push.c",
-					"semi_transient": false,
+					"file": "lib/pe/pe_rva2offset.c",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 296,
+						"buffer_size": 442,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								296,
-								296
+								441,
+								441
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/pe/pe_thunk.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 386,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								272,
+								272
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -616,6 +658,10 @@
 	{
 		"height": 0.0
 	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
 	"output.sftp":
 	{
 		"height": 0.0
@@ -658,11 +704,11 @@
 	"settings":
 	{
 	},
-	"show_minimap": false,
+	"show_minimap": true,
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 254.0,
+	"side_bar_width": 261.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

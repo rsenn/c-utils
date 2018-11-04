@@ -88,7 +88,7 @@ main(int argc, char* argv[]) {
   size_t i = 0;
 
   if(!argv[1]) {
-    argv[1] = "mediathek-list.cbp";
+    argv[1] = "C:\\Users\\roman\\Desktop\\dirlist\\pelist.cbp";
   }
 
   buffer_mmapprivate(&input, argv[1]);

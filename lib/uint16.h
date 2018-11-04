@@ -16,28 +16,17 @@
 extern "C" {
 #endif
 
-#ifdef __MSYS__
-# ifndef __MS_types__
-#  define __MS_types__
-# endif
-# include <sys/types.h>
-# ifdef __BIT_TYPES_DEFINED__
-#  define uint16_t u_int16_t
-#  define int16_t int
-# endif
-
-#elif defined(_MSC_VER)
+#if defined(_MSC_VER)
 # include <windows.h>
 # define uint16_t UINT16
 # define int16_t INT16
 
+typedef uint16_t uint16;
+typedef int16_t int16;
+
 #elif defined(__GNUC__) && !defined(__MINGW32__)
-#ifndef uint16_t
-typedef __UINT16_TYPE__ uint16_t;
-#endif
-#ifndef int16_t
-typedef __INT16_TYPE__ int16_t;
-#endif
+typedef __UINT16_TYPE__ uint16;
+typedef __INT16_TYPE__ int16;
 
 #elif !defined(__BORLANDC__)
 typedef uint16_t uint16;
@@ -97,4 +86,3 @@ uint16 uint16_read(const char*);
 #endif
 
 #endif
-

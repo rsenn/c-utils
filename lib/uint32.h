@@ -13,32 +13,21 @@
 extern "C" {
 #endif
 
-#ifdef __MSYS__
-# ifndef __MS_types__
-#  define __MS_types__
-# endif
-# include <sys/types.h>
-# ifdef __BIT_TYPES_DEFINED__
-typedef u_int32_t uint32;
-typedef int32_t int32;
-# endif
-
-#elif defined(_MSC_VER)
+#if defined(_MSC_VER)
 # include <windows.h>
 # define uint32_t UINT32
 # define int32_t INT32
+
+typedef uint32_t uint32;
+typedef int32_t int32;
 
 #elif defined(__MINGW32__) || defined(__MINGW64__)
 typedef uint32_t uint32;
 typedef int32_t int32;
 
 #elif defined(__GNUC__)
-# ifndef uint32_t
-typedef __UINT32_TYPE__ uint32_t;
-# endif
-# ifndef int32_t
-typedef __INT32_TYPE__ int32_t;
-# endif
+typedef __UINT32_TYPE__ uint32;
+typedef __INT32_TYPE__ int32;
 
 #elif !defined(__BORLANDC__)
 typedef uint32_t uint32;
@@ -114,4 +103,3 @@ uint32 uint32_prng(uint32, uint32 seed);
 uint32 uint32_prng(uint32, uint32 seed);
 uint32 uint32_random(void);
 int    uint32_seed(const void*, unsigned long n);
-

@@ -19,5 +19,6 @@ pe_datadir_name(int i) {
     "DELAY_IMPORT",
     "COMHEADER",
   };
-  return names[i];
+   if(i >= 0 && i < sizeof(names) / sizeof(names[0])) return names[i];
+   return NULL;
 }

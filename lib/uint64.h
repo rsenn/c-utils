@@ -14,29 +14,13 @@
 extern "C" {
 #endif
 
-#ifdef __MSYS__
-# ifndef __MS_types__
-#  define __MS_types__
-# endif
-# undef __BSD_VISIBLE
-# define __BSD_VISIBLE 0
-# include <sys/types.h>
-# ifdef __BIT_TYPES_DEFINED__
-#  define uint64_t u_int64_t
-#  define int64_t long long
-# else
-typedef unsigned long long uint64_t;
-typedef long long int64_t;
-# endif
-#endif
-
-#if defined(___int64_t_defined)
-typedef u_int64_t uint64;
-typedef int64_t int64;
-
-#elif defined(__UINT64_TYPE__) && defined(__INT64_TYPE__)
+#if defined(__UINT64_TYPE__) && defined(__INT64_TYPE__)
 typedef __UINT64_TYPE__ uint64;
 typedef __INT64_TYPE__ int64;
+
+#elif defined(___int64_t_defined)
+typedef u_int64_t uint64;
+typedef int64_t int64;
 
 #elif defined(_MSC_VER) || defined(__BORLANDC__)
 #include <windows.h>
@@ -70,11 +54,13 @@ uint64 uint64_read_big(const char* in);
 
 #endif
 
+#ifndef NO_UINT64_MACROS
 inline static uint64
 uint64_get(const void* ptr) {
   const char* in = ptr;
   return *(uint64 *)in;
 }
+#endif
 
 #if defined(_WIN32) && defined(_MSC_VER)
 // for older MSVC

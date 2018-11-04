@@ -61,7 +61,8 @@ pe_print_data_directories(buffer* b, uint8* base, pe_data_directory* data_dirs, 
   size_t i;
 
   for(i = 0; i < n; ++i) {
-    buffer_putspad(b, pe_datadir_name(i), 12);
+    const char* name = pe_datadir_name(i);
+    buffer_putspad(b, name ? name : "", 12);
     buffer_putspace(b);
     buffer_putxlong0(b,
                       pe_rva2offset(base, uint32_get(&data_dirs[i].virtual_address)),
