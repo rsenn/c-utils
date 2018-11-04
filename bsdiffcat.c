@@ -1,10 +1,10 @@
 #include "lib/array.h"
+#include "lib/uint64.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/errmsg.h"
 #include "lib/uint32.h"
-#include "lib/uint64.h"
 
 typedef struct {
   char magic[8];

@@ -12,16 +12,18 @@
 # include <sys/atomic.h>
 #elif WINDOWS_NATIVE || defined(__MSYS__)
 # define __CAS(val,oldval,newval) InterlockedCompareExchange(val,newval,oldval)
-# define __CAS_PTR(ptr,oldptr,newptr) InterlockedCompareExchangePointer(ptr,newptr,oldptr)
+# ifdef __LCC__
+#  define __CAS_PTR(ptr,oldptr,newptr) InterlockedCompareExchange(ptr,newptr,oldptr)
+# else
+#  define __CAS_PTR(ptr,oldptr,newptr) InterlockedCompareExchangePointer(ptr,newptr,oldptr)
+# endif
 #elif defined(__GNUC__)
 # define __CAS(val,oldval,newval) __sync_val_compare_and_swap(val,oldval,newval)
-
-#if __SIZEOF_POINTER__ == 4
-# define __CAS_PTR(ptr,oldptr,newptr) __sync_val_compare_and_swap_4(ptr,oldptr,newptr)
-#else
-# define __CAS_PTR(ptr,oldptr,newptr) __sync_val_compare_and_swap_8(ptr,oldptr,newptr)
-#endif
-
+# if __SIZEOF_POINTER__ == 4
+#  define __CAS_PTR(ptr,oldptr,newptr) __sync_val_compare_and_swap_4(ptr,oldptr,newptr)
+# else
+#  define __CAS_PTR(ptr,oldptr,newptr) __sync_val_compare_and_swap_8(ptr,oldptr,newptr)
+# endif
 #else
 # warning No atomic operations
 #endif

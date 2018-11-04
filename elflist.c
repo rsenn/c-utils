@@ -1,5 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 
+#include "lib/uint64.h"
 #include "lib/buffer.h"
 #include "lib/elf.h"
 #include "lib/mmap.h"

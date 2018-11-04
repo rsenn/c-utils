@@ -15,13 +15,13 @@
 
 #include "lib/io_internal.h"
 #include "lib/stralloc.h"
+#include "lib/uint64.h"
 #include "lib/buffer.h"
 #include "lib/open.h"
 #include "lib/fmt.h"
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/scan.h"
-#include "lib/uint64.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX

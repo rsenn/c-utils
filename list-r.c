@@ -5,6 +5,8 @@
 #define STRINGIFY(VALUE) INTERNAL_STRINGIFY(VALUE)
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+
 #ifdef _MSC_VER
 #define snprintf _snprintf
 #endif
@@ -38,7 +40,6 @@
 #include "lib/ioctlcmd.h"
 #include <errno.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <time.h>
 
 #if WINDOWS

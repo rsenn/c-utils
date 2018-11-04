@@ -1622,6 +1622,8 @@ set_compiler_type(const char* compiler) {
   push_var("CXX", "c++");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
+  stralloc_copys(&link_command, "$(LINK) -subsystem console -o $@ $(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)");
+  stralloc_copys(&lib_command, "$(LIB) /out:$@ $^");
 
   push_var("CFLAGS", "-O2");
   push_var("DEFS", "-DHAVE_ERRNO_H=1");
@@ -1684,7 +1686,7 @@ set_compiler_type(const char* compiler) {
     //  push_var("LDFLAGS", "/MANIFEST /manifest:embed2 /MANIFESTUAC:\"level=asInvoker uiAccess=false\"");
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
-    set_command(&lib_command, "$(LIB) /OUT:$@", "$^");
+  set_command(&lib_command, "$(LIB) /out:$@", "$^");
     //    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
     /*
@@ -1765,11 +1767,16 @@ set_compiler_type(const char* compiler) {
      */
   } else if(str_start(compiler, "lcc")) {
 
-    if(mach.bits == _64)
+    if(mach.bits == _64) {
       set_var("CC", "lcc64");
-    else
+      set_var("LINK", "lcclnk64");
+      set_var("LIB", "lcclib64");
+    } else {
       set_var("CC", "lcc");
-
+      set_var("LINK", "lcclnk");
+      set_var("LIB", "lcclib");
+    }
+    
     /*
      * Tiny CC compiler
      */
