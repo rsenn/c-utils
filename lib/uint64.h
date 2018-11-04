@@ -4,10 +4,13 @@
 
 #if defined(__BORLANDC__)
 #include <systypes.h>
+#elif defined(__LCC__)
+#include <stdint.h>
 #elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
 #include <stdint.h>
 #endif
+
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -31,7 +34,7 @@ typedef INT64 int64;
 typedef uint64_t uint64;
 typedef int64_t int64;
 
-#elif defined(__BORLANDC__) || defined(__TCC__)
+#else
 typedef uint64_t uint64;
 typedef int64_t int64;
 #endif

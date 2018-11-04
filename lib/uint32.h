@@ -4,6 +4,8 @@
 
 #if defined(__BORLANDC__)
 #include <systypes.h>
+#elif defined(__LCC__)
+#include <stdint.h>
 #elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
 #include <stdint.h>
