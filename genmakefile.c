@@ -1724,7 +1724,15 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "/LIBPATH:\"%VCToolsInstallDir%lib\\$(MACHINE)\"");
 
     push_var("LDFLAGS",
-             "/INCREMENTAL /MANIFEST /manifest:embed /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\" /DEBUG");
+             "/INCREMENTAL /MANIFEST");
+
+if(build_type == BUILD_TYPE_DEBUG)
+   push_var("LDFLAGS", "/DEBUG");
+
+    if(str_start(compiler, "icl"))
+      push_var("LDFLAGS",
+             "/manifest:embed /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\"");
+    
 
     if(mach.arch == ARM) {
       push_var("LDFLAGS", "/MACHINE:ARM");
@@ -1756,8 +1764,6 @@ set_compiler_type(const char* compiler) {
 
     if(build_type == BUILD_TYPE_DEBUG) {
       push_var("CFLAGS", "-w -w-use");
-    } else {
-      push_var("CFLAGS", "-r");
     }
     if(build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "-d -a-");
@@ -1775,6 +1781,9 @@ set_compiler_type(const char* compiler) {
       if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
         push_var("CFLAGS", "-vxxx");
 
+    /*  if(build_type != BUILD_TYPE_DEBUG)
+        push_var("CFLAGS", "-Or");
+*/
       set_command(&link_command, "$(CC) $(LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
       /* Borland C++ Builder 5.5 */
@@ -1788,6 +1797,9 @@ set_compiler_type(const char* compiler) {
         push_var("CFLAGS", "-v");
         push_var("LDFLAGS", "-v");
       }
+
+      if(build_type != BUILD_TYPE_DEBUG)
+        push_var("CFLAGS", "-r");
 
       stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
       set_command(&link_command, "$(CC) $(LDFLAGS) -e\"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");

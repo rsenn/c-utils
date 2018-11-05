@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
+#include <time.h>
 
 #if _FILE_OFFSET_BITS == 64
 typedef struct stat stat_t;
@@ -17,7 +18,7 @@ typedef struct stat stat_t;
 
 time_t
 dir_time(struct dir_s* d, int time_type) {
-  unsigned long long r = 0;
+  time_t  r = 0;
 #if USE_READDIR
   const char* name = dir_INTERNAL(d)->dir_entry->d_name;
   stat_t st;

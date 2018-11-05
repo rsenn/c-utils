@@ -12,10 +12,10 @@
 	"buffers":
 	[
 		{
-			"contents": "pe_get_datadir",
+			"contents": "MAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PATHSEP\nDEFAULT_PATHSEP\nvoid\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_s\npath_prefix_b\npath_extension\npath_object\npath_wildcard\nformat_linklib_lib\nformat_linklib_switch\nscan_main\nhas_main\nextract_includes\nget_includes\nrule_command\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nget_var\nset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\noutput_rule\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\nlib_rule_for_sourcedir\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_compile_rules\ngen_lib_rules\ngen_link_rules\ngen_clean_rule\noutput_all_vars\noutput_all_rules\nusage\nset_machine\nset_make_type\nset_compiler_type\nmain",
 			"settings":
 			{
-				"buffer_size": 14,
+				"buffer_size": 1180,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -26,6 +26,15 @@
 			"settings":
 			{
 				"buffer_size": 280,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "genmakefile.c",
+			"settings":
+			{
+				"buffer_size": 47922,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -489,7 +498,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 14,
+						"buffer_size": 1180,
 						"regions":
 						{
 						},
@@ -498,32 +507,457 @@
 						],
 						"settings":
 						{
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\lib\\pe\\pe_get_datadir.c",
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\genmakefile.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									39,
-									53
+									365,
+									376
+								],
+								[
+									391,
+									405
+								],
+								[
+									421,
+									435
+								],
+								[
+									451,
+									465
+								],
+								[
+									477,
+									491
+								],
+								[
+									513,
+									524
+								],
+								[
+									539,
+									553
+								],
+								[
+									567,
+									581
+								],
+								[
+									595,
+									609
+								],
+								[
+									624,
+									638
+								],
+								[
+									677,
+									692
+								],
+								[
+									712,
+									727
+								],
+								[
+									1293,
+									1297
+								],
+								[
+									2008,
+									2019
+								],
+								[
+									2316,
+									2329
+								],
+								[
+									2533,
+									2541
+								],
+								[
+									2707,
+									2714
+								],
+								[
+									2878,
+									2886
+								],
+								[
+									3307,
+									3316
+								],
+								[
+									3484,
+									3492
+								],
+								[
+									3507,
+									3515
+								],
+								[
+									3530,
+									3537
+								],
+								[
+									3552,
+									3561
+								],
+								[
+									3812,
+									3825
+								],
+								[
+									4322,
+									4335
+								],
+								[
+									4666,
+									4680
+								],
+								[
+									4933,
+									4944
+								],
+								[
+									5443,
+									5456
+								],
+								[
+									5849,
+									5867
+								],
+								[
+									6053,
+									6074
+								],
+								[
+									6304,
+									6313
+								],
+								[
+									6817,
+									6825
+								],
+								[
+									7051,
+									7067
+								],
+								[
+									8042,
+									8054
+								],
+								[
+									8301,
+									8313
+								],
+								[
+									9494,
+									9502
+								],
+								[
+									10016,
+									10027
+								],
+								[
+									10107,
+									10116
+								],
+								[
+									10448,
+									10460
+								],
+								[
+									10541,
+									10552
+								],
+								[
+									10761,
+									10769
+								],
+								[
+									11025,
+									11036
+								],
+								[
+									11250,
+									11261
+								],
+								[
+									11445,
+									11455
+								],
+								[
+									11699,
+									11709
+								],
+								[
+									12104,
+									12115
+								],
+								[
+									12409,
+									12416
+								],
+								[
+									12812,
+									12819
+								],
+								[
+									12995,
+									13003
+								],
+								[
+									13119,
+									13130
+								],
+								[
+									13264,
+									13272
+								],
+								[
+									13445,
+									13453
+								],
+								[
+									13825,
+									13841
+								],
+								[
+									14102,
+									14115
+								],
+								[
+									14333,
+									14352
+								],
+								[
+									15869,
+									15884
+								],
+								[
+									16361,
+									16377
+								],
+								[
+									17198,
+									17209
+								],
+								[
+									17843,
+									17868
+								],
+								[
+									18291,
+									18306
+								],
+								[
+									18663,
+									18683
+								],
+								[
+									19006,
+									19019
+								],
+								[
+									19363,
+									19374
+								],
+								[
+									19527,
+									19546
+								],
+								[
+									20582,
+									20599
+								],
+								[
+									21270,
+									21300
+								],
+								[
+									21734,
+									21754
+								],
+								[
+									22095,
+									22106
+								],
+								[
+									23221,
+									23234
+								],
+								[
+									23499,
+									23515
+								],
+								[
+									23837,
+									23852
+								],
+								[
+									24080,
+									24102
+								],
+								[
+									24657,
+									24670
+								],
+								[
+									25924,
+									25938
+								],
+								[
+									26211,
+									26226
+								],
+								[
+									26576,
+									26593
+								],
+								[
+									27002,
+									27015
+								],
+								[
+									27497,
+									27511
+								],
+								[
+									29904,
+									29918
+								],
+								[
+									31401,
+									31416
+								],
+								[
+									31697,
+									31713
+								],
+								[
+									31862,
+									31867
+								],
+								[
+									33811,
+									33822
+								],
+								[
+									34237,
+									34250
+								],
+								[
+									35038,
+									35055
+								],
+								[
+									42350,
+									42354
 								]
 							],
 							"symlist":
 							[
-								"pe_get_datadir"
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"DEFAULT_PATHSEP",
+								"DEFAULT_PATHSEP",
+								"void",
+								"set_command",
+								"strarray_dump",
+								"debug_sa",
+								"debug_s",
+								"debug_sl",
+								"debug_int",
+								"debug_sa",
+								"debug_sl",
+								"debug_s",
+								"debug_int",
+								"path_prefix_s",
+								"path_prefix_b",
+								"path_extension",
+								"path_object",
+								"path_wildcard",
+								"format_linklib_lib",
+								"format_linklib_switch",
+								"scan_main",
+								"has_main",
+								"extract_includes",
+								"get_includes",
+								"rule_command",
+								"get_rule",
+								"get_rule_sa",
+								"find_rule",
+								"find_rule_sa",
+								"find_rule_b",
+								"add_path",
+								"add_srcpath",
+								"add_path_sa",
+								"new_source",
+								"add_source",
+								"get_sources",
+								"get_var",
+								"set_var",
+								"push_var",
+								"push_var_sa",
+								"push_lib",
+								"with_lib",
+								"get_rules_by_cmd",
+								"dirname_alloc",
+								"populate_sourcedirs",
+								"dump_sourcedirs",
+								"includes_to_libs",
+								"target_ptrs",
+								"target_dep_list_recursive",
+								"target_dep_list",
+								"target_deps_indirect",
+								"deps_indirect",
+								"deps_direct",
+								"print_target_deps_r",
+								"print_target_deps",
+								"remove_indirect_deps_recursive",
+								"remove_indirect_deps",
+								"output_rule",
+								"get_sourcedir",
+								"get_sourcedir_sa",
+								"get_sourcedir_b",
+								"lib_rule_for_sourcedir",
+								"deps_for_libs",
+								"target_add_dep",
+								"target_add_deps",
+								"gen_compile_rules",
+								"gen_lib_rules",
+								"gen_link_rules",
+								"gen_clean_rule",
+								"output_all_vars",
+								"output_all_rules",
+								"usage",
+								"set_machine",
+								"set_make_type",
+								"set_compiler_type",
+								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 4.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -549,6 +983,36 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "genmakefile.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 47922,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								38231,
+								38231
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 51.0,
+						"translation.y": 22078.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
