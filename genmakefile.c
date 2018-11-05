@@ -83,7 +83,7 @@ static const char* make_end_inline = NULL;
 
 static strlist builddir, outdir;
 static stralloc srcdir;
-static char pathsep = DEFAULT_PATHSEP;
+static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static int build_type = BUILD_TYPE_DEBUG;
 
 static HMAP_DB *sourcedirs, *rules, *vars;
@@ -182,8 +182,8 @@ path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
   if(prefix->len) {
     stralloc_cat(out, prefix);
 
-    if(!stralloc_endb(prefix, &pathsep, 1))
-      stralloc_catc(out, pathsep);
+    if(!stralloc_endb(prefix, &pathsep_make, 1))
+      stralloc_catc(out, pathsep_make);
   }
   stralloc_cats(out, path);
 }
@@ -201,8 +201,8 @@ path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out) {
   if(prefix->len) {
     stralloc_cat(out, prefix);
 
-    if(!stralloc_endb(prefix, &pathsep, 1))
-      stralloc_catc(out, pathsep);
+    if(!stralloc_endb(prefix, &pathsep_make, 1))
+      stralloc_catc(out, pathsep_make);
   }
   stralloc_catb(out, x, n);
 }
@@ -230,8 +230,8 @@ path_object(const char* in, stralloc* out) {
   if(builddir.sa.len) {
     stralloc_cat(out, &builddir.sa);
 
-    if(!stralloc_endb(out, &pathsep, 1))
-      stralloc_catc(out, pathsep);
+    if(!stralloc_endb(out, &pathsep_make, 1))
+      stralloc_catc(out, pathsep_make);
   }
 
   return path_extension(str_basename(in), out, objext);
@@ -395,7 +395,7 @@ rule_command(target* rule, stralloc* out) {
   stralloc prereq;
   stralloc_init(&prereq);
   stralloc_copy(&prereq, &rule->prereq.sa);
-  stralloc_replace(&prereq, pathsep == '/' ? '\\' : '/', pathsep);
+  stralloc_replace(&prereq, pathsep_args == '/' ? '\\' : '/', pathsep_args);
 
   for(i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
@@ -507,7 +507,7 @@ add_path(strlist* list, const char* path) {
 
   for(i = list->sa.len - len; i < list->sa.len; ++i) {
     if(list->sa.s[i] == '/' || list->sa.s[i] == '\\')
-      list->sa.s[i] = pathsep;
+      list->sa.s[i] = pathsep_make;
   }
 }
 
@@ -558,7 +558,7 @@ add_source(const char* filename, strarray* sources) {
     stralloc sa;
     stralloc_init(&sa);
     stralloc_copys(&sa, filename);
-    //    stralloc_replace(&sa, pathsep == '/' ? '\\' : '/', pathsep);
+    //    stralloc_replace(&sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
     strarray_push_sa(sources, &sa);
 
@@ -747,11 +747,11 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
       extract_includes(x, n, &l, 0);
 
-      stralloc_replace(&l.sa, pathsep == '\\' ? '/' : '\\', pathsep);
+      stralloc_replace(&l.sa, pathsep_make == '\\' ? '/' : '\\', pathsep_make);
 
       strlist_foreach_s(&l, s) {
         dir.len = dlen;
-        stralloc_catc(&dir, pathsep);
+        stralloc_catc(&dir, pathsep_make);
         stralloc_cats(&dir, s);
 
         path_canonical_sa(&dir, &r);
@@ -1059,9 +1059,9 @@ void
 output_rule(buffer* b, target* rule) {
   int num_deps = strlist_count(&rule->prereq);
 
-  if(array_length(&rule->deps, sizeof(target*))) {
+/*  if(array_length(&rule->deps, sizeof(target*))) {
     print_target_deps(b, rule);
-  }
+  }*/
 
   if(num_deps == 0 && str_diffn(rule->name, builddir.sa.s, builddir.sa.len)) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, "\n", 0);
@@ -1074,7 +1074,7 @@ output_rule(buffer* b, target* rule) {
     stralloc prereq;
     stralloc_init(&prereq);
     stralloc_copy(&prereq, &rule->prereq.sa);
-    stralloc_replace(&prereq, pathsep == '/' ? '\\' : '/', pathsep);
+    stralloc_replace(&prereq, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
     buffer_putspace(b);
     buffer_putsa(b, &prereq);
@@ -1588,26 +1588,28 @@ set_make_type(const char* make, const char* compiler) {
   if(str_start(make, "bmake") || str_start(make, "borland")) {
 
     /* Borland C++ Builder Make */
-    pathsep = '\\';
+    pathsep_make = '\\';
     make_begin_inline = "@&&|\n\t";
     make_end_inline = "\n|";
 
   } else if(str_start(make, "nmake")) {
 
     /* Microsoft NMake */
-    pathsep = '\\';
+    pathsep_make = '\\';
     make_begin_inline = "@<<\n\t";
     make_end_inline = "\n<<";
 
   } else if(str_start(make, "gmake") || str_start(make, "gnu")) {
 
-    pathsep = '/';
+    pathsep_make = '/';
     stralloc_copys(&mkdir_command, "test -d \"$@\" || mkdir -p \"$@\"");
     stralloc_copys(&delete_command, "rm -f");
 
   } else {
     return 0;
   }
+
+  pathsep_args = pathsep_make;
 
   return 1;
 }
@@ -1644,6 +1646,8 @@ set_compiler_type(const char* compiler) {
 
       set_var("AR", "ar");
     } else if(str_start(compiler, "clang") || str_start(compiler, "llvm")) {
+      pathsep_args = '/';
+
       set_var("CC", "clang");
       set_var("CXX", "clang++");
 
@@ -1900,9 +1904,9 @@ main(int argc, char* argv[]) {
     return 2;
   }
 
-  strlist_init(&workdir, pathsep);
-  strlist_init(&outdir, pathsep);
-  strlist_init(&builddir, pathsep);
+  strlist_init(&workdir, pathsep_make);
+  strlist_init(&outdir, pathsep_make);
+  strlist_init(&builddir, pathsep_make);
 
   if(outfile) {
     int fd;
@@ -1914,7 +1918,7 @@ main(int argc, char* argv[]) {
     if(stralloc_equals(&outdir.sa, "."))
       stralloc_zero(&outdir.sa);
     else
-      stralloc_catc(&outdir.sa, pathsep);
+      stralloc_catc(&outdir.sa, pathsep_make);
   }
 
   path_getcwd(&workdir.sa);
@@ -1943,7 +1947,7 @@ main(int argc, char* argv[]) {
     path_relative(workdir.sa.s, outdir.sa.s, &tmp);
 
     if(tmp.len) {
-      stralloc_catc(&tmp, pathsep);
+      stralloc_catc(&tmp, pathsep_make);
       stralloc_copy(&srcdir, &tmp);
       debug_sa("srcdir: ", &srcdir);
     }
@@ -1953,7 +1957,7 @@ main(int argc, char* argv[]) {
   path_relative(builddir.sa.s, outdir.sa.s, &tmp);
   /*
     if(tmp.len) {
-      stralloc_catc(&tmp, pathsep);
+      stralloc_catc(&tmp, pathsep_make);
       stralloc_copy(&builddir.sa, &tmp);
     }
     stralloc_free(&tmp);

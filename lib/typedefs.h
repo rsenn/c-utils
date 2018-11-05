@@ -28,13 +28,17 @@
 extern "C" {
 #endif
 
-#if !defined(_SSIZE_T_DEFINED) && !(defined(_SYS_TYPES_H) && defined(__MSYS__)) && !defined(_SSIZE_T_)
+#ifdef __PTRDIFF_TYPE__
+typedef __PTRDIFF_TYPE__ ssize_t;
+#define _SSIZE_T_DEFINED 1
+#elif !defined(_SSIZE_T_DEFINED) && !(defined(_SYS_TYPES_H) && defined(__MSYS__)) && !defined(_SSIZE_T_)
 #define _SSIZE_T_DEFINED 1
 typedef ptrdiff_t ssize_t;
 #endif
 
-#if defined(__BORLANDC__) || (defined(_SYS_TYPES_H) && defined(__MSYS__))
-
+#ifdef __INTPTR_TYPE__
+typedef __INTPTR_TYPE__ intptr_t;
+#elif defined(__BORLANDC__) || (defined(_SYS_TYPES_H) && defined(__MSYS__))
 typedef ptrdiff_t intptr_t;
 #endif
 

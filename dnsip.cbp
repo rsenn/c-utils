@@ -1,152 +1,332 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_project_file>
-  <FileVersion major="1" minor="6"/>
-  <Project>
-    <Option title="dnsip"/>
-    <Option pch_mode="2"/>
-    <Option compiler="gcc"/>
-    <Build>
-      <Target title="Debug">
-        <Option output="bin/Debug/dnsip" prefix_auto="1" extension_auto="1"/>
-        <Option object_output="obj/Debug/"/>
-        <Option type="1"/>
-        <Option compiler="gcc"/>
-        <Compiler>
-          <Add option="-Wextra"/>
-          <Add option="-Wall"/>
-          <Add option="-g3"/>
-          <Add option="-ggdb"/>
-          <Add option="-O0"/>
-          <Add option="-DUSE_WIDECHAR=0"/>
-          <Add option="-DDEBUG"/>
-          <Add directory="."/>
-        </Compiler>
-      </Target>
-      <Target title="Release">
-        <Option output="bin/Release/dnsip" prefix_auto="1" extension_auto="1"/>
-        <Option object_output="obj/Release/"/>
-        <Option type="1"/>
-        <Option compiler="gcc"/>
-        <Compiler>
-          <Add option="-w"/>
-          <Add option="-fomit-frame-pointer"/>
-          <Add option="-fexpensive-optimizations"/>
-          <Add option="-Os"/>
-          <Add option="-ffast-math"/>
-          <Add option="-DUSE_WIDECHAR=0"/>
-          <Add option="-DNDEBUG=1"/>
-          <Add directory="."/>
-        </Compiler>
-      </Target>
-    </Build>
-    <Compiler>
-      <Add option="-DINLINE=inline"/>
-      <Add option="-D_FILE_OFFSET_BITS=64"/>
-      <Add option="-D_LARGEFILE_SOURCE=1"/>
-      <Add option="-D_GNU_SOURCE=1"/>
-      <Add option="-DHAVE_LIBBZ2=1"/>
-      <Add option="-DHAVE_LIBLZMA=1"/>
-      <Add option="-DHAVE_ZLIB=1"/>
-    </Compiler>
-    <Linker>
-      <Add library="z"/>
-      <Add library="bz2"/>
-      <Add library="lzma"/>
-      <Add library="advapi32"/>
-      <Add library="ws2_32"/>
-      <Add library="iphlpapi"/>
-      <Add library="psapi"/>
-      <Add library="shlwapi"/>
-    </Linker>
-    <Unit filename="dnsip.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_1.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_2.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_flush.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_put.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_putflush.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_stubborn.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/byte.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/byte/byte_copy.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/byte/byte_diff.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/byte/byte_equal.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/byte/byte_zero.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/case.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/case/case_diffb.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns/dns_dfd.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns/dns_domain.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns/dns_ip4.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns/dns_packet.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns/dns_random.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns/dns_rcip.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns/dns_resolve.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns/dns_sortip.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/dns/dns_transmit.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/errmsg.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/errmsg/errmsg_iam.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/errmsg/errmsg_puts.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/errmsg/errmsg_warnsys.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/errmsg/errmsg_write.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/fmt.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/fmt/fmt_ulong.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/io/iopause.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/ndelay.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/ndelay/ndelay_on.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/open.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/open/open_read.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/open/openreadclose.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/open/readclose.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan/scan_fromhex.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan/scan_ulong.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan/scan_ulongn.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan/scan_xlong.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/fmt_ip4.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/scan_ip4.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/scan_ip6.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_bind4.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_bind6.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_connect4.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_connect6.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_connected.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_ip4loopback.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_noipv6.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_tcp6.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_tcp6b.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_udp6.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_v4mappedprefix.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_v6any.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/socket/socket_v6loopback.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/str.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/str/str_len.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/stralloc.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/stralloc/stralloc_append.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/stralloc/stralloc_catb.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/stralloc/stralloc_copyb.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/stralloc/stralloc_copys.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/stralloc/stralloc_ready.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/stralloc/stralloc_readyplus.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/tai.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/tai/tai_pack.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/taia.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/taia/taia_add.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/taia/taia_approx.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/taia/taia_frac.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/taia/taia_less.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/taia/taia_now.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/taia/taia_pack.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/taia/taia_sub.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/taia/taia_uint.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/uint16.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/uint16/uint16_pack_big.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/uint16/uint16_unpack_big.c"><Option compilerVar="CC"/></Unit>
-    <Extensions>
-      <envvars/>
-      <code_completion/>
-      <lib_finder disable_auto="1"/>
-      <debugger/>
-    </Extensions>
-  </Project>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="dnsip" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/dnsip" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
+					<Add option="-g3" />
+					<Add option="-ggdb" />
+					<Add option="-O0" />
+					<Add option="-DUSE_WIDECHAR=0" />
+					<Add option="-DDEBUG" />
+					<Add directory="." />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/dnsip" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-w" />
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
+					<Add option="-ffast-math" />
+					<Add option="-DUSE_WIDECHAR=0" />
+					<Add option="-DNDEBUG=1" />
+					<Add directory="." />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-DINLINE=inline" />
+			<Add option="-D_FILE_OFFSET_BITS=64" />
+			<Add option="-D_LARGEFILE_SOURCE=1" />
+			<Add option="-D_GNU_SOURCE=1" />
+			<Add option="-DHAVE_LIBBZ2=1" />
+			<Add option="-DHAVE_LIBLZMA=1" />
+			<Add option="-DHAVE_ZLIB=1" />
+		</Compiler>
+		<Linker>
+			<Add library="z" />
+			<Add library="bz2" />
+			<Add library="lzma" />
+			<Add library="advapi32" />
+			<Add library="ws2_32" />
+			<Add library="iphlpapi" />
+			<Add library="psapi" />
+			<Add library="shlwapi" />
+		</Linker>
+		<Unit filename="dnsip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer/buffer_1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer/buffer_2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer/buffer_flush.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer/buffer_put.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer/buffer_putflush.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/buffer/buffer_stubborn.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/byte.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/byte/byte_copy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/byte/byte_diff.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/byte/byte_equal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/byte/byte_zero.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/case.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/case/case_diffb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns/dns_dfd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns/dns_domain.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns/dns_ip4.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns/dns_packet.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns/dns_random.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns/dns_rcip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns/dns_resolve.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns/dns_sortip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/dns/dns_transmit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/errmsg.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/errmsg/errmsg_iam.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/errmsg/errmsg_puts.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/errmsg/errmsg_warnsys.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/errmsg/errmsg_write.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/fmt.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/fmt/fmt_ulong.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/io/iopause.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/ndelay.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/ndelay/ndelay_on.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/open.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/open/open_read.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/open/openreadclose.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/open/readclose.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/scan.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/scan/scan_fromhex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/scan/scan_ulong.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/scan/scan_ulongn.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/scan/scan_xlong.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/fmt_ip4.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/scan_ip4.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/scan_ip6.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_bind4.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_bind6.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_connect4.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_connect6.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_connected.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_ip4loopback.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_noipv6.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_tcp4b.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_tcp6.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_tcp6b.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_udp4.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_udp6.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_v4mappedprefix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_v6any.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/socket_v6loopback.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/winsock2errno.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/socket/winsock_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/str.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/str/str_len.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/stralloc.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/stralloc/stralloc_append.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/stralloc/stralloc_catb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/stralloc/stralloc_copyb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/stralloc/stralloc_copys.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/stralloc/stralloc_ready.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/stralloc/stralloc_readyplus.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/tai.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/tai/tai_pack.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/taia.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/taia/taia_add.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/taia/taia_approx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/taia/taia_frac.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/taia/taia_less.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/taia/taia_now.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/taia/taia_pack.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/taia/taia_sub.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/taia/taia_uint.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/uint16.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/uint16/uint16_pack_big.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/uint16/uint16_unpack_big.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
 </CodeBlocks_project_file>
