@@ -1631,7 +1631,9 @@ set_compiler_type(const char* compiler) {
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
   stralloc_copys(&lib_command, "$(LIB) /out:$@ $^");
 
-  push_var("CFLAGS", "-O2");
+  if(build_type != BUILD_TYPE_DEBUG)
+    push_var("CFLAGS", build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
+
   push_var("DEFS", "-DHAVE_ERRNO_H=1");
 
   if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || str_start(compiler, "clang") ||
@@ -1828,8 +1830,11 @@ set_compiler_type(const char* compiler) {
 
     set_var("CC", "tcc");
 
-    if(build_type == BUILD_TYPE_DEBUG)
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
       push_var("CFLAGS", "-g");
+
+    if(build_type == BUILD_TYPE_MINSIZEREL)
+      push_var("LDFLAGS", "-Wl,-file-alignment=16");
 
     push_var("CFLAGS", "-Wall");
     push_var("CPPFLAGS", "-D__TCC__=1");
@@ -1882,7 +1887,7 @@ main(int argc, char* argv[]) {
                            {0}};
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:a:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
