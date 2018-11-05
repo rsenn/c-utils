@@ -390,12 +390,13 @@ get_includes(const char* srcfile, strlist* includes, int sys) {
  */
 void
 rule_command(target* rule, stralloc* out) {
+  char from = pathsep_args == '/' ? '\\' : '/';
   size_t i;
   stralloc* in = rule->recipe;
   stralloc prereq;
   stralloc_init(&prereq);
-  stralloc_copy(&prereq, &rule->prereq.sa);
-  stralloc_replace(&prereq, pathsep_args == '/' ? '\\' : '/', pathsep_args);
+  strlist_join(&rule->prereq, &prereq, ' ');
+  stralloc_replace(&prereq, from, pathsep_args);
 
   for(i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
@@ -403,17 +404,21 @@ rule_command(target* rule, stralloc* out) {
     if(i + 2 <= in->len && *p == '$' && str_chr("@^<", p[1]) < 3) {
       switch(p[1]) {
         case '@': {
+          size_t p = out->len;
           stralloc_cats(out, rule->name);
+          byte_replace(&out->s[p], out->len - p, from, pathsep_args);
           break;
         }
         case '^': {
-
+          size_t p = out->len;
           stralloc_cat(out, &prereq);
+          byte_replace(&out->s[p], out->len - p, from, pathsep_args);
           break;
         }
         case '<': {
           size_t n = stralloc_findb(&prereq, &rule->prereq.sep, 1);
           stralloc_catb(out, prereq.s, n);
+          byte_replace(&out->s[out->len - n], n, from, pathsep_args);
           break;
         }
       }
@@ -1624,7 +1629,6 @@ set_compiler_type(const char* compiler) {
   push_var("CXX", "c++");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
-  stralloc_copys(&link_command, "$(LINK) -subsystem console -o $@ $(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS)");
   stralloc_copys(&lib_command, "$(LIB) /out:$@ $^");
 
   push_var("CFLAGS", "-O2");

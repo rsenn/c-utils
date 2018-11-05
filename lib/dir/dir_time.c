@@ -1,13 +1,13 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#include "../dir.h"
+#include "../dir_internal.h"
 
 #if USE_READDIR
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
-#include "dir.h"
-#include "dir_internal.h"
 
 #if _FILE_OFFSET_BITS == 64
 typedef struct stat stat_t;
