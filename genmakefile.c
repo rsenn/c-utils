@@ -1064,9 +1064,9 @@ void
 output_rule(buffer* b, target* rule) {
   int num_deps = strlist_count(&rule->prereq);
 
-/*  if(array_length(&rule->deps, sizeof(target*))) {
-    print_target_deps(b, rule);
-  }*/
+  /*  if(array_length(&rule->deps, sizeof(target*))) {
+      print_target_deps(b, rule);
+    }*/
 
   if(num_deps == 0 && str_diffn(rule->name, builddir.sa.s, builddir.sa.len)) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, "\n", 0);
@@ -1222,7 +1222,7 @@ deps_for_libs(HMAP_DB* rules) {
 
       debug_sl("direct", &libs);
 #if 0 // def DEBUG_OUTPUT
-      //print_target_deps(buffer_2, lib);
+      // print_target_deps(buffer_2, lib);
       buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
       buffer_putsa(buffer_2, &libs.sa);
       buffer_putnlflush(buffer_2);
@@ -1640,6 +1640,11 @@ set_compiler_type(const char* compiler) {
     libext = ".a";
     objext = ".o";
 
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+      push_var("CFLAGS", "-g");
+      push_var("LDFLAGS", "-g");
+    }
+
     /*
      * GNU GCC compatible compilers
      */
@@ -1649,6 +1654,10 @@ set_compiler_type(const char* compiler) {
       set_var("CXX", "g++");
 
       set_var("AR", "ar");
+
+      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+        push_var("CFLAGS", "-ggdb");
+
     } else if(str_start(compiler, "clang") || str_start(compiler, "llvm")) {
       pathsep_args = '/';
 
@@ -1677,7 +1686,6 @@ set_compiler_type(const char* compiler) {
     set_var("LINK", "link");
     push_var("CPPFLAGS", "-Dinline=__inline");
 
-
     /*    push_var("LDFLAGS",
                  "/DEBUG /DYNAMICBASE /INCREMENTAL /NXCOMPAT /TLBID:1");
     */
@@ -1686,7 +1694,7 @@ set_compiler_type(const char* compiler) {
     //  push_var("LDFLAGS", "/MANIFEST /manifest:embed2 /MANIFESTUAC:\"level=asInvoker uiAccess=false\"");
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
-  set_command(&lib_command, "$(LIB) /out:$@", "$^");
+    set_command(&lib_command, "$(LIB) /out:$@", "$^");
     //    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
     /*
@@ -1700,7 +1708,7 @@ set_compiler_type(const char* compiler) {
       set_var("LIB", "xilib");
 
       push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
-      
+
       if(mach.bits == _64)
         push_var("LDFLAGS", "/LIBPATH:\"%ROOT%\\compiler\\lib\\intel64\"");
       else
@@ -1713,7 +1721,8 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "/LIBPATH:\"%WindowsSdkDir%lib\\%WindowsSDKLibVersion%um\\$(MACHINE)\"");
     push_var("LDFLAGS", "/LIBPATH:\"%VCToolsInstallDir%lib\\$(MACHINE)\"");
 
-    push_var("LDFLAGS", "/INCREMENTAL /MANIFEST /manifest:embed /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\" /DEBUG");
+    push_var("LDFLAGS",
+             "/INCREMENTAL /MANIFEST /manifest:embed /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\" /DEBUG");
 
     if(mach.arch == ARM) {
       push_var("LDFLAGS", "/MACHINE:ARM");
@@ -1725,9 +1734,8 @@ set_compiler_type(const char* compiler) {
       push_var("LDFLAGS", "/MACHINE:X86");
       set_var("MACHINE", "x86");
     }
-    
-    set_command(&link_command,
-                "$(LINK) /OUT:\"$@\" $(LDFLAGS) /PDB:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
+
+    set_command(&link_command, "$(LINK) /OUT:\"$@\" $(LDFLAGS) /PDB:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
 
     /*
      * Borland C++ Builder
@@ -1735,16 +1743,24 @@ set_compiler_type(const char* compiler) {
   } else if(str_start(compiler, "bcc")) {
 
     //    push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
+    if(build_type == BUILD_TYPE_MINSIZEREL)
+      set_var("CFLAGS", "-O1");
+    else if(build_type == BUILD_TYPE_RELEASE || build_type == BUILD_TYPE_RELWITHDEBINFO)
+      set_var("CFLAGS", "-O -O2");
 
-    push_var("CFLAGS", "-q -tWC -tWM -O2");
+    push_var("CFLAGS", "-q -tWC -tWM");
     push_var("CPPFLAGS", "-Dinline=__inline");
     push_var("LDFLAGS", "-q");
 
     if(build_type == BUILD_TYPE_DEBUG) {
       push_var("CFLAGS", "-w -w-use");
     } else {
-      push_var("CFLAGS", "-O1 -r");
+      push_var("CFLAGS", "-r");
     }
+    if(build_type == BUILD_TYPE_MINSIZEREL)
+      push_var("CFLAGS", "-d -a-");
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+      push_var("CFLAGS", "-y");
 
     /* Embracadero C++ */
     if(str_find(compiler, "55") == str_len(compiler) && str_find(compiler, "60") == str_len(compiler)) {
@@ -1753,6 +1769,9 @@ set_compiler_type(const char* compiler) {
 
       /* C99 standard */
       push_var("CFLAGS", "-An");
+
+      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+        push_var("CFLAGS", "-vxxx");
 
       set_command(&link_command, "$(CC) $(LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
@@ -1764,8 +1783,8 @@ set_compiler_type(const char* compiler) {
       push_var("CFLAGS", "-ff -fp");
 
       if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
-        push_var("CFLAGS", "-v -y");
-        push_var("LDFLAGS", "-v -y");
+        push_var("CFLAGS", "-v");
+        push_var("LDFLAGS", "-v");
       }
 
       stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
@@ -1794,7 +1813,10 @@ set_compiler_type(const char* compiler) {
       set_var("LINK", "lcclnk");
       set_var("LIB", "lcclib");
     }
-    
+
+    if(build_type == BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "-g2");
+
     /*
      * Tiny CC compiler
      */
@@ -1806,7 +1828,10 @@ set_compiler_type(const char* compiler) {
 
     set_var("CC", "tcc");
 
-    push_var("CFLAGS", "-g -Wall");
+    if(build_type == BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "-g");
+
+    push_var("CFLAGS", "-Wall");
     push_var("CPPFLAGS", "-D__TCC__=1");
 
     set_command(&lib_command, "$(CC) -ar rcs $@", "$^");

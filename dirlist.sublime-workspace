@@ -12,42 +12,20 @@
 	"buffers":
 	[
 		{
+			"contents": "pe_get_datadir",
+			"settings":
+			{
+				"buffer_size": 14,
+				"line_ending": "Windows",
+				"name": "𝌆 Outline",
+				"scratch": true
+			}
+		},
+		{
 			"file": "lib/pe/pe_get_datadir.c",
 			"settings":
 			{
 				"buffer_size": 280,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/pe.h",
-			"settings":
-			{
-				"buffer_size": 14086,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/Program Files/IDM Computer Solutions/UEStudio/configs/Lcc win32 Compiler/Win32 Console Application",
-			"settings":
-			{
-				"buffer_size": 4087,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "lib/pe/pe_rva2offset.c",
-			"settings":
-			{
-				"buffer_size": 442,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/pe/pe_thunk.c",
-			"settings":
-			{
-				"buffer_size": 386,
 				"line_ending": "Unix"
 			}
 		}
@@ -103,6 +81,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"out",
+				"Browse Mode: Outline (Right)"
+			],
 			[
 				"Package Control: ",
 				"Package Control: Advanced Install Package"
@@ -184,18 +166,19 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/roman/Desktop/dirlist",
-		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/pe"
+		"/C/Users/roman/Desktop/dirlist"
 	],
 	"file_history":
 	[
+		"/C/Users/roman/Desktop/dirlist/lib/pe.h",
+		"/C/Program Files/IDM Computer Solutions/UEStudio/configs/Lcc win32 Compiler/Win32 Console Application",
+		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
+		"/C/Users/roman/Desktop/dirlist/lib/pe/pe_thunk.c",
 		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_canonicalize.c",
 		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push_tokens.c",
 		"/C/Users/roman/Desktop/dirlist/lib/buffer/buffer_putulong.c",
-		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CTags.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-mousemap",
@@ -314,10 +297,7 @@
 		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_append_sa.c",
 		"/C/Users/roman/Documents/dirlist/mediathek-parser.cpp",
 		"/C/Users/roman/Documents/dirlist/lib/array/array_cat0.c",
-		"/C/Users/roman/Documents/dirlist/lib/array/array_cats.c",
-		"/C/Users/roman/Documents/dirlist/dirlist.sublime-build",
-		"/C/Users/roman/Documents/dirlist/lib/array/array_reset.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_dump.c"
+		"/C/Users/roman/Documents/dirlist/lib/array/array_cats.c"
 	],
 	"find":
 	{
@@ -335,6 +315,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"$(LIBS)",
+			"print_target_deps",
 			"_IMPORT",
 			"pe_export_directory",
 			"strlist_ini",
@@ -452,7 +434,7 @@
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": true,
+		"regex": false,
 		"replace_history":
 		[
 			"\\\\",
@@ -499,11 +481,53 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14,
+						"regions":
+						{
+						},
+						"selection":
+						[
+						],
+						"settings":
+						{
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\lib\\pe\\pe_get_datadir.c",
+							"outline_rename_mode": false,
+							"symkeys":
+							[
+								[
+									39,
+									53
+								]
+							],
+							"symlist":
+							[
+								"pe_get_datadir"
+							],
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 1,
 					"file": "lib/pe/pe_get_datadir.c",
 					"semi_transient": false,
 					"settings":
@@ -527,125 +551,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "lib/pe.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 14086,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5929,
-								5929
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3219.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/C/Program Files/IDM Computer Solutions/UEStudio/configs/Lcc win32 Compiler/Win32 Console Application",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4087,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3453,
-								3471
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 1703.0,
-						"zoom_level": 1.0
-					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/pe/pe_rva2offset.c",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 442,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								441,
-								441
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/pe/pe_thunk.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 386,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								272,
-								272
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
 					"type": "text"
 				}
 			]
@@ -664,20 +570,29 @@
 		"cells":
 		[
 			[
+				2,
+				0,
+				3,
+				2
+			],
+			[
 				0,
 				0,
-				1,
-				1
+				2,
+				2
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.2,
+			0.8,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
+			0.5,
 			1.0
 		]
 	},
@@ -736,7 +651,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
+	"selected_group": 1,
 	"settings":
 	{
 	},
