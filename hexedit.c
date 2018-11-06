@@ -206,6 +206,8 @@ main(int argc, char* argv[]) {
   unsigned char* x;
   buffer file;
   int fd;
+  
+  errmsg_iam(argv[0]);
 
   if(argc <= index) {
     usage(argv[0]);
@@ -310,7 +312,7 @@ main(int argc, char* argv[]) {
 
     if(check == 0) {
       buffer_backup(&file);
-      patch_apply(file.x, file.a, p);
+      patch_apply((unsigned char*)file.x, file.a, p);
       ret = 0;
     }
   }

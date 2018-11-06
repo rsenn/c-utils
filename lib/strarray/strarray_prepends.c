@@ -6,12 +6,12 @@ int
 strarray_prepends(strarray* arr, const char* s) {
   size_t i, n = strarray_size(arr);
   for(i = 0; i < n; ++i) {
-    char** p = array_get(arr, sizeof(char*), i);
+    char** p = array_get((array*)arr, sizeof(char*), i);
     size_t len = str_len(*p);
     stralloc sa;
     sa.s = *p;
     sa.len = sa.a = len;
-    if(!stralloc_prepend(&sa, s)) return 0;
+    if(!stralloc_prepends(&sa, s)) return 0;
     stralloc_nul(&sa);
     *p = sa.s;
   }

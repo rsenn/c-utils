@@ -15,7 +15,7 @@ xml_tag_pred(xmlnode* node, const void* arg) {
   //  buffer_putsa(buffer_2, arg);
   //  buffer_putnlflush(buffer_2);
 
-  return node->type == XML_ELEMENT && strlist_contains(arg, node->name);
+  return node->type == XML_ELEMENT && strlist_contains((strlist*)arg, node->name);
 }
 
 xmlnode*

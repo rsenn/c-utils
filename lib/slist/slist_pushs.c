@@ -5,7 +5,7 @@
 
 int
 slist_pushs(slink** list, const char* s) {
-  slink** ptr = *list;
+  slink** ptr = list;
   slink* n;
   
   if((n = malloc(sizeof(slink*)+sizeof(char*))) == NULL)

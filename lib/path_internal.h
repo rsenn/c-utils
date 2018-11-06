@@ -10,7 +10,7 @@
 #include "path.h"
 #include "stralloc.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #define PATHSEP_C '\\'
 #define PATHSEP_S "\\"
 #else

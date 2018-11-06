@@ -27,7 +27,7 @@ xspf_process(playlist* pl, track* t, const char* tag, stralloc* value) {
   } else if(str_equal(t->tag.s, "title")) {
     stralloc_copy(&t->title, value);
   } else if(str_equal(t->tag.s, "duration")) {
-    scan_uint(value->s, &t->length);
+    scan_uint(value->s, (unsigned int*)&t->length);
   }
 }
 
@@ -37,7 +37,7 @@ xspf_xml_callback(xmlreader* reader,
                   stralloc* name,
                   stralloc* value,
                   HMAP_DB** attrs) {
-  track* t = reader->data;
+  track* t = (track*)reader->data;
   playlist* pl = t->pl;
 
   if(id == XML_ELEMENT) {

@@ -206,6 +206,8 @@ main(int argc, char* argv[]) {
   array records;
   int exitcode = 0;
 
+  errmsg_iam(argv[0]);
+
   array_init(&records);
 
   if(argc > 2) {

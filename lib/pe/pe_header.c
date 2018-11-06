@@ -4,7 +4,7 @@ void*
 pe_header_nt(void* pe) {
   pe_dos_header* dos = pe;
   uint32 lfanew;
-  uint32_unpack(&dos->e_lfanew, &lfanew);
+  lfanew = uint32_get(&dos->e_lfanew);
   return (unsigned char*)dos + lfanew;
 }
 
@@ -50,12 +50,10 @@ pe_header_opt64(void* pe) {
 pe_section_header*
 pe_header_sections(void* pe, int* nsections) {
   pe_coff_header* coff = pe_header_coff(pe);
-  unsigned char* opthdr = &coff[1];
-  uint16 optsize;
-  uint16_unpack(&coff->size_of_optional_header, &optsize);
+  unsigned char* opthdr = (unsigned char*)&coff[1];
+  uint16 optsize =  uint16_get(&coff->size_of_optional_header);
   if(nsections) {
-    uint16 num;
-    uint16_unpack(&coff->number_of_sections, &num);
+    uint16 num =  uint16_get(&coff->number_of_sections);
     *nsections = num;
   }
   return (pe_section_header*)(opthdr + optsize);
@@ -64,5 +62,5 @@ pe_header_sections(void* pe, int* nsections) {
 pe_data_directory*
 pe_header_datadir(void* pe) {
   uint8* opthdr = pe_header_opt(pe);
-  return PE_32(pe) ? opthdr + 96 : opthdr + 112;
+  return (pe_data_directory*)(PE_32(pe) ? opthdr + 96 : opthdr + 112);
 }

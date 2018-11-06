@@ -96,7 +96,10 @@ last_error_str() {
                     0,
                     0))
     return 0;
-  snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
+    str_copy(tmpbuf, "ERROR: ");
+    str_cat(tmpbuf, err);
+    str_cat(tmpbuf, "\n");
+    
   /* or otherwise log it */
   // OutputDebugString(tmpbuf);
   LocalFree(err);
@@ -106,8 +109,8 @@ last_error_str() {
 int64
 get_file_size(char* path) {
   LARGE_INTEGER size;
-    typedef LONG(WINAPI * getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
-  static getfilesizeex_fn api_fn;
+    typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
+  static getfilesizeex_fn* api_fn;
 
   HANDLE hFile = CreateFileA(
                    path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -116,7 +119,7 @@ get_file_size(char* path) {
   if(!api_fn) {
     HANDLE kernel;
     if((kernel = LoadLibraryA("kernel32.dll")) != INVALID_HANDLE_VALUE)
-      api_fn = (getfilesizeex_fn*)GetProcAddress(kernel, "GetFileSizeEx");
+      api_fn = (getfilesizeex_fn*)(void*)GetProcAddress(kernel, "GetFileSizeEx");
   }
 
   if(!api_fn)
@@ -153,9 +156,12 @@ int
 get_win_api(void* ptr, const char* dll, const char* func) {
   if(*(void**)ptr == 0) {
     HANDLE h;
+    void* fn;
     if((h = LoadLibraryA(dll)) != 0) {
-      if((*(void**)ptr = GetProcAddress(h, func)))
+      if((fn = (void*)GetProcAddress(h, func))) {
+        *(void**)ptr = fn;
         return 0;
+      }
     }
   }
 
@@ -201,7 +207,7 @@ get_file_owner(const char* path) {
     return 0;
   }
   if(convert_sid_to_string_sid_a(pSidOwner, &strsid)) {
-    snprintf(tmpbuf, sizeof(tmpbuf), "%s", strsid);
+    str_copy(tmpbuf, strsid);
     LocalFree(strsid);
   }
   /* First call to LookupAccountSid to get the tmpbuf sizes. */
@@ -239,13 +245,13 @@ get_file_owner(const char* path) {
   if(bRtnBool == FALSE) {
     dwErrorCode = GetLastError();
     if(dwErrorCode == ERROR_NONE_MAPPED)
-      snprintf(tmpbuf, sizeof(tmpbuf), "Account owner not found for specified SID.\n");
+    str_copy(tmpbuf, "Account owner not found for specified SID.\n");
     else
-      snprintf(tmpbuf, sizeof(tmpbuf), "Error in LookupAccountSid.\n");
+      str_copy(tmpbuf,"Error in LookupAccountSid.\n");
     return tmpbuf;
   } else if(bRtnBool == TRUE)
     /* Print the account name. */
-    snprintf(tmpbuf, sizeof(tmpbuf), "%s", AcctName);
+    str_copy(tmpbuf, AcctName);
   return tmpbuf;
 }
 

@@ -52,7 +52,8 @@ main(int argc, char* argv[]) {
   char inbuf[8192];
   int ret;
 
-  http_init(&h, url_host, url_port);
+  errmsg_iam(argv[0]);
+    http_init(&h, url_host, url_port);
   ret = http_get(&h, url_location);
 
   buffer_init(&in, (buffer_op_sys*)&do_recv, h.sock, inbuf, sizeof(inbuf));

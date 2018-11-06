@@ -4,7 +4,7 @@
 
 #include "../iarray.h"
 
-#if defined(__BORLANDC__) || defined(__ORANGEC__) || defined(__LCC__)
+#if defined(__BORLANDC__) || defined(__ORANGEC__) || defined(__LCC__) || defined(__DMC__)
 #define InterlockedCompareExchangePointer(ptr,newptr,oldptr) InterlockedCompareExchange((long*)ptr,(long)newptr,(long)oldptr)
 #endif
 #ifdef __DMC__

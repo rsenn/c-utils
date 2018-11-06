@@ -15,9 +15,9 @@ pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsigned off6
     size = size64;
   }
   switch(size) {
-    case 8: ret = uint64_read(&p[off]); break;
-    case 4: ret = uint32_read(&p[off]); break;
-    case 2: ret = uint16_read(&p[off]); break;
+    case 8: ret = uint64_get(&p[off]); break;
+    case 4: ret = uint32_get(&p[off]); break;
+    case 2: ret = uint16_get(&p[off]); break;
     case 1: ret = p[off]; break;
   }
   return ret;

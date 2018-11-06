@@ -60,7 +60,7 @@ http_readable(http* h) {
     int err;
     http_response* r = h->response;
     buffer recvb;
-    buffer_init(&recvb, buffer_dummyread, -1, r->body.s, r->body.len);
+    buffer_init(&recvb, (buffer_op_sys*)&buffer_dummyread, -1, r->body.s, r->body.len);
     recvb.p = r->ptr;
 
     for(;;) {

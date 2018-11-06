@@ -1,10 +1,5 @@
 #include "../str.h"
-
-typedef struct stralloc_s { char* s; size_t len, a; } stralloc;
-
-void stralloc_init(stralloc*);
-void stralloc_append(stralloc*, const char*);
-int stralloc_decamelize(stralloc*, stralloc*);
+#include "../stralloc.h"
 
 char*
 str_decamelize(const char* s) {

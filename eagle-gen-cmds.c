@@ -334,7 +334,7 @@ layer_name(int i) {
 int
 layer_id(const char* str) {
   int id = -1;
-  if(scan_uint(str, &id)) {
+  if(scan_uint(str, (unsigned int*)&id)) {
     if(id >= 0 && id < strarray_size(&layers)) return id;
   }
   return -1;

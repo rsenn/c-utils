@@ -69,7 +69,7 @@ http_get(http* h, const char* location) {
     stralloc_init(&((*r)->data));
     stralloc_init(&((*r)->boundary));
   }
-  ret = socket_connect4(h->sock, h->addr.addr, h->port);
+  ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);
 
   if(ret == -1) {
 

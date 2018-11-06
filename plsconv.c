@@ -86,7 +86,7 @@ main(int argc, char* argv[]) {
         else if(!str_diff(optarg, "xspf"))
           outtype = XSPF;
         break;
-      case 'h': usage(mybasename(argv[0])); exit(EXIT_SUCCESS);
+      case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
       default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n"); exit(EXIT_FAILURE);
     }
   }

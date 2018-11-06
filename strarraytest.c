@@ -97,7 +97,7 @@ main(int argc, char* argv[]) {
 
   strarray_removesuffixs(&sarr, ".h");
   strarray_joins(&sarr, &sa, ", ");
-  buffer_puts(buffer_1, &sa);
+  buffer_putsa(buffer_1, &sa);
   buffer_putnlflush(buffer_1);
 
   return 0;

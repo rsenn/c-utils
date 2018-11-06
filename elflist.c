@@ -49,7 +49,7 @@ elf_dump_dynamic(uint8* base) {
   int di = elf_section_index(base, ".dynamic");
   range dyn;
   void* entry;
-  const char* dynstrtab = NULL;
+  const uint8* dynstrtab = NULL;
   static const char* const dynamic_types[] = {"NULL",       "NEEDED",     "PLTRELSZ",      "PLTGOT",         "HASH",
                                               "STRTAB",     "SYMTAB",     "RELA",          "RELASZ",         "RELAENT",
                                               "STRSZ",      "SYMENT",     "INIT",          "FINI",           "SONAME",
@@ -88,7 +88,7 @@ elf_dump_dynamic(uint8* base) {
 
     if(tag == ELF_DT_NEEDED) {
       buffer_putspace(buffer_1);
-      buffer_puts(buffer_1, &dynstrtab[val]);
+      buffer_puts(buffer_1, (const char*)&dynstrtab[val]);
     } else {
       buffer_puts(buffer_1, " 0x");
       buffer_putxint640(buffer_1, val, ELF_BITS(base) / 4);
@@ -108,8 +108,8 @@ elf_dump_symbols(uint8* base, uint8* tab, size_t size, const char* stname) {
   static const char* const binding_types[] = {"LOCAL", "GLOBAL", "WEAK"};
   static const char* const symbol_types[] = {"NOTYPE", "OBJECT", "FUNC", "SECTION", "FILE", "COMMON", "TLS"};
   range symtab;
-  symtab.start = tab;
-  symtab.end = tab + size;
+  symtab.start = (char*)tab;
+  symtab.end = (char*)tab + size;
   symtab.elem_size = ELF_BITS(base) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
 
   range_foreach(&symtab, symbol) {

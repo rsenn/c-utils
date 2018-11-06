@@ -89,7 +89,7 @@ extern ssize_t write();
 #endif
 
 int64
-filesize(int fd) {
+file_size(int fd) {
   int64 sz;
 #if defined(_WIN32) || defined(_WIN64)
   DWORD fszH;
@@ -160,7 +160,7 @@ static int verbose = 0, fraction = 1, space = 1;
 int
 main(int argc, char* argv[]) {
   int ai;
-  infile.op = &read;
+  infile.op = (buffer_op_proto*)&read;
   for(ai = 1; ai < argc; ++ai) {
     char* av = argv[ai];
 
@@ -192,7 +192,7 @@ next:
     buffer_putlong(buffer_2, fd);
     buffer_putnlflush(buffer_2);
 
-    fsize = filesize(fd);
+    fsize = file_size(fd);
 
     iterations = (((fsize + map_size + 1) / map_size) + 7) >> 3;
     remain = fsize;

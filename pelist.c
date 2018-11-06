@@ -188,7 +188,7 @@ pe_dump_imports(uint8* base) {
         pe_import_by_name* name_import;
 
         if((name_import = pe_rva2ptr(base, rva))) {
-          sym = name_import->name;
+          sym = (const char*)name_import->name;
           ordinal = uint16_get(&name_import->hint);
         }
       }

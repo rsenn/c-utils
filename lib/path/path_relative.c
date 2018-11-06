@@ -40,6 +40,7 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
   strlist_init(&r, PATHSEP_C);
   path_canonical(relative_to, &r.sa);
   path_canonical(path, &p.sa);
+
   {
     size_t n1 = strlist_count(&p);
     size_t n2 = strlist_count(&r);
@@ -69,6 +70,8 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
     }
   }
   strlist_join(&rel, out, PATHSEP_C);
+  if(out->len == 0)
+    stralloc_catc(out, '.');
 #endif
   return 1;
 }

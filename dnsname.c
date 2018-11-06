@@ -12,6 +12,7 @@ static stralloc out;
 
 int
 main(int argc, char** argv) {
+  errmsg_iam(argv[0]);
   dns_random_init(seed);
 
   if(*argv) ++argv;

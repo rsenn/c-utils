@@ -16,6 +16,5 @@ path_getcwd(stralloc* sa) {
   stralloc_ready(sa, PATH_MAX);
   /* repeat until we have reserved enough space */
   getcwd(sa->s, sa->a);
-  /* now truncate to effective length */
-  stralloc_trunc(sa, str_len(sa->s));
+  sa->len = str_len(sa->s);
 }

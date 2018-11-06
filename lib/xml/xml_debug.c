@@ -13,7 +13,7 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
 
     if(node->type == XML_TEXT) {
       stralloc space, text;
-      const void* av[4];
+      void* av[4];
       av[0] =  " ";
       av[1] = (void*)(depth * 2 + 6 );
       

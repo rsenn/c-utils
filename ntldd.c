@@ -470,7 +470,7 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
     if(cfg->machine_type != -1 && (int)loaded_image.file_header->coff_header.machine != cfg->machine_type)
       return 1;
   } else {
-    const char* dir;
+    char* dir;
     success = FALSE;
     strlist_foreach_s(cfg->search_paths, dir) {
       success = try_map_and_load(str_basename(name), dir, &loaded_image, cfg->machine_type);
@@ -734,8 +734,8 @@ int
 registry_query(const char* key, const char* value, stralloc* sa) {
   HKEY hkey;
   DWORD len, ret, type;
-  typedef LONG(WINAPI * reggetvalue_fn)(HKEY, LPCSTR, LPCSTR, DWORD, DWORD*, void*, DWORD*);
-  static reggetvalue_fn api_fn;
+  typedef LONG(WINAPI reggetvalue_fn)(HKEY, LPCSTR, LPCSTR, DWORD, DWORD*, void*, DWORD*);
+  static reggetvalue_fn* api_fn;
 
   if(!api_fn) {
     HANDLE advapi;

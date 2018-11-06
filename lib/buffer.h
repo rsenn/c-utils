@@ -85,7 +85,7 @@ int buffer_putnlflush(buffer* b); /* put \n and flush */
 #define buffer_PUTC(s, c) \
   ( ((s)->a != (s)->p) \
     ? ( (s)->x[(s)->p++] = (c),  0 ) \
-    : buffer_put((s), &(c), 1) \
+    : buffer_putc((s), (c)) \
   )
 
 ssize_t buffer_get(buffer* b, char* x, size_t len);
