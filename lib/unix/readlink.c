@@ -8,6 +8,13 @@
 #include <windows.h>
 #include <winioctl.h>
 
+#ifndef FILE_ATTRIBUTE_REPARSE_POINT
+#define FILE_ATTRIBUTE_REPARSE_POINT 0x400
+#endif
+#ifndef FILE_FLAG_OPEN_REPARSE_POINT
+#define FILE_FLAG_OPEN_REPARSE_POINT    0x200000
+#endif
+
 #ifndef Newx
 #define Newx(v, n, t) v = (t*)malloc((n));
 #endif

@@ -136,9 +136,9 @@ xmlnodeset xml_find_all_attrs(xmlnode*, const char* attrs);
 
 
 xmlnode* xml_find_parent_attr(xmlnode*, const char* attrs);
-xmlnode* xml_find_parent_pred_1(xmlnode*, int (*pred)(void), const void* arg);
-xmlnode* xml_find_parent_pred_2(xmlnode*, int (*pred)(void), const void* a0, const void* a1);
-xmlnode* xml_find_parent_pred_3(xmlnode*, int (*pred)(void), const void* a0, const void* a1, const void* a2);
+xmlnode* xml_find_parent_pred_1(xmlnode*, int (*pred)(), const void* arg);
+xmlnode* xml_find_parent_pred_2(xmlnode*, int (*pred)(), const void* a0, const void* a1);
+xmlnode* xml_find_parent_pred_3(xmlnode*, int (*pred)(), const void* a0, const void* a1, const void* a2);
 xmlnode* xml_find_parent(xmlnode*, const char* tag);
 
 

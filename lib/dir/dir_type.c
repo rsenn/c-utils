@@ -10,6 +10,9 @@
 
 #include <sys/stat.h>
 #endif
+#ifndef FILE_ATTRIBUTE_REPARSE_POINT
+#define FILE_ATTRIBUTE_REPARSE_POINT 0x400
+#endif
 
 int
 dir_type(struct dir_s* d) {
