@@ -51,14 +51,15 @@ init(char ip[256]) {
 #if WINDOWS
   FIXED_INFO* pFixedInfo;
   ULONG ulOutBufLen;
-  static DWORD (WINAPI* get_network_params)(PFIXED_INFO pFixedInfo,PULONG pOutBufLen);
+  typedef DWORD (WINAPI get_network_params_fn)(PFIXED_INFO pFixedInfo,PULONG pOutBufLen);
+  static get_network_params_fn* get_network_params;
 #endif
 
 if(get_network_params == 0) {
  HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
  
  if(iphlpapi != INVALID_HANDLE_VALUE) {
-   if((get_network_params = GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
+   if((get_network_params = (get_network_params_fn*)GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
    return -1;   
  }
 }

@@ -7,6 +7,10 @@
 #if defined(__BORLANDC__) || defined(__ORANGEC__) || defined(__LCC__)
 #define InterlockedCompareExchangePointer(ptr,newptr,oldptr) InterlockedCompareExchange((long*)ptr,(long)newptr,(long)oldptr)
 #endif
+#ifdef __DMC__
+#define InterlockedCompareExchange(p,n,o) InterlockedCompareExchange((void**)p,(void*)n,(void*)o)
+#endif
+
 
 #ifdef __dietlibc__
 # include <sys/atomic.h>
@@ -81,7 +85,7 @@ iarray_allocate(iarray* ia, size_t pos) {
 #endif
   {
     size_t l;
-    do { l = (size_t)__CAS((void*)&ia->len, (void*)prevlen, (void*)realpos); } while(l < realpos);
+    do { l = (size_t)__CAS(&ia->len, prevlen, realpos); } while(l < realpos);
   }
   return &iarray_data(*p)[(pos - index) * ia->elemsize];
 }
