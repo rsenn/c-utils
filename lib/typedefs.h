@@ -20,7 +20,7 @@
 #include <stdint.h>
 #endif*/
 
-#if defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(__MINGW32__) || defined(__MINGW64__) || defined(__ORANGEC__)
 #include <stdint.h>
 #endif
 

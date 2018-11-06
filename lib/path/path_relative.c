@@ -4,7 +4,7 @@
 #include "../windoze.h"
 #define MAX_NUM(a, b) ((a) > (b) ? (a) : (b))
 #if WINDOWS_NATIVE
-#include <shlwapi.h>
+#include <windows.h>
 #endif
 int
 path_relative(const char* path, const char* relative_to, stralloc* out) {

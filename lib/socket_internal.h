@@ -2,6 +2,10 @@
 #ifndef SOCKET_INTERNAL_H
 #define SOCKET_INTERNAL_H
 
+#ifdef __ORANGEC__
+#undef USE_WS2_32
+#endif
+
 #if defined(_WIN32) || defined(_WIN64)
 #if USE_WS2_32
 #ifndef _WINSOCKAPI_

@@ -6,7 +6,6 @@
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE
-#include <psapi.h>
 #include <windows.h>
 #else
 #include <limits.h>
@@ -16,8 +15,16 @@
 int
 mmap_filename(void* map, stralloc* sa) {
 #if WINDOWS_NATIVE
+   static DWORD (WINAPI *get_mmaped_filename)(HANDLE hProcess,LPVOID lpv,LPWSTR lpFilename,DWORD nSize);
+
+   if(get_mmaped_filename == 0) {
+    HANDLE* psapi = LoadLibraryA("psapi.dll");
+    if((get_mmaped_filename = GetProcAddress(psapi, "GetMappedFileNameA")) == 0)
+      return 0;
+   }
+
   stralloc_ready(sa, MAX_PATH + 1);
-  sa->len = GetMappedFileNameA(GetCurrentProcess(), map, sa->s, sa->a);
+  sa->len = get_mmaped_filename(GetCurrentProcess(), map, sa->s, sa->a);
   return sa->len > 0;
 #else
   char buf[1024];

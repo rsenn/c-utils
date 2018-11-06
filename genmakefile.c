@@ -1544,12 +1544,14 @@ usage(char* argv0) {
                        "     msvc        Visual C++ NMake\n"
                        "     icl         Intel C++ NMake\n"
                        "     clang       LLVM NMake\n"
+                       "     occ         OrangeC\n"
                        "\n",
                        "  -m, --make-type TYPE      make program type, one of:\n"
                        "\n"
                        "     nmake       Microsoft NMake\n"
                        "     borland     Borland Make\n"
                        "     gmake       GNU Make\n"
+                       "     omake       OrangeCC Make\n"
                        "\n",
                        0);
   buffer_putnlflush(buffer_1);
@@ -1610,6 +1612,8 @@ set_make_type(const char* make, const char* compiler) {
     stralloc_copys(&mkdir_command, "test -d \"$@\" || mkdir -p \"$@\"");
     stralloc_copys(&delete_command, "rm -f");
 
+  } else if(str_start(make, "omake") || str_start(make, "orange")) {
+
   } else {
     return 0;
   }
@@ -1627,6 +1631,12 @@ set_compiler_type(const char* compiler) {
 
   push_var("CC", "cc");
   push_var("CXX", "c++");
+
+  push_lib("EXTRA_LIBS", "advapi32");
+  push_lib("EXTRA_LIBS", "ws2_32");
+  push_lib("EXTRA_LIBS", "iphlpapi");
+  push_lib("EXTRA_LIBS", "psapi");
+  push_lib("EXTRA_LIBS", "shlwapi");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
   stralloc_copys(&lib_command, "$(LIB) /out:$@ $^");
@@ -1723,16 +1733,13 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "/LIBPATH:\"%WindowsSdkDir%lib\\%WindowsSDKLibVersion%um\\$(MACHINE)\"");
     push_var("LDFLAGS", "/LIBPATH:\"%VCToolsInstallDir%lib\\$(MACHINE)\"");
 
-    push_var("LDFLAGS",
-             "/INCREMENTAL /MANIFEST");
+    push_var("LDFLAGS", "/INCREMENTAL /MANIFEST");
 
-if(build_type == BUILD_TYPE_DEBUG)
-   push_var("LDFLAGS", "/DEBUG");
+    if(build_type == BUILD_TYPE_DEBUG)
+      push_var("LDFLAGS", "/DEBUG");
 
     if(str_start(compiler, "icl"))
-      push_var("LDFLAGS",
-             "/manifest:embed /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\"");
-    
+      push_var("LDFLAGS", "/manifest:embed /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\"");
 
     if(mach.arch == ARM) {
       push_var("LDFLAGS", "/MACHINE:ARM");
@@ -1781,9 +1788,9 @@ if(build_type == BUILD_TYPE_DEBUG)
       if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
         push_var("CFLAGS", "-vxxx");
 
-    /*  if(build_type != BUILD_TYPE_DEBUG)
-        push_var("CFLAGS", "-Or");
-*/
+      /*  if(build_type != BUILD_TYPE_DEBUG)
+          push_var("CFLAGS", "-Or");
+  */
       set_command(&link_command, "$(CC) $(LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
       /* Borland C++ Builder 5.5 */
@@ -1853,6 +1860,30 @@ if(build_type == BUILD_TYPE_DEBUG)
 
     set_command(&lib_command, "$(CC) -ar rcs $@", "$^");
     set_command(&link_command, "$(CC) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
+  } else if(str_start(compiler, "occ") || str_start(compiler, "orange")) {
+    set_var("CC", "occ");
+    set_var("LIB", "olib");
+    set_var("LINK", "olink");
+
+objext = ".o";
+    libext = ".l";
+
+    push_var("CPPFLAGS", "/Dinline=__inline");
+    //push_var("LDFLAGS", "/Wcm");
+    push_var("CFLAGS", "/C+? /1 /v /E100");
+
+  if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+      push_var("CFLAGS", "+v");
+      push_var("LDFLAGS", "/v /c+");
+  }
+
+push_var("LDFLAGS", "/T:CON32");
+set_var("EXTRA_LIBS", "clwin.l climp.l");
+
+    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) \"-o$@\" \"/I;\" $<");
+    stralloc_copys(&lib_command, "$(LIB) /! \"$@\" $^");
+    set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o\"$@\"", "$^ c0xpe.o $(LIBS) $(EXTRA_LIBS)");
+
   } else {
     return 0;
   }
@@ -1860,12 +1891,6 @@ if(build_type == BUILD_TYPE_DEBUG)
   with_lib("zlib");
   with_lib("bz2");
   with_lib("lzma");
-
-  push_lib("EXTRA_LIBS", "advapi32");
-  push_lib("EXTRA_LIBS", "ws2_32");
-  push_lib("EXTRA_LIBS", "iphlpapi");
-  push_lib("EXTRA_LIBS", "psapi");
-  push_lib("EXTRA_LIBS", "shlwapi");
 
   return 1;
 }
@@ -1935,6 +1960,8 @@ main(int argc, char* argv[]) {
       make = "nmake";
     else if(str_start(compiler, "g"))
       make = "gmake";
+    else if(str_start(compiler, "o"))
+      make = "omake";
   }
 
   if(make == NULL)

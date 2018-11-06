@@ -2,7 +2,6 @@
 
 #if WINDOWS
 #define _WINSOCKAPI_
-#include <winsock2.h>
 #endif
 
 #include "../socket_internal.h"

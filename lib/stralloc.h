@@ -192,7 +192,7 @@ void buffer_fromsa(buffer* b, const stralloc* sa);
 size_t stralloc_scan(stralloc *out, const stralloc *in, size_t (*scan_function)(const char *, char *));
 
 #ifdef __BORLANDC__
-#define stralloc_length(sa) sa->len
+#define stralloc_length(sa) (sa)->len
 #else
 inline static size_t stralloc_length(const stralloc* sa) { return sa->len; }
 #endif
@@ -221,7 +221,7 @@ int stralloc_subst(stralloc *out, const char *b, size_t len, const char *from, c
 
 typedef size_t (stralloc_fmt_fn)();
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
-size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, stralloc_fmt_fn*, int (*pred)());
+size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len,  size_t (*fmt_function)(char*, unsigned int ch), int (*pred)(int));
 size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, stralloc_fmt_fn*);
 
 int stralloc_catdouble(stralloc*, double d, int prec);
