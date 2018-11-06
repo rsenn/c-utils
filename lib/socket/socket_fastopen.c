@@ -14,7 +14,8 @@
 int
 socket_fastopen(int s) {
 #if defined(SOL_TCP) && defined(TCP_FASTOPEN)
-  return setsockopt(s, SOL_TCP, TCP_FASTOPEN, (int[]){5}, sizeof(int));
+  int opt = 5;
+  return setsockopt(s, SOL_TCP, TCP_FASTOPEN, (void*)&opt, sizeof(int));
 #else
 #ifdef ENOPROTOOPT
   errno = ENOPROTOOPT;

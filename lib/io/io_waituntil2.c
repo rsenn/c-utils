@@ -380,7 +380,7 @@ dopoll:
   {
 #if WINDOWS
     DWORD numberofbytes;
-    ULONG_PTR x;
+    DWORD x;
     LPOVERLAPPED o;
     if(first_readable != -1 || first_writeable != -1) {
       return 1;

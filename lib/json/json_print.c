@@ -3,7 +3,6 @@
 #include "../slist.h"
 #include "../stralloc.h"
 
-static void json_print_list(jsonval*, buffer*, int);
 static void
 json_print_val(jsonval* val, buffer* b, int depth) {
   switch(val->type) {

@@ -14,7 +14,7 @@
 int
 socket_quickack(int s, int value) {
 #ifdef TCP_QUICKACK
-  return setsockopt(s, SOL_TCP, TCP_QUICKACK, &value, sizeof(int));
+  return setsockopt(s, SOL_TCP, TCP_QUICKACK, (void*)&value, sizeof(int));
 #else
 #ifdef ENOPROTOOPT
   errno = ENOPROTOOPT;

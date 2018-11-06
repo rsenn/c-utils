@@ -1,6 +1,7 @@
 #ifndef BINFMT_H
 #define BINFMT_H 1
 
+#include "typedefs.h"
 #include "uint8.h"
 #include "uint32.h"
 #include "uint64.h"
@@ -37,7 +38,7 @@ typedef struct {
 
 typedef struct {
   uint8* baseaddr;
-  uint64 filesize;
+  size_t filesize;
   binfmt_type type;
   binfmt_bits bits;
   range sections;

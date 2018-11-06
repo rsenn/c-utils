@@ -27,7 +27,7 @@ socket_mcleave6(int s, const char ip[16]) {
 #ifdef LIBC_HAS_IP6
   byte_copy(&opt.ipv6mr_multiaddr, 16, ip);
   opt.ipv6mr_interface = 0;
-  return winsock2errno(setsockopt(s, IPPROTO_IPV6, IPV6_DROP_MEMBERSHIP, &opt, sizeof opt));
+  return winsock2errno(setsockopt(s, IPPROTO_IPV6, IPV6_DROP_MEMBERSHIP, (void*)&opt, sizeof opt));
 #else
   errno = EPROTONOSUPPORT;
   return -1;

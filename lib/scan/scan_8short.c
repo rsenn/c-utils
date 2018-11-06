@@ -1,8 +1,9 @@
 #include "../scan.h"
 
-size_t scan_8short(const char* src, unsigned short* dest) {
+size_t
+scan_8short(const char* src, unsigned short* dest) {
   /* make a copy of src so we can return the number of bytes we progressed */
-  const char *tmp = src;
+  const char* tmp = src;
   /* this is called l because we copy and pasted from 8long, where l
    * stood for "long" */
   unsigned short l = 0;
@@ -15,7 +16,8 @@ size_t scan_8short(const char* src, unsigned short* dest) {
     /* overflow check; for each digit we multiply by 8 and then add the
      * digit; 0-7 needs 3 bits of storage, so we need to check if the
      * uppermost 3 bits of l are empty. Do it by shifting to the right */
-    if(l >> (sizeof(l) * 8 - 3)) break;
+    if(l >> (sizeof(l) * 8 - 3))
+      break;
     l = (unsigned short)(l * 8 + c);
     ++tmp;
   }

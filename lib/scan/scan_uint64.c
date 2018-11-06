@@ -9,13 +9,17 @@ scan_uint64(const char* src, uint64* dest) {
     uint64 n;
     /* division is very slow on most architectures */
     n = l << 3;
-    if((n >> 3) != l) break;
-    if(n + (l << 1) < n) break;
+    if((n >> 3) != l)
+      break;
+    if(n + (l << 1) < n)
+      break;
     n += l << 1;
-    if(n + c < n) break;
+    if(n + c < n)
+      break;
     l = n + c;
     ++tmp;
   }
-  if(tmp - src) *dest = l;
+  if(tmp - src)
+    *dest = l;
   return (size_t)(tmp - src);
 }

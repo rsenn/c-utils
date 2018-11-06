@@ -7,6 +7,9 @@
 #include "lib/taia.h"
 
 #include <errno.h>
+#ifdef __ORANGEC__
+#include <sockets.h>
+#endif
 
 static int last_errno = 0;
 

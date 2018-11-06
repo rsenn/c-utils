@@ -1545,6 +1545,7 @@ usage(char* argv0) {
                        "     icl         Intel C++ NMake\n"
                        "     clang       LLVM NMake\n"
                        "     occ         OrangeC\n"
+                       "     dmc         Digital Mars C++\n"
                        "\n",
                        "  -m, --make-type TYPE      make program type, one of:\n"
                        "\n"
@@ -1552,6 +1553,7 @@ usage(char* argv0) {
                        "     borland     Borland Make\n"
                        "     gmake       GNU Make\n"
                        "     omake       OrangeCC Make\n"
+                       "     make        Other make\n"
                        "\n",
                        0);
   buffer_putnlflush(buffer_1);
@@ -1615,7 +1617,8 @@ set_make_type(const char* make, const char* compiler) {
   } else if(str_start(make, "omake") || str_start(make, "orange")) {
 
   } else {
-    return 0;
+      pathsep_make = '\\';
+
   }
 
   pathsep_args = pathsep_make;
@@ -1635,11 +1638,12 @@ set_compiler_type(const char* compiler) {
   push_lib("EXTRA_LIBS", "advapi32");
   push_lib("EXTRA_LIBS", "ws2_32");
   push_lib("EXTRA_LIBS", "iphlpapi");
-  //push_lib("EXTRA_LIBS", "psapi");
-  //push_lib("EXTRA_LIBS", "shlwapi");
+  // push_lib("EXTRA_LIBS", "psapi");
+  // push_lib("EXTRA_LIBS", "shlwapi");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
   stralloc_copys(&lib_command, "$(LIB) /out:$@ $^");
+      set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o\"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   if(build_type != BUILD_TYPE_DEBUG)
     push_var("CFLAGS", build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
@@ -1865,25 +1869,37 @@ set_compiler_type(const char* compiler) {
     set_var("LIB", "olib");
     set_var("LINK", "olink");
 
-objext = ".o";
+    objext = ".o";
     libext = ".l";
 
     push_var("CPPFLAGS", "/Dinline=__inline");
-    //push_var("LDFLAGS", "/Wcm");
+    // push_var("LDFLAGS", "/Wcm");
     push_var("CFLAGS", "/C+? /1 /v /E100");
 
-  if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "+v");
       push_var("LDFLAGS", "/v /c+");
-  }
+    }
 
-push_var("LDFLAGS", "/T:CON32");
-set_var("EXTRA_LIBS", "clwin.l climp.l");
+    push_var("LDFLAGS", "/T:CON32");
+    set_var("EXTRA_LIBS", "clwin.l climp.l");
 
     stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) \"-o$@\" \"/I;\" $<");
     stralloc_copys(&lib_command, "$(LIB) /! \"$@\" $^");
     set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o\"$@\"", "$^ c0xpe.o $(LIBS) $(EXTRA_LIBS)");
 
+  } else if(str_start(compiler, "8cc")) {
+     libext = ".a";
+    objext = ".o";
+    
+    set_var("CC", "8cc");
+    
+  } else if(str_start(compiler, "dmc") || str_start(compiler, "digitalmars")) {
+
+    
+    set_var("CC", "dmc");
+    
+    
   } else {
     return 0;
   }
@@ -1965,7 +1981,7 @@ main(int argc, char* argv[]) {
   }
 
   if(make == NULL)
-    make = "gmake";
+    make = "make";
 
   if(compiler == NULL)
     compiler = "gcc";

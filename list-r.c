@@ -21,10 +21,8 @@
 #include <dirent.h>
 #include <unistd.h>
 #else
-#include <aclapi.h>
 #include <fcntl.h>
 #include <io.h>
-#include <sddl.h>
 #include <wtypes.h>
 #endif
 #include "lib/array.h"
@@ -44,11 +42,16 @@
 
 #if WINDOWS
 #include <io.h>
-#include <shlwapi.h>
 #include <windows.h>
 
 #ifndef IO_REPARSE_TAG_SYMLINK
 #define IO_REPARSE_TAG_SYMLINK 0xa000000c
+#endif
+#ifndef FILE_ATTRIBUTE_REPARSE_POINT
+#define FILE_ATTRIBUTE_REPARSE_POINT 0x400
+#endif
+#ifndef SE_FILE_OBJECT
+#define SE_FILE_OBJECT 1
 #endif
 #endif
 
@@ -146,6 +149,19 @@ get_file_time(const char* path) {
   return t;
 }
 
+int
+get_win_api(void* ptr, const char* dll, const char* func) {
+  if(*(void**)ptr == 0) {
+    HANDLE h;
+    if((h = LoadLibraryA(dll)) != 0) {
+      if((*(void**)ptr = GetProcAddress(h, func)))
+        return 0;
+    }
+  }
+
+  return -1;
+}
+
 const char*
 get_file_owner(const char* path) {
   static char tmpbuf[1024];
@@ -160,6 +176,8 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
+  static DWORD (WINAPI* get_security_info)(HANDLE,DWORD,SECURITY_INFORMATION,PSID*,PSID*,PACL*,PACL*,PSECURITY_DESCRIPTOR*);
+  static BOOL (WINAPI* convert_sid_to_string_sid_a)(PSID,LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object. */
   hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -169,15 +187,20 @@ get_file_owner(const char* path) {
     /*   	snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode); */
     return 0;
   }
+  if(get_win_api(&get_security_info, "advapi32", "GetSecurityInfo") == -1)
+    return 0;
+    if(get_win_api(&convert_sid_to_string_sid_a, "advapi32", "ConvertSidToStringSidA") == -1)
+    return 0;
+  
   /* Get the owner SID of the file. */
-  dwRtnCode = GetSecurityInfo(hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
+  dwRtnCode = get_security_info(hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
   /* Check GetLastError for GetSecurityInfo error condition. */
   if(dwRtnCode != ERROR_SUCCESS) {
     dwErrorCode = GetLastError();
     /*   snprintf(tmpbuf, sizeof(tmpbuf), "GetSecurityInfo error = %d\n", dwErrorCode); */
     return 0;
   }
-  if(ConvertSidToStringSid(pSidOwner, &strsid)) {
+  if(convert_sid_to_string_sid_a(pSidOwner, &strsid)) {
     snprintf(tmpbuf, sizeof(tmpbuf), "%s", strsid);
     LocalFree(strsid);
   }

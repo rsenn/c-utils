@@ -16,13 +16,9 @@ scan_double(const char* in, double* dest) {
   const char* c = in;
   char neg = 0;
   switch(*c) {
-    case '-':
-      neg = 1;
-    case '+':
-      c++;
-      break;
-    default:
-      break;
+    case '-': neg = 1;
+    case '+': c++; break;
+    default: break;
   }
   while(isdigit(*c)) {
     d = d * 10 + (*c - '0');
@@ -40,11 +36,8 @@ scan_double(const char* in, double* dest) {
     char neg = 0;
     if(c[1] < '0') {
       switch(*c) {
-        case '-':
-          neg = 1;
-        case '+':
-          c++;
-          break;
+        case '-': neg = 1;
+        case '+': c++; break;
         default:
           d = 0;
           c = in;

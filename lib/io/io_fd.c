@@ -81,7 +81,7 @@ io_getfds() {
   return &io_fds;
 }
 
-static int io_fds_inited;
+static intptr_t io_fds_inited;
 uint64 io_wanted_fds;
 array io_pollfds;
 enum __io_waitmode io_waitmode;
@@ -117,7 +117,7 @@ io_fd_internal(fd_t d, int flags) {
    * and not to 1.  We know we are done when it is 1.  We know we need
    * to do something when it is 0.  We know somebody else is doing it
    * when it is 2. */
-  if(__CAS(&io_fds_inited, 0, 2) == 0) {
+  if(__CAS((void*)&io_fds_inited, (void*)0, (void*)2) == 0) {
     iarray_init(&io_fds, sizeof(io_entry));
     io_fds_inited = 1;
   } else
@@ -126,7 +126,7 @@ io_fd_internal(fd_t d, int flags) {
       __asm__("" : : : "memory");
 #endif
     } while(io_fds_inited != 1);
-  if(!(e = iarray_allocate(&io_fds, d))) return 0;
+  if(!(e = (io_entry*)iarray_allocate(&io_fds, (size_t)d))) return 0;
   if(e->inuse) return e;
   byte_zero(e, sizeof(io_entry));
   e->inuse = 1;
@@ -190,7 +190,7 @@ io_fd_internal(fd_t d, int flags) {
 
 #if WINDOWS
   if(io_comport) {
-    if(CreateIoCompletionPort((HANDLE)(size_t)d, io_comport, (ULONG_PTR)(size_t)d, 0) == 0) {
+    if(CreateIoCompletionPort((HANDLE)(size_t)d, io_comport, (DWORD)d, 0) == 0) {
       errno = EBADF;
       return 0;
     }

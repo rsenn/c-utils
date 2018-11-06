@@ -16,10 +16,12 @@ scan_uint(const char* src, unsigned int* dest) {
     unsigned int l;
     for(cur = src, l = 0; *cur >= '0' && *cur <= '9'; ++cur) {
       unsigned long tmp = l * 10ul + *cur - '0';
-      if((unsigned int)tmp != tmp) break;
+      if((unsigned int)tmp != tmp)
+        break;
       l = tmp;
     }
-    if(cur > src) *dest = l;
+    if(cur > src)
+      *dest = l;
     return (size_t)(cur - src);
 #ifdef __GNUC__
   } else {

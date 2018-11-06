@@ -4,7 +4,7 @@
 
 #include "../iarray.h"
 
-#ifdef __BORLANDC__
+#if defined(__BORLANDC__) || defined(__ORANGEC__) || defined(__LCC__)
 #define InterlockedCompareExchangePointer(ptr,newptr,oldptr) InterlockedCompareExchange((long*)ptr,(long)newptr,(long)oldptr)
 #endif
 
@@ -12,11 +12,7 @@
 # include <sys/atomic.h>
 #elif WINDOWS_NATIVE || defined(__MSYS__)
 # define __CAS(val,oldval,newval) InterlockedCompareExchange(val,newval,oldval)
-# ifdef __LCC__
-#  define __CAS_PTR(ptr,oldptr,newptr) InterlockedCompareExchange(ptr,newptr,oldptr)
-# else
 #  define __CAS_PTR(ptr,oldptr,newptr) InterlockedCompareExchangePointer(ptr,newptr,oldptr)
-# endif
 #elif defined(__GNUC__)
 # define __CAS(val,oldval,newval) __sync_val_compare_and_swap(val,oldval,newval)
 # if __SIZEOF_POINTER__ == 4
@@ -72,7 +68,7 @@ iarray_allocate(iarray* ia, size_t pos) {
     if(!*p) {
       if(!newpage)
         if(!(newpage = new_page(ia->bytesperpage))) return 0;
-      if(__CAS_PTR(p, 0, newpage) == 0) newpage = 0;
+      if(__CAS_PTR((void*)p, 0, (void*)newpage) == 0) newpage = 0;
     }
     if(index + ia->elemperpage > pos) break;
     p = &(*p)->next;
@@ -85,7 +81,7 @@ iarray_allocate(iarray* ia, size_t pos) {
 #endif
   {
     size_t l;
-    do { l = __CAS(&ia->len, prevlen, realpos); } while(l < realpos);
+    do { l = (size_t)__CAS((void*)&ia->len, (void*)prevlen, (void*)realpos); } while(l < realpos);
   }
   return &iarray_data(*p)[(pos - index) * ia->elemsize];
 }

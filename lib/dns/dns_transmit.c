@@ -348,7 +348,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have sent entire query to curserver on TCP socket s
     pos not defined
     */
-    r = recv(fd, &ch, 1, 0);
+    r = recv(fd, (void*)&ch, 1, 0);
     if(r <= 0) return nexttcp(d);
     d->packetlen = ch;
     d->tcpstate = 4;
@@ -361,7 +361,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     pos not defined
     have received one byte of packet length into packetlen
     */
-    r = recv(fd, &ch, 1, 0);
+    r = recv(fd, (void*)&ch, 1, 0);
     if(r <= 0) return nexttcp(d);
     d->packetlen <<= 8;
     d->packetlen += ch;

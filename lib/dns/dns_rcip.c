@@ -12,8 +12,32 @@
 #include <stdlib.h>
 
 #if WINDOWS
-#include <iphlpapi.h>
 #include <windows.h>
+
+#define MAX_HOSTNAME_LEN 128
+#define MAX_DOMAIN_NAME_LEN 128
+#define MAX_SCOPE_ID_LEN 256
+typedef struct {
+	char String[4 * 4];
+} IP_ADDRESS_STRING,*PIP_ADDRESS_STRING,IP_MASK_STRING,*PIP_MASK_STRING;
+typedef struct _IP_ADDR_STRING {
+	struct _IP_ADDR_STRING* Next;
+	IP_ADDRESS_STRING IpAddress;
+	IP_MASK_STRING IpMask;
+	DWORD Context;
+} IP_ADDR_STRING,*PIP_ADDR_STRING;
+
+typedef struct {
+	char HostName[MAX_HOSTNAME_LEN + 4] ;
+	char DomainName[MAX_DOMAIN_NAME_LEN + 4];
+	PIP_ADDR_STRING CurrentDnsServer;
+	IP_ADDR_STRING DnsServerList;
+	UINT NodeType;
+	char ScopeId[MAX_SCOPE_ID_LEN + 4];
+	UINT EnableRouting;
+	UINT EnableProxy;
+	UINT EnableDns;
+} FIXED_INFO,*PFIXED_INFO;
 #endif
 
 static stralloc data;
@@ -27,7 +51,17 @@ init(char ip[256]) {
 #if WINDOWS
   FIXED_INFO* pFixedInfo;
   ULONG ulOutBufLen;
+  static DWORD (WINAPI* get_network_params)(PFIXED_INFO pFixedInfo,PULONG pOutBufLen);
 #endif
+
+if(get_network_params == 0) {
+ HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
+ 
+ if(iphlpapi != INVALID_HANDLE_VALUE) {
+   if((get_network_params = GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
+   return -1;   
+ }
+}
 
   x = getenv("DNSCACHEIP");
 
@@ -41,13 +75,13 @@ init(char ip[256]) {
     pFixedInfo = (FIXED_INFO*)MALLOC(sizeof(FIXED_INFO));
     if(pFixedInfo) {
       ulOutBufLen = sizeof(FIXED_INFO);
-      if(GetNetworkParams(pFixedInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
+      if(get_network_params(pFixedInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
         FREE(pFixedInfo);
         pFixedInfo = (FIXED_INFO*)MALLOC(ulOutBufLen);
       }
     }
     if(pFixedInfo) {
-      if(GetNetworkParams(pFixedInfo, &ulOutBufLen) == NO_ERROR) {
+      if(get_network_params(pFixedInfo, &ulOutBufLen) == NO_ERROR) {
         x = pFixedInfo->DnsServerList.IpAddress.String;
       }
     }

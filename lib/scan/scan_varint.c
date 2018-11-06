@@ -4,7 +4,8 @@ size_t
 scan_varint(const char* in, size_t len, uint64* n) {
   size_t i;
   uint64 l;
-  if(len == 0) return 0;
+  if(len == 0)
+    return 0;
   l = 0;
   for(l = 0, i = 0; i < len; ++i) {
     l += (in[i] & 0x7f) << (i * 7);
