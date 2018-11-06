@@ -1635,8 +1635,8 @@ set_compiler_type(const char* compiler) {
   push_lib("EXTRA_LIBS", "advapi32");
   push_lib("EXTRA_LIBS", "ws2_32");
   push_lib("EXTRA_LIBS", "iphlpapi");
-  push_lib("EXTRA_LIBS", "psapi");
-  push_lib("EXTRA_LIBS", "shlwapi");
+  //push_lib("EXTRA_LIBS", "psapi");
+  //push_lib("EXTRA_LIBS", "shlwapi");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
   stralloc_copys(&lib_command, "$(LIB) /out:$@ $^");
