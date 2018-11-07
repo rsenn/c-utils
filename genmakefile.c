@@ -1892,8 +1892,6 @@ set_compiler_type(const char* compiler) {
     objext = ".o";
     libext = ".l";
 
-    format_linklib_fn = NULL;
-
     push_var("CPPFLAGS", "/Dinline=__inline");
     // push_var("LDFLAGS", "/Wcm");
     push_var("CFLAGS", "/C+? /1 /v /E100");
@@ -1904,11 +1902,13 @@ set_compiler_type(const char* compiler) {
     }
 
     push_var("LDFLAGS", "/T:CON32");
-    set_var("EXTRA_LIBS", "clwin.l climp.l");
+
+    push_lib("DEFAULT_LIBS", "clwin");
+    push_lib("DEFAULT_LIBS", "climp");
 
     stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) \"-o$@\" \"/I;\" $<");
     stralloc_copys(&lib_command, "$(LIB) /! \"$@\" $^");
-    set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o\"$@\"", "$^ c0xpe.o $(LIBS)");
+    set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o\"$@\"", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
 
   } else if(str_start(compiler, "8cc")) {
     libext = ".a";
