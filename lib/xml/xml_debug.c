@@ -21,7 +21,7 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
       stralloc_init(&text);
       stralloc_cats(&space, "\\n\"\n");
       
-      stralloc_fmt_call(&space, &fmt_repeat, av);
+      stralloc_fmt_call(&space, (stralloc_fmt_fn*)&fmt_repeat, av);
       stralloc_catc(&space, '"');
       stralloc_nul(&space);
       stralloc_subst(&text, node->name, str_len(node->name), "\n", space.s);
