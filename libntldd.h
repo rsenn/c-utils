@@ -90,17 +90,4 @@ struct _soff_entry {
   void* off;
 };
 
-static inline void*
-map_pointer(soff_entry* soffs, int soffs_len, uint32 in_ptr, int* section) {
-  int i;
-  for(i = 0; i < soffs_len; i++)
-    if(soffs[i].start <= in_ptr && soffs[i].end >= in_ptr) {
-      if(section != NULL)
-        *section = i;
-      if(soffs[i].off)
-        return (char*)soffs[i].off + in_ptr;
-    }
-  return NULL;
-}
-
 #endif

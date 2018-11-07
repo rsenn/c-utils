@@ -66,7 +66,7 @@ static stralloc cwd;
 #endif
 
 #ifdef HAVE_CYGWIN_CONV_PATH
-#define cygwin_conv_to_full_posix_path(from, to) \
+#define cygwin_conv_to_full_posix_path(from, to)                                                                       \
   cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, (from), (to), MAX_PATH)
 #endif
 
@@ -84,21 +84,6 @@ pathconv(const char* path, stralloc* sa) {
 #endif
 
 /*****************************************************************************
- * Function find_section_by_raw_data
- *****************************************************************************/
-int
-find_section_by_raw_data(pe_loaded_image* img, uint32 address) {
-  unsigned long i;
-  for(i = 0; i < img->number_of_sections; i++) {
-    uint32 start = img->sections[i].virtual_address;
-    uint32 end = start + img->sections[i].size_of_raw_data;
-    if(address >= start && address < end)
-      return i;
-  }
-  return -1;
-}
-
-/*****************************************************************************
  * Function resize_array
  *****************************************************************************/
 void
@@ -111,9 +96,9 @@ resize_array(void** data, uint64* data_size, size_t sizeof_data) {
   *data_size = new_size;
 }
 
-#define resize_dep_list(ptr_deptree, ptr_deptree_size) \
+#define resize_dep_list(ptr_deptree, ptr_deptree_size)                                                                 \
   resize_array((void**)ptr_deptree, ptr_deptree_size, sizeof(struct dep_tree_element*))
-#define resize_import_list(ptr_import_list, ptr_import_list_size) \
+#define resize_import_list(ptr_import_list, ptr_import_list_size)                                                      \
   resize_array((void**)ptr_import_list, ptr_import_list_size, sizeof(struct import_table_item))
 #define resize_stack(ptr_stack, ptr_stack_size) resize_array((void**)ptr_stack, ptr_stack_size, sizeof(char*))
 
@@ -161,17 +146,11 @@ find_dep(struct dep_tree_element* root, char* name, struct dep_tree_element** re
 int build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root, struct dep_tree_element* self);
 
 struct dep_tree_element*
-process_dep(build_tree_config* cfg,
-            soff_entry* soffs,
-            int soffs_len,
-            uint32 name,
-            struct dep_tree_element* root,
-            struct dep_tree_element* self,
-            int deep) {
+process_dep(build_tree_config* cfg, uint32 name, struct dep_tree_element* root, struct dep_tree_element* self, int deep) {
   struct dep_tree_element* child = NULL;
   int found;
   int64 i;
-  char* dllname = (char*)pe_rva2ptr(self->mapped_address, uint32_get(&name));
+  char* dllname = pe_rva2ptr(self->mapped_address, uint32_get(&name));
   if(dllname == NULL)
     return NULL;
   if(str_len(dllname) > 10 && str_case_diffn("api-ms-win", dllname, 10) == 0) {
@@ -252,9 +231,7 @@ static void
 build_dep_tree32or64(pe_loaded_image* img,
                      build_tree_config* cfg,
                      struct dep_tree_element* root,
-                     struct dep_tree_element* self,
-                     soff_entry* soffs,
-                     int soffs_len) {
+                     struct dep_tree_element* self) {
   pe_data_directory* idata;
   pe_import_descriptor* iid;
   pe_export_directory* ied;
@@ -265,7 +242,7 @@ build_dep_tree32or64(pe_loaded_image* img,
 
   idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_EXPORT];
   if(idata->size > 0 && idata->virtual_address != 0) {
-    ied = (pe_export_directory*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+    ied = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(ied && ied->name != 0) {
       char* export_module = pe_rva2ptr(img->base, uint32_get(&ied->name));
       if(export_module != NULL) {
@@ -276,29 +253,28 @@ build_dep_tree32or64(pe_loaded_image* img,
     if(ied && ied->number_of_functions > 0) {
       uint32 *addrs, *names;
       uint16* ords;
-      int section = -1;
       self->exports_len = uint32_get(&ied->number_of_functions);
       self->exports = (struct export_table_item*)malloc(sizeof(struct export_table_item) * self->exports_len);
       byte_zero(self->exports, sizeof(struct export_table_item) * self->exports_len);
-      addrs = (uint32*)pe_rva2ptr(img->base, uint32_get(&ied->address_of_functions));
-      ords = (uint16*)pe_rva2ptr(img->base, uint32_get(&ied->address_of_name_ordinals));
-      names = (uint32*)pe_rva2ptr(img->base,  uint32_get(&ied->address_of_names));
+      addrs = pe_rva2ptr(img->base, uint32_get(&ied->address_of_functions));
+      ords = pe_rva2ptr(img->base, uint32_get(&ied->address_of_name_ordinals));
+      names = pe_rva2ptr(img->base, uint32_get(&ied->address_of_names));
       for(i = 0; i < ied->number_of_names; i++) {
         self->exports[ords[i]].ordinal = ords[i] + ied->base;
         if(names[i] != 0) {
-          char* s_name = (char*)pe_rva2ptr(img->base, uint32_get(&names[i]));
+          char* s_name = pe_rva2ptr(img->base, uint32_get(&names[i]));
           if(s_name != NULL)
             self->exports[ords[i]].name = str_dup(s_name);
         }
       }
       for(i = 0; i < ied->number_of_functions; i++) {
         if(addrs[i] != 0) {
-          int section_index = find_section_by_raw_data(img, addrs[i]);
+          int section_index = pe_rva2section(img, addrs[i]);
           if((idata->virtual_address <= addrs[i]) && (idata->virtual_address + idata->size > addrs[i])) {
             self->exports[i].address = NULL;
-            self->exports[i].forward_str = str_dup((char*)pe_rva2ptr(img->base, uint32_get(&addrs[i])));
+            self->exports[i].forward_str = str_dup(pe_rva2ptr(img->base, uint32_get(&addrs[i])));
           } else
-            self->exports[i].address = map_pointer(soffs, soffs_len, addrs[i], &section);
+            self->exports[i].address = pe_rva2ptr(img->base, uint32_get(&addrs[i]));
           self->exports[i].ordinal = i + ied->base;
           self->exports[i].section_index = section_index;
           self->exports[i].address_offset = addrs[i];
@@ -307,20 +283,20 @@ build_dep_tree32or64(pe_loaded_image* img,
     }
   }
 
-  idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_IMPORT, cfg);
+  idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_IMPORT];
   if(idata->size > 0 && idata->virtual_address != 0) {
-    iid = (pe_import_descriptor*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+    iid = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
                  iid[i].first_thunk;
           i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
-        dll = process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 0);
+        dll = process_dep(cfg, iid[i].name, root, self, 0);
         if(dll == NULL)
           continue;
-        ith = (void*)pe_rva2ptr(img->base, uint32_get(&iid[i].first_thunk));
-        oith = (void*)pe_rva2ptr(img->base, uint32_get(&iid[i].original_first_thunk));
+        ith = pe_rva2ptr(img->base, uint32_get(&iid[i].first_thunk));
+        oith = pe_rva2ptr(img->base, uint32_get(&iid[i].original_first_thunk));
         for(j = 0; (impaddress = thunk_data_u1_function(ith, j, cfg)) != 0; j++) {
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
@@ -334,7 +310,7 @@ build_dep_tree32or64(pe_loaded_image* img,
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
-            pe_import_by_name* byname = (pe_import_by_name*)pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
+            pe_import_by_name* byname = pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
             if(byname != NULL)
               imp->name = str_dup((char*)byname->name);
           }
@@ -342,9 +318,9 @@ build_dep_tree32or64(pe_loaded_image* img,
       }
   }
 
-  idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_DELAY_IMPORT, cfg);
+  idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_DELAY_IMPORT];
   if(idata->size > 0 && idata->virtual_address != 0) {
-    idd = (pe_delayload_descriptor*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+    idd = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
                  idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
@@ -352,12 +328,12 @@ build_dep_tree32or64(pe_loaded_image* img,
           i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
-        dll = process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 0);
+        dll = process_dep(cfg, idd[i].dll_name_rva, root, self, 0);
         if(dll == NULL)
           continue;
         if(idd[i].attributes.all_attributes & 0x00000001) {
-          ith = (void*)pe_rva2ptr(img->base, uint32_get(&idd[i].import_address_table_rva));
-          oith = (void*)pe_rva2ptr(img->base, uint32_get(&idd[i].import_name_table_rva));
+          ith = pe_rva2ptr(img->base, uint32_get(&idd[i].import_address_table_rva));
+          oith = pe_rva2ptr(img->base, uint32_get(&idd[i].import_name_table_rva));
         } else {
           ith = (void*)(uintptr_t)idd[i].import_address_table_rva;
           oith = (void*)(uintptr_t)idd[i].import_name_table_rva;
@@ -374,7 +350,7 @@ build_dep_tree32or64(pe_loaded_image* img,
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
-            pe_import_by_name* byname = (pe_import_by_name*)pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
+            pe_import_by_name* byname = pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
             if(byname != NULL)
               imp->name = str_dup((char*)byname->name);
           }
@@ -382,27 +358,27 @@ build_dep_tree32or64(pe_loaded_image* img,
       }
   }
 
-  idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_IMPORT, cfg);
+  idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_IMPORT];
   if(idata->size > 0 && idata->virtual_address != 0) {
-    iid = (pe_import_descriptor*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+    iid = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
                  iid[i].first_thunk;
           i++)
 
-        process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 1);
+        process_dep(cfg, iid[i].name, root, self, 1);
   }
 
-  idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_DELAY_IMPORT, cfg);
+  idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_DELAY_IMPORT];
   if(idata->size > 0 && idata->virtual_address != 0) {
-    idd = (pe_delayload_descriptor*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+    idd = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
                  idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
                  idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++)
 
-        process_dep(cfg, soffs, soffs_len, idd[i].dll_name_rva, root, self, 1);
+        process_dep(cfg, idd[i].dll_name_rva, root, self, 1);
   }
 }
 
@@ -431,10 +407,9 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
 
   if(dhdr) {
     loaded_image->base = (char*)dhdr;
-    loaded_image->file_header = (pe64_nt_headers*)pe_header_nt(loaded_image->base);
-    loaded_image->number_of_sections = uint16_get(&loaded_image->file_header->coff_header.number_of_sections);
+    loaded_image->file_header = pe_header_nt(loaded_image->base);
     loaded_image->module_name = str_dup(sa.s);
-    loaded_image->sections = pe_header_sections(loaded_image->base, NULL);
+    loaded_image->sections = pe_header_sections(loaded_image->base, &loaded_image->number_of_sections);
     success = 1;
   }
 
@@ -452,8 +427,6 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   char success = 0;
 
   uint32 i, j;
-  int soffs_len;
-  soff_entry* soffs;
 
   if(self->flags & DEPTREE_PROCESSED) {
     return 0;
@@ -463,10 +436,10 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
     // if(self->resolved_module == NULL)    self->resolved_module = str_dup(name);
 
     dos = (pe_dos_header*)hmod;
-    loaded_image.file_header = (pe64_nt_headers*)((char*)hmod + dos->e_lfanew);
-    loaded_image.sections = (pe_section_header*)((char*)hmod + dos->e_lfanew + sizeof(pe64_nt_headers));
-    loaded_image.number_of_sections = loaded_image.file_header->coff_header.number_of_sections;
+    loaded_image.file_header = pe_header_nt(hmod);
+    loaded_image.sections = pe_header_sections(hmod, &loaded_image.number_of_sections);
     loaded_image.base = (void*)hmod;
+
     if(cfg->machine_type != -1 && (int)loaded_image.file_header->coff_header.machine != cfg->machine_type)
       return 1;
   } else {
@@ -493,27 +466,9 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   push_stack(cfg->stack, cfg->stack_len, cfg->stack_size, name);
 
   self->mapped_address = loaded_image.base;
-
   self->flags |= DEPTREE_PROCESSED;
 
-  soffs_len = img->number_of_sections;
-  soffs = (soff_entry*)malloc(sizeof(soff_entry) * (soffs_len + 1));
-  for(i = 0; i < img->number_of_sections; i++) {
-    soffs[i].start = img->sections[i].virtual_address;
-    soffs[i].end = soffs[i].start + img->sections[i].virtual_size;
-    if(cfg->on_self)
-      soffs[i].off = img->base /* + img->sections[i].virtual_address*/;
-    else if(img->sections[i].pointer_to_raw_data != 0)
-      soffs[i].off = img->base + img->sections[i].pointer_to_raw_data - img->sections[i].virtual_address;
-    else
-      soffs[i].off = NULL;
-  }
-  soffs[img->number_of_sections].start = 0;
-  soffs[img->number_of_sections].end = 0;
-  soffs[img->number_of_sections].off = 0;
-
-  build_dep_tree32or64(img, cfg, root, self, soffs, soffs_len);
-  free(soffs);
+  build_dep_tree32or64(img, cfg, root, self);
 
   if(!cfg->on_self) {
     mmap_unmap(loaded_image.base, loaded_image.size_of_image);

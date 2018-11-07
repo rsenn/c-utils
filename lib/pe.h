@@ -327,11 +327,11 @@ typedef struct {
 
 typedef struct {
   char* module_name;            /* 0x00 (PSTR) */
-  uint64 h_file;                /* 0x08 (HANDLE) */
+  fd_t h_file;                  /* 0x08 (HANDLE) */
   char* base;                   /* 0x10 (PUCHAR) */
   pe64_nt_headers* file_header; /* 0x18 (PIMAGE_NT_HEADERS64) */
   uint64 last_rva_section;      /* 0x20 (pe_section_header) */
-  uint64 number_of_sections;    /* 0x28 (ULONG) */
+  int number_of_sections;    /* 0x28 (ULONG) */
   pe_section_header* sections;  /* 0x30 (pe_section_header) */
   uint32 characteristics;       /* 0x38 (ULONG) */
   char f_system_image;          /* 0x3c (BOOLEAN) */
@@ -409,6 +409,7 @@ typedef struct {
 
 void* pe_header_nt(void*);
 void* pe_header_opt(void*);
+int pe_rva2section(void* base, uint32 rva);
 int64 pe_rva2offset(void*, uint32 rva);
 void* pe_rva2ptr(void*, uint32 rva);
 uint32 pe_header_sig(void*);

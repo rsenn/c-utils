@@ -31,51 +31,35 @@ static int skip_fields = 8;
 static char* delimiters = " \t\r";
 static size_t delimiters_len;
 
-/*
-static char buffer_0_in[BUFFER_INSIZE];
-static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
+static stralloc dirp = {0, 0, 0};
 
-static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
-
-static char buffer_2_out[BUFFER_OUTSIZE];
-static buffer buffer_2 = BUFFER_INIT((void*)write, 2, buffer_2_out, BUFFER_OUTSIZE);
-*/
-static stralloc dirp = { 0, 0, 0 };
-
-static char*
-mystr_basename(const char* s) {
-  char* r1 = strrchr(s, '/');
-  char* r2 = strrchr(s, '\\');
-
-  if(!r1 && !r2)
-    return(char *)s;
-
-  return(r1 > r2) ? r1 + 1 : r2 + 1;
-}
-
-int is_delimiter(char c) {
+int
+is_delimiter(char c) {
   return !(byte_chr(delimiters, delimiters_len, c) == delimiters_len);
 }
-size_t skip_field(int n, char* s, size_t len) {
+
+size_t
+skip_field(int n, char* s, size_t len) {
   size_t ret = 0;
   while(n-- && ret < len) {
-    if(ret == len) return ret;
+    if(ret == len)
+      return ret;
 
-    while(ret < len && !is_delimiter(s[ret]))
-      ret++;
+    while(ret < len && !is_delimiter(s[ret])) ret++;
 
-    if(ret == len) return ret;
+    if(ret == len)
+      return ret;
 
-    while(ret < len && is_delimiter(s[ret]))
-      ret++;
+    while(ret < len && is_delimiter(s[ret])) ret++;
 
-    if(ret == len) return ret;
+    if(ret == len)
+      return ret;
   }
   return ret;
 }
 
-int decode_ls_lR() {
+int
+decode_ls_lR() {
   char buffer[MAXIMUM_PATH_LENGTH];
   ssize_t pos, len, i;
   size_t offset = dirp.len;
@@ -91,16 +75,15 @@ int decode_ls_lR() {
 
     if(len == 0 && buffer[0] != '\n') {
       buffer_close(buffer_0);
-      //buffer_puts(buffer_2, "len == 0!!!\n");
-      //buffer_flush(buffer_2);
+      // buffer_puts(buffer_2, "len == 0!!!\n");
+      // buffer_flush(buffer_2);
       break;
-
     }
 
-    if(buffer[len - 1 ] == ':')
+    if(buffer[len - 1] == ':')
       buffer[len - 1] = '/';
 
-    if(buffer[len - 1 ] == '/')
+    if(buffer[len - 1] == '/')
       is_dir = 1;
 
     if(is_dir) {
@@ -132,47 +115,49 @@ int decode_ls_lR() {
   return 0;
 }
 
-void usage(char* arg0) {
+void
+usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
-  buffer_puts(buffer_2, mystr_basename(arg0));
+  buffer_puts(buffer_2, str_basename(arg0));
   buffer_puts(buffer_2, " [Options]\n");
   buffer_puts(buffer_2, " -s num   Skip <num> Number of fields\n");
   buffer_flush(buffer_2);
   exit(1);
 }
-int main(int argc, char* argv[]) {
+
+int
+main(int argc, char* argv[]) {
   int argi;
 
   for(argi = 1; argi < argc; argi++) {
     char* arg = argv[argi];
     if(arg[0] == '-') {
       switch(arg[1]) {
-      case 's':
-        argi++;
-        if(argi < argc)
-          skip_fields = atoi(argv[argi]);
-        break;
-      case 'd':
-        argi++;
-        if(argi < argc) {
+        case 's':
+          argi++;
+          if(argi < argc)
+            skip_fields = atoi(argv[argi]);
+          break;
+        case 'd':
+          argi++;
+          if(argi < argc) {
 
-          delimiters = argv[argi];
-          delimiters_len = str_len(delimiters);
-        }
-        break;
-      case 'p':
-        argi++;
-        if(argi < argc) {
-          stralloc_copys(&dirp, argv[argi]);
-          if(dirp.len && dirp.s[dirp.len - 1] != '/')
-            stralloc_catb(&dirp, "/", 1);
-        }
-        break;
-      default:
-        usage(argv[0]);
-        break;
+            delimiters = argv[argi];
+            delimiters_len = str_len(delimiters);
+          }
+          break;
+        case 'p':
+          argi++;
+          if(argi < argc) {
+            stralloc_copys(&dirp, argv[argi]);
+            if(dirp.len && dirp.s[dirp.len - 1] != '/')
+              stralloc_catb(&dirp, "/", 1);
+          }
+          break;
+        default: usage(argv[0]); break;
       }
-    } else break;
+    } else
+      break;
   }
   if(argi < argc) {
     buffer_puts(buffer_2, "Opening file ");
@@ -186,4 +171,3 @@ int main(int argc, char* argv[]) {
   decode_ls_lR();
   return 0;
 }
-
