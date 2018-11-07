@@ -12,10 +12,10 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "PROCESS_STATUS_ERROR\nprocess_create",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 35,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -33,22 +33,9 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 50932,
+				"buffer_size": 51047,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "{\n    // All these settings have been taken from the clang-format manual, \n    // and can be customised form within Sublime Text settings files.\n    // Please note, the defaults set below are completely random values.\n    // Take a look at http://clang.llvm.org/docs/ClangFormatStyleOptions.html\n    // For examples.\n\n    // The style used for all options not specifically set in the configuration.\n    // Possible \"values\":\n    //     LLVM \n    //     Google \n    //     Chromium \n    //     Mozilla \n    //     WebKit \n    \"BasedOnStyle\": \"LLVM\",\n    \n    // The extra indent or outdent of access modifiers, e.g. \"public\":.    \n//  \"AccessModifierOffset\": 2,\n\n    // If true, horizontally aligns arguments after an open bracket.\n    // This applies to round brackets (parentheses), angle brackets and square brackets.\n    // This will result in formattings like:\n    // Possible values:\n\n    // BAS_Align (in configuration: Align) Align parameters on the open bracket,\n    //  e.g.:\n    // someLongFunction(argument1,\n    //                  argument2);\n    //                  \n    // BAS_DontAlign (in configuration: DontAlign) Don’t align, instead use \n    // ContinuationIndentWidth, e.g.:\n    // someLongFunction(argument1,\n    //     argument2);\n    //     \n    // BAS_AlwaysBreak (in configuration: AlwaysBreak) Always break after an \n    // open bracket, if the parameters don’t fit on a single line, e.g.:\n    // someLongFunction(\n    //     argument1, argument2);\n//  \"AlignAfterOpenBracket\": true,\n\n    // If true, aligns consecutive assignments.\n    // This will align the assignment operators of consecutive lines.\n    // This will result in formattings like:\n    //     int aaaa = 12;\n    //     int b    = 23;\n    //     int ccc  = 23;\n//  \"AlignConsecutiveAssignments\": true,\n\n    // If true, aligns consecutive declarations.\n    // This will align the declaration names of consecutive lines. This will result in formattings like\n    // int         aaaa = 12;\n    // float       b = 23;\n    // std::string ccc = 23;\n// \"AlignConsecutiveDeclarations\": true,\n\n    // If true, aligns escaped newlines as far left as possible. Otherwise puts\n    // them into the right-most column.\n//  \"AlignEscapedNewlinesLeft\": true,\n\n    // If true, horizontally align operands of binary and ternary expressions.\n// \"AlignOperands\": true,   \n\n    // If true, aligns trailing comments.\n//  \"AlignTrailingComments\": true,\n\n    // Allow putting all parameters of a function declaration onto the next line\n    // even if BinPackParameters is false.\n//  \"AllowAllParametersOfDeclarationOnNextLine\": true,\n\n    // Allows contracting simple braced statements to a single line.\n    // E.g., this allows if (a) { return; } to be put on a single line.\n//  \"AllowShortBlocksOnASingleLine\": true,\n\n    // If true, short case labels will be contracted to a single line.\n//  \"AllowShortCaseLabelsOnASingleLine\": true,\n\n    // Dependent on the value, int f() { return 0; } can be put on a single\n    // line.\n    // Possible values:\n    //     SFS_None   (in \"configuration\": None) Never merge functions into a\n    //     single line.    \n    //     SFS_Empty (in configuration: Empty) Only merge empty functions.\n    //     SFS_Inline (in \"configuration\": Inline) Only merge functions defined\n    //     inside a class.\n    //     SFS_All    (in \"configuration\": All) Merge all functions fitting on a\n    //     single line.\n//  \"AllowShortFunctionsOnASingleLine\": \"None\",\n\n    // If true, if (a) return; can be put on a single line.\n//  \"AllowShortIfStatementsOnASingleLine\": false,\n\n    // If true, while (true) continue; can be put on a single line.\n//  \"AllowShortLoopsOnASingleLine\": true,\n\n    // The function definition return type breaking style to use.\n    // Possible values:\n    //     DRTBS_None     (in configuration: None) Break after return type automatically.\n    //     PenaltyReturnTypeOnItsOwnLine is taken into account.\n    //     DRTBS_All      (in configuration: All) Always break after the return type.\n    //     DRTBS_TopLevel (in configuration: TopLevel) Always break after the return types\n    //     of top level functions.\n//  \"AlwaysBreakAfterDefinitionReturnType\": \"None\",\n//  \"AlwaysBreakAfterReturnType\": \"None\",\n\n    // If true, always break before multiline string literals.\n    // This flag is mean to make cases where there are multiple multiline \n    // strings in a file look more consistent. Thus, it will only take effect \n    // if wrapping the string at that point leads to it being indented \n    // ContinuationIndentWidth spaces from the start of the line.\n//  \"AlwaysBreakBeforeMultilineStrings\": true,\n\n    // If true, always break after the template<...> of a template declaration.\n//  \"AlwaysBreakTemplateDeclarations\": true,\n\n    // If false, a function call’s arguments will either be all on the same line\n    // or will have one line each.\n//  \"BinPackArguments\": true,\n\n    // If false, a function call’s or function definition’s parameters will\n    // either all be on the same line or will have one line each.\n//  \"BinPackParameters\": true,\n\n    // Control of individual brace wrapping cases.\n    // If BreakBeforeBraces is set to custom, use this to specify how each \n    // individual brace case should be handled. Otherwise, this is ignored.\n    // Nested configuration flags:    \n    // bool AfterClass Wrap class definitions.\n    // bool AfterControlStatement Wrap control statements (if/for/while/switch/..).\n    // bool AfterEnum Wrap enum definitions.\n    // bool AfterFunction Wrap function definitions.\n    // bool AfterNamespace Wrap namespace definitions.\n    // bool AfterObjCDeclaration Wrap ObjC definitions (@autoreleasepool, interfaces, ..).\n    // bool AfterStruct Wrap struct definitions.\n    // bool AfterUnion Wrap union definitions.\n    // bool BeforeCatch Wrap before catch.\n    // bool BeforeElse Wrap before else.\n    // bool IndentBraces Indent the wrapped braces themselves.\n    // bool SplitEmptyFunction If false, empty function body can be put on a single line.\n    // bool SplitEmptyRecord If false, empty record (e.g. class, struct or union) body can be put on a single line.\n    // bool SplitEmptyNamespace If false, empty namespace body can be put on a single line.\n    \"BraceWrapping\":{\n//        \"AfterClass\":             false,\n//        \"AfterControlStatement\":  false,\n//        \"AfterEnum\":              false,\n//        \"AfterFunction\":          false,\n//        \"AfterNamespace\":         false,\n//        \"AfterObjCDeclaration\":   false,\n//        \"AfterStruct\":            false,\n//        \"AfterUnion\":             false,\n//        \"BeforeCatch\":            false,\n//        \"BeforeElse\":             false,\n//        \"IndentBraces\":           false,\n//        \"SplitEmptyFunction:\"     true,\n//        \"SplitEmptyRecord\":       true,\n//        \"SplitEmptyNamespace\":    true\n    },\n\n    // Break after each annotation on a field in Java files.\n// \"BreakAfterJavaFieldAnnotations\": true,\n\n    // The way to wrap binary operators.\n    // Possible values:\n    // BOS_None (in configuration: None) Break after operators.\n    // BOS_NonAssignment (in configuration: NonAssignment) Break before operators that aren’t assignments.\n    // BOS_All (in configuration: All) Break before operators.\n//  \"BreakBeforeBinaryOperators\": \"None\",\n\n    // The brace breaking style to use.\n    // Possible \"values\":\n    // BS_Attach (in \"configuration\": Attach) Always attach braces to\n    // surrounding context.\n    // BS_Linux (in \"configuration\": Linux) Like Attach, but break before braces\n    // on function, namespace and class definitions.\n    // BS_Mozilla (in configuration: Mozilla) Like Attach, but break before \n    // braces on enum, function, and record definitions.\n    // BS_Stroustrup (in \"configuration\": Stroustrup) Like Attach, but break\n    // before function definitions.\n    // BS_Allman (in \"configuration\": Allman) Always break before braces. \n    // BS_GNU (in \"configuration\": GNU) Always break before braces and add an extra\n    // level of indentation to braces of control statements, not to those of\n    // class, function or other definitions.\n    // BS_WebKit (in configuration: WebKit) Like Attach, but break before functions.\n    // BS_Custom (in configuration: Custom) Configure each individual brace in \n    // BraceWrapping.\n//  \"BreakBeforeBraces\": \"Attach\",\n\n    // If true, ternary operators will be placed after line breaks.\n//  \"BreakBeforeTernaryOperators\": true,\n    \n    // Always break constructor initializers before commas and align the commas\n    // with the colon.\n//  \"BreakConstructorInitializersBeforeComma\": true,\n\n    // The column limit. A column limit of 0 means that there is no column\n    // limit. In this case, clang-format will respect the input’s line breaking\n    // decisions within statements unless they contradict other rules.\n//  \"ColumnLimit\": 80,\n\n    // A regular expression that describes comments with special meaning, which\n    // should not be split into lines or otherwise changed.\n    // \"CommentPragmas\": \"\",\n\n    // If the constructor initializers don’t fit on a line, put each initializer\n    // on its own line.\n//  \"ConstructorInitializerAllOnOneLineOrOnePerLine\": true,\n\n    // The number of characters to use for indentation of constructor\n    // initializer lists.\n//  \"ConstructorInitializerIndentWidth\": 2,\n\n    // Indent width for line continuations.\n//  \"ContinuationIndentWidth\": 2,\n\n    // If true, format braced lists as best suited for C++11 braced lists.\n    // Important \"differences\": - No spaces inside the braced list. - No line\n    // break before the closing brace. - Indentation with the continuation\n    // indent, not with the block indent. Fundamentally, C++11 braced lists are\n    // formatted exactly like function calls would be formatted in their place.\n    // If the braced list follows a name (e.g. a type or variable name), clang-\n    // format formats as if the {} were the parentheses of a function call with\n    // that name. If there is no name, a zero-length name is assumed.\n//  \"Cpp11BracedListStyle\": true,\n\n    // If true, analyze the formatted file for the most common alignment of \n    // & and *. PointerAlignment is then used only as fallback.\n//  \"DerivePointerAlignment\": true,\n\n    // Disables formatting completely.\n//  \"DisableFormat\": false,\n\n    // If true, clang-format detects whether function calls and definitions are\n    // formatted with one parameter per line. Each call can be bin-packed, one-\n    // per-line or inconclusive. If it is inconclusive, e.g. completely on one\n    // line, but a decision needs to be made, clang-format analyzes whether\n    // there are other bin-packed cases in the input file and act accordingly.\n    // \"NOTE\": This is an experimental flag, that might go away or be renamed. Do\n    // not use this in config files, etc. Use at your own risk.\n//  \"ExperimentalAutoDetectBinPacking\": true,\n\n    // A vector of macros that should be interpreted as foreach loops instead of\n    // as function calls. These are expected to be macros of the \"form\":\n    // FOREACH(<variable-declaration>, ...)\n    // <loop-body>\n    // In the .clang-format configuration file, this can be configured like:\n    // ForEachMacros: ['RANGES_FOR', 'FOREACH']\n    // For example: BOOST_FOREACH.\n// \"ForEachMacros\": \"['RANGES_FOR', 'FOREACH']\" \n    \n    // Regular expressions denoting the different #include categories used for \n    // ordering #includes.\n    // These regular expressions are matched against the filename of an include\n    // (including the <> or “”) in order. The value belonging to the first \n    // matching regular expression is assigned and #includes are sorted first \n    // according to increasing category number and then alphabetically within \n    // each category.\n    // If none of the regular expressions match, UINT_MAX is assigned as \n    // category. The main header for a source file automatically gets \n    // category 0, so that it is kept at the beginning of the \n    // #includes (http://llvm.org/docs/CodingStandards.html#include-style).\n    // To configure this in the .clang-format file, use:\n    // IncludeCategories:\n    //   - Regex:           '^\"(llvm|llvm-c|clang|clang-c)/'\n    //     Priority:        2\n    //   - Regex:           '^(<|\"(gtest|isl|json)/)'\n    //     Priority:        3\n    //   - Regex:           '.\\*'\n    //     Priority:        1\n// \"IncludeCategories\": \"UINT_MAX\"\n\n    // Indent case labels one level from the switch statement. When false, use\n    // the same indentation level as for the switch statement. Switch statement\n    // body is always indented one level more than case labels.\n//  \"IndentCaseLabels\": true,\n\n    // If true, indent when breaking function declarations which are not also\n    // definitions after the type.\n//  \"IndentFunctionDeclarationAfterType\": true,\n\n    // The number of columns to use for indentation.\n//  \"IndentWidth\": 2,\n\n    // Indent if a function definition or declaration is wrapped after the type.\n//  \"IndentWrappedFunctionNames\": true,\n\n    // If true, empty lines at the start of blocks are kept.\n// \"KeepEmptyLinesAtTheStartOfBlocks\": true,\n\n    // Language, this format style is targeted at. Possible \"values\": LK_None\n    // (in \"configuration\": None) Do not use. LK_Cpp (in \"configuration\": Cpp)\n    // Should be used for C, C++, ObjectiveC, ObjectiveC++. LK_JavaScript (in\n    // \"configuration\": JavaScript) Should be used for JavaScript. LK_Proto (in\n    // \"configuration\": Proto) Should be used for Protocol Buffers\n    // (\"https\"://developers.google.com/protocol-buffers/). \n//  \"Language\": \"Cpp\",\n\n    // A regular expression matching macros that start a block.\n//  MacroBlockBegin: \"*_MACRO_START\"\n\n    // A regular expression matching macros that end a block.\n//  MacroBlockEnd: \"*_MACRO_END\",\n\n    // The maximum number of consecutive empty lines to keep.\n//  \"MaxEmptyLinesToKeep\": 2,\n\n    // The indentation used for namespaces.\n    // Possible \"values\":\n    // NI_None (in \"configuration\": None) Don’t indent in namespaces.\n    // NI_Inner (in \"configuration\": Inner) Indent only in inner namespaces\n    // (nested in other namespaces).    \n    // NI_All (in \"configuration\": All) Indent in all namespaces.\n//  \"NamespaceIndentation\": \"Inner\",\n\n    // The number of characters to use for indentation of ObjC blocks.\n//  \"ObjCBlockIndentWidth\": 4,\n\n    // Add a space after @property in Objective-C, i.e. use @property (readonly)\n    // instead of @property(readonly).    \n//  \"ObjCSpaceAfterProperty\": false,\n\n    // Add a space in front of an Objective-C protocol list, i.e. use Foo\n    // <Protocol> instead of Foo<Protocol>.    \n//  \"ObjCSpaceBeforeProtocolList\": false,\n\n    // The penalty for breaking a function call after “call(”.\n//  \"PenaltyBreakBeforeFirstCallParameter\": 0,\n\n    // The penalty for each line break introduced inside a comment.\n//  \"PenaltyBreakComment\": 0,\n\n    // The penalty for breaking before the first <<.\n//  \"PenaltyBreakFirstLessLess\": 0,\n\n    // The penalty for each line break introduced inside a string literal.\n//  \"PenaltyBreakString\": 0,\n\n    // The penalty for each character outside of the column limit.\n//  \"PenaltyExcessCharacter\": 0,\n\n    // Penalty for putting the return type of a function onto its own line.\n//  \"PenaltyReturnTypeOnItsOwnLine\": 0,\n\n    // Pointer and reference alignment style.\n    // Possible values:\n    //     PAS_Left   (in configuration: Left) Align pointer to the left.\n    //     PAS_Right  (in configuration: Right) Align pointer to the right.\n    //     PAS_Middle (in configuration: Middle) Align pointer in the middle.\n//  \"PointerAlignment\": \"Left\",\n\n    // If true, a space may be inserted after C style casts.\n// \"SpaceAfterCStyleCast\": true,\n\n    // If false, spaces will be removed before assignment operators.\n//  \"SpaceBeforeAssignmentOperators\": true,\n\n    // Defines in which cases to put a space before opening parentheses.\n    // Possible \"values\":\n    // SBPO_Never (in \"configuration\": Never) Never put a space before opening\n    // parentheses.\n    // SBPO_ControlStatements (in \"configuration\": ControlStatements) Put a\n    // space before opening parentheses only after control statement keywords\n    // (for/if/while...).\n    // SBPO_Always (in \"configuration\": Always) Always put a space before\n    // opening parentheses, except when it’s prohibited by the syntax rules (in\n    // function- like macro definitions) or when determined by other style rules\n    // (after unary operators, opening parentheses, etc.)    \n//  \"SpaceBeforeParens\": \"ControlStatements\",\n\n    // If true, spaces may be inserted into ‘()’.\n//  \"SpaceInEmptyParentheses\": true,\n\n    // The number of spaces before trailing line comments (//-comments). This\n    // does not affect trailing block comments (/**/-comments) as those commonly\n    // have different usage patterns and a number of special cases.\n//  \"SpacesBeforeTrailingComments\": 2,\n\n    // If true, spaces will be inserted after ‘<’ and before ‘>’ in template\n    // argument lists\n//  \"SpacesInAngles\": true,\n\n    // If true, spaces may be inserted into C style casts.\n//  \"SpacesInCStyleCastParentheses\": true,\n\n    // If true, spaces are inserted inside container literals (e.g. ObjC and\n    // Javascript array and dict literals).    \n//  \"SpacesInContainerLiterals\": true,\n\n    // If true, spaces will be inserted after ‘(‘ and before ‘)’.\n//  \"SpacesInParentheses\": true,\n\n    // If true, spaces will be inserted after ‘[‘ and before ‘]’.\n//  \"SpacesInSquareBrackets\": true,\n\n    // Format compatible with this standard, e.g. use A<A<int> > instead of\n    // A<A<int>> for LS_Cpp03. Possible \"values\":\n    // LS_Cpp03 (in \"configuration\": Cpp03) Use C++03-compatible syntax.\n    // LS_Cpp11 (in \"configuration\": Cpp11) Use features of C++11 (e.g.\n    // A<A<int>> instead of A<A<int> >).    \n    // LS_Auto (in \"configuration\": Auto) Automatic detection based on the input.\n//  \"Standard\": \"Cpp03\",\n\n    // The number of columns used for tab stops.\n//  \"TabWidth\": 2,\n\n    // The way to use tab characters in the resulting file.\n    // Possible \"values\":\n    // UT_Never (in \"configuration\": Never) Never use tab. UT_ForIndentation (in\n    // \"configuration\": ForIndentation) Use tabs only for indentation. UT_Always\n    // (in \"configuration\": Always) Use tabs whenever we need to fill whitespace\n    // that spans at least from one tab stop to the next one.\n//  \"UseTab\": \"Never\"\n}\n",
-			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format_custom.sublime-settings",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 18463,
-				"line_ending": "Windows",
-				"read_only": true,
-				"scratch": true
 			}
 		},
 		{
@@ -58,19 +45,6 @@
 				"buffer_size": 614,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": "[\n    // TODO: figure out how to match multiple scopes.\n    { \"keys\": [\"ctrl+option+a\"], \"command\": \"clang_format\",\n        \"context\":  \n        [\n            {\"key\": \"selector\", \"operator\": \"equal\", \"operand\": \"source.c++\"}\n        ],\n    },\n\n    { \"keys\": [\"ctrl+option+a\"], \"command\": \"clang_format\",\n        \"context\":  \n        [\n            {\"key\": \"selector\", \"operator\": \"equal\", \"operand\": \"source.c\"}\n        ],\n    },\n    \n    { \"keys\": [\"ctrl+option+a\"], \"command\": \"clang_format\",\n        \"context\":\n        [\n            {\"key\": \"selector\", \"operator\": \"equal\", \"operand\": \"source.js\"}\n        ]\n    }\n]",
-			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/Default (Windows).sublime-keymap",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 617,
-				"line_ending": "Windows",
-				"read_only": true,
-				"scratch": true
 			}
 		},
 		{
@@ -85,16 +59,12 @@
 			}
 		},
 		{
-			"contents": "{\n    // This is the path to the binary for clang-format. If it is in your path,\n    // it should just work out-of-the-box. Otherwise, you can set the full path,\n    // which will look like this: \n    //    \"binary\": \"/path/to/clang/bin/clang-format\"\n    // Note that you can set this from within ST directly through the Command\n    // Palette. \n\n    \"binary\": \"clang-format\",\n\n    // We use the Google style by default. This can be selected from ST using\n    // the Command Palette. Choosing 'Custom' means that the settings will\n    // be loaded from the Sublime Text settings file (which is accessed\n    // from within ST through preferences. Choosing 'File' will look in the \n    // local directories from a clang-format settings file. See the clang-format\n    // documentation to see how this works. \n\n    \"style\": \"Google\",\n\n    // Setting this to true will run the formatter on every save. If you want to\n    // only enable this for a given project, try checking out the package\n    // \"Project-Specific\".\n    \n    \"format_on_save\": false,\n\n    // If format_on_save is set to true, ClangFormat checks if the current file\n    // has its syntax set to a language in the list below. If it is in the list,\n    // then the file will be formatted by ClangFormat.\n\n    \"languages\": [\"C\", \"C++\", \"C++11\", \"JavaScript\", \"Objective-C\", \"Objective-C++\"]\n}\n",
-			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format.sublime-settings",
-			"file_size": -1,
-			"file_write_time": -1,
+			"file": "lib/process/process_create.c",
 			"settings":
 			{
-				"buffer_size": 1352,
-				"line_ending": "Windows",
-				"read_only": true,
-				"scratch": true
+				"buffer_size": 2131,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -268,11 +238,13 @@
 	[
 		"/C/Users/roman/Desktop/dirlist",
 		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/mmap",
-		"/C/Users/roman/Desktop/dirlist/lib/path"
+		"/C/Users/roman/Desktop/dirlist/lib/process"
 	],
 	"file_history":
 	[
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format.sublime-settings",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/Default (Windows).sublime-keymap",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format_custom.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/lib/pe.h",
 		"/C/Program Files/IDM Computer Solutions/UEStudio/configs/Lcc win32 Compiler/Win32 Console Application",
 		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
@@ -397,10 +369,7 @@
 		"/C/Users/roman/Documents/dirlist/Makefile",
 		"/C/Users/roman/Documents/dirlist/lib/stralloc.h",
 		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_cats.c",
-		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_append_sa.c",
-		"/C/Users/roman/Documents/dirlist/mediathek-parser.cpp",
-		"/C/Users/roman/Documents/dirlist/lib/array/array_cat0.c",
-		"/C/Users/roman/Documents/dirlist/lib/array/array_cats.c"
+		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_append_sa.c"
 	],
 	"find":
 	{
@@ -597,7 +566,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 35,
 						"regions":
 						{
 						},
@@ -606,13 +575,23 @@
 						],
 						"settings":
 						{
-							"current_file": null,
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\lib\\process\\process_create.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									161,
+									181
+								],
+								[
+									243,
+									257
+								]
 							],
 							"symlist":
 							[
+								"PROCESS_STATUS_ERROR",
+								"process_create"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -620,13 +599,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 8,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 5,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -654,7 +633,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -663,7 +642,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 50932,
+						"buffer_size": 51047,
 						"regions":
 						{
 						},
@@ -689,34 +668,6 @@
 				},
 				{
 					"buffer": 3,
-					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format_custom.sublime-settings",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 18463,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								18463,
-								18463
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
 					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
 					"semi_transient": false,
 					"settings":
@@ -742,39 +693,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/Default (Windows).sublime-keymap",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 617,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								400,
-								406
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
+					"buffer": 4,
 					"semi_transient": false,
 					"settings":
 					{
@@ -800,39 +723,41 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format.sublime-settings",
+					"buffer": 5,
+					"file": "lib/process/process_create.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1352,
+						"buffer_size": 2131,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								1352
+								2038,
+								2038
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 474.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 6,
 					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/clang_format.sublime-settings",
 					"semi_transient": false,
 					"settings":
@@ -862,7 +787,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 7,
 					"file": "lib/path/path_relative.c",
 					"semi_transient": false,
 					"settings":
@@ -888,11 +813,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 8,
 					"file": "lib/stralloc/mmap_filename.c",
 					"semi_transient": false,
 					"settings":
@@ -918,7 +843,7 @@
 						"translation.y": 82.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 6,
 					"type": "text"
 				}
 			]

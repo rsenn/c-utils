@@ -1374,7 +1374,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
         link->recipe = &link_command;
 
         debug_s("program", link->name);
-        debug_sa("program libs", &libs);
+        debug_sa("program libs", &libs.sa);
 
         /*        deps_indirect(&indir, &libs);
 
@@ -1909,7 +1909,7 @@ set_compiler_type(const char* compiler) {
       push_var("CFLAGS", "-a1 -o+space ");
       push_var("LDFLAGS", "-Nc");
     } else if(build_type == BUILD_TYPE_DEBUG) {
-      push_var("CFLAGS", "-o-");
+      //push_var("CFLAGS", "-o-");
     } else {
       push_var("CFLAGS", "-o");
     }
@@ -1919,6 +1919,7 @@ set_compiler_type(const char* compiler) {
     return 0;
   }
 
+  push_lib("EXTRA_LIBS", "advapi32");
   push_lib("EXTRA_LIBS", "wsock32");
   with_lib("zlib");
   with_lib("bz2");
