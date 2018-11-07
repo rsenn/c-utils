@@ -51,7 +51,7 @@ process_create(const char* filename, const char* argv) {
   siStartInfo.cb = sizeof(STARTUPINFO);
   siStartInfo.hStdError = _get_osfhandle(pipes[2][1]);
   siStartInfo.hStdOutput = _get_osfhandle(pipes[1][1]);
-  siStartInfo.hStdInput = _get_osfhandle(pipes[2][0]);
+  siStartInfo.hStdInput = _get_osfhandle(pipes[0][0]);
   siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
   /* Create the child process */

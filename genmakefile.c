@@ -1636,11 +1636,6 @@ set_compiler_type(const char* compiler) {
   push_var("CC", "cc");
   push_var("CXX", "c++");
 
-  push_lib("EXTRA_LIBS", "advapi32");
-  push_lib("EXTRA_LIBS", "wsock32");
-  //push_lib("EXTRA_LIBS", "iphlpapi");
-  // push_lib("EXTRA_LIBS", "psapi");
-  // push_lib("EXTRA_LIBS", "shlwapi");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
   stralloc_copys(&lib_command, "$(LIB) /out:$@ $^");
@@ -1924,6 +1919,7 @@ set_compiler_type(const char* compiler) {
     return 0;
   }
 
+  push_lib("EXTRA_LIBS", "wsock32");
   with_lib("zlib");
   with_lib("bz2");
   with_lib("lzma");
@@ -2034,20 +2030,25 @@ main(int argc, char* argv[]) {
   }
 
   path_getcwd(&thisdir.sa);
+  stralloc_replace(&outdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+  path_absolute_sa(&outdir.sa);
 
   stralloc_nul(&outdir.sa);
   stralloc_nul(&thisdir.sa);
 
   if(strlist_contains(&outdir, "build")) {
-    path_relative(outdir.sa.s, thisdir.sa.s, &builddir.sa);
+    stralloc_copy(&builddir.sa, &outdir.sa);
+    //path_relative(outdir.sa.s, thisdir.sa.s, &builddir.sa);
   } else if(!strlist_contains(&thisdir, "build")) {
+    stralloc_copy(&builddir.sa, &thisdir.sa);
     strlist_push(&builddir, dir ? dir : "build");
     strlist_push(&builddir, compiler);
+    strlist_push(&builddir, build_types[build_type]);
   }
 
-  strlist_push(&builddir, build_types[build_type]);
-
   stralloc_replace(&builddir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+  stralloc_nul(&builddir.sa);
+  
   path_relative(builddir.sa.s, outdir.sa.s, &workdir.sa);
 
   stralloc_nul(&outdir.sa);
