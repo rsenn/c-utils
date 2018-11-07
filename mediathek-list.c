@@ -38,6 +38,7 @@ void* __declspec(dllimport) popen(const char*, const char*);
 # define popen _popen
 #else
 # include <stdio.h>
+#undef _popen
 #endif
 
 extern char strlist_dumpx[5];

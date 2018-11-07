@@ -20,6 +20,10 @@
 #define O_NONBLOCK 0
 #endif
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#define pipe _pipe
+#endif
+
 int
 pipe2(int fd[2], int flags) {
   /* Mingw _pipe() corrupts fd on failure; also, if we succeed at
@@ -46,7 +50,7 @@ pipe2(int fd[2], int flags) {
 #if defined(_WIN32) && !(defined(__CYGWIN__) || defined(__MSYS__))
   /* Native Windows API.  */
 
-  if(_pipe(fd, 4096, flags & ~O_NONBLOCK) < 0) {
+  if(pipe(fd, 4096, flags & ~O_NONBLOCK) < 0) {
     fd[0] = tmp[0];
     fd[1] = tmp[1];
     return -1;

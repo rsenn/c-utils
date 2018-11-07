@@ -204,6 +204,8 @@ main(int argc, char* argv[]) {
       {"canonicalize", 0, NULL, 'f'},
       {0}
   };
+  
+  errmsg_iam(argv[0]);
 
 #if WINDOWS_NATIVE
   format = WIN;

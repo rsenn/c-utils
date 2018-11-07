@@ -467,6 +467,8 @@ main(int argc, char* argv[]) {
     {"list-all", 0, NULL, 'l'},
     {0},
   };
+  
+  errmsg_iam(argv[0]);
 
   for(;;) {
     c = getopt_long(argc, argv, "hmilpa", opts, &index);
