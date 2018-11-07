@@ -1,15 +1,7 @@
 #include "../uint32.h"
 
-uint32
-uint32_entropy[8] = {
-    0xe25e40f8,
-    0x2839fba7,
-    0x4e75896d,
-    0x69291d9b,
-    0xdfaf0ba6,
-    0x9a6e9617,
-    0x432b04e5,
-    0x434846dc,
+uint32 uint32_entropy[8] = {
+    0xe25e40f8, 0x2839fba7, 0x4e75896d, 0x69291d9b, 0xdfaf0ba6, 0x9a6e9617, 0x432b04e5, 0x434846dc,
 };
 
 /* prng */

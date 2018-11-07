@@ -86,7 +86,7 @@ unit_test_tmpfile(buffer* b, char* tmpl) {
     exit(EXIT_FAILURE);
   }
   buffer_free(b);
-  buffer_init(b, write, fd, malloc(1024), 1024);
+  buffer_init(b, (buffer_op_sys*)&write, fd, malloc(1024), 1024);
   return b;
 }
 

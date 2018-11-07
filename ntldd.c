@@ -28,7 +28,7 @@ MSDN Magazine articles
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/unix.h"
-#include "lib/path.h"
+#include "lib/path_internal.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/pe.h"
@@ -100,7 +100,8 @@ find_section_by_raw_data(pe_loaded_image* img, uint32 address) {
 
 /*****************************************************************************
  * Function resize_array
- *****************************************************************************/ void
+ *****************************************************************************/
+void
 resize_array(void** data, uint64* data_size, size_t sizeof_data) {
   uint64 new_size = (*data_size) > 0 ? (*data_size) * 2 : 64;
   void* new_data;
@@ -170,7 +171,7 @@ process_dep(build_tree_config* cfg,
   struct dep_tree_element* child = NULL;
   int found;
   int64 i;
-  char* dllname = (char*)map_pointer(soffs, soffs_len, name, NULL);
+  char* dllname = (char*)pe_rva2ptr(self->mapped_address, uint32_get(&name));
   if(dllname == NULL)
     return NULL;
   if(str_len(dllname) > 10 && str_case_diffn("api-ms-win", dllname, 10) == 0) {
@@ -238,14 +239,14 @@ thunk_data_u1_function(void* thunk_array, uint32 index, build_tree_config* cfg) 
   else
     return ((uint64*)thunk_array)[index];
 }
-
+/*
 static void*
 opt_header_get_dd_entry(void* opt_header, uint32 entry_type, build_tree_config* cfg) {
   if(cfg->machine_type == PE_FILE_MACHINE_I386)
     return &(((pe32_opt_header*)opt_header)->data_directory[entry_type]);
   else
     return &(((pe64_opt_header*)opt_header)->data_directory[entry_type]);
-}
+}*/
 
 static void
 build_dep_tree32or64(pe_loaded_image* img,
@@ -259,15 +260,14 @@ build_dep_tree32or64(pe_loaded_image* img,
   pe_export_directory* ied;
   pe_delayload_descriptor* idd;
   void *ith, *oith;
-  void* opt_header = &img->file_header->optional_header;
+  void* opt_header = pe_header_opt(img->base);
   uint32 i, j;
 
-  idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_EXPORT, cfg);
+  idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_EXPORT];
   if(idata->size > 0 && idata->virtual_address != 0) {
-    int export_section = -2;
-    ied = (pe_export_directory*)map_pointer(soffs, soffs_len, idata->virtual_address, &export_section);
+    ied = (pe_export_directory*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(ied && ied->name != 0) {
-      char* export_module = map_pointer(soffs, soffs_len, ied->name, NULL);
+      char* export_module = pe_rva2ptr(img->base, uint32_get(&ied->name));
       if(export_module != NULL) {
         if(self->export_module == NULL)
           self->export_module = str_dup(export_module);
@@ -277,16 +277,16 @@ build_dep_tree32or64(pe_loaded_image* img,
       uint32 *addrs, *names;
       uint16* ords;
       int section = -1;
-      self->exports_len = ied->number_of_functions;
+      self->exports_len = uint32_get(&ied->number_of_functions);
       self->exports = (struct export_table_item*)malloc(sizeof(struct export_table_item) * self->exports_len);
       byte_zero(self->exports, sizeof(struct export_table_item) * self->exports_len);
-      addrs = (uint32*)map_pointer(soffs, soffs_len, ied->address_of_functions, NULL);
-      ords = (uint16*)map_pointer(soffs, soffs_len, ied->address_of_name_ordinals, NULL);
-      names = (uint32*)map_pointer(soffs, soffs_len, ied->address_of_names, NULL);
+      addrs = (uint32*)pe_rva2ptr(img->base, uint32_get(&ied->address_of_functions));
+      ords = (uint16*)pe_rva2ptr(img->base, uint32_get(&ied->address_of_name_ordinals));
+      names = (uint32*)pe_rva2ptr(img->base,  uint32_get(&ied->address_of_names));
       for(i = 0; i < ied->number_of_names; i++) {
         self->exports[ords[i]].ordinal = ords[i] + ied->base;
         if(names[i] != 0) {
-          char* s_name = (char*)map_pointer(soffs, soffs_len, names[i], NULL);
+          char* s_name = (char*)pe_rva2ptr(img->base, uint32_get(&names[i]));
           if(s_name != NULL)
             self->exports[ords[i]].name = str_dup(s_name);
         }
@@ -296,7 +296,7 @@ build_dep_tree32or64(pe_loaded_image* img,
           int section_index = find_section_by_raw_data(img, addrs[i]);
           if((idata->virtual_address <= addrs[i]) && (idata->virtual_address + idata->size > addrs[i])) {
             self->exports[i].address = NULL;
-            self->exports[i].forward_str = str_dup((char*)map_pointer(soffs, soffs_len, addrs[i], NULL));
+            self->exports[i].forward_str = str_dup((char*)pe_rva2ptr(img->base, uint32_get(&addrs[i])));
           } else
             self->exports[i].address = map_pointer(soffs, soffs_len, addrs[i], &section);
           self->exports[i].ordinal = i + ied->base;
@@ -309,7 +309,7 @@ build_dep_tree32or64(pe_loaded_image* img,
 
   idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_IMPORT, cfg);
   if(idata->size > 0 && idata->virtual_address != 0) {
-    iid = (pe_import_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
+    iid = (pe_import_descriptor*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
                  iid[i].first_thunk;
@@ -319,8 +319,8 @@ build_dep_tree32or64(pe_loaded_image* img,
         dll = process_dep(cfg, soffs, soffs_len, iid[i].name, root, self, 0);
         if(dll == NULL)
           continue;
-        ith = (void*)map_pointer(soffs, soffs_len, iid[i].first_thunk, NULL);
-        oith = (void*)map_pointer(soffs, soffs_len, iid[i].original_first_thunk, NULL);
+        ith = (void*)pe_rva2ptr(img->base, uint32_get(&iid[i].first_thunk));
+        oith = (void*)pe_rva2ptr(img->base, uint32_get(&iid[i].original_first_thunk));
         for(j = 0; (impaddress = thunk_data_u1_function(ith, j, cfg)) != 0; j++) {
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
@@ -334,7 +334,7 @@ build_dep_tree32or64(pe_loaded_image* img,
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
-            pe_import_by_name* byname = (pe_import_by_name*)map_pointer(soffs, soffs_len, imp->orig_address, NULL);
+            pe_import_by_name* byname = (pe_import_by_name*)pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
             if(byname != NULL)
               imp->name = str_dup((char*)byname->name);
           }
@@ -344,7 +344,7 @@ build_dep_tree32or64(pe_loaded_image* img,
 
   idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_DELAY_IMPORT, cfg);
   if(idata->size > 0 && idata->virtual_address != 0) {
-    idd = (pe_delayload_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
+    idd = (pe_delayload_descriptor*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
                  idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
@@ -356,8 +356,8 @@ build_dep_tree32or64(pe_loaded_image* img,
         if(dll == NULL)
           continue;
         if(idd[i].attributes.all_attributes & 0x00000001) {
-          ith = (void*)map_pointer(soffs, soffs_len, idd[i].import_address_table_rva, NULL);
-          oith = (void*)map_pointer(soffs, soffs_len, idd[i].import_name_table_rva, NULL);
+          ith = (void*)pe_rva2ptr(img->base, uint32_get(&idd[i].import_address_table_rva));
+          oith = (void*)pe_rva2ptr(img->base, uint32_get(&idd[i].import_name_table_rva));
         } else {
           ith = (void*)(uintptr_t)idd[i].import_address_table_rva;
           oith = (void*)(uintptr_t)idd[i].import_name_table_rva;
@@ -374,7 +374,7 @@ build_dep_tree32or64(pe_loaded_image* img,
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
-            pe_import_by_name* byname = (pe_import_by_name*)map_pointer(soffs, soffs_len, imp->orig_address, NULL);
+            pe_import_by_name* byname = (pe_import_by_name*)pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
             if(byname != NULL)
               imp->name = str_dup((char*)byname->name);
           }
@@ -384,7 +384,7 @@ build_dep_tree32or64(pe_loaded_image* img,
 
   idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_IMPORT, cfg);
   if(idata->size > 0 && idata->virtual_address != 0) {
-    iid = (pe_import_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
+    iid = (pe_import_descriptor*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(iid)
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
                  iid[i].first_thunk;
@@ -395,7 +395,7 @@ build_dep_tree32or64(pe_loaded_image* img,
 
   idata = opt_header_get_dd_entry(opt_header, PE_DIRECTORY_ENTRY_DELAY_IMPORT, cfg);
   if(idata->size > 0 && idata->virtual_address != 0) {
-    idd = (pe_delayload_descriptor*)map_pointer(soffs, soffs_len, idata->virtual_address, NULL);
+    idd = (pe_delayload_descriptor*)pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(idd)
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
                  idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
@@ -431,8 +431,8 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
 
   if(dhdr) {
     loaded_image->base = (char*)dhdr;
-    loaded_image->file_header = (pe64_nt_headers*)(loaded_image->base + dhdr->e_lfanew);
-    loaded_image->number_of_sections = loaded_image->file_header->coff_header.number_of_sections;
+    loaded_image->file_header = (pe64_nt_headers*)pe_header_nt(loaded_image->base);
+    loaded_image->number_of_sections = uint16_get(&loaded_image->file_header->coff_header.number_of_sections);
     loaded_image->module_name = str_dup(sa.s);
     loaded_image->sections = pe_header_sections(loaded_image->base, NULL);
     success = 1;
@@ -756,9 +756,9 @@ registry_query(const char* key, const char* value, stralloc* sa) {
     hkey = HKEY_LOCAL_MACHINE;
   }
 
-  stralloc_ready(sa, PATH_MAX + 1);
-  sa->len = sa->a;
-  ret = api_fn(hkey, strchr(key, '\\') + 1, value, RRF_RT_ANY, &type, sa->s, &len);
+  stralloc_ready(sa, PATH_MAX * 64 + 1);
+  len = sa->a;
+  ret = (*api_fn)(hkey, strchr(key, '\\') + 1, value, RRF_RT_ANY, &type, sa->s, &len);
   sa->len = len;
   if(ret == ERROR_SUCCESS) {
     if(type == REG_EXPAND_SZ)
@@ -835,7 +835,7 @@ main(int argc, char** argv) {
   strlist_init(&sp, '\0');
 
   path_getcwd(&cwd);
-  stralloc_append(&cwd, cwd.s);
+  stralloc_append(&cwd, PATHSEP_S);
 
   // byte_zero(&sp, sizeof(sp));
   // sp.path = calloc(1, sizeof(char*));

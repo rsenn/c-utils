@@ -110,7 +110,7 @@ TEST(test_strlist_cat) {
   buffer_putnlflush(buffer_1);
 
   // ASSERT_EQ(0, !str_equal(strlist_at(&sl1, 2), "1234"));
-  strlist_join(&sl1, &sa, "|");
+  strlist_join(&sl1, &sa, '|');
 
   buffer_putsa(buffer_1, &sa);
   buffer_putnlflush(buffer_1);
