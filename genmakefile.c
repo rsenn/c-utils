@@ -46,6 +46,7 @@ typedef struct {
 typedef struct {
   struct slink link;
   const char* name;
+  int has_main;
 } sourcefile;
 
 typedef struct {
@@ -566,6 +567,8 @@ new_source(const char* name) {
   if((ret = malloc(sizeof(sourcefile)))) {
     byte_zero(ret, sizeof(sourcefile));
     ret->name = str_dup(name);
+    ret->has_main = has_main(ret->name) == 1;
+
     return ret;
   }
   return 0;
@@ -1345,17 +1348,19 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
   const char* x;
   char** srcfile;
   strlist incs, libs, deps, indir;
-  stralloc obj, bin;
+  stralloc dir, obj, bin;
   strlist_init(&incs, ' ');
   strlist_init(&libs, ' ');
   strlist_init(&deps, ' ');
   strlist_init(&indir, ' ');
+  stralloc_init(&dir);
   stralloc_init(&obj);
   stralloc_init(&bin);
   all = get_rule("all");
 
   strarray_foreach(sources, srcfile) {
     target *compile, *link;
+    sourcedir* srcdir;
 
     strlist_zero(&incs);
     strlist_zero(&libs);
@@ -1363,6 +1368,10 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
     strlist_zero(&indir);
 
     if(has_main(*srcfile) == 1) {
+
+      path_dirname(*srcfile, &dir);
+
+      srcdir = get_sourcedir_sa(&dir);
 
       path_object(*srcfile, &obj);
 
@@ -1384,7 +1393,18 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
       if((link = get_rule_sa(&bin))) {
         int nremoved;
+        sourcefile* pfile;
+
         add_path_sa(&link->prereq, &obj);
+
+        slist_foreach(srcdir->sources, pfile) {
+          if(!pfile->has_main) {
+            stralloc_zero(&obj);
+            path_object(pfile->name, &obj);
+
+            add_path_sa(&link->prereq, &obj);
+          }
+        }
 
         //  get_rules_by_cmd(&lib_command, &link->prereq);
 
@@ -1443,6 +1463,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
   strlist_free(&indir);
   stralloc_free(&bin);
   stralloc_free(&obj);
+  stralloc_free(&dir);
 }
 
 void
