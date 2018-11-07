@@ -72,6 +72,7 @@ if(MSVC)
   else()
       set(WARNFLAGS "-W3")
    endif()
+   
 endif(MSVC)
 #if(WIN32 OR MSYS OR CYGWIN)
   add_definitions(-D_FILE_OFFSET_BITS=64)
@@ -524,6 +525,21 @@ endforeach()
 
 
 #
+
+
+   set(CompilerFlags
+        CMAKE_C_FLAGS
+        CMAKE_C_FLAGS_DEBUG
+        CMAKE_C_FLAGS_RELEASE
+        CMAKE_C_FLAGS_RELWITHDEBINFO
+        CMAKE_C_FLAGS_MINSIZEREL
+        )
+foreach(CompilerFlag ${CompilerFlags})
+  string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+  message("${CompilerFlag}: ${${CompilerFlag}}")
+endforeach()
+
+
 set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 unix var vartab xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
@@ -714,7 +730,7 @@ add_program(eagle-to-circuit array buffer byte cb cbmap fmt hmap mmap scan str s
 add_program(elf64list elf mmap uint16 uint32 uint64)
 add_program(elflist buffer elf mmap str)
 add_program(elfwrsec buffer elf mmap)
-add_program(genmakefile buffer hmap mmap path rdir scan slist str unix stralloc strarray strlist ${LIBSHLWAPI})
+add_program(genmakefile errmsg buffer hmap mmap path rdir scan slist str unix stralloc strarray strlist ${LIBSHLWAPI})
 add_program(hexedit array buffer io errmsg mmap open path scan stralloc uint64 unix)
 add_program(httptest buffer byte http io socket taia)
 add_program(impgen buffer byte mmap open pe uint16 uint32)

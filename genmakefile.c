@@ -1720,6 +1720,7 @@ set_compiler_type(const char* compiler) {
     set_var("CC", "cl /nologo");
     set_var("LIB", "lib");
     set_var("LINK", "link");
+    push_var("CFLAGS", "-MT");
     push_var("CPPFLAGS", "-Dinline=__inline");
 
     /*    push_var("LDFLAGS",
@@ -1756,6 +1757,9 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "/LIBPATH:\"%UniversalCRTSdkDir%lib\\%WindowsSDKLibVersion%ucrt\\$(MACHINE)\"");
     push_var("LDFLAGS", "/LIBPATH:\"%WindowsSdkDir%lib\\%WindowsSDKLibVersion%um\\$(MACHINE)\"");
     push_var("LDFLAGS", "/LIBPATH:\"%VCToolsInstallDir%lib\\$(MACHINE)\"");
+    
+    push_var("LDFLAGS", "/LIBPATH:\"%WindowsSdkDir%lib$(X64)\"");
+    push_var("LDFLAGS", "/LIBPATH:\"%VCINSTALLDIR%\\lib$(AMD64)\"");
 
     push_var("LDFLAGS", "/INCREMENTAL /MANIFEST");
 
@@ -1771,9 +1775,12 @@ set_compiler_type(const char* compiler) {
     } else if(mach.bits == _64) {
       push_var("LDFLAGS", "/MACHINE:X64");
       set_var("MACHINE", "x64");
+      set_var("X64", "\\x64");
+      set_var("AMD64", "\\amd64");
     } else if(mach.bits == _32) {
       push_var("LDFLAGS", "/MACHINE:X86");
       set_var("MACHINE", "x86");
+      set_var("X64", "");
     }
 
     set_command(&link_command, "$(LINK) /OUT:\"$@\" $(LDFLAGS) /PDB:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
@@ -1901,6 +1908,9 @@ set_compiler_type(const char* compiler) {
       push_var("LDFLAGS", "/v /c+");
     }
 
+    if(build_type == BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "/O-");
+
     push_var("LDFLAGS", "/T:CON32");
 
     push_lib("DEFAULT_LIBS", "clwin");
@@ -1977,6 +1987,8 @@ main(int argc, char* argv[]) {
                            {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
                            {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
                            {0}};
+
+  errmsg_iam(argv[0]);
 
   for(;;) {
     c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:a:", opts, &index);
