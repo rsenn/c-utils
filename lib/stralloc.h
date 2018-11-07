@@ -257,3 +257,4 @@ int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
 
 #endif
 
+int stralloc_contains(const stralloc* sa, const char* what);
