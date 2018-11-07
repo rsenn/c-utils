@@ -1,4 +1,12 @@
 #define _FILE_OFFSET_BITS 64
+#include "../windoze.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 #include "../open.h"
 #include <fcntl.h>
 

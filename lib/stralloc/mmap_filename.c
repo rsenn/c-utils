@@ -1,6 +1,4 @@
 #include "../buffer.h"
-#include "../mmap.h"
-#include "../open.h"
 #include "../scan.h"
 #include "../stralloc.h"
 #include "../windoze.h"
@@ -11,6 +9,7 @@
 #include <limits.h>
 #include <unistd.h>
 #endif
+#include <fcntl.h>
 
 int
 mmap_filename(void* map, stralloc* sa) {
@@ -29,7 +28,7 @@ mmap_filename(void* map, stralloc* sa) {
   return sa->len > 0;
 #else
   char buf[1024];
-  buffer b = BUFFER_INIT(read, open_read("/proc/self/maps"), buf, sizeof(buf));
+  buffer b = BUFFER_INIT(read, open("/proc/self/maps", O_RDONLY), buf, sizeof(buf));
   char line[73 + PATH_MAX + 1];
   ssize_t n;
   int ret = 0;

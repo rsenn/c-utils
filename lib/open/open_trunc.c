@@ -1,5 +1,4 @@
 #define _FILE_OFFSET_BITS 64
-
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE

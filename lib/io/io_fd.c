@@ -16,7 +16,9 @@
 #undef my_extern
 #include "../byte.h"
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
 #endif
 

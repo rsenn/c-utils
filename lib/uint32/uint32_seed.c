@@ -6,6 +6,7 @@
 #else
 #include <unistd.h>
 #endif
+#include <fcntl.h>
 
 #define UINT32_POOLSIZE 16
 
@@ -23,7 +24,7 @@ uint32_seed(const void* p, unsigned long n) {
 
   if(n == 0) {
     int i;
-    if((fd = open_read("/dev/urandom")) != -1) {
+    if((fd = open("/dev/urandom", O_RDONLY)) != -1) {
       i = read(fd, uint32_pool, sizeof(uint32_pool));
       if(i > 0) uint32_bytes_seeded += i;
       close(fd);

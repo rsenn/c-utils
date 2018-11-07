@@ -1,8 +1,10 @@
+#define _FILE_OFFSET_BITS 64
 #include "../windoze.h"
 
-#define _FILE_OFFSET_BITS 64
-#if WINDOWS
+#if WINDOWS_NATIVE
+#include <io.h>
 #else
+#include <unistd.h>
 #endif
 
 #include "../io_internal.h"

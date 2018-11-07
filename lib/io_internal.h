@@ -26,10 +26,12 @@ extern void* io_getfds();
 #if WINDOWS
 # include <windows.h>
 # if WINDOWS_NATIVE
-#  define read _read
-#  define write _write
-//#  define open _open
-#  define close _close
+#  ifndef __LCC__
+#   define read _read
+#   define write _write
+//#   define open _open
+#   define close _close
+#  endif
 #  define popen _popen
 # endif
 //#define lseek lseek64
