@@ -1,5 +1,10 @@
 #include "../buffer.h"
-#include "../stralloc.h"
+
+typedef struct stralloc_s {
+  char* s;
+  size_t len;
+  size_t a;
+} stralloc;
 
 int
 buffer_putsa(buffer* b, const stralloc* sa) {

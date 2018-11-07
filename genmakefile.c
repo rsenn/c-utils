@@ -1383,7 +1383,6 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
                 buffer_putm_internal(buffer_2, "rule '", compile->name, "' includes: ", incs.sa.s, 0);
                 buffer_putnlflush(buffer_2);
         */
-        includes_to_libs(&incs, &libs);
       }
 
       stralloc_zero(&bin);
@@ -1401,6 +1400,8 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
           if(!pfile->has_main) {
             stralloc_zero(&obj);
             path_object(pfile->name, &obj);
+
+          get_includes(pfile->name, &incs, 0);
 
             add_path_sa(&link->prereq, &obj);
           }
@@ -1440,6 +1441,8 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
 
         */
+        includes_to_libs(&incs, &libs);
+
         target_ptrs(&libs, &link->deps);
 
         strlist_zero(&deps);

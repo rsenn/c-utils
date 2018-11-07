@@ -1,5 +1,3 @@
-
-#include "../stralloc.h"
 #include "../open.h"
 #include "../uint64.h"
 #include <errno.h>
@@ -7,6 +5,8 @@
 #if !WINDOWS_NATIVE
 #include <unistd.h>
 #endif
+
+typedef struct stralloc_s stralloc;
 
 int
 openreadclose(const char* fn, stralloc* sa, size_t bufsize) {

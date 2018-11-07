@@ -1,6 +1,4 @@
 #include "../windoze.h"
-
-#include "../buffer.h"
 #include "../stralloc.h"
 #include <stdarg.h>
 

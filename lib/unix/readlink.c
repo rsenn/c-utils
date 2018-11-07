@@ -4,6 +4,7 @@
 #if WINDOWS
 #include "../ioctlcmd.h"
 #include "../utf8.h"
+#include "../stralloc.h"
 #include <stdio.h>
 #include <windows.h>
 #include <winioctl.h>

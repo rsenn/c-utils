@@ -1,5 +1,4 @@
 #include "../buffer.h"
-#include "../stralloc.h"
 
 static ssize_t
 dummyreadwrite(fd_t fd, void* buf, size_t len, void* arg) {

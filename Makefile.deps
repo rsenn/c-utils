@@ -108,6 +108,8 @@ $(BUILDDIR)buffer_dummyread.o: lib/buffer/buffer_dummyread.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_dummyreadmmap.o: lib/buffer/buffer_dummyreadmmap.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_dump.o: lib/buffer/buffer_dump.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_feed.o: lib/buffer/buffer_feed.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_flush.o: lib/buffer/buffer_flush.c
@@ -118,6 +120,10 @@ $(BUILDDIR)buffer_freshen.o: lib/buffer/buffer_freshen.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_fromarray.o: lib/buffer/buffer_fromarray.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_frombuf.o: lib/buffer/buffer_frombuf.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_fromsa.o: lib/buffer/buffer_fromsa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_fromstr.o: lib/buffer/buffer_fromstr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_get.o: lib/buffer/buffer_get.c
@@ -126,9 +132,13 @@ $(BUILDDIR)buffer_getc.o: lib/buffer/buffer_getc.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_getline.o: lib/buffer/buffer_getline.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_getline_sa.o: lib/buffer/buffer_getline_sa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_getn.o: lib/buffer/buffer_getn.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_get_token.o: lib/buffer/buffer_get_token.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_get_token_pred.o: lib/buffer/buffer_get_token_pred.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_get_until.o: lib/buffer/buffer_get_until.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
@@ -194,6 +204,10 @@ $(BUILDDIR)buffer_putptr.o: lib/buffer/buffer_putptr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_puts.o: lib/buffer/buffer_puts.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_putsa.o: lib/buffer/buffer_putsa.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_putsaflush.o: lib/buffer/buffer_putsaflush.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_putsalign.o: lib/buffer/buffer_putsalign.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_putsflush.o: lib/buffer/buffer_putsflush.c
@@ -237,6 +251,8 @@ $(BUILDDIR)buffer_skip_until.o: lib/buffer/buffer_skip_until.c
 $(BUILDDIR)buffer_stubborn.o: lib/buffer/buffer_stubborn.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_stubborn2.o: lib/buffer/buffer_stubborn2.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_truncfile.o: lib/buffer/buffer_truncfile.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_write.o: lib/buffer/buffer_write.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
@@ -1214,14 +1230,6 @@ $(BUILDDIR)str_tok.o: lib/str/str_tok.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)time_table_spd.o: lib/str/time_table_spd.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)buffer_dump.o: lib/stralloc/buffer_dump.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)buffer_frombuf.o: lib/stralloc/buffer_frombuf.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)buffer_fromsa.o: lib/stralloc/buffer_fromsa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)buffer_getline_sa.o: lib/stralloc/buffer_getline_sa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_getnewline_sa.o: lib/stralloc/buffer_getnewline_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_gettok_sa.o: lib/stralloc/buffer_gettok_sa.c
@@ -1230,21 +1238,13 @@ $(BUILDDIR)buffer_get_new_token_sa.o: lib/stralloc/buffer_get_new_token_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_get_new_token_sa_pred.o: lib/stralloc/buffer_get_new_token_sa_pred.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)buffer_get_token_pred.o: lib/stralloc/buffer_get_token_pred.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_get_token_sa.o: lib/stralloc/buffer_get_token_sa.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_get_token_sa_pred.o: lib/stralloc/buffer_get_token_sa_pred.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)buffer_putsa.o: lib/stralloc/buffer_putsa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)buffer_putsaflush.o: lib/stralloc/buffer_putsaflush.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_put_escaped.o: lib/stralloc/buffer_put_escaped.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)buffer_tosa.o: lib/stralloc/buffer_tosa.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)buffer_truncfile.o: lib/stralloc/buffer_truncfile.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)mmap_filename.o: lib/stralloc/mmap_filename.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
@@ -1307,6 +1307,8 @@ $(BUILDDIR)stralloc_chomp.o: lib/stralloc/stralloc_chomp.c
 $(BUILDDIR)stralloc_chop.o: lib/stralloc/stralloc_chop.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)stralloc_chr.o: lib/stralloc/stralloc_chr.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_contains.o: lib/stralloc/stralloc_contains.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)stralloc_copy.o: lib/stralloc/stralloc_copy.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
@@ -1800,8 +1802,6 @@ $(BUILDDIR)xml_set_attribute_double.o: lib/xml/xml_set_attribute_double.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)xml_textnode.o: lib/xml/xml_textnode.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)libntldd.o: libntldd.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)simple.o: libyuarel/examples/simple.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)test_lib.o: libyuarel/tests/test_lib.c
@@ -1811,8 +1811,6 @@ $(BUILDDIR)yuarel.o: libyuarel/yuarel.c
 $(BUILDDIR)list-r.o: list-r.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)macho32list.o: macho32list.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)map.o: map.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)mediathek-list.o: mediathek-list.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
@@ -1840,10 +1838,6 @@ $(BUILDDIR)sln.o: sln.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)strarraytest.o: strarraytest.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)strstr.o: strstr.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)str_findb.o: str_findb.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)all_tests.o: tests/all_tests.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)test_path.o: tests/test_path.c
@@ -1867,6 +1861,4 @@ $(BUILDDIR)xmltest3.o: xmltest3.c
 $(BUILDDIR)xmltest4.o: xmltest4.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)ziptest.o: ziptest.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)stralloc_contains.o: lib/stralloc/stralloc_contains.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
