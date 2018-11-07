@@ -15,7 +15,7 @@
 int
 mmap_filename(void* map, stralloc* sa) {
 #if WINDOWS_NATIVE
-   typedef DWORD (WINAPI get_mmaped_filename_fn)(HANDLE hProcess,LPVOID lpv,LPSTR lpFilename,DWORD nSize);
+   typedef DWORD (WINAPI get_mmaped_filename_fn)(HANDLE,LPVOID,LPSTR,DWORD);
    static get_mmaped_filename_fn* get_mmaped_filename;
 
    if(get_mmaped_filename == 0) {
@@ -25,7 +25,7 @@ mmap_filename(void* map, stralloc* sa) {
    }
 
   stralloc_ready(sa, MAX_PATH + 1);
-  sa->len = (size_t)get_mmaped_filename(GetCurrentProcess(), map, sa->s, sa->a);
+  sa->len = (size_t)(*get_mmaped_filename)(GetCurrentProcess(), map, sa->s, sa->a);
   return sa->len > 0;
 #else
   char buf[1024];

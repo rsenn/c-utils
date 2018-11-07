@@ -299,8 +299,7 @@ format_linklib_switch(const char* libname, stralloc* out) {
 }
 
 void
-format_linklib_dummy(const char* libname, stralloc* out) {
-}
+format_linklib_dummy(const char* libname, stralloc* out) {}
 
 /**
  * Checks if the given source file contains a main() function
@@ -1227,20 +1226,20 @@ deps_for_libs(HMAP_DB* rules) {
 
       includes_to_libs(&srcdir->includes, &libs);
 
-      //debug_s("library", lib->name);
+      // debug_s("library", lib->name);
 
       strlist_removes(&libs, lib->name);
-      //debug_sl("deps", &libs);
+      // debug_sl("deps", &libs);
 
       strlist_zero(&indir);
       deps_indirect(&indir, &libs);
 
-      //debug_sl("indir", &indir);
+      // debug_sl("indir", &indir);
       strlist_sub(&indir, &libs);
 
       strlist_sub(&libs, &indir);
 
-      //debug_sl("direct", &libs);
+// debug_sl("direct", &libs);
 #if 0 // def DEBUG_OUTPUT
       // print_target_deps(buffer_2, lib);
       buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
@@ -1391,8 +1390,8 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         link->recipe = &link_command;
 
-        //debug_s("program", link->name);
-       // debug_sa("program libs", &libs.sa);
+        // debug_s("program", link->name);
+        // debug_sa("program libs", &libs.sa);
 
         /*        deps_indirect(&indir, &libs);
 
@@ -1657,9 +1656,9 @@ set_compiler_type(const char* compiler) {
   push_var("CC", "cc");
   push_var("CXX", "c++");
 
-  stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
+  stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o \"$@\" $<");
   stralloc_copys(&lib_command, "$(LIB) /out:$@ $^");
-  set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o\"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+  set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o \"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   if(build_type == BUILD_TYPE_DEBUG) {
     push_var("DEFS", "-DDEBUG=1");
@@ -1723,10 +1722,17 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "-MT");
     push_var("CPPFLAGS", "-Dinline=__inline");
 
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+      push_var("CFLAGS", "/Zi");
+
+    if(build_type == BUILD_TYPE_MINSIZEREL)
+      push_var("CFLAGS", "/Os");
+    else if(build_type != BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "/Ox");
     /*    push_var("LDFLAGS",
                  "/DEBUG /DYNAMICBASE /INCREMENTAL /NXCOMPAT /TLBID:1");
     */
-    push_var("LDFLAGS", "/SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT");
+    // push_var("LDFLAGS", "/SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT");
 
     //  push_var("LDFLAGS", "/MANIFEST /manifest:embed2 /MANIFESTUAC:\"level=asInvoker uiAccess=false\"");
 
@@ -1757,7 +1763,7 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "/LIBPATH:\"%UniversalCRTSdkDir%lib\\%WindowsSDKLibVersion%ucrt\\$(MACHINE)\"");
     push_var("LDFLAGS", "/LIBPATH:\"%WindowsSdkDir%lib\\%WindowsSDKLibVersion%um\\$(MACHINE)\"");
     push_var("LDFLAGS", "/LIBPATH:\"%VCToolsInstallDir%lib\\$(MACHINE)\"");
-    
+
     push_var("LDFLAGS", "/LIBPATH:\"%WindowsSdkDir%lib$(X64)\"");
     push_var("LDFLAGS", "/LIBPATH:\"%VCINSTALLDIR%\\lib$(AMD64)\"");
 
@@ -1868,6 +1874,20 @@ set_compiler_type(const char* compiler) {
 
     if(build_type == BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "-g2");
+
+    make_begin_inline = 0;
+    make_end_inline = 0;
+    push_var("STDC_LIBS", "oldnames.lib");
+
+    if(mach.bits == _64) {
+      push_var("STDC_LIBS", "ccl64.lib");
+      push_var("STDC_LIBS", "libc64.lib");
+    } else {
+      push_var("STDC_LIBS", "libc.lib");
+    }
+
+    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o \"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command, "$(LINK) $(LDFLAGS) -o \"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
     /*
      * Tiny CC compiler

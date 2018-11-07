@@ -41,6 +41,7 @@ typedef int32_t int32;
 
 #if !defined(NO_UINT32_MACROS)
 
+#if (defined(__i386__) || defined(_M_IX86) ||defined (_X86_) || defined(__x86_64__) || defined(_M_AMD64) || defined(__LITTLE_ENDIAN__) || (BYTE_ORDER == _LITTLE_ENDIAN) || defined(_AMD64_) || defined(I_X86_))
 inline static void
 uint32_pack(char* out, uint32 in) {
   *(uint32 *)out = in;
@@ -62,12 +63,8 @@ uint32_read(const char* in) {
   return *(uint32 *)in;
 }
 
-void uint32_pack_big(char* out, uint32 in);
-void uint32_unpack_big(const char* in, uint32* out);
-uint32 uint32_read_big(const char* in);
 #else
 
-#if !defined(NO_UINT32_MACROS)
 inline static uint32
 uint32_get(const void* ptr) {
   const char* in = ptr;
@@ -78,24 +75,20 @@ inline static uint32
 uint32_read(const char* in) {
   return (in[0] << 24) | (in[1] << 16) | (in[2] << 8) | (in[3]);
 }
-#endif
 
 void uint32_pack(char* out, uint32 in);
-void uint32_pack_big(char* out, uint32 in);
 void uint32_unpack(const char* in, uint32* out);
+#endif
+#endif
+
+void uint32_pack_big(char* out, uint32 in);
 void uint32_unpack_big(const char* in, uint32* out);
-uint32 uint32_read(const char* in);
 uint32 uint32_read_big(const char* in);
 
 uint32 uint32_random();
 int uint32_seed(const void*, unsigned long n);
 uint32 uint32_prng(uint32, uint32 seed);
-#endif
 
-#ifdef __cplusplus
-}
-#endif
-#endif
 /* bit rotating macros */
 #define uint32_ror(v,c)      (((uint32)(v) >> (c)) | ((uint32)(v) << (32 - (c))))
 #define uint32_rol(v,c)      (((uint32)(v) << (c)) | ((uint32)(v) >> (32 - (c))))
@@ -105,3 +98,8 @@ uint32 uint32_prng(uint32, uint32 seed);
 uint32 uint32_prng(uint32, uint32 seed);
 uint32 uint32_random(void);
 int    uint32_seed(const void*, unsigned long n);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
