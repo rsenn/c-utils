@@ -17,14 +17,14 @@ typedef struct {
 } pe_data_directory;
 
 typedef struct {
-  uint32 characteristics;
-  uint32 time_date_stamp;
-  uint16 major_version;
-  uint16 minor_version;
-  uint32 name;
-  uint32 base;
-  uint32 number_of_functions;
-  uint32 number_of_names;
+  uint32 characteristics;    /**< 0x00 */
+  uint32 time_date_stamp;    /**< 0x04 */
+  uint16 major_version;      /**< 0x08 */
+  uint16 minor_version;      /**< 0x0a */
+  uint32 name;               /**< 0x0c */
+  uint32 base;               /**< 0x10 */
+  uint32 number_of_functions;/**< 0x14 */
+  uint32 number_of_names;    /**< 0x18 */
   uint32 address_of_functions;
   uint32 address_of_names;
   uint32 address_of_name_ordinals;
@@ -50,8 +50,8 @@ typedef struct {
   union {
     uint32 all_attributes;
     struct {
-      uint32 rva_based : 1;
-      uint32 reserved_attributes : 31;
+      int rva_based : 1;
+      int reserved_attributes : 31;
     };
   } attributes;
   uint32 dll_name_rva;
@@ -422,8 +422,8 @@ pe32_opt_header* pe_header_opt32(void*);
 pe64_opt_header* pe_header_opt64(void*);
 pe_section_header* pe_get_section(void*, const char* name);
 pe_data_directory* pe_header_datadir(void*);
-pe_section_header* pe_header_sections(void*, int* nsections);
-pe_data_directory* pe_get_datadir(void*, size_t* num);
+pe_section_header* pe_header_sections(void*, uint16* nsections);
+pe_data_directory* pe_get_datadir(void*, uint32* num);
 const char* pe_datadir_name(int);
 
 #define PE_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
@@ -439,6 +439,9 @@ const char* pe_datadir_name(int);
 
 #define PE_OFFSET(pe, st, field) \
   (PE_64(pe) ? PE_FIELD_OFFSET(pe64_##st, field) : PE_FIELD_OFFSET(pe32_##st, field))
+
+#define PE_ADDR(pe, ptr, st, field) \
+  ((void*)(((char*)ptr)+PE_OFFSET(pe, st, field)))
 
 #define PE_SIZE(pe, st, field) \
   (PE_64(pe) ? PE_FIELD_SIZE(pe64_##st, field) : PE_FIELD_SIZE(pe32_##st, field))

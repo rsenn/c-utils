@@ -48,7 +48,7 @@ pe_header_opt64(void* pe) {
 }
 
 pe_section_header*
-pe_header_sections(void* pe, int* nsections) {
+pe_header_sections(void* pe, uint16* nsections) {
   pe_coff_header* coff = pe_header_coff(pe);
   unsigned char* opthdr = (unsigned char*)&coff[1];
   uint16 optsize =  uint16_get(&coff->size_of_optional_header);

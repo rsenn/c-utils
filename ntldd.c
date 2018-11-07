@@ -269,7 +269,7 @@ build_dep_tree32or64(pe_loaded_image* img,
       }
       for(i = 0; i < ied->number_of_functions; i++) {
         if(addrs[i] != 0) {
-          int section_index = pe_rva2section(img, addrs[i]);
+          int section_index = pe_rva2section(img->base, addrs[i]);
           if((idata->virtual_address <= addrs[i]) && (idata->virtual_address + idata->size > addrs[i])) {
             self->exports[i].address = NULL;
             self->exports[i].forward_str = str_dup(pe_rva2ptr(img->base, uint32_get(&addrs[i])));
@@ -619,11 +619,11 @@ print_image_links(int first,
 
   if(!unresolved && !first) {
     if(str_case_diff(self->module, self->resolved_module) == 0) {
-      buffer_puts(buffer_1, " (0x");
-      buffer_putxint640(buffer_1, (int64)self->mapped_address, 8);
+      buffer_puts(buffer_1, " (");
+      buffer_putptr(buffer_1, self->mapped_address);
     } else {
       buffer_putm_3(buffer_1, " => ", self->resolved_module, " (0x");
-      buffer_putxint640(buffer_1, (int64)self->mapped_address, 8);
+      buffer_putptr(buffer_1, self->mapped_address);
     }
     buffer_putsflush(buffer_1, ")\n");
   }

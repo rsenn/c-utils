@@ -900,6 +900,8 @@ $(BUILDDIR)pe_rva2offset.o: lib/pe/pe_rva2offset.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)pe_rva2ptr.o: lib/pe/pe_rva2ptr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)pe_rva2section.o: lib/pe/pe_rva2section.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)pe_thunk.o: lib/pe/pe_thunk.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)playlist_init.o: lib/playlist/playlist_init.c

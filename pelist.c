@@ -333,7 +333,7 @@ main(int argc, char** argv) {
 
 void
 pe_dump_sections(uint8* base) {
-  int i, n;
+  uint16 i, n;
   pe_section_header* sections = pe_header_sections(base, &n);
 
   buffer_putspad(buffer_1, "section name", 16);

@@ -20,7 +20,7 @@
 #define O_NONBLOCK 0
 #endif
 
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
+#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER) || defined(__BORLANDC__)
 #define pipe _pipe
 #endif
 

@@ -11,7 +11,7 @@ typedef ssize_t (read_fn)(fd_t fd, void* buf, size_t n);
 
 typedef struct {
   char ch;
-  unsigned char p:1;
+  int p:1;
   read_fn* op;
   fd_t fd;
 } charbuf;

@@ -24,7 +24,7 @@ typedef enum {
 typedef struct {
   jsondata type;
   union {
-    char boolv : 1;
+    int boolv : 1;
     int64 intv;
     double doublev;
     stralloc stringv;

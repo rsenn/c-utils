@@ -3,7 +3,7 @@
 
 pe_section_header*
 pe_get_section(void* base, const char* name) {
-  int i, n;
+  uint16 i, n;
   pe_section_header* sections = pe_header_sections(base, &n);
 
   for(i = 0; i < n; i++) {

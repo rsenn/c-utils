@@ -3,7 +3,7 @@
 
 uint32
 pe_offset2rva(uint8* base, int64 off) {
-  int i, n;
+  uint16 i, n;
   pe_section_header* sections = pe_header_sections(base, &n);
 
   if((uint32)off < sections[0].pointer_to_raw_data)

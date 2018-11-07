@@ -2,7 +2,7 @@
 
 int
 pe_rva2section(void* base, uint32 rva) {
-  int i, n;
+  uint16 i, n;
   pe_section_header* sections = pe_header_sections(base, &n);
 
   if(rva < sections[0].virtual_address)
