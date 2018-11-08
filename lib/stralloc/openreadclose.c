@@ -1,3 +1,4 @@
+#include "../stralloc.h"
 #include "../open.h"
 #include "../uint64.h"
 #include <errno.h>

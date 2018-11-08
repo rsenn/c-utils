@@ -1,5 +1,12 @@
+#include "../windoze.h"
 #include "../buffer.h"
 #include "../mmap.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 extern ssize_t buffer_dummyreadmmap();
 extern void buffer_munmap(void* buf);

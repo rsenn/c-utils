@@ -43,6 +43,7 @@ int open_rwsync(const char *filename);
 int openreadclose(const char* fn, stralloc* sa, size_t bufsize);
 ssize_t readclose_append(int64 fd, stralloc* sa, size_t bufsize);
 ssize_t readclose(int64 fd, stralloc* sa, size_t bufsize);
+int open_filename(fd_t, stralloc*);
 #endif
 
 int open_temp(char*);
@@ -52,4 +53,3 @@ int open_temp(char*);
 #endif
 
 #endif
-

@@ -6,19 +6,19 @@
 /*
  * int path_is_absolute(const char*);
  */
-TEST(test_path_absolute) {
-  // ASSERT_EQ(0, !path_is_absolute("/test/path"));
-  // ASSERT_EQ(1, !path_is_absolute("test/path"));
+TEST(test_path_is_absolute) {
+  ASSERT_EQ(0, !path_is_absolute("/test/path"));
+  ASSERT_EQ(1, !path_is_absolute("test/path"));
 }
 
 /*
  * char* path_basename(char*);
  */
 TEST(test_path_basename) {
-  // ASSERT_EQ(0, str_diff("path", path_basename("/test/path")));
-  // ASSERT_EQ(0, str_diff("path", path_basename("test/path")));
-  // ASSERT_EQ(0, str_diff("path", path_basename("path")));
-  // ASSERT_EQ(0, !str_diff("path", path_basename("/path/test")));
+  ASSERT_EQ(0, str_diff("path", path_basename("/test/path")));
+  ASSERT_EQ(0, str_diff("path", path_basename("test/path")));
+  ASSERT_EQ(0, str_diff("path", path_basename("path")));
+  ASSERT_EQ(0, !str_diff("path", path_basename("/path/test")));
 }
 
 /*
@@ -35,7 +35,7 @@ TEST(test_path_canonicalize) {
   buffer_puts(buffer_1, "\"");
   buffer_putnlflush(buffer_1);
 
-  //  //ASSERT_EQ(0, stralloc_diffs(&sa, "/test/path"));
+  ASSERT_EQ(0, stralloc_diffs(&sa, "/test/path"));
 }
 
 /*
@@ -45,10 +45,10 @@ TEST(test_path_dirname) {
   stralloc sa;
   stralloc_init(&sa);
 
-  // ASSERT_EQ(0, str_diff("/test", path_dirname("/test/path", &sa)));
-  // ASSERT_EQ(0, str_diff("test", path_dirname("test/path", &sa)));
-  // ASSERT_EQ(0, str_diff(".", path_dirname("path", &sa)));
-  // ASSERT_EQ(0, !str_diff("test", path_dirname("/path/test", &sa)));
+  ASSERT_EQ(0, str_diff("/test", path_dirname("/test/path", &sa)));
+  ASSERT_EQ(0, str_diff("test", path_dirname("test/path", &sa)));
+  ASSERT_EQ(0, str_diff(".", path_dirname("path", &sa)));
+  ASSERT_EQ(0, !str_diff("test", path_dirname("/path/test", &sa)));
 }
 
 /*
@@ -97,7 +97,16 @@ TEST(test_path_right) {}
  * size_t path_skips(const char* s);
  */
 
-TEST(test_path_skips) {}
+TEST(test_path_skips) {
+  const char* p = "//blah/la/lumpur";
+  size_t i = 0;
+  ASSERT_EQ(2, (i += path_skips(&p[i])));
+  ASSERT_EQ(6, (i += path_skips(&p[i])));
+  ASSERT_EQ(7, (i += path_skips(&p[i])));
+  ASSERT_EQ(9, (i += path_skips(&p[i])));
+  ASSERT_EQ(10, (i += path_skips(&p[i])));
+  ASSERT_EQ(16, (i += path_skips(&p[i])));
+}
 
 /*
  * size_t path_skip(const char* s, size_t n);
@@ -163,30 +172,30 @@ TEST(test_path_collapse) {
   buffer_puts(buffer_1, "\"");
   buffer_putnlflush(buffer_1);
 
-  // ASSERT_SA_EQUALS(&sa, "/this/is/a/test");
+  ASSERT_STRALLOCEQUALS(&sa, "/this/is/a/test");
 }
 
-#define RUN_PATH_TESTS() \
-  RUN(test_path_basename); \
-  RUN(test_path_canonicalize); \
-  RUN(test_path_dirname); \
-  RUN(test_path_fnmatch); \
-  RUN(test_path_getcwd); \
-  RUN(test_path_gethome); \
-  RUN(test_path_len_s); \
-  RUN(test_path_len); \
-  RUN(test_path_readlink); \
-  RUN(test_path_right); \
-  RUN(test_path_skips); \
-  RUN(test_path_skip); \
-  RUN(test_path_num); \
-  RUN(test_path_num_sa); \
-  RUN(test_path_exists); \
-  RUN(test_path_absolute); \
-  RUN(test_path_relative); \
-  RUN(test_path_split); \
-  RUN(test_path_canonical_sa); \
-  RUN(test_path_absolute_sa); \
+#define RUN_PATH_TESTS()                                                                                               \
+  RUN(test_path_basename);                                                                                             \
+  RUN(test_path_canonicalize);                                                                                         \
+  RUN(test_path_dirname);                                                                                              \
+  RUN(test_path_fnmatch);                                                                                              \
+  RUN(test_path_getcwd);                                                                                               \
+  RUN(test_path_gethome);                                                                                              \
+  RUN(test_path_len_s);                                                                                                \
+  RUN(test_path_len);                                                                                                  \
+  RUN(test_path_readlink);                                                                                             \
+  RUN(test_path_right);                                                                                                \
+  RUN(test_path_skips);                                                                                                \
+  RUN(test_path_skip);                                                                                                 \
+  RUN(test_path_num);                                                                                                  \
+  RUN(test_path_num_sa);                                                                                               \
+  RUN(test_path_exists);                                                                                               \
+  RUN(test_path_is_absolute);                                                                                          \
+  RUN(test_path_relative);                                                                                             \
+  RUN(test_path_split);                                                                                                \
+  RUN(test_path_canonical_sa);                                                                                         \
+  RUN(test_path_absolute_sa);                                                                                          \
   RUN(test_path_collapse)
 
 TESTS(path) { RUN_PATH_TESTS(); }

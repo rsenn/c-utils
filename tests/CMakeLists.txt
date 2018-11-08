@@ -5,7 +5,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 link_directories(${CMAKE_BINARY_DIR})
 
-link_libraries(strlist path taia tai buffer mmap open uint32)
+link_libraries(strlist path stralloc str taia tai buffer mmap open uint32)
 
 file(GLOB TESTS test_*.c)
 

@@ -63,6 +63,8 @@ size_t str_cat(void *p1, const void *p2);
 size_t str_copyb(void *p1, const void *p2, size_t max);
 size_t str_find(const void *s, const void *what);
 size_t str_findb(const char*, const char* x, size_t n);
+size_t str_rfindb(const char* s1, const char* x, size_t n);
+size_t str_rfind(const void* s, const void* what);
 void str_lower(void *str);
 
 struct tm;

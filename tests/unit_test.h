@@ -25,6 +25,7 @@
 #include "../lib/buffer.h"
 #include "../lib/taia.h"
 #include "../lib/windoze.h"
+#include "../lib/path_internal.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -50,29 +51,37 @@ typedef char bool;
 
 // APIs
 #define TEST(name) static void name(struct unit_test* mu_)
-#define RUN(name) \
-  if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) { \
-    mu_->success++; \
-  } else { \
-    mu_->failure++; \
-    if(muconf_ptr()->x) \
-      return; \
+#define RUN(name)                                                                                                      \
+  if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) {                                                                \
+    mu_->success++;                                                                                                    \
+  } else {                                                                                                             \
+    mu_->failure++;                                                                                                    \
+    if(muconf_ptr()->x)                                                                                                \
+      return;                                                                                                          \
   }
-  
-  
+
 #define TESTLOG_CHAR(c) buffer_putc(muerr, c)
-#define TESTLOG_STR(s) buffer_putsflush(muerr, s)
+#define TESTLOG_STR(s) buffer_putm_internal(muerr, s, 0), buffer_flush(muerr)
 #define TESTLOG_LONG(d) buffer_putlong(muerr, d), buffer_flush(muerr)
 #define TESTLOG_DBL(d) buffer_putdouble(muerr, d, 0), buffer_flush(muerr)
 #define TESTLOG_FLUSH() buffer_flush(muerr)
 
+#define equal(a, b) ((a) == (b))
+#define not_equal(a, b) ((a) != (b))
+#define less_than(a, b) ((a) < (b))
+#define not_greater(a, b) ((a) <= (b))
+#define greater_than(a, b) ((a) > (b))
+#define not_less(a, b) ((a) >= (b))
+
 // Assertions
-#define ASSERT_EQ(x1, x2) unit_test_assert(mu_, x1, x2, ==, !=)
-#define ASSERT_NE(x1, x2) unit_test_assert(mu_, x1, x2, !=, ==)
-#define ASSERT_LT(x1, x2) unit_test_assert(mu_, x1, x2, <, >=)
-#define ASSERT_LE(x1, x2) unit_test_assert(mu_, x1, x2, <=, >)
-#define ASSERT_GT(x1, x2) unit_test_assert(mu_, x1, x2, >, >=)
-#define ASSERT_GE(x1, x2) unit_test_assert(mu_, x1, x2, >=, >)
+#define ASSERT_STREQUAL(x1, x2) unit_test_assert(mu_, x1, x2, str_equal, !=)
+#define ASSERT_STRALLOCEQUALS(x1, x2) unit_test_assert(mu_, x1, x2, stralloc_equals, !=)
+#define ASSERT_EQ(x1, x2) unit_test_assert(mu_, x1, x2, equal, !=)
+#define ASSERT_NE(x1, x2) unit_test_assert(mu_, x1, x2, not_equal, ==)
+#define ASSERT_LT(x1, x2) unit_test_assert(mu_, x1, x2, less_than, >=)
+#define ASSERT_LE(x1, x2) unit_test_assert(mu_, x1, x2, not_greater, >)
+#define ASSERT_GT(x1, x2) unit_test_assert(mu_, x1, x2, greater_then, >=)
+#define ASSERT_GE(x1, x2) unit_test_assert(mu_, x1, x2, not_less, >)
 
 #define ASSERT_STR_EQUAL(s1, s2) ASSERT_EQ(0, str_diff(s1, s2))
 #define ASSERT_STR_EQUAL_N(s1, s2, n) ASSERT_EQ(0, str_diffn(s1, s2, n))
@@ -100,37 +109,21 @@ typedef char bool;
 #define INFO(msg) msg
 #endif
 
-// Internals
-#define unit_test_typespec(code) \
-  _Generic((code),\
-char *            : "%s"  ,\
-signed char       : "%hhd",\
-signed short      : "%hd" ,\
-signed int        : "%d"  ,\
-signed long       : "%ld" ,\
-signed long long  : "%lld",\
-unsigned char     : "%u"  ,\
-unsigned short    : "%hu" ,\
-unsigned int      : "%u"  ,\
-unsigned long     : "%lu" ,\
-unsigned long long: "%llu",\
-float             : "%f"  ,\
-double            : "%lf" ,\
-long double       : "%Lf" ,\
-default           : "%p")
-
-#define unit_test_assert(mu_, x1, x2, op, notop) \
-  if(!((x1)op(x2))) { \
-    buffer_putsflush((mu_)->faillog, "  Assertion failed: "); \
-    buffer_putm((mu_)->faillog, unit_test_typespec(x1), x1); \
-    buffer_puts((mu_)->faillog, " " #notop " "); \
-    buffer_putm((mu_)->faillog, unit_test_typespec(x2), x2); \
-    buffer_putm((mu_)->faillog, " (", __FILE__, ":"); \
-    buffer_putulong((mu_)->faillog, __LINE__); \
-    buffer_puts((mu_)->faillog, ")"); \
-    buffer_putnlflush((mu_)->faillog); \
-    (mu_)->failure++; \
-    return; \
+#define unit_test_assert(mu_, x1, x2, op, notop)                                                                       \
+  if(!op((x1), (x2))) {                                                                                                \
+    const char* file = __FILE__;                                                                                       \
+    size_t n = str_rfind(file, ".." PATHSEP_S);                                                                        \
+    if(file[n]) file += n + 3;                                                                                            \
+    buffer_putm_internal((mu_)->faillog,  file, ":", 0);                                                          \
+    buffer_putulong((mu_)->faillog, __LINE__);                                                                         \
+    buffer_puts((mu_)->faillog, "  Assertion failed: ");                                                          \
+    buffer_puts((mu_)->faillog, #x1);                                                                                  \
+    buffer_puts((mu_)->faillog, " " #notop " ");                                                                       \
+    buffer_puts((mu_)->faillog, #x2);                                                                                  \
+    buffer_puts((mu_)->faillog, ")");                                                                                  \
+    buffer_putnlflush((mu_)->faillog);                                                                                 \
+    (mu_)->failure++;                                                                                                  \
+    return;                                                                                                            \
   }
 
 struct unit_test {
@@ -197,7 +190,7 @@ unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
 void unit_test_execute(struct unit_test* mu_);
 
 //#define unit_test_main main
-//int unit_test_main(int argc, char** argv);
+// int unit_test_main(int argc, char** argv);
 struct unit_testConf* muconf_ptr(void);
 int unit_test_call(struct unit_test* mu_, unit_test_func_t func);
 void unit_test_cleanup(struct unit_test* mu_);
