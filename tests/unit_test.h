@@ -58,9 +58,13 @@ typedef char bool;
     if(muconf_ptr()->x) \
       return; \
   }
-#define TESTLOG_STRS(...) buffer_putmflush(muerr, __VA_ARGS__)
+  
+  
+#define TESTLOG_CHAR(c) buffer_putc(muerr, c)
+#define TESTLOG_STR(s) buffer_putsflush(muerr, s)
 #define TESTLOG_LONG(d) buffer_putlong(muerr, d), buffer_flush(muerr)
 #define TESTLOG_DBL(d) buffer_putdouble(muerr, d, 0), buffer_flush(muerr)
+#define TESTLOG_FLUSH() buffer_flush(muerr)
 
 // Assertions
 #define ASSERT_EQ(x1, x2) unit_test_assert(mu_, x1, x2, ==, !=)

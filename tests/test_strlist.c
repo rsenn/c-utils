@@ -374,7 +374,7 @@ TEST(test_strlist_range) {
   strlist_init(&sl, '\0');
   strlist_init(&r, '\0');
 
-  strlist_pushm(&sl, "abcdefg", "abcdef", "abcde", "abcd", "abc", "ab", "a");
+  strlist_pushm_internal(&sl, "abcdefg", "abcdef", "abcde", "abcd", "abc", "ab", "a", 0);
 
   r = strlist_range(&sl, 2, 5);
 

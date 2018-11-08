@@ -108,23 +108,25 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   rc = unit_test_call(running, func);
 
   if(running->failure == 0) {
-    TESTLOG_STRS(PASS("."));
-    if(muconf_ptr()->v)
-      TESTLOG_STRS(PASS("  %s\n"), name);
+    TESTLOG_STR(PASS("."));
+    if(muconf_ptr()->v) {
+      TESTLOG_STR("  "); TESTLOG_STR(name); TESTLOG_STR("\n");
+      }
   } else {
-    TESTLOG_STRS(FAIL("F"));
-    if(muconf_ptr()->v)
-      TESTLOG_STRS(FAIL("  %s\n"), name);
+    TESTLOG_STR(FAIL("F"));
+    if(muconf_ptr()->v) {
+      TESTLOG_STR("  "); TESTLOG_STR(name); TESTLOG_STR("\n");
+      }
   }
 
   if(!unit_test_empty(running->faillog)) {
-    buffer_putmflush(mu_->testlog, FAIL("\nFAILURE"), " in ", BOLD(name), "\n");
+    buffer_putm_internal(mu_->testlog, FAIL("\nFAILURE"), " in ", BOLD(name), "\n", 0);
     unit_test_copy(running->faillog, mu_->testlog);
   }
 
   if(!muconf_ptr()->q) {
     if(!unit_test_empty(running->testlog)) {
-      buffer_putmflush(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR"), " for ", BOLD(name), "\n");
+      buffer_putm_internal(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR"), " for ", BOLD(name), "\n", 0);
       unit_test_copy(running->testlog, mu_->testlog);
     }
   }
@@ -135,12 +137,13 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
 
 void
 unit_test_usage(const char* cmd) {
-  TESTLOG_STRS("usage: %s [-qsvx]\n"
+  TESTLOG_STR("usage: %s [-qsvx]\n"
           "Options:\n"
           "  -q  Quiet stdout.\n"
           "  -s  Disable to capture stdout.\n"
           "  -v  Enalbe verbose mode.\n"
-          "  -x  Exit on first failure.\n",
+          "  -x  Exit on first failure.\n");
+          TESTLOG_STR(
           cmd);
 }
 
@@ -161,8 +164,9 @@ unit_test_optparse(int argc, char** argv) {
         case 'q': muconf_ptr()->q = TRUE; break;
         case 'h': unit_test_usage(argv[0]); exit(EXIT_SUCCESS);
         default:
-          TESTLOG_STRS("%s: illegal option -- %c\n", argv[0], argv[i][j]);
+          TESTLOG_STR(argv[0]); TESTLOG_STR(": illegal option -- "); TESTLOG_CHAR(argv[i][j]);
           unit_test_usage(argv[0]);
+          TESTLOG_FLUSH();
           exit(EXIT_FAILURE);
       }
     }
@@ -194,19 +198,19 @@ unit_test_main(int argc, char** argv) {
     buffer_putc(muerr, '\n');
 
   unit_test_copy(mu_->testlog, muerr);
-  TESTLOG_STRS("\nRAN "); TESTLOG_LONG(  mu_->success + mu_->failure); TESTLOG_STRS(" TESTS IN ");
+  TESTLOG_STR("\nRAN "); TESTLOG_LONG(  mu_->success + mu_->failure); TESTLOG_STR(" TESTS IN ");
   //TESTLOG_DBL( mu_->elapsed); 
-  TESTLOG_STRS("\n"); 
+  TESTLOG_STR("\n"); 
   
 
   if((mu_->success + mu_->failure) > 0) {
-           TESTLOG_STRS( "\n");
-           TESTLOG_STRS( (mu_->failure == 0) ? PASS("OK") : FAIL("FAILED"));
+           TESTLOG_STR( "\n");
+           TESTLOG_STR( (mu_->failure == 0) ? PASS("OK") : FAIL("FAILED"));
            
-           TESTLOG_STRS(" (SUCCESS: "); TESTLOG_LONG(mu_->success); TESTLOG_STRS(", FAILURE: "); TESTLOG_LONG(mu_->failure); TESTLOG_STRS("\n");
+           TESTLOG_STR(" (SUCCESS: "); TESTLOG_LONG(mu_->success); TESTLOG_STR(", FAILURE: "); TESTLOG_LONG(mu_->failure); TESTLOG_STR("\n");
            
   } else {
-    TESTLOG_STRS(FAIL("\nNO TESTS FOUND\n"));
+    TESTLOG_STR(FAIL("\nNO TESTS FOUND\n"));
   }
 
   unit_test_cleanup(mu_);
