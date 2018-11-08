@@ -90,6 +90,7 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   int ret = 1;
   int (*stat_fn)(const char*,struct _stat*) = stat;
   char buf[PATH_MAX + 1];
+  char sep;
 #ifdef HAVE_LSTAT
 #if !WINDOWS_NATIVE
   if(symbolic) stat_fn = lstat;
@@ -97,14 +98,16 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
 
 #endif
   if(path_issep(*path)) {
-    stralloc_catc(sa, PATHSEP_C);
+    stralloc_catc(sa, (sep = *path));
     path++;
   }
 start:
   /* loop once for every /path/component/
      we canonicalize absolute paths, so we must always have a '/' here */
   while(*path) {
-    while(path_issep(*path)) path++;
+    while(path_issep(*path))
+      sep = *path++;
+
     /* check for various relative directory parts beginning with '.' */
     if(path[0] == '.') {
       /* strip any "./" inside the path or a trailing "." */
@@ -122,16 +125,16 @@ start:
     /* exit now if we're done */
     if(*path == '\0') break;
     /* begin a new path component */
-    if(sa->len && (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\')) stralloc_catc(sa, PATHSEP_C);
+    if(sa->len && (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\')) stralloc_catc(sa, sep);
     /* look for the next path separator and then copy the component */
     n = path_len_s(path);
     stralloc_catb(sa, path, n);
-    if(n == 2 && path[1] == ':') stralloc_catc(sa, PATHSEP_C);
+    if(n == 2 && path[1] == ':') stralloc_catc(sa, sep);
     stralloc_nul(sa);
     path += n;
     /* now stat() the thing to verify it */
     byte_zero(&st, sizeof(st));
-    if(stat_fn(sa->s, &st) == -1) return 0;
+//    if(stat_fn(sa->s, &st) == -1) return 0;
     /* is it a symbolic link? */
     if(is_link(sa->s)) {
       ret++;
@@ -143,7 +146,7 @@ start:
       if(path_is_absolute(buf)) {
         str_copyn(&buf[n], path, PATH_MAX - n);
         stralloc_zero(sa);
-        stralloc_catc(sa, PATHSEP_C);
+        stralloc_catc(sa, sep);
         path = buf;
         goto start;
         /* if the symlink is relative we remove the symlink path
@@ -177,6 +180,6 @@ start:
     }
 #endif
   }
-  if(sa->len == 0) stralloc_catc(sa, PATHSEP_C);
+  if(sa->len == 0) stralloc_catc(sa, sep);
   return ret;
 }

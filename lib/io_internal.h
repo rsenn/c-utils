@@ -30,7 +30,7 @@ extern void* io_getfds();
 #   define read _read
 #   define write _write
 //#   define open _open
-#   define close _close
+//#   define close _close
 #  endif
 #  define popen _popen
 # endif
@@ -136,7 +136,6 @@ typedef struct {
 extern int io_multithreaded;
 extern int io_sockets[2];
 
-
 my_extern uint64 io_wanted_fds;
 my_extern array io_pollfds;
 
@@ -214,4 +213,3 @@ extern int close();
 #endif
 
 #endif
-

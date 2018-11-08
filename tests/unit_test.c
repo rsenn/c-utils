@@ -20,9 +20,11 @@
  */
 
 #include "../lib/windoze.h"
+#include "../lib/stralloc.h"
 #include "../lib/buffer.h"
 #include "../lib/open.h"
 #include "../lib/io_internal.h"
+#include "../lib/errmsg.h"
 #include "unit_test.h"
 
 #ifndef UNIT_TEST_STATIC_FUNCTIONS
@@ -64,6 +66,9 @@ unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
   taia_now(&end);
   taia_sub(&mu_->elapsed, &end, &start);
 
+  buffer_flush(mu_->testlog);
+  buffer_flush(mu_->faillog);
+
   return (mu_->failure == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
@@ -80,6 +85,24 @@ unit_test_empty(buffer* b) {
 
 void
 unit_test_closetemp(buffer* b) {
+  buffer_flush(b);
+  if(unit_test_empty(b)) {
+     stralloc filename;
+     stralloc_init(&filename);
+
+     write(b->fd, "\n", 1);
+
+     open_filename(b->fd, &filename);
+     stralloc_nul(&filename);
+
+     close(b->fd);
+     b->fd = -1;
+
+     if(filename.len) {
+       int ret = unlink(filename.s);
+       if(ret) errmsg_warnsys("unlink(", filename.s, "): ", 0);
+     }
+  }
 }
 
 buffer*
@@ -92,6 +115,7 @@ unit_test_tmpfile(buffer* b, char* tmpl) {
   }
   buffer_free(b);
   buffer_init(b, (buffer_op_sys*)&write, fd, malloc(1024), 1024);
+  b->deinit = &unit_test_closetemp;
   return b;
 }
 
@@ -139,6 +163,9 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
       unit_test_copy(running->testlog, mu_->testlog);
     }
   }
+
+  buffer_flush(mu_->testlog);
+  buffer_flush(mu_->faillog);
 
   unit_test_cleanup(running);
   return rc;

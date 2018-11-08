@@ -101,11 +101,8 @@ TEST(test_path_skips) {
   const char* p = "//blah/la/lumpur";
   size_t i = 0;
   ASSERT_EQ(2, (i += path_skips(&p[i])));
-  ASSERT_EQ(6, (i += path_skips(&p[i])));
   ASSERT_EQ(7, (i += path_skips(&p[i])));
-  ASSERT_EQ(9, (i += path_skips(&p[i])));
   ASSERT_EQ(10, (i += path_skips(&p[i])));
-  ASSERT_EQ(16, (i += path_skips(&p[i])));
 }
 
 /*

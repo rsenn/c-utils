@@ -109,7 +109,7 @@ TEST(test_strlist_cat) {
   buffer_putsa(buffer_1, &sl1.sa);
   buffer_putnlflush(buffer_1);
 
-  ASSERT_EQ(0, !str_equal(strlist_at(&sl1, 2), "1234"));
+  ASSERT_EQ(0, str_diffn(strlist_at(&sl1, 2), "1234", 4));
   strlist_join(&sl1, &sa, '|');
 
   buffer_putsa(buffer_1, &sa);
@@ -272,13 +272,18 @@ TEST(test_strlist_push_sa) {
  * void strlist_push_tokens(strlist* sl, const char* s, const char* delim);
  */
 TEST(test_strlist_push_tokens) {
+  const char* s;
   strlist sl;
   strlist_init(&sl, '\0');
 
   strlist_push_tokens(&sl, "blah, l33t, 1234, 8192", ", ");
 
-  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 3), "8192"));
-  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 2), "1234"));
+
+  s = strlist_at(&sl, 3);
+  ASSERT_EQ(0, !str_equal(s, "8192"));
+
+  s = strlist_at(&sl, 2);
+  ASSERT_EQ(0, !str_equal(s, "1234"));
 }
 
 /*

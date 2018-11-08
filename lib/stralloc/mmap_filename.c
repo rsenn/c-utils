@@ -5,6 +5,7 @@
 
 #if WINDOWS_NATIVE
 #include <windows.h>
+#define BUFSIZE 512
 #else
 #include <limits.h>
 #include <unistd.h>
@@ -14,17 +15,55 @@
 int
 mmap_filename(void* map, stralloc* sa) {
 #if WINDOWS_NATIVE
-   typedef DWORD (WINAPI get_mmaped_filename_fn)(HANDLE,LPVOID,LPSTR,DWORD);
-   static get_mmaped_filename_fn* get_mmaped_filename;
+  typedef DWORD(WINAPI get_mmaped_filename_fn)(HANDLE, LPVOID, LPSTR, DWORD);
+  static get_mmaped_filename_fn* get_mmaped_filename;
 
-   if(get_mmaped_filename == 0) {
+  if(get_mmaped_filename == 0) {
     HANDLE* psapi = LoadLibraryA("psapi.dll");
     if((get_mmaped_filename = (get_mmaped_filename_fn*)GetProcAddress(psapi, "GetMappedFileNameA")) == 0)
       return 0;
-   }
+  }
 
   stralloc_ready(sa, MAX_PATH + 1);
-  sa->len = (size_t)(*get_mmaped_filename)(GetCurrentProcess(), map, sa->s, sa->a);
+  if((sa->len = (size_t) (*get_mmaped_filename)(GetCurrentProcess(), map, sa->s, sa->a))) {
+
+    /* Translate path with device name to drive letters. */
+    char szTemp[BUFSIZE];
+    szTemp[0] = '\0';
+
+    if(GetLogicalDriveStringsA(BUFSIZE - 1, szTemp)) {
+      char szName[MAX_PATH];
+      char szDrive[3] = " :";
+      BOOL bFound = FALSE;
+      char* p = szTemp;
+
+      do {
+        /* Copy the drive letter to the template string */
+        *szDrive = *p;
+
+        /* Look up each device name */
+        if(QueryDosDevice(szDrive, szName, MAX_PATH)) {
+          size_t uNameLen = strlen(szName);
+
+          if(uNameLen < MAX_PATH) {
+            bFound = strnicmp(sa->s, szName, uNameLen) == 0 && *(sa->s + uNameLen) == '\\';
+
+            if(bFound) {
+              /* Reconstruct sa->s using szTempFile
+                 Replace device path with DOS path */
+              stralloc_remove(sa, 0, uNameLen);
+              stralloc_prepends(sa, szDrive);
+              break;
+            }
+          }
+        }
+
+        /* Go to the next NULL character. */
+        while(*p++)
+          ;
+      } while(!bFound && *p); /* end of string */
+    }
+  }
   return sa->len > 0;
 #else
   char buf[1024];
