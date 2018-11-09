@@ -102,29 +102,6 @@
 
 int hmap_free_data(TUPLE* tuple);
 
-static int
-hmap_cmp(void* v1, int v1_len, void* v2, int v2_len) {
-  if(v1_len != v2_len) {
-    return -1;
-  }
-  return byte_diff(v1, v1_len, v2);
-}
-
-static int
-hash(const void* key, unsigned int len) {
-  unsigned int hash, i;
-
-  for(hash = i = 0; i < len; ++i) {
-    hash += ((const unsigned char*)key)[i];
-    hash += (hash << 10);
-    hash ^= (hash >> 6);
-  }
-  hash += (hash << 3);
-  hash ^= (hash >> 11);
-  hash += (hash << 15);
-  return hash & 0x7FFFFFFF;
-}
-
 #define HMAP_SET_DATA() \
   { \
     switch(data_type) { \
@@ -170,12 +147,5 @@ hash(const void* key, unsigned int len) {
     } \
   }
 
-// inline int
-// hmap_cmp(void* v1, int v1_len, void* v2, int v2_len) {
-//}
-
-// inline int
-// hash(void* key, unsigned int len) {
-
-//}
-
+int hmap_cmp(void* v1, int v1_len, void* v2, int v2_len);
+int hmap_hash(const void* key, unsigned int len);

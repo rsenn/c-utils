@@ -98,7 +98,7 @@ expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack
   }
   /* ..and variable substitutions */
   else {
-    unsigned long offset;
+    size_t offset;
 
     /* look for the variable.
        if the S_NULL flag is set and we have a var which is null
@@ -216,7 +216,7 @@ expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack
 
         for(i = 1; i <= vlen; i++) {
           str_copyn(str, v, i);
-          if(fnmatch(sa.s, v, FNM_PERIOD) == 0) break;
+          if(fnmatch(sa.s, (char*)v, FNM_PERIOD) == 0) break;
         }
 
         if(i > vlen) i = 0;
@@ -238,7 +238,7 @@ expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack
 
         for(i = vlen; i > 0; i--) {
           str_copyn(str, v, i);
-          if(fnmatch(sa.s,  v, FNM_PERIOD) == 0) break;
+          if(fnmatch(sa.s, (char*)v, FNM_PERIOD) == 0) break;
         }
 
         if(i == 0) i = vlen;

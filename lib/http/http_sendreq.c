@@ -11,7 +11,8 @@ do_send(fd_t s, const void* buf, size_t len) {
 
 int
 http_sendreq(http* h) {
-  if(h->request == NULL) return 0;
+  if(h->request == NULL)
+    return 0;
   buffer_puts(&h->q.out, "GET ");
   buffer_putsa(&h->q.out, &h->request->location);
   buffer_puts(&h->q.out, " HTTP/1.1\r\n");
@@ -20,5 +21,6 @@ http_sendreq(http* h) {
   buffer_puts(&h->q.out, "\r\n");
   buffer_putsflush(&h->q.out, "\r\n");
   buffer_flush(&h->q.out);
+
   return 1;
 }

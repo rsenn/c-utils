@@ -32,7 +32,9 @@ extern void* io_getfds();
 //#   define open _open
 //#   define close _close
 #  endif
+# if !defined(__DMC__)
 #  define popen _popen
+# endif
 # endif
 //#define lseek lseek64
 # define llseek lseek64

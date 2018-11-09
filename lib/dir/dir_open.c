@@ -39,7 +39,7 @@ dir_open(struct dir_s* d, const char* p)
 
       wpath[wlen] = '\0';
       dir_INTERNAL(d)->dir_path = wpath;
-      h = (intptr_t)FindFirstFileW(wpath, &dir_INTERNAL(d)->dir_finddata);
+      h = FindFirstFileW(wpath, &dir_INTERNAL(d)->dir_finddata);
     }
     dir_INTERNAL(d)->tmpname = NULL;
 #else

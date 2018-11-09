@@ -16,7 +16,8 @@ fmt_httpdate(char* dest, time_t t) {
   struct tm* x = gmtime(&t);
   size_t i;
 
-  if(dest == 0) return 29;
+  if(dest == 0)
+    return 29;
   /* "Sun, 06 Nov 1994 08:49:37 GMT" */
   byte_copy(dest, 3, days + 3 * x->tm_wday);
   i = 3;

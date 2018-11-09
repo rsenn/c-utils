@@ -1,9 +1,6 @@
 #include "../fmt.h"
 
-static char
-tohex(char c) {
-  return (char)(c >= 10 ? c - 10 + 'a' : c + '0');
-}
+#define tohex(c) (char)((c) >= 10 ? (c) - 10 + 'a' : (c) + '0')
 
 size_t
 fmt_xint64(char* dest, uint64 i) {

@@ -53,7 +53,9 @@ main(int argc, char* argv[]) {
   int ret;
 
   errmsg_iam(argv[0]);
-    http_init(&h, url_host, url_port);
+
+  http_init(&h, url_host, url_port);
+
   ret = http_get(&h, url_location);
 
   buffer_init(&in, (buffer_op_sys*)&do_recv, h.sock, inbuf, sizeof(inbuf));

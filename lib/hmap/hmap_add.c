@@ -11,7 +11,7 @@ hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int dat
   char* data = NULL;
   va_list args;
 
-  int index = hash(key, k_len) % (*hmap_db)->bucket_size;
+  int index = hmap_hash(key, k_len) % (*hmap_db)->bucket_size;
 
   VALIDATE_DB(*hmap_db, key, k_len);
 

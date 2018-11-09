@@ -38,19 +38,16 @@ typedef enum {
   HTTP_STATUS_FINISH
 } http_status;
 
-
 typedef struct http_response_s {
-
   http_transfer_type transfer;
   http_status status;
-  stralloc body;
   stralloc data;
   size_t ptr;
   size_t chnk;
   size_t line;
   union {
-    size_t content_length;
-    size_t chunk_length;
+    unsigned long content_length;
+    unsigned long chunk_length;
   };
   stralloc boundary;
 //  buffer rbuf;
@@ -62,6 +59,7 @@ typedef struct {
     buffer out;
     buffer in;
   } q;
+  buffer data;
   stralloc host;
   ipv4addr addr;
   ipv4port port;
@@ -84,4 +82,3 @@ int     http_socket(http* h);
 #endif
 
 #endif /* defined HTTP_H */
-

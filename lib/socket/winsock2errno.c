@@ -14,7 +14,7 @@
 #define EFAULT 14
 #endif
 
-#ifndef ENAMETOOLONG 
+#ifndef ENAMETOOLONG
 #define ENAMETOOLONG 91 /* File or path name too long */
 #endif
 
@@ -27,19 +27,19 @@
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
 #endif /* !defined(EPROTONOSUPPORT) */
- 
+
 #ifndef ETIMEDOUT
 #define ETIMEDOUT WSAETIMEDOUT
 #endif /* !defined(ETIMEDOUT) */
- 
+
 #ifndef EWOULDBLOCK
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #endif /* !defined(EWOULDBLOCK) */
- 
+
 #ifndef EINPROGRESS
 #define EINPROGRESS WSAEINPROGRESS
 #endif /* !defined(EINPROGRESS) */
- 
+
 #ifndef ECONNREFUSED
 #define ECONNREFUSED WSAECONNREFUSED
 #endif /* !defined(ECONNREFUSED) */
@@ -73,6 +73,10 @@ winsock2errno(long l) {
       errno = ENOTEMPTY; break;
     case WSAEPROTONOSUPPORT:
       errno = EPROTONOSUPPORT; break;
+    case WSAEWOULDBLOCK:
+        errno = EWOULDBLOCK; break;
+    case WSAEINPROGRESS:
+      errno = EINPROGRESS; break;
     default:
       errno = x;
       break;

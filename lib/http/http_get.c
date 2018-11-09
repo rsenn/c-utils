@@ -18,6 +18,7 @@ http_get(http* h, const char* location) {
   int ret;
   struct hostent* he;
   ipv4addr* a;
+  char ip[FMT_IP4];
   stralloc dns;
   uint32 serial = 0;
 
@@ -35,13 +36,7 @@ http_get(http* h, const char* location) {
 
   buffer_putsa(buffer_2, &h->host);
   buffer_puts(buffer_2, " (");
-  buffer_putulong(buffer_2, a->iaddr & 0xff);
-  buffer_puts(buffer_2, ".");
-  buffer_putulong(buffer_2, (a->iaddr >> 8) & 0xff);
-  buffer_puts(buffer_2, ".");
-  buffer_putulong(buffer_2, (a->iaddr >> 16) & 0xff);
-  buffer_puts(buffer_2, ".");
-  buffer_putulong(buffer_2, (a->iaddr >> 24) & 0xff);
+  buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)a->addr));
   buffer_puts(buffer_2, ")");
   buffer_putnlflush(buffer_2);
 
@@ -65,7 +60,6 @@ http_get(http* h, const char* location) {
     http_response** r = &h->response;
     (*r) = malloc(sizeof(http_response));
     byte_zero((*r), sizeof(http_response));
-    stralloc_init(&((*r)->body));
     stralloc_init(&((*r)->data));
     stralloc_init(&((*r)->boundary));
   }

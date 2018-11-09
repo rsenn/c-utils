@@ -5,7 +5,7 @@
 
 int
 hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data) {
-  int index = hash((void*)key, k_len) % hmap_db->bucket_size;
+  int index = hmap_hash((void*)key, k_len) % hmap_db->bucket_size;
   TUPLE* ptr_tuple = (hmap_db->tuple + index);
   TUPLE* ptr_hash_tuple = NULL;
   TUPLE* itr_tuple;
