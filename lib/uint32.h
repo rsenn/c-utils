@@ -9,34 +9,37 @@
 #elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
 #include <stdint.h>
+#else
+#define __MS_types__
+#include <sys/types.h>
 #endif
+
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if defined(_MSC_VER)
-# include <windows.h>
-# define uint32_t UINT32
-# define int32_t INT32
+#if defined(__UINT32_TYPE__) && defined(__INT32_TYPE__)
+typedef __UINT32_TYPE__ uint32;
+typedef __INT32_TYPE__ int32;
 
-typedef uint32_t uint32;
+#elif defined(___int32_t_defined) || defined(__BIT_TYPES_DEFINED__)
+typedef u_int32_t uint32;
 typedef int32_t int32;
+
+#elif defined(_MSC_VER) || defined(__BORLANDC__)
+#include <windows.h>
+typedef UINT32 uint32;
+typedef INT32 int32;
 
 #elif defined(__MINGW32__) || defined(__MINGW64__)
 typedef uint32_t uint32;
 typedef int32_t int32;
 
-#elif defined(__GNUC__)
-typedef __UINT32_TYPE__ uint32;
-typedef __INT32_TYPE__ int32;
-
-#elif !defined(__BORLANDC__)
+#else
 typedef uint32_t uint32;
-# if !defined(_WINSOCK2API_) || defined(__TCC__)
 typedef int32_t int32;
-# endif
-
 #endif
 
 #if !defined(NO_UINT32_MACROS)

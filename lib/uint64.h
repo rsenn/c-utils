@@ -9,6 +9,9 @@
 #elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
 #include <stdint.h>
+#else
+#define __MS_types__
+#include <sys/types.h>
 #endif
 
 #include <stddef.h>
@@ -21,7 +24,7 @@ extern "C" {
 typedef __UINT64_TYPE__ uint64;
 typedef __INT64_TYPE__ int64;
 
-#elif defined(___int64_t_defined)
+#elif defined(___int64_t_defined) || defined(__BIT_TYPES_DEFINED__)
 typedef u_int64_t uint64;
 typedef int64_t int64;
 

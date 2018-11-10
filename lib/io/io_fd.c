@@ -1,16 +1,12 @@
-#include "../windoze.h"
-#include "../socket_internal.h"
-
 #ifndef _POSIX_SOURCE
 #define _POSIX_SOURCE
 #endif
-
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
-
+#include "../socket_internal.h"
 #include "../array.h"
-#include <errno.h>
+
 #define my_extern
 #include "../io_internal.h"
 #undef my_extern
@@ -27,7 +23,7 @@
 #endif
 
 #include <fcntl.h>
-#include <sys/types.h>
+#include <errno.h>
 
 #ifdef HAVE_KQUEUE
 #include <sys/event.h>
@@ -37,7 +33,6 @@
 #include <inttypes.h>
 #include <sys/epoll.h>
 #endif
-
 
 #ifdef HAVE_DEVPOLL
 #include <sys/devpoll.h>
@@ -51,7 +46,7 @@
 
 #ifdef __dietlibc__
 #include <sys/atomic.h>
-#elif WINDOWS
+#elif WINDOWS_NATIVE
 #define __CAS(ptr, oldval, newval) InterlockedCompareExchange(ptr, newval, oldval)
 #else
 #define __CAS(ptr, oldval, newval) __sync_val_compare_and_swap(ptr, oldval, newval)
@@ -76,9 +71,6 @@ HANDLE io_comport;
 #define F_SETSIG        10      /* for sockets. */
 #define F_GETSIG        11      /* for sockets. */
 #endif
-
-
-
 
 static iarray io_fds;
 

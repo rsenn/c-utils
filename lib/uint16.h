@@ -1,4 +1,4 @@
-/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
+	/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
 #ifndef UINT16_H
 #define UINT16_H
 
@@ -9,28 +9,35 @@
 #elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
 #include <stdint.h>
+#else
+#define __MS_types__
+#include <sys/types.h>
 #endif
-#if defined(__MINGW32__) || defined(__MINGW64__)
-#include <stdint.h>
-#endif
+
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if defined(_MSC_VER)
-# include <windows.h>
-# define uint16_t UINT16
-# define int16_t INT16
-
-typedef uint16_t uint16;
-typedef int16_t int16;
-
-#elif defined(__GNUC__) && !defined(__MINGW32__)
+#if defined(__UINT16_TYPE__) && defined(__INT16_TYPE__)
 typedef __UINT16_TYPE__ uint16;
 typedef __INT16_TYPE__ int16;
 
-#elif !defined(__BORLANDC__)
+#elif defined(___int16_t_defined) || defined(__BIT_TYPES_DEFINED__)
+typedef u_int16_t uint16;
+typedef int16_t int16;
+
+#elif defined(_MSC_VER) || defined(__BORLANDC__)
+#include <windows.h>
+typedef UINT16 uint16;
+typedef INT16 int16;
+
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+typedef uint16_t uint16;
+typedef int16_t int16;
+
+#else
 typedef uint16_t uint16;
 typedef int16_t int16;
 #endif
