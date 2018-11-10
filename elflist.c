@@ -5,27 +5,85 @@
 #include "lib/elf.h"
 #include "lib/mmap.h"
 #include "lib/str.h"
-#include <assert.h>
-#include <stdlib.h>
+#include "lib/unix.h"
+#include "lib/getopt.h"
 
-void elf_dump_dynamic(uint8* base);
-void elf_dump_sections(uint8* base);
-void elf_dump_segments(uint8* base);
+void elf_dump_dynamic(char* base);
+void elf_dump_sections(char* base);
+void elf_dump_segments(char* base);
+void elf_dump_symbols(char* base, range section, range text, const char* stname, int binding);
+void elf_print_prefix(buffer* b);
+
+static int list_defined, list_undefined;
+static const char* filename;
+
+void
+elf_print_prefix(buffer* b) {
+  if(filename)
+    buffer_putm_internal(b, filename, ":", 0);
+}
+
+void
+usage(char* av0) {
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] <file...>\n",
+                       "\n",
+                       "Options:\n",
+                       "\n",
+                       "  -h, --help              Show this help\n",
+                       "  -D, --defined           List defined symbols\n",
+                       "  -U, --undefined         List undefined symbols\n",
+                       "\n",
+                       0);
+  buffer_flush(buffer_1);
+}
 
 int
 main(int argc, char** argv) {
-  uint8* base = NULL;
+  char* base = NULL;
   size_t filesize;
 
-  if(argc < 2) {
+  int c, index = 0;
+
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"defined", 0, &list_defined, 'D'},
+                           {"undefined", 0, &list_undefined, 'U'},
+                           {0}};
+
+  for(;;) {
+    c = getopt_long(argc, argv, "hDU", opts, &index);
+    if(c == -1)
+      break;
+    if(c == '\0')
+      continue;
+
+    switch(c) {
+      case 'h': usage(argv[0]); return 0;
+      case 'D': list_defined = 1; break;
+      case 'U': list_undefined = 1; break;
+      default: {
+        usage(argv[0]);
+        return 1;
+      }
+    }
+  }
+
+  if(!(list_defined | list_undefined))
+    list_defined = list_undefined = 1;
+
+  if(optind == argc) {
     buffer_putm_3(buffer_1, "Usage: ", str_basename(argv[0]), " XXX.dll\n");
     buffer_flush(buffer_1);
     return 0;
   }
 
-  base = (uint8*)mmap_private(argv[1], &filesize);
+  for(; argv[optind]; ++optind) {
+    filename = argv[optind];
 
-  {
+    base = (char*)mmap_private(filename, &filesize);
+
     const char* interp = elf_get_section(base, ".interp", NULL);
 
     elf_dump_sections(base);
@@ -37,19 +95,25 @@ main(int argc, char** argv) {
       buffer_putnlflush(buffer_1);
     }
     /*    elf_dump_imports(base);*/
-  }
 
-  mmap_unmap(base, filesize);
+    range symtab = elf_get_symtab_r(base);
+    range text = elf_get_section_r(base, ".text");
+
+    elf_dump_symbols(base, symtab, text, ".strtab", ELF_STB_GLOBAL);
+    elf_dump_symbols(base, symtab, text, ".strtab", ELF_STB_LOCAL);
+
+    mmap_unmap(base, filesize);
+  }
 
   return 0;
 }
 void
-elf_dump_dynamic(uint8* base) {
+elf_dump_dynamic(char* base) {
 
-  int di = elf_section_index(base, ".dynamic");
+  int di = elf_section_find(base, ".dynamic");
   range dyn;
   void* entry;
-  const uint8* dynstrtab = NULL;
+  const char* dynstrtab = NULL;
   static const char* const dynamic_types[] = {"NULL",       "NEEDED",     "PLTRELSZ",      "PLTGOT",         "HASH",
                                               "STRTAB",     "SYMTAB",     "RELA",          "RELASZ",         "RELAENT",
                                               "STRSZ",      "SYMENT",     "INIT",          "FINI",           "SONAME",
@@ -100,36 +164,75 @@ elf_dump_dynamic(uint8* base) {
   }
 }
 
+    extern int buffer_putptr_size_2;
 void
-elf_dump_symbols(uint8* base, uint8* tab, size_t size, const char* stname) {
+elf_dump_symbols(char* base, range section, range text, const char* stname, int binding) {
   void* symbol;
-  int si = elf_section_index(base, stname);
+  int si = elf_section_find(base, stname);
   const char* strtab = elf_section_offset(base, si);
   static const char* const binding_types[] = {"LOCAL", "GLOBAL", "WEAK"};
   static const char* const symbol_types[] = {"NOTYPE", "OBJECT", "FUNC", "SECTION", "FILE", "COMMON", "TLS"};
-  range symtab;
-  symtab.start = (char*)tab;
-  symtab.end = (char*)tab + size;
+  range symtab = section;
   symtab.elem_size = ELF_BITS(base) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
 
+/*  buffer_putspad(buffer_1, "symbol name", 33);
+  buffer_putspad(buffer_1, "value", ELF_BITS(base) / 4 + 2 + 1);
+  buffer_putspad(buffer_1, "size", ELF_BITS(base) / 4 + 2 + 1);
+  if(binding < 0)
+    buffer_putspad(buffer_1, "binding", 16);
+  buffer_puts(buffer_1, "type");
+  buffer_putnlflush(buffer_1);*/
+
   range_foreach(&symtab, symbol) {
+    range code = elf_symbol_r(base, symbol);
+
     uint32 name = ELF_GET(base, symbol, sym, st_name);
-    uint64 value = ELF_GET(base, symbol, sym, st_value);
-    uint64 size = ELF_GET(base, symbol, sym, st_size);
     uint8 info = ELF_GET(base, symbol, sym, st_info);
 
-    if(!name)
+    if(!strtab[name])
       continue;
+
+    if(binding > -1 && ELF_ELF32_ST_BIND(info) != binding)
+      continue;
+
+    if(range_empty(&code)  && !list_undefined) continue; 
+    if(!range_empty(&code)  && !list_defined) continue; 
+
+    elf_print_prefix(buffer_1);
+    
+    buffer_putptr_size_2 = ELF_BITS(base) / 4;
+
+    if(!range_empty(&code))
+      buffer_putptr(buffer_1, code.start - base);
+    else
+      buffer_putnspace(buffer_1, buffer_putptr_size_2);
+    
+    if(ELF_ELF32_ST_BIND(info) == ELF_STB_GLOBAL) 
+      buffer_puts(buffer_1, !range_empty(&code) ? " T " : " U ");
+    else
+      buffer_puts(buffer_1, !range_empty(&code) ? " t " : " u ");
 
     buffer_putspad(buffer_1, &(strtab[name]), 32);
     /*buffer_puts(buffer_1, "0x");
     buffer_putxlong0(buffer_1, name, 8);
-    */ buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, value, ELF_BITS(base) / 4);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, size, ELF_BITS(base) / 4);
-    buffer_putspace(buffer_1);
-    buffer_puts(buffer_1, binding_types[ELF_ELF32_ST_BIND(info)]);
+    */
+    /*jjif(size) {
+      buffer_puts(buffer_1, " 0x");
+      buffer_putxint640(buffer_1, value, ELF_BITS(base) / 4);
+    } else {
+      buffer_putnspace(buffer_1, ELF_BITS(base) / 4 + 3);
+    }
+
+    if(size) {
+      buffer_puts(buffer_1, "   ");
+      buffer_putulong0(buffer_1, size, ELF_BITS(base) / 4);
+    } else {
+      buffer_putnspace(buffer_1, ELF_BITS(base) / 4 + 3);
+    }*/
+    if(binding < 0) {
+      buffer_putspace(buffer_1);
+      buffer_putspad(buffer_1, binding_types[ELF_ELF32_ST_BIND(info)], 16);
+    }
     buffer_putspace(buffer_1);
     buffer_puts(buffer_1, symbol_types[ELF_ELF32_ST_TYPE(info)]);
 
@@ -138,7 +241,7 @@ elf_dump_symbols(uint8* base, uint8* tab, size_t size, const char* stname) {
 }
 
 void
-elf_dump_sections(uint8* base) {
+elf_dump_sections(char* base) {
   int i, n;
   range sections = elf_section_headers(base);
   void* section;
@@ -177,21 +280,22 @@ elf_dump_sections(uint8* base) {
     buffer_puts(buffer_1, " 0x");
     buffer_putxint640(buffer_1, align, ELF_BITS(base) / 4);
     buffer_putspace(buffer_1);
-    buffer_puts(buffer_1, elf_section_type(type));
+    buffer_puts(buffer_1, elf_section_typename(type));
     buffer_putnlflush(buffer_1);
 
     if(type == ELF_SHT_SYMTAB || type == ELF_SHT_DYNSYM) {
-      elf_dump_symbols(base, base + offs, size, type == ELF_SHT_SYMTAB ? ".strtab" : ".dynstr");
+      //    elf_dump_symbols(base, elf_section(base, section), type == ELF_SHT_SYMTAB ? ".strtab" : ".dynstr");
     }
   }
 }
 void
-elf_dump_segments(uint8* base) {
+elf_dump_segments(char* base) {
   int i, n;
   range segments = elf_program_headers(base);
   void* segment;
 
-  if(range_size(&segments) == 0) return;
+  if(range_size(&segments) == 0)
+    return;
 
   buffer_putspad(buffer_1, "paddr", ELF_BITS(base) / 4);
   buffer_putnspace(buffer_1, 3);

@@ -2440,22 +2440,42 @@ to two GOT entries for GD symbol */
 #define ELF_32(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS32)
 #define ELF_64(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64)
 
-uint8* elf_header_ident(void* elf);
-uint64 elf_get_value(void* elf, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
-uint8* elf_header_ident(void* elf);
-void* elf_header_sections(void* elf);
-range elf_program_headers(void* elf);
-range elf_section_headers(void* elf);
-const char* elf_shstrtab(void* elf);
-const char* elf_section_type(int i);
-int elf_section_index(void* elf, const char* sname);
-void* elf_section_offset(void* elf, int sn);
-size_t elf_section_size(void* elf, int sn);
-range elf_dynamic_section(void* elf);
-void* elf_get_section(void* elf, const char* name, size_t* szp);
+#define ELF_STRUCT_SIZE(elf, st) \
+  (ELF_64(elf) ? sizeof(elf64_##st) : sizeof(elf32_##st))
+
+range       elf_dynamic_section(void*);
+range       elf_get_section_r(void*, const char* name);
+void*       elf_get_section(void*, const char* name, size_t* szp);
+range       elf_get_symtab_r(void*);
+void*       elf_get_symtab(void*, size_t* szp);
+uint64      elf_get_value(void*, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+uint8*      elf_header_ident(void*);
+void*       elf_header_sections(void*);
+range       elf_program_headers(void*);
+int         elf_section_find(void*, const char* sname);
+range       elf_section_headers(void*);
+int         elf_section_index(void*, uint32 sh_type);
+void*       elf_section_offset(void*, int sn);
+size_t      elf_section_size(void*, int sn);
+const char* elf_section_typename(uint32);
+range       elf_section(void*, void* shdr);
+const char* elf_shstrtab(void*);
+
+#define ELF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
+#define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
+
+#define ELF_ADDR(elf, ptr, st, field) \
+  ((void*)(((char*)ptr)+ELF_OFFSET(elf, st, field)))
+
+#define ELF_OFFSET(elf, st, field) \
+  (ELF_64(elf) ? ELF_FIELD_OFFSET(elf64_##st, field) : ELF_FIELD_OFFSET(elf32_##st, field))
+
+#define ELF_SIZE(elf, st, field) \
+  (ELF_64(elf) ? ELF_FIELD_SIZE(elf64_##st, field) : ELF_FIELD_SIZE(elf32_##st, field))
 
 #ifdef __cplusplus
 };
 #endif
 
 #endif /* elf.h */
+range elf_symbol_r(void*, void* sym);

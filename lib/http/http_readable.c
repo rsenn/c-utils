@@ -103,9 +103,14 @@ http_readable(http* h) {
       }
 
       if(r->content_length) {
-        stralloc_readyplus(&r->data, r->content_length);
+        size_t a;
+        
+        if(r->content_length < (a = r->data.a - r->data.len)) a = r->content_length;
+        if(a > 1024) a = 1024;
 
-        if((ret = buffer_get(&h->q.in, &r->data.s[r->data.len], r->content_length)) <= 0)
+        stralloc_readyplus(&r->data, 1024);
+
+        if((ret = buffer_get(&h->q.in, &r->data.s[r->data.len], r->data.a - r->data.len)) <= 0)
           break;
 
          putline("data", &r->data.s[r->data.len], 1, &h->q.in);

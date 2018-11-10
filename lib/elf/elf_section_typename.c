@@ -1,7 +1,7 @@
 #include "../elf.h"
 
 const char*
-elf_section_type(int i) {
+elf_section_typename(uint32 sh_type) {
   static const char* const types[] = {"<0>",
                                       "PROGBITS",
                                       "SYMTAB",
@@ -20,5 +20,5 @@ elf_section_type(int i) {
                                       "GROUP",
                                       "SYMTAB_SHNDX",
                                       "NUM"};
-  return types[i];
+  return types[sh_type];
 }

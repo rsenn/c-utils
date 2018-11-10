@@ -1,8 +1,12 @@
-#include "../windoze.h"
+#define USE_WS2_32 1
+
+#if WINDOWS_NATIVE
+#define _WINSOCKAPI_
+#endif
+
 #include "../socket_internal.h"
 #include "../ndelay.h"
 
-#include <sys/types.h>
 #include <errno.h>
 
 int socket_tcp4(void) {

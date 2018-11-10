@@ -15,7 +15,12 @@ typedef  struct range {
 
 static inline size_t
 range_size(const range* r) {
-  return (r->end - r->start) / r->elem_size;
+  return (r->end - r->start) / (r->elem_size ? r->elem_size : 1);
+}
+
+static inline int
+range_empty(const range* r) {
+  return r->end == r->start;
 }
 
 void range_init(range* r, void* start, size_t n_elem, size_t elem_size);

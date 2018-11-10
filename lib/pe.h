@@ -446,6 +446,9 @@ const char* pe_datadir_name(int);
 #define PE_SIZE(pe, st, field) \
   (PE_64(pe) ? PE_FIELD_SIZE(pe64_##st, field) : PE_FIELD_SIZE(pe32_##st, field))
 
+#define PE_STRUCT_SIZE(pe, st) \
+  (PE_64(pe) ? sizeof(pe64_##st) : sizeof(pe32_##st))
+
 #define PE_GET(pe, ptr, st, field) \
   pe_get_value(pe, \
                ptr, \
