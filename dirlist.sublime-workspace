@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"range",
+				"range"
+			],
+			[
 				"USE_",
 				"USE_HD44780_LCD"
 			]
@@ -12,103 +16,96 @@
 	"buffers":
 	[
 		{
-			"contents": "pe_dump_sections\nPE_DUMP_FIELD\nbuffer_putspad\npe_print_data_directories\npe_print_export_directory\npe_dump_exports\npe_dump_imports\nusage\nmain\npe_dump_sections",
+			"contents": "#include \"../omf.h\"\n\nomf_record*\nomf_begin(omf_file* omf) {\n return omf->map;\n}\n",
+			"file": "lib/omf/omf_begin.c",
+			"file_size": 80,
+			"file_write_time": 131862838094351654,
 			"settings":
 			{
-				"buffer_size": 157,
-				"line_ending": "Windows",
-				"name": "𝌆 Outline",
-				"scratch": true
-			}
-		},
-		{
-			"file": "lib/pe/pe_get_datadir.c",
-			"settings":
-			{
-				"buffer_size": 292,
+				"buffer_size": 80,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"file": "lib/omf/omf_end.c",
 			"settings":
 			{
-				"buffer_size": 53745,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "list-r.c",
-			"settings":
-			{
-				"buffer_size": 21027,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pelist.c",
-			"settings":
-			{
-				"buffer_size": 12991,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
-			"settings":
-			{
-				"buffer_size": 614,
+				"buffer_size": 123,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"contents": "Package Control Messages\n========================\n\nSublimeAStyleFormatter\n----------------------\n\n  SublimeAStyleFormatter\n  ======================\n  \n  SublimeAStyleFormatter is a simple code formatter plugin for Sublime Text 2.\n  It provides ability to format C, C++, C#, and Java files.\n  \n  Usage\n  -----\n  ### Key Bindings\n  The default key bindings for this plugin:\n  \n  **Windows, Linux:**\n  + `ctrl+alt+f`: Format current file\n  + `ctrl+k, ctrl+f`: Format current selection\n  \n  **OSX:**\n  + `ctrl+alt+f`: Format current file\n  + `super+k,super+f`: Format current selection\n  \n  ### Command Palette\n  Open the command palette, it apperas as `SublimeAStyleFormatter: Format Current File`\n  and `SublimeAStyleFormatter Format Current Selection`.\n",
+			"file": "lib/omf/omf_next.c",
 			"settings":
 			{
-				"buffer_size": 752,
-				"line_ending": "Windows",
-				"name": "Package Control Messages",
-				"read_only": true,
-				"scratch": true
+				"buffer_size": 218,
+				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/process/process_create.c",
+			"file": "lib/omf/omf_data.c",
 			"settings":
 			{
-				"buffer_size": 2131,
+				"buffer_size": 211,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "lib/omf/omf_name.c",
+			"settings":
+			{
+				"buffer_size": 2370,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/clang_format.sublime-settings",
+			"file": "lib/omf.h",
 			"settings":
 			{
-				"buffer_size": 1350,
+				"buffer_size": 818,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "omflist.c",
+			"settings":
+			{
+				"buffer_size": 1908,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "elflist.c",
+			"settings":
+			{
+				"buffer_size": 10699,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/omf/omf_close.c",
+			"settings":
+			{
+				"buffer_size": 89,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "lib/path/path_relative.c",
+			"file": "lib/omf/omf_open.c",
 			"settings":
 			{
-				"buffer_size": 2151,
-				"encoding": "UTF-8",
+				"buffer_size": 185,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/stralloc/mmap_filename.c",
+			"file": "lib/range.h",
 			"settings":
 			{
-				"buffer_size": 2589,
-				"encoding": "UTF-8",
+				"buffer_size": 935,
 				"line_ending": "Unix"
 			}
 		}
@@ -256,17 +253,31 @@
 	[
 		"/C/Users/roman/Desktop/dirlist",
 		"/C/Users/roman/Desktop/dirlist/lib",
+		"/C/Users/roman/Desktop/dirlist/lib/case",
+		"/C/Users/roman/Desktop/dirlist/lib/omf",
+		"/C/Users/roman/Desktop/dirlist/lib/open",
 		"/C/Users/roman/Desktop/dirlist/lib/process"
 	],
 	"file_history":
 	[
+		"/C/Users/roman/Desktop/dirlist/lib/pe/pe_get_datadir.c",
+		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
+		"/C/Users/roman/Desktop/dirlist/list-r.c",
+		"/C/Users/roman/Desktop/dirlist/pelist.c",
+		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_next_record.c",
+		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_open.c",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/roman/Desktop/dirlist/lib/process/process_create.c",
+		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/clang_format.sublime-settings",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_relative.c",
+		"/C/Users/roman/Desktop/dirlist/lib/stralloc/mmap_filename.c",
+		"/C/Users/roman/Desktop/dirlist/lib/omf.h",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Cscope/CscopeSublime.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/Default (Windows).sublime-keymap",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format_custom.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/lib/pe.h",
 		"/C/Program Files/IDM Computer Solutions/UEStudio/configs/Lcc win32 Compiler/Win32 Console Application",
-		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/lib/pe/pe_thunk.c",
 		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push.c",
@@ -279,7 +290,6 @@
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_canonical.c",
 		"/C/Users/roman/Desktop/dirlist/pathtool.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
 		"/B/Programs/mplayer/mplayer/config",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_collapse.c",
@@ -377,17 +387,7 @@
 		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_cat.c",
 		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_push_sa.c",
 		"/C/Users/roman/Documents/dirlist/mediathek-parser.c",
-		"/C/Users/roman/Documents/dirlist/dirlist.sublime-project",
-		"/C/Users/roman/Documents/dirlist/lib/strlist/strlist_push.c",
-		"/C/Users/roman/Documents/dirlist/lib/strlist_copy.c",
-		"/I/PortableApps/SublimeTextPortable/App/64-bit/Data/Packages/CodeFormatter/Default (Windows).sublime-keymap",
-		"/I/PortableApps/SublimeTextPortable/App/64-bit/Data/Packages/User/Default (Windows).sublime-keymap",
-		"/I/PortableApps/SublimeTextPortable/App/64-bit/Data/Packages/Clang Format/Default (Windows).sublime-keymap",
-		"/I/PortableApps/SublimeTextPortable/App/64-bit/Data/Packages/User/SchemrFavorites.sublime-settings",
-		"/C/Users/roman/Documents/dirlist/Makefile",
-		"/C/Users/roman/Documents/dirlist/lib/stralloc.h",
-		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_cats.c",
-		"/C/Users/roman/Documents/dirlist/lib/stralloc/stralloc_append_sa.c"
+		"/C/Users/roman/Documents/dirlist/dirlist.sublime-project"
 	],
 	"find":
 	{
@@ -405,6 +405,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"base",
 			"last_error_str",
 			"gen_link_rules",
 			"srcdir",
@@ -579,114 +580,86 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"sheets":
+			[
+			]
+		},
+		{
+			"selected": 7,
 			"sheets":
 			[
 				{
 					"buffer": 0,
+					"file": "lib/omf/omf_begin.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 157,
+						"buffer_size": 80,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								157,
-								157
+								80,
+								80
 							]
 						],
 						"settings":
 						{
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\pelist.c",
-							"outline_rename_mode": false,
-							"symkeys":
-							[
-								[
-									366,
-									382
-								],
-								[
-									406,
-									419
-								],
-								[
-									446,
-									460
-								],
-								[
-									2529,
-									2554
-								],
-								[
-									3098,
-									3123
-								],
-								[
-									4763,
-									4778
-								],
-								[
-									6016,
-									6031
-								],
-								[
-									7736,
-									7741
-								],
-								[
-									8677,
-									8681
-								],
-								[
-									11583,
-									11599
-								]
-							],
-							"symlist":
-							[
-								"pe_dump_sections",
-								"PE_DUMP_FIELD",
-								"buffer_putspad",
-								"pe_print_data_directories",
-								"pe_print_export_directory",
-								"pe_dump_exports",
-								"pe_dump_imports",
-								"usage",
-								"main",
-								"pe_dump_sections"
-							],
-							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 2.0,
+						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 8,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 3,
-			"sheets":
-			[
+				},
 				{
 					"buffer": 1,
-					"file": "lib/pe/pe_get_datadir.c",
+					"file": "lib/omf/omf_end.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 292,
+						"buffer_size": 123,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
+								67,
+								77
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/omf/omf_next.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 218,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								176,
 								0
 							]
 						],
@@ -698,151 +671,201 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 53745,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								29881,
-								29880
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 18390.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "list-r.c",
+					"file": "lib/omf/omf_data.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 21027,
+						"buffer_size": 211,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								19115,
-								19115
+								151,
+								151
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C99/C99.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 8762.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "pelist.c",
+					"file": "lib/omf/omf_name.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12991,
+						"buffer_size": 2370,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11583,
-								11599
+								19,
+								19
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4150.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 614,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								243,
-								243
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 5,
+					"file": "lib/omf.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 752,
+						"buffer_size": 818,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								752,
-								752
+								572,
+								580
 							]
 						],
 						"settings":
 						{
-							"auto_indent": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_width": 2,
-							"word_wrap": true
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "omflist.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1908,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1620,
+								1620
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 263.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "elflist.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10699,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3833,
+								3833
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1254.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/omf/omf_close.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 89,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								89,
+								89
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/omf/omf_open.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 185,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								185
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -852,123 +875,31 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "lib/process/process_create.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2131,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2038,
-								2038
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 474.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/clang_format.sublime-settings",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1350,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1082,
-								1082
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 141.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/path/path_relative.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2151,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								185,
-								185
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
 					"buffer": 10,
-					"file": "lib/stralloc/mmap_filename.c",
+					"file": "lib/range.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2589,
+						"buffer_size": 935,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								168,
+								159
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C99/C99.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 82.0,
+						"translation.y": 104.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
@@ -1068,7 +999,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 1,
+	"selected_group": 0,
 	"settings":
 	{
 	},
@@ -1076,7 +1007,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 260.0,
+	"side_bar_width": 382.0,
 	"status_bar_visible": false,
 	"template_settings":
 	{

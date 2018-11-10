@@ -9,12 +9,16 @@
 #endif
 
 static ssize_t
-http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
+http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
+  http* h = b->cookie;
+
   return winsock2errno(recv(fd, buf, len, 0));
 }
 
 static ssize_t
-http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
+http_socket_write(fd_t fd, void* buf, size_t len, buffer* b) {
+  http* h = b->cookie;
+
   return winsock2errno(send(fd, buf, len, 0));
 }
 
@@ -28,6 +32,7 @@ http_socket(http* h) {
     h->q.in.fd = h->sock;
   } else {
     buffer_read_fd(&h->q.in, h->sock);
+	h->q.in.cookie = (void*)h;
   }
   h->q.in.op = &http_socket_read;
 
@@ -35,6 +40,7 @@ http_socket(http* h) {
     h->q.out.fd = h->sock;
   } else {
     buffer_write_fd(&h->q.out, h->sock);
+	h->q.out.cookie = (void*)h;
   }
   h->q.out.op = &http_socket_write;
 }
