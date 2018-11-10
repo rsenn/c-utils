@@ -1,5 +1,5 @@
 #include "../windoze.h"
-#include "../socket.h"
+#include "../socket_internal.h"
 #include "../ndelay.h"
 
 #include <sys/types.h>
