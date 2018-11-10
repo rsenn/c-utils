@@ -7,8 +7,6 @@
 #include <unistd.h>
 #endif
 
-typedef struct stralloc_s stralloc;
-
 int
 openreadclose(const char* fn, stralloc* sa, size_t bufsize) {
   int64 fd;
