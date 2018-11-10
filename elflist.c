@@ -7,6 +7,7 @@
 #include "lib/str.h"
 #include "lib/unix.h"
 #include "lib/getopt.h"
+#include "lib/range.h"
 
 void elf_dump_dynamic(char* base);
 void elf_dump_sections(char* base);
@@ -80,11 +81,14 @@ main(int argc, char** argv) {
   }
 
   for(; argv[optind]; ++optind) {
+    const char* interp;
+    range symtab, text;
+    
     filename = argv[optind];
 
     base = (char*)mmap_private(filename, &filesize);
 
-    const char* interp = elf_get_section(base, ".interp", NULL);
+    interp = elf_get_section(base, ".interp", NULL);
 
     elf_dump_sections(base);
     elf_dump_segments(base);
@@ -96,8 +100,8 @@ main(int argc, char** argv) {
     }
     /*    elf_dump_imports(base);*/
 
-    range symtab = elf_get_symtab_r(base);
-    range text = elf_get_section_r(base, ".text");
+    symtab = elf_get_symtab_r(base);
+    text = elf_get_section_r(base, ".text");
 
     elf_dump_symbols(base, symtab, text, ".strtab", ELF_STB_GLOBAL);
     elf_dump_symbols(base, symtab, text, ".strtab", ELF_STB_LOCAL);
@@ -203,7 +207,7 @@ elf_dump_symbols(char* base, range section, range text, const char* stname, int 
     buffer_putptr_size_2 = ELF_BITS(base) / 4;
 
     if(!range_empty(&code))
-      buffer_putptr(buffer_1, code.start - base);
+      buffer_putptr(buffer_1, (char*)(ptrdiff_t)(code.start - base));
     else
       buffer_putnspace(buffer_1, buffer_putptr_size_2);
     

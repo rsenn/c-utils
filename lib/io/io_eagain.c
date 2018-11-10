@@ -1,10 +1,13 @@
 #include "../io_internal.h"
 
-void io_eagain(fd_t d ){
+void
+io_eagain(fd_t d) {
   io_entry* e = iarray_get(io_getfds(), d);
   if(e) {
-    if(e->wantread) e->canread = 0;
-    if(e->wantwrite) e->canwrite = 0;
+    if(e->wantread)
+      e->canread = 0;
+    if(e->wantwrite)
+      e->canwrite = 0;
 #if defined(HAVE_SIGIO)
     if(d == alt_firstread) {
       debug_printf(("io_eagain: dequeueing %lld from alt read queue (next is %ld)\n", d, e->next_read));

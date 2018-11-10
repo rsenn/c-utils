@@ -1,29 +1,13 @@
 #include "../socket_internal.h"
-
-
 #include "../io_internal.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
-#ifdef HAVE_KQUEUE
-#include <sys/event.h>
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_EPOLL
-#include "../byte.h"
-#include <inttypes.h>
-#include <sys/epoll.h>
-#endif
+#include <assert.h>
 
 #ifdef HAVE_SIGIO
 #include <poll.h>
-#endif
-
-#ifdef HAVE_DEVPOLL
-#include <sys/devpoll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 #endif
 
 /* IDEA: if someone calls io_dontwantwrite, do not do the syscall to
@@ -45,7 +29,8 @@ io_wantwrite_really(fd_t d, io_entry* e) {
     struct epoll_event x;
     byte_zero(&x, sizeof(x)); /* to shut up valgrind */
     x.events = EPOLLOUT;
-    if(e->kernelwantread) x.events |= EPOLLIN;
+    if(e->kernelwantread)
+      x.events |= EPOLLIN;
     x.data.fd = d;
     epoll_ctl(io_master, e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, d, &x);
   }
@@ -62,30 +47,15 @@ io_wantwrite_really(fd_t d, io_entry* e) {
   }
 #endif
 
-#ifdef HAVE_DEVPOLL
-  if(io_waitmode == DEVPOLL) {
-    struct pollfd x;
-    x.fd = d;
-    x.events = POLLOUT;
-    if(e->wantread) x.events |= POLLIN;
-    write(io_master, &x, sizeof(x));
-  }
-#endif
-
 #ifdef HAVE_SIGIO
   if(io_waitmode == _SIGIO) {
     struct pollfd p;
     p.fd = d;
     p.events = POLLOUT;
     switch(poll(&p, 1, 0)) {
-    case 1:
-      e->canwrite = 1;
-      break;
-    case 0:
-      e->canwrite = 0;
-      break;
-    case -1:
-      return;
+      case 1: e->canwrite = 1; break;
+      case 0: e->canwrite = 0; break;
+      case -1: return;
     }
     if(e->canwrite) {
       debug_printf(("io_wantwrite: enqueueing %lld in normal write queue before %ld\n", d, first_readable));
@@ -111,8 +81,10 @@ io_wantwrite_really(fd_t d, io_entry* e) {
 void
 io_wantwrite(fd_t d) {
   io_entry* e = iarray_get(io_getfds(), d);
-  if(!e) return;
-  if(e->wantwrite && e->kernelwantwrite) return;
+  if(!e)
+    return;
+  if(e->wantwrite && e->kernelwantwrite)
+    return;
   if(e->canwrite) {
     e->next_write = first_writeable;
     first_writeable = d;

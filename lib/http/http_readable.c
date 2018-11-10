@@ -55,86 +55,91 @@ void
 http_readable(http* h) {
   ssize_t ret;
   int err;
+  http_response* r;
 
   buffer_feed(&h->q.in);
 
-  if(h->response) {
-    http_response* r = h->response;
-
-    if(r->status == HTTP_RECV_HEADER) {
-      while((ret = buffer_getline_sa(&h->q.in, &r->data)) > 0) {
-        stralloc_trim(&r->data, "\r\n", 2);
-        stralloc_nul(&r->data);
-
-        putline("Header", r->data.s, -r->data.len, &h->q.in);
-
-        if(r->data.len == 0) {
-          r->status = HTTP_RECV_DATA;
-          break;
-        }
-
-        if(stralloc_startb(&r->data, "Content-Type: multipart", 23)) {
-          size_t p = str_find(r->data.s, "boundary=");
-
-          if(r->data.s[p]) {
-            stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
-          }
-          r->transfer = HTTP_TRANSFER_BOUNDARY;
-        } else if(stralloc_startb(&r->data, "Content-Length:", 15)) {
-          scan_ulong(&r->data.s[16], &r->content_length);
-          r->transfer = HTTP_TRANSFER_LENGTH;
-        } else {
-          r->transfer = HTTP_TRANSFER_CHUNKED;
-        }
-
-        stralloc_zero(&r->data);
-      }
-    }
-
-    while(r->status == HTTP_RECV_DATA) {
-
-      if(r->transfer == HTTP_TRANSFER_CHUNKED && r->chunk_length == 0) {
-        char length[64];
-        if((ret = buffer_getline(&h->q.in, length, sizeof(length))) <= 0)
-          break;
-
-        scan_xlong(length, &r->chunk_length);
-        continue;
-      }
-
-      if(r->content_length) {
-        size_t a;
-        
-        if(r->content_length < (a = r->data.a - r->data.len)) a = r->content_length;
-        if(a > 1024) a = 1024;
-
-        stralloc_readyplus(&r->data, 1024);
-
-        if((ret = buffer_get(&h->q.in, &r->data.s[r->data.len], r->data.a - r->data.len)) <= 0)
-          break;
-
-         putline("data", &r->data.s[r->data.len], 1, &h->q.in);
-
-          r->data.len += ret;
-          r->content_length -= ret;
-          continue;
-      }
-
-      r->status = HTTP_STATUS_FINISH;
-    }
-
-    if(ret == -1) {
-      err = errno;
-      errno = 0;
-    } else {
-      err = 0;
-    }
-
-    if(ret == 0) {
-      r->status = HTTP_STATUS_FINISH;
-     }
-
-    if(err && err != EWOULDBLOCK)
-      r->status = HTTP_STATUS_ERROR;
+  if((r = h->response) == NULL) {
+    return;
   }
+
+  while(r->status == HTTP_RECV_HEADER) {
+    if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
+      break;
+
+    stralloc_trim(&r->data, "\r\n", 2);
+    stralloc_nul(&r->data);
+
+    putline("Header", r->data.s, -r->data.len, &h->q.in);
+
+    if(r->data.len == 0) {
+      r->ptr = 0;
+      r->status = HTTP_RECV_DATA;
+      break;
+    }
+
+    if(stralloc_startb(&r->data, "Content-Type: multipart", 23)) {
+      size_t p = str_find(r->data.s, "boundary=");
+
+      if(r->data.s[p]) {
+        stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
+      }
+      r->transfer = HTTP_TRANSFER_BOUNDARY;
+    } else if(stralloc_startb(&r->data, "Content-Length:", 15)) {
+      scan_ulong(&r->data.s[16], &r->content_length);
+      r->transfer = HTTP_TRANSFER_LENGTH;
+    } else {
+      r->transfer = HTTP_TRANSFER_CHUNKED;
+    }
+
+    stralloc_zero(&r->data);
+  }
+
+  while(r->status == HTTP_RECV_DATA) {
+
+    if(r->transfer == HTTP_TRANSFER_CHUNKED && r->chunk_length == 0) {
+      char length[64];
+      if((ret = buffer_getline(&h->q.in, length, sizeof(length))) <= 0)
+        break;
+
+      scan_xlong(length, &r->chunk_length);
+      continue;
+    }
+/*
+    if(r->content_length) {
+      size_t a;
+
+      if(r->content_length < (a = r->data.a - r->data.len))
+        a = r->content_length;
+      if(a > 1024)
+        a = 1024;
+
+      stralloc_readyplus(&r->data, 1024);
+
+      if((ret = buffer_get(&h->q.in, &r->data.s[r->data.len], r->data.a - r->data.len)) <= 0)
+        break;
+
+      putline("data", &r->data.s[r->data.len], 1, &h->q.in);
+
+      r->data.len += ret;
+      r->content_length -= ret;
+      continue;
+    }
+
+    r->status = HTTP_STATUS_FINISH;*/
+  }
+
+  if(ret == -1) {
+    err = errno;
+    errno = 0;
+  } else {
+    err = 0;
+  }
+
+  if(ret == 0) {
+    r->status = HTTP_STATUS_FINISH;
+  }
+
+  if(err && err != EWOULDBLOCK)
+    r->status = HTTP_STATUS_ERROR;
 }

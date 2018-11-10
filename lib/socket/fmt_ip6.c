@@ -36,20 +36,24 @@ fmt_ip6(char* s, const char ip[16]) {
     if(pos0 == k && len0) {
       if(k == 0) {
         ++len;
-        if(s) *s++ = ':';
+        if(s)
+          *s++ = ':';
       }
       ++len;
-      if(s) *s++ = ':';
+      if(s)
+        *s++ = ':';
       k += len0 - 2;
       continue;
     }
     temp = ((unsigned long)(unsigned char)ip[k] << 8) + (unsigned long)(unsigned char)ip[k + 1];
     temp = fmt_xlong(s, temp);
     len += temp;
-    if(s) s += temp;
+    if(s)
+      s += temp;
     if(k < 14) {
       ++len;
-      if(s) *s++ = ':';
+      if(s)
+        *s++ = ':';
     }
   }
 

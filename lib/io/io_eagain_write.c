@@ -1,6 +1,7 @@
 #include "../io_internal.h"
 
-void io_eagain_write(fd_t d ){
+void
+io_eagain_write(fd_t d) {
   io_entry* e = iarray_get(io_getfds(), d);
   if(e) {
     e->canwrite = 0;

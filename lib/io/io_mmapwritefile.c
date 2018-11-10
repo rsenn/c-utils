@@ -26,14 +26,16 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
     const char* c;
     unsigned long left;
 #if WINDOWS_NATIVE
-    if(!e->mh) e->mh = CreateFileMapping((HANDLE)(size_t)in, 0, PAGE_READONLY, 0, 0, NULL);
-    if(!e->mh) goto readwrite;
+    if(!e->mh)
+      e->mh = CreateFileMapping((HANDLE)(size_t)in, 0, PAGE_READONLY, 0, 0, NULL);
+    if(!e->mh)
+      goto readwrite;
 #endif
     do {
       if(e->mmapped) {
         /* did we already map the right chunk? */
         if(off >= e->mapofs && off < e->mapofs + e->maplen)
-          goto mapok;  /* ok; mmapped the right chunk*/
+          goto mapok; /* ok; mmapped the right chunk*/
 #if WINDOWS_NATIVE
         UnmapViewOfFile(e->mmapped);
 #else
@@ -46,8 +48,7 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
       else
         e->maplen = 0x10000;
 #if WINDOWS_NATIVE
-      if((e->mmapped = MapViewOfFile(e->mh, FILE_MAP_READ, (DWORD)(e->mapofs >> 32),
-                                     (DWORD)e->mapofs, e->maplen)) == 0)
+      if((e->mmapped = MapViewOfFile(e->mh, FILE_MAP_READ, (DWORD)(e->mapofs >> 32), (DWORD)e->mapofs, e->maplen)) == 0)
 #else
       if((e->mmapped = mmap(0, e->maplen, PROT_READ, MAP_SHARED, in, e->mapofs)) == MAP_FAILED)
 #endif
@@ -55,10 +56,11 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
         e->mmapped = 0;
         goto readwrite;
       }
-mapok:
+    mapok:
       c = (const char*)(e->mmapped) + (off & 0xffff);
       left = e->maplen - (off & 0xffff);
-      if(left > bytes) left = bytes;
+      if(left > bytes)
+        left = bytes;
       while(left > 0) {
         m = writecb(out, c, left);
         if(m < 0) {
@@ -74,7 +76,8 @@ mapok:
           }
           return sent ? (int64)sent : -1;
         }
-        if(m == 0) return sent;
+        if(m == 0)
+          return sent;
         sent += m;
         left -= m;
         bytes -= m;

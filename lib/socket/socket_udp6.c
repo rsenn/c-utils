@@ -27,14 +27,16 @@ socket_udp6b(void) {
   int s;
 
   __winsock_init();
-  if(noipv6) goto compat;
+  if(noipv6)
+    goto compat;
   s = winsock2errno(socket(PF_INET6, SOCK_DGRAM, 0));
   if(s == -1) {
     if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT) {
     compat:
       s = winsock2errno(socket(AF_INET, SOCK_DGRAM, 0));
       noipv6 = 1;
-      if(s == -1) return -1;
+      if(s == -1)
+        return -1;
     } else
       return -1;
   }

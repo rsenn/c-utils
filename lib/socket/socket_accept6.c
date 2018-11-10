@@ -35,7 +35,8 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
       {
         struct sockaddr *x, *y;
         GetAcceptExSockaddrs(e->inbuf, 0, 200, 200, &x, &sa2len, &y, &dummy);
-        if(dummy > sizeof(sa)) dummy = sizeof(sa);
+        if(dummy > sizeof(sa))
+          dummy = sizeof(sa);
         byte_copy(&sa, dummy, y);
       }
       fd = e->next_accept;
@@ -54,10 +55,13 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
     /* no accept queued, queue one now. */
     if(e->next_accept == 0) {
       e->next_accept = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-      if(e == INVALID_HANDLE_VALUE) return winsock2errno(-1);
+      if(e == INVALID_HANDLE_VALUE)
+        return winsock2errno(-1);
     }
-    if(AcceptEx(s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or)) goto incoming;
-    if(WSAGetLastError() != ERROR_IO_PENDING) return winsock2errno(-1);
+    if(AcceptEx(s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or))
+      goto incoming;
+    if(WSAGetLastError() != ERROR_IO_PENDING)
+      return winsock2errno(-1);
     e->acceptqueued = 1;
     if(fd == -1) {
       errno = EAGAIN;
@@ -67,7 +71,8 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   } else {
 #endif
     fd = accept(s, (struct sockaddr*)&sa, &dummy);
-    if(fd == -1) return winsock2errno(-1);
+    if(fd == -1)
+      return winsock2errno(-1);
 #if WINDOWS_NATIVE
   }
 #endif
@@ -79,16 +84,21 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
       byte_copy(ip, 12, V4mappedprefix);
       byte_copy(ip + 12, 4, (char*)&sa4->sin_addr);
     }
-    if(port) uint16_unpack_big((char*)&sa4->sin_port, port);
+    if(port)
+      uint16_unpack_big((char*)&sa4->sin_port, port);
     return fd;
   }
-  if(ip) byte_copy(ip, 16, (char*)&sa.sin6_addr);
-  if(port) uint16_unpack_big((char*)&sa.sin6_port, port);
-# ifdef LIBC_HAS_SCOPE_ID
-  if(scope_id) *scope_id = sa.sin6_scope_id;
-# else
-  if(scope_id) *scope_id = 0;
-# endif
+  if(ip)
+    byte_copy(ip, 16, (char*)&sa.sin6_addr);
+  if(port)
+    uint16_unpack_big((char*)&sa.sin6_port, port);
+#ifdef LIBC_HAS_SCOPE_ID
+  if(scope_id)
+    *scope_id = sa.sin6_scope_id;
+#else
+  if(scope_id)
+    *scope_id = 0;
+#endif
 
   return fd;
 #else
@@ -96,8 +106,10 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
     byte_copy(ip, 12, V4mappedprefix);
     byte_copy(ip + 12, 4, (char*)&sa.sin_addr);
   }
-  if(port) uint16_unpack_big((char*)&sa.sin_port, port);
-  if(scope_id) *scope_id = 0;
+  if(port)
+    uint16_unpack_big((char*)&sa.sin_port, port);
+  if(scope_id)
+    *scope_id = 0;
   return fd;
 #endif
 }

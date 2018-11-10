@@ -25,23 +25,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#ifdef HAVE_KQUEUE
-#include <sys/event.h>
-#endif
-
-#ifdef HAVE_EPOLL
-#include <inttypes.h>
-#include <sys/epoll.h>
-#endif
-
-#ifdef HAVE_DEVPOLL
-#include <sys/devpoll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#endif
-
 #ifdef __DMC__
-#define InterlockedCompareExchange(p,n,o) InterlockedCompareExchange((void**)p,(void*)n,(void*)o)
+#define InterlockedCompareExchange(p, n, o) InterlockedCompareExchange((void**)p, (void*)n, (void*)o)
 #endif
 
 #ifdef __dietlibc__
@@ -68,8 +53,8 @@ HANDLE io_comport;
 #include <fcntl.h>
 
 #ifndef F_SETSIG
-#define F_SETSIG        10      /* for sockets. */
-#define F_GETSIG        11      /* for sockets. */
+#define F_SETSIG 10 /* for sockets. */
+#define F_GETSIG 11 /* for sockets. */
 #endif
 
 static iarray io_fds;
@@ -104,7 +89,8 @@ io_fd_internal(fd_t d, int flags) {
 #if !WINDOWS
   long r;
   if((flags & (IO_FD_BLOCK | IO_FD_NONBLOCK)) == 0) {
-    if((r = fcntl(d, F_GETFL, 0)) == -1) return 0; /* file descriptor not open */
+    if((r = fcntl(d, F_GETFL, 0)) == -1)
+      return 0; /* file descriptor not open */
   } else if(flags & IO_FD_NONBLOCK)
     r = O_NDELAY;
   else
@@ -124,34 +110,40 @@ io_fd_internal(fd_t d, int flags) {
       __asm__("" : : : "memory");
 #endif
     } while(io_fds_inited != 1);
-  if(!(e = (io_entry*)iarray_allocate(&io_fds, (size_t)d))) return 0;
-  if(e->inuse) return e;
+  if(!(e = (io_entry*)iarray_allocate(&io_fds, (size_t)d)))
+    return 0;
+  if(e->inuse)
+    return e;
   byte_zero(e, sizeof(io_entry));
   e->inuse = 1;
 #if WINDOWS
   e->mh = 0;
 #else
-  if(r & O_NDELAY) e->nonblock = 1;
+  if(r & O_NDELAY)
+    e->nonblock = 1;
 #endif
   e->next_read = e->next_write = -1;
   if(io_waitmode == UNDECIDED) {
     first_readable = first_writeable = -1;
 #if defined(HAVE_EPOLL)
     io_master = epoll_create(1000);
-    if(io_master != -1) io_waitmode = EPOLL;
+    if(io_master != -1)
+      io_waitmode = EPOLL;
 #endif
 
 #if defined(HAVE_KQUEUE)
     if(io_waitmode == UNDECIDED) { /* who knows, maybe someone supports both one day */
       io_master = kqueue();
-      if(io_master != -1) io_waitmode = KQUEUE;
+      if(io_master != -1)
+        io_waitmode = KQUEUE;
     }
 #endif
 
 #if defined(HAVE_DEVPOLL)
     if(io_waitmode == UNDECIDED) {
       io_master = open("/dev/poll", O_RDWR);
-      if(io_master != -1) io_waitmode = DEVPOLL;
+      if(io_master != -1)
+        io_waitmode = DEVPOLL;
     }
 #endif
 
@@ -206,13 +198,15 @@ io_fd(fd_t d) {
 int
 io_fd_canwrite(fd_t d) {
   io_entry* e = io_fd_internal(d, 0);
-  if(e) e->canwrite = 1;
+  if(e)
+    e->canwrite = 1;
   return !!e;
 }
 
 int
 io_fd_flags(fd_t d, int flags) {
   io_entry* e = io_fd_internal(d, flags);
-  if(e && (flags & IO_FD_CANWRITE)) e->canwrite = 1;
+  if(e && (flags & IO_FD_CANWRITE))
+    e->canwrite = 1;
   return !!e;
 }

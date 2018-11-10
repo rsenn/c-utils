@@ -15,8 +15,10 @@ io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   io_entry* e;
   gettimeofday(&tv, NULL);
   e = iarray_get(io_getfds(), s);
-  if(!e) return 0;
-  if(bufsize < 100) return 0;
+  if(!e)
+    return 0;
+  if(bufsize < 100)
+    return 0;
   i = fmt_str(buf, "first_readable ");
   i += fmt_long(buf + i, first_readable);
   i += fmt_str(buf + i, ", first_writeable ");
@@ -32,22 +34,33 @@ io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   i += fmt_str(buf + i, "fd # ");
   i += fmt_ulong(buf + i, s);
   i += fmt_str(buf + i, ": ");
-  if(bufsize - i < 100) return 0;
+  if(bufsize - i < 100)
+    return 0;
   i += fmt_str(buf + i, "timeout ");
   i += fmt_uint64(buf + i, e->timeout.sec.x - (uint64)4611686018427387914 - tv.tv_sec);
   i += fmt_str(buf + i, ".");
   i += fmt_ulong(buf + i, e->timeout.nano);
   i += fmt_str(buf + i, " ");
-  if(bufsize - i < 100) return 0;
-  if(e->wantread) i += fmt_str(buf + i, "wr ");
-  if(e->wantwrite) i += fmt_str(buf + i, "ww ");
-  if(e->canread) i += fmt_str(buf + i, "cr ");
-  if(e->canwrite) i += fmt_str(buf + i, "cw ");
-  if(e->nonblock) i += fmt_str(buf + i, "nb ");
-  if(!e->inuse) i += fmt_str(buf + i, "!inuse ");
-  if(e->kernelwantread) i += fmt_str(buf + i, "kwr ");
-  if(e->kernelwantwrite) i += fmt_str(buf + i, "kww ");
-  if(e->epolladded) i += fmt_str(buf + i, "ea ");
+  if(bufsize - i < 100)
+    return 0;
+  if(e->wantread)
+    i += fmt_str(buf + i, "wr ");
+  if(e->wantwrite)
+    i += fmt_str(buf + i, "ww ");
+  if(e->canread)
+    i += fmt_str(buf + i, "cr ");
+  if(e->canwrite)
+    i += fmt_str(buf + i, "cw ");
+  if(e->nonblock)
+    i += fmt_str(buf + i, "nb ");
+  if(!e->inuse)
+    i += fmt_str(buf + i, "!inuse ");
+  if(e->kernelwantread)
+    i += fmt_str(buf + i, "kwr ");
+  if(e->kernelwantwrite)
+    i += fmt_str(buf + i, "kww ");
+  if(e->epolladded)
+    i += fmt_str(buf + i, "ea ");
   if(e->mmapped) {
     i += fmt_str(buf + i, "mmap(");
     i += fmt_xint64(buf + i, (uint64)e->mmapped);
@@ -56,7 +69,8 @@ io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
     i += fmt_str(buf + i, "@");
     i += fmt_xlong(buf + i, (unsigned long)e->mapofs);
   }
-  if(bufsize - i < 100) return 0;
+  if(bufsize - i < 100)
+    return 0;
   i += fmt_str(buf + i, "next_read ");
   i += fmt_long(buf + i, e->next_read);
   i += fmt_str(buf + i, " next_write ");

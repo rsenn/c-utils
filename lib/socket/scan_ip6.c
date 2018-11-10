@@ -36,7 +36,8 @@ scan_ip6(const char* s, char ip[16]) {
       }
     }
     i = scan_xlong(s, &u);
-    if(!i) return 0;
+    if(!i)
+      return 0;
     if(prefixlen == 12 && s[i] == '.') {
       /* the last 4 bytes may be written as IPv4 address */
       i = scan_ip4(s, ip + 12);
@@ -49,20 +50,23 @@ scan_ip6(const char* s, char ip[16]) {
     ip[prefixlen++] = (char)u;
     s += i;
     len += i;
-    if(prefixlen == 16) return len;
+    if(prefixlen == 16)
+      return len;
   }
 
   /* part 2, after "::" */
   for(;;) {
     if(*s == ':') {
-      if(suffixlen == 0) break;
+      if(suffixlen == 0)
+        break;
       s++;
       len++;
     } else if(suffixlen)
       break;
     i = scan_xlong(s, &u);
     if(!i) {
-      if(suffixlen) --len;
+      if(suffixlen)
+        --len;
       break;
     }
     if(suffixlen + prefixlen <= 12 && s[i] == '.') {
@@ -78,7 +82,8 @@ scan_ip6(const char* s, char ip[16]) {
     suffix[suffixlen++] = (char)u;
     s += i;
     len += i;
-    if(prefixlen + suffixlen == 16) break;
+    if(prefixlen + suffixlen == 16)
+      break;
   }
   for(i = 0; i < suffixlen; i++) ip[16 - suffixlen + i] = suffix[i];
   return len;

@@ -9,7 +9,6 @@
 #include "../uint16.h"
 #include "../uint32.h"
 
-
 int
 socket_bind4(int s, const char* ip, uint16 port) {
   struct sockaddr_in si;

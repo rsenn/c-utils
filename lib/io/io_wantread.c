@@ -1,35 +1,20 @@
+//#define _WINSOCKAPI_
+#define _CYGWIN_IF_H_
 #include "../windoze.h"
 
 #if WINDOWS
-#define _WINSOCKAPI_
 #include <winsock.h>
+//#define USE_WS2_32 1
 #define __INSIDE_CYGWIN_NET__ 1
 #endif
-
-#include "../io_internal.h"
 #include "../socket_internal.h"
+#include "../io_internal.h"
+
 #include <errno.h>
 #include <fcntl.h>
 
-#ifdef HAVE_KQUEUE
-#include <sys/event.h>
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_EPOLL
-#include "../byte.h"
-#include <inttypes.h>
-#include <sys/epoll.h>
-#endif
-
 #ifdef HAVE_SIGIO
 #include <poll.h>
-#endif
-
-#ifdef HAVE_DEVPOLL
-#include <sys/devpoll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 #endif
 
 #ifdef DEBUG
@@ -46,7 +31,6 @@
 #define SOCK_STREAM 1
 #endif
 
-
 void
 io_wantread_really(fd_t d, io_entry* e) {
   int64 newfd;
@@ -58,7 +42,8 @@ io_wantread_really(fd_t d, io_entry* e) {
     struct epoll_event x;
     byte_zero(&x, sizeof(x)); /* to shut up valgrind */
     x.events = EPOLLIN;
-    if(e->kernelwantwrite) x.events |= EPOLLOUT;
+    if(e->kernelwantwrite)
+      x.events |= EPOLLOUT;
     x.data.fd = d;
     epoll_ctl(io_master, e->kernelwantwrite ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, d, &x);
   }
@@ -75,16 +60,6 @@ io_wantread_really(fd_t d, io_entry* e) {
   }
 #endif
 
-#ifdef HAVE_DEVPOLL
-  if(io_waitmode == DEVPOLL) {
-    struct pollfd x;
-    x.fd = d;
-    x.events = POLLIN;
-    if(e->wantwrite) x.events |= POLLOUT;
-    write(io_master, &x, sizeof(x));
-  }
-#endif
-
 #ifdef HAVE_SIGIO
   if(io_waitmode == _SIGIO) {
     struct pollfd p;
@@ -92,11 +67,8 @@ io_wantread_really(fd_t d, io_entry* e) {
       p.fd = d;
       p.events = POLLIN;
       switch(poll(&p, 1, 0)) {
-        case 1:
-          e->canread = 1;
-          break;
-        case -1:
-          return;
+        case 1: e->canread = 1; break;
+        case -1: return;
       }
     }
     if(e->canread) {
@@ -107,9 +79,10 @@ io_wantread_really(fd_t d, io_entry* e) {
   }
 #endif
 
-#if WINDOWS
+#if WINDOWS_NATIVE
   if(e->listened) {
-    if(e->next_accept == 0) e->next_accept = socket(AF_INET, SOCK_STREAM, 0);
+    if(e->next_accept == 0)
+      e->next_accept = socket(AF_INET, SOCK_STREAM, 0);
     if(e->next_accept != -1) {
       AcceptEx(d, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or);
       e->acceptqueued = 1;
@@ -142,7 +115,8 @@ io_wantread_really(fd_t d, io_entry* e) {
 void
 io_wantread(fd_t d) {
   io_entry* e = iarray_get(io_getfds(), d);
-  if(!e || e->wantread) return;
+  if(!e || e->wantread)
+    return;
   if(e->canread) {
     e->next_read = first_readable;
     first_readable = d;

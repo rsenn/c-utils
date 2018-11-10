@@ -1,1 +1,1 @@
-int noipv6=0;
+int noipv6 = 0;

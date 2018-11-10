@@ -8,7 +8,8 @@ io_timeouted() {
   size_t alen = iarray_length(io_getfds());
   taia_now(&now);
   ++ptr;
-  if(ptr > alen) ptr = 0;
+  if(ptr > alen)
+    ptr = 0;
   e = iarray_get(io_getfds(), ptr);
   for(; ptr <= alen; ++ptr, e = iarray_get(io_getfds(), ptr)) {
     if(e && e->inuse && e->timeout.sec.x && taia_less(&e->timeout, &now)) {

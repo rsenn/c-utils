@@ -64,17 +64,14 @@ if(MSVC)
   else()
       set(WARNFLAGS "-W3")
    endif()
-   
-endif(MSVC)
-  add_definitions(-D_FILE_OFFSET_BITS=64)
-
-if(MSVC)
-add_definitions(-wd4706)
+  add_definitions(-wd4706)
 else(MSVC)
   if(CMAKE_COMPILER_IS_GNUCC OR GNU)
     add_definitions( -g  )
   endif(CMAKE_COMPILER_IS_GNUCC OR GNU)
 endif(MSVC)
+
+add_definitions(-D_FILE_OFFSET_BITS=64)
 
 set(CMAKE_C_FLAGS_DEBUG "-Wall -DDEBUG ${CMAKE_C_FLAGS_DEBUG}")
 
@@ -197,6 +194,10 @@ if(MINGW OR MINGW32 OR WIN32 OR WIN64 OR MSVC)
   endif()
   set(LIBSHLWAPI shlwapi)
 endif()
+
+if(MSVC AND NOT LIBMSWSOCK)
+  set(LIBMSWSOCK "ws2_32" CACHE STRING "Winsock2 library")
+endif(MSVC AND NOT LIBMSWSOCK) 
 
 if(NOT CXX11_FLAGS)
 set(CXX11_FLAGS "-std=c++11")
@@ -543,7 +544,7 @@ add_program(eagle-gen-cmds array buffer byte cb cbmap errmsg fmt hmap mmap scan 
 add_program(eagle-init-brd hmap scan str stralloc strlist xml)
 add_program(eagle-to-circuit array buffer byte cb cbmap fmt hmap mmap scan str stralloc strlist xml)
 add_program(elf64list elf mmap uint16 uint32 uint64)
-add_program(elflist buffer elf mmap str)
+add_program(elflist errmsg unix buffer elf mmap str)
 add_program(elfwrsec buffer elf mmap)
 add_program(genmakefile errmsg buffer hmap mmap path rdir scan slist str unix stralloc strarray strlist ${LIBSHLWAPI})
 add_program(hexedit array buffer io errmsg mmap open path scan stralloc uint64 unix)

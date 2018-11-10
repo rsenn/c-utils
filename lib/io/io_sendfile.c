@@ -39,7 +39,8 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 int64
 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   long long r = sendfile64(out, in, off, bytes, 0, 0);
-  if(r == -1 && errno != EAGAIN) r = -3;
+  if(r == -1 && errno != EAGAIN)
+    r = -3;
   if(r != bytes) {
     io_entry* e = iarray_get(io_getfds(), s);
     if(e) {
@@ -58,7 +59,8 @@ int64
 io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   off64_t o = off;
   long long r = sendfile64(out, in, &o, bytes);
-  if(r == -1 && errno != EAGAIN) r = -3;
+  if(r == -1 && errno != EAGAIN)
+    r = -3;
   if(r != bytes) {
     io_entry* e = iarray_get(io_getfds(), s);
     if(e) {
@@ -131,7 +133,8 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
     if(i == todo) {
       done += todo;
       n -= todo;
-      if(n == 0) return done;
+      if(n == 0)
+        return done;
       continue;
     } else {
       if(e) {
@@ -148,7 +151,7 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 }
 #endif
 
-#elif (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__)
+#elif(defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__)
 
 #ifndef TF_USE_KERNEL_APC
 #define TF_USE_KERNEL_APC 0x20
@@ -165,15 +168,15 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
     /* we called TransmitFile, and it returned. */
     e->sendfilequeued = 2;
     errno = e->errorcode;
-    if(e->bytes_written == -1) return -1;
+    if(e->bytes_written == -1)
+      return -1;
     if(e->bytes_written != bytes) { /* we wrote less than caller wanted to write */
       e->sendfilequeued = 1;        /* so queue next request */
       off += e->bytes_written;
       bytes -= e->bytes_written;
       e->os.Offset = off;
       e->os.OffsetHigh = (off >> 32);
-      TransmitFile(
-          (size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
+      TransmitFile((size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
     }
     return e->bytes_written;
   } else {
@@ -181,8 +184,7 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
     e->os.Offset = off;
     e->os.OffsetHigh = (off >> 32);
     /* we always write at most 64k, so timeout handling is possible */
-    if(!TransmitFile(
-           (size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
+    if(!TransmitFile((size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
       return -3;
   }
   return e->bytes_written;

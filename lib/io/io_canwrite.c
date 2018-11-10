@@ -1,6 +1,5 @@
 #include "../windoze.h"
 
-
 #include "../io_internal.h"
 #include <errno.h>
 
@@ -26,7 +25,8 @@ io_canwrite() {
   for(;;) {
     int64 r;
     e = iarray_get(io_getfds(), first_writeable);
-    if(!e) break;
+    if(!e)
+      break;
     r = first_writeable;
     first_writeable = e->next_write;
     e->next_write = -1;
@@ -37,7 +37,7 @@ io_canwrite() {
 #else
        e->canwrite
 #endif
-    ) {
+           ) {
 #if defined(HAVE_SIGIO)
       e->next_write = alt_firstwrite;
       alt_firstwrite = r;
@@ -45,7 +45,8 @@ io_canwrite() {
       if(io_waitmode != _SIGIO)
 #endif
         e->canwrite = 0;
-      if(!e->kernelwantwrite) io_wantwrite_really(r, e);
+      if(!e->kernelwantwrite)
+        io_wantwrite_really(r, e);
       return r;
     }
   }

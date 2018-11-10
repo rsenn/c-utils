@@ -1,6 +1,5 @@
 #include "../windoze.h"
 
-
 #if WINDOWS
 #else
 #endif
@@ -10,5 +9,6 @@
 void
 io_setcookie(fd_t d, void* cookie) {
   io_entry* e;
-  if((e = iarray_get(io_getfds(), d))) e->cookie = cookie;
+  if((e = iarray_get(io_getfds(), d)))
+    e->cookie = cookie;
 }

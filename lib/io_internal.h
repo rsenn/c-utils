@@ -79,6 +79,35 @@ my_extern HANDLE io_comport;
 #define STDERR_FILENO 2
 #endif
 
+#ifdef HAVE_KQUEUE
+#include <sys/event.h>
+#endif
+
+#ifdef HAVE_DEVPOLL
+#include <sys/devpoll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#endif
+
+#ifdef HAVE_EPOLL
+#ifndef _XOPEN_SOURCE
+#define _XOPEN_SOURCE
+#endif
+
+#include "../byte.h"
+#include <inttypes.h>
+#include <sys/epoll.h>
+
+#ifndef EPOLLRDNORM
+#define EPOLLRDNORM 0
+#endif
+
+#ifndef EPOLLRDBAND
+#define EPOLLRDNORM 0
+#endif
+#endif
+
+
 #if defined(__MINGW32__) || defined(__MINGW64__)
 int write();
 int read();
@@ -213,5 +242,10 @@ extern int close();
 #else
 #define DEBUG_MSG(msg, fd)
 #endif
+
+static inline io_entry*
+io_getentry(int64 fd) {
+  return iarray_get(io_getfds(), fd);
+}
 
 #endif

@@ -1,6 +1,5 @@
 #include "../windoze.h"
 
-
 #if WINDOWS
 #include <windows.h>
 #else
@@ -42,7 +41,8 @@ io_tryread(fd_t d, char* buf, int64 len) {
       e->canread = 0;
       return -3;
     }
-    if(x > len) x = len;
+    if(x > len)
+      x = len;
     if(x) {
       byte_copy(buf, x, e->inbuf);
       byte_copy(e->inbuf, e->bytes_read - x, e->inbuf + x);
@@ -52,7 +52,8 @@ io_tryread(fd_t d, char* buf, int64 len) {
       e->canread = 0;
       if(len > x) {
         /* queue next read */
-        if(len > sizeof(e->inbuf)) len = sizeof(e->inbuf);
+        if(len > sizeof(e->inbuf))
+          len = sizeof(e->inbuf);
         if(ReadFile((HANDLE)(size_t)d, e->inbuf, len, 0, &e->or)) {
           e->canread = 1;
           e->readqueued = 2;
@@ -72,7 +73,8 @@ io_tryread(fd_t d, char* buf, int64 len) {
     return x;
   }
   if(!e->readqueued) {
-    if(len > sizeof(e->inbuf)) len = sizeof(e->inbuf);
+    if(len > sizeof(e->inbuf))
+      len = sizeof(e->inbuf);
     if(ReadFile((HANDLE)(size_t)d, e->inbuf, len, 0, &e->or)) {
       e->readqueued = 1;
     } else {
@@ -102,8 +104,7 @@ io_tryread(fd_t d, char* buf, int64 len) {
     } /* catch integer truncation */
     p.events = POLLIN;
     switch(poll(&p, 1, 0)) {
-      case -1:
-        return -3;
+      case -1: return -3;
       case 0:
         errno = EAGAIN;
         e->canread = 0;
@@ -121,8 +122,10 @@ io_tryread(fd_t d, char* buf, int64 len) {
     setitimer(ITIMER_REAL, &old, 0);
   }
   if(r == -1) {
-    if(errno == EINTR) errno = EAGAIN;
-    if(errno != EAGAIN) r = -3;
+    if(errno == EINTR)
+      errno = EAGAIN;
+    if(errno != EAGAIN)
+      r = -3;
   }
   if(r != len) {
     e->canread = 0;

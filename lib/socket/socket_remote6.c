@@ -20,7 +20,8 @@ socket_remote6(int s, char ip[16], uint16* port, uint32* scope_id) {
 #endif
   socklen_t len = sizeof si;
 
-  if(getpeername(s, (struct sockaddr*)&si, &len) == -1) return winsock2errno(-1);
+  if(getpeername(s, (struct sockaddr*)&si, &len) == -1)
+    return winsock2errno(-1);
 #ifdef LIBC_HAS_IP6
   if(noipv6 || si.sin6_family == AF_INET || si.sin6_family == PF_INET) {
     struct sockaddr_in* si4 = (struct sockaddr_in*)&si;
@@ -28,15 +29,20 @@ socket_remote6(int s, char ip[16], uint16* port, uint32* scope_id) {
       byte_copy(ip, 12, V4mappedprefix);
       byte_copy(ip + 12, 4, (char*)&si4->sin_addr);
     }
-    if(port) uint16_unpack_big((char*)&si4->sin_port, port);
+    if(port)
+      uint16_unpack_big((char*)&si4->sin_port, port);
     return 0;
   }
-  if(ip) byte_copy(ip, 16, (char*)&si.sin6_addr);
-  if(port) uint16_unpack_big((char*)&si.sin6_port, port);
+  if(ip)
+    byte_copy(ip, 16, (char*)&si.sin6_addr);
+  if(port)
+    uint16_unpack_big((char*)&si.sin6_port, port);
 #ifdef LIBC_HAS_SCOPE_ID
-  if(scope_id) *scope_id = si.sin6_scope_id;
+  if(scope_id)
+    *scope_id = si.sin6_scope_id;
 #else
-  if(scope_id) *scope_id = 0;
+  if(scope_id)
+    *scope_id = 0;
 #endif
 
 #else
@@ -44,8 +50,10 @@ socket_remote6(int s, char ip[16], uint16* port, uint32* scope_id) {
     byte_copy(ip, 12, V4mappedprefix);
     byte_copy(ip + 12, 4, (char*)&si.sin_addr);
   }
-  if(port) uint16_unpack_big((char*)&si.sin_port, port);
-  if(scope_id) *scope_id = 0;
+  if(port)
+    uint16_unpack_big((char*)&si.sin_port, port);
+  if(scope_id)
+    *scope_id = 0;
 #endif
   return 0;
 }

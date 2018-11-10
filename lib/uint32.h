@@ -20,7 +20,8 @@
 extern "C" {
 #endif
 
-#if defined(__UINT32_TYPE__) && defined(__INT32_TYPE__)
+#if defined(__BORLANDC__)
+#elif defined(__UINT32_TYPE__) && defined(__INT32_TYPE__)
 typedef __UINT32_TYPE__ uint32;
 typedef __INT32_TYPE__ int32;
 
@@ -28,7 +29,7 @@ typedef __INT32_TYPE__ int32;
 typedef u_int32_t uint32;
 typedef int32_t int32;
 
-#elif defined(_MSC_VER) || defined(__BORLANDC__)
+#elif defined(_MSC_VER)
 #include <windows.h>
 typedef UINT32 uint32;
 typedef INT32 int32;

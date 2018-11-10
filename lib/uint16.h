@@ -20,7 +20,8 @@
 extern "C" {
 #endif
 
-#if defined(__UINT16_TYPE__) && defined(__INT16_TYPE__)
+#if defined(__BORLANDC__)
+#elif defined(__UINT16_TYPE__) && defined(__INT16_TYPE__)
 typedef __UINT16_TYPE__ uint16;
 typedef __INT16_TYPE__ int16;
 
@@ -28,7 +29,7 @@ typedef __INT16_TYPE__ int16;
 typedef u_int16_t uint16;
 typedef int16_t int16;
 
-#elif defined(_MSC_VER) || defined(__BORLANDC__)
+#elif defined(_MSC_VER)
 #include <windows.h>
 typedef UINT16 uint16;
 typedef INT16 int16;

@@ -1,7 +1,7 @@
 #include "lib/http.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
-#include "lib/io.h"
+#include "lib/io_internal.h"
 #include "lib/iopause.h"
 #include "lib/socket.h"
 #include "lib/taia.h"
@@ -52,6 +52,8 @@ main(int argc, char* argv[]) {
   static buffer in;
   char inbuf[8192];
   int ret;
+  io_entry* e;
+  fd_t fd;
 
   errmsg_iam(argv[0]);
 
@@ -59,33 +61,40 @@ main(int argc, char* argv[]) {
 
   ret = http_get(&h, url_location);
 
-  buffer_init(&in, (buffer_op_sys*)&do_recv, h.sock, inbuf, sizeof(inbuf));
+/*  buffer_init(&in, (buffer_op_sys*)&do_recv, h.sock, inbuf, sizeof(inbuf));
 
   buffer_puts(buffer_2, "http_get() = ");
   buffer_putlong(buffer_2, (long)ret);
   buffer_putnlflush(buffer_2);
+*/
+  io_fd(h.sock);
+  e = io_getentry(h.sock);
+
+  io_wantwrite(h.sock);
+/*
 
   byte_zero(&iop, sizeof(iop));
   iop.fd = h.sock;
-  iop.events = /*IOPAUSE_READ|*/ IOPAUSE_WRITE;
+  iop.events = IOPAUSE_WRITE;
 
   set_timeouts(10);
   iopause(&iop, 1, &deadline, &stamp);
+*/
 
-  http_sendreq(&h);
+  while((fd = io_canwrite()) != -1) {
+	  if(h.sock == fd)
+		   http_sendreq(&h);
+  } 
 
   for(;;) {
-    iop.events = IOPAUSE_READ;
+	  io_wantread(h.sock);
 
-    set_timeouts(10);
-    iopause(&iop, 1, &deadline, &stamp);
-
-    if(iop.revents & IOPAUSE_READ) {
+	  if(e->canread)
       http_readable(&h);
 
-      if(h.response->status == HTTP_STATUS_FINISH) break;
-    }
-  }
+      if(h.response->status == HTTP_STATUS_FINISH)
+		  break;
+   }
 
   buffer_putsa(buffer_1, &h.response->data);
   buffer_putnlflush(buffer_1);

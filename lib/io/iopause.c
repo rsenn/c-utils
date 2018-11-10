@@ -18,7 +18,8 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
     t = *stamp;
     taia_sub(&t, deadline, &t);
     d = taia_approx(&t);
-    if(d > 1000.0) d = 1000.0;
+    if(d > 1000.0)
+      d = 1000.0;
     millisecs = (int)(d * 1000.0 + 20.0);
   }
 
@@ -27,9 +28,9 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
 #ifdef IOPAUSE_POLL
 
   poll(x, len, millisecs);
-  /* XXX: some kernels apparently need x[0] even if len is 0 */
-  /* XXX: how to handle EAGAIN? are kernels really this dumb? */
-  /* XXX: how to handle EINVAL? when exactly can this happen? */
+/* XXX: some kernels apparently need x[0] even if len is 0 */
+/* XXX: how to handle EAGAIN? are kernels really this dumb? */
+/* XXX: how to handle EINVAL? when exactly can this happen? */
 
 #else
   {
@@ -45,30 +46,41 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
     nfds = 1;
     for(i = 0; i < len; ++i) {
       fd = x[i].fd;
-      if(fd != x[i].fd) continue;
-      if(fd < 0) continue;
-      if(fd >= (int)(8 * sizeof(fd_set))) continue; /*XXX*/
+      if(fd != x[i].fd)
+        continue;
+      if(fd < 0)
+        continue;
+      if(fd >= (int)(8 * sizeof(fd_set)))
+        continue; /*XXX*/
 
-      if(fd >= nfds) nfds = fd + 1;
-      if(x[i].events & IOPAUSE_READ) FD_SET(fd, &rfds);
-      if(x[i].events & IOPAUSE_WRITE) FD_SET(fd, &wfds);
+      if(fd >= nfds)
+        nfds = fd + 1;
+      if(x[i].events & IOPAUSE_READ)
+        FD_SET(fd, &rfds);
+      if(x[i].events & IOPAUSE_WRITE)
+        FD_SET(fd, &wfds);
     }
 
     tv.tv_sec = millisecs / 1000;
     tv.tv_usec = 1000 * (millisecs % 1000);
 
-    if(select(nfds, &rfds, &wfds, (fd_set*)0, &tv) <= 0) return;
+    if(select(nfds, &rfds, &wfds, (fd_set*)0, &tv) <= 0)
+      return;
     /* XXX: for EBADF, could seek out and destroy the bad descriptor */
 
     for(i = 0; i < len; ++i) {
       fd = x[i].fd;
-      if(fd < 0) continue;
-      if(fd >= 8 * sizeof(fd_set)) continue; /*XXX*/
+      if(fd < 0)
+        continue;
+      if(fd >= 8 * sizeof(fd_set))
+        continue; /*XXX*/
 
       if(x[i].events & IOPAUSE_READ)
-        if(FD_ISSET(fd, &rfds)) x[i].revents |= IOPAUSE_READ;
+        if(FD_ISSET(fd, &rfds))
+          x[i].revents |= IOPAUSE_READ;
       if(x[i].events & IOPAUSE_WRITE)
-        if(FD_ISSET(fd, &wfds)) x[i].revents |= IOPAUSE_WRITE;
+        if(FD_ISSET(fd, &wfds))
+          x[i].revents |= IOPAUSE_WRITE;
     }
   }
 #endif

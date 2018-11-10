@@ -7,7 +7,6 @@
 #include "../socket_internal.h"
 #include <sys/types.h>
 
-
 int
 socket_mcloop4(int s, char loop) {
 #ifdef IP_MULTICAST_LOOP

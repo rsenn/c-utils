@@ -6,7 +6,7 @@
 
 #include "../socket_internal.h"
 
-#if WINDOWS_NATIVE  && !defined(__MINGW32__)
+#if WINDOWS_NATIVE && !defined(__MINGW32__)
 typedef int socklen_t;
 #endif
 

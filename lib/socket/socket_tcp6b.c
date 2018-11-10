@@ -21,7 +21,8 @@
 #define EPROTONOSUPPORT EAFNOSUPPORT
 #endif
 
-int socket_tcp6b(void) {
+int
+socket_tcp6b(void) {
 #ifdef LIBC_HAS_IP6
   int s;
 
@@ -29,14 +30,16 @@ int socket_tcp6b(void) {
   __winsock_init();
 #endif
 
-  if(noipv6) goto compat;
+  if(noipv6)
+    goto compat;
   s = winsock2errno(socket(PF_INET6, SOCK_STREAM, 0));
   if(s == -1) {
     if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT) {
-compat:
+    compat:
       s = winsock2errno(socket(AF_INET, SOCK_STREAM, 0));
       noipv6 = 1;
-      if(s == -1) return -1;
+      if(s == -1)
+        return -1;
     } else
       return -1;
   }
@@ -51,4 +54,3 @@ compat:
   return socket_tcp4b();
 #endif
 }
-

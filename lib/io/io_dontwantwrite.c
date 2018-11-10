@@ -1,6 +1,5 @@
 #include "../socket_internal.h"
 
-
 #if WINDOWS
 #else
 #endif
@@ -8,22 +7,6 @@
 #include "../io_internal.h"
 #include <errno.h>
 #include <fcntl.h>
-#ifdef HAVE_KQUEUE
-#include <sys/event.h>
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_EPOLL
-#include "../byte.h"
-#include <inttypes.h>
-#include <sys/epoll.h>
-#endif
-
-#ifdef HAVE_DEVPOLL
-#include <sys/devpoll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#endif
 
 #ifdef DEBUG
 #include <assert.h>
@@ -49,7 +32,8 @@ io_dontwantwrite_really(fd_t d, io_entry* e) {
     struct epoll_event x;
     byte_zero(&x, sizeof(x)); /* to shut up valgrind */
     x.events = 0;
-    if(e->wantread) x.events |= EPOLLIN;
+    if(e->wantread)
+      x.events |= EPOLLIN;
     x.data.fd = d;
     epoll_ctl(io_master, e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_DEL, d, &x);
   }
@@ -66,16 +50,6 @@ io_dontwantwrite_really(fd_t d, io_entry* e) {
   }
 #endif
 
-#ifdef HAVE_DEVPOLL
-  if(io_waitmode == DEVPOLL) {
-    struct pollfd x;
-    x.fd = d;
-    x.events = 0;
-    if(e->kernelwantread) x.events |= POLLIN;
-    if(!x.events) x.events = POLLREMOVE;
-    write(io_master, &x, sizeof(x));
-  }
-#endif
   e->wantwrite = 0;
   e->kernelwantwrite = 0;
 }
@@ -84,7 +58,8 @@ void
 io_dontwantwrite(fd_t d) {
   io_entry* e = iarray_get(io_getfds(), d);
   if(e) {
-    if(e->canwrite) io_dontwantwrite_really(d, e);
+    if(e->canwrite)
+      io_dontwantwrite_really(d, e);
     e->wantwrite = 0;
   }
 }

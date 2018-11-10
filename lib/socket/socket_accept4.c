@@ -31,7 +31,8 @@ socket_accept4(int s, char* ip, uint16* port) {
       {
         struct sockaddr *x, *y;
         GetAcceptExSockaddrs(e->inbuf, 0, 200, 200, &x, &sa2len, &y, &len);
-        if(len > sizeof(si)) len = sizeof(si);
+        if(len > sizeof(si))
+          len = sizeof(si);
         byte_copy(&si, len, y);
       }
       fd = e->next_accept;
@@ -50,10 +51,13 @@ socket_accept4(int s, char* ip, uint16* port) {
     /* no accept queued, queue one now. */
     if(e->next_accept == 0) {
       e->next_accept = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-      if(e == INVALID_HANDLE_VALUE) return winsock2errno(-1);
+      if(e == INVALID_HANDLE_VALUE)
+        return winsock2errno(-1);
     }
-    if(AcceptEx(s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or)) goto incoming;
-    if(WSAGetLastError() != ERROR_IO_PENDING) return winsock2errno(-1);
+    if(AcceptEx(s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or))
+      goto incoming;
+    if(WSAGetLastError() != ERROR_IO_PENDING)
+      return winsock2errno(-1);
     e->acceptqueued = 1;
     if(fd == -1) {
       errno = EAGAIN;
@@ -63,12 +67,15 @@ socket_accept4(int s, char* ip, uint16* port) {
   } else {
 #endif
 
-    if((fd = accept(s, (void*)&si, &len)) == -1) return winsock2errno(-1);
+    if((fd = accept(s, (void*)&si, &len)) == -1)
+      return winsock2errno(-1);
 
 #if WINDOWS_NATIVE
   }
 #endif
-  if(ip) *(uint32*)ip = *(uint32*)&si.sin_addr;
-  if(port) uint16_unpack_big((char*)&si.sin_port, port);
+  if(ip)
+    *(uint32*)ip = *(uint32*)&si.sin_addr;
+  if(port)
+    uint16_unpack_big((char*)&si.sin_port, port);
   return fd;
 }

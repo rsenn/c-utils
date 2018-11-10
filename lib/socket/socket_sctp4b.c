@@ -19,7 +19,8 @@ socket_sctp4b(void) {
   int s;
   __winsock_init();
   s = winsock2errno(socket(PF_INET, SOCK_STREAM, IPPROTO_SCTP));
-  if(s == -1) return -1;
+  if(s == -1)
+    return -1;
   return s;
 #else
   errno = EPROTONOSUPPORT;

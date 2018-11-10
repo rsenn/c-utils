@@ -17,14 +17,17 @@ socket_bind6(int s, const char* ip, uint16 port, uint32 scope_id) {
 #endif
   int i;
 
-  if(!ip) ip = V6any;
+  if(!ip)
+    ip = V6any;
 
 #ifdef LIBC_HAS_IP6
   if(noipv6) {
 #endif
     for(i = 0; i < 16; i++)
-      if(ip[i] != 0) break;
-    if(i == 16 || ip6_isv4mapped(ip)) return socket_bind4(s, ip + 12, port);
+      if(ip[i] != 0)
+        break;
+    if(i == 16 || ip6_isv4mapped(ip))
+      return socket_bind4(s, ip + 12, port);
 #ifdef LIBC_HAS_IP6
   }
   byte_zero(&sa, sizeof sa);
@@ -36,7 +39,7 @@ socket_bind6(int s, const char* ip, uint16 port, uint32 scope_id) {
 
   return winsock2errno(bind(s, (struct sockaddr*)&sa, sizeof sa));
 #else
-    errno = EPROTONOSUPPORT;
-    return -1;
+  errno = EPROTONOSUPPORT;
+  return -1;
 #endif
 }

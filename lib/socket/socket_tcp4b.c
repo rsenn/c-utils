@@ -9,10 +9,12 @@
 
 #include <errno.h>
 
-int socket_tcp4b(void) {
+int
+socket_tcp4b(void) {
   int s;
   __winsock_init();
-  s = winsock2errno(socket(AF_INET,SOCK_STREAM,IPPROTO_IP));
-  if(s == -1) return -1;
+  s = winsock2errno(socket(AF_INET, SOCK_STREAM, IPPROTO_IP));
+  if(s == -1)
+    return -1;
   return s;
 }

@@ -11,8 +11,8 @@
 #include "../byte.h"
 #include <errno.h>
 
-
-int socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
+int
+socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
 #ifdef LIBC_HAS_IP6
   struct sockaddr_in6 sa;
 
@@ -26,16 +26,16 @@ int socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
   }
   byte_zero(&sa, sizeof sa);
   sa.sin6_family = PF_INET6;
-  uint16_pack_big((char *) &sa.sin6_port, port);
+  uint16_pack_big((char*)&sa.sin6_port, port);
   sa.sin6_flowinfo = 0;
 #ifdef LIBC_HAS_SCOPE_ID
   sa.sin6_scope_id = scope_id;
 #endif
-  byte_copy((char *) &sa.sin6_addr, 16, ip);
+  byte_copy((char*)&sa.sin6_addr, 16, ip);
 
-  return winsock2errno(connect(s, (void*) &sa, sizeof sa));
+  return winsock2errno(connect(s, (void*)&sa, sizeof sa));
 #else
-    errno = EPROTONOSUPPORT;
-    return -1;
+  errno = EPROTONOSUPPORT;
+  return -1;
 #endif
 }

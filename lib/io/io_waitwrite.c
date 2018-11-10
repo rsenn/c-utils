@@ -29,7 +29,8 @@ io_waitwrite(fd_t d, const char* buf, int64 len) {
     unsigned long i = 1;
     ioctlsocket(d, FIONBIO, &i);
   }
-  if(r == -1) r = -3;
+  if(r == -1)
+    r = -3;
   return r;
 }
 
@@ -55,13 +56,15 @@ io_waitwrite(fd_t d, const char* buf, int64 len) {
     p.events = POLLOUT;
     switch(poll(&p, 1, -1)) {
       case -1:
-        if(errno == EAGAIN) goto again;
+        if(errno == EAGAIN)
+          goto again;
         return -3;
     }
   }
   r = write(d, buf, len);
   if(r == -1) {
-    if(errno == EAGAIN) goto again;
+    if(errno == EAGAIN)
+      goto again;
     r = -3;
   }
   return r;

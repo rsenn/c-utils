@@ -21,14 +21,16 @@ io_pipe(fd_t* d) {
   security_attributes.bInheritHandle = TRUE;
   security_attributes.lpSecurityDescriptor = 0;
 
-  if(CreatePipe(fds, fds + 1, &security_attributes, 0) == 0) return 0;
-  d[0] = _open_osfhandle((intptr_t)fds[0], _O_RDONLY|_O_BINARY);
-  d[1] = _open_osfhandle((intptr_t)fds[1], _O_WRONLY|_O_BINARY);
+  if(CreatePipe(fds, fds + 1, &security_attributes, 0) == 0)
+    return 0;
+  d[0] = _open_osfhandle((intptr_t)fds[0], _O_RDONLY | _O_BINARY);
+  d[1] = _open_osfhandle((intptr_t)fds[1], _O_WRONLY | _O_BINARY);
   return 1;
 #else
   fd_t fds[2];
-  if(pipe(fds) == -1) return 0;
- if(io_fd((size_t)fds[1]) && io_fd((size_t)fds[0])) {
+  if(pipe(fds) == -1)
+    return 0;
+  if(io_fd((size_t)fds[1]) && io_fd((size_t)fds[0])) {
     d[0] = (size_t)fds[0];
     d[1] = (size_t)fds[1];
     return 1;

@@ -8,8 +8,9 @@
 #include <errno.h>
 #include "../io_internal.h"
 
-void io_closeonexec(fd_t d ){
+void
+io_closeonexec(fd_t d) {
 #if !(defined(_WIN32) || defined(_WIN64))
-  fcntl(d,F_SETFL,fcntl(d,F_GETFL,0) | FD_CLOEXEC);
+  fcntl(d, F_SETFL, fcntl(d, F_GETFL, 0) | FD_CLOEXEC);
 #endif
 }

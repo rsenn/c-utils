@@ -16,10 +16,7 @@
 	"buffers":
 	[
 		{
-			"contents": "#include \"../omf.h\"\n\nomf_record*\nomf_begin(omf_file* omf) {\n return omf->map;\n}\n",
 			"file": "lib/omf/omf_begin.c",
-			"file_size": 80,
-			"file_write_time": 131862838094351654,
 			"settings":
 			{
 				"buffer_size": 80,
@@ -32,7 +29,7 @@
 			{
 				"buffer_size": 123,
 				"encoding": "UTF-8",
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -48,7 +45,7 @@
 			"settings":
 			{
 				"buffer_size": 211,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -80,7 +77,7 @@
 			"file": "elflist.c",
 			"settings":
 			{
-				"buffer_size": 10699,
+				"buffer_size": 10771,
 				"line_ending": "Unix"
 			}
 		},
@@ -90,7 +87,7 @@
 			{
 				"buffer_size": 89,
 				"encoding": "UTF-8",
-				"line_ending": "Windows"
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -252,6 +249,7 @@
 	"expanded_folders":
 	[
 		"/C/Users/roman/Desktop/dirlist",
+		"/C/Users/roman/Desktop/dirlist/html",
 		"/C/Users/roman/Desktop/dirlist/lib",
 		"/C/Users/roman/Desktop/dirlist/lib/case",
 		"/C/Users/roman/Desktop/dirlist/lib/omf",
@@ -796,15 +794,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10699,
+						"buffer_size": 10771,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3833,
-								3833
+								0,
+								0
 							]
 						],
 						"settings":

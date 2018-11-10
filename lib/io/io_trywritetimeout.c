@@ -3,9 +3,9 @@
 #include <errno.h>
 
 #if WINDOWS_NATIVE
-# ifndef ETIMEDOUT
-#  define ETIMEDOUT WSAETIMEDOUT 
-# endif
+#ifndef ETIMEDOUT
+#define ETIMEDOUT WSAETIMEDOUT
+#endif
 #endif
 
 int64

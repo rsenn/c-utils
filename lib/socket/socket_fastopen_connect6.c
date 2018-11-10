@@ -18,7 +18,8 @@ socket_fastopen_connect6(int s, const char* ip, uint16 port, uint32 scope_id, co
 #endif
     /* apparently the kernel does not support TCP fast open */
     r = socket_connect6(s, ip, port, scope_id);
-    if(r == 0) return write(s, buf, len);
+    if(r == 0)
+      return write(s, buf, len);
   }
   return r;
 }

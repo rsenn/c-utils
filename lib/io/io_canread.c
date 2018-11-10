@@ -1,13 +1,11 @@
 #include "../windoze.h"
 
-
 #if WINDOWS
 #else
 #endif
 
 #include "../io_internal.h"
 #include <errno.h>
-
 
 void io_wantread_really(fd_t d, io_entry* e);
 
@@ -31,12 +29,12 @@ io_canread() {
   for(;;) {
     int64 r;
     e = iarray_get(io_getfds(), first_readable);
-    if(!e) break;
+    if(!e)
+      break;
     r = first_readable;
     first_readable = e->next_read;
     e->next_read = -1;
     debug_printf(("io_canread: dequeue %lld from normal read queue (next is %ld)\n", r, first_readable));
-
 
     if(e->wantread &&
 #if WINDOWS
@@ -44,7 +42,7 @@ io_canread() {
 #else
        e->canread
 #endif
-    ) {
+           ) {
 #if defined(HAVE_SIGIO)
       e->next_read = alt_firstread;
       alt_firstread = r;
@@ -52,7 +50,8 @@ io_canread() {
       if(io_waitmode != _SIGIO)
 #endif
         e->canread = 0;
-      if(!e->kernelwantread) io_wantread_really(r, e);
+      if(!e->kernelwantread)
+        io_wantread_really(r, e);
       return r;
     }
   }

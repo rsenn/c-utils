@@ -1,6 +1,5 @@
 #include "../socket_internal.h"
 
-
 #if WINDOWS
 #include <windows.h>
 #else
@@ -89,8 +88,7 @@ io_trywrite(fd_t d, const char* buf, int64 len) {
     } /* catch overflow */
     p.events = POLLOUT;
     switch(poll(&p, 1, 0)) {
-      case -1:
-        return -3;
+      case -1: return -3;
       case 0:
         errno = EAGAIN;
         e->canwrite = 0;
@@ -108,8 +106,10 @@ io_trywrite(fd_t d, const char* buf, int64 len) {
     setitimer(ITIMER_REAL, &old, 0);
   }
   if(r == -1) {
-    if(errno == EINTR) errno = EAGAIN;
-    if(errno != EAGAIN) r = -3;
+    if(errno == EINTR)
+      errno = EAGAIN;
+    if(errno != EAGAIN)
+      r = -3;
   }
   if(r != len) {
     e->canwrite = 0;

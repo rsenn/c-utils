@@ -27,11 +27,11 @@ scan_ip6if(const char* src, char* ip, uint32* scope_id) {
       tmp[j - (i + 1)] = 0;
     }
     if(tmp) {
-    if(*tmp) {
-      *scope_id = socket_getifidx(tmp);
-      i = j;
-    }
-    free(tmp);
+      if(*tmp) {
+        *scope_id = socket_getifidx(tmp);
+        i = j;
+      }
+      free(tmp);
     }
   }
   return i;
