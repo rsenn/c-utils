@@ -331,7 +331,7 @@ typedef struct {
   char* base;                   /* 0x10 (PUCHAR) */
   pe64_nt_headers* file_header; /* 0x18 (PIMAGE_NT_HEADERS64) */
   uint64 last_rva_section;      /* 0x20 (pe_section_header) */
-  int number_of_sections;    /* 0x28 (ULONG) */
+  uint16 number_of_sections;    /* 0x28 (ULONG) */
   pe_section_header* sections;  /* 0x30 (pe_section_header) */
   uint32 characteristics;       /* 0x38 (ULONG) */
   char f_system_image;          /* 0x3c (BOOLEAN) */

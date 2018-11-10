@@ -754,7 +754,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
@@ -931,7 +931,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay omf open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
 
 
 $(info BUILDDIR: $(BUILDDIR))
@@ -1000,6 +1000,7 @@ $(call lib-target,map)
 $(call lib-target,mmap)
 $(call lib-target,ndelay)
 $(call lib-target,path,lib/readlink.c lib/symlink.c lib/fork.c lib/wordexp.c lib/pipe2.c lib/getdelim.c)
+$(call lib-target,omf)
 $(call lib-target,open)
 $(call lib-target,pe)
 $(call lib-target,playlist)
@@ -1364,6 +1365,14 @@ endif
 
 $(BUILDDIR)pelist$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
 $(BUILDDIR)pelist$(M64_)$(EXEEXT): $(BUILDDIR)pelist.o $(BUILDDIR)getopt.o $(call add-library, binfmt pe array strlist stralloc errmsg buffer mmap open dir str byte fmt uint64 uint32)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+
+$(BUILDDIR)omflist$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
+$(BUILDDIR)omflist$(M64_)$(EXEEXT): $(BUILDDIR)omflist.o $(BUILDDIR)getopt.o $(call add-library, binfmt omf array strlist stralloc errmsg buffer omf mmap open dir str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

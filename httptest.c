@@ -39,7 +39,8 @@ do_recv(int s, void* buf, size_t len, void* ptr) {
  *  URL: http://verteiler1.mediathekview.de/Filmliste-akt.xz
  */
 
-static const char* const url_host = "verteiler1.mediathekview.de";
+static const char* const url_host = //"verteiler1.mediathekview.de";
+ "5.1.76.111";
 static const char* const url_location = "/Filmliste-akt.xz";
 static const uint16 url_port = 80;
 

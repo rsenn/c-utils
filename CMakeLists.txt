@@ -556,7 +556,7 @@ foreach(CompilerFlag ${CompilerFlags})
 endforeach()
 
 
-set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay open path pe playlist range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 unix var vartab xml)
+set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay omf open path pe playlist range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 unix var vartab xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -664,6 +664,7 @@ endfunction(add_program PROG)
 
 set(PROGRAMS
   list-r rdir-test ntldd strarraytest httptest pkgcfg pelist pathtool mediathek-parser eagle-gen-cmds mediathek-list macho32list elflist elf64list impgen elfwrsec torrent-progress opensearch-dump xmltest4 ziptest xmltest xmltest2 xmltest3 xmlpp regfilter sln plsconv reg2cmd hexedit jsontest eagle-to-circuit eagle-init-brd decode-ls-lR dnsip dnsname dnstest buffertest ccat count-depth bsdiffcat binfmttest access
+  omflist
 )
 
 #foreach(PROGRAM ${PROGRAMS})
@@ -759,6 +760,7 @@ add_program(ntldd pe strlist buffer byte path str unix stralloc uint64)
 add_program(opensearch-dump buffer stralloc xml)
 add_program(pathtool buffer errmsg path stralloc strlist unix)
 add_program(pelist buffer mmap pe str unix)
+add_program(omflist buffer omf mmap str unix)
 add_program(pkgcfg buffer byte cbmap dir env errmsg path slist str unix stralloc strarray strlist)
 add_program(plsconv buffer byte open playlist str unix)
 add_program(rdir-test buffer rdir)

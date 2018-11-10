@@ -48,7 +48,8 @@ hexchar(char value) {
 
 static char
 char_tolower(char ch) {
-  if(ch >= 'A' && ch <= 'Z') ch += 0x20;
+  if(ch >= 'A' && ch <= 'Z')
+    ch += 0x20;
   return ch;
 }
 
@@ -57,7 +58,8 @@ find_char(char ch, char* buffer, unsigned int n) {
   unsigned int i;
   int ret = 0;
   for(i = 0; i < n; i++) {
-    if(buffer[i] == ch) ret++;
+    if(buffer[i] == ch)
+      ret++;
   }
   return ret;
 }
@@ -83,11 +85,11 @@ typedef enum {
 } regroot_t;
 
 static const char* registry_roots[] = {
-  "HKEY_LOCAL_MACHINE", "HKEY_CURRENT_USER", "HKEY_CLASSES_ROOT", "HKEY_USERS", "HKEY_CURRENT_CONFIG",
+    "HKEY_LOCAL_MACHINE", "HKEY_CURRENT_USER", "HKEY_CLASSES_ROOT", "HKEY_USERS", "HKEY_CURRENT_CONFIG",
 };
 
 static const char* registry_roots_short[] = {
-  "HKLM", "HKCU", "HKCR", "HKU", "HKCC",
+    "HKLM", "HKCU", "HKCR", "HKU", "HKCC",
 };
 
 typedef enum {
@@ -102,7 +104,7 @@ typedef enum {
 } regtype_t;
 
 const char* regtype_strings[] = {
-  "REG_NONE", "REG_SZ", "REG_MULTI_SZ", "REG_EXPAND_SZ", "REG_DWORD", "REG_QWORD", "REG_BINARY",
+    "REG_NONE", "REG_SZ", "REG_MULTI_SZ", "REG_EXPAND_SZ", "REG_DWORD", "REG_QWORD", "REG_BINARY",
 };
 
 int
@@ -124,7 +126,7 @@ reg2cmd() {
 
     if(lineno == 1) {
       if(((unsigned char)buffer[0] == 0xff && (unsigned char)buffer[1] == 0xfe) ||
-          (buffer[0] == 0x00 || buffer[1] == 0x00)) {
+         (buffer[0] == 0x00 || buffer[1] == 0x00)) {
         unicode = 1;
       }
       /*
@@ -140,7 +142,8 @@ reg2cmd() {
       continue;
     }
 
-    if(len < 0 || (len == 0 && buffer[0] == '\0')) break;
+    if(len < 0 || (len == 0 && buffer[0] == '\0'))
+      break;
 
     if(unicode) {
       len = collapse_unicode(buffer, len);
@@ -161,7 +164,8 @@ reg2cmd() {
     pos = 0;
     if(line.len) {
       for(; pos < len; pos++) {
-        if(buffer[pos] != ' ') break;
+        if(buffer[pos] != ' ')
+          break;
       }
     }
     stralloc_catb(&line, &buffer[pos], len - pos);
@@ -233,7 +237,8 @@ reg2cmd() {
           }
           break;
         }
-        if(line.s[keyend] == '"') inquote = !inquote;
+        if(line.s[keyend] == '"')
+          inquote = !inquote;
       }
 
       inquote = 0;
@@ -244,7 +249,8 @@ reg2cmd() {
           pos++;
           continue;
         }
-        if(line.s[pos] == '"') inquote = !inquote;
+        if(line.s[pos] == '"')
+          inquote = !inquote;
       }
 
       if(inquote) {
@@ -255,9 +261,11 @@ reg2cmd() {
       if(line.s[valuestart] == '"') {
         rt = REGISTRY_SZ;
 
-        if(line.s[valuestart] == '"') valuestart++;
+        if(line.s[valuestart] == '"')
+          valuestart++;
 
-        if(line.s[valueend - 1] == '"') valueend--;
+        if(line.s[valueend - 1] == '"')
+          valueend--;
 
       } else if(!str_diffn(&line.s[valuestart], "-", 1)) {
         rt = REGISTRY_DELETE;
@@ -293,7 +301,8 @@ reg2cmd() {
 
       buffer_puts(buffer_1, "\" ");
 
-      if(force) buffer_puts(buffer_1, "/f ");
+      if(force)
+        buffer_puts(buffer_1, "/f ");
 
       if(line.s[keystart] == '@' && (keyend - keystart) == 1) {
         buffer_puts(buffer_1, "/ve ");
@@ -308,9 +317,11 @@ reg2cmd() {
 
       has_expansion = (find_char('%', &line.s[valuestart], valueend - valuestart) >= 2);
 
-      if(has_expansion && rt == REGISTRY_SZ) rt = REGISTRY_EXPAND_SZ;
+      if(has_expansion && rt == REGISTRY_SZ)
+        rt = REGISTRY_EXPAND_SZ;
 
-      if(valueend == valuestart && rt == REGISTRY_BINARY) type = "REG_SZ";
+      if(valueend == valuestart && rt == REGISTRY_BINARY)
+        type = "REG_SZ";
       if(has_newline && rt == REGISTRY_SZ)
         type = "REG_BINARY";
       else
@@ -323,52 +334,54 @@ reg2cmd() {
         buffer_puts(buffer_1, " /d ");
 
         switch(rt) {
-        case REGISTRY_EXPAND_SZ: {
-          buffer_putc(buffer_1, '"');
-          for(pos = valuestart; pos < valueend; pos++) {
-            if(line.s[pos] == '%') buffer_putc(buffer_1, '^');
-            buffer_PUTC(buffer_1, line.s[pos]);
-          }
-          buffer_putc(buffer_1, '"');
-          break;
-        }
-        case REGISTRY_SZ: {
-          buffer_putc(buffer_1, '"');
-          if(has_newline) {
+          case REGISTRY_EXPAND_SZ: {
+            buffer_putc(buffer_1, '"');
             for(pos = valuestart; pos < valueend; pos++) {
-              buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
-              buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] & 0x0f));
+              if(line.s[pos] == '%')
+                buffer_putc(buffer_1, '^');
+              buffer_PUTC(buffer_1, line.s[pos]);
             }
-          } else {
-            buffer_put(buffer_1, &line.s[valuestart], valueend - valuestart);
+            buffer_putc(buffer_1, '"');
+            break;
           }
-          buffer_putc(buffer_1, '"');
-          break;
-        }
-        case REGISTRY_DWORD: {
-          buffer_putuint64(buffer_1, word);
-          break;
-        }
-        case REGISTRY_QWORD: {
-          buffer_putuint64(buffer_1, word);
-          break;
-        }
-        case REGISTRY_BINARY: {
-          buffer_putc(buffer_1, '"');
-          for(pos = valuestart; pos < valueend; pos++) {
-            if(scan_fromhex(line.s[pos]) != -1) buffer_putc(buffer_1, char_tolower(line.s[pos]));
+          case REGISTRY_SZ: {
+            buffer_putc(buffer_1, '"');
+            if(has_newline) {
+              for(pos = valuestart; pos < valueend; pos++) {
+                buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
+                buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] & 0x0f));
+              }
+            } else {
+              buffer_put(buffer_1, &line.s[valuestart], valueend - valuestart);
+            }
+            buffer_putc(buffer_1, '"');
+            break;
           }
-          buffer_putc(buffer_1, '"');
-          break;
-        }
-        default: {
-          buffer_puts(buffer_2, "Unhandled type: ");
-          buffer_puts(buffer_2, regtype_strings[rt]);
-          buffer_puts(buffer_2, "\n");
-          buffer_flush(buffer_2);
-          exit(2);
-          break;
-        }
+          case REGISTRY_DWORD: {
+            buffer_putuint64(buffer_1, word);
+            break;
+          }
+          case REGISTRY_QWORD: {
+            buffer_putuint64(buffer_1, word);
+            break;
+          }
+          case REGISTRY_BINARY: {
+            buffer_putc(buffer_1, '"');
+            for(pos = valuestart; pos < valueend; pos++) {
+              if(scan_fromhex(line.s[pos]) != -1)
+                buffer_putc(buffer_1, char_tolower(line.s[pos]));
+            }
+            buffer_putc(buffer_1, '"');
+            break;
+          }
+          default: {
+            buffer_puts(buffer_2, "Unhandled type: ");
+            buffer_puts(buffer_2, regtype_strings[rt]);
+            buffer_puts(buffer_2, "\n");
+            buffer_flush(buffer_2);
+            exit(2);
+            break;
+          }
         }
       }
 
@@ -412,9 +425,9 @@ main(int argc, char* argv[]) {
     char* arg = argv[argi];
     if(arg[0] == '-') {
       switch(arg[1]) {
-      case 'f': force++; break;
-      case 's': shortroot++; break;
-      default: usage(argv[0]); break;
+        case 'f': force++; break;
+        case 's': shortroot++; break;
+        default: usage(argv[0]); break;
       }
     } else
       break;
@@ -425,7 +438,8 @@ main(int argc, char* argv[]) {
     buffer_puts(buffer_2, "' ...\n");
     buffer_flush(buffer_2);
 
-    if((buffer_0->fd = open_read(argv[argi])) < 0) usage(argv[0]);
+    if((buffer_0->fd = open_read(argv[argi])) < 0)
+      usage(argv[0]);
 
     argi++;
   }
@@ -434,7 +448,8 @@ main(int argc, char* argv[]) {
     buffer_puts(buffer_2, argv[argi]);
     buffer_puts(buffer_2, "' ...\n");
     buffer_flush(buffer_2);
-    if((buffer_1->fd = open_trunc(argv[argi])) < 0) usage(argv[0]);
+    if((buffer_1->fd = open_trunc(argv[argi])) < 0)
+      usage(argv[0]);
 
     argi++;
   }

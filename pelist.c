@@ -252,6 +252,10 @@ main(int argc, char** argv) {
                            {"optional-header", 0, &print_opt_header, 'O'},
                            {0}};
 
+  buffer_puts(buffer_1, "Number of arguments: ");
+  buffer_putlong(buffer_1, argc);
+  buffer_putnlflush(buffer_1);
+
   for(;;) {
     c = getopt_long(argc, argv, "hiedsEDO", opts, &index);
     if(c == -1)
@@ -314,7 +318,7 @@ main(int argc, char** argv) {
         pe_print_export_directory(buffer_2, base, export_dir);
       }
       if(print_data_dir) {
-        size_t num_dirs;
+        uint32 num_dirs;
         pe_data_directory* data_dir = pe_get_datadir(base, &num_dirs);
 
           pe_print_data_directories(buffer_2, base, data_dir, num_dirs);

@@ -81,7 +81,7 @@ static const char* opt_timestyle = "%b %2e %H:%M";
 static uint64 filetime_to_unix(const FILETIME* ft);
 static const char*
 
-last_error_str() {
+last_error() {
   DWORD errCode = GetLastError();
   static char tmpbuf[1024];
   char* err;
@@ -130,7 +130,7 @@ get_file_size(char* path) {
     return -1; /* error condition, could call GetLastError to find out more */
   }
   CloseHandle(hFile);
-  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str()); */
+  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error()); */
   return size.QuadPart;
 }
 
@@ -148,7 +148,7 @@ get_file_time(const char* path) {
   CloseHandle(hFile);
   if((t = filetime_to_unix(&lw)) <= 0)
     if((t = filetime_to_unix(&c)) <= 0) t = filetime_to_unix(&la);
-  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error_str()); */
+  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error()); */
   return t;
 }
 
