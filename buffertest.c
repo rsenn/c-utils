@@ -1,6 +1,9 @@
-#include "lib/buffer.h"
 #include "lib/stralloc.h"
+#include "lib/buffer.h"
+#include "lib/open.h"
 #include "lib/mmap.h"
+#include "lib/byte.h"
+#include "lib/str.h"
 
 int
 buffer_copy(buffer* out, buffer* in) {

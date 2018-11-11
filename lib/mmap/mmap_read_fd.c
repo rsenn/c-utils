@@ -23,7 +23,7 @@ mmap_read_fd(fd_t fd, size_t* filesize) {
   map = 0;
   if(m) {
     if((map = MapViewOfFile(m, FILE_MAP_READ, 0, 0, 0)))
-          *filesize = GetFileSize((HANDLE)fd, NULL);
+      *filesize = GetFileSize((HANDLE)fd, NULL);
   }
   CloseHandle(m);
   return map;
@@ -32,7 +32,8 @@ mmap_read_fd(fd_t fd, size_t* filesize) {
   char* map = mmap_empty;
   if(fstat(fd, &st) == 0 && (*filesize = st.st_size)) {
     map = mmap(0, *filesize, PROT_READ, MAP_SHARED, fd, 0);
-    if(map == (char*)-1) map = 0;
+    if(map == (char*)-1)
+      map = 0;
   }
   return map;
 #endif

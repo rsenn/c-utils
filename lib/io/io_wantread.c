@@ -2,7 +2,7 @@
 #define _CYGWIN_IF_H_
 #include "../windoze.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <winsock.h>
 //#define USE_WS2_32 1
 #define __INSIDE_CYGWIN_NET__ 1

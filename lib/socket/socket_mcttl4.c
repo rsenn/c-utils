@@ -7,7 +7,7 @@
 #include "../socket_internal.h"
 #include <sys/types.h>
 
-#if WINDOWS && !defined(IP_MULTICAST_TTL)
+#if WINDOWS_NATIVE && !defined(IP_MULTICAST_TTL)
 #include <ws2tcpip.h>
 #endif
 

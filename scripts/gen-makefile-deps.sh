@@ -15,7 +15,7 @@ if [ "$ADD" ]; then
 fi
 
 CMD='echo "'$OUTSTR'"'
-#CMD='y=$(gcc -MM -I. "$x" | sed ":lp; \\|\\\\$| { N; s|\\\\\\n\\s*||; b lp }; s|.*: ||; s|/[^.]\+/\.\.||g"); '$CMD
+CMD='y=$(gcc -MM -I. "$x" | sed ":lp; \\|\\\\$| { N; s|\\\\\\n\\s*||; b lp }; s|.*: ||; s|/[^.]\+/\.\.||g"); '$CMD
 CMD='y=; '$CMD
 CMD='for x ; do '$CMD'; done'
 CMD="$CMD${PIPE:+ | $PIPE}"

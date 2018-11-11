@@ -94,8 +94,7 @@ omf_name(omf_record* rec) {
     case 0xce:
       return "VENDEXT";
     /* Header Record */
-    case 0xf0:
-      return "Library";
+    case 0xf0: return "Library";
   }
   return NULL;
-} 
+}

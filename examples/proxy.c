@@ -5,7 +5,7 @@
 #include "../lib/str.h"
 #include "../lib/dns.h"
 #include <errno.h>
-#include <getopt.h>
+#include "../lib/getopt.h"
 #include "../lib/scan.h"
 #include <stdlib.h>
 

@@ -1,5 +1,5 @@
-#include <dns.h>
-#include <ip4.h>
+#include "../lib/dns.h"
+#include "../lib/ip4.h"
 #include "../lib/buffer.h"
 #include <errno.h>
 #include <string.h>

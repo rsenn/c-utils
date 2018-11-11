@@ -5,7 +5,7 @@
 #include <windows.h>
 #endif
 
-#if !WINDOWS
+#if !WINDOWS_NATIVE
 #include <poll.h>
 #endif
 
@@ -16,7 +16,7 @@
 #include <write12.h>
 #endif
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 extern HANDLE io_comport;
 #endif
 
@@ -361,7 +361,7 @@ io_waituntil2(int64 milliseconds) {
 dopoll :
 #endif
 {
-#if WINDOWS
+#if WINDOWS_NATIVE
   DWORD numberofbytes;
   DWORD x;
   LPOVERLAPPED o;

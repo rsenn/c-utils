@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <string.h>
-#include <textcode.h>
+#include "../textcode.h"
 
 int
 main() {

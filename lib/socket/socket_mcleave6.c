@@ -1,6 +1,6 @@
 #define USE_WS2_32 1
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #define _WINSOCKAPI_
 #endif
 

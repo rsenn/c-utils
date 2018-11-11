@@ -1299,7 +1299,9 @@ void
 gen_compile_rules(HMAP_DB* rules, strarray* sources) {
   char** srcfile;
   stralloc obj;
+  strlist incs;
   stralloc_init(&obj);
+  strlist_init(&incs, ' ');
 
   strarray_foreach(sources, srcfile) {
     target* rule;
@@ -1308,6 +1310,10 @@ gen_compile_rules(HMAP_DB* rules, strarray* sources) {
 
     if((rule = get_rule_sa(&obj))) {
       add_srcpath(&rule->prereq, *srcfile);
+
+
+      get_includes(*srcfile, &rule->prereq, 0);
+
 
       rule->recipe = &compile_command;
     }

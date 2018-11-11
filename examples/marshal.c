@@ -7,13 +7,13 @@
 #include "../lib/stralloc.h"
 #include "../lib/buffer.h"
 #include "../lib/scan.h"
-#include <textcode.h>
-#include <byte.h>
-#include <uint16.h>
-#include <uint32.h>
-#include <uint64.h>
+#include "../lib/textcode.h"
+#include "../lib/byte.h"
+#include "../lib/uint16.h"
+#include "../lib/uint32.h"
+#include "../lib/uint64.h"
 #include <openreadclose.h>
-#include <mmap.h>
+#include "../lib/mmap.h"
 #include "../lib/str.h"
 
 char buf[100];

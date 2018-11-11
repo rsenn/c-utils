@@ -2,7 +2,7 @@
 #include "../lib/str.h"
 #include <assert.h>
 #include "../lib/scan.h"
-#include <byte.h>
+#include "../lib/byte.h"
 
 int
 main() {

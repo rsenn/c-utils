@@ -12,7 +12,7 @@
 int
 socket_tcp4(void) {
   int s;
-#if defined(SOCK_NONBLOCK) && !WINDOWS
+#if defined(SOCK_NONBLOCK) && !WINDOWS_NATIVE
   if((s = winsock2errno(socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP))) > -1)
     return s;
 #endif

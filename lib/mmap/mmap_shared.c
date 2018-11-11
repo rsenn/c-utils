@@ -22,11 +22,13 @@ mmap_shared(const char* filename, size_t* filesize) {
                   OPEN_EXISTING,
                   FILE_ATTRIBUTE_NORMAL,
                   0);
-  if(fd == INVALID_HANDLE_VALUE) return 0;
+  if(fd == INVALID_HANDLE_VALUE)
+    return 0;
   m = CreateFileMapping(fd, 0, PAGE_READWRITE, 0, 0, NULL);
   map = 0;
   if(m)
-    if((map = MapViewOfFile(m, FILE_MAP_READ|FILE_MAP_WRITE, 0, 0, 0))) *filesize = GetFileSize(fd, NULL);
+    if((map = MapViewOfFile(m, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0)))
+      *filesize = GetFileSize(fd, NULL);
   CloseHandle(m);
   CloseHandle(fd);
   return map;
@@ -41,7 +43,8 @@ mmap_shared(const char* filename, size_t* filesize) {
     }
     *filesize = (size_t)o;
     map = mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if(map == (char*)-1) map = 0;
+    if(map == (char*)-1)
+      map = 0;
     close(fd);
     return map;
   }

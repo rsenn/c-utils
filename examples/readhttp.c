@@ -19,7 +19,7 @@ main() {
   int res;
 
   stralloc_init(&sa);
-  res = buffer_get_token_sa_pred(buffer_0, &sa, ishttp);
+  res = buffer_get_token_sa_pred(buffer_0, &sa, ishttp, 0);
   buffer_puts(buffer_1, "buffer_get_token_sa_pred returned ");
   buffer_putlong(buffer_1, res);
   buffer_putsflush(buffer_1, ".\n\n");
