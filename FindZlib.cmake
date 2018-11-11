@@ -79,7 +79,7 @@ if(NOT ZLIB_LIBRARY)
     find_library(ZLIB_LIBRARY_DEBUG NAMES ${ZLIB_NAMES_DEBUG} ${${search}} PATH_SUFFIXES lib)
   endforeach()
 
-  include(${CMAKE_CURRENT_LIST_DIR}/SelectLibraryConfigurations.cmake)
+  include(SelectLibraryConfigurations)
   select_library_configurations(ZLIB)
 endif()
 
@@ -89,59 +89,64 @@ unset(ZLIB_NAMES_DEBUG)
 mark_as_advanced(ZLIB_INCLUDE_DIR)
 
 if(ZLIB_INCLUDE_DIR AND EXISTS "${ZLIB_INCLUDE_DIR}/zlib.h")
-    file(STRINGS "${ZLIB_INCLUDE_DIR}/zlib.h" ZLIB_H REGEX "^#define ZLIB_VERSION \"[^\"]*\"$")
+  file(STRINGS "${ZLIB_INCLUDE_DIR}/zlib.h" ZLIB_H REGEX "^#define ZLIB_VERSION \"[^\"]*\"$")
 
-    string(REGEX REPLACE "^.*ZLIB_VERSION \"([0-9]+).*$" "\\1" ZLIB_VERSION_MAJOR "${ZLIB_H}")
-    string(REGEX REPLACE "^.*ZLIB_VERSION \"[0-9]+\\.([0-9]+).*$" "\\1" ZLIB_VERSION_MINOR  "${ZLIB_H}")
-    string(REGEX REPLACE "^.*ZLIB_VERSION \"[0-9]+\\.[0-9]+\\.([0-9]+).*$" "\\1" ZLIB_VERSION_PATCH "${ZLIB_H}")
-    set(ZLIB_VERSION_STRING "${ZLIB_VERSION_MAJOR}.${ZLIB_VERSION_MINOR}.${ZLIB_VERSION_PATCH}")
+  string(REGEX REPLACE "^.*ZLIB_VERSION \"([0-9]+).*$" "\\1" ZLIB_VERSION_MAJOR "${ZLIB_H}")
+  string(REGEX REPLACE "^.*ZLIB_VERSION \"[0-9]+\\.([0-9]+).*$" "\\1" ZLIB_VERSION_MINOR  "${ZLIB_H}")
+  string(REGEX REPLACE "^.*ZLIB_VERSION \"[0-9]+\\.[0-9]+\\.([0-9]+).*$" "\\1" ZLIB_VERSION_PATCH "${ZLIB_H}")
+  set(ZLIB_VERSION_STRING "${ZLIB_VERSION_MAJOR}.${ZLIB_VERSION_MINOR}.${ZLIB_VERSION_PATCH}")
 
-    # only append a TWEAK version if it exists:
-    set(ZLIB_VERSION_TWEAK "")
-    if( "${ZLIB_H}" MATCHES "ZLIB_VERSION \"[0-9]+\\.[0-9]+\\.[0-9]+\\.([0-9]+)")
-        set(ZLIB_VERSION_TWEAK "${CMAKE_MATCH_1}")
-        string(APPEND ZLIB_VERSION_STRING ".${ZLIB_VERSION_TWEAK}")
-    endif()
+  # only append a TWEAK version if it exists:
+  set(ZLIB_VERSION_TWEAK "")
+  if( "${ZLIB_H}" MATCHES "ZLIB_VERSION \"[0-9]+\\.[0-9]+\\.[0-9]+\\.([0-9]+)")
+      set(ZLIB_VERSION_TWEAK "${CMAKE_MATCH_1}")
+      string(APPEND ZLIB_VERSION_STRING ".${ZLIB_VERSION_TWEAK}")
+  endif()
 
-    set(ZLIB_MAJOR_VERSION "${ZLIB_VERSION_MAJOR}")
-    set(ZLIB_MINOR_VERSION "${ZLIB_VERSION_MINOR}")
-    set(ZLIB_PATCH_VERSION "${ZLIB_VERSION_PATCH}")
+  set(ZLIB_MAJOR_VERSION "${ZLIB_VERSION_MAJOR}")
+  set(ZLIB_MINOR_VERSION "${ZLIB_VERSION_MINOR}")
+  set(ZLIB_PATCH_VERSION "${ZLIB_VERSION_PATCH}")
 endif()
 
-include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
+include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(ZLIB REQUIRED_VARS ZLIB_LIBRARY ZLIB_INCLUDE_DIR
-                                       VERSION_VAR ZLIB_VERSION_STRING)
+                                     VERSION_VAR ZLIB_VERSION_STRING)
 
 if(ZLIB_FOUND)
-    set(ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIR})
+  set(ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIR})
 
-    if(NOT ZLIB_LIBRARIES)
-      set(ZLIB_LIBRARIES ${ZLIB_LIBRARY})
-    endif()
+  if(NOT ZLIB_LIBRARIES)
+    set(ZLIB_LIBRARIES ${ZLIB_LIBRARY})
+  endif()
 
-    if(NOT TARGET ZLIB::ZLIB)
-      add_library(ZLIB::ZLIB UNKNOWN IMPORTED)
+  if(NOT TARGET ZLIB::ZLIB)
+    add_library(ZLIB::ZLIB UNKNOWN IMPORTED)
+    set_target_properties(ZLIB::ZLIB PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIRS}")
+
+    if(ZLIB_LIBRARY_RELEASE)
+      set_property(TARGET ZLIB::ZLIB APPEND PROPERTY
+        IMPORTED_CONFIGURATIONS RELEASE)
       set_target_properties(ZLIB::ZLIB PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIRS}")
-
-      if(ZLIB_LIBRARY_RELEASE)
-        set_property(TARGET ZLIB::ZLIB APPEND PROPERTY
-          IMPORTED_CONFIGURATIONS RELEASE)
-        set_target_properties(ZLIB::ZLIB PROPERTIES
-          IMPORTED_LOCATION_RELEASE "${ZLIB_LIBRARY_RELEASE}")
-      endif()
-
-      if(ZLIB_LIBRARY_DEBUG)
-        set_property(TARGET ZLIB::ZLIB APPEND PROPERTY
-          IMPORTED_CONFIGURATIONS DEBUG)
-        set_target_properties(ZLIB::ZLIB PROPERTIES
-          IMPORTED_LOCATION_DEBUG "${ZLIB_LIBRARY_DEBUG}")
-      endif()
-
-      if(NOT ZLIB_LIBRARY_RELEASE AND NOT ZLIB_LIBRARY_DEBUG)
-        set_property(TARGET ZLIB::ZLIB APPEND PROPERTY
-          IMPORTED_LOCATION "${ZLIB_LIBRARY}")
-      endif()
+        IMPORTED_LOCATION_RELEASE "${ZLIB_LIBRARY_RELEASE}")
     endif()
-endif()
 
+    if(ZLIB_LIBRARY_DEBUG)
+      set_property(TARGET ZLIB::ZLIB APPEND PROPERTY
+        IMPORTED_CONFIGURATIONS DEBUG)
+      set_target_properties(ZLIB::ZLIB PROPERTIES
+        IMPORTED_LOCATION_DEBUG "${ZLIB_LIBRARY_DEBUG}")
+    endif()
+
+    if(NOT ZLIB_LIBRARY_RELEASE AND NOT ZLIB_LIBRARY_DEBUG)
+      set_property(TARGET ZLIB::ZLIB APPEND PROPERTY
+        IMPORTED_LOCATION "${ZLIB_LIBRARY}")
+    endif()
+  endif()
+
+  if(NOT ZLIB_LIBRARY_DEBUG)
+    unset(ZLIB_LIBRARY_DEBUG CACHE)
+    set(ZLIB_LIBRARY_DEBUG "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib (debug)")
+  endif(NOT ZLIB_LIBRARY_DEBUG)
+
+endif()
