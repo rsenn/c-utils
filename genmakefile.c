@@ -742,35 +742,36 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
   strarray_foreach(sources, srcfile) {
     size_t n;
     char* x;
-    sourcedir* srcdir;
-    sourcefile* file = new_source(*srcfile);
 
-    path_dirname(*srcfile, &dir);
-
-    if((srcdir = hmap_get(sourcedirs, dir.s, dir.len + 1))) {
-      slist_add(&srcdir->sources, &file->link);
-
-      ++srcdir->n_sources;
-    } else {
-      sourcedir newdir;
-      byte_zero(&newdir, sizeof(newdir));
-
-      newdir.n_sources = 1;
-      newdir.sources = &file->link;
-      strlist_init(&newdir.includes, '\0');
-
-      hmap_set(&sourcedirs, dir.s, dir.len + 1, &newdir, sizeof(newdir));
-
-      srcdir = hmap_get(sourcedirs, dir.s, dir.len + 1);
-    }
-
-    if((x = mmap_read(file->name, &n))) {
+    if((x = mmap_read(*srcfile, &n)) != 0) {
       const char* s;
       size_t dlen = dir.len;
+      sourcedir* srcdir;
+      sourcefile* file = new_source(*srcfile);
       stralloc r;
       strlist l;
       stralloc_init(&r);
       strlist_init(&l, '\0');
+
+
+      path_dirname(*srcfile, &dir);
+
+      if((srcdir = hmap_get(sourcedirs, dir.s, dir.len + 1))) {
+        slist_add(&srcdir->sources, &file->link);
+
+        ++srcdir->n_sources;
+      } else {
+        sourcedir newdir;
+        byte_zero(&newdir, sizeof(newdir));
+
+        newdir.n_sources = 1;
+        newdir.sources = &file->link;
+        strlist_init(&newdir.includes, '\0');
+
+        hmap_set(&sourcedirs, dir.s, dir.len + 1, &newdir, sizeof(newdir));
+
+        srcdir = hmap_get(sourcedirs, dir.s, dir.len + 1);
+      }
 
       extract_includes(x, n, &l, 0);
 
@@ -791,7 +792,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
       mmap_unmap(x, n);
     } else {
-      buffer_putm_internal(buffer_2, "ERROR opening '", file->name, "'\n", 0);
+      buffer_putm_internal(buffer_2, "ERROR opening '", *srcfile, "'\n", 0);
       buffer_putnlflush(buffer_2);
     }
   }
@@ -1401,7 +1402,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
             stralloc_zero(&obj);
             path_object(pfile->name, &obj);
 
-          get_includes(pfile->name, &incs, 0);
+            get_includes(pfile->name, &incs, 0);
 
             add_path_sa(&link->prereq, &obj);
           }

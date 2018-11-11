@@ -53,16 +53,16 @@ init(char ip[256]) {
   ULONG ulOutBufLen;
   typedef DWORD (WINAPI get_network_params_fn)(PFIXED_INFO pFixedInfo,PULONG pOutBufLen);
   static get_network_params_fn* get_network_params;
-#endif
 
-if(get_network_params == 0) {
- HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
- 
- if(iphlpapi != INVALID_HANDLE_VALUE) {
-   if((get_network_params = (get_network_params_fn*)GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
-   return -1;   
- }
-}
+  if(get_network_params == 0) {
+  HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
+  
+  if(iphlpapi != INVALID_HANDLE_VALUE) {
+    if((get_network_params = (get_network_params_fn*)GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
+    return -1;   
+  }
+  }
+#endif
 
   x = getenv("DNSCACHEIP");
 
