@@ -1,14 +1,16 @@
 //#define _WINSOCKAPI_
 #define _CYGWIN_IF_H_
-#include "../windoze.h"
 
-#if WINDOWS_NATIVE
-#include <winsock.h>
-//#define USE_WS2_32 1
+#if defined(_WIN32) || defined(_WIN64)
+#include <winsock2.h>
+#define USE_WS2_32 1
+#define _WINSOCKAPI_
+//#include <winsock.h>
 #define __INSIDE_CYGWIN_NET__ 1
 #endif
 #include "../socket_internal.h"
 #include "../io_internal.h"
+
 
 #include <errno.h>
 #include <fcntl.h>

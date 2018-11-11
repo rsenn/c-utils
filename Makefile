@@ -536,7 +536,7 @@ endif
 
 CPPFLAGS := -I.
 
-DEFINES += INLINE=inline
+#DEFINES += INLINE=inline
 #DEFINES += PATH_MAX=4096
 ifeq ($(READDIR),)
 ifeq ($(SYS),mingw32)
@@ -688,7 +688,7 @@ MINGW := 0
 endif
 ifeq ($(MINGW),1)
 LDFLAGS += -static-libgcc
-DEFINES += open=_open read=_read write=_write close=_close
+#DEFINES += open=_open read=_read write=_write close=_close
 #LDFLAGS += -static-lib{asan,gfortran,lsan,tsan,ubsan}
 WIN32 := 1
 endif
