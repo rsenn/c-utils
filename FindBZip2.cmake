@@ -47,6 +47,8 @@ if (NOT BZIP2_LIBRARIES)
     find_library(BZIP2_LIBRARY_RELEASE NAMES bz2 bzip2 ${_BZIP2_PATHS} PATH_SUFFIXES lib)
     find_library(BZIP2_LIBRARY_DEBUG NAMES bz2d bzip2d ${_BZIP2_PATHS} PATH_SUFFIXES lib)
 
+    set(BZIP2_LIBRARIES "${BZIP2_LIBRARY_RELEASE}")
+
     include(SelectLibraryConfigurations)
     SELECT_LIBRARY_CONFIGURATIONS(BZIP2)
 else ()
@@ -102,5 +104,10 @@ if (BZIP2_FOUND)
       endif()
     endif()
 endif ()
+
+if(NOT BZIP2_LIBRARY_DEBUG)
+  unset(BZIP2_LIBRARY_DEBUG CACHE)
+  set(BZIP2_LIBRARY_DEBUG "${BZIP2_LIBRARY_RELEASE}" CACHE FILEPATH "libbz2 (release)")
+endif(NOT BZIP2_LIBRARY_DEBUG)
 
 mark_as_advanced(BZIP2_INCLUDE_DIR)
