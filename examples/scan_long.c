@@ -20,7 +20,7 @@ main() {
   for(i = 1; i < 0xfffffffffull; i += i + 1) {
     int k;
     unsigned long test;
-    buf[k = fmt_ulonglong(buf, i)] = 0;
+    buf[k = fmt_uint64(buf, i)] = 0;
     buffer_puts(buffer_1, buf);
     buffer_putnlflush(buffer_1);
     if(buf[scan_ulong(buf, &test)])

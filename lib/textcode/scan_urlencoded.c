@@ -1,6 +1,6 @@
-#include "fmt.h"
-#include "textcode.h"
-#include "scan.h"
+#include "../fmt.h"
+#include "../textcode.h"
+#include "../scan.h"
 
 static size_t inner_scan_urlencoded(const char *src,char *dest,size_t *destlen,int plus) {
   register const unsigned char* s=(const unsigned char*) src;

@@ -14,7 +14,7 @@ fmt_double(char* dest, double d, int maxlen, int prec) {
   } __u;
 
   __u.d = d;
-  
+
   /* step 1: extract sign, mantissa and exponent */
   s = __u.x >> 63;
   e = ((__u.x >> 52) & ((1 << 11) - 1)) - 1023;
@@ -25,12 +25,14 @@ fmt_double(char* dest, double d, int maxlen, int prec) {
 
   if(s) {
     d = -d;
-    if(writeok) *dest = '-';
+    if(writeok)
+      *dest = '-';
     --maxlen;
     dest++;
   }
   if(d == 0.0) {
-    if(writeok) *dest = '0';
+    if(writeok)
+      *dest = '0';
     --maxlen;
     dest++;
     return dest - oldbuf;
@@ -70,24 +72,28 @@ fmt_double(char* dest, double d, int maxlen, int prec) {
   if(e10 > prec) {
     /* use scientific notation */
     int len = fmt_double(writeok ? dest : 0, d / tmp, maxlen, prec);
-    if(len == 0) return 0;
+    if(len == 0)
+      return 0;
     maxlen -= len;
     dest += len;
     if(--maxlen >= 0) {
-      if(writeok) *dest = 'e';
+      if(writeok)
+        *dest = 'e';
       ++dest;
     }
     for(len = 1000; len > 0; len /= 10) {
       if(e10 >= len || !initial) {
         if(--maxlen >= 0) {
-          if(writeok) *dest = (e10 / len) + '0';
+          if(writeok)
+            *dest = (e10 / len) + '0';
           ++dest;
         }
         initial = 0;
         e10 = e10 % len;
       }
     }
-    if(maxlen >= 0) return dest - oldbuf;
+    if(maxlen >= 0)
+      return dest - oldbuf;
     return 0;
   }
   /* step 5: loop through the digits, inserting the decimal point when
@@ -100,7 +106,8 @@ fmt_double(char* dest, double d, int maxlen, int prec) {
     if((!initial) || c) {
       if(--maxlen >= 0) {
         initial = 0;
-        if(writeok) *dest = c + '0';
+        if(writeok)
+          *dest = c + '0';
         ++dest;
       } else
         return 0;
@@ -110,7 +117,8 @@ fmt_double(char* dest, double d, int maxlen, int prec) {
       tmp = 1e-1;
       initial = 0;
       if(--maxlen >= 0) {
-        if(writeok) *dest = '.';
+        if(writeok)
+          *dest = '.';
         ++dest;
       } else
         return 0;

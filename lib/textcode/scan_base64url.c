@@ -1,5 +1,4 @@
-#include "textcode.h"
-#include "haveinline.h"
+#include "../textcode.h"
 
 static inline int dec(unsigned char x) {
   if (x>='A' && x<='Z') return x-'A';

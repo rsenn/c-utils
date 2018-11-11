@@ -12,7 +12,7 @@
 #include "../lib/uint16.h"
 #include "../lib/uint32.h"
 #include "../lib/uint64.h"
-#include <openreadclose.h>
+#include "../lib/open.h"
 #include "../lib/mmap.h"
 #include "../lib/str.h"
 
@@ -33,7 +33,7 @@ zap2() {
 
 int
 main() {
-  uint32_t x;
+  uint32 x;
 
   unsigned long long ull;
   unsigned long ul;
@@ -96,9 +96,9 @@ main() {
   assert(fmt_xlonglong(NULL, 12345678900ll) == 9);
   zap();
   assert(fmt_xlonglong(buf, 12345678900ll) == 9 && byte_equal(buf, 10, "2dfdc1c34_"));
-  assert(fmt_ulonglong(NULL, 12345678900ull) == 11);
+  assert(fmt_uint64(NULL, 12345678900ull) == 11);
   zap();
-  assert(fmt_ulonglong(buf, 12345678900ull) == 11 && byte_equal(buf, 12, "12345678900_"));
+  assert(fmt_uint64(buf, 12345678900ull) == 11 && byte_equal(buf, 12, "12345678900_"));
 
   assert(fmt_ulong0(NULL, 12345, 7) == 7);
   zap();
@@ -268,7 +268,7 @@ main() {
   assert(scan_ulong("23.", &ul) == 2 && ul == 23);
   assert(scan_uint("23.", &ui) == 2 && ui == 23);
   assert(scan_ushort("23.", &us) == 2 && us == 23);
-  assert(scan_ulonglong("23.", &ull) == 2 && ull == 23);
+  assert(scan_uint64("23.", &ull) == 2 && ull == 23);
 
   assert(scan_long("23.", &l) == 2 && l == 23);
   assert(scan_int("23.", &i) == 2 && i == 23);
@@ -352,8 +352,8 @@ main() {
   assert(scan_short("-32768", &s) == 6 && s == -32768);
   assert(scan_short("-032769", &s) == 6 && s == -3276);
 
-  assert(scan_ulonglong("18446744073709551615", &ull) == 20 && ull == 0xffffffffffffffffull);
-  assert(scan_ulonglong("18446744073709551616", &ull) == 19 && ull == 1844674407370955161ull);
+  assert(scan_uint64("18446744073709551615", &ull) == 20 && ull == 0xffffffffffffffffull);
+  assert(scan_uint64("18446744073709551616", &ull) == 19 && ull == 1844674407370955161ull);
   assert(scan_xlonglong("ffffffffffffffff", &ull) == 16 && ull == 0xffffffffffffffffull);
   assert(scan_xlonglong("ffffffffffffffff0", &ull) == 16 && ull == 0xffffffffffffffffull);
   assert(scan_8longlong("1777777777777777777777", &ull) == 22 && ull == 0xffffffffffffffffull);
@@ -370,12 +370,12 @@ main() {
 
   zap2();
 
-  assert(sizeof(uint16) == sizeof(uint16_t));
-  assert(sizeof(uint32) == sizeof(uint32_t));
-  assert(sizeof(uint64) == sizeof(uint64_t));
-  assert(sizeof(int16) == sizeof(int16_t));
-  assert(sizeof(int32) == sizeof(int32_t));
-  assert(sizeof(int64) == sizeof(int64_t));
+  assert(sizeof(uint16) == sizeof(uint16));
+  assert(sizeof(uint32) == sizeof(uint32));
+  assert(sizeof(uint64) == sizeof(uint64));
+  assert(sizeof(int16) == sizeof(int16));
+  assert(sizeof(int32) == sizeof(int32));
+  assert(sizeof(int64) == sizeof(int64));
 
   assert(uint16_read(buf) == 0x100);
   assert(uint16_read(buf + 1) == 0x201);

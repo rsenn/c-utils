@@ -7,11 +7,13 @@ fmt_asn1derlength(char* dest, uint64 l) {
   /* encoding is either l%128 or (0x80+number of bytes,bytes) */
   size_t needed = (sizeof l), i;
   if(l < 128) {
-    if(dest) *dest = l & 0x7f;
+    if(dest)
+      *dest = l & 0x7f;
     return 1;
   }
   for(i = 1; i < needed; ++i)
-    if(!(l >> (i * 8))) break;
+    if(!(l >> (i * 8)))
+      break;
   if(dest) {
     size_t j = i;
     *dest = (char)(0x80 + i);

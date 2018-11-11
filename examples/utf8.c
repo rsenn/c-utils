@@ -7,7 +7,7 @@
 int
 main() {
   char buf[100];
-  uint32_t l;
+  uint32 l;
   unsigned int i;
   /* first positive testing for the various lengths */
   l = fmt_utf8(buf, 0);

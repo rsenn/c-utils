@@ -4,7 +4,8 @@ size_t
 fmt_utf8(char* dest, uint32 n) {
   size_t i, j;
   if(n <= 0x7f) {
-    if(dest) *dest = (char)n;
+    if(dest)
+      *dest = (char)n;
     return 1;
   }
   for(i = 0x3f, j = 1; i < 0x7fffffff; i = (i << 5) | 0x1f, ++j) {

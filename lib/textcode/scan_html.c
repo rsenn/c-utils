@@ -1,13 +1,10 @@
-#include <inttypes.h>
-#include <string.h>
-#include "entities.h"
-
-#include "fmt.h"
-#include "textcode.h"
-#include "haveinline.h"
-#include "scan.h"
-#include "case.h"
-#include "str.h"
+#include "../typedefs.h"
+#include "../entities.h"
+#include "../fmt.h"
+#include "../textcode.h"
+#include "../scan.h"
+#include "../case.h"
+#include "../str.h"
 
 static const char* lookup(size_t ofs,const char* t) {
   if (ofs>entities.tab[0]) return 0;

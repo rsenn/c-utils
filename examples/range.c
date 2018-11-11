@@ -36,8 +36,8 @@ check_minmax() {
 
   assert(__MIN(int32_t) == (int32_t)0x80000000);
   assert(__MAX(int32_t) == 0x7fffffff);
-  assert(__MIN(uint32_t) == 0);
-  assert(__MAX(uint32_t) == 0xffffffff);
+  assert(__MIN(uint32) == 0);
+  assert(__MAX(uint32) == 0xffffffff);
 }
 
 void
@@ -125,7 +125,7 @@ check_rangeptrbuf() {
   assert(range_str4inbuf(buf, sizeof(buf), 0) == 0);
   assert(range_str4inbuf(buf, sizeof(buf), buf + sizeof(buf)) == 0);
   {
-    uint32_t y[6];
+    uint32 y[6];
     int i;
     for(i = 0; i < 6; ++i) y[i] = "fnord"[i];
     assert(range_str4inbuf(y, 5 * 4, y) == 0);

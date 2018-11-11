@@ -1,6 +1,5 @@
-#include "fmt.h"
-#include "textcode.h"
-#include "haveinline.h"
+#include "../fmt.h"
+#include "../textcode.h"
 #include <string.h>
 
 size_t fmt_ldapescape2(char* dest,const char* src,size_t len,const char* escapeme) {

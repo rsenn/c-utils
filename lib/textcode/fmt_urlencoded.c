@@ -1,7 +1,6 @@
-#include "fmt.h"
-#include "textcode.h"
-#include "str.h"
-#include "haveinline.h"
+#include "../fmt.h"
+#include "../textcode.h"
+#include "../str.h"
 
 static inline int issafe(unsigned char c) {
   const char safe[] = "$/.=~-_";

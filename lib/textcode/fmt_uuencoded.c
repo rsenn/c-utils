@@ -1,6 +1,5 @@
-#include "fmt.h"
-#include "textcode.h"
-#include "haveinline.h"
+#include "../fmt.h"
+#include "../textcode.h"
 
 static inline unsigned int enc(unsigned char x) {
   return ((x-1)&077)+'!';
