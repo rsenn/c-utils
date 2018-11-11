@@ -72,7 +72,7 @@ iarray_allocate(iarray* ia, size_t pos) {
     if(!*p) {
       if(!newpage)
         if(!(newpage = new_page(ia->bytesperpage))) return 0;
-      if(__CAS_PTR((void*)p, 0, (void*)newpage) == 0) newpage = 0;
+      if(__CAS_PTR((void**)p, 0, (void*)newpage) == 0) newpage = 0;
     }
     if(index + ia->elemperpage > pos) break;
     p = &(*p)->next;
