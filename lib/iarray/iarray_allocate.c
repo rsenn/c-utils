@@ -78,7 +78,7 @@ iarray_allocate(iarray* ia, size_t pos) {
     p = &(*p)->next;
   }
   if(newpage)
-#if WINDOWS
+#if WINDOWS_NATIVE
     free(newpage);
 #else
     munmap(newpage, ia->bytesperpage);

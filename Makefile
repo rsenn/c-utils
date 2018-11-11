@@ -938,6 +938,7 @@ $(info BUILDDIR: $(BUILDDIR))
 
 
 all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
+	$(info all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS))
 
 #$(BUILDDIR)tryerrno.c:
 #	echo "int main() {\
@@ -965,7 +966,7 @@ CPPFLAGS := -I.
 .PHONY: builddir
 builddir: $(BUILDDIR) $(OBJDIR)
 	-mkdir -p $(BUILDDIR) || mkdir $(BUILDDIR)
-	-md $(subst /,\,$(BUILDDIR))
+	#-md $(subst /,\,$(BUILDDIR))
 
 $(BUILDDIR):
 	-mkdir -p $(BUILDDIR) || mkdir $(BUILDDIR)

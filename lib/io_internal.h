@@ -26,7 +26,7 @@ extern void* io_getfds();
 #if WINDOWS
 # include <windows.h>
 # if WINDOWS_NATIVE
-#  ifndef __LCC__
+#  if !defined(__LCC__) && !defined(__MINGW32__)
 #   define read _read
 #   define write _write
 //#   define open _open

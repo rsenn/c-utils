@@ -40,7 +40,7 @@ do_recv(int s, void* buf, size_t len, void* ptr) {
  */
 
 static const char* const url_host = //"verteiler1.mediathekview.de";
- "5.1.76.111";
+    "5.1.76.111";
 static const char* const url_location = "/Filmliste-akt.xz";
 static const uint16 url_port = 80;
 
@@ -61,40 +61,41 @@ main(int argc, char* argv[]) {
 
   ret = http_get(&h, url_location);
 
-/*  buffer_init(&in, (buffer_op_sys*)&do_recv, h.sock, inbuf, sizeof(inbuf));
+  /*  buffer_init(&in, (buffer_op_sys*)&do_recv, h.sock, inbuf, sizeof(inbuf));
 
-  buffer_puts(buffer_2, "http_get() = ");
-  buffer_putlong(buffer_2, (long)ret);
-  buffer_putnlflush(buffer_2);
-*/
+    buffer_puts(buffer_2, "http_get() = ");
+    buffer_putlong(buffer_2, (long)ret);
+    buffer_putnlflush(buffer_2);
+  */
   io_fd(h.sock);
   e = io_getentry(h.sock);
 
   io_wantwrite(h.sock);
-/*
+  io_wantread(h.sock);
+  /*
 
-  byte_zero(&iop, sizeof(iop));
-  iop.fd = h.sock;
-  iop.events = IOPAUSE_WRITE;
+    byte_zero(&iop, sizeof(iop));
+    iop.fd = h.sock;
+    iop.events = IOPAUSE_WRITE;
 
-  set_timeouts(10);
-  iopause(&iop, 1, &deadline, &stamp);
-*/
-
-  while((fd = io_canwrite()) != -1) {
-	  if(h.sock == fd)
-		   http_sendreq(&h);
-  } 
+    set_timeouts(10);
+    iopause(&iop, 1, &deadline, &stamp);
+  */
 
   for(;;) {
-	  io_wantread(h.sock);
+    io_wait();
 
-	  if(e->canread)
+    if((fd = io_canwrite()) != -1) {
+      if(h.sock == fd)
+        http_sendreq(&h);
+    }
+
+    if(e->canread)
       http_readable(&h);
 
-      if(h.response->status == HTTP_STATUS_FINISH)
-		  break;
-   }
+    if(h.response->status == HTTP_STATUS_FINISH)
+      break;
+  }
 
   buffer_putsa(buffer_1, &h.response->data);
   buffer_putnlflush(buffer_1);

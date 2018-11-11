@@ -39,13 +39,13 @@
 
 #ifdef __APPLE__
 #define EXPORT __attribute__((visibility("default")))
-#elif WINDOWS
+#elif WINDOWS_NATIVE
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <stdio.h>
 HANDLE io_comport;
 #endif
@@ -86,7 +86,7 @@ long alt_firstwrite;
 static io_entry*
 io_fd_internal(fd_t d, int flags) {
   io_entry* e;
-#if !WINDOWS
+#if !WINDOWS_NATIVE
   long r;
   if((flags & (IO_FD_BLOCK | IO_FD_NONBLOCK)) == 0) {
     if((r = fcntl(d, F_GETFL, 0)) == -1)
@@ -116,7 +116,7 @@ io_fd_internal(fd_t d, int flags) {
     return e;
   byte_zero(e, sizeof(io_entry));
   e->inuse = 1;
-#if WINDOWS
+#if WINDOWS_NATIVE
   e->mh = 0;
 #else
   if(r & O_NDELAY)
@@ -157,7 +157,7 @@ io_fd_internal(fd_t d, int flags) {
     }
 #endif
 
-#if WINDOWS
+#if WINDOWS_NATIVE
     io_comport = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
     if(io_comport) {
       io_waitmode = COMPLETIONPORT;
@@ -178,7 +178,7 @@ io_fd_internal(fd_t d, int flags) {
   }
 #endif
 
-#if WINDOWS
+#if WINDOWS_NATIVE
   if(io_comport) {
     if(CreateIoCompletionPort((HANDLE)(size_t)d, io_comport, (DWORD)d, 0) == 0) {
       errno = EBADF;
