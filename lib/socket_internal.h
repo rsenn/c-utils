@@ -7,14 +7,14 @@
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)
-#if USE_WS2_32
-#ifndef _WINSOCKAPI_
-#define _WINSOCKAPI_
-#endif
-#include <winsock2.h>
-#else
-#include <winsock.h>
-#endif
+# if USE_WS2_32
+#  ifndef _WINSOCKAPI_
+#   define _WINSOCKAPI_
+#  endif
+#  include <winsock2.h>
+# else
+#  include <winsock.h>
+# endif
 #endif
 
 #include "windoze.h"

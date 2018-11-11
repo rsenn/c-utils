@@ -27,6 +27,20 @@ include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
 include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 include(${CMAKE_SOURCE_DIR}/CheckInline.cmake)
 
+   set(CompilerFlags
+        CMAKE_C_FLAGS
+        CMAKE_C_FLAGS_DEBUG
+        CMAKE_C_FLAGS_RELEASE
+        CMAKE_C_FLAGS_RELWITHDEBINFO
+        CMAKE_C_FLAGS_MINSIZEREL
+        )
+foreach(CompilerFlag ${CompilerFlags})
+  string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+  set(${CompilerFlag} "${${CompilerFlag}}" CACHE STRING "Compiler flags ${CompilerFlag}")
+  message("${CompilerFlag}: ${${CompilerFlag}}")
+endforeach()
+
+
 if(LIBLZMA_FOUND)
   link_libraries(${LIBLZMA_LIBRARIES})
   include_directories(${LIBLZMA_INCLUDE_DIRS})

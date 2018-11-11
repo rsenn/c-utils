@@ -1,9 +1,4 @@
 #define USE_WS2_32 1
-
-#if WINDOWS
-#define _WINSOCKAPI_
-#endif
-
 #include "../socket_internal.h"
 #include "../byte.h"
 
