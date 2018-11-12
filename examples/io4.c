@@ -1,4 +1,5 @@
 #include "../lib/io.h"
+#include "../lib/uint64.h"
 #include "../lib/buffer.h"
 #include <unistd.h>
 
@@ -23,7 +24,7 @@ main() {
   sleep(2);
   if((r = io_tryreadtimeout(pfd[0], buf, sizeof buf)) != -2) {
     buffer_puts(buffer_2, "io_tryreadtimeout returned ");
-    buffer_putlonglong(buffer_2, r);
+    buffer_putint64(buffer_2, r);
     buffer_putnlflush(buffer_2);
     return 111;
   }

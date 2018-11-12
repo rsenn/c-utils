@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include "../lib/uint64.h"
 #include "../lib/buffer.h"
 #include "../lib/io.h"
 
@@ -35,7 +36,7 @@ main() {
     int64 r;
     if((r = io_waitwrite(pfd[1], buf, sizeof buf)) != sizeof buf) {
       buffer_puts(buffer_2, "io_waitwrite returned ");
-      buffer_putlonglong(buffer_2, r);
+      buffer_putint64(buffer_2, r);
       buffer_putnlflush(buffer_2);
     }
   }

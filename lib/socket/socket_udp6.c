@@ -31,14 +31,17 @@ socket_udp6b(void) {
     goto compat;
   s = winsock2errno(socket(PF_INET6, SOCK_DGRAM, 0));
   if(s == -1) {
-    if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT) {
+#ifndef __CYGWIN__
+    if(!(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT))
+      return -1;
+#endif
+    {
     compat:
       s = winsock2errno(socket(AF_INET, SOCK_DGRAM, 0));
       noipv6 = 1;
       if(s == -1)
         return -1;
-    } else
-      return -1;
+    } 
   }
 #ifdef IPV6_V6ONLY
   {

@@ -44,8 +44,11 @@ SOURCES = httptest.c lib/array/array_allocate.c lib/array/array_start.c lib/arra
     lib/socket/winsock2errno.c \
     lib/buffer/buffer_putsflush.c \
     lib/socket/init.c \
-    lib/socket/socket_udp6.c \
-    lib/socket/socket_udp4.c
+    lib/socket/socket_udp4.c \
+    lib/buffer/buffer_get.c \
+    lib/io/io_canread.c \
+    lib/io/io_tryread.c \
+    lib/http/http_read.c
 
 
 
