@@ -442,19 +442,18 @@ dopoll :
     return 1;
   }
 #else
-    struct pollfd* p;
-    for(i = r = 0; (size_t)i < iarray_length(io_getfds()); ++i) {
-      io_entry* e = iarray_get(io_getfds(), i);
-      if(!e)
+  struct pollfd* p;
+  for(i = r = 0; (size_t)i < iarray_length(io_getfds()); ++i) {
+    io_entry* e = iarray_get(io_getfds(), i);
+    if(!e) continue;
+    e->canread = e->canwrite = 0;
+    if(e->wantread || e->wantwrite) {
+      if((p = array_allocate(&io_pollfds, sizeof(struct pollfd), r))) {
+        p->fd = i;
+        p->events = (e->wantread ? POLLIN : 0) + (e->wantwrite ? POLLOUT : 0);
+        ++r;
+      } else
         return -1;
-      e->canread = e->canwrite = 0;
-      if(e->wantread || e->wantwrite) {
-        if((p = array_allocate(&io_pollfds, sizeof(struct pollfd), r))) {
-          p->fd = i;
-          p->events = (e->wantread ? POLLIN : 0) + (e->wantwrite ? POLLOUT : 0);
-          ++r;
-        } else
-          return -1;
       }
     }
     p = array_start(&io_pollfds);

@@ -5,8 +5,10 @@
 #include "lib/iopause.h"
 #include "lib/socket.h"
 #include "lib/taia.h"
+#include "lib/errmsg.h"
 
 #include <errno.h>
+
 #ifdef __ORANGEC__
 #include <sockets.h>
 #endif
@@ -21,27 +23,13 @@ set_timeouts(int seconds) {
   taia_uint(&stamp, 0);
 }
 
-static ssize_t
-do_recv(int s, void* buf, size_t len, void* ptr) {
-  ssize_t ret = recv(s, buf, len, 0);
-  if(ret == -1) {
-    last_errno = errno;
-    errno = 0;
-    /*    if(errno == EAGAIN) {
-          errno = 0;
-          ret = -1;
-        }*/
-  }
-  return ret;
-}
-
 /*
  *  URL: http://verteiler1.mediathekview.de/Filmliste-akt.xz
  */
 
 static const char* const url_host = //"verteiler1.mediathekview.de";
-    "5.1.76.111";
-static const char* const url_location = "/Filmliste-akt.xz";
+    "www.fefe.de";                 //"5.1.76.111";
+static const char* const url_location = "/gatling/";
 static const uint16 url_port = 80;
 
 int
@@ -71,7 +59,6 @@ main(int argc, char* argv[]) {
   e = io_getentry(h.sock);
 
   io_wantwrite(h.sock);
-  io_wantread(h.sock);
   /*
 
     byte_zero(&iop, sizeof(iop));
@@ -83,22 +70,37 @@ main(int argc, char* argv[]) {
   */
 
   for(;;) {
+again:
     io_wait();
 
-    if((fd = io_canwrite()) != -1) {
-      if(h.sock == fd)
+    while((fd = io_canwrite()) != -1) {
+      if(h.sock == fd) {
         http_sendreq(&h);
+        io_wantread(h.sock);
+        goto again;
+      }
     }
 
-    if(e->canread)
-      http_readable(&h);
+    while((fd = io_canread()) != -1) {
+      if(h.sock == fd) {
+        if(http_readable(&h)) {
+          char buf[1024];
+          ssize_t n = buffer_get(&h.q.in, buf, sizeof(buf));
+
+          if(n > 0) {
+            buffer_put(buffer_1, buf, n);
+            buffer_flush(buffer_1);
+          }
+        }
+      }
+    }
 
     if(h.response->status == HTTP_STATUS_FINISH)
       break;
   }
 
-  buffer_putsa(buffer_1, &h.response->data);
+ /* buffer_putsa(buffer_1, &h.response->data);
   buffer_putnlflush(buffer_1);
-
+*/
   return 0;
 }

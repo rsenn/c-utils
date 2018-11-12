@@ -8,9 +8,6 @@
 #include <poll.h>
 #endif
 
-#ifndef _WINSOCKAPI_
-#define _WINSOCKAPI_ 1
-#endif
 #include "../socket_internal.h"
 #include "../io_internal.h"
 

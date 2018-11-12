@@ -1,9 +1,10 @@
 #include "../windoze.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <windows.h>
 #else
 #include <poll.h>
+#include <sys/time.h>
 #endif
 
 #include "../byte.h"
@@ -14,7 +15,7 @@
 #define EAGAIN 11
 #endif
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 /* In Windows, I/O works differently. */
 /* Instead of calling read until it says EAGAIN, you call read in
  * overlapping mode, and then wait for it to finish.

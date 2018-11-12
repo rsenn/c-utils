@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "_CYGWIN_IF_H_\nUSE_WS2_32\n_WINSOCKAPI_\n__INSIDE_CYGWIN_NET__\nassert\nAF_INET\nSOCK_STREAM\nio_wantread_really\nio_wantread",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 117,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -29,7 +29,16 @@
 			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 7618,
+				"buffer_size": 7637,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/io/io_wantread.c",
+			"settings":
+			{
+				"buffer_size": 2915,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -179,7 +188,9 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/roman/Desktop/dirlist"
+		"/C/Users/roman/Desktop/dirlist",
+		"/C/Users/roman/Desktop/dirlist/lib",
+		"/C/Users/roman/Desktop/dirlist/lib/io"
 	],
 	"file_history":
 	[
@@ -318,16 +329,19 @@
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 105.0,
 		"where_history":
 		[
 		]
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
+			"mswsock",
+			"_WINSOCKAPI_",
+			"mswsock",
 			" stralloc",
 			"add_srcpath",
 			"get_includes",
@@ -452,11 +466,10 @@
 			"IVAL",
 			" PRESCALE",
 			"uint8 ",
-			"__delay_ms",
-			"echo_mode"
+			"__delay_ms"
 		],
 		"highlight": true,
-		"in_selection": true,
+		"in_selection": false,
 		"preserve_case": false,
 		"regex": false,
 		"replace_history":
@@ -515,7 +528,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 117,
 						"regions":
 						{
 						},
@@ -524,13 +537,58 @@
 						],
 						"settings":
 						{
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\CMakeLists.txt",
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\lib\\io\\io_wantread.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									31,
+									44
+								],
+								[
+									115,
+									125
+								],
+								[
+									136,
+									148
+								],
+								[
+									180,
+									201
+								],
+								[
+									403,
+									409
+								],
+								[
+									445,
+									452
+								],
+								[
+									491,
+									502
+								],
+								[
+									518,
+									536
+								],
+								[
+									2575,
+									2586
+								]
 							],
 							"symlist":
 							[
+								"_CYGWIN_IF_H_",
+								"USE_WS2_32",
+								"_WINSOCKAPI_",
+								"__INSIDE_CYGWIN_NET__",
+								"assert",
+								"AF_INET",
+								"SOCK_STREAM",
+								"io_wantread_really",
+								"io_wantread"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -538,13 +596,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -553,15 +611,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7618,
+						"buffer_size": 7637,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1577,
-								1577
+								1903,
+								1903
 							]
 						],
 						"settings":
@@ -570,6 +628,36 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 684.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/io/io_wantread.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2915,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								172,
+								172
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -680,7 +768,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 382.0,
+	"side_bar_width": 381.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

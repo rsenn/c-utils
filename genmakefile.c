@@ -1312,7 +1312,7 @@ gen_compile_rules(HMAP_DB* rules, strarray* sources) {
       add_srcpath(&rule->prereq, *srcfile);
 
 
-      get_includes(*srcfile, &rule->prereq, 0);
+      get_includes(*srcfile, &incs, 0);
 
 
       rule->recipe = &compile_command;

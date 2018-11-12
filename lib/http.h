@@ -67,15 +67,13 @@ typedef struct {
   http_response* response;
 } http;
 
-int http_get(http *h, const char *location);
-void http_init(http *h, const char *host, uint16 port);
-int http_sendreq(http *h);
-void http_readable();
-void http_writeable();
-
-ssize_t http_recv(fd_t fd, void* buf, size_t len, void* b);
-ssize_t http_send(fd_t fd, void* buf, size_t len, void* b);
-int     http_socket(http* h);
+int  http_get(http*, const char* location);
+void http_init(http*, const char* host, uint16 port);
+int  http_readable(http*);
+void http_read(http_response*);
+int  http_sendreq(http*);
+int  http_socket(http*);
+void http_writeable(void);
 
 #ifdef __cplusplus
 }

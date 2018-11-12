@@ -1,22 +1,24 @@
 #ifndef WINDOZE_H
 #define WINDOZE_H 1
 
-#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__) || defined(__MSYS__)
-#if !(defined(__MSYS__) || defined(__CYGWIN__))
-#define WINDOWS_NATIVE 1
-#endif
-#define WINDOWS 1
+#if defined(_WIN32) || defined(WIN32) || defined(MSVC) || defined(__CYGWIN__) || defined(__MSYS__)
+# if !(defined(__MSYS__) || defined(__CYGWIN__))
+#  define WINDOWS_NATIVE 1
+# endif
+# define WINDOWS 1
 #endif
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
 #define MINGW 1
 #endif
 
-#if WINDOWS
-#include <windows.h>
-#endif
+#define _FILE_OFFSET_BITS 64
 
 #if WINDOWS_NATIVE
+#if USE_WS2_32
+#include <winsock2.h>
+#endif
+#include <windows.h>
 #include <io.h>
 #endif
 
@@ -34,4 +36,3 @@ extern "C" {
 }
 #endif
 #endif /* defined(WINDOZE_H) */
-

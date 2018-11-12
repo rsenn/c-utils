@@ -41,7 +41,7 @@ extern "C" {
  */
 typedef struct _iarray_page {
   struct _iarray_page* next;
-#ifndef __BORLANDC__
+#if !defined(__BORLANDC__) && !defined(__ICL__)
   char data[0];
 #endif
 } iarray_page;

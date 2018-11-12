@@ -57,7 +57,7 @@ sed 's,[^[:print:]],\n,g' "$1" | sed -n "/\.c\$/ { s|.*/||; p }" | sort -fu)
   if [ "$C_ONLY" = true ]; then
     EXPR="$EXPR; \\|\.c$|! d"
   fi
-  FILES=`find "$BASEDIR/" "(" "$@" ")" -and -not -wholename "*build/*" | sort -u | sed "$EXPR"`
+  FILES=`find "$BASEDIR/" "(" "$@" ")" -and -not -wholename "*build/*" -and -not -wholename "*examples/*" | sort -u | sed "$EXPR"`
 
   if [ -n "$UPDATE" -a -e "$UPDATE" ]; then
     ( sed -i \

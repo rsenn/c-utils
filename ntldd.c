@@ -395,6 +395,9 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
   stralloc_cats(&sa, name);
   stralloc_nul(&sa);
 
+  if(!path_exists(sa.s))
+    return success;
+
 #ifdef DEBUG_OPEN
   buffer_puts(buffer_2, "Filename: ");
   buffer_puts(buffer_2, sa.s);

@@ -1,7 +1,6 @@
 #include <string.h>
 #include "../lib/buffer.h"
 #include "../lib/textcode.h"
-#include "../lib/havealloca.h"
 #include <unistd.h>
 #include <stdio.h>
 

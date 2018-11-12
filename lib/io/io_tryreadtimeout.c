@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../socket_internal.h"
 #include "../io_internal.h"
 

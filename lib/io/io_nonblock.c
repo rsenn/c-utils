@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../socket_internal.h"
 
 #if WINDOWS_NATIVE

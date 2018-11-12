@@ -5,8 +5,8 @@
 #endif
 
 #include "../socket_internal.h"
-#if WINDOWS_NATIVE
 
+#if WINDOWS_NATIVE
 void
 __winsock_init(void) {
   static int inited;

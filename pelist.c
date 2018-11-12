@@ -283,7 +283,7 @@ main(int argc, char** argv) {
     list_imports = list_exports = 1;
 
   for(; argv[optind]; ++optind) {
-    base = (uint8*)mmap_private(argv[optind], &filesize);
+    base = (uint8*)mmap_shared(argv[optind], &filesize);
 
     if(base) {
       pe32_nt_headers* nt_headers = pe_header_nt(base);
@@ -326,8 +326,7 @@ main(int argc, char** argv) {
 
       mmap_unmap(base, filesize);
     } else {
-      buffer_putm_3(buffer_2, "ERROR: No such file or directory '", argv[optind], "'");
-      buffer_putnlflush(buffer_2);
+      errmsg_warn("ERROR opening '", argv[optind], "': ", 0);
       return 127;
     }
   }

@@ -20,5 +20,5 @@
 
 int
 open_rw(const char* filename) {
-  return open(filename, O_RDWR | O_CREAT | O_NDELAY | O_BINARY, 0644);
+  return open(filename, O_RDWR | O_CREAT | O_BINARY, 0644);
 }

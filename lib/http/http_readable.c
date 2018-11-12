@@ -51,9 +51,9 @@ boundary_predicate(stralloc* sa, void* arg) {
   return 0;
 }
 
-void
+int
 http_readable(http* h) {
-  ssize_t ret;
+  ssize_t ret = -1;
   int err;
   http_response* r;
 
@@ -75,6 +75,13 @@ http_readable(http* h) {
     if(r->data.len == 0) {
       r->ptr = 0;
       r->status = HTTP_RECV_DATA;
+
+      if(h->q.in.p < h->q.in.n) {
+        ret = 1;
+      } else {
+      ret = 0;
+      errno = EWOULDBLOCK;
+      }
       break;
     }
 
@@ -95,38 +102,31 @@ http_readable(http* h) {
     stralloc_zero(&r->data);
   }
 
-  while(r->status == HTTP_RECV_DATA) {
+  if(r->status == HTTP_RECV_DATA) {
+    ret = 1;
 
-    if(r->transfer == HTTP_TRANSFER_CHUNKED && r->chunk_length == 0) {
-      char length[64];
-      if((ret = buffer_getline(&h->q.in, length, sizeof(length))) <= 0)
-        break;
+    /*
+        if(r->content_length) {
+          size_t a;
 
-      scan_xlong(length, &r->chunk_length);
-      continue;
-    }
-/*
-    if(r->content_length) {
-      size_t a;
+          if(r->content_length < (a = r->data.a - r->data.len))
+            a = r->content_length;
+          if(a > 1024)
+            a = 1024;
 
-      if(r->content_length < (a = r->data.a - r->data.len))
-        a = r->content_length;
-      if(a > 1024)
-        a = 1024;
+          stralloc_readyplus(&r->data, 1024);
 
-      stralloc_readyplus(&r->data, 1024);
+          if((ret = buffer_get(&h->q.in, &r->data.s[r->data.len], r->data.a - r->data.len)) <= 0)
+            break;
 
-      if((ret = buffer_get(&h->q.in, &r->data.s[r->data.len], r->data.a - r->data.len)) <= 0)
-        break;
+          putline("data", &r->data.s[r->data.len], 1, &h->q.in);
 
-      putline("data", &r->data.s[r->data.len], 1, &h->q.in);
+          r->data.len += ret;
+          r->content_length -= ret;
+          continue;
+        }
 
-      r->data.len += ret;
-      r->content_length -= ret;
-      continue;
-    }
-
-    r->status = HTTP_STATUS_FINISH;*/
+        r->status = HTTP_STATUS_FINISH;*/
   }
 
   if(ret == -1) {
@@ -142,4 +142,6 @@ http_readable(http* h) {
 
   if(err && err != EWOULDBLOCK)
     r->status = HTTP_STATUS_ERROR;
+
+  return ret;
 }

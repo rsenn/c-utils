@@ -6,12 +6,10 @@
 #undef USE_WS2_32
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
+#if ((defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && !defined(__CYGWIN__)) || defined(WINDOWS_NATIVE)
 # if USE_WS2_32
-#  ifndef _WINSOCKAPI_
-#   define _WINSOCKAPI_
-#  endif
 #  include <winsock2.h>
+#  include <mswsock.h>
 # else
 #  include <winsock.h>
 # endif

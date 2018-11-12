@@ -15,6 +15,7 @@
 #ifdef __dietlibc__
 # include <sys/atomic.h>
 #elif WINDOWS_NATIVE || defined(__MSYS__)
+# include <windows.h>
 # define __CAS(val,oldval,newval) InterlockedCompareExchange(val,newval,oldval)
 #  define __CAS_PTR(ptr,oldptr,newptr) InterlockedCompareExchangePointer(ptr,newptr,oldptr)
 #elif defined(__GNUC__)
@@ -49,6 +50,7 @@ new_page(size_t pagesize) {
               0, pagesize, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
   if(x == MAP_FAILED) return 0;
 #endif
+  byte_zero(x, pagesize);
   return (iarray_page*)x;
 }
 

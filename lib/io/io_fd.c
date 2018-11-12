@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #ifndef _POSIX_SOURCE
 #define _POSIX_SOURCE
 #endif
@@ -180,7 +181,7 @@ io_fd_internal(fd_t d, int flags) {
 
 #if WINDOWS_NATIVE
   if(io_comport) {
-    if(CreateIoCompletionPort((HANDLE)(size_t)d, io_comport, (DWORD)d, 0) == 0) {
+    if(CreateIoCompletionPort((HANDLE)(UINT_PTR)d, io_comport, (UINT_PTR)d, 0) == 0) {
       errno = EBADF;
       return 0;
     }

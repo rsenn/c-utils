@@ -11,6 +11,7 @@
 #include <unistd.h>
 #endif
 #include <errno.h>
+size_t http_read_internal(http* h, char* buf, size_t n);
 
 static ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
@@ -18,31 +19,20 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   http* h = b->cookie;
   http_response* r;
 
-  s = winsock2errno(recv(fd, buf, len, 0));
+  // s = winsock2errno(recv(fd, buf, len, 0));
+  s = io_tryread(fd, buf, len);
 
-  if((r = h->response) && r->status == HTTP_RECV_DATA) {
+  if(s == 0) {
+    r->status = HTTP_STATUS_CLOSED;
+  } else if(s == -1) {
 
-    if(r > 0) {
-      r->ptr += s;
-
-      switch(r->transfer) {
-        case HTTP_TRANSFER_LENGTH: {
-          if(r->ptr == r->content_length)
-            r->status = HTTP_STATUS_FINISH;
-          break;
-        }
-        case HTTP_TRANSFER_CHUNKED: {
-          if(r->ptr == r->chunk_length)
-            r->status = HTTP_RECV_DATA;
-          break;
-        }
-      }
-    } else if(r == 0) {
-      r->status = HTTP_STATUS_CLOSED;
-    } else if(r == -1 && errno != EWOULDBLOCK && errno != EAGAIN) {
+    if(errno != EWOULDBLOCK && errno != EAGAIN) {
       r->status = HTTP_STATUS_ERROR;
     }
   }
+
+  if(s > 0)
+    s = http_read_internal(h, buf, s);
 
   return s;
 }

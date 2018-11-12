@@ -1,17 +1,18 @@
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 #include "../lib/buffer.h"
 #include "../lib/textcode.h"
-#include "../lib/havealloca.h"
 
 void
 b64encode(const char* c, long len) {
-  char* buf = alloca(len * 2 + 4);
+  char* buf = malloc(len * 2 + 4);
   buffer_put(buffer_1, buf, fmt_base64(buf, c, len));
   if(isatty(1))
     buffer_putnlflush(buffer_1);
   else
     buffer_flush(buffer_1);
+  free(buf);
 }
 
 int

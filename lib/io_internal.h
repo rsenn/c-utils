@@ -29,8 +29,8 @@ extern void* io_getfds();
 #  if !defined(__LCC__) && !defined(__MINGW32__)
 #   define read _read
 #   define write _write
-//#   define open _open
-//#   define close _close
+#   define open _open
+#   define close _close
 #  endif
 # if !defined(__DMC__)
 #  define popen _popen

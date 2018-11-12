@@ -525,6 +525,8 @@ else
   endif
 endif
 
+export BUILDDIR
+
 vpath lib lib/array lib/cb lib/cbmap lib/binfmt lib/buffer lib/byte lib/dir lib/fmt lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/playlist lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR) tests
 VPATH = lib:lib/array:lib/binfmt:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/playlist:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR):tests
 
@@ -931,13 +933,16 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay omf open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf uint16 uint32 uint64 var vartab xml)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay omf open path pe playlist rdir scan sig slist socket str stralloc strarray strlist tai taia textcode textbuf uint16 uint32 uint64 var vartab xml)
 
+
+#EXAMPLES := array$(EXEEXT) b64encode$(EXEEXT) buffer_mmap$(EXEEXT) cas$(EXEEXT) cdbget2$(EXEEXT) cescape$(EXEEXT) client$(EXEEXT) dllink$(EXEEXT) fdpassing$(EXEEXT) fmt$(EXEEXT) fmt_iso8691$(EXEEXT) fmt_longlong$(EXEEXT) fmt_strm_alloca$(EXEEXT) httpd$(EXEEXT) io$(EXEEXT) io2$(EXEEXT) io3$(EXEEXT) io4$(EXEEXT) io5$(EXEEXT) iob$(EXEEXT) iom$(EXEEXT) json$(EXEEXT) marshal$(EXEEXT) mult$(EXEEXT) netstring$(EXEEXT) protobuf$(EXEEXT) proxy$(EXEEXT) range$(EXEEXT) readhttp$(EXEEXT) scan$(EXEEXT) server$(EXEEXT) stralloc_buffer$(EXEEXT) textcode$(EXEEXT) uint$(EXEEXT) unurl$(EXEEXT) urlencode$(EXEEXT) uudecode$(EXEEXT) vd$(EXEEXT)
+EXAMPLES := $(BUILDDIR)array$(EXEEXT) $(BUILDDIR)b64encode$(EXEEXT) $(BUILDDIR)buffer_mmap$(EXEEXT) $(BUILDDIR)dnsip$(EXEEXT) $(BUILDDIR)fmt$(EXEEXT) $(BUILDDIR)fmt_strm_alloca$(EXEEXT) $(BUILDDIR)scan$(EXEEXT) $(BUILDDIR)uint$(EXEEXT) $(BUILDDIR)io$(EXEEXT) $(BUILDDIR)io2$(EXEEXT) $(BUILDDIR)io3$(EXEEXT) $(BUILDDIR)io4$(EXEEXT) $(BUILDDIR)io5$(EXEEXT) $(BUILDDIR)iob$(EXEEXT) $(BUILDDIR)iom$(EXEEXT)
 
 $(info BUILDDIR: $(BUILDDIR))
 
 
-all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)
+all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS) $(EXAMPLES)
 	$(info all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS))
 
 #$(BUILDDIR)tryerrno.c:
@@ -1015,6 +1020,7 @@ $(call lib-target,strarray)
 $(call lib-target,strlist)
 $(call lib-target,tai)
 $(call lib-target,taia)
+$(call lib-target,textcode)
 $(call lib-target,textbuf)
 $(call lib-target,time)
 $(call lib-target,uint16)
@@ -1485,3 +1491,4 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 
 -include $(BUILDDIR)defines.make
 -include Makefile.tests
+-include Makefile.examples
