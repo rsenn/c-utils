@@ -88,7 +88,7 @@ fmt_jsonescape(char* dest, const char* src, size_t len) {
 #include <string.h>
 
 int
-main() {
+unittest_main() {
   char buf[100];
   /* test utf-8 pass-through and correct encoding of \t */
   assert(fmt_jsonescape(buf, "\tfnörd", 7) == 8 && !memcmp(buf, "\\tfnörd", 8));

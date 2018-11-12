@@ -43,7 +43,7 @@ size_t scan_base64(const char *src,char *dest,size_t *destlen) {
 #include <string.h>
 #include <stdio.h>
 
-int main() {
+int unittest_main() {
   char buf[100];
   size_t i,l;
   memset(buf,0,10); assert(scan_base64("Zm5vcmQ=",buf,&l)==8 && l==5 && !memcmp(buf,"fnord",6));

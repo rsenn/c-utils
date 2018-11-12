@@ -41,7 +41,7 @@ size_t scan_urlencoded2(const char *src,char *dest,size_t *destlen) {
 #undef UNITTEST
 #include <scan/scan_fromhex.c>
 
-int main() {
+int unittest_main() {
   char buf[100];
   size_t l;
   /* check base operation */

@@ -1,7 +1,9 @@
-#include "lib/unix.h"
 #include "lib/buffer.h"
+#include "lib/unix.h"
 #include "lib/str.h"
 #include "lib/unix.h"
+#include "lib/mmap.h"
+#include "lib/byte.h"
 
 #include <stdlib.h>
 

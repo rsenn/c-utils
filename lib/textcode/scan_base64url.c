@@ -35,7 +35,7 @@ size_t scan_base64url(const char *src,char *dest,size_t *destlen) {
 #include <string.h>
 #include <stdio.h>
 
-int main() {
+int unittest_main() {
   char buf[100];
   size_t i,l;
   /* check that we don't consume padding */

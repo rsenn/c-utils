@@ -26,7 +26,7 @@ size_t scan_hexdump(const char *src,char *dest,size_t *destlen) {
 #undef UNITTEST
 #include <scan/scan_fromhex.c>
 
-int main() {
+int unittest_main() {
   char buf[100];
   size_t l;
   memset(buf,0,sizeof(buf));

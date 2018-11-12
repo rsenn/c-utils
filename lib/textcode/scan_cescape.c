@@ -81,7 +81,7 @@ error:
 #include <scan/scan_fromhex.c>
 #include <fmt/fmt_utf8.c>
 
-int main() {
+int unittest_main() {
   size_t dl;
   char buf[100];
   assert(scan_cescape("test\\n\");",buf,&dl)==6 && dl==5 && !memcmp(buf,"test\n",5));

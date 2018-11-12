@@ -1226,11 +1226,11 @@ deps_for_libs(HMAP_DB* rules) {
       strlist libs;
       strlist_init(&libs, ' ');
 
-      //      debug_sl("includes", &srcdir->includes);
 
       includes_to_libs(&srcdir->includes, &libs);
 
-      // debug_s("library", lib->name);
+      debug_s("library", lib->name);
+           debug_sl("includes", &srcdir->includes);
 
       strlist_removes(&libs, lib->name);
       // debug_sl("deps", &libs);
@@ -1311,15 +1311,14 @@ gen_compile_rules(HMAP_DB* rules, strarray* sources) {
     if((rule = get_rule_sa(&obj))) {
       add_srcpath(&rule->prereq, *srcfile);
 
-
       get_includes(*srcfile, &incs, 0);
-
 
       rule->recipe = &compile_command;
     }
   }
 
   stralloc_free(&obj);
+  strlist_free(&incs);
 }
 
 /**
@@ -2205,7 +2204,6 @@ main(int argc, char* argv[]) {
     stralloc_replace(&arg, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     stralloc_nul(&arg);
 
-    debug_sa("arg", &arg);
 
 #if WINDOWS_NATIVE && !MINGW
     if(str_rchrs(argv[optind], "*?", 2) < str_len(argv[optind]))

@@ -97,7 +97,7 @@ size_t scan_html(const char *src,char *dest,size_t *destlen) {
 #include <fmt/fmt_utf8.c>
 #include <stdio.h>
 
-int main() {
+int unittest_main() {
   char* html="<a href=\"http://example.com/&quot;foo\">libowfat&lt;home</a>";
   char buf[100];
   size_t destlen;

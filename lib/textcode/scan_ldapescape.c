@@ -29,7 +29,7 @@ size_t scan_ldapescape(const char *src,char *dest,size_t *destlen) {
 #undef UNITTEST
 #include <scan/scan_fromhex.c>
 
-int main() {
+int unittest_main() {
   size_t dl;
   char buf[100];
   assert(scan_ldapescape("test\\n\");",buf,&dl)==4 && dl==4 && !memcmp(buf,"test",4));

@@ -29,7 +29,7 @@ size_t scan_uuencoded(const char *src,char *dest,size_t *destlen) {
 #include <stdio.h>
 #include <string.h>
 
-int main() {
+int unittest_main() {
   char buf[100];
   size_t i;
   memset(buf,0,100);

@@ -78,7 +78,7 @@ abort:
 #include <scan/scan_utf8.c>
 #include <fmt/fmt_utf8.c>
 
-int main() {
+int unittest_main() {
   char buf[100];
   size_t l;
   assert(scan_jsonescape("fnord",buf,&l)==5 && l==5 && !memcmp(buf,"fnord",5));
