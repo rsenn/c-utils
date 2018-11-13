@@ -2,6 +2,7 @@
 #include "../lib/fmt.h"
 #include "../lib/byte.h"
 #include <assert.h>
+#include <alloca.h>
 
 int
 main() {
