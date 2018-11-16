@@ -14,6 +14,7 @@ static const double toint = 1 / EPS;
 
 #include "uint64.h"
 
+#ifndef __TCC__
 double
 round(double x) { 
  int e;
@@ -43,4 +44,5 @@ round(double x) {
   if(u.i >> 63) y = -y;
   return y;
 }
+#endif
 #endif

@@ -32,6 +32,7 @@ static const char* const url_host = //"verteiler1.mediathekview.de";
     "www.fefe.de";                  //"5.1.76.111";
 static const char* const url_location = "/gatling/";
 static const uint16 url_port = 80;
+static io_entry* g_iofd;
 
 int
 main(int argc, char* argv[]) {
@@ -41,7 +42,6 @@ main(int argc, char* argv[]) {
   static buffer in;
   char inbuf[8192];
   int ret;
-  io_entry* e;
   fd_t fd;
   fd_t outfile = open_trunc("output.txt");
 
@@ -59,9 +59,10 @@ main(int argc, char* argv[]) {
   */
   io_fd(h.sock);
 
-  e = io_getentry(h.sock);
+  g_iofd = io_getentry(h.sock);
 
   io_wantwrite(h.sock);
+  io_wantread(h.sock);
   /*
 
     byte_zero(&iop, sizeof(iop));
@@ -73,9 +74,11 @@ main(int argc, char* argv[]) {
   */
 
   for(;;) {
-    char buf[1024];
+    char buf[8192];
     ssize_t n;
     int doread = 0;
+
+    io_wait();
 
     while((fd = io_canwrite()) != -1) {
       if(h.sock == fd) {
@@ -83,19 +86,25 @@ main(int argc, char* argv[]) {
       }
     }
 
-    if((doread = h.q.in.p < h.q.in.n) == 0) {
-
-      while((fd = io_canread()) != -1) {
-        if(h.sock == fd) {
-          doread = 1;
-        }
+    while((fd = io_canread()) != -1) {
+      if(h.sock == fd) {
+        doread = 1;
       }
     }
 
-    // if(doread) {
-    while((n = http_read(&h, buf, sizeof(buf))) > 0)
-      write(outfile, buf, n);
-    //}
+    if(!doread)
+      doread = h.q.in.p < h.q.in.n;
+
+    if(doread) {
+      while((n = http_read(&h, buf, sizeof(buf))) > 0) {
+        write(outfile, buf, n);
+
+        buffer_puts(buffer_2, "Wrote ");
+        buffer_putlong(buffer_2, n);
+        buffer_putsflush(buffer_2, " bytes...\n");
+      }
+      buffer_dump(buffer_2, &h.q.in);
+    }
     /*
     if(http_readable(&h, 1)) {
       ssize_t n = buffer_get(&h.q.in, buf, sizeof(buf));
@@ -108,12 +117,10 @@ main(int argc, char* argv[]) {
 
     if(h.response->status == HTTP_STATUS_CLOSED)
       break;
-
-    io_wait();
   }
 
-  /* buffer_putsa(buffer_1, &h.response->data);
-   buffer_putnlflush(buffer_1);
-  */
+  /* buffer_putsa(buffer_1, &h.response->data);*/
+  buffer_putnlflush(buffer_2);
+
   return 0;
 }

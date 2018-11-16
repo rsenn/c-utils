@@ -469,11 +469,24 @@ dopoll :
       buffer_puts(buffer_2, ", events=");
       if(p[i].events & POLLIN) buffer_puts(buffer_2, "IN ");
       if(p[i].events & POLLOUT) buffer_puts(buffer_2, "OUT ");
+      if(p[i].events & POLLERR) buffer_puts(buffer_2, "ERR ");
       buffer_puts(buffer_2, "}");
       buffer_putnlflush(buffer_2);
     }
     if((i = poll(array_start(&io_pollfds), r, milliseconds)) < 1)
       return -1;
+    for(i = 0; i < r; ++i) {
+      buffer_puts(buffer_2, "pollfd[");
+      buffer_putlong(buffer_2, i);
+      buffer_puts(buffer_2, "] { .fd=");
+      buffer_putlong(buffer_2, p[i].fd);
+      buffer_puts(buffer_2, ", revents=");
+      if(p[i].revents & POLLIN) buffer_puts(buffer_2, "IN ");
+      if(p[i].revents & POLLOUT) buffer_puts(buffer_2, "OUT ");
+      if(p[i].revents & POLLERR) buffer_puts(buffer_2, "ERR ");
+      buffer_puts(buffer_2, "}");
+      buffer_putnlflush(buffer_2);
+    }
     for(j = r - 1; j >= 0; --j) {
       io_entry* e = iarray_get(io_getfds(), p->fd);
       if(p->revents & (POLLERR | POLLHUP | POLLNVAL)) {

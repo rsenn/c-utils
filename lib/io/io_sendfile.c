@@ -107,16 +107,16 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 #elif defined(__dietlibc__)
 #include <sys/sendfile.h>
 #else
-#  ifndef __NR_sendfile
-#   define __NR_sendfile 71
-#  endif
+#ifndef __NR_sendfile
+#define __NR_sendfile 71
+#endif
 
-# ifdef __aarch64__
-#  define sendfile(x...) syscall(__NR_sendfile64, x)
-# else
-#  define sendfile(x...) syscall(__NR_sendfile, x)
+#ifdef __aarch64__
+#define sendfile(x...) syscall(__NR_sendfile64, x)
+#else
+#define sendfile(x...) syscall(__NR_sendfile, x)
 //_syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)
-# endif
+#endif
 
 #endif
 
@@ -160,11 +160,27 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 
 int64
 io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
+  typedef WINBOOL(WINAPI transmit_file_fn)(SOCKET, HANDLE, DWORD, DWORD, LPOVERLAPPED, LPTRANSMIT_FILE_BUFFERS, DWORD);
+  static transmit_file_fn* transmit_file;
+
   io_entry* e = iarray_get(io_getfds(), out);
   if(!e) {
     errno = EBADF;
     return -3;
   }
+  if(transmit_file == 0) {
+    HANDLE wsock32 = LoadLibraryA("wsock32.dll");
+    if(wsock32 == INVALID_HANDLE_VALUE)
+      wsock32 = LoadLibraryA("mswsock.dll");
+
+    if(wsock32 != INVALID_HANDLE_VALUE) {
+      transmit_file = (transmit_file_fn*)GetProcAddress(wsock32, "TransmitFile");
+    }
+  }
+
+  if(transmit_file == 0)
+    return -1;
+
   if(e->sendfilequeued == 1) {
     /* we called TransmitFile, and it returned. */
     e->sendfilequeued = 2;
@@ -177,7 +193,7 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
       bytes -= e->bytes_written;
       e->os.Offset = off;
       e->os.OffsetHigh = (off >> 32);
-      TransmitFile((size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
+      (*transmit_file)((size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC);
     }
     return e->bytes_written;
   } else {
@@ -185,7 +201,7 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
     e->os.Offset = off;
     e->os.OffsetHigh = (off >> 32);
     /* we always write at most 64k, so timeout handling is possible */
-    if(!TransmitFile((size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
+    if(!(*transmit_file)((size_t)out, (HANDLE)(size_t)in, bytes > 0xffff ? 0xffff : bytes, 0, &e->os, 0, TF_USE_KERNEL_APC))
       return -3;
   }
   return e->bytes_written;

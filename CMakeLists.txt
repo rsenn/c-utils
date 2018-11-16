@@ -2,7 +2,7 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 cmake_minimum_required(VERSION 2.8)
 set(CMAKE_WARN_VS8 OFF)
 
-project(dirlist)
+project(dirlist C)
 
 set(DIRLIST_VERSION 1.0)
 set(CPACK_SOURCE_GENERATOR TXZ)

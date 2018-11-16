@@ -15,7 +15,6 @@
 #define EAGAIN 11
 #endif
 
-#if WINDOWS_NATIVE
 /* In Windows, I/O works differently. */
 /* Instead of calling read until it says EAGAIN, you call read in
  * overlapping mode, and then wait for it to finish.
@@ -26,6 +25,7 @@
 
 int64
 io_tryread(fd_t d, char* buf, int64 len) {
+#if WINDOWS_NATIVE
   io_entry* e = iarray_get(io_getfds(), d);
   if(!e) {
     errno = EBADF;
@@ -83,12 +83,7 @@ io_tryread(fd_t d, char* buf, int64 len) {
   }
   errno = EAGAIN;
   return -1;
-}
-
 #else
-
-int64
-io_tryread(fd_t d, char* buf, int64 len) {
   long r;
   struct itimerval old, new;
   struct pollfd p;
@@ -139,6 +134,5 @@ io_tryread(fd_t d, char* buf, int64 len) {
 #endif
   }
   return r;
-}
-
 #endif
+}
