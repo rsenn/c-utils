@@ -56,6 +56,7 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
   */
   io_fd(h.sock);
+
   e = io_getentry(h.sock);
 
   io_wantwrite(h.sock);
