@@ -6,6 +6,7 @@
 #include "lib/socket.h"
 #include "lib/taia.h"
 #include "lib/errmsg.h"
+#include "lib/open.h"
 
 #include <errno.h>
 
@@ -72,6 +73,8 @@ main(int argc, char* argv[]) {
   */
 
   for(;;) {
+    char buf[1024];
+    ssize_t n;
     int doread = 0;
 
     while((fd = io_canwrite()) != -1) {
@@ -89,12 +92,10 @@ main(int argc, char* argv[]) {
       }
     }
 
-    if(doread) {
-      char buf[1024];
-      ssize_t n;
-      if((n = buffer_get(&h.q.in, buf, sizeof(buf))) > 0)
-        write(outfile, buf, n);
-    }
+    // if(doread) {
+    while((n = http_read(&h, buf, sizeof(buf))) > 0)
+      write(outfile, buf, n);
+    //}
     /*
     if(http_readable(&h, 1)) {
       ssize_t n = buffer_get(&h.q.in, buf, sizeof(buf));
@@ -105,7 +106,7 @@ main(int argc, char* argv[]) {
       }
     }*/
 
-    if(h.response->status == HTTP_STATUS_FINISH)
+    if(h.response->status == HTTP_STATUS_CLOSED)
       break;
 
     io_wait();

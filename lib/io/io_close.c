@@ -1,7 +1,7 @@
 #include "../windoze.h"
 
 #include <sys/types.h>
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <windows.h>
 #else
 #include <sys/mman.h>
@@ -23,7 +23,7 @@ io_close(fd_t d) {
     if(e->kernelwantwrite)
       io_dontwantwrite_really(d, e);
     if(e->mmapped) {
-#if WINDOWS
+#if WINDOWS_NATIVE
       UnmapViewOfFile(e->mmapped);
       CloseHandle(e->mh);
 #else

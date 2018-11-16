@@ -7,6 +7,7 @@
 #include "../http.h"
 #include "../io_internal.h"
 #include "../scan.h"
+#include "../stralloc.h"
 #include "../str.h"
 #include <ctype.h>
 #include <errno.h>
@@ -58,7 +59,7 @@ http_readable(http* h, int freshen) {
   http_response* r;
 
   if(freshen)
-  buffer_freshen(&h->q.in);
+    buffer_freshen(&h->q.in);
 
   if((r = h->response) == NULL) {
     return;
@@ -80,8 +81,8 @@ http_readable(http* h, int freshen) {
       if(h->q.in.p < h->q.in.n) {
         ret = 1;
       } else {
-      ret = 0;
-      errno = EWOULDBLOCK;
+        ret = 0;
+        errno = EWOULDBLOCK;
       }
       break;
     }

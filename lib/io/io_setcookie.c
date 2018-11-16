@@ -1,6 +1,6 @@
 #include "../windoze.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #else
 #endif
 

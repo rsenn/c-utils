@@ -1,9 +1,10 @@
 #include "../socket_internal.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <windows.h>
 #else
 #include <poll.h>
+#include <sys/time.h>
 #endif
 
 #include "../io_internal.h"
@@ -13,7 +14,7 @@
 #define EAGAIN 11
 #endif
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 
 /* All the Unix trickery is unsupported on Windows.  Instead, one is
  * supposed to do the whole write in overlapping mode and then get

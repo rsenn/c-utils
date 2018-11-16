@@ -74,13 +74,13 @@ static int debug;
 static strlist include, exclude;
 
 // static
-ssize_t
+/*ssize_t
 buffer_dummyread(int fd, char* b, size_t n) {
   (void)fd;
   (void)b;
   (void)n;
   return 0;
-}
+}*/
 
 void
 count_field_lengths(strlist* sl, int lengths[21]) {

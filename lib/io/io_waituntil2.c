@@ -1,5 +1,6 @@
 #include "../socket_internal.h"
 #include "../io_internal.h"
+#include "../buffer.h"
 
 #if WINDOWS_NATIVE
 #include <windows.h>
@@ -457,6 +458,20 @@ dopoll :
       }
     }
     p = array_start(&io_pollfds);
+      buffer_puts(buffer_2, "io_wait() ");
+      buffer_putlong(buffer_2, r);
+      buffer_putsflush(buffer_2, " fds\n");
+    for(i = 0; i < r; ++i) {
+      buffer_puts(buffer_2, "pollfd[");
+      buffer_putlong(buffer_2, i);
+      buffer_puts(buffer_2, "] { .fd=");
+      buffer_putlong(buffer_2, p[i].fd);
+      buffer_puts(buffer_2, ", events=");
+      if(p[i].events & POLLIN) buffer_puts(buffer_2, "IN ");
+      if(p[i].events & POLLOUT) buffer_puts(buffer_2, "OUT ");
+      buffer_puts(buffer_2, "}");
+      buffer_putnlflush(buffer_2);
+    }
     if((i = poll(array_start(&io_pollfds), r, milliseconds)) < 1)
       return -1;
     for(j = r - 1; j >= 0; --j) {

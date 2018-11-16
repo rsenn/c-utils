@@ -1,6 +1,6 @@
 #include "../socket_internal.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #else
 #endif
 

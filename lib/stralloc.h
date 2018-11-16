@@ -94,6 +94,8 @@ int stralloc_append(stralloc* sa, const char* in); /* beware: this takes a point
  * the terminating \0, is a prefix of the string stored in sa. Otherwise
  * it returns 0. sa must already be allocated. */
 int stralloc_starts(stralloc* sa, const char* in) __pure__;
+unsigned int stralloc_startb(const stralloc*, const void* prefix, unsigned int len);
+unsigned int stralloc_start(const stralloc*, const stralloc* prefix);
 
 /* stralloc_diff returns negative, 0, or positive, depending on whether
  * a is lexicographically smaller than, equal to, or greater than the

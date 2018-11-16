@@ -23,10 +23,10 @@ http_sendreq(http* h) {
   buffer_flush(&h->q.out);
 
   io_dontwantwrite(h->sock);
-/*
-  buffer_freshen(&h->q.in);
-  http_readable(h, 0);
-*/
+  /*
+    buffer_freshen(&h->q.in);
+    http_readable(h, 0);
+  */
   io_wantread(h->sock);
 
   return 1;

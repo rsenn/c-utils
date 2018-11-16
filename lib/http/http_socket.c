@@ -13,29 +13,7 @@
 #include <errno.h>
 size_t http_read_internal(http* h, char* buf, size_t n);
 
-static ssize_t
-http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
-  int s;
-  http* h = b->cookie;
-  http_response* r = h->response;
-
-  // s = winsock2errno(recv(fd, buf, len, 0));
-  s = io_tryread(fd, buf, len);
-
-  if(s == 0) {
-    r->status = HTTP_STATUS_CLOSED;
-  } else if(s == -1) {
-
-    if(errno != EWOULDBLOCK && errno != EAGAIN) {
-      r->status = HTTP_STATUS_ERROR;
-    }
-  }
-
-  if(s > 0)
-    s = http_read_internal(h, buf, s);
-
-  return s;
-}
+ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
 
 static ssize_t
 http_socket_write(fd_t fd, void* buf, size_t len, buffer* b) {
