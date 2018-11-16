@@ -65,7 +65,9 @@ io_wantwrite_really(fd_t d, io_entry* e) {
   }
 #endif
 
-#if WINDOWS_NATIVE
+#ifdef USE_SELECT
+
+#elif WINDOWS_NATIVE
   printf("e->wantwrite == %d\n", e->wantwrite);
   if(!e->wantwrite) {
     e->next_write = first_writeable;

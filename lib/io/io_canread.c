@@ -37,7 +37,7 @@ io_canread() {
     debug_printf(("io_canread: dequeue %lld from normal read queue (next is %ld)\n", r, first_readable));
 
     if(e->wantread &&
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE && !defined(USE_SELECT)
        (e->canread || e->acceptqueued == 1 || e->readqueued == 1)
 #else
        e->canread

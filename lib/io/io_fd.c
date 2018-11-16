@@ -158,7 +158,7 @@ io_fd_internal(fd_t d, int flags) {
     }
 #endif
 
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE && !defined(USE_SELECT)
     io_comport = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
     if(io_comport) {
       io_waitmode = COMPLETIONPORT;
@@ -179,7 +179,7 @@ io_fd_internal(fd_t d, int flags) {
   }
 #endif
 
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE && !defined(USE_SELECT)
   if(io_comport) {
     if(CreateIoCompletionPort((HANDLE)(UINT_PTR)d, io_comport, (UINT_PTR)d, 0) == 0) {
       errno = EBADF;

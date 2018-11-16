@@ -543,6 +543,10 @@ endif
 
 CPPFLAGS := -I.
 
+ifneq ($(SELECT),)
+DEFINES += USE_SELECT=$(SELECT)
+endif
+
 #DEFINES += INLINE=inline
 #DEFINES += PATH_MAX=4096
 ifeq ($(READDIR),)

@@ -25,7 +25,6 @@
 
 int64
 io_tryread(fd_t d, char* buf, int64 len) {
-#if WINDOWS_NATIVE
   io_entry* e = iarray_get(io_getfds(), d);
   if(!e) {
     errno = EBADF;
@@ -35,6 +34,12 @@ io_tryread(fd_t d, char* buf, int64 len) {
     errno = EINVAL;
     return -3;
   }
+#ifdef USE_SELECT
+  {
+    int r = winsock2errno(recv(d, buf, len, 0));
+    return r;
+  }
+#elif WINDOWS_NATIVE
   if(e->readqueued == 2) {
     int x = e->bytes_read;
     if(e->errorcode) {
@@ -84,55 +89,57 @@ io_tryread(fd_t d, char* buf, int64 len) {
   errno = EAGAIN;
   return -1;
 #else
-  long r;
-  struct itimerval old, new;
-  struct pollfd p;
-  io_entry* e = iarray_get(io_getfds(), d);
-  if(!e) {
-    errno = EBADF;
-    return -3;
-  }
-  if(!e->nonblock) {
-    p.fd = d;
-    if(p.fd != d) {
+  {
+    long r;
+    struct itimerval old, new;
+    struct pollfd p;
+    io_entry* e = iarray_get(io_getfds(), d);
+    if(!e) {
       errno = EBADF;
       return -3;
-    } /* catch integer truncation */
-    p.events = POLLIN;
-    switch(poll(&p, 1, 0)) {
-      case -1: return -3;
-      case 0:
+    }
+    if(!e->nonblock) {
+      p.fd = d;
+      if(p.fd != d) {
+        errno = EBADF;
+        return -3;
+      } /* catch integer truncation */
+      p.events = POLLIN;
+      switch(poll(&p, 1, 0)) {
+        case -1: return -3;
+        case 0:
+          errno = EAGAIN;
+          e->canread = 0;
+          e->next_read = -1;
+          return -1;
+      }
+      new.it_interval.tv_usec = 10000;
+      new.it_interval.tv_sec = 0;
+      new.it_value.tv_usec = 10000;
+      new.it_value.tv_sec = 0;
+      setitimer(ITIMER_REAL, &new, &old);
+    }
+    r = read(d, buf, len);
+    if(!e->nonblock) {
+      setitimer(ITIMER_REAL, &old, 0);
+    }
+    if(r == -1) {
+      if(errno == EINTR)
         errno = EAGAIN;
-        e->canread = 0;
-        e->next_read = -1;
-        return -1;
+      if(errno != EAGAIN)
+        r = -3;
     }
-    new.it_interval.tv_usec = 10000;
-    new.it_interval.tv_sec = 0;
-    new.it_value.tv_usec = 10000;
-    new.it_value.tv_sec = 0;
-    setitimer(ITIMER_REAL, &new, &old);
-  }
-  r = read(d, buf, len);
-  if(!e->nonblock) {
-    setitimer(ITIMER_REAL, &old, 0);
-  }
-  if(r == -1) {
-    if(errno == EINTR)
-      errno = EAGAIN;
-    if(errno != EAGAIN)
-      r = -3;
-  }
-  if(r != len) {
-    e->canread = 0;
+    if(r != len) {
+      e->canread = 0;
 #if defined(HAVE_SIGIO)
-    if(d == alt_firstread) {
-      debug_printf(("io_tryread: dequeueing %ld from alt read queue (next is %ld)\n", d, e->next_read));
-      alt_firstread = e->next_read;
-      e->next_read = -1;
-    }
+      if(d == alt_firstread) {
+        debug_printf(("io_tryread: dequeueing %ld from alt read queue (next is %ld)\n", d, e->next_read));
+        alt_firstread = e->next_read;
+        e->next_read = -1;
+      }
 #endif
+    }
+    return r;
   }
-  return r;
 #endif
 }

@@ -14,8 +14,6 @@
 #define EAGAIN 11
 #endif
 
-#if WINDOWS_NATIVE
-
 /* All the Unix trickery is unsupported on Windows.  Instead, one is
  * supposed to do the whole write in overlapping mode and then get
  * notified via an I/O completion port when it's done. */
@@ -25,6 +23,16 @@
 
 int64
 io_trywrite(fd_t d, const char* buf, int64 len) {
+#ifdef USE_SELECT
+  io_entry* e = iarray_get(io_getfds(), d);
+  int r;
+  if(!e) {
+    errno = EBADF;
+    return -3;
+  }
+  r = winsock2errno(send(d, buf, len, 0));
+  return r;
+#elif WINDOWS_NATIVE
   io_entry* e = iarray_get(io_getfds(), d);
   int r;
   if(!e) {
@@ -66,12 +74,7 @@ io_trywrite(fd_t d, const char* buf, int64 len) {
       }
     }
   }
-}
-
 #else
-
-int64
-io_trywrite(fd_t d, const char* buf, int64 len) {
   long r;
   struct itimerval old, new;
   struct pollfd p;
@@ -123,6 +126,5 @@ io_trywrite(fd_t d, const char* buf, int64 len) {
 #endif
   }
   return r;
-}
-
 #endif
+}

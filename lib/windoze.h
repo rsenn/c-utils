@@ -14,7 +14,7 @@
 
 #define _FILE_OFFSET_BITS 64
 
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE || WINDOWS_OVERRIDE
 #if USE_WS2_32
 #include <winsock2.h>
 #endif

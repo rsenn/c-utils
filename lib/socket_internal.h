@@ -6,7 +6,7 @@
 #undef USE_WS2_32
 #endif
 
-#if ((defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && !defined(__CYGWIN__)) || defined(WINDOWS_NATIVE)
+#if ((defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && !defined(__CYGWIN__)) || defined(WINDOWS_NATIVE) || defined(WINDOWS_OVERRIDE)
 # if USE_WS2_32
 #  include <winsock2.h>
 #  include <mswsock.h>
@@ -18,21 +18,21 @@
 #include "windoze.h"
 #include "socket.h"
 
-#if !WINDOWS_NATIVE
-#include <sys/param.h>
-# if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
-#  include <sys/socket.h>
-#  include <netinet/in.h>
-#  include <netdb.h>
-# endif
-#include <unistd.h>
+#if !WINDOWS_NATIVE && !WINDOWS_OVERRIDE
+# include <sys/param.h>
+#  if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
+#   include <sys/socket.h>
+#   include <netinet/in.h>
+#   include <netdb.h>
+#  endif
+# include <unistd.h>
 #endif
 
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
 
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE || WINDOWS_OVERRIDE
 #include <windows.h>
 
 #ifndef EAGAIN
@@ -58,7 +58,7 @@
 #endif
 #endif
 
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE || WINDOWS_OVERRIDE
 /* set errno to WSAGetLastError() */
 int winsock2errno(long l);
 void __winsock_init(void);
@@ -72,6 +72,10 @@ void __winsock_init(void);
 # if !defined(_SYS_SOCKET_H)
 typedef int socklen_t;
 # endif
+#endif
+
+#if WINDOWS_NATIVE
+#define USE_SELECT 1
 #endif
 
 #endif
