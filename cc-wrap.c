@@ -7,7 +7,13 @@
 #include "lib/env.h"
 #include "lib/errmsg.h"
 
-static stralloc cmd, realcmd, fullcmd;
+#if WINDOWS_NATIVE
+#include <process.h>
+#else
+#include <unistd.h>
+#endif
+
+static stralloc cmd, realcmd, fullcmd, specs;
 static const char* ext = "";
 static strlist path;
 
@@ -60,11 +66,19 @@ main(int argc, char* argv[]) {
       stralloc_copy(&realcmd, &fullcmd);
   }
 
-  for(size_t i = 1; i < argc; ++i) {
+  stralloc_copys(&specs, "-specs=");
+  stralloc_cat(&specs, &realcmd);
+  if((i = stralloc_finds(&specs, ".real"))) {
+    specs.len = i;
+  }
+  stralloc_cats(&specs, ".specs");
+  stralloc_nul(&specs);
+
+  for(i = 1; i < argc; ++i) {
     strlist_push(&args, argv[i]);
   }
 
-  strlist_unshift(&args, "-specs=/usr/specs.txt");
+  strlist_unshift(&args, specs.s);
   strlist_unshift(&args, path_basename(realcmd.s));
 
   stralloc_init(&sa);
@@ -87,10 +101,12 @@ main(int argc, char* argv[]) {
   buffer_putsa(buffer_1, &realcmd);
   buffer_puts(buffer_1, "'");
   buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "args: '");
-  buffer_putsa(buffer_1, &sa);
-  buffer_puts(buffer_1, "'");
-  buffer_putnlflush(buffer_1);
+#endif
+  #ifdef DEBUG
+  buffer_puts(buffer_2, "execvp: '");
+  buffer_putsa(buffer_2, &sa);
+  buffer_puts(buffer_2, "'");
+  buffer_putnlflush(buffer_2);
 #endif
 
   av = strlist_to_argv(&args);

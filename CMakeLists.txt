@@ -10,7 +10,7 @@ set(CPACK_SOURCE_IGNORE_FILES ${ignored_files})
 set(CPACK_SOURCE_PACKAGE_FILE_NAME dirlist-${DIRLIST_VERSION})
 set(CPACK_PACKAGE_NAME dirlist)
 set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
-set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL;/")
+set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
 
 
 set(BUILD_SHARED_LIBS FALSE)
@@ -183,7 +183,7 @@ add_program(xmltest2 xml stralloc buffer byte fmt hmap)
 add_program(xmltest3 xml stralloc buffer byte fmt hmap)
 add_program(xmltest4 xml stralloc buffer array byte cb cbmap fmt hmap mmap scan str strlist)
 add_program(ziptest buffer str unix)
-add_program(cc-wrap buffer strarray strlist stralloc)
+add_program(cc-wrap errmsg env buffer path strarray strlist stralloc)
 
 
 add_subdirectory(tests)
