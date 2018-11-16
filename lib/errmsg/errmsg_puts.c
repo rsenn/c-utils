@@ -1,13 +1,8 @@
-#include "../windoze.h"
-
-#include "../errmsg.h"
 #include "../errmsg_internal.h"
 #include "../str.h"
 #include "../uint64.h"
 
 #if WINDOWS
-#include <io.h>
-
 void
 errmsg_puts(int64 fd, const char* s) {
   write(fd, s, str_len(s));

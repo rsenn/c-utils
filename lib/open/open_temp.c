@@ -6,12 +6,18 @@
 #include "../uint32.h"
 
 #if WINDOWS_NATIVE
+# ifdef _MSC_VER
+#  define _CRT_INTERNAL_NONSTDC_NAMES 1
+# endif
 # include <io.h>
+#  if !defined(__LCC__) && !defined(__MINGW32__)
+#   define read _read
+#   define write _write
+#   define open _open
+#   define close _close
+#  endif
 #else
 # include <unistd.h>
-# ifdef __linux__
-#  include <linux/limits.h>
-# endif
 #endif
 
 #include <errno.h>

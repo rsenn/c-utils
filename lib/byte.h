@@ -69,10 +69,11 @@ size_t byte_fmt(const char *in, size_t in_len, stralloc *out, size_t (*fmt_funct
 size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));
 #endif
 
+void byte_replace(char* x, size_t n, char before, char after);
+size_t byte_ccopy(void* dst, size_t count, const void* src, char c);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-void byte_replace(char* x, size_t n, char before, char after);

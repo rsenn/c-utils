@@ -7,6 +7,7 @@
 #include <io.h>
 #endif
 #include <limits.h>
+#include "lib/byte.h"
 #include "lib/buffer.h"
 #include "lib/fmt.h"
 #include "lib/str.h"

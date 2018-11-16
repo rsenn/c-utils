@@ -2,6 +2,7 @@
 
 #if WINDOWS_NATIVE
 #include <io.h>
+#define close _close
 #else
 #include <unistd.h>
 #endif

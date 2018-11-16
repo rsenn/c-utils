@@ -1,7 +1,17 @@
+#include "lib/socket_internal.h"
+#include "lib/io_internal.h"
+#include "lib/case.h"
+#include "lib/open.h"
+#include "lib/stralloc.h"
+#include "lib/scan.h"
+#include "lib/fmt.h"
+#include "lib/str.h"
+#include "lib/tai.h"
+#include "lib/taia.h"
+#include "lib/buffer.h"
 #include "lib/dns.h"
 #include "lib/errmsg.h"
 #include "lib/ip4.h"
-#include "lib/buffer.h"
 
 int
 main(int argc, char* argv[]) {

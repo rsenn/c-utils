@@ -1,3 +1,5 @@
+#include "../uint64.h"
+#include "../buffer.h"
 #include "../hmap.h"
 #include "../xml.h"
 

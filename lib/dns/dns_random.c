@@ -4,7 +4,10 @@
 #include "../taia.h"
 #include "../uint32.h"
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+#include <process.h>
+#define getpid _getpid
+#else
 #include <unistd.h>
 #endif
 

@@ -12,13 +12,16 @@
 #endif
 
 #if WINDOWS_NATIVE
+#include <io.h>
 #include <process.h>
-#define mkdir(file,mode) mkdir(file)
+#define spawnv _spawnv
+#define mkdir(file,mode) _mkdir(file)
 #else
 #include <sys/wait.h>
 #endif
 #include <sys/stat.h>
 
+#include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/str.h"
 #include "lib/byte.h"

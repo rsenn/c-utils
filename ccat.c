@@ -1,4 +1,5 @@
 #include "lib/buffer.h"
+#include "lib/open.h"
 #include "lib/unix.h"
 #include "lib/str.h"
 #include "lib/unix.h"

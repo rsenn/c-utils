@@ -19,8 +19,10 @@
 extern void* io_getfds();
 
 #if WINDOWS_NATIVE
+# ifdef _MSC_VER
+#  define _CRT_INTERNAL_NONSTDC_NAMES 1
+# endif
 # include <io.h>
-
 #endif
 
 #if WINDOWS

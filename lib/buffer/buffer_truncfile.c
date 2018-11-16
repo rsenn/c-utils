@@ -3,11 +3,19 @@
 #include "../open.h"
 
 #if WINDOWS_NATIVE
-#include <io.h>
+# ifdef _MSC_VER
+#  define _CRT_INTERNAL_NONSTDC_NAMES 1
+# endif
+# include <io.h>
+#  if !defined(__LCC__) && !defined(__MINGW32__)
+#   define read _read
+#   define write _write
+#   define open _open
+#   define close _close
+#  endif
 #else
-#include <unistd.h>
+# include <unistd.h>
 #endif
-
 #include <stdlib.h>
 
 int
