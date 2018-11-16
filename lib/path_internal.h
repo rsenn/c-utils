@@ -13,9 +13,13 @@
 #if WINDOWS_NATIVE
 #define PATHSEP_C '\\'
 #define PATHSEP_S "\\"
+#define PATHLISTSEP_C ';'
+#define PATHLISTSEP_S ";"
 #else
 #define PATHSEP_C '/'
 #define PATHSEP_S "/"
+#define PATHLISTSEP_C ':'
+#define PATHLISTSEP_S ":"
 #endif
 
 #ifndef PATH_MAX

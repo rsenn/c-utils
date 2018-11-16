@@ -4,13 +4,15 @@
 char**
 strlist_to_argv(const strlist* sl) {
   size_t i = 0, n = strlist_count(sl);
-  char** v = calloc(sizeof(char*), (n + 1));
-  if(v == NULL) return NULL;
+  char** v = malloc((n + 1) * sizeof(char*) + sl->sa.len + 1);
+  char *s, *p = (char*)&v[n + 1];
 
-  while(i < n) {
-    v[i] = strlist_at(sl, i);
-    i++;
+  strlist_foreach(sl, s, n) {
+    byte_copy(p, n, s);
+    p[n] = '\0';
+    v[i++] = p;
+    p += n + 1;
   }
-  /* v[i] = NULL; */
+  v[i] = NULL;
   return v;
 }

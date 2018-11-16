@@ -7,10 +7,12 @@
 
 int
 path_exists(const char* p) {
+	int ret; 
 #if WINDOWS_NATIVE
-  return access(p, 0) == 0;
+  ret = access(p, 0) == 0;
 #else
   struct stat st;
-  return lstat(p, &st) == 0;
+  ret = lstat(p, &st) == 0;
 #endif
+  return ret;
 }
