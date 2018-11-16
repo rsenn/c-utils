@@ -19,7 +19,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   socklen_t dummy = sizeof sa;
   int64 fd;
 
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE && !defined(USE_SELECT)
   io_entry* e = array_get(io_getfds(), sizeof(io_entry), s);
   if(e && e->inuse) {
     int sa2len;
@@ -72,7 +72,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
     fd = accept(s, (struct sockaddr*)&sa, &dummy);
     if(fd == -1)
       return winsock2errno(-1);
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE && !defined(USE_SELECT)
   }
 #endif
 

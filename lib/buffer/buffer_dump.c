@@ -16,12 +16,21 @@ buffer_dump(buffer* out, buffer* b) {
   char xlong[FMT_LONG + FMT_LONG + FMT_LONG];
   unsigned long n;
 
+#ifndef COLOR_DUMP
+#define RED ""
+#define GREEN ""
+#define YELLOW ""
+#define CYAN ""
+#define MAGENTA ""
+#define NONE ""
+#else
 #define RED "\033[1;31m"
 #define GREEN "\033[1;32m"
 #define YELLOW "\033[1;33m"
 #define CYAN "\033[1;36m"
 #define MAGENTA "\033[1;35m"
 #define NONE "\033[0m"
+#endif
 
   buffer_puts(out, "[ ");
   buffer_puts(out, YELLOW "p" CYAN "=" MAGENTA);

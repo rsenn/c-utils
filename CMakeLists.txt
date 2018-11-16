@@ -70,6 +70,12 @@ link_libraries(
  )
 add_definitions(-Dinline=__inline)
 
+option(USE_SELECT "Use select() syscall" OFF)
+
+if(USE_SELECT)
+  add_definitions(-DUSE_SELECT=1)
+endif(USE_SELECT)
+
 set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf dir dns elf env errmsg expand fmt gpio hmap http iarray io json list map mmap ndelay omf open path pe playlist range rdir scan sig slist socket str strarray strlist stralloc tai taia textbuf textcode uint16 uint32 uint64 unix var vartab xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})

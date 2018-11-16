@@ -170,6 +170,9 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 
 int64
 io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
+#ifdef USE_SELECT
+  return -1;
+#else
   typedef BOOL WINAPI transmit_file_fn(SOCKET, HANDLE, DWORD, DWORD, LPOVERLAPPED, LPTRANSMIT_FILE_BUFFERS, DWORD);
   static transmit_file_fn* transmit_file;
 
@@ -215,6 +218,7 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
       return -3;
   }
   return e->bytes_written;
+#endif
 }
 
 #else

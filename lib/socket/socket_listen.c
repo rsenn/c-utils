@@ -13,7 +13,7 @@
 
 int
 socket_listen(int s, unsigned int backlog) {
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE && !defined(USE_SELECT)
   io_entry* e;
   int r = listen(s, backlog);
   if(r == -1)

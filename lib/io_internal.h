@@ -109,7 +109,6 @@ my_extern HANDLE io_comport;
 #endif
 #endif
 
-
 #if defined(__MINGW32__) || defined(__MINGW64__)
 int write();
 int read();
@@ -142,7 +141,7 @@ typedef struct {
   unsigned int kernelwantread : 1; /* did we tell the kernel we want to read/write? */
   unsigned int kernelwantwrite : 1;
   unsigned int epolladded : 1;
-#if WINDOWS
+#if WINDOWS_NATIVE && !defined(USE_SELECT)
   unsigned int readqueued : 2;
   unsigned int writequeued : 2;
   unsigned int acceptqueued : 2;
@@ -156,13 +155,15 @@ typedef struct {
   void* mmapped;
   long maplen;
   uint64 mapofs;
-#if WINDOWS
-  OVERLAPPED or, ow, os; /* overlapped for read+accept, write+connect, sendfile */
+#if WINDOWS_NATIVE
   HANDLE /* fd, */ mh;
+#ifndef USE_SELECT
+  OVERLAPPED or, ow, os; /* overlapped for read+accept, write+connect, sendfile */
   char inbuf[8192];
   int bytes_read, bytes_written;
   DWORD errorcode;
   int64 next_accept;
+#endif
 #endif
 } io_entry;
 

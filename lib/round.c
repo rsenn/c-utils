@@ -1,4 +1,4 @@
-#ifdef __TCC__
+#ifdef __TINYC__
 #define HAVE_ROUND 1
 #endif
 
@@ -14,7 +14,7 @@ static const double toint = 1 / EPS;
 
 #include "uint64.h"
 
-#ifndef __TCC__
+#ifndef __TINYC__
 double
 round(double x) { 
  int e;

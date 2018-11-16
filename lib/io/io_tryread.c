@@ -9,6 +9,8 @@
 
 #include "../byte.h"
 #include "../io_internal.h"
+#include "../socket_internal.h"
+
 #include <errno.h>
 
 #ifndef EAGAIN

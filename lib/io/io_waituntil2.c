@@ -97,6 +97,19 @@ static void handleevent(fd_t fd, int readable, int writable, int error) {
 }
 #endif
 
+static void
+put_fdset(buffer* b, const char*name, const fd_set* fds, fd_t maxfd) {
+  fd_t i;
+  buffer_putm_internal(b, "fd_set ", name, "=[", 0);
+  for(i = 0; i <= maxfd; ++i) {
+    if(FD_ISSET(i, fds)) {
+      buffer_putspace(b);
+      buffer_putlong(b, i);
+    }
+  }
+  buffer_puts(b, " ]");
+}
+
 int64
 io_waituntil2(int64 milliseconds) {
 #if !(defined(_WIN32) || defined(_WIN64))
@@ -105,11 +118,15 @@ io_waituntil2(int64 milliseconds) {
   long i, j, r;
   if(!io_wanted_fds)
     return 0;
+
 #ifdef USE_SELECT
-  FD_SET rfds, wfds;
+  {
+  fd_set rfds, wfds;
   fd_t maxfd = -1;
   io_entry* e;
   struct timeval tv;
+  FD_ZERO(&rfds);
+  FD_ZERO(&wfds);
   for(i = r = 0; (size_t)i <= iarray_length(io_getfds()); ++i) {
     if(!(e = iarray_get(io_getfds(), i)))
       continue;
@@ -125,33 +142,25 @@ io_waituntil2(int64 milliseconds) {
     ++r;
   }
 
-  buffer_puts(buffer_2, "io_wait() ");
-  buffer_putlong(buffer_2, r);
-  buffer_putsflush(buffer_2, " fds\n");
-  for(i = 0; i <= maxfd; ++i) {
-    if((e = iarray_get(io_getfds(), i))) {
-      buffer_puts(buffer_2, "fd[");
-      buffer_putlong(buffer_2, i);
-      buffer_puts(buffer_2, "] { .fd=");
-      buffer_putlong(buffer_2, i);
-      buffer_puts(buffer_2, ", events=");
-      if(FD_ISSET(i, &rfds))
-        buffer_puts(buffer_2, "IN ");
-      if(FD_ISSET(i, &wfds))
-        buffer_puts(buffer_2, "OUT ");
-      buffer_puts(buffer_2, "}");
-      buffer_putnlflush(buffer_2);
-    }
-  }
+  put_fdset(buffer_2, "rfds", &rfds, maxfd);
+  buffer_puts(buffer_2, ", ");
+  put_fdset(buffer_2, "wfds", &wfds, maxfd);
+  buffer_putnlflush(buffer_2);
 
   tv.tv_sec = milliseconds / 1000;
   tv.tv_usec = milliseconds % 1000 * 1000;
 
-  if((i = select(maxfd + 1, &rfds, &wfds, NULL, &tv)) == -1)
+  if((i = select(maxfd + 1, &rfds, &wfds, NULL, milliseconds == -1 ? 0 : &tv)) == -1)
     return -1;
 
+  put_fdset(buffer_2, "rfds2", &rfds, maxfd);
+  buffer_puts(buffer_2, ", ");
+  put_fdset(buffer_2, "wfds2", &wfds, maxfd);
+  buffer_putnlflush(buffer_2);
+
   for(j = maxfd; j >= 0; --j) {
-    io_entry* e = iarray_get(io_getfds(), j);
+   if(!(e = iarray_get(io_getfds(), j)))
+      continue;
 
     if(!e->canread && FD_ISSET(j, &rfds)) {
       e->canread = 1;
@@ -165,8 +174,10 @@ io_waituntil2(int64 milliseconds) {
     }
   }
   return i;
+  }
 #elif WINDOWS_NATIVE
-  DWORD numberofbytes;
+  {
+    DWORD numberofbytes;
   DWORD x;
   LPOVERLAPPED o;
   if(first_readable != -1 || first_writeable != -1) {
@@ -244,6 +255,7 @@ io_waituntil2(int64 milliseconds) {
       first_writeable = x;
     }
     return 1;
+  }
   }
 #else
 #ifdef HAVE_EPOLL

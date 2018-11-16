@@ -46,7 +46,7 @@ $(BUILDDIR)httpd$(EXEEXT): examples/httpd.c io.a iarray.a buffer.a array.a byte.
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)io$(EXEEXT): examples/io.c io.a socket.a iarray.a buffer.a byte.a fmt.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
-$(BUILDDIR)io2$(EXEEXT): examples/io2.c io.a socket.a iarray.a array.a buffer.a byte.a fmt.a
+$(BUILDDIR)io2$(EXEEXT): examples/io2.c io.a socket.a iarray.a array.a buffer.a str.a byte.a fmt.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)io3$(EXEEXT): examples/io3.c io.a socket.a iarray.a buffer.a byte.a fmt.a str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
