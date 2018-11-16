@@ -443,7 +443,7 @@ dopoll :
   }
 #else
   struct pollfd* p;
-  for(i = r = 0; (size_t)i < iarray_length(io_getfds()); ++i) {
+  for(i = r = 0; (size_t)i <= iarray_length(io_getfds()); ++i) {
     io_entry* e = iarray_get(io_getfds(), i);
     if(!e) continue;
     e->canread = e->canwrite = 0;

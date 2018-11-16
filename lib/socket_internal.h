@@ -59,7 +59,6 @@
 #endif
 
 #if WINDOWS_NATIVE
-
 /* set errno to WSAGetLastError() */
 int winsock2errno(long l);
 void __winsock_init(void);

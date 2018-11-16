@@ -380,8 +380,13 @@ endif
 #$(info KERN: $(KERN))
 #$(info SYS: $(SYS))
 
-
 USE_WINSOCK := $(call check-function-exists,WSAStartup,-lws2_32,winsock2.h)
+ifeq ($(MSYS),1)
+  USE_WINSOCK := 0
+endif
+ifeq ($(CYGWIN),1)
+  USE_WINSOCK := 0
+endif
 #$(info USE_WINSOCK=$(USE_WINSOCK))
 ifeq ($(USE_WINSOCK),1)
 WINSOCK_LIB = -lws2_32 -lmswsock
@@ -567,7 +572,7 @@ ifeq ($(WIN32),)
 WIN32 := 0
 endif
 ifeq ($(WIN32),1)
-OTHERLIBS := -lws2_32 -lmswsock
+#OTHERLIBS := -lws2_32 -lmswsock
 endif
 ifeq ($(WIN32),1)
 WIDECHAR := 1

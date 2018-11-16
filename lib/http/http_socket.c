@@ -17,7 +17,7 @@ static ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   int s;
   http* h = b->cookie;
-  http_response* r;
+  http_response* r = h->response;
 
   // s = winsock2errno(recv(fd, buf, len, 0));
   s = io_tryread(fd, buf, len);

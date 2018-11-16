@@ -52,12 +52,13 @@ boundary_predicate(stralloc* sa, void* arg) {
 }
 
 int
-http_readable(http* h) {
+http_readable(http* h, int freshen) {
   ssize_t ret = -1;
   int err;
   http_response* r;
 
-  buffer_feed(&h->q.in);
+  if(freshen)
+  buffer_freshen(&h->q.in);
 
   if((r = h->response) == NULL) {
     return;

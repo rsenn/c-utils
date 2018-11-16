@@ -69,7 +69,7 @@ typedef struct {
 
 int  http_get(http*, const char* location);
 void http_init(http*, const char* host, uint16 port);
-int  http_readable(http*);
+int  http_readable(http*, int freshen);
 void http_read(http_response*);
 int  http_sendreq(http*);
 int  http_socket(http*);

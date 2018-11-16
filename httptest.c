@@ -28,7 +28,7 @@ set_timeouts(int seconds) {
  */
 
 static const char* const url_host = //"verteiler1.mediathekview.de";
-    "www.fefe.de";                 //"5.1.76.111";
+    "www.fefe.de";                  //"5.1.76.111";
 static const char* const url_location = "/gatling/";
 static const uint16 url_port = 80;
 
@@ -42,6 +42,7 @@ main(int argc, char* argv[]) {
   int ret;
   io_entry* e;
   fd_t fd;
+  fd_t outfile = open_trunc("output.txt");
 
   errmsg_iam(argv[0]);
 
@@ -71,37 +72,47 @@ main(int argc, char* argv[]) {
   */
 
   for(;;) {
-again:
-    io_wait();
+    int doread = 0;
 
     while((fd = io_canwrite()) != -1) {
       if(h.sock == fd) {
         http_sendreq(&h);
-        io_wantread(h.sock);
-        goto again;
       }
     }
 
-    while((fd = io_canread()) != -1) {
-      if(h.sock == fd) {
-        if(http_readable(&h)) {
-          char buf[1024];
-          ssize_t n = buffer_get(&h.q.in, buf, sizeof(buf));
+    if((doread = h.q.in.p < h.q.in.n) == 0) {
 
-          if(n > 0) {
-            buffer_put(buffer_1, buf, n);
-            buffer_flush(buffer_1);
-          }
+      while((fd = io_canread()) != -1) {
+        if(h.sock == fd) {
+          doread = 1;
         }
       }
     }
 
+    if(doread) {
+      char buf[1024];
+      ssize_t n;
+      if((n = buffer_get(&h.q.in, buf, sizeof(buf))) > 0)
+        write(outfile, buf, n);
+    }
+    /*
+    if(http_readable(&h, 1)) {
+      ssize_t n = buffer_get(&h.q.in, buf, sizeof(buf));
+
+      if(n > 0) {
+        buffer_put(buffer_1, buf, n);
+        buffer_flush(buffer_1);
+      }
+    }*/
+
     if(h.response->status == HTTP_STATUS_FINISH)
       break;
+
+    io_wait();
   }
 
- /* buffer_putsa(buffer_1, &h.response->data);
-  buffer_putnlflush(buffer_1);
-*/
+  /* buffer_putsa(buffer_1, &h.response->data);
+   buffer_putnlflush(buffer_1);
+  */
   return 0;
 }
