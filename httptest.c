@@ -107,11 +107,11 @@ main(int argc, char* argv[]) {
         while((n = http_read(&h, buf, sizeof(buf))) > 0) {
           write(outfile, buf, n);
           //    write(1, buf, n);
-
-          buffer_put(buffer_1, "Wrote ", 7);
-          buffer_putlong(buffer_1, n);
-          buffer_put(buffer_1, " bytes...", 9);
-          buffer_putnlflush(buffer_1);
+          /*j
+                    buffer_put(buffer_1, "Wrote ", 7);
+                    buffer_putlong(buffer_1, n);
+                    buffer_put(buffer_1, " bytes...", 9);
+                    buffer_putnlflush(buffer_1);*/
         }
         buffer_dump(buffer_1, &h.q.in);
       }
@@ -125,7 +125,7 @@ main(int argc, char* argv[]) {
         }
       }*/
 
-      if(h.response->status == HTTP_STATUS_CLOSED)
+      if(h.response->status >= HTTP_STATUS_CLOSED)
         break;
     }
 

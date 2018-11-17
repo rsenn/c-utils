@@ -142,10 +142,10 @@ io_waituntil2(int64 milliseconds) {
       ++r;
     }
 
-    put_fdset(buffer_1, "rfds", &rfds, maxfd);
+    /*put_fdset(buffer_1, "rfds", &rfds, maxfd);
     buffer_puts(buffer_1, ", ");
     put_fdset(buffer_1, "wfds", &wfds, maxfd);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_1);*/
 
     tv.tv_sec = milliseconds / 1000;
     tv.tv_usec = milliseconds % 1000 * 1000;
@@ -153,10 +153,10 @@ io_waituntil2(int64 milliseconds) {
     if((i = select(maxfd + 1, &rfds, &wfds, NULL, milliseconds == -1 ? 0 : &tv)) == -1)
       return -1;
 
-    put_fdset(buffer_1, "rfds2", &rfds, maxfd);
+    /*put_fdset(buffer_1, "rfds2", &rfds, maxfd);
     buffer_puts(buffer_1, ", ");
     put_fdset(buffer_1, "wfds2", &wfds, maxfd);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_1);*/
 
     for(j = maxfd; j >= 0; --j) {
       if(!(e = iarray_get(io_getfds(), j)))
