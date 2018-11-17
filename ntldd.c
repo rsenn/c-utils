@@ -146,7 +146,8 @@ find_dep(struct dep_tree_element* root, char* name, struct dep_tree_element** re
 int build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root, struct dep_tree_element* self);
 
 struct dep_tree_element*
-process_dep(build_tree_config* cfg, uint32 name, struct dep_tree_element* root, struct dep_tree_element* self, int deep) {
+process_dep(
+    build_tree_config* cfg, uint32 name, struct dep_tree_element* root, struct dep_tree_element* self, int deep) {
   struct dep_tree_element* child = NULL;
   int found;
   int64 i;
@@ -777,6 +778,7 @@ main(int argc, char** argv) {
   int digit_optind = 0;
   const char* rel_to = 0;
   int index = 0;
+  int print_dirs = 0;
   const struct longopt opts[] = {{"help", 0, 0, 'h'},
                                  {"verbose", 0, &verbose, 'v'},
                                  {"unused", 0, &unused, 'u'},
@@ -787,6 +789,7 @@ main(int argc, char** argv) {
                                  {"list-imports", 0, &list_imports, 'i'},
                                  {"version", 0, 0, 'V'},
                                  {"search-dir", 0, 0, 'D'},
+                                 {"print-search-dirs", 0, &print_dirs, 1},
                                  {0}};
 
   strlist sp;
@@ -798,7 +801,7 @@ main(int argc, char** argv) {
   // byte_zero(&sp, sizeof(sp));
   // sp.path = calloc(1, sizeof(char*));
   for(;;) {
-    c = getopt_long(argc, argv, "hvudrRei", opts, &index);
+    c = getopt_long(argc, argv, "hvudrReiD:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -873,11 +876,16 @@ main(int argc, char** argv) {
       p = str_basename(buff);
       if(p)
         *p = '\0';
-      strlist_push_unique(&sp, buff);
+
+      if(!strlist_contains(&sp, buff))
+        strlist_unshift(&sp, buff);
     }
-    buffer_puts(buffer_2, "pathlist=");
-    strlist_dump(buffer_2, &sp);
-    buffer_putnlflush(buffer_2);
+
+    if(print_dirs) {
+      buffer_puts(buffer_2, "search dirs:");
+      strlist_dump(buffer_2, &sp);
+      buffer_putnlflush(buffer_2);
+    }
 
     {
       int multiple = files_start + 1 < argc;
