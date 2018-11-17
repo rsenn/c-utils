@@ -11,16 +11,22 @@ do_send(fd_t s, const void* buf, size_t len) {
 
 int
 http_sendreq(http* h) {
+  buffer* out = &h->q.out;
   if(h->request == NULL)
     return 0;
-  buffer_puts(&h->q.out, "GET ");
-  buffer_putsa(&h->q.out, &h->request->location);
-  buffer_puts(&h->q.out, " HTTP/1.1\r\n");
-  buffer_puts(&h->q.out, "Host: ");
-  buffer_putsa(&h->q.out, &h->host);
-  buffer_puts(&h->q.out, "\r\n");
-  buffer_putsflush(&h->q.out, "\r\n");
-  buffer_flush(&h->q.out);
+
+  buffer_puts(out, "GET ");
+  buffer_putsa(out, &h->request->location);
+  buffer_puts(out, " HTTP/1.1\r\n");
+
+  buffer_puts(out, "Host: ");
+  buffer_putsa(out, &h->host);
+  buffer_puts(out, "\r\n");
+
+  buffer_putsflush(out, "Connection: close\r\n");
+
+  buffer_putsflush(out, "\r\n");
+  buffer_flush(out);
 
   io_dontwantwrite(h->sock);
   /*

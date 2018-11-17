@@ -23,24 +23,6 @@ buffer_dummyread() {
   return 0;
 }
 
-static void
-putline(const char* what, const char* b, ssize_t l, buffer* buf) {
-  buffer_puts(buffer_2, what);
-  buffer_puts(buffer_2, "[");
-  buffer_putulong(buffer_2, l <= 0 ? -l : l);
-  buffer_puts(buffer_2, "]");
-  buffer_puts(buffer_2, ": ");
-  if(l <= 0)
-    buffer_puts(buffer_2, b);
-  else {
-    while(l-- > 0) buffer_put(buffer_2, b++, 1);
-  }
-  buffer_puts(buffer_2, " (bytes in recvb: ");
-  buffer_putulong(buffer_2, buf->n - buf->p);
-  buffer_puts(buffer_2, ")");
-  buffer_putnlflush(buffer_2);
-}
-
 static int
 boundary_predicate(stralloc* sa, void* arg) {
   stralloc* pred = arg;
@@ -72,7 +54,7 @@ http_readable(http* h, int freshen) {
     stralloc_trim(&r->data, "\r\n", 2);
     stralloc_nul(&r->data);
 
-    putline("Header", r->data.s, -r->data.len, &h->q.in);
+    // putline("Header", r->data.s, -r->data.len, &h->q.in);
 
     if(r->data.len == 0) {
       r->ptr = 0;

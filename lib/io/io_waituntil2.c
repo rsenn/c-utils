@@ -98,7 +98,7 @@ static void handleevent(fd_t fd, int readable, int writable, int error) {
 #endif
 
 static void
-put_fdset(buffer* b, const char*name, const fd_set* fds, fd_t maxfd) {
+put_fdset(buffer* b, const char* name, const fd_set* fds, fd_t maxfd) {
   fd_t i;
   buffer_putm_internal(b, "fd_set ", name, "=[", 0);
   for(i = 0; i <= maxfd; ++i) {
@@ -121,141 +121,141 @@ io_waituntil2(int64 milliseconds) {
 
 #ifdef USE_SELECT
   {
-  fd_set rfds, wfds;
-  fd_t maxfd = -1;
-  io_entry* e;
-  struct timeval tv;
-  FD_ZERO(&rfds);
-  FD_ZERO(&wfds);
-  for(i = r = 0; (size_t)i <= iarray_length(io_getfds()); ++i) {
-    if(!(e = iarray_get(io_getfds(), i)))
-      continue;
-    e->canread = e->canwrite = 0;
-    if(e->wantread || e->wantwrite) {
-      if(e->wantread)
-        FD_SET(i, &rfds);
-      if(e->wantwrite)
-        FD_SET(i, &wfds);
-      if(i > maxfd)
-        maxfd = i;
+    fd_set rfds, wfds;
+    fd_t maxfd = -1;
+    io_entry* e;
+    struct timeval tv;
+    FD_ZERO(&rfds);
+    FD_ZERO(&wfds);
+    for(i = r = 0; (size_t)i <= iarray_length(io_getfds()); ++i) {
+      if(!(e = iarray_get(io_getfds(), i)))
+        continue;
+      e->canread = e->canwrite = 0;
+      if(e->wantread || e->wantwrite) {
+        if(e->wantread)
+          FD_SET(i, &rfds);
+        if(e->wantwrite)
+          FD_SET(i, &wfds);
+        if(i > maxfd)
+          maxfd = i;
+      }
+      ++r;
     }
-    ++r;
-  }
 
-  put_fdset(buffer_2, "rfds", &rfds, maxfd);
-  buffer_puts(buffer_2, ", ");
-  put_fdset(buffer_2, "wfds", &wfds, maxfd);
-  buffer_putnlflush(buffer_2);
+    put_fdset(buffer_1, "rfds", &rfds, maxfd);
+    buffer_puts(buffer_1, ", ");
+    put_fdset(buffer_1, "wfds", &wfds, maxfd);
+    buffer_putnlflush(buffer_1);
 
-  tv.tv_sec = milliseconds / 1000;
-  tv.tv_usec = milliseconds % 1000 * 1000;
+    tv.tv_sec = milliseconds / 1000;
+    tv.tv_usec = milliseconds % 1000 * 1000;
 
-  if((i = select(maxfd + 1, &rfds, &wfds, NULL, milliseconds == -1 ? 0 : &tv)) == -1)
-    return -1;
+    if((i = select(maxfd + 1, &rfds, &wfds, NULL, milliseconds == -1 ? 0 : &tv)) == -1)
+      return -1;
 
-  put_fdset(buffer_2, "rfds2", &rfds, maxfd);
-  buffer_puts(buffer_2, ", ");
-  put_fdset(buffer_2, "wfds2", &wfds, maxfd);
-  buffer_putnlflush(buffer_2);
+    put_fdset(buffer_1, "rfds2", &rfds, maxfd);
+    buffer_puts(buffer_1, ", ");
+    put_fdset(buffer_1, "wfds2", &wfds, maxfd);
+    buffer_putnlflush(buffer_1);
 
-  for(j = maxfd; j >= 0; --j) {
-   if(!(e = iarray_get(io_getfds(), j)))
-      continue;
+    for(j = maxfd; j >= 0; --j) {
+      if(!(e = iarray_get(io_getfds(), j)))
+        continue;
 
-    if(!e->canread && FD_ISSET(j, &rfds)) {
-      e->canread = 1;
-      e->next_read = first_readable;
-      first_readable = j;
+      if(!e->canread && FD_ISSET(j, &rfds)) {
+        e->canread = 1;
+        e->next_read = first_readable;
+        first_readable = j;
+      }
+      if(!e->canwrite && FD_ISSET(j, &wfds)) {
+        e->canwrite = 1;
+        e->next_write = first_writeable;
+        first_writeable = j;
+      }
     }
-    if(!e->canwrite && FD_ISSET(j, &wfds)) {
-      e->canwrite = 1;
-      e->next_write = first_writeable;
-      first_writeable = j;
-    }
-  }
-  return i;
+    return i;
   }
 #elif WINDOWS_NATIVE
   {
     DWORD numberofbytes;
-  DWORD x;
-  LPOVERLAPPED o;
-  if(first_readable != -1 || first_writeable != -1) {
-    return 1;
-  }
-  if(GetQueuedCompletionStatus(io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
-    io_entry* e = iarray_get(io_getfds(), x);
-    if(!e)
-      return 0;
-    e->errorcode = 0;
-    if(o == &e->or &&e->readqueued == 1) {
-      e->readqueued = 2;
-      e->canread = 1;
-      e->bytes_read = numberofbytes;
-      e->next_read = first_readable;
-      first_readable = x;
-    } else if(o == &e->ow && e->writequeued == 1) {
-      e->writequeued = 2;
-      e->canwrite = 1;
-      e->bytes_written = numberofbytes;
-      e->next_write = first_writeable;
-      first_writeable = x;
-    } else if(o == &e->or &&e->acceptqueued == 1) {
-      e->acceptqueued = 2;
-      e->canread = 1;
-      e->next_read = first_readable;
-      first_readable = x;
-    } else if(o == &e->ow && e->connectqueued == 1) {
-      e->connectqueued = 2;
-      e->canwrite = 1;
-      e->next_write = first_writeable;
-      first_writeable = x;
-    } else if(o == &e->os && e->sendfilequeued == 1) {
-      e->sendfilequeued = 2;
-      e->canwrite = 1;
-      e->bytes_written = numberofbytes;
-      e->next_write = first_writeable;
-      first_writeable = x;
+    DWORD x;
+    LPOVERLAPPED o;
+    if(first_readable != -1 || first_writeable != -1) {
+      return 1;
     }
-    return 1;
-  } else {
-    /* either the overlapped I/O request failed or we timed out */
-    DWORD err;
-    io_entry* e;
-    if(!o)
-      return 0; /* timeout */
-    /* we got a completion packet for a failed I/O operation */
-    err = GetLastError();
-    if(err == WAIT_TIMEOUT)
-      return 0; /* or maybe not */
-    e = iarray_get(io_getfds(), x);
-    if(!e)
-      return 0; /* WTF?! */
-    e->errorcode = err;
-    if(o == &e->or &&(e->readqueued || e->acceptqueued)) {
-      if(e->readqueued)
+    if(GetQueuedCompletionStatus(io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
+      io_entry* e = iarray_get(io_getfds(), x);
+      if(!e)
+        return 0;
+      e->errorcode = 0;
+      if(o == &e->or &&e->readqueued == 1) {
         e->readqueued = 2;
-      else if(e->acceptqueued)
+        e->canread = 1;
+        e->bytes_read = numberofbytes;
+        e->next_read = first_readable;
+        first_readable = x;
+      } else if(o == &e->ow && e->writequeued == 1) {
+        e->writequeued = 2;
+        e->canwrite = 1;
+        e->bytes_written = numberofbytes;
+        e->next_write = first_writeable;
+        first_writeable = x;
+      } else if(o == &e->or &&e->acceptqueued == 1) {
         e->acceptqueued = 2;
-      e->canread = 1;
-      e->bytes_read = -1;
-      e->next_read = first_readable;
-      first_readable = x;
-    } else if((o == &e->ow || o == &e->os) && (e->writequeued || e->connectqueued || e->sendfilequeued)) {
-      if(o == &e->ow) {
-        if(e->writequeued)
-          e->writequeued = 2;
-        else if(e->connectqueued)
-          e->connectqueued = 2;
-      } else if(o == &e->os)
+        e->canread = 1;
+        e->next_read = first_readable;
+        first_readable = x;
+      } else if(o == &e->ow && e->connectqueued == 1) {
+        e->connectqueued = 2;
+        e->canwrite = 1;
+        e->next_write = first_writeable;
+        first_writeable = x;
+      } else if(o == &e->os && e->sendfilequeued == 1) {
         e->sendfilequeued = 2;
-      e->canwrite = 1;
-      e->bytes_written = -1;
-      e->next_write = first_writeable;
-      first_writeable = x;
+        e->canwrite = 1;
+        e->bytes_written = numberofbytes;
+        e->next_write = first_writeable;
+        first_writeable = x;
+      }
+      return 1;
+    } else {
+      /* either the overlapped I/O request failed or we timed out */
+      DWORD err;
+      io_entry* e;
+      if(!o)
+        return 0; /* timeout */
+      /* we got a completion packet for a failed I/O operation */
+      err = GetLastError();
+      if(err == WAIT_TIMEOUT)
+        return 0; /* or maybe not */
+      e = iarray_get(io_getfds(), x);
+      if(!e)
+        return 0; /* WTF?! */
+      e->errorcode = err;
+      if(o == &e->or &&(e->readqueued || e->acceptqueued)) {
+        if(e->readqueued)
+          e->readqueued = 2;
+        else if(e->acceptqueued)
+          e->acceptqueued = 2;
+        e->canread = 1;
+        e->bytes_read = -1;
+        e->next_read = first_readable;
+        first_readable = x;
+      } else if((o == &e->ow || o == &e->os) && (e->writequeued || e->connectqueued || e->sendfilequeued)) {
+        if(o == &e->ow) {
+          if(e->writequeued)
+            e->writequeued = 2;
+          else if(e->connectqueued)
+            e->connectqueued = 2;
+        } else if(o == &e->os)
+          e->sendfilequeued = 2;
+        e->canwrite = 1;
+        e->bytes_written = -1;
+        e->next_write = first_writeable;
+        first_writeable = x;
+      }
+      return 1;
     }
-    return 1;
-  }
   }
 #else
 #ifdef HAVE_EPOLL
@@ -531,40 +531,40 @@ dopoll :
     }
   }
   p = array_start(&io_pollfds);
-  buffer_puts(buffer_2, "io_wait() ");
-  buffer_putlong(buffer_2, r);
-  buffer_putsflush(buffer_2, " fds\n");
+  buffer_puts(buffer_1, "io_wait() ");
+  buffer_putlong(buffer_1, r);
+  buffer_putsflush(buffer_1, " fds\n");
   for(i = 0; i < r; ++i) {
-    buffer_puts(buffer_2, "pollfd[");
-    buffer_putlong(buffer_2, i);
-    buffer_puts(buffer_2, "] { .fd=");
-    buffer_putlong(buffer_2, p[i].fd);
-    buffer_puts(buffer_2, ", events=");
+    buffer_puts(buffer_1, "pollfd[");
+    buffer_putlong(buffer_1, i);
+    buffer_puts(buffer_1, "] { .fd=");
+    buffer_putlong(buffer_1, p[i].fd);
+    buffer_puts(buffer_1, ", events=");
     if(p[i].events & POLLIN)
-      buffer_puts(buffer_2, "IN ");
+      buffer_puts(buffer_1, "IN ");
     if(p[i].events & POLLOUT)
-      buffer_puts(buffer_2, "OUT ");
+      buffer_puts(buffer_1, "OUT ");
     if(p[i].events & POLLERR)
-      buffer_puts(buffer_2, "ERR ");
-    buffer_puts(buffer_2, "}");
-    buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_1, "ERR ");
+    buffer_puts(buffer_1, "}");
+    buffer_putnlflush(buffer_1);
   }
   if((i = poll(array_start(&io_pollfds), r, milliseconds)) < 1)
     return -1;
   for(i = 0; i < r; ++i) {
-    buffer_puts(buffer_2, "pollfd[");
-    buffer_putlong(buffer_2, i);
-    buffer_puts(buffer_2, "] { .fd=");
-    buffer_putlong(buffer_2, p[i].fd);
-    buffer_puts(buffer_2, ", revents=");
+    buffer_puts(buffer_1, "pollfd[");
+    buffer_putlong(buffer_1, i);
+    buffer_puts(buffer_1, "] { .fd=");
+    buffer_putlong(buffer_1, p[i].fd);
+    buffer_puts(buffer_1, ", revents=");
     if(p[i].revents & POLLIN)
-      buffer_puts(buffer_2, "IN ");
+      buffer_puts(buffer_1, "IN ");
     if(p[i].revents & POLLOUT)
-      buffer_puts(buffer_2, "OUT ");
+      buffer_puts(buffer_1, "OUT ");
     if(p[i].revents & POLLERR)
-      buffer_puts(buffer_2, "ERR ");
-    buffer_puts(buffer_2, "}");
-    buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_1, "ERR ");
+    buffer_puts(buffer_1, "}");
+    buffer_putnlflush(buffer_1);
   }
   for(j = r - 1; j >= 0; --j) {
     io_entry* e = iarray_get(io_getfds(), p->fd);

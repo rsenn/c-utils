@@ -80,7 +80,6 @@ io_wantread_really(fd_t d, io_entry* e) {
 
 #ifdef USE_SELECT
 
-
 #elif WINDOWS_NATIVE
   if(e->listened) {
     if(e->next_accept == 0)

@@ -42,7 +42,7 @@ io_canread() {
 #else
        e->canread
 #endif
-           ) {
+    ) {
 #if defined(HAVE_SIGIO)
       e->next_read = alt_firstread;
       alt_firstread = r;

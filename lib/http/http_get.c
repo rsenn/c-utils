@@ -40,11 +40,11 @@ http_get(http* h, const char* location) {
 
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 
-  buffer_putsa(buffer_2, &h->host);
-  buffer_puts(buffer_2, " (");
-  buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)a->addr));
-  buffer_puts(buffer_2, ")");
-  buffer_putnlflush(buffer_2);
+  buffer_putsa(buffer_1, &h->host);
+  buffer_puts(buffer_1, " (");
+  buffer_put(buffer_1, ip, fmt_ip4(ip, (const char*)a->addr));
+  buffer_puts(buffer_1, ")");
+  buffer_putnlflush(buffer_1);
 
   http_socket(h);
 
@@ -67,6 +67,8 @@ http_get(http* h, const char* location) {
     byte_zero((*r), sizeof(http_response));
     stralloc_init(&((*r)->data));
     stralloc_init(&((*r)->boundary));
+
+    (*r)->content_length = UINT64_MAX;
   }
   ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);
 

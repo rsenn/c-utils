@@ -46,8 +46,8 @@ typedef struct http_response_s {
   size_t chnk;
   size_t line;
   union {
-    unsigned long content_length;
-    unsigned long chunk_length;
+    uint64 content_length;
+    uint64 chunk_length;
   };
   stralloc boundary;
 //  buffer rbuf;

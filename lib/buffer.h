@@ -54,7 +54,7 @@ int buffer_puts(buffer* b, const char* x);
 int buffer_putsalign(buffer* b, const char* x);
 int buffer_putsflush(buffer* b, const char* x);
 
-#if defined(__GNUC__) && !defined(__LIBOWFAT_INTERNAL)
+#if defined(__GNUC__) && !defined(__LIBOWFAT_INTERNAL) && !defined(__dietlibc__)
 /* as a little gcc-specific hack,  if somebody calls buffer_puts with a
  * constant string,  where we know its length at compile-time,  call
  * buffer_put with the known length instead */
