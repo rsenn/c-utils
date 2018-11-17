@@ -54,13 +54,12 @@ http_get(http* h, const char* location) {
     h->request = NULL;
   }
   {
-    http_request** r = &h->request;
-    (*r) = malloc(sizeof(http_request));
-    byte_zero((*r), sizeof(http_request));
-    (*r)->serial = serial;
-    (*r)->type = GET;
-    stralloc_init(&((*r)->location));
-    stralloc_copys(&((*r)->location), location);
+    http_request* req = h->request = malloc(sizeof(http_request));
+    byte_zero(req, sizeof(http_request));
+    req->serial = serial;
+    req->type = GET;
+    stralloc_init(&(req->location));
+    stralloc_copys(&(req->location), location);
   }
   {
     http_response** r = &h->response;
