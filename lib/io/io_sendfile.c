@@ -1,5 +1,5 @@
+#if(defined(_WIN32) || defined(_WIN64)) && !defined(__ORANGEC__) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #define USE_WS2_32 1
-#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
 #define _WINSOCKAPI_
 #include <winsock2.h>
 #include <mswsock.h>
@@ -158,7 +158,7 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 }
 #endif
 
-#elif(defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)) //&& !defined(__MSYS__)
+#elif(defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)) && !defined(__MSYS__)
 
 //#undef closesocket
 //#include <winsock2.h>

@@ -191,7 +191,7 @@ http_read(http* h, char* buf, size_t len) {
     if(n >= (ssize_t)len)
       n = (ssize_t)len;
     byte_copy(buf, (size_t)n, b->x + b->p);
-      putnum("skipbuf", n);
+    putnum("skipbuf", n);
     len -= (size_t)n;
     buf += n;
     ret += n;

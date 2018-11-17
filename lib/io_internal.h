@@ -228,7 +228,7 @@ struct eventpacket {
   enum { CANREAD, CANWRITE, TIMEOUT } what;
 };
 
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE && !__POCC__
 //extern int open();
 extern int read();
 extern int write();

@@ -13,18 +13,17 @@
         ""             "."            "."
 */
 static const char* const dot = ".";
-#define PATHSEP_S "\\/"
 
 char*
 path_dirname(const char* path, stralloc* dir) {
   size_t i;
   stralloc_zero(dir);
-  i = str_rchrs(path, PATHSEP_S, 2);
+  i = str_rchrs(path, PATHSEP_S_MIXED, str_len(PATHSEP_S_MIXED));
   if(path == NULL || path[i] == '\0') {
     stralloc_copys(dir, dot);
   } else {
     /* remove trailing slashes */
-    while(i > 0 && str_chr(PATHSEP_S, path[i - 1]) < 2) --i;
+    while(i > 0 && path_issep(path[i - 1])) --i;
     stralloc_copyb(dir, path, i);
   }
   stralloc_nul(dir);

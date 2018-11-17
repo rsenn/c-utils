@@ -11,6 +11,10 @@
 
 #define NUM_ELEMENTS(x) (sizeof(x) / sizeof(x[0]))
 
+#ifndef _MAX_PATH
+#define _MAX_PATH 260
+#endif
+
 /*
  * Helper functions
  */

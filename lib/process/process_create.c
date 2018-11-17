@@ -12,7 +12,7 @@
 
 
 int
-process_create(const char* filename, const char* argv) {
+process_create(const char* filename, const char* argv[]) {
 #if WINDOWS_NATIVE
   size_t i;
   strlist joined_argv;

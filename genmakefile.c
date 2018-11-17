@@ -753,8 +753,9 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
       stralloc_init(&r);
       strlist_init(&l, '\0');
 
-
       path_dirname(*srcfile, &dir);
+
+      debug_sa("path_dirname(*srcfile)", &dir);
 
       if((srcdir = hmap_get(sourcedirs, dir.s, dir.len + 1))) {
         slist_add(&srcdir->sources, &file->link);
@@ -808,7 +809,7 @@ dump_sourcedirs(buffer* b, HMAP_DB* sourcedirs) {
     sourcedir* srcdir = hmap_data(t);
     sourcefile* pfile;
 
-    buffer_puts(b, "source dir(");
+    buffer_putm_internal(b, "source dir '", t->key, "' (", 0);
     buffer_putulong(b, srcdir->n_sources);
     buffer_puts(b, "): ");
     buffer_put(b, t->key, t->key_len);
@@ -1178,10 +1179,11 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
   stralloc_init(&sa);
 
   path_prefix_s(&workdir.sa, name, &sa);
+  // stralloc_copys(&sa, name);
 
   stralloc_cats(&sa, libext);
 
-  //  debug_sa("lib_rule_for_sourcedir", &sa);
+  debug_sa("lib_rule_for_sourcedir", &sa);
 
   if((rule = get_rule_sa(&sa))) {
     sourcefile* pfile;
@@ -1226,11 +1228,10 @@ deps_for_libs(HMAP_DB* rules) {
       strlist libs;
       strlist_init(&libs, ' ');
 
-
       includes_to_libs(&srcdir->includes, &libs);
 
       debug_s("library", lib->name);
-           debug_sl("includes", &srcdir->includes);
+      debug_sl("includes", &srcdir->includes);
 
       strlist_removes(&libs, lib->name);
       // debug_sl("deps", &libs);
@@ -1333,8 +1334,11 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
 
   hmap_foreach(srcdirs, t) {
     sourcedir* srcdir = hmap_data(t);
-    const char *s, *base = str_basename(t->key);
+    const char *s, *base = path_basename(t->key);
     size_t n;
+
+    debug_s("srcdir", t->key);
+    debug_s("base", base);
 
     if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
       continue;
@@ -1347,14 +1351,15 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
 /**
  * Generate compile rules for every source file with a main()
  */
-void
+int
 gen_link_rules(HMAP_DB* rules, strarray* sources) {
+  int count = 0;
   target* all;
-
   const char* x;
   char** srcfile;
   strlist incs, libs, deps, indir;
   stralloc dir, obj, bin;
+
   strlist_init(&incs, ' ');
   strlist_init(&libs, ' ');
   strlist_init(&deps, ' ');
@@ -1429,7 +1434,6 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
                 strlist_zero(&deps);
                 target_dep_list(&deps, link);
 
-
                 debug_sa("final deps", &deps);
         */
 
@@ -1439,12 +1443,10 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         deps_direct(&deps, link);
 
-
         strlist_sub(&deps, &indir);
              debug_sa("direct deps", &deps);
 
         array_trunc(&link->deps);
-
 
         */
         includes_to_libs(&incs, &libs);
@@ -1462,6 +1464,8 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
         buffer_putsa(buffer_2, &deps.sa);
         buffer_putnlflush(buffer_2);*/
 #endif
+
+        ++count;
       }
     }
   }
@@ -1473,6 +1477,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
   stralloc_free(&bin);
   stralloc_free(&obj);
   stralloc_free(&dir);
+  return count;
 }
 
 void
@@ -1597,6 +1602,7 @@ usage(char* argv0) {
                        "     clang       LLVM NMake\n"
                        "     occ         OrangeC\n"
                        "     dmc         Digital Mars C++\n"
+                       "     pocc        Pelles-C\n"
                        "\n",
                        "  -m, --make-type TYPE      make program type, one of:\n"
                        "\n"
@@ -1604,6 +1610,7 @@ usage(char* argv0) {
                        "     borland     Borland Make\n"
                        "     gmake       GNU Make\n"
                        "     omake       OrangeCC Make\n"
+                       "     pomake      Pelles-C Make\n"
                        "     make        Other make\n"
                        "\n",
                        0);
@@ -1667,6 +1674,12 @@ set_make_type(const char* make, const char* compiler) {
 
   } else if(str_start(make, "omake") || str_start(make, "orange")) {
     pathsep_make = '\\';
+
+  } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
+    pathsep_make = '\\';
+
+    make_begin_inline = "<<\n\t";
+    make_end_inline = "\n<<";
 
   } else {
     pathsep_make = '\\';
@@ -1997,6 +2010,43 @@ set_compiler_type(const char* compiler) {
     }
     stralloc_copys(&lib_command, "$(LIB) -c $@ $^");
 
+  } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
+    set_var("CC", "cc");
+    set_var("LINK", "polink");
+    set_var("LIB", "polib");
+    push_var("CFLAGS", "-std:C11 -fp:precise -W0 -Gr -Go");
+    push_var("CFLAGS", "-Ze -Gm");
+
+    if(mach.bits == _64) {
+      set_var("MACHINE", "AMD64");
+      set_var("TARGET", "amd64");
+      set_var("L64", "64");
+      libext = "64.lib";
+      push_var("DEFS", "-D_M_AMD64");
+    } else if(mach.bits == _32) {
+      set_var("MACHINE", "X86");
+      set_var("TARGET", "x86");
+      set_var("L64", "");
+      push_var("DEFS", "-D_M_IX86");
+    }
+    push_var("CFLAGS", "-T$(TARGET)-coff");
+    push_var("LDFLAGS", "-machine:$(MACHINE)");
+
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+      push_var("CFLAGS", "/Zi");
+
+    if(build_type == BUILD_TYPE_MINSIZEREL)
+      push_var("CFLAGS", "/Os");
+    else if(build_type != BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "/Ot /Ob1");
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+      push_var("CFLAGS", "/Zi");
+      push_var("LDFLAGS", "/DEBUG");
+    }
+
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -Fo\"$@\"");
+    stralloc_copys(&link_command, "$(CC) $(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS) /Fe\"$@\"");
+
   } else {
     return 0;
   }
@@ -2116,6 +2166,8 @@ main(int argc, char* argv[]) {
       make = "gmake";
     else if(str_start(compiler, "o"))
       make = "omake";
+    else if(str_start(compiler, "po"))
+      make = "pomake";
   }
 
   if(make == NULL)
@@ -2204,7 +2256,6 @@ main(int argc, char* argv[]) {
     stralloc_replace(&arg, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     stralloc_nul(&arg);
 
-
 #if WINDOWS_NATIVE && !MINGW
     if(str_rchrs(argv[optind], "*?", 2) < str_len(argv[optind]))
       strarray_glob(&args, arg.s);
@@ -2257,14 +2308,26 @@ main(int argc, char* argv[]) {
     if(cmd_objs)
       gen_compile_rules(rules, &srcs);
 
+    dump_sourcedirs(buffer_2, sourcedirs);
     if(cmd_libs) {
       gen_lib_rules(rules, sourcedirs);
 
       deps_for_libs(rules);
     }
 
-    if(cmd_bins)
-      gen_link_rules(rules, &srcs);
+    if(cmd_bins) {
+      cmd_bins = gen_link_rules(rules, &srcs);
+    }
+
+    if(cmd_bins == 0) {
+      TUPLE* t;
+      hmap_foreach(rules, t) {
+        target* tgt = hmap_data(t);
+
+        if(tgt->recipe == &lib_command)
+          strlist_push(&all->deps, t->key);
+      }
+    }
 
     gen_clean_rule(rules);
 

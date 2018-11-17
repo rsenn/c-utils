@@ -1,11 +1,12 @@
 #ifndef TYPEDEFS_H
 #define TYPEDEFS_H
 
+/* for ssize_t: */
+#define __POCC__OLDNAMES
+#include <sys/types.h>
+
 /* for size_t & ptrdiff_t */
 #include <stddef.h>
-
-/* for ssize_t: */
-#include <sys/types.h>
 
 #ifdef __LCC__
 #include <stdint.h>
@@ -22,7 +23,7 @@
 #include <stdint.h>
 #endif*/
 
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(__ORANGEC__) || defined(__DMC__)
+#if defined(__MINGW32__) || defined(__MINGW64__) || defined(__ORANGEC__) || defined(__DMC__) || defined(__STDC_IEC_559__)
 #include <stdint.h>
 #endif
 
@@ -30,19 +31,24 @@
 extern "C" {
 #endif
 
-#if !(defined(_SYS_TYPES_H) && defined(__MSYS__))
+#if defined(__SSIZE_TYPE__) && !defined(_SSIZE_T_DEFINED)
+#define _SSIZE_T_DEFINED 1
+typedef __SSIZE_TYPE__ ssize_t;
+#endif
+
 #if defined(__PTRDIFF_TYPE__) && !defined(_SSIZE_T_DEFINED)
 #define _SSIZE_T_DEFINED 1
 typedef __PTRDIFF_TYPE__ ssize_t;
-#elif !defined(_SSIZE_T_DEFINED) && !(defined(_SYS_TYPES_H) && defined(__MSYS__)) && !defined(_SSIZE_T_)
+#endif
+
+#if !(defined(_SYS_TYPES_H) && defined(__MSYS__)) && !defined(_SSIZE_T_DEFINED)
 #define _SSIZE_T_DEFINED 1
 typedef ptrdiff_t ssize_t;
-#endif
 #endif
 
 #ifdef __INTPTR_TYPE__
 typedef __INTPTR_TYPE__ intptr_t;
-#elif defined(__BORLANDC__) || (defined(_SYS_TYPES_H) && defined(__MSYS__))
+#elif defined(__BORLANDC__) || defined(__POCC__) || (defined(_SYS_TYPES_H) && defined(__MSYS__))
 typedef ptrdiff_t intptr_t;
 #endif
 

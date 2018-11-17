@@ -16,7 +16,7 @@
 # endif
 //# include <ws2ipdef.h>
 # ifndef _MSC_VER
-# include <ws2tcpip.h>
+//# include <ws2tcpip.h>
 # endif
 #endif
 

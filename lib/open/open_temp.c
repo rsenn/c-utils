@@ -10,6 +10,7 @@
 #  define _CRT_INTERNAL_NONSTDC_NAMES 1
 # endif
 # include <io.h>
+# include <windows.h>
 #  if !defined(__LCC__) && !defined(__MINGW32__)
 #   define read _read
 #   define write _write

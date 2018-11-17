@@ -1,3 +1,4 @@
+#include "lib/windoze.h"
 #include "lib/unix.h"
 #include "lib/array.h"
 #include "lib/buffer.h"
@@ -10,6 +11,10 @@
 #include "lib/open.h"
 #include "lib/path.h"
 #include "lib/str.h"
+
+#if WINDOWS
+#include <windows.h>
+#endif
 
 #include <fcntl.h>
 #include <stdio.h>
