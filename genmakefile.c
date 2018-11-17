@@ -2021,7 +2021,7 @@ set_compiler_type(const char* compiler) {
       set_var("MACHINE", "AMD64");
       set_var("TARGET", "amd64");
       set_var("L64", "64");
-      libext = "64.lib";
+      //libext = "64.lib";
       push_var("DEFS", "-D_M_AMD64");
     } else if(mach.bits == _32) {
       set_var("MACHINE", "X86");

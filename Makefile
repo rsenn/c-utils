@@ -698,6 +698,7 @@ ifneq ($(MINGW),1)
 MINGW := 0
 endif
 ifeq ($(MINGW),1)
+CFLAGS += -fno-stack-check -fno-stack-protector -mno-stack-arg-probe
 LDFLAGS += -static-libgcc
 #DEFINES += open=_open read=_read write=_write close=_close
 #LDFLAGS += -static-lib{asan,gfortran,lsan,tsan,ubsan}
