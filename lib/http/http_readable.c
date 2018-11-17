@@ -44,7 +44,7 @@ http_readable(http* h, int freshen) {
     buffer_freshen(&h->q.in);
 
   if((r = h->response) == NULL) {
-    return;
+    return ret;
   }
 
   while(r->status == HTTP_RECV_HEADER) {
