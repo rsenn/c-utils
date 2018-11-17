@@ -7,8 +7,8 @@ TARGET = access
 
 INCLUDEPATH += .
 
-HEADERS =
+HEADERS = 
 
 
 
-SOURCES = access.c
+SOURCES = 
