@@ -29,7 +29,7 @@
 			"file": "httptest.c",
 			"settings":
 			{
-				"buffer_size": 2479,
+				"buffer_size": 2510,
 				"line_ending": "Unix"
 			}
 		},
@@ -212,13 +212,7 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/roman/Desktop/dirlist",
-		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/http",
-		"/C/Users/roman/Desktop/dirlist/lib/io",
-		"/C/Users/roman/Desktop/dirlist/lib/process",
-		"/C/Users/roman/Desktop/dirlist/lib/strarray",
-		"/C/Users/roman/Desktop/dirlist/lib/strlist"
+		"/home/roman/Sources/dirlist"
 	],
 	"file_history":
 	[
@@ -562,6 +556,10 @@
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
@@ -604,7 +602,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2479,
+						"buffer_size": 2510,
 						"regions":
 						{
 						},
@@ -652,7 +650,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 520.0,
+						"translation.y": 520.47952048,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
@@ -682,7 +680,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 184.0,
+						"translation.y": 183.816183816,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
@@ -737,12 +735,12 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage",
+							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1404.0,
+						"translation.y": 962.037962038,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

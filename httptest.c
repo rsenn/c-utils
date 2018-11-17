@@ -101,7 +101,8 @@ main(int argc, char* argv[]) {
 
         buffer_puts(buffer_2, "Wrote ");
         buffer_putlong(buffer_2, n);
-        buffer_putsflush(buffer_2, " bytes...\n");
+        buffer_puts(buffer_2, " bytes...");
+        buffer_putnlflush(buffer_2);
       }
       buffer_dump(buffer_2, &h.q.in);
     }

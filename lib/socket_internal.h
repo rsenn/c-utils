@@ -13,6 +13,8 @@
 # else
 #  include <winsock.h>
 # endif
+//# include <ws2ipdef.h>
+# include <ws2tcpip.h>
 #endif
 
 #include "windoze.h"
@@ -20,7 +22,7 @@
 
 #if !WINDOWS_NATIVE && !WINDOWS_OVERRIDE
 # include <sys/param.h>
-#  if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
+#  if !WINDOWS || !(defined(_WINSOCKAPI_) || defined(_WINSOCK2API_))
 #   include <sys/socket.h>
 #   include <netinet/in.h>
 #   include <netdb.h>
