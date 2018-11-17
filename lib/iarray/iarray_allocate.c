@@ -14,6 +14,7 @@
 
 #ifdef __dietlibc__
 # include <sys/atomic.h>
+#  define __CAS_PTR(ptr,oldptr,newptr) __CAS(ptr,newptr,oldptr)
 #elif WINDOWS_NATIVE || defined(__MSYS__)
 # include <windows.h>
 # define __CAS(val,oldval,newval) InterlockedCompareExchange(val,newval,oldval)

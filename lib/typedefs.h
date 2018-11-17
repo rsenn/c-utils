@@ -11,7 +11,7 @@
 #include <stdint.h>
 #endif
 
-#include <time.h>
+//#include <time.h>
 
 /*
 #if defined(HAVE_INTTYPES_H) || defined(__LCC__) || (!defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__))

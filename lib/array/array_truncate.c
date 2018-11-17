@@ -1,6 +1,7 @@
 #include "../array.h"
-#include "../likely.h"
 #include "../safemult.h"
+
+#define __unlikely(x) (x)
 
 /* I'm not sure I understand what this function is good for */
 void

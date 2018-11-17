@@ -21,7 +21,7 @@ get_sources() {
   done
   echo QMAKE=$QMAKE 1>&2
   if [ ! -e "$1" ]; then
-    set -- $(ls -td build/*/Debug/"$1".exe | head -n1)
+    set -- $(ls -td build/*/Debug/"$1"{,.exe} | head -n1)
   fi
   [ "$DEBUG" = true ] && echo "ARG:" $@ 1>&2
 
