@@ -22,6 +22,12 @@ http_get(http* h, const char* location) {
   stralloc dns;
   uint32 serial = 0;
 
+  if(location[0] != '/') {
+    size_t len = str_chr(location, '/');
+    stralloc_copyb(&h->host, location, len);
+    location += len;
+  }
+
   stralloc_nul(&h->host);
 
   stralloc_init(&dns);

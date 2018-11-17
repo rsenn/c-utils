@@ -31,6 +31,7 @@ set_timeouts(int seconds) {
 static const char* const url_host = //"verteiler1.mediathekview.de";
     "www.fefe.de";                  //"5.1.76.111";
 static const char* const url_location = "/gatling/";
+
 static const uint16 url_port = 80;
 static io_entry* g_iofd;
 
@@ -49,7 +50,7 @@ main(int argc, char* argv[]) {
 
   http_init(&h, url_host, url_port);
 
-  ret = http_get(&h, url_location);
+  ret = http_get(&h, "www.fefe.de/gatling/");
 
   /*  buffer_init(&in, (buffer_op_sys*)&do_recv, h.sock, inbuf, sizeof(inbuf));
 
