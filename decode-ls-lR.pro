@@ -21,6 +21,6 @@ INCLUDEPATH += .
 
 HEADERS = lib/buffer.h lib/byte.h lib/str.h lib/stralloc.h
 
-SOURCES = decode-ls-lR.c lib/buffer/buffer_0.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_close.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get_token.c lib/buffer/buffer_getc.c lib/buffer/buffer_getline.c lib/buffer/buffer_put.c lib/buffer/buffer_puts.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/byte/byte_ccopy.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_zero.c lib/str/str_basename.c lib/str/str_diffn.c lib/str/str_len.c lib/str/str_rchrs.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_copyb.c lib/stralloc/stralloc_copys.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c
+SOURCES = decode-ls-lR.c lib/buffer/buffer_0.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_close.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get_token.c lib/buffer/buffer_getc.c lib/buffer/buffer_getline.c lib/buffer/buffer_put.c lib/buffer/buffer_puts.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/byte/byte_ccopy.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_zero.c lib/str/str_basename.c lib/str/str_diffn.c lib/str/str_len.c lib/str/str_rchr.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_copyb.c lib/stralloc/stralloc_copys.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c
 HEADERS = lib/buffer.h lib/byte.h lib/str.h lib/stralloc.h
 

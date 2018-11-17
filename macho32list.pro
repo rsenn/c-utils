@@ -40,6 +40,6 @@ INCLUDEPATH += .
 HEADERS = lib/mmap.h lib/open.h
 
 
-SOURCES = lib/mmap/mmap_private.c lib/open/open_read.c lib/socket/init.c macho32list.c
+SOURCES = lib/mmap/mmap_private.c lib/open/open_read.c macho32list.c
 
 DEFINES += HAVE_ERRNO_H=1

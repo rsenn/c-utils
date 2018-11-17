@@ -37,9 +37,9 @@ mingw | mingw32 | mingw64 {
 
 INCLUDEPATH += .
 
-HEADERS = lib/buffer.h lib/byte.h lib/fmt.h lib/mmap.h lib/open.h lib/str.h
+HEADERS = lib/buffer.h lib/byte.h lib/fmt.h lib/mmap.h lib/open.h lib/pe.h lib/str.h
 
-SOURCES = impgen.c lib/buffer/buffer_1.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn.c lib/byte/byte_copy.c lib/fmt/fmt_ulong.c lib/mmap/mmap_read.c lib/mmap/mmap_unmap.c lib/open/open_read.c lib/socket/init.c lib/str/str_len.c
+SOURCES = impgen.c lib/buffer/buffer_1.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn.c lib/byte/byte_copy.c lib/fmt/fmt_ulong.c lib/mmap/mmap_read.c lib/mmap/mmap_unmap.c lib/open/open_read.c lib/pe/pe_get_datadir.c lib/pe/pe_header.c lib/pe/pe_rva2offset.c lib/pe/pe_rva2ptr.c lib/pe/pe_rva2section.c lib/str/str_basename.c lib/str/str_len.c lib/str/str_rchr.c
 
 
 DEFINES += io_seek=lseek64

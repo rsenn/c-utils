@@ -40,6 +40,6 @@ INCLUDEPATH += .
 HEADERS = lib/mmap.h lib/open.h
 
 
-SOURCES = elf64list.c lib/mmap/mmap_private.c lib/open/open_read.c lib/socket/init.c
+SOURCES = elf64list.c lib/mmap/mmap_private.c lib/open/open_read.c
 
 DEFINES += HAVE_ERRNO_H=1
