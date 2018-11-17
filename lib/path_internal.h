@@ -26,9 +26,10 @@
 #if WINDOWS_NATIVE
 #include <windows.h>
 #endif
-#ifdef MAX_PATH
-#define PATH_MAX MAX_PATH
+#ifndef MAX_PATH
+#define MAX_PATH 260
 #endif
+#define PATH_MAX MAX_PATH
 #endif
 
 #define path_issep(c) ((c) == '/' || (c) == '\\')

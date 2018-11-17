@@ -14,14 +14,16 @@
 
 #define _FILE_OFFSET_BITS 64
 
+/*
 #if WINDOWS_NATIVE || WINDOWS_OVERRIDE
 #if USE_WS2_32
+#define _WINSOCKAPI_
 #include <winsock2.h>
 #endif
 #include <windows.h>
 #include <io.h>
 #endif
-
+*/
 #ifdef __cplusplus
 extern "C" {
 #endif
