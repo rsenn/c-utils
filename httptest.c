@@ -99,11 +99,11 @@ main(int argc, char* argv[]) {
           doread = 1;
         }
       }
-
+/*
       if(!doread)
         doread = h.q.in.p < h.q.in.n;
 
-      if(doread) {
+      if(doread) */ {
         while((n = http_read(&h, buf, sizeof(buf))) > 0) {
           write(outfile, buf, n);
           //    write(1, buf, n);

@@ -98,6 +98,7 @@ http_read_header(http* h, http_response* r) {
     } else if(stralloc_startb(&r->data, "Content-Length:", 15)) {
       scan_uint64(&r->data.s[16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
+      putnum("content length", r->content_length);
     } else if(stralloc_starts(&r->data, "Transfer-Encoding:") && stralloc_contains(&r->data, "chunked")) {
       r->chunk_length = 0;
       r->transfer = HTTP_TRANSFER_CHUNKED;
@@ -124,7 +125,8 @@ http_read_internal(http* h, char* buf, size_t len) {
   if((r = h->response) == NULL)
     return len;
   if(r->status == HTTP_RECV_HEADER) {
-    http_read_header(h, r);
+    if(http_read_header(h, r) > 0)
+      r->ptr = 0;
   }
   if(r->status == HTTP_RECV_DATA) {
     switch(r->transfer) {
@@ -160,7 +162,7 @@ http_read_internal(http* h, char* buf, size_t len) {
         break;
       }
       case HTTP_TRANSFER_LENGTH: {
-        if(r->content_length == 0)
+        if(r->ptr == r->content_length)
           r->status = HTTP_STATUS_FINISH;
         break;
       }
@@ -178,11 +180,8 @@ http_read(http* h, char* buf, size_t len) {
     bytes = b->n - b->p;
     if((n = buffer_freshen(b)) <= 0)
       break;
-    /*if(b->n - b->p > bytes) {
-        buffer_puts(buffer_1, "Read ");
-        buffer_putlong(buffer_1, (b->n - b->p) - bytes);
-        buffer_putsflush(buffer_1, " bytes\n");
-      }*/
+    if(b->n - b->p > bytes)
+      putnum("growbuf", (b->n - b->p) - bytes);
     buffer_dump(buffer_1, b);
     if(h->response->status != HTTP_RECV_DATA)
       break;
@@ -192,6 +191,7 @@ http_read(http* h, char* buf, size_t len) {
     if(n >= (ssize_t)len)
       n = (ssize_t)len;
     byte_copy(buf, (size_t)n, b->x + b->p);
+      putnum("skipbuf", n);
     len -= (size_t)n;
     buf += n;
     ret += n;
