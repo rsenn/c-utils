@@ -97,7 +97,8 @@ main(int argc, char* argv[]) {
 
     if(doread) {
       while((n = http_read(&h, buf, sizeof(buf))) > 0) {
-        write(outfile, buf, n);
+          write(outfile, buf, n);
+          write(1, buf, n);
 
         buffer_puts(buffer_2, "Wrote ");
         buffer_putlong(buffer_2, n);
