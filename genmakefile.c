@@ -13,6 +13,10 @@
 #include "lib/strlist.h"
 #include "lib/uint32.h"
 #include "lib/errmsg.h"
+#include "lib/array.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
+#include "lib/dir.h"
 
 #include <ctype.h>
 
@@ -680,8 +684,9 @@ push_lib(const char* name, const char* lib) {
 
 void
 with_lib(const char* lib) {
-  stralloc def;
+  stralloc def, lib64;
   stralloc_init(&def);
+  stralloc_init(&lib64);
   stralloc_copys(&def, "-DHAVE_");
 
   if(str_find(lib, "lib") == str_len(lib))
@@ -693,7 +698,11 @@ with_lib(const char* lib) {
 
   push_var_sa("DEFS", &def);
 
-  push_lib("LIBS", lib);
+  stralloc_copys(&lib64, lib);
+  stralloc_cats(&lib64, "$(L64)");
+  stralloc_nul(&lib64);
+
+  push_lib("LIBS", lib64.s);
 }
 
 /**
@@ -1700,7 +1709,7 @@ set_compiler_type(const char* compiler) {
   push_var("CXX", "c++");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o \"$@\" $<");
-  stralloc_copys(&lib_command, "$(LIB) /out:$@ $^");
+  set_command(&lib_command, "$(LIB) /out:$@", "$^");
   set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o \"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   if(build_type == BUILD_TYPE_DEBUG) {
