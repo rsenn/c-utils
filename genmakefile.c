@@ -2325,7 +2325,7 @@ main(int argc, char* argv[]) {
         target* tgt = hmap_data(t);
 
         if(tgt->recipe == &lib_command)
-          strlist_push(&all->deps, t->key);
+          strlist_push(&all->prereq, t->key);
       }
     }
 

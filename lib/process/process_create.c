@@ -49,9 +49,9 @@ process_create(const char* filename, const char* argv[]) {
   ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
 
   siStartInfo.cb = sizeof(STARTUPINFO);
-  siStartInfo.hStdError = _get_osfhandle(pipes[2][1]);
-  siStartInfo.hStdOutput = _get_osfhandle(pipes[1][1]);
-  siStartInfo.hStdInput = _get_osfhandle(pipes[0][0]);
+  siStartInfo.hStdError = (HANDLE)_get_osfhandle(pipes[2][1]);
+  siStartInfo.hStdOutput = (HANDLE)_get_osfhandle(pipes[1][1]);
+  siStartInfo.hStdInput = (HANDLE)_get_osfhandle(pipes[0][0]);
   siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
   /* Create the child process */

@@ -144,7 +144,7 @@ http_read_internal(http* h, char* buf, size_t len) {
         if(r->chunk_length == 0) {
           size_t i, bytes = in->n - in->p;
           if((i = byte_chr(&in->x[in->p], bytes, '\n')) < bytes) {
-            i = scan_xlong(&in->x[in->p], &r->chunk_length);
+            i = scan_xint64(&in->x[in->p], &r->chunk_length);
             in->p += i;
             if(in->x[in->p] == '\r')
               ++in->p;
