@@ -19,7 +19,7 @@ mmap_filename(void* map, stralloc* sa) {
   static get_mmaped_filename_fn* get_mmaped_filename;
 
   if(get_mmaped_filename == 0) {
-    HANDLE* psapi = LoadLibraryA("psapi.dll");
+    HINSTANCE psapi = LoadLibraryA("psapi.dll");
     if((get_mmaped_filename = (get_mmaped_filename_fn*)GetProcAddress(psapi, "GetMappedFileNameA")) == 0)
       return 0;
   }

@@ -41,9 +41,9 @@ process_create(const char* filename, const char* argv[]) {
   /* Assume failure to start process */
   status = PROCESS_STATUS_ERROR;
 
-  io_pipe(&pipes[0]);
-  io_pipe(&pipes[1]);
-  io_pipe(&pipes[2]);
+  io_pipe(pipes[0]);
+  io_pipe(pipes[1]);
+  io_pipe(pipes[2]);
 
   ZeroMemory(&piProcessInfo, sizeof(PROCESS_INFORMATION));
   ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));

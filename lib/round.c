@@ -1,4 +1,4 @@
-#ifdef __TINYC__
+#if defined(__TINYC__) || defined(__POCC__)
 #define HAVE_ROUND 1
 #endif
 

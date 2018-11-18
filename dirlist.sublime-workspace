@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "MAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PATHSEP\nDEFAULT_PATHSEP\nvoid\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_s\npath_prefix_b\npath_extension\npath_object\npath_wildcard\nextract_build_type\nformat_linklib_lib\nformat_linklib_switch\nformat_linklib_dummy\nscan_main\nhas_main\nextract_includes\nget_includes\nrule_command\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nget_var\nset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\noutput_rule\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\nlib_rule_for_sourcedir\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_compile_rules\ngen_lib_rules\ngen_link_rules\ngen_clean_rule\noutput_all_vars\noutput_all_rules\nusage\nset_machine\nset_make_type\nset_compiler_type\nmain",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 1220,
+				"buffer_size": 0,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -30,14 +30,6 @@
 			"settings":
 			{
 				"buffer_size": 2859,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/http/http_read.c",
-			"settings":
-			{
-				"buffer_size": 5928,
 				"line_ending": "Unix"
 			}
 		},
@@ -61,9 +53,26 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 56004,
+				"buffer_size": 56006,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/D/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Package Control.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 1784,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "{\n\t\"shell_cmd\": \"make\"\n}\n",
+			"settings":
+			{
+				"buffer_size": 25,
+				"line_ending": "Windows",
+				"name": "untitled.sublime-build"
 			}
 		},
 		{
@@ -93,10 +102,10 @@
 			}
 		},
 		{
-			"contents": "Package Control Messages\n========================\n\nOutline\n-------\n\n  Thank you for installing the Outline package.\n  \n  To start, bring up the Command Palette with `Ctrl + Shift + P`, and select `Browse Mode: Outline (Left)` or another preferred layout.\n  \n  Please visit https://github.com/warmdev/SublimeOutline for more details.\n",
+			"contents": "Package Control Messages\n========================\n\nOutline\n-------\n\n  Thank you for installing the Outline package.\n  \n  To start, bring up the Command Palette with `Ctrl + Shift + P`, and select `Browse Mode: Outline (Left)` or another preferred layout.\n  \n  Please visit https://github.com/warmdev/SublimeOutline for more details.\n\n\nNeon Color Scheme\n-----------------\n\n  Neon Color Scheme v2.0.0\n  +++++++++++++++++++++++++\n  \n  Thank you for installing my Neon Color Scheme! I hope you enjoy using it as much\n  as I enjoyed creating it. If you have any questions, concerns, bugs, improvement\n  suggestions, or anything else, feel free to open an issue on Github or send me a\n  tweet and I'll do my best to help you out.\n  \n     @MattDMo\n  \n  https://github.com/MattDMo/Neon-color-scheme\n",
 			"settings":
 			{
-				"buffer_size": 333,
+				"buffer_size": 791,
 				"line_ending": "Windows",
 				"name": "Package Control Messages",
 				"read_only": true,
@@ -163,16 +172,36 @@
 		"selected_items":
 		[
 			[
-				"outlin",
-				"Browse Mode: Outline (Right)"
+				"install",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"editor",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"reposit",
+				"Preferences: Package Control Settings – User"
+			],
+			[
+				"repo",
+				"Package Control: Add Repository"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
 			],
 			[
 				"Package Control: ",
+				"Package Control: Add Repository"
+			],
+			[
+				"instal",
 				"Package Control: Install Package"
 			],
 			[
-				"install",
-				"Package Control: Install Package"
+				"outlin",
+				"Browse Mode: Outline (Right)"
 			],
 			[
 				"repos",
@@ -216,10 +245,6 @@
 			],
 			[
 				"adva",
-				"Package Control: Advanced Install Package"
-			],
-			[
-				"in",
 				"Package Control: Advanced Install Package"
 			],
 			[
@@ -282,6 +307,7 @@
 	],
 	"file_history":
 	[
+		"/C/Users/roman/Desktop/dirlist/lib/http/http_read.c",
 		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil2.c",
 		"/C/Users/roman/Desktop/dirlist/lib/io/io_wantread.c",
@@ -408,8 +434,7 @@
 		"/home/roman/Sources/dirlist/lib/dir/dir_read.c",
 		"/home/roman/Sources/dirlist/lib/dir_internal.h",
 		"/home/roman/Sources/dirlist/lib/dir/dir_close.c",
-		"/home/roman/Sources/dirlist/lib/dir.h",
-		"/home/roman/Sources/dirlist/lib/dir/dir_open.c"
+		"/home/roman/Sources/dirlist/lib/dir.h"
 	],
 	"find":
 	{
@@ -616,7 +641,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1220,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -626,453 +651,13 @@
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\genmakefile.c",
+							"current_file": null,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
-								[
-									398,
-									409
-								],
-								[
-									424,
-									438
-								],
-								[
-									454,
-									468
-								],
-								[
-									484,
-									498
-								],
-								[
-									510,
-									524
-								],
-								[
-									546,
-									557
-								],
-								[
-									572,
-									586
-								],
-								[
-									600,
-									614
-								],
-								[
-									628,
-									642
-								],
-								[
-									657,
-									671
-								],
-								[
-									710,
-									725
-								],
-								[
-									745,
-									760
-								],
-								[
-									1342,
-									1346
-								],
-								[
-									2044,
-									2055
-								],
-								[
-									2352,
-									2365
-								],
-								[
-									2562,
-									2570
-								],
-								[
-									2736,
-									2743
-								],
-								[
-									2907,
-									2915
-								],
-								[
-									3336,
-									3345
-								],
-								[
-									3513,
-									3521
-								],
-								[
-									3536,
-									3544
-								],
-								[
-									3559,
-									3566
-								],
-								[
-									3581,
-									3590
-								],
-								[
-									3841,
-									3854
-								],
-								[
-									4384,
-									4397
-								],
-								[
-									4761,
-									4775
-								],
-								[
-									5028,
-									5039
-								],
-								[
-									5574,
-									5587
-								],
-								[
-									5938,
-									5956
-								],
-								[
-									6188,
-									6206
-								],
-								[
-									6392,
-									6413
-								],
-								[
-									6574,
-									6594
-								],
-								[
-									6709,
-									6718
-								],
-								[
-									7222,
-									7230
-								],
-								[
-									7456,
-									7472
-								],
-								[
-									8447,
-									8459
-								],
-								[
-									8706,
-									8718
-								],
-								[
-									9899,
-									9907
-								],
-								[
-									10421,
-									10432
-								],
-								[
-									10512,
-									10521
-								],
-								[
-									10853,
-									10865
-								],
-								[
-									10946,
-									10957
-								],
-								[
-									11166,
-									11174
-								],
-								[
-									11430,
-									11441
-								],
-								[
-									11785,
-									11796
-								],
-								[
-									11980,
-									11990
-								],
-								[
-									12281,
-									12291
-								],
-								[
-									12686,
-									12697
-								],
-								[
-									12991,
-									12998
-								],
-								[
-									13394,
-									13401
-								],
-								[
-									13577,
-									13585
-								],
-								[
-									13701,
-									13712
-								],
-								[
-									13846,
-									13854
-								],
-								[
-									14063,
-									14071
-								],
-								[
-									14443,
-									14459
-								],
-								[
-									14720,
-									14733
-								],
-								[
-									14951,
-									14970
-								],
-								[
-									16567,
-									16582
-								],
-								[
-									17087,
-									17103
-								],
-								[
-									17924,
-									17935
-								],
-								[
-									18569,
-									18594
-								],
-								[
-									19017,
-									19032
-								],
-								[
-									19389,
-									19409
-								],
-								[
-									19732,
-									19745
-								],
-								[
-									20089,
-									20100
-								],
-								[
-									20253,
-									20272
-								],
-								[
-									21308,
-									21325
-								],
-								[
-									21996,
-									22026
-								],
-								[
-									22460,
-									22480
-								],
-								[
-									22821,
-									22832
-								],
-								[
-									23945,
-									23958
-								],
-								[
-									24223,
-									24239
-								],
-								[
-									24561,
-									24576
-								],
-								[
-									24804,
-									24826
-								],
-								[
-									25408,
-									25421
-								],
-								[
-									26668,
-									26682
-								],
-								[
-									26955,
-									26970
-								],
-								[
-									27320,
-									27337
-								],
-								[
-									27854,
-									27867
-								],
-								[
-									28408,
-									28422
-								],
-								[
-									31330,
-									31344
-								],
-								[
-									32826,
-									32841
-								],
-								[
-									33158,
-									33174
-								],
-								[
-									33323,
-									33328
-								],
-								[
-									35609,
-									35620
-								],
-								[
-									36035,
-									36048
-								],
-								[
-									37107,
-									37124
-								],
-								[
-									48537,
-									48541
-								]
 							],
 							"symlist":
 							[
-								"MAX_CMD_LEN",
-								"DEFAULT_OBJEXT",
-								"DEFAULT_LIBEXT",
-								"DEFAULT_LIBPFX",
-								"DEFAULT_EXEEXT",
-								"MAX_CMD_LEN",
-								"DEFAULT_OBJEXT",
-								"DEFAULT_LIBEXT",
-								"DEFAULT_LIBPFX",
-								"DEFAULT_EXEEXT",
-								"DEFAULT_PATHSEP",
-								"DEFAULT_PATHSEP",
-								"void",
-								"set_command",
-								"strarray_dump",
-								"debug_sa",
-								"debug_s",
-								"debug_sl",
-								"debug_int",
-								"debug_sa",
-								"debug_sl",
-								"debug_s",
-								"debug_int",
-								"path_prefix_s",
-								"path_prefix_b",
-								"path_extension",
-								"path_object",
-								"path_wildcard",
-								"extract_build_type",
-								"format_linklib_lib",
-								"format_linklib_switch",
-								"format_linklib_dummy",
-								"scan_main",
-								"has_main",
-								"extract_includes",
-								"get_includes",
-								"rule_command",
-								"get_rule",
-								"get_rule_sa",
-								"find_rule",
-								"find_rule_sa",
-								"find_rule_b",
-								"add_path",
-								"add_srcpath",
-								"add_path_sa",
-								"new_source",
-								"add_source",
-								"get_sources",
-								"get_var",
-								"set_var",
-								"push_var",
-								"push_var_sa",
-								"push_lib",
-								"with_lib",
-								"get_rules_by_cmd",
-								"dirname_alloc",
-								"populate_sourcedirs",
-								"dump_sourcedirs",
-								"includes_to_libs",
-								"target_ptrs",
-								"target_dep_list_recursive",
-								"target_dep_list",
-								"target_deps_indirect",
-								"deps_indirect",
-								"deps_direct",
-								"print_target_deps_r",
-								"print_target_deps",
-								"remove_indirect_deps_recursive",
-								"remove_indirect_deps",
-								"output_rule",
-								"get_sourcedir",
-								"get_sourcedir_sa",
-								"get_sourcedir_b",
-								"lib_rule_for_sourcedir",
-								"deps_for_libs",
-								"target_add_dep",
-								"target_add_deps",
-								"gen_compile_rules",
-								"gen_lib_rules",
-								"gen_link_rules",
-								"gen_clean_rule",
-								"output_all_vars",
-								"output_all_rules",
-								"usage",
-								"set_machine",
-								"set_make_type",
-								"set_compiler_type",
-								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -1080,13 +665,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 8,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 4,
+			"selected": 9,
 			"sheets":
 			[
 				{
@@ -1116,41 +701,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "lib/http/http_read.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5928,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 520.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
 					"file": "lib/http/http_socket.c",
 					"semi_transient": false,
 					"settings":
@@ -1176,11 +731,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 3,
 					"file": "lib/http/http_sendreq.c",
 					"semi_transient": false,
 					"settings":
@@ -1206,24 +761,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 4,
 					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 56004,
+						"buffer_size": 56006,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								48456,
-								48456
+								46673,
+								46673
 							]
 						],
 						"settings":
@@ -1234,14 +789,71 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 26260.0,
+						"translation.y": 25952.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/D/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Package Control.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1784,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								331,
+								348
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 6,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								17,
+								21
+							]
+						],
+						"settings":
+						{
+							"default_dir": "D:\\PortableApps\\SublimeText3Portable\\App\\SublimeText64\\Data\\Packages\\User",
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
 					"file": "lib/path/path_dirname.c",
 					"semi_transient": false,
 					"settings":
@@ -1267,11 +879,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 8,
 					"file": "lib/path_internal.h",
 					"semi_transient": false,
 					"settings":
@@ -1295,11 +907,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 9,
 					"file": "lib/path/path_basename.c",
 					"semi_transient": false,
 					"settings":
@@ -1325,23 +937,23 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 10,
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 333,
+						"buffer_size": 791,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								333,
-								333
+								791,
+								791
 							]
 						],
 						"settings":
@@ -1355,11 +967,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 11,
 					"semi_transient": false,
 					"settings":
 					{
@@ -1382,7 +994,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 6,
 					"type": "text"
 				}
 			]

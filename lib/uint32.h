@@ -89,7 +89,7 @@ void uint32_pack_big(char* out, uint32 in);
 void uint32_unpack_big(const char* in, uint32* out);
 uint32 uint32_read_big(const char* in);
 
-uint32 uint32_random();
+uint32 uint32_random(void);
 int uint32_seed(const void*, unsigned long n);
 uint32 uint32_prng(uint32, uint32 seed);
 
