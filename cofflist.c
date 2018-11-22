@@ -255,6 +255,8 @@ main(int argc, char** argv) {
                            {"optional-header", 0, &print_opt_header, 'O'},
                            {0}};
 
+  errmsg_iam(argv[0]);
+
   buffer_puts(buffer_1, "Number of arguments: ");
   buffer_putlong(buffer_1, argc);
   buffer_putnlflush(buffer_1);

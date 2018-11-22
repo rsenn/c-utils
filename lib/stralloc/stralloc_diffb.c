@@ -16,6 +16,7 @@ stralloc_diffb(const stralloc* sa, const void* d, unsigned int dlen) {
     compare common lengths
   */
   r = byte_diff(sa->s, len, d);
-  if(r) return r;
+  if(r)
+    return r;
   return (int)sa->len - (int)dlen;
 }

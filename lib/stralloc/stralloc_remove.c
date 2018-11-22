@@ -3,7 +3,8 @@
 
 int
 stralloc_remove(stralloc* sa, size_t pos, size_t n) {
-  if(pos + 1 > sa->len) return -1;
+  if(pos + 1 > sa->len)
+    return -1;
   if(pos + n >= sa->len) {
     n = sa->len - pos;
     sa->len = pos;

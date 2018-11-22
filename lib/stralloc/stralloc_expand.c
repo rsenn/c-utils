@@ -25,7 +25,8 @@ stralloc_expand(stralloc* sa) {
   } while((n = ExpandEnvironmentStrings(s, sa->s, sa->a)) > sa->a);
 
   /* now truncate to effective length */
-  if(n > 0) stralloc_trunc(sa, n - 1);
+  if(n > 0)
+    stralloc_trunc(sa, n - 1);
 
   free(s);
 

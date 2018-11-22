@@ -33,7 +33,7 @@ DEPS += $(wildcard ../lib/path/*.c)
 deps.rsp:
 	$(file >deps.rsp,$(DEPS))
 
-all_tests: unit_test.o unit_test_runner.o unit_test.o test_strlist.o test_path.o | deps.rsp
+all_tests: unit_test.o unit_test_runner.o unit_test.o test_stralloc.o test_strlist.o test_path.o | deps.rsp
 	$(CC) $(CFLAGS) -o $@ $^ @deps.rsp
 
 .PHONY: clean

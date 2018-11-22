@@ -46,10 +46,14 @@ wctou8(char* m, wchar_t w) {
 
 int
 wcu8len(const wchar_t w) {
-  if(!(w & ~0x7f)) return 1;
-  if(!(w & ~0x7ff)) return 2;
-  if(!(w & ~0xffff)) return 3;
-  if(!(w & ~0x1fffff)) return 4;
+  if(!(w & ~0x7f))
+    return 1;
+  if(!(w & ~0x7ff))
+    return 2;
+  if(!(w & ~0xffff))
+    return 3;
+  if(!(w & ~0x1fffff))
+    return 4;
   return -1; /* error */
 }
 
@@ -79,7 +83,8 @@ wcstou8s(char* pu, const wchar_t* pw, size_t count) {
   wchar_t w;
   int len = wcsu8slen(pw);
 
-  if(NULL == pu) return (size_t)len;
+  if(NULL == pu)
+    return (size_t)len;
 
   clen = 0;
   while((w = *pw++)) {
@@ -109,7 +114,8 @@ wcstou8s(char* pu, const wchar_t* pw, size_t count) {
 
 int
 u8len(const char* u, size_t count) {
-  if(0 == count) return 0;
+  if(0 == count)
+    return 0;
 
   if(NULL == u)
     return 0;
@@ -132,7 +138,8 @@ u8towc(wchar_t* w, const char* u, size_t count) {
   int len;
   /* assert */
 
-  if(NULL == w) return -1;
+  if(NULL == w)
+    return -1;
 
   len = u8len(u, 1);
 
@@ -196,7 +203,8 @@ size_t
 u8stowcs(wchar_t* pw, const char* pu, size_t count) {
   size_t clen = 0;
 
-  if(NULL == pw) return u8swcslen(pu);
+  if(NULL == pw)
+    return u8swcslen(pu);
 
   while(*pu && clen < count) {
     int ulen = u8towc(&pw[clen], pu, 1);
@@ -207,6 +215,7 @@ u8stowcs(wchar_t* pw, const char* pu, size_t count) {
       pu += ulen;
     }
   }
-  if('\0' == *pu && clen < count) pw[clen++] = L'\0';
+  if('\0' == *pu && clen < count)
+    pw[clen++] = L'\0';
   return clen;
 }

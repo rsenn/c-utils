@@ -416,7 +416,7 @@ rule_command(target* rule, stralloc* out) {
   stralloc prereq;
   stralloc_init(&prereq);
   strlist_join(&rule->prereq, &prereq, ' ');
-  stralloc_replace(&prereq, from, pathsep_args);
+  stralloc_replacec(&prereq, from, pathsep_args);
 
   for(i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
@@ -587,7 +587,7 @@ add_source(const char* filename, strarray* sources) {
     stralloc sa;
     stralloc_init(&sa);
     stralloc_copys(&sa, filename);
-    //    stralloc_replace(&sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+    //    stralloc_replacec(&sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
     strarray_push_sa(sources, &sa);
 
@@ -785,7 +785,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
       extract_includes(x, n, &l, 0);
 
-      stralloc_replace(&l.sa, pathsep_make == '\\' ? '/' : '\\', pathsep_make);
+      stralloc_replacec(&l.sa, pathsep_make == '\\' ? '/' : '\\', pathsep_make);
 
       strlist_foreach_s(&l, s) {
         dir.len = dlen;
@@ -1112,7 +1112,7 @@ output_rule(buffer* b, target* rule) {
     stralloc prereq;
     stralloc_init(&prereq);
     stralloc_copy(&prereq, &rule->prereq.sa);
-    stralloc_replace(&prereq, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+    stralloc_replacec(&prereq, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
     buffer_putspace(b);
     buffer_putsa(b, &prereq);
@@ -2073,7 +2073,6 @@ set_compiler_type(const char* compiler) {
   with_lib("bz2");
   with_lib("lzma");
 
- 
   return 1;
 }
 static stralloc tmp;
@@ -2200,7 +2199,7 @@ main(int argc, char* argv[]) {
     return 2;
   }
 
-  stralloc_replace(&outdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+  stralloc_replacec(&outdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   path_absolute_sa(&outdir.sa);
 
   stralloc_nul(&outdir.sa);
@@ -2216,7 +2215,7 @@ main(int argc, char* argv[]) {
     strlist_push(&builddir, build_types[build_type]);
   }
 
-  stralloc_replace(&builddir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+  stralloc_replacec(&builddir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   stralloc_nul(&builddir.sa);
 
   path_relative(builddir.sa.s, outdir.sa.s, &workdir.sa);
@@ -2232,8 +2231,8 @@ main(int argc, char* argv[]) {
   // debug_sa("workdir", &workdir.sa);
 
   if(outdir.sa.len) {
-    stralloc_replace(&thisdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
-    stralloc_replace(&outdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+    stralloc_replacec(&thisdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+    stralloc_replacec(&outdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
 
     // debug_sa("thisdir", &thisdir.sa);
     // debug_sa("outdir", &outdir.sa);
@@ -2253,7 +2252,7 @@ main(int argc, char* argv[]) {
 
   path_relative(builddir.sa.s, outdir.sa.s, &tmp);
 
-  stralloc_replace(&workdir.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+  stralloc_replacec(&workdir.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
   /*
     if(tmp.len) {
       stralloc_catc(&tmp, pathsep_make);
@@ -2270,7 +2269,7 @@ main(int argc, char* argv[]) {
     stralloc arg;
     stralloc_init(&arg);
     stralloc_copys(&arg, argv[optind]);
-    stralloc_replace(&arg, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+    stralloc_replacec(&arg, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     stralloc_nul(&arg);
 
 #if WINDOWS_NATIVE && !MINGW

@@ -6,7 +6,8 @@ stralloc_fmt_pred(
   size_t i;
   stralloc_zero(out);
   for(i = 0; i < in_len; ++i) {
-    if(!stralloc_readyplus(out, 10)) return 0;
+    if(!stralloc_readyplus(out, 10))
+      return 0;
 
     if(pred(in[i]))
       out->len += fmt_function(&out->s[out->len], in[i]);

@@ -8,7 +8,8 @@ stralloc_remove_all(stralloc* sa, register const char* delchars, register unsign
   register char* t;
 
   t = x = sa->s;
-  if(!x) return; /* safety */
+  if(!x)
+    return; /* safety */
   i = sa->len;
   while(i) {
     if(byte_chr(delchars, delcharslen, *x) == delcharslen) { /* good char found */
