@@ -1,10 +1,10 @@
 #include "../windoze.h"
-#include "../stralloc.h"
-
-#include <stdlib.h>
 #if WINDOWS
 #include <windows.h>
+#else
+#include <stdlib.h>
 #endif
+#include "../stralloc.h"
 
 int
 stralloc_expand(stralloc* sa) {

@@ -17,10 +17,6 @@
 #include <write12.h>
 #endif
 
-#if WINDOWS_NATIVE
-extern HANDLE io_comport;
-#endif
-
 #if 0
 static void handleevent(fd_t fd, int readable, int writable, int error) {
   io_entry* e = array_get(io_getfds(), sizeof(io_entry), fd);

@@ -48,7 +48,6 @@
 
 #if WINDOWS_NATIVE
 #include <stdio.h>
-HANDLE io_comport;
 #endif
 
 #include <fcntl.h>

@@ -30,7 +30,10 @@
 #ifndef MAX_PATH
 #define MAX_PATH 260
 #endif
+
+#ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
+#endif
 
 #if WINDOWS_NATIVE
 #define PATHSEP_S_MIXED "\\"

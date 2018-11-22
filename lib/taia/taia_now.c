@@ -1,14 +1,16 @@
 #include "../windoze.h"
 
-#include "../taia.h"
-#include "../tai.h"
-#include "../uint64.h"
-#include <sys/types.h>
 #if WINDOWS
 #include <windows.h>
 #else
+#include <sys/types.h>
 #include <sys/time.h>
 #endif
+
+
+#include "../taia.h"
+#include "../tai.h"
+#include "../uint64.h"
 
 void
 taia_now(struct taia* t) {

@@ -1,5 +1,6 @@
 #include "../stralloc.h"
 #include "../byte.h"
+#include "../str.h"
 
 int
 stralloc_replaces(stralloc* sa, const char* from, const char* to) {

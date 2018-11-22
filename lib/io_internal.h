@@ -26,8 +26,8 @@ extern void* io_getfds();
 #endif
 
 #if WINDOWS
-# include <windows.h>
 # if WINDOWS_NATIVE
+# include <windows.h>
 #  if !defined(__LCC__) && !defined(__MINGW32__)
 #   define read _read
 #   define write _write
@@ -40,7 +40,7 @@ extern void* io_getfds();
 # endif
 //#define lseek lseek64
 # define llseek lseek64
-my_extern HANDLE io_comport;
+my_extern intptr_t io_comport;
 
 # elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
 //# define HAVE_EPOLL 1

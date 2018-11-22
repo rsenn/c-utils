@@ -1,7 +1,6 @@
-#define NO_UINT64_MACROS
 #include "../uint64.h"
-#include "../uint32.h"
 
+#undef uint64_unpack
 void
 uint64_unpack(const char* in, uint64* out) {
   *out = uint64_read(in);
