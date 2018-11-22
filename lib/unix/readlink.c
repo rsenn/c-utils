@@ -1,7 +1,7 @@
-#include "../typedefs.h"
 #include "../windoze.h"
+#include "../typedefs.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include "../ioctlcmd.h"
 #include "../utf8.h"
 #include "../stralloc.h"

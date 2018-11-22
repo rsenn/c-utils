@@ -1,7 +1,6 @@
 #define USE_WS2_32 1
 /*#if defined(_WIN32) || defined(_WIN64)
 #define _CYGWIN_IF_H_
-#include <mswsock.h>
 #define _WINSOCKAPI_
 #define __INSIDE_CYGWIN_NET__ 1
 #endif*/

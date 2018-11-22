@@ -153,7 +153,7 @@ debug_sl(const char* name, const strlist* l) {
     else
       stralloc_catb(&tmp, x, n);
   }
-  debug_sa(name, &tmp);
+  // debug_sa(name, &tmp);
   stralloc_free(&tmp);
 }
 
@@ -764,7 +764,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
       path_dirname(*srcfile, &dir);
 
-      debug_sa("path_dirname(*srcfile)", &dir);
+      // debug_sa("path_dirname(*srcfile)", &dir);
 
       if((srcdir = hmap_get(sourcedirs, dir.s, dir.len + 1))) {
         slist_add(&srcdir->sources, &file->link);
@@ -1192,7 +1192,7 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
   stralloc_cats(&sa, libext);
 
-  debug_sa("lib_rule_for_sourcedir", &sa);
+  // debug_sa("lib_rule_for_sourcedir", &sa);
 
   if((rule = get_rule_sa(&sa))) {
     sourcefile* pfile;
@@ -1239,8 +1239,8 @@ deps_for_libs(HMAP_DB* rules) {
 
       includes_to_libs(&srcdir->includes, &libs);
 
-      debug_s("library", lib->name);
-      debug_sl("includes", &srcdir->includes);
+      // debug_s("library", lib->name);
+      // debug_sl("includes", &srcdir->includes);
 
       strlist_removes(&libs, lib->name);
       // debug_sl("deps", &libs);
@@ -1346,8 +1346,8 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     const char *s, *base = path_basename(t->key);
     size_t n;
 
-    debug_s("srcdir", t->key);
-    debug_s("base", base);
+    // debug_s("srcdir", t->key);
+    // debug_s("base", base);
 
     if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
       continue;
@@ -1443,7 +1443,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
                 strlist_zero(&deps);
                 target_dep_list(&deps, link);
 
-                debug_sa("final deps", &deps);
+                //debug_sa("final deps", &deps);
         */
 
         /*
@@ -1453,7 +1453,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
         deps_direct(&deps, link);
 
         strlist_sub(&deps, &indir);
-             debug_sa("direct deps", &deps);
+             //debug_sa("direct deps", &deps);
 
         array_trunc(&link->deps);
 
@@ -2018,6 +2018,8 @@ set_compiler_type(const char* compiler) {
       push_var("CFLAGS", "-o");
     }
     stralloc_copys(&lib_command, "$(LIB) -c $@ $^");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
+    set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o\"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
     set_var("CC", "cc");
@@ -2030,7 +2032,7 @@ set_compiler_type(const char* compiler) {
       set_var("MACHINE", "AMD64");
       set_var("TARGET", "amd64");
       set_var("L64", "64");
-      //libext = "64.lib";
+      // libext = "64.lib";
       push_var("DEFS", "-D_M_AMD64");
     } else if(mach.bits == _32) {
       set_var("MACHINE", "X86");
@@ -2061,11 +2063,17 @@ set_compiler_type(const char* compiler) {
   }
 
   push_lib("EXTRA_LIBS", "advapi32");
+
+  if(str_start(compiler, "dmc"))
   push_lib("EXTRA_LIBS", "wsock32");
+  else
+  push_lib("EXTRA_LIBS", "ws2_32");
+
   with_lib("zlib");
   with_lib("bz2");
   with_lib("lzma");
 
+ 
   return 1;
 }
 static stralloc tmp;
@@ -2218,17 +2226,17 @@ main(int argc, char* argv[]) {
   stralloc_nul(&builddir.sa);
   stralloc_nul(&workdir.sa);
 
-  debug_sa("builddir", &builddir.sa);
-  debug_sa("outdir", &outdir.sa);
-  debug_sa("thisdir", &thisdir.sa);
-  debug_sa("workdir", &workdir.sa);
+  // debug_sa("builddir", &builddir.sa);
+  // debug_sa("outdir", &outdir.sa);
+  // debug_sa("thisdir", &thisdir.sa);
+  // debug_sa("workdir", &workdir.sa);
 
   if(outdir.sa.len) {
     stralloc_replace(&thisdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     stralloc_replace(&outdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
 
-    debug_sa("thisdir", &thisdir.sa);
-    debug_sa("outdir", &outdir.sa);
+    // debug_sa("thisdir", &thisdir.sa);
+    // debug_sa("outdir", &outdir.sa);
 
     path_absolute_sa(&outdir.sa);
     stralloc_zero(&tmp);
@@ -2236,12 +2244,12 @@ main(int argc, char* argv[]) {
 
     // if(tmp.len) {
     stralloc_copy(&srcdir, &tmp);
-    debug_sa("srcdir", &srcdir);
+    // debug_sa("srcdir", &srcdir);
     //}
     stralloc_zero(&tmp);
   }
 
-  debug_sa("srcdir", &srcdir);
+  // debug_sa("srcdir", &srcdir);
 
   path_relative(builddir.sa.s, outdir.sa.s, &tmp);
 
@@ -2253,7 +2261,7 @@ main(int argc, char* argv[]) {
     }
     stralloc_free(&tmp);
 
-    debug_sa("builddir", &builddir.sa);
+    //debug_sa("builddir", &builddir.sa);
   */
   strarray_init(&args);
   strarray_init(&srcs);
@@ -2317,7 +2325,9 @@ main(int argc, char* argv[]) {
     if(cmd_objs)
       gen_compile_rules(rules, &srcs);
 
+#ifdef DEBUG_OUTPUT
     dump_sourcedirs(buffer_2, sourcedirs);
+#endif
     if(cmd_libs) {
       gen_lib_rules(rules, sourcedirs);
 

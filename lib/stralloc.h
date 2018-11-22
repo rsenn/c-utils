@@ -249,14 +249,15 @@ int stralloc_catwcs(stralloc* sa, const wchar_t* buf);
 
 
 int stralloc_remove(stralloc*, size_t pos, size_t n);
-void stralloc_replace(stralloc*, char before, char after);
+void stralloc_replacec(stralloc*, char before, char after);
 int stralloc_removesuffixs(stralloc*, const char* suffix);
 int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
+
+int stralloc_contains(const stralloc* sa, const char* what);
+int stralloc_replaces(stralloc*, const char* from, const char* to);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-int stralloc_contains(const stralloc* sa, const char* what);

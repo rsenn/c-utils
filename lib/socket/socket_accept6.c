@@ -5,10 +5,6 @@
 #include "../uint64.h"
 #include "../byte.h"
 
-#if WINDOWS_NATIVE
-#include <mswsock.h>
-#endif
-
 int
 socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
 #ifdef LIBC_HAS_IP6

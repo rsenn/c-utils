@@ -10,10 +10,6 @@
 #include "../uint64.h"
 #include "../byte.h"
 
-#if WINDOWS_NATIVE
-#include <mswsock.h>
-#endif
-
 int
 socket_accept4(int s, char* ip, uint16* port) {
   struct sockaddr_in si;

@@ -7,10 +7,6 @@
 #include "../socket_internal.h"
 #include "../io_internal.h"
 
-#if WINDOWS_NATIVE
-#include <mswsock.h>
-#endif
-
 int
 socket_listen(int s, unsigned int backlog) {
 #if WINDOWS_NATIVE && !defined(USE_SELECT)

@@ -19,6 +19,7 @@
 #ifdef __aarch64__
 #include <asm/unistd.h>
 #endif
+#include "../uint8.h"
 
 #if defined(HAVE_BSDSENDFILE)
 #define SENDFILE 1
@@ -163,7 +164,6 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 //#undef closesocket
 //#include <winsock2.h>
 //#include <windows.h>
-//#include <mswsock.h>
 
 #ifndef TF_USE_KERNEL_APC
 #define TF_USE_KERNEL_APC 0x20
