@@ -14,6 +14,7 @@ all: all_tests
 DEPS := $(wildcard ../lib/byte/*.c)
 DEPS += $(wildcard ../lib/str/*.c)
 DEPS += $(wildcard ../lib/case/*.c)
+DEPS += $(wildcard ../lib/errmsg/*.c)
 DEPS += $(wildcard ../lib/fmt/*.c)
 DEPS += $(wildcard ../lib/scan/*.c)
 DEPS += $(wildcard ../lib/open/*.c)

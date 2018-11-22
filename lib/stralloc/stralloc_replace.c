@@ -1,8 +1,9 @@
 #include "../stralloc.h"
 #include "../byte.h"
+#include <assert.h>
 
 int
-stralloc_replaceb(stralloc* sa, size_t pos, size_t len, const char* to, size_t tolen) {
+stralloc_replace(stralloc* sa, size_t pos, size_t len, const char* to, size_t tolen) {
   char* x;
   size_t n;
 

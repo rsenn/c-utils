@@ -255,7 +255,7 @@ int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
 
 int stralloc_contains(const stralloc* sa, const char* what);
 int stralloc_replaces(stralloc*, const char* from, const char* to);
-int stralloc_replaceb(stralloc*, size_t pos, size_t len, const char* to, size_t tolen);
+int stralloc_replace(stralloc*, size_t pos, size_t len, const char* to, size_t tolen);
 
 #ifdef __cplusplus
 }
