@@ -50,12 +50,12 @@ int byte_equal_notimingattack(const void* a, size_t len,const void* b) __pure__;
 
 void byte_fill(void *out, size_t len, int c);
 
-int byte_case_diff(const void *x1, unsigned int len, const void *x2);
-unsigned int byte_case_equal(const void *s, unsigned int len, const void *t);
-unsigned int byte_count(const void *s, unsigned int n, char c);
-unsigned int byte_equal(const void *s, unsigned int n, const void *t);
-void byte_lower(void *s, unsigned int len);
-void byte_upper(void* s, unsigned int len);
+int byte_case_diff(const void *x1, size_t len, const void *x2);
+size_t byte_case_equal(const void *s, size_t len, const void *t);
+size_t byte_count(const void *s, size_t n, char c);
+size_t byte_equal(const void *s, size_t n, const void *t);
+void byte_lower(void *s, size_t len);
+void byte_upper(void* s, size_t len);
 
 size_t byte_findb(const void* haystack, size_t hlen, const void* what, size_t wlen);
 size_t byte_finds(const void* haystack, size_t hlen, const char* what);

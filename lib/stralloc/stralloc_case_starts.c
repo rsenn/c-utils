@@ -2,7 +2,7 @@
 #include "../str.h"
 #include "../stralloc.h"
 
-unsigned int
+size_t
 stralloc_case_starts(const stralloc* sa, const char* prefix) {
   unsigned int prefix_len;
   prefix_len = str_len(prefix);

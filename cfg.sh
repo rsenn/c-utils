@@ -1,15 +1,14 @@
 cfg() {
   : ${build:=`gcc -dumpmachine`}
-  [ -n "$build" ] && build=${build//-pc-/-}
 
   if [ -z "$host" ]; then
     host=$build
-    case "$host" in
-      x86_64-w64-mingw32) host="$host" builddir=build/mingw64 prefix=/mingw64 ;;
-      i686-w64-mingw32) host="$host" builddir=build/mingw32 prefix=/mingw32 ;;
-      x86_64-pc-*) host="$host" builddir=build/${host#*-pc-}64 prefix=/usr ;;
-      i686-pc-*) host="$host" builddir=build/${host#*-pc-}32 prefix=/usr ;;
-    esac
+#    case "$host" in
+#      x86_64-w64-mingw32) host="$host" builddir=build/mingw64 prefix=/mingw64 ;;
+#      i686-w64-mingw32) host="$host" builddir=build/mingw32 prefix=/mingw32 ;;
+#      x86_64-pc-*) host="$host" builddir=build/${host#*-pc-}64 prefix=/usr ;;
+#      i686-pc-*) host="$host" builddir=build/${host#*-pc-}32 prefix=/usr ;;
+#    esac
   fi
   : ${prefix:=/usr}
   : ${libdir:=$prefix/lib}
@@ -96,7 +95,6 @@ cfg-diet() {
 cfg-musl() {
  (build=$(${CC:-gcc} -dumpmachine)
   host=${build/-gnu/-musl}
-  host=${host/-pc-/-}
   builddir=build/$host
   prefix=/usr
   includedir=/usr/include/$host

@@ -22,6 +22,7 @@
 #include "windoze.h"
 #include "socket.h"
 
+
 #if !WINDOWS_NATIVE && !WINDOWS_OVERRIDE
 # include <sys/param.h>
 #  if !WINDOWS || !(defined(_WINSOCKAPI_) || defined(_WINSOCK2API_))
@@ -31,6 +32,11 @@
 #  endif
 # include <unistd.h>
 #endif
+
+#if WINDOWS && WINDOWS_OVERRIDE
+#define WINDOWS_NATIVE 1
+#endif
+
 
 #ifdef HAVE_ERRNO_H
 #include <errno.h>

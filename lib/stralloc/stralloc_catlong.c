@@ -1,7 +1,7 @@
 #include "../stralloc.h"
 #undef stralloc_catlong
 
-unsigned int
+size_t
 stralloc_catlong(stralloc* sa, long l) {
   return stralloc_catlong0(sa, l, 0);
 }

@@ -1,7 +1,7 @@
 #include "../byte.h"
 
 int
-byte_case_diff(const void* x1, unsigned int len, const void* x2) {
+byte_case_diff(const void* x1, size_t len, const void* x2) {
   const unsigned char* s;
   const unsigned char* t;
   int x;

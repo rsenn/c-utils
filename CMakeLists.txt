@@ -16,9 +16,9 @@ set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAM
 set(BUILD_SHARED_LIBS FALSE)
 
 if(NOT ENABLE_SHARED)
- set(BUILD_SHARED_LIBS FALSE)
+  set(BUILD_SHARED_LIBS FALSE)
 else(NOT ENABLE_SHARED)
- set(BUILD_SHARED_LIBS TRUE)
+  set(BUILD_SHARED_LIBS TRUE)
 endif(NOT ENABLE_SHARED)
 
 include(FindPkgConfig)
@@ -29,68 +29,79 @@ include(${CMAKE_SOURCE_DIR}/CheckInline.cmake)
 
 set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
 foreach(CompilerFlag ${CompilerFlags})
- string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
- set(${CompilerFlag} "${${CompilerFlag}}" CACHE STRING "Compiler flags ${CompilerFlag}")
- message("${CompilerFlag}: ${${CompilerFlag}}")
+  unset(FLAG)
+  string(REPLACE "/MD" "/MT" FLAG "${${CompilerFlag}}")
+  if("${CompilerFlag}" STREQUAL "CMAKE_C_FLAGS_DEBUG")
+    set(FLAG "${FLAG} -DDEBUG=1")
+  endif()
+  unset(${CompilerFlag} CACHE)
+    set(${CompilerFlag} "${FLAG}" CACHE STRING "Compiler flags ${CompilerFlag}")
+  message("${CompilerFlag}: ${${CompilerFlag}}")
 endforeach()
 
 
 if(LIBLZMA_FOUND)
- link_libraries(${LIBLZMA_LIBRARIES})
- include_directories(${LIBLZMA_INCLUDE_DIRS})
- add_definitions(-DHAVE_LIBLZMA=1
- -DLZMA_API_STATIC=1
- )
-else()
- add_definitions(-DHAVE_LIBLZMA=0)
-endif()
+  link_libraries(${LIBLZMA_LIBRARIES})
+  include_directories(${LIBLZMA_INCLUDE_DIRS})
+  add_definitions(-DHAVE_LIBLZMA=1
+  -DLZMA_API_STATIC=1
+  )
+else(LIBLZMA_FOUND)
+  add_definitions(-DHAVE_LIBLZMA=0)
+endif(LIBLZMA_FOUND)
 
 if(ZLIB_FOUND)
- link_libraries(${ZLIB_LIBRARIES})
- include_directories(${ZLIB_INCLUDE_DIRS})
- add_definitions(-DHAVE_ZLIB=1 #-DZLIB_DLL=1
- )
-else()
- add_definitions(-DHAVE_ZLIB=0)
-endif()
- link_libraries(${BZIP2_LIBRARIES})
- include_directories(${BZIP2_INCLUDE_DIR})
+  link_libraries(${ZLIB_LIBRARIES})
+  include_directories(${ZLIB_INCLUDE_DIRS})
+  add_definitions(-DHAVE_ZLIB=1)
+else(ZLIB_FOUND)
+  add_definitions(-DHAVE_ZLIB=0)
+endif(ZLIB_FOUND)
+
+link_libraries(${BZIP2_LIBRARIES})
+include_directories(${BZIP2_INCLUDE_DIR})
 pkg_search_module(LIBBZ2 libbz2 bzip2)
 
 if(LIBBZ2_FOUND OR BZIP2_FOUND)
- add_definitions(-DHAVE_LIBBZ2=1)
-else()
- add_definitions(-DHAVE_LIBBZ2=0)
-endif()
+  add_definitions(-DHAVE_LIBBZ2=1)
+else(LIBBZ2_FOUND OR BZIP2_FOUND)
+  add_definitions(-DHAVE_LIBBZ2=0)
+endif(LIBBZ2_FOUND OR BZIP2_FOUND)
 
 link_libraries(
- ${ZLIB_LIBRARY_RELEASE}
- ${BZIP2_LIBRARY_RELEASE}
- ${LIBLZMA_LIBRARY}
- )
+  ${ZLIB_LIBRARY_RELEASE}
+  ${BZIP2_LIBRARY_RELEASE}
+  ${LIBLZMA_LIBRARY}
+  )
 add_definitions(-Dinline=__inline)
 
 option(USE_SELECT "Use select() syscall" OFF)
 
+if(WIN32 OR WIN64 OR MSVC)
+  set(LIBMSWSOCK wsock32)
+endif()
+
 if(USE_SELECT)
-  add_definitions(-DUSE_SELECT=1)
+   add_definitions(-DUSE_SELECT=1)
 endif(USE_SELECT)
 
 set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hash_map hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
- file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
- file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
- if(NOT MODSOURCES)
- file(GLOB MODSOURCES lib/${ARCHIVE}_*.c)
- endif()
- add_library("${ARCHIVE}" ${MODSOURCES} ${MODHEADERS})
- set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
+  file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
+  file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
+  if(NOT MODSOURCES)
+  file(GLOB MODSOURCES lib/${ARCHIVE}_*.c)
+  endif()
+  add_library("${ARCHIVE}" ${MODSOURCES} ${MODHEADERS})
+  set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
 endforeach(ARCHIVE)
 
 foreach(NETLIB dns http io ndelay socket)
-  target_link_libraries(${NETLIB} ${LIBMSWSOCK})
+   target_link_libraries(${NETLIB} ${LIBMSWSOCK})
 endforeach()
+
+
 target_link_libraries(unix buffer ndelay)
 target_link_libraries(array byte str)
 target_link_libraries(binfmt mmap byte)
@@ -131,17 +142,17 @@ target_link_libraries(ndelay socket)
 set(COMMON_LIBS unix strlist array scan str byte mmap open fmt )
 file(GLOB LIBHEADERS lib/*.h)
 function(add_program PROG)
- unset(INCLUDES)
- foreach(DEP ${ARGN})
- list(FIND LIBSUBDIRS "${DEP}" I)
- if(I GREATER -1)
- list(APPEND INCLUDES "lib/${DEP}.h")
- endif(I GREATER -1)
- endforeach(DEP ${ARGN})
- #message("Program '${PROG}' dependencies: ${INCLUDES}")
- add_executable(${PROG} ${PROG}.c ${INCLUDES})
- target_link_libraries(${PROG} ${ARGN})
- install(TARGETS ${PROG} DESTINATION bin)
+  unset(INCLUDES)
+  foreach(DEP ${ARGN})
+  list(FIND LIBSUBDIRS "${DEP}" I)
+  if(I GREATER -1)
+  list(APPEND INCLUDES "lib/${DEP}.h")
+  endif(I GREATER -1)
+  endforeach(DEP ${ARGN})
+  #message("Program '${PROG}' dependencies: ${INCLUDES}")
+  add_executable(${PROG} ${PROG}.c ${INCLUDES})
+  target_link_libraries(${PROG} ${ARGN})
+  install(TARGETS ${PROG} DESTINATION bin)
 endfunction(add_program PROG)
 
 

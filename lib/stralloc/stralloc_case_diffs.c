@@ -4,7 +4,7 @@
 
 int
 stralloc_case_diffs(const stralloc* sa, const char* s) {
-  unsigned int len;
+  size_t len;
   unsigned int s_len;
   int r;
 

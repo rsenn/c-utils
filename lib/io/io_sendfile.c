@@ -1,10 +1,12 @@
 #define USE_WS2_32 1
+#define WINDOWS_OVERRIDE 1
 #include "../windoze.h"
 #include "../socket_internal.h"
 
-#if WINDOWS_NATIVE
+#if WINDOWS
 #include <mswsock.h>
 #endif
+
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
 
 #define _LARGEFILE64_SOURCE

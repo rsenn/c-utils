@@ -1,7 +1,7 @@
 #include "../byte.h"
 
 void
-byte_lower(void* s, unsigned int len) {
+byte_lower(void* s, size_t len) {
   unsigned char c;
   unsigned char* x;
   x = s;

@@ -1,7 +1,7 @@
 #include "../byte.h"
 
-unsigned int
-byte_case_start(const void* x1, unsigned int len, const void* x2) {
+size_t
+byte_case_start(const void* x1, size_t len, const void* x2) {
   const unsigned char* s;
   const unsigned char* t;
   int x;

@@ -4,8 +4,8 @@
   return index to first occurance of data,
   otherwise return sa->len
 */
-unsigned int
-stralloc_findb(const stralloc* sa, const void* what, unsigned int len) {
+size_t
+stralloc_findb(const stralloc* sa, const void* what, size_t len) {
   unsigned int i;
   unsigned int sa_len;
   unsigned int last;

@@ -1,7 +1,7 @@
 #include "../byte.h"
 
-unsigned int
-byte_count(const void* s, unsigned int n, char c) {
+size_t
+byte_count(const void* s, size_t n, char c) {
   const unsigned char* t;
   unsigned int count;
   unsigned char ch;
