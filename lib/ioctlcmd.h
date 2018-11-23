@@ -3,7 +3,7 @@
 
 #include "windoze.h"
 
-#if !WINDOWS
+#if !WINDOWS_NATIVE
 typedef unsigned char UCHAR;
 typedef unsigned char BYTE;
 typedef char TCHAR;

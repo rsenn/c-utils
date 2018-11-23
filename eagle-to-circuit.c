@@ -1,15 +1,4 @@
-#include <assert.h>
-#include <ctype.h>
-#include <float.h>
-#include <limits.h>
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
-#include <libgen.h>
-#endif
-
-#include "lib/array.h"
+#include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/cb.h"
@@ -23,6 +12,18 @@
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/xml.h"
+#include "lib/array.h"
+
+#include <assert.h>
+#include <ctype.h>
+#include <float.h>
+#include <limits.h>
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+#if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
+#include <libgen.h>
+#endif
 
 #ifdef _MSC_VER
 #define alloca _alloca

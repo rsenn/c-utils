@@ -1,12 +1,12 @@
+#include "../windoze.h"
 #include "../dir_internal.h"
+#include <stdlib.h>
 
 #if USE_READDIR
 #include <dirent.h>
 #else
 #include <windows.h>
 #endif
-
-#include <stdlib.h>
 
 void
 dir_close(struct dir_s* d) {

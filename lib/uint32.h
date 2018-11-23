@@ -40,7 +40,10 @@ typedef int32_t int32;
 
 #else
 typedef uint32_t uint32;
+
+#if !(defined(_WINSOCK2API_) && defined(__LCC__))
 typedef int32_t int32;
+#endif
 #endif
 
 #if !defined(NO_UINT32_MACROS)
@@ -89,7 +92,7 @@ void uint32_pack_big(char* out, uint32 in);
 void uint32_unpack_big(const char* in, uint32* out);
 uint32 uint32_read_big(const char* in);
 
-uint32 uint32_random();
+uint32 uint32_random(void);
 int uint32_seed(const void*, unsigned long n);
 uint32 uint32_prng(uint32, uint32 seed);
 
@@ -98,10 +101,6 @@ uint32 uint32_prng(uint32, uint32 seed);
 #define uint32_rol(v,c)      (((uint32)(v) << (c)) | ((uint32)(v) >> (32 - (c))))
 #define uint32_ror_safe(v,c) (((uint32)(v) >> uint32rc(c)) | ((uint32)(v) << (32 - uint32rc(c))))
 #define uint32_rol_safe(v,c) (((uint32)(v) << uint32rc(c)) | ((uint32)(v) >> (32 - uint32rc(c))))
-
-uint32 uint32_prng(uint32, uint32 seed);
-uint32 uint32_random(void);
-int    uint32_seed(const void*, unsigned long n);
 
 #ifdef __cplusplus
 }

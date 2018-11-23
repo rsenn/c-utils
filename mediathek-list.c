@@ -7,11 +7,14 @@
 #include "lib/unix.h"
 #include "lib/http.h"
 #include "lib/io_internal.h"
+#include "lib/iarray.h"
 #include "lib/scan.h"
 #include "lib/slist.h"
 #include "lib/str.h"
+#include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
+#include "lib/windoze.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -22,6 +25,7 @@
 
 #if WINDOWS_NATIVE
 #include <io.h>
+#include <stdio.h>
 #else
 #include <unistd.h>
 #endif

@@ -9,7 +9,9 @@
 #include "lib/json.h"
 #include "lib/open.h"
 #include "lib/io_internal.h"
+#include "lib/iarray.h"
 #include "lib/str.h"
+#include "lib/scan.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -33,13 +35,13 @@ put_str_escaped(buffer* b, const char* str) {
 }
 
 int
-main(int argc, char* argv[1]) {
+main(int argc, char* argv[]) {
   int fd;
   jsonval* doc;
   stralloc tmp;
   stralloc_init(&tmp);
 
-  fd = open_read("../dirlist/test.json");
+  fd = open_read(argc > 1 ? argv[1] : "../dirlist/test.json");
   //size_t sz;
   //char* map = mmap_private( argc > 1 ? argv[1] : "../dirlist/test.json", &sz);;
 

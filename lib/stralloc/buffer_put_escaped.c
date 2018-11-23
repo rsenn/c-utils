@@ -6,8 +6,10 @@
 
 static int
 escaped_pred(int c) {
-  if(c == '\'' || c == '"' || c == '$' || c < 0x20) return 1;
-  if(isalpha(c) || isdigit(c) || ispunct(c) || c == ' ') return 0;
+  if(c == '\'' || c == '"' || c == '$' || c < 0x20)
+    return 1;
+  if(isalpha(c) || isdigit(c) || ispunct(c) || c == ' ')
+    return 0;
   return 1;
 }
 

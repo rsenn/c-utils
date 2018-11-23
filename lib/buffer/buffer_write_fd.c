@@ -19,7 +19,7 @@ buffer_write_fd(buffer* b, fd_t fd) {
   b->x = malloc(BUFFER_OUTSIZE);
 
   if(b->x == NULL) return -1;
-  b->op = (void*)write;
+  b->op = (buffer_op_proto*)write;
   b->deinit = buffer_free;
   return 0;
 }

@@ -105,7 +105,7 @@ http_read_header(http* h, http_response* r) {
     }
     stralloc_zero(&r->data);
   }
-  h->q.in.op = &http_socket_read;
+  h->q.in.op = (buffer_op_proto*)&http_socket_read;
   return ret;
 }
 
@@ -144,7 +144,7 @@ http_read_internal(http* h, char* buf, size_t len) {
         if(r->chunk_length == 0) {
           size_t i, bytes = in->n - in->p;
           if((i = byte_chr(&in->x[in->p], bytes, '\n')) < bytes) {
-            i = scan_xlong(&in->x[in->p], &r->chunk_length);
+            i = scan_xint64(&in->x[in->p], &r->chunk_length);
             in->p += i;
             if(in->x[in->p] == '\r')
               ++in->p;
@@ -191,7 +191,7 @@ http_read(http* h, char* buf, size_t len) {
     if(n >= (ssize_t)len)
       n = (ssize_t)len;
     byte_copy(buf, (size_t)n, b->x + b->p);
-      putnum("skipbuf", n);
+    putnum("skipbuf", n);
     len -= (size_t)n;
     buf += n;
     ret += n;

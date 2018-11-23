@@ -5,6 +5,9 @@
 #include "lib/str.h"
 #include "lib/errmsg.h"
 #include "lib/omf.h"
+#include "lib/fmt.h"
+#include "lib/mmap.h"
+#include "lib/byte.h"
 
 void
 usage(char* av0) {
@@ -31,7 +34,7 @@ main(int argc, char** argv) {
   int c, index = 0;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {0}};
-
+  errmsg_iam(argv[0]);
   buffer_puts(buffer_1, "Number of arguments: ");
   buffer_putlong(buffer_1, argc);
   buffer_putnlflush(buffer_1);

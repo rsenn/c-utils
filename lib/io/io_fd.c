@@ -33,6 +33,7 @@
 #ifdef __dietlibc__
 #include <sys/atomic.h>
 #elif WINDOWS_NATIVE || (defined(__CYGWIN__) && __MSYS__ == 1)
+#include <windows.h>
 #define __CAS(ptr, oldval, newval) InterlockedCompareExchange(ptr, newval, oldval)
 #else
 #define __CAS(ptr, oldval, newval) __sync_val_compare_and_swap(ptr, oldval, newval)
@@ -48,7 +49,6 @@
 
 #if WINDOWS_NATIVE
 #include <stdio.h>
-HANDLE io_comport;
 #endif
 
 #include <fcntl.h>
@@ -65,7 +65,7 @@ io_getfds() {
   return &io_fds;
 }
 
-static intptr_t io_fds_inited;
+static volatile long int io_fds_inited;
 uint64 io_wanted_fds;
 array io_pollfds;
 enum __io_waitmode io_waitmode;

@@ -1,9 +1,9 @@
 #define USE_WS2_32 1
-#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
-#include <winsock2.h>
-#include <mswsock.h>
-#else
+#include "../windoze.h"
 #include "../socket_internal.h"
+
+#if WINDOWS_NATIVE
+#include <mswsock.h>
 #endif
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
 
@@ -18,6 +18,7 @@
 #ifdef __aarch64__
 #include <asm/unistd.h>
 #endif
+#include "../uint8.h"
 
 #if defined(HAVE_BSDSENDFILE)
 #define SENDFILE 1
@@ -157,12 +158,11 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 }
 #endif
 
-#elif(defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)) //&& !defined(__MSYS__)
+#elif(defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)) && !defined(__MSYS__)
 
 //#undef closesocket
 //#include <winsock2.h>
 //#include <windows.h>
-//#include <mswsock.h>
 
 #ifndef TF_USE_KERNEL_APC
 #define TF_USE_KERNEL_APC 0x20

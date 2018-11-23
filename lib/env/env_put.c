@@ -22,7 +22,8 @@ env_put2(const char* name, const char* value) {
 int
 env_put(const char* s) {
   size_t namelen = str_chr(s, '=');
-  char *name, *value;
+  char* name;
+  const char* value;
   int ret;
   if(s[namelen] == '\0') return 0;
   value = &s[namelen+1];

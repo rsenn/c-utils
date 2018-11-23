@@ -6,6 +6,9 @@
 #include "lib/mmap.h"
 #include "lib/pe.h"
 #include "lib/str.h"
+#include "lib/fmt.h"
+#include "lib/byte.h"
+#include "lib/errmsg.h"
 #include <assert.h>
 #include <stdlib.h>
 
@@ -283,7 +286,7 @@ main(int argc, char** argv) {
     list_imports = list_exports = 1;
 
   for(; argv[optind]; ++optind) {
-    base = (uint8*)mmap_shared(argv[optind], &filesize);
+    base = (uint8*)mmap_read(argv[optind], &filesize);
 
     if(base) {
       pe32_nt_headers* nt_headers = pe_header_nt(base);

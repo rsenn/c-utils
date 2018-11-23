@@ -316,6 +316,15 @@ package_pin(struct package* pkg, const char* name) {
 }
 
 int
+layer_id(const char* str) {
+  int id = -1;
+  if(scan_uint(str, (unsigned int*)&id)) {
+    if(id >= 0 && id < strarray_size(&layers)) return id;
+  }
+  return -1;
+}
+
+int
 get_layer(const char* str) {
   long i, n = strarray_size(&layers);
 
@@ -330,15 +339,6 @@ get_layer(const char* str) {
 const char*
 layer_name(int i) {
   return strarray_at(&layers, i);
-}
-
-int
-layer_id(const char* str) {
-  int id = -1;
-  if(scan_uint(str, (unsigned int*)&id)) {
-    if(id >= 0 && id < strarray_size(&layers)) return id;
-  }
-  return -1;
 }
 
 const char*

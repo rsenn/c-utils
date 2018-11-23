@@ -2,8 +2,7 @@
 #include "../stralloc.h"
 #include <stdarg.h>
 
-
-typedef size_t (stralloc_fmt_x)(char*, void*, void*, void*, void*);
+typedef size_t(stralloc_fmt_x)(char*, void*, void*, void*, void*);
 
 size_t
 stralloc_fmt_call(stralloc* out, stralloc_fmt_fn* fmt_function, void* av[4]) {

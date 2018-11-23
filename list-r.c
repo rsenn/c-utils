@@ -3,9 +3,37 @@
 #define _FILE_OFFSET_BITS 64
 #define INTERNAL_STRINGIFY(VALUE) #VALUE
 #define STRINGIFY(VALUE) INTERNAL_STRINGIFY(VALUE)
+
+#include "lib/windoze.h"
+
+#if WINDOWS_NATIVE
+#include <windows.h>
+#include <io.h>
+#include <wtypes.h>
+#else
+#include <dirent.h>
+#include <unistd.h>
+#endif
+
+#include "lib/buffer.h"
+#include "lib/dir_internal.h"
+#include "lib/fmt.h"
+#include "lib/fnmatch.h"
+#include "lib/io_internal.h"
+#include "lib/iarray.h"
+#include "lib/open.h"
+#include "lib/str.h"
+#include "lib/stralloc.h"
+#include "lib/uint64.h"
+#include "lib/ioctlcmd.h"
+#include "lib/byte.h"
+#include "lib/array.h"
+#include "lib/unix.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -15,34 +43,13 @@
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
-#include "lib/windoze.h"
-#include "lib/unix.h"
-#if !WINDOWS
-#include <dirent.h>
-#include <unistd.h>
-#else
-#include <fcntl.h>
-#include <io.h>
-#include <wtypes.h>
-#endif
-#include "lib/array.h"
-#include "lib/buffer.h"
-#include "lib/dir_internal.h"
-#include "lib/fmt.h"
-#include "lib/fnmatch.h"
-#include "lib/io_internal.h"
-#include "lib/open.h"
-#include "lib/str.h"
-#include "lib/stralloc.h"
-#include "lib/uint64.h"
-#include "lib/ioctlcmd.h"
+
 #include <errno.h>
 #include <string.h>
 #include <time.h>
 
 #if WINDOWS
 #include <io.h>
-#include <windows.h>
 
 #ifndef IO_REPARSE_TAG_SYMLINK
 #define IO_REPARSE_TAG_SYMLINK 0xa000000c

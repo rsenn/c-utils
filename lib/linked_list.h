@@ -6,7 +6,6 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
-#include <stdbool.h>
 #include "typedefs.h"
 
 #ifdef __cplusplus

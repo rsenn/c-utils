@@ -5,7 +5,7 @@
 
 #define _POSIX_ 1
 
-#ifdef _MSC_VER
+#if 0 //def _MSC_VER
 #include <crtdefs.h>
 #endif /* _MSC_VER */
 

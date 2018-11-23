@@ -1,11 +1,13 @@
 #include "lib/windoze.h"
 #include "lib/strlist.h"
 #include "lib/strarray.h"
+#include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/path_internal.h"
 #include "lib/process.h"
 #include "lib/env.h"
 #include "lib/errmsg.h"
+#include "lib/byte.h"
 
 #if WINDOWS_NATIVE
 #include <process.h>

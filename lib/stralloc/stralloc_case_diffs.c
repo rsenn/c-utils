@@ -20,6 +20,7 @@ stralloc_case_diffs(const stralloc* sa, const char* s) {
     compare common lengths
   */
   r = byte_case_diff(sa->s, len, s);
-  if(r) return r;
+  if(r)
+    return r;
   return (int)sa->len - (int)s_len;
 }

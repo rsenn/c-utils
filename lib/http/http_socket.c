@@ -34,7 +34,7 @@ http_socket(http* h) {
     buffer_read_fd(&h->q.in, h->sock);
     h->q.in.cookie = (void*)h;
   }
-  h->q.in.op = &http_socket_read;
+  h->q.in.op = (buffer_op_proto*)&http_socket_read;
 
   if(h->q.out.x) {
     h->q.out.fd = h->sock;
@@ -42,5 +42,5 @@ http_socket(http* h) {
     buffer_write_fd(&h->q.out, h->sock);
     h->q.out.cookie = (void*)h;
   }
-  h->q.out.op = &http_socket_write;
+  h->q.out.op = (buffer_op_proto*)&http_socket_write;
 }

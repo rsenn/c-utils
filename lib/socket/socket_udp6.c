@@ -1,9 +1,4 @@
 #define USE_WS2_32 1
-
-#if WINDOWS_NATIVE
-#define _WINSOCKAPI_
-#endif
-
 #include "../socket_internal.h"
 #include <sys/types.h>
 #include "../ndelay.h"
@@ -41,7 +36,7 @@ socket_udp6b(void) {
       noipv6 = 1;
       if(s == -1)
         return -1;
-    } 
+    }
   }
 #ifdef IPV6_V6ONLY
   {

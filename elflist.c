@@ -8,6 +8,8 @@
 #include "lib/unix.h"
 #include "lib/getopt.h"
 #include "lib/range.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
 
 void elf_dump_dynamic(char* base);
 void elf_dump_sections(char* base);

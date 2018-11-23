@@ -3,10 +3,13 @@
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/io_internal.h"
+#include "lib/iarray.h"
 #include "lib/open.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
+#include "lib/fmt.h"
+#include "lib/mmap.h"
 
 #include <ctype.h>
 #include <errno.h>

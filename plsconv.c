@@ -3,9 +3,15 @@
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/io_internal.h"
+#include "lib/iarray.h"
 #include "lib/open.h"
 #include "lib/playlist.h"
 #include "lib/str.h"
+#include "lib/stralloc.h"
+#include "lib/fmt.h"
+#include "lib/scan.h"
+#include "lib/hmap.h"
+#include "lib/xml.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>

@@ -11,6 +11,8 @@
 #include "lib/buffer.h"
 #include "lib/fmt.h"
 #include "lib/str.h"
+#include "lib/io.h"
+#include "lib/iarray.h"
 
 #ifndef MAXIMUM_PATH_LENGTH
 #define MAXIMUM_PATH_LENGTH (4096 - 1)

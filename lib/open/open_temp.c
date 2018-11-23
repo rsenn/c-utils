@@ -10,6 +10,7 @@
 #  define _CRT_INTERNAL_NONSTDC_NAMES 1
 # endif
 # include <io.h>
+# include <windows.h>
 #  if !defined(__LCC__) && !defined(__MINGW32__)
 #   define read _read
 #   define write _write
@@ -68,7 +69,11 @@ open_temp(char* tmpl) {
     }
 
     unlink(tmpl);
-    res = open(tmpl,  O_RDWR | O_CREAT | O_TRUNC | O_BINARY, 0666);
+    res = open(tmpl,  O_RDWR | O_CREAT | O_TRUNC | O_BINARY
+ #ifndef WINDOWS_NATIVE
+   , 0666
+ #endif
+ );
     
     if(res >= 0 || errno != EEXIST) break;
   }

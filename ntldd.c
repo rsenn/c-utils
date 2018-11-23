@@ -30,9 +30,11 @@ MSDN Magazine articles
 #include "lib/unix.h"
 #include "lib/path_internal.h"
 #include "lib/str.h"
-#include "lib/stralloc.h"
 #include "lib/pe.h"
 #include "lib/mmap.h"
+#include "lib/fmt.h"
+#include "lib/stralloc.h"
+#include "lib/strlist.h"
 
 #include <limits.h>
 #include <stdio.h>
@@ -778,7 +780,7 @@ main(int argc, char** argv) {
   int digit_optind = 0;
   const char* rel_to = 0;
   int index = 0;
-  int print_dirs = 0;
+  static int print_dirs = 0;
   const struct longopt opts[] = {{"help", 0, 0, 'h'},
                                  {"verbose", 0, &verbose, 'v'},
                                  {"unused", 0, &unused, 'u'},

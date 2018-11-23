@@ -1,5 +1,6 @@
 #include "lib/socket_internal.h"
 #include "lib/io_internal.h"
+#include "lib/iarray.h"
 #include "lib/case.h"
 #include "lib/open.h"
 #include "lib/stralloc.h"

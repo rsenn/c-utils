@@ -29,5 +29,9 @@
 
 int
 open_append(const char* filename) {
-  return open(filename, O_WRONLY | O_APPEND | O_CREAT | O_BINARY, 0600);
+  return open(filename, O_WRONLY | O_APPEND | O_CREAT | O_BINARY
+#ifndef WINDOWS_NATIVE
+  , 0600
+#endif
+);
 }

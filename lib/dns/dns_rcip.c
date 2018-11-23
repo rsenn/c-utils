@@ -12,6 +12,9 @@
 #include <stdlib.h>
 
 #if WINDOWS
+#if !defined(__ORANGEC__) && !defined(__CYGWIN__)
+#include <winsock2.h>
+#endif
 #include <windows.h>
 
 #define MAX_HOSTNAME_LEN 128

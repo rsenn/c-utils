@@ -1,7 +1,11 @@
 #include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/io_internal.h"
+#include "lib/iarray.h"
 #include "lib/str.h"
+#include "lib/byte.h"
+#include "lib/mmap.h"
+#include "lib/open.h"
 
 #include <stdlib.h>
 

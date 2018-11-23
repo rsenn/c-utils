@@ -12,7 +12,7 @@
 
 
 int
-process_create(const char* filename, const char* argv) {
+process_create(const char* filename, const char* argv[]) {
 #if WINDOWS_NATIVE
   size_t i;
   strlist joined_argv;
@@ -41,17 +41,17 @@ process_create(const char* filename, const char* argv) {
   /* Assume failure to start process */
   status = PROCESS_STATUS_ERROR;
 
-  io_pipe(&pipes[0]);
-  io_pipe(&pipes[1]);
-  io_pipe(&pipes[2]);
+  io_pipe(pipes[0]);
+  io_pipe(pipes[1]);
+  io_pipe(pipes[2]);
 
   ZeroMemory(&piProcessInfo, sizeof(PROCESS_INFORMATION));
   ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
 
   siStartInfo.cb = sizeof(STARTUPINFO);
-  siStartInfo.hStdError = _get_osfhandle(pipes[2][1]);
-  siStartInfo.hStdOutput = _get_osfhandle(pipes[1][1]);
-  siStartInfo.hStdInput = _get_osfhandle(pipes[0][0]);
+  siStartInfo.hStdError = (HANDLE)_get_osfhandle(pipes[2][1]);
+  siStartInfo.hStdOutput = (HANDLE)_get_osfhandle(pipes[1][1]);
+  siStartInfo.hStdInput = (HANDLE)_get_osfhandle(pipes[0][0]);
   siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
   /* Create the child process */

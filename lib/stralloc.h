@@ -224,7 +224,7 @@ int stralloc_subst(stralloc *out, const char *b, size_t len, const char *from, c
 typedef size_t (stralloc_fmt_fn)(char*, unsigned int);
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
 size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len,  size_t (*fmt_function)(char*, unsigned int ch), int (*pred)(int));
-size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, stralloc_fmt_fn*);
+size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)());
 
 int stralloc_catdouble(stralloc*, double d, int prec);
 
@@ -249,14 +249,16 @@ int stralloc_catwcs(stralloc* sa, const wchar_t* buf);
 
 
 int stralloc_remove(stralloc*, size_t pos, size_t n);
-void stralloc_replace(stralloc*, char before, char after);
+void stralloc_replacec(stralloc*, char before, char after);
 int stralloc_removesuffixs(stralloc*, const char* suffix);
 int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
+
+int stralloc_contains(const stralloc* sa, const char* what);
+int stralloc_replaces(stralloc*, const char* from, const char* to);
+int stralloc_replace(stralloc*, size_t pos, size_t len, const char* to, size_t tolen);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-int stralloc_contains(const stralloc* sa, const char* what);

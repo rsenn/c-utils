@@ -68,7 +68,7 @@ http_get(http* h, const char* location) {
     stralloc_init(&((*r)->data));
     stralloc_init(&((*r)->boundary));
 
-    (*r)->content_length = UINT64_MAX;
+    (*r)->content_length = (uint64)-1;
   }
   ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);
 

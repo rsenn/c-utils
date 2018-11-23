@@ -1,3 +1,16 @@
+#include "lib/windoze.h"
+#include "lib/xml.h"
+#include "lib/hmap.h"
+#include "lib/fmt.h"
+#include "lib/byte.h"
+#include "lib/mmap.h"
+#include "lib/scan.h"
+#include "lib/str.h"
+#include "lib/stralloc.h"
+#include "lib/strlist.h"
+
+#include "lib/round.c"
+
 #include <ctype.h>
 #include <float.h>
 #include <math.h>
@@ -7,16 +20,6 @@
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
-
-#include "lib/hmap.h"
-#include "lib/scan.h"
-#include "lib/str.h"
-#include "lib/stralloc.h"
-#include "lib/strlist.h"
-#include "lib/windoze.h"
-#include "lib/xml.h"
-
-#include "lib/round.c"
 
 #if WINDOWS_NATIVE && !defined(__TINYC__) && !defined(__ORANGEC__) && !defined(__DMC__)
 #define isnan(x) _isnan(x)

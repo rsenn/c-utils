@@ -40,7 +40,7 @@
 extern int stat(const char*,struct stat*);
 #endif
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 int is_symlink(const char*);
 static int
 is_link(const char* path) {
