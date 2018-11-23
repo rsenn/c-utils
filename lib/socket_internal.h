@@ -2,6 +2,8 @@
 #ifndef SOCKET_INTERNAL_H
 #define SOCKET_INTERNAL_H
 
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
+
 #ifdef __ORANGEC__
 #undef USE_WS2_32
 #endif
@@ -20,8 +22,9 @@
 #endif
 
 #include "windoze.h"
-#include "socket.h"
+#endif
 
+#include "socket.h"
 
 #if !WINDOWS_NATIVE && !WINDOWS_OVERRIDE
 # include <sys/param.h>
@@ -33,14 +36,18 @@
 # include <unistd.h>
 #endif
 
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
+
 #if WINDOWS && WINDOWS_OVERRIDE
 #define WINDOWS_NATIVE 1
 #endif
-
+#endif
 
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
+
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
 
 #if WINDOWS_NATIVE || WINDOWS_OVERRIDE
 #include <windows.h>
@@ -65,6 +72,7 @@
 #endif
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
+#endif
 #endif
 #endif
 
