@@ -33,7 +33,7 @@
 #define O_BINARY 0
 #endif
 
-static char default_tmpl[PATH_MAX] = "temp-XXXXXX.txt";
+static char default_tmpl[] = "temp-XXXXXX.txt";
 
 int
 open_temp(char* tmpl) {

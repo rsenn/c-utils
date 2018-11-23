@@ -16,7 +16,7 @@ mmap_read(const char* filename, size_t* filesize) {
 #if WINDOWS_NATIVE
   HANDLE fd, m;
   char* map;
-  fd = CreateFile(filename,
+  fd = CreateFileA(filename,
                   GENERIC_READ,
                   FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                   0,

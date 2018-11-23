@@ -20,8 +20,8 @@ QMAKE_CFLAGS_WARN_ON += -Wno-unused-arguments
 
 
 #mingw | mingw32 | mingw64 | msvc {
-win32 | winn64 {
- DEFINES += USE_READDIR=0
+win32 | win64 {
+ DEFINES += USE_READDIR=0 USE_WIDECHAR=1 UNICODE=1
 
 } else {
  DEFINES += USE_READDIR=1
@@ -63,4 +63,10 @@ SOURCES = genmakefile.c lib/array/array_allocate.c lib/array/array_catb.c lib/ar
     lib/strarray/strarray_glob.c \
     lib/unix/getopt.c \
     lib/unix/glob.c \
-    lib/str/str_copy.c
+    lib/str/str_copy.c \
+    lib/stralloc/stralloc_copywcs.c \
+    lib/stralloc/stralloc_copywcb.c \
+    lib/stralloc/stralloc_catwcs.c \
+    lib/stralloc/stralloc_catwcb.c \
+    lib/stralloc/utf8.c \
+    lib/dir/dir_name.c
