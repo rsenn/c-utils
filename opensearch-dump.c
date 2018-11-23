@@ -2,6 +2,11 @@
 #include "lib/stralloc.h"
 #include "lib/xml.h"
 #include "lib/str.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
+#include "lib/scan.h"
+#include "lib/mmap.h"
+#include "lib/hmap.h"
 
 static stralloc url, templ;
 static char sep = '?';

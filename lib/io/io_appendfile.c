@@ -12,7 +12,11 @@
 
 int
 io_appendfile(fd_t* d, const char* s) {
-  long fd = open(s, O_WRONLY | O_APPEND | O_CREAT, 0600);
+  long fd = open(s, O_WRONLY | O_APPEND | O_CREAT
+#ifndef WINDOWS_NATIVE
+, 0600
+#endif
+);
   if(fd != -1) {
     *d = fd;
     return 1;

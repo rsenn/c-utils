@@ -1,5 +1,7 @@
 #include "lib/windoze.h"
 #include "lib/unix.h"
+#include "lib/io.h"
+#include "lib/iarray.h"
 #include "lib/array.h"
 #include "lib/buffer.h"
 #include "lib/mmap.h"
@@ -11,6 +13,8 @@
 #include "lib/open.h"
 #include "lib/path.h"
 #include "lib/str.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
 
 #if WINDOWS
 #include <windows.h>

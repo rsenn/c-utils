@@ -5,6 +5,8 @@
 #include "lib/errmsg.h"
 #include "lib/path.h"
 #include "lib/str.h"
+#include "lib/stralloc.h"
+#include "lib/mmap.h"
 
 #include <ctype.h>
 

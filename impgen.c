@@ -24,6 +24,7 @@
 #include "lib/pe.h"
 #include "lib/uint32.h"
 #include "lib/str.h"
+#include "lib/fmt.h"
 
 int
 main(int argc, char* argv[]) {

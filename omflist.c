@@ -5,6 +5,9 @@
 #include "lib/str.h"
 #include "lib/errmsg.h"
 #include "lib/omf.h"
+#include "lib/fmt.h"
+#include "lib/mmap.h"
+#include "lib/byte.h"
 
 void
 usage(char* av0) {

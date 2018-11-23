@@ -1,4 +1,14 @@
 #include "lib/windoze.h"
+#include "lib/uint64.h"
+#include "lib/buffer.h"
+#include "lib/io.h"
+#include "lib/iarray.h"
+#include "lib/mmap.h"
+#include "lib/open.h"
+#include "lib/stralloc.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
+#include "lib/str.h"
 
 //#if WINDOWS_NATIVE
 //#define snprintf _snprintf
@@ -30,14 +40,6 @@
 #ifndef PRIx64
 #define PRIx64 "lx"
 #endif
-
-#include "lib/uint64.h"
-#include "lib/buffer.h"
-#include "lib/io.h"
-#include "lib/mmap.h"
-#include "lib/open.h"
-#include "lib/stralloc.h"
-#include "lib/windoze.h"
 
 #if defined(__x86_64__) && defined(__linux)
 #define lseek lseek64

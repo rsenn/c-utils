@@ -2,6 +2,10 @@
 #include "lib/mmap.h"
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
+#include "lib/str.h"
+#include "lib/byte.h"
+#include "lib/array.h"
+
 int
 main(int argc, char* argv[]) {
   const char* const headers[] = {"lib/algorithm.h",

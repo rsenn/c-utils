@@ -1,4 +1,16 @@
-#if !(defined(_WIN32) || defined(_WIN64))
+#include "lib/windoze.h"
+#include "lib/io_internal.h"
+#include "lib/iarray.h"
+#include "lib/stralloc.h"
+#include "lib/uint64.h"
+#include "lib/buffer.h"
+#include "lib/open.h"
+#include "lib/fmt.h"
+#include "lib/byte.h"
+#include "lib/str.h"
+#include "lib/scan.h"
+
+#if !WINDOWS_NATIVE
 #include <unistd.h>
 #else
 #include <io.h>
@@ -12,16 +24,6 @@
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
 #endif
-
-#include "lib/io_internal.h"
-#include "lib/stralloc.h"
-#include "lib/uint64.h"
-#include "lib/buffer.h"
-#include "lib/open.h"
-#include "lib/fmt.h"
-#include "lib/byte.h"
-#include "lib/str.h"
-#include "lib/scan.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX

@@ -69,7 +69,11 @@ open_temp(char* tmpl) {
     }
 
     unlink(tmpl);
-    res = open(tmpl,  O_RDWR | O_CREAT | O_TRUNC | O_BINARY, 0666);
+    res = open(tmpl,  O_RDWR | O_CREAT | O_TRUNC | O_BINARY
+ #ifndef WINDOWS_NATIVE
+   , 0666
+ #endif
+ );
     
     if(res >= 0 || errno != EEXIST) break;
   }

@@ -1,6 +1,6 @@
 #include "lib/windoze.h"
 
-#if !WINDOWS
+#if !WINDOWS_NATIVE
 #include <unistd.h>
 #else
 #include <io.h>
@@ -23,6 +23,9 @@
 #include "lib/scan.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
+#include "lib/io.h"
+#include "lib/iarray.h"
+#include "lib/path_internal.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX

@@ -1,8 +1,13 @@
 #include "lib/buffer.h"
 #include "lib/hmap.h"
 #include "lib/io.h"
+#include "lib/iarray.h"
 #include "lib/stralloc.h"
 #include "lib/xml.h"
+#include "lib/byte.h"
+#include "lib/fmt.h"
+#include "lib/mmap.h"
+#include "lib/str.h"
 #include <ctype.h>
 
 static buffer infile, b;

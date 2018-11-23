@@ -14,6 +14,12 @@
 #include "lib/strarray.h"
 #include "lib/strlist.h"
 #include "lib/wordexp.h"
+#include "lib/io.h"
+#include "lib/iarray.h"
+#include "lib/ndelay.h"
+#include "lib/mmap.h"
+#include "lib/array.h"
+#include "lib/socket.h"
 #include <ctype.h>
 #include <stdlib.h>
 

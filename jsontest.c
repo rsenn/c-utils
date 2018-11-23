@@ -9,7 +9,9 @@
 #include "lib/json.h"
 #include "lib/open.h"
 #include "lib/io_internal.h"
+#include "lib/iarray.h"
 #include "lib/str.h"
+#include "lib/scan.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>

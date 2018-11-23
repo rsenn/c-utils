@@ -5,6 +5,8 @@
 #include "lib/unix.h"
 #include "lib/mmap.h"
 #include "lib/byte.h"
+#include "lib/iarray.h"
+#include "lib/io.h"
 
 #include <stdlib.h>
 

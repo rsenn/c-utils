@@ -6,6 +6,10 @@
 #include "lib/stralloc.h"
 #include "lib/xml.h"
 #include "lib/str.h"
+#include "lib/mmap.h"
+#include "lib/scan.h"
+#include "lib/strlist.h"
+#include "lib/array.h"
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>

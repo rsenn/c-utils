@@ -7,6 +7,15 @@
 #include "lib/taia.h"
 #include "lib/errmsg.h"
 #include "lib/open.h"
+#include "lib/dns.h"
+#include "lib/fmt.h"
+#include "lib/iarray.h"
+#include "lib/scan.h"
+#include "lib/str.h"
+#include "lib/stralloc.h"
+#include "lib/tai.h"
+#include "lib/case.h"
+
 
 #include <errno.h>
 

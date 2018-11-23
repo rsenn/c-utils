@@ -33,6 +33,7 @@
 #ifdef __dietlibc__
 #include <sys/atomic.h>
 #elif WINDOWS_NATIVE || (defined(__CYGWIN__) && __MSYS__ == 1)
+#include <windows.h>
 #define __CAS(ptr, oldval, newval) InterlockedCompareExchange(ptr, newval, oldval)
 #else
 #define __CAS(ptr, oldval, newval) __sync_val_compare_and_swap(ptr, oldval, newval)

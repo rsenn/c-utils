@@ -6,6 +6,9 @@
 #include "lib/mmap.h"
 #include "lib/pe.h"
 #include "lib/str.h"
+#include "lib/fmt.h"
+#include "lib/byte.h"
+#include "lib/errmsg.h"
 #include <assert.h>
 #include <stdlib.h>
 
