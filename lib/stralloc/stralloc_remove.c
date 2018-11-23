@@ -1,7 +1,7 @@
 #include "../byte.h"
 #include "../stralloc.h"
 
-int
+size_t
 stralloc_remove(stralloc* sa, size_t pos, size_t n) {
   if(pos + 1 > sa->len)
     return -1;

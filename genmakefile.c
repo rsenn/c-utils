@@ -284,7 +284,7 @@ path_wildcard(const char* path, stralloc* sa) {
 
 int
 extract_build_type(const stralloc* s) {
-  size_t i;
+  int i;
 
   for(i = 0; i < sizeof(build_types) / sizeof(build_types[0]); ++i) {
     if(stralloc_contains(s, build_types[i]))
@@ -1135,7 +1135,7 @@ remove_indirect_deps_recursive(array* top, array* a, int depth) {
   }
 }
 
-int
+ssize_t
 remove_indirect_deps(array* deps) {
   size_t w, r, n;
   target** a;
@@ -1612,7 +1612,7 @@ output_all_vars(buffer* b, HMAP_DB* vars) {
  */
 void
 output_make_rule(buffer* b, target* rule) {
-  int num_deps = strlist_count(&rule->prereq);
+  size_t num_deps = strlist_count(&rule->prereq);
 
     if(array_length(&rule->deps, sizeof(target*))) {
       print_target_deps(b, rule);

@@ -20,7 +20,7 @@
 
 extern ssize_t buffer_stubborn(buffer_op_fn* op, fd_t fd, const char* buf, size_t len, void* cookie);
 
-int
+ssize_t
 buffer_putflush(buffer* b, const char* x, size_t len) {
   /* Since we know we are going to flush anyway, let's see if we can
    * optimize a bit */

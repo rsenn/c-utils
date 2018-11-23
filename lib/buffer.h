@@ -49,10 +49,10 @@ int buffer_read_fd(buffer*,  fd_t fd);
 int buffer_flush(buffer* b);
 int buffer_put(buffer*, const char* x, size_t len);
 int buffer_putalign(buffer*, const char* x, size_t len);
-int buffer_putflush(buffer*, const char* x, size_t len);
+ssize_t buffer_putflush(buffer*, const char* x, size_t len);
 int buffer_puts(buffer*, const char* x);
 int buffer_putsalign(buffer*, const char* x);
-int buffer_putsflush(buffer*, const char* x);
+ssize_t buffer_putsflush(buffer*, const char* x);
 
 #if defined(__GNUC__) && !defined(__LIBOWFAT_INTERNAL) && !defined(__dietlibc__)
 /* as a little gcc-specific hack,  if somebody calls buffer_puts with a
@@ -80,7 +80,7 @@ int buffer_putm_internal_flush(buffer*b, ...);
 #define buffer_putm_7(b, a1, a2, a3, a4, a5, a6, a7) buffer_putm_internal(b, a1, a2, a3, a4, a5, a6, a7, (char*)0)
 
 int buffer_putspace(buffer* b);
-int buffer_putnlflush(buffer* b); /* put \n and flush */
+ssize_t buffer_putnlflush(buffer* b); /* put \n and flush */
 
 #define buffer_PUTC(s, c) \
   ( ((s)->a != (s)->p) \

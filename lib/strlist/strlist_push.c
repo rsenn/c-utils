@@ -10,4 +10,5 @@ strlist_push(strlist* sl, const char* s) {
   stralloc_cats(&sl->sa, s);
   stralloc_catc(&sl->sa, sl->sep);
 //  --sl->sa.len;
+  return 1;
 }

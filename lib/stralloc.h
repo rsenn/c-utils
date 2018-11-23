@@ -248,7 +248,7 @@ int stralloc_catwcb(stralloc* sa, const wchar_t* buf, size_t len);
 int stralloc_catwcs(stralloc* sa, const wchar_t* buf);
 
 
-int stralloc_remove(stralloc*, size_t pos, size_t n);
+size_t stralloc_remove(stralloc*, size_t pos, size_t n);
 void stralloc_replacec(stralloc*, char before, char after);
 int stralloc_removesuffixs(stralloc*, const char* suffix);
 int stralloc_removesuffixb(stralloc*, const char* x, size_t len);

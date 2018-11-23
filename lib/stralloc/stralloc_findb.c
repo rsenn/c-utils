@@ -6,19 +6,17 @@
 */
 size_t
 stralloc_findb(const stralloc* sa, const void* what, size_t len) {
-  unsigned int i;
-  unsigned int sa_len;
-  unsigned int last;
+  size_t i, n, last;
   char* s;
-  sa_len = sa->len;
-  if(sa_len < len)
-    return sa_len;
-  last = sa_len - len;
+  n = sa->len;
+  if(n < len)
+    return n;
+  last = n - len;
   s = sa->s;
   for(i = 0; i <= last; i++) {
     if(byte_equal(s, len, what))
       return i;
     s++;
   }
-  return sa_len;
+  return n;
 }

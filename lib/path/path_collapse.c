@@ -5,7 +5,8 @@
 int
 path_collapse(const char* path, stralloc* out) {
   const char* x;
-  size_t i = 0, n;
+  int count = 0;
+  size_t n;
   char sep = path_getsep(path);
   strlist p, o;
   strlist_init(&p, sep);
@@ -14,16 +15,16 @@ path_collapse(const char* path, stralloc* out) {
   stralloc_zero(out);
   byte_copy(&o.sa, sizeof(stralloc), out);
   strlist_foreach(&p, x, n) {
-    if(i > 1) {
+    if(count > 1) {
       if(n == 2 && byte_equal(x, 2, "..")) {
         strlist_pop(&o);
-        --i;
+        --count;
         continue;
       }
     }
     strlist_pushb(&o, x, n);
-    ++i;
+    ++count;
   }
   byte_copy(out, sizeof(stralloc), &o.sa);
-  return i;
+  return count;
 }

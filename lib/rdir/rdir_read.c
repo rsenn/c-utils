@@ -3,6 +3,7 @@
 #include "../byte.h"
 #include "../dir_internal.h"
 #include "../stralloc.h"
+#include "../str.h"
 
 #include <assert.h>
 #include <stdlib.h>

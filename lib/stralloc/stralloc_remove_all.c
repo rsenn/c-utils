@@ -3,9 +3,8 @@
 
 void
 stralloc_remove_all(stralloc* sa, register const char* delchars, register unsigned int delcharslen) {
-  register unsigned int i;
-  register char* x;
-  register char* t;
+  register size_t i;
+  register char *x, *t;
 
   t = x = sa->s;
   if(!x)
@@ -18,5 +17,5 @@ stralloc_remove_all(stralloc* sa, register const char* delchars, register unsign
     x++;
     i--;
   }
-  sa->len = (unsigned int)(t - sa->s);
+  sa->len = (size_t)(t - sa->s);
 }
