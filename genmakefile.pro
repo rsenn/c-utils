@@ -70,4 +70,6 @@ SOURCES = genmakefile.c lib/array/array_allocate.c lib/array/array_catb.c lib/ar
     lib/stralloc/stralloc_catwcs.c \
     lib/stralloc/stralloc_catwcb.c \
     lib/stralloc/utf8.c \
-    lib/dir/dir_name.c
+    lib/dir/dir_name.c \
+    lib/buffer/buffer_2.c \
+    lib/unix/readlink.c
