@@ -17,6 +17,7 @@
 #include "lib/byte.h"
 #include "lib/fmt.h"
 #include "lib/dir.h"
+#include "lib/range.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -421,14 +422,9 @@ get_includes(const char* srcfile, strlist* includes, int sys) {
  * Get rule command with substitutions
  */
 void
-rule_command(target* rule, stralloc* out) {
-  char from = pathsep_args == '/' ? '\\' : '/';
+rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen) {
   size_t i;
   stralloc* in = rule->recipe;
-  stralloc prereq;
-  stralloc_init(&prereq);
-  strlist_join(&rule->prereq, &prereq, ' ');
-  stralloc_replacec(&prereq, from, pathsep_args);
 
   for(i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
@@ -449,19 +445,19 @@ rule_command(target* rule, stralloc* out) {
         case '@': {
           size_t p = out->len;
           stralloc_cats(out, rule->name);
-          byte_replace(&out->s[p], out->len - p, from, pathsep_args);
+          byte_replace(&out->s[p], out->len - p, pathsep_args == '/' ? '\\' : '/', pathsep_args);
           break;
         }
         case '^': {
-          size_t p = out->len;
-          stralloc_cat(out, &prereq);
-          byte_replace(&out->s[p], out->len - p, from, pathsep_args);
+          //  size_t p = out->len;
+          stralloc_catb(out, prereq, plen);
+          //          byte_replace(&out->s[p], out->len - p, from, pathsep_args);
           break;
         }
         case '<': {
-          size_t n = stralloc_findb(&prereq, &rule->prereq.sep, 1);
-          stralloc_catb(out, prereq.s, n);
-          byte_replace(&out->s[out->len - n], n, from, pathsep_args);
+          size_t n = byte_chr(prereq, plen, ' ');
+          stralloc_catb(out, prereq, n);
+          //        byte_replace(&out->s[out->len - n], n, from, pathsep_args);
           break;
         }
       }
@@ -471,6 +467,71 @@ rule_command(target* rule, stralloc* out) {
         break;
     }
   }
+}
+
+void
+rule_command(target* rule, stralloc* out) {
+  size_t len;
+  const char* pfx = 0;
+  char *s, from = pathsep_args == '/' ? '\\' : '/';
+  strlist prereq;
+  strlist_init(&prereq, ' ');
+
+  if(stralloc_contains(rule->recipe, "-+$^")) {
+    pfx = "-+";
+    //    stralloc_replaces(&lib_command, "-+$^", "$^");
+  }
+
+  strlist_foreach(&rule->prereq, s, len) {
+    if(pfx) {
+      strlist_push(&prereq, pfx);
+      stralloc_catb(&prereq.sa, s, len);
+    } else {
+      strlist_pushb(&prereq, s, len);
+    }
+  }
+  //  stralloc_copy(&prereq.sa, &rule->prereq.sa);
+
+  stralloc_replacec(&prereq.sa, from, pathsep_args);
+
+  if(rule->recipe == &lib_command) {
+    char* x;
+    size_t n = 0;
+    range r;
+    r.start = stralloc_begin(&prereq.sa);
+    r.end = stralloc_end(&prereq.sa);
+    for(; r.start < r.end;) {
+      for(x = r.start;;) {
+        n = strlist_skip(&prereq, x);
+        if(n == 0 || x + n - r.start > 512)
+          break;
+        x += n;
+      }
+      if(out->len) {
+        stralloc_cats(out, newline);
+        stralloc_catc(out, '\t');
+      }
+
+      if(pfx && byte_equal(r.start, str_len(pfx), pfx)) {
+        r.start += 2;
+      }
+
+      n = x - r.start;
+
+      if(n > 0 && r.start[n - 1] == ' ')
+        --n;
+
+      rule_command_subst(rule, out, r.start, n);
+
+      if(r.start + n < r.end && r.start[n] == ' ')
+        ++n;
+
+      r.start += n;
+    }
+  } else {
+    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len);
+  }
+
   stralloc_free(&prereq);
 }
 
@@ -1621,9 +1682,9 @@ void
 output_make_rule(buffer* b, target* rule) {
   size_t num_deps = strlist_count(&rule->prereq);
 
-  if(array_length(&rule->deps, sizeof(target*))) {
-    print_target_deps(b, rule);
-  }
+  /* if(array_length(&rule->deps, sizeof(target*)))
+     print_target_deps(b, rule);
+  */
 
   if(num_deps == 0 && str_diffn(rule->name, workdir.sa.s, workdir.sa.len)) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, "\n", 0);
@@ -2172,7 +2233,8 @@ set_compiler_type(const char* compiler) {
     } else {
       push_var("CFLAGS", "-o");
     }
-    stralloc_copys(&lib_command, "$(LIB) -c $@ $^");
+    //    set_command(&lib_command, "$(LIB) -c $@", "$^");
+    set_command(&lib_command, "$(LIB) $@ /c", "-+$^");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
     set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o\"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 

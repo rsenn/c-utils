@@ -65,6 +65,23 @@ int strlist_append_sa(strlist* sl, const stralloc* sa);
 #define strlist_foreach(sl, str, n) for((str) = (sl)->sa.s; ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl)-(str), (sl)->sep)) >= 0); (str) += (n) + 1)
 #define strlist_foreach_s(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl)-str, (sl)->sep) + 1)
 
+#define strlist_len(sl, ptr) (byte_chr(ptr, strlist_end((sl)) - (ptr), (sl)->sep))
+
+static inline size_t
+strlist_skip(const strlist* sl, char* ptr) {
+  size_t ret = strlist_len(sl, ptr);
+  if(ptr + ret < strlist_end(sl) && ptr[ret] == sl->sep)
+    ++ret;
+  return ret;
+}
+static inline char*
+strlist_next(const strlist* sl, char* ptr) {
+  ptr += strlist_len(sl, ptr);
+  if(ptr < strlist_end(sl) && *ptr == sl->sep)
+    ++ptr;
+  return ptr;
+}
+
 #ifdef STRALLOC_H
 int strlist_contains_sa(strlist*, const stralloc* sa);
 int strlist_push_sa(strlist*, const stralloc* sa);
@@ -87,4 +104,3 @@ int strlist_sub(strlist*, const strlist* o);
 }
 # endif
 #endif /* defined(STRLIST_H) */
-
