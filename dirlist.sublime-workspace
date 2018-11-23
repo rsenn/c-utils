@@ -16,63 +16,13 @@
 	"buffers":
 	[
 		{
-			"contents": "omf_dump\ndump_hex\nusage\nmain",
+			"contents": "MAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PATHSEP\nDEFAULT_PATHSEP\nvoid\nput_newline\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_s\npath_prefix_b\npath_extension\npath_object\npath_wildcard\nextract_build_type\nformat_linklib_lib\nformat_linklib_switch\nformat_linklib_dummy\nscan_main\nhas_main\nextract_includes\nget_includes\nrule_command_subst\nrule_command\nsubst_var\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nget_var\nset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\npush_define\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\nlib_rule_for_sourcedir\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_compile_rules\ngen_lib_rules\ngen_link_rules\ngen_clean_rule\noutput_all_vars\noutput_make_rule\noutput_ninja_rule\noutput_build_rules\noutput_all_rules\noutput_script\nset_machine\nset_make_type\nset_compiler_type\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 28,
+				"buffer_size": 1329,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
-			}
-		},
-		{
-			"file": "genmakefile.c",
-			"settings":
-			{
-				"buffer_size": 61799,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/omf.h",
-			"settings":
-			{
-				"buffer_size": 3937,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/omf/omf_data.c",
-			"settings":
-			{
-				"buffer_size": 216,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/omf/omf_record_begin.c",
-			"settings":
-			{
-				"buffer_size": 616,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/omf/omf_record_end.c",
-			"settings":
-			{
-				"buffer_size": 113,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/omf/omf_record_next.c",
-			"settings":
-			{
-				"buffer_size": 2422,
-				"line_ending": "Unix"
 			}
 		},
 		{
@@ -84,10 +34,10 @@
 			}
 		},
 		{
-			"file": "lib/omf/omf_name.c",
+			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 2363,
+				"buffer_size": 63229,
 				"line_ending": "Unix"
 			}
 		}
@@ -143,6 +93,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"edit",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"Package Control: list",
+				"Package Control: List Packages"
+			],
 			[
 				"Package Control: install",
 				"Package Control: Advanced Install Package"
@@ -290,13 +248,17 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/roman/Desktop/dirlist",
-		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/omf"
+		"/C/Users/roman/Desktop/dirlist"
 	],
 	"file_history":
 	[
+		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
+		"/C/Users/roman/Desktop/dirlist/lib/omf.h",
+		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_data.c",
+		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_record_begin.c",
+		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_record_end.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_record_next.c",
+		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_name.c",
 		"/C/Users/roman/Desktop/dirlist/lib/typedefs.h",
 		"/C/Users/roman/Desktop/dirlist/lib/pe.h",
 		"/C/Users/roman/Desktop/dirlist/lib/coff.h",
@@ -316,7 +278,6 @@
 		"/C/Users/roman/Desktop/dirlist/tests/unit_test_runner.c",
 		"/C/Users/roman/Desktop/dirlist/lib/http/http_socket.c",
 		"/C/Users/roman/Desktop/dirlist/lib/http/http_sendreq.c",
-		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_dirname.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path_internal.h",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_basename.c",
@@ -342,9 +303,6 @@
 		"/C/Users/roman/Desktop/dirlist/elflist.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_end.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_next.c",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_data.c",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_name.c",
-		"/C/Users/roman/Desktop/dirlist/lib/omf.h",
 		"/C/Users/roman/Desktop/dirlist/omflist.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_close.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_open.c",
@@ -421,9 +379,7 @@
 		"/D/Sources/rsenn/dirlist/lib/utf8.c",
 		"/D/Sources/rsenn/dirlist/lib/pe.h",
 		"/D/Sources/rsenn/dirlist/elflist.c",
-		"/D/Sources/rsenn/dirlist/elf64list.c",
-		"/D/Sources/rsenn/dirlist/pelist.c",
-		"/D/Sources/rsenn/dirlist/pathtool.c"
+		"/D/Sources/rsenn/dirlist/elf64list.c"
 	],
 	"find":
 	{
@@ -634,7 +590,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 28,
+						"buffer_size": 1329,
 						"regions":
 						{
 						},
@@ -644,31 +600,486 @@
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\omflist.c",
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\genmakefile.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									274,
-									282
+									528,
+									539
 								],
 								[
-									515,
-									523
+									554,
+									568
 								],
 								[
-									1406,
-									1411
+									584,
+									598
 								],
 								[
-									1970,
-									1974
+									614,
+									628
+								],
+								[
+									640,
+									654
+								],
+								[
+									676,
+									687
+								],
+								[
+									702,
+									716
+								],
+								[
+									730,
+									744
+								],
+								[
+									758,
+									772
+								],
+								[
+									787,
+									801
+								],
+								[
+									840,
+									855
+								],
+								[
+									875,
+									890
+								],
+								[
+									1489,
+									1493
+								],
+								[
+									2287,
+									2298
+								],
+								[
+									2391,
+									2402
+								],
+								[
+									2699,
+									2712
+								],
+								[
+									2909,
+									2917
+								],
+								[
+									3083,
+									3090
+								],
+								[
+									3254,
+									3262
+								],
+								[
+									3686,
+									3695
+								],
+								[
+									3863,
+									3871
+								],
+								[
+									3886,
+									3894
+								],
+								[
+									3909,
+									3916
+								],
+								[
+									3931,
+									3940
+								],
+								[
+									4191,
+									4204
+								],
+								[
+									4734,
+									4747
+								],
+								[
+									5111,
+									5125
+								],
+								[
+									5378,
+									5389
+								],
+								[
+									5924,
+									5937
+								],
+								[
+									6288,
+									6306
+								],
+								[
+									6535,
+									6553
+								],
+								[
+									6739,
+									6760
+								],
+								[
+									6921,
+									6941
+								],
+								[
+									7056,
+									7065
+								],
+								[
+									7569,
+									7577
+								],
+								[
+									7803,
+									7819
+								],
+								[
+									8794,
+									8806
+								],
+								[
+									9053,
+									9071
+								],
+								[
+									10372,
+									10384
+								],
+								[
+									11843,
+									11852
+								],
+								[
+									12466,
+									12474
+								],
+								[
+									13012,
+									13023
+								],
+								[
+									13103,
+									13112
+								],
+								[
+									13460,
+									13472
+								],
+								[
+									13553,
+									13564
+								],
+								[
+									13773,
+									13781
+								],
+								[
+									14037,
+									14048
+								],
+								[
+									14392,
+									14403
+								],
+								[
+									14587,
+									14597
+								],
+								[
+									14901,
+									14911
+								],
+								[
+									15307,
+									15318
+								],
+								[
+									15612,
+									15619
+								],
+								[
+									16015,
+									16022
+								],
+								[
+									16198,
+									16206
+								],
+								[
+									16322,
+									16333
+								],
+								[
+									16467,
+									16475
+								],
+								[
+									16684,
+									16692
+								],
+								[
+									17141,
+									17152
+								],
+								[
+									17397,
+									17413
+								],
+								[
+									17674,
+									17687
+								],
+								[
+									17905,
+									17924
+								],
+								[
+									19736,
+									19751
+								],
+								[
+									20256,
+									20272
+								],
+								[
+									21093,
+									21104
+								],
+								[
+									21738,
+									21763
+								],
+								[
+									22186,
+									22201
+								],
+								[
+									22558,
+									22578
+								],
+								[
+									22901,
+									22914
+								],
+								[
+									23258,
+									23269
+								],
+								[
+									23422,
+									23441
+								],
+								[
+									24474,
+									24491
+								],
+								[
+									25162,
+									25192
+								],
+								[
+									25630,
+									25650
+								],
+								[
+									26179,
+									26192
+								],
+								[
+									26457,
+									26473
+								],
+								[
+									26795,
+									26810
+								],
+								[
+									27038,
+									27060
+								],
+								[
+									27690,
+									27703
+								],
+								[
+									28947,
+									28961
+								],
+								[
+									29234,
+									29249
+								],
+								[
+									29599,
+									29616
+								],
+								[
+									30133,
+									30146
+								],
+								[
+									30693,
+									30707
+								],
+								[
+									33619,
+									33633
+								],
+								[
+									35115,
+									35130
+								],
+								[
+									35797,
+									35813
+								],
+								[
+									36699,
+									36716
+								],
+								[
+									37637,
+									37655
+								],
+								[
+									38175,
+									38191
+								],
+								[
+									38390,
+									38403
+								],
+								[
+									39027,
+									39038
+								],
+								[
+									39453,
+									39466
+								],
+								[
+									40652,
+									40669
+								],
+								[
+									52544,
+									52549
+								],
+								[
+									54946,
+									54950
 								]
 							],
 							"symlist":
 							[
-								"omf_dump",
-								"dump_hex",
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"DEFAULT_PATHSEP",
+								"DEFAULT_PATHSEP",
+								"void",
+								"put_newline",
+								"set_command",
+								"strarray_dump",
+								"debug_sa",
+								"debug_s",
+								"debug_sl",
+								"debug_int",
+								"debug_sa",
+								"debug_sl",
+								"debug_s",
+								"debug_int",
+								"path_prefix_s",
+								"path_prefix_b",
+								"path_extension",
+								"path_object",
+								"path_wildcard",
+								"extract_build_type",
+								"format_linklib_lib",
+								"format_linklib_switch",
+								"format_linklib_dummy",
+								"scan_main",
+								"has_main",
+								"extract_includes",
+								"get_includes",
+								"rule_command_subst",
+								"rule_command",
+								"subst_var",
+								"get_rule",
+								"get_rule_sa",
+								"find_rule",
+								"find_rule_sa",
+								"find_rule_b",
+								"add_path",
+								"add_srcpath",
+								"add_path_sa",
+								"new_source",
+								"add_source",
+								"get_sources",
+								"get_var",
+								"set_var",
+								"push_var",
+								"push_var_sa",
+								"push_lib",
+								"with_lib",
+								"push_define",
+								"get_rules_by_cmd",
+								"dirname_alloc",
+								"populate_sourcedirs",
+								"dump_sourcedirs",
+								"includes_to_libs",
+								"target_ptrs",
+								"target_dep_list_recursive",
+								"target_dep_list",
+								"target_deps_indirect",
+								"deps_indirect",
+								"deps_direct",
+								"print_target_deps_r",
+								"print_target_deps",
+								"remove_indirect_deps_recursive",
+								"remove_indirect_deps",
+								"get_sourcedir",
+								"get_sourcedir_sa",
+								"get_sourcedir_b",
+								"lib_rule_for_sourcedir",
+								"deps_for_libs",
+								"target_add_dep",
+								"target_add_deps",
+								"gen_compile_rules",
+								"gen_lib_rules",
+								"gen_link_rules",
+								"gen_clean_rule",
+								"output_all_vars",
+								"output_make_rule",
+								"output_ninja_rule",
+								"output_build_rules",
+								"output_all_rules",
+								"output_script",
+								"set_machine",
+								"set_make_type",
+								"set_compiler_type",
 								"usage",
 								"main"
 							],
@@ -678,189 +1089,17 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 6,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 61799,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "lib/omf.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3937,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								781,
-								791
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/omf/omf_data.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 216,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								216,
-								216
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/omf/omf_record_begin.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 616,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								472,
-								472
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "lib/omf/omf_record_end.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 113,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								41,
-								41
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/omf/omf_record_next.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2422,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								389,
-								389
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
 					"file": "omflist.c",
 					"semi_transient": false,
 					"settings":
@@ -872,8 +1111,8 @@
 						"selection":
 						[
 							[
-								3643,
-								3643
+								2858,
+								2859
 							]
 						],
 						"settings":
@@ -886,16 +1125,16 @@
 						"translation.y": 1563.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "lib/omf/omf_name.c",
+					"buffer": 2,
+					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2363,
+						"buffer_size": 63229,
 						"regions":
 						{
 						},
@@ -916,7 +1155,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -995,6 +1234,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"",
+				"lib\\omf.h"
+			],
 			[
 				"genma",
 				"genmakefile.c"
