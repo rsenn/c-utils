@@ -745,6 +745,11 @@ endif
 
 WARNINGS += no-unused-function
 
+$(info MSYS: $(MSYS))
+
+#ifeq ($(MSYS),1)
+#  CFLAGS += -I/usr/include/w32api
+#endif
 
 #CFLAGS = $(patsubst %,-W%,$(WARNINGS))
 DEFS := $(patsubst %,-D%,$(DEFINES))

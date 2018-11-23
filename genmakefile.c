@@ -1198,7 +1198,8 @@ output_ninja_rule(buffer* b, target* rule) {
   if(rule_name) {
     stralloc path;
     stralloc_init(&path);
-    stralloc_subst(&path, rule->name, str_len(rule->name), "\\", "/");
+    stralloc_subst(
+        &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");
 
     buffer_puts(b, "build ");
     buffer_putsa(b, &path);
@@ -1207,7 +1208,11 @@ output_ninja_rule(buffer* b, target* rule) {
     buffer_puts(b, " ");
 
     stralloc_zero(&path);
-    stralloc_subst(&path, rule->prereq.sa.s, rule->prereq.sa.len, "\\", "/");
+    stralloc_subst(&path,
+                   rule->prereq.sa.s,
+                   rule->prereq.sa.len,
+                   pathsep_args == '/' ? "\\" : "/",
+                   pathsep_args == '/' ? "/" : "\\");
 
     buffer_putsa(b, &path);
 
@@ -1786,6 +1791,8 @@ set_make_type(const char* make, const char* compiler) {
     make_begin_inline = "@<<\n\t";
     make_end_inline = "\n<<";
 
+    newline = "\r\n";
+
   } else if(str_start(make, "gmake") || str_start(make, "gnu")) {
 
     newline = "\n";
@@ -1961,6 +1968,8 @@ set_compiler_type(const char* compiler) {
      * Borland C++ Builder
      */
   } else if(str_start(compiler, "bcc")) {
+
+    pathsep_args = '\\';
 
     //    push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
     if(build_type == BUILD_TYPE_MINSIZEREL)

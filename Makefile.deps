@@ -2154,3 +2154,15 @@ $(BUILDDIR)linked_list_prepend.o: lib/hash_map/linked_list_prepend.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)linked_list_size.o: lib/hash_map/linked_list_size.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_get_symtab.o: lib/coff/coff_get_symtab.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_get_strtab.o: lib/coff/coff_get_strtab.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_symbol_table.o: lib/coff/coff_symbol_table.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h lib/range.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_storage_class.o: lib/coff/coff_storage_class.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_sclass_name.o: lib/coff/coff_sclass_name.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_putlong0.o: lib/buffer/buffer_putlong0.c lib/buffer.h lib/typedefs.h lib/fmt.h lib/uint32.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<

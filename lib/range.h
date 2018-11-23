@@ -34,10 +34,12 @@ range_index(range* r, size_t i) {
 }
 static inline void* range_next(range* r, void* ptr) { return (char*)ptr + r->elem_size; }
 
+static inline void* range_plus(range* r, void* ptr, size_t n) { return ((char*)ptr) + r->elem_size * n; }
+static inline void range_add(range* r, void** ptr, size_t n) { *ptr = ((char*)(*ptr)) + r->elem_size * n; }
+
 #define range_foreach(r, var) for(var = range_start(r); var != range_end(r); var = range_next(r, var))
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* defined RANGE_H */
-

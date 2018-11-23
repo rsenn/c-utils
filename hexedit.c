@@ -16,7 +16,7 @@
 #include "lib/byte.h"
 #include "lib/fmt.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <windows.h>
 #endif
 

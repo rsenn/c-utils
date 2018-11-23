@@ -1,7 +1,9 @@
 #include "../wait.h"
 #include "../windoze.h"
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+#include <windows.h>
+#else
 #include <sys/types.h>
 #include <sys/wait.h>
 #endif
