@@ -1,4 +1,5 @@
 #include "../omf.h"
+#include "../mmap.h"
 
 int
 omf_open(omf_file* omf, const char* filename) {

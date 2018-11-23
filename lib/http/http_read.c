@@ -105,7 +105,7 @@ http_read_header(http* h, http_response* r) {
     }
     stralloc_zero(&r->data);
   }
-  h->q.in.op = &http_socket_read;
+  h->q.in.op = (buffer_op_proto*)&http_socket_read;
   return ret;
 }
 

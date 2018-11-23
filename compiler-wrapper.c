@@ -15,7 +15,7 @@
 #include <io.h>
 #include <process.h>
 //#define spawnv _spawnv
-#define mkdir(file, mode) _mkdir(file)
+#define mkdir(file, mode) mkdir(file)
 #else
 #include <sys/wait.h>
 #endif
