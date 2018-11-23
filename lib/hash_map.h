@@ -130,4 +130,3 @@ bool hash_map_contains_key(hash_map *map, void *key);
 }
 #endif
 #endif
-
