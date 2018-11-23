@@ -40,7 +40,10 @@ typedef int32_t int32;
 
 #else
 typedef uint32_t uint32;
+
+#if !(defined(_WINSOCK2API_) && defined(__LCC__))
 typedef int32_t int32;
+#endif
 #endif
 
 #if !defined(NO_UINT32_MACROS)

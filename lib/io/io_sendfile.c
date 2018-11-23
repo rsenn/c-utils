@@ -1,10 +1,9 @@
-#if(defined(_WIN32) || defined(_WIN64)) && !defined(__ORANGEC__) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #define USE_WS2_32 1
-#define _WINSOCKAPI_
-#include <winsock2.h>
-#include <mswsock.h>
-#else
+#include "../windoze.h"
 #include "../socket_internal.h"
+
+#if WINDOWS_NATIVE
+#include <mswsock.h>
 #endif
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
 

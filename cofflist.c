@@ -31,6 +31,50 @@ put_hex(buffer* b, uint32 v) {
 }
 
 void
+coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
+
+  coff_symtab_entry* aux = coff_index_symtab(coff, uint32_get(&fn->func.tag_index));
+  coff_symtab_entry* bfef = coff_index_symtab(coff, uint32_get(&fn->func.tag_index) + 1);
+  coff_section_header* shdr = coff_get_section(coff, aux->e.scnum);
+  range ln = coff_line_numbers(coff, shdr);
+  coff_line_number* p;
+  const char* strtab = coff_get_strtab(coff, NULL);
+  int i = 0;
+
+  uint16 line_number = bfef->bfef.source_line_number;
+
+  buffer_putnlflush(b);
+  buffer_puts(b, "Line number entries: ");
+  buffer_putulong(b, range_size(&ln));
+  buffer_puts(b, ", Function start line number: ");
+  buffer_putulong(b, line_number);
+  buffer_putnlflush(b);
+
+  range_foreach(&ln, p) {
+
+    buffer_putulong0(b, i++, 3);
+    buffer_putspace(b);
+    if(p->line) {
+      buffer_puts(b, "line: ");
+      buffer_putulong(b, p->line);
+      buffer_puts(b, ", addr: ");
+      buffer_putulong(b, p->addr);
+      
+            buffer_puts(b, ", offset: ");
+      buffer_putxlong0(b, p->addr + uint32_get(&shdr->pointer_to_raw_data), 8);
+    } else {
+      coff_symtab_entry* sym = coff_index_symtab(coff, p->fname);
+    
+      buffer_puts(b, "fname: ");
+      buffer_puts(b, coff_symbol_name(coff, sym));
+    }
+    buffer_putnlflush(b);
+  }
+
+  buffer_putnlflush(b);
+}
+
+void
 coff_list_symbols(buffer* b, void* coff) {
   range symtab;
   const char* strtab = coff_get_strtab(coff, NULL);
@@ -73,12 +117,9 @@ coff_list_symbols(buffer* b, void* coff) {
     } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
       //   stralloc_cats(&name, "()");
       fn = range_plus(&symtab, e, 1);
-    } 
-    
-    
+    }
 
     stralloc_nul(&name);
-
 
     if(!isspace(name.s[0]) && name.s[0] != 0x08) {
       const char* sclass = coff_sclass_name(e->e.sclass);
@@ -103,27 +144,38 @@ coff_list_symbols(buffer* b, void* coff) {
     for(j = 0; j < numaux; ++j) {
       aux = range_plus(&symtab, e, 1 + j);
 
-      if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
+      if(!str_diffn(name.s, ".bf", 3) || !str_diffn(name.s, ".ef", 3)) {
+        buffer_puts(b, "Aux .bf/.ef def: ");
+        buffer_puts(b, ".source_line_number: ");
+        buffer_putulong(b, aux->bfef.source_line_number);
+        buffer_puts(b, ", .pointer_to_next_function: ");
+        buffer_putulong(b, aux->bfef.pointer_to_next_function);
+        buffer_putnlflush(b);
+
+      } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
         buffer_puts(b, "Aux function def: ");
         buffer_puts(b, ".bf_tag_index: ");
         buffer_putulong(b, aux->func.tag_index);
+
         buffer_puts(b, ", .code_size: ");
         buffer_putulong(b, aux->func.code_size);
-        buffer_puts(b, ", .pointer_to_line_number: ");
-        buffer_putulong(b, aux->func.pointer_to_line_number);
+        buffer_puts(b, ", .pointer_to_line_number: 0x");
+        buffer_putxlong0(b, aux->func.pointer_to_line_number, 8);
         buffer_puts(b, ", .pointer_to_next_function: ");
         buffer_putulong(b, aux->func.pointer_to_next_function);
         buffer_putnlflush(b);
+
+        coff_print_func(b, coff, aux);
       } else if(e->e.sclass == COFF_C_EXT && e->e.scnum == COFF_SECTION_UNDEF && e->e.value == 0) {
         buffer_puts(b, "Aux weak def: ");
         buffer_puts(b, ".tag_index: ");
         buffer_putulong(b, aux->weak.tag_index);
         buffer_puts(b, ", .characteristics: 0x");
-        buffer_putxlong0(b, aux->weak.characteristics, sizeof(aux->weak.characteristics)*2);
+        buffer_putxlong0(b, aux->weak.characteristics, sizeof(aux->weak.characteristics) * 2);
 
         buffer_putnlflush(b);
-       } else if(e->e.sclass == COFF_C_FILE) {
-       } else if(e->e.sclass == COFF_C_STATIC) {
+      } else if(e->e.sclass == COFF_C_FILE) {
+      } else if(e->e.sclass == COFF_C_STATIC) {
         buffer_puts(b, "Aux section def: ");
         buffer_puts(b, ".length: ");
         buffer_putulong(b, aux->section.length);
@@ -138,7 +190,7 @@ coff_list_symbols(buffer* b, void* coff) {
         buffer_puts(b, ", .selection: ");
         buffer_putulong(b, aux->section.selection);
         buffer_putnlflush(b);
-       }
+      }
     }
     e = range_plus(&symtab, e, numaux);
     i += numaux;

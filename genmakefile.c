@@ -1145,9 +1145,9 @@ void
 output_make_rule(buffer* b, target* rule) {
   int num_deps = strlist_count(&rule->prereq);
 
-  /*  if(array_length(&rule->deps, sizeof(target*))) {
+    if(array_length(&rule->deps, sizeof(target*))) {
       print_target_deps(b, rule);
-    }*/
+    }
 
   if(num_deps == 0 && str_diffn(rule->name, workdir.sa.s, workdir.sa.len)) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, "\n", 0);
