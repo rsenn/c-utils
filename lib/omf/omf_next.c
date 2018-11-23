@@ -7,6 +7,5 @@ omf_next(omf_record* rec) {
   if(l > 1024)
     l = 1024;
 
-  rec = (omf_record*)(r + 3 + l);
-  return rec;
+  return (omf_record*)(r + 3 + l);
 }

@@ -59,12 +59,12 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
       buffer_putulong(b, p->line);
       buffer_puts(b, ", addr: ");
       buffer_putulong(b, p->addr);
-      
-            buffer_puts(b, ", offset: ");
+
+      buffer_puts(b, ", offset: ");
       buffer_putxlong0(b, p->addr + uint32_get(&shdr->pointer_to_raw_data), 8);
     } else {
       coff_symtab_entry* sym = coff_index_symtab(coff, p->fname);
-    
+
       buffer_puts(b, "fname: ");
       buffer_puts(b, coff_symbol_name(coff, sym));
     }

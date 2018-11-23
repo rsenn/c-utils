@@ -849,22 +849,22 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
       strlist_foreach_s(&l, s) {
         dir.len = dlen;
-//        
+        //
 
         stralloc_catc(&dir, PATHSEP_C);
         stralloc_cats(&dir, s);
-         stralloc_nul(&dir);
+        stralloc_nul(&dir);
 
         stralloc_zero(&r);
         path_collapse(dir.s, &r);
-  
-     //   path_canonical_sa(&dir, &r);
+
+        //   path_canonical_sa(&dir, &r);
 
         strlist_push_unique_sa(&srcdir->includes, &r);
       }
 
-dir.len = dlen;
-debug_sa("srcdir", &dir);
+      dir.len = dlen;
+      debug_sa("srcdir", &dir);
       debug_sa("includes", &srcdir->includes);
 
       stralloc_free(&r);
@@ -1216,7 +1216,7 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
   stralloc_cats(&sa, libext);
 
-   debug_sa("lib_rule_for_sourcedir", &sa);
+  debug_sa("lib_rule_for_sourcedir", &sa);
 
   if((rule = get_rule_sa(&sa))) {
     sourcefile* pfile;
@@ -1621,9 +1621,9 @@ void
 output_make_rule(buffer* b, target* rule) {
   size_t num_deps = strlist_count(&rule->prereq);
 
-    if(array_length(&rule->deps, sizeof(target*))) {
-      print_target_deps(b, rule);
-    }
+  if(array_length(&rule->deps, sizeof(target*))) {
+    print_target_deps(b, rule);
+  }
 
   if(num_deps == 0 && str_diffn(rule->name, workdir.sa.s, workdir.sa.len)) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, "\n", 0);
@@ -2104,6 +2104,7 @@ set_compiler_type(const char* compiler) {
     format_linklib_fn = &format_linklib_switch;
 
     set_var("CC", "tcc");
+    set_var("AR", "$(CC) -ar");
 
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
       push_var("CFLAGS", "-g");
@@ -2114,8 +2115,9 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "-Wall");
     push_var("CPPFLAGS", "-D__TCC__=1");
 
-    set_command(&lib_command, "$(CC) -ar rcs $@", "$^");
+    set_command(&lib_command, "$(AR) rcs $@", "$^");
     set_command(&link_command, "$(CC) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
+
   } else if(str_start(compiler, "occ") || str_start(compiler, "orange")) {
     set_var("CC", "occ");
     set_var("LIB", "olib");
@@ -2305,7 +2307,7 @@ main(int argc, char* argv[]) {
                            {"relwithdebinfo", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},
                            {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
                            {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
-  {"define", 0, NULL, 'D'},
+                           {"define", 0, NULL, 'D'},
                            {0}};
 
   errmsg_iam(argv[0]);

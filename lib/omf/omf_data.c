@@ -8,7 +8,7 @@ omf_data(omf_record* rec) {
   if(n > 1024)
     n = 1024;
 
-  r.start = (char*)rec;
+  r.start = (char*)rec + 3;
   r.end = r.start + (r.elem_size = n);
   return r;
 }

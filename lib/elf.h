@@ -32,7 +32,7 @@ typedef uint16 elf64_versym;
                 ELF_FIELD_OFFS(elf64_##st, field),                                                                     \
                 ELF_FIELD_SIZE(elf64_##st, field))
 
-typedef struct {
+typedef struct __unaligned {
   uint8 e_ident[ELF_EI_NIDENT]; /* Magic number and other info */
   uint16 e_type;                /* Object file type */
   uint16 e_machine;             /* Architecture */
@@ -49,7 +49,7 @@ typedef struct {
   uint16 e_shstrndx;            /* Section header string table index */
 } elf32_ehdr;
 
-typedef struct {
+typedef struct __unaligned {
   uint8 e_ident[ELF_EI_NIDENT]; /* Magic number and other info */
   uint16 e_type;                /* Object file type */
   uint16 e_machine;             /* Architecture */
@@ -327,7 +327,7 @@ typedef struct {
 
 /* Symbol table entry.  */
 
-typedef struct {
+typedef struct  __unaligned {
   uint32 st_name;  /* Symbol name (string tbl index) */
   uint32 st_value; /* Symbol value */
   uint32 st_size;  /* Symbol size */
@@ -336,7 +336,7 @@ typedef struct {
   uint16 st_shndx; /* Section index */
 } elf32_sym;
 
-typedef struct {
+typedef struct __unaligned  {
   uint32 st_name;  /* Symbol name (string tbl index) */
   uint8 st_info;   /* Symbol type and binding */
   uint8 st_other;  /* Symbol visibility */
@@ -348,12 +348,12 @@ typedef struct {
 /* The syminfo section if available contains additional information about
    every dynamic symbol.  */
 
-typedef struct {
+typedef struct  __unaligned {
   uint16 si_boundto; /* Direct bindings, symbol bound to */
   uint16 si_flags;   /* Per symbol flags */
 } elf32_syminfo;
 
-typedef struct {
+typedef struct  __unaligned {
   uint16 si_boundto; /* Direct bindings, symbol bound to */
   uint16 si_flags;   /* Per symbol flags */
 } elf64_syminfo;
@@ -740,7 +740,7 @@ generally available.  */
 
 /* Version definition sections.  */
 
-typedef struct {
+typedef struct __unaligned  {
   uint16 vd_version; /* Version revision */
   uint16 vd_flags;   /* Version information */
   uint16 vd_ndx;     /* Version Index */
@@ -751,7 +751,7 @@ typedef struct {
                 entry */
 } elf32_verdef;
 
-typedef struct {
+typedef struct __unaligned {
   uint16 vd_version; /* Version revision */
   uint16 vd_flags;   /* Version information */
   uint16 vd_ndx;     /* Version Index */
@@ -793,7 +793,7 @@ typedef struct {
 
 /* Version dependency section.  */
 
-typedef struct {
+typedef struct __unaligned {
   uint16 vn_version; /* Version of structure */
   uint16 vn_cnt;     /* Number of associated aux entries */
   uint32 vn_file;    /* Offset of filename for this
@@ -803,7 +803,7 @@ typedef struct {
                 entry */
 } elf32_verneed;
 
-typedef struct {
+typedef struct __unaligned  {
   uint16 vn_version; /* Version of structure */
   uint16 vn_cnt;     /* Number of associated aux entries */
   uint32 vn_file;    /* Offset of filename for this
@@ -820,7 +820,7 @@ typedef struct {
 
 /* Auxiliary needed version information.  */
 
-typedef struct {
+typedef struct __unaligned {
   uint32 vna_hash;  /* Hash value of dependency name */
   uint16 vna_flags; /* Dependency specific information */
   uint16 vna_other; /* Unused */
@@ -829,7 +829,7 @@ typedef struct {
                entry */
 } elf32_vernaux;
 
-typedef struct {
+typedef struct  __unaligned {
   uint32 vna_hash;  /* Hash value of dependency name */
   uint16 vna_flags; /* Dependency specific information */
   uint16 vna_other; /* Unused */
@@ -969,7 +969,7 @@ typedef struct {
 #define ELF_NOTE_OS_FREEBSD 3
 
 /* Move records.  */
-typedef struct {
+typedef struct __unaligned  {
   uint64 m_value;   /* Symbol value.  */
   uint32 m_info;    /* Size and index.  */
   uint32 m_poffset; /* Symbol offset.  */
@@ -977,7 +977,7 @@ typedef struct {
   uint16 m_stride;  /* Stride info.  */
 } elf32_move;
 
-typedef struct {
+typedef struct __unaligned  {
   uint64 m_value;   /* Symbol value.  */
   uint64 m_info;    /* Size and index.  */
   uint64 m_poffset; /* Symbol offset.  */
@@ -1342,7 +1342,7 @@ typedef struct {
 
 /* Entries found in sections of type ELF_SHT_MIPS_OPTIONS.  */
 
-typedef struct {
+typedef struct __unaligned  {
   uint8 kind;     /* Determines interpretation of the
                  variable part of descriptor.  */
   uint8 size;     /* Size of descriptor, including header.  */
