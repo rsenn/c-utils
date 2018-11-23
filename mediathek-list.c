@@ -620,7 +620,7 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        str_basename(argv0),
-                       " [keywords...]\n",
+                       "[OPTIONS] [KEYWORDS...]\n",
                        "\n",
                        "Options\n",
                        "  -h, --help                show this help\n",
