@@ -1196,19 +1196,23 @@ output_ninja_rule(buffer* b, target* rule) {
     rule_name = "lib";
 
   if(rule_name) {
-    stralloc name;
-    stralloc_init(&name);
-    stralloc_subst(&name, rule->name, str_len(rule->name), "\\", "/");
+    stralloc path;
+    stralloc_init(&path);
+    stralloc_subst(&path, rule->name, str_len(rule->name), "\\", "/");
 
     buffer_puts(b, "build ");
-    buffer_putsa(b, &name);
+    buffer_putsa(b, &path);
     buffer_puts(b, ": ");
     buffer_puts(b, rule_name);
     buffer_puts(b, " ");
-    buffer_putsa(b, &rule->prereq.sa);
+
+    stralloc_zero(&path);
+    stralloc_subst(&path, rule->prereq.sa.s, rule->prereq.sa.len, "\\", "/");
+
+    buffer_putsa(b, &path);
 
     buffer_putnlflush(b);
-    stralloc_free(&name);
+    stralloc_free(&path);
   }
 }
 
@@ -1798,8 +1802,10 @@ set_make_type(const char* make, const char* compiler) {
     make_begin_inline = "<<\n\t";
     make_end_inline = "\n<<";
 
-  } else {
-    pathsep_make = '\\';
+  } else if(str_start(make, "ninja")) {
+    ninja = 1;
+    pathsep_make = '/';
+    newline = "\n";
   }
 
   pathsep_args = pathsep_make;
@@ -1814,7 +1820,7 @@ int
 set_compiler_type(const char* compiler) {
 
   push_var("CC", "cc");
-  push_var("CXX", "c++");
+   push_var("CXX", "c++");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o \"$@\" $<");
   set_command(&lib_command, "$(LIB) /out:$@", "$^");
