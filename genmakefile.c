@@ -99,7 +99,7 @@ static HMAP_DB *sourcedirs, *rules, *vars;
 static const char *compiler, *make;
 static const char* newline = "\n";
 static machine_type mach;
-static int batch;
+static int batch, ninja;
 
 static linklib_fmt* format_linklib_fn;
 
@@ -472,6 +472,30 @@ rule_command(target* rule, stralloc* out) {
     }
   }
   stralloc_free(&prereq);
+}
+
+void
+subst_var(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int tolower) {
+  size_t i;
+  stralloc_zero(out);
+  for(i = 0; i < in->len; ++i) {
+    const char* p = &in->s[i];
+
+    if(i + 4 <= in->len && *p == '$' && p[1] == '(') {
+      size_t vlen;
+      stralloc_cats(out, pfx);
+      i += 2;
+      vlen = byte_chr(&in->s[i], in->len - i, ')');
+      stralloc_catb(out, &in->s[i], vlen);
+      if(tolower)
+        byte_lower(&out->s[out->len - vlen], vlen);
+      stralloc_cats(out, sfx);
+      i += vlen;
+      continue;
+    }
+
+    stralloc_append(out, p);
+  }
 }
 
 /**
@@ -1118,7 +1142,7 @@ remove_indirect_deps(array* deps) {
  * Output rule to buffer
  */
 void
-output_rule(buffer* b, target* rule) {
+output_make_rule(buffer* b, target* rule) {
   int num_deps = strlist_count(&rule->prereq);
 
   /*  if(array_length(&rule->deps, sizeof(target*))) {
@@ -1158,6 +1182,34 @@ output_rule(buffer* b, target* rule) {
   }
 
   buffer_putnlflush(b);
+}
+
+void
+output_ninja_rule(buffer* b, target* rule) {
+  const char* rule_name = 0;
+
+  if(rule->recipe == &compile_command)
+    rule_name = "cc";
+  else if(rule->recipe == &link_command)
+    rule_name = "link";
+  else if(rule->recipe == &lib_command)
+    rule_name = "lib";
+
+  if(rule_name) {
+    stralloc name;
+    stralloc_init(&name);
+    stralloc_subst(&name, rule->name, str_len(rule->name), "\\", "/");
+
+    buffer_puts(b, "build ");
+    buffer_putsa(b, &name);
+    buffer_puts(b, ": ");
+    buffer_puts(b, rule_name);
+    buffer_puts(b, " ");
+    buffer_putsa(b, &rule->prereq.sa);
+
+    buffer_putnlflush(b);
+    stralloc_free(&name);
+  }
 }
 
 /**
@@ -1577,23 +1629,53 @@ gen_clean_rule(HMAP_DB* rules) {
  */
 void
 output_all_vars(buffer* b, HMAP_DB* vars) {
+  stralloc v;
   TUPLE* t;
+  stralloc_init(&v);
 
   hmap_foreach(vars, t) {
     strlist* var = hmap_data(t);
 
     if(var->sa.len) {
+      stralloc_copys(&v, t->key);
+      if(ninja)
+        stralloc_lower(&v);
+
+      stralloc_nul(&v);
 
       if(batch)
-        buffer_putm_internal(b, "SET ", t->key, "=", 0);
+        buffer_putm_internal(b, "SET ", v.s, "=", 0);
       else
-        buffer_putm_internal(b, t->key, " = ", 0);
+        buffer_putm_internal(b, v.s, " = ", 0);
 
-      buffer_putsa(b, &var->sa);
+      if(ninja) {
+        stralloc_zero(&v);
+        subst_var(&var->sa, &v, "$", "", 1);
+        buffer_putsa(b, &v);
+      } else {
+        buffer_putsa(b, &var->sa);
+      }
       put_newline(b, 0);
     }
   }
   put_newline(b, 1);
+}
+
+void
+output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
+  stralloc out;
+  stralloc_init(&out);
+
+  buffer_putm_internal(b, "rule ", name, "\n  command = ", 0);
+  subst_var(cmd, &out, "$", "", 1);
+  stralloc_replaces(&out, "$@", "$out");
+  stralloc_replaces(&out, "$<", "$in");
+  stralloc_replaces(&out, "$^", "$in");
+  stralloc_remove_all(&out, "\"", 1);
+  stralloc_removesuffixs(&out, "\n");
+  stralloc_removesuffixs(&out, "\r");
+  buffer_putsa(b, &out);
+  buffer_putsflush(b, "\n");
 }
 
 /**
@@ -1603,7 +1685,13 @@ void
 output_all_rules(buffer* b, HMAP_DB* hmap) {
   TUPLE* t;
 
-  hmap_foreach(hmap, t) { output_rule(b, t->vals.val_custom); }
+  hmap_foreach(hmap, t) {
+
+    if(ninja)
+      output_ninja_rule(b, t->vals.val_custom);
+    else
+      output_make_rule(b, t->vals.val_custom);
+  }
 }
 
 void
@@ -1641,55 +1729,6 @@ output_script(buffer* b, target* rule) {
 
   put_newline(b, flush);
   rule->serial = serial;
-}
-
-/**
- * Show command line usage
- */
-void
-usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(argv0),
-                       " [sources...]\n",
-                       "\n",
-                       "Options\n",
-                       "  -h, --help                show this help\n",
-                       "  -o, --output FILE         write to file\n"
-                       "  -O, --objext EXT          object file extension\n",
-
-                       "  -B, --exeext EXT          binary file extension\n",
-                       "  -L, --libext EXT          library file extension\n",
-                       "  -l, --create-libs         create rules for libraries\n",
-                       "  -o, --create-objs         create rules for objects\n",
-                       "  -b, --create-bins         create rules for programs\n",
-                       "  -d, --builddir            build directory\n",
-                       "  -t, --compiler-type TYPE   compiler type, one of:\n"
-                       "\n"
-                       "     gcc         GNU make\n"
-                       "     bcc55       Borland C++ Builder 5.5\n"
-                       "     bcc32       Borland C++ Builder new\n"
-                       "     lcc         lcc make\n"
-                       "     tcc         Tinycc make\n"
-                       "     msvc        Visual C++ NMake\n"
-                       "     icl         Intel C++ NMake\n"
-                       "     clang       LLVM NMake\n"
-                       "     occ         OrangeC\n"
-                       "     dmc         Digital Mars C++\n"
-                       "     pocc        Pelles-C\n"
-                       "\n",
-                       "  -m, --make-type TYPE      make program type, one of:\n"
-                       "\n"
-                       "     nmake       Microsoft NMake\n"
-                       "     borland     Borland Make\n"
-                       "     gmake       GNU Make\n"
-                       "     omake       OrangeCC Make\n"
-                       "     pomake      Pelles-C Make\n"
-                       "     make        Other make\n"
-                       "     batch       Windows batch (.bat .cmd)\n"
-                       "\n",
-                       0);
-  buffer_putnlflush(buffer_1);
 }
 
 /**
@@ -1928,12 +1967,9 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "-q");
 
     if(build_type == BUILD_TYPE_DEBUG)
-          push_var("CFLAGS", "-w");
+      push_var("CFLAGS", "-w");
 
-
-    
-
-        if(build_type == BUILD_TYPE_MINSIZEREL)
+    if(build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "-d -a-");
 
     /* Embracadero C++ */
@@ -1959,9 +1995,9 @@ set_compiler_type(const char* compiler) {
 
       push_var("CFLAGS", "-ff -fp");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
-      push_var("CFLAGS", "-y");
-    
+      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+        push_var("CFLAGS", "-y");
+
       if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
         push_var("CFLAGS", "-v");
         push_var("LDFLAGS", "-v");
@@ -2150,6 +2186,57 @@ set_compiler_type(const char* compiler) {
 
   return 1;
 }
+
+/**
+ * Show command line usage
+ */
+void
+usage(char* argv0) {
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(argv0),
+                       " [sources...]\n",
+                       "\n",
+                       "Options\n",
+                       "  -h, --help                show this help\n",
+                       "  -o, --output FILE         write to file\n"
+                       "  -O, --objext EXT          object file extension\n",
+
+                       "  -B, --exeext EXT          binary file extension\n",
+                       "  -L, --libext EXT          library file extension\n",
+                       "  -l, --create-libs         create rules for libraries\n",
+                       "  -o, --create-objs         create rules for objects\n",
+                       "  -b, --create-bins         create rules for programs\n",
+                       "  -d, --builddir            build directory\n",
+                       "  -t, --compiler-type TYPE   compiler type, one of:\n"
+                       "\n"
+                       "     gcc         GNU make\n"
+                       "     bcc55       Borland C++ Builder 5.5\n"
+                       "     bcc32       Borland C++ Builder new\n"
+                       "     lcc         lcc make\n"
+                       "     tcc         Tinycc make\n"
+                       "     msvc        Visual C++ NMake\n"
+                       "     icl         Intel C++ NMake\n"
+                       "     clang       LLVM NMake\n"
+                       "     occ         OrangeC\n"
+                       "     dmc         Digital Mars C++\n"
+                       "     pocc        Pelles-C\n"
+                       "\n",
+                       "  -m, --make-type TYPE      make program type, one of:\n"
+                       "\n"
+                       "     nmake       Microsoft NMake\n"
+                       "     borland     Borland Make\n"
+                       "     gmake       GNU Make\n"
+                       "     omake       OrangeCC Make\n"
+                       "     pomake      Pelles-C Make\n"
+                       "     make        Other make\n"
+                       "     batch       Windows batch (.bat .cmd)\n"
+                       "     ninja       Ninja build\n"
+                       "\n",
+                       0);
+  buffer_putnlflush(buffer_1);
+}
+
 static stralloc tmp;
 
 int
@@ -2264,6 +2351,7 @@ main(int argc, char* argv[]) {
     make = "make";
 
   batch = str_start(make, "bat") || str_start(make, "cmd");
+  ninja = make[str_find(make, "ninja")] != '\0';
 
   if(compiler == NULL)
     compiler = "gcc";
@@ -2435,6 +2523,13 @@ main(int argc, char* argv[]) {
 
   fail:
     output_all_vars(buffer_1, vars);
+
+    if(ninja) {
+      output_build_rules(buffer_1, "cc", &compile_command);
+      output_build_rules(buffer_1, "link", &link_command);
+      output_build_rules(buffer_1, "lib", &lib_command);
+      put_newline(buffer_1, 0);
+    }
 
     if(batch)
       output_script(buffer_1, NULL);
