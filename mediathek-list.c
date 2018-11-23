@@ -15,6 +15,7 @@
 #include "lib/strarray.h"
 #include "lib/strlist.h"
 #include "lib/windoze.h"
+#include "lib/errmsg.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -48,7 +49,6 @@ void* __declspec(dllimport) popen(const char*, const char*);
 extern char strlist_dumpx[5];
 
 static const char* dt_fmt = "%Y%m%d %H:%M";
-char* argv0;
 
 /*
 http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz
@@ -590,12 +590,35 @@ parse_mediathek_list(int fd) {
   return 0;
 }
 
+/**
+ * Show command line usage
+ */
+void
+usage(char* argv0) {
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(argv0),
+                       " [keywords...]\n",
+                       "\n",
+                       "Options\n",
+                       "  -h, --help                show this help\n",
+                       "  -F                        date/time format\n",
+                       "  -t HH:MM:SS               minimum length\n",
+                       "  -i KEYWORD                include entries matching\n",
+                       "  -x KEYWORD                exclude entries matching\n",
+                       "\n",
+                       0);
+  buffer_putnlflush(buffer_1);
+}
+
 int
 main(int argc, char* argv[]) {
 
   int opt;
 
   min_length = 0;
+
+errmsg_iam(argv[0]);
 
   while((opt = getopt(argc, argv, "F:dt:i:x:")) != -1) {
     switch(opt) {
@@ -604,7 +627,8 @@ main(int argc, char* argv[]) {
       case 't': min_length = parse_time(optarg); break;
       case 'i': strlist_push(&include, optarg); break;
       case 'x': strlist_push(&exclude, optarg); break;
-      default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], " [-t HH:MM:SS]\n"); exit(EXIT_FAILURE);
+      default:
+         usage(argv[0]); exit(EXIT_FAILURE);
     }
   }
 
