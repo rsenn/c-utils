@@ -1,9 +1,10 @@
+#include "../windoze.h"
 #ifdef _WIN32
 #define cmsghdr wsacmsghdr
 #endif
 
 #if WINDOWS
-#include "io_internal.h"
+#include "../io_internal.h"
 #include <errno.h>
 int
 io_passfd(fd_t sock, fd_t fd) {
@@ -25,9 +26,9 @@ io_passfd(fd_t sock, fd_t fd) {
 #define _XOPEN_SOURCE
 #define _XOPEN_SOURCE_EXTENDED 1
 #endif
-#include "io_internal.h"
+#include "../io_internal.h"
 #include <errno.h>
-#include "typedefs.h"
+#include "../typedefs.h"
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>

@@ -860,8 +860,6 @@ $(BUILDDIR)io_wantread.o: lib/io/io_wantread.c lib/socket_internal.h lib/windoze
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)io_wantwrite.o: lib/io/io_wantwrite.c lib/socket_internal.h lib/windoze.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/io_internal.h lib/array.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/io.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)io_passfd.o: lib/io_passfd.c lib/io_internal.h lib/windoze.h lib/array.h lib/typedefs.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/io.h
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)json_free.o: lib/json/json_free.c lib/json.h lib/charbuf.h lib/typedefs.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/slist.h lib/uint64.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)json_newnode.o: lib/json/json_newnode.c lib/byte.h lib/typedefs.h lib/json.h lib/charbuf.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/slist.h lib/uint64.h
@@ -2083,4 +2081,76 @@ $(BUILDDIR)coff_header.o: lib/coff/coff_header.c
 $(BUILDDIR)stralloc_replacec.o: lib/stralloc/stralloc_replacec.c lib/stralloc.h lib/typedefs.h lib/byte.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)stralloc_replaces.o: lib/stralloc/stralloc_replaces.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_clear.o: lib/hash_map/hash_map_clear.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_contains_key.o: lib/hash_map/hash_map_contains_key.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_default_comparator.o: lib/hash_map/hash_map_default_comparator.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_default_hash_func.o: lib/hash_map/hash_map_default_hash_func.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_free.o: lib/hash_map/hash_map_free.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_get.o: lib/hash_map/hash_map_get.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_init.o: lib/hash_map/hash_map_init.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_keys.o: lib/hash_map/hash_map_keys.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_put.o: lib/hash_map/hash_map_put.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_remove.o: lib/hash_map/hash_map_remove.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_size.o: lib/hash_map/hash_map_size.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_clear.o: lib/hash_map/hash_map_clear.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_contains_key.o: lib/hash_map/hash_map_contains_key.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_default_comparator.o: lib/hash_map/hash_map_default_comparator.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_default_hash_func.o: lib/hash_map/hash_map_default_hash_func.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_free.o: lib/hash_map/hash_map_free.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_get.o: lib/hash_map/hash_map_get.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_init.o: lib/hash_map/hash_map_init.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_keys.o: lib/hash_map/hash_map_keys.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_put.o: lib/hash_map/hash_map_put.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_remove.o: lib/hash_map/hash_map_remove.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hash_map_size.o: lib/hash_map/hash_map_size.c lib/linked_list.h lib/typedefs.h lib/memory.h lib/hash_map.h lib/linked_list.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io_passfd.o: lib/io/io_passfd.c lib/windoze.h lib/io_internal.h lib/windoze.h lib/array.h lib/typedefs.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/io.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_append.o: lib/hash_map/linked_list_append.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_free.o: lib/hash_map/linked_list_free.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_head.o: lib/hash_map/linked_list_head.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_init.o: lib/hash_map/linked_list_init.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_prepend.o: lib/hash_map/linked_list_prepend.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_size.o: lib/hash_map/linked_list_size.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io_passfd.o: lib/io/io_passfd.c lib/windoze.h lib/io_internal.h lib/windoze.h lib/array.h lib/typedefs.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/io.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_append.o: lib/hash_map/linked_list_append.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_free.o: lib/hash_map/linked_list_free.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_head.o: lib/hash_map/linked_list_head.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_init.o: lib/hash_map/linked_list_init.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_prepend.o: lib/hash_map/linked_list_prepend.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)linked_list_size.o: lib/hash_map/linked_list_size.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<

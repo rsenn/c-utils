@@ -1820,7 +1820,7 @@ int
 set_compiler_type(const char* compiler) {
 
   push_var("CC", "cc");
-   push_var("CXX", "c++");
+  push_var("CXX", "c++");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o \"$@\" $<");
   set_command(&lib_command, "$(LIB) /out:$@", "$^");
@@ -2024,7 +2024,7 @@ set_compiler_type(const char* compiler) {
     push_lib("STDC_LIBS", "cw32");
     push_lib("STDC_LIBS", "import32");
 
-    set_command(&lib_command, "$(LIB)", "/a /u \"$@\" $^");
+    set_command(&lib_command, "$(LIB) /p256 \"$@\" /u", "$^");
 
     /*
      * LCC compiler

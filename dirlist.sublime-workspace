@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "TESTS\nTESTS\nTESTS\nSTART",
+			"contents": "MAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PATHSEP\nDEFAULT_PATHSEP\nvoid\nput_newline\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_s\npath_prefix_b\npath_extension\npath_object\npath_wildcard\nextract_build_type\nformat_linklib_lib\nformat_linklib_switch\nformat_linklib_dummy\nscan_main\nhas_main\nextract_includes\nget_includes\nrule_command\nsubst_var\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nget_var\nset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\noutput_make_rule\noutput_ninja_rule\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\nlib_rule_for_sourcedir\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_compile_rules\ngen_lib_rules\ngen_link_rules\ngen_clean_rule\noutput_all_vars\noutput_build_rules\noutput_all_rules\noutput_script\nset_machine\nset_make_type\nset_compiler_type\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 23,
+				"buffer_size": 1298,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -29,7 +29,7 @@
 			"file": "httptest.c",
 			"settings":
 			{
-				"buffer_size": 2859,
+				"buffer_size": 3038,
 				"line_ending": "Unix"
 			}
 		},
@@ -37,8 +37,16 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 56593,
+				"buffer_size": 60687,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/array.h",
+			"settings":
+			{
+				"buffer_size": 2313,
 				"line_ending": "Unix"
 			}
 		},
@@ -57,7 +65,7 @@
 			"file": "tests/test_stralloc.c",
 			"settings":
 			{
-				"buffer_size": 9563,
+				"buffer_size": 7229,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -84,14 +92,6 @@
 			{
 				"buffer_size": 266,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "tests/unit_test.h",
-			"settings":
-			{
-				"buffer_size": 8247,
 				"line_ending": "Unix"
 			}
 		}
@@ -274,7 +274,7 @@
 	"expanded_folders":
 	[
 		"/C/Users/roman/Desktop/dirlist",
-		"/C/Users/roman/Desktop/dirlist/tests"
+		"/C/Users/roman/Desktop/dirlist/lib"
 	],
 	"file_history":
 	[
@@ -423,6 +423,22 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"name",
+			"subst_var",
+			"varname",
+			"output_ninja",
+			"output_make_rule",
+			"output_rule(",
+			"subst_var",
+			"rule_command",
+			"atch;",
+			"TRUE",
+			"print_target",
+			"putnlflush",
+			"find_rule_b",
+			"all =",
+			"output_rule",
+			"set_make_type",
 			"dmc",
 			"\"cc\"",
 			"path_prefix_s",
@@ -534,23 +550,7 @@
 			"SOFTPWM",
 			"number",
 			"USE_HD44780_LCD",
-			"TRISA",
-			"RA",
-			"def",
-			"chipl",
-			":65",
-			"BUILDDIR",
-			"-I",
-			"CPPFLAGS",
-			"-I",
-			"to_amount",
-			"led_enabled",
-			"LED_PIN",
-			"LED_",
-			"UART_",
-			"uart_",
-			"#warning",
-			"uart_"
+			"TRISA"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -558,6 +558,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"path",
+			"v",
 			"",
 			"last_error",
 			"\\\\",
@@ -612,7 +614,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 23,
+						"buffer_size": 1298,
 						"regions":
 						{
 						},
@@ -622,38 +624,483 @@
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\tests\\unit_test_runner.c",
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\genmakefile.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									158,
-									163
+									505,
+									516
 								],
 								[
-									175,
-									180
+									531,
+									545
 								],
 								[
-									191,
-									196
+									561,
+									575
 								],
 								[
-									205,
-									210
+									591,
+									605
+								],
+								[
+									617,
+									631
+								],
+								[
+									653,
+									664
+								],
+								[
+									679,
+									693
+								],
+								[
+									707,
+									721
+								],
+								[
+									735,
+									749
+								],
+								[
+									764,
+									778
+								],
+								[
+									817,
+									832
+								],
+								[
+									852,
+									867
+								],
+								[
+									1466,
+									1470
+								],
+								[
+									2264,
+									2275
+								],
+								[
+									2368,
+									2379
+								],
+								[
+									2676,
+									2689
+								],
+								[
+									2886,
+									2894
+								],
+								[
+									3060,
+									3067
+								],
+								[
+									3231,
+									3239
+								],
+								[
+									3663,
+									3672
+								],
+								[
+									3840,
+									3848
+								],
+								[
+									3863,
+									3871
+								],
+								[
+									3886,
+									3893
+								],
+								[
+									3908,
+									3917
+								],
+								[
+									4168,
+									4181
+								],
+								[
+									4711,
+									4724
+								],
+								[
+									5088,
+									5102
+								],
+								[
+									5355,
+									5366
+								],
+								[
+									5901,
+									5914
+								],
+								[
+									6265,
+									6283
+								],
+								[
+									6515,
+									6533
+								],
+								[
+									6719,
+									6740
+								],
+								[
+									6901,
+									6921
+								],
+								[
+									7036,
+									7045
+								],
+								[
+									7549,
+									7557
+								],
+								[
+									7783,
+									7799
+								],
+								[
+									8774,
+									8786
+								],
+								[
+									9033,
+									9045
+								],
+								[
+									10487,
+									10496
+								],
+								[
+									11110,
+									11118
+								],
+								[
+									11656,
+									11667
+								],
+								[
+									11747,
+									11756
+								],
+								[
+									12104,
+									12116
+								],
+								[
+									12197,
+									12208
+								],
+								[
+									12417,
+									12425
+								],
+								[
+									12681,
+									12692
+								],
+								[
+									13036,
+									13047
+								],
+								[
+									13231,
+									13241
+								],
+								[
+									13545,
+									13555
+								],
+								[
+									13951,
+									13962
+								],
+								[
+									14256,
+									14263
+								],
+								[
+									14659,
+									14666
+								],
+								[
+									14842,
+									14850
+								],
+								[
+									14966,
+									14977
+								],
+								[
+									15111,
+									15119
+								],
+								[
+									15328,
+									15336
+								],
+								[
+									15835,
+									15851
+								],
+								[
+									16112,
+									16125
+								],
+								[
+									16343,
+									16362
+								],
+								[
+									17963,
+									17978
+								],
+								[
+									18483,
+									18499
+								],
+								[
+									19320,
+									19331
+								],
+								[
+									19965,
+									19990
+								],
+								[
+									20413,
+									20428
+								],
+								[
+									20785,
+									20805
+								],
+								[
+									21128,
+									21141
+								],
+								[
+									21485,
+									21496
+								],
+								[
+									21649,
+									21668
+								],
+								[
+									22701,
+									22718
+								],
+								[
+									23389,
+									23419
+								],
+								[
+									23853,
+									23873
+								],
+								[
+									24214,
+									24230
+								],
+								[
+									25123,
+									25140
+								],
+								[
+									26083,
+									26096
+								],
+								[
+									26361,
+									26377
+								],
+								[
+									26699,
+									26714
+								],
+								[
+									26942,
+									26964
+								],
+								[
+									27549,
+									27562
+								],
+								[
+									28815,
+									28829
+								],
+								[
+									29102,
+									29117
+								],
+								[
+									29467,
+									29484
+								],
+								[
+									30001,
+									30014
+								],
+								[
+									30561,
+									30575
+								],
+								[
+									33487,
+									33501
+								],
+								[
+									34983,
+									34998
+								],
+								[
+									35632,
+									35650
+								],
+								[
+									36170,
+									36186
+								],
+								[
+									36385,
+									36398
+								],
+								[
+									37022,
+									37033
+								],
+								[
+									37448,
+									37461
+								],
+								[
+									38624,
+									38641
+								],
+								[
+									50398,
+									50403
+								],
+								[
+									52800,
+									52804
 								]
 							],
 							"symlist":
 							[
-								"TESTS",
-								"TESTS",
-								"TESTS",
-								"START"
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"DEFAULT_PATHSEP",
+								"DEFAULT_PATHSEP",
+								"void",
+								"put_newline",
+								"set_command",
+								"strarray_dump",
+								"debug_sa",
+								"debug_s",
+								"debug_sl",
+								"debug_int",
+								"debug_sa",
+								"debug_sl",
+								"debug_s",
+								"debug_int",
+								"path_prefix_s",
+								"path_prefix_b",
+								"path_extension",
+								"path_object",
+								"path_wildcard",
+								"extract_build_type",
+								"format_linklib_lib",
+								"format_linklib_switch",
+								"format_linklib_dummy",
+								"scan_main",
+								"has_main",
+								"extract_includes",
+								"get_includes",
+								"rule_command",
+								"subst_var",
+								"get_rule",
+								"get_rule_sa",
+								"find_rule",
+								"find_rule_sa",
+								"find_rule_b",
+								"add_path",
+								"add_srcpath",
+								"add_path_sa",
+								"new_source",
+								"add_source",
+								"get_sources",
+								"get_var",
+								"set_var",
+								"push_var",
+								"push_var_sa",
+								"push_lib",
+								"with_lib",
+								"get_rules_by_cmd",
+								"dirname_alloc",
+								"populate_sourcedirs",
+								"dump_sourcedirs",
+								"includes_to_libs",
+								"target_ptrs",
+								"target_dep_list_recursive",
+								"target_dep_list",
+								"target_deps_indirect",
+								"deps_indirect",
+								"deps_direct",
+								"print_target_deps_r",
+								"print_target_deps",
+								"remove_indirect_deps_recursive",
+								"remove_indirect_deps",
+								"output_make_rule",
+								"output_ninja_rule",
+								"get_sourcedir",
+								"get_sourcedir_sa",
+								"get_sourcedir_b",
+								"lib_rule_for_sourcedir",
+								"deps_for_libs",
+								"target_add_dep",
+								"target_add_deps",
+								"gen_compile_rules",
+								"gen_lib_rules",
+								"gen_link_rules",
+								"gen_clean_rule",
+								"output_all_vars",
+								"output_build_rules",
+								"output_all_rules",
+								"output_script",
+								"set_machine",
+								"set_make_type",
+								"set_compiler_type",
+								"usage",
+								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 5.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 8,
@@ -662,7 +1109,7 @@
 			]
 		},
 		{
-			"selected": 6,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -671,15 +1118,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2859,
+						"buffer_size": 3038,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								938,
-								938
+								0,
+								0
 							]
 						],
 						"settings":
@@ -701,15 +1148,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 56593,
+						"buffer_size": 60687,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								49022,
-								49022
+								45310,
+								45309
 							]
 						],
 						"settings":
@@ -719,14 +1166,42 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 26398.0,
+						"translation.y": 25978.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
+					"file": "lib/array.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2313,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1745,
+								1760
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 246.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "tests/test_strlist.c",
 					"semi_transient": false,
 					"settings":
@@ -752,24 +1227,24 @@
 						"translation.y": 6275.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 5,
 					"file": "tests/test_stralloc.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9563,
+						"buffer_size": 7229,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								637,
-								637
+								0,
+								0
 							]
 						],
 						"settings":
@@ -782,11 +1257,11 @@
 						"translation.y": 166.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 6,
 					"file": "tests/all_tests.c",
 					"semi_transient": false,
 					"settings":
@@ -810,11 +1285,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 7,
 					"file": "tests/unit_test.c",
 					"semi_transient": false,
 					"settings":
@@ -840,11 +1315,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 8,
 					"file": "tests/unit_test_runner.c",
 					"semi_transient": false,
 					"settings":
@@ -863,36 +1338,6 @@
 						"settings":
 						{
 							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "tests/unit_test.h",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 8247,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -968,7 +1413,7 @@
 	"project": "dirlist.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 72.0
 	},
 	"save_all_on_build": true,
 	"select_file":
