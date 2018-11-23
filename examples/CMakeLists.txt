@@ -19,8 +19,14 @@ set(EXAMPLES
    #utf8
   )
 foreach(EXAMPLE ${EXAMPLES})
+  if(EXISTS "${EXAMPLE}_example.c")
+    set(SOURCE "${EXAMPLE}_example.c")
+  else(EXISTS "${EXAMPLE}_example.c")
+    set(SOURCE "${EXAMPLE}.c")
+  endif(EXISTS "${EXAMPLE}_example.c")
+    
 #  message("Example: ${EXAMPLE}")
-  add_executable(example_${EXAMPLE} "${EXAMPLE}.c")
+add_executable(example_${EXAMPLE} "${SOURCE}")
 target_link_libraries(example_${EXAMPLE} io)
 endforeach(EXAMPLE ${EXAMPLES})
 
