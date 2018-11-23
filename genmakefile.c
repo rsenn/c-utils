@@ -813,7 +813,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
     if((x = mmap_read(*srcfile, &n)) != 0) {
       const char* s;
-      size_t dlen = dir.len;
+      size_t dlen;
       sourcedir* srcdir;
       sourcefile* file = new_source(*srcfile);
       stralloc r;
@@ -822,6 +822,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
       strlist_init(&l, '\0');
 
       path_dirname(*srcfile, &dir);
+      dlen = dir.len;
 
       // debug_sa("path_dirname(*srcfile)", &dir);
 
@@ -835,7 +836,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
         newdir.n_sources = 1;
         newdir.sources = &file->link;
-        strlist_init(&newdir.includes, '\0');
+        strlist_init(&newdir.includes, ' ');
 
         hmap_set(&sourcedirs, dir.s, dir.len + 1, &newdir, sizeof(newdir));
 
@@ -848,17 +849,23 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
       strlist_foreach_s(&l, s) {
         dir.len = dlen;
+//        
+
         stralloc_catc(&dir, PATHSEP_C);
         stralloc_cats(&dir, s);
+         stralloc_nul(&dir);
 
-
-        debug_sa("srcdir includes", &dir);
+        stralloc_zero(&r);
+        path_collapse(dir.s, &r);
+  
      //   path_canonical_sa(&dir, &r);
 
-
-
-       // strlist_push_unique_sa(&srcdir->includes, &r);
+        strlist_push_unique_sa(&srcdir->includes, &r);
       }
+
+dir.len = dlen;
+debug_sa("srcdir", &dir);
+      debug_sa("includes", &srcdir->includes);
 
       stralloc_free(&r);
       strlist_free(&l);

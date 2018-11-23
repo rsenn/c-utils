@@ -35,6 +35,8 @@ mingw | mingw32 | mingw64 {
  QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 }
 
+DEFINES += DEBUG=1
+
 !*msvc* {
  DEFINES += INLINE=inline
 
@@ -57,7 +59,6 @@ SOURCES = genmakefile.c lib/array/array_allocate.c lib/array/array_catb.c lib/ar
     lib/buffer/buffer_putsflush.c \
     lib/byte/byte_lower.c \
     lib/stralloc/stralloc_subst.c \
-    lib/stralloc/stralloc_replaces.c \
     lib/stralloc/stralloc_replacec.c \
     lib/stralloc/stralloc_removesuffixs.c \
     lib/strarray/strarray_glob.c \
