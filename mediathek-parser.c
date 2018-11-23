@@ -80,7 +80,8 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
 
   array_trunc(x);
 
-  if((n = byte_chr(p, end - p, '\n')) != (unsigned)(end - p)) end = p + n;
+  if((n = byte_chr(p, end - p, '\n')) != (unsigned)(end - p))
+    end = p + n;
 
   while(p < end && *p != '"') ++p;
 
@@ -122,7 +123,8 @@ strarray_dump(buffer* b, const array* a) {
   buffer_puts(b, "[ \"");
   while(ac--) {
     buffer_puts(b, *av);
-    if(ac > 0) buffer_puts(b, "\", \"");
+    if(ac > 0)
+      buffer_puts(b, "\", \"");
     ++av;
   }
   buffer_putsflush(b, "\" ]\n");
@@ -163,9 +165,11 @@ cleanup_text(char* t) {
 
   for(i = 0; (c = t[i]); ++i) {
 
-    if(isdelim(c) && isdelim(prev)) continue;
+    if(isdelim(c) && isdelim(prev))
+      continue;
 
-    if(isdelim(c)) c = ' ';
+    if(isdelim(c))
+      c = ' ';
     stralloc_append(&out, &c);
     prev = c;
   }
@@ -255,8 +259,10 @@ process_entry(const array* a) {
       }
     }
 
-    if(str_len(thema) == 0) return;
-    if(d < 20 * 60) return;
+    if(str_len(thema) == 0)
+      return;
+    if(d < 20 * 60)
+      return;
 
     cleanup_text(thema);
     cleanup_text(title);
@@ -293,7 +299,8 @@ process_entry(const array* a) {
 
   while(ac > 0) {
     --ac;
-    if(av[ac]) free(av[ac]);
+    if(av[ac])
+      free(av[ac]);
   }
 }
 
@@ -365,7 +372,8 @@ process_input(buffer* input) {
   stralloc_init(&sa);
   strlist_init(&fields, '\0');
 
-  if(csv == 0) buffer_puts(buffer_1, "#EXTM3U\r\n");
+  if(csv == 0)
+    buffer_puts(buffer_1, "#EXTM3U\r\n");
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
@@ -398,15 +406,12 @@ main(int argc, char* argv[]) {
   buffer b;
 
   struct longopt opts[] = {
-      {"csv", 0, NULL, 'c'},
-      {"debug", 0, NULL, 'd'},
-      {"low", 0, NULL, 'l'},
-      {"format", 1, NULL, 'F'},
-      {0},
+      {"csv", 0, NULL, 'c'}, {"debug", 0, NULL, 'd'}, {"low", 0, NULL, 'l'}, {"format", 1, NULL, 'F'}, {0},
   };
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {
-    if(opt == 0) continue;
+    if(opt == 0)
+      continue;
 
     switch(opt) {
       case 'c': csv = 1; break;
