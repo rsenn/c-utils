@@ -2135,7 +2135,7 @@ set_compiler_type(const char* compiler) {
     push_lib("DEFAULT_LIBS", "climp");
 
     stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) \"-o$@\" \"/I;\" $<");
-    stralloc_copys(&lib_command, "$(LIB) /! \"$@\" $^");
+    set_command(&lib_command, "$(LIB) /!", "\"$@\" * $^");
     set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o\"$@\"", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
 
   } else if(str_start(compiler, "8cc")) {
