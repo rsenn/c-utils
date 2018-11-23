@@ -1283,7 +1283,7 @@ deps_for_libs(HMAP_DB* rules) {
       strlist_sub(&libs, &indir);
 
 // debug_sl("direct", &libs);
-#if DEBUG
+#if DEBUG_OUTPUT
       // print_target_deps(buffer_2, lib);
       buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
       buffer_putsa(buffer_2, &libs.sa);

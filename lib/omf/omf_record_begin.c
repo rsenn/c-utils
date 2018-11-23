@@ -9,7 +9,7 @@ omf_record_begin(omf_record* rec) {
     /* OMF_PUBDEF */
     case 0x91:
     case 0x90: {
-      uint16 group_index, segment_index;
+      int16 group_index, segment_index;
 
       p = omf_read_index(p, &group_index);
       p = omf_read_index(p, &segment_index);
