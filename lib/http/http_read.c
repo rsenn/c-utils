@@ -58,6 +58,8 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   } else if(s == -1) {
     if(errno != EWOULDBLOCK && errno != EAGAIN) {
       r->status = HTTP_STATUS_ERROR;
+    } else {
+      errno = 0;
     }
   }
   if(s > 0) {

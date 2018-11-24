@@ -23,7 +23,12 @@ http_get(http* h, const char* location) {
   uint32 serial = 0;
 
   if(location[0] != '/') {
-    size_t len = str_chr(location, '/');
+    size_t len;
+
+    if(location[len = str_findb(location, "://", 3)])
+      location += len + 3;
+
+    len = str_chr(location, '/');
     stralloc_copyb(&h->host, location, len);
     location += len;
   }
