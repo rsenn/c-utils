@@ -158,7 +158,7 @@ endfunction(add_program PROG)
 
 add_program(binfmttest binfmt)
 add_program(bsdiffcat buffer array byte errmsg uint32 uint64)
-add_program(buffertest stralloc buffer mmap)
+add_program(buffertest stralloc buffer array case mmap)
 add_program(ccat buffer open str unix)
 add_program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 add_program(count-depth buffer fmt)
