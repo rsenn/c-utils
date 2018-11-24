@@ -10,8 +10,8 @@
  ],
             
             "file_exclude_patterns": [ 
-                ".*",
-                "*.stackdump",
+                ".*", "testlog-*", "faillog-*", "libtmp*",
+                "*.stackdump", "*.tmp*",
                  "*.o",
                 "*.d",
                 "*#*",
