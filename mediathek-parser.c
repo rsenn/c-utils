@@ -144,6 +144,15 @@ dump_long(buffer* b, const char* name, long value) {
   buffer_putlong(b, value);
   buffer_putnlflush(b);
 }
+
+void
+get_domain(const char* url, stralloc* d) {
+  while(*url && *url != ':') ++url;
+  ++url;
+  while(*url && *url == '/') ++url;
+  stralloc_copyb(d, url, str_chr(url, '/'));
+}
+
 #define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
 
 void
