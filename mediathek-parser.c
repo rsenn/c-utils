@@ -211,7 +211,7 @@ cleanup_domain(stralloc* d) {
 int
 process_entry(char** av, int ac) {
 
-  if(ac >= 21 && str_start(av[0], "X")) {
+  if(ac >= 21 && str_start(av[0], "\"X")) {
     char timebuf[256];
     stralloc datetime;
     struct tm tm;
