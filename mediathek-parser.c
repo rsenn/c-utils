@@ -80,7 +80,7 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
 
   array_trunc(x);
 
-  if((n = byte_chr(p, end - p, '\n')) != (unsigned)(end - p))
+  if((n = byte_finds(p, end - p, "\"X\":[")) != (unsigned)(end - p))
     end = p + n;
 
   while(p < end && *p != '"') ++p;
@@ -144,15 +144,6 @@ dump_long(buffer* b, const char* name, long value) {
   buffer_putlong(b, value);
   buffer_putnlflush(b);
 }
-
-void
-get_domain(const char* url, stralloc* d) {
-  while(*url && *url != ':') ++url;
-  ++url;
-  while(*url && *url == '/') ++url;
-  stralloc_copyb(d, url, str_chr(url, '/'));
-}
-
 #define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
 
 void
@@ -371,6 +362,13 @@ process_input(buffer* input) {
   strlist fields;
   stralloc_init(&sa);
   strlist_init(&fields, '\0');
+  void
+    get_domain(const char* url, stralloc* d) {
+      while(*url && *url != ':') ++url;
+      ++url;
+      while(*url && *url == '/') ++url;
+      stralloc_copyb(d, url, str_chr(url, '/'));
+  }
 
   if(csv == 0)
     buffer_puts(buffer_1, "#EXTM3U\r\n");

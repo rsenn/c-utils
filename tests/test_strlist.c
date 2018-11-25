@@ -182,6 +182,24 @@ TEST(test_strlist_froms) {
 }
 
 /*
+ * void    strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
+ */
+
+TEST(test_strlist_fromb) {
+  strlist sl;
+  const char* x = "blah / l33t / 1234 / 8192";
+  strlist_init(&sl, '\0');
+  strlist_fromb(&sl, x, str_len(x), "/");
+
+  ASSERT_EQ(4, strlist_count(&sl));
+
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 0), "blah"));
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 1), "l33t"));
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 2), "1234"));
+  ASSERT_EQ(0, !str_equal(strlist_at(&sl, 3), "8192"));
+}
+
+/*
  * int64 strlist_index_of(strlist* sl, const char* str);
  */
 TEST(test_strlist_index_of) {
@@ -511,6 +529,7 @@ TEST(test_strlist_unshift) {
   RUN(test_strlist_count);                                                                                             \
   RUN(test_strlist_dump);                                                                                              \
   RUN(test_strlist_froms);                                                                                             \
+  RUN(test_strlist_fromb);                                                                                             \
   RUN(test_strlist_index_of);                                                                                          \
   RUN(test_strlist_join);                                                                                              \
   RUN(test_strlist_joins);                                                                                             \

@@ -40,6 +40,7 @@ int     strlist_contains(strlist*, const char* s);
 size_t  strlist_count(const strlist*);
 void    strlist_dump(buffer*, const strlist* sl);
 void    strlist_froms(strlist*, const char* s, char delim);
+void    strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
 int64   strlist_index_of(strlist*, const char* str);
 void    strlist_join(const strlist*, stralloc* sa, char delim);
 int     strlist_pushb(strlist*, const char* s, size_t n);
@@ -104,3 +105,4 @@ int strlist_sub(strlist*, const strlist* o);
 }
 # endif
 #endif /* defined(STRLIST_H) */
+
