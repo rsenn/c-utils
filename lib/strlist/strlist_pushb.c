@@ -4,7 +4,7 @@
 int
 strlist_pushb(strlist* sl, const char* s, size_t n) {
   if(sl->sa.len) {
-    if(sl->sa.s[sl->sa.len - 1] != sl->sep)
+//    if(sl->sa.s[sl->sa.len - 1] != sl->sep)
       stralloc_catc(&sl->sa, sl->sep);
   }
   if(n)

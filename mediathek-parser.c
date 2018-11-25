@@ -70,8 +70,8 @@ parse_predicate(const char* x, size_t len)
 */
 
 int
-read_line(const char* s, size_t len, strlist* fields, array* x) {
-  const char *end = s + len, *p = s;
+read_line(char* s, size_t len, strlist* fields, array* x) {
+  char *end = s + len, *p = s;
   int64 pos = 0;
   int quoted = 0 /*, escaped = 0*/;
   size_t n, i = 0;
@@ -85,7 +85,15 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
 
   while(p < end && *p != '"') ++p;
 
-// ++p;
+  strlist_fromb(fields, p, end - p, "\",\"");
+
+  // ++p;
+
+  if(str_start(p, "\"X\":[")) {
+    p[2] = ':';
+    p[3] = '[';
+    p[4] = '"';
+  }
 
   for(; p < end; ++p /*, escaped = 0*/) {
     if(*p == '\\') {
@@ -200,11 +208,8 @@ cleanup_domain(stralloc* d) {
   return d->s;
 }
 
-void
-process_entry(const array* a) {
-
-  char** av = array_start(a);
-  size_t ac = array_length(a, sizeof(char*));
+int
+process_entry(char** av, int ac) {
 
   if(ac >= 21 && !str_diff(av[0], "X")) {
     char timebuf[256];
@@ -296,14 +301,10 @@ process_entry(const array* a) {
 
     (void)t;
   } else {
-    strarray_dump(buffer_2, a);
+    return 0;
   }
 
-  while(ac > 0) {
-    --ac;
-    if(av[ac])
-      free(av[ac]);
-  }
+  return 1;
 }
 
 static void
@@ -392,7 +393,15 @@ process_input(buffer* input) {
             buffer_putnlflush(buffer_2);
     */
 
-    process_entry(&arr);
+    {
+      char** v = strlist_to_argv(&fields);
+      int c = strlist_count(&fields);
+
+      if(!process_entry(v, c))
+        strlist_dump(buffer_2, &fields);
+
+      free(v);
+    }
   }
 
   buffer_close(input);
