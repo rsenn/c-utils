@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "MAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PATHSEP\nDEFAULT_PATHSEP\nvoid\nput_newline\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_s\npath_prefix_b\npath_extension\npath_object\npath_wildcard\nextract_build_type\nformat_linklib_lib\nformat_linklib_switch\nformat_linklib_dummy\nscan_main\nhas_main\nextract_includes\nget_includes\nrule_command_subst\nrule_command\nsubst_var\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nget_var\nset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\npush_define\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\nlib_rule_for_sourcedir\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_compile_rules\ngen_lib_rules\ngen_link_rules\ngen_clean_rule\noutput_all_vars\noutput_make_rule\noutput_ninja_rule\noutput_build_rules\noutput_all_rules\noutput_script\nset_machine\nset_make_type\nset_compiler_type\nusage\nmain",
+			"contents": "str_ptime\noutput_entry\nread_line\nstrarray_dump\ndump_pair\ndump_long\nget_domain\nisdelim\ncleanup_text\ncleanup_domain\nprocess_entry\nput_quoted_string\noutput_entry\nprocess_input\nmain",
 			"settings":
 			{
-				"buffer_size": 1329,
+				"buffer_size": 177,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -33,6 +33,23 @@
 			"settings":
 			{
 				"buffer_size": 63232,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "mediathek-parser.c",
+			"settings":
+			{
+				"buffer_size": 10630,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ntldd.c",
+			"settings":
+			{
+				"buffer_size": 30686,
 				"line_ending": "Unix"
 			}
 		},
@@ -63,14 +80,6 @@
 			"settings":
 			{
 				"buffer_size": 237,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/omf/omf_record_next.c",
-			"settings":
-			{
-				"buffer_size": 2422,
 				"line_ending": "Unix"
 			}
 		},
@@ -136,12 +145,12 @@
 		"selected_items":
 		[
 			[
-				"instal",
-				"Package Control: Advanced Install Package"
-			],
-			[
 				"edit",
 				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"instal",
+				"Package Control: Advanced Install Package"
 			],
 			[
 				"install",
@@ -444,6 +453,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"\n ",
 			"data.start",
 			"recptr",
 			"occ",
@@ -570,8 +580,7 @@
 			"mediathe",
 			"get_until",
 			"mediathe",
-			"string_predicate",
-			"mediathe"
+			"string_predicate"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -637,7 +646,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1329,
+						"buffer_size": 177,
 						"regions":
 						{
 						},
@@ -647,487 +656,87 @@
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\genmakefile.c",
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\mediathek-parser.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									528,
-									539
-								],
-								[
-									554,
-									568
-								],
-								[
 									584,
-									598
+									593
 								],
 								[
-									614,
-									628
+									651,
+									663
 								],
 								[
-									640,
-									654
+									1407,
+									1416
 								],
 								[
-									676,
-									687
+									2454,
+									2467
 								],
 								[
-									702,
-									716
+									2743,
+									2752
 								],
 								[
-									730,
-									744
+									2911,
+									2920
 								],
 								[
-									758,
-									772
+									3072,
+									3082
 								],
 								[
-									787,
-									801
+									3252,
+									3259
 								],
 								[
-									840,
-									855
+									3342,
+									3354
 								],
 								[
-									875,
-									890
+									3698,
+									3712
 								],
 								[
-									1489,
-									1493
+									4193,
+									4206
 								],
 								[
-									2287,
-									2298
+									6848,
+									6865
 								],
 								[
-									2391,
-									2402
+									7135,
+									7147
 								],
 								[
-									2699,
-									2712
+									8489,
+									8502
 								],
 								[
-									2909,
-									2917
-								],
-								[
-									3083,
-									3090
-								],
-								[
-									3254,
-									3262
-								],
-								[
-									3686,
-									3695
-								],
-								[
-									3863,
-									3871
-								],
-								[
-									3886,
-									3894
-								],
-								[
-									3909,
-									3916
-								],
-								[
-									3931,
-									3940
-								],
-								[
-									4191,
-									4204
-								],
-								[
-									4734,
-									4747
-								],
-								[
-									5111,
-									5125
-								],
-								[
-									5378,
-									5389
-								],
-								[
-									5924,
-									5937
-								],
-								[
-									6291,
-									6309
-								],
-								[
-									6538,
-									6556
-								],
-								[
-									6742,
-									6763
-								],
-								[
-									6924,
-									6944
-								],
-								[
-									7059,
-									7068
-								],
-								[
-									7572,
-									7580
-								],
-								[
-									7806,
-									7822
-								],
-								[
-									8797,
-									8809
-								],
-								[
-									9056,
-									9074
-								],
-								[
-									10375,
-									10387
-								],
-								[
-									11846,
-									11855
-								],
-								[
-									12469,
-									12477
-								],
-								[
-									13015,
-									13026
-								],
-								[
-									13106,
-									13115
-								],
-								[
-									13463,
-									13475
-								],
-								[
-									13556,
-									13567
-								],
-								[
-									13776,
-									13784
-								],
-								[
-									14040,
-									14051
-								],
-								[
-									14395,
-									14406
-								],
-								[
-									14590,
-									14600
-								],
-								[
-									14904,
-									14914
-								],
-								[
-									15310,
-									15321
-								],
-								[
-									15615,
-									15622
-								],
-								[
-									16018,
-									16025
-								],
-								[
-									16201,
-									16209
-								],
-								[
-									16325,
-									16336
-								],
-								[
-									16470,
-									16478
-								],
-								[
-									16687,
-									16695
-								],
-								[
-									17144,
-									17155
-								],
-								[
-									17400,
-									17416
-								],
-								[
-									17677,
-									17690
-								],
-								[
-									17908,
-									17927
-								],
-								[
-									19739,
-									19754
-								],
-								[
-									20259,
-									20275
-								],
-								[
-									21096,
-									21107
-								],
-								[
-									21741,
-									21766
-								],
-								[
-									22189,
-									22204
-								],
-								[
-									22561,
-									22581
-								],
-								[
-									22904,
-									22917
-								],
-								[
-									23261,
-									23272
-								],
-								[
-									23425,
-									23444
-								],
-								[
-									24477,
-									24494
-								],
-								[
-									25165,
-									25195
-								],
-								[
-									25633,
-									25653
-								],
-								[
-									26182,
-									26195
-								],
-								[
-									26460,
-									26476
-								],
-								[
-									26798,
-									26813
-								],
-								[
-									27041,
-									27063
-								],
-								[
-									27693,
-									27706
-								],
-								[
-									28950,
-									28964
-								],
-								[
-									29237,
-									29252
-								],
-								[
-									29602,
-									29619
-								],
-								[
-									30136,
-									30149
-								],
-								[
-									30696,
-									30710
-								],
-								[
-									33622,
-									33636
-								],
-								[
-									35118,
-									35133
-								],
-								[
-									35800,
-									35816
-								],
-								[
-									36702,
-									36719
-								],
-								[
-									37640,
-									37658
-								],
-								[
-									38178,
-									38194
-								],
-								[
-									38393,
-									38406
-								],
-								[
-									39030,
-									39041
-								],
-								[
-									39456,
-									39469
-								],
-								[
-									40655,
-									40672
-								],
-								[
-									52547,
-									52552
-								],
-								[
-									54949,
-									54953
+									9389,
+									9393
 								]
 							],
 							"symlist":
 							[
-								"MAX_CMD_LEN",
-								"DEFAULT_OBJEXT",
-								"DEFAULT_LIBEXT",
-								"DEFAULT_LIBPFX",
-								"DEFAULT_EXEEXT",
-								"MAX_CMD_LEN",
-								"DEFAULT_OBJEXT",
-								"DEFAULT_LIBEXT",
-								"DEFAULT_LIBPFX",
-								"DEFAULT_EXEEXT",
-								"DEFAULT_PATHSEP",
-								"DEFAULT_PATHSEP",
-								"void",
-								"put_newline",
-								"set_command",
+								"str_ptime",
+								"output_entry",
+								"read_line",
 								"strarray_dump",
-								"debug_sa",
-								"debug_s",
-								"debug_sl",
-								"debug_int",
-								"debug_sa",
-								"debug_sl",
-								"debug_s",
-								"debug_int",
-								"path_prefix_s",
-								"path_prefix_b",
-								"path_extension",
-								"path_object",
-								"path_wildcard",
-								"extract_build_type",
-								"format_linklib_lib",
-								"format_linklib_switch",
-								"format_linklib_dummy",
-								"scan_main",
-								"has_main",
-								"extract_includes",
-								"get_includes",
-								"rule_command_subst",
-								"rule_command",
-								"subst_var",
-								"get_rule",
-								"get_rule_sa",
-								"find_rule",
-								"find_rule_sa",
-								"find_rule_b",
-								"add_path",
-								"add_srcpath",
-								"add_path_sa",
-								"new_source",
-								"add_source",
-								"get_sources",
-								"get_var",
-								"set_var",
-								"push_var",
-								"push_var_sa",
-								"push_lib",
-								"with_lib",
-								"push_define",
-								"get_rules_by_cmd",
-								"dirname_alloc",
-								"populate_sourcedirs",
-								"dump_sourcedirs",
-								"includes_to_libs",
-								"target_ptrs",
-								"target_dep_list_recursive",
-								"target_dep_list",
-								"target_deps_indirect",
-								"deps_indirect",
-								"deps_direct",
-								"print_target_deps_r",
-								"print_target_deps",
-								"remove_indirect_deps_recursive",
-								"remove_indirect_deps",
-								"get_sourcedir",
-								"get_sourcedir_sa",
-								"get_sourcedir_b",
-								"lib_rule_for_sourcedir",
-								"deps_for_libs",
-								"target_add_dep",
-								"target_add_deps",
-								"gen_compile_rules",
-								"gen_lib_rules",
-								"gen_link_rules",
-								"gen_clean_rule",
-								"output_all_vars",
-								"output_make_rule",
-								"output_ninja_rule",
-								"output_build_rules",
-								"output_all_rules",
-								"output_script",
-								"set_machine",
-								"set_make_type",
-								"set_compiler_type",
-								"usage",
+								"dump_pair",
+								"dump_long",
+								"get_domain",
+								"isdelim",
+								"cleanup_text",
+								"cleanup_domain",
+								"process_entry",
+								"put_quoted_string",
+								"output_entry",
+								"process_input",
 								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
@@ -1136,13 +745,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -1158,8 +767,8 @@
 						"selection":
 						[
 							[
-								5634,
-								5632
+								6496,
+								6496
 							]
 						],
 						"settings":
@@ -1169,14 +778,74 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3125.0,
+						"translation.y": 3569.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "mediathek-parser.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10630,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6623,
+								6623
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3498.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 3,
+					"file": "ntldd.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 30686,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "lib/coff/coff_sclass_name.c",
 					"semi_transient": false,
 					"settings":
@@ -1202,11 +871,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 5,
 					"file": "lib/coff/coff_line_numbers.c",
 					"semi_transient": false,
 					"settings":
@@ -1231,11 +900,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 6,
 					"file": "lib/coff/coff_index_symtab.c",
 					"semi_transient": false,
 					"settings":
@@ -1259,41 +928,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "lib/omf/omf_record_next.c",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 2422,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								237,
-								237
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
+					"buffer": 7,
 					"file": "/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
 					"semi_transient": false,
 					"settings":
@@ -1317,7 +956,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				}
 			]
