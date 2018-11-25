@@ -215,9 +215,9 @@ process_entry(char** av, int ac) {
     return 0;
 
   while(ac > 0 && !(str_len(av[5]) == 8 && str_len(av[6]) == 8)) {
-      av++;
-      ac--;
-    }
+    av++;
+    ac--;
+  }
 
   if(ac >= 21) {
     char timebuf[256];

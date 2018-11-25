@@ -16,6 +16,7 @@
 #include "lib/strlist.h"
 #include "lib/windoze.h"
 #include "lib/errmsg.h"
+#include "lib/unix.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
