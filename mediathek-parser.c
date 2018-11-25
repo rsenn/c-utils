@@ -80,10 +80,12 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
 
   array_trunc(x);
 
-  if((n = byte_finds(p, end - p, "\"X\":[")) != (unsigned)(end - p))
+  if((n = byte_finds(p + 1, end - p - 1, "\"X\":[")) != (unsigned)(end - p))
     end = p + n;
 
-  while(p < end && *p != '"') ++p;
+  while(p < end && *p != '[') ++p;
+
+  ++p;
 
   for(; p < end; ++p /*, escaped = 0*/) {
     if(*p == '\\') {
@@ -371,13 +373,6 @@ process_input(buffer* input) {
   strlist fields;
   stralloc_init(&sa);
   strlist_init(&fields, '\0');
-  void
-    get_domain(const char* url, stralloc* d) {
-      while(*url && *url != ':') ++url;
-      ++url;
-      while(*url && *url == '/') ++url;
-      stralloc_copyb(d, url, str_chr(url, '/'));
-  }
 
   if(csv == 0)
     buffer_puts(buffer_1, "#EXTM3U\r\n");

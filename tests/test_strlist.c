@@ -189,7 +189,7 @@ TEST(test_strlist_fromb) {
   strlist sl;
   const char* x = "blah / l33t / 1234 / 8192";
   strlist_init(&sl, '\0');
-  strlist_fromb(&sl, x, str_len(x), "/");
+  strlist_fromb(&sl, x, str_len(x), " / ");
 
   ASSERT_EQ(4, strlist_count(&sl));
 
