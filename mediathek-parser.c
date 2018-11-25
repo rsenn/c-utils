@@ -210,10 +210,16 @@ cleanup_domain(stralloc* d) {
 
 int
 process_entry(char** av, int ac) {
-  av++; ac--;
-  av++; ac--;
 
-  if(ac >= 21 && str_start(av[-2], "\"X")) {
+  if(!str_start(av[0], "\"X"))
+    return 0;
+
+  while(ac > 0 && !(str_len(av[5]) == 8 && str_len(av[6]) == 8)) {
+      av++;
+      ac--;
+    }
+
+  if(ac >= 21) {
     char timebuf[256];
     stralloc datetime;
     struct tm tm;
@@ -268,8 +274,9 @@ process_entry(char** av, int ac) {
       }
     }
 
-    if(str_len(thema) == 0)
-      return;
+    /*if(str_len(thema) == 0)
+      return;*/
+
     if(d < 20 * 60)
       return;
 
@@ -278,11 +285,9 @@ process_entry(char** av, int ac) {
     cleanup_text(description);
 
     if(str_len(sender) == 0) {
-
       stralloc s;
       stralloc_init(&s);
       get_domain(url_lo.s, &s);
-      free(sender);
       sender = cleanup_domain(&s);
     }
 
