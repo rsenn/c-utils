@@ -80,7 +80,7 @@ unit_test_copy(buffer* src, buffer* dst) {
 bool
 unit_test_empty(buffer* b) {
   size_t pos = lseek(b->fd, 0, SEEK_END);
-  return pos == 0;
+  return pos <= 1;
 }
 
 void
