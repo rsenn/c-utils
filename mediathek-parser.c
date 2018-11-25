@@ -81,11 +81,11 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
   array_trunc(x);
 
   if((n = byte_finds(p + 1, end - p - 1, "\"X\":[")) != (unsigned)(end - p))
-    end = p + n;
+    end = p + 1 + n;
 
-  while(p < end && *p != '[') ++p;
+  while(p < end && *p != '"') ++p;
 
-  ++p;
+// ++p;
 
   for(; p < end; ++p /*, escaped = 0*/) {
     if(*p == '\\') {
