@@ -312,8 +312,7 @@ format_linklib_switch(const char* libname, stralloc* out) {
   stralloc_cats(out, "-l");
   stralloc_cats(out, libname);
 
-  if(stralloc_endb(out, "lib", 3))
-    out->len -= 3;
+  stralloc_replaces(out, "lib", "");
 }
 
 void
@@ -532,7 +531,7 @@ rule_command(target* rule, stralloc* out) {
     rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len);
   }
 
-  stralloc_free(&prereq);
+  stralloc_free(&prereq.sa);
 }
 
 void

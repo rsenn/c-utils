@@ -278,7 +278,7 @@ process_entry(char** av, int ac) {
       return;*/
 
     if(d < 20 * 60)
-      return;
+      return 1;
 
     cleanup_text(thema);
     cleanup_text(title);

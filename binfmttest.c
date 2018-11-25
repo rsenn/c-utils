@@ -1,3 +1,4 @@
+#include "lib/byte.h"
 #include "lib/binfmt.h"
 
 int

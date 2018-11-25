@@ -12,6 +12,10 @@
 #include <stdio.h>
 #endif
 
+#ifdef __DMC__
+#define snprintf _snprintf
+#endif
+
 static const char* last_error_str();
 
 int

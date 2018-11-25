@@ -37,7 +37,7 @@
 #define HAVE_POPEN 1
 #endif
 
-#if !defined( HAVE_POPEN) //|| (defined(__CYGWIN__) && defined(__amd64__))
+#if defined(NO_POPEN) || defined(__DMC__)
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>

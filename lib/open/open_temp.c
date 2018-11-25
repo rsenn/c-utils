@@ -36,18 +36,18 @@
 static char default_tmpl[] = "temp-XXXXXX.txt";
 
 int
-open_temp(char* tmpl) {
+open_temp(const char* tmpl) {
   int i, res;
   unsigned int random;
   char* tmp;
 
   if(!tmpl) {
-    tmpl = default_tmpl;
-    tmp = &tmpl[5];
+    tmpl = (const char*)default_tmpl;
+    tmp = (char*)&tmpl[5];
   } else {
     str_copy(default_tmpl, tmpl);
     tmpl = default_tmpl;
-    tmp = tmpl + str_chr(tmpl, 'X');
+    tmp = (char*)tmpl + str_chr(tmpl, 'X');
     if(tmp < tmpl) goto error;
   }
 
