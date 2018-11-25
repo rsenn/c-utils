@@ -47,8 +47,8 @@ open_temp(char* tmpl) {
   } else {
     str_copy(default_tmpl, tmpl);
     tmpl = default_tmpl;
-  tmp = tmpl + str_len(tmpl) - 6;
-  if(tmp < tmpl) goto error;
+    tmp = tmpl + str_chr(tmpl, 'X');
+    if(tmp < tmpl) goto error;
   }
 
   for(i = 0; i < 6; ++i) {
