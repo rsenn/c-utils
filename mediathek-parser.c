@@ -91,8 +91,8 @@ read_line(char* s, size_t len, strlist* fields, array* x) {
 
   if(str_start(p, "\"X\":[")) {
     p[2] = ':';
-    p[3] = '[';
-    p[4] = '"';
+    p[3] = '"';
+    p[4] = ',';
   }
 
   for(; p < end; ++p /*, escaped = 0*/) {
@@ -211,7 +211,7 @@ cleanup_domain(stralloc* d) {
 int
 process_entry(char** av, int ac) {
 
-  if(ac >= 21 && !str_diff(av[0], "X")) {
+  if(ac >= 21 && str_start(av[0], "X")) {
     char timebuf[256];
     stralloc datetime;
     struct tm tm;
