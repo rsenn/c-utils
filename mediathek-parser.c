@@ -85,8 +85,6 @@ read_line(char* s, size_t len, strlist* fields, array* x) {
 
   while(p < end && *p != '"') ++p;
 
-  strlist_fromb(fields, p, end - p, "\",\"");
-
   // ++p;
 
   if(str_start(p, "\"X\":[")) {
@@ -94,6 +92,8 @@ read_line(char* s, size_t len, strlist* fields, array* x) {
     p[3] = '"';
     p[4] = ',';
   }
+
+  strlist_fromb(fields, p, end - p, "\",\"");
 
   for(; p < end; ++p /*, escaped = 0*/) {
     if(*p == '\\') {
