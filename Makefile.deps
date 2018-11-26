@@ -1024,8 +1024,6 @@ $(BUILDDIR)playlist_write_start.o: lib/playlist/playlist_write_start.c lib/windo
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)playlist_xspf.o: lib/playlist/playlist_xspf.c lib/buffer.h lib/typedefs.h lib/byte.h lib/playlist.h lib/stralloc.h lib/uint32.h lib/buffer.h lib/scan.h lib/uint64.h lib/xml.h lib/hmap.h lib/textbuf.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)popen.o: lib/popen.c lib/windoze.h
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)process_create.o: lib/process/process_create.c lib/windoze.h lib/io.h lib/windoze.h lib/iarray.h lib/uint64.h lib/typedefs.h lib/taia.h lib/tai.h lib/uint32.h lib/strlist.h lib/stralloc.h lib/byte.h lib/buffer.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)range_init.o: lib/range/range_init.c lib/range.h lib/typedefs.h
@@ -2039,4 +2037,14 @@ $(BUILDDIR)omf_record_end.o: lib/omf/omf_record_end.c lib/omf.h lib/typedefs.h l
 $(BUILDDIR)omf_record_next.o: lib/omf/omf_record_next.c lib/omf.h lib/typedefs.h lib/uint8.h lib/uint16.h lib/range.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)strlist_fromb.o: lib/strlist/strlist_fromb.c lib/byte.h lib/typedefs.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)win32_borland_popen.o: lib/unix/win32_borland_popen.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)win32_loadprog.o: lib/unix/win32_loadprog.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)win32_popen.o: lib/unix/win32_popen.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)path_absolute.o: lib/path/path_absolute.c lib/path_internal.h lib/windoze.h lib/str.h lib/typedefs.h lib/path.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)strlist_fromv.o: lib/strlist/strlist_fromv.c lib/str.h lib/typedefs.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<

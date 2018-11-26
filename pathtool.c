@@ -27,9 +27,13 @@ static stralloc cwd;
 
 void
 strlist_from_path(strlist* sl, const char* p) {
+  char* dp = delims.s;
+
+  if(*dp == sl->sep && delims.len > 1)
+    ++dp;
+
   strlist_zero(sl);
-  // strlist_push(sl, "");
-  strlist_push_tokens(sl, p, delims.s);
+  strlist_froms(sl, p, *dp); 
 }
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
@@ -66,7 +70,8 @@ pathconv(const char* path, stralloc* sa) {
   if(format == MIXED) {
     size_t i;
     for(i = 0; i < sa->len; ++i) {
-      if(sa->s[i] == '\\') sa->s[i] = '/';
+      if(sa->s[i] == '\\')
+        sa->s[i] = '/';
     }
   }
 }
@@ -83,7 +88,10 @@ pathtool(const char* arg, stralloc* sa) {
   buffer_putnlflush(buffer_2);
 #endif
   if(absolute) {
-    path_realpath(arg, sa, 0, &cwd);
+    path_absolute(arg, sa);
+    stralloc_nul(sa);
+    path_collapse(sa->s, sa);
+
 #ifdef DEBUG_OUTPUT
     buffer_putsflush(buffer_2, "path_realpath");
 #endif
@@ -121,6 +129,12 @@ pathtool(const char* arg, stralloc* sa) {
   stralloc_zero(sa);
 
   if(relative_to.sa.s) {
+
+    stralloc_nul(&path.sa);
+    stralloc_nul(&relative_to.sa);
+    path_relative(path.sa.s, relative_to.sa.s, sa);
+
+    /*
     strlist rel;
     size_t n1 = strlist_count(&path);
     size_t n2 = strlist_count(&relative_to);
@@ -154,11 +168,12 @@ pathtool(const char* arg, stralloc* sa) {
       ++i;
     }
 
-    strlist_join(&rel, sa, separator[0]);
+    strlist_join(&rel, sa, separator[0]);*/
 
   } else {
     strlist_join(&path, sa, separator[0]);
   }
+  stralloc_nul(sa);
 
   return 1;
 }
@@ -166,23 +181,24 @@ pathtool(const char* arg, stralloc* sa) {
 void
 usage(char* av0) {
   buffer_putm_internal(buffer_1,
-              "Usage: ",
-              str_basename(av0),
-              " [OPTIONS] <path...>\n",
-              "\n",
-              "Options:\n",
-              "\n",
-              "  -h, --help             Show this help\n",
-              "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
-              "  -s, --separator SEP    Use SEP as directory separator\n",
-              "  -w, --windows          Print Windows form of path(s) (C:\\WINNT)\n",
-              "  -m, --mixed            Like --windows, but with regular slashes (C:/WINNT)\n",
-              "  -u, --unix   (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n",
-              "  -a, --absolute         Output absolute path\n",
-              "  -f, --canonicalize     Canonicalize by following every symlink in\n"
-              "                         every component of the given name recursively;\n"
-              "                         all but the last component must exist\n",
-              "\n", 0);
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] <path...>\n",
+                       "\n",
+                       "Options:\n",
+                       "\n",
+                       "  -h, --help             Show this help\n",
+                       "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
+                       "  -s, --separator SEP    Use SEP as directory separator\n",
+                       "  -w, --windows          Print Windows form of path(s) (C:\\WINNT)\n",
+                       "  -m, --mixed            Like --windows, but with regular slashes (C:/WINNT)\n",
+                       "  -u, --unix   (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n",
+                       "  -a, --absolute         Output absolute path\n",
+                       "  -f, --canonicalize     Canonicalize by following every symlink in\n"
+                       "                         every component of the given name recursively;\n"
+                       "                         all but the last component must exist\n",
+                       "\n",
+                       0);
   buffer_flush(buffer_1);
 }
 
@@ -193,18 +209,16 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char* rel_to = NULL;
   int index = 0;
-  struct longopt opts[] = {
-      {"help", 0, NULL, 'h'},
-      {"relative-to", 1, NULL, 'r'},
-      {"separator", 1, NULL, 's'},
-      {"mixed", 0, NULL, 'm'},
-      {"unix", 0, NULL, 'u'},
-      {"windows", 0, NULL, 'w'},
-      {"absolute", 0, NULL, 'a'},
-      {"canonicalize", 0, NULL, 'f'},
-      {0}
-  };
-  
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"relative-to", 1, NULL, 'r'},
+                           {"separator", 1, NULL, 's'},
+                           {"mixed", 0, NULL, 'm'},
+                           {"unix", 0, NULL, 'u'},
+                           {"windows", 0, NULL, 'w'},
+                           {"absolute", 0, NULL, 'a'},
+                           {"canonicalize", 0, NULL, 'f'},
+                           {0}};
+
   errmsg_iam(argv[0]);
 
 #if WINDOWS_NATIVE
@@ -217,8 +231,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = getopt_long(argc, argv, "afhr:s:muw", opts, &index);
-    if(c == -1) break;
-    if(c == 0) continue;
+    if(c == -1)
+      break;
+    if(c == 0)
+      continue;
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;

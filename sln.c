@@ -118,6 +118,9 @@ sln(const char* path) {
 int
 main(int argc, char* argv[]) {
   int i;
+  
+  errmsg_iam(argv[0]);
+  
   for(i = 1; i < argc; ++i) {
     const char* a = argv[i];
     int i = str_rchr(a, '.');

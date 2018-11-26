@@ -1,5 +1,6 @@
 #include "lib/byte.h"
 #include "lib/binfmt.h"
+#include "lib/mmap.h"
 
 int
 main(int argc, char* argv[]) {

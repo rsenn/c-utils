@@ -1,6 +1,5 @@
 #include <sys/stat.h>
 
-
 #include "../windoze.h"
 #include "../path_internal.h"
 #include "../readlink.h"
@@ -37,18 +36,20 @@
 #define _stat stat
 #endif
 #ifdef __LCC__
-extern int stat(const char*,struct stat*);
+extern int stat(const char*, struct stat*);
 #endif
 
 #if WINDOWS_NATIVE
 int is_symlink(const char*);
 static int
 is_link(const char* path) {
-  if(is_symlink(path)) return 1;
+  if(is_symlink(path))
+    return 1;
 #ifdef HAVE_LSTAT
   {
     struct stat st;
-    if(lstat(path, &st) != -1) return S_ISLNK(st.st_mode);
+    if(lstat(path, &st) != -1)
+      return S_ISLNK(st.st_mode);
   }
 #endif
   return 0;
@@ -57,7 +58,8 @@ is_link(const char* path) {
 static int
 is_link(const char* path) {
   struct stat st;
-  if(lstat(path, &st) == -1) return 0;
+  if(lstat(path, &st) == -1)
+    return 0;
   return S_ISLNK(st.st_mode);
 }
 #endif
@@ -88,12 +90,13 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   size_t n;
   struct _stat st;
   int ret = 1;
-  int (*stat_fn)(const char*,struct _stat*) = stat;
+  int (*stat_fn)(const char*, struct _stat*) = stat;
   char buf[PATH_MAX + 1];
   char sep;
 #ifdef HAVE_LSTAT
 #if !WINDOWS_NATIVE
-  if(symbolic) stat_fn = lstat;
+  if(symbolic)
+    stat_fn = lstat;
 #endif
 
 #endif
@@ -101,12 +104,19 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
     stralloc_catc(sa, (sep = *path));
     path++;
   }
+#if WINDOWS
+  else if(*path && path[1] == ':') {
+    sep = path[1];
+  }
+#endif
+  else
+    sep = PATHSEP_C;
+
 start:
   /* loop once for every /path/component/
      we canonicalize absolute paths, so we must always have a '/' here */
   while(*path) {
-    while(path_issep(*path))
-      sep = *path++;
+    while(path_issep(*path)) sep = *path++;
 
     /* check for various relative directory parts beginning with '.' */
     if(path[0] == '.') {
@@ -123,23 +133,27 @@ start:
       }
     }
     /* exit now if we're done */
-    if(*path == '\0') break;
+    if(*path == '\0')
+      break;
     /* begin a new path component */
-    if(sa->len && (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\')) stralloc_catc(sa, sep);
+    if(sa->len && (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\'))
+      stralloc_catc(sa, sep);
     /* look for the next path separator and then copy the component */
     n = path_len_s(path);
     stralloc_catb(sa, path, n);
-    if(n == 2 && path[1] == ':') stralloc_catc(sa, sep);
+    if(n == 2 && path[1] == ':')
+      stralloc_catc(sa, sep);
     stralloc_nul(sa);
     path += n;
     /* now stat() the thing to verify it */
     byte_zero(&st, sizeof(st));
-//    if(stat_fn(sa->s, &st) == -1) return 0;
+    //    if(stat_fn(sa->s, &st) == -1) return 0;
     /* is it a symbolic link? */
     if(is_link(sa->s)) {
       ret++;
       /* read the link, return if failed and then nul-terminate the buffer */
-      if((n = readlink(sa->s, buf, PATH_MAX)) == -1) return 0;
+      if((n = readlink(sa->s, buf, PATH_MAX)) == -1)
+        return 0;
       // buf[n] = '\0';
       /* if the symlink is absolute we clear the stralloc,
          set the path to buf and repeat the whole procedure */
@@ -153,17 +167,17 @@ start:
          component and recurse */
       } else {
         int rret;
-        
+
         sa->len = path_right(sa->s, sa->len);
         buf[n] = '\0';
-/*        
-        buffer_puts(buffer_2, "recursive path_canonicalize(\"");
-        buffer_puts(buffer_2, buf);
-        buffer_puts(buffer_2, "\", \"");
-        buffer_putsa(buffer_2, sa);
-        buffer_puts(buffer_2, "\", ");
-        buffer_putlong(buffer_2, symbolic);
-        buffer_puts(buffer_2, ") = ");*/
+        /*
+                buffer_puts(buffer_2, "recursive path_canonicalize(\"");
+                buffer_puts(buffer_2, buf);
+                buffer_puts(buffer_2, "\", \"");
+                buffer_putsa(buffer_2, sa);
+                buffer_puts(buffer_2, "\", ");
+                buffer_putlong(buffer_2, symbolic);
+                buffer_puts(buffer_2, ") = ");*/
         rret = path_canonicalize(buf, sa, symbolic);
 
         /*buffer_putlong(buffer_2, rret);
@@ -172,7 +186,7 @@ start:
           return 0;
       }
     }
-#if 0 //def S_ISDIR
+#if 0 // def S_ISDIR
     /* it isn't a directory :( */
     if(!S_ISDIR(st.st_mode)) {
       errno = ENOTDIR;
@@ -180,6 +194,7 @@ start:
     }
 #endif
   }
-  if(sa->len == 0) stralloc_catc(sa, sep);
+  if(sa->len == 0)
+    stralloc_catc(sa, sep);
   return ret;
 }

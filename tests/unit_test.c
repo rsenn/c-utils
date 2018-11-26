@@ -87,21 +87,22 @@ void
 unit_test_closetemp(buffer* b) {
   buffer_flush(b);
   if(unit_test_empty(b)) {
-     stralloc filename;
-     stralloc_init(&filename);
+    stralloc filename;
+    stralloc_init(&filename);
 
-     write(b->fd, "\n", 1);
+    write(b->fd, "\n", 1);
 
-     open_filename(b->fd, &filename);
-     stralloc_nul(&filename);
+    open_filename(b->fd, &filename);
+    stralloc_nul(&filename);
 
-     close(b->fd);
-     b->fd = -1;
+    close(b->fd);
+    b->fd = -1;
 
-     if(filename.len) {
-       int ret = unlink(filename.s);
-       if(ret) errmsg_warnsys("unlink(", filename.s, "): ", 0);
-     }
+    if(filename.len) {
+      int ret = unlink(filename.s);
+      if(ret)
+        errmsg_warnsys("unlink(", filename.s, "): ", 0);
+    }
   }
 }
 

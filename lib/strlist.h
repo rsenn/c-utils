@@ -100,9 +100,9 @@ int   strlist_removes(strlist*, const char* s);
 
 int strlist_trunc(strlist*, size_t items);
 int strlist_sub(strlist*, const strlist* o);
+void strlist_fromv(strlist*, const char** v, int c);
 
 # ifdef __cplusplus
 }
 # endif
 #endif /* defined(STRLIST_H) */
-
