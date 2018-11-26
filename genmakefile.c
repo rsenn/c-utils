@@ -116,11 +116,13 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
   stralloc_copys(sa, cmd);
   if(args) {
     stralloc_catc(sa, ' ');
-    if(make_begin_inline)
+    if(make_begin_inline && make_end_inline) {
       stralloc_cats(sa, make_begin_inline);
-    stralloc_cats(sa, args);
-    if(make_end_inline)
+      stralloc_subst(sa, args, str_len(args), "$^", "$|");
       stralloc_cats(sa, make_end_inline);
+      } else {
+    stralloc_cats(sa, args);
+    }      
   }
 }
 
@@ -439,7 +441,7 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen)
       continue;
     }
 
-    if(i + 2 <= in->len && *p == '$' && str_chr("@^<", p[1]) < 3) {
+    if(i + 2 <= in->len && *p == '$' && str_chr("@^<|", p[1]) < 4) {
       switch(p[1]) {
         case '@': {
           size_t p = out->len;
@@ -448,15 +450,16 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen)
           break;
         }
         case '^': {
-          //  size_t p = out->len;
           stralloc_catb(out, prereq, plen);
-          //          byte_replace(&out->s[p], out->len - p, from, pathsep_args);
+          break;
+        }
+        case '|': {
+          stralloc_subst(out, prereq, plen, " ", "\n ");
           break;
         }
         case '<': {
           size_t n = byte_chr(prereq, plen, ' ');
           stralloc_catb(out, prereq, n);
-          //        byte_replace(&out->s[out->len - n], n, from, pathsep_args);
           break;
         }
       }
@@ -493,7 +496,7 @@ rule_command(target* rule, stralloc* out) {
 
   stralloc_replacec(&prereq.sa, from, pathsep_args);
 
-  if(rule->recipe == &lib_command) {
+  if(make_begin_inline == NULL && rule->recipe == &lib_command) {
     char* x;
     size_t n = 0;
     range r;
@@ -1868,14 +1871,14 @@ set_make_type(const char* make, const char* compiler) {
 
     /* Borland C++ Builder Make */
     pathsep_make = '\\';
-    make_begin_inline = "@&&|\n\t";
+    make_begin_inline = "@&&|\n ";
     make_end_inline = "\n|";
 
   } else if(str_start(make, "nmake")) {
 
     /* Microsoft NMake */
     pathsep_make = '\\';
-    make_begin_inline = "@<<\n\t";
+    make_begin_inline = "@<<\n ";
     make_end_inline = "\n<<";
 
     newline = "\r\n";
@@ -1893,7 +1896,7 @@ set_make_type(const char* make, const char* compiler) {
   } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
     pathsep_make = '\\';
 
-    make_begin_inline = "<<\n\t";
+    make_begin_inline = "<<\n ";
     make_end_inline = "\n<<";
 
   } else if(str_start(make, "ninja")) {
@@ -2204,7 +2207,7 @@ set_compiler_type(const char* compiler) {
     push_lib("DEFAULT_LIBS", "climp");
 
     stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) \"-o$@\" \"/I;\" $<");
-    set_command(&lib_command, "$(LIB) /!", "\"$@\" * $^");
+    set_command(&lib_command, "$(LIB) /! $@", "$^");
     set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o\"$@\"", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
 
   } else if(str_start(compiler, "8cc")) {
