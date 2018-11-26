@@ -11,10 +11,14 @@
  */
 void
 path_getcwd(stralloc* sa) {
+  char sep;
   stralloc_zero(sa);
   /* reserve some space */
   stralloc_ready(sa, PATH_MAX);
   /* repeat until we have reserved enough space */
   getcwd(sa->s, sa->a);
   sa->len = str_len(sa->s);
+  sep = path_getsep(sa->s);
+  if(sep && sep != PATHSEP_C)
+  stralloc_replacec(sa, sep, PATHSEP_C); 
 }

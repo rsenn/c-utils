@@ -1,5 +1,4 @@
 #include "lib/http.h"
-#include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/io_internal.h"
 #include "lib/iopause.h"
@@ -15,6 +14,7 @@
 #include "lib/stralloc.h"
 #include "lib/tai.h"
 #include "lib/case.h"
+#include "lib/buffer.h"
 
 #include <errno.h>
 

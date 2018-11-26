@@ -1,7 +1,7 @@
 #include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
-#include "lib/path.h"
+#include "lib/path_internal.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/windoze.h"
@@ -33,7 +33,7 @@ strlist_from_path(strlist* sl, const char* p) {
     ++dp;
 
   strlist_zero(sl);
-  strlist_froms(sl, p, *dp); 
+  strlist_froms(sl, p, *dp);
 }
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
@@ -92,9 +92,11 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_nul(sa);
     path_collapse(sa->s, sa);
 
-#ifdef DEBUG_OUTPUT
-    buffer_putsflush(buffer_2, "path_realpath");
-#endif
+    #ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "absolute: ");
+    buffer_putsa(buffer_2, sa);
+    buffer_putnlflush(buffer_2);
+   #endif
   } else if(canonical) {
     path_canonicalize(arg, sa, 1);
 #ifdef DEBUG_OUTPUT
@@ -123,7 +125,7 @@ pathtool(const char* arg, stralloc* sa) {
   }
 #endif
 
-  strlist_init(&path, separator[0]);
+  strlist_init(&path, relative_to.sa.s ? PATHSEP_C : separator[0]);
   strlist_from_path(&path, sa->s);
 
   stralloc_zero(sa);
@@ -132,6 +134,13 @@ pathtool(const char* arg, stralloc* sa) {
 
     stralloc_nul(&path.sa);
     stralloc_nul(&relative_to.sa);
+
+#ifdef DEBUG_OUTPUT
+    buffer_putm_internal(buffer_2, "relative(\"", path.sa.s, "\", \"", relative_to.sa.s, "\")", 0);
+    buffer_putsa(buffer_2, sa);
+    buffer_putnlflush(buffer_2);
+#endif
+
     path_relative(path.sa.s, relative_to.sa.s, sa);
 
     /*
@@ -272,10 +281,13 @@ main(int argc, char* argv[]) {
   }
 
   if(rel_to) {
+    char tmpsep = separator[0];
     stralloc rel;
 
     stralloc_init(&rel);
     absolute = 1;
+
+    separator[0] = PATHSEP_C;
 
     if(pathtool(rel_to, &rel)) {
       stralloc_copy(&relative_to.sa, &rel);
@@ -283,6 +295,13 @@ main(int argc, char* argv[]) {
     } else {
       errmsg_warnsys(str_basename(argv[0]), ": relative to", NULL);
     }
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "relative-to: ");
+    buffer_putsa(buffer_2, &relative_to.sa);
+    buffer_putnlflush(buffer_2);
+#endif
+    separator[0] = tmpsep;
   }
 
   while(optind < argc) {
