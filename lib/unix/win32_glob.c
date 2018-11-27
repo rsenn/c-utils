@@ -78,7 +78,7 @@ globfree(glob_t* pglob) {
 }
 
 #if 0
-int main(void)
+int testmain(void)
 {
     glob_t gg;
     printf("globtest\n");

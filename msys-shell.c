@@ -56,24 +56,24 @@ usage(char* argv0) {
 
 int
 main(int argc, char* argv[]) {
-  size_t i;
+  int i;
   stralloc sa;
   strarray v;
   strlist args;
   char** av;
   int ret;
   const char* pathstr;
-  int index, c, verbose = 0;
-  strlist_init(&args, '\0');
-
+  static int index, c, verbose;
   const struct longopt opts[] = {{"help", 0, 0, 'h'},
                                  {"verbose", 0, &verbose, 'v'},
-
+                                 {"exec", 0, 0, 'e'},
                                  {0}};
+  strlist_init(&args, '\0');
+
 
   errmsg_iam(argv[0]);
   for(;;) {
-    c = getopt_long(argc, argv, "hv", opts, &index);
+    c = getopt_long(argc, argv, "hve:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -104,10 +104,10 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   stralloc_copys(&cmd, argv[0]);
-  if(stralloc_endb(&cmd, ".exe", 4)) {
+/*  if(stralloc_endb(&cmd, ".exe", 4)) {
     cmd.len -= 4;
     ext = ".exe";
-  }
+  }*/
   stralloc_copy(&realcmd, &cmd);
   stralloc_cats(&realcmd, ".real");
   stralloc_cats(&realcmd, ext);
@@ -136,6 +136,8 @@ main(int argc, char* argv[]) {
   stralloc_init(&sa);
   strlist_joins(&args, &sa, "' '");
   stralloc_nul(&sa);
+
+  /*
   // strarray_joins(&v, &sa, "'\n'");
 
   if(!path_exists(realcmd.s)) {
@@ -160,7 +162,7 @@ main(int argc, char* argv[]) {
   buffer_puts(buffer_2, "'");
   buffer_putnlflush(buffer_2);
 #endif
-
+*/
   av = strlist_to_argv(&args);
   ret = execvp(realcmd.s, av);
 
