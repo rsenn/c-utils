@@ -8,6 +8,9 @@
 /* for size_t & ptrdiff_t */
 #include <stddef.h>
 
+/* for time_t */
+#include <time.h>
+
 #ifdef __LCC__
 #include <stdint.h>
 #endif
