@@ -1,7 +1,7 @@
 #include "../windoze.h"
 
 #include "../buffer.h"
-#if WINDOWS_NATIVE
+#if WINDOWS
 #include <windows.h>
 #else
 #include <fcntl.h>
