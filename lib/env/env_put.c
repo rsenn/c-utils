@@ -1,4 +1,5 @@
 #include "../windoze.h"
+#include "../typedefs.h"
 
 /* env.c, envread.c, env.h: environ library
 Daniel J. Bernstein, djb@silverton.berkeley.edu.

@@ -2,7 +2,7 @@
 #define ENV_H
 
 #include <stdlib.h>
-#include <sys/types.h>
+#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C" {
