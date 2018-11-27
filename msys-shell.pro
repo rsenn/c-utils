@@ -64,4 +64,5 @@ SOURCES = lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_flush.c 
     lib/env/env_pick.c \
     lib/env/env_put.c \
     lib/env/env_string.c \
-    lib/env/env_unset.c
+    lib/env/env_unset.c \
+lib/byte/byte_count.c lib/str/str_cat.c lib/str/str_chr.c lib/str/str_copy.c lib/str/str_start.c lib/stralloc/stralloc_append.c

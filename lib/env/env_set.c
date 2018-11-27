@@ -14,4 +14,3 @@ env_set(const char* name, const char* value) {
   return setenv(name, value, 1) == 0;
 #endif
 }
-

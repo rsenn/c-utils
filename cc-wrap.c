@@ -8,6 +8,8 @@
 #include "lib/env.h"
 #include "lib/errmsg.h"
 #include "lib/byte.h"
+#include "lib/mmap.h"
+#include "lib/scan.h"
 
 #if WINDOWS_NATIVE
 #include <process.h>
@@ -18,6 +20,37 @@
 static stralloc cmd, realcmd, fullcmd, specs;
 static const char* ext = "";
 static strlist path;
+static stralloc base;
+
+char*
+base_file(const char* suffix) {
+  stralloc_zero(&base);
+  stralloc_copys(&base, argv0);
+  if(stralloc_endb(&base, ".exe", 4)) {
+    base.len -= 4;
+    ext = ".exe";
+  }
+  stralloc_cats(&base, suffix);
+  stralloc_nul(&base);
+  return base.s;
+}
+
+int
+read_env(const char* x, size_t n) {
+  char* line;
+  size_t len, skip;
+  byte_foreach_skip(x, n, line, skip) {
+
+    skip = scan_lineskip(line, n - (line - x));
+    len = scan_line(line, skip);
+
+    env_putb(line, len);
+
+    buffer_puts(buffer_2, "Line: ");
+    buffer_put(buffer_2, line, len);
+    buffer_putnlflush(buffer_2);
+  }
+}
 
 int
 path_lookup(const char* cmd, stralloc* out) {
@@ -44,6 +77,9 @@ main(int argc, char* argv[]) {
   char** av;
   int ret;
   const char* pathstr;
+
+  errmsg_iam(argv[0]);
+
   strlist_init(&args, '\0');
 
   pathstr = env_get("PATH");
@@ -51,36 +87,37 @@ main(int argc, char* argv[]) {
   strlist_init(&path, '\0');
   strlist_froms(&path, pathstr, PATHLISTSEP_C);
 
-  errmsg_iam(argv[0]);
-
-  stralloc_copys(&cmd, argv[0]);
-  if(stralloc_endb(&cmd, ".exe", 4)) {
-    cmd.len -= 4;
-    ext = ".exe";
-  }
-  stralloc_copy(&realcmd, &cmd);
-  stralloc_cats(&realcmd, ".real");
-  stralloc_cats(&realcmd, ext);
+  base_file(".real");
+  stralloc_cats(&base, ext);
+  stralloc_copy(&realcmd, &base);
   stralloc_nul(&realcmd);
 
   if(!stralloc_contains(&realcmd, PATHSEP_S)) {
-    if(path_lookup(realcmd.s, &fullcmd))
-      stralloc_copy(&realcmd, &fullcmd);
+    path_lookup(realcmd.s, &fullcmd);
+  } else if(path_exists(realcmd.s)) {
+    stralloc_copy(&fullcmd, &realcmd);
   }
 
-  stralloc_copys(&specs, "-specs=");
-  stralloc_cat(&specs, &realcmd);
-  if((i = stralloc_finds(&specs, ".real"))) {
-    specs.len = i;
+  if(path_exists(base_file(".specs"))) {
+    stralloc_copys(&specs, "-specs=");
+    stralloc_cat(&specs, &base);
+    stralloc_nul(&specs);
+
+    strlist_unshift(&args, specs.s);
   }
-  stralloc_cats(&specs, ".specs");
-  stralloc_nul(&specs);
+
+  if(path_exists(base_file(".env"))) {
+    size_t n;
+    char* x;
+    if((x = mmap_read(base.s, &n)))
+      read_env(x, n);
+    mmap_unmap(x, n);
+  }
 
   for(i = 1; i < argc; ++i) {
     strlist_push(&args, argv[i]);
   }
 
-  strlist_unshift(&args, specs.s);
   strlist_unshift(&args, path_basename(realcmd.s));
 
   stralloc_init(&sa);
@@ -89,8 +126,8 @@ main(int argc, char* argv[]) {
   // strarray_joins(&v, &sa, "'\n'");
 
   if(!path_exists(realcmd.s)) {
-    errmsg_warnsys("exists ", realcmd.s, " ('", sa.s, "''): ", 0);
-    return 127;
+    errmsg_warnsys("doesn't exist: ", realcmd.s, " ('", sa.s, "''): ", 0);
+    //    return 127;
   }
 
 #if 0
@@ -104,7 +141,7 @@ main(int argc, char* argv[]) {
   buffer_puts(buffer_1, "'");
   buffer_putnlflush(buffer_1);
 #endif
-  #ifdef DEBUG
+#ifdef DEBUG
   buffer_puts(buffer_2, "execvp: '");
   buffer_putsa(buffer_2, &sa);
   buffer_puts(buffer_2, "'");
@@ -121,3 +158,4 @@ main(int argc, char* argv[]) {
 
   return 0;
 }
+

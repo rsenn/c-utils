@@ -18,7 +18,7 @@
 //#include <unistd.h>
 #endif
 
-static stralloc cmd, execbin, root,fullcmd, specs;
+static stralloc cmd, execbin, root, fullcmd, specs;
 static const char* ext = "";
 static strlist path;
 
@@ -38,16 +38,23 @@ path_lookup(const char* cmd, stralloc* out) {
   return 0;
 }
 
-
 void
 setup_env() {
-  if(!env_get("MSYS2_PATH")) env_set("MSYS2_PATH", "/usr/local/bin:/usr/bin:/bin");
-  if(!env_get("MSYS2_PREFIX")) env_set("MSYS2_PREFIX", "B:\\PortableApps\\MSYS2Portable\\App\\msys32\\usr");
-  if(!env_get("MSYS2_ROOT")) env_set("MSYS2_ROOT", "B:\\PortableApps\\MSYS2Portable\\App\\msys32");
-  if(!env_get("MSYSTEM")) env_set("MSYSTEM", "MSYS");
-  if(!env_get("MSYSTEM_CARCH")) env_set("MSYSTEM_CARCH", "i686");
-  if(!env_get("MSYSTEM_CHOST")) env_set("MSYSTEM_CHOST", "i686-pc-msys");
-  if(!env_get("MSYSTEM_PREFIX")) env_set("MSYSTEM_PREFIX", "/usr");}
+  if(!env_get("MSYS2_PATH"))
+    env_set("MSYS2_PATH", "/usr/local/bin:/usr/bin:/bin");
+  if(!env_get("MSYS2_PREFIX"))
+    env_set("MSYS2_PREFIX", "B:\\PortableApps\\MSYS2Portable\\App\\msys32\\usr");
+  if(!env_get("MSYS2_ROOT"))
+    env_set("MSYS2_ROOT", "B:\\PortableApps\\MSYS2Portable\\App\\msys32");
+  if(!env_get("MSYSTEM"))
+    env_set("MSYSTEM", "MSYS");
+  if(!env_get("MSYSTEM_CARCH"))
+    env_set("MSYSTEM_CARCH", "i686");
+  if(!env_get("MSYSTEM_CHOST"))
+    env_set("MSYSTEM_CHOST", "i686-pc-msys");
+  if(!env_get("MSYSTEM_PREFIX"))
+    env_set("MSYSTEM_PREFIX", "/usr");
+}
 
 /**
  * Show command line usage
@@ -76,13 +83,9 @@ main(int argc, char* argv[]) {
   int ret;
   const char* pathstr;
   static int index, c, verbose;
-  const struct longopt opts[] = {{"help", 0, 0, 'h'},
-                                 {"verbose", 0, &verbose, 'v'},
-  {"exec", 0, 0, 'e'},
-  {"root", 0, 0, 'r'},
-                                {0}};
+  const struct longopt opts[] = {
+      {"help", 0, 0, 'h'}, {"verbose", 0, &verbose, 'v'}, {"exec", 0, 0, 'e'}, {"root", 0, 0, 'r'}, {0}};
   strlist_init(&args, '\0');
-
 
   errmsg_iam(argv[0]);
   for(;;) {
@@ -93,9 +96,7 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(c) {
-      case 'h':
-        usage(argv[0]);
-        break;
+      case 'h': usage(argv[0]); break;
 
       case 'v': verbose++; break;
       case 'r': stralloc_copys(&root, optarg); break;
@@ -117,10 +118,10 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   stralloc_copys(&cmd, argv[0]);
-/*  if(stralloc_endb(&cmd, ".exe", 4)) {
-    cmd.len -= 4;
-    ext = ".exe";
-  }*/
+  /*  if(stralloc_endb(&cmd, ".exe", 4)) {
+      cmd.len -= 4;
+      ext = ".exe";
+    }*/
   stralloc_copy(&execbin, &cmd);
   stralloc_cats(&execbin, ".real");
   stralloc_cats(&execbin, ext);
