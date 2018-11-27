@@ -1,5 +1,5 @@
 #include "../windoze.h"
-#if WINDOWS_NATIVE
+#if WINDOWS_NATIVE && !defined(_MSC_VER)
 //&& !defined(__MINGW32__) && !defined(__MINGW64__)
 
 #include "../byte.h"

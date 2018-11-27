@@ -2851,6 +2851,8 @@ main(int argc, char* argv[]) {
 
     hmap_init(1024, &sourcedirs);
 
+    strarray_dump(buffer_2, &args);
+
     strarray_foreach(&args, arg) {
 
       if(!path_exists(*arg)) {
