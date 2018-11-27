@@ -105,6 +105,8 @@ static int batch, ninja;
 
 static linklib_fmt* format_linklib_fn;
 
+static int inst_bins, inst_libs;
+
 void
 put_newline(buffer* b, int flush) {
   buffer_puts(b, newline);
@@ -735,6 +737,11 @@ get_sources(const char* basedir, strarray* sources) {
 /**
  * Find or create variable
  */
+int
+isset(const char* name) {
+  return hmap_search(vars, name, str_len(name) + 1, 0) == HMAP_SUCCESS;
+}
+
 strlist*
 get_var(const char* name) {
   TUPLE* t;
@@ -744,7 +751,8 @@ get_var(const char* name) {
 
   if(hmap_search(vars, name, str_len(name) + 1, &t) != HMAP_SUCCESS) {
     strlist var;
-    strlist_init(&var, ' ');
+
+    strlist_init(&var, isupper(name[0]) ? ' ' : pathsep_args);
 
     hmap_set(&vars, name, str_len(name) + 1, &var, sizeof(strlist));
     hmap_search(vars, name, str_len(name) + 1, &t);
@@ -753,15 +761,24 @@ get_var(const char* name) {
   return (strlist*)t->vals.val_chars;
 }
 
+const char*
+var(const char* name) {
+  strlist* v = get_var(name);
+  stralloc_nul(&v->sa);
+  return v->sa.s;
+}
+
 /**
  * Set variable
  */
-void
+strlist*
 set_var(const char* name, const char* value) {
   strlist* var = get_var(name);
 
   stralloc_zero(&var->sa);
   stralloc_copys(&var->sa, value);
+
+  return var;
 }
 
 /**
@@ -928,8 +945,8 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
       }
 
       dir.len = dlen;
-      debug_sa("srcdir", &dir);
-      debug_sa("includes", &srcdir->includes);
+      // debug_sa("srcdir", &dir);
+      // debug_sa("includes", &srcdir->includes);
 
       stralloc_free(&r);
       strlist_free(&l);
@@ -1641,6 +1658,79 @@ gen_clean_rule(HMAP_DB* rules) {
   }
 }
 
+target*
+gen_install_rules(HMAP_DB* rules) {
+  TUPLE* t;
+  target* inst = NULL;
+  const char* v = 0;
+
+  hmap_foreach(rules, t) {
+    target* rule = t->vals.val_custom;
+    int do_lib, do_bin;
+
+    do_lib = (inst_libs && (str_end(t->key, ".lib") || str_end(t->key, ".a") || t->key[str_find(t->key, ".so")] ||
+                            rule->recipe == &lib_command));
+
+    do_bin = (inst_bins && (str_end(t->key, ".dll") || str_end(t->key, ".exe") || rule->recipe == &link_command));
+
+    if(!(do_lib || do_bin))
+      continue;
+
+    if(!inst) {
+      inst = get_rule("install");
+
+      inst->recipe = malloc(sizeof(stralloc));
+      stralloc_init(inst->recipe);
+
+      strlist_push(&inst->prereq, "all");
+    }
+
+    if(!isset("prefix")) {
+
+      set_var("prefix", "/usr");
+      stralloc_cats(inst->recipe, "\n\t$(INSTALL_DIR) $(DESTDIR)$(prefix)");
+
+      if(!v) {
+        v = set_var("INSTALL", "install");
+
+        if(!isset("INSTALL_DIR")) {
+          set_var("INSTALL_DIR", str_start(v, "install") ? "$(INSTALL) -d" : "mkdir");
+        }
+
+        if(do_lib && !isset("INSTALL_DATA")) {
+          set_var("INSTALL_DATA", str_start(v, "install") ? "$(INSTALL) -m 644" : "$(INSTALL)");
+        }
+
+        if(do_bin && !isset("INSTALL_EXEC")) {
+          set_var("INSTALL_EXEC", str_start(v, "install") ? "$(INSTALL) -m 755" : "$(INSTALL)");
+        }
+      }
+    }
+
+    if(do_bin) {
+      if(!isset("bindir")) {
+        set_var("bindir", "$(prefix)/bin");
+        stralloc_cats(inst->recipe, "\n\t$(INSTALL_DIR) $(DESTDIR)$(bindir)");
+      }
+
+      stralloc_catm_internal(inst->recipe, "\n\t$(INSTALL_EXEC) ", t->key, " $(DESTDIR)$(bindir)", 0);
+    }
+
+    if(do_lib) {
+      if(!isset("libdir")) {
+        set_var("libdir", "$(prefix)/lib");
+        if(str_end(compiler, "64")) {
+          push_var("libdir", "$(X64)");
+        }
+
+        stralloc_cats(inst->recipe, "\n\t$(INSTALL_DIR) $(DESTDIR)$(libdir)");
+      }
+
+      stralloc_catm_internal(inst->recipe, "\n\t$(INSTALL_DATA) ", t->key, " $(DESTDIR)$(libdir)", 0);
+    }
+  }
+}
+
 /**
  * Output all variables
  */
@@ -1714,9 +1804,13 @@ output_make_rule(buffer* b, target* rule) {
 
     rule_command(rule, &cmd);
 
-    buffer_puts(b, "\n\t");
+    if(!stralloc_starts(&cmd, newline)) {
+      put_newline(b, 0);
+      buffer_putc(b, '\t');
+    }
     buffer_putsa(b, &cmd);
-    buffer_putc(b, '\n');
+
+    put_newline(b, 0);
 
     stralloc_free(&cmd);
   }
@@ -1863,6 +1957,7 @@ set_machine(const char* s) {
  */
 int
 set_make_type(const char* make, const char* compiler) {
+  const char* inst = "install";
 
   newline = "\r\n";
 
@@ -1875,6 +1970,7 @@ set_make_type(const char* make, const char* compiler) {
     make_begin_inline = "@&&|\n ";
     make_sep_inline = " ";
     make_end_inline = "\n|";
+    inst = "copy /y";
 
   } else if(str_start(make, "nmake")) {
 
@@ -1884,6 +1980,8 @@ set_make_type(const char* make, const char* compiler) {
     make_end_inline = "\n<<";
 
     newline = "\r\n";
+
+    inst = "copy /y";
 
   } else if(str_start(make, "gmake") || str_start(make, "gnu")) {
 
@@ -1895,17 +1993,25 @@ set_make_type(const char* make, const char* compiler) {
   } else if(str_start(make, "omake") || str_start(make, "orange")) {
     pathsep_make = '\\';
 
+    if(inst_bins || inst_libs)
+      set_var("INSTALL", "copy /y");
+
   } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
     pathsep_make = '\\';
 
     make_begin_inline = "<<\n ";
     make_end_inline = "\n<<";
 
+    inst = "copy /y";
+
   } else if(str_start(make, "ninja")) {
     ninja = 1;
     pathsep_make = '/';
     newline = "\n";
   }
+
+  if(inst_bins || inst_libs)
+    set_var("INSTALL", inst);
 
   pathsep_args = pathsep_make;
 
@@ -2292,10 +2398,6 @@ set_compiler_type(const char* compiler) {
   else
     push_lib("EXTRA_LIBS", "ws2_32");
 
-  with_lib("zlib");
-  with_lib("bz2");
-  with_lib("lzma");
-
   return 1;
 }
 
@@ -2316,11 +2418,12 @@ usage(char* argv0) {
 
                        "  -B, --exeext EXT          binary file extension\n",
                        "  -L, --libext EXT          library file extension\n",
-                       "  -l, --create-libs         create rules for libraries\n",
+                       "  -a, --create-libs         create rules for libraries\n",
                        "  -o, --create-objs         create rules for objects\n",
                        "  -b, --create-bins         create rules for programs\n",
                        "  -d, --builddir            build directory\n",
-                       "  -t, --compiler-type TYPE   compiler type, one of:\n"
+                       "  -t, --compiler-type TYPE   compiler type, one of:\n",
+                       "  -l, --link                link a library\n",
                        "\n"
                        "     gcc         GNU make\n"
                        "     bcc55       Borland C++ Builder 5.5\n"
@@ -2360,6 +2463,8 @@ main(int argc, char* argv[]) {
   strlist thisdir, outdir;
   strarray args;
   strlist cmdline;
+  static strarray libs;
+  const char** it;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"objext", 0, NULL, 'O'},
@@ -2368,6 +2473,9 @@ main(int argc, char* argv[]) {
                            {"create-libs", 0, &cmd_libs, 1},
                            {"create-objs", 0, &cmd_objs, 1},
                            {"create-bins", 0, &cmd_bins, 1},
+                           {"install", 0, 0, 'I'},
+                           /*                           {"install-bins", 0, &inst_bins, 1},
+                                                     {"install-libs", 0, &inst_libs, 1},*/
                            {"builddir", 0, 0, 'd'},
                            {"compiler-type", 0, 0, 't'},
                            {"make-type", 0, 0, 'm'},
@@ -2385,14 +2493,17 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:a:D:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
       continue;
 
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
+      case 'h':
+        usage(argv[0]);
+        ret = 0;
+        goto exit;
       case 'o': outfile = optarg; break;
       case 'O': objext = optarg; break;
       case 'B': binext = optarg; break;
@@ -2401,8 +2512,16 @@ main(int argc, char* argv[]) {
       case 't': compiler = optarg; break;
       case 'm': make = optarg; break;
       case 'a': set_machine(optarg); break;
+      case 'l': strarray_push(&libs, optarg); break;
+      case 'I':
+        inst_bins = 1;
+        inst_libs = 1;
+        break;
       case 'D': push_define(optarg); break;
-      default: usage(argv[0]); return 1;
+      default:
+        // usage(argv[0]);
+        ret = 1;
+        goto exit;
     }
   }
 
@@ -2412,11 +2531,15 @@ main(int argc, char* argv[]) {
     cmd_libs = 1;
   }
 
+  if(inst_bins)
+    cmd_bins = 1;
+  if(inst_libs)
+    cmd_libs = 1;
+
   if(!format_linklib_fn)
     format_linklib_fn = &format_linklib_lib;
 
-  strlist_init(&thisdir, pathsep_make);
-  strlist_init(&outdir, pathsep_make);
+  strlist_init(&thisdir, pathsep_make) strlist_init(&outdir, pathsep_make);
   strlist_init(&builddir, pathsep_make);
   strlist_init(&workdir, pathsep_make);
 
@@ -2428,7 +2551,8 @@ main(int argc, char* argv[]) {
     int fd;
     if((fd = open_trunc(outfile)) == -1) {
       errmsg_warnsys("ERROR: opening '", outfile, "'", 0);
-      return 2;
+      ret = 2;
+      goto exit;
     }
     buffer_1->fd = fd;
 
@@ -2478,8 +2602,11 @@ main(int argc, char* argv[]) {
 
   if(!set_make_type(make, compiler) || !set_compiler_type(compiler)) {
     usage(argv[0]);
-    return 2;
+    ret = 2;
+    goto exit;
   }
+
+  strarray_foreach(&libs, it) { with_lib(*it); }
 
   stralloc_replacec(&outdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   path_absolute_sa(&outdir.sa);
@@ -2556,7 +2683,7 @@ main(int argc, char* argv[]) {
     if(stralloc_contains(&arg, "=")) {
       size_t eqpos;
       const char* v;
-      debug_sa("Setting var", &arg);
+      // debug_sa("Setting var", &arg);
 
       eqpos = str_chr(arg.s, '=');
       arg.s[eqpos++] = '\0';
@@ -2584,7 +2711,8 @@ main(int argc, char* argv[]) {
 
     buffer_putsflush(buffer_2, "ERROR: No arguments given\n\n");
     usage(argv[0]);
-    return 1;
+    ret = 1;
+    goto exit;
 
   } else {
     target* rule;
@@ -2654,12 +2782,14 @@ main(int argc, char* argv[]) {
         // print_target_deps(buffer_2, tgt);
       }
     }
+    if(inst_bins || inst_libs)
+      gen_install_rules(rules);
 
   fail:
     buffer_puts(buffer_1, "# Generated by:\n#  ");
     buffer_putsa(buffer_1, &cmdline.sa);
     buffer_putnlflush(buffer_1);
-    
+
     output_all_vars(buffer_1, vars);
 
     if(ninja) {
@@ -2679,5 +2809,6 @@ main(int argc, char* argv[]) {
     hmap_destroy(&sourcedirs);
   }
 
+exit:
   return ret;
 }
