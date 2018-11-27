@@ -102,6 +102,7 @@ static const char *toolchain, *compiler, *make;
 static const char* newline = "\n";
 static machine_type mach;
 static int batch, ninja;
+static int batchmode;
 
 static linklib_fmt* format_linklib_fn;
 
@@ -1295,14 +1296,14 @@ get_sourcedir_b(const char* x, size_t n) {
 /**
  * Generate compile rules for every source file given
  */
-void
+target*
 gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
   sourcefile* src;
   char** srcfile;
   target* rule;
   stralloc obj;
   strlist incs;
-  int batch = 0; //str_start(make, "nmake");
+
   stralloc_init(&obj);
   strlist_init(&incs, ' ');
 
@@ -1318,7 +1319,7 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
     if(!str_equal(ext, ".c"))
       continue;
 
-    if(batch) {
+    if(batchmode) {
       stralloc_zero(&obj);
       stralloc_catm_internal(&obj, "{", dir, "}", ext, "{", workdir.sa.s, "}", objext, ":", 0);
     } else {
@@ -1327,9 +1328,11 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
 
     if((rule = get_rule_sa(&obj))) {
 
-      if(batch)
-        path_object(*srcfile, &obj);
-      add_srcpath(&rule->prereq, batch ? obj.s : *srcfile);
+      if(batchmode)
+        rule->prereq.sep = '\0';
+      //        path_object(*srcfile, &obj);
+
+      add_srcpath(&rule->prereq, /*batchmode ? obj.s :*/ *srcfile);
 
       if(rule->recipe)
         continue;
@@ -1337,7 +1340,7 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
       // get_includes(*srcfile, &incs, 0);
 
       if(!rule->recipe) {
-        if(batch) {
+        if(batchmode) {
           rule->recipe = malloc(sizeof(stralloc));
           stralloc_init(rule->recipe);
           stralloc_copy(rule->recipe, &compile_command);
@@ -1353,6 +1356,7 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
 
   stralloc_free(&obj);
   strlist_free(&incs);
+  return batchmode ? rule : 0;
 }
 
 /**
@@ -1360,7 +1364,7 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
  */
 target*
 lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
-  target* rule;
+  target *dep = 0, *rule;
   stralloc sa;
   stralloc_init(&sa);
 
@@ -1371,16 +1375,23 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
   debug_sa("lib_rule_for_sourcedir", &sa);
 
-  gen_compile_rules(rules, srcdir, name);
+  dep = gen_compile_rules(rules, srcdir, name);
 
   if((rule = get_rule_sa(&sa))) {
     sourcefile* pfile;
     strlist_init(&rule->prereq, ' ');
 
-    slist_foreach(srcdir->sources, pfile) {
-      path_object(pfile->name, &sa);
-
-      add_path_sa(&rule->prereq, &sa);
+    if(dep) {
+      char* s;
+      strlist_foreach_s(&dep->prereq, s) {
+        path_object(s, &sa);
+        add_path_sa(&rule->prereq, &sa);
+      }
+    } else {
+      slist_foreach(srcdir->sources, pfile) {
+        path_object(pfile->name, &sa);
+        add_path_sa(&rule->prereq, &sa);
+      }
     }
 
     rule->recipe = &lib_command;
@@ -1486,9 +1497,6 @@ target_add_deps(target* t, const strlist* deps) {
   }
 }
 
-/**
- * Generate compile rules for every library given
- */
 void
 gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   target* rule;
@@ -1512,6 +1520,9 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   stralloc_free(&inc);
 }
 
+/**
+ * Generate compile rules for every library given
+ */
 /**
  * Generate compile rules for every source file with a main()
  */
@@ -2713,6 +2724,8 @@ main(int argc, char* argv[]) {
     ret = 2;
     goto exit;
   }
+
+  batchmode = batch && stralloc_contains(&compile_command, "-Fo");
 
   strarray_foreach(&libs, it) { with_lib(*it); }
 
