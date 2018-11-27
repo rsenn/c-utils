@@ -174,7 +174,7 @@ env_putb(const char* x, size_t n) {
   u = malloc(n + 1);
   if(!u)
     return 0;
-  str_copyn(u, s, n);
+  str_copyn(u, x, n);
   if(!env_add(u)) {
     free(u);
     return 0;

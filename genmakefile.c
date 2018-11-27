@@ -491,8 +491,7 @@ rule_command(target* rule, stralloc* out) {
   strlist_init(&prereq, ' ');
 
   if(stralloc_contains(rule->recipe, "-+$^")) {
-    pfx = "-+";
-    //    stralloc_replaces(&lib_command, "-+$^", "$^");
+//    pfx = "-+";
   }
 
   strlist_foreach(&rule->prereq, s, len) {
@@ -2432,7 +2431,7 @@ set_compiler_type(const char* compiler) {
       push_var("CFLAGS", "-o");
     }
     //    set_command(&lib_command, "$(LIB) -c $@", "$^");
-    set_command(&lib_command, "$(LIB) $@ /c", "-+$^");
+    set_command(&lib_command, "$(LIB) -c $@", "$^");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
     set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o\"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 

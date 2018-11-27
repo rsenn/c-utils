@@ -584,7 +584,6 @@ SOURCES = \
  \
   lib/buffer/buffer_prefetch.c \
   lib/iarray/iarray_get.c \
-  lib/ndelay/ndelay_on.c \
   lib/uint32/uint32_random.c \
   lib/taia/taia_now.c \
   lib/uint32/uint32_prng.c \
@@ -593,6 +592,4 @@ SOURCES = \
   lib/io/io_dontwantread.c \
   lib/io/io_dontwantwrite.c \
   lib/iarray/iarray_init.c \
-  lib/iarray/iarray_allocate.c \
- \
-  lib/socket/winsock2errno.c
+  lib/iarray/iarray_allocate.c
