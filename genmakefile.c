@@ -1293,6 +1293,69 @@ get_sourcedir_b(const char* x, size_t n) {
   return ret;
 }
 /**
+ * Generate compile rules for every source file given
+ */
+void
+gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
+  sourcefile* src;
+  char** srcfile;
+  target* rule;
+  stralloc obj;
+  strlist incs;
+  int batch = 0; //str_start(make, "nmake");
+  stralloc_init(&obj);
+  strlist_init(&incs, ' ');
+
+  slist_foreach(&srcdir->sources, src) {
+    const char* ext;
+    srcfile = &src->name;
+
+    ext = *srcfile + str_rchr(*srcfile, pathsep_make);
+    if(*ext == pathsep_make)
+      ++ext;
+    ext += str_rchr(ext, '.');
+
+    if(!str_equal(ext, ".c"))
+      continue;
+
+    if(batch) {
+      stralloc_zero(&obj);
+      stralloc_catm_internal(&obj, "{", dir, "}", ext, "{", workdir.sa.s, "}", objext, ":", 0);
+    } else {
+      path_object(*srcfile, &obj);
+    }
+
+    if((rule = get_rule_sa(&obj))) {
+
+      if(batch)
+        path_object(*srcfile, &obj);
+      add_srcpath(&rule->prereq, batch ? obj.s : *srcfile);
+
+      if(rule->recipe)
+        continue;
+
+      // get_includes(*srcfile, &incs, 0);
+
+      if(!rule->recipe) {
+        if(batch) {
+          rule->recipe = malloc(sizeof(stralloc));
+          stralloc_init(rule->recipe);
+          stralloc_copy(rule->recipe, &compile_command);
+          stralloc_replaces(rule->recipe, "-Fo", "-Fd");
+          stralloc_replaces(rule->recipe, "$@", workdir.sa.s);
+
+        } else {
+          rule->recipe = str_start(make, "g") ? NULL : &compile_command;
+        }
+      }
+    }
+  }
+
+  stralloc_free(&obj);
+  strlist_free(&incs);
+}
+
+/**
  * Generate lib rule for source dir
  */
 target*
@@ -1307,6 +1370,8 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
   stralloc_cats(&sa, libext);
 
   debug_sa("lib_rule_for_sourcedir", &sa);
+
+  gen_compile_rules(rules, srcdir, name);
 
   if((rule = get_rule_sa(&sa))) {
     sourcefile* pfile;
@@ -1422,69 +1487,6 @@ target_add_deps(target* t, const strlist* deps) {
 }
 
 /**
- * Generate compile rules for every source file given
- */
-void
-gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
-  sourcefile* src;
-  char** srcfile;
-  target* rule;
-  stralloc obj;
-  strlist incs;
-  int batch = str_start(make, "nmake");
-  stralloc_init(&obj);
-  strlist_init(&incs, ' ');
-
-  slist_foreach(&srcdir->sources, src) {
-    const char* ext;
-    srcfile = &src->name;
-
-    ext = srcfile + str_rchr(srcfile, pathsep_make);
-    if(*ext == pathsep_make)
-      ++ext;
-    ext += str_rchr(ext, '.');
-
-    if(!str_equal(ext, ".c"))
-      continue;
-
-    if(batch) {
-      stralloc_zero(&obj);
-      stralloc_catm_internal(&obj, "{", dir, "}", ext, "{", workdir.sa.s, "}", objext, ":", 0);
-    } else {
-      path_object(*srcfile, &obj);
-    }
-
-    if((rule = get_rule_sa(&obj))) {
-
-      if(batch)
-        path_object(*srcfile, &obj);
-      add_srcpath(&rule->prereq, batch ? obj.s : *srcfile);
-
-      if(rule->recipe)
-        continue;
-
-      // get_includes(*srcfile, &incs, 0);
-
-      if(!rule->recipe) {
-        if(batch) {
-          rule->recipe = malloc(sizeof(stralloc));
-          stralloc_init(rule->recipe);
-          stralloc_copy(rule->recipe, &compile_command);
-          stralloc_replaces(rule->recipe, "-Fo", "-Fd");
-          stralloc_replaces(rule->recipe, "$@", workdir.sa.s);
-
-        } else {
-          rule->recipe = str_start(make, "g") ? NULL : &compile_command;
-        }
-      }
-    }
-  }
-
-  stralloc_free(&obj);
-  strlist_free(&incs);
-}
-
-/**
  * Generate compile rules for every library given
  */
 void
@@ -1504,8 +1506,6 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
 
     if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
       continue;
-
-    gen_compile_rules(rules, srcdir, t->key);
 
     rule = lib_rule_for_sourcedir(rules, srcdir, base);
   }
@@ -1808,7 +1808,7 @@ output_make_rule(buffer* b, target* rule) {
     stralloc cmd;
     stralloc_init(&cmd);
 
-    if(str_start(make, "g") || str_start(make, "nmake"))
+    if(str_start(make, "g") /*|| str_start(make, "nmake")*/)
       stralloc_copy(&cmd, rule->recipe);
     else
       rule_command(rule, &cmd);
