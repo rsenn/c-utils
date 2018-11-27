@@ -395,4 +395,43 @@ SOURCES = \
   lib/strlist/strlist_to_argv.c \
   lib/strlist/strlist_trunc.c \
   lib/strlist/strlist_unshift.c \
-  msys-shell.c
+  msys-shell.c \
+  lib/array/array_allocate.c \
+  lib/array/array_bytes.c \
+  lib/array/array_catb.c \
+  lib/array/array_get.c \
+  lib/array/array_length.c \
+  lib/array/array_start.c \
+  lib/array/array_truncate.c \
+  lib/fmt/fmt_8long.c \
+  lib/fmt/fmt_double.c \
+  lib/fmt/fmt_escapecharshell.c \
+  lib/fmt/fmt_hexb.c \
+  lib/fmt/fmt_int64.c \
+  lib/fmt/fmt_long.c \
+  lib/fmt/fmt_minus.c \
+  lib/fmt/fmt_uint64.c \
+  lib/fmt/fmt_ulong.c \
+  lib/fmt/fmt_ulong0.c \
+  lib/fmt/fmt_xint64.c \
+  lib/fmt/fmt_xlong.c \
+  lib/mmap/mmap_private.c \
+  lib/mmap/mmap_private_fd.c \
+  lib/mmap/mmap_read.c \
+  lib/mmap/mmap_read_fd.c \
+  lib/mmap/mmap_shared_fd.c \
+  lib/open/open_trunc.c \
+  lib/scan/scan_ulong.c \
+  lib/str/isleap.c \
+  lib/stralloc/utf8.c \
+  lib/unix/getopt.c \
+  lib/unix/glob.c \
+  lib/unix/readlink.c \
+  lib/unix/win32_glob.c \
+  lib/array/array_fail.c \
+  lib/array/umult64.c \
+  lib/scan/scan_ulongn.c lib/str/time_table_spd.c \
+ \
+  lib/array/array_fail.c \
+  lib/array/umult64.c \
+  lib/scan/scan_ulongn.c
