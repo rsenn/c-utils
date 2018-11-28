@@ -1,12 +1,12 @@
 #include "../windoze.h"
 
 #include "../buffer.h"
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <windows.h>
 #else
-#include <fcntl.h>
 #include <sys/mman.h>
 #endif
+#include <fcntl.h>
 
 void
 buffer_munmap(void* buf) {
