@@ -7,7 +7,7 @@
  * https://github.com/takamin/win-c/blob/master/LICENSE
  */
 
-#ifndef GETOPT_H
+#if !defined(GETOPT_H) && !defined(__GETOPT_H__)
 #define GETOPT_H 1
 #define __GETOPT_H__ 1
 
@@ -31,7 +31,7 @@ struct longopt {
   int val;
 };
 
-int getopt_long(int argc, char * const argv[], const char *optstring, const struct longopt *longopts, int *longindex);
+int getopt_long (int argc, char * const *argv, const char *optstring, const struct longopt *, int *);                                                                                                  
 
      int getopt_long_only(int argc, char  *  const  *argv,  const
      char   *shortopts,   const   struct  longopt  *longopts,  int

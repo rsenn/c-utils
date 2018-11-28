@@ -35,10 +35,10 @@ base_file(const char* suffix) {
   return base.s;
 }
 
-int
+ssize_t
 read_env(const char* x, size_t n) {
   char* line;
-  size_t len, skip;
+  size_t len, skip, num_read = 0;
   byte_foreach_skip(x, n, line, skip) {
 
     skip = scan_lineskip(line, n - (line - x));
@@ -49,7 +49,11 @@ read_env(const char* x, size_t n) {
     buffer_puts(buffer_2, "Line: ");
     buffer_put(buffer_2, line, len);
     buffer_putnlflush(buffer_2);
+
+    num_read += len;
   }
+
+  return len;
 }
 
 int
@@ -70,7 +74,8 @@ path_lookup(const char* cmd, stralloc* out) {
 
 int
 main(int argc, char* argv[]) {
-  size_t i;
+  size_t p;
+  int i;
   stralloc sa;
   strarray v;
   strlist args;

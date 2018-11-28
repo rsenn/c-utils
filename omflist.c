@@ -10,6 +10,8 @@
 #include "lib/byte.h"
 #include "lib/stralloc.h"
 
+#include <ctype.h>
+
 void
 omf_dump(buffer* b, omf_record* r) {
   uint16 len = uint16_get(&r->length);

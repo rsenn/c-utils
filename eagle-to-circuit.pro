@@ -20,8 +20,8 @@ unix|linux {
 }
 
 gcc|linux {
-  QMAKE_CFLAGS_WARN_ON += -Wno-unused-parameter
-  QMAKE_CFLAGS_WARN_ON += -Wno-unused-variable
+gcc: QMAKE_CFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-but-set-variable
+gcc: QMAKE_CFLAGS_WARN_ON += -Wno-unused-variable -Wno-unused-but-set-variable
 }
 
 mingw | mingw32 | mingw64 | msvc {
@@ -41,7 +41,7 @@ mingw | mingw32 | mingw64 {
 
   #!*mingw*: DEFINES += USE_READDIR=1
 
-#  #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
+gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter -Wno-unused-but-set-variable
 }
 
 INCLUDEPATH += .

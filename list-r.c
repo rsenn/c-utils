@@ -674,7 +674,7 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char* rel_to = 0;
   int index = 0;
-  struct longopt opts[] = {
+  static const struct longopt opts[] = {
     {"help", 0, 0, 'h'},
     {"list", 0, &opt_list, 1},
     {"numeric", 0, &opt_numeric, 1},
