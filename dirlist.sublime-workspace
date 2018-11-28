@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "MAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PATHSEP\nDEFAULT_PATHSEP\nvoid\nput_newline\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_s\npath_prefix_b\npath_extension\npath_object\npath_wildcard\nextract_build_type\nformat_linklib_lib\nformat_linklib_switch\nformat_linklib_dummy\nscan_main\nhas_main\nextract_includes\nget_includes\nrule_command\nsubst_var\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nget_var\nset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\noutput_make_rule\noutput_ninja_rule\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\nlib_rule_for_sourcedir\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_compile_rules\ngen_lib_rules\ngen_link_rules\ngen_clean_rule\noutput_all_vars\noutput_build_rules\noutput_all_rules\noutput_script\nset_machine\nset_make_type\nset_compiler_type\nusage\nmain",
+			"contents": "coff_dump_sections\nput_hex\ncoff_print_func\ncoff_list_symbols\nusage\nmain\ncoff_dump_sections",
 			"settings":
 			{
-				"buffer_size": 1298,
+				"buffer_size": 90,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -31,6 +31,14 @@
 			{
 				"buffer_size": 60932,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "compiler-wrapper.c",
+			"settings":
+			{
+				"buffer_size": 17604,
 				"line_ending": "Unix"
 			}
 		},
@@ -228,7 +236,7 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/roman/Desktop/dirlist"
+		"/home/roman/Sources/dirlist"
 	],
 	"file_history":
 	[
@@ -363,7 +371,7 @@
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 22.977022977
 	},
 	"find_in_files":
 	{
@@ -568,488 +576,62 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1298,
+						"buffer_size": 90,
 						"regions":
 						{
 						},
 						"selection":
 						[
+							[
+								42,
+								42
+							]
 						],
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\genmakefile.c",
+							"current_file": "/home/roman/Sources/dirlist/cofflist.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									505,
-									516
+									481,
+									499
 								],
 								[
-									531,
-									545
+									520,
+									527
 								],
 								[
-									561,
-									575
+									697,
+									712
 								],
 								[
-									591,
-									605
+									2015,
+									2032
 								],
 								[
-									617,
-									631
+									6338,
+									6343
 								],
 								[
-									653,
-									664
+									7279,
+									7283
 								],
 								[
-									679,
-									693
-								],
-								[
-									707,
-									721
-								],
-								[
-									735,
-									749
-								],
-								[
-									764,
-									778
-								],
-								[
-									817,
-									832
-								],
-								[
-									852,
-									867
-								],
-								[
-									1466,
-									1470
-								],
-								[
-									2264,
-									2275
-								],
-								[
-									2368,
-									2379
-								],
-								[
-									2676,
-									2689
-								],
-								[
-									2886,
-									2894
-								],
-								[
-									3060,
-									3067
-								],
-								[
-									3231,
-									3239
-								],
-								[
-									3663,
-									3672
-								],
-								[
-									3840,
-									3848
-								],
-								[
-									3863,
-									3871
-								],
-								[
-									3886,
-									3893
-								],
-								[
-									3908,
-									3917
-								],
-								[
-									4168,
-									4181
-								],
-								[
-									4711,
-									4724
-								],
-								[
-									5088,
-									5102
-								],
-								[
-									5355,
-									5366
-								],
-								[
-									5901,
-									5914
-								],
-								[
-									6265,
-									6283
-								],
-								[
-									6515,
-									6533
-								],
-								[
-									6719,
-									6740
-								],
-								[
-									6901,
-									6921
-								],
-								[
-									7036,
-									7045
-								],
-								[
-									7549,
-									7557
-								],
-								[
-									7783,
-									7799
-								],
-								[
-									8774,
-									8786
-								],
-								[
-									9033,
-									9045
-								],
-								[
-									10487,
-									10496
-								],
-								[
-									11110,
-									11118
-								],
-								[
-									11656,
-									11667
-								],
-								[
-									11747,
-									11756
-								],
-								[
-									12104,
-									12116
-								],
-								[
-									12197,
-									12208
-								],
-								[
-									12417,
-									12425
-								],
-								[
-									12681,
-									12692
-								],
-								[
-									13036,
-									13047
-								],
-								[
-									13231,
-									13241
-								],
-								[
-									13545,
-									13555
-								],
-								[
-									13951,
-									13962
-								],
-								[
-									14256,
-									14263
-								],
-								[
-									14659,
-									14666
-								],
-								[
-									14842,
-									14850
-								],
-								[
-									14966,
-									14977
-								],
-								[
-									15111,
-									15119
-								],
-								[
-									15328,
-									15336
-								],
-								[
-									15835,
-									15851
-								],
-								[
-									16112,
-									16125
-								],
-								[
-									16343,
-									16362
-								],
-								[
-									17963,
-									17978
-								],
-								[
-									18483,
-									18499
-								],
-								[
-									19320,
-									19331
-								],
-								[
-									19965,
-									19990
-								],
-								[
-									20413,
-									20428
-								],
-								[
-									20785,
-									20805
-								],
-								[
-									21128,
-									21141
-								],
-								[
-									21485,
-									21496
-								],
-								[
-									21649,
-									21668
-								],
-								[
-									22701,
-									22718
-								],
-								[
-									23389,
-									23419
-								],
-								[
-									23853,
-									23873
-								],
-								[
-									24214,
-									24230
-								],
-								[
-									25119,
-									25136
-								],
-								[
-									26278,
-									26291
-								],
-								[
-									26556,
-									26572
-								],
-								[
-									26894,
-									26909
-								],
-								[
-									27137,
-									27159
-								],
-								[
-									27744,
-									27757
-								],
-								[
-									29010,
-									29024
-								],
-								[
-									29297,
-									29312
-								],
-								[
-									29662,
-									29679
-								],
-								[
-									30196,
-									30209
-								],
-								[
-									30756,
-									30770
-								],
-								[
-									33682,
-									33696
-								],
-								[
-									35178,
-									35193
-								],
-								[
-									35827,
-									35845
-								],
-								[
-									36365,
-									36381
-								],
-								[
-									36580,
-									36593
-								],
-								[
-									37217,
-									37228
-								],
-								[
-									37643,
-									37656
-								],
-								[
-									38842,
-									38859
-								],
-								[
-									50642,
-									50647
-								],
-								[
-									53044,
-									53048
+									10278,
+									10296
 								]
 							],
 							"symlist":
 							[
-								"MAX_CMD_LEN",
-								"DEFAULT_OBJEXT",
-								"DEFAULT_LIBEXT",
-								"DEFAULT_LIBPFX",
-								"DEFAULT_EXEEXT",
-								"MAX_CMD_LEN",
-								"DEFAULT_OBJEXT",
-								"DEFAULT_LIBEXT",
-								"DEFAULT_LIBPFX",
-								"DEFAULT_EXEEXT",
-								"DEFAULT_PATHSEP",
-								"DEFAULT_PATHSEP",
-								"void",
-								"put_newline",
-								"set_command",
-								"strarray_dump",
-								"debug_sa",
-								"debug_s",
-								"debug_sl",
-								"debug_int",
-								"debug_sa",
-								"debug_sl",
-								"debug_s",
-								"debug_int",
-								"path_prefix_s",
-								"path_prefix_b",
-								"path_extension",
-								"path_object",
-								"path_wildcard",
-								"extract_build_type",
-								"format_linklib_lib",
-								"format_linklib_switch",
-								"format_linklib_dummy",
-								"scan_main",
-								"has_main",
-								"extract_includes",
-								"get_includes",
-								"rule_command",
-								"subst_var",
-								"get_rule",
-								"get_rule_sa",
-								"find_rule",
-								"find_rule_sa",
-								"find_rule_b",
-								"add_path",
-								"add_srcpath",
-								"add_path_sa",
-								"new_source",
-								"add_source",
-								"get_sources",
-								"get_var",
-								"set_var",
-								"push_var",
-								"push_var_sa",
-								"push_lib",
-								"with_lib",
-								"get_rules_by_cmd",
-								"dirname_alloc",
-								"populate_sourcedirs",
-								"dump_sourcedirs",
-								"includes_to_libs",
-								"target_ptrs",
-								"target_dep_list_recursive",
-								"target_dep_list",
-								"target_deps_indirect",
-								"deps_indirect",
-								"deps_direct",
-								"print_target_deps_r",
-								"print_target_deps",
-								"remove_indirect_deps_recursive",
-								"remove_indirect_deps",
-								"output_make_rule",
-								"output_ninja_rule",
-								"get_sourcedir",
-								"get_sourcedir_sa",
-								"get_sourcedir_b",
-								"lib_rule_for_sourcedir",
-								"deps_for_libs",
-								"target_add_dep",
-								"target_add_deps",
-								"gen_compile_rules",
-								"gen_lib_rules",
-								"gen_link_rules",
-								"gen_clean_rule",
-								"output_all_vars",
-								"output_build_rules",
-								"output_all_rules",
-								"output_script",
-								"set_machine",
-								"set_make_type",
-								"set_compiler_type",
+								"coff_dump_sections",
+								"put_hex",
+								"coff_print_func",
+								"coff_list_symbols",
 								"usage",
-								"main"
+								"main",
+								"coff_dump_sections"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -1057,13 +639,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -1079,8 +661,8 @@
 						"selection":
 						[
 							[
-								24213,
-								24257
+								24173,
+								24173
 							]
 						],
 						"settings":
@@ -1090,14 +672,44 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 14577.0,
+						"translation.y": 14577.4225774,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
+					"file": "compiler-wrapper.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 17604,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
 					"file": "lib/coff.h",
 					"semi_transient": false,
 					"settings":
@@ -1120,14 +732,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1140.0,
+						"translation.y": 1139.86013986,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 4,
 					"file": "cofflist.c",
 					"semi_transient": false,
 					"settings":
@@ -1139,8 +751,8 @@
 						"selection":
 						[
 							[
-								3854,
-								3854
+								724,
+								724
 							]
 						],
 						"settings":
@@ -1150,10 +762,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1274.0,
+						"translation.y": 173.826173826,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -1161,7 +773,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 22.0
+		"height": 22.977022977
 	},
 	"input":
 	{
@@ -1223,7 +835,7 @@
 	"project": "dirlist.sublime-project",
 	"replace":
 	{
-		"height": 72.0
+		"height": 41.958041958
 	},
 	"save_all_on_build": true,
 	"select_file":
