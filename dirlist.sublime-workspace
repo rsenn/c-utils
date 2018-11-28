@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "path_lookup\nsetup_env\nusage\nmain",
+			"contents": "MAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PATHSEP\nDEFAULT_PATHSEP\nvoid\nput_newline\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_s\npath_prefix_b\npath_extension\npath_object\npath_wildcard\nextract_build_type\nformat_linklib_lib\nformat_linklib_switch\nformat_linklib_dummy\nscan_main\nhas_main\nextract_includes\nget_includes\nrule_command_subst\nrule_command\nsubst_var\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nisset\nget_var\nvar\nset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\npush_define\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\ngen_compile_rules\nlib_rule_for_sourcedir\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_lib_rules\ngen_link_rules\noutput_build_rules\ngen_install_rules\noutput_all_vars\noutput_make_rule\ngen_clean_rule\noutput_ninja_rule\noutput_all_rules\noutput_script\nset_machine\nset_make_type\nset_compiler_type\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 32,
+				"buffer_size": 1357,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -29,7 +29,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 70841,
+				"buffer_size": 70817,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -38,15 +38,15 @@
 			"file": "cc-wrap.c",
 			"settings":
 			{
-				"buffer_size": 3243,
+				"buffer_size": 3306,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "msys-shell.c",
+			"file": "buffertest.c",
 			"settings":
 			{
-				"buffer_size": 4463,
+				"buffer_size": 1929,
 				"line_ending": "Unix"
 			}
 		}
@@ -655,7 +655,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 32,
+						"buffer_size": 1357,
 						"regions":
 						{
 						},
@@ -665,31 +665,501 @@
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "/home/roman/Sources/rsenn/dirlist/msys-shell.c",
+							"current_file": "/home/roman/Sources/rsenn/dirlist/genmakefile.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									502,
-									513
+									528,
+									539
 								],
 								[
-									776,
-									785
+									554,
+									568
 								],
 								[
-									1416,
-									1421
+									584,
+									598
 								],
 								[
-									1820,
-									1824
+									614,
+									628
+								],
+								[
+									640,
+									654
+								],
+								[
+									676,
+									687
+								],
+								[
+									702,
+									716
+								],
+								[
+									730,
+									744
+								],
+								[
+									758,
+									772
+								],
+								[
+									787,
+									801
+								],
+								[
+									840,
+									855
+								],
+								[
+									875,
+									890
+								],
+								[
+									1489,
+									1493
+								],
+								[
+									2418,
+									2429
+								],
+								[
+									2522,
+									2533
+								],
+								[
+									3062,
+									3075
+								],
+								[
+									3272,
+									3280
+								],
+								[
+									3446,
+									3453
+								],
+								[
+									3617,
+									3625
+								],
+								[
+									4049,
+									4058
+								],
+								[
+									4226,
+									4234
+								],
+								[
+									4249,
+									4257
+								],
+								[
+									4272,
+									4279
+								],
+								[
+									4294,
+									4303
+								],
+								[
+									4554,
+									4567
+								],
+								[
+									5097,
+									5110
+								],
+								[
+									5474,
+									5488
+								],
+								[
+									5741,
+									5752
+								],
+								[
+									6287,
+									6300
+								],
+								[
+									6651,
+									6669
+								],
+								[
+									6898,
+									6916
+								],
+								[
+									7102,
+									7123
+								],
+								[
+									7267,
+									7287
+								],
+								[
+									7402,
+									7411
+								],
+								[
+									7915,
+									7923
+								],
+								[
+									8149,
+									8165
+								],
+								[
+									9140,
+									9152
+								],
+								[
+									9399,
+									9417
+								],
+								[
+									10662,
+									10674
+								],
+								[
+									12188,
+									12197
+								],
+								[
+									12811,
+									12819
+								],
+								[
+									13357,
+									13368
+								],
+								[
+									13448,
+									13457
+								],
+								[
+									13805,
+									13817
+								],
+								[
+									13898,
+									13909
+								],
+								[
+									14118,
+									14126
+								],
+								[
+									14382,
+									14393
+								],
+								[
+									14737,
+									14748
+								],
+								[
+									14932,
+									14942
+								],
+								[
+									15246,
+									15256
+								],
+								[
+									15652,
+									15663
+								],
+								[
+									15952,
+									15957
+								],
+								[
+									16062,
+									16069
+								],
+								[
+									16483,
+									16486
+								],
+								[
+									16615,
+									16622
+								],
+								[
+									16813,
+									16821
+								],
+								[
+									16937,
+									16948
+								],
+								[
+									17082,
+									17090
+								],
+								[
+									17299,
+									17307
+								],
+								[
+									17756,
+									17767
+								],
+								[
+									18013,
+									18029
+								],
+								[
+									18290,
+									18303
+								],
+								[
+									18521,
+									18540
+								],
+								[
+									20358,
+									20373
+								],
+								[
+									20878,
+									20894
+								],
+								[
+									21715,
+									21726
+								],
+								[
+									22360,
+									22385
+								],
+								[
+									22808,
+									22823
+								],
+								[
+									23180,
+									23200
+								],
+								[
+									23523,
+									23536
+								],
+								[
+									23880,
+									23891
+								],
+								[
+									24044,
+									24063
+								],
+								[
+									25096,
+									25113
+								],
+								[
+									25784,
+									25814
+								],
+								[
+									26252,
+									26272
+								],
+								[
+									26801,
+									26814
+								],
+								[
+									27079,
+									27095
+								],
+								[
+									27417,
+									27432
+								],
+								[
+									27678,
+									27695
+								],
+								[
+									29212,
+									29234
+								],
+								[
+									30099,
+									30112
+								],
+								[
+									31356,
+									31370
+								],
+								[
+									31643,
+									31658
+								],
+								[
+									31946,
+									31959
+								],
+								[
+									32564,
+									32578
+								],
+								[
+									35636,
+									35654
+								],
+								[
+									36152,
+									36169
+								],
+								[
+									38173,
+									38188
+								],
+								[
+									38855,
+									38871
+								],
+								[
+									40254,
+									40268
+								],
+								[
+									42252,
+									42269
+								],
+								[
+									43220,
+									43236
+								],
+								[
+									43435,
+									43448
+								],
+								[
+									44072,
+									44083
+								],
+								[
+									44498,
+									44511
+								],
+								[
+									46010,
+									46027
+								],
+								[
+									58787,
+									58792
+								],
+								[
+									61202,
+									61206
 								]
 							],
 							"symlist":
 							[
-								"path_lookup",
-								"setup_env",
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"DEFAULT_PATHSEP",
+								"DEFAULT_PATHSEP",
+								"void",
+								"put_newline",
+								"set_command",
+								"strarray_dump",
+								"debug_sa",
+								"debug_s",
+								"debug_sl",
+								"debug_int",
+								"debug_sa",
+								"debug_sl",
+								"debug_s",
+								"debug_int",
+								"path_prefix_s",
+								"path_prefix_b",
+								"path_extension",
+								"path_object",
+								"path_wildcard",
+								"extract_build_type",
+								"format_linklib_lib",
+								"format_linklib_switch",
+								"format_linklib_dummy",
+								"scan_main",
+								"has_main",
+								"extract_includes",
+								"get_includes",
+								"rule_command_subst",
+								"rule_command",
+								"subst_var",
+								"get_rule",
+								"get_rule_sa",
+								"find_rule",
+								"find_rule_sa",
+								"find_rule_b",
+								"add_path",
+								"add_srcpath",
+								"add_path_sa",
+								"new_source",
+								"add_source",
+								"get_sources",
+								"isset",
+								"get_var",
+								"var",
+								"set_var",
+								"push_var",
+								"push_var_sa",
+								"push_lib",
+								"with_lib",
+								"push_define",
+								"get_rules_by_cmd",
+								"dirname_alloc",
+								"populate_sourcedirs",
+								"dump_sourcedirs",
+								"includes_to_libs",
+								"target_ptrs",
+								"target_dep_list_recursive",
+								"target_dep_list",
+								"target_deps_indirect",
+								"deps_indirect",
+								"deps_direct",
+								"print_target_deps_r",
+								"print_target_deps",
+								"remove_indirect_deps_recursive",
+								"remove_indirect_deps",
+								"get_sourcedir",
+								"get_sourcedir_sa",
+								"get_sourcedir_b",
+								"gen_compile_rules",
+								"lib_rule_for_sourcedir",
+								"deps_for_libs",
+								"target_add_dep",
+								"target_add_deps",
+								"gen_lib_rules",
+								"gen_link_rules",
+								"output_build_rules",
+								"gen_install_rules",
+								"output_all_vars",
+								"output_make_rule",
+								"gen_clean_rule",
+								"output_ninja_rule",
+								"output_all_rules",
+								"output_script",
+								"set_machine",
+								"set_make_type",
+								"set_compiler_type",
 								"usage",
 								"main"
 							],
@@ -705,7 +1175,7 @@
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -714,15 +1184,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 70841,
+						"buffer_size": 70817,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								70841,
-								70841
+								0,
+								0
 							]
 						],
 						"settings":
@@ -735,7 +1205,7 @@
 						"translation.y": 7121.87812188,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -744,15 +1214,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3243,
+						"buffer_size": 3306,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1472,
+								1472
 							]
 						],
 						"settings":
@@ -762,7 +1232,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 534.465534466,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -770,11 +1240,11 @@
 				},
 				{
 					"buffer": 3,
-					"file": "msys-shell.c",
+					"file": "buffertest.c",
 					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 4463,
+						"buffer_size": 1929,
 						"regions":
 						{
 						},
@@ -795,7 +1265,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]

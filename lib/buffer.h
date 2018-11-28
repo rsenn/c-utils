@@ -8,24 +8,26 @@
 extern "C" {
 #endif
 
-typedef ssize_t (buffer_op_sys)(fd_t fd, void* buf, size_t len);
-typedef ssize_t (buffer_op_proto)(fd_t fd, void* buf, size_t len, void* arg);
-typedef ssize_t (buffer_op_fn)(/*fd_t fd, void* buf, size_t len, void* arg*/);
+typedef ssize_t(buffer_op_sys)(fd_t fd, void* buf, size_t len);
+typedef ssize_t(buffer_op_proto)(fd_t fd, void* buf, size_t len, void* arg);
+typedef ssize_t(buffer_op_fn)(/*fd_t fd, void* buf, size_t len, void* arg*/);
 typedef buffer_op_fn* buffer_op_ptr;
 
 typedef struct buffer {
-  char *x;  	/* actual buffer space */
-  size_t p;  	/* current position */
-  size_t n;  	/* current size of string in buffer */
-  size_t a;  	/* allocated buffer size */
+  char* x;             /* actual buffer space */
+  size_t p;            /* current position */
+  size_t n;            /* current size of string in buffer */
+  size_t a;            /* allocated buffer size */
   buffer_op_proto* op; /* use read(2) or write(2) */
-  void* cookie;  		/* used internally by the to-stralloc buffers,  and for buffer chaini(ng */
-  void (*deinit)();  /* called to munmap/free cleanup,  with a pointer to the buffer as argument */
-  fd_t fd;  	/* passed as first argument to op */
+  void* cookie;        /* used internally by the to-stralloc buffers,  and for buffer chaini(ng */
+  void (*deinit)();    /* called to munmap/free cleanup,  with a pointer to the buffer as argument */
+  fd_t fd;             /* passed as first argument to op */
 } buffer;
 
-#define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (buffer_op_proto*)(void*)(op),  NULL,  NULL,  (fd) }
-#define BUFFER_INIT_FREE(op, fd, buf, len) { (buf),  0,  0,  (len),  (buffer_op_proto*)(void*)(op),  NULL,  buffer_free,  (fd) }
+#define BUFFER_INIT(op, fd, buf, len)                                                                                  \
+  { (buf), 0, 0, (len), (buffer_op_proto*)(void*)(op), NULL, NULL, (fd) }
+#define BUFFER_INIT_FREE(op, fd, buf, len)                                                                             \
+  { (buf), 0, 0, (len), (buffer_op_proto*)(void*)(op), NULL, buffer_free, (fd) }
 #define BUFFER_INIT_READ(op, fd, buf, len) BUFFER_INIT(op, fd, buf, len) /*obsolete*/
 #define BUFFER_INSIZE 8192
 #define BUFFER_OUTSIZE 8192
@@ -44,7 +46,7 @@ void buffer_close(buffer* b);
 
 /* reading from an fd... if it is a regular file,  then  buffer_mmapread_fd is called,
    otherwise  buffer_init(&b,  read,  fd,  malloc(8192),  8192) */
-int buffer_read_fd(buffer*,  fd_t fd);
+int buffer_read_fd(buffer*, fd_t fd);
 
 int buffer_flush(buffer* b);
 int buffer_put(buffer*, const char* x, size_t len);
@@ -59,11 +61,12 @@ ssize_t buffer_putsflush(buffer*, const char* x);
  * constant string,  where we know its length at compile-time,  call
  * buffer_put with the known length instead */
 #define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, __builtin_strlen(s)) : buffer_puts(b, s))
-#define buffer_putsflush(b, s) (__builtin_constant_p(s) ? buffer_putflush(b, s, __builtin_strlen(s)) : buffer_putsflush(b, s))
+#define buffer_putsflush(b, s)                                                                                         \
+  (__builtin_constant_p(s) ? buffer_putflush(b, s, __builtin_strlen(s)) : buffer_putsflush(b, s))
 #endif
 
-int buffer_putm_internal(buffer*b, ...);
-int buffer_putm_internal_flush(buffer*b, ...);
+int buffer_putm_internal(buffer* b, ...);
+int buffer_putm_internal_flush(buffer* b, ...);
 
 #ifdef __BORLANDC__
 #define buffer_putm(b, args) buffer_putm_internal(b, args, (char*)0)
@@ -82,11 +85,7 @@ int buffer_putm_internal_flush(buffer*b, ...);
 int buffer_putspace(buffer* b);
 ssize_t buffer_putnlflush(buffer* b); /* put \n and flush */
 
-#define buffer_PUTC(s, c) \
-  ( ((s)->a != (s)->p) \
-    ? ( (s)->x[(s)->p++] = (c),  0 ) \
-    : buffer_putc((s), (c)) \
-  )
+#define buffer_PUTC(s, c) (((s)->a != (s)->p) ? ((s)->x[(s)->p++] = (c), 0) : buffer_putc((s), (c)))
 
 ssize_t buffer_get(buffer*, char* x, size_t len);
 ssize_t buffer_feed(buffer* b);
@@ -108,23 +107,20 @@ typedef int (*string_predicate)(const char* x, size_t len, void* arg);
 /* like buffer_get_token but the token ends when your predicate says so */
 ssize_t buffer_get_token_pred(buffer*, char* x, size_t len, string_predicate p, void*);
 
-char *buffer_peek(buffer* b);
-int buffer_peekc(buffer*, char *c);
+char* buffer_peek(buffer* b);
+int buffer_peekc(buffer*, char* c);
 void buffer_seek(buffer*, size_t len);
 
-int buffer_skipc(buffer *b);
+int buffer_skipc(buffer* b);
 int buffer_skipn(buffer*, size_t n);
 
 int buffer_prefetch(buffer*, size_t n);
 
-#define buffer_PEEK(s) ( (s)->x + (s)->p )
-#define buffer_SEEK(s, len) ( (s)->p += (len) )
+#define buffer_PEEK(s) ((s)->x + (s)->p)
+#define buffer_SEEK(s, len) ((s)->p += (len))
 
-#define buffer_GETC(s, c) \
-  ( ((s)->p < (s)->n) \
-    ? ( *(c) = *buffer_PEEK(s),  buffer_SEEK((s), 1),  1 ) \
-    : buffer_get((s), (c), 1) \
-  )
+#define buffer_GETC(s, c)                                                                                              \
+  (((s)->p < (s)->n) ? (*(c) = *buffer_PEEK(s), buffer_SEEK((s), 1), 1) : buffer_get((s), (c), 1))
 
 int buffer_putulong(buffer*, unsigned long int l);
 int buffer_put8long(buffer*, unsigned long int l);
@@ -134,13 +130,13 @@ int buffer_putlong(buffer*, signed long int l);
 int buffer_putdouble(buffer*, double d, int prec);
 
 int buffer_puterror(buffer* b);
-int buffer_puterror2(buffer*,  int errnum);
+int buffer_puterror2(buffer*, int errnum);
 
-extern buffer *buffer_0;
-extern buffer *buffer_0small;
-extern buffer *buffer_1;
-extern buffer *buffer_1small;
-extern buffer *buffer_2;
+extern buffer* buffer_0;
+extern buffer* buffer_0small;
+extern buffer* buffer_1;
+extern buffer* buffer_1small;
+extern buffer* buffer_2;
 
 #ifdef STRALLOC_H
 /* write stralloc to buffer */
@@ -178,34 +174,34 @@ int buffer_get_new_token_sa_pred(buffer*, stralloc* sa, sa_predicate p, void*);
 
 /* make a buffer from a stralloc.
  * Do not change the stralloc after this! */
-void buffer_fromsa(buffer*, const stralloc* sa);  /* read from sa */
-int buffer_tosa(buffer*b, stralloc* sa);  	/* write to sa,  auto-growing it */
+void buffer_fromsa(buffer*, const stralloc* sa); /* read from sa */
+int buffer_tosa(buffer* b, stralloc* sa);        /* write to sa,  auto-growing it */
 
-int buffer_gettok_sa(buffer*, stralloc *sa, const char *charset, size_t setlen);
+int buffer_gettok_sa(buffer*, stralloc* sa, const char* charset, size_t setlen);
 #endif
 
-void buffer_frombuf(buffer*, const char* x, size_t l);  /* buffer reads from static buffer */
+void buffer_frombuf(buffer*, const char* x, size_t l); /* buffer reads from static buffer */
 
 #ifdef ARRAY_H
-void buffer_fromarray(buffer*, array* a);  /* buffer reads from array */
+void buffer_fromarray(buffer*, array* a); /* buffer reads from array */
 #endif
-void buffer_dump(buffer *out,  buffer *b);
+void buffer_dump(buffer* out, buffer* b);
 
-int buffer_putc(buffer*,  char c);
-int buffer_putnspace(buffer*,  int n);
+int buffer_putc(buffer*, char c);
+int buffer_putnspace(buffer*, int n);
 
-int buffer_putptr(buffer*, void *ptr);
+int buffer_putptr(buffer*, void* ptr);
 int buffer_putulong0(buffer*, unsigned long l, int pad);
 int buffer_putlong0(buffer*, long l, int pad);
 int buffer_putxlong0(buffer*, unsigned long l, int pad);
 
-int buffer_skipspace(buffer *b);
+int buffer_skipspace(buffer* b);
 int buffer_skip_pred(buffer*, int (*pred)(int));
 
-int buffer_put_escaped(buffer*, const char *x, size_t len);
-int buffer_puts_escaped(buffer*, const char *x);
+int buffer_put_escaped(buffer*, const char* x, size_t len);
+int buffer_puts_escaped(buffer*, const char* x);
 
-int buffer_freshen(buffer *b);
+int buffer_freshen(buffer* b);
 
 int buffer_truncfile(buffer*, const char* fn);
 
@@ -219,14 +215,14 @@ int buffer_putspad(buffer*, const char* x, size_t pad);
 int buffer_deflate(buffer*, buffer* out, int level);
 int buffer_inflate(buffer*, buffer* in);
 
-int  buffer_gunzip(buffer*, const char* filename);
-int  buffer_gunzip_fd(buffer*, fd_t fd);
-int  buffer_gzip(buffer*, const char* filename, int level);
-int  buffer_gzip_fd(buffer*, fd_t fd, int level);
-int  buffer_bunzip(buffer*, const char* filename);
-int  buffer_bunzip_fd(buffer*, fd_t fd);
-int  buffer_bzip(buffer*, const char* filename, int level);
-int  buffer_bzip_fd(buffer*, fd_t fd, int level);
+int buffer_gunzip(buffer*, const char* filename);
+int buffer_gunzip_fd(buffer*, fd_t fd);
+int buffer_gzip(buffer*, const char* filename, int level);
+int buffer_gzip_fd(buffer*, fd_t fd, int level);
+int buffer_bunzip(buffer*, const char* filename);
+int buffer_bunzip_fd(buffer*, fd_t fd);
+int buffer_bzip(buffer*, const char* filename, int level);
+int buffer_bzip_fd(buffer*, fd_t fd, int level);
 
 int buffer_get_until(buffer*, char* x, size_t len, const char* charset, size_t setlen);
 
@@ -236,7 +232,7 @@ int buffer_write_fd(buffer*, fd_t fd);
 int buffer_putint64(buffer*, int64 l);
 int buffer_putuint64(buffer*, uint64 l);
 int buffer_putxint64(buffer*, uint64 l);
-int buffer_putuint64(buffer*,  uint64 i);
+int buffer_putuint64(buffer*, uint64 i);
 int buffer_putint64(buffer*, int64 i);
 int buffer_putxint640(buffer*, uint64 l, int pad);
 #endif
@@ -246,4 +242,3 @@ int buffer_putxint640(buffer*, uint64 l, int pad);
 #endif
 
 #endif
-

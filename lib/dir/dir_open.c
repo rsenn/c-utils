@@ -19,10 +19,10 @@
 static const char* last_error_str();
 
 int
-dir_open(struct dir_s* d, const char* p)
-{
+dir_open(struct dir_s* d, const char* p) {
   int ret;
-  if(!(d->dir_int = malloc(sizeof(struct dir_internal_s)))) return 1;
+  if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))
+    return 1;
 #if USE_READDIR
   ret = ((dir_INTERNAL(d)->dir_handle = opendir(p)) == NULL) ? -1 : 0;
 #else
@@ -31,17 +31,17 @@ dir_open(struct dir_s* d, const char* p)
     HANDLE h;
     stralloc_init(&path);
     stralloc_copys(&path, p);
-    
-   if(path.len > 0 && path.s[path.len - 1] != '\\')
-   stralloc_catc(&path, '\\');
-   stralloc_catc(&path, '*');
-   stralloc_nul(&path);
 
-   dir_INTERNAL(d)->dir_path = path.s;
+    if(path.len > 0 && path.s[path.len - 1] != '\\')
+      stralloc_catc(&path, '\\');
+    stralloc_catc(&path, '*');
+    stralloc_nul(&path);
+
+    dir_INTERNAL(d)->dir_path = path.s;
 
 #if USE_WIDECHAR
-  {
-    size_t wlen = u8swcslen(path.s);
+    {
+      size_t wlen = u8swcslen(path.s);
       wchar_t* wpath = malloc((wlen + 1) * sizeof(wchar_t));
 
       u8stowcs(wpath, path.s, wlen);
@@ -73,13 +73,13 @@ dir_open(struct dir_s* d, const char* p)
 
 #if !USE_READDIR
 static const char*
-last_error_str()
-{
+last_error_str() {
   DWORD errCode = GetLastError();
   static char tmpbuf[1024];
   char* err;
   tmpbuf[0] = '\0';
-  if(errCode == 0) return tmpbuf;
+  if(errCode == 0)
+    return tmpbuf;
   SetLastError(0);
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                     NULL,

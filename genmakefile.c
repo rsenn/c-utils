@@ -2545,7 +2545,7 @@ usage(char* argv0) {
                        "     occ         OrangeC\n",
                        "     dmc         Digital Mars C++\n",
                        "     pocc        Pelles-C\n",
-                       "  -m, --make-type TYPE      make program type, one of:\n" ,
+                       "  -m, --make-type TYPE      make program type, one of:\n",
                        "     nmake       Microsoft NMake\n",
                        "     borland     Borland Make\n",
                        "     gmake       GNU Make\n",
@@ -2553,7 +2553,7 @@ usage(char* argv0) {
                        "     pomake      Pelles-C Make\n",
                        "     make        Other make\n",
                        "     batch       Windows batch (.bat .cmd)\n",
-                       "     ninja       Ninja build\n" ,
+                       "     ninja       Ninja build\n",
                        0);
   buffer_putnlflush(buffer_1);
 }

@@ -1,14 +1,14 @@
 #ifdef __DMC__
 
 /***
-*popen.c - initiate a pipe and a child command
-*
-*       Copyright (c) Microsoft Corporation. All rights reserved.
-*
-*Purpose:
-*       Defines _popen() and _pclose().
-*
-*******************************************************************************/
+ *popen.c - initiate a pipe and a child command
+ *
+ *       Copyright (c) Microsoft Corporation. All rights reserved.
+ *
+ *Purpose:
+ *       Defines _popen() and _pclose().
+ *
+ *******************************************************************************/
 
 #include "../typedefs.h"
 
@@ -74,32 +74,32 @@ extern IDpair* __idpairs;
 static IDpair* __cdecl idtab(FILE*);
 
 /***
-*FILE *_popen(cmdstring,type) - initiate a pipe and a child command
-*
-*Purpose:
-*       Creates a pipe and asynchronously executes a child copy of the command
-*       processor with cmdstring (see system()). If the type string contains
-*       an 'r', the calling process can read child command's standard output
-*       via the returned stream. If the type string contains a 'w', the calling
-*       process can write to the child command's standard input via the
-*       returned stream.
-*
-*Entry:
-*       char *cmdstring - command to be executed
-*       char *type   - string of the form "r|w[b|t]", determines the mode
-*                         of the returned stream (i.e., read-only vs write-only,
-*                         binary vs text mode)
-*
-*Exit:
-*       If successful, returns a stream associated with one end of the created
-*       pipe (the other end of the pipe is associated with either the child
-*       command's standard input or standard output).
-*
-*       If an error occurs, NULL is returned.
-*
-*Exceptions:
-*
-*******************************************************************************/
+ *FILE *_popen(cmdstring,type) - initiate a pipe and a child command
+ *
+ *Purpose:
+ *       Creates a pipe and asynchronously executes a child copy of the command
+ *       processor with cmdstring (see system()). If the type string contains
+ *       an 'r', the calling process can read child command's standard output
+ *       via the returned stream. If the type string contains a 'w', the calling
+ *       process can write to the child command's standard input via the
+ *       returned stream.
+ *
+ *Entry:
+ *       char *cmdstring - command to be executed
+ *       char *type   - string of the form "r|w[b|t]", determines the mode
+ *                         of the returned stream (i.e., read-only vs write-only,
+ *                         binary vs text mode)
+ *
+ *Exit:
+ *       If successful, returns a stream associated with one end of the created
+ *       pipe (the other end of the pipe is associated with either the child
+ *       command's standard input or standard output).
+ *
+ *       If an error occurs, NULL is returned.
+ *
+ *Exceptions:
+ *
+ *******************************************************************************/
 
 FILE* __cdecl popen(const char* cmdstring, const char* type) {
 
@@ -120,7 +120,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
 
   char* cmdexe;        /* pathname for the command processor */
   char* envbuf = NULL; /* buffer for the env variable */
-  intptr_t childhnd;      /* handle for child process (cmd.exe) */
+  intptr_t childhnd;   /* handle for child process (cmd.exe) */
 
   IDpair* locidpair; /* pointer to IDpair table entry */
   char *buf = NULL, *pfin, *env;
@@ -183,12 +183,12 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
 
   /* ASSERT LOCK FOR IDPAIRS HERE!!!!
    */
-/*  if(!_mtinitlocknum(_POPEN_LOCK)) {
-    _close(phdls[0]);
-    _close(phdls[1]);
-    return NULL;
-  }
-  _mlock(_POPEN_LOCK);*/
+  /*  if(!_mtinitlocknum(_POPEN_LOCK)) {
+      _close(phdls[0]);
+      _close(phdls[1]);
+      return NULL;
+    }
+    _mlock(_POPEN_LOCK);*/
   __try {
 
     /* set flags to indicate pipe handles are open. note, these are only
@@ -285,7 +285,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
 #ifdef WPRFLAG
       while((env = (char*)_wgetpath((char*)env, buf, _MAX_PATH - 1)) && (*buf)) {
 #else  /* WPRFLAG */
-      while((env = (char*)_getpath((char*)env,  buf, _MAX_PATH - 1)) && (*buf)) {
+      while((env = (char*)_getpath((char*)env, buf, _MAX_PATH - 1)) && (*buf)) {
 #endif /* WPRFLAG */
         pfin = buf + strlen(buf) - 1;
 
@@ -296,10 +296,10 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
         } else if(*pfin != XSLASHCHAR)
           (lstrcatn(buf, _MAX_PATH, SLASH));
 
-#else   /* _MBCS */
+#else  /* _MBCS */
         if(*pfin != SLASHCHAR && *pfin != XSLASHCHAR)
           (lstrcatn(buf, SLASH, _MAX_PATH));
-#endif  /* _MBCS */
+#endif /* _MBCS */
         /* check that the final path will be of legal size. if so,
          * build it. otherwise, return to the caller (return value
          * and errno rename set from initial call to _spawnve()).
@@ -341,12 +341,12 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
      */
     goto done;
 
-  /**
-   * error handling code. all detected errors end up here, entering
-   * via a goto one of the labels. note that the logic is currently
-   * a straight fall-thru scheme (e.g., if entered at error4, the
-   * code for error4, error3,...,error1 is all executed).
-   **********************************************************************/
+    /**
+     * error handling code. all detected errors end up here, entering
+     * via a goto one of the labels. note that the logic is currently
+     * a straight fall-thru scheme (e.g., if entered at error4, the
+     * code for error4, error3,...,error1 is all executed).
+     **********************************************************************/
 
   error4: /* make sure locidpair is reusable
            */
@@ -370,7 +370,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
 
       ;
   } __finally {
-//    _munlock(_POPEN_LOCK);
+    //    _munlock(_POPEN_LOCK);
   }
 
 error1:
@@ -380,29 +380,29 @@ error1:
 #ifndef _UNICODE
 
 /***
-*int _pclose(pstream) - wait on a child command and close the stream on the
-*   associated pipe
-*
-*Purpose:
-*       Closes pstream then waits on the associated child command. The
-*       argument, pstream, must be the return value from a previous call to
-*       _popen. _pclose first looks up the process handle of child command
-*       started by that _popen and does a cwait on it. Then, it closes pstream
-*       and returns the exit status of the child command to the caller.
-*
-*Entry:
-*       FILE *pstream - file stream returned by a previous call to _popen
-*
-*Exit:
-*       If successful, _pclose returns the exit status of the child command.
-*       The format of the return value is that same as for cwait, except that
-*       the low order and high order bytes are swapped.
-*
-*       If an error occurs, -1 is returned.
-*
-*Exceptions:
-*
-*******************************************************************************/
+ *int _pclose(pstream) - wait on a child command and close the stream on the
+ *   associated pipe
+ *
+ *Purpose:
+ *       Closes pstream then waits on the associated child command. The
+ *       argument, pstream, must be the return value from a previous call to
+ *       _popen. _pclose first looks up the process handle of child command
+ *       started by that _popen and does a cwait on it. Then, it closes pstream
+ *       and returns the exit status of the child command to the caller.
+ *
+ *Entry:
+ *       FILE *pstream - file stream returned by a previous call to _popen
+ *
+ *Exit:
+ *       If successful, _pclose returns the exit status of the child command.
+ *       The format of the return value is that same as for cwait, except that
+ *       the low order and high order bytes are swapped.
+ *
+ *       If an error occurs, -1 is returned.
+ *
+ *Exceptions:
+ *
+ *******************************************************************************/
 
 int __cdecl _pclose(FILE* pstream) {
   IDpair* locidpair; /* pointer to entry in idpairs table */
@@ -410,11 +410,11 @@ int __cdecl _pclose(FILE* pstream) {
   int retval = -1;   /* return value (to caller) */
   int save_errno;
 
-//  _VALIDATE_RETURN((pstream != NULL), EINVAL, -1);
+  //  _VALIDATE_RETURN((pstream != NULL), EINVAL, -1);
 
-/*  if(!_mtinitlocknum(_POPEN_LOCK))
-    return -1;
-  _mlock(_POPEN_LOCK);*/
+  /*  if(!_mtinitlocknum(_POPEN_LOCK))
+      return -1;
+    _mlock(_POPEN_LOCK);*/
   __try {
 
     if((locidpair = idtab(pstream)) == NULL) {
@@ -433,7 +433,7 @@ int __cdecl _pclose(FILE* pstream) {
      */
     save_errno = errno;
     errno = 0;
-    if((cwait(&termstat, locidpair->prochnd,WAIT_GRANDCHILD) != -1) || (errno == EINTR))
+    if((cwait(&termstat, locidpair->prochnd, WAIT_GRANDCHILD) != -1) || (errno == EINTR))
       retval = termstat;
     errno = save_errno;
 
@@ -457,29 +457,29 @@ int __cdecl _pclose(FILE* pstream) {
 #endif /* _UNICODE */
 
 /***
-* static IDpair * idtab(FILE *pstream) - find an idpairs table entry
-*
-*Purpose:
-*   Find an entry in the idpairs table.  This function finds the entry the
-*   idpairs table entry corresponding to pstream. In the case where pstream
-*   is NULL, the entry being searched for is any free entry. In this case,
-*   idtab will create the idpairs table if it doesn't exist, or expand it (by
-*   exactly one entry) if there are no free entries.
-*
-*   [MTHREAD NOTE:  This routine assumes that the caller has acquired the
-*   idpairs table lock.]
-*
-*Entry:
-*   FILE *pstream - stream corresponding to table entry to be found (if NULL
-*                   then find any free table entry)
-*
-*Exit:
-*   if successful, returns a pointer to the idpairs table entry. otherwise,
-*   returns NULL.
-*
-*Exceptions:
-*
-*******************************************************************************/
+ * static IDpair * idtab(FILE *pstream) - find an idpairs table entry
+ *
+ *Purpose:
+ *   Find an entry in the idpairs table.  This function finds the entry the
+ *   idpairs table entry corresponding to pstream. In the case where pstream
+ *   is NULL, the entry being searched for is any free entry. In this case,
+ *   idtab will create the idpairs table if it doesn't exist, or expand it (by
+ *   exactly one entry) if there are no free entries.
+ *
+ *   [MTHREAD NOTE:  This routine assumes that the caller has acquired the
+ *   idpairs table lock.]
+ *
+ *Entry:
+ *   FILE *pstream - stream corresponding to table entry to be found (if NULL
+ *                   then find any free table entry)
+ *
+ *Exit:
+ *   if successful, returns a pointer to the idpairs table entry. otherwise,
+ *   returns NULL.
+ *
+ *Exceptions:
+ *
+ *******************************************************************************/
 
 static IDpair* __cdecl idtab(FILE* pstream) {
 

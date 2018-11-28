@@ -6,19 +6,19 @@
 #include "../uint32.h"
 
 #if WINDOWS_NATIVE
-# ifdef _MSC_VER
-#  define _CRT_INTERNAL_NONSTDC_NAMES 1
-# endif
-# include <io.h>
-# include <windows.h>
-#  if !defined(__LCC__) && !defined(__MINGW32__)
-#   define read _read
-#   define write _write
-#   define open _open
-#   define close _close
-#  endif
+#ifdef _MSC_VER
+#define _CRT_INTERNAL_NONSTDC_NAMES 1
+#endif
+#include <io.h>
+#include <windows.h>
+#if !defined(__LCC__) && !defined(__MINGW32__)
+#define read _read
+#define write _write
+#define open _open
+#define close _close
+#endif
 #else
-# include <unistd.h>
+#include <unistd.h>
 #endif
 
 #include <errno.h>
@@ -48,7 +48,8 @@ open_temp(const char* tmpl) {
     str_copy(default_tmpl, tmpl);
     tmpl = default_tmpl;
     tmp = (char*)tmpl + str_chr(tmpl, 'X');
-    if(tmp < tmpl) goto error;
+    if(tmp < tmpl)
+      goto error;
   }
 
   for(i = 0; i < 6; ++i) {
@@ -57,25 +58,27 @@ open_temp(const char* tmpl) {
       errno = EINVAL;
       return -1;
     }
-
   }
-   
+
   for(;;) {
     random = uint32_random();
-    
+
     for(i = 0; i < 6; ++i) {
       int hexdigit = (random >> (i * 5)) & 0x1f;
       tmp[i] = hexdigit > 9 ? hexdigit + 'A' - 10 : hexdigit + '0';
     }
 
     unlink(tmpl);
-    res = open(tmpl,  O_RDWR | O_CREAT | O_TRUNC | O_BINARY
- #ifndef WINDOWS_NATIVE
-   , 0666
- #endif
- );
-    
-    if(res >= 0 || errno != EEXIST) break;
+    res = open(tmpl,
+               O_RDWR | O_CREAT | O_TRUNC | O_BINARY
+#ifndef WINDOWS_NATIVE
+               ,
+               0666
+#endif
+    );
+
+    if(res >= 0 || errno != EEXIST)
+      break;
   }
   return res;
 }

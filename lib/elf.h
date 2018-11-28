@@ -47,7 +47,8 @@ typedef struct __unaligned {
   uint16 e_shentsize;           /* Section header table entry size */
   uint16 e_shnum;               /* Section header table entry count */
   uint16 e_shstrndx;            /* Section header string table index */
-} elf32_ehdr;
+}
+elf32_ehdr;
 
 typedef struct __unaligned {
   uint8 e_ident[ELF_EI_NIDENT]; /* Magic number and other info */
@@ -64,7 +65,8 @@ typedef struct __unaligned {
   uint16 e_shentsize;           /* Section header table entry size */
   uint16 e_shnum;               /* Section header table entry count */
   uint16 e_shstrndx;            /* Section header string table index */
-} elf64_ehdr;
+}
+elf64_ehdr;
 
 /* Fields in the e_ident array.  The EI_* macros are indices into the
    array.  The macros under each EI_* macro are the values the byte
@@ -327,36 +329,40 @@ typedef struct {
 
 /* Symbol table entry.  */
 
-typedef struct  __unaligned {
+typedef struct __unaligned {
   uint32 st_name;  /* Symbol name (string tbl index) */
   uint32 st_value; /* Symbol value */
   uint32 st_size;  /* Symbol size */
   uint8 st_info;   /* Symbol type and binding */
   uint8 st_other;  /* Symbol visibility */
   uint16 st_shndx; /* Section index */
-} elf32_sym;
+}
+elf32_sym;
 
-typedef struct __unaligned  {
+typedef struct __unaligned {
   uint32 st_name;  /* Symbol name (string tbl index) */
   uint8 st_info;   /* Symbol type and binding */
   uint8 st_other;  /* Symbol visibility */
   uint16 st_shndx; /* Section index */
   uint64 st_value; /* Symbol value */
   uint64 st_size;  /* Symbol size */
-} elf64_sym;
+}
+elf64_sym;
 
 /* The syminfo section if available contains additional information about
    every dynamic symbol.  */
 
-typedef struct  __unaligned {
+typedef struct __unaligned {
   uint16 si_boundto; /* Direct bindings, symbol bound to */
   uint16 si_flags;   /* Per symbol flags */
-} elf32_syminfo;
+}
+elf32_syminfo;
 
-typedef struct  __unaligned {
+typedef struct __unaligned {
   uint16 si_boundto; /* Direct bindings, symbol bound to */
   uint16 si_flags;   /* Per symbol flags */
-} elf64_syminfo;
+}
+elf64_syminfo;
 
 /* Possible values for si_boundto.  */
 #define ELF_SYMINFO_BT_SELF 0xffff       /* Symbol bound to self */
@@ -740,7 +746,7 @@ generally available.  */
 
 /* Version definition sections.  */
 
-typedef struct __unaligned  {
+typedef struct __unaligned {
   uint16 vd_version; /* Version revision */
   uint16 vd_flags;   /* Version information */
   uint16 vd_ndx;     /* Version Index */
@@ -749,7 +755,8 @@ typedef struct __unaligned  {
   uint32 vd_aux;     /* Offset in bytes to verdaux array */
   uint32 vd_next;    /* Offset in bytes to next verdef
                 entry */
-} elf32_verdef;
+}
+elf32_verdef;
 
 typedef struct __unaligned {
   uint16 vd_version; /* Version revision */
@@ -760,7 +767,8 @@ typedef struct __unaligned {
   uint32 vd_aux;     /* Offset in bytes to verdaux array */
   uint32 vd_next;    /* Offset in bytes to next verdef
                 entry */
-} elf64_verdef;
+}
+elf64_verdef;
 
 /* Legal values for vd_version (version revision).  */
 #define ELF_VER_DEF_NONE 0    /* No version */
@@ -801,9 +809,10 @@ typedef struct __unaligned {
   uint32 vn_aux;     /* Offset in bytes to vernaux array */
   uint32 vn_next;    /* Offset in bytes to next verneed
                 entry */
-} elf32_verneed;
+}
+elf32_verneed;
 
-typedef struct __unaligned  {
+typedef struct __unaligned {
   uint16 vn_version; /* Version of structure */
   uint16 vn_cnt;     /* Number of associated aux entries */
   uint32 vn_file;    /* Offset of filename for this
@@ -811,7 +820,8 @@ typedef struct __unaligned  {
   uint32 vn_aux;     /* Offset in bytes to vernaux array */
   uint32 vn_next;    /* Offset in bytes to next verneed
                 entry */
-} elf64_verneed;
+}
+elf64_verneed;
 
 /* Legal values for vn_version (version revision).  */
 #define ELF_VER_NEED_NONE 0    /* No version */
@@ -827,16 +837,18 @@ typedef struct __unaligned {
   uint32 vna_name;  /* Dependency name string offset */
   uint32 vna_next;  /* Offset in bytes to next vernaux
                entry */
-} elf32_vernaux;
+}
+elf32_vernaux;
 
-typedef struct  __unaligned {
+typedef struct __unaligned {
   uint32 vna_hash;  /* Hash value of dependency name */
   uint16 vna_flags; /* Dependency specific information */
   uint16 vna_other; /* Unused */
   uint32 vna_name;  /* Dependency name string offset */
   uint32 vna_next;  /* Offset in bytes to next vernaux
                entry */
-} elf64_vernaux;
+}
+elf64_vernaux;
 
 /* Legal values for vna_flags.  */
 #define ELF_VER_FLG_WEAK 0x2 /* Weak version identifier */
@@ -969,21 +981,23 @@ typedef struct {
 #define ELF_NOTE_OS_FREEBSD 3
 
 /* Move records.  */
-typedef struct __unaligned  {
+typedef struct __unaligned {
   uint64 m_value;   /* Symbol value.  */
   uint32 m_info;    /* Size and index.  */
   uint32 m_poffset; /* Symbol offset.  */
   uint16 m_repeat;  /* Repeat count.  */
   uint16 m_stride;  /* Stride info.  */
-} elf32_move;
+}
+elf32_move;
 
-typedef struct __unaligned  {
+typedef struct __unaligned {
   uint64 m_value;   /* Symbol value.  */
   uint64 m_info;    /* Size and index.  */
   uint64 m_poffset; /* Symbol offset.  */
   uint16 m_repeat;  /* Repeat count.  */
   uint16 m_stride;  /* Stride info.  */
-} elf64_move;
+}
+elf64_move;
 
 /* Macro to construct move records.  */
 #define ELF_ELF32_M_SYM(info) ((info) >> 8)
@@ -1342,14 +1356,15 @@ typedef struct {
 
 /* Entries found in sections of type ELF_SHT_MIPS_OPTIONS.  */
 
-typedef struct __unaligned  {
+typedef struct __unaligned {
   uint8 kind;     /* Determines interpretation of the
                  variable part of descriptor.  */
   uint8 size;     /* Size of descriptor, including header.  */
   uint16 section; /* Section header index of section affected,
               0 for global options.  */
   uint32 info;    /* Kind-specific information.  */
-} elf_options;
+}
+elf_options;
 
 /* Values for `kind' field in elf_options.  */
 
@@ -2440,38 +2455,35 @@ to two GOT entries for GD symbol */
 #define ELF_32(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS32)
 #define ELF_64(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64)
 
-#define ELF_STRUCT_SIZE(elf, st) \
-  (ELF_64(elf) ? sizeof(elf64_##st) : sizeof(elf32_##st))
+#define ELF_STRUCT_SIZE(elf, st) (ELF_64(elf) ? sizeof(elf64_##st) : sizeof(elf32_##st))
 
-range       elf_dynamic_section(void*);
-range       elf_get_section_r(void*, const char* name);
-void*       elf_get_section(void*, const char* name, size_t* szp);
-range       elf_get_symtab_r(void*);
-void*       elf_get_symtab(void*, size_t* szp);
-uint64      elf_get_value(void*, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
-uint8*      elf_header_ident(void*);
-void*       elf_header_sections(void*);
-range       elf_program_headers(void*);
-int         elf_section_find(void*, const char* sname);
-range       elf_section_headers(void*);
-int         elf_section_index(void*, uint32 sh_type);
-void*       elf_section_offset(void*, int sn);
-size_t      elf_section_size(void*, int sn);
+range elf_dynamic_section(void*);
+range elf_get_section_r(void*, const char* name);
+void* elf_get_section(void*, const char* name, size_t* szp);
+range elf_get_symtab_r(void*);
+void* elf_get_symtab(void*, size_t* szp);
+uint64 elf_get_value(void*, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+uint8* elf_header_ident(void*);
+void* elf_header_sections(void*);
+range elf_program_headers(void*);
+int elf_section_find(void*, const char* sname);
+range elf_section_headers(void*);
+int elf_section_index(void*, uint32 sh_type);
+void* elf_section_offset(void*, int sn);
+size_t elf_section_size(void*, int sn);
 const char* elf_section_typename(uint32);
-range       elf_section(void*, void* shdr);
+range elf_section(void*, void* shdr);
 const char* elf_shstrtab(void*);
 
 #define ELF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
 #define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
 
-#define ELF_ADDR(elf, ptr, st, field) \
-  ((void*)(((char*)ptr)+ELF_OFFSET(elf, st, field)))
+#define ELF_ADDR(elf, ptr, st, field) ((void*)(((char*)ptr) + ELF_OFFSET(elf, st, field)))
 
-#define ELF_OFFSET(elf, st, field) \
+#define ELF_OFFSET(elf, st, field)                                                                                     \
   (ELF_64(elf) ? ELF_FIELD_OFFSET(elf64_##st, field) : ELF_FIELD_OFFSET(elf32_##st, field))
 
-#define ELF_SIZE(elf, st, field) \
-  (ELF_64(elf) ? ELF_FIELD_SIZE(elf64_##st, field) : ELF_FIELD_SIZE(elf32_##st, field))
+#define ELF_SIZE(elf, st, field) (ELF_64(elf) ? ELF_FIELD_SIZE(elf64_##st, field) : ELF_FIELD_SIZE(elf32_##st, field))
 
 #ifdef __cplusplus
 };

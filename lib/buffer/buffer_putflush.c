@@ -36,7 +36,8 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
     v[1].iov_base = (char*)x;
     v[1].iov_len = len;
     while((w = writev(b->fd, v, 2)) < 0) {
-      if(errno == EINTR) continue;
+      if(errno == EINTR)
+        continue;
       return -1;
     }
     if(__unlikely((size_t)w != cl)) {
@@ -55,7 +56,9 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
     return 0;
   }
 #endif
-  if(buffer_put(b, x, len) < 0) return -1;
-  if(buffer_flush(b) < 0) return -1;
+  if(buffer_put(b, x, len) < 0)
+    return -1;
+  if(buffer_flush(b) < 0)
+    return -1;
   return 0;
 }
