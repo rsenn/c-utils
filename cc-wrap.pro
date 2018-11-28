@@ -45,7 +45,6 @@ msvc {
 
  #!*mingw*: DEFINES += USE_READDIR=1
 
- #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
 
 INCLUDEPATH += .
@@ -567,7 +566,6 @@ SOURCES = \
   lib/unix/getopt.c \
   lib/unix/getpagesize.c \
   lib/unix/glob.c \
-  lib/unix/pipe2.c \
   lib/unix/popen.c \
   lib/unix/readlink.c \
   lib/unix/win32_borland_popen.c \
@@ -592,4 +590,5 @@ SOURCES = \
   lib/io/io_dontwantread.c \
   lib/io/io_dontwantwrite.c \
   lib/iarray/iarray_init.c \
-  lib/iarray/iarray_allocate.c
+  lib/iarray/iarray_allocate.c \
+    lib/unix/readlink.c

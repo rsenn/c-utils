@@ -14,7 +14,7 @@ CONFIG -= qt
 !*msvc* {
   DEFINES += INLINE=inline
 
-  #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
+#  #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
 
 INCLUDEPATH += .
