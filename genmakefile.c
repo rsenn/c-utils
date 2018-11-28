@@ -847,7 +847,7 @@ void
 push_define(const char* def) {
   stralloc define;
   stralloc_init(&define);
-  stralloc_copys(&define, "-D");
+  stralloc_copys(&define, "-D ");
   stralloc_cats(&define, def);
   stralloc_nul(&define);
 

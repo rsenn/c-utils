@@ -32,14 +32,15 @@ mingw | mingw32 | mingw64 {
 
   #!*mingw*: DEFINES += USE_READDIR=1
 
-#  #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
+gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable
 }
 
 INCLUDEPATH += .
 
-HEADERS = lib/buffer.h lib/byte.h lib/fmt.h lib/scan.h lib/str.h lib/stralloc.h lib/strlist.h
+HEADERS = lib/buffer.h lib/byte.h lib/errmsg.h lib/fmt.h lib/scan.h lib/str.h lib/stralloc.h lib/strlist.h
 
 
-SOURCES = lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get.c lib/buffer/buffer_get_token.c lib/buffer/buffer_getc.c lib/buffer/buffer_init.c lib/buffer/buffer_put.c lib/buffer/buffer_putc.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/byte/byte_ccopy.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_zero.c lib/fmt/fmt_long.c lib/fmt/fmt_uint64.c lib/fmt/fmt_ulong.c lib/popen.c lib/scan/scan_uint.c lib/scan/scan_ushort.c lib/str/isleap.c lib/str/str_case_diffn.c lib/str/str_find.c lib/str/str_findb.c lib/str/str_istr.c lib/str/str_len.c lib/str/str_ptime.c lib/str/str_rchr.c lib/str/time_table_spd.c lib/stralloc/stralloc_append.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_catc.c lib/stralloc/stralloc_cats.c lib/stralloc/stralloc_copyb.c lib/stralloc/stralloc_copys.c lib/stralloc/stralloc_free.c lib/stralloc/stralloc_init.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c lib/stralloc/stralloc_zero.c lib/strlist/strlist_at.c lib/strlist/strlist_count.c lib/strlist/strlist_dump.c lib/strlist/strlist_join.c lib/strlist/strlist_push.c lib/strlist/strlist_push_tokens.c lib/strlist/strlist_pushb.c lib/unix/getopt.c mediathek-list.c
+SOURCES = lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_get.c lib/buffer/buffer_get_token.c lib/buffer/buffer_getc.c lib/buffer/buffer_init.c lib/buffer/buffer_put.c lib/buffer/buffer_putc.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_puts.c lib/buffer/buffer_putulong.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/byte/byte_ccopy.c lib/byte/byte_chr.c lib/byte/byte_copy.c lib/byte/byte_zero.c lib/errmsg/errmsg_iam.c lib/fmt/fmt_long.c lib/fmt/fmt_uint64.c lib/fmt/fmt_ulong.c lib/scan/scan_uint.c lib/scan/scan_ushort.c lib/str/isleap.c lib/str/str_basename.c lib/str/str_case_diffn.c lib/str/str_find.c lib/str/str_findb.c lib/str/str_istr.c lib/str/str_len.c lib/str/str_ptime.c lib/str/str_rchr.c lib/str/time_table_spd.c lib/stralloc/stralloc_append.c lib/stralloc/stralloc_catb.c lib/stralloc/stralloc_catc.c lib/stralloc/stralloc_cats.c lib/stralloc/stralloc_copyb.c lib/stralloc/stralloc_copys.c lib/stralloc/stralloc_free.c lib/stralloc/stralloc_init.c lib/stralloc/stralloc_ready.c lib/stralloc/stralloc_readyplus.c lib/stralloc/stralloc_zero.c lib/strlist/strlist_at.c lib/strlist/strlist_count.c lib/strlist/strlist_dump.c lib/strlist/strlist_join.c lib/strlist/strlist_push.c lib/strlist/strlist_push_tokens.c lib/strlist/strlist_pushb.c lib/unix/getopt.c lib/unix/popen.c mediathek-list.c \
+    lib/str/str_diff.c
 
 

@@ -1,5 +1,6 @@
 #include "../buffer.h"
 #include "../byte.h"
+#include "../str.h"
 #include <stdlib.h>
 #include <time.h>
 

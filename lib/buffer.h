@@ -19,13 +19,13 @@ typedef struct buffer {
   size_t n;  	/* current size of string in buffer */
   size_t a;  	/* allocated buffer size */
   buffer_op_proto* op; /* use read(2) or write(2) */
-  void* cookie;  		/* used internally by the to-stralloc buffers,  and for buffer chaining */
+  void* cookie;  		/* used internally by the to-stralloc buffers,  and for buffer chaini(ng */
   void (*deinit)();  /* called to munmap/free cleanup,  with a pointer to the buffer as argument */
   fd_t fd;  	/* passed as first argument to op */
 } buffer;
 
-#define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (buffer_op_proto*)(op),  NULL,  NULL,  (fd) }
-#define BUFFER_INIT_FREE(op, fd, buf, len) { (buf),  0,  0,  (len),  (buffer_op_proto*)(op),  NULL,  buffer_free,  (fd) }
+#define BUFFER_INIT(op, fd, buf, len) { (buf),  0,  0,  (len),  (buffer_op_proto*)(void*)(op),  NULL,  NULL,  (fd) }
+#define BUFFER_INIT_FREE(op, fd, buf, len) { (buf),  0,  0,  (len),  (buffer_op_proto*)(void*)(op),  NULL,  buffer_free,  (fd) }
 #define BUFFER_INIT_READ(op, fd, buf, len) BUFFER_INIT(op, fd, buf, len) /*obsolete*/
 #define BUFFER_INSIZE 8192
 #define BUFFER_OUTSIZE 8192

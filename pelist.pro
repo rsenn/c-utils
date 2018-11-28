@@ -32,7 +32,7 @@ mingw | mingw32 | mingw64 {
 
   #!*mingw*: DEFINES += USE_READDIR=1
 
-#  #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
+gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable
 }
 
 INCLUDEPATH += .
@@ -40,7 +40,9 @@ INCLUDEPATH += .
 HEADERS = lib/buffer.h lib/byte.h lib/errmsg.h lib/fmt.h lib/mmap.h lib/open.h lib/pe.h lib/str.h
 
 
-SOURCES = lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnc.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_putnspace.c lib/buffer/buffer_puts.c lib/buffer/buffer_putspace.c lib/buffer/buffer_putspad.c lib/buffer/buffer_putulong.c lib/buffer/buffer_putulong0.c lib/buffer/buffer_putxint640.c lib/buffer/buffer_putxlong0.c lib/buffer/buffer_stubborn.c lib/byte/byte_copy.c lib/byte/byte_fill.c lib/errmsg/errmsg_iam.c lib/errmsg/errmsg_puts.c lib/errmsg/errmsg_warn.c lib/errmsg/errmsg_write.c lib/fmt/fmt_long.c lib/fmt/fmt_ulong.c lib/fmt/fmt_xint64.c lib/fmt/fmt_xlong.c lib/mmap/mmap_shared.c lib/mmap/mmap_unmap.c lib/open/open_rw.c lib/pe/pe_datadir_name.c lib/pe/pe_get_datadir.c lib/pe/pe_get_section.c lib/pe/pe_get_value.c lib/pe/pe_header.c lib/pe/pe_rva2offset.c lib/pe/pe_rva2ptr.c lib/pe/pe_rva2section.c lib/pe/pe_thunk.c lib/str/str_basename.c lib/str/str_diff.c lib/str/str_len.c lib/str/str_rchr.c lib/unix/getopt.c pelist.c \
+SOURCES = lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlong.c lib/buffer/buffer_putm_internal.c lib/buffer/buffer_putnc.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_putnspace.c lib/buffer/buffer_puts.c lib/buffer/buffer_putspace.c lib/buffer/buffer_putspad.c lib/buffer/buffer_putulong.c lib/buffer/buffer_putulong0.c lib/buffer/buffer_putxint640.c lib/buffer/buffer_putxlong0.c lib/buffer/buffer_stubborn.c lib/byte/byte_copy.c lib/byte/byte_fill.c lib/errmsg/errmsg_iam.c lib/errmsg/errmsg_puts.c lib/errmsg/errmsg_warn.c lib/errmsg/errmsg_write.c lib/fmt/fmt_long.c lib/fmt/fmt_ulong.c lib/fmt/fmt_xint64.c lib/fmt/fmt_xlong.c lib/mmap/mmap_read.c lib/mmap/mmap_unmap.c lib/open/open_read.c lib/pe/pe_datadir_name.c lib/pe/pe_get_datadir.c lib/pe/pe_get_section.c lib/pe/pe_get_value.c lib/pe/pe_header.c lib/pe/pe_rva2offset.c lib/pe/pe_rva2ptr.c lib/pe/pe_rva2section.c lib/pe/pe_thunk.c lib/str/str_basename.c lib/str/str_diff.c lib/str/str_len.c lib/str/str_rchr.c lib/unix/getopt.c pelist.c \
     lib/buffer/buffer_putc.c
 
 DEFINES += HAVE_ERRNO_H=1
+
+

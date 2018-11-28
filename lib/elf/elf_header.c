@@ -18,4 +18,5 @@ elf_header_sections(void* elf) {
       return (uint8*)ehdr + ehdr->e_shoff;
     }
   }
+  return 0;
 }

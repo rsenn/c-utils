@@ -15,3 +15,4 @@ SOURCES = lib/buffer/buffer_1.c lib/buffer/buffer_close.c lib/buffer/buffer_dumm
 HEADERS = lib/buffer.h lib/byte.h lib/fmt.h lib/hmap.h lib/mmap.h lib/open.h lib/str.h lib/stralloc.h lib/xml.h
 
 
+gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable

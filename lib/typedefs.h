@@ -39,9 +39,11 @@ extern "C" {
 typedef __SSIZE_TYPE__ ssize_t;
 #endif
 
+#ifndef __MSYS__
 #if defined(__PTRDIFF_TYPE__) && !defined(_SSIZE_T_DEFINED)
 #define _SSIZE_T_DEFINED 1
 typedef __PTRDIFF_TYPE__ ssize_t;
+#endif
 #endif
 
 #if !(defined(_SYS_TYPES_H) && defined(__MSYS__)) && !defined(_SSIZE_T_DEFINED)

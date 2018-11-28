@@ -3,10 +3,13 @@
 #include "../buffer.h"
 #if WINDOWS
 #include <windows.h>
-#else
-#include <fcntl.h>
+#endif
+
+#if !WINDOWS_NATIVE
 #include <sys/mman.h>
 #endif
+
+#include <fcntl.h>
 
 void
 buffer_munmap(void* buf) {
