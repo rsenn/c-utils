@@ -3,10 +3,10 @@
 
 size_t
 list_length(list *l) {
-  link* link;
+  node* node;
   size_t count = 0;
 
-  for(link = l->head; link; link = link->next)
+  for(node = l->head; node; node = node->next)
     ++count;
 
   return count;

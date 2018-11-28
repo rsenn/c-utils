@@ -2,7 +2,7 @@
 #include "../list.h"
 
 void
-list_remove(list *l, link *p) {
+list_remove(list *l, node *p) {
   /* If there is a prev p, update its next-
      reference, otherwise update the head */
   if(p == l->head)

@@ -49,10 +49,12 @@ typedef __PTRDIFF_TYPE__ ssize_t;
 typedef ptrdiff_t ssize_t;
 #endif
 
+#if !defined(__dietlibc__) && !defined(_INTTYPES_H)
 #ifdef __INTPTR_TYPE__
 typedef __INTPTR_TYPE__ intptr_t;
 #elif defined(__BORLANDC__) || defined(__POCC__) || (defined(_SYS_TYPES_H) && defined(__MSYS__))
 typedef ptrdiff_t intptr_t;
+#endif
 #endif
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(_WIN64) && !(defined(__CYGWIN__) || defined(__MSYS__))
