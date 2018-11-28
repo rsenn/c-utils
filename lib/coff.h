@@ -10,7 +10,7 @@ extern "C" {
 #include "uint32.h"
 #include "range.h"
 
-typedef struct {
+typedef struct __unaligned {
   uint16 machine; /* machine_type */
   uint16 number_of_sections;
   uint32 time_date_stamp;
@@ -18,7 +18,8 @@ typedef struct {
   uint32 number_of_symbols;
   uint16 size_of_optional_header;
   uint16 characteristics; /* image_characteristics */
-} coff_file_header;
+}
+coff_file_header;
 
 #define COFF_FILE_RELOCS_STRIPPED 0x0001
 #define COFF_FILE_EXECUTABLE_IMAGE 0x0002
@@ -69,7 +70,7 @@ typedef struct {
 #define COFF_SECTION_NAME_SIZE 8
 
 /* Quoting pecoff_v8.docx: "Entries in the section table are numbered starting from one (1)". */
-typedef struct {
+typedef struct __unaligned {
   char name[COFF_SECTION_NAME_SIZE]; /* TODO: Should we use char instead? */
   union {
     uint32 physical_address; /* same value as next field */
@@ -83,7 +84,8 @@ typedef struct {
   uint16 number_of_relocations;
   uint16 number_of_linenumbers; /* deprecated */
   uint32 characteristics;       /* section_characteristics */
-} coff_section_header;
+}
+coff_section_header;
 
 #define COFF_SECTION_UNDEF ((int16)0)       // external symbol
 #define COFF_SECTION_ABSOLUTE ((int16)-1)   // value of symbol is absolute
@@ -92,7 +94,7 @@ typedef struct {
 #define COFF_SECTION_P_TV ((int16)-4)       // indicates symbol needs postload transfer vector
 #define COFF_SECTION_REMOVE_ME ((int16)-99) // Specific for objconv program: Debug or exception section being removed
 
-typedef struct {
+typedef struct __unaligned {
   uint16 magic;
   uint8 major_linker_version;
   uint8 minor_linker_version;
@@ -102,15 +104,17 @@ typedef struct {
   uint32 address_of_entry_point;
   uint32 base_of_code;
   uint32 base_of_data;
-} coff_opt_header;
+}
+coff_opt_header;
 
-typedef struct {
+typedef struct __unaligned {
   union {
     uint32 fname; // function name symbol table index, if Line == 0
     uint32 addr;  // section-relative address of code that corresponds to line
   };
   uint16 line; // line number
-} coff_line_number;
+}
+coff_line_number;
 
 /*
  *  All symbols and sections have the following definition
@@ -118,7 +122,7 @@ typedef struct {
 #define COFF_E_SYMNMLEN 8 /* # characters in a short symbol name	*/
 
 typedef union {
-  struct {
+  struct __unaligned {
     union {
       char name[COFF_E_SYMNMLEN]; /* Symbol name (first 8 characters) */
       struct {
@@ -132,40 +136,45 @@ typedef union {
     uint16 type;  /* Type of section */
     uint8 sclass; /* Loader class */
     uint8 numaux; /* Number of auxiliary entries which follow */
-  } e;
+  }
+  e;
 
   // Function definition
-  struct {
+  struct __unaligned {
     uint32 tag_index;                // Index to .bf entry
     uint32 code_size;                // Size of function code
     uint32 pointer_to_line_number;   // Pointer to line number entry
     uint32 pointer_to_next_function; // Symbol table index of next function
     uint16 x_tvndx;                  // Unused
-  } func;
+  }
+  func;
 
   // .bf abd .ef
-  struct {
+  struct __unaligned {
     uint32 unused1;
     uint16 source_line_number; // Line number in source file
     uint16 unused2;
     uint32 unused3;                  // Pointer to line number entry
     uint32 pointer_to_next_function; // Symbol table index of next function
     uint16 unused4;                  // Unused
-  } bfef;
+  }
+  bfef;
 
   // Weak external
-  struct {
+  struct __unaligned {
     uint32 tag_index;       // Symbol table index of alternative symbol2
     uint32 characteristics; //
     uint32 unused1;
     uint32 unused2;
     uint16 unused3; // Unused
-  } weak;
+  }
+  weak;
 
   // File name
-  struct {
+  struct __unaligned {
     char file_name[18]; //           File name
-  } filename;
+  }
+  filename;
 
   // String table index
   struct {         // MS COFF uses multiple aux records rather than a string table entry!
@@ -174,7 +183,7 @@ typedef union {
   } stringindex;
 
   // Section definition
-  struct {
+  struct __unaligned {
     uint32 length;
     uint16 number_of_relocations; // Line number in source file
     uint16 number_of_line_numbers;
@@ -182,52 +191,53 @@ typedef union {
     uint16 number;    // Symbol table index of next function
     uint8 selection;  // Unused
     uint8 unused1[3];
-  } section;
+  }
+  section;
 
 } coff_symtab_entry;
 
-#define COFF_C_NULL     0   /* null */
-#define COFF_C_AUTO     1   /* automatic variable */
-#define COFF_C_EXT      2   /* external symbol */
-#define COFF_C_STATIC   3   /* static */
-#define COFF_C_REG      4   /* register variable */
-#define COFF_C_EXTDEF   5   /* external definition */
-#define COFF_C_LABEL    6   /* label */
-#define COFF_C_ULABEL   7   /* undefined label */
-#define COFF_C_MOS      8   /* member of structure */
-#define COFF_C_ARG      9   /* function argument */
-#define COFF_C_STRTAG  10   /* structure tag */
-#define COFF_C_MOU     11   /* member of union */
-#define COFF_C_UNTAG   12   /* union tag */
-#define COFF_C_TPDEF   13   /* type definition */
-#define COFF_C_USTATIC 14   /* undefined static */
-#define COFF_C_ENTAG   15   /* enumeration tag */
-#define COFF_C_MOE     16   /* member of enumeration */
-#define COFF_C_REGPARM 17   /* register parameter */
-#define COFF_C_FIELD   18   /* bit field */
-#define COFF_C_AUTOARG 19   /* auto argument */
-#define COFF_C_LASTENT 20   /* dummy entry (end of block) */
-#define COFF_C_BLOCK  100   /* ".bb" or ".eb" */
-#define COFF_C_FCN    101   /* ".bf" or ".ef" */
-#define COFF_C_EOS    102   /* end of structure */
-#define COFF_C_FILE   103   /* file name */
-#define COFF_C_LINE   104   /* line # reformatted as symbol table entry */
-#define COFF_C_ALIAS  105   /* duplicate tag */
-#define COFF_C_HIDDEN 106   /* ext symbol in dmert public lib */
-#define COFF_C_EFCN   255   /* physical end of function */
+#define COFF_C_NULL 0     /* null */
+#define COFF_C_AUTO 1     /* automatic variable */
+#define COFF_C_EXT 2      /* external symbol */
+#define COFF_C_STATIC 3   /* static */
+#define COFF_C_REG 4      /* register variable */
+#define COFF_C_EXTDEF 5   /* external definition */
+#define COFF_C_LABEL 6    /* label */
+#define COFF_C_ULABEL 7   /* undefined label */
+#define COFF_C_MOS 8      /* member of structure */
+#define COFF_C_ARG 9      /* function argument */
+#define COFF_C_STRTAG 10  /* structure tag */
+#define COFF_C_MOU 11     /* member of union */
+#define COFF_C_UNTAG 12   /* union tag */
+#define COFF_C_TPDEF 13   /* type definition */
+#define COFF_C_USTATIC 14 /* undefined static */
+#define COFF_C_ENTAG 15   /* enumeration tag */
+#define COFF_C_MOE 16     /* member of enumeration */
+#define COFF_C_REGPARM 17 /* register parameter */
+#define COFF_C_FIELD 18   /* bit field */
+#define COFF_C_AUTOARG 19 /* auto argument */
+#define COFF_C_LASTENT 20 /* dummy entry (end of block) */
+#define COFF_C_BLOCK 100  /* ".bb" or ".eb" */
+#define COFF_C_FCN 101    /* ".bf" or ".ef" */
+#define COFF_C_EOS 102    /* end of structure */
+#define COFF_C_FILE 103   /* file name */
+#define COFF_C_LINE 104   /* line # reformatted as symbol table entry */
+#define COFF_C_ALIAS 105  /* duplicate tag */
+#define COFF_C_HIDDEN 106 /* ext symbol in dmert public lib */
+#define COFF_C_EFCN 255   /* physical end of function */
 
 coff_section_header* coff_get_section(void*, uint16 index);
-const char*          coff_get_strtab(void*, uint32* szptr);
-coff_symtab_entry*   coff_get_symtab(void*, uint32* num);
-coff_file_header*    coff_header_file(void*);
-coff_opt_header*     coff_header_opt(void*);
+const char* coff_get_strtab(void*, uint32* szptr);
+coff_symtab_entry* coff_get_symtab(void*, uint32* num);
+coff_file_header* coff_header_file(void*);
+coff_opt_header* coff_header_opt(void*);
 coff_section_header* coff_header_sections(void*, uint16* nsections);
-coff_symtab_entry*   coff_index_symtab(void*, int index);
-range                coff_line_numbers(void*, coff_section_header* shdr);
-const char*          coff_sclass_name(uint8);
-const char*          coff_storage_class(uint8);
-const char*          coff_symbol_name(void*, coff_symtab_entry* sym);
-range                coff_symbol_table(void*);
+coff_symtab_entry* coff_index_symtab(void*, int index);
+range coff_line_numbers(void*, coff_section_header* shdr);
+const char* coff_sclass_name(uint8);
+const char* coff_storage_class(uint8);
+const char* coff_symbol_name(void*, coff_symtab_entry* sym);
+range coff_symbol_table(void*);
 
 #define COFF_TYPE(coff) ((coff_type) * (uint16*)coff_header_opt((coff)))
 #define COFF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))

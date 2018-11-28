@@ -1,5 +1,6 @@
 #include "../windoze.h"
-#if WINDOWS_NATIVE && !defined(__MINGW32__) && !defined(__MINGW64__)
+#if WINDOWS_NATIVE && !defined(_MSC_VER)
+//&& !defined(__MINGW32__) && !defined(__MINGW64__)
 
 #include "../byte.h"
 #include "../glob.h"

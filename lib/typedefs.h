@@ -8,6 +8,9 @@
 /* for size_t & ptrdiff_t */
 #include <stddef.h>
 
+/* for time_t */
+#include <time.h>
+
 #ifdef __LCC__
 #include <stdint.h>
 #endif
@@ -56,6 +59,14 @@ typedef ptrdiff_t intptr_t;
 typedef intptr_t fd_t;
 #else
 typedef int fd_t;
+#endif
+
+#ifndef __unaligned
+#ifdef __GNUC__
+#define __unaligned  __attribute__((packed))
+#else
+#define __unaligned
+#endif
 #endif
 
 #ifdef __cplusplus

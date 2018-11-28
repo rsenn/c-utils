@@ -30,7 +30,7 @@ mingw | mingw32 | mingw64 {
 
   #!*mingw*: DEFINES += USE_READDIR=1
 
-  #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
+#  #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
 
 INCLUDEPATH += .

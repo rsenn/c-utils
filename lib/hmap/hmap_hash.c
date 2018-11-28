@@ -1,7 +1,7 @@
 #include "../hmap_internal.h"
 
 int
-hmap_hash(const void* key, unsigned int len) {
+hmap_hash(const void* key, size_t len) {
   unsigned int hmap_hash, i;
 
   for(hmap_hash = i = 0; i < len; ++i) {

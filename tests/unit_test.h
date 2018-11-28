@@ -113,10 +113,11 @@ typedef char bool;
   if(!op((x1), (x2))) {                                                                                                \
     const char* file = __FILE__;                                                                                       \
     size_t n = str_rfind(file, ".." PATHSEP_S);                                                                        \
-    if(file[n]) file += n + 3;                                                                                            \
-    buffer_putm_internal((mu_)->faillog,  file, ":", 0);                                                          \
+    if(file[n])                                                                                                        \
+      file += n + 3;                                                                                                   \
+    buffer_putm_internal((mu_)->faillog, file, ":", 0);                                                                \
     buffer_putulong((mu_)->faillog, __LINE__);                                                                         \
-    buffer_puts((mu_)->faillog, "  Assertion failed: ");                                                          \
+    buffer_puts((mu_)->faillog, "  Assertion failed: ");                                                               \
     buffer_puts((mu_)->faillog, #x1);                                                                                  \
     buffer_puts((mu_)->faillog, " " #notop " ");                                                                       \
     buffer_puts((mu_)->faillog, #x2);                                                                                  \
@@ -190,7 +191,8 @@ unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
 void unit_test_execute(struct unit_test* mu_);
 
 //#define unit_test_main main
-// int unit_test_main(int argc, char** argv);
+int unit_test_main(int argc, char** argv);
+
 struct unit_testConf* muconf_ptr(void);
 int unit_test_call(struct unit_test* mu_, unit_test_func_t func);
 void unit_test_cleanup(struct unit_test* mu_);

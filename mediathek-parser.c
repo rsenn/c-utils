@@ -70,8 +70,8 @@ parse_predicate(const char* x, size_t len)
 */
 
 int
-read_line(const char* s, size_t len, strlist* fields, array* x) {
-  const char *end = s + len, *p = s;
+read_line(char* s, size_t len, strlist* fields, array* x) {
+  char *end = s + len, *p = s;
   int64 pos = 0;
   int quoted = 0 /*, escaped = 0*/;
   size_t n, i = 0;
@@ -80,9 +80,20 @@ read_line(const char* s, size_t len, strlist* fields, array* x) {
 
   array_trunc(x);
 
-  if((n = byte_chr(p, end - p, '\n')) != (unsigned)(end - p)) end = p + n;
+  if((n = byte_finds(p + 1, end - p - 1, "\"X\":[")) != (unsigned)(end - p))
+    end = p + 1 + n;
 
   while(p < end && *p != '"') ++p;
+
+  // ++p;
+
+  if(str_start(p, "\"X\":[")) {
+    p[2] = ':';
+    p[3] = '"';
+    p[4] = ',';
+  }
+
+  strlist_fromb(fields, p, end - p, "\",\"");
 
   for(; p < end; ++p /*, escaped = 0*/) {
     if(*p == '\\') {
@@ -122,7 +133,8 @@ strarray_dump(buffer* b, const array* a) {
   buffer_puts(b, "[ \"");
   while(ac--) {
     buffer_puts(b, *av);
-    if(ac > 0) buffer_puts(b, "\", \"");
+    if(ac > 0)
+      buffer_puts(b, "\", \"");
     ++av;
   }
   buffer_putsflush(b, "\" ]\n");
@@ -163,9 +175,11 @@ cleanup_text(char* t) {
 
   for(i = 0; (c = t[i]); ++i) {
 
-    if(isdelim(c) && isdelim(prev)) continue;
+    if(isdelim(c) && isdelim(prev))
+      continue;
 
-    if(isdelim(c)) c = ' ';
+    if(isdelim(c))
+      c = ' ';
     stralloc_append(&out, &c);
     prev = c;
   }
@@ -194,13 +208,18 @@ cleanup_domain(stralloc* d) {
   return d->s;
 }
 
-void
-process_entry(const array* a) {
+int
+process_entry(char** av, int ac) {
 
-  char** av = array_start(a);
-  size_t ac = array_length(a, sizeof(char*));
+  if(!str_start(av[0], "\"X"))
+    return 0;
 
-  if(ac >= 21 && !str_diff(av[0], "X")) {
+  while(ac > 0 && !(str_len(av[5]) == 8 && str_len(av[6]) == 8)) {
+    av++;
+    ac--;
+  }
+
+  if(ac >= 21) {
     char timebuf[256];
     stralloc datetime;
     struct tm tm;
@@ -255,19 +274,20 @@ process_entry(const array* a) {
       }
     }
 
-    if(str_len(thema) == 0) return;
-    if(d < 20 * 60) return;
+    /*if(str_len(thema) == 0)
+      return;*/
+
+    if(d < 20 * 60)
+      return 1;
 
     cleanup_text(thema);
     cleanup_text(title);
     cleanup_text(description);
 
     if(str_len(sender) == 0) {
-
       stralloc s;
       stralloc_init(&s);
       get_domain(url_lo.s, &s);
-      free(sender);
       sender = cleanup_domain(&s);
     }
 
@@ -288,13 +308,10 @@ process_entry(const array* a) {
 
     (void)t;
   } else {
-    strarray_dump(buffer_2, a);
+    return 0;
   }
 
-  while(ac > 0) {
-    --ac;
-    if(av[ac]) free(av[ac]);
-  }
+  return 1;
 }
 
 static void
@@ -365,7 +382,8 @@ process_input(buffer* input) {
   stralloc_init(&sa);
   strlist_init(&fields, '\0');
 
-  if(csv == 0) buffer_puts(buffer_1, "#EXTM3U\r\n");
+  if(csv == 0)
+    buffer_puts(buffer_1, "#EXTM3U\r\n");
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
@@ -382,7 +400,15 @@ process_input(buffer* input) {
             buffer_putnlflush(buffer_2);
     */
 
-    process_entry(&arr);
+    {
+      char** v = strlist_to_argv(&fields);
+      int c = strlist_count(&fields);
+
+      if(!process_entry(v, c))
+        strlist_dump(buffer_2, &fields);
+
+      free(v);
+    }
   }
 
   buffer_close(input);
@@ -398,15 +424,12 @@ main(int argc, char* argv[]) {
   buffer b;
 
   struct longopt opts[] = {
-      {"csv", 0, NULL, 'c'},
-      {"debug", 0, NULL, 'd'},
-      {"low", 0, NULL, 'l'},
-      {"format", 1, NULL, 'F'},
-      {0},
+      {"csv", 0, NULL, 'c'}, {"debug", 0, NULL, 'd'}, {"low", 0, NULL, 'l'}, {"format", 1, NULL, 'F'}, {0},
   };
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {
-    if(opt == 0) continue;
+    if(opt == 0)
+      continue;
 
     switch(opt) {
       case 'c': csv = 1; break;

@@ -40,6 +40,7 @@ int     strlist_contains(strlist*, const char* s);
 size_t  strlist_count(const strlist*);
 void    strlist_dump(buffer*, const strlist* sl);
 void    strlist_froms(strlist*, const char* s, char delim);
+void    strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
 int64   strlist_index_of(strlist*, const char* str);
 void    strlist_join(const strlist*, stralloc* sa, char delim);
 int     strlist_pushb(strlist*, const char* s, size_t n);
@@ -65,6 +66,23 @@ int strlist_append_sa(strlist* sl, const stralloc* sa);
 #define strlist_foreach(sl, str, n) for((str) = (sl)->sa.s; ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl)-(str), (sl)->sep)) >= 0); (str) += (n) + 1)
 #define strlist_foreach_s(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl)-str, (sl)->sep) + 1)
 
+#define strlist_len(sl, ptr) (byte_chr(ptr, strlist_end((sl)) - (ptr), (sl)->sep))
+
+static inline size_t
+strlist_skip(const strlist* sl, char* ptr) {
+  size_t ret = strlist_len(sl, ptr);
+  if(ptr + ret < strlist_end(sl) && ptr[ret] == sl->sep)
+    ++ret;
+  return ret;
+}
+static inline char*
+strlist_next(const strlist* sl, char* ptr) {
+  ptr += strlist_len(sl, ptr);
+  if(ptr < strlist_end(sl) && *ptr == sl->sep)
+    ++ptr;
+  return ptr;
+}
+
 #ifdef STRALLOC_H
 int strlist_contains_sa(strlist*, const stralloc* sa);
 int strlist_push_sa(strlist*, const stralloc* sa);
@@ -82,9 +100,9 @@ int   strlist_removes(strlist*, const char* s);
 
 int strlist_trunc(strlist*, size_t items);
 int strlist_sub(strlist*, const strlist* o);
+void strlist_fromv(strlist*, const char** v, int c);
 
 # ifdef __cplusplus
 }
 # endif
 #endif /* defined(STRLIST_H) */
-

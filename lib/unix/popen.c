@@ -31,13 +31,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
- #include "windoze.h"
+ #include "../windoze.h"
 
 #ifdef __MSVCRT__
 #define HAVE_POPEN 1
 #endif
 
-#if !defined( HAVE_POPEN) //|| (defined(__CYGWIN__) && defined(__amd64__))
+#if defined(NO_POPEN) || defined(__DMC__)
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>

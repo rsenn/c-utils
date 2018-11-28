@@ -90,7 +90,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
         if(longopts != 0 && *(argv[optind] + 1) == '-') {
           char const* spec_long = argv[optind] + 2;
           char const* pos_eq = strchr(spec_long, '=');
-          int spec_len = (pos_eq == NULL ? str_len(spec_long) : pos_eq - spec_long);
+          ssize_t spec_len = (pos_eq == NULL ? str_len(spec_long) : pos_eq - spec_long);
           int index_search = 0;
           int index_found = -1;
           const struct longopt* optdef = 0;

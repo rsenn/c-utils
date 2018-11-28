@@ -1,7 +1,7 @@
 #include "../byte.h"
 #include "../stralloc.h"
 
-unsigned int
-stralloc_endb(const stralloc* sa, const void* suffix, unsigned int len) {
+size_t
+stralloc_endb(const stralloc* sa, const void* suffix, size_t len) {
   return (sa->len >= len) && byte_equal(sa->s + sa->len - len, len, suffix);
 }

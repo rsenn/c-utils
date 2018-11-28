@@ -41,7 +41,7 @@ mingw | mingw32 | mingw64 {
   DEFINES += INLINE=inline
 
 
-  #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
+#  #QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter
 }
 
 INCLUDEPATH += .

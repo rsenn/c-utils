@@ -3,7 +3,7 @@
 
 void
 array_catb(array* to, const void* from, uint64 len) {
-  long l;
+  int64 l;
   if(!len) return;
   if(to->allocated < 0) return;
   if(to->initialized + len < to->initialized) {

@@ -8,7 +8,8 @@ int
 env_make(const char** v, size_t argc, const char* s, size_t len) {
   while(argc--) {
     size_t n = strlen(s) + 1;
-    if(n > len) return (errno = EINVAL, 0);
+    if(n > len)
+      return (errno = EINVAL, 0);
     *v++ = s;
     s += n;
     len -= n;

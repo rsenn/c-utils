@@ -94,8 +94,8 @@ int stralloc_append(stralloc* sa, const char* in); /* beware: this takes a point
  * the terminating \0, is a prefix of the string stored in sa. Otherwise
  * it returns 0. sa must already be allocated. */
 int stralloc_starts(stralloc* sa, const char* in) __pure__;
-unsigned int stralloc_startb(const stralloc*, const void* prefix, unsigned int len);
-unsigned int stralloc_start(const stralloc*, const stralloc* prefix);
+size_t stralloc_startb(const stralloc*, const void* prefix, size_t len);
+size_t stralloc_start(const stralloc*, const stralloc* prefix);
 
 /* stralloc_diff returns negative, 0, or positive, depending on whether
  * a is lexicographically smaller than, equal to, or greater than the
@@ -116,7 +116,7 @@ int stralloc_diffs(const stralloc* a, const char* b) __pure__;
 int stralloc_nul(stralloc* sa);
 
 /* stralloc_catulong0 appends a '0' padded ASCII representation of in */
-unsigned int stralloc_catulong(stralloc* sa, unsigned long int ul);
+size_t stralloc_catulong(stralloc* sa, unsigned long int ul);
 int stralloc_catulong0(stralloc* sa, unsigned long int in, size_t n);
 
 /* stralloc_catlong0 appends a '0' padded ASCII representation of in */
@@ -144,13 +144,13 @@ int stralloc_case_diff(const stralloc *sa1, const stralloc *sa2);
 int stralloc_case_diffs(const stralloc *sa, const char *s);
 int stralloc_diffb(const stralloc *sa, const void *d, unsigned int dlen);
 int stralloc_diffs(const stralloc *a, const char *b);
-unsigned int stralloc_case_equal(const stralloc *sa1, const stralloc *sa2);
-unsigned int stralloc_case_equals(const stralloc *sa, const char *s);
-unsigned int stralloc_cathexb(stralloc *sa, const void *d, unsigned int n);
-unsigned int stralloc_equalb(const stralloc *sa, const void *d, unsigned int dlen);
-unsigned int stralloc_find(const stralloc *sa, const stralloc *what);
-unsigned int stralloc_findb(const stralloc *sa, const void *what, unsigned int len);
-unsigned int stralloc_finds(const stralloc *sa, const char *what);
+size_t stralloc_case_equal(const stralloc *sa1, const stralloc *sa2);
+size_t stralloc_case_equals(const stralloc *sa, const char *s);
+size_t stralloc_cathexb(stralloc *sa, const void *d, unsigned int n);
+size_t stralloc_equalb(const stralloc *sa, const void *d, unsigned int dlen);
+size_t stralloc_find(const stralloc *sa, const stralloc *what);
+size_t stralloc_findb(const stralloc *sa, const void *what, size_t len);
+size_t stralloc_finds(const stralloc *sa, const char *what);
 
 #ifdef BUFFER_H
 /* write stralloc to buffer */
@@ -206,7 +206,7 @@ inline static size_t stralloc_length(const stralloc* sa) { return sa->len; }
 #define stralloc_iterator_distance(it1, it2) ((it2) - (it1))
 #define stralloc_is_last(sa, ptr) ((sa)->len > 0 && ((sa)->s + (sa)->len - 1) == (ptr))
 
-unsigned int stralloc_endb(const stralloc* sa, const void* suffix, unsigned int len);
+size_t stralloc_endb(const stralloc* sa, const void* suffix, size_t len);
 
 inline static void stralloc_iterator_increment(char** it) { ++(*it); }
 inline static int stralloc_iterator_equal(char** it1, char** it2) { return it1 == it2; }
@@ -228,8 +228,8 @@ size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_funct
 
 int stralloc_catdouble(stralloc*, double d, int prec);
 
-unsigned int stralloc_chr(const stralloc* sa, char c);
-unsigned int stralloc_rchr(const stralloc* sa, char c);
+size_t stralloc_chr(const stralloc* sa, char c);
+size_t stralloc_rchr(const stralloc* sa, char c);
 
 int  stralloc_copywcb(stralloc* sa, const wchar_t* buf, size_t len);
 int  stralloc_copywcs(stralloc* sa, const wchar_t* buf);
@@ -240,7 +240,7 @@ int stralloc_prependb(stralloc* sa, const char* s, size_t n);
 int stralloc_prepends(stralloc* sa, const char* s);
 int stralloc_prepend(stralloc* sa, const stralloc* other);
 
-unsigned int stralloc_ends(const stralloc* sa, const stralloc* suffix);
+size_t stralloc_ends(const stralloc* sa, const stralloc* suffix);
 
 int stralloc_expand(stralloc* sa);
 
@@ -248,7 +248,7 @@ int stralloc_catwcb(stralloc* sa, const wchar_t* buf, size_t len);
 int stralloc_catwcs(stralloc* sa, const wchar_t* buf);
 
 
-int stralloc_remove(stralloc*, size_t pos, size_t n);
+size_t stralloc_remove(stralloc*, size_t pos, size_t n);
 void stralloc_replacec(stralloc*, char before, char after);
 int stralloc_removesuffixs(stralloc*, const char* suffix);
 int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
@@ -256,6 +256,23 @@ int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
 int stralloc_contains(const stralloc* sa, const char* what);
 int stralloc_replaces(stralloc*, const char* from, const char* to);
 int stralloc_replace(stralloc*, size_t pos, size_t len, const char* to, size_t tolen);
+
+size_t stralloc_case_end(const stralloc*, const stralloc* suffix);
+size_t stralloc_case_starts(const stralloc*, const char* prefix);
+size_t stralloc_case_start(const stralloc*, const stralloc* prefix);
+size_t stralloc_catuint(stralloc*, unsigned int ui);
+size_t stralloc_catxlong(stralloc*, unsigned long u);
+size_t stralloc_count(const stralloc*, char c);
+size_t stralloc_erase(stralloc*);
+void   stralloc_lower(stralloc*);
+void   stralloc_move(stralloc*, stralloc* from);
+int    stralloc_ready_tuned(stralloc*, size_t n, size_t base, size_t a, size_t b);
+void   stralloc_remove_all(stralloc*, register const char* delchars, register unsigned int delcharslen);
+void   stralloc_replace_non_printable(stralloc*, char ch);
+void   stralloc_reverse_blocks(stralloc*, size_t size);
+void   stralloc_reverse(stralloc*);
+void   stralloc_upper(register stralloc*);
+
 
 #ifdef __cplusplus
 }

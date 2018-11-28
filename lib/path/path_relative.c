@@ -38,8 +38,14 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
   strlist_init(&rel, PATHSEP_C);
   strlist_init(&p, PATHSEP_C);
   strlist_init(&r, PATHSEP_C);
+
   path_canonical(relative_to, &r.sa);
+  if(stralloc_starts(&r.sa, ".."))
+    path_absolute_sa(&r.sa);
+
   path_canonical(path, &p.sa);
+  if(stralloc_starts(&p.sa, ".."))
+    path_absolute_sa(&p.sa);
 
   {
     size_t n1 = strlist_count(&p);
@@ -56,8 +62,10 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
       buffer_put(buffer_2, s2, l2);
       buffer_putnlflush(buffer_2);
 #endif
-      if(l1 != l2) break;
-      if(byte_diff(s1, l1, s2)) break;
+      if(l1 != l2)
+        break;
+      if(byte_diff(s1, l1, s2))
+        break;
     }
     strlist_init(&rel, PATHSEP_C);
     while(n2-- > i) {

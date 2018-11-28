@@ -16,19 +16,20 @@ typedef struct {
   uint32 size;
 } pe_data_directory;
 
-typedef struct {
-  uint32 characteristics;    /**< 0x00 */
-  uint32 time_date_stamp;    /**< 0x04 */
-  uint16 major_version;      /**< 0x08 */
-  uint16 minor_version;      /**< 0x0a */
-  uint32 name;               /**< 0x0c */
-  uint32 base;               /**< 0x10 */
-  uint32 number_of_functions;/**< 0x14 */
-  uint32 number_of_names;    /**< 0x18 */
+typedef struct __unaligned {
+  uint32 characteristics;     /**< 0x00 */
+  uint32 time_date_stamp;     /**< 0x04 */
+  uint16 major_version;       /**< 0x08 */
+  uint16 minor_version;       /**< 0x0a */
+  uint32 name;                /**< 0x0c */
+  uint32 base;                /**< 0x10 */
+  uint32 number_of_functions; /**< 0x14 */
+  uint32 number_of_names;     /**< 0x18 */
   uint32 address_of_functions;
   uint32 address_of_names;
   uint32 address_of_name_ordinals;
-} pe_export_directory;
+}
+pe_export_directory;
 
 typedef struct {
   union {
@@ -63,7 +64,7 @@ typedef struct {
   uint32 time_date_stamp;
 } pe_delayload_descriptor;
 
-typedef struct pe_dos_header {
+typedef struct __unaligned {
   uint16 e_magic;
   uint16 e_cblp;
   uint16 e_cp;
@@ -83,7 +84,8 @@ typedef struct pe_dos_header {
   uint16 e_oeminfo;
   uint16 e_res2[10];
   uint32 e_lfanew; /* sizeof(image_dos_h_eader) + size of MS-DOS stub */
-} pe_dos_header;
+}
+pe_dos_header;
 
 typedef struct {
   uint16 machine; /* machine_type */
@@ -98,7 +100,7 @@ typedef struct {
 #define PE_SECTION_NAME_SIZE 8
 
 /* Quoting pecoff_v8.docx: "Entries in the section table are numbered starting from one (1)". */
-typedef struct {
+typedef struct __unaligned {
   char name[PE_SECTION_NAME_SIZE]; /* TODO: Should we use char instead? */
   union {
     uint32 physical_address; /* same value as next field */
@@ -112,7 +114,8 @@ typedef struct {
   uint16 number_of_relocations;
   uint16 number_of_linenumbers; /* deprecated */
   uint32 characteristics;       /* section_characteristics */
-} pe_section_header;
+}
+pe_section_header;
 
 #define PE_SUBSYSTEM_UNKNOWN 0
 #define PE_SUBSYSTEM_NATIVE 1
@@ -148,7 +151,7 @@ typedef struct {
 #define PE_NUMBEROF_DIRECTORY_ENTRIES 16
 
 /* r_eference: http://msdn.microsoft.com/en-us/library/windows/desktop/ms680339(v=vs.85).aspx */
-typedef struct {
+typedef struct __unaligned {
   uint16 magic;
   unsigned char major_linker_version;
   unsigned char minor_linker_version;
@@ -180,9 +183,10 @@ typedef struct {
   uint32 loader_flags;
   uint32 number_of_rva_and_sizes;
   pe_data_directory data_directory[PE_NUMBEROF_DIRECTORY_ENTRIES];
-} pe32_opt_header;
+}
+pe32_opt_header;
 
-typedef struct {
+typedef struct __unaligned {
   uint16 magic;
   unsigned char major_linker_version;
   unsigned char minor_linker_version;
@@ -213,9 +217,10 @@ typedef struct {
   uint32 loader_flags; /* must be zero */
   uint32 number_of_rva_and_sizes;
   pe_data_directory data_directory[PE_NUMBEROF_DIRECTORY_ENTRIES];
-} pe64_opt_header;
+}
+pe64_opt_header;
 
-typedef struct {
+typedef struct __unaligned {
   pe_dos_header dos_hdr;
   uint32 signature;
   pe_coff_header* coff_hdr;
@@ -226,7 +231,8 @@ typedef struct {
   void* sections_ptr;
   uint64 entrypoint;
   uint64 imagebase;
-} pe_file_t;
+}
+pe_file_t;
 
 typedef enum {
   PE_MAGIC_ROM = 0x107,
@@ -267,7 +273,7 @@ typedef enum {
 typedef struct { uint64 flink, blink; } list_entry;
 
 #define PE_SIZEOF_SHORT_NAME 8
-typedef struct {
+typedef struct __unaligned {
   char name[PE_SIZEOF_SHORT_NAME];
   union {
     uint32 physical_address;
@@ -281,7 +287,8 @@ typedef struct {
   uint16 number_of_relocations;
   uint16 number_of_linenumbers;
   uint32 characteristics;
-} section_header;
+}
+section_header;
 
 typedef struct {
   union {
@@ -313,11 +320,12 @@ typedef struct {
 //  uint32 first_thunk;
 //} pe_import_descriptor;
 
-typedef struct {
+typedef struct __unaligned {
   uint32 signature;
   pe_coff_header coff_header;
   pe64_opt_header optional_header;
-} pe64_nt_headers;
+}
+pe64_nt_headers;
 
 typedef struct {
   uint32 signature;
@@ -430,31 +438,27 @@ const char* pe_datadir_name(int);
 #define PE_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
 #define PE_STRUCT_OFFSETS(st, field) PE_FIELD_OFFSET(pe32_##st, field), PE_FIELD_SIZE(pe32_##st, field), PE_FIELD_OFFSET(pe64_##st, field), PE_FIELD_SIZE(pe64_##st, field))
 
-#define PE32_FIRST_SECTION(ntheader) \
-  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe32_nt_headers, optional_header) + \
+#define PE32_FIRST_SECTION(ntheader)                                                                                   \
+  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe32_nt_headers, optional_header) +                         \
                         ((pe32_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
-#define PE64_FIRST_SECTION(ntheader) \
-  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe64_nt_headers, optional_header) + \
+#define PE64_FIRST_SECTION(ntheader)                                                                                   \
+  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe64_nt_headers, optional_header) +                         \
                         ((pe64_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
 
-#define PE_OFFSET(pe, st, field) \
-  (PE_64(pe) ? PE_FIELD_OFFSET(pe64_##st, field) : PE_FIELD_OFFSET(pe32_##st, field))
+#define PE_OFFSET(pe, st, field) (PE_64(pe) ? PE_FIELD_OFFSET(pe64_##st, field) : PE_FIELD_OFFSET(pe32_##st, field))
 
-#define PE_ADDR(pe, ptr, st, field) \
-  ((void*)(((char*)ptr)+PE_OFFSET(pe, st, field)))
+#define PE_ADDR(pe, ptr, st, field) ((void*)(((char*)ptr) + PE_OFFSET(pe, st, field)))
 
-#define PE_SIZE(pe, st, field) \
-  (PE_64(pe) ? PE_FIELD_SIZE(pe64_##st, field) : PE_FIELD_SIZE(pe32_##st, field))
+#define PE_SIZE(pe, st, field) (PE_64(pe) ? PE_FIELD_SIZE(pe64_##st, field) : PE_FIELD_SIZE(pe32_##st, field))
 
-#define PE_STRUCT_SIZE(pe, st) \
-  (PE_64(pe) ? sizeof(pe64_##st) : sizeof(pe32_##st))
+#define PE_STRUCT_SIZE(pe, st) (PE_64(pe) ? sizeof(pe64_##st) : sizeof(pe32_##st))
 
-#define PE_GET(pe, ptr, st, field) \
-  pe_get_value(pe, \
-               ptr, \
-               PE_FIELD_OFFSET(pe32_##st, field), \
-               PE_FIELD_SIZE(pe32_##st, field), \
-               PE_FIELD_OFFSET(pe64_##st, field), \
+#define PE_GET(pe, ptr, st, field)                                                                                     \
+  pe_get_value(pe,                                                                                                     \
+               ptr,                                                                                                    \
+               PE_FIELD_OFFSET(pe32_##st, field),                                                                      \
+               PE_FIELD_SIZE(pe32_##st, field),                                                                        \
+               PE_FIELD_OFFSET(pe64_##st, field),                                                                      \
                PE_FIELD_SIZE(pe64_##st, field))
 #define PE_MAGIC(pe) uint16_read(pe_header_opt(pe))
 

@@ -8,6 +8,58 @@
 #include "lib/fmt.h"
 #include "lib/mmap.h"
 #include "lib/byte.h"
+#include "lib/stralloc.h"
+
+void
+omf_dump(buffer* b, omf_record* r) {
+  uint16 len = uint16_get(&r->length);
+
+  buffer_puts(b, "omf record: type=");
+  buffer_putxlong0(b, r->type, 2);
+  buffer_puts(b, ", length=");
+  buffer_putulong(b, len);
+  buffer_putnlflush(b);
+}
+
+void
+dump_hex(buffer* b, const char* x, const char* y, size_t offset) {
+  size_t n = y - x;
+  size_t i;
+  stralloc linesa;
+  stralloc_init(&linesa);
+
+  for(i = 0; i < n; ++i) {
+    size_t li = i % 16;
+    if(li == 0) {
+      if(linesa.len) {
+        buffer_puts(b, "  |");
+        buffer_putsa(b, &linesa);
+        buffer_putnspace(b, 16 - linesa.len);
+        buffer_putc(b, '|');
+        stralloc_zero(&linesa);
+      }
+      buffer_putc(b, '\n');
+      buffer_putxlong0(b, i + offset, 8);
+      buffer_putspace(b);
+    }
+    buffer_putspace(b);
+    buffer_putxlong0(b, (unsigned long)(unsigned char)x[i], 2);
+    stralloc_catc(&linesa, isprint(x[i]) ? x[i] : ' ');
+  }
+
+  while(i % 16) {
+    buffer_putnspace(b, 3);
+    ++i;
+  }
+  if(linesa.len) {
+    buffer_puts(b, "  |");
+    buffer_putsa(b, &linesa);
+    buffer_putc(b, '|');
+  }
+
+  stralloc_free(&linesa);
+  buffer_putnlflush(b);
+}
 
 void
 usage(char* av0) {
@@ -61,19 +113,52 @@ main(int argc, char** argv) {
     if(omf_open(&omf, argv[optind])) {
 
       omf_record* r;
+      char* p;
+
+      r = omf_begin(&omf);
+
+      omf_dump(buffer_1, r);
 
       omf_foreach(&omf, r) {
         range x = omf_data(r);
         const char* name = omf_name(r);
-        buffer_putm_internal(buffer_1, name ? name : "<null>", " (0x", 0);
-        buffer_putxlong0(buffer_1, r->type, 2);
-        buffer_puts(buffer_1, ") : ");
-        buffer_putulong(buffer_1, x.elem_size);
-        buffer_putsflush(buffer_1, " bytes\n");
+
+        if((p = omf_record_begin(r))) {
+
+          omf_record_foreach(r, p) {
+
+            //  //|| r->type == 0x96
+            buffer_putptr(buffer_1, p);
+
+            if((r->type & 0xfe) == 0x90 || r->type == 0x96 || r->type == 0x8c) {
+              buffer_putspace(buffer_1);
+              buffer_puts(buffer_1, omf_name(r));
+              buffer_putspace(buffer_1);
+              buffer_put(buffer_1, omf_str_begin(p), omf_str_len(p));
+            }
+
+            buffer_putnlflush(buffer_1);
+          }
+
+          continue;
+        }
+
+#ifdef DEBUG
+        buffer_putm_internal(buffer_2, name ? name : "<null>", " (0x", 0);
+        buffer_putxlong0(buffer_2, r->type, 2);
+        buffer_puts(buffer_2, ") : ");
+
+        buffer_putulong(buffer_2, x.end - x.start);
+        buffer_puts(buffer_2, " bytes");
+
+        if(r->type != OMF_COMENT)
+          dump_hex(buffer_2, x.start - 3, x.end, x.start - (char*)omf.map);
+
+        buffer_putnlflush(buffer_2);
+#endif
       }
 
       omf_close(&omf);
-
     } else {
       errmsg_warnsys("ERROR opening '", argv[optind], "': ");
       return 127;

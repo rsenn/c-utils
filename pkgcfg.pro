@@ -5,7 +5,7 @@ CONFIG -= qt
 CONFIG += link_pkgconfig
 
 TARGET = pkgcfg
-QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable
+#QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable
 
 INCLUDEPATH += .
 

@@ -147,5 +147,5 @@ int hmap_free_data(TUPLE* tuple);
     } \
   }
 
-int hmap_cmp(void* v1, int v1_len, void* v2, int v2_len);
-int hmap_hash(const void* key, unsigned int len);
+int hmap_cmp(void* v1, size_t v1_len, void* v2, size_t v2_len);
+int hmap_hash(const void* key, size_t len);

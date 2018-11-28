@@ -15,4 +15,3 @@ env_unset(const char* name) {
   return 1;
 #endif
 }
-

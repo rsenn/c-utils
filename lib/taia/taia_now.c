@@ -7,10 +7,8 @@
 #include <sys/time.h>
 #endif
 
-
 #include "../taia.h"
 #include "../tai.h"
-#include "../uint64.h"
 
 void
 taia_now(struct taia* t) {

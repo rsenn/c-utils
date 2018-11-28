@@ -55,7 +55,8 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
       closing = 1;
     }
     if(closing) buffer_puts(b, ",");
-    (closing ? buffer_putnlflush : buffer_flush)(b);
+
+    if(closing) buffer_putnlflush(b); else buffer_flush(b);
   } while((node = node->next));
 }
 

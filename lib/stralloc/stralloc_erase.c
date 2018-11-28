@@ -1,6 +1,6 @@
 #include "../stralloc.h"
 
-unsigned int
+size_t
 stralloc_erase(stralloc* sa) {
   if(!stralloc_ready(sa, 1))
     return 0;

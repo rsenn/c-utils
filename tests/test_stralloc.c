@@ -22,6 +22,7 @@ TEST(test_stralloc_init) {
 TEST(test_stralloc_ready) {
   stralloc sa;
 
+  stralloc_init(&sa);
   stralloc_ready(&sa, 40);
 
   ASSERT_GE(sa.a, 40);
@@ -36,6 +37,7 @@ TEST(test_stralloc_ready) {
 TEST(test_stralloc_readyplus) {
   stralloc sa;
 
+  stralloc_init(&sa);
   stralloc_ready(&sa, 40);
   stralloc_readyplus(&sa, 20);
 

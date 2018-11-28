@@ -80,28 +80,29 @@ unit_test_copy(buffer* src, buffer* dst) {
 bool
 unit_test_empty(buffer* b) {
   size_t pos = lseek(b->fd, 0, SEEK_END);
-  return pos == 0;
+  return pos <= 1;
 }
 
 void
 unit_test_closetemp(buffer* b) {
   buffer_flush(b);
   if(unit_test_empty(b)) {
-     stralloc filename;
-     stralloc_init(&filename);
+    stralloc filename;
+    stralloc_init(&filename);
 
-     write(b->fd, "\n", 1);
+    write(b->fd, "\n", 1);
 
-     open_filename(b->fd, &filename);
-     stralloc_nul(&filename);
+    open_filename(b->fd, &filename);
+    stralloc_nul(&filename);
 
-     close(b->fd);
-     b->fd = -1;
+    close(b->fd);
+    b->fd = -1;
 
-     if(filename.len) {
-       int ret = unlink(filename.s);
-       if(ret) errmsg_warnsys("unlink(", filename.s, "): ", 0);
-     }
+    if(filename.len) {
+      int ret = unlink(filename.s);
+      if(ret)
+        errmsg_warnsys("unlink(", filename.s, "): ", 0);
+    }
   }
 }
 

@@ -33,22 +33,22 @@
 #define O_BINARY 0
 #endif
 
-static char default_tmpl[PATH_MAX] = "temp-XXXXXX.txt";
+static char default_tmpl[] = "temp-XXXXXX.txt";
 
 int
-open_temp(char* tmpl) {
+open_temp(const char* tmpl) {
   int i, res;
   unsigned int random;
   char* tmp;
 
   if(!tmpl) {
-    tmpl = default_tmpl;
-    tmp = &tmpl[5];
+    tmpl = (const char*)default_tmpl;
+    tmp = (char*)&tmpl[5];
   } else {
     str_copy(default_tmpl, tmpl);
     tmpl = default_tmpl;
-  tmp = tmpl + str_len(tmpl) - 6;
-  if(tmp < tmpl) goto error;
+    tmp = (char*)tmpl + str_chr(tmpl, 'X');
+    if(tmp < tmpl) goto error;
   }
 
   for(i = 0; i < 6; ++i) {

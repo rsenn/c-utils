@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../dir_internal.h"
 #include "../str.h"
 #include "../stralloc.h"
@@ -6,6 +7,15 @@
 #if USE_WIDECHAR
 #include "../utf8.h"
 #endif
+
+#if !USE_READDIR
+#include <stdio.h>
+#endif
+
+#ifdef __DMC__
+#define snprintf _snprintf
+#endif
+
 static const char* last_error_str();
 
 int
@@ -79,7 +89,7 @@ last_error_str()
                     0,
                     NULL))
     return 0;
-  _snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
+  snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
   /* or otherwise log it */
   // OutputDebugString(tmpbuf);
   LocalFree(err);

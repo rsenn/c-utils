@@ -1,7 +1,7 @@
 #include "../byte.h"
 
 void
-byte_upper(void* s, unsigned int len) {
+byte_upper(void* s, size_t len) {
   unsigned char c;
   unsigned char* x;
   x = s;

@@ -1,7 +1,7 @@
 #include "../fmt.h"
 #include "../stralloc.h"
 
-unsigned int
+size_t
 stralloc_catxlong(stralloc* sa, unsigned long u) {
   unsigned int i;
   i = fmt_xlong(FMT_LEN, u);

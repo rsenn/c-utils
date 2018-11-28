@@ -3,7 +3,7 @@
 
 int
 stralloc_diffb(const stralloc* sa, const void* d, unsigned int dlen) {
-  unsigned int len;
+  size_t len;
   int r;
   /*
     get shortest len
