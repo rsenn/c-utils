@@ -18,7 +18,7 @@ SOURCES = lib/buffer/buffer_1.c lib/buffer/buffer_flush.c lib/buffer/buffer_put.
     lib/buffer/buffer_2.c \
     lib/str/str_rchrs.c \
     lib/unix/readlink.c \
-    lib/stralloc/utf8.c
+    lib/stralloc/utf8.c lib/path/path_absolute.c lib/path/path_collapse.c lib/path/path_getsep.c lib/path/path_relative.c lib/stralloc/stralloc_replacec.c lib/strlist/strlist_froms.c lib/byte/byte_equal.c lib/byte/byte_replace.c lib/path/path_absolute_sa.c lib/path/path_canonical.c lib/stralloc/stralloc_starts.c lib/strlist/strlist_pop.c lib/stralloc/stralloc_cat.c lib/stralloc/stralloc_free.c
 
 msvc | mingw | mingw32 {
   DEFINES += WINDOWS_NATIVE=1

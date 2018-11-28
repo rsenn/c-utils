@@ -572,7 +572,6 @@ SOURCES = \
   lib/unix/win32_glob.c \
   lib/unix/win32_loadprog.c \
   lib/unix/win32_popen.c \
-  lib/unix/wordexp.c \
     lib/io/io_pipe.c \
     lib/io/io_sigpipe.c \
     lib/io/io_passfd.c \
