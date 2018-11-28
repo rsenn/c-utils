@@ -14,6 +14,10 @@
  *
  */
 
+#include "../windoze.h"
+
+#if WINDOWS_NATIVE
+
 /* $Revision: 9.6.2.1 $        */
 
 #include <windows.h>
@@ -516,4 +520,5 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
   return (rc);
 }
 
+#endif
 #endif
