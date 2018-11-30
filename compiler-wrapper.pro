@@ -20,3 +20,4 @@ SOURCES = compiler-wrapper.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buf
 
 
 DEFINES += HAVE_ERRNO_H=1
+gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable

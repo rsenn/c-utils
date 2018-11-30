@@ -1,5 +1,6 @@
 #include "../byte.h"
 #include "../strlist.h"
+#include "../str.h"
 
 void
 strlist_fromb(strlist* sl, const char* x, size_t n, const char* delim) {

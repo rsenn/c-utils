@@ -491,7 +491,7 @@ rule_command(target* rule, stralloc* out) {
   strlist_init(&prereq, ' ');
 
   if(stralloc_contains(rule->recipe, "-+$^")) {
-//    pfx = "-+";
+    //    pfx = "-+";
   }
 
   strlist_foreach(&rule->prereq, s, len) {
@@ -847,7 +847,7 @@ void
 push_define(const char* def) {
   stralloc define;
   stralloc_init(&define);
-  stralloc_copys(&define, "-D");
+  stralloc_copys(&define, "-D ");
   stralloc_cats(&define, def);
   stralloc_nul(&define);
 
@@ -1670,10 +1670,10 @@ output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
   stralloc_replaces(&out, "$<", "$in");
   stralloc_replaces(&out, "$^", "$in");
   stralloc_remove_all(&out, "\"", 1);
-  stralloc_removesuffixs(&out, "\n");
+  stralloc_removesuffixs(&out, newline);
   stralloc_removesuffixs(&out, "\r");
   buffer_putsa(b, &out);
-  buffer_putsflush(b, "\n");
+  buffer_putsflush(b, newline);
 }
 
 target*
@@ -1795,7 +1795,7 @@ output_make_rule(buffer* b, target* rule) {
 
   if(num_deps == 0 && str_diffn(rule->name, workdir.sa.s, workdir.sa.len) &&
      !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
-    buffer_putm_internal(b, ".PHONY: ", rule->name, "\n", 0);
+    buffer_putm_internal(b, ".PHONY: ", rule->name, newline, 0);
   }
 
   buffer_puts(b, rule->name);
@@ -2519,7 +2519,7 @@ usage(char* argv0) {
                        "Usage: ",
                        str_basename(argv0),
                        " [sources...]\n",
-                       "\n",
+                       newline,
                        "Options\n",
                        "  -h, --help                show this help\n",
                        "  -o, --output FILE         write to file\n"
@@ -2533,30 +2533,27 @@ usage(char* argv0) {
                        "  -d, --builddir            build directory\n",
                        "  -t, --compiler-type TYPE   compiler type, one of:\n",
                        "  -l, --link                link a library\n",
-                       "\n"
-                       "     gcc         GNU make\n"
-                       "     bcc55       Borland C++ Builder 5.5\n"
-                       "     bcc32       Borland C++ Builder new\n"
-                       "     lcc         lcc make\n"
-                       "     tcc         Tinycc make\n"
-                       "     msvc        Visual C++ NMake\n"
-                       "     icl         Intel C++ NMake\n"
-                       "     clang       LLVM NMake\n"
-                       "     occ         OrangeC\n"
-                       "     dmc         Digital Mars C++\n"
-                       "     pocc        Pelles-C\n"
-                       "\n",
-                       "  -m, --make-type TYPE      make program type, one of:\n"
-                       "\n"
-                       "     nmake       Microsoft NMake\n"
-                       "     borland     Borland Make\n"
-                       "     gmake       GNU Make\n"
-                       "     omake       OrangeCC Make\n"
-                       "     pomake      Pelles-C Make\n"
-                       "     make        Other make\n"
-                       "     batch       Windows batch (.bat .cmd)\n"
-                       "     ninja       Ninja build\n"
-                       "\n",
+                       newline,
+                       "     gcc         GNU make\n",
+                       "     bcc55       Borland C++ Builder 5.5\n",
+                       "     bcc32       Borland C++ Builder new\n",
+                       "     lcc         lcc make\n",
+                       "     tcc         Tinycc make\n",
+                       "     msvc        Visual C++ NMake\n",
+                       "     icl         Intel C++ NMake\n",
+                       "     clang       LLVM NMake\n",
+                       "     occ         OrangeC\n",
+                       "     dmc         Digital Mars C++\n",
+                       "     pocc        Pelles-C\n",
+                       "  -m, --make-type TYPE      make program type, one of:\n" ,
+                       "     nmake       Microsoft NMake\n",
+                       "     borland     Borland Make\n",
+                       "     gmake       GNU Make\n",
+                       "     omake       OrangeCC Make\n",
+                       "     pomake      Pelles-C Make\n",
+                       "     make        Other make\n",
+                       "     batch       Windows batch (.bat .cmd)\n",
+                       "     ninja       Ninja build\n" ,
                        0);
   buffer_putnlflush(buffer_1);
 }
@@ -2698,7 +2695,8 @@ main(int argc, char* argv[]) {
       make = "pomake";
   }
 
-  cygming = str_start(toolchain, "mingw") || str_start(toolchain, "cyg") || str_start(toolchain, "msys");
+  if(toolchain)
+    cygming = str_start(toolchain, "mingw") || str_start(toolchain, "cyg") || str_start(toolchain, "msys");
 
   if(cygming) {
     compiler = "gcc";
@@ -2855,7 +2853,7 @@ main(int argc, char* argv[]) {
     strarray_foreach(&args, arg) {
 
       if(!path_exists(*arg)) {
-        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", *arg, "\n", 0);
+        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", *arg, newline, 0);
         buffer_flush(buffer_2);
         ret = 127;
         goto fail;

@@ -1,4 +1,5 @@
 #include "../windoze.h"
+#include "../byte.h"
 #include "../likely.h"
 #include <fcntl.h>
 
