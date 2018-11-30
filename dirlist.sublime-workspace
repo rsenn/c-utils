@@ -29,7 +29,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 69156,
+				"buffer_size": 70841,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -50,7 +50,6 @@
 			"settings":
 			{
 				"buffer_size": 73,
-				"encoding": "UTF-8",
 				"line_ending": "Windows",
 				"name": "untitled.sublime-build"
 			}
@@ -1256,15 +1255,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 69156,
+						"buffer_size": 70841,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12749,
-								12749
+								0,
+								0
 							]
 						],
 						"settings":
