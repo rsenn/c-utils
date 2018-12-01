@@ -926,7 +926,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
         newdir.n_sources = 1;
         newdir.sources = &file->link;
-        strlist_init(&newdir.includes, ' ');
+        strlist_init(&newdir.includes, '\0');
 
         hmap_set(&sourcedirs, dir.s, dir.len + 1, &newdir, sizeof(newdir));
 
@@ -1304,13 +1304,13 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
   strlist incs;
 
   stralloc_init(&obj);
-  strlist_init(&incs, ' ');
+  strlist_init(&incs, '\0');
 
   slist_foreach(&srcdir->sources, src) {
     const char* ext;
     srcfile = &src->name;
 
-    ext = *srcfile + str_rchr(*srcfile, pathsep_make);
+    ext = *srcfile + str_rchr(*srcfile, PATHSEP_C);
     if(*ext == pathsep_make)
       ++ext;
     ext += str_rchr(ext, '.');
@@ -2079,7 +2079,7 @@ set_make_type(const char* make, const char* compiler) {
   } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
     pathsep_make = '\\';
 
-    make_begin_inline = "<<\r\n ";
+    make_begin_inline = "@<<\r\n ";
     make_end_inline = "\r\n<<";
 
     inst = "copy /y";
@@ -2439,8 +2439,8 @@ set_compiler_type(const char* compiler) {
     set_var("CC", "cc");
     set_var("LINK", "polink");
     set_var("LIB", "polib");
-    push_var("CFLAGS", "-std:C11 -fp:precise -W0 -Gr -Go");
-    push_var("CFLAGS", "-Ze -Gm");
+    push_var("CFLAGS", "-std:C11 -fp:precise -W0 -Go");
+    push_var("CFLAGS", "-Ze -Zx");
 
     if(mach.bits == _64) {
       set_var("MACHINE", "AMD64");
@@ -2456,21 +2456,22 @@ set_compiler_type(const char* compiler) {
     }
     push_var("CFLAGS", "-T$(TARGET)-coff");
     push_var("LDFLAGS", "-machine:$(MACHINE)");
+    push_var("LDFLAGS", "-libpath:\"%PELLESC%\\lib\"");
 
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
-      push_var("CFLAGS", "/Zi");
+      push_var("CFLAGS", "-Zi");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
-      push_var("CFLAGS", "/Os");
+      push_var("CFLAGS", "-Os");
     else if(build_type != BUILD_TYPE_DEBUG)
-      push_var("CFLAGS", "/Ot /Ob1");
+      push_var("CFLAGS", "-Ot -Ob1");
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
-      push_var("CFLAGS", "/Zi");
-      push_var("LDFLAGS", "/DEBUG");
+      push_var("CFLAGS", "-Zi");
+      push_var("LDFLAGS", "-DEBUG");
     }
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -Fo\"$@\"");
-    stralloc_copys(&link_command, "$(CC) $(LDFLAGS) $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS) /Fe\"$@\"");
+    stralloc_copys(&link_command, "$(CC) $^ $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS) -Fe\"$@\"");
 
   } else {
     return 0;

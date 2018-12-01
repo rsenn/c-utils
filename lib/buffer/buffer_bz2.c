@@ -129,7 +129,7 @@ buffer_bz2(buffer* b, buffer* other, int compress) {
   ctx->b = other;
 
   buffer_init(b,
-              (buffer_op_sys*)(compress ? (void*)&buffer_bzwrite_op : (void*)&buffer_bzread_op),
+              (buffer_op_proto*)(compress ? (void*)&buffer_bzwrite_op : (void*)&buffer_bzread_op),
               -1,
               ctx->buf,
               sizeof(ctx->buf));
