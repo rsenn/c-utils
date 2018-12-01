@@ -7,27 +7,20 @@
 static void
 json_print_val(jsonval* val, buffer* b, int depth) {
   switch(val->type) {
-    case JSON_NONE:
-      break;
+    case JSON_NONE: break;
     case JSON_STRING:
       buffer_puts(b, "\"");
       buffer_putsa(b, &val->stringv);
       buffer_puts(b, "\"");
       break;
-    case JSON_DOUBLE:
-      buffer_putdouble(b, val->doublev, 15);
-      break;
-    case JSON_BOOL:
-      buffer_puts(b, val->boolv ? "true" : "false");
-      break;
-    case JSON_INT:
-      buffer_putint64(b, val->intv);
-      break;
+    case JSON_DOUBLE: buffer_putdouble(b, val->doublev, 15); break;
+    case JSON_BOOL: buffer_puts(b, val->boolv ? "true" : "false"); break;
+    case JSON_INT: buffer_putint64(b, val->intv); break;
     case JSON_OBJECT: {
       TUPLE* t = hmap_begin(val->dictv);
       buffer_puts(b, "{\n");
       for(; t; t = t->next) {
-              int last;
+        int last;
         buffer_putnspace(b, 2 * (depth + 1));
         buffer_putc(b, '"');
         buffer_put(b, t->key, t->key_len);
@@ -35,7 +28,8 @@ json_print_val(jsonval* val, buffer* b, int depth) {
         json_print_val(t->vals.val_custom, b, depth + 1);
         last = t->next == hmap_begin(val->dictv);
         buffer_puts(b, last ? "\n" : ",\n");
-        if(last) break;
+        if(last)
+          break;
       }
       buffer_putnspace(b, 2 * depth);
       buffer_puts(b, "}\n");

@@ -23,27 +23,27 @@ typedef array strarray;
 #define strarray_size(l) array_length((l), sizeof(char*))
 
 #define strarray_begin(l) (char**)array_start((l))
-#define strarray_end(l) (strarray_begin(l)+strarray_size(l))
+#define strarray_end(l) (strarray_begin(l) + strarray_size(l))
 
 #define strarray_at(l, pos) (*(char**)array_get((l), sizeof(char*), pos))
 
 #define strarray_foreach(a, ptr) for((ptr) = (void*)strarray_begin(a); ((char**)(ptr)) < strarray_end(a); ++ptr)
 
-char* *strarray_to_argv(strarray*);
+char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);
 
 int64 strarray_index_of(strarray*, const char* s);
 char* strarray_pop(strarray*, char* s);
-int   strarray_pushb(strarray*, const char* b, size_t n);
-int   strarray_pushd(strarray*, const char* s);
-int   strarray_push(strarray*, const char* s);
-int   strarray_set(strarray*, size_t index, const char* s);
+int strarray_pushb(strarray*, const char* b, size_t n);
+int strarray_pushd(strarray*, const char* s);
+int strarray_push(strarray*, const char* s);
+int strarray_set(strarray*, size_t index, const char* s);
 
 #ifdef STRALLOC_H
-int strarray_push_sa (strarray * a, const stralloc * sa);
+int strarray_push_sa(strarray* a, const stralloc* sa);
 #endif
 
-void strarray_sort(strarray*, int (*)(char* , char* ));
+void strarray_sort(strarray*, int (*)(char*, char*));
 
 int strarray_appends(strarray* arr, const char* s);
 int strarray_prepends(strarray* arr, const char* s);
@@ -52,8 +52,8 @@ int strarray_removesuffixs(strarray* arr, const char* s);
 
 int strarray_joins(strarray* arr, stralloc* sa, const char* sep);
 
-int strarray_transform(strarray* in,  strarray* out, char* (*pred)(const char*));
-int strarray_each(strarray* arr, void (*pred)(char** ));
+int strarray_transform(strarray* in, strarray* out, char* (*pred)(const char*));
+int strarray_each(strarray* arr, void (*pred)(char**));
 
 int strarray_glob(strarray* arr, const char* pattern);
 

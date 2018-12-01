@@ -20,14 +20,16 @@ rdir_read(rdir_t* d) {
   for(;;) {
     if((s = dir_read(&d->dir))) {
       int type = dir_type(&d->dir);
-      if(!(str_diff(s, "..") && str_diff(s, "."))) continue;
+      if(!(str_diff(s, "..") && str_diff(s, ".")))
+        continue;
 
       if(d->sa.s[d->sa.len - 1] != DIRSEP_C) {
         stralloc_catc(&d->sa, DIRSEP_C);
       }
       len = d->sa.len;
 
-      if(type == D_DIRECTORY) rdir_push(d);
+      if(type == D_DIRECTORY)
+        rdir_push(d);
 
       stralloc_cats(&d->sa, s);
       stralloc_nul(&d->sa);

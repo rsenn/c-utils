@@ -14,4 +14,3 @@ hmap_hash(const void* key, size_t len) {
   hmap_hash += (hmap_hash << 15);
   return hmap_hash & 0x7FFFFFFF;
 }
-

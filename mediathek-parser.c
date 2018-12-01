@@ -230,7 +230,7 @@ process_entry(char** av, int ac) {
          /**grcoee = av[7],*/ *description = av[8],
          *url = av[9] /*, *website = av[10], *untertitel = av[11], *urlrtmp = av[12]*/,
          *url_klein = av[13] /*, *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17],
-                                *url_history = av[18], *geo = av[19], *neu = av[20]*/
+                              *url_history = av[18], *geo = av[19], *neu = av[20]*/
         ;
 
     /*    char* title = av[8];
@@ -424,7 +424,11 @@ main(int argc, char* argv[]) {
   buffer b;
 
   struct longopt opts[] = {
-      {"csv", 0, NULL, 'c'}, {"debug", 0, NULL, 'd'}, {"low", 0, NULL, 'l'}, {"format", 1, NULL, 'F'}, {0},
+      {"csv", 0, NULL, 'c'},
+      {"debug", 0, NULL, 'd'},
+      {"low", 0, NULL, 'l'},
+      {"format", 1, NULL, 'F'},
+      {0},
   };
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {

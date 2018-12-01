@@ -100,9 +100,11 @@ file_size(int fd) {
 #else
   off_t pos, end;
   /* if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1; */
-  if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t) - 1) return -1;
+  if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t)-1)
+    return -1;
   /* if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1; */
-  if((end = lseek(fd, 0, SEEK_END)) == (off_t) - 1) return -1;
+  if((end = lseek(fd, 0, SEEK_END)) == (off_t)-1)
+    return -1;
 
   sz = end;
   lseek(fd, pos, SEEK_SET);
@@ -117,7 +119,8 @@ last_error_str() {
   DWORD errCode = GetLastError();
   static stralloc buffer;
   char* err;
-  if(errCode == 0) return NULL;
+  if(errCode == 0)
+    return NULL;
 
   SetLastError(0);
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -147,7 +150,8 @@ int
 check_block_zero(char* b, size_t n) {
   size_t i;
   for(i = 0; i < n; i++) {
-    if(b[i] != '\0') return 0;
+    if(b[i] != '\0')
+      return 0;
   }
   return 1;
 }
@@ -166,14 +170,15 @@ main(int argc, char* argv[]) {
   for(ai = 1; ai < argc; ++ai) {
     char* av = argv[ai];
 
-    if(av[0] != '-') break;
+    if(av[0] != '-')
+      break;
 
     switch(av[1]) {
-    case 'F': fraction = 0; break;
-    case 'v': verbose++; break;
-    case 'S': space = 0; break;
-    case '-': ++ai; goto next;
-    default: goto next;
+      case 'F': fraction = 0; break;
+      case 'v': verbose++; break;
+      case 'S': space = 0; break;
+      case '-': ++ai; goto next;
+      default: goto next;
     }
   }
 next:
@@ -189,11 +194,11 @@ next:
 
     fd = open_read(argv[ai]);
 
-/*
-    buffer_putm_internal(buffer_2, "open_read(", argv[ai], ") = ", 0);
-    buffer_putlong(buffer_2, fd);
-    buffer_putnlflush(buffer_2);
-*/
+    /*
+        buffer_putm_internal(buffer_2, "open_read(", argv[ai], ") = ", 0);
+        buffer_putlong(buffer_2, fd);
+        buffer_putnlflush(buffer_2);
+    */
     fsize = file_size(fd);
 
     iterations = (((fsize + map_size + 1) / map_size) + 7) >> 3;
@@ -266,7 +271,8 @@ next:
 
       mmap_unmap(m, msz);
 
-      if(remain >= map_size) remain -= map_size;
+      if(remain >= map_size)
+        remain -= map_size;
     }
     nonzero_blocks = all_blocks - zero_blocks;
     percent = (unsigned int)((float)nonzero_blocks * 10000 / all_blocks);
@@ -274,7 +280,8 @@ next:
     buffer_puts(buffer_1, argv[ai]);
     buffer_puts(buffer_1, (space ? ": " : ":"));
 
-    if(!fraction) percent += 50;
+    if(!fraction)
+      percent += 50;
 
     buffer_putulong(buffer_1, percent / 100);
 

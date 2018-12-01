@@ -1,5 +1,10 @@
+#include "../windoze.h"
 #include "../buffer.h"
 #include <errno.h>
+
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#endif
 
 int
 buffer_stubborn(buffer_op_proto* op, fd_t fd, const char* buf, size_t len, void* b) {

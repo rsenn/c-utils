@@ -26,16 +26,6 @@
 
 #include "socket.h"
 
-#if !WINDOWS_NATIVE && !WINDOWS_OVERRIDE
-# include <sys/param.h>
-#  if !WINDOWS || !(defined(_WINSOCKAPI_) || defined(_WINSOCK2API_))
-#   include <sys/socket.h>
-#   include <netinet/in.h>
-#   include <netdb.h>
-#  endif
-# include <unistd.h>
-#endif
-
 #if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
 
 #if WINDOWS && WINDOWS_OVERRIDE
@@ -74,6 +64,17 @@
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
 #endif
 #endif
+#endif
+
+#if !WINDOWS_NATIVE //&& !WINDOWS_OVERRIDE
+# include <sys/param.h>
+#  if !(defined(_WINSOCKAPI_) || defined(_WINSOCK2API_))
+#   include <sys/socket.h>
+#   include <netinet/in.h>
+#define __INSIDE_CYGWIN_NET__ 1
+#   include <netdb.h>
+#  endif
+# include <unistd.h>
 #endif
 
 #if WINDOWS_NATIVE || WINDOWS_OVERRIDE

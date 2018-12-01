@@ -10,5 +10,3 @@ coff_line_numbers(void* coff, coff_section_header* shdr) {
 
   return r;
 }
-
-

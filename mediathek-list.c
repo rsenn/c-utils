@@ -51,6 +51,8 @@ extern char strlist_dumpx[5];
 
 static const char* dt_fmt = "%Y%m%d %H:%M";
 
+#include "lib/http.h"
+
 /*
 http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz
 http://mediathekview.jankal.me/Filmliste-akt.xz
@@ -382,7 +384,13 @@ delete_mediathek_entry(mediathek_entry_t* e) {
 
 static mediathek_entry_t* e;
 
-/* returns 1 if all tokens match */
+
+/**
+ * @brief match_tokens
+ * @param toks
+ * @param str
+ * @return 1 if all tokens match
+ */
 int
 match_tokens(char* toks, const char* str) {
   size_t i;
@@ -481,7 +489,7 @@ parse_entry(strlist* sl) {
                                    url,
                                    link
 
-                                   );
+      );
 
       if(ret) {
         ret->tm = dt + tm;
