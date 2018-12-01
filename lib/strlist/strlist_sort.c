@@ -10,7 +10,7 @@ size_t
 strlist_sort(strlist* sl) {
   size_t p, l = 0;
 
-  char *end, *tmp, **ptrs = calloc(sizeof(char*), (strlist_count(sl) + 1));
+  char *end, *tmp, **ptrs = calloc(sizeof(char *), (strlist_count(sl) + 1));
   tmp = sl->sa.s;
   end = &sl->sa.s[sl->sa.len];
 

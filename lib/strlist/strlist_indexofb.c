@@ -8,9 +8,11 @@ strlist_indexofb(strlist* sl, const char* x, size_t n) {
   const char* s = sl->sa.s;
   for(p = 0; p < sl->sa.len;) {
     size_t l = byte_chr(&sl->sa.s[p], sl->sa.len - p, sl->sep);
-    if((l == 0 && p + 1 == sl->sa.len)) break;
+    if((l == 0 && p + 1 == sl->sa.len))
+      break;
 
-    if((n == l && byte_equal(&sl->sa.s[p], l, x))) return p;
+    if((n == l && byte_equal(&sl->sa.s[p], l, x)))
+      return p;
 
     p += l + 1;
   }

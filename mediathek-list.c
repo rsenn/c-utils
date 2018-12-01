@@ -546,7 +546,7 @@ parse_mediathek_list(int fd) {
   ssize_t ret, ret2;
   strlist prev, prevout, sl;
   buffer b;
-  buffer_init(&b, (buffer_op_sys*)&read, fd, buf, sizeof(buf));
+  buffer_init(&b, (buffer_op_proto*)&read, fd, buf, sizeof(buf));
 
   strlist_init(&prev, '\0');
   strlist_init(&prevout, '\0');

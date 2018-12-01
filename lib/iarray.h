@@ -49,7 +49,10 @@ typedef struct _iarray_page {
 typedef struct {
   iarray_page* pages[16];
   size_t elemsize,elemperpage,bytesperpage;
-  volatile unsigned long len;
+#ifndef __POCC__
+  volatile
+#endif
+   unsigned long len;
 } iarray;
 
 void iarray_init(iarray* ia,size_t elemsize);

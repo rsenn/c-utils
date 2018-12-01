@@ -5,7 +5,8 @@
 int
 strlist_shift(strlist* sl, const char** strp) {
   size_t offs;
-  if(sl->sa.len == 0) return 0;
+  if(sl->sa.len == 0)
+    return 0;
 
   offs = strlist_at(sl, 1) - sl->sa.s;
 

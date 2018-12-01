@@ -27,7 +27,8 @@ start:
     return (plen ? PATH_FNM_NOMATCH : 0);
   }
   /* there is still some string left but pattern ended */
-  if(plen == 0) return PATH_FNM_NOMATCH;
+  if(plen == 0)
+    return PATH_FNM_NOMATCH;
   /* if PATH_FNM_PERIOD is set, a leading period in string has to be
    * matched  exactly by a period in pattern.  A period is considered
    * to be leading if it is the first character in string, or if both
@@ -35,9 +36,11 @@ start:
    */
   if(*string == '.' && *pattern != '.' && (flags & PATH_FNM_PERIOD)) {
     /* don't match if PATH_FNM_PERIOD and this is the first char */
-    if(!(flags & NOTFIRST)) return PATH_FNM_NOMATCH;
+    if(!(flags & NOTFIRST))
+      return PATH_FNM_NOMATCH;
     /* don't match if PATH_FNM_PERIOD and PATH_FNM_PATHNAME and previous was '/' */
-    if((flags & PATH_FNM_PATHNAME) && string[-1] == '/') return PATH_FNM_NOMATCH;
+    if((flags & PATH_FNM_PATHNAME) && string[-1] == '/')
+      return PATH_FNM_NOMATCH;
   }
   flags |= NOTFIRST;
   switch(*pattern) {
@@ -48,7 +51,8 @@ start:
       plen--;
       /* unterminated character class because in a pathname the '/' is a separator
          and can't be matched. this means we have a mismatch */
-      if(*string == '/' && (flags & PATH_FNM_PATHNAME)) return PATH_FNM_NOMATCH;
+      if(*string == '/' && (flags & PATH_FNM_PATHNAME))
+        return PATH_FNM_NOMATCH;
       /* exclamation mark negates the class */
       neg = (*pattern == '!');
       pattern += neg;
@@ -59,7 +63,8 @@ start:
         int res = 0;
         /* if there is a closing bracket and it's not
            the first char the class is terminated */
-        if(*pattern == ']' && pattern != start) break;
+        if(*pattern == ']' && pattern != start)
+          break;
         if(*pattern == '[' && pattern[1] == ':') {
           /* MEMBER - stupid POSIX char classes */
           /* TODO: implement them, but maybe not because POSIX sucks here! HARR HARR */
@@ -102,7 +107,8 @@ start:
         pattern++;
         plen--;
         /* ...if there is one */
-        if(plen) goto match;
+        if(plen)
+          goto match;
       }
       /* don't escape -> literal match */
       else
@@ -119,7 +125,8 @@ start:
     }
     case '?': {
       /* it can't match a / when we're matching a pathname */
-      if(*string == '/' && (flags & PATH_FNM_PATHNAME)) break;
+      if(*string == '/' && (flags & PATH_FNM_PATHNAME))
+        break;
       pattern++;
       plen--;
       string++;

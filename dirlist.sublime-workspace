@@ -46,7 +46,91 @@
 			"file": "msys-shell.c",
 			"settings":
 			{
+<<<<<<< HEAD
+				"buffer_size": 73,
+				"line_ending": "Windows",
+				"name": "untitled.sublime-build"
+			}
+		},
+		{
+			"contents": "Package Control Messages\n========================\n\nCMakeBuilder\n------------\n\n  +--++++====++++----------------------------------------------++++====++++--+\n  \n                       Thanks for trying CMakeBuilder!\n                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  \n  The CMakeBuilder package is located at\n  \n      (Installed) Packages/CMakeBuilder\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  This message is the installation message. It can be found at\n  \n      (Installed) Packages/CMakeBuilder/messages/install.txt\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  This plugin is very simple and can be seen as \"glue\" between the CMake build\n  system and Sublime Text's own build system. It gives you a few useful\n  utility commands so that you don't have to leave Sublime Text, for most of \n  the time. To help CMakeBuilder know where your CMake build folder is, you'll\n  have to have a .sublime-project file with a \"cmake\" dictionary sitting next \n  to \"settings\", \"folders\", and so forth.\n  \n  For the \"Instruction Manual\", please see:\n  \n      https://github.com/rwols/CMakeBuilder\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  Or, you can even just go to\n  \n      Preferences -> Package Settings -> CMakeBuilder -> README\n  \n  Extra goodies:\n  - Goto error/warning at the configuration step (press F4)\n  - Goto error/warning at the build step (press F4)\n  - Run your unit tests from within Sublime with CTest\n  - Diagnose command if you get stuck on what to do\n  - Syntax highlighting for the CMakeCache.txt file\n  - Syntax highlighting for the cmake output panel at the configuration step\n  - Syntax highlighting for both Make- and Ninja-based build systems\n  - Syntax highlighting for Visual Studio / MSBuild-style outputs\n  \n  Note that commands are \"disabled\" when they feel that they cannot be run.\n  For example, if there is no CMakeLists.txt file in your project folder, the\n  command \"CMakeBuilder: Configure\" will not show up in the command palette.\n  The command \"CMakeBuilder: Diagnose\" can always be run and you can use that\n  as a hint as to what is wrong.\n  \n  This plugin is not a replacement for \"serious\" build users. In a real build,\n  you probably want to create shared and static versions of your library, and\n  debug and release versions. Perhaps 32 bit and 64 bit too. That's what the\n  command line is for. This plugin is for the developer working on a CMake \n  project and wanting to quickly build/test the project.\n  \n  This plugin does not provide syntax highlighting for CMakeLists.txt files \n  and .cmake files, nor does it provide highlighting for \".in\" files suitable\n  for \"configure_file\" commands from CMake; download the \"CMake\" package to\n  that end.\n  +--++++====++++----------------------------------------------++++====++++--+\n",
+			"settings":
+			{
+				"buffer_size": 2804,
+				"line_ending": "Windows",
+				"name": "Package Control Messages",
+				"read_only": true,
+				"scratch": true
+			}
+		},
+		{
+			"contents": "{\n\t\"shell_cmd\": \"make\"\n}\n",
+			"settings":
+			{
+				"buffer_size": 25,
+				"line_ending": "Windows",
+				"name": "untitled.sublime-build"
+			}
+		},
+		{
+			"file": "dirlist.sublime-project",
+			"settings":
+			{
+				"buffer_size": 2350,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "hexedit.c",
+			"settings":
+			{
+				"buffer_size": 8050,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "mediathek-parser.c",
+			"settings":
+			{
+				"buffer_size": 10626,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pathtool.c",
+			"settings":
+			{
+				"buffer_size": 7776,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/coff/coff_sclass_name.c",
+			"settings":
+			{
+				"buffer_size": 1221,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/coff/coff_line_numbers.c",
+			"settings":
+			{
+				"buffer_size": 280,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/coff/coff_index_symtab.c",
+			"settings":
+			{
+				"buffer_size": 232,
+=======
 				"buffer_size": 4463,
+>>>>>>> 8021b34da066093412e33f0050a9d71cf5d6d8ae
 				"line_ending": "Unix"
 			}
 		}
@@ -721,8 +805,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
+								0,
+								0
+=======
 								70841,
 								70841
+>>>>>>> 8021b34da066093412e33f0050a9d71cf5d6d8ae
 							]
 						],
 						"settings":

@@ -12,16 +12,17 @@ path_collapse(const char* path, stralloc* out) {
   strlist_init(&p, sep);
   strlist_init(&o, sep);
   strlist_froms(&p, path, sep == '\\' ? '/' : '\\');
-  
+
   stralloc_zero(out);
-  
+
   byte_copy(&o.sa, sizeof(stralloc), out);
 
   strlist_foreach(&p, x, n) {
     if(count > 1) {
       if(n == 1 && *x == '.') {
         continue;
-      } if(n == 2 && byte_equal(x, 2, "..")) {
+      }
+      if(n == 2 && byte_equal(x, 2, "..")) {
         strlist_pop(&o);
         --count;
         continue;

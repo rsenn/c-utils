@@ -15,7 +15,8 @@ path_absolute_sa(stralloc* sa) {
     stralloc_free(&tmp);
     ret = 1;
   }
-  if(sa->len && path_issep(sa->s[sa->len - 1])) --sa->len;
+  if(sa->len && path_issep(sa->s[sa->len - 1]))
+    --sa->len;
   stralloc_nul(sa);
   return ret;
 }

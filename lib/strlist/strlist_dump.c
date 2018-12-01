@@ -24,8 +24,10 @@ strlist_dump(buffer* out, const strlist* sl) {
     n = byte_chr(s, end - s, sl->sep);
     buffer_put(out, s, n); //, &chrs[sizeof(chrs) - 1]  - p);
 
-    if(s + 1 >= end) break;
-    if(i + 1 >= count) break;
+    if(s + 1 >= end)
+      break;
+    if(i + 1 >= count)
+      break;
 
     buffer_put(out, "\"", 1);
     buffer_puts(out, strlist_dumpx);
