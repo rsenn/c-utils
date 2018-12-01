@@ -15,10 +15,11 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
     stralloc_free(&text);
     return;
   }
-  if(!closing) buffer_putnspace(b, depth * 2);
+  if(!closing)
+    buffer_putnspace(b, depth * 2);
   buffer_putm_internal(b, "<", node->name, 0);
   if(node->attributes && node->attributes->tuple_count) {
-    buffer_putc(b,' ');
+    buffer_putc(b, ' ');
     xml_print_attributes(node->attributes, b, " ", "=", "\"");
   }
 
@@ -40,11 +41,14 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
     closing = 1;
   }
 
-//  if(node->next && depth == 0) {
-//    xmlnode* next = node->next;
-//    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);
-//  }
-  if(closing) buffer_putnlflush(b); else buffer_flush(b);
+  //  if(node->next && depth == 0) {
+  //    xmlnode* next = node->next;
+  //    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);
+  //  }
+  if(closing)
+    buffer_putnlflush(b);
+  else
+    buffer_flush(b);
 }
 
 static void

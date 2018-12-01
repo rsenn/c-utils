@@ -18,7 +18,8 @@ reduce(stralloc* sa) {
   j = stralloc_finds(sa, ".so");
 
   for(i = sa->len - 1; i >= 0; --i) {
-    if(!(isdigit(sa->s[i]) || sa->s[i] == '.')) break;
+    if(!(isdigit(sa->s[i]) || sa->s[i] == '.'))
+      break;
     if(i == j + 3 || sa->s[i] == '.') {
       sa->len = i;
       return 1;
@@ -32,7 +33,8 @@ reduce(stralloc* sa) {
 
       while(isdigit(sa->s[k])) ++k;
 
-      if(!str_diffn(&sa->s[k], ".so", 3)) break;
+      if(!str_diffn(&sa->s[k], ".so", 3))
+        break;
 
       byte_copy(&sa->s[i], sa->len - j, &sa->s[j]);
       sa->len -= j - i;
@@ -108,7 +110,7 @@ sln(const char* path) {
 
     if(mklink_sa(&s, &d) == -1) {
       errmsg_warnsys("symlink failed", NULL);
-      exit(2); 
+      exit(2);
     }
     stralloc_copy(&s, &d);
   }
@@ -118,9 +120,9 @@ sln(const char* path) {
 int
 main(int argc, char* argv[]) {
   int i;
-  
+
   errmsg_iam(argv[0]);
-  
+
   for(i = 1; i < argc; ++i) {
     const char* a = argv[i];
     int i = str_rchr(a, '.');
@@ -134,27 +136,34 @@ main(int argc, char* argv[]) {
         stralloc_init(&link);
 
         for(;;) {
-          if((ret = buffer_get_new_token_sa(&in, &target, " \t\v", 2)) < 0) break;
+          if((ret = buffer_get_new_token_sa(&in, &target, " \t\v", 2)) < 0)
+            break;
 
-          if(ret == 0 || target.s[0] == '\0') break;
-          if(target.len > 0) --target.len;
+          if(ret == 0 || target.s[0] == '\0')
+            break;
+          if(target.len > 0)
+            --target.len;
 
-          if((ret = buffer_get_new_token_sa(&in, &link, "\r\n", 2)) < 0) break;
+          if((ret = buffer_get_new_token_sa(&in, &link, "\r\n", 2)) < 0)
+            break;
 
-          if(ret == 0 || link.s[0] == '\0') break;
+          if(ret == 0 || link.s[0] == '\0')
+            break;
           stralloc_chomp(&link);
 
           mklink_sa(&target, &link);
 
           if(!stralloc_endb(&link, ".so", 3)) {
-            if(sln(link.s)) return 1;
+            if(sln(link.s))
+              return 1;
           }
         }
 
         buffer_close(&in);
       }
     } else {
-      if(sln(argv[i])) return 1;
+      if(sln(argv[i]))
+        return 1;
     }
   }
 }

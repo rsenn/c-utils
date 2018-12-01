@@ -56,7 +56,7 @@ main(int argc, char* argv[]) {
 
   errmsg_iam(argv[0]);
 
-//  unlink(outname);
+  //  unlink(outname);
   if((outfile = open_temp(outname)) == -1) {
     errmsg_warnsys("open error: ", 0);
     return 126;

@@ -296,7 +296,6 @@ TEST(test_strlist_push_tokens) {
 
   strlist_push_tokens(&sl, "blah, l33t, 1234, 8192", ", ");
 
-
   s = strlist_at(&sl, 3);
   ASSERT_EQ(0, !str_equal(s, "8192"));
 

@@ -17,12 +17,12 @@ mmap_read(const char* filename, size_t* filesize) {
   HANDLE fd, m;
   char* map;
   fd = CreateFileA(filename,
-                  GENERIC_READ,
-                  FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                  0,
-                  OPEN_EXISTING,
-                  FILE_ATTRIBUTE_NORMAL,
-                  0);
+                   GENERIC_READ,
+                   FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                   0,
+                   OPEN_EXISTING,
+                   FILE_ATTRIBUTE_NORMAL,
+                   0);
   if(fd == INVALID_HANDLE_VALUE)
     return 0;
   m = CreateFileMapping(fd, 0, PAGE_READONLY, 0, 0, NULL);

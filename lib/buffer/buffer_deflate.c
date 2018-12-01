@@ -35,7 +35,8 @@ again:
     goto again;
   }
 
-  if(ret == Z_STREAM_ERROR) return -1;
+  if(ret == Z_STREAM_ERROR)
+    return -1;
 
   have = n - z->avail_in;
 
@@ -72,7 +73,8 @@ buffer_deflate(buffer* b, buffer* out, int level) {
   int ret;
   z_stream* z;
   deflate_ctx* ctx = calloc(1, sizeof(deflate_ctx));
-  if(ctx == NULL) return 0;
+  if(ctx == NULL)
+    return 0;
 
   ctx->other = out;
 
@@ -98,7 +100,8 @@ buffer_deflate(buffer* b, buffer* out, int level) {
 
   deflateSetHeader(&ctx->z, &ctx->hdr);
 
-  if(ret != Z_OK) return 0;
+  if(ret != Z_OK)
+    return 0;
 
   return 1;
 }

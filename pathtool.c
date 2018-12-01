@@ -92,11 +92,11 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_nul(sa);
     path_collapse(sa->s, sa);
 
-    #ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "absolute: ");
     buffer_putsa(buffer_2, sa);
     buffer_putnlflush(buffer_2);
-   #endif
+#endif
   } else if(canonical) {
     path_canonicalize(arg, sa, 1);
 #ifdef DEBUG_OUTPUT

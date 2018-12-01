@@ -9,18 +9,19 @@ static void
 xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
   do {
     int closing = node_is_closing(node);
-    if(!closing) buffer_putnspace(b, depth * 2);
+    if(!closing)
+      buffer_putnspace(b, depth * 2);
 
     if(node->type == XML_TEXT) {
       stralloc space, text;
       void* av[4];
-      av[0] =  " ";
-      av[1] = (void*)(depth * 2 + 6 );
-      
+      av[0] = " ";
+      av[1] = (void*)(depth * 2 + 6);
+
       stralloc_init(&space);
       stralloc_init(&text);
       stralloc_cats(&space, "\\n\"\n");
-      
+
       stralloc_fmt_call(&space, (stralloc_fmt_fn*)&fmt_repeat, av);
       stralloc_catc(&space, '"');
       stralloc_nul(&space);
@@ -35,7 +36,8 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
     buffer_putm_internal(b, "element[", node_is_closing(node) ? &node->name[1] : node->name, 0);
     buffer_putm_internal(b, "] ", 0);
     buffer_putm_internal(b, node_is_closing(node) ? " closing" : NULL, 0);
-    if(node->attributes) xml_print_attributes(node->attributes, b, " ", "=", "'");
+    if(node->attributes)
+      xml_print_attributes(node->attributes, b, " ", "=", "'");
 
     if(node->children) {
       int only_text_children = (node->children->type == XML_TEXT);
@@ -54,9 +56,13 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
       buffer_puts(b, node->name[0] == '?' ? "?" : " self-closing");
       closing = 1;
     }
-    if(closing) buffer_puts(b, ",");
+    if(closing)
+      buffer_puts(b, ",");
 
-    if(closing) buffer_putnlflush(b); else buffer_flush(b);
+    if(closing)
+      buffer_putnlflush(b);
+    else
+      buffer_flush(b);
   } while((node = node->next));
 }
 

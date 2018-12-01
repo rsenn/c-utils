@@ -15,9 +15,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-int getopt(int argc, char *const argv[], const char *optstring);
+int getopt(int argc, char* const argv[], const char* optstring);
 
-extern char *optarg;
+extern char* optarg;
 extern int optind, opterr, optopt;
 
 #define no_argument 0
@@ -25,17 +25,15 @@ extern int optind, opterr, optopt;
 #define optional_argument 2
 
 struct longopt {
-  const char *name;
+  const char* name;
   int has_arg;
-  int *flag;
+  int* flag;
   int val;
 };
 
-int getopt_long (int argc, char * const *argv, const char *optstring, const struct longopt *, int *);                                                                                                  
+int getopt_long(int argc, char* const* argv, const char* optstring, const struct longopt*, int*);
 
-     int getopt_long_only(int argc, char  *  const  *argv,  const
-     char   *shortopts,   const   struct  longopt  *longopts,  int
-     *indexptr);
+int getopt_long_only(int argc, char* const* argv, const char* shortopts, const struct longopt* longopts, int* indexptr);
 /****************************************************************************
     int getopt_long_only(int argc, char* const argv[],
             const char* optstring,
@@ -49,4 +47,3 @@ int getopt_long (int argc, char * const *argv, const char *optstring, const stru
 #define __GETOPT_H__ 1
 #endif
 #endif /* GETOPT_H */
-

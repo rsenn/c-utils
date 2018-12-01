@@ -17,7 +17,8 @@ buffer_munmap(void* buf) {
   if(b->fd != -1) {
     int flags;
     if((flags = fcntl(b->fd, F_GETFL)) != -1)
-      if(flags & (O_WRONLY | O_RDWR)) msync(b->x, b->a, MS_SYNC);
+      if(flags & (O_WRONLY | O_RDWR))
+        msync(b->x, b->a, MS_SYNC);
   }
   munmap(b->x, b->a);
 #endif

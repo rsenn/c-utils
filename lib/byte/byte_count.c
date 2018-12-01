@@ -9,28 +9,32 @@ byte_count(const void* s, size_t n, char c) {
   count = 0;
   ch = (unsigned char)c;
   for(;;) {
-    if(!n) break;
+    if(!n)
+      break;
     if(*t == ch) {
       ++count;
     }
     ++t;
     --n;
 
-    if(!n) break;
+    if(!n)
+      break;
     if(*t == ch) {
       ++count;
     }
     ++t;
     --n;
 
-    if(!n) break;
+    if(!n)
+      break;
     if(*t == ch) {
       ++count;
     }
     ++t;
     --n;
 
-    if(!n) break;
+    if(!n)
+      break;
     if(*t == ch) {
       ++count;
     }

@@ -24,7 +24,7 @@ size_t byte_chr(const void* haystack, size_t len, char needle) __pure__;
 
 /* byte_rchr returns the largest integer i between 0 and len-1 inclusive
  * such that one[i] equals needle, or len if not found. */
-size_t byte_rchr(const void* haystack,size_t len,char needle) __pure__;
+size_t byte_rchr(const void* haystack, size_t len, char needle) __pure__;
 
 /* byte_copy copies in[0] to out[0], in[1] to out[1], ... and in[len-1]
  * to out[len-1]. */
@@ -46,15 +46,15 @@ void byte_zero(void* out, size_t len);
 
 //#define byte_equal(s,n,t) (!byte_diff((s),(n),(t)))
 
-int byte_equal_notimingattack(const void* a, size_t len,const void* b) __pure__;
+int byte_equal_notimingattack(const void* a, size_t len, const void* b) __pure__;
 
-void byte_fill(void *out, size_t len, int c);
+void byte_fill(void* out, size_t len, int c);
 
-int byte_case_diff(const void *x1, size_t len, const void *x2);
-size_t byte_case_equal(const void *s, size_t len, const void *t);
-size_t byte_count(const void *s, size_t n, char c);
-size_t byte_equal(const void *s, size_t n, const void *t);
-void byte_lower(void *s, size_t len);
+int byte_case_diff(const void* x1, size_t len, const void* x2);
+size_t byte_case_equal(const void* s, size_t len, const void* t);
+size_t byte_count(const void* s, size_t n, char c);
+size_t byte_equal(const void* s, size_t n, const void* t);
+void byte_lower(void* s, size_t len);
 void byte_upper(void* s, size_t len);
 
 size_t byte_findb(const void* haystack, size_t hlen, const void* what, size_t wlen);
@@ -65,15 +65,16 @@ size_t byte_finds(const void* haystack, size_t hlen, const char* what);
 #endif
 
 #ifdef STRALLOC_H
-size_t byte_fmt(const char *in, size_t in_len, stralloc *out, size_t (*fmt_function)(char *, unsigned int ch));
-size_t byte_scan(const char *in, size_t in_len, stralloc *out, size_t (*scan_function)(const char *, char *));
+size_t byte_fmt(const char* in, size_t in_len, stralloc* out, size_t (*fmt_function)(char*, unsigned int ch));
+size_t byte_scan(const char* in, size_t in_len, stralloc* out, size_t (*scan_function)(const char*, char*));
 #endif
 
 void byte_replace(char* x, size_t n, char before, char after);
 size_t byte_ccopy(void* dst, size_t count, const void* src, char c);
 
 #define byte_foreach(x, n, p) byte_foreach_skip(x, n, p, 1)
-#define byte_foreach_skip(x, n, p, skip) for((p) = (void*)x; (void*)(p) != ((char*)(x)+(n)); (p) = (void*)(((char*)(p))+(skip)))
+#define byte_foreach_skip(x, n, p, skip)                                                                               \
+  for((p) = (void*)x; (void*)(p) != ((char*)(x) + (n)); (p) = (void*)(((char*)(p)) + (skip)))
 
 #ifdef __cplusplus
 }
