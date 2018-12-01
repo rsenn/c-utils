@@ -65,7 +65,11 @@ io_getfds() {
   return &io_fds;
 }
 
-static volatile long int io_fds_inited;
+static
+#ifndef __POCC__
+volatile
+#endif
+long int io_fds_inited;
 uint64 io_wanted_fds;
 array io_pollfds;
 enum __io_waitmode io_waitmode;

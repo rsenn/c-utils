@@ -57,11 +57,13 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
   BOOL isRelative = FALSE;
 
   attr = GetFileAttributes(lpTargetName);
-  if(attr == INVALID_FILE_ATTRIBUTES) return FALSE;
+  if(attr == INVALID_FILE_ATTRIBUTES)
+    return FALSE;
   isDirectory = attr & FILE_ATTRIBUTE_DIRECTORY;
   deletefunc = isDirectory ? RemoveDirectory : DeleteFile;
 
-  if(!AcquireSymlinkPriv(lpLinkName)) return FALSE;
+  if(!AcquireSymlinkPriv(lpLinkName))
+    return FALSE;
 
   if(*lpTargetName == '\\' || isalpha(*lpTargetName) && lpTargetName[1] == ':') {
     BOOL rv;
@@ -109,7 +111,8 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
   }
 
   if(isDirectory) {
-    if(!CreateDirectory(lpLinkName, lpsa)) return FALSE;
+    if(!CreateDirectory(lpLinkName, lpsa))
+      return FALSE;
     hFile = CreateFile(lpLinkName,
                        GENERIC_WRITE,
                        FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -182,7 +185,8 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   BOOL(WINAPI * deletefunc)();
 
   attr = GetFileAttributes(lpTargetName);
-  if(attr == INVALID_FILE_ATTRIBUTES) return FALSE;
+  if(attr == INVALID_FILE_ATTRIBUTES)
+    return FALSE;
   isDirectory = attr & FILE_ATTRIBUTE_DIRECTORY;
   deletefunc = isDirectory ? RemoveDirectory : DeleteFile;
 
@@ -202,7 +206,8 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   }
 
   if(isDirectory) {
-    if(!CreateDirectory(lpLinkName, lpsa)) return FALSE;
+    if(!CreateDirectory(lpLinkName, lpsa))
+      return FALSE;
     hFile = CreateFile(lpLinkName,
                        GENERIC_WRITE,
                        FILE_SHARE_READ | FILE_SHARE_WRITE,

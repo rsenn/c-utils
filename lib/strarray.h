@@ -27,7 +27,7 @@ typedef array strarray;
 
 #define strarray_at(l, pos) (*(char**)array_get((l), sizeof(char*), pos))
 
-#define strarray_foreach(a, ptr) for(ptr = strarray_begin(a); ptr < strarray_end(a); ++ptr)
+#define strarray_foreach(a, ptr) for((ptr) = (void*)strarray_begin(a); ((char**)(ptr)) < strarray_end(a); ++ptr)
 
 char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);

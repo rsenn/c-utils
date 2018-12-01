@@ -1,14 +1,11 @@
 #include "../windoze.h"
 
 #include "../buffer.h"
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <windows.h>
-#endif
-
-#if !WINDOWS_NATIVE
+#else
 #include <sys/mman.h>
 #endif
-
 #include <fcntl.h>
 
 void
