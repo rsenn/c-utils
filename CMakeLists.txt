@@ -25,6 +25,7 @@ include(FindPkgConfig)
 include(${CMAKE_SOURCE_DIR}/FindZlib.cmake)
 include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
 include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
+include(${CMAKE_SOURCE_DIR}/FindOpenSSL.cmake)
 include(${CMAKE_SOURCE_DIR}/CheckInline.cmake)
 
 set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
@@ -67,6 +68,11 @@ if(LIBBZ2_FOUND OR BZIP2_FOUND)
 else(LIBBZ2_FOUND OR BZIP2_FOUND)
   add_definitions(-DHAVE_LIBBZ2=0)
 endif(LIBBZ2_FOUND OR BZIP2_FOUND)
+
+if(OPENSSL_FOUND)
+  add_definitions(-DHAVE_OPENSSL=1)
+  include_directories(${OPENSSL_INCLUDE_DIR})
+endif(OPENSSL_FOUND)
 
 link_libraries(
   ${ZLIB_LIBRARY_RELEASE}
@@ -116,7 +122,7 @@ target_link_libraries(elf byte str range mmap uint64 uint32)
 target_link_libraries(fmt byte str uint64 uint32)
 target_link_libraries(gpio mmap)
 target_link_libraries(hmap str)
-target_link_libraries(http dns errmsg byte io scan socket str)
+target_link_libraries(http dns errmsg byte io scan socket str ${OPENSSL_LIBRARIES})
 target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
 target_link_libraries(json charbuf hmap scan)
 target_link_libraries(map str)

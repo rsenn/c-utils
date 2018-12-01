@@ -65,6 +65,7 @@ typedef struct {
   ipv4port port;
   http_request* request;
   http_response* response;
+  void* ssl;
 } http;
 
 ssize_t buffer_dummyread(void);
