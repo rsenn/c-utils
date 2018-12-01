@@ -39,11 +39,13 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
   strlist_init(&p, PATHSEP_C);
   strlist_init(&r, PATHSEP_C);
 
-  path_canonical(relative_to, &r.sa);
+  stralloc_zero(out);
+
+  path_canonical(relative_to[0] ? relative_to : ".", &r.sa);
   if(stralloc_starts(&r.sa, ".."))
     path_absolute_sa(&r.sa);
 
-  path_canonical(path, &p.sa);
+  path_canonical(path[0] ? path : ".", &p.sa);
   if(stralloc_starts(&p.sa, ".."))
     path_absolute_sa(&p.sa);
 
@@ -51,6 +53,7 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
     size_t n1 = strlist_count(&p);
     size_t n2 = strlist_count(&r);
     size_t i, n = MAX_NUM(n1, n2);
+
     for(i = 0; i < n; ++i) {
       size_t l1, l2;
       char* s1 = strlist_at_n(&p, i, &l1);
@@ -77,9 +80,18 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
       ++i;
     }
   }
-  strlist_join(&rel, out, PATHSEP_C);
-  if(out->len == 0)
-    stralloc_catc(out, '.');
+  //  strlist_join(&rel, out, PATHSEP_C);
+
+  if(rel.sa.len == 0) {
+    stralloc_copys(out, ".");
+  } else {
+    stralloc_free(out);
+    stralloc_move(out, &rel.sa);
+  }
+
+  strlist_free(&p);
+  strlist_free(&r);
+  strlist_free(&rel);
 #endif
   return 1;
 }

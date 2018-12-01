@@ -14,7 +14,8 @@ strlist_at_sa(const strlist* sl, size_t i) {
       return sa;
     }
 
-    if(sl->sa.s[p] == sl->sep) ++l;
+    if(sl->sa.s[p] == sl->sep)
+      ++l;
   }
   return sa;
 }

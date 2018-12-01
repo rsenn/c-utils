@@ -7,7 +7,7 @@
 
 int
 path_exists(const char* p) {
-	int ret; 
+  int ret;
 #if WINDOWS_NATIVE
   ret = access(p, 0) == 0;
 #else

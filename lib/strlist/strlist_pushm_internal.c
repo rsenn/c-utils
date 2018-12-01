@@ -7,7 +7,8 @@ strlist_pushm_internal(strlist* sl, ...) {
   const char* s;
   va_start(a, sl);
   while((s = va_arg(a, const char*))) {
-    if(strlist_push(sl, s) == 0) return 0;
+    if(strlist_push(sl, s) == 0)
+      return 0;
   }
   va_end(a);
   return 1;
