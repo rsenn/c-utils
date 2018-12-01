@@ -109,6 +109,11 @@ static linklib_fmt* format_linklib_fn;
 static int inst_bins, inst_libs;
 static int cygming;
 
+/**
+ * @brief put_newline
+ * @param b
+ * @param flush
+ */
 void
 put_newline(buffer* b, int flush) {
   buffer_puts(b, newline);
@@ -116,6 +121,12 @@ put_newline(buffer* b, int flush) {
     buffer_flush(b);
 }
 
+/**
+ * @brief set_command
+ * @param sa
+ * @param cmd
+ * @param args
+ */
 void
 set_command(stralloc* sa, const char* cmd, const char* args) {
   stralloc_copys(sa, cmd);
@@ -137,6 +148,11 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
     stralloc_replaces(sa, "$^", "$**");
 }
 
+/**
+ * @brief strarray_dump
+ * @param b
+ * @param arr
+ */
 void
 strarray_dump(buffer* b, const strarray* arr) {
   char **p = strarray_begin(arr), **e = strarray_end(arr);
@@ -149,7 +165,11 @@ strarray_dump(buffer* b, const strarray* arr) {
 }
 
 #ifdef DEBUG
-
+/**
+ * @brief debug_sa
+ * @param name
+ * @param sa
+ */
 void
 debug_sa(const char* name, stralloc* sa) {
   buffer_puts(buffer_2, name);
@@ -158,6 +178,11 @@ debug_sa(const char* name, stralloc* sa) {
   buffer_putnlflush(buffer_2);
 }
 
+/**
+ * @brief debug_s
+ * @param name
+ * @param s
+ */
 void
 debug_s(const char* name, const char* s) {
   buffer_puts(buffer_2, name);
@@ -165,6 +190,12 @@ debug_s(const char* name, const char* s) {
   buffer_puts(buffer_2, s);
   buffer_putnlflush(buffer_2);
 }
+
+/**
+ * @brief debug_sl
+ * @param name
+ * @param l
+ */
 void
 debug_sl(const char* name, const strlist* l) {
   size_t pos, n;
@@ -183,6 +214,11 @@ debug_sl(const char* name, const strlist* l) {
   stralloc_free(&tmp);
 }
 
+/**
+ * @brief debug_int
+ * @param name
+ * @param i
+ */
 void
 debug_int(const char* name, int i) {
   buffer_puts(buffer_2, name);
@@ -251,11 +287,14 @@ path_extension(const char* in, stralloc* out, const char* ext) {
 }
 
 /**
- * Convert source file name to object file name
+ * @brief path_object  Convert source file name to object file name
+ * @param in
+ * @param out
+ * @return
  */
 char*
 path_object(const char* in, stralloc* out) {
-  stralloc_zero(out);
+//  stralloc_zero(out);
 
   if(workdir.sa.len && !stralloc_equals(&workdir.sa, ".")) {
     stralloc_cat(out, &workdir.sa);
@@ -277,7 +316,7 @@ char*
 path_wildcard(const char* path, stralloc* sa, const char* wildchar) {
   const char* x;
   size_t n, e;
-  stralloc_copys(sa, path);
+  stralloc_cats(sa, path);
   stralloc_nul(sa);
   x = path_basename(sa->s);
   x = path_skip_separator(x);
@@ -294,6 +333,11 @@ path_wildcard(const char* path, stralloc* sa, const char* wildchar) {
  * @}
  */
 
+/**
+ * @brief extract_build_type
+ * @param s
+ * @return
+ */
 int
 extract_build_type(const stralloc* s) {
   int i;
@@ -306,7 +350,9 @@ extract_build_type(const stralloc* s) {
 }
 
 /**
- * Output library name (+".lib")
+ * @brief format_linklib_lib  Output library name (+".lib")
+ * @param libname
+ * @param out
  */
 void
 format_linklib_lib(const char* libname, stralloc* out) {
@@ -316,7 +362,9 @@ format_linklib_lib(const char* libname, stralloc* out) {
 }
 
 /**
- * Output library name (+ leading "-l")
+ * @brief format_linklib_switch  Output library name (+ leading "-l")
+ * @param libname
+ * @param out
  */
 void
 format_linklib_switch(const char* libname, stralloc* out) {
@@ -326,11 +374,19 @@ format_linklib_switch(const char* libname, stralloc* out) {
   stralloc_replaces(out, "lib", "");
 }
 
+/**
+ * @brief format_linklib_dummy
+ * @param libname
+ * @param out
+ */
 void
 format_linklib_dummy(const char* libname, stralloc* out) {}
 
 /**
- * Checks if the given source file contains a main() function
+ * @brief scan_main  Checks if the given source file contains a main() function
+ * @param x
+ * @param n
+ * @return
  */
 int
 scan_main(const char* x, size_t n) {
@@ -371,7 +427,11 @@ has_main(const char* filename) {
 }
 
 /**
- * Extract #include directives
+ * @brief extract_includes  Extract #include directives
+ * @param x
+ * @param n
+ * @param includes
+ * @param sys
  */
 void
 extract_includes(const char* x, size_t n, strlist* includes, int sys) {
@@ -416,6 +476,13 @@ extract_includes(const char* x, size_t n, strlist* includes, int sys) {
   }
 }
 
+/**
+ * @brief get_includes
+ * @param srcfile
+ * @param includes
+ * @param sys
+ * @return
+ */
 int
 get_includes(const char* srcfile, strlist* includes, int sys) {
   const char* x;
@@ -429,7 +496,11 @@ get_includes(const char* srcfile, strlist* includes, int sys) {
 }
 
 /**
- * Get rule command with substitutions
+ * @brief rule_command_subst  Get rule command with substitutions
+ * @param rule
+ * @param out
+ * @param prereq
+ * @param plen
  */
 void
 rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen) {
@@ -480,6 +551,11 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen)
   }
 }
 
+/**
+ * @brief rule_command
+ * @param rule
+ * @param out
+ */
 void
 rule_command(target* rule, stralloc* out) {
   size_t len;
@@ -547,6 +623,14 @@ rule_command(target* rule, stralloc* out) {
   stralloc_free(&prereq.sa);
 }
 
+/**
+ * @brief subst_var
+ * @param in
+ * @param out
+ * @param pfx
+ * @param sfx
+ * @param tolower
+ */
 void
 subst_var(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int tolower) {
   size_t i;
@@ -600,12 +684,22 @@ get_rule(const char* name) {
   return ret;
 }
 
+/**
+ * @brief get_rule_sa
+ * @param name
+ * @return
+ */
 target*
 get_rule_sa(stralloc* name) {
   stralloc_nul(name);
   return get_rule(name->s);
 }
 
+/**
+ * @brief find_rule
+ * @param needle
+ * @return
+ */
 target*
 find_rule(const char* needle) {
   TUPLE* t;
@@ -625,12 +719,23 @@ find_rule(const char* needle) {
   return 0;
 }
 
+/**
+ * @brief find_rule_sa
+ * @param name
+ * @return
+ */
 target*
 find_rule_sa(stralloc* name) {
   stralloc_nul(name);
   return find_rule(name->s);
 }
 
+/**
+ * @brief find_rule_b
+ * @param x
+ * @param n
+ * @return
+ */
 target*
 find_rule_b(const char* x, size_t n) {
   target* r;
@@ -657,6 +762,11 @@ add_path(strlist* list, const char* path) {
   }
 }
 
+/**
+ * @brief add_srcpath
+ * @param list
+ * @param path
+ */
 void
 add_srcpath(strlist* list, const char* path) {
   size_t i, len = str_len(path);
@@ -671,6 +781,11 @@ add_srcpath(strlist* list, const char* path) {
   }
 }
 
+/**
+ * @brief add_path_sa
+ * @param list
+ * @param path
+ */
 void
 add_path_sa(strlist* list, stralloc* path) {
   stralloc_nul(path);
@@ -683,7 +798,9 @@ add_path_sa(strlist* list, stralloc* path) {
  */
 
 /**
- * Create new source file entry.
+ * @brief new_source  Create new source file entry.
+ * @param name
+ * @return
  */
 sourcefile*
 new_source(const char* name) {
@@ -700,7 +817,9 @@ new_source(const char* name) {
 }
 
 /**
- * Adds a source file to the given list.
+ * @brief add_source  Adds a source file to the given list.
+ * @param filename
+ * @param sources
  */
 void
 add_source(const char* filename, strarray* sources) {
@@ -716,8 +835,11 @@ add_source(const char* filename, strarray* sources) {
   }
 }
 
+
 /**
- * Searches all source files in the given directory and creates a string-array.
+ * @brief get_sources Searches all source files in the given directory and creates a string-array.
+ * @param basedir
+ * @param sources
  */
 void
 get_sources(const char* basedir, strarray* sources) {
@@ -740,13 +862,20 @@ get_sources(const char* basedir, strarray* sources) {
  */
 
 /**
- * Find or create variable
+ * @brief isset
+ * @param name
+ * @return
  */
 int
 isset(const char* name) {
   return hmap_search(vars, name, str_len(name) + 1, 0) == HMAP_SUCCESS;
 }
 
+/**
+ * @brief get_var  Find or create variable
+ * @param name
+ * @return
+ */
 strlist*
 get_var(const char* name) {
   TUPLE* t;
@@ -766,6 +895,11 @@ get_var(const char* name) {
   return (strlist*)t->vals.val_chars;
 }
 
+/**
+ * @brief var
+ * @param name
+ * @return
+ */
 const char*
 var(const char* name) {
   strlist* v = get_var(name);
@@ -774,7 +908,10 @@ var(const char* name) {
 }
 
 /**
- * Set variable
+ * @brief set_var  Set variable
+ * @param name
+ * @param value
+ * @return
  */
 strlist*
 set_var(const char* name, const char* value) {
@@ -787,7 +924,9 @@ set_var(const char* name, const char* value) {
 }
 
 /**
- * Add value to variable
+ * @brief push_var  Add value to variable
+ * @param name
+ * @param value
  */
 void
 push_var(const char* name, const char* value) {
@@ -796,13 +935,20 @@ push_var(const char* name, const char* value) {
   strlist_push_unique(var, value);
 }
 
+/**
+ * @brief push_var_sa
+ * @param name
+ * @param value
+ */
 void
 push_var_sa(const char* name, stralloc* value) {
   strlist_push_unique_sa(get_var(name), value);
 }
 
 /**
- * Add library spec to variable
+ * @brief push_lib  Add library spec to variable
+ * @param name
+ * @param lib
  */
 void
 push_lib(const char* name, const char* lib) {
@@ -816,6 +962,10 @@ push_lib(const char* name, const char* lib) {
   }
 }
 
+/**
+ * @brief with_lib
+ * @param lib
+ */
 void
 with_lib(const char* lib) {
   stralloc def, lib64;
@@ -839,6 +989,10 @@ with_lib(const char* lib) {
   push_lib("LIBS", lib64.s);
 }
 
+/**
+ * @brief push_define
+ * @param def
+ */
 void
 push_define(const char* def) {
   stralloc define;
@@ -855,7 +1009,9 @@ push_define(const char* def) {
  */
 
 /**
- * Search rules by command
+ * @brief get_rules_by_cmd  Search rules by command
+ * @param cmd
+ * @param deps
  */
 void
 get_rules_by_cmd(stralloc* cmd, strlist* deps) {
@@ -871,7 +1027,9 @@ get_rules_by_cmd(stralloc* cmd, strlist* deps) {
 }
 
 /**
- * Gets directory name from a file path (allocated).
+ * @brief dirname_alloc  Gets directory name from a file path (allocated).
+ * @param p
+ * @return
  */
 char*
 dirname_alloc(const char* p) {
@@ -885,7 +1043,9 @@ dirname_alloc(const char* p) {
 }
 
 /**
- * Creates a hash-map of all source directories
+ * @brief populate_sourcedirs  Creates a hash-map of all source directories
+ * @param sources
+ * @param sourcedirs
  */
 void
 populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
@@ -966,6 +1126,11 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
   stralloc_free(&dir);
 }
 
+/**
+ * @brief dump_sourcedirs
+ * @param b
+ * @param sourcedirs
+ */
 void
 dump_sourcedirs(buffer* b, HMAP_DB* sourcedirs) {
   TUPLE* t;
@@ -989,7 +1154,9 @@ dump_sourcedirs(buffer* b, HMAP_DB* sourcedirs) {
 }
 
 /**
- * Include list to library list
+ * @brief includes_to_libs  Include list to library list
+ * @param includes
+ * @param libs
  */
 void
 includes_to_libs(const strlist* includes, strlist* libs) {
@@ -1075,6 +1242,11 @@ target_dep_list_recursive(strlist* l, target* t, int depth, strlist* hier) {
   }
 }
 
+/**
+ * @brief target_dep_list
+ * @param l
+ * @param t
+ */
 void
 target_dep_list(strlist* l, target* t) {
   strlist hier;
@@ -1110,6 +1282,11 @@ target_deps_indirect(strlist* l, target* t) {
   strlist_free(&hier);
 }
 
+/**
+ * @brief deps_indirect
+ * @param l
+ * @param names
+ */
 void
 deps_indirect(strlist* l, const strlist* names) {
   size_t n;
@@ -1128,6 +1305,11 @@ deps_indirect(strlist* l, const strlist* names) {
   strlist_free(&hier);
 }
 
+/**
+ * @brief deps_direct
+ * @param l
+ * @param t
+ */
 void
 deps_direct(strlist* l, const target* t) {
   target** ptr;
@@ -1138,6 +1320,14 @@ deps_direct(strlist* l, const target* t) {
   }
 }
 
+/**
+ * @brief print_target_deps_r
+ * @param b
+ * @param t
+ * @param deplist
+ * @param hierlist
+ * @param depth
+ */
 void
 print_target_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, int depth) {
   target** ptr;
@@ -1228,6 +1418,11 @@ remove_indirect_deps_recursive(array* top, array* a, int depth) {
   }
 }
 
+/**
+ * @brief remove_indirect_deps
+ * @param deps
+ * @return
+ */
 ssize_t
 remove_indirect_deps(array* deps) {
   size_t w, r, n;
@@ -1413,7 +1608,6 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
  * @brief deps_for_libs
  * @param rules
  */
-
 void
 deps_for_libs(HMAP_DB* rules) {
   TUPLE* t;
@@ -1470,6 +1664,12 @@ deps_for_libs(HMAP_DB* rules) {
   stralloc_free(&sa);
 }
 
+/**
+ * @brief target_add_dep
+ * @param t
+ * @param other
+ * @return
+ */
 int
 target_add_dep(target* t, target* other) {
 
@@ -1484,6 +1684,11 @@ target_add_dep(target* t, target* other) {
   return 0;
 }
 
+/**
+ * @brief target_add_deps
+ * @param t
+ * @param deps
+ */
 void
 target_add_deps(target* t, const strlist* deps) {
   const char* x;
@@ -1500,6 +1705,13 @@ target_add_deps(target* t, const strlist* deps) {
     }
   }
 }
+
+/**
+ * @brief gen_srcdir_rule
+ * @param rules
+ * @param srcdir
+ * @param name
+ */
 void
 gen_srcdir_rule(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
   sourcefile* src;
@@ -1532,6 +1744,11 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
   }
 }
 
+/**
+ * @brief gen_lib_rules
+ * @param rules
+ * @param srcdirs
+ */
 void
 gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   TUPLE* t;
@@ -1558,10 +1775,10 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
 }
 
 /**
- * Generate compile rules for every library given
- */
-/**
- * Generate compile rules for every source file with a main()
+ * @brief gen_link_rules  Generate compile rules for every source file with a main()
+ * @param rules
+ * @param sources
+ * @return
  */
 int
 gen_link_rules(HMAP_DB* rules, strarray* sources) {
@@ -1698,6 +1915,13 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
   stralloc_free(&dir);
   return count;
 }
+
+/**
+ * @brief output_build_rules
+ * @param b
+ * @param name
+ * @param cmd
+ */
 void
 output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
   stralloc out;
@@ -1715,6 +1939,11 @@ output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
   buffer_putsflush(b, newline);
 }
 
+/**
+ * @brief gen_install_rules
+ * @param rules
+ * @return
+ */
 target*
 gen_install_rules(HMAP_DB* rules) {
   TUPLE* t;
@@ -1786,7 +2015,9 @@ gen_install_rules(HMAP_DB* rules) {
 }
 
 /**
- * Output all variables
+ * @brief output_all_vars  Output all variables
+ * @param b
+ * @param vars
  */
 void
 output_all_vars(buffer* b, HMAP_DB* vars) {
@@ -1823,7 +2054,9 @@ output_all_vars(buffer* b, HMAP_DB* vars) {
 }
 
 /**
- * Output rule to buffer
+ * @brief output_make_rule  Output rule to buffer
+ * @param b
+ * @param rule
  */
 void
 output_make_rule(buffer* b, target* rule) {
@@ -1912,6 +2145,10 @@ output_make_rule(buffer* b, target* rule) {
   put_newline(b, 1);
 }
 
+/**
+ * @brief gen_clean_rule
+ * @param rules
+ */
 void
 gen_clean_rule(HMAP_DB* rules) {
   target* rule;
@@ -1983,6 +2220,11 @@ gen_clean_rule(HMAP_DB* rules) {
   }
 }
 
+/**
+ * @brief output_ninja_rule
+ * @param b
+ * @param rule
+ */
 void
 output_ninja_rule(buffer* b, target* rule) {
   const char* rule_name = 0;
@@ -2019,8 +2261,11 @@ output_ninja_rule(buffer* b, target* rule) {
     stralloc_free(&path);
   }
 }
+
 /**
- * Output the rule set
+ * @brief output_all_rules  Output the rule set
+ * @param b
+ * @param hmap
  */
 void
 output_all_rules(buffer* b, HMAP_DB* hmap) {
@@ -2037,6 +2282,11 @@ output_all_rules(buffer* b, HMAP_DB* hmap) {
   }
 }
 
+/**
+ * @brief output_script
+ * @param b
+ * @param rule
+ */
 void
 output_script(buffer* b, target* rule) {
   static uint32 serial;
@@ -2075,7 +2325,9 @@ output_script(buffer* b, target* rule) {
 }
 
 /**
- * Set the machine type
+ * @brief set_machine  Set the machine type
+ * @param s
+ * @return
  */
 int
 set_machine(const char* s) {
@@ -2102,7 +2354,10 @@ set_machine(const char* s) {
 }
 
 /**
- * Set make program type
+ * @brief set_make_type  Set make program type
+ * @param make
+ * @param compiler
+ * @return
  */
 int
 set_make_type(const char* make, const char* compiler) {
@@ -2170,7 +2425,9 @@ set_make_type(const char* make, const char* compiler) {
 }
 
 /**
- * Set the compiler type
+ * @brief set_compiler_type Set the compiler type
+ * @param compiler
+ * @return
  */
 int
 set_compiler_type(const char* compiler) {
@@ -2583,7 +2840,8 @@ set_compiler_type(const char* compiler) {
 }
 
 /**
- * Show command line usage
+ * @brief usage  Show command line usage
+ * @param argv0
  */
 void
 usage(char* argv0) {
@@ -2632,6 +2890,12 @@ usage(char* argv0) {
 
 static stralloc tmp;
 
+/**
+ * @brief main
+ * @param argc
+ * @param argv
+ * @return
+ */
 int
 main(int argc, char* argv[]) {
   static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
