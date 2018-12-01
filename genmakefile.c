@@ -2902,7 +2902,7 @@ main(int argc, char* argv[]) {
   int c;
   int ret = 0, index = 0;
   const char *outfile = NULL, *dir = NULL;
-  strlist thisdir, outdir;
+  strlist thisdir, outdir, toks;
   strarray args;
   strlist cmdline;
   static strarray libs;
@@ -3057,29 +3057,23 @@ main(int argc, char* argv[]) {
 
   debug_sa("builddir", &builddir.sa);
 
-  strlist_foreach(&builddir, s, n) {
-    const char* c = str_ndup(s, n);
-    int i;
-    if(set_compiler_type(c)) {
-      compiler = c;
+
+  strlist_init(&toks, '\0');
+  strlist_foreach(&builddir, s, n) { strlist_pushb_unique(&toks, s, n); }
+  stralloc_catb(&toks, '\0', 1);
+  stralloc_cats(&toks, outfile);
+  stralloc_replacec(&toks, '/', '\0');
+  stralloc_replacec(&toks, '-', '\0');
+  stralloc_replacec(&toks, '-', '\0');
+
+  strlist_foreach_s(&toks, s) {
+	  int i;
+    if(set_compiler_type(s)) {
+      compiler = s;
       break;
     }
     for(i = 0; build_types[i]; ++i) {
-      if(!str_case_diff(c, build_types[i])) {
-        build_type = i;
-        break;
-      }
-    }
-  }
-  strlist_foreach(&outdir, s, n) {
-    const char* c = str_ndup(s, n);
-    int i;
-    if(set_compiler_type(c)) {
-      compiler = c;
-      break;
-    }
-    for(i = 0; i < sizeof(build_types) / sizeof(build_types[0]); ++i) {
-      if(!str_case_diff(c, build_types[i])) {
+      if(!str_case_diff(s, build_types[i])) {
         build_type = i;
         break;
       }
