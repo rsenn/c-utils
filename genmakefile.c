@@ -210,7 +210,6 @@ debug_int(const char* name, int i) {
  */
 void
 path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
-  stralloc_zero(out);
   if(prefix->len && !stralloc_equals(prefix, ".")) {
     stralloc_cat(out, prefix);
 
@@ -229,7 +228,6 @@ path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
  */
 void
 path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out) {
-  stralloc_zero(out);
   if(prefix->len && !stralloc_equals(prefix, ".")) {
     stralloc_cat(out, prefix);
 
@@ -1306,17 +1304,25 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
   strlist_init(&incs, '\0');
 
   slist_foreach(&srcdir->sources, src) {
-    const char* ext;
+    const char *s, *ext;
     srcfile = &src->name;
 
     ext = *srcfile + str_rchr(*srcfile, PATHSEP_C);
     if(*ext == pathsep_make)
       ++ext;
+    s = str_ndup(*srcfile, str_rchr(*srcfile, '.'));
     ext += str_rchr(ext, '.');
 
     if(!str_equal(ext, ".c"))
       continue;
 
+    if(str_start(make, "g")) {
+      stralloc_zero(&obj);
+      path_prefix_s(&workdir.sa, "%.o", &obj);
+      stralloc_cats(&obj, ": ");
+      stralloc_cats(&obj, dir);
+      path_wildcard(s, &obj, "%");
+    }
     if(batchmode) {
       stralloc_zero(&obj);
       stralloc_catm_internal(&obj, "{", dir, "}", ext, "{", workdir.sa.s, "}", objext, ":", 0);
@@ -1494,6 +1500,37 @@ target_add_deps(target* t, const strlist* deps) {
     }
   }
 }
+void
+gen_srcdir_rule(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
+  sourcefile* src;
+  target* rule;
+  stralloc mask;
+  stralloc_init(&mask);
+
+  slist_foreach(&srcdir->sources, src) {
+
+    const char* s;
+    debug_s("sourcefile", src->name);
+    if(!str_end(src->name, ".c"))
+      continue;
+    s = str_ndup(src->name, str_rchr(src->name, '.'));
+
+    path_prefix_b(&workdir.sa, s, str_len(s), &mask);
+    stralloc_cats(&mask, ": ");
+    path_wildcard(src->name, &mask, "%");
+
+    debug_sa("mask", &mask);
+
+    if((rule = get_rule_sa(&mask))) {
+
+      strlist_push(&rule->prereq, src->name);
+
+      if(rule->recipe == 0) {
+        rule->recipe = &compile_command;
+      }
+    }
+  }
+}
 
 void
 gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
@@ -1512,6 +1549,8 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
 
     if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
       continue;
+
+    gen_srcdir_rule(rules, srcdir, base);
 
     rule = lib_rule_for_sourcedir(rules, srcdir, base);
   }
@@ -1565,7 +1604,8 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         get_includes(*srcfile, &incs, 0);
 
-        add_path(&compile->prereq, *srcfile);
+        
+        add_srcpath(&compile->prereq, *srcfile);
 
         compile->recipe = &compile_command;
 
@@ -1782,13 +1822,6 @@ output_all_vars(buffer* b, HMAP_DB* vars) {
   put_newline(b, 1);
 }
 
-void
-output_srcdir_rule(buffer* b, sourcedir* srcdir) {
-  sourcefile* src;
-
-  slist_foreach(&srcdir->sources, src) { debug_s("sourcefile", src->name); }
-}
-
 /**
  * Output rule to buffer
  */
@@ -1805,9 +1838,40 @@ output_make_rule(buffer* b, target* rule) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, 0);
   }
 
-  buffer_puts(b, rule->name);
-  buffer_putc(b, ':');
+  if(rule->name[str_chr(rule->name, '%')]) {
+    stralloc prefix;
+    stralloc_init(&prefix);
+    if(str_end(rule->name, ".c")) {
+      const char* s;
+      size_t n;
+      strlist_foreach(&rule->prereq, s, n) {
+        size_t l;
+        if(prefix.len)
+          stralloc_cats(&prefix, " \\\n");
 
+        if((l = byte_rchr(s, n, '/')) < n) {
+          s += l + 1, n -= l + 1;
+        }
+        path_prefix_b(&workdir.sa, s, byte_rchr(s, n, '.'), &prefix);
+        stralloc_cats(&prefix, objext);
+      }
+      stralloc_cats(&prefix, ": ");
+
+      path_prefix_s(&workdir.sa, path_basename(rule->name), &prefix);
+      prefix.len = byte_rchr(prefix.s, prefix.len, '.');
+      stralloc_cats(&prefix, objext);
+      stralloc_cats(&prefix, ": ");
+      buffer_putsa(b, &prefix);
+      num_deps = 0;
+    }
+  } /*else {
+*/
+  buffer_puts(b, rule->name);
+
+  if(!rule->name[str_chr(rule->name, '%')])
+    buffer_putc(b, ':');
+  /*  }
+*/
   if(num_deps) {
     stralloc prereq;
     stralloc_init(&prereq);
@@ -1825,10 +1889,7 @@ output_make_rule(buffer* b, target* rule) {
     stralloc cmd;
     stralloc_init(&cmd);
 
-    if(str_start(make, "g") /*|| str_start(make, "nmake")*/)
-      stralloc_copy(&cmd, rule->recipe);
-    else
-      rule_command(rule, &cmd);
+    rule_command(rule, &cmd);
 
     if(!stralloc_starts(&cmd, newline)) {
       put_newline(b, 0);
@@ -2734,16 +2795,30 @@ main(int argc, char* argv[]) {
 
   strlist_foreach(&builddir, s, n) {
     const char* c = str_ndup(s, n);
+    int i;
     if(set_compiler_type(c)) {
       compiler = c;
       break;
     }
+    for(i = 0; build_types[i]; ++i) {
+      if(!str_case_diff(c, build_types[i])) {
+        build_type = i;
+        break;
+      }
+    }
   }
   strlist_foreach(&outdir, s, n) {
     const char* c = str_ndup(s, n);
+    int i;
     if(set_compiler_type(c)) {
       compiler = c;
       break;
+    }
+    for(i = 0; i < sizeof(build_types) / sizeof(build_types[0]); ++i) {
+      if(!str_case_diff(c, build_types[i])) {
+        build_type = i;
+        break;
+      }
     }
   }
 
