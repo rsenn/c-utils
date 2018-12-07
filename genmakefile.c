@@ -1509,14 +1509,13 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
     if(!str_equal(ext + str_rchr(ext, '.'), ".c"))
       continue;
 
-    if(str_start(make, "g")) {
       stralloc_zero(&obj);
+    if(str_start(make, "g")) {
       path_prefix_s(&workdir.sa, "%.o", &obj);
       stralloc_cats(&obj, ": ");
       stralloc_cats(&obj, dir);
       path_wildcard(s, &obj, "%");
     } else if(batchmode) {
-      stralloc_zero(&obj);
       stralloc_catm_internal(&obj, "{", dir, "}", ext, "{", workdir.sa.s, "}", objext, ":", 0);
     } else {
       path_object(ext, &obj);
@@ -1724,6 +1723,7 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
       continue;
     s = str_ndup(src->name, str_rchr(src->name, '.'));
 
+    stralloc_zero(&mask);
     path_prefix_s(&workdir.sa, path_basename(s), &mask);
     stralloc_cats(&mask, objext);
 
@@ -1745,6 +1745,7 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
 
     free(s);
   }
+    stralloc_free(&mask);
 }
 
 /**

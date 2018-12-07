@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include "../list.h"
 
-link*
+node*
 list_find(list *l, int (*pred)(void *)) {
-  link *p;
+  node *p;
 
   /* Loop through all links until we find the pointer */
   list_foreach(l, p) {

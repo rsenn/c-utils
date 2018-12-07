@@ -1,10 +1,10 @@
 #include "../list.h"
 
 void
-list_swap(list *l, link *p1, link *p2) {
-  link l1, l2;
+list_swap(list *l, node *p1, node *p2) {
+  node l1, l2;
 
-  /* Return if its twice the same link */
+  /* Return if its twice the same node */
   if(p1 == p2)
     return;
 

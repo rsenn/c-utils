@@ -13,6 +13,10 @@
 #include <unistd.h>
 #endif
 
+#ifndef EAGAIN
+#define EAGAIN 11
+#endif
+
 static int
 serverwantstcp(const char* buf, unsigned int len) {
   char out[12];
