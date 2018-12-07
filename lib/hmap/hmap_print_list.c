@@ -1,3 +1,5 @@
+#include "../uint64.h"
+#include "../buffer.h"
 #include "../hmap_internal.h"
 
 static void

@@ -18,8 +18,6 @@
 #include <errno.h>
 #include <stdio.h>
 
-static SSL_CTX* http_sslctx;
-
 size_t http_read_internal(http* h, char* buf, size_t n);
 
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
@@ -31,6 +29,8 @@ http_socket_write(fd_t fd, void* buf, size_t len, buffer* b) {
   return winsock2errno(send(fd, buf, len, 0));
 }
 
+#ifdef HAVE_OPENSSL
+static SSL_CTX* http_sslctx;
 static SSL_CTX*
 new_sslctx(void) {
   const SSL_METHOD* method;
@@ -53,6 +53,8 @@ new_sslctx(void) {
   }
   return ctx;
 }
+#endif
+
 int
 http_socket(http* h) {
 

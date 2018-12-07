@@ -294,7 +294,7 @@ path_extension(const char* in, stralloc* out, const char* ext) {
  */
 char*
 path_object(const char* in, stralloc* out) {
-//  stralloc_zero(out);
+  //  stralloc_zero(out);
 
   if(workdir.sa.len && !stralloc_equals(&workdir.sa, ".")) {
     stralloc_cat(out, &workdir.sa);
@@ -823,7 +823,7 @@ new_source(const char* name) {
  */
 void
 add_source(const char* filename, strarray* sources) {
-  if(str_end(filename, ".c") || str_end(filename, "*.h")) {
+  if(str_end(filename, ".c") || str_end(filename, ".h")) {
     stralloc sa;
     stralloc_init(&sa);
     stralloc_copys(&sa, filename);
@@ -834,7 +834,6 @@ add_source(const char* filename, strarray* sources) {
     stralloc_free(&sa);
   }
 }
-
 
 /**
  * @brief get_sources Searches all source files in the given directory and creates a string-array.
@@ -1506,9 +1505,8 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
     if(*ext == pathsep_make)
       ++ext;
     s = str_ndup(*srcfile, str_rchr(*srcfile, '.'));
-    ext += str_rchr(ext, '.');
 
-    if(!str_equal(ext, ".c"))
+    if(!str_equal(ext + str_rchr(ext, '.'), ".c"))
       continue;
 
     if(str_start(make, "g")) {
@@ -1517,12 +1515,11 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
       stralloc_cats(&obj, ": ");
       stralloc_cats(&obj, dir);
       path_wildcard(s, &obj, "%");
-    }
-    if(batchmode) {
+    } else if(batchmode) {
       stralloc_zero(&obj);
       stralloc_catm_internal(&obj, "{", dir, "}", ext, "{", workdir.sa.s, "}", objext, ":", 0);
     } else {
-      path_object(*srcfile, &obj);
+      path_object(ext, &obj);
     }
 
     if((rule = get_rule_sa(&obj))) {
@@ -1713,13 +1710,13 @@ target_add_deps(target* t, const strlist* deps) {
  * @param name
  */
 void
-gen_srcdir_rule(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
+gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
   sourcefile* src;
   target* rule;
   stralloc mask;
   stralloc_init(&mask);
 
-  slist_foreach(&srcdir->sources, src) {
+  slist_foreach(&sdir->sources, src) {
 
     const char* s;
     debug_s("sourcefile", src->name);
@@ -1727,11 +1724,15 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
       continue;
     s = str_ndup(src->name, str_rchr(src->name, '.'));
 
-    path_prefix_b(&workdir.sa, s, str_len(s), &mask);
-    stralloc_cats(&mask, ": ");
-    path_wildcard(src->name, &mask, "%");
+    path_prefix_s(&workdir.sa, path_basename(s), &mask);
+    stralloc_cats(&mask, objext);
 
-    debug_sa("mask", &mask);
+    if(batchmode || str_start(make, "g")) {
+      stralloc_cats(&mask, ": ");
+
+      path_wildcard(src->name, &mask, "%");
+      debug_sa("mask", &mask);
+    }
 
     if((rule = get_rule_sa(&mask))) {
 
@@ -1741,6 +1742,8 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
         rule->recipe = &compile_command;
       }
     }
+
+    free(s);
   }
 }
 
@@ -1821,7 +1824,6 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         get_includes(*srcfile, &incs, 0);
 
-        
         add_srcpath(&compile->prereq, *srcfile);
 
         compile->recipe = &compile_command;
@@ -2071,7 +2073,7 @@ output_make_rule(buffer* b, target* rule) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, 0);
   }
 
-  if(rule->name[str_chr(rule->name, '%')]) {
+  /*  if(rule->name[str_chr(rule->name, '%')]) {
     stralloc prefix;
     stralloc_init(&prefix);
     if(str_end(rule->name, ".c")) {
@@ -2082,7 +2084,7 @@ output_make_rule(buffer* b, target* rule) {
         if(prefix.len)
           stralloc_cats(&prefix, " \\\n");
 
-        if((l = byte_rchr(s, n, '/')) < n) {
+        if((l = byte_rchr(s, n, pathsep_make)) < n) {
           s += l + 1, n -= l + 1;
         }
         path_prefix_b(&workdir.sa, s, byte_rchr(s, n, '.'), &prefix);
@@ -2097,8 +2099,8 @@ output_make_rule(buffer* b, target* rule) {
       buffer_putsa(b, &prefix);
       num_deps = 0;
     }
-  } /*else {
-*/
+  }*/ /*else {
+                                           */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])
@@ -3057,22 +3059,21 @@ main(int argc, char* argv[]) {
 
   debug_sa("builddir", &builddir.sa);
 
-
   strlist_init(&toks, '\0');
   strlist_foreach(&builddir, s, n) { strlist_pushb_unique(&toks, s, n); }
-  stralloc_catb(&toks, '\0', 1);
-  stralloc_cats(&toks, outfile);
-  stralloc_replacec(&toks, '/', '\0');
-  stralloc_replacec(&toks, '-', '\0');
-  stralloc_replacec(&toks, '-', '\0');
+  stralloc_catb(&toks.sa, "\0", 1);
+  stralloc_cats(&toks.sa, outfile);
+  stralloc_replacec(&toks.sa, '/', '\0');
+  stralloc_replacec(&toks.sa, '-', '\0');
+  stralloc_replacec(&toks.sa, '-', '\0');
 
   strlist_foreach_s(&toks, s) {
-	  int i;
+    int i;
     if(set_compiler_type(s)) {
       compiler = s;
       break;
     }
-    for(i = 0; build_types[i]; ++i) {
+    for(i = 0; i < (sizeof(build_types) / sizeof(build_types[0])); ++i) {
       if(!str_case_diff(s, build_types[i])) {
         build_type = i;
         break;

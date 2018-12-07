@@ -5,6 +5,7 @@
 #define STRINGIFY(VALUE) INTERNAL_STRINGIFY(VALUE)
 
 #include "lib/windoze.h"
+#include "lib/getopt.h"
 
 #if WINDOWS_NATIVE
 #include <windows.h>

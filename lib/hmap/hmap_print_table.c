@@ -1,4 +1,6 @@
-#include "../hmap_internal.h"
+#include "../uint64.h"
+#include "../buffer.h"
+einclude "../hmap_internal.h"
 
 static void
 hmap_print(HMAP_DB* hmap) {

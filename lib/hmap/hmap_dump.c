@@ -1,5 +1,6 @@
-#include "../hmap.h"
+#include "../uint64.h"
 #include "../buffer.h"
+#include "../hmap.h"
 
 #define put_tuple(t) \
   buffer_put(b, "#", 1); \

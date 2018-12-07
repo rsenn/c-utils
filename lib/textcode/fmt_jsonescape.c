@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../str.h"
 #include "../fmt.h"
 #include "../textcode.h"
@@ -64,7 +65,7 @@ fmt_jsonescape(char* dest, const char* src, size_t len) {
 #endif
           {
             if(dest)
-              memcpy(dest + written, s + i, j);
+              byte_copy(dest + written, j, s + i);
             written += j;
           }
           i += j - 1; /* -1 because the for loop will also add 1 */

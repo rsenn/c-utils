@@ -1,3 +1,4 @@
+#include "lib/windoze.h"
 #include "lib/http.h"
 #include "lib/byte.h"
 #include "lib/io_internal.h"
@@ -20,6 +21,12 @@
 
 #ifdef __ORANGEC__
 #include <sockets.h>
+#endif
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
 #endif
 
 static int last_errno = 0;

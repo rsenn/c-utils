@@ -1,6 +1,8 @@
+#include "../byte.h"
 #include "../linked_list.h"
 #include "../memory.h"
 #include "../hash_map.h"
+
 void
 hash_map_init(hash_map* map, size_t capacity, hash_map_comparator comparator, hash_map_hash_func hash_func) {
   map->capacity = capacity;
