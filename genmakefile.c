@@ -580,7 +580,7 @@ rule_command(target* rule, stralloc* out) {
 
   stralloc_replacec(&prereq.sa, from, pathsep_args);
 
-  if(make_begin_inline == NULL && rule->recipe == &lib_command) {
+  if(0) { //make_begin_inline == NULL && rule->recipe == &lib_command) {
     char* x;
     size_t n = 0;
     range r;
@@ -679,6 +679,10 @@ get_rule(const char* name) {
     ret->name = t->key;
 
     strlist_init(&ret->prereq, ' ');
+#ifdef DEBUG
+    buffer_putm_internal(buffer_2, "Created rule '", ret->name, "'\n", 0);
+    buffer_flush(buffer_2);
+#endif
   }
 
   return ret;
@@ -1509,7 +1513,7 @@ gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
     if(!str_equal(ext + str_rchr(ext, '.'), ".c"))
       continue;
 
-      stralloc_zero(&obj);
+    stralloc_zero(&obj);
     if(str_start(make, "g")) {
       path_prefix_s(&workdir.sa, "%.o", &obj);
       stralloc_cats(&obj, ": ");
@@ -1619,6 +1623,7 @@ deps_for_libs(HMAP_DB* rules) {
     size_t n;
     const char* s;
 
+    stralloc_zero(&sa);
     path_prefix_s(&workdir.sa, str_basename(t->key), &sa);
     stralloc_cats(&sa, libext);
 
@@ -1745,7 +1750,7 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
 
     free(s);
   }
-    stralloc_free(&mask);
+  stralloc_free(&mask);
 }
 
 /**
@@ -1810,6 +1815,8 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
     strlist_zero(&libs);
     strlist_zero(&deps);
     strlist_zero(&indir);
+
+    stralloc_zero(&obj);
 
     if(has_main(*srcfile) == 1) {
 
@@ -2107,7 +2114,7 @@ output_make_rule(buffer* b, target* rule) {
   if(!rule->name[str_chr(rule->name, '%')])
     buffer_putc(b, ':');
   /*  }
-*/
+   */
   if(num_deps) {
     stralloc prereq;
     stralloc_init(&prereq);
