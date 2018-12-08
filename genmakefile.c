@@ -3063,7 +3063,7 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "-Go"); /* Accepts 'old' names for C runtime functions */
    // push_var("CFLAGS", "-Gz"); /* default to __stdcall */
 
-    push_var("CPPFLAGS", "-D__PELLESC__");
+    push_var("CPPFLAGS", "-D__POCC__");
 
     if(mach.bits == _64) {
       set_var("MACHINE", "AMD64");

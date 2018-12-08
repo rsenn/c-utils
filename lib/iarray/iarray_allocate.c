@@ -1,4 +1,4 @@
-#ifdef __PELLESC__
+#ifdef __POCC__
 #define NOWINBASEINTERLOCK 1
 #define _NTOS_ 1
 long __stdcall InterlockedCompareExchange(long volatile *,long,long);
@@ -30,7 +30,7 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile *,void*,void*);
 #ifdef __dietlibc__
 #include <sys/atomic.h>
 #define __CAS_PTR(ptr, oldptr, newptr) __CAS(ptr, oldptr, newptr)
-#elif WINDOWS_NATIVE || defined(__MSYS__) || defined(__PELLESC__)
+#elif WINDOWS_NATIVE || defined(__MSYS__) || defined(__POCC__)
 #include <windows.h>
 #define __CAS(val, oldval, newval) InterlockedCompareExchange(val, newval, oldval)
 #define __CAS_PTR(ptr, oldptr, newptr) InterlockedCompareExchangePointer(ptr, newptr, oldptr)
