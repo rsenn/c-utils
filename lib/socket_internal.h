@@ -97,4 +97,10 @@ typedef int socklen_t;
 #define USE_SELECT 1
 #endif
 
+
+#ifdef __PELLESC__
+#define __WSAFDIsSet _WSAFDIsSet
+#endif
+
+
 #endif
