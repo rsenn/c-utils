@@ -8,7 +8,7 @@
 #include "lib/str.h"
 #include "lib/byte.h"
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 /*
 typedef enum {
   MIXED, UNIX, WIN
@@ -147,7 +147,7 @@ pathtool(const char* arg, stralloc* sa) {
     strlist rel;
     size_t n1 = strlist_count(&path);
     size_t n2 = strlist_count(&relative_to);
-    size_t i, n = max(n1, n2);
+    size_t i, n = MAX(n1, n2);
 
     for(i = 0; i < n; ++i) {
       size_t l1, l2;

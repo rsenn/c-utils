@@ -59,12 +59,14 @@ typedef struct {
   int n_sources;
   slink* sources;
   strlist includes;
+  array rules;
 } sourcedir;
 
 typedef struct {
   const char* name;
+  strlist output;
   strlist prereq;
-  stralloc* recipe;
+  stralloc recipe;
   array deps;
   uint32 serial;
 } target;
@@ -87,9 +89,7 @@ static const char* libext = DEFAULT_LIBEXT;
 static const char* libpfx = DEFAULT_LIBPFX;
 static const char* binext = DEFAULT_EXEEXT;
 
-static const char* make_begin_inline = NULL;
-static const char* make_sep_inline = NULL;
-static const char* make_end_inline = NULL;
+static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 
 static strlist builddir, workdir;
 static stralloc srcdir;
@@ -101,13 +101,22 @@ static HMAP_DB *sourcedirs, *rules, *vars;
 static const char *toolchain, *compiler, *make;
 static const char* newline = "\n";
 static machine_type mach;
-static int batch, ninja;
+static int batch, shell, ninja;
 static int batchmode;
 
 static linklib_fmt* format_linklib_fn;
 
 static int inst_bins, inst_libs;
 static int cygming;
+
+void
+stralloc_weak(stralloc* out, const stralloc* from) {
+  if(out->a)
+    stralloc_free(out);
+  out->a = 0;
+  out->s = from->s;
+  out->len = from->len;
+}
 
 /**
  * @brief put_newline
@@ -240,23 +249,6 @@ debug_int(const char* name, int i) {
  */
 
 /**
- * @brief path_prefix_s Adds a prefix to the specified path
- * @param prefix        Prefix to add
- * @param path          The path string
- * @param out           Write output here
- */
-void
-path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
-  if(prefix->len && !stralloc_equals(prefix, ".")) {
-    stralloc_cat(out, prefix);
-
-    if(!stralloc_endb(prefix, &pathsep_make, 1))
-      stralloc_catc(out, pathsep_make);
-  }
-  stralloc_cats(out, path);
-}
-
-/**
  * @brief path_prefix_b Adds a prefix to the specified path
  * @param prefix        Prefix to add
  * @param x             The path buffer
@@ -272,6 +264,17 @@ path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out) {
       stralloc_catc(out, pathsep_make);
   }
   stralloc_catb(out, x, n);
+}
+
+/**
+ * @brief path_prefix_s Adds a prefix to the specified path
+ * @param prefix        Prefix to add
+ * @param path          The path string
+ * @param out           Write output here
+ */
+void
+path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
+  path_prefix_b(prefix, path, str_len(path), out);
 }
 
 /**
@@ -295,15 +298,7 @@ path_extension(const char* in, stralloc* out, const char* ext) {
  */
 char*
 path_object(const char* in, stralloc* out) {
-  //  stralloc_zero(out);
-
-  if(workdir.sa.len && !stralloc_equals(&workdir.sa, ".")) {
-    stralloc_cat(out, &workdir.sa);
-
-    if(!stralloc_endb(out, &pathsep_make, 1))
-      stralloc_catc(out, pathsep_make);
-  }
-
+  path_prefix_b(&workdir.sa, "", 0, out);
   return path_extension(str_basename(in), out, objext);
 }
 
@@ -314,19 +309,24 @@ path_object(const char* in, stralloc* out) {
  * @return               Output string
  */
 char*
-path_wildcard(const char* path, stralloc* sa, const char* wildchar) {
+path_wildcard(stralloc* sa, const char* wildchar) {
   const char* x;
   size_t n, e;
-  stralloc_cats(sa, path);
+
   stralloc_nul(sa);
-  x = path_basename(sa->s);
-  x = path_skip_separator(x);
+
+  x = sa->s + str_rchrs(sa->s, "/\\ ", 3);
+
+  if(*x)
+    ++x;
+
   n = x - sa->s;
   e = byte_rchr(x, sa->len - n, '.');
 
   stralloc_remove(sa, n, e);
   stralloc_insertb(sa, wildchar, n, str_len(wildchar));
   stralloc_nul(sa);
+
   return sa->s;
 }
 
@@ -506,18 +506,19 @@ get_includes(const char* srcfile, strlist* includes, int sys) {
 void
 rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen) {
   size_t i;
-  stralloc* in = rule->recipe;
+  stralloc* in = &rule->recipe;
 
   for(i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
 
-    if(batch && i + 4 <= in->len && *p == '$' && p[1] == '(') {
+    if((shell || batch) && i + 4 <= in->len && *p == '$' && p[1] == '(') {
       size_t vlen;
-      stralloc_catc(out, '%');
+      stralloc_catc(out, shell ? '$' : '%');
       i += 2;
       vlen = byte_chr(&in->s[i], in->len - i, ')');
       stralloc_catb(out, &in->s[i], vlen);
-      stralloc_catc(out, '%');
+      if(batch)
+        stralloc_catc(out, '%');
       i += vlen;
       continue;
     }
@@ -565,7 +566,7 @@ rule_command(target* rule, stralloc* out) {
   strlist prereq;
   strlist_init(&prereq, ' ');
 
-  if(stralloc_contains(rule->recipe, "-+$^")) {
+  if(stralloc_contains(&rule->recipe, "-+$^")) {
     //    pfx = "-+";
   }
 
@@ -616,7 +617,7 @@ rule_command(target* rule, stralloc* out) {
       r.start += n;
     }
   } else if(str_start(make, "g")) {
-    stralloc_copy(out, rule->recipe);
+    stralloc_copy(out, &rule->recipe);
   } else {
     rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len);
   }
@@ -663,21 +664,27 @@ target*
 get_rule(const char* name) {
   target* ret = NULL;
   TUPLE* t;
+  size_t len = str_len(name);
 
   if(rules == NULL)
     hmap_init(1024, &rules);
 
-  if(hmap_search(rules, name, str_len(name) + 1, &t) == HMAP_SUCCESS) {
+  if(hmap_search(rules, name, len + 1, &t) == HMAP_SUCCESS) {
     ret = t->vals.val_custom;
   } else {
     ret = malloc(sizeof(target));
     byte_zero(ret, sizeof(target));
     // ret->serial = 0;
 
-    hmap_add(&rules, name, str_len(name) + 1, 0, HMAP_DATA_TYPE_CUSTOM, ret);
-    hmap_search(rules, name, str_len(name) + 1, &t);
+    hmap_add(&rules, name, len + 1, 0, HMAP_DATA_TYPE_CUSTOM, ret);
+    hmap_search(rules, name, len + 1, &t);
 
     ret->name = t->key;
+
+    strlist_init(&ret->output, ' ');
+
+    ret->output.sa.s = t->key;
+    ret->output.sa.len = len;
 
     strlist_init(&ret->prereq, ' ');
 
@@ -747,10 +754,35 @@ find_rule_b(const char* x, size_t n) {
   target* r;
   stralloc sa;
   stralloc_init(&sa);
-  stralloc_copyb(&sa, x, n);
+  sa.s = x;
+  sa.len = n;
   r = find_rule_sa(&sa);
-  stralloc_free(&sa);
   return r;
+}
+
+/**
+ * @brief match_rule
+ * @param rule           Target rule
+ * @param pattern        Preqreq wildcard pattern
+ * @return               1 if match
+ */
+int
+match_rule(target* rule, const char* pattern) {
+  int ret = 0;
+  const char* s;
+  size_t n;
+  stralloc sa;
+  stralloc_init(&sa);
+
+  strlist_foreach(&rule->prereq, s, n) {
+    stralloc_copyb(&sa, s, n);
+    if(str_equal(pattern, path_wildcard(&sa, "%"))) {
+      ret = 1;
+      break;
+    }
+  }
+  stralloc_free(&sa);
+  return ret;
 }
 
 /**
@@ -1026,7 +1058,7 @@ get_rules_by_cmd(stralloc* cmd, strlist* deps) {
   hmap_foreach(rules, t) {
     target* rule = t->vals.val_custom;
 
-    if(rule->recipe == cmd) {
+    if(rule->recipe.s == cmd->s || stralloc_equal(&rule->recipe, cmd)) {
       strlist_push(deps, rule->name);
     }
   }
@@ -1598,78 +1630,8 @@ target_add_deps(target* t, const strlist* deps) {
 }
 
 /**
- * Generate compile rules for every source file given
- */
-target*
-gen_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
-  sourcefile* src;
-  const char** srcfile;
-  target* rule;
-  stralloc obj;
-  strlist incs;
-
-  stralloc_init(&obj);
-  strlist_init(&incs, '\0');
-
-  slist_foreach(&srcdir->sources, src) {
-    const char *s, *ext;
-    srcfile = &src->name;
-
-    ext = *srcfile + str_rchr(*srcfile, PATHSEP_C);
-    if(*ext == pathsep_make)
-      ++ext;
-    s = str_ndup(*srcfile, str_rchr(*srcfile, '.'));
-
-    if(!str_equal(ext + str_rchr(ext, '.'), ".c"))
-      continue;
-
-    stralloc_zero(&obj);
-/*    if(str_start(make, "g")) {
-      path_prefix_s(&workdir.sa, "%.o", &obj);
-      stralloc_cats(&obj, ": ");
-      stralloc_cats(&obj, dir);
-      path_wildcard(s, &obj, "%");
-    } else if(batchmode) {
-      stralloc_catm_internal(&obj, "{", dir, "}", ext, "{", workdir.sa.s, "}", objext, ":", 0);
-    } else*/ {
-      path_object(ext, &obj);
-    }
-
-    if((rule = get_rule_sa(&obj))) {
-
-      if(batchmode)
-        rule->prereq.sep = '\0';
-      //        path_object(*srcfile, &obj);
-
-      add_srcpath(&rule->prereq, /*batchmode ? obj.s :*/ *srcfile);
-
-      if(rule->recipe)
-        continue;
-
-      // get_includes(*srcfile, &incs, 0);
-
-      if(!rule->recipe) {
-        if(batchmode) {
-          rule->recipe = malloc(sizeof(stralloc));
-          stralloc_init(rule->recipe);
-          stralloc_copy(rule->recipe, &compile_command);
-          stralloc_replaces(rule->recipe, "-Fo", "-Fd");
-          stralloc_replaces(rule->recipe, "$@", workdir.sa.s);
-
-        } else {
-          rule->recipe = str_start(make, "g") ? NULL : &compile_command;
-        }
-      }
-    }
-  }
-
-  stralloc_free(&obj);
-  strlist_free(&incs);
-  return batchmode ? rule : 0;
-}
-
-/**
- * Generate compile rules for every source file given
+ * @brief gen_clean_rule  Generate clean rule which removes all target outputs
+ * @param rules
  */
 void
 gen_clean_rule(HMAP_DB* rules) {
@@ -1683,7 +1645,7 @@ gen_clean_rule(HMAP_DB* rules) {
     stralloc fn;
     strlist delete_args;
     stralloc_init(&fn);
-    strlist_init(&delete_args, '\0');
+    strlist_init(&delete_args, ' ');
 
     if(delete_command.len == 0)
       stralloc_copys(&delete_command, "DEL /F /Q");
@@ -1699,8 +1661,9 @@ gen_clean_rule(HMAP_DB* rules) {
       rule = hmap_data(t);
 
       /* If the rule has prerequisites and a recipe, it must be a producing rule */
-      if(strlist_count(&rule->prereq) && rule->recipe) {
+      if(strlist_count(&rule->prereq) && rule->recipe.s) {
         size_t bpos;
+
         if(t->key[(bpos = str_rchr(t->key, '{'))]) {
           size_t epos = str_rchr(&t->key[bpos + 1], '}');
           stralloc_zero(&fn);
@@ -1714,7 +1677,7 @@ gen_clean_rule(HMAP_DB* rules) {
           stralloc_copys(&fn, t->key);
 
           /* If possible, transform file name into a wildcard pattern */
-          arg = path_wildcard(t->key, &fn, "*");
+          arg = path_wildcard(&fn, "*");
         }
         /* Add to deletion list */
         strlist_push_unique(&delete_args, arg);
@@ -1738,10 +1701,152 @@ gen_clean_rule(HMAP_DB* rules) {
         lineoffs = -MAX_CMD_LEN;
     }
 
-    rule->recipe = &delete_command;
+    stralloc_weak(&rule->recipe, &delete_command);
   }
 }
 
+/**
+ * @brief dump_rule
+ * @param rule
+ */
+void
+dump_rule(target* rule) {
+#ifdef DEBUG
+  buffer_putm_internal(buffer_2, "Rule '", rule->name, "'\n", 0);
+
+  if(rule->prereq.sa.len) {
+    stralloc_nul(&rule->prereq.sa);
+    buffer_putm_internal(buffer_2, "  prereq: ", rule->prereq.sa.s, "\n", 0);
+  }
+  if(rule->output.sa.len) {
+    stralloc_nul(&rule->output.sa);
+    buffer_putm_internal(buffer_2, "  output: ", rule->output.sa.s, "\n", 0);
+  }
+  if(rule->recipe.len) {
+    stralloc_nul(&rule->recipe);
+    buffer_putm_internal(buffer_2, "  recipe: ", rule->recipe.s, "\n", 0);
+  }
+  if(array_length(&rule->deps, sizeof(target*))) {
+    target** t;
+    buffer_puts(buffer_2, "  deps:");
+    array_foreach_t(&rule->deps, t) {
+      buffer_putspace(buffer_2);
+      buffer_puts(buffer_2, (*t)->name);
+    }
+    buffer_puts(buffer_2, newline);
+  }
+  buffer_putnlflush(buffer_2);
+#endif
+}
+
+/**
+ * @brief gen_srcdir_compile_rules  Generate compile rules for every source file given
+ * @param rules                     All rules
+ * @param srcdir                    source dir structure
+ * @param dir                       source dir path
+ * @return
+ */
+target*
+gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
+  sourcefile* src;
+  target* rule;
+  stralloc target, srcs, obj;
+  size_t len;
+
+  stralloc_init(&target);
+  path_object("%", &target);
+  stralloc_cats(&target, ": ");
+
+  stralloc_init(&srcs);
+
+  len = target.len;
+
+  stralloc_init(&obj);
+
+  slist_foreach(&sdir->sources, src) {
+    const char *s, *ext;
+
+    if(!str_end(src->name, ".c"))
+      continue;
+
+    s = str_basename(src->name);
+
+    target.len = len;
+
+    stralloc_copys(&srcs, src->name);
+    path_wildcard(&srcs, "*");
+    stralloc_replacec(&srcs, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+
+    stralloc_zero(&obj);
+    path_object(src->name, &obj);
+
+    if(str_start(make, "g") || ((shell | batch) && batchmode)) {
+      stralloc_cats(&target, src->name);
+      path_wildcard(&target, "%");
+    } else if(batchmode) {
+      stralloc_zero(&target);
+      stralloc_catm_internal(&target, "{", dir, "}", ext, "{", workdir.sa.s, "}", objext, ":", 0);
+    } else {
+    }
+    stralloc_replacec(&target, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+
+    if((rule = get_rule_sa(&target))) {
+
+      add_path_sa(&rule->output, &obj);
+
+      if(rule->recipe.s)
+        continue;
+      else {
+        strlist_zero(&rule->output);
+      }
+
+      add_srcpath(&rule->prereq, srcs.s);
+
+      if((shell | batch) == 0 && batchmode) {
+        // rule->recipe = malloc(sizeof(stralloc));
+        stralloc_init(&rule->recipe);
+        stralloc_copy(&rule->recipe, &compile_command);
+        stralloc_replaces(&rule->recipe, "-Fo", "-Fd");
+        stralloc_replaces(&rule->recipe, "$@", workdir.sa.s);
+
+      } else {
+        size_t p, e;
+        char* x;
+        // stralloc_weak(&rule->recipe, &compile_command);
+        stralloc_copy(&rule->recipe, &compile_command);
+
+        x = stralloc_begin(&rule->recipe);
+        // e = stralloc_end(&rule->recipe);
+
+        p = e = stralloc_finds(&rule->recipe, "$@");
+        while(p > 0 && !((x[p + 1] == '/' || x[p + 1] == '-') && x[p] == ' ')) --p;
+
+        e += 2;
+        if(x[e] == '"')
+          ++e;
+
+        stralloc_remove(&rule->recipe, p, e - p);
+
+        //        rule->recipe = /* str_start(make, "g") ? NULL :*/ &compile_command;
+      }
+    }
+  }
+
+  stralloc_free(&obj);
+  stralloc_free(&target);
+
+  dump_rule(rule);
+
+  return rule;
+}
+
+/**
+ * @brief gen_simple_compile_rules  Generate compile rules for every source file in srcdir
+ * @param rules                     All rules
+ * @param srcdir                    source dir structure
+ * @param dir                       source dir path
+ * @return
+ */
 target*
 gen_simple_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
   sourcefile* src;
@@ -1750,7 +1855,7 @@ gen_simple_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
 
   slist_foreach(&srcdir->sources, src) {
     target* rule;
-    const char* base = path_basename(src->name);
+    const char* base = str_basename(src->name);
 
     if(!str_equal(base + str_rchr(base, '.'), ".c"))
       continue;
@@ -1760,15 +1865,25 @@ gen_simple_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
 
     if((rule = get_rule_sa(&obj))) {
       add_srcpath(&rule->prereq, src->name);
-      rule->recipe = &compile_command;
+
+      if(rule->recipe.s == NULL) {
+        stralloc_weak(&rule->recipe, &compile_command);
+
+        array_catb(&srcdir->rules, &rule, sizeof(target*));
+      }
     }
   }
 
   stralloc_free(&obj);
   return 0;
 }
+
 /**
- * Generate lib rule for source dir
+ * @brief lib_rule_for_sourcedir  Generate lib rule for source dir
+ * @param rules                     All rules
+ * @param srcdir                    source dir structure
+ * @param dir                       source dir path
+ * @return
  */
 target*
 lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
@@ -1783,28 +1898,43 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
   // debug_sa("lib_rule_for_sourcedir", &sa);
 
-  dep = gen_simple_compile_rules(rules, srcdir, name);
+  if(str_start(make, "g") || batchmode)
+    dep = gen_srcdir_compile_rules(rules, srcdir, name);
+  else
+    dep = gen_simple_compile_rules(rules, srcdir, name);
 
   if((rule = get_rule_sa(&sa))) {
     sourcefile* pfile;
     strlist_init(&rule->prereq, ' ');
 
     if(dep) {
+      size_t n;
       char* s;
-      strlist_foreach_s(&dep->prereq, s) {
-        stralloc_zero(&sa);
-        path_object(s, &sa);
-        add_path_sa(&rule->prereq, &sa);
-      }
+      strlist_cat(&rule->prereq, &dep->output);
+      /*      strlist_foreach(&dep->output, s, n) {
+              stralloc_zero(&sa);
+              path_object(s, &sa);
+              add_path_sa(&rule->prereq, &sa);
+            }
+      */
+
+      // strlist_push(&rule->prereq, dep->name);
+
+      array_catb(&rule->deps, &dep, sizeof(target*));
+
     } else {
       slist_foreach(srcdir->sources, pfile) {
+        if(!str_end(pfile->name, ".c"))
+          continue;
         stralloc_zero(&sa);
         path_object(pfile->name, &sa);
         add_path_sa(&rule->prereq, &sa);
       }
     }
 
-    rule->recipe = &lib_command;
+    stralloc_weak(&rule->recipe, &lib_command);
+
+    dump_rule(rule);
   }
 
   stralloc_free(&sa);
@@ -1813,9 +1943,9 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
 /**
  * @brief gen_srcdir_rule
- * @param rules
- * @param srcdir
- * @param name
+ * @param rules                     All rules
+ * @param srcdir                    source dir structure
+ * @param name                      source dir name
  */
 void
 gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
@@ -1828,37 +1958,38 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
 
     const char* s;
     debug_s("sourcefile", src->name);
+
     if(!str_end(src->name, ".c"))
       continue;
+
     s = str_ndup(src->name, str_rchr(src->name, '.'));
 
     stralloc_zero(&mask);
-    path_prefix_s(&workdir.sa, path_basename(s), &mask);
+    path_prefix_s(&workdir.sa, str_basename(s), &mask);
     stralloc_cats(&mask, objext);
 
     if(batchmode || str_start(make, "g")) {
       stralloc_cats(&mask, ": ");
+      stralloc_cats(&mask, src->name);
 
-      path_wildcard(src->name, &mask, "%");
+      path_wildcard(&mask, "%");
       debug_sa("mask", &mask);
     }
 
     if((rule = get_rule_sa(&mask))) {
-
       strlist_push(&rule->prereq, src->name);
-
-      if(rule->recipe == 0) {
-        rule->recipe = &compile_command;
+      if(rule->recipe.s == 0) {
+        stralloc_weak(&rule->recipe, &compile_command);
       }
     }
 
-    free(s);
+    free((void*)s);
   }
   stralloc_free(&mask);
 }
 
 /**
- * @brief gen_lib_rules
+ * @brief gen_lib_rules  Generate library rules for every source dir
  * @param rules
  * @param srcdirs
  */
@@ -1880,9 +2011,11 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
       continue;
 
-   // gen_srcdir_rule(rules, srcdir, base);
+    // gen_srcdir_rule(rules, srcdir, base);
 
     rule = lib_rule_for_sourcedir(rules, srcdir, base);
+
+    array_catb(&srcdir->rules, &rule, sizeof(target*));
   }
   stralloc_free(&inc);
 }
@@ -1938,7 +2071,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         add_srcpath(&compile->prereq, *srcfile);
 
-        compile->recipe = &compile_command;
+        stralloc_weak(&compile->recipe, &compile_command);
 
         /*        stralloc_nul(&incs);
                 buffer_putm_internal(buffer_2, "rule '", compile->name, "' includes: ", incs.sa.s, 0);
@@ -1970,7 +2103,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         //  get_rules_by_cmd(&lib_command, &link->prereq);
 
-        link->recipe = &link_command;
+        stralloc_weak(&link->recipe, &link_command);
 
         // debug_s("program", link->name);
         // debug_sa("program libs", &libs.sa);
@@ -2069,9 +2202,9 @@ gen_install_rules(HMAP_DB* rules) {
     int do_lib, do_bin;
 
     do_lib = (inst_libs && (str_end(t->key, ".lib") || str_end(t->key, ".a") || t->key[str_find(t->key, ".so")] ||
-                            rule->recipe == &lib_command));
+                            rule->recipe.s == lib_command.s));
 
-    do_bin = (inst_bins && (str_end(t->key, ".dll") || str_end(t->key, ".exe") || rule->recipe == &link_command));
+    do_bin = (inst_bins && (str_end(t->key, ".dll") || str_end(t->key, ".exe") || rule->recipe.s == link_command.s));
 
     if(!(do_lib || do_bin))
       continue;
@@ -2079,8 +2212,8 @@ gen_install_rules(HMAP_DB* rules) {
     if(!inst) {
       inst = get_rule("install");
 
-      inst->recipe = malloc(sizeof(stralloc));
-      stralloc_init(inst->recipe);
+      // inst->recipe = malloc(sizeof(stralloc));
+      stralloc_init(&inst->recipe);
 
       strlist_push(&inst->prereq, "all");
     }
@@ -2088,7 +2221,7 @@ gen_install_rules(HMAP_DB* rules) {
     if(!isset("prefix")) {
 
       set_var("prefix", "/usr");
-      stralloc_catm_internal(inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(prefix)", 0);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(prefix)", 0);
 
       if(!v) {
         v = set_var("INSTALL", "install")->sa.s;
@@ -2106,10 +2239,10 @@ gen_install_rules(HMAP_DB* rules) {
     if(do_bin) {
       if(!isset("bindir")) {
         set_var("bindir", "$(prefix)/bin");
-        stralloc_catm_internal(inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(bindir)", 0);
+        stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(bindir)", 0);
       }
 
-      stralloc_catm_internal(inst->recipe, newline, "\t$(INSTALL_EXEC) ", t->key, " $(DESTDIR)$(bindir)", 0);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", t->key, " $(DESTDIR)$(bindir)", 0);
     }
 
     if(do_lib) {
@@ -2119,10 +2252,10 @@ gen_install_rules(HMAP_DB* rules) {
           push_var("libdir", "$(X64)");
         }
 
-        stralloc_catm_internal(inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(libdir)", 0);
+        stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(libdir)", 0);
       }
 
-      stralloc_catm_internal(inst->recipe, newline, "\t$(INSTALL_DATA) ", t->key, " $(DESTDIR)$(libdir)", 0);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DATA) ", t->key, " $(DESTDIR)$(libdir)", 0);
     }
   }
   return inst;
@@ -2151,16 +2284,22 @@ output_all_vars(buffer* b, HMAP_DB* vars) {
 
       if(batch)
         buffer_putm_internal(b, "SET ", v.s, "=", 0);
+      else if(shell)
+        buffer_putm_internal(b, v.s, "=\"", 0);
       else
         buffer_putm_internal(b, v.s, " = ", 0);
 
-      if(ninja) {
+      if(ninja || shell) {
         stralloc_zero(&v);
         subst_var(&var->sa, &v, "$", "", 1);
         buffer_putsa(b, &v);
       } else {
         buffer_putsa(b, &var->sa);
       }
+
+      if(shell)
+        buffer_putc(b, '"');
+
       put_newline(b, 0);
     }
   }
@@ -2185,6 +2324,10 @@ output_make_rule(buffer* b, target* rule) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, 0);
   }
 
+  if(rule->output.sa.s != rule->name) {
+    buffer_putsa(b, &rule->output.sa);
+    buffer_puts(b, ": ");
+  }
   /*  if(rule->name[str_chr(rule->name, '%')]) {
     stralloc prefix;
     stralloc_init(&prefix);
@@ -2212,7 +2355,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                                                                                                                 */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])
@@ -2232,7 +2375,7 @@ output_make_rule(buffer* b, target* rule) {
     stralloc_free(&prereq);
   }
 
-  if(rule->recipe) {
+  if(&rule->recipe) {
     stralloc cmd;
     stralloc_init(&cmd);
 
@@ -2272,11 +2415,11 @@ void
 output_ninja_rule(buffer* b, target* rule) {
   const char* rule_name = 0;
 
-  if(rule->recipe == &compile_command)
+  if(rule->recipe.s == compile_command.s)
     rule_name = "cc";
-  else if(rule->recipe == &link_command)
+  else if(rule->recipe.s == link_command.s)
     rule_name = "link";
-  else if(rule->recipe == &lib_command)
+  else if(rule->recipe.s == lib_command.s)
     rule_name = "lib";
 
   if(rule_name) {
@@ -2417,7 +2560,11 @@ set_make_type(const char* make, const char* compiler) {
 
   stralloc_copys(&mkdir_command, "IF NOT EXIST \"$@\" MKDIR \"$@\"");
 
-  if(str_start(make, "bmake") || str_start(make, "borland")) {
+  if(str_start(make, "batch") || str_start(make, "cmd")) {
+    pathsep_args = '\\';
+    pathsep_make = '\\';
+
+  } else if(str_start(make, "bmake") || str_start(make, "borland")) {
 
     /* Borland C++ Builder Make */
     pathsep_make = '\\';
@@ -2462,8 +2609,7 @@ set_make_type(const char* make, const char* compiler) {
 
   } else if(str_start(make, "ninja")) {
     ninja = 1;
-    pathsep_make =
-    pathsep_args = PATHSEP_C;
+    pathsep_make = pathsep_args = PATHSEP_C;
 
     make_begin_inline = make_sep_inline = make_end_inline = 0;
   }
@@ -2779,7 +2925,8 @@ set_compiler_type(const char* compiler) {
     push_lib("DEFAULT_LIBS", "clwin");
     push_lib("DEFAULT_LIBS", "climp");
 
-    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) \"-o$@\" \"/I;\" $<");
+    //    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) -o\"$@\" \"/I;\" $<");
+    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) -o\"$@\" $<");
     set_command(&lib_command, "$(LIB) /! $@", "$^");
     set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o\"$@\"", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
 
@@ -2819,39 +2966,49 @@ set_compiler_type(const char* compiler) {
     set_var("CC", "cc");
     set_var("LINK", "polink");
     set_var("LIB", "polib");
-    push_var("CFLAGS", "-fp:precise -W0 -Go");
-    push_var("CFLAGS", "-Ze -Zx");
+
+    if(build_type != BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "-Ob1");
+
+    // push_var("CFLAGS", "-fp:precise");
+    push_var("CFLAGS", "-W0");
+
+    push_var("CFLAGS", "-Ze");
+    push_var("CFLAGS", "-Zx");
+    push_var("CFLAGS", "-Go");
+    push_var("CFLAGS", "-Gz");
+
+    push_var("CPPFLAGS", "-D__PELLESC__");
 
     if(mach.bits == _64) {
       set_var("MACHINE", "AMD64");
       set_var("TARGET", "amd64");
       set_var("L64", "64");
       // libext = "64.lib";
-      push_var("DEFS", "-D_M_AMD64");
+      push_var("CPPFLAGS", "-D_M_AMD64");
+
     } else if(mach.bits == _32) {
       set_var("MACHINE", "X86");
       set_var("TARGET", "x86");
       set_var("L64", "");
-      push_var("DEFS", "-D_M_IX86");
+      push_var("CPPFLAGS", "-D_M_IX86");
     }
+
     push_var("CFLAGS", "-T$(TARGET)-coff");
     push_var("LDFLAGS", "-machine:$(MACHINE)");
     push_var("LDFLAGS", "-libpath:\"%PELLESC%\\lib\"");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
-      push_var("CFLAGS", "-Zi");
+    /*    if(build_type == BUILD_TYPE_MINSIZEREL)
+          push_var("CFLAGS", "-Os");
 
-    if(build_type == BUILD_TYPE_MINSIZEREL)
-      push_var("CFLAGS", "-Os");
-    else if(build_type != BUILD_TYPE_DEBUG)
-      push_var("CFLAGS", "-Ot -Ob1");
+        else*/
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "-Zi");
       push_var("LDFLAGS", "-DEBUG");
     }
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -Fo\"$@\"");
-    stralloc_copys(&link_command, "$(CC) $^ $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS) -Fe\"$@\"");
+    stralloc_copys(&link_command, "$(CC) $^ -Fe\"$@\" $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else {
     return 0;
@@ -2863,6 +3020,8 @@ set_compiler_type(const char* compiler) {
     push_lib("EXTRA_LIBS", "wsock32");
   else
     push_lib("EXTRA_LIBS", "ws2_32");
+
+  push_lib("EXTRA_LIBS", "kernel32");
 
   if(cygming) {
 
@@ -3103,6 +3262,7 @@ main(int argc, char* argv[]) {
 
   batch = str_start(make, "bat") || str_start(make, "cmd");
   ninja = make[str_find(make, "ninja")] != '\0';
+  shell = str_start(make, "sh");
 
   if(compiler == NULL)
     compiler = "gcc";
@@ -3142,6 +3302,9 @@ main(int argc, char* argv[]) {
   }
 
   batchmode = batch && stralloc_contains(&compile_command, "-Fo");
+
+  if(batch)
+    pathsep_args = pathsep_make;
 
   strarray_foreach(&libs, it) { with_lib(*it); }
 
@@ -3276,7 +3439,7 @@ main(int argc, char* argv[]) {
     if(strlist_count(&workdir) && !stralloc_equals(&workdir.sa, ".")) {
 
       if((rule = get_rule_sa(&workdir.sa))) {
-        rule->recipe = &mkdir_command;
+        stralloc_weak(&rule->recipe, &mkdir_command);
 
         add_path_sa(&all->prereq, &workdir.sa);
       }
@@ -3303,8 +3466,10 @@ main(int argc, char* argv[]) {
 
     if(str_start(make, "g")) {
       target* compile = get_rule(".c.o");
-      compile->recipe = &compile_command;
+      stralloc_weak(&compile->recipe, &compile_command);
     }
+    if(((batch | shell) && stralloc_equals(&workdir.sa, ".")))
+      batchmode = 1;
 
     populate_sourcedirs(&srcs, sourcedirs);
 
@@ -3326,7 +3491,7 @@ main(int argc, char* argv[]) {
       hmap_foreach(rules, t) {
         target* tgt = hmap_data(t);
 
-        if(tgt->recipe == &lib_command)
+        if(tgt->recipe.s == lib_command.s)
           strlist_push(&all->prereq, t->key);
       }
     }
@@ -3357,9 +3522,15 @@ main(int argc, char* argv[]) {
       put_newline(buffer_1, 0);
     }
 
-    if(batch)
+    if(batch || shell) {
+      if(batch) {
+        buffer_putm_internal(buffer_1, "CD %~dp0", newline, newline, 0);
+      } else {
+        buffer_putm_internal(buffer_1, "cd \"$(dirname \"$0\")\"\n\n", 0);
+      }
+
       output_script(buffer_1, NULL);
-    else
+    } else
       output_all_rules(buffer_1, rules);
 
     //   hmap_dump(sourcedirs, buffer_1);

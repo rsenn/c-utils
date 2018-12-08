@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#if defined(WINDOWS_NATIVE) && defined(_MSC_VER)
+#if 0 // defined(WINDOWS_NATIVE) && (_MSC_VER >= 0900)
 #include <crtdbg.h>
 #endif
 

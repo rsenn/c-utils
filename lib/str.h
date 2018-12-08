@@ -77,6 +77,10 @@ int str_endb(const char* a, const char* x, size_t n);
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 
+
+#define str_foreach(s, ptr) for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr))+1)
+#define str_foreach_skip(s, ptr, skipcall) for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr))+(skipcall))
+
 #ifdef __cplusplus
 }
 #endif

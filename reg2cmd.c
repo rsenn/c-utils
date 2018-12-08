@@ -9,6 +9,7 @@
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/scan.h"
+#include "lib/path_internal.h"
 
 #if !WINDOWS_NATIVE
 #include <unistd.h>
@@ -29,8 +30,8 @@
 #define _MAX_PATH PATH_MAX
 #endif
 
-#ifndef MAXIMUM_PATH_LENGTH
-#define MAXIMUM_PATH_LENGTH _MAX_PATH
+#ifndef MAX_PATH
+#define MAX_PATH _MAX_PATH
 #endif
 
 static char*
@@ -110,8 +111,8 @@ const char* regtype_strings[] = {
 
 int
 reg2cmd() {
-  char buffer[MAXIMUM_PATH_LENGTH];
-  char key[MAXIMUM_PATH_LENGTH];
+  char buffer[MAX_PATH];
+  char key[MAX_PATH];
   unsigned int lineno = 0;
   int unicode = 0;
   ssize_t pos, len;

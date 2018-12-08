@@ -52,9 +52,9 @@ buffer_dump(buffer* out, buffer* b) {
   buffer_puts(out, "\"");
 
   buffer_puts(out, NONE ", " YELLOW "fd" CYAN "=" NONE);
-  if(b->op == (buffer_op_proto*)stralloc_write) {
+  /*if(b->op == (buffer_op_proto*)stralloc_write) {
     buffer_puts(out, "*sa");
-  } else {
+  } else*/ {
     n = fmt_long(xlong, b->fd);
     buffer_put(out, xlong, n);
   }
@@ -67,8 +67,8 @@ buffer_dump(buffer* out, buffer* b) {
     buffer_puts(out, "<write> ");
   else if(b->op == (buffer_op_proto*)&buffer_dummyreadmmap)
     buffer_puts(out, "<mmap>  ");
-  else if(b->op == (buffer_op_proto*)&stralloc_write)
-    buffer_puts(out, "<sa-wr> ");
+/*  else if(b->op == (buffer_op_proto*)&stralloc_write)
+    buffer_puts(out, "<sa-wr> ");*/
   else if(b->op == (buffer_op_proto*)NULL)
     buffer_puts(out, "NULL    ");
   else {

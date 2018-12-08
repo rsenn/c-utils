@@ -1,3 +1,9 @@
+#ifdef __PELLESC__
+#define NOWINBASEINTERLOCK 1
+#define _NTOS_ 1
+long __stdcall InterlockedCompareExchange(long volatile*, long, long);
+void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*);
+#endif
 #include "../windoze.h"
 #ifndef _POSIX_SOURCE
 #define _POSIX_SOURCE
@@ -30,9 +36,20 @@
 #define InterlockedCompareExchange(p, n, o) InterlockedCompareExchange((void**)p, (void*)n, (void*)o)
 #endif
 
-#ifdef __dietlibc__
+#if defined(__STDC__) && (__STDC_VERSION__ >= 201112L)
+#include <stdatomic.h>
+static inline long
+__CAS(long* ptr, long oldval, long newval) {
+#ifdef __ORANGEC__
+  atomic_compare_swap(ptr, &oldval, newval);
+#else
+  __atomic_compare_exchange_n(ptr, &oldval, newval, 0, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+#endif
+  return oldval;
+}
+#elif defined(__dietlibc__)
 #include <sys/atomic.h>
-#elif WINDOWS_NATIVE || (defined(__CYGWIN__) && __MSYS__ == 1)
+#elif WINDOWS_NATIVE || (defined(__CYGWIN__) && __MSYS__ == 1) || defined(__PELLESC__)
 #include <windows.h>
 #define __CAS(ptr, oldval, newval) InterlockedCompareExchange(ptr, newval, oldval)
 #else
@@ -67,9 +84,9 @@ io_getfds() {
 
 static
 #ifndef __POCC__
-volatile
+    volatile
 #endif
-long int io_fds_inited;
+    long int io_fds_inited;
 uint64 io_wanted_fds;
 array io_pollfds;
 enum __io_waitmode io_waitmode;

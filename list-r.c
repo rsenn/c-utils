@@ -16,6 +16,11 @@
 #include <unistd.h>
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "lib/buffer.h"
 #include "lib/dir_internal.h"
 #include "lib/fmt.h"
@@ -30,11 +35,6 @@
 #include "lib/byte.h"
 #include "lib/array.h"
 #include "lib/unix.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
