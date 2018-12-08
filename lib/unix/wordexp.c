@@ -158,7 +158,7 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
       dup2(p[1], 1);
     }
     execl("/bin/sh", "sh", "-c", "eval \"printf %s\\\\\\\\0 x $1 $2\"", "sh", s, redir, (char*)0);
-    _exit(1);
+    exit(1);
   }
   close(p[1]);
 

@@ -1818,7 +1818,6 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
       if(rule->recipe.s)
         continue;
 
-
       if((shell | batch) == 0 && batchmode) {
         // rule->recipe = malloc(sizeof(stralloc));
         stralloc_init(&rule->recipe);
@@ -2780,19 +2779,19 @@ set_compiler_type(const char* compiler) {
     binext = ".exe";
     libext = ".lib";
 
-    set_var("CC", "cl /nologo");
+    set_var("CC", "cl -nologo");
     set_var("LIB", "lib");
     set_var("LINK", "link");
-    push_var("CFLAGS", "-MT");
+    push_var("CFLAGS", build_type == BUILD_TYPE_DEBUG ? "-MTd" : "-MT");
     push_var("CPPFLAGS", "-Dinline=__inline");
 
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
-      push_var("CFLAGS", "/Zi");
+      push_var("CFLAGS", "-Zi");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
-      push_var("CFLAGS", "/Os");
+      push_var("CFLAGS", "-Os");
     else if(build_type != BUILD_TYPE_DEBUG)
-      push_var("CFLAGS", "/Ox");
+      push_var("CFLAGS", "-Ox");
     /*    push_var("LDFLAGS",
                  "/DEBUG /DYNAMICBASE /INCREMENTAL /NXCOMPAT /TLBID:1");
     */
@@ -2801,15 +2800,15 @@ set_compiler_type(const char* compiler) {
     //  push_var("LDFLAGS", "/MANIFEST /manifest:embed2 /MANIFESTUAC:\"level=asInvoker uiAccess=false\"");
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
-    set_command(&lib_command, "$(LIB) /out:$@", "$^");
+    set_command(&lib_command, "$(LIB) -out:$@", "$^");
     //    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
     /*
      * Intel C++ compiler
      */
     if(str_start(compiler, "icl")) {
-      set_var("CC", "icl /nologo");
-      set_var("CXX", "icl /nologo");
+      set_var("CC", "icl -nologo");
+      set_var("CXX", "icl -nologo");
 
       set_var("LINK", "xilink");
       set_var("LIB", "xilib");
@@ -2817,38 +2816,38 @@ set_compiler_type(const char* compiler) {
       push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
 
       if(mach.bits == _64)
-        push_var("LDFLAGS", "/LIBPATH:\"%ROOT%\\compiler\\lib\\intel64\"");
+        push_var("LDFLAGS", "-LIBPATH:\"%ROOT%\\compiler\\lib\\intel64\"");
       else
-        push_var("LDFLAGS", "/LIBPATH:\"%ROOT%\\compiler\\lib\"");
+        push_var("LDFLAGS", "-LIBPATH:\"%ROOT%\\compiler\\lib\"");
 
       //      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     }
 
-    push_var("LDFLAGS", "/LIBPATH:\"%UniversalCRTSdkDir%lib\\%WindowsSDKLibVersion%ucrt\\$(MACHINE)\"");
-    push_var("LDFLAGS", "/LIBPATH:\"%WindowsSdkDir%lib\\%WindowsSDKLibVersion%um\\$(MACHINE)\"");
-    push_var("LDFLAGS", "/LIBPATH:\"%VCToolsInstallDir%lib\\$(MACHINE)\"");
+    push_var("LDFLAGS", "-LIBPATH:\"%UniversalCRTSdkDir%lib\\%WindowsSDKLibVersion%ucrt\\$(MACHINE)\"");
+    push_var("LDFLAGS", "-LIBPATH:\"%WindowsSdkDir%lib\\%WindowsSDKLibVersion%um\\$(MACHINE)\"");
+    push_var("LDFLAGS", "-LIBPATH:\"%VCToolsInstallDir%lib\\$(MACHINE)\"");
 
-    push_var("LDFLAGS", "/LIBPATH:\"%WindowsSdkDir%lib$(X64)\"");
-    push_var("LDFLAGS", "/LIBPATH:\"%VCINSTALLDIR%\\lib$(AMD64)\"");
+    push_var("LDFLAGS", "-LIBPATH:\"%WindowsSdkDir%lib$(X64)\"");
+    push_var("LDFLAGS", "-LIBPATH:\"%VCINSTALLDIR%\\lib$(AMD64)\"");
 
-    push_var("LDFLAGS", "/INCREMENTAL /MANIFEST");
+    push_var("LDFLAGS", "-INCREMENTAL -MANIFEST");
 
     if(build_type == BUILD_TYPE_DEBUG)
-      push_var("LDFLAGS", "/DEBUG");
+      push_var("LDFLAGS", "-DEBUG");
 
     if(str_start(compiler, "icl"))
-      push_var("LDFLAGS", "/manifest:embed /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\"");
+      push_var("LDFLAGS", "-manifest:embed -MANIFESTUAC:\"level='asInvoker' uiAccess='false'\"");
 
     if(mach.arch == ARM) {
-      push_var("LDFLAGS", "/MACHINE:ARM");
+      push_var("LDFLAGS", "-MACHINE:ARM");
       set_var("MACHINE", mach.bits == _64 ? "arm64" : "arm");
     } else if(mach.bits == _64) {
-      push_var("LDFLAGS", "/MACHINE:X64");
+      push_var("LDFLAGS", "-MACHINE:X64");
       set_var("MACHINE", "x64");
       set_var("X64", "\\x64");
       set_var("AMD64", "\\amd64");
     } else if(mach.bits == _32) {
-      push_var("LDFLAGS", "/MACHINE:X86");
+      push_var("LDFLAGS", "-MACHINE:X86");
       set_var("MACHINE", "x86");
       set_var("X64", "");
     }

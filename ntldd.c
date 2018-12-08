@@ -63,7 +63,7 @@ static stralloc cwd;
 #define MAX_PATH 260
 #endif
 
-#if !defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)
+#if (!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
