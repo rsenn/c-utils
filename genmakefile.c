@@ -794,11 +794,11 @@ void
 add_path(strlist* list, const char* path) {
   size_t i, len = str_len(path);
 
-  strlist_push(list, path);
-
-  for(i = list->sa.len - len; i < list->sa.len; ++i) {
-    if(list->sa.s[i] == '/' || list->sa.s[i] == '\\')
-      list->sa.s[i] = pathsep_make;
+  if(strlist_push_unique(list, path)) {
+    for(i = list->sa.len - len; i < list->sa.len; ++i) {
+      if(list->sa.s[i] == '/' || list->sa.s[i] == '\\')
+        list->sa.s[i] = pathsep_make;
+    }
   }
 }
 
@@ -2755,7 +2755,8 @@ set_compiler_type(const char* compiler) {
     /*
      * Visual C++ compiler
      */
-  } else if(str_start(compiler, "msvc") || str_start(compiler, "icl")) {
+  } else if(str_start(compiler, "msvc") || str_start(compiler, "icl") ||
+     str_start(compiler, "vs20") || str_start(compiler, "vc")) {
 
     objext = ".obj";
     binext = ".exe";
