@@ -1813,10 +1813,11 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
 
       add_path_sa(&rule->output, &obj);
 
+      add_srcpath(&rule->prereq, srcs.s);
+
       if(rule->recipe.s)
         continue;
 
-      add_srcpath(&rule->prereq, srcs.s);
 
       if((shell | batch) == 0 && batchmode) {
         // rule->recipe = malloc(sizeof(stralloc));
