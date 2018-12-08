@@ -2350,7 +2350,7 @@ output_make_rule(buffer* b, target* rule) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, 0);
   }
 
-  if(rule->output.sa.s != rule->name) {
+  if(!stralloc_equals(&rule->output.sa, rule->name)) {
     buffer_putsa(b, &rule->output.sa);
     buffer_puts(b, ": ");
   }
@@ -3145,43 +3145,43 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        str_basename(argv0),
-                       " [sources...]\n",
-                       newline,
-                       "Options\n",
-                       "  -h, --help                show this help\n",
+                       " [sources...]\n"
+                       "\n"
+                       "Options\n"
+                       "  -h, --help                show this help\n"
                        "  -o, --output FILE         write to file\n"
-                       "  -O, --objext EXT          object file extension\n",
-                       "  -B, --exeext EXT          binary file extension\n",
-                       "  -L, --libext EXT          library file extension\n",
-                       "  -a, --create-libs         create rules for libraries\n",
-                       "  -o, --create-objs         create rules for objects\n",
-                       "  -b, --create-bins         create rules for programs\n",
-                       "  -d, --builddir            build directory\n",
-                       "  -t, --compiler-type TYPE   compiler type, one of:\n",
-                       "  -l, --link                link a library\n",
-                       "\n",
-                       "     gcc         GNU make\n",
-                       "     bcc55       Borland C++ Builder 5.5\n",
-                       "     bcc32       Borland C++ Builder new\n",
-                       "     lcc         lcc make\n",
-                       "     tcc         Tinycc make\n",
-                       "     msvc        Visual C++ NMake\n",
-                       "     icl         Intel C++ NMake\n",
-                       "     clang       LLVM NMake\n",
-                       "     occ         OrangeC\n",
-                       "     dmc         Digital Mars C++\n",
-                       "     pocc        Pelles-C\n",
-                       "\n",
-                       "  -m, --make-type TYPE      make program type, one of:\n",
-                       "     nmake       Microsoft NMake\n",
-                       "     borland     Borland Make\n",
-                       "     gmake       GNU Make\n",
-                       "     omake       OrangeCC Make\n",
-                       "     pomake      Pelles-C Make\n",
-                       "     make        Other make\n",
-                       "     batch       Windows batch (.bat .cmd)\n",
+                       "  -O, --objext EXT          object file extension\n"
+                       "  -B, --exeext EXT          binary file extension\n"
+                       "  -L, --libext EXT          library file extension\n"
+                       "  -a, --create-libs         create rules for libraries\n"
+                       "  -o, --create-objs         create rules for objects\n"
+                       "  -b, --create-bins         create rules for programs\n"
+                       "  -d, --builddir            build directory\n"
+                       "  -t, --compiler-type TYPE   compiler type, one of:\n"
+                       "  -l, --link                link a library\n"
+                       "\n"
+                       "     gcc         GNU make\n"
+                       "     bcc55       Borland C++ Builder 5.5\n"
+                       "     bcc32       Borland C++ Builder new\n"
+                       "     lcc         lcc make\n"
+                       "     tcc         Tinycc make\n"
+                       "     msvc        Visual C++ NMake\n"
+                       "     icl         Intel C++ NMake\n"
+                       "     clang       LLVM NMake\n"
+                       "     occ         OrangeC\n"
+                       "     dmc         Digital Mars C++\n"
+                       "     pocc        Pelles-C\n"
+                       "\n"
+                       "  -m, --make-type TYPE      make program type, one of:\n"
+                       "     nmake       Microsoft NMake\n"
+                       "     borland     Borland Make\n"
+                       "     gmake       GNU Make\n"
+                       "     omake       OrangeCC Make\n"
+                       "     pomake      Pelles-C Make\n"
+                       "     make        Other make\n"
+                       "     batch       Windows batch (.bat .cmd)\n"
                        "     ninja       Ninja build\n",
-                       0);
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 
