@@ -580,7 +580,7 @@ rule_command(target* rule, stralloc* out) {
 
   stralloc_replacec(&prereq.sa, from, pathsep_args);
 
-  if(0) { //make_begin_inline == NULL && rule->recipe == &lib_command) {
+  if(0) { // make_begin_inline == NULL && rule->recipe == &lib_command) {
     char* x;
     size_t n = 0;
     range r;
@@ -1583,11 +1583,13 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
     if(dep) {
       char* s;
       strlist_foreach_s(&dep->prereq, s) {
+        stralloc_zero(&sa);
         path_object(s, &sa);
         add_path_sa(&rule->prereq, &sa);
       }
     } else {
       slist_foreach(srcdir->sources, pfile) {
+        stralloc_zero(&sa);
         path_object(pfile->name, &sa);
         add_path_sa(&rule->prereq, &sa);
       }
@@ -2108,7 +2110,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                           */
+                                                                                      */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])
@@ -2777,7 +2779,7 @@ set_compiler_type(const char* compiler) {
     set_var("CC", "cc");
     set_var("LINK", "polink");
     set_var("LIB", "polib");
-    push_var("CFLAGS", "-std:C11 -fp:precise -W0 -Go");
+    push_var("CFLAGS", "-fp:precise -W0 -Go");
     push_var("CFLAGS", "-Ze -Zx");
 
     if(mach.bits == _64) {
@@ -3069,8 +3071,10 @@ main(int argc, char* argv[]) {
 
   strlist_init(&toks, '\0');
   strlist_foreach(&builddir, s, n) { strlist_pushb_unique(&toks, s, n); }
-  stralloc_catb(&toks.sa, "\0", 1);
-  stralloc_cats(&toks.sa, outfile);
+  if(outfile) {
+    stralloc_catb(&toks.sa, "\0", 1);
+    stralloc_cats(&toks.sa, outfile);
+  }
   stralloc_replacec(&toks.sa, '/', '\0');
   stralloc_replacec(&toks.sa, '-', '\0');
   stralloc_replacec(&toks.sa, '-', '\0');
@@ -3109,7 +3113,7 @@ main(int argc, char* argv[]) {
     if(strlist_contains(&outdir, "build")) {
       stralloc_copy(&builddir.sa, &outdir.sa);
       // path_relative(outdir.sa.s, thisdir.sa.s, &builddir.sa);
-    } else if(!strlist_contains(&thisdir, "build")) {
+    } else if(toolchain && !strlist_contains(&thisdir, "build")) {
       stralloc_copy(&builddir.sa, &thisdir.sa);
       strlist_push(&builddir, dir ? dir : "build");
       strlist_push(&builddir, toolchain);

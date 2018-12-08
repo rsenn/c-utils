@@ -1,6 +1,6 @@
 #include "../windoze.h"
 
-#if WINDOWS_NATIVE && !defined(_MSC_VER)
+#if WINDOWS_NATIVE //&& !defined(_MSC_VER)
 
 #include "../byte.h"
 #include "../glob.h"
