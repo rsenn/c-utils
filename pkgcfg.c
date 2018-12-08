@@ -532,7 +532,7 @@ main(int argc, char* argv[]) {
     return 0;
   } else if(optind < argc) {
     strarray modules;
-    strarray_from_argv(argc - optind, &argv[optind], &modules);
+    strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);
     return !pkg_conf(&modules);
   } else {
     buffer_puts(buffer_2, "Must specify package names on the command line");

@@ -66,8 +66,12 @@ xmlnode*    xml_find_element(xmlnode*, const char* tag);
 void        xml_free(xmlnode*);
 char*       xml_get_attribute(xmlnode*, const char* attr);
 xmlnode*    xml_get_document(xmlnode*);
-int         xml_match_name_and_attr();
-int         xml_match_name();
+
+#ifdef STRLIST_H
+int xml_match_name_and_attr(xmlnode*, strlist* names, const char* attr, const char* value);
+int xml_match_name(xmlnode*, strlist* names, const char* attr, const char* value);
+#endif
+
 xmlnode*    xml_newnode(xmlnodeid);
 int         xml_path(const xmlnode*, stralloc* out);
 void        xml_print_attributes(HMAP_DB*, buffer* b, const char* sep, const char* eq, const char* quot);

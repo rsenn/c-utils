@@ -32,8 +32,7 @@
 static struct unit_testConf muconf = {/*.q =*/FALSE, /*.s =*/FALSE, /*.v =*/FALSE, /*.x =*/FALSE};
 
 struct unit_testConf*
-muconf_ptr() {
-
+muconf_ptr(void) {
   return &muconf;
 }
 static buffer *muout, *muerr;

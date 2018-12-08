@@ -18,10 +18,7 @@
 
 #define is_space(c) ((c) == ' ' || (c) == '\t' || (c) == '\r' || (c) == '\n')
 
-ssize_t
-buffer_dummyread() {
-  return 0;
-}
+extern ssize_t buffer_dummyread(int, void*, size_t, void*);
 
 static int
 boundary_predicate(stralloc* sa, void* arg) {

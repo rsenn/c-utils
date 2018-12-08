@@ -16,7 +16,7 @@ No known patent problems.
 
 #if WINDOWS_NATIVE
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__PELLESC__)
 int
 env_put2(const char* name, const char* value) {
   return !!_putenv_s(name, value);

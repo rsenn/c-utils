@@ -68,6 +68,7 @@ typedef struct {
   strlist prereq;
   stralloc recipe;
   array deps;
+  array objs;
   uint32 serial;
 } target;
 
@@ -90,6 +91,7 @@ static const char* libpfx = DEFAULT_LIBPFX;
 static const char* binext = DEFAULT_EXEEXT;
 
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
+static const char *comment = "#";
 
 static strlist builddir, workdir;
 static stralloc srcdir;
@@ -754,7 +756,7 @@ find_rule_b(const char* x, size_t n) {
   target* r;
   stralloc sa;
   stralloc_init(&sa);
-  sa.s = x;
+  sa.s = (char*)x;
   sa.len = n;
   r = find_rule_sa(&sa);
   return r;
@@ -1260,14 +1262,22 @@ target_ptrs(const strlist* targets, array* out) {
  * @param l                           Output target names
  * @param t                           Target
  */
+static uint32 target_dep_serial;
+
 void
 target_dep_list_recursive(strlist* l, target* t, int depth, strlist* hier) {
   target** ptr;
 
+  t->serial = target_dep_serial;
+
   array_foreach_t(&t->deps, ptr) {
     const char* name = (*ptr)->name;
 
+    if(t->serial == (*ptr)->serial)
+      continue;
+
     if(!strlist_contains(hier, name)) {
+
       strlist_push(hier, name);
       target_dep_list_recursive(l, *ptr, depth + 1, hier);
       strlist_pop(hier);
@@ -1287,11 +1297,14 @@ target_dep_list_recursive(strlist* l, target* t, int depth, strlist* hier) {
  */
 void
 target_dep_list(strlist* l, target* t) {
+
   strlist hier;
   strlist_init(&hier, '\0');
   strlist_push(&hier, t->name);
 
   strlist_zero(l);
+
+  --target_dep_serial;
 
   target_dep_list_recursive(l, t, 0, &hier);
   strlist_free(&hier);
@@ -1920,7 +1933,7 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
       // strlist_push(&rule->prereq, dep->name);
 
-      array_catb(&rule->deps, &dep, sizeof(target*));
+      array_catb(&rule->objs, &dep, sizeof(target*));
 
     } else {
       slist_foreach(srcdir->sources, pfile) {
@@ -1978,6 +1991,7 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
 
     if((rule = get_rule_sa(&mask))) {
       strlist_push(&rule->prereq, src->name);
+
       if(rule->recipe.s == 0) {
         stralloc_weak(&rule->recipe, &compile_command);
       }
@@ -2139,7 +2153,8 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
         strlist_zero(&deps);
         target_dep_list(&deps, link);
 
-        strlist_cat(&link->prereq, &deps);
+        if(strlist_count(&deps))
+          strlist_cat(&link->prereq, &deps);
 
 #if 0 // def DEBUG_OUTPUT
         /*print_target_deps(buffer_2, link);
@@ -2290,9 +2305,13 @@ output_all_vars(buffer* b, HMAP_DB* vars) {
         buffer_putm_internal(b, v.s, " = ", 0);
 
       if(ninja || shell) {
-        stralloc_zero(&v);
-        subst_var(&var->sa, &v, "$", "", 1);
-        buffer_putsa(b, &v);
+          stralloc_zero(&v);
+          subst_var(&var->sa, &v, "$", "", 1);
+          buffer_putsa(b, &v);
+      } else  if(batch) {
+          stralloc_zero(&v);
+          subst_var(&var->sa, &v, "%", "%", 1);
+          buffer_putsa(b, &v);
       } else {
         buffer_putsa(b, &var->sa);
       }
@@ -2355,7 +2374,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])
@@ -2484,13 +2503,26 @@ output_script(buffer* b, target* rule) {
   int flush = 0;
 
   if(rule == NULL) {
+    TUPLE* t;
+    ++serial;
+
+    /*    hmap_foreach(rules, t) {
+          rule = hmap_data(t);
+
+          output_script(b, rule);
+        }
+    */
     flush = 1;
     rule = get_rule("all");
-    ++serial;
   }
 
   if(rule->serial == serial)
     return;
+
+  if(!rule->name[str_chr(rule->name, '%')]) {
+      if(rule->recipe.s != compile_command.s)
+    buffer_putm_internal(b, newline, "REM Rules for '", rule->name, "'", newline, 0);
+  }
 
   strlist_foreach(&rule->prereq, x, n) {
     target* dep = find_rule_b(x, n);
@@ -2501,13 +2533,37 @@ output_script(buffer* b, target* rule) {
     output_script(b, dep);
   }
 
-  if(rule->recipe) {
+  if(array_length(&rule->objs, sizeof(target*))) {
+    target** tptr;
+    array_foreach_t(&rule->objs, tptr) {
+      target* dep = *tptr;
+
+      if(dep == 0 || dep->serial == serial)
+        continue;
+
+      // if(dep->name[str_chr(dep->name, '%')])
+      output_script(b, dep);
+    }
+  }
+
+  if(rule->recipe.len) {
     stralloc cmd;
     stralloc_init(&cmd);
     rule_command(rule, &cmd);
     buffer_putsa(b, &cmd);
     stralloc_free(&cmd);
+
+    buffer_puts(b, " || GOTO FAIL");
   }
+
+  if(str_equal(rule->name, "all")) {
+      buffer_putm_internal(b, newline,
+                           ":SUCCESS", newline,
+                           "ECHO Done.", newline,
+                           "GOTO QUIT", newline, newline,
+                           ":FAIL", newline, "ECHO Fail.", newline, newline,
+                           ":QUIT", newline, 0);
+    }
 
   put_newline(b, flush);
   rule->serial = serial;
@@ -2683,6 +2739,13 @@ set_compiler_type(const char* compiler) {
 
       set_var("AR", "llvm-ar");
     }
+
+    if(build_type == BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "-O0");
+    else if(build_type == BUILD_TYPE_MINSIZEREL)
+      push_var("CFLAGS", "-Os");
+    else
+      push_var("CFLAGS", "-O2");
 
     set_command(&lib_command, "$(AR) rcs $@", "$^");
     set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
@@ -2997,6 +3060,7 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "-T$(TARGET)-coff");
     push_var("LDFLAGS", "-machine:$(MACHINE)");
     push_var("LDFLAGS", "-libpath:\"%PELLESC%\\lib\"");
+    push_var("LDFLAGS", "-libpath:\"%PELLESC%\\lib\\win$(L64)\"");
 
     /*    if(build_type == BUILD_TYPE_MINSIZEREL)
           push_var("CFLAGS", "-Os");
@@ -3264,6 +3328,9 @@ main(int argc, char* argv[]) {
   ninja = make[str_find(make, "ninja")] != '\0';
   shell = str_start(make, "sh");
 
+  if(batch)
+    comment = "REM ";
+
   if(compiler == NULL)
     compiler = "gcc";
   else if(mach.bits == 0)
@@ -3509,7 +3576,7 @@ main(int argc, char* argv[]) {
       gen_install_rules(rules);
 
   fail:
-    buffer_puts(buffer_1, "# Generated by:\n#  ");
+    buffer_putm_internal(buffer_1, comment, " Generated by:\n", comment, "  ", 0);
     buffer_putsa(buffer_1, &cmdline.sa);
     buffer_putnlflush(buffer_1);
 
@@ -3524,7 +3591,7 @@ main(int argc, char* argv[]) {
 
     if(batch || shell) {
       if(batch) {
-        buffer_putm_internal(buffer_1, "CD %~dp0", newline, newline, 0);
+        buffer_putm_internal(buffer_1, "CD %~dp0", newline, 0);
       } else {
         buffer_putm_internal(buffer_1, "cd \"$(dirname \"$0\")\"\n\n", 0);
       }

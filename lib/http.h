@@ -68,7 +68,6 @@ typedef struct {
   void* ssl;
 } http;
 
-ssize_t buffer_dummyread(void);
 int     http_get(http*, const char* location);
 void    http_init(http*, const char* host, uint16 port);
 int     http_readable(http*, int freshen);

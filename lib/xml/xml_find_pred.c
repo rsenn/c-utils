@@ -86,7 +86,7 @@ xmlnode*
 xml_find_pred_n(xmlnode* node, int (*pred)(xmlnode*, const void*), int n, ...) {
   xmlnode* ret;
   va_list args;
-  va_start(args, pred);
+  va_start(args, n);
 
   ret = xml_vfind_pred_n(node, pred, n, args);
 
