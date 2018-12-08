@@ -91,7 +91,7 @@ static const char* libpfx = DEFAULT_LIBPFX;
 static const char* binext = DEFAULT_EXEEXT;
 
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
-static const char *comment = "#";
+static const char* comment = "#";
 
 static strlist builddir, workdir;
 static stralloc srcdir;
@@ -144,7 +144,7 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
   if(args) {
     stralloc_catc(sa, ' ');
 
-    if(make_begin_inline && make_end_inline) {
+    if(!(ninja || batch) && (make_begin_inline && make_end_inline)) {
       stralloc_cats(sa, make_begin_inline);
       if(!str_start(make, "nmake"))
         stralloc_subst(sa, args, str_len(args), "$^", "$|");
@@ -955,7 +955,10 @@ var(const char* name) {
  */
 strlist*
 set_var(const char* name, const char* value) {
-  strlist* var = get_var(name);
+  strlist* var;
+
+  hmap_delete(&vars, (void*)name, str_len(name) + 1);
+  var = get_var(name);
 
   stralloc_zero(&var->sa);
   stralloc_copys(&var->sa, value);
@@ -1037,7 +1040,7 @@ void
 push_define(const char* def) {
   stralloc define;
   stralloc_init(&define);
-  stralloc_copys(&define, "-D ");
+  stralloc_copys(&define, "-D");
   stralloc_cats(&define, def);
   stralloc_nul(&define);
 
@@ -1805,13 +1808,13 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
 
     if((rule = get_rule_sa(&target))) {
 
+      if(rule->recipe.s == 0)
+        strlist_zero(&rule->output);
+
       add_path_sa(&rule->output, &obj);
 
       if(rule->recipe.s)
         continue;
-      else {
-        strlist_zero(&rule->output);
-      }
 
       add_srcpath(&rule->prereq, srcs.s);
 
@@ -1825,20 +1828,23 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
       } else {
         size_t p, e;
         char* x;
-        // stralloc_weak(&rule->recipe, &compile_command);
-        stralloc_copy(&rule->recipe, &compile_command);
 
-        x = stralloc_begin(&rule->recipe);
-        // e = stralloc_end(&rule->recipe);
+        if(workdir.sa.len == 0 || stralloc_equals(&workdir.sa, ".")) {
+          stralloc_copy(&rule->recipe, &compile_command);
+          x = stralloc_begin(&rule->recipe);
+          // e = stralloc_end(&rule->recipe);
 
-        p = e = stralloc_finds(&rule->recipe, "$@");
-        while(p > 0 && !((x[p + 1] == '/' || x[p + 1] == '-') && x[p] == ' ')) --p;
+          p = e = stralloc_finds(&rule->recipe, "$@");
+          while(p > 0 && !((x[p + 1] == '/' || x[p + 1] == '-') && x[p] == ' ')) --p;
 
-        e += 2;
-        if(x[e] == '"')
-          ++e;
+          e += 2;
+          if(x[e] == '"')
+            ++e;
 
-        stralloc_remove(&rule->recipe, p, e - p);
+          stralloc_remove(&rule->recipe, p, e - p);
+        } else {
+          stralloc_weak(&rule->recipe, &compile_command);
+        }
 
         //        rule->recipe = /* str_start(make, "g") ? NULL :*/ &compile_command;
       }
@@ -2298,20 +2304,20 @@ output_all_vars(buffer* b, HMAP_DB* vars) {
       stralloc_nul(&v);
 
       if(batch)
-        buffer_putm_internal(b, "SET ", v.s, "=", 0);
+        buffer_putm_internal(b, "@SET ", v.s, "=", 0);
       else if(shell)
         buffer_putm_internal(b, v.s, "=\"", 0);
       else
         buffer_putm_internal(b, v.s, " = ", 0);
 
       if(ninja || shell) {
-          stralloc_zero(&v);
-          subst_var(&var->sa, &v, "$", "", 1);
-          buffer_putsa(b, &v);
-      } else  if(batch) {
-          stralloc_zero(&v);
-          subst_var(&var->sa, &v, "%", "%", 1);
-          buffer_putsa(b, &v);
+        stralloc_zero(&v);
+        subst_var(&var->sa, &v, "$", "", 1);
+        buffer_putsa(b, &v);
+      } else if(batch) {
+        stralloc_zero(&v);
+        subst_var(&var->sa, &v, "%", "%", 1);
+        buffer_putsa(b, &v);
       } else {
         buffer_putsa(b, &var->sa);
       }
@@ -2374,7 +2380,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])
@@ -2520,8 +2526,8 @@ output_script(buffer* b, target* rule) {
     return;
 
   if(!rule->name[str_chr(rule->name, '%')]) {
-      if(rule->recipe.s != compile_command.s)
-    buffer_putm_internal(b, newline, "REM Rules for '", rule->name, "'", newline, 0);
+    if(rule->recipe.s != compile_command.s)
+      buffer_putm_internal(b, newline, "REM Rules for '", rule->name, "'", newline, 0);
   }
 
   strlist_foreach(&rule->prereq, x, n) {
@@ -2557,13 +2563,24 @@ output_script(buffer* b, target* rule) {
   }
 
   if(str_equal(rule->name, "all")) {
-      buffer_putm_internal(b, newline,
-                           ":SUCCESS", newline,
-                           "ECHO Done.", newline,
-                           "GOTO QUIT", newline, newline,
-                           ":FAIL", newline, "ECHO Fail.", newline, newline,
-                           ":QUIT", newline, 0);
-    }
+    buffer_putm_internal(b,
+                         newline,
+                         ":SUCCESS",
+                         newline,
+                         "ECHO Done.",
+                         newline,
+                         "GOTO QUIT",
+                         newline,
+                         newline,
+                         ":FAIL",
+                         newline,
+                         "ECHO Fail.",
+                         newline,
+                         newline,
+                         ":QUIT",
+                         newline,
+                         0);
+  }
 
   put_newline(b, flush);
   rule->serial = serial;
@@ -2755,8 +2772,8 @@ set_compiler_type(const char* compiler) {
     /*
      * Visual C++ compiler
      */
-  } else if(str_start(compiler, "msvc") || str_start(compiler, "icl") ||
-     str_start(compiler, "vs20") || str_start(compiler, "vc")) {
+  } else if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
+            str_start(compiler, "vc")) {
 
     objext = ".obj";
     binext = ".exe";
@@ -3031,34 +3048,35 @@ set_compiler_type(const char* compiler) {
     set_var("LINK", "polink");
     set_var("LIB", "polib");
 
+    set_var("TARGET", mach.bits == _64 ? "amd64-coff" : "x86-coff");
+
+    set_var("CFLAGS", "-W0");
+
     if(build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "-Ob1");
 
     // push_var("CFLAGS", "-fp:precise");
-    push_var("CFLAGS", "-W0");
 
-    push_var("CFLAGS", "-Ze");
-    push_var("CFLAGS", "-Zx");
-    push_var("CFLAGS", "-Go");
-    push_var("CFLAGS", "-Gz");
+    push_var("CFLAGS", "-Ze"); /* Activates Microsoft's extensions to C */
+   // push_var("CFLAGS", "-Zx"); /* Activates Pelle's extensions to C */
+    push_var("CFLAGS", "-Go"); /* Accepts 'old' names for C runtime functions */
+   // push_var("CFLAGS", "-Gz"); /* default to __stdcall */
 
     push_var("CPPFLAGS", "-D__PELLESC__");
 
     if(mach.bits == _64) {
       set_var("MACHINE", "AMD64");
-      set_var("TARGET", "amd64");
       set_var("L64", "64");
       // libext = "64.lib";
       push_var("CPPFLAGS", "-D_M_AMD64");
 
     } else if(mach.bits == _32) {
       set_var("MACHINE", "X86");
-      set_var("TARGET", "x86");
       set_var("L64", "");
       push_var("CPPFLAGS", "-D_M_IX86");
     }
 
-    push_var("CFLAGS", "-T$(TARGET)-coff");
+    push_var("CFLAGS", "-T$(TARGET)");
     push_var("LDFLAGS", "-machine:$(MACHINE)");
     push_var("LDFLAGS", "-libpath:\"%PELLESC%\\lib\"");
     push_var("LDFLAGS", "-libpath:\"%PELLESC%\\lib\\win$(L64)\"");

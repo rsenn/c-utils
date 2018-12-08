@@ -52,7 +52,7 @@ else(LIBLZMA_FOUND)
 endif(LIBLZMA_FOUND)
 
 if(ZLIB_FOUND)
-  link_libraries(${ZLIB_LIBRARIES})
+  link_libraries(${ZLIB_LIBRARY})
   include_directories(${ZLIB_INCLUDE_DIRS})
   add_definitions(-DHAVE_ZLIB=1)
 else(ZLIB_FOUND)
