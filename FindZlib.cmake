@@ -75,7 +75,7 @@ endforeach()
 # Allow ZLIB_LIBRARY to be set manually, as the location of the zlib library
 if(NOT ZLIB_LIBRARY)
   foreach(search ${_ZLIB_SEARCHES})
-    find_library(ZLIB_LIBRARY_RELEASE NAMES ${ZLIB_NAMES} ${${search}} PATH_SUFFIXES lib)
+    find_library(ZLIB_LIBRARY NAMES ${ZLIB_NAMES} ${${search}} PATH_SUFFIXES lib)
     find_library(ZLIB_LIBRARY_DEBUG NAMES ${ZLIB_NAMES_DEBUG} ${${search}} PATH_SUFFIXES lib)
   endforeach()
 
@@ -124,29 +124,29 @@ if(ZLIB_FOUND)
     set_target_properties(ZLIB::ZLIB PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIRS}")
 
-    if(ZLIB_LIBRARY_RELEASE)
+    if(ZLIB_LIBRARY)
       set_property(TARGET ZLIB::ZLIB APPEND PROPERTY
         IMPORTED_CONFIGURATIONS RELEASE)
       set_target_properties(ZLIB::ZLIB PROPERTIES
-        IMPORTED_LOCATION_RELEASE "${ZLIB_LIBRARY_RELEASE}")
+        IMPORTED_LOCATION "${ZLIB_LIBRARY}")
     endif()
 
-    if(ZLIB_LIBRARY_DEBUG)
+    if(ZLIB_LIBRARY)
       set_property(TARGET ZLIB::ZLIB APPEND PROPERTY
         IMPORTED_CONFIGURATIONS DEBUG)
       set_target_properties(ZLIB::ZLIB PROPERTIES
-        IMPORTED_LOCATION_DEBUG "${ZLIB_LIBRARY_DEBUG}")
+        IMPORTED_LOCATION "${ZLIB_LIBRARY}")
     endif()
 
-    if(NOT ZLIB_LIBRARY_RELEASE AND NOT ZLIB_LIBRARY_DEBUG)
+    if(NOT ZLIB_LIBRARY AND NOT ZLIB_LIBRARY)
       set_property(TARGET ZLIB::ZLIB APPEND PROPERTY
         IMPORTED_LOCATION "${ZLIB_LIBRARY}")
     endif()
   endif()
 
-  if(NOT ZLIB_LIBRARY_DEBUG)
-    unset(ZLIB_LIBRARY_DEBUG CACHE)
-    set(ZLIB_LIBRARY_DEBUG "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib (debug)")
-  endif(NOT ZLIB_LIBRARY_DEBUG)
+  if(NOT ZLIB_LIBRARY)
+    unset(ZLIB_LIBRARY CACHE)
+    set(ZLIB_LIBRARY "${ZLIB_LIBRARY}" CACHE FILEPATH "zlib (debug)")
+  endif(NOT ZLIB_LIBRARY)
 
 endif()

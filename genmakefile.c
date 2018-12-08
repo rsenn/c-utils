@@ -2866,7 +2866,6 @@ usage(char* argv0) {
                        "  -h, --help                show this help\n",
                        "  -o, --output FILE         write to file\n"
                        "  -O, --objext EXT          object file extension\n",
-
                        "  -B, --exeext EXT          binary file extension\n",
                        "  -L, --libext EXT          library file extension\n",
                        "  -a, --create-libs         create rules for libraries\n",
@@ -2875,7 +2874,7 @@ usage(char* argv0) {
                        "  -d, --builddir            build directory\n",
                        "  -t, --compiler-type TYPE   compiler type, one of:\n",
                        "  -l, --link                link a library\n",
-                       newline,
+                       "\n",
                        "     gcc         GNU make\n",
                        "     bcc55       Borland C++ Builder 5.5\n",
                        "     bcc32       Borland C++ Builder new\n",
@@ -2887,6 +2886,7 @@ usage(char* argv0) {
                        "     occ         OrangeC\n",
                        "     dmc         Digital Mars C++\n",
                        "     pocc        Pelles-C\n",
+                       "\n",
                        "  -m, --make-type TYPE      make program type, one of:\n",
                        "     nmake       Microsoft NMake\n",
                        "     borland     Borland Make\n",

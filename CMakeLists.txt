@@ -59,7 +59,7 @@ else(ZLIB_FOUND)
   add_definitions(-DHAVE_ZLIB=0)
 endif(ZLIB_FOUND)
 
-link_libraries(${BZIP2_LIBRARIES})
+link_libraries(${BZIP2_LIBRARY_RELEASE})
 include_directories(${BZIP2_INCLUDE_DIR})
 pkg_search_module(LIBBZ2 libbz2 bzip2)
 
@@ -75,7 +75,7 @@ if(OPENSSL_FOUND)
 endif(OPENSSL_FOUND)
 
 link_libraries(
-  ${ZLIB_LIBRARY_RELEASE}
+  ${ZLIB_LIBRARY}
   ${BZIP2_LIBRARY_RELEASE}
   ${LIBLZMA_LIBRARY}
   )
