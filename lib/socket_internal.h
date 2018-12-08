@@ -98,7 +98,7 @@ typedef int socklen_t;
 #endif
 
 
-#ifdef __PELLESC__
+#if defined(__PELLESC__) && defined(_M_AMD64)
 #define __WSAFDIsSet _WSAFDIsSet
 #endif
 
