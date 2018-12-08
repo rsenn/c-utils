@@ -178,7 +178,7 @@ add_program(eagle-to-circuit xml stralloc buffer strlist  array byte cb cbmap fm
 add_program(elf64list elf mmap uint16 uint32 uint64)
 add_program(elflist buffer errmsg unix elf mmap str)
 add_program(elfwrsec buffer elf mmap)
-add_program(genmakefile strarray stralloc buffer rdir errmsg hmap mmap path scan slist str unix  strlist ${LIBSHLWAPI})
+add_program(genmakefile strarray stralloc buffer rdir errmsg hmap mmap path scan slist case str unix  strlist ${LIBSHLWAPI})
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix)
 add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK})
 add_program(impgen buffer byte mmap open pe uint16 uint32)

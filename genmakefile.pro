@@ -63,4 +63,7 @@ SOURCES = genmakefile.c lib/array/array_allocate.c lib/array/array_catb.c lib/ar
     lib/str/str_case_start.c \
     lib/stralloc/stralloc_move.c \
     lib/stralloc/stralloc_diff.c \
-    lib/hmap/hmap_delete.c
+    lib/hmap/hmap_delete.c \
+    lib/case/case_lowerc.c \
+    lib/case/case_find.c \
+    lib/case/case_findb.c
