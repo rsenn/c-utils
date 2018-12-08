@@ -18,6 +18,7 @@
 #include "lib/fmt.h"
 #include "lib/dir.h"
 #include "lib/range.h"
+#include "lib/case.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -3373,10 +3374,12 @@ main(int argc, char* argv[]) {
       compiler = s;
       break;
     }
-    for(i = 0; i < (sizeof(build_types) / sizeof(build_types[0])); ++i) {
-      if(!str_case_diff(s, build_types[i])) {
-        build_type = i;
-        break;
+    if(build_type == -1) {
+      for(i = 0; i < (sizeof(build_types) / sizeof(build_types[0])); ++i) {
+        if(s[case_find(s, build_types[i])]) {
+          build_type = i;
+          break;
+        }
       }
     }
   }

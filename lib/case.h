@@ -13,6 +13,9 @@ void case_lowers(char *s);
 /* turn upper case letters to lower case letters, binary */
 void case_lowerb(void *buf,size_t len);
 
+
+int case_lowerc(int c);
+
 /* like str_diff, ignoring case */
 int case_diffs(const char *,const char *);
 /* like byte_diff, ignoring case */
@@ -24,9 +27,11 @@ int case_starts(const char *,const char *);
 #define case_equals(s,t) (!case_diffs((s),(t)))
 #define case_equalb(s,n,t) (!case_diffb((s),(n),(t)))
 
+size_t case_findb(const char* s1, const char* x, size_t n);
+size_t case_find(const void* s, const void* what);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
