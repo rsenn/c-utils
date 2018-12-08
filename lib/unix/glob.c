@@ -200,7 +200,7 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
       cbCurr += cch + 1;
 
       ++cMatches;
-    } while(FindNextFile(hFind, &find_data) && cMatches != maxMatches);
+    } while(FindNextFileA(hFind, &find_data) && cMatches != maxMatches);
 
     (void)FindClose(hFind);
 

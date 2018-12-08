@@ -1,5 +1,6 @@
 #ifdef HAVE_LIBBZ2
 #include <bzlib.h>
+#define BZ_NO_STDIO 1
 #endif
 
 
@@ -7,6 +8,7 @@
 #include <stdlib.h>
 
 #ifdef HAVE_LIBBZ2
+#ifndef BZ_NO_STDIO
 static void
 buffer_bzip_close(buffer* b) {
   BZFILE* f;
@@ -86,4 +88,5 @@ buffer_bzip_fd(buffer* b, fd_t fd, int level) {
   b->deinit = buffer_bzip_close;
   return 0;
 }
+#endif
 #endif

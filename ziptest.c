@@ -154,6 +154,7 @@ main(int argc, char* argv[]) {
           buffer_gzip(&cbuf, out_filename, level);
       }
       break;
+ #if 0
     case C_BZ2:
       if(decompress) {
         if(input == buffer_0)
@@ -167,6 +168,7 @@ main(int argc, char* argv[]) {
           buffer_bzip(&cbuf, out_filename, level);
       }
       break;
+ #endif
     /*    case C_XZ: */
     /*    case C_LZMA: */
     /*      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); */
