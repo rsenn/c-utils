@@ -1,6 +1,6 @@
 $(BUILDDIR)array$(EXEEXT): examples/array.c io.a iarray.a ndelay.a buffer.a array.a byte.a str.a fmt.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
-$(BUILDDIR)b64encode$(EXEEXT): examples/b64encode.c io.a iarray.a ndelay.a buffer.a byte.a fmt.a textcode.a
+$(BUILDDIR)b64encode$(EXEEXT): examples/b64encode.c io.a iarray.a ndelay.a buffer.a byte.a fmt.a textcode.a str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 $(BUILDDIR)buffer_1$(EXEEXT): examples/buffer_1.c io.a iarray.a ndelay.a buffer.a byte.a fmt.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
