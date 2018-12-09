@@ -2381,7 +2381,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])
@@ -2704,8 +2704,8 @@ set_make_type(const char* make, const char* compiler) {
 int
 set_compiler_type(const char* compiler) {
 
-  push_var("CC", "cc");
-  push_var("CXX", "c++");
+  set_var("CC", "cc");
+  set_var("CXX", "c++");
 
   stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o \"$@\" $<");
   set_command(&lib_command, "$(LIB) /out:$@", "$^");
@@ -2814,46 +2814,48 @@ set_compiler_type(const char* compiler) {
       set_var("LINK", "xilink");
       set_var("LIB", "xilib");
 
-      push_var("CFLAGS", "-Qip -Qunroll4 -nologo");
+      push_var("CFLAGS", "-Qip");
+      push_var("CFLAGS", "-Qunroll4");
+      push_var("CFLAGS", "-Qauto-ilp32");
 
       if(mach.bits == _64)
-        push_var("LDFLAGS", "-LIBPATH:\"%ROOT%\\compiler\\lib\\intel64\"");
+        push_var("LDFLAGS", "-libpath:\"$(ROOT)\\compiler\\lib\\intel64\"");
       else
-        push_var("LDFLAGS", "-LIBPATH:\"%ROOT%\\compiler\\lib\"");
+        push_var("LDFLAGS", "-libpath:\"$(ROOT)\\compiler\\lib\"");
 
       //      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     }
 
-    push_var("LDFLAGS", "-LIBPATH:\"%UniversalCRTSdkDir%lib\\%WindowsSDKLibVersion%ucrt\\$(MACHINE)\"");
-    push_var("LDFLAGS", "-LIBPATH:\"%WindowsSdkDir%lib\\%WindowsSDKLibVersion%um\\$(MACHINE)\"");
-    push_var("LDFLAGS", "-LIBPATH:\"%VCToolsInstallDir%lib\\$(MACHINE)\"");
+    push_var("LDFLAGS", "-libpath:\"$(UNIVERSALCRTSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)ucrt\\$(MACHINE)\"");
+    push_var("LDFLAGS", "-libpath:\"$(WINDOWSSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)um\\$(MACHINE)\"");
+    push_var("LDFLAGS", "-libpath:\"$(VCTOOLSINSTALLDIR)lib\\$(MACHINE)\"");
 
-    push_var("LDFLAGS", "-LIBPATH:\"%WindowsSdkDir%lib$(X64)\"");
-    push_var("LDFLAGS", "-LIBPATH:\"%VCINSTALLDIR%\\lib$(AMD64)\"");
+    push_var("LDFLAGS", "-libpath:\"$(WINDOWSSDKDIR)lib$(X64)\"");
+    push_var("LDFLAGS", "-libpath:\"$(VCINSTALLDIR)\\lib$(AMD64)\"");
 
-    push_var("LDFLAGS", "-INCREMENTAL -MANIFEST");
+    push_var("LDFLAGS", "-incremental -manifest");
 
     if(build_type == BUILD_TYPE_DEBUG)
-      push_var("LDFLAGS", "-DEBUG");
+      push_var("LDFLAGS", "-debug");
 
     if(str_start(compiler, "icl"))
-      push_var("LDFLAGS", "-manifest:embed -MANIFESTUAC:\"level='asInvoker' uiAccess='false'\"");
+      push_var("LDFLAGS", "-manifest:embed -manifestuac:\"level='asInvoker' uiAccess='false'\"");
 
     if(mach.arch == ARM) {
-      push_var("LDFLAGS", "-MACHINE:ARM");
+      push_var("LDFLAGS", "-machine:ARM");
       set_var("MACHINE", mach.bits == _64 ? "arm64" : "arm");
     } else if(mach.bits == _64) {
-      push_var("LDFLAGS", "-MACHINE:X64");
+      push_var("LDFLAGS", "-machine:X64");
       set_var("MACHINE", "x64");
       set_var("X64", "\\x64");
       set_var("AMD64", "\\amd64");
     } else if(mach.bits == _32) {
-      push_var("LDFLAGS", "-MACHINE:X86");
+      push_var("LDFLAGS", "-machine:X86");
       set_var("MACHINE", "x86");
       set_var("X64", "");
     }
 
-    set_command(&link_command, "$(LINK) /OUT:\"$@\" $(LDFLAGS) /PDB:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
+    set_command(&link_command, "$(LINK) -out:\"$@\" $(LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
 
     /*
      * Borland C++ Builder
@@ -3059,9 +3061,9 @@ set_compiler_type(const char* compiler) {
     // push_var("CFLAGS", "-fp:precise");
 
     push_var("CFLAGS", "-Ze"); /* Activates Microsoft's extensions to C */
-   // push_var("CFLAGS", "-Zx"); /* Activates Pelle's extensions to C */
+                               // push_var("CFLAGS", "-Zx"); /* Activates Pelle's extensions to C */
     push_var("CFLAGS", "-Go"); /* Accepts 'old' names for C runtime functions */
-   // push_var("CFLAGS", "-Gz"); /* default to __stdcall */
+                               // push_var("CFLAGS", "-Gz"); /* default to __stdcall */
 
     push_var("CPPFLAGS", "-D__POCC__");
 
