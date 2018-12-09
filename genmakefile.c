@@ -1675,11 +1675,18 @@ gen_clean_rule(HMAP_DB* rules) {
 
     hmap_foreach(rules, t) {
 
+      const char* target = t->key;
+
       /* Ignore the builddir rule */
       if(stralloc_equals(&workdir.sa, t->key))
         continue;
 
       rule = hmap_data(t);
+
+      if(target[str_chr(target, '%')]) {
+        stralloc_nul(&rule->output.sa);
+        target = rule->output.sa.s;
+      }
 
       /* If the rule has prerequisites and a recipe, it must be a producing rule */
       if(strlist_count(&rule->prereq) && rule->recipe.s) {
@@ -1687,6 +1694,7 @@ gen_clean_rule(HMAP_DB* rules) {
 
         if(t->key[(bpos = str_rchr(t->key, '{'))]) {
           size_t epos = str_rchr(&t->key[bpos + 1], '}');
+
           stralloc_zero(&fn);
           stralloc_catb(&fn, &t->key[bpos + 1], epos);
           stralloc_catc(&fn, pathsep_make);
@@ -1695,7 +1703,7 @@ gen_clean_rule(HMAP_DB* rules) {
           stralloc_nul(&fn);
           arg = fn.s;
         } else {
-          stralloc_copys(&fn, t->key);
+          stralloc_copys(&fn, target);
 
           /* If possible, transform file name into a wildcard pattern */
           arg = path_wildcard(&fn, "*");

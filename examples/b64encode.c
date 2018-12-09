@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include "../lib/str.h"
 #include "../lib/buffer.h"
 #include "../lib/textcode.h"
 
