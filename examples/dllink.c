@@ -17,7 +17,7 @@ main(int argc, char* argv[]) {
   buffer filein;
 
   ndelay_off(s);
-  if(argc < 2 || strlen(argv[1]) > 900) {
+  if(argc < 2 || str_len(argv[1]) > 900) {
     buffer_putsflush(buffer_2, "usage: dllink ed2k://|file|<filename>|<filesize>|<MD4-sum|\n");
     return 0;
   }
@@ -33,7 +33,7 @@ main(int argc, char* argv[]) {
   } else
     strcat(buf, argv[1]);
   strcat(buf, "\nq\n");
-  write(s, buf, strlen(buf));
+  write(s, buf, str_len(buf));
   for(;;) {
     line[0] = 0;
     if((l = buffer_getline(&filein, line, (sizeof line) - 1)) == 0 && line[l] != '\n')

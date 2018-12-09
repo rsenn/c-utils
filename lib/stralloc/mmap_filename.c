@@ -43,7 +43,7 @@ mmap_filename(void* map, stralloc* sa) {
 
         /* Look up each device name */
         if(QueryDosDevice(szDrive, szName, MAX_PATH)) {
-          size_t uNameLen = strlen(szName);
+          size_t uNameLen = str_len(szName);
 
           if(uNameLen < MAX_PATH) {
             bFound = strnicmp(sa->s, szName, uNameLen) == 0 && *(sa->s + uNameLen) == '\\';

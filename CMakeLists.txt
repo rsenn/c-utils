@@ -22,10 +22,16 @@ else(NOT ENABLE_SHARED)
 endif(NOT ENABLE_SHARED)
 
 include(FindPkgConfig)
-include(${CMAKE_SOURCE_DIR}/FindZlib.cmake)
-include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
-include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
-include(${CMAKE_SOURCE_DIR}/FindOpenSSL.cmake)
+
+#include(${CMAKE_SOURCE_DIR}/FindZlib.cmake)
+#include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
+#include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
+#include(${CMAKE_SOURCE_DIR}/FindOpenSSL.cmake)
+include(FindZlib)
+include(FindBZip2)
+include(FindLibLZMA)
+include(FindOpenSSL)
+
 include(${CMAKE_SOURCE_DIR}/CheckInline.cmake)
 
 set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
@@ -42,7 +48,7 @@ endforeach()
 
 
 if(LIBLZMA_FOUND)
-  link_libraries(${LIBLZMA_LIBRARIES})
+  link_libraries(${LIBLZMA_LIBRARY})
   include_directories(${LIBLZMA_INCLUDE_DIRS})
   add_definitions(-DHAVE_LIBLZMA=1
   -DLZMA_API_STATIC=1

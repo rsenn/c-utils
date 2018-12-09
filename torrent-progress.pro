@@ -8,13 +8,13 @@ CONFIG -= qt
   DEFINES += _CRT_NONSTDC_NO_DEPRECATE=1
   DEFINES += _CRT_SECURE_NO_WARNINGS=1
 
-  QMAKE_CFLAGS_WARN_ON = -W3 -Wno-unused-parameter
+gcc:   QMAKE_CFLAGS_WARN_ON = -W3 -Wno-unused-parameter
 }
 
 !*msvc* {
   DEFINES += INLINE=inline
 
-gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable
+gcc: gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable
 }
 
 INCLUDEPATH += .

@@ -957,14 +957,18 @@ var(const char* name) {
 strlist*
 set_var(const char* name, const char* value) {
   strlist* var;
-
-  hmap_delete(&vars, (void*)name, str_len(name) + 1);
   var = get_var(name);
 
   stralloc_zero(&var->sa);
   stralloc_copys(&var->sa, value);
 
   return var;
+}
+
+void
+unset_var(const char* name) {
+  if(isset(name))
+   hmap_delete(&vars, (void*)name, str_len(name) + 1);
 }
 
 /**

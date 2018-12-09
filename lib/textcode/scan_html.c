@@ -62,7 +62,7 @@ scan_html_inner(const char* src, char* dest, size_t* destlen, enum htmlmode mode
       }
       utf8 = lookup(1, src + i + 1);
       if(utf8) {
-        size_t l = strlen(utf8);
+        size_t l = str_len(utf8);
         if(dest)
           byte_copy(dest + written, l, utf8);
         written += l;

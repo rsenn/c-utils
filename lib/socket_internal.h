@@ -98,7 +98,7 @@ typedef int socklen_t;
 #endif
 
 
-#if defined(__POCC__) && defined(_M_AMD64)
+#if 0 //defined(__POCC__) && defined(_M_AMD64)
 #define __WSAFDIsSet _WSAFDIsSet
 #endif
 

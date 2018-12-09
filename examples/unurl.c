@@ -8,7 +8,7 @@ void
 unurl(const char* s) {
   char* buf;
   unsigned long len;
-  buf = alloca(strlen(s) + 1);
+  buf = alloca(str_len(s) + 1);
   if(s[scan_urlencoded(s, buf, &len)]) {
     buffer_putsflush(buffer_2, "parse error!\n");
     return;

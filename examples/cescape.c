@@ -5,8 +5,8 @@
 
 void
 cescape(const char* c) {
-  char* buf = alloca(strlen(c) * 5 + 1);
-  buffer_put(buffer_1, buf, fmt_cescape(buf, c, strlen(c)));
+  char* buf = alloca(str_len(c) * 5 + 1);
+  buffer_put(buffer_1, buf, fmt_cescape(buf, c, str_len(c)));
   buffer_putnlflush(buffer_1);
 }
 
