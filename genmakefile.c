@@ -1666,7 +1666,7 @@ gen_clean_rule(HMAP_DB* rules) {
     stralloc fn;
     strlist delete_args;
     stralloc_init(&fn);
-    strlist_init(&delete_args, ' ');
+    strlist_init(&delete_args, '\0');
 
     if(delete_command.len == 0)
       stralloc_copys(&delete_command, "DEL /F /Q");
