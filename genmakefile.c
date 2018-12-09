@@ -3181,7 +3181,7 @@ usage(char* argv0) {
                        "     bcc55       Borland C++ Builder 5.5\n"
                        "     bcc32       Borland C++ Builder new\n"
                        "     lcc         lcc make\n"
-                       "     tcc         Tinycc make\n"
+                       "     tcc         TinyCC make\n"
                        "     msvc        Visual C++ NMake\n"
                        "     icl         Intel C++ NMake\n"
                        "     clang       LLVM NMake\n"
