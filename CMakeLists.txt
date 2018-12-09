@@ -48,7 +48,7 @@ endforeach()
 
 
 if(LIBLZMA_FOUND)
-  link_libraries(${LIBLZMA_LIBRARY})
+  link_libraries(${LIBLZMA_LIBRARIES})
   include_directories(${LIBLZMA_INCLUDE_DIRS})
   add_definitions(-DHAVE_LIBLZMA=1
   -DLZMA_API_STATIC=1
@@ -58,16 +58,16 @@ else(LIBLZMA_FOUND)
 endif(LIBLZMA_FOUND)
 
 if(ZLIB_FOUND)
-  link_libraries(${ZLIB_LIBRARY})
+  link_libraries(${ZLIB_LIBRARIES})
   include_directories(${ZLIB_INCLUDE_DIRS})
   add_definitions(-DHAVE_ZLIB=1)
 else(ZLIB_FOUND)
   add_definitions(-DHAVE_ZLIB=0)
 endif(ZLIB_FOUND)
 
-link_libraries(${BZIP2_LIBRARY})
-include_directories(${BZIP2_INCLUDE_DIR})
-pkg_search_module(LIBBZ2 libbz2 bzip2)
+link_libraries(${BZIP2_LIBRARIES})
+include_directories(${BZIP2_INCLUDE_DIRS})
+#pkg_search_module(BZIP2 libbz2 bzip2)
 
 if(LIBBZ2_FOUND OR BZIP2_FOUND)
   add_definitions(-DHAVE_LIBBZ2=1)
@@ -81,9 +81,10 @@ if(OPENSSL_FOUND)
 endif(OPENSSL_FOUND)
 
 link_libraries(
-  ${ZLIB_LIBRARY}
-  ${BZIP2_LIBRARY}
-  ${LIBLZMA_LIBRARY}
+  ${ZLIB_LIBRARIES}
+  ${BZIP2_LIBRARIES}
+  ${LIBLZMA_LIBRARIES}
+  ${OPENSSL_LIBRARIES}
   )
 add_definitions(-Dinline=__inline)
 
@@ -117,7 +118,7 @@ endforeach()
 target_link_libraries(unix stralloc buffer ndelay)
 target_link_libraries(array byte str)
 target_link_libraries(binfmt mmap byte)
-target_link_libraries(buffer byte fmt mmap open str ${LIBLZMA_LIBRARY})
+target_link_libraries(buffer byte fmt mmap open str ${LIBLZMA_LIBRARIES})
 target_link_libraries(cb str)
 target_link_libraries(cbmap str)
 target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI})
@@ -171,7 +172,7 @@ endfunction(add_program PROG)
 add_program(binfmttest binfmt)
 add_program(bsdiffcat buffer array byte errmsg uint32 uint64)
 add_program(buffertest stralloc buffer array case mmap)
-add_program(ccat buffer open str unix ${LIBLZMA_LIBRARY})
+add_program(ccat buffer open str unix ${LIBLZMA_LIBRARIES})
 add_program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 add_program(count-depth buffer fmt)
 add_program(decode-ls-lR stralloc buffer byte fmt io open str)
