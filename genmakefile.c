@@ -2990,19 +2990,19 @@ set_compiler_type(const char* compiler) {
     objext = ".o";
     libext = ".l";
 
-    push_var("CPPFLAGS", "/Dinline=__inline");
+    push_var("CPPFLAGS", "-Dinline=__inline");
     // push_var("LDFLAGS", "/Wcm");
-    push_var("CFLAGS", "/C+? /1 /v /E100");
+    push_var("CFLAGS", "-C+? +1 -v -E-36 -E-39");
 
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "+v");
-      push_var("LDFLAGS", "/v /c+");
+      push_var("LDFLAGS", "-v -c+");
     }
 
     if(build_type == BUILD_TYPE_DEBUG)
-      push_var("CFLAGS", "/O-");
+      push_var("CFLAGS", "-O-");
 
-    push_var("LDFLAGS", "/T:CON32");
+    push_var("LDFLAGS", "-T:CON32");
 
     push_lib("DEFAULT_LIBS", "clwin");
     push_lib("DEFAULT_LIBS", "climp");
