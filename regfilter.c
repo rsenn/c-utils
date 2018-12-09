@@ -35,12 +35,6 @@
 #define MAXIMUM_PATH_LENGTH _MAX_PATH
 #endif
 
-static char*
-mystr_basename(const char* path) {
-  char* r = strrchr(path, '/');
-  return r ? r + 1 : (char*)path;
-}
-
 static int force = 0, shortroot = 0;
 
 static char
@@ -111,7 +105,7 @@ const char* regtype_strings[] = {
 };
 
 int
-reg2cmd() {
+regfilter() {
   char* o;
   char buffer[MAXIMUM_PATH_LENGTH];
   char key[MAXIMUM_PATH_LENGTH];
@@ -415,7 +409,7 @@ reg2cmd() {
 void
 usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
-  buffer_puts(buffer_2, mystr_basename(arg0));
+  buffer_puts(buffer_2, str_basename(arg0));
   buffer_puts(buffer_2, " [-f] [input - file] [output - file]\n");
   buffer_flush(buffer_2);
   exit(1);
@@ -456,6 +450,6 @@ main(int argc, char* argv[]) {
 
     argi++;
   }
-  reg2cmd();
+  regfilter();
   return 0;
 }

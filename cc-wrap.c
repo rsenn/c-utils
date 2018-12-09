@@ -12,8 +12,10 @@
 #include "lib/scan.h"
 
 #if WINDOWS_NATIVE
+#define EXEEXT ".exe"
 #include <process.h>
 #else
+#define EXEEXT ""
 #include <unistd.h>
 #endif
 
@@ -97,6 +99,11 @@ main(int argc, char* argv[]) {
   strlist_init(&path, '\0');
   strlist_froms(&path, pathstr, PATHLISTSEP_C);
 
+#ifdef DEBUG
+  buffer_puts(buffer_2, "ext: ");
+  buffer_puts(buffer_2, ext);
+  buffer_putnlflush(buffer_2);
+#endif
   base_file(".real");
   stralloc_cats(&base, ext);
   stralloc_copy(&realcmd, &base);

@@ -68,9 +68,7 @@ cfg-android ()
   -DPKG_CONFIG_EXECUTABLE=arm-linux-androideabi-pkg-config \
   -DCMAKE_PREFIX_PATH=/opt/arm-linux-androideabi/sysroot/usr \
   -DCMAKE_MAKE_PROGRAM=/usr/bin/make \
-   -DCMAKE_MODULE_PATH="/opt/OpenCV-3.4.1-android-sdk/sdk/native/jni/abi-armeabi-v7a" \
-   -DOpenCV_DIR="/opt/OpenCV-3.4.1-android-sdk/sdk/native/jni/abi-armeabi-v7a" \
-   "$@"
+    "$@"
     )
 }
 
@@ -136,4 +134,16 @@ cfg-termux()
    -DCMAKE_MODULE_PATH="/data/data/com.termux/files/usr/lib/cmake" \
    "$@"
     )
+}
+
+cfg-msys32() { 
+    cfg \
+      -DCMAKE_EXE_LINKER_FLAGS="-static" \
+      -DBZIP2_LIBRAR{Y,IES}="$prefix/lib/libbz2.a" \
+      -DZLIB_LIBRARY="$prefix/lib/libz.a" \
+      -DLIBLZMA_LIBRARY="$prefix/lib/liblzma.a" \
+      -DOPENSSL_CRYPTO_LIBRARY="$prefix/lib/libcrypto.a" \
+      -DOPENSSL_SSL_LIBRARY="$prefix/lib/libssl.a" \
+      -DUSE_SELECT=ON \
+      "$@"
 }

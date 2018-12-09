@@ -29,7 +29,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 86808,
+				"buffer_size": 86891,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -104,7 +104,7 @@
 			"file": "pathtool.c",
 			"settings":
 			{
-				"buffer_size": 7769,
+				"buffer_size": 7818,
 				"line_ending": "Unix"
 			}
 		},
@@ -729,8 +729,8 @@
 						"selection":
 						[
 							[
-								1122,
-								1139
+								1300,
+								1300
 							]
 						],
 						"settings":
@@ -1255,15 +1255,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 86808,
+						"buffer_size": 86891,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								41837,
+								41850
 							]
 						],
 						"settings":
@@ -1273,7 +1273,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 18825.0,
+						"translation.y": 25325.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -1357,7 +1357,9 @@
 						{
 							"auto_indent": false,
 							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 2,
 							"tab_width": 2,
+							"translate_tabs_to_spaces": true,
 							"word_wrap": true
 						},
 						"translation.x": 0.0,
@@ -1491,7 +1493,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7769,
+						"buffer_size": 7818,
 						"regions":
 						{
 						},

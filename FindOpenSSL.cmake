@@ -211,8 +211,8 @@ if(WIN32 AND NOT CYGWIN)
     set(SSL_EAY_LIBRARY_RELEASE "${SSL_EAY_RELEASE}")
 
     include(SelectLibraryConfigurations)
-    select_library_configurations(LIB_EAY)
-    select_library_configurations(SSL_EAY)
+    select_library_configurations(OPENSSL_CRYPTO_LIBRARY)
+    select_library_configurations(OPENSSL_SSL_LIBRARY)
 
     mark_as_advanced(LIB_EAY_LIBRARY_DEBUG LIB_EAY_LIBRARY_RELEASE
                      SSL_EAY_LIBRARY_DEBUG SSL_EAY_LIBRARY_RELEASE)
@@ -222,7 +222,7 @@ if(WIN32 AND NOT CYGWIN)
     # same player, for MinGW
     set(LIB_EAY_NAMES crypto libeay32)
     set(SSL_EAY_NAMES ssl ssleay32)
-    find_library(LIB_EAY
+    find_library(OPENSSL_CRYPTO_LIBRARY
       NAMES
         ${LIB_EAY_NAMES}
       NAMES_PER_DIR
@@ -232,7 +232,7 @@ if(WIN32 AND NOT CYGWIN)
         "lib"
     )
 
-    find_library(SSL_EAY
+    find_library(OPENSSL_SSL_LIBRARY
       NAMES
         ${SSL_EAY_NAMES}
       NAMES_PER_DIR
@@ -242,14 +242,14 @@ if(WIN32 AND NOT CYGWIN)
         "lib"
     )
 
-    mark_as_advanced(SSL_EAY LIB_EAY)
-    set(OPENSSL_SSL_LIBRARY ${SSL_EAY} )
-    set(OPENSSL_CRYPTO_LIBRARY ${LIB_EAY} )
+    mark_as_advanced(OPENSSL_SSL_LIBRARY OPENSSL_CRYPTO_LIBRARY)
+    set(OPENSSL_SSL_LIBRARY ${OPENSSL_SSL_LIBRARY} )
+    set(OPENSSL_CRYPTO_LIBRARY ${OPENSSL_CRYPTO_LIBRARY} )
     unset(LIB_EAY_NAMES)
     unset(SSL_EAY_NAMES)
   else()
     # Not sure what to pick for -say- intel, let's use the toplevel ones and hope someone report issues:
-    find_library(LIB_EAY
+    find_library(OPENSSL_CRYPTO_LIBRARY
       NAMES
         libcrypto
         libeay32
@@ -261,7 +261,7 @@ if(WIN32 AND NOT CYGWIN)
         lib
     )
 
-    find_library(SSL_EAY
+    find_library(OPENSSL_SSL_LIBRARY
       NAMES
         libssl
         ssleay32
@@ -273,9 +273,9 @@ if(WIN32 AND NOT CYGWIN)
         lib
     )
 
-    mark_as_advanced(SSL_EAY LIB_EAY)
-    set(OPENSSL_SSL_LIBRARY ${SSL_EAY} )
-    set(OPENSSL_CRYPTO_LIBRARY ${LIB_EAY} )
+    mark_as_advanced(OPENSSL_SSL_LIBRARY OPENSSL_CRYPTO_LIBRARY)
+    set(OPENSSL_SSL_LIBRARY ${OPENSSL_SSL_LIBRARY} )
+    set(OPENSSL_CRYPTO_LIBRARY ${OPENSSL_CRYPTO_LIBRARY} )
   endif()
 else()
 
