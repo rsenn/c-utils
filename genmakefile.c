@@ -2836,6 +2836,7 @@ set_compiler_type(const char* compiler) {
 
     push_var("LDFLAGS", "-libpath:\"$(WINDOWSSDKDIR)lib$(X64)\"");
     push_var("LDFLAGS", "-libpath:\"$(VCINSTALLDIR)\\lib$(AMD64)\"");
+    push_var("LDFLAGS", "-libpath:\"$(VCINSTALLDIR)\\PlatformSDK\\lib$(AMD64)\"");
 
     push_var("LDFLAGS", "-incremental -manifest");
 

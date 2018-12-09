@@ -5,6 +5,12 @@
 #ifdef HAVE_LIBLZMA
 #include <lzma.h>
 
+#ifdef __DMC__
+#undef  LZMA_VLI_UNKNOWN
+#define  LZMA_VLI_UNKNOWN 18446744073709551615ull
+#endif
+
+
 #define LZMA_BLOCK_SIZE 1024
 
 typedef struct {
@@ -126,7 +132,9 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   f[1].id = LZMA_FILTER_LZMA2;
   f[1].options = &opt_lzma2;
   
-  f[2].id = 18446744073709551615ull; //LZMA_VLI_UNKNOWN;
+  f[2].id = 
+  LZMA_VLI_UNKNOWN
+  ;
   
   if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) {
     return 0;
@@ -145,7 +153,7 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   b->deinit = &buffer_lzma_close;
 
   ret = compress ? lzma_stream_encoder(&ctx->strm, f, LZMA_CHECK_CRC64)
-                 : lzma_stream_decoder(&ctx->strm, 18446744073709551615ull /*UINT64_MAX*/, LZMA_CONCATENATED);
+                 : lzma_stream_decoder(&ctx->strm, LZMA_VLI_UNKNOWN, LZMA_CONCATENATED);
 
   if(ret != LZMA_OK) return 0;
 
