@@ -38,6 +38,7 @@ set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_
 foreach(CompilerFlag ${CompilerFlags})
   unset(FLAG)
   string(REPLACE "/MD" "/MT" FLAG "${${CompilerFlag}}")
+  string(REPLACE "/MTd" "/MT" FLAG "${FLAG}")
   if("${CompilerFlag}" STREQUAL "CMAKE_C_FLAGS_DEBUG")
     set(FLAG "${FLAG} -DDEBUG=1")
   endif()

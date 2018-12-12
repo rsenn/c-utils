@@ -968,7 +968,7 @@ set_var(const char* name, const char* value) {
 void
 unset_var(const char* name) {
   if(isset(name))
-   hmap_delete(&vars, (void*)name, str_len(name) + 1);
+    hmap_delete(&vars, (void*)name, str_len(name) + 1);
 }
 
 /**
@@ -2732,61 +2732,11 @@ set_compiler_type(const char* compiler) {
 
   push_var("DEFS", "-DHAVE_ERRNO_H=1");
 
-  if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") ||
-     str_start(compiler, "llvm")) {
-
-    libext = ".a";
-    objext = ".o";
-
-    if(str_end(compiler, "32"))
-      push_var("CFLAGS", "-m32");
-    if(str_end(compiler, "64"))
-      push_var("CFLAGS", "-m64");
-
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
-      push_var("CFLAGS", "-g");
-      push_var("LDFLAGS", "-g");
-    }
-
-    /*
-     * GNU GCC compatible compilers
-     */
-
-    if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming) {
-      set_var("CC", "gcc");
-      set_var("CXX", "g++");
-
-      set_var("AR", str_start(compiler, "gcc") ? "gcc-ar" : "ar");
-
-      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
-        push_var("CFLAGS", "-ggdb");
-
-    } else if(str_start(compiler, "clang") || str_start(compiler, "llvm")) {
-      pathsep_args = '/';
-
-      set_var("CC", "clang");
-      set_var("CXX", "clang++");
-
-      set_var("AR", "llvm-ar");
-    }
-
-    if(build_type == BUILD_TYPE_DEBUG)
-      push_var("CFLAGS", "-O0");
-    else if(build_type == BUILD_TYPE_MINSIZEREL)
-      push_var("CFLAGS", "-Os");
-    else
-      push_var("CFLAGS", "-O2");
-
-    set_command(&lib_command, "$(AR) rcs $@", "$^");
-    set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
-
-    format_linklib_fn = &format_linklib_switch;
-
-    /*
-     * Visual C++ compiler
-     */
-  } else if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
-            str_start(compiler, "vc")) {
+  /*
+   * Visual C++ compiler
+   */
+  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
+     str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
 
     objext = ".obj";
     binext = ".exe";
@@ -2869,6 +2819,59 @@ set_compiler_type(const char* compiler) {
     }
 
     set_command(&link_command, "$(LINK) -out:\"$@\" $(LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
+
+  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") ||
+            str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
+
+    libext = ".a";
+    objext = ".o";
+
+    if(str_start(compiler, "zapcc"))
+      set_var("CC", "zapcc");
+
+    if(build_type == BUILD_TYPE_DEBUG)
+      set_var("CFLAGS", "-O0");
+    else if(build_type == BUILD_TYPE_MINSIZEREL)
+      set_var("CFLAGS", "-Os");
+    else
+      set_var("CFLAGS", "-O2");
+
+    if(str_end(compiler, "32"))
+      push_var("CFLAGS", "-m32");
+    if(str_end(compiler, "64"))
+      push_var("CFLAGS", "-m64");
+
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+      push_var("CFLAGS", "-g");
+      push_var("LDFLAGS", "-g");
+    }
+
+    /*
+     * GNU GCC compatible compilers
+     */
+
+    if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming) {
+      set_var("CC", "gcc");
+      set_var("CXX", "g++");
+
+      set_var("AR", str_start(compiler, "gcc") ? "gcc-ar" : "ar");
+
+      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+        push_var("CFLAGS", "-ggdb");
+
+    } else if(str_start(compiler, "clang") || str_start(compiler, "llvm")) {
+      pathsep_args = '/';
+
+      set_var("CC", "clang");
+      set_var("CXX", "clang++");
+
+      set_var("AR", "llvm-ar");
+    }
+
+    set_command(&lib_command, "$(AR) rcs $@", "$^");
+    set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
+
+    format_linklib_fn = &format_linklib_switch;
 
     /*
      * Borland C++ Builder
@@ -2988,7 +2991,7 @@ set_compiler_type(const char* compiler) {
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
       push_var("CFLAGS", "-g");
 
-      push_var("LDFLAGS", "-Wl,-subsystem=console");
+    push_var("LDFLAGS", "-Wl,-subsystem=console");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
       push_var("LDFLAGS", "-Wl,-file-alignment=16");
@@ -3277,6 +3280,9 @@ main(int argc, char* argv[]) {
         break;
       case 'D': push_define(optarg); break;
       default:
+        buffer_puts(buffer_2, "No such option '-");
+        buffer_putc(buffer_2, c);
+        buffer_putsflush(buffer_2, "'\n");
         // usage(argv[0]);
         ret = 1;
         goto exit;

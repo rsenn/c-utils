@@ -29,7 +29,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 86891,
+				"buffer_size": 87482,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1255,15 +1255,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 86891,
+						"buffer_size": 87482,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								41837,
-								41850
+								0,
+								0
 							]
 						],
 						"settings":
