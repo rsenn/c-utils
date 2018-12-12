@@ -46,6 +46,9 @@ int path_getsep(const char*);
 int path_is_separator(char);
 char* path_skip_separator(const char*);
 
+int path_find(const char* path, const char* name, stralloc* out);
+
+
 #ifdef __cplusplus
 }
 #endif
