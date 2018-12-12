@@ -63,7 +63,7 @@ static stralloc cwd;
 #define MAX_PATH 260
 #endif
 
-#if (!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
+#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
@@ -449,13 +449,19 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
     if(cfg->machine_type != -1 && (int)loaded_image.file_header->coff_header.machine != cfg->machine_type)
       return 1;
   } else {
+    stralloc sa;
     char* dir;
+    stralloc_init(&sa);
     success = FALSE;
     strlist_foreach_s(cfg->search_paths, dir) {
-      success = try_map_and_load(str_basename(name), dir, &loaded_image, cfg->machine_type);
-      if(success)
-        break;
+      if(path_find(dir, str_basename(name), &sa)) {
+        stralloc_nul(&sa);
+        success = try_map_and_load(str_basename(sa.s), dir, &loaded_image, cfg->machine_type);
+        if(success)
+          break;
+      }
     }
+    stralloc_free(&sa);
     if(!success)
       success = try_map_and_load(name, NULL, &loaded_image, cfg->machine_type);
     if(!success) {
