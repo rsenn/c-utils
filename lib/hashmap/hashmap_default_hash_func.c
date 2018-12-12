@@ -1,7 +1,7 @@
 #include "../linked_list.h"
 #include "../memory.h"
-#include "../hash_map.h"
+#include "../hashmap.h"
 size_t
-hash_map_default_hash_func(const void* key, size_t capacity) {
+hashmap_default_hash_func(const void* key, size_t capacity) {
   return *((size_t*)key) % capacity;
 }

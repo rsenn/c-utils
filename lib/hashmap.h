@@ -17,7 +17,7 @@ extern "C" {
  * Comparator function to determine whether `*l` and `*r` are equal.
  * @return Negative if `*l` is less than `*r`; zero if `*l` is equal to `*r`; positive if `*l` is greater than `*r`.
  */
-typedef int (*hash_map_comparator)(const void* l, const void* r);
+typedef int (*hashmap_comparator)(const void* l, const void* r);
 
 /**
  * Hash function
@@ -25,7 +25,7 @@ typedef int (*hash_map_comparator)(const void* l, const void* r);
  * @param capacity maximum size of the map
  * @return an offset within the range `[0, capacity)`
  */
-typedef size_t (*hash_map_hash_func)(const void* key, size_t capacity);
+typedef size_t (*hashmap_hash_func)(const void* key, size_t capacity);
 
 /**
  * Hash map object
@@ -38,12 +38,12 @@ typedef struct {
   /** Hash table */
   linked_list** table;
   /** Key comparator function */
-  hash_map_comparator comparator;
+  hashmap_comparator comparator;
   /** Key hash function */
-  hash_map_hash_func hash_func;
+  hashmap_hash_func hash_func;
   /** Keys */
   linked_list* keys;
-} hash_map;
+} hashmap;
 
 /**
  * Key/value pair
@@ -53,7 +53,7 @@ typedef struct {
   void* key;
   /** Value */
   void* value;
-} hash_map_pair;
+} hashmap_pair;
 
 /**
  * Initialize the hash map.
@@ -62,14 +62,14 @@ typedef struct {
  * @param comparator key comparator function
  * @param hash_func key hash function
  */
-void hash_map_init(hash_map* map, size_t capacity, hash_map_comparator comparator, hash_map_hash_func hash_func);
+void hashmap_init(hashmap* map, size_t capacity, hashmap_comparator comparator, hashmap_hash_func hash_func);
 
 /**
  * Free the hash map.
  * This function will also free the table of internal linked lists.
  * @param map hash map structure
  */
-void hash_map_free(hash_map* map);
+void hashmap_free(hashmap* map);
 
 /**
  * Get the value for the given key.
@@ -77,7 +77,7 @@ void hash_map_free(hash_map* map);
  * @param key key for value to fetch
  * @return pointer to the value
  */
-void* hash_map_get(hash_map* map, void* key);
+void* hashmap_get(hashmap* map, void* key);
 
 /**
  * Insert the value into the map.
@@ -85,7 +85,7 @@ void* hash_map_get(hash_map* map, void* key);
  * @param key key associated with value
  * @param value value associated with key
  */
-void hash_map_put(hash_map* map, void* key, void* value);
+void hashmap_put(hashmap* map, void* key, void* value);
 
 /**
  * Remove the mapping from the map if this key exists. Calling this on
@@ -93,27 +93,27 @@ void hash_map_put(hash_map* map, void* key, void* value);
  * @param map hash map structure
  * @param key key for mapping to remove
  */
-void hash_map_remove(hash_map* map, void* key);
+void hashmap_remove(hashmap* map, void* key);
 
 /**
  * Returns number of key-value pairs in the map
  * @param map hash map structure
  * @return size of the hash map
  */
-size_t hash_map_size(hash_map* map);
+size_t hashmap_size(hashmap* map);
 
 /**
  * Returns a linked list that contains all keys in the map
  * @param map hash map structure
  * @return a linked list containing all keys
  */
-linked_list* hash_map_keys(hash_map* map);
+linked_list* hashmap_keys(hashmap* map);
 
 /**
  * Removes all key/value pairs from the map
  * @param map hash map structure
  */
-void hash_map_clear(hash_map* map);
+void hashmap_clear(hashmap* map);
 
 /**
  * Check if the map contains the given key
@@ -121,10 +121,10 @@ void hash_map_clear(hash_map* map);
  * @param key the key to check
  * @return true if map contains key
  */
-int hash_map_contains_key(hash_map* map, void* key);
+int hashmap_contains_key(hashmap* map, void* key);
 
-int hash_map_default_comparator(const void*, const void* r);
-size_t hash_map_default_hash_func(const void*, size_t capacity);
+int hashmap_default_comparator(const void*, const void* r);
+size_t hashmap_default_hash_func(const void*, size_t capacity);
 
 #ifdef __cplusplus
 }
