@@ -367,7 +367,7 @@ pkg_list() {
     }
   }
 
-  slist_foreach(&pkgs, it) {}
+  slink_foreach(&pkgs, it) {}
 }
 
 /**

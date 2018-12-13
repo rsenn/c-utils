@@ -77,39 +77,52 @@ typedef struct hmap_db {
   TUPLE* list_tuple;
 } HMAP_DB;
 
-int    hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data);
-int    hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int data_type, ...);
-int    hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len);
-int    hmap_destroy(HMAP_DB** hmap_db);
-void   hmap_dump(HMAP_DB* hmap, buffer* b);
-int    hmap_free_data(TUPLE* tuple);
-int    hmap_init(int bucket_size, HMAP_DB** hmap_db);
-int    hmap_is_locate(HMAP_DB* hmap_db, void* key, size_t k_len);
-int    hmap_print_list(HMAP_DB* my_hmap_db);
-int    hmap_print_table(HMAP_DB* my_hmap_db);
-int    hmap_print_tree(HMAP_DB* my_hmap_db);
-int    hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data);
-int    hmap_set_chars(HMAP_DB** hmap_db, const char* key, const char* data);
-int    hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc* data);
-int    hmap_set(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_len);
+int hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data);
+int hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int data_type, ...);
+int hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len);
+int hmap_destroy(HMAP_DB** hmap_db);
+void hmap_dump(HMAP_DB* hmap, buffer* b);
+int hmap_free_data(TUPLE* tuple);
+int hmap_init(int bucket_size, HMAP_DB** hmap_db);
+int hmap_is_locate(HMAP_DB* hmap_db, void* key, size_t k_len);
+int hmap_print_list(HMAP_DB* my_hmap_db);
+int hmap_print_table(HMAP_DB* my_hmap_db);
+int hmap_print_tree(HMAP_DB* my_hmap_db);
+int hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data);
+int hmap_set_chars(HMAP_DB** hmap_db, const char* key, const char* data);
+int hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc* data);
+int hmap_set(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_len);
 size_t hmap_size(HMAP_DB* my_hmap_db);
-int    hmap_truncate(HMAP_DB** hmap_db);
+int hmap_truncate(HMAP_DB** hmap_db);
 void* hmap_get(HMAP_DB* db, const char* key, size_t keylen);
 
-inline static void* hmap_data(TUPLE* tuple) {
+inline static void*
+hmap_data(TUPLE* tuple) {
   return tuple->vals.val_chars;
 }
 
-#define hmap_last(hmap_db, tuple)  ((hmap_db)->list_tuple == (tuple)->next)
+#define hmap_last(hmap_db, tuple) ((hmap_db)->list_tuple == (tuple)->next)
 #define hmap_next(hmap_db, tuple) (hmap_last(hmap_db, tuple) ? NULL : (tuple)->next)
 
 #define hmap_foreach(hmap_db, tuple) for(tuple = hmap_begin(hmap_db); tuple; tuple = hmap_next(hmap_db, tuple))
 
-inline static TUPLE* hmap_begin(HMAP_DB* hmap) { return hmap->list_tuple; }
+inline static TUPLE*
+hmap_begin(HMAP_DB* hmap) {
+  return hmap->list_tuple;
+}
 
-inline static void hmap_iterator_increment(TUPLE** t) { *t = (*t)->next; }
-inline static int hmap_iterator_equal(TUPLE** t1, TUPLE** t2) { return (*t1) == (*t2); }
-inline static TUPLE* hmap_iterator_dereference(TUPLE** it) { return *it; }
+inline static void
+hmap_iterator_increment(TUPLE** t) {
+  *t = (*t)->next;
+}
+inline static int
+hmap_iterator_equal(TUPLE** t1, TUPLE** t2) {
+  return (*t1) == (*t2);
+}
+inline static TUPLE*
+hmap_iterator_dereference(TUPLE** it) {
+  return *it;
+}
 
 //#define hmap_end(hmap_db) (&((hmap_db)->list_tuple->prev->next))
 //#define hmap_end(hmap_db) ((hmap_db)->list_tuple ? &((hmap_db)->list_tuple->prev->next) : NULL)
@@ -119,22 +132,24 @@ inline static TUPLE* hmap_iterator_dereference(TUPLE** it) { return *it; }
 #define hmap_iterator_dereference(it_ptr) (*(it_ptr))
 inline static int
 hmap_iterator_distance(TUPLE** it1, TUPLE** it2) {
-  TUPLE *a = *it1;
-  TUPLE *b = *it2;
+  TUPLE* a = *it1;
+  TUPLE* b = *it2;
   int n = 0;
 
   while(a && a != *it2 && a != a->next) {
     a = a->next;
     ++n;
   }
-  if(a == *it2 || (!it2 && a == a->next)) return n;
+  if(a == *it2 || (!it2 && a == a->next))
+    return n;
 
   n = 0;
   while(b && b != *it1 && b != b->next) {
     b = b->next;
     ++n;
   }
-  if(b == * it1 || (!it1  && b == b->next)) return n;
+  if(b == *it1 || (!it1 && b == b->next))
+    return n;
 
   return -1;
 }
@@ -148,15 +163,14 @@ hmap_iterator_distance(TUPLE** it1, TUPLE** it2) {
 //#define hmap_iterator_is_last(hmap_db,it)  ((hmap_db)->list_tuple == (*(it))->next)
 
 #ifdef STRALLOC_H
-int hmap_set_stralloc(HMAP_DB **hmap_db, const stralloc *key, const stralloc *data);
+int hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc* data);
 #endif
 
 #ifdef BUFFER_H
-void hmap_dump(HMAP_DB *my_hmap_db, buffer*);
+void hmap_dump(HMAP_DB* my_hmap_db, buffer*);
 #endif
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* defined HMAP_H */
-

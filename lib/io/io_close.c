@@ -3,7 +3,9 @@
 #include <sys/types.h>
 #if WINDOWS_NATIVE
 #include <windows.h>
+#include <io.h>
 #else
+#include <unistd.h>
 #include <sys/mman.h>
 #endif
 

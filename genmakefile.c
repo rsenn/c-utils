@@ -98,6 +98,7 @@ static strlist builddir, workdir;
 static stralloc srcdir;
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static int build_type = -1;
+static strlist build_as_lib;
 
 static HMAP_DB *sourcedirs, *rules, *vars;
 
@@ -1037,6 +1038,16 @@ with_lib(const char* lib) {
   push_lib("LIBS", lib64.s);
 }
 
+void
+include_dir(const char* dir) {
+  stralloc arg;
+  stralloc_init(&arg);
+  stralloc_copys(&arg, "-I");
+  stralloc_cats(&arg, dir);
+
+  push_var_sa("CPPFLAGS", &arg);
+}
+
 /**
  * @brief push_define
  * @param def
@@ -1192,7 +1203,7 @@ dump_sourcedirs(buffer* b, HMAP_DB* sourcedirs) {
     buffer_puts(b, "): ");
     buffer_put(b, t->key, t->key_len);
 
-    slist_foreach(srcdir->sources, pfile) {
+    slink_foreach(srcdir->sources, pfile) {
       buffer_putspace(b);
       buffer_puts(b, pfile->name);
     }
@@ -1792,7 +1803,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
 
   stralloc_init(&obj);
 
-  slist_foreach(&sdir->sources, src) {
+  slink_foreach(&sdir->sources, src) {
     const char *s, *ext;
 
     if(!str_end(src->name, ".c"))
@@ -1885,9 +1896,14 @@ gen_simple_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
   stralloc obj;
   stralloc_init(&obj);
 
-  slist_foreach(&srcdir->sources, src) {
+  slink_foreach(&srcdir->sources, src) {
     target* rule;
-    const char* base = str_basename(src->name);
+    const char* base;
+
+    if(src->name == 0)
+      continue;
+
+    base = str_basename(src->name);
 
     if(!str_equal(base + str_rchr(base, '.'), ".c"))
       continue;
@@ -1955,7 +1971,7 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
       array_catb(&rule->objs, &dep, sizeof(target*));
 
     } else {
-      slist_foreach(srcdir->sources, pfile) {
+      slink_foreach(srcdir->sources, pfile) {
         if(!str_end(pfile->name, ".c"))
           continue;
         stralloc_zero(&sa);
@@ -1986,7 +2002,7 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
   stralloc mask;
   stralloc_init(&mask);
 
-  slist_foreach(&sdir->sources, src) {
+  slink_foreach(&sdir->sources, src) {
 
     const char* s;
     debug_s("sourcefile", src->name);
@@ -2041,7 +2057,7 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     // debug_s("srcdir", t->key);
     // debug_s("base", base);
 
-    if(str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
+    if(strlist_contains(&build_as_lib, base) || str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
       continue;
 
     // gen_srcdir_rule(rules, srcdir, base);
@@ -2123,7 +2139,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         add_path_sa(&link->prereq, &obj);
 
-        slist_foreach(srcdir->sources, pfile) {
+        slink_foreach(srcdir->sources, pfile) {
           if(!pfile->has_main) {
             stralloc_zero(&obj);
             path_object(pfile->name, &obj);
@@ -3223,7 +3239,7 @@ main(int argc, char* argv[]) {
   strlist thisdir, outdir, toks;
   strarray args;
   strlist cmdline;
-  static strarray libs;
+  static strarray libs, includes;
   const char** it;
   const char* s;
   size_t n;
@@ -3231,11 +3247,12 @@ main(int argc, char* argv[]) {
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"objext", 0, NULL, 'O'},
                            {"exeext", 0, NULL, 'B'},
-                           {"libext", 0, NULL, 'L'},
+                           {"libext", 0, NULL, 'X'},
                            {"create-libs", 0, &cmd_libs, 1},
                            {"create-objs", 0, &cmd_objs, 1},
                            {"create-bins", 0, &cmd_bins, 1},
-                           {"install", 0, 0, 'I'},
+                           {"install", 0, 0, 'i'},
+                           {"includedir", 0, 0, 'I'},
                            /*                           {"install-bins", 0, &inst_bins, 1},
                                                      {"install-libs", 0, &inst_libs, 1},*/
                            {"builddir", 0, 0, 'd'},
@@ -3247,6 +3264,7 @@ main(int argc, char* argv[]) {
                            {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
                            {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
                            {"define", 0, NULL, 'D'},
+                           {"build-as-lib", 0, 0, 'L'},
                            {0}};
 
   errmsg_iam(argv[0]);
@@ -3255,7 +3273,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -3269,13 +3287,15 @@ main(int argc, char* argv[]) {
       case 'o': outfile = optarg; break;
       case 'O': objext = optarg; break;
       case 'B': binext = optarg; break;
-      case 'L': libext = optarg; break;
+      case 'L': strlist_push(&build_as_lib, optarg); break;
+      case 'X': libext = optarg; break;
       case 'd': dir = optarg; break;
       case 't': toolchain = compiler = optarg; break;
       case 'm': make = optarg; break;
       case 'a': set_machine(optarg); break;
       case 'l': strarray_push(&libs, optarg); break;
-      case 'I':
+      case 'I': strarray_push(&includes, optarg); break;
+      case 'i':
         inst_bins = 1;
         inst_libs = 1;
         break;
@@ -3420,6 +3440,7 @@ main(int argc, char* argv[]) {
     pathsep_args = pathsep_make;
 
   strarray_foreach(&libs, it) { with_lib(*it); }
+  strarray_foreach(&includes, it) { include_dir(*it); }
 
   stralloc_replacec(&outdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   //  path_absolute_sa(&outdir.sa);
@@ -3599,12 +3620,12 @@ main(int argc, char* argv[]) {
       cmd_bins = gen_link_rules(rules, &srcs);
     }
 
-    if(cmd_bins == 0) {
+    if(cmd_bins == 0 || cmd_libs == 1) {
       TUPLE* t;
       hmap_foreach(rules, t) {
         target* tgt = hmap_data(t);
 
-        if(tgt->recipe.s == lib_command.s)
+        if(stralloc_equal(&tgt->recipe, &lib_command))
           strlist_push(&all->prereq, t->key);
       }
     }

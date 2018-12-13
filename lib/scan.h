@@ -104,6 +104,8 @@ size_t scan_varint(const char* in, size_t len, uint64* n);
 
 size_t scan_xmlescape(const char* src, char* dest);
 
+size_t scan_utf8_sem(const char* in, size_t len, uint32* num);
+
 #ifdef __cplusplus
 }
 #endif

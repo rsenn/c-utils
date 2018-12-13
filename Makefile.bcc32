@@ -60,7 +60,7 @@ $(BUILDDIR)access.obj $(BUILDDIR)binfmttest.obj $(BUILDDIR)bsdiffcat.obj $(BUILD
 	 $(BUILDDIR)%.obj: %.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -n"$(BUILDDIR)" $^
 
-$(BUILDDIR)fnmatch.obj $(BUILDDIR)fork.obj $(BUILDDIR)getdelim.obj $(BUILDDIR)getenv.obj $(BUILDDIR)getopt.obj $(BUILDDIR)glob.obj $(BUILDDIR)hash_map.obj $(BUILDDIR)iopause.obj $(BUILDDIR)io_passfd.obj $(BUILDDIR)isleap.obj $(BUILDDIR)linked_list.obj $(BUILDDIR)memalign.obj $(BUILDDIR)memory.obj $(BUILDDIR)pipe2.obj $(BUILDDIR)popen.obj $(BUILDDIR)readlink.obj $(BUILDDIR)round.obj $(BUILDDIR)setenv.obj $(BUILDDIR)strptime.obj $(BUILDDIR)symlink.obj $(BUILDDIR)time_table_spd.obj $(BUILDDIR)umult64.obj $(BUILDDIR)utf8.obj $(BUILDDIR)wordexp.obj: \
+$(BUILDDIR)fnmatch.obj $(BUILDDIR)fork.obj $(BUILDDIR)getdelim.obj $(BUILDDIR)getenv.obj $(BUILDDIR)getopt.obj $(BUILDDIR)glob.obj $(BUILDDIR)hashmap.obj $(BUILDDIR)iopause.obj $(BUILDDIR)io_passfd.obj $(BUILDDIR)isleap.obj $(BUILDDIR)linked_list.obj $(BUILDDIR)memalign.obj $(BUILDDIR)memory.obj $(BUILDDIR)pipe2.obj $(BUILDDIR)popen.obj $(BUILDDIR)readlink.obj $(BUILDDIR)round.obj $(BUILDDIR)setenv.obj $(BUILDDIR)strptime.obj $(BUILDDIR)symlink.obj $(BUILDDIR)time_table_spd.obj $(BUILDDIR)umult64.obj $(BUILDDIR)utf8.obj $(BUILDDIR)wordexp.obj: \
 	 $(BUILDDIR)%.obj: lib/%.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -n"$(BUILDDIR)" $^
 

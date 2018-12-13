@@ -38,10 +38,13 @@ set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_
 foreach(CompilerFlag ${CompilerFlags})
   unset(FLAG)
   string(REPLACE "/MD" "/MT" FLAG "${${CompilerFlag}}")
-  string(REPLACE "/MTd" "/MT" FLAG "${FLAG}")
+  #string(REPLACE "/MTd" "/MT" FLAG "${FLAG}")
   if("${CompilerFlag}" STREQUAL "CMAKE_C_FLAGS_DEBUG")
     set(FLAG "${FLAG} -DDEBUG=1")
   endif()
+  string(REPLACE " " ";" FLAG "${FLAG}")
+  list(REMOVE_DUPLICATES FLAG)
+  string(REPLACE ";" " " FLAG "${FLAG}")
   unset(${CompilerFlag} CACHE)
     set(${CompilerFlag} "${FLAG}" CACHE STRING "Compiler flags ${CompilerFlag}")
   message("${CompilerFlag}: ${${CompilerFlag}}")
@@ -49,7 +52,7 @@ endforeach()
 
 
 if(LIBLZMA_FOUND)
-  link_libraries(${LIBLZMA_LIBRARIES})
+  #link_libraries(${LIBLZMA_LIBRARIES})
   include_directories(${LIBLZMA_INCLUDE_DIRS})
   add_definitions(-DHAVE_LIBLZMA=1
   -DLZMA_API_STATIC=1
@@ -59,14 +62,14 @@ else(LIBLZMA_FOUND)
 endif(LIBLZMA_FOUND)
 
 if(ZLIB_FOUND)
-  link_libraries(${ZLIB_LIBRARIES})
+  #link_libraries(${ZLIB_LIBRARIES})
   include_directories(${ZLIB_INCLUDE_DIRS})
   add_definitions(-DHAVE_ZLIB=1)
 else(ZLIB_FOUND)
   add_definitions(-DHAVE_ZLIB=0)
 endif(ZLIB_FOUND)
 
-link_libraries(${BZIP2_LIBRARIES})
+#link_libraries(${BZIP2_LIBRARIES})
 include_directories(${BZIP2_INCLUDE_DIRS})
 #pkg_search_module(BZIP2 libbz2 bzip2)
 
@@ -81,12 +84,12 @@ if(OPENSSL_FOUND)
   include_directories(${OPENSSL_INCLUDE_DIR})
 endif(OPENSSL_FOUND)
 
-link_libraries(
-  ${ZLIB_LIBRARIES}
-  ${BZIP2_LIBRARIES}
-  ${LIBLZMA_LIBRARIES}
-  ${OPENSSL_LIBRARIES}
-  )
+#link_libraries(
+#  ${ZLIB_LIBRARIES}
+#  ${BZIP2_LIBRARIES}
+#  ${LIBLZMA_LIBRARIES}
+#  ${OPENSSL_LIBRARIES}
+#  )
 add_definitions(-Dinline=__inline)
 
 option(USE_SELECT "Use select() syscall" OFF)
@@ -99,7 +102,7 @@ if(USE_SELECT)
    add_definitions(-DUSE_SELECT=1)
 endif(USE_SELECT)
 
-set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hash_map hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml)
+set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml)
 
 foreach(ARCHIVE ${LIBSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -119,7 +122,7 @@ endforeach()
 target_link_libraries(unix stralloc buffer ndelay)
 target_link_libraries(array byte str)
 target_link_libraries(binfmt mmap byte)
-target_link_libraries(buffer byte fmt mmap open str ${LIBLZMA_LIBRARIES})
+target_link_libraries(buffer byte fmt mmap open str)
 target_link_libraries(cb str)
 target_link_libraries(cbmap str)
 target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI})
@@ -169,11 +172,15 @@ function(add_program PROG)
   install(TARGETS ${PROG} DESTINATION bin)
 endfunction(add_program PROG)
 
+set(COMPRESSION_LIBRARIES ${LIBLZMA_LIBRARIES} 
+    ${ZLIB_LIBRARIES}
+ ${BZIP2_LIBRARIES})
+
 
 add_program(binfmttest binfmt)
-add_program(bsdiffcat buffer array byte errmsg uint32 uint64)
-add_program(buffertest stralloc buffer array case mmap)
-add_program(ccat buffer open str unix ${LIBLZMA_LIBRARIES})
+add_program(bsdiffcat buffer array byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
+add_program(buffertest stralloc buffer array case mmap ${COMPRESSION_LIBRARIES})
+add_program(ccat buffer open str unix ${COMPRESSION_LIBRARIES})
 add_program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 add_program(count-depth buffer fmt)
 add_program(decode-ls-lR stralloc buffer byte fmt io open str)
@@ -213,10 +220,12 @@ add_program(xmltest xml stralloc buffer byte fmt hmap)
 add_program(xmltest2 xml stralloc buffer byte fmt hmap)
 add_program(xmltest3 xml stralloc buffer byte fmt hmap)
 add_program(xmltest4 xml stralloc buffer array byte cb cbmap fmt hmap mmap scan str strlist)
-add_program(ziptest buffer str unix)
-add_program(cc-wrap errmsg env buffer path strarray strlist stralloc)
+add_program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
+add_program(cc-wrap errmsg env buffer path dir strarray strlist stralloc fmt)
+add_program(ar-wrap errmsg env buffer path dir strarray strlist stralloc fmt)
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
 add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
+add_program(tcping map unix dns case io iarray array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 
 add_subdirectory(tests)
 #add_subdirectory(examples)

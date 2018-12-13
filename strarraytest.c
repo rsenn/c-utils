@@ -36,7 +36,7 @@ main(int argc, char* argv[]) {
                                  "lib/glob.h",
                                  "lib/gpio.h",
                                  "lib/gpio_internal.h",
-                                 "lib/hash_map.h",
+                                 "lib/hashmap.h",
                                  "lib/hmap.h",
                                  "lib/hmap_internal.h",
                                  "lib/http.h",

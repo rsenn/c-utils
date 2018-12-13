@@ -836,8 +836,8 @@ build\bcc32\Debug\gpio_short_wait.obj: lib\gpio\gpio_short_wait.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ lib\gpio\gpio_short_wait.c
 build\bcc32\Debug\gpio_write.obj: lib\gpio\gpio_write.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ lib\gpio\gpio_write.c
-build\bcc32\Debug\hash_map.obj: lib\hash_map.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ lib\hash_map.c
+build\bcc32\Debug\hashmap.obj: lib\hashmap.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ lib\hashmap.c
 build\bcc32\Debug\hmap_add.obj: lib\hmap\hmap_add.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ lib\hmap\hmap_add.c
 build\bcc32\Debug\hmap_add_tuple_with_data.obj: lib\hmap\hmap_add_tuple_with_data.c

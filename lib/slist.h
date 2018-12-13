@@ -29,8 +29,8 @@ int    slist_shifts(slink**);
 slink* slist_shift(slink**);
 int    slist_unshifts(slink**, const char* s);
 
-#define slist_foreach(slist, n) for((n) = (void*)(slist); (n); (n) = (void*)((slink*)(n))->next)
-#define slink_foreach(slink, n) for((n) = (void*)slist_begin(slink); *(slink**)(n); (n) = (void*)slist_next((slink**)n))
+#define slink_foreach(link, n) for((n) = (void*)(link); (n); (n) = (void*)((slink*)(n))->next)
+#define slist_foreach(list, n) for((n) = (void*)slist_begin(list); *(slink**)(n); (n) = (void*)slist_next((slink**)n))
 
 inline static slink**
 slist_begin(slink** list) {
@@ -93,4 +93,3 @@ slist_iterator_equal(slink** list, slink** it1, slink** it2) {
 }
 #endif
 #endif /* defined(SLIST_H) */
-

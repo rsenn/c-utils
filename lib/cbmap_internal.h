@@ -64,5 +64,6 @@ struct cbmap_internal_node {
 struct cbmap_internal_node* cbmap_internal_node_new(void);
 
 void cbmap_internal_node_destroy(struct cbmap_internal_node* node);
-void cbmap_data_node_destroy(struct cbmap_data_node* data, cbmap_allocator_t key_allocator, cbmap_allocator_t value_allocator);
-
+void cbmap_data_node_destroy(struct cbmap_data_node* data,
+                             cbmap_allocator_t key_allocator,
+                             cbmap_allocator_t value_allocator);

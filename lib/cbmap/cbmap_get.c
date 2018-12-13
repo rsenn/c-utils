@@ -8,20 +8,20 @@ cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_le
   unsigned char* p = map->root;
   const unsigned char* key_bytes = (const unsigned char*)key;
   struct cbmap_data_node* data;
-  
+
   if(p == NULL || key == NULL) {
     return 0;
   }
 
   while(IS_INTERNAL_NODE(p)) {
     struct cbmap_internal_node* q = GET_INTERNAL_NODE(p);
-    unsigned char c = 0; 
-      int direction;
- 
+    unsigned char c = 0;
+    int direction;
+
     if(q->byte < key_len) {
       c = key_bytes[q->byte];
     }
-direction = (1 + (q->otherbits | c)) >> 8;
+    direction = (1 + (q->otherbits | c)) >> 8;
     p = q->branch[direction];
   }
 

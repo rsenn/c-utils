@@ -10,12 +10,17 @@
 #include "lib/byte.h"
 #include "lib/mmap.h"
 #include "lib/scan.h"
+#include "lib/open.h"
 
-#if WINDOWS_NATIVE
+#if WINDOWS
 #define EXEEXT ".exe"
-#include <process.h>
 #else
 #define EXEEXT ""
+#endif
+
+#if WINDOWS_NATIVE
+#include <process.h>
+#else
 #include <unistd.h>
 #endif
 
@@ -25,14 +30,78 @@
 #endif
 
 static stralloc cmd, realcmd, fullcmd, specs;
-static const char* ext =
-#if WINDOWS
-    ".exe";
-#else
-    "";
-#endif
+static const char* ext = "";
 static strlist path, pathext;
-static stralloc prog, base;
+static stralloc prog, real, base, cwd;
+
+#ifdef DEBUG
+/**
+ * @brief debug_sa
+ * @param name
+ * @param sa
+ */
+void
+debug_sa(const char* name, stralloc* sa) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_putsa(buffer_2, sa);
+  buffer_putnlflush(buffer_2);
+}
+
+/**
+ * @brief debug_s
+ * @param name
+ * @param s
+ */
+void
+debug_s(const char* name, const char* s) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_puts(buffer_2, s);
+  buffer_putnlflush(buffer_2);
+}
+
+/**
+ * @brief debug_sl
+ * @param name
+ * @param l
+ */
+void
+debug_sl(const char* name, const strlist* l) {
+  size_t pos, n;
+  const char* x;
+  stralloc tmp;
+  stralloc_init(&tmp);
+  strlist_foreach(l, x, n) {
+    if(tmp.len)
+      stralloc_catc(&tmp, ' ');
+    if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
+      stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
+    else
+      stralloc_catb(&tmp, x, n);
+  }
+  // debug_sa(name, &tmp);
+  stralloc_free(&tmp);
+}
+
+/**
+ * @brief debug_int
+ * @param name
+ * @param i
+ */
+void
+debug_int(const char* name, int i) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_putlong(buffer_2, i);
+  buffer_putnlflush(buffer_2);
+}
+#else
+#define debug_sa(x, y)
+#define debug_sl(x, y)
+#define debug_s(x, y)
+#define debug_int(x, y)
+#endif
 
 void
 pathlist_get(strlist* list, const char* varname) {
@@ -74,15 +143,15 @@ pathlist_lookup(const char* bin, stralloc* out) {
 
 char*
 base_file(const char* suffix) {
-  stralloc_zero(&base);
-  stralloc_cat(&base, &prog);
-  if(stralloc_endb(&base, ".exe", 4)) {
-    base.len -= 4;
-    ext = ".exe";
+  stralloc_zero(&real);
+  stralloc_cat(&real, &prog);
+  if(stralloc_endb(&real, EXEEXT, str_len(EXEEXT))) {
+    real.len -= str_len(EXEEXT);
+    ext = EXEEXT;
   }
-  stralloc_cats(&base, suffix);
-  stralloc_nul(&base);
-  return base.s;
+  stralloc_cats(&real, suffix);
+  stralloc_nul(&real);
+  return real.s;
 }
 
 ssize_t
@@ -123,22 +192,22 @@ path_lookup(const char* cmd, stralloc* out) {
 }
 
 const char*
-get_prog_name(void) {
+get_prog_name(stralloc* prog) {
   ssize_t len;
 
-  stralloc_ready(&prog, PATH_MAX);
+  stralloc_ready(prog, PATH_MAX);
 
 #ifndef WINDOWS_NATIVE
-  if((len = readlink("/proc/self/exe", prog.s, prog.a)) > 0) {
-    prog.len = len;
-    return prog.s;
+  if((len = readlink("/proc/self/exe", prog->s, prog->a)) > 0) {
+    prog->len = len;
+    return prog->s;
   }
 #endif
 
 #if WINDOWS
-  if((len = GetModuleFileNameA(0, prog.s, prog.a)) > 0) {
-    prog.len = len;
-    return prog.s;
+  if((len = GetModuleFileNameA(0, prog->s, prog->a)) > 0) {
+    prog->len = len;
+    return prog->s;
   }
 #endif
 
@@ -149,12 +218,12 @@ get_prog_name(void) {
     if(strlist_count(&pathext) == 0)
       strlist_push(&pathext, "");
 
-    pathlist_lookup(argv0, &prog);
+    pathlist_lookup(argv0, prog);
   } else {
-    stralloc_copys(&prog, argv0);
+    stralloc_copys(prog, argv0);
   }
-  stralloc_nul(&prog);
-  return prog.s;
+  stralloc_nul(prog);
+  return prog->s;
 }
 
 int
@@ -170,11 +239,17 @@ main(int argc, char* argv[]) {
 
   errmsg_iam(argv[0]);
 
+  path_getcwd(&cwd);
+  debug_sa("cwd", &cwd);
+
   strlist_init(&args, '\0');
 
-  get_prog_name();
+  get_prog_name(&prog);
+  if(stralloc_endb(&prog, EXEEXT, str_len(EXEEXT)))
+    prog.len -= str_len(EXEEXT);
+  stralloc_nul(&prog);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG
   buffer_puts(buffer_2, "argv0: ");
   buffer_puts(buffer_2, argv[0]);
   buffer_puts(buffer_2, ", prog: ");
@@ -184,9 +259,15 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
+  stralloc_copys(&base, path_basename(prog.s));
+
+debug_sa("base", &base);
+
   base_file(".real");
-  stralloc_cats(&base, ext);
-  stralloc_copy(&realcmd, &base);
+  if(!stralloc_ends(&real, ext))
+    stralloc_cats(&real, ext);
+
+  stralloc_copy(&realcmd, &real);
   stralloc_nul(&realcmd);
 
   if(!stralloc_contains(&realcmd, PATHSEP_S)) {
@@ -197,7 +278,7 @@ main(int argc, char* argv[]) {
 
   if(path_exists(base_file(".specs"))) {
     stralloc_copys(&specs, "-specs=");
-    stralloc_cat(&specs, &base);
+    stralloc_cat(&specs, &real);
     stralloc_nul(&specs);
 
     strlist_unshift(&args, specs.s);
@@ -206,13 +287,36 @@ main(int argc, char* argv[]) {
   if(path_exists(base_file(".env"))) {
     size_t n;
     char* x;
-    if((x = mmap_read(base.s, &n)))
+    if((x = mmap_read(real.s, &n)))
       read_env(x, n);
     mmap_unmap(x, n);
   }
 
   for(i = 1; i < argc; ++i) {
-    strlist_push(&args, argv[i]);
+    size_t pos;
+    stralloc arg;
+    stralloc_init(&arg);
+    stralloc_copys(&arg, argv[i]);
+    stralloc_nul(&arg);
+
+    if(stralloc_starts(&arg, "@")) {
+      long exist = 0;
+      stralloc sa;
+      stralloc_init(&sa);
+       debug_sa("@", &arg);
+
+       if(openreadclose(arg.s, &sa, 4096) > 0) {
+exist = 1;
+       }
+      debug_int("exist", exist);
+    }
+
+    pos = stralloc_findb(&arg, "/", 1);
+
+    if(pos > 0 && pos < arg.len)
+      stralloc_replacec(&arg, '/', '\\');
+
+    strlist_push_sa(&args, &arg);
   }
 
   strlist_unshift(&args, path_basename(realcmd.s));
@@ -226,11 +330,11 @@ main(int argc, char* argv[]) {
     stralloc_cats(&realcmd, EXEEXT);
 
   if(!path_exists(realcmd.s)) {
-    errmsg_warnsys("doesn't exist: ", realcmd.s, " ('", sa.s, "''): ", 0);
+    errmsg_warnsys("doesn't exist: ", realcmd.s, " \"", sa.s, "\" : ", 0);
     //    return 127;
   }
 
-#if 0
+#if DEBUG
   buffer_puts(buffer_1, "cmd: '");
   buffer_putsa(buffer_1, &cmd);
   buffer_puts(buffer_1, ext);
@@ -241,7 +345,7 @@ main(int argc, char* argv[]) {
   buffer_puts(buffer_1, "'");
   buffer_putnlflush(buffer_1);
 #endif
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG
   buffer_puts(buffer_2, "execvp: '");
   buffer_putsa(buffer_2, &sa);
   buffer_puts(buffer_2, "'");

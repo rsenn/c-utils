@@ -1,7 +1,7 @@
 #include "../linked_list.h"
 #include "../memory.h"
-#include "../hash_map.h"
+#include "../hashmap.h"
 size_t
-hash_map_size(hash_map* map) {
+hashmap_size(hashmap* map) {
   return map->size;
 }

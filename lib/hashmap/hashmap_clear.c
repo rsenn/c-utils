@@ -1,8 +1,8 @@
 #include "../linked_list.h"
 #include "../memory.h"
-#include "../hash_map.h"
+#include "../hashmap.h"
 void
-hash_map_clear(hash_map* map) {
+hashmap_clear(hashmap* map) {
   size_t i;
   for(i = 0; i < map->capacity; i++) {
     linked_list* list = map->table[i];

@@ -2,6 +2,7 @@
 #include "../scan.h"
 #include "../stralloc.h"
 #include "../windoze.h"
+#include "../str.h"
 
 #if WINDOWS_NATIVE
 #include <windows.h>
