@@ -217,6 +217,7 @@ add_program(ziptest buffer str unix)
 add_program(cc-wrap errmsg env buffer path dir strarray strlist stralloc)
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
 add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
+add_program(tcping unix dns stralloc buffer errmsg socket ${LIBIPHLPAPI})
 
 add_subdirectory(tests)
 #add_subdirectory(examples)
