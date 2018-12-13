@@ -45,7 +45,8 @@ hmap_print_tree_tuple(HMAP_DB* hmap) {
 
 int
 hmap_print_tree(HMAP_DB* hmap) {
-  if(hmap == NULL) return HMAP_DB_EMPTY;
+  if(hmap == NULL)
+    return HMAP_DB_EMPTY;
   hmap_print_tree_tuple(hmap);
   return HMAP_SUCCESS;
 }

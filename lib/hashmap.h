@@ -3,8 +3,8 @@
  * Simple hash map implementation.
  */
 
-#ifndef HASH_MAP_H
-#define HASH_MAP_H
+#ifndef HASHMAP_H
+#define HASHMAP_H
 
 #include "typedefs.h"
 #include "linked_list.h"

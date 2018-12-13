@@ -28,7 +28,8 @@ map_newnode(const char* key, void* value, int vsize) {
   int ksize = str_len(key) + 1;
   int voffset = ksize + ((sizeof(void*) - ksize) % sizeof(void*));
   node = malloc(sizeof(*node) + voffset + vsize);
-  if(!node) return NULL;
+  if(!node)
+    return NULL;
   byte_copy(node + 1, ksize, key);
   node->hash = map_hash(key);
   node->value = ((char*)(node + 1)) + voffset;
@@ -86,4 +87,3 @@ map_resize(map_base_t* m, int nbuckets) {
   /* Return error code if realloc() failed */
   return (buckets == NULL) ? -1 : 0;
 }
-

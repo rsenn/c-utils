@@ -4,7 +4,7 @@
 
 int
 cbmap_visit(unsigned char* top, cbmap_visitor visitor_fn, void* user_data) {
- struct cbmap_data_node* data ;
+  struct cbmap_data_node* data;
   if(IS_INTERNAL_NODE(top)) {
     int direction;
     struct cbmap_internal_node* q = GET_INTERNAL_NODE(top);
@@ -15,16 +15,17 @@ cbmap_visit(unsigned char* top, cbmap_visitor visitor_fn, void* user_data) {
     }
     return 1;
   }
- data = GET_DATA_NODE(top);
+  data = GET_DATA_NODE(top);
   return visitor_fn(data->key, data->key_len, data->value, data->value_len, user_data);
 }
 
 int
-cbmap_visit_prefix(cbmap_t map, unsigned char* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data) {
+cbmap_visit_prefix(
+    cbmap_t map, unsigned char* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data) {
   unsigned char* p = map->root;
   unsigned char* top;
-   struct cbmap_data_node* data ;
-    size_t i;
+  struct cbmap_data_node* data;
+  size_t i;
 
   if(p == NULL) {
     return 1;
@@ -38,13 +39,13 @@ cbmap_visit_prefix(cbmap_t map, unsigned char* key_prefix, size_t key_prefix_len
     if(q->byte < key_prefix_len) {
       c = key_prefix[q->byte];
     }
-     direction = (1 + (q->otherbits | c)) >> 8;
+    direction = (1 + (q->otherbits | c)) >> 8;
     p = q->branch[direction];
     if(q->byte < key_prefix_len) {
       top = p;
     }
   }
- data = GET_DATA_NODE(p);
+  data = GET_DATA_NODE(p);
   for(i = 0; i < key_prefix_len; i++) {
     if(data->key[i] != key_prefix[i]) {
       return 1;

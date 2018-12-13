@@ -36,7 +36,8 @@ hmap_print_list_tuple(HMAP_DB* hmap) {
 
 int
 hmap_print_list(HMAP_DB* hmap) {
-  if(hmap == NULL) return HMAP_DB_EMPTY;
+  if(hmap == NULL)
+    return HMAP_DB_EMPTY;
   hmap_print_list_tuple(hmap);
   return HMAP_SUCCESS;
 }

@@ -2,9 +2,9 @@
 #include "../buffer.h"
 #include "../hmap.h"
 
-#define put_tuple(t) \
-  buffer_put(b, "#", 1); \
-  buffer_putulong0(b, (t)->index, 5); \
+#define put_tuple(t)                                                                                                   \
+  buffer_put(b, "#", 1);                                                                                               \
+  buffer_putulong0(b, (t)->index, 5);                                                                                  \
   buffer_putm_internal(b, " ", (t)->key, "=", NULL);
 
 void
@@ -25,7 +25,8 @@ hmap_dump(HMAP_DB* hmap, buffer* b) {
       case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(b, tuple->vals.val_custom); break;
     }
 
-    if(tuple->next == hmap->list_tuple) break;
+    if(tuple->next == hmap->list_tuple)
+      break;
 
     tuple = tuple->next;
     buffer_putnlflush(b);

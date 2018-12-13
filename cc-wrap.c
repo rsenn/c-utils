@@ -19,20 +19,63 @@
 #include <unistd.h>
 #endif
 
-static stralloc cmd, realcmd, fullcmd, specs;
-static const char* ext = 
 #if WINDOWS
-".exe";
-#else
-"";
+#include <windows.h>
+#include <psapi.h>
 #endif
-static strlist path;
-static stralloc base;
+
+static stralloc cmd, realcmd, fullcmd, specs;
+static const char* ext =
+#if WINDOWS
+    ".exe";
+#else
+    "";
+#endif
+static strlist path, pathext;
+static stralloc prog, base;
+
+void
+pathlist_get(strlist* list, const char* varname) {
+  const char* p;
+
+  if((p = env_get(varname))) {
+    strlist_init(list, '\0');
+    strlist_froms(list, p, p[0] == '/' ? ':' : ';');
+  }
+}
+
+const char*
+pathlist_lookup(const char* bin, stralloc* out) {
+  const char *dir, *ext;
+  stralloc name;
+  stralloc_init(&name);
+
+  strlist_foreach_s(&path, dir) {
+    strlist_foreach_s(&pathext, ext) {
+      stralloc_copys(&name, bin);
+      stralloc_cats(&name, ext);
+      stralloc_nul(&name);
+
+#ifdef DEBUG_OUTPUT
+      buffer_putm_internal(buffer_2, "path_find(\"", dir, "\", \"", name.s, "\", out);", 0);
+      buffer_putnlflush(buffer_2);
+#endif
+
+      if(path_find(dir, name.s, out)) {
+        stralloc_nul(out);
+        stralloc_free(&name);
+        return out->s;
+      }
+    }
+  }
+  stralloc_free(&name);
+  return NULL;
+}
 
 char*
 base_file(const char* suffix) {
   stralloc_zero(&base);
-  stralloc_copys(&base, argv0);
+  stralloc_cat(&base, &prog);
   if(stralloc_endb(&base, ".exe", 4)) {
     base.len -= 4;
     ext = ".exe";
@@ -79,6 +122,41 @@ path_lookup(const char* cmd, stralloc* out) {
   return 0;
 }
 
+const char*
+get_prog_name(void) {
+  ssize_t len;
+
+  stralloc_ready(&prog, PATH_MAX);
+
+#ifndef WINDOWS_NATIVE
+  if((len = readlink("/proc/self/exe", prog.s, prog.a)) > 0) {
+    prog.len = len;
+    return prog.s;
+  }
+#endif
+
+#if WINDOWS
+  if((len = GetModuleFileNameA(0, prog.s, prog.a)) > 0) {
+    prog.len = len;
+    return prog.s;
+  }
+#endif
+
+  if(!path_is_absolute(argv0)) {
+    pathlist_get(&path, "PATH");
+    pathlist_get(&pathext, "PATHEXT");
+
+    if(strlist_count(&pathext) == 0)
+      strlist_push(&pathext, "");
+
+    pathlist_lookup(argv0, &prog);
+  } else {
+    stralloc_copys(&prog, argv0);
+  }
+  stralloc_nul(&prog);
+  return prog.s;
+}
+
 int
 main(int argc, char* argv[]) {
   size_t p;
@@ -94,16 +172,18 @@ main(int argc, char* argv[]) {
 
   strlist_init(&args, '\0');
 
-  pathstr = env_get("PATH");
-
-  strlist_init(&path, '\0');
-  strlist_froms(&path, pathstr, PATHLISTSEP_C);
+  get_prog_name();
 
 #ifdef DEBUG
-  buffer_puts(buffer_2, "ext: ");
+  buffer_puts(buffer_2, "argv0: ");
+  buffer_puts(buffer_2, argv[0]);
+  buffer_puts(buffer_2, ", prog: ");
+  buffer_putsa(buffer_2, &prog);
+  buffer_puts(buffer_2, ", ext: ");
   buffer_puts(buffer_2, ext);
   buffer_putnlflush(buffer_2);
 #endif
+
   base_file(".real");
   stralloc_cats(&base, ext);
   stralloc_copy(&realcmd, &base);
@@ -141,6 +221,9 @@ main(int argc, char* argv[]) {
   strlist_joins(&args, &sa, "' '");
   stralloc_nul(&sa);
   // strarray_joins(&v, &sa, "'\n'");
+
+  if(!stralloc_ends(&realcmd, EXEEXT))
+    stralloc_cats(&realcmd, EXEEXT);
 
   if(!path_exists(realcmd.s)) {
     errmsg_warnsys("doesn't exist: ", realcmd.s, " ('", sa.s, "''): ", 0);

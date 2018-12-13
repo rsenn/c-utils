@@ -31,7 +31,8 @@ hmap_print(HMAP_DB* hmap) {
 
 int
 hmap_print_table(HMAP_DB* hmap) {
-  if(hmap == NULL) return HMAP_DB_EMPTY;
+  if(hmap == NULL)
+    return HMAP_DB_EMPTY;
   hmap_print(hmap);
   return HMAP_SUCCESS;
 }

@@ -35,11 +35,11 @@ typedef UINT32 uint32;
 typedef INT32 int32;
 
 #elif defined(__MINGW32__) || defined(__MINGW64__)
-typedef uint32_t uint32;
+typedef uint32 uint32;
 typedef int32_t int32;
 
 #else
-typedef uint32_t uint32;
+typedef uint32 uint32;
 
 #if !(defined(_WINSOCK2API_) && defined(__LCC__))
 typedef int32_t int32;

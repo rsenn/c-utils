@@ -3,6 +3,7 @@
 #include "../playlist.h"
 #include "../scan.h"
 #include "../xml.h"
+#include "../str.h"
 
 #include <ctype.h>
 #include <stdlib.h>
