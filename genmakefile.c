@@ -1898,7 +1898,12 @@ gen_simple_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
 
   slink_foreach(&srcdir->sources, src) {
     target* rule;
-    const char* base = str_basename(src->name);
+    const char* base;
+
+    if(src->name == 0)
+      continue;
+
+    base = str_basename(src->name);
 
     if(!str_equal(base + str_rchr(base, '.'), ".c"))
       continue;
