@@ -27,10 +27,8 @@
 #define VERSION 1.3.5
 
 #include "lib/buffer.h"
+#include "lib/socket_internal.h"
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
