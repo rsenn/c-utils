@@ -1,28 +1,28 @@
-/*
- * tcping.c
- *
- * Copyright (c) 2002-2008 Marc Kirchner <mail(at)marc(dash)kirchner(dot)de>
- *
- * tcping is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * tcping is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with ms++. If not, see <http://www.gnu.org/licenses/>.
- *
- * tcping does a nonblocking connect to test if a port is reachable.
- * Its exit codes are:
- *     -1 an error occured
- *     0  port is open
- *     1  port is closed
- *     2  user timeout
- */
+c /*
+   * tcping.c
+   *
+   * Copyright (c) 2002-2008 Marc Kirchner <mail(at)marc(dash)kirchner(dot)de>
+   *
+   * tcping is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU Lesser General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+   *
+   * tcping is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   * GNU Lesser General Public License for more details.
+   *
+   * You should have received a copy of the GNU Lesser General Public License
+   * along with ms++. If not, see <http://www.gnu.org/licenses/>.
+   *
+   * tcping does a nonblocking connect to test if a port is reachable.
+   * Its exit codes are:
+   *     -1 an error occured
+   *     0  port is open
+   *     1  port is closed
+   *     2  user timeout
+   */
 
 #define VERSION 1.3.5
 
@@ -53,7 +53,7 @@
 #define HOSTS_FILE "/etc/hosts"
 #endif
 
-static map_t(uint32) hosts;
+    static map_t(uint32) hosts;
 static char ipbuf[IP4_FMT];
 
 void
