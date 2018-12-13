@@ -174,7 +174,7 @@ main(int argc, char* argv[]) {
 
   get_prog_name();
 
-#ifdef DEBUG
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "argv0: ");
   buffer_puts(buffer_2, argv[0]);
   buffer_puts(buffer_2, ", prog: ");
@@ -241,7 +241,7 @@ main(int argc, char* argv[]) {
   buffer_puts(buffer_1, "'");
   buffer_putnlflush(buffer_1);
 #endif
-#ifdef DEBUG
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "execvp: '");
   buffer_putsa(buffer_2, &sa);
   buffer_puts(buffer_2, "'");
