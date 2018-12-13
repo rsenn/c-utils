@@ -100,9 +100,10 @@ ssize_t socket_fastopen_connect6(int s, const char* ip, uint16 port, uint32 scop
 const char* socket_ip6loopback();
 const char* socket_ip4loopback();
 
+int socket_error(fd_t, int* error);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-

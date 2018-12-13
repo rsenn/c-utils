@@ -49,7 +49,7 @@ endforeach()
 
 
 if(LIBLZMA_FOUND)
-  link_libraries(${LIBLZMA_LIBRARIES})
+  #link_libraries(${LIBLZMA_LIBRARIES})
   include_directories(${LIBLZMA_INCLUDE_DIRS})
   add_definitions(-DHAVE_LIBLZMA=1
   -DLZMA_API_STATIC=1
@@ -59,14 +59,14 @@ else(LIBLZMA_FOUND)
 endif(LIBLZMA_FOUND)
 
 if(ZLIB_FOUND)
-  link_libraries(${ZLIB_LIBRARIES})
+  #link_libraries(${ZLIB_LIBRARIES})
   include_directories(${ZLIB_INCLUDE_DIRS})
   add_definitions(-DHAVE_ZLIB=1)
 else(ZLIB_FOUND)
   add_definitions(-DHAVE_ZLIB=0)
 endif(ZLIB_FOUND)
 
-link_libraries(${BZIP2_LIBRARIES})
+#link_libraries(${BZIP2_LIBRARIES})
 include_directories(${BZIP2_INCLUDE_DIRS})
 #pkg_search_module(BZIP2 libbz2 bzip2)
 
@@ -119,7 +119,7 @@ endforeach()
 target_link_libraries(unix stralloc buffer ndelay)
 target_link_libraries(array byte str)
 target_link_libraries(binfmt mmap byte)
-target_link_libraries(buffer byte fmt mmap open str ${LIBLZMA_LIBRARIES})
+target_link_libraries(buffer byte fmt mmap open str)
 target_link_libraries(cb str)
 target_link_libraries(cbmap str)
 target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI})
@@ -217,7 +217,7 @@ add_program(ziptest buffer str unix)
 add_program(cc-wrap errmsg env buffer path dir strarray strlist stralloc)
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
 add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
-add_program(tcping unix dns stralloc buffer errmsg socket ${LIBIPHLPAPI})
+add_program(tcping map unix dns case io iarray array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 
 add_subdirectory(tests)
 #add_subdirectory(examples)

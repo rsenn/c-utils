@@ -1446,8 +1446,8 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)tcping$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
-$(BUILDDIR)tcping$(M64_)$(EXEEXT): $(BUILDDIR)tcping.o $(call add-library,dns case io socket ndelay errmsg taia tai buffer stralloc open scan str byte uint16)
+$(BUILDDIR)tcping$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
+$(BUILDDIR)tcping$(M64_)$(EXEEXT): $(BUILDDIR)tcping.o $(call add-library,map dns case io iarray array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
