@@ -1,4 +1,4 @@
-c /*
+/*
    * tcping.c
    *
    * Copyright (c) 2002-2008 Marc Kirchner <mail(at)marc(dash)kirchner(dot)de>
