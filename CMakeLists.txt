@@ -38,10 +38,13 @@ set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_
 foreach(CompilerFlag ${CompilerFlags})
   unset(FLAG)
   string(REPLACE "/MD" "/MT" FLAG "${${CompilerFlag}}")
-  string(REPLACE "/MTd" "/MT" FLAG "${FLAG}")
+  #string(REPLACE "/MTd" "/MT" FLAG "${FLAG}")
   if("${CompilerFlag}" STREQUAL "CMAKE_C_FLAGS_DEBUG")
     set(FLAG "${FLAG} -DDEBUG=1")
   endif()
+  string(REPLACE " " ";" FLAG "${FLAG}")
+  list(REMOVE_DUPLICATES FLAG)
+  string(REPLACE ";" " " FLAG "${FLAG}")
   unset(${CompilerFlag} CACHE)
     set(${CompilerFlag} "${FLAG}" CACHE STRING "Compiler flags ${CompilerFlag}")
   message("${CompilerFlag}: ${${CompilerFlag}}")
@@ -81,12 +84,12 @@ if(OPENSSL_FOUND)
   include_directories(${OPENSSL_INCLUDE_DIR})
 endif(OPENSSL_FOUND)
 
-link_libraries(
-  ${ZLIB_LIBRARIES}
-  ${BZIP2_LIBRARIES}
-  ${LIBLZMA_LIBRARIES}
-  ${OPENSSL_LIBRARIES}
-  )
+#link_libraries(
+#  ${ZLIB_LIBRARIES}
+#  ${BZIP2_LIBRARIES}
+#  ${LIBLZMA_LIBRARIES}
+#  ${OPENSSL_LIBRARIES}
+#  )
 add_definitions(-Dinline=__inline)
 
 option(USE_SELECT "Use select() syscall" OFF)
@@ -169,11 +172,15 @@ function(add_program PROG)
   install(TARGETS ${PROG} DESTINATION bin)
 endfunction(add_program PROG)
 
+set(COMPRESSION_LIBRARIES ${LIBLZMA_LIBRARIES} 
+    ${ZLIB_LIBRARIES}
+ ${BZIP2_LIBRARIES})
+
 
 add_program(binfmttest binfmt)
-add_program(bsdiffcat buffer array byte errmsg uint32 uint64)
-add_program(buffertest stralloc buffer array case mmap)
-add_program(ccat buffer open str unix ${LIBLZMA_LIBRARIES})
+add_program(bsdiffcat buffer array byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
+add_program(buffertest stralloc buffer array case mmap ${COMPRESSION_LIBRARIES})
+add_program(ccat buffer open str unix ${COMPRESSION_LIBRARIES})
 add_program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 add_program(count-depth buffer fmt)
 add_program(decode-ls-lR stralloc buffer byte fmt io open str)
@@ -213,7 +220,7 @@ add_program(xmltest xml stralloc buffer byte fmt hmap)
 add_program(xmltest2 xml stralloc buffer byte fmt hmap)
 add_program(xmltest3 xml stralloc buffer byte fmt hmap)
 add_program(xmltest4 xml stralloc buffer array byte cb cbmap fmt hmap mmap scan str strlist)
-add_program(ziptest buffer str unix)
+add_program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
 add_program(cc-wrap errmsg env buffer path dir strarray strlist stralloc)
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
 add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
