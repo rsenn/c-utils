@@ -130,29 +130,9 @@ hmap_iterator_dereference(TUPLE** it) {
 #define hmap_iterator_increment(it) ((it) = &(*(it))->next)
 #define hmap_iterator_decrement(it) ((it) = &(*(it))->prev)
 #define hmap_iterator_dereference(it_ptr) (*(it_ptr))
-inline static int
-hmap_iterator_distance(TUPLE** it1, TUPLE** it2) {
-  TUPLE* a = *it1;
-  TUPLE* b = *it2;
-  int n = 0;
 
-  while(a && a != *it2 && a != a->next) {
-    a = a->next;
-    ++n;
-  }
-  if(a == *it2 || (!it2 && a == a->next))
-    return n;
-
-  n = 0;
-  while(b && b != *it1 && b != b->next) {
-    b = b->next;
-    ++n;
-  }
-  if(b == *it1 || (!it1 && b == b->next))
-    return n;
-
-  return -1;
-}
+#define hmap_iterator_distance(it1, it2) hmap_distance(&(it1), &(it2))
+int hmap_distance(TUPLE** it1, TUPLE** it2);
 
 #define hmap_iterator_equal(it1, it2) ((it1) == (it2))
 /*#define hmap_iterator_equal(it1, it2) ( \

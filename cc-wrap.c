@@ -21,7 +21,6 @@
 
 #if WINDOWS
 #include <windows.h>
-#include <psapi.h>
 #endif
 
 static stralloc cmd, realcmd, fullcmd, specs;
@@ -222,7 +221,7 @@ main(int argc, char* argv[]) {
   stralloc_nul(&sa);
   // strarray_joins(&v, &sa, "'\n'");
 
-  if(!stralloc_ends(&realcmd, EXEEXT))
+  if(!stralloc_endb(&realcmd, EXEEXT, str_len(EXEEXT)))
     stralloc_cats(&realcmd, EXEEXT);
 
   if(!path_exists(realcmd.s)) {

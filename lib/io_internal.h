@@ -246,6 +246,8 @@ extern int close();
 #define DEBUG_MSG(msg, fd)
 #endif
 
+void* io_getfds(void);
+
 static inline io_entry*
 io_getentry(int64 fd) {
   return iarray_get(io_getfds(), fd);

@@ -2,8 +2,8 @@
 #ifndef RANGECHECK_H
 #define RANGECHECK_H
 
-#include <inttypes.h>
-#include <stddef.h>
+#include "typedefs.h"
+#include "uint32.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,7 +48,7 @@ extern "C" {
 #define __expect(foo, bar) __builtin_expect((long)(foo), bar)
 #endif
 
-#if defined(__GNUC__) && !defined(__likely)
+#if /*defined(__GNUC__) &&*/ !defined(__likely)
 #define __likely(foo) __expect((foo), 1)
 #define __unlikely(foo) __expect((foo), 0)
 #endif
@@ -60,14 +60,14 @@ extern "C" {
 /* does ptr point to one of buf[0], buf[1], ... buf[len-1]? */
 __static inline __gnuinline int
 range_ptrinbuf(const void* buf, size_t len, const void* ptr) {
-  register const char* c = (const char*)buf;             /* no pointer arithmetic on void* */
-  return __likely(c &&                                   /* is buf non-NULL? */
-                  ((uintptr_t)c) + len > (uintptr_t)c && /* gcc 4.1 miscompiles without (uintptr_t) */
+  register const char* c = (const char*)buf;       /* no pointer arithmetic on void* */
+  return __likely(c &&                             /* is buf non-NULL? */
+                  ((size_t)c) + len > (size_t)c && /* gcc 4.1 miscompiles without (size_t) */
                   /* catch integer overflows and fail if buffer is 0 bytes long */
                   /* because then ptr can't point _in_ the buffer */
-                  (uintptr_t)((const char*)ptr - c) < len); /* this one is a little tricky.
+                  (size_t)((const char*)ptr - c) < len); /* this one is a little tricky.
                      "ptr-c" checks the offset of ptr in the buffer is inside the buffer size.
-                     Now, ptr-c can underflow; say it is -1.  When we cast it to uintptr_t, it becomes
+                     Now, ptr-c can underflow; say it is -1.  When we cast it to size_t, it becomes
                      a very large number. */
 }
 
@@ -84,7 +84,7 @@ range_ptrinbuf2(const void* Min, const void* Max, const void* ptr) {
  * Does NOT check whether buf has a non-zero length! */
 __static inline __gnuinline int
 range_validbuf(const void* buf, size_t len) {
-  return __likely(buf && (uintptr_t)buf + len >= (uintptr_t)buf);
+  return __likely(buf && (size_t)buf + len >= (size_t)buf);
 }
 
 /* same thing but buffer is given as pointer to first byte (Min) and
