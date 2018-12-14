@@ -8,17 +8,26 @@
 #include "lib/unix.h"
 #include "lib/getopt.h"
 #include "lib/range.h"
+#include "lib/rangecheck.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
 
-void elf_dump_dynamic(char* base);
-void elf_dump_sections(char* base);
-void elf_dump_segments(char* base);
-void elf_dump_symbols(char* base, range section, range text, const char* stname, int binding);
+void elf_dump_dynamic(range map);
+void elf_dump_sections(range map);
+void elf_dump_segments(range map);
+void elf_dump_symbols(range map, range section, range text, const char* stname, int binding);
 void elf_print_prefix(buffer* b);
 
 static int list_defined, list_undefined;
 static const char* filename;
+
+#define RANGE_CHECK(ptr)                                                                                               \
+  do {                                                                                                                 \
+    if(!range_ptrinbuf2(map.start, map.end, ptr)) {                                                                    \
+      buffer_puts(buffer_2, "OUT of range: " #ptr);                                                                    \
+      buffer_putnlflush(buffer_2);                                                                                     \
+    }                                                                                                                  \
+  } while(0)
 
 void
 elf_print_prefix(buffer* b) {
@@ -26,6 +35,10 @@ elf_print_prefix(buffer* b) {
     buffer_putm_internal(b, filename, ":", 0);
 }
 
+/**
+ * @brief usage  Show command line usage
+ * @param av0
+ */
 void
 usage(char* av0) {
   buffer_putm_internal(buffer_1,
@@ -45,7 +58,7 @@ usage(char* av0) {
 
 int
 main(int argc, char** argv) {
-  char* base = NULL;
+  static range map;
   size_t filesize;
 
   int c, index = 0;
@@ -85,38 +98,44 @@ main(int argc, char** argv) {
   for(; argv[optind]; ++optind) {
     const char* interp;
     range symtab, text;
-    
+
     filename = argv[optind];
 
-    base = (char*)mmap_private(filename, &filesize);
+    map.start = (char*)mmap_read(filename, &filesize);
+    map.end = map.start + filesize;
 
-    interp = elf_get_section(base, ".interp", NULL);
+    interp = elf_get_section(map.start, ".interp", NULL);
 
-    elf_dump_sections(base);
-    elf_dump_segments(base);
-    elf_dump_dynamic(base);
+    elf_dump_sections(map);
+    elf_dump_segments(map);
+    elf_dump_dynamic(map);
 
     if(interp) {
       buffer_putm_2(buffer_1, "Interpreter: ", interp);
       buffer_putnlflush(buffer_1);
     }
-    /*    elf_dump_imports(base);*/
+    /*    elf_dump_imports(map.start);*/
 
-    symtab = elf_get_symtab_r(base);
-    text = elf_get_section_r(base, ".text");
+    symtab = elf_get_symtab_r(map.start);
+    text = elf_get_section_r(map.start, ".text");
 
-    elf_dump_symbols(base, symtab, text, ".strtab", ELF_STB_GLOBAL);
-    elf_dump_symbols(base, symtab, text, ".strtab", ELF_STB_LOCAL);
+    elf_dump_symbols(map, symtab, text, ".strtab", ELF_STB_GLOBAL);
+    elf_dump_symbols(map, symtab, text, ".strtab", ELF_STB_LOCAL);
 
-    mmap_unmap(base, filesize);
+    mmap_unmap(map.start, map.end - map.start);
   }
 
   return 0;
 }
-void
-elf_dump_dynamic(char* base) {
 
-  int di = elf_section_find(base, ".dynamic");
+/**
+ * @brief elf_dump_dynamic  Dumps all ELF dynamic entries
+ * @param map               Pointer range of the loaded ELF file
+ */
+void
+elf_dump_dynamic(range map) {
+
+  int di = elf_section_find(map.start, ".dynamic");
   range dyn;
   void* entry;
   const char* dynstrtab = NULL;
@@ -131,13 +150,16 @@ elf_dump_dynamic(char* base) {
   if(di == -1)
     return;
 
-  dyn = elf_dynamic_section(base);
+  dyn = elf_dynamic_section(map.start);
 
   range_foreach(&dyn, entry) {
-    int64 tag = ELF_GET(base, entry, dyn, d_tag);
+    int64 tag = ELF_GET(map.start, entry, dyn, d_tag);
 
     if(tag == ELF_DT_STRTAB) {
-      dynstrtab = base + ELF_GET(base, entry, dyn, d_un.d_val);
+      dynstrtab = map.start + ELF_GET(map.start, entry, dyn, d_un.d_val);
+
+      RANGE_CHECK(dynstrtab);
+
       break;
     }
 
@@ -146,12 +168,12 @@ elf_dump_dynamic(char* base) {
   }
 
   range_foreach(&dyn, entry) {
-    int64 tag = ELF_GET(base, entry, dyn, d_tag);
-    uint64 val = ELF_GET(base, entry, dyn, d_un.d_val);
+    int64 tag = ELF_GET(map.start, entry, dyn, d_tag);
+    uint64 val = ELF_GET(map.start, entry, dyn, d_un.d_val);
 
     if(tag >= ELF_DT_NUM) {
       buffer_puts(buffer_1, "0x");
-      buffer_putxint640(buffer_1, tag, ELF_BITS(base) / 4);
+      buffer_putxint640(buffer_1, tag, ELF_BITS(map.start) / 4);
     } else {
       buffer_putspad(buffer_1, dynamic_types[tag % ELF_DT_NUM], 18);
     }
@@ -161,7 +183,7 @@ elf_dump_dynamic(char* base) {
       buffer_puts(buffer_1, (const char*)&dynstrtab[val]);
     } else {
       buffer_puts(buffer_1, " 0x");
-      buffer_putxint640(buffer_1, val, ELF_BITS(base) / 4);
+      buffer_putxint640(buffer_1, val, ELF_BITS(map.start) / 4);
     }
     buffer_putnlflush(buffer_1);
 
@@ -170,30 +192,39 @@ elf_dump_dynamic(char* base) {
   }
 }
 
-    extern int buffer_putptr_size_2;
+extern int buffer_putptr_size_2;
+
+/**
+ * @brief elf_dump_symbols
+ * @param map               Pointer range of the loaded ELF file
+ * @param section
+ * @param text
+ * @param stname
+ * @param binding
+ */
 void
-elf_dump_symbols(char* base, range section, range text, const char* stname, int binding) {
+elf_dump_symbols(range map, range section, range text, const char* stname, int binding) {
   void* symbol;
-  int si = elf_section_find(base, stname);
-  const char* strtab = elf_section_offset(base, si);
+  int si = elf_section_find(map.start, stname);
+  const char* strtab = elf_section_offset(map.start, si);
   static const char* const binding_types[] = {"LOCAL", "GLOBAL", "WEAK"};
   static const char* const symbol_types[] = {"NOTYPE", "OBJECT", "FUNC", "SECTION", "FILE", "COMMON", "TLS"};
   range symtab = section;
-  symtab.elem_size = ELF_BITS(base) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
+  symtab.elem_size = ELF_BITS(map.start) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
 
-/*  buffer_putspad(buffer_1, "symbol name", 33);
-  buffer_putspad(buffer_1, "value", ELF_BITS(base) / 4 + 2 + 1);
-  buffer_putspad(buffer_1, "size", ELF_BITS(base) / 4 + 2 + 1);
-  if(binding < 0)
-    buffer_putspad(buffer_1, "binding", 16);
-  buffer_puts(buffer_1, "type");
-  buffer_putnlflush(buffer_1);*/
+  /*  buffer_putspad(buffer_1, "symbol name", 33);
+    buffer_putspad(buffer_1, "value", ELF_BITS(map.start) / 4 + 2 + 1);
+    buffer_putspad(buffer_1, "size", ELF_BITS(map.start) / 4 + 2 + 1);
+    if(binding < 0)
+      buffer_putspad(buffer_1, "binding", 16);
+    buffer_puts(buffer_1, "type");
+    buffer_putnlflush(buffer_1);*/
 
   range_foreach(&symtab, symbol) {
-    range code = elf_symbol_r(base, symbol);
+    range code = elf_symbol_r(map.start, symbol);
 
-    uint32 name = ELF_GET(base, symbol, sym, st_name);
-    uint8 info = ELF_GET(base, symbol, sym, st_info);
+    uint32 name = ELF_GET(map.start, symbol, sym, st_name);
+    uint8 info = ELF_GET(map.start, symbol, sym, st_info);
 
     if(!strtab[name])
       continue;
@@ -201,19 +232,21 @@ elf_dump_symbols(char* base, range section, range text, const char* stname, int 
     if(binding > -1 && ELF_ELF32_ST_BIND(info) != binding)
       continue;
 
-    if(range_empty(&code)  && !list_undefined) continue; 
-    if(!range_empty(&code)  && !list_defined) continue; 
+    if(range_empty(&code) && !list_undefined)
+      continue;
+    if(!range_empty(&code) && !list_defined)
+      continue;
 
     elf_print_prefix(buffer_1);
-    
-    buffer_putptr_size_2 = ELF_BITS(base) / 4;
+
+    buffer_putptr_size_2 = ELF_BITS(map.start) / 4;
 
     if(!range_empty(&code))
-      buffer_putptr(buffer_1, (char*)(ptrdiff_t)(code.start - base));
+      buffer_putptr(buffer_1, (char*)(ptrdiff_t)(code.start - map.start));
     else
       buffer_putnspace(buffer_1, buffer_putptr_size_2);
-    
-    if(ELF_ELF32_ST_BIND(info) == ELF_STB_GLOBAL) 
+
+    if(ELF_ELF32_ST_BIND(info) == ELF_STB_GLOBAL)
       buffer_puts(buffer_1, !range_empty(&code) ? " T " : " U ");
     else
       buffer_puts(buffer_1, !range_empty(&code) ? " t " : " u ");
@@ -224,16 +257,16 @@ elf_dump_symbols(char* base, range section, range text, const char* stname, int 
     */
     /*jjif(size) {
       buffer_puts(buffer_1, " 0x");
-      buffer_putxint640(buffer_1, value, ELF_BITS(base) / 4);
+      buffer_putxint640(buffer_1, value, ELF_BITS(map.start) / 4);
     } else {
-      buffer_putnspace(buffer_1, ELF_BITS(base) / 4 + 3);
+      buffer_putnspace(buffer_1, ELF_BITS(map.start) / 4 + 3);
     }
 
     if(size) {
       buffer_puts(buffer_1, "   ");
-      buffer_putulong0(buffer_1, size, ELF_BITS(base) / 4);
+      buffer_putulong0(buffer_1, size, ELF_BITS(map.start) / 4);
     } else {
-      buffer_putnspace(buffer_1, ELF_BITS(base) / 4 + 3);
+      buffer_putnspace(buffer_1, ELF_BITS(map.start) / 4 + 3);
     }*/
     if(binding < 0) {
       buffer_putspace(buffer_1);
@@ -246,92 +279,102 @@ elf_dump_symbols(char* base, range section, range text, const char* stname, int 
   }
 }
 
+/**
+ * @brief elf_dump_sections
+ * @param map               Pointer range of the loaded ELF file
+ */
 void
-elf_dump_sections(char* base) {
+elf_dump_sections(range map) {
   int i, n;
-  range sections = elf_section_headers(base);
+  range sections = elf_section_headers(map.start);
   void* section;
 
   buffer_putspad(buffer_1, "section name", 16);
   buffer_putspace(buffer_1);
-  buffer_putspad(buffer_1, "addr", ELF_BITS(base) / 4);
+  buffer_putspad(buffer_1, "addr", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "size", ELF_BITS(base) / 4);
+  buffer_putspad(buffer_1, "size", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "offset", ELF_BITS(base) / 4);
+  buffer_putspad(buffer_1, "offset", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "align", ELF_BITS(base) / 4);
+  buffer_putspad(buffer_1, "align", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
   buffer_puts(buffer_1, "type");
   buffer_putnlflush(buffer_1);
 
   range_foreach(&sections, section) {
-    uint32 name = ELF_GET(base, section, shdr, sh_name);
-    uint64 addr = ELF_GET(base, section, shdr, sh_addr);
-    uint64 size = ELF_GET(base, section, shdr, sh_size);
-    uint64 offs = ELF_GET(base, section, shdr, sh_offset);
-    uint64 align = ELF_GET(base, section, shdr, sh_addralign);
-    uint32 type = ELF_GET(base, section, shdr, sh_type) % ELF_SHT_NUM;
+    uint32 name = ELF_GET(map.start, section, shdr, sh_name);
+    uint64 addr = ELF_GET(map.start, section, shdr, sh_addr);
+    uint64 size = ELF_GET(map.start, section, shdr, sh_size);
+    uint64 offs = ELF_GET(map.start, section, shdr, sh_offset);
+    uint64 align = ELF_GET(map.start, section, shdr, sh_addralign);
+    uint32 type = ELF_GET(map.start, section, shdr, sh_type) % ELF_SHT_NUM;
 
     if(!name && !addr && !size)
       continue;
 
-    buffer_putspad(buffer_1, &(elf_shstrtab(base)[name]), 16);
+    buffer_putspad(buffer_1, &(elf_shstrtab(map.start)[name]), 16);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, addr, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, addr, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, size, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, size, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, offs, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, offs, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, align, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, align, ELF_BITS(map.start) / 4);
     buffer_putspace(buffer_1);
     buffer_puts(buffer_1, elf_section_typename(type));
     buffer_putnlflush(buffer_1);
 
     if(type == ELF_SHT_SYMTAB || type == ELF_SHT_DYNSYM) {
-      //    elf_dump_symbols(base, elf_section(base, section), type == ELF_SHT_SYMTAB ? ".strtab" : ".dynstr");
+      //    elf_dump_symbols(map.start, elf_section(map.start, section), type == ELF_SHT_SYMTAB ? ".strtab" :
+      //    ".dynstr");
     }
   }
 }
+
+/**
+ * @brief elf_dump_segments
+ * @param map               Pointer range of the loaded ELF file
+ */
 void
-elf_dump_segments(char* base) {
+elf_dump_segments(range map) {
   int i, n;
-  range segments = elf_program_headers(base);
+  range segments = elf_program_headers(map.start);
   void* segment;
 
   if(range_size(&segments) == 0)
     return;
 
-  buffer_putspad(buffer_1, "paddr", ELF_BITS(base) / 4);
+  buffer_putspad(buffer_1, "paddr", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "vaddr", ELF_BITS(base) / 4);
+  buffer_putspad(buffer_1, "vaddr", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "filesz", ELF_BITS(base) / 4);
+  buffer_putspad(buffer_1, "filesz", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "memsz", ELF_BITS(base) / 4);
+  buffer_putspad(buffer_1, "memsz", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
   buffer_puts(buffer_1, "flags");
   buffer_putnlflush(buffer_1);
 
   range_foreach(&segments, segment) {
-    uint64 paddr = ELF_GET(base, segment, phdr, p_paddr);
-    uint64 vaddr = ELF_GET(base, segment, phdr, p_vaddr);
-    uint64 filesz = ELF_GET(base, segment, phdr, p_filesz);
-    uint64 memsz = ELF_GET(base, segment, phdr, p_memsz);
-    uint32 flags = ELF_GET(base, segment, phdr, p_flags);
+    uint64 paddr = ELF_GET(map.start, segment, phdr, p_paddr);
+    uint64 vaddr = ELF_GET(map.start, segment, phdr, p_vaddr);
+    uint64 filesz = ELF_GET(map.start, segment, phdr, p_filesz);
+    uint64 memsz = ELF_GET(map.start, segment, phdr, p_memsz);
+    uint32 flags = ELF_GET(map.start, segment, phdr, p_flags);
 
     if(!paddr && !vaddr && !filesz)
       continue;
 
     buffer_puts(buffer_1, "0x");
-    buffer_putxint640(buffer_1, paddr, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, paddr, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, vaddr, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, vaddr, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, filesz, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, filesz, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, memsz, ELF_BITS(base) / 4);
+    buffer_putxint640(buffer_1, memsz, ELF_BITS(map.start) / 4);
     buffer_putm_internal(buffer_1,
                          " ",
                          (flags & ELF_PF_R) ? "r" : "-",

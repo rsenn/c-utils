@@ -48,7 +48,7 @@ extern "C" {
 #define __expect(foo, bar) __builtin_expect((long)(foo), bar)
 #endif
 
-#if defined(__GNUC__) && !defined(__likely)
+#if /*defined(__GNUC__) &&*/ !defined(__likely)
 #define __likely(foo) __expect((foo), 1)
 #define __unlikely(foo) __expect((foo), 0)
 #endif
@@ -60,8 +60,8 @@ extern "C" {
 /* does ptr point to one of buf[0], buf[1], ... buf[len-1]? */
 __static inline __gnuinline int
 range_ptrinbuf(const void* buf, size_t len, const void* ptr) {
-  register const char* c = (const char*)buf;             /* no pointer arithmetic on void* */
-  return __likely(c &&                                   /* is buf non-NULL? */
+  register const char* c = (const char*)buf;       /* no pointer arithmetic on void* */
+  return __likely(c &&                             /* is buf non-NULL? */
                   ((size_t)c) + len > (size_t)c && /* gcc 4.1 miscompiles without (size_t) */
                   /* catch integer overflows and fail if buffer is 0 bytes long */
                   /* because then ptr can't point _in_ the buffer */
