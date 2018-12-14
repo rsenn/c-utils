@@ -135,7 +135,7 @@ get_file_size(char* path) {
   if(!api_fn)
     return -1;
 
-  if(!api_fn(hFile, &size)) {
+  if(!(*api_fn)(hFile, &size)) {
     CloseHandle(hFile);
     return -1; /* error condition, could call GetLastError to find out more */
   }

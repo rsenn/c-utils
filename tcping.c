@@ -107,7 +107,7 @@ read_hosts(const char* file) {
 #endif
           stralloc_nul(&hostname);
 
-          map_set(&hosts_db, hostname.s, ip);
+          map_set(&hosts_db, hostname.s, *(uint32*)ip);
 
           s += hlen;
           s += scan_whitenskip(&p[s], l - s);

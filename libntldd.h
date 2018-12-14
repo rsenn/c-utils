@@ -1,74 +1,93 @@
-#include "lib/safemult.h"
+#ifndef __LIBNTLDD_H__
+#define __LIBNTLDD_H__
 
-#if SAFEMULT_NO_INLINE
-#if defined(__GNUC__) && (__GNUC__ >= 5)
-
+#include "lib/pe.h"
+#include "lib/strlist.h"
+#include "lib/uint16.h"
+#include "lib/uint32.h"
 #include "lib/uint64.h"
 
-int umult64(uint64 a,uint64 b,uint64* c) { return !__builtin_mul_overflow(a,b,c); }
-
-#else
-
-/* #include "haveuint128.h" */
-
-#if defined(__x86_64__) && defined(__OPTIMIZE__)
-
-/* WARNING: this only works if compiled with -fomit-frame-pointer */
-void umult64() {
-  asm volatile(
-    "xchgq %rdx,%rsi\n"
-    "movq %rdi,%rax\n"
-    "mulq %rdx\n"
-    "jc 1f\n"	/* overflow */
-    "movq %rax,(%rsi)\n"
-    "xorq %rax,%rax\n"
-    "inc %rax\n"
-    "ret\n"
-    "1:\n"
-    "xorq %rax,%rax\n"
-    /* the closing ret is renerated by gcc */
-    );
-}
-
-#else
-
-#if defined(HAVE_UINT128)
-
-int umult64(uint64 a,uint64 b,uint64* c) {
-  __uint128_t x=((__uint128_t)a)*b;
-  if ((*c=(uint64)x) != x) return 0;
-  return 1;
-}
-
-#else
-
-/* return 1 for overflow, 0 for ok */
-int umult64(uint64 a,uint64 b,uint64* c) {
-  uint32 ahi=a>>32;
-  uint32 alo=(a&0xffffffff);
-  uint32 bhi=b>>32;
-  uint32 blo=(b&0xffffffff);
-
-  // a=ahi*x+alo, b=bhi*x+blo
-  // a*b = (ahi*x+alo) * (bhi*x+blo)
-  //     = ahi*x*bhi*x + ahi*x*blo + alo*bhi*x + alo*blo
-
-  // -> overflow if ahi*bhi != zero */
-  if (ahi && bhi) return 0;
-
-  a=(uint64)(ahi)*blo+(uint64)(alo)*bhi;
-  if (a>0xffffffff) return 0;
-  {
-    uint64 x=(uint64)(alo)*blo;
-    if (x+(a<<32) < x) return 0;
-    *c=x+(a<<32);
-  }
-  return 1;
-}
-
+#ifdef __unix__
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
 #endif
 
+#define NTLDD_VERSION_MAJOR 0
+#define NTLDD_VERSION_MINOR 2
+
+struct dep_tree_element;
+
+struct export_table_item {
+  void* address;
+  char* name;
+  uint16 ordinal;
+  char* forward_str;
+  struct export_table_item* forward;
+  int section_index;
+  uint32 address_offset;
+};
+
+struct import_table_item {
+  uint64 orig_address;
+  uint64 address;
+  char* name;
+  int ordinal;
+  struct dep_tree_element* dll;
+  struct export_table_item* mapped;
+};
+
+struct dep_tree_element {
+  uint64 flags;
+  char* module;
+  char* export_module;
+  char* resolved_module;
+  void* mapped_address;
+  struct dep_tree_element** childs;
+  uint64 childs_size;
+  uint64 childs_len;
+  uint64 imports_len;
+  uint64 imports_size;
+  struct import_table_item* imports;
+  uint64 exports_len;
+  struct export_table_item* exports;
+};
+
+#define DEPTREE_VISITED 0x00000001
+#define DEPTREE_UNRESOLVED 0x00000002
+#define DEPTREE_PROCESSED 0x00000004
+
+int clear_dep_status(struct dep_tree_element* self, uint64 flags);
+
+void add_dep(struct dep_tree_element* parent, struct dep_tree_element* child);
+
+typedef struct build_tree_config_t {
+  int datarelocs;
+  int functionrelocs;
+  int recursive;
+  int on_self;
+  char*** stack;
+  uint64* stack_len;
+  uint64* stack_size;
+  int machine_type;
+  strlist* search_paths;
+} build_tree_config;
+
+int build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root, struct dep_tree_element* self);
+
+#define FALSE 0
+#define TRUE 1
+typedef size_t uintptr_t;
+
+#ifndef MAX_PATH
+#define MAX_PATH PATH_MAX
 #endif
 
+typedef struct _soff_entry soff_entry;
+
+struct _soff_entry {
+  uint32 start;
+  uint32 end;
+  void* off;
+};
+
 #endif
-#endif /* SAFEMULT_NO_INLINE */

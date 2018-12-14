@@ -8,7 +8,7 @@
 #define lstat stat
 #endif
 
-#ifndef __LCC__
+#if !defined(__LCC__) || defined(_WIN64)
 #define _stat stat
 #endif
 
