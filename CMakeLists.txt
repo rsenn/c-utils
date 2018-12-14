@@ -27,10 +27,6 @@ include(FindPkgConfig)
 #include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindOpenSSL.cmake)
-include(FindZlib)
-include(FindBZip2)
-include(FindLibLZMA)
-include(FindOpenSSL)
 
 include(${CMAKE_SOURCE_DIR}/CheckInline.cmake)
 
@@ -51,16 +47,28 @@ foreach(CompilerFlag ${CompilerFlags})
 endforeach()
 
 
+################################################################################
+## Check LibLZMA
+################################################################################
+pkg_search_module(LIBLZMA liblzma lzma)
+if(NOT LIBLZMA_FOUND)
+include(FindLibLZMA)
+endif(NOT LIBLZMA_FOUND)
 if(LIBLZMA_FOUND)
   #link_libraries(${LIBLZMA_LIBRARIES})
   include_directories(${LIBLZMA_INCLUDE_DIRS})
-  add_definitions(-DHAVE_LIBLZMA=1
-  -DLZMA_API_STATIC=1
-  )
+  add_definitions(-DHAVE_LIBLZMA=1 -DLZMA_API_STATIC=1)
 else(LIBLZMA_FOUND)
   add_definitions(-DHAVE_LIBLZMA=0)
 endif(LIBLZMA_FOUND)
 
+################################################################################
+## Check Zlib
+################################################################################
+pkg_search_module(ZLIB zlib libz z)
+if(NOT ZLIB_FOUND)
+include(FindZlib)
+endif(NOT ZLIB_FOUND)
 if(ZLIB_FOUND)
   #link_libraries(${ZLIB_LIBRARIES})
   include_directories(${ZLIB_INCLUDE_DIRS})
@@ -69,16 +77,27 @@ else(ZLIB_FOUND)
   add_definitions(-DHAVE_LIBZ=0)
 endif(ZLIB_FOUND)
 
-#link_libraries(${BZIP2_LIBRARIES})
-include_directories(${BZIP2_INCLUDE_DIRS})
-#pkg_search_module(BZIP2 libbz2 bzip2)
-
+################################################################################
+## Check BZip2
+################################################################################
+pkg_search_module(BZIP2 libbz2 bzip2)
+if(NOT BZIP2_FOUND)
+  include(FindBZip2)
+endif(NOT BZIP2_FOUND)
 if(LIBBZ2_FOUND OR BZIP2_FOUND)
   add_definitions(-DHAVE_LIBBZ2=1)
+  include_directories(${BZIP2_INCLUDE_DIRS})
 else(LIBBZ2_FOUND OR BZIP2_FOUND)
   add_definitions(-DHAVE_LIBBZ2=0)
 endif(LIBBZ2_FOUND OR BZIP2_FOUND)
 
+################################################################################
+## Check OpenSSL
+################################################################################
+pkg_search_module(OPENSSL openssl libssl)
+if(NOT OPENSSL_FOUND)
+include(FindOpenSSL)
+endif(NOT OPENSSL_FOUND)
 if(OPENSSL_FOUND)
   add_definitions(-DHAVE_OPENSSL=1)
   include_directories(${OPENSSL_INCLUDE_DIR})
