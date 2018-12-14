@@ -113,7 +113,9 @@ add_definitions(-Dinline=__inline)
 
 option(USE_SELECT "Use select() syscall" OFF)
 
-if(WIN32 OR WIN64 OR MSVC)
+if(MINGW)
+  set(LIBMSWSOCK ws2_32)
+elseif(WIN32 OR WIN64 OR MSVC)
   set(LIBMSWSOCK wsock32)
 endif()
 
@@ -153,7 +155,7 @@ target_link_libraries(fmt byte str uint64 uint32)
 target_link_libraries(gpio mmap)
 target_link_libraries(hmap str)
 target_link_libraries(http dns errmsg byte io scan socket str ${OPENSSL_LIBRARIES})
-target_link_libraries(io buffer iarray byte fmt open taia ${LIBMSWSOCK})
+target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
 target_link_libraries(json charbuf hmap scan)
 target_link_libraries(map str)
 target_link_libraries(mmap open scan ${LIBPSAPI})
@@ -191,8 +193,14 @@ function(add_program PROG)
   install(TARGETS ${PROG} DESTINATION bin)
 endfunction(add_program PROG)
 
-set(COMPRESSION_LIBRARIES ${LIBLZMA_LIBRARIES} 
-    ${ZLIB_LIBRARIES}
+if(NOT LIBLZMA_LIBRARIES)
+  set(LIBLZMA_LIBRARIES "${LIBLZMA_LIBRARY}")
+endif(NOT LIBLZMA_LIBRARIES)
+
+
+set(COMPRESSION_LIBRARIES
+  ${LIBLZMA_LIBRARIES}
+  ${ZLIB_LIBRARIES}
  ${BZIP2_LIBRARIES})
 
 
