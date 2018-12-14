@@ -19,13 +19,6 @@ typedef uint16 elf64_versym;
 
 #define ELF_EI_NIDENT               (16)
 
-#define ELF_FIELD_OFFS(type, field) ((size_t)(uint8*)&(((type*)0)->field))
-#define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
-
-#define ELF_STRUCT_OFFSETS(st, field) ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
-
-#define ELF_GET(elf, ptr, st, field) elf_get_value(elf, ptr, ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
-
 typedef struct __unaligned {
   uint8 e_ident[ELF_EI_NIDENT]; /* Magic number and other info */
   uint16 e_type;                /* Object file type */
@@ -1266,12 +1259,6 @@ typedef uint32 elf32_conflict;
 
 #define __ELF_NATIVE_CLASS          __WORDSIZE
 
-#define ELF_BITS(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64 ? 64 : 32)
-#define ELF_32(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS32)
-#define ELF_64(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64)
-
-#define ELF_STRUCT_SIZE(elf, st) (ELF_64(elf) ? sizeof(elf64_##st) : sizeof(elf32_##st))
-
 range       elf_dynamic_section(void*);
 range       elf_get_section_r(void*, const char* name);
 void*       elf_get_section(void*, const char* name, size_t* szp);
@@ -1292,13 +1279,24 @@ range       elf_section(void*, void* shdr);
 const char* elf_shstrtab(void*);
 range       elf_symbol_r(void*, void* sym);
 
+#define ELF_BITS(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64 ? 64 : 32)
+#define ELF_32(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS32)
+#define ELF_64(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64)
+
+#define ELF_FIELD_OFFS(type, field) ((size_t)(uint8*)&(((type*)0)->field))
+#define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
+
+#define ELF_STRUCT_OFFSETS(st, field) ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
+#define ELF_STRUCT_SIZE(elf, st) (ELF_64(elf) ? sizeof(elf64_##st) : sizeof(elf32_##st))
+
+#define ELF_GET(elf, ptr, st, field) elf_get_value(elf, ptr, ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
+
+
 #define ELF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
 #define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
 
 #define ELF_ADDR(elf, ptr, st, field) ((void*)(((char*)ptr) + ELF_OFFSET(elf, st, field)))
-
 #define ELF_OFFSET(elf, st, field) (ELF_64(elf) ? ELF_FIELD_OFFSET(elf64_##st, field) : ELF_FIELD_OFFSET(elf32_##st, field))
-
 #define ELF_SIZE(elf, st, field) (ELF_64(elf) ? ELF_FIELD_SIZE(elf64_##st, field) : ELF_FIELD_SIZE(elf32_##st, field))
 
 #ifdef __cplusplus
@@ -1306,4 +1304,3 @@ range       elf_symbol_r(void*, void* sym);
 #endif
 
 #endif /* elf.h */
-range elf_symbol_r(void*, void* sym);

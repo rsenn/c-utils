@@ -12,6 +12,7 @@
 #include "lib/byte.h"
 #include "lib/fmt.h"
 #include "lib/strlist.h"
+#include <stdlib.h>
 
 void elf_dump_dynamic(range map);
 void elf_dump_sections(range map);
@@ -128,8 +129,7 @@ main(int argc, char** argv) {
     list_defined = list_undefined = 1;
 
   if(optind == argc) {
-    buffer_putm_3(buffer_1, "Usage: ", str_basename(argv[0]), " XXX.dll\n");
-    buffer_flush(buffer_1);
+    usage(argv[0]);
     return 0;
   }
 
@@ -142,6 +142,9 @@ main(int argc, char** argv) {
     map.start = (char*)mmap_read(filename, &filesize);
     map.end = map.start + filesize;
 
+    buffer_puts(buffer_2, "map start: ");
+    buffer_putptr(buffer_2, map.start);
+    buffer_putnlflush(buffer_2);
 
     if(dump_file_header)
       elf_dump_header(buffer_1, map);

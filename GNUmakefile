@@ -958,7 +958,7 @@ $(info BUILDDIR: $(BUILDDIR))
 
 
 all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS) $(EXAMPLES)
-	$(info all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS))
+	$(info all: $(notdir builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)))
 
 #$(BUILDDIR)tryerrno.c:
 #	echo "int main() {\
