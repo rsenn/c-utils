@@ -26,6 +26,7 @@ static const char* filename;
     if(!range_ptrinbuf2(map.start, map.end, ptr)) {                                                                    \
       buffer_puts(buffer_2, "OUT of range: " #ptr);                                                                    \
       buffer_putnlflush(buffer_2);                                                                                     \
+      exit(120);                                                                                                       \
     }                                                                                                                  \
   } while(0)
 
@@ -135,7 +136,7 @@ main(int argc, char** argv) {
 void
 elf_dump_dynamic(range map) {
 
-  int di = elf_section_find(map.start, ".dynamic");
+  int i = 0, di = elf_section_find(map.start, ".dynamic");
   range dyn;
   void* entry;
   const char* dynstrtab = NULL;
@@ -154,9 +155,15 @@ elf_dump_dynamic(range map) {
 
   range_foreach(&dyn, entry) {
     int64 tag = ELF_GET(map.start, entry, dyn, d_tag);
+    uint64 val = ELF_GET(map.start, entry, dyn, d_un.d_val);
 
     if(tag == ELF_DT_STRTAB) {
-      dynstrtab = map.start + ELF_GET(map.start, entry, dyn, d_un.d_val);
+      buffer_puts(buffer_2, "ELF_DT_STRTAB:\n0x");
+      buffer_putxint640(buffer_2, val, ELF_BITS(map.start) / 4);
+      buffer_putnlflush(buffer_2);
+      //   buffer_puts(buffer_2, elf_)
+
+      dynstrtab = map.start + val;
 
       RANGE_CHECK(dynstrtab);
 
@@ -197,9 +204,9 @@ extern int buffer_putptr_size_2;
 /**
  * @brief elf_dump_symbols
  * @param map               Pointer range of the loaded ELF file
- * @param section
- * @param text
- * @param stname
+ * @param section           Symbol table section
+ * @param text              Code section
+ * @param stname            String-table section name
  * @param binding
  */
 void
