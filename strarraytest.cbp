@@ -65,7 +65,7 @@
     <Unit filename="lib/array/array_get.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/array/array_length.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/array/array_start.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/array/umult64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/safemult/umult64.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_1.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_flush.c"><Option compilerVar="CC"/></Unit>
