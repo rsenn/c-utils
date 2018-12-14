@@ -32,7 +32,7 @@ usage(char* argv0) {
               "  -1 ... -9           compression level; default is 3\n",
               "\n",
               "Supported types are:", 0);
-#ifdef HAVE_ZLIB
+#ifdef HAVE_LIBZ
   buffer_puts(buffer_1, " gz");
 #endif
 #ifdef HAVE_LIBBZ2

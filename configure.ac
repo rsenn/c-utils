@@ -85,7 +85,7 @@ AC_CHECK_FUNC([round],[AC_DEFINE_UNQUOTED([HAVE_ROUND],[1],[Define this if you h
 AC_CHECK_FUNC([wordexp],[AC_DEFINE_UNQUOTED([HAVE_WORDEXP],[1],[Define this if you have the wordexp() function])])
 dnl AC_CHECK_FUNC([WSAStartup],[AC_DEFINE_UNQUOTED([HAVE_WSASTARTUP],[1],[Define this if you have the WSAStartup() function])])
 
-AC_CHECK_ZLIB([AC_DEFINE_UNQUOTED([HAVE_ZLIB],[1],[Define if you have zlib])])
+AC_CHECK_ZLIB([AC_DEFINE_UNQUOTED([HAVE_LIBZ],[1],[Define if you have zlib])])
 AC_CHECK_BZLIB([AC_DEFINE_UNQUOTED([HAVE_LIBBZ2],[1],[Define if you have libbz2])])
 AC_CHECK_LIBLZMA([AC_DEFINE_UNQUOTED([HAVE_LIBLZMA],[1],[Define if you have liblzma])])
 

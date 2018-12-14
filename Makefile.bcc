@@ -2,7 +2,7 @@ CC = bcc32c
 CCLD = $(CC)
 LIB = tlib
 CFLAGS = -v -O -O1 -d -dc
-DEFS = -DHAVE_ERRNO_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDINT_H=1 -DHAVE_SYS_FCNTL_H=1 -DHAVE_ZLIB=1 -DHAVE_LIBLZMA=1 -DHAVE_LIBBZ2=1
+DEFS = -DHAVE_ERRNO_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDINT_H=1 -DHAVE_SYS_FCNTL_H=1 -DHAVE_LIBZ=1 -DHAVE_LIBLZMA=1 -DHAVE_LIBBZ2=1
 CPPFLAGS = 
 COMPILE = $(CC) $(CFLAGS) $(DEFS) $(CPPFLAGS) -c
 LIBS = array.lib binfmt.lib buffer.lib byte.lib case.lib cb.lib cbmap.lib charbuf.lib dir.lib dns.lib elf.lib env.lib errmsg.lib expand.lib fmt.lib gpio.lib hmap.lib http.lib iarray.lib io.lib json.lib list.lib map.lib mmap.lib ndelay.lib open.lib path.lib pe.lib playlist.lib rdir.lib scan.lib sig.lib slist.lib socket.lib str.lib stralloc.lib strarray.lib strlist.lib tai.lib taia.lib textbuf.lib uint16.lib uint32.lib uint64.lib var.lib vartab.lib xml.lib

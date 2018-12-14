@@ -1,7 +1,7 @@
 CC = gcc
 CXX = g++
 CFLAGS = -g3 -ggdb -O0
-DEFS = -DHAVE_ERRNO_H=1 -DHAVE_ZLIB=1 -DHAVE_LIBBZ2=1 -DHAVE_LIBLZMA=1
+DEFS = -DHAVE_ERRNO_H=1 -DHAVE_LIBZ=1 -DHAVE_LIBBZ2=1 -DHAVE_LIBLZMA=1
 AR = ar
 LIBS = -lz -lbz2 -llzma
 EXTRA_LIBS = -ladvapi32 -lws2_32 -liphlpapi -lpsapi -lshlwapi

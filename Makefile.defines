@@ -89,7 +89,7 @@ ifneq ($(WORDEXP),)
 DEFINES += HAVE_WORDEXP="$(WORDEXP)"
 endif
 ifneq ($(ZLIB),)
-DEFINES += HAVE_ZLIB="$(ZLIB)"
+DEFINES += HAVE_LIBZ="$(ZLIB)"
 endif
 ifneq ($(STDINT_H),)
 DEFINES += HAVE_STDINT_H="$(STDINT_H)"
