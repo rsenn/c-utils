@@ -1,20 +1,20 @@
-.TH fmt_uint64 3
+.TH fmt_ulonglong 3
 .SH NAME
-fmt_uint64 \- write an ASCII representation of an uint64 integer
+fmt_ulonglong \- write an ASCII representation of an uint64 integer
 .SH SYNTAX
 .B #include <fmt.h>
 
-size_t \fBfmt_uint64\fP(char *\fIdest\fR,uint64 \fIsource\fR);
+size_t \fBfmt_ulonglong\fP(char *\fIdest\fR,uint64 \fIsource\fR);
 .SH DESCRIPTION
-fmt_uint64 writes an ASCII representation ('0' to '9', base 10) of
+fmt_ulonglong writes an ASCII representation ('0' to '9', base 10) of
 \fIsource\fR to \fIdest\fR and returns the number of bytes written.
 
-fmt_uint64 does not append \\0.
+fmt_ulonglong does not append \\0.
 
-If \fIdest\fR equals FMT_LEN (i.e. is zero), fmt_uint64 returns the
+If \fIdest\fR equals FMT_LEN (i.e. is zero), fmt_ulonglong returns the
 number of bytes it would have written.
 
 For convenience, fmt.h defines the integer FMT_ULONG to be big enough to
-contain every possible fmt_uint64 output plus \\0.
+contain every possible fmt_ulonglong output plus \\0.
 .SH "SEE ALSO"
-scan_uint64(3)
+scan_ulonglong(3)

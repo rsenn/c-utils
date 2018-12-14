@@ -60,8 +60,8 @@ typedef struct tuple {
   union {
     int val_int;
     unsigned int val_uint;
-    long int val_int64;
-    unsigned long int val_uint64;
+    long int val_longlong;
+    unsigned long int val_ulonglong;
     double val_double;
     char* val_chars;
     struct tuple* val_tuple;
