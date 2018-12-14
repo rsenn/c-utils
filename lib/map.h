@@ -40,9 +40,9 @@ typedef struct {
 
 #define map_deinit(m) map_deinit_(&(m)->base)
 
-#define map_get(m, key) ((m)->ref = map_get_(&(m)->base, key))
+#define map_get(m, key) ((m)->ref = map_get_((void*)&(m)->base, (key)))
 
-#define map_set(m, key, value) ((m)->tmp = (value), map_set_(&(m)->base, key, &(m)->tmp, sizeof((m)->tmp)))
+#define map_set(m, key, value) ((m)->tmp = (value), map_set_(&(m)->base, key, (void*)&(m)->tmp, sizeof((m)->tmp)))
 
 #define map_remove(m, key) map_remove_(&(m)->base, key)
 

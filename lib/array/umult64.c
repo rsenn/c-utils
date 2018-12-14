@@ -1,4 +1,4 @@
-#if defined(__x86_64__) && defined(__OPTIMIZE__) && \
+#if defined(__x86_64__) && defined(__OPTIMIZE__) &&                                                                    \
     !(defined(_WIN32) || defined(__CYGWIN__) || defined(__CYGWIN64__) || defined(__MSYS__))
 
 /* WARNING: this only works if compiled with -fomit - frame - pointer */
@@ -15,7 +15,7 @@ umult64() {
                    "1:\n"
                    "xorq %rax,%rax\n"
                    /* the closing ret is renerated by gcc */
-  );
+                   );
 }
 
 #else
@@ -28,7 +28,8 @@ umult64() {
 int
 umult64(uint64 a, uint64 b, uint64* c) {
   __uint128_t x = ((__uint128_t)a) * b;
-  if((*c = (uint64)x) != x) return 0;
+  if((*c = (uint64)x) != x)
+    return 0;
   return 1;
 }
 
@@ -42,13 +43,16 @@ umult64(uint64 a, uint64 b, uint64* c) {
   uint32 bhi = b >> 32;
   uint32 blo = (b & 0xffffffff);
 
-  if(ahi && bhi) return 0;
+  if(ahi && bhi)
+    return 0;
 
   a = (uint64)(ahi)*blo + (uint64)(alo)*bhi;
-  if(a > 0xffffffff) return 0;
+  if(a > 0xffffffff)
+    return 0;
   {
     uint64 x = (uint64)(alo)*blo;
-    if(x + (a << 32) < x) return 0;
+    if(x + (a << 32) < x)
+      return 0;
     *c = x + (a << 32);
   }
   return 1;
