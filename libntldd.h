@@ -1,9 +1,9 @@
-#include "../safemult.h"
+#include "lib/safemult.h"
 
 #if SAFEMULT_NO_INLINE
 #if defined(__GNUC__) && (__GNUC__ >= 5)
 
-#include "../uint64.h"
+#include "lib/uint64.h"
 
 int umult64(uint64 a,uint64 b,uint64* c) { return !__builtin_mul_overflow(a,b,c); }
 
