@@ -96,9 +96,9 @@ main() {
   assert(fmt_xlonglong(NULL, 12345678900ll) == 9);
   zap();
   assert(fmt_xlonglong(buf, 12345678900ll) == 9 && byte_equal(buf, 10, "2dfdc1c34_"));
-  assert(fmt_uint64(NULL, 12345678900ull) == 11);
+  assert(fmt_ulonglong(NULL, 12345678900ull) == 11);
   zap();
-  assert(fmt_uint64(buf, 12345678900ull) == 11 && byte_equal(buf, 12, "12345678900_"));
+  assert(fmt_ulonglong(buf, 12345678900ull) == 11 && byte_equal(buf, 12, "12345678900_"));
 
   assert(fmt_ulong0(NULL, 12345, 7) == 7);
   zap();
@@ -268,7 +268,7 @@ main() {
   assert(scan_ulong("23.", &ul) == 2 && ul == 23);
   assert(scan_uint("23.", &ui) == 2 && ui == 23);
   assert(scan_ushort("23.", &us) == 2 && us == 23);
-  assert(scan_uint64("23.", &ull) == 2 && ull == 23);
+  assert(scan_ulonglong("23.", &ull) == 2 && ull == 23);
 
   assert(scan_long("23.", &l) == 2 && l == 23);
   assert(scan_int("23.", &i) == 2 && i == 23);
@@ -352,8 +352,8 @@ main() {
   assert(scan_short("-32768", &s) == 6 && s == -32768);
   assert(scan_short("-032769", &s) == 6 && s == -3276);
 
-  assert(scan_uint64("18446744073709551615", &ull) == 20 && ull == 0xffffffffffffffffull);
-  assert(scan_uint64("18446744073709551616", &ull) == 19 && ull == 1844674407370955161ull);
+  assert(scan_ulonglong("18446744073709551615", &ull) == 20 && ull == 0xffffffffffffffffull);
+  assert(scan_ulonglong("18446744073709551616", &ull) == 19 && ull == 1844674407370955161ull);
   assert(scan_xlonglong("ffffffffffffffff", &ull) == 16 && ull == 0xffffffffffffffffull);
   assert(scan_xlonglong("ffffffffffffffff0", &ull) == 16 && ull == 0xffffffffffffffffull);
   assert(scan_8longlong("1777777777777777777777", &ull) == 22 && ull == 0xffffffffffffffffull);

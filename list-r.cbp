@@ -86,7 +86,7 @@
     <Unit filename="lib/dir/dir_read.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/dir/dir_type.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/fmt/fmt_uint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_ulonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/open.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/open/open_trunc.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str.h"><Option compilerVar="CC"/></Unit>

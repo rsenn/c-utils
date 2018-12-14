@@ -101,7 +101,7 @@
     <Unit filename="lib/scan/scan_fromhex.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/scan/scan_nonwhitenskip.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/scan/scan_whitenskip.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan/scan_xint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/scan/scan_xlonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str/str_len.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/stralloc.h"><Option compilerVar="CC"/></Unit>

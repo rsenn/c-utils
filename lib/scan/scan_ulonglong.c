@@ -1,7 +1,7 @@
 #include "../scan.h"
 
 size_t
-scan_uint64(const char* src, uint64* dest) {
+scan_ulonglong(const char* src, uint64* dest) {
   const char* tmp = src;
   uint64 l = 0;
   unsigned char c;

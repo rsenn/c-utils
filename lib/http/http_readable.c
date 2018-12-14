@@ -74,7 +74,7 @@ http_readable(http* h, int freshen) {
       }
       r->transfer = HTTP_TRANSFER_BOUNDARY;
     } else if(stralloc_startb(&r->data, "Content-Length:", 15)) {
-      scan_uint64(&r->data.s[16], &r->content_length);
+      scan_ulonglong(&r->data.s[16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
     } else {
       r->transfer = HTTP_TRANSFER_CHUNKED;

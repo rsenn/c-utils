@@ -71,7 +71,7 @@
     <Unit filename="lib/buffer/buffer_putc.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_puts.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putsa.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_putuint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putulonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_stubborn.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_stubborn2.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/byte.h"><Option compilerVar="CC"/></Unit>
@@ -79,13 +79,13 @@
     <Unit filename="lib/byte/byte_copy.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/byte/byte_zero.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt.h"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/fmt/fmt_uint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_ulonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/open.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/open/open_read.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/open/open_trunc.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/scan.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/scan/scan_fromhex.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan/scan_xint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/scan/scan_xlonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/scan/scan_xlong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str/str_diffn.c"><Option compilerVar="CC"/></Unit>

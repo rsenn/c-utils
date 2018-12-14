@@ -243,7 +243,7 @@ char*
 format_num(time_t num) {
   static char buf[FMT_LONG];
   byte_zero(buf, sizeof(buf));
-  buf[fmt_uint64(buf, num)] = '\0';
+  buf[fmt_ulonglong(buf, num)] = '\0';
   return buf;
 }
 

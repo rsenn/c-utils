@@ -33,9 +33,9 @@ size_t scan_8long(const char* src, unsigned long* dest);
  * and return the number of bytes that were parsed */
 size_t scan_long(const char* src, signed long* dest);
 
-size_t scan_int64(const char* src, int64* dest);
-size_t scan_uint64(const char* src, uint64* dest);
-size_t scan_xint64(const char* src, uint64* dest);
+size_t scan_longlong(const char* src, int64* dest);
+size_t scan_ulonglong(const char* src, uint64* dest);
+size_t scan_xlonglong(const char* src, uint64* dest);
 size_t scan_octal(const char* src, uint64* dest);
 
 size_t scan_uint(const char* src, unsigned int* dest);
@@ -96,7 +96,7 @@ size_t scan_octal(const char* src, uint64* dest);
 size_t scan_8longn(const char* src, size_t n, unsigned long* dest);
 size_t scan_int(const char* src, int* dest);
 size_t scan_long(const char* src, long* dest);
-size_t scan_int64(const char* src, int64* dest);
+size_t scan_longlong(const char* src, int64* dest);
 size_t scan_longn(const char* src, size_t n, long* dest);
 size_t scan_pb_tag(const char* in, size_t len, size_t* fieldno, unsigned char* type);
 size_t scan_pb_type0_sint(const char* in, size_t len, int64* l);
@@ -105,6 +105,8 @@ size_t scan_varint(const char* in, size_t len, uint64* n);
 size_t scan_xmlescape(const char* src, char* dest);
 
 size_t scan_utf8_sem(const char* in, size_t len, uint32* num);
+
+size_t scan_eolskip(const char* s, size_t limit);
 
 #ifdef __cplusplus
 }

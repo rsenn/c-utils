@@ -67,7 +67,7 @@
     <Unit filename="lib/buffer/buffer_putc.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putdouble.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putflush.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_putint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putlonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putnlflush.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putnspace.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_puts.c"><Option compilerVar="CC"/></Unit>
@@ -92,8 +92,8 @@
     <Unit filename="lib/fmt.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_double.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_escapecharc.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/fmt/fmt_int64.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/fmt/fmt_uint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_longlong.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_ulonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_ulong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/hmap.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/hmap/hmap_add.c"><Option compilerVar="CC"/></Unit>
@@ -111,8 +111,8 @@
     <Unit filename="lib/open/open_read.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/scan.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/scan/scan_double.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan/scan_int64.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan/scan_uint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/scan/scan_longlong.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/scan/scan_ulonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str/str_len.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/stralloc.h"><Option compilerVar="CC"/></Unit>

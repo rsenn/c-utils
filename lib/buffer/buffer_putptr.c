@@ -9,7 +9,7 @@ buffer_putptr(buffer* b, void* ptr) {
   size_t n;
   if(ptr == NULL) return buffer_puts(b, "(null)");
 
-  n = fmt_xint64(buf, (uint64)(intptr_t)ptr);
+  n = fmt_xlonglong(buf, (uint64)(intptr_t)ptr);
   buf[n] = '\0';
   buffer_put(b, "0x", 2);
   while(n++ < buffer_putptr_size_2) buffer_putc(b, '0');

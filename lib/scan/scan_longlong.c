@@ -3,13 +3,13 @@
 static const unsigned long maxlong = ((unsigned long)-1) >> 1;
 
 size_t
-scan_int64(const char* src, int64* dest) {
+scan_longlong(const char* src, int64* dest) {
   size_t i, o;
   uint64 l;
   char c = src[0];
   unsigned int neg = c == '-';
   o = c == '-' || c == '+';
-  if((i = scan_uint64(src + o, &l))) {
+  if((i = scan_ulonglong(src + o, &l))) {
     if(i > 0 && l > maxlong + neg) {
       l /= 10;
       --i;

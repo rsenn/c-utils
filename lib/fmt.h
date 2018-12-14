@@ -128,9 +128,9 @@ size_t fmt_strm_internal(char* dest, ...);
   })
 #endif
 
-size_t fmt_uint64(char* dest, uint64 i);
-size_t fmt_int64(char* dest, int64 i);
-size_t fmt_xint64(char* dest, uint64 x);
+size_t fmt_ulonglong(char* dest, uint64 i);
+size_t fmt_longlong(char* dest, int64 i);
+size_t fmt_xlonglong(char* dest, uint64 x);
 size_t fmt_octal(char* dest, uint64 o);
 
 size_t fmt_escapecharquotedprintable(char* dest, unsigned int ch);

@@ -601,7 +601,7 @@ print_image_links(int first,
       buffer_puts(buffer_1, "] ");
       buffer_putspad(buffer_1, item->name, 16);
       buffer_puts(buffer_1, " (0x");
-      buffer_putxint640(buffer_1, item->address_offset, 8);
+      buffer_putxlonglong0(buffer_1, item->address_offset, 8);
       buffer_putm_3(buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <");
       buffer_putulong(buffer_1, item->section_index);
       buffer_puts(buffer_1, ">");
@@ -646,9 +646,9 @@ print_image_links(int first,
 
       buffer_puts(buffer_1, "\t");
       buffer_putnspace(buffer_1, depth * 2);
-      buffer_putxint640(buffer_1, item->orig_address, 8);
+      buffer_putxlonglong0(buffer_1, item->orig_address, 8);
       buffer_putspace(buffer_1);
-      buffer_putxint640(buffer_1, item->address, 8);
+      buffer_putxlonglong0(buffer_1, item->address, 8);
       buffer_putspace(buffer_1);
       buffer_putulong0(buffer_1, item->ordinal, 3);
       buffer_putspace(buffer_1);
