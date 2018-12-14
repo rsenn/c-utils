@@ -40,6 +40,7 @@
 #include "lib/str.h"
 #include "lib/mmap.h"
 #include "lib/scan.h"
+#include "lib/uint32.h"
 
 #include <stdlib.h>
 #include <errno.h>
@@ -53,7 +54,7 @@
 #define HOSTS_FILE "/etc/hosts"
 #endif
 
-    static map_t(uint32) hosts;
+static map_t(uint32) hosts_db;
 static char ipbuf[IP4_FMT];
 
 void
@@ -65,16 +66,15 @@ usage(char* prog) {
 
 int
 read_hosts(const char* file) {
-  const char* x;
+  char* x;
   size_t n;
   char ip[4];
-  uint32 ipn;
   stralloc hostname;
   stralloc_init(&hostname);
 
   if((x = mmap_read(file, &n))) {
     const char* p;
-    int s, l, e, i;
+    size_t s, l, e, i;
 
     str_foreach_skip(x, p, l + 1) {
       e = n - (p - x);
@@ -88,7 +88,7 @@ read_hosts(const char* file) {
         continue;
 
       if((i = scan_ip4(&p[s], ip))) {
-        int hlen;
+        size_t hlen;
         s += i;
         s += scan_whitenskip(&p[s], l - s);
 
@@ -106,8 +106,8 @@ read_hosts(const char* file) {
           buffer_putnlflush(buffer_1);
 #endif
           stralloc_nul(&hostname);
-          uint32_unpack(ip, &ipn);
-          map_set(&hosts, hostname.s, ipn);
+
+          map_set(&hosts_db, hostname.s, ip);
 
           s += hlen;
           s += scan_whitenskip(&p[s], l - s);
@@ -121,12 +121,10 @@ read_hosts(const char* file) {
 
 int
 lookup_hosts(stralloc* name, stralloc* ips) {
-  uint32* ptr;
+  void* ptr;
   stralloc_nul(name);
-  if((ptr = map_get(&hosts, name->s))) {
-    stralloc_ready(ips, 4);
-    uint32_pack(ips->s, *ptr);
-    ips->len = 4;
+  if((ptr = map_get(&hosts_db, name->s)))  {
+    stralloc_copyb(ips, ptr, 4);
     return 1;
   }
   return 0;
@@ -228,7 +226,7 @@ main(int argc, char* argv[]) {
 
     taia_now(&now);
     taia_uint(&deadline, timeout_sec + timeout_usec / 1000000);
-    umult64(timeout_usec % 1000000, 1000, &deadline.nano);
+    umult32(timeout_usec % 1000000, 1000, &deadline.nano);
     taia_add(&deadline, &deadline, &now);
 
     io_waituntil(deadline);

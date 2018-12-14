@@ -2172,3 +2172,11 @@ $(BUILDDIR)path_find.o: lib/path/path_find.c lib/path_internal.h lib/windoze.h l
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)socket_error.o: lib/socket/socket_error.c lib/socket_internal.h lib/windoze.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hmap_distance.o: lib/hmap/hmap_distance.c lib/hmap_internal.h lib/byte.h lib/typedefs.h lib/hmap.h lib/stralloc.h lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)umult16.o: lib/safemult/umult16.c lib/safemult.h lib/uint16.h lib/uint32.h lib/uint64.h lib/uint16.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)umult32.o: lib/safemult/umult32.c lib/safemult.h lib/uint16.h lib/uint32.h lib/uint64.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)umult64.o: lib/safemult/umult64.c lib/safemult.h lib/uint16.h lib/uint32.h lib/uint64.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
