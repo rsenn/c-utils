@@ -6,18 +6,18 @@
 #include "../uint16.h"
 
 int
-umult16(uint16 a, uint16 b, uint16* c) {
+imult16(int16 a, int16 b, int16* c) {
   return !__builtin_mul_overflow(a, b, c);
 }
 
 #else
 
 int
-umult16(uint16 a, uint16 b, uint16* c) {
-  unsigned long x = (unsigned long)a * b;
-  if(x > 0xffff)
+imult16(int16 a, int16 b, int16* c) {
+  int32 x = (int32)a * b;
+  if((int16)x != x)
     return 0;
-  *c = x & 0xffff;
+  *c = x;
   return 1;
 }
 

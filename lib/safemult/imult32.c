@@ -3,23 +3,22 @@
 #if SAFEMULT_NO_INLINE
 #if defined(__GNUC__) && (__GNUC__ >= 5)
 
-#include "../uint16.h"
+#include "../uint32.h"
 
 int
-umult16(uint16 a, uint16 b, uint16* c) {
+imult32(int32 a, int32 b, int32* c) {
   return !__builtin_mul_overflow(a, b, c);
 }
 
 #else
 
 int
-umult16(uint16 a, uint16 b, uint16* c) {
-  unsigned long x = (unsigned long)a * b;
-  if(x > 0xffff)
+imult32(int32 a, int32 b, int32* c) {
+  int64 x = (int64)a * b;
+  if((int32)x != x)
     return 0;
-  *c = x & 0xffff;
+  *c = x;
   return 1;
 }
-
 #endif
 #endif /* SAFEMULT_NO_INLINE */
