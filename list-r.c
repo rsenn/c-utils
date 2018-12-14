@@ -333,7 +333,7 @@ static int list_dir_internal(stralloc* dir, char type);
 static void
 make_num(stralloc* out, size_t num, size_t width) {
   char fmt[FMT_ULONG + 1];
-  size_t sz = fmt_uint64(fmt, num);
+  size_t sz = fmt_ulonglong(fmt, num);
   ssize_t n = width - sz;
   while(n-- > 0) {
     stralloc_catb(out, " ", 1);

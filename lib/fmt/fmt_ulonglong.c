@@ -2,7 +2,7 @@
 #include "../uint64.h"
 
 size_t
-fmt_uint64(char* dest, uint64 i) {
+fmt_ulonglong(char* dest, uint64 i) {
   size_t len;
   uint64 tmp, len2;
   /* first count the number of bytes needed */

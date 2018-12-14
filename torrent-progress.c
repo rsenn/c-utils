@@ -211,9 +211,9 @@ next:
       buffer_puts(buffer_2, "kB (0x");
       buffer_putxlong(buffer_2, map_size);
       buffer_puts(buffer_2, ") iterations: ");
-      buffer_putuint64(buffer_2, iterations);
+      buffer_putulonglong(buffer_2, iterations);
       buffer_puts(buffer_2, " (end offset: 0x");
-      buffer_putxint64(buffer_2, fsize);
+      buffer_putxlonglong(buffer_2, fsize);
       buffer_putnlflush(buffer_2);
     }
 

@@ -53,9 +53,9 @@ void
 debug_int(const char* name, int64 value) {
   buffer_puts(buffer_1, name);
   buffer_puts(buffer_1, ": 0x");
-  buffer_putxint640(buffer_1, value, 8);
+  buffer_putxlonglong0(buffer_1, value, 8);
   buffer_puts(buffer_1, " (");
-  buffer_putint64(buffer_1, value);
+  buffer_putlonglong(buffer_1, value);
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
 }
@@ -152,7 +152,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
 
           if(from != to && !new.x) {
             buffer_puts(buffer_1, "  patch(p, 0x");
-            buffer_putxint640(buffer_1, w + j, 8);
+            buffer_putxlonglong0(buffer_1, w + j, 8);
             buffer_puts(buffer_1, ", 0x");
             buffer_putxlong0(buffer_1, (unsigned long)(unsigned char)from, 2);
             buffer_puts(buffer_1, ", 0x");

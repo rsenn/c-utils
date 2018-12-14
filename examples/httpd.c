@@ -180,7 +180,7 @@ httpresponse(struct http_data* h, int64 s) {
       c += fmt_str(c, "HTTP/1.1 Coming Up\r\nContent-Type: ");
       c += fmt_str(c, m);
       c += fmt_str(c, "\r\nContent-Length: ");
-      c += fmt_uint64(c, s.st_size);
+      c += fmt_ulonglong(c, s.st_size);
       c += fmt_str(c, "\r\nLast-Modified: ");
       c += fmt_httpdate(c, s.st_mtime);
       c += fmt_str(c, "\r\nConnection: ");

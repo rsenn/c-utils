@@ -18,10 +18,10 @@ xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, co
         buffer_putulong(b, tpl->vals.val_uint);
         break;
       case HMAP_DATA_TYPE_INT64:
-        buffer_putint64(b, tpl->vals.val_int64);
+        buffer_putlonglong(b, tpl->vals.val_int64);
         break;
       case HMAP_DATA_TYPE_UINT64:
-        buffer_putuint64(b, tpl->vals.val_uint64);
+        buffer_putulonglong(b, tpl->vals.val_uint64);
         break;
       case HMAP_DATA_TYPE_DOUBLE:
         buffer_putdouble(b, tpl->vals.val_double, 15);

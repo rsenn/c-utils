@@ -3,7 +3,7 @@
 #define tohex(c) (char)((c) >= 10 ? (c)-10 + 'a' : (c) + '0')
 
 size_t
-fmt_xint64(char* dest, uint64 i) {
+fmt_xlonglong(char* dest, uint64 i) {
   uint64 len, tmp;
   /* first count the number of bytes needed */
   for(len = 1, tmp = i; tmp > 15; ++len) tmp >>= 4;

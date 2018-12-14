@@ -35,7 +35,7 @@ static const char* filename;
 #define ELF_DUMP_FIELD(base, ptr, st, field) \
   buffer_putspad(b, #field, 30), \
   buffer_puts(b, " 0x"), \
-  buffer_putxint640(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), \
+  buffer_putxlonglong0(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), \
   buffer_putnlflush(b)
 
 void
@@ -203,7 +203,7 @@ elf_dump_dynamic(range map) {
 
     if(tag == ELF_DT_STRTAB) {
       buffer_puts(buffer_2, "ELF_DT_STRTAB:\n0x");
-      buffer_putxint640(buffer_2, val, ELF_BITS(map.start) / 4);
+      buffer_putxlonglong0(buffer_2, val, ELF_BITS(map.start) / 4);
       buffer_putnlflush(buffer_2);
       //   buffer_puts(buffer_2, elf_)
 
@@ -224,7 +224,7 @@ elf_dump_dynamic(range map) {
 
     if(tag >= ELF_DT_NUM) {
       buffer_puts(buffer_1, "0x");
-      buffer_putxint640(buffer_1, tag, ELF_BITS(map.start) / 4);
+      buffer_putxlonglong0(buffer_1, tag, ELF_BITS(map.start) / 4);
     } else {
       buffer_putspad(buffer_1, dynamic_types[tag % ELF_DT_NUM], 18);
     }
@@ -234,7 +234,7 @@ elf_dump_dynamic(range map) {
       buffer_puts(buffer_1, (const char*)&dynstrtab[val]);
     } else {
       buffer_puts(buffer_1, " 0x");
-      buffer_putxint640(buffer_1, val, ELF_BITS(map.start) / 4);
+      buffer_putxlonglong0(buffer_1, val, ELF_BITS(map.start) / 4);
     }
     buffer_putnlflush(buffer_1);
 
@@ -308,7 +308,7 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
     */
     /*jjif(size) {
       buffer_puts(buffer_1, " 0x");
-      buffer_putxint640(buffer_1, value, ELF_BITS(map.start) / 4);
+      buffer_putxlonglong0(buffer_1, value, ELF_BITS(map.start) / 4);
     } else {
       buffer_putnspace(buffer_1, ELF_BITS(map.start) / 4 + 3);
     }
@@ -366,13 +366,13 @@ elf_dump_sections(range map) {
 
     buffer_putspad(buffer_1, &(elf_shstrtab(map.start)[name]), 16);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, addr, ELF_BITS(map.start) / 4);
+    buffer_putxlonglong0(buffer_1, addr, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, size, ELF_BITS(map.start) / 4);
+    buffer_putxlonglong0(buffer_1, size, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, offs, ELF_BITS(map.start) / 4);
+    buffer_putxlonglong0(buffer_1, offs, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, align, ELF_BITS(map.start) / 4);
+    buffer_putxlonglong0(buffer_1, align, ELF_BITS(map.start) / 4);
     buffer_putspace(buffer_1);
     buffer_puts(buffer_1, elf_section_typename(type));
     buffer_putnlflush(buffer_1);
@@ -419,13 +419,13 @@ elf_dump_segments(range map) {
       continue;
 
     buffer_puts(buffer_1, "0x");
-    buffer_putxint640(buffer_1, paddr, ELF_BITS(map.start) / 4);
+    buffer_putxlonglong0(buffer_1, paddr, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, vaddr, ELF_BITS(map.start) / 4);
+    buffer_putxlonglong0(buffer_1, vaddr, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, filesz, ELF_BITS(map.start) / 4);
+    buffer_putxlonglong0(buffer_1, filesz, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
-    buffer_putxint640(buffer_1, memsz, ELF_BITS(map.start) / 4);
+    buffer_putxlonglong0(buffer_1, memsz, ELF_BITS(map.start) / 4);
     buffer_putm_internal(buffer_1,
                          " ",
                          (flags & ELF_PF_R) ? "r" : "-",

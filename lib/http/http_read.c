@@ -14,7 +14,7 @@ static void
 putnum(const char* what, ssize_t n) {
   buffer_puts(buffer_1, what);
   buffer_puts(buffer_1, ": ");
-  buffer_putint64(buffer_1, n);
+  buffer_putlonglong(buffer_1, n);
   buffer_putnlflush(buffer_1);
 }
 
@@ -98,7 +98,7 @@ http_read_header(http* h, http_response* r) {
       }
       r->transfer = HTTP_TRANSFER_BOUNDARY;
     } else if(stralloc_startb(&r->data, "Content-Length:", 15)) {
-      scan_uint64(&r->data.s[16], &r->content_length);
+      scan_ulonglong(&r->data.s[16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
       putnum("content length", r->content_length);
     } else if(stralloc_starts(&r->data, "Transfer-Encoding:") && stralloc_contains(&r->data, "chunked")) {
@@ -134,11 +134,9 @@ http_read_internal(http* h, char* buf, size_t len) {
     switch(r->transfer) {
       case HTTP_TRANSFER_CHUNKED: {
         if(r->ptr == r->chunk_length) {
-          if(in->n - in->p >= 2) {
-            if(in->x[in->p] == '\r')
-              ++in->p;
-            if(in->x[in->p] == '\n')
-              ++in->p;
+          size_t skip;
+          if((skip = scan_eolskip(&in->x[in->p], in->n - in->p))) {
+            in->p += skip;
             r->chunk_length = 0;
           }
           putnum("chunk end", r->ptr);
@@ -146,71 +144,69 @@ http_read_internal(http* h, char* buf, size_t len) {
         if(r->chunk_length == 0) {
           size_t i, bytes = in->n - in->p;
           if((i = byte_chr(&in->x[in->p], bytes, '\n')) < bytes) {
-            i = scan_xint64(&in->x[in->p], &r->chunk_length);
+            i = scan_xlonglong(&in->x[in->p], &r->chunk_length);
             in->p += i;
-            if(in->x[in->p] == '\r')
-              ++in->p;
-            if(in->x[in->p] == '\n')
-              ++in->p;
-            r->ptr = 0;
-            if(r->chunk_length) {
-              putnum("chunk begin", r->chunk_length);
-            } else {
-              putnum("transfer end", 0);
-              r->status = HTTP_STATUS_FINISH;
+
+            if((i = scan_eolskip(&in->x[in->p], in->n - in->p))) {
+              in->p += i;
+              r->ptr = 0;
+              if(r->chunk_length) {
+                putnum("chunk begin", r->chunk_length);
+              } else {
+                putnum("transfer end", 0);
+                r->status = HTTP_STATUS_FINISH;
+              }
             }
           }
+          break;
         }
-        break;
-      }
-      case HTTP_TRANSFER_LENGTH: {
-        if(r->ptr == r->content_length)
-          r->status = HTTP_STATUS_FINISH;
-        break;
-      }
-    }
-  }
-  return len;
-}
-
-ssize_t
-http_read(http* h, char* buf, size_t len) {
-  buffer* b = &h->q.in;
-  ssize_t bytes, n, ret = 0;
-  http_response* r;
-  while(len) {
-    bytes = b->n - b->p;
-    if((n = buffer_freshen(b)) <= 0)
-      break;
-    if(b->n - b->p > bytes)
-      putnum("growbuf", (b->n - b->p) - bytes);
-    buffer_dump(buffer_1, b);
-    if(h->response->status != HTTP_RECV_DATA)
-      break;
-    r = h->response;
-    if(n + r->ptr > r->content_length)
-      n = r->content_length - r->ptr;
-    if(n >= (ssize_t)len)
-      n = (ssize_t)len;
-    byte_copy(buf, (size_t)n, b->x + b->p);
-    putnum("skipbuf", n);
-    len -= (size_t)n;
-    buf += n;
-    ret += n;
-    b->p += (size_t)n;
-    if(b->p == b->n)
-      b->p = b->n = 0;
-    // r->content_length -= n;
-    r->ptr += n;
-    putnum("ptr", r->ptr);
-    if(r->ptr == r->content_length && b->n - b->p > 0) {
-      http_read_internal(h, &b->x[b->p], b->n - b->p);
-
-      if(r->status == HTTP_STATUS_FINISH) {
-        io_dontwantread(h->sock);
-        break;
+        case HTTP_TRANSFER_LENGTH: {
+          if(r->ptr == r->content_length)
+            r->status = HTTP_STATUS_FINISH;
+          break;
+        }
       }
     }
+    return len;
   }
-  return ret;
-}
+
+  ssize_t http_read(http * h, char* buf, size_t len) {
+    buffer* b = &h->q.in;
+    ssize_t bytes, n, ret = 0;
+    http_response* r;
+    while(len) {
+      bytes = b->n - b->p;
+      if((n = buffer_freshen(b)) <= 0)
+        break;
+      if(b->n - b->p > bytes)
+        putnum("growbuf", (b->n - b->p) - bytes);
+      buffer_dump(buffer_1, b);
+      if(h->response->status != HTTP_RECV_DATA)
+        break;
+      r = h->response;
+      if(n + r->ptr > r->content_length)
+        n = r->content_length - r->ptr;
+      if(n >= (ssize_t)len)
+        n = (ssize_t)len;
+      byte_copy(buf, (size_t)n, b->x + b->p);
+      putnum("skipbuf", n);
+      len -= (size_t)n;
+      buf += n;
+      ret += n;
+      b->p += (size_t)n;
+      if(b->p == b->n)
+        b->p = b->n = 0;
+      // r->content_length -= n;
+      r->ptr += n;
+      putnum("ptr", r->ptr);
+      if(r->ptr == r->content_length && b->n - b->p > 0) {
+        http_read_internal(h, &b->x[b->p], b->n - b->p);
+
+        if(r->status == HTTP_STATUS_FINISH) {
+          io_dontwantread(h->sock);
+          break;
+        }
+      }
+    }
+    return ret;
+  }

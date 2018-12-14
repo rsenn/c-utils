@@ -284,7 +284,7 @@ reg2cmd() {
         rt = REGISTRY_DWORD;
       } else if(!str_diffn(&line.s[valuestart], "qword:", 6)) {
         uint64 ull;
-        scan_xint64(&line.s[valuestart + 6], &ull);
+        scan_xlonglong(&line.s[valuestart + 6], &ull);
         word = ull;
         rt = REGISTRY_QWORD;
       } else {
@@ -359,11 +359,11 @@ reg2cmd() {
             break;
           }
           case REGISTRY_DWORD: {
-            buffer_putuint64(buffer_1, word);
+            buffer_putulonglong(buffer_1, word);
             break;
           }
           case REGISTRY_QWORD: {
-            buffer_putuint64(buffer_1, word);
+            buffer_putulonglong(buffer_1, word);
             break;
           }
           case REGISTRY_BINARY: {
