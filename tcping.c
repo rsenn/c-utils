@@ -200,6 +200,9 @@ main(int argc, char* argv[]) {
     usage(argv[0]);
     return 105;
   }
+
+  io_fd(sock);
+
   if((ret = socket_connect4(sock, ips.s, port)) != 0) {
     if(errno != EINPROGRESS) {
 #if 1 // def HAVE_SOLARIS
