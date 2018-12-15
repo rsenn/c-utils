@@ -4,14 +4,16 @@
 
 static xmlnode*
 xml_find_predicate(xmlnode* node, int (*pred)(), const void* vptr[]) {
-  do {
+  while(node) {
     if(pred(node, vptr[0], vptr[1], vptr[2])) break;
 
     if(node->children) {
       xmlnode* r;
       if((r = xml_find_predicate(node->children, pred, vptr))) return r;
     }
-  } while((node = node->next));
+
+     node = node->next;
+  } 
 
   return node;
 }
