@@ -8,6 +8,8 @@
 #endif
 
 #if WINDOWS_NATIVE
+int wsa_socketpair(int, int, int, SOCKET[2]);
+#define socketpair wsa_socketpair
 #else
 #include <netinet/in.h>
 #endif

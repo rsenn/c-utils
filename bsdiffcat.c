@@ -151,7 +151,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
           to = add[j] += src[j];
 
           if(from != to && !new.x) {
-            buffer_puts(buffer_1, "  patch(p, 0x");
+            buffer_puts(buffer_1, "  patch(0x");
             buffer_putxlonglong0(buffer_1, w + j, 8);
             buffer_puts(buffer_1, ", 0x");
             buffer_putxlong0(buffer_1, (unsigned long)(unsigned char)from, 2);

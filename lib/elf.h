@@ -126,7 +126,7 @@ elf64_ehdr;
 /* Legal values for e_machine (architecture).  */
 
 #define ELF_EM_NONE                 0 /* No machine */
-#define ELF_EM_M32                  1 /* AT#define ELF_EM_M32 1          /* AT&T WE 32100 T WE 32100 */
+#define ELF_EM_M32                  1 /* AT&T WE 32100 T WE 32100 */
 #define ELF_EM_SPARC                2 /* SUN SPARC */
 #define ELF_EM_386                  3 /* Intel 80386 */
 #define ELF_EM_68K                  4 /* Motorola m68k family */
