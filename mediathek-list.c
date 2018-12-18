@@ -463,7 +463,7 @@ match_toklists(strlist* sl) {
   char* s;
   int ret = 0;
 
-  if(include.sa.s == 0) 
+  if(include.sa.s == 0)
     ret = 1;
 
   strlist_foreach_s(&include, s) {
@@ -489,7 +489,7 @@ match_toklists(strlist* sl) {
 mediathek_entry_t*
 parse_entry(strlist* sl) {
 
-  mediathek_entry_t* ret;
+  static mediathek_entry_t* e;
   time_t dt = parse_anydate(strlist_at(sl, 3));
 
   time_t tm = parse_time(strlist_at(sl, 4));
@@ -511,24 +511,42 @@ parse_entry(strlist* sl) {
       if(!desc || !url)
         return 0;
 
-      ret = create_mediathek_entry(strlist_at(sl, 0),
-                                   strlist_at(sl, 1),
-                                   strlist_at(sl, 2),
+      if(!e)
+        e = new_mediathek_entry();
 
-                                   desc,
-                                   url,
-                                   link
+      if(e) {
+        stralloc_copys(&e->channel, strlist_at(sl, 0));
+        stralloc_0(&e->channel);
+        stralloc_copys(&e->topic, strlist_at(sl, 1));
+        stralloc_0(&e->topic);
+        stralloc_copys(&e->title, strlist_at(sl, 2));
+        stralloc_0(&e->title);
 
-      );
+        stralloc_copys(&e->desc, desc ? desc : "");
+        stralloc_0(&e->desc);
+        stralloc_copys(&e->url, url ? url : "");
+        stralloc_0(&e->url);
+        stralloc_copys(&e->link, link ? link : "");
+        stralloc_0(&e->link);
+        /*
+         e = create_mediathek_entry(strlist_at(sl, 0),
+                                      strlist_at(sl, 1),
+                                      strlist_at(sl, 2),
 
-      if(ret) {
-        ret->tm = dt + tm;
-        ret->dr = dr;
-        ret->mbytes = mbytes;
+                                      desc,
+                                      url,
+                                      link
+
+         );*/
+
+        e->tm = dt + tm;
+        e->dr = dr;
+        e->mbytes = mbytes;
       }
-      return ret;
+      return e;
     }
   }
+  return 0;
 }
 
 void
@@ -583,6 +601,7 @@ parse_mediathek_list(buffer* inbuf) {
   size_t matched = 0, total = 0;
   ssize_t ret, ret2;
   strlist prev, prevout, sl;
+  mediathek_entry_t* e = 0;
 
   strlist_init(&sl, '\0');
   strlist_init(&prev, '\0');
@@ -629,13 +648,13 @@ parse_mediathek_list(buffer* inbuf) {
         output_entry(buffer_1, &sl);
         strlist_copy(&prevout, &sl);
       }
-
-      delete_mediathek_entry(e);
-      e = 0;
     }
 
     strlist_copy(&prev, &sl);
   }
+
+  delete_mediathek_entry(e);
+  e = 0;
 
   buffer_flush(buffer_1);
 
