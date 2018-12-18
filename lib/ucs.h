@@ -7,8 +7,11 @@
 extern "C" {
 #endif
 
-wchar_t ucs_from_latin1(int ch);
-char    ucs_to_latin1(wchar_t ch);
+wchar_t ucs_from_latin1_char(int ch);
+char    ucs_to_latin1_char(wchar_t ch);
+
+size_t  fmt_latin1_utf8(char*, char);
+size_t  scan_latin1_utf8(const char*, size_t, char* out);
 
 #ifdef __cplusplus
 }
