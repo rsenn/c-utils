@@ -1,6 +1,6 @@
 #include "uint32.h"
 
-struct {
+const struct {
   uint32 tab[9854];
   char data[8115];
 } entities = {

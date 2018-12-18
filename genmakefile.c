@@ -874,8 +874,8 @@ add_source(const char* filename, strarray* sources) {
     stralloc_init(&sa);
     stralloc_copys(&sa, filename);
     //    stralloc_replacec(&sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
-
-    strarray_push_sa(sources, &sa);
+    
+    strarray_push_sa_unique(sources, &sa);
 
     stralloc_free(&sa);
   }
