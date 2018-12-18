@@ -18,6 +18,10 @@
 #include <unistd.h>
 #endif
 
+#ifdef __LCC__
+#define stat _stat
+#endif
+
 static int verbose;
 
 extern int symlink(const char*, const char*);
