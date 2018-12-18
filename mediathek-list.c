@@ -174,6 +174,7 @@ read_mediathek_list(const char* url, buffer* b) {
   http_get(&h, url);
 
   buffer_init(&in, (buffer_op_proto*)&http_read, (fd_t)&h, malloc(8192), 8192);
+  in.cookie = &h;
   in.deinit = &buffer_free;
   buffer_lzma(b, &in, 0);
 
@@ -528,7 +529,7 @@ parse_entry(strlist* sl) {
                                    url,
                                    link
 
-                                   );
+      );
 
       if(ret) {
         ret->tm = dt + tm;
@@ -593,6 +594,7 @@ parse_mediathek_list(buffer* inbuf) {
   ssize_t ret, ret2;
   strlist prev, prevout, sl;
 
+  strlist_init(&sl, '\0');
   strlist_init(&prev, '\0');
   strlist_init(&prevout, '\0');
 
@@ -618,7 +620,7 @@ parse_mediathek_list(buffer* inbuf) {
       }
     }
 
-    strlist_init(&sl, '\0');
+    strlist_zero(&sl);
     split_fields(&sl, &prev, buf2, ret + ret2);
 
     if((e = parse_entry(&sl))) {
@@ -635,16 +637,14 @@ parse_mediathek_list(buffer* inbuf) {
         }
 
         output_entry(buffer_1, &sl);
-        //    strlist_free(&prevout);
-        prevout = sl;
+        strlist_copy(&prevout, &sl);
       }
 
       delete_mediathek_entry(e);
       e = 0;
     }
 
-    //  strlist_free(&prev);
-    prev = sl;
+    strlist_copy(&prev, &sl);
   }
 
   buffer_flush(buffer_1);
@@ -666,6 +666,10 @@ parse_mediathek_list(buffer* inbuf) {
     buffer_puts(buffer_2, " entries.");
     buffer_putnlflush(buffer_2);
   }
+
+  strlist_free(&sl);
+  strlist_free(&prev);
+  strlist_free(&prevout);
 
   return 0;
 }

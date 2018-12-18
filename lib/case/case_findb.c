@@ -1,22 +1,14 @@
-#include "../str.h"
-
-#define lowerc(c) (((c) >= 'A' && (c) <= 'Z') ? (c) + ( 'a' - 'A') : (c))
+#include "../case.h"
 
 size_t
-case_findb(const char* s1, const char *x, size_t n) {
-  register const char *s, *b;
-  size_t i;
-
-  if(n == 0 || !*x) return str_len(s1);
-
-  for(s = s1; *s; s++) {
-    for(i = 0, b = s; ; ) {
-    unsigned int ch = *b++;
-    if(lowerc(x[i]) != lowerc(ch)) break;
-      if(++i == n)
-        return s - s1;
-    }
+case_findb(const void* haystack, size_t hlen, const void* what, size_t wlen) {
+  size_t i, last;
+  const char* s = haystack;
+  if(hlen < wlen) return hlen;
+  last = hlen - wlen;
+  for(i = 0; i <= last; i++) {
+    if(!case_diffb(s, wlen, what)) return i;
+    s++;
   }
-  return s - s1;
+  return hlen;
 }
-

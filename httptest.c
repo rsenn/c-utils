@@ -127,7 +127,8 @@ main(int argc, char* argv[]) {
         }
       }
 
-      while((n = http_read(&h, buf, sizeof(buf))) > 0) {
+      h.q.in.cookie = &h;
+      while((n = http_read(&h, buf, sizeof(buf), &h.q.in)) > 0) {
         if(write(outfile, buf, n) == -1) {
           errmsg_warnsys("write error: ", 0);
           return 2;

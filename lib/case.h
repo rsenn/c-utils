@@ -26,8 +26,9 @@ int case_starts(const char*, const char*);
 #define case_equals(s, t) (!case_diffs((s), (t)))
 #define case_equalb(s, n, t) (!case_diffb((s), (n), (t)))
 
-size_t case_findb(const char* s1, const char* x, size_t n);
-size_t case_find(const void* s, const void* what);
+size_t case_findb(const void*, size_t, const void*, size_t);
+size_t case_finds(const void*, size_t, const char*);
+size_t case_find(const void*, const void*);
 
 #ifdef __cplusplus
 }
