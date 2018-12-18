@@ -58,7 +58,7 @@ MSDN Magazine articles
 static stralloc cwd;
 static strlist sp;
 
-const char* search_path(const char* filename);
+char* search_path(const char* filename);
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
 #include <sys/cygwin.h>
@@ -777,9 +777,9 @@ add_path(strlist* sp, const char* path) {
   }
 }
 
-const char*
+char*
 search_path(const char* filename) {
-  const char *ret = 0, *dir;
+  char *ret = 0, *dir;
   stralloc sa;
   stralloc_init(&sa);
 
