@@ -6,6 +6,8 @@
 #include "uint16.h"
 #include "uint32.h"
 
+#include <errno.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -61,6 +61,21 @@ char* path_skip_separator(const char*);
 
 int path_find(const char* path, const char* name, stralloc* out);
 
+#ifndef PATH_MAX
+#if WINDOWS
+#include <windows.h>
+#endif
+#endif
+
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
+
+#ifndef PATH_MAX
+#define PATH_MAX MAX_PATH
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

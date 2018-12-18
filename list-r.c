@@ -35,6 +35,7 @@
 #include "lib/byte.h"
 #include "lib/array.h"
 #include "lib/unix.h"
+#include "lib/path.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -513,9 +514,9 @@ list_dir_internal(stralloc* dir, char type) {
     stralloc_cats(dir, DIRSEP_S);
   l = dir->len;
   while((name = dir_read(&d))) {
-    dtype = dir_type(&d);
     unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
     uint64 size = 0, mtime = 0;
+    dtype = dir_type(&d);
     dir->len = l;
     if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, "..")) {
       continue;

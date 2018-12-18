@@ -1007,14 +1007,16 @@ push_var_sa(const char* name, stralloc* value) {
  */
 void
 push_lib(const char* name, const char* lib) {
+  stralloc sa;
   strlist* var = get_var(name);
 
-  if(format_linklib_fn) {
-    if(var->sa.len)
-      stralloc_catc(&var->sa, var->sep);
+  stralloc_init(&sa);
 
-    format_linklib_fn(lib, &var->sa);
+  if(format_linklib_fn) {
+    format_linklib_fn(lib, &sa);
+    push_var_sa(name, &sa);
   }
+  stralloc_free(&sa);
 }
 
 /**
@@ -2415,7 +2417,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])

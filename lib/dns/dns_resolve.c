@@ -1,5 +1,6 @@
 #include "../byte.h"
 #include "../dns.h"
+#include "../io.h"
 #include "../iopause.h"
 #include "../ip6.h"
 #include "../taia.h"

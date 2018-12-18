@@ -8,7 +8,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
-#include <time.h>
 
 #if _FILE_OFFSET_BITS == 64
 typedef struct stat stat_t;
@@ -24,22 +23,22 @@ filetime_to_unix(const FILETIME* ft) {
 }
 #endif
 
-time_t
-dir_time(struct dir_s* d, int time_type) {
-  time_t  r = 0;
+unsigned long
+dir_time(struct dir_s* d, int type) {
+  unsigned long  r = 0;
 #if USE_READDIR
   const char* name = dir_INTERNAL(d)->dir_entry->d_name;
   stat_t st;
 
   lstat(name, &st);
 
-  switch (time_type) {
+  switch (unsigned longype) {
     case D_TIME_CREATION: r = st.st_ctime; break;
     case D_TIME_ACCESS: r = st.st_atime; break;
     case D_TIME_MODIFICATION: r = st.st_mtime; break;
   }
 #elif WINDOWS
-  switch (time_type) {
+  switch (unsigned longype) {
     case D_TIME_CREATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftCreationTime); breake
     case D_TIME_ACCESS: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastAccessTime); break;
     case D_TIME_MODIFICATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime); break;

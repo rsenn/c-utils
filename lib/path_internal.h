@@ -8,20 +8,6 @@
 #include "path.h"
 #include "stralloc.h"
 
-#ifndef PATH_MAX
-#if WINDOWS
-#include <windows.h>
-#endif
-#endif
-
-#ifndef MAX_PATH
-#define MAX_PATH 260
-#endif
-
-#ifndef PATH_MAX
-#define PATH_MAX MAX_PATH
-#endif
-
 #if WINDOWS_NATIVE
 #define PATHSEP_S_MIXED "\\"
 #define path_issep(c) ((c) == '\\')

@@ -1,12 +1,12 @@
 #define USE_WS2_32 1
 #include "../socket_internal.h"
+#include "../socket.h"
 #include "../buffer.h"
 #include "../byte.h"
 #include "../dns.h"
 #include "../errmsg.h"
 #include "../http.h"
 #include "../io.h"
-#include "../io_internal.h"
 #include "../ip4.h"
 #include "../str.h"
 
