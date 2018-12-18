@@ -51,7 +51,7 @@ http_get(http* h, const char* location) {
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
 
-  http_socket(h);
+  http_socket(h, h->nonblocking);
 
   if(h->request) {
     serial = h->request->serial + 1;

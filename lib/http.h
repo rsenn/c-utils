@@ -30,7 +30,7 @@ typedef enum {
 } http_transfer_type;
 
 typedef enum {
-  HTTP_RECV_HEADER,
+  HTTP_RECV_HEADER = 0,
   HTTP_RECV_DATA,
   HTTP_STATUS_CLOSED,
   HTTP_STATUS_ERROR,
@@ -67,6 +67,7 @@ typedef struct {
   http_request* request;
   http_response* response;
   void* ssl;
+  int nonblocking;
 } http;
 
 int http_get(http*, const char* location);
@@ -77,7 +78,7 @@ size_t http_read_internal(http*, char* buf, size_t len);
 ssize_t http_read(http*, char* buf, size_t len);
 int http_sendreq(http*);
 ssize_t http_socket_read(fd_t, void* buf, size_t len, buffer* b);
-int http_socket(http*);
+int http_socket(http*, int nonblock);
 void http_writeable(void);
 
 #ifdef __cplusplus

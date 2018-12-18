@@ -33,6 +33,7 @@
 #else
 #include <unistd.h>
 #endif
+#include <errno.h>
 
 #define BUFSIZE 65535
 
@@ -168,6 +169,7 @@ read_mediathek_list(const char* url, buffer* b) {
   static buffer in;
 
   http_init(&h, "127.0.0.1", 80);
+  h.nonblocking = 0;
 
   http_get(&h, url);
 
@@ -647,7 +649,8 @@ parse_mediathek_list(buffer* inbuf) {
 
   buffer_flush(buffer_1);
 
-  if(ret == -1) {
+  if(h.response->err) {
+    errno = h.response->err;
     errmsg_warn("Read error: ", 0);
   } else if(ret == 0) {
     char status[FMT_ULONG + 1];

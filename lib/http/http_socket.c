@@ -4,6 +4,7 @@
 #include "../buffer.h"
 #include "../http.h"
 #include "../io.h"
+#include "../ndelay.h"
 
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
@@ -56,15 +57,19 @@ new_sslctx(void) {
 #endif
 
 int
-http_socket(http* h) {
+http_socket(http* h, int nonblock) {
 
   h->sock = socket_tcp4();
 
   if(h->sock == -1)
     return -1;
+  
+  if(nonblock)
+    ndelay_on(h->sock);
+  else
+    ndelay_off(h->sock);
 
   io_fd(h->sock);
-  io_nonblock(h->sock);
 
 #ifdef HAVE_OPENSSL
   if(!http_sslctx)
