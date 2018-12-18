@@ -1,6 +1,8 @@
 #ifndef _DIR_H__
 #define _DIR_H__
 
+#include "uint64.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,8 +35,9 @@ int dir_open(struct dir_s* d, const char* p);
 char* dir_read(struct dir_s* d);
 void dir_close(struct dir_s* d);
 
-char* dir_name(struct dir_s* d);
-int dir_type(struct dir_s* d);
+char* dir_name(struct dir_s*);
+int dir_type(struct dir_s*);
+int64 dir_size(struct dir_s*);
 // unsigned long dir_time(struct dir_s* d, int time_type);
 
 #ifdef STRALLOC_H

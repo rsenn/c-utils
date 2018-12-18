@@ -8,23 +8,12 @@
 #include "path.h"
 #include "stralloc.h"
 
-#if WINDOWS_NATIVE
-#define PATHSEP_C '\\'
-#define PATHSEP_S "\\"
-#define PATHLISTSEP_C ';'
-#define PATHLISTSEP_S ";"
-#else
-#define PATHSEP_C '/'
-#define PATHSEP_S "/"
-#define PATHLISTSEP_C ':'
-#define PATHLISTSEP_S ":"
-#endif
-
 #ifndef PATH_MAX
-#if WINDOWS_NATIVE
+#if WINDOWS
 #include <windows.h>
 #endif
 #endif
+
 #ifndef MAX_PATH
 #define MAX_PATH 260
 #endif

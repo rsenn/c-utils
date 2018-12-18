@@ -66,21 +66,6 @@ my_extern intptr_t io_comport;
 
 #include <errno.h>
 
-#ifndef io_seek
-#warning No io_seek() function defined, defaulting to lseek
-#define io_seek lseek
-#endif
-
-#ifndef STDIN_FILENO
-#define STDIN_FILENO 0
-#endif
-#ifndef STDOUT_FILENO
-#define STDOUT_FILENO 1
-#endif
-#ifndef STDERR_FILENO
-#define STDERR_FILENO 2
-#endif
-
 #ifdef HAVE_KQUEUE
 #include <sys/event.h>
 #endif

@@ -163,8 +163,20 @@ void* io_getfds(void);
 inline static io_entry* io_getentry(int64 fd) { return iarray_get(io_getfds(), fd); }
 
 #ifndef io_seek
+#warning No io_seek() function defined, defaulting to lseek
 #define io_seek lseek
 #endif
+
+#ifndef STDIN_FILENO
+#define STDIN_FILENO 0
+#endif
+#ifndef STDOUT_FILENO
+#define STDOUT_FILENO 1
+#endif
+#ifndef STDERR_FILENO
+#define STDERR_FILENO 2
+#endif
+
 
 #ifdef __cplusplus
 }

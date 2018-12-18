@@ -16,6 +16,14 @@ typedef struct stat stat_t;
 typedef struct stat stat_t;
 #endif
 
+#if !USE_READDIR && WINDOWS
+static uint64
+filetime_to_unix(const FILETIME* ft) {
+  uint64 windowsTicks = ((uint64)ft->dwHighDateTime << 32) + ft->dwLowDateTime;
+  return (uint64)(windowsTicks / 10000000 - SEC_TO_UNIX_EPOCH);
+}
+#endif
+
 time_t
 dir_time(struct dir_s* d, int time_type) {
   time_t  r = 0;
@@ -30,6 +38,13 @@ dir_time(struct dir_s* d, int time_type) {
     case D_TIME_ACCESS: r = st.st_atime; break;
     case D_TIME_MODIFICATION: r = st.st_mtime; break;
   }
+#elif WINDOWS
+  switch (time_type) {
+    case D_TIME_CREATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftCreationTime); breake
+    case D_TIME_ACCESS: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastAccessTime); break;
+    case D_TIME_MODIFICATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime); break;
+  }
 #endif
+
   return r;
 }
