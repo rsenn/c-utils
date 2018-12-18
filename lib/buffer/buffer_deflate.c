@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#ifdef HAVE_LIBZ
+#ifdef HAVE_ZLIB
 #include <zlib.h>
 
 typedef struct {

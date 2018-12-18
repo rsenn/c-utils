@@ -17,6 +17,7 @@
 #include "lib/windoze.h"
 #include "lib/errmsg.h"
 #include "lib/unix.h"
+#include "lib/http.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -162,54 +163,68 @@ process_status(void) {
 
 int
 read_mediathek_list(const char* url) {
-  /*  int status;
-    int xzpid;
-    int xzpipe[2];
-    int clpipe[2];
-    int clpid;
 
-    process_status();
+  http h;
 
-    if(pipe(xzpipe) != 0) return -1;
-    if(pipe(clpipe) != 0) return -1;
+  http_init(&h, NULL, 80);
 
-    if((xzpid = fork()) == 0) {
+  http_get(&h, url);
 
-      close(STDOUT_FILENO);
-      dup(xzpipe[1]);
-      close(STDIN_FILENO);
-      dup(clpipe[0]);
+  for(;;) {
+    fd_t fd;
+    int doread = 0;
+    char buf[8192];
+    ssize_t n;
 
-      execlp("xzcat", "xzcat", 0);
-      exit(1);
+    io_wait();
+
+    while((fd = io_canwrite()) != -1) {
+      if(h.sock != fd)
+        continue;
+
+      if(http_sendreq(&h) == -1) {
+        errmsg_warnsys("send error: ", 0);
+        return 2;
+      }
     }
 
-    if((clpid = fork()) == 0) {
-
-      close(STDOUT_FILENO);
-      dup(clpipe[1]);
-
-      execlp("curl", "curl", "-s", url, 0);
-      exit(1);
+    while((fd = io_canread()) != -1) {
+      if(h.sock == fd) {
+        doread = 1;
+      }
     }
 
-    return xzpipe[0];*/
+    while((n = http_read(&h, buf, sizeof(buf))) > 0) {
 
-  stralloc cmd;
-  stralloc_init(&cmd);
-  stralloc_copys(&cmd, "curl -s ");
-  stralloc_cats(&cmd, url);
-  stralloc_cats(&cmd, "| xzcat");
-  stralloc_0(&cmd);
+      if(n > 0) {
+        buffer_puts(buffer_2, "Read ");
+        buffer_putulong(buffer_2, n);
+        buffer_puts(buffer_2, " bytes");
+        buffer_putnlflush(buffer_2);
 
-  {
-    static FILE* pfd;
-
-    if((pfd = (void*)popen(cmd.s, "r")) == 0)
-      return -1;
-
-    return fileno(pfd);
+      } else if(n == -1 || h.response->status == HTTP_STATUS_ERROR) {
+        errmsg_warnsys("read error: ", 0);
+        return 1;
+      }
+    }
   }
+
+  /*
+    stralloc cmd;
+    stralloc_init(&cmd);
+    stralloc_copys(&cmd, "curl -s ");
+    stralloc_cats(&cmd, url);
+    stralloc_cats(&cmd, "| xzcat");
+    stralloc_0(&cmd);
+
+    {
+      static FILE* pfd;
+
+      if((pfd = (void*)popen(cmd.s, "r")) == 0)
+        return -1;
+
+      return fileno(pfd);
+    }*/
 }
 
 /* Parses a time in HH:MM:SS format and returns seconds */
@@ -384,7 +399,6 @@ delete_mediathek_entry(mediathek_entry_t* e) {
 
 static mediathek_entry_t* e;
 
-
 /**
  * @brief match_tokens
  * @param toks
@@ -489,7 +503,7 @@ parse_entry(strlist* sl) {
                                    url,
                                    link
 
-      );
+                                   );
 
       if(ret) {
         ret->tm = dt + tm;

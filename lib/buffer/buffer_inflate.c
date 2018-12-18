@@ -4,7 +4,7 @@
 #include "../buffer.h"
 #include <stdlib.h>
 
-#ifdef HAVE_LIBZ
+#ifdef HAVE_ZLIB
 #include <zlib.h>
 
 typedef struct {

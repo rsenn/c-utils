@@ -57,7 +57,6 @@ main(int argc, char* argv[]) {
   iopause_fd iop;
   static buffer in;
   char inbuf[8192];
-  int ret;
   fd_t fd, outfile;
   const char* outname = "output-XXXXXX.txt";
 
@@ -78,7 +77,7 @@ main(int argc, char* argv[]) {
 
   for(argi = 1; argi < argc; ++argi) {
 
-    ret = http_get(&h, argv[argi]);
+    int ret = http_get(&h, argv[argi]);
 
     /*  buffer_init(&in, (buffer_op_sys*)&do_recv, h.sock, inbuf, sizeof(inbuf));
       buffer_puts(buffer_1, "http_get() = ");

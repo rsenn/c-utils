@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <io.h>
 #else
 #include <unistd.h>

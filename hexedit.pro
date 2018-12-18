@@ -22,7 +22,7 @@ gcc {
 }
 
 #PKGCONFIG += zlib
-DEFINES += HAVE_LIBZ=1
+DEFINES += HAVE_ZLIB=1
 
 
 

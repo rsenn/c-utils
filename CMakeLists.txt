@@ -67,14 +67,14 @@ endif(LIBLZMA_FOUND)
 ################################################################################
 pkg_search_module(ZLIB zlib libz z)
 if(NOT ZLIB_FOUND)
-include(FindZlib)
+  include(FindZlib)
 endif(NOT ZLIB_FOUND)
+set(ZLIB_LIBRARY "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib library")
+message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
 if(ZLIB_FOUND)
   #link_libraries(${ZLIB_LIBRARIES})
   include_directories(${ZLIB_INCLUDE_DIRS})
-  add_definitions(-DHAVE_LIBZ=1)
-else(ZLIB_FOUND)
-  add_definitions(-DHAVE_LIBZ=0)
+  add_definitions(-DHAVE_ZLIB=1)
 endif(ZLIB_FOUND)
 
 ################################################################################
@@ -200,7 +200,7 @@ endif(NOT LIBLZMA_LIBRARIES)
 
 set(COMPRESSION_LIBRARIES
   ${LIBLZMA_LIBRARIES}
-  ${ZLIB_LIBRARIES}
+  ${ZLIB_LIBRARY}
  ${BZIP2_LIBRARIES})
 
 
@@ -221,7 +221,7 @@ add_program(elf64list elf mmap uint16 uint32 uint64)
 add_program(elflist buffer errmsg unix elf mmap str)
 add_program(elfwrsec buffer elf mmap)
 add_program(genmakefile strarray stralloc buffer rdir errmsg hmap mmap path scan slist case str unix  strlist ${LIBSHLWAPI})
-add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix)
+add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK})
 add_program(impgen buffer byte mmap open pe uint16 uint32)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
@@ -253,7 +253,7 @@ add_program(ar-wrap errmsg env buffer path dir strarray strlist stralloc fmt)
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
 add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
 add_program(tcping map unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
-add_program(crc32 buffer mmap open ${ZLIB_LIBRARIES})
+add_program(crc32 errmsg buffer mmap open ${ZLIB_LIBRARY})
 
 add_subdirectory(tests)
 #add_subdirectory(examples)

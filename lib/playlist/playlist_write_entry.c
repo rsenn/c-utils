@@ -3,7 +3,7 @@
 #include "../str.h"
 #include "../byte.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <io.h>
 #else
 #include <unistd.h>

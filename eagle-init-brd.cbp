@@ -46,7 +46,7 @@
       <Add option="-D_GNU_SOURCE=1"/>
       <Add option="-DHAVE_LIBBZ2=1"/>
       <Add option="-DHAVE_LIBLZMA=1"/>
-      <Add option="-DHAVE_LIBZ=1"/>
+      <Add option="-DHAVE_ZLIB=1"/>
     </Compiler>
     <Linker>
       <Add library="z"/>

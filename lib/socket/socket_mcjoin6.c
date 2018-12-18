@@ -10,6 +10,7 @@
 #include <errno.h>
 
 #ifdef IPV6_JOIN_GROUP
+#undef LIBC_HAS_IP6
 #define LIBC_HAS_IP6
 #endif
 

@@ -59,6 +59,10 @@ int
 http_socket(http* h) {
 
   h->sock = socket_tcp4();
+
+  if(h->sock == -1) return -1;
+
+  io_fd(h->sock);
   io_nonblock(h->sock);
 
 #ifdef HAVE_OPENSSL
@@ -85,4 +89,6 @@ http_socket(http* h) {
     h->q.out.cookie = (void*)h;
   }
   h->q.out.op = (buffer_op_proto*)&http_socket_write;
+
+  return 0;
 }

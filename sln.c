@@ -1,4 +1,3 @@
-#include <sys/stat.h>
 #include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
@@ -11,6 +10,13 @@
 #include "lib/getopt.h"
 
 #include <ctype.h>
+#include <sys/stat.h>
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 extern int symlink(const char*, const char*);
 

@@ -1,3 +1,4 @@
+#include "lib/windoze.h"
 #include "lib/array.h"
 #include "lib/uint64.h"
 #include "lib/buffer.h"
@@ -10,6 +11,10 @@
 #include "lib/str.h"
 #include "lib/errmsg.h"
 #include "lib/uint32.h"
+
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#endif
 
 typedef struct {
   char magic[8];

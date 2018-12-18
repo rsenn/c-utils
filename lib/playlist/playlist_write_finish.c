@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <io.h>
 #else
 #include <unistd.h>

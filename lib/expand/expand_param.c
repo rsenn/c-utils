@@ -9,6 +9,12 @@
 #include "../expand.h"
 #include "../errmsg.h"
 
+#if WINDOWS_NATIVE
+#define getpid() GetProcessId(NULL)
+#else
+#include <unistd.h>
+#endif
+
 union node*
 expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack, char* argv[], int exitcode, int flags) {
   union node* n = *nptr;
