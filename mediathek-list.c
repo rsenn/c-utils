@@ -429,49 +429,44 @@ static mediathek_entry_t* e;
  * @return 1 if all tokens match
  */
 int
-match_tokens(char* toks, const char* str) {
-  size_t i;
+match_tokens(char* toks, const char* x, size_t n) {
+  size_t tlen = str_len(toks), i;
   int ret = 1;
-  strlist t;
-  strlist_init(&t, '\0');
-  strlist_push_tokens(&t, toks, "/+,|*;");
+  const char* s;
 
-  for(i = 0; i < strlist_count(&t); ++i) {
-    char* tok = strlist_at(&t, i);
+  str_foreach_skip(toks, s, i) {
+    i = scan_noncharsetnskip(s, "/+,|*;", tlen);
 
-    if(str_istr((char*)str, tok) == 0) {
+    if(i > 0 && case_findb(x, n, s, i) == n) {
       ret = 0;
       break;
     }
+
+    i += scan_charsetnskip(&s[i], "/+,|*;", tlen - i);
+    tlen -= i;
   }
 
   if(ret && debug > 1) {
-    buffer_putm_5(buffer_2, "token list '", toks, "' matched '", str, "'.");
+    buffer_putm_internal(buffer_2, "token list '", toks, "' matched '", 0);
+    buffer_put(buffer_2, x, b);
+    buffer_puts(buffer_2, "'.");
     buffer_putnlflush(buffer_2);
   }
 
-  strlist_free(&t);
   return ret;
 }
 
 /* returns 1 if any of the token lists match */
 int
 match_toklists(strlist* sl) {
-  stralloc sa;
+  const char* s;
   int ret = 0;
-  size_t i, n;
-  stralloc_init(&sa);
-  strlist_join(sl, &sa, '|');
-  stralloc_0(&sa);
 
-  n = strlist_count(&include);
-  if(n == 0)
+  if(include.sa.s == 0) 
     ret = 1;
 
-  for(i = 0; i < n; ++i) {
-    char* toklist = strlist_at(&include, i);
-
-    if(match_tokens(toklist, sa.s)) {
+  strlist_foreach_s(&include, s) {
+    if(match_tokens(s, sl->sa.s, sl->sa.len)) {
       ret = 1;
       break;
     }
@@ -480,18 +475,12 @@ match_toklists(strlist* sl) {
   if(ret == 0)
     return 0;
 
-  n = strlist_count(&exclude);
-
-  for(i = 0; i < n; ++i) {
-    char* toklist = strlist_at(&exclude, i);
-
-    if(match_tokens(toklist, sa.s)) {
+  strlist_foreach_s(&exclude, s) {
+    if(match_tokens(s, sl->sa.s, sl->sa.len)) {
       ret = 0;
       break;
     }
   }
-
-  stralloc_free(&sa);
 
   return ret;
 }
