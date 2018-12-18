@@ -1104,7 +1104,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)getopt.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, errmsg array safemult strlist stralloc buffer fmt mmap open str byte)
+$(BUILDDIR)mediathek-parser$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-parser.o $(BUILDDIR)getopt.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, ucs errmsg array safemult strlist stralloc buffer fmt scan mmap open str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

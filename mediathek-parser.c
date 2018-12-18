@@ -10,6 +10,7 @@
 #include "lib/strlist.h"
 #include "lib/fmt.h"
 #include "lib/mmap.h"
+#include "lib/ucs.h"
 
 #include <ctype.h>
 #include <errno.h>
@@ -185,6 +186,7 @@ cleanup_text(char* t) {
   }
   byte_copy(t, out.len, out.s);
   t[out.len] = '\0';
+  str_utf8_latin1(t);
   stralloc_free(&out);
 }
 
