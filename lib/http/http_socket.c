@@ -60,7 +60,8 @@ http_socket(http* h) {
 
   h->sock = socket_tcp4();
 
-  if(h->sock == -1) return -1;
+  if(h->sock == -1)
+    return -1;
 
   io_fd(h->sock);
   io_nonblock(h->sock);

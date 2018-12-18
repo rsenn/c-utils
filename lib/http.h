@@ -50,6 +50,7 @@ typedef struct http_response_s {
     uint64 chunk_length;
   };
   stralloc boundary;
+  int err;
   //  buffer rbuf;
 } http_response;
 

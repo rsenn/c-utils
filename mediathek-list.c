@@ -52,6 +52,7 @@ void* __declspec(dllimport) popen(const char*, const char*);
 extern char strlist_dumpx[5];
 
 static const char* dt_fmt = "%Y%m%d %H:%M";
+static http h;
 
 #include "lib/http.h"
 
@@ -165,7 +166,6 @@ int
 read_mediathek_list(const char* url, buffer* b) {
 
   static buffer in;
-  static http h;
 
   http_init(&h, "127.0.0.1", 80);
 
@@ -646,6 +646,14 @@ parse_mediathek_list(buffer* inbuf) {
   }
 
   buffer_flush(buffer_1);
+
+  if(ret == -1) {
+    errmsg_warn("Read error: ", 0);
+  } else if(ret == 0) {
+    char status[FMT_ULONG + 1];
+    status[fmt_ulong(status, h.response->status)] = '\0';
+    errmsg_warn("STATUS: ", status, " EOF: ", 0);
+  }
 
   if(debug) {
     buffer_puts(buffer_2, "\nprocessed ");

@@ -12,29 +12,29 @@ size_t http_read_internal(http* h, char* buf, size_t len);
 
 static void
 putnum(const char* what, ssize_t n) {
-  buffer_puts(buffer_1, what);
-  buffer_puts(buffer_1, ": ");
-  buffer_putlonglong(buffer_1, n);
-  buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_2, what);
+  buffer_puts(buffer_2, ": ");
+  buffer_putlonglong(buffer_2, n);
+  buffer_putnlflush(buffer_2);
 }
 
 static void
 putline(const char* what, const char* b, ssize_t l, buffer* buf) {
-  buffer_puts(buffer_1, what);
-  buffer_puts(buffer_1, "[");
-  buffer_putulong(buffer_1, l <= 0 ? -l : l);
-  buffer_puts(buffer_1, "]");
-  buffer_puts(buffer_1, ": ");
+  buffer_puts(buffer_2, what);
+  buffer_puts(buffer_2, "[");
+  buffer_putulong(buffer_2, l <= 0 ? -l : l);
+  buffer_puts(buffer_2, "]");
+  buffer_puts(buffer_2, ": ");
   if(l <= 0)
-    buffer_puts(buffer_1, b);
+    buffer_puts(buffer_2, b);
   else {
-    while(l-- > 0) buffer_put(buffer_1, b++, 1);
+    while(l-- > 0) buffer_put(buffer_2, b++, 1);
   }
   /*
-  buffer_puts(buffer_1, " (bytes in recvb: ");
-  buffer_putulong(buffer_1, buf->n - buf->p);
-  buffer_puts(buffer_1, ")");*/
-  buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_2, " (bytes in recvb: ");
+  buffer_putulong(buffer_2, buf->n - buf->p);
+  buffer_puts(buffer_2, ")");*/
+  buffer_putnlflush(buffer_2);
 }
 
 ssize_t
@@ -44,6 +44,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
   s = io_tryread(fd, buf, len);
+  putnum("io_tryread", s);
   /*  buffer_puts(buffer_1, "io_tryread(");
     buffer_putlong(buffer_1, fd);
     buffer_puts(buffer_1, ", ");
@@ -68,6 +69,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
     s = http_read_internal(h, buf, s);
     h->q.in.n = n;
   }
+  r->err = (s == -1 ? errno : 0);
   return s;
 }
 
@@ -176,16 +178,23 @@ http_read(http* h, char* buf, size_t len) {
   buffer* b = &h->q.in;
   ssize_t bytes, n, ret = 0;
   http_response* r;
+  r = h->response;
   while(len) {
     bytes = b->n - b->p;
-    if((n = buffer_freshen(b)) <= 0)
+    putnum("bytes", bytes);
+    n = buffer_freshen(b);
+    putnum("freshen", n);
+    putnum("err", r->err);
+    // buffer_dump(buffer_1, b);
+    if((n) <= 0) {
+      if(ret == 0)
+        ret = n;
       break;
+    }
     if(b->n - b->p > bytes)
       putnum("growbuf", (b->n - b->p) - bytes);
-    buffer_dump(buffer_1, b);
-    if(h->response->status != HTTP_RECV_DATA)
-      break;
-    r = h->response;
+    /*  if(h->response->status != HTTP_RECV_DATA)
+        break;*/
     if(n + r->ptr > r->content_length)
       n = r->content_length - r->ptr;
     if(n >= (ssize_t)len)
@@ -210,5 +219,8 @@ http_read(http* h, char* buf, size_t len) {
       }
     }
   }
+
+  putnum("read ret", ret);
+
   return ret;
 }
