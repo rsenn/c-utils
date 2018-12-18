@@ -66,7 +66,7 @@ main(int argc, char* argv[])  {
 
   buffer_truncfile(&gzout, "output.gz");
 
-#ifdef HAVE_LIBZ
+#ifdef HAVE_ZLIB
   buffer_deflate(&deflate, &gzout, 9);
 
   buffer_puts(&deflate, "gzipp'd test text\n\nblah blah blah\n");

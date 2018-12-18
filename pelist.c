@@ -17,11 +17,9 @@ static int print_export_dir, print_data_dir, print_opt_header;
 
 void pe_dump_sections(uint8* base);
 
-#define PE_DUMP_FIELD(base, ptr, st, field) \
-  buffer_putspad(b, #field, 30), \
-  buffer_puts(b, " 0x"), \
-  buffer_putxlonglong0(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), \
-  buffer_putnlflush(b)
+#define PE_DUMP_FIELD(base, ptr, st, field)                                                                            \
+  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"),                                                                \
+      buffer_putxlonglong0(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), buffer_putnlflush(b)
 
 void
 pe_dump_opthdr(buffer* b, uint8* base) {
@@ -58,7 +56,6 @@ pe_dump_opthdr(buffer* b, uint8* base) {
   PE_DUMP_FIELD(base, opthdr, opt_header, number_of_rva_and_sizes);
 }
 
-
 void
 pe_print_data_directories(buffer* b, uint8* base, pe_data_directory* data_dirs, size_t n) {
   size_t i;
@@ -68,8 +65,8 @@ pe_print_data_directories(buffer* b, uint8* base, pe_data_directory* data_dirs, 
     buffer_putspad(b, name ? name : "", 12);
     buffer_putspace(b);
     buffer_putxlong0(b,
-                      pe_rva2offset(base, uint32_get(&data_dirs[i].virtual_address)),
-                      sizeof(data_dirs[i].virtual_address) * 2);
+                     pe_rva2offset(base, uint32_get(&data_dirs[i].virtual_address)),
+                     sizeof(data_dirs[i].virtual_address) * 2);
     buffer_putspace(b);
     buffer_putxlong0(b, uint32_get(&data_dirs[i].size), sizeof(data_dirs[i].size) * 2);
     buffer_putnlflush(b);
@@ -177,7 +174,7 @@ pe_dump_imports(uint8* base) {
 
     for(j = 0;; ++j) {
       const char* sym = NULL;
-      uint16 ordinal;
+      uint16 ordinal = 0;
       int64 rva;
 
       if(!(rva = pe_thunk(base, thunk, j)))
@@ -245,15 +242,17 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"imports", 0, &list_imports, 'i'},
-                           {"exports", 0, &list_exports, 'e'},
-                           {"deps", 0, &list_deps, 'd'},
-                           {"sections", 0, &list_sections, 's'},
-                           {"export-directory", 0, &print_export_dir, 'E'},
-                           {"data-directory", 0, &print_data_dir, 'D'},
-                           {"optional-header", 0, &print_opt_header, 'O'},
-                           {0}};
+  static const struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                                        {"imports", 0, &list_imports, 'i'},
+                                        {"exports", 0, &list_exports, 'e'},
+                                        {"deps", 0, &list_deps, 'd'},
+                                        {"sections", 0, &list_sections, 's'},
+                                        {"export-directory", 0, &print_export_dir, 'E'},
+                                        {"data-directory", 0, &print_data_dir, 'D'},
+                                        {"optional-header", 0, &print_opt_header, 'O'},
+                                        {0}};
+
+  errmsg_iam(argv[0]);
 
   buffer_puts(buffer_1, "Number of arguments: ");
   buffer_putlong(buffer_1, argc);
@@ -324,7 +323,7 @@ main(int argc, char** argv) {
         uint32 num_dirs;
         pe_data_directory* data_dir = pe_get_datadir(base, &num_dirs);
 
-          pe_print_data_directories(buffer_2, base, data_dir, num_dirs);
+        pe_print_data_directories(buffer_2, base, data_dir, num_dirs);
       }
 
       mmap_unmap(base, filesize);
@@ -363,8 +362,8 @@ pe_dump_sections(uint8* base) {
     buffer_putxlong0(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     buffer_puts(buffer_1, " 0x");
     buffer_putxlong0(buffer_1,
-                      uint32_get(&sections[i].pointer_to_raw_data),
-                      sizeof(sections[i].pointer_to_raw_data) * 2);
+                     uint32_get(&sections[i].pointer_to_raw_data),
+                     sizeof(sections[i].pointer_to_raw_data) * 2);
     buffer_putnlflush(buffer_1);
   }
 }

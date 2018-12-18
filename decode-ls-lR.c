@@ -17,9 +17,9 @@
 #include "lib/fmt.h"
 #include "lib/byte.h"
 #include "lib/str.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX

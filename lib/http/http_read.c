@@ -56,6 +56,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   if(s == 0) {
     r->status = HTTP_STATUS_CLOSED;
   } else if(s == -1) {
+    r->err = errno;
     if(errno != EWOULDBLOCK && errno != EAGAIN) {
       r->status = HTTP_STATUS_ERROR;
     } else {
@@ -68,6 +69,8 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
     s = http_read_internal(h, buf, s);
     h->q.in.n = n;
   }
+      putnum("http_socket_read", s);
+      putnum("err", r->err);
   return s;
 }
 
@@ -84,6 +87,7 @@ http_read_header(http* h, http_response* r) {
     stralloc_trim(&r->data, "\r\n", 2);
     stralloc_nul(&r->data);
     //  putline("Header", r->data.s, -r->data.len, &h->q.in);
+      putnum("data.len", r->data.len);
     if(r->data.len == 0) {
       r->ptr = in->p;
       r->status = HTTP_RECV_DATA;
@@ -107,6 +111,7 @@ http_read_header(http* h, http_response* r) {
     }
     stralloc_zero(&r->data);
   }
+      putnum("http_read_header", r->status);
   h->q.in.op = (buffer_op_proto*)&http_socket_read;
   return ret;
 }
@@ -168,6 +173,7 @@ http_read_internal(http* h, char* buf, size_t len) {
       }
     }
   }
+      putnum("http_read_internal", r->status);
   return len;
 }
 
@@ -176,16 +182,24 @@ http_read(http* h, char* buf, size_t len) {
   buffer* b = &h->q.in;
   ssize_t bytes, n, ret = 0;
   http_response* r;
+    r = h->response;
   while(len) {
+    int st = r->status;
     bytes = b->n - b->p;
-    if((n = buffer_freshen(b)) <= 0)
+    if((n = buffer_freshen(b)) <= 0) {
+      if(r->status == st) {
+        if(ret == 0 && r->err != 0) {
+          errno = r->err;
+          ret = -1;
+        }
       break;
+      }
+    }
     if(b->n - b->p > bytes)
       putnum("growbuf", (b->n - b->p) - bytes);
     buffer_dump(buffer_1, b);
     if(h->response->status != HTTP_RECV_DATA)
       break;
-    r = h->response;
     if(n + r->ptr > r->content_length)
       n = r->content_length - r->ptr;
     if(n >= (ssize_t)len)
@@ -210,5 +224,7 @@ http_read(http* h, char* buf, size_t len) {
       }
     }
   }
+      putnum("ret", ret);
+      putnum("avail", b->n - b->p);
   return ret;
 }

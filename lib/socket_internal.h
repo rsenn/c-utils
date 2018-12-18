@@ -8,17 +8,18 @@
 #undef USE_WS2_32
 #endif
 
-#if ((defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER)) && !defined(__CYGWIN__)) || defined(WINDOWS_NATIVE) || defined(WINDOWS_OVERRIDE)
-# if USE_WS2_32
-# define _WINSOCKAPI_
-#  include <winsock2.h>
-# else
-#  include <winsock.h>
-# endif
+#if((defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER)) && !defined(__CYGWIN__)) || defined(WINDOWS_NATIVE) ||   \
+    defined(WINDOWS_OVERRIDE)
+#if USE_WS2_32
+#define _WINSOCKAPI_
+#include <winsock2.h>
+#else
+#include <winsock.h>
+#endif
 //# include <ws2ipdef.h>
-# ifndef _MSC_VER
+#ifndef _MSC_VER
 //# include <ws2tcpip.h>
-# endif
+#endif
 #endif
 
 #include "windoze.h"
@@ -51,15 +52,6 @@
 #ifndef ETIMEDOUT
 #define ETIMEDOUT WSAETIMEDOUT
 #endif
-#ifndef EWOULDBLOCK
-#define EWOULDBLOCK WSAEWOULDBLOCK
-#endif
-#ifndef EINPROGRESS
-#define EINPROGRESS WSAEINPROGRESS
-#endif
-#ifndef ECONNREFUSED
-#define ECONNREFUSED WSAECONNREFUSED
-#endif
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT
 #endif
@@ -67,14 +59,14 @@
 #endif
 
 #if !WINDOWS_NATIVE //&& !WINDOWS_OVERRIDE
-# include <sys/param.h>
-#  if !(defined(_WINSOCKAPI_) || defined(_WINSOCK2API_))
-#   include <sys/socket.h>
-#   include <netinet/in.h>
+#include <sys/param.h>
+#if !(defined(_WINSOCKAPI_) || defined(_WINSOCK2API_))
+#include <sys/socket.h>
+#include <netinet/in.h>
 #define __INSIDE_CYGWIN_NET__ 1
-#   include <netdb.h>
-#  endif
-# include <unistd.h>
+#include <netdb.h>
+#endif
+#include <unistd.h>
 #endif
 
 #if WINDOWS_NATIVE || WINDOWS_OVERRIDE
@@ -88,19 +80,17 @@ void __winsock_init(void);
 #endif
 
 #if WINDOWS
-# if !defined(_SYS_SOCKET_H)
+#if !defined(_SYS_SOCKET_H)
 typedef int socklen_t;
-# endif
+#endif
 #endif
 
 #if WINDOWS_NATIVE
 #define USE_SELECT 1
 #endif
 
-
-#if 0 //defined(__POCC__) && defined(_M_AMD64)
+#if 0 // defined(__POCC__) && defined(_M_AMD64)
 #define __WSAFDIsSet _WSAFDIsSet
 #endif
-
 
 #endif

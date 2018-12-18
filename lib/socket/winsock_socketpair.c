@@ -15,7 +15,7 @@
  * Currently supports TCP/IPv4 socket pairs only
  */
 int
-wsa_socketpair(int af, int type, int proto, SOCKET sock[2]) {
+wsa_socketpair(int af, int type, int proto, fd_t sock[2]) {
   /*  assert(af == AF_INET
         && type == SOCK_STREAM
         && (proto == IPPROTO_IP || proto == IPPROTO_TCP));*/
@@ -92,7 +92,7 @@ error:
  * syncSocket won't have it set.
  * Currently supports TCP/IPv4 socket pairs only
  */
-int
+/*int
 wsa_sync_async_socketpair(int af, int type, int proto, SOCKET* syncSocket, SOCKET* asyncSocket) {
   SOCKET listen_sock, sock1, sock2;
   SOCKADDR_IN addr1, addr2;
@@ -122,7 +122,7 @@ wsa_sync_async_socketpair(int af, int type, int proto, SOCKET* syncSocket, SOCKE
   if(listen(listen_sock, 1))
     goto error;
 
-  if((sock1 = wsa_sync_socket(af, type, proto)) == INVALID_SOCKET)
+  if((sock1 = socket(af, type, proto)) == INVALID_SOCKET)
     goto error;
 
   if(connect(sock1, (SOCKADDR*)&addr1, addr1_len))
@@ -163,5 +163,5 @@ error:
 
   return SOCKET_ERROR;
 }
-
+*/
 #endif

@@ -400,11 +400,17 @@ endif
 
 $(call def-function-exists,ZLIB,deflate,-lz)
 
-HAVE_LIBZ := $(call check-function-exists,deflate,-lz)
-#$(info HAVE_LIBZ=$(HAVE_LIBZ))
+HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
+#$(info HAVE_ZLIB=$(HAVE_ZLIB))
 
 HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
-#$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
+ifneq ($(HAVE_LIBLZMA),1)
+HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma -lpthread)
+LIBLZMA := -llzma -lpthread
+else
+LIBLZMA := -llzma
+endif
+$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
 
 HAVE_LIBBZ2 := $(call check-function-exists,BZ2_bzCompress,-lbz2)
 $(info HAVE_LIBBZ2=$(HAVE_LIBBZ2))
@@ -774,7 +780,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest cc-wrap  ar-wrap cofflist msys-shell tcping)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc32)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
@@ -841,15 +847,14 @@ endif
 endif
 endif
 
-ifeq ($(HAVE_LIBZ),1)
-DEFINES += HAVE_LIBZ=1
-CPPFLAGS += -DHAVE_LIBZ=1
+ifeq ($(HAVE_ZLIB),1)
+DEFINES += HAVE_ZLIB=1
+CPPFLAGS += -DHAVE_ZLIB=1
 LIBS = -lz
 endif
 ifeq ($(HAVE_LIBLZMA),1)
 DEFINES += HAVE_LIBLZMA=1
 CPPFLAGS += -DHAVE_LIBLZMA=1
-LIBLZMA = -llzma
 endif
 ifeq ($(HAVE_LIBBZ2),1)
 DEFINES += HAVE_LIBBZ2=1
@@ -1104,7 +1109,8 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)getopt.o $(BUILDDIR)popen.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, errmsg array safemult strlist stralloc buffer fmt mmap scan open str byte)
+$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): LIBS += $(LIBLZMA)
+$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)getopt.o $(BUILDDIR)popen.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, http dns case io taia tai socket ndelay errmsg iarray array safemult strlist stralloc buffer fmt mmap scan open str byte uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1161,7 +1167,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-ifeq ($(HAVE_LIBZ),1)
+ifeq ($(HAVE_ZLIB),1)
 $(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += -lz
 endif
 ifeq ($(HAVE_LIBLZMA),1)
@@ -1459,6 +1465,13 @@ endif
 
 $(BUILDDIR)tcping$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
 $(BUILDDIR)tcping$(M64_)$(EXEEXT): $(BUILDDIR)tcping.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)crc32$(M64_)$(EXEEXT): LIBS += -lz
+$(BUILDDIR)crc32$(M64_)$(EXEEXT): $(BUILDDIR)crc32.o $(call add-library,errmsg buffer mmap open fmt scan str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

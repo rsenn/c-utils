@@ -1,3 +1,5 @@
+#ifndef __LCC__
+
 #include "../typedefs.h"
 #include "../entities.h"
 #include "../fmt.h"
@@ -140,4 +142,5 @@ unittest_main() {
   memset(buf, '?', sizeof(buf));
   assert(scan_html("&#1;", buf, &destlen) == 4 && destlen == 1 && buf[0] == 1 && buf[1] == '?');
 }
+#endif
 #endif

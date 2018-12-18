@@ -30,7 +30,7 @@ typedef enum {
 } http_transfer_type;
 
 typedef enum {
-  HTTP_RECV_HEADER,
+  HTTP_RECV_HEADER = 0,
   HTTP_RECV_DATA,
   HTTP_STATUS_CLOSED,
   HTTP_STATUS_ERROR,
@@ -50,7 +50,8 @@ typedef struct http_response_s {
     uint64 chunk_length;
   };
   stralloc boundary;
-//  buffer rbuf;
+  int err;
+  //  buffer rbuf;
 } http_response;
 
 typedef struct {
@@ -66,18 +67,19 @@ typedef struct {
   http_request* request;
   http_response* response;
   void* ssl;
+  int nonblocking;
 } http;
 
-int     http_get(http*, const char* location);
-void    http_init(http*, const char* host, uint16 port);
-int     http_readable(http*, int freshen);
+int http_get(http*, const char* location);
+void http_init(http*, const char* host, uint16 port);
+int http_readable(http*, int freshen);
 ssize_t http_read_header(http*, http_response* r);
-size_t  http_read_internal(http*, char* buf, size_t len);
+size_t http_read_internal(http*, char* buf, size_t len);
 ssize_t http_read(http*, char* buf, size_t len);
-int     http_sendreq(http*);
+int http_sendreq(http*);
 ssize_t http_socket_read(fd_t, void* buf, size_t len, buffer* b);
-int     http_socket(http*);
-void    http_writeable(void);
+int http_socket(http*, int nonblock);
+void http_writeable(void);
 
 #ifdef __cplusplus
 }

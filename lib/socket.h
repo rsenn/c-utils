@@ -6,6 +6,8 @@
 #include "uint16.h"
 #include "uint32.h"
 
+#include <errno.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -101,6 +103,18 @@ const char* socket_ip6loopback();
 const char* socket_ip4loopback();
 
 int socket_error(fd_t, int* error);
+
+#if WINDOWS_NATIVE
+# ifndef EINPROGRESS
+#  define EINPROGRESS WSAEINPROGRESS
+# endif
+# ifndef EWOULDBLOCK
+#  define EWOULDBLOCK WSAEWOULDBLOCK
+# endif
+# ifndef ECONNREFUSED
+#  define ECONNREFUSED WSAECONNREFUSED
+# endif
+#endif
 
 #ifdef __cplusplus
 }

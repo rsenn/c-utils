@@ -7,10 +7,10 @@
 extern "C" {
 #endif
 
-typedef int (function_t)();
-typedef int (function0_t)(void);
-typedef int (function1_t)(void*);
-typedef int (function2_t)(void*,void*);
+typedef int(function_t)();
+typedef int(function0_t)(void);
+typedef int(function1_t)(void*);
+typedef int(function2_t)(void*, void*);
 
 struct {
   union {

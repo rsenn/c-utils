@@ -1,8 +1,12 @@
+#include "../windoze.h"
 #include "../buffer.h"
 #include "../open.h"
 #include "../gpio_internal.h"
 
-#if !(defined(_WIN32) || defined(_WIN64))
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
 #include <sys/mman.h>
 #endif
 

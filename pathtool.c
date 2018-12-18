@@ -1,7 +1,7 @@
 #include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/windoze.h"

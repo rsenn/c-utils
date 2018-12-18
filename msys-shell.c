@@ -4,7 +4,7 @@
 #include "lib/strarray.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 #include "lib/process.h"
 #include "lib/env.h"
 #include "lib/errmsg.h"
@@ -104,7 +104,7 @@ main(int argc, char* argv[]) {
 
       default:
         buffer_putm_internal(
-            buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `", argv[0], "\" --help' for more information");
+            buffer_2, "Unrecognized option `", argv[optind], "'\n", "Try `", argv[0], "\" --help' for more information");
         buffer_putnlflush(buffer_2);
         return 1;
     }

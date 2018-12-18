@@ -1,5 +1,5 @@
 #include "lib/windoze.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
 #include "lib/stralloc.h"
 #include "lib/uint64.h"
@@ -9,7 +9,7 @@
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/scan.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 
 #if !WINDOWS_NATIVE
 #include <unistd.h>

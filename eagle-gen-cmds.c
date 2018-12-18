@@ -101,9 +101,7 @@ struct ref {
     int pin;
   };
 };
-typedef struct pos {
-  double x, y;
-} xy;
+typedef struct pos { double x, y; } xy;
 struct wire {
   double x1, y1, x2, y2;
 };
@@ -191,7 +189,7 @@ xy_add(struct pos* d, const struct pos* p) {
 static inline double
 round_to(double d, double rounding) {
   d /= rounding;
-  d = (long)d;
+  d = (long)(d + 0.5);
   d *= rounding;
   return d;
 }
@@ -1062,17 +1060,13 @@ print_xml_xy(buffer* b, xmlnode* e) {
 
 void
 print_xml_rect(buffer* b, xmlnode* e) {
-  buffer_putm_internal(b,
-                       "(",
-                       xml_get_attribute(e, "x1"),
-                       " ",
-                       xml_get_attribute(e, "y1"),
-                       ") (",
-                       xml_get_attribute(e, "x2"),
-                       " ",
-                       xml_get_attribute(e, "y2"),
-                       ")",
-                       0);
+  const char *x1, *y1, *x2, *y2;
+  x1 = xml_get_attribute(e, "x1");
+  y1 = xml_get_attribute(e, "y1");
+  x2 = xml_get_attribute(e, "x2");
+  y2 = xml_get_attribute(e, "y2");
+  buffer_putm_internal(
+      b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", 0);
   buffer_flush(b);
 }
 

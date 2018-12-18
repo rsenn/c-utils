@@ -4,12 +4,12 @@
 #include "lib/iarray.h"
 #include "lib/array.h"
 #include "lib/buffer.h"
+#include "lib/stralloc.h"
 #include "lib/mmap.h"
 #include "lib/scan.h"
 #include "lib/uint64.h"
 #include "lib/uint8.h"
 #include "lib/errmsg.h"
-#include "lib/stralloc.h"
 #include "lib/open.h"
 #include "lib/path.h"
 #include "lib/str.h"
@@ -23,6 +23,10 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+#ifdef HAVE_ZLIB
+#include <zlib.h>
+#endif
+
 char hexdigits[] = "0123456789abcdef";
 
 typedef struct {
@@ -34,12 +38,33 @@ typedef struct {
 typedef struct {
   const char* name;
   size_t file_size;
+  uint32 crc32;
   array records;
 } patch_t;
 
 static array patches;
 
 extern int buffer_dummyreadmmap();
+
+int
+get_crc32(const char* filename, uint32* crc) {
+   size_t n;
+   char* x;
+
+   if(mmap_read(filename, &n) == 0) return -1;
+
+   *crc = crc32(0, (const Bytef*)x, n);
+
+   mmap_unmap(x, n);
+   return 0;
+}
+
+uint32
+buffer_crc32(buffer* b) {
+  uint32 r;
+  r = crc32(0, (const Bytef*)b->x, b->n);
+  return r;
+}
 
 void
 buffer_filename(buffer* b, stralloc* sa) {
@@ -52,7 +77,7 @@ buffer_filename(buffer* b, stralloc* sa) {
   fcntl(b->fd, F_GETPATH, sa->s);
   stralloc(b->fd, F_GETPATH, sa->s);
   stralloc_shrink(sa);
-#else
+#elif !WINDOWS_NATIVE
   {
     stralloc procp;
     stralloc_init(&procp);
@@ -63,6 +88,8 @@ buffer_filename(buffer* b, stralloc* sa) {
     stralloc_nul(&procp);
     path_readlink(procp.s, sa);
   }
+#else
+    mmap_filename(b->x, sa);
 #endif
 }
 
@@ -117,16 +144,19 @@ print(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
   buffer_PUTC(buffer_2, hexdigits[to & 0x0f]);
 }
 
-void
-new_patch(const char* name, size_t file_size) {
+patch_t*
+patch_new(const char* name, size_t file_size, uint32 crc32) {
   patch_t* patch = array_allocate(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)));
 
   patch->name = name;
   patch->file_size = file_size;
+  patch->crc32 = crc32;
+
+  return patch;
 }
 
 void
-patch(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
+patch(size_t i, unsigned char from, unsigned char to) {
   patch_t* patch = array_get(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)) - 1);
   record_t* rec = array_allocate(&patch->records, sizeof(record_t), array_length(&patch->records, sizeof(record_t)));
 
@@ -215,7 +245,7 @@ main(int argc, char* argv[]) {
   unsigned char* x;
   buffer file;
   int fd;
-  
+
   errmsg_iam(argv[0]);
 
   if(argc <= index) {
@@ -255,62 +285,126 @@ main(int argc, char* argv[]) {
   /* Sublime Text 3176 */
 
   /* Linux x32 */
-  new_patch("Sublime Text 3176 Linux x86", 0);
-  patch(x, 0xD779, 0x00, 0x01);
-  patch(x, 0xC068, 0x38, 0x08);
-  patch(x, 0xC069, 0x00, 0x01);
-  patch(x, 0x482C5, 0x83, 0xC3);
-  patch(x, 0x482C6, 0xEC, 0x90);
-  patch(x, 0x482C7, 0x0C, 0x90);
+  patch_new("Sublime Text 3176 Linux x86", 0, 0);
+  patch(0xD779, 0x00, 0x01);
+  patch(0xC068, 0x38, 0x08);
+  patch(0xC069, 0x00, 0x01);
+  patch(0x482C5, 0x83, 0xC3);
+  patch(0x482C6, 0xEC, 0x90);
+  patch(0x482C7, 0x0C, 0x90);
 
   /* Linux x64 */
-  new_patch("Sublime Text 3176 Linux x64", 0);
-  patch(x, 0xeb83, 0x00, 0x01); /* Persistent License Check */
-  patch(x, 0xd539, 0x00, 0x01); /* Initial License Check */
-  patch(x, 0xd538, 0x38, 0x08);
-  patch(x, 0x460b5, 0x53, 0xC3); /* Software Update Prompt */
+  patch_new("Sublime Text 3176 Linux x64", 0, 0);
+  patch(0xeb83, 0x00, 0x01); /* Persistent License Check */
+  patch(0xd539, 0x00, 0x01); /* Initial License Check */
+  patch(0xd538, 0x38, 0x08);
+  patch(0x460b5, 0x53, 0xC3); /* Software Update Prompt */
 
   /* Windows x86 */
-  new_patch("Sublime Text 3176 Windows x86", 0);
-  patch(x, 0xeb83, 0x00, 0x01); /* Persistent License Check */
-  patch(x, 0x267CA, 0x00, 0x01);
-  patch(x, 0x26C4F, 0x38, 0x08);
-  patch(x, 0x26C50, 0x00, 0x01);
-  patch(x, 0x50AFA, 0x55, 0xC3);
+  patch_new("Sublime Text 3176 Windows x86", 0, 0);
+  patch(0xeb83, 0x00, 0x01); /* Persistent License Check */
+  patch(0x267CA, 0x00, 0x01);
+  patch(0x26C4F, 0x38, 0x08);
+  patch(0x26C50, 0x00, 0x01);
+  patch(0x50AFA, 0x55, 0xC3);
 
   /* Windows x64 */
-  new_patch("Sublime Text 3176 Windows x64", 0);
-  patch(x, 0x3985A, 0x00, 0x01);
-  patch(x, 0x3A073, 0x38, 0x08);
-  patch(x, 0x3A074, 0x00, 0x01);
-  patch(x, 0x792FB, 0x57, 0xC3);
-
-  patch(x, 0x3985A, 0x00, 0x01); /* Persistent License Check */
-  patch(x, 0x3A073, 0x38, 0x08);
-  patch(x, 0x3A074, 0x00, 0x01); /* Initial License Check */
-  patch(x, 0x792FB, 0x57, 0xC3); /* Software Update Prompt */
+  patch_new("Sublime Text 3176 Windows x64", 7352944, 0);
+  patch(0x3985A, 0x00, 0x01); /* Persistent License Check */
+  patch(0x3A073, 0x38, 0x08);
+  patch(0x3A074, 0x00, 0x01); /* Initial License Check */
+  patch(0x792FB, 0x57, 0xC3); /* Software Update Prompt */
 
   /* eagle-lin32-7.2.0 */
-  new_patch("EAGLE 7.2.0 Linux x86", 20629928);
-  patch(x, 0x00251874, 0x0f, 0x31);
-  patch(x, 0x00251875, 0xb6, 0xc0);
-  patch(x, 0x00251876, 0x46, 0x90);
-  patch(x, 0x00251877, 0x06, 0x90);
-  patch(x, 0x00251878, 0xc1, 0x90);
-  patch(x, 0x00251879, 0xe8, 0x90);
-  patch(x, 0x0025187a, 0x04, 0x90);
-  patch(x, 0x0044bbb4, 0x74, 0xeb);
+  patch_new("EAGLE 7.2.0 Linux x86", 20629928, 0);
+  patch(0x00251874, 0x0f, 0x31);
+  patch(0x00251875, 0xb6, 0xc0);
+  patch(0x00251876, 0x46, 0x90);
+  patch(0x00251877, 0x06, 0x90);
+  patch(0x00251878, 0xc1, 0x90);
+  patch(0x00251879, 0xe8, 0x90);
+  patch(0x0025187a, 0x04, 0x90);
+  patch(0x0044bbb4, 0x74, 0xeb);
 
   /* eagle-lin32-7.7.0 */
-  new_patch("EAGLE 7.7.0 Linux x86", 27784220);
-  patch(x, 0x002ec33e, 0x0f, 0x31);
-  patch(x, 0x002ec33f, 0xb6, 0xc0);
-  patch(x, 0x002ec340, 0x46, 0x90);
-  patch(x, 0x002ec341, 0x06, 0x90);
-  patch(x, 0x002ec342, 0xc1, 0x90);
-  patch(x, 0x002ec343, 0xe8, 0x90);
-  patch(x, 0x002ec344, 0x04, 0x90);
-  patch(x, 0x0051fc14, 0x74, 0xeb);
+  patch_new("EAGLE 7.7.0 Linux x86", 27784220, 0);
+  patch(0x002ec33e, 0x0f, 0x31);
+  patch(0x002ec33f, 0xb6, 0xc0);
+  patch(0x002ec340, 0x46, 0x90);
+  patch(0x002ec341, 0x06, 0x90);
+  patch(0x002ec342, 0xc1, 0x90);
+  patch(0x002ec343, 0xe8, 0x90);
+  patch(0x002ec344, 0x04, 0x90);
+  patch(0x0051fc14, 0x74, 0xeb);
+
+
+  /* eagle-win64-7.6.0 */
+  patch_new("EAGLE 7.6.0 Windows x64", 28329984, 0);
+
+  patch(0x000d6932, 0x48, 0x90);
+  patch(0x000d6933, 0x8b, 0x90);
+  patch(0x000d6934, 0xcf, 0x90);
+  patch(0x000d6935, 0xe8, 0x90);
+  patch(0x000d6936, 0x96, 0x90);
+  patch(0x000d6937, 0x71, 0x90);
+  patch(0x000d6938, 0x50, 0x90);
+  patch(0x000d6939, 0x00, 0x90);
+  patch(0x00244e0c, 0x0f, 0x33);
+  patch(0x00244e0d, 0xb6, 0xd2);
+  patch(0x00244e0e, 0x56, 0x90);
+  patch(0x00244e0f, 0x06, 0x90);
+  patch(0x002450b8, 0x75, 0xeb);
+  patch(0x003f325d, 0x74, 0xeb);
+  patch(0x003f3271, 0x74, 0xeb);
+
+
+  /* eagle-win32-7.7.0 */
+  patch_new("EAGLE 7.7.0 Windows x86", 21286400, 0);
+
+  patch(0x0017fa6f, 0x06, 0x05);
+  patch(0x0017fd4c, 0x75, 0xeb);
+  patch(0x002a3063, 0x74, 0xeb);
+  patch(0x002a3076, 0x74, 0xeb);
+  patch(0x00f51a5e, 0x45, 0x55);
+  patch(0x00f51a5f, 0x78, 0x6c);
+  patch(0x00f51a60, 0x70, 0x74);
+  patch(0x00f51a61, 0x72, 0x69);
+  patch(0x00f51a62, 0x65, 0x6d);
+  patch(0x00f51a63, 0x73, 0x61);
+  patch(0x00f51a64, 0x73, 0x74);
+  patch(0x00f51a65, 0x00, 0x65);
+  patch(0x00f53199, 0x74, 0x53);
+  patch(0x00f5319a, 0x6f, 0x41);
+  patch(0x00f5319b, 0x20, 0x4b);
+  patch(0x00f5319c, 0x72, 0x49);
+  patch(0x00f5319d, 0x75, 0x53);
+  patch(0x00f5319e, 0x6e, 0x20);
+  patch(0x00f5319f, 0x20, 0x55);
+  patch(0x00f531a0, 0x45, 0x4b);
+  patch(0x00f531a1, 0x41, 0x52);
+  patch(0x00f531a2, 0x47, 0x20);
+  patch(0x00f531a3, 0x4c, 0x20);
+  patch(0x00f531a4, 0x45, 0x20);
+
+  /* eagle-win64-7.7.0 */
+  patch_new("EAGLE 7.7.0 Windows x64", 28654080, 0);
+
+  patch(0x000d7800, 0x48, 0x90);
+  patch(0x000d7801, 0x8b, 0x90);
+  patch(0x000d7802, 0xcf, 0x90);
+  patch(0x000d7803, 0xe8, 0x90);
+  patch(0x000d7804, 0xd8, 0x90);
+  patch(0x000d7805, 0xec, 0x90);
+  patch(0x000d7806, 0x50, 0x90);
+  patch(0x000d7807, 0x00, 0x90);
+  patch(0x00246838, 0x0f, 0x33);
+  patch(0x00246839, 0xb6, 0xd2);
+  patch(0x0024683a, 0x56, 0x90);
+  patch(0x0024683b, 0x06, 0x90);
+  patch(0x00246ae4, 0x75, 0xeb);
+  patch(0x003f52c9, 0x74, 0xeb);
+  patch(0x003f52dd, 0x74, 0xeb);
+
 
   if((p = patch_find(x, n))) {
     int check = patch_check(x, n, p);

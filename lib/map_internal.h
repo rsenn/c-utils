@@ -22,11 +22,9 @@ map_hash(const char* str) {
   return hash;
 }
 
-
 static int
 map_bucketidx(map_base_t* m, unsigned hash) {
   /* If the implementation is changed to allow a non-power-of-2 bucket count,
    * the line below should be changed to use mod instead of AND */
   return hash & (m->nbuckets - 1);
 }
-

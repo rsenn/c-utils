@@ -1,4 +1,3 @@
-#include <sys/stat.h>
 #include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
@@ -6,9 +5,24 @@
 #include "lib/path.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
+#include "lib/strarray.h"
 #include "lib/mmap.h"
+#include "lib/getopt.h"
 
 #include <ctype.h>
+#include <sys/stat.h>
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
+#ifdef __LCC__
+#define stat _stat
+#endif
+
+static int verbose;
 
 extern int symlink(const char*, const char*);
 
@@ -61,6 +75,11 @@ mklink(char* target, char* link) {
     unlink(link);
   }
 
+  if(verbose) {
+    buffer_putm_internal(buffer_2, "'", link, "' -> '", target, "'", 0);
+    buffer_putnlflush(buffer_2);
+  }
+
   return symlink(path_basename(target), link);
 }
 
@@ -76,10 +95,12 @@ mklink_sa(stralloc* target, stralloc* link) {
     stralloc_insertb(target, link->s, 0, len);
   }
 
+  /*if(verbose) {
   buffer_putsa(buffer_2, link);
   buffer_puts(buffer_2, " -> ");
   buffer_putsa(buffer_2, target);
   buffer_putnlflush(buffer_2);
+  }*/
 
   stralloc_nul(target);
   return mklink(target->s, link->s);
@@ -117,14 +138,49 @@ sln(const char* path) {
 
   return 0;
 }
+
+void
+usage(char* av0) {
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] <FILE.list | TARGET LINK>\n",
+                       "\n",
+                       "Options:\n",
+                       "\n",
+                       "  -h, --help              Show this help\n",
+                       "  -v, --verbose           Be verbose\n",
+                       "\n",
+                       0);
+  buffer_flush(buffer_1);
+}
+
 int
 main(int argc, char* argv[]) {
-  int i;
+  int index = 0, c;
+  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0}};
 
   errmsg_iam(argv[0]);
 
-  for(i = 1; i < argc; ++i) {
-    const char* a = argv[i];
+  for(;;) {
+    c = getopt_long(argc, argv, "hv", opts, &index);
+    if(c == -1)
+      break;
+    if(c == '\0')
+      continue;
+
+    switch(c) {
+      case 'h': usage(argv[0]); return 0;
+      case 'v': verbose = 1; break;
+      default: {
+        usage(argv[0]);
+        return 1;
+      }
+    }
+  }
+
+  while(optind < argc) {
+    const char* a = argv[optind++];
     int i = str_rchr(a, '.');
 
     if(str_equal(&a[i], ".list")) {

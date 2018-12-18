@@ -15,15 +15,14 @@ typedef struct {
   char buf[];
 } textbuf;
 
-textbuf* is_textbuf    (buffer*);
-uint64   textbuf_column(buffer*);
-void     textbuf_free  (buffer*);
-void     textbuf_init  (buffer*, buffer*, size_t);
-uint64   textbuf_line  (buffer*);
-ssize_t  textbuf_read  (fd_t, char*, size_t, void*);
+textbuf* is_textbuf(buffer*);
+uint64 textbuf_column(buffer*);
+void textbuf_free(buffer*);
+void textbuf_init(buffer*, buffer*, size_t);
+uint64 textbuf_line(buffer*);
+ssize_t textbuf_read(fd_t, char*, size_t, void*);
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* defined TEXTBUF_H */
-

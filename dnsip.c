@@ -1,6 +1,6 @@
 #define USE_WS2_32 1
-#include "lib/socket_internal.h"
-#include "lib/io_internal.h"
+#include "lib/socket.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
 #include "lib/case.h"
 #include "lib/open.h"

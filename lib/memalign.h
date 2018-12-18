@@ -10,10 +10,9 @@ extern "C" {
 
 void* memalign_alloc_aligned(size_t size);
 void* memalign_alloc(size_t boundary, size_t size);
-void  memalign_free(void* ptr);
+void memalign_free(void* ptr);
 
 #ifdef __cplusplus
 }
 #endif
 #endif
-

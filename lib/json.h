@@ -41,28 +41,23 @@ typedef struct {
 
 #define node_is_closing(n) ((n)->name[0] == '/')
 
-typedef int(json_read_callback_fn)(jsonreader* r,
-                                   jsondata id,
-                                   stralloc* name,
-                                   stralloc* value,
-                                   HMAP_DB** attrs);
+typedef int(json_read_callback_fn)(jsonreader* r, jsondata id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
 typedef int(json_predicate_fn)();
 
-void     json_free(jsonval*);
+void json_free(jsonval*);
 jsonval* json_newnode(jsondata);
-int      json_parse_array(jsonval*, charbuf* b);
-int      json_parse_getsa(charbuf*, stralloc* sa);
-int      json_parse_object(jsonval*, charbuf* b);
-int      json_parse_string(jsonval*, charbuf* b);
-int      json_parse(jsonval*, charbuf* b);
-void     json_print(jsonval*, buffer* b);
-void     json_reader_init(jsonreader*, charbuf* b);
-void     json_read_callback(jsonreader*, json_read_callback_fn* fn);
+int json_parse_array(jsonval*, charbuf* b);
+int json_parse_getsa(charbuf*, stralloc* sa);
+int json_parse_object(jsonval*, charbuf* b);
+int json_parse_string(jsonval*, charbuf* b);
+int json_parse(jsonval*, charbuf* b);
+void json_print(jsonval*, buffer* b);
+void json_reader_init(jsonreader*, charbuf* b);
+void json_read_callback(jsonreader*, json_read_callback_fn* fn);
 jsonval* json_read_tree(charbuf*);
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* LIB_JSON_H_ */
-

@@ -22,7 +22,7 @@ typedef struct pollfd iopause_fd;
 
 #include "taia.h"
 
-extern void iopause(iopause_fd *,unsigned int,struct taia *,struct taia *);
+extern void iopause(iopause_fd*, unsigned int, struct taia*, struct taia*);
 
 #else
 
@@ -39,7 +39,7 @@ typedef struct {
 
 #include "taia.h"
 
-extern void iopause(iopause_fd *,unsigned int,struct taia *,struct taia *);
+extern void iopause(iopause_fd*, unsigned int, struct taia*, struct taia*);
 
 #endif /* IOPAUSE_POLL */
 
@@ -47,4 +47,3 @@ extern void iopause(iopause_fd *,unsigned int,struct taia *,struct taia *);
 }
 #endif
 #endif
-

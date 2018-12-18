@@ -28,6 +28,7 @@
 
 #include "lib/windoze.h"
 #include "lib/buffer.h"
+#include "lib/socket.h"
 #include "lib/socket_internal.h"
 #include "lib/ndelay.h"
 #include "lib/unix.h"
@@ -50,7 +51,9 @@
 #define HOSTS_FILE "C:\\Windows\\System32\\drivers\\etc\\hosts"
 #else
 #include <unistd.h>
+#ifndef closesocket
 #define closesocket close
+#endif
 #define HOSTS_FILE "/etc/hosts"
 #endif
 
@@ -66,64 +69,64 @@ usage(char* prog) {
 
 int
 read_hosts(const char* file) {
+  const char* p;
+  size_t s, l, e, i;
   char* x;
   size_t n;
   char ip[4];
   stralloc hostname;
   stralloc_init(&hostname);
 
-  if((x = mmap_read(file, &n))) {
-    const char* p;
-    size_t s, l, e, i;
+  if((x = mmap_read(file, &n)) == 0)
+    return -1;
 
-    str_foreach_skip(x, p, l + 1) {
-      e = n - (p - x);
-      s = scan_whitenskip(p, e);
+  str_foreach_skip(x, p, l + 1) {
+    e = n - (p - x);
+    s = scan_whitenskip(p, e);
 
-      l = byte_chr(p, e, '\n');
+    l = byte_chr(p, e, '\n');
 
-      if(s >= l)
-        continue;
-      if(p[s] == '#')
-        continue;
+    if(s >= l)
+      continue;
+    if(p[s] == '#')
+      continue;
 
-      if((i = scan_ip4(&p[s], ip))) {
-        size_t hlen;
-        s += i;
-        s += scan_whitenskip(&p[s], l - s);
+    if((i = scan_ip4(&p[s], ip))) {
+      size_t hlen;
+      s += i;
+      s += scan_whitenskip(&p[s], l - s);
 
-        stralloc_zero(&hostname);
+      stralloc_zero(&hostname);
 
-        while(s < l && (hlen = scan_nonwhitenskip(&p[s], l - s))) {
-          stralloc_copyb(&hostname, &p[s], hlen);
+      while(s < l && (hlen = scan_nonwhitenskip(&p[s], l - s))) {
+        stralloc_copyb(&hostname, &p[s], hlen);
 
 #ifdef DEBUG_OUTPUT
-          buffer_puts(buffer_1, "IP: ");
-          buffer_put(buffer_1, ipbuf, ip4_fmt(ipbuf, ip));
+        buffer_puts(buffer_1, "IP: ");
+        buffer_put(buffer_1, ipbuf, ip4_fmt(ipbuf, ip));
 
-          buffer_puts(buffer_1, ", Hostname: ");
-          buffer_putsa(buffer_1, &hostname);
-          buffer_putnlflush(buffer_1);
+        buffer_puts(buffer_1, ", Hostname: ");
+        buffer_putsa(buffer_1, &hostname);
+        buffer_putnlflush(buffer_1);
 #endif
-          stralloc_nul(&hostname);
+        stralloc_nul(&hostname);
 
-          map_set(&hosts_db, hostname.s, *(uint32*)ip);
+        map_set(&hosts_db, hostname.s, *(uint32*)ip);
 
-          s += hlen;
-          s += scan_whitenskip(&p[s], l - s);
-        }
+        s += hlen;
+        s += scan_whitenskip(&p[s], l - s);
       }
     }
   }
-
   mmap_unmap(x, n);
+  return 0;
 }
 
 int
 lookup_hosts(stralloc* name, stralloc* ips) {
   void* ptr;
   stralloc_nul(name);
-  if((ptr = map_get(&hosts_db, name->s)))  {
+  if((ptr = map_get(&hosts_db, name->s))) {
     stralloc_copyb(ips, ptr, 4);
     return 1;
   }

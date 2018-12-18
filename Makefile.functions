@@ -34,11 +34,11 @@ endef
 define cmds-include-exists =
 set -e; \
 NAME=test_$(subst .,_,$(subst /,_,$(1))); \
-(echo -e "#include <$(1)>\n"; \
-echo -e "\n"; \
-echo -e "int main() {"; \
-echo -e "  return 0;"; \
-echo -e "}") >$$NAME.c; \
+(echo "#include <$(1)>"; \
+echo ""; \
+echo "int main() {"; \
+echo "  return 0;"; \
+echo "}") >$$NAME.c; \
 $(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) -c -o $$NAME $$NAME.c && R=0 || R=1; \
 rm -f "$$NAME" "$$NAME.c"; exit $$R
 endef
@@ -46,7 +46,7 @@ endef
 define cmds-try-compile =
 set -e;  \
 NAME=$$RANDOM; \
-(echo -e "$(1)") >test_$$NAME.c; \
+(echo "$(1)") >test_$$NAME.c; \
 if $(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS) -o test_$$NAME test_$$NAME.c $(2); then R=0; else R=1; fi; \
 rm -f "test_$$NAME" "test_$$NAME.c"; exit $$R
 endef

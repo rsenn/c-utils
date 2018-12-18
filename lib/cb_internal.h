@@ -70,4 +70,3 @@ cb_free_node(void* ptr) {
     free(ptr);
   }
 }
-
