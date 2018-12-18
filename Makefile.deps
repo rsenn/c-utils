@@ -2206,3 +2206,11 @@ $(BUILDDIR)buffertest.o: buffertest.c lib/stralloc.h lib/typedefs.h lib/buffer.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)ucs_latin1.o: lib/ucs/ucs_latin1.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_latin1_utf8.o: lib/ucs/fmt_latin1_utf8.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan_latin1_utf8.o: lib/ucs/scan_latin1_utf8.c lib/ucs.h lib/fmt.h lib/typedefs.h lib/uint32.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_latin1_utf8.o: lib/ucs/fmt_latin1_utf8.c lib/ucs.h lib/fmt.h lib/typedefs.h lib/uint32.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan_latin1_utf8.o: lib/ucs/scan_latin1_utf8.c lib/ucs.h lib/fmt.h lib/typedefs.h lib/uint32.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<

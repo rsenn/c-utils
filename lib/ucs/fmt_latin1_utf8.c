@@ -1,5 +1,5 @@
-#include "../ucs.c"
-#include "../fmt.c"
+#include "../ucs.h"
+#include "../fmt.h"
 
 size_t
 fmt_latin1_utf8(char* out, char ch) {

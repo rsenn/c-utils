@@ -28,8 +28,8 @@ ucs_to_latin1(wchar_t ch) {
     return ch;
 
   for(i = 0; i < (sizeof(ucs_latin1_table) / sizeof(ucs_latin1_table[0])); ++i) {
-    if(ucs_latin1_table[i] == ch) {
+    if(ucs_latin1_table[i] == ch)
       return 0x80 + i;
-    }
-    return 0;
   }
+  return 0;
+}
