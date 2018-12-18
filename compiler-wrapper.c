@@ -27,7 +27,7 @@
 #include "lib/byte.h"
 #include "lib/fmt.h"
 #include "lib/buffer.h"
-#include "lib/dir_internal.h"
+#include "lib/dir.h"
 
 #define mytolower(c) ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
 

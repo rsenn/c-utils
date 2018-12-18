@@ -4,11 +4,11 @@
 #include "windoze.h"
 
 #ifndef my_extern
-# if WINDOWS
-#  define my_extern extern __declspec(dllexport)
-# else
-#  define my_extern extern
-# endif
+#if WINDOWS
+#define my_extern extern __declspec(dllexport)
+#else
+#define my_extern extern
+#endif
 #endif
 
 #include "array.h"
@@ -19,41 +19,41 @@
 extern void* io_getfds();
 
 #if WINDOWS_NATIVE
-# ifdef _MSC_VER
-#  define _CRT_INTERNAL_NONSTDC_NAMES 1
-# endif
-# include <io.h>
+#ifdef _MSC_VER
+#define _CRT_INTERNAL_NONSTDC_NAMES 1
+#endif
+#include <io.h>
 #endif
 
 #if WINDOWS
-# if WINDOWS_NATIVE
-# include <windows.h>
-#  if !defined(__LCC__) && !defined(__MINGW32__) && !defined(__MSYS__)
-#   define read _read
-#   define write _write
-#   define open _open
-#   define close _close
-#  endif
-# if !defined(__DMC__)
-#  define popen _popen
-# endif
-# endif
+#if WINDOWS_NATIVE
+#include <windows.h>
+#if !defined(__LCC__) && !defined(__MINGW32__) && !defined(__MSYS__)
+#define read _read
+#define write _write
+#define open _open
+#define close _close
+#endif
+#if !defined(__DMC__)
+#define popen _popen
+#endif
+#endif
 //#define lseek lseek64
-# define llseek lseek64
+#define llseek lseek64
 my_extern intptr_t io_comport;
 
-# elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
+#elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
 //# define HAVE_EPOLL 1
 //# define HAVE_SIGIO 1
 
-# ifdef HAVE_SIGIO
-#  ifndef _GNU_SOURCE
-#   define _GNU_SOURCE
-#  endif
-#  undef _POSIX_C_SOURCE
-#  define _POSIX_C_SOURCE  199309L
-#  include <signal.h>
-# endif
+#ifdef HAVE_SIGIO
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 199309L
+#include <signal.h>
+#endif
 
 #endif /* WINDOWS_NATIVE */
 
@@ -130,7 +130,7 @@ int read();
 /* Basically, we tell the kernel that we want to read if !canread,
  * and we tell the kernel that we want to write if !canwrite. */
 
-typedef struct {
+typedef struct ioent {
   tai6464 timeout;
   unsigned int wantread : 1; /* does the app want to read/write? */
   unsigned int wantwrite : 1;
@@ -229,7 +229,7 @@ struct eventpacket {
 };
 
 #if WINDOWS_NATIVE && !__POCC__
-//extern int open();
+// extern int open();
 extern int read();
 extern int write();
 extern int close();
@@ -238,19 +238,9 @@ extern int close();
 #define debug_printf(x)
 
 #ifdef DEBUG
-#define DEBUG_MSG(msg, fd) \
-  buffer_puts(buffer_2, msg), \
-  buffer_putlong(buffer_2, fd), \
-  buffer_putnlflush(buffer_2)
+#define DEBUG_MSG(msg, fd) buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
 #else
 #define DEBUG_MSG(msg, fd)
 #endif
-
-void* io_getfds(void);
-
-static inline io_entry*
-io_getentry(int64 fd) {
-  return iarray_get(io_getfds(), fd);
-}
 
 #endif

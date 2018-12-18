@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 #ifdef __BORLANDC__
-#define iarray_data(page) ((char*)(page)+sizeof(iarray_page*))
+#define iarray_data(page) ((char*)(page) + sizeof(iarray_page*))
 #else
 #define iarray_data(page) (page)->data
 #endif
@@ -48,16 +48,16 @@ typedef struct _iarray_page {
 
 typedef struct {
   iarray_page* pages[16];
-  size_t elemsize,elemperpage,bytesperpage;
+  size_t elemsize, elemperpage, bytesperpage;
 #ifndef __POCC__
   volatile
 #endif
-   unsigned long len;
+      unsigned long len;
 } iarray;
 
-void iarray_init(iarray* ia,size_t elemsize);
-void* iarray_get(iarray* ia,size_t pos);
-void* iarray_allocate(iarray* ia,size_t pos);
+void iarray_init(iarray* ia, size_t elemsize);
+void* iarray_get(iarray* ia, size_t pos);
+void* iarray_allocate(iarray* ia, size_t pos);
 size_t iarray_length(iarray* ia);
 
 /* WARNING: do not use the array during or after iarray_free, make sure
@@ -69,4 +69,3 @@ void iarray_free(iarray* ia);
 }
 #endif
 #endif
-

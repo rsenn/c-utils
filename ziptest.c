@@ -1,6 +1,6 @@
 #include "lib/unix.h"
 #include "lib/buffer.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
 #include "lib/str.h"
 #include "lib/byte.h"

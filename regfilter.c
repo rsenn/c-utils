@@ -25,7 +25,7 @@
 #include "lib/stralloc.h"
 #include "lib/io.h"
 #include "lib/iarray.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX

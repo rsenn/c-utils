@@ -2,7 +2,7 @@
 
 #include "../socket_internal.h"
 #include "../select.h"
-#include "../io.h"
+#include "../io_internal.h"
 #include "../iopause.h"
 #include "../taia.h"
 

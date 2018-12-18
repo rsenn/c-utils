@@ -1,5 +1,5 @@
 #include "../windoze.h"
-#include "../io.h"
+#include "../io_internal.h"
 #include "../playlist.h"
 #include "../byte.h"
 #include "../fmt.h"

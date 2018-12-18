@@ -3,7 +3,7 @@
 #include "lib/strarray.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 #include "lib/process.h"
 #include "lib/env.h"
 #include "lib/errmsg.h"

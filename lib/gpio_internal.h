@@ -31,4 +31,3 @@ static const int GPIO_PULL_UP = 2;
 #define PIN_VAL(n) (1 << (n % 32))
 
 extern volatile unsigned int* gpio; /* See gpio_init(). */
-

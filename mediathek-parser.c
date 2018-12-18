@@ -2,7 +2,7 @@
 #include "lib/array.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
 #include "lib/open.h"
 #include "lib/str.h"

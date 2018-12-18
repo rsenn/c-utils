@@ -25,8 +25,8 @@ extern const ipv4addr IPV4ADDR_ANY;
 extern const ipv4addr IPV4ADDR_BROADCAST;
 extern const ipv4addr IPV4ADDR_LOOPBACK;
 
-size_t scan_ip4(const char *src,char *ip);
-size_t fmt_ip4(char *dest,const char *ip);
+size_t scan_ip4(const char* src, char* ip);
+size_t fmt_ip4(char* dest, const char* ip);
 
 /* for djb backwards compatibility */
 #define ip4_scan scan_ip4
@@ -42,4 +42,3 @@ extern const char ip4loopback[4]; /* = {127,0,0,1};*/
 #endif
 
 #endif
-

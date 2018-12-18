@@ -22,10 +22,10 @@
 #include <fcntl.h>
 
 #include "lib/buffer.h"
-#include "lib/dir_internal.h"
+#include "lib/dir.h"
 #include "lib/fmt.h"
 #include "lib/fnmatch.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
 #include "lib/open.h"
 #include "lib/str.h"

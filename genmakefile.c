@@ -3,7 +3,7 @@
 #include "lib/hmap.h"
 #include "lib/mmap.h"
 #include "lib/open.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 #include "lib/rdir.h"
 #include "lib/scan.h"
 #include "lib/slist.h"
@@ -1240,8 +1240,8 @@ includes_to_libs(const strlist* includes, strlist* libs) {
 
     if(stralloc_endb(&sa, ".h", 2))
       sa.len -= 2;
-    if(stralloc_endb(&sa, "_internal", 9))
-      sa.len -= 9;
+    /*if(stralloc_endb(&sa, "_internal", 9))
+      sa.len -= 9;*/
 
     stralloc_cats(&sa, libext);
 

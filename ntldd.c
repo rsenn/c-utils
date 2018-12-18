@@ -28,7 +28,7 @@ MSDN Magazine articles
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/unix.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 #include "lib/str.h"
 #include "lib/pe.h"
 #include "lib/mmap.h"

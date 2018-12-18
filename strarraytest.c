@@ -62,7 +62,7 @@ main(int argc, char* argv[]) {
                                  "lib/ndelay.h",
                                  "lib/open.h",
                                  "lib/path.h",
-                                 "lib/path_internal.h",
+                                 "lib/path.h",
                                  "lib/pe.h",
                                  "lib/playlist.h",
                                  "lib/range.h",

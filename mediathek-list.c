@@ -6,7 +6,7 @@
 #include "lib/fmt.h"
 #include "lib/unix.h"
 #include "lib/http.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
 #include "lib/scan.h"
 #include "lib/slist.h"

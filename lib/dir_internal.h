@@ -5,7 +5,7 @@
 
 #define _POSIX_ 1
 
-#if 0 //def _MSC_VER
+#if 0 // def _MSC_VER
 #include <crtdefs.h>
 #endif /* _MSC_VER */
 
@@ -127,4 +127,3 @@ struct dir_internal_s {
 #endif
 
 #endif /* _DIR_INTERNAL_H__ */
-

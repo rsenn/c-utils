@@ -1,11 +1,24 @@
 #ifndef _PATH_H__
 #define _PATH_H__
 
+#include "windoze.h"
 #include "stralloc.h"
 #include "str.h"
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#if WINDOWS_NATIVE
+#define PATHSEP_C '\\'
+#define PATHSEP_S "\\"
+#define PATHLISTSEP_C ';'
+#define PATHLISTSEP_S ";"
+#else
+#define PATHSEP_C '/'
+#define PATHSEP_S "/"
+#define PATHLISTSEP_C ':'
+#define PATHLISTSEP_S ":"
 #endif
 
 #define PATH_FNM_NOMATCH 1
@@ -47,7 +60,6 @@ int path_is_separator(char);
 char* path_skip_separator(const char*);
 
 int path_find(const char* path, const char* name, stralloc* out);
-
 
 #ifdef __cplusplus
 }

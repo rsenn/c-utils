@@ -16,9 +16,9 @@ extern "C" {
 
 extern const short __spm[13];
 
-int     fnmatch(const char* pattern, const char* string, int flags);
-int     isleap(int year);
-int     pipe2(int fd[2], int flags);
+int fnmatch(const char* pattern, const char* string, int flags);
+int isleap(int year);
+int pipe2(int fd[2], int flags);
 
 #if WINDOWS_NATIVE
 size_t getpagesize();
@@ -28,4 +28,3 @@ size_t getpagesize();
 }
 #endif
 #endif /* defined(UNIX_H) */
-

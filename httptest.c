@@ -1,7 +1,7 @@
 #include "lib/windoze.h"
 #include "lib/http.h"
 #include "lib/byte.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iopause.h"
 #include "lib/socket.h"
 #include "lib/taia.h"
