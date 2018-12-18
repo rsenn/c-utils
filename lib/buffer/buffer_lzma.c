@@ -3,13 +3,13 @@
 #include <stdlib.h>
 
 #ifdef HAVE_LIBLZMA
+#define LZMA_API_STATIC 1
 #include <lzma.h>
 
 #ifdef __DMC__
-#undef  LZMA_VLI_UNKNOWN
-#define  LZMA_VLI_UNKNOWN 18446744073709551615ull
+#undef LZMA_VLI_UNKNOWN
+#define LZMA_VLI_UNKNOWN 18446744073709551615ull
 #endif
-
 
 #define LZMA_BLOCK_SIZE 1024
 
