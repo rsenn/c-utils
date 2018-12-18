@@ -404,6 +404,12 @@ HAVE_ZLIB := $(call check-function-exists,deflate,-lz)
 #$(info HAVE_ZLIB=$(HAVE_ZLIB))
 
 HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma)
+ifneq ($(HAVE_LIBLZMA),1)
+HAVE_LIBLZMA := $(call check-function-exists,lzma_code,-llzma -lpthread)
+LIBLZMA := -llzma -lpthread
+else
+LIBLZMA := -llzma
+endif
 #$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
 
 HAVE_LIBBZ2 := $(call check-function-exists,BZ2_bzCompress,-lbz2)
@@ -849,7 +855,6 @@ endif
 ifeq ($(HAVE_LIBLZMA),1)
 DEFINES += HAVE_LIBLZMA=1
 CPPFLAGS += -DHAVE_LIBLZMA=1
-LIBLZMA = -llzma
 endif
 ifeq ($(HAVE_LIBBZ2),1)
 DEFINES += HAVE_LIBBZ2=1
@@ -1104,6 +1109,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
+$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): LIBS += $(LIBLZMA)
 $(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)getopt.o $(BUILDDIR)popen.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, http dns case io taia tai socket ndelay errmsg iarray array safemult strlist stralloc buffer fmt mmap scan open str byte uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)

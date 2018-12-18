@@ -120,6 +120,7 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 
   for(i = 0; n; ++i) {
     offs = byte_finds(buf, n, "\",\"");
+    if(offs == n) offs = byte_finds(buf, n, "\"],");
 
     if(offs == 0) {
       const char* p = strlist_at(prev, i);
@@ -169,7 +170,7 @@ read_mediathek_list(const char* url, buffer* b) {
 
   http_get(&h, url);
 
-  buffer_init(&in, http_read, &h, malloc(8192), 8192);
+  buffer_init(&in, (buffer_op_proto*)&http_read, (fd_t)&h, malloc(8192), 8192);
   in.deinit = &buffer_free;
   buffer_lzma(b, &in, 0);
 
@@ -560,7 +561,7 @@ output_entry(buffer* b, strlist* sl) {
 
   size_t i, n = strlist_count(sl);
 
-  buffer_put(b, " ", 1);
+  buffer_puts(b, "\"X\":[");
 
   for(i = 0; i < n; ++i) {
     char c;
@@ -576,7 +577,7 @@ output_entry(buffer* b, strlist* sl) {
       buffer_PUTC(b, c);
     }
 
-    buffer_puts(b, (i == 0 ? "\" : [" : ((i + 1 < n) ? "\"," : "\" ]")));
+    buffer_puts(b,  ((i + 1 < n) ? "\"," : "\" ]"));
   }
 }
 
@@ -593,7 +594,7 @@ parse_mediathek_list(buffer* inbuf) {
 
   buffer_put(buffer_1, "{\n", 2);
 
-  while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
+    while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
 
     for(;;) {
       if(ret + 1 >= BUFSIZE)
@@ -614,7 +615,7 @@ parse_mediathek_list(buffer* inbuf) {
     }
 
     strlist_init(&sl, '\0');
-    split_fields(&sl, &prev, buf2, ret);
+    split_fields(&sl, &prev, buf2, ret + ret2);
 
     if((e = parse_entry(&sl))) {
       total++;

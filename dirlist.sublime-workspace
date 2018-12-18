@@ -16,168 +16,29 @@
 	"buffers":
 	[
 		{
-			"contents": "buffer_dummyreadmmap\nget_crc32\nbuffer_crc32\nbuffer_filename\nbuffer_backup\nprint\npatch_new\npatch\npatch_check\npatch_find\nrecord_apply\npatch_apply\nusage\nmain",
+			"contents": "_XOPEN_SOURCE\n__POSIX_VISIBLE\n__MISC_VISIBLE\nBUFSIZE\n__declspec\npopen\npopen\ncount_field_lengths\nsplit_fields\nprocess_status\nread_mediathek_list\nparse_time\nformat_num\nformat_time\nparse_datetime\nparse_anydate\nformat_datetime\nmake_url\nnew_mediathek_entry\ncreate_mediathek_entry\ndelete_mediathek_entry\nmatch_tokens\nmatch_toklists\nparse_entry\nprint_entry\noutput_entry\nparse_mediathek_list\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 154,
+				"buffer_size": 394,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "lib/io/io_waituntil.c",
+			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 415,
+				"buffer_size": 88768,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/io/io_waituntil2.c",
+			"file": "mediathek-list.c",
 			"settings":
 			{
-				"buffer_size": 17677,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "lib/io.h",
-			"settings":
-			{
-				"buffer_size": 5317,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/io/io_timeouted.c",
-			"settings":
-			{
-				"buffer_size": 763,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/io/io_close.c",
-			"settings":
-			{
-				"buffer_size": 745,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "tcping.c",
-			"settings":
-			{
-				"buffer_size": 6714,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/elf.h",
-			"settings":
-			{
-				"buffer_size": 61283,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/rangecheck.h",
-			"settings":
-			{
-				"buffer_size": 8630,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "elflist.c",
-			"settings":
-			{
-				"buffer_size": 15091,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "hexedit.vcxproj",
-			"settings":
-			{
-				"buffer_size": 66036,
-				"encoding": "UTF-8 with BOM",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "lib/buffer/buffer_mmapread_fd.c",
-			"settings":
-			{
-				"buffer_size": 369,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "hexedit.c",
-			"settings":
-			{
-				"buffer_size": 10324,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/mmap.h",
-			"settings":
-			{
-				"buffer_size": 1231,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/stralloc/mmap_filename.c",
-			"settings":
-			{
-				"buffer_size": 2619,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "torrent-progress.c",
-			"settings":
-			{
-				"buffer_size": 6727,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "crc32.c",
-			"settings":
-			{
-				"buffer_size": 565,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/buffer/buffer_mmapread.c",
-			"settings":
-			{
-				"buffer_size": 341,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/range.h",
-			"settings":
-			{
-				"buffer_size": 1158,
+				"buffer_size": 15938,
+				"encoding": "Western (Windows 1252)",
 				"line_ending": "Unix"
 			}
 		}
@@ -429,10 +290,35 @@
 	"expanded_folders":
 	[
 		"/C/Users/roman/Desktop/dirlist",
-		"/C/Users/roman/Desktop/dirlist/lib"
+		"/C/Users/roman/Desktop/dirlist/lib",
+		"/C/Users/roman/Desktop/dirlist/lib/http"
 	],
 	"file_history":
 	[
+		"/C/Users/roman/Desktop/dirlist/mediathek-list.c",
+		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil.c",
+		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil2.c",
+		"/C/Users/roman/Desktop/dirlist/lib/io.h",
+		"/C/Users/roman/Desktop/dirlist/lib/io/io_timeouted.c",
+		"/C/Users/roman/Desktop/dirlist/hexedit.c",
+		"/C/Users/roman/Desktop/dirlist/lib/http/http_read.c",
+		"/C/Users/roman/Desktop/dirlist/lib/http/http_get.c",
+		"/C/Users/roman/Desktop/dirlist/lib/http/http_writeable.c",
+		"/C/Users/roman/Desktop/dirlist/httptest.c",
+		"/C/Users/roman/Desktop/dirlist/lib/http/http_socket.c",
+		"/C/Users/roman/Desktop/dirlist/lib/stralloc/mmap_filename.c",
+		"/C/Users/roman/Desktop/dirlist/torrent-progress.c",
+		"/C/Users/roman/Desktop/dirlist/crc32.c",
+		"/C/Users/roman/Desktop/dirlist/lib/buffer/buffer_mmapread.c",
+		"/C/Users/roman/Desktop/dirlist/lib/range.h",
+		"/C/Users/roman/Desktop/dirlist/lib/mmap.h",
+		"/C/Users/roman/Desktop/dirlist/lib/io/io_close.c",
+		"/C/Users/roman/Desktop/dirlist/tcping.c",
+		"/C/Users/roman/Desktop/dirlist/lib/elf.h",
+		"/C/Users/roman/Desktop/dirlist/lib/rangecheck.h",
+		"/C/Users/roman/Desktop/dirlist/elflist.c",
+		"/C/Users/roman/Desktop/dirlist/hexedit.vcxproj",
+		"/C/Users/roman/Desktop/dirlist/lib/buffer/buffer_mmapread_fd.c",
 		"/C/Users/roman/Desktop/dirlist/examples/uudecode.c",
 		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_dirname.c",
@@ -461,26 +347,21 @@
 		"/C/Users/roman/Desktop/dirlist/lib/pe.h",
 		"/C/Users/roman/Desktop/dirlist/lib/coff.h",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_get_name.c",
-		"/C/Users/roman/Desktop/dirlist/lib/elf.h",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_begin.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/outline.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/cofflist.c",
 		"/C/Users/roman/Desktop/dirlist/genmakefile.h",
-		"/C/Users/roman/Desktop/dirlist/httptest.c",
 		"/C/Users/roman/Desktop/dirlist/lib/array.h",
 		"/C/Users/roman/Desktop/dirlist/tests/test_strlist.c",
 		"/C/Users/roman/Desktop/dirlist/tests/test_stralloc.c",
 		"/C/Users/roman/Desktop/dirlist/tests/all_tests.c",
 		"/C/Users/roman/Desktop/dirlist/tests/unit_test.c",
 		"/C/Users/roman/Desktop/dirlist/tests/unit_test_runner.c",
-		"/C/Users/roman/Desktop/dirlist/lib/http/http_socket.c",
 		"/C/Users/roman/Desktop/dirlist/lib/http/http_sendreq.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path_internal.h",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_basename.c",
 		"/D/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Package Control.sublime-settings",
-		"/C/Users/roman/Desktop/dirlist/lib/http/http_read.c",
-		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil2.c",
 		"/C/Users/roman/Desktop/dirlist/lib/io/io_wantread.c",
 		"/C/Users/roman/Desktop/dirlist/lib/process/process_create.c",
 		"/C/Users/roman/Desktop/dirlist/lib/strarray/strarray_from_argv.c",
@@ -496,19 +377,16 @@
 		"/C/Users/roman/Desktop/dirlist/lib/iarray/iarray_allocate.c",
 		"/C/Users/roman/Desktop/dirlist/examples/io2.c",
 		"/C/Users/roman/Desktop/dirlist/examples/fmt_strm_alloca.c",
-		"/C/Users/roman/Desktop/dirlist/elflist.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_end.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_next.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_close.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_open.c",
-		"/C/Users/roman/Desktop/dirlist/lib/range.h",
 		"/C/Users/roman/Desktop/dirlist/lib/pe/pe_get_datadir.c",
 		"/C/Users/roman/Desktop/dirlist/list-r.c",
 		"/C/Users/roman/Desktop/dirlist/pelist.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_next_record.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/clang_format.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_relative.c",
-		"/C/Users/roman/Desktop/dirlist/lib/stralloc/mmap_filename.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Cscope/CscopeSublime.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/Default (Windows).sublime-keymap",
@@ -544,23 +422,7 @@
 		"/C/Users/roman/Desktop/dirlist/tests/test_path.c",
 		"/C/Users/roman/Desktop/dirlist/access.c",
 		"/C/Users/roman/Desktop/dirlist/lib/uint64.h",
-		"/C/Users/roman/Desktop/dirlist/lib/binfmt.h",
-		"/C/Users/roman/Desktop/dirlist/lib/windoze.h",
-		"/C/Users/roman/Desktop/unix.h",
-		"/C/Users/roman/Desktop/dirlist/lib/socket.h",
-		"/C/Users/roman/Desktop/dirlist/lib/socket_internal.h",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/CPrettify/user.cfg",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/CPrettify.sublime-settings",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Package Control.sublime-settings",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/Package Control/Package Control.sublime-settings",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_num_sa.c",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/CTags.sublime-settings",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/CPrettify/CPrettify.sublime-settings",
-		"/D/Qt/qt-5.10.1-static-ltcg-msvc2017-x86_64/mkspecs/win32-msvc/qmake.conf",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/Schemr/Default (Windows).sublime-keymap",
-		"/D/Sources/rsenn/dirlist/scripts/gen-a-deps.sh"
+		"/C/Users/roman/Desktop/dirlist/lib/binfmt.h"
 	],
 	"find":
 	{
@@ -578,6 +440,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"popen",
 			"new_patch",
 			"patch",
 			"dynstr",
@@ -704,8 +567,7 @@
 			"\\",
 			"equal",
 			"-w",
-			"link_rules",
-			"data_dir"
+			"link_rules"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -771,7 +633,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 154,
+						"buffer_size": 394,
 						"regions":
 						{
 						},
@@ -781,81 +643,156 @@
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\hexedit.c",
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\mediathek-list.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									767,
+									8,
+									21
+								],
+								[
+									32,
+									47
+								],
+								[
+									63,
+									77
+								],
+								[
+									726,
+									733
+								],
+								[
+									777,
 									787
 								],
 								[
-									796,
-									805
+									841,
+									846
 								],
 								[
-									1002,
-									1014
+									899,
+									904
 								],
 								[
-									1102,
-									1117
+									2359,
+									2378
 								],
 								[
-									1672,
-									1685
+									2594,
+									2606
 								],
 								[
-									2415,
-									2420
+									3173,
+									3187
 								],
 								[
-									2872,
-									2881
+									3769,
+									3788
 								],
 								[
-									3141,
-									3146
+									5327,
+									5337
 								],
 								[
-									3480,
-									3491
+									5699,
+									5709
 								],
 								[
-									3940,
-									3950
+									5846,
+									5857
 								],
 								[
-									4197,
-									4209
+									6273,
+									6287
 								],
 								[
-									4498,
-									4509
+									6463,
+									6476
 								],
 								[
-									4820,
-									4825
+									6719,
+									6734
 								],
 								[
-									5158,
-									5162
+									7004,
+									7012
+								],
+								[
+									7544,
+									7563
+								],
+								[
+									7732,
+									7754
+								],
+								[
+									8337,
+									8359
+								],
+								[
+									8692,
+									8704
+								],
+								[
+									9234,
+									9248
+								],
+								[
+									9860,
+									9871
+								],
+								[
+									10860,
+									10871
+								],
+								[
+									11688,
+									11700
+								],
+								[
+									12130,
+									12150
+								],
+								[
+									13766,
+									13771
+								],
+								[
+									14486,
+									14490
 								]
 							],
 							"symlist":
 							[
-								"buffer_dummyreadmmap",
-								"get_crc32",
-								"buffer_crc32",
-								"buffer_filename",
-								"buffer_backup",
-								"print",
-								"patch_new",
-								"patch",
-								"patch_check",
-								"patch_find",
-								"record_apply",
-								"patch_apply",
+								"_XOPEN_SOURCE",
+								"__POSIX_VISIBLE",
+								"__MISC_VISIBLE",
+								"BUFSIZE",
+								"__declspec",
+								"popen",
+								"popen",
+								"count_field_lengths",
+								"split_fields",
+								"process_status",
+								"read_mediathek_list",
+								"parse_time",
+								"format_num",
+								"format_time",
+								"parse_datetime",
+								"parse_anydate",
+								"format_datetime",
+								"make_url",
+								"new_mediathek_entry",
+								"create_mediathek_entry",
+								"delete_mediathek_entry",
+								"match_tokens",
+								"match_toklists",
+								"parse_entry",
+								"print_entry",
+								"output_entry",
+								"parse_mediathek_list",
 								"usage",
 								"main"
 							],
@@ -865,30 +802,30 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 12,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "lib/io/io_waituntil.c",
+					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 415,
+						"buffer_size": 88768,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								395,
-								408
+								61396,
+								61396
 							]
 						],
 						"settings":
@@ -898,438 +835,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 16,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "lib/io/io_waituntil2.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 17677,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6800,
-								6800
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2913.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 15,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/io.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5317,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2565,
-								2577
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 951.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "lib/io/io_timeouted.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 763,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								35,
-								35
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 17,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/io/io_close.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 745,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								126,
-								126
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 18,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "tcping.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6714,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/elf.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 61283,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/rangecheck.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8630,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "elflist.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 15091,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5986,
-								5986
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1659.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "hexedit.vcxproj",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 66036,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/XML/XML.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "lib/buffer/buffer_mmapread_fd.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 369,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								127,
-								168
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "hexedit.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10324,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7223,
-								7223
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3551.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "lib/mmap.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1231,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1147,
-								1160
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "lib/stralloc/mmap_filename.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2619,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								972,
-								975
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 35550.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
-					"file": "torrent-progress.c",
+					"buffer": 2,
+					"file": "mediathek-list.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6727,
+						"buffer_size": 15938,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1474,
-								1470
+								3129,
+								3148
 							]
 						],
 						"settings":
@@ -1339,94 +865,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 774.0,
+						"translation.y": 1314.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "crc32.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 565,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								66,
-								66
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 18,
-					"file": "lib/buffer/buffer_mmapread.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 341,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								108,
-								108
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 19,
-					"file": "lib/range.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1158,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
