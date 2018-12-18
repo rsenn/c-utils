@@ -2795,9 +2795,9 @@ set_compiler_type(const char* compiler) {
   set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o \"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   if(build_type == BUILD_TYPE_DEBUG) {
-    push_var("DEFS", "-DDEBUG=1");
+    push_var("CPPFLAGS", "-DDEBUG=1");
   } else {
-    push_var("DEFS", "-DNDEBUG=1");
+    push_var("CPPFLAGS", "-DNDEBUG=1");
     push_var("CFLAGS", build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
   }
 
@@ -2940,7 +2940,10 @@ set_compiler_type(const char* compiler) {
     }
 
     set_command(&lib_command, "$(AR) rcs $@", "$^");
-    set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
+    //set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
+    set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@", "$^ $(LIBS)");
+  
+    binext = "";
 
     format_linklib_fn = &format_linklib_switch;
 
