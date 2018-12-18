@@ -870,14 +870,15 @@ new_source(const char* name) {
 void
 add_source(const char* filename, strarray* sources) {
   if(str_end(filename, ".c") || str_end(filename, ".h")) {
-    stralloc sa;
-    stralloc_init(&sa);
-    stralloc_copys(&sa, filename);
-    //    stralloc_replacec(&sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
-    
-    strarray_push_sa_unique(sources, &sa);
+    strarray_push_unique(sources, filename);
+    /*    stralloc sa;
+        stralloc_init(&sa);
+        stralloc_copys(&sa, filename);
+        //    stralloc_replacec(&sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
-    stralloc_free(&sa);
+        strarray_push_sa_unique(sources, &sa);
+
+        stralloc_free(&sa);*/
   }
 }
 
@@ -893,7 +894,9 @@ get_sources(const char* basedir, strarray* sources) {
   if(!rdir_open(&rdir, basedir)) {
     const char* s;
 
-    while((s = rdir_read(&rdir))) add_source(s, sources);
+    while((s = rdir_read(&rdir))) {
+      add_source(s, sources);
+    }
   }
 }
 
@@ -2412,7 +2415,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])

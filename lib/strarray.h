@@ -33,6 +33,7 @@ char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);
 
 #define strarray_contains(a, s) (strarray_index_of((a),(s))!=-1)
+#define strarray_push_unique(a, s) do { if(!strarray_contains((a),(s)))  strarray_push((a),(s)); } while(0)
 
 int64 strarray_index_of(strarray*, const char* s);
 char* strarray_pop(strarray*, char* s);

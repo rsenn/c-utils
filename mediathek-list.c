@@ -77,7 +77,7 @@ const char* const mediathek_urls[] = {
 };
 
 const char* const mediathek_url = "http://127.0.0.1/Filmliste-akt.xz";
-//http://verteiler1.mediathekview.de/Filmliste-akt.xz";
+// http://verteiler1.mediathekview.de/Filmliste-akt.xz";
 
 static unsigned long min_length;
 static int debug;
@@ -106,45 +106,36 @@ count_field_lengths(strlist* sl, int lengths[21]) {
 
 int
 split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
-  int ret = 0;
-  char buf2[4096];
-  char* p = buf;
-  char* end = buf + n;
+
+  size_t i;
+  size_t offs = byte_finds(buf, n, "[\"");
+
+  if(offs == n)
+    return 0;
+
+  buf += offs + 2;
+  n -= offs + 2;
 
   strlist_zero(sl);
 
-  for(;;) {
-    size_t n = 0;
-    while(p < end && *p != '"') ++p;
+  for(i = 0; n; ++i) {
+    offs = byte_finds(buf, n, "\",\"");
 
-    if(p == end)
+    if(offs == 0) {
+      const char* p = strlist_at(prev, i);
+      strlist_push(sl, p ? p : "");
+    } else {
+      strlist_pushb(sl, buf, offs);
+    }
+
+    if(offs == n)
       break;
 
-    ++p;
-
-    while(p < end) {
-
-      if(*p == '\\' && p[1] == '"') {
-        ++p;
-      } else {
-        if(*p == '"') {
-          ++p;
-          break;
-        }
-      }
-
-      buf2[n++] = *p++;
-    }
-
-    if(ret >= 1 && ret <= 2 && n == 0) {
-      strlist_push(sl, strlist_at(prev, ret));
-    } else {
-      strlist_pushb(sl, buf2, n);
-    }
-    ret++;
+    buf += offs + 3;
+    n -= offs + 3;
   }
 
-  return ret;
+  return i;
 }
 
 void
@@ -169,20 +160,25 @@ process_status(void) {
  * @return
  */
 int
-read_mediathek_list(const char* url) {
+read_mediathek_list(const char* url, buffer* b) {
 
-  http h;
+  static buffer in;
+  static http h;
 
   http_init(&h, "127.0.0.1", 80);
 
   http_get(&h, url);
 
+  buffer_init(&in, http_read, &h, malloc(8192), 8192);
+  in.deinit = &buffer_free;
+  buffer_lzma(b, &in, 0);
+
   for(;;) {
     fd_t fd;
     int doread = 0;
-    char buf[8192];
-    ssize_t n;
-
+    /*ssize_t n;
+    char dbuf[8192];
+*/
     io_wait();
 
     while((fd = io_canwrite()) != -1) {
@@ -198,65 +194,71 @@ read_mediathek_list(const char* url) {
     while((fd = io_canread()) != -1) {
       if(h.sock == fd) {
         doread = 1;
-      }
-    }
-
-    while((n = http_read(&h, buf, sizeof(buf))) > 0) {
-
-      if(n > 0) {
-        buffer_puts(buffer_2, "Read ");
-        buffer_putulong(buffer_2, n);
-        buffer_puts(buffer_2, " bytes");
-        buffer_putnlflush(buffer_2);
-
-      } else if(n == -1 || h.response->status == HTTP_STATUS_ERROR) {
-        errmsg_warnsys("read error: ", 0);
-        return 1;
+        return 0;
       }
     }
   }
-
   /*
-    stralloc cmd;
-    stralloc_init(&cmd);
-    stralloc_copys(&cmd, "curl -s ");
-    stralloc_cats(&cmd, url);
-    stralloc_cats(&cmd, "| xzcat");
-    stralloc_0(&cmd);
+      while((n = buffer_get(&decompress, dbuf, sizeof(dbuf))) > 0) {
 
-    {
-      static FILE* pfd;
+        if(n > 0) {
+          buffer_puts(buffer_2, "Read ");
+          buffer_putulong(buffer_2, n);
+          buffer_puts(buffer_2, " bytes");
+          buffer_putnlflush(buffer_2);
 
-      if((pfd = (void*)popen(cmd.s, "r")) == 0)
-        return -1;
+          write(1, dbuf, n);
 
-      return fileno(pfd);
-    }*/
+        } else if(n == -1 || h.response->status == HTTP_STATUS_ERROR) {
+          errmsg_warnsys("read error: ", 0);
+          return 1;
+        }
+      }
+    }
+
+    /*
+      stralloc cmd;
+      stralloc_init(&cmd);
+      stralloc_copys(&cmd, "curl -s ");
+      stralloc_cats(&cmd, url);
+      stralloc_cats(&cmd, "| xzcat");
+      stralloc_0(&cmd);
+
+      {
+        static FILE* pfd;
+
+        if((pfd = (void*)popen(cmd.s, "r")) == 0)
+          return -1;
+
+        return fileno(pfd);
+      }*/
 }
 
 /* Parses a time in HH:MM:SS format and returns seconds */
 unsigned long
 parse_time(const char* s) {
   size_t r = 0;
-  unsigned short n;
-  size_t l;
+  if(s) {
+    unsigned short n;
+    size_t l;
 
-  if(s == 0)
-    return 0;
+    if(s == 0)
+      return 0;
 
-  for(;;) {
-    l = scan_ushort(s, &n);
-    if(l == 0)
-      break;
-    r += n;
-    s += l;
-    if(*s == ':') {
-      r *= 60;
-      ++s;
-      continue;
+    for(;;) {
+      l = scan_ushort(s, &n);
+      if(l == 0)
+        break;
+      r += n;
+      s += l;
+      if(*s == ':') {
+        r *= 60;
+        ++s;
+        continue;
+      }
+      if(*s == '\0')
+        break;
     }
-    if(*s == '\0')
-      break;
   }
   return r;
 }
@@ -311,19 +313,28 @@ parse_datetime(const char* s, const char* fmt) {
 time_t
 parse_anydate(const char* s) {
   const char* fmt;
-  size_t len = str_len(s);
-  if(len != 8) /* len - str_rchr(s, '.') == 4) */
-    fmt = "%d.%m.%Y";
-  else
-    fmt = "%Y%m%d";
-  return parse_datetime(s, fmt);
+  if(s) {
+    size_t len = str_len(s);
+    if(len != 8) /* len - str_rchr(s, '.') == 4) */
+      fmt = "%d.%m.%Y";
+    else
+      fmt = "%Y%m%d";
+    return parse_datetime(s, fmt);
+  }
+  return 0;
 }
 
 char*
 format_datetime(size_t t, const char* fmt) {
   static char buf[1024];
-  time_t tm = t;
-  /*size_t n =*/strftime(buf, sizeof(buf), fmt, localtime(&tm));
+  time_t tim = t;
+  struct tm* tms;
+
+  tms = localtime(&tim);
+  if(tms == 0)
+    return "(invalid time)";
+
+  /*size_t n =*/strftime(buf, sizeof(buf), fmt, tms);
 
   return buf; /*  buffer_put(b, buf, n); */
 }
@@ -484,27 +495,29 @@ mediathek_entry_t*
 parse_entry(strlist* sl) {
 
   mediathek_entry_t* ret;
-  time_t dt = parse_anydate(strlist_at(sl, 4));
+  time_t dt = parse_anydate(strlist_at(sl, 3));
 
-  time_t tm = parse_time(strlist_at(sl, 5));
-  time_t dr = parse_time(strlist_at(sl, 6)); /* duration */
+  time_t tm = parse_time(strlist_at(sl, 4));
+  time_t dr = parse_time(strlist_at(sl, 5)); /* duration */
 
   if((unsigned)dr < min_length)
     return 0;
   {
     unsigned int mbytes = 0;
-    const char* mb = strlist_at(sl, 7);
+    const char* mb = strlist_at(sl, 6);
     if(mb)
       scan_uint(mb, &mbytes);
 
     {
-      const char* desc = strlist_at(sl, 8);
-      const char* url = strlist_at(sl, 9);
-      const char* link = strlist_at(sl, 10);
+      const char* desc = strlist_at(sl, 7);
+      const char* url = strlist_at(sl, 8);
+      const char* link = strlist_at(sl, 9);
 
-      ret = create_mediathek_entry(strlist_at(sl, 1),
+if(!desc || !url) return 0;
+
+      ret = create_mediathek_entry(strlist_at(sl, 0),
+                                   strlist_at(sl, 1),
                                    strlist_at(sl, 2),
-                                   strlist_at(sl, 3),
 
                                    desc,
                                    url,
@@ -527,8 +540,8 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm_internal(b, "Kanal:\t", e->channel.s /*strlist_at(sl, 1)*/, sep, 0);
-  buffer_putm_internal(b, "Thema:\t", e->topic.s /*strlist_at(sl, 2)*/, sep, 0);
+  buffer_putm_internal(b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, 0);
+  buffer_putm_internal(b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, 0);
   buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, 0);
 
   buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, 0);
@@ -568,34 +581,33 @@ output_entry(buffer* b, strlist* sl) {
 }
 
 int
-parse_mediathek_list(int fd) {
+parse_mediathek_list(buffer* inbuf) {
   char buf[1024];
   static char buf2[BUFSIZE];
   size_t matched = 0, total = 0;
   ssize_t ret, ret2;
   strlist prev, prevout, sl;
-  buffer b;
-  buffer_init(&b, (buffer_op_proto*)&read, fd, buf, sizeof(buf));
 
   strlist_init(&prev, '\0');
   strlist_init(&prevout, '\0');
 
   buffer_put(buffer_1, "{\n", 2);
 
-  while((ret = buffer_get_token(&b, buf2, sizeof(buf2), "]", 1)) > 0) {
+  while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
 
     for(;;) {
       if(ret + 1 >= BUFSIZE)
         break;
-      buf2[ret++] = ']';
-      ret2 = buffer_get(&b, &buf2[ret], 1);
+      // buf2[ret++] = ']';
+      //  ++ret;
+      ret2 = buffer_get(inbuf, &buf2[ret], 1);
       if(ret2 > 0) {
 
         if(ret > 1 && buf2[ret - 2] == '"' && buf2[ret] == ',')
           break;
 
         ret += ret2;
-        ret2 = buffer_get_token(&b, &buf2[ret], sizeof(buf2) - ret, "]", 1);
+        ret2 = buffer_get_token(inbuf, &buf2[ret], sizeof(buf2) - ret, "]", 1);
         if(ret2 > 0)
           ret += ret2;
       }
@@ -618,6 +630,7 @@ parse_mediathek_list(int fd) {
         }
 
         output_entry(buffer_1, &sl);
+    //    strlist_free(&prevout);
         prevout = sl;
       }
 
@@ -625,6 +638,7 @@ parse_mediathek_list(int fd) {
       e = 0;
     }
 
+  //  strlist_free(&prev);
     prev = sl;
   }
 
@@ -667,6 +681,7 @@ int
 main(int argc, char* argv[]) {
 
   int opt;
+  static buffer in;
 
   min_length = 0;
 
@@ -723,5 +738,8 @@ main(int argc, char* argv[]) {
   if(argv0[str_rchr(argv0, '/')] != '\0')
     argv0 += str_rchr(argv0, '/') + 1;
 
-  return parse_mediathek_list(read_mediathek_list(mediathek_url));
+  if(!read_mediathek_list(mediathek_url, &in)) {
+    return parse_mediathek_list(&in);
+  }
+  return 1;
 }

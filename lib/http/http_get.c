@@ -84,5 +84,9 @@ http_get(http* h, const char* location) {
       errno = 0;
     }
   }
+
+  io_wantwrite(h->sock);
+  io_wantread(h->sock);
+
   return ret == 0;
 }
