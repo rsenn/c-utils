@@ -3018,7 +3018,7 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "-Wl,-subsystem=console");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
-      push_var("LDFLAGS", "-Wl,-file-alignment=16");
+//      push_var("LDFLAGS", "-Wl,-file-alignment=16");
 
     push_var("CFLAGS", "-Wall");
     push_var("CPPFLAGS", "-D__TCC__=1");

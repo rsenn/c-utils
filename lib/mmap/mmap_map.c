@@ -16,7 +16,7 @@
 char*
 mmap_map(fd_t fd, size_t sz, uint64 offset) {
 #if WINDOWS_NATIVE
-  HANDLE h = (HANDLE)_get_osfhandle(fd);
+  HANDLE h = (HANDLE)_get_osfhandle((int)fd);
   HANDLE m;
   DWORD szl, szh;
   char* map;

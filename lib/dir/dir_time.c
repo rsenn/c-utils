@@ -32,14 +32,14 @@ dir_time(struct dir_s* d, int type) {
 
   lstat(name, &st);
 
-  switch (unsigned longype) {
+  switch (type) {
     case D_TIME_CREATION: r = st.st_ctime; break;
     case D_TIME_ACCESS: r = st.st_atime; break;
     case D_TIME_MODIFICATION: r = st.st_mtime; break;
   }
 #elif WINDOWS
-  switch (unsigned longype) {
-    case D_TIME_CREATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftCreationTime); breake
+  switch (type) {
+    case D_TIME_CREATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftCreationTime); break;
     case D_TIME_ACCESS: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastAccessTime); break;
     case D_TIME_MODIFICATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime); break;
   }
