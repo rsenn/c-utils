@@ -12,29 +12,29 @@ size_t http_read_internal(http* h, char* buf, size_t len);
 
 static void
 putnum(const char* what, ssize_t n) {
-  buffer_puts(buffer_1, what);
-  buffer_puts(buffer_1, ": ");
-  buffer_putlonglong(buffer_1, n);
-  buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_2, what);
+  buffer_puts(buffer_2, ": ");
+  buffer_putlonglong(buffer_2, n);
+  buffer_putnlflush(buffer_2);
 }
 
 static void
 putline(const char* what, const char* b, ssize_t l, buffer* buf) {
-  buffer_puts(buffer_1, what);
-  buffer_puts(buffer_1, "[");
-  buffer_putulong(buffer_1, l <= 0 ? -l : l);
-  buffer_puts(buffer_1, "]");
-  buffer_puts(buffer_1, ": ");
+  buffer_puts(buffer_2, what);
+  buffer_puts(buffer_2, "[");
+  buffer_putulong(buffer_2, l <= 0 ? -l : l);
+  buffer_puts(buffer_2, "]");
+  buffer_puts(buffer_2, ": ");
   if(l <= 0)
-    buffer_puts(buffer_1, b);
+    buffer_puts(buffer_2, b);
   else {
-    while(l-- > 0) buffer_put(buffer_1, b++, 1);
+    while(l-- > 0) buffer_put(buffer_2, b++, 1);
   }
   /*
-  buffer_puts(buffer_1, " (bytes in recvb: ");
-  buffer_putulong(buffer_1, buf->n - buf->p);
-  buffer_puts(buffer_1, ")");*/
-  buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_2, " (bytes in recvb: ");
+  buffer_putulong(buffer_2, buf->n - buf->p);
+  buffer_puts(buffer_2, ")");*/
+  buffer_putnlflush(buffer_2);
 }
 
 ssize_t
@@ -44,15 +44,15 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
   s = io_tryread(fd, buf, len);
-  /*  buffer_puts(buffer_1, "io_tryread(");
-    buffer_putlong(buffer_1, fd);
-    buffer_puts(buffer_1, ", ");
-    buffer_putptr(buffer_1, buf);
-    buffer_puts(buffer_1, ", ");
-    buffer_putulong(buffer_1, len);
-    buffer_puts(buffer_1, ") = ");
-    buffer_putlong(buffer_1, s);
-    buffer_putnlflush(buffer_1);*/
+  /*  buffer_puts(buffer_2, "io_tryread(");
+    buffer_putlong(buffer_2, fd);
+    buffer_puts(buffer_2, ", ");
+    buffer_putptr(buffer_2, buf);
+    buffer_puts(buffer_2, ", ");
+    buffer_putulong(buffer_2, len);
+    buffer_puts(buffer_2, ") = ");
+    buffer_putlong(buffer_2, s);
+    buffer_putnlflush(buffer_2);*/
   if(s == 0) {
     r->status = HTTP_STATUS_CLOSED;
   } else if(s == -1) {
@@ -198,7 +198,7 @@ h = bf->cookie;
     }
     if(b->n - b->p > bytes)
       //putnum("growbuf", (b->n - b->p) - bytes);
-    //buffer_dump(buffer_1, b);
+    //buffer_dump(buffer_2, b);
     if(h->response->status != HTTP_RECV_DATA)
       break;
     if(n + r->ptr > r->content_length)

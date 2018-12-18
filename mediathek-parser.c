@@ -93,7 +93,7 @@ read_line(char* s, size_t len, strlist* fields, array* x) {
     p[4] = ',';
   }
 
-  strlist_fromb(fields, p, end - p, "\",\"");
+  strlist_fromb(fields, p, end - p, "\", \"");
 
   for(; p < end; ++p /*, escaped = 0*/) {
     if(*p == '\\') {
@@ -214,7 +214,7 @@ process_entry(char** av, int ac) {
   if(!str_start(av[0], "\"X"))
     return 0;
 
-  while(ac > 0 && !(str_len(av[5]) == 8 && str_len(av[6]) == 8)) {
+  while(ac > 6 && !(str_len(av[4]) == 10 && str_len(av[6]) == 8)) {
     av++;
     ac--;
   }
@@ -400,7 +400,7 @@ process_input(buffer* input) {
             buffer_putnlflush(buffer_2);
     */
 
-    {
+    if(fields.sa.s) {
       char** v = strlist_to_argv(&fields);
       int c = strlist_count(&fields);
 
