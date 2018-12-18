@@ -27,12 +27,13 @@ io_passfd(fd_t sock, fd_t fd) {
 #define _XOPEN_SOURCE_EXTENDED 1
 #endif
 #include "../io_internal.h"
-#include <errno.h>
 #include "../typedefs.h"
+#include "../byte.h"
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/uio.h>
+#include <errno.h>
 
 union fdmsg {
   struct cmsghdr h;

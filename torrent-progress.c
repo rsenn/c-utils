@@ -1,3 +1,11 @@
+#define _LARGEFILE64_SOURCE 1
+#define _LARGEFILE_SOURCE 1
+#define _GNU_SOURCE 1
+#define _FILE_OFFSET_BITS 64
+
+#define _LARGEFILE_SOURCE 1
+#define _GNU_SOURCE 1
+
 #include "lib/windoze.h"
 #include "lib/uint64.h"
 #include "lib/buffer.h"
@@ -13,13 +21,6 @@
 //#if WINDOWS_NATIVE
 //#define snprintf _snprintf
 //#endif
-
-#define _LARGEFILE_SOURCE 1
-#define _GNU_SOURCE 1
-#define _FILE_OFFSET_BITS 64
-
-#define _LARGEFILE_SOURCE 1
-#define _GNU_SOURCE 1
 
 #include <errno.h>
 #include <fcntl.h>

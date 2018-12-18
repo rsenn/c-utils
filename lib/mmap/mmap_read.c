@@ -1,3 +1,4 @@
+#define _LARGEFILE64_SOURCE
 #include "../windoze.h"
 #include "../io_internal.h"
 #include "../mmap.h"

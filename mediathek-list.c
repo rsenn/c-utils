@@ -79,7 +79,7 @@ const char* const mediathek_urls[] = {
     "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
-const char* const mediathek_url = "http://127.0.0.1/Filmliste-akt.xz";
+const char* mediathek_url = "http://127.0.0.1/Filmliste-akt.xz";
 // http://verteiler1.mediathekview.de/Filmliste-akt.xz";
 
 static unsigned long min_length;
@@ -695,6 +695,7 @@ usage(char* argv0) {
                        "\n",
                        "Options\n",
                        "  -h, --help                show this help\n",
+                       "  -u, --url=URL             set URL\n",
                        "  -F                        date/time format\n",
                        "  -t HH:MM:SS               minimum length\n",
                        "  -i KEYWORD                include entries matching\n",
@@ -714,10 +715,11 @@ main(int argc, char* argv[]) {
 
   errmsg_iam(argv[0]);
 
-  while((opt = getopt(argc, argv, "F:dt:i:x:h")) != -1) {
+  while((opt = getopt(argc, argv, "u:F:dt:i:x:h")) != -1) {
     switch(opt) {
       case 'h': usage(argv[0]); return 0;
       case 'F': dt_fmt = optarg; break;
+      case 'u': mediathek_url = optarg; break;
       case 'd': debug++; break;
       case 't': min_length = parse_time(optarg); break;
       case 'i': strlist_push(&include, optarg); break;
