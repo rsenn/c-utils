@@ -32,7 +32,7 @@ typedef array strarray;
 char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);
 
-#define strarray_contains(a, s) (strarray_index_of((a),(s))==-1)
+#define strarray_contains(a, s) (strarray_index_of((a),(s))!=-1)
 
 int64 strarray_index_of(strarray*, const char* s);
 char* strarray_pop(strarray*, char* s);
@@ -43,7 +43,7 @@ int strarray_set(strarray*, size_t index, const char* s);
 
 #ifdef STRALLOC_H
 #define strarray_push_sa_unique(a,sa) do { if(!strarray_contains_sa((a),(sa)))  strarray_push_sa((a),(sa)); } while(0)
-#define strarray_contains_sa(a, sa) (strarray_index_of_sa((a),(sa))==-1)
+#define strarray_contains_sa(a, sa) (strarray_index_of_sa((a),(sa))!=-1)
 
 int strarray_push_sa(strarray* a, const stralloc* sa);
 int64 strarray_index_of_sa(strarray*, const stralloc* sa);
