@@ -39,7 +39,8 @@ xml_dump(xmlnode* n, buffer* b) {
       xml_print_attributes(n->attributes, b, ", ", ":", "");
     }
     buffer_putnlflush(b);
-    if(n->children) xml_dump(n->children, b);
+    if(n->children)
+      xml_dump(n->children, b);
   } while((n = n->next));
 }
 

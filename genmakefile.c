@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <sys/stat.h>
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -80,6 +81,11 @@ enum {
   BUILD_TYPE_DEBUG,
 };
 
+void debug_int(const char* name, int i);
+void debug_sa(const char* name, stralloc* sa);
+void debug_sl(const char* name, const strlist* l);
+void debug_s(const char* name, const char* s);
+
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 
 typedef void(linklib_fmt)(const char*, stralloc*);
@@ -93,6 +99,7 @@ static const char* binext = DEFAULT_EXEEXT;
 
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 static const char* comment = "#";
+static const char* cross_compile = "";
 
 static strlist builddir, workdir;
 static stralloc srcdir;
@@ -112,6 +119,34 @@ static linklib_fmt* format_linklib_fn;
 
 static int inst_bins, inst_libs;
 static int cygming;
+
+int
+mkdir_sa(const stralloc* dir, int mode) {
+  stralloc sa;
+  stralloc_init(&sa);
+  stralloc_copy(&sa, dir);
+  if(stralloc_endb(&sa, &pathsep_make, 1))
+    sa.len -= 1;
+  stralloc_nul(&sa);
+  return mkdir(sa.s, mode);
+}
+
+int
+mkdir_components(strlist* dir, int mode) {
+  int ret = 0;
+  size_t i, n = strlist_count(dir);
+
+  for(i = 1; i <= n; ++i) {
+    strlist r = strlist_range(dir, 0, i);
+
+#ifdef DEBUG
+    debug_sa("mkdir_components", &r.sa);
+#endif
+    if(mkdir_sa(&r.sa, mode) == -1)
+      ret |= -1;
+  }
+  return ret;
+}
 
 void
 stralloc_weak(stralloc* out, const stralloc* from) {
@@ -814,16 +849,19 @@ add_path(strlist* list, const char* path) {
  */
 void
 add_srcpath(strlist* list, const char* path) {
-  size_t i, len = str_len(path);
-
   if(srcdir.len && !stralloc_equals(&srcdir, ".")) {
-    strlist_push_sa(list, &srcdir);
+    stralloc sa;
+    stralloc_init(&sa);
 
+    stralloc_copy(&sa, &srcdir);
     if(!stralloc_endb(&srcdir, &pathsep_make, 1))
-      stralloc_catc(&list->sa, pathsep_make);
-    stralloc_cats(&list->sa, path);
+      stralloc_catc(&sa, pathsep_make);
+    stralloc_cats(&sa, path);
+
+    strlist_push_unique_sa(list, &sa);
+    stralloc_free(&sa);
   } else {
-    strlist_push(list, path);
+    strlist_push_unique(list, path);
   }
 }
 
@@ -1821,16 +1859,17 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
 
     target.len = len;
 
-    stralloc_copys(&srcs, src->name);
-    path_wildcard(&srcs, "*");
+    stralloc_zero(&srcs);
+    path_prefix_s(&srcdir, src->name, &srcs);
+    path_wildcard(&srcs, "%");
     stralloc_replacec(&srcs, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
     stralloc_zero(&obj);
     path_object(src->name, &obj);
 
     if(str_start(make, "g") || ((shell | batch) && batchmode)) {
-      stralloc_cats(&target, src->name);
-      path_wildcard(&target, "%");
+      stralloc_cat(&target, &srcs);
+      // path_wildcard(&target, "%");
     } else if(batchmode) {
       stralloc_zero(&target);
       stralloc_catm_internal(&target, "{", dir, "}", ext, "{", workdir.sa.s, "}", objext, ":", 0);
@@ -1840,12 +1879,14 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
 
     if((rule = get_rule_sa(&target))) {
 
-      if(rule->recipe.s == 0)
+      if(rule->recipe.s == 0) {
         strlist_zero(&rule->output);
+        strlist_zero(&rule->prereq);
+      }
 
       add_path_sa(&rule->output, &obj);
 
-      add_srcpath(&rule->prereq, srcs.s);
+      // add_srcpath(&rule->prereq, srcs.s);
 
       if(rule->recipe.s)
         continue;
@@ -1886,7 +1927,9 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
   stralloc_free(&obj);
   stralloc_free(&target);
 
+#ifdef DEBUG_OUTPUT
   dump_rule(rule);
+#endif
 
   return rule;
 }
@@ -1990,7 +2033,9 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
     stralloc_weak(&rule->recipe, &lib_command);
 
+#ifdef DEBUG_OUTPUT
     dump_rule(rule);
+#endif
   }
 
   stralloc_free(&sa);
@@ -2417,7 +2462,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])
@@ -2523,8 +2568,10 @@ output_all_rules(buffer* b, HMAP_DB* hmap) {
     target* rule = t->vals.val_custom;
     const char* name = t->key;
 
+#ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "Outputting rule '", name, "'", newline, 0);
     buffer_flush(buffer_2);
+#endif
 
     if(ninja)
       output_ninja_rule(b, t->vals.val_custom);
@@ -3018,9 +3065,9 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "-Wl,-subsystem=console");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
-//      push_var("LDFLAGS", "-Wl,-file-alignment=16");
+      //      push_var("LDFLAGS", "-Wl,-file-alignment=16");
 
-    push_var("CFLAGS", "-Wall");
+      push_var("CFLAGS", "-Wall");
     push_var("CPPFLAGS", "-D__TCC__=1");
 
     set_command(&lib_command, "$(AR) rcs $@", "$^");
@@ -3273,6 +3320,7 @@ main(int argc, char* argv[]) {
                            {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
                            {"define", 0, NULL, 'D'},
                            {"build-as-lib", 0, 0, 'L'},
+                           {"cross", 0, 0, 'c'},
                            {0}};
 
   errmsg_iam(argv[0]);
@@ -3281,7 +3329,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:c:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -3292,6 +3340,7 @@ main(int argc, char* argv[]) {
         usage(argv[0]);
         ret = 0;
         goto exit;
+      case 'c': cross_compile = optarg; break;
       case 'o': outfile = optarg; break;
       case 'O': objext = optarg; break;
       case 'B': binext = optarg; break;
@@ -3337,19 +3386,8 @@ main(int argc, char* argv[]) {
   strlist_init(&builddir, pathsep_make);
   strlist_init(&workdir, pathsep_make);
 
-  if(dir) {
-    stralloc_copys(&builddir.sa, dir);
-  }
-
   if(outfile) {
     int fd;
-    if((fd = open_trunc(outfile)) == -1) {
-      errmsg_warnsys("ERROR: opening '", outfile, "'", 0);
-      ret = 2;
-      goto exit;
-    }
-    buffer_1->fd = fd;
-
     path_dirname(outfile, &outdir.sa);
 
     if(stralloc_equals(&outdir.sa, "."))
@@ -3357,7 +3395,22 @@ main(int argc, char* argv[]) {
     else
       stralloc_catc(&outdir.sa, pathsep_make);
 
+    mkdir_components(&outdir, 0755);
+
+    if((fd = open_trunc(outfile)) == -1) {
+      errmsg_warnsys("ERROR: opening '", outfile, "'", 0);
+      ret = 2;
+      goto exit;
+    }
+    buffer_1->fd = fd;
+
     //  path_absolute_sa(&outdir.sa);
+  }
+
+  if(dir) {
+    stralloc_copys(&builddir.sa, dir);
+  } else if(outdir.sa.len) {
+    stralloc_copy(&builddir.sa, &outdir.sa);
   }
 
   path_getcwd(&thisdir.sa);
@@ -3442,6 +3495,17 @@ main(int argc, char* argv[]) {
     goto exit;
   }
 
+  if(*cross_compile) {
+    set_var("CROSS_COMPILE", cross_compile);
+
+    if(isset("CC"))
+      stralloc_prepends(&get_var("CC")->sa, "$(CROSS_COMPILE)");
+    if(isset("CXX"))
+      stralloc_prepends(&get_var("CXX")->sa, "$(CROSS_COMPILE)");
+    if(isset("AR"))
+      stralloc_prepends(&get_var("AR")->sa, "$(CROSS_COMPILE)");
+  }
+
   batchmode = batch && stralloc_contains(&compile_command, "-Fo");
 
   if(batch)
@@ -3521,6 +3585,7 @@ main(int argc, char* argv[]) {
   debug_sa("tmp", &tmp);
 
   stralloc_replacec(&workdir.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+
   /*
     if(tmp.len) {
       stralloc_catc(&tmp, pathsep_make);

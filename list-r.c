@@ -344,7 +344,7 @@ make_num(stralloc* out, size_t num, size_t width) {
 
 static void
 print_strarray(buffer* b, array* a) {
-  size_t i, n = array_length(a, sizeof(char*));
+  size_t i, n = array_length(a, sizeof(char *));
   char** x = array_start(a);
   for(i = 0; i < n; ++i) {
     char* s = x[i];
@@ -358,7 +358,7 @@ print_strarray(buffer* b, array* a) {
 
 static int
 fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
-  size_t i, n = array_length(a, sizeof(char*));
+  size_t i, n = array_length(a, sizeof(char *));
   char** x = array_start(a);
   int ret = FNM_NOMATCH;
   for(i = 0; i < n; ++i) {
@@ -524,7 +524,7 @@ list_dir_internal(stralloc* dir, char type) {
     stralloc_readyplus(dir, str_len(name) + 1);
     str_copy(dir->s + dir->len, name);
     dir->len += str_len(name);
-      is_symlink = !!(dtype & D_SYMLINK);
+    is_symlink = !!(dtype & D_SYMLINK);
 #if !WINDOWS_NATIVE
     if(lstat(dir->s, &st) != -1) {
       if(root_dev && st.st_dev) {
@@ -532,7 +532,7 @@ list_dir_internal(stralloc* dir, char type) {
           continue;
         }
       }
-    } 
+    }
 #endif
 #if !WINDOWS_NATIVE
     if(S_ISLNK(st.st_mode)) {

@@ -26,12 +26,13 @@ buffer_copy(buffer* out, buffer* in) {
 void
 usage(char* argv0) {
   buffer_putm_internal(buffer_1,
-              "Usage: ",
-              argv0,
-              " [-o output] [infile or stdin]\n\n",
-              "  -1 ... -9           compression level; default is 3\n",
-              "\n",
-              "Supported types are:", 0);
+                       "Usage: ",
+                       argv0,
+                       " [-o output] [infile or stdin]\n\n",
+                       "  -1 ... -9           compression level; default is 3\n",
+                       "\n",
+                       "Supported types are:",
+                       0);
 #ifdef HAVE_ZLIB
   buffer_puts(buffer_1, " gz");
 #endif
@@ -56,13 +57,17 @@ typedef enum compression_type {
 
 compression_type
 compression_from_ext(const char* ext) {
-  if(str_case_equal(ext, "gz") || str_case_equal(ext, "tgz")) return C_GZ;
+  if(str_case_equal(ext, "gz") || str_case_equal(ext, "tgz"))
+    return C_GZ;
 
-  if(str_case_equal(ext, "bz2") || str_case_equal(ext, "tbz2") || str_case_equal(ext, "tbz")) return C_BZ2;
+  if(str_case_equal(ext, "bz2") || str_case_equal(ext, "tbz2") || str_case_equal(ext, "tbz"))
+    return C_BZ2;
 
-  if(str_case_equal(ext, "xz") || str_case_equal(ext, "txz")) return C_XZ;
+  if(str_case_equal(ext, "xz") || str_case_equal(ext, "txz"))
+    return C_XZ;
 
-  if(str_case_equal(ext, "lzma")) return C_LZMA;
+  if(str_case_equal(ext, "lzma"))
+    return C_LZMA;
 
   return C_UNKNOWN;
 }
@@ -70,7 +75,8 @@ compression_from_ext(const char* ext) {
 compression_type
 compression_from_filename(const char* fn) {
   const char* ext = fn + str_rchr(fn, '.');
-  if(*ext) return compression_from_ext(++ext);
+  if(*ext)
+    return compression_from_ext(++ext);
   return C_UNKNOWN;
 }
 
@@ -109,7 +115,8 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(argv[optind]) in_filename = argv[optind];
+  if(argv[optind])
+    in_filename = argv[optind];
 
   if(str_equal(in_filename, "-")) {
     input = buffer_0;
@@ -122,7 +129,8 @@ main(int argc, char* argv[]) {
     input = &infile;
     if(in_type == C_UNKNOWN) {
       in_type = compression_from_filename(in_filename);
-      if(in_type != C_UNKNOWN) decompress = 1;
+      if(in_type != C_UNKNOWN)
+        decompress = 1;
     }
   }
 
@@ -135,7 +143,8 @@ main(int argc, char* argv[]) {
       return 1;
     }
     output = &outfile;
-    if(out_type == C_UNKNOWN) out_type = compression_from_filename(out_filename);
+    if(out_type == C_UNKNOWN)
+      out_type = compression_from_filename(out_filename);
   }
 
   type = decompress ? in_type : out_type;
@@ -154,7 +163,7 @@ main(int argc, char* argv[]) {
           buffer_gzip(&cbuf, out_filename, level);
       }
       break;
- #if 0
+#if 0
     case C_BZ2:
       if(decompress) {
         if(input == buffer_0)
@@ -168,7 +177,7 @@ main(int argc, char* argv[]) {
           buffer_bzip(&cbuf, out_filename, level);
       }
       break;
- #endif
+#endif
     /*    case C_XZ: */
     /*    case C_LZMA: */
     /*      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); */

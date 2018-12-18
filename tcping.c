@@ -29,6 +29,7 @@
 #include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/socket.h"
+#include "lib/socket_internal.h"
 #include "lib/ndelay.h"
 #include "lib/unix.h"
 #include "lib/errmsg.h"

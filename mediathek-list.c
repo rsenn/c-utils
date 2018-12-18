@@ -120,7 +120,8 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 
   for(i = 0; n; ++i) {
     offs = byte_finds(buf, n, "\",\"");
-    if(offs == n) offs = byte_finds(buf, n, "\"],");
+    if(offs == n)
+      offs = byte_finds(buf, n, "\"],");
 
     if(offs == 0) {
       const char* p = strlist_at(prev, i);
@@ -514,7 +515,8 @@ parse_entry(strlist* sl) {
       const char* url = strlist_at(sl, 8);
       const char* link = strlist_at(sl, 9);
 
-if(!desc || !url) return 0;
+      if(!desc || !url)
+        return 0;
 
       ret = create_mediathek_entry(strlist_at(sl, 0),
                                    strlist_at(sl, 1),
@@ -577,7 +579,7 @@ output_entry(buffer* b, strlist* sl) {
       buffer_PUTC(b, c);
     }
 
-    buffer_puts(b,  ((i + 1 < n) ? "\"," : "\" ]"));
+    buffer_puts(b, ((i + 1 < n) ? "\"," : "\" ]"));
   }
 }
 
@@ -594,7 +596,7 @@ parse_mediathek_list(buffer* inbuf) {
 
   buffer_put(buffer_1, "{\n", 2);
 
-    while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
+  while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
 
     for(;;) {
       if(ret + 1 >= BUFSIZE)
@@ -631,7 +633,7 @@ parse_mediathek_list(buffer* inbuf) {
         }
 
         output_entry(buffer_1, &sl);
-    //    strlist_free(&prevout);
+        //    strlist_free(&prevout);
         prevout = sl;
       }
 
@@ -639,7 +641,7 @@ parse_mediathek_list(buffer* inbuf) {
       e = 0;
     }
 
-  //  strlist_free(&prev);
+    //  strlist_free(&prev);
     prev = sl;
   }
 

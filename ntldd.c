@@ -303,7 +303,7 @@ build_dep_tree32or64(pe_loaded_image* img,
           continue;
         ith = pe_rva2ptr(img->base, uint32_get(&iid[i].first_thunk));
         oith = pe_rva2ptr(img->base, uint32_get(&iid[i].original_first_thunk));
-      
+
         for(j = 0; (impaddress = thunk_data_u1_function(img->base, ith, j, cfg)) != 0; j++) {
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
@@ -796,7 +796,6 @@ search_path(const char* filename) {
   stralloc_free(&sa);
   return ret;
 }
-
 
 int
 main(int argc, char** argv) {
