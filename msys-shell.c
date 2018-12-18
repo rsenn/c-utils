@@ -104,7 +104,7 @@ main(int argc, char* argv[]) {
 
       default:
         buffer_putm_internal(
-            buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `", argv[0], "\" --help' for more information");
+            buffer_2, "Unrecognized option `", argv[optind], "'\n", "Try `", argv[0], "\" --help' for more information");
         buffer_putnlflush(buffer_2);
         return 1;
     }

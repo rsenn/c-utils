@@ -319,10 +319,13 @@ path_wildcard(stralloc* sa, const char* wildchar) {
 
   stralloc_nul(sa);
 
-  x = sa->s + str_rchrs(sa->s, "/\\ ", 3);
+  x = sa->s;
 
-  if(*x)
-    ++x;
+  if(sa->s[(n = str_rchrs(sa->s, "/\\ ", 3))]) {
+    x += n;
+    if(*x)
+      ++x;
+  }
 
   n = x - sa->s;
   e = byte_rchr(x, sa->len - n, '.');
@@ -2409,7 +2412,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])

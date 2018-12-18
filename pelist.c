@@ -174,7 +174,7 @@ pe_dump_imports(uint8* base) {
 
     for(j = 0;; ++j) {
       const char* sym = NULL;
-      uint16 ordinal;
+      uint16 ordinal = 0;
       int64 rva;
 
       if(!(rva = pe_thunk(base, thunk, j)))

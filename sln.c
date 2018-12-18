@@ -18,6 +18,8 @@
 #include <unistd.h>
 #endif
 
+static int verbose;
+
 extern int symlink(const char*, const char*);
 
 int
@@ -69,6 +71,11 @@ mklink(char* target, char* link) {
     unlink(link);
   }
 
+  if(verbose) {
+    buffer_putm_internal(buffer_2, "'", link, "' -> '", target, "'", 0);
+    buffer_putnlflush(buffer_2);
+  }
+
   return symlink(path_basename(target), link);
 }
 
@@ -84,10 +91,12 @@ mklink_sa(stralloc* target, stralloc* link) {
     stralloc_insertb(target, link->s, 0, len);
   }
 
+  /*if(verbose) {
   buffer_putsa(buffer_2, link);
   buffer_puts(buffer_2, " -> ");
   buffer_putsa(buffer_2, target);
   buffer_putnlflush(buffer_2);
+  }*/
 
   stralloc_nul(target);
   return mklink(target->s, link->s);
@@ -145,7 +154,6 @@ usage(char* av0) {
 int
 main(int argc, char* argv[]) {
   int index = 0, c;
-  static int verbose;
   static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0}};
 
   errmsg_iam(argv[0]);

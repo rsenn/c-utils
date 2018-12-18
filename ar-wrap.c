@@ -1,6 +1,7 @@
 #include "lib/windoze.h"
 #include "lib/strlist.h"
 #include "lib/strarray.h"
+#include "lib/open.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/path_internal.h"
@@ -10,7 +11,6 @@
 #include "lib/byte.h"
 #include "lib/mmap.h"
 #include "lib/scan.h"
-#include "lib/open.h"
 
 #if WINDOWS
 #define EXEEXT ".exe"

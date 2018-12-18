@@ -18,6 +18,7 @@
 #include "lib/errmsg.h"
 #include "lib/unix.h"
 #include "lib/http.h"
+#include "lib/io.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -75,7 +76,8 @@ const char* const mediathek_urls[] = {
     "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
-const char* const mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
+const char* const mediathek_url = "http://127.0.0.1/Filmliste-akt.xz";
+//http://verteiler1.mediathekview.de/Filmliste-akt.xz";
 
 static unsigned long min_length;
 static int debug;
@@ -161,12 +163,17 @@ process_status(void) {
 #endif
 }
 
+/**
+ * @brief read_mediathek_list  Reads Mediathek list from HTTP server
+ * @param url
+ * @return
+ */
 int
 read_mediathek_list(const char* url) {
 
   http h;
 
-  http_init(&h, NULL, 80);
+  http_init(&h, "127.0.0.1", 80);
 
   http_get(&h, url);
 

@@ -428,7 +428,6 @@ int
 build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root, struct dep_tree_element* self) {
   pe_loaded_image loaded_image;
   pe_loaded_image* img;
-  pe_dos_header* dos;
   unsigned char* hmod = 0;
   char success = 0;
 
@@ -441,7 +440,6 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   if(cfg->on_self) {
     // if(self->resolved_module == NULL)    self->resolved_module = str_dup(name);
 
-    dos = (pe_dos_header*)hmod;
     loaded_image.file_header = pe_header_nt(hmod);
     loaded_image.sections = pe_header_sections(hmod, &loaded_image.number_of_sections);
     loaded_image.base = (void*)hmod;
@@ -699,7 +697,7 @@ print_image_links(int first,
  */
 int
 registry_query(const char* key, const char* value, stralloc* sa) {
-  HKEY hkey;
+  HKEY hkey = 0;
   DWORD len, ret, type;
   typedef LONG(WINAPI reggetvalue_fn)(HKEY, LPCSTR, LPCSTR, DWORD, DWORD*, void*, DWORD*);
   static reggetvalue_fn* api_fn;
@@ -775,7 +773,7 @@ add_path(strlist* sp, const char* path) {
 
 int
 main(int argc, char** argv) {
-  int i;
+  int i = 0;
   static int verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0, recursive = 0, list_exports = 0,
              list_imports = 0;
   int skip = 0;
@@ -835,7 +833,8 @@ main(int argc, char** argv) {
 
       case 'V': printversion(); break;
       default:
-        buffer_putm_4(buffer_2, "Unrecognized option `", argv[i], "'\n", "Try `ntldd --help' for more information");
+        buffer_putm_4(
+            buffer_2, "Unrecognized option `", argv[optind], "'\n", "Try `ntldd --help' for more information");
         buffer_putnlflush(buffer_2);
         return 1;
     }

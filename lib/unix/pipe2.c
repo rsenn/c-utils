@@ -48,7 +48,7 @@ pipe(fd_t fd[2]) {
 #endif
 
 int
-pipe2(fd_t fd[2], int flags) {
+pipe2(int fd[2], int flags) {
   /* Mingw _pipe() corrupts fd on failure; also, if we succeed at
      creating the pipe but later fail at changing fcntl, we want
      to leave fd unchanged: http://austingroupbugs.net/view.php?id=467  */

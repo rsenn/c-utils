@@ -41,6 +41,7 @@ extern "C" {
 #define __static static
 #endif
 
+#undef __expect
 #if !defined(__GNUC__) || (__GNUC__ < 3)
 #define __builtin_expect(foo, bar) (foo)
 #define __expect(foo, bar) (foo)
