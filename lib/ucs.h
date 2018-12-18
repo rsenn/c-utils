@@ -7,7 +7,8 @@
 extern "C" {
 #endif
 
-wchar_t ucs_latin1(int ch);
+wchar_t ucs_from_latin1(int ch);
+char    ucs_to_latin1(wchar_t ch);
 
 #ifdef __cplusplus
 }
