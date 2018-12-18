@@ -56,6 +56,9 @@ MSDN Magazine articles
 #endif
 
 static stralloc cwd;
+static strlist sp;
+
+const char* search_path(const char* filename);
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
 #include <sys/cygwin.h>
@@ -215,11 +218,11 @@ pop_stack(char*** stack, uint64* stack_len, uint64* stack_size, char* name) {
 }
 
 static uint64
-thunk_data_u1_function(void* thunk_array, uint32 index, build_tree_config* cfg) {
-  if(cfg->machine_type == PE_FILE_MACHINE_I386)
-    return ((uint32*)thunk_array)[index];
-  else
+thunk_data_u1_function(void* pe, void* thunk_array, uint32 index, build_tree_config* cfg) {
+  if(PE_64(pe))
     return ((uint64*)thunk_array)[index];
+  else
+    return ((uint32*)thunk_array)[index];
 }
 /*
 static void*
@@ -300,13 +303,14 @@ build_dep_tree32or64(pe_loaded_image* img,
           continue;
         ith = pe_rva2ptr(img->base, uint32_get(&iid[i].first_thunk));
         oith = pe_rva2ptr(img->base, uint32_get(&iid[i].original_first_thunk));
-        for(j = 0; (impaddress = thunk_data_u1_function(ith, j, cfg)) != 0; j++) {
+      
+        for(j = 0; (impaddress = thunk_data_u1_function(img->base, ith, j, cfg)) != 0; j++) {
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
           if(oith) {
           }
-          imp->orig_address = thunk_data_u1_function(oith, j, cfg);
+          imp->orig_address = thunk_data_u1_function(img->base, oith, j, cfg);
           if(cfg->on_self) {
             imp->address = impaddress;
           }
@@ -341,12 +345,12 @@ build_dep_tree32or64(pe_loaded_image* img,
           ith = (void*)(uintptr_t)idd[i].import_address_table_rva;
           oith = (void*)(uintptr_t)idd[i].import_name_table_rva;
         }
-        for(j = 0; (impaddress = thunk_data_u1_function(ith, j, cfg)) != 0; j++) {
+        for(j = 0; (impaddress = thunk_data_u1_function(img->base, ith, j, cfg)) != 0; j++) {
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
           if(oith)
-            imp->orig_address = thunk_data_u1_function(oith, j, cfg);
+            imp->orig_address = thunk_data_u1_function(img->base, oith, j, cfg);
           if(cfg->on_self) {
             imp->address = impaddress;
           }
@@ -393,15 +397,17 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
   pe_dos_header* dhdr;
 
   stralloc_init(&sa);
+  if(path == 0)
+    path = search_path(name);
   if(path)
     stralloc_copys(&sa, path);
   stralloc_cats(&sa, name);
   stralloc_nul(&sa);
-
+/*
   if(!path_exists(sa.s))
     return success;
-
-#ifdef DEBUG_OPEN
+*/
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "Filename: ");
   buffer_puts(buffer_2, sa.s);
   buffer_putnlflush(buffer_2);
@@ -771,6 +777,27 @@ add_path(strlist* sp, const char* path) {
   }
 }
 
+const char*
+search_path(const char* filename) {
+  const char *ret = 0, *dir;
+  stralloc sa;
+  stralloc_init(&sa);
+
+  strlist_foreach_s(&sp, dir) {
+    stralloc_copys(&sa, dir);
+    stralloc_cats(&sa, filename);
+    stralloc_nul(&sa);
+
+    if(path_exists(sa.s)) {
+      ret = dir;
+      break;
+    }
+  }
+  stralloc_free(&sa);
+  return ret;
+}
+
+
 int
 main(int argc, char** argv) {
   int i = 0;
@@ -798,9 +825,6 @@ main(int argc, char** argv) {
                                  {"print-search-dirs", 0, &print_dirs, 1},
                                  {0}};
 
-  strlist sp;
-  strlist_init(&sp, '\0');
-
   path_getcwd(&cwd);
   stralloc_append(&cwd, PATHSEP_S);
 
@@ -819,13 +843,13 @@ main(int argc, char** argv) {
         skip = 1;
         break;
 
-      case 'v':
-      case 'u':
-      case 'd':
-      case 'r':
-      case 'R':
-      case 'e':
-      case 'i': break;
+      case 'v': verbose = 1; break;
+      case 'u': unused = 1; break;
+      case 'd': datarelocs = 1; break;
+      case 'r': functionrelocs = 1; break;
+      case 'R': recursive = 1; break;
+      case 'e': list_exports = 1; break;
+      case 'i': list_imports = 1; break;
       case 'D': {
         add_path(&sp, optarg);
         break;

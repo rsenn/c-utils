@@ -410,7 +410,7 @@ LIBLZMA := -llzma -lpthread
 else
 LIBLZMA := -llzma
 endif
-#$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
+$(info HAVE_LIBLZMA=$(HAVE_LIBLZMA))
 
 HAVE_LIBBZ2 := $(call check-function-exists,BZ2_bzCompress,-lbz2)
 $(info HAVE_LIBBZ2=$(HAVE_LIBBZ2))
