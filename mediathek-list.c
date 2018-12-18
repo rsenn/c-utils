@@ -19,6 +19,7 @@
 #include "lib/unix.h"
 #include "lib/http.h"
 #include "lib/io.h"
+#include "lib/case.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -448,7 +449,7 @@ match_tokens(char* toks, const char* x, size_t n) {
 
   if(ret && debug > 1) {
     buffer_putm_internal(buffer_2, "token list '", toks, "' matched '", 0);
-    buffer_put(buffer_2, x, b);
+    buffer_put(buffer_2, x, n);
     buffer_puts(buffer_2, "'.");
     buffer_putnlflush(buffer_2);
   }
@@ -459,7 +460,7 @@ match_tokens(char* toks, const char* x, size_t n) {
 /* returns 1 if any of the token lists match */
 int
 match_toklists(strlist* sl) {
-  const char* s;
+  char* s;
   int ret = 0;
 
   if(include.sa.s == 0) 

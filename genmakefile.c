@@ -365,8 +365,10 @@ path_wildcard(stralloc* sa, const char* wildchar) {
   n = x - sa->s;
   e = byte_rchr(x, sa->len - n, '.');
 
-  stralloc_remove(sa, n, e);
-  stralloc_insertb(sa, wildchar, n, str_len(wildchar));
+  if(e != sa->len - n) {
+    stralloc_remove(sa, n, e);
+    stralloc_insertb(sa, wildchar, n, str_len(wildchar));
+  }
   stralloc_nul(sa);
 
   return sa->s;

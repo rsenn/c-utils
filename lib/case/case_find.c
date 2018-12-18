@@ -6,5 +6,5 @@
 */
 size_t
 case_find(const void* s, const void* what) {
-  return case_findb(s, what, str_len(what));
+  return case_finds(s, str_len(s), what);
 }
