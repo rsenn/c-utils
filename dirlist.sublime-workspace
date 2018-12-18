@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "alloca\nM_PI\niround\nmm2in\nin2mm\nnode_print\nnode_depth\nstr_ischarset\nstr_isfloat\nstr_isspace\nprint_attrs\nprint_element_attrs\ndump_net\nhuman_to_mm\nxy_neg\nxy_add\nround_to\nxy_align\nget_double\nget_int\nget_parent\nget_child\nget_wire\nget\nget_or_create\nget_entry\nprint_base\nprint_name_value\npackage_pin\nlayer_id\nget_layer\nlayer_name\nlayer_by_id\nbuild_layers\nrect_translate\nnode_align\nrect_update\ncheck_wire\nbuild_part\nbuild_sym\nbuild_reflist\nbuild_nets\nbuild_package\nbuild_deviceset\ngetnodeset\ngetparts\nfor_set\nnodeset_topleft\ntree_topleft\ndump_package\ndump_part\nnet_connects\ndump_net\nnode_print\nnode_depth\nstr_ischarset\nstr_isfloat\nstr_isdoublenum\nstr_isspace\nprint_element_name\nprint_attrs\nprint_element_attrs\nprint_element_content\nprint_element_children\nprint_element_names\nprint_xy\nprint_vertex\nprint_rect\nprint_xml_xy\nprint_xml_rect\nprint_script\nbuffer_read\nmatch_query\ndraw_measures\nmatch_foreach\nusage\nmain",
+			"contents": "hmap_search",
 			"settings":
 			{
-				"buffer_size": 903,
+				"buffer_size": 11,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -41,6 +41,17 @@
 				"buffer_size": 39915,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "/*****************************************************************************/\n/*                                                                           */\n/* RTTTL Ring Tone Player for Microchip PIC16F87x Microcontrollers           */\n/* Copyright Craig.Peacock@beyondlogic.org                                   */\n/* Version 1.0 17th August 2003                                              */\n/*                                                                           */\n/*****************************************************************************/\n\n#include \"pictest.h\"\n#include \"device.h\"\n#include \"random.h\"\n#include \"timer.h\"\n\n#if NO_PORTB\n#define TONE RA0\n#define TONE_TRIS TRISA0\n#else\n#define TONE RB0\n#define TONE_TRIS TRISB0\n#endif\n\n#include \"config-bits.h\"\n\n// void InitTimer(void);\n// void delayms(unsigned char cnt);\nvoid main(void);\nvoid PlayNote(unsigned short note, unsigned char octave, unsigned int duration);\n\nvolatile unsigned char beep;\nvolatile unsigned char preloadTMR1L;\nvolatile unsigned char preloadTMR1H;\nvolatile unsigned short TMR0Count;\n\n\n//#define MissionImpossible\n\ntypedef struct ringtone {\n  unsigned int defaultoctave;\n  unsigned int defaultduration;\n  unsigned char beat_speed;\n  const unsigned char* Melody;\n} ringtone_t;\n\n#define NUM_RINGTONES ((sizeof(ringtones) / sizeof(ringtones[0])) - 1)\n\nconst ringtone_t ringtones[] = {\n\n    {/* Adams Family */ 5, 8, 160, \"c,4f,a,4f,c,4b4,2g,f,4e,g,4e,g4,4c,2f,c,4f,a,4f,c,4b4,2g,f,4e,c,4d,e,1f,c,d,e,f,1p,\"\n                                   \"d,e,f#,g,1p,d,e,f#,g,4p,d,e,f#,g,4p,c,d,e,f\"},\n    {/* Animaniacs Theme  */ 5, 4, 160, \"d#6,d6,d#6,f.6,8d#6,d.6,8d#6,c6,2p,8d6,8d#6,f.6,8d#6,d.6,8d#6,a#,2p,8c6,8a#,\"\n                                        \"8g#,8g#,8c6,8d#6,g#6,8p,8g#6,8a#.6,16g#6,8g6,8g#6,f6,8p,8f6,d#6,c7,a#.6,8g#6,\"\n                                        \"g#6,\"},\n    {/* Babylon 5 */ 5, 4, 180, \"32p,2b4,1e,1g,1f#,1a,1b,2g,g,8g,8a,1b,1f#,1b4,1d,1c#,1e,1f#,2d,d,8d,8e,1f#\"},\n    {/* Back to the Future */ 5, 16, 200, \"4g.,p,4c.,p,2f#.,p,g.,p,a.,p,8g,p,8e,p,8c,p,4f#,p,g.,p,a.,p,8g.,p,8d.,p,8g.,\"\n                                          \"p,8d.6,p,4d.6,p,4c#6,p,b.,p,c#.6,p,2d.6\"},\n    //{ /* Bad Boys - Theme */ 6, 4, 160,\n    //\"a_5,g5,a_5,g5,p,8f5,8g5,8g5,8g5,2a_5,8a_5,8a_5,8a_5,8a_5,a_5,8a_5,8c,a_5,g5,g5,a_5,g5,a_5,g5,p,8f5,8g5,8g5,8g5,2a_5,8a_5,8a_5,8a_5,8a_5,a_5,8a_5,8c,a_5,g5,g5,a_5,g5,a_5,g5,p,8f5,8g5,8g5,8g5,2a_5,8a_5,8a_5,8a_5,8a_5,a_5,8a_5,8c,a_5,g5,g5,a_5,g5,a_5,g5,p,8f5,8g5,8g5,8g5,2a_5,8a_5,8a_5,8a_5,8a_5,a_5,8a_5,8c,a_5,g5,g5\"\n    //},\n    {/* Barbapapa - Theme */ 6, 4, 180, \"8f5,8f5,8p,8f5,a_5,d,d_,d,c,2a_5,8d,8g,8p,8d,8p,2f.,8p,p,8f5,8f5,8p,8f5,a_5,d,\"\n                                        \"d_,d,c,a_5,8f,8g,8p,8d,f,c,d,d_,f,a_5,p,8g,8f,g,a,a_,f,d,a_5,p,g5,8d_5,8d5,8p,\"\n                                        \"c.5,f_5,8f_5,8f_5,8p,f.5,f5,a_5,d,d_,d,8c,1a_5\"},\n    {/* Bugs Bunny */ 5, 16, 200, \"4a6,8g6,2a6,8p,4e6,8d6,2e6,8p,4a6,8g6,2a6,8g6,4e6,8d6,4e6,8p,8d6,4b,4d6,8g6,4a6,8g6,\"\n                                  \"8g6,8e6,8g6,4f#6,8p,8a6,4b6,8a6,8g6,4f#6,4e6,2a6\"},\n    //{ /* Computer Games - Final Fantasy 7 - Boss Theme */ 5, 4, 112,\n    //\"16a4,16a4,16a4,8c.,16a4,16a4,16a4,8d.,16a4,16a4,16a4,16d#,16d,16c,16d,16c,16b4,8c,16b4,16a4,16a4,16a4,8c.,16a4,16a4,16a4,8d.,16a4,16a4,16a4,16d#,16d,16c,16d,16c,16b4,8c,16b4,16c,16c,16c,8d#.,16c,16c,16c,8f.,16c,16c,16c,16f#,16f,16d#,16f,16d#,16d,8d#,16d,16c,16c,16c,8d#.,16c,16c,16c,8f.,16c,16c,16c,16f#,16f,16d#,16f,16d#,16d,16d#,16d,16c\"\n    //},\n    {/* Computer Games - Secret Of Monkey Island - Theme */ 5, 4, 180, \"8e6,8p,8e6,8g6,8f#6,8e6,d6,2e6,8p,8d6,8p,8d6,\"\n                                                                       \"8c6,8b,8d6,8c6,8p,8c6,8p,b,p,8e6,8p,e.6,8g6,8f#\"\n                                                                       \"6,8e6,d6,2e6,8p,8f#6,8g6,8p,8g6,8p,a6,p,f#6,8p,\"\n                                                                       \"8g6,8f#6,8e6,8d6,8f#6,8g6,8p,8g6,8p,f#6\"},\n    {/* Dallas */ 5, 8, 125, \"e,4a.,e,4e.6,a,4c#6,b,c#6,4a,4e,4a,4f#6,4e6,c#6,d6,2e.6,p,e,4a,4f#6,4e6,c#6,d6,4e6,b,c#6,\"\n                             \"4a,4e,4a,c#6,d6,4b.,a,2a\"},\n    {/* Deep Purple-Smoke on the Water */ 4,\n     4,\n     112,\n     \"c,d#,f.,c,d#,8f#,f,p,c,d#,f.,d#,c,2p,8p,c,d#,f.,c,d#,8f#,f,p,c,d#,f.,d#,c\"},\n    {/* Donkey Kong Country Theme  */ 5, 4, 125, \"8d6,8d6,2a.6,8f6,8g6,8f6,2d.6,8d6,8d6,2a#.6,8g6,8a6,8g6,2e.6,8e6,8e6,\"\n                                                 \"2c.7,8a6,8a#6,8c7,2d.7,8f6,8g6,2a.6,8e6,8f6,8g6,1f6,\"},\n    //{ /* Films And Tv - Taxi Theme */ 5, 4, 140,\n    //\"8d#6,8g6,8g#6,a#6,a#6,a#.6,8d#7,8c7,8a#6,8d#6,8f6,g6,8a#6,2f.6,p,8c6,8d#6,8f6,32f#6,8g6,8a#6,8c7,32f6,32f#6,8g6,8p,8f6,8d#6,8c6,8d#6,8f6,16g6,16p,32d#6,32e6,f6,8d#6,2c.6,p,8c6,8d#6,8f6,32f#6,8g6,8a#6,8c7,8d#7,8p,8c7,8a#6,16g.6,32a#6,32b6,8c7,d#.7\"\n    //},\n    {/* Flintstones */ 5, 16, 200, \"4g#6,4c#6,8p,4c#7,8a#6,4g#6,4c#6,8p,4g#6,8f#6,8f6,8f6,8f#6,8g#6,4c#6,4d#6,2f6,2p,\"\n                                   \"4g#6,4c#6,8p,4c#7,8a#6,4g#6,4c#6,8p,4g#6,8f#6,8f6,8f6,8f#6,8g#6,4c#6,4d#6,2c#6\"},\n    {/* Forest Gump - Theme */ 5, 4, 100, \"16c#6,16c#6,16f#6,8d#6,8c#6,8d#6,16p,16g#6,16f#6,16p,8c#6,16p,16f#6,16f#6,\"\n                                          \"8f#6,8c#6,8f#6,p,8p,16p,16c#6,16f#6,8f#6,8c#6,8f#6,16p,16a#6,8g#6,8d#6,8c#\"\n                                          \"6\"},\n    {/* Funky Town */ 4, 8, 125, \"c6,c6,a#5,c6,p,g5,p,g5,c6,f6,e6,c6,2p,c6,c6,a#5,c6,p,g5,p,g5,c6,f6,e6,c6\"},\n    {/* Ghostbusters Theme  */ 5, 4, 125, \"16c#,16p,8c#,16e,16f,16g#,16p,8b,8p,8a#.,16p,16c#,16p,8c#,16e,16f,16g#,16p,\"\n                                          \"16b,16p,16b,16p,a#,8p,16c#6,16c#6,8f6,16c#6,16p,8d#6,16b,\"},\n    //{ /* Hitchcock */ 5, 16, 200,\n    //\"c,p,f4,8p,8f,32g,32p,f,32p,e,32p,d,32p,e,8p,f,32p,g,8p.,c,p,f4,8p,8f,32g,32p,f,32p,e,32p,d,32p,e,8p,f,32p,g,8p.,c,p,f4,8p,g#,32p,8c6,p,a#,32p,g#,8p,c6,32p,8d#6,p,c#6,32p,c6,8p,d#6,32p,8g6,p,f6,32p,e6,32p,c#6,32p,c6,32p,a#,32p,g#,32p,g,32p,8f4\"\n    //},\n    {/* Indiana Jones - Theme */ 5, 4, 225, \"e,16f,8g,2c6,d,16e,1f,g,16a,8b,2f6,a,16b,c6,d6,e6,e,16f,8g,1c6,d6,16e6,\"\n                                            \"2f6,g,16g,e6,d6,16g,e6,d6,16g,f6,e6,16d6,2c6\"},\n    {/* Itchy & Scratcy */ 6,\n     8,\n     198,\n     \"8c,8a5,4p,8c,8a,4p,8c,a5,8c,a5,8c,8a,4p,8p,8c,8d,8e,8p,8e,8f,8g,4p,8d,8c,4d,8f,4a#,4a,2c7\"},\n    {/* Knight Rider */ 5,\n     32,\n     63,\n     \"16e,f,e,8b,16e6,f6,e6,8b,16e,f,e,16b,16e6,4d6,8p,4p,16e,f,e,8b,16e6,f6,e6,8b,16e,f,e,16b,16e6,4f6\"},\n    {/* Legend Of Zelda - Title Theme */ 6, 16, 50, \"8b5,8f#.5,b5,32b5,32c#,32d#,32e,4f#,f#,32f#.,32g.,32a.,4b,32b,32b.\"\n                                                    \",32a.,32g.,a.,32g.,4f#,8f#,e32e,32f#,4g,f#,e,d,32d,32e,4f#,e,d,c#\"\n                                                    \",32c#,32d#,4f,8g#,4f#\"},\n    {/* Leisure Suit Larry - Main Theme */ 6, 16, 56, \"f.5,f#.5,g.5,g#5,32a#5,f5,g#.5,a#.5,32f5,g#5,32a#5,g#5,8c#.,a#5,\"\n                                                      \"32c#,a5,a#.5,c#.,32a5,a#5,32c#,d#,8e,c#.,f.,f.,f.,f.,f,32e,d#,\"\n                                                      \"8d,a#.5,e,32f,e,32f,c#,d#.,c#\"},\n    {/* Light My Fire */ 5,\n     8,\n     140,\n     \"b,16g,16a,b,d6,c6,b,a,g,a,16f,16a,c6,f6,16d6,16c6,16a#,16g,g#,g,g#,16g,16a,b,c#6,16b,16a,16g,16f,e,f,4a\"},\n    {/* Looney Tunes */ 5, 16, 160, \"f7,f7,8e7,8d7,8c7,4a6,8p,8c7,f7,f7,8e7,8d7,8d#7,4e7,8p,8e7,8e7,8c7,8d7,8c7,e7,e7,\"\n                                    \"8c7,8d7,8a6,8c7,8g6,8a#6,8a6,8f6\"},\n    {/* McGyver */ 4, 4, 160, \"8c5,8c5,8c5,8c5,2b,8f#,a,2g,8c5,c5,b,8a,8b,8a,g,e5,2  \"\n                              \"a,b.,8p,8c5,8b,8a,c5,8b,8a,d5,8c5,8b,d5,8c5,8b,e5,8d5,8e5,f#5,b,1g5,8p,8g5  \"\n                              \",8e5,8c5,8f#5,8d5,8b,8e5,8c5,8a,8d5,8b,8g,c5,b,8c5,8b,8a,8g,a#,a,8g.\"},\n    //{ /* Monty Python */ 5, 8, 180,\n    //\"d#6,d6,4c6,b,4a#,a,4g#,g,f,g,g#,4g,f,2a#,p,a#,g,p,g,g,f#,g,d#6,p,a#,a#,p,g,g#,p,g#,g#,p,a#,2c6,p,g#,f,p,f,f,e,f,d6,p,c6,c6,p,g#,g,p,g,g,p,g#,2a#,p,a#,g,p,g,g,f#,g,g6,p,d#6,d#6,p,a#,a,p,f6,f6,p,f6,2f6,p,d#6,4d6,f6,f6,e6,f6,4c6,f6,f6,e6,f6,a#,p,a,a#,p,a,2a#\"\n    //},\n    {/* Mortal Kombat - Theme */ 6, 4, 160, \"16a7,16a7,16c7,16a7,16d7,16a7,16e7,16d7,16c7,16c7,16e7,16d7,16g7,16c7,\"\n                                            \"16e7,16c7,16g7,16g7,16b7,16g7,16c7,16g7,16d7,16c7,16f7,16f7,16a7,16f7,\"\n                                            \"16c7,16f7,16c7,16b7\"},\n    {/* Munsters */ 5, 8, 160, \"d,f,d,g#,a,4d6,a#,a,2g,f,g,4a,a4,g#4,a4,b4,4c#,2d,4p,4c,4c6,4c6,2c6,a#,a,a#,g,a,4f,4p,\"\n                               \"4g,4g,2g,f,e,f,d,e,2c#,4p,4d,f,d,g#,a,4d6,a#,a,2g,f,g,4a,a4,g#4,a4,b4,4c#,2d\"},\n    //{ /* Pacman - Theme */ 5, 4, 112,\n    //\"32b,32p,32b6,32p,32f#6,32p,32d#6,32p,32b6,32f#6,16p,16d#6,16p,32c6,32p,32c7,32p,32g6,32p,32e6,32p,32c7,32g6,16p,16e6,16p,32b,32p,32b6,32p,32f#6,32p,32d#6,32p,32b6,32f#6,16p,16d#6,16p,32d#6,32e6,32f6,32p,32f6,32f#6,32g6,32p,32g6,32g#6,32a6,32p,32b.6\"\n    //},\n    {/* Pingu */ 6, 4, 285, \"g,p,e,p,f,e,d,p,g,p,e,p,f,a,g,p,a,c7,b,a,g,c7,g,f,e,f,e,d,g,g,p,f,e,p,g,p,c7,c\"},\n    {/* Pink Panter - Theme */ 6, 4, 100, \"8g_5,2a5,8b5,2c,8g_5,8a5,8b5,8c,8f,8e,8a5,8c,8e,2d_,16d,16c,16a5,8g5,1a5,8g_\"\n                                          \"5,2a5,8b5,2c,8g_5,8a5,8b5,8c,8f,8e,8c,8e,8a,1g_,8g_5,2a5,8b5,2c,16g_5,8a5,\"\n                                          \"8b5,8c,8f,8e,8a5,8c,8e,2d_,8d,16c,16a5\"},\n    {/* Pinky and the Brain */ 6, 16, 200, \"b.5,p,8e.,p,d#.,p,8e.,p,g.,p,4d#.,4p,b.5,p,8e.,p,d#.,p,8e.,p,g.,p,4d#.,4p,\"\n                                           \"4e,8p,8e.,p,g.,p,8a#.,p,4a#,8p,a#.,p,8b.,p,a.,p,4g,8p,4f#,4p,e.,p,8a.,p,g#.\"\n                                           \",p,8a.,p,b.,p,4g#,4p,e.,p,8a.,p,g#.,p,8a.,p,b.,p,4g#,4p,c.,p,8b.5,p,8b.5,\"\n                                           \"8p,b.5,p\"},\n    {/* Pirates Of The Caribbean - Theme */ 6,\n     4,\n     200,\n     \"8d,8e,2f,8g,8a,g,f,e,f,g,a,g,p,8f,8g,a,p,8g,8f,e,f,e,d,p,8e,8c,d,8p,p,8d,8e,f,p,8e,8f,g,f,g,a,g,f,d\"},\n    {/* Police Academy - Theme */ 6,\n     4,\n     160,\n     \"g5,c5,8d5,c5,32p,c,b5,8a5,8a5,8a5,8g5,p,8g5,8a5,8g5,8g5,g5,8c,g5,16p,f5,e5,f5,e5,c5,8d5\"},\n    {/* Popeye */ 6,\n     8,\n     160,\n     \"a5,c,c,c,4a#5,a5,4c,2p,c,d,a#5,d,4f,d,2c,p,c,d,a#5,d,f,e,d,c,d,c,a5,f5,a5,c,d,c,4a#5,g5,2f5\"},\n    //{ /* Pulp Fiction - Theme */ 6, 4, 113,\n    //\"16f5,16f5,16f5,16f5,16f5,16f5,16f5,16f5,16a5,16a5,16a5,16a5,16a_5,16a_5,16a_5,16a_5,16c,16c,16c,16c,16c,16c,16c,16f5,16e,16e,16e,16e,16c_,16c_,16c_,16c_,16c,16c,16c,16c,16c,16c,16c,16c,16c,16c,16c,16c,16c,16c,16c,16c,16c,16c\"\n    //},\n    {/* Scooby Doo */ 6,\n     8,\n     160,\n     \"e,e,d,d,2c,d,4e,2a5,a5,4b5,4g5,4e,d,4c,d,2e,4p,e,e,d,d,2c,d,4f,2a5,a5,4b5,4g5,4e,d,2c\"},\n    {/* Simpsons */ 5, 8, 160, \"c.6,4e6,4f#6,a6,4g.6,4e6,4c6,a,f#,f#,f#,2g,p,p,f#,f#,f#,g,4a#.,c6,c6,c6,4c6\"},\n    {/* Smurfs */ 5, 4, 200, \"2c6,f.6,8c6,d6,a#,2g,c.6,8a,f,a,2g,p,16g,16a,16a#,16b,2c6,f.6,8c6,d6,a#,2g,c.6,8a,a#,e,\"\n                             \"2f,p,16g,16a,16a#,16b,2c6,f.6,8c6,d6,a#,2g,c.6,8a,f,a,2g,p,16g,16a,16a#,16b,2c6,f.6,8c6,\"\n                             \"d6,a#,2g,c.6,8a,a#,e,2f.,1p\"},\n    {/* South Park */ 5,\n     8,\n     125,\n     \"e,e,e,16e,e,16e,p,e,e,e,e,e,16p,16e,e,2p,g,g,4g,16b,16b,b,e,a#,16g,16g,g,16f#,16f#,f#,e\"},\n    {/* Spongebob Squarepants - Theme */ 6, 4, 112, \"c,a5,g5,e5,c,a5,g5,e5,c,a5,g5,e5,8g.5,16g5,2a5,b5,2c,2p,c,a5,g5,\"\n                                                    \"e5,c,a5,g5,e5,c,a5,g5,e5,8g.5,16g5,2a5,b5,2c,2p,c,a5,g5,e5,c,a5,\"\n                                                    \"g5,e5,c,a5,g5,e5,8g.5,16g5,2a5,b5,2c,2p,c,a5,g5,e5,c,a5,g5,e5,c,\"\n                                                    \"a5,g5,e5,8g.5,16g5,2a5,b5,2c\"},\n    {/* Star Trek */ 5, 16, 63, \"8f.,a#,4d#.6,8d6,a#.,g.,c.6,4f6\"},\n    {/* Star Wars */ 6, 8, 180, \"f5,f5,f5,2a#5.,2f.,d#,d,c,2a#.,4f.,d#,d,c,2a#.,4f.,d#,d,d#,2c,4p,f5,f5,f5,2a#5.,2f.,d#\"\n                                \",d,c,2a#.,4f.,d#,d,c,2a#.,4f.,d#,d,d#,2c\"},\n    {/* Super Mario Bros - Theme */ 6, 4, 100, \"p,8c.5,16g5,8p,8e5,16p,8a5,16b5,16p,16a_5,8a5,8g5,8e,8g,8a,16e,16g,16p,\"\n                                               \"8e,16c,16d,8b.5,8c.,16g5,8p,8e5,16p,8a5,16b5,16p,16a_5,8a5,8g5,8e,8g,\"\n                                               \"8a,16f,16g,16p,8e,16c,16d,8b.5\"},\n    {/* Super Mario Bros 3 - Theme */ 6, 4, 100, \"16e,16e,32p,8e,16c,8e,8g,8p,8g5,8p,8c,16p,8g5,16p,8e5,16p,8a5,8b5,\"\n                                                 \"16a_5,8a5,16g.5,16e,16g,8a,16f,8g,8e,16c,16d,8b5,16p,8c,16p,8g5,16p,\"\n                                                 \"8e5,16p,8a5,8b5,16a_5,8a5,16g.5,16e,16g,8a,16f,8g,8e,16c,16d,8b5,8p,\"\n                                                 \"16g,16f_,16f\"},\n    {/* Teenage Mutant Ninja Turtle - Theme */ 6, 4, 90, \"p,8g,8a,8g,8a,8g,16a,8g,16p,8a,8a_,8c7,8a_,8c7,8d_7,16c7,8a_,\"\n                                                         \"16p,8c7,8f7,8f7,8d_7,8f7,8g_7,16f7,8d_7,16p,8f7,16c7,16c7,\"\n                                                         \"16c7,16c7,8a_,c7,16c7,16c7,16c7,8c7\"},\n    {/* Terminator Soundtrack - Theme */ 6,\n     4,\n     90,\n     \"16d,8e,1f,8e,8c,1f5,16p,8e,1f,8e,8c,2a,2g,16d,8e,1f,8e,8c,1f5,16p,8e,1f,8e,8c,2a,2g\"},\n    {/* Tetris Theme 1 */ 5, 4, 160, \"e6,8b,8c6,8d6,16e6,16d6,8c6,8b,a,8a,8c6,e6,8d6,8c6,b,8b,8c6,d6,e6,c6,a,2a,8p,d6,\"\n                                     \"8f6,a6,8g6,8f6,e6,8e6,8c6,e6,8d6,8c6,b,8b,8c6,d6,e6,c6,a,a\"},\n    {/* Tetris Theme 2 */ 5,\n     4,\n     160,\n     \"d6,32p,c.6,32p,8a,8c6,8a#,16a,16g,f,c,8a,8c6,8g,8a,f,c,d,8d,8e,8g,8f,8e,8d,c,c,c\"},\n    {/* Tetris Theme 3 */ 5, 4, 63, \"d#6,b,c#6,a#,16b,16g#,16a#,16b,16b,16g#,16a#,16b,c#6,g,d#6,16p,16g#,16a#,16b,c#6,\"\n                                    \"16p,16b,16a#,g#,g,g#,16f,16g,16g#,16a#,8d#.6,32d#6,32p,32d#6,32p,32d#6,32p,16d6,\"\n                                    \"16d#6,8f.6,16d6,8a#,8p,8f#6,8d#6,8f#,8g#,a#.,16p,16a#,8d#.6,16f6,16f#6,16f6,16d#6,\"\n                                    \"16a#,8g#.,16b,8d#6,16f6,16d#6,8a#.,16b,16a#,16g#,16f,16f#,d#\"},\n    {/* The A-Team */ 5, 8, 132, \"4d#6,a#,2d#6,16p,g#,4a#,4d#.,p,16g,16a#,d#6,a#,f6,2d#6,16p,c#.6,16c6,16a#,g#.,2a#.\"},\n    {/* The Muppets - Theme */ 6,\n     4,\n     225,\n     \"16a5,8p.,8a,16p.,32c5,8a,8p,8f_5,16p.,32b5,8c_,16p.,32g5,8c_,8p,8e5,16p.,32f_5,8d,8p\"},\n    {/* The X Files - Theme */ 6,\n     4,\n     125,\n     \"e5,b5,a5,b5,d,2b.5,1p,e5,b5,a5,b5,e,2b.5,g,f_,e,d,f_,2b.5,1p,e5,b5,a5,b5,d,2b.5,1p,e,2b.5\"},\n\n    {0, 0, 0, 0}};\n\nvolatile unsigned char beat_speed;\n\nvoid\nmain() {\n  unsigned int pointer = 0;\n  unsigned int octave = 0;\n  unsigned int duration = 0;\n  unsigned short note = 0;\n  const ringtone_t* rt_p;\n  const char* Melody;\n\n  TONE_TRIS = 0; /* Make TONE an output */\n\n  beep = 0;\n\n  random_init(eeprom_read(0), eeprom_read(1), eeprom_read(2));\n\n  eeprom_write(0, random());\n  eeprom_write(1, random());\n  eeprom_write(2, random());\n\n  rt_p = &ringtones[random() % NUM_RINGTONES];\n\n  //  InitTimer();\n  timer0_init(PRESCALE_1_256 | TIMER0_FLAGS_INTR);\n  timer1_init(PRESCALE_1_1 | TIMER1_FLAGS_EXTCLK | TIMER1_FLAGS_SYNC);\n\n  PEIE = 1;\n  GIE = 1; /* Enable General Purpose Interrupts */\n\n  do {\n\n    octave = rt_p->defaultoctave; /* Set Default Octave */\n    beat_speed = rt_p->beat_speed;\n    Melody = rt_p->Melody;\n\n    if((Melody[pointer] == '3') && (Melody[pointer + 1] == '2')) {\n      duration = 32;\n      pointer += 2;\n    } else if((Melody[pointer] == '1') && (Melody[pointer + 1] == '6')) {\n      duration = 16;\n      pointer += 2;\n    } else if(Melody[pointer] == '8') {\n      duration = 8;\n      pointer++;\n    } else if(Melody[pointer] == '4') {\n      duration = 4;\n      pointer++;\n    } else if(Melody[pointer] == '2') {\n      duration = 2;\n      pointer++;\n    } else if(Melody[pointer] == '1') {\n      duration = 1;\n      pointer++;\n    } else\n      duration = rt_p->defaultduration;\n\n    if(Melody[pointer + 1] == '#') {\n\n      /* Process Sharps */\n\n      switch(Melody[pointer]) {\n        case 'a':\n          note = 10726;\n          break;\n        case 'c':\n          note = 9019;\n          break;\n        case 'd':\n          note = 8035;\n          break;\n        case 'f':\n          note = 6757;\n          break;\n        case 'g':\n          note = 6024;\n          break;\n      }\n      pointer += 2;\n\n    } else {\n\n      switch(Melody[pointer]) {\n        case 'a':\n          note = 11364;\n          break;\n        case 'b':\n          note = 10123;\n          break;\n        case 'c':\n          note = 9555;\n          break;\n        case 'd':\n          note = 8513;\n          break;\n        case 'e':\n          note = 7584;\n          break;\n        case 'f':\n          note = 7158;\n          break;\n        case 'g':\n          note = 6378;\n          break;\n        case 'p':\n          note = 0;\n          break;\n      }\n      pointer++;\n    }\n\n    if(Melody[pointer] == '.') {\n      /* Duration 1.5x */\n      duration = duration + 128;\n      pointer++;\n    }\n\n    if(Melody[pointer] == '4') {\n      octave = 4;\n      pointer++;\n    } else if(Melody[pointer] == '5') {\n      octave = 5;\n      pointer++;\n    } else if(Melody[pointer] == '6') {\n      octave = 6;\n      pointer++;\n    } else if(Melody[pointer] == '7') {\n      octave = 7;\n      pointer++;\n    }\n\n    if(Melody[pointer] == '.') {\n      /* Duration 1.5x */\n      duration = duration + 128;\n      pointer++;\n    }\n\n    PlayNote(note, octave, duration);\n\n  } while(Melody[pointer++] == ',');\n\n  /* Wait until last note has played */\n  while(TMR0Count) {\n  };\n  beep = 0;\n\n  /* Loop */\n  while(1) {\n  };\n}\n\nvoid\nPlayNote(unsigned short note, unsigned char octave, unsigned int duration) {\n\n  /* Process octave */\n  switch(octave) {\n    case 4: /* Do noting */\n      break;\n    case 5: /* %2 */\n      note = note >> 1;\n      break;\n    case 6: /* %4 */\n      note = note >> 2;\n      break;\n    case 7: /* %8 */\n      note = note >> 4;\n      break;\n  }\n\n  /* Wait until last note has played */\n  while(TMR0Count) {\n  };\n  beep = 0;\n\n  /* Process New Note Frequency */\n  if(note) {\n    note = ~note;\n    preloadTMR1L = (note & 0xFF);\n    preloadTMR1H = ((note & 0xFF00) >> 8);\n  }\n\n  /* Process Note Duration */\n  TMR0Count = 255 / (duration & 0x7F);\n\n  /* If duration is 1.5x add .5 to duration */\n  if(duration & 0x80) TMR0Count = (TMR0Count + (TMR0Count >> 1));\n\n  if(note) beep = 1;\n}\n\n// void InitTimer(void) {\n//  /* Initialise Timer 0 */\n//  OPTION_REG = 0b11010111; /* Set TMR0 to Internal CLk, 1:256 */\n//  T0IF = 0; /* Clear TMR0 Flag, ready for use */\n//  T0IE = 1; /* Enable Timer Overflow Interrupt */\n\n//  /* Initialise Timer 1 */\n//  T1CON = 0b00000001; /* Counter Enabled, Using Ext Pin 1:1 Prescaler */\n//  TMR1IF = 0; /* Clear Flag */\n//  TMR1IE = 1; /* Enable Interrupt */\n//}\n\nvoid interrupt\ninterr(void) {\n  if(T0IF) {\n    TMR0 = beat_speed;\n    if(TMR0Count) TMR0Count--;\n    T0IF = 0;\n  }\n  if(TMR1IF) {\n    if(beep)\n      TONE = !TONE;\n    else\n      TONE = 0;\n    TMR1H = preloadTMR1H;\n    TMR1L = preloadTMR1L;\n    TMR1IF = 0; /* Clear Flag */\n  }\n}\n",
+			"file": "/mnt/NewData/Sources/rsenn/pictest/src/ringtone.c",
+			"file_size": 19436,
+			"file_write_time": 131801521409408035,
+			"settings":
+			{
+				"buffer_size": 19012,
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -719,7 +730,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 903,
+						"buffer_size": 11,
 						"regions":
 						{
 						},
@@ -729,412 +740,32 @@
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "/home/roman/Sources/rsenn/dirlist/eagle-gen-cmds.c",
+							"current_file": "/home/roman/Sources/rsenn/dirlist/lib/hmap/hmap_search.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									662,
-									668
-								],
-								[
-									705,
-									709
-								],
-								[
-									787,
-									793
-								],
-								[
-									828,
-									833
-								],
-								[
-									860,
-									865
-								],
-								[
-									2477,
-									2487
-								],
-								[
-									2508,
-									2518
-								],
-								[
-									2539,
-									2552
-								],
-								[
-									2590,
-									2601
-								],
-								[
-									2622,
-									2633
-								],
-								[
-									2655,
-									2666
-								],
-								[
-									2690,
-									2709
-								],
-								[
-									2732,
-									2740
-								],
-								[
-									3368,
-									3379
-								],
-								[
-									3722,
-									3728
-								],
-								[
-									3821,
-									3827
-								],
-								[
-									3922,
-									3930
-								],
-								[
-									4029,
-									4037
-								],
-								[
-									4206,
-									4216
-								],
-								[
-									4534,
-									4541
-								],
-								[
-									4851,
-									4861
-								],
-								[
-									5136,
-									5145
-								],
-								[
-									5320,
-									5328
-								],
-								[
-									5704,
-									5707
-								],
-								[
-									5926,
-									5939
-								],
-								[
-									6438,
-									6447
-								],
-								[
-									6601,
-									6611
-								],
-								[
-									6700,
-									6716
-								],
-								[
-									6880,
-									6891
-								],
-								[
-									7237,
-									7245
-								],
-								[
-									7411,
-									7420
-								],
-								[
-									7660,
-									7670
-								],
-								[
-									7729,
-									7740
-								],
-								[
-									7854,
-									7866
-								],
-								[
-									8049,
-									8063
-								],
-								[
-									8137,
-									8147
-								],
-								[
-									8986,
-									8997
-								],
-								[
-									9241,
-									9251
-								],
-								[
-									9682,
-									9692
-								],
-								[
-									10596,
-									10605
-								],
-								[
-									11552,
-									11565
-								],
-								[
-									12721,
-									12731
-								],
-								[
-									13253,
-									13266
-								],
-								[
-									14046,
-									14061
-								],
-								[
-									15563,
-									15573
-								],
-								[
-									15746,
-									15754
-								],
-								[
-									16155,
-									16162
-								],
-								[
-									16413,
-									16428
-								],
-								[
-									16898,
-									16910
-								],
-								[
-									17453,
-									17465
-								],
-								[
-									18012,
-									18021
-								],
-								[
-									18572,
-									18584
-								],
-								[
-									18903,
-									18911
-								],
-								[
-									19722,
-									19732
-								],
-								[
-									19949,
-									19959
-								],
-								[
-									20046,
-									20059
-								],
-								[
-									20195,
-									20206
-								],
-								[
-									20277,
-									20292
-								],
-								[
-									20367,
-									20378
-								],
-								[
-									20480,
-									20498
-								],
-								[
-									21138,
-									21149
-								],
-								[
-									21422,
-									21441
-								],
-								[
-									21531,
-									21552
-								],
-								[
-									21811,
-									21833
-								],
-								[
-									22371,
-									22390
-								],
-								[
-									22775,
-									22783
-								],
-								[
-									23106,
-									23118
-								],
-								[
-									23290,
-									23300
-								],
-								[
-									23534,
-									23546
-								],
-								[
-									23669,
-									23683
-								],
-								[
-									24135,
-									24147
-								],
-								[
-									26941,
-									26952
-								],
-								[
-									27030,
-									27041
-								],
-								[
-									28397,
-									28410
-								],
-								[
-									31188,
-									31201
-								],
-								[
-									31926,
-									31931
-								],
-								[
-									32470,
-									32474
+									76,
+									87
 								]
 							],
 							"symlist":
 							[
-								"alloca",
-								"M_PI",
-								"iround",
-								"mm2in",
-								"in2mm",
-								"node_print",
-								"node_depth",
-								"str_ischarset",
-								"str_isfloat",
-								"str_isspace",
-								"print_attrs",
-								"print_element_attrs",
-								"dump_net",
-								"human_to_mm",
-								"xy_neg",
-								"xy_add",
-								"round_to",
-								"xy_align",
-								"get_double",
-								"get_int",
-								"get_parent",
-								"get_child",
-								"get_wire",
-								"get",
-								"get_or_create",
-								"get_entry",
-								"print_base",
-								"print_name_value",
-								"package_pin",
-								"layer_id",
-								"get_layer",
-								"layer_name",
-								"layer_by_id",
-								"build_layers",
-								"rect_translate",
-								"node_align",
-								"rect_update",
-								"check_wire",
-								"build_part",
-								"build_sym",
-								"build_reflist",
-								"build_nets",
-								"build_package",
-								"build_deviceset",
-								"getnodeset",
-								"getparts",
-								"for_set",
-								"nodeset_topleft",
-								"tree_topleft",
-								"dump_package",
-								"dump_part",
-								"net_connects",
-								"dump_net",
-								"node_print",
-								"node_depth",
-								"str_ischarset",
-								"str_isfloat",
-								"str_isdoublenum",
-								"str_isspace",
-								"print_element_name",
-								"print_attrs",
-								"print_element_attrs",
-								"print_element_content",
-								"print_element_children",
-								"print_element_names",
-								"print_xy",
-								"print_vertex",
-								"print_rect",
-								"print_xml_xy",
-								"print_xml_rect",
-								"print_script",
-								"buffer_read",
-								"match_query",
-								"draw_measures",
-								"match_foreach",
-								"usage",
-								"main"
+								"hmap_search"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 3.996003996,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 11,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -1164,7 +795,7 @@
 						"translation.y": 21833.1668332,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -1194,11 +825,39 @@
 						"translation.y": 19123.8761239,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
+					"file": "/mnt/NewData/Sources/rsenn/pictest/src/ringtone.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 19012,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								24,
+								24
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "lib/xml/xml_find_element.c",
 					"semi_transient": true,
 					"settings":
@@ -1224,11 +883,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 5,
 					"file": "/mnt/NewData/Sources/rsenn/dirlist/lib/hmap_internal.h",
 					"semi_transient": false,
 					"settings":
@@ -1254,11 +913,11 @@
 						"translation.y": 1443.55644356,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 6,
 					"file": "lib/hmap/hmap_search.c",
 					"semi_transient": false,
 					"settings":
@@ -1284,11 +943,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 7,
 					"file": "lib/hmap/hmap_set_chars.c",
 					"semi_transient": false,
 					"settings":
@@ -1312,11 +971,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 8,
 					"file": "lib/hmap/hmap_add.c",
 					"semi_transient": false,
 					"settings":
@@ -1342,11 +1001,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 9,
 					"file": "eagle-init-brd.c",
 					"semi_transient": false,
 					"settings":
@@ -1372,11 +1031,11 @@
 						"translation.y": 4838.16183816,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 10,
 					"file": "eagle-to-circuit.c",
 					"semi_transient": false,
 					"settings":
@@ -1402,11 +1061,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 11,
 					"file": "cc-wrap.c",
 					"semi_transient": false,
 					"settings":
@@ -1432,7 +1091,7 @@
 						"translation.y": 534.465534466,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 10,
 					"type": "text"
 				}
 			]
@@ -1548,7 +1207,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 257.0,
+	"side_bar_width": 194.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
