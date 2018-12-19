@@ -12,9 +12,11 @@ No known patent problems.
 #include "../byte.h"
 #include "../str.h"
 
+#include <stdlib.h>
+
 #if WINDOWS_NATIVE
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__POCC__)
 int
 env_put2(const char* name, const char* value) {
   return !!_putenv_s(name, value);
@@ -31,8 +33,8 @@ env_putb(const char* x, size_t n) {
   name = str_ndup(x, namelen);
   value = str_ndup(&x[namelen + 1], n - (namelen + 1));
   ret = env_put2(name, value);
-  free(name);
-  free(value);
+  free((void*)name);
+  free((void*)value);
   return ret;
 }
 

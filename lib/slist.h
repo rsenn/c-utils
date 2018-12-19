@@ -16,21 +16,21 @@ slist_add(slink** list, slink* link) {
   *list = link;
 }
 
-slink**list_find(slink**, int (*pred)(slink*));
-void   slist_add_after(slink**, slink* p, slink* after);
-void   slist_add_before(slink**, slink* p, slink* before);
+slink** list_find(slink**, int (*pred)(slink*));
+void slist_add_after(slink**, slink* p, slink* after);
+void slist_add_before(slink**, slink* p, slink* before);
 slink* slist_find_delete(slink**, int (*pred)(slink*));
-void   slist_init(slink**);
+void slist_init(slink**);
 size_t slist_length(slink**);
-int    slist_pushs(slink**, const char* s);
-void   slist_push(slink**, slink* link);
+int slist_pushs(slink**, const char* s);
+void slist_push(slink**, slink* link);
 slink* slist_remove(slink**);
-int    slist_shifts(slink**);
+int slist_shifts(slink**);
 slink* slist_shift(slink**);
-int    slist_unshifts(slink**, const char* s);
+int slist_unshifts(slink**, const char* s);
 
-#define slist_foreach(slist, n) for((n) = (void*)(slist); (n); (n) = (void*)((slink*)(n))->next)
-#define slink_foreach(slink, n) for((n) = (void*)slist_begin(slink); *(slink**)(n); (n) = (void*)slist_next((slink**)n))
+#define slink_foreach(link, n) for((n) = (void*)(link); (n); (n) = (void*)((slink*)(n))->next)
+#define slist_foreach(list, n) for((n) = (void*)slist_begin(list); *(slink**)(n); (n) = (void*)slist_next((slink**)n))
 
 inline static slink**
 slist_begin(slink** list) {
@@ -43,8 +43,7 @@ slist_next(slink** link) {
 
 inline static slink**
 slist_end(slink** list) {
-  while(*list)
-    list = &(*list)->next;
+  while(*list) list = &(*list)->next;
   return list;
 }
 
@@ -93,4 +92,3 @@ slist_iterator_equal(slink** list, slink** it1, slink** it2) {
 }
 #endif
 #endif /* defined(SLIST_H) */
-

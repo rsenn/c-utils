@@ -4,6 +4,12 @@
 #include "../buffer.h"
 #include "../http.h"
 #include "../io.h"
+#include "../ndelay.h"
+
+#ifdef HAVE_OPENSSL
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#endif
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -11,6 +17,8 @@
 #include <unistd.h>
 #endif
 #include <errno.h>
+#include <stdio.h>
+
 size_t http_read_internal(http* h, char* buf, size_t n);
 
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
@@ -22,11 +30,54 @@ http_socket_write(fd_t fd, void* buf, size_t len, buffer* b) {
   return winsock2errno(send(fd, buf, len, 0));
 }
 
+#ifdef HAVE_OPENSSL
+static SSL_CTX* http_sslctx;
+static SSL_CTX*
+new_sslctx(void) {
+  const SSL_METHOD* method;
+  SSL_CTX* ctx;
+
+#if OPENSSL_API_COMPAT >= 0x10100000L
+  const OPENSSL_INIT_SETTINGS* settings = OPENSSL_INIT_new();
+  OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, settings);
+  method = TLS_client_method(); /* create new server-method instance */
+#else
+  SSL_library_init();
+  OpenSSL_add_all_algorithms();    /* load & register all cryptos, etc. */
+  SSL_load_error_strings();        /* load all error messages */
+  method = SSLv23_client_method(); /* create new server-method instance */
+#endif
+  ctx = SSL_CTX_new(method); /* create new context from method */
+  if(ctx == NULL) {
+    ERR_print_errors_fp(stderr);
+    abort();
+  }
+  return ctx;
+}
+#endif
+
 int
-http_socket(http* h) {
+http_socket(http* h, int nonblock) {
 
   h->sock = socket_tcp4();
-  io_nonblock(h->sock);
+
+  if(h->sock == -1)
+    return -1;
+  
+  if(nonblock)
+    ndelay_on(h->sock);
+  else
+    ndelay_off(h->sock);
+
+  io_fd(h->sock);
+
+#ifdef HAVE_OPENSSL
+  if(!http_sslctx)
+    http_sslctx = new_sslctx();
+
+  h->ssl = SSL_new(http_sslctx);
+  SSL_set_fd(h->ssl, h->sock);
+#endif
 
   if(h->q.in.x) {
     h->q.in.fd = h->sock;
@@ -34,6 +85,7 @@ http_socket(http* h) {
     buffer_read_fd(&h->q.in, h->sock);
     h->q.in.cookie = (void*)h;
   }
+
   h->q.in.op = (buffer_op_proto*)&http_socket_read;
 
   if(h->q.out.x) {
@@ -43,4 +95,6 @@ http_socket(http* h) {
     h->q.out.cookie = (void*)h;
   }
   h->q.out.op = (buffer_op_proto*)&http_socket_write;
+
+  return 0;
 }

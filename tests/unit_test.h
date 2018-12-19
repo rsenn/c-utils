@@ -47,6 +47,7 @@
 #define FALSE 0
 #endif
 
+#undef bool
 typedef char bool;
 
 // APIs

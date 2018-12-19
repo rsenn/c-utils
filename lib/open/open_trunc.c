@@ -30,7 +30,7 @@
 int
 open_trunc(const char* filename) {
   return open(filename, O_WRONLY | O_TRUNC | O_CREAT | O_BINARY
-#ifndef WINDOWS_NATIVE
+ #if !defined(__BORLANDC__)
  , 0644
 #endif
 );

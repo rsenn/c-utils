@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "path_lookup\nsetup_env\nusage\nmain",
+			"contents": "_XOPEN_SOURCE\n__POSIX_VISIBLE\n__MISC_VISIBLE\nBUFSIZE\n__declspec\npopen\npopen\ncount_field_lengths\nsplit_fields\nprocess_status\nread_mediathek_list\nparse_time\nformat_num\nformat_time\nparse_datetime\nparse_anydate\nformat_datetime\nmake_url\nnew_mediathek_entry\ncreate_mediathek_entry\ndelete_mediathek_entry\nmatch_tokens\nmatch_toklists\nparse_entry\nprint_entry\noutput_entry\nparse_mediathek_list\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 32,
+				"buffer_size": 394,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -29,113 +29,21 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 70841,
-				"encoding": "UTF-8",
+				"buffer_size": 88768,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "cc-wrap.c",
+			"file": "mediathek-list.c",
 			"settings":
 			{
-				"buffer_size": 3243,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "msys-shell.c",
-			"settings":
-			{
-<<<<<<< HEAD
-				"buffer_size": 73,
-				"line_ending": "Windows",
-				"name": "untitled.sublime-build"
-			}
-		},
-		{
-			"contents": "Package Control Messages\n========================\n\nCMakeBuilder\n------------\n\n  +--++++====++++----------------------------------------------++++====++++--+\n  \n                       Thanks for trying CMakeBuilder!\n                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  \n  The CMakeBuilder package is located at\n  \n      (Installed) Packages/CMakeBuilder\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  This message is the installation message. It can be found at\n  \n      (Installed) Packages/CMakeBuilder/messages/install.txt\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  This plugin is very simple and can be seen as \"glue\" between the CMake build\n  system and Sublime Text's own build system. It gives you a few useful\n  utility commands so that you don't have to leave Sublime Text, for most of \n  the time. To help CMakeBuilder know where your CMake build folder is, you'll\n  have to have a .sublime-project file with a \"cmake\" dictionary sitting next \n  to \"settings\", \"folders\", and so forth.\n  \n  For the \"Instruction Manual\", please see:\n  \n      https://github.com/rwols/CMakeBuilder\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  Or, you can even just go to\n  \n      Preferences -> Package Settings -> CMakeBuilder -> README\n  \n  Extra goodies:\n  - Goto error/warning at the configuration step (press F4)\n  - Goto error/warning at the build step (press F4)\n  - Run your unit tests from within Sublime with CTest\n  - Diagnose command if you get stuck on what to do\n  - Syntax highlighting for the CMakeCache.txt file\n  - Syntax highlighting for the cmake output panel at the configuration step\n  - Syntax highlighting for both Make- and Ninja-based build systems\n  - Syntax highlighting for Visual Studio / MSBuild-style outputs\n  \n  Note that commands are \"disabled\" when they feel that they cannot be run.\n  For example, if there is no CMakeLists.txt file in your project folder, the\n  command \"CMakeBuilder: Configure\" will not show up in the command palette.\n  The command \"CMakeBuilder: Diagnose\" can always be run and you can use that\n  as a hint as to what is wrong.\n  \n  This plugin is not a replacement for \"serious\" build users. In a real build,\n  you probably want to create shared and static versions of your library, and\n  debug and release versions. Perhaps 32 bit and 64 bit too. That's what the\n  command line is for. This plugin is for the developer working on a CMake \n  project and wanting to quickly build/test the project.\n  \n  This plugin does not provide syntax highlighting for CMakeLists.txt files \n  and .cmake files, nor does it provide highlighting for \".in\" files suitable\n  for \"configure_file\" commands from CMake; download the \"CMake\" package to\n  that end.\n  +--++++====++++----------------------------------------------++++====++++--+\n",
-			"settings":
-			{
-				"buffer_size": 2804,
-				"line_ending": "Windows",
-				"name": "Package Control Messages",
-				"read_only": true,
-				"scratch": true
-			}
-		},
-		{
-			"contents": "{\n\t\"shell_cmd\": \"make\"\n}\n",
-			"settings":
-			{
-				"buffer_size": 25,
-				"line_ending": "Windows",
-				"name": "untitled.sublime-build"
-			}
-		},
-		{
-			"file": "dirlist.sublime-project",
-			"settings":
-			{
-				"buffer_size": 2350,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "hexedit.c",
-			"settings":
-			{
-				"buffer_size": 8050,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "mediathek-parser.c",
-			"settings":
-			{
-				"buffer_size": 10626,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pathtool.c",
-			"settings":
-			{
-				"buffer_size": 7776,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/coff/coff_sclass_name.c",
-			"settings":
-			{
-				"buffer_size": 1221,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/coff/coff_line_numbers.c",
-			"settings":
-			{
-				"buffer_size": 280,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/coff/coff_index_symtab.c",
-			"settings":
-			{
-				"buffer_size": 232,
-=======
-				"buffer_size": 4463,
->>>>>>> 8021b34da066093412e33f0050a9d71cf5d6d8ae
+				"buffer_size": 15938,
+				"encoding": "Western (Windows 1252)",
 				"line_ending": "Unix"
 			}
 		}
 	],
-	"build_system": "Packages/Makefile Improved/Make.sublime-build",
+	"build_system": "Make",
 	"build_system_choices":
 	[
 		[
@@ -201,22 +109,6 @@
 		[
 			[
 				[
-					"Packages/Makefile Improved/Make.sublime-build",
-					""
-				],
-				[
-					"Packages/Makefile Improved/Make.sublime-build",
-					"Clean"
-				]
-			],
-			[
-				"Packages/Makefile Improved/Make.sublime-build",
-				""
-			]
-		],
-		[
-			[
-				[
 					"Packages/Makefile/Make.sublime-build",
 					""
 				],
@@ -238,10 +130,6 @@
 		"last_filter": "",
 		"selected_items":
 		[
-			[
-				"Package Control: ",
-				"Package Control: Add Channel"
-			],
 			[
 				"install",
 				"Package Control: Advanced Install Package"
@@ -277,6 +165,10 @@
 			[
 				"Package Control: adv",
 				"Package Control: Advanced Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
 			],
 			[
 				"Package Control: add",
@@ -397,29 +289,54 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/rsenn/dirlist"
+		"/C/Users/roman/Desktop/dirlist",
+		"/C/Users/roman/Desktop/dirlist/lib",
+		"/C/Users/roman/Desktop/dirlist/lib/http"
 	],
 	"file_history":
 	[
-		"/home/roman/Sources/rsenn/dirlist/httptest.c",
-		"/home/roman/Sources/rsenn/dirlist/lib/path/path_dirname.c",
-		"/home/roman/Sources/rsenn/dirlist/msys32.sublime-build",
-		"/home/roman/Sources/rsenn/dirlist/dirlist.sublime-project",
-		"/home/roman/Sources/rsenn/dirlist/mediathek-parser.c",
-		"/home/roman/Sources/rsenn/dirlist/pathtool.c",
-		"/home/roman/Sources/rsenn/dirlist/lib/coff/coff_sclass_name.c",
-		"/home/roman/Sources/rsenn/dirlist/lib/coff/coff_line_numbers.c",
-		"/home/roman/Sources/rsenn/dirlist/lib/coff/coff_index_symtab.c",
+		"/C/Users/roman/Desktop/dirlist/mediathek-list.c",
+		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil.c",
+		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil2.c",
+		"/C/Users/roman/Desktop/dirlist/lib/io.h",
+		"/C/Users/roman/Desktop/dirlist/lib/io/io_timeouted.c",
+		"/C/Users/roman/Desktop/dirlist/hexedit.c",
+		"/C/Users/roman/Desktop/dirlist/lib/http/http_read.c",
+		"/C/Users/roman/Desktop/dirlist/lib/http/http_get.c",
+		"/C/Users/roman/Desktop/dirlist/lib/http/http_writeable.c",
+		"/C/Users/roman/Desktop/dirlist/httptest.c",
+		"/C/Users/roman/Desktop/dirlist/lib/http/http_socket.c",
+		"/C/Users/roman/Desktop/dirlist/lib/stralloc/mmap_filename.c",
+		"/C/Users/roman/Desktop/dirlist/torrent-progress.c",
+		"/C/Users/roman/Desktop/dirlist/crc32.c",
+		"/C/Users/roman/Desktop/dirlist/lib/buffer/buffer_mmapread.c",
+		"/C/Users/roman/Desktop/dirlist/lib/range.h",
+		"/C/Users/roman/Desktop/dirlist/lib/mmap.h",
+		"/C/Users/roman/Desktop/dirlist/lib/io/io_close.c",
+		"/C/Users/roman/Desktop/dirlist/tcping.c",
+		"/C/Users/roman/Desktop/dirlist/lib/elf.h",
+		"/C/Users/roman/Desktop/dirlist/lib/rangecheck.h",
+		"/C/Users/roman/Desktop/dirlist/elflist.c",
+		"/C/Users/roman/Desktop/dirlist/hexedit.vcxproj",
+		"/C/Users/roman/Desktop/dirlist/lib/buffer/buffer_mmapread_fd.c",
+		"/C/Users/roman/Desktop/dirlist/examples/uudecode.c",
+		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
+		"/C/Users/roman/Desktop/dirlist/lib/path/path_dirname.c",
+		"/C/Users/roman/Desktop/dirlist/msys32.sublime-build",
+		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
+		"/C/Users/roman/Desktop/dirlist/mediathek-parser.c",
+		"/C/Users/roman/Desktop/dirlist/pathtool.c",
+		"/C/Users/roman/Desktop/dirlist/lib/coff/coff_sclass_name.c",
+		"/C/Users/roman/Desktop/dirlist/lib/coff/coff_line_numbers.c",
+		"/C/Users/roman/Desktop/dirlist/lib/coff/coff_index_symtab.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
 		"/C/Users/roman/Desktop/msys32-path.cmd",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Schemr/Default (Windows).sublime-keymap",
 		"/C/Users/roman/Desktop/dirlist/omflist.c",
-		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/stream_flags_en",
 		"/C/Users/roman/Desktop/dirlist/stream_flags_co",
 		"/C/Users/roman/Desktop/dirlist/stream_encoder_",
 		"/C/Users/roman/Desktop/dirlist/stream_encoder.",
-		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf.h",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_data.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_record_begin.c",
@@ -430,27 +347,21 @@
 		"/C/Users/roman/Desktop/dirlist/lib/pe.h",
 		"/C/Users/roman/Desktop/dirlist/lib/coff.h",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_get_name.c",
-		"/C/Users/roman/Desktop/dirlist/lib/elf.h",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_begin.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/outline.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/cofflist.c",
 		"/C/Users/roman/Desktop/dirlist/genmakefile.h",
-		"/C/Users/roman/Desktop/dirlist/httptest.c",
 		"/C/Users/roman/Desktop/dirlist/lib/array.h",
 		"/C/Users/roman/Desktop/dirlist/tests/test_strlist.c",
 		"/C/Users/roman/Desktop/dirlist/tests/test_stralloc.c",
 		"/C/Users/roman/Desktop/dirlist/tests/all_tests.c",
 		"/C/Users/roman/Desktop/dirlist/tests/unit_test.c",
 		"/C/Users/roman/Desktop/dirlist/tests/unit_test_runner.c",
-		"/C/Users/roman/Desktop/dirlist/lib/http/http_socket.c",
 		"/C/Users/roman/Desktop/dirlist/lib/http/http_sendreq.c",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_dirname.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path_internal.h",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_basename.c",
 		"/D/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Package Control.sublime-settings",
-		"/C/Users/roman/Desktop/dirlist/lib/http/http_read.c",
-		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil2.c",
 		"/C/Users/roman/Desktop/dirlist/lib/io/io_wantread.c",
 		"/C/Users/roman/Desktop/dirlist/lib/process/process_create.c",
 		"/C/Users/roman/Desktop/dirlist/lib/strarray/strarray_from_argv.c",
@@ -466,19 +377,16 @@
 		"/C/Users/roman/Desktop/dirlist/lib/iarray/iarray_allocate.c",
 		"/C/Users/roman/Desktop/dirlist/examples/io2.c",
 		"/C/Users/roman/Desktop/dirlist/examples/fmt_strm_alloca.c",
-		"/C/Users/roman/Desktop/dirlist/elflist.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_end.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_next.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_close.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_open.c",
-		"/C/Users/roman/Desktop/dirlist/lib/range.h",
 		"/C/Users/roman/Desktop/dirlist/lib/pe/pe_get_datadir.c",
 		"/C/Users/roman/Desktop/dirlist/list-r.c",
 		"/C/Users/roman/Desktop/dirlist/pelist.c",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_next_record.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/clang_format.sublime-settings",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_relative.c",
-		"/C/Users/roman/Desktop/dirlist/lib/stralloc/mmap_filename.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Cscope/CscopeSublime.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/Default (Windows).sublime-keymap",
@@ -493,7 +401,6 @@
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-mousemap",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_canonical.c",
-		"/C/Users/roman/Desktop/dirlist/pathtool.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
 		"/B/Programs/mplayer/mplayer/config",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
@@ -515,24 +422,11 @@
 		"/C/Users/roman/Desktop/dirlist/tests/test_path.c",
 		"/C/Users/roman/Desktop/dirlist/access.c",
 		"/C/Users/roman/Desktop/dirlist/lib/uint64.h",
-		"/C/Users/roman/Desktop/dirlist/lib/binfmt.h",
-		"/C/Users/roman/Desktop/dirlist/lib/windoze.h",
-		"/C/Users/roman/Desktop/unix.h",
-		"/C/Users/roman/Desktop/dirlist/lib/socket.h",
-		"/C/Users/roman/Desktop/dirlist/lib/socket_internal.h",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/CPrettify/user.cfg",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/CPrettify.sublime-settings",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/Package Control.sublime-settings",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/Package Control/Package Control.sublime-settings",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_num_sa.c",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/User/CTags.sublime-settings",
-		"/B/PortableApps/SublimeText3Portable/App/SublimeText64/Data/Packages/CPrettify/CPrettify.sublime-settings",
-		"/D/Qt/qt-5.10.1-static-ltcg-msvc2017-x86_64/mkspecs/win32-msvc/qmake.conf"
+		"/C/Users/roman/Desktop/dirlist/lib/binfmt.h"
 	],
 	"find":
 	{
-		"height": 22.977022977
+		"height": 40.0
 	},
 	"find_in_files":
 	{
@@ -546,6 +440,13 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"popen",
+			"new_patch",
+			"patch",
+			"dynstr",
+			"get_symtab_r",
+			"ELF_GET",
+			"dump_dyn",
 			"_inline",
 			"newline =",
 			"\"\\n\\t",
@@ -666,14 +567,7 @@
 			"\\",
 			"equal",
 			"-w",
-			"link_rules",
-			"data_dir",
-			"shift+ctrl",
-			"alt",
-			"dir_INTERNAL(d)->tmpname",
-			"size",
-			"double",
-			"float"
+			"link_rules"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -739,7 +633,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 32,
+						"buffer_size": 394,
 						"regions":
 						{
 						},
@@ -749,31 +643,156 @@
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "/home/roman/Sources/rsenn/dirlist/msys-shell.c",
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\mediathek-list.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									502,
-									513
+									8,
+									21
 								],
 								[
-									776,
-									785
+									32,
+									47
 								],
 								[
-									1416,
-									1421
+									63,
+									77
 								],
 								[
-									1820,
-									1824
+									726,
+									733
+								],
+								[
+									777,
+									787
+								],
+								[
+									841,
+									846
+								],
+								[
+									899,
+									904
+								],
+								[
+									2359,
+									2378
+								],
+								[
+									2594,
+									2606
+								],
+								[
+									3173,
+									3187
+								],
+								[
+									3769,
+									3788
+								],
+								[
+									5327,
+									5337
+								],
+								[
+									5699,
+									5709
+								],
+								[
+									5846,
+									5857
+								],
+								[
+									6273,
+									6287
+								],
+								[
+									6463,
+									6476
+								],
+								[
+									6719,
+									6734
+								],
+								[
+									7004,
+									7012
+								],
+								[
+									7544,
+									7563
+								],
+								[
+									7732,
+									7754
+								],
+								[
+									8337,
+									8359
+								],
+								[
+									8692,
+									8704
+								],
+								[
+									9234,
+									9248
+								],
+								[
+									9860,
+									9871
+								],
+								[
+									10860,
+									10871
+								],
+								[
+									11688,
+									11700
+								],
+								[
+									12130,
+									12150
+								],
+								[
+									13766,
+									13771
+								],
+								[
+									14486,
+									14490
 								]
 							],
 							"symlist":
 							[
-								"path_lookup",
-								"setup_env",
+								"_XOPEN_SOURCE",
+								"__POSIX_VISIBLE",
+								"__MISC_VISIBLE",
+								"BUFSIZE",
+								"__declspec",
+								"popen",
+								"popen",
+								"count_field_lengths",
+								"split_fields",
+								"process_status",
+								"read_mediathek_list",
+								"parse_time",
+								"format_num",
+								"format_time",
+								"parse_datetime",
+								"parse_anydate",
+								"format_datetime",
+								"make_url",
+								"new_mediathek_entry",
+								"create_mediathek_entry",
+								"delete_mediathek_entry",
+								"match_tokens",
+								"match_toklists",
+								"parse_entry",
+								"print_entry",
+								"output_entry",
+								"parse_mediathek_list",
 								"usage",
 								"main"
 							],
@@ -783,13 +802,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -798,20 +817,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 70841,
+						"buffer_size": 88768,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-<<<<<<< HEAD
-								0,
-								0
-=======
-								70841,
-								70841
->>>>>>> 8021b34da066093412e33f0050a9d71cf5d6d8ae
+								61396,
+								61396
 							]
 						],
 						"settings":
@@ -821,57 +835,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 7121.87812188,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "cc-wrap.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3243,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 35550.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "msys-shell.c",
-					"semi_transient": true,
+					"buffer": 2,
+					"file": "mediathek-list.c",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4463,
+						"buffer_size": 15938,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								3129,
+								3148
 							]
 						],
 						"settings":
@@ -881,7 +865,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1314.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -892,7 +876,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 22.977022977
+		"height": 22.0
 	},
 	"input":
 	{
@@ -950,11 +934,11 @@
 	{
 		"height": 0.0
 	},
-	"pinned_build_system": "Packages/Makefile Improved/Make.sublime-build",
+	"pinned_build_system": "Make",
 	"project": "dirlist.sublime-project",
 	"replace":
 	{
-		"height": 41.958041958
+		"height": 72.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1000,7 +984,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 254.0,
+	"side_bar_width": 224.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

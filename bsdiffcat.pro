@@ -2,6 +2,17 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
+CONFIG += link_pkgconfig
+
+
+PKGCONFIG += liblzma
+DEFINES += HAVE_LIBLZMA=1
+
+PKGCONFIG += zlib
+DEFINES += HAVE_ZLIB=1
+
+PKGCONFIG += bzip2
+DEFINES += HAVE_LIBBZ2=1
 
 *msvc* {
   DEFINES += INLINE=__inline
@@ -37,9 +48,10 @@ gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-variable -Wno-unused-
 
 INCLUDEPATH += .
 
+
 HEADERS = lib/buffer.h lib/byte.h lib/errmsg.h lib/fmt.h lib/mmap.h lib/open.h lib/str.h
 
 
-SOURCES = bsdiffcat.c lib/buffer/buffer_0.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_bz2.c lib/buffer/buffer_close.c lib/buffer/buffer_dummyread.c lib/buffer/buffer_dummyreadmmap.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_free.c lib/buffer/buffer_get.c lib/buffer/buffer_init.c lib/buffer/buffer_mmapread.c lib/buffer/buffer_mmapread_fd.c lib/buffer/buffer_munmap.c lib/buffer/buffer_prefetch.c lib/buffer/buffer_put.c lib/buffer/buffer_putc.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putint64.c lib/buffer/buffer_putnc.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_putnspace.c lib/buffer/buffer_puts.c lib/buffer/buffer_putxint640.c lib/buffer/buffer_putxlong0.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/buffer/buffer_truncfile.c lib/byte/byte_copy.c lib/byte/byte_count.c lib/byte/byte_diff.c lib/byte/byte_fill.c lib/byte/byte_zero.c lib/errmsg/errmsg_iam.c lib/errmsg/errmsg_infosys.c lib/errmsg/errmsg_puts.c lib/errmsg/errmsg_write.c lib/fmt/fmt_int64.c lib/fmt/fmt_uint64.c lib/fmt/fmt_xint64.c lib/fmt/fmt_xlong.c lib/mmap/mmap_read.c lib/mmap/mmap_read_fd.c lib/open/open_read.c lib/open/open_trunc.c lib/str/str_basename.c lib/str/str_len.c lib/str/str_rchr.c
+SOURCES = bsdiffcat.c lib/buffer/buffer_0.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buffer_bz2.c lib/buffer/buffer_close.c lib/buffer/buffer_dummyread.c lib/buffer/buffer_dummyreadmmap.c lib/buffer/buffer_feed.c lib/buffer/buffer_flush.c lib/buffer/buffer_free.c lib/buffer/buffer_get.c lib/buffer/buffer_init.c lib/buffer/buffer_mmapread.c lib/buffer/buffer_mmapread_fd.c lib/buffer/buffer_munmap.c lib/buffer/buffer_prefetch.c lib/buffer/buffer_put.c lib/buffer/buffer_putc.c lib/buffer/buffer_putflush.c lib/buffer/buffer_putlonglong.c lib/buffer/buffer_putnc.c lib/buffer/buffer_putnlflush.c lib/buffer/buffer_putnspace.c lib/buffer/buffer_puts.c lib/buffer/buffer_putxlonglong0.c lib/buffer/buffer_putxlong0.c lib/buffer/buffer_stubborn.c lib/buffer/buffer_stubborn2.c lib/buffer/buffer_truncfile.c lib/byte/byte_copy.c lib/byte/byte_count.c lib/byte/byte_diff.c lib/byte/byte_fill.c lib/byte/byte_zero.c lib/errmsg/errmsg_iam.c lib/errmsg/errmsg_infosys.c lib/errmsg/errmsg_puts.c lib/errmsg/errmsg_write.c lib/fmt/fmt_longlong.c lib/fmt/fmt_ulonglong.c lib/fmt/fmt_xlonglong.c lib/fmt/fmt_xlong.c lib/mmap/mmap_read.c lib/mmap/mmap_read_fd.c lib/open/open_read.c lib/open/open_trunc.c lib/str/str_basename.c lib/str/str_len.c lib/str/str_rchr.c lib/buffer/buffer_bzip.c lib/buffer/buffer_deflate.c lib/buffer/buffer_inflate.c lib/buffer/buffer_gzip.c
 
 DEFINES += HAVE_ERRNO_H=1

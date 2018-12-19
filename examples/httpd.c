@@ -53,17 +53,17 @@ header_complete(struct http_data* r) {
 void
 httperror(struct http_data* r, const char* title, const char* message) {
   char* c;
-  c = r->hdrbuf = (char*)malloc(strlen(message) + strlen(title) + 200);
+  c = r->hdrbuf = (char*)malloc(str_len(message) + str_len(title) + 200);
   if(!c) {
     r->hdrbuf = "HTTP/1.0 500 internal error\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\nout of memory\n";
-    r->hlen = strlen(r->hdrbuf);
+    r->hlen = str_len(r->hdrbuf);
   } else {
     c += fmt_str(c, "HTTP/1.0 ");
     c += fmt_str(c, title);
     c += fmt_str(c, "\r\nContent-Type: text/html\r\nConnection: ");
     c += fmt_str(c, r->keepalive ? "keep-alive" : "close");
     c += fmt_str(c, "\r\nContent-Length: ");
-    c += fmt_ulong(c, strlen(message) + strlen(title) + 16 - 4);
+    c += fmt_ulong(c, str_len(message) + str_len(title) + 16 - 4);
     c += fmt_str(c, "\r\n\r\n<title>");
     c += fmt_str(c, title + 4);
     c += fmt_str(c, "</title>\n");
@@ -122,7 +122,7 @@ const char*
 http_header(struct http_data* r, const char* h) {
   long i;
   long l = array_bytes(&r->r);
-  long sl = strlen(h);
+  long sl = str_len(h);
   const char* c = array_start(&r->r);
   for(i = 0; i + sl + 2 < l; ++i)
     if(c[i] == '\n' && case_equalb(c + i + 1, sl, h) && c[i + sl + 1] == ':') {
@@ -180,7 +180,7 @@ httpresponse(struct http_data* h, int64 s) {
       c += fmt_str(c, "HTTP/1.1 Coming Up\r\nContent-Type: ");
       c += fmt_str(c, m);
       c += fmt_str(c, "\r\nContent-Length: ");
-      c += fmt_uint64(c, s.st_size);
+      c += fmt_ulonglong(c, s.st_size);
       c += fmt_str(c, "\r\nLast-Modified: ");
       c += fmt_httpdate(c, s.st_mtime);
       c += fmt_str(c, "\r\nConnection: ");

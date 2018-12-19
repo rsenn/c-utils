@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include "../lib/str.h"
 #include "../lib/buffer.h"
 #include "../lib/textcode.h"
 
@@ -19,7 +20,7 @@ int
 main(int argc, char* argv[]) {
   int i;
   for(i = 1; i < argc; ++i) {
-    b64encode(argv[i], strlen(argv[i]));
+    b64encode(argv[i], str_len(argv[i]));
   }
   if(argc < 2) {
     char src[1024];

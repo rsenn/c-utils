@@ -1,14 +1,14 @@
 #include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/windoze.h"
 #include "lib/str.h"
 #include "lib/byte.h"
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 /*
 typedef enum {
   MIXED, UNIX, WIN
@@ -42,7 +42,7 @@ strlist_from_path(strlist* sl, const char* p) {
 #define MAX_PATH 260
 #endif
 
-#if !defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)
+#if (!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
@@ -147,7 +147,7 @@ pathtool(const char* arg, stralloc* sa) {
     strlist rel;
     size_t n1 = strlist_count(&path);
     size_t n2 = strlist_count(&relative_to);
-    size_t i, n = max(n1, n2);
+    size_t i, n = MAX(n1, n2);
 
     for(i = 0; i < n; ++i) {
       size_t l1, l2;

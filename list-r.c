@@ -5,6 +5,7 @@
 #define STRINGIFY(VALUE) INTERNAL_STRINGIFY(VALUE)
 
 #include "lib/windoze.h"
+#include "lib/getopt.h"
 
 #if WINDOWS_NATIVE
 #include <windows.h>
@@ -15,11 +16,16 @@
 #include <unistd.h>
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "lib/buffer.h"
-#include "lib/dir_internal.h"
+#include "lib/dir.h"
 #include "lib/fmt.h"
 #include "lib/fnmatch.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
 #include "lib/open.h"
 #include "lib/str.h"
@@ -29,11 +35,7 @@
 #include "lib/byte.h"
 #include "lib/array.h"
 #include "lib/unix.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "lib/path.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -134,7 +136,7 @@ get_file_size(char* path) {
   if(!api_fn)
     return -1;
 
-  if(!api_fn(hFile, &size)) {
+  if(!(*api_fn)(hFile, &size)) {
     CloseHandle(hFile);
     return -1; /* error condition, could call GetLastError to find out more */
   }
@@ -332,7 +334,7 @@ static int list_dir_internal(stralloc* dir, char type);
 static void
 make_num(stralloc* out, size_t num, size_t width) {
   char fmt[FMT_ULONG + 1];
-  size_t sz = fmt_uint64(fmt, num);
+  size_t sz = fmt_ulonglong(fmt, num);
   ssize_t n = width - sz;
   while(n-- > 0) {
     stralloc_catb(out, " ", 1);
@@ -342,7 +344,7 @@ make_num(stralloc* out, size_t num, size_t width) {
 
 static void
 print_strarray(buffer* b, array* a) {
-  size_t i, n = array_length(a, sizeof(char*));
+  size_t i, n = array_length(a, sizeof(char *));
   char** x = array_start(a);
   for(i = 0; i < n; ++i) {
     char* s = x[i];
@@ -356,7 +358,7 @@ print_strarray(buffer* b, array* a) {
 
 static int
 fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
-  size_t i, n = array_length(a, sizeof(char*));
+  size_t i, n = array_length(a, sizeof(char *));
   char** x = array_start(a);
   int ret = FNM_NOMATCH;
   for(i = 0; i < n; ++i) {
@@ -514,6 +516,7 @@ list_dir_internal(stralloc* dir, char type) {
   while((name = dir_read(&d))) {
     unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
     uint64 size = 0, mtime = 0;
+    dtype = dir_type(&d);
     dir->len = l;
     if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, "..")) {
       continue;
@@ -521,6 +524,7 @@ list_dir_internal(stralloc* dir, char type) {
     stralloc_readyplus(dir, str_len(name) + 1);
     str_copy(dir->s + dir->len, name);
     dir->len += str_len(name);
+    is_symlink = !!(dtype & D_SYMLINK);
 #if !WINDOWS_NATIVE
     if(lstat(dir->s, &st) != -1) {
       if(root_dev && st.st_dev) {
@@ -528,11 +532,8 @@ list_dir_internal(stralloc* dir, char type) {
           continue;
         }
       }
-      is_symlink = !!S_ISLNK(mode);
-    } else
+    }
 #endif
-      is_symlink = 0;
-    dtype = dir_type(&d);
 #if !WINDOWS_NATIVE
     if(S_ISLNK(st.st_mode)) {
       stat(dir->s, &st);
@@ -557,7 +558,7 @@ list_dir_internal(stralloc* dir, char type) {
     size = st.st_size;
     mtime = st.st_mtime;
 #else
-    mode = (is_dir ? S_IFDIR : (is_symlink ? S_IFLNK : S_IFREG));
+    mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
 #if USE_READDIR
     if(!is_dir) {
       size = get_file_size(s); /* dir_INTERNAL(&d)->dir_entry->d_name); */
@@ -567,8 +568,8 @@ list_dir_internal(stralloc* dir, char type) {
       size = 0;
     }
 #else
-    size = ((uint64)(dir_INTERNAL(&d)->dir_finddata.nFileSizeHigh) << 32) + dir_INTERNAL(&d)->dir_finddata.nFileSizeLow;
-    mtime = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime);
+    size = dir_size(&d);
+    mtime = dir_time(&d, D_TIME_MODIFICATION);
 #endif
 #endif
     if(opt_list) {
@@ -596,11 +597,11 @@ list_dir_internal(stralloc* dir, char type) {
     /* fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d)); */
     if(is_dir)
       stralloc_catc(dir, opt_separator);
-    if(dir->len > MAXIMUM_PATH_LENGTH) {
+    if(dir->len > MAX_PATH) {
       buffer_puts(buffer_2, "ERROR: Directory ");
       buffer_putsa(buffer_2, dir);
-      buffer_puts(buffer_2, " longer than MAXIMUM_PATH_LENGTH (" STRINGIFY(MAXIMUM_PATH_LENGTH) ")!\n");
-      /*buffer_putulong(buffer_2, MAXIMUM_PATH_LENGTH);
+      buffer_puts(buffer_2, " longer than MAX_PATH (" STRINGIFY(MAX_PATH) ")!\n");
+      /*buffer_putulong(buffer_2, MAX_PATH);
       buffer_puts(buffer_2, ")!\n");*/
       buffer_flush(buffer_2);
       goto end;

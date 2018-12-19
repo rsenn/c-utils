@@ -20,8 +20,8 @@ buffer_get_token(buffer* b, char* x, size_t len, const char* charset, size_t set
 
         /* memccpy returns a pointer to the next char after matching
          * char or NULL if it copied all bytes it was asked for */
-        b->p += (d - (x + blen));
-        return d - x - 1;
+        b->p += i;
+        return d - x;
       }
       blen += n;
       b->p += n;

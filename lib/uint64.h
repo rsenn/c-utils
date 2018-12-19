@@ -44,16 +44,17 @@ typedef int64_t int64;
 
 #if !defined(NO_UINT64_MACROS)
 
-#if (defined(__i386__) || defined(_M_IX86) ||defined (_X86_) || defined(__x86_64__) || defined(_M_AMD64) || defined(__LITTLE_ENDIAN__) || (BYTE_ORDER == _LITTLE_ENDIAN) || defined(_AMD64_) || defined(I_X86_))
+#if(defined(__i386__) || defined(_M_IX86) || defined(_X86_) || defined(__x86_64__) || defined(_M_AMD64) ||             \
+    defined(__LITTLE_ENDIAN__) || (BYTE_ORDER == _LITTLE_ENDIAN) || defined(_AMD64_) || defined(I_X86_))
 
-#define uint64_pack(out, in) ( * (uint64 *)(out) = (in))
-#define uint64_unpack(in, out) ( * (out) = *(uint64 *)(in))
-#define uint64_read(in) ( * (uint64 *)(in))
+#define uint64_pack(out, in) (*(uint64*)(out) = (in))
+#define uint64_unpack(in, out) (*(out) = *(uint64*)(in))
+#define uint64_read(in) (*(uint64*)(in))
 
 inline static uint64
 uint64_get(const void* ptr) {
   const char* in = ptr;
-  return *(uint64 *)in;
+  return *(uint64*)in;
 }
 
 #else
@@ -68,25 +69,26 @@ uint64 uint64_read_big(const char* in);
 
 #if defined(_WIN32) && defined(_MSC_VER)
 // for older MSVC
-# ifndef PRId64
-#  define PRId64 "I64d"
-# endif
-# ifndef PRIu64
-#  define PRIu64 "I64u"
-# endif
-# ifndef PRIx64
-#  define PRIx64 "I64x"
-# endif
+#ifndef PRId64
+#define PRId64 "I64d"
+#endif
+#ifndef PRIu64
+#define PRIu64 "I64u"
+#endif
+#ifndef PRIx64
+#define PRIx64 "I64x"
+#endif
 #endif /* _WIN32 && _MSC_VER */
 
 #if defined(_WIN32) && defined(_MSC_VER)
 // for older MSVC: "unsigned __int64 -> double" conversion not implemented (why?-)
-__inline double uint64_to_double(uint64 ull) {
-  return ((int64)ull >= 0 ? (double)(int64)ull :
-    ((double)(int64)(ull - 9223372036854775808UI64)) + 9223372036854775808.0);
+__inline double
+uint64_to_double(uint64 ull) {
+  return ((int64)ull >= 0 ? (double)(int64)ull
+                          : ((double)(int64)(ull - 9223372036854775808UI64)) + 9223372036854775808.0);
 }
 #else
-# define uint64_to_double(ull) ((double)(ull))
+#define uint64_to_double(ull) ((double)(ull))
 #endif /* _WIN32 && _MSC_VER && TSCI2_OS_WIN32 */
 
 #ifdef __cplusplus

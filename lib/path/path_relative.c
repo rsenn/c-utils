@@ -85,7 +85,6 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
   if(rel.sa.len == 0) {
     stralloc_copys(out, ".");
   } else {
-    stralloc_free(out);
     stralloc_move(out, &rel.sa);
   }
 

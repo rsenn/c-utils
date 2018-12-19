@@ -5,10 +5,10 @@
 extern "C" {
 #endif
 
-void	*alloc(unsigned long n);
-void	alloc_free(void *x);
+void* alloc(unsigned long n);
+void alloc_free(void* x);
 
-unsigned int	alloc_re(void **x, unsigned long m, unsigned long n);
+unsigned int alloc_re(void** x, unsigned long m, unsigned long n);
 
 #ifdef __cplusplus
 }

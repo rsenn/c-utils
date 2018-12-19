@@ -1,18 +1,26 @@
 #include "../path_internal.h"
 #include "../windoze.h"
 
-#if !WINDOWS_NATIVE
 #include <sys/stat.h>
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#define lstat stat
+#endif
+
+#if !defined(__LCC__) || defined(_WIN64)
+#define _stat stat
 #endif
 
 int
 path_exists(const char* p) {
-  int ret;
 #if WINDOWS_NATIVE
-  ret = access(p, 0) == 0;
-#else
-  struct stat st;
-  ret = lstat(p, &st) == 0;
+  if(access(p, 0) == 0) return 1;
 #endif
-  return ret;
+  {
+    struct _stat st;
+    if(lstat(p, &st) == 0)
+      return 1;
+  }
+  return 0;
 }

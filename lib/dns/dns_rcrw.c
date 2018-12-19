@@ -1,7 +1,5 @@
 #define USE_WS2_32 1
 #include "../windoze.h"
-
-
 #include "../byte.h"
 #include "../dns.h"
 #include "../open.h"
@@ -9,6 +7,10 @@
 #include "../stralloc.h"
 #include "../taia.h"
 #include <stdlib.h>
+
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#endif
 
 static stralloc data;
 

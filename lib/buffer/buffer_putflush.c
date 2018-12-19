@@ -10,6 +10,10 @@
 
 #include <errno.h>
 
+#ifndef EINTR
+#define EINTR 4
+#endif
+
 #ifdef __dietlibc__
 #undef __unlikely
 #endif

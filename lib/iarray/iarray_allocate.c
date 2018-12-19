@@ -1,9 +1,23 @@
+#ifdef __POCC__
+#define NOWINBASEINTERLOCK 1
+#define _NTOS_ 1
+long __stdcall InterlockedCompareExchange(long volatile *,long,long);
+void* __stdcall InterlockedCompareExchangePointer(void* volatile *,void*,void*);
+#endif
+
 #include "../windoze.h"
 #include "../byte.h"
-#include "../likely.h"
-#include <fcntl.h>
-
 #include "../iarray.h"
+
+#if defined(__STDC__) 
+#if __STDC_VERSION__ >= 201112L 
+#include <stdatomic.h>
+
+
+#endif
+#endif
+
+#include <fcntl.h>
 
 #if defined(__BORLANDC__) || defined(__ORANGEC__) || defined(__LCC__) || defined(__DMC__)
 #define InterlockedCompareExchangePointer(ptr, newptr, oldptr)                                                         \
@@ -16,7 +30,7 @@
 #ifdef __dietlibc__
 #include <sys/atomic.h>
 #define __CAS_PTR(ptr, oldptr, newptr) __CAS(ptr, oldptr, newptr)
-#elif WINDOWS_NATIVE || defined(__MSYS__)
+#elif WINDOWS_NATIVE || defined(__MSYS__) || defined(__POCC__)
 #include <windows.h>
 #define __CAS(val, oldval, newval) InterlockedCompareExchange(val, newval, oldval)
 #define __CAS_PTR(ptr, oldptr, newptr) InterlockedCompareExchangePointer(ptr, newptr, oldptr)

@@ -49,10 +49,8 @@ extern int errno;
 
 /* Match STRING against the filename pattern PATTERN, returning zero if
    it matches, nonzero if not.  */
-int fnmatch(pattern, string, flags) const char* pattern;
-const char* string;
-int flags;
-{
+int
+fnmatch(const char* pattern, const char* string, int flags) {
   const char *p = pattern, *n = string;
   char c;
 

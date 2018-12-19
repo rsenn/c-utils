@@ -28,7 +28,7 @@ main(int argc, char* argv[]) {
     else
       x[0].iov_base = argv[0];
   }
-  x[0].iov_len = strlen(x[0].iov_base);
+  x[0].iov_len = str_len(x[0].iov_base);
   x[1].iov_base = "\nq\n";
   x[1].iov_len = 3;
   writev(s, x, 2);

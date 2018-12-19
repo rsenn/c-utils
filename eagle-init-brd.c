@@ -22,7 +22,9 @@
 #endif
 
 #if WINDOWS_NATIVE && !defined(__TINYC__) && !defined(__ORANGEC__) && !defined(__DMC__)
+#ifndef isnan
 #define isnan(x) _isnan(x)
+#endif
 #endif
 
 #define END_OF_LINE "; "

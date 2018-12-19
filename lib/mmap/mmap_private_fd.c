@@ -1,3 +1,4 @@
+#define _LARGEFILE64_SOURCE
 #include "../windoze.h"
 #include "../io_internal.h"
 #include "../mmap.h"
@@ -15,7 +16,7 @@
 char*
 mmap_private_fd(fd_t fd, size_t* filesize) {
 #if WINDOWS_NATIVE
-  HANDLE h = (HANDLE)_get_osfhandle(fd);
+  HANDLE h = (HANDLE)_get_osfhandle((int)fd);
   HANDLE m;
   char* map;
   if(h == INVALID_HANDLE_VALUE)

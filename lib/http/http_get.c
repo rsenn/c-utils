@@ -1,12 +1,12 @@
 #define USE_WS2_32 1
 #include "../socket_internal.h"
+#include "../socket.h"
 #include "../buffer.h"
 #include "../byte.h"
 #include "../dns.h"
 #include "../errmsg.h"
 #include "../http.h"
 #include "../io.h"
-#include "../io_internal.h"
 #include "../ip4.h"
 #include "../str.h"
 
@@ -45,13 +45,13 @@ http_get(http* h, const char* location) {
 
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 
-  buffer_putsa(buffer_1, &h->host);
-  buffer_puts(buffer_1, " (");
-  buffer_put(buffer_1, ip, fmt_ip4(ip, (const char*)a->addr));
-  buffer_puts(buffer_1, ")");
-  buffer_putnlflush(buffer_1);
+  buffer_putsa(buffer_2, &h->host);
+  buffer_puts(buffer_2, " (");
+  buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)a->addr));
+  buffer_puts(buffer_2, ")");
+  buffer_putnlflush(buffer_2);
 
-  http_socket(h);
+  http_socket(h, h->nonblocking);
 
   if(h->request) {
     serial = h->request->serial + 1;
@@ -84,5 +84,9 @@ http_get(http* h, const char* location) {
       errno = 0;
     }
   }
+
+  io_wantwrite(h->sock);
+  io_wantread(h->sock);
+
   return ret == 0;
 }

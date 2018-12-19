@@ -1,10 +1,12 @@
+#define _LARGEFILE64_SOURCE
 #include "../windoze.h"
-#include "../io.h"
+#include "../io_internal.h"
 #include "../playlist.h"
+#include "../byte.h"
 
 #include <stdio.h>
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <io.h>
 #else
 #include <unistd.h>

@@ -127,8 +127,8 @@ int buffer_put8long(buffer *b, unsigned long int l);
 int buffer_putxlong(buffer *b, unsigned long int l);
 int buffer_putlong(buffer *b, signed long int l);
 
-int buffer_putint64(buffer* b, signed long long int l);
-int buffer_putuint64(buffer* b, unsigned long long int l);
+int buffer_putlonglong(buffer* b, signed long long int l);
+int buffer_putulonglong(buffer* b, unsigned long long int l);
 
 int buffer_putdouble(buffer *b, double d);
 
@@ -191,7 +191,7 @@ void buffer_fromarray(buffer* b, array* a);	/* buffer reads from array */
 void buffer_dump(buffer *out,  buffer *b);
 
 int buffer_putc(buffer *b,  char c);
-int buffer_putuint64(buffer *b,  uint64 i);
+int buffer_putulonglong(buffer *b,  uint64 i);
 int buffer_putnspace(buffer *b,  int n);
 
 int buffer_putptr(buffer *b, void *ptr);

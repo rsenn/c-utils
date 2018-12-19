@@ -62,7 +62,7 @@
     <Unit filename="lib/array/array_allocate.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/array/array_length.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/array/array_start.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/array/umult64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/safemult/umult64.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_1.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_2.c"><Option compilerVar="CC"/></Unit>
@@ -81,7 +81,7 @@
     <Unit filename="lib/buffer/buffer_putc.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putdouble.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putflush.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_putint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putlonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putlong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putm_internal.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putnlflush.c"><Option compilerVar="CC"/></Unit>
@@ -89,7 +89,7 @@
     <Unit filename="lib/buffer/buffer_putptr.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_puts.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putsa.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/buffer/buffer_putuint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/buffer/buffer_putulonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_putulong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_skip_pred.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_skip_until.c"><Option compilerVar="CC"/></Unit>
@@ -109,13 +109,13 @@
     <Unit filename="lib/fmt.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_double.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_escapecharc.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/fmt/fmt_int64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_longlong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_long.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_repeat.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/fmt/fmt_uint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_ulonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_ulong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_utf8.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/fmt/fmt_xint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/fmt/fmt_xlonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_xlong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/fmt/fmt_xmlescape.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/hmap.h"><Option compilerVar="CC"/></Unit>

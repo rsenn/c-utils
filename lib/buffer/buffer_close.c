@@ -2,7 +2,9 @@
 
 #if WINDOWS_NATIVE
 #include <io.h>
+#ifndef __LCC__
 #define close _close
+#endif
 #else
 #include <unistd.h>
 #endif

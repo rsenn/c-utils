@@ -1,3 +1,5 @@
+#define USE_WS2_32 1
+
 #include "../socket_internal.h"
 #include "../io_internal.h"
 #include "../buffer.h"
@@ -138,10 +140,10 @@ io_waituntil2(int64 milliseconds) {
       ++r;
     }
 
-    /*put_fdset(buffer_1, "rfds", &rfds, maxfd);
-    buffer_puts(buffer_1, ", ");
-    put_fdset(buffer_1, "wfds", &wfds, maxfd);
-    buffer_putnlflush(buffer_1);*/
+    /*put_fdset(buffer_2, "rfds", &rfds, maxfd);
+    buffer_puts(buffer_2, ", ");
+    put_fdset(buffer_2, "wfds", &wfds, maxfd);
+    buffer_putnlflush(buffer_2);*/
 
     tv.tv_sec = milliseconds / 1000;
     tv.tv_usec = milliseconds % 1000 * 1000;
@@ -149,10 +151,10 @@ io_waituntil2(int64 milliseconds) {
     if((i = select(maxfd + 1, &rfds, &wfds, NULL, milliseconds == -1 ? 0 : &tv)) == -1)
       return -1;
 
-    /*put_fdset(buffer_1, "rfds2", &rfds, maxfd);
-    buffer_puts(buffer_1, ", ");
-    put_fdset(buffer_1, "wfds2", &wfds, maxfd);
-    buffer_putnlflush(buffer_1);*/
+    /*put_fdset(buffer_2, "rfds2", &rfds, maxfd);
+    buffer_puts(buffer_2, ", ");
+    put_fdset(buffer_2, "wfds2", &wfds, maxfd);
+    buffer_putnlflush(buffer_2);*/
 
     for(j = maxfd; j >= 0; --j) {
       if(!(e = iarray_get(io_getfds(), j)))
@@ -527,40 +529,40 @@ dopoll :
     }
   }
   p = array_start(&io_pollfds);
-  buffer_puts(buffer_1, "io_wait() ");
-  buffer_putlong(buffer_1, r);
-  buffer_putsflush(buffer_1, " fds\n");
+  buffer_puts(buffer_2, "io_wait() ");
+  buffer_putlong(buffer_2, r);
+  buffer_putsflush(buffer_2, " fds\n");
   for(i = 0; i < r; ++i) {
-    buffer_puts(buffer_1, "pollfd[");
-    buffer_putlong(buffer_1, i);
-    buffer_puts(buffer_1, "] { .fd=");
-    buffer_putlong(buffer_1, p[i].fd);
-    buffer_puts(buffer_1, ", events=");
+    buffer_puts(buffer_2, "pollfd[");
+    buffer_putlong(buffer_2, i);
+    buffer_puts(buffer_2, "] { .fd=");
+    buffer_putlong(buffer_2, p[i].fd);
+    buffer_puts(buffer_2, ", events=");
     if(p[i].events & POLLIN)
-      buffer_puts(buffer_1, "IN ");
+      buffer_puts(buffer_2, "IN ");
     if(p[i].events & POLLOUT)
-      buffer_puts(buffer_1, "OUT ");
+      buffer_puts(buffer_2, "OUT ");
     if(p[i].events & POLLERR)
-      buffer_puts(buffer_1, "ERR ");
-    buffer_puts(buffer_1, "}");
-    buffer_putnlflush(buffer_1);
+      buffer_puts(buffer_2, "ERR ");
+    buffer_puts(buffer_2, "}");
+    buffer_putnlflush(buffer_2);
   }
   if((i = poll(array_start(&io_pollfds), r, milliseconds)) < 1)
     return -1;
   for(i = 0; i < r; ++i) {
-    buffer_puts(buffer_1, "pollfd[");
-    buffer_putlong(buffer_1, i);
-    buffer_puts(buffer_1, "] { .fd=");
-    buffer_putlong(buffer_1, p[i].fd);
-    buffer_puts(buffer_1, ", revents=");
+    buffer_puts(buffer_2, "pollfd[");
+    buffer_putlong(buffer_2, i);
+    buffer_puts(buffer_2, "] { .fd=");
+    buffer_putlong(buffer_2, p[i].fd);
+    buffer_puts(buffer_2, ", revents=");
     if(p[i].revents & POLLIN)
-      buffer_puts(buffer_1, "IN ");
+      buffer_puts(buffer_2, "IN ");
     if(p[i].revents & POLLOUT)
-      buffer_puts(buffer_1, "OUT ");
+      buffer_puts(buffer_2, "OUT ");
     if(p[i].revents & POLLERR)
-      buffer_puts(buffer_1, "ERR ");
-    buffer_puts(buffer_1, "}");
-    buffer_putnlflush(buffer_1);
+      buffer_puts(buffer_2, "ERR ");
+    buffer_puts(buffer_2, "}");
+    buffer_putnlflush(buffer_2);
   }
   for(j = r - 1; j >= 0; --j) {
     io_entry* e = iarray_get(io_getfds(), p->fd);

@@ -6,4 +6,3 @@
 void sig_block(void);
 
 #endif /* SIG_H */
-

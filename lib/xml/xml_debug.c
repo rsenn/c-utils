@@ -16,7 +16,7 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
       stralloc space, text;
       void* av[4];
       av[0] = " ";
-      av[1] = (void*)(depth * 2 + 6);
+      av[1] = (void*)(intptr_t)(depth * 2 + 6);
 
       stralloc_init(&space);
       stralloc_init(&text);

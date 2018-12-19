@@ -44,7 +44,7 @@ json_parse_num(jsonval* j, charbuf* b) {
       if(c == '.' || c == 'E' || c == 'e') j->type = JSON_DOUBLE;
     }
     stralloc_nul(&num);
-    n = j->type == JSON_INT ? scan_int64(num.s, &j->intv) : scan_double(num.s, &j->doublev);
+    n = j->type == JSON_INT ? scan_longlong(num.s, &j->intv) : scan_double(num.s, &j->doublev);
     if(n > 0) return 1;
   }
   return 0;

@@ -11,29 +11,18 @@
 extern "C" {
 #endif
 
-typedef enum {
-	PE,
-	ELF,
-	MACH_O
-} binfmt_type;
+typedef enum { PE, ELF, MACH_O } binfmt_type;
 
-typedef enum {
-	B32,
-	B64
-} binfmt_bits;
+typedef enum { B32, B64 } binfmt_bits;
 
-typedef enum {
-	B_R = 4,
-	B_W = 2,
-	B_X = 1
-} binfmt_prot;
+typedef enum { B_R = 4, B_W = 2, B_X = 1 } binfmt_prot;
 
 typedef struct {
-	const char* name;
-	uint64 addr;
-	uint64 offs;
-	uint64 size;
-	uint32 flags;
+  const char* name;
+  uint64 addr;
+  uint64 offs;
+  uint64 size;
+  uint32 flags;
 } binfmt_entry;
 
 typedef struct {
@@ -52,4 +41,3 @@ int binfmt_open(binfmt_file*, const char* filename);
 }
 #endif
 #endif
-

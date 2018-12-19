@@ -229,12 +229,12 @@ int buffer_get_until(buffer*, char* x, size_t len, const char* charset, size_t s
 int buffer_write_fd(buffer*, fd_t fd);
 
 #ifdef UINT64_H
-int buffer_putint64(buffer*, int64 l);
-int buffer_putuint64(buffer*, uint64 l);
-int buffer_putxint64(buffer*, uint64 l);
-int buffer_putuint64(buffer*, uint64 i);
-int buffer_putint64(buffer*, int64 i);
-int buffer_putxint640(buffer*, uint64 l, int pad);
+int buffer_putlonglong(buffer*, int64 l);
+int buffer_putulonglong(buffer*, uint64 l);
+int buffer_putxlonglong(buffer*, uint64 l);
+int buffer_putulonglong(buffer*, uint64 i);
+int buffer_putlonglong(buffer*, int64 i);
+int buffer_putxlonglong0(buffer*, uint64 l, int pad);
 #endif
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-	/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
+/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
 #ifndef UINT16_H
 #define UINT16_H
 
@@ -45,23 +45,28 @@ typedef int16_t int16;
 
 #if !defined(NO_UINT16_MACROS)
 
-#if (defined(__i386__) || defined(_M_IX86) ||defined (_X86_) || defined(__x86_64__) || defined(_M_AMD64) || defined(__LITTLE_ENDIAN__) || (BYTE_ORDER == _LITTLE_ENDIAN) || defined(_AMD64_) || defined(I_X86_))
+#if(defined(__i386__) || defined(_M_IX86) || defined(_X86_) || defined(__x86_64__) || defined(_M_AMD64) ||             \
+    defined(__LITTLE_ENDIAN__) || (BYTE_ORDER == _LITTLE_ENDIAN) || defined(_AMD64_) || defined(I_X86_))
 
-inline static void uint16_pack(char* out, uint16 in) {
-  *(uint16 *)out = in;
+inline static void
+uint16_pack(char* out, uint16 in) {
+  *(uint16*)out = in;
 }
 
-inline static void uint16_unpack(const char* in, uint16* out) {
-  *out = *(uint16 *)in;
+inline static void
+uint16_unpack(const char* in, uint16* out) {
+  *out = *(uint16*)in;
 }
 
-inline static uint16 uint16_get(const void* ptr) {
+inline static uint16
+uint16_get(const void* ptr) {
   const char* in = ptr;
-  return *(uint16 *)in;
+  return *(uint16*)in;
 }
 
-inline static uint16 uint16_read(const char* in) {
-  return *(uint16 *)in;
+inline static uint16
+uint16_read(const char* in) {
+  return *(uint16*)in;
 }
 
 #else

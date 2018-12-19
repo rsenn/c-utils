@@ -5,7 +5,7 @@
 
 #define _POSIX_ 1
 
-#if 0 //def _MSC_VER
+#if 0 // def _MSC_VER
 #include <crtdefs.h>
 #endif /* _MSC_VER */
 
@@ -53,13 +53,13 @@ struct dir_internal_s {
 #endif
 };
 
-#ifndef _S_IFDIR
-#define _S_IFDIR 0040000 /* directory */
-#endif                   /* !defined(_S_IFDIR) */
+#ifndef S_IFDIR
+#define S_IFDIR 0040000 /* directory */
+#endif                   /* !defined(S_IFDIR) */
 
-#ifndef _S_IFCHR
-#define _S_IFCHR 0020000 /* character special */
-#endif                   /* !defined(_S_IFCHR) */
+#ifndef S_IFCHR
+#define S_IFCHR 0020000 /* character special */
+#endif                   /* !defined(S_IFCHR) */
 
 #ifndef S_IFBLK
 #define S_IFBLK 0060000 /* block special */
@@ -127,4 +127,3 @@ struct dir_internal_s {
 #endif
 
 #endif /* _DIR_INTERNAL_H__ */
-

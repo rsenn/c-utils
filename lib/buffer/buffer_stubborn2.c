@@ -6,6 +6,10 @@
 #include <unistd.h>
 #endif
 
+#ifndef EINTR
+#define EINTR 4
+#endif
+
 ssize_t
 buffer_stubborn_read(buffer_op_proto* op, fd_t fd, const void* buf, size_t len, void* ptr) {
   ssize_t w;

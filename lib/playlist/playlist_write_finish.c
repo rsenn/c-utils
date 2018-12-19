@@ -1,5 +1,6 @@
+#define _LARGEFILE64_SOURCE
 #include "../windoze.h"
-#include "../io.h"
+#include "../io_internal.h"
 #include "../playlist.h"
 #include "../byte.h"
 #include "../fmt.h"
@@ -7,7 +8,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <io.h>
 #else
 #include <unistd.h>

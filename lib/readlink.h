@@ -10,8 +10,7 @@ ssize_t readlink(const char*, char* buf, size_t maxlen);
 
 #if WINDOWS
 char is_junction(const char*);
-int  is_symlink(const char*);
+int is_symlink(const char*);
 #endif
 
 #endif
-

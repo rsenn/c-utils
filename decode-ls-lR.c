@@ -17,15 +17,16 @@
 #include "lib/fmt.h"
 #include "lib/byte.h"
 #include "lib/str.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
+#include "lib/path.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX
 #endif
 
-#ifndef MAXIMUM_PATH_LENGTH
-#define MAXIMUM_PATH_LENGTH _MAX_PATH
+#ifndef MAX_PATH
+#define MAX_PATH _MAX_PATH
 #endif
 
 static int skip_fields = 8;
@@ -61,7 +62,7 @@ skip_field(int n, char* s, size_t len) {
 
 int
 decode_ls_lR() {
-  char buffer[MAXIMUM_PATH_LENGTH];
+  char buffer[MAX_PATH];
   ssize_t pos, len, i;
   size_t offset = dirp.len;
   int is_dir;

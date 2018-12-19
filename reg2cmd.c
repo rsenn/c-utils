@@ -1,5 +1,5 @@
 #include "lib/windoze.h"
-#include "lib/io_internal.h"
+#include "lib/io.h"
 #include "lib/iarray.h"
 #include "lib/stralloc.h"
 #include "lib/uint64.h"
@@ -9,6 +9,7 @@
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/scan.h"
+#include "lib/path.h"
 
 #if !WINDOWS_NATIVE
 #include <unistd.h>
@@ -29,8 +30,8 @@
 #define _MAX_PATH PATH_MAX
 #endif
 
-#ifndef MAXIMUM_PATH_LENGTH
-#define MAXIMUM_PATH_LENGTH _MAX_PATH
+#ifndef MAX_PATH
+#define MAX_PATH _MAX_PATH
 #endif
 
 static char*
@@ -110,8 +111,8 @@ const char* regtype_strings[] = {
 
 int
 reg2cmd() {
-  char buffer[MAXIMUM_PATH_LENGTH];
-  char key[MAXIMUM_PATH_LENGTH];
+  char buffer[MAX_PATH];
+  char key[MAX_PATH];
   unsigned int lineno = 0;
   int unicode = 0;
   ssize_t pos, len;
@@ -283,7 +284,7 @@ reg2cmd() {
         rt = REGISTRY_DWORD;
       } else if(!str_diffn(&line.s[valuestart], "qword:", 6)) {
         uint64 ull;
-        scan_xint64(&line.s[valuestart + 6], &ull);
+        scan_xlonglong(&line.s[valuestart + 6], &ull);
         word = ull;
         rt = REGISTRY_QWORD;
       } else {
@@ -358,11 +359,11 @@ reg2cmd() {
             break;
           }
           case REGISTRY_DWORD: {
-            buffer_putuint64(buffer_1, word);
+            buffer_putulonglong(buffer_1, word);
             break;
           }
           case REGISTRY_QWORD: {
-            buffer_putuint64(buffer_1, word);
+            buffer_putulonglong(buffer_1, word);
             break;
           }
           case REGISTRY_BINARY: {

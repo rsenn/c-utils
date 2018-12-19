@@ -35,12 +35,13 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
     stralloc_free(&text);
     return;
   }
-  
-  if(!closing) buffer_putnspace(b, depth * 2);
+
+  if(!closing)
+    buffer_putnspace(b, depth * 2);
   buffer_putm_internal(b, "<", node->name, 0);
- 
+
   if(node->attributes && node->attributes->tuple_count) {
-    buffer_putc(b,' ');
+    buffer_putc(b, ' ');
     xml_print_attributes(node->attributes, b, " ", "=", "\"");
   }
 
@@ -64,12 +65,13 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
     closing = 1;
   }
 
-//  if(node->next && depth == 0) {
-//    xmlnode* next = node->next;
-//    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);
-//  }
-  if(closing) buffer_puts(b, nl);
-   buffer_flush(b);
+  //  if(node->next && depth == 0) {
+  //    xmlnode* next = node->next;
+  //    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);
+  //  }
+  if(closing)
+    buffer_puts(b, nl);
+  buffer_flush(b);
 }
 
 static void
@@ -85,7 +87,7 @@ xml_print_tree(xmlnode* node, buffer* b) {
     buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
     node = node->children;
   }
-  
+
   (node->parent ? xml_print_node : xml_print_list)(node, b, 0, "\n");
 }
 
@@ -105,23 +107,22 @@ main(int argc, char* argv[]) {
   buffer_skip_until(&input, "\r\n", 2);
   doc = xml_read_tree(&input);
   xml_print_tree(doc->children, buffer_1);
-/*
-  for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
-    xmlnode* n = *it;
-    buffer_puts(buffer_1, "NODESET[");
-    buffer_putlong(buffer_1, i++);
-    buffer_puts(buffer_1, "]: ");
-    xml_debug(n, buffer_1);
-    buffer_putnlflush(buffer_1);
-  }
-  ns = xml_find_all_1(doc, xml_match_name, "Unit");
-  xml_print_nodeset(&ns, buffer_1);
-  buffer_putlong(buffer_1, xmlnodeset_size(&ns));
-  buffer_putnlflush(buffer_1);*/
+  /*
+    for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
+      xmlnode* n = *it;
+      buffer_puts(buffer_1, "NODESET[");
+      buffer_putlong(buffer_1, i++);
+      buffer_puts(buffer_1, "]: ");
+      xml_debug(n, buffer_1);
+      buffer_putnlflush(buffer_1);
+    }
+    ns = xml_find_all_1(doc, xml_match_name, "Unit");
+    xml_print_nodeset(&ns, buffer_1);
+    buffer_putlong(buffer_1, xmlnodeset_size(&ns));
+    buffer_putnlflush(buffer_1);*/
   /*
    * Cleanup function for the XML library.
    */
   xml_free(doc);
   return (0);
 }
-

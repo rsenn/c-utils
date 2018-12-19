@@ -79,13 +79,13 @@ init(char ip[256]) {
     pFixedInfo = (FIXED_INFO*)MALLOC(sizeof(FIXED_INFO));
     if(pFixedInfo) {
       ulOutBufLen = sizeof(FIXED_INFO);
-      if(get_network_params(pFixedInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
+      if((*get_network_params)(pFixedInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
         FREE(pFixedInfo);
         pFixedInfo = (FIXED_INFO*)MALLOC(ulOutBufLen);
       }
     }
     if(pFixedInfo) {
-      if(get_network_params(pFixedInfo, &ulOutBufLen) == NO_ERROR) {
+      if((*get_network_params)(pFixedInfo, &ulOutBufLen) == NO_ERROR) {
         x = pFixedInfo->DnsServerList.IpAddress.String;
       }
     }

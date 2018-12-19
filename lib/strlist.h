@@ -23,6 +23,7 @@ typedef struct strlist_s {
 #define strlist_zero(l) stralloc_zero(&(l)->sa)
 #define strlist_init(l, s) stralloc_init(&(l)->sa), (l)->sep = (s);
 #define strlist_free(l) stralloc_free(&(l)->sa)
+#define strlist_copy(d, s) (d)->sep = (s)->sep, stralloc_copy(&(d)->sa, &(s)->sa)
 
 #ifdef __BORLANDC__
 #define strlist_pushm(sa, args) strlist_pushm_internal(sa, args, (char*)0)
@@ -66,6 +67,7 @@ int strlist_append_sa(strlist* sl, const stralloc* sa);
   for((str) = (sl)->sa.s;                                                                                              \
       ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) >= 0);                   \
       (str) += (n) + 1)
+
 #define strlist_foreach_s(sl, str)                                                                                     \
   for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
 

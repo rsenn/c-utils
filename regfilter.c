@@ -25,7 +25,7 @@
 #include "lib/stralloc.h"
 #include "lib/io.h"
 #include "lib/iarray.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX
@@ -34,12 +34,6 @@
 #ifndef MAXIMUM_PATH_LENGTH
 #define MAXIMUM_PATH_LENGTH _MAX_PATH
 #endif
-
-static char*
-mystr_basename(const char* path) {
-  char* r = strrchr(path, '/');
-  return r ? r + 1 : (char*)path;
-}
 
 static int force = 0, shortroot = 0;
 
@@ -111,7 +105,7 @@ const char* regtype_strings[] = {
 };
 
 int
-reg2cmd() {
+regfilter() {
   char* o;
   char buffer[MAXIMUM_PATH_LENGTH];
   char key[MAXIMUM_PATH_LENGTH];
@@ -286,7 +280,7 @@ reg2cmd() {
         rt = REGISTRY_DWORD;
       } else if(!str_diffn(&line.s[valuestart], "qword:", 6)) {
         uint64 ull;
-        scan_xint64(&line.s[valuestart + 6], &ull);
+        scan_xlonglong(&line.s[valuestart + 6], &ull);
         word = ull;
         rt = REGISTRY_QWORD;
       } else {
@@ -361,11 +355,11 @@ reg2cmd() {
             break;
           }
           case REGISTRY_DWORD: {
-            buffer_putuint64(buffer_1, word);
+            buffer_putulonglong(buffer_1, word);
             break;
           }
           case REGISTRY_QWORD: {
-            buffer_putuint64(buffer_1, word);
+            buffer_putulonglong(buffer_1, word);
             break;
           }
           case REGISTRY_BINARY: {
@@ -415,7 +409,7 @@ reg2cmd() {
 void
 usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
-  buffer_puts(buffer_2, mystr_basename(arg0));
+  buffer_puts(buffer_2, str_basename(arg0));
   buffer_puts(buffer_2, " [-f] [input - file] [output - file]\n");
   buffer_flush(buffer_2);
   exit(1);
@@ -456,6 +450,6 @@ main(int argc, char* argv[]) {
 
     argi++;
   }
-  reg2cmd();
+  regfilter();
   return 0;
 }

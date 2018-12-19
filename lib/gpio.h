@@ -3,7 +3,6 @@
 
 /* RhinoDevel, Marcel Timm, 2017dec28 */
 
-
 int gpio_read(int const pin_nr);
 void gpio_set_input_pull(int const pin_nr, int const pull);
 void gpio_set_input_resistor_pull(int const pin_nr, int const pull);
@@ -40,4 +39,3 @@ void gpio_write(int const pin_nr, int const high);
  */
 
 #endif
-

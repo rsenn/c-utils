@@ -36,7 +36,7 @@ main() {
     int64 r;
     if((r = io_waitwrite(pfd[1], buf, sizeof buf)) != sizeof buf) {
       buffer_puts(buffer_2, "io_waitwrite returned ");
-      buffer_putint64(buffer_2, r);
+      buffer_putlonglong(buffer_2, r);
       buffer_putnlflush(buffer_2);
     }
   }

@@ -367,9 +367,7 @@ typedef struct macho_fat_arch {
   uint32 align;
 } macho_fat_arch;
 
-typedef struct macho_mach_header_magic {
-  uint32 magic;
-} macho_mach_header_magic;
+typedef struct macho_mach_header_magic { uint32 magic; } macho_mach_header_magic;
 
 typedef struct macho_mach_header {
   uint32 magic;
@@ -382,14 +380,14 @@ typedef struct macho_mach_header {
 } macho_mach_header;
 
 typedef struct macho_mach_header_64 {
-  uint32 magic;           /* mach magic number identifier */
+  uint32 magic;             /* mach magic number identifier */
   cpu_type_t cputype;       /* cpu specifier */
   cpu_subtype_t cpusubtype; /* machine specifier */
-  uint32 filetype;        /* type of file */
-  uint32 ncmds;           /* number of load commands */
-  uint32 sizeofcmds;      /* the size of all the load commands */
-  uint32 flags;           /* flags */
-  uint32 reserved;        /* reserved */
+  uint32 filetype;          /* type of file */
+  uint32 ncmds;             /* number of load commands */
+  uint32 sizeofcmds;        /* the size of all the load commands */
+  uint32 flags;             /* flags */
+  uint32 reserved;          /* reserved */
 } macho_mach_header_64;
 
 typedef struct macho_load_command {
@@ -412,17 +410,17 @@ typedef struct macho_segment_command {
 } macho_segment_command;
 
 typedef struct macho_segment_command_64 {/* for 64-bit architectures */
-  uint32 cmd;            /* LC_SEGMENT_64 */
-  uint32 cmdsize;        /* includes sizeof macho_section_64 structs */
-  char segname[16];        /* segment name */
-  uint64 vmaddr;         /* memory address of this segment */
-  uint64 vmsize;         /* memory size of this segment */
-  uint64 fileoff;        /* file offset of this segment */
-  uint64 filesize;       /* amount to map from the file */
-  vm_prot_t maxprot;       /* maximum VM protection */
-  vm_prot_t initprot;      /* initial VM protection */
-  uint32 nsects;         /* number of sections in segment */
-  uint32 flags;          /* flags */
+  uint32 cmd;                            /* LC_SEGMENT_64 */
+  uint32 cmdsize;                        /* includes sizeof macho_section_64 structs */
+  char segname[16];                      /* segment name */
+  uint64 vmaddr;                         /* memory address of this segment */
+  uint64 vmsize;                         /* memory size of this segment */
+  uint64 fileoff;                        /* file offset of this segment */
+  uint64 filesize;                       /* amount to map from the file */
+  vm_prot_t maxprot;                     /* maximum VM protection */
+  vm_prot_t initprot;                    /* initial VM protection */
+  uint32 nsects;                         /* number of sections in segment */
+  uint32 flags;                          /* flags */
 } macho_segment_command_64;
 
 typedef struct macho_section {
@@ -439,19 +437,19 @@ typedef struct macho_section {
   uint32 reserved2;
 } macho_section;
 
-typedef struct macho_section_64 {   /* for 64-bit architectures */
-  char sectname[16];  /* name of this macho_section */
-  char segname[16];   /* segment this macho_section goes in */
-  uint64 addr;      /* memory address of this macho_section */
-  uint64 size;      /* size in bytes of this macho_section */
-  uint32 offset;    /* file offset of this macho_section */
-  uint32 align;     /* macho_section alignment (power of 2) */
-  uint32 reloff;    /* file offset of relocation entries */
-  uint32 nreloc;    /* number of relocation entries */
-  uint32 flags;     /* flags (macho_section type and attributes)*/
-  uint32 reserved1; /* reserved (for offset or index) */
-  uint32 reserved2; /* reserved (for count or sizeof) */
-  uint32 reserved3; /* reserved */
+typedef struct macho_section_64 {/* for 64-bit architectures */
+  char sectname[16];             /* name of this macho_section */
+  char segname[16];              /* segment this macho_section goes in */
+  uint64 addr;                   /* memory address of this macho_section */
+  uint64 size;                   /* size in bytes of this macho_section */
+  uint32 offset;                 /* file offset of this macho_section */
+  uint32 align;                  /* macho_section alignment (power of 2) */
+  uint32 reloff;                 /* file offset of relocation entries */
+  uint32 nreloc;                 /* number of relocation entries */
+  uint32 flags;                  /* flags (macho_section type and attributes)*/
+  uint32 reserved1;              /* reserved (for offset or index) */
+  uint32 reserved2;              /* reserved (for count or sizeof) */
+  uint32 reserved3;              /* reserved */
 } macho_section_64;
 
 union lc_str {
@@ -553,17 +551,16 @@ typedef struct macho_nlist {
 ** unsigned char [N_STAB:3 | N_PEXT:1 | N_TYPE:3 | N_EXT:1]
 ** which are used via the following masks
 */
-#define MACHO_N_STAB  0xe0            /* if any of these bits set, a symbolic debugging entry */
-#define MACHO_N_PEXT  0x10            /* private external symbol bit */
-#define MACHO_N_TYPE  0x0e            /* mask for the type bits */
-#define MACHO_N_EXT   0x01            /* external symbol bit, set for external symbols */
+#define MACHO_N_STAB 0xe0 /* if any of these bits set, a symbolic debugging entry */
+#define MACHO_N_PEXT 0x10 /* private external symbol bit */
+#define MACHO_N_TYPE 0x0e /* mask for the type bits */
+#define MACHO_N_EXT 0x01  /* external symbol bit, set for external symbols */
 
 /* Values for N_TYPE bits of the n_type field */
-#define MACHO_N_UNDF  0x0             /* undefined, n_sect == NO_SECT */
-#define MACHO_N_ABS   0x2             /* absolute, n_sect == NO_SECT */
-#define MACHO_N_SECT  0xe             /* defined in section number n_sect */
-#define MACHO_N_PBUD  0xc             /* prebound undefined (defined in a dylib) */
-#define MACHO_N_INDR  0xa             /* indirect */
+#define MACHO_N_UNDF 0x0 /* undefined, n_sect == NO_SECT */
+#define MACHO_N_ABS 0x2  /* absolute, n_sect == NO_SECT */
+#define MACHO_N_SECT 0xe /* defined in section number n_sect */
+#define MACHO_N_PBUD 0xc /* prebound undefined (defined in a dylib) */
+#define MACHO_N_INDR 0xa /* indirect */
 
 #endif
-

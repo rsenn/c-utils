@@ -1,3 +1,11 @@
+#define _LARGEFILE64_SOURCE 1
+#define _LARGEFILE_SOURCE 1
+#define _GNU_SOURCE 1
+#define _FILE_OFFSET_BITS 64
+
+#define _LARGEFILE_SOURCE 1
+#define _GNU_SOURCE 1
+
 #include "lib/windoze.h"
 #include "lib/uint64.h"
 #include "lib/buffer.h"
@@ -14,17 +22,11 @@
 //#define snprintf _snprintf
 //#endif
 
-#define _LARGEFILE_SOURCE 1
-#define _GNU_SOURCE 1
-#define _FILE_OFFSET_BITS 64
-
-#define _LARGEFILE_SOURCE 1
-#define _GNU_SOURCE 1
-
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -210,9 +212,9 @@ next:
       buffer_puts(buffer_2, "kB (0x");
       buffer_putxlong(buffer_2, map_size);
       buffer_puts(buffer_2, ") iterations: ");
-      buffer_putuint64(buffer_2, iterations);
+      buffer_putulonglong(buffer_2, iterations);
       buffer_puts(buffer_2, " (end offset: 0x");
-      buffer_putxint64(buffer_2, fsize);
+      buffer_putxlonglong(buffer_2, fsize);
       buffer_putnlflush(buffer_2);
     }
 

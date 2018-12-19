@@ -1,6 +1,6 @@
 #include "../windoze.h"
 
-#include "../io.h"
+#include "../io_internal.h"
 #include "../mmap.h"
 #include "../open.h"
 #if WINDOWS_NATIVE
@@ -16,7 +16,7 @@ extern char mmap_empty[];
 char*
 mmap_rw_fd(fd_t fd, size_t* filesize) {
 #if WINDOWS_NATIVE
-  HANDLE h = (HANDLE)_get_osfhandle(fd);
+  HANDLE h = (HANDLE)_get_osfhandle((int)fd);
   HANDLE m;
   char* map;
   m = CreateFileMapping(h, 0, PAGE_READWRITE, 0, 0, NULL);

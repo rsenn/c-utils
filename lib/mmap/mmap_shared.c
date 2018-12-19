@@ -1,6 +1,7 @@
+#define _LARGEFILE64_SOURCE
 #include "../windoze.h"
 
-#include "../io.h"
+#include "../io_internal.h"
 #include "../mmap.h"
 #include "../open.h"
 #if WINDOWS_NATIVE

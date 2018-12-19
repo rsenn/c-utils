@@ -122,12 +122,12 @@ int hmap_free_data(TUPLE* tuple);
         HMAP_DUMP("add[%d] data[%u]\n", index, new_tuple->vals.val_uint);                                              \
         break;                                                                                                         \
       case HMAP_DATA_TYPE_INT64:                                                                                       \
-        new_tuple->vals.val_int64 = va_arg(args, long int);                                                            \
-        HMAP_DUMP("add[%d] data[%ld]\n", index, new_tuple->vals.val_int64);                                            \
+        new_tuple->vals.val_longlong = va_arg(args, long int);                                                         \
+        HMAP_DUMP("add[%d] data[%ld]\n", index, new_tuple->vals.val_longlong);                                         \
         break;                                                                                                         \
       case HMAP_DATA_TYPE_UINT64:                                                                                      \
-        new_tuple->vals.val_uint64 = va_arg(args, unsigned long int);                                                  \
-        HMAP_DUMP("add[%d] data[%lu]\n", index, new_tuple->vals.val_uint64);                                           \
+        new_tuple->vals.val_ulonglong = va_arg(args, unsigned long int);                                               \
+        HMAP_DUMP("add[%d] data[%lu]\n", index, new_tuple->vals.val_ulonglong);                                        \
         break;                                                                                                         \
       case HMAP_DATA_TYPE_DOUBLE:                                                                                      \
         new_tuple->vals.val_double = va_arg(args, double);                                                             \

@@ -63,7 +63,7 @@
     <Unit filename="lib/array/array_allocate.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/array/array_get.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/array/array_length.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/array/umult64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/safemult/umult64.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_2.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/buffer/buffer_close.c"><Option compilerVar="CC"/></Unit>
@@ -112,7 +112,7 @@
     <Unit filename="lib/path/path_readlink.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/scan.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/scan/scan_fromhex.c"><Option compilerVar="CC"/></Unit>
-    <Unit filename="lib/scan/scan_xint64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="lib/scan/scan_xlonglong.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str.h"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str/str_basename.c"><Option compilerVar="CC"/></Unit>
     <Unit filename="lib/str/str_len.c"><Option compilerVar="CC"/></Unit>

@@ -1,3 +1,4 @@
+#include "lib/windoze.h"
 #include "lib/array.h"
 #include "lib/uint64.h"
 #include "lib/buffer.h"
@@ -10,6 +11,10 @@
 #include "lib/str.h"
 #include "lib/errmsg.h"
 #include "lib/uint32.h"
+
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#endif
 
 typedef struct {
   char magic[8];
@@ -53,9 +58,9 @@ void
 debug_int(const char* name, int64 value) {
   buffer_puts(buffer_1, name);
   buffer_puts(buffer_1, ": 0x");
-  buffer_putxint640(buffer_1, value, 8);
+  buffer_putxlonglong0(buffer_1, value, 8);
   buffer_puts(buffer_1, " (");
-  buffer_putint64(buffer_1, value);
+  buffer_putlonglong(buffer_1, value);
   buffer_puts(buffer_1, ")");
   buffer_putnlflush(buffer_1);
 }
@@ -151,8 +156,8 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
           to = add[j] += src[j];
 
           if(from != to && !new.x) {
-            buffer_puts(buffer_1, "  patch(p, 0x");
-            buffer_putxint640(buffer_1, w + j, 8);
+            buffer_puts(buffer_1, "  patch(0x");
+            buffer_putxlonglong0(buffer_1, w + j, 8);
             buffer_puts(buffer_1, ", 0x");
             buffer_putxlong0(buffer_1, (unsigned long)(unsigned char)from, 2);
             buffer_puts(buffer_1, ", 0x");

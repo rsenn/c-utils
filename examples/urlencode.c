@@ -5,8 +5,8 @@
 
 void
 urlencode(const char* c) {
-  char* buf = alloca(strlen(c) * 3 + 1);
-  buffer_put(buffer_1, buf, fmt_urlencoded(buf, c, strlen(c)));
+  char* buf = alloca(str_len(c) * 3 + 1);
+  buffer_put(buffer_1, buf, fmt_urlencoded(buf, c, str_len(c)));
   buffer_putnlflush(buffer_1);
 }
 
