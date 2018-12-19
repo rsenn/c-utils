@@ -71,15 +71,13 @@ parse_predicate(const char* x, size_t len)
 */
 
 int
-read_line(char* s, size_t len, strlist* fields, array* x) {
+read_line(char* s, size_t len, strlist* fields) {
   char *end = s + len, *p = s;
   int64 pos = 0;
   int quoted = 0 /*, escaped = 0*/;
   size_t n, i = 0;
   char tokbuf[65536];
   (void)fields;
-
-  array_trunc(x);
 
   if((n = byte_finds(p + 1, end - p - 1, "\"X\":[")) != (unsigned)(end - p))
     end = p + 1 + n;
@@ -108,10 +106,8 @@ read_line(char* s, size_t len, strlist* fields, array* x) {
         i = 0;
         continue;
       } else {
-        char** a = array_allocate(x, sizeof(char*), pos++);
         quoted = 0;
         tokbuf[i] = '\0';
-        *a++ = str_dup(tokbuf);
 
         i = 0;
         continue;
@@ -379,7 +375,6 @@ process_input(buffer* input) {
   int ret = -1;
   size_t line = 0 /*, index = 0*/;
   stralloc sa;
-  static array arr;
   strlist fields;
   stralloc_init(&sa);
   strlist_init(&fields, '\0');
@@ -391,9 +386,8 @@ process_input(buffer* input) {
     ++line;
 
     strlist_init(&fields, '\0');
-    array_trunc(&arr);
 
-    ret = read_line(sa.s, sa.len, &fields, &arr);
+    ret = read_line(sa.s, sa.len, &fields);
 
     /*        buffer_puts(buffer_2, "Line ");
             buffer_putulong(buffer_2, line);
