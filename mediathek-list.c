@@ -223,7 +223,6 @@ read_mediathek_list(const char* url, buffer* b) {
       }
     }
 
-    /*
       stralloc cmd;
       stralloc_init(&cmd);
       stralloc_copys(&cmd, "curl -s ");
@@ -613,6 +612,7 @@ parse_mediathek_list(buffer* inbuf) {
   while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
 
     for(;;) {
+      ret2 = 0;
       if(ret + 1 >= BUFSIZE)
         break;
       // buf2[ret++] = ']';
