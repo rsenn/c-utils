@@ -79,8 +79,9 @@ const char* const mediathek_urls[] = {
     "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
-const char* mediathek_url = "http://127.0.0.1/Filmliste-akt.xz";
-// http://verteiler1.mediathekview.de/Filmliste-akt.xz";
+const char* mediathek_url = 
+ "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
+//"http://127.0.0.1/Filmliste-akt.xz";
 
 static unsigned long min_length;
 static int debug;
