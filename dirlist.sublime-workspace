@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "_XOPEN_SOURCE\n__POSIX_VISIBLE\n__MISC_VISIBLE\nBUFSIZE\n__declspec\npopen\npopen\ncount_field_lengths\nsplit_fields\nprocess_status\nread_mediathek_list\nparse_time\nformat_num\nformat_time\nparse_datetime\nparse_anydate\nformat_datetime\nmake_url\nnew_mediathek_entry\ncreate_mediathek_entry\ndelete_mediathek_entry\nmatch_tokens\nmatch_toklists\nparse_entry\nprint_entry\noutput_entry\nparse_mediathek_list\nusage\nmain",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 394,
+				"buffer_size": 0,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -29,7 +29,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 88768,
+				"buffer_size": 90773,
 				"line_ending": "Unix"
 			}
 		},
@@ -37,7 +37,7 @@
 			"file": "mediathek-list.c",
 			"settings":
 			{
-				"buffer_size": 15938,
+				"buffer_size": 17326,
 				"encoding": "Western (Windows 1252)",
 				"line_ending": "Unix"
 			}
@@ -287,14 +287,9 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
-	"expanded_folders":
-	[
-		"/C/Users/roman/Desktop/dirlist",
-		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/http"
-	],
 	"file_history":
 	[
+		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/mediathek-list.c",
 		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil.c",
 		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil2.c",
@@ -323,7 +318,6 @@
 		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_dirname.c",
 		"/C/Users/roman/Desktop/dirlist/msys32.sublime-build",
-		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/mediathek-parser.c",
 		"/C/Users/roman/Desktop/dirlist/pathtool.c",
 		"/C/Users/roman/Desktop/dirlist/lib/coff/coff_sclass_name.c",
@@ -440,6 +434,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"parse_mediathek_list",
 			"popen",
 			"new_patch",
 			"patch",
@@ -566,8 +561,7 @@
 			"absolute",
 			"\\",
 			"equal",
-			"-w",
-			"link_rules"
+			"-w"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -633,168 +627,27 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 394,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\mediathek-list.c",
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\dirlist.sublime-project",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
-								[
-									8,
-									21
-								],
-								[
-									32,
-									47
-								],
-								[
-									63,
-									77
-								],
-								[
-									726,
-									733
-								],
-								[
-									777,
-									787
-								],
-								[
-									841,
-									846
-								],
-								[
-									899,
-									904
-								],
-								[
-									2359,
-									2378
-								],
-								[
-									2594,
-									2606
-								],
-								[
-									3173,
-									3187
-								],
-								[
-									3769,
-									3788
-								],
-								[
-									5327,
-									5337
-								],
-								[
-									5699,
-									5709
-								],
-								[
-									5846,
-									5857
-								],
-								[
-									6273,
-									6287
-								],
-								[
-									6463,
-									6476
-								],
-								[
-									6719,
-									6734
-								],
-								[
-									7004,
-									7012
-								],
-								[
-									7544,
-									7563
-								],
-								[
-									7732,
-									7754
-								],
-								[
-									8337,
-									8359
-								],
-								[
-									8692,
-									8704
-								],
-								[
-									9234,
-									9248
-								],
-								[
-									9860,
-									9871
-								],
-								[
-									10860,
-									10871
-								],
-								[
-									11688,
-									11700
-								],
-								[
-									12130,
-									12150
-								],
-								[
-									13766,
-									13771
-								],
-								[
-									14486,
-									14490
-								]
 							],
 							"symlist":
 							[
-								"_XOPEN_SOURCE",
-								"__POSIX_VISIBLE",
-								"__MISC_VISIBLE",
-								"BUFSIZE",
-								"__declspec",
-								"popen",
-								"popen",
-								"count_field_lengths",
-								"split_fields",
-								"process_status",
-								"read_mediathek_list",
-								"parse_time",
-								"format_num",
-								"format_time",
-								"parse_datetime",
-								"parse_anydate",
-								"format_datetime",
-								"make_url",
-								"new_mediathek_entry",
-								"create_mediathek_entry",
-								"delete_mediathek_entry",
-								"match_tokens",
-								"match_toklists",
-								"parse_entry",
-								"print_entry",
-								"output_entry",
-								"parse_mediathek_list",
-								"usage",
-								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -817,15 +670,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 88768,
+						"buffer_size": 90773,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								61396,
-								61396
+								0,
+								0
 							]
 						],
 						"settings":
@@ -847,15 +700,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 15938,
+						"buffer_size": 17326,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3129,
-								3148
+								2369,
+								2369
 							]
 						],
 						"settings":
@@ -865,7 +718,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1314.0,
+						"translation.y": 1222.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

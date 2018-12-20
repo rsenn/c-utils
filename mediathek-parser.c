@@ -25,6 +25,8 @@
 #include <unistd.h>
 #endif
 
+#define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
+
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
 static int csv = 0;
@@ -38,38 +40,15 @@ void output_entry(const char* sender,
                   const char* datetime,
                   const char* url,
                   const char* description);
-/*
-int
-parse_predicate(const char* x, size_t len)
-{
 
-  while(isspace(*x) && len > 0) {
-    ++x;
-    --len;
-  }>
-#include <stdlib.h>
-  if(len == 0)
-    return 0;
-
-  size_t pos = byte_chr(x, '\n', len);
-
-  if(pos != len && pos > 0)
-    return 1;
-
-  buffer_puts(buffer_1, "Predicate: ");
-  buffer_put(buffer_1, x, len);
-
-  buffer_puts(buffer_1, " (");
-  buffer_putulong(buffer_1, len);
-  buffer_putsflush(buffer_1, ")\n");
-
-  if(len > 0 && x[len - 1] == ' ')
-    return 1;
-
-  return 0;
-}
-*/
-
+/**
+ * @brief read_line
+ * @param s
+ * @param len
+ * @param fields
+ * @param x
+ * @return
+ */
 int
 read_line(char* s, size_t len, strlist* fields, array* x) {
   char *end = s + len, *p = s;
@@ -156,6 +135,11 @@ dump_long(buffer* b, const char* name, long value) {
   buffer_putnlflush(b);
 }
 
+/**
+ * @brief get_domain
+ * @param url
+ * @param d
+ */
 void
 get_domain(const char* url, stralloc* d) {
   while(*url && *url != ':') ++url;
@@ -164,8 +148,10 @@ get_domain(const char* url, stralloc* d) {
   stralloc_copyb(d, url, str_chr(url, '/'));
 }
 
-#define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
-
+/**
+ * @brief cleanup_text
+ * @param t
+ */
 void
 cleanup_text(char* t) {
   int i;
@@ -190,6 +176,11 @@ cleanup_text(char* t) {
   stralloc_free(&out);
 }
 
+/**
+ * @brief cleanup_domain
+ * @param d
+ * @return
+ */
 char*
 cleanup_domain(stralloc* d) {
   size_t i;
@@ -210,6 +201,12 @@ cleanup_domain(stralloc* d) {
   return d->s;
 }
 
+/**
+ * @brief process_entry
+ * @param av
+ * @param ac
+ * @return
+ */
 int
 process_entry(char** av, int ac) {
 
@@ -230,10 +227,7 @@ process_entry(char** av, int ac) {
 
     char *sender = av[1], *thema = av[2], *title = av[3] /*, *date = av[4], *time = av[5]*/, *duration = av[6],
          /**grcoee = av[7],*/ *description = av[8],
-         *url = av[9] /*, *website = av[10], *untertitel = av[11], *urlrtmp = av[12]*/,
-         *url_klein = av[13] /*, *urlrtmp_klein = av[14], *url_hd = av[15], *urlrtmp_hd = av[16], *datuml = av[17],
-                              *url_history = av[18], *geo = av[19], *neu = av[20]*/
-        ;
+         *url = av[9], *url_klein = av[13];
 
     /*    char* title = av[8];
         char* date = av[4];
@@ -247,7 +241,7 @@ process_entry(char** av, int ac) {
     if(str_len(url_klein)) {
       char* endptr = url_klein;
       unsigned long pos_lo = strtoul(url_klein, &endptr, 10);
-      //*endptr++ = '\0';
+
       endptr++;
       stralloc_copyb(&url_lo, url, pos_lo);
       stralloc_catb(&url_lo, endptr, str_len(endptr) + 1);
@@ -296,12 +290,12 @@ process_entry(char** av, int ac) {
     /*dump_pair(buffer_2, "sender", sender);
     dump_pair(buffer_2, "thema", thema);
     dump_pair(buffer_2, "title", title);*/
-
-    /*    dump_long(buffer_2, "d", d);
-        dump_pair(buffer_2, "duration", duration);
-        dump_pair(buffer_2, "url", url);
-        dump_pair(buffer_2, "url_lo.n", av[13]);
-        dump_pair(buffer_2, "url_lo.s", url_lo.s);
+    /*
+      dump_long(buffer_2, "d", d);
+      dump_pair(buffer_2, "duration", duration);
+      dump_pair(buffer_2, "url", url);
+      dump_pair(buffer_2, "url_lo.n", av[13]);
+      dump_pair(buffer_2, "url_lo.s", url_lo.s);
     */
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
@@ -316,7 +310,11 @@ process_entry(char** av, int ac) {
   return 1;
 }
 
-static void
+/**
+ * @brief put_quoted_string
+ * @param str
+ */
+void
 put_quoted_string(const char* str) {
   buffer_putc(buffer_1, '"');
   while(*str) {
@@ -330,6 +328,16 @@ put_quoted_string(const char* str) {
   buffer_putc(buffer_1, '"');
 }
 
+/**
+ * @brief output_entry
+ * @param sender
+ * @param thema
+ * @param title
+ * @param duration
+ * @param datetime
+ * @param url
+ * @param description
+ */
 void
 output_entry(const char* sender,
              const char* thema,
@@ -374,6 +382,11 @@ output_entry(const char* sender,
   buffer_flush(buffer_1);
 }
 
+/**
+ * @brief process_input
+ * @param input
+ * @return
+ */
 int
 process_input(buffer* input) {
   int ret = -1;
@@ -417,6 +430,12 @@ process_input(buffer* input) {
   return ret;
 }
 
+/**
+ * @brief main
+ * @param argc
+ * @param argv
+ * @return
+ */
 int
 main(int argc, char* argv[]) {
 

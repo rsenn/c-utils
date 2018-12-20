@@ -179,10 +179,11 @@ http_read_internal(http* h, char* buf, size_t len) {
 
 ssize_t
 http_read(http* h, char* buf, size_t len, buffer* bf) {
-h = bf->cookie;
-  buffer* b = &h->q.in;
   ssize_t bytes, n, ret = 0;
   http_response* r;
+  buffer* b;
+  h = bf->cookie;
+  b = &h->q.in;
     r = h->response;
   while(len) {
     int st = r->status;

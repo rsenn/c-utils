@@ -30,7 +30,8 @@
                 "*.sdb",
                 "*.depend", "*.manifest", "*.user", "*.log", "*.layout", "*.map", "*.cbp", "*.pro",
                 "*.1", "*.104", "*.12058", "*.169f640", "*.a", "*.ac", "*.anjuta", "*.asc", "*.asm", "*.b#1", "*.b#2", "*.b#3", "*.bak", "*.bcc", "*.bcc32", "*.bcc55", "*.bin", "*.brd", "*.bsdiff", "*.bz2", "*.cbp", "*.cl", "*.clang-format", "*.clang-tidy", "*.cpp", "*.c~", "*.Debug", "*.def", "*.defines", "*.defs", "*.deps", "*.dfba675", "*.diff", "*.exe", "*.flags", "*.functions", "*.gdb_history", "*.geany", "*.gitattributes", "*.gitignore", "*.gnu", "*.gz", "*.hexdump", "*.in", "*.json", "*.lcc", "*.lib", "*.list", "*.lo", "*.log", "*.lzma", "*.m4", "*.mk", "*.msys", "*.o", "*.obj", "*.old", "*.orig", "*.out","*.pdf", "*.pri", "*.pro", "*.Release", "*.s", "*.sch", "*.scr", "*.sed", "*.sh", "*.stackdump", "*.stash", "*.swp", "*.syms", "*.tar", "*.tds", "*.tests", "*.tgitconfig", "*.tml", "*.tmp", "*.user", "*.workspace", "*.x", "*.xml", "*.xml~", "*.xz", "*.zip",
-                "!", "bash", "bash32", "bash64", "configure", "dash", "eagle", "ls32", "sh", "srcs", "strings32", "t", "test", "ï*"
+                "!", "bash", "bash32", "bash64", "configure", "dash", "eagle", "ls32", "sh", "srcs", "strings32", "t", "test", "ï*",
+                "*.vcxproj*", "*.pro.user*", "*.pro"
 
          ]
 
