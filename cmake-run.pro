@@ -18,7 +18,7 @@ gcc: QMAKE_CFLAGS_WARN_ON += -Wno-unused-arguments -Wno-unused-parameter -Wno-un
 gcc: QMAKE_CFLAGS_WARN_ON += -Wno-unused-variable -Wno-unused-but-set-variable
 }
 
-
+DEFINES += PIPE2_NDELAY_OFF=1
 
 #mingw | mingw32 | mingw64 | msvc {
 win32 | win64 {
@@ -70,4 +70,6 @@ SOURCES = cmake-run.c lib/buffer/buffer_1.c lib/buffer/buffer_2.c lib/buffer/buf
     lib/unix/wordexp.c \
     lib/str/str_diff.c \
     lib/buffer/buffer_putm_internal.c \
-    lib/buffer/buffer_putc.c
+    lib/buffer/buffer_putc.c \
+    lib/unix/getdelim.c \
+    lib/unix/pipe2.c

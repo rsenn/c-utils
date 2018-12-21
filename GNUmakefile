@@ -1072,9 +1072,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-
-
-$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)getopt.o $(BUILDDIR)fnmatch.o $(call add-library,rdir dir strarray array safemult stralloc buffer open byte fmt str)
+$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)getopt.o $(BUILDDIR)fnmatch.o $(call add-library,rdir dir strarray array safemult stralloc buffer open byte fmt scan str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1110,7 +1108,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): LIBS += $(LIBLZMA)
+$(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): LIBS += $(LIBLZMA) $(WINSOCK_LIB)
 $(BUILDDIR)mediathek-list$(M64_)$(EXEEXT): $(BUILDDIR)mediathek-list.o $(BUILDDIR)getopt.o $(BUILDDIR)popen.o $(BUILDDIR)isleap.o $(BUILDDIR)time_table_spd.o $(call add-library, http dns case io taia tai socket ndelay errmsg iarray array safemult strlist stralloc buffer fmt mmap scan open str byte uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)

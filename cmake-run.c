@@ -103,6 +103,11 @@ debug_int(const char* name, int i) {
 #define debug_int(x, y)
 #endif
 
+/**
+ * @brief pathlist_get
+ * @param list
+ * @param varname
+ */
 void
 pathlist_get(strlist* list, const char* varname) {
   const char* p;
@@ -113,6 +118,12 @@ pathlist_get(strlist* list, const char* varname) {
   }
 }
 
+/**
+ * @brief pathlist_lookup
+ * @param bin
+ * @param out
+ * @return
+ */
 const char*
 pathlist_lookup(const char* bin, stralloc* out) {
   const char *dir, *ext;
@@ -141,6 +152,11 @@ pathlist_lookup(const char* bin, stralloc* out) {
   return NULL;
 }
 
+/**
+ * @brief base_file
+ * @param suffix
+ * @return
+ */
 char*
 base_file(const char* suffix) {
   stralloc_zero(&real);
@@ -154,6 +170,12 @@ base_file(const char* suffix) {
   return real.s;
 }
 
+/**
+ * @brief read_env
+ * @param x
+ * @param n
+ * @return
+ */
 ssize_t
 read_env(const char* x, size_t n) {
   char* line;
@@ -175,6 +197,12 @@ read_env(const char* x, size_t n) {
   return len;
 }
 
+/**
+ * @brief path_lookup
+ * @param cmd
+ * @param out
+ * @return
+ */
 int
 path_lookup(const char* cmd, stralloc* out) {
   char* s;
@@ -191,6 +219,11 @@ path_lookup(const char* cmd, stralloc* out) {
   return 0;
 }
 
+/**
+ * @brief get_prog_name
+ * @param prog
+ * @return
+ */
 const char*
 get_prog_name(stralloc* prog) {
   ssize_t len;
@@ -226,6 +259,12 @@ get_prog_name(stralloc* prog) {
   return prog->s;
 }
 
+/**
+ * @brief main
+ * @param argc
+ * @param argv
+ * @return
+ */
 int
 main(int argc, char* argv[]) {
   size_t p;

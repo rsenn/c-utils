@@ -132,17 +132,24 @@ endif(OPENSSL_FOUND)
 #  )
 add_definitions(-Dinline=__inline)
 
-option(USE_SELECT "Use select() syscall" OFF)
-
 if(MINGW)
   set(LIBMSWSOCK ws2_32)
 elseif(WIN32 OR WIN64 OR MSVC)
   set(LIBMSWSOCK wsock32)
 endif()
 
+option(USE_SELECT "Use select() syscall" OFF)
+
 if(USE_SELECT)
    add_definitions(-DUSE_SELECT=1)
 endif(USE_SELECT)
+
+if(WIN32 OR MSVC)
+  option(USE_WIDECHAR "Use widechar API" OFF)
+  if(USE_WIDECHAR)
+     add_definitions(-DUSE_WIDECHAR=1)
+  endif(USE_WIDECHAR)
+endif(WIN32 OR MSVC)
 
 set(LIBSUBDIRS array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
 

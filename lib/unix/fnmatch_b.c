@@ -15,8 +15,11 @@ static struct charclass {
 } allclasses[] = {
     STRUCT_CHARCLASS(alnum),
     STRUCT_CHARCLASS(alpha),
-    STRUCT_CHARCLASS(blank),
+    STRUCT_CHARCLASS(ascii),
+/*    STRUCT_CHARCLASS(blank),*/
     STRUCT_CHARCLASS(cntrl),
+/*    STRUCT_CHARCLASS(csym),
+    STRUCT_CHARCLASS(csymf),*/
     STRUCT_CHARCLASS(digit),
     STRUCT_CHARCLASS(graph),
     STRUCT_CHARCLASS(lower),

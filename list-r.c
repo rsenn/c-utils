@@ -36,6 +36,7 @@
 #include "lib/array.h"
 #include "lib/unix.h"
 #include "lib/path.h"
+#include "lib/scan.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -84,6 +85,7 @@ static array exclude_masks;
 static char opt_separator = DIRSEP_C;
 
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0;
+static unsigned long opt_minsize = 0;
 static const char* opt_relative_to = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 #if(defined(_WIN32) || defined(MINGW)) && !defined(__MSYS__)
@@ -561,8 +563,8 @@ list_dir_internal(stralloc* dir, char type) {
     mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
 #if USE_READDIR
     if(!is_dir) {
-      size = get_file_size(s); /* dir_INTERNAL(&d)->dir_entry->d_name); */
-      mtime = get_file_time(s);
+      size = dir_size(&d); /* dir_INTERNAL(&d)->dir_entry->d_name); */
+      mtime = dir_time(&d);
     } else {
       mtime = 0;
       size = 0;
@@ -572,7 +574,7 @@ list_dir_internal(stralloc* dir, char type) {
     mtime = dir_time(&d, D_TIME_MODIFICATION);
 #endif
 #endif
-    if(opt_list) {
+    if(opt_list && size >= opt_minsize) {
       stralloc_init(&pre);
       /* Mode string */
       mode_str(&pre, mode);
@@ -612,8 +614,9 @@ list_dir_internal(stralloc* dir, char type) {
       len -= 2;
       s += 2;
     }
-    if(opt_list)
+    if(opt_list && size >= opt_minsize)
       buffer_putsa(buffer_1, &pre);
+
     if(opt_relative_to) {
       size_t sz = str_len(opt_relative_to);
       if(str_diffn(s, opt_relative_to, sz) == 0) {
@@ -625,9 +628,13 @@ list_dir_internal(stralloc* dir, char type) {
         }
       }
     }
-    buffer_put(buffer_1, s, len);
-    buffer_put(buffer_1, "\n", 1);
-    buffer_flush(buffer_1);
+
+    if(size >= opt_minsize) {
+      buffer_put(buffer_1, s, len);
+      buffer_put(buffer_1, "\n", 1);
+      buffer_flush(buffer_1);
+    }
+
     if(is_dir && !is_symlink) {
       dir->len--;
       list_dir_internal(dir, 0);
@@ -677,6 +684,7 @@ usage(char* argv0) {
                        "  -o, --output     FILE     write output to FILE\n",
                        "  -x, --exclude    PATTERN  exclude entries matching PATTERN\n",
                        "  -t, --time-style FORMAT   format time according to FORMAT\n",
+                       "  -m, --min-size   BYTES    minimum file size\n",
                        0);
   buffer_putnlflush(buffer_1);
 }
@@ -696,6 +704,7 @@ main(int argc, char* argv[]) {
     {"output", 1, 0, 'o'},
     {"exclude", 1, 0, 'x'},
     {"time-style", 1, 0, 't'},
+    {"min-size", 1, 0, 'm'},
 #if WINDOWS
     {"separator", 1, 0, 's'},
 #endif
@@ -706,7 +715,7 @@ main(int argc, char* argv[]) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlnro:x:t:", opts, &index);
+    c = getopt_long(argc, argv, "hlnro:x:t:m:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -734,6 +743,7 @@ main(int argc, char* argv[]) {
       case 'l': opt_list = 1; break;
       case 'n': opt_numeric = 1; break;
       case 'r': opt_relative = 1; break;
+      case 'm': scan_ulong(optarg, &opt_minsize); break;
       default: usage(argv[0]); return 1;
     }
   }
