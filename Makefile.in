@@ -80,10 +80,10 @@ LIB_OBJECTS = array_allocate.o array_bytes.o array_cat.o array_cat0.o array_catb
 all: libowcarb.a $(PROGRAMS)
 
 .c.o:
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CROSS_COMPILE)$(CC) $(DEFS) $(CFLAGS) $(CPPFLAGS) -c $<
 
 %.o: %.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CROSS_COMPILE)$(CC) $(DEFS) $(CFLAGS) $(CPPFLAGS) -c $<
 
 libowcarb.a: $(LIB_OBJECTS)
 	$(CROSS_COMPILE)$(AR) rc $@ $^
