@@ -25,6 +25,8 @@
 #include <unistd.h>
 #endif
 
+#define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
+
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
 static int csv = 0;
@@ -44,13 +46,14 @@ void output_entry(const char* sender,
  * @param s
  * @param len
  * @param fields
+ * @param x
  * @return
  */
 int
 read_line(char* s, size_t len, strlist* fields) {
   char *end = s + len, *p = s;
   int64 pos = 0;
-  int quoted = 0 /*, escaped = 0*/;
+  int quoted = 0;
   size_t n, i = 0;
   char tokbuf[65536];
   (void)fields;
@@ -60,8 +63,6 @@ read_line(char* s, size_t len, strlist* fields) {
 
   while(p < end && *p != '"') ++p;
 
-  // ++p;
-
   if(str_start(p, "\"X\":[")) {
     p[2] = ':';
     p[3] = '"';
@@ -70,13 +71,10 @@ read_line(char* s, size_t len, strlist* fields) {
 
   strlist_fromb(fields, p, end - p, "\", \"");
 
-  for(; p < end; ++p /*, escaped = 0*/) {
+  for(; p < end; ++p) {
     if(*p == '\\') {
-      /* escaped = 1;*/
       ++p;
-    }
-
-    else if(*p == '"') {
+    } else if(*p == '"') {
       if(!quoted) {
         quoted = 1;
         i = 0;
@@ -84,18 +82,12 @@ read_line(char* s, size_t len, strlist* fields) {
       } else {
         quoted = 0;
         tokbuf[i] = '\0';
-
         i = 0;
         continue;
-        /*while(++p < end && *p != '"')
-          ;
-        if(*++p == ',')
-          ++p;*/
       }
     }
     tokbuf[i++] = *p;
   }
-
   return p - s;
 }
 
@@ -146,8 +138,6 @@ get_domain(const char* url, stralloc* d) {
   stralloc_copyb(d, url, str_chr(url, '/'));
 }
 
-#define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
-
 /**
  * @brief cleanup_text
  * @param t
@@ -161,7 +151,6 @@ cleanup_text(char* t) {
   stralloc_init(&out);
 
   for(i = 0; (c = t[i]); ++i) {
-
     if(isdelim(c) && isdelim(prev))
       continue;
 
@@ -170,7 +159,9 @@ cleanup_text(char* t) {
     stralloc_append(&out, &c);
     prev = c;
   }
+
   byte_copy(t, out.len, out.s);
+
   t[out.len] = '\0';
   str_utf8_latin1(t);
   stralloc_free(&out);
@@ -225,12 +216,9 @@ process_entry(char** av, int ac) {
     time_t t;
     unsigned d;
 
-    char *sender = av[1], *thema = av[2], *title = av[3] /*, *date = av[4], *time = av[5]*/, *duration = av[6],
-         /**grcoee = av[7],*/ *description = av[8],
-         *url = av[9] ,
-         *url_klein = av[13]
-        ;
-
+    char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6],
+         *description = av[8],
+         *url = av[9], *url_klein = av[13];
 
     stralloc url_lo;
     stralloc_init(&url_lo);
@@ -238,7 +226,7 @@ process_entry(char** av, int ac) {
     if(str_len(url_klein)) {
       char* endptr = url_klein;
       unsigned long pos_lo = strtoul(url_klein, &endptr, 10);
-      //*endptr++ = '\0';
+
       endptr++;
       stralloc_copyb(&url_lo, url, pos_lo);
       stralloc_catb(&url_lo, endptr, str_len(endptr) + 1);
@@ -252,11 +240,7 @@ process_entry(char** av, int ac) {
     stralloc_cats(&datetime, av[5]);
     stralloc_nul(&datetime);
 
-    if(str_ptime(datetime.s, datetime_format, &tm) == NULL) {
-      t = 0;
-    } else {
-      t = mktime(&tm);
-    }
+    t = str_ptime(datetime.s, datetime_format, &tm) ? mktime(&tm) : 0;
 
     {
       int h = 0, m = 0, s = 0;
@@ -266,9 +250,6 @@ process_entry(char** av, int ac) {
         d = 0;
       }
     }
-
-    /*if(str_len(thema) == 0)
-      return;*/
 
     if(d < 20 * 60)
       return 1;
@@ -287,12 +268,12 @@ process_entry(char** av, int ac) {
     /*dump_pair(buffer_2, "sender", sender);
     dump_pair(buffer_2, "thema", thema);
     dump_pair(buffer_2, "title", title);*/
-
-    /*    dump_long(buffer_2, "d", d);
-        dump_pair(buffer_2, "duration", duration);
-        dump_pair(buffer_2, "url", url);
-        dump_pair(buffer_2, "url_lo.n", av[13]);
-        dump_pair(buffer_2, "url_lo.s", url_lo.s);
+    /*
+      dump_long(buffer_2, "d", d);
+      dump_pair(buffer_2, "duration", duration);
+      dump_pair(buffer_2, "url", url);
+      dump_pair(buffer_2, "url_lo.n", av[13]);
+      dump_pair(buffer_2, "url_lo.s", url_lo.s);
     */
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
@@ -311,7 +292,7 @@ process_entry(char** av, int ac) {
  * @brief put_quoted_string
  * @param str
  */
-static void
+void
 put_quoted_string(const char* str) {
   buffer_putc(buffer_1, '"');
   while(*str) {
@@ -433,9 +414,7 @@ process_input(buffer* input) {
  */
 int
 main(int argc, char* argv[]) {
-
   int opt, index = 0;
-
   char inbuf[8192];
   buffer b;
 
