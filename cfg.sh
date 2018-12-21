@@ -33,6 +33,20 @@ cfg() {
       -DBUILD_SHARED_LIBS=OFF \
       -DENABLE_PIC=OFF ;;
   esac
+  mkdir -p "${builddir}"
+  b=$(realpath "${builddir}")
+  case "${generator}${b}" in
+    *code*blocks*) generator="CodeBlocks" ;;
+    *code*lite*) generator="CodeLite" ;;
+    *sublime*)  generator="Sublime Text 2" ;;
+    *kate*)  generator="Kate" ;;
+    *eclipse*)  generator="Eclipse CDT4" ;;
+  esac
+  case "$generator" in
+    *\ -\ *) ;;
+    "CodeBlocks"|"CodeLite"|"Sublime Text 2"|"Kate"|"Eclipse CDT4") generator="$generator - Ninja" ;;
+  esac
+
   : ${generator:="Unix Makefiles"}
 
  (mkdir -p $builddir

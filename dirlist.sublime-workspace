@@ -16,29 +16,37 @@
 	"buffers":
 	[
 		{
-			"contents": "_XOPEN_SOURCE\n__POSIX_VISIBLE\n__MISC_VISIBLE\nBUFSIZE\n__declspec\npopen\npopen\ncount_field_lengths\nsplit_fields\nprocess_status\nread_mediathek_list\nparse_time\nformat_num\nformat_time\nparse_datetime\nparse_anydate\nformat_datetime\nmake_url\nnew_mediathek_entry\ncreate_mediathek_entry\ndelete_mediathek_entry\nmatch_tokens\nmatch_toklists\nparse_entry\nprint_entry\noutput_entry\nparse_mediathek_list\nusage\nmain",
+			"contents": "_POSIX_C_SOURCE\nNOTFIRST\nSTRUCT_CHARCLASS\ncharclass_lookup\nmatch\nfnmatch",
 			"settings":
 			{
-				"buffer_size": 394,
+				"buffer_size": 72,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"file": "dirlist.sublime-project",
 			"settings":
 			{
-				"buffer_size": 88768,
+				"buffer_size": 2229,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "mediathek-list.c",
+			"file": "lib/unix/fnmatch_b.c",
 			"settings":
 			{
-				"buffer_size": 15938,
-				"encoding": "Western (Windows 1252)",
+				"buffer_size": 4244,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Makefile.functions",
+			"settings":
+			{
+				"buffer_size": 4605,
 				"line_ending": "Unix"
 			}
 		}
@@ -130,6 +138,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"packa",
+				"Package Control: Discover Packages"
+			],
 			[
 				"install",
 				"Package Control: Advanced Install Package"
@@ -257,10 +269,6 @@
 			[
 				"build",
 				"Build: New Build System"
-			],
-			[
-				"packa",
-				"Package Control: Advanced Install Package"
 			]
 		],
 		"width": 449.0
@@ -289,12 +297,16 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/roman/Desktop/dirlist",
-		"/C/Users/roman/Desktop/dirlist/lib",
-		"/C/Users/roman/Desktop/dirlist/lib/http"
+		"/home/roman/Sources/rsenn/dirlist",
+		"/home/roman/Sources/rsenn/dirlist/lib",
+		"/home/roman/Sources/rsenn/dirlist/lib/unix",
+		"/home/roman/Sources/rsenn/dirlist/lib/wait"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/rsenn/dirlist/genmakefile.c",
+		"/home/roman/Sources/rsenn/dirlist/mediathek-list.c",
+		"/home/roman/Sources/rsenn/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/mediathek-list.c",
 		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil.c",
 		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil2.c",
@@ -419,14 +431,11 @@
 		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_pop.c",
 		"/C/Users/roman/Desktop/dirlist/lib/popen.c",
 		"/C/Users/roman/Desktop/dirlist/lib/uint16.h",
-		"/C/Users/roman/Desktop/dirlist/tests/test_path.c",
-		"/C/Users/roman/Desktop/dirlist/access.c",
-		"/C/Users/roman/Desktop/dirlist/lib/uint64.h",
-		"/C/Users/roman/Desktop/dirlist/lib/binfmt.h"
+		"/C/Users/roman/Desktop/dirlist/tests/test_path.c"
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 39.96003996
 	},
 	"find_in_files":
 	{
@@ -440,6 +449,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			".txt",
+			".dep",
+			"function",
 			"popen",
 			"new_patch",
 			"patch",
@@ -564,10 +576,7 @@
 			"wildcard",
 			"realpath",
 			"absolute",
-			"\\",
-			"equal",
-			"-w",
-			"link_rules"
+			"\\"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -633,7 +642,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 394,
+						"buffer_size": 72,
 						"regions":
 						{
 						},
@@ -643,158 +652,43 @@
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\mediathek-list.c",
+							"current_file": "/home/roman/Sources/rsenn/dirlist/lib/unix/fnmatch_b.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
 									8,
-									21
+									23
 								],
 								[
-									32,
-									47
+									97,
+									105
 								],
 								[
-									63,
-									77
+									119,
+									135
 								],
 								[
-									726,
-									733
+									745,
+									761
 								],
 								[
-									777,
-									787
+									1124,
+									1129
 								],
 								[
-									841,
-									846
-								],
-								[
-									899,
-									904
-								],
-								[
-									2359,
-									2378
-								],
-								[
-									2594,
-									2606
-								],
-								[
-									3173,
-									3187
-								],
-								[
-									3769,
-									3788
-								],
-								[
-									5327,
-									5337
-								],
-								[
-									5699,
-									5709
-								],
-								[
-									5846,
-									5857
-								],
-								[
-									6273,
-									6287
-								],
-								[
-									6463,
-									6476
-								],
-								[
-									6719,
-									6734
-								],
-								[
-									7004,
-									7012
-								],
-								[
-									7544,
-									7563
-								],
-								[
-									7732,
-									7754
-								],
-								[
-									8337,
-									8359
-								],
-								[
-									8692,
-									8704
-								],
-								[
-									9234,
-									9248
-								],
-								[
-									9860,
-									9871
-								],
-								[
-									10860,
-									10871
-								],
-								[
-									11688,
-									11700
-								],
-								[
-									12130,
-									12150
-								],
-								[
-									13766,
-									13771
-								],
-								[
-									14486,
-									14490
+									1235,
+									1242
 								]
 							],
 							"symlist":
 							[
-								"_XOPEN_SOURCE",
-								"__POSIX_VISIBLE",
-								"__MISC_VISIBLE",
-								"BUFSIZE",
-								"__declspec",
-								"popen",
-								"popen",
-								"count_field_lengths",
-								"split_fields",
-								"process_status",
-								"read_mediathek_list",
-								"parse_time",
-								"format_num",
-								"format_time",
-								"parse_datetime",
-								"parse_anydate",
-								"format_datetime",
-								"make_url",
-								"new_mediathek_entry",
-								"create_mediathek_entry",
-								"delete_mediathek_entry",
-								"match_tokens",
-								"match_toklists",
-								"parse_entry",
-								"print_entry",
-								"output_entry",
-								"parse_mediathek_list",
-								"usage",
-								"main"
+								"_POSIX_C_SOURCE",
+								"NOTFIRST",
+								"STRUCT_CHARCLASS",
+								"charclass_lookup",
+								"match",
+								"fnmatch"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -802,7 +696,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -813,29 +707,29 @@
 			[
 				{
 					"buffer": 1,
-					"file": "genmakefile.c",
+					"file": "dirlist.sublime-project",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 88768,
+						"buffer_size": 2229,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								61396,
-								61396
+								415,
+								415
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage",
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 35550.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -843,19 +737,19 @@
 				},
 				{
 					"buffer": 2,
-					"file": "mediathek-list.c",
+					"file": "lib/unix/fnmatch_b.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 15938,
+						"buffer_size": 4244,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3129,
-								3148
+								4166,
+								4166
 							]
 						],
 						"settings":
@@ -865,10 +759,38 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1314.0,
+						"translation.y": 1418.58141858,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Makefile.functions",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4605,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -876,7 +798,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 22.0
+		"height": 22.977022977
 	},
 	"input":
 	{
@@ -984,7 +906,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 224.0,
+	"side_bar_width": 367.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

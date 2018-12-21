@@ -780,7 +780,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc32)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xmltest xmltest2 xmltest3 xmltest4 ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc32 cmake-run)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
@@ -1452,6 +1452,13 @@ endif
 
 $(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
 $(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): $(BUILDDIR)ar-wrap.o $(call add-library,errmsg strarray slist path dir env strlist hmap stralloc buffer mmap unix open scan fmt str byte array)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)cmake-run$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
+$(BUILDDIR)cmake-run$(M64_)$(EXEEXT): $(BUILDDIR)cmake-run.o $(call add-library,errmsg strarray slist path dir env strlist hmap stralloc buffer mmap unix open scan fmt str byte array)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
