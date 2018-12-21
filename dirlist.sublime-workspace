@@ -37,8 +37,16 @@
 			"file": "mediathek-list.c",
 			"settings":
 			{
-				"buffer_size": 17326,
+				"buffer_size": 16052,
 				"encoding": "Western (Windows 1252)",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "genmakefile.~bpr",
+			"settings":
+			{
+				"buffer_size": 28143,
 				"line_ending": "Unix"
 			}
 		}
@@ -287,8 +295,13 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/C/Users/roman/Desktop/dirlist"
+	],
 	"file_history":
 	[
+		"/C/Users/roman/Desktop/dirlist/mk-vs2008-x64-minsizerel.cmd",
 		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
 		"/C/Users/roman/Desktop/dirlist/mediathek-list.c",
 		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil.c",
@@ -415,8 +428,7 @@
 		"/C/Users/roman/Desktop/dirlist/lib/uint16.h",
 		"/C/Users/roman/Desktop/dirlist/tests/test_path.c",
 		"/C/Users/roman/Desktop/dirlist/access.c",
-		"/C/Users/roman/Desktop/dirlist/lib/uint64.h",
-		"/C/Users/roman/Desktop/dirlist/lib/binfmt.h"
+		"/C/Users/roman/Desktop/dirlist/lib/uint64.h"
 	],
 	"find":
 	{
@@ -633,15 +645,11 @@
 						},
 						"selection":
 						[
-							[
-								0,
-								0
-							]
 						],
 						"settings":
 						{
 							"color_scheme": null,
-							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\dirlist.sublime-project",
+							"current_file": "C:\\Users\\roman\\Desktop\\dirlist\\genmakefile.~bpr",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
@@ -655,13 +663,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -691,7 +699,7 @@
 						"translation.y": 35550.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -700,15 +708,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17326,
+						"buffer_size": 16052,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2369,
-								2369
+								3463,
+								3482
 							]
 						],
 						"settings":
@@ -718,7 +726,37 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1222.0,
+						"translation.y": 1853.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "genmakefile.~bpr",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 28143,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3398,
+								3398
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -837,7 +875,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 224.0,
+	"side_bar_width": 234.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

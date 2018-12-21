@@ -116,7 +116,7 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 
   strlist_zero(sl);
 
-  for(i = 0; n; ++i)
+  for(i = 0; n; ++i) {
     offs = byte_finds(buf, n, "\",\"");
 
     if(offs == n)
@@ -610,6 +610,7 @@ parse_mediathek_list(buffer* inbuf) {
     buffer_putsflush(buffer_2, " bytes.\n");
 
     for(;;) {
+      ret2 = 0;
       if(ret + 1 >= BUFSIZE)
         break;
       // buf2[ret++] = ']';

@@ -50,22 +50,18 @@ void output_entry(const char* sender,
  * @return
  */
 int
-read_line(char* s, size_t len, strlist* fields, array* x) {
+read_line(char* s, size_t len, strlist* fields) {
   char *end = s + len, *p = s;
   int64 pos = 0;
-  int quoted = 0 /*, escaped = 0*/;
+  int quoted = 0;
   size_t n, i = 0;
   char tokbuf[65536];
   (void)fields;
-
-  array_trunc(x);
 
   if((n = byte_finds(p + 1, end - p - 1, "\"X\":[")) != (unsigned)(end - p))
     end = p + 1 + n;
 
   while(p < end && *p != '"') ++p;
-
-  // ++p;
 
   if(str_start(p, "\"X\":[")) {
     p[2] = ':';
@@ -75,37 +71,31 @@ read_line(char* s, size_t len, strlist* fields, array* x) {
 
   strlist_fromb(fields, p, end - p, "\", \"");
 
-  for(; p < end; ++p /*, escaped = 0*/) {
+  for(; p < end; ++p) {
     if(*p == '\\') {
-      /* escaped = 1;*/
       ++p;
-    }
-
-    else if(*p == '"') {
+    } else if(*p == '"') {
       if(!quoted) {
         quoted = 1;
         i = 0;
         continue;
       } else {
-        char** a = array_allocate(x, sizeof(char*), pos++);
         quoted = 0;
         tokbuf[i] = '\0';
-        *a++ = str_dup(tokbuf);
-
         i = 0;
         continue;
-        /*while(++p < end && *p != '"')
-          ;
-        if(*++p == ',')
-          ++p;*/
       }
     }
     tokbuf[i++] = *p;
   }
-
   return p - s;
 }
 
+/**
+ * @brief strarray_dump
+ * @param b
+ * @param a
+ */
 void
 strarray_dump(buffer* b, const array* a) {
   char** av = array_start(a);
@@ -161,7 +151,6 @@ cleanup_text(char* t) {
   stralloc_init(&out);
 
   for(i = 0; (c = t[i]); ++i) {
-
     if(isdelim(c) && isdelim(prev))
       continue;
 
@@ -170,7 +159,9 @@ cleanup_text(char* t) {
     stralloc_append(&out, &c);
     prev = c;
   }
+
   byte_copy(t, out.len, out.s);
+
   t[out.len] = '\0';
   str_utf8_latin1(t);
   stralloc_free(&out);
@@ -225,16 +216,10 @@ process_entry(char** av, int ac) {
     time_t t;
     unsigned d;
 
-    char *sender = av[1], *thema = av[2], *title = av[3] /*, *date = av[4], *time = av[5]*/, *duration = av[6],
-         /**grcoee = av[7],*/ *description = av[8],
+    char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6],
+         *description = av[8],
          *url = av[9], *url_klein = av[13];
 
-    /*    char* title = av[8];
-        char* date = av[4];
-        char* time = av[5];
-        char* duration = av[6];
-        char* url = av[9];
-      */
     stralloc url_lo;
     stralloc_init(&url_lo);
 
@@ -255,11 +240,7 @@ process_entry(char** av, int ac) {
     stralloc_cats(&datetime, av[5]);
     stralloc_nul(&datetime);
 
-    if(str_ptime(datetime.s, datetime_format, &tm) == NULL) {
-      t = 0;
-    } else {
-      t = mktime(&tm);
-    }
+    t = str_ptime(datetime.s, datetime_format, &tm) ? mktime(&tm) : 0;
 
     {
       int h = 0, m = 0, s = 0;
@@ -269,9 +250,6 @@ process_entry(char** av, int ac) {
         d = 0;
       }
     }
-
-    /*if(str_len(thema) == 0)
-      return;*/
 
     if(d < 20 * 60)
       return 1;
@@ -392,7 +370,6 @@ process_input(buffer* input) {
   int ret = -1;
   size_t line = 0 /*, index = 0*/;
   stralloc sa;
-  static array arr;
   strlist fields;
   stralloc_init(&sa);
   strlist_init(&fields, '\0');
@@ -404,9 +381,8 @@ process_input(buffer* input) {
     ++line;
 
     strlist_init(&fields, '\0');
-    array_trunc(&arr);
 
-    ret = read_line(sa.s, sa.len, &fields, &arr);
+    ret = read_line(sa.s, sa.len, &fields);
 
     /*        buffer_puts(buffer_2, "Line ");
             buffer_putulong(buffer_2, line);
@@ -438,9 +414,7 @@ process_input(buffer* input) {
  */
 int
 main(int argc, char* argv[]) {
-
   int opt, index = 0;
-
   char inbuf[8192];
   buffer b;
 

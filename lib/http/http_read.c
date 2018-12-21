@@ -54,6 +54,9 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
     buffer_putlong(buffer_2, s);
     buffer_putnlflush(buffer_2);*/
   if(s == 0) {
+    closesocket(h->sock);
+    h->q.in.fd = h->q.out.fd =
+    h->sock = -1;
     r->status = HTTP_STATUS_CLOSED;
   } else if(s == -1) {
     r->err = errno;
