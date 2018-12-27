@@ -54,6 +54,9 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
     buffer_putlong(buffer_2, s);
     buffer_putnlflush(buffer_2);*/
   if(s == 0) {
+    closesocket(h->sock);
+    h->q.in.fd = h->q.out.fd =
+    h->sock = -1;
     r->status = HTTP_STATUS_CLOSED;
   } else if(s == -1) {
     r->err = errno;
@@ -179,10 +182,11 @@ http_read_internal(http* h, char* buf, size_t len) {
 
 ssize_t
 http_read(http* h, char* buf, size_t len, buffer* bf) {
-h = bf->cookie;
-  buffer* b = &h->q.in;
   ssize_t bytes, n, ret = 0;
   http_response* r;
+  buffer* b;
+  h = bf->cookie;
+  b = &h->q.in;
     r = h->response;
   while(len) {
     int st = r->status;

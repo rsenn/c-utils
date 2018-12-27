@@ -5,6 +5,7 @@ DEFS = -DHAVE_ERRNO_H=1 -DHAVE_LIBZ=1 -DHAVE_LIBBZ2=1 -DHAVE_LIBLZMA=1
 AR = ar
 LIBS = -lz -lbz2 -llzma
 EXTRA_LIBS = -ladvapi32 -lws2_32 -liphlpapi -lpsapi -lshlwapi
+DEPS_RSP = deps.rsp
 
 all: all_tests
 
@@ -14,6 +15,7 @@ all: all_tests
 DEPS := $(wildcard ../lib/byte/*.c)
 DEPS += $(wildcard ../lib/str/*.c)
 DEPS += $(wildcard ../lib/case/*.c)
+DEPS += $(wildcard ../lib/dir/*.c)
 DEPS += $(wildcard ../lib/errmsg/*.c)
 DEPS += $(wildcard ../lib/fmt/*.c)
 DEPS += $(wildcard ../lib/scan/*.c)
@@ -31,14 +33,15 @@ DEPS += $(wildcard ../lib/buffer/*.c)
 DEPS += $(wildcard ../lib/unix/*.c)
 DEPS += $(wildcard ../lib/path/*.c)
 
-deps.rsp:
-	$(file >deps.rsp,$(DEPS))
+$(DEPS_RSP):
+	$(file >$(DEPS_RSP),$(DEPS))
 
-all_tests: all_tests.o unit_test.o unit_test_runner.o unit_test.o test_stralloc.o test_strlist.o test_path.o | deps.rsp
-	$(CC) $(CFLAGS) -o $@ $^ @deps.rsp
+all_tests: all_tests.o unit_test.o unit_test_runner.o unit_test.o test_stralloc.o test_strlist.o test_path.o | $(DEPS_RSP)
+	$(CC) $(CFLAGS) -o $@ $^ @$(DEPS_RSP)
 
 .PHONY: clean
 clean:
 	$(RM) *.o
 	$(RM) *.a
+	$(RM) $(DEPS_RSP)
 

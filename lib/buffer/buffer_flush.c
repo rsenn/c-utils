@@ -2,7 +2,7 @@
 
 extern ssize_t buffer_stubborn(buffer_op_fn* op, fd_t fd, const char* buf, size_t len, void* cookie);
 
-extern int
+int
 buffer_flush(buffer* b) {
   size_t p;
   ssize_t r;

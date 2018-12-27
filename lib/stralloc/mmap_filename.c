@@ -79,8 +79,9 @@ mmap_filename(void* map, stralloc* sa) {
 
     p += scan_xlonglong(p, &start);
     if(*p == '-') {
-      char* e = line + n;
+      char* e = line + n - 1;
       int i = 4;
+
       ++p;
       p += scan_xlonglong(p, &end);
 
