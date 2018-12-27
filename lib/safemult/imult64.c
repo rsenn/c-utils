@@ -58,7 +58,7 @@ imult64(int64 a, int64 b, int64* c) {
   }
   if(!umult64(a, b, &d))
     return 0;
-  if(d > (unsigned __int64)0x7fffffffffffffff + neg)
+  if(d > (uint64)0x7fffffffffffffff + neg)
     return 0;
   *c = (neg ? -d : d);
   return 1;

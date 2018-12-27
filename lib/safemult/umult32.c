@@ -4,6 +4,7 @@
 #if defined(__GNUC__) && (__GNUC__ >= 5)
 
 #include "../uint32.h"
+#include "../uint64.h"
 
 int
 umult32(uint32 a, uint32 b, uint32* c) {
@@ -14,7 +15,7 @@ umult32(uint32 a, uint32 b, uint32* c) {
 
 int
 umult32(uint32 a, uint32 b, uint32* c) {
-  unsigned __int64 x = (unsigned __int64)a * b;
+  uint64 x = (uint64)a * b;
   if(x > 0xffffffff)
     return 0;
   *c = x & 0xffffffff;
