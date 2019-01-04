@@ -48,7 +48,7 @@ endif
 #check-header = $(info $(call cmd-check-header,$(1)))
 DEFINES_FILE := Makefile.defines
 
-$(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
+#$(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
 
 #$(info HAVE_SYS_TYPES_H=$(HAVE_SYS_TYPES_H))
 #$(info HAVE_INTTYPES_H=$(HAVE_INTTYPES_H))
@@ -172,7 +172,7 @@ endif
 
 
 #$(call def-include-exists,errno.h,HAVE_ERRNO_H)
-$(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
+#$(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
 #$(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
 BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
 ifneq ($(CC),$(subst m32,,$(CC)))
@@ -513,8 +513,6 @@ endif
 #endif
 TOOLCHAIN := $(HOST1)-$(HOST2)-$(HOST3)
 
-#$(info HOST: $(HOST))
-
 #ifeq ($(OS),mingw32)
 #TOOLCHAIN = $(HOST)-$(shell $(CROSS_COMPILE)gcc -dumpversion)
 #else
@@ -754,6 +752,13 @@ endif
 
 WARNINGS += no-unused-function
 
+
+ifeq ($(PIE),1)
+CFLAGS += -fPIE
+LDFLAGS += -pie
+endif
+
+#$(info HOST:
 $(info MSYS: $(MSYS))
 
 #ifeq ($(MSYS),1)
