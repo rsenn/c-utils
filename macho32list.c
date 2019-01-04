@@ -46,7 +46,7 @@ main(int argc, char** argv) {
         int j;
 
         segment = (macho_segment_command*)(content + offset);
-        if(!!strcmp(segment->segname, "__TEXT")) {
+        if(!!str_diff(segment->segname, "__TEXT")) {
           section_index += segment->nsects;
           break;
         }
@@ -54,7 +54,7 @@ main(int argc, char** argv) {
         section = (macho_section*)(content + offset + sizeof(macho_segment_command));
         for(j = 0; j < segment->nsects; j++, section++) {
           section_index++;
-          if(!strcmp(section->sectname, "__text")) text_section_index = section_index;
+          if(!str_diff(section->sectname, "__text")) text_section_index = section_index;
         }
         break;
       }

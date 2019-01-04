@@ -61,11 +61,11 @@ main(int argc, char** argv) {
       section_header = (elf64_shdr*)(content + offset);
       section_name = section_names + section_header->sh_name;
 
-      if(!strcmp(section_name, ".dynstr")) {
+      if(!str_diff(section_name, ".dynstr")) {
         dynstr = section_header;
-      } else if(!strcmp(section_name, ".dynsym")) {
+      } else if(!str_diff(section_name, ".dynsym")) {
         dynsym = section_header;
-      } else if(!strcmp(section_name, ".text")) {
+      } else if(!str_diff(section_name, ".text")) {
         text_section_header_index = i;
       }
     }
