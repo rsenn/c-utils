@@ -26,23 +26,6 @@
 			}
 		},
 		{
-			"file": "dirlist.sublime-project",
-			"settings":
-			{
-				"buffer_size": 2229,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/unix/fnmatch_b.c",
-			"settings":
-			{
-				"buffer_size": 4244,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "Makefile.functions",
 			"settings":
 			{
@@ -139,12 +122,16 @@
 		"selected_items":
 		[
 			[
-				"packa",
+				"install",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"Package Control: sear",
 				"Package Control: Discover Packages"
 			],
 			[
-				"install",
-				"Package Control: Advanced Install Package"
+				"packa",
+				"Package Control: Discover Packages"
 			],
 			[
 				"edit",
@@ -297,13 +284,12 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/rsenn/dirlist",
-		"/home/roman/Sources/rsenn/dirlist/lib",
-		"/home/roman/Sources/rsenn/dirlist/lib/unix",
-		"/home/roman/Sources/rsenn/dirlist/lib/wait"
+		"/home/roman/Sources/dirlist"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/dirlist/dirlist.sublime-project",
+		"/home/roman/Sources/dirlist/lib/unix/fnmatch_b.c",
 		"/home/roman/Sources/rsenn/dirlist/genmakefile.c",
 		"/home/roman/Sources/rsenn/dirlist/mediathek-list.c",
 		"/home/roman/Sources/rsenn/dirlist/dirlist.sublime-project",
@@ -429,13 +415,11 @@
 		"/C/Users/roman/Desktop/dirlist/SetMSVCStaticRuntime.cmake",
 		"/C/Users/roman/Desktop/dirlist/lib/unit_test.h",
 		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_pop.c",
-		"/C/Users/roman/Desktop/dirlist/lib/popen.c",
-		"/C/Users/roman/Desktop/dirlist/lib/uint16.h",
-		"/C/Users/roman/Desktop/dirlist/tests/test_path.c"
+		"/C/Users/roman/Desktop/dirlist/lib/popen.c"
 	],
 	"find":
 	{
-		"height": 39.96003996
+		"height": 22.0
 	},
 	"find_in_files":
 	{
@@ -648,6 +632,10 @@
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
@@ -696,77 +684,17 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "dirlist.sublime-project",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2229,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								415,
-								415
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "lib/unix/fnmatch_b.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4244,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4166,
-								4166
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1418.58141858,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
 					"file": "Makefile.functions",
 					"semi_transient": false,
 					"settings":
@@ -790,7 +718,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -798,7 +726,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 22.977022977
+		"height": 22.0
 	},
 	"input":
 	{
@@ -860,7 +788,7 @@
 	"project": "dirlist.sublime-project",
 	"replace":
 	{
-		"height": 72.0
+		"height": 40.0
 	},
 	"save_all_on_build": true,
 	"select_file":

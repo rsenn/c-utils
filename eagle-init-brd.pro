@@ -7,7 +7,7 @@ CONFIG += link_pkgconfig
 
 *msvc* {
   DEFINES += INLINE=__inline
-  DEFINES += _CRT_NONSTDC_NO_DEPRECATE=1
+  DEFINES += _CRT_NONSTDC_NQO_DEPRECATE=1
   DEFINES += _CRT_SECURE_NO_WARNINGS=1
 
   QMAKE_CFLAGS_WARN_ON = -W3
@@ -34,6 +34,7 @@ gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-variable -Wno-unused-
 }
 
 INCLUDEPATH += .
+INCLUDEPATH += C:\Users\roman\Documents\qtserialport-opensource-src-5.7.0\src\serialport
 
 #win32: LIBXML2_DIR = e:/Libraries/libxml2-2.9.4/vs2015-x86
 #win64: LIBXML2_DIR = e:/Libraries/libxml2-2.9.4/vs2015-x64
