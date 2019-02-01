@@ -286,7 +286,13 @@ main(int argc, char* argv[]) {
     }
   }
 
-  /* Sublime Text 3176 */
+  /* Linux x64 */
+  patch_new("Sublime Text 3065 Linux x64",13170144 , 0);
+  patch(0x00005ac2, 0x2e, 0xe2);
+
+  /* Linux x64 */
+  patch_new("Sublime Text 3126 Linux x64", 5200392, 0);
+  patch(0xc62e, 0x94, 0x95); /* License Check */
 
   /* Linux x32 */
   patch_new("Sublime Text 3176 Linux x86", 0, 0);
