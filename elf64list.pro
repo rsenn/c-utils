@@ -37,9 +37,9 @@ gcc: QMAKE_CFLAGS_WARN_ON += -Wno-sign-compare -Wno-unused-variable -Wno-unused-
 
 INCLUDEPATH += .
 
-HEADERS = lib/mmap.h lib/open.h
+HEADERS = lib/mmap.h lib/open.h lib/str.h
 
 
-SOURCES = elf64list.c lib/mmap/mmap_private.c lib/open/open_read.c
+SOURCES = elf64list.c lib/mmap/mmap_private.c lib/open/open_read.c lib/str/str_diff.c
 
 DEFINES += HAVE_ERRNO_H=1
