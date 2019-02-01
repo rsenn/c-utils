@@ -36,11 +36,29 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*)
 #define InterlockedCompareExchange(p, n, o) InterlockedCompareExchange((void**)p, (void*)n, (void*)o)
 #endif
 
-#if defined(__STDC__) && (__STDC_VERSION__ >= 201112L)
+#ifdef __arm__
+typedef long(__kernel_cmpxchg_t)(long oldval, long newval, long* ptr);
+static inline long
+__CAS(long* ptr, long oldval, long newval) {
+  long actual_oldval, fail;
+
+  while(1) {
+    actual_oldval = *ptr;
+
+    if(__builtin_expect(oldval != actual_oldval, 0))
+      return actual_oldval;
+
+    fail = (*(__kernel_cmpxchg_t*)0xffff0fc0)(actual_oldval, newval, ptr);
+
+    if(__builtin_expect(!fail, 1))
+      return oldval;
+  }
+}
+#elif defined(__STDC__) && (__STDC_VERSION__ >= 201112L)
 #include <stdatomic.h>
 static inline long
 __CAS(long* ptr, long oldval, long newval) {
-#ifdef __ORANGEC__
+#if defined(__ORANGEC__)
   atomic_compare_swap(ptr, &oldval, newval);
 #else
   __atomic_compare_exchange_n(ptr, &oldval, newval, 0, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
