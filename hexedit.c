@@ -52,15 +52,16 @@ extern int buffer_dummyreadmmap();
 
 int
 get_crc32(const char* filename, uint32* crc) {
-   size_t n;
-   char* x;
+  size_t n;
+  char* x;
 
-   if(mmap_read(filename, &n) == 0) return -1;
+  if(mmap_read(filename, &n) == 0)
+    return -1;
 
-   *crc = crc32(0, (const Bytef*)x, n);
+  *crc = crc32(0, (const Bytef*)x, n);
 
-   mmap_unmap(x, n);
-   return 0;
+  mmap_unmap(x, n);
+  return 0;
 }
 
 uint32
@@ -93,7 +94,7 @@ buffer_filename(buffer* b, stralloc* sa) {
     path_readlink(procp.s, sa);
   }
 #else
-    mmap_filename(b->x, sa);
+  mmap_filename(b->x, sa);
 #endif
 }
 
@@ -116,20 +117,26 @@ buffer_backup(buffer* b) {
   stralloc_nul(&orig);
 
 #if WINDOWS_NATIVE
-  if(CopyFileA(orig.s, backup.s, FALSE) != TRUE) return -1;
+  if(CopyFileA(orig.s, backup.s, FALSE) != TRUE)
+    return -1;
 
-  if((fd = open_rw(orig.s)) == -1) return -1;
+  if((fd = open_rw(orig.s)) == -1)
+    return -1;
 #else
-  if(rename(orig.s, backup.s) ==  -1) return -1;
+  if(rename(orig.s, backup.s) == -1)
+    return -1;
 
-  if((fd = open_rw(orig.s)) == -1) return -1;
+  if((fd = open_rw(orig.s)) == -1)
+    return -1;
 
-  if(io_sendfile(fd, b->fd, 0, size) == -1) return -1;
+  if(io_sendfile(fd, b->fd, 0, size) == -1)
+    return -1;
 #endif
 
   buffer_close(b);
 
-  if(buffer_mmapshared_fd(b, fd)) return -1;
+  if(buffer_mmapshared_fd(b, fd))
+    return -1;
 
   return 0;
 }
@@ -174,7 +181,8 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
   size_t i, nrec = array_length(&p->records, sizeof(record_t));
   size_t done = 0;
 
-  if(p->file_size && p->file_size != n) return -1;
+  if(p->file_size && p->file_size != n)
+    return -1;
 
   for(i = 0; i < nrec; ++i) {
     record_t* r = array_get(&p->records, sizeof(record_t), i);
@@ -187,7 +195,8 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
     }
   }
 
-  if(done == nrec) return 1;
+  if(done == nrec)
+    return 1;
   return 0;
 }
 
@@ -197,7 +206,8 @@ patch_find(unsigned char* x, size_t n) {
   for(i = 0; i < np; ++i) {
     patch_t* p = array_get(&patches, sizeof(patch_t), i);
 
-    if(patch_check(x, n, p) >= 0) return p;
+    if(patch_check(x, n, p) >= 0)
+      return p;
   }
   return NULL;
 }
@@ -219,7 +229,8 @@ void
 patch_apply(unsigned char* x, size_t n, patch_t* p) {
   size_t i, nrec = array_length(&p->records, sizeof(record_t));
 
-  if(p->file_size && p->file_size != n) return;
+  if(p->file_size && p->file_size != n)
+    return;
 
   for(i = 0; i < nrec; ++i) {
     record_t* r = array_get(&p->records, sizeof(record_t), i);
@@ -236,7 +247,8 @@ usage(const char* av0) {
                        " <file> [edit-specifier]\n"
                        "\n"
                        "  [edit-specifier] is <address>=<value>\n"
-                       "\n", 0);
+                       "\n",
+                       0);
   buffer_putnlflush(buffer_2);
 }
 
@@ -264,7 +276,7 @@ main(int argc, char* argv[]) {
 
   x = (unsigned char*)file.x;
   n = file.n;
-  //x = (unsigned char*)mmap_shared(argv[index], &n);
+  // x = (unsigned char*)mmap_shared(argv[index], &n);
 
   while(++index < argc) {
     uint64 addr = 0;
@@ -287,8 +299,14 @@ main(int argc, char* argv[]) {
   }
 
   /* Linux x64 */
-  patch_new("Sublime Text 3065 Linux x64",13170144 , 0);
+  patch_new("Sublime Text 3065 Linux x64", 13170144, 0);
   patch(0x00005ac2, 0x2e, 0xe2);
+  patch(0x001BD111, 0x8A, 0x90);
+  patch(0x001BD112, 0x9B, 0xB3);
+  patch(0x001BD113, 0xB8, 0x01);
+  patch(0x001BD114, 0x00, 0x90);
+  patch(0x001BD115, 0x00, 0x90);
+  patch(0x001BD116, 0x00, 0x90);
 
   /* Linux x64 */
   patch_new("Sublime Text 3126 Linux x64", 5200392, 0);
@@ -337,24 +355,22 @@ main(int argc, char* argv[]) {
   patch(0x00251879, 0xe8, 0x90);
   patch(0x0025187a, 0x04, 0x90);
   patch(0x0044bbb4, 0x74, 0xeb);
-/*
-  patch(0x00251874, 0x0f, 0x31);
-  patch(0x00251875, 0xb6, 0xc0);
-  patch(0x00251876, 0x46, 0x90);
-  patch(0x00251877, 0x06, 0x90);
-  patch(0x00251878, 0xc1, 0x90);
-  patch(0x00251879, 0xe8, 0x90);
-  patch(0x0025187a, 0x04, 0x90);
-  patch(0x0044bbb4, 0x74, 0xeb);
-*/ 
- /* eagle-lin32-7.5.0 */
-  patch_new("EAGLE 7.5.0 Linux x86",25715928, 0);
- patch(0x0010cc56, 0xc3, 0x41);
+  /*
+    patch(0x00251874, 0x0f, 0x31);
+    patch(0x00251875, 0xb6, 0xc0);
+    patch(0x00251876, 0x46, 0x90);
+    patch(0x00251877, 0x06, 0x90);
+    patch(0x00251878, 0xc1, 0x90);
+    patch(0x00251879, 0xe8, 0x90);
+    patch(0x0025187a, 0x04, 0x90);
+    patch(0x0044bbb4, 0x74, 0xeb);
+  */
+  /* eagle-lin32-7.5.0 */
+  patch_new("EAGLE 7.5.0 Linux x86", 25715928, 0);
+  patch(0x0010cc56, 0xc3, 0x41);
   patch(0x002a4dda, 0x31, 0xc1);
   patch(0x002a4ddb, 0xc0, 0xe8);
   patch(0x002a4ddc, 0x90, 0x04);
-
-
 
   /* eagle-lin32-7.7.0 */
   patch_new("EAGLE 7.7.0 Linux x86", 27784220, 0);
@@ -376,7 +392,6 @@ main(int argc, char* argv[]) {
   patch(0x002ec344, 0x04, 0x90);
   patch(0x0051fc14, 0x74, 0xeb);
 
-
   /* eagle-win64-7.6.0 */
   patch_new("EAGLE 7.6.0 Windows x64", 28329984, 0);
 
@@ -396,14 +411,12 @@ main(int argc, char* argv[]) {
   patch(0x003f325d, 0x74, 0xeb);
   patch(0x003f3271, 0x74, 0xeb);
 
-
   /* eagle-lin64-7.6.0 */
-  patch_new("EAGLE 7.6.0 Linux x64",25715928, 0);
+  patch_new("EAGLE 7.6.0 Linux x64", 25715928, 0);
   patch(0x0010cc56, 0xc3, 0x41);
   patch(0x002a4dda, 0x31, 0xc1);
   patch(0x002a4ddb, 0xc0, 0xe8);
   patch(0x002a4ddc, 0x90, 0x04);
-
 
   /* eagle-win32-7.7.0 */
   patch_new("EAGLE 7.7.0 Windows x86", 21286400, 0);
@@ -452,11 +465,10 @@ main(int argc, char* argv[]) {
   patch(0x003f52c9, 0x74, 0xeb);
   patch(0x003f52dd, 0x74, 0xeb);
 
-
   if((p = patch_find(x, n))) {
     int check = patch_check(x, n, p);
 
-    buffer_puts(buffer_2,  check == 1 ? "Already patched: " : "Found patch: ");
+    buffer_puts(buffer_2, check == 1 ? "Already patched: " : "Found patch: ");
     buffer_puts(buffer_2, p->name);
     buffer_putnlflush(buffer_2);
 
