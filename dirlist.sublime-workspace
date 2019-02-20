@@ -16,10 +16,10 @@
 	"buffers":
 	[
 		{
-			"contents": "_POSIX_C_SOURCE\nNOTFIRST\nSTRUCT_CHARCLASS\ncharclass_lookup\nmatch\nfnmatch",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 72,
+				"buffer_size": 0,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -30,6 +30,36 @@
 			"settings":
 			{
 				"buffer_size": 4605,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Makefile.defines",
+			"settings":
+			{
+				"buffer_size": 2520,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "{\n\t// This setting dictates which color scheme set will take priority if a match is found in both color scheme sets.\n\t// Options: \"fileName_ColorSchemes\" or \"filePath_ColorSchemes\"\n\t\"preferred_ColorScheme_Set\": \"filePath_ColorSchemes\",\n\n\t// This setting, if enabled, allows regexPattern values in filePath_ColorSchemes to query the entire filepath, including the filename.\n\t\"include_FileName_In_FilePath\": false,\n\n\n\n\t// NOTE for regexPattern values:\n\t//\t\tJSON requires that backslashes be escaped,\n\t//\t\tso \\\\ is equivalent to a single backslash ( IE: RegEx escape character ),\n\t//\t\tand \\\\\\\\ is equivalent to a literal backslash.\n\n\n\n\t// fileName_ColorSchemes regexPattern values will be matched against the active file's name ( including extension )\n\t\"fileName_ColorSchemes\":\n\t\t[\n\t\t\t// Match any CSS file\n\t\t\t{\t\"regexPattern\": \".*\\\\.css\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Espresso Libre.tmTheme\" },\n\n\t\t\t// Match any HTML file\n\t\t\t{\t\"regexPattern\": \".*\\\\.html\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/MagicWB (Amiga).tmTheme\" },\n\n\t\t\t// Match any file with the exact name \"Specific FileName\" ( extension is ignored )\n\t\t\t{\t\"regexPattern\": \"Specific FileName\\\\..*\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Monokai Bright.tmTheme\" },\n\n\t\t\t// Match any file which contains \"Specific Word\" in its name ( extension is ignored )\n\t\t\t{\t\"regexPattern\": \".*Specific Word.*?\\\\..*\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/SpaceCadet.tmTheme\" },\n\t\t],\n\n\t// filePath_ColorSchemes regexPattern values will be matched against the active file's directory path\n\t// ( excluding filename, unless include_FileName_In_FilePath is enabled )\n\t\"filePath_ColorSchemes\":\n\t\t[\n\t\t\t// Match any file with \"Specific Directory\" as the final directory in its path\n\t\t\t{\t\"regexPattern\": \".*\\\\\\\\Specific Directory$\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Amy.tmTheme\" },\n\n\t\t\t// Match any file with \"Specific Directory/Specific SubDirectory\" as the final directories in its path\n\t\t\t{\t\"regexPattern\": \".*\\\\\\\\Specific Directory\\\\\\\\Specific SubDirectory$\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Cobalt.tmTheme\" },\n\n\t\t\t// Match any file within \"Specific Directory\" followed by any subdirectory structure which has \"Specific SubSubDirectory\" as the final directory in its path\n\t\t\t{\t\"regexPattern\": \".*\\\\\\\\Specific Directory\\\\\\\\.*\\\\\\\\Specific SubSubDirectory$\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Zenburnesque.tmTheme\" },\n\t\t],\n}\n",
+			"file": "/home/roman/.config/sublime-text-3/Packages/Conditional ColorSchemes/Example.sublime-settings",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 2479,
+				"line_ending": "Unix",
+				"read_only": true,
+				"scratch": true
+			}
+		},
+		{
+			"file": "dirlist.sublime-project",
+			"settings":
+			{
+				"buffer_size": 2224,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -284,10 +314,12 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/dirlist"
+		"/home/roman/Sources/dirlist",
+		"/home/roman/Sources/dirlist/lib"
 	],
 	"file_history":
 	[
+		"/home/roman/.config/sublime-text-3/Packages/User/ConditionalColorSchemes.sublime-settings",
 		"/home/roman/Sources/dirlist/dirlist.sublime-project",
 		"/home/roman/Sources/dirlist/lib/unix/fnmatch_b.c",
 		"/home/roman/Sources/rsenn/dirlist/genmakefile.c",
@@ -414,8 +446,7 @@
 		"/C/Users/roman/Desktop/dirlist/lib/path/path_fnmatch.c",
 		"/C/Users/roman/Desktop/dirlist/SetMSVCStaticRuntime.cmake",
 		"/C/Users/roman/Desktop/dirlist/lib/unit_test.h",
-		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_pop.c",
-		"/C/Users/roman/Desktop/dirlist/lib/popen.c"
+		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_pop.c"
 	],
 	"find":
 	{
@@ -626,57 +657,38 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 72,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
-							[
-								0,
-								0
-							]
 						],
 						"settings":
 						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "\\.",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ":",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
 							"color_scheme": null,
-							"current_file": "/home/roman/Sources/rsenn/dirlist/lib/unix/fnmatch_b.c",
+							"current_file": "/home/roman/Sources/dirlist/Makefile.defines",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
-								[
-									8,
-									23
-								],
-								[
-									97,
-									105
-								],
-								[
-									119,
-									135
-								],
-								[
-									745,
-									761
-								],
-								[
-									1124,
-									1129
-								],
-								[
-									1235,
-									1242
-								]
 							],
 							"symlist":
 							[
-								"_POSIX_C_SOURCE",
-								"NOTFIRST",
-								"STRUCT_CHARCLASS",
-								"charclass_lookup",
-								"match",
-								"fnmatch"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -684,13 +696,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -712,13 +724,159 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "\\.",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ":",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "Makefile.defines",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 2520,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "\\.",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ":",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/roman/.config/sublime-text-3/Packages/Conditional ColorSchemes/Example.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2479,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								630,
+								630
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "\\.",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ":",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "dirlist.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2224,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1629,
+								1629
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "\\.",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ":",
+									"selector": "source.lua"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1170.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -730,7 +888,7 @@
 	},
 	"input":
 	{
-		"height": 35.968031968
+		"height": 36.0
 	},
 	"layout":
 	{
