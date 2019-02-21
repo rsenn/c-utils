@@ -36,12 +36,13 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
     return;
   }
 
-  if(!closing)
+  if(!closing) {
     buffer_putnspace(b, depth * 2);
-  buffer_putm_internal(b, node->name, 0);
+    buffer_putm_internal(b, node->name, 0);
+  }
 
   if(node->attributes && node->attributes->tuple_count) {
-    buffer_puts(b, ' ');
+    buffer_puts(b, " ");
     xml_print_attributes(node->attributes, b, ", ", ": ", "\"");
   }
 
@@ -49,12 +50,12 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
     int only_text_children = (node->children->type == XML_TEXT);
 
     if(only_text_children) {
-    buffer_puts(b, ", \"");
+      buffer_puts(b, ", \"");
       xml_print_list(node->children, b, 0, "\\n");
-    buffer_puts(b, "\"\n");
+      buffer_puts(b, "\"\n");
     } else if(xml_num_children(node) == 1) {
-    buffer_puts(b, ", ->\n");
-        buffer_putnspace(b, (depth + 1) * 2);
+      buffer_puts(b, ", ->\n");
+      buffer_putnspace(b, (depth + 1) * 2);
       xml_print_list(node->children, b, 0, "");
     } else {
       buffer_puts(b, nl);
@@ -83,8 +84,8 @@ xml_print_list(xmlnode* node, buffer* b, int depth, const char* nl) {
 static void
 xml_print_tree(xmlnode* node, buffer* b) {
   if(node->type == XML_DOCUMENT) {
-  //buffer_puts(b, "@html\"utf-8\"?>\n")
-  //  buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+    //buffer_puts(b, "@html\"utf-8\"?>\n")
+    //  buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
     node = node->children;
   }
 
@@ -107,7 +108,7 @@ main(int argc, char* argv[]) {
   buffer_skip_until(&input, "\r\n", 2);
   doc = xml_read_tree(&input);
   xml_print_tree(doc->children, buffer_1);
-  
+
   /*
    * Cleanup function for the XML library.
    */
