@@ -4,6 +4,7 @@
 #include "lib/uint16.h"
 #include "lib/uint32.h"
 #include "lib/uint64.h"
+#include "lib/str.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

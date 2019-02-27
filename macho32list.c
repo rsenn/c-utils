@@ -3,6 +3,7 @@
 #include "lib/uint32.h"
 #include "lib/macho.h"
 #include "lib/mmap.h"
+#include "lib/str.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

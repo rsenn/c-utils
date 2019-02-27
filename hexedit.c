@@ -27,10 +27,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-#ifdef HAVE_ZLIB
-#include <zlib.h>
-#endif
-
 char hexdigits[] = "0123456789abcdef";
 
 typedef struct {
@@ -50,6 +46,23 @@ static array patches;
 
 extern int buffer_dummyreadmmap();
 
+uint32
+crc32(uint32 crc, const char* data, size_t size) {
+  uint32 i, r = ~0;
+  const char* end = data + size;
+
+  while(data < end) {
+    r ^= *data++;
+
+    for(i = 0; i < 8; i++) {
+      uint32 t = ~((r & 1) - 1);
+      r = (r >> 1) ^ (0xedb88320 & t);
+    }
+  }
+
+  return ~r;
+}
+
 int
 get_crc32(const char* filename, uint32* crc) {
   size_t n;
@@ -58,7 +71,7 @@ get_crc32(const char* filename, uint32* crc) {
   if(mmap_read(filename, &n) == 0)
     return -1;
 
-  *crc = crc32(0, (const Bytef*)x, n);
+  *crc = crc32(0, (const char*)x, n);
 
   mmap_unmap(x, n);
   return 0;
@@ -67,7 +80,7 @@ get_crc32(const char* filename, uint32* crc) {
 uint32
 buffer_crc32(buffer* b) {
   uint32 r;
-  r = crc32(0, (const Bytef*)b->x, b->n);
+  r = crc32(0, (const char*)b->x, b->n);
   return r;
 }
 

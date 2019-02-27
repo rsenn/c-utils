@@ -54,7 +54,7 @@ __CAS(long* ptr, long oldval, long newval) {
       return oldval;
   }
 }
-#elif defined(__STDC__) && (__STDC_VERSION__ >= 201112L)
+#elif defined(__STDC__) && (__STDC_VERSION__ >= 201112L) && !defined(__EMSCRIPTEN__)
 #include <stdatomic.h>
 static inline long
 __CAS(long* ptr, long oldval, long newval) {

@@ -23,6 +23,35 @@ xml_num_children(xmlnode* node) {
   return n;
 }
 
+void
+xml_print_attrs(HMAP_DB* db, buffer* b) {
+  TUPLE* tpl = db->list_tuple;
+
+  while(tpl) {
+    buffer_putm_internal(b, tpl == db->list_tuple ? "" : ", ", 0);
+    if(tpl->key[str_chr(tpl->key, '-')])
+      buffer_putm_internal(b, "\"", tpl->key, "\"", 0);
+    else
+      buffer_puts(b, tpl->key);
+
+    buffer_putm_internal(b, ": ", "\"", 0);
+
+    switch(tpl->data_type) {
+      case HMAP_DATA_TYPE_INT: buffer_putlong(b, tpl->vals.val_int); break;
+      case HMAP_DATA_TYPE_UINT: buffer_putulong(b, tpl->vals.val_uint); break;
+      case HMAP_DATA_TYPE_INT64: buffer_putlonglong(b, tpl->vals.val_longlong); break;
+      case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(b, tpl->vals.val_ulonglong); break;
+      case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(b, tpl->vals.val_double, 15); break;
+      case HMAP_DATA_TYPE_CHARS: buffer_put(b, tpl->vals.val_chars, tpl->data_len - 1); break;
+      case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(b, tpl->vals.val_custom); break;
+    }
+    buffer_puts(b, "\"");
+    if(tpl->next == db->list_tuple)
+      break;
+    tpl = tpl->next;
+  }
+}
+
 static void
 xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
   int closing = node_is_closing(node);
@@ -43,7 +72,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
 
   if(node->attributes && node->attributes->tuple_count) {
     buffer_puts(b, " ");
-    xml_print_attributes(node->attributes, b, ", ", ": ", "\"");
+    xml_print_attrs(node->attributes, b);
   }
 
   if(node->children) {
@@ -51,21 +80,24 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
 
     if(only_text_children) {
       buffer_puts(b, ", \"");
-      xml_print_list(node->children, b, 0, "\\n");
+      xml_print_list(node->children, b, 0, " ");
       buffer_puts(b, "\"\n");
-    } else if(xml_num_children(node) == 1) {
-      buffer_puts(b, ", ->\n");
-      buffer_putnspace(b, (depth + 1) * 2);
-      xml_print_list(node->children, b, 0, "");
+      /*} else if(xml_num_children(node) == 1) {
+        buffer_puts(b, ", ->\n");
+        buffer_putnspace(b, (depth + 1) * 2);
+        xml_print_list(node->children, b, 0, "");*/
     } else {
-      buffer_puts(b, nl);
+      if(node->attributes && node->attributes->tuple_count)
+        buffer_puts(b, ",");
+
+      buffer_puts(b, " ->\n");
       xml_print_list(node->children, b, depth + 1, "\n");
       buffer_putnspace(b, depth * 2);
     }
   } else if(node->name[0] == '/' || (node->next && node_is_closing(node->next))) {
-    //buffer_putc(b, '>');
+    // buffer_putc(b, '>');
   } else {
-    //buffer_puts(b, node->name[0] == '?' ? "?>" : "/>");
+    // buffer_puts(b, node->name[0] == '?' ? "?>" : "/>");
     closing = 1;
   }
 
@@ -84,7 +116,7 @@ xml_print_list(xmlnode* node, buffer* b, int depth, const char* nl) {
 static void
 xml_print_tree(xmlnode* node, buffer* b) {
   if(node->type == XML_DOCUMENT) {
-    //buffer_puts(b, "@html\"utf-8\"?>\n")
+    // buffer_puts(b, "@html\"utf-8\"?>\n")
     //  buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
     node = node->children;
   }

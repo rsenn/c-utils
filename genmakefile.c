@@ -22,7 +22,8 @@
 
 #include <stdlib.h>
 #include <ctype.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023

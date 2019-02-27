@@ -9,7 +9,7 @@
 
 uint32
 socket_getifidx(const char* ifname) {
-#ifdef HAVE_N2I
+#if defined(HAVE_N2I) && !defined(__EMSCRIPTEN__)
   return if_nametoindex(ifname);
 #else
   return 0;

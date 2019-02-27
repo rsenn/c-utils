@@ -56,7 +56,7 @@ set -e;  \
 ($(if $(3),$(foreach H,$(3),echo "#include <$(H)>";),echo "extern int $(1)();";) \
 echo "int main() {"; \
 echo "  void *ptr = &$(1);"; \
-echo "  return 0;"; \
+echo "  return (int)ptr;"; \
 echo "}") >test_$(1).c; \
 if $(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS) -o test_$(1) test_$(1).c $(2); then R=0; else R=1; fi; \
 rm -f "test_$(1)" "test_$(1).c"; exit $$R

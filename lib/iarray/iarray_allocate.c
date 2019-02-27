@@ -10,10 +10,8 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile *,void*,void*);
 #include "../iarray.h"
 
 #if defined(__STDC__) 
-#if __STDC_VERSION__ >= 201112L 
+#if __STDC_VERSION__ >= 201112L  && !defined(__EMSCRIPTEN__)
 #include <stdatomic.h>
-
-
 #endif
 #endif
 
