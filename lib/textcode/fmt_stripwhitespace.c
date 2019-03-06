@@ -14,15 +14,20 @@ fmt_stripwhitespace(char* dest, const char* src, size_t len) {
       if(i) {
           s += i;
           len -= i;
-          *dest++ = ' ';
+          if(d > dest)
+            *d++ = ' ';
       }
+      if(len == 0) break;
 
       j = scan_nonwhitenskip(s, len);
 
-      while(i < j) {
+      while(j > 0) {
           *d++ = *s++;
           --len;
+          --j;
       }
+      
+      if(len == 0) break;
   }
   return d - dest;
 }

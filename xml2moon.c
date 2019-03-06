@@ -10,6 +10,7 @@
 #include "lib/scan.h"
 #include "lib/strlist.h"
 #include "lib/array.h"
+#include "lib/textcode.h"
 
 static void xml_print_list(xmlnode*, buffer*, int, const char*);
 
@@ -86,11 +87,10 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
       char* content = xml_content(node);
 
       if((content = xml_content(node))) {
+          size_t len = content ? str_len(content) : 0;
 
-          stralloc_ready(&text, str_len(content));
-
-        text.len =  fmt_stripwhitespace(text.s, content, str_len(content));
-
+          stralloc_ready(&text, len);
+          text.len =  fmt_stripwhitespace(text.s, content, len);
       }
       stralloc_nul(&text);
       buffer_putm_internal(b, ", \"", text.s, "\"", 0);
