@@ -1158,7 +1158,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)xml2moon$(M64_)$(EXEEXT): $(BUILDDIR)xml2moon.o $(call add-library, cbmap xml array safemult strlist charbuf textbuf hmap stralloc buffer mmap open byte scan fmt fmt str)
+$(BUILDDIR)xml2moon$(M64_)$(EXEEXT): $(BUILDDIR)xml2moon.o $(call add-library, textcode cbmap xml array safemult strlist charbuf textbuf hmap stralloc buffer mmap open byte scan fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

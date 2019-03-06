@@ -37,13 +37,13 @@ xml_print_attrs(HMAP_DB* db, buffer* b) {
     buffer_putm_internal(b, ": ", "\"", 0);
 
     switch(tpl->data_type) {
-      case HMAP_DATA_TYPE_INT: buffer_putlong(b, tpl->vals.val_int); break;
-      case HMAP_DATA_TYPE_UINT: buffer_putulong(b, tpl->vals.val_uint); break;
-      case HMAP_DATA_TYPE_INT64: buffer_putlonglong(b, tpl->vals.val_longlong); break;
-      case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(b, tpl->vals.val_ulonglong); break;
-      case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(b, tpl->vals.val_double, 15); break;
-      case HMAP_DATA_TYPE_CHARS: buffer_put(b, tpl->vals.val_chars, tpl->data_len - 1); break;
-      case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(b, tpl->vals.val_custom); break;
+    case HMAP_DATA_TYPE_INT: buffer_putlong(b, tpl->vals.val_int); break;
+    case HMAP_DATA_TYPE_UINT: buffer_putulong(b, tpl->vals.val_uint); break;
+    case HMAP_DATA_TYPE_INT64: buffer_putlonglong(b, tpl->vals.val_longlong); break;
+    case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(b, tpl->vals.val_ulonglong); break;
+    case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(b, tpl->vals.val_double, 15); break;
+    case HMAP_DATA_TYPE_CHARS: buffer_put(b, tpl->vals.val_chars, tpl->data_len - 1); break;
+    case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(b, tpl->vals.val_custom); break;
     }
     buffer_puts(b, "\"");
     if(tpl->next == db->list_tuple)
@@ -77,12 +77,27 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
 
   if(node->children) {
     int only_text_children = (node->children->type == XML_TEXT);
+    static stralloc text;
+
+    stralloc_zero(&text);
 
     if(only_text_children) {
-      buffer_puts(b, ", \"");
-      xml_print_list(node->children, b, 0, " ");
+
+      char* content = xml_content(node);
+
+      if((content = xml_content(node))) {
+
+          stralloc_ready(&text, str_len(content));
+
+        text.len =  fmt_stripwhitespace(text.s, content, str_len(content));
+
+      }
+      stralloc_nul(&text);
+      buffer_putm_internal(b, ", \"", text.s, "\"", 0);
+
+      /*xml_print_list(node->children, b, 0, " ");
       buffer_puts(b, "\"\n");
-      /*} else if(xml_num_children(node) == 1) {
+      *} else if(xml_num_children(node) == 1) {
         buffer_puts(b, ", ->\n");
         buffer_putnspace(b, (depth + 1) * 2);
         xml_print_list(node->children, b, 0, "");*/
