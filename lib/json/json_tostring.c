@@ -10,7 +10,8 @@ json_tostring_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->quote = '"';
 };
 
-void json_tostring(jsonval* val, stralloc* sa) {
+const char*
+json_tostring(jsonval* val, stralloc* sa) {
   switch(val->type) {
     case JSON_DOUBLE: {
       stralloc_readyplus(sa, 63);
@@ -31,4 +32,6 @@ void json_tostring(jsonval* val, stralloc* sa) {
       break;
     }
   }
+  stralloc_nul(sa);
+  return sa.s;
 }
