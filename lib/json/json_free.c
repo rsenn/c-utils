@@ -3,13 +3,9 @@
 static size_t
 json_free_val(jsonval* val) {
   switch(val->type) {
-    case JSON_OBJECT:
-      break;
-    case JSON_ARRAY:
-      break;
-    default:
-      free(val);
-      return 1;
+    case JSON_OBJECT: break;
+    case JSON_ARRAY: break;
+    default: free(val); return 1;
   }
   return 0;
 }

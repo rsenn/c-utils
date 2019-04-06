@@ -1,5 +1,5 @@
 #include "../byte.h"
-#include "alloc.h"
+#include "cbmap_alloc.h"
 #include "../cbmap_internal.h"
 
 static void*

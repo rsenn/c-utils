@@ -34,6 +34,23 @@ put_str_escaped(buffer* b, const char* str) {
   buffer_putsa(b, &esc);
 }
 
+static const jsonprinter compact_printer = {
+  "", "", "", ","
+};
+
+void
+json_pretty_print(jsonval* val, buffer* b) {
+  stralloc out;
+  stralloc_init(&out);
+  json_tosa(val, &out, &compact_printer);
+
+  if(out.len > 16384) {
+    json_print(val, b, 0);
+  } else {
+    buffer_putsa(b, &out);
+  }
+}
+
 int
 main(int argc, char* argv[]) {
   int fd;
@@ -41,20 +58,15 @@ main(int argc, char* argv[]) {
   stralloc tmp;
   stralloc_init(&tmp);
 
-  fd = open_read(argc > 1 ? argv[1] : "../dirlist/test.json");
-  //size_t sz;
-  //char* map = mmap_private( argc > 1 ? argv[1] : "../dirlist/test.json", &sz);;
+  fd = argc > 1 ? open_read(argv[1]) : 0;
 
-  //buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.json");
-  //
   charbuf_init(&infile, (read_fn*)&read, fd);
 
   doc = json_read_tree(&infile);
 
-  json_print(doc, buffer_1, 0);
+  json_pretty_print(doc, buffer_1);
 
   charbuf_close(&infile);
 
   json_free(doc);
-
 }

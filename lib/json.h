@@ -6,6 +6,7 @@
 #include "slist.h"
 #include "uint64.h"
 #include <sys/types.h>
+#include <ctype.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +40,13 @@ typedef struct {
   jsonval** loc;
 } jsonreader;
 
+typedef struct {
+  const char* indent;
+  const char* newline;
+  const char* spacing;
+  const char* separator;
+} jsonprinter;
+
 #define node_is_closing(n) ((n)->name[0] == '/')
 
 typedef int(json_read_callback_fn)(jsonreader* r, jsondata id, stralloc* name, stralloc* value, HMAP_DB** attrs);
@@ -52,10 +60,15 @@ int json_parse_getsa(charbuf*, stralloc* sa);
 int json_parse_object(jsonval*, charbuf* b);
 int json_parse_string(jsonval*, charbuf* b);
 int json_parse(jsonval*, charbuf* b);
-void json_print(jsonval*, buffer* b);
+void json_print(jsonval*, buffer* b, const jsonprinter* p);
 void json_reader_init(jsonreader*, charbuf* b);
 void json_read_callback(jsonreader*, json_read_callback_fn* fn);
 jsonval* json_read_tree(charbuf*);
+void json_tosa(jsonval* val, stralloc* sa, const jsonprinter* p);
+
+static inline int json_is_identifier_char(int c) {
+  return isalpha(c) || c == '$' || c == '_' || ispunct(c);
+}
 
 #ifdef __cplusplus
 }

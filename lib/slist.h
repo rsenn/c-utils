@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <sys/types.h>
+#include "alloc.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,46 +33,29 @@ int slist_unshifts(slink**, const char* s);
 #define slink_foreach(link, n) for((n) = (void*)(link); (n); (n) = (void*)((slink*)(n))->next)
 #define slist_foreach(list, n) for((n) = (void*)slist_begin(list); *(slink**)(n); (n) = (void*)slist_next((slink**)n))
 
-inline static slink**
-slist_begin(slink** list) {
-  return list;
-}
-inline static slink**
-slist_next(slink** link) {
-  return &(*link)->next;
-}
+#define slist_begin(st) ((struct slink**)&(st))
+#define slist_next(st) (((struct slink*)(st))->next)
 
-inline static slink**
-slist_end(slink** list) {
-  while(*list) list = &(*list)->next;
-  return list;
-}
+#define slink_data(link) ((void*)&((*(struct slink**)(link))[1]))
+#define slist_data(ptr) ((void*)&(((struct slink*)(ptr))[1]))
 
-inline static int
-slist_iterator_first(slink** list, slink** p) {
-  return list == p;
-}
-inline static int
-slist_iterator_last(slink** list, slink** p) {
-  (void)list;
-  return *p && (*p)->next == NULL;
-}
-inline static int
-slist_iterator_end(slink** list, slink** p) {
-  (void)list;
-  return (*p) == NULL;
-}
+#define slink_new(type) ((slink*)alloc_zero(sizeof(type) + sizeof(slink)))
 
-inline static void
-slist_iterator_increment(slink** list, slink*** p) {
-  (void)list;
-  *p = &(**p)->next;
-}
-inline static slink*
-slist_iterator_dereference(slink** list, slink** p) {
-  (void)list;
-  return *p;
-}
+static inline slink** slink_insert(slink** at, slink* link) {  link->next = *at; *at = link; return &link->next; }
+
+#define slist_insert(list, link) slink_insert(list, (slink*)(link))
+
+inline static slink** slink_begin(slink** list) { return list; }
+inline static slink** slink_next(slink** link) { return &(*link)->next; }
+inline static slink** slink_end(slink** list) { while(*list) list = &(*list)->next; return list; }
+
+inline static int slist_iterator_first(slink** list, slink** p) { return list == p; }
+inline static int slist_iterator_last(slink** list, slink** p) { (void)list; return *p && (*p)->next == NULL; }
+inline static int slist_iterator_end(slink** list, slink** p) { (void)list; return (*p) == NULL; }
+
+inline static void slist_iterator_increment(slink** list, slink*** p) { (void)list; *p = &(**p)->next; }
+inline static slink* slist_iterator_dereference(slink** list, slink** p) { (void)list; return *p; }
+
 inline static size_t
 slist_iterator_distance(slink** list, slink** from, slink** to) {
   size_t i = 0;
@@ -82,6 +66,7 @@ slist_iterator_distance(slink** list, slink** from, slink** to) {
   };
   return i;
 }
+
 inline static int
 slist_iterator_equal(slink** list, slink** it1, slink** it2) {
   (void)list;

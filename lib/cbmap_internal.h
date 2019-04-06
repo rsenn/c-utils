@@ -1,5 +1,5 @@
 #include "cbmap.h"
-#include "cbmap/alloc.h"
+#include "cbmap/cbmap_alloc.h"
 #include <string.h>
 #include <sys/types.h>
 

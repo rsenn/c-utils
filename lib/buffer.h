@@ -209,6 +209,7 @@ int buffer_lzma(buffer*, buffer*, int compress);
 int buffer_bz2(buffer*, buffer*, int compress);
 
 int buffer_putnc(buffer*, char c, int ntimes);
+int buffer_putns(buffer*, const char* s, int ntimes);
 
 int buffer_putspad(buffer*, const char* x, size_t pad);
 

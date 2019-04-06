@@ -1,4 +1,4 @@
-#include "alloc.h"
+#include "cbmap_alloc.h"
 #include "../cbmap_internal.h"
 
 struct cbmap_internal_node*

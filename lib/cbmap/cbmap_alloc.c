@@ -1,6 +1,6 @@
 #include "../windoze.h"
 
-#include "alloc.h"
+#include "cbmap_alloc.h"
 
 #include "../memalign.h"
 #include "../byte.h"

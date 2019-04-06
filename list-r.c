@@ -84,7 +84,7 @@ static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static array exclude_masks;
 static char opt_separator = DIRSEP_C;
 
-static int opt_list = 0, opt_numeric = 0, opt_relative = 0;
+static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0;
 static unsigned long opt_minsize = 0;
 static const char* opt_relative_to = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
@@ -528,7 +528,7 @@ list_dir_internal(stralloc* dir, char type) {
     dir->len += str_len(name);
     is_symlink = !!(dtype & D_SYMLINK);
 #if !WINDOWS_NATIVE
-    if(lstat(dir->s, &st) != -1) {
+    if(!opt_deref && lstat(dir->s, &st) != -1) {
       if(root_dev && st.st_dev) {
         if(st.st_dev != root_dev) {
           continue;
@@ -635,7 +635,7 @@ list_dir_internal(stralloc* dir, char type) {
       buffer_flush(buffer_1);
     }
 
-    if(is_dir && !is_symlink) {
+    if(is_dir && (opt_deref || !is_symlink)) {
       dir->len--;
       list_dir_internal(dir, 0);
     }
@@ -685,6 +685,7 @@ usage(char* argv0) {
                        "  -x, --exclude    PATTERN  exclude entries matching PATTERN\n",
                        "  -t, --time-style FORMAT   format time according to FORMAT\n",
                        "  -m, --min-size   BYTES    minimum file size\n",
+                       "  -L, --dereference         dereference symlinks\n",
                        0);
   buffer_putnlflush(buffer_1);
 }
@@ -704,6 +705,7 @@ main(int argc, char* argv[]) {
     {"output", 1, 0, 'o'},
     {"exclude", 1, 0, 'x'},
     {"time-style", 1, 0, 't'},
+    {"dereference", 0, &opt_deref, 1},
     {"min-size", 1, 0, 'm'},
 #if WINDOWS
     {"separator", 1, 0, 's'},
@@ -741,6 +743,7 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'l': opt_list = 1; break;
+      case 'L': opt_deref = 1; break;
       case 'n': opt_numeric = 1; break;
       case 'r': opt_relative = 1; break;
       case 'm': scan_ulong(optarg, &opt_minsize); break;

@@ -189,6 +189,8 @@ int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*)
 /* make a buffer from a stralloc.
  * Do not change the stralloc after this! */
 void buffer_fromsa(buffer* b, const stralloc* sa);
+
+int stralloc_write(int fd, const char* buf, size_t len, buffer* b);
 #endif
 
 size_t stralloc_scan(stralloc* out, const stralloc* in, size_t (*scan_function)(const char*, char*));
