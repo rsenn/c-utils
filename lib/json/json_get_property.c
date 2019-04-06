@@ -1,26 +1,32 @@
 #include "../json.h"
 
-jsonval*
-json_get_property(jsonval* obj, jsonval name) {
-  jsonval* ret = 0;
-  if(obj->type == JSON_OBJECT) {
+jsonval
+json_get_property(jsonval obj, jsonval name) {
+  jsonval ret = json_undefined();
+
+  if(obj.type == JSON_ARRAY || obj.type == JSON_STRING) {
+    if(str_equal(json_str(&name), "length"))
+      return json_int(json_length(obj));
+  }
+
+  if(obj.type == JSON_OBJECT) {
     stralloc key;
     stralloc_init(&key);
-    json_tostring(&name, &key);
+    json_tostring(name, &key);
     stralloc_nul(&key);
-    ret = hmap_get(&obj->dictv, key.s, key.len);
+    ret = *(jsonval*)hmap_get(&obj.dictv, key.s, key.len);
     stralloc_free(&key);
-  } else if(obj->type == JSON_ARRAY) {
+  } else if(obj.type == JSON_ARRAY) {
     struct slink* p;
-    int64 index = json_toint(name);
+    int64 i;
 
-    for(p = obj->listv; p; p = p->next) {
-      if(index-- == 0)
-        ret = slist_data(p);
+    i = json_toint(name);
+    for(p = obj.listv; p; p = p->next) {
+      if(i-- == 0) {
+        ret = *(jsonval*)slist_data(p);
         break;
       }
     }
   }
   return ret;
 }
-

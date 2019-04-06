@@ -4,7 +4,7 @@
 #include <float.h>
 
 double
-json_todouble(jsonval* val) {
+json_todouble(jsonval val) {
   double ret;
   stralloc sa;
   stralloc_init(&sa);

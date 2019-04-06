@@ -51,7 +51,7 @@ main(int argc, char* argv[]) {
 
   doc = json_read_tree(&infile);
 
-  json_print(doc, buffer_1, 0);
+  json_print(*doc, buffer_1, 0);
 
   charbuf_close(&infile);
 

@@ -41,14 +41,13 @@ byte_fullfils_predicate(const char* x, size_t len, int (*pred)(int)) {
 
 static void
 json_print_separator(jsonval* val, buffer* b, int depth, int index, void (*p)(jsonfmt*, jsonval*, int, int)) {
- 
+
   const char* nl;
- jsonfmt printer;
+  jsonfmt printer;
   p(&printer, val, depth, index);
   nl = printer.newline;
 
   buffer_puts(b, nl);
-
 
   if(nl[0] == '\n')
     buffer_putns(b, printer.indent, depth);
@@ -62,14 +61,14 @@ json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
   size_t len = byte_chr(key, key_len, '\0');
   if(quote)
     buffer_putc(b, fmt->quote);
-  buffer_put(b, key, len);  
+  buffer_put(b, key, len);
   if(quote)
     buffer_putc(b, fmt->quote);
 }
 
 static void
 json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
-    char tmp[6];
+  char tmp[6];
   buffer_putc(b, fmt->quote);
   while(len--) {
     if(*x == fmt->quote || *x == '\\')
@@ -85,7 +84,7 @@ static void
 json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*, int, int)) {
   TUPLE* t;
   int index = 0;
- jsonfmt printer;
+  jsonfmt printer;
   p(&printer, val, depth, index);
 
   buffer_puts(b, "{");
@@ -121,7 +120,7 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
 
   slink_foreach(val->listv, ptr) {
     json_print_val(slist_data(ptr), b, depth, p);
- ++index;
+    ++index;
     if(slist_next(ptr)) {
       buffer_put(b, ",", 1);
       json_print_separator(val, b, depth, index, p);
@@ -135,12 +134,12 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
 static void
 json_print_val(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*, int, int)) {
   jsonfmt printer;
-    p(&printer, val, depth, 0);
+  p(&printer, val, depth, 0);
 
   json_print_separator(val, b, depth, -1, p);
 
   switch(val->type) {
-    case JSON_NONE: break;
+    case JSON_UNDEFINED: break;
     case JSON_STRING: json_print_str(b, val->stringv.s, val->stringv.len, &printer); break;
     case JSON_DOUBLE: buffer_putdouble(b, val->doublev, 15); break;
     case JSON_BOOL: buffer_puts(b, val->boolv ? "true" : "false"); break;
@@ -151,12 +150,12 @@ json_print_val(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*,
 }
 
 void
-json_print(jsonval* val, buffer* b, void (*p)()) {
+json_print(jsonval val, buffer* b, void (*p)()) {
   jsonfmt printer;
   if(p == NULL)
     p = &json_default_printer;
-  p(&printer, val, 0, -1);
-  json_print_val(val, b, 0, p);
+  p(&printer, &val, 0, -1);
+  json_print_val(&val, b, 0, p);
   buffer_puts(b, printer.newline);
   buffer_flush(b);
 }

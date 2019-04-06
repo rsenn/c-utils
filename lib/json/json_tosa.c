@@ -11,7 +11,7 @@ json_default_printer(jsonfmt* p, jsonval* v, int depth) {
 };
 
 void
-json_tosa(jsonval* val, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int)) {
+json_tosa(jsonval val, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int)) {
   buffer b;
   char buf[1024];
 

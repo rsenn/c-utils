@@ -5,7 +5,7 @@ static void
 json_recurse_val(jsonval* val, void (*fn)(), void* arg, int depth) {
   fn(val, arg, depth);
   switch(val->type) {
-    case JSON_NONE:
+    case JSON_UNDEFINED:
     case JSON_STRING:
     case JSON_DOUBLE:
     case JSON_BOOL:

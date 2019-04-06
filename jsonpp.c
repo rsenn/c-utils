@@ -64,7 +64,7 @@ if(depth < 2) {
 };
 
 void
-json_pretty_print(jsonval* val, buffer* b) {
+json_pretty_print(jsonval val, buffer* b) {
   stralloc out;
   stralloc_init(&out);
   json_tosa(val, &out, &compact_printer);
@@ -148,7 +148,7 @@ main(int argc, char* argv[]) {
   buffer_putulong(buffer_1, get_depth(doc));
   buffer_putnlflush(buffer_1);
   
-  json_pretty_print(doc, buffer_1);
+  json_pretty_print(*doc, buffer_1);
 
   charbuf_close(&infile);
 
