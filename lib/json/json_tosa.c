@@ -2,13 +2,16 @@
 #include "../stralloc.h"
 #include "../json.h"
 
-static const jsonprinter json_default_printer = {
-  "", "", "", ","
+
+static void
+json_default_printer(jsonfmt* p, jsonval* v, int depth) {
+  p->indent = "  ";
+  p->newline = "\n";
+  p->spacing = " ";
 };
 
-
 void
-json_tosa(jsonval* val, stralloc* sa, const jsonprinter* p) {
+json_tosa(jsonval* val, stralloc* sa, void (*p)(jsonfmt*,jsonval*,int)) {
   buffer b;
   char buf[1024];
 

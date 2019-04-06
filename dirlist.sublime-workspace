@@ -16,50 +16,87 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "json_print_val\nbyte_fullfils_predicate\njson_print_key\njson_print_str\njson_print_object\njson_print_array\njson_print_val\njson_print",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 129,
 				"line_ending": "Windows",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "Makefile.functions",
+			"file": "lib/json/json_tosa.c",
 			"settings":
 			{
-				"buffer_size": 4605,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Makefile.defines",
-			"settings":
-			{
-				"buffer_size": 2520,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "{\n\t// This setting dictates which color scheme set will take priority if a match is found in both color scheme sets.\n\t// Options: \"fileName_ColorSchemes\" or \"filePath_ColorSchemes\"\n\t\"preferred_ColorScheme_Set\": \"filePath_ColorSchemes\",\n\n\t// This setting, if enabled, allows regexPattern values in filePath_ColorSchemes to query the entire filepath, including the filename.\n\t\"include_FileName_In_FilePath\": false,\n\n\n\n\t// NOTE for regexPattern values:\n\t//\t\tJSON requires that backslashes be escaped,\n\t//\t\tso \\\\ is equivalent to a single backslash ( IE: RegEx escape character ),\n\t//\t\tand \\\\\\\\ is equivalent to a literal backslash.\n\n\n\n\t// fileName_ColorSchemes regexPattern values will be matched against the active file's name ( including extension )\n\t\"fileName_ColorSchemes\":\n\t\t[\n\t\t\t// Match any CSS file\n\t\t\t{\t\"regexPattern\": \".*\\\\.css\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Espresso Libre.tmTheme\" },\n\n\t\t\t// Match any HTML file\n\t\t\t{\t\"regexPattern\": \".*\\\\.html\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/MagicWB (Amiga).tmTheme\" },\n\n\t\t\t// Match any file with the exact name \"Specific FileName\" ( extension is ignored )\n\t\t\t{\t\"regexPattern\": \"Specific FileName\\\\..*\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Monokai Bright.tmTheme\" },\n\n\t\t\t// Match any file which contains \"Specific Word\" in its name ( extension is ignored )\n\t\t\t{\t\"regexPattern\": \".*Specific Word.*?\\\\..*\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/SpaceCadet.tmTheme\" },\n\t\t],\n\n\t// filePath_ColorSchemes regexPattern values will be matched against the active file's directory path\n\t// ( excluding filename, unless include_FileName_In_FilePath is enabled )\n\t\"filePath_ColorSchemes\":\n\t\t[\n\t\t\t// Match any file with \"Specific Directory\" as the final directory in its path\n\t\t\t{\t\"regexPattern\": \".*\\\\\\\\Specific Directory$\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Amy.tmTheme\" },\n\n\t\t\t// Match any file with \"Specific Directory/Specific SubDirectory\" as the final directories in its path\n\t\t\t{\t\"regexPattern\": \".*\\\\\\\\Specific Directory\\\\\\\\Specific SubDirectory$\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Cobalt.tmTheme\" },\n\n\t\t\t// Match any file within \"Specific Directory\" followed by any subdirectory structure which has \"Specific SubSubDirectory\" as the final directory in its path\n\t\t\t{\t\"regexPattern\": \".*\\\\\\\\Specific Directory\\\\\\\\.*\\\\\\\\Specific SubSubDirectory$\",\n\t\t\t\t\"colorScheme\": \"Packages/Color Scheme - Default/Zenburnesque.tmTheme\" },\n\t\t],\n}\n",
-			"file": "/home/roman/.config/sublime-text-3/Packages/Conditional ColorSchemes/Example.sublime-settings",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 2479,
-				"line_ending": "Unix",
-				"read_only": true,
-				"scratch": true
-			}
-		},
-		{
-			"file": "dirlist.sublime-project",
-			"settings":
-			{
-				"buffer_size": 2224,
+				"buffer_size": 393,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc.h",
+			"settings":
+			{
+				"buffer_size": 11943,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_put.c",
+			"settings":
+			{
+				"buffer_size": 597,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_stubborn.c",
+			"settings":
+			{
+				"buffer_size": 464,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_frombuf.c",
+			"settings":
+			{
+				"buffer_size": 324,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/fmt/fmt_escapecharjson.c",
+			"settings":
+			{
+				"buffer_size": 1054,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_print.c",
+			"settings":
+			{
+				"buffer_size": 2806,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json.h",
+			"settings":
+			{
+				"buffer_size": 1630,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/likely.h",
+			"settings":
+			{
+				"buffer_size": 267,
 				"line_ending": "Unix"
 			}
 		}
@@ -152,8 +189,24 @@
 		"selected_items":
 		[
 			[
+				"schemeed",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"schemed",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"add re",
+				"Package Control: Add Repository"
+			],
+			[
 				"install",
-				"Package Control: Advanced Install Package"
+				"Package Control: Install Package"
 			],
 			[
 				"Package Control: sear",
@@ -236,10 +289,6 @@
 				"Package Control: Install Package"
 			],
 			[
-				"add re",
-				"Package Control: Add Repository"
-			],
-			[
 				"outli",
 				"Browse Mode: Outline (Right)"
 			],
@@ -295,6 +344,10 @@
 		"height": 219.0,
 		"history":
 		[
+			"sublime.log_commands(True)",
+			"sublime.log_commands(True);",
+			" sublime.log_commands(True);",
+			" sublime.log_commands(True)",
 			"Outline",
 			"clang_format",
 			"Theme - Spacefunk, C++ Starting Kit",
@@ -315,12 +368,39 @@
 	"expanded_folders":
 	[
 		"/home/roman/Sources/dirlist",
-		"/home/roman/Sources/dirlist/lib"
+		"/home/roman/Sources/dirlist/lib",
+		"/home/roman/Sources/dirlist/lib/binfmt",
+		"/home/roman/Sources/dirlist/lib/json"
 	],
 	"file_history":
 	[
-		"/home/roman/.config/sublime-text-3/Packages/User/ConditionalColorSchemes.sublime-settings",
+		"/home/roman/Sources/dirlist/lib/byte.h",
+		"/home/roman/Sources/dirlist/lib/json.h",
+		"/home/roman/Sources/dirlist/lib/stralloc/stralloc_write.c",
+		"/home/roman/Sources/dirlist/lib/buffer/buffer_fromsa.c",
+		"/home/roman/Sources/dirlist/lib/buffer/buffer_putnc.c",
+		"/home/roman/Sources/dirlist/lib/json/json_print.c",
+		"/home/roman/Sources/dirlist/lib/buffer.h",
+		"/home/roman/Sources/dirlist/lib/stralloc/stralloc_fmt_call.c",
+		"/home/roman/Sources/dirlist/Makefile.functions",
+		"/home/roman/Sources/dirlist/jsontest.c",
+		"/home/roman/Sources/dirlist/lib/json/json_parse.c",
+		"/home/roman/Sources/dirlist/lib/json/json_free.c",
+		"/home/roman/Sources/dirlist/lib/charbuf/charbuf_peek.c",
+		"/home/roman/Sources/dirlist/lib/charbuf.h",
+		"/home/roman/Sources/dirlist/lib/charbuf/charbuf_skip.c",
+		"/home/roman/Sources/dirlist/jsonpp.c",
+		"/home/roman/Sources/dirlist/lib/slist/slist_add_after.c",
+		"/home/roman/Sources/dirlist/lib/slist.h",
+		"/home/roman/Sources/dirlist/lib/json/json_newnode.c",
 		"/home/roman/Sources/dirlist/dirlist.sublime-project",
+		"/home/roman/.config/sublime-text-3/Packages/Open-Include/Open-Include.sublime-settings",
+		"/home/roman/.config/sublime-text-3/Packages/User/Open-Include.sublime-settings",
+		"/home/roman/.config/sublime-text-3/Packages/Open-Include/Default (Linux).sublime-keymap",
+		"/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/roman/Sources/dirlist/lib/slist/slist_add_before.c",
+		"/home/roman/.config/sublime-text-3/Packages/Conditional ColorSchemes/Example.sublime-settings",
+		"/home/roman/.config/sublime-text-3/Packages/User/ConditionalColorSchemes.sublime-settings",
 		"/home/roman/Sources/dirlist/lib/unix/fnmatch_b.c",
 		"/home/roman/Sources/rsenn/dirlist/genmakefile.c",
 		"/home/roman/Sources/rsenn/dirlist/mediathek-list.c",
@@ -421,42 +501,19 @@
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/Default (Windows).sublime-keymap",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Clang Format/clang_format_custom.sublime-settings",
-		"/C/Program Files/IDM Computer Solutions/UEStudio/configs/Lcc win32 Compiler/Win32 Console Application",
-		"/C/Users/roman/Desktop/dirlist/lib/pe/pe_thunk.c",
-		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push.c",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_canonicalize.c",
-		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push_tokens.c",
-		"/C/Users/roman/Desktop/dirlist/lib/buffer/buffer_putulong.c",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CTags.sublime-settings",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-keymap",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/Default.sublime-mousemap",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_canonical.c",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/CscopeSublime.sublime-settings",
-		"/B/Programs/mplayer/mplayer/config",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/CTags/CTags.sublime-settings",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_collapse.c",
-		"/C/Users/roman/Desktop/dirlist/genmakefile/genmakefile.c",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_skip_separator.c",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_is_separator.c",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_skip.c",
-		"/C/Users/roman/Desktop/dirlist/tests/CMakeLists.txt",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_is_absolute.c",
-		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_push_unique.c",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_absolute_sa.c",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_fnmatch.c",
-		"/C/Users/roman/Desktop/dirlist/SetMSVCStaticRuntime.cmake",
-		"/C/Users/roman/Desktop/dirlist/lib/unit_test.h",
-		"/C/Users/roman/Desktop/dirlist/lib/strlist/strlist_pop.c"
+		"/C/Program Files/IDM Computer Solutions/UEStudio/configs/Lcc win32 Compiler/Win32 Console Application"
 	],
 	"find":
 	{
-		"height": 22.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
 		"height": 105.0,
 		"where_history":
 		[
+			"/home/roman/Sources/dirlist/lib",
+			""
 		]
 	},
 	"find_state":
@@ -464,6 +521,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"stralloc_write",
+			"predi",
+			"json.h",
+			"slink_next",
 			".txt",
 			".dep",
 			"function",
@@ -587,11 +648,7 @@
 			"libext",
 			"get_inc",
 			"extract_inc",
-			"clean_rule",
-			"wildcard",
-			"realpath",
-			"absolute",
-			"\\"
+			"clean_rule"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -657,7 +714,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 129,
 						"regions":
 						{
 						},
@@ -682,13 +739,53 @@
 								}
 							],
 							"color_scheme": null,
-							"current_file": "/home/roman/Sources/dirlist/Makefile.defines",
+							"current_file": "/home/roman/Sources/dirlist/lib/json/json_print.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									206,
+									220
+								],
+								[
+									292,
+									315
+								],
+								[
+									474,
+									488
+								],
+								[
+									740,
+									754
+								],
+								[
+									1031,
+									1048
+								],
+								[
+									1574,
+									1590
+								],
+								[
+									2067,
+									2081
+								],
+								[
+									2617,
+									2627
+								]
 							],
 							"symlist":
 							[
+								"json_print_val",
+								"byte_fullfils_predicate",
+								"json_print_key",
+								"json_print_str",
+								"json_print_object",
+								"json_print_array",
+								"json_print_val",
+								"json_print"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -696,65 +793,109 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 9,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 6,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "Makefile.functions",
+					"file": "lib/json/json_tosa.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4605,
+						"buffer_size": 393,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								142,
+								142
 							]
 						],
 						"settings":
 						{
-							"auto_complete_triggers":
-							[
-								{
-									"characters": "\\.",
-									"selector": "source.lua"
-								},
-								{
-									"characters": ":",
-									"selector": "source.lua"
-								},
-								{
-									"characters": ".#",
-									"selector": "text.html"
-								}
-							],
-							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "Makefile.defines",
-					"semi_transient": true,
+					"file": "lib/stralloc.h",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2520,
+						"buffer_size": 11943,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6522,
+								6522
+							]
+						],
+						"settings":
+						{
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1918.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/buffer/buffer_put.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 597,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								488,
+								488
+							]
+						],
+						"settings":
+						{
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/buffer/buffer_stubborn.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 464,
 						"regions":
 						{
 						},
@@ -767,65 +908,8 @@
 						],
 						"settings":
 						{
-							"auto_complete_triggers":
-							[
-								{
-									"characters": "\\.",
-									"selector": "source.lua"
-								},
-								{
-									"characters": ":",
-									"selector": "source.lua"
-								},
-								{
-									"characters": ".#",
-									"selector": "text.html"
-								}
-							],
-							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/home/roman/.config/sublime-text-3/Packages/Conditional ColorSchemes/Example.sublime-settings",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2479,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								630,
-								630
-							]
-						],
-						"settings":
-						{
-							"auto_complete_triggers":
-							[
-								{
-									"characters": "\\.",
-									"selector": "source.lua"
-								},
-								{
-									"characters": ":",
-									"selector": "source.lua"
-								},
-								{
-									"characters": ".#",
-									"selector": "text.html"
-								}
-							],
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -835,48 +919,154 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "dirlist.sublime-project",
+					"buffer": 5,
+					"file": "lib/buffer/buffer_frombuf.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2224,
+						"buffer_size": 324,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1629,
-								1629
+								22,
+								22
 							]
 						],
 						"settings":
 						{
-							"auto_complete_triggers":
-							[
-								{
-									"characters": "\\.",
-									"selector": "source.lua"
-								},
-								{
-									"characters": ":",
-									"selector": "source.lua"
-								},
-								{
-									"characters": ".#",
-									"selector": "text.html"
-								}
-							],
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1170.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/fmt/fmt_escapecharjson.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1054,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								19,
+								19
+							]
+						],
+						"settings":
+						{
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/json/json_print.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2806,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								441,
+								445
+							]
+						],
+						"settings":
+						{
+							"SL.153.region_keys":
+							[
+							],
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/json.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1630,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								506,
+								506
+							]
+						],
+						"settings":
+						{
+							"SL.156.region_keys":
+							[
+							],
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 546.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/likely.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 267,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
@@ -925,6 +1115,10 @@
 	"output.CppBuilder":
 	{
 		"height": 209.0
+	},
+	"output.SublimeLinter":
+	{
+		"height": 0.0
 	},
 	"output.exec":
 	{
@@ -992,7 +1186,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 367.0,
+	"side_bar_width": 356.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

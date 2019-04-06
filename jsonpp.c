@@ -24,7 +24,6 @@
 #include <sys/types.h>
 
 static charbuf infile;
-//static buffer b;
 
 void
 put_str_escaped(buffer* b, const char* str) {
@@ -34,8 +33,26 @@ put_str_escaped(buffer* b, const char* str) {
   buffer_putsa(b, &esc);
 }
 
-static const jsonprinter compact_printer = {
-  "", "", "", ","
+static void
+max_depth_fn(jsonval* v, int* arg, int depth) {
+  if(depth > *arg)
+    *arg = depth;
+}
+
+static int
+get_depth(jsonval* v) {
+  int max_depth = -1;
+  json_recurse(v, max_depth_fn, &max_depth);
+  return max_depth;
+}
+
+static void
+compact_printer(jsonfmt* p, jsonval* v, int depth) {
+  int valdepth = get_depth(v); 
+  int pretty = depth < 4 && valdepth > 1;
+  p->newline = pretty ? "\n" : " ";
+  p->indent = p->newline[0] == '\n' ? (pretty ? "  " : "") : "";
+  p->spacing = pretty ? " " : "";
 };
 
 void
@@ -64,6 +81,10 @@ main(int argc, char* argv[]) {
 
   doc = json_read_tree(&infile);
 
+  buffer_puts(buffer_1, "max_depth: ");
+  buffer_putulong(buffer_1, get_depth(doc));
+  buffer_putnlflush(buffer_1);
+  
   json_pretty_print(doc, buffer_1);
 
   charbuf_close(&infile);
