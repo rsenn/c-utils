@@ -66,10 +66,29 @@ void json_read_callback(jsonreader*, json_read_callback_fn* fn);
 jsonval* json_read_tree(charbuf*);
 void json_tosa(jsonval* val, stralloc* sa, void (*)());
 void json_recurse(jsonval* val, void (*fn)(), void* arg);
+int  json_set_property(jsonval* obj, jsonval name, jsonval value);
+jsonval* json_get_property(jsonval* obj, jsonval name);
+void json_tostring(jsonval* val, stralloc* sa);
+double json_todouble(jsonval* val);
+int64 json_toint(jsonval* val);
 
 static inline int json_is_identifier_char(int c) {
   return isalpha(c) || c == '$' || c == '_' || ispunct(c);
 }
+
+static inline jsonval
+json_double(double n) {jsonval ret = { JSON_DOUBLE }; ret.doublev = n; return ret; }
+
+static inline jsonval
+json_int(int64 i) { jsonval ret = { JSON_INT }; ret.intv = i; return ret; }
+
+#ifdef STR_H
+static inline jsonval
+json_string(const char* s) { jsonval ret = { JSON_STRING }; ret.stringv.s = s; ret.stringv.len = str_len(s); ret.stringv.a = 0; return ret; }
+#endif
+
+static inline jsonval
+json_bool(int b) { jsonval ret = { JSON_BOOL }; ret.boolv = !!b; return ret; }
 
 #ifdef __cplusplus
 }
