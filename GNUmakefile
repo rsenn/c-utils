@@ -1171,7 +1171,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)jsonpp$(M64_)$(EXEEXT): $(BUILDDIR)jsonpp.o $(call add-library, json slist alloc array safemult charbuf textbuf hmap stralloc buffer mmap open str byte scan fmt)
+$(BUILDDIR)jsonpp$(M64_)$(EXEEXT): $(BUILDDIR)jsonpp.o $(call add-library, json errmsg slist alloc array safemult charbuf textbuf hmap stralloc buffer mmap open str byte scan fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

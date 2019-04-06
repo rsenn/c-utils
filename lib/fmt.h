@@ -140,9 +140,15 @@ size_t fmt_escapecharquotedprintableutf8(char* dest, unsigned int ch);
 
 unsigned int fmt_hexb(void* out, const void* d, unsigned int len);
 size_t fmt_xmlescape(char* dest, unsigned int ch);
+
+#ifdef UINT32_H
 size_t fmt_escapecharc(char* dest, uint32 ch);
 
 size_t fmt_escapecharshell(char* dest, uint32 ch);
+size_t fmt_escapecharjson(char* dest, uint32 ch);
+#endif
+
+
 char fmt_tohex(char c);
 size_t fmt_repeat(char* dest, const char* src, int n);
 

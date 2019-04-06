@@ -2,6 +2,8 @@
 #include <errno.h>
 #include "../alloc.h"
 
+#ifdef DJB_STRICT
+
 #define ALIGNMENT 16 /* XXX: assuming that this alignment is enough */
 #define SPACE 2048   /* must be multiple of ALIGNMENT */
 
@@ -35,3 +37,9 @@ alloc_free(void* x) {
       return; /* XXX: assuming that pointers are flat */
   free(x);
 }
+#else
+
+void* alloc(size_t n) { return malloc(n); }
+void alloc_free(void* ptr) { return free(ptr); }
+
+#endif

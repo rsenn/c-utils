@@ -16,8 +16,8 @@ alloc_re(void** x, size_t m, size_t n) {
   y = realloc(*x, n);
   if(!y)
     return 0;
-  if(n > m)
-    byte_zero(&y[m], n - m);
+  // if(n > m)
+  //   byte_zero(&y[m], n - m);
   *x = y;
   return 1;
 #endif

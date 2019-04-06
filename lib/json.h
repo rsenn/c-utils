@@ -44,6 +44,7 @@ typedef struct {
   const char* indent;
   const char* newline;
   const char* spacing;
+  char quote;
 } jsonfmt;
 
 #define node_is_closing(n) ((n)->name[0] == '/')
@@ -59,11 +60,11 @@ int json_parse_getsa(charbuf*, stralloc* sa);
 int json_parse_object(jsonval*, charbuf* b);
 int json_parse_string(jsonval*, charbuf* b);
 int json_parse(jsonval*, charbuf* b);
-void json_print(jsonval*, buffer* b, void (*)(jsonfmt*,jsonval*,int));
+void json_print(jsonval*, buffer* b, void (*)());
 void json_reader_init(jsonreader*, charbuf* b);
 void json_read_callback(jsonreader*, json_read_callback_fn* fn);
 jsonval* json_read_tree(charbuf*);
-void json_tosa(jsonval* val, stralloc* sa, void (*)(jsonfmt*,jsonval*,int));
+void json_tosa(jsonval* val, stralloc* sa, void (*)());
 void json_recurse(jsonval* val, void (*fn)(), void* arg);
 
 static inline int json_is_identifier_char(int c) {
