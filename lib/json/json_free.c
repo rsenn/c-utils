@@ -47,7 +47,7 @@ json_free(jsonval* val) {
   static struct free_stats stats;
   json_recurse(val, json_free_count, &stats);
   json_free_val(val, 0);
-#ifdef DEBUG
+#ifdef JSON_DEBUG
   buffer_puts(buffer_2, "vals free'd: ");
   buffer_putulong(buffer_2, stats.num);
   buffer_putnlflush(buffer_2);
