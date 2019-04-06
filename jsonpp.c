@@ -59,7 +59,7 @@ if(depth < 2) {
 }*/
   p->newline = (!one_line  && depth < 5 && ((index > -1) || index == -2)) ? "\n" : "";
   p->indent = indent_str.s;
-  p->spacing = compact ? "" : " ";
+  p->spacing = (!compact && index > -1) ? " " : "";
   p->quote = quote_char;
 };
 
@@ -89,7 +89,9 @@ usage(char* av0) {
                        "  -s, --single-quote      Use ' as quote\n"
                        "  -d, --double-quote      Use \" as quote\n"
                        "  -o, --one-line          One-line\n"
-                       "\n",
+                       "  -c, --compact           Compact\n"
+                       "  -l, --indent NUM        Indent level\n"
+                       "\n", 
                        0);
   buffer_flush(buffer_1);
 }
