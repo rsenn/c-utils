@@ -96,19 +96,19 @@ xml_to_json(xmlnode* node) {
 
 int
 main(int argc, char* argv[]) {
-  buffer input;
+  buffer* input = buffer_0;
   xmlnode* doc;
   static xmlnodeset ns;
   xmlnodeset_iter_t it, e;
   size_t i = 0;
 
-  if(!argv[1]) {
-    argv[1] = "C:\\Users\\roman\\Desktop\\dirlist\\pelist.cbp";
+  if(argv[1]) {
+   input->fd = open_read(argv[1]);
   }
 
-  buffer_mmapprivate(&input, argv[1]);
-  buffer_skip_until(&input, "\r\n", 2);
-  doc = xml_read_tree(&input);
+  buffer_skip_until(input, "\r\n", 2);
+  doc = xml_read_tree(input);
+   buffer_close(input);
   jsonval root = xml_to_json(doc);
 
   json_print(root, buffer_1, 0);
