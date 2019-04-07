@@ -58,10 +58,9 @@ json_print_separator(jsonval* val, buffer* b, int depth, int index, void (*p)(js
 static void
 json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
   int quote = !byte_fullfils_predicate(key, key_len, json_is_identifier_char);
-  size_t len = byte_chr(key, key_len, '\0');
   if(quote)
     buffer_putc(b, fmt->quote);
-  buffer_put(b, key, len);
+  buffer_put(b, key, key_len);
   if(quote)
     buffer_putc(b, fmt->quote);
 }
@@ -90,23 +89,25 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
   buffer_puts(b, "{");
   json_print_separator(val, b, depth, index, p);
 
-  hmap_foreach(val->dictv, t) {
-    int last = hmap_next(val->dictv, t) == NULL;
+  if(val->dictv && val->dictv->list_tuple) {
+    hmap_foreach(val->dictv, t) {
+      int last = hmap_next(val->dictv, t) == NULL;
 
-    ++index;
+      ++index;
 
-    json_print_key(b, t->key, t->key_len, p);
+      json_print_key(b, t->key, t->key_len - 1, p);
 
-    buffer_putm_internal(b, ":", printer.spacing, 0);
+      buffer_putm_internal(b, ":", printer.spacing, 0);
 
-    json_print_val(t->vals.val_custom, b, depth + 1, p);
+      json_print_val(t->vals.val_chars, b, depth + 1, p);
 
-    if(!last) {
-      buffer_put(b, ",", 1);
-      json_print_separator(val, b, depth, index, p);
+      if(!last) {
+        buffer_put(b, ",", 1);
+        json_print_separator(val, b, depth, index, p);
+      }
     }
+    json_print_separator(val, b, depth - 1, -2, p);
   }
-  json_print_separator(val, b, depth, -2, p);
   buffer_puts(b, "}");
 }
 

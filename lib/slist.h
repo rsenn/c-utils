@@ -33,11 +33,23 @@ int slist_unshifts(slink**, const char* s);
 #define slink_foreach(link, n) for((n) = (void*)(link); (n); (n) = (void*)((slink*)(n))->next)
 #define slist_foreach(list, n) for((n) = (void*)slist_begin(list); *(slink**)(n); (n) = (void*)slist_next((slink**)n))
 
-#define slist_begin(st) ((struct slink**)&(st))
-#define slist_next(st) (((struct slink*)(st))->next)
+#define _slist_begin(st) ((struct slink**)&(st))
+#define _slist_next(st) (((struct slink*)(st))->next)
 
-#define slink_data(link) ((void*)&((*(struct slink**)(link))[1]))
-#define slist_data(ptr) ((void*)&(((struct slink*)(ptr))[1]))
+static inline void* slink_data(slink** link) { return &((*link)[1]); }
+static inline void* slist_data(slink* list) { return &(list[1]); }
+
+static inline slink** slink_next(slink** link) { return &((*link)->next); }
+static inline slink* slist_next(slink* list) { return list->next; }
+
+static inline int slink_last(slink** link) { return !(*link); }
+static inline slink* slist_last(slink* list) { return !list->next; }
+
+static inline size_t slink_size(slink** link) { size_t i = 0; while(!slink_last(link)) { ++i; link = slink_next(link); }; return i; }
+static inline size_t slist_size(slink* list) { size_t i = 0; while(list) { ++i; list = list->next; }; return i; }
+
+static inline slink** slink_tail(slink** link) { while(*link) { link = slink_next(link); }; return link; }
+static inline slink* slist_end(slink* list) { while(list->next) { list = list->next; }; return list; }
 
 #define slink_new(type) ((slink*)alloc_zero(sizeof(type) + sizeof(slink)))
 
@@ -45,8 +57,9 @@ static inline slink** slink_insert(slink** at, slink* link) {  link->next = *at;
 
 #define slist_insert(list, link) slink_insert(list, (slink*)(link))
 
+inline static slink* slist_begin(slink* list) { return list; }
+
 inline static slink** slink_begin(slink** list) { return list; }
-inline static slink** slink_next(slink** link) { return &(*link)->next; }
 inline static slink** slink_end(slink** list) { while(*list) list = &(*list)->next; return list; }
 
 inline static int slist_iterator_first(slink** list, slink** p) { return list == p; }

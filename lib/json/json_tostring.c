@@ -19,7 +19,7 @@ json_tostring(jsonval val, stralloc* sa) {
     }
     case JSON_DOUBLE: {
       stralloc_readyplus(sa, 63);
-      sa->len += fmt_double(&sa->s[sa->len], val.doublev, 63, 10);
+      sa->len += fmt_double(&sa->s[sa->len], val.doublev, 0, 0);
       break;
     }
     case JSON_INT: {
@@ -28,15 +28,14 @@ json_tostring(jsonval val, stralloc* sa) {
       break;
     }
     case JSON_STRING: {
-      stralloc_cat(sa, &val.stringv);
+      stralloc_catb(sa, val.stringv.s, val.stringv.len);
       break;
     }
     default: {
-      if(json_isnull(val)) {
+      if(json_isnull(val))
         stralloc_cats(sa, "null");
-        break;
-      }
-      json_tosa(val, sa, json_tostring_printer);
+      else
+        json_tosa(val, sa, json_tostring_printer);
       break;
     }
   }
