@@ -1,3 +1,4 @@
+#include "../hmap.h"
 #include "../alloc.h"
 #include "../json.h"
 

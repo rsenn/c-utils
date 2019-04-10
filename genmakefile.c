@@ -2338,8 +2338,6 @@ gen_install_rules(HMAP_DB* rules) {
         if(do_lib)
           set_var("INSTALL_DATA", str_start(v, "install") ? "$(INSTALL) -m 644" : "$(INSTALL)");
 
-        if(do_bin)
-          set_var("INSTALL_EXEC", str_start(v, "install") ? "$(INSTALL) -m 755" : "$(INSTALL)");
       }
     }
 
@@ -2348,6 +2346,8 @@ gen_install_rules(HMAP_DB* rules) {
         set_var("bindir", "$(prefix)/bin");
         stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(bindir)", 0);
       }
+      
+      set_var("INSTALL_EXEC", str_start(v, "install") ? "$(INSTALL) -m 755" : "$(INSTALL)");
 
       stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", t->key, " $(DESTDIR)$(bindir)", 0);
     }

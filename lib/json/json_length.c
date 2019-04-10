@@ -1,3 +1,4 @@
+#include "../hmap.h"
 #include "../json.h"
 
 int64

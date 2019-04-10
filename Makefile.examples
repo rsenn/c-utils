@@ -1,4 +1,4 @@
-$(BUILDDIR)array$(EXEEXT): examples/array.c io.a iarray.a ndelay.a buffer.a array.a byte.a str.a fmt.a
+$(BUILDDIR)array$(EXEEXT): examples/array.c io.a iarray.a ndelay.a buffer.a array.a byte.a str.a fmt.a safemult.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 $(BUILDDIR)b64encode$(EXEEXT): examples/b64encode.c io.a iarray.a ndelay.a buffer.a byte.a fmt.a textcode.a str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
@@ -46,13 +46,13 @@ $(BUILDDIR)httpd$(EXEEXT): examples/httpd.c io.a iarray.a buffer.a array.a byte.
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)io$(EXEEXT): examples/io.c io.a socket.a iarray.a buffer.a byte.a fmt.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
-$(BUILDDIR)io2$(EXEEXT): examples/io2.c io.a socket.a iarray.a array.a buffer.a str.a byte.a fmt.a
+$(BUILDDIR)io2$(EXEEXT): examples/io2.c io.a socket.a iarray.a array.a buffer.a str.a byte.a fmt.a safemult.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)io3$(EXEEXT): examples/io3.c io.a socket.a iarray.a buffer.a byte.a fmt.a str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)io4$(EXEEXT): examples/io4.c io.a socket.a iarray.a buffer.a byte.a fmt.a taia.a str.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
-$(BUILDDIR)io5$(EXEEXT): examples/io5.c io.a socket.a iarray.a array.a buffer.a socket.a ndelay.a str.a fmt.a byte.a uint16.a
+$(BUILDDIR)io5$(EXEEXT): examples/io5.c io.a socket.a iarray.a array.a buffer.a socket.a ndelay.a str.a fmt.a byte.a uint16.a safemult.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)
 $(BUILDDIR)iob$(EXEEXT): examples/iob.c iob.a io.a socket.a iarray.a buffer.a byte.a fmt.a
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) $(WINSOCK_LIB)

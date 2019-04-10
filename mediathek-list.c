@@ -20,6 +20,7 @@
 #include "lib/http.h"
 #include "lib/io.h"
 #include "lib/case.h"
+#include "lib/hmap.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>

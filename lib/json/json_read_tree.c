@@ -1,3 +1,4 @@
+#include "../hmap.h"
 #include "../byte.h"
 #include "../fmt.h"
 #include "../json.h"
