@@ -26,35 +26,19 @@
 			}
 		},
 		{
-			"file": "lib/hmap/hmap_set_chars.c",
+			"contents": "\n  struct longopt opts[] = {{\"help\", 0, NULL, 'h'},\n                           {\"objext\", 0, NULL, 'O'},\n                           {\"exeext\", 0, NULL, 'B'},\n                           {\"libext\", 0, NULL, 'X'},\n                           {\"create-libs\", 0, &cmd_libs, 1},\n                           {\"create-objs\", 0, &cmd_objs, 1},\n                           {\"create-bins\", 0, &cmd_bins, 1},\n                           {\"install\", 0, 0, 'i'},\n                           {\"includedir\", 0, 0, 'I'},\n                           /*                           {\"install-bins\", 0, &inst_bins, 1},\n                                                     {\"install-libs\", 0, &inst_libs, 1},*/\n                           {\"builddir\", 0, 0, 'd'},\n                           {\"compiler-type\", 0, 0, 't'},\n                           {\"make-type\", 0, 0, 'm'},\n                           {\"arch\", 0, 0, 'a'},\n                           {\"release\", 0, &build_type, BUILD_TYPE_RELEASE},\n                           {\"relwithdebinfo\", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},\n                           {\"minsizerel\", 0, &build_type, BUILD_TYPE_MINSIZEREL},\n                           {\"debug\", 0, &build_type, BUILD_TYPE_DEBUG},\n                           {\"define\", 0, NULL, 'D'},\n                           {\"build-as-lib\", 0, 0, 'L'},\n                           {\"cross\", 0, 0, 'c'},\n                           {0}};",
 			"settings":
 			{
-				"buffer_size": 568,
+				"buffer_size": 1402,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json.h",
+			"file": "xmlpp.c",
 			"settings":
 			{
-				"buffer_size": 3579,
+				"buffer_size": 3457,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/hmap/hmap_set.c",
-			"settings":
-			{
-				"buffer_size": 558,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/hmap/hmap_add.c",
-			"settings":
-			{
-				"buffer_size": 2215,
 				"line_ending": "Unix"
 			}
 		},
@@ -67,37 +51,26 @@
 			}
 		},
 		{
-			"file": "lib/json/json_print.c",
+			"file": "xml2json.c",
 			"settings":
 			{
-				"buffer_size": 4045,
-				"encoding": "UTF-8",
+				"buffer_size": 3202,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/hmap.h",
+			"file": "lib/hmap/hmap_delete.c",
 			"settings":
 			{
-				"buffer_size": 4270,
+				"buffer_size": 1102,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Searching 1457 files for \"val_chars\" (case sensitive)\n\n/home/roman/Sources/dirlist/lib/hmap.h:\n   64      unsigned long int val_ulonglong;\n   65      double val_double;\n   66:     char* val_chars;\n   67      struct tuple* val_tuple;\n   68      void* val_custom;\n   ..\n   99  inline static void*\n  100  hmap_data(TUPLE* tuple) {\n  101:   return tuple->vals.val_chars;\n  102  }\n  103  \n\n/home/roman/Sources/dirlist/lib/hmap/hmap_dump.c:\n   22        case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(b, tuple->vals.val_ulonglong); break;\n   23        case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(b, tuple->vals.val_double, 15); break;\n   24:       case HMAP_DATA_TYPE_CHARS: buffer_putm_internal(b, \"\\\"\", tuple->vals.val_chars, \"\\\"\", NULL); break;\n   25        case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(b, tuple->vals.val_custom); break;\n   26      }\n\n/home/roman/Sources/dirlist/lib/hmap/hmap_free_data.c:\n   25        break;\n   26      case HMAP_DATA_TYPE_CHARS:\n   27:       HMAP_DUMP(\"remove[%d] data[%s]\\n\", tuple->index, (char*)tuple->vals.val_chars);\n   28:       if(tuple->vals.val_chars != NULL) {\n   29:         free(tuple->vals.val_chars);\n   30        }\n   31:       tuple->vals.val_chars = NULL;\n   32        break;\n   33      case HMAP_DATA_TYPE_CUSTOM:\n\n/home/roman/Sources/dirlist/lib/hmap/hmap_get.c:\n    5    TUPLE* ptr_tuple;\n    6    if(hmap_search(db, key, keylen, &ptr_tuple) == HMAP_SUCCESS)\n    7:     return ptr_tuple->vals.val_chars;\n    8    return NULL;\n    9  }\n\n/home/roman/Sources/dirlist/lib/hmap/hmap_print_list.c:\n   22        case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(buffer_1, t->vals.val_ulonglong); break;\n   23        case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(buffer_1, t->vals.val_double, 15); break;\n   24:       case HMAP_DATA_TYPE_CHARS: buffer_put(buffer_1, t->vals.val_chars, t->data_len); break;\n   25        case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(buffer_1, t->vals.val_custom); break;\n   26      }\n\n/home/roman/Sources/dirlist/lib/hmap/hmap_print_table.c:\n   23        case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(buffer_1, t->vals.val_ulonglong); break;\n   24        case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(buffer_1, t->vals.val_double, 15); break;\n   25:       case HMAP_DATA_TYPE_CHARS: buffer_put(buffer_1, t->vals.val_chars, t->data_len); break;\n   26        case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(buffer_1, t->vals.val_custom); break;\n   27      }\n\n/home/roman/Sources/dirlist/lib/hmap/hmap_print_tree.c:\n   29            case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(buffer_1, t->vals.val_ulonglong); break;\n   30            case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(buffer_1, t->vals.val_double, 15); break;\n   31:           case HMAP_DATA_TYPE_CHARS: buffer_put(buffer_1, t->vals.val_chars, t->data_len); break;\n   32            case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(buffer_1, t->vals.val_custom); break;\n   33          }\n\n/home/roman/Sources/dirlist/lib/hmap/hmap_set.c:\n   11      hmap_free_data(t);\n   12  \n   13:     t->vals.val_chars = calloc(1, d_len);\n   14  \n   15:     if(t->vals.val_chars == NULL)\n   16        return HMAP_ALLOCATED_ERROR;\n   17  \n   18:     byte_copy(t->vals.val_chars, d_len, data);\n   19      t->data_len = d_len;\n   20      \n\n/home/roman/Sources/dirlist/lib/hmap_internal.h:\n  137          data = va_arg(args, char*);                                                                                    \\\n  138          d_len = va_arg(args, size_t);                                                                                  \\\n  139:         new_tuple->vals.val_chars = (char*)calloc(1, d_len + 1);                                                       \\\n  140:         if(new_tuple->vals.val_chars == NULL) {                                                                        \\\n  141            free(new_tuple);                                                                                             \\\n  142            return HMAP_ALLOCATED_ERROR;                                                                                 \\\n  143          }                                                                                                              \\\n  144:         byte_copy(new_tuple->vals.val_chars, d_len, data);                                                             \\\n  145                                                                                                                         \\\n  146:         ((char*)new_tuple->vals.val_chars)[d_len] = 0;                                                                 \\\n  147          new_tuple->data_len = d_len;                                                                                   \\\n  148:         HMAP_DUMP(\"add[%d] data[%s]\\n\", index, (char*)new_tuple->vals.val_chars);                                      \\\n  149          break;                                                                                                         \\\n  150        case HMAP_DATA_TYPE_CUSTOM:                                                                                      \\\n\n/home/roman/Sources/dirlist/lib/xml/xml_get_attribute.c:\n    7    if(node->attributes) {\n    8      TUPLE* data;\n    9:     if(hmap_search(node->attributes, (const void*)attr, str_len(attr), &data) == HMAP_SUCCESS) return data->vals.val_chars;\n   10    }\n   11    return NULL;\n\n/home/roman/Sources/dirlist/lib/xml/xml_get_attribute_sa.c:\n    8    TUPLE* t;\n    9    if(hmap_search(n->attributes, (char*)name, str_len(name), &t) == HMAP_SUCCESS) {\n   10:     stralloc_copyb(sa, t->vals.val_chars, t->data_len);\n   11      if(sa->len > 0 && sa->s[sa->len - 1] == '\\0') --sa->len;\n   12      return 1;\n\n/home/roman/Sources/dirlist/lib/xml/xml_print_attributes.c:\n   28          break;\n   29        case HMAP_DATA_TYPE_CHARS:\n   30:         buffer_put(b, tpl->vals.val_chars, tpl->data_len - 1);\n   31          break;\n   32        case HMAP_DATA_TYPE_CUSTOM:\n\n22 matches across 12 files\n",
+			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 5966,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "lib/xml/xml_print_attributes.c",
-			"settings":
-			{
-				"buffer_size": 1164,
+				"buffer_size": 91583,
 				"line_ending": "Unix"
 			}
 		}
@@ -198,12 +171,16 @@
 				"Package Control: Install Package"
 			],
 			[
-				"find",
-				"Find Elements in Folder…"
+				"open",
+				"File Navigator: Open"
 			],
 			[
 				"find file",
-				"File Manager: Find In Files"
+				"Find Elements in Folder…"
+			],
+			[
+				"find",
+				"Find Elements in Folder…"
 			],
 			[
 				"instlal pac",
@@ -392,6 +369,15 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/dirlist/lib/xml/xml_print_attributes.c",
+		"/home/roman/Sources/dirlist/lib/hmap.h",
+		"/home/roman/Sources/dirlist/lib/json/json_print.c",
+		"/home/roman/Sources/dirlist/jsonpp.c",
+		"/home/roman/Sources/dirlist/lib/hmap/hmap_set_chars.c",
+		"/home/roman/Sources/dirlist/lib/json.h",
+		"/home/roman/Sources/dirlist/lib/hmap/hmap_set.c",
+		"/home/roman/Sources/dirlist/lib/hmap/hmap_add.c",
+		"/home/roman/Sources/dirlist/genmakefile.c",
 		"/home/roman/Sources/dirlist/lib/json/json_push.c",
 		"/home/roman/Sources/dirlist/lib/slist.h",
 		"/home/roman/Sources/dirlist/xml2json.c",
@@ -403,23 +389,17 @@
 		"/home/roman/Sources/dirlist/lib/hmap/hmap_set_stralloc.c",
 		"/home/roman/Sources/dirlist/lib/json/json_toint.c",
 		"/home/roman/Sources/dirlist/lib/json/json_parse.c",
-		"/home/roman/Sources/dirlist/lib/json/json_print.c",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_set.c",
 		"/home/roman/Sources/dirlist/lib/fmt.h",
 		"/home/roman/Sources/dirlist/lib/json/json_newnode.c",
 		"/home/roman/Sources/dirlist/lib/hmap/hmap_size.c",
 		"/home/roman/Sources/dirlist/lib/hashmap/hashmap_init.c",
 		"/home/roman/Sources/dirlist/lib/json/json_get_property.c",
 		"/home/roman/Sources/dirlist/lib/json/json_length.c",
-		"/home/roman/Sources/dirlist/lib/hmap.h",
 		"/home/roman/Sources/dirlist/lib/hmap/hmap_init.c",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_add.c",
 		"/home/roman/Sources/dirlist/lib/json/json_tosa.c",
 		"/home/roman/Sources/dirlist/lib/json/json_todouble.c",
 		"/home/roman/Sources/dirlist/lib/json/json_free.c",
-		"/home/roman/Sources/dirlist/jsonpp.c",
 		"/home/roman/Sources/dirlist/lib/cbmap.h",
-		"/home/roman/Sources/dirlist/lib/json.h",
 		"/home/roman/Sources/dirlist/lib/json/json_read_tree.c",
 		"/home/roman/Sources/dirlist/lib/cbmap/cbmap_get.c",
 		"/home/roman/Sources/dirlist/lib/cbmap/cbmap_insert.c",
@@ -516,10 +496,7 @@
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_begin.c",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/outline.sublime-settings",
 		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings",
-		"/C/Users/roman/Desktop/dirlist/cofflist.c",
-		"/C/Users/roman/Desktop/dirlist/genmakefile.h",
-		"/C/Users/roman/Desktop/dirlist/lib/array.h",
-		"/C/Users/roman/Desktop/dirlist/tests/test_strlist.c"
+		"/C/Users/roman/Desktop/dirlist/cofflist.c"
 	],
 	"find":
 	{
@@ -739,7 +716,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -772,7 +749,7 @@
 								}
 							],
 							"color_scheme": null,
-							"current_file": "/home/roman/Sources/dirlist/lib/hmap/hmap_add.c",
+							"current_file": "/home/roman/Sources/dirlist/xml2json.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
@@ -786,22 +763,142 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1402,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1299,
+								1299
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 26.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "xmlpp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3457,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2629,
+								2629
+							]
+						],
+						"settings":
+						{
+							"SL.170.region_keys":
+							[
+							],
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 605.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "jsonpp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3754,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1736,
+								1736
+							]
+						],
+						"settings":
+						{
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 975.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "xml2json.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3202,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2932,
+								2932
+							]
+						],
+						"settings":
+						{
+							"SL.172.region_keys":
+							[
+							],
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1336.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 3,
+			"selected": 1,
 			"sheets":
 			[
 				{
-					"buffer": 1,
-					"file": "lib/hmap/hmap_set_chars.c",
+					"buffer": 5,
+					"file": "lib/hmap/hmap_delete.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 568,
+						"buffer_size": 1102,
 						"regions":
 						{
 						},
@@ -825,343 +922,32 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "lib/json.h",
+					"buffer": 6,
+					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3579,
+						"buffer_size": 91583,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3199,
-								3199
+								77926,
+								77926
 							]
 						],
 						"settings":
 						{
-							"SL.169.region_keys":
-							[
-								"sublime_linter.protected_regions",
-								"SL.clang++.Gutter.|region.redish markup.error.sublime_linter|dot",
-								"SL.clang++.Highlights.|42d00f59c8a8ec4b6579cd029d1d4f18d8e0369c86e5c62b6a4afc8cec9d2c5a|region.redish markup.error.sublime_linter|32"
-							],
 							"origin_encoding": "ASCII",
-							"syntax": "Packages/C++/C++.sublime-syntax"
+							"syntax": "Packages/C11/C11.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 663.0,
+						"translation.y": 42114.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/hmap/hmap_set.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 558,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								35,
-								35
-							]
-						],
-						"settings":
-						{
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/hmap/hmap_add.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2215,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								977,
-								977
-							]
-						],
-						"settings":
-						{
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "jsonpp.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3754,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								620,
-								620
-							]
-						],
-						"settings":
-						{
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/json/json_print.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4045,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1944,
-								1944
-							]
-						],
-						"settings":
-						{
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 819.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/hmap.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4270,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2278,
-								2278
-							]
-						],
-						"settings":
-						{
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 741.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5966,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										186,
-										195
-									],
-									[
-										356,
-										365
-									],
-									[
-										713,
-										722
-									],
-									[
-										1042,
-										1051
-									],
-									[
-										1082,
-										1091
-									],
-									[
-										1135,
-										1144
-									],
-									[
-										1187,
-										1196
-									],
-									[
-										1445,
-										1454
-									],
-									[
-										1815,
-										1824
-									],
-									[
-										2282,
-										2291
-									],
-									[
-										2760,
-										2769
-									],
-									[
-										3013,
-										3022
-									],
-									[
-										3073,
-										3082
-									],
-									[
-										3171,
-										3180
-									],
-									[
-										3577,
-										3586
-									],
-									[
-										3708,
-										3717
-									],
-									[
-										4227,
-										4236
-									],
-									[
-										4481,
-										4490
-									],
-									[
-										4775,
-										4784
-									],
-									[
-										5316,
-										5325
-									],
-									[
-										5568,
-										5577
-									],
-									[
-										5844,
-										5853
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								5849,
-								5849
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1209.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/xml/xml_print_attributes.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1164,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								943,
-								943
-							]
-						],
-						"settings":
-						{
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 39.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -1180,29 +966,27 @@
 		"cells":
 		[
 			[
-				2,
 				0,
-				3,
-				2
+				0,
+				1,
+				1
 			],
 			[
-				0,
+				1,
 				0,
 				2,
-				2
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
-			0.2,
-			0.79756097561,
+			0.362595419847,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
-			0.5,
 			1.0
 		]
 	},
@@ -1235,7 +1019,7 @@
 	"project": "dirlist.sublime-project",
 	"replace":
 	{
-		"height": 70.0
+		"height": 40.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1273,7 +1057,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 1,
+	"selected_group": 0,
 	"settings":
 	{
 	},
@@ -1281,7 +1065,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 356.0,
+	"side_bar_width": 348.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

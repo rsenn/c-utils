@@ -24,6 +24,12 @@ max_depth_fn(jsonval* v, int* arg, int depth) {
   if(depth > *arg)
     *arg = depth;
 }
+
+/**
+ * @brief      Gets depth of JSON node tree.
+ * @param      v     JSON value
+ * @return     The depth.
+ */
 static int
 get_depth(jsonval* v) {
   int max_depth = -1;
@@ -31,16 +37,27 @@ get_depth(jsonval* v) {
   return max_depth;
 }
 
+/**
+ * @brief      { function_description }
+ * @param      p      { parameter_description }
+ * @param      v      { parameter_description }
+ * @param[in]  depth  The depth
+ * @param[in]  index  The index
+ */
 static void
 pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   int valdepth = get_depth(v); 
-
   p->newline = (!one_line  && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
   p->indent = indent_str.s;
-  p->spacing = ((valdepth < 1 && index > 0) || (valdepth >= 1 &&  index > -1)) ? " " : "";
+  p->spacing = " "; //((valdepth < 1 && index > 0) || (valdepth >= 1 &&  index > -1)) ? " " : "";
   p->quote = '"';
 }
 
+/**
+ * @brief      { function_description }
+ * @param      list  The list
+ * @return     { description_of_the_return_value }
+ */
 static jsonval
 xmllist_to_jsonarray(xmlnode* list) {
   jsonval arr = json_array();
@@ -52,45 +69,42 @@ xmllist_to_jsonarray(xmlnode* list) {
   return arr;
 }
 
-static jsonval
-hmap_to_jsonobj(HMAP_DB* db) {
+/**
+ * @return     1 on succes
+ */
+static int
+hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
   if(db && db->list_tuple) { 
   TUPLE* t;
-  jsonval obj = json_object();
-   
     hmap_foreach(db, t) {
-      json_set_property(&obj, json_string(t->key), json_stringn(t->vals.val_chars, t->data_len));
+      json_set_property(obj, json_string(t->key), json_stringn(t->vals.val_chars, t->data_len));
     }
-    return obj;
+    return 1;
   }
-   return json_null();
+  return 0;
 }
 
+/**
+ * @brief      { function_description }
+ * @param      node  The node
+ * @return     { description_of_the_return_value }
+ */
 static jsonval
 xml_to_json_obj(xmlnode* node) {
   TUPLE* t;
   jsonval obj = json_object();
-
-
   json_set_property(&obj, json_string("name"), json_string(node->name));
-
-  if(node->attributes && node->attributes->list_tuple) {
-    json_set_property(&obj, json_string("attributes"), hmap_to_jsonobj(node->attributes));
-  }
-
-  if(node->children) {
+  if(node->attributes && node->attributes->list_tuple)
+    hmap_to_jsonobj(node->attributes, &obj);
+  if(node->children)
     json_set_property(&obj, json_string("children"), xmllist_to_jsonarray(node->children));
-  }
-
   return obj;
 }
 
 static jsonval
 xml_to_json(xmlnode* node) {
-
   if(node->type == XML_DOCUMENT || node->attributes == NULL)
     return xmllist_to_jsonarray(node->children);
-
   return xml_to_json_obj(node);
 }
 
