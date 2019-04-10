@@ -53,7 +53,7 @@ typedef __PTRDIFF_TYPE__ ssize_t;
 typedef ptrdiff_t ssize_t;
 #endif
 
-#if !defined(__dietlibc__) && !defined(_INTTYPES_H)
+#if !defined(__dietlibc__) && !defined(_INTTYPES_H) && !defined(__clang__)
 #ifdef __INTPTR_TYPE__
 typedef __INTPTR_TYPE__ intptr_t;
 #elif defined(__BORLANDC__) || defined(__POCC__) || (defined(_SYS_TYPES_H) && defined(__MSYS__))
