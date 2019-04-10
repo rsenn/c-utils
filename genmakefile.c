@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/stat.h>
+
 #include <sys/types.h>
 
 #if WINDOWS
@@ -3246,15 +3247,26 @@ usage(char* argv0) {
                        "\n"
                        "Options\n"
                        "  -h, --help                show this help\n"
+                       "\n"
                        "  -o, --output FILE         write to file\n"
+                       "\n"
                        "  -O, --objext EXT          object file extension\n"
                        "  -B, --exeext EXT          binary file extension\n"
                        "  -L, --libext EXT          library file extension\n"
+                       "\n"
                        "  -a, --create-libs         create rules for libraries\n"
                        "  -o, --create-objs         create rules for objects\n"
                        "  -b, --create-bins         create rules for programs\n"
+                       "  -i, --install             create installation rules\n"
+                       "\n"
                        "  -d, --builddir            build directory\n"
-                       "  -l, --link                link a library\n"
+                       "  -a, --arch                set architecture\n"
+                       "  -c, --cross TARGET        set cross compiler\n"
+                       "\n"
+                       "  -D, --define NAME[=VALUE] add a preprocessor definition\n"
+                       "  -I, --includedir DIR      add an include directory\n"
+                       "  -l, --link LIB            link a library\n"
+                       "\n"
                        "  -t, --compiler-type TYPE  compiler type, one of:\n"
                        "\n"
                        "     gcc         GNU make\n"
@@ -3278,7 +3290,13 @@ usage(char* argv0) {
                        "     pomake      Pelles-C Make\n"
                        "     make        Other make\n"
                        "     batch       Windows batch (.bat .cmd)\n"
-                       "     ninja       Ninja build\n",
+                       "     ninja       Ninja build\n"
+                       "\n"
+                       "  --debug        Specify build type"
+                       "  --release\n"
+                       "  --relwithdebinfo\n"
+                       "  --minsizerel\n"
+                       "\n",
                        NULL);
   buffer_putnlflush(buffer_1);
 }

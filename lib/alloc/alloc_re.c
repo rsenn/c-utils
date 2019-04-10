@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "../alloc.h"
 #include "../byte.h"
 
