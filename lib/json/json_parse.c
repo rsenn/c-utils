@@ -68,8 +68,9 @@ json_parse_num(jsonval* j, charbuf* b) {
 int
 json_parse_bool(jsonval* j, charbuf* b) {
   if(charbuf_skip_ifset(b, "tf", 2)) {
+    const char* n;
     int v = charbuf_peek(b) == 'r';
-    for(const char* n = v ? "rue" : "alse"; *n; ++n) {
+    for(n = v ? "rue" : "alse"; *n; ++n) {
       if(!charbuf_skip_ifeq(b, *n))
         return 0;
     }
