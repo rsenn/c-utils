@@ -35,7 +35,7 @@ ifeq ($(CC),cc)
 endif
 
 CXX = g++
-include Makefile.functions
+include build/functions.mk
 
 
 ifeq ($(SHARED),1)
@@ -46,7 +46,7 @@ endif
 
 
 #check-header = $(info $(call cmd-check-header,$(1)))
-DEFINES_FILE := Makefile.defines
+DEFINES_FILE := build/defines.mk
 
 #$(foreach inc,sys/types.h inttypes.h vcruntime.h stdint.h stddef.h errno.h,$(call def-include-exists,$(inc)))
 
@@ -1575,7 +1575,7 @@ inst-slackpkg: slackpkg
 		cp -vf dirlist-`date +%Y%m%d`-slackware.txz "$$x"; \
   done
 
--include Makefile.deps
+-include build/deps.mk
 
 $(BUILDDIR)/%.pic.o: CFLAGS += -fPIC
 
@@ -1590,5 +1590,5 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 
 
 -include $(BUILDDIR)defines.make
--include Makefile.tests
--include Makefile.examples
+-include build/tests.mk
+-include build/examples.mk

@@ -45,7 +45,7 @@ endif(NOT HAVE_LSEEK64)
 #include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindOpenSSL.cmake)
 
-include(${CMAKE_SOURCE_DIR}/CheckInline.cmake)
+include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
 
 set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
 foreach(CompilerFlag ${CompilerFlags})
