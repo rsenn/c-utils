@@ -1,8 +1,10 @@
 #!/bin/sh
 #
-# 20180919
+THISDIR=`dirname "$0"`
 set -e
 set -x
+
+cd $THISDIR/../..
 
 aclocal --force -I config
 autoheader --force
