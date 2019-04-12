@@ -5,7 +5,6 @@
 
 Contignuous containers:
 
-File Description
 
 lib/range.h          tuple {start,end,size} a pointer range with item size in bytes                              
 lib/strarray.h       an array of pointer to string, string always '\0' terminated, vector always NULL terminated 
@@ -14,7 +13,6 @@ lib/strlist.h        character separated list (\0 \n , ...) in a stralloc
 
 Linked list containers:
 
-File Description
 
 lib/slist.h          single ended queue (head) singly linked (next) list container. 
                      mutable traversal using node** x = &head iteration with node* p = head
@@ -24,7 +22,6 @@ with list traversal macros list_foreach,*_safe,*_reverse
 
 Assiociative and hierarchical containers:
 
-File Description
 
 lib/hmap.h           hash map container with ownership on property of built-in type or custom *ptr,struct_size 
 lib/hashmap.h        associative map container using hashed bucket algorithms 
@@ -34,7 +31,6 @@ lib/map.h
 
 
 
-File Description
 
 lib/http.h           HTTP client model with requests, responses and headers, compression chains async reading via iopause 
 lib/charbuf.h        an 1-byte character buffer 
@@ -42,7 +38,6 @@ lib/charbuf.h        an 1-byte character buffer
 
 Serialization / Data formats:
 
-File Description
 
 lib/json.h           JSON callback and tree parsers, tree iteration, token output 
 lib/xml.h            XML read with callback, set of functions for building element and attribute lists 
@@ -50,7 +45,6 @@ lib/playlist.h       Read/write Playlist generic playlist abstraction
 
 Word expand, exec and wait process
 
-File Description
 
 lib/expand.h         shell word expansion of ${vars}, special params and backticks command into string list 
 lib/process.h        exec and wait for processes 
@@ -58,7 +52,6 @@ lib/wait.h           wait/waitpid from djb
 lib/sig.h            sig action/block from djb 
 
 
-File Description
 
 lib/var.h            Lexically ordered NAME=VALUE pairs with attributes (exported, local, readonly, ...) 
 lib/vartab.h         Table for variable lookup stacked for subshell context 
@@ -128,7 +121,6 @@ LINK, LDFLAGS linker, flags
 -I and -D add include/definition
 
 
-File Description
 
 ntldd.c              recurse dynamic bindings of .exe files like /usr/bin/ldd on Linux 
 pelist.c             List .EXE and .DLL file sections, import tables and export directories 
