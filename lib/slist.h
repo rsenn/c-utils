@@ -43,7 +43,7 @@ static inline slink** slink_next(slink** link) { return &((*link)->next); }
 static inline slink* slist_next(slink* list) { return list->next; }
 
 static inline int slink_last(slink** link) { return !(*link); }
-static inline slink* slist_last(slink* list) { return !list->next; }
+static inline slink* slist_islast(slink* list) { return !list->next; }
 
 static inline size_t slink_size(slink** link) { size_t i = 0; while(!slink_last(link)) { ++i; link = slink_next(link); }; return i; }
 static inline size_t slist_size(slink* list) { size_t i = 0; while(list) { ++i; list = list->next; }; return i; }

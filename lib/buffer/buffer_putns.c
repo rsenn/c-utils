@@ -1,4 +1,5 @@
 #include "../buffer.h"
+#include "../str.h"
 
 int
 buffer_putns(buffer* b, const char* s, int ntimes) {

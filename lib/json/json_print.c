@@ -4,6 +4,7 @@
 #include "../json.h"
 #include "../slist.h"
 #include "../stralloc.h"
+#include "../fmt.h"
 
 static void
 depth_fn(jsonval* v, int* arg, int depth) {
