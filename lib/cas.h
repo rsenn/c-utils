@@ -2,7 +2,7 @@
 #define InterlockedCompareExchange(p, n, o) InterlockedCompareExchange((void**)p, (void*)n, (void*)o)
 #endif
 
-#if defined(__i386__) || defined(__x86_64__)
+#if (defined(__i386__) || defined(__x86_64__)) && defined(__TINYC__)
 int __inline__ __sync_val_compare_and_swap( volatile unsigned int *ptr, int cmp, int new) {
   unsigned char ret;
   __asm__ __volatile__ (
