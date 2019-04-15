@@ -23,8 +23,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/stat.h>
-
 #include <sys/types.h>
+
+extern buffer* optbuf;
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -3348,6 +3349,9 @@ main(int argc, char* argv[]) {
                            {0}};
 
   errmsg_iam(argv[0]);
+#ifdef _MSC_VER
+  optbuf = buffer_1;
+#endif
 
   strlist_init(&cmdline, ' ');
   strlist_fromv(&cmdline, (const char**)argv, argc);
