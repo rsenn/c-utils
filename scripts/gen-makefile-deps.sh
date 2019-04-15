@@ -1,11 +1,12 @@
 #!/bin/sh
 : ${SUFFIX=.o}
-: ${PIPE="tee Makefile.deps"}
+: ${DEPSMK=build/deps.mk}
+: ${PIPE="tee $DEPSMK"}
 NL="
 "
 TAB="	"
 
-[ $# -le 0 ] && set -- $(find . -name "*.c" -and -not -wholename "*build/*" ) || PIPE="tee -a Makefile.deps"
+[ $# -le 0 ] && set -- $(find . -name "*.c" -and -not -wholename "*build/*" ) || PIPE="tee -a $DEPSMK"
 
 #OUTSTR='\$(BUILDDIR)$(basename "$x" .c)${SUFFIX}: ${y:-${x}}$NL$TAB\$(CROSS_COMPILE)\$(CC) \$(CFLAGS) \$(CPPFLAGS) -c -o \$@ \$<'
 OUTSTR='\$(BUILDDIR)$(basename "$x" .c)${SUFFIX}: ${y:-${x#./}}$NL$TAB\$(CROSS_COMPILE)\$(CC) \$(CFLAGS) \$(CPPFLAGS) \$(INCLUDES) \$(DEFS) -c -o \$@ \$<'

@@ -20,7 +20,7 @@ cfg() {
     #cmakebuild=cmake-${cmakebuild#toolchain-}
     : ${builddir=build/$cmakebuild}
   else
-   : ${builddir=build/cmake-$host}
+   : ${builddir=build/$host}
   fi
 
   case $(uname -o) in
