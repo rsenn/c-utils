@@ -27,6 +27,7 @@ json_default_printer(jsonfmt* p, const jsonval* v, int depth, int index) {
   p->newline = pretty ? "\n" : "";
   p->spacing = pretty ? " " : "";
   p->quote = '"';
+  p->precision = 10;
 };
 
 static void json_print_val(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*, int, int));
@@ -151,7 +152,7 @@ json_print_val(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*,
   switch(val->type) {
     case JSON_UNDEFINED: break;
     case JSON_STRING: json_print_str(b, val->stringv.s, val->stringv.len, &printer); break;
-    case JSON_DOUBLE: buffer_putdouble(b, val->doublev, 15); break;
+    case JSON_DOUBLE: buffer_putdouble(b, val->doublev, printer.precision); break;
     case JSON_BOOL: buffer_puts(b, val->boolv ? "true" : "false"); break;
     case JSON_INT: buffer_putlonglong(b, val->intv); break;
     case JSON_OBJECT: json_print_object(val, b, depth + 1, p); break;

@@ -68,6 +68,7 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->indent = indent_str.s;
   p->spacing = " ";
   p->separat = valdepth > 1 ? ",\n" : ", ";
+  p->precision = 5;
 }
 
 /**
@@ -110,7 +111,14 @@ xml_style_json(char* x, size_t n) {
     np = byte_camelize(prop, np);
     if(np > 0) {
       jsonval name = json_stringn(prop, np);
-      jsonval val = json_stringn(value, nv);
+      jsonval val = json_undefined();
+      charbuf b; char* ptr = value;
+      value[nv] = '\0';
+      charbuf_froms(&b, &ptr);
+
+      if(!numbers || !json_parse_num(&val, &b))
+        val = json_stringn(value, nv);
+
       json_set_property(&r, name, val);
     }
   }

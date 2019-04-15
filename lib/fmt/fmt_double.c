@@ -37,7 +37,7 @@ fmt_double(char* dest, double d, int maxlen, int prec) {
     dest++;
     return dest - oldbuf;
   }
-  if(e10 <= 0) {
+  if(e10 <= 0 || (int)d == 0) {
     if(writeok) {
       dest[0] = '0';
       dest[1] = '.';

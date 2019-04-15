@@ -61,7 +61,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
         return;
       continue;
     }
-    if((n = buffer_gettok_sa(b, &tag, " \t\r\v/>", 6)) < 0)
+    if((n = buffer_gettok_sa(b, &tag, " \n\t\r\v/>", 7)) < 0)
       return;
     stralloc_nul(&tag);
     buffer_skipspace(b);
