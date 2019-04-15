@@ -19,16 +19,16 @@
 			"file": "xmlpp.c",
 			"settings":
 			{
-				"buffer_size": 3457,
+				"buffer_size": 3509,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "jsonpp.c",
+			"file": "torrent-progress.c",
 			"settings":
 			{
-				"buffer_size": 3754,
+				"buffer_size": 6757,
 				"line_ending": "Unix"
 			}
 		},
@@ -36,54 +36,68 @@
 			"file": "xml2json.c",
 			"settings":
 			{
-				"buffer_size": 3202,
+				"buffer_size": 7048,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/hmap/hmap_delete.c",
+			"file": "jsonpp.c",
 			"settings":
 			{
-				"buffer_size": 1102,
+				"buffer_size": 3762,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"file": "lib/json/json_print.c",
 			"settings":
 			{
-				"buffer_size": 91583,
+				"buffer_size": 4368,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "httptest.c",
+			"contents": "Searching 1450 files for \"fmt_escapecharjson\" (case sensitive)\n\n/home/roman/Sources/dirlist/lib/fmt.h:\n  146  \n  147  size_t fmt_escapecharshell(char* dest, uint32 ch);\n  148: size_t fmt_escapecharjson(char* dest, uint32 ch);\n  149  #endif\n  150  \n\n/home/roman/Sources/dirlist/lib/fmt/fmt_escapecharjson.c:\n   15  \n   16  size_t\n   17: fmt_escapecharjson(char* dest, uint32 ch) {\n   18    size_t n;\n   19    switch(ch) {\n\n/home/roman/Sources/dirlist/lib/json/json_print.c:\n   71    while(len--) {\n   72      if(*x == fmt->quote || *x == '\\\\')\n   73:       buffer_put(b, tmp, fmt_escapecharjson(tmp, *x));\n   74      else\n   75        buffer_PUTC(b, *x);\n\n3 matches across 3 files\n",
 			"settings":
 			{
-				"buffer_size": 3119,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "\n\n\n\n  Contignuous containers:\n\n      lib/range.h          tuple {start,end,size} a pointer range with item size in bytes\n      lib/strarray.h       an array of pointer to string, string always '\\0' terminated, vector always NULL terminated\n      lib/strlist.h        character separated list (\\0 \\n , ...) in a stralloc\n\n\n  Linked list containers:\n\n      lib/slist.h          single ended queue (head) singly linked (next) list container.\n                           mutable traversal using node** x = &head\n                           iteration with node* p = head\n\n      lib/list.h           double ended queue (head,tail) using double linked lists (prev,next)\n                           with list traversal macros list_foreach,*_safe,*_reverse\n\n  Assiociative and hierarchical containers:\n\n      lib/hmap.h           hash map container with ownership on property of built-in type or custom *ptr,struct_size\n      lib/hashmap.h        associative map container using hashed bucket algorithms\n      lib/cb.h             crit-bit trees\n      lib/cbmap.h          an associative map container based on crit-bittrees\n      lib/map.h\n\n\n\n      lib/http.h           HTTP client model with requests, responses and headers, compression chains async reading via iopause\n      lib/charbuf.h        an 1-byte character buffer\n\n\n  Serialization / Data formats:\n\n      lib/json.h           JSON callback and tree parsers, tree iteration, token output\n      lib/xml.h            XML read with callback, set of functions for building element and attribute lists\n      lib/playlist.h       Read/write Playlist generic playlist abstraction\n\n   Word expand, exec and wait process\n\n      lib/expand.h         shell word expansion of ${vars}, special params and backticks command into string list\n      lib/process.h        exec and wait for processes\n      lib/wait.h           wait/waitpid from djb\n      lib/sig.h            sig action/block from djb\n\n\n      lib/var.h            Lexically ordered NAME=VALUE pairs with attributes (exported, local, readonly, ...)\n      lib/vartab.h         Table for variable lookup stacked for subshell context\n\n\n  Dumb charset conversion UCS, UTF-8, Latin 1\n\n      lib/ucs.h\n\n\n  Periphery / Sensing\n\n      lib/gpio.h           Memory map Raspberry Pi GPIO pins, provide tri-state digital i/o\n\n\n  Base function from fefe libowfat:\n\n        array    dns      open     taia\n        buffer   examples scan     test\n        byte     fmt      socket   textcode\n        case     io       str      uint\n        cdb      mmap     stralloc unix\n        critbit  mult     tai\n\n\n      lib/array.h          allocated byte vector item indexing with umult64\n      lib/buffer.h         buffered standard input/output/error. op is pointer to a read/write(fd,buf,len) = num_bytes\n      lib/byte.h           operations on fixed length byte ranges\n      lib/case.h           case-insensitive versions of str comparision functions from fefe libowfat\n      lib/dns.h            djbdns client api\n      lib/fmt.h            formatted output into byte buffer functions\n      lib/io.h             libfefe I/O muxing for unix and windows\n      lib/alloc.h          alloc, alloc_re, alloc_free djb interface\n\n      lib/iarray.h         array of integers container\n      lib/fmt.h            formatted output into byte buffer functions\n      lib/io.h             libfefe I/O muxing for unix and windows\n      lib/dns.h            djbdns client api\n      lib/errmsg.h         fefe libowfat\n\n\n\n\n\n  Command line (CLI) utilities:\n\n      pkgcfg.c             Drop-in pkg-config, prints compile and link flags for package\n      impgen.c             Generate a .DEF file from a .DLL library\n\n      ar-wrap.c            generic cross-compiler wrapper for the archiver (lib bundler)\n      cc-wrap.c            generic cross-compiler wrapper for the front (preprocessor, compiler, assembler)\n      compiler-wrapper.c   A compiler driver for Microchip PIC toolchains (picc,picc18,xc8,sdcc)\n      cmake-run.c          find cross environment using dir and path functions and pass it to CMake\n\n      genmakefile.c        Makefile / Ninja generator based on\n\n                                *.c *.h          files\n                                .                directories\n\n                                CC, CFLAGS       compiler, flags\n\n                                AR, ARFLAGS      librarian\n                                LINK, LDFLAGS    linker, flags\n\n                                -L and -l        add library\n                                -I and -D        add include/definition\n\n\n      ntldd.c              recurse dynamic bindings of .exe files like /usr/bin/ldd on Linux\n      pelist.c             List .EXE and .DLL file sections, import tables and export directories\n      omflist.c            List OMF object files symbols\n      cofflist.c           List COFF object files symbols\n      elflist.c            List Elf32 headers, sections, segments, symbols and dynamic section\n      elf64list.c          List Elf64 headers, sections, segments, symbols and dynamic section\n      macho32list.c        List Mach-O segments and symbol table\n\n\n  Compression and integrity\n\n      ccat.c               Compressed file cat with getopt() options and error reporting\n      crc32.c              Calculate crc32 checksum, using zlib or diet version\n\n\n  Network utilities\n\n      dnsip.c              Resolve hostname into IP addresses (NS from resolv.conf or DNSCACHE environment variable)\n      dnsname.c            Reverse lookup of IP address\n      tcping.c             try to TCP connect and output time of each acknowledge or reset\n\n\n  Binary file tools\n\n      bsdiffcat.c          Translates a binary diff made with bsdiff into patch(buf, offset, ifval, thenval) calls\n      hexedit.c            Memory map a file and process a set of patch data in the form: ADDRESS IF-BYTE SET-BYTE\n      torrent-progress.c   memory map incomplete torrent data calculate percentage of pages which are all zero-bytes\n\n\n  Media and streams\n\n      mediathek-list.c     HTTP load and filter mediathek-filme.json of the MediathekView application\n      mediathek-parser.c   Parse a mediathek-filme.json store and generate a Playlist from it\n\n  Windows registry\n\n      reg2cmd.c            Convert a windows registry .REG file into a .BAT with REG ADD commands\n      regfilter.c          zombie copy reg2cmd, was intended a filtering version, like grepdiff\n\n\n  Path helpers\n\n      pathtool.c           dropin for realpath, with --relative-to DIR feature and windows/msys support cygpath compliant\n      sln.c                for a /usr/lib/libX.so.major.minor file pass one or more link names: libX.so.major libX.so /lib/libX.so\n      msys-shell.c         Registry & path search for msys/msys2 environments and launch mintty and bash inside\n\n  Utilities reading/writing XML/JSON\n\n      opensearch-dump.c    parse an OpenSearch XML file into an URL /search?query=%s to have them in Firefox/Chrome\n      plsconv.c            Convert playlists between the formats .M3U .PLS .XSPF\n\n      xmlpp.c              pretty-print XML/XHML\n      jsonpp.c             Pretty-print JSON data\n      xml2json.c           convert an element tree into json objects { tagName, ...attributes, children: [ ..innerElements\n      xml2moon.c           convert XHTML content into lapis html generator syntax: element prop: val, prop2: ..\n\n      eagle-gen-cmds.c     Read EAGLE XML schematics/layouts and generate commands to draw contour and x/y axis measures\n      eagle-init-brd.c     Generate component arrangement congruent with Schematic and generate translate and rotate commands\n      eagle-to-circuit.c   Read EAGLE XML packages and netlists, write .circuit file for striprouter\n\n\n  Basic usage examples or boilerplates:\n\n      binfmttest.c         Test binary format readers\n      buffertest.c         Test I/O buffer system, chaining with zlib/bzip2/lzma filter\n      dnstest.c            Test DNS resolver\n      httptest.c           Test HTTP client\n      jsontest.c           Test JSON parser\n      strarraytest.c       Test array of char* pointer functions\n      xmltest.c            Test XML reading with callbacks (diet version of SAX)\n      xmltest2.c           Test XML reading as tree (diet version of DOM)\n      xmltest3.c           Test XML traversal and selection (diet version of getElementBy* and XPath)\n      xmltest4.c           Test XML query\n      ziptest.c            Simple universal file compression of *.gz, *.bz2, *.xz based on file extension\n\n\n",
-			"file": "README.txt",
-			"file_size": 8521,
-			"file_write_time": 131994740586651878,
-			"settings":
-			{
-				"buffer_size": 8520,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Package Control Messages\n========================\n\nGitHub Markdown Snippets\n------------------------\n\n  ☀☀☀☀☀☀ Thanks for Github Markdown Snippets! (✿✪‿✪｡)ﾉ ☀☀☀☀☀☀☀\n  ✿ To report bugs and request features - https://github.com/praveenpuglia/github_markdown_snippets\n  \n  〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜\n  Usage\n  〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜\n  A consolidated guide is available at - http://praveenpuglia.github.io/github_markdown_snippets \n  \n  Type a tag name and hit tab. That's it! ｡◕‿◕｡\n  \n  ✿ Long tags like `blockquote` are shortened for power use.\n  \n  〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜\n  List of Tab Triggers\n  〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜\n  h1              // Heading 1\n  h2              // Heading 2\n  h3              // Heading 3\n  h4              // Heading 4\n  h5              // Heading 5\n  h6              // Heading 6\n  b               // Bold\n  i               // Italic\n  bq              // Blockquote\n  strike          // Strikeout\n  hr              // Horizontal Rule, Divider\n  code            // Inline Code\n  pre             // Code Block with language based highlighting.\n  a               // Anchor\n  img             // Image\n  ol              // Ordered List\n  ul              // Unordered List\n  table           // Table\n",
-			"settings":
-			{
-				"buffer_size": 1335,
+				"buffer_size": 680,
 				"line_ending": "Unix",
-				"name": "Package Control Messages",
-				"read_only": true,
+				"name": "Find Results",
 				"scratch": true
+			}
+		},
+		{
+			"file": "lib/fmt/fmt_escapecharjson.c",
+			"settings":
+			{
+				"buffer_size": 1221,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/fmt.h",
+			"settings":
+			{
+				"buffer_size": 6698,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_tostring.c",
+			"settings":
+			{
+				"buffer_size": 968,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json.h",
+			"settings":
+			{
+				"buffer_size": 3727,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -174,6 +188,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"instlal pa",
+				"Package Control: Install Package"
+			],
 			[
 				"install",
 				"Package Control: Install Package"
@@ -376,28 +394,27 @@
 		"/home/roman/Sources/dirlist",
 		"/home/roman/Sources/dirlist/lib",
 		"/home/roman/Sources/dirlist/lib/alloc",
-		"/home/roman/Sources/dirlist/lib/cbmap",
-		"/home/roman/Sources/dirlist/lib/fmt",
-		"/home/roman/Sources/dirlist/lib/hmap",
 		"/home/roman/Sources/dirlist/lib/http",
 		"/home/roman/Sources/dirlist/lib/json",
 		"/home/roman/Sources/dirlist/lib/slist"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/dirlist/xml2json.c",
+		"/home/roman/Sources/dirlist/lib/json/json_print.c",
+		"/home/roman/Sources/dirlist/lib/hmap/hmap_delete.c",
+		"/home/roman/Sources/dirlist/genmakefile.c",
+		"/home/roman/Sources/dirlist/README.txt",
 		"/home/roman/Sources/dirlist/README.md",
 		"/home/roman/Sources/dirlist/lib/xml/xml_print_attributes.c",
 		"/home/roman/Sources/dirlist/lib/hmap.h",
-		"/home/roman/Sources/dirlist/lib/json/json_print.c",
 		"/home/roman/Sources/dirlist/jsonpp.c",
 		"/home/roman/Sources/dirlist/lib/hmap/hmap_set_chars.c",
 		"/home/roman/Sources/dirlist/lib/json.h",
 		"/home/roman/Sources/dirlist/lib/hmap/hmap_set.c",
 		"/home/roman/Sources/dirlist/lib/hmap/hmap_add.c",
-		"/home/roman/Sources/dirlist/genmakefile.c",
 		"/home/roman/Sources/dirlist/lib/json/json_push.c",
 		"/home/roman/Sources/dirlist/lib/slist.h",
-		"/home/roman/Sources/dirlist/xml2json.c",
 		"/home/roman/Sources/dirlist/lib/hmap/hmap_get.c",
 		"/home/roman/Sources/dirlist/lib/json/json_set_property.c",
 		"/home/roman/Sources/dirlist/lib/json/json_tostring.c",
@@ -510,9 +527,7 @@
 		"/C/Users/roman/Desktop/dirlist/lib/pe.h",
 		"/C/Users/roman/Desktop/dirlist/lib/coff.h",
 		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_get_name.c",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_begin.c",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/outline.sublime-settings",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Outline/outline.sublime-settings"
+		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_begin.c"
 	],
 	"find":
 	{
@@ -532,6 +547,20 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"tag_proper",
+			"tagName",
+			"fmt->quote",
+			"quote_char",
+			"quote_char$",
+			"quote_char",
+			"fmt_escapecharjson",
+			"json_print_str",
+			"putns",
+			"depth",
+			"putns",
+			"print_sep",
+			"buffer_2",
+			"pretty_printer",
 			"dup_fla",
 			"children",
 			"each",
@@ -645,21 +674,7 @@
 			"finds",
 			"mswsock",
 			"_WINSOCKAPI_",
-			"mswsock",
-			" stralloc",
-			"add_srcpath",
-			"get_includes",
-			"base",
-			"last_error_str",
-			"gen_link_rules",
-			"srcdir",
-			"path_rela",
-			"debug_sa(",
-			"dmc",
-			"LIBS\"",
-			"$(LIBS)",
-			"print_target_deps",
-			"_IMPORT"
+			"mswsock"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -732,7 +747,7 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -741,7 +756,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3457,
+						"buffer_size": 3509,
 						"regions":
 						{
 						},
@@ -764,42 +779,40 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1073.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "jsonpp.c",
+					"file": "torrent-progress.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3754,
+						"buffer_size": 6757,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1736,
-								1736
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"git_gutter_is_enabled": true,
-							"origin_encoding": "ASCII",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 481.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -808,104 +821,226 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3202,
+						"buffer_size": 7048,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2932,
-								2932
+								790,
+								790
 							]
 						],
 						"settings":
 						{
-							"SL.172.region_keys":
+							"SL.59.region_keys":
 							[
 							],
 							"git_gutter_is_enabled": true,
-							"origin_encoding": "ASCII",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1154.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/hmap/hmap_delete.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1102,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"git_gutter_is_enabled": true,
-							"origin_encoding": "ASCII",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 91583,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								77926,
-								77926
-							]
-						],
-						"settings":
-						{
-							"git_gutter_is_enabled": true,
-							"origin_encoding": "ASCII",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 41724.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "httptest.c",
-					"semi_transient": true,
+					"buffer": 3,
+					"file": "jsonpp.c",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3119,
+						"buffer_size": 3762,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1206,
+								1206
+							]
+						],
+						"settings":
+						{
+							"git_gutter_is_enabled": true,
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 715.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/json/json_print.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4368,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3632,
+								3632
+							]
+						],
+						"settings":
+						{
+							"SL.53.region_keys":
+							[
+							],
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1468.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 680,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										183,
+										201
+									],
+									[
+										336,
+										354
+									],
+									[
+										575,
+										593
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								350,
+								350
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/fmt/fmt_escapecharjson.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1221,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								706,
+								706
+							]
+						],
+						"settings":
+						{
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/fmt.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6698,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6442,
+								6442
+							]
+						],
+						"settings":
+						{
+							"SL.57.region_keys":
+							[
+							],
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1248.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/json/json_tostring.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 968,
 						"regions":
 						{
 						},
@@ -927,69 +1062,38 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "README.txt",
+					"buffer": 9,
+					"file": "lib/json.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8520,
+						"buffer_size": 3727,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8520,
-								8520
+								838,
+								838
 							]
 						],
 						"settings":
 						{
 							"git_gutter_is_enabled": true,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"syntax": "Packages/C++/C++.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2223.0,
+						"translation.y": 312.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1335,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1335,
-								1335
-							]
-						],
-						"settings":
-						{
-							"auto_indent": false,
-							"git_gutter_is_enabled": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_width": 2,
-							"word_wrap": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
