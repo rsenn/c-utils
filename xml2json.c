@@ -18,7 +18,7 @@
 
 static jsonval xml_to_json_obj(xmlnode* node);
 
-static int one_line = 0, indent = 2, compact = 0, numbers = 0;
+static int one_line = 0, indent = 2, compact = 0, numbers = 0, no_quote = 0;
 static stralloc indent_str = {"  ", 1, 0};
 static const char *children_property = "children";
 static const char *tag_property = "tagName";
@@ -52,23 +52,30 @@ get_depth(jsonval* v) {
  */
 static void
 pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
-  int valdepth = get_depth(v);
+  int valdepth = v ? get_depth(v) : -1;
 
-  if(json_isnumber(*v))
-    p->quote = '\0';
-  else
-   p->quote = quote_char;
+  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
+  p->indent = indent_str.s;
+  p->spacing = " ";
+  p->separat = valdepth > 1 ? ",\n" : ", ";
+  p->precision = 5;
+  p->depth = depth;
+  p->index = index;
+  p->quote = quote_char;
+
+ if(v == NULL) {
+  p->quote = no_quote ? "\0" : quote_char;
+  return;
+ }
+
+  if(numbers && json_isnumber(*v))
+    p->quote = "\0";
 
   if(compact) {
     p->newline = p->indent = p->spacing = "";
     p->separat = ",";
     return;
   }
-  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
-  p->indent = indent_str.s;
-  p->spacing = " ";
-  p->separat = valdepth > 1 ? ",\n" : ", ";
-  p->precision = 5;
 }
 
 /**
@@ -260,6 +267,7 @@ main(int argc, char* argv[]) {
       {"compact", 0, NULL, 'c'},
       {"indent", 0, NULL, 'l'},
       {"numbers", 0, NULL, 'n'},
+      {"no-quote",0,NULL, 'Q'},
       {"tag", 0, NULL, 'T'},
       {"children", 0, NULL, 'C'},
       {"class", 0, NULL, 'N'},
@@ -269,7 +277,7 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:cT:C:N:n", opts, &index);
+    c = getopt_long(argc, argv, "hsdol:cT:C:N:nQ", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -282,6 +290,7 @@ main(int argc, char* argv[]) {
       case 'o': one_line = 1; break;
       case 'c': compact = 1; break;
       case 'n': numbers = 1; break;
+      case 'Q': no_quote = 1; break;
       case 'l': scan_int(optarg, &indent); break;
       case 'T': tag_property = optarg; break;
       case 'C': children_property = optarg; break;
