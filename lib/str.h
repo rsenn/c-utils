@@ -79,6 +79,8 @@ int str_is(const char* s, int(*pred)());
 
 size_t str_camelize(char*);
 
+char* str_triml(char*, const char* charset, unsigned int charsetlen);
+
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 

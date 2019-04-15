@@ -136,7 +136,7 @@ int stralloc_chop(stralloc* sa);
 /* remove trailing "\r\n", "\n" or "\r".  Return number of removed chars (0, 1 or 2) */
 int stralloc_chomp(stralloc* sa);
 
-void stralloc_trim(stralloc* sa, const char* trimchars, unsigned int trimcharslen);
+void stralloc_trimr(stralloc* sa, const char* trimchars, unsigned int trimcharslen);
 
 int stralloc_decamelize(stralloc* sa, stralloc* to);
 size_t stralloc_camelize(stralloc*);

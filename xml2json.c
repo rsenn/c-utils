@@ -102,7 +102,10 @@ xml_style_json(char* x, size_t n) {
 
     size_t np = byte_chr(x, n, ':');
 
-    x[np] = '\0';
+    char* prop = byte_triml(x, &np, " \t\v\r\n");
+    
+
+    
     str_camelize(x);
 
     buffer_puts(buffer_1, "style item: ");
