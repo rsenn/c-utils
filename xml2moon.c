@@ -1,3 +1,4 @@
+#include "lib/uint64.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
@@ -84,7 +85,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
 
     if(only_text_children) {
 
-      char* content = xml_content(node);
+      const char* content = xml_content(node);
 
       if((content = xml_content(node))) {
           size_t len = content ? str_len(content) : 0;

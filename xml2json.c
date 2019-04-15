@@ -78,14 +78,14 @@ xmllist_to_jsonarray(xmlnode* list) {
     jsonval v = json_undefined();
 
     if(n->type == XML_TEXT) {
-      if(!node->name[0] || str_is(node->name, isspace))
+      if(!n->name[0] || str_is(n->name, isspace))
         continue;
         
-      v = json_string(node->name);
+      v = json_string(n->name);
     } else {
       if(n->name[0] == '/') continue;
 
-      v = xml_to_json_obj(n)
+      v = xml_to_json_obj(n);
     }
     json_push(&arr, v);
   }
