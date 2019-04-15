@@ -32,47 +32,7 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*)
 #include <fcntl.h>
 #include <errno.h>
 
-#ifdef __DMC__
-#define InterlockedCompareExchange(p, n, o) InterlockedCompareExchange((void**)p, (void*)n, (void*)o)
-#endif
-
-#ifdef __arm__
-typedef long(__kernel_cmpxchg_t)(long oldval, long newval, long* ptr);
-static inline long
-__CAS(long* ptr, long oldval, long newval) {
-  long actual_oldval, fail;
-
-  while(1) {
-    actual_oldval = *ptr;
-
-    if(__builtin_expect(oldval != actual_oldval, 0))
-      return actual_oldval;
-
-    fail = (*(__kernel_cmpxchg_t*)0xffff0fc0)(actual_oldval, newval, ptr);
-
-    if(__builtin_expect(!fail, 1))
-      return oldval;
-  }
-}
-#elif defined(__STDC__) && (__STDC_VERSION__ >= 201112L) && !defined(__EMSCRIPTEN__)
-#include <stdatomic.h>
-static inline long
-__CAS(long* ptr, long oldval, long newval) {
-#if defined(__ORANGEC__)
-  atomic_compare_swap(ptr, &oldval, newval);
-#else
-  __atomic_compare_exchange_n(ptr, &oldval, newval, 0, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
-#endif
-  return oldval;
-}
-#elif defined(__dietlibc__)
-#include <sys/atomic.h>
-#elif WINDOWS_NATIVE || (defined(__CYGWIN__) && __MSYS__ == 1) || defined(__POCC__)
-#include <windows.h>
-#define __CAS(ptr, oldval, newval) InterlockedCompareExchange(ptr, newval, oldval)
-#else
-#define __CAS(ptr, oldval, newval) __sync_val_compare_and_swap(ptr, oldval, newval)
-#endif
+#include "../cas.h"
 
 #ifdef __APPLE__
 #define EXPORT __attribute__((visibility("default")))
