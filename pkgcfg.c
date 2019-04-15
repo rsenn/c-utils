@@ -23,6 +23,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#define PKGCFG_EXISTS    1
+#define PKGCFG_PRINT_ERR 2
+#define PKGCFG_SHORT_ERR 4
+
 typedef enum {
   PRINT_VERSION = 1,
   PRINT_CFLAGS,
@@ -406,7 +410,7 @@ pkg_open(const char* pkgname, pkg* pf) {
  * @param pkgname   Package name
  */
 int
-pkg_conf(strarray* modules) {
+pkg_conf(strarray* modules, int mode) {
   int i;
   stralloc value;
   stralloc_init(&value);
@@ -416,7 +420,10 @@ pkg_conf(strarray* modules) {
     pkg pf;
     byte_zero(&pf, sizeof(pf));
 
-    if(!pkg_open(pkgname, &pf)) continue;
+	if(!pkg_open(pkgname, &pf)) {
+		if(mode & PKGCFG_EXISTS) return 0;
+		continue;
+	}
 
     if(cmd.code == PRINT_PATH) {
       if(value.len) stralloc_catc(&value, '\n');
@@ -443,8 +450,10 @@ pkg_conf(strarray* modules) {
     pkg_free(&pf);
   }
 
-  buffer_putsa(buffer_1, &value);
-  buffer_putnlflush(buffer_1);
+  if(!(mode & PKGCFG_EXISTS)) {
+    buffer_putsa(buffer_1, &value);
+    buffer_putnlflush(buffer_1);
+  }
   return 1;
 }
 
@@ -460,10 +469,13 @@ usage(char* progname) {
   buffer_putnlflush(buffer_1);
 }
 
+extern buffer* optbuf;
+
 int
 main(int argc, char* argv[]) {
   int c;
   int index = 0;
+  int mode = 0;
   struct longopt opts[] = {
     {"help", 0, NULL, 'h'},
     {"modversion", 0, NULL, PRINT_VERSION},
@@ -471,10 +483,16 @@ main(int argc, char* argv[]) {
     {"libs", 0, NULL, PRINT_LIBS},
     {"path", 0, NULL, PRINT_PATH},
     {"list-all", 0, NULL, 'l'},
+    {"print-errors", 0, &mode, PKGCFG_PRINT_ERR},
+	{"short-errors", 0, &mode, PKGCFG_SHORT_ERR},
+	{"exists", 0, &mode, PKGCFG_EXISTS},
     {0},
   };
   
   errmsg_iam(argv[0]);
+#ifdef _MSC_VER
+  optbuf = buffer_1;
+#endif
 
   for(;;) {
     c = getopt_long(argc, argv, "hmilpa", opts, &index);
@@ -492,7 +510,13 @@ main(int argc, char* argv[]) {
     case 'l':
       if(!cmd.code) cmd.code = LIST_ALL;
       break;
-    default: usage(argv[0]); return 1;
+    default: 
+		buffer_puts(buffer_1, "ERROR: Invalid argument -");
+		buffer_putc(buffer_1, isprint(c) ? c : '?');
+		buffer_putm_internal(buffer_1, " '", optarg ? optarg : "", "'", 0);
+        buffer_putnlflush(buffer_1);
+		usage(argv[0]);
+		return 1;
     }
   }
 
@@ -533,7 +557,7 @@ main(int argc, char* argv[]) {
   } else if(optind < argc) {
     strarray modules;
     strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);
-    return !pkg_conf(&modules);
+    return !pkg_conf(&modules, mode);
   } else {
     buffer_puts(buffer_2, "Must specify package names on the command line");
     buffer_putnlflush(buffer_2);

@@ -19,6 +19,7 @@ char* optarg = 0;
 int optind = 1;
 int opterr = 1;
 int optopt = 0;
+buffer* optbuf = NULL;
 
 int postpone_count = 0;
 int nextchar = 0;
@@ -48,6 +49,8 @@ postpone_noopt(int argc, char* const argv[], int index) {
 
 static int
 _getopt_(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
+	if(optbuf == NULL)
+		optbuf = buffer_2;
   while(1) {
     int c;
     const char* optptr = 0;
@@ -98,8 +101,8 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
             if(strncmp(spec_long, longopts->name, spec_len) == 0) {
               if(optdef != 0) {
                 if(opterr) {
-                  buffer_putm_2(buffer_2, "ambiguous option: ", spec_long);
-                  buffer_putnlflush(buffer_2);
+                  buffer_putm_2(optbuf, "ambiguous option: ", spec_long);
+                  buffer_putnlflush(optbuf);
                 }
                 return '?';
               }
@@ -111,8 +114,8 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
           }
           if(optdef == 0) {
             if(opterr) {
-              buffer_putm_2(buffer_2, "no such a option: ", spec_long);
-              buffer_putnlflush(buffer_2);
+              buffer_putm_2(optbuf, "no such a option: ", spec_long);
+              buffer_putnlflush(optbuf);
             }
             return '?';
           }
@@ -121,8 +124,8 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
               optarg = 0;
               if(pos_eq != 0) {
                 if(opterr) {
-                  buffer_putm_2(buffer_2, "no argument for ", optdef->name);
-                  buffer_putnlflush(buffer_2);
+                  buffer_putm_2(optbuf, "no argument for ", optdef->name);
+                  buffer_putnlflush(optbuf);
                 }
                 return '?';
               }
@@ -154,9 +157,9 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
     if(optptr == NULL) {
       optopt = c;
       if(opterr) {
-        buffer_putm_2(buffer_2, argv[0], ": invalid option -- ");
-        buffer_PUTC(buffer_2, (char)c);
-        buffer_putnlflush(buffer_2);
+        buffer_putm_2(optbuf, argv[0], ": invalid option -- ");
+        buffer_PUTC(optbuf, (char)c);
+        buffer_putnlflush(optbuf);
       }
       ++nextchar;
       return '?';
@@ -179,9 +182,9 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
         } else {
           optopt = c;
           if(opterr) {
-            buffer_putm_2(buffer_2, argv[0], ": option requires an argument -- ");
-            buffer_PUTC(buffer_2, (char)c);
-            buffer_putnlflush(buffer_2);
+            buffer_putm_2(optbuf, argv[0], ": option requires an argument -- ");
+            buffer_PUTC(optbuf, (char)c);
+            buffer_putnlflush(optbuf);
           }
           if(optstring[0] == ':' || ((optstring[0] == '-' || optstring[0] == '+') && optstring[1] == ':')) {
             c = ':';
