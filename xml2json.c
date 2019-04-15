@@ -99,33 +99,22 @@ xml_style_json(char* x, size_t n) {
   static const char* const whitespace = " \t\v\r\n\0";
   strlist style;
   jsonval r = json_object();
-
   strlist_init(&style, ';');
   style.sa.s = x;
   style.sa.len = n;
-
   strlist_foreach(&style, x, n) {
     size_t np = byte_chr(x, n, ':');
     size_t nv = n - (np + 1);
     char* value = byte_trim(&x[np+1], &nv, whitespace, 6);
     char* prop = byte_trim(x, &np, whitespace, 6);
-
     np = byte_camelize(prop, np);
-
     if(np > 0) {
       jsonval name = json_stringn(prop, np);
       jsonval val = json_stringn(value, nv);
       json_set_property(&r, name, val);
     }
-
-    
-/*    buffer_puts(buffer_1, "style prop: '");
-    buffer_put(buffer_1, prop, np);
-    buffer_puts(buffer_1, "'\nstyle value: '");
-    buffer_put(buffer_1, value, nv);
-    buffer_puts(buffer_1, "'");
-    buffer_putnlflush(buffer_1)*/;
   }
+  strlist_free(&style);
   return r;
 }
 
@@ -145,15 +134,11 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
         size_t len = t->data_len;
         charbuf b;
         char* ptr;
-
         if(len > 0 && t->vals.val_chars[len - 1] == '\0') --len;
-
         if(str_equal(prop, "class") || str_equal(prop, "className"))
           prop = class_property;
-
         ptr = t->vals.val_chars;
         charbuf_froms(&b, &ptr);
-
         if(!numbers || !json_parse_num(&v, &b)) 
           v = json_stringn(t->vals.val_chars, len);
       }

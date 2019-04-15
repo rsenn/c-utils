@@ -180,7 +180,7 @@ pkg_read(buffer* b, pkg* p) {
     if(value.s[0] == '\0') break;
 
     if(name.len) {
-      stralloc_trim(&value, "\r\n\t \0", 5);
+      stralloc_trimr(&value, "\r\n\t \0", 5);
       stralloc_nul(&value);
       stralloc_nul(&name);
 #ifdef DEBUG_OUTPUT
