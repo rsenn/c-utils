@@ -155,6 +155,16 @@ xml_to_json(xmlnode* node) {
   return xml_to_json_obj(node);
 }
 
+static int 
+xml_depth(xmlnode* node) {
+  int i = 0;
+  while(node) {
+    node = node->parent;
+    ++i;
+  }
+  return i;
+}
+
 void
 usage(char* av0) {
   buffer_putm_internal(buffer_1,
@@ -188,8 +198,12 @@ usage(char* av0) {
 int
 testwalk(xmlnode* node, xmlnode* root) {
 
-  buffer_putm_internal(buffer_2, "walk: ", node->name, 0);
-  buffer_putnlflush(buffer_2);
+  if(node->name && node->name[0] != '/' && node->type == XML_ELEMENT) {
+    int depth = xml_depth(node);
+    buffer_putm_internal(buffer_2, "walk: ", node->name, " depth: ", 0);
+    buffer_putlong(buffer_2, depth);
+    buffer_putnlflush(buffer_2);
+  }
   //xml_print(node, buffer_2);
   return 0;
 }
@@ -247,7 +261,7 @@ main(int argc, char* argv[]) {
 
     buffer_skip_until(input, "\r\n", 2);
     doc = xml_read_tree(input);
-    xml_walk(doc, testwalk);
+    //xml_walk(doc, testwalk);
 
     buffer_close(input);
 
