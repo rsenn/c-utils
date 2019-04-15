@@ -77,6 +77,8 @@ int str_endb(const char* a, const char* x, size_t n);
 
 int str_is(const char* s, int(*pred)());
 
+size_t str_camelize(char*);
+
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 

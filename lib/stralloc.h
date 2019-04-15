@@ -139,6 +139,7 @@ int stralloc_chomp(stralloc* sa);
 void stralloc_trim(stralloc* sa, const char* trimchars, unsigned int trimcharslen);
 
 int stralloc_decamelize(stralloc* sa, stralloc* to);
+size_t stralloc_camelize(stralloc*);
 
 int stralloc_case_diff(const stralloc* sa1, const stralloc* sa2);
 int stralloc_case_diffs(const stralloc* sa, const char* s);

@@ -1591,4 +1591,3 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 -include $(BUILDDIR)defines.make
 -include build/tests.mk
 -include build/examples.mk
--include build/deps.mk

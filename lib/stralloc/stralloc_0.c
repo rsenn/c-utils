@@ -1,5 +1,4 @@
 #include "../stralloc.h"
-#undef stralloc_0
 
 #undef stralloc_0
 

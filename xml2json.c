@@ -188,7 +188,9 @@ usage(char* av0) {
 int
 testwalk(xmlnode* node, xmlnode* root) {
 
-  xml_print(node, buffer_2);
+  buffer_putm_internal(buffer_2, "walk: ", node->name, 0);
+  buffer_putnlflush(buffer_2);
+  //xml_print(node, buffer_2);
   return 0;
 }
 
