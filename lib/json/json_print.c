@@ -5,6 +5,7 @@
 #include "../slist.h"
 #include "../stralloc.h"
 #include "../fmt.h"
+#include <assert.h>
 
 static void
 depth_fn(jsonval* v, int* arg, int depth) {
@@ -56,26 +57,30 @@ json_print_separator(jsonval* val, buffer* b, int what, int depth, int index, vo
 
 static void
 json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
-  int quote = !byte_fullfils_predicate(key, key_len, json_is_identifier_char);
-  if(quote)
-    buffer_puts(b, fmt->quote);
+  char quote;
+  quote = (!byte_fullfils_predicate(key, key_len, json_is_identifier_char)) ? fmt->quote[0] : '\0';
+
+  if(quote) buffer_putc(b, quote);
   buffer_put(b, key, key_len);
-  if(quote)
-    buffer_puts(b, fmt->quote);
+  if(quote) buffer_putc(b, quote);
 }
 
 static void
 json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
   char tmp[6];
-  buffer_puts(b, fmt->quote);
+  char quote = fmt->quote[0];
+  if(quote)
+    buffer_putc(b, quote);
   while(len--) {
-    if(*x == fmt->quote[0] || *x == '\\')
-      buffer_put(b, tmp, fmt_escapecharjson(tmp, *x, fmt->quote[0]));
+    assert(*x);
+    if(*x == quote || *x == '\\')
+      buffer_put(b, tmp, fmt_escapecharjson(tmp, *x, quote));
     else
       buffer_PUTC(b, *x);
     ++x;
   }
-  buffer_puts(b, fmt->quote);
+  if(quote)
+    buffer_putc(b, quote);
 }
 
 static void
@@ -95,7 +100,7 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
 
       ++index;
 
-      json_print_key(b, t->key, t->key_len - 1, p);
+      json_print_key(b, t->key, t->key_len - 1, &printer);
 
       buffer_puts(b, ":");
       json_print_separator(val, b, JSON_FMT_SPACING, depth, index, p);

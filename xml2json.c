@@ -18,7 +18,7 @@
 
 static jsonval xml_to_json_obj(xmlnode* node);
 
-static int one_line = 0, indent = 2, compact = 0;
+static int one_line = 0, indent = 2, compact = 0, numbers = 0;
 static stralloc indent_str = {"  ", 1, 0};
 static const char *children_property = "children";
 static const char *tag_property = "tagName";
@@ -53,7 +53,12 @@ get_depth(jsonval* v) {
 static void
 pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   int valdepth = get_depth(v);
-  p->quote = quote_char;
+
+  if(json_isnumber(*v))
+    p->quote = '\0';
+  else
+   p->quote = quote_char;
+
   if(compact) {
     p->newline = p->indent = p->spacing = "";
     p->separat = ",";
@@ -91,6 +96,7 @@ xmllist_to_jsonarray(xmlnode* list) {
 
 static jsonval
 xml_style_json(char* x, size_t n) {
+  static const char* const whitespace = " \t\v\r\n\0";
   strlist style;
   jsonval r = json_object();
 
@@ -99,20 +105,26 @@ xml_style_json(char* x, size_t n) {
   style.sa.len = n;
 
   strlist_foreach(&style, x, n) {
-
     size_t np = byte_chr(x, n, ':');
+    size_t nv = n - (np + 1);
+    char* value = byte_trim(&x[np+1], &nv, whitespace, 6);
+    char* prop = byte_trim(x, &np, whitespace, 6);
 
-    char* prop = byte_triml(x, &np, " \t\v\r\n");
+    np = byte_camelize(prop, np);
+
+    if(np > 0) {
+      jsonval name = json_stringn(prop, np);
+      jsonval val = json_stringn(value, nv);
+      json_set_property(&r, name, val);
+    }
+
     
-
-    
-    str_camelize(x);
-
-    buffer_puts(buffer_1, "style item: ");
-    buffer_put(buffer_1, x, np);
-    buffer_puts(buffer_1, " ");
-    buffer_put(buffer_1, &x[np+1], n - (np + 1));
-    buffer_putnlflush(buffer_1);
+/*    buffer_puts(buffer_1, "style prop: '");
+    buffer_put(buffer_1, prop, np);
+    buffer_puts(buffer_1, "'\nstyle value: '");
+    buffer_put(buffer_1, value, nv);
+    buffer_puts(buffer_1, "'");
+    buffer_putnlflush(buffer_1)*/;
   }
   return r;
 }
@@ -130,9 +142,20 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
       if(str_equal(prop, "style")) {
         v = xml_style_json(t->vals.val_chars, t->data_len);
       } else {
+        size_t len = t->data_len;
+        charbuf b;
+        char* ptr;
+
+        if(len > 0 && t->vals.val_chars[len - 1] == '\0') --len;
+
         if(str_equal(prop, "class") || str_equal(prop, "className"))
           prop = class_property;
-        v = json_stringn(t->vals.val_chars, t->data_len);
+
+        ptr = t->vals.val_chars;
+        charbuf_froms(&b, &ptr);
+
+        if(!numbers || !json_parse_num(&v, &b)) 
+          v = json_stringn(t->vals.val_chars, len);
       }
       json_set_property(obj, json_string(prop), v);
     }
@@ -199,6 +222,7 @@ usage(char* av0) {
                        "  -o, --one-line          One-line\n"
                        "  -c, --compact           Compact\n"
                        "  -l, --indent NUM        Indent level\n"
+                       "  -n, --numbers           Show numbers unquoted\n"
                        "\n"
                        "  -T, --tag NAME          Name of property with tag name [",
                        tag_property,
@@ -242,6 +266,7 @@ main(int argc, char* argv[]) {
       {"one-line", 0, NULL, 'o'},
       {"compact", 0, NULL, 'c'},
       {"indent", 0, NULL, 'l'},
+      {"numbers", 0, NULL, 'n'},
       {"tag", 0, NULL, 'T'},
       {"children", 0, NULL, 'C'},
       {"class", 0, NULL, 'N'},
@@ -251,7 +276,7 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:cT:C:N:", opts, &index);
+    c = getopt_long(argc, argv, "hsdol:cT:C:N:n", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -263,6 +288,7 @@ main(int argc, char* argv[]) {
       case 'd': quote_char[0] = '"'; break;
       case 'o': one_line = 1; break;
       case 'c': compact = 1; break;
+      case 'n': numbers = 1; break;
       case 'l': scan_int(optarg, &indent); break;
       case 'T': tag_property = optarg; break;
       case 'C': children_property = optarg; break;

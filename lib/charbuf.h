@@ -8,13 +8,16 @@
 extern "C" {
 #endif
 
-typedef ssize_t(read_fn)(fd_t fd, void* buf, size_t n);
+typedef ssize_t(read_fn)(fd_t fd, void* buf, size_t n, void*);
 
 typedef struct {
   char ch;
   int p : 1;
   read_fn* op;
-  fd_t fd;
+  union {
+    fd_t fd;
+    void *ptr;
+  };
 } charbuf;
 
 #define CHARBUF_INIT(op, fd)                                                                                           \
@@ -38,6 +41,8 @@ static inline int charbuf_skip_ifset(charbuf* b, const char* set, size_t setlen)
   if(byte_chr(set, setlen, c) == setlen) return 0;
   return charbuf_skip(b);
 }
+
+void charbuf_froms(charbuf* b, char** s);
 
 #ifdef __cplusplus
 }

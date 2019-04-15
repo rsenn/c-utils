@@ -76,6 +76,13 @@ const char* byte_triml(const char* x, size_t* len, const char* charset, unsigned
 
 size_t byte_trimr(char* x, size_t n, const char* trimchars, unsigned int trimcharslen);
 
+static inline char*
+byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen) {
+  x = byte_triml(x, n, trimchars,trimcharslen);
+  *n = byte_trimr(x, *n, trimchars,trimcharslen);
+  return x;
+}
+
 size_t byte_camelize(char* x, size_t len);
 
 

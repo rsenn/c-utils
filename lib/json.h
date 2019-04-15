@@ -109,8 +109,8 @@ static inline jsonval json_array() { jsonval ret = { JSON_ARRAY }; ret.listv = 0
 static inline jsonval json_double(double n) {jsonval ret = { JSON_DOUBLE }; ret.doublev = n; return ret; }
 static inline jsonval json_int(int64 i) { jsonval ret = { JSON_INT }; ret.intv = i; return ret; }
 static inline jsonval json_bool(int b) { jsonval ret = { JSON_BOOL }; ret.boolv = !!b; return ret; }
-static inline jsonval json_string(const char* s) { jsonval ret = { JSON_STRING }; ret.stringv.s = (char*)s; ret.stringv.len = str_len(s); ret.stringv.a = 0; return ret; }
-static inline jsonval json_stringn(const char* s, size_t n) { jsonval ret = { JSON_STRING }; ret.stringv.s = (char*)s; ret.stringv.len = n; ret.stringv.a = 0; return ret; }
+static inline jsonval json_string(const char* s) { jsonval ret = { JSON_STRING }; ret.stringv.a = 1 + (ret.stringv.len = str_len(s)); ret.stringv.s = (char*)str_ndup(s, ret.stringv.len);  0; return ret; }
+static inline jsonval json_stringn(const char* s, size_t n) { jsonval ret = { JSON_STRING }; ret.stringv.s = (char*)str_ndup(s, n); ret.stringv.len = n; ret.stringv.a = n + 1; return ret; }
 
 
 static inline int json_isnull(jsonval v) { return v.type == JSON_OBJECT && v.dictv == 0; }
