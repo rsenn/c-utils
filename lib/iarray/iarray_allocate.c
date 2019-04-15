@@ -25,6 +25,20 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile *,void*,void*);
 #define InterlockedCompareExchange(p, n, o) InterlockedCompareExchange((void**)p, (void*)n, (void*)o)
 #endif
 
+#ifdef __TCC__
+int __inline__ __sync_val_compare_and_swap( volatile unsigned int *ptr, int cmp, int new) {
+  unsigned char ret;
+  __asm__ __volatile__ (
+  " lock\n"
+  " cmpxchgl %2,%1\n"
+  " sete %0\n"
+  : "=q" (ret), "=m" (*ptr)
+  : "r" (new), "m" (*ptr), "a" (cmp)
+  : "memory");
+  return (int) ret;
+}
+#endif
+
 #ifdef __dietlibc__
 #include <sys/atomic.h>
 #define __CAS_PTR(ptr, oldptr, newptr) __CAS(ptr, oldptr, newptr)
