@@ -20,9 +20,9 @@ static jsonval xml_to_json_obj(xmlnode* node);
 
 static int one_line = 0, indent = 2, compact = 0;
 static stralloc indent_str = {"  ", 1, 0};
-static const char *children_property = "children", *tag_property = "tagName", *class_property = "className";
-
-;
+static const char *children_property = "children";
+static const char *tag_property = "tagName";
+static const char *class_property = "className";
 static char quote_char[2] = {'"', '\0'};
 
 static void
@@ -39,9 +39,7 @@ max_depth_fn(jsonval* v, int* arg, int depth) {
 static int
 get_depth(jsonval* v) {
   int max_depth = -1;
-
   json_recurse(v, max_depth_fn, &max_depth);
-
   return max_depth;
 }
 
@@ -55,13 +53,15 @@ get_depth(jsonval* v) {
 static void
 pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   int valdepth = get_depth(v);
-
-  p->newline = valdepth > 1
-                   ? "\n"
-                   : " "; // (!one_line && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
-  p->indent = indent_str.s;
-  p->spacing = " "; //((valdepth < 1 && index > 0) || (valdepth >= 1 &&  index > -1)) ? " " : "";
   p->quote = quote_char;
+  if(compact) {
+    p->newline = p->indent = p->spacing = "";
+    p->separat = ",";
+    return;
+  }
+  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
+  p->indent = indent_str.s;
+  p->spacing = " ";
   p->separat = valdepth > 1 ? ",\n" : ", ";
 }
 
@@ -76,20 +76,42 @@ xmllist_to_jsonarray(xmlnode* list) {
   xmlnode* n;
   for(n = list; n; n = n->next) {
     jsonval v = json_undefined();
-
     if(n->type == XML_TEXT) {
       if(!n->name[0] || str_is(n->name, isspace))
         continue;
-        
       v = json_string(n->name);
     } else {
       if(n->name[0] == '/') continue;
-
       v = xml_to_json_obj(n);
     }
     json_push(&arr, v);
   }
   return arr;
+}
+
+static jsonval
+xml_style_json(char* x, size_t n) {
+  strlist style;
+  jsonval r = json_object();
+
+  strlist_init(&style, ';');
+  style.sa.s = x;
+  style.sa.len = n;
+
+  strlist_foreach(&style, x, n) {
+
+    size_t np = byte_chr(x, n, ':');
+
+    x[np] = '\0';
+    str_camelize(x);
+
+    buffer_puts(buffer_1, "style item: ");
+    buffer_put(buffer_1, x, np);
+    buffer_puts(buffer_1, " ");
+    buffer_put(buffer_1, &x[np+1], n - (np + 1));
+    buffer_putnlflush(buffer_1);
+  }
+  return r;
 }
 
 /**
@@ -101,10 +123,15 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
     TUPLE* t;
     hmap_foreach(db, t) {
       const char* prop = t->key;
-      if(str_equal(prop, "class") || str_equal(prop, "className"))
-        prop = class_property;
-
-      json_set_property(obj, json_string(prop), json_stringn(t->vals.val_chars, t->data_len));
+      jsonval v = json_undefined();
+      if(str_equal(prop, "style")) {
+        v = xml_style_json(t->vals.val_chars, t->data_len);
+      } else {
+        if(str_equal(prop, "class") || str_equal(prop, "className"))
+          prop = class_property;
+        v = json_stringn(t->vals.val_chars, t->data_len);
+      }
+      json_set_property(obj, json_string(prop), v);
     }
     return 1;
   }
@@ -118,28 +145,19 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
  */
 static jsonval
 xml_to_json_obj(xmlnode* node) {
-  /*
-    static const char*const node_types[] = {
-        "(null)", "XML_DOCUMENT", "XML_ELEMENT", "XML_ATTRIBUTE", "XML_TEXT",
-    };
+/*  static const char* const node_types[] = {"(null)", "XML_DOCUMENT", "XML_ELEMENT", "XML_ATTRIBUTE", "XML_TEXT" };
     buffer_putm_internal(buffer_2, node_types[(int)node->type], " ", node->name, "\n", 0);*/
-
   if(node->type == XML_ELEMENT) {
     jsonval obj = json_object();
-
     json_set_property(&obj, json_string(tag_property), json_string(node->name));
-
     if(node->attributes && node->attributes->list_tuple)
       hmap_to_jsonobj(node->attributes, &obj);
-
     if(node->children)
       json_set_property(&obj, json_string(children_property), xmllist_to_jsonarray(node->children));
     return obj;
   }
-
   if(node->type == XML_TEXT) {
   }
-
   return json_undefined();
 }
 
@@ -148,10 +166,8 @@ xml_to_json_obj(xmlnode* node) {
  */
 static jsonval
 xml_to_json(xmlnode* node) {
-
   if(node->type == XML_DOCUMENT || node->attributes == NULL)
     return xmllist_to_jsonarray(node->children);
-
   return xml_to_json_obj(node);
 }
 
@@ -197,14 +213,12 @@ usage(char* av0) {
 
 int
 testwalk(xmlnode* node, xmlnode* root) {
-
   if(node->name && node->name[0] != '/' && node->type == XML_ELEMENT) {
     int depth = xml_depth(node);
     buffer_putm_internal(buffer_2, "walk: ", node->name, " depth: ", 0);
     buffer_putlong(buffer_2, depth);
     buffer_putnlflush(buffer_2);
   }
-  //xml_print(node, buffer_2);
   return 0;
 }
 
@@ -234,7 +248,7 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:cT:C:", opts, &index);
+    c = getopt_long(argc, argv, "hsdol:cT:C:N:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)

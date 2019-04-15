@@ -35,9 +35,11 @@ __CAS(long* ptr, long oldval, long newval) {
   }
 }
 #elif defined(__STDC__) && (__STDC_VERSION__ >= 201112L) && !defined(__EMSCRIPTEN__)
+
 #include <stdatomic.h>
+
 static inline long
-__CAS(long* ptr, long oldval, long newval) {
+__atomic_compare_and_swap(long* ptr, long oldval, long newval) {
 #if defined(__ORANGEC__)
   atomic_compare_swap(ptr, &oldval, newval);
 #else
@@ -45,8 +47,14 @@ __CAS(long* ptr, long oldval, long newval) {
 #endif
   return oldval;
 }
+
+#define __CAS __atomic_compare_and_swap
+#define __CAS_PTR __atomic_compare_and_swap
+
 #elif defined(__dietlibc__)
+
 #include <sys/atomic.h>
+
 #elif WINDOWS_NATIVE || (defined(__CYGWIN__) && __MSYS__ == 1) || defined(__POCC__)
 #include <windows.h>
 #define __CAS(ptr, oldval, newval) InterlockedCompareExchange(ptr, newval, oldval)
