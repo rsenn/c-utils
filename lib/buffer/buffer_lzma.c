@@ -126,15 +126,13 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   lzma_options_lzma opt_lzma2;
   lzma_filter f[3];
   
-  f[0].id = LZMA_FILTER_X86;
+  f[0].id = 0x04; //LZMA_FILTER_X86;
   f[0].options = 0;
   
-  f[1].id = LZMA_FILTER_LZMA2;
+  f[1].id = 0x21; //LZMA_FILTER_LZMA2;
   f[1].options = &opt_lzma2;
   
-  f[2].id = 
-  LZMA_VLI_UNKNOWN
-  ;
+  f[2].id = 0xffffffffffffffff; // LZMA_VLI_UNKNOWN;
   
   if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) {
     return 0;
@@ -153,7 +151,7 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   b->deinit = &buffer_lzma_close;
 
   ret = compress ? lzma_stream_encoder(&ctx->strm, f, LZMA_CHECK_CRC64)
-                 : lzma_stream_decoder(&ctx->strm, LZMA_VLI_UNKNOWN, LZMA_CONCATENATED);
+                 : lzma_stream_decoder(&ctx->strm, 0xffffffffffffffff /*LZMA_VLI_UNKNOWN*/, LZMA_CONCATENATED);
 
   if(ret != LZMA_OK) return 0;
 
