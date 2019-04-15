@@ -10,12 +10,14 @@ xml_find_all_predicate(xmlnode* node, array* a, int (*pred)(), const void* vptr[
 
     if(pred(node, vptr[0], vptr[1], vptr[2])) {
       xmlnode** nptr;
-      if(!(nptr = array_allocate(a, sizeof(xmlnode*), array_length(a, sizeof(xmlnode*))))) return 0;
+      if(!(nptr = array_allocate(a, sizeof(xmlnode*), array_length(a, sizeof(xmlnode*)))))
+        return 0;
       *nptr = node;
     }
 
     if(node->children) {
-      if(!xml_find_all_predicate(node->children, a, pred, vptr)) return 0;
+      if(!xml_find_all_predicate(node->children, a, pred, vptr))
+        return 0;
     }
   } while((node = node->next));
   return 1;

@@ -30,7 +30,19 @@ static int depth = 0;
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   xmlnode* n;
+  if(id == XML_TEXT) {
+    if(reader->closing) --depth;
+    if(value && value->s)
+      stralloc_nul(value);
+    buffer_puts(buffer_1, node_types[id - 1]);
+    buffer_puts(buffer_1, " \"");
+    buffer_putsa(buffer_1, value);
+    buffer_puts(buffer_1, "\"");
+  buffer_putnlflush(buffer_1);
+    return 1;
+  }
   if(id != XML_ELEMENT) return 1;
+
   if(reader->closing) --depth;
   buffer_putm_4(buffer_1, node_types[id], " \"", name ? name->s : "", "\"");
   if(value) buffer_putm_2(buffer_1, ", value=", value ? value->s : "");

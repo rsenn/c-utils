@@ -31,7 +31,8 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
     case XML_ELEMENT: {
       int closing = reader->closing || reader->self_closing;
 
-      if(reader->closing) --depth;
+      if(reader->closing)
+        --depth;
 
       if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
         buffer_puts(buffer_1, "\n");
@@ -50,7 +51,8 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       stralloc_copy(&prev_element, name);
       prev_closing = closing;
 
-      if(!reader->closing && !reader->self_closing) ++depth;
+      if(!reader->closing && !reader->self_closing)
+        ++depth;
       break;
     }
     default: break;
@@ -73,7 +75,7 @@ usage(char* av0) {
                        "  -o, --one-line          One-line\n"
                        "  -c, --compact           Compact\n"
                        "  -l, --indent NUM        Indent level\n"
-                       "\n", 
+                       "\n",
                        0);
   buffer_flush(buffer_1);
 }
@@ -82,33 +84,35 @@ int
 main(int argc, char* argv[]) {
   xmlreader r;
   int ret;
-   int c;
+  int c;
   int index = 0;
   struct longopt opts[] = {
-    {"help", 0, NULL, 'h'},
-    {"single-quote", 0, &quote_char, '\''},
-    {"double-quote", 0, &quote_char, '"'},
-    {"one-line", 0, NULL, 'o'},
-    {"compact", 0, NULL, 'c'},
-    {"indent", 0, NULL, 'l'},
-    {0},
+      {"help", 0, NULL, 'h'},
+      {"single-quote", 0, &quote_char, '\''},
+      {"double-quote", 0, &quote_char, '"'},
+      {"one-line", 0, NULL, 'o'},
+      {"compact", 0, NULL, 'c'},
+      {"indent", 0, NULL, 'l'},
+      {0},
   };
-  
+
   errmsg_iam(argv[0]);
 
   for(;;) {
     c = getopt_long(argc, argv, "hsdol:c", opts, &index);
-    if(c == -1) break;
-    if(c == 0) continue;
+    if(c == -1)
+      break;
+    if(c == 0)
+      continue;
 
     switch(c) {
-    case 'h': usage(argv[0]); return 0;
-    case 's': quote_char = '\''; break;
-    case 'd': quote_char = '"'; break;
-    case 'o': one_line = 1; break;
-    case 'c': compact = 1; break;
-    case 'l': scan_int(optarg, &indent); break;
-    default: usage(argv[0]); return 1;
+      case 'h': usage(argv[0]); return 0;
+      case 's': quote_char = '\''; break;
+      case 'd': quote_char = '"'; break;
+      case 'o': one_line = 1; break;
+      case 'c': compact = 1; break;
+      case 'l': scan_int(optarg, &indent); break;
+      default: usage(argv[0]); return 1;
     }
   }
 

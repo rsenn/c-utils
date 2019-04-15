@@ -1,6 +1,6 @@
-#include "../hmap.h"
 #include "../uint64.h"
 #include "../buffer.h"
+#include "../hmap.h"
 #include "../json.h"
 #include "../slist.h"
 #include "../stralloc.h"
@@ -42,43 +42,40 @@ byte_fullfils_predicate(const char* x, size_t len, int (*pred)(int)) {
 }
 
 static void
-json_print_separator(jsonval* val, buffer* b, int depth, int index, void (*p)(jsonfmt*, jsonval*, int, int)) {
-
-  const char* nl;
+json_print_separator(jsonval* val, buffer* b, int what, int depth, int index, void (*p)(jsonfmt*, jsonval*, int, int)) {
+  const char* s;
   jsonfmt printer;
   p(&printer, val, depth, index);
-  nl = printer.newline;
 
-  buffer_puts(b, nl);
+  s = printer.ws[what];
+  buffer_puts(b, s);
 
-  if(nl[0] == '\n')
+  if(s[str_chr(s, '\n')])
     buffer_putns(b, printer.indent, depth);
-  else
-    buffer_puts(b, printer.spacing);
 }
 
 static void
 json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
   int quote = !byte_fullfils_predicate(key, key_len, json_is_identifier_char);
   if(quote)
-    buffer_putc(b, fmt->quote);
+    buffer_puts(b, fmt->quote);
   buffer_put(b, key, key_len);
   if(quote)
-    buffer_putc(b, fmt->quote);
+    buffer_puts(b, fmt->quote);
 }
 
 static void
 json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
   char tmp[6];
-  buffer_putc(b, fmt->quote);
+  buffer_puts(b, fmt->quote);
   while(len--) {
-    if(*x == fmt->quote || *x == '\\')
-      buffer_put(b, tmp, fmt_escapecharjson(tmp, *x));
+    if(*x == fmt->quote[0] || *x == '\\')
+      buffer_put(b, tmp, fmt_escapecharjson(tmp, *x, fmt->quote[0]));
     else
       buffer_PUTC(b, *x);
     ++x;
   }
-  buffer_putc(b, fmt->quote);
+  buffer_puts(b, fmt->quote);
 }
 
 static void
@@ -89,7 +86,8 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
   p(&printer, val, depth, index);
 
   buffer_puts(b, "{");
-  json_print_separator(val, b, depth, index, p);
+  // buffer_putm_internal(b, "{", printer.spacing, 0);
+  json_print_separator(val, b, JSON_FMT_NEWLINE, depth, index, p);
 
   if(val->dictv && val->dictv->list_tuple) {
     hmap_foreach(val->dictv, t) {
@@ -99,38 +97,40 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
 
       json_print_key(b, t->key, t->key_len - 1, p);
 
-      buffer_putm_internal(b, ":", printer.spacing, 0);
+      buffer_puts(b, ":");
+      json_print_separator(val, b, JSON_FMT_SPACING, depth, index, p);
 
-      json_print_val(t->vals.val_chars, b, depth + 1, p);
+      json_print_val(t->vals.val_chars, b, depth, p);
 
       if(!last) {
-        buffer_put(b, ",", 1);
-        json_print_separator(val, b, depth, index, p);
+        json_print_separator(val, b, JSON_FMT_SEPARATOR, depth, index, p);
       }
     }
-    json_print_separator(val, b, depth - 1, -2, p);
+    json_print_separator(val, b, JSON_FMT_NEWLINE, depth - 1, -2, p);
   }
   buffer_puts(b, "}");
 }
 
 static void
 json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*, int, int)) {
+  jsonfmt printer;
+  p(&printer, val, depth, 0);
   slink* ptr;
   int index = 0;
 
   buffer_puts(b, "[");
-  json_print_separator(val, b, depth, index, p);
+  // buffer_puts(b, printer.spacing);
+  json_print_separator(val, b, JSON_FMT_NEWLINE, depth, index, p);
 
   slink_foreach(val->listv, ptr) {
     json_print_val(slist_data(ptr), b, depth, p);
     ++index;
     if(slist_next(ptr)) {
-      buffer_put(b, ",", 1);
-      json_print_separator(val, b, depth, index, p);
+      json_print_separator(val, b, JSON_FMT_SEPARATOR, depth, index, p);
     }
   }
 
-  json_print_separator(val, b, depth - 1, -2, p);
+  json_print_separator(val, b, JSON_FMT_NEWLINE, depth - 1, -2, p);
   buffer_puts(b, "]");
 }
 
@@ -139,7 +139,9 @@ json_print_val(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*,
   jsonfmt printer;
   p(&printer, val, depth, 0);
 
-  json_print_separator(val, b, depth, -1, p);
+  /*if(depth > 0)
+    buffer_puts(b, printer.spacing);*/
+  //    json_print_separator(val, b, depth, -1, p);
 
   switch(val->type) {
     case JSON_UNDEFINED: break;

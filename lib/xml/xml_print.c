@@ -15,9 +15,12 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
     stralloc_free(&text);
     return;
   }
+
   if(!closing)
     buffer_putnspace(b, depth * 2);
+
   buffer_putm_internal(b, "<", node->name, 0);
+  
   if(node->attributes && node->attributes->tuple_count) {
     buffer_putc(b, ' ');
     xml_print_attributes(node->attributes, b, " ", "=", "\"");

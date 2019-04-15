@@ -5,15 +5,17 @@
 static xmlnode*
 xml_find_predicate(xmlnode* node, int (*pred)(), const void* vptr[]) {
   while(node) {
-    if(pred(node, vptr[0], vptr[1], vptr[2])) break;
+    if(pred(node, vptr[0], vptr[1], vptr[2]))
+      break;
 
     if(node->children) {
       xmlnode* r;
-      if((r = xml_find_predicate(node->children, pred, vptr))) return r;
+      if((r = xml_find_predicate(node->children, pred, vptr)))
+        return r;
     }
 
-     node = node->next;
-  } 
+    node = node->next;
+  }
 
   return node;
 }
@@ -38,9 +40,12 @@ xml_pfind_pred(xmlnode* node, int (*pred)(/*xmlnode*,const void*,const void*,con
     ptr[2] = &values;
   }
   ret = xml_find_predicate(node, pred, ptr);
-  if(names.sa.a) strlist_free(&names);
-  if(attrs.sa.a) strlist_free(&attrs);
-  if(values.sa.a) strlist_free(&values);
+  if(names.sa.a)
+    strlist_free(&names);
+  if(attrs.sa.a)
+    strlist_free(&attrs);
+  if(values.sa.a)
+    strlist_free(&values);
   return ret;
 }
 

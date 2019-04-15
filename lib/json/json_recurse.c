@@ -13,16 +13,15 @@ json_recurse_val(jsonval* val, void (*fn)(), void* arg, int depth) {
     case JSON_INT: break;
 
     case JSON_OBJECT: {
-      TUPLE* t;
-
       if(val->dictv && val->dictv->list_tuple) {
+        TUPLE* t;
         hmap_foreach(val->dictv, t) { json_recurse_val(t->vals.val_custom, fn, arg, depth + 1); }
       }
       break;
     }
     case JSON_ARRAY: {
       slink* link;
-      slist_foreach(val->listv, link) { json_recurse_val(slist_data(link), fn, arg, depth + 1); }
+      slink_foreach(val->listv, link) { json_recurse_val(slist_data(link), fn, arg, depth + 1); }
       break;
     }
   }

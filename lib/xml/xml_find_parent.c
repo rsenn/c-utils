@@ -8,7 +8,8 @@ int xml_tag_pred(xmlnode* node, const void* arg);
 static xmlnode*
 xml_find_parent_predicate(xmlnode* node, int (*pred)(), const void* vptr[]) {
   while((node = node->parent)) {
-    if(pred(node, vptr[0], vptr[1], vptr[2])) break;
+    if(pred(node, vptr[0], vptr[1], vptr[2]))
+      break;
   }
   return node;
 }
@@ -28,8 +29,10 @@ xml_pfind_parent(xmlnode* node, int (*pred)(), const void* ptr[]) {
     ptr[1] = &attrs;
   }
   ret = xml_find_parent_predicate(node, pred, ptr);
-  if(names.sa.a) strlist_free(&names);
-  if(attrs.sa.a) strlist_free(&attrs);
+  if(names.sa.a)
+    strlist_free(&names);
+  if(attrs.sa.a)
+    strlist_free(&attrs);
   return ret;
 }
 

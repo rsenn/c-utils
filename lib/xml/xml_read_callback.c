@@ -10,7 +10,8 @@ is_whitespace(const char* x, size_t n) {
   size_t i;
 
   for(i = 0; i < n; ++i) {
-    if(!isspace(x[i])) return 0;
+    if(!byte_chr(" \t\v\r\n\0", 5, x[i]))
+      return 0;
   }
   return 1;
 }
@@ -56,45 +57,55 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     } else if(*s == '?') {
       r->self_closing = 1;
     } else if(*s == '!') {
-      if(buffer_skip_until(b, ">", 1) <= 0) return;
+      if(buffer_skip_until(b, ">", 1) <= 0)
+        return;
       continue;
     }
-    if((n = buffer_gettok_sa(b, &tag, " \t\r\v/>", 6)) < 0) return;
+    if((n = buffer_gettok_sa(b, &tag, " \t\r\v/>", 6)) < 0)
+      return;
     stralloc_nul(&tag);
     buffer_skipspace(b);
 
-    while(isalpha(*(s = buffer_peek(b)))) {
+    while((s = buffer_peek(b)) && isalpha(*s)) {
       char ch;
       int quoted = 0;
       const char* charset;
       stralloc_zero(&attr);
       stralloc_zero(&val);
-      if((n = buffer_gettok_sa(b, &attr, "=", 1)) < 0) break;
-      if(buffer_skipc(b) < 0) return;
+      if((n = buffer_gettok_sa(b, &attr, "=", 1)) < 0)
+        break;
+      if(buffer_skipc(b) < 0)
+        return;
 
       if(*buffer_peek(b) == '"') {
-        if(buffer_skipc(b) < 0) return;
+        if(buffer_skipc(b) < 0)
+          return;
         quoted = 1;
       }
-     charset = quoted ? "\"" : "/> \t\r\n\v";
-      if((n = buffer_gettok_sa(b, &val, charset, str_len(charset))) < 0) break;
-      if(quoted && buffer_skipc(b) < 0) return;
+      charset = quoted ? "\"" : "/> \t\r\n\v";
+      if((n = buffer_gettok_sa(b, &val, charset, str_len(charset))) < 0)
+        break;
+      if(quoted && buffer_skipc(b) < 0)
+        return;
       stralloc_nul(&attr);
       stralloc_nul(&val);
       hmap_set(&r->attrmap, attr.s, attr.len, val.s, val.len + 1);
-      if(!fn(r, XML_ATTRIBUTE, &attr, &val, NULL)) return;
+      if(!fn(r, XML_ATTRIBUTE, &attr, &val, NULL))
+        return;
       buffer_skipspace(b);
     }
     buffer_skipspace(b);
 
-    if(str_chr("/?", *buffer_peek(b)) < 2) {
+    if((s = buffer_peek(b)) && str_chr("/?", *s) < 2) {
       r->self_closing = 1;
       r->closing = 0;
       buffer_skipc(b);
     }
     buffer_skipspace(b);
-    if(*buffer_peek(b) == '>') buffer_skipc(b);
-    if(!fn(r, XML_ELEMENT, &tag, NULL, &r->attrmap)) return;
+    if((s = buffer_peek(b)) && *s == '>')
+      buffer_skipc(b);
+    if(!fn(r, XML_ELEMENT, &tag, NULL, &r->attrmap))
+      return;
 
     if(r->attrmap) {
       hmap_destroy(&r->attrmap);
@@ -102,11 +113,13 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     }
     hmap_init(XML_HMAP_BUCKETS, &r->attrmap);
     stralloc_zero(&tag);
-    if((n = buffer_gettok_sa(b, &tag, "<", 1)) < 0) return;
+    if((n = buffer_gettok_sa(b, &tag, "<", 1)) < 0)
+      return;
     s = buffer_peek(b);
 
     if(!is_whitespace(tag.s, tag.len)) {
-      if(!fn(r, XML_TEXT, NULL, &tag, NULL)) return;
+      if(!fn(r, XML_TEXT, NULL, &tag, NULL))
+        return;
     }
   }
 }

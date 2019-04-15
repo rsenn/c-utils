@@ -14,8 +14,18 @@ fmt_hex4(char* dest, uint16 w) {
 }
 
 size_t
-fmt_escapecharjson(char* dest, uint32 ch) {
+fmt_escapecharjson(char* dest, uint32 ch, char quote) {
   size_t n;
+
+  if(quote != '"' && quote != '\'')
+    quote = '"';
+
+  if(ch != quote) {
+    if(ch == '\'' || ch == '"') {
+      dest[0] = ch;
+      return 1;
+    }
+  }
   switch(ch) {
     case '\b': ch = 'b'; goto simple;
     case '\n': ch = 'n'; goto simple;

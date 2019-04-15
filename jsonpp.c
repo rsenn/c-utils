@@ -57,7 +57,7 @@ if(depth < 2) {
   buffer_puts(buffer_2, ")");
   buffer_putnlflush(buffer_2);
 }*/
-  p->newline = (!one_line  && valdepth > 1 && ((index > -1) || index == -2)) ? "\n" : "";
+  p->newline = "\n"; //(!one_line  && valdepth > 1 && ((index > -1) || index == -2)) ? "\n" : "";
   p->indent = indent_str.s;
   p->spacing = ((valdepth < 1 && index > 0) || (valdepth >= 1 &&  index > -1)) ? " " : "";
   p->quote = quote_char;

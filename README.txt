@@ -2,7 +2,6 @@
 
 
 
-
   Contignuous containers:
 
       lib/range.h          tuple {start,end,size} a pointer range with item size in bytes

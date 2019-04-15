@@ -57,7 +57,8 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
         stralloc_nul(name);
         node->name = name->s;
         name->s = NULL;
-        if(reader->parent) node->parent = reader->parent;
+        if(reader->parent)
+          node->parent = reader->parent;
 
         if(reader->self_closing) {
           *(reader->ptr) = node;

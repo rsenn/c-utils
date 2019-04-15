@@ -10,8 +10,10 @@ xml_delete(xmlnode* node) {
     } while((child = child->next));
   }
 
-  if(node->name) free(node->name);
-  if(node->attributes) hmap_destroy(&node->attributes);
+  if(node->name)
+    free(node->name);
+  if(node->attributes)
+    hmap_destroy(&node->attributes);
 
   if(node->parent) {
     xmlnode** nptr = &node->parent->children;

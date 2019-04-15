@@ -41,12 +41,19 @@ typedef struct {
   jsonval** loc;
 } jsonreader;
 
-typedef struct {
-  const char* indent;
-  const char* newline;
-  const char* spacing;
-  char quote;
+typedef union {
+   const char* ws[5];
+   struct {
+     const char *indent, *newline, *spacing, *separat, *quote;
+   };
 } jsonfmt;
+
+#define JSON_FMT_INDENT 0
+#define JSON_FMT_NEWLINE 1
+#define JSON_FMT_SPACING 2
+#define JSON_FMT_SEPARATOR 3
+#define JSON_FMT_QUOTE 4
+
 
 typedef int(json_read_callback_fn)(jsonreader* r, jsondata id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
@@ -67,7 +74,7 @@ int         json_parse_num(jsonval*, charbuf* b);
 int         json_parse_object(jsonval*, charbuf* b);
 int         json_parse_string(jsonval*, charbuf* b);
 
-void        json_recurse(jsonval*, void (*fn)(void), void* arg);
+void        json_recurse(jsonval*, void (*fn)(), void* arg);
 
 jsonval*    json_newnode(jsondata);
 
@@ -76,7 +83,7 @@ jsonval     json_get_property(jsonval, jsonval name);
 jsonval*    json_push(jsonval* arr, jsonval item);
 int64       json_length(jsonval);
 
-void        json_print(jsonval, buffer* b, void (*p)(void));
+void        json_print(jsonval, buffer* b, void (*p)());
 void        json_tosa(jsonval, stralloc* sa, void (*p)(jsonfmt*, jsonval* , int));
 
 double      json_todouble(jsonval);
