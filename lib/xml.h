@@ -166,6 +166,8 @@ xmlnode* xml_find_parent_pred_2(xmlnode*, int (*pred)(), const void* a0, const v
 xmlnode* xml_find_parent_pred_3(xmlnode*, int (*pred)(), const void* a0, const void* a1, const void* a2);
 xmlnode* xml_find_parent(xmlnode*, const char* tag);
 
+void xml_walk(xmlnode*, int (*)());
+
 #ifdef __cplusplus
 }
 #endif

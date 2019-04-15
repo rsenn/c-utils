@@ -186,6 +186,13 @@ usage(char* av0) {
 }
 
 int
+testwalk(xmlnode* node, xmlnode* root) {
+
+  xml_print(node, buffer_2);
+  return 0;
+}
+
+int
 main(int argc, char* argv[]) {
   buffer* input = buffer_0;
   xmlnode* doc;
@@ -238,7 +245,10 @@ main(int argc, char* argv[]) {
 
     buffer_skip_until(input, "\r\n", 2);
     doc = xml_read_tree(input);
+    xml_walk(doc, testwalk);
+
     buffer_close(input);
+
     jsonval root = xml_to_json(doc);
 
     json_print(root, buffer_1, pretty_printer);
