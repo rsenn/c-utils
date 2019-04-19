@@ -10,7 +10,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "../../api/lzma/index.h"
+#include "index.h"
 
 
 /// Maximum size of Index that has exactly one Record.

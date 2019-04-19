@@ -306,7 +306,7 @@ extern "C" {
 /* Advanced features */
 #include "lzma/stream_flags.h"
 #include "lzma/block.h"
-#include "../../api/lzma/index.h"
+#include "index.h"
 #include "../../api/lzma/index_hash.h"
 
 /* Hardware information */

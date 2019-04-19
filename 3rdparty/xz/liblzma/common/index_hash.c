@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "common.h"
-#include "../../api/lzma/index.h"
+#include "index.h"
 #include "../../check/check.h"
 
 
