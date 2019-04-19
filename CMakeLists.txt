@@ -43,7 +43,6 @@ endif(NOT HAVE_LSEEK64)
 #include(${CMAKE_SOURCE_DIR}/FindZlib.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
-#include(${CMAKE_SOURCE_DIR}/FindOpenSSL.cmake)
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
 
@@ -99,9 +98,13 @@ endif(NOT BZIP2_FOUND)
 ## Check OpenSSL
 ################################################################################
 pkg_search_module(OPENSSL openssl libssl)
-if(NOT OPENSSL_FOUND)
+if(OPENSSL_FOUND)
+  if(pkgcfg_lib_OPENSSL_ssl AND pkgcfg_lib_OPENSSL_crypto)
+    set(OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_ssl} ${pkgcfg_lib_OPENSSL_crypto})
+  endif(pkgcfg_lib_OPENSSL_ssl AND pkgcfg_lib_OPENSSL_crypto)
+else(OPENSSL_FOUND)
 include(FindOpenSSL)
-endif(NOT OPENSSL_FOUND)
+endif(OPENSSL_FOUND)
 if(OPENSSL_FOUND)
   add_definitions(-DHAVE_OPENSSL=1)
   include_directories(${OPENSSL_INCLUDE_DIR})
