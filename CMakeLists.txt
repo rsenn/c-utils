@@ -108,7 +108,7 @@ if(OPENSSL_FOUND)
 endif(OPENSSL_FOUND)
 
 #link_libraries(
-#  ${ZLIB_LIBRARIES}
+#  ${ZLIB_LIBRARY}
 #  ${BZIP2_LIBRARIES}
 #  ${LIBLZMA_LIBRARIES}
 #  ${OPENSSL_LIBRARIES}
@@ -209,7 +209,7 @@ endforeach()
 target_link_libraries(unix stralloc buffer ndelay)
 target_link_libraries(array safemult byte str)
 target_link_libraries(binfmt mmap byte)
-target_link_libraries(buffer byte fmt mmap open str ${ZLIB_LIBRARIES})
+target_link_libraries(buffer byte fmt mmap open str ${ZLIB_LIBRARY})
 target_link_libraries(cb str)
 target_link_libraries(cbmap str)
 target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI})
