@@ -153,6 +153,7 @@ if(NOT ZLIB_FOUND)
 endif()
 
 if(NOT ZLIB_LIBRARY)
+  message("Building zlib from 3rdparty/zlib")
   file(GLOB ZLIB_SOURCES 3rdparty/zlib/*.c)
   add_library(z ${ZLIB_SOURCES})
   set(ZLIB_LIBRARY_DEBUG z CACHE FILEPATH "" FORCE)
@@ -162,6 +163,7 @@ if(NOT ZLIB_LIBRARY)
 endif(NOT ZLIB_LIBRARY)
 
 if(NOT BZIP2_LIBRARY)
+  message("Building libbz2 from 3rdparty/bzip2")
   file(GLOB LIBBZ2_SOURCES 3rdparty/bzip2/*.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
   set(BZIP2_LIBRARY_DEBUG bz2 CACHE FILEPATH "" FORCE)
@@ -171,6 +173,7 @@ if(NOT BZIP2_LIBRARY)
 endif(NOT BZIP2_LIBRARY)
 
 if(NOT LIBLZMA_LIBRARY)
+  message("Building liblzma from 3rdparty/xz")
   file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
   add_library(lzma ${LIBLZMA_SOURCES})
   set_target_properties(lzma PROPERTIES
