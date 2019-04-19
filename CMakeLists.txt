@@ -52,7 +52,7 @@ foreach(CompilerFlag ${CompilerFlags})
   unset(FLAG)
   string(REPLACE "/MD" "/MT" FLAG "${${CompilerFlag}}")
   #string(REPLACE "/MTd" "/MT" FLAG "${FLAG}")
-  if("${CompilerFlag}" STREQUAL "CMAKE_C_FLAGS_DEBUG")
+  if(${CompilerFlag} STREQUAL "CMAKE_C_FLAGS_DEBUG")
     set(FLAG "${FLAG} -DDEBUG=1")
   endif()
   string(REPLACE " " ";" FLAG "${FLAG}")
@@ -154,11 +154,14 @@ endif(WIN32 OR MSVC)
 if(NOT ZLIB_FOUND)
   file(GLOB ZLIB_SOURCES 3rdparty/zlib/*.c)
   add_library(z ${ZLIB_SOURCES})
+  set(ZLIB_LIBRARY z)
+
 endif(NOT ZLIB_FOUND)
 
 if(NOT LIBBZ2_FOUND)
   file(GLOB LIBBZ2_SOURCES 3rdparty/bzip2/*.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
+  set(BZIP2_LIBRARIES bz2)
 endif(NOT LIBBZ2_FOUND)
 
 if(NOT LIBLZMA_FOUND)
@@ -167,6 +170,7 @@ if(NOT LIBLZMA_FOUND)
   set_target_properties(lzma PROPERTIES
     COMPILE_DEFINITIONS "-DHAVE_CONFIG_H=1"
   )
+  set(LIBLZMA_LIBRARIES lzma)
 endif(NOT LIBLZMA_FOUND)
 
 set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
