@@ -71,13 +71,6 @@ pkg_search_module(LIBLZMA liblzma lzma)
 if(NOT LIBLZMA_FOUND)
 include(FindLibLZMA)
 endif(NOT LIBLZMA_FOUND)
-if(LIBLZMA_FOUND)
-  #link_libraries(${LIBLZMA_LIBRARIES})
-  include_directories(${LIBLZMA_INCLUDE_DIRS})
-  add_definitions(-DHAVE_LIBLZMA=1 -DLZMA_API_STATIC=1)
-else(LIBLZMA_FOUND)
-  add_definitions(-DHAVE_LIBLZMA=0)
-endif(LIBLZMA_FOUND)
 
 ################################################################################
 ## Check Zlib
@@ -91,12 +84,6 @@ if(pkgcfg_lib_ZLIB_z)
   set(ZLIB_LIBRARY_DEBUG "${pkgcfg_lib_ZLIB_z}")
 endif(pkgcfg_lib_ZLIB_z)
 set(ZLIB_LIBRARY "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib library")
-message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
-if(ZLIB_FOUND)
-  #link_libraries(${ZLIB_LIBRARIES})
-  include_directories(${ZLIB_INCLUDE_DIRS})
-  add_definitions(-DHAVE_ZLIB=1)
-endif(ZLIB_FOUND)
 
 ################################################################################
 ## Check BZip2
@@ -105,12 +92,6 @@ pkg_search_module(BZIP2 libbz2 bzip2)
 if(NOT BZIP2_FOUND)
   include(FindBZip2)
 endif(NOT BZIP2_FOUND)
-if(LIBBZ2_FOUND OR BZIP2_FOUND)
-  add_definitions(-DHAVE_LIBBZ2=1)
-  include_directories(${BZIP2_INCLUDE_DIRS})
-else(LIBBZ2_FOUND OR BZIP2_FOUND)
-  add_definitions(-DHAVE_LIBBZ2=0)
-endif(LIBBZ2_FOUND OR BZIP2_FOUND)
 
 ################################################################################
 ## Check OpenSSL
@@ -177,6 +158,28 @@ if(NOT LIBLZMA_FOUND)
   )
   set(LIBLZMA_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api)
 endif(NOT LIBLZMA_FOUND)
+
+message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
+if(ZLIB_FOUND)
+  #link_libraries(${ZLIB_LIBRARIES})
+  include_directories(${ZLIB_INCLUDE_DIRS})
+  add_definitions(-DHAVE_ZLIB=1)
+endif(ZLIB_FOUND)
+
+if(LIBBZ2_FOUND OR BZIP2_FOUND)
+  add_definitions(-DHAVE_LIBBZ2=1)
+  include_directories(${BZIP2_INCLUDE_DIRS})
+else(LIBBZ2_FOUND OR BZIP2_FOUND)
+  add_definitions(-DHAVE_LIBBZ2=0)
+endif(LIBBZ2_FOUND OR BZIP2_FOUND)
+
+if(LIBLZMA_FOUND)
+  #link_libraries(${LIBLZMA_LIBRARIES})
+  include_directories(${LIBLZMA_INCLUDE_DIRS})
+  add_definitions(-DHAVE_LIBLZMA=1 -DLZMA_API_STATIC=1)
+else(LIBLZMA_FOUND)
+  add_definitions(-DHAVE_LIBLZMA=0)
+endif(LIBLZMA_FOUND)
 
 set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
 
