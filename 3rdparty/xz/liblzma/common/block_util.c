@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "common.h"
-#include "../../api/lzma/index.h"
+#include "index.h"
 
 
 extern LZMA_API(lzma_ret)
