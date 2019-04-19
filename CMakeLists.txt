@@ -155,7 +155,7 @@ if(NOT LIBLZMA_FOUND)
   file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
   add_library(lzma ${LIBLZMA_SOURCES})
   set_target_properties(lzma PROPERTIES
-    COMPILE_DEFINITIONS "-DHAVE_CONFIG_H=1"
+    COMPILE_DEFINITIONS "HAVE_CONFIG_H=1"
   )
   set(LIBLZMA_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api)
 endif(NOT LIBLZMA_FOUND)
