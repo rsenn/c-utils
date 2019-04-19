@@ -962,14 +962,17 @@ $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
 ifneq ($(HAVE_ZLIB),1)
+  BUILD_ZLIB = 1
   BUILD_3RD_PARTY += z
 $(info Building libz from 3rdparty/zlib)
 endif
 ifneq ($(HAVE_LIBBZ2),1)
+  BUILD_LIBBZ2 = 1
   BUILD_3RD_PARTY += bz2
 $(info Building libbz2 from 3rdparty/bzip2)
 endif
 ifneq ($(HAVE_LIBLZMA),1)
+  BUILD_LIBLZMA = 1
   BUILD_3RD_PARTY += lzma
 $(info Building liblzma from 3rdparty/xz)
 endif
@@ -1083,10 +1086,15 @@ $(call lib-target,range)
 $(call lib-target,safemult)
 $(call lib-target,ucs)
 
-
+ifeq ($(BUILD_ZLIB),1)
 $(call lib-target,libz,,3rdparty/zlib/*.c)
+endif
+ifeq ($(BUILD_LIBBZ2),1)
 $(call lib-target,libbz2,,3rdparty/bzip2/*.c)
+endif
+ifeq ($(BUILD_LIBLZMA),1)
 $(call lib-target,liblzma,,3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c,CPPFLAGS += -I3rdparty/xz -I3rdparty/xz/check -I3rdparty/xz/common -I3rdparty/xz/delta -I3rdparty/xz/lz -I3rdparty/xz/lzma -I3rdparty/xz/simple -I3rdparty/xz/liblzma/common -I3rdparty/xz/liblzma/lzma -DHAVE_CONFIG_H=1)
+endif
 
 $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(call add-library, stralloc buffer str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
