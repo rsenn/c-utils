@@ -495,12 +495,14 @@ main(int argc, char* argv[]) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "hmilpa", opts, &index);
+    c = getopt_long(argc, argv, "?hmilpa", opts, &index);
     if(c == -1) break;
     if(c == 0) continue;
 
     switch(c) {
-    case 'h': usage(argv[0]); return 0;
+    case '?':
+    case 'h':
+      usage(argv[0]); return 0;
     case PRINT_VERSION:
     case PRINT_CFLAGS:
     case PRINT_LIBS:
@@ -511,12 +513,13 @@ main(int argc, char* argv[]) {
       if(!cmd.code) cmd.code = LIST_ALL;
       break;
     default: 
-		buffer_puts(buffer_1, "ERROR: Invalid argument -");
+		buffer_puts(buffer_1, "WARNING: Invalid argument -");
 		buffer_putc(buffer_1, isprint(c) ? c : '?');
 		buffer_putm_internal(buffer_1, " '", optarg ? optarg : "", "'", 0);
         buffer_putnlflush(buffer_1);
-		usage(argv[0]);
-		return 1;
+        break;
+		/*usage(argv[0]);
+		return 1;*/
     }
   }
 
