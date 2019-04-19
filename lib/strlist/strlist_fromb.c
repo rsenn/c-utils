@@ -5,7 +5,6 @@
 void
 strlist_fromb(strlist* sl, const char* x, size_t n, const char* delim) {
   size_t len = str_len(delim);
-  stralloc_zero(&sl->sa);
 
   if(x == NULL)
     return;

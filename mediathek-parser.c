@@ -69,6 +69,7 @@ read_line(char* s, size_t len, strlist* fields) {
     p[4] = ',';
   }
 
+  strlist_zero(fields);
   strlist_fromb(fields, p, end - p, "\", \"");
 
   for(; p < end; ++p) {

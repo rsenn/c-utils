@@ -304,7 +304,7 @@ main(int argc, char* argv[]) {
       stralloc_init(&sa);
       debug_sa("@", &arg);
 
-      if(openreadclose(arg.s, &sa, 4096) > 0) {
+      if(openreadclose(arg.s+1, &sa, 4096) > 0) {
         exist = 1;
       }
       debug_int("exist", exist);
