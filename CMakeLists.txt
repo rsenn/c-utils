@@ -151,9 +151,27 @@ if(WIN32 OR MSVC)
   endif(USE_WIDECHAR)
 endif(WIN32 OR MSVC)
 
-set(LIBSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
+if(NOT ZLIB_FOUND)
+  file(GLOB ZLIB_SOURCES 3rdparty/zlib/*.c)
+  add_library(z ${ZLIB_SOURCES})
+endif(NOT ZLIB_FOUND)
 
-foreach(ARCHIVE ${LIBSUBDIRS})
+if(NOT LIBBZ2_FOUND)
+  file(GLOB LIBBZ2_SOURCES 3rdparty/bzip2/*.c)
+  add_library(bz2 ${LIBBZ2_SOURCES})
+endif(NOT LIBBZ2_FOUND)
+
+if(NOT LIBLZMA_FOUND)
+  file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
+  add_library(lzma ${LIBLZMA_SOURCES})
+  set_target_properties(lzma PROPERTIES
+    COMPILE_DEFINITIONS "-DHAVE_CONFIG_H=1"
+  )
+endif(NOT LIBLZMA_FOUND)
+
+set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
+
+foreach(ARCHIVE ${MODSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
   file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
   if(NOT MODSOURCES)
@@ -207,11 +225,11 @@ target_link_libraries(ndelay socket)
 
 
 set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )
-file(GLOB LIBHEADERS lib/*.h)
+file(GLOB MODHEADERS lib/*.h)
 function(add_program PROG)
   unset(INCLUDES)
   foreach(DEP ${ARGN})
-  list(FIND LIBSUBDIRS "${DEP}" I)
+  list(FIND MODSUBDIRS "${DEP}" I)
   if(I GREATER -1)
   list(APPEND INCLUDES "lib/${DEP}.h")
   endif(I GREATER -1)
@@ -222,10 +240,11 @@ function(add_program PROG)
   install(TARGETS ${PROG} DESTINATION bin)
 endfunction(add_program PROG)
 
+
+
 if(NOT LIBLZMA_LIBRARIES)
   set(LIBLZMA_LIBRARIES "${LIBLZMA_LIBRARY}")
 endif(NOT LIBLZMA_LIBRARIES)
-
 
 set(COMPRESSION_LIBRARIES
   ${LIBLZMA_LIBRARIES}
@@ -282,7 +301,7 @@ add_program(ar-wrap errmsg env buffer path dir strarray strlist stralloc fmt)
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
 add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
 add_program(tcping map unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
-add_program(crc32 errmsg buffer mmap open ${ZLIB_LIBRARY})
+add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
 
 add_program(jsonpp json errmsg)

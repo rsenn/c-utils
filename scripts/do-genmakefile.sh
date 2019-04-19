@@ -19,9 +19,11 @@ FILENAMES="NMakefile Makefile GNUmakefile build.bat build.ninja"
 COMPILERS="gcc clang tcc zapcc"
 
 set -f
-set -- lib *.c tests
+set -- lib *.c 3rdparty tests
 
-set -- genmakefile --minsizerel "$@" -lzlib -lbz2 -llzma 
+#set -- genmakefile --minsizerel "$@" -lzlib -lbz2 -llzma 
+set -- "$@" -DHAVE_{ZLIB,LIBBZ2,LIBLZMA}=1
+set -- genmakefile --minsizerel "$@" 
 
 : ${CMD=echo}
 
@@ -33,8 +35,8 @@ for C in $COMPILERS; do
     FN=`get_num $N $FILENAMES`
 
    GENMK="$CMD $* -t $C -m $MAKE -o build/$C/$FN"
-   echo "GENMK='$GENMK'" 1>&2
-   (set +f
+   #echo "GENMK='$GENMK'" 1>&2
+   (set -f
    IFS=" "
    eval "$GENMK")
   done
