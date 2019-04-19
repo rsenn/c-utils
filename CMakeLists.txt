@@ -96,6 +96,9 @@ if(ZLIB_FOUND)
   #link_libraries(${ZLIB_LIBRARIES})
   include_directories(${ZLIB_INCLUDE_DIRS})
   add_definitions(-DHAVE_ZLIB=1)
+else(ZLIB_FOUND)
+  unset(ZLIB_LIBRARY CACHE)
+  unset(ZLIB_LIBRARY)
 endif(ZLIB_FOUND)
 
 ################################################################################
@@ -151,8 +154,9 @@ if(WIN32 OR MSVC)
   endif(USE_WIDECHAR)
 endif(WIN32 OR MSVC)
 
-if(${ZLIB_LIBRARY} MATCHES NOTFOUND)
-  set(ZLIB_FOUND )
+if(ZLIB_LIBRARY MATCHES NOTFOUND)
+  set(ZLIB_FOUND NO)
+  unset(ZLIB_LIBRARY)
 endif()
 
 if(NOT ZLIB_FOUND)
@@ -259,7 +263,7 @@ set(COMPRESSION_LIBRARIES
   ${ZLIB_LIBRARY}
  ${BZIP2_LIBRARIES})
 
-if(NOT ${OPENSSL_LIBRARIES} MATCHES NOTFOUND)
+if(OPENSSL_CRYPTO_LIBRARY AND OPENSSL_SSL_LIBRARY)
   set(CRYPTO_LIBRARIES
     ${OPENSSL_LIBRARIES}
   )
