@@ -78,7 +78,7 @@ size_t byte_trimr(char* x, size_t n, const char* trimchars, unsigned int trimcha
 
 static inline char*
 byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen) {
-  x = byte_triml(x, n, trimchars,trimcharslen);
+  x = (char*)byte_triml(x, n, trimchars,trimcharslen);
   *n = byte_trimr(x, *n, trimchars,trimcharslen);
   return x;
 }
