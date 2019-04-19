@@ -306,6 +306,11 @@ main(int argc, char* argv[]) {
 
       if(openreadclose(arg.s+1, &sa, 4096) > 0) {
         exist = 1;
+
+        debug_int("sa", &sa);
+        
+        strlist_fromb(&args, sa.s, sa.len, " \r\n\t");
+        continue;
       }
       debug_int("exist", exist);
     }

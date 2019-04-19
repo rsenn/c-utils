@@ -123,6 +123,10 @@ static linklib_fmt* format_linklib_fn;
 static int inst_bins, inst_libs;
 static int cygming;
 
+#ifndef _WIN32
+#define _mkdir mkdir
+#endif
+
 int
 mkdir_sa(const stralloc* dir, int mode) {
   stralloc sa;
