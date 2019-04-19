@@ -260,7 +260,7 @@ main(int argc, char* argv[]) {
 
   stralloc_copys(&base, path_basename(prog.s));
 
-debug_sa("base", &base);
+  debug_sa("base", &base);
 
   base_file(".real");
   if(!stralloc_endb(&real, ext, str_len(ext)))
@@ -302,11 +302,11 @@ debug_sa("base", &base);
       long exist = 0;
       stralloc sa;
       stralloc_init(&sa);
-       debug_sa("@", &arg);
+      debug_sa("@", &arg);
 
-       if(openreadclose(arg.s, &sa, 4096) > 0) {
-exist = 1;
-       }
+      if(openreadclose(arg.s, &sa, 4096) > 0) {
+        exist = 1;
+      }
       debug_int("exist", exist);
     }
 
