@@ -204,7 +204,7 @@ target_link_libraries(elf byte str range mmap uint64 uint32)
 target_link_libraries(fmt byte str uint64 uint32)
 target_link_libraries(gpio mmap)
 target_link_libraries(hmap str)
-target_link_libraries(http dns errmsg byte io scan socket str ${OPENSSL_LIBRARIES})
+target_link_libraries(http dns errmsg byte io scan socket str ${CRYPTO_LIBRARIES})
 target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
 target_link_libraries(json charbuf hmap scan)
 target_link_libraries(map str)
@@ -255,6 +255,11 @@ set(COMPRESSION_LIBRARIES
   ${ZLIB_LIBRARY}
  ${BZIP2_LIBRARIES})
 
+if(NOT ${OPENSSL_LIBRARIES} STRMATCH NOTFOUND)
+  set(CRYPTO_LIBRARIES
+    ${OPENSSL_LIBRARIES}
+  )
+endif()
 
 add_program(binfmttest binfmt)
 add_program(bsdiffcat buffer array safemult byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
@@ -274,7 +279,7 @@ add_program(elflist buffer errmsg unix elf mmap str)
 add_program(elfwrsec buffer elf mmap)
 add_program(genmakefile strarray stralloc buffer rdir errmsg hmap mmap path scan slist case str unix  strlist ${LIBSHLWAPI})
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
-add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK})
+add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES})
 add_program(impgen buffer byte mmap open pe uint16 uint32)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r stralloc buffer unix dir array fmt open str uint64 ${LIBADVAPI32})
