@@ -784,8 +784,8 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #endif
 #
 
-
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc32 cmake-run)
+#LIBRARIES = $(patsubst %,$(BUILDDIR)lib%$(M64_).a,z bz2 lzma)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc cmake-run)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
@@ -961,6 +961,7 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
+LIBRARIES = $(patsubst %,$(BUILDDIR)lib%.a,z bz2 lzma)
 MODULES += $(patsubst %,$(BUILDDIR)%.a,alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textcode textbuf uint16 uint32 uint64 var vartab xml ucs alloc)
 
 
@@ -970,8 +971,8 @@ EXAMPLES := $(BUILDDIR)array$(EXEEXT) $(BUILDDIR)b64encode$(EXEEXT) $(BUILDDIR)b
 $(info BUILDDIR: $(BUILDDIR))
 
 
-all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS) $(EXAMPLES)
-	$(info all: $(notdir builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(PROGRAMS)))
+all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(LIBRARIES) $(PROGRAMS) $(EXAMPLES)
+	$(info all: $(notdir builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(LIBRARIES) $(PROGRAMS)))
 
 #$(BUILDDIR)tryerrno.c:
 #	echo "int main() {\
@@ -1068,6 +1069,11 @@ $(call lib-target,unix)
 $(call lib-target,range)
 $(call lib-target,safemult)
 $(call lib-target,ucs)
+
+
+$(call lib-target,libz,,3rdparty/zlib/*.c)
+$(call lib-target,libbz2,,3rdparty/bzip2/*.c)
+$(call lib-target,liblzma,,3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c,CPPFLAGS += -I3rdparty/xz -I3rdparty/xz/check -I3rdparty/xz/common -I3rdparty/xz/delta -I3rdparty/xz/lz -I3rdparty/xz/lzma -I3rdparty/xz/simple -I3rdparty/xz/liblzma/common -I3rdparty/xz/liblzma/lzma -DHAVE_CONFIG_H=1)
 
 $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(call add-library, stralloc buffer str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -1500,8 +1506,8 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)crc32$(M64_)$(EXEEXT): LIBS += -lz
-$(BUILDDIR)crc32$(M64_)$(EXEEXT): $(BUILDDIR)crc32.o $(call add-library,errmsg buffer mmap open fmt scan str byte)
+$(BUILDDIR)crc$(M64_)$(EXEEXT): LIBS += -lz
+$(BUILDDIR)crc$(M64_)$(EXEEXT): $(BUILDDIR)crc.o $(call add-library,errmsg buffer mmap open fmt scan str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

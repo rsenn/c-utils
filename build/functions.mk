@@ -8,14 +8,15 @@ target-tmpl := $(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3
 
 
 define lib-tmpl =
-$$(BUILDDIR)$(1).a: $$(call add-sources,lib/$(1)/*.c $(2))
+$(if $(4),$$(BUILDDIR)$(1).a: $(4))
+$$(BUILDDIR)$(1).a: $$(call add-sources,$(if $(3),$(3),lib/$(1)/*.c) $(2))
 	$$(AR) rcs $$@ $$^
 $$(BUILDDIR)lib$(1).so: LDFLAGS += -shared -Wl,-rpath=$$(BUILDDIR:%/=%)
-$$(BUILDDIR)lib$(1).so: $$(call add-sources,lib/$(1)/*.c $(2),.pic.o)
+$$(BUILDDIR)lib$(1).so: $$(call add-sources,$(if $(3),$(3),lib/$(1)/*.c) $(2),.pic.o)
 	$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(EXTRA_LDFLAGS) $$(CFLAGS) $$(CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)
 endef
 
-lib-target = $(eval $(call lib-tmpl,$(1),$(2)))
+lib-target = $(eval $(call lib-tmpl,$(1),$(2),$(3),$(4)))
 
 define cmds-try-compile =
 set -e;
