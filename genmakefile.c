@@ -131,7 +131,7 @@ mkdir_sa(const stralloc* dir, int mode) {
   if(stralloc_endb(&sa, &pathsep_make, 1))
     sa.len -= 1;
   stralloc_nul(&sa);
-  return mkdir(sa.s, mode);
+  return _mkdir(sa.s, mode);
 }
 
 int
