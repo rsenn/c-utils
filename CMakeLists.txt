@@ -69,7 +69,7 @@ endforeach()
 pkg_search_module(LIBLZMA liblzma lzma)
 if(LIBLZMA_FOUND)
   if(pkgcfg_lib_LIBLZMA_lzma)
-    set(LIBLZMA_LIBRARIES ${pkgcfg_lib_LIBLZMA_lzma})
+    set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma})
   endif(pkgcfg_lib_LIBLZMA_lzma)
 else(LIBLZMA_FOUND)
 include(FindLibLZMA)
@@ -120,7 +120,7 @@ endif(OPENSSL_FOUND)
 #link_libraries(
 #  ${ZLIB_LIBRARY}
 #  ${BZIP2_LIBRARIES}
-#  ${LIBLZMA_LIBRARIES}
+#  ${LIBLZMA_LIBRARY}
 #  ${OPENSSL_LIBRARIES}
 #  )
 add_definitions(-Dinline=__inline)
@@ -152,6 +152,8 @@ endif()
 if(NOT ZLIB_FOUND OR NOT ZLIB_LIBRARY)
   file(GLOB ZLIB_SOURCES 3rdparty/zlib/*.c)
   add_library(z ${ZLIB_SOURCES})
+  set(ZLIB_LIBRARY_DEBUG z)
+  set(ZLIB_LIBRARY_RELEASE z)
   set(ZLIB_LIBRARY z)
   set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/zlib)
 endif(NOT ZLIB_FOUND OR NOT ZLIB_LIBRARY)
@@ -159,6 +161,8 @@ endif(NOT ZLIB_FOUND OR NOT ZLIB_LIBRARY)
 if(NOT LIBBZ2_FOUND)
   file(GLOB LIBBZ2_SOURCES 3rdparty/bzip2/*.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
+  set(BZIP2_LIBRARY_DEBUG bz2)
+  set(BZIP2_LIBRARY_RELEASE bz2)
   set(BZIP2_LIBRARIES bz2)
   set(BZIP2_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/3rdparty/bzip2)
 endif(NOT LIBBZ2_FOUND)
@@ -169,7 +173,8 @@ if(NOT LIBLZMA_FOUND)
   set_target_properties(lzma PROPERTIES
     COMPILE_DEFINITIONS "HAVE_CONFIG_H=1"
   )
-  set(LIBLZMA_LIBRARIES lzma)
+  set(LIBLZMA_LIBRARY lzma)
+  set(LIBLZMA_LIBRARY lzma)
   set(LIBLZMA_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api)
 endif(NOT LIBLZMA_FOUND)
 
@@ -190,14 +195,14 @@ else(LIBBZ2_FOUND OR BZIP2_LIBRARIES)
   add_definitions(-DHAVE_LIBBZ2=0)
 endif(LIBBZ2_FOUND OR BZIP2_LIBRARIES)
 
-message("LIBLZMA_LIBRARIES: ${LIBLZMA_LIBRARIES} LIBLZMA_FOUND: ${LIBLZMA_FOUND}")
-if(LIBLZMA_FOUND OR LIBLZMA_LIBRARIES)
-  #link_libraries(${LIBLZMA_LIBRARIES})
+message("LIBLZMA_LIBRARY: ${LIBLZMA_LIBRARY} LIBLZMA_FOUND: ${LIBLZMA_FOUND}")
+if(LIBLZMA_FOUND OR LIBLZMA_LIBRARY)
+  #link_libraries(${LIBLZMA_LIBRARY})
   include_directories(${LIBLZMA_INCLUDE_DIRS})
   add_definitions(-DHAVE_LIBLZMA=1 -DLZMA_API_STATIC=1)
-else(LIBLZMA_FOUND OR LIBLZMA_LIBRARIES)
+else(LIBLZMA_FOUND OR LIBLZMA_LIBRARY)
   add_definitions(-DHAVE_LIBLZMA=0)
-endif(LIBLZMA_FOUND OR LIBLZMA_LIBRARIES)
+endif(LIBLZMA_FOUND OR LIBLZMA_LIBRARY)
 
 set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
 
@@ -272,12 +277,12 @@ endfunction(add_program PROG)
 
 
 
-if(NOT LIBLZMA_LIBRARIES)
-  set(LIBLZMA_LIBRARIES "${LIBLZMA_LIBRARY}")
-endif(NOT LIBLZMA_LIBRARIES)
+if(NOT LIBLZMA_LIBRARY)
+  set(LIBLZMA_LIBRARY "${LIBLZMA_LIBRARY}")
+endif(NOT LIBLZMA_LIBRARY)
 
 set(COMPRESSION_LIBRARIES
-  ${LIBLZMA_LIBRARIES}
+  ${LIBLZMA_LIBRARY}
   ${ZLIB_LIBRARY}
   ${BZIP2_LIBRARIES}
 )
@@ -309,7 +314,7 @@ add_program(impgen buffer byte mmap open pe uint16 uint32)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r stralloc buffer unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
-add_program(mediathek-list errmsg stralloc buffer byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARIES} ${CRYPTO_LIBRARIES})
+add_program(mediathek-list errmsg stralloc buffer byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES})
 add_program(mediathek-parser ucs errmsg stralloc buffer array byte open str unix strlist)
 add_program(ntldd stralloc buffer pe strlist byte path str unix uint64)
 add_program(opensearch-dump xml stralloc buffer)
