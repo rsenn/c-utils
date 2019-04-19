@@ -13,10 +13,13 @@ get_num() {
 }
 
 BUILD_TOOLS="nmake make gmake batch ninja"
-EXTENSIONS="nmake mk bat ninja"
+EXTENSIONS="nmake mk gmake bat ninja"
 FILENAMES="NMakefile Makefile GNUmakefile build.bat build.ninja"
 
-COMPILERS="gcc clang tcc zapcc"
+: ${BUILDDIR="build/\$C"}
+
+: ${COMPILERS="gcc clang tcc zapcc"}
+: ${FILENAME="\$FN"}
 
 set -f
 set -- lib *.c 3rdparty tests
@@ -34,7 +37,7 @@ for C in $COMPILERS; do
     EXT=`get_num $N $EXTENSIONS`
     FN=`get_num $N $FILENAMES`
 
-   GENMK="$CMD $* -t $C -m $MAKE -o build/$C/$FN"
+   GENMK="$CMD $* -t $C -m $MAKE -o ${BUILDDIR:+$BUILDDIR/}$FILENAME"
    #echo "GENMK='$GENMK'" 1>&2
    (set -f
    IFS=" "

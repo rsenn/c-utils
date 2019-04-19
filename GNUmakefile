@@ -961,7 +961,20 @@ $(info CC: $(CC))
 $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
-LIBRARIES = $(patsubst %,$(BUILDDIR)lib%.a,z bz2 lzma)
+ifneq ($(HAVE_ZLIB),1)
+  BUILD_3RD_PARTY += z
+$(info Building libz from 3rdparty/zlib)
+endif
+ifneq ($(HAVE_LIBBZ2),1)
+  BUILD_3RD_PARTY += bz2
+$(info Building libbz2 from 3rdparty/bzip2)
+endif
+ifneq ($(HAVE_LIBLZMA),1)
+  BUILD_3RD_PARTY += lzma
+$(info Building liblzma from 3rdparty/xz)
+endif
+
+LIBRARIES = $(patsubst %,$(BUILDDIR)lib%.a,$(BUILD_3RD_PARTY))
 MODULES += $(patsubst %,$(BUILDDIR)%.a,alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textcode textbuf uint16 uint32 uint64 var vartab xml ucs alloc)
 
 
