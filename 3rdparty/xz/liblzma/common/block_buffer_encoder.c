@@ -14,7 +14,7 @@
 #include "block_encoder.h"
 #include "filter_encoder.h"
 #include "../../lzma/lzma2_encoder.h"
-#include "check.h"
+#include "../../check/check.h"
 
 
 /// Estimate the maximum size of the Block Header and Check fields for

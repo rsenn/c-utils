@@ -20,7 +20,7 @@
 	extern const uint32_t lzma_lz_hash_table[256];
 #	define hash_table lzma_lz_hash_table
 #else
-#	include "check.h"
+#	include "../check/check.h"
 #	define hash_table lzma_crc32_table[0]
 #endif
 
