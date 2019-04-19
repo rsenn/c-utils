@@ -10,6 +10,7 @@
 #include "lib/byte.h"
 #include "lib/mmap.h"
 #include "lib/scan.h"
+#include "lib/open.h"
 
 #if WINDOWS_NATIVE
 #define EXEEXT ".exe"
@@ -157,6 +158,27 @@ get_prog_name(void) {
 }
 
 int
+write_log(const strlist* argv, const char* file) {
+  stralloc sa;
+  fd_t fd;
+
+  if((fd = open_append(file)) != -1) {
+    buffer b;
+    buffer_write_fd(&b, fd);
+
+    stralloc_init(&sa);
+    strlist_join(argv, &sa, ' ');
+
+    buffer_putsa(&b, &sa);
+    buffer_putnlflush(&b);
+    buffer_close(&b);
+
+    return 1;
+  }
+  return 0;
+}
+
+int
 main(int argc, char* argv[]) {
   size_t p;
   int i;
@@ -166,6 +188,7 @@ main(int argc, char* argv[]) {
   char** av;
   int ret;
   const char* pathstr;
+  const char* logfile = getenv("LOGFILE");
 
   errmsg_iam(argv[0]);
 
@@ -228,6 +251,9 @@ main(int argc, char* argv[]) {
     errmsg_warnsys("doesn't exist: ", realcmd.s, " ('", sa.s, "''): ", 0);
     //    return 127;
   }
+
+  if(logfile) 
+    write_log(&args, logfile);
 
 #if 0
   buffer_puts(buffer_1, "cmd: '");
