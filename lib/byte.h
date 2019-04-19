@@ -72,13 +72,15 @@ size_t byte_scan(const char* in, size_t in_len, stralloc* out, size_t (*scan_fun
 void byte_replace(char* x, size_t n, char before, char after);
 size_t byte_ccopy(void* dst, size_t count, const void* src, char c);
 
+/* read only trim-left */
 const char* byte_triml(const char* x, size_t* len, const char* charset, unsigned int charsetlen);
+
 
 size_t byte_trimr(char* x, size_t n, const char* trimchars, unsigned int trimcharslen);
 
 static inline char*
 byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen) {
-  x = byte_triml(x, n, trimchars,trimcharslen);
+  x = (char*)byte_triml(x, n, trimchars,trimcharslen);
   *n = byte_trimr(x, *n, trimchars,trimcharslen);
   return x;
 }
