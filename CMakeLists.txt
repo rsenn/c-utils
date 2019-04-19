@@ -151,14 +151,6 @@ if(NOT ZLIB_FOUND OR NOT EXISTS "${ZLIB_LIBRARY}")
   unset(ZLIB_FOUND CACHE)
   unset(ZLIB_LIBRARY CACHE)
 endif()
-if(NOT BZIP2_FOUND OR NOT EXISTS "${BZIP2_LIBRARY}")
-  unset(BZIP2_FOUND CACHE)
-  unset(BZIP2_LIBRARY CACHE)
-endif()
-if(NOT LIBLZMA_FOUND OR NOT EXISTS "${LIBLZMA_LIBRARY}")
-  unset(LIBLZMA_FOUND CACHE)
-  unset(LIBLZMA_LIBRARY CACHE)
-endif()
 
 if(NOT ZLIB_LIBRARY)
   message("Building zlib from 3rdparty/zlib")
@@ -358,7 +350,7 @@ add_program(tcping map unix dns case io array socket ndelay errmsg taia tai buff
 add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
 
-add_program(jsonpp json errmsg)
+add_program(jsonpp json errmsg unix)
 add_program(xml2json json xml errmsg unix)
 add_program(xml2moon xml textcode errmsg)
 
