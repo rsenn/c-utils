@@ -151,20 +151,24 @@ if(WIN32 OR MSVC)
   endif(USE_WIDECHAR)
 endif(WIN32 OR MSVC)
 
-if(NOT ZLIB_FOUND OR ${ZLIB_LIBRARY} STRMATCH NOTFOUND)
+if(${ZLIB_LIBRARY} STRMATCH NOTFOUND)
+  set(ZLIB_FOUND )
+endif()
+
+if(NOT ZLIB_FOUND)
   file(GLOB ZLIB_SOURCES 3rdparty/zlib/*.c)
   add_library(z ${ZLIB_SOURCES})
   set(ZLIB_LIBRARY z)
 
 endif(NOT ZLIB_FOUND)
 
-if(NOT LIBBZ2_FOUND OR ${BZIP2_LIBRARIES} STRMATCH NOTFOUND)
+if(NOT LIBBZ2_FOUND)
   file(GLOB LIBBZ2_SOURCES 3rdparty/bzip2/*.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
   set(BZIP2_LIBRARIES bz2)
 endif(NOT LIBBZ2_FOUND)
 
-if(NOT LIBLZMA_FOUND OR ${LIBLZMA_LIBRARIES} STRMATCH NOTFOUND)
+if(NOT LIBLZMA_FOUND)
   file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
   add_library(lzma ${LIBLZMA_SOURCES})
   set_target_properties(lzma PROPERTIES
