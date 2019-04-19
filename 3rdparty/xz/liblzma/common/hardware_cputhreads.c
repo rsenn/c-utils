@@ -12,7 +12,7 @@
 
 #include "common.h"
 
-#include "tuklib_cpucores.h"
+#include "../../common/tuklib_cpucores.h"
 
 
 extern LZMA_API(uint32_t)

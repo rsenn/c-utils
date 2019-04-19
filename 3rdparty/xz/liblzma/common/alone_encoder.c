@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "common.h"
-#include "lzma_encoder.h"
+#include "../../lzma/lzma_encoder.h"
 
 
 #define ALONE_HEADER_SIZE (1 + 4 + 8)

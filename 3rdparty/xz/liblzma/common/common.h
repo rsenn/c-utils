@@ -13,9 +13,9 @@
 #ifndef LZMA_COMMON_H
 #define LZMA_COMMON_H
 
-#include "sysdefs.h"
-#include "mythread.h"
-#include "tuklib_integer.h"
+#include "../../common/sysdefs.h"
+#include "../../common/mythread.h"
+#include "../../common/tuklib_integer.h"
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 #	ifdef DLL_EXPORT
@@ -32,7 +32,7 @@
 
 #define LZMA_API(type) LZMA_API_EXPORT type LZMA_API_CALL
 
-#include "lzma.h"
+#include "../api/lzma.h"
 
 // These allow helping the compiler in some often-executed branches, whose
 // result is almost always the same.

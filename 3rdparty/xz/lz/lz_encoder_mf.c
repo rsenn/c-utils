@@ -13,7 +13,7 @@
 
 #include "lz_encoder.h"
 #include "lz_encoder_hash.h"
-#include "memcmplen.h"
+#include "../liblzma/common/memcmplen.h"
 
 
 /// \brief      Find matches starting from the current byte

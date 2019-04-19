@@ -12,8 +12,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "lzma2_encoder.h"
-#include "lzma_encoder_private.h"
-#include "fastpos.h"
+#include "../liblzma/lzma/lzma_encoder_private.h"
+#include "../liblzma/lzma/fastpos.h"
 
 
 /////////////

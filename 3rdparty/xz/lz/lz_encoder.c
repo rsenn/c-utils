@@ -20,7 +20,7 @@
 #	include "lz_encoder_hash_table.h"
 #endif
 
-#include "memcmplen.h"
+#include "../liblzma/common/memcmplen.h"
 
 
 typedef struct {

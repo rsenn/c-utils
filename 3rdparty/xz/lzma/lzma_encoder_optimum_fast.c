@@ -9,8 +9,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "lzma_encoder_private.h"
-#include "memcmplen.h"
+#include "../liblzma/lzma/lzma_encoder_private.h"
+#include "../liblzma/common/memcmplen.h"
 
 
 #define change_pair(small_dist, big_dist) \

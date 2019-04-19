@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "private.h"
-#include "tuklib_integer.h"
+#include "../common/tuklib_integer.h"
 
 
 /// Information about a .xz file

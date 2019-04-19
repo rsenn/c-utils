@@ -11,8 +11,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "alone_decoder.h"
-#include "lzma_decoder.h"
-#include "lz_decoder.h"
+#include "../../lzma/lzma_decoder.h"
+#include "../../lz/lz_decoder.h"
 
 
 typedef struct {

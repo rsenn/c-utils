@@ -13,7 +13,7 @@
 #ifndef LZMA_SIMPLE_CODER_H
 #define LZMA_SIMPLE_CODER_H
 
-#include "common.h"
+#include "../liblzma/common/common.h"
 
 
 extern lzma_ret lzma_simple_x86_encoder_init(lzma_next_coder *next,

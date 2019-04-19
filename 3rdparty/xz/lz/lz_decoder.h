@@ -14,7 +14,7 @@
 #ifndef LZMA_LZ_DECODER_H
 #define LZMA_LZ_DECODER_H
 
-#include "common.h"
+#include "../liblzma/common/common.h"
 
 
 typedef struct {

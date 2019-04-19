@@ -12,7 +12,7 @@
 
 #include "common.h"
 
-#include "tuklib_physmem.h"
+#include "../../common/tuklib_physmem.h"
 
 
 extern LZMA_API(uint64_t)

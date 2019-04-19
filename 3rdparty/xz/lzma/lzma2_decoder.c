@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "lzma2_decoder.h"
-#include "lz_decoder.h"
+#include "../lz/lz_decoder.h"
 #include "lzma_decoder.h"
 
 

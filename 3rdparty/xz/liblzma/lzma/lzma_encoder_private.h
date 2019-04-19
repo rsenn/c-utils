@@ -14,10 +14,10 @@
 #ifndef LZMA_LZMA_ENCODER_PRIVATE_H
 #define LZMA_LZMA_ENCODER_PRIVATE_H
 
-#include "lz_encoder.h"
-#include "range_encoder.h"
+#include "../../lz/lz_encoder.h"
+#include "../../rangecoder/range_encoder.h"
 #include "lzma_common.h"
-#include "lzma_encoder.h"
+#include "../../lzma/lzma_encoder.h"
 
 
 // Macro to compare if the first two bytes in two buffers differ. This is

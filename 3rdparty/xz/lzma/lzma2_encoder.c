@@ -11,9 +11,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "lz_encoder.h"
+#include "../lz/lz_encoder.h"
 #include "lzma_encoder.h"
-#include "fastpos.h"
+#include "../liblzma/lzma/fastpos.h"
 #include "lzma2_encoder.h"
 
 

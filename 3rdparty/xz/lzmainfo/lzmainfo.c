@@ -10,15 +10,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "sysdefs.h"
+#include "../common/sysdefs.h"
 #include <stdio.h>
 #include <errno.h>
 
-#include "lzma.h"
+#include "../liblzma/api/lzma.h"
 #include "getopt.h"
-#include "tuklib_gettext.h"
-#include "tuklib_progname.h"
-#include "tuklib_exit.h"
+#include "../common/tuklib_gettext.h"
+#include "../common/tuklib_progname.h"
+#include "../common/tuklib_exit.h"
 
 #ifdef TUKLIB_DOSLIKE
 #	include <fcntl.h>

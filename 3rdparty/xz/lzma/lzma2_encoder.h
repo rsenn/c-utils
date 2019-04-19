@@ -14,7 +14,7 @@
 #ifndef LZMA_LZMA2_ENCODER_H
 #define LZMA_LZMA2_ENCODER_H
 
-#include "common.h"
+#include "../liblzma/common/common.h"
 
 
 /// Maximum number of bytes of actual data per chunk (no headers)

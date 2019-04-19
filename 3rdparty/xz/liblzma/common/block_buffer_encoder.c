@@ -13,7 +13,7 @@
 #include "block_buffer_encoder.h"
 #include "block_encoder.h"
 #include "filter_encoder.h"
-#include "lzma2_encoder.h"
+#include "../../lzma/lzma2_encoder.h"
 #include "check.h"
 
 

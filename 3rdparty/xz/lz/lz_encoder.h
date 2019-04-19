@@ -14,7 +14,7 @@
 #ifndef LZMA_LZ_ENCODER_H
 #define LZMA_LZ_ENCODER_H
 
-#include "common.h"
+#include "../liblzma/common/common.h"
 
 
 /// A table of these is used by the LZ-based encoder to hold

@@ -37,7 +37,7 @@ static bool warn_fchown;
 #	endif
 #endif
 
-#include "tuklib_open_stdxxx.h"
+#include "../common/tuklib_open_stdxxx.h"
 
 #ifndef O_BINARY
 #	define O_BINARY 0

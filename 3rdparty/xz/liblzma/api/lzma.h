@@ -292,7 +292,7 @@ extern "C" {
 #include "lzma/version.h"
 #include "lzma/base.h"
 #include "lzma/vli.h"
-#include "lzma/check.h"
+#include "../../api/lzma/check.h"
 
 /* Filters */
 #include "lzma/filter.h"
@@ -306,8 +306,8 @@ extern "C" {
 /* Advanced features */
 #include "lzma/stream_flags.h"
 #include "lzma/block.h"
-#include "lzma/index.h"
-#include "lzma/index_hash.h"
+#include "../../api/lzma/index.h"
+#include "../../api/lzma/index_hash.h"
 
 /* Hardware information */
 #include "lzma/hardware.h"

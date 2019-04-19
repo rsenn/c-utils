@@ -9,9 +9,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "lzma_encoder_private.h"
-#include "fastpos.h"
-#include "memcmplen.h"
+#include "../liblzma/lzma/lzma_encoder_private.h"
+#include "../liblzma/lzma/fastpos.h"
+#include "../liblzma/common/memcmplen.h"
 
 
 ////////////

@@ -10,10 +10,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "sysdefs.h"
-#include "mythread.h"
+#include "../common/sysdefs.h"
+#include "../common/mythread.h"
 
-#include "lzma.h"
+#include "../liblzma/api/lzma.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -23,10 +23,10 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "tuklib_gettext.h"
-#include "tuklib_progname.h"
-#include "tuklib_exit.h"
-#include "tuklib_mbstr.h"
+#include "../common/tuklib_gettext.h"
+#include "../common/tuklib_progname.h"
+#include "../common/tuklib_exit.h"
+#include "../common/tuklib_mbstr.h"
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #	define WIN32_LEAN_AND_MEAN

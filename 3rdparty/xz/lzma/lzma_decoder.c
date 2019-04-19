@@ -11,10 +11,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "lz_decoder.h"
-#include "lzma_common.h"
+#include "../lz/lz_decoder.h"
+#include "../liblzma/lzma/lzma_common.h"
 #include "lzma_decoder.h"
-#include "range_decoder.h"
+#include "../rangecoder/range_decoder.h"
 
 // The macros unroll loops with switch statements.
 // Silence warnings about missing fall-through comments.

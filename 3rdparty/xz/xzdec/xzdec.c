@@ -10,8 +10,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "sysdefs.h"
-#include "lzma.h"
+#include "../common/sysdefs.h"
+#include "../liblzma/api/lzma.h"
 
 #include <stdarg.h>
 #include <errno.h>
@@ -19,8 +19,8 @@
 #include <unistd.h>
 
 #include "getopt.h"
-#include "tuklib_progname.h"
-#include "tuklib_exit.h"
+#include "../common/tuklib_progname.h"
+#include "../common/tuklib_exit.h"
 
 #ifdef TUKLIB_DOSLIKE
 #	include <fcntl.h>
