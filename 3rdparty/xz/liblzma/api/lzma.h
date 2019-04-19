@@ -95,7 +95,7 @@
 		 *     the few rarely-needed liblzma functions that allocate
 		 *     memory and expect the caller to free it using free().
 		 */
-#		if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER < 1800
+#		if defined(_WIN32) && (defined(_MSC_VER) && _MSC_VER < 1800) || defined(__BORLANDC__)
 			typedef unsigned __int8 uint8_t;
 			typedef unsigned __int32 uint32_t;
 			typedef unsigned __int64 uint64_t;
@@ -292,7 +292,7 @@ extern "C" {
 #include "lzma/version.h"
 #include "lzma/base.h"
 #include "lzma/vli.h"
-#include "../../api/lzma/check.h"
+#include "lzma/check.h"
 
 /* Filters */
 #include "lzma/filter.h"
@@ -306,8 +306,8 @@ extern "C" {
 /* Advanced features */
 #include "lzma/stream_flags.h"
 #include "lzma/block.h"
-#include "index.h"
-#include "../../api/lzma/index_hash.h"
+#include "lzma/index.h"
+#include "lzma/index_hash.h"
 
 /* Hardware information */
 #include "lzma/hardware.h"
