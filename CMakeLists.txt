@@ -82,7 +82,9 @@ endif(NOT ZLIB_FOUND)
 if(pkgcfg_lib_ZLIB_z)
   set(ZLIB_LIBRARY_RELEASE "${pkgcfg_lib_ZLIB_z}")
   set(ZLIB_LIBRARY_DEBUG "${pkgcfg_lib_ZLIB_z}")
+  set(ZLIB_FOUND TRUE)
 endif(pkgcfg_lib_ZLIB_z)
+
 set(ZLIB_LIBRARY "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib library")
 
 ################################################################################
@@ -137,12 +139,12 @@ if(ZLIB_LIBRARY MATCHES NOTFOUND)
   unset(ZLIB_LIBRARY)
 endif()
 
-if(NOT ZLIB_FOUND)
+if(NOT ZLIB_FOUND OR NOT ZLIB_LIBRARY)
   file(GLOB ZLIB_SOURCES 3rdparty/zlib/*.c)
   add_library(z ${ZLIB_SOURCES})
   set(ZLIB_LIBRARY z)
   set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/zlib)
-endif(NOT ZLIB_FOUND)
+endif(NOT ZLIB_FOUND OR NOT ZLIB_LIBRARY)
 
 if(NOT LIBBZ2_FOUND)
   file(GLOB LIBBZ2_SOURCES 3rdparty/bzip2/*.c)
@@ -267,7 +269,8 @@ endif(NOT LIBLZMA_LIBRARIES)
 set(COMPRESSION_LIBRARIES
   ${LIBLZMA_LIBRARIES}
   ${ZLIB_LIBRARY}
- ${BZIP2_LIBRARIES})
+  ${BZIP2_LIBRARIES}
+)
 
 if(OPENSSL_LIBRARIES)
   set(CRYPTO_LIBRARIES
