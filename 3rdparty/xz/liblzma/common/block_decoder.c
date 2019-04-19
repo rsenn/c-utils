@@ -12,7 +12,7 @@
 
 #include "block_decoder.h"
 #include "filter_decoder.h"
-#include "check.h"
+#include "../../check/check.h"
 
 
 typedef struct {

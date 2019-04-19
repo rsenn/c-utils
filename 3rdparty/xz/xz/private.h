@@ -54,7 +54,7 @@
 #include "coder.h"
 #include "message.h"
 #include "args.h"
-#include "hardware.h"
+#include "../liblzma/api/lzma/hardware.h"
 #include "file_io.h"
 #include "options.h"
 #include "signals.h"

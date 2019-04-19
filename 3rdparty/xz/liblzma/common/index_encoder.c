@@ -11,8 +11,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "index_encoder.h"
-#include "index.h"
-#include "check.h"
+#include "../../api/lzma/index.h"
+#include "../../check/check.h"
 
 
 typedef struct {

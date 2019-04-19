@@ -21,7 +21,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "check.h"
+#include "../api/lzma/check.h"
 
 // Rotate a uint32_t. GCC can optimize this to a rotate instruction
 // at least on x86.
