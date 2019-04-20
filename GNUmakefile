@@ -964,16 +964,23 @@ $(info CROSS_COMPILE: $(CROSS_COMPILE))
 ifneq ($(HAVE_ZLIB),1)
   BUILD_ZLIB = 1
   BUILD_3RD_PARTY += z
+  LIBZ = $(BUILDDIR)libz.a
+  HAVE_ZLIB = 1
 $(info Building libz from 3rdparty/zlib)
 endif
 ifneq ($(HAVE_LIBBZ2),1)
   BUILD_LIBBZ2 = 1
   BUILD_3RD_PARTY += bz2
+  LIBBZ2 = $(BUILDDIR)libbz2.a
+  HAVE_LIBBZ2 = 1
 $(info Building libbz2 from 3rdparty/bzip2)
 endif
 ifneq ($(HAVE_LIBLZMA),1)
   BUILD_LIBLZMA = 1
   BUILD_3RD_PARTY += lzma
+  LIBLZMA = $(BUILDDIR)liblzma.a
+  HAVE_LIBLZMA = 1
+$(info Building libz from 3rdparty/zlib)
 $(info Building liblzma from 3rdparty/xz)
 endif
 
@@ -1217,15 +1224,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-ifeq ($(HAVE_ZLIB),1)
-$(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += -lz
-endif
-ifeq ($(HAVE_LIBLZMA),1)
-$(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += -llzma
-endif
-ifeq ($(HAVE_LIBBZ2),1)
-$(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += -lbz2
-endif
+$(BUILDDIR)buffertest$(M64_)$(EXEEXT): LIBS += $(LIBZ) $(LIBLZMA) $(LIBBZ2)
 $(BUILDDIR)buffertest$(M64_)$(EXEEXT): $(BUILDDIR)buffertest.o $(call add-library, array safemult charbuf textbuf hmap stralloc buffer mmap open byte scan fmt fmt str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
