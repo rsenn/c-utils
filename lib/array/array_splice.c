@@ -1,6 +1,7 @@
 #include "../array.h"
 #include "../byte.h"
 #include "../uint64.h"
+#include "../safemult.h"
 
 int64
 array_splice(array* a, uint64 membersize, uint64 start, uint64 del, uint64 insert, const void* x) {

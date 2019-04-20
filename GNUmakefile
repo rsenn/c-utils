@@ -1090,7 +1090,7 @@ $(call lib-target,errmsg)
 $(call lib-target,dns)
 $(call lib-target,unix)
 $(call lib-target,range)
-$(call lib-target,safemult)
+$(call lib-target,safemult,lib/safemult/*.c)
 $(call lib-target,ucs)
 
 ifeq ($(BUILD_ZLIB),1)
@@ -1499,7 +1499,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
-$(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): $(BUILDDIR)ar-wrap.o $(call add-library,errmsg strarray slist path dir env strlist hmap stralloc buffer mmap unix open scan fmt str byte array safemult)
+$(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): $(BUILDDIR)ar-wrap.o $(call add-library,errmsg slist path dir env strlist hmap stralloc buffer mmap unix open scan fmt byte strarray str array safemult)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

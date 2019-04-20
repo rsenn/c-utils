@@ -1,6 +1,7 @@
 #include "../strarray.h"
 #include "../array.h"
 #include "../byte.h"
+#include "../safemult.h"
 #include "../uint64.h"
 
 int64
@@ -8,7 +9,7 @@ strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char
   char** s = &strarray_at(a, start);
   uint64 i, len, newlen;
 
-  len = strarray_length(a);
+  len = strarray_size(a);
   
   if(start + del > len)
     del = len - start;

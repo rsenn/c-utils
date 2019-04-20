@@ -33,7 +33,6 @@ static const char* ext = "";
 static strlist path, pathext;
 static stralloc prog, real, base, cwd;
 
-#ifdef DEBUG
 void
 debug_strarray(const char* name, strarray* stra) {
   stralloc sa;
@@ -46,6 +45,7 @@ debug_strarray(const char* name, strarray* stra) {
   stralloc_free(&sa);
 }
 
+#ifdef DEBUG
 /**
  * @brief debug_sa
  * @param name
@@ -307,7 +307,7 @@ main(int argc, char* argv[]) {
     size_t pos;
     stralloc arg;
     stralloc_init(&arg);
-    stralloc_copys(&arg, strarray_get(&v, i);
+    stralloc_copys(&arg, strarray_at(&v, i));
     stralloc_nul(&arg);
 
     if(stralloc_starts(&arg, "@")) {
