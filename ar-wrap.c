@@ -370,7 +370,7 @@ main(int argc, char* argv[]) {
         stralloc dir;
         stralloc_init(&dir);
         path_dirname(arg.s, &dir);
-        strlist_push_unique(&dirs, &dir);
+        strlist_push_unique_sa(&dirs, &dir);
         stralloc_free(&dir);
 
         stralloc_prepends(&arg, "+-");
