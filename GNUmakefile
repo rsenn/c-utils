@@ -985,7 +985,7 @@ $(info Building liblzma from 3rdparty/xz)
 endif
 
 LIBRARIES = $(patsubst %,$(BUILDDIR)lib%.a,$(BUILD_3RD_PARTY))
-MODULES += $(patsubst %,$(BUILDDIR)%.a,alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textcode textbuf uint16 uint32 uint64 var vartab xml ucs alloc)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textcode textbuf uint16 uint32 uint64 var vartab wait xml ucs alloc)
 
 
 #EXAMPLES := array safemult$(EXEEXT) b64encode$(EXEEXT) buffer_mmap$(EXEEXT) cas$(EXEEXT) cdbget2$(EXEEXT) cescape$(EXEEXT) client$(EXEEXT) dllink$(EXEEXT) fdpassing$(EXEEXT) fmt$(EXEEXT) fmt_iso8691$(EXEEXT) fmt_longlong$(EXEEXT) httpd$(EXEEXT) io$(EXEEXT) io2$(EXEEXT) io3$(EXEEXT) io4$(EXEEXT) io5$(EXEEXT) iob$(EXEEXT) iom$(EXEEXT) json$(EXEEXT) marshal$(EXEEXT) mult$(EXEEXT) netstring$(EXEEXT) protobuf$(EXEEXT) proxy$(EXEEXT) range$(EXEEXT) readhttp$(EXEEXT) scan$(EXEEXT) server$(EXEEXT) stralloc_buffer$(EXEEXT) textcode$(EXEEXT) uint$(EXEEXT) unurl$(EXEEXT) urlencode$(EXEEXT) uudecode$(EXEEXT) vd$(EXEEXT)
@@ -1084,6 +1084,7 @@ $(call lib-target,uint32)
 $(call lib-target,uint64)
 $(call lib-target,var)
 $(call lib-target,vartab)
+$(call lib-target,wait)
 #$(call lib-target,wait)
 $(call lib-target,xml)
 $(call lib-target,socket,lib/socket/winsock2errno.c lib/socket/winsock_init.c)
@@ -1500,7 +1501,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
-$(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): $(BUILDDIR)ar-wrap.o $(call add-library,process errmsg slist path dir env strlist hmap stralloc buffer mmap unix open scan fmt byte strarray str array safemult)
+$(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): $(BUILDDIR)ar-wrap.o $(call add-library,process wait errmsg slist path dir env strlist hmap stralloc buffer mmap unix open scan fmt byte strarray str array safemult)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
