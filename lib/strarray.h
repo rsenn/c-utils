@@ -72,6 +72,9 @@ int strarray_each(strarray* arr, void (*pred)(char**));
 
 int strarray_glob(strarray* arr, const char* pattern);
 
+int64 strarray_splice(strarray*, uint64 start, uint64 del, uint64 insert, const char** x);
+
+
 #ifdef __cplusplus
 }
 #endif

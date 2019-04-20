@@ -1093,7 +1093,7 @@ ifeq ($(BUILD_LIBBZ2),1)
 $(call lib-target,libbz2,,3rdparty/bzip2/*.c)
 endif
 ifeq ($(BUILD_LIBLZMA),1)
-$(call lib-target,liblzma,,3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c,CPPFLAGS += -I3rdparty/xz -I3rdparty/xz/check -I3rdparty/xz/common -I3rdparty/xz/delta -I3rdparty/xz/lz -I3rdparty/xz/lzma -I3rdparty/xz/simple -I3rdparty/xz/liblzma/common -I3rdparty/xz/liblzma/lzma -DHAVE_CONFIG_H=1)
+$(call lib-target,liblzma,,3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c,CPPFLAGS += -I3rdparty/xz -DHAVE_CONFIG_H=1 -DMYTHREAD_POSIX=1)
 endif
 
 $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(call add-library, stralloc buffer str byte)

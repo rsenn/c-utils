@@ -67,6 +67,9 @@ array_iterator_dereference(void** it) {
   return *it;
 }
 
+int64 array_splice(array*, uint64 membersize, uint64 start, uint64 del, uint64 insert, const void* x);
+
+
 #ifdef __cplusplus
 }
 #endif
