@@ -255,6 +255,7 @@ main(int argc, char* argv[]) {
 
   strlist_init(&opts, '\0');
   strlist_init(&objs, '\0');
+  strlist_init(&dirs, '\0');
 
   stralloc_init(&arg);
   stralloc_init(&lib);
