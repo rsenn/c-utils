@@ -355,9 +355,6 @@ main(int argc, char* argv[]) {
       }
     }
 
-    if(stralloc_equals(&arg, "/u"))
-      continue;
-
     pos = stralloc_findb(&arg, "/", 1);
 
     if(pos > 0 && pos < arg.len)
@@ -370,6 +367,11 @@ main(int argc, char* argv[]) {
 
       if(is_obj)
         stralloc_prepends(&arg, "+-");
+
+      if(stralloc_starts(&arg, "/")) {
+        if(arg.len == 2)
+          continue;
+      }
 
       strlist_push_sa(is_obj ? &objs : &opts, &arg);
     }
