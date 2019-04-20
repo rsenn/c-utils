@@ -335,7 +335,10 @@ main(int argc, char* argv[]) {
           it += scan_whitenskip(it, end - it);
           if(it == end) break;
           n = scan_nonwhitenskip(it, end - it);
+          it = byte_trim(it, &n, "\"'", 2);
+
           it[n] = '\0';
+          
           array_catb(&a, &it, sizeof(char*));
           it += n + 1;
         }
