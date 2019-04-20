@@ -351,7 +351,7 @@ main(int argc, char* argv[]) {
 
         strarray_splice(&v, i, 1, array_length(&a, sizeof(char*)), array_start(&a));
 
-        debug_strarray("new args", &v);
+        //debug_strarray("new args", &v);
 
         --i;
         continue;
@@ -392,9 +392,9 @@ main(int argc, char* argv[]) {
   strlist_cat(&opts, &objs);
 
   stralloc_init(&sa);
-  strlist_joins(&dirs, &sa, " , ");
+  //strlist_joins(&dirs, &sa, " , ");
+  strarray_joins(&v, &sa, "'\n'");
   stralloc_nul(&sa);
-  // strarray_joins(&v, &sa, "'\n'");
   //
 
 
@@ -407,21 +407,21 @@ main(int argc, char* argv[]) {
   }
 
 #if DEBUG
-  buffer_puts(buffer_1, "dirs: ");
-  buffer_putsa(buffer_1, &sa);
-  buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "cmd: '");
-  buffer_putsa(buffer_1, &cmd);
-  buffer_puts(buffer_1, ext);
-  buffer_puts(buffer_1, "'");
-  buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "realcmd: '");
-  buffer_putsa(buffer_1, &realcmd);
-  buffer_puts(buffer_1, "'");
-  buffer_putnlflush(buffer_1);
+//  buffer_puts(buffer_1, "dirs: ");
+//  buffer_putsa(buffer_1, &sa);
+//  buffer_putnlflush(buffer_1);
+//  buffer_puts(buffer_1, "cmd: '");
+//  buffer_putsa(buffer_1, &cmd);
+//  buffer_puts(buffer_1, ext);
+//  buffer_puts(buffer_1, "'");
+//  buffer_putnlflush(buffer_1);
+//  buffer_puts(buffer_1, "realcmd: '");
+//  buffer_putsa(buffer_1, &realcmd);
+//  buffer_puts(buffer_1, "'");
+//  buffer_putnlflush(buffer_1);
 #endif
 #ifdef DEBUG
-  buffer_puts(buffer_2, "execvp: '");
+  buffer_puts(buffer_2, "cmd: '");
   buffer_putsa(buffer_2, &sa);
   buffer_puts(buffer_2, "'");
   buffer_putnlflush(buffer_2);
