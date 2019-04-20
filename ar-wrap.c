@@ -378,10 +378,8 @@ main(int argc, char* argv[]) {
         stralloc_prepends(&arg, "+-");
       }
 
-      if(stralloc_starts(&arg, "/")) {
-        if(arg.len == 2)
-          continue;
-      }
+      if(stralloc_equals(&arg, "/a") || stralloc_equals(&arg, "/u"))
+        continue;
 
       strlist_push_sa(is_obj ? &objs : &opts, &arg);
     }
