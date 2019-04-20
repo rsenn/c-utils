@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-int process_create(const char* filename, const char* argv);
+int process_create(const char* filename, const char* argv[], fd_t std[3], const char* cwd);
 
 #ifdef __cplusplus
 }

@@ -426,7 +426,8 @@ main(int argc, char* argv[]) {
 #endif
 
   av = strlist_to_argv(&opts);
-  ret = execvp(realcmd.s, av);
+  ret = process_create(realcmd.s, av, 0, 0);
+  //ret = execvp(realcmd.s, av);
 
   if(ret == -1) {
     errmsg_warnsys("execvp:", 0);
