@@ -434,5 +434,9 @@ main(int argc, char* argv[]) {
     return 1;
   }
 
+  if(wait_nointr(status) == ret) {
+    errmsg_warnsys("child terminated:", 0);
+  }
+
   return 0;
 }
