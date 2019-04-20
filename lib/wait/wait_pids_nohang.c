@@ -10,7 +10,7 @@ int
 wait_pids_nohang(int const* pids, unsigned int len, int* wstat) {
 #if WINDOWS_NATIVE
   DWORD exitcode = 0;
-  HANDLE *handles = LocalAlloc(sizeof(HANDLE) * len);
+  HANDLE *handles = LocalAlloc(LHND, sizeof(HANDLE) * len);
   unsigned int i;
   int ret;
 
@@ -28,13 +28,12 @@ wait_pids_nohang(int const* pids, unsigned int len, int* wstat) {
     for(i = 0; i < len; i++) {
       if(ret == WAIT_OBJECT_0 + i) {
         GetExitCodeProcess(handles[i], &exitcode);
+        CloseHandle(handles[i]);
         if(exitcode == STILL_ACTIVE)
-          return -1;
+          i = -2;
         break;
       }
-      CloseHandle(handles[i]);
     }
-
     if(i < len) {
       *wstat = exitcode;
       return 1 + i;
