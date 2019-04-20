@@ -24,17 +24,18 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/crypto/include)
 link_libraries(dl)
 
 exec_program(perl "${CMAKE_CURRENT_SOURCE_DIR}" ARGS util/mkbuildinf.pl OUTPUT_VARIABLE MKBUILDINF_H)
+
+foreach(H crypto/include/internal/bn_conf.h crypto/include/internal/dso_conf.h include/openssl/opensslconf.h)
+
 exec_program(perl "${CMAKE_CURRENT_SOURCE_DIR}" ARGS
   -I.
   -Mconfigdata
   util/dofile.pl
   -oMakefile 
-  crypto/include/internal/bn_conf.h.in
-  OUTPUT_VARIABLE BN_CONF_H)
-
-message("BN_CONF_H: ${BN_CONF_H}")
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/crypto/include/internal/bn_conf.h "${BN_CONF_H}\n\n")
-
+  "${H}.in"
+  OUTPUT_VARIABLE TEMPF)
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/${H}" "${TEMPF}\n\n")
+endforeach()
 
 
 file(WRITE ${CMAKE_BINARY_DIR}/buildinf.h "${MKBUILDINF_H}\n\n")
