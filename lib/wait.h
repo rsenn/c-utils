@@ -1,6 +1,8 @@
 #ifndef WAIT_H
 #define WAIT_H
 
+#include "uint64.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -13,6 +15,8 @@ int wait_nointr(int* wstat);
 int wait_pids_nohang(int const* pids, unsigned int len, int* wstat);
 int wait_pid_nohang(int pid, int* wstat);
 unsigned int wait_reap(void);
+
+int wait_pid(int64 pid, int* wstat);
 
 #ifdef __cplusplus
 }
