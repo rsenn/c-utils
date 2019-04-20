@@ -240,6 +240,28 @@ get_prog_name(stralloc* prog) {
 }
 
 int
+write_log(const strlist* argv, const char* file) {
+  stralloc sa;
+  fd_t fd;
+
+  if((fd = open_append(file)) != -1) {
+    buffer b;
+    buffer_write_fd(&b, fd);
+
+    stralloc_init(&sa);
+    strlist_join(argv, &sa, ' ');
+
+    buffer_putsa(&b, &sa);
+    buffer_putnlflush(&b);
+    buffer_close(&b);
+
+    return 1;
+  }
+  return 0;
+}
+
+
+int
 main(int argc, char* argv[]) {
   size_t p;
   int i,st;
@@ -249,6 +271,8 @@ main(int argc, char* argv[]) {
   char** av;
   int ret;
   const char* pathstr;
+  const char* logfile = getenv("LOGFILE");
+  static int tlib = 0;
 
   errmsg_iam(argv[0]);
 
@@ -278,6 +302,10 @@ main(int argc, char* argv[]) {
 #endif
 
   stralloc_copys(&base, path_basename(prog.s));
+  stralloc_lower(&base);
+
+  if(stralloc_starts(&base, "tlib"))
+    tlib = 1;
 
   debug_sa("base", &base);
 
@@ -375,11 +403,14 @@ main(int argc, char* argv[]) {
         strlist_push_unique_sa(&dirs, &dir);
         stralloc_free(&dir);
 
-        stralloc_prepends(&arg, "+-");
+        if(tlib)
+          stralloc_prepends(&arg, "+-");
       }
 
-      if(stralloc_equals(&arg, "/a") || stralloc_equals(&arg, "/u"))
-        continue;
+      if(tlib) {
+        if(stralloc_equals(&arg, "/a") || stralloc_equals(&arg, "/u"))
+          continue;
+      }
 
       strlist_push_sa(is_obj ? &objs : &opts, &arg);
     }
@@ -424,6 +455,8 @@ main(int argc, char* argv[]) {
   buffer_puts(buffer_2, "'");
   buffer_putnlflush(buffer_2);
 #endif
+  if(logfile) 
+    write_log(&opts, logfile);
 
   av = strlist_to_argv(&opts);
 
