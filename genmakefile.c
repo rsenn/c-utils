@@ -1097,8 +1097,8 @@ void
 include_dir(const char* dir) {
   stralloc arg;
   stralloc_init(&arg);
-  stralloc_copys(&arg, "-I");
-  stralloc_cats(&arg, dir);
+  path_relative(dir, builddir.sa.s, &arg);
+  stralloc_prepends(&arg, "-I");
 
   push_var_sa("CPPFLAGS", &arg);
 }
