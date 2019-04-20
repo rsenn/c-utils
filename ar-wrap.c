@@ -241,9 +241,9 @@ int
 main(int argc, char* argv[]) {
   size_t p;
   int i;
-  stralloc sa;
+  stralloc sa, lib, arg;
   strarray v;
-  strlist args;
+  strlist opts, objs;
   char** av;
   int ret;
   const char* pathstr;
@@ -253,7 +253,11 @@ main(int argc, char* argv[]) {
   path_getcwd(&cwd);
   debug_sa("cwd", &cwd);
 
-  strlist_init(&args, '\0');
+  strlist_init(&opts, '\0');
+  strlist_init(&objs, '\0');
+
+  stralloc_init(&arg);
+  stralloc_init(&lib);
 
   get_prog_name(&prog);
   if(stralloc_endb(&prog, EXEEXT, str_len(EXEEXT)))
@@ -292,7 +296,7 @@ main(int argc, char* argv[]) {
     stralloc_cat(&specs, &real);
     stralloc_nul(&specs);
 
-    strlist_unshift(&args, specs.s);
+    strlist_unshift(&opts, specs.s);
   }
 
   if(path_exists(base_file(".env"))) {
@@ -308,8 +312,6 @@ main(int argc, char* argv[]) {
 
   for(i = 1; i < strarray_size(&v); ++i) {
     size_t pos;
-    stralloc arg;
-    stralloc_init(&arg);
     stralloc_copys(&arg, strarray_at(&v, i));
     stralloc_nul(&arg);
 
@@ -319,12 +321,12 @@ main(int argc, char* argv[]) {
       stralloc_init(&sa);
       debug_sa("@", &arg);
 
-      if(openreadclose(arg.s+1, &sa, 4096) > 0) {
-        stralloc_nul(&arg); 
+      if(openreadclose(arg.s + 1, &sa, 4096) > 0) {
+        stralloc_nul(&arg);
         char *it, *end;
         array a;
         array_init(&a);
-        
+
         it = stralloc_begin(&sa);
         end = stralloc_end(&sa);
 
@@ -333,12 +335,13 @@ main(int argc, char* argv[]) {
         while(it < end) {
           size_t n;
           it += scan_whitenskip(it, end - it);
-          if(it == end) break;
+          if(it == end)
+            break;
           n = scan_nonwhitenskip(it, end - it);
           it = byte_trim(it, &n, "\"'", 2);
 
           it[n] = '\0';
-          
+
           array_catb(&a, &it, sizeof(char*));
           it += n + 1;
         }
@@ -352,18 +355,30 @@ main(int argc, char* argv[]) {
       }
     }
 
+    if(stralloc_equals(&arg, "/u"))
+      continue;
+
     pos = stralloc_findb(&arg, "/", 1);
 
     if(pos > 0 && pos < arg.len)
       stralloc_replacec(&arg, '/', '\\');
 
-    strlist_push_sa(&args, &arg);
+    if(stralloc_endb(&arg, ".a", 2) || stralloc_endb(&arg, ".lib", 4)) {
+      stralloc_copy(&lib, &arg);
+    } else {
+      int is_obj = stralloc_endb(&arg, ".o", 2) || stralloc_endb(&arg, ".obj", 4);
+
+      stralloc_prepends(&arg, "+-");
+      strlist_push_sa(is_obj ? &objs : &opts, &arg);
+    }
   }
 
-  strlist_unshift(&args, path_basename(realcmd.s));
+  strlist_unshift(&opts, path_basename(realcmd.s));
+  strlist_push_sa(&opts, &lib);
+  strlist_cat(&opts, &objs);
 
   stralloc_init(&sa);
-  strlist_joins(&args, &sa, "' '");
+  strlist_joins(&opts, &sa, "' '");
   stralloc_nul(&sa);
   // strarray_joins(&v, &sa, "'\n'");
 
@@ -393,7 +408,7 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  av = strlist_to_argv(&args);
+  av = strlist_to_argv(&opts);
   ret = execvp(realcmd.s, av);
 
   if(ret == -1) {
