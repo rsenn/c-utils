@@ -17,14 +17,14 @@ wait_pid(int pid, int* wstat) {
   int i;
   int ret;
 
-	hproc = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_INFORMATION, FALSE, pid);
+  hproc = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_INFORMATION, FALSE, pid);
 
   for(;;) {
 
-	ret = WaitForSingleObject(hproc, INFINITE);
+    ret = WaitForSingleObject(hproc, INFINITE);
 
-	if(ret == WAIT_TIMEOUT) continue;
-	if(ret == WAIT_FAILED) return -1;
+    if(ret == WAIT_TIMEOUT) continue;
+    if(ret == WAIT_FAILED) return -1;
 
     if(ret == WAIT_OBJECT_0) {
       GetExitCodeProcess(hproc, &exitcode);
@@ -34,7 +34,7 @@ wait_pid(int pid, int* wstat) {
 
       *wstat = exitcode;
       return 1;
-    } 
+    }
   }
   return -1;
 

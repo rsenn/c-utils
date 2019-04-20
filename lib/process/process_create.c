@@ -1,4 +1,5 @@
 #include "../windoze.h"
+#include "../byte.h"
 #include "../io.h"
 #include "../strlist.h"
 #include "../uint64.h"
@@ -21,7 +22,8 @@ static const char*
 last_error_str() {
   DWORD errCode = GetLastError();
   static char tmpbuf[1024];
-  char* err;
+  DWORD len;
+  char* err = 0;
   tmpbuf[0] = '\0';
   if(errCode == 0)
     return tmpbuf;
@@ -34,10 +36,13 @@ last_error_str() {
                     0,
                     NULL))
     return 0;
-  
-  _snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
-  /* or otherwise log it */
-  // OutputDebugString(tmpbuf);
+
+  byte_copy(tmpbuf, 7, "ERROR: ");
+  len = strlen(err);
+  if(len > sizeof(tmpbuf - 8))
+    len = tmpbuf - 8;
+  byte_copy(tmpbuf + 7, len, err);
+
   LocalFree(err);
   return tmpbuf;
 }
@@ -48,7 +53,7 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
   fd_t fds[3];
   int64 pid;
   int status = 0;
-  
+
   if(std) {
     fds[0] = std[0];
     fds[1] = std[1];
@@ -106,11 +111,11 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
     /* Create the child process */
 
     retval = CreateProcessA(filename,
-                            joined_argv.s, 
+                            joined_argv.s,
                             &saAttr,          // process security attributes
                             NULL,             // primary thread security attributes
                             TRUE,             // handles are inherited
-                        /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to make GetExitCodeProcess() work?) */
+                            /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to make GetExitCodeProcess() work?) */
                             CREATE_NO_WINDOW, // creation flags
                             NULL,
                             cwd,             // use parent's current directory
@@ -120,8 +125,8 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
     if(retval == FALSE) {
       int error = GetLastError();
 
-	  buffer_puts(buffer_2, last_error_str());
-	  buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_2, last_error_str());
+      buffer_putnlflush(buffer_2);
 
       pid = -1;
     } else {
