@@ -1290,7 +1290,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): $(BUILDDIR)eagle-to-circuit.o $(call add-library, errmsg path cbmap xml array safemult charbuf textbuf hmap strlist buffer stralloc mmap io open byte scan fmt str alloc) 
+$(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): $(BUILDDIR)eagle-to-circuit.o $(call add-library, errmsg path cbmap xml array safemult charbuf textbuf hmap strlist stralloc buffer mmap io open byte scan fmt str alloc) 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@

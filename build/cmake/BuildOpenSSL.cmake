@@ -1,10 +1,10 @@
 project(openssl)
 
-add_definitions(-DENGINESDIR='\"/usr/lib/engines-1.1\"')
+add_definitions(-DENGINESDIR="/usr/lib/engines-1.1")
 add_definitions(-DL_ENDIAN)
 add_definitions(-DNDEBUG)
 add_definitions(-DOPENSSL_API_COMPAT=0x10100000L)
-add_definitions(-DOPENSSLDIR='\"/etc/ssl\"')
+add_definitions(-DOPENSSLDIR="/etc/ssl")
 add_definitions(-DOPENSSL_NO_DYNAMIC_ENGINE)
 add_definitions(-DOPENSSL_THREADS)
 add_definitions(-DOPENSSL_NO_IDEA=1 -DOPENSSL_NO_RC5=1)
@@ -14,21 +14,22 @@ add_definitions(-DOPENSSL_CPUID_OBJ=1 -DOPENSSL_USE_NODELETE=1)
 
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto/modes)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(crypto)
-include_directories(crypto/include)
-include_directories(crypto/modes)
-include_directories(include)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/crypto/include)
 
 link_libraries(dl)
 
-exec_program(perl ARGS ${CMAKE_CURRENT_SOURCE_DIR}/util/mkbuildinf.pl OUTPUT_VARIABLE MKBUILDINF_H)
-exec_program(perl ARGS
-  -I${CMAKE_CURRENT_SOURCE_DIR}
-  -Mconfigdata 
-  ${CMAKE_CURRENT_SOURCE_DIR}/util/dofile.pl
+exec_program(perl "${CMAKE_CURRENT_SOURCE_DIR}" ARGS util/mkbuildinf.pl OUTPUT_VARIABLE MKBUILDINF_H)
+exec_program(perl "${CMAKE_CURRENT_SOURCE_DIR}" ARGS
+  -I.
+  -Mconfigdata
+  util/dofile.pl
   -oMakefile 
-  ${CMAKE_CURRENT_SOURCE_DIR}/crypto/include/internal/bn_conf.h.in
+  crypto/include/internal/bn_conf.h.in
   OUTPUT_VARIABLE BN_CONF_H)
 
 message("BN_CONF_H: ${BN_CONF_H}")
