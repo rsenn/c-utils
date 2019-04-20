@@ -40,11 +40,6 @@ extern void* io_getfds();
 # endif
 //#define lseek lseek64
 
-#ifdef __BORLANDC__
-#define llseek lseeki64
-#else
-#define llseek lseek64
-#endif
 my_extern intptr_t io_comport;
 
 # elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
