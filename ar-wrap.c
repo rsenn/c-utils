@@ -306,7 +306,7 @@ main(int argc, char* argv[]) {
   strarray_init(&v);
   strarray_from_argv(argc, argv, &v);
 
-  for(i = 1; i < argc; ++i) {
+  for(i = 1; i < strarray_size(&v); ++i) {
     size_t pos;
     stralloc arg;
     stralloc_init(&arg);
