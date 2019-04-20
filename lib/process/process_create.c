@@ -3,11 +3,15 @@
 #include "../strlist.h"
 #include "../uint64.h"
 #include "../env.h"
+#include "../errmsg.h"
+#include "../wait.h"
 
 #if WINDOWS_NATIVE
 #include <windows.h>
 #include <process.h>
 #include <io.h>
+#else
+#include <unistd.h>
 #endif
 
 #define PROCESS_STATUS_ERROR     -1       // process has entered an erroneous state
@@ -93,7 +97,6 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
   }
 #else
   {
-    pid_t pid;
     int status;
 
 

@@ -16,7 +16,7 @@ int wait_pids_nohang(int const* pids, unsigned int len, int* wstat);
 int wait_pid_nohang(int pid, int* wstat);
 unsigned int wait_reap(void);
 
-int wait_pid(int64 pid, int* wstat);
+int wait_pid(int pid, int* wstat);
 
 #ifdef __cplusplus
 }

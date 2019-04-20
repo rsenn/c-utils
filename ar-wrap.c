@@ -11,6 +11,7 @@
 #include "lib/byte.h"
 #include "lib/mmap.h"
 #include "lib/scan.h"
+#include "lib/wait.h"
 
 #if WINDOWS
 #define EXEEXT ".exe"
@@ -27,6 +28,7 @@
 #if WINDOWS
 #include <windows.h>
 #endif
+#include <errno.h>
 
 static stralloc cmd, realcmd, fullcmd, specs;
 static const char* ext = "";
@@ -426,6 +428,8 @@ main(int argc, char* argv[]) {
 #endif
 
   av = strlist_to_argv(&opts);
+
+  errno = 0;
   ret = process_create(realcmd.s, av, 0, 0);
   //ret = execvp(realcmd.s, av);
 
@@ -434,7 +438,7 @@ main(int argc, char* argv[]) {
     return 1;
   }
 
-  if((ret = wait_nointr(&i))) {
+  if(wait_pid(ret, &i) > 0) {
     errmsg_warnsys("child terminated:", 0);
   }
 

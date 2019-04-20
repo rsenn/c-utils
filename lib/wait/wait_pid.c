@@ -8,7 +8,7 @@
 #endif
 
 int
-wait_pid(int64 pid, int* wstat) {
+wait_pid(int pid, int* wstat) {
 #if WINDOWS_NATIVE
   DWORD exitcode = 0;
   HANDLE hproc;
