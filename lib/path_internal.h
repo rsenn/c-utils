@@ -7,6 +7,7 @@
 #include "str.h"
 #include "path.h"
 #include "stralloc.h"
+#include "windoze.h"
 
 #if WINDOWS_NATIVE
 #define PATHSEP_S_MIXED "\\"
