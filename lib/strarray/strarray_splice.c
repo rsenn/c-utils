@@ -33,7 +33,7 @@ strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char
     }
 
     if(len) {
-      (insert > del ? byte_copyr : byte_copy)(end - len, len, move);
+      (insert > del ? byte_copyr : byte_copy)((char*)end - len, len, move);
     }
   }
 

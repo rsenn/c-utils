@@ -18,7 +18,7 @@ char*
 path_dirname(const char* path, stralloc* dir) {
   size_t i;
   stralloc_zero(dir);
-  i = str_rchrs(path, PATHSEP_S_MIXED, str_len(PATHSEP_S_MIXED));
+  i = str_rchrs(path, "/\\", 2);
   if(path == NULL || path[i] == '\0') {
     stralloc_copys(dir, dot);
   } else {
