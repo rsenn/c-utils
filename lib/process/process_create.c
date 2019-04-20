@@ -34,6 +34,7 @@ last_error_str() {
                     0,
                     NULL))
     return 0;
+  
   _snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
   /* or otherwise log it */
   // OutputDebugString(tmpbuf);
