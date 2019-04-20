@@ -243,7 +243,7 @@ main(int argc, char* argv[]) {
   int i;
   stralloc sa, lib, arg;
   strarray v;
-  strlist opts, objs;
+  strlist opts, objs, dirs;
   char** av;
   int ret;
   const char* pathstr;
@@ -365,8 +365,15 @@ main(int argc, char* argv[]) {
     } else {
       int is_obj = stralloc_endb(&arg, ".o", 2) || stralloc_endb(&arg, ".obj", 4);
 
-      if(is_obj)
+      if(is_obj) {
+        stralloc dir;
+        stralloc_init(&dir);
+        path_dirname(arg.s, &dir);
+        strlist_push_unique(&dirs, &dir);
+        stralloc_free(&dir);
+
         stralloc_prepends(&arg, "+-");
+      }
 
       if(stralloc_starts(&arg, "/")) {
         if(arg.len == 2)
@@ -382,9 +389,11 @@ main(int argc, char* argv[]) {
   strlist_cat(&opts, &objs);
 
   stralloc_init(&sa);
-  strlist_joins(&opts, &sa, "' '");
+  strlist_joins(&dirs, &sa, " , ");
   stralloc_nul(&sa);
   // strarray_joins(&v, &sa, "'\n'");
+  //
+
 
   if(!stralloc_endb(&realcmd, EXEEXT, str_len(EXEEXT)))
     stralloc_cats(&realcmd, EXEEXT);
@@ -395,6 +404,9 @@ main(int argc, char* argv[]) {
   }
 
 #if DEBUG
+  buffer_puts(buffer_1, "dirs: ");
+  buffer_putsa(buffer_1, &sa);
+  buffer_putnlflush(buffer_1);
   buffer_puts(buffer_1, "cmd: '");
   buffer_putsa(buffer_1, &cmd);
   buffer_puts(buffer_1, ext);
