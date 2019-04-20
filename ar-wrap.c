@@ -242,7 +242,7 @@ get_prog_name(stralloc* prog) {
 int
 main(int argc, char* argv[]) {
   size_t p;
-  int i;
+  int i,st;
   stralloc sa, lib, arg;
   strarray v;
   strlist opts, objs, dirs;
@@ -434,11 +434,17 @@ main(int argc, char* argv[]) {
   //ret = execvp(realcmd.s, av);
 
   if(ret == -1) {
-    errmsg_warnsys("execvp:", 0);
+    errmsg_warnsys("process_create:", 0);
     return 1;
   }
 
-  if(wait_pid(ret, &i) > 0) {
+  if((i = wait_pid(ret, &st)) != -1) {
+    buffer_puts(buffer_2, "waitpid = ");
+    buffer_putlong(buffer_2, i);
+    buffer_puts(buffer_2, " status = ");
+    buffer_putlong(buffer_2, st);
+    buffer_puts(buffer_2, " ");
+    buffer_flush(buffer_2);
     errmsg_warnsys("child terminated:", 0);
   }
 
