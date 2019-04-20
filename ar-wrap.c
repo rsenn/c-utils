@@ -34,6 +34,18 @@ static strlist path, pathext;
 static stralloc prog, real, base, cwd;
 
 #ifdef DEBUG
+void
+debug_strarray(const char* name, strarray* stra) {
+  stralloc sa;
+  stralloc_init(&sa);
+  strarray_joins(stra, &sa, ",\n  ");
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ":\n  ");
+  buffer_putsa(buffer_2, &sa);
+  buffer_putnlflush(buffer_2);
+  stralloc_free(&sa);
+}
+
 /**
  * @brief debug_sa
  * @param name
@@ -295,7 +307,7 @@ main(int argc, char* argv[]) {
     size_t pos;
     stralloc arg;
     stralloc_init(&arg);
-    stralloc_copys(&arg, argv[i]);
+    stralloc_copys(&arg, strarray_get(&v, i);
     stralloc_nul(&arg);
 
     if(stralloc_starts(&arg, "@")) {
@@ -305,14 +317,33 @@ main(int argc, char* argv[]) {
       debug_sa("@", &arg);
 
       if(openreadclose(arg.s+1, &sa, 4096) > 0) {
+        stralloc_nul(&arg); 
+        char *it, *end;
+        array a;
+        array_init(&a);
+        
+        it = stralloc_begin(&sa);
+        end = stralloc_end(&sa);
+
         exist = 1;
 
-        debug_sa("sa", &sa);
-        
-        strlist_fromb(&args, sa.s, sa.len, " \r\n\t");
+        while(it < end) {
+          size_t n;
+          it += scan_whitenskip(it, end - it);
+          if(it == end) break;
+          n = scan_nonwhitenskip(it, end - it);
+          it[n] = '\0';
+          array_catb(&a, &it, sizeof(char*));
+          it += n + 1;
+        }
+
+        strarray_splice(&v, i, 1, array_length(&a, sizeof(char*)), array_start(&a));
+
+        debug_strarray("new args", &v);
+
+        --i;
         continue;
       }
-      debug_int("exist", exist);
     }
 
     pos = stralloc_findb(&arg, "/", 1);
