@@ -368,7 +368,9 @@ main(int argc, char* argv[]) {
     } else {
       int is_obj = stralloc_endb(&arg, ".o", 2) || stralloc_endb(&arg, ".obj", 4);
 
-      stralloc_prepends(&arg, "+-");
+      if(is_obj)
+        stralloc_prepends(&arg, "+-");
+
       strlist_push_sa(is_obj ? &objs : &opts, &arg);
     }
   }
