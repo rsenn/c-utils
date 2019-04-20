@@ -5,6 +5,7 @@
 #include "../uint32.h"
 
 #if WINDOWS_NATIVE
+#include <windows.h>
 #include <process.h>
 #define getpid _getpid
 #else
@@ -54,8 +55,10 @@ dns_random_init(const char data[128]) {
   taia_pack(tpack, &t);
   for(i = 0; i < 4; ++i) uint32_unpack(tpack + 4 * i, in + 4 + i);
 
+#if WINDOWS_NATIVE
+  in[8] = GetCurrentProcessId();
+#else
   in[8] = getpid();
-#if !WINDOWS_NATIVE
   in[9] = getppid();
 #endif
   /* more space in 10 and 11, but this is probably enough */
