@@ -13,6 +13,22 @@ set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
 set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
 
 
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl" OR NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+    file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+    file(DOWNLOAD "http://distfiles.gentoo.org/distfiles/openssl-1.1.0j.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
+  endif()
+
+  exec_program(bsdtar ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+  file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.0j" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+  file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
+  file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
+
+endif()
+if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
+  add_subdirectory(3rdparty/openssl)
+endif()
+
 set(BUILD_SHARED_LIBS FALSE)
 
 if(NOT ENABLE_SHARED)
@@ -85,7 +101,7 @@ if(ZLIB_FOUND)
     set(ZLIB_LIBRARY_DEBUG "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
   endif(pkgcfg_lib_ZLIB_z)
 else(ZLIB_FOUND)
-  include(FindZlib)
+  #include(FindZlib)
 endif(ZLIB_FOUND)
 
 if(ZLIB_LIBRARY_RELEASE)
