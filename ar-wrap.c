@@ -303,6 +303,9 @@ main(int argc, char* argv[]) {
     mmap_unmap(x, n);
   }
 
+  strarray_init(&v);
+  strarray_from_argv(argc, argv, &v);
+
   for(i = 1; i < argc; ++i) {
     size_t pos;
     stralloc arg;

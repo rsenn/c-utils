@@ -25,7 +25,7 @@ strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char
   newlen = len - del + insert;
 
   if(insert != del) {
-    char** move = strarray_at(a, start + del);
+    char** move = s + del;
     len = a->p + a->initialized - (char*)move;
 
     (insert > del ? byte_copyr : byte_copy)((char*)array_allocate(a, sizeof(char*), newlen) - len, len, move);
