@@ -30,7 +30,7 @@
 int
 open_rw(const char* filename) {
   return open(filename, O_RDWR | O_CREAT | O_BINARY
-#ifndef WINDOWS_NATIVE
+#if !WINDOWS_NATIVE
   , 0644
 #endif
 );

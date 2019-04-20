@@ -71,7 +71,7 @@ open_temp(const char* tmpl) {
     unlink(tmpl);
     res = open(tmpl,
                O_RDWR | O_CREAT | O_TRUNC | O_BINARY
-#ifndef WINDOWS_NATIVE
+#if !WINDOWS_NATIVE
                ,
                0666
 #endif

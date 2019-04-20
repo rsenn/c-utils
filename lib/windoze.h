@@ -37,6 +37,10 @@
 extern "C" {
 #endif
 
+#if !WINDOWS_NATIVE
+#define WINDOWS_NATIVE 0
+#endif
+
 #ifdef __cplusplus
 }
 #endif

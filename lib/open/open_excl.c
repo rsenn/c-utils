@@ -26,7 +26,7 @@
 int
 open_excl(const char* filename) {
   return open(filename, O_WRONLY | O_TRUNC | O_CREAT | O_EXCL
-#ifndef WINDOWS_NATIVE
+#if !WINDOWS_NATIVE
   , 0600
 #endif
 );

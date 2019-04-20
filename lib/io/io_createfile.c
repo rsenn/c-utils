@@ -13,7 +13,7 @@
 int
 io_createfile(fd_t* d, const char* s) {
   long fd = open(s, O_WRONLY | O_CREAT | O_TRUNC
-#ifndef WINDOWS_NATIVE
+#if !WINDOWS_NATIVE
   , 0600
 #endif
   );

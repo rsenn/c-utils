@@ -210,7 +210,7 @@ get_prog_name(stralloc* prog) {
 
   stralloc_ready(prog, PATH_MAX);
 
-#ifndef WINDOWS_NATIVE
+#if !WINDOWS_NATIVE
   if((len = readlink("/proc/self/exe", prog->s, prog->a)) > 0) {
     prog->len = len;
     return prog->s;
@@ -341,10 +341,17 @@ main(int argc, char* argv[]) {
   strarray_init(&v);
   strarray_from_argv(argc, argv, &v);
 
+
+
   for(i = 1; i < strarray_size(&v); ++i) {
     size_t pos;
     stralloc_copys(&arg, strarray_at(&v, i));
     stralloc_nul(&arg);
+
+    if(i == 1 && !tlib) {
+      strlist_push_sa(&opts, &arg);
+      continue;
+    }
 
     if(stralloc_starts(&arg, "@")) {
       long exist = 0;
@@ -388,8 +395,11 @@ main(int argc, char* argv[]) {
 
     pos = stralloc_findb(&arg, "/", 1);
 
+#if WINDOWS_NATIVE
     if(pos > 0 && pos < arg.len)
       stralloc_replacec(&arg, '/', '\\');
+    }
+#endif
 
     if(stralloc_endb(&arg, ".a", 2) || stralloc_endb(&arg, ".lib", 4)) {
       stralloc_copy(&lib, &arg);
