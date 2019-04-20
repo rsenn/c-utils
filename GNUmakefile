@@ -536,8 +536,8 @@ endif
 
 export BUILDDIR
 
-vpath lib lib/array lib/alloc lib/cb lib/cbmap lib/binfmt lib/buffer lib/byte lib/dir lib/fmt lib/hashmap lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/coff lib/playlist lib/process lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 $(BUILDDIR) tests
-VPATH = lib:lib/array:lib/alloc:lib/binfmt:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/hashmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/coff:lib/playlist:lib/process:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:$(BUILDDIR):tests
+vpath lib lib/array lib/alloc lib/cb lib/cbmap lib/binfmt lib/buffer lib/byte lib/dir lib/fmt lib/hashmap lib/hmap lib/http lib/io lib/list lib/mmap lib/open lib/pe lib/coff lib/playlist lib/process lib/map lib/scan lib/socket lib/str lib/stralloc lib/tai lib/taia lib/uint16 lib/uint32 lib/uint64 lib/wait $(BUILDDIR) tests
+VPATH = lib:lib/array:lib/alloc:lib/binfmt:lib/buffer:lib/cb:lib/cbmap:lib/byte:lib/dir:lib/fmt:lib/hmap:lib/hashmap:lib/http:lib/io:lib/list:lib/mmap:lib/open:lib/pe:lib/coff:lib/playlist:lib/process:lib/map:lib/scan:lib/socket:lib/str:lib/stralloc:lib/tai:lib/taia:lib/uint16:lib/uint32:lib/uint64:lib/wait:$(BUILDDIR):tests
 
 ifeq ($(CXXOPTS),)
 ##$(info OS: "$(OS)")
@@ -1085,7 +1085,6 @@ $(call lib-target,uint64)
 $(call lib-target,var)
 $(call lib-target,vartab)
 $(call lib-target,wait)
-#$(call lib-target,wait)
 $(call lib-target,xml)
 $(call lib-target,socket,lib/socket/winsock2errno.c lib/socket/winsock_init.c)
 $(call lib-target,errmsg)
