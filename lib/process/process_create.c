@@ -14,8 +14,33 @@
 #include <unistd.h>
 #endif
 
+#if WINDOWS_NATIVE
 #define PROCESS_STATUS_ERROR     -1       // process has entered an erroneous state
 
+static const char*
+last_error_str() {
+  DWORD errCode = GetLastError();
+  static char tmpbuf[1024];
+  char* err;
+  tmpbuf[0] = '\0';
+  if(errCode == 0)
+    return tmpbuf;
+  SetLastError(0);
+  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                    NULL,
+                    errCode,
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
+                    (LPTSTR)&err,
+                    0,
+                    NULL))
+    return 0;
+  snprintf(tmpbuf, sizeof(tmpbuf), "ERROR: %s\n", err);
+  /* or otherwise log it */
+  // OutputDebugString(tmpbuf);
+  LocalFree(err);
+  return tmpbuf;
+}
+#endif
 
 int
 process_create(const char* filename, const char* argv[], fd_t std[3], const char* cwd) {
@@ -91,7 +116,14 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
                             &siStartInfo,    // STARTUPINFO pointer
                             &piProcessInfo); // receives PROCESS_INFORMATION
 
-    if(retval != FALSE) {
+    if(retval == FALSE) {
+      int error = GetLastError();
+
+	  buffer_puts(buffer_2, last_error_str());
+	  buffer_putnlflush(buffer_2);
+
+      pid = -1;
+    } else {
       pid = piProcessInfo.dwProcessId;
     }
   }
@@ -117,5 +149,5 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
 
   }
 #endif
-  return wait_pid_nohang(pid, &status) == 0 ? pid : -1;
+  return pid;
 }
