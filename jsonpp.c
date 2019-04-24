@@ -60,7 +60,9 @@ if(depth < 2) {
   p->newline = "\n"; //(!one_line  && valdepth > 1 && ((index > -1) || index == -2)) ? "\n" : "";
   p->indent = indent_str.s;
   p->spacing = ((valdepth < 1 && index > 0) || (valdepth >= 1 &&  index > -1)) ? " " : "";
+  p->separat = ",";
   p->quote = quote;
+  p->precision = 16;
 };
 
 void

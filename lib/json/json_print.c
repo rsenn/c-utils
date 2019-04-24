@@ -22,11 +22,12 @@ get_depth(jsonval* v) {
 
 static void
 json_default_printer(jsonfmt* p, const jsonval* v, int depth, int index) {
-  int pretty = get_depth(v) > 1;
+  int pretty = v && get_depth(v) > 1;
   p->indent = pretty ? "  " : "";
   p->newline = pretty ? "\n" : "";
   p->spacing = pretty ? " " : "";
-  p->quote = '"';
+  p->separat = pretty ? ", " : ",";
+  p->quote = "\"";
   p->precision = 10;
   p->depth = depth;
   p->index = index;
@@ -102,7 +103,7 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
       ++index;
 
       p(&printer, 0, depth + 1, index);
-      json_print_key(b, t->key, t->key_len - 1, &printer);
+      json_print_key(b, t->key, t->key_len, &printer);
 
       buffer_puts(b, ":");
       json_print_separator(val, b, JSON_FMT_SPACING, &printer);
