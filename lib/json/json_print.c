@@ -114,7 +114,7 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
         json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
       }
     }
-    p(&printer, val, -1, -2);
+    p(&printer, val, depth-1, -2);
     json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   }
   buffer_puts(b, "}");
