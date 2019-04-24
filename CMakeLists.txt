@@ -23,6 +23,10 @@ if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl" OR NOT EXISTS "${CMAKE_SOUR
   file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.0j" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
   file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
   file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
+  exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS
+    -p0 -i ../../build/cmake/openssl-1.1.0j-pkgs7.patch
+  )
+
 
 endif()
 if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")

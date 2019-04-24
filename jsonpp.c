@@ -17,7 +17,7 @@
 #include <sys/types.h>
 
 static charbuf infile;
-static int quote_char = '"';
+static char quote[4] = { '"', 0 };
 static int one_line, indent = 2, compact;
 static stralloc indent_str;
 
@@ -44,7 +44,7 @@ get_depth(jsonval* v) {
 
 static void
 compact_printer(jsonfmt* p, jsonval* v, int depth, int index) {
-  int valdepth = get_depth(v); 
+  int valdepth = v ? get_depth(v) : 0;  
   int pretty = depth < 4 && valdepth > 1;
 /*
 
@@ -60,7 +60,7 @@ if(depth < 2) {
   p->newline = "\n"; //(!one_line  && valdepth > 1 && ((index > -1) || index == -2)) ? "\n" : "";
   p->indent = indent_str.s;
   p->spacing = ((valdepth < 1 && index > 0) || (valdepth >= 1 &&  index > -1)) ? " " : "";
-  p->quote = quote_char;
+  p->quote = quote;
 };
 
 void
@@ -106,8 +106,8 @@ main(int argc, char* argv[]) {
 
   struct longopt opts[] = {
     {"help", 0, NULL, 'h'},
-    {"single-quote", 0, &quote_char, '\''},
-    {"double-quote", 0, &quote_char, '"'},
+    {"single-quote", 0, NULL, 's'},
+    {"double-quote", 0, NULL, 'd'},
     {"one-line", 0, NULL, 'o'},
     {"compact", 0, NULL, 'c'},
     {"indent", 0, NULL, 'l'},
@@ -123,8 +123,8 @@ main(int argc, char* argv[]) {
 
     switch(c) {
     case 'h': usage(argv[0]); return 0;
-    case 's': quote_char = '\''; break;
-    case 'd': quote_char = '"'; break;
+    case 's': quote[0] = '\''; break;
+    case 'd': quote[0] = '"'; break;
     case 'o': one_line = 1; break;
     case 'c': compact = 1; break;
     case 'l': scan_int(optarg, &indent); break;
