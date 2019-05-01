@@ -53,7 +53,7 @@
 			"file": "jsonpp.c",
 			"settings":
 			{
-				"buffer_size": 3762,
+				"buffer_size": 3804,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -392,13 +392,8 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/dirlist",
-		"/home/roman/Sources/dirlist/lib",
-		"/home/roman/Sources/dirlist/lib/alloc",
-		"/home/roman/Sources/dirlist/lib/cbmap",
-		"/home/roman/Sources/dirlist/lib/http",
-		"/home/roman/Sources/dirlist/lib/json",
-		"/home/roman/Sources/dirlist/lib/slist"
+		"/home/roman/Sources/c-utils",
+		"/home/roman/Sources/c-utils/lib"
 	],
 	"file_history":
 	[
@@ -533,7 +528,7 @@
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 22.0
 	},
 	"find_in_files":
 	{
@@ -891,15 +886,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3762,
+						"buffer_size": 3804,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1206,
-								1206
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1104,7 +1099,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 25.0
+		"height": 22.0
 	},
 	"input":
 	{
@@ -1161,7 +1156,7 @@
 	"project": "dirlist.sublime-project",
 	"replace":
 	{
-		"height": 46.0
+		"height": 40.0
 	},
 	"save_all_on_build": true,
 	"select_file":
