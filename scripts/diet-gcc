@@ -1,0 +1,23 @@
+#!/bin/sh
+EXPR='s,-pc-,-,; s,-gnu.*,-dietlibc,'
+DIET=$(realpath /usr/bin/diet64)
+ARGS=
+IFS="
+"
+case "$*" in
+  *-m32*) DIET=/opt/diet/bin-i386/diet; EXPR="$EXPR; s,x86_64,i686,g" ;;
+  *-m64*) DIET=/opt/diet/bin-x86_64/diet; EXPR="$EXPR; s,i[3-6]86,x86_64,g" ;;
+esac
+case "$*" in
+  *dumpmachine*)  gcc -dumpmachine |sed "$EXPR"; exit 0 ;;
+esac
+for ARG; do 
+	case "$ARG" in
+		-O[1-9]) ARG="-Os" ;;
+		-g*) ARG="-g" ;;
+		-fPIC|-fpie|-pie|-shared) continue ;;
+	esac
+	ARGS="${ARGS:+$ARGS$IFS}$ARG"
+done
+ARGS="-D_BSD_SOURCE=1$IFS-D__RCSID(x)=$IFS$ARGS"
+exec "$DIET" -Os gcc $ARGS
