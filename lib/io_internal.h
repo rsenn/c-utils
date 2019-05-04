@@ -38,7 +38,7 @@ extern void* io_getfds();
 #define popen _popen
 #  endif
 # endif
-//#define lseek lseek64
+#define lseek64 lseek
 
 my_extern intptr_t io_comport;
 
