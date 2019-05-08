@@ -13,8 +13,8 @@
 #include "block_buffer_encoder.h"
 #include "block_encoder.h"
 #include "filter_encoder.h"
-#include "../../lzma/lzma2_encoder.h"
-#include "../../check/check.h"
+#include "lzma2_encoder.h"
+#include "check.h"
 
 
 /// Estimate the maximum size of the Block Header and Check fields for
@@ -33,9 +33,9 @@ static uint64_t
 lzma2_bound(uint64_t uncompressed_size)
 {
 	// Prevent integer overflow in overhead calculation.
-	if (uncompressed_size > COMPRESSED_SIZE_MAX)
+	if (uncompressed_size > COMPRESSED_SIZE_MAX) {
 		return 0;
-
+	}
 	// Calculate the exact overhead of the LZMA2 headers: Round
 	// uncompressed_size up to the next multiple of LZMA2_CHUNK_MAX,
 	// multiply by the size of per-chunk header, and add one byte for
@@ -172,17 +172,17 @@ block_encode_normal(lzma_block *block, const lzma_allocator *allocator,
 	return_if_error(lzma_block_header_size(block));
 
 	// Reserve space for the Block Header and skip it for now.
-	if (out_size - *out_pos <= block->header_size)
+	if (out_size - *out_pos <= block->header_size) {
 		return LZMA_BUF_ERROR;
-
+	}
 	const size_t out_start = *out_pos;
 	*out_pos += block->header_size;
 
 	// Limit out_size so that we stop encoding if the output would grow
 	// bigger than what uncompressed Block would be.
-	if (out_size - *out_pos > block->compressed_size)
+	if (out_size - *out_pos > block->compressed_size) {
 		out_size = *out_pos + block->compressed_size;
-
+	}
 	// TODO: In many common cases this could be optimized to use
 	// significantly less memory.
 	lzma_next_coder raw_encoder = LZMA_NEXT_CODER_INIT;
@@ -233,7 +233,7 @@ block_buffer_encode(lzma_block *block, const lzma_allocator *allocator,
 
 	// The contents of the structure may depend on the version so
 	// check the version before validating the contents of *block.
-	if (block->version > 1)
+	if (block->version != 0)
 		return LZMA_OPTIONS_ERROR;
 
 	if ((unsigned int)(block->check) > LZMA_CHECK_ID_MAX
@@ -262,9 +262,9 @@ block_buffer_encode(lzma_block *block, const lzma_allocator *allocator,
 	// value for block->compressed_size.
 	block->uncompressed_size = in_size;
 	block->compressed_size = lzma2_bound(in_size);
-	if (block->compressed_size == 0)
+	if (block->compressed_size == 0) {
 		return LZMA_DATA_ERROR;
-
+	}
 	// Do the actual compression.
 	lzma_ret ret = LZMA_BUF_ERROR;
 	if (try_to_compress)

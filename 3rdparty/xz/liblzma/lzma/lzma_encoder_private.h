@@ -14,10 +14,10 @@
 #ifndef LZMA_LZMA_ENCODER_PRIVATE_H
 #define LZMA_LZMA_ENCODER_PRIVATE_H
 
-#include "../../lz/lz_encoder.h"
-#include "../../rangecoder/range_encoder.h"
+#include "lz_encoder.h"
+#include "range_encoder.h"
 #include "lzma_common.h"
-#include "../../lzma/lzma_encoder.h"
+#include "lzma_encoder.h"
 
 
 // Macro to compare if the first two bytes in two buffers differ. This is
@@ -69,7 +69,7 @@ typedef struct {
 } lzma_optimal;
 
 
-struct lzma_lzma1_encoder_s {
+struct lzma_coder_s {
 	/// Range encoder
 	lzma_range_encoder rc;
 
@@ -138,10 +138,10 @@ struct lzma_lzma1_encoder_s {
 
 
 extern void lzma_lzma_optimum_fast(
-		lzma_lzma1_encoder *restrict coder, lzma_mf *restrict mf,
+		lzma_coder *restrict coder, lzma_mf *restrict mf,
 		uint32_t *restrict back_res, uint32_t *restrict len_res);
 
-extern void lzma_lzma_optimum_normal(lzma_lzma1_encoder *restrict coder,
+extern void lzma_lzma_optimum_normal(lzma_coder *restrict coder,
 		lzma_mf *restrict mf, uint32_t *restrict back_res,
 		uint32_t *restrict len_res, uint32_t position);
 

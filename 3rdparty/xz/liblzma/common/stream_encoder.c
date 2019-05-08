@@ -14,7 +14,7 @@
 #include "index_encoder.h"
 
 
-typedef struct {
+struct lzma_coder_s {
 	enum {
 		SEQ_STREAM_HEADER,
 		SEQ_BLOCK_INIT,
@@ -55,11 +55,11 @@ typedef struct {
 	/// Buffer to hold Stream Header, Block Header, and Stream Footer.
 	/// Block Header has biggest maximum size.
 	uint8_t buffer[LZMA_BLOCK_HEADER_SIZE_MAX];
-} lzma_stream_coder;
+};
 
 
 static lzma_ret
-block_encoder_init(lzma_stream_coder *coder, const lzma_allocator *allocator)
+block_encoder_init(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	// Prepare the Block options. Even though Block encoder doesn't need
 	// compressed_size, uncompressed_size, and header_size to be
@@ -78,13 +78,11 @@ block_encoder_init(lzma_stream_coder *coder, const lzma_allocator *allocator)
 
 
 static lzma_ret
-stream_encode(void *coder_ptr, const lzma_allocator *allocator,
+stream_encode(lzma_coder *coder, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
-	lzma_stream_coder *coder = coder_ptr;
-
 	// Main loop
 	while (*out_pos < out_size)
 	switch (coder->sequence) {
@@ -160,9 +158,9 @@ stream_encode(void *coder_ptr, const lzma_allocator *allocator,
 				coder->block_encoder.coder, allocator,
 				in, in_pos, in_size,
 				out, out_pos, out_size, convert[action]);
-		if (ret != LZMA_STREAM_END || action == LZMA_SYNC_FLUSH)
+		if (ret != LZMA_STREAM_END || action == LZMA_SYNC_FLUSH) {
 			return ret;
-
+		}
 		// Add a new Index Record.
 		const lzma_vli unpadded_size = lzma_block_unpadded_size(
 				&coder->block_options);
@@ -182,9 +180,9 @@ stream_encode(void *coder_ptr, const lzma_allocator *allocator,
 				coder->index_encoder.coder, allocator,
 				NULL, NULL, 0,
 				out, out_pos, out_size, LZMA_RUN);
-		if (ret != LZMA_STREAM_END)
+		if (ret != LZMA_STREAM_END) {
 			return ret;
-
+		}
 		// Encode the Stream Footer into coder->buffer.
 		const lzma_stream_flags stream_flags = {
 			.version = 0,
@@ -193,8 +191,8 @@ stream_encode(void *coder_ptr, const lzma_allocator *allocator,
 		};
 
 		if (lzma_stream_footer_encode(&stream_flags, coder->buffer)
-				!= LZMA_OK)
-			return LZMA_PROG_ERROR;
+			!= LZMA_OK)
+				return LZMA_PROG_ERROR;
 
 		coder->buffer_size = LZMA_STREAM_HEADER_SIZE;
 		coder->sequence = SEQ_STREAM_FOOTER;
@@ -211,10 +209,8 @@ stream_encode(void *coder_ptr, const lzma_allocator *allocator,
 
 
 static void
-stream_encoder_end(void *coder_ptr, const lzma_allocator *allocator)
+stream_encoder_end(lzma_coder *coder, const lzma_allocator *allocator)
 {
-	lzma_stream_coder *coder = coder_ptr;
-
 	lzma_next_end(&coder->block_encoder, allocator);
 	lzma_next_end(&coder->index_encoder, allocator);
 	lzma_index_end(coder->index, allocator);
@@ -228,12 +224,10 @@ stream_encoder_end(void *coder_ptr, const lzma_allocator *allocator)
 
 
 static lzma_ret
-stream_encoder_update(void *coder_ptr, const lzma_allocator *allocator,
+stream_encoder_update(lzma_coder *coder, const lzma_allocator *allocator,
 		const lzma_filter *filters,
 		const lzma_filter *reversed_filters)
 {
-	lzma_stream_coder *coder = coder_ptr;
-
 	if (coder->sequence <= SEQ_BLOCK_INIT) {
 		// There is no incomplete Block waiting to be finished,
 		// thus we can change the whole filter chain. Start by
@@ -277,50 +271,48 @@ stream_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	if (filters == NULL)
 		return LZMA_PROG_ERROR;
 
-	lzma_stream_coder *coder = next->coder;
-
-	if (coder == NULL) {
-		coder = lzma_alloc(sizeof(lzma_stream_coder), allocator);
-		if (coder == NULL)
+	if (next->coder == NULL) {
+		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
+		if (next->coder == NULL)
 			return LZMA_MEM_ERROR;
 
-		next->coder = coder;
 		next->code = &stream_encode;
 		next->end = &stream_encoder_end;
 		next->update = &stream_encoder_update;
 
-		coder->filters[0].id = LZMA_VLI_UNKNOWN;
-		coder->block_encoder = LZMA_NEXT_CODER_INIT;
-		coder->index_encoder = LZMA_NEXT_CODER_INIT;
-		coder->index = NULL;
+		next->coder->filters[0].id = LZMA_VLI_UNKNOWN;
+		next->coder->block_encoder = LZMA_NEXT_CODER_INIT;
+		next->coder->index_encoder = LZMA_NEXT_CODER_INIT;
+		next->coder->index = NULL;
 	}
 
 	// Basic initializations
-	coder->sequence = SEQ_STREAM_HEADER;
-	coder->block_options.version = 0;
-	coder->block_options.check = check;
+	next->coder->sequence = SEQ_STREAM_HEADER;
+	next->coder->block_options.version = 0;
+	next->coder->block_options.check = check;
 
 	// Initialize the Index
-	lzma_index_end(coder->index, allocator);
-	coder->index = lzma_index_init(allocator);
-	if (coder->index == NULL)
+	lzma_index_end(next->coder->index, allocator);
+	next->coder->index = lzma_index_init(allocator);
+	if (next->coder->index == NULL) {
 		return LZMA_MEM_ERROR;
-
+	}
 	// Encode the Stream Header
 	lzma_stream_flags stream_flags = {
 		.version = 0,
 		.check = check,
 	};
 	return_if_error(lzma_stream_header_encode(
-			&stream_flags, coder->buffer));
+			&stream_flags, next->coder->buffer));
 
-	coder->buffer_pos = 0;
-	coder->buffer_size = LZMA_STREAM_HEADER_SIZE;
+	next->coder->buffer_pos = 0;
+	next->coder->buffer_size = LZMA_STREAM_HEADER_SIZE;
 
 	// Initialize the Block encoder. This way we detect unsupported
 	// filter chains when initializing the Stream encoder instead of
 	// giving an error after Stream Header has already written out.
-	return stream_encoder_update(coder, allocator, filters, NULL);
+	return stream_encoder_update(
+			next->coder, allocator, filters, NULL);
 }
 
 

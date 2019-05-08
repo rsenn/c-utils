@@ -16,17 +16,12 @@
 #ifndef LZMA_SYSDEFS_H
 #define LZMA_SYSDEFS_H
 
-#if __STDC_VERSION__ >= 199901L
-#define HAVE_STDINT_H 1
-#define HAVE_STDBOOL_H 1
-#endif
-
 //////////////
 // Includes //
 //////////////
 
 #ifdef HAVE_CONFIG_H
-#	include "../config.h"
+#	include <config.h>
 #endif
 
 // Get standard-compliant stdio functions under MinGW and MinGW-w64.
@@ -170,16 +165,6 @@ typedef unsigned char _Bool;
 #	include <memory.h>
 #endif
 
-// As of MSVC 2013, inline and restrict are supported with
-// non-standard keywords.
-#if defined(_WIN32) && defined(_MSC_VER)
-#	ifndef inline
-#		define inline __inline
-#	endif
-#	ifndef restrict
-#		define restrict __restrict
-#	endif
-#endif
 
 ////////////
 // Macros //
@@ -202,6 +187,19 @@ typedef unsigned char _Bool;
 #	define lzma_attr_alloc_size(x) __attribute__((__alloc_size__(x)))
 #else
 #	define lzma_attr_alloc_size(x)
+#endif
+
+#if _MSC_VER
+#	define WIN32_LEAN_AND_MEAN
+#   include <windows.h>
+#   include <basetsd.h> // SSIZE_T
+#   define ssize_t SSIZE_T
+#   define inline __inline
+#   define restrict __restrict
+#   define S_ISDIR(mode)  (((mode) & S_IFMT) == S_IFDIR)
+#   define S_ISREG(mode)  (((mode) & S_IFMT) == S_IFREG)
+#   define snprintf _snprintf
+#   define strcasecmp _stricmp
 #endif
 
 #endif

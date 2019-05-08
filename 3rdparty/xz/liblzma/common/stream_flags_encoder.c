@@ -39,9 +39,9 @@ lzma_stream_header_encode(const lzma_stream_flags *options, uint8_t *out)
 	memcpy(out, lzma_header_magic, sizeof(lzma_header_magic));
 
 	// Stream Flags
-	if (stream_flags_encode(options, out + sizeof(lzma_header_magic)))
+	if (stream_flags_encode(options, out + sizeof(lzma_header_magic))) {
 		return LZMA_PROG_ERROR;
-
+	}
 	// CRC32 of the Stream Header
 	const uint32_t crc = lzma_crc32(out + sizeof(lzma_header_magic),
 			LZMA_STREAM_FLAGS_SIZE, 0);
@@ -69,9 +69,9 @@ lzma_stream_footer_encode(const lzma_stream_flags *options, uint8_t *out)
 	unaligned_write32le(out + 4, options->backward_size / 4 - 1);
 
 	// Stream Flags
-	if (stream_flags_encode(options, out + 2 * 4))
+	if (stream_flags_encode(options, out + 2 * 4)) {
 		return LZMA_PROG_ERROR;
-
+	}
 	// CRC32
 	const uint32_t crc = lzma_crc32(
 			out + 4, 4 + LZMA_STREAM_FLAGS_SIZE, 0);

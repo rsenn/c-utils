@@ -150,14 +150,14 @@ lzma_outq_read(lzma_outq *restrict outq, uint8_t *restrict out,
 		lzma_vli *restrict uncompressed_size)
 {
 	// There must be at least one buffer from which to read.
-	if (outq->bufs_used == 0)
+	if (outq->bufs_used == 0) {
 		return LZMA_OK;
-
+	}
 	// Get the buffer.
 	uint32_t i = outq->bufs_pos - outq->bufs_used;
-	if (outq->bufs_pos < outq->bufs_used)
+	if (outq->bufs_pos < outq->bufs_used) {
 		i += outq->bufs_allocated;
-
+	}
 	lzma_outbuf *buf = &outq->bufs[i];
 
 	// If it isn't finished yet, we cannot read from it.

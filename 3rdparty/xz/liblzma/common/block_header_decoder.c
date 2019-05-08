@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "common.h"
-#include "../../check/check.h"
+#include "check.h"
 
 
 static void
@@ -46,23 +46,15 @@ lzma_block_header_decode(lzma_block *block,
 		block->filters[i].options = NULL;
 	}
 
-	// Versions 0 and 1 are supported. If a newer version was specified,
-	// we need to downgrade it.
-	if (block->version > 1)
-		block->version = 1;
-
-	// This isn't a Block Header option, but since the decompressor will
-	// read it if version >= 1, it's better to initialize it here than
-	// to expect the caller to do it since in almost all cases this
-	// should be false.
-	block->ignore_check = false;
+	// Always zero for now.
+	block->version = 0;
 
 	// Validate Block Header Size and Check type. The caller must have
 	// already set these, so it is a programming error if this test fails.
 	if (lzma_block_header_size_decode(in[0]) != block->header_size
-			|| (unsigned int)(block->check) > LZMA_CHECK_ID_MAX)
+			|| (unsigned int)(block->check) > LZMA_CHECK_ID_MAX) {
 		return LZMA_PROG_ERROR;
-
+	}
 	// Exclude the CRC32 field.
 	const size_t in_size = block->header_size - 4;
 
@@ -71,9 +63,9 @@ lzma_block_header_decode(lzma_block *block,
 		return LZMA_DATA_ERROR;
 
 	// Check for unsupported flags.
-	if (in[1] & 0x3C)
+	if (in[1] & 0x3C) {
 		return LZMA_OPTIONS_ERROR;
-
+	}
 	// Start after the Block Header Size and Block Flags fields.
 	size_t in_pos = 2;
 

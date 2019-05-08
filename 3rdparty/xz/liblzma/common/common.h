@@ -13,9 +13,9 @@
 #ifndef LZMA_COMMON_H
 #define LZMA_COMMON_H
 
-#include "../../common/sysdefs.h"
-#include "../../common/mythread.h"
-#include "../../common/tuklib_integer.h"
+#include "sysdefs.h"
+#include "mythread.h"
+#include "tuklib_integer.h"
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 #	ifdef DLL_EXPORT
@@ -32,7 +32,9 @@
 
 #define LZMA_API(type) LZMA_API_EXPORT type LZMA_API_CALL
 
-#include "../api/lzma.h"
+#define LZMA_UNSTABLE
+
+#include "lzma.h"
 
 // These allow helping the compiler in some often-executed branches, whose
 // result is almost always the same.
@@ -73,7 +75,6 @@
 	( LZMA_TELL_NO_CHECK \
 	| LZMA_TELL_UNSUPPORTED_CHECK \
 	| LZMA_TELL_ANY_CHECK \
-	| LZMA_IGNORE_CHECK \
 	| LZMA_CONCATENATED )
 
 
@@ -87,6 +88,10 @@
 /// there's no need to have it in the public API.
 #define LZMA_TIMED_OUT 32
 
+
+/// Type of encoder/decoder specific data; the actual structure is defined
+/// differently in different coders.
+typedef struct lzma_coder_s lzma_coder;
 
 typedef struct lzma_next_coder_s lzma_next_coder;
 
@@ -103,7 +108,7 @@ typedef lzma_ret (*lzma_init_function)(
 /// input and output buffers, but for simplicity they still use this same
 /// function prototype.
 typedef lzma_ret (*lzma_code_function)(
-		void *coder, const lzma_allocator *allocator,
+		lzma_coder *coder, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size,
@@ -111,7 +116,7 @@ typedef lzma_ret (*lzma_code_function)(
 
 /// Type of a function to free the memory allocated for the coder
 typedef void (*lzma_end_function)(
-		void *coder, const lzma_allocator *allocator);
+		lzma_coder *coder, const lzma_allocator *allocator);
 
 
 /// Raw coder validates and converts an array of lzma_filter structures to
@@ -134,7 +139,7 @@ struct lzma_filter_info_s {
 /// Hold data and function pointers of the next filter in the chain.
 struct lzma_next_coder_s {
 	/// Pointer to coder-specific data
-	void *coder;
+	lzma_coder *coder;
 
 	/// Filter ID. This is LZMA_VLI_UNKNOWN when this structure doesn't
 	/// point to a filter coder.
@@ -156,21 +161,21 @@ struct lzma_next_coder_s {
 
 	/// Pointer to a function to get progress information. If this is NULL,
 	/// lzma_stream.total_in and .total_out are used instead.
-	void (*get_progress)(void *coder,
+	void (*get_progress)(lzma_coder *coder,
 			uint64_t *progress_in, uint64_t *progress_out);
 
 	/// Pointer to function to return the type of the integrity check.
 	/// Most coders won't support this.
-	lzma_check (*get_check)(const void *coder);
+	lzma_check (*get_check)(const lzma_coder *coder);
 
 	/// Pointer to function to get and/or change the memory usage limit.
 	/// If new_memlimit == 0, the limit is not changed.
-	lzma_ret (*memconfig)(void *coder, uint64_t *memusage,
+	lzma_ret (*memconfig)(lzma_coder *coder, uint64_t *memusage,
 			uint64_t *old_memlimit, uint64_t new_memlimit);
 
 	/// Update the filter-specific options or the whole filter chain
 	/// in the encoder.
-	lzma_ret (*update)(void *coder, const lzma_allocator *allocator,
+	lzma_ret (*update)(lzma_coder *coder, const lzma_allocator *allocator,
 			const lzma_filter *filters,
 			const lzma_filter *reversed_filters);
 };
@@ -228,12 +233,6 @@ struct lzma_internal_s {
 /// Allocates memory
 extern void *lzma_alloc(size_t size, const lzma_allocator *allocator)
 		lzma_attribute((__malloc__)) lzma_attr_alloc_size(1);
-
-/// Allocates memory and zeroes it (like calloc()). This can be faster
-/// than lzma_alloc() + memzero() while being backward compatible with
-/// custom allocators.
-extern void * lzma_attribute((__malloc__)) lzma_attr_alloc_size(1)
-		lzma_alloc_zero(size_t size, const lzma_allocator *allocator);
 
 /// Frees memory
 extern void lzma_free(void *ptr, const lzma_allocator *allocator);

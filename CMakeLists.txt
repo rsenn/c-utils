@@ -13,26 +13,6 @@ set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
 set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
 
 
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl" OR NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
-    file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-    file(DOWNLOAD "http://distfiles.gentoo.org/distfiles/openssl-1.1.0j.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
-  endif()
-
-  exec_program(bsdtar ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
-  file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.0j" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-  file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
-  file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
-  exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS
-    -p0 -i ../../build/cmake/openssl-1.1.0j-pkgs7.patch
-  )
-
-
-endif()
-if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
-  add_subdirectory(3rdparty/openssl)
-endif()
-
 set(BUILD_SHARED_LIBS FALSE)
 
 if(NOT ENABLE_SHARED)
@@ -138,6 +118,7 @@ endif(OPENSSL_FOUND)
 if(OPENSSL_FOUND)
   add_definitions(-DHAVE_OPENSSL=1)
   include_directories(${OPENSSL_INCLUDE_DIR})
+
 endif(OPENSSL_FOUND)
 
 #link_libraries(
@@ -202,6 +183,27 @@ if(NOT LIBLZMA_LIBRARY)
   set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
   set(LIBLZMA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api CACHE PATH "" FORCE)
 endif(NOT LIBLZMA_LIBRARY)
+
+if(NOT OPENSSL_FOUND)
+  message("Building openssl from 3rdparty/openssl")
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl" OR NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+      file(DOWNLOAD "http://distfiles.gentoo.org/distfiles/openssl-1.1.0j.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
+    endif()
+
+    exec_program(bsdtar ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.0j" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+    file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
+    file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
+    exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS
+      -p0 -i ../../build/cmake/openssl-1.1.0j-pkgs7.patch
+    )
+  endif()
+  if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
+    add_subdirectory(3rdparty/openssl)
+  endif()
+endif(NOT OPENSSL_FOUND)
 
 message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
 if(ZLIB_LIBRARY)
@@ -317,6 +319,8 @@ set(COMPRESSION_LIBRARIES
 
 if(OPENSSL_LIBRARIES)
   set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES})
+else(OPENSSL_LIBRARIES)
+  set(CRYPTO_LIBRARIES )
 endif(OPENSSL_LIBRARIES)
 
 add_program(binfmttest binfmt)
@@ -374,6 +378,7 @@ add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
 add_program(jsonpp json errmsg unix)
 add_program(xml2json json xml errmsg unix)
 add_program(xml2moon xml textcode errmsg)
+add_program(su-cmd errmsg)
 
 
 add_subdirectory(tests)

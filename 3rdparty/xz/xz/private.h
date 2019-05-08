@@ -10,10 +10,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "../common/sysdefs.h"
-#include "../common/mythread.h"
+#include "sysdefs.h"
+#include "mythread.h"
 
-#include "../liblzma/api/lzma.h"
+#define LZMA_UNSTABLE
+#include "lzma.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -21,17 +22,15 @@
 #include <signal.h>
 #include <locale.h>
 #include <stdio.h>
+
+#ifndef _MSC_VER
 #include <unistd.h>
-
-#include "../common/tuklib_gettext.h"
-#include "../common/tuklib_progname.h"
-#include "../common/tuklib_exit.h"
-#include "../common/tuklib_mbstr.h"
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#	define WIN32_LEAN_AND_MEAN
-#	include <windows.h>
 #endif
+
+#include "tuklib_gettext.h"
+#include "tuklib_progname.h"
+#include "tuklib_exit.h"
+#include "tuklib_mbstr.h"
 
 #ifndef STDIN_FILENO
 #	define STDIN_FILENO (fileno(stdin))
@@ -45,22 +44,15 @@
 #	define STDERR_FILENO (fileno(stderr))
 #endif
 
-#ifdef HAVE_CAPSICUM
-#	define ENABLE_SANDBOX 1
-#endif
-
 #include "main.h"
 #include "mytime.h"
 #include "coder.h"
 #include "message.h"
 #include "args.h"
-#include "../liblzma/api/lzma/hardware.h"
+#include "hardware.h"
 #include "file_io.h"
 #include "options.h"
 #include "signals.h"
 #include "suffix.h"
 #include "util.h"
-
-#ifdef HAVE_DECODERS
-#	include "list.h"
-#endif
+#include "list.h"

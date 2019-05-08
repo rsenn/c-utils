@@ -564,8 +564,8 @@ extern LZMA_API(lzma_bool) lzma_index_iter_locate(
  *              - LZMA_MEM_ERROR
  *              - LZMA_PROG_ERROR
  */
-extern LZMA_API(lzma_ret) lzma_index_cat(lzma_index *dest, lzma_index *src,
-		const lzma_allocator *allocator)
+extern LZMA_API(lzma_ret) lzma_index_cat(lzma_index *restrict dest, 
+	lzma_index *restrict src, const lzma_allocator *allocator)
 		lzma_nothrow lzma_attr_warn_unused_result;
 
 
@@ -586,7 +586,8 @@ extern LZMA_API(lzma_index *) lzma_index_dup(
  * \param       i           Pointer to lzma_index which should be encoded.
  *
  * The valid `action' values for lzma_code() are LZMA_RUN and LZMA_FINISH.
- * It is enough to use only one of them (you can choose freely).
+ * It is enough to use only one of them (you can choose freely; use LZMA_RUN
+ * to support liblzma versions older than 5.0.0).
  *
  * \return      - LZMA_OK: Initialization succeeded, continue with lzma_code().
  *              - LZMA_MEM_ERROR
@@ -609,21 +610,16 @@ extern LZMA_API(lzma_ret) lzma_index_encoder(
  *                          to a new lzma_index, which the application
  *                          has to later free with lzma_index_end().
  * \param       memlimit    How much memory the resulting lzma_index is
- *                          allowed to require. liblzma 5.2.3 and earlier
- *                          don't allow 0 here and return LZMA_PROG_ERROR;
- *                          later versions treat 0 as if 1 had been specified.
+ *                          allowed to require.
  *
- * Valid `action' arguments to lzma_code() are LZMA_RUN and LZMA_FINISH.
- * There is no need to use LZMA_FINISH, but it's allowed because it may
- * simplify certain types of applications.
+ * The valid `action' values for lzma_code() are LZMA_RUN and LZMA_FINISH.
+ * It is enough to use only one of them (you can choose freely; use LZMA_RUN
+ * to support liblzma versions older than 5.0.0).
  *
  * \return      - LZMA_OK: Initialization succeeded, continue with lzma_code().
  *              - LZMA_MEM_ERROR
+ *              - LZMA_MEMLIMIT_ERROR
  *              - LZMA_PROG_ERROR
- *
- *              liblzma 5.2.3 and older list also LZMA_MEMLIMIT_ERROR here
- *              but that error code has never been possible from this
- *              initialization function.
  */
 extern LZMA_API(lzma_ret) lzma_index_decoder(
 		lzma_stream *strm, lzma_index **i, uint64_t memlimit)

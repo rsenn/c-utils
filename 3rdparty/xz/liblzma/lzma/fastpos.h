@@ -14,6 +14,8 @@
 #ifndef LZMA_FASTPOS_H
 #define LZMA_FASTPOS_H
 
+#include "lzma_common.h"
+
 // LZMA encodes match distances by storing the highest two bits using
 // a six-bit value [0, 63], and then the missing lower bits.
 // Dictionary size is also stored using this encoding in the .xz
@@ -110,12 +112,12 @@ get_dist_slot(uint32_t dist)
 {
 	// If it is small enough, we can pick the result directly from
 	// the precalculated table.
-	if (dist < fastpos_limit(0, 0))
+	if (dist < fastpos_limit(0, 0)) {
 		return lzma_fastpos[dist];
-
-	if (dist < fastpos_limit(0, 1))
+	}
+	if (dist < fastpos_limit(0, 1)) {
 		return fastpos_result(dist, 0, 1);
-
+	}
 	return fastpos_result(dist, 0, 2);
 }
 

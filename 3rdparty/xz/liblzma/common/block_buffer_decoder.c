@@ -21,9 +21,9 @@ lzma_block_buffer_decode(lzma_block *block, const lzma_allocator *allocator,
 	if (in_pos == NULL || (in == NULL && *in_pos != in_size)
 			|| *in_pos > in_size || out_pos == NULL
 			|| (out == NULL && *out_pos != out_size)
-			|| *out_pos > out_size)
+			|| *out_pos > out_size) {
 		return LZMA_PROG_ERROR;
-
+	}
 	// Initialize the Block decoder.
 	lzma_next_coder block_decoder = LZMA_NEXT_CODER_INIT;
 	lzma_ret ret = lzma_block_decoder_init(

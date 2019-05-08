@@ -125,9 +125,9 @@ extern LZMA_API(lzma_ret)
 lzma_filters_copy(const lzma_filter *src, lzma_filter *dest,
 		const lzma_allocator *allocator)
 {
-	if (src == NULL || dest == NULL)
+	if (src == NULL || dest == NULL) {
 		return LZMA_PROG_ERROR;
-
+	}
 	lzma_ret ret;
 	size_t i;
 	for (i = 0; src[i].id != LZMA_VLI_UNKNOWN; ++i) {
@@ -194,9 +194,9 @@ static lzma_ret
 validate_chain(const lzma_filter *filters, size_t *count)
 {
 	// There must be at least one filter.
-	if (filters == NULL || filters[0].id == LZMA_VLI_UNKNOWN)
+	if (filters == NULL || filters[0].id == LZMA_VLI_UNKNOWN) {
 		return LZMA_PROG_ERROR;
-
+	}
 	// Number of non-last filters that may change the size of the data
 	// significantly (that is, more than 1-2 % or so).
 	size_t changes_size_count = 0;

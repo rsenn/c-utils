@@ -18,15 +18,6 @@
 #	endif
 #	include <windows.h>
 
-// glibc >= 2.9
-#elif defined(TUKLIB_CPUCORES_SCHED_GETAFFINITY)
-#	include <sched.h>
-
-// FreeBSD
-#elif defined(TUKLIB_CPUCORES_CPUSET)
-#	include <sys/param.h>
-#	include <sys/cpuset.h>
-
 #elif defined(TUKLIB_CPUCORES_SYSCTL)
 #	ifdef HAVE_SYS_PARAM_H
 #		include <sys/param.h>
@@ -52,24 +43,6 @@ tuklib_cpucores(void)
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo(&sysinfo);
 	ret = sysinfo.dwNumberOfProcessors;
-
-#elif defined(TUKLIB_CPUCORES_SCHED_GETAFFINITY)
-	cpu_set_t cpu_mask;
-	if (sched_getaffinity(0, sizeof(cpu_mask), &cpu_mask) == 0)
-		ret = CPU_COUNT(&cpu_mask);
-
-#elif defined(TUKLIB_CPUCORES_CPUSET)
-	cpuset_t set;
-	if (cpuset_getaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, -1,
-			sizeof(set), &set) == 0) {
-#	ifdef CPU_COUNT
-		ret = CPU_COUNT(&set);
-#	else
-		for (unsigned i = 0; i < CPU_SETSIZE; ++i)
-			if (CPU_ISSET(i, &set))
-				++ret;
-#	endif
-	}
 
 #elif defined(TUKLIB_CPUCORES_SYSCTL)
 	int name[2] = { CTL_HW, HW_NCPU };
