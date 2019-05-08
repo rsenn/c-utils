@@ -277,7 +277,25 @@ endif(LIBLZMA_LIBRARY)
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
-set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
+macro(GET_LIBDIRS)
+  file(GLOB TMPDIRS lib/*/)
+  list(FILTER TMPDIRS EXCLUDE REGEX \\.)
+  set(LIBDIRS "")
+  foreach(DIR ${TMPDIRS})
+    string(REGEX REPLACE ".*/" "" DIR "${DIR}")
+    if(EXISTS "${CMAKE_SOURCE_DIR}/lib/${DIR}.h")
+      list(APPEND LIBDIRS "${DIR}")
+    endif(EXISTS "${CMAKE_SOURCE_DIR}/lib/${DIR}.h")
+  endforeach(DIR ${LIBDIRS})
+endmacro(GET_LIBDIRS)
+  
+GET_LIBDIRS()
+
+
+#set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
+set(MODSUBDIRS ${LIBDIRS})
+
+  #string(REGEX REPLACE "/[^ \n\t\r]*/lib/" " " LIBDIRS "${LIBDIRS}")
 
 foreach(ARCHIVE ${MODSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
