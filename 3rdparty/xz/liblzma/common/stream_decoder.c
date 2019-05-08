@@ -97,9 +97,9 @@ stream_decoder_reset(lzma_coder *coder, const lzma_allocator *allocator)
 
 static lzma_ret
 stream_decode(lzma_coder *coder, const lzma_allocator *allocator,
-		const uint8_t *restrict in, size_t *restrict in_pos,
-		size_t in_size, uint8_t *restrict out,
-		size_t *restrict out_pos, size_t out_size, lzma_action action)
+		const uint8_t *__restrict in, size_t *__restrict in_pos,
+		size_t in_size, uint8_t *__restrict out,
+		size_t *__restrict out_pos, size_t out_size, lzma_action action)
 {
 	// When decoding the actual Block, it may be able to produce more
 	// output even if we don't give it any new input.

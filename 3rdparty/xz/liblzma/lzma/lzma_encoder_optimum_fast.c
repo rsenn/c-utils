@@ -17,8 +17,8 @@
 
 
 extern void
-lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
-		uint32_t *restrict back_res, uint32_t *restrict len_res)
+lzma_lzma_optimum_fast(lzma_coder *__restrict coder, lzma_mf *__restrict mf,
+		uint32_t *__restrict back_res, uint32_t *__restrict len_res)
 {
 	const uint32_t nice_len = mf->nice_len;
 

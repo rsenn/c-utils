@@ -138,11 +138,11 @@ struct lzma_coder_s {
 
 
 extern void lzma_lzma_optimum_fast(
-		lzma_coder *restrict coder, lzma_mf *restrict mf,
-		uint32_t *restrict back_res, uint32_t *restrict len_res);
+		lzma_coder *__restrict coder, lzma_mf *__restrict mf,
+		uint32_t *__restrict back_res, uint32_t *__restrict len_res);
 
-extern void lzma_lzma_optimum_normal(lzma_coder *restrict coder,
-		lzma_mf *restrict mf, uint32_t *restrict back_res,
-		uint32_t *restrict len_res, uint32_t position);
+extern void lzma_lzma_optimum_normal(lzma_coder *__restrict coder,
+		lzma_mf *__restrict mf, uint32_t *__restrict back_res,
+		uint32_t *__restrict len_res, uint32_t position);
 
 #endif

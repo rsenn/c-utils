@@ -15,6 +15,14 @@
 
 #include "sysdefs.h"
 
+#if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
+#if _WIN32_WINNT >= 0x600
+#define MYTHREAD_VISTA
+#else
+#define MYTHREAD_WIN95
+#endif
+#endif
+
 // If any type of threading is enabled, #define MYTHREAD_ENABLED.
 #if defined(MYTHREAD_POSIX) || defined(MYTHREAD_WIN95) \
 		|| defined(MYTHREAD_VISTA)
@@ -82,8 +90,8 @@ do { \
 #if !(defined(_WIN32) && !defined(__CYGWIN__))
 // Use sigprocmask() to set the signal mask in single-threaded programs.
 static inline void
-mythread_sigmask(int how, const sigset_t *restrict set,
-		sigset_t *restrict oset)
+mythread_sigmask(int how, const sigset_t *__restrict set,
+		sigset_t *__restrict oset)
 {
 	int ret = sigprocmask(how, set, oset);
 	assert(ret == 0);
@@ -133,8 +141,8 @@ typedef struct timespec mythread_condtime;
 // Use pthread_sigmask() to set the signal mask in multi-threaded programs.
 // Do nothing on OpenVMS since it lacks pthread_sigmask().
 static inline void
-mythread_sigmask(int how, const sigset_t *restrict set,
-		sigset_t *restrict oset)
+mythread_sigmask(int how, const sigset_t *__restrict set,
+		sigset_t *__restrict oset)
 {
 #ifdef __VMS
 	(void)how;

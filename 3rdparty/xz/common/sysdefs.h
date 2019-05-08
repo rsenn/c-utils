@@ -20,9 +20,9 @@
 // Includes //
 //////////////
 
-#ifdef HAVE_CONFIG_H
-#	include <config.h>
-#endif
+//#ifdef HAVE_CONFIG_H
+//#	include <config.h>
+//#endif
 
 // Get standard-compliant stdio functions under MinGW and MinGW-w64.
 #ifdef __MINGW32__
@@ -195,7 +195,7 @@ typedef unsigned char _Bool;
 #   include <basetsd.h> // SSIZE_T
 #   define ssize_t SSIZE_T
 #   define inline __inline
-#   define restrict __restrict
+#   define __restrict __restrict
 #   define S_ISDIR(mode)  (((mode) & S_IFMT) == S_IFDIR)
 #   define S_ISREG(mode)  (((mode) & S_IFMT) == S_IFREG)
 #   define snprintf _snprintf

@@ -45,11 +45,21 @@ extern lzma_ret lzma_lzma_encoder_reset(
 		lzma_coder *coder, const lzma_options_lzma *options);
 
 
-extern lzma_ret lzma_lzma_encode(lzma_coder *restrict coder,
-		lzma_mf *restrict mf, uint8_t *restrict out,
-		size_t *restrict out_pos, size_t out_size,
+extern lzma_ret lzma_lzma_encode(lzma_coder *__restrict coder,
+		lzma_mf *__restrict mf, uint8_t *__restrict out,
+		size_t *__restrict out_pos, size_t out_size,
 		uint32_t read_limit);
 
+#endif
+
+#define HAVE_ENCODER_LZMA1
+#define HAVE_ENCODER_LZMA2
+#if defined(_X86_) || defined(__x86_64__)
+#define HAVE_ENCODER_X86
+#elif defined(__thumb__)
+#define HAVE_ENCODER_ARMTHUMB 
+#elif defined(__arm__)
+#define HAVE_ENCODER_ARM
 #endif
 
 #endif

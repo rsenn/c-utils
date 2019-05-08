@@ -94,11 +94,11 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(setresgid(gid,gid,gid) < 0)
-    err(1, "setresgid(%i)", gid);
+  if(setgid(gid) < 0)
+    err(1, "setgid(%i)", gid);
 
-  if(setresuid(uid,uid,uid) < 0)
-    err(1, "setresuid(%i)", uid);
+  if(setuid(uid) < 0)
+    err(1, "setuid(%i)", uid);
 
   execvp(cmdargv[0], cmdargv);
   err(1, "%s", cmdargv[0]);

@@ -281,9 +281,9 @@ struct lzma_coder_s {
 
 
 static lzma_ret
-lzma_decode(lzma_coder *restrict coder, lzma_dict *restrict dictptr,
-		const uint8_t *restrict in,
-		size_t *restrict in_pos, size_t in_size)
+lzma_decode(lzma_coder *__restrict coder, lzma_dict *__restrict dictptr,
+		const uint8_t *__restrict in,
+		size_t *__restrict in_pos, size_t in_size)
 {
 	////////////////////
 	// Initialization //
