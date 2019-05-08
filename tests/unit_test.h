@@ -23,6 +23,7 @@
 #define UNIT_TEST_H
 
 #include "../lib/buffer.h"
+#include "../lib/tai.h"
 #include "../lib/taia.h"
 #include "../lib/windoze.h"
 #include "../lib/path_internal.h"
@@ -147,7 +148,7 @@ int unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name
 
 #ifdef UNIT_TEST_STATIC_FUNCTIONS
 #define START() static void unit_test_execute(struct unit_test* mu_)
-
+#define EXEC(name) unit_test_execute_##name(mu_)
 #define TESTS(name) static void unit_test_execute_##name(struct unit_test* mu_)
 
 static void unit_test_execute(struct unit_test* mu_);
@@ -177,7 +178,7 @@ unit_test_gettime() {
 
 static int
 unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
-  taia6464 start = unit_test_gettime();
+  tai6464 start = *unit_test_gettime();
   func(mu_);
   taia_sub(&mu_->elapsed, &start, unit_test_gettime());
   return (mu_->failure == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
