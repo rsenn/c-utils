@@ -220,8 +220,8 @@ make_short_rep(lzma_optimal *optimal)
 
 
 static void
-backward(lzma_coder *__restrict coder, uint32_t *__restrict len_res,
-		uint32_t *__restrict back_res, uint32_t cur)
+backward(lzma_coder *restrict coder, uint32_t *restrict len_res,
+		uint32_t *restrict back_res, uint32_t cur)
 {
 	coder->opts_end_index = cur;
 
@@ -268,8 +268,8 @@ backward(lzma_coder *__restrict coder, uint32_t *__restrict len_res,
 //////////
 
 static inline uint32_t
-helper1(lzma_coder *__restrict coder, lzma_mf *__restrict mf,
-		uint32_t *__restrict back_res, uint32_t *__restrict len_res,
+helper1(lzma_coder *restrict coder, lzma_mf *restrict mf,
+		uint32_t *restrict back_res, uint32_t *restrict len_res,
 		uint32_t position)
 {
 	const uint32_t nice_len = mf->nice_len;
@@ -806,8 +806,8 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 
 
 extern void
-lzma_lzma_optimum_normal(lzma_coder *__restrict coder, lzma_mf *__restrict mf,
-		uint32_t *__restrict back_res, uint32_t *__restrict len_res,
+lzma_lzma_optimum_normal(lzma_coder *restrict coder, lzma_mf *restrict mf,
+		uint32_t *restrict back_res, uint32_t *restrict len_res,
 		uint32_t position)
 {
 	// If we have symbols pending, return the next pending symbol.

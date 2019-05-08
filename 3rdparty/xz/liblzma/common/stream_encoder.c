@@ -79,9 +79,9 @@ block_encoder_init(lzma_coder *coder, const lzma_allocator *allocator)
 
 static lzma_ret
 stream_encode(lzma_coder *coder, const lzma_allocator *allocator,
-		const uint8_t *__restrict in, size_t *__restrict in_pos,
-		size_t in_size, uint8_t *__restrict out,
-		size_t *__restrict out_pos, size_t out_size, lzma_action action)
+		const uint8_t *restrict in, size_t *restrict in_pos,
+		size_t in_size, uint8_t *restrict out,
+		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
 	// Main loop
 	while (*out_pos < out_size)

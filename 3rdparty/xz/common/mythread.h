@@ -80,11 +80,10 @@ do { \
 
 
 #if !(defined(_WIN32) && !defined(__CYGWIN__))
-#include <signal.h>
 // Use sigprocmask() to set the signal mask in single-threaded programs.
 static inline void
-mythread_sigmask(int how, const sigset_t *__restrict set,
-		sigset_t *__restrict oset)
+mythread_sigmask(int how, const sigset_t *restrict set,
+		sigset_t *restrict oset)
 {
 	int ret = sigprocmask(how, set, oset);
 	assert(ret == 0);
@@ -134,8 +133,8 @@ typedef struct timespec mythread_condtime;
 // Use pthread_sigmask() to set the signal mask in multi-threaded programs.
 // Do nothing on OpenVMS since it lacks pthread_sigmask().
 static inline void
-mythread_sigmask(int how, const sigset_t *__restrict set,
-		sigset_t *__restrict oset)
+mythread_sigmask(int how, const sigset_t *restrict set,
+		sigset_t *restrict oset)
 {
 #ifdef __VMS
 	(void)how;

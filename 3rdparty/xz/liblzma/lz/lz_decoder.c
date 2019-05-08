@@ -64,9 +64,9 @@ lz_decoder_reset(lzma_coder *coder)
 
 static lzma_ret
 decode_buffer(lzma_coder *coder,
-		const uint8_t *__restrict in, size_t *__restrict in_pos,
-		size_t in_size, uint8_t *__restrict out,
-		size_t *__restrict out_pos, size_t out_size)
+		const uint8_t *restrict in, size_t *restrict in_pos,
+		size_t in_size, uint8_t *restrict out,
+		size_t *restrict out_pos, size_t out_size)
 {
 	while (true) {
 		// Wrap the dictionary if needed.
@@ -127,9 +127,9 @@ decode_buffer(lzma_coder *coder,
 static lzma_ret
 lz_decode(lzma_coder *coder,
 		const lzma_allocator *allocator lzma_attribute((__unused__)),
-		const uint8_t *__restrict in, size_t *__restrict in_pos,
-		size_t in_size, uint8_t *__restrict out,
-		size_t *__restrict out_pos, size_t out_size,
+		const uint8_t *restrict in, size_t *restrict in_pos,
+		size_t in_size, uint8_t *restrict out,
+		size_t *restrict out_pos, size_t out_size,
 		lzma_action action)
 {
 	if (coder->next.code == NULL)

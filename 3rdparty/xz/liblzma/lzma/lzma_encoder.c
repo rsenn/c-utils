@@ -309,8 +309,8 @@ encode_eopm(lzma_coder *coder, uint32_t position)
 
 
 extern lzma_ret
-lzma_lzma_encode(lzma_coder *__restrict coder, lzma_mf *__restrict mf,
-		uint8_t *__restrict out, size_t *__restrict out_pos,
+lzma_lzma_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
+		uint8_t *restrict out, size_t *restrict out_pos,
 		size_t out_size, uint32_t limit)
 {
 	// Initialize the stream if no data has been encoded yet.
@@ -402,8 +402,8 @@ lzma_lzma_encode(lzma_coder *__restrict coder, lzma_mf *__restrict mf,
 
 
 static lzma_ret
-lzma_encode(lzma_coder *__restrict coder, lzma_mf *__restrict mf,
-		uint8_t *__restrict out, size_t *__restrict out_pos,
+lzma_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
+		uint8_t *restrict out, size_t *restrict out_pos,
 		size_t out_size)
 {
 	// Plain LZMA has no support for sync-flushing.

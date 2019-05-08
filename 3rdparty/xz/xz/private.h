@@ -14,7 +14,7 @@
 #include "../common/mythread.h"
 
 #define LZMA_UNSTABLE
-#include "../liblzma/api/lzma.h"
+#include "lzma.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -49,7 +49,7 @@
 #include "coder.h"
 #include "message.h"
 #include "args.h"
-#include "../liblzma/api/lzma/hardware.h"
+#include "hardware.h"
 #include "file_io.h"
 #include "options.h"
 #include "signals.h"

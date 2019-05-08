@@ -19,7 +19,7 @@
 /// encoder's filter stack).
 static void
 copy_and_encode(lzma_coder *coder,
-		const uint8_t *__restrict in, uint8_t *__restrict out, size_t size)
+		const uint8_t *restrict in, uint8_t *restrict out, size_t size)
 {
 	const size_t distance = coder->distance;
 
@@ -50,9 +50,9 @@ encode_in_place(lzma_coder *coder, uint8_t *buffer, size_t size)
 
 static lzma_ret
 delta_encode(lzma_coder *coder, const lzma_allocator *allocator,
-		const uint8_t *__restrict in, size_t *__restrict in_pos,
-		size_t in_size, uint8_t *__restrict out,
-		size_t *__restrict out_pos, size_t out_size, lzma_action action)
+		const uint8_t *restrict in, size_t *restrict in_pos,
+		size_t in_size, uint8_t *restrict out,
+		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
 	lzma_ret ret;
 
