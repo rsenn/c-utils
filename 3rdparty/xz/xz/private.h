@@ -10,11 +10,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "sysdefs.h"
-#include "mythread.h"
+#include "../common/sysdefs.h"
+#include "../common/mythread.h"
 
 #define LZMA_UNSTABLE
-#include "lzma.h"
+#include "../liblzma/api/lzma.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -27,10 +27,10 @@
 #include <unistd.h>
 #endif
 
-#include "tuklib_gettext.h"
-#include "tuklib_progname.h"
-#include "tuklib_exit.h"
-#include "tuklib_mbstr.h"
+#include "../common/tuklib_gettext.h"
+#include "../common/tuklib_progname.h"
+#include "../common/tuklib_exit.h"
+#include "../common/tuklib_mbstr.h"
 
 #ifndef STDIN_FILENO
 #	define STDIN_FILENO (fileno(stdin))
@@ -49,7 +49,7 @@
 #include "coder.h"
 #include "message.h"
 #include "args.h"
-#include "hardware.h"
+#include "../liblzma/api/lzma/hardware.h"
 #include "file_io.h"
 #include "options.h"
 #include "signals.h"

@@ -11,7 +11,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "lz_encoder.h"
+#include "../lz/lz_encoder.h"
 #include "lzma_encoder.h"
 #include "fastpos.h"
 #include "lzma2_encoder.h"
@@ -133,8 +133,8 @@ lzma2_header_uncompressed(lzma_coder *coder)
 
 
 static lzma_ret
-lzma2_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
-		uint8_t *restrict out, size_t *restrict out_pos,
+lzma2_encode(lzma_coder *__restrict coder, lzma_mf *__restrict mf,
+		uint8_t *__restrict out, size_t *__restrict out_pos,
 		size_t out_size)
 {
 	while (*out_pos < out_size)

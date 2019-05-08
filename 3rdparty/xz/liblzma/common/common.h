@@ -13,9 +13,9 @@
 #ifndef LZMA_COMMON_H
 #define LZMA_COMMON_H
 
-#include "sysdefs.h"
-#include "mythread.h"
-#include "tuklib_integer.h"
+#include "../../common/sysdefs.h"
+#include "../../common/mythread.h"
+#include "../../common/tuklib_integer.h"
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 #	ifdef DLL_EXPORT
@@ -34,7 +34,7 @@
 
 #define LZMA_UNSTABLE
 
-#include "lzma.h"
+#include "../api/lzma.h"
 
 // These allow helping the compiler in some often-executed branches, whose
 // result is almost always the same.
@@ -109,9 +109,9 @@ typedef lzma_ret (*lzma_init_function)(
 /// function prototype.
 typedef lzma_ret (*lzma_code_function)(
 		lzma_coder *coder, const lzma_allocator *allocator,
-		const uint8_t *restrict in, size_t *restrict in_pos,
-		size_t in_size, uint8_t *restrict out,
-		size_t *restrict out_pos, size_t out_size,
+		const uint8_t *__restrict in, size_t *__restrict in_pos,
+		size_t in_size, uint8_t *__restrict out,
+		size_t *__restrict out_pos, size_t out_size,
 		lzma_action action);
 
 /// Type of a function to free the memory allocated for the coder
@@ -264,9 +264,9 @@ extern void lzma_next_end(lzma_next_coder *next,
 
 /// Copy as much data as possible from in[] to out[] and update *in_pos
 /// and *out_pos accordingly. Returns the number of bytes copied.
-extern size_t lzma_bufcpy(const uint8_t *restrict in, size_t *restrict in_pos,
-		size_t in_size, uint8_t *restrict out,
-		size_t *restrict out_pos, size_t out_size);
+extern size_t lzma_bufcpy(const uint8_t *__restrict in, size_t *__restrict in_pos,
+		size_t in_size, uint8_t *__restrict out,
+		size_t *__restrict out_pos, size_t out_size);
 
 
 /// \brief      Return if expression doesn't evaluate to LZMA_OK

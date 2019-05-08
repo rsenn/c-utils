@@ -14,7 +14,7 @@
 #ifndef LZMA_LZMA2_DECODER_H
 #define LZMA_LZMA2_DECODER_H
 
-#include "common.h"
+#include "../common/common.h"
 
 extern lzma_ret lzma_lzma2_decoder_init(lzma_next_coder *next,
 		const lzma_allocator *allocator,

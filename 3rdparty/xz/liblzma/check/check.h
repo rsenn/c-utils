@@ -13,7 +13,7 @@
 #ifndef LZMA_CHECK_H
 #define LZMA_CHECK_H
 
-#include "common.h"
+#include "../common/common.h"
 
 #if defined(HAVE_COMMONCRYPTO_COMMONDIGEST_H)
 #	include <CommonCrypto/CommonDigest.h>

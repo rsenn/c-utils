@@ -16,7 +16,7 @@
 #include "block_buffer_encoder.h"
 #include "index_encoder.h"
 #include "outqueue.h"
-#include "mythread.h"
+#include "../../common/mythread.h"
 
 /// Maximum supported block size. This makes it simpler to prevent integer
 /// overflows if we are given unusually large block size.
@@ -549,7 +549,7 @@ get_thread(lzma_coder *coder, const lzma_allocator *allocator)
 
 static lzma_ret
 stream_encode_in(lzma_coder *coder, const lzma_allocator *allocator,
-		const uint8_t *restrict in, size_t *restrict in_pos,
+		const uint8_t *__restrict in, size_t *__restrict in_pos,
 		size_t in_size, lzma_action action)
 {
 	while (*in_pos < in_size
@@ -663,9 +663,9 @@ wait_for_work(lzma_coder *coder, mythread_condtime *wait_abs,
 
 static lzma_ret
 stream_encode_mt(lzma_coder *coder, const lzma_allocator *allocator,
-		const uint8_t *restrict in, size_t *restrict in_pos,
-		size_t in_size, uint8_t *restrict out,
-		size_t *restrict out_pos, size_t out_size, lzma_action action)
+		const uint8_t *__restrict in, size_t *__restrict in_pos,
+		size_t in_size, uint8_t *__restrict out,
+		size_t *__restrict out_pos, size_t out_size, lzma_action action)
 {
 	switch (coder->sequence) {
 	case SEQ_STREAM_HEADER:

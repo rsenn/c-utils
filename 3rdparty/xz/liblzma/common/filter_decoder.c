@@ -12,10 +12,10 @@
 
 #include "filter_decoder.h"
 #include "filter_common.h"
-#include "lzma_decoder.h"
-#include "lzma2_decoder.h"
-#include "simple_decoder.h"
-#include "delta_decoder.h"
+#include "../lzma/lzma_decoder.h"
+#include "../lzma/lzma2_decoder.h"
+#include "../simple/simple_decoder.h"
+#include "../delta/delta_decoder.h"
 
 
 typedef struct {

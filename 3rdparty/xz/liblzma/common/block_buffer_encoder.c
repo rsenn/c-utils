@@ -13,8 +13,8 @@
 #include "block_buffer_encoder.h"
 #include "block_encoder.h"
 #include "filter_encoder.h"
-#include "lzma2_encoder.h"
-#include "check.h"
+#include "../lzma/lzma2_encoder.h"
+#include "../check/check.h"
 
 
 /// Estimate the maximum size of the Block Header and Check fields for
@@ -226,6 +226,7 @@ block_buffer_encode(lzma_block *block, const lzma_allocator *allocator,
 		uint8_t *out, size_t *out_pos, size_t out_size,
 		bool try_to_compress)
 {
+   size_t i;
 	// Validate the arguments.
 	if (block == NULL || (in == NULL && in_size != 0) || out == NULL
 			|| out_pos == NULL || *out_pos > out_size)
@@ -291,7 +292,7 @@ block_buffer_encode(lzma_block *block, const lzma_allocator *allocator,
 	// Block Padding. No buffer overflow here, because we already adjusted
 	// out_size so that (out_size - out_start) is a multiple of four.
 	// Thus, if the buffer is full, the loop body can never run.
-	for (size_t i = (size_t)(block->compressed_size); i & 3; ++i) {
+	for (i = (size_t)(block->compressed_size); i & 3; ++i) {
 		assert(*out_pos < out_size);
 		out[(*out_pos)++] = 0x00;
 	}

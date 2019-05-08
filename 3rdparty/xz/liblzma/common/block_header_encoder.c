@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "common.h"
-#include "check.h"
+#include "../check/check.h"
 
 
 extern LZMA_API(lzma_ret)

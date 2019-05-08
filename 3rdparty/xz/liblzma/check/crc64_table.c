@@ -10,7 +10,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "common.h"
+#include "../common/common.h"
 
 #ifdef WORDS_BIGENDIAN
 #	include "crc64_table_be.h"

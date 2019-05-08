@@ -2,7 +2,7 @@
 
 IFS="
 "
-SOURCES=$(find "$@" -name "*.[ch]" )
+SOURCES=$(find "$@" -name "*.[ch]"  -and -not -wholename "*/api/*" ) 
 
 find_source() {
   echo "$SOURCES" | grep -E "(/|^)$1\$"
@@ -37,9 +37,9 @@ grep -H -n '^\s*#\s*include' $SOURCES |
        INCLUDE_OUT="\"$INCLUDE_REL\""
     fi
 
-     if [ "$INCLUDE_REL" != "$INCLUDE_FILE" ]; then
+     #if [ "$INCLUDE_REL" != "$INCLUDE_FILE" ]; then
        echo "sed -i '$LINE s|$INCLUDE|$INCLUDE_OUT|' $FILE" 
        echo "FILE=$FILE LINE=$LINE INCLUDE=$INCLUDE INCLUDE_REL=$INCLUDE_REL" 1>&2
-     fi
+     #fi
    done)
   done)

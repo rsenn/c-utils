@@ -70,9 +70,9 @@ lzma_free(void *ptr, const lzma_allocator *allocator)
 //////////
 
 extern size_t
-lzma_bufcpy(const uint8_t *restrict in, size_t *restrict in_pos,
-		size_t in_size, uint8_t *restrict out,
-		size_t *restrict out_pos, size_t out_size)
+lzma_bufcpy(const uint8_t *__restrict in, size_t *__restrict in_pos,
+		size_t in_size, uint8_t *__restrict out,
+		size_t *__restrict out_pos, size_t out_size)
 {
 	const size_t in_avail = in_size - *in_pos;
 	const size_t out_avail = out_size - *out_pos;

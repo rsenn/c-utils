@@ -14,8 +14,8 @@
 #ifndef LZMA_LZMA_COMMON_H
 #define LZMA_LZMA_COMMON_H
 
-#include "common.h"
-#include "range_common.h"
+#include "../common/common.h"
+#include "../rangecoder/range_common.h"
 
 
 ///////////////////

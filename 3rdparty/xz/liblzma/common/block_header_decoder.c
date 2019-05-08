@@ -11,16 +11,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "common.h"
-#include "check.h"
+#include "../check/check.h"
 
 
 static void
 free_properties(lzma_block *block, const lzma_allocator *allocator)
 {
+  size_t i;
 	// Free allocated filter options. The last array member is not
 	// touched after the initialization in the beginning of
 	// lzma_block_header_decode(), so we don't need to touch that here.
-	for (size_t i = 0; i < LZMA_FILTERS_MAX; ++i) {
+	for (i = 0; i < LZMA_FILTERS_MAX; ++i) {
 		lzma_free(block->filters[i].options, allocator);
 		block->filters[i].id = LZMA_VLI_UNKNOWN;
 		block->filters[i].options = NULL;

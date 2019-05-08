@@ -11,8 +11,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "alone_decoder.h"
-#include "lzma_decoder.h"
-#include "lz_decoder.h"
+#include "../lzma/lzma_decoder.h"
+#include "../lz/lz_decoder.h"
 
 
 struct lzma_coder_s {
@@ -52,9 +52,9 @@ struct lzma_coder_s {
 static lzma_ret
 alone_decode(lzma_coder *coder,
 		const lzma_allocator *allocator lzma_attribute((__unused__)),
-		const uint8_t *restrict in, size_t *restrict in_pos,
-		size_t in_size, uint8_t *restrict out,
-		size_t *restrict out_pos, size_t out_size,
+		const uint8_t *__restrict in, size_t *__restrict in_pos,
+		size_t in_size, uint8_t *__restrict out,
+		size_t *__restrict out_pos, size_t out_size,
 		lzma_action action)
 {
 	while (*out_pos < out_size

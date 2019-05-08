@@ -14,7 +14,7 @@
 #ifndef LZMA_LZMA_DECODER_H
 #define LZMA_LZMA_DECODER_H
 
-#include "common.h"
+#include "../common/common.h"
 
 
 /// Allocates and initializes LZMA decoder

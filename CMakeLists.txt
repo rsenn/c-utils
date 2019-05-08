@@ -23,6 +23,46 @@ endif(NOT ENABLE_SHARED)
 
 include(FindPkgConfig)
 include(CheckFunctionExists)
+include(CheckTypeSize)
+#include(${CMAKE_SOURCE_DIR}/build/cmake/CheckSizeTypes.cmake)
+
+check_type_size(size_t SIZEOF_SIZE_T)
+check_type_size(_Bool SIZEOF__BOOL)
+
+if(SIZEOF__BOOL)
+  set(HAVE__BOOL TRUE)
+else(SIZEOF__BOOL)
+  set(HAVE__BOOL FALSE)
+endif(SIZEOF__BOOL)
+
+add_definitions(-DSIZEOF_SIZE_T=${SIZEOF_SIZE_T})
+
+if(HAVE__BOOL)
+  add_definitions(-DHAVE__BOOL=1)
+endif(HAVE__BOOL)
+
+include(CheckIncludeFile)
+check_include_file(stdbool.h HAVE_STDBOOL_H)
+check_include_file(stdint.h HAVE_STDINT_H)
+check_include_file(inttypes.h HAVE_INTTYPES_H)
+
+if(HAVE_STDBOOL_H)
+  add_definitions(-DHAVE_STDBOOL_H=1)
+endif(HAVE_STDBOOL_H)
+if(HAVE_STDINT_H)
+  add_definitions(-DHAVE_STDINT_H=1)
+endif(HAVE_STDINT_H)
+if(HAVE_INTTYPES_H)
+  add_definitions(-DHAVE_INTTYPES_H=1)
+endif(HAVE_INTTYPES_H)
+
+include(CheckLibraryExists)
+
+check_library_exists(pthread pthread_create "" HAVE_LIBPTHREAD)
+if(HAVE_LIBPTHREAD)
+  add_definitions(-DMYTHREAD_POSIX=1)
+endif(HAVE_LIBPTHREAD)
+
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -173,7 +213,7 @@ if(NOT BZIP2_LIBRARY)
   set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
 endif(NOT BZIP2_LIBRARY)
 
-if(NOT LIBLZMA_LIBRARY)
+if(NOT LIBLZMA_FOUND)
   message("Building liblzma from 3rdparty/xz")
   file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
   add_library(lzma ${LIBLZMA_SOURCES})
@@ -182,7 +222,7 @@ if(NOT LIBLZMA_LIBRARY)
   )
   set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
   set(LIBLZMA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api CACHE PATH "" FORCE)
-endif(NOT LIBLZMA_LIBRARY)
+endif(NOT LIBLZMA_FOUND)
 
 if(NOT OPENSSL_FOUND)
   message("Building openssl from 3rdparty/openssl")
