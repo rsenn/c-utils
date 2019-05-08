@@ -1,4 +1,5 @@
 #include "../str.h"
+#include "../byte.h"
 
 char*
 str_triml(char* s, const char* charset, unsigned int charsetlen) {

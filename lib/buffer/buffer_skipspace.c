@@ -1,4 +1,5 @@
 #include "../buffer.h"
+#include "../byte.h"
 #include <ctype.h>
 
 static int

@@ -7,12 +7,14 @@
 #include "test_path.c"
 #include "test_strlist.c"
 */
+TESTS(buffer);
 TESTS(stralloc);
 TESTS(strlist);
 TESTS(path);
 TESTS(tuple);
 
 START() {
+  EXEC(buffer);
   EXEC(stralloc);
   EXEC(strlist);
   EXEC(path);

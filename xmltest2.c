@@ -52,10 +52,12 @@ main(int argc, char* argv[1]) {
   stralloc tmp;
   stralloc_init(&tmp);
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
+  
   if(argc > 2)
     elem_name = argv[2];
   {
     xmlnode* doc = xml_read_tree(&infile);
+
     xmlnodeset ns = xml_find_all_1(doc, xml_match_name, elem_name);
     xmlnodeset_iter_t it, e;
     size_t i = 0;

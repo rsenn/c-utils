@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>
+
 static buffer infile;
 static buffer b;
 void
