@@ -15,6 +15,14 @@
 
 #include "sysdefs.h"
 
+#if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
+#if _WIN32_WINNT >= 0x600
+#define MYTHREAD_VISTA
+#else
+#define MYTHREAD_WIN95
+#endif
+#endif
+
 // If any type of threading is enabled, #define MYTHREAD_ENABLED.
 #if defined(MYTHREAD_POSIX) || defined(MYTHREAD_WIN95) \
 		|| defined(MYTHREAD_VISTA)

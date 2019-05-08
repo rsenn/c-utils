@@ -16,6 +16,16 @@
 #include "common.h"
 
 
+#define HAVE_ENCODER_LZMA1
+#define HAVE_ENCODER_LZMA2
+#if defined(_X86_) || defined(__x86_64__)
+#define HAVE_ENCODER_X86
+#elif defined(__thumb__)
+#define HAVE_ENCODER_ARMTHUMB 
+#elif defined(__arm__)
+#define HAVE_ENCODER_ARM
+#endif
+
 // FIXME: Might become a part of the public API.
 extern uint64_t lzma_mt_block_size(const lzma_filter *filters);
 
