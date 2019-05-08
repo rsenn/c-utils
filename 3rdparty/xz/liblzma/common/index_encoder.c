@@ -43,10 +43,10 @@ struct lzma_coder_s {
 static lzma_ret
 index_encode(lzma_coder *coder,
 		const lzma_allocator *allocator lzma_attribute((__unused__)),
-		const uint8_t *restrict in lzma_attribute((__unused__)),
-		size_t *restrict in_pos lzma_attribute((__unused__)),
+		const uint8_t *__restrict in lzma_attribute((__unused__)),
+		size_t *__restrict in_pos lzma_attribute((__unused__)),
 		size_t in_size lzma_attribute((__unused__)),
-		uint8_t *restrict out, size_t *restrict out_pos,
+		uint8_t *__restrict out, size_t *__restrict out_pos,
 		size_t out_size,
 		lzma_action action lzma_attribute((__unused__)))
 {

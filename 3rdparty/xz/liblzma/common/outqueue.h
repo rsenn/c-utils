@@ -131,10 +131,10 @@ extern bool lzma_outq_is_readable(const lzma_outq *outq);
 /// \note       This reads lzma_outbuf.finished variables and thus call
 ///             to this function needs to be protected with a mutex.
 ///
-extern lzma_ret lzma_outq_read(lzma_outq *restrict outq,
-		uint8_t *restrict out, size_t *restrict out_pos,
-		size_t out_size, lzma_vli *restrict unpadded_size,
-		lzma_vli *restrict uncompressed_size);
+extern lzma_ret lzma_outq_read(lzma_outq *__restrict outq,
+		uint8_t *__restrict out, size_t *__restrict out_pos,
+		size_t out_size, lzma_vli *__restrict unpadded_size,
+		lzma_vli *__restrict uncompressed_size);
 
 
 /// \brief      Test if there is at least one buffer free

@@ -764,7 +764,7 @@ index_cat_helper(const index_cat_info *info, index_stream *this)
 
 
 extern LZMA_API(lzma_ret)
-lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
+lzma_index_cat(lzma_index *__restrict dest, lzma_index *__restrict src,
 		const lzma_allocator *allocator)
 {
 	const lzma_vli dest_file_size = lzma_index_file_size(dest);

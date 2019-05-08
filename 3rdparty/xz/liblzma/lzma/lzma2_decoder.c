@@ -54,8 +54,8 @@ struct lzma_coder_s {
 
 
 static lzma_ret
-lzma2_decode(lzma_coder *restrict coder, lzma_dict *restrict dict,
-		const uint8_t *restrict in, size_t *restrict in_pos,
+lzma2_decode(lzma_coder *__restrict coder, lzma_dict *__restrict dict,
+		const uint8_t *__restrict in, size_t *__restrict in_pos,
 		size_t in_size)
 {
 	// With SEQ_LZMA it is possible that no new input is needed to do
