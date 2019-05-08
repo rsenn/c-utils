@@ -52,4 +52,14 @@ extern lzma_ret lzma_lzma_encode(lzma_coder *__restrict coder,
 
 #endif
 
+#define HAVE_ENCODER_LZMA1
+#define HAVE_ENCODER_LZMA2
+#if defined(_X86_) || defined(__x86_64__)
+#define HAVE_ENCODER_X86
+#elif defined(__thumb__)
+#define HAVE_ENCODER_ARMTHUMB 
+#elif defined(__arm__)
+#define HAVE_ENCODER_ARM
+#endif
+
 #endif

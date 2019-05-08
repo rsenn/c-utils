@@ -50,4 +50,14 @@ extern uint64_t lzma_lzma_decoder_memusage_nocheck(const void *options);
 
 #endif
 
+#define HAVE_DECODER_LZMA1
+#define HAVE_DECODER_LZMA2
+#if defined(_X86_) || defined(__x86_64__)
+#define HAVE_DECODER_X86
+#elif defined(__thumb__)
+#define HAVE_DECODER_ARMTHUMB 
+#elif defined(__arm__)
+#define HAVE_DECODER_ARM
+#endif
+
 #endif
