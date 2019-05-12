@@ -146,11 +146,16 @@ main(int argc, char* argv[]) {
   xmlnode* doc;
   static xmlnodeset ns;
   xmlnodeset_iter_t it, e;
+  int ret;
   size_t i = 0;
 
-  if(!argv[1]) {
-    argv[1] = "C:\\Users\\roman\\Desktop\\dirlist\\pelist.cbp";
-  }
+
+  if(argc > 1)
+    ret = buffer_mmapprivate(&input, argv[1]);
+  else
+    ret = buffer_read_fd(&input, 0);
+
+  if(ret) return 1;
 
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
