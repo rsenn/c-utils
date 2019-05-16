@@ -140,7 +140,7 @@ main(int argc, char* argv[]) {
   int ret;
   int verbose = 1;
   int c;
-  long timeout_sec = 0, timeout_usec = 0;
+  long timeout_sec = 30, timeout_usec = 0;
   int port = 0;
   stralloc host, ips;
   tai6464 now, deadline;

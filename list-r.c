@@ -705,7 +705,7 @@ main(int argc, char* argv[]) {
     {"output", 1, 0, 'o'},
     {"exclude", 1, 0, 'x'},
     {"time-style", 1, 0, 't'},
-    {"dereference", 0, &opt_deref, 1},
+    {"dereference", 0, 0, 'L'},
     {"min-size", 1, 0, 'm'},
 #if WINDOWS
     {"separator", 1, 0, 's'},
@@ -717,7 +717,7 @@ main(int argc, char* argv[]) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlnro:x:t:m:", opts, &index);
+    c = getopt_long(argc, argv, "hlnro:x:t:m:L", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
