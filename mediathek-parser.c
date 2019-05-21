@@ -248,8 +248,8 @@ process_entry(char** av, int ac) {
     unsigned d;
 
     char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6],
-         *description = av[8],
-         *url = av[9], *url_klein = av[13];
+          *description = av[8],
+           *url = av[9], *url_klein = av[13];
 
     stralloc url_lo;
     stralloc_init(&url_lo);
@@ -392,21 +392,27 @@ output_entry_m3u(const char* sender,
 }
 void
 output_entry_sh(const char* sender,
-                 const char* thema,
-                 const char* title,
-                 unsigned duration,
-                 const char* datetime,
-                 const char* url,
-                 const char* description) {
+                const char* thema,
+                const char* title,
+                unsigned duration,
+                const char* datetime,
+                const char* url,
+                const char* description) {
 
-  stralloc filename;
+  stralloc filename, t;
   stralloc_init(&filename);
-  stralloc_catm_internal(&filename, sender, " - ", thema, " - ", title, ".mp4", 0);
+  stralloc_init(&t);
+  stralloc_subst(&t, title, str_len(title), ": ", " - ");
+  stralloc_nul(&t);
+  stralloc_catm_internal(&filename,  thema, " - ", t.s, ".mp4", 0);
+  stralloc_free(&t);
   stralloc_nul(&filename);
 
 
   buffer_putm_internal(buffer_1, "wget -c -O '", filename.s, "' '", url, "'", 0);
   buffer_putnlflush(buffer_1);
+
+  stralloc_free(&filename);
 }
 
 /**
@@ -456,7 +462,7 @@ process_input(buffer* input) {
 }
 
 void usage(const char* argv0) {
-  buffer_putm_internal(buffer_2, "Usage: ", argv0, "[-d] [-l] <file>\n",0); 
+  buffer_putm_internal(buffer_2, "Usage: ", argv0, "[-d] [-l] [-F] <file>\n", 0);
   buffer_flush(buffer_2);
 }
 /**
@@ -472,7 +478,7 @@ main(int argc, char* argv[]) {
   buffer b;
 
   struct longopt opts[] = {
-      {"csv", 0, NULL, 'c'}, {"debug", 0, NULL, 'd'}, {"low", 0, NULL, 'l'}, {"format", 1, NULL, 'F'}, {0},
+    {"csv", 0, NULL, 'c'}, {"debug", 0, NULL, 'd'}, {"low", 0, NULL, 'l'}, {"format", 1, NULL, 'F'}, {0},
   };
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:lF:", opts, &index)) != -1) {
@@ -480,20 +486,20 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(opt) {
-      case 'c': csv = 1; break;
-      case 'd': debug++; break;
-      case 'l': lowq++; break;
-      case 'f': datetime_format = optarg; break;
-      case 'F': {
-        output_format* fmt = find_output_format(optarg); 
-         if(fmt == NULL) {
-          usage(argv[0]);
-          return EXIT_FAILURE;
-         }
-        output_fmt = fmt;
-        break;
+    case 'c': csv = 1; break;
+    case 'd': debug++; break;
+    case 'l': lowq++; break;
+    case 'f': datetime_format = optarg; break;
+    case 'F': {
+      output_format* fmt = find_output_format(optarg);
+      if(fmt == NULL) {
+        usage(argv[0]);
+        return EXIT_FAILURE;
       }
-      default: /* '?' */ usage(argv[0]); exit(EXIT_FAILURE);
+      output_fmt = fmt;
+      break;
+    }
+    default: /* '?' */ usage(argv[0]); exit(EXIT_FAILURE);
     }
   }
 

@@ -25,6 +25,15 @@
 			}
 		},
 		{
+			"file": "mediathek-parser.c",
+			"settings":
+			{
+				"buffer_size": 11664,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "hexedit.c",
 			"settings":
 			{
@@ -464,7 +473,7 @@
 	],
 	"find":
 	{
-		"height": 22.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -480,6 +489,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"bsea",
+			"output_entry",
 			"variant left, variant right",
 			"value",
 			" \n",
@@ -605,9 +616,7 @@
 			"path_prefix_s",
 			"sourcedirs",
 			"dump_sourcedirs",
-			"rule_command",
-			"#",
-			"select("
+			"rule_command"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -683,7 +692,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -718,11 +727,45 @@
 						"translation.y": 897.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "mediathek-parser.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11664,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6505,
+								6505
+							]
+						],
+						"settings":
+						{
+							"SL.41.region_keys":
+							[
+							],
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3504.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
 					"file": "hexedit.c",
 					"semi_transient": true,
 					"settings":
@@ -749,7 +792,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -823,6 +866,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"mediath",
+				"mediathek-parser.c"
+			],
 			[
 				"",
 				"lib\\omf.h"
