@@ -403,6 +403,7 @@ output_entry_sh(const char* sender,
   stralloc_init(&filename);
   stralloc_init(&t);
   stralloc_subst(&t, title, str_len(title), ": ", " - ");
+  stralloc_replacec(&t, '/', '-');
   stralloc_nul(&t);
   stralloc_catm_internal(&filename,  thema, " - ", t.s, ".mp4", 0);
   stralloc_free(&t);
