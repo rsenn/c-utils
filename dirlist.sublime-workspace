@@ -33,19 +33,19 @@
 			}
 		},
 		{
+			"file": "lib/open/open_trunc.c",
+			"settings":
+			{
+				"buffer_size": 619,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "xml2json.c",
 			"settings":
 			{
 				"buffer_size": 8692,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/http/http_sendreq.c",
-			"settings":
-			{
-				"buffer_size": 861,
 				"line_ending": "Unix"
 			}
 		},
@@ -94,10 +94,10 @@
 			}
 		},
 		{
-			"file": "lib/json.h",
+			"file": "lib/open/open_rw.c",
 			"settings":
 			{
-				"buffer_size": 3812,
+				"buffer_size": 598,
 				"line_ending": "Unix"
 			}
 		}
@@ -392,8 +392,14 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/c-utils",
-		"/home/roman/Sources/c-utils/lib"
+		"/home/enki/Sources/c-utils",
+		"/home/enki/Sources/c-utils/lib",
+		"/home/enki/Sources/c-utils/lib/alloc",
+		"/home/enki/Sources/c-utils/lib/array",
+		"/home/enki/Sources/c-utils/lib/byte",
+		"/home/enki/Sources/c-utils/lib/open",
+		"/home/enki/Sources/c-utils/lib/path",
+		"/home/enki/Sources/c-utils/lib/sig"
 	],
 	"file_history":
 	[
@@ -528,7 +534,7 @@
 	],
 	"find":
 	{
-		"height": 22.0
+		"height": 31.0
 	},
 	"find_in_files":
 	{
@@ -779,7 +785,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -809,11 +815,39 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
+					"file": "lib/open/open_trunc.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 619,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
 					"file": "xml2json.c",
 					"semi_transient": false,
 					"settings":
@@ -846,38 +880,7 @@
 						"translation.y": 496.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/http/http_sendreq.c",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 861,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -909,7 +912,7 @@
 						"translation.y": 39.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -964,7 +967,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -995,7 +998,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1060,38 +1063,35 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 9,
-					"file": "lib/json.h",
-					"semi_transient": false,
+					"file": "lib/open/open_rw.c",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 3812,
+						"buffer_size": 598,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3079,
-								3079
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 772.0,
+						"translation.y": 551.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -1099,7 +1099,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 22.0
+		"height": 31.0
 	},
 	"input":
 	{
@@ -1156,7 +1156,7 @@
 	"project": "dirlist.sublime-project",
 	"replace":
 	{
-		"height": 40.0
+		"height": 58.0
 	},
 	"save_all_on_build": true,
 	"select_file":

@@ -238,6 +238,10 @@ int buffer_putlonglong(buffer*, int64 i);
 int buffer_putxlonglong0(buffer*, uint64 l, int pad);
 #endif
 
+#ifdef TAI_H
+int buffer_puttai(buffer*, const struct tai*);
+#endif
+
 #ifdef __cplusplus
 }
 #endif
