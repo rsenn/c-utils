@@ -6,7 +6,7 @@ NL="
 "
 TAB="	"
 
-[ $# -le 0 ] && set -- $(find . -name "*.c" -and -not -wholename "*build/*" ) || PIPE="tee -a $DEPSMK"
+[ $# -le 0 ] && set -- $(find . -name "*.c" -and -not -wholename "*build/*" -and -not -wholename "*3rdpart*" ) || PIPE="tee -a $DEPSMK"
 
 #OUTSTR='\$(BUILDDIR)$(basename "$x" .c)${SUFFIX}: ${y:-${x}}$NL$TAB\$(CROSS_COMPILE)\$(CC) \$(CFLAGS) \$(CPPFLAGS) -c -o \$@ \$<'
 OUTSTR='\$(BUILDDIR)$(basename "$x" .c)${SUFFIX}: ${y:-${x#./}}$NL$TAB\$(CROSS_COMPILE)\$(CC) \$(CFLAGS) \$(CPPFLAGS) \$(INCLUDES) \$(DEFS) -c -o \$@ \$<'
