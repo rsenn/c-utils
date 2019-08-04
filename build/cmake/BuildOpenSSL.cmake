@@ -1,4 +1,5 @@
 project(openssl)
+enable_language(C)
 
 add_definitions(-DENGINESDIR="/usr/lib/engines-1.1")
 add_definitions(-DL_ENDIAN)
@@ -110,5 +111,5 @@ file(GLOB LIBSSL_SOURCES
 )
 
 add_library(ssl ${LIBSSL_SOURCES})
-
+set_target_properties(ssl PROPERTIES LINKER_LANGUAGE C)
 

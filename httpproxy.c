@@ -22,6 +22,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "lib/buffer.h"
+#include "lib/fmt.h"
 #include <errno.h>
 
 #include <arpa/inet.h>
@@ -47,11 +49,13 @@
 #define EMIT  emit(
 #define END   ,_END);
 
+static inline void brkpnt() { __asm__ __volatile__("int3"); }
+
 extern int errno;
+static const char* progname;
 
 enum {
-  FALSE,
-  TRUE,
+  FALSE, TRUE,
   TYPE,
   TEXT,
   CONNECTION,
@@ -62,10 +66,10 @@ enum {
 #define ISA(_s_, _l_) ((!strcmp(*argv, _s_)) || (!strcmp(*argv, _l_)))
 #define GETMAX(_a_, _b_) (((_a_) > (_b_)) ? (_a_) : (_b_))
 #define NULLFREE(_a_)                                                                                                  \
-  if((_a_)) {                                                                                                          \
-    free((_a_));                                                                                                       \
-    (_a_) = 0;                                                                                                         \
-  }
+if((_a_)) {                                                                                                          \
+  free((_a_));                                                                                                       \
+  (_a_) = 0;                                                                                                         \
+}
 
 #define READSERVER 0x01
 #define READCLIENT 0x02
@@ -78,22 +82,22 @@ struct client {
   clientHost[INET6_ADDRSTRLEN],
 
              // The host to connect to
-             *host,
+  *host,
 
              // Response from host
-             *toclient,
+  *toclient,
 
              // What to send to the server
-             *toserver,
+  *toserver,
 
              // Writing to the client
-             *coffset,
+  *coffset,
 
              // Writing to the server
-             *soffset,
+  *soffset,
 
              // Is the client active
-             active;
+  active;
 
   int
   // To client in use size
@@ -130,6 +134,22 @@ int g_proxyfd;
 fd_set g_rg_fds, g_wg_fds, g_eg_fds;
 struct client g_dbase[MAX], *g_forsig;
 struct linger g_linger_t = {1, 0};
+
+void
+print_base(buffer* b) {
+  buffer_putm_2(b, progname, ": ");
+}
+
+/**
+ * Outputs name/value pair
+ */
+void
+print_name_value(buffer* b, const char* name, const char* value) {
+  print_base(b);
+  if(name)
+    buffer_putm_2(b, name, ": ");
+  buffer_puts(b, value ? value : "(null)");
+}
 
 void
 emit(int firstarg, ...) {
@@ -180,36 +200,36 @@ wraprecv(int socket, void* buf, size_t len, int flags, int which) {
       binbuf[0] = '\\';
 
       switch(ptr[ix]) {
-      case '"':
+        case '"':
         binbuf[1] = '"';
         binbuf += 2;
         break;
-      case '\\':
+        case '\\':
         binbuf[1] = '\\';
         binbuf += 2;
         break;
-      case '\b':
+        case '\b':
         binbuf[1] = 'b';
         binbuf += 2;
         break;
-      case '\f':
+        case '\f':
         binbuf[1] = 'f';
         binbuf += 2;
         break;
-      case '\n':
+        case '\n':
         binbuf[1] = 'n';
         binbuf += 2;
         break;
-      case '\r':
+        case '\r':
         binbuf[1] = 'r';
         binbuf += 2;
         break;
-      case '\t':
+        case '\t':
         binbuf[1] = 't';
         binbuf += 2;
         break;
 
-      default:
+        default:
         binbuf[1] = 'u';
         binbuf[2] = HEX[(unsigned char)ptr[ix] >> 4];
         binbuf[3] = HEX[ptr[ix] & 0xf];
@@ -313,13 +333,14 @@ my_atoi(char** ptr_in) {
 
 void
 buf_emit(type) {
-  EMIT TYPE, type, TEXT, g_buf END
+  //EMIT TYPE, type, TEXT, g_buf END
 }
 
 void
 error_con(int connection, char* message) {
-  sprintf(g_buf, message, strerror(errno));
-  EMIT TYPE, "error", CONNECTION, connection, TEXT, g_buf END
+  char buf[FMT_ULONG];
+  buf[fmt_ulong(buf, connection)] = '\0';
+  errmsg_warnsys("ERROR: connection #", buf, ": ", message);
 }
 
 void
@@ -362,7 +383,7 @@ relaysetup(struct client* t) {
   t->serverfd = socket(AF_INET, SOCK_STREAM, 0);
 
   error_gen(setsockopt(t->serverfd, SOL_SOCKET, SO_LINGER, &g_linger_t, sizeof(struct linger)),
-            "Couldn't set socket options: %s");
+    "Couldn't set socket options: %s");
 
   name.sin_family = AF_INET;
   name.sin_port = htons(t->port);
@@ -385,8 +406,9 @@ relaysetup(struct client* t) {
 void
 process(struct client* toprocess) {
   char *ptr, *path_start, *location_start, *host_start, *host_compare = 0, *payload_start = toprocess->toserver,
-                                                         *payload_end = toprocess->toserver + toprocess->tssize;
+  *payload_end = toprocess->toserver + toprocess->tssize;
 
+  brkpnt();
   // The request is something like:
   // GET http://website/page HTTP/1.1 ...
   // We try to get the hostname out of this and replace it with
@@ -500,11 +522,11 @@ newconnection(int connectionID) {
     getpeername(connectionID, &client.addr, &len);
 
     inet_ntop(AF_INET,
-              &client.in.sin_addr,
+      &client.in.sin_addr,
 
               // Set the hostname
-              cur->clientHost,
-              sizeof(cur->clientHost));
+      cur->clientHost,
+      sizeof(cur->clientHost));
 
     cur->clientPort = ntohs(client.in.sin_port);
   }
@@ -662,7 +684,8 @@ main(int argc, char* argv[]) {
   struct sockaddr_in proxy;
   socklen_t addrlen = sizeof(addr);
 
-  char *progname = argv[0], *ptr;
+  progname = str_basename(argv[0]);
+  char *ptr;
 
   signal(SIGPIPE, handle_bp);
   signal(SIGQUIT, closeAll);

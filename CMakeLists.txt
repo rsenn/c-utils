@@ -375,6 +375,7 @@ add_program(jsonpp json errmsg unix)
 add_program(xml2json json xml errmsg unix)
 add_program(xml2moon xml textcode errmsg)
 
+add_program(httpproxy http io)
 
 add_subdirectory(tests)
 #add_subdirectory(examples)

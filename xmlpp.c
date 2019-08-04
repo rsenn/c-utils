@@ -6,7 +6,7 @@
 #include "lib/xml.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
-#include "lib/mmap.h"
+#include "lib/mmap.h" 
 #include "lib/str.h"
 #include "lib/getopt.h"
 #include "lib/errmsg.h"
@@ -18,8 +18,8 @@ static buffer infile, b;
 static int depth = 0, prev_closing = 0;
 static stralloc prev_element;
 static int quote_char = '"';
-static int one_line, indent = 2, compact;
-static stralloc indent_str;
+static int one_line, indent = 2, compact, terminate;
+static stralloc indent_str; 
 
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
@@ -44,6 +44,11 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       if(attrs && *attrs && (*attrs)->list_tuple) {
         buffer_putspace(buffer_1);
         xml_print_attributes(*attrs, buffer_1, " ", "=", "\"");
+      }
+
+      if(terminate && !reader->self_closing) {
+        if(str_equal(name->s, "img") || str_equal(name->s, "link") || str_equal(name->s, "br"))
+          reader->self_closing = 1;
       }
 
       buffer_puts(buffer_1, reader->self_closing ? (name->s[0] == '?' ? "?>" : "/>") : ">");
@@ -75,6 +80,7 @@ usage(char* av0) {
                        "  -o, --one-line          One-line\n"
                        "  -c, --compact           Compact\n"
                        "  -l, --indent NUM        Indent level\n"
+                       "  -t, --terminate         Terminate non-closed tags (img, link, br, ...)\n"
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -93,13 +99,14 @@ main(int argc, char* argv[]) {
       {"one-line", 0, NULL, 'o'},
       {"compact", 0, NULL, 'c'},
       {"indent", 0, NULL, 'l'},
+      {"terminate", 0, NULL, 't'},
       {0},
   };
 
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:c", opts, &index);
+    c = getopt_long(argc, argv, "hsdol:ct", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -111,6 +118,7 @@ main(int argc, char* argv[]) {
       case 'd': quote_char = '"'; break;
       case 'o': one_line = 1; break;
       case 'c': compact = 1; break;
+      case 't': terminate = 1; break;
       case 'l': scan_int(optarg, &indent); break;
       default: usage(argv[0]); return 1;
     }

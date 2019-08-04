@@ -51,6 +51,7 @@
  * author: Daniel Veillard
  * copy: see Copyright for the status of this software.
  */
+#include "str.h"
 #include <stdio.h>
 
 struct pad {
