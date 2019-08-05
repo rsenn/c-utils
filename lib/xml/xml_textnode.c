@@ -10,3 +10,4 @@ xml_textnode(const char* text, size_t len) {
   }
   return node;
 }
+

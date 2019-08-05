@@ -9,3 +9,4 @@ env_len(const char* const* e) {
   while(*e++) i++;
   return i;
 }
+

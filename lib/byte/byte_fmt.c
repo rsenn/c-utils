@@ -17,3 +17,4 @@ byte_fmt(const char* in, size_t in_len, stralloc* out, size_t (*fmt_function)(ch
   stralloc_trunc(out, out->len);
   return out->len;
 }
+

@@ -44,3 +44,4 @@ strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char
 
   return newlen;
 }
+

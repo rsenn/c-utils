@@ -11,3 +11,4 @@ linked_list_init(linked_list* list, linked_list_destructor free_data) {
 
   list->size = 0;
 }
+

@@ -13,3 +13,4 @@ path_split(const char* p, strlist* sl) {
   strlist_froms(sl, p, sep);
   return strlist_count(sl) > 1;
 }
+

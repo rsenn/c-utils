@@ -21,3 +21,4 @@ buffer_mmapshared_fd(buffer* b, fd_t fd) {
   b->deinit = buffer_munmap;
   return 0;
 }
+

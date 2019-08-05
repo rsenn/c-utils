@@ -29,3 +29,4 @@ dns_resolve(const char* q, const char qtype[2]) {
     if(r == 1) return 0;
   }
 }
+

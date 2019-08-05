@@ -176,3 +176,4 @@ json_print(jsonval val, buffer* b, void (*p)()) {
   buffer_puts(b, printer.newline);
   buffer_flush(b);
 }
+

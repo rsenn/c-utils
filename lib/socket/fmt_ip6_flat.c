@@ -12,3 +12,4 @@ fmt_ip6_flat(char* s, const char ip[16]) {
   }
   return 32;
 }
+

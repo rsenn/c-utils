@@ -70,3 +70,4 @@ dns_domain_suffixpos(const char* big, const char* little) {
     big += c;
   }
 }
+

@@ -29,3 +29,4 @@ fmt_base64(char* dest, const char* src, size_t len) {
   }
   return written;
 }
+

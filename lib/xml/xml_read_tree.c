@@ -84,3 +84,4 @@ xml_read_tree(buffer* b) {
   xml_read_callback(&r, xml_read_node);
   return r.doc;
 }
+

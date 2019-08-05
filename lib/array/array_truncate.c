@@ -12,3 +12,4 @@ array_truncate(array* x, uint64 membersize, int64 len) {
   if(__unlikely(wanted > x->initialized)) return;
   x->initialized = wanted;
 }
+

@@ -12,3 +12,4 @@ charbuf_get(charbuf* b) {
 
   return (int)(unsigned int)(unsigned char)b->ch;
 }
+

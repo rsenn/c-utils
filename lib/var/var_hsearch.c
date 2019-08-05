@@ -44,3 +44,4 @@ var_hsearch(struct search* context) {
      return the maximum possible distance */
   return (VAR_HASH) - 1;
 }
+

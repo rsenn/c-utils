@@ -20,3 +20,4 @@ scan_yenc(const char* src, char* dest, size_t* destlen) {
   *destlen = written;
   return i;
 }
+

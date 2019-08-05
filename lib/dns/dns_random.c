@@ -78,3 +78,4 @@ dns_random(unsigned int n) {
 
   return out[--outleft] % n;
 }
+

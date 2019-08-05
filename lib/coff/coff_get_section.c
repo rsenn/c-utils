@@ -9,3 +9,4 @@ coff_get_section(void* coff, uint16 index) {
 
   return NULL;
 }
+

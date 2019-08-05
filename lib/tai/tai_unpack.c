@@ -22,3 +22,4 @@ tai_unpack(const char* s, struct tai* t) {
   x += (unsigned char)s[7];
   t->x = x;
 }
+

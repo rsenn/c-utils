@@ -82,3 +82,4 @@ array_allocate(array* x, uint64 membersize, int64 pos) {
 
   return x->p + pos * membersize;
 }
+

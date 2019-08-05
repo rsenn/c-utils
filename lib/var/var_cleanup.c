@@ -13,3 +13,4 @@ var_cleanup(struct var* var) {
     if((*var->glink = var->gnext)) var->gnext->glink = var->glink;
   }
 }
+

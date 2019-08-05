@@ -11,3 +11,4 @@ charbuf_skip(charbuf* b) {
 
   return 1;
 }
+

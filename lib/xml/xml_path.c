@@ -21,3 +21,4 @@ xml_path(const xmlnode* node, stralloc* out) {
   stralloc_zero(out);
   return xml_path_out(node, out) != 0;
 }
+

@@ -25,3 +25,4 @@ buffer_put(buffer* b, const char* buf, size_t len) {
   b->p += len;
   return 0;
 }
+

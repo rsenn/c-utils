@@ -17,3 +17,4 @@ strarray_prepends(strarray* arr, const char* s) {
   }
   return 1;
 }
+

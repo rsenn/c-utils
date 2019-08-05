@@ -19,3 +19,4 @@ case_diffb(const void* S, size_t len, const void* T) {
   }
   return 0;
 }
+

@@ -164,3 +164,4 @@ different_byte_found:
 
   return INSERT_OK;
 }
+

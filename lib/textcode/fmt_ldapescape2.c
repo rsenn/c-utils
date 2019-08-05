@@ -25,3 +25,4 @@ fmt_ldapescape2(char* dest, const char* src, size_t len, const char* escapeme) {
   }
   return written;
 }
+

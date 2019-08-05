@@ -20,3 +20,4 @@ openreadclose(const char* fn, stralloc* sa, size_t bufsize) {
     return -1;
   return 1;
 }
+

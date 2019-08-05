@@ -24,3 +24,4 @@ var_set(char* v, int flags) {
 
   return var;
 }
+

@@ -26,3 +26,4 @@ fmt_asn1derlength(char* dest, uint64 l) {
   }
   return i + 1;
 }
+

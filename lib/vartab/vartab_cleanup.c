@@ -40,3 +40,4 @@ vartab_cleanup(struct vartab* vartab) {
     vartab->table[i] = NULL;
   }
 }
+

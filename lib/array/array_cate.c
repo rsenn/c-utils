@@ -8,3 +8,4 @@ array_cate(array* to, const array* const from, int64 pos, int64 stop) {
   }
   array_catb(to, from->p + pos, stop - pos);
 }
+

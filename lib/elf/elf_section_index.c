@@ -15,3 +15,4 @@ elf_section_index(void* elf, uint32 sh_type) {
   }
   return -1;
 }
+

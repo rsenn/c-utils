@@ -16,3 +16,4 @@ fmt_str(char* out, const char* in) {
   }
   return (size_t)(t - in);
 }
+

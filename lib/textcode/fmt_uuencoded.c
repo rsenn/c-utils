@@ -46,3 +46,4 @@ fmt_uuencoded(char* dest, const char* src, size_t len) {
   }
   return dest - orig;
 }
+

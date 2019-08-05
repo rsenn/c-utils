@@ -60,3 +60,4 @@ done:
   *dest = (neg ? -d : d);
   return (size_t)(c - in);
 }
+

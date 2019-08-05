@@ -42,3 +42,4 @@ unittest_main() {
   assert(scan_hexdump("0", buf, &l) == 0 && l == 0 && buf[0] == '?');
 }
 #endif
+

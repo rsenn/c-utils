@@ -120,3 +120,4 @@ is_junction(const char* LinkPath) {
 }
 
 #endif /* WINDOWS */
+

@@ -9,3 +9,4 @@ case_lowers(char* s) {
     ++s;
   }
 }
+

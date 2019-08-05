@@ -11,3 +11,4 @@ stralloc_case_end(const stralloc* sa, const stralloc* suffix) {
     return 0;
   return byte_case_equal(sa->s + sa_len - suffix_len, suffix_len, suffix->s);
 }
+

@@ -12,3 +12,4 @@ scan_xint(const char* src, unsigned int* dest) {
   *dest = l;
   return (size_t)(tmp - src);
 }
+

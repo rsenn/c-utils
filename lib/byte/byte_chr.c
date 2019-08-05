@@ -15,3 +15,4 @@ byte_chr(const void* haystack, size_t len, char needle) {
   }
   return s - (const char*)haystack;
 }
+

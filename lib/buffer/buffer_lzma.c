@@ -158,3 +158,4 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   return 1;
 }
 #endif
+

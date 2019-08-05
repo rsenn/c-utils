@@ -16,3 +16,4 @@ xml_set_attribute_double(xmlnode* node, const char* a, double d) {
   buf[n] = '\0';
   xml_set_attribute(node, a, buf);
 }
+

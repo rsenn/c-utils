@@ -10,3 +10,4 @@ fmt_ip6ifc(char* s, const char ip[16], uint32 scope_id) {
   else
     return fmt_ip6if(s, ip, scope_id);
 }
+

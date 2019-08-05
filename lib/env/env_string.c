@@ -15,3 +15,4 @@ env_string(stralloc* sa, const char* const* envp, size_t envlen) {
   }
   return 1;
 }
+

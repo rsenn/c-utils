@@ -9,3 +9,4 @@ coff_symbol_name(void* coff, coff_symtab_entry* sym) {
   }
   return sym->e.name;
 }
+

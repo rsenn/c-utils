@@ -21,3 +21,4 @@ buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void* arg) {
     }
   }
 }
+

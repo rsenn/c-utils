@@ -11,3 +11,4 @@ buffer_skipc(buffer* b) {
   }
   return 0;
 }
+

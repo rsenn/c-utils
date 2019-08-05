@@ -10,3 +10,4 @@ vartab_print(int flags) {
   for(var = var_list; var; var = var->gnext)
     if(var->child == NULL && (var->flags & flags) == flags) var_print(var, flags);
 }
+

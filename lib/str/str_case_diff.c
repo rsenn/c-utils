@@ -23,3 +23,4 @@ str_case_diff(const void* p1, const void* p2) {
   }
   return x - y;
 }
+

@@ -10,3 +10,4 @@ str_rchr(const char* s, char needle) {
   }
   return (size_t)((found ? found : in) - s);
 }
+

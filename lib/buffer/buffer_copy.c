@@ -14,3 +14,4 @@ buffer_copy(buffer* bout, buffer* bin) {
     buffer_SEEK(bin, n);
   }
 }
+

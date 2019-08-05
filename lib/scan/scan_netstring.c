@@ -22,3 +22,4 @@ scan_netstring(const char* in, size_t len, char** dest, size_t* slen) {
   *slen = l;
   return n + 2 + l;
 }
+

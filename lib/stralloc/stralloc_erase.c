@@ -8,3 +8,4 @@ stralloc_erase(stralloc* sa) {
   sa->s[0] = 'Z'; /* "offensive programming" */
   return 1;
 }
+

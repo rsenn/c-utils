@@ -13,3 +13,4 @@ hashmap_free(hashmap* map) {
   safe_free(map->table);
   safe_free(map);
 }
+

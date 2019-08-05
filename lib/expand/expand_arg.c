@@ -39,3 +39,4 @@ expand_arg(struct narg* narg, union node** nptr, struct vartab* varstack, char *
 
   return n;
 }
+

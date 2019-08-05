@@ -15,3 +15,4 @@ env_get2(const char* const* envp, const char* s) {
       return envp[i] + len + 1;
   return 0;
 }
+

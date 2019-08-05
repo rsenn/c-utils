@@ -12,3 +12,4 @@ str_decamelize(const char* s) {
   stralloc_append(&out, "");
   return out.s;
 }
+

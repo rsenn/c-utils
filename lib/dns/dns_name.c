@@ -69,3 +69,4 @@ dns_name6(stralloc* out, const char ip[16]) {
   if(ip6_isv4mapped(ip)) return dns_name4(out, ip + 12);
   return dns_name6_inner(out, ip);
 }
+

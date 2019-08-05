@@ -43,3 +43,4 @@ fmt_escapecharshell(char* dest, uint32 ch) {
       return 4;
   }
 }
+

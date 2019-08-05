@@ -8,3 +8,4 @@ buffer_skipn(buffer* b, size_t n) {
   }
   return 0;
 }
+

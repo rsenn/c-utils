@@ -10,3 +10,4 @@ textbuf_free(buffer* b) {
     free(tb);
   }
 }
+

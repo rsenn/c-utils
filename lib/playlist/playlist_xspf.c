@@ -79,3 +79,4 @@ t = malloc(sizeof(track));
 
   pls->reader = (int (*)(playlist*))xspf_reader;
 }
+

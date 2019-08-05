@@ -33,3 +33,4 @@ var_chflg(char* v, int flags, int set) {
 
   return 0;
 }
+

@@ -14,3 +14,4 @@ buffer_mmapread_fd(buffer* b, fd_t fd) {
   if(b->n) b->deinit = buffer_munmap; /*    b->todo=MUNMAP; */
   return 0;
 }
+

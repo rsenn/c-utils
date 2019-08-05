@@ -16,3 +16,4 @@ var_export(char** dest) {
 
   return dest;
 }
+

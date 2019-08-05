@@ -12,3 +12,4 @@ array_indexof(array* a, uint64 membersize, void* data) {
   }
   return -1;
 }
+

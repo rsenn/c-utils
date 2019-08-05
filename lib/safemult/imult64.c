@@ -70,3 +70,4 @@ imult64(int64 a, int64 b, int64* c) {
 
 #endif
 #endif /* SAFEMULT_NO_INLINE */
+

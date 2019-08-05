@@ -12,3 +12,4 @@ var_get(struct vartab* varstack, const char* v, size_t* offset) {
   }
   return 0;
 }
+

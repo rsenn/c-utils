@@ -19,3 +19,4 @@ buffer_get_token_pred(buffer* b, char* x, size_t len, string_predicate p, void* 
   }
   return blen;
 }
+

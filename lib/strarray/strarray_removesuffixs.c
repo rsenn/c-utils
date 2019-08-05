@@ -21,3 +21,4 @@ strarray_removesuffixs(strarray* arr, const char* s) {
   }
   return 1;
 }
+

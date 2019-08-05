@@ -15,3 +15,4 @@ int case_diffs(const char *s,const char *t)
   }
   return ((int)(unsigned int) x) - ((int)(unsigned int) y);
 }
+

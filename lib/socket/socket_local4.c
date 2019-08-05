@@ -20,3 +20,4 @@ socket_local4(int s, char ip[4], uint16* port) {
     uint16_unpack_big((char*)&si.sin_port, port);
   return 0;
 }
+

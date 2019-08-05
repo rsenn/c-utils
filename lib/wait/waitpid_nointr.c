@@ -19,3 +19,4 @@ waitpid_nointr(int pid, int* wstat, int flags) {
   return r;
 #endif
 }
+

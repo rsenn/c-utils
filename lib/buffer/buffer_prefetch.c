@@ -25,3 +25,4 @@ buffer_prefetch(buffer* b, size_t n) {
   }
   return b->n - b->p;
 }
+

@@ -10,3 +10,4 @@ str_len(const char* in) {
   }
   return t - in;
 }
+

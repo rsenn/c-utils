@@ -6,3 +6,4 @@ cb_get_kv_ex(void* kv, void** value) {
   size_t keylen = str_len(key) + 1;
   *value = key + keylen;
 }
+

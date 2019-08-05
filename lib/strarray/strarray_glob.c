@@ -22,3 +22,4 @@ strarray_glob(strarray* arr, const char* pattern) {
   }
   return 0;
 }
+

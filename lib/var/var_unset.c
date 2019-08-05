@@ -17,3 +17,4 @@ var_unset(char* v) {
     var_cleanup(var);
   } while((var = var->parent));
 }
+

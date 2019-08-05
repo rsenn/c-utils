@@ -19,3 +19,4 @@ strlist_at_sa(const strlist* sl, size_t i) {
   }
   return sa;
 }
+

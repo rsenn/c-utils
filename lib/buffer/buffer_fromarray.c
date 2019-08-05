@@ -8,3 +8,4 @@ buffer_fromarray(buffer* b, array* a) {
   else
     buffer_frombuf(b, array_start(a), a->initialized);
 }
+

@@ -33,3 +33,4 @@ fmt_html(char* dest, const char* src, size_t len) {
   }
   return written;
 }
+

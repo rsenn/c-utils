@@ -19,3 +19,4 @@ stralloc_remove_all(stralloc* sa, register const char* delchars, register unsign
   }
   sa->len = (size_t)(t - sa->s);
 }
+

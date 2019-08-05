@@ -11,3 +11,4 @@ stralloc_trunc(stralloc* sa, size_t n) {
   }
   return 0;
 }
+

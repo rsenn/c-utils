@@ -16,3 +16,4 @@ expand_catsa(union node* node, stralloc* sa, struct vartab* varstack, char* argv
   expand_unescape(sa);
   stralloc_nul(sa);
 }
+

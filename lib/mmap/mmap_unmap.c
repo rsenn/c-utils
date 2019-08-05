@@ -18,3 +18,4 @@ mmap_unmap(void* mapped, size_t maplen) {
   return munmap(mapped, maplen);
 #endif
 }
+

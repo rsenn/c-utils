@@ -21,3 +21,4 @@ byte_zero(void* out, size_t len) {
   }
 #endif
 }
+

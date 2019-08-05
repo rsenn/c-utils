@@ -37,3 +37,4 @@ hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len) {
 
   return r;
 }
+

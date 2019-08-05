@@ -17,3 +17,4 @@ stralloc_diff(const stralloc* a, const stralloc* b) {
   }
   return j;
 }
+

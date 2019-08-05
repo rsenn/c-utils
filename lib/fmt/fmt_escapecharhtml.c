@@ -8,3 +8,4 @@ fmt_escapecharhtml(char* dest, unsigned int ch) {
 }
 
 #endif
+

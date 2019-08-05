@@ -16,3 +16,4 @@ buffer_getn(buffer* b, char* x, size_t len) {
   }
   return (ssize_t)blen;
 }
+

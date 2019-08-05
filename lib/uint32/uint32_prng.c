@@ -19,3 +19,4 @@ uint32_prng(uint32 value, uint32 seed) {
 
   return seed;
 }
+

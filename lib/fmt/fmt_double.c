@@ -127,3 +127,4 @@ fmt_double(char* dest, double d, int maxlen, int prec) {
   }
   return dest - oldbuf;
 }
+

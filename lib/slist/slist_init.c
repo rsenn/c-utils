@@ -5,3 +5,4 @@ void
 slist_init(slink** list) {
   *list = NULL;
 }
+

@@ -52,3 +52,4 @@ gpio_init() {
   /* [munmap() call is not necessary later, */
   /* because it will automatically unmap on process termination] */
 }
+

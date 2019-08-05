@@ -7,3 +7,4 @@ buffer_seek(buffer* b, size_t len) {
   if(n > b->n) n = b->n;
   b->p = n;
 }
+

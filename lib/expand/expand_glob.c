@@ -58,3 +58,4 @@ expand_glob(union node** nptr, struct vartab* varstack, int flags) {
 
   return n;
 }
+

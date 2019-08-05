@@ -22,3 +22,4 @@ socket_connect4(int s, const char* ip, uint16 port) {
   *((uint32*)&si.sin_addr) = *((uint32*)ip);
   return winsock2errno(connect(s, (struct sockaddr*)&si, sizeof(si)));
 }
+

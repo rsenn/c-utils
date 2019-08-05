@@ -9,3 +9,4 @@ scan_pb_type0_sint(const char* in, size_t len, int64* l) {
   *l = (-(m & 1)) ^ (m >> 1);
   return n;
 }
+

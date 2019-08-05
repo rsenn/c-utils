@@ -16,3 +16,4 @@ b0read(fd_t fd, char* buf, size_t len) {
 char buffer_0_space[128];
 static buffer it = BUFFER_INIT_READ(b0read, 0, buffer_0_space, sizeof buffer_0_space);
 buffer* buffer_0small = &it;
+

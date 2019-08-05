@@ -5,3 +5,4 @@ extern int
 stralloc_catwcs(stralloc* sa, const wchar_t* buf) {
   return stralloc_catwcb(sa, buf, wcslen(buf));
 }
+

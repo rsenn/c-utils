@@ -10,3 +10,4 @@ stralloc_catulong0(stralloc* sa, unsigned long int in, size_t n) {
   } else
     return 0;
 }
+

@@ -14,3 +14,4 @@ stralloc_readyplus(stralloc* sa, size_t len) {
     return stralloc_ready(sa, len);
   }
 }
+

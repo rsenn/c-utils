@@ -23,3 +23,4 @@ path_find(const char* path, const char* name, stralloc* out) {
   dir_close(&dir);
   return ret;
 }
+

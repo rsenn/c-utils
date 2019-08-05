@@ -30,3 +30,4 @@ stralloc_replace(stralloc* sa, size_t pos, size_t len, const char* to, size_t to
 
   return 1;
 }
+

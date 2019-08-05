@@ -13,3 +13,4 @@ stralloc_copyb(stralloc* sa, const char* buf, size_t len) {
   }
   return 0;
 }
+

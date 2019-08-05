@@ -11,3 +11,4 @@ stralloc_catxlong(stralloc* sa, unsigned long u) {
   sa->len += i;
   return 1;
 }
+

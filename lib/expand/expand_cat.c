@@ -81,3 +81,4 @@ expand_cat(const char* b, unsigned int len, union node** nptr, struct vartab* va
 
   return n;
 }
+

@@ -11,3 +11,4 @@ const char*
 socket_ip6loopback() {
   return (const char*)V6loopback;
 }
+

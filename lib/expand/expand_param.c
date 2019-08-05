@@ -261,3 +261,4 @@ expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack
   stralloc_free(&value);
   return n;
 }
+

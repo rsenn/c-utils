@@ -46,3 +46,4 @@ scan_int(const char* src, int* dest) {
   *dest = (neg ? -l : l);
   return (size_t)(tmp - src);
 }
+

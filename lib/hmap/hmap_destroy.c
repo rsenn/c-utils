@@ -8,3 +8,4 @@ hmap_destroy(HMAP_DB** hmap_db) {
   *hmap_db = NULL;
   return 0;
 }
+

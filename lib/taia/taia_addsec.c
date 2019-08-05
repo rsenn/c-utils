@@ -8,3 +8,4 @@ taia_addsec(struct taia* t, const struct taia* u, long secs) {
   t->nano = u->nano;
   t->atto = u->atto;
 }
+

@@ -23,3 +23,4 @@ dir_close(struct dir_s* d) {
   }
   free(d->dir_int);
 }
+

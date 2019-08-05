@@ -45,3 +45,4 @@ scan_short(const char* src, short* dest) {
   *dest = (short)(neg ? -l : l);
   return (size_t)(tmp - src);
 }
+

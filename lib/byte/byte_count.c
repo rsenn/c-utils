@@ -43,3 +43,4 @@ byte_count(const void* s, size_t n, char c) {
   }
   return count;
 }
+

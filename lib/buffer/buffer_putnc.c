@@ -6,3 +6,4 @@ buffer_putnc(buffer* b, char c, int ntimes) {
     if(buffer_put(b, &c, 1) < 0) return -1;
   return 0;
 }
+

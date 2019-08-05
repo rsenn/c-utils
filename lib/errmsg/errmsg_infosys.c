@@ -12,3 +12,4 @@ errmsg_infosys(const char* message, ...) {
   va_start(a, message);
   errmsg_write(1, strerror(errno), message, a);
 }
+

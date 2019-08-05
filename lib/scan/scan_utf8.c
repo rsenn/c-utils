@@ -58,3 +58,4 @@ scan_utf8(const char* in, size_t len, unsigned int* num) {
     *num = i;
   return (size_t)(in - orig);
 }
+

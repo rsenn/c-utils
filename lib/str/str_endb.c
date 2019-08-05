@@ -7,3 +7,4 @@ str_endb(const char* a, const char* x, size_t n) {
   a += alen - n;
   return alen >= n && byte_equal(a, n, x);
 }
+

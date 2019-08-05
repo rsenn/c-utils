@@ -32,3 +32,4 @@ env_merge(const char** v, size_t vmax, const char* const* envp, size_t envlen, c
   v[vlen++] = 0;
   return vlen;
 }
+

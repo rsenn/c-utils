@@ -22,3 +22,4 @@ strlist_froms(strlist* sl, const char* s, char delim) {
       stralloc_catc(&sl->sa, sl->sep);
   }
 }
+

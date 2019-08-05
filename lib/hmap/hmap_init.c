@@ -21,3 +21,4 @@ hmap_init(int bucket_size, HMAP_DB** hmap_db) {
 
   return HMAP_SUCCESS;
 }
+

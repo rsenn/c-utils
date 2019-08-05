@@ -14,3 +14,4 @@ gpio_set_input_resistor_pull(int const pin_nr, int const pull) {
   *GPPULL = 0;
   *GPPULLCLK0 = 0;
 }
+

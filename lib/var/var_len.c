@@ -15,3 +15,4 @@ var_len(const char* v) {
   }
   return s - v;
 }
+

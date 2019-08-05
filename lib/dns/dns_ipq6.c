@@ -69,3 +69,4 @@ dns_ip6_qualify(stralloc* out, stralloc* fqdn, const stralloc* in) {
   if(dns_resolvconfrewrite(&rules) == -1) return -1;
   return dns_ip6_qualify_rules(out, fqdn, in, &rules);
 }
+

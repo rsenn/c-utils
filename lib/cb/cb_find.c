@@ -28,3 +28,4 @@ cb_find_top_i(const critbit_tree* cb, const void* key, size_t keylen) {
   }
   return top;
 }
+

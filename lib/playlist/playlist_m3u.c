@@ -46,3 +46,4 @@ playlist_m3u(playlist* pls, buffer* b) {
   pls->type = M3U;
   pls->reader = (int (*)(playlist*))m3u_reader;
 }
+

@@ -10,3 +10,4 @@ byte_copy(void* out, size_t len, const void* in) {
   for(i = 0; i < len; ++i)
     s[i] = t[i];
 }
+

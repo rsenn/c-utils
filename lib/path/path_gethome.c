@@ -43,3 +43,4 @@ path_gethome(int uid) {
   buffer_close(&b);
   return NULL;
 }
+

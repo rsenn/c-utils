@@ -23,3 +23,4 @@ strlist_fromb(strlist* sl, const char* x, size_t n, const char* delim) {
     n -= i;
   }
 }
+

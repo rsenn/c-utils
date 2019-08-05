@@ -6,3 +6,4 @@ omf_record_end(omf_record* rec) {
 
   return data.end;
 }
+

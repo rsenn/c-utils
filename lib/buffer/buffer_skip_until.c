@@ -17,3 +17,4 @@ buffer_skip_until(buffer* b, const char* charset, size_t setlen) {
   }
   return n;
 }
+

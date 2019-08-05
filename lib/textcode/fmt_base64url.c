@@ -26,3 +26,4 @@ fmt_base64url(char* dest, const char* src, size_t len) {
   /* no padding for base64url */
   return written;
 }
+

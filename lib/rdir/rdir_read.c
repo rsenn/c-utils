@@ -87,3 +87,4 @@ rdir_pop(rdir_t* d) {
   d->sa = sa;
   free(prev);
 }
+

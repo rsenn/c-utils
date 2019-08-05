@@ -47,3 +47,4 @@ mmap_private(const char* filename, size_t* filesize) {
   return 0;
 #endif
 }
+

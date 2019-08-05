@@ -17,3 +17,4 @@ str_copyn(void* p1, const void* p2, size_t max) {
   *s = '\0';
   return len;
 }
+

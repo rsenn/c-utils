@@ -15,3 +15,4 @@ gpio_short_wait(void) {
   usleep(250000); /* 250ms. */
 #endif
 }
+

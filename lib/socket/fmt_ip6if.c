@@ -22,3 +22,4 @@ fmt_ip6if(char* dest, const char* ip, uint32 scope_id) {
   }
   return i;
 }
+

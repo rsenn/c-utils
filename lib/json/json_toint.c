@@ -16,3 +16,4 @@ json_toint(jsonval val) {
   stralloc_free(&sa);
   return ret;
 }
+

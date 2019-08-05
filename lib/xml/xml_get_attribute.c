@@ -11,3 +11,4 @@ xml_get_attribute(xmlnode* node, const char* attr) {
   }
   return NULL;
 }
+

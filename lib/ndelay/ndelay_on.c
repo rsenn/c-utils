@@ -20,3 +20,4 @@ ndelay_on(fd_t fd) {
   return fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NDELAY);
 #endif
 }
+

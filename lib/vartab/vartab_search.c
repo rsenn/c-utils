@@ -75,3 +75,4 @@ vartab_search(struct vartab* vartab, const char* v, struct search* context) {
 
   return NULL;
 }
+

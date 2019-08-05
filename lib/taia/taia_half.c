@@ -12,3 +12,4 @@ taia_half(tai6464* t, const tai6464* u) {
     t->nano += (uint32)500000000UL;
   t->sec.x = u->sec.x >> 1;
 }
+

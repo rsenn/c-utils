@@ -11,3 +11,4 @@ stralloc_utf8_latin1(stralloc* sa) {
   sa->len = w;
   return w;
 }
+

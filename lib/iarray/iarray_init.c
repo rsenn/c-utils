@@ -14,3 +14,4 @@ iarray_init(iarray* ia, size_t elemsize) {
     ia->bytesperpage = elemsize + sizeof(void*);
   ia->elemperpage = (ia->bytesperpage - sizeof(void*)) / elemsize;
 }
+

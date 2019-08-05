@@ -12,3 +12,4 @@ buffer_putspad(buffer* b, const char* x, size_t pad) {
   }
   return 0;
 }
+

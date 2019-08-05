@@ -41,3 +41,4 @@ array_splice(array* a, uint64 membersize, uint64 start, uint64 del, uint64 inser
 
   return newlen;
 }
+

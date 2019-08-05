@@ -6,3 +6,4 @@ buffer_free(void* buf) {
   buffer* b = buf;
   free(b->x);
 }
+

@@ -32,3 +32,4 @@ dns_domain_todot_cat(stralloc* out, const char* d) {
     if(!stralloc_append(out, ".")) return 0;
   }
 }
+

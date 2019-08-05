@@ -29,3 +29,4 @@ xml_delete(xmlnode* node) {
 
   free(node);
 }
+

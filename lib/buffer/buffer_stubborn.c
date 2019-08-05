@@ -24,3 +24,4 @@ buffer_stubborn(buffer_op_proto* op, fd_t fd, const char* buf, size_t len, void*
   }
   return 0;
 }
+

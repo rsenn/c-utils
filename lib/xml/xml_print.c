@@ -70,3 +70,4 @@ xml_print(xmlnode* node, buffer* b) {
 
   (node->parent ? xml_print_node : xml_print_list)(node, b, 0);
 }
+

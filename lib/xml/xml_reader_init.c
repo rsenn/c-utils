@@ -7,3 +7,4 @@ xml_reader_init(xmlreader* r, buffer* b) {
   r->ptr = &r->doc->children;
   r->b = b;
 }
+

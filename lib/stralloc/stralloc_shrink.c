@@ -12,3 +12,4 @@ stralloc_shrink(stralloc* sa) {
   }
   return 1;
 }
+

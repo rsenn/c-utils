@@ -31,3 +31,4 @@ buffer_read_fd(buffer* b, fd_t fd) {
   b->deinit = buffer_free;
   return 0;
 }
+

@@ -14,3 +14,4 @@ strlist_range(const strlist* sl, size_t from, size_t to) {
   ret.sa.a = 0;
   return ret;
 }
+

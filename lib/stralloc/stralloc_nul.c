@@ -11,3 +11,4 @@ stralloc_nul(stralloc* sa) {
   sa->s[sa->len] = '\0';
   return 1;
 }
+

@@ -11,3 +11,4 @@ expand_escape(stralloc* sa, const char* b, unsigned int n) {
     stralloc_catc(sa, *b++);
   }
 }
+

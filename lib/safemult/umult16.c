@@ -23,3 +23,4 @@ umult16(uint16 a, uint16 b, uint16* c) {
 
 #endif
 #endif /* SAFEMULT_NO_INLINE */
+

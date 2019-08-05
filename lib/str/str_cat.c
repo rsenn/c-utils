@@ -31,3 +31,4 @@ str_cat(void* p1, const void* p2) {
     ++len;
   }
 }
+

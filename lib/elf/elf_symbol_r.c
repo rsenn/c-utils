@@ -11,3 +11,4 @@ elf_symbol_r(void* elf, void* sym) {
   return r;
 
 }
+

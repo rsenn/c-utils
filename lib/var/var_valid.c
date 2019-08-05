@@ -15,3 +15,4 @@ var_valid(const char* v) {
     if(!*s || *s == '=') return 1;
   }
 }
+

@@ -12,3 +12,4 @@ scan_xlong(const char* src, unsigned long* dest) {
   *dest = l;
   return tmp - src;
 }
+

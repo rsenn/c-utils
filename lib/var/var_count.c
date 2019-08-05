@@ -11,3 +11,4 @@ var_count(int flags) {
 
   return n;
 }
+

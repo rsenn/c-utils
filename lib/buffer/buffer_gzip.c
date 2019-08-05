@@ -85,3 +85,4 @@ buffer_gzip_fd(buffer* b, fd_t fd, int level) {
   return 0;
 }
 #endif
+

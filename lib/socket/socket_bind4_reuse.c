@@ -16,3 +16,4 @@ socket_bind4_reuse(int s, const char* ip, uint16 port) {
 #endif
   return winsock2errno(socket_bind4(s, ip, port));
 }
+

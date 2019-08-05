@@ -8,3 +8,4 @@ xml_content(xmlnode* node) {
   }
   return NULL;
 }
+

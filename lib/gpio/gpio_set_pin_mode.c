@@ -13,3 +13,4 @@ gpio_set_pin_mode(int const pin_nr, int const mode) {
 
   GPFSEL[offset] |= mode << shift; /* Set mode/function. */
 }
+

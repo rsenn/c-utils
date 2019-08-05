@@ -51,3 +51,4 @@ dns_mx(stralloc* out, const stralloc* fqdn) {
   dns_domain_free(&q);
   return 0;
 }
+

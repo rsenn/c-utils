@@ -138,3 +138,4 @@ dns_resolvconfrewrite(stralloc* out) {
   if(!stralloc_copy(out, &rules)) return -1;
   return 0;
 }
+

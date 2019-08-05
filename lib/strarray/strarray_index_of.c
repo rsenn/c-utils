@@ -11,3 +11,4 @@ strarray_index_of(strarray* arr, const char* s) {
   }
   return -1;
 }
+

@@ -26,3 +26,4 @@ byte_case_start(const void* x1, size_t len, const void* x2) {
       return 0;
   }
 }
+

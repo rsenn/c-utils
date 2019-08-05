@@ -17,3 +17,4 @@ stralloc_copywcb(stralloc* sa, const wchar_t* buf, size_t len) {
   }
   return 0;
 }
+

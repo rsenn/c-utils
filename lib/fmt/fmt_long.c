@@ -9,3 +9,4 @@ fmt_long(char* dest, long int i) {
   } else
     return fmt_ulong(dest, (unsigned long)i);
 }
+

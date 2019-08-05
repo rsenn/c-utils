@@ -40,3 +40,4 @@ ucs_to_latin1_char(wchar_t ch) {
   }
   return 0;
 }
+

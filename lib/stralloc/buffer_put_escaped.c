@@ -23,3 +23,4 @@ buffer_put_escaped(buffer* b, const char* x, size_t len) {
   stralloc_free(&e);
   return ret;
 }
+

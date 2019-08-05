@@ -16,3 +16,4 @@ fmt_ip4(char* s, const char ip[4]) {
   }
   return len - 1;
 }
+

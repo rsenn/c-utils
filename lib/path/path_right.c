@@ -6,3 +6,4 @@ path_right(const char* s, size_t n) {
   while(p >= s && !path_issep(*p)) --p;
   return p - s;
 }
+

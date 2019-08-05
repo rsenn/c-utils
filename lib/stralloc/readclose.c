@@ -46,3 +46,4 @@ readclose(int64 fd, stralloc* sa, size_t bufsize) {
   }
   return readclose_append(fd, sa, bufsize);
 }
+

@@ -13,3 +13,4 @@ byte_fill(void* out, size_t len, int c) {
     ++s;
   }
 }
+

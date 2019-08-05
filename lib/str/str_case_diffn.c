@@ -25,3 +25,4 @@ str_case_diffn(const void* p1, const void* p2, size_t n) {
   }
   return x - y;
 }
+

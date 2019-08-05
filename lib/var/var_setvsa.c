@@ -49,3 +49,4 @@ var_setvsa(const char* name, stralloc* sa, int flags) {
   var->flags |= flags;
   return var->sa.s;
 }
+

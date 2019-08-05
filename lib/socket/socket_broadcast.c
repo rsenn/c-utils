@@ -12,3 +12,4 @@ socket_broadcast(int s) {
   int opt = 1;
   return winsock2errno(setsockopt(s, SOL_SOCKET, SO_BROADCAST, (void*)&opt, sizeof opt));
 }
+

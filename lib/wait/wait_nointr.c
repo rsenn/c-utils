@@ -20,3 +20,4 @@ wait_nointr(int* wstat) {
   return r;
 #endif
 }
+

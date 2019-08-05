@@ -11,3 +11,4 @@ buffer_putxlonglong0(buffer* b, uint64 l, int pad) {
 
   return buffer_put(b, buf, n);
 }
+

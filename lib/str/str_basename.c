@@ -14,3 +14,4 @@ str_basename(const char* s) {
   if(n && s[n] != '\0') s = s + n + 1;
   return (char*)s;
 }
+

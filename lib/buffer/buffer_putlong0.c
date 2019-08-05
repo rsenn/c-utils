@@ -10,3 +10,4 @@ buffer_putlong0(buffer* b, long l, int pad) {
   }
   return buffer_put(b, buf, n);
 }
+

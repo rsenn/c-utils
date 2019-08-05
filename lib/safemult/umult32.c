@@ -24,3 +24,4 @@ umult32(uint32 a, uint32 b, uint32* c) {
 
 #endif
 #endif /* SAFEMULT_NO_INLINE */
+

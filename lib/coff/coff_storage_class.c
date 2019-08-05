@@ -35,3 +35,4 @@ coff_storage_class(uint8 sclass) {
   }
   return NULL;
 }
+

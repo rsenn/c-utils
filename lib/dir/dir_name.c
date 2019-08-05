@@ -24,3 +24,4 @@ dir_name(struct dir_s* d)
   return dir_NAME(d);
 #endif
 }
+

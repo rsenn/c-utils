@@ -42,3 +42,4 @@ hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data) {
 
   return HMAP_TUPLE_NOT_FOUND;
 }
+

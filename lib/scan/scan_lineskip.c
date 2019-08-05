@@ -12,3 +12,4 @@ scan_lineskip(const char* s, size_t limit) {
   }
   return (size_t)(t - s);
 }
+

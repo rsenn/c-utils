@@ -11,3 +11,4 @@ buffer_getc(buffer* b, char* x) {
   ++b->p;
   return 1;
 }
+

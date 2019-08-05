@@ -6,3 +6,4 @@ charbuf_nextc(charbuf* b, char* ch) {
   if(ret >= 0) ret = charbuf_peekc(b, ch);
   return ret;
 }
+

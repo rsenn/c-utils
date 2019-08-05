@@ -17,3 +17,4 @@ buffer_get(buffer* b, char* x, size_t len) {
   }
   return r;
 }
+

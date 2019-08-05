@@ -18,3 +18,4 @@ str_diff(const char* a, const char* b) {
   }
   return j;
 }
+

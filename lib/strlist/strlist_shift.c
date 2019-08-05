@@ -18,3 +18,4 @@ strlist_shift(strlist* sl, const char** strp) {
   sl->sa.len -= offs;
   return 1;
 }
+

@@ -19,3 +19,4 @@ pe_offset2rva(uint8* base, int64 off) {
   }
   return 0;
 }
+

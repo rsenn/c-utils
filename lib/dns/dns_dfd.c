@@ -70,3 +70,4 @@ dns_domain_fromdot(char** out, const char* buf, size_t n) {
   *out = x;
   return 1;
 }
+

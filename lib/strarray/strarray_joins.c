@@ -13,3 +13,4 @@ strarray_joins(strarray* arr, stralloc* sa, const char* sep) {
   }
   return 1;
 }
+

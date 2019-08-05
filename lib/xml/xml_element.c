@@ -7,3 +7,4 @@ xml_element(const char* name) {
   node->name = str_dup(name);
   return node;
 }
+

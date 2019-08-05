@@ -25,3 +25,4 @@ xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, co
     tpl = tpl->next;
   }
 }
+

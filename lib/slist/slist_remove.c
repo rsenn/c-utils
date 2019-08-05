@@ -8,3 +8,4 @@ slist_remove(slink **p) {
   ret->next = NULL;
   return ret;
 }
+

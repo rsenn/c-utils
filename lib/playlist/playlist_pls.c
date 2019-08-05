@@ -63,3 +63,4 @@ playlist_pls(playlist* pls, buffer* b) {
   pls->type = PLS;
   pls->reader = (int (*)(playlist*))pls_reader;
 }
+

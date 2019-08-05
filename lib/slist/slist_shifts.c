@@ -10,3 +10,4 @@ slist_shifts(slink** list) {
   free(*(char**)(&link[1]));
   free(link);
 }
+

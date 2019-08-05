@@ -147,3 +147,4 @@ buffer_bz2(buffer* b, buffer* other, int compress) {
   return 1;
 }
 #endif
+

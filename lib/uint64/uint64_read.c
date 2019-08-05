@@ -6,3 +6,4 @@ uint64
 uint64_read(const char* in) {
   return uint32_read(in) | ((uint64)uint32_read(in + 4) << 32);
 }
+

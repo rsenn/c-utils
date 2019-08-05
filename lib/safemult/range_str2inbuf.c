@@ -15,3 +15,4 @@ range_str2inbuf(const void* buf, size_t len, const void* stringstart) {
     ;
   return (x + 1 <= y);
 }
+

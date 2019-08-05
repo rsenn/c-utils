@@ -15,3 +15,4 @@ hmap_size(HMAP_DB* my_hmap_db) {
   }
   return ret;
 }
+

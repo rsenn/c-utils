@@ -44,3 +44,4 @@ xml_has_attr(xmlnode* node, const void* n, strlist* attrs) {
   }
   return 0;
 }
+

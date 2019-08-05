@@ -9,3 +9,4 @@ charbuf_peek(charbuf* b) {
   }
   return (int)(unsigned int)(unsigned char)b->ch;
 }
+

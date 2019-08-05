@@ -7,3 +7,4 @@ array_reset(array* x) {
   x->p = 0;
   x->allocated = x->initialized = 0;
 }
+

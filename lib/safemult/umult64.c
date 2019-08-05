@@ -81,3 +81,4 @@ umult64(uint64 a, uint64 b, uint64* c) {
 
 #endif
 #endif /* SAFEMULT_NO_INLINE */
+

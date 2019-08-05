@@ -16,3 +16,4 @@ buffer_putptr(buffer* b, void* ptr) {
   buffer_puts(b, buf);
   return n + 2;
 }
+

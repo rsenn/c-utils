@@ -8,3 +8,4 @@ stralloc_removesuffixb(stralloc* sa, const char* x, size_t len) {
   }
   return 0;
 }
+

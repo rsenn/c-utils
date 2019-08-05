@@ -76,3 +76,4 @@ dns_ip4(stralloc* out, const stralloc* fqdn) {
   out->len &= ~3;
   return 0;
 }
+

@@ -20,3 +20,4 @@ expand_vars(union node* vars, union node** nptr, struct vartab* varstack, char *
   }
   return ret;
 }
+

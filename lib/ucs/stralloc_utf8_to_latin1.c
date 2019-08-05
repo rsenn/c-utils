@@ -24,3 +24,4 @@ stralloc_utf8_to_latin1(stralloc* out, const char* s, size_t len) {
   out->len += n;
   return n;
 }
+

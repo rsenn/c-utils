@@ -12,3 +12,4 @@ elf_get_section(void* elf, const char* name, size_t* szp) {
   }
   return 0;
 }
+

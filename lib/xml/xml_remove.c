@@ -7,3 +7,4 @@ xml_remove(xmlnode** nptr) {
   node->parent = NULL;
   return node;
 }
+

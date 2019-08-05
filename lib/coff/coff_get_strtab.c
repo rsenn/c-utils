@@ -8,3 +8,4 @@ coff_get_strtab(void* coff, uint32* szptr) {
     *szptr = size;
   return syms.end;
 }
+

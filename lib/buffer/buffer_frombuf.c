@@ -18,3 +18,4 @@ buffer_frombuf(buffer* b, const char* x, size_t l) {
   b->op = &dummyreadwrite;
   b->deinit = 0;
 }
+

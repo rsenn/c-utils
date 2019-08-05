@@ -21,3 +21,4 @@ hmap_truncate(HMAP_DB** hmap_db) {
   }
   return 0;
 }
+

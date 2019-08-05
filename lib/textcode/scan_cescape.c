@@ -103,3 +103,4 @@ unittest_main() {
   assert(scan_cescape("test\\Ua\");", buf, &dl) == 4 && dl == 4 && !memcmp(buf, "test", 4));
 }
 #endif
+

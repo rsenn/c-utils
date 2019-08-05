@@ -33,3 +33,4 @@ scan_uint(const char* src, unsigned int* dest) {
 #endif
   }
 }
+

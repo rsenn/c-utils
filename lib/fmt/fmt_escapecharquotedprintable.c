@@ -12,3 +12,4 @@ fmt_escapecharquotedprintable(char* dest, unsigned int ch) {
   }
   return 3;
 }
+

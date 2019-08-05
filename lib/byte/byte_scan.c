@@ -15,3 +15,4 @@ byte_scan(const char* in, size_t in_len, stralloc* out, size_t (*scan_function)(
   }
   return out->len;
 }
+

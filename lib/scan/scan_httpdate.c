@@ -120,3 +120,4 @@ done:
 #endif
   return (size_t)(c - in);
 }
+

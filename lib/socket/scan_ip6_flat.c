@@ -16,3 +16,4 @@ scan_ip6_flat(const char* s, char ip[16]) {
   }
   return 32;
 }
+

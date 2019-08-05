@@ -12,3 +12,4 @@ buffer_feed(buffer* b) {
   }
   return (ssize_t)(b->n - b->p);
 }
+

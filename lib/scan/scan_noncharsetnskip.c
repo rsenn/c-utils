@@ -16,3 +16,4 @@ scan_noncharsetnskip(const char* s, const char* charset, size_t limit) {
   }
   return (size_t)(t - s);
 }
+

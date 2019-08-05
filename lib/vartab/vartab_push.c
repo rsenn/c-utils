@@ -16,3 +16,4 @@ vartab_push(struct vartab* vartab) {
   vartab->level = varstack->level + 1;
   varstack = vartab;
 }
+

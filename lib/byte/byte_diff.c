@@ -27,3 +27,4 @@ byte_diff(const void* a, size_t len, const void* b) {
   return 0;
 #endif
 }
+

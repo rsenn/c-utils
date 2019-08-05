@@ -10,3 +10,4 @@ int
 buffer_skipspace(buffer* b) {
   return buffer_skip_pred(b, is_space);
 }
+

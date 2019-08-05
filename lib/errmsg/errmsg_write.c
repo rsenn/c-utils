@@ -19,3 +19,4 @@ errmsg_write(int64 fd, const char* err, const char* message, va_list list) {
   errmsg_puts(fd, "\n");
   errmsg_flush(fd);
 }
+

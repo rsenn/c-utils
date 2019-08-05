@@ -254,3 +254,4 @@ symlink(const char* oldpath, const char* newpath) {
   return CreateSymlink(newpath, oldpath, NULL);
 }
 #endif /* WINDOWS */
+

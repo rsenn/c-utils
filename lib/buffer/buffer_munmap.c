@@ -26,3 +26,4 @@ buffer_munmap(void* buf) {
   b->a = 0;
   b->deinit = NULL;
 }
+

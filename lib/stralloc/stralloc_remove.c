@@ -14,3 +14,4 @@ stralloc_remove(stralloc* sa, size_t pos, size_t n) {
   sa->len -= n;
   return n;
 }
+

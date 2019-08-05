@@ -23,3 +23,4 @@ dir_path(struct dir_s* d, stralloc* sa) {
   stralloc_cats(sa, dir_NAME(d));
 #endif
 }
+

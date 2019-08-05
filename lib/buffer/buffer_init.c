@@ -11,3 +11,4 @@ buffer_init(buffer* b, buffer_op_proto* op, fd_t fd, char* y, size_t ylen) {
   b->cookie = 0;
   b->deinit = 0;
 }
+

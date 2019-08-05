@@ -19,3 +19,4 @@ socket_mchopcount6(int s, char TTL) {
   return winsock2errno(socket_mcttl4(s, TTL));
 #endif
 }
+

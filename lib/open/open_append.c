@@ -35,3 +35,4 @@ open_append(const char* filename) {
 #endif
 );
 }
+

@@ -59,3 +59,4 @@ vartab_add(struct vartab* vartab, struct var* var, struct search* context) {
     *var->glink = var;
   }
 }
+

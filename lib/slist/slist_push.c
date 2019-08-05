@@ -9,3 +9,4 @@ slist_push(slink** list, slink* link) {
 
   *ptr = link;
  }
+

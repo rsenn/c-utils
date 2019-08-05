@@ -6,3 +6,4 @@ buffer_peek(buffer* b) {
 
   return b->x + b->p;
 }
+

@@ -39,3 +39,4 @@ socket_mcjoin6(int s, const char ip[16], int _interface) {
   return -1;
 #endif
 }
+

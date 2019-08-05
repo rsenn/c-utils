@@ -14,3 +14,4 @@ xml_get_attribute_sa(xmlnode* n, stralloc* sa, const char* name) {
   }
   return 0;
 }
+

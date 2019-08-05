@@ -48,3 +48,4 @@ scan_longn(const char* src, size_t n, long* dest) {
   *dest = (neg ? -l : l);
   return (size_t)(tmp - src);
 }
+

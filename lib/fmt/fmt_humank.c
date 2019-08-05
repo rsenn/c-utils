@@ -28,3 +28,4 @@ fmt_humank(char* dest, uint64 l) {
   dest[i + 2] = unit;
   return i + 3;
 }
+

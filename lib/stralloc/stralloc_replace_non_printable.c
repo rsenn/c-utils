@@ -12,3 +12,4 @@ stralloc_replace_non_printable(stralloc* sa, char ch) {
     }
   }
 }
+

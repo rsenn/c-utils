@@ -36,3 +36,4 @@ io_close(fd_t d) {
   }
   close(d);
 }
+

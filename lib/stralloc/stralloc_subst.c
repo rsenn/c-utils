@@ -19,3 +19,4 @@ stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, const
   }
   return 1;
 }
+

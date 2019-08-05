@@ -8,3 +8,4 @@ array_fail(array* x) {
   x->initialized = 0;
   x->allocated = -1;
 }
+

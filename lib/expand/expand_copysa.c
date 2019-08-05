@@ -15,3 +15,4 @@ expand_copysa(union node* node, stralloc* sa, struct vartab* varstack, char* arg
   byte_copy(sa, sizeof(stralloc), &tmpnode.narg.stra);
   stralloc_nul(sa);
 }
+

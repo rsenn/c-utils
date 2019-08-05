@@ -32,3 +32,4 @@ array_get(const array* const x, uint64 membersize, int64 pos) {
   if(__unlikely((int64)wanted >= x->allocated || wanted >= x->initialized)) return 0;
   return (void*)(x->p + pos * membersize);
 }
+

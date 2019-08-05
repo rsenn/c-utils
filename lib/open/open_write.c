@@ -31,3 +31,4 @@ open_write(const char* filename) {
 #endif
   );
 }
+

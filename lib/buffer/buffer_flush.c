@@ -12,3 +12,4 @@ buffer_flush(buffer* b) {
   if(r > 0) r = 0;
   return (int)r;
 }
+

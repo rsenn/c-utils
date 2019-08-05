@@ -29,3 +29,4 @@ fmt_html_tagarg(char* dest, const char* src, size_t len) {
   }
   return written;
 }
+

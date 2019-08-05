@@ -70,3 +70,4 @@ void
 xml_debug(xmlnode* node, buffer* b) {
   xml_debug_nodelist(node, b, 0);
 }
+

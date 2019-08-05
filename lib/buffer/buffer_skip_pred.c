@@ -12,3 +12,4 @@ buffer_skip_pred(buffer* b, int (*pred)(int)) {
   }
   return n;
 }
+

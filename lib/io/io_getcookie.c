@@ -13,3 +13,4 @@ io_getcookie(fd_t d) {
   return e ? e->cookie : 0;
 
 }
+

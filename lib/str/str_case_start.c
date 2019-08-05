@@ -22,3 +22,4 @@ str_case_start(const void* p1, const void* p2) {
     if(x != y) return 0;
   }
 }
+

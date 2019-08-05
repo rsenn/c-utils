@@ -12,3 +12,4 @@ errmsg_warnsys(const char* message, ...) {
   va_start(a, message);
   errmsg_write(2, strerror(errno), message, a);
 }
+

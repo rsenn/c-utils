@@ -9,3 +9,4 @@ strarray_from_argv(int argc, const char* const argv[], strarray* arr) {
   }
   return i;
 }
+

@@ -57,3 +57,4 @@ scan_ulongn(const char* src, size_t n, unsigned long int* dest) {
     return (size_t)(tmp - src);
   }
 }
+

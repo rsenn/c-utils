@@ -20,3 +20,4 @@ var_setvint(const char* v, int i, int flags) {
   var->offset = var->len + 1;
   return var->sa.s;
 }
+

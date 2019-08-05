@@ -42,3 +42,4 @@ wait_pid(int pid, int* wstat) {
   return waitpid_nointr(pid, wstat, 0);
 #endif
 }
+

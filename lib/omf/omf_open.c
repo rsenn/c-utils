@@ -10,3 +10,4 @@ omf_open(omf_file* omf, const char* filename) {
 
   return 1;
 }
+

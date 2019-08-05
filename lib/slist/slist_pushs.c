@@ -20,3 +20,4 @@ slist_pushs(slink** list, const char* s) {
   *((const char**)&n[1]) = str_dup(s);
   return 1;
 }
+

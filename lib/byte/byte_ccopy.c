@@ -11,3 +11,4 @@ byte_ccopy(void* dst, size_t count, const void* src, char c) {
   }
   return b - (const char*)src;
 }
+

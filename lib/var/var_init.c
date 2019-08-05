@@ -18,3 +18,4 @@ var_init(const char* v, struct var* var, struct search* context) {
 
   return var;
 }
+

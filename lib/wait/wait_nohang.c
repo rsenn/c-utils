@@ -16,3 +16,4 @@ wait_nohang(int *wstat) {
   return wait3(wstat, WNOHANG, (struct rusage *) 0);
 #endif
 }
+

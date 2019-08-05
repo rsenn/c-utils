@@ -98,3 +98,4 @@ omf_name(omf_record* rec) {
   }
   return NULL;
 }
+

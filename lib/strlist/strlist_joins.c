@@ -12,3 +12,4 @@ strlist_joins(const strlist* sl, stralloc* sa, const char* delim) {
     stralloc_catb(sa, &sl->sa.s[i], n);
   }
 }
+

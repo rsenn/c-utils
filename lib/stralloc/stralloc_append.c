@@ -12,3 +12,4 @@ stralloc_append(stralloc* sa, const char* in) {
   }
   return 0;
 }
+

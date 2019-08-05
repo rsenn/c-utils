@@ -8,3 +8,4 @@ slist_find(slink** l, int (*pred)(slink*)) {
   }
   return NULL;
 }
+

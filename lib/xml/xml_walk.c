@@ -17,3 +17,4 @@ xml_walk(xmlnode* root, int (*func)()) {
     }
   } while(node);
 }
+

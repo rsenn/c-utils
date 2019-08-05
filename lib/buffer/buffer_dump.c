@@ -78,3 +78,4 @@ buffer_dump(buffer* out, buffer* b) {
   buffer_puts(out, " ]");
   buffer_putnlflush(out);
 }
+

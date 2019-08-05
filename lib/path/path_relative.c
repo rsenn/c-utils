@@ -94,3 +94,4 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
 #endif
   return 1;
 }
+

@@ -18,3 +18,4 @@ list_add_before(list *l, node *p, node *before) {
   /* Update prev-reference of the <before> p */
   before->prev = p;
 }
+

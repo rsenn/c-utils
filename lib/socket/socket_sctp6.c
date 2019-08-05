@@ -18,3 +18,4 @@ socket_sctp6(void) {
   }
   return s;
 }
+

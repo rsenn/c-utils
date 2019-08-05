@@ -85,3 +85,4 @@ iarray_allocate(iarray* ia, size_t pos) {
   }
   return &iarray_data(*p)[(pos - index) * ia->elemsize];
 }
+

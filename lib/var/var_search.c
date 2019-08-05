@@ -31,3 +31,4 @@ var_search(struct vartab* varstack, const char* v, struct search* context) {
   context->global = 1;
   return var;
 }
+

@@ -9,3 +9,4 @@ rdir_open(rdir_t* d, const char* p) {
   d->prev = NULL;
   return ret;
 }
+

@@ -16,3 +16,4 @@ byte_rchr(const void* haystack, size_t len, char needle) {
   }
   return len;
 }
+

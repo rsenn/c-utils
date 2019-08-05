@@ -30,3 +30,4 @@ sig_block(void) {
   sigprocmask(SIG_BLOCK, &newset, &oldset);
 #endif
 }
+

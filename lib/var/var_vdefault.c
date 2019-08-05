@@ -15,3 +15,4 @@ var_vdefault(struct vartab* varstack, const char* v, const char* def, size_t* le
   if(lenp) *lenp = str_len(def);
   return def;
 }
+

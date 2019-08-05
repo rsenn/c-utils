@@ -90,3 +90,4 @@ dir_type(struct dir_s* d) {
 #endif
   return r;
 }
+

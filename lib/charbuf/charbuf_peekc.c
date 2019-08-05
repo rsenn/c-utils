@@ -9,3 +9,4 @@ charbuf_peekc(charbuf* b, char* ch) {
   }
   return ret;
 }
+

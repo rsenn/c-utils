@@ -158,3 +158,4 @@ dns_resolvconfip(char s[256]) {
   byte_copy(s, 256, ip);
   return 0;
 }
+

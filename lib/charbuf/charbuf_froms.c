@@ -14,3 +14,4 @@ charbuf_froms(charbuf* b, char** s) {
   b->op = charbuf_readstr;
   b->ptr = (void*)s;
 }
+

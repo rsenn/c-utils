@@ -10,3 +10,4 @@ xml_content_sa(xmlnode* node, stralloc* sa) {
   }
   return sa->len - n;
 }
+

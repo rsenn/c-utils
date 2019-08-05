@@ -19,3 +19,4 @@ list_push(list *l, node *p) {
   /* Now put the p to list tail */
   l->tail = p;
 }
+

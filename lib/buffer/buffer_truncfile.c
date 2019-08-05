@@ -29,3 +29,4 @@ buffer_truncfile(buffer* b, const char* fn) {
   b->deinit = buffer_free;
   return 0;
 }
+

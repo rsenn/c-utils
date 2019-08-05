@@ -18,3 +18,4 @@ list_add_after(list *l, node *p, node *after) {
   /* Update next-reference of the <after> p */
   after->next = p;
 }
+

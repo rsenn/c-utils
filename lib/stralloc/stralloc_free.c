@@ -9,3 +9,4 @@ stralloc_free(stralloc* sa) {
   }
   sa->s = 0;
 }
+

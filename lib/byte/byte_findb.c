@@ -16,3 +16,4 @@ byte_findb(const void* haystack, size_t hlen, const void* what, size_t wlen) {
   }
   return hlen;
 }
+

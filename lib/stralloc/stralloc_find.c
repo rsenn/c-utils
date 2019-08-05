@@ -7,3 +7,4 @@ size_t
 stralloc_find(const stralloc* sa, const stralloc* what) {
   return stralloc_findb(sa, what->s, what->len);
 }
+

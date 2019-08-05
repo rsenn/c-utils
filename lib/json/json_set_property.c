@@ -42,3 +42,4 @@ json_set_property(jsonval* obj, jsonval name, jsonval value) {
 
   return ret;
 }
+

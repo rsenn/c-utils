@@ -108,3 +108,4 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   return fd;
 #endif
 }
+

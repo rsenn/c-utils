@@ -18,3 +18,4 @@ var_copys(const char* s, int flags) {
 
   return var;
 }
+

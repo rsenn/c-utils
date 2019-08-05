@@ -21,3 +21,4 @@ fmt_ulong0(char* dest, unsigned long i, size_t pad) {
 
   return len < pad ? pad : len;
 }
+

@@ -8,3 +8,4 @@ slist_add_before(slink** l, slink* p, slink* before) {
     p->next = *l;
     *l = p;
 }
+

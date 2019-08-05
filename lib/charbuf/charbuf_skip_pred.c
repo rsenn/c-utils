@@ -11,3 +11,4 @@ charbuf_skip_pred(charbuf* b, int (*pred)(int)) {
   }
   return n;
 }
+

@@ -11,3 +11,4 @@ xml_add_child(xmlnode* parent, xmlnode* node) {
 
   *nptr = node;
 }
+

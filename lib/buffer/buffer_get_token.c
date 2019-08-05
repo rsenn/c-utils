@@ -42,3 +42,4 @@ buffer_get_token(buffer* b, char* x, size_t len, const char* charset, size_t set
   }
   return (ssize_t)blen;
 }
+

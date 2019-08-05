@@ -22,3 +22,4 @@ elf_get_value(void* elf, void* ptr, unsigned off32, unsigned size32, unsigned of
   }
   return ret;
 }
+

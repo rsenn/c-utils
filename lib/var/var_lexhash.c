@@ -64,3 +64,4 @@ var_lexhash(const char* v, VAR_HASH* h) {
 
   return (size_t)p - (size_t)v;
 }
+

@@ -5,3 +5,4 @@ size_t
 linked_list_size(linked_list* list) {
   return list->size;
 }
+

@@ -11,3 +11,4 @@ cb_new_kv(const char* key, size_t keylen, const void* value, size_t len, void* o
   byte_copyr(dst + keylen + 1, len, value);
   return len + keylen + 1;
 }
+

@@ -14,3 +14,4 @@ buffer_mmapprivate_fd(buffer* b, fd_t fd) {
   b->deinit = buffer_munmap;
   return 0;
 }
+

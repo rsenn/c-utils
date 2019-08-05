@@ -60,3 +60,4 @@ fmt_escapecharjson(char* dest, uint32 ch, char quote) {
   }
   return n + 6;
 }
+

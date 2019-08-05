@@ -11,3 +11,4 @@ str_utf8_latin1(char* s) {
   s[w] = '\0';
   return w;
 }
+

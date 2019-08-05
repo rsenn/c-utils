@@ -11,3 +11,4 @@ case_lowerb(void* S, size_t len) {
     ++s;
   }
 }
+

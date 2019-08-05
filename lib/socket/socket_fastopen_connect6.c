@@ -23,3 +23,4 @@ socket_fastopen_connect6(int s, const char* ip, uint16 port, uint32 scope_id, co
   }
   return r;
 }
+
