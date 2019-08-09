@@ -1338,7 +1338,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 ifeq ($(USE_DIET),1)
-$(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += -lcompat -lpthread
+$(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += -lpthread
 endif
 $(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): $(BUILDDIR)pkgcfg.o $(BUILDDIR)getopt.o $(BUILDDIR)wordexp.o $(call add-library,env slist cbmap path unix dir strarray strlist stralloc buffer errmsg array safemult mmap byte scan fmt str open uint32)
@@ -1348,7 +1348,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 ifneq ($(DIET),)
-$(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += -lcompat
+$(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS +=
 endif
 $(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)sln$(M64_)$(EXEEXT): $(BUILDDIR)sln.o $(call add-library, slist cbmap path dir stralloc buffer errmsg strarray strlist array safemult mmap byte scan fmt str open uint32)
@@ -1548,7 +1548,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)redir$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB) -lcompat
+$(BUILDDIR)redir$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
 $(BUILDDIR)redir$(M64_)$(EXEEXT): $(BUILDDIR)redir.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
