@@ -19,7 +19,7 @@
 			"file": "xmlpp.c",
 			"settings":
 			{
-				"buffer_size": 3509,
+				"buffer_size": 3884,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -36,7 +36,7 @@
 			"file": "lib/open/open_trunc.c",
 			"settings":
 			{
-				"buffer_size": 619,
+				"buffer_size": 620,
 				"line_ending": "Unix"
 			}
 		},
@@ -72,7 +72,7 @@
 			"file": "lib/fmt/fmt_escapecharjson.c",
 			"settings":
 			{
-				"buffer_size": 1221,
+				"buffer_size": 1222,
 				"line_ending": "Unix"
 			}
 		},
@@ -80,7 +80,7 @@
 			"file": "lib/fmt.h",
 			"settings":
 			{
-				"buffer_size": 6698,
+				"buffer_size": 6840,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -89,7 +89,7 @@
 			"file": "lib/json/json_tostring.c",
 			"settings":
 			{
-				"buffer_size": 968,
+				"buffer_size": 969,
 				"line_ending": "Unix"
 			}
 		},
@@ -97,7 +97,7 @@
 			"file": "lib/open/open_rw.c",
 			"settings":
 			{
-				"buffer_size": 598,
+				"buffer_size": 599,
 				"line_ending": "Unix"
 			}
 		}
@@ -390,17 +390,6 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
-	"expanded_folders":
-	[
-		"/home/enki/Sources/c-utils",
-		"/home/enki/Sources/c-utils/lib",
-		"/home/enki/Sources/c-utils/lib/alloc",
-		"/home/enki/Sources/c-utils/lib/array",
-		"/home/enki/Sources/c-utils/lib/byte",
-		"/home/enki/Sources/c-utils/lib/open",
-		"/home/enki/Sources/c-utils/lib/path",
-		"/home/enki/Sources/c-utils/lib/sig"
-	],
 	"file_history":
 	[
 		"/home/roman/Sources/dirlist/lib/json/json_print.c",
@@ -759,15 +748,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3509,
+						"buffer_size": 3884,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2629,
-								2629
+								0,
+								0
 							]
 						],
 						"settings":
@@ -807,6 +796,7 @@
 						],
 						"settings":
 						{
+							"origin_encoding": "ASCII",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -824,7 +814,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 619,
+						"buffer_size": 620,
 						"regions":
 						{
 						},
@@ -837,6 +827,7 @@
 						],
 						"settings":
 						{
+							"origin_encoding": "ASCII",
 							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
@@ -976,20 +967,21 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1221,
+						"buffer_size": 1222,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								706,
-								706
+								0,
+								0
 							]
 						],
 						"settings":
 						{
 							"git_gutter_is_enabled": true,
+							"origin_encoding": "ASCII",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -1007,15 +999,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6698,
+						"buffer_size": 6840,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6442,
-								6442
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1041,7 +1033,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 968,
+						"buffer_size": 969,
 						"regions":
 						{
 						},
@@ -1055,6 +1047,7 @@
 						"settings":
 						{
 							"git_gutter_is_enabled": true,
+							"origin_encoding": "ASCII",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -1072,7 +1065,7 @@
 					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 598,
+						"buffer_size": 599,
 						"regions":
 						{
 						},
@@ -1085,6 +1078,7 @@
 						],
 						"settings":
 						{
+							"origin_encoding": "ASCII",
 							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,

@@ -29,9 +29,9 @@ if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl" OR NOT EXISTS "${CMAKE_SOUR
 
 
 endif()
-if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
-  add_subdirectory(3rdparty/openssl)
-endif()
+#if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
+#  add_subdirectory(3rdparty/openssl)
+#endif()
 
 set(BUILD_SHARED_LIBS FALSE)
 
@@ -262,7 +262,7 @@ target_link_libraries(elf byte str range mmap uint64 uint32)
 target_link_libraries(fmt byte str uint64 uint32)
 target_link_libraries(gpio mmap)
 target_link_libraries(hmap str)
-target_link_libraries(http dns errmsg byte io scan socket str ${CRYPTO_LIBRARIES})
+target_link_libraries(http dns errmsg byte io scan socket stralloc str ${CRYPTO_LIBRARIES})
 target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
 target_link_libraries(json charbuf hmap scan)
 target_link_libraries(map str)
@@ -277,7 +277,7 @@ target_link_libraries(socket byte fmt ndelay scan uint16 ${LIBMSWSOCK})
 target_link_libraries(str byte)	
 target_link_libraries(stralloc open byte fmt str)
 target_link_libraries(strarray array)
-target_link_libraries(strlist stralloc)
+target_link_libraries(strlist stralloc buffer)
 target_link_libraries(taia tai)
 target_link_libraries(textbuf byte playlist)
 target_link_libraries(uint64 uint32)
@@ -316,7 +316,7 @@ set(COMPRESSION_LIBRARIES
 )
 
 if(OPENSSL_LIBRARIES)
-  set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES})
+  set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES} pthread)
 endif(OPENSSL_LIBRARIES)
 
 add_program(binfmttest binfmt)
@@ -375,7 +375,9 @@ add_program(jsonpp json errmsg unix)
 add_program(xml2json json xml errmsg unix)
 add_program(xml2moon xml textcode errmsg)
 
-add_program(httpproxy http io)
+add_program(httpproxy http io map)
+add_program(tcpproxy http io)
+add_program(redir http io)
 
 add_subdirectory(tests)
 #add_subdirectory(examples)

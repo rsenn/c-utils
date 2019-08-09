@@ -86,6 +86,25 @@ cfg-android ()
     )
 }
 
+cfg-tcc() {
+ (build=$(${CC:-gcc} -dumpmachine | sed 's,-unknown-,-,g; s,-gnu,-tcc,g')
+  host=${build//-gnu/-tcc}
+  : ${builddir=build/$host}
+  : ${prefix=/opt/tcc}
+  : ${libdir=/opt/tcc/lib-${host%%-*}}
+  : ${bindir=/opt/tcc/bin-${host%%-*}}
+  
+  CC="tcc" \
+  PKG_CONFIG="$host-pkg-config" \
+  LIBS="${LIBS:+$LIBS }-liconv -lpthread" \
+  cfg \
+    -DSHARED_LIBS=OFF \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_VERBOSE_MAKEFILE=ON \
+    -DCMAKE_TOOLCHAIN_FILE="/usr/share/cmake-3.10/Modules/Platform/Linux-TinyCC-C.cmake" \
+    "$@")
+}
+
 cfg-diet() {
  (build=$(${CC:-gcc} -dumpmachine)
   host=${build/-gnu/-dietlibc}

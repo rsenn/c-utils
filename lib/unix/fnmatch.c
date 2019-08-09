@@ -43,10 +43,6 @@
 //#if defined(_WIN32) || defined(__MINGW64__) || defined(_MSC_VER)
 #if !defined(HAVE_FNMATCH)
 
-#ifndef errno
-extern int errno;
-#endif
-
 /* Match STRING against the filename pattern PATTERN, returning zero if
    it matches, nonzero if not.  */
 int

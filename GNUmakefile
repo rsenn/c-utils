@@ -28,10 +28,10 @@ endef
 OS ?= $(shell uname -o | tr "[[:upper:]]" "[[:lower:]]")
 
 ifeq ($(CC),)
-  CC := gcc
+	CC := gcc
 endif
 ifeq ($(CC),cc)
-  CC := gcc
+	CC := gcc
 endif
 
 CXX = g++
@@ -68,11 +68,11 @@ define CHECK_SCOPE_ID =
 #include <netinet/in.h>\n
 \n
 int main() {\n
-  struct sockaddr_in6 sa;\n
-  sa.sin6_family = PF_INET6;\n
-  sa.sin6_scope_id = 23;\n
-  (void)sa;\n
-  return 0;\n
+	struct sockaddr_in6 sa;\n
+	sa.sin6_family = PF_INET6;\n
+	sa.sin6_scope_id = 23;\n
+	(void)sa;\n
+	return 0;\n
 }\n
 endef
 
@@ -239,7 +239,7 @@ ifeq ($(CROSS_COMPILE),)
 HOST ?= $(BUILD)
 else
 ifeq ($(USE_MUSL),1)
-    HOST := $(subst gnu,musl,$(BUILD))
+	  HOST := $(subst gnu,musl,$(BUILD))
 else
 ifeq ($(USE_DIET),1)
 HOST := $( shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
@@ -311,19 +311,19 @@ ifneq ($(CROSS_COMPILE),)
 ifeq ($(call cmd-exists,$(CROSS_COMPILE)$(PKG_CONFIG)),1)
 PKG_CONFIG := $(CROSS_COMPILE)$(PKG_CONFIG)
 else
-  P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/sys*root/*/lib/pkgconfig)
-  ifeq ($(call file-exists,$(P)),1)
-  PKG_CONFIG_PATH := $(P)
-  ifeq ($(SYSROOT),)
-  SYSROOT := $(dir $(subst /lib/pkgconfig,,$(P)))
+	P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/sys*root/*/lib/pkgconfig)
+	ifeq ($(call file-exists,$(P)),1)
+	PKG_CONFIG_PATH := $(P)
+	ifeq ($(SYSROOT),)
+	SYSROOT := $(dir $(subst /lib/pkgconfig,,$(P)))
 #$(info SYSROOT=$(SYSROOT))
-  endif
-  else
-  P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/lib/pkgconfig)
-  ifeq ($(call file-exists,$(P)),1)
-  PKG_CONFIG_PATH := $(P)
-  endif
-  endif
+	endif
+	else
+	P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/lib/pkgconfig)
+	ifeq ($(call file-exists,$(P)),1)
+	PKG_CONFIG_PATH := $(P)
+	endif
+	endif
 endif
 endif
 
@@ -382,10 +382,10 @@ endif
 
 USE_WINSOCK := $(call check-function-exists,WSAStartup,-lws2_32,winsock2.h)
 ifeq ($(MSYS),1)
-  USE_WINSOCK := 0
+	USE_WINSOCK := 0
 endif
 ifeq ($(CYGWIN),1)
-  USE_WINSOCK := 0
+	USE_WINSOCK := 0
 endif
 #$(info USE_WINSOCK=$(USE_WINSOCK))
 ifeq ($(USE_WINSOCK),1)
@@ -524,14 +524,14 @@ ifneq (${builddir},)
 BUILDDIR = ${builddir}/$(BUILD_TYPE)/
 else
 ifneq ($(HOST),$(BUILD))
-  BUILDDIR = build/$(HOST)/$(BUILD_TYPE)/
+	BUILDDIR = build/$(HOST)/$(BUILD_TYPE)/
 else
 #	ifeq ($(CROSS_COMPILE),)
 	BUILDDIR = build/$(HOST)/$(BUILD_TYPE)/
 #	else
 #	BUILDDIR = build/$(patsubst %-,%,$(CROSS_COMPILE))/$(BUILD_TYPE)/
 #	endif
-  endif
+	endif
 endif
 
 export BUILDDIR
@@ -559,7 +559,7 @@ ifeq ($(SYS),mingw32)
 READDIR :=0
 else
 ifeq ($(SYS),msys)
-  READDIR := 1
+	READDIR := 1
 #DEFINES += USE_READDIR=0
 endif
 endif
@@ -648,7 +648,7 @@ endif
 endif
 
 #$(info BUILDDIR: \
-  )
+	)
 #$(info builddir: $(builddir))
 ifeq ($(BUILD_TYPE),Prof)
 DEBUG := 0
@@ -785,14 +785,14 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 #LIBRARIES = $(patsubst %,$(BUILDDIR)lib%$(M64_).a,z bz2 lzma)
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc cmake-run httpproxy)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc cmake-run tcpproxy redir httpproxy)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
 LIBSOURCES = $(wildcard lib/*/*.c)
 ifeq ($(DO_CXX),1)
 PROGRAMS += \
-  piccfghex$(M64_)$(EXEEXT)
+	piccfghex$(M64_)$(EXEEXT)
 #  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXEEXT)
 endif
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
@@ -806,7 +806,7 @@ VPATH = $(BUILDDIR):.:lib:src
 ##$(info ARCH: $(ARCH))
 ##$(info BUILD: $(BUILD))
 ##$(info BUILDDIR: \
-  )
+	)
 ##$(info BUILDTYPE: $(BUILDTYPE))
 ##$(info CCVER: $(CCVER))
 ##$(info CROSS_COMPILE: $(CROSS_COMPILE))
@@ -819,7 +819,7 @@ VPATH = $(BUILDDIR):.:lib:src
 ##$(info STATIC: $(STATIC))
 ##$(info TRIPLET: $(TRIPLET))
 ifeq ($(OS),darwin)
-  READDIR := 1
+	READDIR := 1
 #DEFINES += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
 #CPPFLAGS += -DUSE_READDIR=1
@@ -931,9 +931,9 @@ else
 ifeq ($(call file-exists,/opt/$(HOST)/sysroot),1)
 SYSROOT := /opt/$(HOST)/sys-root
 else
-  ifneq ($(HOST),)
+	ifneq ($(HOST),)
 SYSROOT := /usr/$(HOST)
-  endif
+	endif
 endif
 endif
 endif
@@ -942,7 +942,7 @@ endif
 endif
 
 ifeq ($(SYSROOT),/usr/)
-  SYSROOT :=
+	SYSROOT :=
 endif
 
 ifneq ($(SYS),msys)
@@ -962,24 +962,24 @@ $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
 ifneq ($(HAVE_ZLIB),1)
-  BUILD_ZLIB = 1
-  BUILD_3RD_PARTY += z
-  LIBZ = $(BUILDDIR)libz.a
-  HAVE_ZLIB = 1
+	BUILD_ZLIB = 1
+	BUILD_3RD_PARTY += z
+	LIBZ = $(BUILDDIR)libz.a
+	HAVE_ZLIB = 1
 $(info Building libz from 3rdparty/zlib)
 endif
 ifneq ($(HAVE_LIBBZ2),1)
-  BUILD_LIBBZ2 = 1
-  BUILD_3RD_PARTY += bz2
-  LIBBZ2 = $(BUILDDIR)libbz2.a
-  HAVE_LIBBZ2 = 1
+	BUILD_LIBBZ2 = 1
+	BUILD_3RD_PARTY += bz2
+	LIBBZ2 = $(BUILDDIR)libbz2.a
+	HAVE_LIBBZ2 = 1
 $(info Building libbz2 from 3rdparty/bzip2)
 endif
 ifneq ($(HAVE_LIBLZMA),1)
-  BUILD_LIBLZMA = 1
-  BUILD_3RD_PARTY += lzma
-  LIBLZMA = $(BUILDDIR)liblzma.a
-  HAVE_LIBLZMA = 1
+	BUILD_LIBLZMA = 1
+	BUILD_3RD_PARTY += lzma
+	LIBLZMA = $(BUILDDIR)liblzma.a
+	HAVE_LIBLZMA = 1
 $(info Building libz from 3rdparty/zlib)
 $(info Building liblzma from 3rdparty/xz)
 endif
@@ -1529,6 +1529,27 @@ endif
 
 $(BUILDDIR)httpproxy$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
 $(BUILDDIR)httpproxy$(M64_)$(EXEEXT): $(BUILDDIR)httpproxy.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
+	  $(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)proxy$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
+$(BUILDDIR)proxy$(M64_)$(EXEEXT): $(BUILDDIR)proxy.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
+	  $(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)tcpproxy$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
+$(BUILDDIR)tcpproxy$(M64_)$(EXEEXT): $(BUILDDIR)tcpproxy.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
+	  $(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)redir$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
+$(BUILDDIR)redir$(M64_)$(EXEEXT): $(BUILDDIR)redir.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1594,7 +1615,7 @@ uninstall:
 	@for PROGRAM in $(PROGRAMS); do \
 		echo $(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
 		$(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
-  done
+	done
 
 slackpkg: all-release
 	@set -x; distdir="_inst"; rm -rf $$distdir; \
@@ -1607,7 +1628,7 @@ inst-slackpkg: slackpkg
 	for x in /m*/*/pmagic/pmodules/; do \
 		rm -vf "$$x"/dirlist-*.txz; \
 		cp -vf dirlist-`date +%Y%m%d`-slackware.txz "$$x"; \
-  done
+	done
 
 -include build/deps.mk
 
