@@ -107,11 +107,12 @@ cfg-tcc() {
 
 cfg-diet() {
  (build=$(${CC:-gcc} -dumpmachine)
+  build=${build/-unknown-/-}
   host=${build/-gnu/-dietlibc}
-  : ${builddir=build/$host}
+  builddir=build/cmake-$host
   : ${prefix=/opt/diet}
-  : ${libdir=/opt/diet/lib-${host%%-*}}
-  : ${bindir=/opt/diet/bin-${host%%-*}}
+  libdir=$prefix/lib-${host%%-*}
+  bindir=$prefix/bin-${host%%-*}
   
   CC="diet-gcc" \
   PKG_CONFIG="$host-pkg-config" \
@@ -120,6 +121,7 @@ cfg-diet() {
     -DSHARED_LIBS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_VERBOSE_MAKEFILE=ON \
+    -DLIB_SUFFIX="-`uname -m`" \
     "$@")
 }
 

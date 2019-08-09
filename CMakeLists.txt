@@ -43,6 +43,7 @@ endif(NOT ENABLE_SHARED)
 
 include(FindPkgConfig)
 include(CheckFunctionExists)
+include(CheckLibraryExists)
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -59,6 +60,11 @@ if(NOT HAVE_LSEEK64)
 else(NOT HAVE_LSEEK64)
     add_definitions(-Dio_seek=lseek64)
 endif(NOT HAVE_LSEEK64)
+
+check_library_exists(compat daemon "" HAVE_COMPAT_LIB)
+if(HAVE_COMPAT_LIB)
+  set(LIBCOMPAT compat)
+endif()
 
 #include(${CMAKE_SOURCE_DIR}/FindZlib.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
@@ -377,7 +383,7 @@ add_program(xml2moon xml textcode errmsg)
 
 add_program(httpproxy http io map)
 add_program(tcpproxy http io)
-add_program(redir http io)
+add_program(redir http io ${LIBCOMPAT})
 
 add_subdirectory(tests)
 #add_subdirectory(examples)
