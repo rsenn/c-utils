@@ -4,202 +4,72 @@
 		"selected_items":
 		[
 			[
-				"range",
-				"range"
+				"Parsigr",
+				"ParsigramBalances"
 			],
 			[
-				"USE_",
-				"USE_HD44780_LCD"
+				"require_",
+				"require_parsigram"
+			],
+			[
+				"capture_",
+				"capture_api_errors"
+			],
+			[
+				"acti",
+				"activate_token"
+			],
+			[
+				"encode",
+				"encode_query_string"
+			],
+			[
+				"getaddres",
+				"getaddressesbylabel\tabc"
+			],
+			[
+				"split",
+				"split_string\tabc"
+			],
+			[
+				"capture",
+				"capture_api_errors\tabc"
+			],
+			[
+				"Trans",
+				"TransactionEndpoint\tabc"
+			],
+			[
+				"capture_er",
+				"capture_errors_json"
+			],
+			[
+				"cap",
+				"capture_errors_json"
 			]
 		]
 	},
 	"buffers":
 	[
-		{
-			"file": "xmlpp.c",
-			"settings":
-			{
-				"buffer_size": 3884,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "torrent-progress.c",
-			"settings":
-			{
-				"buffer_size": 6757,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/open/open_trunc.c",
-			"settings":
-			{
-				"buffer_size": 620,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "xml2json.c",
-			"settings":
-			{
-				"buffer_size": 8692,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "jsonpp.c",
-			"settings":
-			{
-				"buffer_size": 3804,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 1450 files for \"fmt_escapecharjson\" (case sensitive)\n\n/home/roman/Sources/dirlist/lib/fmt.h:\n  146  \n  147  size_t fmt_escapecharshell(char* dest, uint32 ch);\n  148: size_t fmt_escapecharjson(char* dest, uint32 ch);\n  149  #endif\n  150  \n\n/home/roman/Sources/dirlist/lib/fmt/fmt_escapecharjson.c:\n   15  \n   16  size_t\n   17: fmt_escapecharjson(char* dest, uint32 ch) {\n   18    size_t n;\n   19    switch(ch) {\n\n/home/roman/Sources/dirlist/lib/json/json_print.c:\n   71    while(len--) {\n   72      if(*x == fmt->quote || *x == '\\\\')\n   73:       buffer_put(b, tmp, fmt_escapecharjson(tmp, *x));\n   74      else\n   75        buffer_PUTC(b, *x);\n\n3 matches across 3 files\n",
-			"settings":
-			{
-				"buffer_size": 680,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "lib/fmt/fmt_escapecharjson.c",
-			"settings":
-			{
-				"buffer_size": 1222,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/fmt.h",
-			"settings":
-			{
-				"buffer_size": 6840,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/json/json_tostring.c",
-			"settings":
-			{
-				"buffer_size": 969,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/open/open_rw.c",
-			"settings":
-			{
-				"buffer_size": 599,
-				"line_ending": "Unix"
-			}
-		}
 	],
-	"build_system": "Make",
+	"build_system": "",
 	"build_system_choices":
 	[
-		[
-			[
-				[
-					"List",
-					""
-				],
-				[
-					"Make",
-					""
-				],
-				[
-					"Make clean",
-					""
-				],
-				[
-					"Packages/Makefile/Make.sublime-build",
-					""
-				],
-				[
-					"Packages/Makefile/Make.sublime-build",
-					"Clean"
-				],
-				[
-					"Packages/C99/C99.sublime-build",
-					""
-				],
-				[
-					"Packages/C99/C99.sublime-build",
-					"Run"
-				]
-			],
-			[
-				"Make",
-				""
-			]
-		],
-		[
-			[
-				[
-					"Packages/C++/C++ Single File.sublime-build",
-					""
-				],
-				[
-					"Packages/C++/C++ Single File.sublime-build",
-					"Run"
-				],
-				[
-					"Packages/Makefile/Make.sublime-build",
-					""
-				],
-				[
-					"Packages/Makefile/Make.sublime-build",
-					"Clean"
-				]
-			],
-			[
-				"Packages/Makefile/Make.sublime-build",
-				""
-			]
-		],
-		[
-			[
-				[
-					"Packages/Makefile/Make.sublime-build",
-					""
-				],
-				[
-					"Packages/Makefile/Make.sublime-build",
-					"Clean"
-				]
-			],
-			[
-				"Packages/Makefile/Make.sublime-build",
-				""
-			]
-		]
 	],
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 363.0,
+		"height": 0.0,
 		"last_filter": "",
 		"selected_items":
 		[
 			[
-				"instlal pa",
+				"install ",
 				"Package Control: Install Package"
 			],
 			[
-				"install",
-				"Package Control: Install Package"
-			],
-			[
-				"install pac",
-				"Package Control: Install Package"
+				"schemee",
+				"SchemeEditor: Edit Current Scheme"
 			],
 			[
 				"adva",
@@ -210,175 +80,145 @@
 				"Package Control: Install Package"
 			],
 			[
-				"open",
-				"File Navigator: Open"
+				"remove",
+				"Package Control: Remove Package"
 			],
 			[
-				"find file",
-				"Find Elements in Folder…"
-			],
-			[
-				"find",
-				"Find Elements in Folder…"
-			],
-			[
-				"instlal pac",
-				"Package Control: Advanced Install Package"
+				"instalp",
+				"Package Control: Install Package"
 			],
 			[
 				"schemeed",
 				"SchemeEditor: Edit Current Scheme"
 			],
 			[
-				"schemed",
-				"SchemeEditor: Edit Current Scheme"
+				"adv",
+				"Package Control: Advanced Install Package"
 			],
 			[
-				"add re",
-				"Package Control: Add Repository"
+				"install",
+				"Package Control: Install Package"
 			],
 			[
-				"Package Control: sear",
-				"Package Control: Discover Packages"
-			],
-			[
-				"packa",
-				"Package Control: Discover Packages"
-			],
-			[
-				"edit",
-				"SchemeEditor: Edit Current Scheme"
+				"html",
+				"HTMLPrettify"
 			],
 			[
 				"instal",
-				"Package Control: Advanced Install Package"
+				"Package Control: Install Package"
 			],
 			[
-				"insta",
-				"Package Control: Advanced Install Package"
-			],
-			[
-				"scheme",
-				"SchemeEditor: Edit Current Scheme"
-			],
-			[
-				"Package Control: list",
-				"Package Control: List Packages"
-			],
-			[
-				"Package Control: install",
-				"Package Control: Advanced Install Package"
-			],
-			[
-				"outline",
-				"Browse Mode: Outline (Right)"
-			],
-			[
-				"Package Control: adv",
-				"Package Control: Advanced Install Package"
+				"install pac",
+				"Package Control: Install Package"
 			],
 			[
 				"Package Control: ",
 				"Package Control: Install Package"
 			],
 			[
-				"Package Control: add",
-				"Package Control: Add Repository"
-			],
-			[
-				"Package Control: adva",
-				"Package Control: Advanced Install Package"
-			],
-			[
-				"editor",
-				"SchemeEditor: Edit Current Scheme"
-			],
-			[
-				"reposit",
-				"Preferences: Package Control Settings – User"
-			],
-			[
-				"repo",
-				"Package Control: Add Repository"
-			],
-			[
-				"in",
-				"Package Control: Install Package"
-			],
-			[
-				"outlin",
-				"Browse Mode: Outline (Right)"
-			],
-			[
-				"repos",
-				"Package Control: Add Repository"
-			],
-			[
 				"install p",
 				"Package Control: Install Package"
 			],
 			[
-				"outli",
-				"Browse Mode: Outline (Right)"
+				"install pack",
+				"Package Control: Install Package"
 			],
 			[
-				"",
-				"Bookmarks: Toggle"
+				"Package Control: install",
+				"Package Control: Install Package"
 			],
 			[
-				"Package Control: disc",
-				"Package Control: Discover Packages"
+				"edit ",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"scheme",
+				"Color Scheme Editor: Goto previous matching scope"
+			],
+			[
+				"INSTALL",
+				"Package Control: Install Package"
+			],
+			[
+				"INST",
+				"Package Control: Install Package"
+			],
+			[
+				"REMOVE",
+				"Package Control: Remove Package"
+			],
+			[
+				"SCHEMED",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"edit",
+				"SchemeEditor: Edit installed scheme"
+			],
+			[
+				"color",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"install p$",
+				"Package Control: Install Package"
+			],
+			[
+				"add re",
+				"Package Control: Add Repository"
+			],
+			[
+				"remove pac",
+				"Package Control: Remove Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"DELETE",
+				"Delete Blank Lines"
+			],
+			[
+				"moon",
+				"Browse Mode: Outline (Left)"
 			],
 			[
 				"out",
 				"Browse Mode: Outline (Right)"
 			],
 			[
-				"pac",
-				"Package Control: Discover Packages"
+				"outline",
+				"Browse Mode: Outline (Right)"
 			],
 			[
-				"ins",
-				"Package Control: Advanced Install Package"
+				"lua",
+				"Set Syntax: Lua"
 			],
 			[
-				"Package Control: insta",
-				"Package Control: Advanced Install Package"
+				"moonscr",
+				"Build With: Compile MoonScript"
 			],
 			[
-				"package",
-				"Package Control: Discover Packages"
+				"moons",
+				"Set Syntax: MoonScript"
 			],
 			[
-				"Remove",
-				"Package Control: Remove Package"
+				"repository",
+				"Package Control: Remove Repository"
 			],
 			[
-				"make",
-				"Makefile (dirlist): make all"
-			],
-			[
-				"build",
-				"Build: New Build System"
+				"REPOS",
+				"Package Control: Add Repository"
 			]
 		],
-		"width": 449.0
+		"width": 0.0
 	},
 	"console":
 	{
-		"height": 219.0,
+		"height": 425.0,
 		"history":
 		[
-			"sublime.log_commands(True)",
-			"sublime.log_commands(True);",
-			" sublime.log_commands(True);",
-			" sublime.log_commands(True)",
-			"Outline",
-			"clang_format",
-			"Theme - Spacefunk, C++ Starting Kit",
-			"schemr",
-			"schemr_favorite_current_scheme",
-			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
 		]
 	},
 	"distraction_free":
@@ -390,148 +230,150 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/home/enki/Documents/Sources/c-utils"
+	],
 	"file_history":
 	[
-		"/home/roman/Sources/dirlist/lib/json/json_print.c",
-		"/home/roman/Sources/dirlist/xml2json.c",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_delete.c",
-		"/home/roman/Sources/dirlist/genmakefile.c",
-		"/home/roman/Sources/dirlist/README.txt",
-		"/home/roman/Sources/dirlist/README.md",
-		"/home/roman/Sources/dirlist/lib/xml/xml_print_attributes.c",
-		"/home/roman/Sources/dirlist/lib/hmap.h",
-		"/home/roman/Sources/dirlist/jsonpp.c",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_set_chars.c",
-		"/home/roman/Sources/dirlist/lib/json.h",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_set.c",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_add.c",
-		"/home/roman/Sources/dirlist/lib/json/json_push.c",
-		"/home/roman/Sources/dirlist/lib/slist.h",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_get.c",
-		"/home/roman/Sources/dirlist/lib/json/json_set_property.c",
-		"/home/roman/Sources/dirlist/lib/json/json_tostring.c",
-		"/home/roman/Sources/dirlist/lib/fmt/fmt_double.c",
-		"/home/roman/Sources/dirlist/lib/json/json_recurse.c",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_set_stralloc.c",
-		"/home/roman/Sources/dirlist/lib/json/json_toint.c",
-		"/home/roman/Sources/dirlist/lib/json/json_parse.c",
-		"/home/roman/Sources/dirlist/lib/fmt.h",
-		"/home/roman/Sources/dirlist/lib/json/json_newnode.c",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_size.c",
-		"/home/roman/Sources/dirlist/lib/hashmap/hashmap_init.c",
-		"/home/roman/Sources/dirlist/lib/json/json_get_property.c",
-		"/home/roman/Sources/dirlist/lib/json/json_length.c",
-		"/home/roman/Sources/dirlist/lib/hmap/hmap_init.c",
-		"/home/roman/Sources/dirlist/lib/json/json_tosa.c",
-		"/home/roman/Sources/dirlist/lib/json/json_todouble.c",
-		"/home/roman/Sources/dirlist/lib/json/json_free.c",
-		"/home/roman/Sources/dirlist/lib/cbmap.h",
-		"/home/roman/Sources/dirlist/lib/json/json_read_tree.c",
-		"/home/roman/Sources/dirlist/lib/cbmap/cbmap_get.c",
-		"/home/roman/Sources/dirlist/lib/cbmap/cbmap_insert.c",
-		"/home/roman/Sources/dirlist/lib/alloc/alloc_zero.c",
-		"/home/roman/Sources/dirlist/lib/alloc/alloc_re.c",
-		"/home/roman/Sources/dirlist/lib/json/json_read_callback.c",
-		"/home/roman/Sources/dirlist/xmlpp.c",
-		"/home/roman/Sources/dirlist/tcping.c",
-		"/home/roman/Sources/dirlist/pelist.c",
-		"/home/roman/Sources/dirlist/lib/alloc/alloc.c",
-		"/home/roman/Sources/dirlist/lib/json/json_reader_init.c",
-		"/home/roman/Sources/dirlist/lib/likely.h",
-		"/home/roman/Sources/dirlist/lib/stralloc.h",
-		"/home/roman/Sources/dirlist/lib/buffer/buffer_put.c",
-		"/home/roman/Sources/dirlist/lib/buffer/buffer_stubborn.c",
-		"/home/roman/Sources/dirlist/lib/buffer/buffer_frombuf.c",
-		"/home/roman/Sources/dirlist/lib/fmt/fmt_escapecharjson.c",
-		"/home/roman/Sources/dirlist/lib/byte.h",
-		"/home/roman/Sources/dirlist/lib/stralloc/stralloc_write.c",
-		"/home/roman/Sources/dirlist/lib/buffer/buffer_fromsa.c",
-		"/home/roman/Sources/dirlist/lib/buffer/buffer_putnc.c",
-		"/home/roman/Sources/dirlist/lib/buffer.h",
-		"/home/roman/Sources/dirlist/lib/stralloc/stralloc_fmt_call.c",
-		"/home/roman/Sources/dirlist/Makefile.functions",
-		"/home/roman/Sources/dirlist/jsontest.c",
-		"/home/roman/Sources/dirlist/lib/charbuf/charbuf_peek.c",
-		"/home/roman/Sources/dirlist/lib/charbuf.h",
-		"/home/roman/Sources/dirlist/lib/charbuf/charbuf_skip.c",
-		"/home/roman/Sources/dirlist/lib/slist/slist_add_after.c",
-		"/home/roman/Sources/dirlist/dirlist.sublime-project",
-		"/home/roman/.config/sublime-text-3/Packages/Open-Include/Open-Include.sublime-settings",
-		"/home/roman/.config/sublime-text-3/Packages/User/Open-Include.sublime-settings",
-		"/home/roman/.config/sublime-text-3/Packages/Open-Include/Default (Linux).sublime-keymap",
-		"/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
-		"/home/roman/Sources/dirlist/lib/slist/slist_add_before.c",
-		"/home/roman/.config/sublime-text-3/Packages/Conditional ColorSchemes/Example.sublime-settings",
-		"/home/roman/.config/sublime-text-3/Packages/User/ConditionalColorSchemes.sublime-settings",
-		"/home/roman/Sources/dirlist/lib/unix/fnmatch_b.c",
-		"/home/roman/Sources/rsenn/dirlist/genmakefile.c",
-		"/home/roman/Sources/rsenn/dirlist/mediathek-list.c",
-		"/home/roman/Sources/rsenn/dirlist/dirlist.sublime-project",
-		"/C/Users/roman/Desktop/dirlist/mediathek-list.c",
-		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil.c",
-		"/C/Users/roman/Desktop/dirlist/lib/io/io_waituntil2.c",
-		"/C/Users/roman/Desktop/dirlist/lib/io.h",
-		"/C/Users/roman/Desktop/dirlist/lib/io/io_timeouted.c",
-		"/C/Users/roman/Desktop/dirlist/hexedit.c",
-		"/C/Users/roman/Desktop/dirlist/lib/http/http_read.c",
-		"/C/Users/roman/Desktop/dirlist/lib/http/http_get.c",
-		"/C/Users/roman/Desktop/dirlist/lib/http/http_writeable.c",
-		"/C/Users/roman/Desktop/dirlist/httptest.c",
-		"/C/Users/roman/Desktop/dirlist/lib/http/http_socket.c",
-		"/C/Users/roman/Desktop/dirlist/lib/stralloc/mmap_filename.c",
-		"/C/Users/roman/Desktop/dirlist/torrent-progress.c",
-		"/C/Users/roman/Desktop/dirlist/crc32.c",
-		"/C/Users/roman/Desktop/dirlist/lib/buffer/buffer_mmapread.c",
-		"/C/Users/roman/Desktop/dirlist/lib/range.h",
-		"/C/Users/roman/Desktop/dirlist/lib/mmap.h",
-		"/C/Users/roman/Desktop/dirlist/lib/io/io_close.c",
-		"/C/Users/roman/Desktop/dirlist/tcping.c",
-		"/C/Users/roman/Desktop/dirlist/lib/elf.h",
-		"/C/Users/roman/Desktop/dirlist/lib/rangecheck.h",
-		"/C/Users/roman/Desktop/dirlist/elflist.c",
-		"/C/Users/roman/Desktop/dirlist/hexedit.vcxproj",
-		"/C/Users/roman/Desktop/dirlist/lib/buffer/buffer_mmapread_fd.c",
-		"/C/Users/roman/Desktop/dirlist/examples/uudecode.c",
-		"/C/Users/roman/Desktop/dirlist/genmakefile.c",
-		"/C/Users/roman/Desktop/dirlist/lib/path/path_dirname.c",
-		"/C/Users/roman/Desktop/dirlist/msys32.sublime-build",
-		"/C/Users/roman/Desktop/dirlist/dirlist.sublime-project",
-		"/C/Users/roman/Desktop/dirlist/mediathek-parser.c",
-		"/C/Users/roman/Desktop/dirlist/pathtool.c",
-		"/C/Users/roman/Desktop/dirlist/lib/coff/coff_sclass_name.c",
-		"/C/Users/roman/Desktop/dirlist/lib/coff/coff_line_numbers.c",
-		"/C/Users/roman/Desktop/dirlist/lib/coff/coff_index_symtab.c",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/User/Default (Windows).sublime-keymap",
-		"/C/Users/roman/Desktop/msys32-path.cmd",
-		"/B/PortableApps/SublimeTextPortable/App/SublimeText64/Data/Packages/Schemr/Default (Windows).sublime-keymap",
-		"/C/Users/roman/Desktop/dirlist/omflist.c",
-		"/C/Users/roman/Desktop/dirlist/stream_flags_en",
-		"/C/Users/roman/Desktop/dirlist/stream_flags_co",
-		"/C/Users/roman/Desktop/dirlist/stream_encoder_",
-		"/C/Users/roman/Desktop/dirlist/stream_encoder.",
-		"/C/Users/roman/Desktop/dirlist/lib/omf.h",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_data.c",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_record_begin.c",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_record_end.c",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_record_next.c",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_name.c",
-		"/C/Users/roman/Desktop/dirlist/lib/typedefs.h",
-		"/C/Users/roman/Desktop/dirlist/lib/pe.h",
-		"/C/Users/roman/Desktop/dirlist/lib/coff.h",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_get_name.c",
-		"/C/Users/roman/Desktop/dirlist/lib/omf/omf_begin.c"
+		"/home/enki/lotto/test.txt",
+		"/home/enki/lotto/utils/util.js",
+		"/home/enki/lotto/pages/deposit.js",
+		"/home/enki/lotto/helpers/app.moon",
+		"/home/enki/lotto/applications/payment.lua",
+		"/home/enki/lotto/applications/payment.moon",
+		"/home/enki/lotto/helpers/payment.moon",
+		"/home/enki/lotto/helpers/json.moon",
+		"/home/enki/lotto/helpers/date.moon",
+		"/home/enki/lotto/applications/users.moon",
+		"/home/enki/lotto/applications/api.moon",
+		"/home/enki/lotto/helpers/validate.moon",
+		"/home/enki/lotto/helpers/api.moon",
+		"/home/enki/lotto/helpers/time.moon",
+		"/home/enki/lotto/applications/socket.moon",
+		"/home/enki/lotto/helpers/validate.lua",
+		"/home/enki/lotto/helpers/payment.lua",
+		"/home/enki/lotto/stores/RootStore.js",
+		"/home/enki/lotto/config.moon",
+		"/home/enki/lotto/helpers/websocket.moon",
+		"/home/enki/lotto/applications/tickets.lua",
+		"/home/enki/lotto/models/users.moon",
+		"/home/enki/lotto/helpers/app.lua",
+		"/home/enki/lotto/helpers/parsigram.moon",
+		"/home/enki/lotto/models/tickets.moon",
+		"/home/enki/lotto/nginx.conf",
+		"/home/roman/lotto/applications/api.moon",
+		"/home/roman/lotto/helpers/api.moon",
+		"/home/roman/lotto/helpers/parsigram.moon",
+		"/home/roman/lotto/static/parsigram.html",
+		"/home/roman/lotto/config.moon",
+		"/home/enki/lotto/helpers/email.moon",
+		"/home/enki/lotto/helpers/email.lua",
+		"/home/enki/lotto/helpers/perfectmoney.moon",
+		"/home/roman/lotto/helpers/perfectmoney.moon",
+		"/home/roman/lotto/docker/backend/config.moon",
+		"/home/roman/lotto/test-parsigram.moon",
+		"/home/roman/lotto/applications/payment.lua",
+		"/home/roman/lotto/helpers/payment.moon",
+		"/home/roman/lotto/helpers/app.moon",
+		"/home/roman/lotto/models/users.moon",
+		"/home/enki/lotto/applications/drawings.moon",
+		"/home/enki/lotto/models/drawings.moon",
+		"/home/roman/lotto/helpers/util.moon",
+		"/home/roman/lotto/test-perfectmoney.moon",
+		"/home/roman/lotto/helpers/queue.moon",
+		"/home/roman/lotto/helpers/perfectmoneysci.moon",
+		"/home/roman/lotto/helpers/validate.moon",
+		"/home/roman/lotto/helpers/string.moon",
+		"/home/roman/lotto/app.moon",
+		"/home/enki/lotto/helpers/perfectmoney.lua",
+		"/home/roman/lotto/test-perfectmoney.lua",
+		"/home/roman/lotto/applications/drawings.moon",
+		"/home/roman/lotto/helpers/models.moon",
+		"/home/roman/lotto/applications/users.moon",
+		"/home/enki/lotto/helpers/bitcoin.moon",
+		"/home/enki/lotto/helpers/model.moon",
+		"/home/roman/lotto/helpers/json.moon",
+		"/home/roman/lotto/helpers/bitcoin.moon",
+		"/home/enki/lotto/helpers/util.moon",
+		"/home/roman/lotto/helpers/url.moon",
+		"/home/enki/lotto/helpers/api.lua",
+		"/home/roman/lotto/test-parsigram.lua",
+		"/home/roman/lotto/applications/payment.moon",
+		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/lapis/application.lua",
+		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/lapis/application.moon",
+		"/home/roman/lotto/helpers/json.lua",
+		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/lapis/validate.moon",
+		"/home/roman/lotto/applications/games.moon",
+		"/home/roman/lotto/helpers/validate.lua",
+		"/home/roman/lotto/models/games.moon",
+		"/home/roman/lotto/helpers/app.lua",
+		"/home/enki/lotto/helpers/bitcoin2.moon",
+		"/home/roman/lotto/applications/users.lua",
+		"/home/roman/lotto/helpers/models.lua",
+		"/home/roman/lotto/nginx.conf",
+		"/home/roman/lotto/doc/parsigram/hazarat.live.txt",
+		"/home/roman/lotto/static/shetab-deposit.html",
+		"/home/enki/Documents/Sources/c-utils/proxy.c",
+		"/home/roman/lotto/helpers/parsigram.lua",
+		"/home/roman/lotto/static/parsigram.min.html",
+		"/home/roman/lotto/doc/parsigram/api.html",
+		"/home/roman/lotto/doc/parsigram/wire.html",
+		"/home/roman/lotto/doc/parsigram/gateway.html",
+		"/home/enki/lotto/doc/parsigram/api.html",
+		"/home/enki/lotto/doc/parsigram/parspay.html",
+		"/home/enki/Desktop/hazarat-parsipardakhtia-live.dump",
+		"/home/enki/lotto/doc/parsigram/samples/Parsigram.php",
+		"/home/enki/lotto/doc/parsigram/gateway.html",
+		"/home/enki/lotto/doc/parsigram/gateway.min.html",
+		"/home/enki/.config/sublime-text-3/Packages/User/.jsbeautifyrc",
+		"/home/enki/.config/sublime-text-3/Packages/HTML-CSS-JS Prettify/.jsbeautifyrc.defaults.json",
+		"/home/enki/.config/sublime-text-3/Packages/HTML-CSS-JS Prettify/HTMLPrettify.sublime-settings",
+		"/home/roman/lotto/static/test.html",
+		"/home/roman/lotto/doc/parsigram/samples/Parsigram.php",
+		"/home/roman/lotto/helpers/model.moon",
+		"/home/enki/lotto/models/user_profiles.moon",
+		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/spec/relations_spec.moon",
+		"/home/enki/lotto/models/users.js",
+		"/home/enki/Sources/lotto/applications/users.moon",
+		"/home/enki/Sources/lotto/models/users.lua",
+		"/home/enki/Sources/lotto/models/user_profiles.moon",
+		"/home/enki/Sources/lotto/test-parsigram.lua",
+		"/home/enki/Sources/lotto/test-parsigram.moon",
+		"/home/enki/Sources/lotto/applications/users.lua",
+		"/home/enki/Sources/lotto/helpers/parsigram.moon",
+		"/home/enki/Sources/lotto/models/users.moon",
+		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/lapis/db/base_model.moon",
+		"/home/enki/Sources/lotto/helpers/perfectmoneysci.moon",
+		"/home/enki/Sources/lotto/helpers/perfectmoney.moon",
+		"/home/enki/Sources/lotto/helpers/bitcoin.moon",
+		"/home/enki/Sources/lotto/helpers/bitcoin2.moon",
+		"/home/enki/Documents/Sources/lotto/doc/parsigram/api.html",
+		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/docs/utilities.md",
+		"/home/enki/Sources/lotto/applications/drawings.moon",
+		"/home/enki/Sources/lotto/static/test.html",
+		"/home/enki/Sources/lotto/helpers/model.moon",
+		"/home/enki/Sources/lotto/doc/api.sh",
+		"/home/enki/Sources/lotto/helpers/api.moon",
+		"/home/enki/Sources/lotto/database/lprj.mysql.sql",
+		"/home/enki/Sources/lotto/database/lprj.postgres.sql",
+		"/home/enki/Sources/pillow-scripts/Scripts/explode.py",
+		"/home/enki/Sources/lotto/applications/tickets.moon",
+		"/home/enki/Sources/lotto/app.moon",
+		"/home/enki/Sources/lotto/all-buttons.html",
+		"/home/enki/Sources/lotto/app.lua",
+		"/home/enki/Sources/lotto/applications/payment.moon",
+		"/home/enki/Sources/lotto/applications/api.moon"
 	],
 	"find":
 	{
-		"height": 31.0
+		"height": 30.0
 	},
 	"find_in_files":
 	{
-		"height": 105.0,
+		"height": 258.0,
 		"where_history":
 		[
-			"/home/roman/Sources/dirlist/lib",
-			""
 		]
 	},
 	"find_state":
@@ -539,199 +381,16 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"val_",
-			"tag_proper",
-			"tagName",
-			"fmt->quote",
-			"quote_char",
-			"quote_char$",
-			"quote_char",
-			"fmt_escapecharjson",
-			"json_print_str",
-			"putns",
-			"depth",
-			"putns",
-			"print_sep",
-			"buffer_2",
-			"pretty_printer",
-			"dup_fla",
-			"children",
-			"each",
-			"push",
-			"val_chars",
-			"LIB_JSON_H_",
-			"val->",
-			"cbmap_visit",
-			"printer.",
-			"p->",
-			"&printer",
-			"printer.",
-			"buffer_puts(buffer_2, \"json_print_separator(\");\n",
-			"printer.",
-			"int))",
-			"depth)",
-			"separator",
-			"max_depth",
-			"printer.",
-			"p->spacing",
-			"p->separator",
-			"p->indent",
-			"p->newline",
-			"stralloc_write",
-			"predi",
-			"json.h",
-			"slink_next",
-			".txt",
-			".dep",
-			"function",
-			"popen",
-			"new_patch",
-			"patch",
-			"dynstr",
-			"get_symtab_r",
-			"ELF_GET",
-			"dump_dyn",
-			"_inline",
-			"newline =",
-			"\"\\n\\t",
-			"\"g\"",
-			"rule_command",
-			"gen_comp",
-			"get_rule_sa",
-			"gen_compile",
-			"gen_compile_rules",
-			"popul",
-			"prepend",
-			"output_make_rule",
-			"output_all",
-			"rule(",
-			"hmap_foreach",
-			"sourcedirs",
-			"gen_compile_rules",
-			"sourcedir;",
-			"srcdir->",
-			"sourcefile;",
-			"rule_command",
-			"put_newline",
-			"set_var",
-			"put_newline",
-			"output_",
-			"output",
-			"_rule(",
-			"var(",
-			"get_var",
-			"set_var(",
-			"set_compiler_typ",
-			"set_com",
-			"set_compile",
-			"get_rule_sa",
-			"get_rule_sa(&wo",
-			"rule = get_rule_sa",
-			"pathsep_args =",
-			"buffer_1",
-			"main(",
-			"\"\\n ",
-			"make_begin_inline",
-			"\n ",
-			"data.start",
-			"recptr",
-			"occ",
-			"make_rule",
-			"all_rules(",
-			"deps(",
-			"sclass",
-			"name",
-			"subst_var",
-			"varname",
-			"output_ninja",
-			"output_make_rule",
-			"output_rule(",
-			"subst_var",
-			"rule_command",
-			"atch;",
-			"TRUE",
-			"print_target",
-			"putnlflush",
-			"find_rule_b",
-			"all =",
-			"output_rule",
-			"set_make_type",
-			"dmc",
-			"\"cc\"",
-			"path_prefix_s",
-			"sourcedirs",
-			"dump_sourcedirs",
-			"rule_command",
-			"#",
-			"select(",
-			"finds",
-			"mswsock",
-			"_WINSOCKAPI_"
 		],
-		"highlight": true,
+		"highlight": false,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": false,
+		"regex": true,
 		"replace_history":
 		[
-			"JSON_H",
-			"val.",
-			"fmt->",
-			"printer.",
-			"fmt",
-			"fmt->",
-			"p->",
-			"int, int))",
-			"depth, index)",
-			"depth",
-			"p->",
-			"printer.spacing",
-			"printer.separator",
-			"printer.indent",
-			"printer.newline",
-			"p",
-			"r",
-			"path",
-			"v",
-			"",
-			"last_error",
-			"\\\\",
-			"ctrl+shift",
-			"ctrl",
-			"d->tmpname",
-			"space",
-			"msg",
-			"warn",
-			"err_format",
-			"msg",
-			"warn",
-			"argi++",
-			"\"ctrl+alt+f\"",
-			",\\n                ",
-			",\\n     ",
-			"t",
-			"/",
-			"init",
-			"string",
-			"dsecs",
-			"SoftPWM",
-			"USE_LCD",
-			"TRISGP",
-			"GP",
-			"OBJDIR",
-			"SER_",
-			"ser_",
-			"#advisory",
-			"POSTSC",
-			"TMR2",
-			"TMR1",
-			"INTERVAL",
-			" SCALE",
-			"volatile uint8 ",
-			""
 		],
 		"reverse": false,
-		"show_context": true,
+		"show_context": false,
 		"use_buffer2": true,
 		"whole_word": false,
 		"wrap": true
@@ -739,365 +398,18 @@
 	"groups":
 	[
 		{
-			"selected": 2,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "xmlpp.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3884,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"SL.170.region_keys":
-							[
-							],
-							"git_gutter_is_enabled": true,
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "torrent-progress.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6757,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "lib/open/open_trunc.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 620,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C++/C.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "xml2json.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8692,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1808,
-								1808
-							]
-						],
-						"settings":
-						{
-							"SL.35.region_keys":
-							[
-							],
-							"SL.59.region_keys":
-							[
-							],
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 496.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "jsonpp.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3804,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"git_gutter_is_enabled": true,
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 39.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 680,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										183,
-										201
-									],
-									[
-										336,
-										354
-									],
-									[
-										575,
-										593
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								350,
-								350
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"git_gutter_is_enabled": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/fmt/fmt_escapecharjson.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1222,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"git_gutter_is_enabled": true,
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/fmt.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6840,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"SL.57.region_keys":
-							[
-							],
-							"git_gutter_is_enabled": true,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1248.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/json/json_tostring.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 969,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"git_gutter_is_enabled": true,
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/open/open_rw.c",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 599,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/C++/C.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 551.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 31.0
+		"height": 30.0
 	},
 	"input":
 	{
-		"height": 36.0
+		"height": 79.0
 	},
 	"layout":
 	{
@@ -1122,35 +434,31 @@
 		]
 	},
 	"menu_visible": true,
-	"output.CppBuilder":
-	{
-		"height": 209.0
-	},
 	"output.SublimeLinter":
 	{
 		"height": 0.0
 	},
+	"output.SublimeLinter Messages":
+	{
+		"height": 194.0
+	},
 	"output.exec":
 	{
-		"height": 283.0
+		"height": 44.0
 	},
 	"output.find_results":
 	{
 		"height": 0.0
 	},
-	"output.mdpopups":
+	"output.unsaved_changes":
 	{
-		"height": 0.0
+		"height": 96.0
 	},
-	"output.sftp":
-	{
-		"height": 0.0
-	},
-	"pinned_build_system": "Make",
-	"project": "dirlist.sublime-project",
+	"pinned_build_system": "Compile MoonScript",
+	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 58.0
+		"height": 56.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1160,12 +468,264 @@
 		"selected_items":
 		[
 			[
-				"",
-				"lib\\omf.h"
+				"payme",
+				"applications/payment.moon"
 			],
 			[
-				"genma",
-				"genmakefile.c"
+				"users.moon",
+				"applications/users.moon"
+			],
+			[
+				"socket.moo",
+				"applications/socket.moon"
+			],
+			[
+				"config.moo",
+				"config.moon"
+			],
+			[
+				"config.moon",
+				"config.moon"
+			],
+			[
+				"payment",
+				"applications/payment.moon"
+			],
+			[
+				"socket",
+				"applications/socket.moon"
+			],
+			[
+				"webso",
+				"helpers/websocket.moon"
+			],
+			[
+				"websock",
+				"helpers/websocket.moon"
+			],
+			[
+				"payment.moo",
+				"applications/payment.moon"
+			],
+			[
+				"parsigram.html",
+				"static/parsigram.html"
+			],
+			[
+				"config.mo",
+				"docker/backend/config.moon"
+			],
+			[
+				"test-pa",
+				"test-parsigram.moon"
+			],
+			[
+				"test-pars",
+				"test-parsigram.moon"
+			],
+			[
+				"test-per",
+				"test-perfectmoney.moon"
+			],
+			[
+				"test-perf",
+				"test-perfectmoney.lua"
+			],
+			[
+				"parsi",
+				"helpers/parsigram.moon"
+			],
+			[
+				"app.moo",
+				"app.moon"
+			],
+			[
+				"test-pe",
+				"test-perfectmoney.moon"
+			],
+			[
+				"test-",
+				"test-parsigram.moon"
+			],
+			[
+				"pay",
+				"applications/payment.moon"
+			],
+			[
+				"drawings.moo",
+				"applications/drawings.moon"
+			],
+			[
+				"api.moon",
+				"applications/api.moon"
+			],
+			[
+				"users.moo",
+				"applications/users.moon"
+			],
+			[
+				"paymen",
+				"applications/payment.moon"
+			],
+			[
+				"models",
+				"helpers/models.moon"
+			],
+			[
+				"models.m",
+				"helpers/models.moon"
+			],
+			[
+				"bitcoin.moo",
+				"helpers/bitcoin.moon"
+			],
+			[
+				"api.moo",
+				"applications/api.moon"
+			],
+			[
+				"api.mo",
+				"helpers/api.moon"
+			],
+			[
+				"perfe",
+				"helpers/perfectmoney.moon"
+			],
+			[
+				"parsigram.moo",
+				"helpers/parsigram.moon"
+			],
+			[
+				"test-p",
+				"test-perfectmoney.moon"
+			],
+			[
+				"perfectmoney.moo",
+				"helpers/perfectmoney.moon"
+			],
+			[
+				"perfect",
+				"helpers/perfectmoney.moon"
+			],
+			[
+				"api.m",
+				"helpers/api.moon"
+			],
+			[
+				"pars",
+				"helpers/parsigram.moon"
+			],
+			[
+				"",
+				"test-parsigram.moon"
+			],
+			[
+				"json.moo",
+				"helpers/json.moon"
+			],
+			[
+				"parsigram.mo",
+				"helpers/parsigram.moon"
+			],
+			[
+				"valida",
+				"helpers/validate.moon"
+			],
+			[
+				"validate",
+				"~/Documents/Sources/lapis-1.7.0-1/lapis/lapis/validate.moon"
+			],
+			[
+				"games",
+				"applications/games.moon"
+			],
+			[
+				"games.moo",
+				"models/games.moon"
+			],
+			[
+				"vali",
+				"helpers/validate.moon"
+			],
+			[
+				"sheta",
+				"static/shetab-deposit.html"
+			],
+			[
+				"parsig",
+				"helpers/parsigram.moon"
+			],
+			[
+				"nginx.conf",
+				"nginx.conf"
+			],
+			[
+				"nginx",
+				"nginx.conf"
+			],
+			[
+				"gate",
+				"doc/parsigram/gateway.html"
+			],
+			[
+				"test.html",
+				"static/test.html"
+			],
+			[
+				"query.",
+				"helpers/query.moon"
+			],
+			[
+				"test.moo",
+				"test.moon"
+			],
+			[
+				"mobile",
+				"static/css/mobile.css"
+			],
+			[
+				"desktop",
+				"static/css/desktop.css"
+			],
+			[
+				"application.m",
+				"applications/users.moon"
+			],
+			[
+				"users.mo",
+				"applications/users.moon"
+			],
+			[
+				"json-to",
+				"scripts/convert-json-to-po.sh"
+			],
+			[
+				"users.",
+				"applications/users.moon"
+			],
+			[
+				"ngin.",
+				"nginx.conf"
+			],
+			[
+				"app.m",
+				"app.moon"
+			],
+			[
+				"embe",
+				"embed.html"
+			],
+			[
+				"ngix",
+				"nginx.conf"
+			],
+			[
+				"components.cs",
+				"static/css/components.css"
+			],
+			[
+				"games.moon",
+				"models/games.moon"
 			]
 		],
 		"width": 0.0
@@ -1193,10 +753,10 @@
 	{
 	},
 	"show_minimap": true,
-	"show_open_files": true,
+	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 348.0,
+	"side_bar_width": 436.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
