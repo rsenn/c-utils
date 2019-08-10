@@ -1741,7 +1741,7 @@ gen_clean_rule(HMAP_DB* rules) {
     strlist_init(&delete_args, '\0');
 
     if(delete_command.len == 0)
-      stralloc_copys(&delete_command, "DEL /F /Q");
+      stralloc_copys(&delete_command, sys.type == WIN ? "DEL /F /Q" : "$(RM)");
 
     cmdoffs = delete_command.len;
 
@@ -3416,7 +3416,7 @@ main(int argc, char* argv[]) {
       case 't': toolchain = compiler = optarg; break;
       case 'm': make = optarg; break;
       case 'a': set_machine(optarg); break;
-      case 'a': set_system(optarg); break;
+      case 's': set_system(optarg); break;
       case 'l': strarray_push(&libs, optarg); break;
       case 'I': strarray_push(&includes, optarg); break;
       case 'i':
