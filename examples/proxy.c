@@ -127,7 +127,7 @@ main(int argc, char* argv[]) {
             io_setcookie(x, s);
             io_setcookie(n, s);
             io_wantwrite(x);
-            io_wantread(x);
+            //io_wantread(x);
           }
         }
         if(errno != EAGAIN) {

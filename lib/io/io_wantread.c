@@ -77,9 +77,7 @@ io_wantread_really(fd_t d, io_entry* e) {
   }
 #endif
 
-#ifdef USE_SELECT
-
-#elif WINDOWS_NATIVE
+#if WINDOWS_NATIVE
   if(e->listened) {
     if(e->next_accept == 0)
       e->next_accept = socket(AF_INET, SOCK_STREAM, 0);

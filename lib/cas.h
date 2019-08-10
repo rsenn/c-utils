@@ -2,7 +2,11 @@
 #define InterlockedCompareExchange(p, n, o) InterlockedCompareExchange((void**)p, (void*)n, (void*)o)
 #endif
 
-#if (defined(__i386__) || defined(__x86_64__)) //&& defined(__TINYC__)
+#if defined(__dietlibc__)
+
+#include <sys/atomic.h>
+
+#elif (defined(__i386__) || defined(__x86_64__)) && defined(__TINYC__)
 int __inline__ __sync_val_compare_and_swap( volatile unsigned int *ptr, int cmp, int new) {
   unsigned char ret;
   __asm__ __volatile__ (
@@ -50,10 +54,6 @@ __atomic_compare_and_swap(long* ptr, long oldval, long newval) {
 
 #define __CAS __atomic_compare_and_swap
 #define __CAS_PTR __atomic_compare_and_swap
-
-#elif defined(__dietlibc__)
-
-#include <sys/atomic.h>
 
 #elif WINDOWS_NATIVE || (defined(__CYGWIN__) && __MSYS__ == 1) || defined(__POCC__)
 #include <windows.h>
