@@ -30,7 +30,7 @@ main(int argc, char* argv[]) {
   static stralloc fqdn;
   static stralloc out;
 
-  if(argc != 4) {
+  if(argc < 4) {
   usage:
     buffer_putsflush(buffer_2,
                      "usage: proxy myip myport hisip hisport\n"
