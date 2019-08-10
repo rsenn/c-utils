@@ -152,7 +152,7 @@ main(int argc, char* argv[]) {
           int r;
           switch(r = io_trywrite(i, s->buf, l)) {
             case -1:
-              buffer_puts(buffer_2, "io_tryread(");
+              buffer_puts(buffer_2, "io_trywrite(");
               buffer_putulong(buffer_2, i);
               buffer_puts(buffer_2, "): ");
               buffer_puterror(buffer_2);
