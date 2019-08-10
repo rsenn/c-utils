@@ -55,6 +55,11 @@ typedef struct {
 } machine_type;
 
 typedef struct {
+  enum { WINDOWS, MAC, LINUX } os;
+  enum { WIN, UNIX } type;
+} system_type;
+
+typedef struct {
   struct slink link;
   const char* name;
   int has_main;
@@ -115,6 +120,7 @@ static HMAP_DB *sourcedirs, *rules, *vars;
 static const char *toolchain, *compiler, *make;
 static const char* newline = "\n";
 static machine_type mach;
+static system_type sys;
 static int batch, shell, ninja;
 static int batchmode;
 
@@ -2709,6 +2715,32 @@ set_machine(const char* s) {
 }
 
 /**
+ * @brief set_system  Set the system type
+ * @param s
+ * @return
+ */
+int
+set_system(const char* s) {
+
+  int ret = 1;
+
+  if(s[str_find(s, "win")]) {
+    sys.os = WINDOWS;
+    sys.type = WIN;
+  } else if(s[str_find(s, "mac")]) {
+    sys.os = MAC;
+    sys.type = UNIX;
+  } else if(s[str_find(s, "lin")]) {
+    sys.os = LINUX;
+    sys.type = UNIX;
+  } else {
+    ret = 0;
+  }
+  
+  return ret;
+}
+
+/**
  * @brief set_make_type  Set make program type
  * @param make
  * @param compiler
@@ -3266,6 +3298,7 @@ usage(char* argv0) {
                        "\n"
                        "  -d, --builddir            build directory\n"
                        "  -a, --arch                set architecture\n"
+                       "  -s, --system OS           set operating system\n"
                        "  -c, --cross TARGET        set cross compiler\n"
                        "\n"
                        "  -D, --define NAME[=VALUE] add a preprocessor definition\n"
@@ -3343,6 +3376,7 @@ main(int argc, char* argv[]) {
                            {"compiler-type", 0, 0, 't'},
                            {"make-type", 0, 0, 'm'},
                            {"arch", 0, 0, 'a'},
+                           {"system", 0, 0, 's'},
                            {"release", 0, &build_type, BUILD_TYPE_RELEASE},
                            {"relwithdebinfo", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},
                            {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
@@ -3361,7 +3395,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:c:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:c:s:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -3382,6 +3416,7 @@ main(int argc, char* argv[]) {
       case 't': toolchain = compiler = optarg; break;
       case 'm': make = optarg; break;
       case 'a': set_machine(optarg); break;
+      case 'a': set_system(optarg); break;
       case 'l': strarray_push(&libs, optarg); break;
       case 'I': strarray_push(&includes, optarg); break;
       case 'i':

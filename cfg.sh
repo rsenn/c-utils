@@ -109,7 +109,7 @@ cfg-diet() {
  (build=$(${CC:-gcc} -dumpmachine)
   build=${build/-unknown-/-}
   host=${build/-gnu/-dietlibc}
-  builddir=build/cmake-$host
+  : ${builddir=build/cmake-$host}
   : ${prefix=/opt/diet}
   libdir=$prefix/lib-${host%%-*}
   bindir=$prefix/bin-${host%%-*}

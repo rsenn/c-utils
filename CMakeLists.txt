@@ -72,6 +72,10 @@ endif()
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_definitions(-DDEBUG=1 -DDEBUG_OUTPUT=1)
+endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+
 set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
 foreach(CompilerFlag ${CompilerFlags})
   unset(FLAG)

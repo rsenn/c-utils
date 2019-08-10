@@ -93,6 +93,9 @@ main(int argc, char* argv[]) {
     while((i = io_canread()) != -1) {
       if(i == s) {
         /* the read event is on the server socket */
+         buffer_puts(buffer_2, "event on listening socket : ");
+          buffer_putlong(buffer_2, s);
+          buffer_putnlflush(buffer_2);
         /* that means it's an incoming connection */
         int n;
         while((n = socket_accept6(s, ip, &port, &scope_id)) != -1) {
@@ -124,6 +127,7 @@ main(int argc, char* argv[]) {
             io_setcookie(x, s);
             io_setcookie(n, s);
             io_wantwrite(x);
+            io_wantread(x);
           }
         }
         if(errno != EAGAIN) {
