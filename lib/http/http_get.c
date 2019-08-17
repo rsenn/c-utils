@@ -30,7 +30,13 @@ http_get(http* h, const char* location) {
 
     len = str_chrs(location, "/:", 2);
     stralloc_copyb(&h->host, location, len);
-    location += str_chr(location, '/');
+
+    if(location[len] == ':') {
+      len += 1;
+      len += scan_ushort(&location[len], &h->port);
+    }
+
+    location += len;
   }
 
   stralloc_nul(&h->host);
