@@ -28,7 +28,7 @@ http_get(http* h, const char* location) {
     if(location[len = str_findb(location, "://", 3)])
       location += len + 3;
 
-    len = str_chr(location, '/');
+    len = str_chrs(location, "/:", 2);
     stralloc_copyb(&h->host, location, len);
     location += len;
   }
