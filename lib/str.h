@@ -36,6 +36,7 @@ size_t str_len(const char* in);
 
 /* str_chr returns the index of the first occurance of needle or \0 in haystack */
 size_t str_chr(const char* haystack, char needle) __pure__;
+size_t str_chrs(const char* in, char needles[], size_t nn) __pure__;
 
 /* str_rchr returns the index of the last occurance of needle or \0 in haystack */
 size_t str_rchr(const char* haystack, char needle) __pure__;
