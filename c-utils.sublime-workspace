@@ -51,18 +51,49 @@
 	},
 	"buffers":
 	[
+		{
+			"contents": "Package Control Messages\n========================\n\nCMakeBuilder\n------------\n\n  +--++++====++++----------------------------------------------++++====++++--+\n  \n                       Thanks for trying CMakeBuilder!\n                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  \n  The CMakeBuilder package is located at\n  \n      (Installed) Packages/CMakeBuilder\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  This message is the installation message. It can be found at\n  \n      (Installed) Packages/CMakeBuilder/messages/install.txt\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  This plugin is very simple and can be seen as \"glue\" between the CMake build\n  system and Sublime Text's own build system. It gives you a few useful\n  utility commands so that you don't have to leave Sublime Text, for most of \n  the time. To help CMakeBuilder know where your CMake build folder is, you'll\n  have to have a .sublime-project file with a \"cmake\" dictionary sitting next \n  to \"settings\", \"folders\", and so forth.\n  \n  For the \"Instruction Manual\", please see:\n  \n      https://github.com/rwols/CMakeBuilder\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  \n  Or, you can even just go to\n  \n      Preferences -> Package Settings -> CMakeBuilder -> README\n  \n  Extra goodies:\n  - Goto error/warning at the configuration step (press F4)\n  - Goto error/warning at the build step (press F4)\n  - Run your unit tests from within Sublime with CTest\n  - Diagnose command if you get stuck on what to do\n  - Syntax highlighting for the CMakeCache.txt file\n  - Syntax highlighting for the cmake output panel at the configuration step\n  - Syntax highlighting for both Make- and Ninja-based build systems\n  - Syntax highlighting for Visual Studio / MSBuild-style outputs\n  \n  Note that commands are \"disabled\" when they feel that they cannot be run.\n  For example, if there is no CMakeLists.txt file in your project folder, the\n  command \"CMakeBuilder: Configure\" will not show up in the command palette.\n  The command \"CMakeBuilder: Diagnose\" can always be run and you can use that\n  as a hint as to what is wrong.\n  \n  This plugin is not a replacement for \"serious\" build users. In a real build,\n  you probably want to create shared and static versions of your library, and\n  debug and release versions. Perhaps 32 bit and 64 bit too. That's what the\n  command line is for. This plugin is for the developer working on a CMake \n  project and wanting to quickly build/test the project.\n  \n  This plugin does not provide syntax highlighting for CMakeLists.txt files \n  and .cmake files, nor does it provide highlighting for \".in\" files suitable\n  for \"configure_file\" commands from CMake; download the \"CMake\" package to\n  that end.\n  +--++++====++++----------------------------------------------++++====++++--+\n",
+			"settings":
+			{
+				"buffer_size": 2804,
+				"line_ending": "Unix",
+				"name": "Package Control Messages",
+				"read_only": true,
+				"scratch": true
+			}
+		}
 	],
-	"build_system": "",
+	"build_system": "Packages/Makefile/Make.sublime-build",
 	"build_system_choices":
 	[
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Makefile/Make.sublime-build",
+				"Clean"
+			]
+		]
 	],
-	"build_varint": "",
+	"build_varint": "Clean",
 	"command_palette":
 	{
 		"height": 0.0,
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
 			[
 				"install ",
 				"Package Control: Install Package"
@@ -94,10 +125,6 @@
 			[
 				"adv",
 				"Package Control: Advanced Install Package"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
 			],
 			[
 				"html",
@@ -232,7 +259,7 @@
 	},
 	"expanded_folders":
 	[
-		"/home/enki/Documents/Sources/c-utils"
+		"/home/roman/Dokumente/Sources/c-utils"
 	],
 	"file_history":
 	[
@@ -367,7 +394,7 @@
 	],
 	"find":
 	{
-		"height": 30.0
+		"height": 32.0
 	},
 	"find_in_files":
 	{
@@ -398,14 +425,45 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2804,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								160,
+								160
+							]
+						],
+						"settings":
+						{
+							"auto_indent": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_width": 2,
+							"word_wrap": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 30.0
+		"height": 32.0
 	},
 	"input":
 	{
@@ -444,7 +502,7 @@
 	},
 	"output.exec":
 	{
-		"height": 44.0
+		"height": 419.0
 	},
 	"output.find_results":
 	{
@@ -454,11 +512,11 @@
 	{
 		"height": 96.0
 	},
-	"pinned_build_system": "Compile MoonScript",
+	"pinned_build_system": "Packages/Makefile/Make.sublime-build",
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 56.0
+		"height": 60.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -756,7 +814,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 436.0,
+	"side_bar_width": 350.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

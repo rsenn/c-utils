@@ -767,6 +767,7 @@ $(info MSYS: $(MSYS))
 
 #CFLAGS = $(patsubst %,-W%,$(WARNINGS))
 DEFS := $(patsubst %,-D%,$(DEFINES))
+DEFS += $(EXTRA_DEFS)
 
 LIB_SRC = $(wildcard *_*.c umult*.c)
 LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
