@@ -30,7 +30,7 @@ http_get(http* h, const char* location) {
 
     len = str_chrs(location, "/:", 2);
     stralloc_copyb(&h->host, location, len);
-    location += len;
+    location += str_chr(location, '/');
   }
 
   stralloc_nul(&h->host);
