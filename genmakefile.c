@@ -50,8 +50,8 @@ extern buffer* optbuf;
 #endif
 
 typedef struct {
-  enum { X86, ARM } arch;
-  enum { _32, _64 } bits;
+  enum { X86, ARM, PIC } arch;
+  enum { _14, _16, _32, _64 } bits;
 } machine_type;
 
 typedef struct {
@@ -109,11 +109,12 @@ static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 static const char* comment = "#";
 static const char* cross_compile = "";
 
-static strlist builddir, workdir;
+static strlist outdir, builddir, workdir;
 static stralloc srcdir;
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static int build_type = -1;
 static strlist build_as_lib;
+static strlist include_dirs;
 
 static HMAP_DB *sourcedirs, *rules, *vars;
 
@@ -1100,13 +1101,28 @@ with_lib(const char* lib) {
 }
 
 void
-include_dir(const char* dir) {
+add_include_dir(const char* dir) {
+  stralloc absolute;
+  stralloc_init(&absolute);
+  stralloc_copys(&absolute, dir);
+  path_absolute_sa(&absolute);
+  stralloc_nul(&absolute);
+  strlist_push_unique(&include_dirs, absolute.s);
+  stralloc_free(&absolute);
+}
+
+void
+include_dirs_to_cppflags() {
   stralloc arg;
   stralloc_init(&arg);
-  path_relative(dir, builddir.sa.s, &arg);
-  stralloc_prepends(&arg, "-I");
-
-  push_var_sa("CPPFLAGS", &arg);
+  const char* dir;
+  strlist_foreach_s(&include_dirs, dir) {
+    stralloc_zero(&arg);
+    path_relative(dir, outdir.sa.s, &arg);
+    stralloc_prepends(&arg, "-I");
+    push_var_sa("CPPFLAGS", &arg);
+  }
+  stralloc_free(&arg);
 }
 
 /**
@@ -1741,7 +1757,7 @@ gen_clean_rule(HMAP_DB* rules) {
     strlist_init(&delete_args, '\0');
 
     if(delete_command.len == 0)
-      stralloc_copys(&delete_command, sys.type == WIN ? "DEL /F /Q" : "$(RM)");
+      stralloc_copys(&delete_command, /* sys.type == WIN ? "DEL /F /Q" : */ "$(RM)");
 
     cmdoffs = delete_command.len;
 
@@ -2348,7 +2364,6 @@ gen_install_rules(HMAP_DB* rules) {
 
         if(do_lib)
           set_var("INSTALL_DATA", str_start(v, "install") ? "$(INSTALL) -m 644" : "$(INSTALL)");
-
       }
     }
 
@@ -2357,7 +2372,7 @@ gen_install_rules(HMAP_DB* rules) {
         set_var("bindir", "$(prefix)/bin");
         stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(bindir)", 0);
       }
-      
+
       set_var("INSTALL_EXEC", str_start(v, "install") ? "$(INSTALL) -m 755" : "$(INSTALL)");
 
       stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", t->key, " $(DESTDIR)$(bindir)", 0);
@@ -2694,7 +2709,6 @@ int
 set_machine(const char* s) {
 
   int ret = 1;
-
   if(s[str_find(s, "64")])
     mach.bits = _64;
   else if(s[str_find(s, "32")])
@@ -2704,7 +2718,9 @@ set_machine(const char* s) {
   else
     ret = 0;
 
-  if(s[str_find(s, "arm")] || s[str_find(s, "aarch")])
+  if(str_start(s, "pic"))
+    mach.arch = PIC;
+  else if(s[str_find(s, "arm")] || s[str_find(s, "aarch")])
     mach.arch = ARM;
   else if(s[str_find(s, "86")])
     mach.arch = X86;
@@ -2736,7 +2752,7 @@ set_system(const char* s) {
   } else {
     ret = 0;
   }
-  
+
   return ret;
 }
 
@@ -2756,7 +2772,7 @@ set_make_type(const char* make, const char* compiler) {
   newline = "\n";
 #endif
 
-  stralloc_copys(&mkdir_command, "IF NOT EXIST \"$@\" MKDIR \"$@\"");
+  stralloc_copys(&mkdir_command, sys.type == WIN ? "IF NOT EXIST \"$@\" MKDIR \"$@\"" : "mkdir -p \"$@\"");
 
   if(str_start(make, "batch") || str_start(make, "cmd")) {
     pathsep_args = '\\';
@@ -3228,20 +3244,60 @@ set_compiler_type(const char* compiler) {
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -Fo $@");
     stralloc_copys(&link_command, "$(CC) $^ -Fe $@ $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+  } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
+    set_var("CC", "xc8");
+    set_var("LINK", "mplink");
+    set_var("LIB", "mplib");
+
+    mach.arch = PIC;
+
+    objext = ".obj";
+
+    set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
+
+    if(!isset("CHIP")) {
+
+      if(mach.bits == _14)
+        set_var("CHIP", "16f876a");
+      else
+        set_var("CHIP", "18f252");
+    }
+    set_var("CFLAGS", "-double=32 -c");
+
+    if(build_type != BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "--opt=all,+asm,+asmfile,+speed,-space,-debug,9");
+
+    // push_var("CFLAGS", "-fp:precise");
+
+    // push_var("CFLAGS", "-V");
+    push_var("CFLAGS", "--asmlist");
+    //   push_var("CFLAGS", "--echo");
+    push_var("CFLAGS", "--chip=$(CHIP)"); /* Accepts 'old' names for C runtime functions */
+                                          // push_var("CFLAGS", "-Gz"); /* default to __stdcall */
+
+    push_var("CPPFLAGS", "-D__$(CHIP)__");
+
+    push_var("LDFLAGS", "--output=default,-inhx032");
+
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
+    stralloc_copys(&link_command, "$(CC) $^ -o$@ $(CFLAGS) $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else {
     return 0;
   }
 
-  push_lib("EXTRA_LIBS", "advapi32");
+  if(mach.arch == PIC) {
 
-  if(str_start(compiler, "dmc"))
-    push_lib("EXTRA_LIBS", "wsock32");
-  else
-    push_lib("EXTRA_LIBS", "ws2_32");
+  } else {
+    push_lib("EXTRA_LIBS", "advapi32");
 
-  push_lib("EXTRA_LIBS", "kernel32");
+    if(str_start(compiler, "dmc"))
+      push_lib("EXTRA_LIBS", "wsock32");
+    else
+      push_lib("EXTRA_LIBS", "ws2_32");
 
+    push_lib("EXTRA_LIBS", "kernel32");
+  }
   if(cygming) {
 
     if(!ninja)
@@ -3353,7 +3409,7 @@ main(int argc, char* argv[]) {
   int c;
   int ret = 0, index = 0;
   const char *outfile = NULL, *dir = NULL;
-  strlist thisdir, outdir, toks;
+  strlist thisdir, toks;
   strarray args;
   strlist cmdline;
   static strarray libs, includes;
@@ -3523,6 +3579,9 @@ main(int argc, char* argv[]) {
   if(batch)
     comment = "REM ";
 
+  if(mach.arch == PIC)
+    compiler = "xc8";
+
   if(compiler == NULL)
     compiler = "gcc";
   else if(mach.bits == 0)
@@ -3579,7 +3638,7 @@ main(int argc, char* argv[]) {
     pathsep_args = pathsep_make;
 
   strarray_foreach(&libs, it) { with_lib(*it); }
-  strarray_foreach(&includes, it) { include_dir(*it); }
+  strarray_foreach(&includes, it) { add_include_dir(*it); }
 
   stralloc_replacec(&outdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   //  path_absolute_sa(&outdir.sa);
@@ -3611,7 +3670,11 @@ main(int argc, char* argv[]) {
   debug_sa("thisdir", &thisdir.sa);
   debug_sa("outdir", &outdir.sa);
   debug_sa("builddir", &builddir.sa);
+
+  include_dirs_to_cppflags();
+
   /*
+
     stralloc_nul(&outdir.sa);
     stralloc_nul(&thisdir.sa);
     path_relative(outdir.sa.s, thisdir.sa.s, &outdir.sa);
