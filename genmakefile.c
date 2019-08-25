@@ -3251,7 +3251,8 @@ set_compiler_type(const char* compiler) {
 
     mach.arch = PIC;
 
-    objext = ".obj";
+    binext = ".cof";
+    objext = ".p1";
 
     set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
 
@@ -3262,7 +3263,7 @@ set_compiler_type(const char* compiler) {
       else
         set_var("CHIP", "18f252");
     }
-    set_var("CFLAGS", "-double=32 -c");
+    set_var("CFLAGS", "-double=32 -c --pass1");
 
     if(build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt=all,+asm,+asmfile,+speed,-space,-debug,9");
@@ -3272,15 +3273,20 @@ set_compiler_type(const char* compiler) {
     // push_var("CFLAGS", "-V");
     push_var("CFLAGS", "--asmlist");
     //   push_var("CFLAGS", "--echo");
-    push_var("CFLAGS", "--chip=$(CHIP)"); /* Accepts 'old' names for C runtime functions */
-                                          // push_var("CFLAGS", "-Gz"); /* default to __stdcall */
-
+    push_var("CFLAGS", "--chip=$(CHIP)");
+    push_var("LDFLAGS", "--chip=$(CHIP)"); 
     push_var("CPPFLAGS", "-D__$(CHIP)__");
 
-    push_var("LDFLAGS", "--output=default,-inhx032");
+        push_var("LDFLAGS", "--output=default,-inhx032");
+    push_var("LDFLAGS", "--summary=default,-psect,-class,+mem,-hex,-file");
+
+    push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
+    push_var("LDFLAGS", "--output=-elf,+mcof");
+    //push_var("LDFLAGS", "--output=-mcof,+elf");
+    push_var("LDFLAGS", "--stack=compiled");
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
-    stralloc_copys(&link_command, "$(CC) $^ -o$@ $(CFLAGS) $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command, "$(CC) $^ -o\"$@\" $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else {
     return 0;
