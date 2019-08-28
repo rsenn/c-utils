@@ -437,5 +437,7 @@ add_program(tinyproxy http io)
 add_program(tcpproxy http io)
 add_program(redir http io ${LIBCOMPAT})
 
+add_program(parse strlist errmsg)
+
 add_subdirectory(tests)
 add_subdirectory(examples)

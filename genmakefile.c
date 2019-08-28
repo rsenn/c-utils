@@ -114,7 +114,7 @@ static stralloc srcdir;
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static int build_type = -1;
 static strlist build_as_lib;
-static strlist include_dirs;
+static strlist include_dirs, link_libraries;
 
 static HMAP_DB *sourcedirs, *rules, *vars;
 
@@ -2028,7 +2028,7 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
   // debug_sa("lib_rule_for_sourcedir", &sa);
 
-  if(str_start(make, "g") || batchmode)
+  if((str_start(make, "g") || batchmode) && mach.arch != PIC)
     dep = gen_srcdir_compile_rules(rules, srcdir, name);
   else
     dep = gen_simple_compile_rules(rules, srcdir, name);
@@ -2141,12 +2141,15 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     // debug_s("srcdir", t->key);
     // debug_s("base", base);
 
-    if(strlist_contains(&build_as_lib, base) || str_equal(base, "lib") || base[0] == '.' || base[0] == '\0')
+    if(strlist_contains(&build_as_lib, base) || (str_equal(base, "lib") && mach.arch != PIC) || base[0] == '.' ||
+       base[0] == '\0')
       continue;
 
     // gen_srcdir_rule(rules, srcdir, base);
 
     rule = lib_rule_for_sourcedir(rules, srcdir, base);
+
+    strlist_push_unique(&link_libraries, rule->name);
 
     array_catb(&srcdir->rules, &rule, sizeof(target*));
   }
@@ -2163,7 +2166,7 @@ int
 gen_link_rules(HMAP_DB* rules, strarray* sources) {
   int count = 0;
   target* all;
-  const char* x;
+  const char *x, *link_lib;
   char** srcfile;
   strlist incs, libs, deps, indir;
   stralloc dir, obj, bin;
@@ -2270,8 +2273,20 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
         target_ptrs(&libs, &link->deps);
 
         strlist_zero(&deps);
+
         target_dep_list(&deps, link);
 
+        strlist_foreach_s(&link_libraries, link_lib) { 
+
+          target* lib = find_rule(link_lib);
+
+          strlist_cat(&deps, &lib->prereq);
+
+
+//          strlist_push(&deps, link_lib); 
+
+
+        }
         if(strlist_count(&deps))
           strlist_cat(&link->prereq, &deps);
 
@@ -2286,7 +2301,6 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
       }
     }
   }
-
   strlist_free(&incs);
   strlist_free(&libs);
   strlist_free(&deps);
@@ -3244,6 +3258,51 @@ set_compiler_type(const char* compiler) {
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -Fo $@");
     stralloc_copys(&link_command, "$(CC) $^ -Fe $@ $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    
+  } else if(str_start(compiler, "sdcc")) {
+     set_var("CC", "sdcc");
+    set_var("LINK", "sdcc");
+    set_var("LIB", "sdar");
+
+    mach.arch = PIC;
+
+    binext = ".cof";
+    objext = ".o";
+
+    set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
+
+    if(!isset("CHIP")) {
+
+      if(mach.bits == _14)
+        set_var("CHIP", "16f876a");
+      else
+        set_var("CHIP", "18f252");
+    }
+    if(!isset("MACH")) {
+
+      if(mach.bits == _14)
+        set_var("MACH", "pic14");
+      else
+        set_var("MACH", "pic16");
+    }
+    set_var("CFLAGS", "--float-reent --use-non-free -c");
+
+    if(build_type != BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "--opt-code-speed");
+
+    // push_var("CFLAGS", "-fp:precise");
+
+    // push_var("CFLAGS", "-V");
+    //   push_var("CFLAGS", "--echo");
+    push_var("CFLAGS", "  -p$(CHIP)");
+    push_var("LDFLAGS", "-p$(CHIP)");
+    push_var("CPPFLAGS", "-D__$(CHIP)__");
+
+    push_var("LDFLAGS", "--out-fmt-elf");
+
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
+    stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
     set_var("CC", "xc8");
     set_var("LINK", "mplink");
@@ -3274,19 +3333,19 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--asmlist");
     //   push_var("CFLAGS", "--echo");
     push_var("CFLAGS", "--chip=$(CHIP)");
-    push_var("LDFLAGS", "--chip=$(CHIP)"); 
+    push_var("LDFLAGS", "--chip=$(CHIP)");
     push_var("CPPFLAGS", "-D__$(CHIP)__");
 
-        push_var("LDFLAGS", "--output=default,-inhx032");
+    push_var("LDFLAGS", "--output=default,-inhx032");
     push_var("LDFLAGS", "--summary=default,-psect,-class,+mem,-hex,-file");
 
     push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
     push_var("LDFLAGS", "--output=-elf,+mcof");
-    //push_var("LDFLAGS", "--output=-mcof,+elf");
+    // push_var("LDFLAGS", "--output=-mcof,+elf");
     push_var("LDFLAGS", "--stack=compiled");
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
-    stralloc_copys(&link_command, "$(CC) $^ -o\"$@\" $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o\"$@\"  $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else {
     return 0;

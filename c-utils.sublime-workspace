@@ -94,13 +94,22 @@
 			}
 		},
 		{
-			"contents": "#define USE_WS2_32 1\n#include \"../socket_internal.h\"\n#include \"../socket.h\"\n#include \"../buffer.h\"\n#include \"../byte.h\"\n#include \"../dns.h\"\n#include \"../errmsg.h\"\n#include \"../http.h\"\n#include \"../io.h\"\n#include \"../ip4.h\"\n#include \"../str.h\"\n\n#include <errno.h>\n#include <stdlib.h>\n\nint\nhttp_get(http* h, const char* location) {\n  int ret;\n  struct hostent* he;\n  ipv4addr* a;\n  char ip[FMT_IP4];\n  stralloc dns;\n  uint32 serial = 0;\n\n  if(location[0] != '/') {\n    size_t len;\n\n    if(location[len = str_findb(location, \"://\", 3)])\n      location += len + 3;\n\n    len = str_chrs(location, \"/:\", 2);\n    stralloc_copyb(&h->host, location, len);\n\n    if(location[len] == ':') {\n      len += 1;\n      len += scan_ushort(&location[len], &h->port);\n    }\n\n    location += len;\n  }\n\n  stralloc_nul(&h->host);\n\n  stralloc_init(&dns);\n  if(dns_ip4(&dns, &h->host) == -1) {\n    errmsg_warnsys(\"ERROR: resolving \", h->host.s, \": \", NULL);\n    return 0;\n  }\n\n  a = (void*)dns.s;\n\n  byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);\n\n  buffer_putsa(buffer_2, &h->host);\n  buffer_puts(buffer_2, \" (\");\n  buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)a->addr));\n  buffer_puts(buffer_2, \")\");\n  buffer_putnlflush(buffer_2);\n\n  http_socket(h, h->nonblocking);\n\n  if(h->request) {\n    serial = h->request->serial + 1;\n    free(h->request);\n    h->request = NULL;\n  }\n  {\n    http_request* req = h->request = mallo(csizeof(http_request));\n    byte_zero(req, sizeof(http_request));\n    req->serial = serial;\n    req->type = GET;\n    stralloc_init(&(req->location));\n    stralloc_copys(&(req->location), location);\n  }\n  {\n    http_response** r = &h->response;\n    (*r) = malloc(sizeof(http_response));\n    byte_zero((*r), sizeof(http_response));\n    stralloc_init(&((*r)->data));\n    stralloc_init(&((*r)->boundary));\n\n    (*r)->content_length = (uint64)-1;\n  }\n  ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);\n\n  if(ret == -1) {\n\n    if(errno == EINPROGRESS) {\n      ret = 0;\n      errno = 0;\n    }\n  }\n\n  io_wantwrite(h->sock);\n  io_wantread(h->sock);\n\n  return ret == 0;\n}\n\n",
+			"contents": "#define USE_WS2_32 1\n#include \"../socket_internal.h\"\n#include \"../socket.h\"\n#include \"../buffer.h\"\n#include \"../byte.h\"\n#include \"../dns.h\"\n#include \"../errmsg.h\"\n#include \"../http.h\"\n#include \"../io.h\"\n#include \"../ip4.h\"\n#include \"../str.h\"\n\n#include <errno.h>\n#include <stdlib.h>\n\nint\nhttp_get(http* h, const char* location) {\n  int ret;\n  struct hostent* he;\n  ipv4addr* a;\n  char ip[FMT_IP4];\n  stralloc dns;\n  uint32 serial = 0;\n\n  if(location[0] != '/') {\n    size_t len;\n\n    if(location[len = str_findb(location, \"://\", 3)])\n      location += len + 3;\n\n    len = str_chrs(location, \"/:\", 2);\n    stralloc_copyb(&h->host, location, len);\n\n    if(location[len] == ':') {\n      len += 1;\n      len += scan_ushort(&location[len], &h->port);\n    }\n\n    location += len;\n  }\n\n  stralloc_nul(&h->host);\n\n  stralloc_init(&dns);\n  if(dns_ip4(&dns, &h->host) == -1) {\n    errmsg_warnsys(\"ERROR: resolving \", h->host.s, \": \", NULL);\n    return 0;\n  }\n\n  a = (void*)dns.s;\n\n  byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);\n\n  buffer_putsa(buffer_2, &h->host);\n  buffer_puts(buffer_2, \" (\");\n  buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)a->addr));\n  buffer_puts(buffer_2, \")\");\n  buffer_putnlflush(buffer_2);\n\n  http_socket(h, h->nonblocking);\n\n  if(h->request) {\n    serial = h->request->serial + 1;\n    free(h->request);\n    h->request = NULL;\n  }\n  {\n    http_request* req = h->request = mallo(cYYsizeof(http_request));\n    byte_zero(req, sizeof(http_request));\n    req->serial = serial;\n    req->type = GET;\n    stralloc_init(&(req->location));\n    stralloc_copys(&(req->location), location);\n  }\n  {\n    http_response** r = &h->response;\n    (*r) = malloc(sizeof(http_response));\n    byte_zero((*r), sizeof(http_response));\n    stralloc_init(&((*r)->data));\n    stralloc_init(&((*r)->boundary));\n\n    (*r)->content_length = (uint64)-1;\n  }\n  ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);\n\n  if(ret == -1) {\n\n    if(errno == EINPROGRESS) {\n      ret = 0;\n      errno = 0;\n    }\n  }\n\n  io_wantwrite(h->sock);\n  io_wantread(h->sock);\n\n  return ret == 0;\n}\n\n",
 			"file": "lib/http/http_get.c",
 			"file_size": 2085,
 			"file_write_time": 132104848861921681,
 			"settings":
 			{
-				"buffer_size": 2085,
+				"buffer_size": 2087,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "genmakefile.c",
+			"settings":
+			{
+				"buffer_size": 96027,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -306,6 +315,7 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/pictest/src/timer0.c",
 		"/home/enki/lotto/test.txt",
 		"/home/enki/lotto/utils/util.js",
 		"/home/enki/lotto/pages/deposit.js",
@@ -432,8 +442,7 @@
 		"/home/enki/Sources/lotto/app.moon",
 		"/home/enki/Sources/lotto/all-buttons.html",
 		"/home/enki/Sources/lotto/app.lua",
-		"/home/enki/Sources/lotto/applications/payment.moon",
-		"/home/enki/Sources/lotto/applications/api.moon"
+		"/home/enki/Sources/lotto/applications/payment.moon"
 	],
 	"find":
 	{
@@ -452,14 +461,127 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"CHIP",
+			"xc8\"",
+			"\"lib\"",
+			"\"LIB\"",
+			"\"lib\"",
+			"push.*dep",
+			"push_unique(dep",
+			"push_unique.*dep",
+			"push_unique",
+			"'^'",
+			"$^",
+			"'^'",
+			"\\$\\^",
+			"$^",
+			"\\$^",
+			"LDFLAGS",
+			"\"xc8\"",
+			"\\$(LDFLAGS",
+			"$(LDFLAGS",
+			"gen_link_rules",
+			"\"all",
+			"gen_srcdir_compile_rules",
+			"lib_rule_for_sourcedir",
+			"all",
+			"gen_lib_rules",
+			"all =",
+			"all;;",
+			"all",
+			"all;",
+			"all",
+			"all =",
+			"all",
+			"\\(all",
+			"all",
+			"\"all\"",
+			"gen_lib",
+			"link_libraries",
+			"gen_link_rules",
+			"target_dep_list",
+			"link_libraries",
+			"gen_lib",
+			"include_dirs",
+			"gen_link_rules",
+			"gen_lib_rules",
+			"lib_rule",
+			"lib_rule_for_sourcedir",
+			"gen_simple",
+			"lib_rule",
+			"\\.a",
+			"lib_rule_for_sourcedir",
+			"lib_rule",
+			"build_as_lib",
+			"\"lib\"",
+			"xc8\"",
+			"binext",
+			"'B'",
+			"exeext",
+			"xc8\"",
+			"== PIC",
+			"objext =",
+			"OBJEXT",
+			"xc8\"",
+			"objext",
+			"OBJEXT",
+			"xc8\"",
+			"IF NOT",
+			"DEL ",
+			"IF NOT",
+			"WIN",
+			"set_sys",
+			"set_system",
+			"'s'",
+			"system\"",
+			"system",
+			"DEL ",
+			"builddir",
+			"outdir",
+			"builddir.sa.s",
+			"builddir.sa",
+			"outfile",
+			"'o'",
+			"workdir",
+			"add_include_dir",
+			"add_include_dirs",
+			"-o",
+			"-o ",
+			"include_dirs_to_cppflags",
+			"add_include",
+			"include_dirs",
+			"add_include_dir",
+			"include_dir",
+			"add_include_dir",
+			"include_dir",
+			"_include",
+			"add_inc",
+			"16f",
+			"set_mach",
+			"mach",
+			"machine_type",
+			"arch",
+			"getopt",
+			"\"--",
+			"--",
+			"--mac",
+			"bits",
+			"xc8",
+			"_32",
+			"gcc",
+			"sdcc",
+			"xc8",
+			"XC8",
+			"XC98",
 			"resolving"
 		],
 		"highlight": false,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": true,
+		"regex": false,
 		"replace_history":
 		[
+			"MACH"
 		],
 		"reverse": false,
 		"show_context": false,
@@ -470,7 +592,7 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -501,7 +623,7 @@
 						"translation.y": 3381.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -532,7 +654,7 @@
 						"translation.y": 4893.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -561,7 +683,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -592,7 +714,7 @@
 						"translation.y": 690.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -644,7 +766,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -653,15 +775,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2085,
+						"buffer_size": 2087,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1404,
-								1404
+								1406,
+								1406
 							]
 						],
 						"settings":
@@ -675,6 +797,37 @@
 						"translation.y": 606.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "genmakefile.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 96027,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								76778,
+								76778
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/JavaScriptNext - ES6 Syntax/Next.tmTheme",
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 75120.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 0,
 					"type": "text"
 				}
@@ -683,7 +836,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 34.0
+		"height": 32.0
 	},
 	"input":
 	{
@@ -736,7 +889,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 64.0
+		"height": 80.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -745,6 +898,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"GENMA",
+				"genmakefile.c"
+			],
 			[
 				"payme",
 				"applications/payment.moon"
