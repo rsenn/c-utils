@@ -116,6 +116,16 @@ parse_strlist(const char* x, ssize_t n, strlist* out) {
   return x - start;
 }
 
+void
+print_args(buffer* b, const strlist* sl) {
+  stralloc sa;
+  stralloc_init(&sa);
+  strlist_joins(sl, &sa, "' '");
+  buffer_puts(b, "'");
+  buffer_putsa(b, &sa);
+  buffer_putsflush(b, "'");
+}
+
 ssize_t
 parse_line(const char* x, ssize_t n) {
   strlist args;
@@ -153,6 +163,8 @@ parse_line(const char* x, ssize_t n) {
   buffer_putm_internal(buffer_2, "Command: ", str.s, "\n", "Arguments: ", 0);
   strlist_dump(buffer_2, &args);
   buffer_putnlflush(buffer_2);
+
+  print_args(buffer_1, &args);
 }
 
 void
@@ -217,19 +229,17 @@ main(int argc, char* argv[]) {
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
     stralloc_trimr(&sa, "\r\n", 2);
-    /*
-    buffer_putulong(buffer_1, line);
-    buffer_puts(buffer_1, ": ");*/
-    buffer_putulong(buffer_1, sa.len);
-    buffer_puts(buffer_1, ": ");
-    buffer_put(buffer_1, sa.s, sa.len);
-
+   
     if(sa.len > 0)
       parse_line(sa.s, sa.len);
 
+/*    buffer_putulong(buffer_1, sa.len);
+    buffer_puts(buffer_1, ": ");
+    buffer_put(buffer_1, sa.s, sa.len);
+
     buffer_puts(buffer_1, "\n");
     buffer_flush(buffer_1);
-  }
+*/  }
 
 #ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "argv0: ");
