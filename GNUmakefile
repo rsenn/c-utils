@@ -1564,7 +1564,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)parse$(M64_)$(EXEEXT): LIBS += -lz
-$(BUILDDIR)parse$(M64_)$(EXEEXT): $(BUILDDIR)parse.o $(call add-library,errmsg buffer mmap open fmt scan strlist stralloc str byte)
+$(BUILDDIR)parse$(M64_)$(EXEEXT): $(BUILDDIR)parse.o $(call add-library,errmsg strlist stralloc buffer  mmap open fmt scan   str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
