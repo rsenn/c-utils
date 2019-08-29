@@ -123,7 +123,7 @@ print_args(buffer* b, const strlist* sl) {
   strlist_joins(sl, &sa, "' '");
   buffer_puts(b, "'");
   buffer_putsa(b, &sa);
-  buffer_putsflush(b, "'");
+  buffer_putsflush(b, "'\n");
 }
 
 ssize_t
@@ -141,9 +141,9 @@ parse_line(const char* x, ssize_t n) {
   if(n <= 0)
     return 0;
   for(;;) {
-    buffer_puts(buffer_2, "char: ");
+  /*  buffer_puts(buffer_2, "char: ");
     buffer_putc(buffer_2, x[0]);
-    buffer_putnlflush(buffer_2);
+    buffer_putnlflush(buffer_2);*/
     if(x[0] == '[')
       i = parse_strlist(x, n, &args);
     else if(x[0] == '"')
@@ -159,11 +159,13 @@ parse_line(const char* x, ssize_t n) {
       n -= 2;
     }
   }
+
+#ifdef DEBUG_OUTPUT
   stralloc_nul(&str);
   buffer_putm_internal(buffer_2, "Command: ", str.s, "\n", "Arguments: ", 0);
   strlist_dump(buffer_2, &args);
   buffer_putnlflush(buffer_2);
-
+#endif
   print_args(buffer_1, &args);
 }
 
