@@ -3307,7 +3307,7 @@ set_compiler_type(const char* compiler) {
     mach.arch = PIC;
 
     binext = ".cof";
-    objext = ".o";
+    objext = ".p1";
 
     set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
 
@@ -3325,7 +3325,9 @@ set_compiler_type(const char* compiler) {
       else
         set_var("MACH", "pic16");
     }
-    set_var("CFLAGS", "-N127 --runtime=default,+stackcall");
+    set_var("CFLAGS", "--pass1");
+    push_var("CFLAGS", "-N127");
+    push_var("CFLAGS", "--runtime=default,+stackcall");
 
     if(build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt=default,-space,+asm,+speed");
