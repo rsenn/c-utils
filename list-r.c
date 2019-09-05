@@ -717,7 +717,7 @@ main(int argc, char* argv[]) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlnro:x:t:m:", opts, &index);
+    c = getopt_long(argc, argv, "hlLnro:x:t:m:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
