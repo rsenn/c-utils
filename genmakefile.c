@@ -54,9 +54,11 @@ typedef struct {
   enum { _14, _16, _32, _64 } bits;
 } machine_type;
 
+typedef enum { WIN, MAC, LINUX } os_type;
+
 typedef struct {
-  enum { WINDOWS, MAC, LINUX } os;
-  enum { WIN, UNIX } type;
+  os_type os;
+  enum { NTOS, UNIX } type;
 } system_type;
 
 typedef struct {
@@ -2755,7 +2757,7 @@ set_system(const char* s) {
   int ret = 1;
 
   if(s[str_find(s, "win")]) {
-    sys.os = WINDOWS;
+    sys.os = WIN;
     sys.type = WIN;
   } else if(s[str_find(s, "mac")]) {
     sys.os = MAC;

@@ -14,7 +14,9 @@
 #if !(defined(__MSYS__) || defined(__CYGWIN__))
 #define WINDOWS_NATIVE 1
 #endif
+#ifndef WINDOWS
 #define WINDOWS 1
+#endif
 #endif
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
