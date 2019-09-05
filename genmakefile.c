@@ -2278,16 +2278,13 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         target_dep_list(&deps, link);
 
-        strlist_foreach_s(&link_libraries, link_lib) { 
+        strlist_foreach_s(&link_libraries, link_lib) {
 
           target* lib = find_rule(link_lib);
 
           strlist_cat(&deps, &lib->prereq);
 
-
-//          strlist_push(&deps, link_lib); 
-
-
+          //          strlist_push(&deps, link_lib);
         }
         if(strlist_count(&deps))
           strlist_cat(&link->prereq, &deps);
@@ -3260,9 +3257,9 @@ set_compiler_type(const char* compiler) {
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -Fo $@");
     stralloc_copys(&link_command, "$(CC) $^ -Fe $@ $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-    
+
   } else if(str_start(compiler, "sdcc")) {
-     set_var("CC", "sdcc");
+    set_var("CC", "sdcc");
     set_var("LINK", "sdcc");
     set_var("LIB", "sdar");
 
@@ -3303,6 +3300,64 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "--out-fmt-elf");
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
+    stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+  } else if(str_start(compiler, "htc")) {
+    set_var("CC", "picc");
+    set_var("LINK", "picc");
+    set_var("LIB", "libr");
+
+    mach.arch = PIC;
+
+    binext = ".cof";
+    objext = ".p1";
+
+    set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
+
+    if(!isset("CHIP")) {
+
+      if(mach.bits == _14)
+        set_var("CHIP", "16f876a");
+      else
+        set_var("CHIP", "18f252");
+    }
+    if(!isset("MACH")) {
+
+      if(mach.bits == _14)
+        set_var("MACH", "pic14");
+      else
+        set_var("MACH", "pic16");
+    }
+    set_var("CFLAGS", "--pass1");
+    push_var("CFLAGS", "-N127");
+    push_var("CFLAGS", "--runtime=default,+stackcall");
+
+    if(build_type != BUILD_TYPE_DEBUG)
+      push_var("CFLAGS", "--opt=default,-space,+asm,+speed");
+    else
+      push_var("CFLAGS", "--opt=default,+debug");
+
+    push_var("CFLAGS", "--double=32");
+    push_var("CFLAGS", "--warn=-3");
+    push_var("CFLAGS", "-V");
+
+    push_var("CFLAGS", "-q");
+    push_var("CFLAGS", "--chip=$(CHIP)");
+
+    push_var("LDFLAGS", "--chip=$(CHIP)");
+    push_var("LDFLAGS", "--output=+mcof,-elf");
+
+    // push_var("CFLAGS", "-fp:precise");
+
+    // push_var("CFLAGS", "-V");
+    //   push_var("CFLAGS", "--echo");
+    push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
+    push_var("LDFLAGS", "--summary=default,-psect,-class,+mem,-hex");
+    push_var("LDFLAGS", "--stack=compiled");
+
+    push_var("LDFLAGS", "--asmlist");
+    push_var("CPPFLAGS", "-D__$(CHIP)__");
+
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -C \"$<\" -o\"$@\"");
     stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
@@ -3442,6 +3497,10 @@ usage(char* argv0) {
                        "     dmc         Digital Mars C++\n"
                        "     pocc        Pelles-C\n"
                        "     zapcc[-cl]  ZapCC\n"
+                       "     zapcc[-cl]  ZapCC\n"
+                       "     htc         Hi-Tech C for PIC or PIC18\n"
+                       "     xc8         Microchip C Compiler for 8-bit PIC\n"
+                       "     sdcc        Small Device C Compiler\n"
                        "\n"
                        "  -m, --make-type TYPE      make program type, one of:\n"
                        "     nmake       Microsoft NMake\n"
