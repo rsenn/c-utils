@@ -356,6 +356,62 @@ main(int argc, char* argv[]) {
   patch(0x3A074, 0x00, 0x01); /* Initial License Check */
   patch(0x792FB, 0x57, 0xC3); /* Software Update Prompt */
 
+  /* Linux x32 */
+  patch_new("Sublime Text 3193 Linux x86", 0, 0);
+
+  /* Linux x64 */
+  patch_new("Sublime Text 3193 Linux x64", 0, 0);
+
+  /* Windows x86 */
+  patch_new("Sublime Text 3193 Windows x86", 0, 0);
+
+  /* Windows x64 */
+  patch_new("Sublime Text 3193 Windows x64", 0, 0);
+
+  patch(0x58BA04, 0x97, 0x00);
+  patch(0x58BA05, 0x94, 0x00);
+  patch(0x58BA06, 0x0d, 0x00);
+
+  /* Linux x32 */
+  patch_new("Sublime Text 3200 Linux x86", 0, 0);
+
+  /* Linux x64 */
+  patch_new("Sublime Text 3200 Linux x64", 0, 0);
+
+  patch(0x3BEB98, 0x84, 0x85); /* Initial License Check */
+  patch(0x477C6E, 0x75, 0x74); /* Persistent License Check */
+
+  /* Windows x86 */
+  patch_new("Sublime Text 3200 Windows x86", 0, 0);
+
+  /* Windows x64 */
+  patch_new("Sublime Text 3200 Windows x64", 0, 0);
+
+  patch(0x8545, 0x84, 0x85);   /* Initial License Check */
+  patch(0x192487, 0x75, 0x74); /* Persistent License Check */
+  patch(0x8F6A8, 0x48, 0xC3);  /* Purchase License Nag */
+
+  /* Linux x32 */
+  patch_new("Sublime Text 3207 Linux x86", 0, 0);
+
+  /* Linux x64 */
+  patch_new("Sublime Text 3207 Linux x64", 0, 0);
+  patch(0x3c03dc, 0x84, 0x85); /* Initial License Check */
+  patch(0x4797a0, 0x75, 0x74); /* Persistent License Check */
+  patch(0x31d180, 0x75, 0x74); /* Purchase License Nag */
+
+  /* Windows x86 */
+  patch_new("Sublime Text 3207 Windows x86", 0, 0);
+
+  /* Windows x64 */
+  patch_new("Sublime Text 3207 Windows x64", 0, 0);
+
+  patch(0x8545, 0x84, 0x85);   /* Initial License Check */
+  patch(0x193263, 0x75, 0x74); /* Persistent License Check */
+  patch(0x90315, 0x48, 0xC3);  /* Purchase License Nag */
+  patch(0xD6B6C, 0x84, 0x85);  /* Initial Update Check */
+  patch(0x4D745A, 0x85, 0x84); /* Menu Update Check */
+
   /* eagle-lin32-7.2.0 */
   patch_new("EAGLE 7.2.0 Linux x86", 20629928, 0);
   patch(0x0000854f, 0x2e, 0x00);
@@ -369,7 +425,7 @@ main(int argc, char* argv[]) {
   patch(0x0025187a, 0x04, 0x90);
   patch(0x0044bbb4, 0x74, 0xeb);
   /*
-    patch(0x00251874, 0x0f, 0x31);
+    patch(0x00251874, 0x0f, 0x31);32
     patch(0x00251875, 0xb6, 0xc0);
     patch(0x00251876, 0x46, 0x90);
     patch(0x00251877, 0x06, 0x90);
