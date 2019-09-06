@@ -105,8 +105,16 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 98007,
+				"buffer_size": 98026,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "binfmttest.c",
+			"settings":
+			{
+				"buffer_size": 190,
 				"line_ending": "Unix"
 			}
 		},
@@ -131,15 +139,8 @@
 			"file": "hexedit.c",
 			"settings":
 			{
-				"buffer_size": 12110,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "GNUmakefile",
-			"settings":
-			{
-				"buffer_size": 55851,
+				"buffer_size": 13341,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -509,6 +510,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			" */",
 			"htc",
 			"xc8",
 			"\\\"",
@@ -635,8 +637,7 @@
 			"gcc",
 			"sdcc",
 			"xc8",
-			"XC8",
-			"XC98"
+			"XC8"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -657,7 +658,7 @@
 	"groups":
 	[
 		{
-			"selected": 6,
+			"selected": 10,
 			"sheets":
 			[
 				{
@@ -871,15 +872,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 98007,
+						"buffer_size": 98026,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								79432,
-								79432
+								0,
+								0
 							]
 						],
 						"settings":
@@ -893,11 +894,39 @@
 						"translation.y": 56597.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 7,
+					"file": "binfmttest.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 190,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
 					"file": "parse.c",
 					"semi_transient": false,
 					"settings":
@@ -928,7 +957,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 9,
 					"file": "crc.c",
 					"semi_transient": false,
 					"settings":
@@ -958,20 +987,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 10,
 					"file": "hexedit.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12110,
+						"buffer_size": 13341,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								7433,
+								7433
 							]
 						],
 						"settings":
@@ -982,40 +1011,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 7100.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "GNUmakefile",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 55851,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Lavender Contrast (rainglow).tmTheme",
-							"syntax": "Packages/Makefile/Makefile.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -1083,7 +1082,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 26.0
+		"height": 27.0
 	},
 	"input":
 	{
@@ -1136,7 +1135,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 48.0
+		"height": 50.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1145,6 +1144,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"hexed",
+				"hexedit.c"
+			],
 			[
 				"parse.c",
 				"parse.c"
