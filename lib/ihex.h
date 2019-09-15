@@ -21,4 +21,7 @@ typedef struct {
 } ihex_file;
 
 
+ssize_t ihex_read_record(ihex_record*, const char*, size_t n);
+
+
 #endif /* IHEX_H_ */
