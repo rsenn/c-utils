@@ -48,6 +48,10 @@ extern buffer* optbuf;
 #else
 #define DEFAULT_PATHSEP '/'
 #endif
+static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+                                   'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
+                                   'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+                                   'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 typedef struct {
   enum { X86, ARM, PIC } arch;
@@ -529,6 +533,59 @@ extract_includes(const char* x, size_t n, strlist* includes, int sys) {
           n -= i + 1;
         }
       }
+    }
+    if((i = byte_chr(x, n, '\n')) >= n)
+      break;
+    x += i;
+    n -= i;
+  }
+}
+
+void
+extract_tokens(const char* x, size_t n, strlist* tokens) {
+  while(n) {
+    size_t i;
+    if((i = scan_noncharsetnskip(x, tok_charset, n)) == n)
+      break;
+          x += i;
+    n -= i;
+   if(*x == '\r' || *x == '\n')
+    break;
+   if((i = scan_charsetnskip(x, tok_charset, n) + 7) >= n)
+        break;
+      if(i > 0)
+        strlist_pushb_unique(tokens, x, i);
+          x += i;
+    n -= i;
+   if(*x == '\r' || *x == '\n')
+    break;
+  }
+}
+
+/**
+ * @brief extract_pptok  Extract preprocessor tokens directives
+ * @param x
+ * @param n
+ * @param includes
+ * @param sys
+ */
+void
+extract_pptok(const char* x, size_t n, strlist* tokens) {
+  while(n) {
+    size_t i;
+    if((i = scan_charsetnskip(x, " \t\r\n", n)) == n)
+      break;
+    x += i;
+    n -= i;
+    if(*x == '#') {
+      x += 1;
+      n -= 1;
+      if((i = scan_charsetnskip(x, " \t\r", n) + 7) >= n)
+        break;
+      x += i;
+      n -= i;
+
+      extract_tokens(x, n, tokens);
     }
     if((i = byte_chr(x, n, '\n')) >= n)
       break;
@@ -1201,9 +1258,10 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
       sourcedir* srcdir;
       sourcefile* file = new_source(*srcfile);
       stralloc r;
-      strlist l;
+      strlist l,pptoks;
       stralloc_init(&r);
       strlist_init(&l, '\0');
+      strlist_init(&pptoks, '\0');
 
       path_dirname(*srcfile, &dir);
       dlen = dir.len;
@@ -1228,6 +1286,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
       }
 
       extract_includes(x, n, &l, 0);
+      extract_pptok(x, n, &pptoks);
 
       stralloc_replacec(&l.sa, PATHSEP_C == '\\' ? '/' : '\\', PATHSEP_C);
 
@@ -2505,7 +2564,7 @@ output_make_rule(buffer* b, target* rule) {
       num_deps = 0;
     }
   }*/ /*else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+       */
   buffer_puts(b, rule->name);
 
   if(!rule->name[str_chr(rule->name, '%')])
@@ -3550,6 +3609,9 @@ main(int argc, char* argv[]) {
                            {"create-libs", 0, &cmd_libs, 1},
                            {"create-objs", 0, &cmd_objs, 1},
                            {"create-bins", 0, &cmd_bins, 1},
+                           {"no-create-libs", 0, &cmd_libs, 0},
+                           {"no-create-objs", 0, &cmd_objs, 0},
+                           {"no-create-bins", 0, &cmd_bins, 0},
                            {"install", 0, 0, 'i'},
                            {"includedir", 0, 0, 'I'},
                            /*                           {"install-bins", 0, &inst_bins, 1},

@@ -136,11 +136,13 @@
 			}
 		},
 		{
+			"contents": "#ifdef HAVE_CONFIG_H\n#include \"config.h\"\n#endif\n\n#include \"lib/windoze.h\"\n#include \"lib/unix.h\"\n#include \"lib/io.h\"\n#include \"lib/iarray.h\"\n#include \"lib/array.h\"\n#include \"lib/buffer.h\"\n#include \"lib/stralloc.h\"\n#include \"lib/mmap.h\"\n#include \"lib/scan.h\"\n#include \"lib/uint64.h\"\n#include \"lib/uint8.h\"\n#include \"lib/errmsg.h\"\n#include \"lib/open.h\"\n#include \"lib/path.h\"\n#include \"lib/str.h\"\n#include \"lib/byte.h\"\n#include \"lib/fmt.h\"\n\n#if WINDOWS_NATIVE\n#include <windows.h>\n#endif\n\n#include <fcntl.h>\n#include <stdio.h>\n\nchar hexdigits[] = \"0123456789abcdef\";\n\ntypedef struct {\n  uint64 offset;\n  uint8 from;\n  uint8 to;\n} record_t;\n\ntypedef struct {\n  const char* name;\n  size_t file_size;\n  uint32 crc32;\n  array records;\n} patch_t;\n\nstatic array patches;\n\nextern int buffer_dummyreadmmap();\n\nuint32\ncrc32(uint32 crc, const char* data, size_t size) {\n  uint32 i, r = ~0;\n  const char* end = data + size;\n\n  while(data < end) {\n    r ^= *data++;\n\n    for(i = 0; i < 8; i++) {\n      uint32 t = ~((r & 1) - 1);\n      r = (r >> 1) ^ (0xedb88320 & t);\n    }\n  }\n\n  return ~r;\n}\n\nint\nget_crc32(const char* filename, uint32* crc) {\n  size_t n;\n  char* x;\n\n  if(mmap_read(filename, &n) == 0)\n    return -1;\n\n  *crc = crc32(0, (const char*)x, n);\n\n  mmap_unmap(x, n);\n  return 0;\n}\n\nuint32\nbuffer_crc32(buffer* b) {\n  uint32 r;\n  r = crc32(0, (const char*)b->x, b->n);\n  return r;\n}\n\nvoid\nbuffer_filename(buffer* b, stralloc* sa) {\n  stralloc_zero(sa);\n  stralloc_nul(sa);\n\n#ifdef F_GETPATH\n  stralloc_ready(sa, MAXPATHLEN + 1);\n\n  fcntl(b->fd, F_GETPATH, sa->s);\n  stralloc(b->fd, F_GETPATH, sa->s);\n  stralloc_shrink(sa);\n#elif !WINDOWS_NATIVE\n  {\n    stralloc procp;\n    stralloc_init(&procp);\n    stralloc_cats(&procp, \"/proc/\");\n    stralloc_catulong(&procp, getpid());\n    stralloc_cats(&procp, \"/fd/\");\n    stralloc_catulong(&procp, b->fd);\n    stralloc_nul(&procp);\n    path_readlink(procp.s, sa);\n  }\n#else\n  mmap_filename(b->x, sa);\n#endif\n}\n\nint\nbuffer_backup(buffer* b) {\n  int fd;\n  size_t size = b->n;\n  stralloc orig, backup;\n  stralloc_init(&orig);\n  stralloc_init(&backup);\n\n  if(b->op == (buffer_op_proto*)&buffer_dummyreadmmap) {\n    buffer_munmap(b);\n  }\n  buffer_filename(b, &orig);\n\n  stralloc_copy(&backup, &orig);\n  stralloc_cats(&backup, \".orig\");\n  stralloc_nul(&backup);\n  stralloc_nul(&orig);\n\n#if WINDOWS_NATIVE\n  if(CopyFileA(orig.s, backup.s, FALSE) != TRUE)\n    return -1;\n\n  if((fd = open_rw(orig.s)) == -1)\n    return -1;\n#else\n  if(rename(orig.s, backup.s) == -1)\n    return -1;\n\n  if((fd = open_rw(orig.s)) == -1)\n    return -1;\n\n  if(io_sendfile(fd, b->fd, 0, size) == -1)\n    return -1;\n#endif\n\n  buffer_close(b);\n\n  if(buffer_mmapshared_fd(b, fd))\n    return -1;\n\n  return 0;\n}\n\nvoid\nprint(unsigned char* p, size_t i, unsigned char from, unsigned char to) {\n  buffer_puts(buffer_2, \"0x\");\n  buffer_putxlong(buffer_2, i);\n  buffer_putspace(buffer_2);\n  buffer_puts(buffer_2, \"0x\");\n  buffer_PUTC(buffer_2, hexdigits[from >> 4]);\n  buffer_PUTC(buffer_2, hexdigits[from & 0x0f]);\n  buffer_putspace(buffer_2);\n  buffer_puts(buffer_2, \"0x\");\n  buffer_PUTC(buffer_2, hexdigits[to >> 4]);\n  buffer_PUTC(buffer_2, hexdigits[to & 0x0f]);\n}\n\npatch_t*\npatch_new(const char* name, size_t file_size, uint32 crc32) {\n  patch_t* patch = array_allocate(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)));\n\n  patch->name = name;\n  patch->file_size = file_size;\n  patch->crc32 = crc32;\n\n  return patch;\n}\n\nvoid\npatch(size_t i, unsigned char from, unsigned char to) {\n  patch_t* patch = array_get(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)) - 1);\n  record_t* rec = array_allocate(&patch->records, sizeof(record_t), array_length(&patch->records, sizeof(record_t)));\n\n  rec->offset = i;\n  rec->from = from;\n  rec->to = to;\n}\n\nint\npatch_check(unsigned char* x, size_t n, patch_t* p) {\n  size_t i, nrec = array_length(&p->records, sizeof(record_t));\n  size_t done = 0;\n\n  if(p->file_size && p->file_size != n)\n    return -1;\n\n  for(i = 0; i < nrec; ++i) {\n    record_t* r = array_get(&p->records, sizeof(record_t), i);\n\n    if(x[r->offset] != r->from) {\n      if(x[r->offset] == r->to)\n        ++done;\n      else\n        return -1;\n    }\n  }\n\n  if(done == nrec)\n    return 1;\n  return 0;\n}\n\npatch_t*\npatch_find(unsigned char* x, size_t n) {\n  size_t i, np = array_length(&patches, sizeof(patch_t));\n  for(i = 0; i < np; ++i) {\n    patch_t* p = array_get(&patches, sizeof(patch_t), i);\n\n    if(patch_check(x, n, p) >= 0)\n      return p;\n  }\n  return NULL;\n}\n\nvoid\nrecord_apply(unsigned char* p, size_t i, unsigned char from, unsigned char to) {\n  buffer_puts(buffer_2, \"patch \");\n  print(p, i, from, to);\n  if(p[i] == from) {\n    p[i] = to;\n    buffer_puts(buffer_2, \" ok\");\n  } else {\n    buffer_puts(buffer_2, \" fail\");\n  }\n  buffer_putnlflush(buffer_2);\n}\n\nvoid\npatch_apply(unsigned char* x, size_t n, patch_t* p) {\n  size_t i, nrec = array_length(&p->records, sizeof(record_t));\n\n  if(p->file_size && p->file_size != n)\n    return;\n\n  for(i = 0; i < nrec; ++i) {\n    record_t* r = array_get(&p->records, sizeof(record_t), i);\n\n    record_apply(x, r->offset, r->from, r->to);\n  }\n}\n\nvoid\nusage(const char* av0) {\n  buffer_putm_internal(buffer_2,\n                       \"Usage: \",\n                       av0,\n                       \" <file> [edit-specifier]\\n\"\n                       \"\\n\"\n                       \"  [edit-specifier] is <address>=<value>\\n\"\n                       \"\\n\",\n                       0);\n  buffer_putnlflush(buffer_2);\n}\n\nint\nmain(int argc, char* argv[]) {\n  int ret = 1;\n  int index = 1;\n  patch_t* p;\n  size_t n;\n  unsigned char* x;\n  buffer file;\n  int fd;\n\n  errmsg_iam(argv[0]);\n\n  if(argc <= index) {\n    usage(argv[0]);\n    return 1;\n  }\n\n  if((fd = open_read(argv[index])) == -1 || buffer_mmapread_fd(&file, fd)) {\n    errmsg_warnsys(str_basename(argv[0]), \": opening file: \", argv[index], 0);\n    return 1;\n  }\n\n  x = (unsigned char*)file.x;\n  n = file.n;\n  // x = (unsigned char*)mmap_shared(argv[index], &n);\n\n  while(++index < argc) {\n    uint64 addr = 0;\n    uint64 val_cmp = 0, val_set = 0;\n    // size_t s_cmp = 0, s_set = 0;\n\n    char* spec = argv[index];\n    char sym = spec[0], *s = &spec[1];\n\n    if(sym == '@') {\n      scan_xlonglong(s, &addr);\n    } else if(sym == '?') {\n    } else if(sym == '=') {\n      // s_set = (scan_xlonglong(s, &val_set) + 1) / 2;\n    } else {\n      buffer_putm_3(buffer_2, \"ERROR: \", spec, \"\\n\");\n      buffer_putnlflush(buffer_2);\n      return 2;\n    }\n  }\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3065 Linux x64\", 13170144, 0);\n  patch(0x00005ac2, 0x2e, 0xe2);\n  patch(0x001BD111, 0x8A, 0x90);\n  patch(0x001BD112, 0x9B, 0xB3);\n  patch(0x001BD113, 0xB8, 0x01);\n  patch(0x001BD114, 0x00, 0x90);\n  patch(0x001BD115, 0x00, 0x90);\n  patch(0x001BD116, 0x00, 0x90);\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3126 Linux x64\", 5200392, 0);\n  patch(0xc62e, 0x94, 0x95); /* License Check */\n\n  /* Linux x32 */\n  patch_new(\"Sublime Text 3176 Linux x86\", 0, 0);\n  patch(0xD779, 0x00, 0x01);\n  patch(0xC068, 0x38, 0x08);\n  patch(0xC069, 0x00, 0x01);\n  patch(0x482C5, 0x83, 0xC3);\n  patch(0x482C6, 0xEC, 0x90);\n  patch(0x482C7, 0x0C, 0x90);\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3176 Linux x64\", 0, 0);\n  patch(0xeb83, 0x00, 0x01); /* Persistent License Check */\n  patch(0xd539, 0x00, 0x01); /* Initial License Check */\n  patch(0xd538, 0x38, 0x08);\n  patch(0x460b5, 0x53, 0xC3); /* Software Update Prompt */\n\n  /* Windows x86 */\n  patch_new(\"Sublime Text 3176 Windows x86\", 0, 0);\n  patch(0xeb83, 0x00, 0x01); /* Persistent License Check */\n  patch(0x267CA, 0x00, 0x01);\n  patch(0x26C4F, 0x38, 0x08);\n  patch(0x26C50, 0x00, 0x01);\n  patch(0x50AFA, 0x55, 0xC3);\n\n  /* Windows x64 */\n  patch_new(\"Sublime Text 3176 Windows x64\", 7352944, 0);\n  patch(0x3985A, 0x00, 0x01); /* Persistent License Check */\n  patch(0x3A073, 0x38, 0x08);\n  patch(0x3A074, 0x00, 0x01); /* Initial License Check */\n  patch(0x792FB, 0x57, 0xC3); /* Software Update Prompt */\n\n\n  /* Windows x64 */\n  patch_new(\"Sublime Text 3193 Windows x64\", 0, 0);\n\n  patch(0x58BA04, 0x97, 0x00);\n  patch(0x58BA05, 0x94, 0x00);\n  patch(0x58BA06, 0x0d, 0x00);\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3200 Linux x64\", 0, 0);\n\n  patch(0x3BEB98, 0x84, 0x85); /* Initial License Check */\n  patch(0x477C6E, 0x75, 0x74); /* Persistent License Check */\n\n\n  /* Windows x64 */\n  patch_new(\"Sublime Text 3200 Windows x64\", 0, 0);\n\n  patch(0x8545, 0x84, 0x85);   /* Initial License Check */\n  patch(0x192487, 0x75, 0x74); /* Persistent License Check */\n  patch(0x8F6A8, 0x48, 0xC3);  /* Purchase License Nag */\n\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3207 Linux x64\", 0, 0);\n  patch(0x3c03dc, 0x84, 0x85); /* Initial License Check */\n  patch(0x4797a0, 0x75, 0x74); /* Persistent License Check */\n  patch(0x31d180, 0x75, 0x74); /* Purchase License Nag */\n\n\n  /* Windows x64 */\n  patch_new(\"Sublime Text 3207 Windows x64\", 0, 0);\n\n  patch(0x8545, 0x84, 0x85);   /* Initial License Check */\n  patch(0x193263, 0x75, 0x74); /* Persistent License Check */\n  patch(0x90315, 0x48, 0xC3);  /* Purchase License Nag */\n  patch(0xD6B6C, 0x84, 0x85);  /* Initial Update Check */\n  patch(0x4D745A, 0x85, 0x84); /* Menu Update Check */\n\n  /* eagle-lin32-7.2.0 */\n  patch_new(\"EAGLE 7.2.0 Linux x86\", 20629928, 0);\n  patch(0x0000854f, 0x2e, 0x00);\n  patch(0x00008a10, 0x2e, 0x00);\n  patch(0x00251874, 0x0f, 0x31);\n  patch(0x00251875, 0xb6, 0xc0);\n  patch(0x00251876, 0x46, 0x90);\n  patch(0x00251877, 0x06, 0x90);\n  patch(0x00251878, 0xc1, 0x90);\n  patch(0x00251879, 0xe8, 0x90);\n  patch(0x0025187a, 0x04, 0x90);\n  patch(0x0044bbb4, 0x74, 0xeb);\n  /*\n    patch(0x00251874, 0x0f, 0x31);32\n    patch(0x00251875, 0xb6, 0xc0);\n    patch(0x00251876, 0x46, 0x90);\n    patch(0x00251877, 0x06, 0x90);\n    patch(0x00251878, 0xc1, 0x90);\n    patch(0x00251879, 0xe8, 0x90);\n    patch(0x0025187a, 0x04, 0x90);\n    patch(0x0044bbb4, 0x74, 0xeb);\n  */\n  /* eagle-lin32-7.5.0 */\n  patch_new(\"EAGLE 7.5.0 Linux x86\", 25715928, 0);\n  patch(0x0010cc56, 0xc3, 0x41);\n  patch(0x002a4dda, 0x31, 0xc1);\n  patch(0x002a4ddb, 0xc0, 0xe8);\n  patch(0x002a4ddc, 0x90, 0x04);\n\n  /* eagle-lin32-7.7.0 */\n  patch_new(\"EAGLE 7.7.0 Linux x86\", 27784220, 0);\n\n  patch(0x00016a1b, 0x2e, 0x00);\n  patch(0x00016a1c, 0x30, 0x00);\n  patch(0x00016a1d, 0x2e, 0x00);\n  patch(0x00016a1e, 0x30, 0x00);\n  patch(0x0001713d, 0x2e, 0x00);\n  patch(0x0001713e, 0x30, 0x00);\n  patch(0x0001713f, 0x2e, 0x00);\n  patch(0x00017140, 0x30, 0x00);\n  patch(0x002ec33e, 0x0f, 0x31);\n  patch(0x002ec33f, 0xb6, 0xc0);\n  patch(0x002ec340, 0x46, 0x90);\n  patch(0x002ec341, 0x06, 0x90);\n  ipatch(0x002ec342, 0xc1, 0x90);\n  patch(0x002ec343, 0xe8, 0x90);\n  patch(0x002ec344, 0x04, 0x90);\n  patch(0x0051fc14, 0x74, 0xeb);\n\n  /* eagle-win64-7.6.0 */\n  patch_new(\"EAGLE 7.6.0 Windows x64\", 28329984, 0);\n\n  patch(0x000d6932, 0x48, 0x90);\n  patch(0x000d6933, 0x8b, 0x90);\n  patch(0x000d6934, 0xcf, 0x90);\n  patch(0x000d6935, 0xe8, 0x90);\n  patch(0x000d6936, 0x96, 0x90);\n  patch(0x000d6937, 0x71, 0x90);\n  patch(0x000d6938, 0x50, 0x90);\n  patch(0x000d6939, 0x00, 0x90);\n  patch(0x00244e0c, 0x0f, 0x33);\n  patch(0x00244e0d, 0xb6, 0xd2);\n  patch(0x00244e0e, 0x56, 0x90);\n  patch(0x00244e0f, 0x06, 0x90);\n  patch(0x002450b8, 0x75, 0xeb);\n  patch(0x003f325d, 0x74, 0xeb);\n  patch(0x003f3271, 0x74, 0xeb);\n\n  /* eagle-lin64-7.6.0 */\n  patch_new(\"EAGLE 7.6.0 Linux x64\", 25715928, 0);\n  patch(0x0010cc56, 0xc3, 0x41);\n  patch(0x002a4dda, 0x31, 0xc1);\n  patch(0x002a4ddb, 0xc0, 0xe8);\n  patch(0x002a4ddc, 0x90, 0x04);\n\n  /* eagle-win32-7.7.0 */\n  patch_new(\"EAGLE 7.7.0 Windows x86\", 21286400, 0);\n\n  patch(0x0017fa6f, 0x06, 0x05);\n  patch(0x0017fd4c, 0x75, 0xeb);\n  patch(0x002a3063, 0x74, 0xeb);\n  patch(0x002a3076, 0x74, 0xeb);\n  patch(0x00f51a5e, 0x45, 0x55);\n  patch(0x00f51a5f, 0x78, 0x6c);\n  patch(0x00f51a60, 0x70, 0x74);\n  patch(0x00f51a61, 0x72, 0x69);\n  patch(0x00f51a62, 0x65, 0x6d);\n  patch(0x00f51a63, 0x73, 0x61);\n  patch(0x00f51a64, 0x73, 0x74);\n  patch(0x00f51a65, 0x00, 0x65);\n  patch(0x00f53199, 0x74, 0x53);\n  patch(0x00f5319a, 0x6f, 0x41);\n  patch(0x00f5319b, 0x20, 0x4b);\n  patch(0x00f5319c, 0x72, 0x49);\n  patch(0x00f5319d, 0x75, 0x53);\n  patch(0x00f5319e, 0x6e, 0x20);\n  patch(0x00f5319f, 0x20, 0x55);\n  patch(0x00f531a0, 0x45, 0x4b);\n  patch(0x00f531a1, 0x41, 0x52);\n  patch(0x00f531a2, 0x47, 0x20);\n  patch(0x00f531a3, 0x4c, 0x20);\n  patch(0x00f531a4, 0x45, 0x20);\n\n  /* eagle-win64-7.7.0 */\n  patch_new(\"EAGLE 7.7.0 Windows x64\", 28654080, 0);\n\n  patch(0x000d7800, 0x48, 0x90);\n  patch(0x000d7801, 0x8b, 0x90);\n  patch(0x000d7802, 0xcf, 0x90);\n  patch(0x000d7803, 0xe8, 0x90);\n  patch(0x000d7804, 0xd8, 0x90);\n  patch(0x000d7805, 0xec, 0x90);\n  patch(0x000d7806, 0x50, 0x90);\n  patch(0x000d7807, 0x00, 0x90);\n  patch(0x00246838, 0x0f, 0x33);\n  patch(0x00246839, 0xb6, 0xd2);\n  patch(0x0024683a, 0x56, 0x90);\n  patch(0x0024683b, 0x06, 0x90);\n  patch(0x00246ae4, 0x75, 0xeb);\n  patch(0x003f52c9, 0x74, 0xeb);\n  patch(0x003f52dd, 0x74, 0xeb);\n\n  if((p = patch_find(x, n))) {\n    int check = patch_check(x, n, p);\n\n    buffer_puts(buffer_2, check == 1 ? \"Already patched: \" : \"Found patch: \");\n    buffer_puts(buffer_2, p->name);\n    buffer_putnlflush(buffer_2);\n\n    if(check == 0) {\n      buffer_backup(&file);\n      patch_apply((unsigned char*)file.x, file.a, p);\n      ret = 0;\n    }\n  }\n\n  buffer_close(&file);\n  return ret;\n}\n",
 			"file": "hexedit.c",
+			"file_size": 13341,
+			"file_write_time": 132122255809677721,
 			"settings":
 			{
-				"buffer_size": 13341,
-				"encoding": "UTF-8",
+				"buffer_size": 13342,
 				"line_ending": "Unix"
 			}
 		},
@@ -189,7 +191,11 @@
 		"selected_items":
 		[
 			[
-				"install ",
+				"schemd",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"install pac",
 				"Package Control: Install Package"
 			],
 			[
@@ -197,7 +203,7 @@
 				"Package Control: Add Repository"
 			],
 			[
-				"install pac",
+				"install ",
 				"Package Control: Install Package"
 			],
 			[
@@ -658,7 +664,7 @@
 	"groups":
 	[
 		{
-			"selected": 10,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -879,22 +885,22 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								76201,
+								76201
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Rainglow/rainglow/Mauve Contrast (rainglow).tmTheme",
+							"color_scheme": "Packages/User/SchemeEditorTemp/Next.tmTheme",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 56597.0,
+						"translation.y": 57860.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -922,7 +928,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -992,20 +998,20 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13341,
+						"buffer_size": 13342,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7433,
-								7433
+								10111,
+								10111
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Rainglow/rainglow/Lavender Contrast (rainglow).tmTheme",
+							"color_scheme": "Packages/Rainglow/rainglow/Horizon Light (rainglow).tmTheme",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -1014,7 +1020,7 @@
 						"translation.y": 7100.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
