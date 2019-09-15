@@ -121,6 +121,7 @@ static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static int build_type = -1;
 static strlist build_as_lib;
 static strlist include_dirs, link_libraries;
+static strlist pptoks;
 
 static HMAP_DB *sourcedirs, *rules, *vars;
 
@@ -545,20 +546,21 @@ void
 extract_tokens(const char* x, size_t n, strlist* tokens) {
   while(n) {
     size_t i;
+    if(*x == '\r' || *x == '\n')
+      break;
     if((i = scan_noncharsetnskip(x, tok_charset, n)) == n)
       break;
-          x += i;
+    x += i;
     n -= i;
-   if(*x == '\r' || *x == '\n')
-    break;
-   if((i = scan_charsetnskip(x, tok_charset, n) + 7) >= n)
-        break;
-      if(i > 0)
-        strlist_pushb_unique(tokens, x, i);
-          x += i;
+    if(*x == '\r' || *x == '\n')
+      break;
+    i = scan_charsetnskip(x, tok_charset, n);
+    if(i > 0)
+      strlist_pushb_unique(tokens, x, i);
+    if(i == n)
+      break;
+    x += i;
     n -= i;
-   if(*x == '\r' || *x == '\n')
-    break;
   }
 }
 
@@ -580,12 +582,17 @@ extract_pptok(const char* x, size_t n, strlist* tokens) {
     if(*x == '#') {
       x += 1;
       n -= 1;
-      if((i = scan_charsetnskip(x, " \t\r", n) + 7) >= n)
+      if((i = scan_charsetnskip(x, " \t\r", n)) == n)
         break;
       x += i;
       n -= i;
-
-      extract_tokens(x, n, tokens);
+      if((i = scan_noncharsetnskip(x, " \t\r<\"", n)) == n)
+        break;
+      if(!(i == 7 && byte_equal(x, 7, "include"))) {
+        x += i;
+        n -= i;
+        extract_tokens(x, byte_chrs(x, n, "\r\n", 2), tokens);
+      }
     }
     if((i = byte_chr(x, n, '\n')) >= n)
       break;
@@ -1258,10 +1265,9 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
       sourcedir* srcdir;
       sourcefile* file = new_source(*srcfile);
       stralloc r;
-      strlist l,pptoks;
+      strlist l;
       stralloc_init(&r);
       strlist_init(&l, '\0');
-      strlist_init(&pptoks, '\0');
 
       path_dirname(*srcfile, &dir);
       dlen = dir.len;
@@ -3997,6 +4003,10 @@ main(int argc, char* argv[]) {
       batchmode = 1;
 
     populate_sourcedirs(&srcs, sourcedirs);
+
+    buffer_puts(buffer_2, "pptoks: ");
+    strlist_dump(buffer_2, &pptoks);
+    buffer_putnlflush(buffer_2);
 
 #ifdef DEBUG_OUTPUT
     dump_sourcedirs(buffer_2, sourcedirs);
