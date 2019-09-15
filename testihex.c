@@ -12,9 +12,9 @@ int main() {
 
   buffer_getline_sa(&input, &sa);
 
-  ihex_record rec;
+  ihex_record* recp;
 
-  ssize_t ret = ihex_read_record(&rec, sa.s, sa.len);
+  ssize_t ret = ihex_read_data(&recp, sa.s, sa.len);
 
   buffer_puts(buffer_2, "ret = ");
   buffer_putlong(buffer_2, ret);

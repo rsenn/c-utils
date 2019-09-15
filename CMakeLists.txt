@@ -439,7 +439,7 @@ add_program(tcpproxy http io)
 add_program(redir http io ${LIBCOMPAT})
 
 add_program(parse strlist errmsg)
-add_program(testihex ihex mmap)
+add_program(testihex ihex stralloc buffer alloc mmap)
 
 add_subdirectory(tests)
 add_subdirectory(examples)
