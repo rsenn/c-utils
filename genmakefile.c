@@ -558,9 +558,9 @@ extract_tokens(const char* x, size_t n, strlist* tokens) {
     if(i > 0 && !(i == 7 && byte_equal(x, 7, "defined"))) {
       if(!(*x >= '0' && *x <= '9')) {
         if(strlist_pushb_unique(tokens, x, i)) {
-          buffer_puts(buffer_2, "added tok: ");
+/*          buffer_puts(buffer_2, "added tok: ");
           buffer_put(buffer_2, x, i);
-          buffer_putnlflush(buffer_2);
+          buffer_putnlflush(buffer_2);*/
         }
       }
     }
@@ -3474,14 +3474,16 @@ set_compiler_type(const char* compiler) {
       else
         set_var("CHIP", "18f252");
     }
-    set_var("CFLAGS", "-double=32 -c --pass1");
+    set_var("CFLAGS", "--double=32 -c --pass1");
 
     if(build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt=all,+asm,+asmfile,+speed,-space,-debug,9");
+    else
+      push_var("CFLAGS", "--opt=+debug");
 
     // push_var("CFLAGS", "-fp:precise");
 
-    // push_var("CFLAGS", "-V");
+     push_var("CFLAGS", "-V");
     push_var("CFLAGS", "--asmlist");
     //   push_var("CFLAGS", "--echo");
     push_var("CFLAGS", "--chip=$(CHIP)");
