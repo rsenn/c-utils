@@ -986,7 +986,7 @@ $(info Building liblzma from 3rdparty/xz)
 endif
 
 LIBRARIES = $(patsubst %,$(BUILDDIR)lib%.a,$(BUILD_3RD_PARTY))
-MODULES += $(patsubst %,$(BUILDDIR)%.a,alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textcode textbuf uint16 uint32 uint64 var vartab wait xml ucs alloc)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textcode textbuf uint16 uint32 uint64 var vartab wait xml ucs alloc)
 
 
 #EXAMPLES := array safemult$(EXEEXT) b64encode$(EXEEXT) buffer_mmap$(EXEEXT) cas$(EXEEXT) cdbget2$(EXEEXT) cescape$(EXEEXT) client$(EXEEXT) dllink$(EXEEXT) fdpassing$(EXEEXT) fmt$(EXEEXT) fmt_iso8691$(EXEEXT) fmt_longlong$(EXEEXT) httpd$(EXEEXT) io$(EXEEXT) io2$(EXEEXT) io3$(EXEEXT) io4$(EXEEXT) io5$(EXEEXT) iob$(EXEEXT) iom$(EXEEXT) json$(EXEEXT) marshal$(EXEEXT) mult$(EXEEXT) netstring$(EXEEXT) protobuf$(EXEEXT) httpproxy$(EXEEXT) range$(EXEEXT) readhttp$(EXEEXT) scan$(EXEEXT) server$(EXEEXT) stralloc_buffer$(EXEEXT) textcode$(EXEEXT) uint$(EXEEXT) unurl$(EXEEXT) urlencode$(EXEEXT) uudecode$(EXEEXT) vd$(EXEEXT)
@@ -1055,6 +1055,7 @@ $(call lib-target,hashmap)
 $(call lib-target,hmap)
 $(call lib-target,http)
 $(call lib-target,iarray)
+$(call lib-target,ihex)
 $(call lib-target,io,lib/iopause.c)
 $(call lib-target,json)
 $(call lib-target,list)
