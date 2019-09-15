@@ -123,12 +123,15 @@ static strlist build_as_lib;
 static strlist include_dirs, link_libraries;
 static strlist pptoks;
 
+static int no_objs = 0, no_libs = 0, no_bins = 0;
+
 static HMAP_DB *sourcedirs, *rules, *vars;
 
 static const char *toolchain, *compiler, *make;
 static const char* newline = "\n";
 static machine_type mach;
 static system_type sys;
+static stralloc chip;
 static int batch, shell, ninja;
 static int batchmode;
 
@@ -558,9 +561,9 @@ extract_tokens(const char* x, size_t n, strlist* tokens) {
     if(i > 0 && !(i == 7 && byte_equal(x, 7, "defined"))) {
       if(!(*x >= '0' && *x <= '9')) {
         if(strlist_pushb_unique(tokens, x, i)) {
-/*          buffer_puts(buffer_2, "added tok: ");
-          buffer_put(buffer_2, x, i);
-          buffer_putnlflush(buffer_2);*/
+          /*          buffer_puts(buffer_2, "added tok: ");
+                    buffer_put(buffer_2, x, i);
+                    buffer_putnlflush(buffer_2);*/
         }
       }
     }
@@ -2238,7 +2241,7 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     // debug_s("srcdir", t->key);
     // debug_s("base", base);
 
-    if(strlist_contains(&build_as_lib, base) || (str_equal(base, "lib") && mach.arch != PIC) || base[0] == '.' ||
+    if(strlist_contains(&build_as_lib, base) /* || (str_equal(base, "lib") && mach.arch != PIC)*/ || base[0] == '.' ||
        base[0] == '\0')
       continue;
 
@@ -2706,6 +2709,9 @@ output_all_rules(buffer* b, HMAP_DB* hmap) {
     target* rule = t->vals.val_custom;
     const char* name = t->key;
 
+    if(no_libs && str_end(name, ".a"))
+      continue;
+
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "Outputting rule '", name, "'", newline, 0);
     buffer_flush(buffer_2);
@@ -2838,6 +2844,28 @@ set_machine(const char* s) {
   return ret;
 }
 
+/**
+ * @brief set_chip  Set the system type
+ * @param s
+ * @return
+ */
+int
+set_chip(const char* s) {
+  int ret = 1;
+  size_t pos = 0;
+
+  if(s[(pos = str_find(s, "16f"))] || s[(pos = str_find(s, "16F"))]) {
+    mach.arch = PIC;
+    mach.bits = _14;
+  } else if(s[(pos = str_find(s, "18f"))] || s[(pos = str_find(s, "18F"))]) {
+    mach.arch = PIC;
+    mach.bits = _16;
+  }
+
+  stralloc_copys(&chip, &s[pos]);
+
+  return ret;
+}
 /**
  * @brief set_system  Set the system type
  * @param s
@@ -3466,15 +3494,18 @@ set_compiler_type(const char* compiler) {
     objext = ".p1";
 
     set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
+    push_var("CPPFLAGS", mach.bits == _14 ? "-DPIC16=1" : "-DPIC18=1");
 
     if(!isset("CHIP")) {
 
-      if(mach.bits == _14)
+      if(chip.len) {
+        stralloc_nul(&chip);
+        set_var("CHIP", chip.s);
+      } else
         set_var("CHIP", "16f876a");
-      else
-        set_var("CHIP", "18f252");
     }
-    set_var("CFLAGS", "--double=32 -c --pass1");
+    push_var("CFLAGS", "--double=32");
+    push_var("CFLAGS", "--pass1");
 
     if(build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt=all,+asm,+asmfile,+speed,-space,-debug,9");
@@ -3483,7 +3514,7 @@ set_compiler_type(const char* compiler) {
 
     // push_var("CFLAGS", "-fp:precise");
 
-     push_var("CFLAGS", "-V");
+    push_var("CFLAGS", "-V");
     push_var("CFLAGS", "--asmlist");
     //   push_var("CFLAGS", "--echo");
     push_var("CFLAGS", "--chip=$(CHIP)");
@@ -3641,31 +3672,32 @@ main(int argc, char* argv[]) {
   size_t n;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"objext", 0, NULL, 'O'},
-                           {"exeext", 0, NULL, 'B'},
-                           {"libext", 0, NULL, 'X'},
+                           {"objext", 1, NULL, 'O'},
+                           {"exeext", 1, NULL, 'B'},
+                           {"libext", 1, NULL, 'X'},
                            {"create-libs", 0, &cmd_libs, 1},
                            {"create-objs", 0, &cmd_objs, 1},
                            {"create-bins", 0, &cmd_bins, 1},
-                           {"no-create-libs", 0, &cmd_libs, 0},
-                           {"no-create-objs", 0, &cmd_objs, 0},
-                           {"no-create-bins", 0, &cmd_bins, 0},
+                           {"no-create-libs", 0, &no_libs, 1},
+                           {"no-create-objs", 0, &no_objs, 1},
+                           {"no-create-bins", 0, &no_bins, 1},
                            {"install", 0, 0, 'i'},
-                           {"includedir", 0, 0, 'I'},
+                           {"includedir", 1, 0, 'I'},
                            /*                           {"install-bins", 0, &inst_bins, 1},
                                                      {"install-libs", 0, &inst_libs, 1},*/
-                           {"builddir", 0, 0, 'd'},
-                           {"compiler-type", 0, 0, 't'},
-                           {"make-type", 0, 0, 'm'},
-                           {"arch", 0, 0, 'a'},
-                           {"system", 0, 0, 's'},
+                           {"builddir", 1, 0, 'd'},
+                           {"compiler-type", 1, 0, 't'},
+                           {"make-type", 1, 0, 'm'},
+                           {"arch", 1, 0, 'a'},
+                           {"system", 1, 0, 's'},
                            {"release", 0, &build_type, BUILD_TYPE_RELEASE},
                            {"relwithdebinfo", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},
                            {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
                            {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
-                           {"define", 0, NULL, 'D'},
+                           {"define", 1, NULL, 'D'},
                            {"build-as-lib", 0, 0, 'L'},
                            {"cross", 0, 0, 'c'},
+                           {"chip", 1, 0, 'p'},
                            {0}};
 
   errmsg_iam(argv[0]);
@@ -3677,7 +3709,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:c:s:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:c:s:p:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -3699,6 +3731,10 @@ main(int argc, char* argv[]) {
       case 'm': make = optarg; break;
       case 'a': set_machine(optarg); break;
       case 's': set_system(optarg); break;
+      case 'p':
+        if(optarg)
+          set_chip(optarg);
+        break;
       case 'l': strarray_push(&libs, optarg); break;
       case 'I': strarray_push(&includes, optarg); break;
       case 'i':
@@ -4028,14 +4064,29 @@ main(int argc, char* argv[]) {
     }
 
     if(str_start(make, "g")) {
-      target* compile = get_rule(".c.o");
+      stralloc rulename;
+      stralloc_init(&rulename);
+      stralloc_copys(&rulename, ".c");
+      stralloc_cats(&rulename, objext);
+
+      target* compile = get_rule_sa(&rulename);
       stralloc_weak(&compile->recipe, &compile_command);
+
+      stralloc_free(&rulename);
     }
+
     if(((batch | shell) && stralloc_equals(&workdir.sa, ".")))
       batchmode = 1;
 
     populate_sourcedirs(&srcs, sourcedirs);
 
+/*    if(no_libs)
+      cmd_libs = 0;
+    if(no_bins)
+      cmd_bins = 0;
+    if(no_objs)
+      cmd_objs = 0;
+*/
     /*buffer_puts(buffer_2, "pptoks: ");
     strlist_dump(buffer_2, &pptoks);
     buffer_putnlflush(buffer_2);
@@ -4058,7 +4109,7 @@ main(int argc, char* argv[]) {
       hmap_foreach(rules, t) {
         target* tgt = hmap_data(t);
 
-        if(stralloc_equal(&tgt->recipe, &lib_command))
+        if(stralloc_equal(&tgt->recipe, &lib_command) && !no_libs)
           strlist_push(&all->prereq, t->key);
       }
     }
