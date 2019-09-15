@@ -3519,7 +3519,7 @@ set_compiler_type(const char* compiler) {
       stralloc_cats(&chipdef, "=1");
       push_var_sa("CPPFLAGS", &chipdef);
     }
-    
+
     push_var("CFLAGS", "--double=32");
     push_var("CFLAGS", "--pass1");
 
@@ -3529,7 +3529,6 @@ set_compiler_type(const char* compiler) {
       push_var("CFLAGS", "--opt=+asm,+asmfile,+speed,-space,-debug,9");
     else
       push_var("CFLAGS", "--opt=+asm,+asmfile,-speed,-space,+debug");
-
 
     // push_var("CFLAGS", "-fp:precise");
 

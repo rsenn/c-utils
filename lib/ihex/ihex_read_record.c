@@ -4,7 +4,8 @@
 ssize_t
 ihex_read_record(ihex_record* ihr, const char* s, size_t n) {
   uint8 b;
-  uint16 s;  const char* x = s;
+  uint16 s;
+  const char* x = s;
   size_t i;
   if(x[0] != ':')
     return 0;
@@ -28,9 +29,7 @@ ihex_read_record(ihex_record* ihr, const char* s, size_t n) {
   if((i = scan_xchar(x, &b)) != 2)
     return 0;
   ihr->checksum = b;
-
   x += i;
   n -= i;
-  
   return x - s;
 }
