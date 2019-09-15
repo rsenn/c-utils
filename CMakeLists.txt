@@ -342,6 +342,7 @@ target_link_libraries(xml buffer array strlist hmap alloc)
 target_link_libraries(json slist hmap stralloc buffer alloc)
 target_link_libraries(ndelay socket)
 target_link_libraries(process wait errmsg)
+target_link_libraries(ihex scan)
 
 
 set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )
@@ -438,6 +439,7 @@ add_program(tcpproxy http io)
 add_program(redir http io ${LIBCOMPAT})
 
 add_program(parse strlist errmsg)
+add_program(testihex ihex mmap)
 
 add_subdirectory(tests)
 add_subdirectory(examples)
