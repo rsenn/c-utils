@@ -555,8 +555,17 @@ extract_tokens(const char* x, size_t n, strlist* tokens) {
     if(*x == '\r' || *x == '\n')
       break;
     i = scan_charsetnskip(x, tok_charset, n);
-    if(i > 0)
-      strlist_pushb_unique(tokens, x, i);
+    if(i > 0) {
+
+      if(!(*x = > '0' && *x <= '9')) {
+        strlist_pushb_unique(tokens, x, i);
+
+        buffer_puts(buffer_2, "added tok: ");
+
+        buffer_put(buffer_2, x, i);
+        buffer_putnlflush(buffer_2);
+      }
+    }
     if(i == n)
       break;
     x += i;
@@ -586,12 +595,37 @@ extract_pptok(const char* x, size_t n, strlist* tokens) {
         break;
       x += i;
       n -= i;
-      if((i = scan_noncharsetnskip(x, " \t\r<\"", n)) == n)
+      if((i = scan_noncharsetnskip(x, " \t\r\n<\"", n)) == n)
         break;
       if(!(i == 7 && byte_equal(x, 7, "include"))) {
         x += i;
         n -= i;
-        extract_tokens(x, byte_chrs(x, n, "\r\n", 2), tokens);
+        {
+          size_t linelen = byte_chrs(x, n, "\r\n", 2);
+          size_t commentpos = byte_findb(x, n, "//", 2);
+
+          while(linelen > 0 && linelen < n) {
+            if(x[linelen - 1] == '\\') {
+              if(x[linelen] == '\r' && x[linelen + 1] == '\n')
+                linelen++;
+              if(linelen + 1 < n) {
+                linelen += 1;
+                linelen += byte_chrs(&x[linelen], n - linelen, "\r\n", 2);
+                continue;
+              }
+            }
+            break;
+          }
+
+          if(commentpos < linelen)
+            linelen = commentpos;
+
+          buffer_puts(buffer_2, "pptoks: ");
+
+          buffer_put(buffer_2, x, linelen);
+          buffer_putnlflush(buffer_2);
+          extract_tokens(x, linelen, tokens);
+        }
       }
     }
     if((i = byte_chr(x, n, '\n')) >= n)
@@ -4004,10 +4038,10 @@ main(int argc, char* argv[]) {
 
     populate_sourcedirs(&srcs, sourcedirs);
 
-    buffer_puts(buffer_2, "pptoks: ");
+    /*buffer_puts(buffer_2, "pptoks: ");
     strlist_dump(buffer_2, &pptoks);
     buffer_putnlflush(buffer_2);
-
+*/
 #ifdef DEBUG_OUTPUT
     dump_sourcedirs(buffer_2, sourcedirs);
 #endif

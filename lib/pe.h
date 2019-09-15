@@ -270,7 +270,9 @@ typedef enum {
   PE_OPTHDR_BASE_OF_DATA = 26,
 } pe_opthdr_field;
 
-typedef struct { uint64 flink, blink; } list_entry;
+typedef struct {
+  uint64 flink, blink;
+} list_entry;
 
 #define PE_SIZEOF_SHORT_NAME 8
 typedef struct __unaligned {

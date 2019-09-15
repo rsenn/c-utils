@@ -124,8 +124,8 @@ hmap_iterator_dereference(TUPLE** it) {
   return *it;
 }
 
-//#define hmap_end(hmap_db) (&((hmap_db)->list_tuple->prev->next))
-//#define hmap_end(hmap_db) ((hmap_db)->list_tuple ? &((hmap_db)->list_tuple->prev->next) : NULL)
+  //#define hmap_end(hmap_db) (&((hmap_db)->list_tuple->prev->next))
+  //#define hmap_end(hmap_db) ((hmap_db)->list_tuple ? &((hmap_db)->list_tuple->prev->next) : NULL)
 
 #define hmap_iterator_increment(it) ((it) = &(*(it))->next)
 #define hmap_iterator_decrement(it) ((it) = &(*(it))->prev)

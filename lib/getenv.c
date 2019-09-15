@@ -4,6 +4,5 @@
 #include <windows.h>
 
 char*
-getenv(const char* variable) {
-}
+getenv(const char* variable) {}
 #endif

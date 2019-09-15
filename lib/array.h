@@ -59,7 +59,7 @@ array_iterator_increment(void** it, uint64 membersize) {
 }
 inline static int
 array_iterator_equal(void** it1, void** it2) {
-  char **p1 = (char **)it1, **p2 = (char **)it2;
+  char **p1 = (char**)it1, **p2 = (char**)it2;
   return p1 == p2;
 }
 inline static void*
@@ -68,7 +68,6 @@ array_iterator_dereference(void** it) {
 }
 
 int64 array_splice(array*, uint64 membersize, uint64 start, uint64 del, uint64 insert, const void* x);
-
 
 #ifdef __cplusplus
 }

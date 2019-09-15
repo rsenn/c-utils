@@ -22,7 +22,9 @@ extern "C" {
  * difference between two TAI64 labels.
  * See http://cr.yp.to/libtai/tai64.html */
 
-typedef struct tai { uint64 x; } tai64;
+typedef struct tai {
+  uint64 x;
+} tai64;
 
 #define tai_unix(t, u) ((void)((t)->x = (uint64)4611686018427387914 + (uint64)(u)))
 

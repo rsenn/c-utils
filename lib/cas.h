@@ -6,17 +6,16 @@
 
 #include <sys/atomic.h>
 
-#elif (defined(__i386__) || defined(__x86_64__)) && defined(__TINYC__)
-int __inline__ __sync_val_compare_and_swap( volatile unsigned int *ptr, int cmp, int new) {
+#elif(defined(__i386__) || defined(__x86_64__)) && defined(__TINYC__)
+int __inline__ __sync_val_compare_and_swap(volatile unsigned int* ptr, int cmp, int new) {
   unsigned char ret;
-  __asm__ __volatile__ (
-  " lock\n"
-  " cmpxchgl %2,%1\n"
-  " sete %0\n"
-  : "=q" (ret), "=m" (*ptr)
-  : "r" (new), "m" (*ptr), "a" (cmp)
-  : "memory");
-  return (int) ret;
+  __asm__ __volatile__(" lock\n"
+                       " cmpxchgl %2,%1\n"
+                       " sete %0\n"
+                       : "=q"(ret), "=m"(*ptr)
+                       : "r"(new), "m"(*ptr), "a"(cmp)
+                       : "memory");
+  return (int)ret;
 }
 #endif
 
@@ -63,9 +62,8 @@ __atomic_compare_and_swap(long* ptr, long oldval, long newval) {
 #endif
 
 #ifndef __CAS
-  #define __CAS __sync_val_compare_and_swap
+#define __CAS __sync_val_compare_and_swap
 #endif
 #ifndef __CAS_PTR
-  #define __CAS_PTR __CAS
+#define __CAS_PTR __CAS
 #endif
-

@@ -76,18 +76,16 @@ size_t byte_ccopy(void* dst, size_t count, const void* src, char c);
 /* read only trim-left */
 const char* byte_triml(const char* x, size_t* len, const char* charset, unsigned int charsetlen);
 
-
 size_t byte_trimr(char* x, size_t n, const char* trimchars, unsigned int trimcharslen);
 
 static inline char*
 byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen) {
-  x = (char*)byte_triml(x, n, trimchars,trimcharslen);
-  *n = byte_trimr(x, *n, trimchars,trimcharslen);
+  x = (char*)byte_triml(x, n, trimchars, trimcharslen);
+  *n = byte_trimr(x, *n, trimchars, trimcharslen);
   return x;
 }
 
 size_t byte_camelize(char* x, size_t len);
-
 
 #define byte_foreach(x, n, p) byte_foreach_skip(x, n, p, 1)
 #define byte_foreach_skip(x, n, p, skip)                                                                               \

@@ -16,7 +16,7 @@ typedef struct {
   read_fn* op;
   union {
     fd_t fd;
-    void *ptr;
+    void* ptr;
   };
 } charbuf;
 
@@ -34,11 +34,17 @@ int charbuf_skip_pred(charbuf*, int (*pred)(int));
 int charbuf_skip_until(charbuf*, char);
 int charbuf_skip(charbuf*);
 
-static inline int charbuf_skip_ifeq(charbuf* b, int c) { return (charbuf_peek(b) == c) ? charbuf_skip(b) : 0; }
-static inline int charbuf_skip_ifset(charbuf* b, const char* set, size_t setlen) { 
+static inline int
+charbuf_skip_ifeq(charbuf* b, int c) {
+  return (charbuf_peek(b) == c) ? charbuf_skip(b) : 0;
+}
+static inline int
+charbuf_skip_ifset(charbuf* b, const char* set, size_t setlen) {
   char c;
-  if(!charbuf_peekc(b, &c)) return 0;
-  if(byte_chr(set, setlen, c) == setlen) return 0;
+  if(!charbuf_peekc(b, &c))
+    return 0;
+  if(byte_chr(set, setlen, c) == setlen)
+    return 0;
   return charbuf_skip(b);
 }
 

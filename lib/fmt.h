@@ -16,7 +16,7 @@ extern "C" {
 #define FMT_XLONG 33       /* enough space to hold 2^128 - 1 in hexadecimal, plus \0 */
 #define FMT_LEN ((char*)0) /* convenient abbreviation */
 
-#define FMT_ISO8601 63       
+#define FMT_ISO8601 63
 /* The formatting routines do not append \0!
  * Use them like this: buf[fmt_ulong(buf, number)] = 0; */
 

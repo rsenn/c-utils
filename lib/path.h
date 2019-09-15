@@ -75,7 +75,6 @@ int path_find(const char* path, const char* name, stralloc* out);
 #define PATH_MAX MAX_PATH
 #endif
 
-
 #ifdef __cplusplus
 }
 #endif

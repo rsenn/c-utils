@@ -243,7 +243,7 @@ main(int argc, char* argv[]) {
     buffer_flush(buffer_1);
 */  }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "argv0: ");
   buffer_puts(buffer_2, argv[0]);
   buffer_puts(buffer_2, ", prog: ");

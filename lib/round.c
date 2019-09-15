@@ -15,19 +15,21 @@ static const double toint = 1 / EPS;
 #include "uint64.h"
 
 double
-round(double x) { 
- int e;
- double y;
+round(double x) {
+  int e;
+  double y;
   union {
     double f;
     uint64 i;
   } u;
-  
+
   u.f = x;
   e = u.i >> 52 & 0x7ff;
-  
-  if(e >= 0x3ff + 52) return x;
-  if(u.i >> 63) x = -x;
+
+  if(e >= 0x3ff + 52)
+    return x;
+  if(u.i >> 63)
+    x = -x;
   if(e < 0x3ff - 1) {
     /* raise inexact if x!=0 */
     /* FORCE_EVAL(x + toint); */
@@ -40,7 +42,8 @@ round(double x) {
     y = y + x + 1;
   else
     y = y + x;
-  if(u.i >> 63) y = -y;
+  if(u.i >> 63)
+    y = -y;
   return y;
 }
 #endif
