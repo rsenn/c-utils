@@ -555,13 +555,10 @@ extract_tokens(const char* x, size_t n, strlist* tokens) {
     if(*x == '\r' || *x == '\n')
       break;
     i = scan_charsetnskip(x, tok_charset, n);
-    if(i > 0) {
-
-      if(!(*x = > '0' && *x <= '9')) {
+    if(i > 0 && !(i == 7 && byte_equal(x, 7, "defined"))) {
+      if(!(*x >= '0' && *x <= '9')) {
         strlist_pushb_unique(tokens, x, i);
-
         buffer_puts(buffer_2, "added tok: ");
-
         buffer_put(buffer_2, x, i);
         buffer_putnlflush(buffer_2);
       }
@@ -603,7 +600,6 @@ extract_pptok(const char* x, size_t n, strlist* tokens) {
         {
           size_t linelen = byte_chrs(x, n, "\r\n", 2);
           size_t commentpos = byte_findb(x, n, "//", 2);
-
           while(linelen > 0 && linelen < n) {
             if(x[linelen - 1] == '\\') {
               if(x[linelen] == '\r' && x[linelen + 1] == '\n')
@@ -616,14 +612,11 @@ extract_pptok(const char* x, size_t n, strlist* tokens) {
             }
             break;
           }
-
           if(commentpos < linelen)
             linelen = commentpos;
-
-          buffer_puts(buffer_2, "pptoks: ");
-
-          buffer_put(buffer_2, x, linelen);
-          buffer_putnlflush(buffer_2);
+          /*          buffer_puts(buffer_2, "pptoks: ");
+                    buffer_put(buffer_2, x, linelen);
+                    buffer_putnlflush(buffer_2);*/
           extract_tokens(x, linelen, tokens);
         }
       }
