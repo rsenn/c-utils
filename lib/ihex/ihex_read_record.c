@@ -2,10 +2,10 @@
 #include "../scan.h"
 
 ssize_t
-ihex_read_record(ihex_record* ihr, const char* s, size_t n) {
+ihex_read_record(ihex_record* ihr, const char* in, size_t n) {
   uint8 b;
   uint16 s;
-  const char* x = s;
+  const char* x = in;
   size_t i;
   if(x[0] != ':')
     return 0;
@@ -31,5 +31,5 @@ ihex_read_record(ihex_record* ihr, const char* s, size_t n) {
   ihr->checksum = b;
   x += i;
   n -= i;
-  return x - s;
+  return x - in;
 }
