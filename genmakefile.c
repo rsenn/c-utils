@@ -3013,7 +3013,7 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
   }
 
-  push_var("DEFS", "-DHAVE_ERRNO_H=1");
+  //  push_var("DEFS", "-DHAVE_ERRNO_H=1");
 
   /*
    * Visual C++ compiler
@@ -3481,8 +3481,8 @@ set_compiler_type(const char* compiler) {
     binext = ".cof";
     objext = ".p1";
 
-    set_var("CFLAGS", "-V");
-    push_var("CFLAGS", "-N127");
+    set_var("CFLAGS", "-N127");
+    // push_var("CFLAGS", "-V");
     push_var("CPPFLAGS", "-DHI_TECH_C=1");
 
     set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
@@ -3518,20 +3518,23 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--runtime=default,+stackcall");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
-      push_var("CFLAGS", "--opt=+asm,-asmfile,-speed,+space,+debug,3");
+      push_var("CFLAGS", "--opt=space");
     else if(build_type != BUILD_TYPE_DEBUG)
-      push_var("CFLAGS", "--opt=+asm,+asmfile,+speed,-space,-debug,9");
+      push_var("CFLAGS", "--opt=speed");
     else
-      push_var("CFLAGS", "--opt=+asm,+asmfile,-speed,-space,+debug");
+      push_var("CFLAGS", "--opt=none");
 
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+      push_var("CFLAGS", "-g");
+
+    push_var("CFLAGS", "--float=24");
     push_var("CFLAGS", "--double=32");
     push_var("CFLAGS", "--warn=-3");
-    push_var("CFLAGS", "-V");
+    // push_var("CFLAGS", "-V");
 
     push_var("CFLAGS", "-q");
     push_var("CFLAGS", "--chip=$(CHIP)");
 
-    push_var("LDFLAGS", "--chip=$(CHIP)");
     push_var("LDFLAGS", "--output=+mcof,-elf");
 
     // push_var("CFLAGS", "-fp:precise");
@@ -3581,8 +3584,8 @@ set_compiler_type(const char* compiler) {
       push_var_sa("CPPFLAGS", &chipdef);
     }
 
+    push_var("CFLAGS", "--float=24");
     push_var("CFLAGS", "--double=32");
-    push_var("CFLAGS", "--pass1");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "--opt=+asm,-asmfile,-speed,+space,+debug,3");
@@ -3593,11 +3596,9 @@ set_compiler_type(const char* compiler) {
 
     // push_var("CFLAGS", "-fp:precise");
 
-    push_var("CFLAGS", "-V");
+    push_var("CFLAGS", "-q");
     push_var("CFLAGS", "--asmlist");
-    //   push_var("CFLAGS", "--echo");
     push_var("CFLAGS", "--chip=$(CHIP)");
-    push_var("LDFLAGS", "--chip=$(CHIP)");
     push_var("CPPFLAGS", "-D__$(CHIP)=1");
 
     push_var("LDFLAGS", "--output=default,-inhx032");
@@ -3608,7 +3609,7 @@ set_compiler_type(const char* compiler) {
     // push_var("LDFLAGS", "--output=-mcof,+elf");
     push_var("LDFLAGS", "--stack=compiled");
 
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c \"$<\" -o\"$@\"");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\"  $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
