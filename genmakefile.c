@@ -3556,7 +3556,7 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "-q");
     push_var("CFLAGS", "--chip=$(CHIP)");
 
-    push_var("LDFLAGS", "--output=+mcof,-elf");
+    push_var("LDFLAGS", "--output=mcof");
 
     push_var("CFLAGS", "--runtime=default,-keep,+stackcall,+download");
     push_var("CFLAGS", "--summary=default,+psect");
@@ -3626,11 +3626,11 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--chip=$(CHIP)");
     push_var("CPPFLAGS", "-D__$(CHIP)=1");
 
-    push_var("LDFLAGS", "--output=default,-inhx032,+inhx32");
+    push_var("LDFLAGS", "--output=mcof");
     push_var("LDFLAGS", "--summary=default,+psect");
 
     push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
-    push_var("LDFLAGS", "--output=-default,elf,+mcof");
+    //push_var("LDFLAGS", "--output=-default,elf,+mcof");
     // push_var("LDFLAGS", "--output=-mcof,+elf");
     push_var("LDFLAGS", "--stack=compiled");
 
