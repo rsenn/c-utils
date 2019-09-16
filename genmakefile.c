@@ -3446,10 +3446,10 @@ set_compiler_type(const char* compiler) {
     // push_var("CFLAGS", "-V");
     //   push_var("CFLAGS", "--echo");
     push_var("CFLAGS", "-m$(MACH) -p$(CHIP)");
-    push_var("LDFLAGS", "-p$(CHIP)");
     push_var("CPPFLAGS", "-D__$(CHIP)");
 
-    push_var("LDFLAGS", "--out-fmt-elf");
+    push_var("LDFLAGS", "-m$(MACH) -p$(CHIP)");
+    push_var("LDFLAGS", "--out-fmt-ihx");
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
     stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
