@@ -3638,7 +3638,6 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");
 
 
-
     stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) \"$<\" -o\"$@\"");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c \"$<\" -o\"$@\"");
     stralloc_copys(&link_command,
@@ -4064,6 +4063,10 @@ main(int argc, char* argv[]) {
   debug_sa("thisdir", &thisdir.sa);
   debug_sa("outdir", &outdir.sa);
   debug_sa("builddir", &builddir.sa);
+
+
+  if(preproc)
+    set_var("CPP", preproc);
 
   include_dirs_to_cppflags();
 
