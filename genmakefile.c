@@ -3434,25 +3434,43 @@ set_compiler_type(const char* compiler) {
       else
         set_var("MACH", "pic16");
     }
-    
-    set_var("CFLAGS", "--float-reent");
-    set_var("CFLAGS", "--use-non-free");
+set_var("CFLAGS", "--use-non-free");
 
-    if(build_type != BUILD_TYPE_DEBUG)
+    if(mach.bits == _16) {
+      push_var("CFLAGS", "--mplab-comp");
+      push_var("CFLAGS", "--extended");
+      push_var("CFLAGS", "--pstack-model=large");
+      push_var("CFLAGS", "--optimize-cmp");
+      push_var("CFLAGS", "--optimize-df");
+    }
+    
+    push_var("CFLAGS", "--float-reent");
+    
+    if(build_type == BUILD_TYPE_MINSIZEREL)
+      push_var("CFLAGS", "--opt-code-size");
+    else if(build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt-code-speed");
 
-    // push_var("CFLAGS", "-fp:precise");
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+      push_var("CFLAGS", "--debug");
+      //push_var("LDFLAGS", "--debug");
+    }
 
-    // push_var("CFLAGS", "-V");
-    //   push_var("CFLAGS", "--echo");
     push_var("CFLAGS", "-m$(MACH) -p$(CHIP)");
     push_var("CPPFLAGS", "-D__$(CHIP)");
+    push_var("CPPFLAGS", "-DSDCC=1");
 
-    push_var("LDFLAGS", "-m$(MACH) -p$(CHIP)");
+    //push_var("LDFLAGS", "-m$(MACH) -p$(CHIP)");
     push_var("LDFLAGS", "--out-fmt-ihx");
 
+    if(mach.bits == _16) {
+      push_var("LIBS", "-llibm18f.lib");
+    } else {
+      push_var("LIBS", "-llibm.lib");
+    }
+
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
-    stralloc_copys(&link_command, "$(CC) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "htc")) {
     set_var("CC", "picc");
     set_var("LINK", "picc");
