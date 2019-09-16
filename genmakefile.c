@@ -3481,7 +3481,8 @@ set_compiler_type(const char* compiler) {
     binext = ".cof";
     objext = ".p1";
 
-    set_var("CFLAGS", "-N127");
+    set_var("CFLAGS", "--mode=PRO");
+    push_var("CFLAGS", "-N127");
     // push_var("CFLAGS", "-V");
     push_var("CPPFLAGS", "-DHI_TECH_C=1");
 
@@ -3515,21 +3516,21 @@ set_compiler_type(const char* compiler) {
         set_var("MACH", "pic16");
     }
 
-    push_var("CFLAGS", "--runtime=default,+stackcall");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "--opt=space");
     else if(build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt=speed");
     else
-      push_var("CFLAGS", "--opt=none");
+      push_var("CFLAGS", "--opt=all");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "-g");
+      push_var("CFLAGS", "--debugger=pickit3");
+    }
 
-    push_var("CFLAGS", "--float=24");
     push_var("CFLAGS", "--double=32");
-    push_var("CFLAGS", "--warn=-3");
+   // push_var("CFLAGS", "--warn=-3");
     // push_var("CFLAGS", "-V");
 
     push_var("CFLAGS", "-q");
@@ -3541,9 +3542,9 @@ set_compiler_type(const char* compiler) {
 
     // push_var("CFLAGS", "-V");
     //   push_var("CFLAGS", "--echo");
-    push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
-    push_var("LDFLAGS", "--summary=default,-psect,-class,+mem,-hex");
-    push_var("LDFLAGS", "--stack=compiled");
+    push_var("CFLAGS", "--runtime=default,-keep");
+//    push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
+    push_var("CFLAGS", "--summary=default,+psect");
 
     push_var("LDFLAGS", "--asmlist");
     push_var("CPPFLAGS", "-D__$(CHIP)__");
@@ -3584,15 +3585,19 @@ set_compiler_type(const char* compiler) {
       push_var_sa("CPPFLAGS", &chipdef);
     }
 
+    push_var("CFLAGS", "--mode=PRO");
     push_var("CFLAGS", "--float=24");
     push_var("CFLAGS", "--double=32");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
-      push_var("CFLAGS", "--opt=+asm,-asmfile,-speed,+space,+debug,3");
+      push_var("CFLAGS", "--opt=default,+asm,-asmfile,-speed,+space,+debug,3");
     else if(build_type != BUILD_TYPE_DEBUG)
-      push_var("CFLAGS", "--opt=+asm,+asmfile,+speed,-space,-debug,9");
-    else
-      push_var("CFLAGS", "--opt=+asm,+asmfile,-speed,-space,+debug");
+      push_var("CFLAGS", "--opt=default,+asm,+asmfile,+speed,-space,-debug,9");
+    else {
+      push_var("CFLAGS", "--opt=default,+asm,+asmfile,-speed,-space,+debug");
+      push_var("CFLAGS", "-g");
+      push_var("CFLAGS", "--debugger=pickit3");
+    }
 
     // push_var("CFLAGS", "-fp:precise");
 
@@ -3601,11 +3606,11 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--chip=$(CHIP)");
     push_var("CPPFLAGS", "-D__$(CHIP)=1");
 
-    push_var("LDFLAGS", "--output=default,-inhx032");
-    push_var("LDFLAGS", "--summary=default,-psect,-class,+mem,-hex,-file");
+    push_var("LDFLAGS", "--output=default,-inhx032,+inhx32");
+    push_var("LDFLAGS", "--summary=default,+psect");
 
     push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
-    push_var("LDFLAGS", "--output=-elf,+mcof");
+    push_var("LDFLAGS", "--output=-default,elf,+mcof");
     // push_var("LDFLAGS", "--output=-mcof,+elf");
     push_var("LDFLAGS", "--stack=compiled");
 
