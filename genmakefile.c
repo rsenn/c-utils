@@ -1218,6 +1218,11 @@ include_dirs_to_cppflags() {
   strlist_foreach_s(&include_dirs, dir) {
     stralloc_zero(&arg);
     path_relative(dir, outdir.sa.s, &arg);
+    
+    buffer_puts(buffer_2, "Adding includedir: ");
+    buffer_putsa(buffer_2, &arg);
+    buffer_putnlflush(buffer_2);
+
     stralloc_prepends(&arg, "-I");
     push_var_sa("CPPFLAGS", &arg);
   }
