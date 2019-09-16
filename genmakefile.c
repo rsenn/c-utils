@@ -3472,8 +3472,7 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
     stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "htc")) {
-    set_var("CC", "picc");
-    set_var("LINK", "picc");
+
     set_var("LIB", "libr");
 
     mach.arch = PIC;
@@ -3483,6 +3482,9 @@ set_compiler_type(const char* compiler) {
 
     set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
     push_var("CPPFLAGS", mach.bits == _14 ? "-DPIC16=1" : "-DPIC18=1");
+
+    set_var("CC", mach.bits == _14 ? "picc" : "picc18");
+    set_var("LINK", mach.bits == _14 ? "picc" : "picc18");
 
     if(chip.len == 0)
       stralloc_copys(&chip, "16f876a");
