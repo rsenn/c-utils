@@ -45,4 +45,3 @@ mmap_shared_fd(fd_t fd, size_t* filesize) {
   return 0;
 #endif
 }
-

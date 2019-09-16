@@ -38,4 +38,3 @@ mmap_rw_fd(fd_t fd, size_t* filesize) {
   return map;
 #endif
 }
-

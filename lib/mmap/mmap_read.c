@@ -1,28 +1,25 @@
-#define _LARGEFILE64_SOURCE
-#include "../windoze.h"
-#include "../io_internal.h"
-#include "../mmap.h"
-#include "../open.h"
-
-#if WINDOWS_NATIVE
+#include <sys/types.h>
+#ifdef _WIN32
 #include <windows.h>
 #else
-#include <sys/mman.h>
 #include <unistd.h>
+#include <sys/mman.h>
+#include "open.h"
 #endif
+#include "mmap.h"
 
-extern char*
+extern const char*
 mmap_read(const char* filename, size_t* filesize) {
-#if WINDOWS_NATIVE
+#ifdef _WIN32
   HANDLE fd, m;
   char* map;
-  fd = CreateFileA(filename,
-                   GENERIC_READ,
-                   FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                   0,
-                   OPEN_EXISTING,
-                   FILE_ATTRIBUTE_NORMAL,
-                   0);
+  fd = CreateFile(filename,
+                  GENERIC_READ,
+                  FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                  0,
+                  OPEN_EXISTING,
+                  FILE_ATTRIBUTE_NORMAL,
+                  0);
   if(fd == INVALID_HANDLE_VALUE)
     return 0;
   m = CreateFileMapping(fd, 0, PAGE_READONLY, 0, 0, NULL);
@@ -34,18 +31,24 @@ mmap_read(const char* filename, size_t* filesize) {
   CloseHandle(fd);
   return map;
 #else
-  fd_t fd = open_read(filename);
+  int fd = open_read(filename);
   char* map;
   if(fd >= 0) {
-    off_t off = 0;
-    *filesize = io_seek(fd, off, SEEK_END);
-    map = mmap(0, *filesize, PROT_READ, MAP_SHARED, fd, 0);
-    if(map == (char*)-1)
-      map = 0;
+    register off_t o = lseek(fd, 0, SEEK_END);
+    if(o == 0 || (sizeof(off_t) != sizeof(size_t) && o > (off_t)(size_t)-1)) {
+      close(fd);
+      return 0;
+    }
+    *filesize = (size_t)o;
+    if(o > 0) {
+      map = mmap(0, *filesize, PROT_READ, MAP_SHARED, fd, 0);
+      if(map == (char*)-1)
+        map = 0;
+    } else
+      map = "";
     close(fd);
     return map;
   }
   return 0;
 #endif
 }
-
