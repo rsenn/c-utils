@@ -1506,3 +1506,1003 @@ $(BUILDDIR)array_find.o: lib/array/array_find.c lib/array.h lib/typedefs.h lib/u
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)charbuf_getc.o: lib/charbuf/charbuf_getc.c lib/charbuf.h lib/typedefs.h lib/byte.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_froms.o: lib/charbuf/charbuf_froms.c lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_nextc.o: lib/charbuf/charbuf_nextc.c lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_init.o: lib/charbuf/charbuf_init.c lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_skip_pred.o: lib/charbuf/charbuf_skip_pred.c lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_close.o: lib/charbuf/charbuf_close.c lib/windoze.h lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_skip_until.o: lib/charbuf/charbuf_skip_until.c lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_skip.o: lib/charbuf/charbuf_skip.c lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_peekc.o: lib/charbuf/charbuf_peekc.c lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_get.o: lib/charbuf/charbuf_get.c lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)charbuf_peek.o: lib/charbuf/charbuf_peek.c lib/charbuf.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_case_diff.o: lib/str/str_case_diff.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_dup.o: lib/str/str_dup.c lib/byte.h lib/typedefs.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_case_equal.o: lib/str/str_case_equal.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_rfindb.o: lib/str/str_rfindb.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_cat.o: lib/str/str_cat.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_equal.o: lib/str/str_equal.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_basename.o: lib/str/str_basename.c lib/windoze.h lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_istr.o: lib/str/str_istr.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_rchr.o: lib/str/str_rchr.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_is.o: lib/str/str_is.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_copyb.o: lib/str/str_copyb.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_end.o: lib/str/str_end.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_find.o: lib/str/str_find.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_diffn.o: lib/str/str_diffn.c lib/byte.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_chrs.o: lib/str/str_chrs.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_chr.o: lib/str/str_chr.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_case_diffn.o: lib/str/str_case_diffn.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_tok.o: lib/str/str_tok.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_ptime.o: lib/str/str_ptime.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)isleap.o: lib/str/isleap.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)time_table_spd.o: lib/str/time_table_spd.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_case_start.o: lib/str/str_case_start.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_triml.o: lib/str/str_triml.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_len.o: lib/str/str_len.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_diff.o: lib/str/str_diff.c lib/byte.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_findb.o: lib/str/str_findb.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_rchrs.o: lib/str/str_rchrs.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_rfind.o: lib/str/str_rfind.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_copyn.o: lib/str/str_copyn.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_ndup.o: lib/str/str_ndup.c lib/byte.h lib/typedefs.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_start.o: lib/str/str_start.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_endb.o: lib/str/str_endb.c lib/str.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_lower.o: lib/str/str_lower.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_copy.o: lib/str/str_copy.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_camelize.o: lib/str/str_camelize.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)getenv.o: lib/getenv.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)textbuf_free.o: lib/textbuf/textbuf_free.c lib/textbuf.h lib/buffer.h lib/typedefs.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)textbuf_read.o: lib/textbuf/textbuf_read.c lib/textbuf.h lib/buffer.h lib/typedefs.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)textbuf_init.o: lib/textbuf/textbuf_init.c lib/textbuf.h lib/buffer.h lib/typedefs.h lib/uint64.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)is_textbuf.o: lib/textbuf/is_textbuf.c lib/textbuf.h lib/buffer.h lib/typedefs.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)textbuf_line.o: lib/textbuf/textbuf_line.c lib/textbuf.h lib/buffer.h lib/typedefs.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)textbuf_column.o: lib/textbuf/textbuf_column.c lib/textbuf.h lib/buffer.h lib/typedefs.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)open_trunc.o: lib/open/open_trunc.c lib/windoze.h lib/open.h lib/typedefs.h lib/windoze.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)open_rw.o: lib/open/open_rw.c lib/windoze.h lib/open.h lib/typedefs.h lib/windoze.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)open_temp.o: lib/open/open_temp.c lib/windoze.h lib/open.h lib/typedefs.h lib/windoze.h lib/uint64.h lib/str.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)open_read.o: lib/open/open_read.c lib/windoze.h lib/open.h lib/typedefs.h lib/windoze.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)open_append.o: lib/open/open_append.c lib/windoze.h lib/open.h lib/typedefs.h lib/windoze.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)open_write.o: lib/open/open_write.c lib/windoze.h lib/open.h lib/typedefs.h lib/windoze.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)open_excl.o: lib/open/open_excl.c lib/windoze.h lib/open.h lib/typedefs.h lib/windoze.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)playlist_init.o: lib/playlist/playlist_init.c lib/playlist.h lib/stralloc.h lib/typedefs.h lib/uint32.h lib/buffer.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)playlist_write_entry.o: lib/playlist/playlist_write_entry.c lib/windoze.h lib/playlist.h lib/stralloc.h lib/typedefs.h lib/uint32.h lib/buffer.h lib/str.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)playlist_m3u.o: lib/playlist/playlist_m3u.c lib/buffer.h lib/typedefs.h lib/playlist.h lib/stralloc.h lib/uint32.h lib/buffer.h lib/scan.h lib/uint64.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)playlist_xspf.o: lib/playlist/playlist_xspf.c lib/buffer.h lib/typedefs.h lib/byte.h lib/playlist.h lib/stralloc.h lib/uint32.h lib/buffer.h lib/scan.h lib/uint64.h lib/xml.h lib/hmap.h lib/textbuf.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)playlist_pls.o: lib/playlist/playlist_pls.c lib/buffer.h lib/typedefs.h lib/playlist.h lib/stralloc.h lib/uint32.h lib/buffer.h lib/scan.h lib/uint64.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)playlist_write_finish.o: lib/playlist/playlist_write_finish.c lib/windoze.h lib/io_internal.h lib/windoze.h lib/array.h lib/typedefs.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/io.h lib/playlist.h lib/stralloc.h lib/buffer.h lib/byte.h lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)playlist_write_start.o: lib/playlist/playlist_write_start.c lib/windoze.h lib/io_internal.h lib/windoze.h lib/array.h lib/typedefs.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/io.h lib/playlist.h lib/stralloc.h lib/buffer.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)playlist_read.o: lib/playlist/playlist_read.c lib/playlist.h lib/stralloc.h lib/typedefs.h lib/uint32.h lib/buffer.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_mcloop6.o: lib/socket/socket_mcloop6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_tcp6.o: lib/socket/socket_tcp6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_accept4.o: lib/socket/socket_accept4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/io_internal.h lib/windoze.h lib/array.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/io.h lib/ip4.h lib/uint8.h lib/uint64.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_noipv6.o: lib/socket/socket_noipv6.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_deferaccept.o: lib/socket/socket_deferaccept.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_getifidx.o: lib/socket/socket_getifidx.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_error.o: lib/socket/socket_error.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_bind6_reuse.o: lib/socket/socket_bind6_reuse.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_mcleave6.o: lib/socket/socket_mcleave6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_mcjoin4.o: lib/socket/socket_mcjoin4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ip4.h lib/uint8.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_local6.o: lib/socket/socket_local6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/ip6.h lib/byte.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_recv4.o: lib/socket/socket_recv4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_fastopen_connect4.o: lib/socket/socket_fastopen_connect4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_ip4.o: lib/socket/fmt_ip4.c lib/fmt.h lib/typedefs.h lib/uint32.h lib/uint64.h lib/ip4.h lib/uint8.h lib/uint16.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_send6.o: lib/socket/socket_send6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/ip4.h lib/uint8.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_connect6.o: lib/socket/socket_connect6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ip6.h lib/byte.h lib/uint16.h lib/uint32.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_listen.o: lib/socket/socket_listen.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/io_internal.h lib/windoze.h lib/array.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/io.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_local4.o: lib/socket/socket_local4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_ip6if.o: lib/socket/fmt_ip6if.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/fmt.h lib/uint64.h lib/ip6.h lib/byte.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_mcleave4.o: lib/socket/socket_mcleave4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_mchopcount6.o: lib/socket/socket_mchopcount6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_ip6.o: lib/socket/fmt_ip6.c lib/byte.h lib/typedefs.h lib/fmt.h lib/uint32.h lib/uint64.h lib/ip4.h lib/uint8.h lib/uint16.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_tcp4.o: lib/socket/socket_tcp4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_sctp4.o: lib/socket/socket_sctp4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_connected.o: lib/socket/socket_connected.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_mcjoin6.o: lib/socket/socket_mcjoin6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan_ip4.o: lib/socket/scan_ip4.c lib/ip4.h lib/uint8.h lib/uint16.h lib/uint32.h lib/scan.h lib/typedefs.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_tcp6b.o: lib/socket/socket_tcp6b.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_remote4.o: lib/socket/socket_remote4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan_ip6if.o: lib/socket/scan_ip6if.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_ip6c.o: lib/socket/fmt_ip6c.c lib/byte.h lib/typedefs.h lib/fmt.h lib/uint32.h lib/uint64.h lib/ip4.h lib/uint8.h lib/uint16.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_bind4.o: lib/socket/socket_bind4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_mcloop4.o: lib/socket/socket_mcloop4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_v4mappedprefix.o: lib/socket/socket_v4mappedprefix.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan_ip6.o: lib/socket/scan_ip6.c lib/ip4.h lib/uint8.h lib/uint16.h lib/uint32.h lib/ip6.h lib/byte.h lib/typedefs.h lib/scan.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_sctp4b.o: lib/socket/socket_sctp4b.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_recv6.o: lib/socket/socket_recv6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_accept6.o: lib/socket/socket_accept6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/io_internal.h lib/windoze.h lib/array.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/io.h lib/ip6.h lib/byte.h lib/uint64.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_sctp6b.o: lib/socket/socket_sctp6b.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_v6loopback.o: lib/socket/socket_v6loopback.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan_ip6_flat.o: lib/socket/scan_ip6_flat.c lib/scan.h lib/typedefs.h lib/uint32.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_quickack.o: lib/socket/socket_quickack.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_broadcast.o: lib/socket/socket_broadcast.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_sctp6.o: lib/socket/socket_sctp6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_fastopen.o: lib/socket/socket_fastopen.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_mcttl4.o: lib/socket/socket_mcttl4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_bind6.o: lib/socket/socket_bind6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_getifname.o: lib/socket/socket_getifname.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_bind4_reuse.o: lib/socket/socket_bind4_reuse.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_connect4.o: lib/socket/socket_connect4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_tryreservein.o: lib/socket/socket_tryreservein.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_tcp4b.o: lib/socket/socket_tcp4b.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_v6any.o: lib/socket/socket_v6any.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_udp4.o: lib/socket/socket_udp4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_fastopen_connect6.o: lib/socket/socket_fastopen_connect6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_remote6.o: lib/socket/socket_remote6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h lib/ip6.h lib/byte.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_send4.o: lib/socket/socket_send4.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_ip6ifc.o: lib/socket/fmt_ip6ifc.c lib/byte.h lib/typedefs.h lib/fmt.h lib/uint32.h lib/uint64.h lib/ip4.h lib/uint8.h lib/uint16.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_ip6_flat.o: lib/socket/fmt_ip6_flat.c lib/fmt.h lib/typedefs.h lib/uint32.h lib/uint64.h lib/ip6.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)winsock2errno.o: lib/socket/winsock2errno.c lib/windoze.h lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)winsock_init.o: lib/socket/winsock_init.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_udp6.o: lib/socket/socket_udp6.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)socket_ip4loopback.o: lib/socket/socket_ip4loopback.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)winsock_socketpair.o: lib/socket/winsock_socketpair.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_storage_class.o: lib/coff/coff_storage_class.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_symbol_table.o: lib/coff/coff_symbol_table.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h lib/range.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_symbol_name.o: lib/coff/coff_symbol_name.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_get_strtab.o: lib/coff/coff_get_strtab.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_header.o: lib/coff/coff_header.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_get_symtab.o: lib/coff/coff_get_symtab.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_get_section.o: lib/coff/coff_get_section.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_sclass_name.o: lib/coff/coff_sclass_name.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_index_symtab.o: lib/coff/coff_index_symtab.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)coff_line_numbers.o: lib/coff/coff_line_numbers.c lib/coff.h lib/uint8.h lib/uint16.h lib/uint32.h lib/range.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_copywcb.o: lib/stralloc/stralloc_copywcb.c lib/byte.h lib/typedefs.h lib/stralloc.h lib/utf8.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_cathexb.o: lib/stralloc/stralloc_cathexb.c lib/fmt.h lib/typedefs.h lib/uint32.h lib/uint64.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_0.o: lib/stralloc/stralloc_0.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)str_decamelize.o: lib/stralloc/str_decamelize.c lib/str.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_find.o: lib/stralloc/stralloc_find.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catm_internal.o: lib/stralloc/stralloc_catm_internal.c lib/str.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_count.o: lib/stralloc/stralloc_count.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_replace.o: lib/stralloc/stralloc_replace.c lib/stralloc.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_copys.o: lib/stralloc/stralloc_copys.c lib/str.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catb.o: lib/stralloc/stralloc_catb.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_getline_sa.o: lib/stralloc/buffer_getline_sa.c lib/buffer.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_equals.o: lib/stralloc/stralloc_case_equals.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)readclose.o: lib/stralloc/readclose.c lib/stralloc.h lib/typedefs.h lib/open.h lib/windoze.h lib/uint64.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_equalb.o: lib/stralloc/stralloc_equalb.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_readyplus.o: lib/stralloc/stralloc_readyplus.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_replace_non_printable.o: lib/stralloc/stralloc_replace_non_printable.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_fmt_pred.o: lib/stralloc/stralloc_fmt_pred.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catint0.o: lib/stralloc/stralloc_catint0.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catxlong.o: lib/stralloc/stralloc_catxlong.c lib/fmt.h lib/typedefs.h lib/uint32.h lib/uint64.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_end.o: lib/stralloc/stralloc_case_end.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_cat.o: lib/stralloc/stralloc_cat.c lib/str.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_start.o: lib/stralloc/stralloc_case_start.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_chr.o: lib/stralloc/stralloc_chr.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_copyb.o: lib/stralloc/stralloc_copyb.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catwcs.o: lib/stralloc/stralloc_catwcs.c lib/stralloc.h lib/typedefs.h lib/utf8.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_scan.o: lib/stralloc/stralloc_scan.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_free.o: lib/stralloc/stralloc_free.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_diff.o: lib/stralloc/stralloc_diff.c lib/stralloc.h lib/typedefs.h lib/byte.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_remove_all.o: lib/stralloc/stralloc_remove_all.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_removesuffixs.o: lib/stralloc/stralloc_removesuffixs.c lib/stralloc.h lib/typedefs.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)mmap_filename.o: lib/stralloc/mmap_filename.c lib/buffer.h lib/typedefs.h lib/scan.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/windoze.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_findb.o: lib/stralloc/stralloc_findb.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catwcb.o: lib/stralloc/stralloc_catwcb.c lib/byte.h lib/typedefs.h lib/stralloc.h lib/utf8.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_ready.o: lib/stralloc/stralloc_ready.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_insertb.o: lib/stralloc/stralloc_insertb.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_gettok_sa.o: lib/stralloc/buffer_gettok_sa.c lib/buffer.h lib/typedefs.h lib/byte.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_diff.o: lib/stralloc/stralloc_case_diff.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_trunc.o: lib/stralloc/stralloc_trunc.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_puts_escaped.o: lib/stralloc/buffer_puts_escaped.c lib/buffer.h lib/typedefs.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_insert.o: lib/stralloc/stralloc_insert.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_ready_tuned.o: lib/stralloc/stralloc_ready_tuned.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_prependb.o: lib/stralloc/stralloc_prependb.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_fmt.o: lib/stralloc/stralloc_fmt.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_chop.o: lib/stralloc/stralloc_chop.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_shrink.o: lib/stralloc/stralloc_shrink.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_diffs.o: lib/stralloc/stralloc_diffs.c lib/stralloc.h lib/typedefs.h lib/byte.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_starts.o: lib/stralloc/stralloc_case_starts.c lib/byte.h lib/typedefs.h lib/str.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)open_filename.o: lib/stralloc/open_filename.c lib/windoze.h lib/stralloc.h lib/typedefs.h lib/typedefs.h lib/mmap.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_ends.o: lib/stralloc/stralloc_ends.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_remove.o: lib/stralloc/stralloc_remove.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_getnewline_sa.o: lib/stralloc/buffer_getnewline_sa.c lib/buffer.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)openreadclose.o: lib/stralloc/openreadclose.c lib/stralloc.h lib/typedefs.h lib/open.h lib/windoze.h lib/uint64.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catuint0.o: lib/stralloc/stralloc_catuint0.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_copy.o: lib/stralloc/stralloc_copy.c lib/str.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_finds.o: lib/stralloc/stralloc_finds.c lib/str.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catlong.o: lib/stralloc/stralloc_catlong.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_erase.o: lib/stralloc/stralloc_erase.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_startb.o: lib/stralloc/stralloc_startb.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_move.o: lib/stralloc/stralloc_move.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_start.o: lib/stralloc/stralloc_start.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_removesuffixb.o: lib/stralloc/stralloc_removesuffixb.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_replacec.o: lib/stralloc/stralloc_replacec.c lib/stralloc.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_lower.o: lib/stralloc/stralloc_lower.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_append.o: lib/stralloc/stralloc_append.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_contains.o: lib/stralloc/stralloc_contains.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_get_new_token_sa.o: lib/stralloc/buffer_get_new_token_sa.c lib/buffer.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)utf8.o: lib/stralloc/utf8.c lib/utf8.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catdouble.o: lib/stralloc/stralloc_catdouble.c lib/fmt.h lib/typedefs.h lib/uint32.h lib/uint64.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_get_token_sa.o: lib/stralloc/buffer_get_token_sa.c lib/buffer.h lib/typedefs.h lib/byte.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catuint.o: lib/stralloc/stralloc_catuint.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_reverse.o: lib/stralloc/stralloc_reverse.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_camelize.o: lib/stralloc/stralloc_camelize.c lib/stralloc.h lib/typedefs.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_tosa.o: lib/stralloc/buffer_tosa.c lib/buffer.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catc.o: lib/stralloc/stralloc_catc.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_equal.o: lib/stralloc/stralloc_case_equal.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_equals.o: lib/stralloc/stralloc_equals.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_write.o: lib/stralloc/stralloc_write.c lib/buffer.h lib/typedefs.h lib/stralloc.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_nul.o: lib/stralloc/stralloc_nul.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catlong0.o: lib/stralloc/stralloc_catlong0.c lib/stralloc.h lib/typedefs.h lib/fmt.h lib/uint32.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_equal.o: lib/stralloc/stralloc_equal.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_upper.o: lib/stralloc/stralloc_upper.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_chomp.o: lib/stralloc/stralloc_chomp.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_copywcs.o: lib/stralloc/stralloc_copywcs.c lib/stralloc.h lib/typedefs.h lib/utf8.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_trimr.o: lib/stralloc/stralloc_trimr.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_init.o: lib/stralloc/stralloc_init.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_replaces.o: lib/stralloc/stralloc_replaces.c lib/stralloc.h lib/typedefs.h lib/byte.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catulong.o: lib/stralloc/stralloc_catulong.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catulong0.o: lib/stralloc/stralloc_catulong0.c lib/stralloc.h lib/typedefs.h lib/fmt.h lib/uint32.h lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_rchr.o: lib/stralloc/stralloc_rchr.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_reverse_blocks.o: lib/stralloc/stralloc_reverse_blocks.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_diffb.o: lib/stralloc/stralloc_diffb.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_fmt_call.o: lib/stralloc/stralloc_fmt_call.c lib/windoze.h lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_get_token_sa_pred.o: lib/stralloc/buffer_get_token_sa_pred.c lib/buffer.h lib/typedefs.h lib/byte.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_put_escaped.o: lib/stralloc/buffer_put_escaped.c lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_prepends.o: lib/stralloc/stralloc_prepends.c lib/str.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_inserts.o: lib/stralloc/stralloc_inserts.c lib/str.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_prepend.o: lib/stralloc/stralloc_prepend.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_catint.o: lib/stralloc/stralloc_catint.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_starts.o: lib/stralloc/stralloc_starts.c lib/byte.h lib/typedefs.h lib/str.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_zero.o: lib/stralloc/stralloc_zero.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_cats.o: lib/stralloc/stralloc_cats.c lib/str.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_endb.o: lib/stralloc/stralloc_endb.c lib/byte.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_expand.o: lib/stralloc/stralloc_expand.c lib/windoze.h lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_get_new_token_sa_pred.o: lib/stralloc/buffer_get_new_token_sa_pred.c lib/buffer.h lib/typedefs.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_decamelize.o: lib/stralloc/stralloc_decamelize.c lib/stralloc.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_case_diffs.o: lib/stralloc/stralloc_case_diffs.c lib/byte.h lib/typedefs.h lib/str.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_subst.o: lib/stralloc/stralloc_subst.c lib/byte.h lib/typedefs.h lib/str.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)case_starts.o: lib/case/case_starts.c lib/case.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)case_findb.o: lib/case/case_findb.c lib/case.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)case_diffs.o: lib/case/case_diffs.c lib/case.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)case_find.o: lib/case/case_find.c lib/case.h lib/typedefs.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)case_lowerc.o: lib/case/case_lowerc.c lib/case.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)case_lowers.o: lib/case/case_lowers.c lib/case.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)case_finds.o: lib/case/case_finds.c lib/case.h lib/typedefs.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)case_lowerb.o: lib/case/case_lowerb.c lib/case.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)case_diffb.o: lib/case/case_diffb.c lib/case.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ndelay_off.o: lib/ndelay/ndelay_off.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ndelay_on.o: lib/ndelay/ndelay_on.c lib/socket_internal.h lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)glob.o: lib/unix/glob.c lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)getpagesize.o: lib/unix/getpagesize.c lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)readlink.o: lib/unix/readlink.c lib/windoze.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)win32_loadprog.o: lib/unix/win32_loadprog.c lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fork.o: lib/unix/fork.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)pipe2.o: lib/unix/pipe2.c lib/windoze.h lib/io_internal.h lib/windoze.h lib/array.h lib/typedefs.h lib/uint64.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/io.h lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)wordexp.o: lib/unix/wordexp.c lib/wordexp.h lib/typedefs.h lib/windoze.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fnmatch.o: lib/unix/fnmatch.c lib/fnmatch.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fnmatch_b.o: lib/unix/fnmatch_b.c lib/fnmatch.h lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)win32_glob.o: lib/unix/win32_glob.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)getdelim.o: lib/unix/getdelim.c lib/typedefs.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)win32_popen.o: lib/unix/win32_popen.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)win32_borland_popen.o: lib/unix/win32_borland_popen.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)getopt.o: lib/unix/getopt.c lib/getopt.h lib/buffer.h lib/typedefs.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)popen.o: lib/unix/popen.c lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint32_seed.o: lib/uint32/uint32_seed.c lib/windoze.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint32_unpack.o: lib/uint32/uint32_unpack.c lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint32_pack.o: lib/uint32/uint32_pack.c lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint32_prng.o: lib/uint32/uint32_prng.c lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint32_read.o: lib/uint32/uint32_read.c lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint32_unpack_big.o: lib/uint32/uint32_unpack_big.c lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint32_random.o: lib/uint32/uint32_random.c lib/uint32.h lib/taia.h lib/tai.h lib/uint64.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint32_read_big.o: lib/uint32/uint32_read_big.c lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint32_pack_big.o: lib/uint32/uint32_pack_big.c lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)strptime.o: lib/strptime.c lib/str.h lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)waitn.o: lib/wait/waitn.c lib/wait.h lib/uint64.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)waitn_reap.o: lib/wait/waitn_reap.c lib/wait.h lib/uint64.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)wait_pids_nohang.o: lib/wait/wait_pids_nohang.c lib/wait.h lib/uint64.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)wait_reap.o: lib/wait/wait_reap.c lib/wait.h lib/uint64.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)waitpid_nointr.o: lib/wait/waitpid_nointr.c lib/wait.h lib/uint64.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)wait_nointr.o: lib/wait/wait_nointr.c lib/wait.h lib/uint64.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)wait_pid.o: lib/wait/wait_pid.c lib/wait.h lib/uint64.h lib/uint64.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)wait_pid_nohang.o: lib/wait/wait_pid_nohang.c lib/wait.h lib/uint64.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)wait_nohang.o: lib/wait/wait_nohang.c lib/wait.h lib/uint64.h lib/windoze.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)eagle-to-circuit.o: eagle-to-circuit.c lib/windoze.h lib/buffer.h lib/typedefs.h lib/byte.h lib/cb.h lib/cbmap.h lib/uint8.h lib/fmt.h lib/uint32.h lib/uint64.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/mmap.h lib/scan.h lib/str.h lib/stralloc.h lib/strlist.h lib/byte.h lib/xml.h lib/hmap.h lib/textbuf.h lib/array.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)genmakefile.o: genmakefile.c lib/windoze.h lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/mmap.h lib/uint64.h lib/open.h lib/path.h lib/str.h lib/rdir.h lib/dir.h lib/dir_internal.h lib/scan.h lib/uint32.h lib/slist.h lib/alloc.h lib/str.h lib/stralloc.h lib/strarray.h lib/array.h lib/byte.h lib/strlist.h lib/uint32.h lib/errmsg.h lib/array.h lib/byte.h lib/fmt.h lib/dir.h lib/range.h lib/case.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)parse.o: parse.c lib/windoze.h lib/strlist.h lib/stralloc.h lib/typedefs.h lib/byte.h lib/uint64.h lib/buffer.h lib/strarray.h lib/array.h lib/stralloc.h lib/buffer.h lib/path.h lib/windoze.h lib/str.h lib/process.h lib/env.h lib/errmsg.h lib/byte.h lib/mmap.h lib/scan.h lib/uint32.h lib/getopt.h lib/open.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)elflist.o: elflist.c lib/uint64.h lib/buffer.h lib/typedefs.h lib/elf.h lib/uint8.h lib/uint16.h lib/uint32.h lib/uint64.h lib/range.h lib/mmap.h lib/str.h lib/unix.h lib/windoze.h lib/getopt.h lib/readlink.h lib/getopt.h lib/range.h lib/rangecheck.h lib/byte.h lib/fmt.h lib/strlist.h lib/stralloc.h lib/byte.h lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)eagle-init-brd.o: eagle-init-brd.c lib/windoze.h lib/xml.h lib/buffer.h lib/typedefs.h lib/hmap.h lib/stralloc.h lib/textbuf.h lib/uint64.h lib/hmap.h lib/fmt.h lib/uint32.h lib/byte.h lib/mmap.h lib/scan.h lib/str.h lib/stralloc.h lib/strlist.h lib/byte.h lib/round.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)jsontest.o: jsontest.c lib/windoze.h lib/charbuf.h lib/typedefs.h lib/byte.h lib/mmap.h lib/uint64.h lib/byte.h lib/fmt.h lib/uint32.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/stralloc.h lib/json.h lib/charbuf.h lib/hmap.h lib/slist.h lib/alloc.h lib/str.h lib/open.h lib/windoze.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h lib/str.h lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)mediathek-list.o: mediathek-list.c lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/unix.h lib/windoze.h lib/getopt.h lib/readlink.h lib/http.h lib/uint16.h lib/stralloc.h lib/buffer.h lib/ip4.h lib/uint8.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h lib/scan.h lib/slist.h lib/alloc.h lib/str.h lib/stralloc.h lib/strarray.h lib/array.h lib/byte.h lib/strlist.h lib/windoze.h lib/errmsg.h lib/case.h lib/hmap.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)testihex.o: testihex.c lib/ihex.h lib/uint8.h lib/uint16.h lib/slist.h lib/alloc.h lib/typedefs.h lib/buffer.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)crc.o: crc.c lib/buffer.h lib/typedefs.h lib/errmsg.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)decode-ls-lR.o: decode-ls-lR.c lib/stralloc.h lib/typedefs.h lib/buffer.h lib/open.h lib/windoze.h lib/uint64.h lib/fmt.h lib/uint32.h lib/byte.h lib/str.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h lib/path.h lib/stralloc.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hexedit.o: hexedit.c lib/windoze.h lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/array.h lib/buffer.h lib/stralloc.h lib/mmap.h lib/scan.h lib/uint64.h lib/uint8.h lib/errmsg.h lib/open.h lib/path.h lib/stralloc.h lib/str.h lib/str.h lib/byte.h lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)dnstest.o: dnstest.c lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/io.h lib/windoze.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/iarray.h lib/case.h lib/open.h lib/stralloc.h lib/scan.h lib/fmt.h lib/str.h lib/tai.h lib/taia.h lib/buffer.h lib/dns.h lib/iopause.h lib/io.h lib/stralloc.h lib/errmsg.h lib/ip4.h lib/uint8.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)dnsname.o: dnsname.c lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/io.h lib/windoze.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/iarray.h lib/case.h lib/open.h lib/stralloc.h lib/scan.h lib/fmt.h lib/str.h lib/tai.h lib/taia.h lib/buffer.h lib/dns.h lib/iopause.h lib/io.h lib/stralloc.h lib/errmsg.h lib/ip4.h lib/uint8.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xml2json.o: xml2json.c lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/stralloc.h lib/xml.h lib/hmap.h lib/textbuf.h lib/str.h lib/mmap.h lib/scan.h lib/strlist.h lib/byte.h lib/json.h lib/charbuf.h lib/slist.h lib/alloc.h lib/str.h lib/array.h lib/textcode.h lib/errmsg.h lib/open.h lib/windoze.h lib/getopt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)elf64list.o: elf64list.c lib/elf.h lib/uint8.h lib/uint16.h lib/uint32.h lib/uint64.h lib/range.h lib/typedefs.h lib/mmap.h lib/uint16.h lib/uint32.h lib/uint64.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)httpproxy.o: httpproxy.c lib/windoze.h lib/buffer.h lib/typedefs.h lib/socket.h lib/uint16.h lib/uint32.h lib/socket_internal.h lib/socket.h lib/ndelay.h lib/unix.h lib/windoze.h lib/getopt.h lib/readlink.h lib/errmsg.h lib/stralloc.h lib/dns.h lib/iopause.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/stralloc.h lib/ip4.h lib/uint8.h lib/map.h lib/byte.h lib/safemult.h lib/str.h lib/mmap.h lib/scan.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)tcping.o: tcping.c lib/windoze.h lib/buffer.h lib/typedefs.h lib/socket.h lib/uint16.h lib/uint32.h lib/socket_internal.h lib/socket.h lib/ndelay.h lib/unix.h lib/windoze.h lib/getopt.h lib/readlink.h lib/errmsg.h lib/stralloc.h lib/dns.h lib/iopause.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/stralloc.h lib/ip4.h lib/uint8.h lib/map.h lib/byte.h lib/safemult.h lib/str.h lib/mmap.h lib/scan.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xmltest3.o: xmltest3.c lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/stralloc.h lib/xml.h lib/hmap.h lib/textbuf.h lib/str.h lib/mmap.h lib/scan.h lib/strlist.h lib/byte.h lib/array.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)rdir-test.o: rdir-test.c lib/rdir.h lib/dir.h lib/uint64.h lib/dir_internal.h lib/stralloc.h lib/typedefs.h lib/dir.h lib/buffer.h lib/stralloc.h lib/byte.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xml2moon.o: xml2moon.c lib/uint64.h lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/stralloc.h lib/xml.h lib/hmap.h lib/textbuf.h lib/str.h lib/mmap.h lib/scan.h lib/strlist.h lib/byte.h lib/array.h lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)macho32list.o: macho32list.c lib/uint32.h lib/macho.h lib/uint8.h lib/uint16.h lib/uint32.h lib/uint64.h lib/mmap.h lib/typedefs.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)tinyproxy.o: tinyproxy.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)opensearch-dump.o: opensearch-dump.c lib/buffer.h lib/typedefs.h lib/stralloc.h lib/xml.h lib/buffer.h lib/hmap.h lib/stralloc.h lib/textbuf.h lib/uint64.h lib/str.h lib/byte.h lib/fmt.h lib/uint32.h lib/scan.h lib/mmap.h lib/hmap.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)torrent-progress.o: torrent-progress.c lib/windoze.h lib/uint64.h lib/buffer.h lib/typedefs.h lib/io.h lib/windoze.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/mmap.h lib/open.h lib/stralloc.h lib/byte.h lib/fmt.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)sln.o: sln.c lib/windoze.h lib/buffer.h lib/typedefs.h lib/byte.h lib/errmsg.h lib/path.h lib/windoze.h lib/stralloc.h lib/str.h lib/str.h lib/stralloc.h lib/strarray.h lib/uint64.h lib/array.h lib/byte.h lib/mmap.h lib/getopt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)test_tuple.o: tests/test_tuple.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/tuple.h tests/../lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)unit_test_runner.o: tests/unit_test_runner.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/path.h tests/../lib/strlist.h tests/../lib/byte.h tests/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)test_stralloc.o: tests/test_stralloc.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)test_path.o: tests/test_path.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/path.h tests/../lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)test_strlist.o: tests/test_strlist.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/strlist.h tests/../lib/byte.h tests/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)all_tests.o: tests/all_tests.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)unit_test.o: tests/unit_test.c tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/typedefs.h tests/../lib/buffer.h tests/../lib/open.h tests/../lib/windoze.h tests/../lib/uint64.h tests/../lib/io_internal.h tests/../lib/array.h tests/../lib/iarray.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint32.h tests/../lib/io.h tests/../lib/errmsg.h tests/unit_test.h tests/../lib/taia.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)count-depth.o: count-depth.c lib/byte.h lib/typedefs.h lib/buffer.h lib/fmt.h lib/uint32.h lib/uint64.h lib/str.h lib/io.h lib/windoze.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ccat.o: ccat.c lib/buffer.h lib/typedefs.h lib/open.h lib/windoze.h lib/uint64.h lib/unix.h lib/getopt.h lib/readlink.h lib/str.h lib/mmap.h lib/byte.h lib/iarray.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)tcpproxy.o: tcpproxy.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)jsonpp.o: jsonpp.c lib/json.h lib/charbuf.h lib/typedefs.h lib/byte.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/slist.h lib/alloc.h lib/uint64.h lib/str.h lib/open.h lib/windoze.h lib/fmt.h lib/uint32.h lib/errmsg.h lib/str.h lib/scan.h lib/getopt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)pelist.o: pelist.c lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/uint64.h lib/buffer.h lib/mmap.h lib/uint64.h lib/pe.h lib/uint32.h lib/uint16.h lib/uint8.h lib/str.h lib/fmt.h lib/byte.h lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xmltest4.o: xmltest4.c lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/stralloc.h lib/xml.h lib/hmap.h lib/textbuf.h lib/str.h lib/mmap.h lib/scan.h lib/strlist.h lib/byte.h lib/array.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)impgen.o: impgen.c lib/byte.h lib/typedefs.h lib/buffer.h lib/mmap.h lib/uint64.h lib/open.h lib/windoze.h lib/pe.h lib/uint32.h lib/uint16.h lib/uint8.h lib/uint32.h lib/str.h lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)omflist.o: omflist.c lib/buffer.h lib/typedefs.h lib/unix.h lib/windoze.h lib/getopt.h lib/readlink.h lib/str.h lib/errmsg.h lib/omf.h lib/uint8.h lib/uint16.h lib/range.h lib/fmt.h lib/uint32.h lib/uint64.h lib/mmap.h lib/byte.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)httptest.o: httptest.c lib/windoze.h lib/http.h lib/uint16.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/typedefs.h lib/buffer.h lib/ip4.h lib/uint8.h lib/byte.h lib/io.h lib/windoze.h lib/iarray.h lib/taia.h lib/tai.h lib/iopause.h lib/io.h lib/socket.h lib/taia.h lib/errmsg.h lib/open.h lib/dns.h lib/iopause.h lib/fmt.h lib/iarray.h lib/scan.h lib/str.h lib/stralloc.h lib/tai.h lib/case.h lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)redir.o: redir.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fdpassing.o: examples/fdpassing.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)b64encode.o: examples/b64encode.c examples/../lib/str.h examples/../lib/typedefs.h examples/../lib/buffer.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan.o: examples/scan.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)readhttp.o: examples/readhttp.c examples/../lib/stralloc.h examples/../lib/typedefs.h examples/../lib/buffer.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)longlong.o: examples/longlong.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/str.h examples/../lib/scan.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_tosa_example.o: examples/buffer_tosa_example.c examples/../lib/byte.h examples/../lib/typedefs.h examples/../lib/stralloc.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io2.o: examples/io2.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)marshal.o: examples/marshal.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/stralloc.h examples/../lib/buffer.h examples/../lib/scan.h examples/../lib/textcode.h examples/../lib/byte.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/open.h examples/../lib/windoze.h examples/../lib/mmap.h examples/../lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)protobuf.o: examples/protobuf.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)server.o: examples/server.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/str.h examples/../lib/socket.h examples/../lib/uint16.h examples/../lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint.o: examples/uint.c examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/byte.h examples/../lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)range.o: examples/range.c examples/../lib/rangecheck.h examples/../lib/typedefs.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)proxy.o: examples/proxy.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/buffer.h examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/str.h examples/../lib/dns.h examples/../lib/iopause.h examples/../lib/io.h examples/../lib/stralloc.h examples/../lib/getopt.h examples/../lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_fromsa_example.o: examples/buffer_fromsa_example.c examples/../lib/stralloc.h examples/../lib/typedefs.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)mult.o: examples/mult.c examples/../lib/safemult.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_iso8691.o: examples/fmt_iso8691.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_long_example.o: examples/fmt_long_example.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)iom.o: examples/iom.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_ip6_example.o: examples/fmt_ip6_example.c examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/typedefs.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)urlencode.o: examples/urlencode.c examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)unurl.o: examples/unurl.c examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cescape.o: examples/cescape.c examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)utf8_example.o: examples/utf8_example.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_buffer.o: examples/stralloc_buffer.c examples/../lib/stralloc.h examples/../lib/typedefs.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt.o: examples/fmt.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io5.o: examples/io5.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/buffer.h examples/../lib/ip6.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_human_example.o: examples/fmt_human_example.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io4.o: examples/io4.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uudecode.o: examples/uudecode.c examples/../lib/textcode.h examples/../lib/str.h examples/../lib/typedefs.h examples/../lib/buffer.h examples/../lib/open.h examples/../lib/windoze.h examples/../lib/uint64.h examples/../lib/stralloc.h examples/../lib/scan.h examples/../lib/uint32.h examples/../lib/case.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)httpd.o: examples/httpd.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/buffer.h examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/array.h examples/../lib/case.h examples/../lib/fmt.h examples/../lib/iob.h examples/../lib/io.h examples/../lib/array.h examples/../lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_strm_alloca.o: examples/fmt_strm_alloca.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_mmap.o: examples/buffer_mmap.c examples/../lib/buffer.h examples/../lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)vd.o: examples/vd.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/buffer.h examples/../lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)json.o: examples/json.c examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)dnsip.o: examples/dnsip.c examples/../lib/dns.h examples/../lib/iopause.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h examples/../lib/stralloc.h examples/../lib/ip4.h examples/../lib/uint8.h examples/../lib/uint16.h examples/../lib/buffer.h examples/../lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)iob.o: examples/iob.c examples/../lib/iob.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h examples/../lib/array.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)dllink.o: examples/dllink.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/buffer.h examples/../lib/case.h examples/../lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cas.o: examples/cas.c examples/../lib/cas.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)array.o: examples/array.c examples/../lib/array.h examples/../lib/typedefs.h examples/../lib/uint64.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io3.o: examples/io3.c examples/../lib/uint64.h examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)textcode.o: examples/textcode.c examples/../lib/array.h examples/../lib/typedefs.h examples/../lib/uint64.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_httpdate_example.o: examples/fmt_httpdate_example.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/buffer.h examples/../lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_1_example.o: examples/buffer_1_example.c examples/../lib/buffer.h examples/../lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io.o: examples/io.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_chomp_example.o: examples/stralloc_chomp_example.c examples/../lib/stralloc.h examples/../lib/typedefs.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)client.o: examples/client.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/str.h examples/../lib/socket.h examples/../lib/uint16.h examples/../lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)byte_copy_example.o: examples/byte_copy_example.c examples/../lib/byte.h examples/../lib/typedefs.h examples/../lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan_long_example.o: examples/scan_long_example.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/fmt.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)netstring.o: examples/netstring.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cdbget2.o: examples/cdbget2.c examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xmltest.o: xmltest.c lib/xml.h lib/buffer.h lib/typedefs.h lib/hmap.h lib/stralloc.h lib/textbuf.h lib/uint64.h lib/buffer.h lib/byte.h lib/fmt.h lib/uint32.h lib/hmap.h lib/iterator.h lib/stralloc.h lib/str.h lib/mmap.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xmltest2.o: xmltest2.c lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/stralloc.h lib/strlist.h lib/byte.h lib/xml.h lib/hmap.h lib/textbuf.h lib/str.h lib/mmap.h lib/scan.h lib/array.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffertest.o: buffertest.c lib/stralloc.h lib/typedefs.h lib/buffer.h lib/open.h lib/windoze.h lib/uint64.h lib/mmap.h lib/byte.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)dnsip.o: dnsip.c lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/io.h lib/windoze.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/iarray.h lib/case.h lib/open.h lib/stralloc.h lib/scan.h lib/fmt.h lib/str.h lib/tai.h lib/taia.h lib/buffer.h lib/dns.h lib/iopause.h lib/io.h lib/stralloc.h lib/errmsg.h lib/ip4.h lib/uint8.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cmake-run.o: cmake-run.c lib/windoze.h lib/strlist.h lib/stralloc.h lib/typedefs.h lib/byte.h lib/uint64.h lib/buffer.h lib/strarray.h lib/array.h lib/open.h lib/windoze.h lib/stralloc.h lib/buffer.h lib/path.h lib/str.h lib/process.h lib/env.h lib/errmsg.h lib/byte.h lib/mmap.h lib/scan.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)regfilter.o: regfilter.c lib/windoze.h lib/uint64.h lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/open.h lib/windoze.h lib/scan.h lib/str.h lib/stralloc.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h lib/path.h lib/stralloc.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)binfmttest.o: binfmttest.c lib/byte.h lib/typedefs.h lib/binfmt.h lib/uint8.h lib/uint32.h lib/uint64.h lib/range.h lib/mmap.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)list-r.o: list-r.c lib/windoze.h lib/getopt.h lib/buffer.h lib/typedefs.h lib/dir.h lib/uint64.h lib/fmt.h lib/uint32.h lib/fnmatch.h lib/io.h lib/windoze.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h lib/open.h lib/str.h lib/stralloc.h lib/uint64.h lib/ioctlcmd.h lib/byte.h lib/array.h lib/unix.h lib/getopt.h lib/readlink.h lib/path.h lib/stralloc.h lib/str.h lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)mediathek-parser.o: mediathek-parser.c lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/array.h lib/uint64.h lib/buffer.h lib/byte.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/open.h lib/str.h lib/stralloc.h lib/strlist.h lib/stralloc.h lib/byte.h lib/buffer.h lib/fmt.h lib/mmap.h lib/ucs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)elfwrsec.o: elfwrsec.c lib/buffer.h lib/typedefs.h lib/elf.h lib/uint8.h lib/uint16.h lib/uint32.h lib/uint64.h lib/range.h lib/mmap.h lib/str.h lib/byte.h lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ntldd.o: ntldd.c lib/windoze.h lib/uint64.h lib/buffer.h lib/typedefs.h lib/byte.h lib/unix.h lib/windoze.h lib/getopt.h lib/readlink.h lib/path.h lib/stralloc.h lib/str.h lib/str.h lib/pe.h lib/uint64.h lib/uint32.h lib/uint16.h lib/uint8.h lib/mmap.h lib/fmt.h lib/stralloc.h lib/strlist.h lib/byte.h lib/buffer.h libntldd.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)gzread.o: 3rdparty/zlib/gzread.c 3rdparty/zlib/gzguts.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)inftrees.o: 3rdparty/zlib/inftrees.c 3rdparty/zlib/zutil.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h 3rdparty/zlib/inftrees.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)compress.o: 3rdparty/zlib/compress.c 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)deflate.o: 3rdparty/zlib/deflate.c 3rdparty/zlib/deflate.h 3rdparty/zlib/zutil.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)trees.o: 3rdparty/zlib/trees.c 3rdparty/zlib/deflate.h 3rdparty/zlib/zutil.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h 3rdparty/zlib/trees.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)gzwrite.o: 3rdparty/zlib/gzwrite.c 3rdparty/zlib/gzguts.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)zutil.o: 3rdparty/zlib/zutil.c 3rdparty/zlib/zutil.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h 3rdparty/zlib/gzguts.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)inflate.o: 3rdparty/zlib/inflate.c 3rdparty/zlib/zutil.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h 3rdparty/zlib/inftrees.h 3rdparty/zlib/inflate.h 3rdparty/zlib/inffast.h 3rdparty/zlib/inffixed.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)crc32.o: 3rdparty/zlib/crc32.c 3rdparty/zlib/zutil.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h 3rdparty/zlib/crc32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)gzclose.o: 3rdparty/zlib/gzclose.c 3rdparty/zlib/gzguts.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)inffast.o: 3rdparty/zlib/inffast.c 3rdparty/zlib/zutil.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h 3rdparty/zlib/inftrees.h 3rdparty/zlib/inflate.h 3rdparty/zlib/inffast.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)gzlib.o: 3rdparty/zlib/gzlib.c 3rdparty/zlib/gzguts.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)infback.o: 3rdparty/zlib/infback.c 3rdparty/zlib/zutil.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h 3rdparty/zlib/inftrees.h 3rdparty/zlib/inflate.h 3rdparty/zlib/inffast.h 3rdparty/zlib/inffixed.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uncompr.o: 3rdparty/zlib/uncompr.c 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)adler32.o: 3rdparty/zlib/adler32.c 3rdparty/zlib/zutil.h 3rdparty/zlib/zlib.h 3rdparty/zlib/zconf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)decompress.o: 3rdparty/bzip2/decompress.c 3rdparty/bzip2/bzlib_private.h 3rdparty/bzip2/bzlib.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)huffman.o: 3rdparty/bzip2/huffman.c 3rdparty/bzip2/bzlib_private.h 3rdparty/bzip2/bzlib.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)compress.o: 3rdparty/bzip2/compress.c 3rdparty/bzip2/bzlib_private.h 3rdparty/bzip2/bzlib.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)crctable.o: 3rdparty/bzip2/crctable.c 3rdparty/bzip2/bzlib_private.h 3rdparty/bzip2/bzlib.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)bzlib.o: 3rdparty/bzip2/bzlib.c 3rdparty/bzip2/bzlib_private.h 3rdparty/bzip2/bzlib.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)randtable.o: 3rdparty/bzip2/randtable.c 3rdparty/bzip2/bzlib_private.h 3rdparty/bzip2/bzlib.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)blocksort.o: 3rdparty/bzip2/blocksort.c 3rdparty/bzip2/bzlib_private.h 3rdparty/bzip2/bzlib.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)simple_decoder.o: 3rdparty/xz/simple/simple_decoder.c 3rdparty/xz/simple/simple_decoder.h 3rdparty/xz/simple/simple_coder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)powerpc.o: 3rdparty/xz/simple/powerpc.c 3rdparty/xz/simple/simple_private.h 3rdparty/xz/simple/simple_coder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)x86.o: 3rdparty/xz/simple/x86.c 3rdparty/xz/simple/simple_private.h 3rdparty/xz/simple/simple_coder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)simple_encoder.o: 3rdparty/xz/simple/simple_encoder.c 3rdparty/xz/simple/simple_encoder.h 3rdparty/xz/simple/simple_coder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)armthumb.o: 3rdparty/xz/simple/armthumb.c 3rdparty/xz/simple/simple_private.h 3rdparty/xz/simple/simple_coder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)simple_coder.o: 3rdparty/xz/simple/simple_coder.c 3rdparty/xz/simple/simple_private.h 3rdparty/xz/simple/simple_coder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)arm.o: 3rdparty/xz/simple/arm.c 3rdparty/xz/simple/simple_private.h 3rdparty/xz/simple/simple_coder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ia64.o: 3rdparty/xz/simple/ia64.c 3rdparty/xz/simple/simple_private.h 3rdparty/xz/simple/simple_coder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)sparc.o: 3rdparty/xz/simple/sparc.c 3rdparty/xz/simple/simple_private.h 3rdparty/xz/simple/simple_coder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lzma_encoder.o: 3rdparty/xz/lzma/lzma_encoder.c 3rdparty/xz/lzma/lzma2_encoder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/liblzma/lzma/lzma_encoder_private.h 3rdparty/../lz/lz_encoder.h 3rdparty/../liblzma/common/common.h 3rdparty/../rangecoder/range_encoder.h 3rdparty/../rangecoder/range_common.h 3rdparty/../liblzma/common/common.h 3rdparty/../rangecoder/price.h 3rdparty/liblzma/lzma/lzma_common.h 3rdparty/common/common.h 3rdparty/../rangecoder/range_common.h 3rdparty/../lzma/lzma_encoder.h 3rdparty/../liblzma/common/common.h 3rdparty/liblzma/lzma/fastpos.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fastpos_table.o: 3rdparty/xz/lzma/fastpos_table.c 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/liblzma/lzma/fastpos.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lzma_encoder_presets.o: 3rdparty/xz/lzma/lzma_encoder_presets.c 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lzma_encoder_optimum_normal.o: 3rdparty/xz/lzma/lzma_encoder_optimum_normal.c 3rdparty/liblzma/lzma/lzma_encoder_private.h 3rdparty/../lz/lz_encoder.h 3rdparty/../liblzma/common/common.h 3rdparty/../../common/sysdefs.h 3rdparty/../../common/mythread.h 3rdparty/../../common/sysdefs.h 3rdparty/../../common/tuklib_integer.h 3rdparty/../../common/tuklib_common.h 3rdparty/../../common/tuklib_config.h 3rdparty/../api/lzma.h 3rdparty/../api/lzma/version.h 3rdparty/../api/lzma/base.h 3rdparty/../api/lzma/vli.h 3rdparty/../api/lzma/check.h 3rdparty/../api/lzma/filter.h 3rdparty/../api/lzma/bcj.h 3rdparty/../api/lzma/delta.h 3rdparty/../api/lzma/lzma12.h 3rdparty/../api/lzma/container.h 3rdparty/../api/lzma/stream_flags.h 3rdparty/../api/lzma/block.h 3rdparty/../api/lzma/index.h 3rdparty/../api/lzma/index_hash.h 3rdparty/../api/lzma/hardware.h 3rdparty/../rangecoder/range_encoder.h 3rdparty/../rangecoder/range_common.h 3rdparty/../liblzma/common/common.h 3rdparty/../rangecoder/price.h 3rdparty/liblzma/lzma/lzma_common.h 3rdparty/common/common.h 3rdparty/../rangecoder/range_common.h 3rdparty/../lzma/lzma_encoder.h 3rdparty/../liblzma/common/common.h 3rdparty/liblzma/lzma/fastpos.h 3rdparty/liblzma/common/memcmplen.h 3rdparty/liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lzma_encoder_optimum_fast.o: 3rdparty/xz/lzma/lzma_encoder_optimum_fast.c 3rdparty/liblzma/lzma/lzma_encoder_private.h 3rdparty/../lz/lz_encoder.h 3rdparty/../liblzma/common/common.h 3rdparty/../../common/sysdefs.h 3rdparty/../../common/mythread.h 3rdparty/../../common/sysdefs.h 3rdparty/../../common/tuklib_integer.h 3rdparty/../../common/tuklib_common.h 3rdparty/../../common/tuklib_config.h 3rdparty/../api/lzma.h 3rdparty/../api/lzma/version.h 3rdparty/../api/lzma/base.h 3rdparty/../api/lzma/vli.h 3rdparty/../api/lzma/check.h 3rdparty/../api/lzma/filter.h 3rdparty/../api/lzma/bcj.h 3rdparty/../api/lzma/delta.h 3rdparty/../api/lzma/lzma12.h 3rdparty/../api/lzma/container.h 3rdparty/../api/lzma/stream_flags.h 3rdparty/../api/lzma/block.h 3rdparty/../api/lzma/index.h 3rdparty/../api/lzma/index_hash.h 3rdparty/../api/lzma/hardware.h 3rdparty/../rangecoder/range_encoder.h 3rdparty/../rangecoder/range_common.h 3rdparty/../liblzma/common/common.h 3rdparty/../rangecoder/price.h 3rdparty/liblzma/lzma/lzma_common.h 3rdparty/common/common.h 3rdparty/../rangecoder/range_common.h 3rdparty/../lzma/lzma_encoder.h 3rdparty/../liblzma/common/common.h 3rdparty/liblzma/common/memcmplen.h 3rdparty/liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lzma2_decoder.o: 3rdparty/xz/lzma/lzma2_decoder.c 3rdparty/xz/lzma/lzma2_decoder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/lz/lz_decoder.h 3rdparty/liblzma/common/common.h 3rdparty/xz/lzma/lzma_decoder.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lzma_decoder.o: 3rdparty/xz/lzma/lzma_decoder.c 3rdparty/lz/lz_decoder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/liblzma/lzma/lzma_common.h 3rdparty/common/common.h 3rdparty/../rangecoder/range_common.h 3rdparty/../liblzma/common/common.h 3rdparty/xz/lzma/lzma_decoder.h 3rdparty/liblzma/common/common.h 3rdparty/rangecoder/range_decoder.h 3rdparty/rangecoder/range_common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lzma2_encoder.o: 3rdparty/xz/lzma/lzma2_encoder.c 3rdparty/lz/lz_encoder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/lzma/lzma_encoder.h 3rdparty/liblzma/common/common.h 3rdparty/liblzma/lzma/fastpos.h 3rdparty/xz/lzma/lzma2_encoder.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)crc64_table.o: 3rdparty/xz/check/crc64_table.c 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/check/crc64_table_le.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)crc64_fast.o: 3rdparty/xz/check/crc64_fast.c 3rdparty/xz/check/check.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/check/crc_macros.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)crc32_table.o: 3rdparty/xz/check/crc32_table.c 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/check/crc32_table_le.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)sha256.o: 3rdparty/xz/check/sha256.c 3rdparty/xz/check/check.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)check.o: 3rdparty/xz/check/check.c 3rdparty/xz/check/check.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)crc32_fast.o: 3rdparty/xz/check/crc32_fast.c 3rdparty/xz/check/check.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/check/crc_macros.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)delta_decoder.o: 3rdparty/xz/delta/delta_decoder.c 3rdparty/xz/delta/delta_decoder.h 3rdparty/xz/delta/delta_common.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/delta/delta_private.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)delta_encoder.o: 3rdparty/xz/delta/delta_encoder.c 3rdparty/xz/delta/delta_encoder.h 3rdparty/xz/delta/delta_common.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/delta/delta_private.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)delta_common.o: 3rdparty/xz/delta/delta_common.c 3rdparty/xz/delta/delta_common.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/delta/delta_private.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)filter_buffer_decoder.o: 3rdparty/xz/liblzma/common/filter_buffer_decoder.c 3rdparty/xz/liblzma/common/filter_decoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)block_buffer_decoder.o: 3rdparty/xz/liblzma/common/block_buffer_decoder.c 3rdparty/xz/liblzma/common/block_decoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)filter_decoder.o: 3rdparty/xz/liblzma/common/filter_decoder.c 3rdparty/xz/liblzma/common/filter_decoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/filter_common.h 3rdparty/../lzma/lzma_decoder.h 3rdparty/../liblzma/common/common.h 3rdparty/../lzma/lzma2_decoder.h 3rdparty/../simple/simple_decoder.h 3rdparty/../simple/simple_coder.h 3rdparty/../liblzma/common/common.h 3rdparty/../delta/delta_decoder.h 3rdparty/../delta/delta_common.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)alone_encoder.o: 3rdparty/xz/liblzma/common/alone_encoder.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/../lzma/lzma_encoder.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stream_flags_common.o: 3rdparty/xz/liblzma/common/stream_flags_common.c 3rdparty/xz/liblzma/common/stream_flags_common.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)easy_encoder.o: 3rdparty/xz/liblzma/common/easy_encoder.c 3rdparty/xz/liblzma/common/easy_preset.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)index_decoder.o: 3rdparty/xz/liblzma/common/index_decoder.c 3rdparty/xz/liblzma/common/index.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/../check/check.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)common.o: 3rdparty/xz/liblzma/common/common.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stream_decoder.o: 3rdparty/xz/liblzma/common/stream_decoder.c 3rdparty/xz/liblzma/common/stream_decoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/block_decoder.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)easy_decoder_memusage.o: 3rdparty/xz/liblzma/common/easy_decoder_memusage.c 3rdparty/xz/liblzma/common/easy_preset.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stream_encoder.o: 3rdparty/xz/liblzma/common/stream_encoder.c 3rdparty/xz/liblzma/common/block_encoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/index_encoder.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)vli_encoder.o: 3rdparty/xz/liblzma/common/vli_encoder.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stream_buffer_encoder.o: 3rdparty/xz/liblzma/common/stream_buffer_encoder.c 3rdparty/xz/liblzma/common/index.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)outqueue.o: 3rdparty/xz/liblzma/common/outqueue.c 3rdparty/xz/liblzma/common/outqueue.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)block_util.o: 3rdparty/xz/liblzma/common/block_util.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/index.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)filter_flags_decoder.o: 3rdparty/xz/liblzma/common/filter_flags_decoder.c 3rdparty/xz/liblzma/common/filter_decoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)block_encoder.o: 3rdparty/xz/liblzma/common/block_encoder.c 3rdparty/xz/liblzma/common/block_encoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/filter_encoder.h 3rdparty/../check/check.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)filter_common.o: 3rdparty/xz/liblzma/common/filter_common.c 3rdparty/xz/liblzma/common/filter_common.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hardware_cputhreads.o: 3rdparty/xz/liblzma/common/hardware_cputhreads.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/../common/tuklib_cpucores.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)vli_decoder.o: 3rdparty/xz/liblzma/common/vli_decoder.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)filter_encoder.o: 3rdparty/xz/liblzma/common/filter_encoder.c 3rdparty/xz/liblzma/common/filter_encoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/filter_common.h 3rdparty/../lzma/lzma_encoder.h 3rdparty/../liblzma/common/common.h 3rdparty/../lzma/lzma2_encoder.h 3rdparty/../simple/simple_encoder.h 3rdparty/../simple/simple_coder.h 3rdparty/../liblzma/common/common.h 3rdparty/../delta/delta_encoder.h 3rdparty/../delta/delta_common.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)block_header_decoder.o: 3rdparty/xz/liblzma/common/block_header_decoder.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/../check/check.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)index_hash.o: 3rdparty/xz/liblzma/common/index_hash.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/index.h 3rdparty/../check/check.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)filter_buffer_encoder.o: 3rdparty/xz/liblzma/common/filter_buffer_encoder.c 3rdparty/xz/liblzma/common/filter_encoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)alone_decoder.o: 3rdparty/xz/liblzma/common/alone_decoder.c 3rdparty/xz/liblzma/common/alone_decoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/../lzma/lzma_decoder.h 3rdparty/../liblzma/common/common.h 3rdparty/../lz/lz_decoder.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)block_buffer_encoder.o: 3rdparty/xz/liblzma/common/block_buffer_encoder.c 3rdparty/xz/liblzma/common/block_buffer_encoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/block_encoder.h 3rdparty/xz/liblzma/common/filter_encoder.h 3rdparty/../lzma/lzma2_encoder.h 3rdparty/../liblzma/common/common.h 3rdparty/../check/check.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stream_buffer_decoder.o: 3rdparty/xz/liblzma/common/stream_buffer_decoder.c 3rdparty/xz/liblzma/common/stream_decoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stream_flags_decoder.o: 3rdparty/xz/liblzma/common/stream_flags_decoder.c 3rdparty/xz/liblzma/common/stream_flags_common.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)easy_buffer_encoder.o: 3rdparty/xz/liblzma/common/easy_buffer_encoder.c 3rdparty/xz/liblzma/common/easy_preset.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)block_decoder.o: 3rdparty/xz/liblzma/common/block_decoder.c 3rdparty/xz/liblzma/common/block_decoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/filter_decoder.h 3rdparty/../check/check.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)vli_size.o: 3rdparty/xz/liblzma/common/vli_size.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)block_header_encoder.o: 3rdparty/xz/liblzma/common/block_header_encoder.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/../check/check.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)easy_preset.o: 3rdparty/xz/liblzma/common/easy_preset.c 3rdparty/xz/liblzma/common/easy_preset.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)index_encoder.o: 3rdparty/xz/liblzma/common/index_encoder.c 3rdparty/xz/liblzma/common/index_encoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/index.h 3rdparty/../check/check.h 3rdparty/../liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stream_encoder_mt.o: 3rdparty/xz/liblzma/common/stream_encoder_mt.c 3rdparty/xz/liblzma/common/filter_encoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/easy_preset.h 3rdparty/xz/liblzma/common/block_encoder.h 3rdparty/xz/liblzma/common/block_buffer_encoder.h 3rdparty/xz/liblzma/common/index_encoder.h 3rdparty/xz/liblzma/common/outqueue.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)easy_encoder_memusage.o: 3rdparty/xz/liblzma/common/easy_encoder_memusage.c 3rdparty/xz/liblzma/common/easy_preset.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)hardware_physmem.o: 3rdparty/xz/liblzma/common/hardware_physmem.c 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/../common/tuklib_physmem.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)filter_flags_encoder.o: 3rdparty/xz/liblzma/common/filter_flags_encoder.c 3rdparty/xz/liblzma/common/filter_encoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)auto_decoder.o: 3rdparty/xz/liblzma/common/auto_decoder.c 3rdparty/xz/liblzma/common/stream_decoder.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/alone_decoder.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)index.o: 3rdparty/xz/liblzma/common/index.c 3rdparty/xz/liblzma/common/index.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/liblzma/common/stream_flags_common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stream_flags_encoder.o: 3rdparty/xz/liblzma/common/stream_flags_encoder.c 3rdparty/xz/liblzma/common/stream_flags_common.h 3rdparty/xz/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lz_decoder.o: 3rdparty/xz/lz/lz_decoder.c 3rdparty/xz/lz/lz_decoder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lz_encoder_mf.o: 3rdparty/xz/lz/lz_encoder_mf.c 3rdparty/xz/lz/lz_encoder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/lz/lz_encoder_hash.h 3rdparty/check/check.h 3rdparty/liblzma/common/common.h 3rdparty/liblzma/common/memcmplen.h 3rdparty/liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lz_encoder.o: 3rdparty/xz/lz/lz_encoder.c 3rdparty/xz/lz/lz_encoder.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/lz/lz_encoder_hash.h 3rdparty/check/check.h 3rdparty/liblzma/common/common.h 3rdparty/liblzma/common/memcmplen.h 3rdparty/liblzma/common/common.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)price_table.o: 3rdparty/xz/rangecoder/price_table.c 3rdparty/xz/rangecoder/range_encoder.h 3rdparty/xz/rangecoder/range_common.h 3rdparty/liblzma/common/common.h 3rdparty/../common/sysdefs.h 3rdparty/../common/mythread.h 3rdparty/../common/sysdefs.h 3rdparty/../common/tuklib_integer.h 3rdparty/../common/tuklib_common.h 3rdparty/../common/tuklib_config.h 3rdparty/api/lzma.h 3rdparty/api/lzma/version.h 3rdparty/api/lzma/base.h 3rdparty/api/lzma/vli.h 3rdparty/api/lzma/check.h 3rdparty/api/lzma/filter.h 3rdparty/api/lzma/bcj.h 3rdparty/api/lzma/delta.h 3rdparty/api/lzma/lzma12.h 3rdparty/api/lzma/container.h 3rdparty/api/lzma/stream_flags.h 3rdparty/api/lzma/block.h 3rdparty/api/lzma/index.h 3rdparty/api/lzma/index_hash.h 3rdparty/api/lzma/hardware.h 3rdparty/xz/rangecoder/price.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)tuklib_physmem.o: 3rdparty/xz/common/tuklib_physmem.c 3rdparty/xz/common/tuklib_physmem.h 3rdparty/xz/common/tuklib_common.h 3rdparty/xz/common/tuklib_config.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)tuklib_cpucores.o: 3rdparty/xz/common/tuklib_cpucores.c 3rdparty/xz/common/tuklib_cpucores.h 3rdparty/xz/common/tuklib_common.h 3rdparty/xz/common/tuklib_config.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cc-wrap.o: cc-wrap.c lib/windoze.h lib/strlist.h lib/stralloc.h lib/typedefs.h lib/byte.h lib/uint64.h lib/buffer.h lib/strarray.h lib/array.h lib/stralloc.h lib/buffer.h lib/path.h lib/windoze.h lib/str.h lib/process.h lib/env.h lib/errmsg.h lib/byte.h lib/mmap.h lib/scan.h lib/uint32.h lib/open.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)bsdiffcat.o: bsdiffcat.c lib/windoze.h lib/array.h lib/typedefs.h lib/uint64.h lib/uint64.h lib/buffer.h lib/fmt.h lib/uint32.h lib/io.h lib/windoze.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h lib/mmap.h lib/open.h lib/byte.h lib/str.h lib/errmsg.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)daemon.o: daemon.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xmlpp.o: xmlpp.c lib/buffer.h lib/typedefs.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/io.h lib/windoze.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/stralloc.h lib/xml.h lib/hmap.h lib/textbuf.h lib/byte.h lib/fmt.h lib/mmap.h lib/str.h lib/getopt.h lib/errmsg.h lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ziptest.o: ziptest.c lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/buffer.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/str.h lib/byte.h lib/mmap.h lib/open.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)pathtool.o: pathtool.c lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/buffer.h lib/errmsg.h lib/path.h lib/stralloc.h lib/str.h lib/stralloc.h lib/strlist.h lib/byte.h lib/uint64.h lib/buffer.h lib/windoze.h lib/str.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)msys-shell.o: msys-shell.c lib/windoze.h lib/strlist.h lib/stralloc.h lib/typedefs.h lib/byte.h lib/uint64.h lib/buffer.h lib/array.h lib/strarray.h lib/array.h lib/stralloc.h lib/buffer.h lib/path.h lib/windoze.h lib/str.h lib/process.h lib/env.h lib/errmsg.h lib/byte.h lib/unix.h lib/getopt.h lib/readlink.h lib/getopt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)compiler-wrapper.o: compiler-wrapper.c lib/windoze.h lib/stralloc.h lib/typedefs.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/byte.h lib/fmt.h lib/uint32.h lib/buffer.h lib/dir.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)plsconv.o: plsconv.c lib/windoze.h lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/buffer.h lib/byte.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/open.h lib/playlist.h lib/stralloc.h lib/buffer.h lib/str.h lib/stralloc.h lib/fmt.h lib/scan.h lib/hmap.h lib/xml.h lib/hmap.h lib/textbuf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
