@@ -195,7 +195,7 @@ http_read(http* h, char* buf, size_t len, buffer* bf) {
     int st = r->status;
     bytes = b->n - b->p;
     if((n = buffer_freshen(b)) <= 0) {
-      if(r->status == st) {
+      if((int)r->status == st) {
         if(ret == 0 && r->err != 0) {
           errno = r->err;
           ret = -1;

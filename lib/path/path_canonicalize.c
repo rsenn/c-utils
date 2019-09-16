@@ -94,9 +94,9 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   size_t n;
   struct _stat st;
   int ret = 1;
-  int (*stat_fn)(const char*, struct _stat*) = stat;
   char buf[PATH_MAX + 1];
   char sep;
+  int (*stat_fn)(const char*, struct _stat*) = stat;
 #ifdef HAVE_LSTAT
 #if !WINDOWS_NATIVE
   if(symbolic)
@@ -151,7 +151,7 @@ start:
     path += n;
     /* now stat() the thing to verify it */
     byte_zero(&st, sizeof(st));
-    //    if(stat_fn(sa->s, &st) == -1) return 0;
+        if(stat_fn(sa->s, &st) == -1) return 0;
     /* is it a symbolic link? */
     if(is_link(sa->s)) {
       ret++;

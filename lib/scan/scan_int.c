@@ -14,8 +14,9 @@ scan_int(const char* src, int* dest) {
   ok = 0;
   neg = 0;
   switch(*tmp) {
-    case '-': neg = 1;
-    case '+': ++tmp;
+	 case '-': { neg = 1;  }
+    case '+': { ++tmp;
+	      break; }
   }
   while((c = (unsigned char)(*tmp - '0')) < 10) {
     unsigned int n;

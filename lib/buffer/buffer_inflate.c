@@ -49,7 +49,7 @@ buffer_inflate(buffer* b, buffer* in) {
   z->zfree = Z_NULL;
   z->opaque = Z_NULL;
 
-  b->op = (buffer_op_proto*)&buffer_inflate_read;
+  b->op = (void*)&buffer_inflate_read;
   b->p = b->n = 0;
   b->cookie = ctx;
 

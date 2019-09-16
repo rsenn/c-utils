@@ -188,7 +188,7 @@ expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack
           for(i = vlen - 1; i >= 0; i--)
             if(fnmatch(sa.s, str + i, FNM_PERIOD) == 0) break;
 
-          n = expand_cat(v, (i < 0 ? vlen : i), nptr, varstack, flags);
+          n = expand_cat(v, (i < 0 ? (int)vlen : i), nptr, varstack, flags);
         }
         break;
       }
