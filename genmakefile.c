@@ -3426,7 +3426,8 @@ set_compiler_type(const char* compiler) {
       else
         set_var("MACH", "pic16");
     }
-    set_var("CFLAGS", "--float-reent --use-non-free -c");
+    set_var("CFLAGS", "--float-reent");
+    set_var("CFLAGS", "--use-non-free");
 
     if(build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt-code-speed");
@@ -3435,9 +3436,9 @@ set_compiler_type(const char* compiler) {
 
     // push_var("CFLAGS", "-V");
     //   push_var("CFLAGS", "--echo");
-    push_var("CFLAGS", "  -p$(CHIP)");
+    push_var("CFLAGS", "-m$(MACH) -p$(CHIP)");
     push_var("LDFLAGS", "-p$(CHIP)");
-    push_var("CPPFLAGS", "-D__$(CHIP)__");
+    push_var("CPPFLAGS", "-D__$(CHIP)");
 
     push_var("LDFLAGS", "--out-fmt-elf");
 
@@ -3456,15 +3457,22 @@ set_compiler_type(const char* compiler) {
     set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
     push_var("CPPFLAGS", mach.bits == _14 ? "-DPIC16=1" : "-DPIC18=1");
 
-    if(!isset("CHIP")) {
+    if(chip.len == 0)
+      stralloc_copys(&chip, "16f876a");
 
-      if(chip.len) {
-        stralloc_nul(&chip);
-        set_var("CHIP", chip.s);
-      } else
-        set_var("CHIP", "16f876a");
+    stralloc_nul(&chip);
+    set_var("CHIP", chip.s);
+
+    {
+      stralloc chipdef;
+      stralloc_init(&chipdef);
+      stralloc_copys(&chipdef, "-DPIC");
+      stralloc_cat(&chipdef, &chip);
+      stralloc_upper(&chipdef);
+      stralloc_cats(&chipdef, "=1");
+      push_var_sa("CPPFLAGS", &chipdef);
     }
-
+    
     if(!isset("MACH")) {
 
       if(mach.bits == _14)
