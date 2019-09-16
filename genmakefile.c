@@ -3434,7 +3434,7 @@ set_compiler_type(const char* compiler) {
       else
         set_var("MACH", "pic16");
     }
-set_var("CFLAGS", "--use-non-free");
+    set_var("CFLAGS", "--use-non-free");
 
     if(mach.bits == _16) {
       push_var("CFLAGS", "--mplab-comp");
@@ -3443,9 +3443,9 @@ set_var("CFLAGS", "--use-non-free");
       push_var("CFLAGS", "--optimize-cmp");
       push_var("CFLAGS", "--optimize-df");
     }
-    
+
     push_var("CFLAGS", "--float-reent");
-    
+
     if(build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "--opt-code-size");
     else if(build_type != BUILD_TYPE_DEBUG)
@@ -3453,14 +3453,14 @@ set_var("CFLAGS", "--use-non-free");
 
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "--debug");
-      //push_var("LDFLAGS", "--debug");
+      // push_var("LDFLAGS", "--debug");
     }
 
     push_var("CFLAGS", "-m$(MACH) -p$(CHIP)");
     push_var("CPPFLAGS", "-D__$(CHIP)");
     push_var("CPPFLAGS", "-DSDCC=1");
 
-    //push_var("LDFLAGS", "-m$(MACH) -p$(CHIP)");
+    // push_var("LDFLAGS", "-m$(MACH) -p$(CHIP)");
     push_var("LDFLAGS", "--out-fmt-ihx");
 
     if(mach.bits == _16) {
