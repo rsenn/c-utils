@@ -123,4 +123,3 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     }
   }
 }
-

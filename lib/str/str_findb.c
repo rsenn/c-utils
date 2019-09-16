@@ -1,7 +1,7 @@
 #include "../str.h"
 
 size_t
-str_findb(const char* s1, const char *x, size_t n) {
+str_findb(const char* s1, const char* x, size_t n) {
   register const char *s, *b;
   size_t i;
 
@@ -16,4 +16,3 @@ str_findb(const char* s1, const char *x, size_t n) {
   }
   return s - s1;
 }
-

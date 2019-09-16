@@ -10,4 +10,3 @@ xml_newnode(xmlnodeid type) {
 
   return ret;
 }
-

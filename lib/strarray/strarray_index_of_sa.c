@@ -13,4 +13,3 @@ strarray_index_of_sa(strarray* arr, const stralloc* sa) {
   }
   return -1;
 }
-

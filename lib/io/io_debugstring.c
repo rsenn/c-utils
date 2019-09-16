@@ -79,4 +79,3 @@ io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   buf[i] = 0;
   return i;
 }
-

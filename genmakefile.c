@@ -3716,7 +3716,7 @@ main(int argc, char* argv[]) {
                            {"build-as-lib", 0, 0, 'L'},
                            {"cross", 0, 0, 'c'},
                            {"chip", 1, 0, 'p'},
-                           {0,0,0,0}};
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 #ifdef _MSC_VER

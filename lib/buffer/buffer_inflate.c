@@ -1,6 +1,5 @@
 #include "../windoze.h"
 
-
 #include "../buffer.h"
 #include <stdlib.h>
 
@@ -27,7 +26,8 @@ buffer_inflate_read(fd_t fd, void* data, size_t n, buffer* b) {
 
   ret = inflate(&ctx->z, 0);
 
-  if(ret == Z_STREAM_ERROR) return -1;
+  if(ret == Z_STREAM_ERROR)
+    return -1;
 
   have = n - z->avail_out;
 
@@ -40,7 +40,8 @@ buffer_inflate(buffer* b, buffer* in) {
   z_stream* z;
 
   inflate_ctx* ctx = calloc(1, sizeof(inflate_ctx));
-  if(ctx == NULL) return 0;
+  if(ctx == NULL)
+    return 0;
 
   ctx->other = in;
 
@@ -58,9 +59,9 @@ buffer_inflate(buffer* b, buffer* in) {
 
   ret = inflateInit2(&ctx->z, 15 + 32);
 
-  if(ret != Z_OK) return 0;
+  if(ret != Z_OK)
+    return 0;
 
   return 1;
 }
 #endif
-

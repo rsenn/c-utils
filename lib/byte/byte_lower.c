@@ -14,4 +14,3 @@ byte_lower(void* s, size_t len) {
     ++x;
   }
 }
-

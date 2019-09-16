@@ -17,4 +17,3 @@ json_length(jsonval v) {
   }
   return 0;
 }
-

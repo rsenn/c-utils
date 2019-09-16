@@ -128,4 +128,3 @@ io_trywrite(fd_t d, const char* buf, int64 len) {
   return r;
 #endif
 }
-

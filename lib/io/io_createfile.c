@@ -12,9 +12,11 @@
 
 int
 io_createfile(fd_t* d, const char* s) {
-  long fd = open(s, O_WRONLY | O_CREAT | O_TRUNC
+  long fd = open(s,
+                 O_WRONLY | O_CREAT | O_TRUNC
 #if !WINDOWS_NATIVE
-  , 0600
+                 ,
+                 0600
 #endif
   );
   if(fd != -1) {
@@ -23,4 +25,3 @@ io_createfile(fd_t* d, const char* s) {
   }
   return 0;
 }
-

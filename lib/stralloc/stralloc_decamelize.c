@@ -17,4 +17,3 @@ stralloc_decamelize(stralloc* sa, stralloc* to) {
   }
   return i;
 }
-

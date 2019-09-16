@@ -20,4 +20,3 @@ scan_fromhex(unsigned char c) {
     return -1;
   */
 }
-

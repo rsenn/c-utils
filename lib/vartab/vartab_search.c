@@ -23,7 +23,8 @@ vartab_search(struct vartab* vartab, const char* v, struct search* context) {
   /* set position to the current bucket and return if its empty */
   context->pos = vartab->pos = &vartab->table[context->bucket];
 
-  if(*vartab->pos == NULL) return NULL;
+  if(*vartab->pos == NULL)
+    return NULL;
 
   /* check for a hashed search match and return if we already have
      a closer match */
@@ -33,11 +34,13 @@ vartab_search(struct vartab* vartab, const char* v, struct search* context) {
     /* if the searched vars len is smaller than hashed chars
        we can safely exit, because every 6-bit pair has a value
        of 1-63 only if it is set */
-    if(VAR_CHARS > context->len) return *context->pos;
+    if(VAR_CHARS > context->len)
+      return *context->pos;
 
     /* if both lens are smaller or equal to hashed char count
        its a match too :) */
-    if(VAR_CHARS >= context->len && VAR_CHARS >= (*context->pos)->len) return *context->pos;
+    if(VAR_CHARS >= context->len && VAR_CHARS >= (*context->pos)->len)
+      return *context->pos;
   }
   /* return if exact match is wanted */
   else if(context->exact) {
@@ -50,7 +53,7 @@ vartab_search(struct vartab* vartab, const char* v, struct search* context) {
        full match :) */
     if(dist < context->hdist) {
       context->hdist = dist;
-      context->bdist = (VAR_HASH) - 1;
+      context->bdist = (VAR_HASH)-1;
       context->closest = context->pos;
     }
 
@@ -62,7 +65,8 @@ vartab_search(struct vartab* vartab, const char* v, struct search* context) {
        a closer match */
     dist = var_bsearch(context);
 
-    if(dist == 0) return *context->pos;
+    if(dist == 0)
+      return *context->pos;
 
     /* set new closest match */
     if(dist <= context->bdist) {
@@ -75,4 +79,3 @@ vartab_search(struct vartab* vartab, const char* v, struct search* context) {
 
   return NULL;
 }
-

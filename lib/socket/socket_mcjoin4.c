@@ -19,4 +19,3 @@ socket_mcjoin4(int s, const char ip[4], const char _interface[4]) {
   return -1;
 #endif
 }
-

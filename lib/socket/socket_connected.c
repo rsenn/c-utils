@@ -18,4 +18,3 @@ socket_connected(int s) {
     return 0;
   return 1;
 }
-

@@ -11,4 +11,3 @@ stralloc_catlong0(stralloc* sa, signed long int in, size_t n) {
   } else
     return 0;
 }
-

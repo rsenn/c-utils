@@ -36,4 +36,3 @@ scan_ip6if(const char* src, char* ip, uint32* scope_id) {
   }
   return i;
 }
-

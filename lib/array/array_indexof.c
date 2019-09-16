@@ -7,9 +7,8 @@ array_indexof(array* a, uint64 membersize, void* data) {
   int64 i, n = array_length(a, membersize);
   for(i = 0; i < n; ++i) {
     if(byte_equal(s, membersize, data))
-       return i;
+      return i;
     s += membersize;
   }
   return -1;
 }
-

@@ -15,4 +15,3 @@ fmt_asn1dertag(char* dest, uint64 l) {
   }
   return i;
 }
-

@@ -12,4 +12,3 @@ strlist_prependb(strlist* sl, const char* b, size_t n) {
   }
   return 0;
 }
-

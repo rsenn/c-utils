@@ -21,4 +21,3 @@ linked_list_free(linked_list* list) {
 
   safe_free(list);
 }
-

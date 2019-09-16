@@ -18,4 +18,3 @@ hashmap_get(hashmap* map, void* key) {
   }
   return NULL;
 }
-

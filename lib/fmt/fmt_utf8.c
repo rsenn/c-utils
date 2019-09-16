@@ -25,4 +25,3 @@ fmt_utf8(char* dest, uint32 n) {
   /* we were asked to encode a value that cannot be encoded */
   return 0;
 }
-

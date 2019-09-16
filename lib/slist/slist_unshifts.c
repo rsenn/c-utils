@@ -6,8 +6,8 @@
 int
 slist_unshifts(slink** list, const char* s) {
   slink* n;
-  
-  if((n = malloc(sizeof(slink*)+sizeof(char*))) == NULL)
+
+  if((n = malloc(sizeof(slink*) + sizeof(char*))) == NULL)
     return 0;
 
   n->next = *list;
@@ -16,4 +16,3 @@ slist_unshifts(slink** list, const char* s) {
   *((const char**)&n[1]) = str_dup(s);
   return 1;
 }
-

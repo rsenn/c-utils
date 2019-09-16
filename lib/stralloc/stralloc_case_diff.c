@@ -20,4 +20,3 @@ stralloc_case_diff(const stralloc* sa1, const stralloc* sa2) {
     return r;
   return (int)sa1->len - (int)sa2->len;
 }
-

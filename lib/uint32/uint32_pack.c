@@ -11,4 +11,3 @@ uint32_pack(char* out, uint32 in) {
   in >>= 8;
   *++out = (char)in;
 }
-

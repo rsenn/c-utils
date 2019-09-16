@@ -9,4 +9,3 @@ byte_trimr(char* x, size_t n, const char* trimchars, unsigned int trimcharslen) 
   }
   return n;
 }
-

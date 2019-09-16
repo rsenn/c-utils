@@ -8,4 +8,3 @@ buffer_default(buffer* b, buffer_op_fn* op) {
   b->n = 0;
   b->op = op;
 }
-

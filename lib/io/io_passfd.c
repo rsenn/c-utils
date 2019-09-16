@@ -80,4 +80,3 @@ io_passfd(fd_t sock, fd_t fd) {
   return sendmsg(sock, &msg, 0) >= 0 ? 0 : -1;
 }
 #endif
-

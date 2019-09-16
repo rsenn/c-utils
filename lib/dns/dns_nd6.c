@@ -26,4 +26,3 @@ dns_name6_domain(char name[DNS_NAME6_DOMAIN], const char ip[16]) {
   }
   byte_copy(name + 4 * 16, 10, "\3ip6\4arpa\0");
 }
-

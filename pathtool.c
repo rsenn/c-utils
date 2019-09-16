@@ -42,7 +42,7 @@ strlist_from_path(strlist* sl, const char* p) {
 #define MAX_PATH 260
 #endif
 
-#if (!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
+#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
@@ -226,7 +226,7 @@ main(int argc, char* argv[]) {
                            {"windows", 0, NULL, 'w'},
                            {"absolute", 0, NULL, 'a'},
                            {"canonicalize", 0, NULL, 'f'},
-                           {0,0,0,0}};
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

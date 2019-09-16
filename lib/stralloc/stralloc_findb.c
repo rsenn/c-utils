@@ -20,4 +20,3 @@ stralloc_findb(const stralloc* sa, const void* what, size_t len) {
   }
   return n;
 }
-

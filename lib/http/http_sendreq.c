@@ -39,4 +39,3 @@ http_sendreq(http* h) {
 
   return 1;
 }
-

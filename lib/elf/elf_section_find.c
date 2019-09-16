@@ -17,4 +17,3 @@ elf_section_find(void* elf, const char* sname) {
   }
   return -1;
 }
-

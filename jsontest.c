@@ -24,7 +24,7 @@
 #include <sys/types.h>
 
 static charbuf infile;
-//static buffer b;
+// static buffer b;
 
 void
 put_str_escaped(buffer* b, const char* str) {
@@ -42,10 +42,10 @@ main(int argc, char* argv[]) {
   stralloc_init(&tmp);
 
   fd = open_read(argc > 1 ? argv[1] : "../dirlist/test.json");
-  //size_t sz;
-  //char* map = mmap_private( argc > 1 ? argv[1] : "../dirlist/test.json", &sz);;
+  // size_t sz;
+  // char* map = mmap_private( argc > 1 ? argv[1] : "../dirlist/test.json", &sz);;
 
-  //buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.json");
+  // buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.json");
   //
   charbuf_init(&infile, (read_fn*)&read, fd);
 
@@ -56,5 +56,4 @@ main(int argc, char* argv[]) {
   charbuf_close(&infile);
 
   json_free(doc);
-
 }

@@ -16,4 +16,3 @@ fmt_tofrom_array(size_t (*func)(char*, const char*, size_t), array* dest, array*
   } else
     array_fail(dest);
 }
-

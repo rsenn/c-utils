@@ -27,4 +27,3 @@ io_block(fd_t d) {
       e->nonblock = 0;
 #endif
 }
-

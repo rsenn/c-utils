@@ -59,4 +59,3 @@ fmt_ip6(char* s, const char ip[16]) {
 
   return len;
 }
-

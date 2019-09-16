@@ -62,9 +62,11 @@ json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
   char quote;
   quote = byte_fullfils_predicate(key, key_len, json_is_identifier_char) ? fmt->quote[0] : '"';
 
-  if(quote) buffer_putc(b, quote);
+  if(quote)
+    buffer_putc(b, quote);
   buffer_put(b, key, key_len);
-  if(quote) buffer_putc(b, quote);
+  if(quote)
+    buffer_putc(b, quote);
 }
 
 static void
@@ -96,7 +98,7 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
 
   if(val->dictv && val->dictv->list_tuple) {
-   
+
     hmap_foreach(val->dictv, t) {
       int last = hmap_next(val->dictv, t) == NULL;
 
@@ -114,7 +116,7 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
         json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
       }
     }
-    p(&printer, val, depth-1, -2);
+    p(&printer, val, depth - 1, -2);
     json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   }
   buffer_puts(b, "}");
@@ -176,4 +178,3 @@ json_print(jsonval val, buffer* b, void (*p)()) {
   buffer_puts(b, printer.newline);
   buffer_flush(b);
 }
-

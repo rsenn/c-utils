@@ -7,8 +7,8 @@ case_lowerb(void* S, size_t len) {
   while(len > 0) {
     --len;
     x = *s - 'A';
-    if(x <= 'Z' - 'A') *s = x + 'a';
+    if(x <= 'Z' - 'A')
+      *s = x + 'a';
     ++s;
   }
 }
-

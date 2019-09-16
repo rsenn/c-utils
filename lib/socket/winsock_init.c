@@ -19,4 +19,3 @@ __winsock_init(void) {
   }
 }
 #endif
-

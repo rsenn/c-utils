@@ -8,4 +8,3 @@ strlist_unshift(strlist* sl, const char* s) {
   sl->sa.s[len] = sl->sep;
   return 1;
 }
-

@@ -38,4 +38,3 @@ fmt_httpdate(char* dest, time_t t) {
   i += fmt_str(dest + i, " GMT");
   return i;
 }
-

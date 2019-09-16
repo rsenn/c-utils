@@ -22,4 +22,3 @@ hashmap_init(hashmap* map, size_t capacity, hashmap_comparator comparator, hashm
   map->keys = (linked_list*)safe_malloc(sizeof(linked_list));
   linked_list_init(map->keys, NULL);
 }
-

@@ -12,4 +12,3 @@ scan_to_sa(size_t (*func)(const char*, char*, size_t*), const char* src, strallo
     sa->len += written;
   return r;
 }
-

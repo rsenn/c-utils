@@ -47,8 +47,8 @@ buffer_dump(buffer* out, buffer* b) {
   } else
     n = 0;
   buffer_puts(out, "\"");
-//  buffer_puts(out, "...");
-  //buffer_put_escaped(out, &b->x[n], 32);
+  //  buffer_puts(out, "...");
+  // buffer_put_escaped(out, &b->x[n], 32);
   buffer_puts(out, "\"");
 
   buffer_puts(out, NONE ", " YELLOW "fd" CYAN "=" NONE);
@@ -67,8 +67,8 @@ buffer_dump(buffer* out, buffer* b) {
     buffer_puts(out, "<write> ");
   else if(b->op == (void*)&buffer_dummyreadmmap)
     buffer_puts(out, "<mmap>  ");
-/*  else if(b->op == (void*)&stralloc_write)
-    buffer_puts(out, "<sa-wr> ");*/
+  /*  else if(b->op == (void*)&stralloc_write)
+      buffer_puts(out, "<sa-wr> ");*/
   else if(b->op == (void*)NULL)
     buffer_puts(out, "NULL    ");
   else {
@@ -78,4 +78,3 @@ buffer_dump(buffer* out, buffer* b) {
   buffer_puts(out, " ]");
   buffer_putnlflush(out);
 }
-

@@ -23,4 +23,3 @@ alloc_re(void** x, size_t m, size_t n) {
   return 1;
 #endif
 }
-

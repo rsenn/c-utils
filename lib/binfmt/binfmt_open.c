@@ -10,4 +10,3 @@ binfmt_open(binfmt_file* bf, const char* filename) {
 
   return 0;
 }
-

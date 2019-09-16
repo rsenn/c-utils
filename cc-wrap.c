@@ -252,7 +252,7 @@ main(int argc, char* argv[]) {
     //    return 127;
   }
 
-  if(logfile) 
+  if(logfile)
     write_log(&args, logfile);
 
 #if 0

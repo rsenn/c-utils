@@ -15,4 +15,3 @@ json_todouble(jsonval val) {
   stralloc_free(&sa);
   return ret;
 }
-

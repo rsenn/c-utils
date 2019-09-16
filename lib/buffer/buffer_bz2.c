@@ -6,7 +6,6 @@
 #include <bzlib.h>
 #endif
 
-
 #include "../buffer.h"
 #include <stdlib.h>
 
@@ -54,7 +53,8 @@ buffer_bzread_op(fd_t fd, void* data, size_t n, buffer* b) {
     return n - strm->avail_out;
   }
 
-  if(ret != BZ_OK) return -1;
+  if(ret != BZ_OK)
+    return -1;
 
   return 0;
 }
@@ -111,8 +111,10 @@ buffer_bz_close(buffer* b) {
 
     ret = BZ2_bzCompress(strm, ctx->a);
 
-    if(ret == BZ_FLUSH_OK) ctx->a = BZ_FINISH;
-    if(ret == BZ_FINISH_OK) break;
+    if(ret == BZ_FLUSH_OK)
+      ctx->a = BZ_FINISH;
+    if(ret == BZ_FINISH_OK)
+      break;
 
   } while(ret != BZ_STREAM_END);
 
@@ -128,23 +130,21 @@ int
 buffer_bz2(buffer* b, buffer* other, int compress) {
   int ret;
   bz_ctx* ctx = calloc(1, sizeof(bz_ctx));
-  if(ctx == NULL) return 0;
+  if(ctx == NULL)
+    return 0;
 
   ctx->b = other;
 
-  buffer_init(b,
-              (void*)(compress ? (void*)&buffer_bzwrite_op : (void*)&buffer_bzread_op),
-              -1,
-              ctx->buf,
-              sizeof(ctx->buf));
+  buffer_init(
+      b, (void*)(compress ? (void*)&buffer_bzwrite_op : (void*)&buffer_bzread_op), -1, ctx->buf, sizeof(ctx->buf));
   b->cookie = ctx;
   b->deinit = &buffer_bz_close;
 
   ret = compress ? BZ2_bzCompressInit(&ctx->strm, compress, 0, 1) : BZ2_bzDecompressInit(&ctx->strm, 0, 0);
 
-  if(ret != BZ_OK) return 0;
+  if(ret != BZ_OK)
+    return 0;
 
   return 1;
 }
 #endif
-

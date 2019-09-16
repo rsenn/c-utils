@@ -6,4 +6,3 @@ void
 errmsg_iam(const char* who) {
   argv0 = who;
 }
-

@@ -20,4 +20,3 @@ var_vlen(const char* v) {
   }
   return n;
 }
-

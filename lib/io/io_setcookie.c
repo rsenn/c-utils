@@ -12,4 +12,3 @@ io_setcookie(fd_t d, void* cookie) {
   if((e = iarray_get(io_getfds(), d)))
     e->cookie = cookie;
 }
-

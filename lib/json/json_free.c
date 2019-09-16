@@ -58,4 +58,3 @@ json_free(jsonval* val) {
   buffer_putnlflush(buffer_2);
 #endif
 }
-

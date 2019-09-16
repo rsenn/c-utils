@@ -25,4 +25,3 @@ taia_pack(char* s, const struct taia* t) {
   x >>= 8;
   s[0] = (char)x;
 }
-

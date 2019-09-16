@@ -18,4 +18,3 @@ socket_deferaccept(int s, enum defermode mode) {
   setsockopt(s, SOL_SOCKET, SO_ACCEPTFILTER, (void*)&afa, sizeof(afa));
 #endif
 }
-

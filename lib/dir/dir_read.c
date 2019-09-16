@@ -8,8 +8,7 @@
 #endif
 
 char*
-dir_read(struct dir_s* d)
-{
+dir_read(struct dir_s* d) {
   char* ret = 0;
 #if USE_READDIR
   struct dirent* de;
@@ -39,4 +38,3 @@ dir_read(struct dir_s* d)
 #endif
   return ret;
 }
-

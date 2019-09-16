@@ -74,4 +74,3 @@ cb_insert(critbit_tree* cb, const void* key, size_t keylen) {
     }
   }
 }
-

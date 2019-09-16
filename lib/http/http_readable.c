@@ -126,4 +126,3 @@ http_readable(http* h, int freshen) {
 
   return ret;
 }
-

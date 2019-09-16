@@ -13,4 +13,3 @@ hashmap_clear(hashmap* map) {
   }
   map->size = 0;
 }
-

@@ -1,7 +1,7 @@
 #include "../list.h"
 
 void
-list_add_before(list *l, node *p, node *before) {
+list_add_before(list* l, node* p, node* before) {
   /* If <before> is the list head, then a list_add_head() does the job */
   if(before == l->head) {
     list_unshift(l, p);
@@ -18,4 +18,3 @@ list_add_before(list *l, node *p, node *before) {
   /* Update prev-reference of the <before> p */
   before->prev = p;
 }
-

@@ -20,4 +20,3 @@ xml_print_nodeset(const xmlnodeset* ns, buffer* b) {
   }
   /* buffer_flush(b); */
 }
-

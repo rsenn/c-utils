@@ -29,4 +29,3 @@ cb_find_prefix_i(void* ptr, const void* key, size_t keylen, void** results, int 
   }
   return next;
 }
-

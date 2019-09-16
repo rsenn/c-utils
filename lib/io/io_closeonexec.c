@@ -14,4 +14,3 @@ io_closeonexec(fd_t d) {
   fcntl(d, F_SETFL, fcntl(d, F_GETFL, 0) | FD_CLOEXEC);
 #endif
 }
-

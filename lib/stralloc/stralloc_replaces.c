@@ -37,4 +37,3 @@ stralloc_replaces(stralloc* sa, const char* from, const char* to) {
 
   return 1;
 }
-

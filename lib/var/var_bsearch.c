@@ -30,15 +30,17 @@ var_bsearch(struct search* context) {
       lm--;
     }
 
-    if(ret < 0) continue;
-    if(ret > 0) return ret;
+    if(ret < 0)
+      continue;
+    if(ret > 0)
+      return ret;
 
     if(lm == 0) {
-      if(lw == 0) return 0;
+      if(lw == 0)
+        return 0;
       return (size_t)*w;
     }
   }
 
   return -1;
 }
-

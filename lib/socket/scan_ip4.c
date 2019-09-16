@@ -20,4 +20,3 @@ scan_ip4(const char* s, char ip[4]) {
   }
   return len - 1;
 }
-

@@ -15,4 +15,3 @@ fmt_octal(char* dest, uint64 i) {
     }
   return len;
 }
-

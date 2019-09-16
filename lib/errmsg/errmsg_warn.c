@@ -10,4 +10,3 @@ errmsg_warn(const char* message, ...) {
   va_start(a, message);
   errmsg_write(2, 0, message, a);
 }
-

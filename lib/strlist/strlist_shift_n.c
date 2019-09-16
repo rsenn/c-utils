@@ -14,4 +14,3 @@ strlist_shift_n(strlist* sl, size_t i) {
 
   return 0;
 }
-

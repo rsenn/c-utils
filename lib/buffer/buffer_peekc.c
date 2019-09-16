@@ -9,4 +9,3 @@ buffer_peekc(buffer* b, char* c) {
   }
   return r;
 }
-

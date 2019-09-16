@@ -25,4 +25,3 @@ stralloc_ready_tuned(stralloc* sa, size_t n, size_t base, size_t a, size_t b) {
   }
   return 1;
 }
-

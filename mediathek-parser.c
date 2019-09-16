@@ -217,9 +217,8 @@ process_entry(char** av, int ac) {
     time_t t;
     unsigned d;
 
-    char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6],
-         *description = av[8],
-         *url = av[9], *url_klein = av[13];
+    char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6], *description = av[8], *url = av[9],
+         *url_klein = av[13];
 
     stralloc url_lo;
     stralloc_init(&url_lo);
@@ -420,7 +419,11 @@ main(int argc, char* argv[]) {
   buffer b;
 
   struct longopt opts[] = {
-      {"csv", 0, NULL, 'c'}, {"debug", 0, NULL, 'd'}, {"low", 0, NULL, 'l'}, {"format", 1, NULL, 'F'}, {0,0,0,0},
+      {"csv", 0, NULL, 'c'},
+      {"debug", 0, NULL, 'd'},
+      {"low", 0, NULL, 'l'},
+      {"format", 1, NULL, 'F'},
+      {0, 0, 0, 0},
   };
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {

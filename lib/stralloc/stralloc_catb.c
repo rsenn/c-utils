@@ -15,4 +15,3 @@ stralloc_catb(stralloc* sa, const char* buf, size_t len) {
   }
   return 0;
 }
-

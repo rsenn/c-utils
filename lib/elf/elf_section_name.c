@@ -7,4 +7,3 @@ elf_section_name(void* elf, int sn) {
   const char* name = &(elf_shstrtab(elf)[idx]);
   return name;
 }
-

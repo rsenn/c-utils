@@ -8,19 +8,21 @@
 #include <io.h>
 #endif
 
-//namespace util {
+// namespace util {
 
 file::file(const string& name, int access)
-  	: m_handle((access & append ? open_append : (access & trunc ? open_trunc : (access & read_write ? open_rw : open_read)))(name.c_str()))
-    ,  m_access(access)
-    , m_retcode(0) {
+    : m_handle((access & append
+                    ? open_append
+                    : (access & trunc ? open_trunc : (access & read_write ? open_rw : open_read)))(name.c_str())),
+      m_access(access), m_retcode(0) {
   if(m_handle < 0) {
-  	m_retcode = m_handle;
+    m_retcode = m_handle;
   }
 }
 
 file::~file() {
-  if(m_handle >= 0) close();
+  if(m_handle >= 0)
+    close();
 }
 
 void
@@ -33,7 +35,7 @@ int
 file::write(const char* b, const unsigned long n) {
   int ret;
   if((ret = ::write(m_handle, b, n)) < 0)
-  	m_retcode = ret;
+    m_retcode = ret;
   return ret;
 }
 
@@ -41,7 +43,7 @@ int
 file::read(char* b, const unsigned long n) {
   int ret;
   if((ret = ::read(m_handle, b, n)) < 0)
-  	m_retcode = ret;
+    m_retcode = ret;
   return ret;
 }
 

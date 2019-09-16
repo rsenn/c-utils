@@ -8,4 +8,3 @@ elf_get_symtab_r(void* elf) {
   r.elem_size = ELF_STRUCT_SIZE(elf, sym);
   return r;
 }
-

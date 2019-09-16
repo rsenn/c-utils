@@ -13,4 +13,3 @@ elf_get_symtab(void* elf, size_t* szp) {
     *szp = n;
   return r;
 }
-

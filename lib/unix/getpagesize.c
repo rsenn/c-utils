@@ -14,4 +14,3 @@ getpagesize() {
   return cachedPageSize;
 }
 #endif /* WINDOWS_NATIVE */
-

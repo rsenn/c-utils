@@ -20,4 +20,3 @@ range_arrayinbuf(const void* buf1, size_t len, const void* arraystart, size_t el
   }
   return range_bufinbuf(buf1, len, arraystart, alen);
 }
-

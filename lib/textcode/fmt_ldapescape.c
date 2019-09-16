@@ -25,4 +25,3 @@ fmt_ldapescape(char* dest, const char* src, size_t len) {
   }
   return written;
 }
-

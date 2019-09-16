@@ -69,12 +69,14 @@ int
 buffer_getint64(buffer* b, int64* i) {
   char buffer[8];
   uint64 u;
-  if(buffer_get(b, buffer, 8) != 8) return 0;
+  if(buffer_get(b, buffer, 8) != 8)
+    return 0;
   uint64_unpack(buffer, &u);
 
   *i = (u & 0x7fffffffffffffff);
 
-  if(u & 0x8000000000000000) *i = -*i;
+  if(u & 0x8000000000000000)
+    *i = -*i;
 
   return 1;
 }
@@ -90,13 +92,18 @@ int
 bsdiff_read_header(buffer* b, bsdiff_header* hdr) {
   char buffer[8];
 
-  if(buffer_get(b, hdr->magic, 8) != 8) return 0;
+  if(buffer_get(b, hdr->magic, 8) != 8)
+    return 0;
 
-  if(byte_diff(hdr->magic, 7, "BSDIFF4")) return 0;
+  if(byte_diff(hdr->magic, 7, "BSDIFF4"))
+    return 0;
 
-  if(!buffer_getint64(b, &hdr->ctrl_len)) return 0;
-  if(!buffer_getint64(b, &hdr->data_len)) return 0;
-  if(!buffer_getint64(b, &hdr->new_size)) return 0;
+  if(!buffer_getint64(b, &hdr->ctrl_len))
+    return 0;
+  if(!buffer_getint64(b, &hdr->data_len))
+    return 0;
+  if(!buffer_getint64(b, &hdr->new_size))
+    return 0;
 
   return 1;
 }
@@ -105,9 +112,12 @@ int
 bsdiff_read_ctrl(buffer* b, bsdiff_control* ctrl) {
   byte_zero(ctrl, sizeof(ctrl));
 
-  if(!buffer_getint64(b, &ctrl->add_len)) return 0;
-  if(!buffer_getint64(b, &ctrl->extra_len)) return 0;
-  if(!buffer_getint64(b, &ctrl->seek_off)) return 0;
+  if(!buffer_getint64(b, &ctrl->add_len))
+    return 0;
+  if(!buffer_getint64(b, &ctrl->extra_len))
+    return 0;
+  if(!buffer_getint64(b, &ctrl->seek_off))
+    return 0;
   return 1;
 }
 
@@ -124,8 +134,8 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
 
   for(;;) {
     int64 len;
-    if(!bsdiff_read_ctrl(&bctrl, &rec)) break;
-
+    if(!bsdiff_read_ctrl(&bctrl, &rec))
+      break;
 
     debug_int("add_len", rec.add_len);
     debug_int("extra_len", rec.extra_len);
@@ -185,7 +195,8 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
         break;
       }
 
-      if(new.x) buffer_put(&new, extra, len);
+      if(new.x)
+        buffer_put(&new, extra, len);
 
       if(!old.x)
         output_hex(extra, len, w, ' ');
@@ -195,7 +206,8 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
     }
 
     r += rec.seek_off;
-    if(old.x) old.p += rec.seek_off;
+    if(old.x)
+      old.p += rec.seek_off;
   }
 
   if(old.x) {
@@ -221,14 +233,17 @@ main(int argc, char* argv[]) {
   array_init(&records);
 
   if(argc > 2) {
-    if(buffer_mmapread(&old, argv[2])) byte_zero(&old, sizeof(old));
+    if(buffer_mmapread(&old, argv[2]))
+      byte_zero(&old, sizeof(old));
     if(argc > 3) {
-      if(buffer_truncfile(&new, argv[3])) byte_zero(&new, sizeof(new));
+      if(buffer_truncfile(&new, argv[3]))
+        byte_zero(&new, sizeof(new));
     }
   }
 
   if(!old.x && !isatty(buffer_0->fd)) {
-    if(buffer_mmapread_fd(&old, buffer_0->fd)) byte_zero(&old, sizeof(old));
+    if(buffer_mmapread_fd(&old, buffer_0->fd))
+      byte_zero(&old, sizeof(old));
   }
 
   if(!new.x && !isatty(buffer_1->fd)) {
@@ -249,8 +264,8 @@ main(int argc, char* argv[]) {
       debug_int("data_len", h.data_len);
       debug_int("new_size", h.new_size);
 
-//      int64 n = bsdiff_read_ctrl(&patch, &records);
-//      debug_int("n", n);
+      //      int64 n = bsdiff_read_ctrl(&patch, &records);
+      //      debug_int("n", n);
 
       bsdiff_read(&patch, &data, &extra);
 

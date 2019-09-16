@@ -8,11 +8,11 @@ byte_chrs(const void* haystack, size_t len, char needle[], size_t nl) {
   const char* end = haystack + len;
 
   for(;;) {
-    if(s == end) break;
+    if(s == end)
+      break;
     if(byte_chr(needle, nl, *s) < nl)
-	    break;
+      break;
     ++s;
   }
   return s - (const char*)haystack;
 }
-

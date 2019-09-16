@@ -6,9 +6,9 @@
 void
 expand_escape(stralloc* sa, const char* b, unsigned int n) {
   while(n--) {
-    if(str_chr("\\*?[", *b) < 4) stralloc_catc(sa, '\\');
+    if(str_chr("\\*?[", *b) < 4)
+      stralloc_catc(sa, '\\');
 
     stralloc_catc(sa, *b++);
   }
 }
-

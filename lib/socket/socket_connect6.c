@@ -39,4 +39,3 @@ socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
   return -1;
 #endif
 }
-

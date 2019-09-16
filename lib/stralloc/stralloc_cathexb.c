@@ -11,4 +11,3 @@ stralloc_cathexb(stralloc* sa, const void* d, unsigned int n) {
   sa->len += len;
   return 1;
 }
-

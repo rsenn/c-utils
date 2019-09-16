@@ -23,8 +23,10 @@ wait_pid(int pid, int* wstat) {
 
     ret = WaitForSingleObject(hproc, INFINITE);
 
-    if(ret == WAIT_TIMEOUT) continue;
-    if(ret == WAIT_FAILED) return -1;
+    if(ret == WAIT_TIMEOUT)
+      continue;
+    if(ret == WAIT_FAILED)
+      return -1;
 
     if(ret == WAIT_OBJECT_0) {
       GetExitCodeProcess(hproc, &exitcode);
@@ -42,4 +44,3 @@ wait_pid(int pid, int* wstat) {
   return waitpid_nointr(pid, wstat, 0);
 #endif
 }
-

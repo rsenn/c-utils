@@ -18,4 +18,3 @@ stralloc_chomp(stralloc* sa) {
   }
   return 0;
 }
-

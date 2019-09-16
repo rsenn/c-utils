@@ -12,8 +12,8 @@ byte_rchr(const void* haystack, size_t len, char needle) {
     if(s > t) {
       break;
     };
-    if(*t == c) return (size_t)(t - s);
+    if(*t == c)
+      return (size_t)(t - s);
   }
   return len;
 }
-

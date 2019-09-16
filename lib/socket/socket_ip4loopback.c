@@ -11,4 +11,3 @@ const char*
 socket_ip4loopback() {
   return (const char*)ip4loopback;
 }
-

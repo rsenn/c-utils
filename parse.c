@@ -141,9 +141,9 @@ parse_line(const char* x, ssize_t n) {
   if(n <= 0)
     return 0;
   for(;;) {
-  /*  buffer_puts(buffer_2, "char: ");
-    buffer_putc(buffer_2, x[0]);
-    buffer_putnlflush(buffer_2);*/
+    /*  buffer_puts(buffer_2, "char: ");
+      buffer_putc(buffer_2, x[0]);
+      buffer_putnlflush(buffer_2);*/
     if(x[0] == '[')
       i = parse_strlist(x, n, &args);
     else if(x[0] == '"')
@@ -232,7 +232,7 @@ main(int argc, char* argv[]) {
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
     stralloc_trimr(&sa, "\r\n", 2);
-   
+
     if(sa.len > 0)
       parse_line(sa.s, sa.len);
 
@@ -245,13 +245,13 @@ main(int argc, char* argv[]) {
 */  }
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "argv0: ");
-  buffer_puts(buffer_2, argv[0]);
-  buffer_puts(buffer_2, ", prog: ");
-  buffer_putsa(buffer_2, &prog);
-  buffer_puts(buffer_2, ", ext: ");
-  buffer_puts(buffer_2, ext);
-  buffer_putnlflush(buffer_2);
+buffer_puts(buffer_2, "argv0: ");
+buffer_puts(buffer_2, argv[0]);
+buffer_puts(buffer_2, ", prog: ");
+buffer_putsa(buffer_2, &prog);
+buffer_puts(buffer_2, ", ext: ");
+buffer_puts(buffer_2, ext);
+buffer_putnlflush(buffer_2);
 #endif
-  return 0;
+return 0;
 }

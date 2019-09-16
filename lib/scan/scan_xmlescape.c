@@ -55,4 +55,3 @@ scan_xmlescape(const char* src, char* dest) {
   *dest = *src;
   return 1;
 }
-

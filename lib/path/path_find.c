@@ -18,9 +18,8 @@ path_find(const char* path, const char* name, stralloc* out) {
       ret = 1;
       break;
     }
-  }  
- 
+  }
+
   dir_close(&dir);
   return ret;
 }
-

@@ -22,4 +22,3 @@ dns_name4_domain(char name[DNS_NAME4_DOMAIN], const char ip[4]) {
   namelen += i;
   byte_copy(name + namelen, 14, "\7in-addr\4arpa\0");
 }
-

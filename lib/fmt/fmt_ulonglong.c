@@ -11,4 +11,3 @@ fmt_ulonglong(char* dest, uint64 i) {
     for(tmp = i, dest += len, len2 = len + 1; --len2; tmp /= 10) *--dest = (tmp % 10) + '0';
   return len;
 }
-

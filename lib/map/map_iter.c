@@ -7,4 +7,3 @@ map_iter_(void) {
   iter.node = NULL;
   return iter;
 }
-

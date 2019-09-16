@@ -16,10 +16,12 @@ var_create(struct vartab* varstack, const char* v, int flags) {
   vartab_hash(varstack, v, &ctx);
   if((oldvar = var_search(varstack, v, &ctx))) {
     /* if we have the V_INIT flag and the var was found return NULL */
-    if(flags & V_INIT) return NULL;
+    if(flags & V_INIT)
+      return NULL;
 
     /* if variable was found on topmost level -> immediately return it */
-    if(oldvar->table == varstack) return oldvar;
+    if(oldvar->table == varstack)
+      return oldvar;
   }
 
   newvar = malloc(sizeof(struct var));
@@ -41,4 +43,3 @@ var_create(struct vartab* varstack, const char* v, int flags) {
 
   return newvar;
 }
-

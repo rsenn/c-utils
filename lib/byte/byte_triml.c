@@ -10,4 +10,3 @@ byte_triml(const char* x, size_t* len, const char* charset, unsigned int charset
   *len = n - i;
   return x + i;
 }
-

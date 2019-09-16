@@ -6,4 +6,3 @@ cb_clear(critbit_tree* cb) {
     cb->root = 0;
   }
 }
-

@@ -23,4 +23,3 @@ socket_mcloop6(int s, char loop) {
   return -1;
 #endif
 }
-

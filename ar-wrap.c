@@ -260,11 +260,10 @@ write_log(const strlist* argv, const char* file) {
   return 0;
 }
 
-
 int
 main(int argc, char* argv[]) {
   size_t p;
-  int i,st;
+  int i, st;
   stralloc sa, lib, arg;
   strarray v;
   strlist opts, objs, dirs;
@@ -339,9 +338,7 @@ main(int argc, char* argv[]) {
   }
 
   strarray_init(&v);
-  strarray_from_argv(argc, (const char *const *)argv, &v);
-
-
+  strarray_from_argv(argc, (const char* const*)argv, &v);
 
   for(i = 1; i < strarray_size(&v); ++i) {
     size_t pos;
@@ -386,7 +383,7 @@ main(int argc, char* argv[]) {
 
         strarray_splice(&v, i, 1, array_length(&a, sizeof(char*)), array_start(&a));
 
-        //debug_strarray("new args", &v);
+        // debug_strarray("new args", &v);
 
         --i;
         continue;
@@ -398,52 +395,51 @@ main(int argc, char* argv[]) {
 #if WINDOWS_NATIVE
     if(pos > 0 && pos < arg.len)
       stralloc_replacec(&arg, '/', '\\');
-    }
+  }
 #endif
 
-    if(stralloc_endb(&arg, ".a", 2) || stralloc_endb(&arg, ".lib", 4)) {
-      stralloc_copy(&lib, &arg);
-    } else {
-      int is_obj = stralloc_endb(&arg, ".o", 2) || stralloc_endb(&arg, ".obj", 4);
+  if(stralloc_endb(&arg, ".a", 2) || stralloc_endb(&arg, ".lib", 4)) {
+    stralloc_copy(&lib, &arg);
+  } else {
+    int is_obj = stralloc_endb(&arg, ".o", 2) || stralloc_endb(&arg, ".obj", 4);
 
-      if(is_obj) {
-        stralloc dir;
-        stralloc_init(&dir);
-        path_dirname(arg.s, &dir);
-        strlist_push_unique_sa(&dirs, &dir);
-        stralloc_free(&dir);
+    if(is_obj) {
+      stralloc dir;
+      stralloc_init(&dir);
+      path_dirname(arg.s, &dir);
+      strlist_push_unique_sa(&dirs, &dir);
+      stralloc_free(&dir);
 
-        if(tlib)
-          stralloc_prepends(&arg, "+-");
-      }
-
-      if(tlib) {
-        if(stralloc_equals(&arg, "/a") || stralloc_equals(&arg, "/u"))
-          continue;
-      }
-
-      strlist_push_sa(is_obj ? &objs : &opts, &arg);
+      if(tlib)
+        stralloc_prepends(&arg, "+-");
     }
+
+    if(tlib) {
+      if(stralloc_equals(&arg, "/a") || stralloc_equals(&arg, "/u"))
+        continue;
+    }
+
+    strlist_push_sa(is_obj ? &objs : &opts, &arg);
   }
+}
 
-  strlist_unshift(&opts, path_basename(realcmd.s));
-  strlist_push_sa(&opts, &lib);
-  strlist_cat(&opts, &objs);
+strlist_unshift(&opts, path_basename(realcmd.s));
+strlist_push_sa(&opts, &lib);
+strlist_cat(&opts, &objs);
 
-  stralloc_init(&sa);
-  //strlist_joins(&dirs, &sa, " , ");
-  strarray_joins(&v, &sa, "'\n'");
-  stralloc_nul(&sa);
-  //
+stralloc_init(&sa);
+// strlist_joins(&dirs, &sa, " , ");
+strarray_joins(&v, &sa, "'\n'");
+stralloc_nul(&sa);
+//
 
+if(!stralloc_endb(&realcmd, EXEEXT, str_len(EXEEXT)))
+  stralloc_cats(&realcmd, EXEEXT);
 
-  if(!stralloc_endb(&realcmd, EXEEXT, str_len(EXEEXT)))
-    stralloc_cats(&realcmd, EXEEXT);
-
-  if(!path_exists(realcmd.s)) {
-    errmsg_warnsys("doesn't exist: ", realcmd.s, " \"", sa.s, "\" : ", 0);
-    //    return 127;
-  }
+if(!path_exists(realcmd.s)) {
+  errmsg_warnsys("doesn't exist: ", realcmd.s, " \"", sa.s, "\" : ", 0);
+  //    return 127;
+}
 
 #if DEBUG
 //  buffer_puts(buffer_1, "dirs: ");
@@ -460,34 +456,34 @@ main(int argc, char* argv[]) {
 //  buffer_putnlflush(buffer_1);
 #endif
 #ifdef DEBUG
-  buffer_puts(buffer_2, "cmd: '");
-  buffer_putsa(buffer_2, &sa);
-  buffer_puts(buffer_2, "'");
-  buffer_putnlflush(buffer_2);
+buffer_puts(buffer_2, "cmd: '");
+buffer_putsa(buffer_2, &sa);
+buffer_puts(buffer_2, "'");
+buffer_putnlflush(buffer_2);
 #endif
-  if(logfile) 
-    write_log(&opts, logfile);
+if(logfile)
+  write_log(&opts, logfile);
 
-  av = strlist_to_argv(&opts);
+av = strlist_to_argv(&opts);
 
-  errno = 0;
-  ret = process_create(realcmd.s, (const char**)av, 0, 0);
-  //ret = execvp(realcmd.s, av);
+errno = 0;
+ret = process_create(realcmd.s, (const char**)av, 0, 0);
+// ret = execvp(realcmd.s, av);
 
-  if(ret == -1) {
-    errmsg_warnsys("process_create:", 0);
-    return 1;
-  }
+if(ret == -1) {
+  errmsg_warnsys("process_create:", 0);
+  return 1;
+}
 
-  if((i = wait_pid(ret, &st)) != -1) {
-    buffer_puts(buffer_2, "waitpid = ");
-    buffer_putlong(buffer_2, i);
-    buffer_puts(buffer_2, " status = ");
-    buffer_putlong(buffer_2, st);
-    buffer_puts(buffer_2, " ");
-    buffer_flush(buffer_2);
-    errmsg_warnsys("child terminated:", 0);
-  }
+if((i = wait_pid(ret, &st)) != -1) {
+  buffer_puts(buffer_2, "waitpid = ");
+  buffer_putlong(buffer_2, i);
+  buffer_puts(buffer_2, " status = ");
+  buffer_putlong(buffer_2, st);
+  buffer_puts(buffer_2, " ");
+  buffer_flush(buffer_2);
+  errmsg_warnsys("child terminated:", 0);
+}
 
-  return 0;
+return 0;
 }

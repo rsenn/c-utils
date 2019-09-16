@@ -11,4 +11,3 @@ scan_to_array(size_t (*func)(const char*, char*, size_t*), const char* src, arra
     return 0;
   return func(src, x, &scanned);
 }
-

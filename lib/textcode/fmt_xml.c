@@ -27,4 +27,3 @@ fmt_xml(char* dest, const char* src, size_t len) {
   }
   return written;
 }
-

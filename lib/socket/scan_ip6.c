@@ -88,4 +88,3 @@ scan_ip6(const char* s, char ip[16]) {
   for(i = 0; i < suffixlen; i++) ip[16 - suffixlen + i] = suffix[i];
   return len;
 }
-

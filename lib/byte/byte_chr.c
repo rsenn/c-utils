@@ -9,10 +9,11 @@ byte_chr(const void* haystack, size_t len, char needle) {
   const char* t = s + len;
 
   for(;;) {
-    if(s == t) break;
-    if(*s == c) break;
+    if(s == t)
+      break;
+    if(*s == c)
+      break;
     ++s;
   }
   return s - (const char*)haystack;
 }
-

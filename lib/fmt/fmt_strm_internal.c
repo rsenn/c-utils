@@ -18,4 +18,3 @@ fmt_strm_internal(char* dest, ...) {
   va_end(a);
   return n;
 }
-

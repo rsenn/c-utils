@@ -16,4 +16,3 @@ stralloc_fmt_pred(
   }
   return out->len;
 }
-

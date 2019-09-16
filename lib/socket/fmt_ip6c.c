@@ -10,4 +10,3 @@ fmt_ip6c(char* s, const char ip[16]) {
   else
     return fmt_ip6(s, ip);
 }
-

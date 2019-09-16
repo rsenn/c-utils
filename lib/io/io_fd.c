@@ -210,4 +210,3 @@ io_fd_flags(fd_t d, int flags) {
     e->canwrite = 1;
   return !!e;
 }
-

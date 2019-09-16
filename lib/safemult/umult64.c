@@ -30,7 +30,7 @@ umult64() {
                "1:\n"
                "xorq %rax,%rax\n"
                /* the closing ret is renerated by gcc */
-               );
+  );
 }
 
 #else
@@ -81,4 +81,3 @@ umult64(uint64 a, uint64 b, uint64* c) {
 
 #endif
 #endif /* SAFEMULT_NO_INLINE */
-

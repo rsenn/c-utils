@@ -6,7 +6,7 @@
 /* expand an assignment list
  */
 int
-expand_vars(union node* vars, union node** nptr, struct vartab* varstack, char *argv[], int exitcode) {
+expand_vars(union node* vars, union node** nptr, struct vartab* varstack, char* argv[], int exitcode) {
   union node *var, *n;
   int ret = 0;
   *nptr = NULL;
@@ -16,8 +16,8 @@ expand_vars(union node* vars, union node** nptr, struct vartab* varstack, char *
       ret++;
     }
     expand_unescape(&n->narg.stra);
-    if(n) nptr = &n->list.next;
+    if(n)
+      nptr = &n->list.next;
   }
   return ret;
 }
-

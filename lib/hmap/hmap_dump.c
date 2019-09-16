@@ -32,4 +32,3 @@ hmap_dump(HMAP_DB* hmap, buffer* b) {
     buffer_putnlflush(b);
   }
 }
-

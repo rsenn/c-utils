@@ -7,4 +7,3 @@ stralloc_chop(stralloc* sa) {
   --sa->len;
   return (unsigned char)(sa->s[sa->len]);
 }
-

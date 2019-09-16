@@ -8,4 +8,3 @@ alloc_zero(size_t n) {
     byte_zero(ret, n);
   return ret;
 }
-

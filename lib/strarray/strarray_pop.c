@@ -10,4 +10,3 @@ strarray_pop(strarray* arr, char* s) {
   }
   return ret;
 }
-

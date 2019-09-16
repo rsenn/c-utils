@@ -25,4 +25,3 @@ socket_tcp4(void) {
   }
   return s;
 }
-

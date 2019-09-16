@@ -27,4 +27,3 @@ stralloc_reverse_blocks(stralloc* sa, size_t size) {
   free(tmp);
 #endif
 }
-

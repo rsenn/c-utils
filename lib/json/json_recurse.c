@@ -31,4 +31,3 @@ void
 json_recurse(jsonval* val, void (*fn)(), void* arg) {
   json_recurse_val(val, fn, arg, 0);
 }
-

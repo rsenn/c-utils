@@ -80,4 +80,3 @@ hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int dat
 
   return index;
 }
-

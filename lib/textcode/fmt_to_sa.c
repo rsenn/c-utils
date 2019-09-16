@@ -10,4 +10,3 @@ fmt_to_sa(size_t (*func)(char*, const char*, size_t), stralloc* sa, const char* 
   sa->len += needed;
   return needed;
 }
-

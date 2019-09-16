@@ -9,4 +9,3 @@ xml_set_attribute(xmlnode* node, const char* a, const char* v) {
 
   hmap_set(&node->attributes, (char*)a, str_len(a), (void*)v, str_len(v) + 1);
 }
-

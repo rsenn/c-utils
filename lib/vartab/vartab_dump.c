@@ -40,4 +40,3 @@ vartab_dump(struct vartab* vartab) {
     for(var = var_list; var; var = var->gnext) var_dump(var);
   }
 }
-

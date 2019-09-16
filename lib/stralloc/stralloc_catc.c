@@ -9,4 +9,3 @@ stralloc_catc(stralloc* sa, const unsigned char c) {
   }
   return 0;
 }
-

@@ -28,7 +28,8 @@ var_setsa(stralloc* sa, int flags) {
   if(var->flags & V_FREESTR) {
     /* if both, old and new variable should be freed
        then free the old one */
-    if(flags & V_FREESTR) stralloc_free(&var->sa);
+    if(flags & V_FREESTR)
+      stralloc_free(&var->sa);
 
     /* the old one should be freed, but the new one not,
        so we can copy new to old */
@@ -54,8 +55,8 @@ var_setsa(stralloc* sa, int flags) {
   /* truncate and set flags */
   stralloc_nul(&var->sa);
 
-  if(var->sa.len > var->len) var->offset = var->len + 1;
+  if(var->sa.len > var->len)
+    var->offset = var->len + 1;
 
   return var;
 }
-

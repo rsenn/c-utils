@@ -17,4 +17,3 @@ hashmap_contains_key(hashmap* map, void* key) {
   }
   return 0;
 }
-

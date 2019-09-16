@@ -17,4 +17,3 @@ io_dup(int64 fd) {
   return dup(fd);
 #endif
 }
-

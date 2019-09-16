@@ -17,4 +17,3 @@ env_addmodif(stralloc* sa, const char* s, const char* t) {
   }
   return 1;
 }
-

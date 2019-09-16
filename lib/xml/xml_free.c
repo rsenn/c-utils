@@ -28,4 +28,3 @@ xml_free(xmlnode* node) {
   buffer_putnlflush(buffer_2);
 #endif
 }
-

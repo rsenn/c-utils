@@ -5,4 +5,3 @@ size_t
 hashmap_size(hashmap* map) {
   return map->size;
 }
-

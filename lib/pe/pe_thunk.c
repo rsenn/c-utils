@@ -17,4 +17,3 @@ pe_thunk(void* pe, void* ptr, int64 index) {
   }
   return ret;
 }
-

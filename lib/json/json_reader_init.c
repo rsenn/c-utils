@@ -7,4 +7,3 @@ json_reader_init(jsonreader* r, charbuf* b) {
   r->b = b;
   r->loc = &r->doc;
 }
-

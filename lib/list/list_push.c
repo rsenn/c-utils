@@ -2,7 +2,7 @@
 #include "../list.h"
 
 void
-list_push(list *l, node *p) {
+list_push(list* l, node* p) {
   /* We add to the list tail, so there's no next p */
   p->next = NULL;
 
@@ -19,4 +19,3 @@ list_push(list *l, node *p) {
   /* Now put the p to list tail */
   l->tail = p;
 }
-

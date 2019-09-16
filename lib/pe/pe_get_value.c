@@ -22,4 +22,3 @@ pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsigned off6
   }
   return ret;
 }
-

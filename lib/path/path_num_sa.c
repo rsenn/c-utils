@@ -5,4 +5,3 @@ path_num_sa(const char* p, size_t len, stralloc* sa, int n) {
   stralloc_copyb(sa, p, r);
   return r;
 }
-

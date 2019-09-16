@@ -17,4 +17,3 @@ json_read_tree(charbuf* b) {
   json_read_callback(&r, json_read_value);
   return r.doc;
 }
-

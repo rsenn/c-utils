@@ -31,4 +31,3 @@ fmt_iso8601(char* dest, time_t t) {
   i += fmt_str(dest + i, "Z");
   return i;
 }
-

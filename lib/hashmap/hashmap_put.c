@@ -27,4 +27,3 @@ hashmap_put(hashmap* map, void* key, void* value) {
   linked_list_append(map->keys, key);
   map->size++;
 }
-

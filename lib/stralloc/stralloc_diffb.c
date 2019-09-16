@@ -20,4 +20,3 @@ stralloc_diffb(const stralloc* sa, const void* d, unsigned int dlen) {
     return r;
   return (int)sa->len - (int)dlen;
 }
-

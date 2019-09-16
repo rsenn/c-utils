@@ -59,4 +59,3 @@ socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* sc
 
   return r;
 }
-

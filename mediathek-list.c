@@ -70,8 +70,7 @@ const char* const mediathek_urls[] = {
     "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
-const char* mediathek_url =
- "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
+const char* mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
 //"http://127.0.0.1/Filmliste-akt.xz";
 
 static unsigned long min_length;
@@ -749,8 +748,6 @@ main(int argc, char* argv[]) {
 
   strlist_dump(buffer_2, &include);
   strlist_dump(buffer_2, &exclude);
-
-
 
   /*  stralloc sa;
     stralloc_init(&sa);

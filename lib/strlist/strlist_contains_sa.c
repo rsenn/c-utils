@@ -13,4 +13,3 @@ strlist_contains_sa(strlist* sl, const stralloc* sa) {
   }
   return 0;
 }
-

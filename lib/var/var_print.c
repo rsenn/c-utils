@@ -9,7 +9,8 @@
  */
 void
 var_print(struct var* var, int flags) {
-  if(flags & V_EXPORT) buffer_puts(buffer_1, "export ");
+  if(flags & V_EXPORT)
+    buffer_puts(buffer_1, "export ");
 
   /* output variable name */
   buffer_put(buffer_1, var->sa.s, var->len);
@@ -22,7 +23,8 @@ var_print(struct var* var, int flags) {
 
     for(i = var->offset; i < var->sa.len; i++) {
       /* escape characters that must be escaped in double-quotation mode */
-      if(is_double_esc(var->sa.s[i])) buffer_puts(buffer_1, "\\");
+      if(is_double_esc(var->sa.s[i]))
+        buffer_puts(buffer_1, "\\");
 
       buffer_PUTC(buffer_1, var->sa.s[i]);
     }
@@ -32,4 +34,3 @@ var_print(struct var* var, int flags) {
 
   buffer_putnlflush(buffer_1);
 }
-

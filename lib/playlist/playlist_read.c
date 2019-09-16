@@ -12,4 +12,3 @@ playlist_read(playlist* pl) {
 
   return i;
 }
-

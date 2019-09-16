@@ -15,8 +15,7 @@ waitpid_nointr(int pid, int* wstat, int flags) {
   int r;
   do {
     r = waitpid(pid, wstat, flags);
-  } while((r == (int) -1) && (errno == EINTR));
+  } while((r == (int)-1) && (errno == EINTR));
   return r;
 #endif
 }
-

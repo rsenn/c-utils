@@ -17,4 +17,3 @@ buffer_putm_internal_flush(buffer* b, ...) {
   buffer_flush(b);
   return r;
 }
-

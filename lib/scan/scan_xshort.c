@@ -13,4 +13,3 @@ scan_xshort(const char* src, unsigned short* dest) {
   *dest = l;
   return (size_t)(tmp - src);
 }
-

@@ -22,4 +22,3 @@ scan_octal(const char* src, uint64* dest) {
   *dest = l;
   return (size_t)(tmp - src);
 }
-

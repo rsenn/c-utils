@@ -46,4 +46,3 @@ unittest_main() {
   assert(scan_ldapescape("test\\ax", buf, &dl) == 4 && dl == 4 && !memcmp(buf, "test", 4));
 }
 #endif
-

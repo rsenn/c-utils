@@ -19,4 +19,3 @@ io_readfile(fd_t* d, const char* s) {
   }
   return 0;
 }
-

@@ -12,4 +12,3 @@ stralloc_fmt(stralloc* out, const char* in, size_t in_len, size_t (*fmt_function
   stralloc_trunc(out, out->len);
   return out->len;
 }
-

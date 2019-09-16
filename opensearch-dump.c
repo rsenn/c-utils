@@ -139,10 +139,12 @@ parse_xml(const char* filename) {
 int
 main(int argc, char** argv) {
   int ai;
-  if(argc < 2) return 1;
+  if(argc < 2)
+    return 1;
   for(ai = 1; ai < argc; ++ai) {
     int ret = parse_xml(argv[ai]);
-    if(ret == -1) return 1;
+    if(ret == -1)
+      return 1;
   }
   return 0;
 }

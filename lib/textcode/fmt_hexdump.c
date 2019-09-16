@@ -15,4 +15,3 @@ fmt_hexdump(char* dest, const char* src, size_t len) {
   }
   return written;
 }
-

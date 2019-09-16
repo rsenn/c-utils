@@ -10,4 +10,3 @@ linked_list_prepend(linked_list* list, void* data) {
 
   list->size++;
 }
-

@@ -15,4 +15,3 @@ socket_tryreservein(int s, int size) {
     size -= (size >> 5);
   }
 }
-

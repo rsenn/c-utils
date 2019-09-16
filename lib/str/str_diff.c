@@ -11,11 +11,12 @@ str_diff(const char* a, const char* b) {
   const unsigned char* t = (const unsigned char*)b;
   int j;
   for(;;) {
-    if((j = (*s - *t))) break;
-    if(!*t) break;
+    if((j = (*s - *t)))
+      break;
+    if(!*t)
+      break;
     ++s;
     ++t;
   }
   return j;
 }
-

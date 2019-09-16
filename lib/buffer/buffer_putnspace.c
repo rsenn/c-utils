@@ -29,4 +29,3 @@ buffer_putnspace(buffer* b, int n) {
   }
   return 0;
 }
-

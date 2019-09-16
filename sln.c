@@ -28,7 +28,7 @@ extern int symlink(const char*, const char*);
 
 int
 reduce(stralloc* sa) {
-  ssize_t  i,j;
+  ssize_t i, j;
   j = stralloc_finds(sa, ".so");
 
   for(i = sa->len - 1; i >= 0; --i) {
@@ -158,7 +158,7 @@ usage(char* av0) {
 int
 main(int argc, char* argv[]) {
   int index = 0, c;
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0,0,0,0}};
+  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

@@ -18,4 +18,3 @@ scan_tofrom_array(size_t (*func)(const char*, char*, size_t*), array* src, array
   array_truncate(src, 1, array_bytes(src) - 1);
   return needed;
 }
-

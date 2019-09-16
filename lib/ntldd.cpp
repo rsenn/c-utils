@@ -3,29 +3,21 @@
 #include <vcl.h>
 #pragma hdrstop
 //---------------------------------------------------------------------------
-WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
-{
-        try
-        {
-                 Application->Initialize();
-                 Application->Title = "ntldd";
-                 Application->Run();
-        }
-        catch (Exception &exception)
-        {
-                 Application->ShowException(&exception);
-        }
-        catch (...)
-        {
-                 try
-                 {
-                         throw Exception("");
-                 }
-                 catch (Exception &exception)
-                 {
-                         Application->ShowException(&exception);
-                 }
-        }
-        return 0;
+WINAPI
+WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+  try {
+    Application->Initialize();
+    Application->Title = "ntldd";
+    Application->Run();
+  } catch(Exception& exception) {
+    Application->ShowException(&exception);
+  } catch(...) {
+    try {
+      throw Exception("");
+    } catch(Exception& exception) {
+      Application->ShowException(&exception);
+    }
+  }
+  return 0;
 }
 //---------------------------------------------------------------------------

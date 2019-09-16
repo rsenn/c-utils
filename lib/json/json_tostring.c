@@ -42,4 +42,3 @@ json_tostring(jsonval val, stralloc* sa) {
   stralloc_nul(sa);
   return sa->s;
 }
-

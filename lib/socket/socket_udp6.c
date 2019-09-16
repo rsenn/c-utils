@@ -59,4 +59,3 @@ socket_udp6(void) {
   }
   return s;
 }
-

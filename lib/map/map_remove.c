@@ -11,4 +11,3 @@ map_remove_(map_base_t* m, const char* key) {
     m->nnodes--;
   }
 }
-

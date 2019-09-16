@@ -11,10 +11,10 @@ strarray_appends(strarray* arr, const char* s) {
     stralloc sa;
     sa.s = *p;
     sa.len = sa.a = len;
-    if(!stralloc_cats(&sa, s)) return 0;
+    if(!stralloc_cats(&sa, s))
+      return 0;
     stralloc_nul(&sa);
     *p++ = sa.s;
   }
   return 1;
 }
-

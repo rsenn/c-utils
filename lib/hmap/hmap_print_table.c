@@ -36,4 +36,3 @@ hmap_print_table(HMAP_DB* hmap) {
   hmap_print(hmap);
   return HMAP_SUCCESS;
 }
-

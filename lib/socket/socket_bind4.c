@@ -21,4 +21,3 @@ socket_bind4(int s, const char* ip, uint16 port) {
     si.sin_addr.s_addr = INADDR_ANY;
   return winsock2errno(bind(s, (struct sockaddr*)&si, sizeof si));
 }
-

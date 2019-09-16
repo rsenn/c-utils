@@ -17,4 +17,3 @@ pe_rva2section(void* base, uint32 rva) {
   }
   return -1;
 }
-

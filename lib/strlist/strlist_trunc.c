@@ -17,4 +17,3 @@ strlist_trunc(strlist* l, size_t items) {
 
   return 0;
 }
-

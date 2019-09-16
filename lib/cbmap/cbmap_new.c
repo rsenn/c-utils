@@ -65,4 +65,3 @@ cbmap_new_with_static_keys_and_values(void) {
                                           CBMAP_NOP_ALLOCATOR.malloc,
                                           CBMAP_NOP_ALLOCATOR.free);
 }
-

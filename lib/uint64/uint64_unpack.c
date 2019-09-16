@@ -5,4 +5,3 @@ void
 uint64_unpack(const char* in, uint64* out) {
   *out = uint64_read(in);
 }
-

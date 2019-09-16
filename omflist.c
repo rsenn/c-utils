@@ -87,7 +87,7 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {0,0,0,0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {0, 0, 0, 0}};
   errmsg_iam(argv[0]);
   buffer_puts(buffer_1, "Number of arguments: ");
   buffer_putlong(buffer_1, argc);

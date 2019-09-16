@@ -9,4 +9,3 @@ array_cat(array* to, const array* const from) {
   }
   array_catb(to, from->p, from->initialized);
 }
-

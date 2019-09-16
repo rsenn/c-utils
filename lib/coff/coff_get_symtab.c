@@ -9,4 +9,3 @@ coff_get_symtab(void* coff, uint32* num) {
   }
   return (coff_symtab_entry*)((char*)coff + uint32_get(&fhdr->pointer_to_symbol_table));
 }
-

@@ -58,4 +58,3 @@ scan_asn1derlength(const char* src, size_t len, uint64* value) {
   *value = l;
   return i;
 }
-

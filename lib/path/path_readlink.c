@@ -30,4 +30,3 @@ path_readlink(const char* path, stralloc* sa) {
   }
   return -1;
 }
-

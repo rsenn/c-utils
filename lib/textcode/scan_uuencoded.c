@@ -55,4 +55,3 @@ unittest_main() {
 }
 
 #endif
-

@@ -36,4 +36,3 @@ cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_le
 
   return NOT_FOUND;
 }
-

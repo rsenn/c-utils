@@ -28,4 +28,3 @@ uint32_random(void) {
 
   return r;
 }
-

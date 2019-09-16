@@ -240,13 +240,10 @@ main(int argc, char* argv[]) {
     taia_uint(&deadline, timeout_sec + timeout_usec / 1000000);
     umult32(timeout_usec % 1000000, 1000, &deadline.nano);
     taia_add(&deadline, &deadline, &now);
-    
+
     buffer_puts(buffer_2, "Deadline: ");
     buffer_puttai(buffer_2, &deadline.sec);
     buffer_putnlflush(buffer_2);
-
-
-
 
     io_waituntil(deadline);
 

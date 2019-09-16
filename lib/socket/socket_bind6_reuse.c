@@ -16,4 +16,3 @@ socket_bind6_reuse(int s, const char* ip, uint16 port, uint32 scope_id) {
 #endif
   return winsock2errno(socket_bind6(s, ip, port, scope_id));
 }
-

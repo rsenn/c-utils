@@ -16,4 +16,3 @@ strlist_count(const strlist* sl) {
   }
   return l;
 }
-

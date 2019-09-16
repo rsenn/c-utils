@@ -18,4 +18,3 @@ socket_tcp4b(void) {
     return -1;
   return s;
 }
-

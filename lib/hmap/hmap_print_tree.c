@@ -50,4 +50,3 @@ hmap_print_tree(HMAP_DB* hmap) {
   hmap_print_tree_tuple(hmap);
   return HMAP_SUCCESS;
 }
-

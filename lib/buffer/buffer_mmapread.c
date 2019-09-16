@@ -14,4 +14,3 @@ buffer_mmapread(buffer* b, const char* filename) {
   b->deinit = buffer_munmap;
   return 0;
 }
-

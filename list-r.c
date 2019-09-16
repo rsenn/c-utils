@@ -346,7 +346,7 @@ make_num(stralloc* out, size_t num, size_t width) {
 
 static void
 print_strarray(buffer* b, array* a) {
-  size_t i, n = array_length(a, sizeof(char *));
+  size_t i, n = array_length(a, sizeof(char*));
   char** x = array_start(a);
   for(i = 0; i < n; ++i) {
     char* s = x[i];
@@ -360,7 +360,7 @@ print_strarray(buffer* b, array* a) {
 
 static int
 fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
-  size_t i, n = array_length(a, sizeof(char *));
+  size_t i, n = array_length(a, sizeof(char*));
   char** x = array_start(a);
   int ret = FNM_NOMATCH;
   for(i = 0; i < n; ++i) {
@@ -710,7 +710,7 @@ main(int argc, char* argv[]) {
 #if WINDOWS
     {"separator", 1, 0, 's'},
 #endif
-    {0,0,0,0}};
+    {0, 0, 0, 0} };
 
 #if WINDOWS && defined(O_BINARY)
   setmode(STDOUT_FILENO, O_BINARY);

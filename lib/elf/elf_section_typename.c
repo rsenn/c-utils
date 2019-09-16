@@ -22,4 +22,3 @@ elf_section_typename(uint32 sh_type) {
                                       "NUM"};
   return types[sh_type];
 }
-

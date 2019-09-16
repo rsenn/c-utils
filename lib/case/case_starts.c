@@ -7,7 +7,8 @@ case_starts(const char* a, const char* b) {
   const char* t = b;
   for(;;) {
     unsigned char x, y;
-    if(!*t) return 1;
+    if(!*t)
+      return 1;
     x = *s - 'A';
     if(x <= 'Z' - 'A')
       x += 'a';
@@ -18,11 +19,12 @@ case_starts(const char* a, const char* b) {
       y += 'a';
     else
       y += 'A';
-    if(x != y) break;
-    if(!x) break;
+    if(x != y)
+      break;
+    if(!x)
+      break;
     ++s;
     ++t;
   }
   return 0;
 }
-

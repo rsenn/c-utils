@@ -29,4 +29,3 @@ path_dirname(const char* path, stralloc* dir) {
   stralloc_nul(dir);
   return dir->s;
 }
-

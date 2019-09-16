@@ -15,4 +15,3 @@ xml_attrnode(const char* name, size_t name_len, const char* value, size_t value_
   }
   return attr;
 }
-

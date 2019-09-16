@@ -17,4 +17,3 @@ fmt_strn(char* out, const char* in, size_t limit) {
   }
   return (size_t)(t - in);
 }
-

@@ -28,7 +28,7 @@ imult64() {
                "1:\n"
                "xorq %rax,%rax\n"
                /* the closing ret is renerated by gcc */
-               );
+  );
 }
 
 #else
@@ -70,4 +70,3 @@ imult64(int64 a, int64 b, int64* c) {
 
 #endif
 #endif /* SAFEMULT_NO_INLINE */
-

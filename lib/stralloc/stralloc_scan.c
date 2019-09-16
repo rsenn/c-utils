@@ -11,4 +11,3 @@ stralloc_scan(stralloc* out, const stralloc* in, size_t (*scan_function)(const c
   }
   return out->len;
 }
-

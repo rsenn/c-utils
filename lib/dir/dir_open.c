@@ -96,4 +96,3 @@ last_error_str() {
   return tmpbuf;
 }
 #endif
-

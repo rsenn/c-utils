@@ -25,4 +25,3 @@ buffer_freshen(buffer* b) {
   }
   return b->n - b->p;
 }
-

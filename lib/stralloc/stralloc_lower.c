@@ -5,4 +5,3 @@ void
 stralloc_lower(stralloc* sa) {
   byte_lower(sa->s, sa->len);
 }
-

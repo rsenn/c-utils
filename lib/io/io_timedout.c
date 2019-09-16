@@ -7,4 +7,3 @@ io_timedout(fd_t d) {
   taia_now(&now);
   return e && e->timeout.sec.x && taia_less(&e->timeout, &now);
 }
-

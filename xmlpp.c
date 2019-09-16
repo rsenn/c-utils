@@ -6,7 +6,7 @@
 #include "lib/xml.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
-#include "lib/mmap.h" 
+#include "lib/mmap.h"
 #include "lib/str.h"
 #include "lib/getopt.h"
 #include "lib/errmsg.h"
@@ -19,7 +19,7 @@ static int depth = 0, prev_closing = 0;
 static stralloc prev_element;
 static int quote_char = '"';
 static int one_line, indent = 2, compact, terminate;
-static stralloc indent_str; 
+static stralloc indent_str;
 
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
@@ -92,16 +92,14 @@ main(int argc, char* argv[]) {
   int ret;
   int c;
   int index = 0;
-  struct longopt opts[] = {
-      {"help", 0, NULL, 'h'},
-      {"single-quote", 0, &quote_char, '\''},
-      {"double-quote", 0, &quote_char, '"'},
-      {"one-line", 0, NULL, 'o'},
-      {"compact", 0, NULL, 'c'},
-      {"indent", 0, NULL, 'l'},
-      {"terminate", 0, NULL, 't'},
-      {0,0,0,0}
-  };
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"single-quote", 0, &quote_char, '\''},
+                           {"double-quote", 0, &quote_char, '"'},
+                           {"one-line", 0, NULL, 'o'},
+                           {"compact", 0, NULL, 'c'},
+                           {"indent", 0, NULL, 'l'},
+                           {"terminate", 0, NULL, 't'},
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

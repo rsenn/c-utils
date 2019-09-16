@@ -7,4 +7,3 @@ size_t
 str_find(const void* s, const void* what) {
   return str_findb(s, what, str_len(what));
 }
-

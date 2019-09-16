@@ -53,4 +53,3 @@ xml_find_all_attrs(xmlnode* node, const char* attrs) {
   strlist_free(&attrlist);
   return r;
 }
-

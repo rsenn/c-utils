@@ -12,4 +12,3 @@ coff_symbol_table(void* coff) {
 
   return r;
 }
-

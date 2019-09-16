@@ -12,4 +12,3 @@ stralloc_insertb(stralloc* sa, const char* s, size_t pos, size_t n) {
   sa->len += n;
   return 1;
 }
-

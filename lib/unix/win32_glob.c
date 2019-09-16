@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#if 0 //defined(MSVC) || defined(_MSC_VER)
+#if 0 // defined(MSVC) || defined(_MSC_VER)
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -95,4 +95,3 @@ int testmain(void)
 
 #endif
 #endif
-

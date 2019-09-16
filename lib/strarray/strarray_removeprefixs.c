@@ -23,4 +23,3 @@ strarray_removeprefixs(strarray* arr, const char* s) {
   }
   return 1;
 }
-

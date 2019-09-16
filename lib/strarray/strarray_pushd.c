@@ -10,4 +10,3 @@ strarray_pushd(strarray* arr, const char* s) {
   }
   return !!d;
 }
-

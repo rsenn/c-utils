@@ -11,4 +11,3 @@ slist_shifts(slink** list) {
   free(link);
   return 0;
 }
-

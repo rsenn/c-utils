@@ -6,4 +6,3 @@ io_timeout(fd_t d, tai6464 t) {
   if(e)
     e->timeout = t;
 }
-

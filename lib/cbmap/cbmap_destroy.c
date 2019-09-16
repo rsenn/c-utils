@@ -30,4 +30,3 @@ cbmap_destroy(cbmap_t* cmap_ptr) {
     *cmap_ptr = NULL;
   }
 }
-

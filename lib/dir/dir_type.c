@@ -61,7 +61,7 @@ dir_type(struct dir_s* d) {
     DIR* dh = dir_INTERNAL(d)->dir_handle;
 
     stralloc_init(&sa);
-        dir_path(d, &sa);
+    dir_path(d, &sa);
     stralloc_nul(&sa);
 
     if(lstat(sa.s, &st) != -1) {
@@ -79,8 +79,7 @@ dir_type(struct dir_s* d) {
     buffer_putnlflush(buffer_2);
 #endif
 
-
-//      printf("dh: %p __d_dirname: %s\n", dh, dh->__d_dirname);
+    //      printf("dh: %p __d_dirname: %s\n", dh, dh->__d_dirname);
 
     stralloc_free(&sa);
   }
@@ -90,4 +89,3 @@ dir_type(struct dir_s* d) {
 #endif
   return r;
 }
-

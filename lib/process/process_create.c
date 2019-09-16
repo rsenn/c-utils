@@ -16,7 +16,7 @@
 #endif
 
 #if WINDOWS_NATIVE
-#define PROCESS_STATUS_ERROR     -1       // process has entered an erroneous state
+#define PROCESS_STATUS_ERROR -1 // process has entered an erroneous state
 
 static const char*
 last_error_str() {
@@ -85,9 +85,11 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
       if(joined_argv.len)
         stralloc_catc(&joined_argv, ' ');
 
-      if(quote) stralloc_catc(&joined_argv, '"');
+      if(quote)
+        stralloc_catc(&joined_argv, '"');
       stralloc_cats(&joined_argv, arg);
-      if(quote) stralloc_catc(&joined_argv, '"');
+      if(quote)
+        stralloc_catc(&joined_argv, '"');
     }
     stralloc_nul(&joined_argv);
 
@@ -112,9 +114,9 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
 
     retval = CreateProcessA(filename,
                             joined_argv.s,
-                            &saAttr,          // process security attributes
-                            NULL,             // primary thread security attributes
-                            TRUE,             // handles are inherited
+                            &saAttr, // process security attributes
+                            NULL,    // primary thread security attributes
+                            TRUE,    // handles are inherited
                             /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to make GetExitCodeProcess() work?) */
                             CREATE_NO_WINDOW, // creation flags
                             NULL,
@@ -137,7 +139,6 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
   {
     int status;
 
-
     if((pid = fork()) == 0) {
       fd_t i;
       for(i = 0; i <= 2; ++i) {
@@ -151,10 +152,7 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
         errmsg_warn("execve failed: ", 0);
       exit(127);
     }
-
-
   }
 #endif
   return pid;
 }
-

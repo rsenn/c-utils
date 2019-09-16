@@ -21,4 +21,3 @@ tai_pack(char* s, const struct tai* t) {
   x >>= 8;
   s[0] = (char)x;
 }
-

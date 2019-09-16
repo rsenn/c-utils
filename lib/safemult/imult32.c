@@ -22,4 +22,3 @@ imult32(int32 a, int32 b, int32* c) {
 }
 #endif
 #endif /* SAFEMULT_NO_INLINE */
-

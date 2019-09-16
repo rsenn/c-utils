@@ -76,18 +76,22 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
   sigset_t set;
 #endif
 
-  if(flags & WRDE_REUSE) wordfree(we);
+  if(flags & WRDE_REUSE)
+    wordfree(we);
 
   if(flags & WRDE_NOCMD)
     for(i = 0; s[i]; i++) switch(s[i]) {
         case '\\':
-          if(!sq) i++;
+          if(!sq)
+            i++;
           break;
         case '\'':
-          if(!dq) sq ^= 1;
+          if(!dq)
+            sq ^= 1;
           break;
         case '"':
-          if(!sq) dq ^= 1;
+          if(!sq)
+            dq ^= 1;
           break;
         case '(':
           if(np) {
@@ -107,10 +111,12 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
         case '>':
         case '{':
         case '}':
-          if(!(sq | dq | np)) return WRDE_BADCHAR;
+          if(!(sq | dq | np))
+            return WRDE_BADCHAR;
           break;
         case '$':
-          if(sq) break;
+          if(sq)
+            break;
           if(s[i + 1] == '(' && s[i + 2] == '(') {
             i += 2;
             np += 2;
@@ -118,7 +124,8 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
           } else if(s[i + 1] != '(')
             break;
         case '`':
-          if(sq) break;
+          if(sq)
+            break;
           return WRDE_CMDSUB;
       }
 
@@ -129,13 +136,15 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
 
   i = wc;
   if(flags & WRDE_DOOFFS) {
-    if(we->we_offs > SSIZE_MAX / sizeof(void*) / 4) goto nospace;
+    if(we->we_offs > SSIZE_MAX / sizeof(void*) / 4)
+      goto nospace;
     i += we->we_offs;
   } else {
     we->we_offs = 0;
   }
 
-  if(pipe2(p, O_CLOEXEC) < 0) goto nospace;
+  if(pipe2(p, O_CLOEXEC) < 0)
+    goto nospace;
 
 #if !WINDOWS_NATIVE
   //__block_all_sigs(&set);
@@ -185,18 +194,21 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
     if(i + 1 >= l) {
       l += l / 2 + 10;
       tmp = realloc(wv, l * sizeof(char*));
-      if(!tmp) break;
+      if(!tmp)
+        break;
       wv = tmp;
     }
     wv[i++] = w;
     wv[i] = 0;
   }
-  if(!feof(f)) err = WRDE_NOSPACE;
+  if(!feof(f))
+    err = WRDE_NOSPACE;
 
   fclose(f);
   reap(pid);
 
-  if(!wv) wv = calloc(i + 1, sizeof *wv);
+  if(!wv)
+    wv = calloc(i + 1, sizeof *wv);
 
   we->we_wordv = wv;
   we->we_wordc = i;
@@ -228,11 +240,11 @@ wordexp(const char* s, wordexp_t* we, int flags) {
 void
 wordfree(wordexp_t* we) {
   size_t i;
-  if(!we->we_wordv) return;
+  if(!we->we_wordv)
+    return;
   for(i = 0; i < we->we_wordc; i++) free(we->we_wordv[we->we_offs + i]);
   free(we->we_wordv);
   we->we_wordv = 0;
   we->we_wordc = 0;
 }
 #endif
-

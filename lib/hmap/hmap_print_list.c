@@ -41,4 +41,3 @@ hmap_print_list(HMAP_DB* hmap) {
   hmap_print_list_tuple(hmap);
   return HMAP_SUCCESS;
 }
-

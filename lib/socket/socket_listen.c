@@ -32,4 +32,3 @@ socket_listen(int s, unsigned int backlog) {
   return listen(s, (int)backlog);
 #endif
 }
-

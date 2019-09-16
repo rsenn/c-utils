@@ -63,7 +63,7 @@ http_socket(http* h, int nonblock) {
 
   if(h->sock == -1)
     return -1;
-  
+
   if(nonblock)
     ndelay_on(h->sock);
   else
@@ -98,4 +98,3 @@ http_socket(http* h, int nonblock) {
 
   return 0;
 }
-

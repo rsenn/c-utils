@@ -8,6 +8,6 @@ vartab_print(int flags) {
   struct var* var;
 
   for(var = var_list; var; var = var->gnext)
-    if(var->child == NULL && (var->flags & flags) == flags) var_print(var, flags);
+    if(var->child == NULL && (var->flags & flags) == flags)
+      var_print(var, flags);
 }
-

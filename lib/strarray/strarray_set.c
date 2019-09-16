@@ -11,4 +11,3 @@ strarray_set(strarray* arr, size_t index, const char* s) {
   }
   return 0;
 }
-

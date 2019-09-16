@@ -10,4 +10,3 @@ stralloc_latin1_to_utf8(stralloc* out, const char* x, size_t n) {
 
   return out->len - start;
 }
-

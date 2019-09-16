@@ -11,4 +11,3 @@ strlist_sub(strlist* l, const strlist* o) {
   }
   return r;
 }
-

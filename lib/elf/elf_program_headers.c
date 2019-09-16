@@ -10,4 +10,3 @@ elf_program_headers(void* elf) {
              ELF_GET(elf, elf, ehdr, e_phentsize));
   return r;
 }
-

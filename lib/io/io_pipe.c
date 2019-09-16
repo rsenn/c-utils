@@ -40,4 +40,3 @@ io_pipe(fd_t* d) {
 #endif
   return 0;
 }
-

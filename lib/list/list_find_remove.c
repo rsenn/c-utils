@@ -1,8 +1,8 @@
 #include "../list.h"
 
 node*
-list_find_delete(list *l, int (*pred)(void*)) {
-  node *p;
+list_find_delete(list* l, int (*pred)(void*)) {
+  node* p;
 
   /* Loop through all links until we find the pointer */
   list_foreach(l, p) {
@@ -31,4 +31,3 @@ list_find_delete(list *l, int (*pred)(void*)) {
 
   return NULL;
 }
-

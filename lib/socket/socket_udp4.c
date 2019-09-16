@@ -22,4 +22,3 @@ socket_udp4(void) {
   }
   return s;
 }
-

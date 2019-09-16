@@ -25,7 +25,7 @@
    the POSIX shell variable name charset [0-9A-Z_a-z]
 
    BIG WARNING ONCE AGAIN: supply only valid names!!!!!!!!!! */
-#define reduce(c) \
+#define reduce(c)                                                                                                      \
   ((c) < 'A' ? (c) - '0' : ((c) <= 'Z' ? (c) - 'A' + 10 : ((c) < 'a' ? (c) - '_' + 36 : (c) - 'a' + 37)))
 
 size_t
@@ -55,7 +55,8 @@ var_lexhash(const char* v, VAR_HASH* h) {
     /* skip current char and exit if the variable name ends */
     p++;
 
-    if(*p == '\0' || *p == '=') break;
+    if(*p == '\0' || *p == '=')
+      break;
   }
   /* fill in next 6 bits on next iteration */
   while((shift -= 6) > -6);
@@ -64,4 +65,3 @@ var_lexhash(const char* v, VAR_HASH* h) {
 
   return (size_t)p - (size_t)v;
 }
-

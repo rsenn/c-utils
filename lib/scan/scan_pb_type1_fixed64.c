@@ -8,4 +8,3 @@ scan_pb_type1_fixed64(const char* in, size_t len, uint64* d) {
   uint64_unpack(in, d);
   return 8;
 }
-

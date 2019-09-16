@@ -11,4 +11,3 @@ iarray_get(iarray* ia, size_t pos) {
   }
   return 0;
 }
-

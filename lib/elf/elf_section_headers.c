@@ -10,4 +10,3 @@ elf_section_headers(void* elf) {
              ELF_GET(elf, elf, ehdr, e_shentsize));
   return r;
 }
-

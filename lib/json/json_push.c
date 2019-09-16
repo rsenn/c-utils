@@ -12,4 +12,3 @@ json_push(jsonval* arr, jsonval item) {
   }
   return 0;
 }
-

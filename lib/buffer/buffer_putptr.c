@@ -7,7 +7,8 @@ int
 buffer_putptr(buffer* b, void* ptr) {
   char buf[FMT_XLONG + 1];
   size_t n;
-  if(ptr == NULL) return buffer_puts(b, "(null)");
+  if(ptr == NULL)
+    return buffer_puts(b, "(null)");
 
   n = fmt_xlonglong(buf, (uint64)(intptr_t)ptr);
   buf[n] = '\0';
@@ -16,4 +17,3 @@ buffer_putptr(buffer* b, void* ptr) {
   buffer_puts(b, buf);
   return n + 2;
 }
-

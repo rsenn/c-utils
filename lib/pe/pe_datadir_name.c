@@ -23,4 +23,3 @@ pe_datadir_name(int i) {
     return names[i];
   return NULL;
 }
-

@@ -9,4 +9,3 @@ scan_eolskip(const char* s, size_t limit) {
     n += 1;
   return n;
 }
-

@@ -9,4 +9,3 @@ env_pick(void) {
   return environ[0];
 #endif
 }
-

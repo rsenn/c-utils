@@ -102,4 +102,3 @@ unittest_main() {
   assert(fmt_jsonescape(buf, "a\x81x", 3) == 4 && !memcmp(buf, "a\xc2\x81x", 4));
 }
 #endif
-

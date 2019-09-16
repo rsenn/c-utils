@@ -13,4 +13,3 @@ strlist_containsb(strlist* sl, const char* x, size_t len) {
   }
   return 0;
 }
-

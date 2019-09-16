@@ -10,11 +10,11 @@ str_istr(char* s, char* find) {
     len = str_len(find);
     do {
       do {
-        if((sc = *s++) == 0) return NULL;
+        if((sc = *s++) == 0)
+          return NULL;
       } while(sc != c);
     } while(str_case_diffn(s, find, len) != 0);
     s--;
   }
   return s;
 }
-

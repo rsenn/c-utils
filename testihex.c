@@ -5,7 +5,8 @@
 #include "lib/open.h"
 #include "lib/byte.h"
 
-int main() {
+int
+main() {
 
   static buffer input;
   const char* filename = "/home/roman/Sources/lc-meter/build/xc8/Debug/LC-meter.hex";
@@ -25,6 +26,4 @@ int main() {
   buffer_puts(buffer_2, "ret = ");
   buffer_putlong(buffer_2, ret);
   buffer_putnlflush(buffer_2);
-
-
 }

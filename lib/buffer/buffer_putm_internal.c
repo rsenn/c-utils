@@ -15,4 +15,3 @@ buffer_putm_internal(buffer* b, ...) {
   va_end(a);
   return r;
 }
-

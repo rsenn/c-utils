@@ -16,4 +16,3 @@ fmt_xlong(char* dest, unsigned long i) {
     }
   return len;
 }
-

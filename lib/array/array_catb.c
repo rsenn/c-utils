@@ -18,4 +18,3 @@ array_catb(array* to, const void* from, uint64 len) {
     goto fail;
   byte_copy(to->p + l, to->initialized - l, from);
 }
-

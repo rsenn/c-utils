@@ -11,7 +11,8 @@ var_setvint(const char* v, int i, int flags) {
 
   var->flags |= flags;
 
-  if(var->sa.a == 0) var->sa.s = NULL;
+  if(var->sa.a == 0)
+    var->sa.s = NULL;
 
   stralloc_copyb(&var->sa, v, var->len);
   stralloc_catc(&var->sa, '=');
@@ -20,4 +21,3 @@ var_setvint(const char* v, int i, int flags) {
   var->offset = var->len + 1;
   return var->sa.s;
 }
-

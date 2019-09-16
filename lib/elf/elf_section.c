@@ -9,4 +9,3 @@ elf_section(void* elf, void* shdr) {
   r.elem_size = 1;
   return r;
 }
-

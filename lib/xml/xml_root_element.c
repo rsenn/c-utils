@@ -12,4 +12,3 @@ xml_root_element(xmlnode* node) {
   }
   return NULL;
 }
-

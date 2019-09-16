@@ -38,4 +38,3 @@ cb_erase(critbit_tree* cb, const void* key, size_t keylen) {
     }
   }
 }
-

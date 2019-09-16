@@ -33,4 +33,3 @@ io_nonblock(fd_t d) {
       e->nonblock = 1;
 #endif
 }
-

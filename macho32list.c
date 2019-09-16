@@ -55,7 +55,8 @@ main(int argc, char** argv) {
         section = (macho_section*)(content + offset + sizeof(macho_segment_command));
         for(j = 0; j < segment->nsects; j++, section++) {
           section_index++;
-          if(!str_diff(section->sectname, "__text")) text_section_index = section_index;
+          if(!str_diff(section->sectname, "__text"))
+            text_section_index = section_index;
         }
         break;
       }
@@ -71,7 +72,8 @@ main(int argc, char** argv) {
         for(j = 0; j < table->nsyms; j++, symbol++) {
           int defined_in_section = 0;
 
-          if((symbol->n_type & MACHO_N_TYPE) == MACHO_N_SECT) defined_in_section = 1;
+          if((symbol->n_type & MACHO_N_TYPE) == MACHO_N_SECT)
+            defined_in_section = 1;
 
           if(defined_in_section && symbol->n_sect == text_section_index && symbol->n_type & MACHO_N_EXT) {
             char* name;

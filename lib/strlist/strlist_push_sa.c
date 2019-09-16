@@ -16,4 +16,3 @@ strlist_push_sa(strlist* sl, const stralloc* sa) {
   }
   return 0;
 }
-

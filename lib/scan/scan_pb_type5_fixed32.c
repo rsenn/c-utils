@@ -8,4 +8,3 @@ scan_pb_type5_fixed32(const char* in, size_t len, uint32* d) {
   uint32_unpack(in, d);
   return 4;
 }
-

@@ -39,7 +39,13 @@ alloc_free(void* x) {
 }
 #else
 
-void* alloc(size_t n) { return malloc(n); }
-void alloc_free(void* ptr) { return free(ptr); }
+void*
+alloc(size_t n) {
+  return malloc(n);
+}
+void
+alloc_free(void* ptr) {
+  return free(ptr);
+}
 
 #endif

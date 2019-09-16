@@ -19,4 +19,3 @@ socket_mcleave4(int s, const char ip[4]) {
   return -1;
 #endif
 }
-

@@ -27,4 +27,3 @@ fmt_fill(char* dest, size_t srclen, size_t padlen, size_t maxlen) {
   }
   return (size_t)(dest - olddest);
 }
-

@@ -7,4 +7,3 @@ stralloc_start(const stralloc* sa, const stralloc* prefix) {
   len = prefix->len;
   return (sa->len >= len) && byte_equal(prefix->s, len, sa->s);
 }
-

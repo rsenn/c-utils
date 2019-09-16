@@ -10,4 +10,3 @@ scan_line(const char* s, size_t limit) {
   }
   return (size_t)(t - s);
 }
-

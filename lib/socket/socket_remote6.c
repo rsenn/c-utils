@@ -57,4 +57,3 @@ socket_remote6(int s, char ip[16], uint16* port, uint32* scope_id) {
 #endif
   return 0;
 }
-

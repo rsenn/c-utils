@@ -20,4 +20,3 @@ scan_longlong(const char* src, int64* dest) {
   }
   return 0;
 }
-

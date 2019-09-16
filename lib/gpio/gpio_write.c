@@ -10,4 +10,3 @@ gpio_write(int const pin_nr, int const high) {
   }
   GPCLR[PIN_OFFSET(pin_nr)] = PIN_VAL(pin_nr);
 }
-

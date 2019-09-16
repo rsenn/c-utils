@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 
-
 static map_node_t*
 map_newnode(const char* key, void* value, int vsize) {
   map_node_t* node;
@@ -91,4 +90,3 @@ fail:
     free(node);
   return -1;
 }
-

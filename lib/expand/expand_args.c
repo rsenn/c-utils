@@ -7,7 +7,7 @@
  * returns count of argument nodes
  */
 int
-expand_args(union node* args, union node** nptr, struct vartab* varstack, char *argv[], int exitcode, int flags) {
+expand_args(union node* args, union node** nptr, struct vartab* varstack, char* argv[], int exitcode, int flags) {
   union node* arg;
   union node* n;
   int ret = 0;
@@ -20,7 +20,8 @@ expand_args(union node* args, union node** nptr, struct vartab* varstack, char *
       ret++;
     }
 
-    if(n == NULL) continue;
+    if(n == NULL)
+      continue;
 
     if(n->narg.flag & X_GLOB) {
       if((n = expand_glob(nptr, varstack, n->narg.flag & ~X_GLOB))) {
@@ -42,4 +43,3 @@ expand_args(union node* args, union node** nptr, struct vartab* varstack, char *
 
   return ret;
 }
-

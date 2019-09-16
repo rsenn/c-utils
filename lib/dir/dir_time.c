@@ -25,20 +25,20 @@ filetime_to_unix(const FILETIME* ft) {
 
 unsigned long
 dir_time(struct dir_s* d, int type) {
-  unsigned long  r = 0;
+  unsigned long r = 0;
 #if USE_READDIR
   const char* name = dir_INTERNAL(d)->dir_entry->d_name;
   stat_t st;
 
   lstat(name, &st);
 
-  switch (type) {
+  switch(type) {
     case D_TIME_CREATION: r = st.st_ctime; break;
     case D_TIME_ACCESS: r = st.st_atime; break;
     case D_TIME_MODIFICATION: r = st.st_mtime; break;
   }
 #elif WINDOWS
-  switch (type) {
+  switch(type) {
     case D_TIME_CREATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftCreationTime); break;
     case D_TIME_ACCESS: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastAccessTime); break;
     case D_TIME_MODIFICATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime); break;
@@ -47,4 +47,3 @@ dir_time(struct dir_s* d, int type) {
 
   return r;
 }
-

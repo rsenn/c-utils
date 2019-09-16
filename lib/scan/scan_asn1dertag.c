@@ -27,4 +27,3 @@ scan_asn1dertag(const char* src, size_t len, uint64* length) {
   }
   return 0;
 }
-

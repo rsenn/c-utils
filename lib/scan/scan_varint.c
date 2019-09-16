@@ -25,4 +25,3 @@ size_t scan_pb_type0_int(const char* dest, size_t len, uint64* l)
   return scan_varint(dest, len, l);
 }
 #endif
-

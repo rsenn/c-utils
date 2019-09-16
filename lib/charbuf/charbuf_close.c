@@ -10,6 +10,6 @@
 
 void
 charbuf_close(charbuf* b) {
-  if(b->fd > 2) close(b->fd);
+  if(b->fd > 2)
+    close(b->fd);
 }
-

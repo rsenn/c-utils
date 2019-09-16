@@ -12,4 +12,3 @@ str_lower(void* str) {
     ++s;
   }
 }
-

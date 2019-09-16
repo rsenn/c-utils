@@ -17,4 +17,3 @@ fmt_hexb(void* out, const void* d, unsigned int len) {
   }
   return len * 2;
 }
-

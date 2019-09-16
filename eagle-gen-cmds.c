@@ -102,7 +102,9 @@ struct ref {
     int pin;
   };
 };
-typedef struct pos { double x, y; } xy;
+typedef struct pos {
+  double x, y;
+} xy;
 struct wire {
   double x1, y1, x2, y2;
 };
@@ -1331,7 +1333,7 @@ main(int argc, char* argv[]) {
                            {"draw", 0, NULL, 'd'},
                            {"align", 0, NULL, 'a'},
                            {"align-by", 0, NULL, 'A'},
-                           {0,0,0,0}};
+                           {0, 0, 0, 0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "LdhaA:l:", opts, &index);

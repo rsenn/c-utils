@@ -24,8 +24,10 @@ var_setvsa(const char* name, stralloc* sa, int flags) {
     stralloc_cat(&var->sa, sa);
     stralloc_trunc(&var->sa, var->sa.len);
 
-    if(flags & V_FREESTR) stralloc_free(sa);
-    if(flags & (V_FREESTR | V_ZEROSA)) stralloc_zero(sa);
+    if(flags & V_FREESTR)
+      stralloc_free(sa);
+    if(flags & (V_FREESTR | V_ZEROSA))
+      stralloc_zero(sa);
   }
   /* variable currently has no controlable stralloc.. . */
   else {
@@ -49,4 +51,3 @@ var_setvsa(const char* name, stralloc* sa, int flags) {
   var->flags |= flags;
   return var->sa.s;
 }
-

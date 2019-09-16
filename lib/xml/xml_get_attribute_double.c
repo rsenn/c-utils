@@ -13,4 +13,3 @@ xml_get_attribute_double(xmlnode* node, const char* attr) {
   }
   return 0;
 }
-

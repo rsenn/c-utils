@@ -82,4 +82,3 @@ var_rndhash(const char* v, VAR_HASH* h) {
 
   return (size_t)v - (size_t)p;
 }
-

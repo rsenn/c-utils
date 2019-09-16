@@ -17,4 +17,3 @@ stralloc_write(int fd, const char* buf, size_t len, buffer* b) {
   }
   return 0;
 }
-

@@ -27,4 +27,3 @@ str_diffn(const char* a, const char* b, size_t limit) {
   }
   return j;
 }
-

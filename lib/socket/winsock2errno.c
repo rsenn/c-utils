@@ -80,4 +80,3 @@ int winsock2errno(long ret) {
   return ret;
 }*/
 #endif
-

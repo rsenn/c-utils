@@ -37,7 +37,7 @@ io_canwrite() {
 #else
        e->canwrite
 #endif
-           ) {
+    ) {
 #if defined(HAVE_SIGIO)
       e->next_write = alt_firstwrite;
       alt_firstwrite = r;
@@ -52,4 +52,3 @@ io_canwrite() {
   }
   return -1;
 }
-

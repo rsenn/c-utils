@@ -13,4 +13,3 @@ strlist_removeb(strlist* l, const char* x, size_t n) {
   }
   return 0;
 }
-

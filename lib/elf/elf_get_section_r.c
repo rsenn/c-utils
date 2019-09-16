@@ -7,4 +7,3 @@ elf_get_section_r(void* elf, const char* name) {
   r.end = r.start + r.elem_size;
   return r;
 }
-

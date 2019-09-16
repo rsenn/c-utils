@@ -25,4 +25,3 @@ stralloc_fmt_call(stralloc* out, stralloc_fmt_fn* fmt_function, void* av[4]) {
   stralloc_trunc(out, out->len);
   return n;
 }
-

@@ -16,4 +16,3 @@ rdir_close(rdir_t* d) {
     free(p);
   }
 }
-

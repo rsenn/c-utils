@@ -12,4 +12,3 @@ str_chr(const char* in, char needle) {
   }
   return (size_t)(t - in);
 }
-

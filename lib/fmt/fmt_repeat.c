@@ -11,4 +11,3 @@ fmt_repeat(char* dest, const char* src, int n) {
   }
   return i;
 }
-

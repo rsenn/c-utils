@@ -8,4 +8,3 @@ stralloc_trimr(stralloc* sa, const char* trimchars, unsigned int trimcharslen) {
 
   sa->len = byte_trimr(sa->s, sa->len, trimchars, trimcharslen);
 }
-

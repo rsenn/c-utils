@@ -36,8 +36,8 @@ ihex_read_data(ihex_record** pihr, const char* in, size_t n) {
       if((i = scan_xchar(x, &data[j])) != 2) {
         free(*pihr);
         *pihr = 0;
-          return 0;
-        }
+        return 0;
+      }
 
       x += i;
       n -= i;

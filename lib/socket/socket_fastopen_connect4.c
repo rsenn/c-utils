@@ -23,4 +23,3 @@ socket_fastopen_connect4(int s, const char* ip, uint16 port, const char* buf, si
   }
   return r;
 }
-

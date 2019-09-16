@@ -12,7 +12,7 @@ int
 wait_pids_nohang(int const* pids, unsigned int len, int* wstat) {
 #if WINDOWS_NATIVE
   DWORD exitcode = 0;
-  HANDLE *handles = LocalAlloc(LHND, sizeof(HANDLE) * len);
+  HANDLE* handles = LocalAlloc(LHND, sizeof(HANDLE) * len);
   unsigned int i;
   int ret;
 
@@ -24,8 +24,10 @@ wait_pids_nohang(int const* pids, unsigned int len, int* wstat) {
 
     ret = WaitForMultipleObjects(len, handles, FALSE, 0);
 
-    if(ret == WAIT_TIMEOUT) return 0;
-    if(ret == WAIT_FAILED) return -1;
+    if(ret == WAIT_TIMEOUT)
+      return 0;
+    if(ret == WAIT_FAILED)
+      return -1;
 
     for(i = 0; i < len; i++) {
       if(ret == WAIT_OBJECT_0 + i) {
@@ -46,11 +48,13 @@ wait_pids_nohang(int const* pids, unsigned int len, int* wstat) {
   for(;;) {
     int w;
     int r = wait_nohang(&w);
-    if(!r || (r == (int) -1)) return (int)r;
+    if(!r || (r == (int)-1))
+      return (int)r;
     {
       unsigned int i = 0;
       for(; i < len; i++)
-        if(r == pids[i]) break;
+        if(r == pids[i])
+          break;
       if(i < len) {
         *wstat = w;
         return 1 + i;
@@ -60,4 +64,3 @@ wait_pids_nohang(int const* pids, unsigned int len, int* wstat) {
   return -1;
 #endif
 }
-

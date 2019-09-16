@@ -20,4 +20,3 @@ path_absolute_sa(stralloc* sa) {
   stralloc_nul(sa);
   return ret;
 }
-

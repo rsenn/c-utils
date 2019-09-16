@@ -83,4 +83,3 @@ xml_find_all_1(xmlnode* node, int (*pred)(), const void* a1) {
 
 //  return ret;
 //}
-

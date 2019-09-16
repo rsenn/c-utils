@@ -8,4 +8,3 @@ byte_replace(char* x, size_t n, char before, char after) {
       x[i] = after;
   }
 }
-

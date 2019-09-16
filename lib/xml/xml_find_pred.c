@@ -101,4 +101,3 @@ xml_find_pred_n(xmlnode* node, int (*pred)(xmlnode*, const void*), int n, ...) {
 
   return ret;
 }
-

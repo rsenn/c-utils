@@ -14,4 +14,3 @@ io_eagain_write(fd_t d) {
 #endif
   }
 }
-

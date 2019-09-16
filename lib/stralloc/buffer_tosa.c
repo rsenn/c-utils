@@ -30,4 +30,3 @@ buffer_tosa(buffer* b, stralloc* sa) {
   b->deinit = 0;
   return 0;
 }
-

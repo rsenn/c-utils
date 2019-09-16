@@ -6,4 +6,3 @@ str_end(const char* a, const char* b) {
   a += str_len(a) - str_len(b);
   return str_equal(a, b);
 }
-

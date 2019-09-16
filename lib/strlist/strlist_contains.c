@@ -14,4 +14,3 @@ strlist_contains(strlist* sl, const char* s) {
   }
   return 0;
 }
-

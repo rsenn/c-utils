@@ -54,4 +54,3 @@ fmt_xmlescape(char* dest, unsigned int ch) {
   }
   return n;
 }
-

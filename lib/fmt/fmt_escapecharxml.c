@@ -44,4 +44,3 @@ size_t fmt_escapecharhtml(char* dest, unsigned int ch) __attribute__((__alias__(
 #endif
 
 #endif
-

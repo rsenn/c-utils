@@ -12,4 +12,3 @@ stralloc_reverse(stralloc* sa) {
     sa->s[sa->len - 1 - i] = tmp;
   }
 }
-

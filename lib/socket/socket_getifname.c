@@ -33,4 +33,3 @@ socket_getifname(uint32 _interface) {
   return "[unknown]";
 }
 #endif
-

@@ -82,4 +82,3 @@ open_temp(const char* tmpl) {
   }
   return res;
 }
-

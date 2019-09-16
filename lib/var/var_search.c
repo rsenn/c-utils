@@ -22,7 +22,8 @@ var_search(struct vartab* varstack, const char* v, struct search* context) {
   /* loop through tables */
   for(vartab = varstack; vartab; vartab = vartab->parent) {
     /* exact match always returns immediately */
-    if((var = vartab_search(vartab, v, context))) break;
+    if((var = vartab_search(vartab, v, context)))
+      break;
   }
 
   /* next time the context is used we have to
@@ -31,4 +32,3 @@ var_search(struct vartab* varstack, const char* v, struct search* context) {
   context->global = 1;
   return var;
 }
-

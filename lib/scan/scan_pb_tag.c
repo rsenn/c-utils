@@ -10,4 +10,3 @@ scan_pb_tag(const char* in, size_t len, size_t* fieldno, unsigned char* type) {
   *fieldno = (l >> 3);
   return n;
 }
-

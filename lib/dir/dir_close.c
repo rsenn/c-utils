@@ -15,7 +15,8 @@ dir_close(struct dir_s* d) {
     closedir(dir_INTERNAL(d)->dir_handle);
 #else
 #if USE_WIDECHAR
-    if(dir_INTERNAL(d)->tmpname) free(dir_INTERNAL(d)->tmpname);
+    if(dir_INTERNAL(d)->tmpname)
+      free(dir_INTERNAL(d)->tmpname);
 #endif
     FindClose((HANDLE)dir_INTERNAL(d)->dir_handle);
     free(dir_INTERNAL(d)->dir_path);
@@ -23,4 +24,3 @@ dir_close(struct dir_s* d) {
   }
   free(d->dir_int);
 }
-

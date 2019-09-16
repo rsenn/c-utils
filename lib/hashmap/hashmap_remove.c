@@ -29,4 +29,3 @@ hashmap_remove(hashmap* map, void* key) {
     current_node = current_node->next;
   }
 }
-

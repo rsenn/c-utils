@@ -12,4 +12,3 @@ scan_xlongn(const char* src, size_t n, unsigned long* dest) {
   *dest = l;
   return (size_t)(tmp - src);
 }
-

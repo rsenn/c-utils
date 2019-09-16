@@ -6,4 +6,3 @@ strlist_push_unique_sa(strlist* sl, const stralloc* sa) {
     return 0;
   return strlist_push_sa(sl, sa);
 }
-

@@ -23,4 +23,3 @@ json_tosa(jsonval val, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int)) {
 
   json_print(val, &b, p);
 }
-

@@ -2,7 +2,7 @@
 #include "../list.h"
 
 void
-list_move_head(list *from, list *to) {
+list_move_head(list* from, list* to) {
   /* Nothing in to-list */
   if(to->head == NULL) {
     /* Copy to to-list */
@@ -26,4 +26,3 @@ list_move_head(list *from, list *to) {
   from->head = NULL;
   from->tail = NULL;
 }
-

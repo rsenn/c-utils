@@ -236,7 +236,7 @@ main(int argc, char** argv) {
                            {"export-directory", 0, &print_export_dir, 'E'},
                            {"data-directory", 0, &print_data_dir, 'D'},
                            {"optional-header", 0, &print_opt_header, 'O'},
-                           {0,0,0,0}};
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

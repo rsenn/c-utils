@@ -20,4 +20,3 @@ elf_header_sections(void* elf) {
   }
   return 0;
 }
-

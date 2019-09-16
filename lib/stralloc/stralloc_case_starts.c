@@ -10,4 +10,3 @@ stralloc_case_starts(const stralloc* sa, const char* prefix) {
     return 0;
   return byte_case_equal(sa->s, prefix_len, prefix);
 }
-

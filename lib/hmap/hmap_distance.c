@@ -23,4 +23,3 @@ hmap_distance(TUPLE** it1, TUPLE** it2) {
 
   return -1;
 }
-

@@ -10,4 +10,3 @@ fmt_to_array(size_t (*func)(char*, const char*, size_t), array* a, const char* s
   } else
     array_fail(a);
 }
-

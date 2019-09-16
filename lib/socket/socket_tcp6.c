@@ -40,4 +40,3 @@ socket_tcp6(void) {
   }
   return s;
 }
-

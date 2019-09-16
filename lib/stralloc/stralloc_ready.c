@@ -29,4 +29,3 @@ stralloc_ready(stralloc* sa, size_t len) {
   sa->s = tmp;
   return 1;
 }
-

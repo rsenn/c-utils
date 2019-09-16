@@ -9,4 +9,3 @@ fmt_escapecharquotedprintableutf8(char* dest, unsigned int ch) {
   for(i = o = 0; i < j; ++i) o += fmt_escapecharquotedprintable(dest + o, (unsigned char)buf[i]);
   return o;
 }
-

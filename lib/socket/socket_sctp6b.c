@@ -57,4 +57,3 @@ socket_sctp6b(void) {
 
 #endif
 }
-

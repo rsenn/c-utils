@@ -25,4 +25,3 @@ taia_unpack(const char* s, struct taia* t) {
   x += (unsigned char)s[3];
   t->nano = x;
 }
-

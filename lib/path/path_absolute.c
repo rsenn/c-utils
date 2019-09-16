@@ -15,4 +15,3 @@ path_absolute(const char* path, stralloc* sa) {
   stralloc_copys(sa, path);
   return 0;
 }
-

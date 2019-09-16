@@ -17,4 +17,3 @@ omf_get_name(omf_record* rec, size_t idx) {
   r.end = r.start + r.elem_size;
   return r;
 }
-

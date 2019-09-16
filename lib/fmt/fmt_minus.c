@@ -9,4 +9,3 @@ fmt_minus(char* dest, int i) {
   }
   return 0;
 }
-

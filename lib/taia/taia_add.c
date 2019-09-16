@@ -16,4 +16,3 @@ taia_add(struct taia* t, const struct taia* u, const struct taia* v) {
     ++t->sec.x;
   }
 }
-

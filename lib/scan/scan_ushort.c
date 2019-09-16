@@ -33,4 +33,3 @@ scan_ushort(const char* src, unsigned short* dest) {
     (void)compileerror;
   }
 }
-

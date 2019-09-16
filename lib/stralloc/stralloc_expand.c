@@ -33,4 +33,3 @@ stralloc_expand(stralloc* sa) {
 #endif
   return n;
 }
-

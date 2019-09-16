@@ -18,4 +18,3 @@ strlist_pushb(strlist* sl, const char* s, size_t n) {
 
   return 1;
 }
-

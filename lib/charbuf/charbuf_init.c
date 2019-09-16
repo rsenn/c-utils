@@ -7,4 +7,3 @@ charbuf_init(charbuf* b, read_fn* op, fd_t fd) {
   b->op = op;
   b->fd = fd;
 }
-

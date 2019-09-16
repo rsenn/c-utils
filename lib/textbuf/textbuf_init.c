@@ -13,4 +13,3 @@ textbuf_init(buffer* b, buffer* src, size_t bufsize) {
     b->cookie = tb;
   }
 }
-

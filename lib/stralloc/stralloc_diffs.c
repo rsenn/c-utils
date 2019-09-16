@@ -20,4 +20,3 @@ stralloc_diffs(const stralloc* a, const char* b) {
   }
   return j;
 }
-

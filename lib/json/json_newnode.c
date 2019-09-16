@@ -11,4 +11,3 @@ json_newnode(jsondata type) {
   }
   return ret;
 }
-

@@ -9,4 +9,3 @@ fmt_ulong(char* dest, unsigned long i) {
     for(tmp = i, dest += len, len2 = len + 1; --len2; tmp /= 10) *--dest = (char)((tmp % 10) + '0');
   return len;
 }
-

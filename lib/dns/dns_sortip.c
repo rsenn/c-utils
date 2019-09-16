@@ -18,4 +18,3 @@ dns_sortip(char* s, unsigned int n) {
     byte_copy(s + (n << 2), 4, tmp);
   }
 }
-

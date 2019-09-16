@@ -9,4 +9,3 @@ charbuf_getc(charbuf* b, char* ch) {
   }
   return ret;
 }
-

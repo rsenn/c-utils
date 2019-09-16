@@ -15,4 +15,3 @@ vartab_pop(struct vartab* vartab) {
   assert(varstack);
   assert(vartab->parent != vartab);
 }
-

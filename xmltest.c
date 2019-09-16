@@ -22,7 +22,10 @@ put_str_escaped(buffer* b, const char* str) {
 }
 
 const char* node_types[] = {
-    "(null)", "XML_DOCUMENT", "XML_ELEMENT", "XML_TEXT",
+    "(null)",
+    "XML_DOCUMENT",
+    "XML_ELEMENT",
+    "XML_TEXT",
 };
 
 static int depth = 0;
@@ -31,21 +34,25 @@ int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   xmlnode* n;
   if(id == XML_TEXT) {
-    if(reader->closing) --depth;
+    if(reader->closing)
+      --depth;
     if(value && value->s)
       stralloc_nul(value);
     buffer_puts(buffer_1, node_types[id - 1]);
     buffer_puts(buffer_1, " \"");
     buffer_putsa(buffer_1, value);
     buffer_puts(buffer_1, "\"");
-  buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_1);
     return 1;
   }
-  if(id != XML_ELEMENT) return 1;
+  if(id != XML_ELEMENT)
+    return 1;
 
-  if(reader->closing) --depth;
+  if(reader->closing)
+    --depth;
   buffer_putm_4(buffer_1, node_types[id], " \"", name ? name->s : "", "\"");
-  if(value) buffer_putm_2(buffer_1, ", value=", value ? value->s : "");
+  if(value)
+    buffer_putm_2(buffer_1, ", value=", value ? value->s : "");
   buffer_puts(buffer_1, ", depth=");
   buffer_putlong(buffer_1, depth);
   buffer_puts(buffer_1, ", closing=");
@@ -53,7 +60,8 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
   buffer_puts(buffer_1, ", self_closing=");
   buffer_putlong(buffer_1, reader->self_closing);
   buffer_putnlflush(buffer_1);
-  if(!reader->closing && !reader->self_closing) ++depth;
+  if(!reader->closing && !reader->self_closing)
+    ++depth;
   return 1;
 }
 

@@ -15,4 +15,3 @@ linked_list_append(linked_list* list, void* data) {
 
   list->size++;
 }
-

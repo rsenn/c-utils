@@ -17,9 +17,8 @@ hmap_set(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_
 
     byte_copy(t->vals.val_chars, d_len, data);
     t->data_len = d_len;
-    
+
     return HMAP_SUCCESS;
   }
   return hmap_add(hmap_db, key, k_len, 1, HMAP_DATA_TYPE_CHARS, data, d_len);
 }
-

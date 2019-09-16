@@ -23,4 +23,3 @@ imult16(int16 a, int16 b, int16* c) {
 
 #endif
 #endif /* SAFEMULT_NO_INLINE */
-

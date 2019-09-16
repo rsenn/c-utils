@@ -9,4 +9,3 @@ scan_plusminus(const char* src, signed int* dest) {
   }
   return 0;
 }
-

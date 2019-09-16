@@ -12,4 +12,3 @@ strlist_append_sa(strlist* sl, const stralloc* sa) {
   }
   return 0;
 }
-

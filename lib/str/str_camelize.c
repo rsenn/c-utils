@@ -3,7 +3,7 @@
 
 size_t
 str_camelize(char* s) {
-  char *p,*x;
+  char *p, *x;
   for(x = p = s; *p; p++) {
     if(*p == '-') {
       *x++ = toupper(*++p);
@@ -14,4 +14,3 @@ str_camelize(char* s) {
   *x = '\0';
   return x - s;
 }
-

@@ -42,11 +42,8 @@ playlist_write_finish(buffer* b, playlist* pl) {
       break;
     }
     case UNKNOWN:
-    default: {
-               return 0;
-    }
+    default: { return 0; }
   }
   buffer_flush(b);
   return 1;
 }
-

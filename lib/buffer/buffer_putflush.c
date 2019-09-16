@@ -66,4 +66,3 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
     return -1;
   return 0;
 }
-
