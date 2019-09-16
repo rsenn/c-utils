@@ -7,7 +7,7 @@ json_tostring_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->indent = "";
   p->newline = "";
   p->spacing = " ";
-  p->quote = '"';
+  p->quote = "\"";
 };
 
 const char*
@@ -35,7 +35,7 @@ json_tostring(jsonval val, stralloc* sa) {
       if(json_isnull(val))
         stralloc_cats(sa, "null");
       else
-        json_tosa(val, sa, json_tostring_printer);
+        json_tosa(val, sa, (void*)&json_tostring_printer);
       break;
     }
   }

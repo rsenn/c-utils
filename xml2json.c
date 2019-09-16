@@ -271,7 +271,7 @@ main(int argc, char* argv[]) {
       {"tag", 0, NULL, 'T'},
       {"children", 0, NULL, 'C'},
       {"class", 0, NULL, 'N'},
-      {0},
+      {0,0,0,0}
   };
 
   errmsg_iam(argv[0]);

@@ -6,6 +6,7 @@
 
 #include "../socket_internal.h"
 #include <sys/types.h>
+#include <net/if.h>
 
 uint32
 socket_getifidx(const char* ifname) {

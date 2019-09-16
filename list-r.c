@@ -710,7 +710,7 @@ main(int argc, char* argv[]) {
 #if WINDOWS
     {"separator", 1, 0, 's'},
 #endif
-    {0} };
+    {0,0,0,0}};
 
 #if WINDOWS && defined(O_BINARY)
   setmode(STDOUT_FILENO, O_BINARY);

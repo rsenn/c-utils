@@ -21,7 +21,8 @@ expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack
   stralloc value;
   char* str = NULL;
   const char *v = NULL;
-  unsigned long argc, vlen = 0;
+  int argc;
+  unsigned long vlen = 0;
 
         for(argc = 0; argv[argc]; ++argc)
           ;
@@ -49,7 +50,7 @@ expand_param(struct nargparam* param, union node** nptr, struct vartab* varstack
 
       /* $@ substitution */
       case S_ARGVS: {
-        unsigned int i = 0;
+        int i = 0;
 
         while(i < argc) {
           param->flag &= ~S_SPECIAL;

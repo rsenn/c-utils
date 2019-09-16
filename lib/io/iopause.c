@@ -74,7 +74,7 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
       fd = x[i].fd;
       if(fd < 0)
         continue;
-      if(fd >= 8 * sizeof(fd_set))
+      if(fd >= (fd_t)(8 * sizeof(fd_set)))
         continue; /*XXX*/
 
       if(x[i].events & IOPAUSE_READ)

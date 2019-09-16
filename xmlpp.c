@@ -100,7 +100,7 @@ main(int argc, char* argv[]) {
       {"compact", 0, NULL, 'c'},
       {"indent", 0, NULL, 'l'},
       {"terminate", 0, NULL, 't'},
-      {0},
+      {0,0,0,0}
   };
 
   errmsg_iam(argv[0]);

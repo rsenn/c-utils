@@ -140,6 +140,9 @@ http_read_internal(http* h, char* buf, size_t len) {
   }
   if(r->status == HTTP_RECV_DATA) {
     switch(r->transfer) {
+	    case HTTP_TRANSFER_UNDEF: break;
+	    case HTTP_TRANSFER_BOUNDARY: break;
+		    
       case HTTP_TRANSFER_CHUNKED: {
         if(r->ptr == r->chunk_length) {
           size_t skip;
@@ -200,7 +203,7 @@ http_read(http* h, char* buf, size_t len, buffer* bf) {
       break;
       }
     }
-    if(b->n - b->p > bytes)
+    if(b->n - b->p > (unsigned long)bytes)
       //putnum("growbuf", (b->n - b->p) - bytes);
     //buffer_dump(buffer_2, b);
     if(h->response->status != HTTP_RECV_DATA)

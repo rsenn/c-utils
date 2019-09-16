@@ -101,7 +101,7 @@ parse_strlist(const char* x, ssize_t n, strlist* out) {
     return 0;
   x += 1;
   n -= 1;
-  for(; i = parse_string(x, n, &arg);) {
+  for(; (i = parse_string(x, n, &arg));) {
     strlist_push_sa(out, &arg);
     x += i, n -= i;
     if(byte_diff(x, 2, ", "))
@@ -167,6 +167,7 @@ parse_line(const char* x, ssize_t n) {
   buffer_putnlflush(buffer_2);
 #endif
   print_args(buffer_1, &args);
+  return 0;
 }
 
 void

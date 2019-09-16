@@ -236,7 +236,7 @@ main(int argc, char** argv) {
                            {"export-directory", 0, &print_export_dir, 'E'},
                            {"data-directory", 0, &print_data_dir, 'D'},
                            {"optional-header", 0, &print_opt_header, 'O'},
-                           {0}};
+                           {0,0,0,0}};
 
   errmsg_iam(argv[0]);
 
@@ -313,7 +313,7 @@ main(int argc, char** argv) {
           coff_print_data_directories(buffer_2, base, data_dir, num_dirs);
       }
 */
-      mmap_unmap(base, filesize);
+      mmap_unmap((void*)base, filesize);
     } else {
       errmsg_warn("ERROR opening '", argv[optind], "': ", 0);
       return 127;

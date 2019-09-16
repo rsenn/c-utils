@@ -69,7 +69,7 @@ void
 json_pretty_print(jsonval val, buffer* b) {
   stralloc out;
   stralloc_init(&out);
-  json_tosa(val, &out, &compact_printer);
+  json_tosa(val, &out, (void*)&compact_printer);
 
   if(out.len > 16384) {
     json_print(val, b, 0);
@@ -113,8 +113,7 @@ main(int argc, char* argv[]) {
     {"one-line", 0, NULL, 'o'},
     {"compact", 0, NULL, 'c'},
     {"indent", 0, NULL, 'l'},
-    {0},
-  };
+    {0,0,0,0}};
   
   errmsg_iam(argv[0]);
 

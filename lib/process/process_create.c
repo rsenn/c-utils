@@ -147,7 +147,7 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
         }
       }
 
-      if(execve(filename, argv, environ) == -1)
+      if(execve(filename, (char* const*)argv, environ) == -1)
         errmsg_warn("execve failed: ", 0);
       exit(127);
     }

@@ -37,8 +37,8 @@ output_hex(const char* x, int64 n, int offset, char space) {
   int64 i;
 
   for(i = 0; i < n; i += 16) {
-    int j;
-    int64 r = n - i < 16 ? n - i : 16;
+    size_t j;
+    uint64 r = n - i < 16 ? n - i : 16;
 
     if(n <= 16 || byte_count(&x[i], r, '\0') < r) {
 
@@ -123,7 +123,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
   buffer_bz2(&bextra, extra, 0);
 
   for(;;) {
-    uint64 len;
+    int64 len;
     if(!bsdiff_read_ctrl(&bctrl, &rec)) break;
 
 

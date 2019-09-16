@@ -407,7 +407,7 @@ parse_args(int argc, char* argv[]) {
 
 done:
   if(!ident)
-    ident = prognm;
+    ident = (char*)prognm;
 
 #ifndef NO_FTP
   /* some kind of ftp being forwarded? */

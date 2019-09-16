@@ -4,6 +4,7 @@
 #include "../safemult.h"
 #include "../uint64.h"
 #include "../str.h"
+#include "../alloc.h"
 
 int64
 strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char** x) {
@@ -16,7 +17,7 @@ strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char
     del = len - start;
 
   for(i = 0; i < del; i++)
-    free(s[i]);
+    alloc_free(s[i]);
 
   newlen = len - del + insert;
 

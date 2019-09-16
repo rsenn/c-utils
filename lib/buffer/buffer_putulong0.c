@@ -4,7 +4,7 @@
 int
 buffer_putulong0(buffer* b, unsigned long l, int pad) {
   char buf[FMT_ULONG];
-  size_t n = fmt_ulong(buf, l);
+  ssize_t n = fmt_ulong(buf, l);
   if(n < pad) {
     if(buffer_putnspace(b, pad - n) < 0) return -1;
   }

@@ -20,7 +20,7 @@ fmt_escapecharjson(char* dest, uint32 ch, char quote) {
   if(quote != '"' && quote != '\'')
     quote = '"';
 
-  if(ch != quote) {
+  if(ch != (uint32)(unsigned)quote) {
     if(ch == '\'' || ch == '"') {
       dest[0] = ch;
       return 1;

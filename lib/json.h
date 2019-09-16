@@ -104,57 +104,65 @@ json_str(jsonval* val) {
 
 static inline jsonval
 json_undefined() {
-  jsonval ret = {JSON_UNDEFINED};
+  jsonval ret;
+ ret.type  = JSON_UNDEFINED;
   return ret;
 }
 static inline jsonval
 json_null() {
-  jsonval ret = {JSON_OBJECT};
+  jsonval ret;
+ ret.type  = JSON_OBJECT;
   ret.dictv = 0;
   return ret;
 }
 static inline jsonval
 json_object() {
-  jsonval ret = {JSON_OBJECT};
+  jsonval ret;
+ ret.type = JSON_OBJECT;
   ret.dictv = 0;
   hmap_init(MAP_BUCKET, &ret.dictv);
   return ret;
 }
 static inline jsonval
 json_array() {
-  jsonval ret = {JSON_ARRAY};
+  jsonval ret;
+ ret.type = JSON_ARRAY;
   ret.listv = 0;
   return ret;
 }
 static inline jsonval
 json_double(double n) {
-  jsonval ret = {JSON_DOUBLE};
+  jsonval ret;
+  ret.type = JSON_DOUBLE;
   ret.doublev = n;
   return ret;
 }
 static inline jsonval
 json_int(int64 i) {
-  jsonval ret = {JSON_INT};
+  jsonval ret;
+ ret.type  = JSON_INT;
   ret.intv = i;
   return ret;
 }
 static inline jsonval
 json_bool(int b) {
-  jsonval ret = {JSON_BOOL};
+  jsonval ret;
+  ret.type = JSON_BOOL;
   ret.boolv = !!b;
   return ret;
 }
 static inline jsonval
 json_string(const char* s) {
-  jsonval ret = {JSON_STRING};
+  jsonval ret;
+ ret.type = JSON_STRING;
   ret.stringv.a = 1 + (ret.stringv.len = str_len(s));
   ret.stringv.s = (char*)str_ndup(s, ret.stringv.len);
-  0;
   return ret;
 }
 static inline jsonval
 json_stringn(const char* s, size_t n) {
-  jsonval ret = {JSON_STRING};
+  jsonval ret;
+ ret.type = JSON_STRING;
   ret.stringv.s = (char*)str_ndup(s, n);
   ret.stringv.len = n;
   ret.stringv.a = n + 1;

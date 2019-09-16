@@ -544,7 +544,7 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, 0);
   buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, 0);
-  buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, 0);
+  buffer_putm_internal(b, "GrÃ¶sse:\t", format_num(e->mbytes), "MB", sep, 0);
 
   /* buffer_putm_3(b, "URL:\t", url , sep);
    buffer_putm_5(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);

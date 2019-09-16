@@ -5,6 +5,7 @@ ssize_t
 ihex_read_buf(ihex_file* ihf, const char* in, size_t n) {
   const char *x = in, *end = in + n;
   ihex_record** recp = &ihf->records;
+  ssize_t ret = 0;
 
   *recp = 0;
 
@@ -18,5 +19,9 @@ ihex_read_buf(ihex_file* ihf, const char* in, size_t n) {
       ++x;
 
     recp = &((*recp)->next);
+    ret++;
+
   }
+
+  return ret;
 }

@@ -41,7 +41,7 @@ main(int argc, char* argv[]) {
 
     filename = argv[optarg];
 
-    dll = mmap_read(filename, &dllsz);
+    dll = (char*)mmap_read(filename, &dllsz);
     if(dll == NULL) return 1;
 
     dll_name = str_basename(filename);

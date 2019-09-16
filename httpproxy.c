@@ -1,4 +1,5 @@
 #include "lib/windoze.h"
+#include "lib/tai.h"
 #include "lib/buffer.h"
 #include "lib/socket.h"
 #include "lib/socket_internal.h"
@@ -49,7 +50,7 @@ read_hosts(const char* file) {
   stralloc hostname;
   stralloc_init(&hostname);
 
-  if((x = mmap_read(file, &n)) == 0)
+  if((x = (char*)mmap_read(file, &n)) == 0)
     return -1;
 
   str_foreach_skip(x, p, l + 1) {

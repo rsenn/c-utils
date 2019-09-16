@@ -228,7 +228,7 @@ main(int argc, char* argv[]) {
   if(path_exists(base_file(".env"))) {
     size_t n;
     char* x;
-    if((x = mmap_read(base.s, &n)))
+    if((x = (char*)mmap_read(base.s, &n)))
       read_env(x, n);
     mmap_unmap(x, n);
   }

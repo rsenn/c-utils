@@ -409,7 +409,7 @@ path_wildcard(stralloc* sa, const char* wildchar) {
  */
 int
 extract_build_type(const stralloc* s) {
-  int i;
+  size_t i;
 
   for(i = 0; i < sizeof(build_types) / sizeof(build_types[0]); ++i) {
     if(stralloc_contains(s, build_types[i]))
@@ -1290,7 +1290,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
   strarray_foreach(sources, srcfile) {
     size_t n;
-    char* x;
+    const char* x;
 
     if((x = mmap_read(*srcfile, &n)) != 0) {
       const char* s;
@@ -2623,7 +2623,7 @@ output_make_rule(buffer* b, target* rule) {
     stralloc_free(&prereq);
   }
 
-  if(&rule->recipe) {
+  if(rule->recipe.s) {
     stralloc cmd;
     stralloc_init(&cmd);
 
@@ -3716,7 +3716,7 @@ main(int argc, char* argv[]) {
                            {"build-as-lib", 0, 0, 'L'},
                            {"cross", 0, 0, 'c'},
                            {"chip", 1, 0, 'p'},
-                           {0}};
+                           {0,0,0,0}};
 
   errmsg_iam(argv[0]);
 #ifdef _MSC_VER
@@ -3880,7 +3880,7 @@ main(int argc, char* argv[]) {
   stralloc_replacec(&toks.sa, '-', '\0');
 
   strlist_foreach_s(&toks, s) {
-    int i;
+    size_t i;
     if(set_compiler_type(s)) {
       compiler = s;
       break;

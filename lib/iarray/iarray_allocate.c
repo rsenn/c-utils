@@ -80,7 +80,7 @@ iarray_allocate(iarray* ia, size_t pos) {
   {
     size_t l;
     do {
-      l = (size_t)__CAS(&ia->len, prevlen, realpos);
+      l = (size_t)__CAS((long *)&ia->len, prevlen, realpos);
     } while(l < realpos);
   }
   return &iarray_data(*p)[(pos - index) * ia->elemsize];

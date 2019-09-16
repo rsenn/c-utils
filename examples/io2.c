@@ -18,18 +18,18 @@ main() {
     if(flageof && writepos >= readpos)
       return 0;
 
-    if(!flageof && readpos < sizeof buf)
+    if(!flageof && readpos < (int64)sizeof(buf))
       io_wantread(0);
     if(writepos < readpos)
       io_wantwrite(1);
     io_wait();
-    if(!flageof && readpos < sizeof buf)
+    if(!flageof && readpos < (int64)sizeof(buf))
       io_dontwantread(0);
     if(writepos < readpos)
       io_dontwantwrite(1);
 
-    if(!flageof && readpos < sizeof buf) {
-      r = io_tryread(0, buf + readpos, sizeof buf - readpos);
+    if(!flageof && readpos < (int64)sizeof(buf)) {
+      r = io_tryread(0, buf + readpos, (int64)sizeof(buf) - readpos);
       if(r <= -2)
         return 111; /* read error other than EAGAIN */
       if(r == 0)

@@ -333,13 +333,13 @@ main(int argc, char* argv[]) {
   if(path_exists(base_file(".env"))) {
     size_t n;
     char* x;
-    if((x = mmap_read(real.s, &n)))
+    if((x = (char*)mmap_read(real.s, &n)))
       read_env(x, n);
     mmap_unmap(x, n);
   }
 
   strarray_init(&v);
-  strarray_from_argv(argc, argv, &v);
+  strarray_from_argv(argc, (const char *const *)argv, &v);
 
 
 
@@ -471,7 +471,7 @@ main(int argc, char* argv[]) {
   av = strlist_to_argv(&opts);
 
   errno = 0;
-  ret = process_create(realcmd.s, av, 0, 0);
+  ret = process_create(realcmd.s, (const char**)av, 0, 0);
   //ret = execvp(realcmd.s, av);
 
   if(ret == -1) {

@@ -486,7 +486,7 @@ main(int argc, char* argv[]) {
     {"print-errors", 0, &mode, PKGCFG_PRINT_ERR},
 	{"short-errors", 0, &mode, PKGCFG_SHORT_ERR},
 	{"exists", 0, &mode, PKGCFG_EXISTS},
-    {0},
+    {0,0,0,0},
   };
   
   errmsg_iam(argv[0]);

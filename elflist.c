@@ -104,7 +104,7 @@ main(int argc, char** argv) {
                            {"defined", 0, &list_defined, 'D'},
                            {"undefined", 0, &list_undefined, 'U'},
   {"file-header", 0, 0, 'F'},
-                           {0}};
+                           {0,0,0,0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "hDUF", opts, &index);

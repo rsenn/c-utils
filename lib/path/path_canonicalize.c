@@ -4,7 +4,9 @@
 #include "../path_internal.h"
 #include "../readlink.h"
 
+#ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 1
+#endif
 #define _XOPEN_SOURCE_EXTENDED 1
 #define _MISC_SOURCE 1
 #define _GNU_SOURCE 1
@@ -154,7 +156,7 @@ start:
     if(is_link(sa->s)) {
       ret++;
       /* read the link, return if failed and then nul-terminate the buffer */
-      if((n = readlink(sa->s, buf, PATH_MAX)) == -1)
+      if((ssize_t)(n = readlink(sa->s, buf, PATH_MAX)) == (ssize_t)-1)
         return 0;
       // buf[n] = '\0';
       /* if the symlink is absolute we clear the stralloc,

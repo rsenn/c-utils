@@ -1,8 +1,8 @@
 #include "../buffer.h"
-#include <ctype.h>
+#include "../byte.h"
 
 static int
-is_space(char c) {
+is_space(int c) {
   return byte_chr(" \t\v\r\n\0", 6, c) < 6;
 }
 

@@ -1,6 +1,7 @@
 #define USE_WS2_32 1
 #include "../socket_internal.h"
 #include "../socket.h"
+#include "../scan.h"
 #include "../buffer.h"
 #include "../byte.h"
 #include "../dns.h"

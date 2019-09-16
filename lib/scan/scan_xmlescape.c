@@ -1,5 +1,6 @@
 #include "../scan.h"
 #include "../str.h"
+#include "../uint8.h"
 
 size_t
 scan_xmlescape(const char* src, char* dest) {
@@ -40,13 +41,13 @@ scan_xmlescape(const char* src, char* dest) {
       *dest = '\'';
       return n + 5;
     } else if(!str_diffn(&src[n], "nbsp;", 5)) {
-      *dest = 160;
+      *(uint8*)dest = 160;
       return n + 5;
     } else if(!str_diffn(&src[n], "laquo;", 6)) {
-      *dest = 171;
+      *(uint8*)dest = 171;
       return n + 6;
     } else if(!str_diffn(&src[n], "raquo;", 6)) {
-      *dest = 187;
+      *(uint8*)dest = 187;
       return n + 6;
     }
   }

@@ -12,7 +12,7 @@ strarray_glob(strarray* arr, const char* pattern) {
   glob_t g;
 
   if((r = glob(pattern, GLOB_ERR, &strarray_glob_error, &g)) == 0) {
-    size_t i;
+    ssize_t i;
 
     for(i = 0; i < g.gl_pathc; ++i) {
       strarray_push(arr, g.gl_pathv[i]);

@@ -8,15 +8,15 @@
 #include <assert.h>
 
 static void
-depth_fn(jsonval* v, int* arg, int depth) {
+depth_fn(const jsonval* v, int* arg, int depth) {
   if(*arg < depth)
     *arg = depth;
 }
 
 static int
-get_depth(jsonval* v) {
+get_depth(const jsonval* v) {
   int depth = -1;
-  json_recurse(v, depth_fn, &depth);
+  json_recurse((jsonval*)v, depth_fn, &depth);
   return depth;
 }
 
@@ -108,7 +108,7 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
       buffer_puts(b, ":");
       json_print_separator(val, b, JSON_FMT_SPACING, &printer);
 
-      json_print_val(t->vals.val_chars, b, depth, p);
+      json_print_val(val, b, depth, p);
 
       if(!last) {
         json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);

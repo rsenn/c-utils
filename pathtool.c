@@ -226,7 +226,7 @@ main(int argc, char* argv[]) {
                            {"windows", 0, NULL, 'w'},
                            {"absolute", 0, NULL, 'a'},
                            {"canonicalize", 0, NULL, 'f'},
-                           {0}};
+                           {0,0,0,0}};
 
   errmsg_iam(argv[0]);
 

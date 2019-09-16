@@ -44,7 +44,7 @@ main(int argc, char** argv) {
       case MACHO_LC_SEGMENT: {
         macho_segment_command* segment;
         macho_section* section;
-        int j;
+        size_t j;
 
         segment = (macho_segment_command*)(content + offset);
         if(!!str_diff(segment->segname, "__TEXT")) {
@@ -63,7 +63,7 @@ main(int argc, char** argv) {
         macho_symtab_command* table;
         macho_nlist* symbol;
         char* string_table;
-        int j;
+        size_t j;
 
         table = (macho_symtab_command*)(content + offset);
         symbol = (macho_nlist*)(content + table->symoff);

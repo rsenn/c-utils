@@ -1331,7 +1331,7 @@ main(int argc, char* argv[]) {
                            {"draw", 0, NULL, 'd'},
                            {"align", 0, NULL, 'a'},
                            {"align-by", 0, NULL, 'A'},
-                           {0}};
+                           {0,0,0,0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "LdhaA:l:", opts, &index);

@@ -9,7 +9,9 @@
 
 /* http://delegate.uec.ac.jp:8081/club/mma/~shimiz98/misc/sendfile.html */
 
+#ifndef _LARGEFILE64_SOURCE
 #define _LARGEFILE64_SOURCE
+#endif
 #define _FILE_OFFSET_BITS 64
 #include "../io_internal.h"
 
