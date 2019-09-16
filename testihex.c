@@ -8,7 +8,7 @@ int main() {
   const char* filename = "/home/roman/Sources/lc-meter/build/xc8/Debug/LC-meter.hex";
   static stralloc sa;
   size_t sz = 0;
-  const char* x = mmap_private(filename, &sz);
+  const char* x = mmap_read(filename, &sz);
 
   buffer_mmapread(&input, filename);
   buffer_getline_sa(&input, &sa);

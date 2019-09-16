@@ -342,7 +342,7 @@ target_link_libraries(xml buffer array strlist hmap alloc)
 target_link_libraries(json slist hmap stralloc buffer alloc)
 target_link_libraries(ndelay socket)
 target_link_libraries(process wait errmsg)
-target_link_libraries(ihex scan)
+target_link_libraries(ihex scan byte)
 
 
 set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )

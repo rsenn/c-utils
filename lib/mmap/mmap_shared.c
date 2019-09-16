@@ -4,9 +4,9 @@
 #else
 #include <unistd.h>
 #include <sys/mman.h>
-#include "open.h"
+#include "../open.h"
 #endif
-#include "mmap.h"
+#include "../mmap.h"
 
 extern char*
 mmap_shared(const char* filename, size_t* filesize) {
