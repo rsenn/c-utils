@@ -1573,7 +1573,7 @@ endif
 
 
 $(BUILDDIR)testihex$(M64_)$(EXEEXT): LIBS += -lz
-$(BUILDDIR)testihex$(M64_)$(EXEEXT): $(BUILDDIR)testihex.o $(call add-library,ihex stralloc buffer mmap scan fmt open byte)
+$(BUILDDIR)testihex$(M64_)$(EXEEXT): $(BUILDDIR)testihex.o $(call add-library,ihex alloc stralloc buffer mmap scan fmt open byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
