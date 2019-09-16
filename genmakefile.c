@@ -1206,7 +1206,14 @@ add_include_dir(const char* dir) {
   stralloc_copys(&absolute, dir);
   path_absolute_sa(&absolute);
   stralloc_nul(&absolute);
-  strlist_push_unique(&include_dirs, absolute.s);
+  if(strlist_push_unique(&include_dirs, absolute.s)) {
+#ifdef DEBUG_OUTPUT
+
+    buffer_puts(buffer_2, "Added to include_dirs: ");
+    buffer_putsa(buffer_2, &absolute);
+    buffer_putnlflush(buffer_2);
+#endif
+  }
   stralloc_free(&absolute);
 }
 
@@ -1216,13 +1223,20 @@ include_dirs_to_cppflags() {
   stralloc_init(&arg);
   const char* dir;
   strlist_foreach_s(&include_dirs, dir) {
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "outdir: ");
+    buffer_puts(buffer_2, outdir.sa.s);
+    buffer_putnlflush(buffer_2);
+#endif
     stralloc_zero(&arg);
     path_relative(dir, outdir.sa.s, &arg);
-    
-    buffer_puts(buffer_2, "Adding includedir: ");
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "include_dir: ");
     buffer_putsa(buffer_2, &arg);
     buffer_putnlflush(buffer_2);
-
+#endif
     stralloc_prepends(&arg, "-I");
     push_var_sa("CPPFLAGS", &arg);
   }
@@ -3705,7 +3719,7 @@ main(int argc, char* argv[]) {
                            {"no-create-objs", 0, &no_objs, 1},
                            {"no-create-bins", 0, &no_bins, 1},
                            {"install", 0, 0, 'i'},
-                           {"includedir", 1, 0, 'I'},
+                           {"includedir", 0, 0, 'I'},
                            /*                           {"install-bins", 0, &inst_bins, 1},
                                                      {"install-libs", 0, &inst_libs, 1},*/
                            {"builddir", 1, 0, 'd'},
@@ -3759,7 +3773,13 @@ main(int argc, char* argv[]) {
           set_chip(optarg);
         break;
       case 'l': strarray_push(&libs, optarg); break;
-      case 'I': strarray_push(&includes, optarg); break;
+      case 'I': {
+        buffer_puts(buffer_2, "Add -I: ");
+        buffer_puts(buffer_2, optarg);
+        buffer_putnlflush(buffer_2);
+        strarray_push(&includes, optarg);
+        break;
+      }
       case 'i':
         inst_bins = 1;
         inst_libs = 1;
