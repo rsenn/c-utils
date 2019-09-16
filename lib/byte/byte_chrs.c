@@ -5,10 +5,10 @@
 size_t
 byte_chrs(const void* haystack, size_t len, char needle[], size_t nl) {
   const char* s = haystack;
-  const char* t = s + len;
+  const char* end = haystack + len;
 
   for(;;) {
-    if(s == t) break;
+    if(s == end) break;
     if(byte_chr(needle, nl, *s) < nl)
 	    break;
     ++s;

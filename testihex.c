@@ -1,6 +1,9 @@
 #include "lib/ihex.h"
 #include "lib/buffer.h"
 #include "lib/stralloc.h"
+#include "lib/mmap.h"
+#include "lib/open.h"
+#include "lib/byte.h"
 
 int main() {
 

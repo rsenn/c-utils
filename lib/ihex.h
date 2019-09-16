@@ -5,16 +5,18 @@
 #include "uint16.h"
 #include "slist.h"
 
-struct ihex_record_s;
 
-typedef struct {
+struct ihex_record_s;
+struct ihex_record_s {
   struct ihex_record_s* next;
   uint8 reclen;
   uint16 offset;
   uint8 rectyp;
   uint8 checksum;
-  uint8 data[0];
-} ihex_record;
+  uint8 data[];
+};
+
+typedef struct ihex_record_s ihex_record;
 
 typedef struct {
   ihex_record* records;
