@@ -45,7 +45,7 @@ alloc(size_t n) {
 }
 void
 alloc_free(void* ptr) {
-  return free(ptr);
+  free(ptr);
 }
 
 #endif
