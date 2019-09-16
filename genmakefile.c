@@ -34,6 +34,7 @@ extern buffer* optbuf;
 #define DEFAULT_LIBEXT ".lib"
 #define DEFAULT_LIBPFX ""
 #define DEFAULT_EXEEXT ".exe"
+#define DEFAULT_PPSEXT ".pp.c"
 #else
 #define MAX_CMD_LEN 8191
 
@@ -41,6 +42,7 @@ extern buffer* optbuf;
 #define DEFAULT_LIBEXT ".a"
 #define DEFAULT_LIBPFX "lib"
 #define DEFAULT_EXEEXT ""
+#define DEFAULT_PPSEXT ".pp.c"
 #endif
 
 #if WINDOWS_NATIVE
@@ -105,11 +107,12 @@ const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "D
 typedef void(linklib_fmt)(const char*, stralloc*);
 
 static strarray srcs;
-static stralloc compile_command, lib_command, link_command, mkdir_command, delete_command;
+static stralloc preprocess_command, compile_command, lib_command, link_command, mkdir_command, delete_command;
 static const char* objext = DEFAULT_OBJEXT;
 static const char* libext = DEFAULT_LIBEXT;
 static const char* libpfx = DEFAULT_LIBPFX;
 static const char* binext = DEFAULT_EXEEXT;
+static const char* ppsext = DEFAULT_PPSEXT;
 
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 static const char* comment = "#";
@@ -127,7 +130,7 @@ static int no_objs = 0, no_libs = 0, no_bins = 0;
 
 static HMAP_DB *sourcedirs, *rules, *vars;
 
-static const char *toolchain, *compiler, *make;
+static const char *toolchain, *compiler, *make, *preproc;
 static const char* newline = "\n";
 static machine_type mach;
 static system_type sys;
@@ -354,15 +357,15 @@ path_extension(const char* in, stralloc* out, const char* ext) {
 }
 
 /**
- * @brief path_object  Convert source file name to object file name
+ * @brief path_output  Convert source file name to object file name
  * @param in
  * @param out
  * @return
  */
 char*
-path_object(const char* in, stralloc* out) {
+path_output(const char* in, stralloc* out, const char* ext) {
   path_prefix_b(&workdir.sa, "", 0, out);
-  return path_extension(str_basename(in), out, objext);
+  return path_extension(str_basename(in), out, ext);
 }
 
 /**
@@ -1990,7 +1993,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
   size_t len;
 
   stralloc_init(&target);
-  path_object("%", &target);
+  path_output("%", &target, objext);
   stralloc_cats(&target, ": ");
 
   stralloc_init(&srcs);
@@ -2015,7 +2018,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
     stralloc_replacec(&srcs, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
     stralloc_zero(&obj);
-    path_object(src->name, &obj);
+    path_output(src->name, &obj, objext);
 
     if(str_start(make, "g") || ((shell | batch) && batchmode)) {
       stralloc_cat(&target, &srcs);
@@ -2092,7 +2095,8 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
  * @return
  */
 target*
-gen_simple_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
+gen_simple_compile_rules(
+    HMAP_DB* rules, sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd) {
   sourcefile* src;
   stralloc obj;
   stralloc_init(&obj);
@@ -2106,17 +2110,17 @@ gen_simple_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir) {
 
     base = str_basename(src->name);
 
-    if(!str_equal(base + str_rchr(base, '.'), ".c"))
+    if(!str_equal(base + str_rchr(base, '.'), fromext))
       continue;
 
     stralloc_zero(&obj);
-    path_object(base, &obj);
+    path_output(base, &obj, toext);
 
     if((rule = get_rule_sa(&obj))) {
       add_srcpath(&rule->prereq, src->name);
 
       if(rule->recipe.s == NULL) {
-        stralloc_weak(&rule->recipe, &compile_command);
+        stralloc_weak(&rule->recipe, cmd);
 
         array_catb(&srcdir->rules, &rule, sizeof(target*));
       }
@@ -2147,10 +2151,16 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
   // debug_sa("lib_rule_for_sourcedir", &sa);
 
-  if((str_start(make, "g") || batchmode) && mach.arch != PIC)
+  if((str_start(make, "g") || batchmode) && mach.arch != PIC) {
     dep = gen_srcdir_compile_rules(rules, srcdir, name);
-  else
-    dep = gen_simple_compile_rules(rules, srcdir, name);
+  } else {
+    if(0 && preproc) {
+      gen_simple_compile_rules(rules, srcdir, name, ".c", ppsext, &preprocess_command);
+      dep = gen_simple_compile_rules(rules, srcdir, name, ppsext, objext, &compile_command);
+    } else {
+      dep = gen_simple_compile_rules(rules, srcdir, name, ".c", objext, &compile_command);
+    }
+  }
 
   if((rule = get_rule_sa(&sa))) {
     sourcefile* pfile;
@@ -2162,7 +2172,8 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
       strlist_cat(&rule->prereq, &dep->output);
       /*      strlist_foreach(&dep->output, s, n) {
               stralloc_zero(&sa);
-              path_object(s, &sa);
+              path_output(s, &sa, objext);
+
               add_path_sa(&rule->prereq, &sa);
             }
       */
@@ -2176,7 +2187,7 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
         if(!str_end(pfile->name, ".c"))
           continue;
         stralloc_zero(&sa);
-        path_object(pfile->name, &sa);
+        path_output(pfile->name, &sa, objext);
         add_path_sa(&rule->prereq, &sa);
       }
     }
@@ -2288,19 +2299,20 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
   const char *x, *link_lib;
   char** srcfile;
   strlist incs, libs, deps, indir;
-  stralloc dir, obj, bin;
+  stralloc dir, ppsrc, obj, bin;
 
   strlist_init(&incs, ' ');
   strlist_init(&libs, ' ');
   strlist_init(&deps, ' ');
   strlist_init(&indir, ' ');
   stralloc_init(&dir);
+  stralloc_init(&ppsrc);
   stralloc_init(&obj);
   stralloc_init(&bin);
   all = get_rule("all");
 
   strarray_foreach(sources, srcfile) {
-    target *compile, *link;
+    target *preprocess, *compile, *link;
     sourcedir* srcdir;
 
     strlist_zero(&incs);
@@ -2308,24 +2320,30 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
     strlist_zero(&deps);
     strlist_zero(&indir);
 
+    stralloc_zero(&ppsrc);
     stralloc_zero(&obj);
 
     if(has_main(*srcfile) == 1) {
 
       path_dirname(*srcfile, &dir);
-
       srcdir = get_sourcedir_sa(&dir);
 
       //      gen_compile_rules(rules, srcdir, dir.s);
 
-      path_object(*srcfile, &obj);
+      if(preproc) {
+        path_output(*srcfile, &ppsrc, ppsext);
+      }
+     path_output(*srcfile, &obj, objext);
+
+      if(preproc && (preprocess = get_rule_sa(&ppsrc))) {
+        add_srcpath(&preprocess->prereq, *srcfile);
+        stralloc_weak(&preprocess->recipe, &preprocess_command);
+      }
 
       if((compile = get_rule_sa(&obj))) {
 
         get_includes(*srcfile, &incs, 0);
-
-        add_srcpath(&compile->prereq, *srcfile);
-
+        add_srcpath(&compile->prereq, preproc ? ppsrc.s : *srcfile);
         stralloc_weak(&compile->recipe, &compile_command);
 
         /*        stralloc_nul(&incs);
@@ -2348,7 +2366,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
         slink_foreach(srcdir->sources, pfile) {
           if(!pfile->has_main) {
             stralloc_zero(&obj);
-            path_object(pfile->name, &obj);
+            path_output(pfile->name, &obj, objext);
 
             get_includes(pfile->name, &incs, 0);
 
@@ -3006,6 +3024,8 @@ set_compiler_type(const char* compiler) {
   set_command(&lib_command, "$(LIB) /out:$@", "$^");
   set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o \"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
+  set_command(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) -o\"$@\"", "$<");
+
   if(build_type == BUILD_TYPE_DEBUG) {
     push_var("CPPFLAGS", "-DDEBUG=1");
   } else {
@@ -3435,7 +3455,7 @@ set_compiler_type(const char* compiler) {
         set_var("MACH", "pic16");
     }
     set_var("CFLAGS", "--use-non-free");
-    if(mach.bits == _16) 
+    if(mach.bits == _16)
       push_var("CFLAGS", "--pstack-model=large");
 
     if(mach.bits == _16) {
@@ -3483,7 +3503,7 @@ set_compiler_type(const char* compiler) {
     binext = ".cof";
     objext = ".p1";
 
-   //set_var("CFLAGS", "--mode=pro");
+    // set_var("CFLAGS", "--mode=pro");
     push_var("CFLAGS", "-N127");
     // push_var("CFLAGS", "-V");
     push_var("CPPFLAGS", "-DHI_TECH_C=1");
@@ -3518,7 +3538,6 @@ set_compiler_type(const char* compiler) {
         set_var("MACH", "pic16");
     }
 
-
     if(build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "--opt=space");
     else if(build_type != BUILD_TYPE_DEBUG)
@@ -3532,16 +3551,18 @@ set_compiler_type(const char* compiler) {
     }
 
     push_var("CFLAGS", "--double=32");
-   // push_var("CFLAGS", "--warn=-3");
+    // push_var("CFLAGS", "--warn=-3");
 
     push_var("CFLAGS", "-q");
     push_var("CFLAGS", "--chip=$(CHIP)");
 
     push_var("LDFLAGS", "--output=+mcof,-elf");
 
-
-    push_var("CFLAGS", "--runtime=default,-keep");
+    push_var("CFLAGS", "--runtime=default,-keep,+stackcall,+download");
     push_var("CFLAGS", "--summary=default,+psect");
+
+    push_var("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
+    push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");
 
     push_var("LDFLAGS", "--asmlist");
     push_var("CPPFLAGS", "-D__$(CHIP)=1");
@@ -3562,6 +3583,8 @@ set_compiler_type(const char* compiler) {
 
     binext = ".cof";
     objext = ".p1";
+
+    push_var("DEFS", "-D__XC=1");
 
     set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
     push_var("CPPFLAGS", mach.bits == _14 ? "-DPIC16=1" : "-DPIC18=1");
@@ -3611,6 +3634,12 @@ set_compiler_type(const char* compiler) {
     // push_var("LDFLAGS", "--output=-mcof,+elf");
     push_var("LDFLAGS", "--stack=compiled");
 
+    push_var("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
+    push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");
+
+
+
+    stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) \"$<\" -o\"$@\"");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c \"$<\" -o\"$@\"");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\"  $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
@@ -3781,6 +3810,7 @@ main(int argc, char* argv[]) {
                            {"build-as-lib", 0, 0, 'L'},
                            {"cross", 0, 0, 'c'},
                            {"chip", 1, 0, 'p'},
+                           {"preprocessor", 1, 0, 'P'},
                            {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
@@ -3792,7 +3822,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:c:s:p:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:c:s:p:P:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -3812,6 +3842,7 @@ main(int argc, char* argv[]) {
       case 'd': dir = optarg; break;
       case 't': toolchain = compiler = optarg; break;
       case 'm': make = optarg; break;
+      case 'P': preproc = optarg; break;
       case 'a': set_machine(optarg); break;
       case 's': set_system(optarg); break;
       case 'p':
