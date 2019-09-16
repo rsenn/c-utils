@@ -434,7 +434,7 @@ add_program(xml2json json xml errmsg unix)
 add_program(xml2moon xml textcode errmsg)
 
 add_program(httpproxy http io map)
-add_program(tinyproxy http io)
+#add_program(tinyproxy http io)
 add_program(tcpproxy http io)
 add_program(redir http io ${LIBCOMPAT})
 
