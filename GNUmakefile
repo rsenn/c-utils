@@ -1005,7 +1005,7 @@ all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(LIBRARIES) $(PROGRAMS) $(EX
 #}" >$(BUILDDIR)tryerrno.c
 
 #$(BUILDDIR)haveerrno.h: $(BUILDDIR)tryerrno.c
-#	$(CROSS_COMPILE)$(CC) -include errno.h -c -o $(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFINES += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
+#	$(CROSS_COMPILE)$(CC) -include errno.h -c -o$(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFINES += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
 #
 #FLAGS += -include $(BUILDDIR)haveerrno.h
 #
