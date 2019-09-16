@@ -3435,6 +3435,8 @@ set_compiler_type(const char* compiler) {
         set_var("MACH", "pic16");
     }
     set_var("CFLAGS", "--use-non-free");
+    if(mach.bits == _16) 
+      push_var("CFLAGS", "--pstack-model=large");
 
     if(mach.bits == _16) {
       push_var("CFLAGS", "--mplab-comp");
@@ -3531,25 +3533,20 @@ set_compiler_type(const char* compiler) {
 
     push_var("CFLAGS", "--double=32");
    // push_var("CFLAGS", "--warn=-3");
-    // push_var("CFLAGS", "-V");
 
     push_var("CFLAGS", "-q");
     push_var("CFLAGS", "--chip=$(CHIP)");
 
     push_var("LDFLAGS", "--output=+mcof,-elf");
 
-    // push_var("CFLAGS", "-fp:precise");
 
-    // push_var("CFLAGS", "-V");
-    //   push_var("CFLAGS", "--echo");
     push_var("CFLAGS", "--runtime=default,-keep");
-//    push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
     push_var("CFLAGS", "--summary=default,+psect");
 
     push_var("LDFLAGS", "--asmlist");
-    push_var("CPPFLAGS", "-D__$(CHIP)__");
+    push_var("CPPFLAGS", "-D__$(CHIP)=1");
 
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -C \"$<\" -o\"$@\"");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c \"$<\" -o\"$@\"");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
@@ -4005,10 +4002,22 @@ main(int argc, char* argv[]) {
       stralloc_copy(&builddir.sa, &outdir.sa);
       // path_relative(outdir.sa.s, thisdir.sa.s, &builddir.sa);
     } else if(toolchain && !strlist_contains(&thisdir, "build")) {
+      stralloc target;
+      stralloc_init(&target);
+      stralloc_copys(&target, toolchain);
+
+      if(chip.s) {
+        stralloc_cats(&target, "-");
+        stralloc_cat(&target, &chip);
+      }
+      stralloc_nul(&target);
+
       stralloc_copy(&builddir.sa, &thisdir.sa);
       strlist_push(&builddir, dir ? dir : "build");
-      strlist_push(&builddir, toolchain);
+      strlist_push_sa(&builddir, &target);
       strlist_push(&builddir, build_types[build_type]);
+
+      stralloc_free(&target);
     }
 
     stralloc_replacec(&builddir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);

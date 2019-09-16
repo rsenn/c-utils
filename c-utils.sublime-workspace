@@ -128,7 +128,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 103100,
+				"buffer_size": 103550,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -344,6 +344,10 @@
 		"selected_items":
 		[
 			[
+				"instal pa",
+				"Package Control: Install Package"
+			],
+			[
 				"out",
 				"Browse Mode: Outline (Right)"
 			],
@@ -521,7 +525,6 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan"
 	],
 	"file_history":
@@ -657,7 +660,7 @@
 	],
 	"find":
 	{
-		"height": 42.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -674,6 +677,22 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"osccal",
+			"picki",
+			"stackcall",
+			"RELWITHDE",
+			"htc\"",
+			"xc8\"",
+			"CPPFLAGS",
+			"DDEBUG",
+			"HAVE_ERR",
+			"\"-V\"",
+			"\"-V",
+			"-V",
+			"pass1",
+			"--pass",
+			"htc\"",
+			"htc\"+",
 			"\"sdcc",
 			"18f252",
 			"\"sdcc\"",
@@ -785,23 +804,7 @@
 			"push_unique",
 			"'^'",
 			"$^",
-			"'^'",
-			"\\$\\^",
-			"$^",
-			"\\$^",
-			"LDFLAGS",
-			"\"xc8\"",
-			"\\$(LDFLAGS",
-			"$(LDFLAGS",
-			"gen_link_rules",
-			"\"all",
-			"gen_srcdir_compile_rules",
-			"lib_rule_for_sourcedir",
-			"all",
-			"gen_lib_rules",
-			"all =",
-			"all;;",
-			"all"
+			"'^'"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -839,6 +842,7 @@
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
 							"current_file": "/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 							"outline_rename_mode": false,
 							"symkeys":
@@ -1272,12 +1276,12 @@
 									65690
 								],
 								[
-									86087,
-									86092
+									86535,
+									86540
 								],
 								[
-									89729,
-									89733
+									90177,
+									90181
 								]
 							],
 							"symlist":
@@ -1623,26 +1627,26 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 103100,
+						"buffer_size": 103550,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								80506,
-								80506
+								79551,
+								79551
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Rainglow/rainglow/Yule Contrast (rainglow).tmTheme",
+							"color_scheme": "Packages/Rainglow/rainglow/Keen Contrast (rainglow).tmTheme",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 72380.0,
+						"translation.y": 51438.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -2141,7 +2145,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3133.0,
+						"translation.y": 2239.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 26,
@@ -2273,7 +2277,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 30.0
+		"height": 24.0
 	},
 	"input":
 	{
@@ -2335,7 +2339,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 56.0
+		"height": 44.0
 	},
 	"save_all_on_build": true,
 	"select_file":
