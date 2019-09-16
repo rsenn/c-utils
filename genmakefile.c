@@ -3470,7 +3470,8 @@ set_compiler_type(const char* compiler) {
     }
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
-    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "htc")) {
 
     set_var("LIB", "libr");
@@ -3479,6 +3480,10 @@ set_compiler_type(const char* compiler) {
 
     binext = ".cof";
     objext = ".p1";
+
+    set_var("CFLAGS", "-V");
+    push_var("CFLAGS", "-N127");
+    push_var("CPPFLAGS", "-DHI_TECH_C=1");
 
     set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
     push_var("CPPFLAGS", mach.bits == _14 ? "-DPIC16=1" : "-DPIC18=1");
@@ -3509,8 +3514,7 @@ set_compiler_type(const char* compiler) {
       else
         set_var("MACH", "pic16");
     }
-    set_var("CFLAGS", "--pass1");
-    push_var("CFLAGS", "-N127");
+
     push_var("CFLAGS", "--runtime=default,+stackcall");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
@@ -3541,8 +3545,9 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "--asmlist");
     push_var("CPPFLAGS", "-D__$(CHIP)__");
 
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -C \"$<\" -o\"$@\"");
-    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -C \"$<\" -o\"$@\"");
+    stralloc_copys(&link_command,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
 
@@ -3604,7 +3609,8 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "--stack=compiled");
 
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
-    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\"  $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\"  $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else {
     return 0;
