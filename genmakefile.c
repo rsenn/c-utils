@@ -3412,20 +3412,29 @@ set_compiler_type(const char* compiler) {
 
     set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
 
-    if(!isset("CHIP")) {
+    if(chip.len == 0)
+      stralloc_copys(&chip, "16f876a");
 
-      if(mach.bits == _14)
-        set_var("CHIP", "16f876a");
-      else
-        set_var("CHIP", "18f252");
+    stralloc_nul(&chip);
+    set_var("CHIP", chip.s);
+
+    {
+      stralloc chipdef;
+      stralloc_init(&chipdef);
+      stralloc_copys(&chipdef, "-DPIC");
+      stralloc_cat(&chipdef, &chip);
+      stralloc_upper(&chipdef);
+      stralloc_cats(&chipdef, "=1");
+      push_var_sa("CPPFLAGS", &chipdef);
     }
-    if(!isset("MACH")) {
 
+    if(!isset("MACH")) {
       if(mach.bits == _14)
         set_var("MACH", "pic14");
       else
         set_var("MACH", "pic16");
     }
+    
     set_var("CFLAGS", "--float-reent");
     set_var("CFLAGS", "--use-non-free");
 
@@ -3472,7 +3481,7 @@ set_compiler_type(const char* compiler) {
       stralloc_cats(&chipdef, "=1");
       push_var_sa("CPPFLAGS", &chipdef);
     }
-    
+
     if(!isset("MACH")) {
 
       if(mach.bits == _14)
