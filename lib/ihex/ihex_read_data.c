@@ -43,6 +43,7 @@ ihex_read_data(ihex_record** pihr, const char* in, size_t n) {
       n -= i;
     }
 
+    r->next = 0;
     r->reclen = len;
     r->rectyp = typ;
     r->offset = off;
