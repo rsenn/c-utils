@@ -3605,7 +3605,7 @@ set_compiler_type(const char* compiler) {
       push_var_sa("CPPFLAGS", &chipdef);
     }
 
-    push_var("CFLAGS", "--mode=PRO");
+    push_var("CFLAGS", "--mode=pro");
     push_var("CFLAGS", "--float=24");
     push_var("CFLAGS", "--double=32");
 
