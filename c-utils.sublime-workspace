@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"BUILD_TYPE",
+				"BUILD_TYPE_RELWITHDEBINFO"
+			],
+			[
 				"Parsigr",
 				"ParsigramBalances"
 			],
@@ -52,10 +56,10 @@
 	"buffers":
 	[
 		{
-			"contents": "ihex_read_record",
+			"contents": "machine_type\nos_type\nsystem_type\nsourcefile\nsourcedir\ntarget\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\nmkdir_sa\nmkdir_components\nstralloc_weak\nput_newline\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_b\npath_prefix_s\npath_extension\npath_object\npath_wildcard\nextract_build_type\nformat_linklib_lib\nformat_linklib_switch\nformat_linklib_dummy\nscan_main\nhas_main\nextract_includes\nextract_tokens\nextract_pptok\nget_includes\nrule_command_subst\nrule_command\nsubst_var\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nmatch_rule\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nisset\nget_var\nvar\nset_var\nunset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\nadd_include_dir\ninclude_dirs_to_cppflags\npush_define\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_clean_rule\ndump_rule\ngen_srcdir_compile_rules\ngen_simple_compile_rules\nlib_rule_for_sourcedir\ngen_srcdir_rule\ngen_lib_rules\ngen_link_rules\noutput_build_rules\ngen_install_rules\noutput_all_vars\noutput_make_rule\noutput_ninja_rule\noutput_all_rules\noutput_script\nset_machine\nset_chip\nset_system\nset_make_type\nset_compiler_type\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 16,
+				"buffer_size": 1482,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -124,8 +128,35 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 101453,
+				"buffer_size": 103100,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": " #include \"../byte.h\"\n#include \"../str.h\"\n\nsize_t\nbyte_finds(const void* haystack, size_t hlen, const char* what) {\n  return byte_findb(haystack, hlen, what, str_len(what));\n}\n",
+			"file": "lib/byte/byte_finds.c",
+			"file_size": 175,
+			"file_write_time": 132130716174935640,
+			"settings":
+			{
+				"buffer_size": 176,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/byte/byte_fmt.c",
+			"settings":
+			{
+				"buffer_size": 550,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/path/path_canonical.c",
+			"settings":
+			{
+				"buffer_size": 121,
 				"line_ending": "Unix"
 			}
 		},
@@ -146,7 +177,6 @@
 			"settings":
 			{
 				"buffer_size": 667,
-				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -182,7 +212,6 @@
 			"settings":
 			{
 				"buffer_size": 47719,
-				"encoding": "Hexadecimal",
 				"line_ending": "Unix"
 			}
 		},
@@ -219,7 +248,10 @@
 			}
 		},
 		{
+			"contents": "#ifndef __LIST_H\n#define __LIST_H\n\n#include <stdlib.h>\n#include <sys/types.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct list {\n  struct node* head;\n  struct node* tail;\n} list;\n\ntypedef struct node {\n  struct node* prev;\n  struct node* next;\n} node;\n\nvoid list_add_after(list*, node*, node* after);\nvoid list_add_before(list*, node*, node* before);\nvoid list_init(list*);\nsize_t list_length(list*);\nvoid list_push(list*, node*);\nvoid list_remove(list*, node*);\nvoid list_unshift(list*, node*);\n\n#define list_foreach_down(list, n) for((n) = (void*)(list)->head; (n) != NULL; (n) = (void*)(((node*)n)->next))\n\n/* n is set to the current node and n->next is backupped\n   into m before loop body for safe walk-throught when\n   links get deleted */\n#define list_foreach_down_safe(list, n, m)                                                                             \\\n  for((n) = (void*)(list)->head, (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL; (n) != NULL;        \\\n      (n) = (void*)((node*)m), (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL)\n\n/*\n * Macros to walk through a list list from tail to head.                     *\n */\n/* n is set to the current node*/\n#define list_foreach_up(list, n) for((n) = (void*)(list)->tail; (n) != NULL; (n) = (void*)(((node*)n)->prev))\n\n/* n is set to the current node and n->prev is backupped\n   into m before loop body for safe walk-throught when\n   links get deleted */\n#define list_foreach_up_safe(list, n, m)                                                                               \\\n  for((n) = (void*)(list)->tail, (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL; (n) != NULL;        \\\n      (n) = (void*)((node*)m), (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL)\n\n/* aliases for backwards compatibility */\n#define list_foreach list_foreach_down\n#define list_foreach_safe list_foreach_down_safe\n\n#ifdef __cplusplus\n}\n#endif\n#endif /* defined(__LIST_H) */\n",
 			"file": "lib/list.h",
+			"file_size": 1995,
+			"file_write_time": 132101250904343801,
 			"settings":
 			{
 				"buffer_size": 1995,
@@ -227,13 +259,19 @@
 			}
 		},
 		{
-			"contents": "Searching 1964 files for \"gen_lib_rules\" (case sensitive)\n\n/home/roman/Dokumente/Sources/c-utils/genmakefile.c:\n 2223:  * @brief gen_lib_rules  Generate library rules for every source dir\n 2228: gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {\n 4094:       gen_lib_rules(rules, sourcedirs);\n\n3 matches in 1 file\n",
+			"file": "lib/strlist.h",
 			"settings":
 			{
-				"buffer_size": 313,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
+				"buffer_size": 4158,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strarray.h",
+			"settings":
+			{
+				"buffer_size": 3199,
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -483,10 +521,12 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_relative.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_xchar.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_fromhex.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_xshort.c",
@@ -613,18 +653,18 @@
 		"/home/enki/Sources/lotto/helpers/perfectmoneysci.moon",
 		"/home/enki/Sources/lotto/helpers/perfectmoney.moon",
 		"/home/enki/Sources/lotto/helpers/bitcoin.moon",
-		"/home/enki/Sources/lotto/helpers/bitcoin2.moon",
-		"/home/enki/Documents/Sources/lotto/doc/parsigram/api.html"
+		"/home/enki/Sources/lotto/helpers/bitcoin2.moon"
 	],
 	"find":
 	{
-		"height": 46.0
+		"height": 42.0
 	},
 	"find_in_files":
 	{
 		"height": 258.0,
 		"where_history":
 		[
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
 			"/home/roman/Dokumente/Sources/c-utils,*.c",
 			""
 		]
@@ -634,6 +674,22 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"\"sdcc",
+			"18f252",
+			"\"sdcc\"",
+			"path_canonical",
+			"path_relative",
+			"cppflags",
+			"strlist_foreach_s",
+			"add_include_dir",
+			"strarray_foreach",
+			"includes",
+			"'I'",
+			"I:",
+			"include_dirs",
+			"add_include_dir",
+			"includes",
+			"'I'",
 			"+debug",
 			"relwith",
 			"xc8\"",
@@ -745,23 +801,7 @@
 			"gen_lib_rules",
 			"all =",
 			"all;;",
-			"all",
-			"all;",
-			"all",
-			"all =",
-			"all",
-			"\\(all",
-			"all",
-			"\"all\"",
-			"gen_lib",
-			"link_libraries",
-			"gen_link_rules",
-			"target_dep_list",
-			"link_libraries",
-			"gen_lib",
-			"include_dirs",
-			"gen_link_rules",
-			"gen_lib_rules"
+			"all"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -790,7 +830,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16,
+						"buffer_size": 1482,
 						"regions":
 						{
 						},
@@ -799,18 +839,558 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_read_record.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									51,
-									67
+									1527,
+									1539
+								],
+								[
+									1575,
+									1582
+								],
+								[
+									1646,
+									1657
+								],
+								[
+									1736,
+									1746
+								],
+								[
+									1838,
+									1847
+								],
+								[
+									1989,
+									1995
+								],
+								[
+									2114,
+									2123
+								],
+								[
+									2155,
+									2163
+								],
+								[
+									2202,
+									2210
+								],
+								[
+									2253,
+									2260
+								],
+								[
+									3590,
+									3598
+								],
+								[
+									3813,
+									3829
+								],
+								[
+									4119,
+									4132
+								],
+								[
+									4333,
+									4344
+								],
+								[
+									4509,
+									4520
+								],
+								[
+									5131,
+									5144
+								],
+								[
+									5395,
+									5403
+								],
+								[
+									5622,
+									5629
+								],
+								[
+									5848,
+									5856
+								],
+								[
+									6335,
+									6344
+								],
+								[
+									6512,
+									6520
+								],
+								[
+									6535,
+									6543
+								],
+								[
+									6558,
+									6565
+								],
+								[
+									6580,
+									6589
+								],
+								[
+									6886,
+									6899
+								],
+								[
+									7368,
+									7381
+								],
+								[
+									7561,
+									7575
+								],
+								[
+									7886,
+									7897
+								],
+								[
+									8262,
+									8275
+								],
+								[
+									8763,
+									8781
+								],
+								[
+									9072,
+									9090
+								],
+								[
+									9338,
+									9359
+								],
+								[
+									9574,
+									9594
+								],
+								[
+									9762,
+									9771
+								],
+								[
+									10275,
+									10283
+								],
+								[
+									10591,
+									10607
+								],
+								[
+									11583,
+									11597
+								],
+								[
+									12426,
+									12439
+								],
+								[
+									14025,
+									14037
+								],
+								[
+									14372,
+									14390
+								],
+								[
+									15739,
+									15751
+								],
+								[
+									17376,
+									17385
+								],
+								[
+									17999,
+									18007
+								],
+								[
+									18832,
+									18843
+								],
+								[
+									18979,
+									18988
+								],
+								[
+									19393,
+									19405
+								],
+								[
+									19551,
+									19562
+								],
+								[
+									19869,
+									19879
+								],
+								[
+									20242,
+									20250
+								],
+								[
+									20589,
+									20600
+								],
+								[
+									21068,
+									21079
+								],
+								[
+									21308,
+									21318
+								],
+								[
+									21678,
+									21688
+								],
+								[
+									22246,
+									22257
+								],
+								[
+									22561,
+									22566
+								],
+								[
+									22748,
+									22755
+								],
+								[
+									23217,
+									23220
+								],
+								[
+									23407,
+									23414
+								],
+								[
+									23579,
+									23588
+								],
+								[
+									23772,
+									23780
+								],
+								[
+									23957,
+									23968
+								],
+								[
+									24148,
+									24156
+								],
+								[
+									24427,
+									24435
+								],
+								[
+									24884,
+									24899
+								],
+								[
+									25309,
+									25333
+								],
+								[
+									25934,
+									25945
+								],
+								[
+									26244,
+									26260
+								],
+								[
+									26609,
+									26622
+								],
+								[
+									26907,
+									26926
+								],
+								[
+									28854,
+									28869
+								],
+								[
+									29433,
+									29449
+								],
+								[
+									30274,
+									30285
+								],
+								[
+									30953,
+									30978
+								],
+								[
+									31547,
+									31562
+								],
+								[
+									31944,
+									31964
+								],
+								[
+									32347,
+									32360
+								],
+								[
+									32758,
+									32769
+								],
+								[
+									33037,
+									33056
+								],
+								[
+									34089,
+									34106
+								],
+								[
+									34777,
+									34807
+								],
+								[
+									35310,
+									35330
+								],
+								[
+									35859,
+									35872
+								],
+								[
+									36137,
+									36153
+								],
+								[
+									36475,
+									36490
+								],
+								[
+									36735,
+									36748
+								],
+								[
+									38088,
+									38102
+								],
+								[
+									38436,
+									38451
+								],
+								[
+									38842,
+									38856
+								],
+								[
+									41100,
+									41109
+								],
+								[
+									42208,
+									42232
+								],
+								[
+									45041,
+									45065
+								],
+								[
+									46004,
+									46026
+								],
+								[
+									47546,
+									47561
+								],
+								[
+									48558,
+									48571
+								],
+								[
+									49421,
+									49435
+								],
+								[
+									52887,
+									52905
+								],
+								[
+									53466,
+									53483
+								],
+								[
+									55545,
+									55560
+								],
+								[
+									56532,
+									56548
+								],
+								[
+									58957,
+									58974
+								],
+								[
+									59987,
+									60003
+								],
+								[
+									60523,
+									60536
+								],
+								[
+									62477,
+									62488
+								],
+								[
+									62992,
+									63000
+								],
+								[
+									63418,
+									63428
+								],
+								[
+									63835,
+									63848
+								],
+								[
+									65673,
+									65690
+								],
+								[
+									86087,
+									86092
+								],
+								[
+									89729,
+									89733
 								]
 							],
 							"symlist":
 							[
-								"ihex_read_record"
+								"machine_type",
+								"os_type",
+								"system_type",
+								"sourcefile",
+								"sourcedir",
+								"target",
+								"debug_int",
+								"debug_sa",
+								"debug_sl",
+								"debug_s",
+								"mkdir_sa",
+								"mkdir_components",
+								"stralloc_weak",
+								"put_newline",
+								"set_command",
+								"strarray_dump",
+								"debug_sa",
+								"debug_s",
+								"debug_sl",
+								"debug_int",
+								"debug_sa",
+								"debug_sl",
+								"debug_s",
+								"debug_int",
+								"path_prefix_b",
+								"path_prefix_s",
+								"path_extension",
+								"path_object",
+								"path_wildcard",
+								"extract_build_type",
+								"format_linklib_lib",
+								"format_linklib_switch",
+								"format_linklib_dummy",
+								"scan_main",
+								"has_main",
+								"extract_includes",
+								"extract_tokens",
+								"extract_pptok",
+								"get_includes",
+								"rule_command_subst",
+								"rule_command",
+								"subst_var",
+								"get_rule",
+								"get_rule_sa",
+								"find_rule",
+								"find_rule_sa",
+								"find_rule_b",
+								"match_rule",
+								"add_path",
+								"add_srcpath",
+								"add_path_sa",
+								"new_source",
+								"add_source",
+								"get_sources",
+								"isset",
+								"get_var",
+								"var",
+								"set_var",
+								"unset_var",
+								"push_var",
+								"push_var_sa",
+								"push_lib",
+								"with_lib",
+								"add_include_dir",
+								"include_dirs_to_cppflags",
+								"push_define",
+								"get_rules_by_cmd",
+								"dirname_alloc",
+								"populate_sourcedirs",
+								"dump_sourcedirs",
+								"includes_to_libs",
+								"target_ptrs",
+								"target_dep_list_recursive",
+								"target_dep_list",
+								"target_deps_indirect",
+								"deps_indirect",
+								"deps_direct",
+								"print_target_deps_r",
+								"print_target_deps",
+								"remove_indirect_deps_recursive",
+								"remove_indirect_deps",
+								"get_sourcedir",
+								"get_sourcedir_sa",
+								"get_sourcedir_b",
+								"deps_for_libs",
+								"target_add_dep",
+								"target_add_deps",
+								"gen_clean_rule",
+								"dump_rule",
+								"gen_srcdir_compile_rules",
+								"gen_simple_compile_rules",
+								"lib_rule_for_sourcedir",
+								"gen_srcdir_rule",
+								"gen_lib_rules",
+								"gen_link_rules",
+								"output_build_rules",
+								"gen_install_rules",
+								"output_all_vars",
+								"output_make_rule",
+								"output_ninja_rule",
+								"output_all_rules",
+								"output_script",
+								"set_machine",
+								"set_chip",
+								"set_system",
+								"set_make_type",
+								"set_compiler_type",
+								"usage",
+								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -818,13 +1398,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 24,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 9,
+			"selected": 7,
 			"sheets":
 			[
 				{
@@ -855,7 +1435,7 @@
 						"translation.y": 3381.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
@@ -885,7 +1465,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
@@ -913,7 +1493,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
@@ -940,10 +1520,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 18200.0,
+						"translation.y": 16549.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
@@ -973,7 +1553,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
@@ -1003,7 +1583,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
@@ -1034,7 +1614,7 @@
 						"translation.y": 606.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
@@ -1043,33 +1623,119 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 101453,
+						"buffer_size": 103100,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								80192,
-								80192
+								80506,
+								80506
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/User/SchemeEditorTemp/Next.tmTheme",
+							"color_scheme": "Packages/Rainglow/rainglow/Yule Contrast (rainglow).tmTheme",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 86317.0,
+						"translation.y": 72380.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/byte/byte_finds.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 176,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1,
+								1
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 10,
+					"file": "lib/byte/byte_fmt.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 550,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								550,
+								550
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "lib/path/path_canonical.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 121,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								33,
+								33
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
 					"file": "lib/ihex.h",
 					"semi_transient": false,
 					"settings":
@@ -1093,11 +1759,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 13,
 					"file": "lib/ihex/ihex_read_record.c",
 					"semi_transient": false,
 					"settings":
@@ -1115,17 +1781,19 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C.sublime-syntax"
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 14,
 					"file": "lib/ihex/ihex_read_buf.c",
 					"semi_transient": false,
 					"settings":
@@ -1151,11 +1819,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 15,
 					"file": "lib/ihex/ihex_read_data.c",
 					"semi_transient": false,
 					"settings":
@@ -1181,11 +1849,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 16,
 					"file": "lib/alloc/alloc_zero.c",
 					"semi_transient": false,
 					"settings":
@@ -1209,11 +1877,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 17,
 					"file": "build/rdir-test",
 					"semi_transient": false,
 					"settings":
@@ -1237,11 +1905,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 18,
 					"file": "testihex.c",
 					"semi_transient": false,
 					"settings":
@@ -1267,11 +1935,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 19,
 					"file": "lib/scan/scan_xshort.c",
 					"semi_transient": false,
 					"settings":
@@ -1289,17 +1957,19 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C.sublime-syntax"
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 20,
 					"file": "lib/scan/scan_xchar.c",
 					"semi_transient": false,
 					"settings":
@@ -1317,17 +1987,19 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C.sublime-syntax"
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 21,
 					"file": "lib/slist.h",
 					"semi_transient": false,
 					"settings":
@@ -1353,11 +2025,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 22,
 					"file": "lib/list.h",
 					"semi_transient": false,
 					"settings":
@@ -1369,8 +2041,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								263,
+								263
 							]
 						],
 						"settings":
@@ -1383,66 +2055,69 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 23,
+					"file": "lib/strlist.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 313,
+						"buffer_size": 4158,
 						"regions":
 						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										129,
-										142
-									],
-									[
-										195,
-										208
-									],
-									[
-										258,
-										271
-									]
-								],
-								"scope": ""
-							}
 						},
 						"selection":
 						[
 							[
-								84,
-								84
+								2849,
+								2849
 							]
 						],
 						"settings":
 						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.x": 121.0,
+						"translation.y": 1066.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 24,
+					"file": "lib/strarray.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3199,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								819,
+								819
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 199.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
 					"file": "parse.c",
 					"semi_transient": false,
 					"settings":
@@ -1466,14 +2141,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3282.0,
+						"translation.y": 3133.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
-					"buffer": 22,
+					"buffer": 26,
 					"file": "crc.c",
 					"semi_transient": false,
 					"settings":
@@ -1499,11 +2174,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 25,
+					"stack_index": 29,
 					"type": "text"
 				},
 				{
-					"buffer": 23,
+					"buffer": 27,
 					"file": "hexedit.c",
 					"semi_transient": false,
 					"settings":
@@ -1530,11 +2205,11 @@
 						"translation.y": 7100.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 28,
 					"file": "mediathek-parser.c",
 					"semi_transient": false,
 					"settings":
@@ -1560,11 +2235,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
-					"buffer": 25,
+					"buffer": 29,
 					"file": "pkgcfg.c",
 					"semi_transient": false,
 					"settings":
@@ -1590,7 +2265,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 27,
 					"type": "text"
 				}
 			]
@@ -1598,7 +2273,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 34.0
+		"height": 30.0
 	},
 	"input":
 	{
@@ -1660,7 +2335,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 64.0
+		"height": 56.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1669,6 +2344,18 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"genma",
+				"genmakefile.c"
+			],
+			[
+				"path_re",
+				"lib/path/path_relative.c"
+			],
+			[
+				"genmake",
+				"genmakefile.c"
+			],
 			[
 				"alloc",
 				"lib/alloc/alloc_zero.c"
@@ -1692,10 +2379,6 @@
 			[
 				"ihex",
 				"lib/ihex.h"
-			],
-			[
-				"genma",
-				"genmakefile.c"
 			],
 			[
 				"hexed",
