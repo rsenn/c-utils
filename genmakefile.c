@@ -3483,7 +3483,7 @@ set_compiler_type(const char* compiler) {
     binext = ".cof";
     objext = ".p1";
 
-    set_var("CFLAGS", "--mode=PRO");
+   //set_var("CFLAGS", "--mode=pro");
     push_var("CFLAGS", "-N127");
     // push_var("CFLAGS", "-V");
     push_var("CPPFLAGS", "-DHI_TECH_C=1");
