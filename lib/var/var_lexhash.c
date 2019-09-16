@@ -41,7 +41,7 @@ var_lexhash(const char* v, VAR_HASH* h) {
 
   /* we subtract 10 from the topmost 6 bits because
      there are no digits allowed */
-  hash = (int64) - 10 << shift;
+  hash = (unsigned long long)(-10ll) << shift;
 
   do {
     /* map the character to a 1-63 range */
