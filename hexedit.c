@@ -377,7 +377,7 @@ main(int argc, char* argv[]) {
   patch(0x8F6A8, 0x48, 0xC3);  /* Purchase License Nag */
 
   /* Linux x64 */
-  patch_new("Sublime Text 3207 Linux x64", 0, 0);
+  patch_new("Sublime Text 3207 Linux x64", 8787520, 0);
   patch(0x3c03dc, 0x84, 0x85); /* Initial License Check */
   patch(0x4797a0, 0x75, 0x74); /* Persistent License Check */
   patch(0x31d180, 0x75, 0x74); /* Purchase License Nag */
