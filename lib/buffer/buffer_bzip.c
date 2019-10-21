@@ -6,7 +6,7 @@
 #include "../buffer.h"
 #include <stdlib.h>
 
-#ifdef HAVE_LIBBZ2
+#if HAVE_LIBBZ2
 #ifndef BZ_NO_STDIO
 static void
 buffer_bzip_close(buffer* b) {

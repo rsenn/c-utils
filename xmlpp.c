@@ -26,6 +26,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
   static int newline_written = 0;
   switch(id) {
     case XML_TEXT: {
+      stralloc_trimr(value, " \r\n\t", 4);
       buffer_putsa(buffer_1, value);
       break;
     }
@@ -39,8 +40,9 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
 
         if(!newline_written) {
-
           buffer_puts(buffer_1, "\n");
+          buffer_flush(buffer_1);
+
           newline_written = 1;
           buffer_putnspace(buffer_1, depth * 2);
         }

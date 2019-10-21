@@ -536,6 +536,7 @@ endif
 ifeq ($(CC),tcc)
 	BUILD := $(subst gnu,tcc,$(BUILD))
 	HOST := $(subst gnu,tcc,$(HOST))
+	DEFINES += inline=__inline
 endif
 ifneq (${builddir},)
 BUILDDIR = ${builddir}/$(BUILD_TYPE)/
