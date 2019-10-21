@@ -174,7 +174,11 @@ endif
 #$(call def-include-exists,errno.h,HAVE_ERRNO_H)
 #$(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
 #$(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
+ifneq ($(subst tcc,,$(CC)),$(CC))
+BUILD := $(shell (set -x; $(CROSS_COMPILE)$(CC) -vv | sed '1!d ; s, version [^ ]\+ , , ; s,[()],,g; s,\s\+,-,g ; s,Linux,linux,g; s,\(.*\)-\(.*\)-\(.*\),\2-\3-\1,'))
+else
 BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
+endif
 ifneq ($(CC),$(subst m32,,$(CC)))
 BUILD := $(subst x86_64,i386,$(BUILD))
 endif
@@ -241,10 +245,14 @@ else
 ifeq ($(USE_MUSL),1)
 	  HOST := $(subst gnu,musl,$(BUILD))
 else
+ifneq ($(subst tcc,,$(CC)),$(CC))
+HOST := $(shell (set -x; $(CROSS_COMPILE)$(CC) -vv | sed '1!d ; s, version [^ ]\+ , , ; s,[()],,g; s,\s\+,-,g ; s,Linux,linux,g; s,\(.*\)-\(.*\)-\(.*\),\2-\3-\1,'))
+else
 ifeq ($(USE_DIET),1)
 HOST := $( shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
 else
-HOST := $( shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
+HOST := $( shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$|| ;; s|-unknown-|-|g' )
+endif
 endif
 endif
 endif
@@ -520,6 +528,15 @@ TOOLCHAIN := $(HOST1)-$(HOST2)-$(HOST3)
 #endif
 #
 #$(info TOOLCHAIN: $(TOOLCHAIN))
+HOST := $(subst unknown-,,$(HOST))
+ifneq ($(CC),$(subst zapcc,,$(CC)))
+	BUILD := $(subst gnu,zapcc,$(BUILD))
+	HOST := $(subst gnu,zapcc,$(HOST))
+endif
+ifeq ($(CC),tcc)
+	BUILD := $(subst gnu,tcc,$(BUILD))
+	HOST := $(subst gnu,tcc,$(HOST))
+endif
 ifneq (${builddir},)
 BUILDDIR = ${builddir}/$(BUILD_TYPE)/
 else
@@ -695,8 +712,12 @@ endif
 
 #$(info DIET: $(DIET))
 #$(info STATIC: $(STATIC))
+ifneq ($(subst tcc,,$(CC)),$(CC))
+HOST := $(shell (set -x; $(CROSS_COMPILE)$(CC) -vv | sed '1!d ; s, version [^ ]\+ , , ; s,[()],,g; s,\s\+,-,g ; s,Linux,linux,g; s,\(.*\)-\(.*\)-\(.*\),\2-\3-\1,'))
+else
 ifeq ($(HOST),)
 HOST := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
+endif
 endif
 ifneq ($(HOST),$(subst mingw,,$(HOST)))
 MINGW := 1
@@ -1573,7 +1594,7 @@ endif
 
 
 $(BUILDDIR)testihex$(M64_)$(EXEEXT): LIBS += -lz
-$(BUILDDIR)testihex$(M64_)$(EXEEXT): $(BUILDDIR)testihex.o $(call add-library,ihex alloc stralloc buffer mmap scan fmt open byte)
+$(BUILDDIR)testihex$(M64_)$(EXEEXT): $(BUILDDIR)testihex.o $(call add-library,ihex alloc stralloc buffer mmap scan fmt open byte str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

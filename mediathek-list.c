@@ -605,9 +605,9 @@ parse_mediathek_list(buffer* inbuf) {
 
   while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
 
-    buffer_puts(buffer_2, "Read ");
-    buffer_putlong(buffer_2, ret);
-    buffer_putsflush(buffer_2, " bytes.\n");
+    //buffer_puts(buffer_2, "Read ");
+    //buffer_putlong(buffer_2, ret);
+    //buffer_putsflush(buffer_2, " bytes.\n");
 
     for(;;) {
       ret2 = 0;

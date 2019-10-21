@@ -21,7 +21,7 @@ int __inline__ __sync_val_compare_and_swap(volatile unsigned int* ptr, int cmp, 
 
 #ifdef __arm__
 typedef long(__kernel_cmpxchg_t)(long oldval, long newval, long* ptr);
-static inline long
+static __inline long
 __CAS(long* ptr, long oldval, long newval) {
   long actual_oldval, fail;
 
@@ -41,7 +41,7 @@ __CAS(long* ptr, long oldval, long newval) {
 
 #include <stdatomic.h>
 
-static inline long
+static __inline long
 __atomic_compare_and_swap(long* ptr, long oldval, long newval) {
 #if defined(__ORANGEC__)
   atomic_compare_swap(ptr, &oldval, newval);

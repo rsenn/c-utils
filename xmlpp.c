@@ -23,6 +23,7 @@ static stralloc indent_str;
 
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+  static int newline_written = 0;
   switch(id) {
     case XML_TEXT: {
       buffer_putsa(buffer_1, value);
@@ -31,15 +32,21 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
     case XML_ELEMENT: {
       int closing = reader->closing || reader->self_closing;
 
-      if(reader->closing)
+      if(reader->closing) {
         --depth;
-
-      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
-        buffer_puts(buffer_1, "\n");
-        buffer_putnspace(buffer_1, depth * 2);
       }
 
-      buffer_putm_3(buffer_1, "<", reader->closing ? "/" : "", name->s);
+      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
+
+        if(!newline_written) {
+
+          buffer_puts(buffer_1, "\n");
+          newline_written = 1;
+          buffer_putnspace(buffer_1, depth * 2);
+        }
+      }
+
+      buffer_putm_internal(buffer_1, "<", reader->closing ? "/" : "", name->s, 0);
 
       if(attrs && *attrs && (*attrs)->list_tuple) {
         buffer_putspace(buffer_1);
@@ -58,6 +65,10 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
 
       if(!reader->closing && !reader->self_closing)
         ++depth;
+
+              newline_written = 0;
+
+
       break;
     }
     default: break;

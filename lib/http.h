@@ -18,6 +18,7 @@ typedef struct http_request_s {
   uint32 serial;
   enum { GET = 0, POST } type;
   stralloc location;
+  stralloc headers;
   struct http_request_s* next;
 } http_request;
 
