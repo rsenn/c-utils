@@ -529,6 +529,10 @@ TOOLCHAIN := $(HOST1)-$(HOST2)-$(HOST3)
 #
 #$(info TOOLCHAIN: $(TOOLCHAIN))
 HOST := $(subst unknown-,,$(HOST))
+ifneq ($(CC),$(subst clang,,$(CC)))
+	BUILD := $(subst gnu,clang,$(BUILD))
+	HOST := $(subst gnu,clang,$(HOST))
+endif
 ifneq ($(CC),$(subst zapcc,,$(CC)))
 	BUILD := $(subst gnu,zapcc,$(BUILD))
 	HOST := $(subst gnu,zapcc,$(HOST))
