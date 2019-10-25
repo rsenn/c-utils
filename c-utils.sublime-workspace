@@ -103,10 +103,13 @@
 			}
 		},
 		{
+			"contents": "#include \"../windoze.h\"\n\n#include \"cbmap_alloc.h\"\n\n#include \"../memalign.h\"\n#include \"../byte.h\"\n#include \"../str.h\"\n#include \"../cbmap_internal.h\"\n#include <stdio.h>\n#include <string.h>\n\n#if 0 // WINDOWS_NATIVE && (_MSC_VER >= 0900)\n#include <crtdbg.h>\n#endif\n\n#ifndef DEBUG\n#define printf(args)\n#endif\n\nstatic unsigned int CBM_DEBUG_ALLOCATIONS = 0;\nstatic unsigned int CBM_DEBUG_FREES = 0;\nstatic unsigned int CBM_DEBUG_ALLOCATED_BYTES = 0;\nstatic unsigned int CBM_DEBUG_DEALLOCATED_BYTES = 0;\n\ndouble\ncbmap_mem_allocated(void) {\n  return CBM_DEBUG_ALLOCATED_BYTES;\n}\n\nint\ncbmap_mem_memalign(void** p, size_t alignment, size_t size) {\n  int a;\n\n#ifdef HAVE_ALIGNED_ALLOC\n  a = !(*p = aligned_alloc(alignment, size));\n#elif defined(HAVE__ALIGNED_MALLOC)\n  a = !(*p = _aligned_malloc(size, alignment));\n//#elif WINDOWS\n#elif defined(HAVE_POSIX_MEMALIGN) && !defined(__dietlibc__)\n  a = posix_memalign(p, alignment, size);\n#else\n  a = !(*p = memalign_alloc(alignment, size));\n//#else\n//  a = !(*p = malloc(size));\n#endif\n\n  if(!a) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n  }\n\n  return a;\n}\n\nvoid*\ncbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line) {\n  void* p;\n\n  p = calloc(count, size);\n  if(p != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += ((unsigned int)count * (unsigned int)size);\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_CALLOC %-20s (%03d): Allocated %g x %g = %g bytes\\n\",\n         p,\n         file,\n         line,\n         (float)count,\n         (float)size,\n         (float)(count * size));\n#endif\n  return p;\n}\n\nchar*\n  \ncbmap_mem_debug_strndup(const char* p, size_t size, const char* file, int line) {\n  char* result = str_ndup(p, size);\n  if(result != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_STRNDUP %-20s (%03d): Allocated %g bytes\\n\", result, file, line, (float)size);\n#endif\n  return result;\n}\n\nchar*\ncbmap_mem_debug_strdup(const char* p, const char* file, int line) {\n  char* result;\n  size_t size = 0;\n\n  if(p == NULL)\n    return NULL;\n\n  result = str_dup(p);\n  if(result != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    size = str_len(p);\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_STRDUP %-20s (%03d): Allocated %g bytes\\n\", result, file, line, (float)size);\n#endif\n  return result;\n}\n\nvoid*\ncbmap_mem_mem_dup(const void* p, size_t size, const char* file, int line) {\n  void* result;\n\n  if(p == NULL)\n    return NULL;\n\n  result = malloc(size);\n  if(result != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n    byte_copy(result, size, p);\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_DUP    %-20s (%03d): Allocated %g bytes\\n\", result, file, line, (float)size);\n#endif\n  return result;\n}\n\nvoid\ncbmap_mem_debug_free(const void* ptr, const char* file, int line) {\n  if(ptr != NULL) {\n    CBM_DEBUG_FREES += 1;\n    CBM_DEBUG_DEALLOCATED_BYTES += 0;\n#ifdef DEBUG\n    printf(\"%p --- CBM_MEM_FREE   %-20s (%03d): Deallocating\\n\", ptr, file, line);\n#endif\n    memalign_free((void*)ptr);\n  }\n}\n\nint\ncbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const char* file, int line) {\n  int result;\n\n#ifdef HAVE_ALIGNED_ALLOC\n  result = !(*memptr = aligned_alloc(alignment, size));\n#elif defined(HAVE__ALIGNED_MALLOC)\n  result = !(*memptr = _aligned_malloc(size, alignment));\n//#elif WINDOWS\n#elif defined(HAVE_POSIX_MEMALIGN) && !defined(__dietlibc__)\n  result = posix_memalign(memptr, alignment, size);\n#else\n  result = !(*memptr = memalign_alloc(alignment, size));\n//#else\n//  result = !(*memptr = malloc(size));\n#endif\n\n  if(!result) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += (unsigned int)size;\n  }\n\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_ALIGNED %-20s (%03d): Allocated %g bytes\\n\", *memptr, file, line, (float)size);\n#endif\n  return result;\n}\n\nvoid\ncbmap_mem_debug_mem(const char* file, int line) {\n  unsigned int allocations = CBM_DEBUG_ALLOCATIONS;\n  unsigned int deallocations = CBM_DEBUG_FREES;\n  unsigned int check = allocations - deallocations;\n\n#ifdef DEBUG\n  printf(\"CBM_MEM_LOG %-20s (%d) ALLOCATIONS %d DEALLOCATIONS %d CHECK %d BYTES %d\\n\",\n         file,\n         line,\n         allocations,\n         deallocations,\n         check,\n         CBM_DEBUG_ALLOCATED_BYTES);\n#endif\n}\n",
 			"file": "lib/cbmap/cbmap_alloc.c",
+			"file_size": 4381,
+			"file_write_time": 132130716178855661,
 			"settings":
 			{
-				"buffer_size": 4381,
+				"buffer_size": 4384,
 				"line_ending": "Unix"
 			}
 		},
@@ -142,10 +145,14 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 400.0,
-		"last_filter": "schemee",
+		"height": 219.0,
+		"last_filter": "install",
 		"selected_items":
 		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
 			[
 				"schemee",
 				"SchemeEditor: Edit Current Scheme"
@@ -165,10 +172,6 @@
 			[
 				"scheme",
 				"SchemeEditor: Edit Current Scheme"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
 			],
 			[
 				"schemed",
@@ -343,9 +346,9 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Sources/c-utils/lib/cb/cb_foreach.c",
 		"/home/roman/Sources/c-utils/xmlpp.c",
-		"/home/roman/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Sources/c-utils/lib/http/http_get.c",
 		"/home/roman/.config/sublime-text-3/Packages/User/SublimeGDB.sublime-settings",
 		"/home/roman/Sources/c-utils/eagle-to-circuit.c",
@@ -809,22 +812,28 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4381,
+						"buffer_size": 4384,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2081,
-								2081
+								1622,
+								1622
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							}
 						},
 						"translation.x": 0.0,
 						"translation.y": 1440.0,
@@ -912,6 +921,10 @@
 	"output.SublimeLinter Messages":
 	{
 		"height": 194.0
+	},
+	"output.doc":
+	{
+		"height": 0.0
 	},
 	"output.exec":
 	{
