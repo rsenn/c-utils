@@ -23,7 +23,7 @@ json_set_property(jsonval* obj, jsonval name, jsonval value) {
 
   } else if(obj->type == JSON_ARRAY) {
     int64 i = json_toint(name);
-    uint64 len = slist_size(obj->listv);
+    int64 len = slist_size(obj->listv);
 
     if(len <= i) {
       while(len <= i) {

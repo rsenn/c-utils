@@ -26,23 +26,23 @@ extern void* io_getfds();
 #endif
 
 #if WINDOWS
-# if WINDOWS_NATIVE
-#  include <windows.h>
-#  if !defined(__LCC__) && !defined(__MINGW32__) && !defined(__MSYS__)
+#if WINDOWS_NATIVE
+#include <windows.h>
+#if !defined(__LCC__) && !defined(__MINGW32__) && !defined(__MSYS__)
 #define read _read
 #define write _write
 #define open _open
 #define close _close
-#  endif
-#  if !defined(__DMC__)
+#endif
+#if !defined(__DMC__)
 #define popen _popen
-#  endif
-# endif
-#define lseek64 lseek
+#endif
+#endif
+//#define lseek lseek64
 
 my_extern intptr_t io_comport;
 
-# elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
+#elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
 //# define HAVE_EPOLL 1
 //# define HAVE_SIGIO 1
 

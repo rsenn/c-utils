@@ -4,7 +4,8 @@
 slink**
 slist_find(slink** l, int (*pred)(slink*)) {
   while(*l) {
-    if(pred(*l)) return l;
+    if(pred(*l))
+      return l;
   }
   return NULL;
 }

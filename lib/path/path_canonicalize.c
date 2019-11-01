@@ -4,7 +4,9 @@
 #include "../path_internal.h"
 #include "../readlink.h"
 
+#ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 1
+#endif
 #define _XOPEN_SOURCE_EXTENDED 1
 #define _MISC_SOURCE 1
 #define _GNU_SOURCE 1
@@ -92,9 +94,9 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   size_t n;
   struct _stat st;
   int ret = 1;
-  int (*stat_fn)(const char*, struct _stat*) = stat;
   char buf[PATH_MAX + 1];
   char sep;
+  int (*stat_fn)(const char*, struct _stat*) = stat;
 #ifdef HAVE_LSTAT
 #if !WINDOWS_NATIVE
   if(symbolic)
@@ -149,12 +151,13 @@ start:
     path += n;
     /* now stat() the thing to verify it */
     byte_zero(&st, sizeof(st));
-    //    if(stat_fn(sa->s, &st) == -1) return 0;
+    if(stat_fn(sa->s, &st) == -1)
+      return 0;
     /* is it a symbolic link? */
     if(is_link(sa->s)) {
       ret++;
       /* read the link, return if failed and then nul-terminate the buffer */
-      if((n = readlink(sa->s, buf, PATH_MAX)) == -1)
+      if((ssize_t)(n = readlink(sa->s, buf, PATH_MAX)) == (ssize_t)-1)
         return 0;
       // buf[n] = '\0';
       /* if the symlink is absolute we clear the stralloc,

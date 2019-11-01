@@ -40,7 +40,7 @@ reduce(stralloc* sa) {
     }
   }
 
-  for(i = 0; i < sa->len; ++i) {
+  for(i = 0; i < (ssize_t)sa->len; ++i) {
     if(sa->s[i] == '-' && isdigit(sa->s[i + 1])) {
 
       size_t k = i + 1;
@@ -158,7 +158,7 @@ usage(char* av0) {
 int
 main(int argc, char* argv[]) {
   int index = 0, c;
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0}};
+  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

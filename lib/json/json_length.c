@@ -11,8 +11,9 @@ json_length(jsonval v) {
       return slist_length(&v.listv);
     }
     case JSON_OBJECT: {
-      return hmap_size(&v.dictv);
+      return hmap_size(v.dictv);
     }
+    default: break;
   }
   return 0;
 }

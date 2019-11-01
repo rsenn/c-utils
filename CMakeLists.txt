@@ -4,6 +4,12 @@ set(CMAKE_WARN_VS8 OFF)
 
 project(dirlist C)
 
+
+set(USE_SELECT "UNDEF" CACHE STRING "Use select() syscall")
+set(USE_POLL "UNDEF" CACHE STRING "Use poll() syscall")
+set(USE_EPOLL "UNDEF" CACHE STRING "Use epoll() syscall")
+
+
 set(DIRLIST_VERSION 1.0)
 set(CPACK_SOURCE_GENERATOR TXZ)
 set(CPACK_SOURCE_IGNORE_FILES ${ignored_files})
@@ -12,6 +18,26 @@ set(CPACK_PACKAGE_NAME dirlist)
 set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
 set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
 
+
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl" OR NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+    file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+    file(DOWNLOAD "http://distfiles.gentoo.org/distfiles/openssl-1.1.0j.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
+  endif()
+
+  exec_program(bsdtar ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+  file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.0j" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+  file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
+  file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
+  exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS
+    -p0 -i ../../build/cmake/openssl-1.1.0j-pkgs7.patch
+  )
+
+
+endif()
+#if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
+#  add_subdirectory(3rdparty/openssl)
+#endif()
 
 set(BUILD_SHARED_LIBS FALSE)
 
@@ -23,47 +49,7 @@ endif(NOT ENABLE_SHARED)
 
 include(FindPkgConfig)
 include(CheckFunctionExists)
-include(CheckTypeSize)
-#include(${CMAKE_SOURCE_DIR}/build/cmake/CheckSizeTypes.cmake)
-
-check_type_size(size_t SIZEOF_SIZE_T)
-check_type_size(_Bool SIZEOF__BOOL)
-
-if(SIZEOF__BOOL)
-  set(HAVE__BOOL TRUE)
-else(SIZEOF__BOOL)
-  set(HAVE__BOOL FALSE)
-endif(SIZEOF__BOOL)
-
-add_definitions(-DSIZEOF_SIZE_T=${SIZEOF_SIZE_T})
-
-if(HAVE__BOOL)
-  add_definitions(-DHAVE__BOOL=1)
-endif(HAVE__BOOL)
-
-include(CheckIncludeFile)
-check_include_file(stdbool.h HAVE_STDBOOL_H)
-check_include_file(stdint.h HAVE_STDINT_H)
-check_include_file(inttypes.h HAVE_INTTYPES_H)
-
-if(HAVE_STDBOOL_H)
-  add_definitions(-DHAVE_STDBOOL_H=1)
-endif(HAVE_STDBOOL_H)
-if(HAVE_STDINT_H)
-  add_definitions(-DHAVE_STDINT_H=1)
-endif(HAVE_STDINT_H)
-if(HAVE_INTTYPES_H)
-  add_definitions(-DHAVE_INTTYPES_H=1)
-endif(HAVE_INTTYPES_H)
-
 include(CheckLibraryExists)
-
-check_library_exists(pthread pthread_create "" HAVE_LIBPTHREAD)
-if(HAVE_LIBPTHREAD)
-  add_definitions(-DMYTHREAD_POSIX=1)
-endif(HAVE_LIBPTHREAD)
-
-
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -81,11 +67,63 @@ else(NOT HAVE_LSEEK64)
     add_definitions(-Dio_seek=lseek64)
 endif(NOT HAVE_LSEEK64)
 
+if(USE_POLL STREQUAL "UNDEF" AND NOT USE_SELECT STREQUAL "ON")
+  message(INFO "Checking for poll()...")
+  check_function_exists(poll_wait HAVE_POLL)
+  if(HAVE_POLL)
+    message(INFO "Checking for poll()... OK")
+    set(USE_POLL TRUE)
+    set(USE_SELECT FALSE)
+  else(HAVE_POLL)
+    message(INFO "Checking for poll()... NOT FOUND")
+    set(USE_POLL TRUE)
+  endif(HAVE_POLL)
+endif(USE_POLL STREQUAL "UNDEF")
+
+message("USE_SELECT=${USE_SELECT}")
+message("USE_POLL=${USE_POLL}")
+message("USE_EPOLL=${USE_EPOLL}")
+if(USE_POLL STREQUAL "UNDEF" AND USE_SELECT STREQUAL "UNDEF" AND USE_EPOLL STREQUAL "UNDEF")
+  set(USE_SELECT TRUE)
+endif()
+if(USE_POLL STREQUAL "ON")
+  add_definitions(-DHAVE_POLL=1 -DIOPAUSE_POLL=1)
+endif()
+
+if(USE_SELECT STREQUAL "ON")
+  add_definitions(-DUSE_SELECT=1 -DIOPAUSE_SELECT=1)
+endif()
+
+
+#message(INFO "Checking for epoll()...")
+#check_function_exists(epoll_wait HAVE_EPOLL)
+#if(HAVE_EPOLL)
+#  message(INFO "Checking for epoll()... OK")
+#  set(USE_EPOLL ON)
+#  set(USE_SELECT OFF)
+#else(HAVE_EPOLL)
+#  message(INFO "Checking for epoll()... NOT FOUND")
+#  set(USE_EPOLL OFF)
+#endif(HAVE_EPOLL)
+
+if(USE_EPOLL STREQUAL ON)
+  add_definitions(-DHAVE_EPOLL=1)
+endif()
+
+check_library_exists(compat daemon "" HAVE_COMPAT_LIB)
+if(HAVE_COMPAT_LIB)
+  set(LIBCOMPAT compat)
+endif()
+
 #include(${CMAKE_SOURCE_DIR}/FindZlib.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_definitions(-DDEBUG=1 -DDEBUG_OUTPUT=1)
+endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
 foreach(CompilerFlag ${CompilerFlags})
@@ -159,7 +197,6 @@ endif(OPENSSL_FOUND)
 if(OPENSSL_FOUND)
   add_definitions(-DHAVE_OPENSSL=1)
   include_directories(${OPENSSL_INCLUDE_DIR})
-
 endif(OPENSSL_FOUND)
 
 #link_libraries(
@@ -175,8 +212,6 @@ if(MINGW)
 elseif(WIN32 OR WIN64 OR MSVC)
   set(LIBMSWSOCK wsock32)
 endif()
-
-option(USE_SELECT "Use select() syscall" OFF)
 
 if(USE_SELECT)
    add_definitions(-DUSE_SELECT=1)
@@ -204,50 +239,26 @@ if(NOT ZLIB_LIBRARY)
   set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/zlib CACHE PATH "" FORCE)
 endif(NOT ZLIB_LIBRARY)
 
-if(NOT BZIP2_FOUND)
+if(NOT BZIP2_LIBRARY)
   message("Building libbz2 from 3rdparty/bzip2")
   file(GLOB LIBBZ2_SOURCES 3rdparty/bzip2/*.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
-  link_directories(${CMAKE_BINARY_DIR})
   set(BZIP2_LIBRARY_DEBUG bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_LIBRARY_RELEASE bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_LIBRARY bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
-endif(NOT BZIP2_FOUND)
+endif(NOT BZIP2_LIBRARY)
 
-if(NOT LIBLZMA_FOUND)
+if(NOT LIBLZMA_LIBRARY)
   message("Building liblzma from 3rdparty/xz")
   file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
   add_library(lzma ${LIBLZMA_SOURCES})
   set_target_properties(lzma PROPERTIES
     COMPILE_DEFINITIONS "HAVE_CONFIG_H=1"
   )
-  link_directories(${CMAKE_BINARY_DIR})
   set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
   set(LIBLZMA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api CACHE PATH "" FORCE)
-endif(NOT LIBLZMA_FOUND)
-
-if(NOT OPENSSL_FOUND)
-  message("Building openssl from 3rdparty/openssl")
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl" OR NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl.tar.gz")
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl.tar.gz")
-      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-      file(DOWNLOAD "http://distfiles.gentoo.org/distfiles/openssl-1.1.0j.tar.gz" "${CMAKE_SOURCE_DIR}/3rdparty/openssl.tar.gz" SHOW_PROGRESS)
-    endif()
-
-    exec_program(bsdtar ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/openssl.tar.gz")
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.0j" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-    file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
-    file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
-    exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS
-      -p0 -i ../../build/cmake/openssl-1.1.0j-pkgs7.patch
-    )
-  endif()
-  if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
-    add_subdirectory(3rdparty/openssl)
-  endif()
-  link_directories(${CMAKE_BINARY_DIR})
-endif(NOT OPENSSL_FOUND)
+endif(NOT LIBLZMA_LIBRARY)
 
 message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
 if(ZLIB_LIBRARY)
@@ -277,25 +288,7 @@ endif(LIBLZMA_LIBRARY)
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
-macro(GET_LIBDIRS)
-  file(GLOB TMPDIRS lib/*/)
-  list(FILTER TMPDIRS EXCLUDE REGEX \\.)
-  set(LIBDIRS "")
-  foreach(DIR ${TMPDIRS})
-    string(REGEX REPLACE ".*/" "" DIR "${DIR}")
-    if(EXISTS "${CMAKE_SOURCE_DIR}/lib/${DIR}.h")
-      list(APPEND LIBDIRS "${DIR}")
-    endif(EXISTS "${CMAKE_SOURCE_DIR}/lib/${DIR}.h")
-  endforeach(DIR ${LIBDIRS})
-endmacro(GET_LIBDIRS)
-  
-GET_LIBDIRS()
-
-
-#set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
-set(MODSUBDIRS ${LIBDIRS})
-
-  #string(REGEX REPLACE "/[^ \n\t\r]*/lib/" " " LIBDIRS "${LIBDIRS}")
+set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
 
 foreach(ARCHIVE ${MODSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -326,7 +319,7 @@ target_link_libraries(elf byte str range mmap uint64 uint32)
 target_link_libraries(fmt byte str uint64 uint32)
 target_link_libraries(gpio mmap)
 target_link_libraries(hmap str)
-target_link_libraries(http dns errmsg byte io scan socket str ${CRYPTO_LIBRARIES})
+target_link_libraries(http dns errmsg byte io scan socket stralloc str ${CRYPTO_LIBRARIES})
 target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
 target_link_libraries(json charbuf hmap scan)
 target_link_libraries(map str)
@@ -341,7 +334,7 @@ target_link_libraries(socket byte fmt ndelay scan uint16 ${LIBMSWSOCK})
 target_link_libraries(str byte)	
 target_link_libraries(stralloc open byte fmt str)
 target_link_libraries(strarray array)
-target_link_libraries(strlist stralloc)
+target_link_libraries(strlist stralloc buffer)
 target_link_libraries(taia tai)
 target_link_libraries(textbuf byte playlist)
 target_link_libraries(uint64 uint32)
@@ -349,6 +342,7 @@ target_link_libraries(xml buffer array strlist hmap alloc)
 target_link_libraries(json slist hmap stralloc buffer alloc)
 target_link_libraries(ndelay socket)
 target_link_libraries(process wait errmsg)
+target_link_libraries(ihex scan byte)
 
 
 set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )
@@ -380,9 +374,7 @@ set(COMPRESSION_LIBRARIES
 )
 
 if(OPENSSL_LIBRARIES)
-  set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES})
-else(OPENSSL_LIBRARIES)
-  set(CRYPTO_LIBRARIES )
+  set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES} pthread)
 endif(OPENSSL_LIBRARIES)
 
 add_program(binfmttest binfmt)
@@ -401,7 +393,7 @@ add_program(eagle-to-circuit xml stralloc buffer strlist  array byte cb cbmap fm
 add_program(elf64list elf mmap uint16 uint32 uint64)
 add_program(elflist buffer errmsg unix elf mmap str)
 add_program(elfwrsec buffer elf mmap)
-add_program(genmakefile strarray stralloc buffer rdir errmsg hmap mmap path scan slist case str unix  strlist ${LIBSHLWAPI})
+add_program(genmakefile strarray stralloc buffer rdir errmsg hmap mmap path scan slist case str unix  strlist byte ${LIBSHLWAPI})
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES})
 add_program(impgen buffer byte mmap open pe uint16 uint32)
@@ -430,7 +422,7 @@ add_program(xmltest3 xml stralloc buffer byte fmt hmap)
 add_program(xmltest4 xml stralloc buffer array byte cb cbmap fmt hmap mmap scan str strlist)
 add_program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
 add_program(cc-wrap errmsg env buffer path dir strarray strlist stralloc fmt)
-add_program(ar-wrap process errmsg env buffer path dir strarray strlist stralloc fmt)
+add_program(ar-wrap process errmsg env buffer path dir strarray strlist stralloc fmt alloc)
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
 add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
 add_program(tcping map unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
@@ -440,8 +432,14 @@ add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
 add_program(jsonpp json errmsg unix)
 add_program(xml2json json xml errmsg unix)
 add_program(xml2moon xml textcode errmsg)
-add_program(su-cmd errmsg)
 
+add_program(httpproxy http io map)
+#add_program(tinyproxy http io)
+add_program(tcpproxy http io)
+add_program(redir http io ${LIBCOMPAT})
+
+add_program(parse strlist errmsg)
+add_program(testihex ihex stralloc buffer alloc mmap)
 
 add_subdirectory(tests)
-#add_subdirectory(examples)
+add_subdirectory(examples)

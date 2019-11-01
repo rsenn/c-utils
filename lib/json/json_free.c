@@ -7,7 +7,7 @@ struct free_stats {
 };
 
 static void
-json_free_count(jsonval* val, struct free_stats* st, int depth) {
+json_free_count(jsonval* val, struct free_stats* st, size_t depth) {
   ++st->num;
   if(st->max_depth < depth)
     st->max_depth = depth;
@@ -37,6 +37,7 @@ json_free_val(jsonval* val, jsonval* parent) {
       val->listv = 0;
       break;
     }
+    default: break;
   }
 
   if(!parent || (parent->type != JSON_OBJECT && parent->type != JSON_ARRAY))

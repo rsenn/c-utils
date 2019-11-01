@@ -6,7 +6,7 @@
 #if !WINDOWS_NATIVE
 #include <signal.h>
 
-//typedef _sigset_t sigset_t;
+// typedef _sigset_t sigset_t;
 #endif
 
 #ifndef SIG_BLOCK

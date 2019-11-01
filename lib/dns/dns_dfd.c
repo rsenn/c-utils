@@ -15,12 +15,14 @@ dns_domain_fromdot(char** out, const char* buf, size_t n) {
   errno = EINVAL;
 
   for(;;) {
-    if(!n) break;
+    if(!n)
+      break;
     ch = *buf++;
     --n;
     if(ch == '.') {
       if(labellen) {
-        if(namelen + labellen + 1 > sizeof name) return 0;
+        if(namelen + labellen + 1 > sizeof name)
+          return 0;
         name[namelen++] = labellen;
         byte_copy(name + namelen, labellen, label);
         namelen += labellen;
@@ -29,7 +31,8 @@ dns_domain_fromdot(char** out, const char* buf, size_t n) {
       continue;
     }
     if(ch == '\\') {
-      if(!n) break;
+      if(!n)
+        break;
       ch = *buf++;
       --n;
       if((ch >= '0') && (ch <= '7')) {
@@ -48,25 +51,30 @@ dns_domain_fromdot(char** out, const char* buf, size_t n) {
         }
       }
     }
-    if(labellen >= sizeof label) return 0;
+    if(labellen >= sizeof label)
+      return 0;
     label[labellen++] = ch;
   }
 
   if(labellen) {
-    if(namelen + labellen + 1 > sizeof name) return 0;
+    if(namelen + labellen + 1 > sizeof name)
+      return 0;
     name[namelen++] = labellen;
     byte_copy(name + namelen, labellen, label);
     namelen += labellen;
   }
 
-  if(namelen + 1 > sizeof name) return 0;
+  if(namelen + 1 > sizeof name)
+    return 0;
   name[namelen++] = 0;
 
   x = malloc(namelen);
-  if(!x) return 0;
+  if(!x)
+    return 0;
   byte_copy(x, namelen, name);
 
-  if(*out) free(*out);
+  if(*out)
+    free(*out);
   *out = x;
   return 1;
 }

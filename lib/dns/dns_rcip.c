@@ -21,26 +21,26 @@
 #define MAX_DOMAIN_NAME_LEN 128
 #define MAX_SCOPE_ID_LEN 256
 typedef struct {
-	char String[4 * 4];
-} IP_ADDRESS_STRING,*PIP_ADDRESS_STRING,IP_MASK_STRING,*PIP_MASK_STRING;
+  char String[4 * 4];
+} IP_ADDRESS_STRING, *PIP_ADDRESS_STRING, IP_MASK_STRING, *PIP_MASK_STRING;
 typedef struct _IP_ADDR_STRING {
-	struct _IP_ADDR_STRING* Next;
-	IP_ADDRESS_STRING IpAddress;
-	IP_MASK_STRING IpMask;
-	DWORD Context;
-} IP_ADDR_STRING,*PIP_ADDR_STRING;
+  struct _IP_ADDR_STRING* Next;
+  IP_ADDRESS_STRING IpAddress;
+  IP_MASK_STRING IpMask;
+  DWORD Context;
+} IP_ADDR_STRING, *PIP_ADDR_STRING;
 
 typedef struct {
-	char HostName[MAX_HOSTNAME_LEN + 4] ;
-	char DomainName[MAX_DOMAIN_NAME_LEN + 4];
-	PIP_ADDR_STRING CurrentDnsServer;
-	IP_ADDR_STRING DnsServerList;
-	UINT NodeType;
-	char ScopeId[MAX_SCOPE_ID_LEN + 4];
-	UINT EnableRouting;
-	UINT EnableProxy;
-	UINT EnableDns;
-} FIXED_INFO,*PFIXED_INFO;
+  char HostName[MAX_HOSTNAME_LEN + 4];
+  char DomainName[MAX_DOMAIN_NAME_LEN + 4];
+  PIP_ADDR_STRING CurrentDnsServer;
+  IP_ADDR_STRING DnsServerList;
+  UINT NodeType;
+  char ScopeId[MAX_SCOPE_ID_LEN + 4];
+  UINT EnableRouting;
+  UINT EnableProxy;
+  UINT EnableDns;
+} FIXED_INFO, *PFIXED_INFO;
 #endif
 
 static stralloc data;
@@ -54,16 +54,16 @@ init(char ip[256]) {
 #if WINDOWS
   FIXED_INFO* pFixedInfo;
   ULONG ulOutBufLen;
-  typedef DWORD (WINAPI get_network_params_fn)(PFIXED_INFO pFixedInfo,PULONG pOutBufLen);
+  typedef DWORD(WINAPI get_network_params_fn)(PFIXED_INFO pFixedInfo, PULONG pOutBufLen);
   static get_network_params_fn* get_network_params;
 
   if(get_network_params == 0) {
-  HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
-  
-  if(iphlpapi != INVALID_HANDLE_VALUE) {
-    if((get_network_params = (get_network_params_fn*)GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
-    return -1;   
-  }
+    HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
+
+    if(iphlpapi != INVALID_HANDLE_VALUE) {
+      if((get_network_params = (get_network_params_fn*)GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
+        return -1;
+    }
   }
 #endif
 
@@ -98,7 +98,8 @@ init(char ip[256]) {
         ++x;
       else {
         i = scan_ip6(x, ip + iplen);
-        if(!i) break;
+        if(!i)
+          break;
         x += i;
         iplen += 16;
       }
@@ -106,9 +107,11 @@ init(char ip[256]) {
 
   if(!iplen) {
     i = openreadclose("/etc/resolv.conf", &data, 64);
-    if(i == (unsigned long int)-1) return -1;
+    if(i == (unsigned long int)-1)
+      return -1;
     if(i) {
-      if(!stralloc_append(&data, "\n")) return -1;
+      if(!stralloc_append(&data, "\n"))
+        return -1;
       i = 0;
       for(j = 0; j < data.len; ++j)
         if(data.s[j] == '\n') {
@@ -143,11 +146,14 @@ dns_resolvconfip(char s[256]) {
   struct taia now;
 
   taia_now(&now);
-  if(taia_less(&deadline, &now)) ok = 0;
-  if(!uses) ok = 0;
+  if(taia_less(&deadline, &now))
+    ok = 0;
+  if(!uses)
+    ok = 0;
 
   if(!ok) {
-    if(init(ip) == -1) return -1;
+    if(init(ip) == -1)
+      return -1;
     taia_uint(&deadline, 600);
     taia_add(&deadline, &now, &deadline);
     uses = 10000;

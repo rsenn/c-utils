@@ -21,7 +21,9 @@ extern "C" {
 
 #include "typedefs.h"
 
-typedef struct critbit_tree { void* root; } critbit_tree;
+typedef struct critbit_tree {
+  void* root;
+} critbit_tree;
 
 #define CB_SUCCESS 0
 #define CB_EXISTS 1

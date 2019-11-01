@@ -3,7 +3,7 @@
 
 size_t
 byte_camelize(char* x, size_t len) {
-  size_t i,o = 0;
+  size_t i, o = 0;
 
   for(i = 0; i < len; i++) {
     if(x[i] == '-') {
@@ -15,4 +15,3 @@ byte_camelize(char* x, size_t len) {
   }
   return o;
 }
-

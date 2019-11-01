@@ -6,7 +6,7 @@ dir_path(struct dir_s* d, stralloc* sa) {
 #if USE_READDIR
   DIR* dh = dir_INTERNAL(d)->dir_handle;
 
-  //stralloc_copys(sa, dh->__d_dirname);
+  // stralloc_copys(sa, dh->__d_dirname);
 #else
 #if USE_WIDECHAR
   stralloc_copywcs(sa, dir_INTERNAL(d)->dir_path);
@@ -15,7 +15,8 @@ dir_path(struct dir_s* d, stralloc* sa) {
 #endif
 
 #endif
-  if(sa->len > 0 && sa->s[sa->len - 1] == '*') --sa->len;
+  if(sa->len > 0 && sa->s[sa->len - 1] == '*')
+    --sa->len;
 
 #if !USE_READDIR && USE_WIDECHAR
   stralloc_catwcs(sa, dir_NAME(d));

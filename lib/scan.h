@@ -48,6 +48,8 @@ size_t scan_xshort(const char* src, unsigned short* dest);
 size_t scan_8short(const char* src, unsigned short* dest);
 size_t scan_short(const char* src, signed short* dest);
 
+size_t scan_xchar(const char*, unsigned char*);
+
 /* interpret src as double precision floating point number,
  * write number to dest and return the number of bytes that were parsed */
 size_t scan_double(const char* in, double* dest);

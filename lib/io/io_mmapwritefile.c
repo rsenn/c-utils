@@ -103,7 +103,7 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
   }
 readwrite:
 #ifndef HAVE_PREAD
-  if(io_seek(in, off, SEEK_SET) != off)
+  if((uint64)io_seek(in, off, SEEK_SET) != off)
     return -1;
 #endif
   while(bytes > 0) {

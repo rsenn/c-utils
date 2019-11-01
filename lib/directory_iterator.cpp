@@ -3,24 +3,22 @@
 
 #include <cstring>
 
-//namespace util {
+// namespace util {
 
 directory_iterator::directory_iterator(const string& path, const string& filter) {
   string p = path;
   if(dir_open(&m_handle, p.c_str())) {
-  	m_retcode = NULL;
+    m_retcode = NULL;
   } else {
-  	next();
+    next();
   }
 }
 
-directory_iterator::~directory_iterator() {
-  close();
-}
+directory_iterator::~directory_iterator() { close(); }
 
-directory_iterator&
-directory_iterator::operator ++() {
-  if(m_retcode > 0) next();
+directory_iterator& directory_iterator::operator++() {
+  if(m_retcode > 0)
+    next();
   return *this;
 }
 
@@ -39,16 +37,17 @@ directory_iterator::close() {
 
 int
 directory_iterator::next() {
-  //int len = requested_buffer_length();
-  //allocate(len);
+  // int len = requested_buffer_length();
+  // allocate(len);
   m_retcode = dir_read(&m_handle);
-  //m_buffer.resize(len);
+  // m_buffer.resize(len);
   return (m_retcode == NULL ? -1 : 0);
 }
 
 int
 directory_iterator::requested_buffer_length() {
-  if(m_retcode) return str_len(m_retcode)+1;
+  if(m_retcode)
+    return str_len(m_retcode) + 1;
   return 0;
 }
 

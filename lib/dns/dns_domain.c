@@ -28,9 +28,11 @@ dns_domain_copy(char** out, const char* in) {
 
   len = dns_domain_length(in);
   x = malloc(len);
-  if(!x) return 0;
+  if(!x)
+    return 0;
   byte_copy(x, len, in);
-  if(*out) free(*out);
+  if(*out)
+    free(*out);
   *out = x;
   return 1;
 }
@@ -40,9 +42,11 @@ dns_domain_equal(const char* dn1, const char* dn2) {
   unsigned int len;
 
   len = dns_domain_length(dn1);
-  if(len != dns_domain_length(dn2)) return 0;
+  if(len != dns_domain_length(dn2))
+    return 0;
 
-  if(case_diffb(dn1, len, dn2)) return 0; /* safe since 63 < 'A' */
+  if(case_diffb(dn1, len, dn2))
+    return 0; /* safe since 63 < 'A' */
   return 1;
 }
 
@@ -51,9 +55,11 @@ dns_domain_suffix(const char* big, const char* little) {
   unsigned char c;
 
   for(;;) {
-    if(dns_domain_equal(big, little)) return 1;
+    if(dns_domain_equal(big, little))
+      return 1;
     c = *big++;
-    if(!c) return 0;
+    if(!c)
+      return 0;
     big += c;
   }
 }
@@ -64,9 +70,11 @@ dns_domain_suffixpos(const char* big, const char* little) {
   unsigned char c;
 
   for(;;) {
-    if(dns_domain_equal(big, little)) return big - orig;
+    if(dns_domain_equal(big, little))
+      return big - orig;
     c = *big++;
-    if(!c) return 0;
+    if(!c)
+      return 0;
     big += c;
   }
 }

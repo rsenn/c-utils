@@ -50,14 +50,14 @@ main() {
 
     byte_zero(buf, sizeof(buf));
     uint64_pack_big(buf, 0x0102030405060708ull);
-    for(i = 0; i < 8; ++i) assert(buf[i] == i + 1);
+    for(i = 0; i < 8; ++i) assert((unsigned char)buf[i] == i + 1);
     uint64_unpack_big(buf, &a);
     assert(a == 0x0102030405060708ull);
     assert(uint64_read_big(buf) == 0x0102030405060708ull);
 
     byte_zero(buf, sizeof(buf));
     uint64_pack(buf, 0x0102030405060708ull);
-    for(i = 0; i < 8; ++i) assert(buf[7 - i] == i + 1);
+    for(i = 0; i < 8; ++i) assert((unsigned char)buf[7 - i] == i + 1);
     uint64_unpack(buf, &a);
     assert(a == 0x0102030405060708ull);
     assert(uint64_read(buf) == 0x0102030405060708ull);

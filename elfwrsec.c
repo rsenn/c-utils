@@ -35,7 +35,8 @@ get_p_type(int type) {
                                         "PT_TLS    ",
                                         "PT_NUM    "};
 
-  if(type < (int)(sizeof(p_types) / sizeof(p_types[0]))) return p_types[type];
+  if(type < (int)(sizeof(p_types) / sizeof(p_types[0])))
+    return p_types[type];
 
   if(type >= 0x6474e550 && type <= 0x6474e552) {
     static const char* const gnu_p_types[] = {"PT_GNU_EH_FRAME", "PT_GNU_STACK", "PT_GNU_RELRO"};
@@ -52,7 +53,8 @@ print_flags(const char* const flagset[], int flags) {
 
   for(shift = 0; flagset[shift]; ++shift) {
     if(flags & (1 << shift)) {
-      if(prev) buffer_puts(buffer_1, " | ");
+      if(prev)
+        buffer_puts(buffer_1, " | ");
       buffer_puts(buffer_1, flagset[shift]);
       ++prev;
     }
@@ -85,7 +87,6 @@ print_phdr64(elf64_phdr* phdr) {
 
   return 0;
 }
-
 
 int
 print_shdr64(elf64_shdr* shdr) {
@@ -159,8 +160,10 @@ main(int argc, char* argv[]) {
 
   const char* fn = NULL;
 
-  if(argc > 1) fn = argv[1];
-  if(argc > 2) section = argv[2];
+  if(argc > 1)
+    fn = argv[1];
+  if(argc > 2)
+    section = argv[2];
 
   return elfwrsec(fn);
 }

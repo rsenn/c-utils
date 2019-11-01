@@ -7,6 +7,10 @@
 #include "../socket_internal.h"
 #include <sys/types.h>
 
+#ifndef WINDOWS
+#include <net/if.h>
+#endif
+
 uint32
 socket_getifidx(const char* ifname) {
 #if defined(HAVE_N2I) && !defined(__EMSCRIPTEN__)

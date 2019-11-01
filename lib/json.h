@@ -42,11 +42,11 @@ typedef struct {
 } jsonreader;
 
 typedef union {
-   const char* ws[5];
-   struct {
-     const char *indent, *newline, *spacing, *separat, *quote;
-     int precision, depth, index;
-   };
+  const char* ws[5];
+  struct {
+    const char *indent, *newline, *spacing, *separat, *quote;
+    int precision, depth, index;
+  };
 } jsonfmt;
 
 #define JSON_FMT_INDENT 0
@@ -55,46 +55,46 @@ typedef union {
 #define JSON_FMT_SEPARATOR 3
 #define JSON_FMT_QUOTE 4
 
-
 typedef int(json_read_callback_fn)(jsonreader* r, jsondata id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
 typedef int(json_predicate_fn)();
 
+void json_free(jsonval*);
 
-void        json_free(jsonval*);
+void json_reader_init(jsonreader*, charbuf* b);
+void json_read_callback(jsonreader*, json_read_callback_fn* fn);
+jsonval* json_read_tree(charbuf*);
 
-void        json_reader_init(jsonreader*, charbuf* b);
-void        json_read_callback(jsonreader*, json_read_callback_fn* fn);
-jsonval*    json_read_tree(charbuf*);
+int json_parse_array(jsonval*, charbuf* b);
+int json_parse_bool(jsonval*, charbuf* b);
+int json_parse_getsa(charbuf*, stralloc* sa);
+int json_parse(jsonval*, charbuf* b);
+int json_parse_num(jsonval*, charbuf* b);
+int json_parse_object(jsonval*, charbuf* b);
+int json_parse_string(jsonval*, charbuf* b);
 
-int         json_parse_array(jsonval*, charbuf* b);
-int         json_parse_bool(jsonval*, charbuf* b);
-int         json_parse_getsa(charbuf*, stralloc* sa);
-int         json_parse(jsonval*, charbuf* b);
-int         json_parse_num(jsonval*, charbuf* b);
-int         json_parse_object(jsonval*, charbuf* b);
-int         json_parse_string(jsonval*, charbuf* b);
+void json_recurse(jsonval*, void (*fn)(), void* arg);
 
-void        json_recurse(jsonval*, void (*fn)(), void* arg);
+jsonval* json_newnode(jsondata);
 
-jsonval*    json_newnode(jsondata);
+jsonval* json_set_property(jsonval*, jsonval name, jsonval value);
+jsonval json_get_property(jsonval, jsonval name);
+jsonval* json_push(jsonval* arr, jsonval item);
+int64 json_length(jsonval);
 
-jsonval*    json_set_property(jsonval*, jsonval name, jsonval value);
-jsonval     json_get_property(jsonval, jsonval name);
-jsonval*    json_push(jsonval* arr, jsonval item);
-int64       json_length(jsonval);
+void json_print(jsonval, buffer* b, void (*p)());
+void json_tosa(jsonval, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int));
 
-void        json_print(jsonval, buffer* b, void (*p)());
-void        json_tosa(jsonval, stralloc* sa, void (*p)(jsonfmt*, jsonval* , int));
-
-double      json_todouble(jsonval);
-int64       json_toint(jsonval);
+double json_todouble(jsonval);
+int64 json_toint(jsonval);
 const char* json_tostring(jsonval, stralloc* sa);
 
-static inline int json_is_identifier_char(int c) {
+static inline int
+json_is_identifier_char(int c) {
   return isalpha(c) || c == '$' || c == '_' || ispunct(c);
 }
-static inline const char* json_str(jsonval* val) {
+static inline const char*
+json_str(jsonval* val) {
   if(val->type == JSON_STRING) {
     stralloc_nul(&val->stringv);
     return val->stringv.s;
@@ -102,20 +102,81 @@ static inline const char* json_str(jsonval* val) {
   return 0;
 }
 
+static inline jsonval
+json_undefined() {
+  jsonval ret;
+  ret.type = JSON_UNDEFINED;
+  return ret;
+}
+static inline jsonval
+json_null() {
+  jsonval ret;
+  ret.type = JSON_OBJECT;
+  ret.dictv = 0;
+  return ret;
+}
+static inline jsonval
+json_object() {
+  jsonval ret;
+  ret.type = JSON_OBJECT;
+  ret.dictv = 0;
+  hmap_init(MAP_BUCKET, &ret.dictv);
+  return ret;
+}
+static inline jsonval
+json_array() {
+  jsonval ret;
+  ret.type = JSON_ARRAY;
+  ret.listv = 0;
+  return ret;
+}
+static inline jsonval
+json_double(double n) {
+  jsonval ret;
+  ret.type = JSON_DOUBLE;
+  ret.doublev = n;
+  return ret;
+}
+static inline jsonval
+json_int(int64 i) {
+  jsonval ret;
+  ret.type = JSON_INT;
+  ret.intv = i;
+  return ret;
+}
+static inline jsonval
+json_bool(int b) {
+  jsonval ret;
+  ret.type = JSON_BOOL;
+  ret.boolv = !!b;
+  return ret;
+}
+static inline jsonval
+json_string(const char* s) {
+  jsonval ret;
+  ret.type = JSON_STRING;
+  ret.stringv.a = 1 + (ret.stringv.len = str_len(s));
+  ret.stringv.s = (char*)str_ndup(s, ret.stringv.len);
+  return ret;
+}
+static inline jsonval
+json_stringn(const char* s, size_t n) {
+  jsonval ret;
+  ret.type = JSON_STRING;
+  ret.stringv.s = (char*)str_ndup(s, n);
+  ret.stringv.len = n;
+  ret.stringv.a = n + 1;
+  return ret;
+}
 
-static inline jsonval json_undefined() { jsonval ret = { JSON_UNDEFINED }; return ret; }
-static inline jsonval json_null() { jsonval ret = { JSON_OBJECT }; ret.dictv = 0; return ret; }
-static inline jsonval json_object() { jsonval ret = { JSON_OBJECT }; ret.dictv = 0; hmap_init(MAP_BUCKET, &ret.dictv); return ret; }
-static inline jsonval json_array() { jsonval ret = { JSON_ARRAY }; ret.listv = 0; return ret; }
-static inline jsonval json_double(double n) {jsonval ret = { JSON_DOUBLE }; ret.doublev = n; return ret; }
-static inline jsonval json_int(int64 i) { jsonval ret = { JSON_INT }; ret.intv = i; return ret; }
-static inline jsonval json_bool(int b) { jsonval ret = { JSON_BOOL }; ret.boolv = !!b; return ret; }
-static inline jsonval json_string(const char* s) { jsonval ret = { JSON_STRING }; ret.stringv.a = 1 + (ret.stringv.len = str_len(s)); ret.stringv.s = (char*)str_ndup(s, ret.stringv.len);  0; return ret; }
-static inline jsonval json_stringn(const char* s, size_t n) { jsonval ret = { JSON_STRING }; ret.stringv.s = (char*)str_ndup(s, n); ret.stringv.len = n; ret.stringv.a = n + 1; return ret; }
-
-
-static inline int json_isnull(jsonval v) { return v.type == JSON_OBJECT && v.dictv == 0; }
-static inline int json_isnumber(jsonval v) { return v.type == JSON_INT || v.type == JSON_DOUBLE; }
+static inline int
+json_isnull(jsonval v) {
+  return v.type == JSON_OBJECT && v.dictv == 0;
+}
+static inline int
+json_isnumber(jsonval v) {
+  return v.type == JSON_INT || v.type == JSON_DOUBLE;
+}
 
 #ifdef __cplusplus
 }

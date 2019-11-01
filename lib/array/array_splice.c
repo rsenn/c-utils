@@ -9,20 +9,20 @@ array_splice(array* a, uint64 membersize, uint64 start, uint64 del, uint64 inser
   uint64 i, len, newlen;
 
   len = array_length(a, membersize);
-  
+
   if(start + del > len)
     del = len - start;
 
   newlen = len - del + insert;
 
-  if(insert) { 
+  if(insert) {
     if(!umult64(membersize, insert, &i))
       return -1;
   }
 
   if(insert != del) {
     size_t bytes;
-    char *newend;
+    char* newend;
     s = array_get(a, membersize, start + del);
     bytes = a->p + a->initialized - s;
     newend = array_allocate(a, membersize, newlen);

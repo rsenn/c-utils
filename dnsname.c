@@ -26,7 +26,8 @@ main(int argc, char** argv) {
   errmsg_iam(argv[0]);
   dns_random_init(seed);
 
-  if(*argv) ++argv;
+  if(*argv)
+    ++argv;
 
   while(*argv) {
     if(!ip4_scan(*argv, ip)) {

@@ -27,49 +27,19 @@
 
 #define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
 
-typedef void (output_fn)(const char* sender,
-                         const char* thema,
-                         const char* title,
-                         unsigned duration,
-                         const char* datetime,
-                         const char* url,
-                         const char* description);
-
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
-/*static const char* output_format_name = "m3u";*/
 static int csv = 0;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
-typedef struct {
-  const char* name;
-  output_fn* fn;
-} output_format;
-
-int
-output_format_diff(const void* x, const void* y) {
-  const output_format *a = y;
-  const char *b = x;
-  return str_diff(a->name, b);
-}
-
-output_fn output_entry_m3u, output_entry_sh;
-
-static const output_format format_table[] = {
-  { "m3u", &output_entry_m3u },
-  { "sh", &output_entry_sh },
-};
-
-static output_format*
-find_output_format(const char* name) {
-  output_format* fmt = bsearch(name, &format_table, sizeof(format_table) / sizeof(output_format), sizeof(output_format), &output_format_diff);
-
-  if(fmt) return fmt->fn;
-  return 0;
-}
-
-static output_fn* output_fmt;
+void output_entry(const char* sender,
+                  const char* thema,
+                  const char* title,
+                  unsigned duration,
+                  const char* datetime,
+                  const char* url,
+                  const char* description);
 
 /**
  * @brief read_line
@@ -247,9 +217,8 @@ process_entry(char** av, int ac) {
     time_t t;
     unsigned d;
 
-    char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6],
-          *description = av[8],
-           *url = av[9], *url_klein = av[13];
+    char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6], *description = av[8], *url = av[9],
+         *url_klein = av[13];
 
     stralloc url_lo;
     stralloc_init(&url_lo);
@@ -309,7 +278,7 @@ process_entry(char** av, int ac) {
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
 
-    output_fmt(sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url, description);
+    output_entry(sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url, description);
 
     (void)t;
   } else {
@@ -348,13 +317,13 @@ put_quoted_string(const char* str) {
  * @param description
  */
 void
-output_entry_m3u(const char* sender,
-                 const char* thema,
-                 const char* title,
-                 unsigned duration,
-                 const char* datetime,
-                 const char* url,
-                 const char* description) {
+output_entry(const char* sender,
+             const char* thema,
+             const char* title,
+             unsigned duration,
+             const char* datetime,
+             const char* url,
+             const char* description) {
 
   if(csv == 0) {
     buffer_puts(buffer_1, "#EXTINF:");
@@ -389,31 +358,6 @@ output_entry_m3u(const char* sender,
   }
   buffer_put(buffer_1, "\r\n", 2);
   buffer_flush(buffer_1);
-}
-void
-output_entry_sh(const char* sender,
-                const char* thema,
-                const char* title,
-                unsigned duration,
-                const char* datetime,
-                const char* url,
-                const char* description) {
-
-  stralloc filename, t;
-  stralloc_init(&filename);
-  stralloc_init(&t);
-  stralloc_subst(&t, title, str_len(title), ": ", " - ");
-  stralloc_replacec(&t, '/', '-');
-  stralloc_nul(&t);
-  stralloc_catm_internal(&filename,  thema, " - ", t.s, ".mp4", 0);
-  stralloc_free(&t);
-  stralloc_nul(&filename);
-
-
-  buffer_putm_internal(buffer_1, "wget -c -O '", filename.s, "' '", url, "'", 0);
-  buffer_putnlflush(buffer_1);
-
-  stralloc_free(&filename);
 }
 
 /**
@@ -462,10 +406,6 @@ process_input(buffer* input) {
   return ret;
 }
 
-void usage(const char* argv0) {
-  buffer_putm_internal(buffer_2, "Usage: ", argv0, "[-d] [-l] [-F] <file>\n", 0);
-  buffer_flush(buffer_2);
-}
 /**
  * @brief main
  * @param argc
@@ -479,28 +419,23 @@ main(int argc, char* argv[]) {
   buffer b;
 
   struct longopt opts[] = {
-    {"csv", 0, NULL, 'c'}, {"debug", 0, NULL, 'd'}, {"low", 0, NULL, 'l'}, {"format", 1, NULL, 'F'}, {0},
+      {"csv", 0, NULL, 'c'},
+      {"debug", 0, NULL, 'd'},
+      {"low", 0, NULL, 'l'},
+      {"format", 1, NULL, 'F'},
+      {0, 0, 0, 0},
   };
 
-  while((opt = getopt_long(argc, argv, "cdf:t:i:x:lF:", opts, &index)) != -1) {
+  while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {
     if(opt == 0)
       continue;
 
     switch(opt) {
-    case 'c': csv = 1; break;
-    case 'd': debug++; break;
-    case 'l': lowq++; break;
-    case 'f': datetime_format = optarg; break;
-    case 'F': {
-      output_format* fmt = find_output_format(optarg);
-      if(fmt == NULL) {
-        usage(argv[0]);
-        return EXIT_FAILURE;
-      }
-      output_fmt = fmt;
-      break;
-    }
-    default: /* '?' */ usage(argv[0]); exit(EXIT_FAILURE);
+      case 'c': csv = 1; break;
+      case 'd': debug++; break;
+      case 'l': lowq++; break;
+      case 'f': datetime_format = optarg; break;
+      default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n"); exit(EXIT_FAILURE);
     }
   }
 
@@ -508,9 +443,6 @@ main(int argc, char* argv[]) {
     ++argc;
     argv[optind] = "-";
   }
-
-  if(output_fmt == NULL)
-    output_fmt = &output_entry_m3u;
 
   while(optind < argc) {
 

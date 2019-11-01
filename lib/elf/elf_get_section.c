@@ -8,7 +8,8 @@ elf_get_section(void* elf, const char* name, size_t* szp) {
       *szp = elf_section_size(elf, si);
     return elf_section_offset(elf, si);
   } else {
-    if(szp) *szp = 0;
+    if(szp)
+      *szp = 0;
   }
   return 0;
 }

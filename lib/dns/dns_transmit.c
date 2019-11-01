@@ -21,8 +21,10 @@ static int
 serverwantstcp(const char* buf, unsigned int len) {
   char out[12];
 
-  if(!dns_packet_copy(buf, len, 0, out, 12)) return 1;
-  if(out[2] & 2) return 1;
+  if(!dns_packet_copy(buf, len, 0, out, 12))
+    return 1;
+  if(out[2] & 2)
+    return 1;
   return 0;
 }
 
@@ -31,7 +33,8 @@ serverfailed(const char* buf, unsigned int len) {
   char out[12];
   unsigned int rcode;
 
-  if(!dns_packet_copy(buf, len, 0, out, 12)) return 1;
+  if(!dns_packet_copy(buf, len, 0, out, 12))
+    return 1;
   rcode = out[3];
   rcode &= 15;
   if(rcode && (rcode != 3)) {
@@ -48,14 +51,19 @@ irrelevant(const struct dns_transmit* d, const char* buf, unsigned int len) {
   unsigned int pos;
 
   pos = dns_packet_copy(buf, len, 0, out, 12);
-  if(!pos) return 1;
-  if(byte_diff(out, 2, d->query + 2)) return 1;
-  if(out[4] != 0) return 1;
-  if(out[5] != 1) return 1;
+  if(!pos)
+    return 1;
+  if(byte_diff(out, 2, d->query + 2))
+    return 1;
+  if(out[4] != 0)
+    return 1;
+  if(out[5] != 1)
+    return 1;
 
   dn = 0;
   pos = dns_packet_getname(buf, len, pos, &dn);
-  if(!pos) return 1;
+  if(!pos)
+    return 1;
   if(!dns_domain_equal(dn, d->query + 14)) {
     free(dn);
     return 1;
@@ -63,30 +71,36 @@ irrelevant(const struct dns_transmit* d, const char* buf, unsigned int len) {
   free(dn);
 
   pos = dns_packet_copy(buf, len, pos, out, 4);
-  if(!pos) return 1;
-  if(byte_diff(out, 2, d->qtype)) return 1;
-  if(byte_diff(out + 2, 2, DNS_C_IN)) return 1;
+  if(!pos)
+    return 1;
+  if(byte_diff(out, 2, d->qtype))
+    return 1;
+  if(byte_diff(out + 2, 2, DNS_C_IN))
+    return 1;
 
   return 0;
 }
 
 static void
 packetfree(struct dns_transmit* d) {
-  if(!d->packet) return;
+  if(!d->packet)
+    return;
   free(d->packet);
   d->packet = 0;
 }
 
 static void
 queryfree(struct dns_transmit* d) {
-  if(!d->query) return;
+  if(!d->query)
+    return;
   free(d->query);
   d->query = 0;
 }
 
 static void
 socketfree(struct dns_transmit* d) {
-  if(!d->s1) return;
+  if(!d->s1)
+    return;
   closesocket(d->s1 - 1);
   d->s1 = 0;
 }
@@ -103,8 +117,10 @@ randombind(struct dns_transmit* d) {
   int j;
 
   for(j = 0; j < 10; ++j)
-    if(socket_bind6(d->s1 - 1, d->localip, 1025 + dns_random(64510), d->scope_id) == 0) return 0;
-  if(socket_bind6(d->s1 - 1, d->localip, 0, d->scope_id) == 0) return 0;
+    if(socket_bind6(d->s1 - 1, d->localip, 1025 + dns_random(64510), d->scope_id) == 0)
+      return 0;
+  if(socket_bind6(d->s1 - 1, d->localip, 0, d->scope_id) == 0)
+    return 0;
   return -1;
 }
 
@@ -238,7 +254,8 @@ dns_transmit_start(struct dns_transmit* d,
   len = dns_domain_length(q);
   d->querylen = len + 18;
   d->query = malloc(d->querylen);
-  if(!d->query) return -1;
+  if(!d->query)
+    return -1;
 
   uint16_pack_big(d->query, len + 16);
   byte_copy(d->query + 2,
@@ -254,7 +271,8 @@ dns_transmit_start(struct dns_transmit* d,
 
   d->udploop = flagrecursive ? 1 : 0;
 
-  if(len + 16 > 512) return firsttcp(d);
+  if(len + 16 > 512)
+    return firsttcp(d);
   return firstudp(d);
 }
 
@@ -271,7 +289,8 @@ dns_transmit_io(struct dns_transmit* d, iopause_fd* x, struct taia* deadline) {
     case 2: x->events = IOPAUSE_WRITE; break;
   }
 
-  if(taia_less(&d->deadline, deadline)) *deadline = d->deadline;
+  if(taia_less(&d->deadline, deadline))
+    *deadline = d->deadline;
 }
 
 int
@@ -285,9 +304,11 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
   fd = d->s1 - 1;
 
   if(!x->revents) {
-    if(taia_less(when, &d->deadline)) return 0;
+    if(taia_less(when, &d->deadline))
+      return 0;
     errno = ETIMEDOUT;
-    if(d->tcpstate == 0) return nextudp(d);
+    if(d->tcpstate == 0)
+      return nextudp(d);
     return nexttcp(d);
   }
 
@@ -299,15 +320,20 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     r = recv(fd, udpbuf, sizeof udpbuf, 0);
     if(r <= 0) {
       if(errno == ECONNREFUSED)
-        if(d->udploop == 2) return 0;
+        if(d->udploop == 2)
+          return 0;
       return nextudp(d);
     }
-    if((unsigned long)r + 1 > sizeof udpbuf) return 0;
+    if((unsigned long)r + 1 > sizeof udpbuf)
+      return 0;
 
-    if(irrelevant(d, udpbuf, r)) return 0;
-    if(serverwantstcp(udpbuf, r)) return firsttcp(d);
+    if(irrelevant(d, udpbuf, r))
+      return 0;
+    if(serverwantstcp(udpbuf, r))
+      return firsttcp(d);
     if(serverfailed(udpbuf, r)) {
-      if(d->udploop == 2) return 0;
+      if(d->udploop == 2)
+        return 0;
       return nextudp(d);
     }
     socketfree(d);
@@ -328,7 +354,8 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have sent connection attempt to curserver on TCP socket s
     pos not defined
     */
-    if(!socket_connected(fd)) return nexttcp(d);
+    if(!socket_connected(fd))
+      return nexttcp(d);
     d->pos = 0;
     d->tcpstate = 2;
     return 0;
@@ -340,7 +367,8 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have sent pos bytes of query
     */
     r = send(fd, d->query + d->pos, d->querylen - d->pos, 0);
-    if(r <= 0) return nexttcp(d);
+    if(r <= 0)
+      return nexttcp(d);
     d->pos += r;
     if(d->pos == d->querylen) {
       struct taia now;
@@ -358,7 +386,8 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     pos not defined
     */
     r = recv(fd, (void*)&ch, 1, 0);
-    if(r <= 0) return nexttcp(d);
+    if(r <= 0)
+      return nexttcp(d);
     d->packetlen = ch;
     d->tcpstate = 4;
     return 0;
@@ -371,7 +400,8 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have received one byte of packet length into packetlen
     */
     r = recv(fd, (void*)&ch, 1, 0);
-    if(r <= 0) return nexttcp(d);
+    if(r <= 0)
+      return nexttcp(d);
     d->packetlen <<= 8;
     d->packetlen += ch;
     d->tcpstate = 5;
@@ -392,14 +422,19 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have received pos bytes of packet
     */
     r = recv(fd, d->packet + d->pos, d->packetlen - d->pos, 0);
-    if(r <= 0) return nexttcp(d);
+    if(r <= 0)
+      return nexttcp(d);
     d->pos += r;
-    if(d->pos < d->packetlen) return 0;
+    if(d->pos < d->packetlen)
+      return 0;
 
     socketfree(d);
-    if(irrelevant(d, d->packet, d->packetlen)) return nexttcp(d);
-    if(serverwantstcp(d->packet, d->packetlen)) return nexttcp(d);
-    if(serverfailed(d->packet, d->packetlen)) return nexttcp(d);
+    if(irrelevant(d, d->packet, d->packetlen))
+      return nexttcp(d);
+    if(serverwantstcp(d->packet, d->packetlen))
+      return nexttcp(d);
+    if(serverfailed(d->packet, d->packetlen))
+      return nexttcp(d);
 
     queryfree(d);
     return 1;

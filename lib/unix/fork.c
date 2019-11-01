@@ -80,10 +80,12 @@ fork(void) {
   NTSTATUS result;
 
   mod = GetModuleHandle("ntdll.dll");
-  if(!mod) return -ENOSYS;
+  if(!mod)
+    return -ENOSYS;
 
   clone_p = GetProcAddress(mod, "RtlCloneUserProcess");
-  if(clone_p == NULL) return -ENOSYS;
+  if(clone_p == NULL)
+    return -ENOSYS;
 
   /* lets do this */
   result = clone_p(RTL_CLONE_PROCESS_FLAGS_CREATE_SUSPENDED | RTL_CLONE_PROCESS_FLAGS_INHERIT_HANDLES,

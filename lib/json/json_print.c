@@ -8,15 +8,15 @@
 #include <assert.h>
 
 static void
-depth_fn(jsonval* v, int* arg, int depth) {
+depth_fn(const jsonval* v, int* arg, int depth) {
   if(*arg < depth)
     *arg = depth;
 }
 
 static int
-get_depth(jsonval* v) {
+get_depth(const jsonval* v) {
   int depth = -1;
-  json_recurse(v, depth_fn, &depth);
+  json_recurse((jsonval*)v, depth_fn, &depth);
   return depth;
 }
 
@@ -62,9 +62,11 @@ json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
   char quote;
   quote = byte_fullfils_predicate(key, key_len, json_is_identifier_char) ? fmt->quote[0] : '"';
 
-  if(quote) buffer_putc(b, quote);
+  if(quote)
+    buffer_putc(b, quote);
   buffer_put(b, key, key_len);
-  if(quote) buffer_putc(b, quote);
+  if(quote)
+    buffer_putc(b, quote);
 }
 
 static void
@@ -96,7 +98,7 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
 
   if(val->dictv && val->dictv->list_tuple) {
-   
+
     hmap_foreach(val->dictv, t) {
       int last = hmap_next(val->dictv, t) == NULL;
 
@@ -108,13 +110,13 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
       buffer_puts(b, ":");
       json_print_separator(val, b, JSON_FMT_SPACING, &printer);
 
-      json_print_val(t->vals.val_chars, b, depth, p);
+      json_print_val(val, b, depth, p);
 
       if(!last) {
         json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
       }
     }
-    p(&printer, val, depth-1, -2);
+    p(&printer, val, depth - 1, -2);
     json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   }
   buffer_puts(b, "}");

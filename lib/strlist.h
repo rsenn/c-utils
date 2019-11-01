@@ -65,7 +65,7 @@ int strlist_append_sa(strlist* sl, const stralloc* sa);
 
 #define strlist_foreach(sl, str, n)                                                                                    \
   for((str) = (sl)->sa.s;                                                                                              \
-      ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) >= 0);                   \
+      ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0);                    \
       (str) += (n) + 1)
 
 #define strlist_foreach_s(sl, str)                                                                                     \

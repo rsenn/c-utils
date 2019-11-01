@@ -4,7 +4,7 @@ define nl =
 endef
 $(info nl: A$(nl)A)
 
-target-tmpl := $(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))$(nl))$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)$(nl)	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(CPPFLAGS) $$(INCLUDES) $$(DEFS) -c -o $$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))$(nl)$(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(nl)	$$(STRIP) $$@$(nl)endif$(nl))$(nl)
+target-tmpl := $(if $(3),$(call clean-target,$(1)): LIBS += $(call flags-lib,$(3))$(nl))$(call clean-target,$(1)): $(2) $(if $(3),| $(3),)$(nl)	$(call is-archive,$(1),$$(AR) rcs $$@ $$^,$(call is-object,$(1),$$(CROSS_COMPILE)$$(CC) $$(CFLAGS) $$(CPPFLAGS) $$(INCLUDES) $$(DEFS) -c -o$$@ $$<,$$(CROSS_COMPILE)$$(CC) $$(LDFLAGS) $$(CFLAGS) $$(CPPFLAGS) -o $$@ $$^ $$(LIBS) $$(EXTRA_LIBS)))$(nl)$(call is-archive,$(1),,ifeq ($$(DO_STRIP),1)$(nl)	$$(STRIP) $$@$(nl)endif$(nl))$(nl)
 
 
 define lib-tmpl =
@@ -40,7 +40,7 @@ echo ""; \
 echo "int main() {"; \
 echo "  return 0;"; \
 echo "}") >$$NAME.c; \
-$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) -c -o $$NAME $$NAME.c && R=0 || R=1; \
+$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) -c -o$$NAME $$NAME.c && R=0 || R=1; \
 rm -f "$$NAME" "$$NAME.c"; exit $$R
 endef
 

@@ -87,11 +87,19 @@ typedef enum {
 } regroot_t;
 
 static const char* registry_roots[] = {
-    "HKEY_LOCAL_MACHINE", "HKEY_CURRENT_USER", "HKEY_CLASSES_ROOT", "HKEY_USERS", "HKEY_CURRENT_CONFIG",
+    "HKEY_LOCAL_MACHINE",
+    "HKEY_CURRENT_USER",
+    "HKEY_CLASSES_ROOT",
+    "HKEY_USERS",
+    "HKEY_CURRENT_CONFIG",
 };
 
 static const char* registry_roots_short[] = {
-    "HKLM", "HKCU", "HKCR", "HKU", "HKCC",
+    "HKLM",
+    "HKCU",
+    "HKCR",
+    "HKU",
+    "HKCC",
 };
 
 typedef enum {
@@ -106,7 +114,13 @@ typedef enum {
 } regtype_t;
 
 const char* regtype_strings[] = {
-    "REG_NONE", "REG_SZ", "REG_MULTI_SZ", "REG_EXPAND_SZ", "REG_DWORD", "REG_QWORD", "REG_BINARY",
+    "REG_NONE",
+    "REG_SZ",
+    "REG_MULTI_SZ",
+    "REG_EXPAND_SZ",
+    "REG_DWORD",
+    "REG_QWORD",
+    "REG_BINARY",
 };
 
 int

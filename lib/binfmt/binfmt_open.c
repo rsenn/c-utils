@@ -8,4 +8,5 @@ binfmt_open(binfmt_file* bf, const char* filename) {
 
   bf->baseaddr = (uint8*)mmap_private(filename, &bf->filesize);
 
+  return 0;
 }

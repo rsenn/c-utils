@@ -23,7 +23,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#define PKGCFG_EXISTS    1
+#define PKGCFG_EXISTS 1
 #define PKGCFG_PRINT_ERR 2
 #define PKGCFG_SHORT_ERR 4
 
@@ -49,7 +49,10 @@ typedef struct pkg_s {
 } pkg;
 
 static const char* const field_names[] = {
-  "Version", "Cflags", "Libs", "Requires",
+    "Version",
+    "Cflags",
+    "Libs",
+    "Requires",
 };
 
 /**
@@ -78,12 +81,14 @@ wordexp_sa(const char* s, stralloc* sa) {
   char** w;
   size_t i;
 
-  if(wordexp(s, &wx, WRDE_NOCMD | WRDE_UNDEF)) return 0;
+  if(wordexp(s, &wx, WRDE_NOCMD | WRDE_UNDEF))
+    return 0;
 
   w = wx.we_wordv;
 
   for(i = 0; i < wx.we_wordc; ++i) {
-    if(sa->len) stralloc_catb(sa, " ", 1);
+    if(sa->len)
+      stralloc_catb(sa, " ", 1);
     stralloc_cats(sa, w[i]);
   }
 
@@ -110,7 +115,8 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
 
   k.s[0] = toupper(k.s[0]);
 
-  if((s = pkg_get(pf, key)) == NULL) return 0;
+  if((s = pkg_get(pf, key)) == NULL)
+    return 0;
 
   {
     stralloc v;
@@ -119,8 +125,10 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
 
     for(;;) {
       stralloc_nul(&v);
-      if(!wordexp_sa(v.s, out)) return 0;
-      if(stralloc_finds(out, "${") == out->len) break;
+      if(!wordexp_sa(v.s, out))
+        return 0;
+      if(stralloc_finds(out, "${") == out->len)
+        break;
 
       stralloc_free(&v);
       v = *out;
@@ -162,12 +170,16 @@ pkg_read(buffer* b, pkg* p) {
 
     while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
 
-    if((ret = buffer_get_new_token_sa(b, &name, ":=\r\n", 4)) == -1) goto fail;
+    if((ret = buffer_get_new_token_sa(b, &name, ":=\r\n", 4)) == -1)
+      goto fail;
     stralloc_chomp(&name);
-    if(name.len > 0 && name.s[0] == '#') continue;
-    if(ret == 1 && isspace(name.s[0])) continue;
+    if(name.len > 0 && name.s[0] == '#')
+      continue;
+    if(ret == 1 && isspace(name.s[0]))
+      continue;
 
-    if(ret == 0 || name.s[0] == '\0') break;
+    if(ret == 0 || name.s[0] == '\0')
+      break;
     if(name.len > 1) {
       sep = name.s[--name.len];
     }
@@ -175,9 +187,11 @@ pkg_read(buffer* b, pkg* p) {
     while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
 
     stralloc_zero(&value);
-    if((ret = buffer_getline_sa(b, &value)) == -1) goto fail;
+    if((ret = buffer_getline_sa(b, &value)) == -1)
+      goto fail;
 
-    if(value.s[0] == '\0') break;
+    if(value.s[0] == '\0')
+      break;
 
     if(name.len) {
       stralloc_trimr(&value, "\r\n\t \0", 5);
@@ -212,7 +226,8 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
   stralloc_nul(&var);
 
   stralloc_init(&v);
-  if(value_len && ((char*)value)[value_len - 1] == '\0') --value_len;
+  if(value_len && ((char*)value)[value_len - 1] == '\0')
+    --value_len;
   stralloc_catb(&v, value, value_len);
 
   /* wordexp_sa(value, &v); */
@@ -395,10 +410,12 @@ pkg_open(const char* pkgname, pkg* pf) {
 
     stralloc_copy(&pf->name, &path);
 
-    if(!buffer_mmapread(&pc, path.s)) break;
+    if(!buffer_mmapread(&pc, path.s))
+      break;
   }
 
-  if(pc.x == NULL) return 0;
+  if(pc.x == NULL)
+    return 0;
 
   ret = pkg_read(&pc, pf);
 
@@ -420,13 +437,15 @@ pkg_conf(strarray* modules, int mode) {
     pkg pf;
     byte_zero(&pf, sizeof(pf));
 
-	if(!pkg_open(pkgname, &pf)) {
-		if(mode & PKGCFG_EXISTS) return 0;
-		continue;
-	}
+    if(!pkg_open(pkgname, &pf)) {
+      if(mode & PKGCFG_EXISTS)
+        return 0;
+      continue;
+    }
 
     if(cmd.code == PRINT_PATH) {
-      if(value.len) stralloc_catc(&value, '\n');
+      if(value.len)
+        stralloc_catc(&value, '\n');
       stralloc_cat(&value, &pf.name);
     } else {
       const char* fn = field_names[cmd.code - 1];
@@ -477,18 +496,18 @@ main(int argc, char* argv[]) {
   int index = 0;
   int mode = 0;
   struct longopt opts[] = {
-    {"help", 0, NULL, 'h'},
-    {"modversion", 0, NULL, PRINT_VERSION},
-    {"cflags", 0, NULL, PRINT_CFLAGS},
-    {"libs", 0, NULL, PRINT_LIBS},
-    {"path", 0, NULL, PRINT_PATH},
-    {"list-all", 0, NULL, 'l'},
-    {"print-errors", 0, &mode, PKGCFG_PRINT_ERR},
-	{"short-errors", 0, &mode, PKGCFG_SHORT_ERR},
-	{"exists", 0, &mode, PKGCFG_EXISTS},
-    {0},
+      {"help", 0, NULL, 'h'},
+      {"modversion", 0, NULL, PRINT_VERSION},
+      {"cflags", 0, NULL, PRINT_CFLAGS},
+      {"libs", 0, NULL, PRINT_LIBS},
+      {"path", 0, NULL, PRINT_PATH},
+      {"list-all", 0, NULL, 'l'},
+      {"print-errors", 0, &mode, PKGCFG_PRINT_ERR},
+      {"short-errors", 0, &mode, PKGCFG_SHORT_ERR},
+      {"exists", 0, &mode, PKGCFG_EXISTS},
+      {0, 0, 0, 0},
   };
-  
+
   errmsg_iam(argv[0]);
 #ifdef _MSC_VER
   optbuf = buffer_1;
@@ -496,30 +515,33 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = getopt_long(argc, argv, "?hmilpa", opts, &index);
-    if(c == -1) break;
-    if(c == 0) continue;
+    if(c == -1)
+      break;
+    if(c == 0)
+      continue;
 
     switch(c) {
-    case '?':
-    case 'h':
-      usage(argv[0]); return 0;
-    case PRINT_VERSION:
-    case PRINT_CFLAGS:
-    case PRINT_LIBS:
-    case PRINT_PATH:
-      if(!cmd.code) cmd.code = c;
-      break;
-    case 'l':
-      if(!cmd.code) cmd.code = LIST_ALL;
-      break;
-    default: 
-		buffer_puts(buffer_1, "WARNING: Invalid argument -");
-		buffer_putc(buffer_1, isprint(c) ? c : '?');
-		buffer_putm_internal(buffer_1, " '", optarg ? optarg : "", "'", 0);
+      case '?':
+      case 'h': usage(argv[0]); return 0;
+      case PRINT_VERSION:
+      case PRINT_CFLAGS:
+      case PRINT_LIBS:
+      case PRINT_PATH:
+        if(!cmd.code)
+          cmd.code = c;
+        break;
+      case 'l':
+        if(!cmd.code)
+          cmd.code = LIST_ALL;
+        break;
+      default:
+        buffer_puts(buffer_1, "WARNING: Invalid argument -");
+        buffer_putc(buffer_1, isprint(c) ? c : '?');
+        buffer_putm_internal(buffer_1, " '", optarg ? optarg : "", "'", 0);
         buffer_putnlflush(buffer_1);
         break;
-		/*usage(argv[0]);
-		return 1;*/
+        /*usage(argv[0]);
+        return 1;*/
     }
   }
 

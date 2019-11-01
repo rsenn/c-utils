@@ -9,7 +9,8 @@ byte_copyr(void* out, size_t len, const void* in) {
   const char* u = t + len;
 
   for(;;) {
-    if(t >= u) break;
+    if(t >= u)
+      break;
     --u;
     --s;
     *s = *u;

@@ -70,8 +70,7 @@ const char* const mediathek_urls[] = {
     "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
-const char* mediathek_url =
- "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
+const char* mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
 //"http://127.0.0.1/Filmliste-akt.xz";
 
 static unsigned long min_length;
@@ -544,7 +543,7 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, 0);
   buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, 0);
-  buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, 0);
+  buffer_putm_internal(b, "GrÃ¶sse:\t", format_num(e->mbytes), "MB", sep, 0);
 
   /* buffer_putm_3(b, "URL:\t", url , sep);
    buffer_putm_5(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);
@@ -606,9 +605,9 @@ parse_mediathek_list(buffer* inbuf) {
 
   while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
 
-    buffer_puts(buffer_2, "Read ");
-    buffer_putlong(buffer_2, ret);
-    buffer_putsflush(buffer_2, " bytes.\n");
+    //buffer_puts(buffer_2, "Read ");
+    //buffer_putlong(buffer_2, ret);
+    //buffer_putsflush(buffer_2, " bytes.\n");
 
     for(;;) {
       ret2 = 0;
@@ -749,8 +748,6 @@ main(int argc, char* argv[]) {
 
   strlist_dump(buffer_2, &include);
   strlist_dump(buffer_2, &exclude);
-
-
 
   /*  stralloc sa;
     stralloc_init(&sa);

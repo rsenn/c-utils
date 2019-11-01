@@ -20,9 +20,9 @@ static jsonval xml_to_json_obj(xmlnode* node);
 
 static int one_line = 0, indent = 2, compact = 0, numbers = 0, no_quote = 0;
 static stralloc indent_str = {"  ", 1, 0};
-static const char *children_property = "children";
-static const char *tag_property = "tagName";
-static const char *class_property = "className";
+static const char* children_property = "children";
+static const char* tag_property = "tagName";
+static const char* class_property = "className";
 static char quote_char[2] = {'"', '\0'};
 
 static void
@@ -54,7 +54,9 @@ static void
 pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   int valdepth = v ? get_depth(v) : -1;
 
-  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
+  p->newline = valdepth > 1
+                   ? "\n"
+                   : " "; // (!one_line && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
   p->indent = indent_str.s;
   p->spacing = " ";
   p->separat = valdepth > 1 ? ",\n" : ", ";
@@ -63,10 +65,10 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->index = index;
   p->quote = quote_char;
 
- if(v == NULL) {
-  p->quote = no_quote ? "\0" : quote_char;
-  return;
- }
+  if(v == NULL) {
+    p->quote = no_quote ? "\0" : quote_char;
+    return;
+  }
 
   if(numbers && json_isnumber(*v))
     p->quote = "\0";
@@ -94,7 +96,8 @@ xmllist_to_jsonarray(xmlnode* list) {
         continue;
       v = json_string(n->name);
     } else {
-      if(n->name[0] == '/') continue;
+      if(n->name[0] == '/')
+        continue;
       v = xml_to_json_obj(n);
     }
     json_push(&arr, v);
@@ -113,13 +116,14 @@ xml_style_json(char* x, size_t n) {
   strlist_foreach(&style, x, n) {
     size_t np = byte_chr(x, n, ':');
     size_t nv = n - (np + 1);
-    char* value = byte_trim(&x[np+1], &nv, whitespace, 6);
+    char* value = byte_trim(&x[np + 1], &nv, whitespace, 6);
     char* prop = byte_trim(x, &np, whitespace, 6);
     np = byte_camelize(prop, np);
     if(np > 0) {
       jsonval name = json_stringn(prop, np);
       jsonval val = json_undefined();
-      charbuf b; char* ptr = value;
+      charbuf b;
+      char* ptr = value;
       value[nv] = '\0';
       charbuf_froms(&b, &ptr);
 
@@ -149,12 +153,13 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
         size_t len = t->data_len;
         charbuf b;
         char* ptr;
-        if(len > 0 && t->vals.val_chars[len - 1] == '\0') --len;
+        if(len > 0 && t->vals.val_chars[len - 1] == '\0')
+          --len;
         if(str_equal(prop, "class") || str_equal(prop, "className"))
           prop = class_property;
         ptr = t->vals.val_chars;
         charbuf_froms(&b, &ptr);
-        if(!numbers || !json_parse_num(&v, &b)) 
+        if(!numbers || !json_parse_num(&v, &b))
           v = json_stringn(t->vals.val_chars, len);
       }
       json_set_property(obj, json_string(prop), v);
@@ -171,8 +176,8 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
  */
 static jsonval
 xml_to_json_obj(xmlnode* node) {
-/*  static const char* const node_types[] = {"(null)", "XML_DOCUMENT", "XML_ELEMENT", "XML_ATTRIBUTE", "XML_TEXT" };
-    buffer_putm_internal(buffer_2, node_types[(int)node->type], " ", node->name, "\n", 0);*/
+  /*  static const char* const node_types[] = {"(null)", "XML_DOCUMENT", "XML_ELEMENT", "XML_ATTRIBUTE", "XML_TEXT" };
+      buffer_putm_internal(buffer_2, node_types[(int)node->type], " ", node->name, "\n", 0);*/
   if(node->type == XML_ELEMENT) {
     jsonval obj = json_object();
     json_set_property(&obj, json_string(tag_property), json_string(node->name));
@@ -197,7 +202,7 @@ xml_to_json(xmlnode* node) {
   return xml_to_json_obj(node);
 }
 
-static int 
+static int
 xml_depth(xmlnode* node) {
   int i = 0;
   while(node) {
@@ -259,20 +264,18 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
 
-  struct longopt opts[] = {
-      {"help", 0, NULL, 'h'},
-      {"single-quote", 0, NULL, 's'},
-      {"double-quote", 0, NULL, 'd'},
-      {"one-line", 0, NULL, 'o'},
-      {"compact", 0, NULL, 'c'},
-      {"indent", 0, NULL, 'l'},
-      {"numbers", 0, NULL, 'n'},
-      {"no-quote",0,NULL, 'Q'},
-      {"tag", 0, NULL, 'T'},
-      {"children", 0, NULL, 'C'},
-      {"class", 0, NULL, 'N'},
-      {0},
-  };
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"single-quote", 0, NULL, 's'},
+                           {"double-quote", 0, NULL, 'd'},
+                           {"one-line", 0, NULL, 'o'},
+                           {"compact", 0, NULL, 'c'},
+                           {"indent", 0, NULL, 'l'},
+                           {"numbers", 0, NULL, 'n'},
+                           {"no-quote", 0, NULL, 'Q'},
+                           {"tag", 0, NULL, 'T'},
+                           {"children", 0, NULL, 'C'},
+                           {"class", 0, NULL, 'N'},
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -306,7 +309,7 @@ main(int argc, char* argv[]) {
 
     buffer_skip_until(input, "\r\n", 2);
     doc = xml_read_tree(input);
-    //xml_walk(doc, testwalk);
+    // xml_walk(doc, testwalk);
 
     buffer_close(input);
 

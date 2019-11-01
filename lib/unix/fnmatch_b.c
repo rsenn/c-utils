@@ -1,4 +1,6 @@
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #include <ctype.h>
 #include <stdlib.h>
 #include "../fnmatch.h"
@@ -16,10 +18,10 @@ static struct charclass {
     STRUCT_CHARCLASS(alnum),
     STRUCT_CHARCLASS(alpha),
     STRUCT_CHARCLASS(ascii),
-/*    STRUCT_CHARCLASS(blank),*/
+    /*    STRUCT_CHARCLASS(blank),*/
     STRUCT_CHARCLASS(cntrl),
-/*    STRUCT_CHARCLASS(csym),
-    STRUCT_CHARCLASS(csymf),*/
+    /*    STRUCT_CHARCLASS(csym),
+        STRUCT_CHARCLASS(csymf),*/
     STRUCT_CHARCLASS(digit),
     STRUCT_CHARCLASS(graph),
     STRUCT_CHARCLASS(lower),
@@ -118,7 +120,7 @@ fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
         }
         if((res && !neg) || ((neg && !res) && p[i] == ']')) {
           while(p[i] && p[i] != ']') ++i;
-          return fnmatch_b(p + !!p[i], plen - !!p[i], s + 1, slen -1, flags);
+          return fnmatch_b(p + !!p[i], plen - !!p[i], s + 1, slen - 1, flags);
         } else if(res && neg)
           return FNM_NOMATCH;
       }
@@ -143,13 +145,13 @@ fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
     case '?': {
       if(s[j] == '/' && flags & FNM_PATHNAME)
         break;
-      }
+    }
       return fnmatch_b(p + 1, plen - 1, s + 1, slen - 1, flags);
     default: {
       if(match(p[i], s[j], flags))
         return fnmatch_b(p + 1, plen - 1, s + 1, slen - 1, flags);
       break;
-      }
+    }
   }
   return FNM_NOMATCH;
 }

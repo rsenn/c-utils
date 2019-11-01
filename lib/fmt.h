@@ -16,6 +16,7 @@ extern "C" {
 #define FMT_XLONG 33       /* enough space to hold 2^128 - 1 in hexadecimal, plus \0 */
 #define FMT_LEN ((char*)0) /* convenient abbreviation */
 
+#define FMT_ISO8601 63
 /* The formatting routines do not append \0!
  * Use them like this: buf[fmt_ulong(buf, number)] = 0; */
 
@@ -148,6 +149,10 @@ size_t fmt_escapecharshell(char* dest, uint32 ch);
 size_t fmt_escapecharjson(char* dest, uint32 ch, char quote);
 #endif
 
+#ifdef TAI_H
+size_t fmt_tai(char* dest, const struct tai* ta);
+#endif
+size_t fmt_iso8601(char* dest, time_t t);
 
 char fmt_tohex(char c);
 size_t fmt_repeat(char* dest, const char* src, int n);

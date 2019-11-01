@@ -19,7 +19,8 @@ var_hsearch(struct search* context) {
     /* because the list is sorted ascending we can skip all
        the vars while their literal hash is smaller than the
        one of the wanted var */
-    if(var->lexhash < context->lexhash) continue;
+    if(var->lexhash < context->lexhash)
+      continue;
 
     /* if we are heading for an exact match (i.e. not creating
        any variable after not found) we do  not require the exact
@@ -28,11 +29,13 @@ var_hsearch(struct search* context) {
       /* in this case those two conditionals, especially the
          rndhash match will prevent from unneccessary lexical
          weighing */
-      if(context->len != var->len) continue;
+      if(context->len != var->len)
+        continue;
 
       /* a 100% mismatch, but without any possibility to calc the
          real distance :) */
-      if(context->rndhash != var->rndhash) continue;
+      if(context->rndhash != var->rndhash)
+        continue;
     }
 
     /* at this point var->lexhash must be bigger or equal to context->lexhash,
@@ -42,5 +45,5 @@ var_hsearch(struct search* context) {
 
   /* looks like there was no entry, or we were bigger than any var,
      return the maximum possible distance */
-  return (VAR_HASH) - 1;
+  return (VAR_HASH)-1;
 }

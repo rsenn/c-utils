@@ -48,7 +48,7 @@ http_readable(http* h, int freshen) {
     if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
       break;
 
-    stralloc_trim(&r->data, "\r\n", 2);
+    stralloc_trimr(&r->data, "\r\n", 2);
     stralloc_nul(&r->data);
 
     // putline("Header", r->data.s, -r->data.len, &h->q.in);

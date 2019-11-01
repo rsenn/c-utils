@@ -1,0 +1,1320 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"pre",
+				"preprocess_command"
+			],
+			[
+				"BUILD_TYPE",
+				"BUILD_TYPE_RELWITHDEBINFO"
+			],
+			[
+				"Parsigr",
+				"ParsigramBalances"
+			],
+			[
+				"require_",
+				"require_parsigram"
+			],
+			[
+				"capture_",
+				"capture_api_errors"
+			],
+			[
+				"acti",
+				"activate_token"
+			],
+			[
+				"encode",
+				"encode_query_string"
+			],
+			[
+				"getaddres",
+				"getaddressesbylabel\tabc"
+			],
+			[
+				"split",
+				"split_string\tabc"
+			],
+			[
+				"capture",
+				"capture_api_errors\tabc"
+			],
+			[
+				"Trans",
+				"TransactionEndpoint\tabc"
+			],
+			[
+				"capture_er",
+				"capture_errors_json"
+			],
+			[
+				"cap",
+				"capture_errors_json"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/home/roman/.config/sublime-text-3/Packages/SublimeGDB/SublimeGDB.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 7372,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/str/str_triml.c",
+			"settings":
+			{
+				"buffer_size": 225,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "mediathek-list.c",
+			"settings":
+			{
+				"buffer_size": 16077,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 2399 files for \"mediathek-list\" (regex, case sensitive)\n\n0 matches",
+			"settings":
+			{
+				"buffer_size": 76,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "lib/cbmap.h",
+			"settings":
+			{
+				"buffer_size": 2506,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include \"../windoze.h\"\n\n#include \"cbmap_alloc.h\"\n\n#include \"../memalign.h\"\n#include \"../byte.h\"\n#include \"../str.h\"\n#include \"../cbmap_internal.h\"\n#include <stdio.h>\n#include <string.h>\n\n#if 0 // WINDOWS_NATIVE && (_MSC_VER >= 0900)\n#include <crtdbg.h>\n#endif\n\n#ifndef DEBUG\n#define printf(args)\n#endif\n\nstatic unsigned int CBM_DEBUG_ALLOCATIONS = 0;\nstatic unsigned int CBM_DEBUG_FREES = 0;\nstatic unsigned int CBM_DEBUG_ALLOCATED_BYTES = 0;\nstatic unsigned int CBM_DEBUG_DEALLOCATED_BYTES = 0;\n\ndouble\ncbmap_mem_allocated(void) {\n  return CBM_DEBUG_ALLOCATED_BYTES;\n}\n\nint\ncbmap_mem_memalign(void** p, size_t alignment, size_t size) {\n  int a;\n\n#ifdef HAVE_ALIGNED_ALLOC\n  a = !(*p = aligned_alloc(alignment, size));\n#elif defined(HAVE__ALIGNED_MALLOC)\n  a = !(*p = _aligned_malloc(size, alignment));\n//#elif WINDOWS\n#elif defined(HAVE_POSIX_MEMALIGN) && !defined(__dietlibc__)\n  a = posix_memalign(p, alignment, size);\n#else\n  a = !(*p = memalign_alloc(alignment, size));\n//#else\n//  a = !(*p = malloc(size));\n#endif\n\n  if(!a) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n  }\n\n  return a;\n}\n\nvoid*\ncbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line) {\n  void* p;\n\n  p = calloc(count, size);\n  if(p != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += ((unsigned int)count * (unsigned int)size);\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_CALLOC %-20s (%03d): Allocated %g x %g = %g bytes\\n\",\n         p,\n         file,\n         line,\n         (float)count,\n         (float)size,\n         (float)(count * size));\n#endif\n  return p;\n}\n\nchar*\n  \ncbmap_mem_debug_strndup(const char* p, size_t size, const char* file, int line) {\n  char* result = str_ndup(p, size);\n  if(result != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_STRNDUP %-20s (%03d): Allocated %g bytes\\n\", result, file, line, (float)size);\n#endif\n  return result;\n}\n\nchar*\ncbmap_mem_debug_strdup(const char* p, const char* file, int line) {\n  char* result;\n  size_t size = 0;\n\n  if(p == NULL)\n    return NULL;\n\n  result = str_dup(p);\n  if(result != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    size = str_len(p);\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_STRDUP %-20s (%03d): Allocated %g bytes\\n\", result, file, line, (float)size);\n#endif\n  return result;\n}\n\nvoid*\ncbmap_mem_mem_dup(const void* p, size_t size, const char* file, int line) {\n  void* result;\n\n  if(p == NULL)\n    return NULL;\n\n  result = malloc(size);\n  if(result != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n    byte_copy(result, size, p);\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_DUP    %-20s (%03d): Allocated %g bytes\\n\", result, file, line, (float)size);\n#endif\n  return result;\n}\n\nvoid\ncbmap_mem_debug_free(const void* ptr, const char* file, int line) {\n  if(ptr != NULL) {\n    CBM_DEBUG_FREES += 1;\n    CBM_DEBUG_DEALLOCATED_BYTES += 0;\n#ifdef DEBUG\n    printf(\"%p --- CBM_MEM_FREE   %-20s (%03d): Deallocating\\n\", ptr, file, line);\n#endif\n    memalign_free((void*)ptr);\n  }\n}\n\nint\ncbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const char* file, int line) {\n  int result;\n\n#ifdef HAVE_ALIGNED_ALLOC\n  result = !(*memptr = aligned_alloc(alignment, size));\n#elif defined(HAVE__ALIGNED_MALLOC)\n  result = !(*memptr = _aligned_malloc(size, alignment));\n//#elif WINDOWS\n#elif defined(HAVE_POSIX_MEMALIGN) && !defined(__dietlibc__)\n  result = posix_memalign(memptr, alignment, size);\n#else\n  result = !(*memptr = memalign_alloc(alignment, size));\n//#else\n//  result = !(*memptr = malloc(size));\n#endif\n\n  if(!result) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += (unsigned int)size;\n  }\n\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_ALIGNED %-20s (%03d): Allocated %g bytes\\n\", *memptr, file, line, (float)size);\n#endif\n  return result;\n}\n\nvoid\ncbmap_mem_debug_mem(const char* file, int line) {\n  unsigned int allocations = CBM_DEBUG_ALLOCATIONS;\n  unsigned int deallocations = CBM_DEBUG_FREES;\n  unsigned int check = allocations - deallocations;\n\n#ifdef DEBUG\n  printf(\"CBM_MEM_LOG %-20s (%d) ALLOCATIONS %d DEALLOCATIONS %d CHECK %d BYTES %d\\n\",\n         file,\n         line,\n         allocations,\n         deallocations,\n         check,\n         CBM_DEBUG_ALLOCATED_BYTES);\n#endif\n}\n",
+			"file": "lib/cbmap/cbmap_alloc.c",
+			"file_size": 4381,
+			"file_write_time": 132130716178855661,
+			"settings":
+			{
+				"buffer_size": 4384,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_trimr.c",
+			"settings":
+			{
+				"buffer_size": 226,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/Makefile/Make.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Makefile/Make.sublime-build",
+				"Clean"
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 219.0,
+		"last_filter": "install",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"schemee",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"remove pa",
+				"Package Control: Remove Package"
+			],
+			[
+				"scheme",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"schemed",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"gdb",
+				"SublimeGDB: Stop Debugging"
+			],
+			[
+				"instal pa",
+				"Package Control: Install Package"
+			],
+			[
+				"out",
+				"Browse Mode: Outline (Right)"
+			],
+			[
+				"schemd",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"install pac",
+				"Package Control: Install Package"
+			],
+			[
+				"add re",
+				"Package Control: Add Repository"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"adva",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"instalp",
+				"Package Control: Install Package"
+			],
+			[
+				"schemeed",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"adv",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"html",
+				"HTMLPrettify"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"install pack",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: install",
+				"Package Control: Install Package"
+			],
+			[
+				"edit ",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"INSTALL",
+				"Package Control: Install Package"
+			],
+			[
+				"INST",
+				"Package Control: Install Package"
+			],
+			[
+				"REMOVE",
+				"Package Control: Remove Package"
+			],
+			[
+				"SCHEMED",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"edit",
+				"SchemeEditor: Edit installed scheme"
+			],
+			[
+				"color",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"install p$",
+				"Package Control: Install Package"
+			],
+			[
+				"remove pac",
+				"Package Control: Remove Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"DELETE",
+				"Delete Blank Lines"
+			],
+			[
+				"moon",
+				"Browse Mode: Outline (Left)"
+			],
+			[
+				"outline",
+				"Browse Mode: Outline (Right)"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"moonscr",
+				"Build With: Compile MoonScript"
+			],
+			[
+				"moons",
+				"Set Syntax: MoonScript"
+			],
+			[
+				"repository",
+				"Package Control: Remove Repository"
+			],
+			[
+				"REPOS",
+				"Package Control: Add Repository"
+			]
+		],
+		"width": 736.0
+	},
+	"console":
+	{
+		"height": 265.0,
+		"history":
+		[
+			"sublime.log_commands(True)",
+			"sublime.log_commands(False)",
+			"sublime.log_commands(True)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/roman/Sources/c-utils",
+		"/home/roman/Sources/c-utils/lib"
+	],
+	"file_history":
+	[
+		"/home/roman/Sources/c-utils/c-utils.sublime-project",
+		"/home/roman/Sources/c-utils/lib/cb/cb_foreach.c",
+		"/home/roman/Sources/c-utils/xmlpp.c",
+		"/home/roman/Sources/c-utils/lib/http/http_get.c",
+		"/home/roman/.config/sublime-text-3/Packages/User/SublimeGDB.sublime-settings",
+		"/home/roman/Sources/c-utils/eagle-to-circuit.c",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_pushb.c",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_pushb_unique.c",
+		"/home/roman/Sources/c-utils/mediathek-list.c",
+		"/home/roman/Sources/c-utils/lib/scan/scan_charsetnskip.c",
+		"/home/roman/Sources/c-utils/lib/scan/scan_noncharsetnskip.c",
+		"/home/roman/Sources/c-utils/lib/byte/byte_finds.c",
+		"/home/roman/Sources/c-utils/lib/path/path_canonical.c",
+		"/home/roman/Sources/c-utils/lib/ihex.h",
+		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_record.c",
+		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_buf.c",
+		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_data.c",
+		"/home/roman/Sources/c-utils/lib/alloc/alloc_zero.c",
+		"/home/roman/Sources/c-utils/build/rdir-test",
+		"/home/roman/Sources/c-utils/testihex.c",
+		"/home/roman/Sources/c-utils/lib/scan/scan_xshort.c",
+		"/home/roman/Sources/c-utils/lib/scan/scan_xchar.c",
+		"/home/roman/Sources/c-utils/lib/slist.h",
+		"/home/roman/Sources/c-utils/lib/list.h",
+		"/home/roman/Sources/c-utils/lib/strlist.h",
+		"/home/roman/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Sources/c-utils/parse.c",
+		"/home/roman/Sources/c-utils/crc.c",
+		"/home/roman/Sources/c-utils/hexedit.c",
+		"/home/roman/Sources/c-utils/mediathek-parser.c",
+		"/home/roman/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_relative.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_xchar.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_fromhex.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_xshort.c",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-init-brd.c",
+		"/home/roman/Dokumente/Sources/c-utils/daemon.c",
+		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
+		"/home/roman/Dokumente/Sources/c-utils/dirlist.sublime-project",
+		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
+		"/home/roman/Dokumente/Sources/c-utils/bsdiffcat.c",
+		"/home/roman/Dokumente/Sources/c-utils/parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/plsconv.c",
+		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/sln.c",
+		"/home/roman/Dokumente/Sources/pictest/src/timer0.c",
+		"/home/enki/lotto/test.txt",
+		"/home/enki/lotto/utils/util.js",
+		"/home/enki/lotto/pages/deposit.js",
+		"/home/enki/lotto/helpers/app.moon",
+		"/home/enki/lotto/applications/payment.lua",
+		"/home/enki/lotto/applications/payment.moon",
+		"/home/enki/lotto/helpers/payment.moon",
+		"/home/enki/lotto/helpers/json.moon",
+		"/home/enki/lotto/helpers/date.moon",
+		"/home/enki/lotto/applications/users.moon",
+		"/home/enki/lotto/applications/api.moon",
+		"/home/enki/lotto/helpers/validate.moon",
+		"/home/enki/lotto/helpers/api.moon",
+		"/home/enki/lotto/helpers/time.moon",
+		"/home/enki/lotto/applications/socket.moon",
+		"/home/enki/lotto/helpers/validate.lua",
+		"/home/enki/lotto/helpers/payment.lua",
+		"/home/enki/lotto/stores/RootStore.js",
+		"/home/enki/lotto/config.moon",
+		"/home/enki/lotto/helpers/websocket.moon",
+		"/home/enki/lotto/applications/tickets.lua",
+		"/home/enki/lotto/models/users.moon",
+		"/home/enki/lotto/helpers/app.lua",
+		"/home/enki/lotto/helpers/parsigram.moon",
+		"/home/enki/lotto/models/tickets.moon",
+		"/home/enki/lotto/nginx.conf",
+		"/home/roman/lotto/applications/api.moon",
+		"/home/roman/lotto/helpers/api.moon",
+		"/home/roman/lotto/helpers/parsigram.moon",
+		"/home/roman/lotto/static/parsigram.html",
+		"/home/roman/lotto/config.moon",
+		"/home/enki/lotto/helpers/email.moon",
+		"/home/enki/lotto/helpers/email.lua",
+		"/home/enki/lotto/helpers/perfectmoney.moon",
+		"/home/roman/lotto/helpers/perfectmoney.moon",
+		"/home/roman/lotto/docker/backend/config.moon",
+		"/home/roman/lotto/test-parsigram.moon",
+		"/home/roman/lotto/applications/payment.lua",
+		"/home/roman/lotto/helpers/payment.moon",
+		"/home/roman/lotto/helpers/app.moon",
+		"/home/roman/lotto/models/users.moon",
+		"/home/enki/lotto/applications/drawings.moon",
+		"/home/enki/lotto/models/drawings.moon",
+		"/home/roman/lotto/helpers/util.moon",
+		"/home/roman/lotto/test-perfectmoney.moon",
+		"/home/roman/lotto/helpers/queue.moon",
+		"/home/roman/lotto/helpers/perfectmoneysci.moon",
+		"/home/roman/lotto/helpers/validate.moon",
+		"/home/roman/lotto/helpers/string.moon",
+		"/home/roman/lotto/app.moon",
+		"/home/enki/lotto/helpers/perfectmoney.lua",
+		"/home/roman/lotto/test-perfectmoney.lua",
+		"/home/roman/lotto/applications/drawings.moon",
+		"/home/roman/lotto/helpers/models.moon",
+		"/home/roman/lotto/applications/users.moon",
+		"/home/enki/lotto/helpers/bitcoin.moon",
+		"/home/enki/lotto/helpers/model.moon",
+		"/home/roman/lotto/helpers/json.moon",
+		"/home/roman/lotto/helpers/bitcoin.moon",
+		"/home/enki/lotto/helpers/util.moon",
+		"/home/roman/lotto/helpers/url.moon",
+		"/home/enki/lotto/helpers/api.lua",
+		"/home/roman/lotto/test-parsigram.lua",
+		"/home/roman/lotto/applications/payment.moon",
+		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/lapis/application.lua",
+		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/lapis/application.moon",
+		"/home/roman/lotto/helpers/json.lua",
+		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/lapis/validate.moon",
+		"/home/roman/lotto/applications/games.moon",
+		"/home/roman/lotto/helpers/validate.lua",
+		"/home/roman/lotto/models/games.moon",
+		"/home/roman/lotto/helpers/app.lua",
+		"/home/enki/lotto/helpers/bitcoin2.moon",
+		"/home/roman/lotto/applications/users.lua",
+		"/home/roman/lotto/helpers/models.lua",
+		"/home/roman/lotto/nginx.conf",
+		"/home/roman/lotto/doc/parsigram/hazarat.live.txt",
+		"/home/roman/lotto/static/shetab-deposit.html",
+		"/home/enki/Documents/Sources/c-utils/proxy.c",
+		"/home/roman/lotto/helpers/parsigram.lua"
+	],
+	"find":
+	{
+		"height": 39.0
+	},
+	"find_in_files":
+	{
+		"height": 258.0,
+		"where_history":
+		[
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
+			"/home/roman/Dokumente/Sources/c-utils,*.c",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"mediathek-list",
+			"putm_",
+			"internal",
+			"internal_",
+			"buffer_1\\.",
+			"}\n",
+			"preproc",
+			"preprocv",
+			"--err",
+			"gen_link",
+			".e",
+			"gen_simpl",
+			"compile_comman",
+			"compile_comm",
+			"gen_simple",
+			"\"compile",
+			"\"type",
+			"--targe",
+			"--type",
+			"gen_simpl",
+			"gen_sim",
+			"gen_simple_compile_rules",
+			"gen_simple",
+			"compile_command",
+			"gen_simple_com",
+			"gen_srcdir",
+			"obj",
+			"path_object",
+			"gen_srcdir",
+			"obj",
+			"ppsext",
+			"objext",
+			"path_object",
+			"set_var",
+			"\"-V\"",
+			"\"-V",
+			"toolchain",
+			"builddir",
+			"osccal",
+			"picki",
+			"stackcall",
+			"RELWITHDE",
+			"htc\"",
+			"xc8\"",
+			"CPPFLAGS",
+			"DDEBUG",
+			"HAVE_ERR",
+			"\"-V\"",
+			"\"-V",
+			"-V",
+			"pass1",
+			"--pass",
+			"htc\"",
+			"htc\"+",
+			"\"sdcc",
+			"18f252",
+			"\"sdcc\"",
+			"path_canonical",
+			"path_relative",
+			"cppflags",
+			"strlist_foreach_s",
+			"add_include_dir",
+			"strarray_foreach",
+			"includes",
+			"'I'",
+			"I:",
+			"include_dirs",
+			"add_include_dir",
+			"includes",
+			"'I'",
+			"+debug",
+			"relwith",
+			"xc8\"",
+			"push_var",
+			"xc8\"",
+			"all",
+			"deps_for",
+			"gen_lib",
+			"lib_rules",
+			"lib_rul",
+			"\"all\"",
+			"all\"",
+			"all",
+			"\"all\"",
+			"no_libs",
+			"no_lib",
+			"lib_rule_for_sourcedir",
+			"gen_lib_rules",
+			"no_libs",
+			"no-crea",
+			"rulename",
+			"\".c\"",
+			"copys(",
+			"objext",
+			"objext;",
+			"objext",
+			".c.o",
+			"objext",
+			"DEFAULT_OBJEXT",
+			"objext",
+			".c.o",
+			"\"lib\"",
+			"populate_sourcedirs",
+			"no-crea",
+			"\"CHIP\"",
+			"set_chip",
+			"chip",
+			"mach.bits",
+			"14",
+			"machine",
+			"--mac",
+			"--type",
+			"chip",
+			"added",
+			"--opt",
+			"pushb_uniq",
+			"strlist_pushb",
+			"strlist_pushb_unique",
+			"adde",
+			"strlist_dump",
+			"pptok(",
+			"pptoks",
+			"pptok",
+			"strlist_dump",
+			"strlist_",
+			"strlist_d",
+			"strlist_",
+			"strlist_de"
+		],
+		"highlight": false,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"buffer_1->",
+			"ppsrc",
+			"path_output",
+			"'",
+			"parse",
+			"MACH"
+		],
+		"reverse": false,
+		"show_context": false,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/home/roman/.config/sublime-text-3/Packages/SublimeGDB/SublimeGDB.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7372,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7372,
+								7372
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScriptNext - ES6 Syntax/JSON (JavaScriptNext).tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2820.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 4,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "lib/str/str_triml.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 225,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "mediathek-list.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16077,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								256,
+								256
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 76,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/cbmap.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2506,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/cbmap/cbmap_alloc.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4384,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1622,
+								1622
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							}
+						},
+						"translation.x": 0.0,
+						"translation.y": 1440.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/stralloc/stralloc_trimr.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 226,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								20,
+								20
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 79.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				2,
+				0,
+				3,
+				2
+			],
+			[
+				0,
+				0,
+				2,
+				2
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.2,
+			0.8,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			0.5,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.SublimeLinter Messages":
+	{
+		"height": 194.0
+	},
+	"output.doc":
+	{
+		"height": 0.0
+	},
+	"output.exec":
+	{
+		"height": 319.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 96.0
+	},
+	"pinned_build_system": "Build debug",
+	"project": "c-utils.sublime-project",
+	"replace":
+	{
+		"height": 74.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"cbmap",
+				"lib/cbmap.h"
+			],
+			[
+				"_trim",
+				"lib/stralloc/stralloc_trimr.c"
+			],
+			[
+				"str_trimr",
+				"lib/stralloc/stralloc_trimr.c"
+			],
+			[
+				"str_trim",
+				"lib/str/str_triml.c"
+			],
+			[
+				"xmlpp",
+				"xmlpp.c"
+			],
+			[
+				"genma",
+				"genmakefile.c"
+			],
+			[
+				"path_re",
+				"lib/path/path_relative.c"
+			],
+			[
+				"genmake",
+				"genmakefile.c"
+			],
+			[
+				"alloc",
+				"lib/alloc/alloc_zero.c"
+			],
+			[
+				"testihe",
+				"testihex.c"
+			],
+			[
+				"rtest",
+				"build/rdir-test"
+			],
+			[
+				"slist.h",
+				"lib/slist.h"
+			],
+			[
+				"list.h",
+				"lib/list.h"
+			],
+			[
+				"ihex",
+				"lib/ihex.h"
+			],
+			[
+				"hexed",
+				"hexedit.c"
+			],
+			[
+				"parse.c",
+				"parse.c"
+			],
+			[
+				"GNUMa",
+				"GNUmakefile"
+			],
+			[
+				"GENMA",
+				"genmakefile.c"
+			],
+			[
+				"payme",
+				"applications/payment.moon"
+			],
+			[
+				"users.moon",
+				"applications/users.moon"
+			],
+			[
+				"socket.moo",
+				"applications/socket.moon"
+			],
+			[
+				"config.moo",
+				"config.moon"
+			],
+			[
+				"config.moon",
+				"config.moon"
+			],
+			[
+				"payment",
+				"applications/payment.moon"
+			],
+			[
+				"socket",
+				"applications/socket.moon"
+			],
+			[
+				"webso",
+				"helpers/websocket.moon"
+			],
+			[
+				"websock",
+				"helpers/websocket.moon"
+			],
+			[
+				"payment.moo",
+				"applications/payment.moon"
+			],
+			[
+				"parsigram.html",
+				"static/parsigram.html"
+			],
+			[
+				"config.mo",
+				"docker/backend/config.moon"
+			],
+			[
+				"test-pa",
+				"test-parsigram.moon"
+			],
+			[
+				"test-pars",
+				"test-parsigram.moon"
+			],
+			[
+				"test-per",
+				"test-perfectmoney.moon"
+			],
+			[
+				"test-perf",
+				"test-perfectmoney.lua"
+			],
+			[
+				"parsi",
+				"helpers/parsigram.moon"
+			],
+			[
+				"app.moo",
+				"app.moon"
+			],
+			[
+				"test-pe",
+				"test-perfectmoney.moon"
+			],
+			[
+				"test-",
+				"test-parsigram.moon"
+			],
+			[
+				"pay",
+				"applications/payment.moon"
+			],
+			[
+				"drawings.moo",
+				"applications/drawings.moon"
+			],
+			[
+				"api.moon",
+				"applications/api.moon"
+			],
+			[
+				"users.moo",
+				"applications/users.moon"
+			],
+			[
+				"paymen",
+				"applications/payment.moon"
+			],
+			[
+				"models",
+				"helpers/models.moon"
+			],
+			[
+				"models.m",
+				"helpers/models.moon"
+			],
+			[
+				"bitcoin.moo",
+				"helpers/bitcoin.moon"
+			],
+			[
+				"api.moo",
+				"applications/api.moon"
+			],
+			[
+				"api.mo",
+				"helpers/api.moon"
+			],
+			[
+				"perfe",
+				"helpers/perfectmoney.moon"
+			],
+			[
+				"parsigram.moo",
+				"helpers/parsigram.moon"
+			],
+			[
+				"test-p",
+				"test-perfectmoney.moon"
+			],
+			[
+				"perfectmoney.moo",
+				"helpers/perfectmoney.moon"
+			],
+			[
+				"perfect",
+				"helpers/perfectmoney.moon"
+			],
+			[
+				"api.m",
+				"helpers/api.moon"
+			],
+			[
+				"pars",
+				"helpers/parsigram.moon"
+			],
+			[
+				"",
+				"test-parsigram.moon"
+			],
+			[
+				"json.moo",
+				"helpers/json.moon"
+			],
+			[
+				"parsigram.mo",
+				"helpers/parsigram.moon"
+			],
+			[
+				"valida",
+				"helpers/validate.moon"
+			],
+			[
+				"validate",
+				"~/Documents/Sources/lapis-1.7.0-1/lapis/lapis/validate.moon"
+			],
+			[
+				"games",
+				"applications/games.moon"
+			],
+			[
+				"games.moo",
+				"models/games.moon"
+			],
+			[
+				"vali",
+				"helpers/validate.moon"
+			],
+			[
+				"sheta",
+				"static/shetab-deposit.html"
+			],
+			[
+				"parsig",
+				"helpers/parsigram.moon"
+			],
+			[
+				"nginx.conf",
+				"nginx.conf"
+			],
+			[
+				"nginx",
+				"nginx.conf"
+			],
+			[
+				"gate",
+				"doc/parsigram/gateway.html"
+			],
+			[
+				"test.html",
+				"static/test.html"
+			],
+			[
+				"query.",
+				"helpers/query.moon"
+			],
+			[
+				"test.moo",
+				"test.moon"
+			],
+			[
+				"mobile",
+				"static/css/mobile.css"
+			],
+			[
+				"desktop",
+				"static/css/desktop.css"
+			],
+			[
+				"application.m",
+				"applications/users.moon"
+			],
+			[
+				"users.mo",
+				"applications/users.moon"
+			],
+			[
+				"json-to",
+				"scripts/convert-json-to-po.sh"
+			],
+			[
+				"users.",
+				"applications/users.moon"
+			],
+			[
+				"ngin.",
+				"nginx.conf"
+			],
+			[
+				"app.m",
+				"app.moon"
+			],
+			[
+				"embe",
+				"embed.html"
+			],
+			[
+				"ngix",
+				"nginx.conf"
+			],
+			[
+				"components.cs",
+				"static/css/components.css"
+			],
+			[
+				"games.moon",
+				"models/games.moon"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 1,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 291.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

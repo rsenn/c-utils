@@ -11,7 +11,7 @@
 
 int
 playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {
-  stralloc* title =  e->title.len ? &e->title : &e->path;
+  stralloc* title = e->title.len ? &e->title : &e->path;
   ++pl->count;
   switch(pl->type) {
     case M3U: {
@@ -57,10 +57,7 @@ playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {
       break;
     }
     case UNKNOWN:
-    default: {
-      return 0;
-    }
+    default: { return 0; }
   }
   return 1;
 }
-

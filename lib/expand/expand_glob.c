@@ -16,7 +16,8 @@ expand_glob(union node** nptr, struct vartab* varstack, int flags) {
   int ret;
   const char* ifs = var_vdefault(varstack, "IFS", IFS_DEFAULT, NULL);
 
-  if(!(n = *nptr)) return n;
+  if(!(n = *nptr))
+    return n;
 
   stralloc_nul(&n->narg.stra);
 

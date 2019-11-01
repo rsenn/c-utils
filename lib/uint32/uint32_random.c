@@ -8,7 +8,7 @@ unsigned long uint32_bytes_seeded = 0;
 
 uint32
 uint32_random(void) {
-  int i;
+  size_t i;
   uint32 r = 0;
 
   /* seed if not seeded */

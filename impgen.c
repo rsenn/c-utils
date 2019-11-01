@@ -34,15 +34,16 @@ main(int argc, char* argv[]) {
     char *dll, *filename, *dll_name;
     size_t dllsz;
     uint32 i, *name_rvas, nexp, num_entries;
-    pe_data_directory *datadir;
+    pe_data_directory* datadir;
     pe_export_directory* expdata;
     pe32_opt_header* opt_hdr_32;
     pe_type type;
 
     filename = argv[optarg];
 
-    dll = mmap_read(filename, &dllsz);
-    if(dll == NULL) return 1;
+    dll = (char*)mmap_read(filename, &dllsz);
+    if(dll == NULL)
+      return 1;
 
     dll_name = str_basename(filename);
 

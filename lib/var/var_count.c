@@ -7,7 +7,8 @@ var_count(int flags) {
   size_t n = 0;
 
   for(var = var_list; var; var = var->gnext)
-    if((var->flags & flags) == flags) n++;
+    if((var->flags & flags) == flags)
+      n++;
 
   return n;
 }

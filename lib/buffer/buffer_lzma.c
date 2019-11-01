@@ -53,7 +53,8 @@ buffer_lzmaread_op(fd_t fd, void* data, size_t n, buffer* b) {
     return n - strm->avail_out;
   }
 
-  if(ret != LZMA_OK) return -1;
+  if(ret != LZMA_OK)
+    return -1;
 
   return 0;
 }
@@ -125,35 +126,34 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   lzma_ctx* ctx;
   lzma_options_lzma opt_lzma2;
   lzma_filter f[3];
-  
-  f[0].id = 0x04; //LZMA_FILTER_X86;
+
+  f[0].id = 0x04; // LZMA_FILTER_X86;
   f[0].options = 0;
-  
-  f[1].id = 0x21; //LZMA_FILTER_LZMA2;
+
+  f[1].id = 0x21; // LZMA_FILTER_LZMA2;
   f[1].options = &opt_lzma2;
-  
+
   f[2].id = 0xffffffffffffffff; // LZMA_VLI_UNKNOWN;
-  
+
   if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) {
     return 0;
   }
   ctx = calloc(1, sizeof(lzma_ctx));
-  if(ctx == NULL) return 0;
+  if(ctx == NULL)
+    return 0;
 
   ctx->b = other;
 
-  buffer_init(b,
-              (buffer_op_proto*)(compress ? (void*)&buffer_lzmawrite_op : (void*)&buffer_lzmaread_op),
-              -1,
-              ctx->buf,
-              sizeof(ctx->buf));
+  buffer_init(
+      b, (void*)(compress ? (void*)&buffer_lzmawrite_op : (void*)&buffer_lzmaread_op), -1, ctx->buf, sizeof(ctx->buf));
   b->cookie = ctx;
   b->deinit = &buffer_lzma_close;
 
   ret = compress ? lzma_stream_encoder(&ctx->strm, f, LZMA_CHECK_CRC64)
                  : lzma_stream_decoder(&ctx->strm, 0xffffffffffffffff /*LZMA_VLI_UNKNOWN*/, LZMA_CONCATENATED);
 
-  if(ret != LZMA_OK) return 0;
+  if(ret != LZMA_OK)
+    return 0;
 
   return 1;
 }

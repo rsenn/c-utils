@@ -22,18 +22,22 @@ vartab_cleanup(struct vartab* vartab) {
       if(var->parent) {
         var->parent->child = NULL;
 
-        if((var->parent->gnext = var->gnext)) var->gnext->glink = &var->parent->gnext;
+        if((var->parent->gnext = var->gnext))
+          var->gnext->glink = &var->parent->gnext;
 
         var->parent->glink = var->glink;
         *var->glink = var->parent;
       } else {
-        if((*var->glink = var->gnext)) var->gnext->glink = var->glink;
+        if((*var->glink = var->gnext))
+          var->gnext->glink = var->glink;
       }
 
-      if(var->flags & V_FREESTR) stralloc_free(&var->sa);
+      if(var->flags & V_FREESTR)
+        stralloc_free(&var->sa);
 
       /* if it was malloc()ed we have to free it now */
-      if((var->flags & V_FREE)) free(var);
+      if((var->flags & V_FREE))
+        free(var);
     }
 
     /* clear the hash bucket */

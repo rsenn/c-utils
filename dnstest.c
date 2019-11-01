@@ -26,7 +26,8 @@ main(int argc, char* argv[]) {
   (void)argc;
 
   dns_random_init(seed);
-  if(*argv) ++argv;
+  if(*argv)
+    ++argv;
   while(*argv) {
     if(!stralloc_copys(&fqdn, *argv)) {
       buffer_putsflush(buffer_2, "out of memory\n");
@@ -38,7 +39,8 @@ main(int argc, char* argv[]) {
     }
 
     for(i = 0; i + 4 <= out.len; i += 4) {
-      if(i) buffer_puts(buffer_1, " ");
+      if(i)
+        buffer_puts(buffer_1, " ");
       buffer_put(buffer_1, str, ip4_fmt(str, out.s + i));
     }
     buffer_puts(buffer_1, "\n");

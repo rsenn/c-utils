@@ -10,4 +10,3 @@ str_triml(char* s, const char* charset, unsigned int charsetlen) {
   }
   return s;
 }
-

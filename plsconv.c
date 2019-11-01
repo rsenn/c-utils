@@ -22,7 +22,7 @@
 #include <stdio.h>
 
 /*extern ssize_t write();
-*/
+ */
 playlist pls1, pls2;
 static buffer outfile;
 static char outbuf[1024];
@@ -32,7 +32,8 @@ static buffer inbuf;
 static const char*
 mybasename(char* name) {
   size_t n = str_rchr(name, '/');
-  if(name[n] != '\0') return &name[n + 1];
+  if(name[n] != '\0')
+    return &name[n + 1];
   return name;
 }
 
@@ -57,13 +58,14 @@ playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 lengt
 void
 usage(char* argv0) {
   buffer_putm_internal(buffer_1,
-              "Usage: ",
-              argv0,
-              " [-f type] [-t type] [-o output] [input or stdin]\n\n",
-              "  -f type  Input type\n"
-              "  -t type  Output type\n"
-              "\n"
-              "Supported types are: m3u pls xspf\n", 0);
+                       "Usage: ",
+                       argv0,
+                       " [-f type] [-t type] [-o output] [input or stdin]\n\n",
+                       "  -f type  Input type\n"
+                       "  -t type  Output type\n"
+                       "\n"
+                       "Supported types are: m3u pls xspf\n",
+                       0);
   buffer_flush(buffer_1);
   exit(0);
 }
@@ -112,7 +114,8 @@ main(int argc, char* argv[]) {
     if(in_type == NULL) {
       size_t i = str_rchr(in_file, '.');
       in_type = &in_file[i];
-      if(*in_type == '.') ++in_type;
+      if(*in_type == '.')
+        ++in_type;
     }
 
     if(!str_diff(in_type, ".pls"))

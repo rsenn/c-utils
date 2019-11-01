@@ -49,8 +49,8 @@ postpone_noopt(int argc, char* const argv[], int index) {
 
 static int
 _getopt_(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
-	if(optbuf == NULL)
-		optbuf = buffer_2;
+  if(optbuf == NULL)
+    optbuf = buffer_2;
   while(1) {
     int c;
     const char* optptr = 0;

@@ -11,22 +11,21 @@ buffer_copy(buffer* out, buffer* in) {
   char tmp[1024];
 
   while((r = buffer_get(in, tmp, sizeof(tmp))) > 0) {
-     buffer_put(out, tmp, r);
+    buffer_put(out, tmp, r);
 
-     n += r;
-
+    n += r;
   }
   buffer_flush(out);
   return n;
 }
 
 int
-main(int argc, char* argv[])  {
-  buffer input,  output, compress, decompress;
+main(int argc, char* argv[]) {
+  buffer input, output, compress, decompress;
   buffer deflate, gzout, inflate, gzin;
   stralloc fname;
 
-  const char* filename =  argv[1] ? argv[1] : "/home/roman/Sources/file-5.34.tar.xz";
+  const char* filename = argv[1] ? argv[1] : "/home/roman/Sources/file-5.34.tar.xz";
 
   if(buffer_mmapprivate(&input, filename) < 0) {
     buffer_putm_2(buffer_2, "ERROR opening: ", filename);
@@ -59,10 +58,10 @@ main(int argc, char* argv[])  {
   buffer_close(&compress);
 #endif
 
-  //buffer_deflate(&compress, &output, 3);
+  // buffer_deflate(&compress, &output, 3);
 
   buffer_copy(buffer_1, &decompress);
-//
+  //
 
   buffer_truncfile(&gzout, "output.gz");
 

@@ -15,7 +15,8 @@
 int
 path_exists(const char* p) {
 #if WINDOWS_NATIVE
-  if(access(p, 0) == 0) return 1;
+  if(access(p, 0) == 0)
+    return 1;
 #endif
   {
     struct _stat st;

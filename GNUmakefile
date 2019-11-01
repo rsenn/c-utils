@@ -28,10 +28,10 @@ endef
 OS ?= $(shell uname -o | tr "[[:upper:]]" "[[:lower:]]")
 
 ifeq ($(CC),)
-  CC := gcc
+	CC := gcc
 endif
 ifeq ($(CC),cc)
-  CC := gcc
+	CC := gcc
 endif
 
 CXX = g++
@@ -68,11 +68,11 @@ define CHECK_SCOPE_ID =
 #include <netinet/in.h>\n
 \n
 int main() {\n
-  struct sockaddr_in6 sa;\n
-  sa.sin6_family = PF_INET6;\n
-  sa.sin6_scope_id = 23;\n
-  (void)sa;\n
-  return 0;\n
+	struct sockaddr_in6 sa;\n
+	sa.sin6_family = PF_INET6;\n
+	sa.sin6_scope_id = 23;\n
+	(void)sa;\n
+	return 0;\n
 }\n
 endef
 
@@ -174,7 +174,11 @@ endif
 #$(call def-include-exists,errno.h,HAVE_ERRNO_H)
 #$(call def-include-exists,sys/devpoll.h,HAVE_DEVPOLL)
 #$(info HAVE_DEVPOLL=$(HAVE_DEVPOLL))
+ifneq ($(subst tcc,,$(CC)),$(CC))
+BUILD := $(shell (set -x; $(CROSS_COMPILE)$(CC) -vv | sed '1!d ; s, version [^ ]\+ , , ; s,[()],,g; s,\s\+,-,g ; s,Linux,linux,g; s,\(.*\)-\(.*\)-\(.*\),\2-\3-\1,'))
+else
 BUILD := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
+endif
 ifneq ($(CC),$(subst m32,,$(CC)))
 BUILD := $(subst x86_64,i386,$(BUILD))
 endif
@@ -239,12 +243,16 @@ ifeq ($(CROSS_COMPILE),)
 HOST ?= $(BUILD)
 else
 ifeq ($(USE_MUSL),1)
-    HOST := $(subst gnu,musl,$(BUILD))
+	  HOST := $(subst gnu,musl,$(BUILD))
+else
+ifneq ($(subst tcc,,$(CC)),$(CC))
+HOST := $(shell (set -x; $(CROSS_COMPILE)$(CC) -vv | sed '1!d ; s, version [^ ]\+ , , ; s,[()],,g; s,\s\+,-,g ; s,Linux,linux,g; s,\(.*\)-\(.*\)-\(.*\),\2-\3-\1,'))
 else
 ifeq ($(USE_DIET),1)
 HOST := $( shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
 else
-HOST := $( shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$||' )
+HOST := $( shell set -x; $(CROSS_COMPILE)$(CC) -dumpmachine  | sed 's|[-.0-9]*\\\$$|| ;; s|\\r\$$|| ;; s|-unknown-|-|g' )
+endif
 endif
 endif
 endif
@@ -311,19 +319,19 @@ ifneq ($(CROSS_COMPILE),)
 ifeq ($(call cmd-exists,$(CROSS_COMPILE)$(PKG_CONFIG)),1)
 PKG_CONFIG := $(CROSS_COMPILE)$(PKG_CONFIG)
 else
-  P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/sys*root/*/lib/pkgconfig)
-  ifeq ($(call file-exists,$(P)),1)
-  PKG_CONFIG_PATH := $(P)
-  ifeq ($(SYSROOT),)
-  SYSROOT := $(dir $(subst /lib/pkgconfig,,$(P)))
+	P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/sys*root/*/lib/pkgconfig)
+	ifeq ($(call file-exists,$(P)),1)
+	PKG_CONFIG_PATH := $(P)
+	ifeq ($(SYSROOT),)
+	SYSROOT := $(dir $(subst /lib/pkgconfig,,$(P)))
 #$(info SYSROOT=$(SYSROOT))
-  endif
-  else
-  P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/lib/pkgconfig)
-  ifeq ($(call file-exists,$(P)),1)
-  PKG_CONFIG_PATH := $(P)
-  endif
-  endif
+	endif
+	else
+	P := $(shell set -x; ls -d /usr/$(CROSS_COMPILE:%-=%)/lib/pkgconfig)
+	ifeq ($(call file-exists,$(P)),1)
+	PKG_CONFIG_PATH := $(P)
+	endif
+	endif
 endif
 endif
 
@@ -382,10 +390,10 @@ endif
 
 USE_WINSOCK := $(call check-function-exists,WSAStartup,-lws2_32,winsock2.h)
 ifeq ($(MSYS),1)
-  USE_WINSOCK := 0
+	USE_WINSOCK := 0
 endif
 ifeq ($(CYGWIN),1)
-  USE_WINSOCK := 0
+	USE_WINSOCK := 0
 endif
 #$(info USE_WINSOCK=$(USE_WINSOCK))
 ifeq ($(USE_WINSOCK),1)
@@ -520,18 +528,32 @@ TOOLCHAIN := $(HOST1)-$(HOST2)-$(HOST3)
 #endif
 #
 #$(info TOOLCHAIN: $(TOOLCHAIN))
+HOST := $(subst unknown-,,$(HOST))
+ifneq ($(CC),$(subst clang,,$(CC)))
+	BUILD := $(subst gnu,clang,$(BUILD))
+	HOST := $(subst gnu,clang,$(HOST))
+endif
+ifneq ($(CC),$(subst zapcc,,$(CC)))
+	BUILD := $(subst gnu,zapcc,$(BUILD))
+	HOST := $(subst gnu,zapcc,$(HOST))
+endif
+ifeq ($(CC),tcc)
+	BUILD := $(subst gnu,tcc,$(BUILD))
+	HOST := $(subst gnu,tcc,$(HOST))
+	DEFINES += inline=__inline
+endif
 ifneq (${builddir},)
 BUILDDIR = ${builddir}/$(BUILD_TYPE)/
 else
 ifneq ($(HOST),$(BUILD))
-  BUILDDIR = build/$(HOST)/$(BUILD_TYPE)/
+	BUILDDIR = build/$(HOST)/$(BUILD_TYPE)/
 else
 #	ifeq ($(CROSS_COMPILE),)
 	BUILDDIR = build/$(HOST)/$(BUILD_TYPE)/
 #	else
 #	BUILDDIR = build/$(patsubst %-,%,$(CROSS_COMPILE))/$(BUILD_TYPE)/
 #	endif
-  endif
+	endif
 endif
 
 export BUILDDIR
@@ -559,7 +581,7 @@ ifeq ($(SYS),mingw32)
 READDIR :=0
 else
 ifeq ($(SYS),msys)
-  READDIR := 1
+	READDIR := 1
 #DEFINES += USE_READDIR=0
 endif
 endif
@@ -648,7 +670,7 @@ endif
 endif
 
 #$(info BUILDDIR: \
-  )
+	)
 #$(info builddir: $(builddir))
 ifeq ($(BUILD_TYPE),Prof)
 DEBUG := 0
@@ -695,8 +717,12 @@ endif
 
 #$(info DIET: $(DIET))
 #$(info STATIC: $(STATIC))
+ifneq ($(subst tcc,,$(CC)),$(CC))
+HOST := $(shell (set -x; $(CROSS_COMPILE)$(CC) -vv | sed '1!d ; s, version [^ ]\+ , , ; s,[()],,g; s,\s\+,-,g ; s,Linux,linux,g; s,\(.*\)-\(.*\)-\(.*\),\2-\3-\1,'))
+else
 ifeq ($(HOST),)
 HOST := $(shell $(CROSS_COMPILE)$(CC) -dumpmachine)
+endif
 endif
 ifneq ($(HOST),$(subst mingw,,$(HOST)))
 MINGW := 1
@@ -767,6 +793,7 @@ $(info MSYS: $(MSYS))
 
 #CFLAGS = $(patsubst %,-W%,$(WARNINGS))
 DEFS := $(patsubst %,-D%,$(DEFINES))
+DEFS += $(EXTRA_DEFS)
 
 LIB_SRC = $(wildcard *_*.c umult*.c)
 LIB_OBJ = $(patsubst %.o,$(BUILDDIR)%.o,$(patsubst %.c,%.o,$(LIB_SRC)))
@@ -785,14 +812,14 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 #LIBRARIES = $(patsubst %,$(BUILDDIR)lib%$(M64_).a,z bz2 lzma)
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon xmlclasses ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc su-cmd cmake-run)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc cmake-run tcpproxy redir httpproxy parse testihex)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
 LIBSOURCES = $(wildcard lib/*/*.c)
 ifeq ($(DO_CXX),1)
 PROGRAMS += \
-  piccfghex$(M64_)$(EXEEXT)
+	piccfghex$(M64_)$(EXEEXT)
 #  $(BUILDDIR)mediathek-parser-cpp$(M64_)$(EXEEXT)
 endif
 OBJECTS = $(PROGRAMS:%=%.o) $(LIB_OBJ)
@@ -806,7 +833,7 @@ VPATH = $(BUILDDIR):.:lib:src
 ##$(info ARCH: $(ARCH))
 ##$(info BUILD: $(BUILD))
 ##$(info BUILDDIR: \
-  )
+	)
 ##$(info BUILDTYPE: $(BUILDTYPE))
 ##$(info CCVER: $(CCVER))
 ##$(info CROSS_COMPILE: $(CROSS_COMPILE))
@@ -819,7 +846,7 @@ VPATH = $(BUILDDIR):.:lib:src
 ##$(info STATIC: $(STATIC))
 ##$(info TRIPLET: $(TRIPLET))
 ifeq ($(OS),darwin)
-  READDIR := 1
+	READDIR := 1
 #DEFINES += USE_READDIR=1
 #CFLAGS += -DUSE_READDIR=1
 #CPPFLAGS += -DUSE_READDIR=1
@@ -931,9 +958,9 @@ else
 ifeq ($(call file-exists,/opt/$(HOST)/sysroot),1)
 SYSROOT := /opt/$(HOST)/sys-root
 else
-  ifneq ($(HOST),)
+	ifneq ($(HOST),)
 SYSROOT := /usr/$(HOST)
-  endif
+	endif
 endif
 endif
 endif
@@ -942,7 +969,7 @@ endif
 endif
 
 ifeq ($(SYSROOT),/usr/)
-  SYSROOT :=
+	SYSROOT :=
 endif
 
 ifneq ($(SYS),msys)
@@ -962,33 +989,33 @@ $(info COMPILE: $(COMPILE))
 $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
 ifneq ($(HAVE_ZLIB),1)
-  BUILD_ZLIB = 1
-  BUILD_3RD_PARTY += z
-  LIBZ = $(BUILDDIR)libz.a
-  HAVE_ZLIB = 1
+	BUILD_ZLIB = 1
+	BUILD_3RD_PARTY += z
+	LIBZ = $(BUILDDIR)libz.a
+	HAVE_ZLIB = 1
 $(info Building libz from 3rdparty/zlib)
 endif
 ifneq ($(HAVE_LIBBZ2),1)
-  BUILD_LIBBZ2 = 1
-  BUILD_3RD_PARTY += bz2
-  LIBBZ2 = $(BUILDDIR)libbz2.a
-  HAVE_LIBBZ2 = 1
+	BUILD_LIBBZ2 = 1
+	BUILD_3RD_PARTY += bz2
+	LIBBZ2 = $(BUILDDIR)libbz2.a
+	HAVE_LIBBZ2 = 1
 $(info Building libbz2 from 3rdparty/bzip2)
 endif
 ifneq ($(HAVE_LIBLZMA),1)
-  BUILD_LIBLZMA = 1
-  BUILD_3RD_PARTY += lzma
-  LIBLZMA = $(BUILDDIR)liblzma.a
-  HAVE_LIBLZMA = 1
+	BUILD_LIBLZMA = 1
+	BUILD_3RD_PARTY += lzma
+	LIBLZMA = $(BUILDDIR)liblzma.a
+	HAVE_LIBLZMA = 1
 $(info Building libz from 3rdparty/zlib)
 $(info Building liblzma from 3rdparty/xz)
 endif
 
 LIBRARIES = $(patsubst %,$(BUILDDIR)lib%.a,$(BUILD_3RD_PARTY))
-MODULES += $(patsubst %,$(BUILDDIR)%.a,alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray io json list map mmap ndelay omf open path pe playlist process rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textcode textbuf uint16 uint32 uint64 var vartab wait xml ucs alloc)
+MODULES += $(patsubst %,$(BUILDDIR)%.a,alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textcode textbuf uint16 uint32 uint64 var vartab wait xml ucs alloc)
 
 
-#EXAMPLES := array safemult$(EXEEXT) b64encode$(EXEEXT) buffer_mmap$(EXEEXT) cas$(EXEEXT) cdbget2$(EXEEXT) cescape$(EXEEXT) client$(EXEEXT) dllink$(EXEEXT) fdpassing$(EXEEXT) fmt$(EXEEXT) fmt_iso8691$(EXEEXT) fmt_longlong$(EXEEXT) httpd$(EXEEXT) io$(EXEEXT) io2$(EXEEXT) io3$(EXEEXT) io4$(EXEEXT) io5$(EXEEXT) iob$(EXEEXT) iom$(EXEEXT) json$(EXEEXT) marshal$(EXEEXT) mult$(EXEEXT) netstring$(EXEEXT) protobuf$(EXEEXT) proxy$(EXEEXT) range$(EXEEXT) readhttp$(EXEEXT) scan$(EXEEXT) server$(EXEEXT) stralloc_buffer$(EXEEXT) textcode$(EXEEXT) uint$(EXEEXT) unurl$(EXEEXT) urlencode$(EXEEXT) uudecode$(EXEEXT) vd$(EXEEXT)
+#EXAMPLES := array safemult$(EXEEXT) b64encode$(EXEEXT) buffer_mmap$(EXEEXT) cas$(EXEEXT) cdbget2$(EXEEXT) cescape$(EXEEXT) client$(EXEEXT) dllink$(EXEEXT) fdpassing$(EXEEXT) fmt$(EXEEXT) fmt_iso8691$(EXEEXT) fmt_longlong$(EXEEXT) httpd$(EXEEXT) io$(EXEEXT) io2$(EXEEXT) io3$(EXEEXT) io4$(EXEEXT) io5$(EXEEXT) iob$(EXEEXT) iom$(EXEEXT) json$(EXEEXT) marshal$(EXEEXT) mult$(EXEEXT) netstring$(EXEEXT) protobuf$(EXEEXT) httpproxy$(EXEEXT) range$(EXEEXT) readhttp$(EXEEXT) scan$(EXEEXT) server$(EXEEXT) stralloc_buffer$(EXEEXT) textcode$(EXEEXT) uint$(EXEEXT) unurl$(EXEEXT) urlencode$(EXEEXT) uudecode$(EXEEXT) vd$(EXEEXT)
 EXAMPLES := $(BUILDDIR)array$(EXEEXT) $(BUILDDIR)b64encode$(EXEEXT) $(BUILDDIR)buffer_mmap$(EXEEXT) $(BUILDDIR)dnsip$(EXEEXT) $(BUILDDIR)fmt$(EXEEXT) $(BUILDDIR)scan$(EXEEXT) $(BUILDDIR)uint$(EXEEXT) $(BUILDDIR)io$(EXEEXT) $(BUILDDIR)io2$(EXEEXT) $(BUILDDIR)io4$(EXEEXT) $(BUILDDIR)io5$(EXEEXT) 
 
 $(info BUILDDIR: $(BUILDDIR))
@@ -1004,7 +1031,7 @@ all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(LIBRARIES) $(PROGRAMS) $(EX
 #}" >$(BUILDDIR)tryerrno.c
 
 #$(BUILDDIR)haveerrno.h: $(BUILDDIR)tryerrno.c
-#	$(CROSS_COMPILE)$(CC) -include errno.h -c -o $(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFINES += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
+#	$(CROSS_COMPILE)$(CC) -include errno.h -c -o$(BUILDDIR)tryerrno.o $(BUILDDIR)tryerrno.c && { echo "#define HAVE_ERRNO_H 1" >$(BUILDDIR)haveerrno.h; echo "DEFINES += HAVE_ERRNO_H=1" >>$(BUILDDIR)defines.make; } || { echo >$(BUILDDIR)haveerrno.h; echo >>$(BUILDDIR)defines.make; }
 #
 #FLAGS += -include $(BUILDDIR)haveerrno.h
 #
@@ -1054,6 +1081,7 @@ $(call lib-target,hashmap)
 $(call lib-target,hmap)
 $(call lib-target,http)
 $(call lib-target,iarray)
+$(call lib-target,ihex)
 $(call lib-target,io,lib/iopause.c)
 $(call lib-target,json)
 $(call lib-target,list)
@@ -1200,12 +1228,6 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)xmlclasses$(M64_)$(EXEEXT): $(BUILDDIR)xmlclasses.o $(call add-library, xml errmsg array safemult charbuf textbuf hmap stralloc buffer mmap open byte scan fmt fmt str alloc)
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
-ifeq ($(DO_STRIP),1)
-	$(STRIP) $@
-endif
-
 $(BUILDDIR)jsontest$(M64_)$(EXEEXT): $(BUILDDIR)jsontest.o $(call add-library, json slist alloc array safemult charbuf textbuf hmap stralloc buffer mmap open str byte scan fmt)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
@@ -1344,7 +1366,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 ifeq ($(USE_DIET),1)
-$(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += -lcompat -lpthread
+$(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += -lpthread
 endif
 $(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): $(BUILDDIR)pkgcfg.o $(BUILDDIR)getopt.o $(BUILDDIR)wordexp.o $(call add-library,env slist cbmap path unix dir strarray strlist stralloc buffer errmsg array safemult mmap byte scan fmt str open uint32)
@@ -1354,7 +1376,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 ifneq ($(DIET),)
-$(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += -lcompat
+$(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS +=
 endif
 $(BUILDDIR)sln$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
 $(BUILDDIR)sln$(M64_)$(EXEEXT): $(BUILDDIR)sln.o $(call add-library, slist cbmap path dir stralloc buffer errmsg strarray strlist array safemult mmap byte scan fmt str open uint32)
@@ -1492,7 +1514,7 @@ endif
 
 
 $(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
-$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library,case errmsg strarray slist rdir dir path strlist hmap stralloc buffer mmap unix open scan fmt str byte array safemult)
+$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(call add-library,case errmsg strarray slist rdir dir path strlist hmap stralloc buffer mmap unix open scan fmt byte str array safemult)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1506,7 +1528,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
-$(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): $(BUILDDIR)ar-wrap.o $(call add-library,process wait errmsg slist path dir env strlist hmap stralloc buffer mmap unix open scan fmt byte strarray str array safemult)
+$(BUILDDIR)ar-wrap$(M64_)$(EXEEXT): $(BUILDDIR)ar-wrap.o $(call add-library,process wait errmsg slist path dir env strlist hmap stralloc buffer mmap unix open scan fmt byte strarray str array safemult alloc)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1533,6 +1555,34 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
+$(BUILDDIR)httpproxy$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
+$(BUILDDIR)httpproxy$(M64_)$(EXEEXT): $(BUILDDIR)httpproxy.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
+	  $(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)tcpproxy$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
+$(BUILDDIR)tcpproxy$(M64_)$(EXEEXT): $(BUILDDIR)tcpproxy.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
+	  $(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+#$(BUILDDIR)tinyproxy$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
+#$(BUILDDIR)tinyproxy$(M64_)$(EXEEXT): $(BUILDDIR)tinyproxy.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
+#	  $(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+#ifeq ($(DO_STRIP),1)
+#	$(STRIP) $@
+#endif
+
+$(BUILDDIR)redir$(M64_)$(EXEEXT): LIBS += $(WINSOCK_LIB)
+$(BUILDDIR)redir$(M64_)$(EXEEXT): $(BUILDDIR)redir.o $(call add-library,map dns case io iarray array safemult socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
 $(BUILDDIR)crc$(M64_)$(EXEEXT): LIBS += -lz
 $(BUILDDIR)crc$(M64_)$(EXEEXT): $(BUILDDIR)crc.o $(call add-library,errmsg buffer mmap open fmt scan str byte)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
@@ -1540,8 +1590,16 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)su-cmd$(M64_)$(EXEEXT): LIBS += -lz
-$(BUILDDIR)su-cmd$(M64_)$(EXEEXT): $(BUILDDIR)su-cmd.o $(call add-library,errmsg buffer mmap open fmt scan str byte)
+$(BUILDDIR)parse$(M64_)$(EXEEXT): LIBS += -lz
+$(BUILDDIR)parse$(M64_)$(EXEEXT): $(BUILDDIR)parse.o $(call add-library,errmsg strlist stralloc buffer  mmap open fmt scan   str byte)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+
+$(BUILDDIR)testihex$(M64_)$(EXEEXT): LIBS += -lz
+$(BUILDDIR)testihex$(M64_)$(EXEEXT): $(BUILDDIR)testihex.o $(call add-library,ihex alloc stralloc buffer mmap scan fmt open byte str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1600,7 +1658,7 @@ uninstall:
 	@for PROGRAM in $(PROGRAMS); do \
 		echo $(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
 		$(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
-  done
+	done
 
 slackpkg: all-release
 	@set -x; distdir="_inst"; rm -rf $$distdir; \
@@ -1613,7 +1671,7 @@ inst-slackpkg: slackpkg
 	for x in /m*/*/pmagic/pmodules/; do \
 		rm -vf "$$x"/dirlist-*.txz; \
 		cp -vf dirlist-`date +%Y%m%d`-slackware.txz "$$x"; \
-  done
+	done
 
 -include build/deps.mk
 

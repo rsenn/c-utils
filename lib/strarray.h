@@ -22,7 +22,7 @@ typedef array strarray;
 
 #define strarray_size(l) array_length((l), sizeof(char*))
 
-#define strarray_begin(l) (char**) array_start((l))
+#define strarray_begin(l) (char**)array_start((l))
 #define strarray_end(l) (strarray_begin(l) + strarray_size(l))
 
 #define strarray_at(l, pos) (*(char**)array_get((l), sizeof(char*), pos))
@@ -73,7 +73,6 @@ int strarray_each(strarray* arr, void (*pred)(char**));
 int strarray_glob(strarray* arr, const char* pattern);
 
 int64 strarray_splice(strarray*, uint64 start, uint64 del, uint64 insert, const char** x);
-
 
 #ifdef __cplusplus
 }

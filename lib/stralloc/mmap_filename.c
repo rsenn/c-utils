@@ -26,7 +26,7 @@ mmap_filename(void* map, stralloc* sa) {
   }
 
   stralloc_ready(sa, MAX_PATH + 1);
-  if((sa->len = (size_t) (*get_mmaped_filename)(GetCurrentProcess(), map, sa->s, sa->a))) {
+  if((sa->len = (size_t)(*get_mmaped_filename)(GetCurrentProcess(), map, sa->s, sa->a))) {
 
     /* Translate path with device name to drive letters. */
     char szTemp[BUFSIZE];

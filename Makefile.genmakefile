@@ -16,358 +16,358 @@ build/gcc/Debug:
 	test -d "$@" || mkdir -p "$@"
 
 .c.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/case_starts.o build/gcc/Debug/case_find.o build/gcc/Debug/case_lowerb.o build/gcc/Debug/case_lowerc.o build/gcc/Debug/case_findb.o build/gcc/Debug/case_lowers.o build/gcc/Debug/case_diffs.o build/gcc/Debug/case_diffb.o build/gcc/Debug/case_finds.o: build/gcc/Debug/%.o: lib/case/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/case.a: build/gcc/Debug/case_starts.o build/gcc/Debug/case_find.o build/gcc/Debug/case_lowerb.o build/gcc/Debug/case_lowerc.o build/gcc/Debug/case_findb.o build/gcc/Debug/case_lowers.o build/gcc/Debug/case_diffs.o build/gcc/Debug/case_diffb.o build/gcc/Debug/case_finds.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/slist_add_before.o build/gcc/Debug/slist_shifts.o build/gcc/Debug/slist_remove.o build/gcc/Debug/slist_find.o build/gcc/Debug/slist_length.o build/gcc/Debug/slist_shift.o build/gcc/Debug/slist_add_after.o build/gcc/Debug/slist_unshifts.o build/gcc/Debug/slist_push.o build/gcc/Debug/slist_pushs.o build/gcc/Debug/slist_init.o build/gcc/Debug/slist_find_remove.o: build/gcc/Debug/%.o: lib/slist/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/slist.a: build/gcc/Debug/slist_add_before.o build/gcc/Debug/slist_shifts.o build/gcc/Debug/slist_remove.o build/gcc/Debug/slist_find.o build/gcc/Debug/slist_length.o build/gcc/Debug/slist_shift.o build/gcc/Debug/slist_add_after.o build/gcc/Debug/slist_unshifts.o build/gcc/Debug/slist_push.o build/gcc/Debug/slist_pushs.o build/gcc/Debug/slist_init.o build/gcc/Debug/slist_find_remove.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/scan_charsetnskip.o build/gcc/Debug/scan_utf8.o build/gcc/Debug/scan_asn1derlength.o build/gcc/Debug/scan_pb_type5_fixed32.o build/gcc/Debug/scan_octal.o build/gcc/Debug/scan_whitenskip.o build/gcc/Debug/scan_xmlescape.o build/gcc/Debug/scan_utf8_sem.o build/gcc/Debug/scan_int.o build/gcc/Debug/scan_asn1dertag.o build/gcc/Debug/scan_line.o build/gcc/Debug/scan_ushort.o build/gcc/Debug/scan_8short.o build/gcc/Debug/scan_nonwhitenskip.o build/gcc/Debug/scan_short.o build/gcc/Debug/scan_ulongn.o build/gcc/Debug/scan_xint.o build/gcc/Debug/scan_fromhex.o build/gcc/Debug/scan_uint.o build/gcc/Debug/scan_xlong.o build/gcc/Debug/scan_varint.o build/gcc/Debug/scan_longn.o build/gcc/Debug/scan_xlongn.o build/gcc/Debug/scan_eolskip.o build/gcc/Debug/scan_longlong.o build/gcc/Debug/scan_8long.o build/gcc/Debug/scan_ulonglong.o build/gcc/Debug/scan_long.o build/gcc/Debug/scan_8int.o build/gcc/Debug/scan_ulong.o build/gcc/Debug/scan_pb_type1_fixed64.o build/gcc/Debug/scan_noncharsetnskip.o build/gcc/Debug/scan_httpdate.o build/gcc/Debug/scan_double.o build/gcc/Debug/scan_lineskip.o build/gcc/Debug/scan_xshort.o build/gcc/Debug/scan_pb_type0_sint.o build/gcc/Debug/scan_xlonglong.o build/gcc/Debug/scan_plusminus.o build/gcc/Debug/scan_8longn.o build/gcc/Debug/scan_pb_tag.o build/gcc/Debug/scan_netstring.o: build/gcc/Debug/%.o: lib/scan/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/scan.a: build/gcc/Debug/scan_charsetnskip.o build/gcc/Debug/scan_utf8.o build/gcc/Debug/scan_asn1derlength.o build/gcc/Debug/scan_pb_type5_fixed32.o build/gcc/Debug/scan_octal.o build/gcc/Debug/scan_whitenskip.o build/gcc/Debug/scan_xmlescape.o build/gcc/Debug/scan_utf8_sem.o build/gcc/Debug/scan_int.o build/gcc/Debug/scan_asn1dertag.o build/gcc/Debug/scan_line.o build/gcc/Debug/scan_ushort.o build/gcc/Debug/scan_8short.o build/gcc/Debug/scan_nonwhitenskip.o build/gcc/Debug/scan_short.o build/gcc/Debug/scan_ulongn.o build/gcc/Debug/scan_xint.o build/gcc/Debug/scan_fromhex.o build/gcc/Debug/scan_uint.o build/gcc/Debug/scan_xlong.o build/gcc/Debug/scan_varint.o build/gcc/Debug/scan_longn.o build/gcc/Debug/scan_xlongn.o build/gcc/Debug/scan_eolskip.o build/gcc/Debug/scan_longlong.o build/gcc/Debug/scan_8long.o build/gcc/Debug/scan_ulonglong.o build/gcc/Debug/scan_long.o build/gcc/Debug/scan_8int.o build/gcc/Debug/scan_ulong.o build/gcc/Debug/scan_pb_type1_fixed64.o build/gcc/Debug/scan_noncharsetnskip.o build/gcc/Debug/scan_httpdate.o build/gcc/Debug/scan_double.o build/gcc/Debug/scan_lineskip.o build/gcc/Debug/scan_xshort.o build/gcc/Debug/scan_pb_type0_sint.o build/gcc/Debug/scan_xlonglong.o build/gcc/Debug/scan_plusminus.o build/gcc/Debug/scan_8longn.o build/gcc/Debug/scan_pb_tag.o build/gcc/Debug/scan_netstring.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/cb_erase.o build/gcc/Debug/cb_foreach.o build/gcc/Debug/cb_insert.o build/gcc/Debug/cb_find_prefix.o build/gcc/Debug/cb_get_kv_ex.o build/gcc/Debug/cb_clear.o build/gcc/Debug/cb_new_kv.o build/gcc/Debug/cb_find.o build/gcc/Debug/cb_get_kv.o: build/gcc/Debug/%.o: lib/cb/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/cb.a: build/gcc/Debug/cb_erase.o build/gcc/Debug/cb_foreach.o build/gcc/Debug/cb_insert.o build/gcc/Debug/cb_find_prefix.o build/gcc/Debug/cb_get_kv_ex.o build/gcc/Debug/cb_clear.o build/gcc/Debug/cb_new_kv.o build/gcc/Debug/cb_find.o build/gcc/Debug/cb_get_kv.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/fmt_strm_internal.o build/gcc/Debug/fmt_8long.o build/gcc/Debug/fmt_minus.o build/gcc/Debug/fmt_iso8601.o build/gcc/Debug/fmt_ulonglong.o build/gcc/Debug/fmt_asn1derlength.o build/gcc/Debug/fmt_escapecharjson.o build/gcc/Debug/fmt_xlonglong.o build/gcc/Debug/fmt_fill.o build/gcc/Debug/fmt_ulong0.o build/gcc/Debug/fmt_long.o build/gcc/Debug/fmt_escapecharhtml.o build/gcc/Debug/fmt_longlong.o build/gcc/Debug/fmt_human.o build/gcc/Debug/fmt_repeat.o build/gcc/Debug/fmt_xlong.o build/gcc/Debug/fmt_xmlescape.o build/gcc/Debug/fmt_utf8.o build/gcc/Debug/fmt_asn1dertag.o build/gcc/Debug/fmt_ulong.o build/gcc/Debug/fmt_humank.o build/gcc/Debug/fmt_hexb.o build/gcc/Debug/fmt_escapecharshell.o build/gcc/Debug/fmt_octal.o build/gcc/Debug/fmt_escapecharquotedprintableutf8.o build/gcc/Debug/fmt_double.o build/gcc/Debug/fmt_tohex.o build/gcc/Debug/fmt_escapecharxml.o build/gcc/Debug/fmt_escapecharc.o build/gcc/Debug/fmt_httpdate.o build/gcc/Debug/fmt_plusminus.o build/gcc/Debug/fmt_escapecharquotedprintable.o build/gcc/Debug/fmt_pad.o build/gcc/Debug/fmt_str.o build/gcc/Debug/fmt_strn.o: build/gcc/Debug/%.o: lib/fmt/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/fmt.a: build/gcc/Debug/fmt_strm_internal.o build/gcc/Debug/fmt_8long.o build/gcc/Debug/fmt_minus.o build/gcc/Debug/fmt_iso8601.o build/gcc/Debug/fmt_ulonglong.o build/gcc/Debug/fmt_asn1derlength.o build/gcc/Debug/fmt_escapecharjson.o build/gcc/Debug/fmt_xlonglong.o build/gcc/Debug/fmt_fill.o build/gcc/Debug/fmt_ulong0.o build/gcc/Debug/fmt_long.o build/gcc/Debug/fmt_escapecharhtml.o build/gcc/Debug/fmt_longlong.o build/gcc/Debug/fmt_human.o build/gcc/Debug/fmt_repeat.o build/gcc/Debug/fmt_xlong.o build/gcc/Debug/fmt_xmlescape.o build/gcc/Debug/fmt_utf8.o build/gcc/Debug/fmt_asn1dertag.o build/gcc/Debug/fmt_ulong.o build/gcc/Debug/fmt_humank.o build/gcc/Debug/fmt_hexb.o build/gcc/Debug/fmt_escapecharshell.o build/gcc/Debug/fmt_octal.o build/gcc/Debug/fmt_escapecharquotedprintableutf8.o build/gcc/Debug/fmt_double.o build/gcc/Debug/fmt_tohex.o build/gcc/Debug/fmt_escapecharxml.o build/gcc/Debug/fmt_escapecharc.o build/gcc/Debug/fmt_httpdate.o build/gcc/Debug/fmt_plusminus.o build/gcc/Debug/fmt_escapecharquotedprintable.o build/gcc/Debug/fmt_pad.o build/gcc/Debug/fmt_str.o build/gcc/Debug/fmt_strn.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/elf_section_headers.o build/gcc/Debug/elf_section_find.o build/gcc/Debug/elf_section_offset.o build/gcc/Debug/elf_section_size.o build/gcc/Debug/elf_header.o build/gcc/Debug/elf_section_name.o build/gcc/Debug/elf_section.o build/gcc/Debug/elf_shstrtab.o build/gcc/Debug/elf_section_typename.o build/gcc/Debug/elf_get_symtab.o build/gcc/Debug/elf_get_section_r.o build/gcc/Debug/elf_get_symtab_r.o build/gcc/Debug/elf_dynamic_section.o build/gcc/Debug/elf_get_value.o build/gcc/Debug/elf_get_section.o build/gcc/Debug/elf_section_index.o build/gcc/Debug/elf_program_headers.o build/gcc/Debug/elf_symbol_r.o: build/gcc/Debug/%.o: lib/elf/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/elf.a: build/gcc/Debug/elf_section_headers.o build/gcc/Debug/elf_section_find.o build/gcc/Debug/elf_section_offset.o build/gcc/Debug/elf_section_size.o build/gcc/Debug/elf_header.o build/gcc/Debug/elf_section_name.o build/gcc/Debug/elf_section.o build/gcc/Debug/elf_shstrtab.o build/gcc/Debug/elf_section_typename.o build/gcc/Debug/elf_get_symtab.o build/gcc/Debug/elf_get_section_r.o build/gcc/Debug/elf_get_symtab_r.o build/gcc/Debug/elf_dynamic_section.o build/gcc/Debug/elf_get_value.o build/gcc/Debug/elf_get_section.o build/gcc/Debug/elf_section_index.o build/gcc/Debug/elf_program_headers.o build/gcc/Debug/elf_symbol_r.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/ndelay_on.o build/gcc/Debug/ndelay_off.o: build/gcc/Debug/%.o: lib/ndelay/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/ndelay.a: build/gcc/Debug/ndelay_on.o build/gcc/Debug/ndelay_off.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/sig_block.o build/gcc/Debug/sig_unblock.o: build/gcc/Debug/%.o: lib/sig/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/sig.a: build/gcc/Debug/sig_block.o build/gcc/Debug/sig_unblock.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/expand_arith.o build/gcc/Debug/expand_cat.o build/gcc/Debug/expand_glob.o build/gcc/Debug/expand_escape.o build/gcc/Debug/expand_argv.o build/gcc/Debug/expand_unescape.o build/gcc/Debug/expand_vars.o build/gcc/Debug/expand_param.o build/gcc/Debug/expand_command.o build/gcc/Debug/expand_catsa.o build/gcc/Debug/expand_args.o build/gcc/Debug/expand_arg.o build/gcc/Debug/expand_copysa.o: build/gcc/Debug/%.o: lib/expand/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/expand.a: build/gcc/Debug/expand_arith.o build/gcc/Debug/expand_cat.o build/gcc/Debug/expand_glob.o build/gcc/Debug/expand_escape.o build/gcc/Debug/expand_argv.o build/gcc/Debug/expand_unescape.o build/gcc/Debug/expand_vars.o build/gcc/Debug/expand_param.o build/gcc/Debug/expand_command.o build/gcc/Debug/expand_catsa.o build/gcc/Debug/expand_args.o build/gcc/Debug/expand_arg.o build/gcc/Debug/expand_copysa.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/coff_index_symtab.o build/gcc/Debug/coff_get_strtab.o build/gcc/Debug/coff_symbol_name.o build/gcc/Debug/coff_header.o build/gcc/Debug/coff_storage_class.o build/gcc/Debug/coff_get_symtab.o build/gcc/Debug/coff_line_numbers.o build/gcc/Debug/coff_sclass_name.o build/gcc/Debug/coff_symbol_table.o build/gcc/Debug/coff_get_section.o: build/gcc/Debug/%.o: lib/coff/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/coff.a: build/gcc/Debug/coff_index_symtab.o build/gcc/Debug/coff_get_strtab.o build/gcc/Debug/coff_symbol_name.o build/gcc/Debug/coff_header.o build/gcc/Debug/coff_storage_class.o build/gcc/Debug/coff_get_symtab.o build/gcc/Debug/coff_line_numbers.o build/gcc/Debug/coff_sclass_name.o build/gcc/Debug/coff_symbol_table.o build/gcc/Debug/coff_get_section.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/uint32_read_big.o build/gcc/Debug/uint32_unpack_big.o build/gcc/Debug/uint32_unpack.o build/gcc/Debug/uint32_pack_big.o build/gcc/Debug/uint32_pack.o build/gcc/Debug/uint32_read.o build/gcc/Debug/uint32_prng.o build/gcc/Debug/uint32_seed.o build/gcc/Debug/uint32_random.o: build/gcc/Debug/%.o: lib/uint32/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/uint32.a: build/gcc/Debug/uint32_read_big.o build/gcc/Debug/uint32_unpack_big.o build/gcc/Debug/uint32_unpack.o build/gcc/Debug/uint32_pack_big.o build/gcc/Debug/uint32_pack.o build/gcc/Debug/uint32_read.o build/gcc/Debug/uint32_prng.o build/gcc/Debug/uint32_seed.o build/gcc/Debug/uint32_random.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/gpio_set_output.o build/gcc/Debug/gpio_set_input_pull_up.o build/gcc/Debug/gpio_set_input_pull_down.o build/gcc/Debug/gpio_set_input_resistor_pull.o build/gcc/Debug/gpio_set_pin_mode.o build/gcc/Debug/gpio_set_input_pull.o build/gcc/Debug/gpio_init.o build/gcc/Debug/gpio_write.o build/gcc/Debug/gpio_short_wait.o build/gcc/Debug/gpio_read.o: build/gcc/Debug/%.o: lib/gpio/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/gpio.a: build/gcc/Debug/gpio_set_output.o build/gcc/Debug/gpio_set_input_pull_up.o build/gcc/Debug/gpio_set_input_pull_down.o build/gcc/Debug/gpio_set_input_resistor_pull.o build/gcc/Debug/gpio_set_pin_mode.o build/gcc/Debug/gpio_set_input_pull.o build/gcc/Debug/gpio_init.o build/gcc/Debug/gpio_write.o build/gcc/Debug/gpio_short_wait.o build/gcc/Debug/gpio_read.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/process_create.o: build/gcc/Debug/%.o: lib/process/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/process.a: build/gcc/Debug/process_create.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/binfmt_open.o: build/gcc/Debug/%.o: lib/binfmt/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/binfmt.a: build/gcc/Debug/binfmt_open.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/byte_copy.o build/gcc/Debug/byte_equal.o build/gcc/Debug/byte_fmt.o build/gcc/Debug/byte_finds.o build/gcc/Debug/byte_lower.o build/gcc/Debug/byte_case_equal.o build/gcc/Debug/byte_case_start.o build/gcc/Debug/byte_count.o build/gcc/Debug/byte_diff.o build/gcc/Debug/byte_findb.o build/gcc/Debug/byte_trimr.o build/gcc/Debug/byte_case_diff.o build/gcc/Debug/byte_upper.o build/gcc/Debug/byte_fill.o build/gcc/Debug/byte_ccopy.o build/gcc/Debug/byte_copyr.o build/gcc/Debug/byte_chr.o build/gcc/Debug/byte_triml.o build/gcc/Debug/byte_zero.o build/gcc/Debug/byte_camelize.o build/gcc/Debug/byte_rchr.o build/gcc/Debug/byte_scan.o build/gcc/Debug/byte_replace.o: build/gcc/Debug/%.o: lib/byte/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/byte.a: build/gcc/Debug/byte_copy.o build/gcc/Debug/byte_equal.o build/gcc/Debug/byte_fmt.o build/gcc/Debug/byte_finds.o build/gcc/Debug/byte_lower.o build/gcc/Debug/byte_case_equal.o build/gcc/Debug/byte_case_start.o build/gcc/Debug/byte_count.o build/gcc/Debug/byte_diff.o build/gcc/Debug/byte_findb.o build/gcc/Debug/byte_trimr.o build/gcc/Debug/byte_case_diff.o build/gcc/Debug/byte_upper.o build/gcc/Debug/byte_fill.o build/gcc/Debug/byte_ccopy.o build/gcc/Debug/byte_copyr.o build/gcc/Debug/byte_chr.o build/gcc/Debug/byte_triml.o build/gcc/Debug/byte_zero.o build/gcc/Debug/byte_camelize.o build/gcc/Debug/byte_rchr.o build/gcc/Debug/byte_scan.o build/gcc/Debug/byte_replace.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/umult32.o build/gcc/Debug/range_str2inbuf.o build/gcc/Debug/range_strinbuf.o build/gcc/Debug/imult32.o build/gcc/Debug/range_arrayinbuf.o build/gcc/Debug/imult16.o build/gcc/Debug/umult16.o build/gcc/Debug/range_str4inbuf.o build/gcc/Debug/umult64.o build/gcc/Debug/imult64.o: build/gcc/Debug/%.o: lib/safemult/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/safemult.a: build/gcc/Debug/umult32.o build/gcc/Debug/range_str2inbuf.o build/gcc/Debug/range_strinbuf.o build/gcc/Debug/imult32.o build/gcc/Debug/range_arrayinbuf.o build/gcc/Debug/imult16.o build/gcc/Debug/umult16.o build/gcc/Debug/range_str4inbuf.o build/gcc/Debug/umult64.o build/gcc/Debug/imult64.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/buffer_read.o build/gcc/Debug/buffer_fromstr.o build/gcc/Debug/buffer_deflate.o build/gcc/Debug/buffer_1.o build/gcc/Debug/buffer_feed.o build/gcc/Debug/buffer_mmapprivate.o build/gcc/Debug/buffer_seek.o build/gcc/Debug/buffer_getline.o build/gcc/Debug/buffer_default.o build/gcc/Debug/buffer_putxlong.o build/gcc/Debug/buffer_munmap.o build/gcc/Debug/buffer_init.o build/gcc/Debug/buffer_bz2.o build/gcc/Debug/buffer_free.o build/gcc/Debug/buffer_freshen.o build/gcc/Debug/buffer_fromsa.o build/gcc/Debug/buffer_get.o build/gcc/Debug/buffer_peekc.o build/gcc/Debug/buffer_2.o build/gcc/Debug/buffer_putns.o build/gcc/Debug/buffer_putulong0.o build/gcc/Debug/buffer_prefetch.o build/gcc/Debug/buffer_flush.o build/gcc/Debug/buffer_putlong.o build/gcc/Debug/buffer_putsa.o build/gcc/Debug/buffer_putspace.o build/gcc/Debug/buffer_putxlonglong.o build/gcc/Debug/buffer_get_until.o build/gcc/Debug/buffer_stubborn2.o build/gcc/Debug/buffer_mmapprivate_fd.o build/gcc/Debug/buffer_write_fd.o build/gcc/Debug/buffer_putm_internal.o build/gcc/Debug/buffer_get_token.o build/gcc/Debug/buffer_gzip.o build/gcc/Debug/buffer_putptr.o build/gcc/Debug/buffer_read_fd.o build/gcc/Debug/buffer_putnlflush.o build/gcc/Debug/buffer_putulong.o build/gcc/Debug/buffer_frombuf.o build/gcc/Debug/buffer_putm_internal_flush.o build/gcc/Debug/buffer_putulonglong.o build/gcc/Debug/buffer_dummyread.o build/gcc/Debug/buffer_skipspace.o build/gcc/Debug/buffer_skip_pred.o build/gcc/Debug/buffer_stubborn.o build/gcc/Debug/buffer_bzip.o build/gcc/Debug/buffer_close.o build/gcc/Debug/buffer_1small.o build/gcc/Debug/buffer_getc.o build/gcc/Debug/buffer_get_token_pred.o build/gcc/Debug/buffer_putxlonglong0.o build/gcc/Debug/buffer_inflate.o build/gcc/Debug/buffer_putnc.o build/gcc/Debug/buffer_put8long.o build/gcc/Debug/buffer_0small.o build/gcc/Debug/buffer_dump.o build/gcc/Debug/buffer_skipn.o build/gcc/Debug/buffer_putnspace.o build/gcc/Debug/buffer_putsflush.o build/gcc/Debug/buffer_putsaflush.o build/gcc/Debug/buffer_mmapshared_fd.o build/gcc/Debug/buffer_skipc.o build/gcc/Debug/buffer_write.o build/gcc/Debug/buffer_putflush.o build/gcc/Debug/buffer_0.o build/gcc/Debug/buffer_dummyreadmmap.o build/gcc/Debug/buffer_peek.o build/gcc/Debug/buffer_put.o build/gcc/Debug/buffer_mmapread_fd.o build/gcc/Debug/buffer_truncfile.o build/gcc/Debug/buffer_puts.o build/gcc/Debug/buffer_getn.o build/gcc/Debug/buffer_putspad.o build/gcc/Debug/buffer_fromarray.o build/gcc/Debug/buffer_lzma.o build/gcc/Debug/buffer_skip_until.o build/gcc/Debug/buffer_putlong0.o build/gcc/Debug/buffer_putlonglong.o build/gcc/Debug/buffer_putxlong0.o build/gcc/Debug/buffer_copy.o build/gcc/Debug/buffer_putc.o build/gcc/Debug/buffer_init_free.o build/gcc/Debug/buffer_putsalign.o build/gcc/Debug/buffer_putdouble.o build/gcc/Debug/buffer_mmapread.o build/gcc/Debug/buffer_putalign.o build/gcc/Debug/buffer_puterror2.o build/gcc/Debug/buffer_puterror.o: build/gcc/Debug/%.o: lib/buffer/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/buffer.a: build/gcc/Debug/buffer_read.o build/gcc/Debug/buffer_fromstr.o build/gcc/Debug/buffer_deflate.o build/gcc/Debug/buffer_1.o build/gcc/Debug/buffer_feed.o build/gcc/Debug/buffer_mmapprivate.o build/gcc/Debug/buffer_seek.o build/gcc/Debug/buffer_getline.o build/gcc/Debug/buffer_default.o build/gcc/Debug/buffer_putxlong.o build/gcc/Debug/buffer_munmap.o build/gcc/Debug/buffer_init.o build/gcc/Debug/buffer_bz2.o build/gcc/Debug/buffer_free.o build/gcc/Debug/buffer_freshen.o build/gcc/Debug/buffer_fromsa.o build/gcc/Debug/buffer_get.o build/gcc/Debug/buffer_peekc.o build/gcc/Debug/buffer_2.o build/gcc/Debug/buffer_putns.o build/gcc/Debug/buffer_putulong0.o build/gcc/Debug/buffer_prefetch.o build/gcc/Debug/buffer_flush.o build/gcc/Debug/buffer_putlong.o build/gcc/Debug/buffer_putsa.o build/gcc/Debug/buffer_putspace.o build/gcc/Debug/buffer_putxlonglong.o build/gcc/Debug/buffer_get_until.o build/gcc/Debug/buffer_stubborn2.o build/gcc/Debug/buffer_mmapprivate_fd.o build/gcc/Debug/buffer_write_fd.o build/gcc/Debug/buffer_putm_internal.o build/gcc/Debug/buffer_get_token.o build/gcc/Debug/buffer_gzip.o build/gcc/Debug/buffer_putptr.o build/gcc/Debug/buffer_read_fd.o build/gcc/Debug/buffer_putnlflush.o build/gcc/Debug/buffer_putulong.o build/gcc/Debug/buffer_frombuf.o build/gcc/Debug/buffer_putm_internal_flush.o build/gcc/Debug/buffer_putulonglong.o build/gcc/Debug/buffer_dummyread.o build/gcc/Debug/buffer_skipspace.o build/gcc/Debug/buffer_skip_pred.o build/gcc/Debug/buffer_stubborn.o build/gcc/Debug/buffer_bzip.o build/gcc/Debug/buffer_close.o build/gcc/Debug/buffer_1small.o build/gcc/Debug/buffer_getc.o build/gcc/Debug/buffer_get_token_pred.o build/gcc/Debug/buffer_putxlonglong0.o build/gcc/Debug/buffer_inflate.o build/gcc/Debug/buffer_putnc.o build/gcc/Debug/buffer_put8long.o build/gcc/Debug/buffer_0small.o build/gcc/Debug/buffer_dump.o build/gcc/Debug/buffer_skipn.o build/gcc/Debug/buffer_putnspace.o build/gcc/Debug/buffer_putsflush.o build/gcc/Debug/buffer_putsaflush.o build/gcc/Debug/buffer_mmapshared_fd.o build/gcc/Debug/buffer_skipc.o build/gcc/Debug/buffer_write.o build/gcc/Debug/buffer_putflush.o build/gcc/Debug/buffer_0.o build/gcc/Debug/buffer_dummyreadmmap.o build/gcc/Debug/buffer_peek.o build/gcc/Debug/buffer_put.o build/gcc/Debug/buffer_mmapread_fd.o build/gcc/Debug/buffer_truncfile.o build/gcc/Debug/buffer_puts.o build/gcc/Debug/buffer_getn.o build/gcc/Debug/buffer_putspad.o build/gcc/Debug/buffer_fromarray.o build/gcc/Debug/buffer_lzma.o build/gcc/Debug/buffer_skip_until.o build/gcc/Debug/buffer_putlong0.o build/gcc/Debug/buffer_putlonglong.o build/gcc/Debug/buffer_putxlong0.o build/gcc/Debug/buffer_copy.o build/gcc/Debug/buffer_putc.o build/gcc/Debug/buffer_init_free.o build/gcc/Debug/buffer_putsalign.o build/gcc/Debug/buffer_putdouble.o build/gcc/Debug/buffer_mmapread.o build/gcc/Debug/buffer_putalign.o build/gcc/Debug/buffer_puterror2.o build/gcc/Debug/buffer_puterror.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/array_start.o build/gcc/Debug/array_indexof.o build/gcc/Debug/array_bytes.o build/gcc/Debug/array_trunc.o build/gcc/Debug/array_cate.o build/gcc/Debug/array_get.o build/gcc/Debug/array_equal.o build/gcc/Debug/array_catb.o build/gcc/Debug/array_cats.o build/gcc/Debug/array_cat.o build/gcc/Debug/array_splice.o build/gcc/Debug/array_truncate.o build/gcc/Debug/array_cats0.o build/gcc/Debug/array_end.o build/gcc/Debug/array_find.o build/gcc/Debug/array_fail.o build/gcc/Debug/array_reset.o build/gcc/Debug/array_cat0.o build/gcc/Debug/array_length.o build/gcc/Debug/array_allocate.o: build/gcc/Debug/%.o: lib/array/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/array.a: build/gcc/Debug/array_start.o build/gcc/Debug/array_indexof.o build/gcc/Debug/array_bytes.o build/gcc/Debug/array_trunc.o build/gcc/Debug/array_cate.o build/gcc/Debug/array_get.o build/gcc/Debug/array_equal.o build/gcc/Debug/array_catb.o build/gcc/Debug/array_cats.o build/gcc/Debug/array_cat.o build/gcc/Debug/array_splice.o build/gcc/Debug/array_truncate.o build/gcc/Debug/array_cats0.o build/gcc/Debug/array_end.o build/gcc/Debug/array_find.o build/gcc/Debug/array_fail.o build/gcc/Debug/array_reset.o build/gcc/Debug/array_cat0.o build/gcc/Debug/array_length.o build/gcc/Debug/array_allocate.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/mmap_rw_fd.o build/gcc/Debug/mmap_private_fd.o build/gcc/Debug/mmap_shared_fd.o build/gcc/Debug/mmap_map.o build/gcc/Debug/mmap_read_fd.o build/gcc/Debug/mmap_shared.o build/gcc/Debug/mmap_unmap.o build/gcc/Debug/mmap_read.o build/gcc/Debug/mmap_private.o: build/gcc/Debug/%.o: lib/mmap/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/mmap.a: build/gcc/Debug/mmap_rw_fd.o build/gcc/Debug/mmap_private_fd.o build/gcc/Debug/mmap_shared_fd.o build/gcc/Debug/mmap_map.o build/gcc/Debug/mmap_read_fd.o build/gcc/Debug/mmap_shared.o build/gcc/Debug/mmap_unmap.o build/gcc/Debug/mmap_read.o build/gcc/Debug/mmap_private.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/hmap_is_locate.o build/gcc/Debug/hmap_init.o build/gcc/Debug/hmap_get.o build/gcc/Debug/hmap_set.o build/gcc/Debug/hmap_size.o build/gcc/Debug/hmap_add.o build/gcc/Debug/hmap_set_stralloc.o build/gcc/Debug/hmap_search.o build/gcc/Debug/hmap_free_data.o build/gcc/Debug/hmap_destroy.o build/gcc/Debug/hmap_truncate.o build/gcc/Debug/hmap_distance.o build/gcc/Debug/hmap_print_list.o build/gcc/Debug/hmap_print_tree.o build/gcc/Debug/hmap_dump.o build/gcc/Debug/hmap_add_tuple_with_data.o build/gcc/Debug/hmap_delete.o build/gcc/Debug/hmap_cmp.o build/gcc/Debug/hmap_hash.o build/gcc/Debug/hmap_set_chars.o build/gcc/Debug/hmap_print_table.o: build/gcc/Debug/%.o: lib/hmap/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/hmap.a: build/gcc/Debug/hmap_is_locate.o build/gcc/Debug/hmap_init.o build/gcc/Debug/hmap_get.o build/gcc/Debug/hmap_set.o build/gcc/Debug/hmap_size.o build/gcc/Debug/hmap_add.o build/gcc/Debug/hmap_set_stralloc.o build/gcc/Debug/hmap_search.o build/gcc/Debug/hmap_free_data.o build/gcc/Debug/hmap_destroy.o build/gcc/Debug/hmap_truncate.o build/gcc/Debug/hmap_distance.o build/gcc/Debug/hmap_print_list.o build/gcc/Debug/hmap_print_tree.o build/gcc/Debug/hmap_dump.o build/gcc/Debug/hmap_add_tuple_with_data.o build/gcc/Debug/hmap_delete.o build/gcc/Debug/hmap_cmp.o build/gcc/Debug/hmap_hash.o build/gcc/Debug/hmap_set_chars.o build/gcc/Debug/hmap_print_table.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/io_socketpair.o build/gcc/Debug/io_waitread.o build/gcc/Debug/io_eagain.o build/gcc/Debug/io_getcookie.o build/gcc/Debug/io_waitwrite.o build/gcc/Debug/io_dontwantwrite.o build/gcc/Debug/io_wantread.o build/gcc/Debug/io_mmapwritefile.o build/gcc/Debug/io_eagain_write.o build/gcc/Debug/io_block.o build/gcc/Debug/io_timeout.o build/gcc/Debug/io_tryreadtimeout.o build/gcc/Debug/io_wait.o build/gcc/Debug/io_canwrite.o build/gcc/Debug/io_pipe.o build/gcc/Debug/io_finishandshutdown.o build/gcc/Debug/io_timeouted.o build/gcc/Debug/io_passfd.o build/gcc/Debug/io_dup.o build/gcc/Debug/io_sigpipe.o build/gcc/Debug/io_waituntil.o build/gcc/Debug/io_readfile.o build/gcc/Debug/io_appendfile.o build/gcc/Debug/io_nonblock.o build/gcc/Debug/io_eagain_read.o build/gcc/Debug/io_sendfile.o build/gcc/Debug/io_setcookie.o build/gcc/Debug/io_fd.o build/gcc/Debug/io_readwritefile.o build/gcc/Debug/io_tryread.o build/gcc/Debug/io_wantwrite.o build/gcc/Debug/io_timedout.o build/gcc/Debug/io_trywritetimeout.o build/gcc/Debug/io_trywrite.o build/gcc/Debug/io_check.o build/gcc/Debug/io_closeonexec.o build/gcc/Debug/io_canread.o build/gcc/Debug/io_debugstring.o build/gcc/Debug/io_dontwantread.o build/gcc/Debug/iopause.o build/gcc/Debug/io_waituntil2.o build/gcc/Debug/io_close.o build/gcc/Debug/io_createfile.o: build/gcc/Debug/%.o: lib/io/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/io.a: build/gcc/Debug/io_socketpair.o build/gcc/Debug/io_waitread.o build/gcc/Debug/io_eagain.o build/gcc/Debug/io_getcookie.o build/gcc/Debug/io_waitwrite.o build/gcc/Debug/io_dontwantwrite.o build/gcc/Debug/io_wantread.o build/gcc/Debug/io_mmapwritefile.o build/gcc/Debug/io_eagain_write.o build/gcc/Debug/io_block.o build/gcc/Debug/io_timeout.o build/gcc/Debug/io_tryreadtimeout.o build/gcc/Debug/io_wait.o build/gcc/Debug/io_canwrite.o build/gcc/Debug/io_pipe.o build/gcc/Debug/io_finishandshutdown.o build/gcc/Debug/io_timeouted.o build/gcc/Debug/io_passfd.o build/gcc/Debug/io_dup.o build/gcc/Debug/io_sigpipe.o build/gcc/Debug/io_waituntil.o build/gcc/Debug/io_readfile.o build/gcc/Debug/io_appendfile.o build/gcc/Debug/io_nonblock.o build/gcc/Debug/io_eagain_read.o build/gcc/Debug/io_sendfile.o build/gcc/Debug/io_setcookie.o build/gcc/Debug/io_fd.o build/gcc/Debug/io_readwritefile.o build/gcc/Debug/io_tryread.o build/gcc/Debug/io_wantwrite.o build/gcc/Debug/io_timedout.o build/gcc/Debug/io_trywritetimeout.o build/gcc/Debug/io_trywrite.o build/gcc/Debug/io_check.o build/gcc/Debug/io_closeonexec.o build/gcc/Debug/io_canread.o build/gcc/Debug/io_debugstring.o build/gcc/Debug/io_dontwantread.o build/gcc/Debug/iopause.o build/gcc/Debug/io_waituntil2.o build/gcc/Debug/io_close.o build/gcc/Debug/io_createfile.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/fmt_foldwhitespace.o build/gcc/Debug/fmt_cescape.o build/gcc/Debug/scan_urlencoded.o build/gcc/Debug/fmt_base64.o build/gcc/Debug/scan_to_array.o build/gcc/Debug/fmt_xml.o build/gcc/Debug/scan_html.o build/gcc/Debug/fmt_quotedprintable.o build/gcc/Debug/scan_yenc.o build/gcc/Debug/fmt_to_array.o build/gcc/Debug/fmt_html_tagarg.o build/gcc/Debug/fmt_ldapescape2.o build/gcc/Debug/fmt_tofrom_array.o build/gcc/Debug/scan_ldapescape.o build/gcc/Debug/fmt_hexdump.o build/gcc/Debug/scan_quotedprintable.o build/gcc/Debug/base64.o build/gcc/Debug/fmt_yenc.o build/gcc/Debug/fmt_to_sa.o build/gcc/Debug/fmt_ldapescape.o build/gcc/Debug/scan_to_sa.o build/gcc/Debug/scan_uuencoded.o build/gcc/Debug/fmt_uuencoded.o build/gcc/Debug/scan_hexdump.o build/gcc/Debug/fmt_urlencoded.o build/gcc/Debug/scan_jsonescape.o build/gcc/Debug/scan_cescape.o build/gcc/Debug/scan_tofrom_array.o build/gcc/Debug/base64url.o build/gcc/Debug/scan_base64url.o build/gcc/Debug/fmt_html.o build/gcc/Debug/fmt_jsonescape.o build/gcc/Debug/fmt_base64url.o build/gcc/Debug/scan_base64.o build/gcc/Debug/fmt_stripwhitespace.o: build/gcc/Debug/%.o: lib/textcode/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/textcode.a: build/gcc/Debug/fmt_foldwhitespace.o build/gcc/Debug/fmt_cescape.o build/gcc/Debug/scan_urlencoded.o build/gcc/Debug/fmt_base64.o build/gcc/Debug/scan_to_array.o build/gcc/Debug/fmt_xml.o build/gcc/Debug/scan_html.o build/gcc/Debug/fmt_quotedprintable.o build/gcc/Debug/scan_yenc.o build/gcc/Debug/fmt_to_array.o build/gcc/Debug/fmt_html_tagarg.o build/gcc/Debug/fmt_ldapescape2.o build/gcc/Debug/fmt_tofrom_array.o build/gcc/Debug/scan_ldapescape.o build/gcc/Debug/fmt_hexdump.o build/gcc/Debug/scan_quotedprintable.o build/gcc/Debug/base64.o build/gcc/Debug/fmt_yenc.o build/gcc/Debug/fmt_to_sa.o build/gcc/Debug/fmt_ldapescape.o build/gcc/Debug/scan_to_sa.o build/gcc/Debug/scan_uuencoded.o build/gcc/Debug/fmt_uuencoded.o build/gcc/Debug/scan_hexdump.o build/gcc/Debug/fmt_urlencoded.o build/gcc/Debug/scan_jsonescape.o build/gcc/Debug/scan_cescape.o build/gcc/Debug/scan_tofrom_array.o build/gcc/Debug/base64url.o build/gcc/Debug/scan_base64url.o build/gcc/Debug/fmt_html.o build/gcc/Debug/fmt_jsonescape.o build/gcc/Debug/fmt_base64url.o build/gcc/Debug/scan_base64.o build/gcc/Debug/fmt_stripwhitespace.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/range_init.o: build/gcc/Debug/%.o: lib/range/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/range.a: build/gcc/Debug/range_init.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/list_add_before.o build/gcc/Debug/list_move_tail.o build/gcc/Debug/list_remove.o build/gcc/Debug/list_find.o build/gcc/Debug/list_init.o build/gcc/Debug/list_push.o build/gcc/Debug/list_move_head.o build/gcc/Debug/list_find_remove.o build/gcc/Debug/list_length.o build/gcc/Debug/list_add_after.o build/gcc/Debug/list_unshift.o build/gcc/Debug/list_swap.o: build/gcc/Debug/%.o: lib/list/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/list.a: build/gcc/Debug/list_add_before.o build/gcc/Debug/list_move_tail.o build/gcc/Debug/list_remove.o build/gcc/Debug/list_find.o build/gcc/Debug/list_init.o build/gcc/Debug/list_push.o build/gcc/Debug/list_move_head.o build/gcc/Debug/list_find_remove.o build/gcc/Debug/list_length.o build/gcc/Debug/list_add_after.o build/gcc/Debug/list_unshift.o build/gcc/Debug/list_swap.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/env_set.o build/gcc/Debug/env_merge.o build/gcc/Debug/env_get2.o build/gcc/Debug/env_make.o build/gcc/Debug/env_put.o build/gcc/Debug/env_addmodif.o build/gcc/Debug/env_len.o build/gcc/Debug/env_get.o build/gcc/Debug/env_unset.o build/gcc/Debug/env_pick.o build/gcc/Debug/env_string.o: build/gcc/Debug/%.o: lib/env/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/env.a: build/gcc/Debug/env_set.o build/gcc/Debug/env_merge.o build/gcc/Debug/env_get2.o build/gcc/Debug/env_make.o build/gcc/Debug/env_put.o build/gcc/Debug/env_addmodif.o build/gcc/Debug/env_len.o build/gcc/Debug/env_get.o build/gcc/Debug/env_unset.o build/gcc/Debug/env_pick.o build/gcc/Debug/env_string.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/uint64_read_big.o build/gcc/Debug/uint64_pack.o build/gcc/Debug/uint64_unpack_big.o build/gcc/Debug/uint64_pack_big.o build/gcc/Debug/uint64_read.o build/gcc/Debug/uint64_unpack.o: build/gcc/Debug/%.o: lib/uint64/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/uint64.a: build/gcc/Debug/uint64_read_big.o build/gcc/Debug/uint64_pack.o build/gcc/Debug/uint64_unpack_big.o build/gcc/Debug/uint64_pack_big.o build/gcc/Debug/uint64_read.o build/gcc/Debug/uint64_unpack.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/wordexp.o build/gcc/Debug/fnmatch.o build/gcc/Debug/popen.o build/gcc/Debug/win32_borland_popen.o build/gcc/Debug/readlink.o build/gcc/Debug/getpagesize.o build/gcc/Debug/fork.o build/gcc/Debug/getdelim.o build/gcc/Debug/win32_glob.o build/gcc/Debug/pipe2.o build/gcc/Debug/win32_loadprog.o build/gcc/Debug/win32_popen.o build/gcc/Debug/fnmatch_b.o build/gcc/Debug/getopt.o build/gcc/Debug/glob.o: build/gcc/Debug/%.o: lib/unix/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/unix.a: build/gcc/Debug/wordexp.o build/gcc/Debug/fnmatch.o build/gcc/Debug/popen.o build/gcc/Debug/win32_borland_popen.o build/gcc/Debug/readlink.o build/gcc/Debug/getpagesize.o build/gcc/Debug/fork.o build/gcc/Debug/getdelim.o build/gcc/Debug/win32_glob.o build/gcc/Debug/pipe2.o build/gcc/Debug/win32_loadprog.o build/gcc/Debug/win32_popen.o build/gcc/Debug/fnmatch_b.o build/gcc/Debug/getopt.o build/gcc/Debug/glob.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/pe_thunk.o build/gcc/Debug/pe_offset2rva.o build/gcc/Debug/pe_rva2section.o build/gcc/Debug/pe_get_section.o build/gcc/Debug/pe_header.o build/gcc/Debug/pe_get_datadir.o build/gcc/Debug/pe_datadir_name.o build/gcc/Debug/pe_rva2offset.o build/gcc/Debug/pe_get_value.o build/gcc/Debug/pe_rva2ptr.o: build/gcc/Debug/%.o: lib/pe/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/pe.a: build/gcc/Debug/pe_thunk.o build/gcc/Debug/pe_offset2rva.o build/gcc/Debug/pe_rva2section.o build/gcc/Debug/pe_get_section.o build/gcc/Debug/pe_header.o build/gcc/Debug/pe_get_datadir.o build/gcc/Debug/pe_datadir_name.o build/gcc/Debug/pe_rva2offset.o build/gcc/Debug/pe_get_value.o build/gcc/Debug/pe_rva2ptr.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/json_read_callback.o build/gcc/Debug/json_toint.o build/gcc/Debug/json_push.o build/gcc/Debug/json_length.o build/gcc/Debug/json_reader_init.o build/gcc/Debug/json_tostring.o build/gcc/Debug/json_tosa.o build/gcc/Debug/json_newnode.o build/gcc/Debug/json_set_property.o build/gcc/Debug/json_get_property.o build/gcc/Debug/json_free.o build/gcc/Debug/json_todouble.o build/gcc/Debug/json_parse.o build/gcc/Debug/json_read_tree.o build/gcc/Debug/json_recurse.o build/gcc/Debug/json_print.o: build/gcc/Debug/%.o: lib/json/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/json.a: build/gcc/Debug/json_read_callback.o build/gcc/Debug/json_toint.o build/gcc/Debug/json_push.o build/gcc/Debug/json_length.o build/gcc/Debug/json_reader_init.o build/gcc/Debug/json_tostring.o build/gcc/Debug/json_tosa.o build/gcc/Debug/json_newnode.o build/gcc/Debug/json_set_property.o build/gcc/Debug/json_get_property.o build/gcc/Debug/json_free.o build/gcc/Debug/json_todouble.o build/gcc/Debug/json_parse.o build/gcc/Debug/json_read_tree.o build/gcc/Debug/json_recurse.o build/gcc/Debug/json_print.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/http_read.o build/gcc/Debug/http_sendreq.o build/gcc/Debug/http_writeable.o build/gcc/Debug/http_init.o build/gcc/Debug/http_socket.o build/gcc/Debug/http_readable.o build/gcc/Debug/http_get.o: build/gcc/Debug/%.o: lib/http/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/http.a: build/gcc/Debug/http_read.o build/gcc/Debug/http_sendreq.o build/gcc/Debug/http_writeable.o build/gcc/Debug/http_init.o build/gcc/Debug/http_socket.o build/gcc/Debug/http_readable.o build/gcc/Debug/http_get.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/fmt_latin1_utf8.o build/gcc/Debug/str_utf8_latin.o build/gcc/Debug/scan_latin1_utf8.o build/gcc/Debug/stralloc_utf8_latin1.o build/gcc/Debug/stralloc_latin1_to_utf8.o build/gcc/Debug/stralloc_utf8_to_latin1.o build/gcc/Debug/ucs_latin1.o: build/gcc/Debug/%.o: lib/ucs/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/ucs.a: build/gcc/Debug/fmt_latin1_utf8.o build/gcc/Debug/str_utf8_latin.o build/gcc/Debug/scan_latin1_utf8.o build/gcc/Debug/stralloc_utf8_latin1.o build/gcc/Debug/stralloc_latin1_to_utf8.o build/gcc/Debug/stralloc_utf8_to_latin1.o build/gcc/Debug/ucs_latin1.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/path_skip_separator.o build/gcc/Debug/path_fnmatch.o build/gcc/Debug/path_getcwd.o build/gcc/Debug/path_canonical.o build/gcc/Debug/path_gethome.o build/gcc/Debug/path_basename.o build/gcc/Debug/path_find.o build/gcc/Debug/path_exists.o build/gcc/Debug/path_skip.o build/gcc/Debug/path_readlink.o build/gcc/Debug/path_absolute.o build/gcc/Debug/path_realpath.o build/gcc/Debug/path_collapse.o build/gcc/Debug/path_dirname.o build/gcc/Debug/path_canonicalize.o build/gcc/Debug/path_is_absolute.o build/gcc/Debug/path_num_sa.o build/gcc/Debug/path_canonical_sa.o build/gcc/Debug/path_absolute_sa.o build/gcc/Debug/symlink.o build/gcc/Debug/path_getsep.o build/gcc/Debug/path_relative.o build/gcc/Debug/path_len.o build/gcc/Debug/path_right.o build/gcc/Debug/path_split.o build/gcc/Debug/path_is_separator.o build/gcc/Debug/path_num.o build/gcc/Debug/path_skips.o build/gcc/Debug/path_len_s.o: build/gcc/Debug/%.o: lib/path/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/path.a: build/gcc/Debug/path_skip_separator.o build/gcc/Debug/path_fnmatch.o build/gcc/Debug/path_getcwd.o build/gcc/Debug/path_canonical.o build/gcc/Debug/path_gethome.o build/gcc/Debug/path_basename.o build/gcc/Debug/path_find.o build/gcc/Debug/path_exists.o build/gcc/Debug/path_skip.o build/gcc/Debug/path_readlink.o build/gcc/Debug/path_absolute.o build/gcc/Debug/path_realpath.o build/gcc/Debug/path_collapse.o build/gcc/Debug/path_dirname.o build/gcc/Debug/path_canonicalize.o build/gcc/Debug/path_is_absolute.o build/gcc/Debug/path_num_sa.o build/gcc/Debug/path_canonical_sa.o build/gcc/Debug/path_absolute_sa.o build/gcc/Debug/symlink.o build/gcc/Debug/path_getsep.o build/gcc/Debug/path_relative.o build/gcc/Debug/path_len.o build/gcc/Debug/path_right.o build/gcc/Debug/path_split.o build/gcc/Debug/path_is_separator.o build/gcc/Debug/path_num.o build/gcc/Debug/path_skips.o build/gcc/Debug/path_len_s.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/taia_half.o build/gcc/Debug/taia_now.o build/gcc/Debug/taia_approx.o build/gcc/Debug/taia_uint.o build/gcc/Debug/taia_add.o build/gcc/Debug/taia_less.o build/gcc/Debug/taia_unpack.o build/gcc/Debug/taia_tai.o build/gcc/Debug/taia_pack.o build/gcc/Debug/taia_sub.o build/gcc/Debug/taia_frac.o build/gcc/Debug/taia_addsec.o: build/gcc/Debug/%.o: lib/taia/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/taia.a: build/gcc/Debug/taia_half.o build/gcc/Debug/taia_now.o build/gcc/Debug/taia_approx.o build/gcc/Debug/taia_uint.o build/gcc/Debug/taia_add.o build/gcc/Debug/taia_less.o build/gcc/Debug/taia_unpack.o build/gcc/Debug/taia_tai.o build/gcc/Debug/taia_pack.o build/gcc/Debug/taia_sub.o build/gcc/Debug/taia_frac.o build/gcc/Debug/taia_addsec.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/hashmap_contains_key.o build/gcc/Debug/linked_list_append.o build/gcc/Debug/hashmap_init.o build/gcc/Debug/hashmap_clear.o build/gcc/Debug/hashmap_free.o build/gcc/Debug/hashmap_keys.o build/gcc/Debug/linked_list_prepend.o build/gcc/Debug/hashmap_default_comparator.o build/gcc/Debug/linked_list_head.o build/gcc/Debug/hashmap_get.o build/gcc/Debug/hashmap_put.o build/gcc/Debug/hashmap_size.o build/gcc/Debug/linked_list_init.o build/gcc/Debug/linked_list_free.o build/gcc/Debug/linked_list_size.o build/gcc/Debug/hashmap_remove.o build/gcc/Debug/hashmap_default_hash_func.o: build/gcc/Debug/%.o: lib/hashmap/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/hashmap.a: build/gcc/Debug/hashmap_contains_key.o build/gcc/Debug/linked_list_append.o build/gcc/Debug/hashmap_init.o build/gcc/Debug/hashmap_clear.o build/gcc/Debug/hashmap_free.o build/gcc/Debug/hashmap_keys.o build/gcc/Debug/linked_list_prepend.o build/gcc/Debug/hashmap_default_comparator.o build/gcc/Debug/linked_list_head.o build/gcc/Debug/hashmap_get.o build/gcc/Debug/hashmap_put.o build/gcc/Debug/hashmap_size.o build/gcc/Debug/linked_list_init.o build/gcc/Debug/linked_list_free.o build/gcc/Debug/linked_list_size.o build/gcc/Debug/hashmap_remove.o build/gcc/Debug/hashmap_default_hash_func.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/waitpid_nointr.o build/gcc/Debug/wait_pids_nohang.o build/gcc/Debug/wait_pid.o build/gcc/Debug/wait_reap.o build/gcc/Debug/waitn_reap.o build/gcc/Debug/wait_nohang.o build/gcc/Debug/waitn.o build/gcc/Debug/wait_pid_nohang.o build/gcc/Debug/wait_nointr.o: build/gcc/Debug/%.o: lib/wait/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/wait.a: build/gcc/Debug/waitpid_nointr.o build/gcc/Debug/wait_pids_nohang.o build/gcc/Debug/wait_pid.o build/gcc/Debug/wait_reap.o build/gcc/Debug/waitn_reap.o build/gcc/Debug/wait_nohang.o build/gcc/Debug/waitn.o build/gcc/Debug/wait_pid_nohang.o build/gcc/Debug/wait_nointr.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/strlist_index_of.o build/gcc/Debug/strlist_contains.o build/gcc/Debug/strlist_push_unique.o build/gcc/Debug/strlist_append_sa.o build/gcc/Debug/strlist_trunc.o build/gcc/Debug/strlist_dump.o build/gcc/Debug/strlist_pushm_internal.o build/gcc/Debug/strlist_push_unique_sa.o build/gcc/Debug/strlist_sort.o build/gcc/Debug/strlist_push_tokens.o build/gcc/Debug/strlist_shift.o build/gcc/Debug/strlist_fromb.o build/gcc/Debug/strlist_push.o build/gcc/Debug/strlist_froms.o build/gcc/Debug/strlist_to_argv.o build/gcc/Debug/strlist_at.o build/gcc/Debug/strlist_pop.o build/gcc/Debug/strlist_prepends.o build/gcc/Debug/strlist_removes.o build/gcc/Debug/strlist_sub.o build/gcc/Debug/strlist_pushb.o build/gcc/Debug/strlist_cat.o build/gcc/Debug/strlist_count.o build/gcc/Debug/strlist_push_sa.o build/gcc/Debug/strlist_at_sa.o build/gcc/Debug/strlist_prepend_sa.o build/gcc/Debug/strlist_shift_n.o build/gcc/Debug/strlist_at_n.o build/gcc/Debug/strlist_removeb.o build/gcc/Debug/strlist_containsb.o build/gcc/Debug/strlist_prependb.o build/gcc/Debug/strlist_join.o build/gcc/Debug/strlist_unshift.o build/gcc/Debug/strlist_range.o build/gcc/Debug/strlist_indexofb.o build/gcc/Debug/strlist_pushb_unique.o build/gcc/Debug/strlist_contains_sa.o build/gcc/Debug/strlist_joins.o build/gcc/Debug/strlist_fromv.o: build/gcc/Debug/%.o: lib/strlist/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/strlist.a: build/gcc/Debug/strlist_index_of.o build/gcc/Debug/strlist_contains.o build/gcc/Debug/strlist_push_unique.o build/gcc/Debug/strlist_append_sa.o build/gcc/Debug/strlist_trunc.o build/gcc/Debug/strlist_dump.o build/gcc/Debug/strlist_pushm_internal.o build/gcc/Debug/strlist_push_unique_sa.o build/gcc/Debug/strlist_sort.o build/gcc/Debug/strlist_push_tokens.o build/gcc/Debug/strlist_shift.o build/gcc/Debug/strlist_fromb.o build/gcc/Debug/strlist_push.o build/gcc/Debug/strlist_froms.o build/gcc/Debug/strlist_to_argv.o build/gcc/Debug/strlist_at.o build/gcc/Debug/strlist_pop.o build/gcc/Debug/strlist_prepends.o build/gcc/Debug/strlist_removes.o build/gcc/Debug/strlist_sub.o build/gcc/Debug/strlist_pushb.o build/gcc/Debug/strlist_cat.o build/gcc/Debug/strlist_count.o build/gcc/Debug/strlist_push_sa.o build/gcc/Debug/strlist_at_sa.o build/gcc/Debug/strlist_prepend_sa.o build/gcc/Debug/strlist_shift_n.o build/gcc/Debug/strlist_at_n.o build/gcc/Debug/strlist_removeb.o build/gcc/Debug/strlist_containsb.o build/gcc/Debug/strlist_prependb.o build/gcc/Debug/strlist_join.o build/gcc/Debug/strlist_unshift.o build/gcc/Debug/strlist_range.o build/gcc/Debug/strlist_indexofb.o build/gcc/Debug/strlist_pushb_unique.o build/gcc/Debug/strlist_contains_sa.o build/gcc/Debug/strlist_joins.o build/gcc/Debug/strlist_fromv.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/strarray_glob.o build/gcc/Debug/strarray_pushd.o build/gcc/Debug/strarray_transform.o build/gcc/Debug/strarray_appends.o build/gcc/Debug/strarray_from_argv.o build/gcc/Debug/strarray_prepends.o build/gcc/Debug/strarray_index_of_sa.o build/gcc/Debug/strarray_removeprefixs.o build/gcc/Debug/strarray_each.o build/gcc/Debug/strarray_joins.o build/gcc/Debug/strarray_push_sa.o build/gcc/Debug/strarray_pop.o build/gcc/Debug/strarray_to_argv.o build/gcc/Debug/strarray_push.o build/gcc/Debug/strarray_sort.o build/gcc/Debug/strarray_set.o build/gcc/Debug/strarray_removesuffixs.o build/gcc/Debug/strarray_splice.o build/gcc/Debug/strarray_pushb.o build/gcc/Debug/strarray_index_of.o: build/gcc/Debug/%.o: lib/strarray/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/strarray.a: build/gcc/Debug/strarray_glob.o build/gcc/Debug/strarray_pushd.o build/gcc/Debug/strarray_transform.o build/gcc/Debug/strarray_appends.o build/gcc/Debug/strarray_from_argv.o build/gcc/Debug/strarray_prepends.o build/gcc/Debug/strarray_index_of_sa.o build/gcc/Debug/strarray_removeprefixs.o build/gcc/Debug/strarray_each.o build/gcc/Debug/strarray_joins.o build/gcc/Debug/strarray_push_sa.o build/gcc/Debug/strarray_pop.o build/gcc/Debug/strarray_to_argv.o build/gcc/Debug/strarray_push.o build/gcc/Debug/strarray_sort.o build/gcc/Debug/strarray_set.o build/gcc/Debug/strarray_removesuffixs.o build/gcc/Debug/strarray_splice.o build/gcc/Debug/strarray_pushb.o build/gcc/Debug/strarray_index_of.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/iarray_free.o build/gcc/Debug/iarray_allocate.o build/gcc/Debug/iarray_get.o build/gcc/Debug/iarray_length.o build/gcc/Debug/iarray_init.o: build/gcc/Debug/%.o: lib/iarray/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/iarray.a: build/gcc/Debug/iarray_free.o build/gcc/Debug/iarray_allocate.o build/gcc/Debug/iarray_get.o build/gcc/Debug/iarray_length.o build/gcc/Debug/iarray_init.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/tai_now.o build/gcc/Debug/tai_add.o build/gcc/Debug/tai_unpack.o build/gcc/Debug/tai_uint.o build/gcc/Debug/tai_pack.o build/gcc/Debug/tai_sub.o: build/gcc/Debug/%.o: lib/tai/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/tai.a: build/gcc/Debug/tai_now.o build/gcc/Debug/tai_add.o build/gcc/Debug/tai_unpack.o build/gcc/Debug/tai_uint.o build/gcc/Debug/tai_pack.o build/gcc/Debug/tai_sub.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/alloc_zero.o build/gcc/Debug/alloc_re.o build/gcc/Debug/alloc.o: build/gcc/Debug/%.o: lib/alloc/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/alloc.a: build/gcc/Debug/alloc_zero.o build/gcc/Debug/alloc_re.o build/gcc/Debug/alloc.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/playlist_init.o build/gcc/Debug/playlist_xspf.o build/gcc/Debug/playlist_pls.o build/gcc/Debug/playlist_write_entry.o build/gcc/Debug/playlist_read.o build/gcc/Debug/playlist_m3u.o build/gcc/Debug/playlist_write_start.o build/gcc/Debug/playlist_write_finish.o: build/gcc/Debug/%.o: lib/playlist/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/playlist.a: build/gcc/Debug/playlist_init.o build/gcc/Debug/playlist_xspf.o build/gcc/Debug/playlist_pls.o build/gcc/Debug/playlist_write_entry.o build/gcc/Debug/playlist_read.o build/gcc/Debug/playlist_m3u.o build/gcc/Debug/playlist_write_start.o build/gcc/Debug/playlist_write_finish.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/dns_resolve.o build/gcc/Debug/dns_random.o build/gcc/Debug/dns_ip6.o build/gcc/Debug/dns_dfd.o build/gcc/Debug/dns_dtda.o build/gcc/Debug/dns_ipq6.o build/gcc/Debug/dns_nd6.o build/gcc/Debug/dns_rcrw.o build/gcc/Debug/dns_mx.o build/gcc/Debug/dns_domain.o build/gcc/Debug/dns_name.o build/gcc/Debug/dns_sortip.o build/gcc/Debug/dns_ip4.o build/gcc/Debug/dns_ipq.o build/gcc/Debug/dns_transmit.o build/gcc/Debug/dns_packet.o build/gcc/Debug/dns_txt.o build/gcc/Debug/dns_rcip.o build/gcc/Debug/dns_sortip6.o build/gcc/Debug/dns_nd.o: build/gcc/Debug/%.o: lib/dns/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/dns.a: build/gcc/Debug/dns_resolve.o build/gcc/Debug/dns_random.o build/gcc/Debug/dns_ip6.o build/gcc/Debug/dns_dfd.o build/gcc/Debug/dns_dtda.o build/gcc/Debug/dns_ipq6.o build/gcc/Debug/dns_nd6.o build/gcc/Debug/dns_rcrw.o build/gcc/Debug/dns_mx.o build/gcc/Debug/dns_domain.o build/gcc/Debug/dns_name.o build/gcc/Debug/dns_sortip.o build/gcc/Debug/dns_ip4.o build/gcc/Debug/dns_ipq.o build/gcc/Debug/dns_transmit.o build/gcc/Debug/dns_packet.o build/gcc/Debug/dns_txt.o build/gcc/Debug/dns_rcip.o build/gcc/Debug/dns_sortip6.o build/gcc/Debug/dns_nd.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/xml_find_pred.o build/gcc/Debug/xml_walk.o build/gcc/Debug/xml_textnode.o build/gcc/Debug/xml_escape.o build/gcc/Debug/xml_root_element.o build/gcc/Debug/xml_delete.o build/gcc/Debug/xml_reader_init.o build/gcc/Debug/xml_insert.o build/gcc/Debug/xml_read_callback.o build/gcc/Debug/xml_remove.o build/gcc/Debug/xml_print.o build/gcc/Debug/xml_get_attribute_sa.o build/gcc/Debug/xml_set_attribute_double.o build/gcc/Debug/xml_get_attribute.o build/gcc/Debug/xml_find_parent.o build/gcc/Debug/xml_free.o build/gcc/Debug/xml_print_nodeset.o build/gcc/Debug/xml_print_attributes.o build/gcc/Debug/xml_find_element_attr.o build/gcc/Debug/xml_add_child.o build/gcc/Debug/xml_find_element.o build/gcc/Debug/xml_find_predicates.o build/gcc/Debug/xml_get_document.o build/gcc/Debug/xml_read_tree.o build/gcc/Debug/xml_debug.o build/gcc/Debug/xml_content_sa.o build/gcc/Debug/xml_newnode.o build/gcc/Debug/xml_attrnode.o build/gcc/Debug/xml_set_attribute.o build/gcc/Debug/xml_content.o build/gcc/Debug/xml_has_attribute.o build/gcc/Debug/xml_find_all_pred.o build/gcc/Debug/xml_path.o build/gcc/Debug/xml_get_attribute_double.o build/gcc/Debug/xml_element.o: build/gcc/Debug/%.o: lib/xml/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/xml.a: build/gcc/Debug/xml_find_pred.o build/gcc/Debug/xml_walk.o build/gcc/Debug/xml_textnode.o build/gcc/Debug/xml_escape.o build/gcc/Debug/xml_root_element.o build/gcc/Debug/xml_delete.o build/gcc/Debug/xml_reader_init.o build/gcc/Debug/xml_insert.o build/gcc/Debug/xml_read_callback.o build/gcc/Debug/xml_remove.o build/gcc/Debug/xml_print.o build/gcc/Debug/xml_get_attribute_sa.o build/gcc/Debug/xml_set_attribute_double.o build/gcc/Debug/xml_get_attribute.o build/gcc/Debug/xml_find_parent.o build/gcc/Debug/xml_free.o build/gcc/Debug/xml_print_nodeset.o build/gcc/Debug/xml_print_attributes.o build/gcc/Debug/xml_find_element_attr.o build/gcc/Debug/xml_add_child.o build/gcc/Debug/xml_find_element.o build/gcc/Debug/xml_find_predicates.o build/gcc/Debug/xml_get_document.o build/gcc/Debug/xml_read_tree.o build/gcc/Debug/xml_debug.o build/gcc/Debug/xml_content_sa.o build/gcc/Debug/xml_newnode.o build/gcc/Debug/xml_attrnode.o build/gcc/Debug/xml_set_attribute.o build/gcc/Debug/xml_content.o build/gcc/Debug/xml_has_attribute.o build/gcc/Debug/xml_find_all_pred.o build/gcc/Debug/xml_path.o build/gcc/Debug/xml_get_attribute_double.o build/gcc/Debug/xml_element.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/cbmap_get.o build/gcc/Debug/cbmap_visit.o build/gcc/Debug/cbmap_insert.o build/gcc/Debug/cbmap_alloc.o build/gcc/Debug/cbmap_count.o build/gcc/Debug/cbmap_data_node_destroy.o build/gcc/Debug/memalign.o build/gcc/Debug/cbmap_delete.o build/gcc/Debug/cbmap_destroy.o build/gcc/Debug/cbmap_internal_node.o build/gcc/Debug/cbmap_new.o build/gcc/Debug/cbmap_visit_all.o: build/gcc/Debug/%.o: lib/cbmap/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/cbmap.a: build/gcc/Debug/cbmap_get.o build/gcc/Debug/cbmap_visit.o build/gcc/Debug/cbmap_insert.o build/gcc/Debug/cbmap_alloc.o build/gcc/Debug/cbmap_count.o build/gcc/Debug/cbmap_data_node_destroy.o build/gcc/Debug/memalign.o build/gcc/Debug/cbmap_delete.o build/gcc/Debug/cbmap_destroy.o build/gcc/Debug/cbmap_internal_node.o build/gcc/Debug/cbmap_new.o build/gcc/Debug/cbmap_visit_all.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/vartab_search.o build/gcc/Debug/vartab_root.o build/gcc/Debug/vartab_hash.o build/gcc/Debug/vartab_push.o build/gcc/Debug/vartab_print.o build/gcc/Debug/vartab_add.o build/gcc/Debug/vartab_pop.o build/gcc/Debug/vartab_cleanup.o build/gcc/Debug/vartab_dump.o: build/gcc/Debug/%.o: lib/vartab/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/vartab.a: build/gcc/Debug/vartab_search.o build/gcc/Debug/vartab_root.o build/gcc/Debug/vartab_hash.o build/gcc/Debug/vartab_push.o build/gcc/Debug/vartab_print.o build/gcc/Debug/vartab_add.o build/gcc/Debug/vartab_pop.o build/gcc/Debug/vartab_cleanup.o build/gcc/Debug/vartab_dump.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/map_getref.o build/gcc/Debug/map_set.o build/gcc/Debug/map_iter.o build/gcc/Debug/map_deinit.o build/gcc/Debug/map_next.o build/gcc/Debug/map_get.o build/gcc/Debug/map_remove.o: build/gcc/Debug/%.o: lib/map/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/map.a: build/gcc/Debug/map_getref.o build/gcc/Debug/map_set.o build/gcc/Debug/map_iter.o build/gcc/Debug/map_deinit.o build/gcc/Debug/map_next.o build/gcc/Debug/map_get.o build/gcc/Debug/map_remove.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/str_end.o build/gcc/Debug/str_lower.o build/gcc/Debug/str_copyn.o build/gcc/Debug/str_start.o build/gcc/Debug/str_tok.o build/gcc/Debug/str_copyb.o build/gcc/Debug/str_case_equal.o build/gcc/Debug/str_diff.o build/gcc/Debug/str_is.o build/gcc/Debug/str_equal.o build/gcc/Debug/str_rchr.o build/gcc/Debug/str_rfind.o build/gcc/Debug/str_copy.o build/gcc/Debug/str_chr.o build/gcc/Debug/str_findb.o build/gcc/Debug/str_cat.o build/gcc/Debug/isleap.o build/gcc/Debug/str_dup.o build/gcc/Debug/str_istr.o build/gcc/Debug/time_table_spd.o build/gcc/Debug/str_ndup.o build/gcc/Debug/str_endb.o build/gcc/Debug/str_case_diffn.o build/gcc/Debug/str_camelize.o build/gcc/Debug/str_triml.o build/gcc/Debug/str_basename.o build/gcc/Debug/str_rfindb.o build/gcc/Debug/str_case_start.o build/gcc/Debug/str_find.o build/gcc/Debug/str_case_diff.o build/gcc/Debug/str_diffn.o build/gcc/Debug/str_len.o build/gcc/Debug/str_rchrs.o build/gcc/Debug/str_ptime.o: build/gcc/Debug/%.o: lib/str/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/str.a: build/gcc/Debug/str_end.o build/gcc/Debug/str_lower.o build/gcc/Debug/str_copyn.o build/gcc/Debug/str_start.o build/gcc/Debug/str_tok.o build/gcc/Debug/str_copyb.o build/gcc/Debug/str_case_equal.o build/gcc/Debug/str_diff.o build/gcc/Debug/str_is.o build/gcc/Debug/str_equal.o build/gcc/Debug/str_rchr.o build/gcc/Debug/str_rfind.o build/gcc/Debug/str_copy.o build/gcc/Debug/str_chr.o build/gcc/Debug/str_findb.o build/gcc/Debug/str_cat.o build/gcc/Debug/isleap.o build/gcc/Debug/str_dup.o build/gcc/Debug/str_istr.o build/gcc/Debug/time_table_spd.o build/gcc/Debug/str_ndup.o build/gcc/Debug/str_endb.o build/gcc/Debug/str_case_diffn.o build/gcc/Debug/str_camelize.o build/gcc/Debug/str_triml.o build/gcc/Debug/str_basename.o build/gcc/Debug/str_rfindb.o build/gcc/Debug/str_case_start.o build/gcc/Debug/str_find.o build/gcc/Debug/str_case_diff.o build/gcc/Debug/str_diffn.o build/gcc/Debug/str_len.o build/gcc/Debug/str_rchrs.o build/gcc/Debug/str_ptime.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/omf_record_end.o build/gcc/Debug/omf_begin.o build/gcc/Debug/omf_name.o build/gcc/Debug/omf_end.o build/gcc/Debug/omf_record_next.o build/gcc/Debug/omf_get_name.o build/gcc/Debug/omf_close.o build/gcc/Debug/omf_data.o build/gcc/Debug/omf_open.o build/gcc/Debug/omf_next.o build/gcc/Debug/omf_record_begin.o: build/gcc/Debug/%.o: lib/omf/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/omf.a: build/gcc/Debug/omf_record_end.o build/gcc/Debug/omf_begin.o build/gcc/Debug/omf_name.o build/gcc/Debug/omf_end.o build/gcc/Debug/omf_record_next.o build/gcc/Debug/omf_get_name.o build/gcc/Debug/omf_close.o build/gcc/Debug/omf_data.o build/gcc/Debug/omf_open.o build/gcc/Debug/omf_next.o build/gcc/Debug/omf_record_begin.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/errmsg_infosys.o build/gcc/Debug/errmsg_warn.o build/gcc/Debug/errmsg_iam.o build/gcc/Debug/errmsg_puts.o build/gcc/Debug/errmsg_warnsys.o build/gcc/Debug/errmsg_info.o build/gcc/Debug/errmsg_write.o: build/gcc/Debug/%.o: lib/errmsg/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/errmsg.a: build/gcc/Debug/errmsg_infosys.o build/gcc/Debug/errmsg_warn.o build/gcc/Debug/errmsg_iam.o build/gcc/Debug/errmsg_puts.o build/gcc/Debug/errmsg_warnsys.o build/gcc/Debug/errmsg_info.o build/gcc/Debug/errmsg_write.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/rdir_close.o build/gcc/Debug/rdir_open.o build/gcc/Debug/rdir_read.o: build/gcc/Debug/%.o: lib/rdir/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/rdir.a: build/gcc/Debug/rdir_close.o build/gcc/Debug/rdir_open.o build/gcc/Debug/rdir_read.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/charbuf_peek.o build/gcc/Debug/charbuf_get.o build/gcc/Debug/charbuf_froms.o build/gcc/Debug/charbuf_skip_pred.o build/gcc/Debug/charbuf_getc.o build/gcc/Debug/charbuf_init.o build/gcc/Debug/charbuf_peekc.o build/gcc/Debug/charbuf_skip.o build/gcc/Debug/charbuf_close.o build/gcc/Debug/charbuf_skip_until.o build/gcc/Debug/charbuf_nextc.o: build/gcc/Debug/%.o: lib/charbuf/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/charbuf.a: build/gcc/Debug/charbuf_peek.o build/gcc/Debug/charbuf_get.o build/gcc/Debug/charbuf_froms.o build/gcc/Debug/charbuf_skip_pred.o build/gcc/Debug/charbuf_getc.o build/gcc/Debug/charbuf_init.o build/gcc/Debug/charbuf_peekc.o build/gcc/Debug/charbuf_skip.o build/gcc/Debug/charbuf_close.o build/gcc/Debug/charbuf_skip_until.o build/gcc/Debug/charbuf_nextc.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/socket_mcjoin6.o build/gcc/Debug/socket_v4mappedprefix.o build/gcc/Debug/socket_quickack.o build/gcc/Debug/socket_accept6.o build/gcc/Debug/winsock_socketpair.o build/gcc/Debug/socket_getifidx.o build/gcc/Debug/socket_connect4.o build/gcc/Debug/scan_ip6.o build/gcc/Debug/socket_local4.o build/gcc/Debug/socket_fastopen.o build/gcc/Debug/socket_broadcast.o build/gcc/Debug/fmt_ip6ifc.o build/gcc/Debug/socket_connect6.o build/gcc/Debug/socket_accept4.o build/gcc/Debug/socket_bind4.o build/gcc/Debug/socket_tryreservein.o build/gcc/Debug/winsock_init.o build/gcc/Debug/socket_v6any.o build/gcc/Debug/socket_mcleave6.o build/gcc/Debug/socket_udp4.o build/gcc/Debug/socket_recv6.o build/gcc/Debug/socket_remote6.o build/gcc/Debug/fmt_ip6if.o build/gcc/Debug/socket_send4.o build/gcc/Debug/scan_ip6_flat.o build/gcc/Debug/socket_connected.o build/gcc/Debug/fmt_ip6_flat.o build/gcc/Debug/socket_local6.o build/gcc/Debug/socket_deferaccept.o build/gcc/Debug/socket_sctp6.o build/gcc/Debug/scan_ip4.o build/gcc/Debug/scan_ip6if.o build/gcc/Debug/socket_recv4.o build/gcc/Debug/socket_mcjoin4.o build/gcc/Debug/socket_listen.o build/gcc/Debug/socket_mcleave4.o build/gcc/Debug/socket_tcp4b.o build/gcc/Debug/fmt_ip6.o build/gcc/Debug/fmt_ip4.o build/gcc/Debug/winsock2errno.o build/gcc/Debug/socket_sctp4.o build/gcc/Debug/socket_mchopcount6.o build/gcc/Debug/socket_tcp4.o build/gcc/Debug/socket_noipv6.o build/gcc/Debug/socket_tcp6b.o build/gcc/Debug/socket_sctp4b.o build/gcc/Debug/socket_bind6.o build/gcc/Debug/socket_mcloop4.o build/gcc/Debug/socket_tcp6.o build/gcc/Debug/socket_ip4loopback.o build/gcc/Debug/socket_getifname.o build/gcc/Debug/fmt_ip6c.o build/gcc/Debug/socket_error.o build/gcc/Debug/socket_remote4.o build/gcc/Debug/socket_fastopen_connect4.o build/gcc/Debug/socket_v6loopback.o build/gcc/Debug/socket_sctp6b.o build/gcc/Debug/socket_fastopen_connect6.o build/gcc/Debug/socket_bind6_reuse.o build/gcc/Debug/socket_bind4_reuse.o build/gcc/Debug/socket_mcloop6.o build/gcc/Debug/socket_udp6.o build/gcc/Debug/socket_mcttl4.o build/gcc/Debug/socket_send6.o: build/gcc/Debug/%.o: lib/socket/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/socket.a: build/gcc/Debug/socket_mcjoin6.o build/gcc/Debug/socket_v4mappedprefix.o build/gcc/Debug/socket_quickack.o build/gcc/Debug/socket_accept6.o build/gcc/Debug/winsock_socketpair.o build/gcc/Debug/socket_getifidx.o build/gcc/Debug/socket_connect4.o build/gcc/Debug/scan_ip6.o build/gcc/Debug/socket_local4.o build/gcc/Debug/socket_fastopen.o build/gcc/Debug/socket_broadcast.o build/gcc/Debug/fmt_ip6ifc.o build/gcc/Debug/socket_connect6.o build/gcc/Debug/socket_accept4.o build/gcc/Debug/socket_bind4.o build/gcc/Debug/socket_tryreservein.o build/gcc/Debug/winsock_init.o build/gcc/Debug/socket_v6any.o build/gcc/Debug/socket_mcleave6.o build/gcc/Debug/socket_udp4.o build/gcc/Debug/socket_recv6.o build/gcc/Debug/socket_remote6.o build/gcc/Debug/fmt_ip6if.o build/gcc/Debug/socket_send4.o build/gcc/Debug/scan_ip6_flat.o build/gcc/Debug/socket_connected.o build/gcc/Debug/fmt_ip6_flat.o build/gcc/Debug/socket_local6.o build/gcc/Debug/socket_deferaccept.o build/gcc/Debug/socket_sctp6.o build/gcc/Debug/scan_ip4.o build/gcc/Debug/scan_ip6if.o build/gcc/Debug/socket_recv4.o build/gcc/Debug/socket_mcjoin4.o build/gcc/Debug/socket_listen.o build/gcc/Debug/socket_mcleave4.o build/gcc/Debug/socket_tcp4b.o build/gcc/Debug/fmt_ip6.o build/gcc/Debug/fmt_ip4.o build/gcc/Debug/winsock2errno.o build/gcc/Debug/socket_sctp4.o build/gcc/Debug/socket_mchopcount6.o build/gcc/Debug/socket_tcp4.o build/gcc/Debug/socket_noipv6.o build/gcc/Debug/socket_tcp6b.o build/gcc/Debug/socket_sctp4b.o build/gcc/Debug/socket_bind6.o build/gcc/Debug/socket_mcloop4.o build/gcc/Debug/socket_tcp6.o build/gcc/Debug/socket_ip4loopback.o build/gcc/Debug/socket_getifname.o build/gcc/Debug/fmt_ip6c.o build/gcc/Debug/socket_error.o build/gcc/Debug/socket_remote4.o build/gcc/Debug/socket_fastopen_connect4.o build/gcc/Debug/socket_v6loopback.o build/gcc/Debug/socket_sctp6b.o build/gcc/Debug/socket_fastopen_connect6.o build/gcc/Debug/socket_bind6_reuse.o build/gcc/Debug/socket_bind4_reuse.o build/gcc/Debug/socket_mcloop6.o build/gcc/Debug/socket_udp6.o build/gcc/Debug/socket_mcttl4.o build/gcc/Debug/socket_send6.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/dir_close.o build/gcc/Debug/dir_open.o build/gcc/Debug/dir_read.o build/gcc/Debug/dir_name.o build/gcc/Debug/dir_path.o build/gcc/Debug/dir_time.o build/gcc/Debug/dir_size.o build/gcc/Debug/dir_type.o: build/gcc/Debug/%.o: lib/dir/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/dir.a: build/gcc/Debug/dir_close.o build/gcc/Debug/dir_open.o build/gcc/Debug/dir_read.o build/gcc/Debug/dir_name.o build/gcc/Debug/dir_path.o build/gcc/Debug/dir_time.o build/gcc/Debug/dir_size.o build/gcc/Debug/dir_type.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/uint16_pack_big.o build/gcc/Debug/uint16_pack.o build/gcc/Debug/uint16_read.o build/gcc/Debug/uint16_unpack.o build/gcc/Debug/uint16_unpack_big.o build/gcc/Debug/uint16_read_big.o: build/gcc/Debug/%.o: lib/uint16/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/uint16.a: build/gcc/Debug/uint16_pack_big.o build/gcc/Debug/uint16_pack.o build/gcc/Debug/uint16_read.o build/gcc/Debug/uint16_unpack.o build/gcc/Debug/uint16_unpack_big.o build/gcc/Debug/uint16_read_big.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/stralloc_case_equal.o build/gcc/Debug/stralloc_reverse.o build/gcc/Debug/stralloc_scan.o build/gcc/Debug/stralloc_catlong0.o build/gcc/Debug/stralloc_replace_non_printable.o build/gcc/Debug/stralloc_shrink.o build/gcc/Debug/stralloc_catulong0.o build/gcc/Debug/stralloc_equalb.o build/gcc/Debug/stralloc_catwcb.o build/gcc/Debug/buffer_tosa.o build/gcc/Debug/stralloc_case_starts.o build/gcc/Debug/readclose.o build/gcc/Debug/buffer_put_escaped.o build/gcc/Debug/stralloc_count.o build/gcc/Debug/stralloc_removesuffixs.o build/gcc/Debug/stralloc_catint0.o build/gcc/Debug/stralloc_case_equals.o build/gcc/Debug/stralloc_inserts.o build/gcc/Debug/buffer_get_new_token_sa.o build/gcc/Debug/stralloc_catb.o build/gcc/Debug/stralloc_catuint0.o build/gcc/Debug/stralloc_prepend.o build/gcc/Debug/stralloc_nul.o build/gcc/Debug/stralloc_erase.o build/gcc/Debug/stralloc_insertb.o build/gcc/Debug/stralloc_catuint.o build/gcc/Debug/buffer_gettok_sa.o build/gcc/Debug/stralloc_start.o build/gcc/Debug/stralloc_trimr.o build/gcc/Debug/stralloc_starts.o build/gcc/Debug/stralloc_diffb.o build/gcc/Debug/stralloc_catxlong.o build/gcc/Debug/stralloc_copywcb.o build/gcc/Debug/stralloc_endb.o build/gcc/Debug/stralloc_removesuffixb.o build/gcc/Debug/stralloc_case_diffs.o build/gcc/Debug/stralloc_find.o build/gcc/Debug/stralloc_prependb.o build/gcc/Debug/stralloc_cat.o build/gcc/Debug/stralloc_catwcs.o build/gcc/Debug/stralloc_copys.o build/gcc/Debug/stralloc_findb.o build/gcc/Debug/stralloc_case_end.o build/gcc/Debug/stralloc_subst.o build/gcc/Debug/stralloc_equals.o build/gcc/Debug/stralloc_ready_tuned.o build/gcc/Debug/stralloc_catlong.o build/gcc/Debug/stralloc_ends.o build/gcc/Debug/stralloc_diffs.o build/gcc/Debug/buffer_getnewline_sa.o build/gcc/Debug/stralloc_case_start.o build/gcc/Debug/stralloc_free.o build/gcc/Debug/stralloc_append.o build/gcc/Debug/stralloc_equal.o build/gcc/Debug/stralloc_cats.o build/gcc/Debug/buffer_get_token_sa_pred.o build/gcc/Debug/stralloc_lower.o build/gcc/Debug/str_decamelize.o build/gcc/Debug/stralloc_catm_internal.o build/gcc/Debug/stralloc_decamelize.o build/gcc/Debug/stralloc_catulong.o build/gcc/Debug/stralloc_fmt.o build/gcc/Debug/stralloc_copy.o build/gcc/Debug/stralloc_write.o build/gcc/Debug/stralloc_ready.o build/gcc/Debug/stralloc_move.o build/gcc/Debug/stralloc_expand.o build/gcc/Debug/stralloc_prepends.o build/gcc/Debug/stralloc_fmt_pred.o build/gcc/Debug/stralloc_replacec.o build/gcc/Debug/stralloc_remove_all.o build/gcc/Debug/stralloc_chomp.o build/gcc/Debug/stralloc_copyb.o build/gcc/Debug/stralloc_chr.o build/gcc/Debug/stralloc_diff.o build/gcc/Debug/stralloc_copywcs.o build/gcc/Debug/stralloc_rchr.o build/gcc/Debug/stralloc_remove.o build/gcc/Debug/stralloc_catc.o build/gcc/Debug/stralloc_insert.o build/gcc/Debug/buffer_get_new_token_sa_pred.o build/gcc/Debug/utf8.o build/gcc/Debug/stralloc_startb.o build/gcc/Debug/stralloc_fmt_call.o build/gcc/Debug/stralloc_readyplus.o build/gcc/Debug/openreadclose.o build/gcc/Debug/stralloc_init.o build/gcc/Debug/stralloc_case_diff.o build/gcc/Debug/stralloc_zero.o build/gcc/Debug/buffer_puts_escaped.o build/gcc/Debug/stralloc_0.o build/gcc/Debug/stralloc_replace.o build/gcc/Debug/open_filename.o build/gcc/Debug/stralloc_cathexb.o build/gcc/Debug/stralloc_replaces.o build/gcc/Debug/stralloc_chop.o build/gcc/Debug/stralloc_upper.o build/gcc/Debug/stralloc_reverse_blocks.o build/gcc/Debug/buffer_getline_sa.o build/gcc/Debug/stralloc_trunc.o build/gcc/Debug/stralloc_catint.o build/gcc/Debug/buffer_get_token_sa.o build/gcc/Debug/stralloc_finds.o build/gcc/Debug/stralloc_catdouble.o build/gcc/Debug/stralloc_contains.o build/gcc/Debug/mmap_filename.o build/gcc/Debug/stralloc_camelize.o: build/gcc/Debug/%.o: lib/stralloc/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/stralloc.a: build/gcc/Debug/stralloc_case_equal.o build/gcc/Debug/stralloc_reverse.o build/gcc/Debug/stralloc_scan.o build/gcc/Debug/stralloc_catlong0.o build/gcc/Debug/stralloc_replace_non_printable.o build/gcc/Debug/stralloc_shrink.o build/gcc/Debug/stralloc_catulong0.o build/gcc/Debug/stralloc_equalb.o build/gcc/Debug/stralloc_catwcb.o build/gcc/Debug/buffer_tosa.o build/gcc/Debug/stralloc_case_starts.o build/gcc/Debug/readclose.o build/gcc/Debug/buffer_put_escaped.o build/gcc/Debug/stralloc_count.o build/gcc/Debug/stralloc_removesuffixs.o build/gcc/Debug/stralloc_catint0.o build/gcc/Debug/stralloc_case_equals.o build/gcc/Debug/stralloc_inserts.o build/gcc/Debug/buffer_get_new_token_sa.o build/gcc/Debug/stralloc_catb.o build/gcc/Debug/stralloc_catuint0.o build/gcc/Debug/stralloc_prepend.o build/gcc/Debug/stralloc_nul.o build/gcc/Debug/stralloc_erase.o build/gcc/Debug/stralloc_insertb.o build/gcc/Debug/stralloc_catuint.o build/gcc/Debug/buffer_gettok_sa.o build/gcc/Debug/stralloc_start.o build/gcc/Debug/stralloc_trimr.o build/gcc/Debug/stralloc_starts.o build/gcc/Debug/stralloc_diffb.o build/gcc/Debug/stralloc_catxlong.o build/gcc/Debug/stralloc_copywcb.o build/gcc/Debug/stralloc_endb.o build/gcc/Debug/stralloc_removesuffixb.o build/gcc/Debug/stralloc_case_diffs.o build/gcc/Debug/stralloc_find.o build/gcc/Debug/stralloc_prependb.o build/gcc/Debug/stralloc_cat.o build/gcc/Debug/stralloc_catwcs.o build/gcc/Debug/stralloc_copys.o build/gcc/Debug/stralloc_findb.o build/gcc/Debug/stralloc_case_end.o build/gcc/Debug/stralloc_subst.o build/gcc/Debug/stralloc_equals.o build/gcc/Debug/stralloc_ready_tuned.o build/gcc/Debug/stralloc_catlong.o build/gcc/Debug/stralloc_ends.o build/gcc/Debug/stralloc_diffs.o build/gcc/Debug/buffer_getnewline_sa.o build/gcc/Debug/stralloc_case_start.o build/gcc/Debug/stralloc_free.o build/gcc/Debug/stralloc_append.o build/gcc/Debug/stralloc_equal.o build/gcc/Debug/stralloc_cats.o build/gcc/Debug/buffer_get_token_sa_pred.o build/gcc/Debug/stralloc_lower.o build/gcc/Debug/str_decamelize.o build/gcc/Debug/stralloc_catm_internal.o build/gcc/Debug/stralloc_decamelize.o build/gcc/Debug/stralloc_catulong.o build/gcc/Debug/stralloc_fmt.o build/gcc/Debug/stralloc_copy.o build/gcc/Debug/stralloc_write.o build/gcc/Debug/stralloc_ready.o build/gcc/Debug/stralloc_move.o build/gcc/Debug/stralloc_expand.o build/gcc/Debug/stralloc_prepends.o build/gcc/Debug/stralloc_fmt_pred.o build/gcc/Debug/stralloc_replacec.o build/gcc/Debug/stralloc_remove_all.o build/gcc/Debug/stralloc_chomp.o build/gcc/Debug/stralloc_copyb.o build/gcc/Debug/stralloc_chr.o build/gcc/Debug/stralloc_diff.o build/gcc/Debug/stralloc_copywcs.o build/gcc/Debug/stralloc_rchr.o build/gcc/Debug/stralloc_remove.o build/gcc/Debug/stralloc_catc.o build/gcc/Debug/stralloc_insert.o build/gcc/Debug/buffer_get_new_token_sa_pred.o build/gcc/Debug/utf8.o build/gcc/Debug/stralloc_startb.o build/gcc/Debug/stralloc_fmt_call.o build/gcc/Debug/stralloc_readyplus.o build/gcc/Debug/openreadclose.o build/gcc/Debug/stralloc_init.o build/gcc/Debug/stralloc_case_diff.o build/gcc/Debug/stralloc_zero.o build/gcc/Debug/buffer_puts_escaped.o build/gcc/Debug/stralloc_0.o build/gcc/Debug/stralloc_replace.o build/gcc/Debug/open_filename.o build/gcc/Debug/stralloc_cathexb.o build/gcc/Debug/stralloc_replaces.o build/gcc/Debug/stralloc_chop.o build/gcc/Debug/stralloc_upper.o build/gcc/Debug/stralloc_reverse_blocks.o build/gcc/Debug/buffer_getline_sa.o build/gcc/Debug/stralloc_trunc.o build/gcc/Debug/stralloc_catint.o build/gcc/Debug/buffer_get_token_sa.o build/gcc/Debug/stralloc_finds.o build/gcc/Debug/stralloc_catdouble.o build/gcc/Debug/stralloc_contains.o build/gcc/Debug/mmap_filename.o build/gcc/Debug/stralloc_camelize.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/open_trunc.o build/gcc/Debug/open_rw.o build/gcc/Debug/open_write.o build/gcc/Debug/open_append.o build/gcc/Debug/open_excl.o build/gcc/Debug/open_read.o build/gcc/Debug/open_temp.o: build/gcc/Debug/%.o: lib/open/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/open.a: build/gcc/Debug/open_trunc.o build/gcc/Debug/open_rw.o build/gcc/Debug/open_write.o build/gcc/Debug/open_append.o build/gcc/Debug/open_excl.o build/gcc/Debug/open_read.o build/gcc/Debug/open_temp.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/var_setsa.o build/gcc/Debug/var_value.o build/gcc/Debug/var_copys.o build/gcc/Debug/var_set.o build/gcc/Debug/var_print.o build/gcc/Debug/var_dump.o build/gcc/Debug/var_vlen.o build/gcc/Debug/var_cleanup.o build/gcc/Debug/var_vdefault.o build/gcc/Debug/var_valid.o build/gcc/Debug/var_setvsa.o build/gcc/Debug/var_init.o build/gcc/Debug/var_create.o build/gcc/Debug/var_import.o build/gcc/Debug/var_rndhash.o build/gcc/Debug/var_lexhash.o build/gcc/Debug/var_unset.o build/gcc/Debug/var_get.o build/gcc/Debug/var_hsearch.o build/gcc/Debug/var_bsearch.o build/gcc/Debug/var_len.o build/gcc/Debug/var_chflg.o build/gcc/Debug/var_count.o build/gcc/Debug/var_search.o build/gcc/Debug/var_export.o build/gcc/Debug/var_setvint.o: build/gcc/Debug/%.o: lib/var/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/var.a: build/gcc/Debug/var_setsa.o build/gcc/Debug/var_value.o build/gcc/Debug/var_copys.o build/gcc/Debug/var_set.o build/gcc/Debug/var_print.o build/gcc/Debug/var_dump.o build/gcc/Debug/var_vlen.o build/gcc/Debug/var_cleanup.o build/gcc/Debug/var_vdefault.o build/gcc/Debug/var_valid.o build/gcc/Debug/var_setvsa.o build/gcc/Debug/var_init.o build/gcc/Debug/var_create.o build/gcc/Debug/var_import.o build/gcc/Debug/var_rndhash.o build/gcc/Debug/var_lexhash.o build/gcc/Debug/var_unset.o build/gcc/Debug/var_get.o build/gcc/Debug/var_hsearch.o build/gcc/Debug/var_bsearch.o build/gcc/Debug/var_len.o build/gcc/Debug/var_chflg.o build/gcc/Debug/var_count.o build/gcc/Debug/var_search.o build/gcc/Debug/var_export.o build/gcc/Debug/var_setvint.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/is_textbuf.o build/gcc/Debug/textbuf_free.o build/gcc/Debug/textbuf_read.o build/gcc/Debug/textbuf_init.o build/gcc/Debug/textbuf_line.o build/gcc/Debug/textbuf_column.o: build/gcc/Debug/%.o: lib/textbuf/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/textbuf.a: build/gcc/Debug/is_textbuf.o build/gcc/Debug/textbuf_free.o build/gcc/Debug/textbuf_read.o build/gcc/Debug/textbuf_init.o build/gcc/Debug/textbuf_line.o build/gcc/Debug/textbuf_column.o
 	$(AR) rcs $@ $^
 
 build/gcc/Debug/genmakefile.o: genmakefile.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o "$@" $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o"$@" $<
 
 build/gcc/Debug/genmakefile: build/gcc/Debug/genmakefile.o build/gcc/Debug/range.a build/gcc/Debug/errmsg.a build/gcc/Debug/strarray.a build/gcc/Debug/slist.a build/gcc/Debug/rdir.a build/gcc/Debug/path.a build/gcc/Debug/dir.a build/gcc/Debug/strlist.a build/gcc/Debug/hmap.a build/gcc/Debug/unix.a build/gcc/Debug/stralloc.a build/gcc/Debug/ndelay.a build/gcc/Debug/buffer.a build/gcc/Debug/scan.a build/gcc/Debug/case.a build/gcc/Debug/array.a build/gcc/Debug/safemult.a build/gcc/Debug/fmt.a build/gcc/Debug/uint16.a build/gcc/Debug/mmap.a build/gcc/Debug/open.a build/gcc/Debug/uint32.a build/gcc/Debug/taia.a build/gcc/Debug/tai.a build/gcc/Debug/uint64.a build/gcc/Debug/byte.a build/gcc/Debug/str.a 
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)

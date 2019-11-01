@@ -43,10 +43,14 @@ static strlist cmds;
 
 void
 update_minmax_xy(double x, double y) {
-  if(x < min_x) min_x = x;
-  if(y < min_y) min_y = y;
-  if(x > max_x) max_x = x;
-  if(y > max_y) max_y = y;
+  if(x < min_x)
+    min_x = x;
+  if(y < min_y)
+    min_y = y;
+  if(x > max_x)
+    max_x = x;
+  if(y > max_y)
+    max_y = y;
 };
 xmlnode* xmldoc = NULL;
 HMAP_DB* hashmap = NULL;
@@ -83,7 +87,8 @@ dump_part(part_t const* p) {
                        ",device=",
                        p->device,
                        ",value=",
-                       p->value, 0);
+                       p->value,
+                       0);
 
   buffer_puts(buffer_2, ",x=");
   buffer_putdouble(buffer_2, p->x, 1);
@@ -171,7 +176,8 @@ get_part(const char* part) {
   TUPLE* ptr_tuple = NULL;
   part_t* p = NULL;
   hmap_search(parts_db, (char*)part, str_len(part), &ptr_tuple);
-  if(ptr_tuple) p = ptr_tuple->vals.val_custom;
+  if(ptr_tuple)
+    p = ptr_tuple->vals.val_custom;
   return p;
 }
 
@@ -186,7 +192,8 @@ create_instance(const char* part, const char* gate, double x, double y, double r
   stralloc_cats(&key, ":");
   stralloc_cats(&key, gate);
   i = malloc(sizeof(instance_t));
-  if(i == NULL) return NULL;
+  if(i == NULL)
+    return NULL;
   str_copyn(i->part, part, sizeof(i->part) - 1);
   str_copyn(i->gate, gate, sizeof(i->gate) - 1);
   i->x = x;
@@ -204,11 +211,13 @@ create_instance(const char* part, const char* gate, double x, double y, double r
 part_t*
 create_part(const char* name, const char* library, const char* deviceset, const char* device, const char* value) {
   part_t* p;
-  if(value == NULL) value = "";
+  if(value == NULL)
+    value = "";
   /*if(deviceset == NULL) deviceset = "";
   if(device == NULL) device = "";*/
   p = malloc(sizeof(*p));
-  if(p == NULL) return NULL;
+  if(p == NULL)
+    return NULL;
   str_copyn(p->name, name, sizeof(p->name) - 1);
   str_copyn(p->library, library ? library : "", sizeof(p->library) - 1);
   str_copyn(p->deviceset, deviceset ? deviceset : "", sizeof(p->deviceset) - 1);
@@ -228,7 +237,8 @@ create_part(const char* name, const char* library, const char* deviceset, const 
 void
 update_part(const char* name, double x, double y, double rot) {
   part_t* p = get_part(name);
-  if(p == NULL) return;
+  if(p == NULL)
+    return;
 
   if(p->x == 0.0 || isnan(p->x)) {
     p->x = x;
@@ -260,10 +270,13 @@ update_part(const char* name, double x, double y, double rot) {
 void
 hmap_each(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
   TUPLE* t;
-  if(hmap == NULL) return;
+  if(hmap == NULL)
+    return;
   for(t = hmap->list_tuple; t; t = t->next) {
-    if(t->data_type == HMAP_DATA_TYPE_CUSTOM) foreach_fn(t->vals.val_custom);
-    if(t->next == hmap->list_tuple) break;
+    if(t->data_type == HMAP_DATA_TYPE_CUSTOM)
+      foreach_fn(t->vals.val_custom);
+    if(t->next == hmap->list_tuple)
+      break;
   }
 }
 
@@ -271,7 +284,8 @@ hmap_each(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
 int
 get_attribute_double(double* d, xmlnode* e, const char* name) {
   char* value;
-  if(!(value = xml_get_attribute(e, name))) return 0;
+  if(!(value = xml_get_attribute(e, name)))
+    return 0;
   return value[scan_double(value, d)] != '\0';
 }
 
@@ -284,9 +298,11 @@ cat_attributes(stralloc* sa, xmlnode* e) {
     stralloc_cats(sa, "\n  ");
     stralloc_catb(sa, a->key, a->key_len);
     stralloc_cats(sa, "=\"");
-    if(value) stralloc_cats(sa, value);
+    if(value)
+      stralloc_cats(sa, value);
     stralloc_catb(sa, "\"", 1);
-    if(a->next == xml_attributes(e)) break;
+    if(a->next == xml_attributes(e))
+      break;
   }
 }
 
@@ -342,7 +358,8 @@ process_part(xmlnode* e) {
 void
 print_element_names(xmlnode* a_node) {
   xmlnode* n = NULL;
-  if(a_node->type == XML_DOCUMENT) a_node = a_node->children;
+  if(a_node->type == XML_DOCUMENT)
+    a_node = a_node->children;
   for(n = a_node; n; n = n->next) {
     if(n->type == XML_ELEMENT) {
       stralloc attrs;
@@ -358,7 +375,8 @@ print_element_names(xmlnode* a_node) {
       } else {
       }
       stralloc_free(&attrs);
-      if(n->children) print_element_names(n->children);
+      if(n->children)
+        print_element_names(n->children);
     }
   }
 }
@@ -372,8 +390,10 @@ const char*
 mystr_basename(const char* filename) {
   char* s1 = strrchr(filename, '\\');
   char* s2 = strrchr(filename, '/');
-  if(s2 > s1) s1 = s2;
-  if(s1) return s1 + 1;
+  if(s2 > s1)
+    s1 = s2;
+  if(s1)
+    return s1 + 1;
   return 0;
 }
 
@@ -404,7 +424,7 @@ main(int argc, char* argv[]) {
     root_element = xmldoc->children;
     print_element_names(root_element);
 
-    hmap_each(parts_db, (void(*)(void*))&each_part);
+    hmap_each(parts_db, (void (*)(void*)) & each_part);
     buffer_flush(buffer_1);
   }
   {

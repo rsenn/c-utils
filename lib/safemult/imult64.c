@@ -28,7 +28,7 @@ imult64() {
                "1:\n"
                "xorq %rax,%rax\n"
                /* the closing ret is renerated by gcc */
-               );
+  );
 }
 
 #else

@@ -13,7 +13,7 @@
 #define FILE_ATTRIBUTE_REPARSE_POINT 0x400
 #endif
 #ifndef FILE_FLAG_OPEN_REPARSE_POINT
-#define FILE_FLAG_OPEN_REPARSE_POINT    0x200000
+#define FILE_FLAG_OPEN_REPARSE_POINT 0x200000
 #endif
 
 #ifndef Newx
@@ -79,19 +79,22 @@ readlink(const char* LinkPath, char* buf, size_t maxlen) {
     }
   }
 
-  if(!wbuf) return 0;
+  if(!wbuf)
+    return 0;
 
   for(len = 0; len < wlen; ++len) {
     u8len += wcu8len(wbuf[len]);
 
-    if(u8len >= maxlen) break;
+    if(u8len >= maxlen)
+      break;
   }
   if(u8len > maxlen) {
     len--;
   }
 
   u8len = wcstou8s(buf, wbuf, len);
-  if(u8len >= maxlen) u8len = maxlen - 1;
+  if(u8len >= maxlen)
+    u8len = maxlen - 1;
 
   buf[u8len] = '\0';
   return u8len;

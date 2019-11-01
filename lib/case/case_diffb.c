@@ -15,7 +15,8 @@ case_diffb(const void* S, size_t len, const void* T) {
     y = *t++ - 'A';
     y += (y <= 'Z' - 'A') ? 'a' : 'A';
 
-    if(x != y) return ((int)(unsigned int)x) - ((int)(unsigned int)y);
+    if(x != y)
+      return ((int)(unsigned int)x) - ((int)(unsigned int)y);
   }
   return 0;
 }

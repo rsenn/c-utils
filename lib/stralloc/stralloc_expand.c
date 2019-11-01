@@ -8,9 +8,9 @@
 
 int
 stralloc_expand(stralloc* sa) {
+  size_t n = 0;
 #if WINDOWS
   char* s;
-  size_t n;
   stralloc_nul(sa);
   s = sa->s;
   n = sa->len * 2 + 4;
@@ -30,6 +30,6 @@ stralloc_expand(stralloc* sa) {
 
   free(s);
 
-  return n;
 #endif
+  return n;
 }

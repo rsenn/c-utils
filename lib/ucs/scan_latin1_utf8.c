@@ -1,7 +1,6 @@
 #include "../ucs.h"
 #include "../scan.h"
 
-
 #include "../buffer.h"
 
 size_t

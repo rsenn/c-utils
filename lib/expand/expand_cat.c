@@ -33,11 +33,13 @@ expand_cat(const char* b, unsigned int len, union node** nptr, struct vartab* va
   for(i = 0;;) {
     /* skip field separators */
     for(x = 0; i < len; i++, x++) {
-      if(ifs[str_chr(ifs, b[i])] == '\0') break;
+      if(ifs[str_chr(ifs, b[i])] == '\0')
+        break;
     }
 
     /* finished */
-    if(i == len) break;
+    if(i == len)
+      break;
 
     /* if there isn't already a node create one now! */
     if(n == NULL) {
@@ -51,7 +53,8 @@ expand_cat(const char* b, unsigned int len, union node** nptr, struct vartab* va
       stralloc_nul(&n->narg.stra);
 
       if(flags & X_GLOB) {
-        if((n = expand_glob(nptr, varstack, flags & ~X_GLOB))) nptr = &n;
+        if((n = expand_glob(nptr, varstack, flags & ~X_GLOB)))
+          nptr = &n;
       } else {
         expand_unescape(&n->narg.stra);
         n->narg.flag &= ~X_GLOB;
@@ -64,7 +67,8 @@ expand_cat(const char* b, unsigned int len, union node** nptr, struct vartab* va
 
     /* skip non-separators */
     for(x = 0; i < len; i++, x++) {
-      if(ifs[str_chr(ifs, b[i])]) break;
+      if(ifs[str_chr(ifs, b[i])])
+        break;
     }
 
     /* there were non-separators: fill the
@@ -76,7 +80,8 @@ expand_cat(const char* b, unsigned int len, union node** nptr, struct vartab* va
     stralloc_catb(&n->narg.stra, &b[i - x], x);
 
     /* finished */
-    if(i == len) break;
+    if(i == len)
+      break;
   }
 
   return n;

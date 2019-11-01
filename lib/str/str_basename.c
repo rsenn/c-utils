@@ -11,6 +11,7 @@
 char*
 str_basename(const char* s) {
   size_t n = PATH_LASTSEP(s);
-  if(n && s[n] != '\0') s = s + n + 1;
+  if(n && s[n] != '\0')
+    s = s + n + 1;
   return (char*)s;
 }

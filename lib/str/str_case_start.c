@@ -17,8 +17,11 @@ str_case_start(const void* p1, const void* p2) {
     if(y >= 'A' && y <= 'Z') { /* upper case */
       y += 'a' - 'A';
     }
-    if(!x) return 0;
-    if(!y) return 1;
-    if(x != y) return 0;
+    if(!x)
+      return 0;
+    if(!y)
+      return 1;
+    if(x != y)
+      return 0;
   }
 }

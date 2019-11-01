@@ -40,8 +40,8 @@ pipe(fd_t fd[2]) {
     return -1;
   } else {
     errno = 0;
-    fd[0] = _open_osfhandle((DWORD)phandles[0], O_RDONLY|O_BINARY);
-    fd[1] = _open_osfhandle((DWORD)phandles[1], O_WRONLY|O_BINARY);
+    fd[0] = _open_osfhandle((DWORD)phandles[0], O_RDONLY | O_BINARY);
+    fd[1] = _open_osfhandle((DWORD)phandles[1], O_WRONLY | O_BINARY);
     return 0;
   }
 }
@@ -79,9 +79,9 @@ pipe2(int fd[2], int flags) {
     return -1;
   }
 
-  /* O_NONBLOCK handling.
-     On native Windows platforms, O_NONBLOCK is defined by gnulib.  Use the
-     functions defined by the gnulib module 'nonblocking'.  */
+    /* O_NONBLOCK handling.
+       On native Windows platforms, O_NONBLOCK is defined by gnulib.  Use the
+       functions defined by the gnulib module 'nonblocking'.  */
 #ifndef PIPE2_NDELAY_OFF
   if(flags & O_NONBLOCK) {
     if(ndelay_on(fd[0]) != 0 || ndelay_on(fd[1]) != 0)
@@ -99,13 +99,13 @@ pipe2(int fd[2], int flags) {
   if(pipe(fd) < 0)
     return -1;
 
-  /* POSIX <http://www.opengroup.org/onlinepubs/9699919799/functions/pipe.html>
-     says that initially, the O_NONBLOCK and FD_CLOEXEC flags are cleared on
-     both fd[0] and fd[1].  */
+    /* POSIX <http://www.opengroup.org/onlinepubs/9699919799/functions/pipe.html>
+       says that initially, the O_NONBLOCK and FD_CLOEXEC flags are cleared on
+       both fd[0] and fd[1].  */
 
-  /* O_NONBLOCK handling.
-     On Unix platforms, O_NONBLOCK is defined by the system.  Use fcntl().  */
- #ifdef F_SETFL
+    /* O_NONBLOCK handling.
+       On Unix platforms, O_NONBLOCK is defined by the system.  Use fcntl().  */
+#ifdef F_SETFL
   if(flags & O_NONBLOCK) {
     int fcntl_flags;
 
@@ -123,7 +123,7 @@ pipe2(int fd[2], int flags) {
   }
 #endif
 
-#if 0 //def O_BINARY
+#if 0 // def O_BINARY
   if(flags & O_BINARY) {
     set_binary_mode(fd[1], O_BINARY);
     set_binary_mode(fd[0], O_BINARY);

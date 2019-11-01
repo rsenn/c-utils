@@ -15,7 +15,8 @@ vartab_add(struct vartab* vartab, struct var* var, struct search* context) {
   /* link it to the list */
   var->blink = vartab->pos;
 
-  if((var->bnext = *var->blink)) var->bnext->blink = &var->bnext;
+  if((var->bnext = *var->blink))
+    var->bnext->blink = &var->bnext;
 
   *var->blink = var;
 
@@ -24,7 +25,8 @@ vartab_add(struct vartab* vartab, struct var* var, struct search* context) {
     assert(var->parent->table != var->table);
 
     /* link ourselves instead of our parent into the global list */
-    if((var->gnext = var->parent->gnext)) var->gnext->glink = &var->gnext;
+    if((var->gnext = var->parent->gnext))
+      var->gnext->glink = &var->gnext;
 
     var->glink = var->parent->glink;
     *var->glink = var;
@@ -43,7 +45,7 @@ vartab_add(struct vartab* vartab, struct var* var, struct search* context) {
 #ifdef DEBUG
       unsigned long dist =
 #endif
-        var_bsearch(context);
+          var_bsearch(context);
 
       /* there must not be a full match, otherwise this means that
          the variable is already in the list which it should not! */
@@ -54,7 +56,8 @@ vartab_add(struct vartab* vartab, struct var* var, struct search* context) {
 
     var->glink = context->pos;
 
-    if((var->gnext = *var->glink)) var->gnext->glink = &var->gnext;
+    if((var->gnext = *var->glink))
+      var->gnext->glink = &var->gnext;
 
     *var->glink = var;
   }

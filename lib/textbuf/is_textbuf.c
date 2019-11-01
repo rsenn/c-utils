@@ -6,4 +6,3 @@ is_textbuf(buffer* b) {
 
   return (void*)tb == b->cookie ? tb : 0;
 }
-

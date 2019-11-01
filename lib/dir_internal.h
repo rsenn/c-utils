@@ -56,11 +56,11 @@ struct dir_internal_s {
 
 #ifndef S_IFDIR
 #define S_IFDIR 0040000 /* directory */
-#endif                   /* !defined(S_IFDIR) */
+#endif                  /* !defined(S_IFDIR) */
 
 #ifndef S_IFCHR
 #define S_IFCHR 0020000 /* character special */
-#endif                   /* !defined(S_IFCHR) */
+#endif                  /* !defined(S_IFCHR) */
 
 #ifndef S_IFBLK
 #define S_IFBLK 0060000 /* block special */

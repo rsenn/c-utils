@@ -30,9 +30,9 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
 #ifdef IOPAUSE_POLL
 
   poll(x, len, millisecs);
-/* XXX: some kernels apparently need x[0] even if len is 0 */
-/* XXX: how to handle EAGAIN? are kernels really this dumb? */
-/* XXX: how to handle EINVAL? when exactly can this happen? */
+  /* XXX: some kernels apparently need x[0] even if len is 0 */
+  /* XXX: how to handle EAGAIN? are kernels really this dumb? */
+  /* XXX: how to handle EINVAL? when exactly can this happen? */
 
 #else
   {
@@ -74,7 +74,7 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
       fd = x[i].fd;
       if(fd < 0)
         continue;
-      if(fd >= 8 * sizeof(fd_set))
+      if(fd >= (fd_t)(8 * sizeof(fd_set)))
         continue; /*XXX*/
 
       if(x[i].events & IOPAUSE_READ)

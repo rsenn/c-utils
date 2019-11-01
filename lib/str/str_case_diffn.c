@@ -6,7 +6,8 @@ str_case_diffn(const void* p1, const void* p2, size_t n) {
   int y;
   const char* s;
   const char* t;
-  if(n == 0) return 0;
+  if(n == 0)
+    return 0;
   s = p1;
   t = p2;
   for(;;) {
@@ -18,10 +19,14 @@ str_case_diffn(const void* p1, const void* p2, size_t n) {
     if(y >= 'A' && y <= 'Z') { /* upper case */
       y += 'a' - 'A';
     }
-    if(s - (const char*)p1 >= n) break;
-    if(x != y) break;
-    if(!x) break;
-    if(!y) break;
+    if(s - (const char*)p1 >= (ssize_t)n)
+      break;
+    if(x != y)
+      break;
+    if(!x)
+      break;
+    if(!y)
+      break;
   }
   return x - y;
 }

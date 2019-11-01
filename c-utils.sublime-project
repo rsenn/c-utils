@@ -1,0 +1,24 @@
+{
+  "build_systems": [
+  {
+    "name": "List",
+    "shell_cmd": "ls -l"
+  },
+  {
+    "name": "Build debug",
+    "shell_cmd": "make DEBUG=1 SELECT=1 CC=clang"
+  },
+  ],
+  "folders": [
+  {
+    "path": "."
+  }],
+  "settings":
+  {
+    "sublimegdb_commandline": "gdb --interpreter=mi ${file}",
+    "sublimegdb_workingdir": "${folder:${project_path:${file}}}",
+    "sublimegdb_exec_cmd": "-exec-run",
+    "tab_size": 2,
+    "sublimegdb_i_know_how_to_use_gdb_thank_you_very_much": true
+  }
+}

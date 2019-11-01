@@ -41,11 +41,14 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
 
   stralloc_zero(out);
 
-  path_canonical(relative_to[0] ? relative_to : ".", &r.sa);
+  // path_canonical(relative_to[0] ? relative_to : ".", &r.sa);
+  stralloc_copys(&r.sa, relative_to);
+  stralloc_copys(&p.sa, path);
+
   if(stralloc_starts(&r.sa, ".."))
     path_absolute_sa(&r.sa);
 
-  path_canonical(path[0] ? path : ".", &p.sa);
+  //  path_canonical(path[0] ? path : ".", &p.sa);
   if(stralloc_starts(&p.sa, ".."))
     path_absolute_sa(&p.sa);
 

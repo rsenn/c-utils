@@ -26,7 +26,8 @@ static char buffer_1_out[BUFFER_OUTSIZE];
 static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
 */
 
-int count_depth() {
+int
+count_depth() {
   char buffer[MAXIMUM_PATH_LENGTH];
   size_t len, i, c;
   for(;;) {
@@ -36,7 +37,7 @@ int count_depth() {
     if(len == 0 || buffer[0] == '\0')
       break;
 
-    if(buffer[len - 1 ] == '/')
+    if(buffer[len - 1] == '/')
       len--;
 
     c = 0;
@@ -53,7 +54,8 @@ int count_depth() {
   return 0;
 }
 
-int main(int argc, char* argv[]) {
+int
+main(int argc, char* argv[]) {
   int argi = 1;
 
   while(argi < argc) {
@@ -66,4 +68,3 @@ int main(int argc, char* argv[]) {
   }
   return count_depth();
 }
-

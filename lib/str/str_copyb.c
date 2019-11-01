@@ -9,7 +9,8 @@ str_copyb(void* p1, const void* p2, size_t max) {
   t = p2;
   len = 0;
   while(max-- > 0) {
-    if(!(*s = *t)) return len;
+    if(!(*s = *t))
+      return len;
     ++s;
     ++t;
     ++len;

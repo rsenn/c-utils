@@ -43,11 +43,10 @@ set_timeouts(int seconds) {
  *  URL: http://verteiler1.mediathekview.de/Filmliste-akt.xz
  */
 
-static const char* const url_host = //"verteiler1.mediathekview.de";
-    "www.fefe.de";                  //"5.1.76.111";
-static const char* const url_location = "/gatling/";
+static const char* const url_host = "127.0.0.1";
+static const char* const url_location = "/login";
 
-static const uint16 url_port = 80;
+static const uint16 url_port = 8080;
 static io_entry* g_iofd;
 static http h;
 
@@ -71,7 +70,7 @@ main(int argc, char* argv[]) {
   http_init(&h, url_host, url_port);
 
   if(argc < 2) {
-    argv[1] = "www.fefe.de/gatling/";
+    argv[1] = "127.0.0.1:8080/login";
     argc++;
   }
 

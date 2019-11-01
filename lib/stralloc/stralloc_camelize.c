@@ -6,4 +6,3 @@ stralloc_camelize(stralloc* sa) {
   sa->len = byte_camelize(sa->s, sa->len);
   return sa->len;
 }
-

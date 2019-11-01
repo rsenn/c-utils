@@ -44,7 +44,7 @@ main(int argc, char** argv) {
       case MACHO_LC_SEGMENT: {
         macho_segment_command* segment;
         macho_section* section;
-        int j;
+        size_t j;
 
         segment = (macho_segment_command*)(content + offset);
         if(!!str_diff(segment->segname, "__TEXT")) {
@@ -55,7 +55,8 @@ main(int argc, char** argv) {
         section = (macho_section*)(content + offset + sizeof(macho_segment_command));
         for(j = 0; j < segment->nsects; j++, section++) {
           section_index++;
-          if(!str_diff(section->sectname, "__text")) text_section_index = section_index;
+          if(!str_diff(section->sectname, "__text"))
+            text_section_index = section_index;
         }
         break;
       }
@@ -63,7 +64,7 @@ main(int argc, char** argv) {
         macho_symtab_command* table;
         macho_nlist* symbol;
         char* string_table;
-        int j;
+        size_t j;
 
         table = (macho_symtab_command*)(content + offset);
         symbol = (macho_nlist*)(content + table->symoff);
@@ -71,7 +72,8 @@ main(int argc, char** argv) {
         for(j = 0; j < table->nsyms; j++, symbol++) {
           int defined_in_section = 0;
 
-          if((symbol->n_type & MACHO_N_TYPE) == MACHO_N_SECT) defined_in_section = 1;
+          if((symbol->n_type & MACHO_N_TYPE) == MACHO_N_SECT)
+            defined_in_section = 1;
 
           if(defined_in_section && symbol->n_sect == text_section_index && symbol->n_type & MACHO_N_EXT) {
             char* name;

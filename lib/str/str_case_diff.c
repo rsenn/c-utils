@@ -17,9 +17,12 @@ str_case_diff(const void* p1, const void* p2) {
     if(y >= 'A' && y <= 'Z') { /* upper case */
       y += 'a' - 'A';
     }
-    if(x != y) break;
-    if(!x) break;
-    if(!y) break;
+    if(x != y)
+      break;
+    if(!x)
+      break;
+    if(!y)
+      break;
   }
   return x - y;
 }

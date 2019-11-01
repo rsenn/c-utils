@@ -10,7 +10,7 @@ errmsg_puts(int64 fd, const char* s) {
 
 void
 errmsg_flush(int64 fd) {
-  return ;
+  return;
 }
 
 #else
@@ -24,14 +24,16 @@ void
 errmsg_puts(int64 fd, const char* s) {
   x[l].iov_base = (char*)s;
   x[l].iov_len = str_len(s);
-  if(++l == COUNT) errmsg_flush(fd);
+  if(++l == COUNT)
+    errmsg_flush(fd);
 }
 
 void
 errmsg_flush(int64 fd) {
   int n = l;
   l = 0;
-  if(n) writev(fd, x, n);
+  if(n)
+    writev(fd, x, n);
 }
 #endif
 

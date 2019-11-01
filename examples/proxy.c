@@ -30,7 +30,7 @@ main(int argc, char* argv[]) {
   static stralloc fqdn;
   static stralloc out;
 
-  if(argc != 4) {
+  if(argc < 4) {
   usage:
     buffer_putsflush(buffer_2,
                      "usage: proxy myip myport hisip hisport\n"
@@ -93,6 +93,9 @@ main(int argc, char* argv[]) {
     while((i = io_canread()) != -1) {
       if(i == s) {
         /* the read event is on the server socket */
+         buffer_puts(buffer_2, "event on listening socket : ");
+          buffer_putlong(buffer_2, s);
+          buffer_putnlflush(buffer_2);
         /* that means it's an incoming connection */
         int n;
         while((n = socket_accept6(s, ip, &port, &scope_id)) != -1) {
@@ -124,6 +127,7 @@ main(int argc, char* argv[]) {
             io_setcookie(x, s);
             io_setcookie(n, s);
             io_wantwrite(x);
+            //io_wantread(x);
           }
         }
         if(errno != EAGAIN) {
@@ -152,7 +156,7 @@ main(int argc, char* argv[]) {
           int r;
           switch(r = io_trywrite(i, s->buf, l)) {
             case -1:
-              buffer_puts(buffer_2, "io_tryread(");
+              buffer_puts(buffer_2, "io_trywrite(");
               buffer_putulong(buffer_2, i);
               buffer_puts(buffer_2, "): ");
               buffer_puterror(buffer_2);

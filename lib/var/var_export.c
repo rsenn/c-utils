@@ -10,7 +10,8 @@ var_export(char** dest) {
   size_t n = 0;
 
   for(var = var_list; var; var = var->gnext)
-    if((var->flags & V_EXPORT)) dest[n++] = var->sa.s;
+    if((var->flags & V_EXPORT))
+      dest[n++] = var->sa.s;
 
   dest[n] = NULL;
 

@@ -1,6 +1,7 @@
 #define USE_WS2_32 1
 #include "../socket_internal.h"
 #include "../socket.h"
+#include "../scan.h"
 #include "../buffer.h"
 #include "../byte.h"
 #include "../dns.h"
@@ -28,8 +29,14 @@ http_get(http* h, const char* location) {
     if(location[len = str_findb(location, "://", 3)])
       location += len + 3;
 
-    len = str_chr(location, '/');
+    len = str_chrs(location, "/:", 2);
     stralloc_copyb(&h->host, location, len);
+
+    if(location[len] == ':') {
+      len += 1;
+      len += scan_ushort(&location[len], &h->port);
+    }
+
     location += len;
   }
 

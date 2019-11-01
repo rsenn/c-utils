@@ -822,7 +822,7 @@ main(int argc, char** argv) {
                                  {"version", 0, 0, 'V'},
                                  {"search-dir", 0, 0, 'D'},
                                  {"print-search-dirs", 0, &print_dirs, 1},
-                                 {0}};
+                                 {0, 0, 0, 0}};
 
   path_getcwd(&cwd);
   stralloc_append(&cwd, PATHSEP_S);

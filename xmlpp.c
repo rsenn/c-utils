@@ -19,7 +19,7 @@ static buffer infile, b;
 static int depth = 0, prev_closing = 0;
 static stralloc prev_element;
 static int quote_char = '"';
-static int one_line, indent = 2, compact;
+static int one_line, indent = 2, compact, terminate;
 static stralloc indent_str;
 
 char*
@@ -59,23 +59,32 @@ reformat_style(char* s) {
 
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+  static int newline_written = 0;
   switch(id) {
     case XML_TEXT: {
+      stralloc_trimr(value, " \r\n\t", 4);
       buffer_putsa(buffer_1, value);
       break;
     }
     case XML_ELEMENT: {
       int closing = reader->closing || reader->self_closing;
 
-      if(reader->closing)
+      if(reader->closing) {
         --depth;
-
-      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
-        buffer_puts(buffer_1, "\n");
-        buffer_putnspace(buffer_1, depth * 2);
       }
 
-      buffer_putm_3(buffer_1, "<", reader->closing ? "/" : "", name->s);
+      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
+
+        if(!newline_written) {
+          buffer_puts(buffer_1, "\n");
+          buffer_flush(buffer_1);
+
+          newline_written = 1;
+          buffer_putnspace(buffer_1, depth * 2);
+        }
+      }
+
+      buffer_putm_internal(buffer_1, "<", reader->closing ? "/" : "", name->s, 0);
 
       if(attrs && *attrs && (*attrs)->list_tuple) {
         char* a = hmap_get(*attrs, "style", 5);
@@ -91,6 +100,11 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
         xml_print_attributes(*attrs, buffer_1, " ", "=", "\"");
       }
 
+      if(terminate && !reader->self_closing) {
+        if(str_equal(name->s, "img") || str_equal(name->s, "link") || str_equal(name->s, "br"))
+          reader->self_closing = 1;
+      }
+
       buffer_puts(buffer_1, reader->self_closing ? (name->s[0] == '?' ? "?>" : "/>") : ">");
 
       stralloc_copy(&prev_element, name);
@@ -98,6 +112,10 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
 
       if(!reader->closing && !reader->self_closing)
         ++depth;
+
+              newline_written = 0;
+
+
       break;
     }
     default: break;
@@ -120,6 +138,7 @@ usage(char* av0) {
                        "  -o, --one-line          One-line\n"
                        "  -c, --compact           Compact\n"
                        "  -l, --indent NUM        Indent level\n"
+                       "  -t, --terminate         Terminate non-closed tags (img, link, br, ...)\n"
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -131,20 +150,19 @@ main(int argc, char* argv[]) {
   int ret;
   int c;
   int index = 0;
-  struct longopt opts[] = {
-      {"help", 0, NULL, 'h'},
-      {"single-quote", 0, &quote_char, '\''},
-      {"double-quote", 0, &quote_char, '"'},
-      {"one-line", 0, NULL, 'o'},
-      {"compact", 0, NULL, 'c'},
-      {"indent", 0, NULL, 'l'},
-      {0},
-  };
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"single-quote", 0, &quote_char, '\''},
+                           {"double-quote", 0, &quote_char, '"'},
+                           {"one-line", 0, NULL, 'o'},
+                           {"compact", 0, NULL, 'c'},
+                           {"indent", 0, NULL, 'l'},
+                           {"terminate", 0, NULL, 't'},
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:c", opts, &index);
+    c = getopt_long(argc, argv, "hsdol:ct", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -156,6 +174,7 @@ main(int argc, char* argv[]) {
       case 'd': quote_char = '"'; break;
       case 'o': one_line = 1; break;
       case 'c': compact = 1; break;
+      case 't': terminate = 1; break;
       case 'l': scan_int(optarg, &indent); break;
       default: usage(argv[0]); return 1;
     }

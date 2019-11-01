@@ -1,16 +1,16 @@
 #ifdef __POCC__
 #define NOWINBASEINTERLOCK 1
 #define _NTOS_ 1
-long __stdcall InterlockedCompareExchange(long volatile *,long,long);
-void* __stdcall InterlockedCompareExchangePointer(void* volatile *,void*,void*);
+long __stdcall InterlockedCompareExchange(long volatile*, long, long);
+void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*);
 #endif
 
 #include "../windoze.h"
 #include "../byte.h"
 #include "../iarray.h"
 
-#if defined(__STDC__) 
-#if __STDC_VERSION__ >= 201112L  && !defined(__EMSCRIPTEN__) && !defined(__ANDROID__)
+#if defined(__STDC__)
+#if __STDC_VERSION__ >= 201112L && !defined(__EMSCRIPTEN__) && !defined(__ANDROID__)
 #include <stdatomic.h>
 #endif
 #endif
@@ -80,7 +80,7 @@ iarray_allocate(iarray* ia, size_t pos) {
   {
     size_t l;
     do {
-      l = (size_t)__CAS(&ia->len, prevlen, realpos);
+      l = (size_t)__CAS((long*)&ia->len, prevlen, realpos);
     } while(l < realpos);
   }
   return &iarray_data(*p)[(pos - index) * ia->elemsize];

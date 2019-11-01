@@ -8,10 +8,12 @@ var_vdefault(struct vartab* varstack, const char* v, const char* def, size_t* le
   struct var* var;
 
   if((var = var_search(varstack, v, NULL))) {
-    if(lenp) *lenp = var->sa.len - var->offset;
+    if(lenp)
+      *lenp = var->sa.len - var->offset;
     return &var->sa.s[var->offset];
   }
 
-  if(lenp) *lenp = str_len(def);
+  if(lenp)
+    *lenp = str_len(def);
   return def;
 }
