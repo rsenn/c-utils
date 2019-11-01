@@ -3,6 +3,7 @@
 #include "lib/io.h"
 #include "lib/iarray.h"
 #include "lib/stralloc.h"
+#include "lib/strlist.h"
 #include "lib/xml.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
@@ -20,6 +21,41 @@ static stralloc prev_element;
 static int quote_char = '"';
 static int one_line, indent = 2, compact;
 static stralloc indent_str;
+
+char*
+reformat_style(char* s) {
+  size_t n;
+  strlist style;
+  stralloc key, value, out;
+  stralloc_init(&key);
+  stralloc_init(&value);
+  stralloc_init(&out);
+  strlist_init(&style, ';');
+  stralloc_copys(&style.sa, s);
+
+  strlist_foreach(&style, s, n) {
+     size_t pos = byte_chr(s, ':', n);
+     stralloc_copyb(&key, s, pos);
+
+     while(s[pos]) {
+      if(s[pos] == ':' || s[pos] == ' ')
+        pos++;
+     }
+     stralloc_copyb(&value, &s[pos], n - pos);
+
+     if(out.len > 0)
+      stralloc_cats(&out, ", ");
+     stralloc_camelize(&key);
+     stralloc_copy(&out, &key);
+     stralloc_cats(&out, ": '");
+     stralloc_cat(&out, &value);
+     stralloc_cats(&out, "'");
+  }
+  stralloc_free(&key);
+  stralloc_free(&value);
+  strlist_free(&style);
+  return out.s;
+}
 
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
@@ -42,6 +78,15 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       buffer_putm_3(buffer_1, "<", reader->closing ? "/" : "", name->s);
 
       if(attrs && *attrs && (*attrs)->list_tuple) {
+        char* a = hmap_get(*attrs, "style", 5);
+
+        if(a) {
+          a = reformat_style(a);
+          hmap_set(attrs, "style", 5, a, str_len(a) + 1);
+        }
+
+
+
         buffer_putspace(buffer_1);
         xml_print_attributes(*attrs, buffer_1, " ", "=", "\"");
       }
