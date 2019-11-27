@@ -2005,6 +2005,8 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
   slink_foreach(&sdir->sources, src) {
     const char *s, *ext;
 
+    if(!src->name) continue;
+
     if(!str_end(src->name, ".c"))
       continue;
 
