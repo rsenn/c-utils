@@ -44,7 +44,7 @@ typedef struct {
 typedef union {
   const char* ws[5];
   struct {
-    const char *indent, *newline, *spacing, *separat, *quote;
+    char *indent, *newline, *spacing, *separat, *quote;
     int precision, depth, index;
   };
 } jsonfmt;

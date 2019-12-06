@@ -60,64 +60,104 @@
 	"buffers":
 	[
 		{
-			"file": "/home/roman/.config/sublime-text-3/Packages/SublimeGDB/SublimeGDB.sublime-settings",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 7372,
+				"buffer_size": 0,
+				"line_ending": "Unix",
+				"name": "𝌆 Outline",
+				"scratch": true
+			}
+		},
+		{
+			"file": "eagle-to-circuit.c",
+			"settings":
+			{
+				"buffer_size": 19500,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/str/str_triml.c",
+			"file": "jsonpp.c",
 			"settings":
 			{
-				"buffer_size": 225,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "mediathek-list.c",
-			"settings":
-			{
-				"buffer_size": 16077,
+				"buffer_size": 4092,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Searching 2399 files for \"mediathek-list\" (regex, case sensitive)\n\n0 matches",
+			"file": "hexedit.c",
 			"settings":
 			{
-				"buffer_size": 76,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "lib/cbmap.h",
-			"settings":
-			{
-				"buffer_size": 2506,
+				"buffer_size": 13688,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "#include \"../windoze.h\"\n\n#include \"cbmap_alloc.h\"\n\n#include \"../memalign.h\"\n#include \"../byte.h\"\n#include \"../str.h\"\n#include \"../cbmap_internal.h\"\n#include <stdio.h>\n#include <string.h>\n\n#if 0 // WINDOWS_NATIVE && (_MSC_VER >= 0900)\n#include <crtdbg.h>\n#endif\n\n#ifndef DEBUG\n#define printf(args)\n#endif\n\nstatic unsigned int CBM_DEBUG_ALLOCATIONS = 0;\nstatic unsigned int CBM_DEBUG_FREES = 0;\nstatic unsigned int CBM_DEBUG_ALLOCATED_BYTES = 0;\nstatic unsigned int CBM_DEBUG_DEALLOCATED_BYTES = 0;\n\ndouble\ncbmap_mem_allocated(void) {\n  return CBM_DEBUG_ALLOCATED_BYTES;\n}\n\nint\ncbmap_mem_memalign(void** p, size_t alignment, size_t size) {\n  int a;\n\n#ifdef HAVE_ALIGNED_ALLOC\n  a = !(*p = aligned_alloc(alignment, size));\n#elif defined(HAVE__ALIGNED_MALLOC)\n  a = !(*p = _aligned_malloc(size, alignment));\n//#elif WINDOWS\n#elif defined(HAVE_POSIX_MEMALIGN) && !defined(__dietlibc__)\n  a = posix_memalign(p, alignment, size);\n#else\n  a = !(*p = memalign_alloc(alignment, size));\n//#else\n//  a = !(*p = malloc(size));\n#endif\n\n  if(!a) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n  }\n\n  return a;\n}\n\nvoid*\ncbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line) {\n  void* p;\n\n  p = calloc(count, size);\n  if(p != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += ((unsigned int)count * (unsigned int)size);\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_CALLOC %-20s (%03d): Allocated %g x %g = %g bytes\\n\",\n         p,\n         file,\n         line,\n         (float)count,\n         (float)size,\n         (float)(count * size));\n#endif\n  return p;\n}\n\nchar*\n  \ncbmap_mem_debug_strndup(const char* p, size_t size, const char* file, int line) {\n  char* result = str_ndup(p, size);\n  if(result != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_STRNDUP %-20s (%03d): Allocated %g bytes\\n\", result, file, line, (float)size);\n#endif\n  return result;\n}\n\nchar*\ncbmap_mem_debug_strdup(const char* p, const char* file, int line) {\n  char* result;\n  size_t size = 0;\n\n  if(p == NULL)\n    return NULL;\n\n  result = str_dup(p);\n  if(result != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    size = str_len(p);\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_STRDUP %-20s (%03d): Allocated %g bytes\\n\", result, file, line, (float)size);\n#endif\n  return result;\n}\n\nvoid*\ncbmap_mem_mem_dup(const void* p, size_t size, const char* file, int line) {\n  void* result;\n\n  if(p == NULL)\n    return NULL;\n\n  result = malloc(size);\n  if(result != NULL) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += size;\n    byte_copy(result, size, p);\n  }\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_DUP    %-20s (%03d): Allocated %g bytes\\n\", result, file, line, (float)size);\n#endif\n  return result;\n}\n\nvoid\ncbmap_mem_debug_free(const void* ptr, const char* file, int line) {\n  if(ptr != NULL) {\n    CBM_DEBUG_FREES += 1;\n    CBM_DEBUG_DEALLOCATED_BYTES += 0;\n#ifdef DEBUG\n    printf(\"%p --- CBM_MEM_FREE   %-20s (%03d): Deallocating\\n\", ptr, file, line);\n#endif\n    memalign_free((void*)ptr);\n  }\n}\n\nint\ncbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const char* file, int line) {\n  int result;\n\n#ifdef HAVE_ALIGNED_ALLOC\n  result = !(*memptr = aligned_alloc(alignment, size));\n#elif defined(HAVE__ALIGNED_MALLOC)\n  result = !(*memptr = _aligned_malloc(size, alignment));\n//#elif WINDOWS\n#elif defined(HAVE_POSIX_MEMALIGN) && !defined(__dietlibc__)\n  result = posix_memalign(memptr, alignment, size);\n#else\n  result = !(*memptr = memalign_alloc(alignment, size));\n//#else\n//  result = !(*memptr = malloc(size));\n#endif\n\n  if(!result) {\n    CBM_DEBUG_ALLOCATIONS += 1;\n    CBM_DEBUG_ALLOCATED_BYTES += (unsigned int)size;\n  }\n\n#ifdef DEBUG\n  printf(\"%p     CBM_MEM_ALIGNED %-20s (%03d): Allocated %g bytes\\n\", *memptr, file, line, (float)size);\n#endif\n  return result;\n}\n\nvoid\ncbmap_mem_debug_mem(const char* file, int line) {\n  unsigned int allocations = CBM_DEBUG_ALLOCATIONS;\n  unsigned int deallocations = CBM_DEBUG_FREES;\n  unsigned int check = allocations - deallocations;\n\n#ifdef DEBUG\n  printf(\"CBM_MEM_LOG %-20s (%d) ALLOCATIONS %d DEALLOCATIONS %d CHECK %d BYTES %d\\n\",\n         file,\n         line,\n         allocations,\n         deallocations,\n         check,\n         CBM_DEBUG_ALLOCATED_BYTES);\n#endif\n}\n",
-			"file": "lib/cbmap/cbmap_alloc.c",
-			"file_size": 4381,
-			"file_write_time": 132130716178855661,
+			"file": "lib/scan/scan_whitenskip.c",
 			"settings":
 			{
-				"buffer_size": 4384,
+				"buffer_size": 208,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/stralloc/stralloc_trimr.c",
+			"file": "lib/scan/scan_xchar.c",
 			"settings":
 			{
-				"buffer_size": 226,
+				"buffer_size": 379,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/byte/byte_copy.c",
+			"settings":
+			{
+				"buffer_size": 268,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_print.c",
+			"settings":
+			{
+				"buffer_size": 4646,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json.h",
+			"settings":
+			{
+				"buffer_size": 3798,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "jsontest.c",
+			"settings":
+			{
+				"buffer_size": 1216,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/cb.h",
+			"settings":
+			{
+				"buffer_size": 2380,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/xml.h",
+			"settings":
+			{
+				"buffer_size": 5350,
 				"line_ending": "Unix"
 			}
 		}
@@ -145,10 +185,14 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 219.0,
-		"last_filter": "install",
+		"height": 400.0,
+		"last_filter": "out",
 		"selected_items":
 		[
+			[
+				"out",
+				"Browse Mode: Outline (Right)"
+			],
 			[
 				"install",
 				"Package Control: Install Package"
@@ -184,10 +228,6 @@
 			[
 				"instal pa",
 				"Package Control: Install Package"
-			],
-			[
-				"out",
-				"Browse Mode: Outline (Right)"
 			],
 			[
 				"schemd",
@@ -342,11 +382,24 @@
 	"expanded_folders":
 	[
 		"/home/roman/Sources/c-utils",
-		"/home/roman/Sources/c-utils/lib"
+		"/home/roman/Sources/c-utils/lib",
+		"/home/roman/Sources/c-utils/lib/scan"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/uint32.h",
+		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
+		"/home/roman/.config/sublime-text-3/Packages/SublimeGDB/SublimeGDB.sublime-settings",
 		"/home/roman/Sources/c-utils/c-utils.sublime-project",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_triml.c",
+		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_alloc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_path.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
 		"/home/roman/Sources/c-utils/lib/cb/cb_foreach.c",
 		"/home/roman/Sources/c-utils/xmlpp.c",
 		"/home/roman/Sources/c-utils/lib/http/http_get.c",
@@ -377,7 +430,6 @@
 		"/home/roman/Sources/c-utils/hexedit.c",
 		"/home/roman/Sources/c-utils/mediathek-parser.c",
 		"/home/roman/Sources/c-utils/pkgcfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_relative.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_xchar.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_fromhex.c",
@@ -462,18 +514,7 @@
 		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/lapis/application.moon",
 		"/home/roman/lotto/helpers/json.lua",
 		"/home/enki/Documents/Sources/lapis-1.7.0-1/lapis/lapis/validate.moon",
-		"/home/roman/lotto/applications/games.moon",
-		"/home/roman/lotto/helpers/validate.lua",
-		"/home/roman/lotto/models/games.moon",
-		"/home/roman/lotto/helpers/app.lua",
-		"/home/enki/lotto/helpers/bitcoin2.moon",
-		"/home/roman/lotto/applications/users.lua",
-		"/home/roman/lotto/helpers/models.lua",
-		"/home/roman/lotto/nginx.conf",
-		"/home/roman/lotto/doc/parsigram/hazarat.live.txt",
-		"/home/roman/lotto/static/shetab-deposit.html",
-		"/home/enki/Documents/Sources/c-utils/proxy.c",
-		"/home/roman/lotto/helpers/parsigram.lua"
+		"/home/roman/lotto/applications/games.moon"
 	],
 	"find":
 	{
@@ -494,6 +535,13 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"_apply",
+			"record_appl",
+			"compact_printer",
+			"byte_copy",
+			"customc",
+			"json_default_printer",
+			"_path",
 			"mediathek-list",
 			"putm_",
 			"internal",
@@ -614,14 +662,7 @@
 			"strlist_pushb_unique",
 			"adde",
 			"strlist_dump",
-			"pptok(",
-			"pptoks",
-			"pptok",
-			"strlist_dump",
-			"strlist_",
-			"strlist_d",
-			"strlist_",
-			"strlist_de"
+			"pptok("
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -650,94 +691,145 @@
 			[
 				{
 					"buffer": 0,
-					"file": "/home/roman/.config/sublime-text-3/Packages/SublimeGDB/SublimeGDB.sublime-settings",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7372,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
-							[
-								7372,
-								7372
-							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScriptNext - ES6 Syntax/JSON (JavaScriptNext).tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"current_file": "/home/roman/Sources/c-utils/hexedit.c",
+							"outline_rename_mode": false,
+							"symkeys":
+							[
+							],
+							"symlist":
+							[
+							],
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2820.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 10,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 4,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "lib/str/str_triml.c",
+					"file": "eagle-to-circuit.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 225,
+						"buffer_size": 19500,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								5164,
+								5164
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
-							"syntax": "Packages/C++/C.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "mediathek-list.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16077,
-						"regions":
-						{
-						},
-						"selection":
-						[
+							"auto_complete_triggers":
 							[
-								256,
-								256
-							]
-						],
-						"settings":
-						{
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3456.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "jsonpp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4092,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1836,
+								1836
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1443.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
@@ -745,46 +837,52 @@
 				},
 				{
 					"buffer": 3,
+					"file": "hexedit.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 76,
+						"buffer_size": 13688,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								7001,
+								7001
 							]
 						],
 						"settings":
 						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 7667.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "lib/cbmap.h",
+					"file": "lib/scan/scan_whitenskip.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2506,
+						"buffer_size": 208,
 						"regions":
 						{
 						},
@@ -797,7 +895,18 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/C11/C11.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -808,67 +917,309 @@
 				},
 				{
 					"buffer": 5,
-					"file": "lib/cbmap/cbmap_alloc.c",
-					"semi_transient": false,
+					"file": "lib/scan/scan_xchar.c",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 4384,
+						"buffer_size": 379,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1622,
-								1622
+								0,
+								0
 							]
 						],
 						"settings":
 						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"typescript_plugin_format_options":
-							{
-								"convertTabsToSpaces": true,
-								"indentSize": 2,
-								"tabSize": 2
-							}
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1440.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 6,
-					"file": "lib/stralloc/stralloc_trimr.c",
+					"file": "lib/byte/byte_copy.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 226,
+						"buffer_size": 268,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								20,
-								20
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
-							"syntax": "Packages/C++/C.sublime-syntax"
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/json/json_print.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4646,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								435,
+								435
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/json.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3798,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1922,
+								1922
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 1173.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "jsontest.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1216,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "lib/cb.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2380,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1100,
+								1100
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 512.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "lib/xml.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5350,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
 					"type": "text"
 				}
 			]
@@ -914,6 +1265,10 @@
 		]
 	},
 	"menu_visible": true,
+	"output.CSS Extended Completions":
+	{
+		"height": 0.0
+	},
 	"output.SublimeLinter":
 	{
 		"height": 0.0
@@ -942,7 +1297,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 74.0
+		"height": 78.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -951,6 +1306,54 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"hexed",
+				"hexedit.c"
+			],
+			[
+				"json.h",
+				"lib/json.h"
+			],
+			[
+				"hmap",
+				"lib/hmap.h"
+			],
+			[
+				"uint32",
+				"lib/uint32.h"
+			],
+			[
+				"json_pr",
+				"lib/json/json_print.c"
+			],
+			[
+				"jsontest",
+				"jsontest.c"
+			],
+			[
+				"json",
+				"jsonpp.c"
+			],
+			[
+				"genma",
+				"genmakefile.c"
+			],
+			[
+				"cb.h",
+				"lib/cb.h"
+			],
+			[
+				"xml.h",
+				"lib/xml.h"
+			],
+			[
+				"eagle-to",
+				"eagle-to-circuit.c"
+			],
+			[
+				"eagle-",
+				"eagle-to-circuit.c"
+			],
 			[
 				"cbmap",
 				"lib/cbmap.h"
@@ -970,10 +1373,6 @@
 			[
 				"xmlpp",
 				"xmlpp.c"
-			],
-			[
-				"genma",
-				"genmakefile.c"
 			],
 			[
 				"path_re",
@@ -1006,10 +1405,6 @@
 			[
 				"ihex",
 				"lib/ihex.h"
-			],
-			[
-				"hexed",
-				"hexedit.c"
 			],
 			[
 				"parse.c",
