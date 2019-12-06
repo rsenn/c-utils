@@ -106,18 +106,18 @@ main(int argc, char* argv[]) {
            argv[0]);
     return local_port;
   }
-/*
-  if(use_syslog)
-    openlog("proxy", LOG_PID, LOG_DAEMON);
-    */
+  /*
+    if(use_syslog)
+      openlog("proxy", LOG_PID, LOG_DAEMON);
+      */
 
   if((server_sock = create_socket(local_port)) < 0) { // start server
     ////plog(LOG_CRIT, "Cannot run server: %m");
     return server_sock;
   }
 
-  //signal(SIGCHLD, sigchld_handler); // prevent ended children from becoming zombies
-  //signal(SIGTERM, sigterm_handler); // handle KILL signal
+  // signal(SIGCHLD, sigchld_handler); // prevent ended children from becoming zombies
+  // signal(SIGTERM, sigterm_handler); // handle KILL signal
 
   if(foreground) {
     server_loop();
@@ -127,7 +127,7 @@ main(int argc, char* argv[]) {
         server_loop();
         break;
       case -1: // error
-        //plog(LOG_CRIT, "Cannot daemonize: %m");
+        // plog(LOG_CRIT, "Cannot daemonize: %m");
         return pid;
       default: // parent
         close(server_sock);
@@ -241,19 +241,19 @@ create_socket(int port) {
 
 /* Send log message to stderr or syslog */
 void
-//plog(int priority, const char* format, ...) {
-  va_list ap;
+    // plog(int priority, const char* format, ...) {
+    va_list ap;
 
-  va_start(ap, format);
+va_start(ap, format);
 
-  if(use_syslog)
-    vsyslog(priority, format, ap);
-  else {
-    vfprintf(stderr, format, ap);
-    fprintf(stderr, "\n");
-  }
+if(use_syslog)
+  vsyslog(priority, format, ap);
+else {
+  vfprintf(stderr, format, ap);
+  fprintf(stderr, "\n");
+}
 
-  va_end(ap);
+va_end(ap);
 }
 
 /* Update systemd status with connection count */
@@ -308,7 +308,7 @@ void
 handle_client(int client_sock, struct sockaddr_storage client_addr) {
 
   if((remote_sock = create_connection()) < 0) {
-    //plog(LOG_ERR, "Cannot connect to host: %m");
+    // plog(LOG_ERR, "Cannot connect to host: %m");
     goto cleanup;
   }
 
@@ -344,13 +344,13 @@ forward_data(int source_sock, int destination_sock) {
   int buf_pipe[2];
 
   if(pipe(buf_pipe) == -1) {
-    //plog(LOG_ERR, "pipe: %m");
+    // plog(LOG_ERR, "pipe: %m");
     exit(CREATE_PIPE_ERROR);
   }
 
   while((n = splice(source_sock, NULL, buf_pipe[WRITE], NULL, SSIZE_MAX, SPLICE_F_NONBLOCK | SPLICE_F_MOVE)) > 0) {
     if(splice(buf_pipe[READ], NULL, destination_sock, NULL, SSIZE_MAX, SPLICE_F_MOVE) < 0) {
-      //plog(LOG_ERR, "write: %m");
+      // plog(LOG_ERR, "write: %m");
       exit(BROKEN_PIPE_ERROR);
     }
   }
@@ -363,7 +363,7 @@ forward_data(int source_sock, int destination_sock) {
 #endif
 
   if(n < 0) {
-    //plog(LOG_ERR, "read: %m");
+    // plog(LOG_ERR, "read: %m");
     exit(BROKEN_PIPE_ERROR);
   }
 
@@ -386,7 +386,7 @@ forward_data_ext(int source_sock, int destination_sock, char* cmd) {
   int n, i, pipe_in[2], pipe_out[2];
 
   if(pipe(pipe_in) < 0 || pipe(pipe_out) < 0) { // create command input and output pipes
-    //plog(LOG_CRIT, "Cannot create pipe: %m");
+    // plog(LOG_CRIT, "Cannot create pipe: %m");
     exit(CREATE_PIPE_ERROR);
   }
 
@@ -403,7 +403,7 @@ forward_data_ext(int source_sock, int destination_sock, char* cmd) {
 
     while((n = recv(source_sock, buffer, BUF_SIZE, 0)) > 0) { // read data from input socket
       if(write(pipe_in[WRITE], buffer, n) < 0) {              // write data to input pipe of external command
-        //plog(LOG_ERR, "Cannot write to pipe: %m");
+        // plog(LOG_ERR, "Cannot write to pipe: %m");
         exit(BROKEN_PIPE_ERROR);
       }
       if((i = read(pipe_out[READ], buffer, BUF_SIZE)) > 0) { // read command output

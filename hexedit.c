@@ -308,15 +308,16 @@ main(int argc, char* argv[]) {
       } else if(sym == '=') {
         uint8_t ch = 0;
         do {
-        n = (scan_xchar(spec, &ch) + 1);
-        if(n >= 1) {
-          patch(addr, file.x[addr], ch);
-        }
-        if(n > 2) n = 2;
-        addr++;
-        spec += n;
+          n = (scan_xchar(spec, &ch) + 1);
+          if(n >= 1) {
+            patch(addr, file.x[addr], ch);
+          }
+          if(n > 2)
+            n = 2;
+          addr++;
+          spec += n;
 
-      } while(n > 1);
+        } while(n > 1);
 
       } else {
         buffer_putm_3(buffer_2, "ERROR: ", spec, "\n");
