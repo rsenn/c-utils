@@ -14,9 +14,4 @@
 
 #include "../../common/tuklib_cpucores.h"
 
-
-extern LZMA_API(uint32_t)
-lzma_cputhreads(void)
-{
-	return tuklib_cpucores();
-}
+extern LZMA_API(uint32_t) lzma_cputhreads(void) { return tuklib_cpucores(); }

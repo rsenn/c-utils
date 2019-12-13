@@ -138,8 +138,8 @@
 /* Define to 1 to disable debugging code. */
 #define NDEBUG 1
 
-#define PACKAGE_NAME      "XZ Utils"
-#define PACKAGE_URL       "https://tukaani.org/xz/"
+#define PACKAGE_NAME "XZ Utils"
+#define PACKAGE_URL "https://tukaani.org/xz/"
 #define PACKAGE_BUGREPORT "lasse.collin@tukaani.org"
 
 /* The size of `size_t', as computed by sizeof. */

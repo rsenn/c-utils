@@ -47,9 +47,8 @@ main() {
   assert(fmt_pb_sint(buf, 2, 150) == 3 && !memcmp(buf, "\x10\xac\x02", 3));
   assert(fmt_pb_double(buf, 3, pi) == 9 && buf[0] == 0x19);
   assert(fmt_pb_float(buf, 4, fpi) == 5 && buf[0] == 0x25);
-  assert(fmt_pb_string(buf, 5, "fnord", 5) == 7 &&
-         !memcmp(buf,
-                 "\x2a\x05"
-                 "fnord",
-                 7));
+  assert(fmt_pb_string(buf, 5, "fnord", 5) == 7 && !memcmp(buf,
+                                                           "\x2a\x05"
+                                                           "fnord",
+                                                           7));
 }

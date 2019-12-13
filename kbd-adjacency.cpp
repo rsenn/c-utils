@@ -12,15 +12,21 @@
 
 //-----------------------------------------------------------------------------
 namespace std {
-const char* begin(const char* s) { return s; }
-const char* end(const char* s) { return begin(s)+std::str_len(s); }
+const char*
+begin(const char* s) {
+  return s;
 }
+const char*
+end(const char* s) {
+  return begin(s) + std::str_len(s);
+}
+} // namespace std
 
 //-----------------------------------------------------------------------------
-typedef  std::vector<char> char_v;
-typedef std::map<char,char_v> adjacency_t;
+typedef std::vector<char> char_v;
+typedef std::map<char, char_v> adjacency_t;
 
-template<class Range>
+template <class Range>
 char_v
 range_to_v(Range r) {
   char_v v;
@@ -28,7 +34,7 @@ range_to_v(Range r) {
   return v;
 }
 
-template<class T>
+template <class T>
 std::vector<T>
 range_to_v(std::initializer_list<T> il) {
   std::vector<T> v;
@@ -37,38 +43,35 @@ range_to_v(std::initializer_list<T> il) {
 }
 
 //-----------------------------------------------------------------------------
-template<class Char, class Container>
-typename std::enable_if<
-std::is_same< Char, typename Container::value_type >::value,
-std::basic_ostream<Char>&
->::type
+template <class Char, class Container>
+typename std::enable_if<std::is_same<Char, typename Container::value_type>::value, std::basic_ostream<Char>&>::type
 operator<<(std::basic_ostream<Char>& os, const Container& vc) {
-  std::copy(vc.begin(), vc.end(),  std::ostream_iterator<Char>(std::cout, ""));
+  std::copy(vc.begin(), vc.end(), std::ostream_iterator<Char>(std::cout, ""));
   return os;
 }
 
 //-----------------------------------------------------------------------------
-template<class Map>
+template <class Map>
 void
 dump_map(const Map& m) {
   for(auto& kv : m) {
-  	std::cout << "m['" << kv.first <<  "'] = \"" << kv.second << "\"" << std::endl;
+    std::cout << "m['" << kv.first << "'] = \"" << kv.second << "\"" << std::endl;
   }
 }
 
 //-----------------------------------------------------------------------------
-template<class Char>
+template <class Char>
 std::unordered_set<Char>
-collect_chars(const std::map<Char,std::vector<Char> >& m) {
+collect_chars(const std::map<Char, std::vector<Char>>& m) {
   std::unordered_set<Char> r;
   for(auto& kv : m) {
-  	r.insert(kv.first);
-  	for(auto& ch : kv.second) {
-  		r.insert(ch);
-  	}
+    r.insert(kv.first);
+    for(auto& ch : kv.second) {
+      r.insert(ch);
+    }
   }
   /*for(auto& kv : m) {
-  	r.insert(kv.first);
+    r.insert(kv.first);
   }*/
   return r;
 }
@@ -90,11 +93,11 @@ make_adjacency_matrix() {
   m['0'] = m['='] = range_to_v("9)'?pPoO");
   m['\''] = m['?'] = range_to_v("0=üèpP");
   m['^'] = m['`'] = range_to_v("'?üè");
-  //m['"'] = m['!'] = range_to_v("'üè$£äà");
+  // m['"'] = m['!'] = range_to_v("'üè$£äà");
 
-  m['q'] = m['Q'] = range_to_v( {'1', '2', 'w', 'W', 'A', 'a'} );
-  m['w'] = m['W'] = range_to_v( {'q', 'Q', '2', '3', 'e', 'E', 's', 'S', 'a', 'A'} );
-  m['e'] = m['E'] = range_to_v( {'q', 'Q', '2', '3', 'e', 'E', 's', 'S', 'a', 'A'} );
+  m['q'] = m['Q'] = range_to_v({'1', '2', 'w', 'W', 'A', 'a'});
+  m['w'] = m['W'] = range_to_v({'q', 'Q', '2', '3', 'e', 'E', 's', 'S', 'a', 'A'});
+  m['e'] = m['E'] = range_to_v({'q', 'Q', '2', '3', 'e', 'E', 's', 'S', 'a', 'A'});
   m['r'] = m['R'] = range_to_v("eE45tTfFdD");
   m['t'] = m['T'] = range_to_v("rR56zZgGfF");
   m['z'] = m['Z'] = range_to_v("tT67uUhHgG");
@@ -134,41 +137,41 @@ make_adjacency_matrix() {
 
 using namespace std::placeholders;
 
-template<typename CharT>
+template <typename CharT>
 std::function<bool(CharT)>
 make_predicate(const std::ctype<CharT>& ct, std::ctype_base::mask m) {
-  return std::bind(
-  	(bool(std::ctype<CharT>::*)(std::ctype_base::mask,CharT) const) &std::ctype<CharT>::is, &ct, m, _1);
+  return std::bind((bool (std::ctype<CharT>::*)(std::ctype_base::mask, CharT) const) & std::ctype<CharT>::is,
+                   &ct,
+                   m,
+                   _1);
 }
 
-int main() {
+int
+main() {
 
+  using std::copy;
   using std::cout;
   using std::ctype;
-  using std::copy;
   using std::endl;
   using std::ostream_iterator;
 
   adjacency_t m = make_adjacency_matrix();
 
   std::locale lc("de_CH.iso88591");
-  const ctype<char>& ct = std::use_facet< ctype<char> >(lc);
+  const ctype<char>& ct = std::use_facet<ctype<char>>(lc);
 
   dump_map(m);
 
   auto cl = collect_chars(m);
 
-  for(auto mask : {
-  	ctype<char>::lower,
-  	ctype<char>::upper,
-  	ctype<char>::digit,
-  	ctype<char>::punct,
-  	ctype<char>::graph,
-  	ctype<char>::print
-  })
-  {
-  	copy_if(cl.begin(), cl.end(), ostream_iterator<char>(cout), make_predicate(ct, mask));
-  	cout << endl;
+  for(auto mask : {ctype<char>::lower,
+                   ctype<char>::upper,
+                   ctype<char>::digit,
+                   ctype<char>::punct,
+                   ctype<char>::graph,
+                   ctype<char>::print}) {
+    copy_if(cl.begin(), cl.end(), ostream_iterator<char>(cout), make_predicate(ct, mask));
+    cout << endl;
   }
 
   return 0;

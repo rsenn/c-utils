@@ -13,7 +13,7 @@
 #include "../liblzma/common/common.h"
 
 #ifdef WORDS_BIGENDIAN
-#	include "crc64_table_be.h"
+#include "crc64_table_be.h"
 #else
-#	include "crc64_table_le.h"
+#include "crc64_table_le.h"
 #endif
