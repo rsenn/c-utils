@@ -392,9 +392,9 @@ new_mediathek_entry() {
  */
 void
 delete_mediathek_entry(mediathek_entry_t* e) {
-  stralloc_free(&e->channel);
-  stralloc_free(&e->topic);
-  stralloc_free(&e->title);
+  if(e->channel.s) stralloc_free(&e->channel);
+  if(e->topic.s) stralloc_free(&e->topic);
+  if(e->title.s) stralloc_free(&e->title);
 
   stralloc_free(&e->desc);
   stralloc_free(&e->url);
@@ -653,6 +653,7 @@ parse_mediathek_list(buffer* inbuf) {
     strlist_copy(&prev, &sl);
   }
 
+  if(e)
   delete_mediathek_entry(e);
   e = 0;
 
