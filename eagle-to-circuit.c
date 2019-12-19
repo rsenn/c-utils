@@ -453,19 +453,43 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
 }
 
 int
+compare_pads(const struct pad* a, const struct pad* b) {
+   long la = LONG_MAX, lb = LONG_MAX;
+  if(scan_long(a->name.s, &la) && scan_long(b->name.s, &lb))
+    return la - lb;
+  return stralloc_diff(&a->name, &b->name);
+}
+
+int
 dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
   const struct package* pkg = value;
-  buffer_puts(buffer_1, "dump_package: ");
+  stralloc_lower(&pkg->name);
+ // buffer_puts(buffer_1, "dump_package: ");
   buffer_putsa(buffer_1, &pkg->name);
-  buffer_puts(buffer_1, " [");
+  buffer_puts(buffer_1, "\t");
+
+  struct pad* first = array_start(&pkg->pads);
+
+  qsort(first, array_length(&pkg->pads, sizeof(struct pad)), sizeof(struct pad), compare_pads);
+
+  double x = first->x, y = first->y;
 
   for(i = 0; i < array_length(&pkg->pads, sizeof(struct pad)); ++i) {
     const struct pad* p = array_get(&pkg->pads, sizeof(struct pad), i);
-    buffer_putspace(buffer_1);
-    buffer_putsa(buffer_1, &p->name);
+    
+    if(i > 0) 
+      buffer_putspace(buffer_1);
+ /*    buffer_putsa(buffer_1, &p->name);
+    buffer_puts(buffer_1, ": "); */
+    buffer_putlong(buffer_1, roundl((p->x - x) / 2.54));
+    buffer_putc(buffer_1, ',');
+    buffer_putlong(buffer_1, roundl((p->y - y) / 2.54));
+     //   buffer_putspace(buffer_1);
+        //buffer_puts(buffer_1, "\n\t ");
+
   }
-  buffer_puts(buffer_1, " ]");
+ // buffer_puts(buffer_2, " ]");
   buffer_putnlflush(buffer_1);
   return 1;
 }
@@ -607,11 +631,11 @@ print_element_name(xmlnode* a_node) {
     return;
 
   if(str_diff(name, "eagle") && str_diff(name, "drawing")) {
-    buffer_putm_2(buffer_1, a_node->parent ? "/" : "", name);
+    buffer_putm_2(buffer_2, a_node->parent ? "/" : "", name);
     if(!(name = xml_get_attribute(a_node, "name")))
       return;
     if(str_len(name))
-      buffer_putm_3(buffer_1, "[@name='", name, "']");
+      buffer_putm_3(buffer_2, "[@name='", name, "']");
   }
 }
 
@@ -624,7 +648,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_5(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"");
+    buffer_putm_5(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"");
     if(t->next == a->list_tuple)
       break;
   }
@@ -644,7 +668,7 @@ print_element_content(xmlnode* node) {
     if(str_isspace(s))
       s = "";
     if(str_len(s))
-      buffer_putm_3(buffer_1, " \"", s, "\"");
+      buffer_putm_3(buffer_2, " \"", s, "\"");
   }
 }
 
@@ -663,7 +687,7 @@ print_element_children(xmlnode* a_node) {
     print_element_name(node);
     print_element_attrs(node);
     print_element_content(node);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_2);
     print_element_children(node);
   }
 }
@@ -689,7 +713,7 @@ print_element_names(xmlnode* node) {
       print_element_attrs(node);
     }
     print_element_content(node);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_2);
     print_element_names(node->children);
   }
 }
@@ -698,17 +722,17 @@ void
 match_query(xmlnode* doc, const char* q) {
   xmlnodeset ns;
   xmlnodeset_iter_t it, e;
-  print_name_value(buffer_1, "XPath query", q);
-  buffer_putnlflush(buffer_1);
+  print_name_value(buffer_2, "XPath query", q);
+  buffer_putnlflush(buffer_2);
   ns = getnodeset(doc, q);
 
   for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
     xmlnode* node = *it;
     print_element_name(node);
     print_element_attrs(node);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_2);
     print_element_children(node);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_2);
 
     if(0) { //! str_diff(q, xq)) {
       TUPLE* a;
@@ -736,7 +760,7 @@ match_query(xmlnode* doc, const char* q) {
         stralloc_0(&query);
         match_query(doc, query.s);
         part_names = getparts(doc);
-        strlist_dump(buffer_1, &part_names);
+        strlist_dump(buffer_2, &part_names);
       }
     }
   }
