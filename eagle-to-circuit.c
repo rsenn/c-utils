@@ -124,6 +124,11 @@ struct net {
   stralloc name;
   array contacts; /**<  list of struct ref */
 };
+struct part_ref {
+  strlist* list;
+  struct part* part;
+};
+
 const char* document = "<doc/>";
 const char* xq = "net";
 void node_print(xmlnode* node);
@@ -542,6 +547,15 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
   return 1;
 }
 
+static int
+cmp_ref(const char** a, const char** b) {
+  size_t alen = byte_chr(*a, str_len(*a), '\t'), blen = byte_chr(*b, str_len(*b), '\t');
+  if(alen != blen)
+    return alen - blen;
+
+  return str_diff(*a, *b);
+}
+
 int
 dump_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct part* ptr = (struct part*)value;
@@ -554,7 +568,18 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
     buffer_puts(buffer_2, " package: ");
     buffer_putsa(buffer_2, &ptr->pkg->name);
   }
-  MAP_VISIT_ALL(nets, output_net, ptr);
+  strlist refs;
+
+  strlist_init(&refs, '\n');
+
+  struct part_ref u = {&refs, ptr};
+  MAP_VISIT_ALL(nets, output_net, &u);
+
+  strlist_sort(&refs, &cmp_ref);
+  // stralloc_replacec(&refs.sa, '\0', '\n');
+  buffer_putsa(&output, &refs.sa);
+  buffer_putnlflush(&output);
+  strlist_free(&refs);
 
   if(ptr->dset) {
     buffer_puts(buffer_2, " deviceset: ");
@@ -612,11 +637,10 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
 int
 output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct net* n = (struct net*)value;
-  struct part* p = user_data;
+  strlist* refs = ((struct part_ref*)user_data)->list;
+  struct part* p = ((struct part_ref*)user_data)->part;
+  ;
   struct ref* rc;
-  strlist refs;
-
-  strlist_init(&refs, '\n');
 
   int64 i, len;
   stralloc conn, rconn;
@@ -626,13 +650,13 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
   if(p) {
     if(!(rc = net_connects(n, p, -1)))
       return 1;
+  }
 
-
-  } else {
-    buffer_puts(&output, "\n# Net ");
+  /* {
+    buffer_puts(&output, "## Net ");
     buffer_putsa(&output, &n->name);
     buffer_puts(&output, "\n");
-  }
+  }*/
   len = array_length(&n->contacts, sizeof(struct ref));
 
   for(i = 0; i < len; ++i) {
@@ -651,12 +675,11 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
       continue;
 
     strlist_push_sa(&connections, &conn);
-    strlist_push_sa(&refs, &conn);
-
+    strlist_push_sa(refs, &conn);
   }
-  strlist_sort(&refs);
-    buffer_putsa(&output, &refs.sa);
-    buffer_putnlflush(&output);
+
+  stralloc_free(&conn);
+  stralloc_free(&rconn);
   return 1;
 }
 /**
