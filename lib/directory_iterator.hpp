@@ -21,7 +21,8 @@ public:
 
   directory_iterator& operator++();
 
-  directory_iterator operator++(int) {
+  directory_iterator
+  operator++(int) {
     directory_iterator temp = *this;
     ++*this;
     return temp;

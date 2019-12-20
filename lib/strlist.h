@@ -53,7 +53,7 @@ int strlist_push(strlist*, const char* s);
 strlist strlist_range(const strlist*, size_t from, size_t to);
 int strlist_shift(strlist*, const char** strp);
 int strlist_shift_n(strlist* sl, size_t i);
-size_t strlist_sort(strlist*, int(*)(const void*, const void*));
+size_t strlist_sort(strlist*, int (*)(const void*, const void*));
 int strlist_unshift(strlist*, const char* s);
 
 int strlist_prepends(strlist* sl, const char* s);

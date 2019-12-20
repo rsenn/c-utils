@@ -146,6 +146,11 @@ MAP_T nets;
 MAP_T symbols;
 strlist connections;
 buffer input, output;
+static struct {
+  struct {
+    int x, y;
+  } min, max;
+} bounds;
 
 /**
  * Reads a real-number value from the element/attribute given
@@ -256,6 +261,18 @@ package_pin(struct package* pkg, const char* name) {
   return -1;
 }
 
+void
+update_bounds(int x, int y) {
+  if(bounds.min.x > x)
+    bounds.min.x = x;
+  if(bounds.max.x < x)
+    bounds.max.x = x;
+  if(bounds.min.y > y)
+    bounds.min.y = y;
+  if(bounds.max.y < y)
+    bounds.max.y = y;
+}
+
 /**
  * Build structures from <part> or <element> element
  */
@@ -272,13 +289,17 @@ build_part(xmlnode* part) {
   val = xml_get_attribute(part, "value");
   if(val)
     stralloc_copys(&p.value, val);
-  p.x = get_double(part, "x") / 0.127;
-  p.y = get_double(part, "y") / 0.127;
+
+  p.x = get_double(part, "x");
+  p.y = get_double(part, "y");
+
+  update_bounds(roundl(p.x / 2.54), roundl(p.y / 2.54));
 
   if(pkgname && str_len(pkgname)) {
     p.pkg = get_entry(packages, pkgname);
   }
   assert(p.pkg);
+
   pins = array_length(&p.pkg->pads, sizeof(struct net*));
   p.pins = calloc(sizeof(struct net*), pins);
   dsname = xml_get_attribute(part, "deviceset");
@@ -514,14 +535,52 @@ compare_pads(const struct pad* a, const struct pad* b) {
   return stralloc_diff(&a->name, &b->name);
 }
 
+void
+clean_pkgname(stralloc* pkgname, const struct package* pkg) {
+  stralloc_init(pkgname);
+  stralloc_copy(pkgname, &pkg->name);
+  stralloc_lower(pkgname);
+
+  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) &&
+     isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
+    // stralloc_remove(pkgname, 0, 1);
+    pkgname->s[0] = 'r';
+    pkgname->s[1] = 'e';
+    pkgname->s[2] = 's';
+    pkgname->s[3] = '_';
+    stralloc_replaces(pkgname, "-v", "v");
+  }
+
+  if(pkgname->s[0] == 'c' || pkgname->s[0] == 'e')
+    stralloc_replaces(pkgname, "-", "_");
+
+  stralloc_replaces(pkgname, "_0", "_");
+  stralloc_replaces(pkgname, ".", "");
+  stralloc_replaces(pkgname, "/", "");
+  stralloc_replaces(pkgname, "c0", "c");
+  stralloc_replaces(pkgname, "-0", "_");
+  stralloc_replaces(pkgname, "x0", "x");
+  stralloc_replaces(pkgname, "-", "_n");
+  stralloc_replaces(pkgname, "+", "_p");
+  for(size_t idx = 0; idx < pkgname->len; idx++) {
+    if(!isalnum(pkgname->s[idx]))
+      pkgname->s[idx] = '_';
+  }
+}
+
 int
 dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
   const struct package* pkg = value;
-  stralloc_lower(&pkg->name);
+  stralloc pkgname;
+  clean_pkgname(&pkgname, pkg);
+
   // buffer_puts(&output, "dump_package: ");
-  buffer_putsa(&output, &pkg->name);
-  buffer_puts(&output, "\t");
+  stralloc_nul(&pkgname);
+
+  buffer_putspad(&output, pkgname.s, 18);
+  stralloc_free(&pkgname);
+  buffer_putspace(&output);
 
   struct pad* first = array_start(&pkg->pads);
 
@@ -534,11 +593,13 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
 
     if(i > 0)
       buffer_putspace(&output);
-    /*    buffer_putsa(&output, &p->name);
-       buffer_puts(&output, ": "); */
-    buffer_putlong(&output, roundl((p->x - x) / 2.54));
+
+    int ix = roundl((p->x - x) / 2.54);
+    int iy = roundl((p->y - y) / 2.54);
+
+    buffer_putlong(&output, -iy);
     buffer_putc(&output, ',');
-    buffer_putlong(&output, roundl((p->y - y) / 2.54));
+    buffer_putlong(&output, -ix);
     //   buffer_putspace(&output);
     // buffer_puts(&output, "\n\t ");
   }
@@ -555,10 +616,37 @@ cmp_ref(const char** a, const char** b) {
 
   return str_diff(*a, *b);
 }
+int
+output_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+  struct part* ptr = (struct part*)value;
+  struct pad* pad1 = array_start(&ptr->pkg->pads);
+
+  stralloc name;
+  stralloc_init(&name);
+  stralloc_copy(&name, &ptr->name);
+  stralloc_nul(&name);
+  buffer_putspad(&output, name.s, 19);
+  stralloc_free(&name);
+
+  clean_pkgname(&name, &ptr->pkg->name);
+  stralloc_nul(&name);
+  buffer_putspad(&output, name.s, 18);
+
+  double x = roundl((ptr->x + pad1->x) / 2.54);
+  double y = roundl((ptr->y + pad1->y) / 2.54);
+
+  buffer_putlong(&output, y + 10);
+  buffer_putc(&output, ',');
+  buffer_putlong(&output, x + 10);
+
+  buffer_putnlflush(&output);
+}
 
 int
 dump_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct part* ptr = (struct part*)value;
+  const char *s, *comment;
+  size_t n;
   assert(ptr->name.s);
   buffer_puts(&output, "\n# Part: ");
   buffer_putsa(&output, &ptr->name);
@@ -576,8 +664,21 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
   MAP_VISIT_ALL(nets, output_net, &u);
 
   strlist_sort(&refs, &cmp_ref);
-  // stralloc_replacec(&refs.sa, '\0', '\n');
-  buffer_putsa(&output, &refs.sa);
+
+  strlist_foreach(&refs, s, n) {
+    size_t clen;
+    size_t i = 0;
+    if((clen = byte_chr(s, n, '\t')) + 1 < n) {
+      ((char*)s)[clen] = '\0';
+      buffer_putspad(&output, s, 7);
+      s += clen + 1;
+      n -= clen + 1;
+      i++;
+    }
+    buffer_put(&output, s, byte_chrs(s, n, " \t\r#\n", 4));
+    buffer_putc(&output, '\n');
+  }
+
   buffer_putnlflush(&output);
   strlist_free(&refs);
 
@@ -675,6 +776,8 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
       continue;
 
     strlist_push_sa(&connections, &conn);
+    stralloc_cats(&conn, "\t# ");
+    stralloc_cat(&conn, &n->name);
     strlist_push_sa(refs, &conn);
   }
 
@@ -925,7 +1028,23 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
   match_foreach(doc, "net|signal", build_nets);
   match_foreach(doc, "symbol", build_sym);
+
+  buffer_puts(&output, "# Stripboard\n# board <width>,<height>\n\nboard ");
+
+  buffer_putlong(&output, ((bounds.max.x + 9) / 10 + 2) * 10);
+  buffer_putc(&output, ',');
+  buffer_putlong(&output, ((bounds.max.y + 9) / 10 + 2) * 10);
+  buffer_puts(&output, "\n");
+
+  buffer_puts(&output, "\n# Packages\n# <package name>   <pin coordinates relative to pin 0>\n\n");
   MAP_VISIT_ALL(packages, dump_package, "package");
+
+  buffer_puts(&output,
+              "\n# Components\n# <component name> <package name>    <absolute position of component pin 0>\n\n");
+  MAP_VISIT_ALL(parts, output_part, "part");
+
+  buffer_puts(&output, "\n# Connections\n# <from component name>.<pin index> <to component name>.<pin index>\n\n");
+
   MAP_VISIT_ALL(parts, dump_part, "part");
   MAP_VISIT_ALL(nets, dump_net, 0);
 

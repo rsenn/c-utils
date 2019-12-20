@@ -60,8 +60,9 @@ main(int argc, char* argv[]) {
 
   while(argi < argc) {
     /*  	if(!str_diff(argv[argi], "-l") || !str_diff(argv[argi], "--list")) {
-      		opt_list = 1;
-      	} else*/ {
+            opt_list = 1;
+        } else*/
+    {
       break;
     }
     argi++;

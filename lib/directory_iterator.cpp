@@ -16,7 +16,8 @@ directory_iterator::directory_iterator(const string& path, const string& filter)
 
 directory_iterator::~directory_iterator() { close(); }
 
-directory_iterator& directory_iterator::operator++() {
+directory_iterator&
+directory_iterator::operator++() {
   if(m_retcode > 0)
     next();
   return *this;

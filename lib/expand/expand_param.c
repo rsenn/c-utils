@@ -75,8 +75,7 @@ expand_param(
       }
 
       /* $- substitution */
-      case S_FLAGS:
-        break;
+      case S_FLAGS: break;
 
       /* $! substitution */
       case S_BGEXCODE:

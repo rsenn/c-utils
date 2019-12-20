@@ -4216,13 +4216,13 @@ main(int argc, char* argv[]) {
 
     populate_sourcedirs(&srcs, sourcedirs);
 
-/*    if(no_libs)
-      cmd_libs = 0;
-    if(no_bins)
-      cmd_bins = 0;
-    if(no_objs)
-      cmd_objs = 0;
-*/
+    /*    if(no_libs)
+          cmd_libs = 0;
+        if(no_bins)
+          cmd_bins = 0;
+        if(no_objs)
+          cmd_objs = 0;
+    */
     /*buffer_puts(buffer_2, "pptoks: ");
     strlist_dump(buffer_2, &pptoks);
     buffer_putnlflush(buffer_2);
