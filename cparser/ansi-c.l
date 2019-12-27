@@ -22,23 +22,34 @@ ES  (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
 WS  [ \t\v\n\f]
 
 %{
-#include "../lib/buffer.h"
-#include "y.tab.h"
+#include "buffer.h"
+#include "ansi-c.tab.h"
 
-#define YY_INPUT(buf,result,max_size) \
-   { \
-     char ch = 0; int c = EOF; if(buffer_getc(buffer_0, &ch) > 0) c = ch; \
-     result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
-   }
+extern buffer input_buffer;
 
-extern void yyerror(const char *);  /* prints grammar violation message */
+static ssize_t
+yy_input(char* buf, size_t max_size) {
+ ssize_t  ret;
+  ret = buffer_get(&input_buffer, buf, 1 || max_size);
 
-extern int sym_type(const char *);  /* returns type from symbol table */
+//  if(ret > 0) {
+//    buffer_puts(buffer_2, "Read char '");
+//    buffer_putc(buffer_2, buf[0]);
+//    buffer_putsflush(buffer_2, "'\n");
+//  }
+  return ret > 0 ? ret : YY_NULL;
+}
+#define YY_INPUT(buf, result, max_size) result = yy_input(buf, max_size)
+
+extern void yyerror(YYLTYPE * locp, const char*); /* prints grammar violation message */
+
+extern int sym_type(const char*); /* returns type from symbol table */
 
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 
 static void comment(void);
 static int check_type(void);
+
 %}
 
 %%
@@ -160,38 +171,29 @@ static int check_type(void);
 %%
 
 int yywrap(void)        /* called at end of input */
-{
-    return 1;           /* terminate now */
-}
+{ return 1; /* terminate now */ }
 
-static void comment(void)
-{
-    int c;
+static void comment(void) {
+  int c;
 
-    while ((c = input()) != 0)
-        if (c == '*')
-        {
-            while ((c = input()) == '*')
-                ;
+  while((c = input()) != 0)
+    if(c == '*') { while((c = input()) == '*')
+        ;
 
-            if (c == '/')
-                return;
+      if(c == '/')
+        return;
 
-            if (c == 0)
-                break;
-        }
-    yyerror("unterminated comment");
+      if(c == 0)
+        break;
+    }
+  yyerror(NULL, "unterminated comment");
 }
 
 static int check_type(void)
-{
-    switch (sym_type(yytext))
-    {
-    case TYPEDEF_NAME:                /* previously defined */
-        return TYPEDEF_NAME;
-    case ENUMERATION_CONSTANT:        /* previously defined */
-        return ENUMERATION_CONSTANT;
-    default:                          /* includes undefined */
-        return IDENTIFIER;
-    }
+{ 
+  switch(sym_type(yytext)) {
+    case TYPEDEF_NAME: /* previously defined */ return TYPEDEF_NAME;
+    case ENUMERATION_CONSTANT: /* previously defined */ return ENUMERATION_CONSTANT;
+    default: /* includes undefined */ return IDENTIFIER;
+  }
 }

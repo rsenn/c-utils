@@ -1,3 +1,18 @@
+%locations 
+%define api.pure full
+
+%{
+#define YYERROR_VERBOSE 1
+#define YYDEBUG 1
+
+
+extern const char* input_file;
+
+extern int yylex ();
+extern void yyerror();
+
+%}
+
 %token	IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
 %token	PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token	AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
@@ -525,10 +540,34 @@ declaration_list
 	;
 
 %%
-#include <stdio.h>
 
-void yyerror(const char *s)
-{
-	fflush(stdout);
-	fprintf(stderr, "*** %s\n", s);
+#include "../lib/buffer.h"
+
+void
+yyerror(YYLTYPE* locp, char const* msg) {
+  buffer_puts(buffer_2, input_file);
+  buffer_putc(buffer_2, ':');
+  buffer_putlong(buffer_2, locp->first_line);
+  buffer_putc(buffer_2, ':');
+  buffer_putlong(buffer_2, locp->first_column);
+  buffer_puts(buffer_2, ": ");
+  buffer_puts(buffer_2, "ERROR: ");
+  buffer_puts(buffer_2, msg);
+  buffer_putnlflush(buffer_2);
+}
+
+
+const char*
+yytokname(int tok) {
+static char chbuf[2];
+  if(tok >= 255) {
+  tok -= 255;
+  if(tok >= 0 && tok < sizeof(yytname) / sizeof(yytname[0]))
+    return yytname[tok];
+  } else {
+    chbuf[0] = tok;
+    return chbuf;
+  }
+
+  return "(null)";
 }
