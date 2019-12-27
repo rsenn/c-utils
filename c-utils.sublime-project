@@ -8,6 +8,10 @@
     "name": "Build debug",
     "shell_cmd": "make DEBUG=1 SELECT=1 CC=clang"
   },
+    {
+    "name": "Rebuild CTags",
+    "shell_cmd": "make .tags"
+  },
   ],
   "folders": [
   {

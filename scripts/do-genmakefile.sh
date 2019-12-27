@@ -12,13 +12,17 @@ get_num() {
   eval 'echo "${'$N'}"')
 }
 
-BUILD_TOOLS="nmake make gmake batch ninja"
-EXTENSIONS="nmake mk gmake bat ninja"
-FILENAMES="NMakefile Makefile GNUmakefile build.bat build.ninja"
+BUILD_TOOLS="nmake pomake make gmake batch ninja"
+EXTENSIONS="nmake pomk mk gmake bat ninja"
+FILENAMES="NMakefile Makefile Makefile GNUmakefile build.bat build.ninja"
+
+case `uname -s` in
+  *_NT-*) : ${COMPILERS="bcc55 bcc32 dmc32 pocc32 pocc64 tcc32 tcc64 lcc32 lcc64 occ32"} ;;
+  *) : ${COMPILERS="gcc clang tcc zapcc"} ;;
+esac
 
 : ${BUILDDIR="build/\$C"}
 
-: ${COMPILERS="gcc clang tcc zapcc"}
 : ${FILENAME="\$FN"}
 
 set -f

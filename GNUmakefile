@@ -1689,3 +1689,13 @@ $(PROGRAMS):  #CPPFLAGS += -I.
 -include $(BUILDDIR)defines.make
 -include build/tests.mk
 -include build/examples.mk
+
+
+.tags: $(wildcard *.c lib/*.h lib/*/*.c)
+	ctags $^
+
+cscope.out: $(wildcard *.c lib/*.h lib/*/*.c)
+	cscope -R  -b $^
+
+TOKS: $(wildcard *.c lib/*.h lib/*/*.c)
+	toks $^
