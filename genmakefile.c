@@ -3478,13 +3478,14 @@ set_compiler_type(const char* compiler) {
     set_var("CC", "sdcc");
     set_var("LINK", "sdcc");
     set_var("LIB", "sdar");
+    unset_var("CXX");
 
     mach.arch = PIC;
 
     binext = ".cof";
     objext = ".o";
 
-    set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
+  //  set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
 
     if(chip.len == 0)
       stralloc_copys(&chip, "16f876a");
@@ -3545,10 +3546,11 @@ set_compiler_type(const char* compiler) {
       push_var("LIBS", "-llibm.lib");
     }
 
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -o\"$@\"");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&link_command,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "htc")) {
+    unset_var("CXX");
 
     set_var("LIB", "libr");
 
@@ -3621,13 +3623,14 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "--asmlist");
     push_var("CPPFLAGS", "-D__$(CHIP)=1");
 
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c \"$<\" -o\"$@\"");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(&link_command,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
 
     no_libs = 1;
+    unset_var("CXX");
 
     set_var("CC", "xc8");
     set_var("LINK", "mplink");
@@ -3691,10 +3694,10 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
     push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");
 
-    stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) \"$<\" -o\"$@\"");
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c \"$<\" -o\"$@\"");
+    stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(&link_command,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o\"$@\"  $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else {
     return 0;
