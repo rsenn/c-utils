@@ -91,6 +91,12 @@ endif
 ifneq ($(ZLIB),)
 DEFINES += HAVE_ZLIB="$(ZLIB)"
 endif
+ifneq ($(HAVE_BZIP2),)
+DEFINES += HAVE_LIBBZ2="$(HAVE_BZIP2)"
+endif
+ifneq ($(HAVE_XZ),)
+DEFINES += HAVE_LIBLZMA="$(HAVE_XZ)"
+endif
 ifneq ($(STDINT_H),)
 DEFINES += HAVE_STDINT_H="$(STDINT_H)"
 endif

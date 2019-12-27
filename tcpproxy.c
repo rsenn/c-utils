@@ -6,10 +6,10 @@
 #include <time.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+//#include <sys/socket.h>
+//#include <netdb.h>
+//#include <netinet/in.h>
+//#include <arpa/inet.h>
 
 static int g_running = 0;
 

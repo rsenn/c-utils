@@ -812,7 +812,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 #
 
 #LIBRARIES = $(patsubst %,$(BUILDDIR)lib%$(M64_).a,z bz2 lzma)
-PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc cmake-run tcpproxy redir httpproxy parse testihex)
+PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc cmake-run httpproxy parse testihex) ##tcpproxy redir
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
@@ -909,6 +909,12 @@ endif
 
 
 #CPPFLAGS += $(DEFS:%=-D%)
+ifneq ($(EXTRA_CPPFLAGS),)
+CPPFLAGS += $(EXTRA_CPPFLAGS)
+endif
+ifneq ($(EXTRA_LDFLAGS),)
+LDFLAGS += $(EXTRA_LDFLAGS)
+endif
 #CFLAGS += $(DEFS:%=-D%)
 #
 #$(info DEFINES: $(DEFINES))

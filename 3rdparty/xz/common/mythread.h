@@ -15,6 +15,14 @@
 
 #include "sysdefs.h"
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#if !defined(_WIN32)
+#define _WIN32 1
+#endif
+#define MYTHREAD_WIN95 1
+#undef MYTHREAD_POSIX
+#endif
+
 // If any type of threading is enabled, #define MYTHREAD_ENABLED.
 #if defined(MYTHREAD_POSIX) || defined(MYTHREAD_WIN95) || defined(MYTHREAD_VISTA)
 #define MYTHREAD_ENABLED 1
