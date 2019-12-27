@@ -2306,8 +2306,7 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   stralloc inc, abspath;
   stralloc_init(&inc);
   stralloc_init(&abspath);
-      target* all = get_rule("all");
-
+  target* all = get_rule("all");
 
   hmap_foreach(srcdirs, t) {
     target* rule;
@@ -2594,19 +2593,56 @@ gen_install_rules(HMAP_DB* rules) {
   return inst;
 }
 
+void
+get_keys(MAP_T map, strlist* list) {
+  TUPLE* t;
+  hmap_foreach(vars, t) { strlist_push(list, t->key); }
+}
+
+/**
+ * @brief subst_var
+ * @param in
+ * @param out
+ * @param pfx
+ * @param sfx
+ * @param tolower
+ */
+void
+get_ref_vars(const stralloc* in, strlist* out) {
+  size_t i;
+  stralloc_zero(&out->sa);
+
+  for(i = 0; i < in->len; ++i) {
+    const char* p = &in->s[i];
+
+    if(i + 4 <= in->len && *p == '$' && p[1] == '(') {
+      size_t vlen;
+      i += 2;
+      vlen = byte_chr(&in->s[i], in->len - i, ')');
+      strlist_pushb(out, &in->s[i], vlen);
+      i += vlen;
+      continue;
+    }
+  }
+}
+
 /**
  * @brief output_all_vars  Output all variables
  * @param b
  * @param vars
  */
 void
-output_all_vars(buffer* b, HMAP_DB* vars) {
+output_var(buffer* b, HMAP_DB* vars, const char* name) {
   stralloc v;
-  TUPLE* t;
-  stralloc_init(&v);
+  strlist* var;
+  strlist refvars;
+  TUPLE* t = 0;
 
-  hmap_foreach(vars, t) {
-    strlist* var = hmap_data(t);
+  if(hmap_search(vars, name, str_len(name) + 1, &t) == HMAP_SUCCESS) {
+    //  assert(t);
+    stralloc_init(&v);
+
+    var = hmap_data(t);
 
     if(var->sa.len) {
       stralloc_copys(&v, t->key);
@@ -2614,6 +2650,20 @@ output_all_vars(buffer* b, HMAP_DB* vars) {
         stralloc_lower(&v);
 
       stralloc_nul(&v);
+
+      strlist_init(&refvars, '\0');
+      get_ref_vars(&var->sa, &refvars);
+      stralloc_nul(&refvars.sa);
+
+      {
+        const char* ref;
+        strlist_foreach_s(&refvars, ref) {
+      /*    buffer_putm_internal(buffer_2, "recurse referenced var: ", ref, "\n", 0);
+          buffer_flush(buffer_2);*/
+
+          output_var(b, vars, ref);
+        }
+      }
 
       if(batch)
         buffer_putm_internal(b, "@SET ", v.s, "=", 0);
@@ -2638,8 +2688,27 @@ output_all_vars(buffer* b, HMAP_DB* vars) {
         buffer_putc(b, '"');
 
       put_newline(b, 0);
+      buffer_flush(b);
     }
+
+    stralloc_free(&v);
+    strlist_free(&refvars);
+
+    hmap_delete(&vars, t->key, t->key_len);
   }
+}
+
+/**
+ * @brief output_all_vars  Output all variables
+ * @param b
+ * @param vars
+ */
+void
+output_all_vars(buffer* b, MAP_T vars, strlist* varnames) {
+  TUPLE* t;
+  const char* name;
+  stralloc_nul(&varnames->sa);
+  strlist_foreach_s(varnames, name) { output_var(b, vars, name); }
   put_newline(b, 1);
 }
 
@@ -3482,8 +3551,7 @@ set_compiler_type(const char* compiler) {
 
     binext = ".cof";
     objext = ".o";
-        libext = ".a";
-
+    libext = ".a";
 
     //  set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
 
@@ -3559,8 +3627,7 @@ set_compiler_type(const char* compiler) {
 
     binext = ".cof";
     objext = ".p1";
-            libext = ".a";
-
+    libext = ".a";
 
     // set_var("CFLAGS", "--mode=pro");
     push_var("CFLAGS", "-N127");
@@ -3633,7 +3700,7 @@ set_compiler_type(const char* compiler) {
 
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
 
-//    no_libs = 1;
+    //    no_libs = 1;
     unset_var("CXX");
 
     set_var("CC", "xc8");
@@ -3644,7 +3711,7 @@ set_compiler_type(const char* compiler) {
 
     binext = ".cof";
     objext = ".p1";
-            libext = ".lpp";
+    libext = ".lpp";
 
     push_var("DEFS", "-D__XC=1");
 
@@ -3703,8 +3770,10 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_C-FLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-   stralloc_copys(&lib_command,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) --OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist --output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(
+        &lib_command,
+        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) --OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist "
+        "--output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else {
     return 0;
@@ -3886,7 +3955,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:aD:l:I:c:s:p:P:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:a:D:l:I:c:s:p:P:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -3907,7 +3976,7 @@ main(int argc, char* argv[]) {
       case 't': toolchain = compiler = optarg; break;
       case 'm': make = optarg; break;
       case 'P': preproc = optarg; break;
-      case 'A': set_machine(optarg); break;
+      case 'a': set_machine(optarg); break;
       case 's': set_system(optarg); break;
       case 'p':
         if(optarg)
@@ -4343,7 +4412,16 @@ main(int argc, char* argv[]) {
     buffer_putsa(buffer_1, &cmdline.sa);
     buffer_putsflush(buffer_1, newline);
 
-    output_all_vars(buffer_1, vars);
+    {
+      strlist varnames;
+      strlist_init(&varnames, '\0');
+
+      get_keys(vars, &varnames);
+      buffer_puts(buffer_2, "varnames: ");
+      strlist_dump(buffer_2, &varnames);
+
+      output_all_vars(buffer_1,vars,  &varnames);
+    }
 
     if(str_equal(make, "gmake")) {
       stralloc_nul(&vpath.sa);

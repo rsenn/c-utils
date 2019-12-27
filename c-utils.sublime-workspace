@@ -80,7 +80,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 108179,
+				"buffer_size": 108183,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -502,6 +502,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"sdar",
 			"has_main",
 			"scan_main",
 			"\"main",
@@ -628,8 +629,7 @@
 			"MAP_NEW",
 			"hmap_",
 			"gen_clean_rule",
-			"clean_rule",
-			"open_"
+			"clean_rule"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -1184,12 +1184,12 @@
 									68489
 								],
 								[
-									90026,
-									90031
+									90030,
+									90035
 								],
 								[
-									93668,
-									93672
+									93672,
+									93676
 								]
 							],
 							"symlist":
@@ -1324,7 +1324,7 @@
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 6.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 5,
@@ -1370,15 +1370,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 108179,
+						"buffer_size": 108183,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								51242,
-								51242
+								83551,
+								83551
 							]
 						],
 						"settings":
@@ -1389,7 +1389,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 45963.0,
+						"translation.y": 70203.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
