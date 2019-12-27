@@ -20,6 +20,7 @@
 #include "lib/range.h"
 #include "lib/case.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/stat.h>
@@ -875,14 +876,14 @@ get_rule(const char* name) {
     MAP_NEW(rules);
 
   if(!(ret = MAP_GET(rules, name, len + 1))) {
-    ret = malloc(sizeof(target));
+    ret = alloca(sizeof(target));
     byte_zero(ret, sizeof(target));
-    // ret->serial = 0;
 
-    hmap_add(&rules, name, len + 1, 0, HMAP_DATA_TYPE_CUSTOM, ret);
-    hmap_search(rules, name, len + 1, &t);
+    hmap_set(&rules, name, len + 1, ret, sizeof(target));
+    assert(hmap_search(rules, name, len + 1, &t) == HMAP_SUCCESS);
+    ret = t->vals.val_chars;
 
-    ret->name = t->key;
+    ret->name = /*str_ndup(name, len); //*/ t->key;
 
     strlist_init(&ret->output, ' ');
 
@@ -2216,15 +2217,6 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
       size_t n;
       char* s;
       strlist_cat(&rule->prereq, &dep->output);
-      /*      strlist_foreach(&dep->output, s, n) {
-              stralloc_zero(&sa);
-              path_output(s, &sa, objext);
-
-              add_path_sa(&rule->prereq, &sa);
-            }
-      */
-
-      // strlist_push(&rule->prereq, dep->name);
 
       array_catb(&rule->objs, &dep, sizeof(target*));
 
@@ -2314,6 +2306,8 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   stralloc inc, abspath;
   stralloc_init(&inc);
   stralloc_init(&abspath);
+      target* all = get_rule("all");
+
 
   hmap_foreach(srcdirs, t) {
     target* rule;
@@ -2340,6 +2334,8 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     rule = lib_rule_for_sourcedir(rules, srcdir, base);
 
     strlist_push_unique(&link_libraries, rule->name);
+
+    add_path(&all->prereq, rule->name);
 
     array_catb(&srcdir->rules, &rule, sizeof(target*));
   }
@@ -2467,19 +2463,14 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         */
         includes_to_libs(&incs, &libs);
-
         target_ptrs(&libs, &link->deps);
-
         strlist_zero(&deps);
-
         target_dep_list(&deps, link);
 
         strlist_foreach_s(&link_libraries, link_lib) {
-
           target* lib = find_rule(link_lib);
-
           strlist_cat(&deps, &lib->prereq);
-
+          add_path(&all->prereq, lib->name);
           //          strlist_push(&deps, link_lib);
         }
         if(strlist_count(&deps))
@@ -3491,6 +3482,8 @@ set_compiler_type(const char* compiler) {
 
     binext = ".cof";
     objext = ".o";
+        libext = ".a";
+
 
     //  set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
 
@@ -3553,6 +3546,7 @@ set_compiler_type(const char* compiler) {
       push_var("LIBS", "-llibm.lib");
     }
 
+    set_command(&lib_command, "$(LIB) $@", "$^");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
@@ -3565,6 +3559,8 @@ set_compiler_type(const char* compiler) {
 
     binext = ".cof";
     objext = ".p1";
+            libext = ".a";
+
 
     // set_var("CFLAGS", "--mode=pro");
     push_var("CFLAGS", "-N127");
@@ -3582,16 +3578,16 @@ set_compiler_type(const char* compiler) {
 
     stralloc_nul(&chip);
     set_var("CHIP", chip.s);
-/*
-    {
-      stralloc chipdef;
-      stralloc_init(&chipdef);
-      stralloc_copys(&chipdef, "-DPIC");
-      stralloc_cat(&chipdef, &chip);
-      stralloc_upper(&chipdef);
-      stralloc_cats(&chipdef, "=1");
-      push_var_sa("CPPFLAGS", &chipdef);
-    }*/
+    /*
+        {
+          stralloc chipdef;
+          stralloc_init(&chipdef);
+          stralloc_copys(&chipdef, "-DPIC");
+          stralloc_cat(&chipdef, &chip);
+          stralloc_upper(&chipdef);
+          stralloc_cats(&chipdef, "=1");
+          push_var_sa("CPPFLAGS", &chipdef);
+        }*/
 
     if(!isset("MACH")) {
 
@@ -3630,13 +3626,14 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "--asmlist");
     push_var("CPPFLAGS", "-D__$(CHIP)=1");
 
+    set_command(&lib_command, "$(LIB) $@", "$^");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
 
-    no_libs = 1;
+//    no_libs = 1;
     unset_var("CXX");
 
     set_var("CC", "xc8");
@@ -3647,6 +3644,7 @@ set_compiler_type(const char* compiler) {
 
     binext = ".cof";
     objext = ".p1";
+            libext = ".lpp";
 
     push_var("DEFS", "-D__XC=1");
 
@@ -3702,9 +3700,11 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");
 
     stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_C-FLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+   stralloc_copys(&lib_command,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) --OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist --output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else {
     return 0;
@@ -4189,7 +4189,7 @@ main(int argc, char* argv[]) {
 
   if(str_equal(make, "gmake")) {
     stralloc_nul(&workdir.sa);
-          strlist_push_unique(&vpath, ".");
+    strlist_push_unique(&vpath, ".");
     strlist_push_unique_sa(&vpath, &workdir.sa);
   }
   strarray_init(&args);
