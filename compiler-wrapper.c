@@ -341,10 +341,10 @@ read_arguments() {
       output_file.len = n + 1;
 
       switch(mode) {
-        case PREPROCESS: stralloc_cats(&output_file, (type == SDCC) ? "e" : "pre"); break;
-        case COMPILE_AND_ASSEMBLE: stralloc_cats(&output_file, (type == SDCC) ? "o" : "p1"); break;
-        case COMPILE: stralloc_cats(&output_file, (type == SDCC) ? "s" : "as"); break;
-        default: break;
+      case PREPROCESS: stralloc_cats(&output_file, (type == SDCC) ? "e" : "pre"); break;
+      case COMPILE_AND_ASSEMBLE: stralloc_cats(&output_file, (type == SDCC) ? "o" : "p1"); break;
+      case COMPILE: stralloc_cats(&output_file, (type == SDCC) ? "s" : "as"); break;
+      default: break;
       }
     }
   }
@@ -476,19 +476,19 @@ execute_cmd() {
     }
 
     switch(mode) {
-      case PREPROCESS: {
-        strlist_push(&cmd, "--pre");
-        break;
-      }
-      case COMPILE: {
-        strlist_push(&cmd, "-S");
-        break;
-      }
-      case COMPILE_AND_ASSEMBLE: {
-        strlist_push(&cmd, "--pass1");
-        break;
-      }
-      default: { break; }
+    case PREPROCESS: {
+      strlist_push(&cmd, "--pre");
+      break;
+    }
+    case COMPILE: {
+      strlist_push(&cmd, "-S");
+      break;
+    }
+    case COMPILE_AND_ASSEMBLE: {
+      strlist_push(&cmd, "--pass1");
+      break;
+    }
+    default: { break; }
     }
 
     if(output_file.len > 0) {
@@ -522,19 +522,19 @@ execute_cmd() {
     strlist_pushm_internal(&cmd, "-p", chip.s, 0);
 
     switch(mode) {
-      case PREPROCESS: {
-        strlist_push(&cmd, "-E");
-        break;
-      }
-      case COMPILE: {
-        strlist_push(&cmd, "-S");
-        break;
-      }
-      case COMPILE_AND_ASSEMBLE: {
-        strlist_push(&cmd, "-c");
-        break;
-      }
-      default: { break; }
+    case PREPROCESS: {
+      strlist_push(&cmd, "-E");
+      break;
+    }
+    case COMPILE: {
+      strlist_push(&cmd, "-S");
+      break;
+    }
+    case COMPILE_AND_ASSEMBLE: {
+      strlist_push(&cmd, "-c");
+      break;
+    }
+    default: { break; }
     }
 
     if(debug) {

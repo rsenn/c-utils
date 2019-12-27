@@ -109,12 +109,13 @@ main(int argc, char* argv[]) {
   int index = 0;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"single-quote", 0, NULL, 's'},
-                           {"double-quote", 0, NULL, 'd'},
-                           {"one-line", 0, NULL, 'o'},
-                           {"compact", 0, NULL, 'c'},
-                           {"indent", 0, NULL, 'l'},
-                           {0, 0, 0, 0}};
+    {"single-quote", 0, NULL, 's'},
+    {"double-quote", 0, NULL, 'd'},
+    {"one-line", 0, NULL, 'o'},
+    {"compact", 0, NULL, 'c'},
+    {"indent", 0, NULL, 'l'},
+    {0, 0, 0, 0}
+  };
 
   errmsg_iam(argv[0]);
 
@@ -126,13 +127,13 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
-      case 's': quote[0] = '\''; break;
-      case 'd': quote[0] = '"'; break;
-      case 'o': one_line = 1; break;
-      case 'c': compact = 1; break;
-      case 'l': scan_int(optarg, &indent); break;
-      default: usage(argv[0]); return 1;
+    case 'h': usage(argv[0]); return 0;
+    case 's': quote[0] = '\''; break;
+    case 'd': quote[0] = '"'; break;
+    case 'o': one_line = 1; break;
+    case 'c': compact = 1; break;
+    case 'l': scan_int(optarg, &indent); break;
+    default: usage(argv[0]); return 1;
     }
   }
 

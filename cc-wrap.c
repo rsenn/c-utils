@@ -27,9 +27,9 @@
 static stralloc cmd, realcmd, fullcmd, specs;
 static const char* ext =
 #if WINDOWS
-    ".exe";
+  ".exe";
 #else
-    "";
+  "";
 #endif
 static strlist path, pathext;
 static stralloc prog, base;

@@ -542,7 +542,7 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   stralloc_lower(pkgname);
 
   if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) &&
-     isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
+      isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
     // stralloc_remove(pkgname, 0, 1);
     pkgname->s[0] = 'r';
     pkgname->s[1] = 'e';

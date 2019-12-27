@@ -103,10 +103,11 @@ main(int argc, char** argv) {
   int c, index = 0;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"defined", 0, &list_defined, 'D'},
-                           {"undefined", 0, &list_undefined, 'U'},
-                           {"file-header", 0, 0, 'F'},
-                           {0, 0, 0, 0}};
+    {"defined", 0, &list_defined, 'D'},
+    {"undefined", 0, &list_undefined, 'U'},
+    {"file-header", 0, 0, 'F'},
+    {0, 0, 0, 0}
+  };
 
   for(;;) {
     c = getopt_long(argc, argv, "hDUF", opts, &index);
@@ -116,14 +117,14 @@ main(int argc, char** argv) {
       continue;
 
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
-      case 'D': list_defined = 1; break;
-      case 'U': list_undefined = 1; break;
-      case 'F': dump_file_header = 1; break;
-      default: {
-        usage(argv[0]);
-        return 1;
-      }
+    case 'h': usage(argv[0]); return 0;
+    case 'D': list_defined = 1; break;
+    case 'U': list_undefined = 1; break;
+    case 'F': dump_file_header = 1; break;
+    default: {
+      usage(argv[0]);
+      return 1;
+    }
     }
   }
 
@@ -192,7 +193,8 @@ elf_dump_dynamic(range map) {
                                               "RPATH",      "SYMBOLIC",   "REL",           "RELSZ",          "RELENT",
                                               "PLTREL",     "DEBUG",      "TEXTREL",       "JMPREL",         "BIND_NOW",
                                               "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ",  "FINI_ARRAYSZ",   "RUNPATH",
-                                              "FLAGS",      "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"};
+                                              "FLAGS",      "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"
+                                             };
 
   if(di == -1)
     return;

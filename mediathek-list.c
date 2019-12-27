@@ -60,14 +60,14 @@ static http h;
 #include "lib/http.h"
 
 const char* const mediathek_urls[] = {
-    "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
-    "http://mediathekview.jankal.me/Filmliste-akt.xz",
-    "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
+  "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
+  "http://mediathekview.jankal.me/Filmliste-akt.xz",
+  "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
+  "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
 const char* mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
@@ -144,7 +144,7 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
  */
 void
 process_status(void) {
-/* display interesting process IDs  */
+  /* display interesting process IDs  */
 #if !(defined(_WIN32) || defined(_WIN64))
   buffer_putm_internal(buffer_2, "process ", argv0, ": pid=", 0);
   buffer_putlong(buffer_2, getpid());
@@ -730,15 +730,15 @@ main(int argc, char* argv[]) {
 
   while((opt = getopt(argc, argv, "u:F:dt:i:x:h")) != -1) {
     switch(opt) {
-      case 'h': usage(argv[0]); return 0;
-      case 'F': dt_fmt = optarg; break;
-      case 'u': mediathek_url = optarg; break;
-      case 'd': debug++; break;
-      case 't': min_length = parse_time(optarg); break;
-      case 'i': strlist_push(&include, optarg); break;
-      case 'x': strlist_push(&exclude, optarg); break;
-      case 'o': outfile = optarg; break;
-      default: usage(argv[0]); return EXIT_FAILURE;
+    case 'h': usage(argv[0]); return 0;
+    case 'F': dt_fmt = optarg; break;
+    case 'u': mediathek_url = optarg; break;
+    case 'd': debug++; break;
+    case 't': min_length = parse_time(optarg); break;
+    case 'i': strlist_push(&include, optarg); break;
+    case 'x': strlist_push(&exclude, optarg); break;
+    case 'o': outfile = optarg; break;
+    default: usage(argv[0]); return EXIT_FAILURE;
     }
   }
 

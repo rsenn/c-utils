@@ -125,7 +125,7 @@ get_file_size(char* path) {
   static getfilesizeex_fn* api_fn;
 
   HANDLE hFile =
-      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could call GetLastError to find out more */
 
@@ -152,7 +152,7 @@ get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
   HANDLE hFile =
-      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could call GetLastError to find out more */
   if(!GetFileTime(hFile, &c, &la, &lw)) {
@@ -198,8 +198,8 @@ get_file_owner(const char* path) {
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
   static DWORD(
-      WINAPI *
-      get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+    WINAPI *
+    get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object. */
@@ -298,30 +298,30 @@ is_junction_point(const char* fn) {
       /* Tag values come from */
       /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx */
       switch(FindFileData.dwReserved0) {
-        case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction point, skipping"); */ break;
-        case IO_REPARSE_TAG_SYMLINK:
-          /* TODO: Maybe have the option to follow symbolic links? */
-          /* ocb.error_filename(fn, "Symbolic link, skipping"); */
-          break;
-        /* TODO: Use label for deduplication reparse point */
-        /*         when the compiler supports it */
-        /*      case IO_REPARSE_TAG_DEDUP: */
-        case 0x80000013:
-          /* This is the reparse point for Data Deduplication */
-          /* See */
-          /* http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
-           */
-          /* Unfortunately the compiler doesn't have this value defined yet. */
-          status = 0;
-          break;
-        case IO_REPARSE_TAG_SIS:
-          /* Single Instance Storage */
-          /* "is a system's ability to keep one copy of content that multiple users or computers share" */
-          /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
-           */
-          status = 0;
-          break;
-        default: break;
+      case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction point, skipping"); */ break;
+      case IO_REPARSE_TAG_SYMLINK:
+        /* TODO: Maybe have the option to follow symbolic links? */
+        /* ocb.error_filename(fn, "Symbolic link, skipping"); */
+        break;
+      /* TODO: Use label for deduplication reparse point */
+      /*         when the compiler supports it */
+      /*      case IO_REPARSE_TAG_DEDUP: */
+      case 0x80000013:
+        /* This is the reparse point for Data Deduplication */
+        /* See */
+        /* http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
+         */
+        /* Unfortunately the compiler doesn't have this value defined yet. */
+        status = 0;
+        break;
+      case IO_REPARSE_TAG_SIS:
+        /* Single Instance Storage */
+        /* "is a system's ability to keep one copy of content that multiple users or computers share" */
+        /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
+         */
+        status = 0;
+        break;
+      default: break;
       }
     }
     /* We don't error check this call as there's nothing to do differently */
@@ -401,21 +401,21 @@ mode_str(stralloc* out, int mode) {
   char mchars[10];
   switch(mode & S_IFMT) {
 #ifdef S_IFLNK
-    case S_IFLNK: mchars[0] = 'l'; break;
+  case S_IFLNK: mchars[0] = 'l'; break;
 #endif
-    case S_IFDIR: mchars[0] = 'd'; break;
-    case S_IFCHR: mchars[0] = 'c'; break;
+  case S_IFDIR: mchars[0] = 'd'; break;
+  case S_IFCHR: mchars[0] = 'c'; break;
 #ifdef S_IFBLK
-    case S_IFBLK: mchars[0] = 'b'; break;
+  case S_IFBLK: mchars[0] = 'b'; break;
 #endif
 #ifdef S_IFIFO
-    case S_IFIFO: mchars[0] = 'i'; break;
+  case S_IFIFO: mchars[0] = 'i'; break;
 #endif
 #ifdef S_IFSOCK
-    case S_IFSOCK: mchars[0] = 's'; break;
+  case S_IFSOCK: mchars[0] = 's'; break;
 #endif
-    case S_IFREG:
-    default: mchars[0] = '-'; break;
+  case S_IFREG:
+  default: mchars[0] = '-'; break;
   }
 #ifdef S_IRUSR
   if(mode & S_IRUSR)
@@ -697,8 +697,8 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char* rel_to = 0;
   int index = 0;
-  static const struct longopt opts[] =
-  { {"help", 0, 0, 'h'},
+  static const struct longopt opts[] = {
+    {"help", 0, 0, 'h'},
     {"list", 0, &opt_list, 1},
     {"numeric", 0, &opt_numeric, 1},
     {"relative", 0, &opt_relative, 1},
@@ -710,7 +710,8 @@ main(int argc, char* argv[]) {
 #if WINDOWS
     {"separator", 1, 0, 's'},
 #endif
-    {0, 0, 0, 0} };
+    {0, 0, 0, 0}
+  };
 
 #if WINDOWS && defined(O_BINARY)
   setmode(STDOUT_FILENO, O_BINARY);
@@ -724,30 +725,30 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
-      case 'x': {
-        char* s = optarg;
-        array_catb(&exclude_masks, (void*)&s, sizeof(char*));
-        break;
-      }
-      case 'o': {
-        buffer_1->fd = io_err_check(open_trunc(optarg));
-        break;
-      }
-      case 't': {
-        opt_timestyle = optarg;
-        break;
-      }
-      case 's': {
-        opt_separator = optarg[0];
-        break;
-      }
-      case 'l': opt_list = 1; break;
-      case 'L': opt_deref = 1; break;
-      case 'n': opt_numeric = 1; break;
-      case 'r': opt_relative = 1; break;
-      case 'm': scan_ulong(optarg, &opt_minsize); break;
-      default: usage(argv[0]); return 1;
+    case 'h': usage(argv[0]); return 0;
+    case 'x': {
+      char* s = optarg;
+      array_catb(&exclude_masks, (void*)&s, sizeof(char*));
+      break;
+    }
+    case 'o': {
+      buffer_1->fd = io_err_check(open_trunc(optarg));
+      break;
+    }
+    case 't': {
+      opt_timestyle = optarg;
+      break;
+    }
+    case 's': {
+      opt_separator = optarg[0];
+      break;
+    }
+    case 'l': opt_list = 1; break;
+    case 'L': opt_deref = 1; break;
+    case 'n': opt_numeric = 1; break;
+    case 'r': opt_relative = 1; break;
+    case 'm': scan_ulong(optarg, &opt_minsize); break;
+    default: usage(argv[0]); return 1;
     }
   }
   /*
