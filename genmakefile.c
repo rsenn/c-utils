@@ -2825,7 +2825,7 @@ output_ninja_rule(buffer* b, target* rule) {
     rule_name = "cc";
   else if(rule->recipe.s == link_command.s)
     rule_name = "link";
-  else if(rule->recipe.s == lib_command.s)
+  else if(stralloc_equal(&rule->recipe, &lib_command))
     rule_name = "lib";
 
   if(rule_name) {
@@ -4404,7 +4404,7 @@ main(int argc, char* argv[]) {
       TUPLE* t;
       hmap_foreach(rules, t) {
         target* tgt = hmap_data(t);
-        // print_target_deps(buffer_2, tgt);
+        print_target_deps(buffer_2, tgt);
       }
     }
     if(inst_bins || inst_libs)
