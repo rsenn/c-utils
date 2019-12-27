@@ -3856,6 +3856,9 @@ usage(char* argv0) {
                        "\n"
                        "  -t, --compiler-type TYPE  compiler type, one of:\n"
                        "\n"
+                       "  -S, --build-as-lib TARGET build target as library\n"
+                       "\n"
+
                        "     gcc         GNU make\n"
                        "     bcc55       Borland C++ Builder 5.5\n"
                        "     bcc         Borland C++ Builder >= 6.0\n"
@@ -3938,7 +3941,7 @@ main(int argc, char* argv[]) {
                            {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
                            {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
                            {"define", 1, NULL, 'D'},
-                           {"build-as-lib", 0, 0, 'L'},
+                           {"build-as-lib", 0, 0, 'S'},
                            {"cross", 0, 0, 'c'},
                            {"chip", 1, 0, 'p'},
                            {"preprocessor", 1, 0, 'P'},
@@ -3955,7 +3958,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:a:D:l:I:c:s:p:P:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:a:D:l:I:c:s:p:P:S:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -3970,7 +3973,7 @@ main(int argc, char* argv[]) {
       case 'o': outfile = optarg; break;
       case 'O': objext = optarg; break;
       case 'B': binext = optarg; break;
-      case 'L': strlist_push(&build_as_lib, optarg); break;
+      case 'S': strlist_push(&build_as_lib, optarg ? optarg :argv[optind]); break;
       case 'X': libext = optarg; break;
       case 'd': dir = optarg; break;
       case 't': toolchain = compiler = optarg; break;
