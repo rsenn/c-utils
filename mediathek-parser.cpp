@@ -17,8 +17,7 @@
 #include <boost/algorithm/string.hpp>
 
 struct dateparser {
-  dateparser(std::string fmt)
-  {
+  dateparser(std::string fmt) {
     /* set format */
     using namespace boost::local_time;
     local_time_input_facet* input_facet = new local_time_input_facet();
@@ -26,8 +25,8 @@ struct dateparser {
     ss.imbue(std::locale(ss.getloc(), input_facet));
   }
 
-  bool operator()(std::string const& text)
-  {
+  bool
+  operator()(std::string const& text) {
     ss.clear();
     ss.str(text);
 
@@ -36,12 +35,12 @@ struct dateparser {
 
     if(ok) {
       auto tm = to_tm(pt);
-      year    = tm.tm_year;
-      month   = tm.tm_mon + 1; /* for 1-based (1:jan, .. 12:dec) */
-      day     = tm.tm_mday;
-      hour    = tm.tm_hour;
-      min     = tm.tm_min;
-      sec     = tm.tm_sec;
+      year = tm.tm_year;
+      month = tm.tm_mon + 1; /* for 1-based (1:jan, .. 12:dec) */
+      day = tm.tm_mday;
+      hour = tm.tm_hour;
+      min = tm.tm_min;
+      sec = tm.tm_sec;
     }
 
     return ok;
@@ -64,21 +63,18 @@ get_second_std(const auto& field) {
 */
 
 void
-entry_to_v(boost::property_tree::ptree const& pt, std::list<std::string>& list)
-{
+entry_to_v(boost::property_tree::ptree const& pt, std::list<std::string>& list) {
   std::cerr << "pt.size=" << pt.size() << std::endl;
-  //std::transform(pt.begin(),pt.end(), list.begin(), get_second_std::string);
+  // std::transform(pt.begin(),pt.end(), list.begin(), get_second_std::string);
 
   ptree::const_iterator end = pt.end();
-  for(ptree::const_iterator it = pt.begin(); it != end;)
-    list.push_back(it->second.get_value<std::string>());
+  for(ptree::const_iterator it = pt.begin(); it != end;) list.push_back(it->second.get_value<std::string>());
 }
 
 std::vector<std::string>
-entry_to_v(boost::property_tree::ptree const& pt)
-{
+entry_to_v(boost::property_tree::ptree const& pt) {
 
-  std::cerr << "pt.size=" << pt.size() << ",value=" <<  pt.get_value<std::string>() <<  std::endl;
+  std::cerr << "pt.size=" << pt.size() << ",value=" << pt.get_value<std::string>() << std::endl;
   std::vector<std::string> ret;
   for(const auto& field : pt) {
     ret.push_back(field.second.get_value<std::string>());
@@ -87,8 +83,7 @@ entry_to_v(boost::property_tree::ptree const& pt)
 }
 
 void
-print(boost::property_tree::ptree::value_type& v/* boost::property_tree::ptree const& pt*/)
-{
+print(boost::property_tree::ptree::value_type& v /* boost::property_tree::ptree const& pt*/) {
   boost::property_tree::ptree const& pt = v.second;
   ptree::const_iterator end = pt.end();
   for(ptree::const_iterator it = pt.begin(); it != end;) {
@@ -109,8 +104,8 @@ print(boost::property_tree::ptree::value_type& v/* boost::property_tree::ptree c
   std::cout << std::endl;
 }
 
-int main()
-{
+int
+main() {
   try {
     std::string input_file = "D:/Programs/MediathekView_11_2015.09.15/Einstellungen/.mediathek3/filme.json";
     std::ifstream input_stream(input_file);
@@ -153,19 +148,21 @@ int main()
 
     /*  BOOST_FOREACH(boost::property_tree::ptree::value_type & v, pt.get_child("particles.electron")) {
         assert(v.first.empty()); /* array elements have no names */
-        std::cout << v.second.data() << std::endl;
-        /* etc */
-      }*/
-    /*
-        boost::property_tree::basic_ptree<std::string,std::string>::const_iterator iter = pt.begin(),iterEnd = pt.end();
-    for(;iter != iterEnd;++iter)
-    {
-         iter->first; /* Your key, at this level it will be "electron", "proton", "proton" */
-         iter->second; /* The object at each step {"pos": [0,0,0], "vel": [0,0,0]}, etc. */
-    }*/
-    return EXIT_SUCCESS;
-  } catch(std::exception& e) {
-    std::cerr << e.what() << std::endl;
+    std::cout << v.second.data() << std::endl;
+    /* etc */
   }
-  return EXIT_FAILURE;
+  * /
+      /*
+          boost::property_tree::basic_ptree<std::string,std::string>::const_iterator iter = pt.begin(),iterEnd =
+      pt.end(); for(;iter != iterEnd;++iter)
+      {
+           iter->first; /* Your key, at this level it will be "electron", "proton", "proton" */
+      iter->second; /* The object at each step {"pos": [0,0,0], "vel": [0,0,0]}, etc. */
+}
+* / return EXIT_SUCCESS;
+}
+catch(std::exception& e) {
+  std::cerr << e.what() << std::endl;
+}
+return EXIT_FAILURE;
 }

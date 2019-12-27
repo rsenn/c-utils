@@ -1,5 +1,5 @@
-int main(void)
-{
+int
+main(void) {
   long long l;
   unsigned long long ul;
 

@@ -62,17 +62,19 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->spacing = ((valdepth < 1 && index > 0) || (valdepth >= 1 && index > -1)) ? " " : "";
   p->separat = ","; // : ",";
   p->quote = quote;
+  //  byte_copy(&p->quote, 2, quote[0] ? quote : "\"");
   p->precision = 16;
 };
 
 void
 json_pretty_print(jsonval val, buffer* b) {
+  void* printfn = compact ? &compact_printer : 0;
   stralloc out;
   stralloc_init(&out);
-  json_tosa(val, &out, (void*)&compact_printer);
+  json_tosa(val, &out, printfn);
 
   if(out.len > 16384) {
-    json_print(val, b, 0);
+    json_print(val, b, printfn);
   } else {
     buffer_putsa(b, &out);
   }

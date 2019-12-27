@@ -392,9 +392,12 @@ new_mediathek_entry() {
  */
 void
 delete_mediathek_entry(mediathek_entry_t* e) {
-  stralloc_free(&e->channel);
-  stralloc_free(&e->topic);
-  stralloc_free(&e->title);
+  if(e->channel.s)
+    stralloc_free(&e->channel);
+  if(e->topic.s)
+    stralloc_free(&e->topic);
+  if(e->title.s)
+    stralloc_free(&e->title);
 
   stralloc_free(&e->desc);
   stralloc_free(&e->url);
@@ -605,9 +608,9 @@ parse_mediathek_list(buffer* inbuf) {
 
   while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
 
-    //buffer_puts(buffer_2, "Read ");
-    //buffer_putlong(buffer_2, ret);
-    //buffer_putsflush(buffer_2, " bytes.\n");
+    // buffer_puts(buffer_2, "Read ");
+    // buffer_putlong(buffer_2, ret);
+    // buffer_putsflush(buffer_2, " bytes.\n");
 
     for(;;) {
       ret2 = 0;
@@ -653,7 +656,8 @@ parse_mediathek_list(buffer* inbuf) {
     strlist_copy(&prev, &sl);
   }
 
-  delete_mediathek_entry(e);
+  if(e)
+    delete_mediathek_entry(e);
   e = 0;
 
   buffer_flush(buffer_1);

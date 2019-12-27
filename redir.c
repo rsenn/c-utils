@@ -794,11 +794,9 @@ client_accept(int sd, struct sockaddr_in* target) {
     switch(errno) {
       case EHOSTUNREACH:
       case ECONNRESET:
-      case ETIMEDOUT:
-        return 0; /* non-fatal errors */
+      case ETIMEDOUT: return 0; /* non-fatal errors */
 
-      default:
-        return 1; /* all other errors assumed fatal */
+      default: return 1; /* all other errors assumed fatal */
     }
   }
 

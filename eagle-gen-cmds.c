@@ -342,7 +342,7 @@ print_base(buffer* b) {
 void
 print_name_value(buffer* b, const char* name, const char* value) {
   print_base(b);
-  if(name)
+    if(name)
     buffer_putm_2(b, name, ": ");
   buffer_puts(b, value ? value : "(null)");
 }
@@ -501,9 +501,11 @@ build_part(xmlnode* part) {
   if(pkgname && str_len(pkgname)) {
     p.pkg = get_entry(packages, pkgname);
   }
-  assert(p.pkg);
-  pins = array_length(&p.pkg->pads, sizeof(struct net*));
-  p.pins = calloc(sizeof(struct net*), pins);
+  //assert(p.pkg);
+  if(p.pkg) {
+    pins = array_length(&p.pkg->pads, sizeof(struct net*));
+    p.pins = calloc(sizeof(struct net*), pins);
+  }
   dsname = xml_get_attribute(part, "deviceset");
   if(dsname)
     p.dset = get_entry(devicesets, dsname);
@@ -916,7 +918,7 @@ void
 print_element_name(xmlnode* a_node) {
   char* name = a_node->name;
 
-  if(a_node->parent) {
+ /*  if(a_node->parent) {
     xmlnode* p = a_node->parent;
     const char* pn = p->name;
 
@@ -924,7 +926,7 @@ print_element_name(xmlnode* a_node) {
       p = p->parent;
     }
     print_element_name(p);
-  }
+  } */
   if(!(name = a_node->name))
     return;
 
@@ -1189,7 +1191,7 @@ match_query(xmlnode* doc, const char* q) {
 
     if(0) { //! str_diff(q, xq)) {
       TUPLE* a;
-      char* elem_name = (char*)&q[2];
+      char* elem_name = (char*)&q[2]; 
       stralloc query;
       stralloc_init(&query);
       elem_name = "*";
@@ -1198,6 +1200,7 @@ match_query(xmlnode* doc, const char* q) {
         strlist part_names;
         char* attr_name = a->key;
         char* v = a->vals.val_chars;
+        strlist_init(&part_names, ' ');
         if(!v || str_len(v) == 0)
           continue;
 
@@ -1213,6 +1216,7 @@ match_query(xmlnode* doc, const char* q) {
         stralloc_0(&query);
         match_query(doc, query.s);
         part_names = getparts(doc);
+      
         strlist_dump(buffer_1, &part_names);
       }
     }
@@ -1512,22 +1516,22 @@ main(int argc, char* argv[]) {
               if(current_signal == NULL || str_diff(name, current_signal)) {
                 current_signal = name;
 
-                buffer_puts(buffer_1, "# ");
+                buffer_puts(buffer_2, "# ");
                 xml_path(named, &path);
-                buffer_putsa(buffer_1, &path);
-                buffer_puts(buffer_1, "[@");
+                buffer_putsa(buffer_2, &path);
+                buffer_puts(buffer_2, "[@");
               }
             }
 
-            xml_print_attributes(named->attributes, buffer_1, ", @", "=", "'");
-            buffer_putnlflush(buffer_1);
+            xml_print_attributes(named->attributes, buffer_2, ", @", "=", "'");
+            buffer_putnlflush(buffer_2);
           }
 
           //      print_xy(buffer_2, layer, x1, y1);
         }
-        print_script(buffer_1, node);
+        print_script(buffer_2, node);
       }
-      buffer_flush(buffer_1);
+      buffer_flush(buffer_2);
 
       print_rect(buffer_2, "extent", &extent);
 

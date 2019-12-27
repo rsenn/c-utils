@@ -1,3 +1,4 @@
+
 #include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
@@ -13,6 +14,7 @@
 #include "lib/strlist.h"
 #include "lib/xml.h"
 #include "lib/array.h"
+#include "lib/open.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -25,6 +27,43 @@
 #include <libgen.h>
 #endif
 
+#if 0
+#define MAP_T cbmap_t
+#define MAP_SIZE cbmap_count
+#define MAP_NEW(map) map = cbmap_new()
+#define MAP_VISIT_ALL cbmap_visit_all
+//#define MAP_GET(map, key, klen) cbmap_get
+static inline void* MAP_GET(cbmap_t map, const void* key, size_t klen) {
+  void* ret = NULL;
+  size_t rlen = 0;
+  cbmap_get(map, key, klen, &ret, &rlen);
+  return (ret && rlen) ? ret : NULL;
+}
+
+#define MAP_INSERT cbmap_insert
+#else
+#define MAP_T HMAP_DB*
+#define MAP_SIZE hmap_size
+#define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
+#define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
+  {                                                                                                                    \
+    TUPLE* t;                                                                                                          \
+    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                  \
+  }
+//#define MAP_GET(map, key, klen, pdata, plen) (*(size_t*)(plen) = sizeof(*(pdata)), *(void**)(pdata) = hmap_get(map,
+// key, klen)) #define MAP_GET(map, key, klen, pdata, plen) (*(size_t*)(plen) = sizeof(*(pdata)), *(void**)(pdata) =
+// hmap_get(map, key, klen))
+static inline void*
+MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
+  TUPLE* t = NULL;
+  if(hmap_search(map, key, klen, &t) == HMAP_SUCCESS)
+    return t->vals.val_chars;
+
+  return NULL;
+}
+
+#define MAP_INSERT(map, key, klen, data, dlen) hmap_set(&map, key, klen, data, dlen)
+#endif
 #ifdef _MSC_VER
 #define alloca _alloca
 #endif
@@ -61,8 +100,8 @@ struct gate {
 };
 struct deviceset {
   stralloc name;
-  array gates;     /**< list of struct gate */
-  cbmap_t devices; /**< map of struct pinmapping */
+  array gates;   /**< list of struct gate */
+  MAP_T devices; /**< map of struct pinmapping */
 };
 struct part {
   stralloc name;
@@ -85,6 +124,11 @@ struct net {
   stralloc name;
   array contacts; /**<  list of struct ref */
 };
+struct part_ref {
+  strlist* list;
+  struct part* part;
+};
+
 const char* document = "<doc/>";
 const char* xq = "net";
 void node_print(xmlnode* node);
@@ -94,9 +138,19 @@ int str_isfloat(const char* s);
 int str_isspace(const char* s);
 void print_attrs(HMAP_DB* a_node);
 void print_element_attrs(xmlnode* a_node);
-int dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
-cbmap_t devicesets, packages, parts, nets, symbols;
+int output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
+MAP_T devicesets;
+MAP_T packages;
+MAP_T parts;
+MAP_T nets;
+MAP_T symbols;
 strlist connections;
+buffer input, output;
+static struct {
+  struct {
+    int x, y;
+  } min, max;
+} bounds;
 
 /**
  * Reads a real-number value from the element/attribute given
@@ -144,23 +198,19 @@ get_child(xmlnode* node, const char* name) {
 }
 
 /**
- * Gets a cbmap_t element.
+ * Gets a MAP_T element.
  */
 void*
 
-get(cbmap_t m, char* name, size_t datasz) {
-  void* ptr;
-  size_t len = datasz;
-  if(!cbmap_get(m, name, str_len(name) + 1, &ptr, &len))
-    ptr = NULL;
-  return ptr;
+get(MAP_T m, char* name, size_t datasz) {
+  return MAP_GET(m, name, str_len(name) + 1);
 }
 
 /**
- * Gets or creates a cbmap_t element.
+ * Gets or creates a MAP_T element.
  */
 void*
-get_or_create(cbmap_t m, char* name, size_t datasz) {
+get_or_create(MAP_T m, char* name, size_t datasz) {
   void* ptr = get(m, name, datasz);
 
   if(!ptr) {
@@ -172,7 +222,7 @@ get_or_create(cbmap_t m, char* name, size_t datasz) {
     char* data = malloc(datasz);
 #endif
     byte_zero(data, datasz);
-    if(cbmap_insert(m, name, str_len(name) + 1, data, datasz))
+    if(MAP_INSERT(m, name, str_len(name) + 1, data, datasz))
       ptr = get(m, name, datasz);
 #if !defined(HAVE_ALLOCA) && !defined(HAVE_DYNSTACK)
     free(data);
@@ -186,11 +236,8 @@ get_or_create(cbmap_t m, char* name, size_t datasz) {
  * Index a cbmap
  */
 void*
-get_entry(cbmap_t map, const char* key) {
-  size_t len = str_len(key) + 1;
-  void* ret = NULL;
-  cbmap_get(map, (void*)key, len, &ret, &len);
-  return ret;
+get_entry(MAP_T map, const char* key) {
+  return MAP_GET(map, (void*)key, str_len(key) + 1);
 }
 
 /**
@@ -214,6 +261,18 @@ package_pin(struct package* pkg, const char* name) {
   return -1;
 }
 
+void
+update_bounds(int x, int y) {
+  if(bounds.min.x > x)
+    bounds.min.x = x;
+  if(bounds.max.x < x)
+    bounds.max.x = x;
+  if(bounds.min.y > y)
+    bounds.min.y = y;
+  if(bounds.max.y < y)
+    bounds.max.y = y;
+}
+
 /**
  * Build structures from <part> or <element> element
  */
@@ -230,19 +289,23 @@ build_part(xmlnode* part) {
   val = xml_get_attribute(part, "value");
   if(val)
     stralloc_copys(&p.value, val);
-  p.x = get_double(part, "x") / 0.127;
-  p.y = get_double(part, "y") / 0.127;
+
+  p.x = get_double(part, "x");
+  p.y = get_double(part, "y");
+
+  update_bounds(roundl(p.x / 2.54), roundl(p.y / 2.54));
 
   if(pkgname && str_len(pkgname)) {
     p.pkg = get_entry(packages, pkgname);
   }
   assert(p.pkg);
+
   pins = array_length(&p.pkg->pads, sizeof(struct net*));
   p.pins = calloc(sizeof(struct net*), pins);
   dsname = xml_get_attribute(part, "deviceset");
   if(dsname)
     p.dset = get_entry(devicesets, dsname);
-  cbmap_insert(parts, (void*)name, str_len(name) + 1, &p, sizeof(struct part));
+  MAP_INSERT(parts, (void*)name, str_len(name) + 1, &p, sizeof(struct part));
 }
 
 /**
@@ -279,6 +342,16 @@ build_sym(xmlnode* part) {
   }
 }
 
+static int
+compare_ref(const struct ref* a, const struct ref* b) {
+  int ret = stralloc_diff(&a->part->name, &b->part->name);
+
+  if(ret)
+    return ret;
+
+  return a->pin - b->pin;
+}
+
 /**
  * @param node   Parent is the 'net' or 'signal' element
  */
@@ -313,6 +386,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
   }
+  qsort(array_start(&n->contacts), array_length(&n->contacts, sizeof(struct ref)), sizeof(struct ref), compare_ref);
 }
 
 /**
@@ -363,7 +437,7 @@ build_package(xmlnode* set) {
     stralloc_copys(&p.name, pn);
     array_catb(&pkg.pads, (const void*)&p, sizeof(struct pad));
   }
-  cbmap_insert(packages, name, str_len(name) + 1, &pkg, sizeof(struct package));
+  MAP_INSERT(packages, name, str_len(name) + 1, &pkg, sizeof(struct package));
 }
 
 /**
@@ -381,7 +455,7 @@ build_deviceset(xmlnode* set) {
 #endif
   byte_zero(&d, sizeof(struct deviceset));
   stralloc_copys(&d.name, name);
-  d.devices = cbmap_new();
+  MAP_NEW(d.devices);
   gates = get_child(set, "gates");
   devices = get_child(set, "devices");
 
@@ -408,11 +482,12 @@ build_deviceset(xmlnode* set) {
     package = xml_get_attribute(node, "package");
     byte_zero(&pm, sizeof(struct pinmapping));
 
-    cbmap_get(packages, package, str_len(package), (void**)&pkg, &len);
-    pm.pkg = pkg;
-    cbmap_insert(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
+    // MAP_GET(packages, package, str_len(package), (void**)&pkg, &len);
+    pm.pkg = MAP_GET(packages, package, str_len(package));
+
+    MAP_INSERT(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
   }
-  cbmap_insert(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
+  MAP_INSERT(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
 }
 
 /**
@@ -453,35 +528,159 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
 }
 
 int
+compare_pads(const struct pad* a, const struct pad* b) {
+  long la = LONG_MAX, lb = LONG_MAX;
+  if(scan_long(a->name.s, &la) && scan_long(b->name.s, &lb))
+    return la - lb;
+  return stralloc_diff(&a->name, &b->name);
+}
+
+void
+clean_pkgname(stralloc* pkgname, const struct package* pkg) {
+  stralloc_init(pkgname);
+  stralloc_copy(pkgname, &pkg->name);
+  stralloc_lower(pkgname);
+
+  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) &&
+     isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
+    // stralloc_remove(pkgname, 0, 1);
+    pkgname->s[0] = 'r';
+    pkgname->s[1] = 'e';
+    pkgname->s[2] = 's';
+    pkgname->s[3] = '_';
+    stralloc_replaces(pkgname, "-v", "v");
+  }
+
+  if(pkgname->s[0] == 'c' || pkgname->s[0] == 'e')
+    stralloc_replaces(pkgname, "-", "_");
+
+  stralloc_replaces(pkgname, "_0", "_");
+  stralloc_replaces(pkgname, ".", "");
+  stralloc_replaces(pkgname, "/", "");
+  stralloc_replaces(pkgname, "c0", "c");
+  stralloc_replaces(pkgname, "-0", "_");
+  stralloc_replaces(pkgname, "x0", "x");
+  stralloc_replaces(pkgname, "-", "_n");
+  stralloc_replaces(pkgname, "+", "_p");
+  for(size_t idx = 0; idx < pkgname->len; idx++) {
+    if(!isalnum(pkgname->s[idx]))
+      pkgname->s[idx] = '_';
+  }
+}
+
+int
 dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
   const struct package* pkg = value;
-  buffer_puts(buffer_1, "dump_package: ");
-  buffer_putsa(buffer_1, &pkg->name);
-  buffer_puts(buffer_1, " [");
+  stralloc pkgname;
+  clean_pkgname(&pkgname, pkg);
+
+  // buffer_puts(&output, "dump_package: ");
+  stralloc_nul(&pkgname);
+
+  buffer_putspad(&output, pkgname.s, 18);
+  stralloc_free(&pkgname);
+  buffer_putspace(&output);
+
+  struct pad* first = array_start(&pkg->pads);
+
+  qsort(first, array_length(&pkg->pads, sizeof(struct pad)), sizeof(struct pad), compare_pads);
+
+  double x = first->x, y = first->y;
 
   for(i = 0; i < array_length(&pkg->pads, sizeof(struct pad)); ++i) {
     const struct pad* p = array_get(&pkg->pads, sizeof(struct pad), i);
-    buffer_putspace(buffer_1);
-    buffer_putsa(buffer_1, &p->name);
+
+    if(i > 0)
+      buffer_putspace(&output);
+
+    int ix = roundl((p->x - x) / 2.54);
+    int iy = roundl((p->y - y) / 2.54);
+
+    buffer_putlong(&output, -iy);
+    buffer_putc(&output, ',');
+    buffer_putlong(&output, -ix);
+    //   buffer_putspace(&output);
+    // buffer_puts(&output, "\n\t ");
   }
-  buffer_puts(buffer_1, " ]");
-  buffer_putnlflush(buffer_1);
+  // buffer_puts(buffer_2, " ]");
+  buffer_putnlflush(&output);
   return 1;
+}
+
+static int
+cmp_ref(const char** a, const char** b) {
+  size_t alen = byte_chr(*a, str_len(*a), '\t'), blen = byte_chr(*b, str_len(*b), '\t');
+  if(alen != blen)
+    return alen - blen;
+
+  return str_diff(*a, *b);
+}
+int
+output_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+  struct part* ptr = (struct part*)value;
+  struct pad* pad1 = array_start(&ptr->pkg->pads);
+
+  stralloc name;
+  stralloc_init(&name);
+  stralloc_copy(&name, &ptr->name);
+  stralloc_nul(&name);
+  buffer_putspad(&output, name.s, 19);
+  stralloc_free(&name);
+
+  clean_pkgname(&name, &ptr->pkg->name);
+  stralloc_nul(&name);
+  buffer_putspad(&output, name.s, 18);
+
+  double x = roundl((ptr->x + pad1->x) / 2.54);
+  double y = roundl((ptr->y + pad1->y) / 2.54);
+
+  buffer_putlong(&output, y + 10);
+  buffer_putc(&output, ',');
+  buffer_putlong(&output, x + 10);
+
+  buffer_putnlflush(&output);
 }
 
 int
 dump_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct part* ptr = (struct part*)value;
+  const char *s, *comment;
+  size_t n;
   assert(ptr->name.s);
-  buffer_puts(buffer_2, "dump_part: ");
-  buffer_putsa(buffer_2, &ptr->name);
+  buffer_puts(&output, "\n# Part: ");
+  buffer_putsa(&output, &ptr->name);
+  buffer_puts(&output, "\n");
 
   if(ptr->pkg) {
     buffer_puts(buffer_2, " package: ");
     buffer_putsa(buffer_2, &ptr->pkg->name);
   }
-  cbmap_visit_all(nets, dump_net, ptr);
+  strlist refs;
+
+  strlist_init(&refs, '\n');
+
+  struct part_ref u = {&refs, ptr};
+  MAP_VISIT_ALL(nets, output_net, &u);
+
+  strlist_sort(&refs, &cmp_ref);
+
+  strlist_foreach(&refs, s, n) {
+    size_t clen;
+    size_t i = 0;
+    if((clen = byte_chr(s, n, '\t')) + 1 < n) {
+      ((char*)s)[clen] = '\0';
+      buffer_putspad(&output, s, 7);
+      s += clen + 1;
+      n -= clen + 1;
+      i++;
+    }
+    buffer_put(&output, s, byte_chrs(s, n, " \t\r#\n", 4));
+    buffer_putc(&output, '\n');
+  }
+
+  buffer_putnlflush(&output);
+  strlist_free(&refs);
 
   if(ptr->dset) {
     buffer_puts(buffer_2, " deviceset: ");
@@ -517,10 +716,31 @@ conn_sa(stralloc* sa, const stralloc* name1, int pin1, const stralloc* name2, in
   pin_sa(sa, name2, pin2);
 }
 
-int
+void
 dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct net* n = (struct net*)value;
-  struct part* p = user_data;
+  struct ref* r;
+
+  buffer_puts(&output, "\n# Net ");
+  buffer_putsa(&output, &n->name);
+  buffer_puts(&output, ":");
+
+  array_foreach(&n->contacts, sizeof(struct ref), r) {
+    buffer_putspace(&output);
+    buffer_putsa(&output, &r->part->name);
+    buffer_putc(&output, '.');
+    buffer_putlong(&output, r->pin + 1);
+  }
+
+  buffer_putnlflush(&output);
+}
+
+int
+output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+  struct net* n = (struct net*)value;
+  strlist* refs = ((struct part_ref*)user_data)->list;
+  struct part* p = ((struct part_ref*)user_data)->part;
+  ;
   struct ref* rc;
 
   int64 i, len;
@@ -528,8 +748,16 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
   stralloc_init(&conn);
   stralloc_init(&rconn);
 
-  if(!(rc = net_connects(n, p, -1)))
-    return 1;
+  if(p) {
+    if(!(rc = net_connects(n, p, -1)))
+      return 1;
+  }
+
+  /* {
+    buffer_puts(&output, "## Net ");
+    buffer_putsa(&output, &n->name);
+    buffer_puts(&output, "\n");
+  }*/
   len = array_length(&n->contacts, sizeof(struct ref));
 
   for(i = 0; i < len; ++i) {
@@ -548,10 +776,13 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
       continue;
 
     strlist_push_sa(&connections, &conn);
-
-    buffer_putsa(buffer_1, &conn);
-    buffer_putnlflush(buffer_1);
+    stralloc_cats(&conn, "\t# ");
+    stralloc_cat(&conn, &n->name);
+    strlist_push_sa(refs, &conn);
   }
+
+  stralloc_free(&conn);
+  stralloc_free(&rconn);
   return 1;
 }
 /**
@@ -607,11 +838,11 @@ print_element_name(xmlnode* a_node) {
     return;
 
   if(str_diff(name, "eagle") && str_diff(name, "drawing")) {
-    buffer_putm_2(buffer_1, a_node->parent ? "/" : "", name);
+    buffer_putm_2(buffer_2, a_node->parent ? "/" : "", name);
     if(!(name = xml_get_attribute(a_node, "name")))
       return;
     if(str_len(name))
-      buffer_putm_3(buffer_1, "[@name='", name, "']");
+      buffer_putm_3(buffer_2, "[@name='", name, "']");
   }
 }
 
@@ -624,7 +855,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_5(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"");
+    buffer_putm_5(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"");
     if(t->next == a->list_tuple)
       break;
   }
@@ -644,7 +875,7 @@ print_element_content(xmlnode* node) {
     if(str_isspace(s))
       s = "";
     if(str_len(s))
-      buffer_putm_3(buffer_1, " \"", s, "\"");
+      buffer_putm_3(buffer_2, " \"", s, "\"");
   }
 }
 
@@ -663,7 +894,7 @@ print_element_children(xmlnode* a_node) {
     print_element_name(node);
     print_element_attrs(node);
     print_element_content(node);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_2);
     print_element_children(node);
   }
 }
@@ -689,7 +920,7 @@ print_element_names(xmlnode* node) {
       print_element_attrs(node);
     }
     print_element_content(node);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_2);
     print_element_names(node->children);
   }
 }
@@ -698,17 +929,17 @@ void
 match_query(xmlnode* doc, const char* q) {
   xmlnodeset ns;
   xmlnodeset_iter_t it, e;
-  print_name_value(buffer_1, "XPath query", q);
-  buffer_putnlflush(buffer_1);
+  print_name_value(buffer_2, "XPath query", q);
+  buffer_putnlflush(buffer_2);
   ns = getnodeset(doc, q);
 
   for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
     xmlnode* node = *it;
     print_element_name(node);
     print_element_attrs(node);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_2);
     print_element_children(node);
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_2);
 
     if(0) { //! str_diff(q, xq)) {
       TUPLE* a;
@@ -736,7 +967,7 @@ match_query(xmlnode* doc, const char* q) {
         stralloc_0(&query);
         match_query(doc, query.s);
         part_names = getparts(doc);
-        strlist_dump(buffer_1, &part_names);
+        strlist_dump(buffer_2, &part_names);
       }
     }
   }
@@ -758,20 +989,30 @@ match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
 
 int
 main(int argc, char* argv[]) {
-  buffer input;
   xmlnode* doc;
-  devicesets = cbmap_new();
-  packages = cbmap_new();
-  parts = cbmap_new();
-  nets = cbmap_new();
-  symbols = cbmap_new();
+  MAP_NEW(devicesets);
+  MAP_NEW(packages);
+  MAP_NEW(parts);
+  MAP_NEW(nets);
+  MAP_NEW(symbols);
+  int argi = 1;
   strlist_init(&connections, '\0');
+  const char* input_file = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
+  const char* output_file = NULL;
+  if(argv[argi])
+    input_file = argv[argi++];
+  if(argv[argi])
+    output_file = argv[argi++];
+  if(argv[argi])
+    xq = argv[argi++];
 
-  if(!argv[1]) {
-    argv[1] = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
-  } else if(argv[2]) {
-    xq = argv[2];
-  }
+  int output_fd = 1;
+
+  if(output_file)
+    output_fd = open_trunc(output_file);
+
+  buffer_write_fd(&output, output_fd);
+
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
   doc = xml_read_tree(&input);
@@ -787,9 +1028,28 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
   match_foreach(doc, "net|signal", build_nets);
   match_foreach(doc, "symbol", build_sym);
-  cbmap_visit_all(packages, dump_package, "package");
-  cbmap_visit_all(parts, dump_part, "part");
-  cbmap_visit_all(nets, dump_net, "nets");
+
+  buffer_puts(&output, "# Stripboard\n# board <width>,<height>\n\nboard ");
+
+  buffer_putlong(&output, ((bounds.max.x + 9) / 10 + 2) * 10);
+  buffer_putc(&output, ',');
+  buffer_putlong(&output, ((bounds.max.y + 9) / 10 + 2) * 10);
+  buffer_puts(&output, "\n");
+
+  buffer_puts(&output, "\n# Packages\n# <package name>   <pin coordinates relative to pin 0>\n\n");
+  MAP_VISIT_ALL(packages, dump_package, "package");
+
+  buffer_puts(&output,
+              "\n# Components\n# <component name> <package name>    <absolute position of component pin 0>\n\n");
+  MAP_VISIT_ALL(parts, output_part, "part");
+
+  buffer_puts(&output, "\n# Connections\n# <from component name>.<pin index> <to component name>.<pin index>\n\n");
+
+  MAP_VISIT_ALL(parts, dump_part, "part");
+  MAP_VISIT_ALL(nets, dump_net, 0);
+
+  hmap_dump(nets, buffer_1);
+  hmap_print_list(nets);
 
   strlist_dump(buffer_2, &connections);
 
@@ -797,6 +1057,7 @@ main(int argc, char* argv[]) {
    * Cleanup function for the XML library.
    */
   xml_free(doc);
+  buffer_flush(&output);
   /*
    * this is to debug memory for regression tests
    */

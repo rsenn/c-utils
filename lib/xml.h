@@ -73,6 +73,7 @@ int xml_match_name(xmlnode*, strlist* names, const char* attr, const char* value
 
 xmlnode* xml_newnode(xmlnodeid);
 int xml_path(const xmlnode*, stralloc* out);
+int xml_path_relative(const xmlnode*, stralloc* out);
 void xml_print_attributes(HMAP_DB*, buffer* b, const char* sep, const char* eq, const char* quot);
 void xml_print_nodeset(const xmlnodeset*, buffer* b);
 void xml_print(xmlnode*, buffer* b);

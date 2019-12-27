@@ -290,6 +290,7 @@ main(int argc, char* argv[]) {
   x = (unsigned char*)file.x;
   n = file.n;
   // x = (unsigned char*)mmap_shared(argv[index], &n);
+  patch_new("command line", file.n, 0);
 
   while(++index < argc) {
     uint64 addr = 0;
@@ -299,15 +300,33 @@ main(int argc, char* argv[]) {
     char* spec = argv[index];
     char sym = spec[0], *s = &spec[1];
 
-    if(sym == '@') {
-      scan_xlonglong(s, &addr);
-    } else if(sym == '?') {
-    } else if(sym == '=') {
-      // s_set = (scan_xlonglong(s, &val_set) + 1) / 2;
-    } else {
-      buffer_putm_3(buffer_2, "ERROR: ", spec, "\n");
-      buffer_putnlflush(buffer_2);
-      return 2;
+    while(sym = *spec++) {
+      size_t n = 0;
+      if(sym == '@') {
+        n = scan_xlonglong(spec, &addr);
+      } else if(sym == '?') {
+      } else if(sym == '=') {
+        uint8_t ch = 0;
+        do {
+          n = (scan_xchar(spec, &ch) + 1);
+          if(n >= 1) {
+            patch(addr, file.x[addr], ch);
+          }
+          if(n > 2)
+            n = 2;
+          addr++;
+          spec += n;
+
+        } while(n > 1);
+
+      } else {
+        buffer_putm_3(buffer_2, "ERROR: ", spec, "\n");
+        buffer_putnlflush(buffer_2);
+        return 2;
+      }
+      if(n == 0)
+        break;
+      spec += n;
     }
   }
 

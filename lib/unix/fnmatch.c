@@ -181,6 +181,6 @@ fnmatch(const char* pattern, const char* string, int flags) {
 #undef FOLD
 }
 
-  //#endif  /* _LIBC or not __GNU_LIBRARY__.  */
+//#endif  /* _LIBC or not __GNU_LIBRARY__.  */
 
 #endif /* defined(_WIN32) || defined(__MINGW64__) || defined(_MSC_VER) */

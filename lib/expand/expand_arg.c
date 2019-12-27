@@ -25,19 +25,13 @@ expand_arg(struct narg* narg, union node** nptr, struct vartab* varstack, char* 
     /* expand argument parts */
     switch(subarg->id) {
       /* arithmetic substitution */
-      case N_ARGARITH:
-        n = expand_arith(&subarg->nargarith, nptr, lflags);
-        break;
+      case N_ARGARITH: n = expand_arith(&subarg->nargarith, nptr, lflags); break;
 
       /* parameter substitution */
-      case N_ARGPARAM:
-        n = expand_param(&subarg->nargparam, nptr, varstack, argv, exitcode, lflags);
-        break;
+      case N_ARGPARAM: n = expand_param(&subarg->nargparam, nptr, varstack, argv, exitcode, lflags); break;
 
       /* command substitution */
-      case N_ARGCMD:
-        n = expand_command(&subarg->nargcmd, nptr, varstack, lflags);
-        break;
+      case N_ARGCMD: n = expand_command(&subarg->nargcmd, nptr, varstack, lflags); break;
 
       /* constant string */
       default: n = expand_cat(subarg->nargstr.stra.s, subarg->nargstr.stra.len, nptr, varstack, lflags); break;

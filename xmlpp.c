@@ -68,8 +68,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       if(!reader->closing && !reader->self_closing)
         ++depth;
 
-              newline_written = 0;
-
+      newline_written = 0;
 
       break;
     }

@@ -1655,7 +1655,7 @@ install-release:
 	$(MAKE) DEBUG=0 install
 
 uninstall:
-	@for PROGRAM in $(PROGRAMS); do \
+	@for PROGRAM in $(notdir $(PROGRAMS)); do \
 		echo $(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
 		$(RM) $(DESTDIR)$(bindir)/$$PROGRAM; \
 	done

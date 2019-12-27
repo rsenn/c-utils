@@ -2005,6 +2005,9 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
   slink_foreach(&sdir->sources, src) {
     const char *s, *ext;
 
+    if(!src->name)
+      continue;
+
     if(!str_end(src->name, ".c"))
       continue;
 
@@ -2333,7 +2336,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
       if(preproc) {
         path_output(*srcfile, &ppsrc, ppsext);
       }
-     path_output(*srcfile, &obj, objext);
+      path_output(*srcfile, &obj, objext);
 
       if(preproc && (preprocess = get_rule_sa(&ppsrc))) {
         add_srcpath(&preprocess->prereq, *srcfile);
@@ -3630,13 +3633,12 @@ set_compiler_type(const char* compiler) {
     push_var("LDFLAGS", "--summary=default,+psect");
 
     push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
-    //push_var("LDFLAGS", "--output=-default,elf,+mcof");
+    // push_var("LDFLAGS", "--output=-default,elf,+mcof");
     // push_var("LDFLAGS", "--output=-mcof,+elf");
     push_var("LDFLAGS", "--stack=compiled");
 
     push_var("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
     push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");
-
 
     stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) \"$<\" -o\"$@\"");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c \"$<\" -o\"$@\"");
@@ -4064,7 +4066,6 @@ main(int argc, char* argv[]) {
   debug_sa("outdir", &outdir.sa);
   debug_sa("builddir", &builddir.sa);
 
-
   if(preproc)
     set_var("CPP", preproc);
 
@@ -4215,13 +4216,13 @@ main(int argc, char* argv[]) {
 
     populate_sourcedirs(&srcs, sourcedirs);
 
-/*    if(no_libs)
-      cmd_libs = 0;
-    if(no_bins)
-      cmd_bins = 0;
-    if(no_objs)
-      cmd_objs = 0;
-*/
+    /*    if(no_libs)
+          cmd_libs = 0;
+        if(no_bins)
+          cmd_bins = 0;
+        if(no_objs)
+          cmd_objs = 0;
+    */
     /*buffer_puts(buffer_2, "pptoks: ");
     strlist_dump(buffer_2, &pptoks);
     buffer_putnlflush(buffer_2);

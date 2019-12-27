@@ -161,7 +161,7 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
         }
       } else {
         if(flags & GLOB_ONLYDIR) {
-        /* Skip all further actions, and get the next entry */
+          /* Skip all further actions, and get the next entry */
 #if 0
                     if(find_data.cFileName[0] >= 'A' && find_data.cFileName[0] <= 'M')
 #endif /* 0 */

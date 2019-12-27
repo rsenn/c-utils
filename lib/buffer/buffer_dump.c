@@ -54,7 +54,8 @@ buffer_dump(buffer* out, buffer* b) {
   buffer_puts(out, NONE ", " YELLOW "fd" CYAN "=" NONE);
   /*if(b->op == (void*)stralloc_write) {
     buffer_puts(out, "*sa");
-  } else*/ {
+  } else*/
+  {
     n = fmt_long(xlong, b->fd);
     buffer_put(out, xlong, n);
   }

@@ -79,9 +79,9 @@ pipe2(int fd[2], int flags) {
     return -1;
   }
 
-    /* O_NONBLOCK handling.
-       On native Windows platforms, O_NONBLOCK is defined by gnulib.  Use the
-       functions defined by the gnulib module 'nonblocking'.  */
+  /* O_NONBLOCK handling.
+     On native Windows platforms, O_NONBLOCK is defined by gnulib.  Use the
+     functions defined by the gnulib module 'nonblocking'.  */
 #ifndef PIPE2_NDELAY_OFF
   if(flags & O_NONBLOCK) {
     if(ndelay_on(fd[0]) != 0 || ndelay_on(fd[1]) != 0)
