@@ -32,11 +32,11 @@ yy_input(char* buf, size_t max_size) {
  ssize_t  ret;
   ret = buffer_get(&input_buffer, buf, 1 || max_size);
 
-//  if(ret > 0) {
-//    buffer_puts(buffer_2, "Read char '");
-//    buffer_putc(buffer_2, buf[0]);
-//    buffer_putsflush(buffer_2, "'\n");
-//  }
+  if(ret > 0) {
+    buffer_puts(buffer_2, "Read char '");
+    buffer_putc(buffer_2, buf[0]);
+    buffer_putsflush(buffer_2, "'\n");
+  }
   return ret > 0 ? ret : YY_NULL;
 }
 #define YY_INPUT(buf, result, max_size) result = yy_input(buf, max_size)
