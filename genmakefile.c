@@ -45,25 +45,30 @@ static inline void* MAP_GET(cbmap_t map, const void* key, size_t klen) {
 typedef HMAP_DB* MAP_T;
 #define MAP_SIZE hmap_size
 #define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
+#define MAP_DESTROY(map) hmap_destroy(&(map))
 #define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
   {                                                                                                                    \
     TUPLE* t;                                                                                                          \
     hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                  \
   }
-static inline void*
+#define MAP_GET(map, key, klen) hmap_get(map, key, klen)
+/*static inline void*
 MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
   TUPLE* t = NULL;
   if(hmap_search(map, key, klen, &t) == HMAP_SUCCESS) {
     if(t->data_type == HMAP_DATA_TYPE_CUSTOM)
-    return t->vals.val_custom;
+      return t->vals.val_custom;
 
     return t->vals.val_chars;
   }
 
   return NULL;
-}
+}*/
 
-#define MAP_INSERT(map, key, klen, data, dlen) (dlen == 0 ? hmap_add(map, key, klen, 0, HMAP_DATA_TYPE_CUSTOM, data) :  hmap_set(&map, key, klen, data, dlen))
+#define MAP_DELETE(map, key, klen) hmap_delete(&(map), key, klen)
+
+#define MAP_INSERT(map, key, klen, data, dlen)                                                                         \
+  (dlen == 0 ? hmap_add(&(map), key, klen, 0, HMAP_DATA_TYPE_CUSTOM, data) : hmap_set(&(map), key, klen, data, dlen))
 #endif
 
 #if WINDOWS
@@ -869,13 +874,12 @@ get_rule(const char* name) {
     MAP_NEW(rules);
 
   if(!(ret = MAP_GET(rules, name, len + 1))) {
-       ret = malloc(sizeof(target));
+    ret = malloc(sizeof(target));
     byte_zero(ret, sizeof(target));
     // ret->serial = 0;
 
-   hmap_add(&rules, name, len + 1, 0, HMAP_DATA_TYPE_CUSTOM, ret);
-     hmap_search(rules, name, len + 1, &t);
-
+    hmap_add(&rules, name, len + 1, 0, HMAP_DATA_TYPE_CUSTOM, ret);
+    hmap_search(rules, name, len + 1, &t);
 
     ret->name = t->key;
 
@@ -1110,7 +1114,7 @@ get_sources(const char* basedir, strarray* sources) {
  */
 int
 isset(const char* name) {
-  return hmap_search(vars, name, str_len(name) + 1, 0) == HMAP_SUCCESS;
+  return !!MAP_GET(vars, name, str_len(name) + 1);
 }
 
 /**
@@ -1123,7 +1127,7 @@ get_var(const char* name) {
   TUPLE* t;
 
   if(vars == NULL)
-    hmap_init(1024, &vars);
+    MAP_NEW(vars);
 
   if(hmap_search(vars, name, str_len(name) + 1, &t) != HMAP_SUCCESS) {
     strlist var;
@@ -1169,7 +1173,7 @@ set_var(const char* name, const char* value) {
 void
 unset_var(const char* name) {
   if(isset(name))
-    hmap_delete(&vars, (void*)name, str_len(name) + 1);
+    MAP_DELETE(vars, (void*)name, str_len(name) + 1);
 }
 
 /**
@@ -1367,7 +1371,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
       // debug_sa("path_dirname(*srcfile)", &dir);
 
-      if((srcdir = hmap_get(sourcedirs, dir.s, dir.len + 1))) {
+      if((srcdir = MAP_GET(sourcedirs, dir.s, dir.len + 1))) {
         slist_add(&srcdir->sources, &file->link);
 
         ++srcdir->n_sources;
@@ -4218,7 +4222,7 @@ main(int argc, char* argv[]) {
       }
     }
 
-    hmap_init(1024, &sourcedirs);
+    MAP_NEW(sourcedirs);
 
     strarray_dump(buffer_2, &args);
 
@@ -4327,7 +4331,7 @@ main(int argc, char* argv[]) {
 
     //   hmap_dump(sourcedirs, buffer_1);
 
-    hmap_destroy(&sourcedirs);
+    MAP_DESTROY(sourcedirs);
   }
 
 exit:
