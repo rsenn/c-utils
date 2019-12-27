@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<CodeBlocks_project_file>
+  <FileVersion major="1" minor="6"/>
+  <Project>
+    <Option title="genmakefile"/>
+    <Option pch_mode="2"/>
+    <Option compiler="gcc"/>
+    <Build>
+      <Target title="Debug">
+        <Option output="bin/Debug/genmakefile" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Debug/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-Wextra"/>
+          <Add option="-Wall"/>
+          <Add option="-g3"/>
+          <Add option="-ggdb"/>
+          <Add option="-O0"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-DDEBUG"/>
+          <Add directory="."/>
+        </Compiler>
+      </Target>
+      <Target title="Release">
+        <Option output="bin/Release/genmakefile" prefix_auto="1" extension_auto="1"/>
+        <Option object_output="obj/Release/"/>
+        <Option type="1"/>
+        <Option compiler="gcc"/>
+        <Compiler>
+          <Add option="-w"/>
+          <Add option="-fomit-frame-pointer"/>
+          <Add option="-fexpensive-optimizations"/>
+          <Add option="-Os"/>
+          <Add option="-ffast-math"/>
+          <Add option="-DUSE_WIDECHAR=0"/>
+          <Add option="-DNDEBUG=1"/>
+          <Add directory="."/>
+        </Compiler>
+      </Target>
+    </Build>
+    <Compiler>
+      <Add option="-DINLINE=inline"/>
+      <Add option="-D_FILE_OFFSET_BITS=64"/>
+      <Add option="-D_LARGEFILE_SOURCE=1"/>
+      <Add option="-D_GNU_SOURCE=1"/>
+      <Add option="-DHAVE_LIBBZ2=1"/>
+      <Add option="-DHAVE_LIBLZMA=1"/>
+      <Add option="-DHAVE_ZLIB=1"/>
+    </Compiler>
+    <Linker>
+      <Add library="z"/>
+      <Add library="bz2"/>
+      <Add library="lzma"/>
+      <Add library="advapi32"/>
+      <Add library="ws2_32"/>
+      <Add library="iphlpapi"/>
+      <Add library="psapi"/>
+      <Add library="shlwapi"/>
+    </Linker>
+    <Unit filename="../../genmakefile.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/array.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/array/array_allocate.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/array/array_catb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/array/array_end.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/array/array_fail.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/array/array_find.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/array/array_length.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/array/array_start.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/array/array_truncate.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/safemult/umult64.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_1.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_2.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_flush.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_put.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_putc.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_putflush.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_putm_internal.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_putnlflush.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_putnspace.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_puts.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_putsa.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_putspace.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_putulong.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/buffer/buffer_stubborn.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_chr.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_copy.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_copyr.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_diff.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_equal.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_fill.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_findb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_finds.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_rchr.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_upper.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/byte/byte_zero.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/dir.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/dir/dir_close.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/dir/dir_open.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/dir/dir_read.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/dir/dir_type.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/fmt.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/fmt/fmt_ulong.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/hmap.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/hmap/hmap_add.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/hmap/hmap_destroy.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/hmap/hmap_free_data.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/hmap/hmap_get.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/hmap/hmap_init.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/hmap/hmap_search.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/hmap/hmap_set.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/hmap/hmap_truncate.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/mmap.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/mmap/mmap_read.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/mmap/mmap_unmap.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/open.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/open/open_read.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/open/open_trunc.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_basename.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_canonical.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_canonical_sa.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_collapse.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_dirname.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_exists.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_getcwd.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_getsep.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_relative.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/path/path_skip_separator.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/rdir.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/rdir/rdir_open.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/rdir/rdir_read.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/scan.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/scan/scan_charsetnskip.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/scan/scan_noncharsetnskip.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/scan/scan_whitenskip.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_basename.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_chr.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_diff.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_diffn.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_dup.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_end.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_find.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_findb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_len.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_ndup.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_rchr.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_rchrs.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/str/str_start.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_append.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_cat.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_catb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_catc.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_cats.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_copy.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_copyb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_copys.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_diffs.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_endb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_findb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_free.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_init.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_insertb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_nul.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_ready.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_readyplus.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_remove.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_removesuffixb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_replace.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_trunc.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/stralloc/stralloc_zero.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strarray.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strarray/strarray_push.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strarray/strarray_push_sa.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strarray/strarray_pushb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist.h"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_at.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_at_n.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_cat.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_contains.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_contains_sa.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_count.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_froms.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_index_of.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_indexofb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_join.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_pop.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_push.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_push_sa.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_push_unique.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_push_unique_sa.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_pushb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_pushb_unique.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_removeb.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_removes.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_sub.c"><Option compilerVar="CC"/></Unit>
+    <Unit filename="../../lib/strlist/strlist_unshift.c"><Option compilerVar="CC"/></Unit>
+    <Extensions>
+      <envvars/>
+      <code_completion/>
+      <lib_finder disable_auto="1"/>
+      <debugger/>
+    </Extensions>
+  </Project>
+</CodeBlocks_project_file>
