@@ -60,10 +60,10 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "MAP_SIZE\nMAP_NEW\nMAP_DESTROY\nMAP_VISIT_ALL\nMAP_GET\nMAP_DELETE\nMAP_INSERT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PPSEXT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PPSEXT\nDEFAULT_PATHSEP\nDEFAULT_PATHSEP\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\nvoid\n_mkdir\nmkdir_sa\nmkdir_components\nstralloc_weak\nput_newline\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_b\npath_prefix_s\npath_extension\npath_output\npath_wildcard\nextract_build_type\nformat_linklib_lib\nformat_linklib_switch\nformat_linklib_dummy\nscan_main\nhas_main\nextract_includes\nextract_tokens\nextract_pptok\nget_includes\nrule_command_subst\nrule_command\nsubst_var\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nmatch_rule\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nisset\nget_var\nvar\nset_var\nunset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\nadd_include_dir\ninclude_dirs_to_cppflags\npush_define\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_clean_rule\ndump_rule\ngen_srcdir_compile_rules\ngen_simple_compile_rules\nlib_rule_for_sourcedir\ngen_srcdir_rule\ngen_lib_rules\ngen_link_rules\noutput_build_rules\ngen_install_rules\noutput_all_vars\noutput_make_rule\noutput_ninja_rule\noutput_all_rules\noutput_script\nset_machine\nset_chip\nset_system\nset_make_type\nset_compiler_type\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 1712,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -73,6 +73,40 @@
 			"settings":
 			{
 				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "genmakefile.c",
+			"settings":
+			{
+				"buffer_size": 108179,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hmap.h",
+			"settings":
+			{
+				"buffer_size": 4270,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hmap/hmap_set.c",
+			"settings":
+			{
+				"buffer_size": 554,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/path/path_exists.c",
+			"settings":
+			{
+				"buffer_size": 403,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -315,6 +349,7 @@
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
 		"/home/roman/Dokumente/Sources/c-utils/lib/cb",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap",
 		"/home/roman/Dokumente/Sources/c-utils/src"
 	],
 	"file_history":
@@ -467,6 +502,79 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"has_main",
+			"scan_main",
+			"\"main",
+			"main",
+			"libr\"",
+			"-o ",
+			"\\.lib\"",
+			"p1\"",
+			"\"all\"",
+			"\\(.all",
+			"\\(all",
+			"(all",
+			"all;",
+			"all",
+			"link_libr",
+			"link_lib",
+			"gen_lib",
+			"Doesn",
+			"ERROR:",
+			"MAP_GET",
+			"val.val_ch",
+			"val_ch",
+			"rules",
+			"rules, vars",
+			"rules, ",
+			"rules,",
+			"rules",
+			"rules;",
+			"DPIC",
+			"PIC",
+			"\"PIC",
+			"DPIC",
+			"vpath ",
+			"strlist.*vpath",
+			"^get_rule_sa",
+			"get_rule_sa",
+			"create-bin",
+			"gmake\"",
+			"vpath",
+			"path_out",
+			"^path_output",
+			"path_output",
+			"prereq",
+			"vpath",
+			"^main\\(",
+			"main\\(",
+			"^static strlist",
+			"vpath",
+			"builddir",
+			"vpath",
+			"builddir\\.sa",
+			"builddir\\.",
+			"builddir",
+			"\"gmake",
+			"htc\"",
+			"-o\\$",
+			"\\\\\\\"",
+			"-o\\$",
+			"\\\\\\\"",
+			"xc8\"",
+			"\"sdcc\"",
+			"^set_var",
+			"set_var",
+			"sdcc\"",
+			"set_compiler_type",
+			"c\\+\\+\"",
+			"c++",
+			"sdcc\"",
+			"CXX\"",
+			"TARGET\"",
+			"DPIC",
+			"16f87",
+			"16f",
 			"gen_lib",
 			"lib",
 			"sourcedir",
@@ -521,80 +629,7 @@
 			"hmap_",
 			"gen_clean_rule",
 			"clean_rule",
-			"open_",
-			"//.*",
-			"tags",
-			"getnodeset",
-			"match_query",
-			"print_element_children",
-			"print_element_name",
-			"match_query",
-			"getparts",
-			"match_query",
-			"buffer_1",
-			"xml_path",
-			"xq",
-			"build_package",
-			"dump_",
-			"_path",
-			"path",
-			"buffer_1",
-			"xml_print_attributes",
-			"\", \"",
-			", \"",
-			", ",
-			"buffer_",
-			"No such ele",
-			"buffer_1",
-			"name.*=",
-			"name=",
-			"output_move",
-			"cmds",
-			"out",
-			"output_part",
-			"stereo",
-			"Package",
-			"spad",
-			"board",
-			"bounds",
-			"update_bounds",
-			"build_part",
-			"output_part",
-			"bounds",
-			"output_part",
-			"component n",
-			"output_pa",
-			"output_part",
-			"putdoub",
-			"output_part",
-			"=\"C1",
-			"0.12",
-			"_part",
-			"pad1",
-			"_part",
-			"output_part",
-			"get_doub",
-			"output_part",
-			"_",
-			"clean_pkg",
-			"output_part",
-			"clean_pkgname",
-			"clean_p",
-			"clean_pack",
-			"dump_part",
-			"output_part",
-			"->packa",
-			"struct part",
-			"dump_part",
-			"build_part",
-			"Part:",
-			"pkgname\\.",
-			"\\&pkgname",
-			"pkgname",
-			"build_part",
-			"element",
-			"E2.5-4/V",
-			"name=\"C1\""
+			"open_"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -602,6 +637,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			"",
+			"\"",
 			"MAP_DELETE(",
 			"MAP_GET",
 			"",
@@ -637,7 +674,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 1712,
 						"regions":
 						{
 						},
@@ -646,27 +683,657 @@
 						],
 						"settings":
 						{
-							"current_file": null,
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									1052,
+									1060
+								],
+								[
+									1079,
+									1086
+								],
+								[
+									1130,
+									1141
+								],
+								[
+									1176,
+									1189
+								],
+								[
+									1664,
+									1671
+								],
+								[
+									2007,
+									2017
+								],
+								[
+									2074,
+									2084
+								],
+								[
+									2333,
+									2344
+								],
+								[
+									2359,
+									2373
+								],
+								[
+									2389,
+									2403
+								],
+								[
+									2419,
+									2433
+								],
+								[
+									2445,
+									2459
+								],
+								[
+									2475,
+									2489
+								],
+								[
+									2512,
+									2523
+								],
+								[
+									2538,
+									2552
+								],
+								[
+									2566,
+									2580
+								],
+								[
+									2594,
+									2608
+								],
+								[
+									2623,
+									2637
+								],
+								[
+									2649,
+									2663
+								],
+								[
+									2707,
+									2722
+								],
+								[
+									2742,
+									2757
+								],
+								[
+									3899,
+									3908
+								],
+								[
+									3940,
+									3948
+								],
+								[
+									3987,
+									3995
+								],
+								[
+									4038,
+									4045
+								],
+								[
+									4178,
+									4182
+								],
+								[
+									5441,
+									5447
+								],
+								[
+									5466,
+									5474
+								],
+								[
+									5689,
+									5705
+								],
+								[
+									5995,
+									6008
+								],
+								[
+									6209,
+									6220
+								],
+								[
+									6385,
+									6396
+								],
+								[
+									7007,
+									7020
+								],
+								[
+									7271,
+									7279
+								],
+								[
+									7498,
+									7505
+								],
+								[
+									7724,
+									7732
+								],
+								[
+									8211,
+									8220
+								],
+								[
+									8388,
+									8396
+								],
+								[
+									8411,
+									8419
+								],
+								[
+									8434,
+									8441
+								],
+								[
+									8456,
+									8465
+								],
+								[
+									8762,
+									8775
+								],
+								[
+									9244,
+									9257
+								],
+								[
+									9437,
+									9451
+								],
+								[
+									9762,
+									9773
+								],
+								[
+									10152,
+									10165
+								],
+								[
+									10653,
+									10671
+								],
+								[
+									10962,
+									10980
+								],
+								[
+									11228,
+									11249
+								],
+								[
+									11464,
+									11484
+								],
+								[
+									11652,
+									11661
+								],
+								[
+									12165,
+									12173
+								],
+								[
+									12481,
+									12497
+								],
+								[
+									13473,
+									13487
+								],
+								[
+									14316,
+									14329
+								],
+								[
+									15915,
+									15927
+								],
+								[
+									16262,
+									16280
+								],
+								[
+									17629,
+									17641
+								],
+								[
+									19266,
+									19275
+								],
+								[
+									19889,
+									19897
+								],
+								[
+									20704,
+									20715
+								],
+								[
+									20851,
+									20860
+								],
+								[
+									21265,
+									21277
+								],
+								[
+									21423,
+									21434
+								],
+								[
+									21741,
+									21751
+								],
+								[
+									22114,
+									22122
+								],
+								[
+									22461,
+									22472
+								],
+								[
+									22940,
+									22951
+								],
+								[
+									23180,
+									23190
+								],
+								[
+									23550,
+									23560
+								],
+								[
+									24118,
+									24129
+								],
+								[
+									24433,
+									24438
+								],
+								[
+									24599,
+									24606
+								],
+								[
+									25059,
+									25062
+								],
+								[
+									25249,
+									25256
+								],
+								[
+									25421,
+									25430
+								],
+								[
+									25612,
+									25620
+								],
+								[
+									25797,
+									25808
+								],
+								[
+									25988,
+									25996
+								],
+								[
+									26267,
+									26275
+								],
+								[
+									26724,
+									26739
+								],
+								[
+									27149,
+									27173
+								],
+								[
+									27774,
+									27785
+								],
+								[
+									28084,
+									28100
+								],
+								[
+									28449,
+									28462
+								],
+								[
+									28747,
+									28766
+								],
+								[
+									30693,
+									30708
+								],
+								[
+									31272,
+									31288
+								],
+								[
+									32113,
+									32124
+								],
+								[
+									32792,
+									32817
+								],
+								[
+									33386,
+									33401
+								],
+								[
+									33783,
+									33803
+								],
+								[
+									34186,
+									34199
+								],
+								[
+									34597,
+									34608
+								],
+								[
+									34876,
+									34895
+								],
+								[
+									35928,
+									35945
+								],
+								[
+									36616,
+									36646
+								],
+								[
+									37149,
+									37169
+								],
+								[
+									37698,
+									37711
+								],
+								[
+									37975,
+									37991
+								],
+								[
+									38312,
+									38327
+								],
+								[
+									38572,
+									38585
+								],
+								[
+									39925,
+									39939
+								],
+								[
+									40273,
+									40288
+								],
+								[
+									40679,
+									40693
+								],
+								[
+									42937,
+									42946
+								],
+								[
+									44045,
+									44069
+								],
+								[
+									46930,
+									46954
+								],
+								[
+									47950,
+									47972
+								],
+								[
+									49621,
+									49636
+								],
+								[
+									50631,
+									50644
+								],
+								[
+									51819,
+									51833
+								],
+								[
+									55688,
+									55706
+								],
+								[
+									56267,
+									56284
+								],
+								[
+									58346,
+									58361
+								],
+								[
+									59333,
+									59349
+								],
+								[
+									61756,
+									61773
+								],
+								[
+									62786,
+									62802
+								],
+								[
+									63322,
+									63335
+								],
+								[
+									65276,
+									65287
+								],
+								[
+									65791,
+									65799
+								],
+								[
+									66217,
+									66227
+								],
+								[
+									66634,
+									66647
+								],
+								[
+									68472,
+									68489
+								],
+								[
+									90026,
+									90031
+								],
+								[
+									93668,
+									93672
+								]
 							],
 							"symlist":
 							[
+								"MAP_SIZE",
+								"MAP_NEW",
+								"MAP_DESTROY",
+								"MAP_VISIT_ALL",
+								"MAP_GET",
+								"MAP_DELETE",
+								"MAP_INSERT",
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"DEFAULT_PPSEXT",
+								"MAX_CMD_LEN",
+								"DEFAULT_OBJEXT",
+								"DEFAULT_LIBEXT",
+								"DEFAULT_LIBPFX",
+								"DEFAULT_EXEEXT",
+								"DEFAULT_PPSEXT",
+								"DEFAULT_PATHSEP",
+								"DEFAULT_PATHSEP",
+								"debug_int",
+								"debug_sa",
+								"debug_sl",
+								"debug_s",
+								"void",
+								"_mkdir",
+								"mkdir_sa",
+								"mkdir_components",
+								"stralloc_weak",
+								"put_newline",
+								"set_command",
+								"strarray_dump",
+								"debug_sa",
+								"debug_s",
+								"debug_sl",
+								"debug_int",
+								"debug_sa",
+								"debug_sl",
+								"debug_s",
+								"debug_int",
+								"path_prefix_b",
+								"path_prefix_s",
+								"path_extension",
+								"path_output",
+								"path_wildcard",
+								"extract_build_type",
+								"format_linklib_lib",
+								"format_linklib_switch",
+								"format_linklib_dummy",
+								"scan_main",
+								"has_main",
+								"extract_includes",
+								"extract_tokens",
+								"extract_pptok",
+								"get_includes",
+								"rule_command_subst",
+								"rule_command",
+								"subst_var",
+								"get_rule",
+								"get_rule_sa",
+								"find_rule",
+								"find_rule_sa",
+								"find_rule_b",
+								"match_rule",
+								"add_path",
+								"add_srcpath",
+								"add_path_sa",
+								"new_source",
+								"add_source",
+								"get_sources",
+								"isset",
+								"get_var",
+								"var",
+								"set_var",
+								"unset_var",
+								"push_var",
+								"push_var_sa",
+								"push_lib",
+								"with_lib",
+								"add_include_dir",
+								"include_dirs_to_cppflags",
+								"push_define",
+								"get_rules_by_cmd",
+								"dirname_alloc",
+								"populate_sourcedirs",
+								"dump_sourcedirs",
+								"includes_to_libs",
+								"target_ptrs",
+								"target_dep_list_recursive",
+								"target_dep_list",
+								"target_deps_indirect",
+								"deps_indirect",
+								"deps_direct",
+								"print_target_deps_r",
+								"print_target_deps",
+								"remove_indirect_deps_recursive",
+								"remove_indirect_deps",
+								"get_sourcedir",
+								"get_sourcedir_sa",
+								"get_sourcedir_b",
+								"deps_for_libs",
+								"target_add_dep",
+								"target_add_deps",
+								"gen_clean_rule",
+								"dump_rule",
+								"gen_srcdir_compile_rules",
+								"gen_simple_compile_rules",
+								"lib_rule_for_sourcedir",
+								"gen_srcdir_rule",
+								"gen_lib_rules",
+								"gen_link_rules",
+								"output_build_rules",
+								"gen_install_rules",
+								"output_all_vars",
+								"output_make_rule",
+								"output_ninja_rule",
+								"output_all_rules",
+								"output_script",
+								"set_machine",
+								"set_chip",
+								"set_system",
+								"set_make_type",
+								"set_compiler_type",
+								"usage",
+								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 6.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -687,13 +1354,136 @@
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/Rainglow/rainglow/Yule Contrast (rainglow).tmTheme",
 							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "genmakefile.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 108179,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								51242,
+								51242
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Yule Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 45963.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/hmap.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4270,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2354,
+								2354
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Yule Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1260.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/hmap/hmap_set.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 554,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Yule Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/path/path_exists.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 403,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								371,
+								371
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Yule Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -785,6 +1575,18 @@
 		"selected_items":
 		[
 			[
+				"hmap.h",
+				"lib/hmap.h"
+			],
+			[
+				"path_ex",
+				"lib/path/path_exists.c"
+			],
+			[
+				"genma",
+				"genmakefile.c"
+			],
+			[
 				"path_abs",
 				"lib/path/path_absolute.c"
 			],
@@ -815,10 +1617,6 @@
 			[
 				"GNUMa",
 				"GNUmakefile"
-			],
-			[
-				"genma",
-				"genmakefile.c"
 			],
 			[
 				"gen-cmd",

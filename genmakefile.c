@@ -3546,7 +3546,7 @@ set_compiler_type(const char* compiler) {
       push_var("LIBS", "-llibm.lib");
     }
 
-    set_command(&lib_command, "$(LIB) $@", "$^");
+    set_command(&lib_command, "$(LIB) rcs $@", "$^");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
