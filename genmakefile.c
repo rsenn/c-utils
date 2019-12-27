@@ -163,6 +163,7 @@ static const char* comment = "#";
 static const char* cross_compile = "";
 
 static strlist outdir, builddir, workdir;
+static strlist vpath;
 static stralloc srcdir;
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static int build_type = -1;
@@ -2232,7 +2233,13 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
         if(!str_end(pfile->name, ".c"))
           continue;
         stralloc_zero(&sa);
-        path_output(pfile->name, &sa, objext);
+
+        if(vpath.sa.len)
+          path_extension(pfile->name, &sa, objext);
+        else
+
+          path_output(pfile->name, &sa, objext);
+
         add_path_sa(&rule->prereq, &sa);
       }
     }
@@ -2280,8 +2287,8 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
       stralloc_cats(&mask, src->name);
 
       path_wildcard(&mask, "%");
-      debug_sa("mask", &mask);
     }
+    debug_sa("mask", &mask);
 
     if((rule = get_rule_sa(&mask))) {
       strlist_push(&rule->prereq, src->name);
@@ -2313,23 +2320,23 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     sourcedir* srcdir = hmap_data(t);
     const char *s, *base = path_basename(t->key);
     size_t n;
-  
-if(str_equal(base, ".")) {
-  stralloc_zero(&abspath);
-    path_absolute(t->key, &abspath);
-    stralloc_nul(&abspath);
-base = path_basename(abspath.s);
-}
+
+    if(str_equal(base, ".")) {
+      stralloc_zero(&abspath);
+      path_absolute(t->key, &abspath);
+      stralloc_nul(&abspath);
+      base = path_basename(abspath.s);
+    }
     // debug_s("srcdir", t->key);
     // debug_s("base", base);
-    // 
+    //
 
     if(strlist_contains(&build_as_lib, base) /* || (str_equal(base, "lib") && mach.arch != PIC)*/ || base[0] == '.' ||
        base[0] == '\0')
       continue;
 
     // gen_srcdir_rule(rules, srcdir, base);
- 
+
     rule = lib_rule_for_sourcedir(rules, srcdir, base);
 
     strlist_push_unique(&link_libraries, rule->name);
@@ -3485,7 +3492,7 @@ set_compiler_type(const char* compiler) {
     binext = ".cof";
     objext = ".o";
 
-  //  set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
+    //  set_var("TARGET", mach.bits == _14 ? "pic16" : "pic18");
 
     if(chip.len == 0)
       stralloc_copys(&chip, "16f876a");
@@ -3493,16 +3500,16 @@ set_compiler_type(const char* compiler) {
     stralloc_nul(&chip);
     set_var("CHIP", chip.s);
 
-   /* {
-      stralloc chipdef;
-      stralloc_init(&chipdef);
-      stralloc_copys(&chipdef, "-DPIC");
-      stralloc_cat(&chipdef, &chip);
-      stralloc_upper(&chipdef);
-      stralloc_cats(&chipdef, "=1");
-      push_var_sa("CPPFLAGS", &chipdef);
-    }
-*/
+    /* {
+       stralloc chipdef;
+       stralloc_init(&chipdef);
+       stralloc_copys(&chipdef, "-DPIC");
+       stralloc_cat(&chipdef, &chip);
+       stralloc_upper(&chipdef);
+       stralloc_cats(&chipdef, "=1");
+       push_var_sa("CPPFLAGS", &chipdef);
+     }
+ */
     if(!isset("MACH")) {
       if(mach.bits == _14)
         set_var("MACH", "pic14");
@@ -3575,7 +3582,7 @@ set_compiler_type(const char* compiler) {
 
     stralloc_nul(&chip);
     set_var("CHIP", chip.s);
-
+/*
     {
       stralloc chipdef;
       stralloc_init(&chipdef);
@@ -3584,7 +3591,7 @@ set_compiler_type(const char* compiler) {
       stralloc_upper(&chipdef);
       stralloc_cats(&chipdef, "=1");
       push_var_sa("CPPFLAGS", &chipdef);
-    }
+    }*/
 
     if(!isset("MACH")) {
 
@@ -3872,6 +3879,8 @@ main(int argc, char* argv[]) {
 #ifdef _MSC_VER
   optbuf = buffer_1;
 #endif
+
+  strlist_init(&vpath, ' ');
 
   strlist_init(&cmdline, ' ');
   strlist_fromv(&cmdline, (const char**)argv, argc);
@@ -4177,6 +4186,12 @@ main(int argc, char* argv[]) {
 
     //debug_sa("builddir", &builddir.sa);
   */
+
+  if(str_equal(make, "gmake")) {
+    stralloc_nul(&workdir.sa);
+          strlist_push_unique(&vpath, ".");
+    strlist_push_unique_sa(&vpath, &workdir.sa);
+  }
   strarray_init(&args);
   strarray_init(&srcs);
 
@@ -4253,11 +4268,18 @@ main(int argc, char* argv[]) {
         get_sources(*arg, &srcs);
     }
 
-    if(str_start(make, "g")) {
+    if(str_end(make, "make")) {
       stralloc rulename;
       stralloc_init(&rulename);
-      stralloc_copys(&rulename, ".c");
-      stralloc_cats(&rulename, objext);
+      if(str_start(make, "g")) {
+        stralloc_copy(&rulename, &workdir.sa);
+        stralloc_cats(&rulename, "/%");
+        stralloc_cats(&rulename, objext);
+        stralloc_cats(&rulename, ": %.c");
+      } else {
+        stralloc_copys(&rulename, ".c");
+        stralloc_cats(&rulename, objext);
+      }
 
       target* compile = get_rule_sa(&rulename);
       stralloc_weak(&compile->recipe, &compile_command);
@@ -4322,6 +4344,16 @@ main(int argc, char* argv[]) {
     buffer_putsflush(buffer_1, newline);
 
     output_all_vars(buffer_1, vars);
+
+    if(str_equal(make, "gmake")) {
+      stralloc_nul(&vpath.sa);
+
+      buffer_putm_internal(buffer_1, "\nvpath ", vpath.sa.s, "\n", 0);
+
+      stralloc_replacec(&vpath.sa, ' ', ':');
+      buffer_putm_internal(buffer_1, "VPATH = ", vpath.sa.s, "\n\n", 0);
+      buffer_flush(buffer_1);
+    }
 
     if(ninja) {
       output_build_rules(buffer_1, "cc", &compile_command);
