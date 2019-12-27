@@ -12,6 +12,12 @@
     "name": "Rebuild CTags",
     "shell_cmd": "make .tags"
   },
+    {
+      "name": "clang-format",
+      "shell_cmd": "clang-format -verbose -style=file -i `find . -name '*.c' -or -name '*.h'`",
+      "working_dir": "${project_path:${folder:${file_path}}}"
+    },
+
   ],
   "folders": [
   {

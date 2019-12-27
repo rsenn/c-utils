@@ -2304,24 +2304,32 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
 void
 gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   TUPLE* t;
-  stralloc inc;
+  stralloc inc, abspath;
   stralloc_init(&inc);
+  stralloc_init(&abspath);
 
   hmap_foreach(srcdirs, t) {
     target* rule;
     sourcedir* srcdir = hmap_data(t);
     const char *s, *base = path_basename(t->key);
     size_t n;
-
+  
+if(str_equal(base, ".")) {
+  stralloc_zero(&abspath);
+    path_absolute(t->key, &abspath);
+    stralloc_nul(&abspath);
+base = path_basename(abspath.s);
+}
     // debug_s("srcdir", t->key);
     // debug_s("base", base);
+    // 
 
     if(strlist_contains(&build_as_lib, base) /* || (str_equal(base, "lib") && mach.arch != PIC)*/ || base[0] == '.' ||
        base[0] == '\0')
       continue;
 
     // gen_srcdir_rule(rules, srcdir, base);
-
+ 
     rule = lib_rule_for_sourcedir(rules, srcdir, base);
 
     strlist_push_unique(&link_libraries, rule->name);
@@ -2329,6 +2337,7 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     array_catb(&srcdir->rules, &rule, sizeof(target*));
   }
   stralloc_free(&inc);
+  stralloc_free(&abspath);
 }
 
 /**
@@ -3483,7 +3492,7 @@ set_compiler_type(const char* compiler) {
     stralloc_nul(&chip);
     set_var("CHIP", chip.s);
 
-    {
+   /* {
       stralloc chipdef;
       stralloc_init(&chipdef);
       stralloc_copys(&chipdef, "-DPIC");
@@ -3492,7 +3501,7 @@ set_compiler_type(const char* compiler) {
       stralloc_cats(&chipdef, "=1");
       push_var_sa("CPPFLAGS", &chipdef);
     }
-
+*/
     if(!isset("MACH")) {
       if(mach.bits == _14)
         set_var("MACH", "pic14");

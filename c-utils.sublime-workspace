@@ -70,106 +70,10 @@
 			}
 		},
 		{
-			"contents": " Ⓜ  MAX_CMD_LEN … — macro object\n Ⓜ  DEFAULT_OBJEXT … — macro object\n Ⓜ  DEFAULT_LIBEXT … — macro object\n Ⓜ  DEFAULT_LIBPFX … — macro object\n Ⓜ  DEFAULT_EXEEXT … — macro object\n Ⓜ  DEFAULT_PPSEXT … — macro object\n Ⓜ  MAX_CMD_LEN … — macro object\n Ⓜ  DEFAULT_OBJEXT … — macro object\n Ⓜ  DEFAULT_LIBEXT … — macro object\n Ⓜ  DEFAULT_LIBPFX … — macro object\n Ⓜ  DEFAULT_EXEEXT … — macro object\n Ⓜ  DEFAULT_PPSEXT … — macro object\n Ⓜ  DEFAULT_PATHSEP … — macro object\n Ⓜ  DEFAULT_PATHSEP … — macro object\n Ⓣ  machine_type ; — typedef\n Ⓣ  os_type ; — typedef\n Ⓣ  system_type ; — typedef\n Ⓣ  sourcefile ; — typedef\n Ⓣ  sourcedir ; — typedef\n Ⓣ  target ; — typedef\n—Ⓕ– debug_int ( ) { … } — function\n—Ⓕ– debug_sa ( ) { … } — function\n—Ⓕ– debug_sl ( ) { … } — function\n—Ⓕ– debug_s ( ) { … } — function\n Ⓜ  _mkdir … — macro object\n—Ⓕ– mkdir_sa ( ) { … } — function\n—Ⓕ– mkdir_components ( ) { … } — function\n—Ⓕ– stralloc_weak ( ) { … } — function\n—Ⓕ– put_newline ( ) { … } — function\n—Ⓕ– set_command ( ) { … } — function\n—Ⓕ– strarray_dump ( ) { … } — function\n—Ⓕ– debug_sa ( ) { … } — function\n—Ⓕ– debug_s ( ) { … } — function\n—Ⓕ– debug_sl ( ) { … } — function\n—Ⓕ– debug_int ( ) { … } — function\n—Ⓜ– debug_sa ( ) … — macro function\n—Ⓜ– debug_sl ( ) … — macro function\n—Ⓜ– debug_s ( ) … — macro function\n—Ⓜ– debug_int ( ) … — macro function\n—Ⓕ– path_prefix_b ( ) { … } — function\n—Ⓕ– path_prefix_s ( ) { … } — function\n—Ⓕ– path_extension ( ) { … } — function\n—Ⓕ– path_output ( ) { … } — function\n—Ⓕ– path_wildcard ( ) { … } — function\n—Ⓕ– extract_build_type ( ) { … } — function\n—Ⓕ– format_linklib_lib ( ) { … } — function\n—Ⓕ– format_linklib_switch ( ) { … } — function\n—Ⓕ– format_linklib_dummy ( ) { … } — function\n—Ⓕ– scan_main ( ) { … } — function\n—Ⓕ– has_main ( ) { … } — function\n—Ⓕ– extract_includes ( ) { … } — function\n—Ⓕ– extract_tokens ( ) { … } — function\n—Ⓕ– extract_pptok ( ) { … } — function\n—Ⓕ– get_includes ( ) { … } — function\n—Ⓕ– rule_command_subst ( ) { … } — function\n—Ⓕ– rule_command ( ) { … } — function\n—Ⓕ– subst_var ( ) { … } — function\n—Ⓕ– get_rule ( ) { … } — function\n—Ⓕ– get_rule_sa ( ) { … } — function\n—Ⓕ– find_rule ( ) { … } — function\n—Ⓕ– find_rule_sa ( ) { … } — function\n—Ⓕ– find_rule_b ( ) { … } — function\n—Ⓕ– match_rule ( ) { … } — function\n—Ⓕ– add_path ( ) { … } — function\n—Ⓕ– add_srcpath ( ) { … } — function\n—Ⓕ– add_path_sa ( ) { … } — function\n—Ⓕ– new_source ( ) { … } — function\n—Ⓕ– add_source ( ) { … } — function\n—Ⓕ– get_sources ( ) { … } — function\n—Ⓕ– isset ( ) { … } — function\n—Ⓕ– get_var ( ) { … } — function\n—Ⓕ– var ( ) { … } — function\n—Ⓕ– set_var ( ) { … } — function\n—Ⓕ– unset_var ( ) { … } — function\n—Ⓕ– push_var ( ) { … } — function\n—Ⓕ– push_var_sa ( ) { … } — function\n—Ⓕ– push_lib ( ) { … } — function\n—Ⓕ– with_lib ( ) { … } — function\n—Ⓕ– add_include_dir ( ) { … } — function\n—Ⓕ– include_dirs_to_cppflags ( ) { … } — function\n—Ⓕ– push_define ( ) { … } — function\n—Ⓕ– get_rules_by_cmd ( ) { … } — function\n—Ⓕ– dirname_alloc ( ) { … } — function\n—Ⓕ– populate_sourcedirs ( ) { … } — function\n—Ⓕ– dump_sourcedirs ( ) { … } — function\n—Ⓕ– includes_to_libs ( ) { … } — function\n—Ⓕ– target_ptrs ( ) { … } — function\n—Ⓕ– target_dep_list_recursive ( ) { … } — function\n—Ⓕ– target_dep_list ( ) { … } — function\n—Ⓕ– target_deps_indirect ( ) { … } — function\n—Ⓕ– deps_indirect ( ) { … } — function\n—Ⓕ– deps_direct ( ) { … } — function\n—Ⓕ– print_target_deps_r ( ) { … } — function\n—Ⓕ– print_target_deps ( ) { … } — function\n—Ⓕ– remove_indirect_deps_recursive ( ) { … } — function\n—Ⓕ– remove_indirect_deps ( ) { … } — function\n—Ⓕ– get_sourcedir ( ) { … } — function\n—Ⓕ– get_sourcedir_sa ( ) { … } — function\n—Ⓕ– get_sourcedir_b ( ) { … } — function\n—Ⓕ– deps_for_libs ( ) { … } — function\n—Ⓕ– target_add_dep ( ) { … } — function\n—Ⓕ– target_add_deps ( ) { … } — function\n—Ⓕ– gen_clean_rule ( ) { … } — function\n—Ⓕ– dump_rule ( ) { … } — function\n—Ⓕ– gen_srcdir_compile_rules ( ) { … } — function\n—Ⓕ– gen_simple_compile_rules ( ) { … } — function\n—Ⓕ– lib_rule_for_sourcedir ( ) { … } — function\n—Ⓕ– gen_srcdir_rule ( ) { … } — function\n—Ⓕ– gen_lib_rules ( ) { … } — function\n—Ⓕ– gen_link_rules ( ) { … } — function\n—Ⓕ– output_build_rules ( ) { … } — function\n—Ⓕ– gen_install_rules ( ) { … } — function\n—Ⓕ– output_all_vars ( ) { … } — function\n—Ⓕ– output_make_rule ( ) { … } — function\n—Ⓕ– output_ninja_rule ( ) { … } — function\n—Ⓕ– output_all_rules ( ) { … } — function\n—Ⓕ– output_script ( ) { … } — function\n—Ⓕ– set_machine ( ) { … } — function\n—Ⓕ– set_chip ( ) { … } — function\n—Ⓕ– set_system ( ) { … } — function\n—Ⓕ– set_make_type ( ) { … } — function\n—Ⓕ– set_compiler_type ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 4689,
-				"line_ending": "Unix",
-				"name": "𝌆 Outline",
-				"scratch": true
-			}
-		},
-		{
-			"file": "eagle-init-brd.c",
-			"settings":
-			{
-				"buffer_size": 12304,
-				"encoding": "UTF-8",
+				"buffer_size": 0,
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "eagle-gen-cmds.c",
-			"settings":
-			{
-				"buffer_size": 39951,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "genmakefile.c",
-			"settings":
-			{
-				"buffer_size": 105106,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "// Place your settings in the file \"User/CTags.sublime-settings\", which\n// overrides the settings in here.\n{\n    // Enable debugging.\n    //\n    // When enabled, this will result in debug output being printed to the\n    // console. This can be useful for debugging issues.\n    \"debug\": false,\n\n    // Enable auto-complete.\n    //\n    // When enabled, this turns on a basic \"auto-complete\" feature, similar to\n    // a very rudimentary \"Intellisense(TM)\". This is useful for providing\n    // better suggestions than stock Sublime Text could provide.\n    \"autocomplete\": false,\n\n    // Path to ctags executable.\n    //\n    // Alter this value if your ctags command is not in the PATH, or if using\n    // a different version of ctags to that in the path (i.e. for OSX).\n    //\n    // NOTE: You *should not* place entire commands here. These commands are\n    // built automatically using the values below. For example, this is OK:\n    //\n    //     \"command\": \"/usr/bin/ctags\"\n    //\n    // This, on the other hand, won't work!\n    //\n    //     \"command\": \"ctags -R -f .tags --exclude=some/path\"\n    //\n    \"command\": \"\",\n\n    // Enable recursive searching of directories when building tag files.\n    //\n    // When enabled, this is equivalent to `-R` parameter. Set to true to\n    // enable recursive search of directories when generating tag files.\n    \"recursive\" : true,\n\n    // Default read/write location of the tags file.\n    //\n    // This is equivalent to the `-f [FILENAME]` parameter. There is likely no\n    // reason to change this unless you have a large number of existing tags\n    // files you'd like to use that already have a different name. In this\n    // case perhaps consider using the 'extra_tag_files' setting instead.\n    \"tag_file\" : \".tags\",\n\n    // Additional tag files names to search.\n    //\n    // These are searched in addition to the file name given in 'tag_file'\n    \"extra_tag_files\": [\".gemtags\", \"tags\"],\n\n    // Additional options to pass to ctags.\n    //\n    // Any addition options you may wish to pass to the ctags executable. For\n    // example:\n    //\n    //     [\"--exclude=some/path\", \"--exclude=some/other/path\", ...]\n    \"opts\" : [],\n\n    // Tag \"kind\"s to ignore.\n    //\n    // A ctags tagfile describes a number of different \"kind\"s, described in\n    // tag FORMAT file found here:\n    //\n    //     http://ctags.sourceforge.net/FORMAT\n    //\n    // These can be filtered (i.e. ignored). For example - 'import' statements\n    // should be ignored in Python. These are of kind \"i\", e.g.\n    //\n    //     \"type\":\"^i$\"\n    //\n    \"filters\": {\n        \"source.python\": {\"type\":\"^i$\"}\n    },\n\n    // Definition \"kind\"s to ignore.\n    //\n    // This is very similar to the 'filters' option. However, this only\n    // applies to the process that is used to find a definition. All filters\n    // placed here will be used when the plugin is searching for a definition\n    // in the file.\n    \"definition_filters\": {\n        \"source.php\": {\"type\":\"^v$\"}\n    },\n\n    // Enable the ctags menu in the context menus.\n    \"show_context_menus\": true,\n\n    // Paths to additional tag files to include in tag search.\n    //\n    // This is a list of items in the following format:\n    //\n    //     [[\"language\", \"platform\"], \"path\"]\n    //\n    \"extra_tag_paths\": [\n        [[\"source.python\", \"windows\"], \"C:\\\\Python27\\\\Lib\\\\tags\"]\n    ],\n\n    // Enable highlighting of selected symbol.\n    //\n    // When enabled, searched symbols will be highlighted when found. This\n    // can be irritating in some instances, e.g. when in Vintage mode. In\n    // these cases, setting this to false will disable this highlighting.\n    \"select_searched_symbol\": true,\n\n    // Set to false to not open an error dialog while tags are building\n    \"display_rebuilding_message\": true,\n\n    // Rank Manager language syntax regex and character sets\n    //\n    // Ex: Python 'and' ignore exp --> '\\sand\\s' - it must have whitespace\n    // around it so it is not part of real name: gates.Nand.evaluate()\n    \"language_syntax\": {\n        \"splitters\" : [\".\", \"::\", \"->\"],\n        \"source.js\": {\n            \"member_exp\": {\n                \"chars\": \"[A-Za-z0-9_$]\",\n                \"splitters\": [\"\\\\.\"],\n                \"open\": [\"\\\\{\", \"\\\\[\", \"\\\\(\"],\n                \"close\": [\"\\\\}\", \"\\\\]\" , \"\\\\)\"], //close[i] must match open[i]\n                \"ignore\": [\"&\", \"\\\\|\", \"\\\\?\", \":\", \"\\\\!\", \"'\", \"=\", \"\\\"\"],\n                \"stop\": [\"\\\\s\", \",\"],\n                \"this\": [\"this\", \"me\", \"self\", \"that\"]\n            },\n            \"reference_types\": {\n                \"__symbol__(\\\\.call|\\\\.apply){0,1}\\\\s*?\\\\(\": [\"f\", \"fa\"],\n                \"\\\\.fire\\\\s*?\\\\(\\\\s*?\\\\[\\\\'\\\"]__symbol__\\\\[\\\\'\\\"\\\\]\": [\n                    \"eventHandler\"\n                ]\n            }\n        },\n        \"source.python\": {\n            //python settings inherit JavaScript, with some overrides\n            \"inherit\": \"source.js\",\n            \"member_exp\": {\n                \"ignore\": [\"\\\\sand\\\\s\", \"\\\\sor\\\\s\", \"\\\\snot\\\\s\", \":\", \"\\\\!\",\n                           \"'\", \"=\", \"\\\"\"],\n                \"this\" : [\"self\"]\n            }\n        },\n        \"source.java\": {\n            \"inherit\": \"source.js\",\n            \"member_exp\": {\n                \"this\" : [\"this\"]\n            }\n        },\n        \"source.cs\": {\n            \"inherit\": \"source.js\",\n            \"member_exp\": {\n                \"this\" : [\"this\"]\n            }\n        }\n    },\n\n    // Scope Filters\n    //\n    // Tags file may optionally contain tagfield for the scope of the tag. For\n    // example:\n    //\n    //   item  .\\fileHelper.js   420;\"   vp  lineno:420  scope:420:19-422:9\n    //\n    // The re is used to extract 'scope:/beginLine:beginCol-endLine:endCol/'\n    //\n    // Different tags generators may generate this non-standard field in\n    // different formats\n    \"scope_re\": \"(\\\\d.*?):(\\\\d.*?)-(\\\\d.*?):(\\\\d.*?)\"\n}\n",
-			"file": "/home/roman/.config/sublime-text-3/Packages/CTags/CTags.sublime-settings",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 5863,
-				"line_ending": "Unix",
-				"read_only": true,
-				"scratch": true
-			}
-		},
-		{
-			"file": "c-utils.sublime-project",
-			"settings":
-			{
-				"buffer_size": 555,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/.config/sublime-text-3/Packages/User/CTags.sublime-settings",
-			"settings":
-			{
-				"buffer_size": 1882,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "GNUmakefile",
-			"settings":
-			{
-				"buffer_size": 57359,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "make.log",
-			"settings":
-			{
-				"buffer_size": 16794,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/xml/xml_find_all_pred.c",
-			"settings":
-			{
-				"buffer_size": 1902,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 2403 files for \"match_query\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c:\n 1174: match_query(xmlnode* doc, const char* q) {\n 1216:         match_query(doc, query.s);\n 1407:     match_query(doc, xq);\n\n/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.c:\n  929: match_query(xmlnode* doc, const char* q) {\n  968:         match_query(doc, query.s);\n 1019:   match_query(doc, xq);\n\n/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.e.c:\n 5532: match_query(xmlnode* doc, const char* q) {\n 5572:         match_query(doc, query.s);\n 5621:   match_query(doc, xq);\n\n9 matches across 3 files\n",
-			"settings":
-			{
-				"buffer_size": 621,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
 			}
 		}
 	],
@@ -201,16 +105,24 @@
 		"selected_items":
 		[
 			[
-				"ctags",
-				"CTags: Rebuild Tags"
-			],
-			[
 				"outline",
 				"Browse Mode: Outline (Right)"
 			],
 			[
+				"TOKS",
+				"Toks: Quick search for definitions of symbol under cursor"
+			],
+			[
 				"install pac",
 				"Package Control: Install Package"
+			],
+			[
+				"cscope",
+				"Cscope: Look up symbol"
+			],
+			[
+				"ctags",
+				"CTags: Rebuild Tags"
 			],
 			[
 				"remove pac",
@@ -402,17 +314,38 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb",
 		"/home/roman/Dokumente/Sources/c-utils/src"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_absolute.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_realpath.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_find.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_find_prefix.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_foreach.c",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add_tuple_with_data.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add.c",
+		"/home/roman/Dokumente/Sources/sdcc/sdcc/t.txt",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-init-brd.c",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
+		"/home/roman/.config/sublime-text-3/Packages/User/CTags.sublime-settings",
+		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
+		"/home/roman/Dokumente/Sources/c-utils/make.log",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
+		"/home/roman/.config/sublime-text-3/Packages/User/CscopeSublime.sublime-settings",
+		"/home/roman/.config/sublime-text-3/Packages/CTags/CTags.sublime-settings",
 		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_sort.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_chr.3",
 		"/home/roman/Dokumente/Sources/c-utils/examples/byte_copy_example.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.c",
 		"/home/roman/Dokumente/Sources/c-utils/test.circuit",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd",
@@ -444,13 +377,9 @@
 		"/home/roman/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.e.c",
 		"/home/roman/Sources/c-utils/jsonpp.c",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
 		"/home/roman/Dokumente/Sources/c-utils/reg2cmd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/uint32.h",
-		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/.config/sublime-text-3/Packages/SublimeGDB/SublimeGDB.sublime-settings",
 		"/home/roman/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_triml.c",
@@ -489,7 +418,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_xchar.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_fromhex.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_xshort.c",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-init-brd.c",
 		"/home/roman/Dokumente/Sources/c-utils/daemon.c",
 		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
 		"/home/roman/Dokumente/Sources/c-utils/dirlist.sublime-project",
@@ -497,7 +425,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/bsdiffcat.c",
 		"/home/roman/Dokumente/Sources/c-utils/parse.c",
 		"/home/roman/Dokumente/Sources/c-utils/plsconv.c",
-		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
 		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/sln.c",
 		"/home/roman/Dokumente/Sources/pictest/src/timer0.c",
@@ -519,26 +446,11 @@
 		"/home/enki/lotto/helpers/validate.lua",
 		"/home/enki/lotto/helpers/payment.lua",
 		"/home/enki/lotto/stores/RootStore.js",
-		"/home/enki/lotto/config.moon",
-		"/home/enki/lotto/helpers/websocket.moon",
-		"/home/enki/lotto/applications/tickets.lua",
-		"/home/enki/lotto/models/users.moon",
-		"/home/enki/lotto/helpers/app.lua",
-		"/home/enki/lotto/helpers/parsigram.moon",
-		"/home/enki/lotto/models/tickets.moon",
-		"/home/enki/lotto/nginx.conf",
-		"/home/roman/lotto/applications/api.moon",
-		"/home/roman/lotto/helpers/api.moon",
-		"/home/roman/lotto/helpers/parsigram.moon",
-		"/home/roman/lotto/static/parsigram.html",
-		"/home/roman/lotto/config.moon",
-		"/home/enki/lotto/helpers/email.moon",
-		"/home/enki/lotto/helpers/email.lua",
-		"/home/enki/lotto/helpers/perfectmoney.moon"
+		"/home/enki/lotto/config.moon"
 	],
 	"find":
 	{
-		"height": 49.0
+		"height": 41.0
 	},
 	"find_in_files":
 	{
@@ -552,9 +464,64 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"gen_lib",
+			"lib",
+			"sourcedir",
+			"build.as",
+			"build-as",
+			"'L'",
+			"build_as_lib",
+			"gen_lib_rules",
+			"cb_find_top_i",
+			"foreach",
+			"cb_foreach",
+			"fb_foreach",
+			"MAP_",
+			"MAP",
+			"hmap_",
+			"MAP_NEWs",
+			"hmap_destroy",
+			"hmap_",
+			"hmap_init",
+			"hmap_",
+			"MAP_GET",
+			"hmap_",
+			"MAP_GET",
+			"hmap_",
+			"hmap_delete(&",
+			"hmap_delete(\\&",
+			"hmap_delete",
+			"MAP_DELETE",
+			"hmap_",
+			"hmap_add",
+			"hmap-add",
+			"hmap_data",
+			"hmap_darta",
+			"tgt =",
+			"MAP_INSERT",
+			"CUSTOM",
+			"MAP_INSERT",
+			"hmap_get",
+			"hmap_",
+			"hmap_foreach",
+			"hmap_",
+			"hmap_add",
+			"MAP_INSERT",
+			"hmap_",
+			"hmap_search",
+			"MAP_GET",
+			" MAP_",
+			"MAP_",
+			"MAP_SEA",
+			"hmap_",
+			"MAP_NEW",
+			"hmap_",
+			"gen_clean_rule",
+			"clean_rule",
+			"open_",
 			"//.*",
 			"tags",
 			"getnodeset",
@@ -627,62 +594,7 @@
 			"build_part",
 			"element",
 			"E2.5-4/V",
-			"name=\"C1\"",
-			"<inst",
-			"<comp",
-			"<packa.*\"SPAD..\"",
-			"\"SPAD..\"",
-			"\"SPAD....\"",
-			"\"SPAD",
-			"SPAD",
-			"<package.*SPAD",
-			"package.*SPAD",
-			"SPAD",
-			"package=",
-			"SPAD",
-			"spad",
-			"replacec",
-			"replace",
-			"E2.5-4/V",
-			"E2",
-			"lower",
-			"tolower",
-			"R3",
-			"R3\\.",
-			"byte_chrs",
-			"putspad",
-			"spad",
-			"strlist_foreach",
-			"foreach",
-			"_net",
-			"pad",
-			"output_net",
-			"dump_part",
-			"Net:",
-			"byte_diff",
-			"cmp_ref",
-			"strlist_sort",
-			"sort",
-			"strlist_sort",
-			"val_custom",
-			"diff",
-			"str_",
-			"sort.c",
-			"from",
-			"subst",
-			"stralloc_",
-			"strlist_sort",
-			"strlist_sor",
-			"output_net",
-			"MAP_VISIT_ALL",
-			"Part:",
-			"output_net",
-			"part_ref",
-			"output_",
-			"strlist",
-			"output_net",
-			"strlist_count",
-			"output_net"
+			"name=\"C1\""
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -690,6 +602,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			"MAP_DELETE(",
+			"MAP_GET",
 			"",
 			"buffer_2",
 			"pkgname->",
@@ -732,7 +646,7 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/.config/sublime-text-3/Packages/User/CTags.sublime-settings",
+							"current_file": null,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
@@ -752,7 +666,7 @@
 			]
 		},
 		{
-			"selected": 6,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -760,1135 +674,26 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4689,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
-							"auto_complete_triggers":
-							[
-								{
-									"characters": "<",
-									"selector": "text.html"
-								},
-								{
-									"characters": ".#",
-									"selector": "text.html"
-								},
-								{
-									"characters": ".#",
-									"selector": "text.html"
-								},
-								{
-									"characters": ".#",
-									"selector": "text.html"
-								}
-							],
-							"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
-							"outline_rename_mode": false,
-							"rainbowth.lispy": false,
-							"symkeys":
-							[
-								[
-									610,
-									621
-								],
-								[
-									636,
-									650
-								],
-								[
-									666,
-									680
-								],
-								[
-									696,
-									710
-								],
-								[
-									722,
-									736
-								],
-								[
-									752,
-									766
-								],
-								[
-									789,
-									800
-								],
-								[
-									815,
-									829
-								],
-								[
-									843,
-									857
-								],
-								[
-									871,
-									885
-								],
-								[
-									900,
-									914
-								],
-								[
-									926,
-									940
-								],
-								[
-									984,
-									999
-								],
-								[
-									1019,
-									1034
-								],
-								[
-									1589,
-									1601
-								],
-								[
-									1637,
-									1644
-								],
-								[
-									1708,
-									1719
-								],
-								[
-									1798,
-									1808
-								],
-								[
-									1900,
-									1909
-								],
-								[
-									2051,
-									2057
-								],
-								[
-									2176,
-									2185
-								],
-								[
-									2217,
-									2225
-								],
-								[
-									2264,
-									2272
-								],
-								[
-									2315,
-									2322
-								],
-								[
-									3701,
-									3707
-								],
-								[
-									3726,
-									3734
-								],
-								[
-									3949,
-									3965
-								],
-								[
-									4255,
-									4268
-								],
-								[
-									4469,
-									4480
-								],
-								[
-									4645,
-									4656
-								],
-								[
-									5267,
-									5280
-								],
-								[
-									5531,
-									5539
-								],
-								[
-									5758,
-									5765
-								],
-								[
-									5984,
-									5992
-								],
-								[
-									6471,
-									6480
-								],
-								[
-									6648,
-									6656
-								],
-								[
-									6671,
-									6679
-								],
-								[
-									6694,
-									6701
-								],
-								[
-									6716,
-									6725
-								],
-								[
-									7022,
-									7035
-								],
-								[
-									7504,
-									7517
-								],
-								[
-									7697,
-									7711
-								],
-								[
-									8022,
-									8033
-								],
-								[
-									8412,
-									8425
-								],
-								[
-									8913,
-									8931
-								],
-								[
-									9222,
-									9240
-								],
-								[
-									9488,
-									9509
-								],
-								[
-									9724,
-									9744
-								],
-								[
-									9912,
-									9921
-								],
-								[
-									10425,
-									10433
-								],
-								[
-									10741,
-									10757
-								],
-								[
-									11733,
-									11747
-								],
-								[
-									12576,
-									12589
-								],
-								[
-									14175,
-									14187
-								],
-								[
-									14522,
-									14540
-								],
-								[
-									15889,
-									15901
-								],
-								[
-									17526,
-									17535
-								],
-								[
-									18149,
-									18157
-								],
-								[
-									18982,
-									18993
-								],
-								[
-									19129,
-									19138
-								],
-								[
-									19543,
-									19555
-								],
-								[
-									19701,
-									19712
-								],
-								[
-									20019,
-									20029
-								],
-								[
-									20392,
-									20400
-								],
-								[
-									20739,
-									20750
-								],
-								[
-									21218,
-									21229
-								],
-								[
-									21458,
-									21468
-								],
-								[
-									21828,
-									21838
-								],
-								[
-									22396,
-									22407
-								],
-								[
-									22711,
-									22716
-								],
-								[
-									22898,
-									22905
-								],
-								[
-									23367,
-									23370
-								],
-								[
-									23557,
-									23564
-								],
-								[
-									23729,
-									23738
-								],
-								[
-									23922,
-									23930
-								],
-								[
-									24107,
-									24118
-								],
-								[
-									24298,
-									24306
-								],
-								[
-									24577,
-									24585
-								],
-								[
-									25034,
-									25049
-								],
-								[
-									25459,
-									25483
-								],
-								[
-									26084,
-									26095
-								],
-								[
-									26394,
-									26410
-								],
-								[
-									26759,
-									26772
-								],
-								[
-									27057,
-									27076
-								],
-								[
-									29004,
-									29019
-								],
-								[
-									29583,
-									29599
-								],
-								[
-									30424,
-									30435
-								],
-								[
-									31103,
-									31128
-								],
-								[
-									31697,
-									31712
-								],
-								[
-									32094,
-									32114
-								],
-								[
-									32497,
-									32510
-								],
-								[
-									32908,
-									32919
-								],
-								[
-									33187,
-									33206
-								],
-								[
-									34239,
-									34256
-								],
-								[
-									34927,
-									34957
-								],
-								[
-									35460,
-									35480
-								],
-								[
-									36009,
-									36022
-								],
-								[
-									36287,
-									36303
-								],
-								[
-									36625,
-									36640
-								],
-								[
-									36885,
-									36898
-								],
-								[
-									38238,
-									38252
-								],
-								[
-									38586,
-									38601
-								],
-								[
-									38992,
-									39006
-								],
-								[
-									41250,
-									41259
-								],
-								[
-									42358,
-									42382
-								],
-								[
-									45243,
-									45267
-								],
-								[
-									46263,
-									46285
-								],
-								[
-									48089,
-									48104
-								],
-								[
-									49101,
-									49114
-								],
-								[
-									49964,
-									49978
-								],
-								[
-									53794,
-									53812
-								],
-								[
-									54373,
-									54390
-								],
-								[
-									56452,
-									56467
-								],
-								[
-									57439,
-									57455
-								],
-								[
-									59864,
-									59881
-								],
-								[
-									60894,
-									60910
-								],
-								[
-									61430,
-									61443
-								],
-								[
-									63384,
-									63395
-								],
-								[
-									63899,
-									63907
-								],
-								[
-									64325,
-									64335
-								],
-								[
-									64742,
-									64755
-								],
-								[
-									66580,
-									66597
-								],
-								[
-									87660,
-									87665
-								],
-								[
-									91302,
-									91306
-								]
-							],
-							"symlist":
-							[
-								" Ⓜ  MAX_CMD_LEN … — macro object",
-								" Ⓜ  DEFAULT_OBJEXT … — macro object",
-								" Ⓜ  DEFAULT_LIBEXT … — macro object",
-								" Ⓜ  DEFAULT_LIBPFX … — macro object",
-								" Ⓜ  DEFAULT_EXEEXT … — macro object",
-								" Ⓜ  DEFAULT_PPSEXT … — macro object",
-								" Ⓜ  MAX_CMD_LEN … — macro object",
-								" Ⓜ  DEFAULT_OBJEXT … — macro object",
-								" Ⓜ  DEFAULT_LIBEXT … — macro object",
-								" Ⓜ  DEFAULT_LIBPFX … — macro object",
-								" Ⓜ  DEFAULT_EXEEXT … — macro object",
-								" Ⓜ  DEFAULT_PPSEXT … — macro object",
-								" Ⓜ  DEFAULT_PATHSEP … — macro object",
-								" Ⓜ  DEFAULT_PATHSEP … — macro object",
-								" Ⓣ  machine_type ; — typedef",
-								" Ⓣ  os_type ; — typedef",
-								" Ⓣ  system_type ; — typedef",
-								" Ⓣ  sourcefile ; — typedef",
-								" Ⓣ  sourcedir ; — typedef",
-								" Ⓣ  target ; — typedef",
-								"—Ⓕ– debug_int ( ) { … } — function",
-								"—Ⓕ– debug_sa ( ) { … } — function",
-								"—Ⓕ– debug_sl ( ) { … } — function",
-								"—Ⓕ– debug_s ( ) { … } — function",
-								" Ⓜ  _mkdir … — macro object",
-								"—Ⓕ– mkdir_sa ( ) { … } — function",
-								"—Ⓕ– mkdir_components ( ) { … } — function",
-								"—Ⓕ– stralloc_weak ( ) { … } — function",
-								"—Ⓕ– put_newline ( ) { … } — function",
-								"—Ⓕ– set_command ( ) { … } — function",
-								"—Ⓕ– strarray_dump ( ) { … } — function",
-								"—Ⓕ– debug_sa ( ) { … } — function",
-								"—Ⓕ– debug_s ( ) { … } — function",
-								"—Ⓕ– debug_sl ( ) { … } — function",
-								"—Ⓕ– debug_int ( ) { … } — function",
-								"—Ⓜ– debug_sa ( ) … — macro function",
-								"—Ⓜ– debug_sl ( ) … — macro function",
-								"—Ⓜ– debug_s ( ) … — macro function",
-								"—Ⓜ– debug_int ( ) … — macro function",
-								"—Ⓕ– path_prefix_b ( ) { … } — function",
-								"—Ⓕ– path_prefix_s ( ) { … } — function",
-								"—Ⓕ– path_extension ( ) { … } — function",
-								"—Ⓕ– path_output ( ) { … } — function",
-								"—Ⓕ– path_wildcard ( ) { … } — function",
-								"—Ⓕ– extract_build_type ( ) { … } — function",
-								"—Ⓕ– format_linklib_lib ( ) { … } — function",
-								"—Ⓕ– format_linklib_switch ( ) { … } — function",
-								"—Ⓕ– format_linklib_dummy ( ) { … } — function",
-								"—Ⓕ– scan_main ( ) { … } — function",
-								"—Ⓕ– has_main ( ) { … } — function",
-								"—Ⓕ– extract_includes ( ) { … } — function",
-								"—Ⓕ– extract_tokens ( ) { … } — function",
-								"—Ⓕ– extract_pptok ( ) { … } — function",
-								"—Ⓕ– get_includes ( ) { … } — function",
-								"—Ⓕ– rule_command_subst ( ) { … } — function",
-								"—Ⓕ– rule_command ( ) { … } — function",
-								"—Ⓕ– subst_var ( ) { … } — function",
-								"—Ⓕ– get_rule ( ) { … } — function",
-								"—Ⓕ– get_rule_sa ( ) { … } — function",
-								"—Ⓕ– find_rule ( ) { … } — function",
-								"—Ⓕ– find_rule_sa ( ) { … } — function",
-								"—Ⓕ– find_rule_b ( ) { … } — function",
-								"—Ⓕ– match_rule ( ) { … } — function",
-								"—Ⓕ– add_path ( ) { … } — function",
-								"—Ⓕ– add_srcpath ( ) { … } — function",
-								"—Ⓕ– add_path_sa ( ) { … } — function",
-								"—Ⓕ– new_source ( ) { … } — function",
-								"—Ⓕ– add_source ( ) { … } — function",
-								"—Ⓕ– get_sources ( ) { … } — function",
-								"—Ⓕ– isset ( ) { … } — function",
-								"—Ⓕ– get_var ( ) { … } — function",
-								"—Ⓕ– var ( ) { … } — function",
-								"—Ⓕ– set_var ( ) { … } — function",
-								"—Ⓕ– unset_var ( ) { … } — function",
-								"—Ⓕ– push_var ( ) { … } — function",
-								"—Ⓕ– push_var_sa ( ) { … } — function",
-								"—Ⓕ– push_lib ( ) { … } — function",
-								"—Ⓕ– with_lib ( ) { … } — function",
-								"—Ⓕ– add_include_dir ( ) { … } — function",
-								"—Ⓕ– include_dirs_to_cppflags ( ) { … } — function",
-								"—Ⓕ– push_define ( ) { … } — function",
-								"—Ⓕ– get_rules_by_cmd ( ) { … } — function",
-								"—Ⓕ– dirname_alloc ( ) { … } — function",
-								"—Ⓕ– populate_sourcedirs ( ) { … } — function",
-								"—Ⓕ– dump_sourcedirs ( ) { … } — function",
-								"—Ⓕ– includes_to_libs ( ) { … } — function",
-								"—Ⓕ– target_ptrs ( ) { … } — function",
-								"—Ⓕ– target_dep_list_recursive ( ) { … } — function",
-								"—Ⓕ– target_dep_list ( ) { … } — function",
-								"—Ⓕ– target_deps_indirect ( ) { … } — function",
-								"—Ⓕ– deps_indirect ( ) { … } — function",
-								"—Ⓕ– deps_direct ( ) { … } — function",
-								"—Ⓕ– print_target_deps_r ( ) { … } — function",
-								"—Ⓕ– print_target_deps ( ) { … } — function",
-								"—Ⓕ– remove_indirect_deps_recursive ( ) { … } — function",
-								"—Ⓕ– remove_indirect_deps ( ) { … } — function",
-								"—Ⓕ– get_sourcedir ( ) { … } — function",
-								"—Ⓕ– get_sourcedir_sa ( ) { … } — function",
-								"—Ⓕ– get_sourcedir_b ( ) { … } — function",
-								"—Ⓕ– deps_for_libs ( ) { … } — function",
-								"—Ⓕ– target_add_dep ( ) { … } — function",
-								"—Ⓕ– target_add_deps ( ) { … } — function",
-								"—Ⓕ– gen_clean_rule ( ) { … } — function",
-								"—Ⓕ– dump_rule ( ) { … } — function",
-								"—Ⓕ– gen_srcdir_compile_rules ( ) { … } — function",
-								"—Ⓕ– gen_simple_compile_rules ( ) { … } — function",
-								"—Ⓕ– lib_rule_for_sourcedir ( ) { … } — function",
-								"—Ⓕ– gen_srcdir_rule ( ) { … } — function",
-								"—Ⓕ– gen_lib_rules ( ) { … } — function",
-								"—Ⓕ– gen_link_rules ( ) { … } — function",
-								"—Ⓕ– output_build_rules ( ) { … } — function",
-								"—Ⓕ– gen_install_rules ( ) { … } — function",
-								"—Ⓕ– output_all_vars ( ) { … } — function",
-								"—Ⓕ– output_make_rule ( ) { … } — function",
-								"—Ⓕ– output_ninja_rule ( ) { … } — function",
-								"—Ⓕ– output_all_rules ( ) { … } — function",
-								"—Ⓕ– output_script ( ) { … } — function",
-								"—Ⓕ– set_machine ( ) { … } — function",
-								"—Ⓕ– set_chip ( ) { … } — function",
-								"—Ⓕ– set_system ( ) { … } — function",
-								"—Ⓕ– set_make_type ( ) { … } — function",
-								"—Ⓕ– set_compiler_type ( ) { … } — function",
-								"—Ⓕ– usage ( ) { … } — function",
-								"—Ⓕ– main ( ) { … } — function"
-							],
 							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "eagle-init-brd.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 12304,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4390,
-								4390
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 5455.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "eagle-gen-cmds.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 39951,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								15276,
-								15278
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 11507.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 105106,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3010,
-								3010
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"typescript_plugin_format_options":
-							{
-								"convertTabsToSpaces": true,
-								"indentSize": 2,
-								"tabSize": 2
-							}
-						},
-						"translation.x": 0.0,
-						"translation.y": 3192.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "/home/roman/.config/sublime-text-3/Packages/CTags/CTags.sublime-settings",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5863,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5863,
-								5863
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScriptNext - ES6 Syntax/JSON (JavaScriptNext).tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "c-utils.sublime-project",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 555,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								188,
-								188
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScriptNext - ES6 Syntax/JSON (JavaScriptNext).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 420.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "/home/roman/.config/sublime-text-3/Packages/User/CTags.sublime-settings",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1882,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								163,
-								163
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScriptNext - ES6 Syntax/JSON (JavaScriptNext).tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true,
-							"typescript_plugin_format_options":
-							{
-								"convertTabsToSpaces": true,
-								"indentSize": 4,
-								"tabSize": 4
-							}
-						},
-						"translation.x": 0.0,
-						"translation.y": 420.0,
-						"zoom_level": 1.0
-					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "GNUmakefile",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 57359,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								57322,
-								57322
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Makefile/Makefile.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 46939.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "make.log",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16794,
-						"regions":
-						{
-							"bookmarks":
-							{
-								"flags": 144,
-								"regions":
-								[
-									[
-										772,
-										869
-									],
-									[
-										869,
-										968
-									],
-									[
-										968,
-										1068
-									],
-									[
-										1068,
-										1170
-									],
-									[
-										2206,
-										2358
-									],
-									[
-										2718,
-										2846
-									],
-									[
-										3417,
-										3556
-									],
-									[
-										3643,
-										3746
-									],
-									[
-										8638,
-										16759
-									]
-								],
-								"scope": "bookmarks"
-							},
-							"error":
-							{
-								"flags": 144,
-								"icon": "Packages/Log Highlight/icons/Danish Royalty/error.png",
-								"regions":
-								[
-									[
-										8638,
-										16759
-									]
-								],
-								"scope": "bookmark"
-							},
-							"warning":
-							{
-								"flags": 144,
-								"icon": "Packages/Log Highlight/icons/Danish Royalty/warning.png",
-								"regions":
-								[
-									[
-										772,
-										869
-									],
-									[
-										869,
-										968
-									],
-									[
-										968,
-										1068
-									],
-									[
-										1068,
-										1170
-									],
-									[
-										2206,
-										2358
-									],
-									[
-										2718,
-										2846
-									],
-									[
-										3417,
-										3556
-									],
-									[
-										3643,
-										3746
-									]
-								],
-								"scope": "bookmark"
-							}
-						},
-						"selection":
-						[
-							[
-								16794,
-								16794
-							]
-						],
-						"settings":
-						{
-							"always_prompt_for_file_reload": false,
-							"color_scheme": "Packages/Log Highlight/Log Highlight.hidden-tmTheme",
-							"floating": false,
-							"logh_lastv": false,
-							"need_to_save": false,
-							"resfr_wa": true,
-							"result_base_dir": "/home/roman/Dokumente/Sources/c-utils",
-							"result_file_regex": "[\"']?([\\w\\d\\:\\\\\\/\\.\\-\\=]+\\.\\w+[\\w\\d]*)[\"']?\\s*[,:on line\\(]{1,9}\\s*(\\d+)\\)?",
-							"syntax": "Packages/Log Highlight/Log Highlight.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1255.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "lib/xml/xml_find_all_pred.c",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 1902,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								858,
-								858
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 102.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 621,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										111,
-										122
-									],
-									[
-										169,
-										180
-									],
-									[
-										207,
-										218
-									],
-									[
-										295,
-										306
-									],
-									[
-										353,
-										364
-									],
-									[
-										389,
-										400
-									],
-									[
-										479,
-										490
-									],
-									[
-										537,
-										548
-									],
-									[
-										573,
-										584
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								120,
-								120
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
 					"type": "text"
 				}
 			]
@@ -1896,7 +701,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 37.0
+		"height": 29.0
 	},
 	"input":
 	{
@@ -1970,7 +775,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 90.0
+		"height": 74.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1979,6 +784,34 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"path_abs",
+				"lib/path/path_absolute.c"
+			],
+			[
+				"realp",
+				"lib/path/path_realpath.c"
+			],
+			[
+				"hmap_add",
+				"lib/hmap/hmap_add.c"
+			],
+			[
+				"hmap",
+				"lib/hmap.h"
+			],
+			[
+				"eagle-to",
+				"eagle-to-circuit.c"
+			],
+			[
+				"open.h",
+				"lib/open.h"
+			],
+			[
+				"GNU",
+				"GNUmakefile"
+			],
 			[
 				"GNUMa",
 				"GNUmakefile"
@@ -2046,14 +879,6 @@
 			[
 				"sort.c",
 				"lib/strlist/strlist_sort.c"
-			],
-			[
-				"eagle-to",
-				"eagle-to-circuit.c"
-			],
-			[
-				"hmap",
-				"lib/hmap.h"
 			],
 			[
 				"hmap_free",
@@ -2452,7 +1277,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
+	"selected_group": 1,
 	"settings":
 	{
 	},

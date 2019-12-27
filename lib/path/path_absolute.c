@@ -7,8 +7,10 @@ path_absolute(const char* path, stralloc* sa) {
 
   if(!path_isabs(path)) {
     path_getcwd(sa);
-    stralloc_catc(sa, PATHSEP_C);
-    stralloc_cats(sa, path);
+    if(!str_equal(path, ".")) {
+      stralloc_catc(sa, PATHSEP_C);
+      stralloc_cats(sa, path);
+    }
     return 1;
   }
 
