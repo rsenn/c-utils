@@ -427,10 +427,10 @@ main(int argc, char* argv[]) {
   strlist_cat(&opts, &objs);
 
   stralloc_init(&sa);
-// strlist_joins(&dirs, &sa, " , ");
+  // strlist_joins(&dirs, &sa, " , ");
   strarray_joins(&v, &sa, "'\n'");
   stralloc_nul(&sa);
-//
+  //
 
   if(!stralloc_endb(&realcmd, EXEEXT, str_len(EXEEXT)))
     stralloc_cats(&realcmd, EXEEXT);
@@ -467,7 +467,7 @@ main(int argc, char* argv[]) {
 
   errno = 0;
   ret = process_create(realcmd.s, (const char**)av, 0, 0);
-// ret = execvp(realcmd.s, av);
+  // ret = execvp(realcmd.s, av);
 
   if(ret == -1) {
     errmsg_warnsys("process_create:", 0);

@@ -53,8 +53,7 @@ extern buffer* optbuf;
 static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
                                    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
                                    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-                                   'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-                                  };
+                                   'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 typedef struct {
   enum { X86, ARM, PIC } arch;
@@ -686,25 +685,25 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen)
 
     if(i + 2 <= in->len && *p == '$' && str_chr("@^<|", p[1]) < 4) {
       switch(p[1]) {
-      case '@': {
-        size_t p = out->len;
-        stralloc_cats(out, rule->name);
-        byte_replace(&out->s[p], out->len - p, pathsep_args == '/' ? '\\' : '/', pathsep_args);
-        break;
-      }
-      case '^': {
-        stralloc_catb(out, prereq, plen);
-        break;
-      }
-      case '|': {
-        stralloc_subst(out, prereq, plen, " ", make_sep_inline ? make_sep_inline : "\n ");
-        break;
-      }
-      case '<': {
-        size_t n = byte_chr(prereq, plen, ' ');
-        stralloc_catb(out, prereq, n);
-        break;
-      }
+        case '@': {
+          size_t p = out->len;
+          stralloc_cats(out, rule->name);
+          byte_replace(&out->s[p], out->len - p, pathsep_args == '/' ? '\\' : '/', pathsep_args);
+          break;
+        }
+        case '^': {
+          stralloc_catb(out, prereq, plen);
+          break;
+        }
+        case '|': {
+          stralloc_subst(out, prereq, plen, " ", make_sep_inline ? make_sep_inline : "\n ");
+          break;
+        }
+        case '<': {
+          size_t n = byte_chr(prereq, plen, ' ');
+          stralloc_catb(out, prereq, n);
+          break;
+        }
       }
       ++i;
     } else {
@@ -2100,7 +2099,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
  */
 target*
 gen_simple_compile_rules(
-  HMAP_DB* rules, sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd) {
+    HMAP_DB* rules, sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd) {
   sourcefile* src;
   stralloc obj;
   stralloc_init(&obj);
@@ -2276,7 +2275,7 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     // debug_s("base", base);
 
     if(strlist_contains(&build_as_lib, base) /* || (str_equal(base, "lib") && mach.arch != PIC)*/ || base[0] == '.' ||
-        base[0] == '\0')
+       base[0] == '\0')
       continue;
 
     // gen_srcdir_rule(rules, srcdir, base);
@@ -2609,7 +2608,7 @@ output_make_rule(buffer* b, target* rule) {
   */
 
   if(num_deps == 0 && str_diffn(rule->name, workdir.sa.s, workdir.sa.len) &&
-      !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
+     !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, 0);
   }
 
@@ -2715,7 +2714,7 @@ output_ninja_rule(buffer* b, target* rule) {
     stralloc path;
     stralloc_init(&path);
     stralloc_subst(
-      &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");
+        &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");
 
     buffer_puts(b, "build ");
     buffer_putsa(b, &path);
@@ -3043,7 +3042,7 @@ set_compiler_type(const char* compiler) {
    * Visual C++ compiler
    */
   if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
-      str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
+     str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
 
     objext = ".obj";
     binext = ".exe";
@@ -3786,35 +3785,34 @@ main(int argc, char* argv[]) {
   size_t n;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
-    {"objext", 1, NULL, 'O'},
-    {"exeext", 1, NULL, 'B'},
-    {"libext", 1, NULL, 'X'},
-    {"create-libs", 0, &cmd_libs, 1},
-    {"create-objs", 0, &cmd_objs, 1},
-    {"create-bins", 0, &cmd_bins, 1},
-    {"no-create-libs", 0, &no_libs, 1},
-    {"no-create-objs", 0, &no_objs, 1},
-    {"no-create-bins", 0, &no_bins, 1},
-    {"install", 0, 0, 'i'},
-    {"includedir", 0, 0, 'I'},
-    /*                           {"install-bins", 0, &inst_bins, 1},
-                              {"install-libs", 0, &inst_libs, 1},*/
-    {"builddir", 1, 0, 'd'},
-    {"compiler-type", 1, 0, 't'},
-    {"make-type", 1, 0, 'm'},
-    {"arch", 1, 0, 'a'},
-    {"system", 1, 0, 's'},
-    {"release", 0, &build_type, BUILD_TYPE_RELEASE},
-    {"relwithdebinfo", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},
-    {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
-    {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
-    {"define", 1, NULL, 'D'},
-    {"build-as-lib", 0, 0, 'L'},
-    {"cross", 0, 0, 'c'},
-    {"chip", 1, 0, 'p'},
-    {"preprocessor", 1, 0, 'P'},
-    {0, 0, 0, 0}
-  };
+                           {"objext", 1, NULL, 'O'},
+                           {"exeext", 1, NULL, 'B'},
+                           {"libext", 1, NULL, 'X'},
+                           {"create-libs", 0, &cmd_libs, 1},
+                           {"create-objs", 0, &cmd_objs, 1},
+                           {"create-bins", 0, &cmd_bins, 1},
+                           {"no-create-libs", 0, &no_libs, 1},
+                           {"no-create-objs", 0, &no_objs, 1},
+                           {"no-create-bins", 0, &no_bins, 1},
+                           {"install", 0, 0, 'i'},
+                           {"includedir", 0, 0, 'I'},
+                           /*                           {"install-bins", 0, &inst_bins, 1},
+                                                     {"install-libs", 0, &inst_libs, 1},*/
+                           {"builddir", 1, 0, 'd'},
+                           {"compiler-type", 1, 0, 't'},
+                           {"make-type", 1, 0, 'm'},
+                           {"arch", 1, 0, 'a'},
+                           {"system", 1, 0, 's'},
+                           {"release", 0, &build_type, BUILD_TYPE_RELEASE},
+                           {"relwithdebinfo", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},
+                           {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
+                           {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
+                           {"define", 1, NULL, 'D'},
+                           {"build-as-lib", 0, 0, 'L'},
+                           {"cross", 0, 0, 'c'},
+                           {"chip", 1, 0, 'p'},
+                           {"preprocessor", 1, 0, 'P'},
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 #ifdef _MSC_VER
@@ -3832,46 +3830,46 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(c) {
-    case 'h':
-      usage(argv[0]);
-      ret = 0;
-      goto exit;
-    case 'c': cross_compile = optarg; break;
-    case 'o': outfile = optarg; break;
-    case 'O': objext = optarg; break;
-    case 'B': binext = optarg; break;
-    case 'L': strlist_push(&build_as_lib, optarg); break;
-    case 'X': libext = optarg; break;
-    case 'd': dir = optarg; break;
-    case 't': toolchain = compiler = optarg; break;
-    case 'm': make = optarg; break;
-    case 'P': preproc = optarg; break;
-    case 'a': set_machine(optarg); break;
-    case 's': set_system(optarg); break;
-    case 'p':
-      if(optarg)
-        set_chip(optarg);
-      break;
-    case 'l': strarray_push(&libs, optarg); break;
-    case 'I': {
-      buffer_puts(buffer_2, "Add -I: ");
-      buffer_puts(buffer_2, optarg);
-      buffer_putnlflush(buffer_2);
-      strarray_push(&includes, optarg);
-      break;
-    }
-    case 'i':
-      inst_bins = 1;
-      inst_libs = 1;
-      break;
-    case 'D': push_define(optarg); break;
-    default:
-      buffer_puts(buffer_2, "No such option '-");
-      buffer_putc(buffer_2, c);
-      buffer_putsflush(buffer_2, "'\n");
-      // usage(argv[0]);
-      ret = 1;
-      goto exit;
+      case 'h':
+        usage(argv[0]);
+        ret = 0;
+        goto exit;
+      case 'c': cross_compile = optarg; break;
+      case 'o': outfile = optarg; break;
+      case 'O': objext = optarg; break;
+      case 'B': binext = optarg; break;
+      case 'L': strlist_push(&build_as_lib, optarg); break;
+      case 'X': libext = optarg; break;
+      case 'd': dir = optarg; break;
+      case 't': toolchain = compiler = optarg; break;
+      case 'm': make = optarg; break;
+      case 'P': preproc = optarg; break;
+      case 'a': set_machine(optarg); break;
+      case 's': set_system(optarg); break;
+      case 'p':
+        if(optarg)
+          set_chip(optarg);
+        break;
+      case 'l': strarray_push(&libs, optarg); break;
+      case 'I': {
+        buffer_puts(buffer_2, "Add -I: ");
+        buffer_puts(buffer_2, optarg);
+        buffer_putnlflush(buffer_2);
+        strarray_push(&includes, optarg);
+        break;
+      }
+      case 'i':
+        inst_bins = 1;
+        inst_libs = 1;
+        break;
+      case 'D': push_define(optarg); break;
+      default:
+        buffer_puts(buffer_2, "No such option '-");
+        buffer_putc(buffer_2, c);
+        buffer_putsflush(buffer_2, "'\n");
+        // usage(argv[0]);
+        ret = 1;
+        goto exit;
     }
   }
 
@@ -4264,7 +4262,7 @@ main(int argc, char* argv[]) {
     if(inst_bins || inst_libs)
       gen_install_rules(rules);
 
-fail:
+  fail:
     buffer_putm_internal(buffer_1, comment, " Generated by:", newline, comment, "  ", 0);
     buffer_putsa(buffer_1, &cmdline.sa);
     buffer_putsflush(buffer_1, newline);

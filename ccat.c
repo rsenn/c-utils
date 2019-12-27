@@ -93,22 +93,22 @@ main(int argc, char* argv[]) {
 
   while((opt = getopt(argc, argv, "123456789dt:o:h")) != -1) {
     switch(opt) {
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9': level = opt - '0'; break;
-    case 'd': decompress = 1; break;
-    case 't': in_type = compression_from_ext(optarg); break;
-    case 'o': out_filename = optarg; break;
-    case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-    default: /* '?' */
-      buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n");
-      exit(EXIT_FAILURE);
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9': level = opt - '0'; break;
+      case 'd': decompress = 1; break;
+      case 't': in_type = compression_from_ext(optarg); break;
+      case 'o': out_filename = optarg; break;
+      case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
+      default: /* '?' */
+        buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n");
+        exit(EXIT_FAILURE);
     }
   }
 
@@ -149,19 +149,19 @@ main(int argc, char* argv[]) {
     buffer cbuf;
 
     switch(type) {
-    case C_GZ:
-      if(decompress)
-        buffer_inflate(&cbuf, input);
-      else
-        buffer_deflate(&cbuf, output, level);
-      break;
-    case C_BZ2: buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
-    case C_XZ:
-    case C_LZMA: buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
-    default:
-      buffer_putm_2(buffer_2, "ERROR: Unable to detect compression type from ", in_filename);
-      buffer_putnlflush(buffer_2);
-      exit(EXIT_FAILURE);
+      case C_GZ:
+        if(decompress)
+          buffer_inflate(&cbuf, input);
+        else
+          buffer_deflate(&cbuf, output, level);
+        break;
+      case C_BZ2: buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
+      case C_XZ:
+      case C_LZMA: buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
+      default:
+        buffer_putm_2(buffer_2, "ERROR: Unable to detect compression type from ", in_filename);
+        buffer_putnlflush(buffer_2);
+        exit(EXIT_FAILURE);
     }
 
     if(decompress == 0 && output == buffer_1) {

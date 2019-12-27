@@ -36,7 +36,7 @@ static char ipbuf[IP4_FMT];
 void
 usage(char* prog) {
   buffer_putm_internal(
-    buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port> <target>", 0);
+      buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port> <target>", 0);
   buffer_putnlflush(buffer_2);
 }
 
@@ -128,18 +128,18 @@ main(int argc, char* argv[]) {
 
   while((c = getopt(argc, argv, "qt:u:")) != -1) {
     switch(c) {
-    case 'q': verbose = 0; break;
-    case 't':
-      if(scan_long(optarg, &timeout_sec) == 0) {
-        usage(argv[0]);
-        return 108;
-      }
-      break;
-    case 'u':
-      if(scan_long(optarg, &timeout_usec) == 0)
-        usage(argv[0]);
-      break;
-    default: usage(argv[0]); return 107;
+      case 'q': verbose = 0; break;
+      case 't':
+        if(scan_long(optarg, &timeout_sec) == 0) {
+          usage(argv[0]);
+          return 108;
+        }
+        break;
+      case 'u':
+        if(scan_long(optarg, &timeout_usec) == 0)
+          usage(argv[0]);
+        break;
+      default: usage(argv[0]); return 107;
     }
   }
 

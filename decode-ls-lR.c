@@ -135,28 +135,28 @@ main(int argc, char* argv[]) {
     char* arg = argv[argi];
     if(arg[0] == '-') {
       switch(arg[1]) {
-      case 's':
-        argi++;
-        if(argi < argc)
-          skip_fields = atoi(argv[argi]);
-        break;
-      case 'd':
-        argi++;
-        if(argi < argc) {
+        case 's':
+          argi++;
+          if(argi < argc)
+            skip_fields = atoi(argv[argi]);
+          break;
+        case 'd':
+          argi++;
+          if(argi < argc) {
 
-          delimiters = argv[argi];
-          delimiters_len = str_len(delimiters);
-        }
-        break;
-      case 'p':
-        argi++;
-        if(argi < argc) {
-          stralloc_copys(&dirp, argv[argi]);
-          if(dirp.len && dirp.s[dirp.len - 1] != '/')
-            stralloc_catb(&dirp, "/", 1);
-        }
-        break;
-      default: usage(argv[0]); break;
+            delimiters = argv[argi];
+            delimiters_len = str_len(delimiters);
+          }
+          break;
+        case 'p':
+          argi++;
+          if(argi < argc) {
+            stralloc_copys(&dirp, argv[argi]);
+            if(dirp.len && dirp.s[dirp.len - 1] != '/')
+              stralloc_catb(&dirp, "/", 1);
+          }
+          break;
+        default: usage(argv[0]); break;
       }
     } else
       break;

@@ -501,7 +501,7 @@ build_part(xmlnode* part) {
   if(pkgname && str_len(pkgname)) {
     p.pkg = get_entry(packages, pkgname);
   }
-  //assert(p.pkg);
+  // assert(p.pkg);
   if(p.pkg) {
     pins = array_length(&p.pkg->pads, sizeof(struct net*));
     p.pins = calloc(sizeof(struct net*), pins);
@@ -1071,7 +1071,7 @@ print_xml_rect(buffer* b, xmlnode* e) {
   x2 = xml_get_attribute(e, "x2");
   y2 = xml_get_attribute(e, "y2");
   buffer_putm_internal(
-    b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", 0);
+      b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", 0);
   buffer_flush(b);
 }
 
@@ -1332,13 +1332,12 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
-    {"layer", 1, NULL, 'l'},
-    {"layers", 0, NULL, 'L'},
-    {"draw", 0, NULL, 'd'},
-    {"align", 0, NULL, 'a'},
-    {"align-by", 0, NULL, 'A'},
-    {0, 0, 0, 0}
-  };
+                           {"layer", 1, NULL, 'l'},
+                           {"layers", 0, NULL, 'L'},
+                           {"draw", 0, NULL, 'd'},
+                           {"align", 0, NULL, 'a'},
+                           {"align-by", 0, NULL, 'A'},
+                           {0, 0, 0, 0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "LdhaA:l:", opts, &index);
@@ -1348,16 +1347,16 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(c) {
-    case 'h': usage(argv[0]); return 0;
-    case 'L': do_list_layers = 1; break;
-    case 'd': do_draw_measures = 1; break;
-    case 'a': do_align_coords = 1; break;
-    case 'A':
-      do_align_coords = 1;
-      alignment = human_to_mm(optarg);
-      break;
-    case 'l': current_layer = optarg; break;
-    default: usage(argv[0]); return 1;
+      case 'h': usage(argv[0]); return 0;
+      case 'L': do_list_layers = 1; break;
+      case 'd': do_draw_measures = 1; break;
+      case 'a': do_align_coords = 1; break;
+      case 'A':
+        do_align_coords = 1;
+        alignment = human_to_mm(optarg);
+        break;
+      case 'l': current_layer = optarg; break;
+      default: usage(argv[0]); return 1;
     }
   }
 

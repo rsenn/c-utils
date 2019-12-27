@@ -152,7 +152,7 @@ output_rotate(const char* name, long angle) {
 /* ----------------------------------------------------------------------- */
 void
 each_part(part_t* p) {
-  if(1) { //p->device[0] != '\0' || p->value[0] != '\0') {
+  if(1) { // p->device[0] != '\0' || p->value[0] != '\0') {
 
     output_move(p->name, p->x - min_x, p->y - min_y);
 

@@ -17,8 +17,7 @@ static const char* const s_flags[] = {"SHF_WRITE",
                                       "SHF_GROUP",
                                       "SHF_TLS",
                                       "SHF_COMPRESSED",
-                                      0
-                                     };
+                                      0};
 static const char* const p_flags[] = {"PF_X", "PF_W", "PF_R", 0};
 static size_t size;
 static void* base;
@@ -34,8 +33,7 @@ get_p_type(int type) {
                                         "PT_SHLIB  ",
                                         "PT_PHDR   ",
                                         "PT_TLS    ",
-                                        "PT_NUM    "
-                                       };
+                                        "PT_NUM    "};
 
   if(type < (int)(sizeof(p_types) / sizeof(p_types[0])))
     return p_types[type];

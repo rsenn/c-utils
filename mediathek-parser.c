@@ -218,7 +218,7 @@ process_entry(char** av, int ac) {
     unsigned d;
 
     char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6], *description = av[8], *url = av[9],
-          *url_klein = av[13];
+         *url_klein = av[13];
 
     stralloc url_lo;
     stralloc_init(&url_lo);
@@ -419,11 +419,11 @@ main(int argc, char* argv[]) {
   buffer b;
 
   struct longopt opts[] = {
-    {"csv", 0, NULL, 'c'},
-    {"debug", 0, NULL, 'd'},
-    {"low", 0, NULL, 'l'},
-    {"format", 1, NULL, 'F'},
-    {0, 0, 0, 0},
+      {"csv", 0, NULL, 'c'},
+      {"debug", 0, NULL, 'd'},
+      {"low", 0, NULL, 'l'},
+      {"format", 1, NULL, 'F'},
+      {0, 0, 0, 0},
   };
 
   while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {
@@ -431,11 +431,11 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(opt) {
-    case 'c': csv = 1; break;
-    case 'd': debug++; break;
-    case 'l': lowq++; break;
-    case 'f': datetime_format = optarg; break;
-    default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n"); exit(EXIT_FAILURE);
+      case 'c': csv = 1; break;
+      case 'd': debug++; break;
+      case 'l': lowq++; break;
+      case 'f': datetime_format = optarg; break;
+      default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n"); exit(EXIT_FAILURE);
     }
   }
 

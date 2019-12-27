@@ -229,15 +229,14 @@ main(int argc, char** argv) {
   int c, index = 0;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
-    {"imports", 0, &list_imports, 'i'},
-    {"exports", 0, &list_exports, 'e'},
-    {"deps", 0, &list_deps, 'd'},
-    {"sections", 0, &list_sections, 's'},
-    {"export-directory", 0, &print_export_dir, 'E'},
-    {"data-directory", 0, &print_data_dir, 'D'},
-    {"optional-header", 0, &print_opt_header, 'O'},
-    {0, 0, 0, 0}
-  };
+                           {"imports", 0, &list_imports, 'i'},
+                           {"exports", 0, &list_exports, 'e'},
+                           {"deps", 0, &list_deps, 'd'},
+                           {"sections", 0, &list_sections, 's'},
+                           {"export-directory", 0, &print_export_dir, 'E'},
+                           {"data-directory", 0, &print_data_dir, 'D'},
+                           {"optional-header", 0, &print_opt_header, 'O'},
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -253,18 +252,18 @@ main(int argc, char** argv) {
       continue;
 
     switch(c) {
-    case 'h': usage(argv[0]); return 0;
-    case 'i': list_imports = 1; break;
-    case 'e': list_exports = 1; break;
-    case 'd': list_deps = 1; break;
-    case 's': list_sections = 1; break;
-    case 'E': print_export_dir = 1; break;
-    case 'D': print_data_dir = 1; break;
-    case 'O': print_opt_header = 1; break;
-    default: {
-      usage(argv[0]);
-      return 1;
-    }
+      case 'h': usage(argv[0]); return 0;
+      case 'i': list_imports = 1; break;
+      case 'e': list_exports = 1; break;
+      case 'd': list_deps = 1; break;
+      case 's': list_sections = 1; break;
+      case 'E': print_export_dir = 1; break;
+      case 'D': print_data_dir = 1; break;
+      case 'O': print_opt_header = 1; break;
+      default: {
+        usage(argv[0]);
+        return 1;
+      }
     }
   }
 

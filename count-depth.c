@@ -62,9 +62,7 @@ main(int argc, char* argv[]) {
     /*  	if(!str_diff(argv[argi], "-l") || !str_diff(argv[argi], "--list")) {
             opt_list = 1;
         } else*/
-    {
-      break;
-    }
+    { break; }
     argi++;
   }
   return count_depth();
