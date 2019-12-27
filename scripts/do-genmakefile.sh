@@ -15,6 +15,14 @@ get_num() {
   eval 'echo "${'$N'}"')
 }
 
+CMD=
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -x | -d | --debug) CMD="echo" ;;
+    *) break ;;
+  esac
+done
+
 : ${BUILDDIR="build/\$C"}
 
 : ${FILENAME="\$FN\${EXT:+.\$EXT}"}
@@ -42,11 +50,12 @@ set -f
 if [ $# -eq 0 ]; then
   set -- lib *.c 3rdparty tests
   set -- "$@" -DHAVE_{ZLIB,LIBBZ2,LIBLZMA}=1
+  set -- "$@" -I3rdparty/{zlib,bzip2,xz/liblzma/api}
 elif [ -d "$1" ]; then
   SRCDIRS=$(find "$1" -name "*.c" -exec dirname {} \; |sort -u)
   INCDIRS=$(find "$1" -name "*.h" -exec dirname {} \; |sort -u)
   OUTPUT_FILE="${1%/}/$OUTPUT_FILE"
-  set -- -a
+  set -- --create-libs
   for INCDIR in $INCDIRS; do
     set -- "$@" -I "$INCDIR"
   done
@@ -58,7 +67,6 @@ fi
 #set -- genmakefile --minsizerel "$@" -lzlib -lbz2 -llzma 
 set -- genmakefile --minsizerel "$@" 
 
-: ${CMD=echo}
 echo Count: $(count "$BUILD_TOOLS") 1>&2
 for C in $COMPILERS; do 
   for N in $(seq 1 $(count "$BUILD_TOOLS")); do
@@ -66,12 +74,14 @@ for C in $COMPILERS; do
     MAKE=`get_num $N $BUILD_TOOLS`
     EXT=`get_num $N $EXTENSIONS`
     FN=`get_num $N $FILENAMES`
-eval OUTFILE="$OUTPUT_FILE"
+    set -f 
+eval "OUTFILE=\"$OUTPUT_FILE\""
+set +f
 OUTDIR=`dirname "$OUTFILE"`
 mkdir -p "$OUTDIR"
-   GENMK="$CMD $* -t $C -m $MAKE -o $OUTPUT_FILE"
+   GENMK="$CMD $* -t $C -m $MAKE -o $OUTFILE"
    #echo "GENMK='$GENMK'" 1>&2
-   (set -f
+   ([ -n "$CMD" ] && set -f
    IFS=" "
    eval "$GENMK")
   done

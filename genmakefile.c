@@ -27,6 +27,44 @@
 
 extern buffer* optbuf;
 
+#if 0
+#define MAP_T cbmap_t
+#define MAP_SIZE cbmap_count
+#define MAP_NEW(map) map = cbmap_new()
+#define MAP_VISIT_ALL cbmap_visit_all
+//#define MAP_GET(map, key, klen) cbmap_get
+static inline void* MAP_GET(cbmap_t map, const void* key, size_t klen) {
+  void* ret = NULL;
+  size_t rlen = 0;
+  cbmap_get(map, key, klen, &ret, &rlen);
+  return (ret && rlen) ? ret : NULL;
+}
+
+#define MAP_INSERT cbmap_insert
+#else
+typedef HMAP_DB* MAP_T;
+#define MAP_SIZE hmap_size
+#define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
+#define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
+  {                                                                                                                    \
+    TUPLE* t;                                                                                                          \
+    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                  \
+  }
+//#define MAP_GET(map, key, klen, pdata, plen) (*(size_t*)(plen) = sizeof(*(pdata)), *(void**)(pdata) = hmap_get(map,
+// key, klen)) #define MAP_GET(map, key, klen, pdata, plen) (*(size_t*)(plen) = sizeof(*(pdata)), *(void**)(pdata) =
+// hmap_get(map, key, klen))
+static inline void*
+MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
+  TUPLE* t = NULL;
+  if(hmap_search(map, key, klen, &t) == HMAP_SUCCESS)
+    return t->vals.val_chars;
+
+  return NULL;
+}
+
+#define MAP_INSERT(map, key, klen, data, dlen) hmap_set(&map, key, klen, data, dlen)
+#endif
+
 #if WINDOWS
 #define MAX_CMD_LEN 1023
 
@@ -128,7 +166,7 @@ static strlist pptoks;
 
 static int no_objs = 0, no_libs = 0, no_bins = 0;
 
-static HMAP_DB *sourcedirs, *rules, *vars;
+static MAP_T sourcedirs, rules, vars;
 
 static const char *toolchain, *compiler, *make, *preproc;
 static const char* newline = "\n";
@@ -827,12 +865,10 @@ get_rule(const char* name) {
   size_t len = str_len(name);
 
   if(rules == NULL)
-    hmap_init(1024, &rules);
+    MAP_NEW(rules);
 
-  if(hmap_search(rules, name, len + 1, &t) == HMAP_SUCCESS) {
-    ret = t->vals.val_custom;
-  } else {
-    ret = malloc(sizeof(target));
+  if(!(ret = MAP_GET(rules, name, len + 1))) {
+       ret = malloc(sizeof(target));
     byte_zero(ret, sizeof(target));
     // ret->serial = 0;
 
@@ -3844,7 +3880,7 @@ main(int argc, char* argv[]) {
       case 't': toolchain = compiler = optarg; break;
       case 'm': make = optarg; break;
       case 'P': preproc = optarg; break;
-      case 'a': set_machine(optarg); break;
+      case 'A': set_machine(optarg); break;
       case 's': set_system(optarg); break;
       case 'p':
         if(optarg)
