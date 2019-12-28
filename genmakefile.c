@@ -2658,8 +2658,8 @@ output_var(buffer* b, HMAP_DB* vars, const char* name) {
       {
         const char* ref;
         strlist_foreach_s(&refvars, ref) {
-      /*    buffer_putm_internal(buffer_2, "recurse referenced var: ", ref, "\n", 0);
-          buffer_flush(buffer_2);*/
+          /*    buffer_putm_internal(buffer_2, "recurse referenced var: ", ref, "\n", 0);
+              buffer_flush(buffer_2);*/
 
           output_var(b, vars, ref);
         }
@@ -3973,7 +3973,7 @@ main(int argc, char* argv[]) {
       case 'o': outfile = optarg; break;
       case 'O': objext = optarg; break;
       case 'B': binext = optarg; break;
-      case 'S': strlist_push(&build_as_lib, optarg ? optarg :argv[optind]); break;
+      case 'S': strlist_push(&build_as_lib, optarg ? optarg : argv[optind]); break;
       case 'X': libext = optarg; break;
       case 'd': dir = optarg; break;
       case 't': toolchain = compiler = optarg; break;
@@ -4423,7 +4423,7 @@ main(int argc, char* argv[]) {
       buffer_puts(buffer_2, "varnames: ");
       strlist_dump(buffer_2, &varnames);
 
-      output_all_vars(buffer_1,vars,  &varnames);
+      output_all_vars(buffer_1, vars, &varnames);
     }
 
     if(str_equal(make, "gmake")) {
