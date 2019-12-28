@@ -30,6 +30,16 @@ put_hex(buffer* b, uint32 v) {
   }
 }
 
+
+void
+put_value(buffer* b, const char*name, uint32 v) {
+    buffer_puts(b, name);
+    buffer_puts(b, ": ");
+   put_hex(b, v);
+
+   buffer_putnlflush(b);
+}
+
 void
 coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
 
@@ -74,10 +84,33 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
   buffer_putnlflush(b);
 }
 
+
+static const char* coff_symtab_mchp_types[] = {
+"null",
+"void",
+"character",
+"short integer",
+"integer",
+"long integer",
+"floating point",
+"double length floating point",
+"structure",
+"union",
+"enumeration",
+"member of enumeration",
+"unsigned character",
+"unsigned short",
+"unsigned integer",
+"unsigned long"
+};
+
 void
 coff_list_symbols(buffer* b, void* coff) {
   range symtab;
   const char* strtab = coff_get_strtab(coff, NULL);
+    coff_file_header* fhdr = coff_header_file(coff);
+
+    char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 || fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
   coff_symtab_entry* e;
   long i = 0;
 
@@ -107,10 +140,40 @@ coff_list_symbols(buffer* b, void* coff) {
     stralloc name;
     stralloc_init(&name);
 
+if(microchip) {
+  coff_symtab_entry_microchip* entry = e;
+
+  if(entry->zeroes != 0)
+      stralloc_copyb(&name, entry->name, sizeof(entry->name));
+    else
+      stralloc_copys(&name, &strtab[entry->offset]);
+
+    stralloc_nul(&name);
+    if(((uint16)(uint8)name.s[0]) > 127 || ((uint16)(uint8)name.s[0]) < 32)
+      name.s[0] = '\0';
+
+     buffer_putlong0(b, i, 3);
+      buffer_putspace(b);
+      put_hex(b, entry->value);
+      buffer_putspace(b);
+      buffer_putspad(b, name.s, 64);
+      buffer_puts(b, "0x");
+      buffer_putxlong0(b, (long)(uint16)entry->scnum, 4);
+      buffer_putspace(b);     
+       buffer_putspad(b, coff_symtab_mchp_types[entry->type], 16);
+      buffer_putspace(b);
+             buffer_putlong0(b, (long)(uint32)entry->numaux, 2);
+      
+      buffer_putspace(b);
+      buffer_putnlflush(b);
+
+
+}  else {
+
     if(e->e.zeroes != 0)
       stralloc_copyb(&name, e->e.name, sizeof(e->e.name));
-    else
-      stralloc_copys(&name, &strtab[e->e.offset]);
+   /* else
+      stralloc_copys(&name, &strtab[e->e.offset]);*/
 
     if(e->e.sclass == 0) {
       stralloc_zero(&name);
@@ -120,6 +183,8 @@ coff_list_symbols(buffer* b, void* coff) {
     }
 
     stralloc_nul(&name);
+
+
 
     if(!isspace(name.s[0]) && name.s[0] != 0x08) {
       const char* sclass = coff_sclass_name(e->e.sclass);
@@ -196,6 +261,7 @@ coff_list_symbols(buffer* b, void* coff) {
     i += numaux;
 
     ++i;
+  }
   }
 }
 
@@ -275,11 +341,37 @@ main(int argc, char** argv) {
 
     if(base) {
       coff_file_header* header = coff_header_file(base);
+      put_value(buffer_2, "COFF_FILE_HEADER\nmachine", uint16_get(&header->machine));
+      put_value(buffer_2, "number_of_sections", uint16_get(&header->number_of_sections));
+      put_value(buffer_2, "time_date_stamp", uint32_get(&header->time_date_stamp));
+      put_value(buffer_2, "pointer_to_symbol_table", uint32_get(&header->pointer_to_symbol_table));
+      put_value(buffer_2, "number_of_symbols" , uint32_get(&header->number_of_symbols));
+      put_value(buffer_2, "size_of_optional_header", uint16_get(&header->size_of_optional_header));
+      put_value(buffer_2, "characteristics", uint16_get(&header->characteristics));
 
-      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64) {
+        buffer_putnlflush(buffer_2);
+
+
+
+      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 
+        && header->machine != COFF_FILE_MACHINE_MICROCHIP_V1
+        && header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
         buffer_putsflush(buffer_2, "not COFF\n");
         return -1;
       }
+
+      coff_opt_header* opthdr = coff_header_opt(base);
+
+      if(opthdr->magic == COFF_OPT_MAGIC_MICROCHIP_V1) {
+      coff_opt_header_microchip* opthdr_mchp = (void*)opthdr;
+
+      put_value(buffer_2,"COFF_OPT_HEADER\nmagic", uint16_get(&opthdr_mchp->magic));
+      put_value(buffer_2,"vstamp", uint16_get(&opthdr_mchp->vstamp));
+      put_value(buffer_2,"proc_type",  /*uint32_get*/(opthdr_mchp->proc_type));
+      put_value(buffer_2,"rom_width_bits", /*uint32_get*/(opthdr_mchp->rom_width_bits));
+      put_value(buffer_2,"ram_width_bits", /*uint32_get*/(opthdr_mchp->ram_width_bits));
+
+    }
 
       // if(!(nt_headers->coff_header.characteristics & COFF_FILE_DLL)) {
       // buffer_putsflush(buffer_2, "not DLL\n");

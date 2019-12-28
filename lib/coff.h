@@ -59,6 +59,8 @@ coff_file_header;
 #define COFF_FILE_MACHINE_CEF 0x0cef
 #define COFF_FILE_MACHINE_EBC 0x0ebc
 #define COFF_FILE_SYSTEM 0x1000
+#define COFF_FILE_MACHINE_MICROCHIP_V1 0x1234
+#define COFF_FILE_MACHINE_MICROCHIP_V2 0x1240
 #define COFF_FILE_DLL 0x2000
 #define COFF_FILE_UP_SYSTEM_ONLY 0x4000
 #define COFF_FILE_BYTES_REVERSED_HI 0x8000
@@ -106,6 +108,19 @@ typedef struct __unaligned {
   uint32 base_of_data;
 }
 coff_opt_header;
+
+typedef struct __unaligned
+{
+ uint16 magic;
+  uint32 vstamp;              /* version of the compiler assembler */
+  uint32 proc_type;
+  uint32 rom_width_bits;
+  uint32 ram_width_bits;
+} coff_opt_header_microchip;
+
+
+#define COFF_OPT_MAGIC_MICROCHIP_V1             0x5678
+#define COFF_OPT_MAGIC_MICROCHIP_V2             0x5678
 
 typedef struct __unaligned {
   union {
@@ -195,6 +210,48 @@ typedef union {
   section;
 
 } coff_symtab_entry;
+
+
+#define COFF_SSYMBOL_NAME_MAX   8   
+
+/* symbol table entry */
+typedef struct __attribute__ ((packed))  {
+  union __attribute__ ((packed)) {
+    char       name[COFF_SSYMBOL_NAME_MAX]; /* symbol name if less than 8 characters */
+    struct __attribute__ ((packed)) {
+      uint32 zeroes;         /* first four characters are 0 */
+      uint32 offset;        /* pointer to the string table */
+    };
+  };
+
+  uint32     value;           /* symbol value */
+  int16      scnum;         /* section number */
+  uint32     type;            /* type */
+  int8       sclass;        /* storage class */
+  uint8      numaux;      /* number of auxiliary symbols */
+} coff_symtab_entry_microchip;
+
+#define COFF_SYMTAB_MCHP_TYPE_NULL 0 /* null */
+#define COFF_SYMTAB_MCHP_TYPE_VOID 1 /* void */
+#define COFF_SYMTAB_MCHP_TYPE_CHAR 2 /* character */
+#define COFF_SYMTAB_MCHP_TYPE_SHORT 3 /* short integer */
+#define COFF_SYMTAB_MCHP_TYPE_INT 4 /* integer */
+#define COFF_SYMTAB_MCHP_TYPE_LONG 5 /* long integer */
+#define COFF_SYMTAB_MCHP_TYPE_FLOAT 6 /* floating point */
+#define COFF_SYMTAB_MCHP_TYPE_DOUBLE 7 /* double length floating point */
+#define COFF_SYMTAB_MCHP_TYPE_STRUCT 8 /* structure */
+#define COFF_SYMTAB_MCHP_TYPE_UNION 9 /* union */
+#define COFF_SYMTAB_MCHP_TYPE_ENUM 10 /* enumeration */
+#define COFF_SYMTAB_MCHP_TYPE_MOE 11 /* member of enumeration */
+#define COFF_SYMTAB_MCHP_TYPE_UCHAR 12 /* unsigned character */
+#define COFF_SYMTAB_MCHP_TYPE_USHORT 13 /* unsigned short */
+#define COFF_SYMTAB_MCHP_TYPE_UINT 14 /* unsigned integer */
+#define COFF_SYMTAB_MCHP_TYPE_ULONG 15 /* unsigned long */
+
+
+#define SYMBOL_SIZE_v1          18
+#define SYMBOL_SIZE_v2          20
+
 
 #define COFF_C_NULL 0     /* null */
 #define COFF_C_AUTO 1     /* automatic variable */

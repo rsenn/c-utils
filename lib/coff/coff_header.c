@@ -20,5 +20,5 @@ coff_header_sections(void* obj, uint16* nsections) {
     uint16 num = uint16_get(&coff->number_of_sections);
     *nsections = num;
   }
-  return (coff_section_header*)(opthdr + optsize);
+  return (coff_section_header*)((char*)opthdr + optsize);
 }

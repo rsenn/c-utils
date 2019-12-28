@@ -7,7 +7,7 @@ coff_symbol_table(void* coff) {
   range r;
 
   r.start = (char*)coff + uint32_get(&fhdr->pointer_to_symbol_table);
-  r.elem_size = 18;
+  r.elem_size = fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2 ? 20 : 18;
   r.end = r.start + r.elem_size * uint32_get(&fhdr->number_of_symbols);
 
   return r;
