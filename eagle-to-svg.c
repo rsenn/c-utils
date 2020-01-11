@@ -29,7 +29,7 @@ static const char* palette[16] = {"#000000",
                                   "#aa0000",
                                   "#00aa00",
                                   "#55ff55",
-                                   "#aaaaaa",
+                                  "#aaaaaa",
                                   "#00aaaa",
                                   "#55ffff",
                                   "#ff5555",
@@ -38,8 +38,7 @@ static const char* palette[16] = {"#000000",
                                   "#aa5500",
                                   "#ffff55",
                                   "#aaaaaa",
-                                  "#ffffff"
-                               };
+                                  "#ffffff"};
 
 static buffer input, output;
 static xmlnodeset nodeset;
@@ -104,12 +103,49 @@ get_color(xmlnode* node) {
   return palette[c];
 }
 
+xmlnode*
+pad(double x, double y) {
+  xmlnode* node = xml_element("path");
+
+  /*   <path fill="green" fill-rule="evenodd" stroke="green"
+   *    stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"
+   *     stroke-width=".265"
+   *     d="M1.27.55a.72.72 0 100 1.44.72.72 0 000-1.44zm0 .167c.324 0 .587.248.587.553 0 .306-.263.553-.587.553-.325
+   * 0-.587-.247-.587-.553 0-.305.262-.553.587-.553z"
+   *   />
+   */
+
+  stralloc sa;
+  stralloc_init(&sa);
+  stralloc_cats(&sa, "translate(");
+  stralloc_catdouble(&sa, x / 2.54, 3);
+  stralloc_cats(&sa, ", ");
+  stralloc_catdouble(&sa, y / 2.54 - 0.25 - 1, 3);
+  stralloc_cats(&sa, ") scale(0.5 0.5) ");
+  stralloc_nul(&sa);
+
+  xml_set_attribute(node, "fill", "green");
+  xml_set_attribute(node, "fill-rule", "evenodd");
+  xml_set_attribute(node, "stroke", "green");
+  xml_set_attribute(node, "stroke-linecap", "round");
+  xml_set_attribute(node, "stroke-linejoin", "round");
+  xml_set_attribute(node, "stroke-miterlimit", "10");
+  xml_set_attribute(node, "stroke-width", ".265");
+  xml_set_attribute(node,
+                    "d",
+                    "M0 2.004a.536.536 0 100 1.072.536.536 0 000-1.072zm0 .124c.242 0 .438.185.438.412 0 "
+                    ".228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
+  xml_set_attribute(node, "transform", sa.s);
+  stralloc_free(&sa);
+  return node;
+}
+
 int
 main(int argc, char* argv[]) {
   xmlnode* doc;
   xmlnode** nptr;
   xmlnode* signals;
-  xmlnode *svgdoc, *svgelem, *svggroup;
+  xmlnode *svgdoc, *svgelem, *svggroup, *svgdefs;
   TUPLE* t;
   int argi = 1;
   const char* input_file = "/home/roman/Dokumente/Sources/pictest/eagle/PIC18F2550-USB+ICSP-Board.brd";
@@ -146,15 +182,15 @@ main(int argc, char* argv[]) {
 
   MAP_FOREACH(layers, t) {
     const char* color = MAP_GET(colors, t->key, t->key_len);
-unsigned int c = 0;
-scan_uint(color, &c);
-
+    unsigned int c = 0;
+    scan_uint(color, &c);
 
     buffer_put(buffer_2, t->key, t->key_len - 1);
     buffer_puts(buffer_2, ": ");
     buffer_put(buffer_2, t->vals.val_chars, t->data_len - 1);
     buffer_puts(buffer_2, ": ");
-    buffer_puts(buffer_2, color);    buffer_puts(buffer_2, ": ");
+    buffer_puts(buffer_2, color);
+    buffer_puts(buffer_2, ": ");
     buffer_puts(buffer_2, palette[c]);
     buffer_putnlflush(buffer_2);
   }
@@ -169,18 +205,27 @@ scan_uint(color, &c);
   xml_set_attribute(svgelem, "xmlns", "http://www.w3.org/2000/svg");
   xml_set_attribute(svgelem, "viewBox", "0 0 21 29.7");
   xml_add_child(svgdoc, svgelem);
-  xml_add_child(svgelem, xml_element("defs"));
+  xml_add_child(svgelem, (svgdefs = xml_element("defs")));
   xml_add_child(svgelem, (svggroup = xml_element("g")));
 
+  xmlnode* clip_path = xml_element("clipPath");
+  xml_set_attribute(clip_path, "id", "pad-clip");
+  xml_add_child(svgdefs, clip_path);
+  xmlnode* clip_p = xml_element("path");
+  xml_set_attribute(
+      clip_p,
+      "d",
+      "M0 2.128c.242 0 .438.185.438.412 0 .228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
+  xml_add_child(clip_path, clip_p);
   xml_set_attribute(svggroup, "stroke-width", "0.3");
   xml_set_attribute(svggroup, "stroke-linecap", "round");
   xml_set_attribute(svggroup, "fill", "none");
 
-  nodeset = xml_find_all_1(doc, xml_match_name, "wire");
+  nodeset = xml_find_all_1(signals, xml_match_name, "wire");
 
   xmlnodeset_foreach(&nodeset, nptr) {
     rect_t rect = get_rect(*nptr);
- //   print_rect(&rect, buffer_2);
+    //   print_rect(&rect, buffer_2);
 
     double width = xml_get_attribute_double(*nptr, "width") / 2.54;
     const char* layer = xml_get_attribute(*nptr, "layer");
@@ -193,7 +238,9 @@ scan_uint(color, &c);
     layer = MAP_GET(layers, layer, str_len(layer) + 1);
     xml_set_attribute(line, "class", layer);
     xml_add_child(svggroup, line);
+    xml_add_child(svggroup, pad(rect.x1 > rect.x2 ? rect.x2 : rect.x1, rect.y1 > rect.y2 ? rect.y2 : rect.y1));
   }
+  // nodeset = xml_find_all_1(signals, xml_match_name, "wire");
 
   xml_print(svgdoc, &output);
   /*
