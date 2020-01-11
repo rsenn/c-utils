@@ -87,7 +87,7 @@ double xml_get_attribute_double(xmlnode*, const char* attr);
 xmlnode* xml_remove(xmlnode**);
 void xml_delete(xmlnode*);
 void xml_add_child(xmlnode*, xmlnode* node);
-void xml_set_attribute_double(xmlnode*, const char* a, double d);
+void xml_set_attribute_double(xmlnode*, const char* a, double d, int prec);
 void xml_set_attribute(xmlnode*, const char* a, const char* v);
 xmlnode* xml_element(const char*);
 
@@ -96,6 +96,8 @@ xmlnode* xml_element(const char*);
 #define xmlnodeset_item(ns, i) ((ns)->nodes[i])
 
 #define xmlnodeset_clear(ns) byte_zero((ns), sizeof(xmlnodeset))
+
+#define xmlnodeset_foreach(ns, it) for((it) = &(ns)->nodes[0]; (it) != &(ns)->nodes[(ns)->size]; ++(it))
 
 __inl xmlnode**
 xmlnodeset_begin(const xmlnodeset* ns) {

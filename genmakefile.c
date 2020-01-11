@@ -2419,8 +2419,13 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
       }
 
       stralloc_zero(&bin);
-      path_extension(obj.s, &bin, binext);
 
+      if(!cmd_libs) {
+        stralloc_nul(&outdir);
+        path_output(path_basename(outdir.sa.s), &bin, binext);
+      } else {
+        path_extension(obj.s, &bin, binext);
+      }
       add_path_sa(&all->prereq, &bin);
 
       if((link = get_rule_sa(&bin))) {
@@ -4456,7 +4461,7 @@ main(int argc, char* argv[]) {
     if(str_equal(make, "gmake")) {
       stralloc_nul(&vpath.sa);
 
-      buffer_putm_internal(buffer_1, "\nvpath ", vpath.sa.s, "\n", 0);
+      //      buffer_putm_internal(buffer_1, "\nvpath ", vpath.sa.s, "\n", 0);
 
       stralloc_replacec(&vpath.sa, ' ', ':');
       buffer_putm_internal(buffer_1, "VPATH = ", vpath.sa.s, "\n\n", 0);

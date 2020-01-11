@@ -60,60 +60,13 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "coff_symbol_name",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 16,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
-			}
-		},
-		{
-			"contents": "#ifndef COFF_H\n#define COFF_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#include \"uint8.h\"\n#include \"uint16.h\"\n#include \"uint32.h\"\n#include \"range.h\"\n\ntypedef struct __unaligned {\n  uint16 machine; /* machine_type */\n  uint16 number_of_sections;\n  uint32 time_date_stamp;\n  uint32 pointer_to_symbol_table;\n  uint32 number_of_symbols;\n  uint16 size_of_optional_header;\n  uint16 characteristics; /* image_characteristics */\n}\ncoff_file_header;\n\n#define COFF_FILE_RELOCS_STRIPPED 0x0001\n#define COFF_FILE_EXECUTABLE_IMAGE 0x0002\n#define COFF_FILE_LINE_NUMS_STRIPPED 0x0004\n#define COFF_FILE_LOCAL_SYMS_STRIPPED 0x0008\n#define COFF_FILE_AGGRESIVE_WS_TRIM 0x0010\n#define COFF_FILE_LARGE_ADDRESS_AWARE 0x0020\n#define COFF_FILE_BYTES_REVERSED_LO 0x0080\n#define COFF_FILE_32BIT_MACHINE 0x0100\n#define COFF_FILE_MACHINE_I386 0x014c\n#define COFF_FILE_MACHINE_R3000 0x0162\n#define COFF_FILE_MACHINE_R4000 0x0166\n#define COFF_FILE_MACHINE_R10000 0x0168\n#define COFF_FILE_MACHINE_WCEMIPSV2 0x0169\n#define COFF_FILE_MACHINE_ALPHA 0x0184\n#define COFF_FILE_MACHINE_POWERPC 0x01f0\n#define COFF_FILE_MACHINE_SH3 0x01a2\n#define COFF_FILE_MACHINE_SH3DSP 0x01a3\n#define COFF_FILE_MACHINE_SH3E 0x01a4\n#define COFF_FILE_MACHINE_SH4 0x01a6\n#define COFF_FILE_MACHINE_SH5 0x01a8\n#define COFF_FILE_MACHINE_ARM 0x01c0\n#define COFF_FILE_MACHINE_THUMB 0x01c2\n#define COFF_FILE_MACHINE_ARMNT 0x01c4\n#define COFF_FILE_MACHINE_ARMV7 0x01c4\n#define COFF_FILE_MACHINE_AM33 0x01d3\n#define COFF_FILE_MACHINE_POWERPCFP 0x01f1\n#define COFF_FILE_DEBUG_STRIPPED 0x0200\n#define COFF_FILE_MACHINE_IA64 0x0200\n#define COFF_FILE_MACHINE_MIPS16 0x0266\n#define COFF_FILE_MACHINE_ALPHA64 0x0284\n#define COFF_FILE_MACHINE_MIPSFPU 0x0366\n#define COFF_FILE_REMOVABLE_RUN_FROM_SWAP 0x0400\n#define COFF_FILE_MACHINE_MIPSFPU16 0x0466\n#define COFF_FILE_MACHINE_TRICORE 0x0520\n#define COFF_FILE_NET_RUN_FROM_SWAP 0x0800\n#define COFF_FILE_MACHINE_CEF 0x0cef\n#define COFF_FILE_MACHINE_EBC 0x0ebc\n#define COFF_FILE_SYSTEM 0x1000\n#define COFF_FILE_MACHINE_MICROCHIP_V1 0x1234\n#define COFF_FILE_MACHINE_MICROCHIP_V2 0x1240\n#define COFF_FILE_DLL 0x2000\n#define COFF_FILE_UP_SYSTEM_ONLY 0x4000\n#define COFF_FILE_BYTES_REVERSED_HI 0x8000\n#define COFF_FILE_MACHINE_AMD64 0x8664\n#define COFF_FILE_MACHINE_M32R 0x9041\n#define COFF_FILE_MACHINE_ARM64 0xaa64\n#define COFF_FILE_MACHINE_CEE 0xc0ee\n\n#define COFF_SECTION_NAME_SIZE 8\n\n/* Quoting pecoff_v8.docx: \"Entries in the section table are numbered starting from one (1)\". */\ntypedef struct __unaligned {\n  char name[COFF_SECTION_NAME_SIZE]; /* TODO: Should we use char instead? */\n  union {\n    uint32 physical_address; /* same value as next field */\n    uint32 virtual_size;\n  };\n  uint32 virtual_address;\n  uint32 size_of_raw_data;\n  uint32 pointer_to_raw_data;\n  uint32 pointer_to_relocations; /* always zero in executables */\n  uint32 pointer_to_linenumbers; /* deprecated */\n  uint16 number_of_relocations;\n  uint16 number_of_linenumbers; /* deprecated */\n  uint32 characteristics;       /* section_characteristics */\n}\ncoff_section_header;\n\n#define COFF_SECTION_UNDEF ((int16)0)       // external symbol\n#define COFF_SECTION_ABSOLUTE ((int16)-1)   // value of symbol is absolute\n#define COFF_SECTION_DEBUG ((int16)-2)      // debugging symbol - value is meaningless\n#define COFF_SECTION_N_TV ((int16)-3)       // indicates symbol needs preload transfer vector\n#define COFF_SECTION_P_TV ((int16)-4)       // indicates symbol needs postload transfer vector\n#define COFF_SECTION_REMOVE_ME ((int16)-99) // Specific for objconv program: Debug or exception section being removed\n\ntypedef struct __unaligned {\n  uint16 magic;\n  uint8 major_linker_version;\n  uint8 minor_linker_version;\n  uint32 size_of_code;\n  uint32 size_of_initialized_data;\n  uint32 size_of_uninitialized_data;\n  uint32 address_of_entry_point;\n  uint32 base_of_code;\n  uint32 base_of_data;\n}\ncoff_opt_header;\n\ntypedef struct __unaligned\n{\n uint16 magic;\n  uint32 vstamp;              /* version of the compiler assembler */\n  uint32 proc_type;\n  uint32 rom_width_bits;\n  uint32 ram_width_bits;\n} coff_opt_header_microchip;\n\n\n#define COFF_OPT_MAGIC_MICROCHIP_V1             0x5678\n#define COFF_OPT_MAGIC_MICROCHIP_V2             0x5678\n\ntypedef struct __unaligned {\n  union {\n    uint32 fname; // function name symbol table index, if Line == 0\n    uint32 addr;  // section-relative address of code that corresponds to line\n  };\n  uint16 line; // line number\n}\ncoff_line_number;\n\n/*\n *  All symbols and sections have the following definition\n */\n#define COFF_E_SYMNMLEN 8 /* # characters in a short symbol name\t*/\n\ntypedef union {\n  struct __unaligned {\n    union {\n      char name[COFF_E_SYMNMLEN]; /* Symbol name (first 8 characters) */\n      struct {\n        uint32 zeroes; /* Leading zeros */\n        uint32 offset; /* Offset if this is a header section */\n      };\n    };\n\n    uint32 value; /* Value (address) of the segment */\n    uint16 scnum; /* Section number */\n    uint16 type;  /* Type of section */\n    uint8 sclass; /* Loader class */\n    uint8 numaux; /* Number of auxiliary entries which follow */\n  }\n  e;\n\n  // Function definition\n  struct __unaligned {\n    uint32 tag_index;                // Index to .bf entry\n    uint32 code_size;                // Size of function code\n    uint32 pointer_to_line_number;   // Pointer to line number entry\n    uint32 pointer_to_next_function; // Symbol table index of next function\n    uint16 x_tvndx;                  // Unused\n  }\n  func;\n\n  // .bf abd .ef\n  struct __unaligned {\n    uint32 unused1;\n    uint16 source_line_number; // Line number in source file\n    uint16 unused2;\n    uint32 unused3;                  // Pointer to line number entry\n    uint32 pointer_to_next_function; // Symbol table index of next function\n    uint16 unused4;                  // Unused\n  }\n  bfef;\n\n  // Weak external\n  struct __unaligned {\n    uint32 tag_index;       // Symbol table index of alternative symbol2\n    uint32 characteristics; //\n    uint32 unused1;\n    uint32 unused2;\n    uint16 unused3; // Unused\n  }\n  weak;\n\n  // File name\n  struct __unaligned {\n    char file_name[18]; //           File name\n  }\n  filename;\n\n  // String table index\n  struct {         // MS COFF uses multiple aux records rather than a string table entry!\n    uint32 zeroes; // zeroes if name file name longer than 18\n    uint32 offset; // string table entry\n  } stringindex;\n\n  // Section definition\n  struct __unaligned {\n    uint32 length;\n    uint16 number_of_relocations; // Line number in source file\n    uint16 number_of_line_numbers;\n    uint32 check_sum; // Pointer to line number entry\n    uint16 number;    // Symbol table index of next function\n    uint8 selection;  // Unused\n    uint8 unused1[3];\n  }\n  section;\n\n} coff_symtab_entry;\n\n\n#define COFF_SSYMBOL_NAME_MAX   8   \n\n/* symbol table entry */\ntypedef struct __attribute__ ((packed))  {\n  union __attribute__ ((packed)) {\n    char       name[COFF_SSYMBOL_NAME_MAX]; /* symbol name if less than 8 characters */\n    struct __attribute__ ((packed)) {\n      uint32 zeroes;         /* first four characters are 0 */\n      uint32 offset;        /* pointer to the string table */\n    };\n  };\n\n  uint32     value;           /* symbol value */\n  int16      scnum;         /* section number */\n  uint32     type;            /* type */\n  int8       sclass;        /* storage class */\n  uint8      numaux;      /* number of auxiliary symbols */\n} coff_symtab_entry_microchip;\n\n#define COFF_SYMTAB_MCHP_TYPE_NULL 0 /* null */\n#define COFF_SYMTAB_MCHP_TYPE_VOID 1 /* void */\n#define COFF_SYMTAB_MCHP_TYPE_CHAR 2 /* character */\n#define COFF_SYMTAB_MCHP_TYPE_SHORT 3 /* short integer */\n#define COFF_SYMTAB_MCHP_TYPE_INT 4 /* integer */\n#define COFF_SYMTAB_MCHP_TYPE_LONG 5 /* long integer */\n#define COFF_SYMTAB_MCHP_TYPE_FLOAT 6 /* floating point */\n#define COFF_SYMTAB_MCHP_TYPE_DOUBLE 7 /* double length floating point */\n#define COFF_SYMTAB_MCHP_TYPE_STRUCT 8 /* structure */\n#define COFF_SYMTAB_MCHP_TYPE_UNION 9 /* union */\n#define COFF_SYMTAB_MCHP_TYPE_ENUM 10 /* enumeration */\n#define COFF_SYMTAB_MCHP_TYPE_MOE 11 /* member of enumeration */\n#define COFF_SYMTAB_MCHP_TYPE_UCHAR 12 /* unsigned character */\n#define COFF_SYMTAB_MCHP_TYPE_USHORT 13 /* unsigned short */\n#define COFF_SYMTAB_MCHP_TYPE_UINT 14 /* unsigned integer */\n#define COFF_SYMTAB_MCHP_TYPE_ULONG 15 /* unsigned long */\n\n\n#define SYMBOL_SIZE_v1          18\n#define SYMBOL_SIZE_v2          20\n\n\n#define COFF_C_NULL 0     /* null */\n#define COFF_C_AUTO 1     /* automatic variable */\n#define COFF_C_EXT 2      /* external symbol */\n#define COFF_C_STATIC 3   /* static */\n#define COFF_C_REG 4      /* register variable */\n#define COFF_C_EXTDEF 5   /* external definition */\n#define COFF_C_LABEL 6    /* label */\n#define COFF_C_ULABEL 7   /* undefined label */\n#define COFF_C_MOS 8      /* member of structure */\n#define COFF_C_ARG 9      /* function argument */\n#define COFF_C_STRTAG 10  /* structure tag */\n#define COFF_C_MOU 11     /* member of union */\n#define COFF_C_UNTAG 12   /* union tag */\n#define COFF_C_TPDEF 13   /* type definition */\n#define COFF_C_USTATIC 14 /* undefined static */\n#define COFF_C_ENTAG 15   /* enumeration tag */\n#define COFF_C_MOE 16     /* member of enumeration */\n#define COFF_C_REGPARM 17 /* register parameter */\n#define COFF_C_FIELD 18   /* bit field */\n#define COFF_C_AUTOARG 19 /* auto argument */\n#define COFF_C_LASTENT 20 /* dummy entry (end of block) */\n#define COFF_C_BLOCK 100  /* \".bb\" or \".eb\" */\n#define COFF_C_FCN 101    /* \".bf\" or \".ef\" */\n#define COFF_C_EOS 102    /* end of structure */\n#define COFF_C_FILE 103   /* file name */\n#define COFF_C_LINE 104   /* line # reformatted as symbol table entry */\n#define COFF_C_ALIAS 105  /* duplicate tag */\n#define COFF_C_HIDDEN 106 /* ext symbol in dmert public lib */\n#define COFF_C_EFCN 255   /* physical end of function */\n\ncoff_section_header* coff_get_section(void*, uint16 index);\nconst char* coff_get_strtab(void*, uint32* szptr);\ncoff_symtab_entry* coff_get_symtab(void*, uint32* num);\ncoff_file_header* coff_header_file(void*);\ncoff_opt_header* coff_header_opt(void*);\ncoff_section_header* coff_header_sections(void*, uint16* nsections);\ncoff_symtab_entry* coff_index_symtab(void*, int index);\nrange coff_line_numbers(void*, coff_section_header* shdr);\nconst char* coff_sclass_name(uint8);\nconst char* coff_storage_class(uint8);\nconst char* coff_symbol_name(void*, coff_symtab_entry* sym);\nrange coff_symbol_table(void*);\n\n#define COFF_TYPE(coff) ((coff_type) * (uint16*)coff_header_opt((coff)))\n#define COFF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))\n#define COFF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)\n#define COFF_ADDR(coff, ptr, st, field) ((void*)(((char*)ptr) + COFF_OFFSET(coff, st, field)))\n#define COFF_ADDR(coff, ptr, st, field) ((void*)(((char*)ptr) + COFF_OFFSET(coff, st, field)))\n#define COFF_MAGIC(coff) uint16_read(coff_header_opt(coff))\n\n#ifdef __cplusplus\n}\n#endif\n#endif /* defined COFF_H */\n",
-			"file": "lib/coff.h",
-			"file_size": 10957,
-			"file_write_time": 132219695782580094,
-			"settings":
-			{
-				"buffer_size": 10957,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 1463 files for \"coff_symbol_table\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/cofflist.c:\n   94:   symtab = coff_symbol_table(coff);\n\n/home/roman/Dokumente/Sources/c-utils/lib/coff.h:\n  255: range coff_symbol_table(void*);\n\n/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_get_strtab.c:\n    5:   range syms = coff_symbol_table(coff);\n\n/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_index_symtab.c:\n    6:   range symtab = coff_symbol_table(coff);\n\n/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_symbol_table.c:\n    5: coff_symbol_table(void* coff) {\n\n5 matches across 5 files\n",
-			"settings":
-			{
-				"buffer_size": 603,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "lib/coff/coff_symbol_table.c",
-			"settings":
-			{
-				"buffer_size": 377,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "cofflist.c",
-			"settings":
-			{
-				"buffer_size": 14461,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "c-utils.sublime-project",
-			"settings":
-			{
-				"buffer_size": 757,
-				"line_ending": "Unix"
 			}
 		},
 		{
@@ -369,16 +322,17 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cb",
-		"/home/roman/Dokumente/Sources/c-utils/lib/coff",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap",
-		"/home/roman/Dokumente/Sources/c-utils/lib/uint32",
-		"/home/roman/Dokumente/Sources/c-utils/src"
+		"/home/roman/Sources/c-utils",
+		"/home/roman/Sources/c-utils/lib"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/c-utils/lib/coff.h",
+		"/home/roman/Sources/c-utils/lib/coff/coff_symbol_table.c",
+		"/home/roman/Sources/c-utils/cofflist.c",
+		"/home/roman/Sources/c-utils/c-utils.sublime-project",
+		"/home/roman/Sources/c-utils/genmakefile.c",
+		"/home/roman/Sources/c-utils/lib/strlist.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_get_strtab.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_get_symtab.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_symbol_table.c",
@@ -434,7 +388,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_get.c",
 		"/home/roman/Sources/c-utils/lib/hmap/hmap_free_data.c",
 		"/home/roman/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Sources/c-utils/lib/strlist.h",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_sort.c",
 		"/home/roman/Sources/c-utils/lib/strlist/strlist_sort.c",
 		"/home/roman/Sources/c-utils/lib/array.h",
@@ -446,7 +399,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/reg2cmd.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/uint32.h",
 		"/home/roman/.config/sublime-text-3/Packages/SublimeGDB/SublimeGDB.sublime-settings",
-		"/home/roman/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_triml.c",
 		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_alloc.c",
@@ -502,15 +454,11 @@
 		"/home/enki/lotto/helpers/payment.moon",
 		"/home/enki/lotto/helpers/json.moon",
 		"/home/enki/lotto/helpers/date.moon",
-		"/home/enki/lotto/applications/users.moon",
-		"/home/enki/lotto/applications/api.moon",
-		"/home/enki/lotto/helpers/validate.moon",
-		"/home/enki/lotto/helpers/api.moon",
-		"/home/enki/lotto/helpers/time.moon"
+		"/home/enki/lotto/applications/users.moon"
 	],
 	"find":
 	{
-		"height": 44.0
+		"height": 41.0
 	},
 	"find_in_files":
 	{
@@ -524,9 +472,57 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"cmd_libs",
+			"path_output",
+			"path_basename",
+			"VPATH",
+			"cmdline",
+			"Generated by",
+			"# gena",
+			"VPATH",
+			"gen_link_rul",
+			"outdir",
+			"dir;",
+			"main\\(",
+			"_rule",
+			"gen_link",
+			"\\\\\\\"\\$@\\\\\\\"",
+			"\\\\\\\"\\$",
+			"\\\\\\\"",
+			"gen_link",
+			"dirname",
+			"vpath",
+			"gen_link",
+			"add_path_sa",
+			"add_path",
+			"add_path_sa",
+			"gen_link",
+			"cmd_libs",
+			"create.lib",
+			"create_lib",
+			"gen_link_rules",
+			"gen_lib_rules",
+			"add_sou",
+			"\\*srcfile",
+			"srcs;",
+			"srcfile",
+			"add_source",
+			"srcs",
+			"sources",
+			"main\\(",
+			"strarray.*sources",
+			"strarray.*source",
+			"strarray",
+			"strlist_push",
+			"sources",
+			"advapi",
+			"os_type",
+			"advapi",
+			"subsystem",
+			"main",
 			"numaux",
 			"coff_symtab_mchp_types",
 			"zeroes",
@@ -606,55 +602,7 @@
 			"DPIC",
 			"PIC",
 			"\"PIC",
-			"DPIC",
-			"vpath ",
-			"strlist.*vpath",
-			"^get_rule_sa",
-			"get_rule_sa",
-			"create-bin",
-			"gmake\"",
-			"vpath",
-			"path_out",
-			"^path_output",
-			"path_output",
-			"prereq",
-			"vpath",
-			"^main\\(",
-			"main\\(",
-			"^static strlist",
-			"vpath",
-			"builddir",
-			"vpath",
-			"builddir\\.sa",
-			"builddir\\.",
-			"builddir",
-			"\"gmake",
-			"htc\"",
-			"-o\\$",
-			"\\\\\\\"",
-			"-o\\$",
-			"\\\\\\\"",
-			"xc8\"",
-			"\"sdcc\"",
-			"^set_var",
-			"set_var",
-			"sdcc\"",
-			"set_compiler_type",
-			"c\\+\\+\"",
-			"c++",
-			"sdcc\"",
-			"CXX\"",
-			"TARGET\"",
-			"DPIC",
-			"16f87",
-			"16f",
-			"gen_lib",
-			"lib",
-			"sourcedir",
-			"build.as",
-			"build-as",
-			"'L'",
-			"build_as_lib"
+			"DPIC"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -662,6 +610,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			"$@",
+			"srcfile",
 			"uint16",
 			"uint32",
 			"",
@@ -701,7 +651,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 16,
 						"regions":
 						{
 						},
@@ -710,13 +660,18 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
+							"current_file": "/home/roman/Sources/c-utils/lib/coff/coff_symbol_name.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									34,
+									50
+								]
 							],
 							"symlist":
 							[
+								"coff_symbol_name"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -724,198 +679,17 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 4,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "lib/coff.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10957,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7296,
-								7296
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 5221.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 603,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										122,
-										139
-									],
-									[
-										211,
-										228
-									],
-									[
-										326,
-										343
-									],
-									[
-										444,
-										461
-									],
-									[
-										545,
-										562
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								560,
-								560
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/coff/coff_symbol_table.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 377,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								278,
-								278
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "cofflist.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 14461,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3687,
-								3687
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3289.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "c-utils.sublime-project",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 757,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4,
-								439
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScriptNext - ES6 Syntax/JSON (JavaScriptNext).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 138.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
 					"file": "lib/coff/coff_symbol_name.c",
 					"semi_transient": true,
 					"settings":
@@ -939,11 +713,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 2,
 					"file": "lib/coff/coff_header.c",
 					"semi_transient": false,
 					"settings":
@@ -969,7 +743,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -1051,7 +825,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 80.0
+		"height": 74.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1060,6 +834,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"strlist.h",
+				"lib/strlist.h"
+			],
+			[
+				"genma",
+				"genmakefile.c"
+			],
 			[
 				"coff.h",
 				"lib/coff.h"
@@ -1099,10 +881,6 @@
 			[
 				"path_ex",
 				"lib/path/path_exists.c"
-			],
-			[
-				"genma",
-				"genmakefile.c"
 			],
 			[
 				"path_abs",
@@ -1171,10 +949,6 @@
 			[
 				"buffer_putspad",
 				"lib/buffer/buffer_putspad.c"
-			],
-			[
-				"strlist.h",
-				"lib/strlist.h"
 			],
 			[
 				"byte.h",

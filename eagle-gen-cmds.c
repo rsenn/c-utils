@@ -428,7 +428,7 @@ node_align(xmlnode* node) {
       if(fabs(newval - oldval) >= DBL_EPSILON) {
         ret = 1;
 
-        xml_set_attribute_double(node, attr_names[i], newval);
+        xml_set_attribute_double(node, attr_names[i], newval, 3);
       }
     }
   }
@@ -1235,32 +1235,32 @@ draw_measures(xmlnode* doc) {
   }
 
   left = xml_element("wire");
-  xml_set_attribute_double(left, "x1", bounds.x1);
-  xml_set_attribute_double(left, "x2", bounds.x1);
-  xml_set_attribute_double(left, "y1", bounds.y1);
-  xml_set_attribute_double(left, "y2", bounds.y2);
-  xml_set_attribute_double(left, "layer", measures_layer);
+  xml_set_attribute_double(left, "x1", bounds.x1, 3);
+  xml_set_attribute_double(left, "x2", bounds.x1, 3);
+  xml_set_attribute_double(left, "y1", bounds.y1, 3);
+  xml_set_attribute_double(left, "y2", bounds.y2, 3);
+  xml_set_attribute_double(left, "layer", measures_layer, 3);
 
   right = xml_element("wire");
-  xml_set_attribute_double(right, "x1", bounds.x2);
-  xml_set_attribute_double(right, "x2", bounds.x2);
-  xml_set_attribute_double(right, "y1", bounds.y1);
-  xml_set_attribute_double(right, "y2", bounds.y2);
-  xml_set_attribute_double(right, "layer", measures_layer);
+  xml_set_attribute_double(right, "x1", bounds.x2, 3);
+  xml_set_attribute_double(right, "x2", bounds.x2, 3);
+  xml_set_attribute_double(right, "y1", bounds.y1, 3);
+  xml_set_attribute_double(right, "y2", bounds.y2, 3);
+  xml_set_attribute_double(right, "layer", measures_layer, 3);
 
   bottom = xml_element("wire");
-  xml_set_attribute_double(bottom, "x1", bounds.x1);
-  xml_set_attribute_double(bottom, "x2", bounds.x2);
-  xml_set_attribute_double(bottom, "y1", bounds.y1);
-  xml_set_attribute_double(bottom, "y2", bounds.y1);
-  xml_set_attribute_double(bottom, "layer", measures_layer);
+  xml_set_attribute_double(bottom, "x1", bounds.x1, 3);
+  xml_set_attribute_double(bottom, "x2", bounds.x2, 3);
+  xml_set_attribute_double(bottom, "y1", bounds.y1, 3);
+  xml_set_attribute_double(bottom, "y2", bounds.y1, 3);
+  xml_set_attribute_double(bottom, "layer", measures_layer, 3);
 
   top = xml_element("wire");
-  xml_set_attribute_double(top, "x1", bounds.x1);
-  xml_set_attribute_double(top, "x2", bounds.x2);
-  xml_set_attribute_double(top, "y1", bounds.y2);
-  xml_set_attribute_double(top, "y2", bounds.y2);
-  xml_set_attribute_double(top, "layer", measures_layer);
+  xml_set_attribute_double(top, "x1", bounds.x1, 3);
+  xml_set_attribute_double(top, "x2", bounds.x2, 3);
+  xml_set_attribute_double(top, "y1", bounds.y2, 3);
+  xml_set_attribute_double(top, "y2", bounds.y2, 3);
+  xml_set_attribute_double(top, "layer", measures_layer, 3);
 
   xml_add_child(plain, left);
   xml_add_child(plain, top);
@@ -1287,20 +1287,20 @@ draw_measures(xmlnode* doc) {
   }
 
   n = xml_element("vertex");
-  xml_set_attribute_double(n, "x", bounds.x1);
-  xml_set_attribute_double(n, "y", bounds.y2);
+  xml_set_attribute_double(n, "x", bounds.x1, 3);
+  xml_set_attribute_double(n, "y", bounds.y2, 3);
   xml_add_child(polygon, n);
   n = xml_element("vertex");
-  xml_set_attribute_double(n, "x", bounds.x1);
-  xml_set_attribute_double(n, "y", bounds.y1);
+  xml_set_attribute_double(n, "x", bounds.x1, 3);
+  xml_set_attribute_double(n, "y", bounds.y1, 3);
   xml_add_child(polygon, n);
   n = xml_element("vertex");
-  xml_set_attribute_double(n, "x", bounds.x2);
-  xml_set_attribute_double(n, "y", bounds.y1);
+  xml_set_attribute_double(n, "x", bounds.x2, 3);
+  xml_set_attribute_double(n, "y", bounds.y1, 3);
   xml_add_child(polygon, n);
   n = xml_element("vertex");
-  xml_set_attribute_double(n, "x", bounds.x2);
-  xml_set_attribute_double(n, "y", bounds.y2);
+  xml_set_attribute_double(n, "x", bounds.x2, 3);
+  xml_set_attribute_double(n, "y", bounds.y2, 3);
   xml_add_child(polygon, n);
 }
 
