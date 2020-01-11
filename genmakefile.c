@@ -28,6 +28,16 @@
 
 extern buffer* optbuf;
 
+typedef enum { WIN, MAC, LINUX } os_type;
+
+#if defined(__linux__) || defined(__unix__)
+static os_type os = LINUX;
+#elif defined(_WIN32) || defined(_WIN64)
+static os_type os = WIN;
+#elif defined(__APPLE__)
+static os_type os = MAC;
+#endif
+
 #if 0
 #define MAP_T cbmap_t
 #define MAP_SIZE cbmap_count
@@ -105,8 +115,6 @@ typedef struct {
   enum { _14, _16, _32, _64 } bits;
 } machine_type;
 
-typedef enum { WIN, MAC, LINUX } os_type;
-
 typedef struct {
   os_type os;
   enum { NTOS, UNIX } type;
@@ -151,7 +159,9 @@ const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "D
 
 typedef void(linklib_fmt)(const char*, stralloc*);
 
-static strarray srcs;
+static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
+
+static strlist srcs;
 static stralloc preprocess_command, compile_command, lib_command, link_command, mkdir_command, delete_command;
 static const char* objext = DEFAULT_OBJEXT;
 static const char* libext = DEFAULT_LIBEXT;
@@ -1068,15 +1078,15 @@ new_source(const char* name) {
  * @param sources
  */
 void
-add_source(const char* filename, strarray* sources) {
+add_source(const char* filename, strlist* sources) {
   if(str_end(filename, ".c") || str_end(filename, ".h")) {
-    strarray_push_unique(sources, filename);
+    strlist_push_unique(sources, filename);
     /*    stralloc sa;
         stralloc_init(&sa);
         stralloc_copys(&sa, filename);
         //    stralloc_replacec(&sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
-        strarray_push_sa_unique(sources, &sa);
+        strlist_push_sa_unique(sources, &sa);
 
         stralloc_free(&sa);*/
   }
@@ -1088,7 +1098,7 @@ add_source(const char* filename, strarray* sources) {
  * @param sources
  */
 void
-get_sources(const char* basedir, strarray* sources) {
+get_sources(const char* basedir, strlist* sources) {
   rdir_t rdir;
 
   if(!rdir_open(&rdir, basedir)) {
@@ -1349,29 +1359,29 @@ dirname_alloc(const char* p) {
  * @param sourcedirs
  */
 void
-populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
-  char** srcfile;
+populate_sourcedirs(strlist* sources, HMAP_DB* sourcedirs) {
+  char* srcfile;
   stralloc dir;
   stralloc_init(&dir);
 
-  strarray_foreach(sources, srcfile) {
+  strlist_foreach_s(sources, srcfile) {
     size_t n;
     const char* x;
 
-    if((x = mmap_read(*srcfile, &n)) != 0) {
+    if((x = mmap_read(srcfile, &n)) != 0) {
       const char* s;
       size_t dlen;
       sourcedir* srcdir;
-      sourcefile* file = new_source(*srcfile);
+      sourcefile* file = new_source(srcfile);
       stralloc r;
       strlist l;
       stralloc_init(&r);
       strlist_init(&l, '\0');
 
-      path_dirname(*srcfile, &dir);
+      path_dirname(srcfile, &dir);
       dlen = dir.len;
 
-      // debug_sa("path_dirname(*srcfile)", &dir);
+      // debug_sa("path_dirname(srcfile)", &dir);
 
       if((srcdir = MAP_GET(sourcedirs, dir.s, dir.len + 1))) {
         slist_add(&srcdir->sources, &file->link);
@@ -1420,7 +1430,7 @@ populate_sourcedirs(strarray* sources, HMAP_DB* sourcedirs) {
 
       mmap_unmap(x, n);
     } else {
-      buffer_putm_internal(buffer_2, "ERROR opening '", *srcfile, "'\n", 0);
+      buffer_putm_internal(buffer_2, "ERROR opening '", srcfile, "'\n", 0);
       buffer_putnlflush(buffer_2);
     }
   }
@@ -2349,11 +2359,11 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
  * @return
  */
 int
-gen_link_rules(HMAP_DB* rules, strarray* sources) {
+gen_link_rules(HMAP_DB* rules, strlist* sources) {
   int count = 0;
   target* all;
   const char *x, *link_lib;
-  char** srcfile;
+  char* srcfile;
   strlist incs, libs, deps, indir;
   stralloc dir, ppsrc, obj, bin;
 
@@ -2367,7 +2377,7 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
   stralloc_init(&bin);
   all = get_rule("all");
 
-  strarray_foreach(sources, srcfile) {
+  strlist_foreach_s(sources, srcfile) {
     target *preprocess, *compile, *link;
     sourcedir* srcdir;
 
@@ -2379,27 +2389,27 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
     stralloc_zero(&ppsrc);
     stralloc_zero(&obj);
 
-    if(has_main(*srcfile) == 1) {
+    if(has_main(srcfile) == 1) {
 
-      path_dirname(*srcfile, &dir);
+      path_dirname(srcfile, &dir);
       srcdir = get_sourcedir_sa(&dir);
 
       //      gen_compile_rules(rules, srcdir, dir.s);
 
       if(preproc) {
-        path_output(*srcfile, &ppsrc, ppsext);
+        path_output(srcfile, &ppsrc, ppsext);
       }
-      path_output(*srcfile, &obj, objext);
+      path_output(srcfile, &obj, objext);
 
       if(preproc && (preprocess = get_rule_sa(&ppsrc))) {
-        add_srcpath(&preprocess->prereq, *srcfile);
+        add_srcpath(&preprocess->prereq, srcfile);
         stralloc_weak(&preprocess->recipe, &preprocess_command);
       }
 
       if((compile = get_rule_sa(&obj))) {
 
-        get_includes(*srcfile, &incs, 0);
-        add_srcpath(&compile->prereq, preproc ? ppsrc.s : *srcfile);
+        get_includes(srcfile, &incs, 0);
+        add_srcpath(&compile->prereq, preproc ? ppsrc.s : srcfile);
         stralloc_weak(&compile->recipe, &compile_command);
 
         /*        stralloc_nul(&incs);
@@ -2419,12 +2429,29 @@ gen_link_rules(HMAP_DB* rules, strarray* sources) {
 
         add_path_sa(&link->prereq, &obj);
 
-        slink_foreach(srcdir->sources, pfile) {
-          if(!pfile->has_main) {
-            stralloc_zero(&obj);
-            path_output(pfile->name, &obj, objext);
+        if(cmd_libs) {
+          slink_foreach(srcdir->sources, pfile) {
+            if(!pfile->has_main) {
+              stralloc_zero(&obj);
+              path_output(pfile->name, &obj, objext);
 
-            get_includes(pfile->name, &incs, 0);
+              get_includes(pfile->name, &incs, 0);
+
+              add_path_sa(&link->prereq, &obj);
+            }
+          }
+        } else {
+          char* srcfile;
+          strlist_foreach_s(sources, srcfile) {
+
+            stralloc_zero(&dir);
+            path_dirname(srcfile, &dir);
+
+            strlist_push_unique_sa(&vpath, &dir);
+
+            stralloc_zero(&obj);
+            path_output(srcfile, &obj, objext);
+            get_includes(srcfile, &incs, 0);
 
             add_path_sa(&link->prereq, &obj);
           }
@@ -3418,7 +3445,7 @@ set_compiler_type(const char* compiler) {
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
       push_var("CFLAGS", "-g");
 
-    push_var("LDFLAGS", "-Wl,-subsystem=console");
+    //  push_var("LDFLAGS", "-Wl,-subsystem=console");
 
     if(build_type == BUILD_TYPE_MINSIZEREL)
       //      push_var("LDFLAGS", "-Wl,-file-alignment=16");
@@ -3780,8 +3807,9 @@ set_compiler_type(const char* compiler) {
   }
 
   if(mach.arch == PIC) {
+  }
 
-  } else {
+  if(os == WIN) {
     push_lib("EXTRA_LIBS", "advapi32");
 
     if(str_start(compiler, "dmc"))
@@ -3905,7 +3933,6 @@ static stralloc tmp;
  */
 int
 main(int argc, char* argv[]) {
-  static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
   int c;
   int ret = 0, index = 0;
   const char *outfile = NULL, *dir = NULL;
