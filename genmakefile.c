@@ -3093,7 +3093,7 @@ set_make_type(const char* make, const char* compiler) {
   newline = "\n";
 #endif
 
-  stralloc_copys(&mkdir_command, sys.type == WIN ? "IF NOT EXIST \"$@\" MKDIR \"$@\"" : "mkdir -p \"$@\"");
+  stralloc_copys(&mkdir_command, sys.type == WIN ? "IF NOT EXIST $@ MKDIR $@" : "mkdir -p $@");
 
   if(str_start(make, "batch") || str_start(make, "cmd")) {
     pathsep_args = '\\';
@@ -3125,7 +3125,7 @@ set_make_type(const char* make, const char* compiler) {
 
     newline = "\n";
     pathsep_make = '/';
-    stralloc_copys(&mkdir_command, "test -d \"$@\" || mkdir -p \"$@\"");
+    stralloc_copys(&mkdir_command, "test -d $@ || mkdir -p $@");
     stralloc_copys(&delete_command, "rm -f");
 
   } else if(str_start(make, "omake") || str_start(make, "orange")) {
@@ -3168,11 +3168,11 @@ set_compiler_type(const char* compiler) {
   set_var("CC", "cc");
   set_var("CXX", "c++");
 
-  stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o \"$@\" $<");
+  stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
   set_command(&lib_command, "$(LIB) /out:$@", "$^");
-  set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o \"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+  set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
-  set_command(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) -o\"$@\"", "$<");
+  set_command(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
 
   if(build_type == BUILD_TYPE_DEBUG) {
     push_var("CPPFLAGS", "-DDEBUG=1");
@@ -3269,7 +3269,7 @@ set_compiler_type(const char* compiler) {
       set_var("X64", "");
     }
 
-    set_command(&link_command, "$(LINK) -out:\"$@\" $(LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
+    set_command(&link_command, "$(LINK) -out:$@ $(LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
 
   } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") ||
             str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
@@ -3386,8 +3386,8 @@ set_compiler_type(const char* compiler) {
       else
         push_var("CFLAGS", "-r");
 
-      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
-      set_command(&link_command, "$(CC) $(LDFLAGS) -e\"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
+      set_command(&link_command, "$(CC) $(LDFLAGS) -e$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     }
 
     set_var("LINK", "ilink32");
@@ -3396,7 +3396,7 @@ set_compiler_type(const char* compiler) {
     push_lib("STDC_LIBS", "cw32");
     push_lib("STDC_LIBS", "import32");
 
-    set_command(&lib_command, "$(LIB) /p256 \"$@\" /u", "$^");
+    set_command(&lib_command, "$(LIB) /p256 $@ /u", "$^");
 
     /*
      * LCC compiler
@@ -3427,8 +3427,8 @@ set_compiler_type(const char* compiler) {
       push_var("STDC_LIBS", "libc.lib");
     }
 
-    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o \"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-    stralloc_copys(&link_command, "$(LINK) $(LDFLAGS) -o \"$@\" $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command, "$(LINK) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
     /*
      * Tiny CC compiler
@@ -3481,10 +3481,10 @@ set_compiler_type(const char* compiler) {
     push_lib("DEFAULT_LIBS", "clwin");
     push_lib("DEFAULT_LIBS", "climp");
 
-    //    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) -o\"$@\" \"/I;\" $<");
-    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) -o\"$@\" $<");
+    //    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ \"/I;\" $<");
+    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ $<");
     set_command(&lib_command, "$(LIB) /! $@", "$^");
-    set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o\"$@\"", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
+    set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o$@", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
 
   } else if(str_start(compiler, "8cc")) {
     libext = ".a";
@@ -3515,8 +3515,8 @@ set_compiler_type(const char* compiler) {
     }
     //    set_command(&lib_command, "$(LIB) -c $@", "$^");
     set_command(&lib_command, "$(LIB) -c $@", "$^");
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o\"$@\" $<");
-    set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o\"$@\"", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
+    set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
     set_var("CC", "cc");
