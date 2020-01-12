@@ -2144,7 +2144,6 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
   return rule;
 }
 
-
 /**
  * @brief gen_simple_compile_rules  Generate compile rules for every source file in srcdir
  * @param rules                     All rules
@@ -2156,7 +2155,8 @@ target*
 gen_simple_compile_rules(
     HMAP_DB* rules, sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd) {
   sourcefile* src;
-  stralloc obj;
+  stralloc ppsrc, obj;
+  stralloc_init(&ppsrc);
   stralloc_init(&obj);
 
   slink_foreach(&srcdir->sources, src) {
@@ -2175,7 +2175,18 @@ gen_simple_compile_rules(
     path_output(base, &obj, toext);
 
     if((rule = get_rule_sa(&obj))) {
-      add_srcpath(&rule->prereq, src->name);
+
+      const char* srcname = src->name;
+
+      if(preproc) {
+
+        stralloc_zero(&ppsrc);
+        stralloc_copys(&ppsrc, path_basename(src->name));
+        stralloc_inserts(&ppsrc, ".pp", byte_rchr(ppsrc.s, ppsrc.len, '.'));
+        stralloc_nul(&ppsrc);
+        srcname = ppsrc.s;
+      }
+      add_srcpath(&rule->prereq, srcname);
 
       if(rule->recipe.s == NULL) {
         stralloc_weak(&rule->recipe, cmd);
@@ -2186,6 +2197,7 @@ gen_simple_compile_rules(
   }
 
   stralloc_free(&obj);
+  stralloc_free(&ppsrc);
   return 0;
 }
 
@@ -2212,7 +2224,7 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
   if((str_start(make, "g") || batchmode) && mach.arch != PIC) {
     dep = gen_srcdir_compile_rules(rules, srcdir, name);
   } else {
-    if(/*0 &&*/ preproc) {
+    if(0 && preproc) {
       gen_simple_compile_rules(rules, srcdir, name, ".c", ppsext, &preprocess_command);
       dep = gen_simple_compile_rules(rules, srcdir, name, ppsext, objext, &compile_command);
     } else {
@@ -2396,7 +2408,6 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
       srcdir = get_sourcedir_sa(&dir);
 
       //      gen_compile_rules(rules, srcdir, dir.s);
-
       if(preproc) {
         path_output(srcfile, &ppsrc, ppsext);
       }
@@ -2410,7 +2421,7 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
       if((compile = get_rule_sa(&obj))) {
 
         get_includes(srcfile, &incs, 0);
-        add_srcpath(&compile->prereq, preproc ? path_basename(ppsrc.s) : srcfile);
+        add_srcpath(&compile->prereq, srcfile); // preproc ? /*path_basename*/ (ppsrc.s) : srcfile);
         stralloc_weak(&compile->recipe, &compile_command);
 
         /*        stralloc_nul(&incs);
@@ -2435,7 +2446,7 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
 
         add_path_sa(&link->prereq, &obj);
 
-        if(cmd_libs ) {
+        if(cmd_libs) {
           slink_foreach(srcdir->sources, pfile) {
             if(!pfile->has_main) {
               stralloc_zero(&obj);
@@ -3184,7 +3195,7 @@ set_compiler_type(const char* compiler) {
   set_command(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
 
   if(build_type == BUILD_TYPE_DEBUG) {
-    push_var("CPPFLAGS", "-DDEBUG=1");
+    push_var("CPPFLAGS", "-D_DEBUG=1");
   } else {
     push_var("CPPFLAGS", "-DNDEBUG=1");
     push_var("CFLAGS", build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
@@ -3723,8 +3734,8 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--runtime=default,-keep,+download");
     push_var("CFLAGS", "--summary=default");
 
-    push_var("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
-    push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");
+    /*push_var("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
+    push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");*/
 
     push_var("LDFLAGS", "--asmlist");
     push_var("CPPFLAGS", "-D__$(CHIP)=1");
@@ -3799,8 +3810,8 @@ set_compiler_type(const char* compiler) {
     // push_var("LDFLAGS", "--output=-mcof,+elf");
     push_var("LDFLAGS", "--stack=compiled");
 
-    push_var("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
-    push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");
+    /*push_var("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
+    push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");*/
 
     stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_C-FLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
@@ -4385,7 +4396,7 @@ main(int argc, char* argv[]) {
         stralloc_cats(&rulename, "/%");
         stralloc_cats(&rulename, objext);
         stralloc_cats(&rulename, ": %");
-        stralloc_cats(&rulename, preproc ? ppsext : ".c");
+        stralloc_cats(&rulename, /* preproc ? ppsext : */ ".c");
       } else {
         stralloc_copys(&rulename, ".c");
         stralloc_cats(&rulename, objext);
@@ -4420,6 +4431,18 @@ main(int argc, char* argv[]) {
       gen_lib_rules(rules, sourcedirs);
 
       deps_for_libs(rules);
+    } else {
+      TUPLE* t;
+      hmap_foreach(sourcedirs, t) {
+        sourcedir* srcdir = hmap_data(t);
+
+if(preproc) {
+ gen_simple_compile_rules(rules, srcdir, t->key, ".c", ppsext, &preprocess_command);
+ gen_simple_compile_rules(rules, srcdir, t->key, ppsext, objext, &compile_command);
+} else {
+        gen_simple_compile_rules(rules, srcdir, t->key, ".c", objext, &compile_command);
+      }
+      }
     }
 
     if(cmd_bins) {
