@@ -2144,6 +2144,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
   return rule;
 }
 
+
 /**
  * @brief gen_simple_compile_rules  Generate compile rules for every source file in srcdir
  * @param rules                     All rules
@@ -2211,7 +2212,7 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
   if((str_start(make, "g") || batchmode) && mach.arch != PIC) {
     dep = gen_srcdir_compile_rules(rules, srcdir, name);
   } else {
-    if(0 && preproc) {
+    if(/*0 &&*/ preproc) {
       gen_simple_compile_rules(rules, srcdir, name, ".c", ppsext, &preprocess_command);
       dep = gen_simple_compile_rules(rules, srcdir, name, ppsext, objext, &compile_command);
     } else {
@@ -2409,7 +2410,7 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
       if((compile = get_rule_sa(&obj))) {
 
         get_includes(srcfile, &incs, 0);
-        add_srcpath(&compile->prereq, preproc ? ppsrc.s : srcfile);
+        add_srcpath(&compile->prereq, preproc ? path_basename(ppsrc.s) : srcfile);
         stralloc_weak(&compile->recipe, &compile_command);
 
         /*        stralloc_nul(&incs);
@@ -2434,7 +2435,7 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
 
         add_path_sa(&link->prereq, &obj);
 
-        if(cmd_libs) {
+        if(cmd_libs ) {
           slink_foreach(srcdir->sources, pfile) {
             if(!pfile->has_main) {
               stralloc_zero(&obj);
