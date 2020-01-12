@@ -73,7 +73,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 111615,
+				"buffer_size": 111829,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -92,7 +92,7 @@
 			"file": "/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 111615,
+				"buffer_size": 111829,
 				"line_ending": "Unix"
 			}
 		},
@@ -497,6 +497,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"has_main",
 			"errformat",
 			"simple.*ppsext",
 			"ppsext",
@@ -623,8 +624,7 @@
 			"cmd_libs",
 			"create.lib",
 			"create_lib",
-			"gen_link_rules",
-			"gen_lib_rules"
+			"gen_link_rules"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -680,10 +680,6 @@
 						},
 						"selection":
 						[
-							[
-								0,
-								0
-							]
 						],
 						"settings":
 						{
@@ -1140,72 +1136,72 @@
 									52414
 								],
 								[
-									56949,
-									56967
+									57102,
+									57120
 								],
 								[
-									57528,
-									57545
+									57681,
+									57698
 								],
 								[
-									59524,
-									59532
+									59677,
+									59685
 								],
 								[
-									59738,
-									59750
+									59891,
+									59903
 								],
 								[
-									60209,
-									60219
+									60362,
+									60372
 								],
 								[
-									61775,
-									61790
+									61928,
+									61943
 								],
 								[
-									62079,
-									62095
+									62232,
+									62248
 								],
 								[
-									64502,
-									64519
+									64655,
+									64672
 								],
 								[
-									65544,
-									65560
+									65697,
+									65713
 								],
 								[
-									66080,
-									66093
+									66233,
+									66246
 								],
 								[
-									68034,
-									68045
+									68187,
+									68198
 								],
 								[
-									68549,
-									68557
+									68702,
+									68710
 								],
 								[
-									68975,
-									68985
+									69128,
+									69138
 								],
 								[
-									69392,
-									69405
+									69545,
+									69558
 								],
 								[
-									71210,
-									71227
+									71363,
+									71380
 								],
 								[
-									92703,
-									92708
+									92856,
+									92861
 								],
 								[
-									96453,
-									96457
+									96606,
+									96610
 								]
 							],
 							"symlist":
@@ -1343,7 +1339,7 @@
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 14.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
@@ -1361,15 +1357,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 111615,
+						"buffer_size": 111829,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								90817,
-								90817
+								54256,
+								54256
 							]
 						],
 						"settings":
@@ -1380,7 +1376,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 64386.0,
+						"translation.y": 40798.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -1452,7 +1448,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 111615,
+						"buffer_size": 111829,
 						"regions":
 						{
 						},
