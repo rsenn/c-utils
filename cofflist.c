@@ -30,14 +30,13 @@ put_hex(buffer* b, uint32 v) {
   }
 }
 
-
 void
-put_value(buffer* b, const char*name, uint32 v) {
-    buffer_puts(b, name);
-    buffer_puts(b, ": ");
-   put_hex(b, v);
+put_value(buffer* b, const char* name, uint32 v) {
+  buffer_puts(b, name);
+  buffer_puts(b, ": ");
+  put_hex(b, v);
 
-   buffer_putnlflush(b);
+  buffer_putnlflush(b);
 }
 
 void
@@ -84,33 +83,30 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
   buffer_putnlflush(b);
 }
 
-
-static const char* coff_symtab_mchp_types[] = {
-"null",
-"void",
-"character",
-"short integer",
-"integer",
-"long integer",
-"floating point",
-"double length floating point",
-"structure",
-"union",
-"enumeration",
-"member of enumeration",
-"unsigned character",
-"unsigned short",
-"unsigned integer",
-"unsigned long"
-};
+static const char* coff_symtab_mchp_types[] = {"null",
+                                               "void",
+                                               "character",
+                                               "short integer",
+                                               "integer",
+                                               "long integer",
+                                               "floating point",
+                                               "double length floating point",
+                                               "structure",
+                                               "union",
+                                               "enumeration",
+                                               "member of enumeration",
+                                               "unsigned character",
+                                               "unsigned short",
+                                               "unsigned integer",
+                                               "unsigned long"};
 
 void
 coff_list_symbols(buffer* b, void* coff) {
   range symtab;
   const char* strtab = coff_get_strtab(coff, NULL);
-    coff_file_header* fhdr = coff_header_file(coff);
+  coff_file_header* fhdr = coff_header_file(coff);
 
-    char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 || fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
+  char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 || fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
   coff_symtab_entry* e;
   long i = 0;
 
@@ -140,128 +136,125 @@ coff_list_symbols(buffer* b, void* coff) {
     stralloc name;
     stralloc_init(&name);
 
-if(microchip) {
-  coff_symtab_entry_microchip* entry = e;
+    if(microchip) {
+      coff_symtab_entry_microchip* entry = e;
 
-  if(entry->zeroes != 0)
-      stralloc_copyb(&name, entry->name, sizeof(entry->name));
-    else
-      stralloc_copys(&name, &strtab[entry->offset]);
+      if(entry->zeroes != 0)
+        stralloc_copyb(&name, entry->name, sizeof(entry->name));
+      else
+        stralloc_copys(&name, &strtab[entry->offset]);
 
-    stralloc_nul(&name);
-    if(((uint16)(uint8)name.s[0]) > 127 || ((uint16)(uint8)name.s[0]) < 32)
-      name.s[0] = '\0';
+      stralloc_nul(&name);
+      if(((uint16)(uint8)name.s[0]) > 127 || ((uint16)(uint8)name.s[0]) < 32)
+        name.s[0] = '\0';
 
-     buffer_putlong0(b, i, 3);
+      buffer_putlong0(b, i, 3);
       buffer_putspace(b);
       put_hex(b, entry->value);
       buffer_putspace(b);
       buffer_putspad(b, name.s, 64);
       buffer_puts(b, "0x");
       buffer_putxlong0(b, (long)(uint16)entry->scnum, 4);
-      buffer_putspace(b);     
-       buffer_putspad(b, coff_symtab_mchp_types[entry->type], 16);
       buffer_putspace(b);
-             buffer_putlong0(b, (long)(uint32)entry->numaux, 2);
-      
+      buffer_putspad(b, coff_symtab_mchp_types[entry->type], 16);
+      buffer_putspace(b);
+      buffer_putlong0(b, (long)(uint32)entry->numaux, 2);
+
       buffer_putspace(b);
       buffer_putnlflush(b);
 
+    } else {
 
-}  else {
+      if(e->e.zeroes != 0)
+        stralloc_copyb(&name, e->e.name, sizeof(e->e.name));
+      /* else
+         stralloc_copys(&name, &strtab[e->e.offset]);*/
 
-    if(e->e.zeroes != 0)
-      stralloc_copyb(&name, e->e.name, sizeof(e->e.name));
-   /* else
-      stralloc_copys(&name, &strtab[e->e.offset]);*/
-
-    if(e->e.sclass == 0) {
-      stralloc_zero(&name);
-    } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
-      //   stralloc_cats(&name, "()");
-      fn = range_plus(&symtab, e, 1);
-    }
-
-    stralloc_nul(&name);
-
-
-
-    if(!isspace(name.s[0]) && name.s[0] != 0x08) {
-      const char* sclass = coff_sclass_name(e->e.sclass);
-      buffer_putlong0(b, i, 3);
-      buffer_putspace(b);
-      put_hex(b, e->e.value);
-      buffer_putspace(b);
-      buffer_putspad(b, name.s, 64);
-      buffer_putlong0(b, (long)(int16)e->e.scnum, 2);
-      buffer_putspace(b);
-      buffer_putspad(b, sclass ? sclass : "(null)", 16);
-      buffer_putlong0(b, e->e.numaux, 4);
-      if(fn) {
-        buffer_putspace(b);
-        buffer_putulong0(b, (unsigned long)fn->func.code_size, 6);
-        buffer_putspace(b);
-        buffer_putxlong0(b, (unsigned long)fn->func.tag_index, 6);
-      }
-      buffer_putnlflush(b);
-    }
-
-    for(j = 0; j < numaux; ++j) {
-      aux = range_plus(&symtab, e, 1 + j);
-
-      if(!str_diffn(name.s, ".bf", 3) || !str_diffn(name.s, ".ef", 3)) {
-        buffer_puts(b, "Aux .bf/.ef def: ");
-        buffer_puts(b, ".source_line_number: ");
-        buffer_putulong(b, aux->bfef.source_line_number);
-        buffer_puts(b, ", .pointer_to_next_function: ");
-        buffer_putulong(b, aux->bfef.pointer_to_next_function);
-        buffer_putnlflush(b);
-
+      if(e->e.sclass == 0) {
+        stralloc_zero(&name);
       } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
-        buffer_puts(b, "Aux function def: ");
-        buffer_puts(b, ".bf_tag_index: ");
-        buffer_putulong(b, aux->func.tag_index);
+        //   stralloc_cats(&name, "()");
+        fn = range_plus(&symtab, e, 1);
+      }
 
-        buffer_puts(b, ", .code_size: ");
-        buffer_putulong(b, aux->func.code_size);
-        buffer_puts(b, ", .pointer_to_line_number: 0x");
-        buffer_putxlong0(b, aux->func.pointer_to_line_number, 8);
-        buffer_puts(b, ", .pointer_to_next_function: ");
-        buffer_putulong(b, aux->func.pointer_to_next_function);
-        buffer_putnlflush(b);
+      stralloc_nul(&name);
 
-        coff_print_func(b, coff, aux);
-      } else if(e->e.sclass == COFF_C_EXT && e->e.scnum == COFF_SECTION_UNDEF && e->e.value == 0) {
-        buffer_puts(b, "Aux weak def: ");
-        buffer_puts(b, ".tag_index: ");
-        buffer_putulong(b, aux->weak.tag_index);
-        buffer_puts(b, ", .characteristics: 0x");
-        buffer_putxlong0(b, aux->weak.characteristics, sizeof(aux->weak.characteristics) * 2);
-
-        buffer_putnlflush(b);
-      } else if(e->e.sclass == COFF_C_FILE) {
-      } else if(e->e.sclass == COFF_C_STATIC) {
-        buffer_puts(b, "Aux section def: ");
-        buffer_puts(b, ".length: ");
-        buffer_putulong(b, aux->section.length);
-        buffer_puts(b, ", .number_of_relocations: ");
-        buffer_putulong(b, aux->section.number_of_relocations);
-        buffer_puts(b, ", .number_of_line_numbers: ");
-        buffer_putulong(b, aux->section.number_of_line_numbers);
-        buffer_puts(b, ", .check_sum: ");
-        buffer_putxlong0(b, aux->section.check_sum, sizeof(aux->section.check_sum) * 2);
-        buffer_puts(b, ", .number: ");
-        buffer_putulong(b, aux->section.number);
-        buffer_puts(b, ", .selection: ");
-        buffer_putulong(b, aux->section.selection);
+      if(!isspace(name.s[0]) && name.s[0] != 0x08) {
+        const char* sclass = coff_sclass_name(e->e.sclass);
+        buffer_putlong0(b, i, 3);
+        buffer_putspace(b);
+        put_hex(b, e->e.value);
+        buffer_putspace(b);
+        buffer_putspad(b, name.s, 64);
+        buffer_putlong0(b, (long)(int16)e->e.scnum, 2);
+        buffer_putspace(b);
+        buffer_putspad(b, sclass ? sclass : "(null)", 16);
+        buffer_putlong0(b, e->e.numaux, 4);
+        if(fn) {
+          buffer_putspace(b);
+          buffer_putulong0(b, (unsigned long)fn->func.code_size, 6);
+          buffer_putspace(b);
+          buffer_putxlong0(b, (unsigned long)fn->func.tag_index, 6);
+        }
         buffer_putnlflush(b);
       }
-    }
-    e = range_plus(&symtab, e, numaux);
-    i += numaux;
 
-    ++i;
-  }
+      for(j = 0; j < numaux; ++j) {
+        aux = range_plus(&symtab, e, 1 + j);
+
+        if(!str_diffn(name.s, ".bf", 3) || !str_diffn(name.s, ".ef", 3)) {
+          buffer_puts(b, "Aux .bf/.ef def: ");
+          buffer_puts(b, ".source_line_number: ");
+          buffer_putulong(b, aux->bfef.source_line_number);
+          buffer_puts(b, ", .pointer_to_next_function: ");
+          buffer_putulong(b, aux->bfef.pointer_to_next_function);
+          buffer_putnlflush(b);
+
+        } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
+          buffer_puts(b, "Aux function def: ");
+          buffer_puts(b, ".bf_tag_index: ");
+          buffer_putulong(b, aux->func.tag_index);
+
+          buffer_puts(b, ", .code_size: ");
+          buffer_putulong(b, aux->func.code_size);
+          buffer_puts(b, ", .pointer_to_line_number: 0x");
+          buffer_putxlong0(b, aux->func.pointer_to_line_number, 8);
+          buffer_puts(b, ", .pointer_to_next_function: ");
+          buffer_putulong(b, aux->func.pointer_to_next_function);
+          buffer_putnlflush(b);
+
+          coff_print_func(b, coff, aux);
+        } else if(e->e.sclass == COFF_C_EXT && e->e.scnum == COFF_SECTION_UNDEF && e->e.value == 0) {
+          buffer_puts(b, "Aux weak def: ");
+          buffer_puts(b, ".tag_index: ");
+          buffer_putulong(b, aux->weak.tag_index);
+          buffer_puts(b, ", .characteristics: 0x");
+          buffer_putxlong0(b, aux->weak.characteristics, sizeof(aux->weak.characteristics) * 2);
+
+          buffer_putnlflush(b);
+        } else if(e->e.sclass == COFF_C_FILE) {
+        } else if(e->e.sclass == COFF_C_STATIC) {
+          buffer_puts(b, "Aux section def: ");
+          buffer_puts(b, ".length: ");
+          buffer_putulong(b, aux->section.length);
+          buffer_puts(b, ", .number_of_relocations: ");
+          buffer_putulong(b, aux->section.number_of_relocations);
+          buffer_puts(b, ", .number_of_line_numbers: ");
+          buffer_putulong(b, aux->section.number_of_line_numbers);
+          buffer_puts(b, ", .check_sum: ");
+          buffer_putxlong0(b, aux->section.check_sum, sizeof(aux->section.check_sum) * 2);
+          buffer_puts(b, ", .number: ");
+          buffer_putulong(b, aux->section.number);
+          buffer_puts(b, ", .selection: ");
+          buffer_putulong(b, aux->section.selection);
+          buffer_putnlflush(b);
+        }
+      }
+      e = range_plus(&symtab, e, numaux);
+      i += numaux;
+
+      ++i;
+    }
   }
 }
 
@@ -345,17 +338,14 @@ main(int argc, char** argv) {
       put_value(buffer_2, "number_of_sections", uint16_get(&header->number_of_sections));
       put_value(buffer_2, "time_date_stamp", uint32_get(&header->time_date_stamp));
       put_value(buffer_2, "pointer_to_symbol_table", uint32_get(&header->pointer_to_symbol_table));
-      put_value(buffer_2, "number_of_symbols" , uint32_get(&header->number_of_symbols));
+      put_value(buffer_2, "number_of_symbols", uint32_get(&header->number_of_symbols));
       put_value(buffer_2, "size_of_optional_header", uint16_get(&header->size_of_optional_header));
       put_value(buffer_2, "characteristics", uint16_get(&header->characteristics));
 
-        buffer_putnlflush(buffer_2);
+      buffer_putnlflush(buffer_2);
 
-
-
-      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 
-        && header->machine != COFF_FILE_MACHINE_MICROCHIP_V1
-        && header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
+      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 &&
+         header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
         buffer_putsflush(buffer_2, "not COFF\n");
         return -1;
       }
@@ -363,15 +353,14 @@ main(int argc, char** argv) {
       coff_opt_header* opthdr = coff_header_opt(base);
 
       if(opthdr->magic == COFF_OPT_MAGIC_MICROCHIP_V1) {
-      coff_opt_header_microchip* opthdr_mchp = (void*)opthdr;
+        coff_opt_header_microchip* opthdr_mchp = (void*)opthdr;
 
-      put_value(buffer_2,"COFF_OPT_HEADER\nmagic", uint16_get(&opthdr_mchp->magic));
-      put_value(buffer_2,"vstamp", uint16_get(&opthdr_mchp->vstamp));
-      put_value(buffer_2,"proc_type",  /*uint32_get*/(opthdr_mchp->proc_type));
-      put_value(buffer_2,"rom_width_bits", /*uint32_get*/(opthdr_mchp->rom_width_bits));
-      put_value(buffer_2,"ram_width_bits", /*uint32_get*/(opthdr_mchp->ram_width_bits));
-
-    }
+        put_value(buffer_2, "COFF_OPT_HEADER\nmagic", uint16_get(&opthdr_mchp->magic));
+        put_value(buffer_2, "vstamp", uint16_get(&opthdr_mchp->vstamp));
+        put_value(buffer_2, "proc_type", /*uint32_get*/ (opthdr_mchp->proc_type));
+        put_value(buffer_2, "rom_width_bits", /*uint32_get*/ (opthdr_mchp->rom_width_bits));
+        put_value(buffer_2, "ram_width_bits", /*uint32_get*/ (opthdr_mchp->ram_width_bits));
+      }
 
       // if(!(nt_headers->coff_header.characteristics & COFF_FILE_DLL)) {
       // buffer_putsflush(buffer_2, "not DLL\n");

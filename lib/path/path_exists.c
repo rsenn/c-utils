@@ -14,14 +14,14 @@
 
 int
 path_exists(const char* p) {
-    struct _stat st;
-    int r;
+  struct _stat st;
+  int r;
 #if WINDOWS_NATIVE
   if(access(p, 0) == 0)
     return 1;
 #endif
   r = lstat(p, &st);
-    if(r == 0)
-      return 1;
+  if(r == 0)
+    return 1;
   return 0;
 }

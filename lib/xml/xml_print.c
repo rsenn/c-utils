@@ -37,7 +37,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
       xml_print_list(node->children, b, depth + 1);
       buffer_putnspace(b, depth * 2);
     }
-      buffer_putm_internal(b, "</", node->name, ">\n", 0);
+    buffer_putm_internal(b, "</", node->name, ">\n", 0);
 
   } else if(node->name[0] == '/' || (node->next && node_is_closing(node->next))) {
     buffer_putc(b, '>');

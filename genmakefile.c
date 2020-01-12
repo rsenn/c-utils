@@ -2433,8 +2433,16 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
       stralloc_zero(&bin);
 
       if(!cmd_libs) {
-        stralloc_nul(&outdir);
-        path_output(path_basename(outdir.sa.s), &bin, binext);
+        stralloc outname;
+        stralloc_init(&outname);
+
+        stralloc_cats(&outname, path_basename(srcfile));
+        if(stralloc_endb(&outname, ".c", 2))
+          outname.len -= 2;
+
+        stralloc_nul(&outname);
+
+        path_output(outname.s, &bin, binext);
       } else {
         path_extension(obj.s, &bin, binext);
       }
@@ -4436,12 +4444,12 @@ main(int argc, char* argv[]) {
       hmap_foreach(sourcedirs, t) {
         sourcedir* srcdir = hmap_data(t);
 
-if(preproc) {
- gen_simple_compile_rules(rules, srcdir, t->key, ".c", ppsext, &preprocess_command);
- gen_simple_compile_rules(rules, srcdir, t->key, ppsext, objext, &compile_command);
-} else {
-        gen_simple_compile_rules(rules, srcdir, t->key, ".c", objext, &compile_command);
-      }
+        if(preproc) {
+          gen_simple_compile_rules(rules, srcdir, t->key, ".c", ppsext, &preprocess_command);
+          gen_simple_compile_rules(rules, srcdir, t->key, ppsext, objext, &compile_command);
+        } else {
+          gen_simple_compile_rules(rules, srcdir, t->key, ".c", objext, &compile_command);
+        }
       }
     }
 
