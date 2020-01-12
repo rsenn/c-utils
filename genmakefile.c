@@ -2452,6 +2452,9 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
             stralloc_zero(&dir);
             path_dirname(srcfile, &dir);
 
+            if(str_end(srcfile, ".h"))
+              continue;
+
             strlist_push_unique_sa(&vpath, &dir);
 
             stralloc_zero(&obj);
@@ -3716,8 +3719,8 @@ set_compiler_type(const char* compiler) {
 
     push_var("LDFLAGS", "--output=mcof");
 
-    push_var("CFLAGS", "--runtime=default,-keep,+stackcall,+download");
-    push_var("CFLAGS", "--summary=default,+psect");
+    push_var("CFLAGS", "--runtime=default,-keep,+download");
+    push_var("CFLAGS", "--summary=default");
 
     push_var("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
     push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");
@@ -3788,7 +3791,7 @@ set_compiler_type(const char* compiler) {
     push_var("CPPFLAGS", "-D__$(CHIP)=1");
 
     push_var("LDFLAGS", "--output=mcof");
-    push_var("LDFLAGS", "--summary=default,+psect");
+    push_var("LDFLAGS", "--summary=default");
 
     push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
     // push_var("LDFLAGS", "--output=-default,elf,+mcof");
