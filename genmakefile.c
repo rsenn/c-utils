@@ -4378,11 +4378,13 @@ main(int argc, char* argv[]) {
     if(str_end(make, "make")) {
       stralloc rulename;
       stralloc_init(&rulename);
+
       if(str_start(make, "g")) {
         stralloc_copy(&rulename, &workdir.sa);
         stralloc_cats(&rulename, "/%");
         stralloc_cats(&rulename, objext);
-        stralloc_cats(&rulename, ": %.c");
+        stralloc_cats(&rulename, ": %");
+        stralloc_cats(&rulename, preproc ? ppsext : ".c");
       } else {
         stralloc_copys(&rulename, ".c");
         stralloc_cats(&rulename, objext);
