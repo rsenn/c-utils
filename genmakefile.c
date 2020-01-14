@@ -3638,7 +3638,7 @@ set_compiler_type(const char* compiler) {
 
     if(mach.bits == _16) {
       push_var("CFLAGS", "--mplab-comp");
-      push_var("CFLAGS", "--extended");
+      //push_var("CFLAGS", "--extended");
       push_var("CFLAGS", "--pstack-model=large");
       push_var("CFLAGS", "--optimize-cmp");
       push_var("CFLAGS", "--optimize-df");

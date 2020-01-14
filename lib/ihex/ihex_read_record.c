@@ -1,8 +1,9 @@
 #include "../ihex.h"
 #include "../scan.h"
+#include "../alloc.h"
 
 ssize_t
-ihex_read_record(ihex_record* ihr, const char* in, size_t n) {
+ihex_read_record(ihex_record** pihr, const char* in, size_t n) {
   uint8 len, typ, chk;
   uint16 off;
   const char* x = in;
@@ -13,23 +14,42 @@ ihex_read_record(ihex_record* ihr, const char* in, size_t n) {
   n -= 1;
   if((i = scan_xchar(x, &len)) != 2)
     return 0;
-  ihr->reclen = len;
   x += i;
   n -= i;
   if((i = scan_xshort(x, &off)) != 4)
     return 0;
-  ihr->offset = off;
   x += i;
   n -= i;
   if((i = scan_xchar(x, &typ)) != 2)
     return 0;
-  ihr->rectyp = typ;
-  x += i + (ihr->reclen * 2);
-  n -= i + (ihr->reclen * 2);
-  if((i = scan_xchar(x, &chk)) != 2)
-    return 0;
-  ihr->checksum = chk;
   x += i;
   n -= i;
-  return x - in;
+  if((i = scan_xchar(&x[(len * 2)], &chk)) != 2)
+    return 0;
+
+  if((*pihr = alloc(sizeof(ihex_record) + len))) {
+    size_t j;
+    ihex_record* r = *pihr;
+    uint8* data = (void*)&r->data;
+
+    for(j = 0; j < len; j++) {
+      if((i = scan_xchar(x, &data[j])) != 2) {
+        free(*pihr);
+        *pihr = 0;
+        return 0;
+      }
+
+      x += i;
+      n -= i;
+    }
+
+    r->next = 0;
+    r->reclen = len;
+    r->rectyp = typ;
+    r->offset = off;
+    r->checksum = chk;
+
+    return x - in;
+  }
+  return 0;
 }
