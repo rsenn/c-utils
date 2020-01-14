@@ -108,24 +108,30 @@ parse_cfgdata(cword** wptr, const char* x, size_t n) {
   csetting** sptr = NULL;
   cvalue** vptr = NULL;
 
-  while(n >= 0) {
+  while(n > 0) {
 
     eol = byte_chr(x, n, '\n');
-    col = byte_chr(x, n, ':') + 1;
-    assert(col < eol);
-    x += col;
-    n -= col;
-    eol -= col;
 
-    if(!str_diffn(x, "CWORD", 5)) {
-      wptr = parse_cfgword(wptr, x, eol);
-      sptr = &(*wptr)->settings;
-    } else if(!str_diffn(x, "CSETTING", 8)) {
-      sptr = parse_cfgsetting(sptr, x, eol);
-      vptr = &(*sptr)->values;
-    } else if(!str_diffn(x, "CVALUE", 6)) {
-      vptr = parse_cfgvalue(vptr, x, eol);
+    if(eol > 0 && x[0] == 'C') {
+      col = byte_chr(x, n, ':') + 1;
+      assert(col < eol);
+      x += col;
+      n -= col;
+      eol -= col;
+
+      if(!str_diffn(x, "CWORD", 5)) {
+        wptr = parse_cfgword(wptr, x, eol);
+        sptr = &(*wptr)->settings;
+      } else if(!str_diffn(x, "CSETTING", 8)) {
+        sptr = parse_cfgsetting(sptr, x, eol);
+        vptr = &(*sptr)->values;
+      } else if(!str_diffn(x, "CVALUE", 6)) {
+        vptr = parse_cfgvalue(vptr, x, eol);
+      }
     }
+
+    if(eol < n)
+      eol++;
 
     x += eol;
     n -= eol;

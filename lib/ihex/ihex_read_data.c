@@ -30,7 +30,7 @@ ihex_read_data(ihex_record** pihr, const char* in, size_t n) {
   if((*pihr = alloc(sizeof(ihex_record) + len))) {
     size_t j;
     ihex_record* r = *pihr;
-    uint8* data = (void*)&r[1];
+    uint8* data = (void*)&r->data;
 
     for(j = 0; j < len; j++) {
       if((i = scan_xchar(x, &data[j])) != 2) {
