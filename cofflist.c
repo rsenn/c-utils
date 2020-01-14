@@ -156,7 +156,7 @@ coff_list_symbols(buffer* b, void* coff) {
       buffer_puts(b, "0x");
       buffer_putxlong0(b, (long)(uint16)entry->scnum, 4);
       buffer_putspace(b);
-      buffer_putspad(b, coff_symtab_mchp_types[entry->type], 16);
+      buffer_putspad(b, coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "", 16);
       buffer_putspace(b);
       buffer_putlong0(b, (long)(uint32)entry->numaux, 2);
 

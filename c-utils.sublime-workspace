@@ -60,10 +60,10 @@
 	"buffers":
 	[
 		{
-			"contents": "MAP_SIZE\nMAP_NEW\nMAP_DESTROY\nMAP_VISIT_ALL\nMAP_GET\nMAP_DELETE\nMAP_INSERT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PPSEXT\nMAX_CMD_LEN\nDEFAULT_OBJEXT\nDEFAULT_LIBEXT\nDEFAULT_LIBPFX\nDEFAULT_EXEEXT\nDEFAULT_PPSEXT\nDEFAULT_PATHSEP\nDEFAULT_PATHSEP\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\nvoid\n_mkdir\nmkdir_sa\nmkdir_components\nstralloc_weak\nput_newline\nset_command\nstrarray_dump\ndebug_sa\ndebug_s\ndebug_sl\ndebug_int\ndebug_sa\ndebug_sl\ndebug_s\ndebug_int\npath_prefix_b\npath_prefix_s\npath_extension\npath_output\npath_wildcard\nextract_build_type\nformat_linklib_lib\nformat_linklib_switch\nformat_linklib_dummy\nscan_main\nhas_main\nextract_includes\nextract_tokens\nextract_pptok\nget_includes\nrule_command_subst\nrule_command\nsubst_var\nget_rule\nget_rule_sa\nfind_rule\nfind_rule_sa\nfind_rule_b\nmatch_rule\nadd_path\nadd_srcpath\nadd_path_sa\nnew_source\nadd_source\nget_sources\nisset\nget_var\nvar\nset_var\nunset_var\npush_var\npush_var_sa\npush_lib\nwith_lib\nadd_include_dir\ninclude_dirs_to_cppflags\npush_define\nget_rules_by_cmd\ndirname_alloc\npopulate_sourcedirs\ndump_sourcedirs\nincludes_to_libs\ntarget_ptrs\ntarget_dep_list_recursive\ntarget_dep_list\ntarget_deps_indirect\ndeps_indirect\ndeps_direct\nprint_target_deps_r\nprint_target_deps\nremove_indirect_deps_recursive\nremove_indirect_deps\nget_sourcedir\nget_sourcedir_sa\nget_sourcedir_b\ndeps_for_libs\ntarget_add_dep\ntarget_add_deps\ngen_clean_rule\ndump_rule\ngen_srcdir_compile_rules\ngen_simple_compile_rules\nlib_rule_for_sourcedir\ngen_srcdir_rule\ngen_lib_rules\ngen_link_rules\noutput_build_rules\ngen_install_rules\nget_keys\nget_ref_vars\noutput_var\noutput_all_vars\noutput_make_rule\noutput_ninja_rule\noutput_all_rules\noutput_script\nset_machine\nset_chip\nset_system\nset_make_type\nset_compiler_type\nusage\nmain",
+			"contents": "xml_to_json_obj\nmax_depth_fn\nget_depth\npretty_printer\nxmllist_to_jsonarray\nxml_style_json\nhmap_to_jsonobj\nxml_to_json_obj\nxml_to_json\nxml_depth\nusage\ntestwalk\nmain",
 			"settings":
 			{
-				"buffer_size": 1745,
+				"buffer_size": 163,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -73,34 +73,16 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 111829,
+				"buffer_size": 111895,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Searching 1464 files for \"^gen_simple\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/genmakefile.c:\n 2150: gen_simple_compile_rules(\n 2163: gen_simple_compile_rules(\n\n2 matches in 1 file\n\n\nSearching 1464 files for \"^gen_simple\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/genmakefile.c:\n 2150: gen_simple_compile_rules(\n 2163: gen_simple_compile_rules(\n\n2 matches in 1 file\n",
+			"file": "xml2json.c",
 			"settings":
 			{
-				"buffer_size": 378,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
-			"settings":
-			{
-				"buffer_size": 111829,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/buffer/buffer_dummyread.c",
-			"settings":
-			{
-				"buffer_size": 108,
+				"buffer_size": 8996,
 				"line_ending": "Unix"
 			}
 		}
@@ -340,15 +322,12 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/c-utils",
-		"/home/roman/Sources/c-utils/lib",
-		"/home/roman/Sources/c-utils/lib/buffer",
-		"/home/roman/Sources/c-utils/lib/stralloc",
-		"/home/roman/Sources/c-utils/lib/wait",
-		"/home/roman/Sources/c-utils/lib/xml"
+		"/home/roman/Sources/c-utils"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/c-utils/cofflist.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Sources/c-utils/lib/xml/xml_print.c",
 		"/home/roman/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd",
@@ -369,7 +348,6 @@
 		"/home/roman/Sources/c-utils/GNUmakefile",
 		"/home/roman/Sources/c-utils/lib/coff.h",
 		"/home/roman/Sources/c-utils/lib/coff/coff_symbol_table.c",
-		"/home/roman/Sources/c-utils/cofflist.c",
 		"/home/roman/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Sources/c-utils/genmakefile.c",
 		"/home/roman/Sources/c-utils/lib/strlist.h",
@@ -381,7 +359,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_exists.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/cofflist.c",
 		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_absolute.c",
@@ -497,6 +474,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"--stac",
+			"--output",
 			"has_main",
 			"errformat",
 			"simple.*ppsext",
@@ -622,9 +601,7 @@
 			"add_path_sa",
 			"gen_link",
 			"cmd_libs",
-			"create.lib",
-			"create_lib",
-			"gen_link_rules"
+			"create.lib"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -674,812 +651,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1745,
-						"regions":
-						{
-						},
-						"selection":
-						[
-						],
-						"settings":
-						{
-							"current_file": "/home/roman/Sources/c-utils/genmakefile.c",
-							"outline_rename_mode": false,
-							"symkeys":
-							[
-								[
-									1290,
-									1298
-								],
-								[
-									1317,
-									1324
-								],
-								[
-									1368,
-									1379
-								],
-								[
-									1414,
-									1427
-								],
-								[
-									1902,
-									1909
-								],
-								[
-									2245,
-									2255
-								],
-								[
-									2312,
-									2322
-								],
-								[
-									2571,
-									2582
-								],
-								[
-									2597,
-									2611
-								],
-								[
-									2627,
-									2641
-								],
-								[
-									2657,
-									2671
-								],
-								[
-									2683,
-									2697
-								],
-								[
-									2713,
-									2727
-								],
-								[
-									2750,
-									2761
-								],
-								[
-									2776,
-									2790
-								],
-								[
-									2804,
-									2818
-								],
-								[
-									2832,
-									2846
-								],
-								[
-									2861,
-									2875
-								],
-								[
-									2887,
-									2901
-								],
-								[
-									2945,
-									2960
-								],
-								[
-									2980,
-									2995
-								],
-								[
-									4094,
-									4103
-								],
-								[
-									4135,
-									4143
-								],
-								[
-									4182,
-									4190
-								],
-								[
-									4233,
-									4240
-								],
-								[
-									4373,
-									4377
-								],
-								[
-									5689,
-									5695
-								],
-								[
-									5714,
-									5722
-								],
-								[
-									5937,
-									5953
-								],
-								[
-									6243,
-									6256
-								],
-								[
-									6457,
-									6468
-								],
-								[
-									6633,
-									6644
-								],
-								[
-									7255,
-									7268
-								],
-								[
-									7519,
-									7527
-								],
-								[
-									7746,
-									7753
-								],
-								[
-									7972,
-									7980
-								],
-								[
-									8459,
-									8468
-								],
-								[
-									8636,
-									8644
-								],
-								[
-									8659,
-									8667
-								],
-								[
-									8682,
-									8689
-								],
-								[
-									8704,
-									8713
-								],
-								[
-									9010,
-									9023
-								],
-								[
-									9492,
-									9505
-								],
-								[
-									9685,
-									9699
-								],
-								[
-									10010,
-									10021
-								],
-								[
-									10400,
-									10413
-								],
-								[
-									10901,
-									10919
-								],
-								[
-									11210,
-									11228
-								],
-								[
-									11476,
-									11497
-								],
-								[
-									11712,
-									11732
-								],
-								[
-									11900,
-									11909
-								],
-								[
-									12413,
-									12421
-								],
-								[
-									12729,
-									12745
-								],
-								[
-									13721,
-									13735
-								],
-								[
-									14564,
-									14577
-								],
-								[
-									16163,
-									16175
-								],
-								[
-									16510,
-									16528
-								],
-								[
-									17877,
-									17889
-								],
-								[
-									19514,
-									19523
-								],
-								[
-									20137,
-									20145
-								],
-								[
-									20952,
-									20963
-								],
-								[
-									21099,
-									21108
-								],
-								[
-									21513,
-									21525
-								],
-								[
-									21671,
-									21682
-								],
-								[
-									21989,
-									21999
-								],
-								[
-									22362,
-									22370
-								],
-								[
-									22709,
-									22720
-								],
-								[
-									23188,
-									23199
-								],
-								[
-									23428,
-									23438
-								],
-								[
-									23798,
-									23808
-								],
-								[
-									24363,
-									24374
-								],
-								[
-									24677,
-									24682
-								],
-								[
-									24843,
-									24850
-								],
-								[
-									25303,
-									25306
-								],
-								[
-									25493,
-									25500
-								],
-								[
-									25665,
-									25674
-								],
-								[
-									25856,
-									25864
-								],
-								[
-									26041,
-									26052
-								],
-								[
-									26232,
-									26240
-								],
-								[
-									26511,
-									26519
-								],
-								[
-									26968,
-									26983
-								],
-								[
-									27393,
-									27417
-								],
-								[
-									28018,
-									28029
-								],
-								[
-									28328,
-									28344
-								],
-								[
-									28693,
-									28706
-								],
-								[
-									28991,
-									29010
-								],
-								[
-									30931,
-									30946
-								],
-								[
-									31510,
-									31526
-								],
-								[
-									32351,
-									32362
-								],
-								[
-									33030,
-									33055
-								],
-								[
-									33624,
-									33639
-								],
-								[
-									34021,
-									34041
-								],
-								[
-									34424,
-									34437
-								],
-								[
-									34835,
-									34846
-								],
-								[
-									35114,
-									35133
-								],
-								[
-									36166,
-									36183
-								],
-								[
-									36854,
-									36884
-								],
-								[
-									37387,
-									37407
-								],
-								[
-									37936,
-									37949
-								],
-								[
-									38213,
-									38229
-								],
-								[
-									38550,
-									38565
-								],
-								[
-									38810,
-									38823
-								],
-								[
-									40163,
-									40177
-								],
-								[
-									40511,
-									40526
-								],
-								[
-									40917,
-									40931
-								],
-								[
-									43175,
-									43184
-								],
-								[
-									44283,
-									44307
-								],
-								[
-									47168,
-									47192
-								],
-								[
-									48536,
-									48558
-								],
-								[
-									50207,
-									50222
-								],
-								[
-									51217,
-									51230
-								],
-								[
-									52400,
-									52414
-								],
-								[
-									57102,
-									57120
-								],
-								[
-									57681,
-									57698
-								],
-								[
-									59677,
-									59685
-								],
-								[
-									59891,
-									59903
-								],
-								[
-									60362,
-									60372
-								],
-								[
-									61928,
-									61943
-								],
-								[
-									62232,
-									62248
-								],
-								[
-									64655,
-									64672
-								],
-								[
-									65697,
-									65713
-								],
-								[
-									66233,
-									66246
-								],
-								[
-									68187,
-									68198
-								],
-								[
-									68702,
-									68710
-								],
-								[
-									69128,
-									69138
-								],
-								[
-									69545,
-									69558
-								],
-								[
-									71363,
-									71380
-								],
-								[
-									92856,
-									92861
-								],
-								[
-									96606,
-									96610
-								]
-							],
-							"symlist":
-							[
-								"MAP_SIZE",
-								"MAP_NEW",
-								"MAP_DESTROY",
-								"MAP_VISIT_ALL",
-								"MAP_GET",
-								"MAP_DELETE",
-								"MAP_INSERT",
-								"MAX_CMD_LEN",
-								"DEFAULT_OBJEXT",
-								"DEFAULT_LIBEXT",
-								"DEFAULT_LIBPFX",
-								"DEFAULT_EXEEXT",
-								"DEFAULT_PPSEXT",
-								"MAX_CMD_LEN",
-								"DEFAULT_OBJEXT",
-								"DEFAULT_LIBEXT",
-								"DEFAULT_LIBPFX",
-								"DEFAULT_EXEEXT",
-								"DEFAULT_PPSEXT",
-								"DEFAULT_PATHSEP",
-								"DEFAULT_PATHSEP",
-								"debug_int",
-								"debug_sa",
-								"debug_sl",
-								"debug_s",
-								"void",
-								"_mkdir",
-								"mkdir_sa",
-								"mkdir_components",
-								"stralloc_weak",
-								"put_newline",
-								"set_command",
-								"strarray_dump",
-								"debug_sa",
-								"debug_s",
-								"debug_sl",
-								"debug_int",
-								"debug_sa",
-								"debug_sl",
-								"debug_s",
-								"debug_int",
-								"path_prefix_b",
-								"path_prefix_s",
-								"path_extension",
-								"path_output",
-								"path_wildcard",
-								"extract_build_type",
-								"format_linklib_lib",
-								"format_linklib_switch",
-								"format_linklib_dummy",
-								"scan_main",
-								"has_main",
-								"extract_includes",
-								"extract_tokens",
-								"extract_pptok",
-								"get_includes",
-								"rule_command_subst",
-								"rule_command",
-								"subst_var",
-								"get_rule",
-								"get_rule_sa",
-								"find_rule",
-								"find_rule_sa",
-								"find_rule_b",
-								"match_rule",
-								"add_path",
-								"add_srcpath",
-								"add_path_sa",
-								"new_source",
-								"add_source",
-								"get_sources",
-								"isset",
-								"get_var",
-								"var",
-								"set_var",
-								"unset_var",
-								"push_var",
-								"push_var_sa",
-								"push_lib",
-								"with_lib",
-								"add_include_dir",
-								"include_dirs_to_cppflags",
-								"push_define",
-								"get_rules_by_cmd",
-								"dirname_alloc",
-								"populate_sourcedirs",
-								"dump_sourcedirs",
-								"includes_to_libs",
-								"target_ptrs",
-								"target_dep_list_recursive",
-								"target_dep_list",
-								"target_deps_indirect",
-								"deps_indirect",
-								"deps_direct",
-								"print_target_deps_r",
-								"print_target_deps",
-								"remove_indirect_deps_recursive",
-								"remove_indirect_deps",
-								"get_sourcedir",
-								"get_sourcedir_sa",
-								"get_sourcedir_b",
-								"deps_for_libs",
-								"target_add_dep",
-								"target_add_deps",
-								"gen_clean_rule",
-								"dump_rule",
-								"gen_srcdir_compile_rules",
-								"gen_simple_compile_rules",
-								"lib_rule_for_sourcedir",
-								"gen_srcdir_rule",
-								"gen_lib_rules",
-								"gen_link_rules",
-								"output_build_rules",
-								"gen_install_rules",
-								"get_keys",
-								"get_ref_vars",
-								"output_var",
-								"output_all_vars",
-								"output_make_rule",
-								"output_ninja_rule",
-								"output_all_rules",
-								"output_script",
-								"set_machine",
-								"set_chip",
-								"set_system",
-								"set_make_type",
-								"set_compiler_type",
-								"usage",
-								"main"
-							],
-							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 14.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 0,
-			"sheets":
-			[
-				{
-					"buffer": 1,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 111829,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								54256,
-								54256
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Color Scheme - Legacy/Sunburst.tmTheme",
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 40798.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 378,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										108,
-										118
-									],
-									[
-										141,
-										151
-									],
-									[
-										298,
-										308
-									],
-									[
-										331,
-										341
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								312,
-								312
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Color Scheme - Legacy/Sunburst.tmTheme",
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 2,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 136.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 111829,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								55159,
-								55159
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Color Scheme - Legacy/Sunburst.tmTheme",
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 41334.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/buffer/buffer_dummyread.c",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 108,
+						"buffer_size": 163,
 						"regions":
 						{
 						},
@@ -1492,14 +664,154 @@
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Color Scheme - Legacy/Sunburst.tmTheme",
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"current_file": "/home/roman/Sources/c-utils/xml2json.c",
+							"outline_rename_mode": false,
+							"symkeys":
+							[
+								[
+									409,
+									424
+								],
+								[
+									761,
+									773
+								],
+								[
+									971,
+									980
+								],
+								[
+									1305,
+									1319
+								],
+								[
+									2140,
+									2160
+								],
+								[
+									2575,
+									2589
+								],
+								[
+									3447,
+									3462
+								],
+								[
+									4400,
+									4415
+								],
+								[
+									5134,
+									5145
+								],
+								[
+									5319,
+									5328
+								],
+								[
+									5433,
+									5438
+								],
+								[
+									6747,
+									6755
+								],
+								[
+									7059,
+									7063
+								]
+							],
+							"symlist":
+							[
+								"xml_to_json_obj",
+								"max_depth_fn",
+								"get_depth",
+								"pretty_printer",
+								"xmllist_to_jsonarray",
+								"xml_style_json",
+								"hmap_to_jsonobj",
+								"xml_to_json_obj",
+								"xml_to_json",
+								"xml_depth",
+								"usage",
+								"testwalk",
+								"main"
+							],
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "genmakefile.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 111895,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								90649,
+								90649
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Color Scheme - Legacy/Sunburst.tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 63264.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "xml2json.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 8996,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8978,
+								8978
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Color Scheme - Legacy/Sunburst.tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -1590,6 +902,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"cofflist.c",
+				"cofflist.c"
+			],
 			[
 				"genma",
 				"genmakefile.c"

@@ -3810,7 +3810,8 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--chip=$(CHIP)");
     push_var("CPPFLAGS", "-D__$(CHIP)=1");
 
-    push_var("LDFLAGS", "--output=mcof");
+    push_var("LDFLAGS", "--output=-elf,+mcof");
+//    push_var("LDFLAGS", "--output=-mcof,+elf:multilocs");
     push_var("LDFLAGS", "--summary=default");
 
     push_var("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
