@@ -62,7 +62,7 @@ json_print_separator(jsonval* val, buffer* b, int what, const jsonfmt* printer) 
 static void
 json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
   char quote;
-  quote = byte_fullfils_predicate(key, key_len, json_is_identifier_char) ? fmt->quote[0] : '"';
+  quote = byte_fullfils_predicate(key, key_len, json_is_identifier_char) ? '\0' : fmt->quote[0];
 
   if(quote)
     buffer_putc(b, quote);
@@ -133,11 +133,11 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
   buffer_puts(b, "[");
   // buffer_puts(b, printer.spacing);
   //
-  p(&printer, val, depth, index);
+  p(&printer, val, depth , index);
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
 
   slink_foreach(val->listv, ptr) {
-    p(&printer, val, depth + 1, index);
+    p(&printer, val, depth , index);
     json_print_val(slist_data(ptr), b, depth, p);
     ++index;
     if(slist_next(ptr)) {

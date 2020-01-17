@@ -1,0 +1,27 @@
+{
+  "name": "c-utils",
+  "version": "1.0.0",
+  "description": "Contignuous containers:",
+  "main": "eagle-to-svg.js",
+  "directories": {
+    "example": "examples",
+    "lib": "lib",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://rsenn@github.com/rsenn/c-utils.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rsenn/c-utils/issues"
+  },
+  "homepage": "https://github.com/rsenn/c-utils#readme",
+  "dependencies": {
+    "xmldom": "^0.2.1"
+  }
+}
