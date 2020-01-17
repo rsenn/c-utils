@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/rsenn/c-utils#readme",
   "dependencies": {
+    "@svgdotjs/svg.js": "^3.0.16",
+    "ansi-styles": "^4.2.1",
     "xmldom": "^0.2.1"
   }
 }
