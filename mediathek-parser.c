@@ -33,13 +33,7 @@ static int csv = 0;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
-void output_entry(const char* sender,
-                  const char* thema,
-                  const char* title,
-                  unsigned duration,
-                  const char* datetime,
-                  const char* url,
-                  const char* description);
+void output_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description);
 
 /**
  * @brief read_line
@@ -217,8 +211,7 @@ process_entry(char** av, int ac) {
     time_t t;
     unsigned d;
 
-    char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6], *description = av[8], *url = av[9],
-         *url_klein = av[13];
+    char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6], *description = av[8], *url = av[9], *url_klein = av[13];
 
     stralloc url_lo;
     stralloc_init(&url_lo);
@@ -317,13 +310,7 @@ put_quoted_string(const char* str) {
  * @param description
  */
 void
-output_entry(const char* sender,
-             const char* thema,
-             const char* title,
-             unsigned duration,
-             const char* datetime,
-             const char* url,
-             const char* description) {
+output_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
 
   if(csv == 0) {
     buffer_puts(buffer_1, "#EXTINF:");

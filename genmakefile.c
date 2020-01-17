@@ -57,10 +57,10 @@ typedef HMAP_DB* MAP_T;
 #define MAP_SIZE hmap_size
 #define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
 #define MAP_DESTROY(map) hmap_destroy(&(map))
-#define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
-  {                                                                                                                    \
-    TUPLE* t;                                                                                                          \
-    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                  \
+#define MAP_VISIT_ALL(map, fn, arg)                                                                                                                                                                    \
+  {                                                                                                                                                                                                    \
+    TUPLE* t;                                                                                                                                                                                          \
+    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                                                                                                  \
   }
 #define MAP_GET(map, key, klen) hmap_get(map, key, klen)
 /*static inline void*
@@ -78,8 +78,7 @@ MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
 
 #define MAP_DELETE(map, key, klen) hmap_delete(&(map), key, klen)
 
-#define MAP_INSERT(map, key, klen, data, dlen)                                                                         \
-  (dlen == 0 ? hmap_add(&(map), key, klen, 0, HMAP_DATA_TYPE_CUSTOM, data) : hmap_set(&(map), key, klen, data, dlen))
+#define MAP_INSERT(map, key, klen, data, dlen) (dlen == 0 ? hmap_add(&(map), key, klen, 0, HMAP_DATA_TYPE_CUSTOM, data) : hmap_set(&(map), key, klen, data, dlen))
 #endif
 
 #if WINDOWS
@@ -105,10 +104,8 @@ MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
 #else
 #define DEFAULT_PATHSEP '/'
 #endif
-static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-                                   'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
-                                   'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-                                   'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
+                                   'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 typedef struct {
   enum { X86, ARM, PIC } arch;
@@ -2152,8 +2149,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
  * @return
  */
 target*
-gen_simple_compile_rules(
-    HMAP_DB* rules, sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd) {
+gen_simple_compile_rules(HMAP_DB* rules, sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd) {
   sourcefile* src;
   stralloc ppsrc, obj;
   stralloc_init(&ppsrc);
@@ -2347,8 +2343,7 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
     // debug_s("base", base);
     //
 
-    if(strlist_contains(&build_as_lib, base) /* || (str_equal(base, "lib") && mach.arch != PIC)*/ || base[0] == '.' ||
-       base[0] == '\0')
+    if(strlist_contains(&build_as_lib, base) /* || (str_equal(base, "lib") && mach.arch != PIC)*/ || base[0] == '.' || base[0] == '\0')
       continue;
 
     // gen_srcdir_rule(rules, srcdir, base);
@@ -2589,8 +2584,7 @@ gen_install_rules(HMAP_DB* rules) {
     target* rule = t->vals.val_custom;
     int do_lib, do_bin;
 
-    do_lib = (inst_libs && (str_end(t->key, ".lib") || str_end(t->key, ".a") || t->key[str_find(t->key, ".so")] ||
-                            rule->recipe.s == lib_command.s));
+    do_lib = (inst_libs && (str_end(t->key, ".lib") || str_end(t->key, ".a") || t->key[str_find(t->key, ".so")] || rule->recipe.s == lib_command.s));
 
     do_bin = (inst_bins && (str_end(t->key, ".dll") || str_end(t->key, ".exe") || rule->recipe.s == link_command.s));
 
@@ -2780,8 +2774,7 @@ output_make_rule(buffer* b, target* rule) {
      print_target_deps(b, rule);
   */
 
-  if(num_deps == 0 && str_diffn(rule->name, workdir.sa.s, workdir.sa.len) &&
-     !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
+  if(num_deps == 0 && str_diffn(rule->name, workdir.sa.s, workdir.sa.len) && !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, 0);
   }
 
@@ -2886,8 +2879,7 @@ output_ninja_rule(buffer* b, target* rule) {
   if(rule_name) {
     stralloc path;
     stralloc_init(&path);
-    stralloc_subst(
-        &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");
+    stralloc_subst(&path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");
 
     buffer_puts(b, "build ");
     buffer_putsa(b, &path);
@@ -2896,11 +2888,7 @@ output_ninja_rule(buffer* b, target* rule) {
     buffer_puts(b, " ");
 
     stralloc_zero(&path);
-    stralloc_subst(&path,
-                   rule->prereq.sa.s,
-                   rule->prereq.sa.len,
-                   pathsep_args == '/' ? "\\" : "/",
-                   pathsep_args == '/' ? "/" : "\\");
+    stralloc_subst(&path, rule->prereq.sa.s, rule->prereq.sa.len, pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");
 
     buffer_putsa(b, &path);
 
@@ -3004,23 +2992,7 @@ output_script(buffer* b, target* rule) {
   }
 
   if(str_equal(rule->name, "all")) {
-    buffer_putm_internal(b,
-                         newline,
-                         ":SUCCESS",
-                         newline,
-                         "ECHO Done.",
-                         newline,
-                         "GOTO QUIT",
-                         newline,
-                         newline,
-                         ":FAIL",
-                         newline,
-                         "ECHO Fail.",
-                         newline,
-                         newline,
-                         ":QUIT",
-                         newline,
-                         0);
+    buffer_putm_internal(b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
   }
 
   put_newline(b, flush);
@@ -3214,8 +3186,7 @@ set_compiler_type(const char* compiler) {
   /*
    * Visual C++ compiler
    */
-  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
-     str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
+  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") || str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
 
     objext = ".obj";
     binext = ".exe";
@@ -3299,8 +3270,7 @@ set_compiler_type(const char* compiler) {
 
     set_command(&link_command, "$(LINK) -out:$@ $(LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
 
-  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") ||
-            str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
+  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") || str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
 
     libext = ".a";
     objext = ".o";
@@ -3638,7 +3608,7 @@ set_compiler_type(const char* compiler) {
 
     if(mach.bits == _16) {
       push_var("CFLAGS", "--mplab-comp");
-      //push_var("CFLAGS", "--extended");
+      // push_var("CFLAGS", "--extended");
       push_var("CFLAGS", "--pstack-model=large");
       push_var("CFLAGS", "--optimize-cmp");
       push_var("CFLAGS", "--optimize-df");
@@ -3671,8 +3641,7 @@ set_compiler_type(const char* compiler) {
 
     set_command(&lib_command, "$(LIB) rcs $@", "$^");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
-    stralloc_copys(&link_command,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "htc")) {
     unset_var("CXX");
 
@@ -3750,8 +3719,7 @@ set_compiler_type(const char* compiler) {
 
     set_command(&lib_command, "$(LIB) $@", "$^");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
-    stralloc_copys(&link_command,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
 
@@ -3824,12 +3792,10 @@ set_compiler_type(const char* compiler) {
 
     stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_C-FLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
-    stralloc_copys(&link_command,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-    stralloc_copys(
-        &lib_command,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) --OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist "
-        "--output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&lib_command,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) --OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist "
+                   "--output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
   } else {
     return 0;
@@ -3861,8 +3827,7 @@ set_compiler_type(const char* compiler) {
 
       //      cross->sep = '-';
       stralloc_cats(&cross->sa, str_start(toolchain, "mingw") ? "-w64-" : "-pc-");
-      stralloc_cats(&cross->sa,
-                    str_start(toolchain, "mingw") ? "mingw32" : str_start(toolchain, "msys") ? "msys" : "cygwin");
+      stralloc_cats(&cross->sa, str_start(toolchain, "mingw") ? "mingw32" : str_start(toolchain, "msys") ? "msys" : "cygwin");
 
       stralloc_catc(&cross->sa, '-');
     }

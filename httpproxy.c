@@ -35,8 +35,7 @@ static char ipbuf[IP4_FMT];
 
 void
 usage(char* prog) {
-  buffer_putm_internal(
-      buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port> <target>", 0);
+  buffer_putm_internal(buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port> <target>", 0);
   buffer_putnlflush(buffer_2);
 }
 

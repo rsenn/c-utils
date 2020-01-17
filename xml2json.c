@@ -54,9 +54,7 @@ static void
 pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   int valdepth = v ? get_depth(v) : -1;
 
-  p->newline = valdepth > 1
-                   ? "\n"
-                   : " "; // (!one_line && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
+  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
   p->indent = indent_str.s;
   p->spacing = " ";
   p->separat = valdepth > 1 ? ",\n" : ", ";

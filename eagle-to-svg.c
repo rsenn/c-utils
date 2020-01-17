@@ -6,10 +6,10 @@
 #define MAP_T HMAP_DB*
 #define MAP_SIZE hmap_size
 #define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
-#define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
-  {                                                                                                                    \
-    TUPLE* t;                                                                                                          \
-    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                  \
+#define MAP_VISIT_ALL(map, fn, arg)                                                                                                                                                                    \
+  {                                                                                                                                                                                                    \
+    TUPLE* t;                                                                                                                                                                                          \
+    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                                                                                                  \
   }
 #define MAP_FOREACH(map, t) hmap_foreach(map, t)
 static inline void*
@@ -22,23 +22,8 @@ MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
 
 #define MAP_INSERT(map, key, klen, data, dlen) hmap_set(&map, key, klen, data, dlen)
 
-static const char* palette[16] = {"#000000",
-                                  "#0000aa",
-                                  "#555555",
-                                  "#5555ff",
-                                  "#aa0000",
-                                  "#00aa00",
-                                  "#55ff55",
-                                  "#aaaaaa",
-                                  "#00aaaa",
-                                  "#55ffff",
-                                  "#ff5555",
-                                  "#aa00aa",
-                                  "#ff55ff",
-                                  "#aa5500",
-                                  "#ffff55",
-                                  "#aaaaaa",
-                                  "#ffffff"};
+static const char* palette[16] = {
+    "#000000", "#0000aa", "#555555", "#5555ff", "#aa0000", "#00aa00", "#55ff55", "#aaaaaa", "#00aaaa", "#55ffff", "#ff5555", "#aa00aa", "#ff55ff", "#aa5500", "#ffff55", "#aaaaaa", "#ffffff"};
 
 static buffer input, output;
 static xmlnodeset nodeset;
@@ -212,10 +197,7 @@ main(int argc, char* argv[]) {
   xml_set_attribute(clip_path, "id", "pad-clip");
   xml_add_child(svgdefs, clip_path);
   xmlnode* clip_p = xml_element("path");
-  xml_set_attribute(
-      clip_p,
-      "d",
-      "M0 2.128c.242 0 .438.185.438.412 0 .228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
+  xml_set_attribute(clip_p, "d", "M0 2.128c.242 0 .438.185.438.412 0 .228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
   xml_add_child(clip_path, clip_p);
   xml_set_attribute(svggroup, "stroke-width", "0.3");
   xml_set_attribute(svggroup, "stroke-linecap", "round");

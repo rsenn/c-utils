@@ -637,8 +637,7 @@ no_mem:
   close(insock);
   close(outsock);
   end_time = (unsigned int)time(NULL);
-  syslog(
-      LOG_INFO, "Disconnect after %d sec, %ld bytes in, %ld bytes out", (end_time - start_time), bytes_in, bytes_out);
+  syslog(LOG_INFO, "Disconnect after %d sec, %ld bytes in, %ld bytes out", (end_time - start_time), bytes_in, bytes_out);
 }
 
 void
@@ -772,12 +771,7 @@ target_connect(int client, struct sockaddr_in* target) {
     return -1;
   }
 
-  syslog(LOG_INFO,
-         "Connecting %s:%d to %s:%d",
-         inet_ntoa(peer.sin_addr),
-         ntohs(peer.sin_port),
-         inet_ntoa(target->sin_addr),
-         ntohs(target->sin_port));
+  syslog(LOG_INFO, "Connecting %s:%d to %s:%d", inet_ntoa(peer.sin_addr), ntohs(peer.sin_port), inet_ntoa(target->sin_addr), ntohs(target->sin_port));
 
   return sd;
 }

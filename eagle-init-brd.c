@@ -77,18 +77,7 @@ typedef struct instance {
 /* ----------------------------------------------------------------------- */
 void
 dump_part(part_t const* p) {
-  buffer_putm_internal(buffer_2,
-                       "dump_part{name=",
-                       p->name,
-                       ",library=",
-                       p->library,
-                       ",deviceset",
-                       p->deviceset,
-                       ",device=",
-                       p->device,
-                       ",value=",
-                       p->value,
-                       0);
+  buffer_putm_internal(buffer_2, "dump_part{name=", p->name, ",library=", p->library, ",deviceset", p->deviceset, ",device=", p->device, ",value=", p->value, 0);
 
   buffer_puts(buffer_2, ",x=");
   buffer_putdouble(buffer_2, p->x, 1);
@@ -328,13 +317,7 @@ process_instance(xmlnode* e) {
   y /= unit_factor;*/
   /*x *= scale_factor;
   y *= scale_factor;*/
-  {
-    instance_t* newinst = create_instance(part.s,
-                                          gate.s,
-                                          round_to_mil(x * scale_factor / unit_factor, grid_mils),
-                                          round_to_mil(y * scale_factor / unit_factor, grid_mils),
-                                          rotate);
-  }
+  { instance_t* newinst = create_instance(part.s, gate.s, round_to_mil(x * scale_factor / unit_factor, grid_mils), round_to_mil(y * scale_factor / unit_factor, grid_mils), rotate); }
 }
 
 /* ----------------------------------------------------------------------- */

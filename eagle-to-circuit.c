@@ -45,10 +45,10 @@ static inline void* MAP_GET(cbmap_t map, const void* key, size_t klen) {
 #define MAP_T HMAP_DB*
 #define MAP_SIZE hmap_size
 #define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
-#define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
-  {                                                                                                                    \
-    TUPLE* t;                                                                                                          \
-    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                  \
+#define MAP_VISIT_ALL(map, fn, arg)                                                                                                                                                                    \
+  {                                                                                                                                                                                                    \
+    TUPLE* t;                                                                                                                                                                                          \
+    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                                                                                                  \
   }
 //#define MAP_GET(map, key, klen, pdata, plen) (*(size_t*)(plen) = sizeof(*(pdata)), *(void**)(pdata) = hmap_get(map,
 // key, klen)) #define MAP_GET(map, key, klen, pdata, plen) (*(size_t*)(plen) = sizeof(*(pdata)), *(void**)(pdata) =
@@ -541,8 +541,7 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   stralloc_copy(pkgname, &pkg->name);
   stralloc_lower(pkgname);
 
-  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) &&
-     isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
+  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) && isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
     // stralloc_remove(pkgname, 0, 1);
     pkgname->s[0] = 'r';
     pkgname->s[1] = 'e';
@@ -1039,8 +1038,7 @@ main(int argc, char* argv[]) {
   buffer_puts(&output, "\n# Packages\n# <package name>   <pin coordinates relative to pin 0>\n\n");
   MAP_VISIT_ALL(packages, dump_package, "package");
 
-  buffer_puts(&output,
-              "\n# Components\n# <component name> <package name>    <absolute position of component pin 0>\n\n");
+  buffer_puts(&output, "\n# Components\n# <component name> <package name>    <absolute position of component pin 0>\n\n");
   MAP_VISIT_ALL(parts, output_part, "part");
 
   buffer_puts(&output, "\n# Connections\n# <from component name>.<pin index> <to component name>.<pin index>\n\n");
