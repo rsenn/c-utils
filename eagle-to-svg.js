@@ -1,3 +1,4 @@
+20;
 const DOMParser = require("xmldom").DOMParser;
 const fs = require("fs");
 const util = require("util");
@@ -109,7 +110,11 @@ function findLine(lineArr, pts, exclude, onFound = (line, pt, pti) => {}) {
   return -1;
 }
 
-var svg = hu("<svg>").attr({ width: "21cm", height: "29.7cm", viewBox: "0 0 210 297 " });
+var svg = hu("<svg>").attr({
+  width: "21cm",
+  height: "29.7cm",
+  viewBox: "0 0 210 297 "
+});
 var max = new Point();
 var scaleFactor = 2.54 * 4;
 var outerGroup = hu("<g>", svg).attr({
@@ -183,7 +188,7 @@ for (let layer in lines) {
     stroke: wire.getLayer().getColor(),
     fill: "none",
     strokeWidth: wire.width > 0 ? wire.width : 0.1,
-      strokeLinecap: "round",
+    strokeLinecap: "round",
     //strokeLinejoin: "round",
     transform: `scale(1,-1)  translate(${-max.x / 2} ${-max.y / 2}) `
   });
@@ -220,7 +225,8 @@ let pkgGroup = hu("<g>", innerGroup).attr({
   stroke: "#008000",
   strokeWidth: 0.1,
   fill: "#008000",
-  transform: `scale(1,-1) translate(${-(max.x) / 2} ${-(max.y) / 2} )`});
+  transform: `scale(1,-1) translate(${-max.x / 2} ${-max.y / 2} )`
+});
 
 for (let via of eagle.instances.Via) {
   hu("<path>", viaGroup).attr({
@@ -234,70 +240,142 @@ for (let via of eagle.instances.Via) {
   console.log("via:", via);
 }
 
+function renderPackage(p) {
+  for(let o of p.getChildren()) {
+    if(o.x1 !== undefined) {
+      const { x1, y1, x2, y2 } = o;
+      const layer = o.getLayer();
+      hu("<line>", innerGroup).attr({
+        x1,
+        y1,
+        x2,
+        y2,
+        stroke: layer.getColor(),
+        strokeWidth: 0.1,
+        dataId: layer.number,
+        dataName: layer.name
+      });
+    }
+    console.log("o: ", o);
+  }
+}
+
+let numElements = Object.values(eagle.Elements).length;
+let elemIndex = -1;
+
 for (let name in eagle.Elements) {
   const e = eagle.Elements[name];
   const p = eagle.Packages[e.package];
   let rotate = /^R/.test(e.rot) ? parseInt(e.rot.substring(1)) : 0;
 
-  if(p) {
-    let bb = (e.getBounds());
-    let b = new Rect(bb);
-    let c = b.center;
+  let hue = Util.randInt(30, 360); // parseInt((Util.hashString(e.name) * 5).toString(2).split('').reverse().join(''),2);
+  let color = new dom.RGBA(hue, 100, 50);
 
-    let hue = (Util.hashString(e.name) * 5) % 360;
-    let color = new dom.RGBA(hue, 100, 50);
+  if(p) {
+    let bb = e.getBounds();
+    let b = e.bbox();
+    let br = e.bbox().rect;
+    let c = b.center;
 
     let elemGroup = hu("<g>", group).attr({
       id: `element-${name}`,
-      transform: `translate(${e.x}, ${e.y})  rotate(${rotate})`
+      transform: ` translate(${e.x}, ${e.y})  translate(1,0)  rotate(${rotate}) `
     });
 
-    for(let pad of p.pads) {
-      let p = new Point({ x: pad.x + e.x, y: pad.y + e.y });
+    const r = e.bbox();
+    const rr = r.round();
+
+    console.log(`b ${e.name}:`, rr, `rotate: `, rotate);
+    hu("<rect>", elemGroup).attr({
+      dataId: e.name,
+      x: rr.x,
+      y: rr.y,
+      width: rr.width,
+      height: rr.height,
+      stroke: color.hex(),
+      strokeWidth: 0.1,
+      fill: new dom.RGBA(color.r, color.g, color.b, 180).hex(),
+      transform: `  `
+    });
+
+    hu("<circle>", elemGroup).attr({
+      cy: 0,
+      cx: 0,
+      r: 0.5,
+      fill: color.hex(),
+      stroke: "#000",
+      strokeWidth: 0.1,
+      transform: ``
+    });
+    hu("<text>", elemGroup)
+      .attr({
+        x: 0,
+        y: 0,
+        fill: "#000", //color.hex(),
+        stroke: "#000",
+        strokeWidth: 0.5,
+        textAnchor: "middle",
+        textAlign: "center",
+        transform: `translate(0,-0.2)  scale(0.04,-0.04)`
+      })
+      .text(e.name);
+
+    for(let o of e.children(child => true /*child instanceof eagle.Pad*/)) {
+      const className = Util.fnName(o.constructor);
+
+      if(!(className == "Pad")) continue;
+      console.log("child: ", util.inspect(o, { depth: 1, colors: true }));
+      Point.rotate(o, (rotate * Math.PI) / 180);
+
       hu("<path>", elemGroup).attr({
         dataId: e.name,
         fill: color.hex(),
         stroke: color.hex(),
         strokeWidth: "0.05",
-        transform: `   translate(${pad.x-0.5},${pad.y-0.5}) scale(0.5, 0.5) translate(${1.7561*0.8},${-1.7561*0.8})`,
+        transform: `translate(${o.x},${o.y}) scale(0.4749,0.4749) translate(-1.7561,-1.7561) translate(4.5,-1.5)`,
         d:
           "m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z"
       });
     }
 
-    console.log(`b ${e.name}:`, b, `rotate: `, rotate);
-    hu("<rect>", elemGroup).attr({
-      dataId: e.name,
-      x: b.x-0.5,
-      y: b.y+0.5,
-      width: b.width,
-      height: b.height,
-      stroke: color.hex(),
-      strokeWidth: 0.1,
-      fill: new dom.RGBA(color.r, color.g, color.b, 80).hex(),
-      transform: `  `
-    });
-
-    hu("<circle>", elemGroup).attr({ cx: e.x, cy: e.y, r: 0.5, fill: color.hex(), stroke: "none", strokeWidth: 2 });
-    hu("<text>", elemGroup)
-      .attr({
-        x: 0,
-        y: 0,
-        fill: color.hex(),
-        stroke: color.hex(),
-        strokeWidth: 0.1,
-        textAnchor: "middle",
-        textAlign: "center",
-        transform: `  translate(${b.x + b.width/2}, ${(b.height-1)/2-1}) scale(0.05,-0.05)`
-      })
-      .text(e.name);
-
-    // console.log("element:", e, Object.keys(p));
+    /*
+    for(let o of e.children()) {
+      let s;
+      const layer = o.getLayer ? o.getLayer() : new eagle.Layer();
+      if(o.x1 !== undefined) {
+        const { x1, y1, x2, y2 } = o;
+        s = hu("<line>", group).attr({
+          x1,
+          y1,
+          x2,
+          y2,
+          stroke: layer.getColor(),
+          strokeWidth: 0.1,
+          dataId: layer.number,
+          dataName: layer.name
+        });
+      } else if(o.x !== undefined) {
+        const { x, y } = o;
+        s = hu("<circle>", group).attr({
+          cy: y,
+          cx: x,
+          r: o.radius || 0.5,
+          fill: "none",
+          stroke: layer.getColor(),
+          strokeWidth: 0.1,
+          dataId: layer.number,
+          dataName: layer.name
+        });
+      }
+      //      console.log("o: ", s ? s.n.outerHTML : null);
+    }
+    console.log(`element ${e.name}`, e.bbox().rect);
+*/
+    elemIndex++;
+    console.log("bb:", bb);
   }
-
-  const bb = e.getBounds();
-  // console.log("bb:", bb);
 }
+
 console.log("max:", max);
 
 let xmlData =
