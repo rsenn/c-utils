@@ -133,11 +133,13 @@ if((i = str.indexOf("(typeof window ==")) != -1)
 
 var html = hu("<html>");
 var head = hu("<head>", html);
-
+[ 'util','dom'].forEach(name => {
 hu("<script>", head).attr({
  src: `data:text/javascript;base64,${Util.base64.encode(
-    readScript("utils/util.es5.js")+"\n"+   readScript("utils/dom.es5.js")+"\n"
+    readScript(`utils/${name}.es5.js")+"\n"
+
   )}`
+  });
   });
 var body = hu("<body>", html);
 var svg = hu("<svg>", body).attr({
