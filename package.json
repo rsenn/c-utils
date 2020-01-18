@@ -24,6 +24,7 @@
   "dependencies": {
     "@svgdotjs/svg.js": "^3.0.16",
     "ansi-styles": "^4.2.1",
+    "jsdom": "^16.0.0",
     "xmldom": "^0.2.1"
   }
 }
