@@ -1,4 +1,4 @@
-20;
+
 const DOMParser = require("xmldom").DOMParser;
 const fs = require("fs");
 const util = require("util");
