@@ -326,13 +326,17 @@ for (let name in eagle.Elements) {
       if(!(className == "Pad")) continue;
       console.log("child: ", util.inspect(o, { depth: 1, colors: true }));
       Point.rotate(o, (rotate * Math.PI) / 180);
+let c=[
+   1.0563900470733643,
+  -1.9779698848724365
+];
 
       hu("<path>", elemGroup).attr({
         dataId: e.name,
         fill: color.hex(),
         stroke: color.hex(),
         strokeWidth: "0.05",
-        transform: `translate(${o.x},${o.y})`,
+        transform: `translate(${o.x},${o.y}) translate(${c.join(',')}) scale(0.4,0.4)`,
         d:
           "m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z"
       });
