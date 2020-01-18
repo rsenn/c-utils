@@ -110,7 +110,37 @@ function findLine(lineArr, pts, exclude, onFound = (line, pt, pti) => {}) {
   return -1;
 }
 
-var svg = hu("<svg>").attr({
+function readScript(path) {
+  let str = fs.readFileSync(path).toString();
+
+  let lines = str.split(/\n/g);
+
+/*  const isCommentLine = l => {
+    if("/* ".indexOf(l[0]) != -1 && l[1] == "*") return true;
+    if(/^\s*\/\//.test(l) || l.startsWith("//")) return true;
+    return false;
+  };
+
+  lines = lines.filter(l => !isCommentLine(l));*/
+  str = lines.join("\n");
+
+/*let i;
+if((i = str.indexOf("(typeof window ==")) != -1)
+  str = str.substring(0, i-3);
+
+*/  return str;
+}
+
+var html = hu("<html>");
+var head = hu("<head>", html);
+
+hu("<script>", head).attr({
+ src: `data:text/javascript;base64,${Util.base64.encode(
+    readScript("utils/util.es5.js")+"\n"+   readScript("utils/dom.es5.js")+"\n"
+  )}`
+  });
+var body = hu("<body>", html);
+var svg = hu("<svg>", body).attr({
   width: "21cm",
   height: "29.7cm",
   viewBox: "0 0 210 297 "
@@ -183,15 +213,18 @@ for (let layer in lines) {
   const color = wire.getLayer().getColor();
   console.log("Signal: ", layer, util.inspect({ color }, { colors: true, depth: 2 }));
 
-  var group = hu("<g>", innerGroup).attr({
+  function makeGroup(attrs) {
+    return hu("<g>", innerGroup).attr({ transform: `scale(1,-1)  translate(${-max.x / 2} ${-max.y / 2}) `, ...attrs });
+  }
+
+  var group = makeGroup({
     id: `Wires-${layer}`,
     stroke: wire.getLayer().getColor(),
     fill: "none",
     strokeWidth: wire.width > 0 ? wire.width : 0.1,
-    strokeLinecap: "round",
-    //strokeLinejoin: "round",
-    transform: `scale(1,-1)  translate(${-max.x / 2} ${-max.y / 2}) `
+    strokeLinecap: "round"
   });
+
   /*
   for(let pline of polylines) {
     var polyline = hu("<polyline>", group).attr({ points: pline.toString() });
@@ -212,20 +245,18 @@ for (let layer in lines) {
   }
 }
 
-let viaGroup = hu("<g>", innerGroup).attr({
+let viaGroup = makeGroup({
   id: `vias-pads`,
   stroke: "#008000",
   strokeWidth: 0.1,
-  fill: "#008000",
-  transform: `scale(1,-1)  translate(${-max.x / 2} ${-max.y / 2})`
+  fill: "#008000"
 });
 
-let pkgGroup = hu("<g>", innerGroup).attr({
+let pkgGroup = makeGroup({
   id: `elements`,
   stroke: "#008000",
   strokeWidth: 0.1,
-  fill: "#008000",
-  transform: `scale(1,-1) translate(${-max.x / 2} ${-max.y / 2} )`
+  fill: "#008000"
 });
 
 for (let via of eagle.instances.Via) {
@@ -263,21 +294,24 @@ function renderPackage(p) {
 let numElements = Object.values(eagle.Elements).length;
 let elemIndex = -1;
 
+let hue = 0;
+let elemGroup;
+var wires = [];
+
 for (let name in eagle.Elements) {
   const e = eagle.Elements[name];
   const p = eagle.Packages[e.package];
   let rotate = /^R/.test(e.rot) ? parseInt(e.rot.substring(1)) : 0;
 
-  let hue = ++elemIndex * 60; // parseInt((Util.hashString(e.name) * 5).toString(2).split('').reverse().join(''),2);
-  let color = new dom.RGBA(hue, 100, 50);
-
+  let color = new dom.RGBA(hue % 360, 100, 50);
+  hue += 60;
   if(p) {
     let bb = e.getBounds();
     let b = e.bbox();
     let br = e.bbox().rect;
     let c = b.center;
 
-    let elemGroup = hu("<g>", group).attr({
+    elemGroup = hu("<g>", group).attr({
       id: `element-${name}`,
       transform: ` translate(${e.x}, ${e.y})  translate(1,0)  rotate(${rotate}) `
     });
@@ -286,18 +320,10 @@ for (let name in eagle.Elements) {
     const rr = r.round();
 
     console.log(`b ${e.name}:`, rr, `rotate: `, rotate);
-    hu("<rect>", elemGroup).attr({
-      dataId: e.name,
-      x: rr.x,
-      y: rr.y,
-      width: rr.width,
-      height: rr.height,
-      stroke: color.hex(),
-      strokeWidth: 0.1,
-      fill: new dom.RGBA(color.r, color.g, color.b, 180).hex(),
-      transform: `  `
-    });
 
+    elemIndex++;
+
+    //    hu("<rect>", elemGroup).attr({dataId: e.name, x: rr.x, y: rr.y, width: rr.width, height: rr.height, stroke: color.hex(), strokeWidth: 0.1, fill: new dom.RGBA(color.r, color.g, color.b, 180).hex(), transform: `  ` });
     hu("<circle>", elemGroup).attr({
       cy: 0,
       cx: 0,
@@ -320,70 +346,69 @@ for (let name in eagle.Elements) {
       })
       .text(e.name);
 
-    for(let o of e.children(child => true /*child instanceof eagle.Pad*/)) {
+    for(let o of e.children()) {
       const className = Util.fnName(o.constructor);
 
-      if(!(className == "Pad")) continue;
-      console.log("child: ", util.inspect(o, { depth: 1, colors: true }));
-      Point.rotate(o, (rotate * Math.PI) / 180);
-      let c = [1.0563900470733643, -1.9779698848724365];
-      hu("<path>", elemGroup).attr({
-        dataId: e.name,
-        fill: color.hex(),
-        stroke: color.hex(),
-        strokeWidth: "0.05",
-        transform: `translate(${Math.round(o.x * 2) * 0.5},${Math.round(o.y * 2) *
-          0.5})   scale(0.5,0.5) translate(${c.join(",")}) `,
-        d:
-          "m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z"
-      });
-    }
+      if(className == "Pad") {
+        Point.rotate(o, (rotate * Math.PI) / 180);
+        let c = [1.0563900470733643, -1.9779698848724365];
+        hu("<path>", elemGroup).attr({
+          dataId: e.name,
+          fill: color.hex(),
+          stroke: color.hex(),
+          strokeWidth: "0.05",
+          transform: `translate(${o.x + 0.75},${o.y - 0.25})   scale(0.5,0.5) translate(${c.join(",")}) `,
+          d:
+            "m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z"
+        });
+      } else if(className == "Wire") {
+        let { x1, y1, x2, y2 } = o;
+        let layer = eagle.Layer.get(o.layer);
+        /*
+        x1 -= e.x;
+        x2 -= e.x;
+        y1 -= e.y;
+        y2 -= e.y;*/
+        x1 += 0.5;
+        x2 += 0.5;
+        y1 += 0.875;
+        y2 += 0.875;
 
-    /*
-    for(let o of e.children()) {
-      let s;
-      const layer = o.getLayer ? o.getLayer() : new eagle.Layer();
-      if(o.x1 !== undefined) {
-        const { x1, y1, x2, y2 } = o;
-        s = hu("<line>", group).attr({
-          x1,
-          y1,
-          x2,
-          y2,
-          stroke: layer.getColor(),
-          strokeWidth: 0.1,
-          dataId: layer.number,
-          dataName: layer.name
-        });
-      } else if(o.x !== undefined) {
-        const { x, y } = o;
-        s = hu("<circle>", group).attr({
-          cy: y,
-          cx: x,
-          r: o.radius || 0.5,
-          fill: "none",
-          stroke: layer.getColor(),
-          strokeWidth: 0.1,
-          dataId: layer.number,
-          dataName: layer.name
-        });
-      }
-      //      console.log("o: ", s ? s.n.outerHTML : null);
-    }
-    console.log(`element ${e.name}`, e.bbox().rect);
+        let color = layer.getColor();
+        wires.push({ x1, y1, x2, y2, stroke: color, strokeWidth: "0.1" });
+        /*
+
+          let s= hu("<line>", elemGroup).attr({
+          dataId: e.name,
+          fill: 'none',
+          stroke: color,
+          strokeWidth: "0.05",
+           x1, y1, x2, y2
+        }).n;
+
+        console.log("wire: ", util.inspect({ out:s.outerHTML }, { depth: 0, colors: true }));
 */
-    elemIndex++;
+      }
+    }
     console.log("bb:", bb);
   }
 }
+
+group = makeGroup({ id: "all-wires" });
+
+wires.forEach(w => {
+  let { x1, y1, x2, y2, stroke, strokeWidth } = w;
+  let s = hu("<line>", group).attr(w).n;
+  console.log("wire: ", util.inspect({ out: s.outerHTML }, { depth: 0, colors: true }));
+});
 
 console.log("max:", max);
 
 let xmlData =
   `<?xml version="1.0" encoding="utf-8"?>\n` +
-  svg.n.outerHTML.replace(/<svg /, '<svg xmlns="http://www.w3.org/2000/svg" ').replace(/><([^/])/g, ">\n<$1");
+  html.n.outerHTML.replace(/<svg /, '<svg xmlns="http://www.w3.org/2000/svg" ').replace(/><([^/])/g, ">\n<$1");
 
-fs.writeFileSync("out.svg", xmlData);
+fs.writeFileSync("out.html", xmlData);
 
 /*
 let wires = eagle.Wires.map(w => { let wire = new dom.Line(w); return Object.assign(wire, w);   });
