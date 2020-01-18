@@ -1,4 +1,3 @@
-
 const DOMParser = require("xmldom").DOMParser;
 const fs = require("fs");
 const util = require("util");
@@ -115,7 +114,7 @@ function readScript(path) {
 
   let lines = str.split(/\n/g);
 
-/*  const isCommentLine = l => {
+  /*  const isCommentLine = l => {
     if("/* ".indexOf(l[0]) != -1 && l[1] == "*") return true;
     if(/^\s*\/\//.test(l) || l.startsWith("//")) return true;
     return false;
@@ -124,23 +123,20 @@ function readScript(path) {
   lines = lines.filter(l => !isCommentLine(l));*/
   str = lines.join("\n");
 
-/*let i;
+  /*let i;
 if((i = str.indexOf("(typeof window ==")) != -1)
   str = str.substring(0, i-3);
 
-*/  return str;
+*/ return str;
 }
 
 var html = hu("<html>");
 var head = hu("<head>", html);
-[ 'util','dom'].forEach(name => {
-hu("<script>", head).attr({
- src: `data:text/javascript;base64,${Util.base64.encode(
-    readScript(`utils/${name}.es5.js")+"\n"
-
-  )}`
+["util", "dom"].forEach(name => {
+  hu("<script>", head).attr({
+    src: `data:text/javascript;base64,${Util.base64.encode(readScript(`utils/${name}.es5.js`) + "\n")}`
   });
-  });
+});
 var body = hu("<body>", html);
 var svg = hu("<svg>", body).attr({
   width: "21cm",
@@ -150,7 +146,7 @@ var svg = hu("<svg>", body).attr({
 var max = new Point();
 var scaleFactor = 2.54 * 4;
 var outerGroup = hu("<g>", svg).attr({
-  transform: `scale(3.5 3.5)`
+  transform: `scale(3,3)`
 });
 
 var grid = hu("<g>", outerGroup).attr({
