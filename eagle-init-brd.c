@@ -402,7 +402,7 @@ main(int argc, char* argv[]) {
     buffer_mmapprivate(&input, filename);
 
     xmldoc = xml_read_tree(&input);
-
+ 
     /* Get the root element node */
     root_element = xmldoc->children;
     print_element_names(root_element);

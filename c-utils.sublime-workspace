@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"Con",
+				"ContactRef\tclass"
+			],
+			[
 				"pre",
 				"preprocess_command"
 			],
@@ -60,29 +64,93 @@
 	"buffers":
 	[
 		{
-			"contents": "xml_to_json_obj\nmax_depth_fn\nget_depth\npretty_printer\nxmllist_to_jsonarray\nxml_style_json\nhmap_to_jsonobj\nxml_to_json_obj\nxml_to_json\nxml_depth\nusage\ntestwalk\nmain",
+			"contents": "isnan\nEND_OF_LINE\nafter_element\non_attribute_decl\non_characters\non_end_element\non_start_element_ns\non_start_element\nxml_callback\nxml_read_node\nupdate_minmax_xy\nhmap_each\nupdate_part\nNAMELEN\ndump_part\ndump_instance\nround_to_mil\noutput_move\noutput_rotate\neach_part\nget_part\ncreate_instance\ncreate_part\nupdate_part\nhmap_each\nget_attribute_double\ncat_attributes\nprocess_instance\nprocess_part\nprint_element_names\nread_xmlfile\nparse_xmlfile\nmystr_basename\nmain",
 			"settings":
 			{
-				"buffer_size": 163,
+				"buffer_size": 454,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"file": "utils/eagle.js",
 			"settings":
 			{
-				"buffer_size": 111895,
+				"buffer_size": 11711,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/pictest/eagle/PIC18F2550-USB+ICSP-Board.brd",
+			"settings":
+			{
+				"buffer_size": 67571,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "xml2json.c",
+			"contents": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<html>\n<head>\n<script> [CDATA]\n//var useragent = require('useragent');\n\n/**\n * Class for utility.\n *\n * @class      Util (name)\n */\nfunction Util() {}\n\nUtil.formatAnnotatedObject = (\n  subject,\n  { indent = \"  \", spacing = \" \", separator = \",\", newline = \"\\n\", maxlen = 30, depth = 1 }\n) => {\n  const i = indent.repeat(Math.abs(1 - depth));\n  let nl = newline != \"\" ? newline + i : spacing;\n  const opts = {\n    newline: depth >= 0 ? newline : \"\",\n    depth: depth - 1\n  };\n  if(subject && subject.toSource !== undefined) return subject.toSource();\n  if(subject instanceof Date) return `new Date('${new Date().toISOString()}')`;\n  if(typeof subject == \"string\") return `'${subject}'`;\n\n  if(subject != null && subject[\"y2\"] !== undefined) {\n    return (\n      \"rect[\" +\n      spacing +\n      subject[\"x\"] +\n      separator +\n      subject[\"y\"] +\n      \" | \" +\n      subject[\"x2\"] +\n      separator +\n      subject[\"y2\"] +\n      \" (\" +\n      subject[\"w\"] +\n      \"x\" +\n      subject[\"h\"] +\n      \")\" +\n      \" ]\"\n    );\n  }\n  if(\"map\" in subject && typeof subject.map == \"function\") {\n    //subject instanceof Array || (subject && subject.length !== undefined)) {\n    return (\n      \"[\" +\n      nl +\n      /*(opts.depth <= 0) ? subject.length + '' : */ subject\n        .map(i => Util.formatAnnotatedObject(i, opts))\n        .join(separator + nl) +\n      \"]\"\n    );\n  }\n  if(typeof subject === \"string\" || subject instanceof String) {\n    return \"'\" + subject + \"'\";\n  }\n  let longest = \"\";\n  let r = [];\n  for(let k in subject) {\n    if(k.length > longest.length) longest = k;\n    let s = \"\";\n\n    //if(typeof(subject[k]) == 'string') s = subject[k];\n\n    if(typeof subject[k] === \"symbol\") {\n      s = \"Symbol\";\n    } else if(typeof subject[k] === \"string\" || subject[k] instanceof String) {\n      s = \"'\" + subject[k] + \"'\";\n    } else if(typeof subject[k] === \"function\") {\n      s = Util.fnName(s) || \"function\";\n      s += \"()\";\n    } else if(typeof subject[k] === \"number\" || typeof subject[k] === \"boolean\") {\n      s = \"\" + subject[k];\n    } else if(subject[k] === null) {\n      s = \"null\";\n    } else if(subject[k] && subject[k].length !== undefined) {\n      try {\n        s =\n          depth <= 0\n            ? `Array(${subject[k].length})`\n            : \"[ \" + subject[k].map(item => Util.formatAnnotatedObject(item, opts)).join(\", \") + \" ]\";\n      } catch(err) {\n        s = \"[\" + subject[k] + \"]\";\n      }\n    } else if(subject[k] && subject[k].toSource !== undefined) {\n      s = subject[k].toSource();\n    } else if(opts.depth >= 0) {\n      s =\n        s.length > maxlen ? \"[Object \" + Util.objName(subject[k]) + \"]\" : Util.formatAnnotatedObject(subject[k], opts);\n    }\n    r.push([k, s]);\n  }\n  //console.log(\"longest: \", longest)\n  let padding = x => Util.pad(x, longest.length, spacing);\n  let j = separator + spacing;\n  if(r.length > 6) {\n    nl = opts.newline + i;\n    j = separator + (opts.newline || spacing) + i;\n  }\n  //padding = x => '';\n\n  let ret =\n    \"{\" + opts.newline + r.map(arr => padding(arr[0]) + arr[0] + \":\" + spacing + arr[1]).join(j) + opts.newline + \"}\";\n  return ret;\n};\nUtil.isDebug = function() {\n  if(process !== undefined && process.env.NODE_ENV === \"production\") return false;\n\n  return true;\n};\n\n/*Util.log = function(message) {\n  const args = [...arguments];\n  if(!this.logFile) {\n    if(process.browser === undefined) {\n      if(globals && globals.require !== undefined) {\n        this.fs = globals.require('fs');\n        this.logFile = this.fs.openSync('logs/node.log', 'a');\n      }\n    }\n  }\n\n  return this.logFile !== undefined ? fs.writeSync(this.logFile, args.join('') + '\\n') : null;\n};\n*/\nUtil.log = (function() {\n  var log = Math.log;\n  return function(n, base) {\n    return log(n) / (base ? log(base) : 1);\n  };\n})();\n\nUtil.logBase = (n, base) => Math.log(n) / Math.log(base);\nUtil.generalLog = (n, x) => Math.log(x) / Math.log(n);\nUtil.toSource = arg => {\n  if(typeof arg == \"string\") return \"'\" + arg + \"'\";\n  if(arg && arg.x !== undefined && arg.y !== undefined) {\n    return \"[\" + arg.x + \",\" + arg.y + \"]\";\n  }\n  if(arg && arg.toSource) return arg.toSource();\n  let cls = arg && arg.constructor && Util.fnName(arg.constructor);\n\n  return String(arg);\n};\nUtil.debug = function(message) {\n  const args = [...arguments];\n  let cache = Util.array();\n\n  const removeCircular = (key, value) => {\n    if(typeof value === \"object\" && value !== null) {\n      if(cache.indexOf(value) !== -1) return;\n      cache.push(value);\n    }\n    return value;\n  };\n\n  const str = args\n    .map(arg => (typeof arg === \"object\" ? JSON.stringify(arg, removeCircular) : arg))\n    .join(\" \")\n    .replace(/\\n/g, \"\");\n  //console.log(\"STR: \"+str);\n\n  console.log.call(console, str);\n  //Util.log.apply(Util, args)\n};\n\nUtil.type = obj => (obj.type && String(obj.type).split(/[ ()]/)[1]) || \"\";\n\nUtil.functionName = fn => {\n  const matches = /function\\s*([^(]*)\\(.*/g.exec(String(fn));\n  if(matches && matches[1]) return matches[1];\n  return null;\n};\n\nUtil.className = obj => Util.functionName(obj.constructor);\n\nUtil.unwrapComponent = c => {\n  for(;;) {\n    if(c.wrappedComponent) c = c.wrappedComponent;\n    else if(c.WrappedComponent) c = c.WrappedComponent;\n    else break;\n  }\n  return c;\n};\nUtil.componentName = c => {\n  for(;;) {\n    if(c.displayName || c.name) {\n      return (c.displayName || c.name).replace(/.*\\(([A-Za-z0-9_]+).*/, \"$1\");\n    } else if(c.wrappedComponent) c = c.wrappedComponent;\n    else if(c.WrappedComponent) c = c.WrappedComponent;\n    else break;\n  }\n  return Util.fnName(c);\n};\n\nUtil.count = (s, ch) => (String(s).match(new RegExp(ch, \"g\")) || Util.array()).length;\n\nUtil.parseNum = str => {\n  let num = parseFloat(str);\n  if(isNaN(num)) num = 0;\n  return num;\n};\nUtil.minmax = (num, min, max) => Math.min(Math.max(num, min), max);\nUtil.getExponential = function(num) {\n  let str = typeof num == \"string\" ? num : num.toExponential();\n  const matches = /e\\+?(.*)$/.exec(str);\n  //console.log(\"matches: \", matches);\n  return parseInt(matches[1]);\n};\nUtil.getNumberParts = function(num) {\n  let str = typeof num == \"string\" ? num : num.toExponential();\n  const matches = /^(-?)(.*)e\\+?(.*)$/.exec(str);\n  //console.log(\"matches: \", matches);\n  const negative = matches[1] == \"-\";\n  return {\n    negative,\n    mantissa: parseFloat(matches[2]),\n    exponent: parseInt(matches[3])\n  };\n};\nUtil.pow2 = n => Math.pow(2, n);\nUtil.pow10 = n => (n >= 0 ? Math.pow(10, n) : 1 / Math.pow(10, -n));\n\nUtil.bitValue = n => Util.pow2(n - 1);\n\nUtil.toBinary = num => parseInt(num).toString(2);\n\nUtil.toBits = num => {\n  let a = Util.toBinary(num)\n    .split(\"\")\n    .reverse();\n  return Array.from(Object.assign({}, a, { length: 50 }), bit => (bit ? 1 : 0));\n};\n\nUtil.getBit = (v, n) => {\n  let s = v.toString(2);\n  return n < s.length ? parseInt(s[s.length - n - 1]) : 0;\n};\n\nUtil.isSet = (v, n) => {\n  return Util.getBit(v, n) == 1;\n};\n\nUtil.bitCount = n => Util.count(Util.toBinary(n), \"1\");\n\nUtil.toggleBit = (num, bit) => {\n  const n = Number(num);\n  return Util.isSet(n, bit) ? n - Util.pow2(bit) : n + Util.pow2(bit);\n};\n\nUtil.setBit = (num, bit) => {\n  const n = Number(num);\n  return Util.isSet(n, bit) ? n : n + Util.pow2(bit);\n};\n\nUtil.clearBit = (num, bit) => {\n  const n = Number(num);\n  return Util.isSet(n, bit) ? n - Util.pow2(bit) : n;\n};\n\nUtil.range = (start, end) => {\n  const r = Array.from({ length: end - start + 1 }, (v, k) => k + start);\n  //console.log(\"Util.range \", r);\n  return r;\n};\n\nUtil.inspect = function(\n  obj,\n  opts = {\n    indent: \"  \",\n    newline: \"\\n\",\n    depth: 2,\n    spacing: \" \"\n  }\n) {\n  return Util.formatAnnotatedObject(obj, opts);\n};\n\nUtil.bitArrayToNumbers = function(arr) {\n  let numbers = Util.array();\n  for(let i = 0; i < arr.length; i++) {\n    const number = i + 1;\n    if(arr[i]) numbers.push(number);\n  }\n  return numbers;\n};\n\nUtil.bitsToNumbers = bits => {\n  let a = Util.toBinary(bits).split(\"\");\n  let r = Util.array();\n  //return a;\n  a.forEach((val, key, arr) => val == \"1\" && r.unshift(a.length - key));\n  return r;\n};\n\nUtil.shuffle = (arr, rnd = Util.rng) => {\n  arr.sort((a, b) => 0.5 - rnd());\n  return arr;\n};\nUtil.sortNum = arr => {\n  arr.sort((a, b) => a - b);\n  //console.log(\"Util.sortNum \", { arr });\n  return arr;\n};\n\nUtil.draw = (arr, n, rnd = Util.rng) => {\n  const r = Util.shuffle(arr, rnd).splice(0, n);\n  //console.log(\"Util.draw \", { arr, n, r });\n  return r;\n};\n\nUtil.is = {\n  on: val => val == \"on\" || val === \"true\" || val === true,\n  off: val => val == \"off\" || val === \"false\" || val === false,\n  true: val => val === \"true\" || val === true,\n  false: val => val === \"false\" || val === false\n};\n\nUtil.onoff = val => {\n  if(Util.is.on(val)) return true;\n  if(Util.is.off(val)) return false;\n  return undefined;\n};\n\nUtil.toBoolean = val => [\"true\", true, 1, \"on\", \"yes\"].indexOf(val) != -1;\n\nUtil.numbersToBits = arr => arr.reduce((bits, num) => bits + Util.bitValue(num), 0);\n\nUtil.randomNumbers = ([start, end], draws) => {\n  const r = Util.sortNum(Util.draw(Util.range(start, end), draws));\n  //console.log(\"Util.randomNumbers \", { start, end, draws, r });\n  return r;\n};\n\nUtil.randomBits = (r = [1, 50], n = 5) => Util.numbersToBits(Util.randomNumbers(r, n));\n\nUtil.pad = (s, n, char = \" \") => (s.length < n ? char.repeat(n - s.length) : \"\");\nUtil.padRight = (s, n, char = \" \") => (s.length < n ? s + char.repeat(n - s.length) : s);\nUtil.padLeft = (s, n, char = \" \") => (s.length < n ? char.repeat(n - s.length) + s : s);\n\nUtil.abbreviate = function(str, max, suffix = \"...\") {\n  if(str.length > max) {\n    return str.substring(0, max - suffix.length) + suffix;\n  }\n  return str;\n};\n\nUtil.trim = function(str, charset) {\n  const r1 = RegExp(\"^[\" + charset + \"]*\");\n  const r2 = RegExp(\"[\" + charset + \"]*$\");\n  return str.replace(r1, \"\").replace(r2, \"\");\n};\n\nUtil.define = (obj, key, value, enumerable = false) =>\n  obj[key] === undefined &&\n  Object.defineProperty(obj, key, {\n    enumerable,\n    configurable: false,\n    writable: false,\n    value\n  });\nUtil.defineGetter = (obj, key, get, enumerable = false) =>\n  obj[key] === undefined &&\n  Object.defineProperty(obj, key, {\n    enumerable,\n    configurable: false,\n    get\n  });\nUtil.defineGetterSetter = (obj, key, get, set, enumerable = false) =>\n  obj[key] === undefined &&\n  Object.defineProperty(obj, key, {\n    get,\n    set,\n    enumerable\n  });\n\nUtil.extendArray = (arr = Array.prototype) => {\n  /*  Util.define(arr, 'tail', function() {\n    return this[this.length - 1];\n  });*/\n  Util.define(arr, \"match\", function(pred) {\n    return Util.match(this, pred);\n  });\n  Util.define(arr, \"clear\", function() {\n    this.splice(0, this, length);\n    return this;\n  });\n  Util.define(arr, \"unique\", function() {\n    return this.filter((item, i, a) => a.indexOf(item) == i);\n  });\n  Util.defineGetterSetter(\n    arr,\n    \"tail\",\n    function() {\n      return Util.tail(this);\n    },\n    function(value) {\n      if(this.length == 0) this.push(value);\n      else this[this.length - 1] = value;\n    }\n  );\n  /*Util.define(arr, 'inspect', function(opts = {}) {\n    return Util.inspect(this, { depth: 100, ...opts });\n  });*/\n};\nUtil.adapter = function(\n  obj,\n  getLength = obj => obj.length,\n  getKey = (obj, index) => obj.key(index),\n  getItem = (obj, key) => obj[key],\n  setItem = (obj, index, value) => (obj[index] = value)\n) {\n  var adapter = {\n    get length() {\n      return getLength(obj);\n    },\n    get instance() {\n      return obj;\n    },\n    key(i) {\n      return getKey(obj, i);\n    },\n    get(key) {\n      return getItem(obj, key);\n    },\n    set(key, value) {\n      return setItem(obj, key, value);\n    },\n    *keys() {\n      var length = getLength(obj);\n      for(let i = 0; i < length; i++) yield getKey(obj, i);\n    },\n    *entries() {\n      for(let key of this.keys()) yield [key, getItem(obj, key)];\n    },\n    [Symbol.iterator]() {\n      return this.entries();\n    },\n    toObject() {\n      return Object.fromEntries(this.entries());\n    },\n    toMap() {\n      return new Map(this.entries());\n    }\n  };\n  return adapter;\n};\n\nUtil.adapter.localStorage = (s = localStorage) =>\n  Util.adapter(\n    s,\n    l => l.length,\n    (l, i) => l.key(i),\n    (l, key) => JSON.parse(l.getItem(key)),\n    (l, key, v) => l.setItem(key, JSON.stringify(v))\n  );\n\nUtil.array = function(enumerable = []) {\n  let a = enumerable instanceof Array ? enumerable : [...enumerable];\n\n  try {\n    if(a.match === undefined) Util.extendArray();\n    if(a.match === undefined) Util.extendArray(a);\n  } catch(err) {}\n  return a;\n};\nUtil.map = function(hash = {}) {\n  let m = hash[Symbol.iterator] !== undefined ? hash : new Map(Object.entries(hash));\n\n  if(m instanceof Array) m[Symbol.iterator] = m.entries;\n  /*\n  try {\n    //if(m.toObject === undefined) Util.extendMap();\n    if(m.toObject === undefined) Util.extendMap(m);\n  } catch(err) {}*/\n  return m;\n};\nUtil.extendMap = function(map) {\n  if(map.entries === undefined) {\n    map.entries = function* iterator() {\n      for(let entry of map) {\n        if(entry.name !== undefined && entry.value !== undefined) yield [entry.name, entry.value];\n        else if(entry[0] !== undefined && entry[1] !== undefined) yield entry;\n        else yield [entry, map[entry]];\n      }\n    };\n  }\n  map.toObject = function() {\n    return Object.fromEntries(this.entries());\n  };\n  map.match = function() {\n    return Util.match.apply(this, arguments);\n  };\n};\nUtil.objectFrom = any => {\n  if(\"toJS\" in any) any = any.toJS();\n  if(\"entries\" in any) return Object.fromEntries(any.entries());\n\n  return Object.assign({}, any);\n};\n\nUtil.tail = function(arr) {\n  return arr && arr.length > 0 ? arr[arr.legth - 1] : null;\n};\n\nUtil.splice = function(str, index, delcount, insert) {\n  var chars = str.split(\"\");\n  Array.prototype.splice.apply(chars, arguments);\n  return chars.join(\"\");\n};\n\nUtil.keyOf = (obj, prop) => {\n  const keys = Object.keys(obj);\n  for(let k in keys) {\n    if(obj[k] === prop) return k;\n  }\n  return undefined;\n};\n\nUtil.rotateRight = (arr, n) => {\n  arr.unshift.apply(arr, arr.splice(n, arr.length));\n  return arr;\n};\n\nUtil.repeat = (n, what) => {\n  let ret = [];\n  while(n-- > 0) ret.push(what);\n  return ret;\n};\n\n/*Util.define(\n  String.prototype,\n  'splice',\n  function(index, delcount, insert) {\n    return Util.splice.apply(this, [this, ...arguments]);\n  }\n);*/\n\nUtil.fnName = (f, parent) => {\n  if(f !== undefined && f.name !== undefined) return f.name;\n  const s = f.toSource ? f.toSource() : f + \"\";\n  const matches = /([A-Za-z_][0-9A-Za-z_]*)\\w*[(\\]]/.exec(s);\n  if(matches) return matches[1];\n  if(parent !== undefined) {\n    for(let key in parent) {\n      if(parent[key] === f) return key;\n    }\n  }\n  return undefined;\n};\n\nUtil.keys = obj => {\n  let r = Util.array();\n  for(let i in obj) r.push(i);\n  return r;\n};\n\nUtil.objName = o => {\n  if(o === undefined || o == null) return o + \"\";\n  if(typeof o === \"function\" || o instanceof Function) return Util.fnName(o);\n\n  if(o.constructor) return Util.fnName(o.constructor);\n  const s = o.type + \"\";\n  return s;\n};\n\nUtil.findKey = (obj, value) => {\n  for(let k in obj) {\n    if(obj[k] === value) return k;\n  }\n  return null;\n};\n\nUtil.find = (arr, value, prop = \"id\", acc = Util.array()) => {\n  let pred;\n  if(typeof value == \"function\") pred = value;\n  else if(prop && prop.length !== undefined) {\n    pred = obj => {\n      if(obj[prop] == value) return true;\n      return false;\n    };\n  } else pred = obj => obj[prop] == value;\n\n  for(let k = 0; k < arr.length; k++) {\n    let v = arr[k];\n    // console.log(\"v: \", v, \"k:\", k);\n    /*if(Util.isArray(v)) {\n      for(let i = 0; i < v.length; i++)\n        if(pred(v[i]))\n          return v[i];\n\n    } else */ {\n      if(pred(v)) return v;\n    }\n  }\n  return null;\n};\n\nUtil.match = (arg, pred) => {\n  let match = pred;\n\n  if(pred instanceof RegExp) {\n    const re = pred;\n    match = (val, key) =>\n      (val && val.tagName !== undefined && re.test(val.tagName)) ||\n      (typeof key === \"string\" && re.test(key)) ||\n      (typeof val === \"string\" && re.test(val));\n  }\n\n  if(Util.isArray(arg)) {\n    if(!(arg instanceof Array)) arg = [...arg];\n\n    return arg.reduce((acc, val, key) => {\n      if(match(val, key, arg)) acc.push(val);\n      return acc;\n    }, Util.array());\n  } else if(Util.isMap(arg)) {\n    // console.log('Util.match ', { arg });\n    return [...arg.keys()].reduce(\n      (acc, key) => (match(arg.get(key), key, arg) ? acc.set(key, arg.get(key)) : acc),\n      new Map()\n    );\n  } else {\n    let i = 0;\n    let ret = [];\n    for(let item of arg) {\n      if(match(item, i, arg)) ret.push(item);\n    }\n    return ret;\n    //    return Object.keys(arg).reduce((acc, key) => (match(arg[key], key, arg) ? { ...acc, [key]: arg[key] } : {}), {});\n  }\n};\n\nUtil.toHash = (map, keyTransform = k => Util.camelize(k)) => {\n  let ret = {};\n\n  for(let i = 0; i < map.length; i++) {\n    const key = map[i];\n    ret[keyTransform(key)] = map[key];\n  }\n  return ret;\n};\n\nUtil.indexOf = (obj, prop) => {\n  for(let key in obj) {\n    if(obj[key] === prop) return key;\n  }\n  return undefined;\n};\n/*\nUtil.injectProps = (options) => {\n  return function(InitialComponent) {\n    return function DndStateInjector() {\n      return <InitialComponent {...options} />;\n    }\n  }\n}*/\nUtil.toString = function() {};\n\nUtil.dump = function(name, props) {\n  var args = [name];\n\n  for(let key in props) {\n    args.push(\"\\n\\t\" + key + \": \");\n    args.push(props[key]);\n  }\n\n  if(\"window\" in global !== false) {\n    //if(window.alert !== undefined)\n    //alert(args);\n\n    if(window.console !== undefined) console.log(...args);\n  }\n};\nUtil.ucfirst = function(str) {\n  if(typeof str != \"string\") str = String(str);\n  return str.substring(0, 1).toUpperCase() + str.substring(1);\n};\nUtil.lcfirst = function(str) {\n  return str.substring(0, 1).toLowerCase() + str.substring(1);\n};\n/**\n * Camelize a string, cutting the string by multiple separators like\n * hyphens, underscores and spaces.\n *\n * @param {text} string Text to camelize\n * @return string Camelized text\n */\nUtil.camelize = function(text, sep = \"\") {\n  return text.replace(/^([A-Z])|[\\s-_]+(\\w)/g, function(match, p1, p2, offset) {\n    if(p2) return sep + p2.toUpperCase();\n    return p1.toLowerCase();\n  });\n};\nUtil.decamelize = (str, separator = \"-\") =>\n  /[A-Z]/.test(str)\n    ? str\n        .replace(/([a-z\\d])([A-Z])/g, \"$1\" + separator + \"$2\")\n        .replace(/([A-Z]+)([A-Z][a-z\\d]+)/g, \"$1\" + separator + \"$2\")\n        .toLowerCase()\n    : str;\n\nUtil.isEmail = function(v) {\n  return /^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$/.test(v);\n};\nUtil.isString = function(v) {\n  return Object.prototype.toString.call(v) == \"[object String]\";\n};\nUtil.isObject = function(v) {\n  return Object.prototype.toString.call(v) == \"[object Object]\";\n};\nUtil.isEmptyString = function(v) {\n  if(this.isString(v) && !v) {\n    return true;\n  }\n  if(this.isString(v) && !v.length) {\n    return true;\n  }\n  return false;\n};\nUtil.isEmpty = function(v) {\n  if(!v) {\n    return true;\n  }\n  if(!v.length) {\n    return true;\n  }\n  return false;\n};\nUtil.notEmpty = function(v) {\n  return !Util.isEmpty(v);\n};\nUtil.hasProps = function(obj) {\n  const keys = Object.keys(obj);\n  return keys.length > 0;\n};\nUtil.validatePassword = function(value) {\n  return (\n    value.length > 7 && /^(?![\\d]+$)(?![a-zA-Z]+$)(?![!#$%^&*]+$)[\\da-zA-Z!#$ %^&*]/.test(value) && !/\\s/.test(value)\n  );\n};\n//deep copy\nUtil.deepClone = function(data) {\n  return JSON.parse(JSON.stringify(data));\n};\n\n// Function\nUtil.findVal = (object, propName, maxDepth = 10) => {\n  if(maxDepth <= 0) return null;\n  for(let key in object) {\n    if(key === propName) {\n      console.log(propName);\n      console.log(object[key]);\n      return object[key];\n    } else {\n      let value = Util.findVal(object[key], propName, maxDepth - 1);\n\n      if(value !== undefined) return value;\n    }\n  }\n};\n//Deep copy for ObservableArray/Object == There is a problem\nUtil.deepCloneObservable = function(data) {\n  let o;\n  const t = typeof data;\n  if(t === \"object\") {\n    o = data.length ? Util.array() : {};\n  } else {\n    return data;\n  }\n  if(t === \"object\") {\n    if(data.length) {\n      for(const value of data) {\n        o.push(this.deepCloneObservable(value));\n      }\n      return o;\n    } else {\n      for(const i in data) {\n        o[i] = this.deepCloneObservable(data[i]);\n      }\n      return o;\n    }\n  }\n};\n\n//Convert ObservableArray to Array\nUtil.toArray = function(observableArray) {\n  return observableArray.slice();\n};\n\n/**\n * Convert the original array to tree\n * @param data original array\n * @param id id field\n * @param pId parent id field\n * @param appId the parent id value of the level one array\n */\nUtil.arryToTree = function(data, id, pId, appId) {\n  const arr = Util.array();\n  data.map((e, i) => {\n    e[pId] === appId && arr.push(e);\n  });\n  const res = this.to3wei(arr, data, id, pId);\n  return res;\n};\n\n/**\n * Convert a first-level branch array to a tree\n * @param a level one branch array\n * @param old original array\n * @param id id field\n * @param pId parent id field\n */\nUtil.to3wei = function(a, old, id, pId) {\n  a.map((e, i) => {\n    a[i].children = Util.array();\n    old.map((se, si) => {\n      if(se[pId] === a[i][id]) {\n        a[i].children = [...a[i].children, se];\n        this.to3wei(a[i].children, old, id, pId);\n      }\n    });\n    if(!a[i].children.length) {\n      delete a[i].children;\n    }\n  });\n  return a;\n};\n\n/**\n * Exchange 2 element positions in the array\n * @param arr original array\n * @param i First element Starting from 0\n * @param j The second element starts at 0\n */\nUtil.arrExchangePos = function(arr, i, j) {\n  arr[i] = arr.splice(j, 1, arr[i])[0];\n};\n\nUtil.arrRemove = function(arr, i) {\n  const index = arr.indexOf(i);\n  if(index > -1) arr.splice(index, 1);\n};\n\nUtil.removeEqual = function(a, b) {\n  let c = {};\n\n  for(let key in Object.assign({}, a)) {\n    if(b[key] === a[key]) continue;\n    c[key] = a[key];\n  }\n  return c;\n};\n\n//Remove the storage when logging out\nUtil.logOutClearStorage = function() {\n  localStorage.removeItem(\"userToken\");\n  localStorage.removeItem(\"userLoginPermission\");\n  localStorage.removeItem(\"ssoToken\");\n  localStorage.removeItem(\"userId\");\n  localStorage.removeItem(\"userInfo\");\n  localStorage.removeItem(\"userGroupList\");\n  localStorage.removeItem(\"gameAuthList\");\n};\n\n//Take the cookies\nUtil.getCookie = function(cookie, name) {\n  let arr = cookie.match(new RegExp(\"(^| )\" + name + \"=([^;]*)(;|$)\"));\n  if(arr != null) return unescape(arr[2]);\n  return null;\n};\n\nUtil.parseCookie = (c = document.cookie) => {\n  if(!(typeof c == \"string\" && c && c.length > 0)) return {};\n  let key = \"\";\n  let value = \"\";\n  const ws = \" \\r\\n\\t\";\n  let i = 0;\n  let ret = {};\n  const skip = (pred = char => ws.indexOf(char) != -1) => {\n    let start = i;\n    while(i < c.length && pred(c[i])) i++;\n    let r = c.substring(start, i);\n    return r;\n  };\n  do {\n    let str = skip(char => char != \"=\" && char != \";\");\n    if(c[i] == \"=\" && str != \"path\") {\n      i++;\n      key = str;\n      value = skip(char => char != \";\");\n    } else {\n      i++;\n      skip();\n    }\n    if(key != \"\") ret[key] = value;\n    skip();\n  } while(i < c.length);\n  return ret;\n};\n\n/*\n\n    matches.shift();\n\n\n    return matches.reduce((acc, part) => {\n      const a = part.trim().split('=');\n      return { ...acc, [a[0]]: decodeURIComponent(a[1]) };\n    }, {});\n  };*/\n\nUtil.encodeCookie = c =>\n  Object.entries(c)\n    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)\n    .join(\"; \");\n\nUtil.setCookies = c =>\n  Object.entries(c).forEach(([key, value]) => {\n    document.cookie = `${key}=${value}`;\n    console.log(`Setting cookie[${key}] = ${value}`);\n  });\n\nUtil.clearCookies = c =>\n  Util.setCookies(\n    Object.keys(Util.parseCookie(c)).reduce(\n      (acc, name) => Object.assign(acc, { [name]: \"; max-age=0; expires=\" + new Date().toUTCString() }),\n      {}\n    )\n  );\n\nUtil.deleteCookie = name => {\n  if(global.window) document.cookie = name + \"=; expires=Thu, 01 Jan 1970 00:00:01 GMT;\";\n};\n\nUtil.accAdd = function(arg1, arg2) {\n  var r1, r2, m;\n  try {\n    r1 = arg1.toString().split(\".\")[1].length;\n  } catch(e) {\n    r1 = 0;\n  }\n  try {\n    r2 = arg2.toString().split(\".\")[1].length;\n  } catch(e) {\n    r2 = 0;\n  }\n  m = Math.pow(10, Math.max(r1, r2));\n  return (arg1 * m + arg2 * m) / m;\n};\n//js subtraction calculation\n//\nUtil.Subtr = function(arg1, arg2) {\n  var r1, r2, m, n;\n  try {\n    r1 = arg1.toString().split(\".\")[1].length;\n  } catch(e) {\n    r1 = 0;\n  }\n  try {\n    r2 = arg2.toString().split(\".\")[1].length;\n  } catch(e) {\n    r2 = 0;\n  }\n  m = Math.pow(10, Math.max(r1, r2));\n  //last modify by deeka\n  //动态控制精度长度\n  n = r1 >= r2 ? r1 : r2;\n  return (arg1 * m - arg2 * m) / m;\n};\n\n//js division function\n//\nUtil.accDiv = function(arg1, arg2) {\n  var t1 = 0;\n  var t2 = 0;\n  var r1;\n  var r2;\n  try {\n    t1 = arg1.toString().split(\".\")[1].length;\n  } catch(e) {}\n  try {\n    t2 = arg2.toString().split(\".\")[1].length;\n  } catch(e) {}\n  r1 = Number(arg1.toString().replace(\".\", \"\"));\n  r2 = Number(arg2.toString().replace(\".\", \"\"));\n  return (r1 / r2) * Math.pow(10, t2 - t1);\n};\n\n//js multiplication function\n//\nUtil.accMul = function(arg1, arg2) {\n  var m = 0;\n  var s1 = arg1.toString();\n  var s2 = arg2.toString();\n  try {\n    m += s1.split(\".\")[1].length;\n  } catch(e) {}\n  try {\n    m += s2.split(\".\")[1].length;\n  } catch(e) {}\n  return (Number(s1.replace(\".\", \"\")) * Number(s2.replace(\".\", \"\"))) / Math.pow(10, m);\n};\n\nUtil.dateFormatter = function(date, formate) {\n  const year = date.getFullYear();\n  let month = date.getMonth() + 1;\n  month = month > 9 ? month : `0${month}`;\n  let day = date.getDate();\n  day = day > 9 ? day : `0${day}`;\n  let hour = date.getHours();\n  hour = hour > 9 ? hour : `0${hour}`;\n  let minute = date.getMinutes();\n  minute = minute > 9 ? minute : `0${minute}`;\n  let second = date.getSeconds();\n  second = second > 9 ? second : `0${second}`;\n\n  return formate\n    .replace(/Y+/, `${year}`.slice(-formate.match(/Y/g).length))\n    .replace(/M+/, month)\n    .replace(/D+/, day)\n    .replace(/h+/, hour)\n    .replace(/m+/, minute)\n    .replace(/s+/, second);\n};\n\nUtil.numberFormatter = function(numStr) {\n  let numSplit = numStr.split(\".\");\n\n  return numSplit[0].replace(/\\B(?=(\\d{3})+(?!\\d))/g, \",\").concat(`.${numSplit[1]}`);\n};\nUtil.searchObject = function(object, matchCallback, currentPath, result, searched) {\n  currentPath = currentPath || \"\";\n  result = result || Util.array();\n  searched = searched || Util.array();\n  if(searched.indexOf(object) !== -1 && object === Object(object)) {\n    return;\n  }\n  searched.push(object);\n  if(matchCallback(object)) {\n    result.push({ path: currentPath, value: object });\n  }\n  try {\n    if(object === Object(object)) {\n      for(var property in object) {\n        const desc = Object.getOwnPropertyDescriptor(object, property);\n        //console.log('x ', {property, desc})\n        if(property.indexOf(\"$\") !== 0 && typeof object[property] !== \"function\" && !desc.get && !desc.set) {\n          if(typeof object[property] === \"object\") {\n            try {\n              JSON.stringify(object[property]);\n            } catch(err) {\n              continue;\n            }\n          }\n          //if (Object.prototype.hasOwnProperty.call(object, property)) {\n          Util.searchObject(object[property], matchCallback, currentPath + \".\" + property, result, searched);\n          //}\n        }\n      }\n    }\n  } catch(e) {\n    console.log(object);\n    //throw e;\n  }\n  return result;\n};\n\nUtil.getURL = function(req = {}) {\n  let proto = process.env.NODE_ENV === \"production\" ? \"https\" : \"http\";\n  let port = process.env.NODE_ENV === \"production\" ? 443 : 8080;\n\n  let host = global.ip || global.host || \"localhost\";\n  if(req && req.headers && req.headers.host !== undefined) {\n    host = req.headers.host.replace(/:.*/, \"\");\n  } else if(process.env.HOST !== undefined) host = process.env.HOST;\n\n  if(global.window !== undefined && window.location !== undefined) return window.location.href;\n  if(req.url !== undefined) return req.url;\n\n  if(global.process !== undefined && global.process.url !== undefined) return global.process.url;\n\n  const url = `${proto}://${host}:${port}`;\n  console.log(\"getURL process \", { url });\n  return url;\n};\nUtil.parseQuery = function(url = Util.getURL()) {\n  let startIndex;\n  let query = {};\n  try {\n    if((startIndex = url.indexOf(\"?\")) != -1) url = url.substring(startIndex);\n\n    const args = [...url.matchAll(/[?&]([^=&#]+)=?([^&#]*)/g)];\n    if(args) {\n      for(let i = 0; i < args.length; i++) {\n        const k = args[i][1];\n        query[k] = decodeURIComponent(args[i][2]);\n      }\n    }\n    return query;\n  } catch(err) {\n    return undefined;\n  }\n};\nUtil.encodeQuery = function(data) {\n  const ret = Util.array();\n  for(let d in data) ret.push(encodeURIComponent(d) + \"=\" + encodeURIComponent(data[d]));\n  return ret.join(\"&\");\n};\nUtil.parseURL = function(href = this.getURL()) {\n  const matches = /^([^:]*):\\/\\/([^/:]*)(:[0-9]*)?(\\/?.*)/.exec(href);\n  if(!matches) return null;\n  const argstr = matches[4].replace(/^[^?]*\\?/, \"?\") + \"&test=1\";\n  const pmatches = typeof argstr === \"string\" ? /[?&]([^?&=]*)=([^?&]*)/g.exec(argstr) : Util.array();\n  const params = [...pmatches].reduce((acc, m) => {\n    acc[m[1]] = m[2];\n    return acc;\n  }, {});\n  //console.log('PARAMS: ', { argstr, pmatches, params });\n  return {\n    protocol: matches[1],\n    host: matches[2],\n    port: typeof matches[3] === \"string\" ? parseInt(matches[3].substring(1)) : 443,\n    location: matches[4].replace(/\\?.*/, \"\"),\n    query: params,\n    href(override) {\n      if(typeof override === \"object\") Object.assign(this, override);\n      const qstr = Util.encodeQuery(this.query);\n      return (\n        (this.protocol ? `${this.protocol}://` : \"\") +\n        (this.host ? this.host : \"\") +\n        (this.port ? \":\" + this.port : \"\") +\n        `${this.location}` +\n        (qstr != \"\" ? \"?\" + qstr : \"\")\n      );\n    }\n  };\n};\n\nUtil.makeURL = function() {\n  const args = [...arguments];\n  let href = typeof args[0] === \"string\" ? args.shift() : this.getURL();\n  let urlObj = null;\n  let host = global.ip || global.host || \"localhost\";\n  if(String(href).indexOf(\"://\") == -1) href = `http://${host}:8080`;\n\n  urlObj = this.parseURL(href);\n\n  return urlObj ? urlObj.href(args[0]) : null;\n};\nUtil.numberFromURL = function(url, fn) {\n  const obj = typeof url === \"object\" ? url : this.parseURL(url);\n  const nr_match = RegExp(\".*[^0-9]([0-9]+)$\").exec(url.location);\n  const nr_arg = nr_match ? nr_match[1] : undefined;\n  const nr = nr_arg && parseInt(nr_arg);\n  if(!isNaN(nr) && typeof fn === \"function\") fn(nr);\n  return nr;\n};\nUtil.isBrowser = () => {\n  return !!(global.window && global.window.document);\n};\nUtil.isServer = () => {\n  return !Util.isBrowser();\n};\nUtil.isMobile = function() {\n  return true;\n};\nUtil.unique = function(arr) {\n  return Array.from(new Set(arr));\n};\nUtil.distinct = function(arr) {\n  return Array.prototype.filter.call(arr, function(value, index, me) {\n    return me.indexOf(value) === index;\n  });\n};\nUtil.rangeMinMax = function(arr, field) {\n  const numbers = [...arr].map(obj => obj[field]);\n  return [Math.min(...numbers), Math.max(...numbers)];\n};\nUtil.mergeLists = function(arr1, arr2, key = \"id\") {\n  let hash = arr1.reduce((acc, it) => Object.assign({ [it[key]]: it }, acc), {});\n  hash = arr2.reduce((acc, it) => Object.assign({ [it[key]]: it }, acc), {});\n  let ret = Util.array();\n  for(let k in hash) {\n    if(hash[k][key]) ret.push(hash[k]);\n  }\n  return ret;\n};\nUtil.throttle = function(fn, wait) {\n  var time = Date.now();\n  return function() {\n    if(time + wait - Date.now() < 0) {\n      fn();\n      time = Date.now();\n    }\n  };\n};\nUtil.foreach = function(obj, fn) {\n  if(obj instanceof Array) obj.forEach(fn);\n  else {\n    for(let key in obj) {\n      fn(obj[key], key, obj);\n    }\n  }\n};\nUtil.all = function(obj, pred) {\n  for(let k in obj) if(!pred(obj[k])) return false;\n  return true;\n};\nUtil.filter = function(obj, fn) {\n  let ret = {};\n  for(let key in obj) {\n    if(fn(obj[key], key, obj)) ret[key] = obj[key];\n  }\n  return ret;\n};\nUtil.reduce = function(obj, fn, accu) {\n  for(let key in obj) accu = fn(accu, obj[key], key, obj);\n  return accu;\n};\nvar map = Util.map;\nUtil.map = (obj, fn) => {\n  if(!fn) return map(obj);\n  let ret = {};\n  for(let key in obj) {\n    if(obj.hasOwnProperty(key)) {\n      let item = fn(key, obj[key], obj);\n      if(item instanceof Array && item.length == 2) ret[item[0]] = item[1];\n      else {\n        if(!(ret instanceof Array)) ret = [];\n        ret.push(item);\n      }\n    }\n  }\n  return ret;\n};\nUtil.entriesToObj = function(arr) {\n  return [...arr].reduce((acc, item) => {\n    const k = item[0];\n    const v = item[1];\n    acc[k] = v;\n    return acc;\n  }, {});\n};\nUtil.parseDate = d => {\n  return /^[0-9]+$/.test(d) ? Util.fromUnixTime(d) : new Date(d);\n};\nUtil.isoDate = function(date) {\n  try {\n    const minOffset = date.getTimezoneOffset();\n    const milliseconds = date.valueOf() - minOffset * 60 * 1000;\n    date = new Date(milliseconds);\n    return date.toISOString().replace(/T.*/, \"\");\n  } catch(err) {}\n  return null;\n};\n\nUtil.toUnixTime = function(dateObj, utc = false) {\n  if(!(dateObj instanceof Date)) dateObj = new Date(dateObj);\n  let epoch = Math.floor(dateObj.getTime() / 1000);\n  if(utc) epoch += dateObj.getTimezoneOffset() * 60;\n  return epoch;\n};\nUtil.fromUnixTime = function(epoch, utc = false) {\n  let t = parseInt(epoch);\n  let d = new Date(0);\n  utc ? d.setUTCSeconds(t) : d.setSeconds(t);\n  return d;\n};\nUtil.formatTime = function(date = new Date(), format = \"HH:MM:SS\") {\n  let n;\n  let out = \"\";\n  for(let i = 0; i < format.length; i += n) {\n    n = 1;\n    while(format[i] == format[i + n]) n++;\n    const fmt = format.substring(i, i + n);\n    let num = fmt;\n    if(fmt.startsWith(\"H\")) num = (\"0\" + date.getHours()).substring(0, n);\n    else if(fmt.startsWith(\"M\")) num = (\"0\" + date.getMinutes()).substring(0, n);\n    else if(fmt.startsWith(\"S\")) num = (\"0\" + date.getSeconds()).substring(0, n);\n    out += num;\n  }\n  return out;\n};\nUtil.leapYear = function(year) {\n  if(year % 400 == 0) return true;\n  if(year % 100 == 0) return false;\n  if(year % 4 == 0) return true;\n  return false;\n};\nUtil.timeSpan = function(s) {\n  var seconds = s % 60;\n  s = Math.floor(s / 60);\n  var minutes = s % 60;\n  s = Math.floor(s / 60);\n  var hours = s % 24;\n  s = Math.floor(s / 24);\n  var days = s % 7;\n  s = Math.floor(s / 7);\n  var weeks = s;\n  var ret = \"\";\n  ret = (\"0\" + hours).substring(0, 2) + \":\" + (\"0\" + minutes).substring(0, 2) + \":\" + (\"0\" + seconds).substring(0, 2);\n  if(days) ret = days + \" days \" + ret;\n  if(weeks) ret = weeks + \" weeks \" + ret;\n  return ret;\n};\nUtil.rng = Math.random;\nUtil.randFloat = function(min, max, rnd = Util.rng) {\n  return rnd() * (max - min) + min;\n};\nUtil.randInt = function(min, max = 16777215, rnd = Util.rng) {\n  return Math.round(Util.randFloat(min, max, rnd));\n};\nUtil.hex = function(num, numDigits = 0) {\n  let n = typeof num == \"number\" ? num : parseInt(num);\n  return (\"0\".repeat(numDigits) + n.toString(16)).slice(-numDigits);\n};\nUtil.roundTo = function(value, prec) {\n  return Math.round(value / prec) * prec;\n};\nUtil.base64 = {\n  encode: utf8 => window.btoa(unescape(encodeURIComponent(utf8))),\n  decode: base64 => decodeURIComponent(escape(window.atob(base64)))\n};\n\nUtil.formatRecord = function(obj) {\n  let ret = {};\n  for(let key in obj) {\n    let val = obj[key];\n\n    if(val instanceof Array) val = val.map(item => Util.formatRecord(item));\n    else if(/^-?[0-9]+$/.test(val)) val = parseInt(val);\n    else if(/^-?[.0-9]+$/.test(val)) val = parseFloat(val);\n    else if(val == \"true\" || val == \"false\") val = Boolean(val);\n\n    ret[key] = val;\n  }\n  return ret;\n};\nUtil.isArray = function(obj) {\n  return (obj && obj.length !== undefined) || obj instanceof Array;\n};\nUtil.isMap = function(obj) {\n  return (obj && obj.get !== undefined && obj.keys !== undefined) || obj instanceof Map;\n};\nUtil.effectiveDeviceWidth = function() {\n  var deviceWidth = window.orientation == 0 ? window.screen.width : window.screen.height;\n  //iOS returns available pixels, Android returns pixels / pixel ratio\n  //http://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html\n  if(navigator.userAgent.indexOf(\"Android\") >= 0 && window.devicePixelRatio) {\n    deviceWidth = deviceWidth / window.devicePixelRatio;\n  }\n  return deviceWidth;\n};\nUtil.getFormFields = function(initialState) {\n  return Util.mergeObjects([\n    initialState,\n    [...document.forms].reduce(\n      (acc, form) =>\n        [...form.elements].reduce(\n          (acc2, e) =>\n            e.name == \"\" || e.value == undefined || e.value == \"undefined\"\n              ? acc2\n              : Object.assign(acc2, { [e.name]: e.value }),\n          acc\n        ),\n      {}\n    )\n  ]);\n};\nUtil.mergeObjects = function(objArr, predicate = (dst, src, key) => (src[key] == \"\" ? undefined : src[key])) {\n  let args = objArr;\n  let obj = {};\n\n  for(let i = 0; i < args.length; i++) {\n    for(let key in args[i]) {\n      const newVal = predicate(obj, args[i], key);\n      if(newVal != undefined) obj[key] = newVal;\n    }\n  }\n  return obj;\n};\nUtil.getUserAgent = function(headers = req.headers) {\n  var agent = useragent.parse(headers[\"user-agent\"]);\n  return agent;\n};\nUtil.factor = function(start, end) {\n  var f = 1;\n  for(var i = start; i <= end; i++) {\n    f = f * i;\n  }\n  return f;\n};\nUtil.factorial = function(n) {\n  return Util.factor(1, n);\n};\nUtil.lottoChances = function(numbers, draws) {\n  const f = Util.factorial;\n  return f(numbers) / (f(numbers - draws) * f(draws));\n};\nUtil.increment = function(obj, key) {\n  if(obj[key] >= 1) obj[key] == 0;\n  obj[key]++;\n  return obj[key];\n};\nUtil.counter = function() {\n  this.i = 0;\n  this.incr = function() {\n    this.i++;\n    return this.i;\n  };\n};\nUtil.filterKeys = function(obj) {\n  let args = [...arguments];\n  obj = args.shift();\n  let ret = {};\n  let pred = typeof args[0] == \"function\" ? args[0] : key => args.indexOf(key) != -1;\n  for(let key in obj) {\n    if(pred(key)) ret[key] = obj[key];\n  }\n  return ret;\n};\nUtil.filterOutKeys = function(obj, arr) {\n  return Util.filterKeys(obj, key => arr.indexOf(key) == -1);\n};\nUtil.numbersConvert = function(str) {\n  return str\n    .split(\"\")\n    .map((ch, i) => (/[ :,./]/.test(ch) ? ch : String.fromCharCode((str.charCodeAt(i) & 0x0f) + 0x30)))\n    .join(\"\");\n};\nUtil.traverse = function(obj, fn) {\n  Util.foreach(obj, (v, k, a) => {\n    fn(v, k, a);\n    if(typeof v === \"object\") Util.traverse(v, fn);\n  });\n};\nUtil.pushUnique = function(arr) {\n  let args = [...arguments];\n  arr = args.shift();\n  args.forEach(item => {\n    if(arr.indexOf(item) == -1) arr.push(item);\n  });\n  return arr;\n};\nUtil.members = function(obj) {\n  let names = Util.array();\n  for(let name in obj) names.push(name);\n  const adder = name => {\n    if(names.indexOf(name) == -1) names.push(name);\n  };\n  Object.getOwnPropertyNames(obj).forEach(adder);\n  Util.getPrototypeChain(obj).forEach(proto => Object.getOwnPropertyNames(proto).forEach(adder));\n  return names;\n};\nUtil.getMethodNames = function(obj) {\n  return Util.array(Util.members(obj).filter(item => typeof obj[item] === \"function\" && item != \"constructor\"));\n};\nUtil.getMethods = function(obj) {\n  const names = Util.getMethodNames(obj);\n  return names.reduce((ret, method) => Object.assign(ret, { [method]: obj[method] }), {});\n};\nUtil.bindMethods = function(methods, obj) {\n  for(let name in methods) {\n    methods[name] = methods[name].bind(obj);\n  }\n  return methods;\n};\nUtil.bindMethodsTo = function(dest, obj, methods) {\n  for(let name in methods) {\n    dest[name] = methods[name].bind(obj);\n  }\n  return dest;\n};\nUtil.getPrototypeChain = function(obj, fn = p => p) {\n  let ret = Util.array();\n  let proto;\n  while((proto = Object.getPrototypeOf(obj))) {\n    if(proto === Object.prototype) break;\n    ret.push(fn(proto));\n    obj = proto;\n  }\n  return ret;\n};\nUtil.weakAssign = function(obj) {\n  let args = [...arguments];\n  obj = args.shift();\n\n  args.forEach(other => {\n    for(let key in other) {\n      if(obj[key] === undefined) obj[key] = other[key];\n    }\n  });\n\n  return obj;\n};\nUtil.getCallerStack = function(position = 2) {\n  if(position >= Error.stackTraceLimit) {\n    throw new TypeError(\n      \"getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `\" +\n        position +\n        \"` and Error.stackTraceLimit was: `\" +\n        Error.stackTraceLimit +\n        \"`\"\n    );\n  }\n\n  const oldPrepareStackTrace = Error.prepareStackTrace;\n  Error.prepareStackTrace = (_, stack) => stack;\n  const stack = new Error().stack;\n  Error.prepareStackTrace = oldPrepareStackTrace;\n\n  return stack !== null && typeof stack === \"object\" ? stack.slice(position) : null;\n};\nUtil.getCallerFile = function(position = 2) {\n  let stack = Util.getCallerStack();\n\n  if(stack !== null && typeof stack === \"object\") {\n    const frame = stack[position];\n    //stack[0] holds this file\n    //stack[1] holds where this function was called\n    //stack[2] holds the file we're interested in\n    return frame ? frame.getFileName() + \":\" + frame.getLineNumber() : undefined;\n  }\n};\nUtil.getCallerFunction = function(position = 2) {\n  let stack = Util.getCallerStack(position + 1);\n\n  if(stack !== null && typeof stack === \"object\") {\n    const frame = stack[0];\n    //stack[0] holds this file\n    //stack[1] holds where this function was called\n    //stack[2] holds the file we're interested in\n    return frame ? frame.getFunction() : undefined;\n  }\n};\nUtil.getCallerFunctionName = function(position = 2) {\n  let stack = Util.getCallerStack(position + 1);\n\n  if(stack !== null && typeof stack === \"object\") {\n    const frame = stack[0];\n    //stack[0] holds this file\n    //stack[1] holds where this function was called\n    //stack[2] holds the file we're interested in\n    return frame ? frame.getMethodName() || frame.getFunctionName() : undefined;\n  }\n};\nUtil.getCallerFunctionNames = function(position = 2) {\n  let stack = Util.getCallerStack(position + 1);\n\n  if(stack !== null && typeof stack === \"object\") {\n    let ret = [];\n    for(let i = 0; stack[i]; i++) {\n      const frame = stack[i];\n      ret.push(frame ? frame.getMethodName() || frame.getFunctionName() : undefined);\n    }\n    return ret;\n  }\n};\nUtil.getCaller = function(position = 2) {\n  let stack = Util.getCallerStack(position + 1);\n  const methods = [\n    \"getColumnNumber\",\n    \"getEvalOrigin\",\n    \"getFileName\",\n    \"getFunction\",\n    \"getFunctionName\",\n    \"getLineNumber\",\n    \"getMethodName\",\n    \"getPosition\",\n    \"getPromiseIndex\",\n    \"getScriptNameOrSourceURL\",\n    \"getThis\",\n    \"getTypeName\"\n  ];\n  if(stack !== null && typeof stack === \"object\") {\n    const frame = stack[0];\n    return methods.reduce((acc, m) => {\n      if(frame[m]) {\n        const name = Util.lcfirst(m.replace(/^get/, \"\"));\n        const value = frame[m]();\n        if(value != undefined) {\n          acc[name] = value;\n        }\n      }\n      return acc;\n    }, {});\n  }\n};\nUtil.getCallers = function(start = 2, num = 1) {\n  let ret = [];\n  let i = start;\n  while(i++ < start + num) {\n    try {\n      ret.push(Util.getCaller(i + 1));\n    } catch(err) {}\n  }\n  return ret;\n};\n\nUtil.rotateLeft = (x, n) => {\n  n = n & 0x1f;\n  return (x << n) | ((x >> (32 - n)) & ~((-1 >> n) << n));\n};\nUtil.rotateRight = (x, n) => {\n  n = n & 0x1f;\n  return Util.rotateLeft(x, 32 - n);\n};\nUtil.hashString = (string, bits = 32, mask = 0xffffffff) => {\n  var ret = 0;\n  var bitc = 0;\n  for(var i = 0; i < string.length; i++) {\n    const code = string.charCodeAt(i);\n\n    ret *= 3;\n    ret ^= code;\n    bitc += 8;\n\n    ret = Util.rotateLeft(ret, 11) & mask;\n  }\n  return ret & 0x7fffffff;\n};\nUtil.flatTree = function(tree, addOutput) {\n  var ret = [];\n  if(!addOutput) addOutput = arg => ret.push(arg);\n\n  addOutput(Util.filterKeys(tree, key => key !== \"children\"));\n\n  if(typeof tree.children == \"object\" && tree.children.length)\n    for(let child of tree.children) Util.flatTree(child, addOutput);\n  return ret;\n};\nUtil.traverseTree = function(tree, fn, depth = 0, parent = null) {\n  fn(tree, depth, parent);\n  if(typeof tree.children == \"object\" && tree.children.length)\n    for(let child of tree.children) Util.traverseTree(child, fn, depth + 1, tree);\n};\nUtil.getImageAverageColor = function(imageElement, options) {\n  if(!imageElement) {\n    return false;\n  }\n\n  options = options || {};\n  var settings = {\n    tooDark: (options.tooDark || 0.03) * 255 * 3, // How dark is too dark for a pixel\n    tooLight: (options.tooLight || 0.97) * 255 * 3, // How light is too light for a pixel\n    tooAlpha: (options.tooAlpha || 0.1) * 255 // How transparent is too transparent for a pixel\n  };\n\n  var w = imageElement.width,\n    h = imageElement.height;\n\n  // Setup canvas and draw image onto it\n  var context = document.createElement(\"canvas\").getContext(\"2d\");\n  context.drawImage(imageElement, 0, 0, w, h);\n\n  // Extract the rgba data for the image from the canvas\n  var subpixels = context.getImageData(0, 0, w, h).data;\n\n  var pixels = {\n    r: 0,\n    g: 0,\n    b: 0,\n    a: 0\n  };\n  var processedPixels = 0;\n\n  var pixel = {\n    r: 0,\n    g: 0,\n    b: 0,\n    a: 0\n  };\n  var luma = 0; // Having luma in the pixel object caused ~10% performance penalty for some reason\n\n  // Loop through the rgba data\n  for(var i = 0, l = w * h * 4; i < l; i += 4) {\n    pixel.r = subpixels[i];\n    pixel.g = subpixels[i + 1];\n    pixel.b = subpixels[i + 2];\n    pixel.a = subpixels[i + 4];\n\n    // Only consider pixels that aren't black, white, or too transparent\n    if(\n      pixel.a > settings.tooAlpha &&\n      (luma = pixel.r + pixel.g + pixel.b) > settings.tooDark && // Luma is assigned inside the conditional to avoid re-calculation when alpha is not met\n      luma < settings.tooLight\n    ) {\n      pixels.r += pixel.r;\n      pixels.g += pixel.g;\n      pixels.b += pixel.b;\n      pixels.a += pixel.a;\n\n      processedPixels++;\n    }\n  }\n\n  // Values of the channels that make up the average color\n  var channels = {\n    r: null,\n    g: null,\n    b: null,\n    a: null\n  };\n\n  if(processedPixels > 0) {\n    channels = {\n      r: Math.round(pixels.r / processedPixels),\n      g: Math.round(pixels.g / processedPixels),\n      b: Math.round(pixels.b / processedPixels),\n      a: Math.round(pixels.a / processedPixels)\n    };\n  }\n\n  var o = Object.assign({}, channels, {\n    toStringRgb: function() {\n      // Returns a CSS compatible RGB string (e.g. '255, 255, 255')\n      const { r, g, b } = this;\n      return [r, g, b].join(\", \");\n    },\n    toStringRgba: function() {\n      // Returns a CSS compatible RGBA string (e.g. '255, 255, 255, 1.0')\n      const { r, g, b, a } = this;\n      return [r, g, b, a].join(\", \");\n    },\n    toStringHex: function() {\n      // Returns a CSS compatible HEX coloor string (e.g. 'FFA900')\n      var toHex = function(d) {\n        h = Math.round(d).toString(16);\n\n        if(h.length < 2) {\n          h = \"0\" + h;\n        }\n        return h;\n      };\n      const { r, g, b } = this;\n      return [toHex(r), toHex(g), toHex(b)].join(\"\");\n    }\n  });\n\n  return o;\n};\n\nif (typeof window == \"object\") {\n  window.Util = Util;\n} else if(typeof module == \"object\") {\n  module.exports = Util;\n  module.exports.default = Util;\n}\n\n</script></head>\n<body>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"21cm\" height=\"29.7cm\" view-box=\"0 0 210 297 \">\n<rect width=\"100%\" height=\"100%\" opacity=\"0\"></rect>\n<g transform=\"scale(3.5 3.5)\">\n<g id=\"Grid\" stroke=\"#555\" fill=\"none\" stroke-width=\"0.03\" stroke-dashoffset=\"0.1\" stroke-dasharray=\"0.05 0.05 0.05\" transform=\"translate(-2, 6.26) scale(10.16, 10.16) translate(0, 0)\">\n<line x1=\"0\" y1=\"0\" x2=\"21\" y2=\"0\"></line>\n<line x1=\"0\" y1=\"1\" x2=\"21\" y2=\"1\"></line>\n<line x1=\"0\" y1=\"2\" x2=\"21\" y2=\"2\"></line>\n<line x1=\"0\" y1=\"3\" x2=\"21\" y2=\"3\"></line>\n<line x1=\"0\" y1=\"4\" x2=\"21\" y2=\"4\"></line>\n<line x1=\"0\" y1=\"5\" x2=\"21\" y2=\"5\"></line>\n<line x1=\"0\" y1=\"6\" x2=\"21\" y2=\"6\"></line>\n<line x1=\"0\" y1=\"7\" x2=\"21\" y2=\"7\"></line>\n<line x1=\"0\" y1=\"8\" x2=\"21\" y2=\"8\"></line>\n<line x1=\"0\" y1=\"9\" x2=\"21\" y2=\"9\"></line>\n<line x1=\"0\" y1=\"10\" x2=\"21\" y2=\"10\"></line>\n<line x1=\"0\" y1=\"11\" x2=\"21\" y2=\"11\"></line>\n<line x1=\"0\" y1=\"12\" x2=\"21\" y2=\"12\"></line>\n<line x1=\"0\" y1=\"13\" x2=\"21\" y2=\"13\"></line>\n<line x1=\"0\" y1=\"14\" x2=\"21\" y2=\"14\"></line>\n<line x1=\"0\" y1=\"15\" x2=\"21\" y2=\"15\"></line>\n<line x1=\"0\" y1=\"16\" x2=\"21\" y2=\"16\"></line>\n<line x1=\"0\" y1=\"17\" x2=\"21\" y2=\"17\"></line>\n<line x1=\"0\" y1=\"18\" x2=\"21\" y2=\"18\"></line>\n<line x1=\"0\" y1=\"19\" x2=\"21\" y2=\"19\"></line>\n<line x1=\"0\" y1=\"20\" x2=\"21\" y2=\"20\"></line>\n<line x1=\"0\" y1=\"21\" x2=\"21\" y2=\"21\"></line>\n<line x1=\"0\" y1=\"22\" x2=\"21\" y2=\"22\"></line>\n<line x1=\"0\" y1=\"23\" x2=\"21\" y2=\"23\"></line>\n<line x1=\"0\" y1=\"24\" x2=\"21\" y2=\"24\"></line>\n<line x1=\"0\" y1=\"25\" x2=\"21\" y2=\"25\"></line>\n<line x1=\"0\" y1=\"26\" x2=\"21\" y2=\"26\"></line>\n<line x1=\"0\" y1=\"27\" x2=\"21\" y2=\"27\"></line>\n<line x1=\"0\" y1=\"28\" x2=\"21\" y2=\"28\"></line>\n<line x1=\"0\" y1=\"29\" x2=\"21\" y2=\"29\"></line>\n<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"29.7\"></line>\n<line x1=\"1\" y1=\"0\" x2=\"1\" y2=\"29.7\"></line>\n<line x1=\"2\" y1=\"0\" x2=\"2\" y2=\"29.7\"></line>\n<line x1=\"3\" y1=\"0\" x2=\"3\" y2=\"29.7\"></line>\n<line x1=\"4\" y1=\"0\" x2=\"4\" y2=\"29.7\"></line>\n<line x1=\"5\" y1=\"0\" x2=\"5\" y2=\"29.7\"></line>\n<line x1=\"6\" y1=\"0\" x2=\"6\" y2=\"29.7\"></line>\n<line x1=\"7\" y1=\"0\" x2=\"7\" y2=\"29.7\"></line>\n<line x1=\"8\" y1=\"0\" x2=\"8\" y2=\"29.7\"></line>\n<line x1=\"9\" y1=\"0\" x2=\"9\" y2=\"29.7\"></line>\n<line x1=\"10\" y1=\"0\" x2=\"10\" y2=\"29.7\"></line>\n<line x1=\"11\" y1=\"0\" x2=\"11\" y2=\"29.7\"></line>\n<line x1=\"12\" y1=\"0\" x2=\"12\" y2=\"29.7\"></line>\n<line x1=\"13\" y1=\"0\" x2=\"13\" y2=\"29.7\"></line>\n<line x1=\"14\" y1=\"0\" x2=\"14\" y2=\"29.7\"></line>\n<line x1=\"15\" y1=\"0\" x2=\"15\" y2=\"29.7\"></line>\n<line x1=\"16\" y1=\"0\" x2=\"16\" y2=\"29.7\"></line>\n<line x1=\"17\" y1=\"0\" x2=\"17\" y2=\"29.7\"></line>\n<line x1=\"18\" y1=\"0\" x2=\"18\" y2=\"29.7\"></line>\n<line x1=\"19\" y1=\"0\" x2=\"19\" y2=\"29.7\"></line>\n<line x1=\"20\" y1=\"0\" x2=\"20\" y2=\"29.7\"></line></g>\n<g transform=\"translate(105 148.5) scale(10.16 10.16)\">\n<g transform=\"scale(1,-1)  translate(-7 -12.5) \" id=\"Wires-Bottom\" stroke=\"#000080\" fill=\"none\" stroke-width=\"0.5\" stroke-linecap=\"round\">\n<line x1=\"3\" y1=\"3\" x2=\"3\" y2=\"6\" transform=\" \"></line>\n<line x1=\"8\" y1=\"3\" x2=\"3\" y2=\"3\" transform=\" \"></line>\n<line x1=\"12\" y1=\"3\" x2=\"8\" y2=\"3\" transform=\" \"></line>\n<line x1=\"8\" y1=\"4\" x2=\"8\" y2=\"3\" transform=\" \"></line>\n<line x1=\"12\" y1=\"5\" x2=\"12\" y2=\"3\" transform=\" \"></line>\n<line x1=\"6\" y1=\"7\" x2=\"6\" y2=\"4\" transform=\" \"></line>\n<line x1=\"6\" y1=\"4\" x2=\"7\" y2=\"4\" transform=\" \"></line>\n<line x1=\"7\" y1=\"5\" x2=\"7\" y2=\"6\" transform=\" \"></line>\n<line x1=\"8\" y1=\"5\" x2=\"11\" y2=\"5\" transform=\" \"></line>\n<line x1=\"10\" y1=\"6\" x2=\"10\" y2=\"5\" transform=\" \"></line>\n<line x1=\"10\" y1=\"5\" x2=\"11\" y2=\"5\" transform=\" \"></line>\n<line x1=\"12\" y1=\"5\" x2=\"12\" y2=\"7\" transform=\" \"></line>\n<line x1=\"3\" y1=\"6\" x2=\"4\" y2=\"6\" transform=\" \"></line>\n<line x1=\"7\" y1=\"6\" x2=\"9\" y2=\"6\" transform=\" \"></line>\n<line x1=\"9\" y1=\"6\" x2=\"9\" y2=\"8\" transform=\" \"></line>\n<line x1=\"8\" y1=\"7\" x2=\"6\" y2=\"7\" transform=\" \"></line>\n<line x1=\"8\" y1=\"9\" x2=\"8\" y2=\"7\" transform=\" \"></line>\n<line x1=\"1\" y1=\"8\" x2=\"4\" y2=\"8\" transform=\" \"></line>\n<line x1=\"4\" y1=\"8\" x2=\"6\" y2=\"8\" transform=\" \"></line>\n<line x1=\"14\" y1=\"8\" x2=\"9\" y2=\"8\" transform=\" \"></line>\n<line x1=\"6\" y1=\"9\" x2=\"1\" y2=\"9\" transform=\" \"></line>\n<line x1=\"8\" y1=\"9\" x2=\"9\" y2=\"9\" transform=\" \"></line>\n<line x1=\"9\" y1=\"9\" x2=\"14\" y2=\"9\" transform=\" \"></line>\n<line x1=\"1\" y1=\"10\" x2=\"6\" y2=\"10\" transform=\" \"></line>\n<line x1=\"14\" y1=\"10\" x2=\"9\" y2=\"10\" transform=\" \"></line>\n<line x1=\"6\" y1=\"11\" x2=\"1\" y2=\"11\" transform=\" \"></line>\n<line x1=\"9\" y1=\"11\" x2=\"14\" y2=\"11\" transform=\" \"></line>\n<line x1=\"2\" y1=\"14\" x2=\"2\" y2=\"12\" transform=\" \"></line>\n<line x1=\"2\" y1=\"12\" x2=\"3\" y2=\"12\" transform=\" \"></line>\n<line x1=\"4\" y1=\"13\" x2=\"4\" y2=\"12\" transform=\" \"></line>\n<line x1=\"4\" y1=\"12\" x2=\"6\" y2=\"12\" transform=\" \"></line>\n<line x1=\"7\" y1=\"14\" x2=\"7\" y2=\"12\" transform=\" \"></line>\n<line x1=\"7\" y1=\"12\" x2=\"9\" y2=\"12\" transform=\" \"></line>\n<line x1=\"9\" y1=\"12\" x2=\"11\" y2=\"12\" transform=\" \"></line>\n<line x1=\"12\" y1=\"12\" x2=\"11\" y2=\"12\" transform=\" \"></line>\n<line x1=\"14\" y1=\"12\" x2=\"12\" y2=\"12\" transform=\" \"></line>\n<line x1=\"2\" y1=\"14\" x2=\"2\" y2=\"13\" transform=\" \"></line>\n<line x1=\"3\" y1=\"13\" x2=\"4\" y2=\"13\" transform=\" \"></line>\n<line x1=\"5\" y1=\"14\" x2=\"5\" y2=\"13\" transform=\" \"></line>\n<line x1=\"5\" y1=\"13\" x2=\"6\" y2=\"13\" transform=\" \"></line>\n<line x1=\"6\" y1=\"13\" x2=\"6\" y2=\"13\" transform=\" \"></line>\n<line x1=\"8\" y1=\"22\" x2=\"8\" y2=\"13\" transform=\" \"></line>\n<line x1=\"8\" y1=\"13\" x2=\"10\" y2=\"13\" transform=\" \"></line>\n<line x1=\"11\" y1=\"13\" x2=\"10\" y2=\"13\" transform=\" \"></line>\n<line x1=\"14\" y1=\"13\" x2=\"11\" y2=\"13\" transform=\" \"></line>\n<line x1=\"3\" y1=\"14\" x2=\"4\" y2=\"14\" transform=\" \"></line>\n<line x1=\"4\" y1=\"14\" x2=\"5\" y2=\"14\" transform=\" \"></line>\n<line x1=\"6\" y1=\"14\" x2=\"7\" y2=\"14\" transform=\" \"></line>\n<line x1=\"7\" y1=\"22\" x2=\"7\" y2=\"14\" transform=\" \"></line>\n<line x1=\"9\" y1=\"14\" x2=\"14\" y2=\"14\" transform=\" \"></line>\n<line x1=\"6\" y1=\"15\" x2=\"1\" y2=\"15\" transform=\" \"></line>\n<line x1=\"1\" y1=\"15\" x2=\"1\" y2=\"16\" transform=\" \"></line>\n<line x1=\"9\" y1=\"15\" x2=\"14\" y2=\"15\" transform=\" \"></line>\n<line x1=\"6\" y1=\"16\" x2=\"2\" y2=\"16\" transform=\" \"></line>\n<line x1=\"14\" y1=\"16\" x2=\"9\" y2=\"16\" transform=\" \"></line>\n<line x1=\"1\" y1=\"17\" x2=\"6\" y2=\"17\" transform=\" \"></line>\n<line x1=\"9\" y1=\"17\" x2=\"14\" y2=\"17\" transform=\" \"></line>\n<line x1=\"1\" y1=\"18\" x2=\"6.5\" y2=\"18\" transform=\" \"></line>\n<line x1=\"9\" y1=\"18\" x2=\"14\" y2=\"18\" transform=\" \"></line>\n<line x1=\"6\" y1=\"19\" x2=\"1\" y2=\"19\" transform=\" \"></line>\n<line x1=\"9\" y1=\"19\" x2=\"14\" y2=\"19\" transform=\" \"></line>\n<line x1=\"1\" y1=\"20\" x2=\"6\" y2=\"20\" transform=\" \"></line>\n<line x1=\"10\" y1=\"20\" x2=\"9\" y2=\"20\" transform=\" \"></line>\n<line x1=\"10\" y1=\"20\" x2=\"14\" y2=\"20\" transform=\" \"></line>\n<line x1=\"2\" y1=\"21\" x2=\"2\" y2=\"23\" transform=\" \"></line>\n<line x1=\"5\" y1=\"24\" x2=\"5\" y2=\"21\" transform=\" \"></line>\n<line x1=\"6\" y1=\"21\" x2=\"5\" y2=\"21\" transform=\" \"></line>\n<line x1=\"9\" y1=\"21\" x2=\"11\" y2=\"21\" transform=\" \"></line>\n<line x1=\"11\" y1=\"21\" x2=\"14\" y2=\"21\" transform=\" \"></line>\n<line x1=\"3\" y1=\"23\" x2=\"3\" y2=\"22\" transform=\" \"></line>\n<line x1=\"3\" y1=\"22\" x2=\"4\" y2=\"22\" transform=\" \"></line>\n<line x1=\"6\" y1=\"25\" x2=\"6\" y2=\"22\" transform=\" \"></line>\n<line x1=\"6\" y1=\"22\" x2=\"7\" y2=\"22\" transform=\" \"></line>\n<line x1=\"8\" y1=\"23\" x2=\"7\" y2=\"23\" transform=\" \"></line>\n<line x1=\"7\" y1=\"23\" x2=\"7\" y2=\"25\" transform=\" \"></line>\n<line x1=\"10\" y1=\"23\" x2=\"9\" y2=\"23\" transform=\" \"></line>\n<line x1=\"9\" y1=\"23\" x2=\"9\" y2=\"25\" transform=\" \"></line>\n<line x1=\"8\" y1=\"25\" x2=\"8\" y2=\"24\" transform=\" \"></line>\n<line x1=\"10\" y1=\"25\" x2=\"10\" y2=\"24\" transform=\" \"></line>\n<line x1=\"10\" y1=\"24\" x2=\"11\" y2=\"24\" transform=\" \"></line></g>\n<g transform=\"scale(1,-1)  translate(-7 -12.5) \" id=\"Wires-Top\" stroke=\"#800000\" fill=\"none\" stroke-width=\"0.5\" stroke-linecap=\"round\">\n<line x1=\"3\" y1=\"12\" x2=\"3\" y2=\"6\" transform=\" \"></line>\n<line x1=\"10\" y1=\"13\" x2=\"10\" y2=\"6\" transform=\" \"></line>\n<line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"7\" transform=\" \"></line>\n<line x1=\"2\" y1=\"16\" x2=\"2\" y2=\"21\" transform=\" \"></line>\n<line x1=\"8\" y1=\"24\" x2=\"5\" y2=\"24\" transform=\" \"></line></g>\n<g transform=\"scale(1,-1)  translate(-7.5 -13) \" id=\"Wires-Measures\" stroke=\"#808080\" fill=\"none\" stroke-width=\"0.1\" stroke-linecap=\"round\">\n<line x1=\"0\" y1=\"0\" x2=\"15\" y2=\"0\" transform=\" \"></line>\n<line x1=\"0\" y1=\"26\" x2=\"0\" y2=\"0\" transform=\" \"></line>\n<line x1=\"15\" y1=\"0\" x2=\"15\" y2=\"26\" transform=\" \"></line>\n<line x1=\"15\" y1=\"26\" x2=\"0\" y2=\"26\" transform=\" \"></line>\n<g id=\"element-J1\" transform=\" translate(6, 25)  translate(1,0)  rotate(0) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#006432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">J1</text>\n<path data-id=\"J1\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(3.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J1\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(0.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J1\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(1.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J1\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(2.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J1\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(4.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-C1\" transform=\" translate(4, 7)  translate(1,0)  rotate(270) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#3c6432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">C1</text>\n<path data-id=\"C1\" fill=\"#3c6432\" stroke=\"#3c6432\" stroke-width=\"0.05\" transform=\"translate(-0.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"C1\" fill=\"#3c6432\" stroke=\"#3c6432\" stroke-width=\"0.05\" transform=\"translate(1.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-C2\" transform=\" translate(11, 12.5)  translate(1,0)  rotate(0) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#786432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">C2</text>\n<path data-id=\"C2\" fill=\"#786432\" stroke=\"#786432\" stroke-width=\"0.05\" transform=\"translate(0.75,-0.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"C2\" fill=\"#786432\" stroke=\"#786432\" stroke-width=\"0.05\" transform=\"translate(0.75,0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-J2\" transform=\" translate(7, 3)  translate(1,0)  rotate(90) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#b46432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">J2</text>\n<path data-id=\"J2\" fill=\"#b46432\" stroke=\"#b46432\" stroke-width=\"0.05\" transform=\"translate(1.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J2\" fill=\"#b46432\" stroke=\"#b46432\" stroke-width=\"0.05\" transform=\"translate(2.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J2\" fill=\"#b46432\" stroke=\"#b46432\" stroke-width=\"0.05\" transform=\"translate(1.75,-1.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J2\" fill=\"#b46432\" stroke=\"#b46432\" stroke-width=\"0.05\" transform=\"translate(0.75,-3.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J2\" fill=\"#b46432\" stroke=\"#b46432\" stroke-width=\"0.05\" transform=\"translate(0.75,1.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J2\" fill=\"#b46432\" stroke=\"#b46432\" stroke-width=\"0.05\" transform=\"translate(2.75,-1.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-LED1\" transform=\" translate(2.5, 23)  translate(1,0)  rotate(180) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#ff6432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">LED1</text>\n<path data-id=\"LED1\" fill=\"#ff6432\" stroke=\"#ff6432\" stroke-width=\"0.05\" transform=\"translate(0.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"LED1\" fill=\"#ff6432\" stroke=\"#ff6432\" stroke-width=\"0.05\" transform=\"translate(1.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-C3\" transform=\" translate(2.5, 14)  translate(1,0)  rotate(270) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#006432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">C3</text>\n<path data-id=\"C3\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(0.75,-0.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"C3\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(0.75,0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-C4\" transform=\" translate(2.5, 13)  translate(1,0)  rotate(270) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#3c6432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">C4</text>\n<path data-id=\"C4\" fill=\"#3c6432\" stroke=\"#3c6432\" stroke-width=\"0.05\" transform=\"translate(0.75,-0.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"C4\" fill=\"#3c6432\" stroke=\"#3c6432\" stroke-width=\"0.05\" transform=\"translate(0.75,0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-C5\" transform=\" translate(11.5, 5)  translate(1,0)  rotate(180) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#786432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">C5</text>\n<path data-id=\"C5\" fill=\"#786432\" stroke=\"#786432\" stroke-width=\"0.05\" transform=\"translate(0.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"C5\" fill=\"#786432\" stroke=\"#786432\" stroke-width=\"0.05\" transform=\"translate(1.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-Q1\" transform=\" translate(4, 13)  translate(1,0)  rotate(180) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#b46432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">Q1</text>\n<path data-id=\"Q1\" fill=\"#b46432\" stroke=\"#b46432\" stroke-width=\"0.05\" transform=\"translate(0.75,-1.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"Q1\" fill=\"#b46432\" stroke=\"#b46432\" stroke-width=\"0.05\" transform=\"translate(0.75,0.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-J4\" transform=\" translate(1, 9.5)  translate(1,0)  rotate(270) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#f06432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">J4</text>\n<path data-id=\"J4\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J4\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(1.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J4\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(0.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J4\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-J5\" transform=\" translate(14, 10.5)  translate(1,0)  rotate(90) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#ff6432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">J5</text>\n<path data-id=\"J5\" fill=\"#ff6432\" stroke=\"#ff6432\" stroke-width=\"0.05\" transform=\"translate(3.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J5\" fill=\"#ff6432\" stroke=\"#ff6432\" stroke-width=\"0.05\" transform=\"translate(2.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J5\" fill=\"#ff6432\" stroke=\"#ff6432\" stroke-width=\"0.05\" transform=\"translate(1.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J5\" fill=\"#ff6432\" stroke=\"#ff6432\" stroke-width=\"0.05\" transform=\"translate(0.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J5\" fill=\"#ff6432\" stroke=\"#ff6432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J5\" fill=\"#ff6432\" stroke=\"#ff6432\" stroke-width=\"0.05\" transform=\"translate(-1.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-J6\" transform=\" translate(14, 17.5)  translate(1,0)  rotate(90) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#006432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">J6</text>\n<path data-id=\"J6\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(2.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J6\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(1.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J6\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(0.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J6\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J6\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(-1.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J6\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(-2.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J6\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(3.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J6\" fill=\"#006432\" stroke=\"#006432\" stroke-width=\"0.05\" transform=\"translate(4.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-J3\" transform=\" translate(1, 18)  translate(1,0)  rotate(270) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#3c6432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">J3</text>\n<path data-id=\"J3\" fill=\"#3c6432\" stroke=\"#3c6432\" stroke-width=\"0.05\" transform=\"translate(2.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J3\" fill=\"#3c6432\" stroke=\"#3c6432\" stroke-width=\"0.05\" transform=\"translate(1.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J3\" fill=\"#3c6432\" stroke=\"#3c6432\" stroke-width=\"0.05\" transform=\"translate(0.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J3\" fill=\"#3c6432\" stroke=\"#3c6432\" stroke-width=\"0.05\" transform=\"translate(-0.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"J3\" fill=\"#3c6432\" stroke=\"#3c6432\" stroke-width=\"0.05\" transform=\"translate(-1.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g>\n<g id=\"element-U$1\" transform=\" translate(7.5, 15)  translate(1,0)  rotate(0) \">\n<circle cy=\"0\" cx=\"0\" r=\"0.5\" fill=\"#f06432\" stroke=\"#000\" stroke-width=\"0.1\" transform=\"\"></circle>\n<text x=\"0\" y=\"0\" fill=\"#000\" stroke=\"#000\" stroke-width=\"0.5\" text-anchor=\"middle\" text-align=\"center\" transform=\"translate(0,-0.2)  scale(0.04,-0.04)\">U$1</text>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,5.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,4.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,3.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,2.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,1.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,0.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-1.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-2.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-3.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-4.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-5.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-6.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(-0.75,-7.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,-7.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,-6.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,-5.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,-4.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,-3.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,-2.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,-1.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,-0.25)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,0.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,1.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,2.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,3.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,4.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path>\n<path data-id=\"U$1\" fill=\"#f06432\" stroke=\"#f06432\" stroke-width=\"0.05\" transform=\"translate(2.25,5.75)   scale(0.5,0.5) translate(1.0563900470733643,-1.9779698848724365) \" d=\"m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z\"></path></g></g>\n<g transform=\"scale(1,-1)  translate(-7.5 -13) \" id=\"vias-pads\" stroke=\"#008000\" stroke-width=\"0.1\" fill=\"#008000\">\n<path transform=\" translate(8 24)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path>\n<path transform=\" translate(5 24)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path>\n<path transform=\" translate(12 12)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path>\n<path transform=\" translate(12 7)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path>\n<path transform=\" translate(3 12)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path>\n<path transform=\" translate(3 6)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path>\n<path transform=\" translate(2 16)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path>\n<path transform=\" translate(2 21)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path>\n<path transform=\" translate(10 13)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path>\n<path transform=\" translate(10 6)  scale(0.5, 0.5) translate(2.5,2.5)\" d=\"m-2.107 -2.107v1.2192 h1.2192  v-1.2192zm0.60994 0.25469c 0.197  0   0.4   0.2   0.36  0.3 0  0.197 -0.158 0.36 -0.36 0.36 c-0.197  0  -0.4  -0.2 -0.36 -0.36 0   -0.197   0.158 -0.36 0.36 -0.36\"></path></g>\n<g transform=\"scale(1,-1)  translate(-7.5 -13) \" id=\"elements\" stroke=\"#008000\" stroke-width=\"0.1\" fill=\"#008000\"></g>\n<g transform=\"scale(1,-1)  translate(-7.5 -13) \" id=\"all-wires\">\n<line x1=\"11\" y1=\"26.375\" x2=\"11\" y2=\"25.375\" stroke=\"#ffff00\" stroke-width=\"0.1\"></line>\n<line x1=\"11\" y1=\"25.375\" x2=\"6\" y2=\"25.375\" stroke=\"#ffff00\" stroke-width=\"0.1\"></line>\n<line x1=\"6\" y1=\"25.375\" x2=\"6\" y2=\"26.375\" stroke=\"#ffff00\" stroke-width=\"0.1\"></line>\n<line x1=\"6\" y1=\"26.375\" x2=\"11\" y2=\"26.375\" stroke=\"#ffff00\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"8.375\" x2=\"4.5\" y2=\"8.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"8.375\" x2=\"4\" y2=\"8.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"8.375\" x2=\"4.5\" y2=\"8.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"7.875\" x2=\"4.5\" y2=\"7.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"7.875\" x2=\"4\" y2=\"7.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"7.875\" x2=\"4.5\" y2=\"7.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"9.375\" x2=\"4\" y2=\"9.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"3.5\" y1=\"9.375\" x2=\"3.5\" y2=\"6.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4\" y1=\"6.875\" x2=\"5\" y2=\"6.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"6.875\" x2=\"5\" y2=\"9.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"6.875\" x2=\"5\" y2=\"6.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"3.5\" y1=\"6.875\" x2=\"4\" y2=\"6.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4\" y1=\"9.375\" x2=\"3.5\" y2=\"9.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"9.375\" x2=\"5\" y2=\"9.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"13.875\" x2=\"11.5\" y2=\"13.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"12.875\" x2=\"11.5\" y2=\"13.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"12.875\" x2=\"11.5\" y2=\"12.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"12.875\" x2=\"11.5\" y2=\"12.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"13.375\" x2=\"11.5\" y2=\"13.375\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"12.375\" x2=\"11\" y2=\"12.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11\" y1=\"13.375\" x2=\"11\" y2=\"12.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11\" y1=\"13.375\" x2=\"11.5\" y2=\"13.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5.5\" y1=\"-0.125\" x2=\"5.5\" y2=\"1.375\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"5.5\" y1=\"1.375\" x2=\"10.5\" y2=\"1.375\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"10.5\" y1=\"1.375\" x2=\"10.5\" y2=\"-0.125\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"10.5\" y1=\"-0.125\" x2=\"5.5\" y2=\"-0.125\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"5.5\" y1=\"1.375\" x2=\"5.5\" y2=\"2.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"10.5\" y1=\"1.375\" x2=\"10.5\" y2=\"2.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"10.5\" y1=\"4.375\" x2=\"10.5\" y2=\"6.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"10.5\" y1=\"6.375\" x2=\"5.5\" y2=\"6.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5.5\" y1=\"6.375\" x2=\"5.5\" y2=\"4.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2\" y1=\"24.875\" x2=\"2\" y2=\"23.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2\" y1=\"24.875\" x2=\"2\" y2=\"23.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"3.5\" y1=\"23.875\" x2=\"3\" y2=\"23.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"3\" y1=\"24.375\" x2=\"3\" y2=\"23.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"4\" y1=\"23.875\" x2=\"3\" y2=\"23.375\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"3\" y1=\"24.875\" x2=\"2.5\" y2=\"23.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"4\" y1=\"23.875\" x2=\"3\" y2=\"23.375\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"3\" y1=\"24.875\" x2=\"2.5\" y2=\"23.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"3.5\" y1=\"14.875\" x2=\"3\" y2=\"14.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2.5\" y1=\"14.875\" x2=\"3\" y2=\"14.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2.5\" y1=\"14.875\" x2=\"2\" y2=\"14.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2.5\" y1=\"14.875\" x2=\"2.5\" y2=\"14.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"3\" y1=\"14.875\" x2=\"3\" y2=\"14.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"2\" y1=\"14.875\" x2=\"2.5\" y2=\"15.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"3\" y1=\"15.375\" x2=\"2.5\" y2=\"15.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"3\" y1=\"15.375\" x2=\"3.5\" y2=\"14.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"3.5\" y1=\"13.875\" x2=\"3\" y2=\"13.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2.5\" y1=\"13.875\" x2=\"3\" y2=\"13.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2.5\" y1=\"13.875\" x2=\"2\" y2=\"13.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2.5\" y1=\"13.875\" x2=\"2.5\" y2=\"13.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"3\" y1=\"13.875\" x2=\"3\" y2=\"13.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"2\" y1=\"13.875\" x2=\"2.5\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"3\" y1=\"14.375\" x2=\"2.5\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"3\" y1=\"14.375\" x2=\"3.5\" y2=\"13.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"6.375\" x2=\"11.5\" y2=\"6.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"6.375\" x2=\"11.5\" y2=\"6.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"6.375\" x2=\"12\" y2=\"6.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"6.375\" x2=\"11.5\" y2=\"6.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"11.5\" y1=\"5.875\" x2=\"12\" y2=\"5.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"12\" y1=\"5.875\" x2=\"12\" y2=\"5.375\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"12\" y1=\"5.375\" x2=\"12\" y2=\"5.375\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"12\" y1=\"5.375\" x2=\"12\" y2=\"6.375\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"12\" y1=\"6.375\" x2=\"12\" y2=\"6.375\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"12\" y1=\"6.375\" x2=\"12\" y2=\"5.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"12.5\" y1=\"5.875\" x2=\"13\" y2=\"5.875\" stroke=\"#808000\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"15.375\" x2=\"4.5\" y2=\"12.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"14.875\" x2=\"5\" y2=\"12.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4\" y1=\"15.375\" x2=\"4\" y2=\"12.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5.5\" y1=\"12.875\" x2=\"5.5\" y2=\"14.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4\" y1=\"12.875\" x2=\"5.5\" y2=\"12.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"12.875\" x2=\"5\" y2=\"12.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"14.875\" x2=\"4.5\" y2=\"15.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5.5\" y1=\"14.875\" x2=\"4\" y2=\"15.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"14.375\" x2=\"5\" y2=\"13.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"13.875\" x2=\"4.5\" y2=\"13.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"13.875\" x2=\"4.5\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"14.375\" x2=\"5\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"13.875\" x2=\"4.5\" y2=\"13.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"13.875\" x2=\"4.5\" y2=\"13.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"5\" y1=\"14.375\" x2=\"4.5\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"14.375\" x2=\"4.5\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"13.875\" x2=\"4.5\" y2=\"13.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"4.5\" y1=\"14.375\" x2=\"4.5\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2.0000000000000004\" y1=\"12.375\" x2=\"1.0000000000000004\" y2=\"12.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"1.0000000000000004\" y1=\"12.375\" x2=\"0.9999999999999997\" y2=\"8.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"0.9999999999999997\" y1=\"8.375\" x2=\"1.9999999999999996\" y2=\"8.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"1.9999999999999996\" y1=\"8.375\" x2=\"2.0000000000000004\" y2=\"12.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"14\" y1=\"8.375\" x2=\"15\" y2=\"8.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"15\" y1=\"8.375\" x2=\"15\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"15\" y1=\"14.375\" x2=\"14\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"14\" y1=\"14.375\" x2=\"14\" y2=\"8.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"14\" y1=\"14.375\" x2=\"15\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"15\" y1=\"14.375\" x2=\"15\" y2=\"21.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"15\" y1=\"21.875\" x2=\"14\" y2=\"21.875\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"14\" y1=\"21.875\" x2=\"14\" y2=\"14.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"2.0000000000000004\" y1=\"21.375\" x2=\"1.0000000000000004\" y2=\"21.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"1.0000000000000004\" y1=\"21.375\" x2=\"0.9999999999999996\" y2=\"16.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"0.9999999999999996\" y1=\"16.375\" x2=\"1.9999999999999996\" y2=\"16.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"1.9999999999999996\" y1=\"16.375\" x2=\"2.0000000000000004\" y2=\"21.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"7.5\" y1=\"22.375\" x2=\"7\" y2=\"22.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"7.5\" y1=\"22.375\" x2=\"8\" y2=\"22.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"7\" y1=\"8.375\" x2=\"9\" y2=\"8.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"9\" y1=\"22.375\" x2=\"8\" y2=\"22.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"9\" y1=\"22.375\" x2=\"9\" y2=\"8.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line>\n<line x1=\"7\" y1=\"21.875\" x2=\"7\" y2=\"8.375\" stroke=\"#c0c0c0\" stroke-width=\"0.1\"></line></g></g>\n<rect x=\"0\" y=\"0\" width=\"210\" height=\"297\" stroke=\"red\" stroke-width=\"0.3\" fill=\"none\"></rect></g></svg></body></html>",
+			"file": "out.svg",
+			"file_size": 109844,
+			"file_write_time": 132238143997154698,
 			"settings":
 			{
-				"buffer_size": 8996,
+				"buffer_size": 109836,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "eagle-init-brd.c",
+			"settings":
+			{
+				"buffer_size": 11879,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "utils/util.es5.js",
+			"settings":
+			{
+				"buffer_size": 46235,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "utils/util.js",
+			"settings":
+			{
+				"buffer_size": 47206,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 1464 files for \"isNumber\" (case sensitive)\n\n0 matches\n\nSearching 1464 files for \"window.dom\" (regex, case sensitive)\n\n0 matches\n\nSearching 3704 files for \"window.dom\" (regex, case sensitive)\n\n/home/roman/Dokumente/Sources/c-utils/utils/dom.es5.js:\n 3826:   window.dom = {\n\n1 match in 1 file\n",
+			"settings":
+			{
+				"buffer_size": 301,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "utils/dom.es5.js",
+			"settings":
+			{
+				"buffer_size": 104323,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "utils/dom.es5.js",
+			"settings":
+			{
+				"buffer_size": 104323,
 				"line_ending": "Unix"
 			}
 		}
@@ -115,12 +183,20 @@
 		"selected_items":
 		[
 			[
-				"remove pac",
-				"Package Control: Remove Package"
+				"install",
+				"Package Control: Install Package"
 			],
 			[
 				"install pac",
 				"Package Control: Install Package"
+			],
+			[
+				"schheme",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"remove pac",
+				"Package Control: Remove Package"
 			],
 			[
 				"outline",
@@ -141,10 +217,6 @@
 			[
 				"utline",
 				"Browse Mode: Outline (Right)"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
 			],
 			[
 				"out",
@@ -322,18 +394,50 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/c-utils"
+		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/tests"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/c-utils/eagle-to-svg.js",
+		"/home/roman/Sources/c-utils/utils/util.es5.js",
+		"/home/roman/Sources/c-utils/eagle-to-svg.c",
+		"/home/roman/Sources/c-utils/utils/dom.es5.js",
+		"/home/roman/Sources/c-utils/utils/hu.js",
+		"/home/roman/Sources/c-utils/out.svg",
+		"/home/roman/Sources/c-utils/utils/savage.js",
+		"/home/roman/Dokumente/Sources/pictest/TTL_Inverter.svg",
+		"/home/roman/the-wild-beauty-company/vias.svg",
+		"/home/roman/Dokumente/Sources/pictest/eagle/PIC18F2550-USB+ICSP-Board.brd",
+		"/home/roman/Sources/c-utils/utils/eagle.js",
+		"/home/roman/Dokumente/Sources/c-utils/vias.svg",
+		"/home/roman/Dokumente/Sources/c-utils/vias2.svg",
+		"/home/roman/Dokumente/Unbenannt.c",
+		"/home/roman/Dokumente/Unbenannt.pnm",
+		"/home/roman/Sources/c-utils/xml2json.c",
+		"/home/roman/Sources/c-utils/lib/json/json_print.c",
+		"/home/roman/Sources/c-utils/utils/dom.js",
+		"/home/roman/Sources/c-utils/lib/buffer.h.cmake",
+		"/home/roman/Dokumente/Unbenannt.xpm",
+		"/home/roman/Dokumente/Unbenannt.ppm",
+		"/home/roman/Dokumente/Unbenannt.png",
+		"/home/roman/Dokumente/Unbenannt.pbm",
+		"/home/roman/Sources/c-utils/eagle-to-svg.js.DOMParser;",
+		"/home/roman/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Sources/c-utils/lib/scan.h",
+		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_buf.c",
+		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_record.c",
+		"/home/roman/Sources/c-utils/lib/ihex.h",
+		"/home/roman/Sources/c-utils/testihex.c",
+		"/home/roman/Sources/c-utils/piccfg.c",
+		"/home/roman/Sources/c-utils/genmakefile.c",
+		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_data.c",
 		"/home/roman/Sources/c-utils/cofflist.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Sources/c-utils/lib/xml/xml_print.c",
-		"/home/roman/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd",
 		"/home/roman/Sources/c-utils/lib/coff/coff_header.c",
 		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_catlong0.c",
-		"/home/roman/Sources/c-utils/eagle-to-svg.c",
 		"/home/roman/Downloads/circuit-20200112-0009.circuitjs (1).txt",
 		"/home/roman/Downloads/circuit-20200112-0009.circuitjs.txt",
 		"/home/roman/Sources/c-utils/lib/xml/xml_path.c",
@@ -349,7 +453,6 @@
 		"/home/roman/Sources/c-utils/lib/coff.h",
 		"/home/roman/Sources/c-utils/lib/coff/coff_symbol_table.c",
 		"/home/roman/Sources/c-utils/c-utils.sublime-project",
-		"/home/roman/Sources/c-utils/genmakefile.c",
 		"/home/roman/Sources/c-utils/lib/strlist.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_get_strtab.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_get_symtab.c",
@@ -394,7 +497,6 @@
 		"/home/roman/Sources/c-utils/lib/cb.h",
 		"/home/roman/Sources/c-utils/jsontest.c",
 		"/home/roman/Sources/c-utils/lib/json.h",
-		"/home/roman/Sources/c-utils/lib/json/json_print.c",
 		"/home/roman/Sources/c-utils/lib/byte/byte_copy.c",
 		"/home/roman/Sources/c-utils/lib/scan/scan_whitenskip.c",
 		"/home/roman/Sources/c-utils/hexedit.c",
@@ -424,46 +526,20 @@
 		"/home/roman/Sources/c-utils/lib/strlist/strlist_pushb_unique.c",
 		"/home/roman/Sources/c-utils/mediathek-list.c",
 		"/home/roman/Sources/c-utils/lib/scan/scan_charsetnskip.c",
-		"/home/roman/Sources/c-utils/lib/scan/scan_noncharsetnskip.c",
-		"/home/roman/Sources/c-utils/lib/byte/byte_finds.c",
-		"/home/roman/Sources/c-utils/lib/path/path_canonical.c",
-		"/home/roman/Sources/c-utils/lib/ihex.h",
-		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_record.c",
-		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_buf.c",
-		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_data.c",
-		"/home/roman/Sources/c-utils/lib/alloc/alloc_zero.c",
-		"/home/roman/Sources/c-utils/build/rdir-test",
-		"/home/roman/Sources/c-utils/testihex.c",
-		"/home/roman/Sources/c-utils/lib/scan/scan_xshort.c",
-		"/home/roman/Sources/c-utils/lib/scan/scan_xchar.c",
-		"/home/roman/Sources/c-utils/lib/slist.h",
-		"/home/roman/Sources/c-utils/lib/list.h",
-		"/home/roman/Sources/c-utils/lib/strarray.h",
-		"/home/roman/Sources/c-utils/parse.c",
-		"/home/roman/Sources/c-utils/crc.c",
-		"/home/roman/Sources/c-utils/mediathek-parser.c",
-		"/home/roman/Sources/c-utils/pkgcfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_relative.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_xchar.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_fromhex.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_xshort.c",
-		"/home/roman/Dokumente/Sources/c-utils/daemon.c",
-		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
-		"/home/roman/Dokumente/Sources/c-utils/dirlist.sublime-project",
-		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
-		"/home/roman/Dokumente/Sources/c-utils/bsdiffcat.c",
-		"/home/roman/Dokumente/Sources/c-utils/parse.c",
-		"/home/roman/Dokumente/Sources/c-utils/plsconv.c"
+		"/home/roman/Sources/c-utils/lib/scan/scan_noncharsetnskip.c"
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 41.0
 	},
 	"find_in_files":
 	{
 		"height": 258.0,
 		"where_history":
 		[
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,*.js,",
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,*.js/home/roman/Dokumente/Sources/c-utils,*.c,*.h,",
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h-2.79/20.47460.",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
 			"/home/roman/Dokumente/Sources/c-utils,*.c",
 			""
@@ -474,134 +550,134 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"--stac",
-			"--output",
-			"has_main",
-			"errformat",
-			"simple.*ppsext",
-			"ppsext",
-			"PPSEXT",
-			"ppsext",
-			"cmd_lib",
-			"ppsext",
-			".pp",
-			"DDEBUG",
-			"\"DEBUG\"",
-			"get_rule_sa",
-			"get_rule",
-			"(!",
-			"ppsext",
-			" preproc ? ppsext : ",
-			"ppsext",
-			"ppsrc",
-			"ppsext",
-			"gen_simple_compile_rules",
-			"srcdir->name",
-			"sourcedir",
-			"gen_simpl",
-			"sourcedir\\*",
-			"sourcedir ",
-			"sourcedir",
-			"gen_simple_compile_rules",
-			"gen_simple",
-			"gen_simüple",
-			"gen_simple_compile_rules",
-			"gen_simple",
-			"gen_lib_rules",
-			"gen_simple",
-			"cmd_lib",
-			"gen_simple_compile_rules",
-			"gen_srcdir_compile_rules",
-			"gen_lib_rules",
-			"gen_srcdir_compile_rules",
-			"^gen_simple",
-			"gen_simple",
-			"sources;",
-			"sources",
-			"%\"",
-			"%",
-			"%\\.",
-			"%.\"",
-			"%.",
-			"ppsext",
-			"lib_rule_for_sourcedir",
-			"preproc",
-			"prereq",
-			"gen_simple_compile_rules",
-			"ppsext",
-			"ppsext.*\\.c",
-			"ppsext",
-			"preproc",
-			"%.c",
-			"ppsext",
-			"%.c",
-			"ppsext",
-			"PPSEXT",
-			"\\.pp",
-			"psect",
-			"stackcall",
-			"gen_link",
-			"\\.c",
-			"ends",
-			"defs\"",
-			"defsQ\"",
-			"defs",
-			"pad",
-			"buffer_2",
-			"MAP_GET",
-			"get_color",
-			"stralloc_catlong0",
-			"double",
-			"set_attr",
-			"set_attribute_double",
-			"get_attr",
-			"xml_set_attribute_double",
-			"xml_set",
-			"xml_add",
-			"set_attr",
-			"xmlnodeid",
-			"putdouble",
-			"get_attr",
-			"xml_find",
-			"getnodeset",
-			"xml_find_all_1",
-			"nodes",
-			"match_name",
-			"xml_match_name",
-			"getnodeset",
-			"match_foreach",
-			"to-circuit",
-			"to-c",
-			"eagle-to-c",
-			" eagle-to-circuit elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping crc cmake-run httpproxy parse testihex) ##tcpproxy redir",
-			"eagle-to-",
-			"cmd_libs",
-			"path_output",
-			"path_basename",
-			"VPATH",
-			"cmdline",
-			"Generated by",
-			"# gena",
-			"VPATH",
-			"gen_link_rul",
-			"outdir",
-			"dir;",
-			"main\\(",
-			"_rule",
-			"gen_link",
-			"\\\\\\\"\\$@\\\\\\\"",
-			"\\\\\\\"\\$",
-			"\\\\\\\"",
-			"gen_link",
-			"dirname",
-			"vpath",
-			"gen_link",
-			"add_path_sa",
-			"add_path",
-			"add_path_sa",
-			"gen_link",
-			"cmd_libs",
-			"create.lib"
+			"dom\\.",
+			"= dom",
+			"^dom\\.",
+			"dom.is",
+			"window.dom",
+			"dom =",
+			"class SVG",
+			"<script",
+			"text.java",
+			"base64",
+			"base",
+			"base64",
+			"<scr",
+			"lang",
+			"readSc",
+			"\\/\\*",
+			"<script",
+			"svg",
+			"<script",
+			"hu(",
+			"hu\\(",
+			"children(",
+			"children\\(",
+			"Point.prototype.toStr",
+			"isNumber",
+			"isNunmber",
+			"isNumber",
+			"isNum",
+			" formatA",
+			"formatA",
+			"Rect",
+			"class Rect",
+			"lass Rec",
+			"Rect {",
+			"class Rec",
+			"class SV",
+			"class BBox",
+			"class BBox\\(",
+			"BBox\\(",
+			"BBox",
+			"BBox$",
+			"BBOX",
+			"trace",
+			"class B",
+			"tracePa",
+			"class SV",
+			"\n  ",
+			"rand",
+			"r",
+			"rand",
+			"class Pack",
+			"^Point\\.",
+			"Point\\.",
+			"Point.translate",
+			"Rect.prototype.toStr",
+			"bboxb",
+			"bbox",
+			"`b",
+			"getBound",
+			"\"b",
+			"\"b ",
+			"\\.iter",
+			"instanceo",
+			"instanceof",
+			"child:",
+			"instanceof",
+			"instance",
+			"child:",
+			"child:child:",
+			"class Pac",
+			"yield",
+			"instanceof",
+			"class Rec",
+			"LED5MM",
+			"\"LED",
+			"LED",
+			"Rect.protoR",
+			"Rect.proto",
+			"children",
+			"\\.child",
+			"class Sig",
+			"getObjg",
+			"getObj",
+			"g.mo",
+			"g.mog",
+			"g.move",
+			"Point.proto",
+			"Line.pro",
+			"move_",
+			"move",
+			"Line.prototype",
+			"Line.prototype.move",
+			"Line.prototype.",
+			"translate\\([01],",
+			"translate(0,",
+			"translate(0",
+			"translate(1",
+			"Point.prototype",
+			"Point.prototype.rotate",
+			"Point.prototype.",
+			"\\.rotate =",
+			"0.47460.47460.4746262",
+			"4746",
+			"0.4746",
+			"8",
+			"0\\.5",
+			"rect",
+			"rect'",
+			"rect\"",
+			"join",
+			"joinjoin.tCoords\nfunction xml2obj(node, parent, pobj)\n([key, value]) =>\n(a, b) =>\nname =>\no =>\nw =>\npt =>\nfunction findLine(lineArr, pts, exclude, onFound = (line, pt, pti) => {})\n(a, b) =>\nl =>\nl =>\nl =>\n(line, pt, ab, linei, ptidx) =>\n(a, b) =>",
+			"join",
+			"zzz",
+			"transform:",
+			"transform:t",
+			"translatetrtranslatetranslate",
+			"translate:",
+			"<ele",
+			"rot=",
+			".brd",
+			"rot",
+			"rot=",
+			"rot=\"",
+			"rot=",
+			"class Ele",
+			"<tex",
+			"<text",
+			"new Line"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -609,6 +685,20 @@
 		"regex": true,
 		"replace_history":
 		[
+			" Util.formatA",
+			"0.50",
+			"0.5",
+			"",
+			"line",
+			"lname",
+			"",
+			"1.27",
+			"\\n  static",
+			"\\n  constructor",
+			"\\1 = -1;",
+			"\\1 = 0;",
+			"\\nclass",
+			"const char* x",
 			"to-svg",
 			"$@",
 			"srcfile",
@@ -651,7 +741,215 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 163,
+						"buffer_size": 454,
+						"regions":
+						{
+						},
+						"selection":
+						[
+						],
+						"settings":
+						{
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/eagle-init-brd.c",
+							"outline_rename_mode": false,
+							"symkeys":
+							[
+								[
+									549,
+									554
+								],
+								[
+									591,
+									602
+								],
+								[
+									613,
+									626
+								],
+								[
+									646,
+									663
+								],
+								[
+									726,
+									739
+								],
+								[
+									771,
+									785
+								],
+								[
+									812,
+									831
+								],
+								[
+									927,
+									943
+								],
+								[
+									980,
+									992
+								],
+								[
+									1076,
+									1089
+								],
+								[
+									1368,
+									1384
+								],
+								[
+									1661,
+									1670
+								],
+								[
+									1719,
+									1730
+								],
+								[
+									1777,
+									1784
+								],
+								[
+									2157,
+									2166
+								],
+								[
+									2683,
+									2696
+								],
+								[
+									3134,
+									3146
+								],
+								[
+									3333,
+									3344
+								],
+								[
+									3747,
+									3760
+								],
+								[
+									4102,
+									4111
+								],
+								[
+									4568,
+									4576
+								],
+								[
+									4866,
+									4881
+								],
+								[
+									5556,
+									5567
+								],
+								[
+									6452,
+									6463
+								],
+								[
+									7127,
+									7136
+								],
+								[
+									7492,
+									7512
+								],
+								[
+									7762,
+									7776
+								],
+								[
+									8262,
+									8278
+								],
+								[
+									9103,
+									9115
+								],
+								[
+									9719,
+									9738
+								],
+								[
+									10480,
+									10492
+								],
+								[
+									10520,
+									10533
+								],
+								[
+									10665,
+									10679
+								],
+								[
+									10931,
+									10935
+								]
+							],
+							"symlist":
+							[
+								"isnan",
+								"END_OF_LINE",
+								"after_element",
+								"on_attribute_decl",
+								"on_characters",
+								"on_end_element",
+								"on_start_element_ns",
+								"on_start_element",
+								"xml_callback",
+								"xml_read_node",
+								"update_minmax_xy",
+								"hmap_each",
+								"update_part",
+								"NAMELEN",
+								"dump_part",
+								"dump_instance",
+								"round_to_mil",
+								"output_move",
+								"output_rotate",
+								"each_part",
+								"get_part",
+								"create_instance",
+								"create_part",
+								"update_part",
+								"hmap_each",
+								"get_attribute_double",
+								"cat_attributes",
+								"process_instance",
+								"process_part",
+								"print_element_names",
+								"read_xmlfile",
+								"parse_xmlfile",
+								"mystr_basename",
+								"main"
+							],
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "utils/eagle.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11711,
 						"regions":
 						{
 						},
@@ -664,154 +962,307 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Sources/c-utils/xml2json.c",
-							"outline_rename_mode": false,
-							"symkeys":
-							[
-								[
-									409,
-									424
-								],
-								[
-									761,
-									773
-								],
-								[
-									971,
-									980
-								],
-								[
-									1305,
-									1319
-								],
-								[
-									2140,
-									2160
-								],
-								[
-									2575,
-									2589
-								],
-								[
-									3447,
-									3462
-								],
-								[
-									4400,
-									4415
-								],
-								[
-									5134,
-									5145
-								],
-								[
-									5319,
-									5328
-								],
-								[
-									5433,
-									5438
-								],
-								[
-									6747,
-									6755
-								],
-								[
-									7059,
-									7063
-								]
-							],
-							"symlist":
-							[
-								"xml_to_json_obj",
-								"max_depth_fn",
-								"get_depth",
-								"pretty_printer",
-								"xmllist_to_jsonarray",
-								"xml_style_json",
-								"hmap_to_jsonobj",
-								"xml_to_json_obj",
-								"xml_to_json",
-								"xml_depth",
-								"usage",
-								"testwalk",
-								"main"
-							],
-							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							},
+							"use_tab_stops": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 180.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 7,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 1,
-			"sheets":
-			[
+				},
 				{
-					"buffer": 1,
-					"file": "genmakefile.c",
+					"buffer": 2,
+					"file": "/home/roman/Dokumente/Sources/pictest/eagle/PIC18F2550-USB+ICSP-Board.brd",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 111895,
+						"buffer_size": 67571,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								90649,
-								90649
+								11435,
+								11435
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Color Scheme - Legacy/Sunburst.tmTheme",
-							"syntax": "Packages/C99/C99.tmLanguage",
+							"syntax": "Packages/XML/XML.sublime-syntax",
 							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							}
 						},
 						"translation.x": 0.0,
-						"translation.y": 63264.0,
+						"translation.y": 2595.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "out.svg",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 109836,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								264,
+								264
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							}
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "xml2json.c",
-					"semi_transient": true,
+					"buffer": 4,
+					"file": "eagle-init-brd.c",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8996,
+						"buffer_size": 11879,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8978,
-								8978
+								11337,
+								11337
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Color Scheme - Legacy/Sunburst.tmTheme",
 							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 6153.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "utils/util.es5.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 46235,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							},
+							"use_tab_stops": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "utils/util.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 47206,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"use_tab_stops": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 26443.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 301,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										267,
+										277
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								276,
+								276
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 3,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 140.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "utils/dom.es5.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 104323,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							},
+							"use_tab_stops": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1560.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "utils/dom.es5.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 104323,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"use_tab_stops": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 69085.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
@@ -819,7 +1270,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 26.0
+		"height": 29.0
 	},
 	"input":
 	{
@@ -893,7 +1344,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 48.0
+		"height": 74.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -903,12 +1354,88 @@
 		"selected_items":
 		[
 			[
-				"cofflist.c",
-				"cofflist.c"
+				"eagle-ini",
+				"eagle-init-brd.c"
+			],
+			[
+				"eagle-t",
+				"eagle-to-svg.js"
+			],
+			[
+				"util.js",
+				"utils/util.js"
+			],
+			[
+				"to-sv",
+				"eagle-to-svg.js"
+			],
+			[
+				"eagle-to",
+				"eagle-to-svg.c"
+			],
+			[
+				"out.svg",
+				"out.svg"
+			],
+			[
+				"dom.es",
+				"utils/dom.es5.js"
+			],
+			[
+				"util.es",
+				"utils/util.es5.js"
+			],
+			[
+				"hu.js",
+				"utils/hu.js"
+			],
+			[
+				"out.sv",
+				"out.svg"
+			],
+			[
+				"sava",
+				"utils/savage.js"
+			],
+			[
+				"hu.j",
+				"utils/hu.js"
+			],
+			[
+				"util",
+				"utils/util.es5.js"
+			],
+			[
+				"to-svg",
+				"eagle-to-svg.js"
+			],
+			[
+				"eagle.js",
+				"utils/eagle.js"
+			],
+			[
+				"xml2json",
+				"xml2json.c"
+			],
+			[
+				"dom.js",
+				"utils/dom.js"
 			],
 			[
 				"genma",
 				"genmakefile.c"
+			],
+			[
+				"ihex.h",
+				"lib/ihex.h"
+			],
+			[
+				"scan.h",
+				"lib/scan.h"
+			],
+			[
+				"cofflist.c",
+				"cofflist.c"
 			],
 			[
 				"stralloc.h",
@@ -991,20 +1518,12 @@
 				"lib/hmap.h"
 			],
 			[
-				"eagle-to",
-				"eagle-to-circuit.c"
-			],
-			[
 				"open.h",
 				"lib/open.h"
 			],
 			[
 				"GNUMa",
 				"GNUmakefile"
-			],
-			[
-				"eagle-ini",
-				"eagle-init-brd.c"
 			],
 			[
 				"test",
@@ -1345,70 +1864,6 @@
 			[
 				"nginx",
 				"nginx.conf"
-			],
-			[
-				"gate",
-				"doc/parsigram/gateway.html"
-			],
-			[
-				"test.html",
-				"static/test.html"
-			],
-			[
-				"query.",
-				"helpers/query.moon"
-			],
-			[
-				"test.moo",
-				"test.moon"
-			],
-			[
-				"mobile",
-				"static/css/mobile.css"
-			],
-			[
-				"desktop",
-				"static/css/desktop.css"
-			],
-			[
-				"application.m",
-				"applications/users.moon"
-			],
-			[
-				"users.mo",
-				"applications/users.moon"
-			],
-			[
-				"json-to",
-				"scripts/convert-json-to-po.sh"
-			],
-			[
-				"users.",
-				"applications/users.moon"
-			],
-			[
-				"ngin.",
-				"nginx.conf"
-			],
-			[
-				"app.m",
-				"app.moon"
-			],
-			[
-				"embe",
-				"embed.html"
-			],
-			[
-				"ngix",
-				"nginx.conf"
-			],
-			[
-				"components.cs",
-				"static/css/components.css"
-			],
-			[
-				"games.moon",
-				"models/games.moon"
 			]
 		],
 		"width": 0.0
