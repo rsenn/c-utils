@@ -297,8 +297,8 @@ get_cfgdat(const char* chip) {
 
       dir = subdir;
 
-    /*  buffer_putm_internal(buffer_2, "subdir = ", subdir, 0);
-      buffer_putnlflush(buffer_2);*/
+      /*  buffer_putm_internal(buffer_2, "subdir = ", subdir, 0);
+        buffer_putnlflush(buffer_2);*/
     }
 
     stralloc_cats(&path, dir);
@@ -310,7 +310,7 @@ get_cfgdat(const char* chip) {
   stralloc_cats(&path, ".cfgdata");
   stralloc_nul(&path);
 
-  return path.s;
+  return path_exists(path.s) ? path.s : 0;
 }
 
 void
@@ -459,12 +459,17 @@ main(int argc, char* argv[]) {
 
   if(optind < argc) {
     hexfile = argv[optind++];
+
     if(optind < argc)
       cfgdata = argv[optind++];
   }
 
-  if(!cfgdata)
+  if(cfgdata) {
+    if(!path_exists(cfgdata))
+      cfgdata = get_cfgdat(cfgdata);
+  } else {
     cfgdata = get_cfgdat("18f2550");
+  }
 
   if(!hexfile)
     hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
