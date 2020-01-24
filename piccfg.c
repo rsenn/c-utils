@@ -46,7 +46,7 @@ static uint32 addr;
 static stralloc cfg;
 // static map_t(const char*) pragmas;
 static strlist pragmas;
-static int defval = 1, oneline = 0, comments = 1;
+static int defval = 1, oneline = 0, comments = 1, output_name = 0;
 
 uint8
 config_byte_at(uint32 addr) {
@@ -268,7 +268,11 @@ add_item(const char* name, const char* value) {
 
   stralloc out;
   stralloc_init(&out);
-  stralloc_catm_internal(&out, name, " = ", value, 0);
+
+  if(value)
+    stralloc_catm_internal(&out, name, " = ", value, 0);
+  else
+     stralloc_catm_internal(&out, "// ", name, 0);
 
   strlist_push_sa(&pragmas, &out);
 
@@ -277,7 +281,7 @@ add_item(const char* name, const char* value) {
 
 void
 process_config(void (*callback)(const char* key, const char* value)) {
-  cword* word;
+  cword *prevword = 0, *word;
   csetting* setting;
   cvalue* value;
 
@@ -299,7 +303,11 @@ process_config(void (*callback)(const char* key, const char* value)) {
         continue;
       }
 
+if(output_name && prevword != word) 
+  callback(word->name, NULL);
+
       callback(setting->name, value->name);
+      prevword = word;
     }
   }
 }
@@ -307,13 +315,21 @@ process_config(void (*callback)(const char* key, const char* value)) {
 void
 output_items(const strlist* items) {
   const char* x;
-  size_t i, n;
-  buffer_puts(buffer_2, "#pragma ");
+  int i, col = 0;
+  size_t n;
 
   i = 0;
   strlist_foreach(items, x, n) {
-    if(i)
-      buffer_puts(buffer_2, oneline ? ", " : "\n#pragma ");
+    if(x[0] != '/') {
+      if(i)
+        buffer_puts(buffer_2, (oneline && col > 0) ? ", " : "\n#pragma ");
+      else
+          buffer_puts(buffer_2, "#pragma ");
+
+   } else if(i) {
+    col = -1;
+    buffer_puts(buffer_2, "\n\n");
+   }
 
     if(comments && !oneline) {
       csetting* setting = find_setting(x);
@@ -328,6 +344,7 @@ output_items(const strlist* items) {
 
       buffer_put(buffer_2, x, n);
     ++i;
+    ++col;
   }
   buffer_putnlflush(buffer_2);
 }
@@ -348,6 +365,7 @@ usage(char* argv0) {
                        "  -o, --oneline             output oneliner\n"
                        "  -D, --no-default          don't output settings with default value\n"
                        "  -C, --no-comments         don't output description comments\n"
+                       "  -n, --name                output register name\n"
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_1);
@@ -364,10 +382,11 @@ main(int argc, char* argv[]) {
                            {"oneline", 0, &oneline, 1},
                            {"no-default", 0, &defval, 0},
                            {"no-comments", 0, &comments, 0},
+                           {"name", 0, &output_name, 1},
                            {0, 0, 0, 0}};
 
   for(;;) {
-    c = getopt_long(argc, argv, "hoDC", opts, &index);
+    c = getopt_long(argc, argv, "hoDCn", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -378,6 +397,7 @@ main(int argc, char* argv[]) {
       case 'o': oneline = 1; break;
       case 'D': defval = 0; break;
       case 'C': comments = 0; break;
+      case 'n': output_name = 1; break;
       default:
         buffer_puts(buffer_2, "No such option '-");
         buffer_putc(buffer_2, c);
