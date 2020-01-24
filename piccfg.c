@@ -48,7 +48,7 @@ static uint32 addr;
 static stralloc cfg;
 // static map_t(const char*) pragmas;
 static strlist pragmas;
-static int defval = 1, oneline = 0, comments = 1, output_name = 0, verbose = 0;
+static int nodefault = 1, oneline = 0, comments = 1, output_name = 0, verbose = 0;
 
 uint8
 config_byte_at(uint32 addr) {
@@ -295,6 +295,7 @@ infer_chip(const char* x, size_t n) {
           len = scan_charsetnskip(s, "0123456789AaFfKkLlJj", len);
 
           stralloc_copyb(&chip, s, len);
+          stralloc_lower(&chip);
           stralloc_nul(&chip);
           return chip.s;
         }
@@ -388,7 +389,7 @@ process_config(void (*callback)(const char* key, const char* value)) {
         continue;
       }
 
-      if(value->is_default && !defval) {
+      if(value->is_default && nodefault) {
 #ifdef DEBUG_OUTPUT
         if(verbose) {
           buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, 0);
@@ -476,14 +477,14 @@ main(int argc, char* argv[]) {
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"oneline", 0, &oneline, 1},
-                           {"no-default", 0, &defval, 0},
+                           {"default", 0, &nodefault, 0},
                            {"no-comments", 0, &comments, 0},
                            {"name", 0, &output_name, 1},
                            {"verbose", 0, &verbose, 1},
                            {0, 0, 0, 0}};
 
   for(;;) {
-    c = getopt_long(argc, argv, "hoDCnv", opts, &index);
+    c = getopt_long(argc, argv, "hodCnv", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -492,7 +493,7 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'h': usage(argv[0]); return 0;
       case 'o': oneline = 1; break;
-      case 'D': defval = 0; break;
+      case 'd': nodefault = 0; break;
       case 'C': comments = 0; break;
       case 'n': output_name = 1; break;
       case 'v': verbose++; break;
@@ -512,6 +513,10 @@ main(int argc, char* argv[]) {
       cfgdata = argv[optind++];
   }
 
+  if(!hexfile)
+    hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
+
+
   if(cfgdata) {
     if(!path_exists(cfgdata))
       cfgdata = get_cfgdat(cfgdata);
@@ -520,9 +525,6 @@ main(int argc, char* argv[]) {
     if(chip)
       cfgdata = get_cfgdat(chip);
   }
-
-  if(!hexfile)
-    hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
 
   x = mmap_read(cfgdata, &n);
   assert(x);
