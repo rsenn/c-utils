@@ -11,6 +11,7 @@
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/map.h"
+#include "lib/strlist.h"
 #include <assert.h>
 
 typedef struct cvalue {
@@ -41,7 +42,8 @@ static cword* words;
 static ihex_file hex;
 static uint32 addr;
 static stralloc cfg;
-static map_t(const char*) pragmas;
+// static map_t(const char*) pragmas;
+static strlist pragmas;
 
 uint8
 config_byte_at(uint32 addr) {
@@ -232,12 +234,22 @@ get_setting_value(cword* word, csetting* setting) {
 }
 
 void
-process_config() {
+add_item(const char* name, const char* value) {
+
+  stralloc out;
+  stralloc_init(&out);
+  stralloc_catm_internal(&out, name, " = ", value, 0);
+
+  strlist_push_sa(&pragmas, &out);
+
+  stralloc_free(&out);
+}
+
+void
+process_config(void (*callback)(const char* key, const char* value)) {
   cword* word;
   csetting* setting;
   cvalue* value;
-
-  map_init(&pragmas);
 
   slink_foreach(words, word) {
     if(!str_diffn(word->name, "IDLOC", 5))
@@ -249,30 +261,15 @@ process_config() {
 
       value = get_setting_value(word, setting);
 
-      map_set(&pragmas, setting->name, value->name);
-      /*
-       *//*
- dump_csetting(buffer_2, setting);
-  dump_cvalue(buffer_2, value);*/
-
-      /*
-       slink_foreach(setting->values, value) {  }*/
+      callback(setting->name, value->name);
     }
-  }
-
-  const char* key;
-
-  for(map_iter_t it = map_iter(&pragmas); (key = map_next(&pragmas, &it));) {
-    const char* value = *(const char**)map_get(&pragmas, key);
-    buffer_putm_internal(buffer_1, "#pragma ", key, " = ", value, 0);
-    buffer_putnlflush(buffer_1);
   }
 }
 
 int
 main(int argc, char* argv[]) {
   const char* x;
-  size_t n;
+  size_t i, n;
 
   const char* cfgdata = argc >= 2 ? argv[1] : "/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata";
   const char* hexfile = argc >= 3 ? argv[2] : "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
@@ -297,7 +294,19 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
   }
 
-  process_config();
+  strlist_init(&pragmas, '\0');
+
+  process_config(&add_item);
+
+  buffer_puts(buffer_2, "#pragma ");
+  i = 0;
+  strlist_foreach(&pragmas, x, n) {
+    if(i)
+      buffer_puts(buffer_2, ", ");
+    buffer_put(buffer_2, x, n);
+    ++i;
+  }
+  buffer_putnlflush(buffer_2);
 
   return 0;
 }
