@@ -155,6 +155,30 @@ cfg-mingw() {
   cfg \
     "$@")
 }
+cfg-mingw32() {
+ (build=$(gcc -dumpmachine)
+  host=i686-w64-mingw32
+  prefix=/usr/$host/sys-root/mingw
+  TOOLCHAIN=/usr/$host/sys-root/toolchain-mingw32.cmake
+  
+  builddir=build/$host \
+  bindir=$prefix/bin \
+  libdir=$prefix/lib \
+  cfg \
+    "$@")
+}
+cfg-mingw64() {
+ (build=$(gcc -dumpmachine)
+  host=x86_64-w64-mingw32
+  prefix=/usr/$host/sys-root/mingw
+  TOOLCHAIN=/usr/$host/sys-root/toolchain-mingw64.cmake
+  
+  builddir=build/$host \
+  bindir=$prefix/bin \
+  libdir=$prefix/lib \
+  cfg \
+    "$@")
+}
 cfg-termux() 
 {
   (builddir=build/termux
