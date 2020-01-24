@@ -3,14 +3,15 @@
 
 #include "uint8.h"
 #include "uint16.h"
+#include "uint32.h"
 #include "slist.h"
 
 struct ihex_record_s;
 struct ihex_record_s {
   struct ihex_record_s* next;
-  uint8 reclen;
+  uint8 length;
   uint16 offset;
-  uint8 rectyp;
+  uint8 type;
   uint8 checksum;
   uint8 data[];
 };
@@ -21,7 +22,9 @@ typedef struct {
   ihex_record* records;
 } ihex_file;
 
-ssize_t ihex_read_record(ihex_record**, const char*, size_t n);
-ssize_t ihex_read_buf(ihex_file*, const char*, size_t n);
+ssize_t ihex_load_record(ihex_record**, const char*, size_t n);
+ssize_t ihex_load_buf(ihex_file*, const char*, size_t n);
+ihex_record* ihex_record_at(ihex_file* ihf, uint32 offset, uint32* roffs);
+size_t ihex_read_at(ihex_file* ihf, uint32 at, char* x, size_t n);
 
 #endif /* IHEX_H_ */

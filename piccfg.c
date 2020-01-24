@@ -7,6 +7,7 @@
 #include "lib/byte.h"
 #include "lib/str.h"
 #include "lib/scan.h"
+#include "lib/ihex.h"
 #include <assert.h>
 
 typedef struct cvalue {
@@ -34,6 +35,7 @@ typedef struct cword {
 } cword;
 
 static cword* words;
+static ihex_file hex;
 
 cvalue**
 parse_cfgvalue(cvalue** vptr, const char* x, size_t n) {
@@ -143,13 +145,19 @@ main(int argc, char* argv[]) {
   const char* x;
   size_t n;
 
-  if(argv[1] == NULL)
-    argv[1] = "/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata";
+  const char* cfgdata = argc >= 2 ? argv[1] : "/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata";
+  const char* hexfile = argc >= 3 ? argv[2] : "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
 
-  x = mmap_read(argv[1], &n);
-
+  x = mmap_read(cfgdata, &n);
   parse_cfgdata(&words, x, n);
-
   mmap_unmap(x, n);
+
+  x = mmap_read(hexfile, &n);
+  ihex_load_buf(&hex, x, n);
+  mmap_unmap(x, n);
+
+  uint16 buf[7];
+  size_t bytes = ihex_read_at(&hex, 0x00300000, buf, sizeof(buf));
+
   return 0;
 }
