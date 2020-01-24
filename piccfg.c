@@ -8,6 +8,9 @@
 #include "lib/str.h"
 #include "lib/scan.h"
 #include "lib/ihex.h"
+#include "lib/stralloc.h"
+#include "lib/buffer.h"
+#include "lib/map.h"
 #include <assert.h>
 
 typedef struct cvalue {
@@ -36,6 +39,49 @@ typedef struct cword {
 
 static cword* words;
 static ihex_file hex;
+static uint32 addr;
+static stralloc cfg;
+static map_t(const char*) pragmas;
+
+uint8
+config_byte_at(uint32 addr) {
+  size_t offs = addr & 0x0fff;
+  assert(offs < cfg.len);
+  return cfg.s[offs];
+}
+
+void
+dump_cword(buffer* b, cword* word) {
+  buffer_puts(b, word->name ? word->name : "(null)");
+  buffer_puts(b, " @ 0x");
+  buffer_putxlong0(b, word->address, 4);
+  buffer_puts(b, "\tmask 0x");
+  buffer_putxlong0(b, word->mask, 2);
+  buffer_puts(b, "\tdefault 0x");
+  buffer_putxlong0(b, word->default_value, 2);
+  buffer_putnlflush(b);
+}
+
+void
+dump_csetting(buffer* b, csetting* setting) {
+  buffer_puts(b, "  ");
+  buffer_puts(b, setting->name ? setting->name : "(null)");
+  buffer_puts(b, "\tmask 0x");
+  buffer_putxlong0(b, setting->mask, 2);
+  buffer_puts(b, "\t\t");
+  buffer_puts(b, setting->description);
+  buffer_putnlflush(b);
+}
+void
+dump_cvalue(buffer* b, cvalue* value) {
+  buffer_puts(b, "    ");
+  buffer_puts(b, value->name ? value->name : "(null)");
+  buffer_puts(b, "\tvalue 0x");
+  buffer_putxlong0(b, value->value, 2);
+  buffer_puts(b, "\t\t");
+  buffer_puts(b, value->description);
+  buffer_putnlflush(b);
+}
 
 cvalue**
 parse_cfgvalue(cvalue** vptr, const char* x, size_t n) {
@@ -107,28 +153,36 @@ parse_cfgword(cword** wptr, const char* x, size_t n) {
 int
 parse_cfgdata(cword** wptr, const char* x, size_t n) {
   size_t eol, col;
-  csetting** sptr = NULL;
-  cvalue** vptr = NULL;
+  cword* w = 0;
+  csetting *s = 0, **sptr = NULL;
+  cvalue *v = 0, **vptr = NULL;
 
   while(n > 0) {
 
     eol = byte_chr(x, n, '\n');
 
     if(eol > 0 && x[0] == 'C') {
+      const char* line = x;
       col = byte_chr(x, n, ':') + 1;
       assert(col < eol);
       x += col;
       n -= col;
       eol -= col;
 
-      if(!str_diffn(x, "CWORD", 5)) {
-        wptr = parse_cfgword(wptr, x, eol);
-        sptr = &(*wptr)->settings;
-      } else if(!str_diffn(x, "CSETTING", 8)) {
-        sptr = parse_cfgsetting(sptr, x, eol);
-        vptr = &(*sptr)->values;
-      } else if(!str_diffn(x, "CVALUE", 6)) {
-        vptr = parse_cfgvalue(vptr, x, eol);
+      if(!str_diffn(line, "CWORD", 5)) {
+        cword** nwptr = parse_cfgword(wptr, x, eol);
+        w = *wptr;
+        sptr = &w->settings;
+        wptr = nwptr;
+      } else if(!str_diffn(line, "CSETTING", 8)) {
+        csetting** nsptr = parse_cfgsetting(sptr, x, eol);
+        s = *sptr;
+        vptr = &s->values;
+        sptr = nsptr;
+      } else if(!str_diffn(line, "CVALUE", 6)) {
+        cvalue** nvptr = parse_cfgvalue(vptr, x, eol);
+        v = *vptr;
+        vptr = nvptr;
       }
     }
 
@@ -137,6 +191,81 @@ parse_cfgdata(cword** wptr, const char* x, size_t n) {
 
     x += eol;
     n -= eol;
+  }
+}
+
+size_t
+config_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
+  size_t bytes;
+  stralloc_zero(sa);
+  stralloc_ready(sa, 14);
+
+  if(((bytes = ihex_read_at(&hex, 0x00300000, sa->s, 14)) == 14)) {
+    *addr = 0x00300000;
+  } else {
+    if((bytes = ihex_read_at(&hex, 0x400e, sa->s, 2)) == 2)
+      *addr = 0x400e;
+  }
+
+  sa->len = bytes;
+  return bytes;
+}
+
+uint8
+get_setting_byte(cword* word, csetting* setting) {
+  uint8 value = config_byte_at(word->address);
+
+  value &= setting->mask;
+
+  return value;
+}
+
+cvalue*
+get_setting_value(cword* word, csetting* setting) {
+  cvalue* value;
+  uint8 byteval = get_setting_byte(word, setting);
+  slink_foreach(setting->values, value) {
+    if(value->value == byteval)
+      return value;
+  }
+  return NULL;
+}
+
+void
+process_config() {
+  cword* word;
+  csetting* setting;
+  cvalue* value;
+
+  map_init(&pragmas);
+
+  slink_foreach(words, word) {
+    if(!str_diffn(word->name, "IDLOC", 5))
+      break;
+
+    dump_cword(buffer_2, word);
+
+    slink_foreach(word->settings, setting) {
+
+      value = get_setting_value(word, setting);
+
+      map_set(&pragmas, setting->name, value->name);
+      /*
+       *//*
+ dump_csetting(buffer_2, setting);
+  dump_cvalue(buffer_2, value);*/
+
+      /*
+       slink_foreach(setting->values, value) {  }*/
+    }
+  }
+
+  const char* key;
+
+  for(map_iter_t it = map_iter(&pragmas); (key = map_next(&pragmas, &it));) {
+    const char* value = *(const char**)map_get(&pragmas, key);
+    buffer_putm_internal(buffer_1, "#pragma ", key, " = ", value, 0);
+    buffer_putnlflush(buffer_1);
   }
 }
 
@@ -156,8 +285,19 @@ main(int argc, char* argv[]) {
   ihex_load_buf(&hex, x, n);
   mmap_unmap(x, n);
 
-  uint16 buf[7];
-  size_t bytes = ihex_read_at(&hex, 0x00300000, buf, sizeof(buf));
+  stralloc_init(&cfg);
+  config_bytes(&hex, &cfg, &addr);
+
+  for(size_t i = 0; i < cfg.len; i += 2) {
+    uint16 v = uint16_read(&cfg.s[i]);
+
+    buffer_putxlong0(buffer_2, addr + i, 4);
+    buffer_puts(buffer_2, ": ");
+    buffer_putxlong0(buffer_2, v, 4);
+    buffer_putnlflush(buffer_2);
+  }
+
+  process_config();
 
   return 0;
 }
