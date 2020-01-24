@@ -272,7 +272,7 @@ add_item(const char* name, const char* value) {
   if(value)
     stralloc_catm_internal(&out, name, " = ", value, 0);
   else
-     stralloc_catm_internal(&out, "// ", name, 0);
+    stralloc_catm_internal(&out, "// ", name, 0);
 
   strlist_push_sa(&pragmas, &out);
 
@@ -303,8 +303,8 @@ process_config(void (*callback)(const char* key, const char* value)) {
         continue;
       }
 
-if(output_name && prevword != word) 
-  callback(word->name, NULL);
+      if(output_name && prevword != word)
+        callback(word->name, NULL);
 
       callback(setting->name, value->name);
       prevword = word;
@@ -324,12 +324,12 @@ output_items(const strlist* items) {
       if(i)
         buffer_puts(buffer_2, (oneline && col > 0) ? ", " : "\n#pragma ");
       else
-          buffer_puts(buffer_2, "#pragma ");
+        buffer_puts(buffer_2, "#pragma ");
 
-   } else if(i) {
-    col = -1;
-    buffer_puts(buffer_2, "\n\n");
-   }
+    } else if(i) {
+      col = -1;
+      buffer_puts(buffer_2, "\n\n");
+    }
 
     if(comments && !oneline) {
       csetting* setting = find_setting(x);
