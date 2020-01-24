@@ -13,6 +13,8 @@
 #include "lib/map.h"
 #include "lib/strlist.h"
 #include "lib/getopt.h"
+#include "lib/dir.h"
+#include "lib/path.h"
 #include <assert.h>
 
 typedef struct cvalue {
@@ -263,6 +265,54 @@ find_value(const char* str) {
   return NULL;
 }
 
+const char*
+get_cfgdat(const char* chip) {
+  static stralloc path;
+
+  if(path.len == 0) {
+    dir_t d;
+    const char *dir = 0, *subdir;
+    static const char* const search_dirs[] = {"/opt/microchip",
+                                              "C:\\Program Files\\Microchip",
+                                              "C:\\Program Files (x86)\\Microchip"};
+
+    for(size_t i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
+      dir = search_dirs[i];
+
+      if(path_exists(dir))
+        break;
+    }
+    if(dir == NULL)
+      return NULL;
+
+    stralloc_copys(&path, dir);
+    stralloc_cats(&path, "/xc8/");
+    stralloc_nul(&path);
+
+    dir_open(&d, path.s);
+
+    while((subdir = dir_read(&d))) {
+      if(subdir[0] == '.')
+        continue;
+
+      dir = subdir;
+
+    /*  buffer_putm_internal(buffer_2, "subdir = ", subdir, 0);
+      buffer_putnlflush(buffer_2);*/
+    }
+
+    stralloc_cats(&path, dir);
+  }
+
+  path.len = stralloc_finds(&path, "/dat/");
+  stralloc_cats(&path, "/dat/cfgdata/");
+  stralloc_cats(&path, chip);
+  stralloc_cats(&path, ".cfgdata");
+  stralloc_nul(&path);
+
+  return path.s;
+}
+
 void
 add_item(const char* name, const char* value) {
 
@@ -322,13 +372,13 @@ output_items(const strlist* items) {
   strlist_foreach(items, x, n) {
     if(x[0] != '/') {
       if(i)
-        buffer_puts(buffer_2, (oneline && col > 0) ? ", " : "\n#pragma ");
+        buffer_puts(buffer_1, (oneline && col > 0) ? ", " : "\n#pragma ");
       else
-        buffer_puts(buffer_2, "#pragma ");
+        buffer_puts(buffer_1, "#pragma ");
 
     } else if(i) {
       col = -1;
-      buffer_puts(buffer_2, "\n\n");
+      buffer_puts(buffer_1, "\n\n");
     }
 
     if(comments && !oneline) {
@@ -337,16 +387,16 @@ output_items(const strlist* items) {
       cvalue* value = find_value(x);
       if(value)
         description = value->description;
-      buffer_putspad(buffer_2, x, 20);
-      buffer_putm_internal(buffer_2, " // ", description, 0);
+      buffer_putspad(buffer_1, x, 20);
+      buffer_putm_internal(buffer_1, " // ", description, 0);
 
     } else
 
-      buffer_put(buffer_2, x, n);
+      buffer_put(buffer_1, x, n);
     ++i;
     ++col;
   }
-  buffer_putnlflush(buffer_2);
+  buffer_putnlflush(buffer_1);
 }
 
 /**
@@ -414,7 +464,7 @@ main(int argc, char* argv[]) {
   }
 
   if(!cfgdata)
-    cfgdata = "/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata";
+    cfgdata = get_cfgdat("18f2550");
 
   if(!hexfile)
     hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
