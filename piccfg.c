@@ -12,11 +12,13 @@
 #include "lib/buffer.h"
 #include "lib/map.h"
 #include "lib/strlist.h"
+#include "lib/getopt.h"
 #include <assert.h>
 
 typedef struct cvalue {
   struct cvalue* next;
   uint16 value;
+  int is_default;
   const char* name;
   const char* description;
 } cvalue;
@@ -44,6 +46,7 @@ static uint32 addr;
 static stralloc cfg;
 // static map_t(const char*) pragmas;
 static strlist pragmas;
+static int defval = 1, oneline = 0, comments = 1;
 
 uint8
 config_byte_at(uint32 addr) {
@@ -86,12 +89,13 @@ dump_cvalue(buffer* b, cvalue* value) {
 }
 
 cvalue**
-parse_cfgvalue(cvalue** vptr, const char* x, size_t n) {
+parse_cfgvalue(cvalue** vptr, cword* w, csetting* s, const char* x, size_t n) {
   cvalue* v = *vptr = alloc(sizeof(cvalue));
   size_t i;
   unsigned long value;
   i = scan_xlongn(x, n, &value);
   assert(i);
+  v->is_default = (w->default_value & s->mask) == value;
   v->value = value;
   x += i + 1;
   n -= i + 1;
@@ -106,7 +110,7 @@ parse_cfgvalue(cvalue** vptr, const char* x, size_t n) {
 }
 
 csetting**
-parse_cfgsetting(csetting** sptr, const char* x, size_t n) {
+parse_cfgsetting(csetting** sptr, cword* w, const char* x, size_t n) {
   csetting* s = *sptr = alloc(sizeof(csetting));
   size_t i;
   unsigned long value;
@@ -177,12 +181,12 @@ parse_cfgdata(cword** wptr, const char* x, size_t n) {
         sptr = &w->settings;
         wptr = nwptr;
       } else if(!str_diffn(line, "CSETTING", 8)) {
-        csetting** nsptr = parse_cfgsetting(sptr, x, eol);
+        csetting** nsptr = parse_cfgsetting(sptr, w, x, eol);
         s = *sptr;
         vptr = &s->values;
         sptr = nsptr;
       } else if(!str_diffn(line, "CVALUE", 6)) {
-        cvalue** nvptr = parse_cfgvalue(vptr, x, eol);
+        cvalue** nvptr = parse_cfgvalue(vptr, w, s, x, eol);
         v = *vptr;
         vptr = nvptr;
       }
@@ -233,6 +237,32 @@ get_setting_value(cword* word, csetting* setting) {
   return NULL;
 }
 
+csetting*
+find_setting(const char* str) {
+  cword* word;
+  csetting* setting;
+  slink_foreach(words, word) {
+    slink_foreach(word->settings, setting) {
+      if(!str_diffn(str, setting->name, str_len(setting->name)))
+        return setting;
+    }
+  }
+  return NULL;
+}
+
+cvalue*
+find_value(const char* str) {
+  csetting* setting = find_setting(str);
+  cvalue* value;
+  str += str_chr(str, '=');
+  while(*str == '=' || *str == ' ') ++str;
+  slink_foreach(setting->values, value) {
+    if(!str_diffn(str, value->name, str_len(value->name)))
+      return value;
+  }
+  return NULL;
+}
+
 void
 add_item(const char* name, const char* value) {
 
@@ -261,18 +291,113 @@ process_config(void (*callback)(const char* key, const char* value)) {
 
       value = get_setting_value(word, setting);
 
+      if(value->is_default && !defval) {
+#ifdef DEBUG_OUTPUT
+        buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, 0);
+        buffer_putnlflush(buffer_2);
+#endif
+        continue;
+      }
+
       callback(setting->name, value->name);
     }
   }
+}
+
+void
+output_items(const strlist* items) {
+  const char* x;
+  size_t i, n;
+  buffer_puts(buffer_2, "#pragma ");
+
+  i = 0;
+  strlist_foreach(items, x, n) {
+    if(i)
+      buffer_puts(buffer_2, oneline ? ", " : "\n#pragma ");
+
+    if(comments && !oneline) {
+      csetting* setting = find_setting(x);
+      const char* description = setting ? setting->description : 0;
+      cvalue* value = find_value(x);
+      if(value)
+        description = value->description;
+      buffer_putspad(buffer_2, x, 20);
+      buffer_putm_internal(buffer_2, " // ", description, 0);
+
+    } else
+
+      buffer_put(buffer_2, x, n);
+    ++i;
+  }
+  buffer_putnlflush(buffer_2);
+}
+
+/**
+ * @brief usage  Show command line usage
+ * @param argv0
+ */
+void
+usage(char* argv0) {
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(argv0),
+                       " <hex-file> <cfgdata-file>\n"
+                       "\n"
+                       "Options\n"
+                       "  -h, --help                show this help\n"
+                       "  -o, --oneline             output oneliner\n"
+                       "  -D, --no-default          don't output settings with default value\n"
+                       "  -C, --no-comments         don't output description comments\n"
+                       "\n",
+                       NULL);
+  buffer_putnlflush(buffer_1);
 }
 
 int
 main(int argc, char* argv[]) {
   const char* x;
   size_t i, n;
+  int c, index = 0;
+  const char *cfgdata = 0, *hexfile = 0;
 
-  const char* cfgdata = argc >= 2 ? argv[1] : "/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata";
-  const char* hexfile = argc >= 3 ? argv[2] : "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"oneline", 0, &oneline, 1},
+                           {"no-default", 0, &defval, 0},
+                           {"no-comments", 0, &comments, 0},
+                           {0, 0, 0, 0}};
+
+  for(;;) {
+    c = getopt_long(argc, argv, "hoDC", opts, &index);
+    if(c == -1)
+      break;
+    if(c == 0)
+      continue;
+
+    switch(c) {
+      case 'h': usage(argv[0]); return 0;
+      case 'o': oneline = 1; break;
+      case 'D': defval = 0; break;
+      case 'C': comments = 0; break;
+      default:
+        buffer_puts(buffer_2, "No such option '-");
+        buffer_putc(buffer_2, c);
+        buffer_putsflush(buffer_2, "'\n");
+
+        return 1;
+    }
+  }
+
+  if(optind < argc) {
+    hexfile = argv[optind++];
+    if(optind < argc)
+      cfgdata = argv[optind++];
+  }
+
+  if(!cfgdata)
+    cfgdata = "/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata";
+
+  if(!hexfile)
+    hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
 
   x = mmap_read(cfgdata, &n);
   parse_cfgdata(&words, x, n);
@@ -298,15 +423,7 @@ main(int argc, char* argv[]) {
 
   process_config(&add_item);
 
-  buffer_puts(buffer_2, "#pragma ");
-  i = 0;
-  strlist_foreach(&pragmas, x, n) {
-    if(i)
-      buffer_puts(buffer_2, ", ");
-    buffer_put(buffer_2, x, n);
-    ++i;
-  }
-  buffer_putnlflush(buffer_2);
+  output_items(&pragmas);
 
   return 0;
 }
