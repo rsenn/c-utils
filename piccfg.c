@@ -48,7 +48,7 @@ static uint32 addr;
 static stralloc cfg;
 // static map_t(const char*) pragmas;
 static strlist pragmas;
-static int defval = 1, oneline = 0, comments = 1, output_name = 0;
+static int defval = 1, oneline = 0, comments = 1, output_name = 0, verbose = 0;
 
 uint8
 config_byte_at(uint32 addr) {
@@ -232,10 +232,24 @@ cvalue*
 get_setting_value(cword* word, csetting* setting) {
   cvalue* value;
   uint8 byteval = get_setting_byte(word, setting);
+
+  if(verbose) {
+    buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", 0);
+    buffer_putxlong0(buffer_2, byteval, 2);
+    buffer_putnlflush(buffer_2);
+  }
+
   slink_foreach(setting->values, value) {
+    if(verbose) {
+      buffer_putm_internal(buffer_2, "  ", value->name, ": ", 0);
+      buffer_putxlong0(buffer_2, value->value, 2);
+      buffer_putnlflush(buffer_2);
+    }
+
     if(value->value == byteval)
       return value;
   }
+
   return NULL;
 }
 
@@ -266,51 +280,71 @@ find_value(const char* str) {
 }
 
 const char*
+infer_chip(const char* x, size_t n) {
+  static stralloc chip;
+
+  for(size_t i = 0; i + 3 < n; i++) {
+    size_t len = n - i;
+    const char* s = &x[i];
+
+    if(*s == '1') {
+      char c2 = tolower(s[2]);
+      if(c2 == 'l' || c2 == 'f') {
+        char c1 = s[1];
+        if(c1 == '2' || c1 == '6' || c1 == '8') {
+          len = scan_charsetnskip(s, "0123456789AaFfKkLlJj", len);
+
+          stralloc_copyb(&chip, s, len);
+          stralloc_nul(&chip);
+          return chip.s;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+const char*
 get_cfgdat(const char* chip) {
   static stralloc path;
-
   if(path.len == 0) {
     dir_t d;
     const char *dir = 0, *subdir;
     static const char* const search_dirs[] = {"/opt/microchip",
                                               "C:\\Program Files\\Microchip",
                                               "C:\\Program Files (x86)\\Microchip"};
-
     for(size_t i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
       dir = search_dirs[i];
-
       if(path_exists(dir))
         break;
     }
     if(dir == NULL)
       return NULL;
-
     stralloc_copys(&path, dir);
     stralloc_cats(&path, "/xc8/");
     stralloc_nul(&path);
-
     dir_open(&d, path.s);
-
     while((subdir = dir_read(&d))) {
       if(subdir[0] == '.')
         continue;
-
       dir = subdir;
-
       /*  buffer_putm_internal(buffer_2, "subdir = ", subdir, 0);
         buffer_putnlflush(buffer_2);*/
     }
-
     stralloc_cats(&path, dir);
   }
-
   path.len = stralloc_finds(&path, "/dat/");
   stralloc_cats(&path, "/dat/cfgdata/");
   stralloc_cats(&path, chip);
   stralloc_cats(&path, ".cfgdata");
   stralloc_nul(&path);
 
-  return path_exists(path.s) ? path.s : 0;
+  if(path_exists(path.s)) {
+    buffer_putm_internal(buffer_2, "Found cfgdata: ", path.s, 0);
+    buffer_putnlflush(buffer_2);
+    return path.s;
+  }
+  return 0;
 }
 
 void
@@ -339,16 +373,27 @@ process_config(void (*callback)(const char* key, const char* value)) {
     if(!str_diffn(word->name, "IDLOC", 5))
       break;
 
-    dump_cword(buffer_2, word);
+    if(verbose)
+      dump_cword(buffer_2, word);
 
     slink_foreach(word->settings, setting) {
 
       value = get_setting_value(word, setting);
 
+      if(value == NULL) {
+        buffer_puts(buffer_2, "WARNING:  value ");
+        buffer_putxlong0(buffer_2, get_setting_byte(word, setting), 2);
+        buffer_putm_internal(buffer_2, " for setting ", setting->name, " not found!", 0);
+        buffer_putnlflush(buffer_2);
+        continue;
+      }
+
       if(value->is_default && !defval) {
 #ifdef DEBUG_OUTPUT
-        buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, 0);
-        buffer_putnlflush(buffer_2);
+        if(verbose) {
+          buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, 0);
+          buffer_putnlflush(buffer_2);
+        }
 #endif
         continue;
       }
@@ -416,6 +461,7 @@ usage(char* argv0) {
                        "  -D, --no-default          don't output settings with default value\n"
                        "  -C, --no-comments         don't output description comments\n"
                        "  -n, --name                output register name\n"
+                       "  -v, --verbose             show verbose messages\n"
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_1);
@@ -433,10 +479,11 @@ main(int argc, char* argv[]) {
                            {"no-default", 0, &defval, 0},
                            {"no-comments", 0, &comments, 0},
                            {"name", 0, &output_name, 1},
+                           {"verbose", 0, &verbose, 1},
                            {0, 0, 0, 0}};
 
   for(;;) {
-    c = getopt_long(argc, argv, "hoDCn", opts, &index);
+    c = getopt_long(argc, argv, "hoDCnv", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -448,6 +495,7 @@ main(int argc, char* argv[]) {
       case 'D': defval = 0; break;
       case 'C': comments = 0; break;
       case 'n': output_name = 1; break;
+      case 'v': verbose++; break;
       default:
         buffer_puts(buffer_2, "No such option '-");
         buffer_putc(buffer_2, c);
@@ -468,30 +516,38 @@ main(int argc, char* argv[]) {
     if(!path_exists(cfgdata))
       cfgdata = get_cfgdat(cfgdata);
   } else {
-    cfgdata = get_cfgdat("18f2550");
+    const char* chip = infer_chip(hexfile, str_len(hexfile));
+    if(chip)
+      cfgdata = get_cfgdat(chip);
   }
 
   if(!hexfile)
     hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
 
   x = mmap_read(cfgdata, &n);
+  assert(x);
+  assert(n);
   parse_cfgdata(&words, x, n);
   mmap_unmap(x, n);
 
   x = mmap_read(hexfile, &n);
+  assert(x);
+  assert(n);
   ihex_load_buf(&hex, x, n);
   mmap_unmap(x, n);
 
   stralloc_init(&cfg);
   config_bytes(&hex, &cfg, &addr);
 
-  for(size_t i = 0; i < cfg.len; i += 2) {
-    uint16 v = uint16_read(&cfg.s[i]);
+  if(verbose) {
+    for(size_t i = 0; i < cfg.len; i += 2) {
+      uint16 v = uint16_read(&cfg.s[i]);
 
-    buffer_putxlong0(buffer_2, addr + i, 4);
-    buffer_puts(buffer_2, ": ");
-    buffer_putxlong0(buffer_2, v, 4);
-    buffer_putnlflush(buffer_2);
+      buffer_putxlong0(buffer_2, addr + i, 4);
+      buffer_puts(buffer_2, ": ");
+      buffer_putxlong0(buffer_2, v, 4);
+      buffer_putnlflush(buffer_2);
+    }
   }
 
   strlist_init(&pragmas, '\0');
