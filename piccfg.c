@@ -225,9 +225,9 @@ config_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
   return bytes;
 }
 
-uint8
-get_setting_byte(cword* word, csetting* setting) {
-  uint8 value = config_data_at(word->address);
+uint16
+get_setting_word(cword* word, csetting* setting) {
+  uint16 value = config_data_at(word->address);
 
   value &= setting->mask;
 
@@ -237,7 +237,7 @@ get_setting_byte(cword* word, csetting* setting) {
 cvalue*
 get_setting_value(cword* word, csetting* setting) {
   cvalue* value;
-  uint8 byteval = get_setting_byte(word, setting);
+  uint16 byteval = get_setting_word(word, setting);
 
   if(verbose) {
     buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", 0);
@@ -389,7 +389,7 @@ process_config(void (*callback)(const char* key, const char* value)) {
 
       if(value == NULL) {
         buffer_puts(buffer_2, "WARNING:  value ");
-        buffer_putxlong0(buffer_2, get_setting_byte(word, setting), 2);
+        buffer_putxlong0(buffer_2, get_setting_word(word, setting), 2);
         buffer_putm_internal(buffer_2, " for setting ", setting->name, " not found!", 0);
         buffer_putnlflush(buffer_2);
         continue;
