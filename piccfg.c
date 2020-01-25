@@ -300,10 +300,12 @@ infer_chip(const char* x, size_t n) {
         if(c1 == '2' || c1 == '6' || c1 == '8') {
           len = scan_charsetnskip(s, "0123456789aAbBcCeEfFgGhHiIjJkKlLmMnNpPrRtTvV", len);
 
-          stralloc_copyb(&chip, s, len);
-          stralloc_lower(&chip);
-          stralloc_nul(&chip);
-          return chip.s;
+          if(len > 3) {
+            stralloc_copyb(&chip, s, len);
+            stralloc_lower(&chip);
+            stralloc_nul(&chip);
+            return chip.s;
+          }
         }
       }
     }
