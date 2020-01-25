@@ -44,17 +44,22 @@ typedef struct cword {
 
 static cword* words;
 static ihex_file hex;
-static uint32 addr;
+static uint32 baseaddr;
 static stralloc cfg;
 // static map_t(const char*) pragmas;
 static strlist pragmas;
 static int nodefault = 1, oneline = 0, comments = 1, output_name = 0, verbose = 0;
 
-uint8
-config_byte_at(uint32 addr) {
-  size_t offs = addr & 0x0fff;
-  assert(offs < cfg.len);
-  return cfg.s[offs];
+uint16
+config_data_at(uint32 addr) {
+  if(baseaddr == 0x0000400e) {
+    size_t offs = addr - 0x2007;
+    assert(offs < cfg.len);
+    return uint16_read(&cfg.s[offs]);
+  } else {
+    size_t offs = (addr & 0x0fff);
+    return cfg.s[offs];
+  }
 }
 
 void
@@ -102,6 +107,7 @@ parse_cfgvalue(cvalue** vptr, cword* w, csetting* s, const char* x, size_t n) {
   x += i + 1;
   n -= i + 1;
   i = byte_chr(x, n, ':');
+  i = byte_chr(x, i, ',');
   v->name = str_ndup(x, i);
   assert(i < n);
   x += i + 1;
@@ -221,7 +227,7 @@ config_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
 
 uint8
 get_setting_byte(cword* word, csetting* setting) {
-  uint8 value = config_byte_at(word->address);
+  uint8 value = config_data_at(word->address);
 
   value &= setting->mask;
 
@@ -516,7 +522,6 @@ main(int argc, char* argv[]) {
   if(!hexfile)
     hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
 
-
   if(cfgdata) {
     if(!path_exists(cfgdata))
       cfgdata = get_cfgdat(cfgdata);
@@ -539,13 +544,13 @@ main(int argc, char* argv[]) {
   mmap_unmap(x, n);
 
   stralloc_init(&cfg);
-  config_bytes(&hex, &cfg, &addr);
+  config_bytes(&hex, &cfg, &baseaddr);
 
   if(verbose) {
     for(size_t i = 0; i < cfg.len; i += 2) {
       uint16 v = uint16_read(&cfg.s[i]);
 
-      buffer_putxlong0(buffer_2, addr + i, 4);
+      buffer_putxlong0(buffer_2, baseaddr + i, 4);
       buffer_puts(buffer_2, ": ");
       buffer_putxlong0(buffer_2, v, 4);
       buffer_putnlflush(buffer_2);
