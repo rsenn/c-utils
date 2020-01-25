@@ -424,9 +424,9 @@ output_items(const strlist* items) {
   strlist_foreach(items, x, n) {
     if(x[0] != '/') {
       if(i)
-        buffer_puts(buffer_1, (oneline && col > 0) ? ", " : "\n#pragma ");
+        buffer_puts(buffer_1, (oneline && col > 0) ? ", " : "\n#pragma config ");
       else
-        buffer_puts(buffer_1, "#pragma ");
+        buffer_puts(buffer_1, "#pragma config ");
 
     } else if(i) {
       col = -1;
