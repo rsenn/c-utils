@@ -292,7 +292,7 @@ infer_chip(const char* x, size_t n) {
       if(c2 == 'l' || c2 == 'f') {
         char c1 = s[1];
         if(c1 == '2' || c1 == '6' || c1 == '8') {
-          len = scan_charsetnskip(s, "0123456789AaFfKkLlJj", len);
+          len = scan_charsetnskip(s, "0123456789aAbBcCeEfFgGhHiIjJkKlLmMnNpPrRtTvV", len);
 
           stralloc_copyb(&chip, s, len);
           stralloc_lower(&chip);
