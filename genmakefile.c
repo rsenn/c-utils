@@ -7,7 +7,7 @@
 #include <sys/types.h>
 
 #include "genmakefile.h"
-
+#include "map.h"
 
 extern buffer* optbuf;
 
@@ -23,7 +23,6 @@ static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
                                    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
                                    'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-
 void debug_int(const char* name, int i);
 void debug_sa(const char* name, stralloc* sa);
 void debug_sl(const char* name, const strlist* l);
@@ -37,9 +36,8 @@ static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
 
 static strlist srcs;
 static stralloc preprocess_command, compile_command, lib_command, link_command, mkdir_command, delete_command;
-static exts_t exts = {   DEFAULT_OBJEXT,   DEFAULT_LIBEXT,   DEFAULT_EXEEXT,   DEFAULT_PPSEXT };
+static exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
 static const char* libpfx = DEFAULT_LIBPFX;
-
 
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 static const char* comment = "#";

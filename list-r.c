@@ -124,7 +124,8 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile =
+      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could call GetLastError to find out more */
 
@@ -150,7 +151,8 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile =
+      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could call GetLastError to find out more */
   if(!GetFileTime(hFile, &c, &la, &lw)) {
@@ -195,7 +197,9 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(WINAPI * get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+  static DWORD(
+      WINAPI *
+      get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object. */

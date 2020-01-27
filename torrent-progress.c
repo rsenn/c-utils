@@ -240,7 +240,12 @@ next:
       char* m = mmap_map(fd, msz, mofs);
 
       if(m == NULL) {
-        fprintf(stderr, "mmap_map(%d, " FMT_SIZE_T ", " FMT_OFFS_T ") failed: %s\n", fd, (size_t)msz, (size_t)mofs, last_error_str());
+        fprintf(stderr,
+                "mmap_map(%d, " FMT_SIZE_T ", " FMT_OFFS_T ") failed: %s\n",
+                fd,
+                (size_t)msz,
+                (size_t)mofs,
+                last_error_str());
         exit(2);
       }
 
@@ -258,7 +263,11 @@ next:
       }
 
       if(verbose)
-        fprintf(stderr, "mmap at " FMT_OFFS_T ", size " FMT_SIZE_T "%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
+        fprintf(stderr,
+                "mmap at " FMT_OFFS_T ", size " FMT_SIZE_T "%s\n",
+                (size_t)mofs,
+                (size_t)msz,
+                (z < blocks ? "" : " zero"));
 
       zero_blocks += z;
 

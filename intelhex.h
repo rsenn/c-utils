@@ -89,5 +89,5 @@ public:
 };
 
 bool compare(hex_data&, hex_data&, value_type, address_type, address_type);
-}
+} // namespace intelhex
 #endif
