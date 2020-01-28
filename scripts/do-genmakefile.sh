@@ -49,7 +49,7 @@ esac
 set -f
 
 if [ $# -eq 0 ]; then
-  set -- lib *.c 3rdparty #tests
+  set -- lib *.c #3rdparty #tests
   set -- "$@" -DHAVE_{ZLIB,LIBBZ2,LIBLZMA}=1
   set -- "$@" -I3rdparty/{zlib,bzip2,xz/liblzma/api}
 elif [ -d "$1" ]; then
