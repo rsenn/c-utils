@@ -36,15 +36,17 @@ void
 xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
   stralloc name;
   stralloc_init(&name);
+  int text_children;
 
   do {
+    text_children = 0;
     if(n->type == XML_DOCUMENT)
       n = n->children;
     stralloc_zero(&name);
     if(n->type == XML_TEXT) {
       const char* x = xml_get_text(n, &name);
       if(x[0]) {
-        buffer_putm_internal(b, "xml_add_child(", parent, ", xml_textnode(\"", x, "\"));\n", 0);
+        buffer_putm_internal(b, "", parent, "->children = xml_textnode(\"", x, "\");\n", 0);
         buffer_flush(b);
       }
     } else if(n->type == XML_ELEMENT) {
@@ -55,23 +57,32 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
       stralloc_remove_all(&name, "-.", 2);
       stralloc_lower(&name);
       stralloc_nul(&name);
-      buffer_putnspace(b, depth * 2);
-      buffer_puts(b, "// depth: ");
-      buffer_putlong(b, depth);
-      buffer_putnlflush(b);
+      buffer_puts(b, "\n");
+      /*      buffer_putnspace(b, depth * 2);
+            buffer_puts(b, "// depth: ");
+            buffer_putlong(b, depth);
+            buffer_putnlflush(b);*/
 
       buffer_putnspace(b, depth * 2);
 
-      if(!strlist_contains(&vars, name.s)) {
-        buffer_puts(b, "xmlnode* ");
-        strlist_push(&vars, name.s);
+      if(n->children && n->children->next == 0 && n->children->type == XML_TEXT) {
+        name.s = NULL;
+        text_children = 1;
       }
-      buffer_putm_internal(b, name.s, " = xml_element(\"", n->name, "\");\n", 0);
-      buffer_putnspace(b, depth * 2);
+
+      if(name.s && !text_children) {
+        if(!strlist_contains(&vars, name.s)) {
+          buffer_puts(b, "xmlnode* ");
+          strlist_push(&vars, name.s);
+        }
+
+        buffer_putm_internal(b, name.s, " = ", 0);
+      }
 
       if(parent) {
-        buffer_putm_internal(b, "xml_add_child(", parent, ", ", name.s, ");\n", 0);
-        buffer_putnspace(b, depth * 2);
+        buffer_putm_internal(b, "xml_child_element(\"", n->name, "\", ", parent, ")", 0);
+      } else {
+        buffer_putm_internal(b, "xml_element(\"", n->name, "\")", 0);
       }
 
       if(n->attributes) {
@@ -82,12 +93,28 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         }
       }
     }
-    buffer_putnlflush(b);
 
-    if(name.s && (n->type == XML_ELEMENT || n->type == XML_DOCUMENT) && n->children)
-      xml_dump(n->children, b, name.s, depth + 1);
+    if(text_children) {
+
+      buffer_putm_internal(b, "->children", 0);
+      buffer_puts(b, "\n");
+      buffer_putnspace(b, depth * 2);
+      buffer_putm_internal(b, "  =  xml_textnode(\"", n->children->name, "\");\n", 0);
+
+    } else {
+
+      buffer_puts(b, ";\n");
+      buffer_putnspace(b, depth * 2);
+
+      if(name.s && (n->type == XML_ELEMENT || n->type == XML_DOCUMENT) && n->children) {
+        xml_dump(n->children, b, name.s, depth + 1);
+      }
+      buffer_flush(b);
+    }
 
   } while((n = n->next));
+
+  buffer_flush(b);
 }
 
 int

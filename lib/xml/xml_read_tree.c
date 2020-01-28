@@ -64,10 +64,9 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
       if(reader->closing && !reader->self_closing) {
         xmlnode* p = reader->parent;
         reader->parent = p->parent;
-        reader->ptr =  &p->next;
+        reader->ptr = &p->next;
 
-        while(*reader->ptr)
-          reader->ptr = &(*reader->ptr)->next;
+        while(*reader->ptr) reader->ptr = &(*reader->ptr)->next;
 
         assert(*reader->ptr == 0);
         /*
@@ -85,18 +84,18 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
                 stralloc_nul(name);
                 node->name = name->s;
                 name->s = NULL;*/
-      } 
+      }
       if(!reader->closing) {
         xmlnode* node;
-                xmlnode* p = reader->parent;
+        xmlnode* p = reader->parent;
 
         stralloc_nul(name);
 
         node = xml_element(name->s);
         node->attributes = *attrs;
         *attrs = NULL;
-          node->parent = p;          
-          *(reader->ptr) = node;
+        node->parent = p;
+        *(reader->ptr) = node;
 
         if(reader->self_closing) {
           reader->ptr = &node->next;

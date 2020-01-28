@@ -109,7 +109,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
 
     fn(r, XML_ELEMENT, &tag, NULL, &r->attrmap);
     if(b->n - b->p <= 1)
-       break;
+      break;
     buffer_skipspace(b);
     s = buffer_peek(b);
 
@@ -130,7 +130,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     hmap_init(XML_HMAP_BUCKETS, &r->attrmap);
 
     if(b->n - b->p <= 1)
-       break;
+      break;
 
     /* if((n =  < 0)
        return;

@@ -88,9 +88,18 @@ double xml_get_attribute_double(xmlnode*, const char* attr);
 xmlnode* xml_remove(xmlnode**);
 void xml_delete(xmlnode*);
 void xml_add_child(xmlnode*, xmlnode* node);
+
+static xmlnode*
+xml_add_text(xmlnode* parent, const char* text) {
+  xmlnode* n = xml_textnode(text);
+  xml_add_child(parent, n);
+  return n;
+}
 void xml_set_attribute_double(xmlnode*, const char* a, double d, int prec);
 void xml_set_attribute(xmlnode*, const char* a, const char* v);
+int xml_set_attributes(xmlnode*, ...);
 xmlnode* xml_element(const char*);
+xmlnode* xml_child_element(const char*, xmlnode*);
 
 #define xml_attributes(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 
