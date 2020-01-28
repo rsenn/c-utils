@@ -308,9 +308,7 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
     set_debug(toolcfg);
 
-  /*set_int(toolcfg, "C6", 255);*/
   set_int(toolcfg, "DB", mplab_cfg.warning_level); //!< Warning level
-  /*set_int(toolcfg, "DC", 9);*/
   set_str(toolcfg, "D1", defines.sa.s);
   set_int(toolcfg, "DF", mplab_cfg.verbose_messages);          //!< verbose messages
   set_int(toolcfg, "DD", mplab_cfg.optimize_global);           //!< optimize global
@@ -318,79 +316,34 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   set_int(toolcfg, "C3", mplab_cfg.optimize_debug);            //!< optmize debug
   set_int(toolcfg, "DE", mplab_cfg.optimize_assembler);        //!< optimize assembler
   set_int(toolcfg, "D7", mplab_cfg.preprocess_assembler);      //!< preprocess assembler
-                                                               /*  set_int(toolcfg, "11E", 0);
-                                                                 set_int(toolcfg, "121", 0);
-                                                                 set_int(toolcfg, "122", 0);
-                                                                 set_int(toolcfg, "123", 0);
-                                                                 set_int(toolcfg, "124", 0);
-                                                                 set_int(toolcfg, "125", 0);
-                                                                 set_int(toolcfg, "11F", 94);
-                                                                 set_int(toolcfg, "127", 0);
-                                                                 set_str(toolcfg, "C9", "4,3,1,2");*/
+                                                          
   set_int(toolcfg, "FE", mplab_cfg.debugger);                  //!< debugger: 39 = PicKit3, 31 = Auto
   set_int(toolcfg, "EC", mplab_cfg.clear_bss);                 //!< clear BSS
   set_int(toolcfg, "F0", mplab_cfg.keep_generated_startup_as); //!< keep generated startup.as
   set_int(toolcfg, "EF", mplab_cfg.initialize_data);           //!< initialize data
-                                                               /*  set_int(toolcfg, "EE", 0);
-                                                                 set_int(toolcfg, "104", 0);
-                                                                 set_str(toolcfg, "E9", "");
-                                                                 set_int(toolcfg, "C4", 0);
-                                                                 set_str(toolcfg, "F2", "");
-                                                                 set_str(toolcfg, "F3", "");
-                                                                 set_str(toolcfg, "F4", "");*/
   set_int(toolcfg, "F8", mplab_cfg.calibrate_oscillator);      //!< calibrate oscillator
-  /*set_str(toolcfg, "F5", "");*/
   set_int(toolcfg, "F9", mplab_cfg.backup_reset_condition_flags); //!< backup reset co ndition flags
   set_int(toolcfg, "FA", mplab_cfg.format_hex_file_for_download); //!< format hex file for download
-  /*set_int(toolcfg, "FB", 0);
-  set_int(toolcfg, "C0", 0);*/
   set_int(toolcfg, "C1", mplab_cfg.managed_stack); //!< managed stack
-  /*set_int(toolcfg, "BD", 0);
-  set_int(toolcfg, "BC", 0);
-  set_int(toolcfg, "BB", 0);
-  set_int(toolcfg, "BF", 0);
-  set_int(toolcfg, "BE", 0);
-  set_str(toolcfg, "B8", "");
-  set_int(toolcfg, "101", 0);
-  set_str(toolcfg, "103", "");
-  set_int(toolcfg, "102", 0);
-  set_str(toolcfg, "BA", "");
-  set_int(toolcfg, "FF", 0);
-  set_int(toolcfg, "100", 0);
-  set_int(toolcfg, "106", 0);
-  set_int(toolcfg, "109", 0);
-  set_int(toolcfg, "10A", 1);
-  set_int(toolcfg, "10B", 0);
-  set_int(toolcfg, "10C", 0);*/
   set_int(toolcfg, "10E", mplab_cfg.program_default_config_words); //!< program default config words
-  /*set_int(toolcfg, "10F", 1);*/
   set_int(toolcfg, "110", mplab_cfg.link_in_peripheral_library); //!< link in peripheral library
-                                                                 /*  set_int(toolcfg, "118", 0);
-                                                                   set_int(toolcfg, "116", 0);
-                                                                   set_str(toolcfg, "117", "");
-                                                                   set_int(toolcfg, "10D", 0);
-                                                                   set_int(toolcfg, "114", -1);
-                                                                   set_int(toolcfg, "113", -1);
-                                                                   set_int(toolcfg, "111", 0);
-                                                                   set_int(toolcfg, "115", -1);
-                                                                   set_int(toolcfg, "F5", 0);
-                                                                 */
+
   stralloc_zero(&sa);
   stralloc_copys(&sa, mplab_cfg.additional_command_line_options);
   stralloc_replaces(&sa, ",", "%2C");
   stralloc_replaces(&sa, " ", ",");
   stralloc_nul(&sa);
+
   set_str(toolcfg, "E3", sa.s);                   //!< additional command line options
   set_int(toolcfg, "E5", mplab_cfg.memory_model); //!< memory model: 0=small, 1=large
-  set_int(toolcfg, "E7", 0);
   set_int(toolcfg, "E8", mplab_cfg.size_of_double); //!< size of double: 0=24, 1=32
   set_int(toolcfg, "126", mplab_cfg.size_of_float); //!< size of float: 0=24, 1=32
-  set_int(toolcfg, "F1", 0);
+/*  set_int(toolcfg, "F1", 0);
   set_str(toolcfg, "F6", "");
   set_str(toolcfg, "F7", "");
   set_int(toolcfg, "B9", -1);
   set_int(toolcfg, "107", 0);
-
+*/
   strlist_init(&tcfg, ' ');
 
   MAP_FOREACH(toolcfg, it) {
