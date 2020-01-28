@@ -47,10 +47,9 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
 
   hmap_init(XML_HMAP_BUCKETS, &r->attrmap);
 
-  buffer_skipspace(b);
-
-  while((n = buffer_gettok_sa(b, &tag, "<", 1)) >= 0) {
+  while((n = buffer_skip_until(b, "<", 1)) > 0) {
     const char* s;
+    stralloc_zero(&tag);
     r->self_closing = r->closing = 0;
     s = buffer_peek(b);
 
@@ -109,7 +108,8 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       buffer_skipc(b);
 
     fn(r, XML_ELEMENT, &tag, NULL, &r->attrmap);
-
+    if(b->n - b->p <= 1)
+       break;
     buffer_skipspace(b);
     s = buffer_peek(b);
 
@@ -117,8 +117,10 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       stralloc_zero(&tag);
 
       buffer_gettok_sa(b, &tag, "<", 1);
-      if(tag.len)
+      if(tag.len) {
+        stralloc_nul(&tag);
         fn(r, XML_TEXT, &tag, NULL, NULL);
+      }
     }
 
     if(r->attrmap) {
@@ -127,13 +129,17 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     }
     hmap_init(XML_HMAP_BUCKETS, &r->attrmap);
 
+    if(b->n - b->p <= 1)
+       break;
+
     /* if((n =  < 0)
        return;
      s = buffer_peek(b);
 
      if(!is_whitespace(tag.s, tag.len)) {
        if(!fn(r, XML_TEXT, NULL, &tag, NULL))
-         return;
+         return;e
+
      }*/
   }
 }

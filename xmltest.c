@@ -44,7 +44,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
     if(n->type == XML_TEXT) {
       const char* x = xml_get_text(n, &name);
       if(x[0]) {
-        buffer_putm_internal(b, "xml_add_child(", parent, ", xml_textnode(\"", x, "\", 0);\n", 0);
+        buffer_putm_internal(b, "xml_add_child(", parent, ", xml_textnode(\"", x, "\"));\n", 0);
         buffer_flush(b);
       }
     } else if(n->type == XML_ELEMENT) {
@@ -98,16 +98,13 @@ main(int argc, char* argv[1]) {
   /* xml_reader_init(&r, &infile);
    xml_read_callback(&r, xml_read_function);
  */
-
   strlist_init(&vars, '\0');
-
   buffer_skip_until(&infile, "\r\n", 2);
-
   doc = xml_read_tree(&infile);
-
-  xml_dump(doc, buffer_1, 0, 0);
-
-  xml_free(doc);
+  if(doc) {
+    xml_dump(doc, buffer_1, 0, 0);
+    xml_free(doc);
+  }
 
   buffer_close(&infile);
 }

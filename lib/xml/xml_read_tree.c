@@ -3,6 +3,7 @@
 #include "../scan.h"
 #include "../str.h"
 #include "../xml.h"
+#include <assert.h>
 
 static size_t
 xml_unescape(const char* x, size_t n, stralloc* out) {
@@ -42,12 +43,14 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
 
         tnode->name = text.s;
         text.s = 0;
-        tnode->parent = (reader->parent && reader->parent->parent) ? reader->parent->parent : 0;
+        tnode->parent = reader->parent;
         tnode->next = 0;
 
-        nptr = &reader->parent->next;
+        nptr = reader->ptr;
         while(*nptr) nptr = &(*nptr)->next;
+
         *nptr = tnode;
+        reader->ptr = &(*nptr)->next;
       }
       break;
     }
@@ -58,40 +61,51 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
 
-      if(reader->closing) {
-        xmlnode *node, *parent = reader->parent;
+      if(reader->closing && !reader->self_closing) {
+        xmlnode* p = reader->parent;
+        reader->parent = p->parent;
+        reader->ptr =  &p->next;
 
-        if(parent) {
-          reader->ptr = &parent->next;
-          reader->parent = parent->parent;
-        }
-        node = xml_newnode(XML_ELEMENT);
-        *reader->ptr = node;
-        reader->ptr = &node->next;
-        stralloc_insertb(name, "/", 0, 1);
+        while(*reader->ptr)
+          reader->ptr = &(*reader->ptr)->next;
+
+        assert(*reader->ptr == 0);
+        /*
+                xmlnode *node, *parent = reader->parent;
+
+                if(parent) {
+                  if(reader->ptr == 0)
+                  reader->ptr = &parent->next;
+                  reader->parent = parent->parent;
+                }
+                node = xml_newnode(XML_ELEMENT);
+                *reader->ptr = node;
+                reader->ptr = &node->next;
+                stralloc_insertb(name, "/", 0, 1);
+                stralloc_nul(name);
+                node->name = name->s;
+                name->s = NULL;*/
+      } 
+      if(!reader->closing) {
+        xmlnode* node;
+                xmlnode* p = reader->parent;
+
         stralloc_nul(name);
-        node->name = name->s;
-        name->s = NULL;
-      } else {
-        xmlnode* node = xml_newnode(id);
-        stralloc_nul(name);
-        node->name = name->s;
-        name->s = NULL;
-        if(reader->parent)
-          node->parent = reader->parent;
+
+        node = xml_element(name->s);
+        node->attributes = *attrs;
+        *attrs = NULL;
+          node->parent = p;          
+          *(reader->ptr) = node;
 
         if(reader->self_closing) {
-          *(reader->ptr) = node;
           reader->ptr = &node->next;
         } else {
-          *(reader->ptr) = node;
           reader->parent = node;
           reader->ptr = &node->children;
         }
-        node->attributes = *attrs;
-        *attrs = NULL;
-        break;
       }
+      break;
     }
   }
   return 1;
@@ -101,6 +115,7 @@ xmlnode*
 xml_read_tree(buffer* b) {
   xmlreader r;
   xml_reader_init(&r, b);
+
   xml_read_callback(&r, xml_read_node);
   return r.doc;
 }
