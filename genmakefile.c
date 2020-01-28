@@ -1024,7 +1024,16 @@ int
 sort_sources(const char** a, const char** b) {
   size_t alen = str_rchrs(*a, "/\\", 2);
   size_t blen = str_rchrs(*b, "/\\", 2);
-  int rdir, rfile;
+  int er, rdir, rfile;
+
+  const char *ext_a, *ext_b;
+
+  ext_a = *a + str_rchr(*a, '.');
+  ext_b = *b + str_rchr(*b, '.');
+
+  er = str_diff(ext_a, ext_b);
+  if(er)
+    return er;
 
   rdir = str_diffn(*a, *b, alen < blen ? blen : alen);
   rfile = str_diff(path_basename(*a), path_basename(*b));

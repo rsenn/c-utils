@@ -109,7 +109,8 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
                               .size_of_double = 1,
                               .size_of_float = 1};
 
-  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files, *file_info;
+  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files, *file_info,
+      *active_file_settings, *tool_settings;
 
   stralloc_init(&sa);
   stralloc_init(&file);
@@ -177,7 +178,7 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   section = other_files = ini_new(&section->next, "OTHER_FILES");
 
   section = ini_new(&section->next, "FILE_INFO");
-  unsigned int i = 0;
+  unsigned int i = 0, num_sources = 0;
 
   /*  buffer_puts(b, "; Number of rules: ");
     buffer_putuint(b, hmap_count(rules));
@@ -186,6 +187,12 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   stralloc_zero(&incdirs.sa);
 
   strarray_foreach(&srcs, p) {
+
+    s = *p;
+
+    if(!is_source(s) && num_sources == 0) {
+      num_sources = i;
+    }
 
     stralloc_zero(&sa);
     stralloc_copy(&sa, &dirs.this.sa);
@@ -269,7 +276,9 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   }
   stralloc_nul(&defines.sa);
 
-  section = ini_new(&section->next, "TOOL_SETTINGS");
+  section = tool_settings = ini_new(&section->next, "TOOL_SETTINGS");
+  section = active_file_settings = ini_new(&section->next, "ACTIVE_FILE_SETTINGS");
+
   set_int(toolcfg, "C6", 255);
   set_int(toolcfg, "DB", mplab_cfg.warning_level); //!< Warning level
   set_int(toolcfg, "DC", 9);
@@ -364,16 +373,33 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   }
   stralloc_nul(&tcfg.sa);
 
-  ini_set(section, make_tool_key(&sa, ""), tcfg.sa.s);
+  ini_set(tool_settings, make_tool_key(&sa, ""), tcfg.sa.s);
 
   if(get_suite() == 1) {
-    ini_set(section, make_tool_key(&sa, "_alt"), "yes");
+
+    for(i = 0; i < num_sources; i++) {
+      size_t len;
+      stralloc_zero(&file);
+      stralloc_catlong0(&file, i, 3);
+
+      len = file.len;
+      stralloc_nul(&file);
+
+      ini_set(tool_settings, make_tool_key(&sa, file.s), "");
+
+      stralloc_cats(&file, "_alt");
+      stralloc_nul(&file);
+      ini_set(tool_settings, make_tool_key(&sa, file.s), "yes");
+
+      file.len = len;
+      stralloc_cats(&file, "_active");
+      stralloc_nul(&file);
+      ini_set(active_file_settings, make_tool_key(&sa, file.s), "yes");
+    }
   } else {
-    ini_set(section, make_tool_key(&sa, "000"), "");
-    ini_set(section, make_tool_key(&sa, "000_alt"), "yes");
+    ini_set(section, make_tool_key(&sa, "_alt"), "yes");
   }
 
-  section = ini_new(&section->next, "ACTIVE_FILE_SETTINGS");
   /*  ini_set(section, make_tool_key(&sa, "000_active"), "yes");
     ini_set(section, make_tool_key(&sa, "001_active"), "yes");
     ini_set(section, make_tool_key(&sa, "002_active"), "yes");
