@@ -172,11 +172,13 @@ worker_error(worker_thread* thr, lzma_ret ret) {
   assert(ret != LZMA_OK);
   assert(ret != LZMA_STREAM_END);
 
-  mythread_sync(thr->coder->mutex) {
-    if(thr->coder->thread_error == LZMA_OK)
-      thr->coder->thread_error = ret;
+  {
+    mythread_sync(thr->coder->mutex) {
+      if(thr->coder->thread_error == LZMA_OK)
+        thr->coder->thread_error = ret;
 
-    mythread_cond_signal(&thr->coder->cond);
+      mythread_cond_signal(&thr->coder->cond);
+    }
   }
 
   return;
@@ -184,6 +186,9 @@ worker_error(worker_thread* thr, lzma_ret ret) {
 
 static worker_state
 worker_encode(worker_thread* thr, worker_state state) {
+  lzma_ret ret;
+  lzma_action action;
+  size_t in_pos, in_size, out_size;
   assert(thr->progress_in == 0);
   assert(thr->progress_out == 0);
 
@@ -203,7 +208,7 @@ worker_encode(worker_thread* thr, worker_state state) {
   // reserved in the beginning of the buffer so that Block Header
   // along with Compressed Size and Uncompressed Size can be
   // written there.
-  lzma_ret ret = lzma_block_header_size(&thr->block_options);
+  ret = lzma_block_header_size(&thr->block_options);
   if(ret != LZMA_OK) {
     worker_error(thr, ret);
     return THR_STOP;
@@ -216,11 +221,11 @@ worker_encode(worker_thread* thr, worker_state state) {
     return THR_STOP;
   }
 
-  size_t in_pos = 0;
-  size_t in_size = 0;
+  in_pos = 0;
+  in_size = 0;
 
   thr->outbuf->size = thr->block_options.header_size;
-  const size_t out_size = thr->coder->outq.buf_size_max;
+  out_size = thr->coder->outq.buf_size_max;
 
   do {
     mythread_sync(thr->mutex) {
@@ -244,27 +249,29 @@ worker_encode(worker_thread* thr, worker_state state) {
     if(state >= THR_STOP)
       return state;
 
-    lzma_action action = state == THR_FINISH ? LZMA_FINISH : LZMA_RUN;
+    action = state == THR_FINISH ? LZMA_FINISH : LZMA_RUN;
+    {
 
-    // Limit the amount of input given to the Block encoder
-    // at once. This way this thread can react fairly quickly
-    // if the main thread wants us to stop or exit.
-    static const size_t in_chunk_max = 16384;
-    size_t in_limit = in_size;
-    if(in_size - in_pos > in_chunk_max) {
-      in_limit = in_pos + in_chunk_max;
-      action = LZMA_RUN;
+      // Limit the amount of input given to the Block encoder
+      // at once. This way this thread can react fairly quickly
+      // if the main thread wants us to stop or exit.
+      static const size_t in_chunk_max = 16384;
+      size_t in_limit = in_size;
+      if(in_size - in_pos > in_chunk_max) {
+        in_limit = in_pos + in_chunk_max;
+        action = LZMA_RUN;
+      }
+
+      ret = thr->block_encoder.code(thr->block_encoder.coder,
+                                    thr->allocator,
+                                    thr->in,
+                                    &in_pos,
+                                    in_limit,
+                                    thr->outbuf->buf,
+                                    &thr->outbuf->size,
+                                    out_size,
+                                    action);
     }
-
-    ret = thr->block_encoder.code(thr->block_encoder.coder,
-                                  thr->allocator,
-                                  thr->in,
-                                  &in_pos,
-                                  in_limit,
-                                  thr->outbuf->buf,
-                                  &thr->outbuf->size,
-                                  out_size,
-                                  action);
   } while(ret == LZMA_OK && thr->outbuf->size < out_size);
 
   switch(ret) {

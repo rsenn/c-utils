@@ -35,13 +35,14 @@ extern LZMA_API(lzma_ret) lzma_stream_header_encode(const lzma_stream_flags* opt
   // Stream Flags
   if(stream_flags_encode(options, out + sizeof(lzma_header_magic)))
     return LZMA_PROG_ERROR;
+  {
+    // CRC32 of the Stream Header
+    const uint32_t crc = lzma_crc32(out + sizeof(lzma_header_magic), LZMA_STREAM_FLAGS_SIZE, 0);
 
-  // CRC32 of the Stream Header
-  const uint32_t crc = lzma_crc32(out + sizeof(lzma_header_magic), LZMA_STREAM_FLAGS_SIZE, 0);
+    unaligned_write32le(out + sizeof(lzma_header_magic) + LZMA_STREAM_FLAGS_SIZE, crc);
 
-  unaligned_write32le(out + sizeof(lzma_header_magic) + LZMA_STREAM_FLAGS_SIZE, crc);
-
-  return LZMA_OK;
+    return LZMA_OK;
+  }
 }
 
 extern LZMA_API(lzma_ret) lzma_stream_footer_encode(const lzma_stream_flags* options, uint8_t* out) {
@@ -60,13 +61,15 @@ extern LZMA_API(lzma_ret) lzma_stream_footer_encode(const lzma_stream_flags* opt
   if(stream_flags_encode(options, out + 2 * 4))
     return LZMA_PROG_ERROR;
 
-  // CRC32
-  const uint32_t crc = lzma_crc32(out + 4, 4 + LZMA_STREAM_FLAGS_SIZE, 0);
+  {
+    // CRC32
+    const uint32_t crc = lzma_crc32(out + 4, 4 + LZMA_STREAM_FLAGS_SIZE, 0);
 
-  unaligned_write32le(out, crc);
+    unaligned_write32le(out, crc);
 
-  // Magic
-  memcpy(out + 2 * 4 + LZMA_STREAM_FLAGS_SIZE, lzma_footer_magic, sizeof(lzma_footer_magic));
+    // Magic
+    memcpy(out + 2 * 4 + LZMA_STREAM_FLAGS_SIZE, lzma_footer_magic, sizeof(lzma_footer_magic));
 
-  return LZMA_OK;
+    return LZMA_OK;
+  }
 }

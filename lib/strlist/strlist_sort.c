@@ -8,11 +8,11 @@ typedef int(cmp_fn_t)(const void*, const void*);
 
 static int
 sort_cmp(const char** a, const char** b) {
-  size_t alen = str_len(*a), blen = str_len(*b);
+  size_t len, alen = str_len(*a), blen = str_len(*b);
   if(alen != blen)
     return alen - blen;
 
-  size_t len = alen < blen ? alen : blen;
+  len = alen < blen ? alen : blen;
 
   return byte_diff(*a, len, *b);
 }
@@ -20,11 +20,12 @@ sort_cmp(const char** a, const char** b) {
 size_t
 strlist_sort(strlist* sl, cmp_fn_t* cmp_fn) {
   size_t p, l = 0;
+  char *end, *tmp, **ptrs;
 
   if(cmp_fn == NULL)
     cmp_fn = &sort_cmp;
 
-  char *end, *tmp, **ptrs = calloc(sizeof(char*), (strlist_count(sl) + 1));
+  ptrs = calloc(sizeof(char*), (strlist_count(sl) + 1));
   tmp = sl->sa.s;
   end = &sl->sa.s[sl->sa.len];
 

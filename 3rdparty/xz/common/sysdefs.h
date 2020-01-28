@@ -47,6 +47,51 @@
 #include <stdint.h>
 #endif
 
+#if !defined(HAVE_STDINT_H) && !defined(HAVE_INTTYPES_H)
+typedef __int64 int64_t;
+//  typedef unsigned __int64 uint64_t;
+typedef __int64 uint64_t;
+
+typedef int int32_t;
+typedef unsigned int uint32_t;
+
+typedef short int16_t;
+typedef unsigned short uint16_t;
+
+typedef char int8_t;
+typedef unsigned char uint8_t;
+
+typedef unsigned long uintptr_t;
+typedef long intptr_t;
+
+#define SIZE_MAX ((size_t)(-1))
+#define UINT32_MAX ((uint32_t)(int32_t)(-1))
+#define UINT64_MAX ((uint64_t)(int64_t)(-1))
+
+#define ULONG_MAX 4294967295UL
+
+#endif
+
+#ifdef __BORLANDC__
+#define restrict
+#define UINT64_C(n) ((unsigned __int64)(n))
+#define MYTHREAD_WIN95 1
+#endif
+
+#ifndef restrict
+#define restrict __restrict
+#endif
+
+#ifdef __BORLANDC__
+#ifndef inline
+#define inline __inline
+#endif
+#endif
+
+#if !defined(HAVE_STDBOOL_H)
+typedef signed char _Bool;
+#endif
+
 // Some pre-C99 systems have SIZE_MAX in limits.h instead of stdint.h. The
 // limits are also used to figure out some macros missing from pre-C99 systems.
 #ifdef HAVE_LIMITS_H

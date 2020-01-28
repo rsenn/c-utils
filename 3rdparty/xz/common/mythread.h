@@ -15,7 +15,7 @@
 
 #include "sysdefs.h"
 
-#if defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(__MINGW32__) || defined(__MINGW64__) || defined(WIN32) || defined(_WIN32)
 #if !defined(_WIN32)
 #define _WIN32 1
 #endif
@@ -27,8 +27,10 @@
 #if defined(MYTHREAD_POSIX) || defined(MYTHREAD_WIN95) || defined(MYTHREAD_VISTA)
 #define MYTHREAD_ENABLED 1
 #endif
+#pragma warning mythread.h
 
 #ifdef MYTHREAD_ENABLED
+#pragma warning mythread enabled
 
 ////////////////////////////////////////
 // Shared between all threading types //
@@ -57,7 +59,8 @@
 #define mythread_sync(mutex) mythread_sync_helper1(mutex, __LINE__)
 #define mythread_sync_helper1(mutex, line) mythread_sync_helper2(mutex, line)
 #define mythread_sync_helper2(mutex, line)                                                                             \
-  for(unsigned int mythread_i_##line = 0;                                                                              \
+  unsigned int mythread_i_##line;                                                                                      \
+  for(mythread_i_##line = 0;                                                                                           \
       mythread_i_##line ? (mythread_mutex_unlock(&(mutex)), 0) : (mythread_mutex_lock(&(mutex)), 1);                   \
       mythread_i_##line = 1)                                                                                           \
     for(unsigned int mythread_j_##line = 0; !mythread_j_##line; mythread_j_##line = 1)
@@ -223,9 +226,9 @@ mythread_cond_init(mythread_cond* mycond) {
     }
   }
 
-    // If anything above fails, fall back to the default CLOCK_REALTIME.
-    // POSIX requires that all implementations of clock_gettime() must
-    // support at least CLOCK_REALTIME.
+  // If anything above fails, fall back to the default CLOCK_REALTIME.
+  // POSIX requires that all implementations of clock_gettime() must
+  // support at least CLOCK_REALTIME.
 #endif
 
   mycond->clk_id = CLOCK_REALTIME;

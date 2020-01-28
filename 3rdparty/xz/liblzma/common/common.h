@@ -163,11 +163,16 @@ struct lzma_next_coder_s {
 };
 
 /// Macro to initialize lzma_next_coder structure
+#ifdef __BORLANDC__
+#define LZMA_NEXT_CODER_INIT                                                                                           \
+  { 0, 0, 18446744073709551615, 0, 0, 0, 0, 0, 0, }
+#else
 #define LZMA_NEXT_CODER_INIT                                                                                           \
   (lzma_next_coder) {                                                                                                  \
     .coder = NULL, .init = (uintptr_t)(NULL), .id = LZMA_VLI_UNKNOWN, .code = NULL, .end = NULL, .get_progress = NULL, \
     .get_check = NULL, .memconfig = NULL, .update = NULL,                                                              \
   }
+#endif
 
 /// Internal data for lzma_strm_init, lzma_code, and lzma_end. A pointer to
 /// this is stored in lzma_stream.
@@ -274,10 +279,31 @@ extern size_t lzma_bufcpy(const uint8_t* restrict in,
 /// (The function being called will use lzma_next_coder_init()). If
 /// initialization fails, memory that wasn't freed by func() is freed
 /// along strm->internal.
-#define lzma_next_strm_init(func, strm, ...)                                                                           \
+#define lzma_next_strm_init(func, strm, options)                                                                       \
   do {                                                                                                                 \
+    lzma_ret ret_;                                                                                                     \
     return_if_error(lzma_strm_init(strm));                                                                             \
-    const lzma_ret ret_ = func(&(strm)->internal->next, (strm)->allocator, __VA_ARGS__);                               \
+    ret_ = func(&(strm)->internal->next, (strm)->allocator, options);                                                  \
+    if(ret_ != LZMA_OK) {                                                                                              \
+      lzma_end(strm);                                                                                                  \
+      return ret_;                                                                                                     \
+    }                                                                                                                  \
+  } while(0)
+#define lzma_next_strm_init_3(func, strm, o1, o2, o3)                                                                  \
+  do {                                                                                                                 \
+    lzma_ret ret_;                                                                                                     \
+    return_if_error(lzma_strm_init(strm));                                                                             \
+    ret_ = func(&(strm)->internal->next, (strm)->allocator, o1, o2, o3);                                               \
+    if(ret_ != LZMA_OK) {                                                                                              \
+      lzma_end(strm);                                                                                                  \
+      return ret_;                                                                                                     \
+    }                                                                                                                  \
+  } while(0)
+#define lzma_next_strm_init_2(func, strm, o1, o2)                                                                      \
+  do {                                                                                                                 \
+    lzma_ret ret_;                                                                                                     \
+    return_if_error(lzma_strm_init(strm));                                                                             \
+    ret_ = func(&(strm)->internal->next, (strm)->allocator, o1, o2);                                                   \
     if(ret_ != LZMA_OK) {                                                                                              \
       lzma_end(strm);                                                                                                  \
       return ret_;                                                                                                     \

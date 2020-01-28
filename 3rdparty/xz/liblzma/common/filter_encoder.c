@@ -54,102 +54,103 @@ typedef struct {
 static const lzma_filter_encoder encoders[] = {
 #ifdef HAVE_ENCODER_LZMA1
     {
-        .id = LZMA_FILTER_LZMA1,
-        .init = &lzma_lzma_encoder_init,
-        .memusage = &lzma_lzma_encoder_memusage,
-        .block_size = NULL, // FIXME
-        .props_size_get = NULL,
-        .props_size_fixed = 5,
-        .props_encode = &lzma_lzma_props_encode,
+        /*.id =*/LZMA_FILTER_LZMA1,
+        /*.init =*/&lzma_lzma_encoder_init,
+        /*.memusage =*/&lzma_lzma_encoder_memusage,
+        /*.block_size =*/NULL, // FIXME
+        /*.props_size_get =*/NULL,
+        /*.props_size_fixed =*/5,
+        /*.props_encode =*/&lzma_lzma_props_encode,
     },
 #endif
 #ifdef HAVE_ENCODER_LZMA2
     {
-        .id = LZMA_FILTER_LZMA2,
-        .init = &lzma_lzma2_encoder_init,
-        .memusage = &lzma_lzma2_encoder_memusage,
-        .block_size = &lzma_lzma2_block_size, // FIXME
-        .props_size_get = NULL,
-        .props_size_fixed = 1,
-        .props_encode = &lzma_lzma2_props_encode,
+        /*.id =*/LZMA_FILTER_LZMA2,
+        /*.init =*/&lzma_lzma2_encoder_init,
+        /*.memusage =*/&lzma_lzma2_encoder_memusage,
+        /*.block_size =*/&lzma_lzma2_block_size, // FIXME
+        /*.props_size_get =*/NULL,
+        /*.props_size_fixed =*/1,
+        /*.props_encode =*/&lzma_lzma2_props_encode,
     },
 #endif
 #ifdef HAVE_ENCODER_X86
     {
-        .id = LZMA_FILTER_X86,
-        .init = &lzma_simple_x86_encoder_init,
-        .memusage = NULL,
-        .block_size = NULL,
-        .props_size_get = &lzma_simple_props_size,
-        .props_encode = &lzma_simple_props_encode,
+        /*.id =*/LZMA_FILTER_X86,
+        /*.init =*/&lzma_simple_x86_encoder_init,
+        /*.memusage =*/NULL,
+        /*.block_size =*/NULL,
+        /*.props_size_get =*/&lzma_simple_props_size,
+        /*.props_encode =*/&lzma_simple_props_encode,
     },
 #endif
 #ifdef HAVE_ENCODER_POWERPC
     {
-        .id = LZMA_FILTER_POWERPC,
-        .init = &lzma_simple_powerpc_encoder_init,
-        .memusage = NULL,
-        .block_size = NULL,
-        .props_size_get = &lzma_simple_props_size,
-        .props_encode = &lzma_simple_props_encode,
+        /*.id =*/LZMA_FILTER_POWERPC,
+        /*.init =*/&lzma_simple_powerpc_encoder_init,
+        /*.memusage =*/NULL,
+        /*.block_size =*/NULL,
+        /*.props_size_get =*/&lzma_simple_props_size,
+        /*.props_encode =*/&lzma_simple_props_encode,
     },
 #endif
 #ifdef HAVE_ENCODER_IA64
     {
-        .id = LZMA_FILTER_IA64,
-        .init = &lzma_simple_ia64_encoder_init,
-        .memusage = NULL,
-        .block_size = NULL,
-        .props_size_get = &lzma_simple_props_size,
-        .props_encode = &lzma_simple_props_encode,
+        /*.id =*/LZMA_FILTER_IA64,
+        /*.init =*/&lzma_simple_ia64_encoder_init,
+        /*.memusage =*/NULL,
+        /*.block_size =*/NULL,
+        /*.props_size_get =*/&lzma_simple_props_size,
+        /*.props_encode =*/&lzma_simple_props_encode,
     },
 #endif
 #ifdef HAVE_ENCODER_ARM
     {
-        .id = LZMA_FILTER_ARM,
-        .init = &lzma_simple_arm_encoder_init,
-        .memusage = NULL,
-        .block_size = NULL,
-        .props_size_get = &lzma_simple_props_size,
-        .props_encode = &lzma_simple_props_encode,
+        /*.id =*/LZMA_FILTER_ARM,
+        /*.init =*/&lzma_simple_arm_encoder_init,
+        /*.memusage =*/NULL,
+        /*.block_size =*/NULL,
+        /*.props_size_get =*/&lzma_simple_props_size,
+        /*.props_encode =*/&lzma_simple_props_encode,
     },
 #endif
 #ifdef HAVE_ENCODER_ARMTHUMB
     {
-        .id = LZMA_FILTER_ARMTHUMB,
-        .init = &lzma_simple_armthumb_encoder_init,
-        .memusage = NULL,
-        .block_size = NULL,
-        .props_size_get = &lzma_simple_props_size,
-        .props_encode = &lzma_simple_props_encode,
+        /*.id =*/LZMA_FILTER_ARMTHUMB,
+        /*.init =*/&lzma_simple_armthumb_encoder_init,
+        /*.memusage =*/NULL,
+        /*.block_size =*/NULL,
+        /*.props_size_get =*/&lzma_simple_props_size,
+        /*.props_encode =*/&lzma_simple_props_encode,
     },
 #endif
 #ifdef HAVE_ENCODER_SPARC
     {
-        .id = LZMA_FILTER_SPARC,
-        .init = &lzma_simple_sparc_encoder_init,
-        .memusage = NULL,
-        .block_size = NULL,
-        .props_size_get = &lzma_simple_props_size,
-        .props_encode = &lzma_simple_props_encode,
+        /*.id =*/LZMA_FILTER_SPARC,
+        /*.init =*/&lzma_simple_sparc_encoder_init,
+        /*.memusage =*/NULL,
+        /*.block_size =*/NULL,
+        /*.props_size_get =*/&lzma_simple_props_size,
+        /*.props_encode =*/&lzma_simple_props_encode,
     },
 #endif
 #ifdef HAVE_ENCODER_DELTA
     {
-        .id = LZMA_FILTER_DELTA,
-        .init = &lzma_delta_encoder_init,
-        .memusage = &lzma_delta_coder_memusage,
-        .block_size = NULL,
-        .props_size_get = NULL,
-        .props_size_fixed = 1,
-        .props_encode = &lzma_delta_props_encode,
+        /*.id =*/LZMA_FILTER_DELTA,
+        /*.init =*/&lzma_delta_encoder_init,
+        /*.memusage =*/&lzma_delta_coder_memusage,
+        /*.block_size =*/NULL,
+        /*.props_size_get =*/NULL,
+        /*.props_size_fixed =*/1,
+        /*.props_encode =*/&lzma_delta_props_encode,
     },
 #endif
 };
 
 static const lzma_filter_encoder*
 encoder_find(lzma_vli id) {
-  for(size_t i = 0; i < ARRAY_SIZE(encoders); ++i)
+  size_t i;
+  for(i = 0; i < ARRAY_SIZE(encoders); ++i)
     if(encoders[i].id == id)
       return encoders + i;
 
@@ -165,18 +166,19 @@ extern LZMA_API(lzma_ret) lzma_filters_update(lzma_stream* strm, const lzma_filt
   // Validate the filter chain.
   if(lzma_raw_encoder_memusage(filters) == UINT64_MAX)
     return LZMA_OPTIONS_ERROR;
+  {
+    // The actual filter chain in the encoder is reversed. Some things
+    // still want the normal order chain, so we provide both.
+    size_t i, count = 1;
+    lzma_filter reversed_filters[LZMA_FILTERS_MAX + 1];
+    while(filters[count].id != LZMA_VLI_UNKNOWN) ++count;
 
-  // The actual filter chain in the encoder is reversed. Some things
-  // still want the normal order chain, so we provide both.
-  size_t count = 1;
-  while(filters[count].id != LZMA_VLI_UNKNOWN) ++count;
+    for(i = 0; i < count; ++i) reversed_filters[count - i - 1] = filters[i];
 
-  lzma_filter reversed_filters[LZMA_FILTERS_MAX + 1];
-  for(size_t i = 0; i < count; ++i) reversed_filters[count - i - 1] = filters[i];
+    reversed_filters[count].id = LZMA_VLI_UNKNOWN;
 
-  reversed_filters[count].id = LZMA_VLI_UNKNOWN;
-
-  return strm->internal->next.update(strm->internal->next.coder, strm->allocator, filters, reversed_filters);
+    return strm->internal->next.update(strm->internal->next.coder, strm->allocator, filters, reversed_filters);
+  }
 }
 
 extern lzma_ret
@@ -185,7 +187,7 @@ lzma_raw_encoder_init(lzma_next_coder* next, const lzma_allocator* allocator, co
 }
 
 extern LZMA_API(lzma_ret) lzma_raw_encoder(lzma_stream* strm, const lzma_filter* options) {
-  lzma_next_strm_init(lzma_raw_coder_init, strm, options, (lzma_filter_find)(&encoder_find), true);
+  lzma_next_strm_init_3(lzma_raw_coder_init, strm, options, (lzma_filter_find)(&encoder_find), true);
 
   strm->internal->supported_actions[LZMA_RUN] = true;
   strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
@@ -201,8 +203,9 @@ extern LZMA_API(uint64_t) lzma_raw_encoder_memusage(const lzma_filter* filters) 
 extern uint64_t
 lzma_mt_block_size(const lzma_filter* filters) {
   uint64_t max = 0;
+  size_t i;
 
-  for(size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
+  for(i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
     const lzma_filter_encoder* const fe = encoder_find(filters[i].id);
     if(fe->block_size != NULL) {
       const uint64_t size = fe->block_size(filters[i].options);

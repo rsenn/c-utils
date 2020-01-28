@@ -145,9 +145,11 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   ctx->b = other;
 
   buffer_init(
-      b, (void*)(compress ? (void*)&buffer_lzmawrite_op : (void*)&buffer_lzmaread_op), -1, ctx->buf, sizeof(ctx->buf));
+      b, 0, -1, ctx->buf, sizeof(ctx->buf));
   b->cookie = ctx;
   b->deinit = &buffer_lzma_close;
+
+b->op = (void*)(compress ? &buffer_lzmawrite_op : &buffer_lzmaread_op);
 
   ret = compress ? lzma_stream_encoder(&ctx->strm, f, LZMA_CHECK_CRC64)
                  : lzma_stream_decoder(&ctx->strm, 0xffffffffffffffff /*LZMA_VLI_UNKNOWN*/, LZMA_CONCATENATED);

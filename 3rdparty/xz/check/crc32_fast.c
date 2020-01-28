@@ -37,29 +37,33 @@ extern LZMA_API(uint32_t) lzma_crc32(const uint8_t* buf, size_t size, uint32_t c
       --size;
     }
 
-    // Calculate the position where to stop.
-    const uint8_t* const limit = buf + (size & ~(size_t)(7));
+    {
+      // Calculate the position where to stop.
+      const uint8_t* const limit = buf + (size & ~(size_t)(7));
 
-    // Calculate how many bytes must be calculated separately
-    // before returning the result.
-    size &= (size_t)(7);
+      // Calculate how many bytes must be calculated separately
+      // before returning the result.
+      size &= (size_t)(7);
 
-    // Calculate the CRC32 using the slice-by-eight algorithm.
-    while(buf < limit) {
-      crc ^= *(const uint32_t*)(buf);
-      buf += 4;
+      // Calculate the CRC32 using the slice-by-eight algorithm.
+      while(buf < limit) {
+        crc ^= *(const uint32_t*)(buf);
+        buf += 4;
 
-      crc = lzma_crc32_table[7][A(crc)] ^ lzma_crc32_table[6][B(crc)] ^ lzma_crc32_table[5][C(crc)] ^
-            lzma_crc32_table[4][D(crc)];
+        crc = lzma_crc32_table[7][A(crc)] ^ lzma_crc32_table[6][B(crc)] ^ lzma_crc32_table[5][C(crc)] ^
+              lzma_crc32_table[4][D(crc)];
 
-      const uint32_t tmp = *(const uint32_t*)(buf);
-      buf += 4;
+        {
+          const uint32_t tmp = *(const uint32_t*)(buf);
+          buf += 4;
 
-      // At least with some compilers, it is critical for
-      // performance, that the crc variable is XORed
-      // between the two table-lookup pairs.
-      crc = lzma_crc32_table[3][A(tmp)] ^ lzma_crc32_table[2][B(tmp)] ^ crc ^ lzma_crc32_table[1][C(tmp)] ^
-            lzma_crc32_table[0][D(tmp)];
+          // At least with some compilers, it is critical for
+          // performance, that the crc variable is XORed
+          // between the two table-lookup pairs.
+          crc = lzma_crc32_table[3][A(tmp)] ^ lzma_crc32_table[2][B(tmp)] ^ crc ^ lzma_crc32_table[1][C(tmp)] ^
+                lzma_crc32_table[0][D(tmp)];
+        }
+      }
     }
   }
 

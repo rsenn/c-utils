@@ -30,19 +30,20 @@ extern LZMA_API(lzma_ret)
     return LZMA_PROG_ERROR;
 
   return_if_error(lzma_vli_encode(filter->id, NULL, out, out_pos, out_size));
+  {
+    // Size of Properties
+    uint32_t props_size;
+    return_if_error(lzma_properties_size(&props_size, filter));
+    return_if_error(lzma_vli_encode(props_size, NULL, out, out_pos, out_size));
 
-  // Size of Properties
-  uint32_t props_size;
-  return_if_error(lzma_properties_size(&props_size, filter));
-  return_if_error(lzma_vli_encode(props_size, NULL, out, out_pos, out_size));
+    // Filter Properties
+    if(out_size - *out_pos < props_size)
+      return LZMA_PROG_ERROR;
 
-  // Filter Properties
-  if(out_size - *out_pos < props_size)
-    return LZMA_PROG_ERROR;
+    return_if_error(lzma_properties_encode(filter, out + *out_pos));
 
-  return_if_error(lzma_properties_encode(filter, out + *out_pos));
+    *out_pos += props_size;
 
-  *out_pos += props_size;
-
-  return LZMA_OK;
+    return LZMA_OK;
+  }
 }

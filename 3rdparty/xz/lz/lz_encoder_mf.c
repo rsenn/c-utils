@@ -216,9 +216,9 @@ move_pending(lzma_mf* mf) {
     return matches_count;                                                                                              \
   } while(0)
 
-  ////////////////
-  // Hash Chain //
-  ////////////////
+////////////////
+// Hash Chain //
+////////////////
 
 #if defined(HAVE_MF_HC3) || defined(HAVE_MF_HC4)
 ///
@@ -407,9 +407,9 @@ lzma_mf_hc4_skip(lzma_mf* mf, uint32_t amount) {
 }
 #endif
 
-  /////////////////
-  // Binary Tree //
-  /////////////////
+/////////////////
+// Binary Tree //
+/////////////////
 
 #if defined(HAVE_MF_BT2) || defined(HAVE_MF_BT3) || defined(HAVE_MF_BT4)
 static lzma_match*

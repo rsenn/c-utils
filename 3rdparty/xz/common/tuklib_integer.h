@@ -197,12 +197,12 @@ read32le(const uint8_t* buf) {
   uint32_t num = *(const uint32_t*)buf;
   return conv32le(num);
 }
-
+/*
 static inline uint64_t
 read64be(const uint8_t* buf) {
   uint64_t num = *(const uint64_t*)buf;
   return conv64be(num);
-}
+}*/
 
 static inline uint64_t
 read64le(const uint8_t* buf) {
@@ -210,11 +210,11 @@ read64le(const uint8_t* buf) {
   return conv64le(num);
 }
 
-  // NOTE: Possible byte swapping must be done in a macro to allow GCC
-  // to optimize byte swapping of constants when using glibc's or *BSD's
-  // byte swapping macros. The actual write is done in an inline function
-  // to make type checking of the buf pointer possible similarly to readXXYe()
-  // functions.
+// NOTE: Possible byte swapping must be done in a macro to allow GCC
+// to optimize byte swapping of constants when using glibc's or *BSD's
+// byte swapping macros. The actual write is done in an inline function
+// to make type checking of the buf pointer possible similarly to readXXYe()
+// functions.
 
 #define write16be(buf, num) write16ne((buf), conv16be(num))
 #define write16le(buf, num) write16ne((buf), conv16le(num))

@@ -1,7 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "lib/windoze.h"
 #include "lib/unix.h"
 #include "lib/io.h"
@@ -306,7 +302,7 @@ main(int argc, char* argv[]) {
         n = scan_xlonglong(spec, &addr);
       } else if(sym == '?') {
       } else if(sym == '=') {
-        uint8_t ch = 0;
+        uint8 ch = 0;
         do {
           n = (scan_xchar(spec, &ch) + 1);
           if(n >= 1) {

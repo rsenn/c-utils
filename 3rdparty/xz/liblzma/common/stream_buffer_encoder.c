@@ -43,6 +43,8 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_encode(lzma_filter* filters,
                                                     uint8_t* out,
                                                     size_t* out_pos_ptr,
                                                     size_t out_size) {
+  lzma_ret ret;
+  size_t out_pos;
   // Sanity checks
   if(filters == NULL || (unsigned int)(check) > LZMA_CHECK_ID_MAX || (in == NULL && in_size != 0) || out == NULL ||
      out_pos_ptr == NULL || *out_pos_ptr > out_size)
@@ -58,7 +60,7 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_encode(lzma_filter* filters,
 
   // Use a local copy. We update *out_pos_ptr only if everything
   // succeeds.
-  size_t out_pos = *out_pos_ptr;
+  out_pos = *out_pos_ptr;
 
   // Check that there's enough space for both Stream Header and
   // Stream Footer.
@@ -68,64 +70,68 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_encode(lzma_filter* filters,
   // Reserve space for Stream Footer so we don't need to check for
   // available space again before encoding Stream Footer.
   out_size -= LZMA_STREAM_HEADER_SIZE;
-
-  // Encode the Stream Header.
-  lzma_stream_flags stream_flags = {
-      .version = 0,
-      .check = check,
-  };
-
-  if(lzma_stream_header_encode(&stream_flags, out + out_pos) != LZMA_OK)
-    return LZMA_PROG_ERROR;
-
-  out_pos += LZMA_STREAM_HEADER_SIZE;
-
-  // Encode a Block but only if there is at least one byte of input.
-  lzma_block block = {
-      .version = 0,
-      .check = check,
-      .filters = filters,
-  };
-
-  if(in_size > 0)
-    return_if_error(lzma_block_buffer_encode(&block, allocator, in, in_size, out, &out_pos, out_size));
-
-  // Index
   {
-    // Create an Index. It will have one Record if there was
-    // at least one byte of input to encode. Otherwise the
-    // Index will be empty.
-    lzma_index* i = lzma_index_init(allocator);
-    if(i == NULL)
-      return LZMA_MEM_ERROR;
+    // Encode the Stream Header.
+    lzma_stream_flags stream_flags = {
+        /*.version =*/0,
+        /* .check =*/0,
+    };
+    stream_flags.check = check;
 
-    lzma_ret ret = LZMA_OK;
+    if(lzma_stream_header_encode(&stream_flags, out + out_pos) != LZMA_OK)
+      return LZMA_PROG_ERROR;
 
-    if(in_size > 0)
-      ret = lzma_index_append(i, allocator, lzma_block_unpadded_size(&block), block.uncompressed_size);
+    out_pos += LZMA_STREAM_HEADER_SIZE;
 
-    // If adding the Record was successful, encode the Index
-    // and get its size which will be stored into Stream Footer.
-    if(ret == LZMA_OK) {
-      ret = lzma_index_buffer_encode(i, out, &out_pos, out_size);
+    {
+      // Encode a Block but only if there is at least one byte of input.
+      lzma_block block = {/* .version = */ 0,
+                          /*.check =*/0,
+                          /*.filters = */ 0};
+      block.check = check;
+      block.filters = filters;
 
-      stream_flags.backward_size = lzma_index_size(i);
+      if(in_size > 0)
+        return_if_error(lzma_block_buffer_encode(&block, allocator, in, in_size, out, &out_pos, out_size));
+
+      // Index
+      {
+        // Create an Index. It will have one Record if there was
+        // at least one byte of input to encode. Otherwise the
+        // Index will be empty.
+        lzma_index* i = lzma_index_init(allocator);
+        if(i == NULL)
+          return LZMA_MEM_ERROR;
+
+        ret = LZMA_OK;
+
+        if(in_size > 0)
+          ret = lzma_index_append(i, allocator, lzma_block_unpadded_size(&block), block.uncompressed_size);
+
+        // If adding the Record was successful, encode the Index
+        // and get its size which will be stored into Stream Footer.
+        if(ret == LZMA_OK) {
+          ret = lzma_index_buffer_encode(i, out, &out_pos, out_size);
+
+          stream_flags.backward_size = lzma_index_size(i);
+        }
+
+        lzma_index_end(i, allocator);
+
+        if(ret != LZMA_OK)
+          return ret;
+      }
+
+      // Stream Footer. We have already reserved space for this.
+      if(lzma_stream_footer_encode(&stream_flags, out + out_pos) != LZMA_OK)
+        return LZMA_PROG_ERROR;
+
+      out_pos += LZMA_STREAM_HEADER_SIZE;
+
+      // Everything went fine, make the new output position available
+      // to the application.
+      *out_pos_ptr = out_pos;
+      return LZMA_OK;
     }
-
-    lzma_index_end(i, allocator);
-
-    if(ret != LZMA_OK)
-      return ret;
   }
-
-  // Stream Footer. We have already reserved space for this.
-  if(lzma_stream_footer_encode(&stream_flags, out + out_pos) != LZMA_OK)
-    return LZMA_PROG_ERROR;
-
-  out_pos += LZMA_STREAM_HEADER_SIZE;
-
-  // Everything went fine, make the new output position available
-  // to the application.
-  *out_pos_ptr = out_pos;
-  return LZMA_OK;
 }

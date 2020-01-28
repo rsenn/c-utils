@@ -159,7 +159,7 @@ rc_read_init(lzma_range_decoder* rc, const uint8_t* restrict in, size_t* restric
     dest = (dest << 1) + (rc_bound + 1);                                                                               \
   } while(0)
 
-  // NOTE: No macros are provided for bittree decoding. It seems to be simpler
-  // to just write them open in the code.
+// NOTE: No macros are provided for bittree decoding. It seems to be simpler
+// to just write them open in the code.
 
 #endif

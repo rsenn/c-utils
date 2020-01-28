@@ -94,11 +94,12 @@ lzma_outq_end(lzma_outq* outq, const lzma_allocator* allocator) {
 
 extern lzma_outbuf*
 lzma_outq_get_buf(lzma_outq* outq) {
+  lzma_outbuf* buf;
   // Caller must have checked it with lzma_outq_has_buf().
   assert(outq->bufs_used < outq->bufs_allocated);
 
   // Initialize the new buffer.
-  lzma_outbuf* buf = &outq->bufs[outq->bufs_pos];
+  buf = &outq->bufs[outq->bufs_pos];
   buf->buf = outq->bufs_mem + outq->bufs_pos * outq->buf_size_max;
   buf->size = 0;
   buf->finished = false;
@@ -128,16 +129,18 @@ lzma_outq_read(lzma_outq* restrict outq,
                size_t out_size,
                lzma_vli* restrict unpadded_size,
                lzma_vli* restrict uncompressed_size) {
+  uint32_t i;
+  lzma_outbuf* buf;
   // There must be at least one buffer from which to read.
   if(outq->bufs_used == 0)
     return LZMA_OK;
 
   // Get the buffer.
-  uint32_t i = outq->bufs_pos - outq->bufs_used;
+  i = outq->bufs_pos - outq->bufs_used;
   if(outq->bufs_pos < outq->bufs_used)
     i += outq->bufs_allocated;
 
-  lzma_outbuf* buf = &outq->bufs[i];
+  buf = &outq->bufs[i];
 
   // If it isn't finished yet, we cannot read from it.
   if(!buf->finished)

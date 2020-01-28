@@ -14,7 +14,9 @@
 extern "C" {
 #endif
 
+#ifndef IO_INTERNAL_H
 typedef struct ioent io_entry;
+#endif
 
 /* like open(s,O_RDONLY) */
 /* return 1 if ok, 0 on error */

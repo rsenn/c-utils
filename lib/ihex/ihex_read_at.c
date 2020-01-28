@@ -16,6 +16,7 @@ ihex_read_at(ihex_file* ihf, uint32 at, char* x, size_t n) {
 
   if((rec = ihex_record_at(ihf, at, &o.off32))) {
     uint32 p = at - o.off32;
+    uint32 end;
 
     while(rec && n > 0) {
       size_t num = rec->length - p;
@@ -28,7 +29,7 @@ ihex_read_at(ihex_file* ihf, uint32 at, char* x, size_t n) {
       n -= num;
       x += num;
 
-      uint32 end = o.off32 + rec->length;
+     end = o.off32 + rec->length;
       rec = rec->next;
       if(!rec)
         break;

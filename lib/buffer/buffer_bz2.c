@@ -1,7 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #ifdef HAVE_LIBBZ2
 #include <bzlib.h>
 #endif
@@ -136,9 +132,10 @@ buffer_bz2(buffer* b, buffer* other, int compress) {
   ctx->b = other;
 
   buffer_init(
-      b, (void*)(compress ? (void*)&buffer_bzwrite_op : (void*)&buffer_bzread_op), -1, ctx->buf, sizeof(ctx->buf));
+      b, 0, -1, ctx->buf, sizeof(ctx->buf));
   b->cookie = ctx;
   b->deinit = &buffer_bz_close;
+  b->op = (void*)(compress ? &buffer_bzwrite_op : &buffer_bzread_op);
 
   ret = compress ? BZ2_bzCompressInit(&ctx->strm, compress, 0, 1) : BZ2_bzDecompressInit(&ctx->strm, 0, 0);
 

@@ -326,7 +326,7 @@ lzma_decode(
           symbol = 1;
 
           if(is_literal_state(state)) {
-          // Decode literal without match byte.
+            // Decode literal without match byte.
 #ifdef HAVE_SMALL
             case SEQ_LITERAL: do { rc_bit(probs[symbol], , , SEQ_LITERAL);
               } while(symbol < (1 << 8));
