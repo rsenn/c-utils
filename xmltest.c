@@ -5,8 +5,10 @@
 #include "lib/hmap.h"
 #include "lib/iterator.h"
 #include "lib/stralloc.h"
+#include "lib/strlist.h"
 #include "lib/str.h"
 #include "lib/mmap.h"
+#include "lib/map.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -28,77 +30,62 @@ const char* node_types[] = {
     "XML_TEXT",
 };
 
-static int depth = 0;
-
-int
-xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
-  xmlnode* n;
-  TUPLE* t;
-  if(id == XML_TEXT) {
-    if(reader->closing)
-      --depth;
-    if(value && value->s)
-      stralloc_nul(value);
-    buffer_puts(buffer_1, node_types[id - 1]);
-    buffer_puts(buffer_1, " \"");
-    buffer_putsa(buffer_1, value);
-    buffer_puts(buffer_1, "\"");
-    buffer_putnlflush(buffer_1);
-    return 1;
-  }
-  if(id != XML_ELEMENT)
-    return 1;
-
-  if(reader->closing)
-    --depth;
-
-  buffer_putm_internal(buffer_1, "node = xml_element(\"", name ? name->s : "", "\");\n", 0);
-
-  hmap_foreach(*attrs, t) {
-    buffer_putm_internal(
-        buffer_1, "node = xml_set_attribute(node, \"", t->key, "\", \"", t->vals.val_chars, "\");\n", 0);
-  }
-  buffer_putnlflush(buffer_1);
-
-  /*  if(value)
-      buffer_putm_2(buffer_1, ", value=", value ? value->s : "");
-    buffer_puts(buffer_1, ", depth=");
-    buffer_putlong(buffer_1, depth);
-    buffer_puts(buffer_1, ", closing=");
-    buffer_putlong(buffer_1, reader->closing);
-    buffer_puts(buffer_1, ", self_closing=");
-    buffer_putlong(buffer_1, reader->self_closing);*/
-  buffer_putnlflush(buffer_1);
-  if(!reader->closing && !reader->self_closing)
-    ++depth;
-  return 1;
-}
+static strlist vars;
 
 void
-xml_dump(xmlnode* n, buffer* b) {
+xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
+  stralloc name;
+  stralloc_init(&name);
+
   do {
- 
+    if(n->type == XML_DOCUMENT)
+      n = n->children;
+    stralloc_zero(&name);
     if(n->type == XML_TEXT) {
-      buffer_puts(b, " \"");
-      put_str_escaped(b, n->name);
-      buffer_puts(b, "\"");
+      const char* x = xml_get_text(n, &name);
+      if(x[0]) {
+        buffer_putm_internal(b, "xml_add_child(", parent, ", xml_textnode(\"", x, "\", 0);\n", 0);
+        buffer_flush(b);
+      }
     } else if(n->type == XML_ELEMENT) {
       TUPLE* t;
+      if(n->name[0] == '/')
+        continue;
+      stralloc_decamelize(n->name, &name, '_');
+      stralloc_remove_all(&name, "-.", 2);
+      stralloc_lower(&name);
+      stralloc_nul(&name);
+      buffer_putnspace(b, depth * 2);
+      buffer_puts(b, "// depth: ");
+      buffer_putlong(b, depth);
+      buffer_putnlflush(b);
 
-      buffer_putm_internal(b, "node = xml_element(\"", n->name, "\");\n", 0);
+      buffer_putnspace(b, depth * 2);
 
-      hmap_foreach(n->attributes, t) {
-        buffer_putm_internal(b, "xml_set_attribute(node, \"", t->key, "\", \"", t->vals.val_chars, "\");\n", 0);
+      if(!strlist_contains(&vars, name.s)) {
+        buffer_puts(b, "xmlnode* ");
+        strlist_push(&vars, name.s);
+      }
+      buffer_putm_internal(b, name.s, " = xml_element(\"", n->name, "\");\n", 0);
+      buffer_putnspace(b, depth * 2);
+
+      if(parent) {
+        buffer_putm_internal(b, "xml_add_child(", parent, ", ", name.s, ");\n", 0);
+        buffer_putnspace(b, depth * 2);
       }
 
-      //  xml_print_attributes(n->attributes, b, ", ", ":", "");
+      if(n->attributes) {
+        hmap_foreach(n->attributes, t) {
+          buffer_putm_internal(
+              b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\");\n", 0);
+          buffer_putnspace(b, depth * 2);
+        }
+      }
     }
     buffer_putnlflush(b);
 
-    if((n->type == XML_ELEMENT||n->type == XML_DOCUMENT) && n->children) {
-
-      xml_dump(n->children, b);
-    }
+    if(name.s && (n->type == XML_ELEMENT || n->type == XML_DOCUMENT) && n->children)
+      xml_dump(n->children, b, name.s, depth + 1);
 
   } while((n = n->next));
 }
@@ -112,12 +99,13 @@ main(int argc, char* argv[1]) {
    xml_read_callback(&r, xml_read_function);
  */
 
+  strlist_init(&vars, '\0');
+
   buffer_skip_until(&infile, "\r\n", 2);
 
   doc = xml_read_tree(&infile);
 
-  xml_dump(doc, buffer_1);
-  // xml_walk(doc, testwalk);
+  xml_dump(doc, buffer_1, 0, 0);
 
   xml_free(doc);
 

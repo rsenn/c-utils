@@ -170,6 +170,7 @@ xmlnode* xml_find_parent_pred_3(xmlnode*, int (*pred)(), const void* a0, const v
 xmlnode* xml_find_parent(xmlnode*, const char* tag);
 
 void xml_walk(xmlnode*, int (*)());
+char* xml_get_text(xmlnode* node, stralloc* out);
 
 #ifdef __cplusplus
 }

@@ -1,14 +1,19 @@
 #include "../byte.h"
 #include "../fmt.h"
 #include "../scan.h"
+#include "../str.h"
 #include "../xml.h"
+
 static size_t
-xml_unescape(const stralloc* in, stralloc* out) {
-  return byte_scan(in->s, in->len, out, scan_xmlescape);
+xml_unescape(const char* x, size_t n, stralloc* out) {
+  return byte_scan(x, n, out, scan_xmlescape);
 }
 
 static int
 xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+  xmlnode** nptr;
+  stralloc text;
+  stralloc_init(&text);
 
   switch(id) {
     case XML_ATTRIBUTE: {
@@ -20,15 +25,30 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
     }
     case XML_TEXT: {
       xmlnode* tnode;
-      stralloc text;
-      stralloc_init(&text);
-      xml_unescape(value, &text);
-      stralloc_nul(&text);
-      tnode = xml_newnode(XML_TEXT);
-      tnode->name = text.s;
-      tnode->parent = reader->parent;
-      *reader->ptr = tnode;
-      reader->ptr = &tnode->next;
+      const char* x = name && name->s ? name->s : value && value->s ? value : "";
+      size_t i, n = name && name->len ? name->len : value && value->len ? value->len : 0;
+
+      i = scan_whitenskip(x, n);
+
+      x += i;
+      n -= i;
+
+      if(n > 0) {
+        tnode = xml_newnode(XML_TEXT);
+
+        stralloc_zero(&text);
+        xml_unescape(x, n, &text);
+        stralloc_nul(&text);
+
+        tnode->name = text.s;
+        text.s = 0;
+        tnode->parent = (reader->parent && reader->parent->parent) ? reader->parent->parent : 0;
+        tnode->next = 0;
+
+        nptr = &reader->parent->next;
+        while(*nptr) nptr = &(*nptr)->next;
+        *nptr = tnode;
+      }
       break;
     }
     case XML_ELEMENT:
