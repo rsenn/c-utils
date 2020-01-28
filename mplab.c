@@ -290,7 +290,7 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
       n -= 2;
 
       if(s[str_chr(s, '$')] == '\0')
-        strlist_pushb(&defines, s, n);
+        strlist_pushb_unique(&defines, s, n);
     }
   }
   stralloc_nul(&defines.sa);

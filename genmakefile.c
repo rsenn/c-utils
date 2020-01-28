@@ -3609,7 +3609,7 @@ set_compiler_type(const char* compiler) {
     }
 
     push_var("CFLAGS", "-m$(MACH) -p$(CHIP)");
-    push_var("CPPFLAGS", "-D__$(CHIP)");
+    push_var("CPPFLAGS", "-D__$(CHIP)=1");
     push_var("CPPFLAGS", "-DSDCC=1");
 
     // push_var("LDFLAGS", "-m$(MACH) -p$(CHIP)");
@@ -3652,15 +3652,6 @@ set_compiler_type(const char* compiler) {
 
     stralloc_nul(&cfg.chip);
     set_var("CHIP", cfg.chip.s);
-    {
-      stralloc chipdef;
-      stralloc_init(&chipdef);
-      stralloc_copys(&chipdef, "-D__");
-      stralloc_cat(&chipdef, &cfg.chip);
-      stralloc_lower(&chipdef);
-      stralloc_cats(&chipdef, "=1");
-      push_var_sa("CPPFLAGS", &chipdef);
-    }
 
     if(!isset("MACH")) {
 
@@ -3787,6 +3778,13 @@ set_compiler_type(const char* compiler) {
   }
 
   if(cfg.mach.arch == PIC) {
+    stralloc chipdef;
+    stralloc_init(&chipdef);
+    stralloc_copys(&chipdef, "-D__");
+    stralloc_cat(&chipdef, &cfg.chip);
+    stralloc_lower(&chipdef);
+    stralloc_cats(&chipdef, "=1");
+    push_var_sa("CPPFLAGS", &chipdef);
   }
 
   if(os == WIN) {
