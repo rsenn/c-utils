@@ -45,7 +45,6 @@ dirs_t dirs;
 static strlist vpath;
 static stralloc srcdir;
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
-static int build_type = -1;
 static strlist build_as_lib;
 static strlist include_dirs, link_libraries;
 static strlist pptoks;
@@ -56,7 +55,7 @@ MAP_T sourcedirs, rules, vars;
 
 tools_t tools;
 static const char* newline = "\n";
-config_t cfg;
+config_t cfg = { 0, 0, 0, -1 };
 static int batch, shell, ninja;
 static int batchmode;
 
@@ -3146,11 +3145,11 @@ set_compiler_type() {
 
   set_command(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
 
-  if(build_type == BUILD_TYPE_DEBUG) {
+  if(cfg.build_type == BUILD_TYPE_DEBUG) {
     push_var("CPPFLAGS", "-D_DEBUG=1");
   } else {
     push_var("CPPFLAGS", "-DNDEBUG=1");
-    push_var("CFLAGS", build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
+    push_var("CFLAGS", cfg.build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
   }
 
   //  push_var("DEFS", "-DHAVE_ERRNO_H=1");
@@ -3168,15 +3167,15 @@ set_compiler_type() {
     set_var("CC", "cl -nologo");
     set_var("LIB", "lib");
     set_var("LINK", "link");
-    push_var("CFLAGS", build_type == BUILD_TYPE_DEBUG ? "-MTd" : "-MT");
+    push_var("CFLAGS", cfg.build_type == BUILD_TYPE_DEBUG ? "-MTd" : "-MT");
     push_var("CPPFLAGS", "-Dinline=__inline");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
       push_var("CFLAGS", "-Zi");
 
-    if(build_type == BUILD_TYPE_MINSIZEREL)
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "-Os");
-    else if(build_type != BUILD_TYPE_DEBUG)
+    else if(cfg.build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "-Ox");
     /*    push_var("LDFLAGS",
                  "/DEBUG /DYNAMICBASE /INCREMENTAL /NXCOMPAT /TLBID:1");
@@ -3221,7 +3220,7 @@ set_compiler_type() {
 
     push_var("LDFLAGS", "-incremental -manifest");
 
-    if(build_type == BUILD_TYPE_DEBUG)
+    if(cfg.build_type == BUILD_TYPE_DEBUG)
       push_var("LDFLAGS", "-debug");
 
     if(str_start(tools.compiler, "icl"))
@@ -3253,9 +3252,9 @@ set_compiler_type() {
     if(str_start(tools.compiler, "zapcc"))
       set_var("CC", "zapcc");
 
-    if(build_type == BUILD_TYPE_DEBUG)
+    if(cfg.build_type == BUILD_TYPE_DEBUG)
       set_var("CFLAGS", "-O0");
-    else if(build_type == BUILD_TYPE_MINSIZEREL)
+    else if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       set_var("CFLAGS", "-Os");
     else
       set_var("CFLAGS", "-O2");
@@ -3265,7 +3264,7 @@ set_compiler_type() {
     if(str_end(tools.compiler, "64"))
       push_var("CFLAGS", "-m64");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "-g");
       push_var("LDFLAGS", "-g");
     }
@@ -3280,7 +3279,7 @@ set_compiler_type() {
 
       set_var("AR", str_start(tools.compiler, "gcc") ? "gcc-ar" : "ar");
 
-      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+      if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
         push_var("CFLAGS", "-ggdb");
 
     } else if(str_start(tools.compiler, "clang") || str_start(tools.compiler, "llvm")) {
@@ -3308,19 +3307,19 @@ set_compiler_type() {
     pathsep_args = '\\';
 
     //    push_var("DEFS", "-DWIN32_LEAN_AND_MEAN");
-    if(build_type == BUILD_TYPE_MINSIZEREL)
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       set_var("CFLAGS", "-O1");
-    else if(build_type == BUILD_TYPE_RELEASE || build_type == BUILD_TYPE_RELWITHDEBINFO)
+    else if(cfg.build_type == BUILD_TYPE_RELEASE || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
       set_var("CFLAGS", "-O -O2");
 
     push_var("CFLAGS", "-q -tWC -tWM");
     push_var("CPPFLAGS", "-Dinline=__inline");
     push_var("LDFLAGS", "-q");
 
-    if(build_type == BUILD_TYPE_DEBUG)
+    if(cfg.build_type == BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "-w");
 
-    if(build_type == BUILD_TYPE_MINSIZEREL)
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "-d -a-");
 
     /* Embracadero C++ */
@@ -3332,10 +3331,10 @@ set_compiler_type() {
       /* C99 standard */
       push_var("CFLAGS", "-An");
 
-      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+      if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
         push_var("CFLAGS", "-v");
 
-      /*  if(build_type != BUILD_TYPE_DEBUG)
+      /*  if(cfg.build_type != BUILD_TYPE_DEBUG)
           push_var("CFLAGS", "-Or");
       */
       set_command(&link_command, "$(CC) $(LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
@@ -3347,15 +3346,15 @@ set_compiler_type() {
 
       push_var("CFLAGS", "-ff -fp");
 
-      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+      if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
         push_var("CFLAGS", "-y");
 
-      if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+      if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
         push_var("CFLAGS", "-v");
         push_var("LDFLAGS", "-v");
       }
 
-      if(build_type == BUILD_TYPE_DEBUG)
+      if(cfg.build_type == BUILD_TYPE_DEBUG)
         push_var("CFLAGS", "-w-use");
       else
         push_var("CFLAGS", "-r");
@@ -3387,7 +3386,7 @@ set_compiler_type() {
       set_var("LIB", "lcclib");
     }
 
-    if(build_type == BUILD_TYPE_DEBUG)
+    if(cfg.build_type == BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "-g2");
 
     make_begin_inline = 0;
@@ -3416,12 +3415,12 @@ set_compiler_type() {
     set_var("CC", "tcc");
     set_var("AR", "$(CC) -ar");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
       push_var("CFLAGS", "-g");
 
     //  push_var("LDFLAGS", "-Wl,-subsystem=console");
 
-    if(build_type == BUILD_TYPE_MINSIZEREL)
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       //      push_var("LDFLAGS", "-Wl,-file-alignment=16");
 
       push_var("CFLAGS", "-Wall");
@@ -3442,12 +3441,12 @@ set_compiler_type() {
     // push_var("LDFLAGS", "/Wcm");
     push_var("CFLAGS", "-C+? +1 -v -E-36 -E-39");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "+v");
       push_var("LDFLAGS", "-v -c+");
     }
 
-    if(build_type == BUILD_TYPE_DEBUG)
+    if(cfg.build_type == BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "-O-");
 
     push_var("LDFLAGS", "-T:CON32");
@@ -3475,14 +3474,14 @@ set_compiler_type() {
 
     set_var("CFLAGS", "");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "-g");
       push_var("LDFLAGS", "-g");
     }
-    if(build_type == BUILD_TYPE_MINSIZEREL) {
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL) {
       push_var("CFLAGS", "-a1 -o+space ");
       push_var("LDFLAGS", "-Nc");
-    } else if(build_type == BUILD_TYPE_DEBUG) {
+    } else if(cfg.build_type == BUILD_TYPE_DEBUG) {
       // push_var("CFLAGS", "-o-");
     } else {
       push_var("CFLAGS", "-o");
@@ -3501,7 +3500,7 @@ set_compiler_type() {
 
     set_var("CFLAGS", "-W0");
 
-    if(build_type != BUILD_TYPE_DEBUG)
+    if(cfg.build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "-Ob1");
 
     // push_var("CFLAGS", "-fp:precise");
@@ -3530,11 +3529,11 @@ set_compiler_type() {
     push_var("LDFLAGS", "-libpath:\"%PELLESC%\\lib\"");
     push_var("LDFLAGS", "-libpath:\"%PELLESC%\\lib\\win$(L64)\"");
 
-    /*    if(build_type == BUILD_TYPE_MINSIZEREL)
+    /*    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
           push_var("CFLAGS", "-Os");
 
         else*/
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "-Zi");
       push_var("LDFLAGS", "-DEBUG");
     }
@@ -3592,12 +3591,12 @@ set_compiler_type() {
 
     push_var("CFLAGS", "--float-reent");
 
-    if(build_type == BUILD_TYPE_MINSIZEREL)
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "--opt-code-size");
-    else if(build_type != BUILD_TYPE_DEBUG)
+    else if(cfg.build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt-code-speed");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "--debug");
       // push_var("LDFLAGS", "--debug");
     }
@@ -3665,14 +3664,14 @@ set_compiler_type() {
         set_var("MACH", "pic16");
     }
 
-    if(build_type == BUILD_TYPE_MINSIZEREL)
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "--opt=space");
-    else if(build_type != BUILD_TYPE_DEBUG)
+    else if(cfg.build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt=speed");
     else
       push_var("CFLAGS", "--opt=all");
 
-    if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       push_var("CFLAGS", "-g");
       push_var("CFLAGS", "--debugger=pickit3");
     }
@@ -3739,9 +3738,9 @@ set_compiler_type() {
     push_var("CFLAGS", "--float=24");
     push_var("CFLAGS", "--double=32");
 
-    if(build_type == BUILD_TYPE_MINSIZEREL)
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       push_var("CFLAGS", "--opt=default,+asm,-asmfile,-speed,+space,+debug,3");
-    else if(build_type != BUILD_TYPE_DEBUG)
+    else if(cfg.build_type != BUILD_TYPE_DEBUG)
       push_var("CFLAGS", "--opt=default,+asm,+asmfile,+speed,-space,-debug,9");
     else {
       push_var("CFLAGS", "--opt=default,+asm,+asmfile,-speed,-space,+debug");
@@ -3943,10 +3942,10 @@ main(int argc, char* argv[]) {
                            {"make-type", 1, 0, 'm'},
                            {"arch", 1, 0, 'a'},
                            {"system", 1, 0, 's'},
-                           {"release", 0, &build_type, BUILD_TYPE_RELEASE},
-                           {"relwithdebinfo", 0, &build_type, BUILD_TYPE_RELWITHDEBINFO},
-                           {"minsizerel", 0, &build_type, BUILD_TYPE_MINSIZEREL},
-                           {"debug", 0, &build_type, BUILD_TYPE_DEBUG},
+                           {"release", 0, &cfg.build_type, BUILD_TYPE_RELEASE},
+                           {"relwithdebinfo", 0, &cfg.build_type, BUILD_TYPE_RELWITHDEBINFO},
+                           {"minsizerel", 0, &cfg.build_type, BUILD_TYPE_MINSIZEREL},
+                           {"debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
                            {"define", 1, NULL, 'D'},
                            {"build-as-lib", 0, 0, 'S'},
                            {"cross", 0, 0, 'c'},
@@ -4073,13 +4072,13 @@ main(int argc, char* argv[]) {
 
   path_getcwd(&dirs.this.sa);
 
-  if(build_type == -1) {
-    if((build_type = extract_build_type(&dirs.build.sa)) == -1)
-      if((build_type = extract_build_type(&dirs.this.sa)) == -1)
-        build_type = extract_build_type(&dirs.out.sa);
+  if(cfg.build_type == -1) {
+    if((cfg.build_type = extract_build_type(&dirs.build.sa)) == -1)
+      if((cfg.build_type = extract_build_type(&dirs.this.sa)) == -1)
+        cfg.build_type = extract_build_type(&dirs.out.sa);
   }
-  if(build_type == -1)
-    build_type = BUILD_TYPE_DEBUG;
+  if(cfg.build_type == -1)
+    cfg.build_type = BUILD_TYPE_DEBUG;
 
   if(tools.make == NULL && tools.compiler) {
     if(str_start(tools.compiler, "b"))
@@ -4142,10 +4141,10 @@ main(int argc, char* argv[]) {
       tools.compiler = (char*)s;
       break;
     }
-    if(build_type == -1) {
+    if(cfg.build_type == -1) {
       for(i = 0; i < (sizeof(build_types) / sizeof(build_types[0])); ++i) {
         if(s[case_find(s, build_types[i])]) {
-          build_type = i;
+          cfg.build_type = i;
           break;
         }
       }
@@ -4201,7 +4200,7 @@ main(int argc, char* argv[]) {
       stralloc_copy(&dirs.build.sa, &dirs.this.sa);
       strlist_push(&dirs.build, dir ? dir : "build");
       strlist_push_sa(&dirs.build, &target);
-      strlist_push(&dirs.build, build_types[build_type]);
+      strlist_push(&dirs.build, build_types[cfg.build_type]);
 
       stralloc_free(&target);
     }
