@@ -111,7 +111,7 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
     if(s[n])
       s += n;
 
-    //  if(!str_equal(s, "."))
+   if(!str_equal(s, "."))
     strlist_push_unique(is_source(*p) ? &srcdirs : &incdirs, s);
 
     path_relative(sa.s, dirs.build.sa.s, &file);
