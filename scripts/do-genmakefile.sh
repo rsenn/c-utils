@@ -83,7 +83,7 @@ mkdir -p "$OUTDIR"
    #echo "GENMK='$GENMK'" 1>&2
    ([ -n "$CMD" ] && set -f
    IFS=" "
-   eval "$GENMK")
+   eval "$GENMK >&/dev/null")
   done
 done
 
