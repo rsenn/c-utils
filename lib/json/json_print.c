@@ -133,11 +133,11 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
   buffer_puts(b, "[");
   // buffer_puts(b, printer.spacing);
   //
-  p(&printer, val, depth , index);
+  p(&printer, val, depth, index);
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
 
   slink_foreach(val->listv, ptr) {
-    p(&printer, val, depth , index);
+    p(&printer, val, depth, index);
     json_print_val(slist_data(ptr), b, depth, p);
     ++index;
     if(slist_next(ptr)) {

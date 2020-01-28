@@ -54,7 +54,7 @@ static int no_objs = 0, no_libs = 0, no_bins = 0;
 
 MAP_T sourcedirs, rules, vars;
 
-static const char *toolchain, *compiler, *make, *preproc;
+tools_t tools;
 static const char* newline = "\n";
 config_t cfg;
 static int batch, shell, ninja;
@@ -132,7 +132,7 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
 
     if(!(ninja || batch) && (make_begin_inline && make_end_inline)) {
       stralloc_cats(sa, make_begin_inline);
-      if(!str_start(make, "nmake"))
+      if(!str_start(tools.make, "nmake"))
         stralloc_subst(sa, args, str_len(args), "$^", "$|");
       else
         stralloc_copys(sa, args);
@@ -142,7 +142,7 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
       stralloc_cats(sa, args);
     }
   }
-  if(str_start(make, "nmake"))
+  if(str_start(tools.make, "nmake"))
     stralloc_replaces(sa, "$^", "$**");
 }
 
@@ -710,7 +710,7 @@ rule_command(target* rule, stralloc* out) {
 
       r.start += n;
     }
-  } else if(str_start(make, "g")) {
+  } else if(str_start(tools.make, "g")) {
     stralloc_copy(out, &rule->recipe);
   } else {
     rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len);
@@ -2018,7 +2018,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
     stralloc_zero(&obj);
     path_output(src->name, &obj, exts.obj);
 
-    if(str_start(make, "g") || ((shell | batch) && batchmode)) {
+    if(str_start(tools.make, "g") || ((shell | batch) && batchmode)) {
       stralloc_cat(&target, &srcs);
       // path_wildcard(&target, "%");
     } else if(batchmode) {
@@ -2070,7 +2070,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
           stralloc_weak(&rule->recipe, &compile_command);
         }
 
-        //        rule->recipe = /* str_start(make, "g") ? NULL :*/ &compile_command;
+        //        rule->recipe = /* str_start(tools.make, "g") ? NULL :*/ &compile_command;
       }
     }
   }
@@ -2119,7 +2119,7 @@ gen_simple_compile_rules(
 
       const char* srcname = src->name;
 
-      if(preproc) {
+      if(tools.preproc) {
 
         stralloc_zero(&ppsrc);
         stralloc_copys(&ppsrc, path_basename(src->name));
@@ -2162,10 +2162,10 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
 
   // debug_sa("lib_rule_for_sourcedir", &sa);
 
-  if((str_start(make, "g") || batchmode) && cfg.mach.arch != PIC) {
+  if((str_start(tools.make, "g") || batchmode) && cfg.mach.arch != PIC) {
     dep = gen_srcdir_compile_rules(rules, srcdir, name);
   } else {
-    if(0 && preproc) {
+    if(0 && tools.preproc) {
       gen_simple_compile_rules(rules, srcdir, name, ".c", exts.pps, &preprocess_command);
       dep = gen_simple_compile_rules(rules, srcdir, name, exts.pps, exts.obj, &compile_command);
     } else {
@@ -2238,7 +2238,7 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
     path_prefix_s(&dirs.work.sa, str_basename(s), &mask);
     stralloc_cats(&mask, exts.obj);
 
-    if(batchmode || str_start(make, "g")) {
+    if(batchmode || str_start(tools.make, "g")) {
       stralloc_cats(&mask, ": ");
       stralloc_cats(&mask, src->name);
 
@@ -2350,12 +2350,12 @@ gen_link_rules(HMAP_DB* rules) {
       srcdir = get_sourcedir_sa(&dir);
 
       //      gen_compile_rules(rules, srcdir, dir.s);
-      if(preproc) {
+      if(tools.preproc) {
         path_output(srcfile, &ppsrc, exts.pps);
       }
       path_output(srcfile, &obj, exts.obj);
 
-      if(preproc && (preprocess = get_rule_sa(&ppsrc))) {
+      if(tools.preproc && (preprocess = get_rule_sa(&ppsrc))) {
         add_srcpath(&preprocess->prereq, srcfile);
         stralloc_weak(&preprocess->recipe, &preprocess_command);
       }
@@ -2363,7 +2363,7 @@ gen_link_rules(HMAP_DB* rules) {
       if((compile = get_rule_sa(&obj))) {
 
         get_includes(srcfile, &incs, 0);
-        add_srcpath(&compile->prereq, srcfile); // preproc ? /*path_basename*/ (ppsrc.s) : srcfile);
+        add_srcpath(&compile->prereq, srcfile); // tools.preproc ? /*path_basename*/ (ppsrc.s) : srcfile);
         stralloc_weak(&compile->recipe, &compile_command);
 
         /*        stralloc_nul(&incs);
@@ -2577,7 +2577,7 @@ gen_install_rules(HMAP_DB* rules) {
     if(do_lib) {
       if(!isset("libdir")) {
         set_var("libdir", "$(prefix)/lib");
-        if(str_end(compiler, "64")) {
+        if(str_end(tools.compiler, "64")) {
           push_var("libdir", "$(X64)");
         }
 
@@ -3048,13 +3048,13 @@ set_system(const char* s) {
 }
 
 /**
- * @brief set_make_type  Set make program type
- * @param make
- * @param compiler
+ * @brief set_make_type  Set tools.make program type
+ * @param tools.make
+ * @param tools.compiler
  * @return
  */
 int
-set_make_type(const char* make, const char* compiler) {
+set_make_type() {
   const char* inst = "install";
 
 #if WINDOWS_NATIVE
@@ -3065,11 +3065,11 @@ set_make_type(const char* make, const char* compiler) {
 
   stralloc_copys(&mkdir_command, cfg.sys.type == WIN ? "IF NOT EXIST $@ MKDIR $@" : "mkdir -p $@");
 
-  if(str_start(make, "batch") || str_start(make, "cmd")) {
+  if(str_start(tools.make, "batch") || str_start(tools.make, "cmd")) {
     pathsep_args = '\\';
     pathsep_make = '\\';
 
-  } else if(str_start(make, "bmake") || str_start(make, "borland")) {
+  } else if(str_start(tools.make, "bmake") || str_start(tools.make, "borland")) {
 
     /* Borland C++ Builder Make */
     pathsep_make = '\\';
@@ -3080,7 +3080,7 @@ set_make_type(const char* make, const char* compiler) {
 
     newline = "\r\n";
 
-  } else if(str_start(make, "nmake")) {
+  } else if(str_start(tools.make, "nmake")) {
 
     /* Microsoft NMake */
     pathsep_make = '\\';
@@ -3091,20 +3091,20 @@ set_make_type(const char* make, const char* compiler) {
 
     inst = "copy /y";
 
-  } else if(str_start(make, "gmake") || str_start(make, "gnu")) {
+  } else if(str_start(tools.make, "gmake") || str_start(tools.make, "gnu")) {
 
     newline = "\n";
     pathsep_make = '/';
     stralloc_copys(&mkdir_command, "test -d $@ || mkdir -p $@");
     stralloc_copys(&delete_command, "rm -f");
 
-  } else if(str_start(make, "omake") || str_start(make, "orange")) {
+  } else if(str_start(tools.make, "omake") || str_start(tools.make, "orange")) {
     pathsep_make = '\\';
 
     if(inst_bins || inst_libs)
       set_var("INSTALL", "copy /y");
 
-  } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
+  } else if(str_start(tools.compiler, "pelles") || str_start(tools.compiler, "po")) {
     pathsep_make = '\\';
 
     make_begin_inline = "@<<\r\n ";
@@ -3112,13 +3112,13 @@ set_make_type(const char* make, const char* compiler) {
 
     inst = "copy /y";
 
-  } else if(str_start(make, "ninja")) {
+  } else if(str_start(tools.make, "ninja")) {
     ninja = 1;
     pathsep_make = pathsep_args = PATHSEP_C;
 
     make_begin_inline = make_sep_inline = make_end_inline = 0;
 
-  } else if(str_equal(make, "mplab")) {
+  } else if(str_equal(tools.make, "mplab")) {
   }
 
   if(inst_bins || inst_libs)
@@ -3130,12 +3130,12 @@ set_make_type(const char* make, const char* compiler) {
 }
 
 /**
- * @brief set_compiler_type Set the compiler type
- * @param compiler
+ * @brief set_tools.compiler_type Set the tools.compiler type
+ * @param tools.compiler
  * @return
  */
 int
-set_compiler_type(const char* compiler) {
+set_compiler_type() {
 
   set_var("CC", "cc");
   set_var("CXX", "c++");
@@ -3156,10 +3156,10 @@ set_compiler_type(const char* compiler) {
   //  push_var("DEFS", "-DHAVE_ERRNO_H=1");
 
   /*
-   * Visual C++ compiler
+   * Visual C++ tools.compiler
    */
-  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
-     str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
+  if(str_start(tools.compiler, "msvc") || str_start(tools.compiler, "icl") || str_start(tools.compiler, "vs20") ||
+     str_start(tools.compiler, "vc") || tools.compiler[str_find(tools.compiler, "-cl")]) {
 
     exts.obj = ".obj";
     exts.bin = ".exe";
@@ -3190,9 +3190,9 @@ set_compiler_type(const char* compiler) {
     //    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
     /*
-     * Intel C++ compiler
+     * Intel C++ tools.compiler
      */
-    if(str_start(compiler, "icl")) {
+    if(str_start(tools.compiler, "icl")) {
       set_var("CC", "icl -nologo");
       set_var("CXX", "icl -nologo");
 
@@ -3224,7 +3224,7 @@ set_compiler_type(const char* compiler) {
     if(build_type == BUILD_TYPE_DEBUG)
       push_var("LDFLAGS", "-debug");
 
-    if(str_start(compiler, "icl"))
+    if(str_start(tools.compiler, "icl"))
       push_var("LDFLAGS", "-manifest:embed -manifestuac:\"level='asInvoker' uiAccess='false'\"");
 
     if(cfg.mach.arch == ARM) {
@@ -3243,13 +3243,14 @@ set_compiler_type(const char* compiler) {
 
     set_command(&link_command, "$(LINK) -out:$@ $(LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
 
-  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") ||
-            str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
+  } else if(str_start(tools.compiler, "gnu") || str_start(tools.compiler, "gcc") || cygming ||
+            str_start(tools.compiler, "clang") || str_start(tools.compiler, "llvm") ||
+            str_start(tools.compiler, "zapcc")) {
 
     exts.lib = ".a";
     exts.obj = ".o";
 
-    if(str_start(compiler, "zapcc"))
+    if(str_start(tools.compiler, "zapcc"))
       set_var("CC", "zapcc");
 
     if(build_type == BUILD_TYPE_DEBUG)
@@ -3259,9 +3260,9 @@ set_compiler_type(const char* compiler) {
     else
       set_var("CFLAGS", "-O2");
 
-    if(str_end(compiler, "32"))
+    if(str_end(tools.compiler, "32"))
       push_var("CFLAGS", "-m32");
-    if(str_end(compiler, "64"))
+    if(str_end(tools.compiler, "64"))
       push_var("CFLAGS", "-m64");
 
     if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO) {
@@ -3270,19 +3271,19 @@ set_compiler_type(const char* compiler) {
     }
 
     /*
-     * GNU GCC compatible compilers
+     * GNU GCC compatible tools.compilers
      */
 
-    if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming) {
+    if(str_start(tools.compiler, "gnu") || str_start(tools.compiler, "gcc") || cygming) {
       set_var("CC", "gcc");
       set_var("CXX", "g++");
 
-      set_var("AR", str_start(compiler, "gcc") ? "gcc-ar" : "ar");
+      set_var("AR", str_start(tools.compiler, "gcc") ? "gcc-ar" : "ar");
 
       if(build_type == BUILD_TYPE_DEBUG || build_type == BUILD_TYPE_RELWITHDEBINFO)
         push_var("CFLAGS", "-ggdb");
 
-    } else if(str_start(compiler, "clang") || str_start(compiler, "llvm")) {
+    } else if(str_start(tools.compiler, "clang") || str_start(tools.compiler, "llvm")) {
       pathsep_args = '/';
 
       set_var("CC", "clang");
@@ -3302,7 +3303,7 @@ set_compiler_type(const char* compiler) {
     /*
      * Borland C++ Builder
      */
-  } else if(str_start(compiler, "bcc")) {
+  } else if(str_start(tools.compiler, "bcc")) {
 
     pathsep_args = '\\';
 
@@ -3323,7 +3324,8 @@ set_compiler_type(const char* compiler) {
       push_var("CFLAGS", "-d -a-");
 
     /* Embracadero C++ */
-    if(str_find(compiler, "55") == str_len(compiler) && str_find(compiler, "60") == str_len(compiler)) {
+    if(str_find(tools.compiler, "55") == str_len(tools.compiler) &&
+       str_find(tools.compiler, "60") == str_len(tools.compiler)) {
       set_var("CC", "bcc32c");
       set_var("CXX", "bcc32x");
 
@@ -3371,9 +3373,9 @@ set_compiler_type(const char* compiler) {
     set_command(&lib_command, "$(LIB) /p256 $@ /u", "$^");
 
     /*
-     * LCC compiler
+     * LCC tools.compiler
      */
-  } else if(str_start(compiler, "lcc")) {
+  } else if(str_start(tools.compiler, "lcc")) {
 
     if(cfg.mach.bits == _64) {
       set_var("CC", "lcc64");
@@ -3403,9 +3405,9 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&link_command, "$(LINK) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
     /*
-     * Tiny CC compiler
+     * Tiny CC tools.compiler
      */
-  } else if(str_start(compiler, "tcc")) {
+  } else if(str_start(tools.compiler, "tcc")) {
 
     exts.lib = ".a";
     exts.obj = ".o";
@@ -3428,7 +3430,7 @@ set_compiler_type(const char* compiler) {
     set_command(&lib_command, "$(AR) rcs $@", "$^");
     set_command(&link_command, "$(CC) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
 
-  } else if(str_start(compiler, "occ") || str_start(compiler, "orange")) {
+  } else if(str_start(tools.compiler, "occ") || str_start(tools.compiler, "orange")) {
     set_var("CC", "occ");
     set_var("LIB", "olib");
     set_var("LINK", "olink");
@@ -3458,13 +3460,13 @@ set_compiler_type(const char* compiler) {
     set_command(&lib_command, "$(LIB) /! $@", "$^");
     set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o$@", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
 
-  } else if(str_start(compiler, "8cc")) {
+  } else if(str_start(tools.compiler, "8cc")) {
     exts.lib = ".a";
     exts.obj = ".o";
 
     set_var("CC", "8cc");
 
-  } else if(str_start(compiler, "dmc") || str_start(compiler, "digitalmars")) {
+  } else if(str_start(tools.compiler, "dmc") || str_start(tools.compiler, "digitalmars")) {
 
     pathsep_args = '\\';
 
@@ -3490,7 +3492,7 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
     set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
-  } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
+  } else if(str_start(tools.compiler, "pelles") || str_start(tools.compiler, "po")) {
     set_var("CC", "cc");
     set_var("LINK", "polink");
     set_var("LIB", "polib");
@@ -3540,7 +3542,7 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -Fo $@");
     stralloc_copys(&link_command, "$(CC) $^ -Fe $@ $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
-  } else if(str_start(compiler, "sdcc")) {
+  } else if(str_start(tools.compiler, "sdcc")) {
     set_var("CC", "sdcc");
     set_var("LINK", "sdcc");
     set_var("LIB", "sdar");
@@ -3617,7 +3619,7 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-  } else if(str_start(compiler, "htc")) {
+  } else if(str_start(tools.compiler, "htc")) {
     unset_var("CXX");
 
     set_var("LIB", "libr");
@@ -3697,7 +3699,7 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
-  } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
+  } else if(str_start(tools.compiler, "xc8") || str_start(tools.compiler, "picc")) {
 
     //    no_libs = 1;
     unset_var("CXX");
@@ -3785,7 +3787,7 @@ set_compiler_type(const char* compiler) {
   if(os == WIN) {
     push_lib("EXTRA_LIBS", "advapi32");
 
-    if(str_start(compiler, "dmc"))
+    if(str_start(tools.compiler, "dmc"))
       push_lib("EXTRA_LIBS", "wsock32");
     else
       push_lib("EXTRA_LIBS", "ws2_32");
@@ -3798,15 +3800,16 @@ set_compiler_type(const char* compiler) {
       pathsep_args = '/';
 
     set_var("prefix", "/");
-    push_var("prefix", str_start(toolchain, "mingw") ? toolchain : "usr");
+    push_var("prefix", str_start(tools.toolchain, "mingw") ? tools.toolchain : "usr");
 
     if(cygming && 0) {
-      strlist* cross = set_var("CROSS_COMPILE", str_end(toolchain, "64") ? "x86_64" : "i686");
+      strlist* cross = set_var("CROSS_COMPILE", str_end(tools.toolchain, "64") ? "x86_64" : "i686");
 
       //      cross->sep = '-';
-      stralloc_cats(&cross->sa, str_start(toolchain, "mingw") ? "-w64-" : "-pc-");
+      stralloc_cats(&cross->sa, str_start(tools.toolchain, "mingw") ? "-w64-" : "-pc-");
       stralloc_cats(&cross->sa,
-                    str_start(toolchain, "mingw") ? "mingw32" : str_start(toolchain, "msys") ? "msys" : "cygwin");
+                    str_start(tools.toolchain, "mingw") ? "mingw32"
+                                                        : str_start(tools.toolchain, "msys") ? "msys" : "cygwin");
 
       stralloc_catc(&cross->sa, '-');
     }
@@ -3837,9 +3840,9 @@ usage(char* argv0) {
                        "\n"
                        "  -o, --output FILE         write to file\n"
                        "\n"
-                       "  -O, --exts.obj EXT          object file extension\n"
+                       "  -O, --objext EXT          object file extension\n"
                        "  -B, --exeext EXT          binary file extension\n"
-                       "  -L, --exts.lib EXT          library file extension\n"
+                       "  -L, --libext EXT          library file extension\n"
                        "\n"
                        "  -a, --create-libs         create rules for libraries\n"
                        "  -o, --create-objs         create rules for objects\n"
@@ -3915,14 +3918,16 @@ main(int argc, char* argv[]) {
   strarray args;
   strlist cmdline;
   static strarray libs, includes;
+  buffer filebuf;
+  buffer* out = buffer_1;
   const char** it;
   const char* s;
   size_t n;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"exts.obj", 1, NULL, 'O'},
+                           {"objext", 1, NULL, 'O'},
                            {"exeext", 1, NULL, 'B'},
-                           {"exts.lib", 1, NULL, 'X'},
+                           {"libext", 1, NULL, 'X'},
                            {"create-libs", 0, &cmd_libs, 1},
                            {"create-objs", 0, &cmd_objs, 1},
                            {"create-bins", 0, &cmd_bins, 1},
@@ -3933,7 +3938,7 @@ main(int argc, char* argv[]) {
                            {"includedir", 0, 0, 'I'},
                            /*                           {"install-bins", 0, &inst_bins, 1},
                                                      {"install-libs", 0, &inst_libs, 1},*/
-                           {"dirs.build", 1, 0, 'd'},
+                           {"builddir", 1, 0, 'd'},
                            {"compiler-type", 1, 0, 't'},
                            {"make-type", 1, 0, 'm'},
                            {"arch", 1, 0, 'a'},
@@ -3960,6 +3965,7 @@ main(int argc, char* argv[]) {
   byte_zero(&rules, sizeof(rules));
   byte_zero(&vars, sizeof(vars));
   byte_zero(&srcs, sizeof(srcs));
+  byte_zero(&tools, sizeof(tools));
 
   strlist_init(&vpath, ' ');
 
@@ -3985,9 +3991,9 @@ main(int argc, char* argv[]) {
       case 'S': strlist_push(&build_as_lib, optarg ? optarg : argv[optind]); break;
       case 'X': exts.lib = optarg; break;
       case 'd': dir = optarg; break;
-      case 't': toolchain = compiler = optarg; break;
-      case 'm': make = optarg; break;
-      case 'P': preproc = optarg; break;
+      case 't': tools.toolchain = tools.compiler = optarg; break;
+      case 'm': tools.make = optarg; break;
+      case 'P': tools.preproc = optarg; break;
       case 'a': set_machine(optarg); break;
       case 's': set_system(optarg); break;
       case 'p':
@@ -4007,6 +4013,7 @@ main(int argc, char* argv[]) {
         inst_libs = 1;
         break;
       case 'D': push_define(optarg); break;
+
       default:
         buffer_puts(buffer_2, "No such option '-");
         buffer_putc(buffer_2, c);
@@ -4047,13 +4054,14 @@ main(int argc, char* argv[]) {
 
     mkdir_components(&dirs.out, 0755);
 
-    if((fd = open_trunc(outfile)) == -1) {
+    byte_zero(&filebuf, sizeof(filebuf));
+
+    if(buffer_truncfile(&filebuf, outfile)) {
       errmsg_warnsys("ERROR: opening '", outfile, "'", 0);
       ret = 2;
       goto exit;
     }
-    buffer_1->fd = fd;
-
+    out = &filebuf;
     //  path_absolute_sa(&dirs.out.sa);
   }
 
@@ -4073,46 +4081,47 @@ main(int argc, char* argv[]) {
   if(build_type == -1)
     build_type = BUILD_TYPE_DEBUG;
 
-  if(make == NULL && compiler) {
-    if(str_start(compiler, "b"))
-      make = "borland";
-    else if(str_start(compiler, "msvc"))
-      make = "nmake";
-    else if(str_start(compiler, "g"))
-      make = "gmake";
-    else if(str_start(compiler, "o"))
-      make = "omake";
-    else if(str_start(compiler, "po"))
-      make = "pomake";
+  if(tools.make == NULL && tools.compiler) {
+    if(str_start(tools.compiler, "b"))
+      tools.make = "borland";
+    else if(str_start(tools.compiler, "msvc"))
+      tools.make = "nmake";
+    else if(str_start(tools.compiler, "g"))
+      tools.make = "gmake";
+    else if(str_start(tools.compiler, "o"))
+      tools.make = "omake";
+    else if(str_start(tools.compiler, "po"))
+      tools.make = "pomake";
   }
 
-  if(toolchain)
-    cygming = str_start(toolchain, "mingw") || str_start(toolchain, "cyg") || str_start(toolchain, "msys");
+  if(tools.toolchain)
+    cygming =
+        str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
 
   if(cygming) {
-    compiler = "gcc";
+    tools.compiler = "gcc";
 
-    if(make == 0)
-      make = "gmake";
+    if(tools.make == 0)
+      tools.make = "gmake";
   }
 
-  if(make == NULL)
-    make = "make";
+  if(tools.make == NULL)
+    tools.make = "make";
 
-  batch = str_start(make, "bat") || str_start(make, "cmd");
-  ninja = make[str_find(make, "ninja")] != '\0';
-  shell = str_start(make, "sh");
+  batch = str_start(tools.make, "bat") || str_start(tools.make, "cmd");
+  ninja = tools.make[str_find(tools.make, "ninja")] != '\0';
+  shell = str_start(tools.make, "sh");
 
   if(batch)
     comment = "REM ";
 
   if(cfg.mach.arch == PIC)
-    compiler = "xc8";
+    tools.compiler = "xc8";
 
-  if(compiler == NULL)
-    compiler = "gcc";
+  if(tools.compiler == NULL)
+    tools.compiler = "gcc";
   else if(cfg.mach.bits == 0)
-    set_machine(compiler);
+    set_machine(tools.compiler);
 
   debug_sa("dirs.build", &dirs.build.sa);
 
@@ -4128,8 +4137,9 @@ main(int argc, char* argv[]) {
 
   strlist_foreach_s(&toks, s) {
     size_t i;
-    if(set_compiler_type(s)) {
-      compiler = s;
+    tools.compiler = s;
+    if(set_compiler_type()) {
+      tools.compiler = (char*)s;
       break;
     }
     if(build_type == -1) {
@@ -4142,7 +4152,7 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(!set_make_type(make, compiler) || !set_compiler_type(compiler)) {
+  if(!set_make_type() || !set_compiler_type()) {
     usage(argv[0]);
     ret = 2;
     goto exit;
@@ -4177,10 +4187,10 @@ main(int argc, char* argv[]) {
     if(strlist_contains(&dirs.out, "build")) {
       stralloc_copy(&dirs.build.sa, &dirs.out.sa);
       // path_relative(dirs.out.sa.s, dirs.this.sa.s, &dirs.build.sa);
-    } else if(toolchain && !strlist_contains(&dirs.this, "build")) {
+    } else if(tools.toolchain && !strlist_contains(&dirs.this, "build")) {
       stralloc target;
       stralloc_init(&target);
-      stralloc_copys(&target, toolchain);
+      stralloc_copys(&target, tools.toolchain);
 
       if(cfg.chip.s) {
         stralloc_cats(&target, "-");
@@ -4210,8 +4220,8 @@ main(int argc, char* argv[]) {
   debug_sa("dirs.out", &dirs.out.sa);
   debug_sa("dirs.build", &dirs.build.sa);
 
-  if(preproc)
-    set_var("CPP", preproc);
+  if(tools.preproc)
+    set_var("CPP", tools.preproc);
 
   include_dirs_to_cppflags();
 
@@ -4268,7 +4278,7 @@ main(int argc, char* argv[]) {
     //debug_sa("dirs.build", &dirs.build.sa);
   */
 
-  if(str_equal(make, "gmake")) {
+  if(str_equal(tools.make, "gmake")) {
     stralloc_nul(&dirs.work.sa);
     strlist_push_unique(&vpath, ".");
     strlist_push_unique_sa(&vpath, &dirs.work.sa);
@@ -4352,16 +4362,16 @@ main(int argc, char* argv[]) {
 
   strarray_sort(&srcs, &sort_sources);
 
-  if(str_end(make, "make")) {
+  if(str_end(tools.make, "make")) {
     stralloc rulename;
     stralloc_init(&rulename);
 
-    if(str_start(make, "g")) {
+    if(str_start(tools.make, "g")) {
       stralloc_copy(&rulename, &dirs.work.sa);
       stralloc_cats(&rulename, "/%");
       stralloc_cats(&rulename, exts.obj);
       stralloc_cats(&rulename, ": %");
-      stralloc_cats(&rulename, /* preproc ? exts.pps : */ ".c");
+      stralloc_cats(&rulename, /* tools.preproc ? exts.pps : */ ".c");
     } else {
       stralloc_copys(&rulename, ".c");
       stralloc_cats(&rulename, exts.obj);
@@ -4401,7 +4411,7 @@ main(int argc, char* argv[]) {
     hmap_foreach(sourcedirs, t) {
       sourcedir* srcdir = hmap_data(t);
 
-      if(preproc) {
+      if(tools.preproc) {
         gen_simple_compile_rules(rules, srcdir, t->key, ".c", exts.pps, &preprocess_command);
         gen_simple_compile_rules(rules, srcdir, t->key, exts.pps, exts.obj, &compile_command);
       } else {
@@ -4438,15 +4448,15 @@ main(int argc, char* argv[]) {
 
 fail:
 
-  if(!case_diffs(make, "mplab")) {
+  if(!case_diffs(tools.make, "mplab")) {
 
-    output_mplab_project(buffer_1, 0, 0, &include_dirs);
+    output_mplab_project(out, 0, 0, &include_dirs);
     goto exit;
   }
 
-  buffer_putm_internal(buffer_1, comment, " Generated by:", newline, comment, "  ", 0);
-  buffer_putsa(buffer_1, &cmdline.sa);
-  buffer_putsflush(buffer_1, newline);
+  buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", 0);
+  buffer_putsa(out, &cmdline.sa);
+  buffer_putsflush(out, newline);
 
   {
     strlist varnames;
@@ -4456,38 +4466,38 @@ fail:
     buffer_puts(buffer_2, "varnames: ");
     strlist_dump(buffer_2, &varnames);
 
-    output_all_vars(buffer_1, vars, &varnames);
+    output_all_vars(out, vars, &varnames);
   }
 
-  if(str_equal(make, "gmake")) {
+  if(str_equal(tools.make, "gmake")) {
     stralloc_nul(&vpath.sa);
 
-    //      buffer_putm_internal(buffer_1, "\nvpath ", vpath.sa.s, "\n", 0);
+    //      buffer_putm_internal(out, "\nvpath ", vpath.sa.s, "\n", 0);
 
     stralloc_replacec(&vpath.sa, ' ', ':');
-    buffer_putm_internal(buffer_1, "VPATH = ", vpath.sa.s, "\n\n", 0);
-    buffer_flush(buffer_1);
+    buffer_putm_internal(out, "VPATH = ", vpath.sa.s, "\n\n", 0);
+    buffer_flush(out);
   }
 
   if(ninja) {
-    output_build_rules(buffer_1, "cc", &compile_command);
-    output_build_rules(buffer_1, "link", &link_command);
-    output_build_rules(buffer_1, "lib", &lib_command);
-    put_newline(buffer_1, 0);
+    output_build_rules(out, "cc", &compile_command);
+    output_build_rules(out, "link", &link_command);
+    output_build_rules(out, "lib", &lib_command);
+    put_newline(out, 0);
   }
 
   if(batch || shell) {
     if(batch) {
-      buffer_putm_internal(buffer_1, "CD %~dp0", newline, 0);
+      buffer_putm_internal(out, "CD %~dp0", newline, 0);
     } else {
-      buffer_putm_internal(buffer_1, "cd \"$(dirname \"$0\")\"\n\n", 0);
+      buffer_putm_internal(out, "cd \"$(dirname \"$0\")\"\n\n", 0);
     }
 
-    output_script(buffer_1, NULL);
+    output_script(out, NULL);
   } else
-    output_all_rules(buffer_1, rules);
+    output_all_rules(out, rules);
 
 exit:
-  MAP_DESTROY(sourcedirs);
+  //  MAP_DESTROY(sourcedirs);
   return ret;
 }
