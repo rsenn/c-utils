@@ -64,9 +64,6 @@ typedef unsigned char uint8_t;
 typedef unsigned long uintptr_t;
 typedef long intptr_t;
 
-#define SIZE_MAX ((size_t)(-1))
-#define UINT32_MAX ((uint32_t)(int32_t)(-1))
-#define UINT64_MAX ((uint64_t)(int64_t)(-1))
 
 #define ULONG_MAX 4294967295UL
 
@@ -89,7 +86,9 @@ typedef long intptr_t;
 #endif
 
 #if !defined(HAVE_STDBOOL_H)
-typedef signed char _Bool;
+#ifndef _Bool
+#define _Bool char
+#endif
 #endif
 
 // Some pre-C99 systems have SIZE_MAX in limits.h instead of stdint.h. The
@@ -97,6 +96,19 @@ typedef signed char _Bool;
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
+
+#ifndef SIZE_MAX
+#define SIZE_MAX 4294967295
+#endif
+
+#ifndef UINT32_MAX
+#define UINT32_MAX 4294967295
+#endif
+
+#ifndef UINT64_MAX
+#define UINT64_MAX 18446744073709551615ULL
+#endif
+
 
 // Be more compatible with systems that have non-conforming inttypes.h.
 // We assume that int is 32-bit and that long is either 32-bit or 64-bit.

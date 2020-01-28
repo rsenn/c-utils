@@ -289,7 +289,7 @@ worker_encode(worker_thread* thr, worker_state state) {
 
       break;
 
-    case LZMA_OK:
+    case LZMA_OK: {
       // The data was incompressible. Encode it using uncompressed
       // LZMA2 chunks.
       //
@@ -316,6 +316,7 @@ worker_encode(worker_thread* thr, worker_state state) {
       }
 
       break;
+      }
 
     default: worker_error(thr, ret); return THR_STOP;
   }
