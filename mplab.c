@@ -13,7 +13,7 @@ make_fileno(stralloc* sa, int i) {
 
 static void
 set_str(MAP_T map, const char* key, const char* value) {
-  MAP_SET(map, key, value);
+  MAP_SET(map, (char*)key, (char*)value);
 }
 
 static void
@@ -26,22 +26,43 @@ set_int(MAP_T map, const char* key, int value) {
   set_str(map, key, v.s);
 }
 
+static int
+get_suite() {
+  if(!case_diffs(tools.compiler, "xc8") || str_start(tools.compiler, "xc8"))
+    return 0;
+  if(!case_diffs(tools.compiler, "htc") || str_start(tools.compiler, "htc"))
+    return 1;
+  if(!case_diffs(tools.compiler, "sdcc") || str_start(tools.compiler, "sdcc"))
+    return 2;
+  return 0;
+}
+static const char* compiler_suites[] = {
+    "38171385-97B2-4EC5-BF2C-C2C027BA5B04", //!< xc8 guid
+    "507D93FD-16F1-4270-980F-0C7C0207E6D3", //!< htc guid
+    "DBB37D42-EAE0-43C3-A936-355514C2170D"  //!< sdcc guid
+};
+
+static const char* compiler_settings[] = {
+    "F42384DA-C7ED-4A02-880F-0F5E88735CE2", //!< xc8 guid
+    "3FF1D5F2-E530-4850-9F70-F61D55BD1AC9", //!< htc guid
+    "43F7CD89-1294-495E-9525-F268225EB77A"  //!< sdcc guid
+};
+
 static const char*
 suite_guid(stralloc* sa) {
-  int xc8 = !case_diffs(tools.compiler, "xc8");
+  int suite = get_suite();
   stralloc_zero(sa);
-  stralloc_catm_internal(
-      sa, "{", (xc8 ? "38171385-97B2-4EC5-BF2C-C2C027BA5B04" : "507D93FD-16F1-4270-980F-0C7C0207E6D3"), "}", 0);
+  stralloc_catm_internal(sa, "{", compiler_suites[suite], "}", 0);
   stralloc_nul(sa);
   return sa->s;
 }
 
 static const char*
 make_tool_key(stralloc* sa, const char* key) {
-  int xc8 = !case_diffs(tools.compiler, "xc8");
+  int suite = get_suite();
+
   stralloc_zero(sa);
-  stralloc_catm_internal(
-      sa, "TS{", (xc8 ? "F42384DA-C7ED-4A02-880F-0F5E88735CE2" : "3FF1D5F2-E530-4850-9F70-F61D55BD1AC9"), "}", key, 0);
+  stralloc_catm_internal(sa, "TS{", compiler_settings[suite], "}", key, 0);
   stralloc_nul(sa);
   return sa->s;
 }
@@ -320,7 +341,7 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   stralloc_replaces(&sa, ",", "%2C");
   stralloc_replaces(&sa, " ", ",");
   stralloc_nul(&sa);
-  set_str(toolcfg, "E3", sa.s);                    //!< additional command line options
+  set_str(toolcfg, "E3", sa.s);                   //!< additional command line options
   set_int(toolcfg, "E5", mplab_cfg.memory_model); //!< memory model: 0=small, 1=large
   set_int(toolcfg, "E7", 0);
   set_int(toolcfg, "E8", mplab_cfg.size_of_double); //!< size of double: 0=24, 1=32
@@ -344,33 +365,27 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   stralloc_nul(&tcfg.sa);
 
   ini_set(section, make_tool_key(&sa, ""), tcfg.sa.s);
-  ini_set(section, make_tool_key(&sa, "_alt"), "yes");
-  ini_set(section, make_tool_key(&sa, "000"), "");
-  ini_set(section, make_tool_key(&sa, "001"), "");
-  ini_set(section, make_tool_key(&sa, "002"), "");
-  ini_set(section, make_tool_key(&sa, "003"), "");
-  ini_set(section, make_tool_key(&sa, "004"), "");
-  ini_set(section, make_tool_key(&sa, "005"), "");
-  ini_set(section, make_tool_key(&sa, "006"), "");
-  ini_set(section, make_tool_key(&sa, "007"), "");
-  ini_set(section, make_tool_key(&sa, "008"), "");
-  ini_set(section, make_tool_key(&sa, "009"), "");
-  ini_set(section, make_tool_key(&sa, "010"), "");
-  ini_set(section, make_tool_key(&sa, "011"), "");
+
+  if(get_suite() == 1) {
+    ini_set(section, make_tool_key(&sa, "_alt"), "yes");
+  } else {
+    ini_set(section, make_tool_key(&sa, "000"), "");
+    ini_set(section, make_tool_key(&sa, "000_alt"), "yes");
+  }
 
   section = ini_new(&section->next, "ACTIVE_FILE_SETTINGS");
-  ini_set(section, make_tool_key(&sa, "000_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "001_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "002_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "003_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "004_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "005_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "006_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "007_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "008_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "009_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "010_active"), "yes");
-  ini_set(section, make_tool_key(&sa, "011_active"), "yes");
+  /*  ini_set(section, make_tool_key(&sa, "000_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "001_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "002_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "003_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "004_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "005_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "006_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "007_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "008_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "009_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "010_active"), "yes");
+    ini_set(section, make_tool_key(&sa, "011_active"), "yes");*/
 
   section = ini_new(&section->next, "INSTRUMENTED_TRACE");
   ini_set_long(section, "enable", 0);

@@ -59,8 +59,6 @@ ini_write(buffer* b, ini_section_t* ini) {
       buffer_put(b, t->vals.val_chars, t->data_len - 1);
       buffer_puts(b, "\r\n");
     }
-    if(ini->next)
-      buffer_puts(b, "\r\n");
 
     ini = ini->next;
   }

@@ -4114,13 +4114,15 @@ main(int argc, char* argv[]) {
   if(batch)
     comment = "REM ";
 
-  if(cfg.mach.arch == PIC)
-    tools.compiler = "xc8";
+  if(tools.compiler == NULL) {
+    if(cfg.mach.arch == PIC)
+      tools.compiler = "xc8";
 
-  if(tools.compiler == NULL)
-    tools.compiler = "gcc";
-  else if(cfg.mach.bits == 0)
-    set_machine(tools.compiler);
+    if(tools.compiler == NULL)
+      tools.compiler = "gcc";
+    else if(cfg.mach.bits == 0)
+      set_machine(tools.compiler);
+  }
 
   debug_sa("dirs.build", &dirs.build.sa);
 
