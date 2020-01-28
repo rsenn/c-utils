@@ -213,10 +213,10 @@ typedef union {
 #define COFF_SSYMBOL_NAME_MAX 8
 
 /* symbol table entry */
-typedef struct __attribute__((packed)) {
-  union __attribute__((packed)) {
+typedef struct __unaligned {
+  union __unaligned {
     char name[COFF_SSYMBOL_NAME_MAX]; /* symbol name if less than 8 characters */
-    struct __attribute__((packed)) {
+    struct __unaligned {
       uint32 zeroes; /* first four characters are 0 */
       uint32 offset; /* pointer to the string table */
     };
