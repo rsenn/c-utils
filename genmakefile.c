@@ -394,22 +394,42 @@ format_linklib_dummy(const char* libname, stralloc* out) {}
  * @return
  */
 int
-scan_main(const char* x, size_t n) {
-  while(n) {
-    size_t i = byte_finds(x, n, "main");
-    if(i + 5 >= n)
-      return 0;
-    i += 4;
-    x += i;
-    n -= i;
-    if(i > 4 && !isspace(*(x - 5)))
-      continue;
-    if((i = scan_whitenskip(x, n)) == n)
-      break;
-    x += i;
-    n -= i;
-    if(*x == '(')
-      return 1;
+scan_main(const char* x, ssize_t n) {
+  while(n > 0) {
+    if(n > 2 && byte_equal(x, 2, "/*")) {
+      size_t i = byte_finds(x, n, "*/");
+
+      x += i;
+      n -= i;
+
+/*      if(n > 0) { ++x; --n; }
+      if(n > 0) { ++x; --n; }
+*/      continue;
+    }
+
+    if(!isalpha(x[0]) && x[0] != '_') {
+      x++;
+      n--;
+
+      if(n >= 5 && byte_equal(x, 4, "main")) {
+        ssize_t i = 0;
+        if(i + 5 >= n)
+          return 0;
+        i += 4;
+        x += i;
+        n -= i;
+        if(i > 4 && !isspace(*(x - 5)))
+          continue;
+        if((i = scan_whitenskip(x, n)) == n)
+          break;
+        x += i;
+        n -= i;
+        if(n >= 1 && *x == '(')
+          return 1;
+      }
+    }
+    x++;
+    n--;
   }
   return 0;
 }
@@ -946,6 +966,8 @@ new_source(const char* name) {
     byte_zero(ret, sizeof(sourcefile));
     ret->name = str_dup(name);
     ret->has_main = has_main(ret->name) == 1;
+
+    debug_s("Source has main()", ret->name);
 
     return ret;
   }
@@ -4348,7 +4370,7 @@ main(int argc, char* argv[]) {
 
   MAP_NEW(sourcedirs);
 
-  strarray_dump(buffer_2, &args);
+//  strarray_dump(buffer_2, &args);
 
   strarray_foreach(&args, arg) {
 
