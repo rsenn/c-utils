@@ -24,6 +24,7 @@ typedef TUPLE* MAP_ITER_T;
 #define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
 #define MAP_DESTROY(map) hmap_destroy(&(map))
 #define MAP_FOREACH(map, iter) hmap_foreach(map, iter)
+#define MAP_VALUE(iter) ((void*)((iter)->vals.val_custom))
 #define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
   {                                                                                                                    \
     TUPLE* t;                                                                                                          \

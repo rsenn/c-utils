@@ -698,7 +698,7 @@ RELEASE := 1
 MINSIZE := 0
 endif
 ifeq ($(DEBUG),1)
-DEFINES += DEBUG=1
+DEFINES += _DEBUG=1
 else
 DEFINES += NDEBUG=1
 endif
@@ -1529,7 +1529,7 @@ endif
 
 
 $(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
-$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(BUILDDIR)ini.o $(BUILDDIR)mplab.o $(call add-library,case errmsg strarray slist rdir dir path strlist hmap stralloc buffer mmap unix open scan fmt byte str array safemult)
+$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(BUILDDIR)ini.o $(BUILDDIR)mplab.o $(call add-library,case errmsg strarray slist rdir dir path strlist hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
