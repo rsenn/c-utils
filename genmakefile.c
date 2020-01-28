@@ -3902,7 +3902,7 @@ usage(char* argv0) {
                        "  -b, --create-bins         create rules for programs\n"
                        "  -i, --install             create installation rules\n"
                        "\n"
-                       "  -d, --dirs.build            build directory\n"
+                       "  -d, --builddir            build directory\n"
                        "  -a, --arch                set architecture\n"
                        "  -s, --system OS           set operating system\n"
                        "  -c, --cross TARGET        set cross compiler\n"
