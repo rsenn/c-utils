@@ -54,7 +54,7 @@ char* str_ndup(const char* s, size_t n);
 char* str_basename(const char* s);
 
 /* returned string must be free'd */
-char* str_decamelize(const char* s);
+char* str_decamelize(const char* s, char sep);
 
 int str_case_diff(const void* p1, const void* p2);
 int str_case_diffn(const void* p1, const void* p2, size_t n);

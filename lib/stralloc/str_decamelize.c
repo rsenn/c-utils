@@ -2,13 +2,10 @@
 #include "../stralloc.h"
 
 char*
-str_decamelize(const char* s) {
-  stralloc in, out;
+str_decamelize(const char* s, char sep) {
+  stralloc out;
   stralloc_init(&out);
-  in.s = (char*)s;
-  in.len = str_len(s);
-  in.a = 0;
-  stralloc_decamelize(&in, &out);
-  stralloc_append(&out, "");
+  stralloc_decamelize(s, &out, sep);
+  stralloc_nul(&out);
   return out.s;
 }
