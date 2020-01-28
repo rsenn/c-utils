@@ -86,6 +86,7 @@ typedef struct {
   strlist work;
   strlist build;
   strlist out;
+  strlist this;
 } dirs_t;
 
 typedef struct {
@@ -110,7 +111,7 @@ enum {
 void add_include_dir(const char* dir);
 void add_path_sa(strlist* list, stralloc* path);
 void add_path(strlist* list, const char* path);
-void add_source(const char* filename, strlist* sources);
+void add_source(const char* filename);
 void add_srcpath(strlist* list, const char* path);
 void debug_int(const char* name, int i);
 void debug_sa(const char* name, stralloc* sa);
@@ -150,7 +151,7 @@ void get_rules_by_cmd(stralloc* cmd, strlist* deps);
 sourcedir* get_sourcedir_b(const char* x, size_t n);
 sourcedir* get_sourcedir(const char* path);
 sourcedir* get_sourcedir_sa(stralloc* path);
-void get_sources(const char* basedir, strlist* sources);
+void get_sources(const char* basedir);
 strlist* get_var(const char* name);
 int has_main(const char* filename);
 void include_dirs_to_cppflags(void);
@@ -178,7 +179,7 @@ char* path_output(const char* in, stralloc* out, const char* ext);
 void path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out);
 void path_prefix_s(const stralloc* prefix, const char* path, stralloc* out);
 char* path_wildcard(stralloc* sa, const char* wildchar);
-void populate_sourcedirs(strlist* sources, HMAP_DB* sourcedirs);
+void populate_sourcedirs(HMAP_DB* sourcedirs);
 void print_target_deps(buffer* b, target* t);
 void print_target_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, int depth);
 void push_define(const char* def);

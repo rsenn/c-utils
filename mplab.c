@@ -2,6 +2,14 @@
 #include "ini.h"
 #include "map.h"
 
+static void
+make_fileno(stralloc* sa, int i) {
+  stralloc_zero(sa);
+  stralloc_copys(sa, "file_");
+  stralloc_catulong0(sa, i, 3);
+  stralloc_nul(sa);
+}
+
 void
 output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include_dirs) {
   MAP_ITER_T it;
@@ -25,20 +33,24 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   stralloc_nul(&sa);
 
   ini_set(section, "device", sa.s);
-/*
-  debug_sa("dirs.work", &dirs.work.sa);
-  debug_sa("dirs.build", &dirs.build.sa);
-  debug_sa("dirs.out", &dirs.out.sa);*/
+  /*
+    debug_sa("dirs.work", &dirs.work.sa);
+    debug_sa("dirs.build", &dirs.build.sa);
+    debug_sa("dirs.out", &dirs.out.sa);*/
 
   strlist_init(&incdirs, ';');
 
   strlist_foreach_s(include_dirs, dir) {
 
     stralloc_zero(&sa);
-    path_relative(dir, dirs.build.sa.s, &sa);
-    stralloc_replacec(&sa, '/', '\\');
-    if(stralloc_ends(&sa, "\\."))
+    path_relative(dir, dirs.out.sa.s, &sa);
+    if(stralloc_endb(&sa, "/", 1))
+      sa.len -= 1;
+
+    if(stralloc_endb(&sa, "/.", 2))
       sa.len -= 2;
+    stralloc_replacec(&sa, '/', '\\');
+
     strlist_push_sa(&incdirs, &sa);
   }
   stralloc_nul(&incdirs.sa);
@@ -76,19 +88,20 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
 
   buffer_puts(b, "; Number of rules: ");
   buffer_putulong(b, hmap_count(rules));
-  buffer_putnlflush(b);
+  buffer_putsflush(b, "\r\n");
 
   strarray_foreach(&srcs, p) {
 
- //   debug_s("source", s);
+    stralloc_zero(&sa);
+    stralloc_copy(&sa, &dirs.this.sa);
+    stralloc_catc(&sa, '/');
+    stralloc_cats(&sa, *p);
+    stralloc_nul(&sa);
 
-    path_relative(*p, &dirs.work, &file);
+    path_relative(sa.s, dirs.build.sa.s, &file);
     stralloc_nul(&file);
 
-    stralloc_zero(&sa);
-    stralloc_copys(&sa, "file_");
-    stralloc_catulong0(&sa, i, 3);
-    stralloc_nul(&sa);
+    make_fileno(&sa, i++);
 
     ini_set(generated_files, sa.s, "no");
     ini_set(other_files, sa.s, "no");
@@ -96,12 +109,11 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
 
     stralloc_zero(&file);
     path_dirname(*p, &file);
+    stralloc_replacec(&file, '/', '\\');
 
     ini_set_sa(file_subfolders, &sa, &file);
 
     stralloc_free(&file);
-
-    i++;
   }
   /*
     hmap_foreach(rules, it) {
@@ -124,14 +136,118 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   ini_set(section, "suite_guid", "{38171385-97B2-4EC5-BF2C-C2C027BA5B04}");
   ini_set(section, "suite_state", "");
 
+  MAP_T toolcfg;
+  MAP_NEW(toolcfg);
+  strlist defines, tcfg, *vdefs;
+
+  strlist_init(&defines, ',');
+  strlist_init(&tcfg, ',');
+  vdefs = get_var("DEFS");
+
+  strlist_foreach(vdefs, s, n) {
+    n = byte_chr(s, n, ' ');
+
+    if(str_start(s, "-D")) {
+      s += 2;
+      n -= 2;
+    }
+    strlist_pushb(&defines, s, n);
+  }
+  stralloc_nul(&defines.sa);
+
   section = ini_new(&section->next, "TOOL_SETTINGS");
+  MAP_SET(toolcfg, "C6", "255");
+  MAP_SET(toolcfg, "DB", "3");
+  MAP_SET(toolcfg, "DC", "9");
+  MAP_SET(toolcfg, "D1", defines.sa.s);
+  MAP_SET(toolcfg, "DF", "1");
+  MAP_SET(toolcfg, "DD", "1");
+  MAP_SET(toolcfg, "C2", "1");
+  MAP_SET(toolcfg, "C3", "1");
+  MAP_SET(toolcfg, "DE", "1");
+  MAP_SET(toolcfg, "D7", "1");
+  MAP_SET(toolcfg, "11E", "0");
+  MAP_SET(toolcfg, "121", "0");
+  MAP_SET(toolcfg, "122", "0");
+  MAP_SET(toolcfg, "123", "0");
+  MAP_SET(toolcfg, "124", "0");
+  MAP_SET(toolcfg, "125", "0");
+  MAP_SET(toolcfg, "11F", "94");
+  MAP_SET(toolcfg, "127", "0");
+  MAP_SET(toolcfg, "C9", "4,3,1,2");
+  MAP_SET(toolcfg, "FE", "39");
+  MAP_SET(toolcfg, "EC", "1");
+  MAP_SET(toolcfg, "F0", "1");
+  MAP_SET(toolcfg, "EF", "0");
+  MAP_SET(toolcfg, "EE", "0");
+  MAP_SET(toolcfg, "104", "0");
+  MAP_SET(toolcfg, "E9", "");
+  MAP_SET(toolcfg, "C4", "0");
+  MAP_SET(toolcfg, "F2", "");
+  MAP_SET(toolcfg, "F3", "");
+  MAP_SET(toolcfg, "F4", "");
+  MAP_SET(toolcfg, "F8", "0");
+  MAP_SET(toolcfg, "F5", "");
+  MAP_SET(toolcfg, "F9", "0");
+  MAP_SET(toolcfg, "FA", "1");
+  MAP_SET(toolcfg, "FB", "0");
+  MAP_SET(toolcfg, "C0", "0");
+  MAP_SET(toolcfg, "C1", "1");
+  MAP_SET(toolcfg, "BD", "0");
+  MAP_SET(toolcfg, "BC", "0");
+  MAP_SET(toolcfg, "BB", "0");
+  MAP_SET(toolcfg, "BF", "0");
+  MAP_SET(toolcfg, "BE", "0");
+  MAP_SET(toolcfg, "B8", "");
+  MAP_SET(toolcfg, "101", "0");
+  MAP_SET(toolcfg, "103", "");
+  MAP_SET(toolcfg, "102", "0");
+  MAP_SET(toolcfg, "BA", "");
+  MAP_SET(toolcfg, "FF", "0");
+  MAP_SET(toolcfg, "100", "0");
+  MAP_SET(toolcfg, "106", "0");
+  MAP_SET(toolcfg, "109", "0");
+  MAP_SET(toolcfg, "10A", "1");
+  MAP_SET(toolcfg, "10B", "0");
+  MAP_SET(toolcfg, "10C", "0");
+  MAP_SET(toolcfg, "10E", "0");
+  MAP_SET(toolcfg, "10F", "1");
+  MAP_SET(toolcfg, "110", "0");
+  MAP_SET(toolcfg, "118", "0");
+  MAP_SET(toolcfg, "116", "0");
+  MAP_SET(toolcfg, "117", "");
+  MAP_SET(toolcfg, "10D", "0");
+  MAP_SET(toolcfg, "114", "-1");
+  MAP_SET(toolcfg, "113", "-1");
+  MAP_SET(toolcfg, "111", "0");
+  MAP_SET(toolcfg, "115", "-1");
+  MAP_SET(toolcfg, "F5", "0");
+  MAP_SET(toolcfg, "E3", "--output=default%2C-inhx032,--output=+mcof%2C-elf");
+  MAP_SET(toolcfg, "E5", "1");
+  MAP_SET(toolcfg, "E7", "0");
+  MAP_SET(toolcfg, "E8", "1");
+  MAP_SET(toolcfg, "126", "1");
+  MAP_SET(toolcfg, "F1", "0");
+  MAP_SET(toolcfg, "F6", "");
+  MAP_SET(toolcfg, "F7", "");
+  MAP_SET(toolcfg, "B9", "-1");
+  MAP_SET(toolcfg, "107", "0");
+
+strlist_init(&tcfg, ' ');
+
+  MAP_FOREACH(toolcfg, it) {
+    stralloc_zero(&sa);
+    stralloc_catb(&sa, it->key, it->key_len-1);
+    stralloc_catc(&sa, '=');
+        stralloc_catb(&sa, it->vals.val_chars, it->data_len-1);
+
+   strlist_push_sa(&tcfg, &sa);
+  }
+  stralloc_nul(&tcfg.sa);
+
   ini_set(
       section,
-      "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}",
-      "C6=255 DB=0 DC=9 D1=USE_HD44780_LCD=1 DF=0 DD=1 C2=0 C3=1 DE=1 D7=1 11E=0 121=0 122=0 123=0 124=0 125=0 11F=94 "
-      "127=0 C9=3,2,1 FE=38 EC=1 F0=0 EF=1 EE=0 104=0 E9= C4=0 F2= F3= F4= F8=1 F5= F9=0 FA=1 FB=0 C0=0 C1=0 BD=0 BC=0 "
-      "BB=0 BF=0 BE=0 B8= 101=0 103= 102=0 BA= FF=0 100=0 106=0 109=0 10A=1 10B=0 10C=0 10E=0 10F=0 110=1 118=0 116=0 "
-      "117= 10D=0 114=-1 113=-1 111=0 115=-1 F5=0 E5=0 E7=0 E8=1 126=1 F1=0 F6= F7= B9=-1 107=0 ");
+      "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}",tcfg.sa.s);
   ini_set(section, "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}_alt", "yes");
   ini_set(section, "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}000", "");
   ini_set(section, "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}001", "");

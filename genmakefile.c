@@ -1,5 +1,3 @@
-
-
 #include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -34,7 +32,7 @@ typedef void(linklib_fmt)(const char*, stralloc*);
 
 static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
 
-strlist srcs;
+strarray srcs;
 static stralloc preprocess_command, compile_command, lib_command, link_command, mkdir_command, delete_command;
 exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
 static const char* libpfx = DEFAULT_LIBPFX;
@@ -781,10 +779,10 @@ get_rule(const char* name) {
     // ret = hmap_data(t);
 
 #ifdef DEBUG_OUTPUT
-  /*  if(t) {
+    if(t) {
       buffer_putm_internal(buffer_2, "Created rule '", ((target*)hmap_data(t))->name, "'\n", 0);
       buffer_flush(buffer_2);
-    }*/
+    }
 #endif
   }
 
@@ -995,18 +993,23 @@ is_object_sa(stralloc* sa) {
  * @param sources
  */
 void
-add_source(const char* filename, strlist* sources) {
-  if(is_source(filename)) {
-    strlist_push_unique(sources, filename);
-    /*    stralloc sa;
-        stralloc_init(&sa);
-        stralloc_copys(&sa, filename);
-        //    stralloc_replacec(&sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+add_source(const char* filename) {
+  if(is_source(filename))
+    strarray_push(&srcs, filename);
+}
 
-        strlist_push_sa_unique(sources, &sa);
+int
+sort_sources(const char** a, const char** b) {
+  size_t alen = str_rchrs(*a, "/\\", 2);
+  size_t blen = str_rchrs(*b, "/\\", 2);
+  int rdir, rfile;
 
-        stralloc_free(&sa);*/
-  }
+  rdir = strncmp(*a, *b, alen < blen ? blen : alen);
+  rfile = strcmp(path_basename(*a), path_basename(*b));
+
+  if(rdir == 0)
+    return rfile;
+  return rdir;
 }
 
 /**
@@ -1015,14 +1018,14 @@ add_source(const char* filename, strlist* sources) {
  * @param sources
  */
 void
-get_sources(const char* basedir, strlist* sources) {
+get_sources(const char* basedir) {
   rdir_t rdir;
 
   if(!rdir_open(&rdir, basedir)) {
     const char* s;
 
     while((s = rdir_read(&rdir))) {
-      add_source(s, sources);
+      add_source(s);
     }
   }
 }
@@ -1276,26 +1279,26 @@ dirname_alloc(const char* p) {
  * @param sourcedirs
  */
 void
-populate_sourcedirs(strlist* sources, HMAP_DB* sourcedirs) {
-  char* srcfile;
+populate_sourcedirs(HMAP_DB* sourcedirs) {
+  const char** p;
   stralloc dir;
   stralloc_init(&dir);
 
-  strlist_foreach_s(sources, srcfile) {
+  strarray_foreach(&srcs, p) {
     size_t n;
     const char* x;
 
-    if((x = mmap_read(srcfile, &n)) != 0) {
+    if((x = mmap_read(*p, &n)) != 0) {
       const char* s;
       size_t dlen;
       sourcedir* srcdir;
-      sourcefile* file = new_source(srcfile);
+      sourcefile* file = new_source(*p);
       stralloc r;
       strlist l;
       stralloc_init(&r);
       strlist_init(&l, '\0');
 
-      path_dirname(srcfile, &dir);
+      path_dirname(*p, &dir);
       dlen = dir.len;
 
       // debug_sa("path_dirname(srcfile)", &dir);
@@ -1347,7 +1350,7 @@ populate_sourcedirs(strlist* sources, HMAP_DB* sourcedirs) {
 
       mmap_unmap(x, n);
     } else {
-      buffer_putm_internal(buffer_2, "ERROR opening '", srcfile, "'\n", 0);
+      buffer_putm_internal(buffer_2, "ERROR opening '", *p, "'\n", 0);
       buffer_putnlflush(buffer_2);
     }
   }
@@ -1771,12 +1774,12 @@ deps_for_libs(HMAP_DB* rules) {
 
       strlist_sub(&libs, &indir);
 
-/*#if DEBUG_OUTPUT
-      buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
-      buffer_putsa(buffer_2, &libs.sa);
-      buffer_putnlflush(buffer_2);
-#endif
-*/
+      /*#if DEBUG_OUTPUT
+            buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
+            buffer_putsa(buffer_2, &libs.sa);
+            buffer_putnlflush(buffer_2);
+      #endif
+      */
       target_ptrs(&libs, &lib->deps);
 
       // print_target_deps(buffer_2, lib);
@@ -3884,7 +3887,7 @@ main(int argc, char* argv[]) {
   int c;
   int ret = 0, index = 0;
   const char *outfile = NULL, *dir = NULL;
-  strlist thisdir, toks;
+  strlist toks;
   strarray args;
   strlist cmdline;
   static strarray libs, includes;
@@ -4004,7 +4007,7 @@ main(int argc, char* argv[]) {
   if(!format_linklib_fn)
     format_linklib_fn = &format_linklib_lib;
 
-  strlist_init(&thisdir, pathsep_make);
+  strlist_init(&dirs.this, pathsep_make);
   strlist_init(&dirs.out, pathsep_make);
   strlist_init(&dirs.build, pathsep_make);
   strlist_init(&dirs.work, pathsep_make);
@@ -4036,11 +4039,11 @@ main(int argc, char* argv[]) {
     stralloc_copy(&dirs.build.sa, &dirs.out.sa);
   }
 
-  path_getcwd(&thisdir.sa);
+  path_getcwd(&dirs.this.sa);
 
   if(build_type == -1) {
     if((build_type = extract_build_type(&dirs.build.sa)) == -1)
-      if((build_type = extract_build_type(&thisdir.sa)) == -1)
+      if((build_type = extract_build_type(&dirs.this.sa)) == -1)
         build_type = extract_build_type(&dirs.out.sa);
   }
   if(build_type == -1)
@@ -4144,13 +4147,13 @@ main(int argc, char* argv[]) {
   //  path_absolute_sa(&dirs.out.sa);
 
   stralloc_nul(&dirs.out.sa);
-  stralloc_nul(&thisdir.sa);
+  stralloc_nul(&dirs.this.sa);
 
   if(dirs.build.sa.len == 0) {
     if(strlist_contains(&dirs.out, "build")) {
       stralloc_copy(&dirs.build.sa, &dirs.out.sa);
-      // path_relative(dirs.out.sa.s, thisdir.sa.s, &dirs.build.sa);
-    } else if(toolchain && !strlist_contains(&thisdir, "build")) {
+      // path_relative(dirs.out.sa.s, dirs.this.sa.s, &dirs.build.sa);
+    } else if(toolchain && !strlist_contains(&dirs.this, "build")) {
       stralloc target;
       stralloc_init(&target);
       stralloc_copys(&target, toolchain);
@@ -4161,7 +4164,7 @@ main(int argc, char* argv[]) {
       }
       stralloc_nul(&target);
 
-      stralloc_copy(&dirs.build.sa, &thisdir.sa);
+      stralloc_copy(&dirs.build.sa, &dirs.this.sa);
       strlist_push(&dirs.build, dir ? dir : "build");
       strlist_push_sa(&dirs.build, &target);
       strlist_push(&dirs.build, build_types[build_type]);
@@ -4175,11 +4178,11 @@ main(int argc, char* argv[]) {
   path_absolute_sa(&dirs.out.sa);
   path_absolute_sa(&dirs.build.sa);
 
-  stralloc_nul(&thisdir.sa);
+  stralloc_nul(&dirs.this.sa);
   stralloc_nul(&dirs.out.sa);
   stralloc_nul(&dirs.build.sa);
 
-  debug_sa("thisdir", &thisdir.sa);
+  debug_sa("dirs.this", &dirs.this.sa);
   debug_sa("dirs.out", &dirs.out.sa);
   debug_sa("dirs.build", &dirs.build.sa);
 
@@ -4191,8 +4194,8 @@ main(int argc, char* argv[]) {
   /*
 
     stralloc_nul(&dirs.out.sa);
-    stralloc_nul(&thisdir.sa);
-    path_relative(dirs.out.sa.s, thisdir.sa.s, &dirs.out.sa);
+    stralloc_nul(&dirs.this.sa);
+    path_relative(dirs.out.sa.s, dirs.this.sa.s, &dirs.out.sa);
   */
 
   path_relative(dirs.build.sa.s, dirs.out.sa.s, &dirs.work.sa);
@@ -4200,22 +4203,22 @@ main(int argc, char* argv[]) {
   stralloc_nul(&dirs.work.sa);
   debug_sa("dirs.work", &dirs.work.sa);
 
-  stralloc_nul(&thisdir.sa);
+  stralloc_nul(&dirs.this.sa);
   stralloc_nul(&dirs.out.sa);
-  path_relative(thisdir.sa.s, dirs.out.sa.s, &srcdir);
+  path_relative(dirs.this.sa.s, dirs.out.sa.s, &srcdir);
   stralloc_nul(&srcdir);
   debug_sa("srcdir", &srcdir);
 
   if(dirs.out.sa.len) {
-    stralloc_replacec(&thisdir.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+    stralloc_replacec(&dirs.this.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
 
-    // debug_sa("thisdir", &thisdir.sa);
+    // debug_sa("dirs.this", &dirs.this.sa);
     // debug_sa("dirs.out", &dirs.out.sa);
 
     path_absolute_sa(&dirs.out.sa);
     stralloc_zero(&tmp);
-    path_relative(thisdir.sa.s, dirs.out.sa.s, &tmp);
+    path_relative(dirs.this.sa.s, dirs.out.sa.s, &tmp);
 
     // if(tmp.len) {
     stralloc_copy(&srcdir, &tmp);
@@ -4318,10 +4321,12 @@ main(int argc, char* argv[]) {
     }
 
     if(is_source(*arg))
-      add_source(*arg, &srcs);
+      add_source(*arg);
     else
-      get_sources(*arg, &srcs);
+      get_sources(*arg);
   }
+
+  strarray_sort(&srcs, &sort_sources);
 
   if(str_end(make, "make")) {
     stralloc rulename;
@@ -4347,7 +4352,7 @@ main(int argc, char* argv[]) {
   if(((batch | shell) && stralloc_equals(&dirs.work.sa, ".")))
     batchmode = 1;
 
-  populate_sourcedirs(&srcs, sourcedirs);
+  populate_sourcedirs(sourcedirs);
 
   /*    if(no_libs)
         cmd_libs = 0;
@@ -4401,7 +4406,7 @@ main(int argc, char* argv[]) {
     TUPLE* t;
     hmap_foreach(rules, t) {
       target* tgt = hmap_data(t);
-     // print_target_deps(buffer_2, tgt);
+      // print_target_deps(buffer_2, tgt);
     }
   }
   if(inst_bins || inst_libs)

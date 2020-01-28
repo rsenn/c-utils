@@ -45,7 +45,7 @@ MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
 }*/
 
 #define MAP_DELETE(map, key, klen) hmap_delete(&(map), key, klen)
-
+#define MAP_SET(map, key, value) MAP_INSERT(map, (key), str_len(key) + 1, (value), str_len(value) + 1)
 #define MAP_INSERT(map, key, klen, data, dlen)                                                                         \
   (dlen == 0 ? hmap_add(&(map), key, klen, 0, HMAP_DATA_TYPE_CUSTOM, data) : hmap_set(&(map), key, klen, data, dlen))
 #endif
