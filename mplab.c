@@ -224,10 +224,12 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
     if(!str_equal(s, "."))
       strlist_push_unique(is_source(*p) ? &srcdirs : &incdirs, s);
 
+#ifdef DEBUG_OUTPUT
     debug_sa("sa", &sa);
     debug_sa("dirs.build", &dirs.build.sa);
     debug_sa("dirs.work", &dirs.work.sa);
     debug_sa("dirs.out", &dirs.out.sa);
+#endif
 
     path_relative(sa.s, dirs.build.sa.s, &file);
     stralloc_replacec(&file, '/', '\\');
