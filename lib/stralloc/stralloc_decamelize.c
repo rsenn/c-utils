@@ -1,19 +1,19 @@
 #include "../stralloc.h"
-#include <ctype.h>
+#include "../byte.h"
 
-int
-stralloc_decamelize(stralloc* sa, stralloc* to) {
-  size_t i;
-  char prev = ' ';
-  for(i = 0; i < sa->len; ++i) {
-    char c = sa->s[i];
+size_t
+stralloc_decamelize(const char* s, stralloc* sa, char sep) {
+  const char* x = s;
+	while(*x) {
+		stralloc_catb(sa, x, 1);
 
-    if(islower(prev) && isupper(sa->s[i])) {
-      stralloc_append(to, "_");
-    }
-    stralloc_catc(to, tolower(c));
+		if(x[1] >= A && x[1] <= 'Z') {
+			stralloc_catc(sa, sep);
+			stralloc_catc(sa, x[1]+0x20);
+			++x;
+		}
 
-    prev = sa->s[i];
-  }
-  return i;
+		x++;
+	}
+  return sa->len;
 }
