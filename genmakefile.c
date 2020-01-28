@@ -4080,19 +4080,6 @@ main(int argc, char* argv[]) {
   if(cfg.build_type == -1)
     cfg.build_type = BUILD_TYPE_DEBUG;
 
-<<<<<<< HEAD
-  if(make == NULL && compiler) {
-    if(str_start(compiler, "b"))
-      make = "borland";
-    else if(str_start(compiler, "msvc"))
-      make = "nmake";
-    else if(str_start(compiler, "g"))
-      make = "gmake";
-    else if(str_start(compiler, "o"))
-      make = "omake";
-    else if(str_start(compiler, "po"))
-      make = "pomake";
-=======
   if(tools.make == NULL && tools.compiler) {
     if(str_start(tools.compiler, "b"))
       tools.make = "borland";
@@ -4104,7 +4091,6 @@ main(int argc, char* argv[]) {
       tools.make = "omake";
     else if(str_start(tools.compiler, "po"))
       tools.make = "pomake";
->>>>>>> 7712c68918419ee7b6f4c6ba424689574fb943a7
   }
 
   if(tools.toolchain)
