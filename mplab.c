@@ -221,12 +221,12 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
     if(!str_equal(s, ".")) {
       strlist_push_unique(is_source(*p) ? &srcdirs : &incdirs, s);
     }
-    //debug_sa("sa", &sa);
-    //debug_sa("dirs.build", &dirs.build.sa);
-    //debug_sa("dirs.work", &dirs.work.sa);
-    //debug_sa("dirs.out", &dirs.out.sa);
+    // debug_sa("sa", &sa);
+    // debug_sa("dirs.build", &dirs.build.sa);
+    // debug_sa("dirs.work", &dirs.work.sa);
+    // debug_sa("dirs.out", &dirs.out.sa);
     path_relative(sa.s, dirs.out.sa.s, &file);
-    //debug_sa("file", &file);
+    // debug_sa("file", &file);
     stralloc_replacec(&file, '/', '\\');
     stralloc_nul(&file);
     make_fileno(&sa, i++);
