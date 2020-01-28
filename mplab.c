@@ -6,13 +6,14 @@ void
 output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include_dirs) {
   MAP_ITER_T it;
   strlist incdirs;
-  const char* dir;
+  const char *dir, *s, **p;
   size_t n;
-  stralloc sa;
+  stralloc sa, file;
 
   ini_section_t *ini, *section, *file_subfolders, *generated_files, *other_files, *file_info;
 
   stralloc_init(&sa);
+  stralloc_init(&file);
 
   section = ini_new(&ini, "HEADER");
   ini_set(section, "magic_cookie", "{66E99B07-E706-4689-9E80-9B2582898A13}");
@@ -24,10 +25,10 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   stralloc_nul(&sa);
 
   ini_set(section, "device", sa.s);
-
+/*
   debug_sa("dirs.work", &dirs.work.sa);
   debug_sa("dirs.build", &dirs.build.sa);
-  debug_sa("dirs.out", &dirs.out.sa);
+  debug_sa("dirs.out", &dirs.out.sa);*/
 
   strlist_init(&incdirs, ';');
 
@@ -77,24 +78,48 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   buffer_putulong(b, hmap_count(rules));
   buffer_putnlflush(b);
 
-  hmap_foreach(rules, it) {
-    target* t = (target*)it->vals.val_chars;
+  strarray_foreach(&srcs, p) {
 
-    debug_target(t);
+ //   debug_s("source", s);
 
-    if(!is_source_sa(&t->prereq.sa))
-      continue;
+    path_relative(*p, &dirs.work, &file);
+    stralloc_nul(&file);
 
     stralloc_zero(&sa);
     stralloc_copys(&sa, "file_");
     stralloc_catulong0(&sa, i, 3);
     stralloc_nul(&sa);
 
-    ini_set(file_subfolders, sa.s, ".");
     ini_set(generated_files, sa.s, "no");
     ini_set(other_files, sa.s, "no");
-    ini_set_sa(section, &sa, &t->prereq);
+    ini_set_sa(section, &sa, &file);
+
+    stralloc_zero(&file);
+    path_dirname(*p, &file);
+
+    ini_set_sa(file_subfolders, &sa, &file);
+
+    stralloc_free(&file);
+
+    i++;
   }
+  /*
+    hmap_foreach(rules, it) {
+      target* t = (target*)it->vals.val_chars;
+
+      if(!is_object(t->name) || stralloc_ends(&t->prereq.sa, exts.pps))
+        continue;
+
+      debug_target(t);
+
+
+      ini_set(file_subfolders, sa.s, ".");
+      ini_set(generated_files, sa.s, "no");
+      ini_set(other_files, sa.s, "no");
+      ini_set_sa(section, &sa, &t->prereq.sa);
+
+      i++;
+    }*/
   section = ini_new(&section->next, "SUITE_INFO");
   ini_set(section, "suite_guid", "{38171385-97B2-4EC5-BF2C-C2C027BA5B04}");
   ini_set(section, "suite_state", "");
@@ -149,4 +174,5 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   ini_write(b, ini);
 
   stralloc_free(&sa);
+  stralloc_free(&file);
 }

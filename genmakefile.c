@@ -34,9 +34,9 @@ typedef void(linklib_fmt)(const char*, stralloc*);
 
 static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
 
-static strlist srcs;
+strlist srcs;
 static stralloc preprocess_command, compile_command, lib_command, link_command, mkdir_command, delete_command;
-static exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
+exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
 static const char* libpfx = DEFAULT_LIBPFX;
 
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
@@ -781,10 +781,10 @@ get_rule(const char* name) {
     // ret = hmap_data(t);
 
 #ifdef DEBUG_OUTPUT
-    if(t) {
+  /*  if(t) {
       buffer_putm_internal(buffer_2, "Created rule '", ((target*)hmap_data(t))->name, "'\n", 0);
       buffer_flush(buffer_2);
-    }
+    }*/
 #endif
   }
 
@@ -976,6 +976,17 @@ int
 is_source_sa(stralloc* sa) {
   stralloc_nul(sa);
   return is_source(sa->s);
+}
+
+int
+is_object(const char* filename) {
+  return str_end(filename, exts.obj);
+}
+
+int
+is_object_sa(stralloc* sa) {
+  stralloc_nul(sa);
+  return is_object(sa->s);
 }
 
 /**
@@ -1760,14 +1771,12 @@ deps_for_libs(HMAP_DB* rules) {
 
       strlist_sub(&libs, &indir);
 
-// debug_sl("direct", &libs);
-#if DEBUG_OUTPUT
-      // print_target_deps(buffer_2, lib);
+/*#if DEBUG_OUTPUT
       buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
       buffer_putsa(buffer_2, &libs.sa);
       buffer_putnlflush(buffer_2);
 #endif
-
+*/
       target_ptrs(&libs, &lib->deps);
 
       // print_target_deps(buffer_2, lib);
@@ -3923,6 +3932,7 @@ main(int argc, char* argv[]) {
   byte_zero(&sourcedirs, sizeof(sourcedirs));
   byte_zero(&rules, sizeof(rules));
   byte_zero(&vars, sizeof(vars));
+  byte_zero(&srcs, sizeof(srcs));
 
   strlist_init(&vpath, ' ');
 
@@ -4391,7 +4401,7 @@ main(int argc, char* argv[]) {
     TUPLE* t;
     hmap_foreach(rules, t) {
       target* tgt = hmap_data(t);
-      print_target_deps(buffer_2, tgt);
+     // print_target_deps(buffer_2, tgt);
     }
   }
   if(inst_bins || inst_libs)
@@ -4401,7 +4411,7 @@ fail:
 
   if(!case_diffs(make, "mplab")) {
 
-    output_mplab_project(buffer_1, &rules, &vars, &include_dirs);
+    output_mplab_project(buffer_1, 0, 0, &include_dirs);
     goto exit;
   }
 

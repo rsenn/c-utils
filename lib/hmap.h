@@ -100,6 +100,10 @@ inline static void*
 hmap_data(TUPLE* tuple) {
   return tuple->vals.val_chars;
 }
+inline static size_t
+hmap_count(HMAP_DB* hmap_db) {
+  return hmap_db->tuple_count;
+}
 
 #define hmap_last(hmap_db, tuple) ((hmap_db)->list_tuple == (tuple)->next)
 #define hmap_next(hmap_db, tuple) (hmap_last(hmap_db, tuple) ? NULL : (tuple)->next)
