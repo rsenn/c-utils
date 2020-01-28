@@ -13,15 +13,16 @@ make_fileno(stralloc* sa, int i) {
 void
 output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include_dirs) {
   MAP_ITER_T it;
-  strlist incdirs;
+  strlist incdirs, srcdirs;
   const char *dir, *s, **p;
   size_t n;
-  stralloc sa, file;
+  stralloc sa, file, dirname;
 
-  ini_section_t *ini, *section, *file_subfolders, *generated_files, *other_files, *file_info;
+  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files, *file_info;
 
   stralloc_init(&sa);
   stralloc_init(&file);
+  stralloc_init(&dirname);
 
   section = ini_new(&ini, "HEADER");
   ini_set(section, "magic_cookie", "{66E99B07-E706-4689-9E80-9B2582898A13}");
@@ -39,6 +40,7 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
     debug_sa("dirs.out", &dirs.out.sa);*/
 
   strlist_init(&incdirs, ';');
+  strlist_init(&srcdirs, ';');
 
   strlist_foreach_s(include_dirs, dir) {
 
@@ -72,12 +74,12 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   ini_set(section, "filter_lib", "*.lib;*.lpp");
   ini_set(section, "filter_lkr", "*.unknown");
 
-  section = ini_new(&section->next, "CAT_SUBFOLDERS");
-  ini_set(section, "subfolder_src", "");
-  ini_set(section, "subfolder_inc", "");
-  ini_set(section, "subfolder_obj", "");
-  ini_set(section, "subfolder_lib", "");
-  ini_set(section, "subfolder_lkr", "");
+  section = cat_subfolders = ini_new(&section->next, "CAT_SUBFOLDERS");
+  ini_set(cat_subfolders, "subfolder_src", "");
+  ini_set(cat_subfolders, "subfolder_inc", "");
+  ini_set(cat_subfolders, "subfolder_obj", "");
+  ini_set(cat_subfolders, "subfolder_lib", "");
+  ini_set(cat_subfolders, "subfolder_lkr", "");
 
   section = file_subfolders = ini_new(&section->next, "FILE_SUBFOLDERS");
   section = generated_files = ini_new(&section->next, "GENERATED_FILES");
@@ -90,6 +92,8 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   buffer_putulong(b, hmap_count(rules));
   buffer_putsflush(b, "\r\n");
 
+  stralloc_zero(&incdirs.sa);
+
   strarray_foreach(&srcs, p) {
 
     stralloc_zero(&sa);
@@ -97,6 +101,18 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
     stralloc_catc(&sa, '/');
     stralloc_cats(&sa, *p);
     stralloc_nul(&sa);
+
+    stralloc_zero(&dirname);
+    path_dirname(*p, &dirname);
+    stralloc_nul(&dirname);
+
+    s = dirname.s;
+    n = str_rchrs(dirname.s, "/\\", 2);
+    if(s[n])
+      s += n;
+
+    //  if(!str_equal(s, "."))
+    strlist_push_unique(is_source(*p) ? &srcdirs : &incdirs, s);
 
     path_relative(sa.s, dirs.build.sa.s, &file);
     stralloc_nul(&file);
@@ -115,6 +131,13 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
 
     stralloc_free(&file);
   }
+
+  stralloc_nul(&incdirs.sa);
+  stralloc_nul(&srcdirs.sa);
+
+  ini_set(cat_subfolders, "subfolder_inc", incdirs.sa.s);
+  ini_set(cat_subfolders, "subfolder_src", srcdirs.sa.s);
+
   /*
     hmap_foreach(rules, it) {
       target* t = (target*)it->vals.val_chars;
@@ -233,21 +256,19 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   MAP_SET(toolcfg, "B9", "-1");
   MAP_SET(toolcfg, "107", "0");
 
-strlist_init(&tcfg, ' ');
+  strlist_init(&tcfg, ' ');
 
   MAP_FOREACH(toolcfg, it) {
     stralloc_zero(&sa);
-    stralloc_catb(&sa, it->key, it->key_len-1);
+    stralloc_catb(&sa, it->key, it->key_len - 1);
     stralloc_catc(&sa, '=');
-        stralloc_catb(&sa, it->vals.val_chars, it->data_len-1);
+    stralloc_catb(&sa, it->vals.val_chars, it->data_len - 1);
 
-   strlist_push_sa(&tcfg, &sa);
+    strlist_push_sa(&tcfg, &sa);
   }
   stralloc_nul(&tcfg.sa);
 
-  ini_set(
-      section,
-      "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}",tcfg.sa.s);
+  ini_set(section, "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}", tcfg.sa.s);
   ini_set(section, "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}_alt", "yes");
   ini_set(section, "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}000", "");
   ini_set(section, "TS{F42384DA-C7ED-4A02-880F-0F5E88735CE2}001", "");

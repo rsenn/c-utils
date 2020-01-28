@@ -58,7 +58,7 @@ int strarray_push_sa(strarray* a, const stralloc* sa);
 int64 strarray_index_of_sa(strarray*, const stralloc* sa);
 #endif
 
-void strarray_sort(strarray*, int (*)(char**, char**));
+void strarray_sort(strarray*, int (*)(const char**, const char**));
 
 int strarray_appends(strarray* arr, const char* s);
 int strarray_prepends(strarray* arr, const char* s);

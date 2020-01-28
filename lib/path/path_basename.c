@@ -12,7 +12,7 @@
        ".."           "."            ".."
 */
 char*
-path_basename(char* path) {
+path_basename(const char* path) {
   size_t n;
 again:
   n = str_rchrs(path, "/\\", 2);
@@ -22,7 +22,7 @@ again:
     if(n == 0)
       return path;
     else {
-      path[n] = 0;
+      ((char*)path)[n] = 0;
       goto again;
     }
   }

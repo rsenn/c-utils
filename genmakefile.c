@@ -955,17 +955,17 @@ new_source(const char* name) {
 
 int
 is_source(const char* filename) {
-  if(str_end(filename, ".c") || str_end(filename, ".h"))
+  if(str_end(filename, ".c"))
     return 1;
-  if(str_end(filename, ".C") || str_end(filename, ".H"))
+  if(str_end(filename, ".C"))
     return 1;
-  if(str_end(filename, ".cc") || str_end(filename, ".hh"))
+  if(str_end(filename, ".cc"))
     return 1;
-  if(str_end(filename, ".cpp") || str_end(filename, ".hpp"))
+  if(str_end(filename, ".cpp"))
     return 1;
-  if(str_end(filename, ".cxx") || str_end(filename, ".hxx"))
+  if(str_end(filename, ".cxx"))
     return 1;
-  if(str_end(filename, ".c++") || str_end(filename, ".h++"))
+  if(str_end(filename, ".c++"))
     return 1;
   return 0;
 }
@@ -974,6 +974,29 @@ int
 is_source_sa(stralloc* sa) {
   stralloc_nul(sa);
   return is_source(sa->s);
+}
+
+int
+is_include(const char* filename) {
+  if(str_end(filename, ".h"))
+    return 1;
+  if(str_end(filename, ".H"))
+    return 1;
+  if(str_end(filename, ".hh"))
+    return 1;
+  if(str_end(filename, ".hpp"))
+    return 1;
+  if(str_end(filename, ".hxx"))
+    return 1;
+  if(str_end(filename, ".h++"))
+    return 1;
+  return 0;
+}
+
+int
+is_include_sa(stralloc* sa) {
+  stralloc_nul(sa);
+  return is_include(sa->s);
 }
 
 int
@@ -994,7 +1017,7 @@ is_object_sa(stralloc* sa) {
  */
 void
 add_source(const char* filename) {
-  if(is_source(filename))
+  if(is_source(filename) || is_include(filename))
     strarray_push(&srcs, filename);
 }
 
@@ -1004,8 +1027,8 @@ sort_sources(const char** a, const char** b) {
   size_t blen = str_rchrs(*b, "/\\", 2);
   int rdir, rfile;
 
-  rdir = strncmp(*a, *b, alen < blen ? blen : alen);
-  rfile = strcmp(path_basename(*a), path_basename(*b));
+  rdir = str_diffn(*a, *b, alen < blen ? blen : alen);
+  rfile = str_diff(path_basename(*a), path_basename(*b));
 
   if(rdir == 0)
     return rfile;
@@ -1975,7 +1998,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
   stralloc_init(&obj);
 
   slink_foreach(&sdir->sources, src) {
-    const char *s, *ext;
+    const char *s, *ext = 0;
 
     if(!src->name)
       continue;
@@ -2290,11 +2313,11 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
  * @return
  */
 int
-gen_link_rules(HMAP_DB* rules, strlist* sources) {
+gen_link_rules(HMAP_DB* rules) {
   int count = 0;
   target* all;
   const char *x, *link_lib;
-  char* srcfile;
+  char **p, *srcfile;
   strlist incs, libs, deps, indir;
   stralloc dir, ppsrc, obj, bin;
 
@@ -2308,7 +2331,8 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
   stralloc_init(&bin);
   all = get_rule("all");
 
-  strlist_foreach_s(sources, srcfile) {
+  strarray_foreach(&srcs, p) {
+    srcfile = *p;
     target *preprocess, *compile, *link;
     sourcedir* srcdir;
 
@@ -2384,8 +2408,8 @@ gen_link_rules(HMAP_DB* rules, strlist* sources) {
             }
           }
         } else {
-          char* srcfile;
-          strlist_foreach_s(sources, srcfile) {
+          strarray_foreach(&srcs, p) {
+            char* srcfile = *p;
 
             stralloc_zero(&dir);
             path_dirname(srcfile, &dir);
@@ -4320,7 +4344,7 @@ main(int argc, char* argv[]) {
       goto fail;
     }
 
-    if(is_source(*arg))
+    if(is_source(*arg) || is_include(*arg))
       add_source(*arg);
     else
       get_sources(*arg);
@@ -4387,7 +4411,7 @@ main(int argc, char* argv[]) {
   }
 
   if(cmd_bins) {
-    cmd_bins = gen_link_rules(rules, &srcs);
+    cmd_bins = gen_link_rules(rules);
   }
 
   if(cmd_bins == 0 || cmd_libs == 1) {

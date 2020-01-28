@@ -26,7 +26,7 @@ extern "C" {
 #define PATH_FNM_NOESCAPE (1 << 1) /* Backslashes don't quote special chars.  */
 #define PATH_FNM_PERIOD (1 << 2)   /* Leading .' is matched only explicitly.  */
 
-char* path_basename(char* path);
+char* path_basename(const char* path);
 int path_canonicalize(const char* path, stralloc* sa, int symbolic);
 char* path_dirname(const char* path, stralloc* dir);
 int path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);

@@ -16,6 +16,7 @@
 #include "lib/dir.h"
 #include "lib/path.h"
 #include <assert.h>
+#include <ctype.h>
 
 typedef struct cvalue {
   struct cvalue* next;
