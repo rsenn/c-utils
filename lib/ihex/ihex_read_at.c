@@ -29,7 +29,7 @@ ihex_read_at(ihex_file* ihf, uint32 at, char* x, size_t n) {
       n -= num;
       x += num;
 
-     end = o.off32 + rec->length;
+      end = o.off32 + rec->length;
       rec = rec->next;
       if(!rec)
         break;

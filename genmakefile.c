@@ -387,18 +387,23 @@ format_linklib_switch(const char* libname, stralloc* out) {
 void
 format_linklib_dummy(const char* libname, stralloc* out) {}
 
-
 const char*
 skip_comment(const char* x, size_t* lenp) {
   const char* p = x;
   size_t n = *lenp;
   while(n > 2) {
 
-        if(byte_equal(x, 2, "*/")) {
-    if(n > 0)  { ++x; --n; }
-    if(n > 0)  { ++x; --n; }
-break;
-        }
+    if(byte_equal(x, 2, "*/")) {
+      if(n > 0) {
+        ++x;
+        --n;
+      }
+      if(n > 0) {
+        ++x;
+        --n;
+      }
+      break;
+    }
     ++x;
     --n;
   }
@@ -416,30 +421,25 @@ int
 scan_main(const char* x, ssize_t n) {
   while(n > 2) {
 
-    if(byte_equal(x, 2, "/*")) {
-      x = skip_comment(x, &n);
-      continue;
-    } 
-
-    if(byte_equal(x, 2, "//")) {
-      size_t i = byte_chr(x, n, '\n');
-      x += i+1;
-      n -= i+1;
-      continue;
-    }
-
-     if(!isalpha(x[0]) && x[0] != '_') {
-      x++;
-      n--;
-      if(n >= 5 && byte_equal(x, 4, "main")) {
+    if(x[0] == '/') {
+      if(x[1] == '*') {
+        x = skip_comment(x, &n);
+      } else if(x[1] == '/') {
+        size_t i = byte_chr(x, n, '\n');
+        x += i + 1;
+        n -= i + 1;
+      }
+    } else if(!isalpha(x[0]) && x[0] != '_') {
+      if(n >= 5 && byte_equal(&x[1], 4, "main")) {
         ssize_t i = 0;
         if(i + 5 >= n)
           return 0;
-        i += 4;
+        i += 5;
         x += i;
         n -= i;
-        if(i > 4 && !isspace(*(x - 5)))
-          continue;
+        /*        if(i > 4 && !isspace(*(x - 5)))
+                  continue;
+        */
         if((i = scan_whitenskip(x, n)) == n)
           break;
         x += i;
@@ -926,11 +926,14 @@ void
 add_path(strlist* list, const char* path) {
   size_t i, len = str_len(path);
 
-  if(strlist_push_unique(list, path)) {
-    for(i = list->sa.len - len; i < list->sa.len; ++i) {
-      if(list->sa.s[i] == '/' || list->sa.s[i] == '\\')
-        list->sa.s[i] = pathsep_make;
-    }
+  if(strlist_containsb(list, path, str_len(path)))
+    return;
+
+  strlist_push(list, path);
+
+  for(i = list->sa.len - len; i < list->sa.len; ++i) {
+    if(list->sa.s[i] == '/' || list->sa.s[i] == '\\')
+      list->sa.s[i] = pathsep_make;
   }
 }
 
@@ -2156,30 +2159,38 @@ gen_simple_compile_rules(
   slink_foreach(&srcdir->sources, src) {
     target* rule;
     const char* base;
+    const char* srcname = src->name;
 
-    if(src->name == 0)
+    if(srcname == 0)
       continue;
 
-    base = str_basename(src->name);
+    base = str_basename(srcname);
 
     if(!str_equal(base + str_rchr(base, '.'), fromext))
       continue;
 
-    stralloc_zero(&obj);
+    if(tools.preproc) {
+      stralloc_zero(&obj);
+      path_output(base, &obj, ".pp.c");
+
+      //      stralloc_inserts(&ppsrc, ".pp", byte_rchr(ppsrc.s, ppsrc.len, '.'));
+
+      if((rule = get_rule_sa(&obj))) {
+        add_srcpath(&rule->prereq, src->name);
+        stralloc_copy(&rule->recipe, &preprocess_command);
+
+        ppsrc = obj;
+        srcname = ppsrc.s;
+      }
+    }
+
+    stralloc_init(&obj);
     path_output(base, &obj, toext);
+
+    debug_sa("obj", &obj);
 
     if((rule = get_rule_sa(&obj))) {
 
-      const char* srcname = src->name;
-
-      if(tools.preproc) {
-
-        stralloc_zero(&ppsrc);
-        stralloc_copys(&ppsrc, path_basename(src->name));
-        stralloc_inserts(&ppsrc, ".pp", byte_rchr(ppsrc.s, ppsrc.len, '.'));
-        stralloc_nul(&ppsrc);
-        srcname = ppsrc.s;
-      }
       add_srcpath(&rule->prereq, srcname);
 
       if(rule->recipe.s == NULL) {
@@ -2218,12 +2229,12 @@ lib_rule_for_sourcedir(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
   if((str_start(tools.make, "g") || batchmode) && cfg.mach.arch != PIC) {
     dep = gen_srcdir_compile_rules(rules, srcdir, name);
   } else {
-    if(0 && tools.preproc) {
-      gen_simple_compile_rules(rules, srcdir, name, ".c", exts.pps, &preprocess_command);
-      dep = gen_simple_compile_rules(rules, srcdir, name, exts.pps, exts.obj, &compile_command);
-    } else {
-      dep = gen_simple_compile_rules(rules, srcdir, name, ".c", exts.obj, &compile_command);
-    }
+    /* if(0 && tools.preproc) {
+       gen_simple_compile_rules(rules, srcdir, name, ".c", exts.pps, &preprocess_command);
+       dep = gen_simple_compile_rules(rules, srcdir, name, exts.pps, exts.obj, &compile_command);
+     } else {*/
+    dep = gen_simple_compile_rules(rules, srcdir, name, ".c", exts.obj, &compile_command);
+    //}
   }
 
   if((rule = get_rule_sa(&sa))) {
@@ -3687,7 +3698,7 @@ set_compiler_type(const char* compiler) {
     push_var("CPPFLAGS", "-DHI_TECH_C=1");
 
     set_var("TARGET", cfg.mach.bits == _14 ? "pic16" : "pic18");
-    push_var("CPPFLAGS", cfg.mach.bits == _14 ? "-DPIC16=1" : "-DPIC18=1");
+    // push_var("CPPFLAGS", cfg.mach.bits == _14 ? "-DPIC16=1" : "-DPIC18=1");
 
     set_var("CC", cfg.mach.bits == _14 ? "picc" : "picc18");
     set_var("LINK", cfg.mach.bits == _14 ? "picc" : "picc18");
@@ -3733,7 +3744,7 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");*/
 
     push_var("LDFLAGS", "--asmlist");
-    push_var("CPPFLAGS", "-D__$(CHIP)=1");
+    //    push_var("CPPFLAGS", "-D__$(CHIP)=1");
 
     set_command(&lib_command, "$(LIB) $@", "$^");
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
@@ -3765,16 +3776,6 @@ set_compiler_type(const char* compiler) {
 
     stralloc_nul(&cfg.chip);
     set_var("CHIP", cfg.chip.s);
-
-    {
-      stralloc chipdef;
-      stralloc_init(&chipdef);
-      stralloc_copys(&chipdef, "-D__");
-      stralloc_cat(&chipdef, &cfg.chip);
-      stralloc_lower(&chipdef);
-      stralloc_cats(&chipdef, "=1");
-      push_var_sa("CPPFLAGS", &chipdef);
-    }
 
     push_var("CFLAGS", "--mode=pro");
     push_var("CFLAGS", "--float=24");
@@ -3825,10 +3826,10 @@ set_compiler_type(const char* compiler) {
   if(cfg.mach.arch == PIC) {
     stralloc chipdef;
     stralloc_init(&chipdef);
-    stralloc_copys(&chipdef, "-D__");
     stralloc_cat(&chipdef, &cfg.chip);
     stralloc_lower(&chipdef);
     stralloc_cats(&chipdef, "=1");
+    stralloc_inserts(&chipdef, "-D__", 0);
     push_var_sa("CPPFLAGS", &chipdef);
   }
 
@@ -4461,10 +4462,11 @@ main(int argc, char* argv[]) {
     hmap_foreach(sourcedirs, t) {
       sourcedir* srcdir = hmap_data(t);
 
-      if(tools.preproc) {
+      /*if(tools.preproc) {
         gen_simple_compile_rules(rules, srcdir, t->key, ".c", exts.pps, &preprocess_command);
         gen_simple_compile_rules(rules, srcdir, t->key, exts.pps, exts.obj, &compile_command);
-      } else {
+      } else */
+      {
         gen_simple_compile_rules(rules, srcdir, t->key, ".c", exts.obj, &compile_command);
       }
     }

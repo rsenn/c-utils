@@ -131,8 +131,7 @@ buffer_bz2(buffer* b, buffer* other, int compress) {
 
   ctx->b = other;
 
-  buffer_init(
-      b, 0, -1, ctx->buf, sizeof(ctx->buf));
+  buffer_init(b, 0, -1, ctx->buf, sizeof(ctx->buf));
   b->cookie = ctx;
   b->deinit = &buffer_bz_close;
   b->op = (void*)(compress ? &buffer_bzwrite_op : &buffer_bzread_op);
