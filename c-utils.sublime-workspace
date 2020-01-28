@@ -68,40 +68,25 @@
 	"buffers":
 	[
 		{
-			"contents": "cvalue\ncsetting\ncword\nconfig_data_at\ndump_cword\ndump_csetting\ndump_cvalue\nparse_cfgvalue\nparse_cfgsetting\nparse_cfgword\nparse_cfgdata\nconfig_bytes\nget_setting_word\nget_setting_value\nfind_setting\nfind_value\ninfer_chip\nget_cfgdat\nadd_item\nprocess_config\noutput_items\nusage\nmain",
+			"contents": "BUTTON_GET\n__at\nSIZE_OF\ndummy_putch\nput_number\nput_str\nmain\nput_number",
 			"settings":
 			{
-				"buffer_size": 275,
+				"buffer_size": 70,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "piccfg.c",
+			"contents": "#include \"src/config-bits.h\"\n#include \"lib/comparator.h\"\n#include \"lib/const.h\"\n#include \"lib/device.h\"\n#include \"lib/interrupt.h\"\n#include \"lib/random.h\"\n#include \"lib/softpwm.h\"\n#include \"lib/timer.h\"\n#include \"pictest.h\"\n\n#if USE_UART\n#include \"lib/uart.h\"\n#endif\n#if USE_SER\n#include \"lib/ser.h\"\n#endif\n#if USE_SOFTSER\n#include \"lib/softser.h\"\n#endif\n\n#include <math.h>\n\n#if NO_PORTB\n#define BUTTON_PORT PORTA\n#define BUTTON_SHIFT 0\n#else\n#define BUTTON_PORT PORTB\n#define BUTTON_SHIFT 4\n#endif\n\n#define BUTTON_GET() ((~(BUTTON_PORT)) >> BUTTON_SHIFT)\n\n#define B_LEFT 0b0001\n#define B_PLUS 0b0010\n#define B_MINUS 0b0100\n#define B_RIGHT 0b1000\n\n//#define b & v, b) (BUTTON_GET()&(b))\n\n#if defined(SDCC) && !(__SDCC_VERSION_MAJOR == 3 && __SDCC_VERSION_MINOR >= 9)\n__code unsigned int __at(_CONFIG) __configword = CONFIG_WORD;\n#endif\n\n#define SIZE_OF(arr) (sizeof(arr) / sizeof(arr[0]))\n\nextern const uint16_t rainbow[64];\nextern const uint8_t rainbow8[64][3];\n\nstatic void\ndummy_putch(char c) {}\n\ntypedef void(putch_fn)(char);\n\nputch_fn* put_char =\n#if USE_UART\n    uart_putch\n#elif USE_SER\n    ser_putch\n#else\n    dummy_putch\n#endif\n    ;\n\nvoid put_number(putch_fn* putc, uint16_t n, uint8_t base, int8_t pad /*, int8_t pointpos*/);\n\nvoid\nput_str(putch_fn* putc, const char* s) {\n  while(*s) putc(*s++);\n}\n\nvolatile BOOL run = 0;\nvolatile uint8_t msec_count = 0;\nvolatile uint16_t bres;\nvolatile uint32_t msecs, hsecs;\n\n//-----------------------------------------------------------------------------\n// Interrupt handling routine\n//-----------------------------------------------------------------------------\nINTERRUPT_HANDLER() {\n  SOFTPWM_ISR();\n  /*\n    if(TMR1IF) {\n      // Clear timer interrupt bit\n      TMR1IF = 0;\n    }*/\n\n#if USE_SER\n  ser_int();\n#endif\n\n  if(TIMER0_INTERRUPT_FLAG) {\n    bres += 256 * 4;\n\n    if(bres >= 5000) {\n      bres -= 5000;\n      msecs++;\n      msec_count++;\n    }\n    if(msec_count >= 10) { // if reached 1 decisecond!\n      hsecs++;             // update clock, etc\n\n      LED2_ANODE = hsecs & 1;\n\n      msec_count -= 10;\n    }\n    // Clear timer interrupt bit\n    TIMER0_INTERRUPT_CLEAR();\n  }\n}\n\n  //-----------------------------------------------------------------------------\nint\nmain() {\n  uint32_t tmp_msecs;\n  static uint32_t prev_hsecs = 0, last_button = 0;\n  uint8_t index, seconds;\n  static BOOL led_state = 0;\n  // static uint8_t prev_index = 0, prev_seconds = 0;\n  BOOL update_colors;\n  char input;\n  uint32_t interval = 500;\n\n  msec_count = msecs = 0;\n  hsecs = 0;\n  bres = 0;\n  run = 1;\n\n  random_init(128, 79, 209);\n\n#if USE_UART\n  uart_init();\n#endif\n#if USE_SER\n  ser_init();\n#endif\n#if USE_SOFTSER\n  softser_init();\n#endif\n\n#if HAVE_ADC\n  ADON = 0;\n  PCFG = 0b0110;\n#endif\n\n#if defined(__16f876a) || defined(__18f252)\n  TRISC4 = TRISC5 = INPUT;\n#endif\n\n  SET_LED2(0);\n\n#if HAVE_COMPARATOR\n  comparator_disable();\n// CMCONbits.CON = 0;\n//  CMCON = 0b111;          //Disable PORTA Comparators\n#endif\n\n#if !NO_PORTB\n  N_RBPU = 0;\n  //  N_RBPU = 0; // enable portb pull-ups\n  TRISB |= 0b11110000;\n  TRISB &= 0b11110011;\n  RB2 = RB3 = LOW;\n\n#endif\n\n#if HAVE_TIMER_0 && USE_TIMER0\n  timer0_init(PRESCALE_1_4);\n\n  TIMER0_INTERRUPT_CLEAR();\n  T0IE = 1;\n#endif\n  // timer1_init(2);\n\n  TRISA3 = TRISA5 = OUTPUT;\n  RA3 = RA5 = HIGH;\n\n  INIT_LED();\n  // INIT_LED2();\n  SET_LED(1);\n  //  SET_LED2(1);\n\n  LED_TRIS();\n  LED_OFF();\n\n  LED2_CATHODE_TRIS = 0;\n  LED2_CATHODE = 0;\n  LED2_ANODE_TRIS = 0;\n  LED2_ANODE = 0;\n\n  softpwm_init();\n  softpwm_values[0] = 30;\n  softpwm_values[1] = 60;\n  softpwm_values[2] = 80;\n\n  PEIE = 1;\n  INTERRUPT_ENABLE();\n\n  put_str(put_char, \"blinktest\\r\\n\");\n\n  for(;;) {\n\n    /*static float hue = 0;\n    static int i = 0;*/\n\n    INTERRUPT_DISABLE();\n    tmp_msecs = msecs;\n    INTERRUPT_ENABLE();\n\n    update_colors = 0;\n    input = 0;\n\n    if(RCIF || OERR || FERR) {\n      char dummy = RCREG;\n      input = RCREG;\n\n      if(OERR || FERR) {\n        CREN = 0;\n        input = 0;\n        dummy = 0xff;\n        dummy = 0x00;\n        CREN = 1;\n      }\n      RCIF = 0;\n\n    } else if(tmp_msecs > last_button + 200) {\n\n      uint8_t b = BUTTON_GET();\n\n      if(b & B_PLUS)\n        input = '+';\n      else if(b & B_MINUS)\n        input = '-';\n      else if(b & B_LEFT)\n        input = ' ';\n      else if(b & B_RIGHT)\n        input = '\\n';\n\n      if(b & 0b1111) {\n        last_button = tmp_msecs;\n      }\n    }\n\n    /*\n        if (input != 0) {\n\n          if (input == '+' || input == 'Q' || input == 'q') {\n            if (interval > 10) interval -= 10;\n          } else if (input == '-' || input == 'A' || input == 'a') {\n            if (interval < 4990) interval += 10;\n          } else if (input == ' ') {\n            run = !run;\n          } else if (input == '\\n') {\n            index += 8;\n            prev_hsecs = 0;\n            update_colors = 1;\n          }\n\n          put_str(put_char, \"CMD: \");\n          put_char(input);\n          put_str(put_char, \"\\r\\n\");\n\n          input = 0;\n        }*/\n\n    if(run) {\n\n      if(tmp_msecs >= prev_hsecs + interval) {\n        index++;\n\n        led_state = !led_state;\n        SET_LED(led_state);\n\n        update_colors = 1;\n        prev_hsecs = tmp_msecs;\n      }\n    }\n\n    if(update_colors) {\n      const uint8_t* rgb;\n\n      rgb = rainbow8[index];\n\n#ifdef USE_UART\n      uart_enable();\n#endif\n\n#if USE_SER || USE_UART\n      put_char('#');\n      put_number(put_char, index, 10, 0);\n      put_str(put_char, \": R=\");\n      put_number(put_char, rgb[0], 10, 0);\n      put_str(put_char, \"%, G=\");\n      put_number(put_char, rgb[1], 10, 0);\n      put_str(put_char, \"%, B=\");\n      put_number(put_char, rgb[2], 10, 0);\n      put_str(put_char, \"% (T=\");\n      put_number(put_char, interval, 10, 0);\n      put_str(put_char, \")\\r\\n\");\n#endif\n#ifdef USE_SOFTSER\n      put_number(softser_putch, tmp_msecs, 10, 0);\n      put_str(softser_putch, \")\\r\\n\");\n#endif\n\n      softpwm_disable();\n      {\n        softpwm_set(0, rgb[0]);\n        softpwm_set(1, rgb[1]);\n        softpwm_set(2, rgb[2]);\n      }\n      softpwm_enable();\n\n      update_colors = 0;\n      //      prev_index = index;\n    }\n#ifdef USE_UART\n    uart_disable();\n#endif\n\n    INTERRUPT_DISABLE();\n    tmp_msecs = msecs + 1000;\n    INTERRUPT_ENABLE();\n\n    for(;;) {\n      BOOL wait;\n      INTERRUPT_DISABLE();\n      wait = msecs < tmp_msecs;\n      INTERRUPT_ENABLE();\n\n      if(!wait) break;\n    }\n  }\n}\n\n//-----------------------------------------------------------------------------\n// Rainbow HSV table (Generated by 'tools/make-hue-table.c')\n//-----------------------------------------------------------------------------\nconst uint8_t rainbow8[64][3] = {\n    {100, 0, 0},   {100, 8, 0},  {100, 17, 0}, {100, 25, 0}, {100, 33, 0}, {100, 42, 0}, {100, 50, 0}, {100, 58, 0},\n    {100, 67, 0},  {100, 71, 0}, {100, 75, 0}, {100, 79, 0}, {100, 83, 0}, {100, 88, 0}, {100, 92, 0}, {100, 96, 0},\n    {100, 100, 0}, {88, 100, 0}, {75, 100, 0}, {63, 100, 0}, {50, 100, 0}, {38, 100, 0}, {25, 100, 0}, {13, 100, 0},\n    {0, 100, 0},   {0, 96, 4},   {0, 92, 8},   {0, 88, 13},  {0, 83, 17},  {0, 79, 21},  {0, 75, 25},  {0, 71, 29},\n    {0, 67, 33},   {0, 58, 42},  {0, 50, 50},  {0, 42, 58},  {0, 33, 67},  {0, 25, 75},  {0, 17, 83},  {0, 8, 92},\n    {0, 0, 100},   {4, 0, 96},   {8, 0, 92},   {13, 0, 88},  {17, 0, 83},  {21, 0, 79},  {25, 0, 75},  {29, 0, 71},\n    {33, 0, 67},   {38, 0, 63},  {42, 0, 58},  {46, 0, 54},  {50, 0, 50},  {54, 0, 46},  {58, 0, 42},  {63, 0, 38},\n    {67, 0, 33},   {71, 0, 29},  {75, 0, 25},  {79, 0, 21},  {83, 0, 17},  {88, 0, 13},  {92, 0, 8},   {96, 0, 4},\n};\n\n//-----------------------------------------------------------------------------\n// Format number as a string and output it using the given 'putc' function\n//-----------------------------------------------------------------------------\nvoid\nput_number(putch_fn* putc, uint16_t n, uint8_t base, int8_t pad) {\n  uint8_t buf[8 * sizeof(long)]; // Assumes 8-bit chars.\n  uint8_t di;\n  int8_t i = 0;\n  char padchar = ' ';\n\n  if(pad < 0) {\n    pad = -pad;\n    padchar = '0';\n  }\n\n  do {\n    di = n % base;\n    buf[i++] = (di < 10 ? (uint8_t)'0' + di : (uint8_t)'A' + di - 10);\n\n    n /= base;\n  } while(n > 0);\n\n  while(pad-- >= i) putc(padchar);\n\n  for(; i > 0; i--) putc((char)buf[(int16_t)i - 1]);\n}\n",
+			"file": "/home/roman/Dokumente/Sources/pictest/blinktest.c",
+			"file_size": 8629,
+			"file_write_time": 132246964090157492,
 			"settings":
 			{
-				"buffer_size": 13578,
+				"buffer_size": 8257,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata",
-			"settings":
-			{
-				"buffer_size": 11274,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/ihex/ihex_read_at.c",
-			"settings":
-			{
-				"buffer_size": 766,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		}
 	],
@@ -346,28 +331,85 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist",
 		"/home/roman/Dokumente/Sources/c-utils/lib/uint16",
 		"/home/roman/Dokumente/Sources/c-utils/tests"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/lc-meter/gen-mk-mplab.sh",
+		"/home/roman/Dokumente/Sources/pictest/gen-mk-mplab.sh",
+		"/home/roman/Dokumente/Sources/pictest/gen-mk.sh",
+		"/home/roman/Dokumente/Sources/lc-meter/gen-mk.sh",
+		"/home/roman/Dokumente/Sources/c-utils/mplab.c",
+		"/home/roman/Dokumente/Sources/pictest/lib/device.h",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
+		"/home/roman/Dokumente/Sources/pictest/lib/ser.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
+		"/home/roman/Dokumente/Sources/c-utils/3rdparty/zlib/inflate.c",
+		"/home/roman/Dokumente/Sources/c-utils/3rdparty/zlib/inflate.h",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest-18f2550-debug-htc.mcp",
+		"/home/roman/Dokumente/Sources/c-utils/ini.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_indexofb.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pushb.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push_unique.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_htc.mcp",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pusb_unique.c",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/htc-18f2550-debug.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/htc.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest_sdcc.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_16f876a_htc.mcp",
+		"/home/roman/Dokumente/Sources/c-utils/ini.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
+		"/home/roman/Dokumente/Sources/c-utils/mplab.h",
+		"/home/roman/Dokumente/Sources/c-utils/map.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_sort.c",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest-18f2550-debug-xc8.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/serialtest_htc.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/ringtone_htc.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/ps2test_htc.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest_htc.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest_xc8.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_18f2550_xc8.mcp",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_truncfile.c",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest2_htc.mcp",
+		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_18f2550_htc.mcp",
+		"/home/roman/Dokumente/Sources/lc-meter/build/mplab/LC-meter-HD44780-16f876a-xc8.mcp",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_relative.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_basename.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_dirname.c",
+		"/home/roman/Dokumente/Sources/c-utils/piccfg.c",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-to-svg.js",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-to-svg.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add.c",
+		"/home/roman/Dokumente/Sources/c-utils/test.sh",
+		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
+		"/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_read_at.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print_attributes.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_set_chars.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_set_stralloc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_0.c",
+		"/home/roman/Dokumente/Sources/c-utils/test.svg",
 		"/opt/microchip/xc8/v1.43/dat/cfgdata/16f876a.cfgdata",
 		"/opt/microchip/xc8/v1.43/dat/cfgdata/18f25k22.cfgdata",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_charsetnskip.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_finds.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_open.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putspad.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/map.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/map_internal.h",
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.c",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-to-svg.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putxlong0.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_xlong.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_xlonglong.c",
@@ -378,7 +420,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_load_buf.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_record_at.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_load_record.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_read_at.c",
 		"/home/roman/Dokumente/Sources/c-utils/utils/eagle.js",
 		"/home/roman/Dokumente/Sources/pictest/eagle/PIC18F2550-USB+ICSP-Board.brd",
 		"/home/roman/Dokumente/Sources/c-utils/out.svg",
@@ -423,75 +464,19 @@
 		"/home/roman/Sources/c-utils/lib/coff/coff_header.c",
 		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_catlong0.c",
 		"/home/roman/Downloads/circuit-20200112-0009.circuitjs (1).txt",
-		"/home/roman/Downloads/circuit-20200112-0009.circuitjs.txt",
-		"/home/roman/Sources/c-utils/lib/xml/xml_path.c",
-		"/home/roman/Sources/c-utils/lib/stralloc.h",
-		"/home/roman/Sources/c-utils/lib/xml.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute_double.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
-		"/home/roman/Sources/c-utils/eagle-to-circuit.c",
-		"/home/roman/Sources/c-utils/eagle-init-brd.c",
-		"/home/roman/Sources/c-utils/eagle-gen-cmds.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_find_predicates.c",
-		"/home/roman/Sources/c-utils/GNUmakefile",
-		"/home/roman/Sources/c-utils/lib/coff.h",
-		"/home/roman/Sources/c-utils/lib/coff/coff_symbol_table.c",
-		"/home/roman/Sources/c-utils/c-utils.sublime-project",
-		"/home/roman/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_get_strtab.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_get_symtab.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_symbol_table.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_exists.c",
-		"/home/roman/Dokumente/Sources/c-utils/cofflist.c",
-		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_absolute.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_realpath.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cb.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cb_internal.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_find.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_find_prefix.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_foreach.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add_tuple_with_data.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add.c",
-		"/home/roman/Dokumente/Sources/sdcc/sdcc/t.txt",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
-		"/home/roman/.config/sublime-text-3/Packages/User/CTags.sublime-settings",
-		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
-		"/home/roman/Dokumente/Sources/c-utils/make.log",
-		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
-		"/home/roman/.config/sublime-text-3/Packages/User/CscopeSublime.sublime-settings",
-		"/home/roman/.config/sublime-text-3/Packages/CTags/CTags.sublime-settings",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_sort.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_chr.3",
-		"/home/roman/Dokumente/Sources/c-utils/examples/byte_copy_example.c",
-		"/home/roman/Dokumente/Sources/c-utils/test.circuit",
-		"/home/roman/Dokumente/Sources/striprouter/bin/circuits/benchmark.circuit",
-		"/home/roman/Dokumente/Sources/striprouter/bin/circuits/example.circuit",
-		"/home/roman/Sources/c-utils/build/examples.mk",
-		"/home/roman/Sources/c-utils/lib/byte.h",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_putspad.c",
-		"/home/roman/Sources/c-utils/lib/cb.h",
-		"/home/roman/Sources/c-utils/jsontest.c",
-		"/home/roman/Sources/c-utils/lib/json.h",
-		"/home/roman/Sources/c-utils/lib/byte/byte_copy.c",
-		"/home/roman/Sources/c-utils/lib/scan/scan_whitenskip.c",
-		"/home/roman/Sources/c-utils/hexedit.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_get.c",
-		"/home/roman/Sources/c-utils/lib/hmap/hmap_free_data.c",
-		"/home/roman/Sources/c-utils/lib/hmap.h"
+		"/home/roman/Downloads/circuit-20200112-0009.circuitjs.txt"
 	],
 	"find":
 	{
-		"height": 46.0
+		"height": 42.0
 	},
 	"find_in_files":
 	{
 		"height": 258.0,
 		"where_history":
 		[
+			"/home/roman/Dokumente/Sources/pictest/lib,*.c,*.h,*.js",
+			"/home/roman/Dokumente/Sources/pictest,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,*.js,",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,*.js/home/roman/Dokumente/Sources/c-utils,*.c,*.h,",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h-2.79/20.47460.",
@@ -502,137 +487,137 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
-			"charset",
-			"#pragma",
-			"config_bytes",
-			"baseaddr",
-			"uint8",
-			"get_setting_byte",
-			"config_byte_at",
-			"CONFIG",
-			"CONFIG:",
-			"add_item",
-			"config_byte_at",
-			"byte_at",
-			"lower",
-			"nodef",
-			"defval",
-			"default",
-			"infer",
-			"skip def",
-			"\"  \"",
-			"output_name",
-			"scan_",
-			"defval",
-			"config_bytes",
-			"output_name",
-			"comments",
-			"comments;",
-			"getopt",
-			"main",
-			"push",
-			"dom\\.",
-			"= dom",
-			"^dom\\.",
-			"dom.is",
-			"window.dom",
-			"dom =",
-			"class SVG",
-			"<script",
-			"text.java",
-			"base64",
-			"base",
-			"base64",
-			"<scr",
-			"lang",
-			"readSc",
-			"\\/\\*",
-			"<script",
-			"svg",
-			"<script",
-			"hu(",
-			"hu\\(",
-			"children(",
-			"children\\(",
-			"Point.prototype.toStr",
-			"isNumber",
-			"isNunmber",
-			"isNumber",
-			"isNum",
-			" formatA",
-			"formatA",
-			"Rect",
-			"class Rect",
-			"lass Rec",
-			"Rect {",
-			"class Rec",
-			"class SV",
-			"class BBox",
-			"class BBox\\(",
-			"BBox\\(",
-			"BBox",
-			"BBox$",
-			"BBOX",
-			"trace",
-			"class B",
-			"tracePa",
-			"class SV",
-			"\n  ",
-			"rand",
-			"r",
-			"rand",
-			"class Pack",
-			"^Point\\.",
-			"Point\\.",
-			"Point.translate",
-			"Rect.prototype.toStr",
-			"bboxb",
-			"bbox",
-			"`b",
-			"getBound",
-			"\"b",
-			"\"b ",
-			"\\.iter",
-			"instanceo",
-			"instanceof",
-			"child:",
-			"instanceof",
-			"instance",
-			"child:",
-			"child:child:",
-			"class Pac",
-			"yield",
-			"instanceof",
-			"class Rec",
-			"LED5MM",
-			"\"LED",
-			"LED",
-			"Rect.protoR",
-			"Rect.proto",
-			"children",
-			"\\.child",
-			"class Sig",
-			"getObjg",
-			"getObj",
-			"g.mo",
-			"g.mog",
-			"g.move",
-			"Point.proto",
-			"Line.pro",
-			"move_",
-			"move",
-			"Line.prototype",
-			"Line.prototype.move",
-			"Line.prototype.",
-			"translate\\([01],",
-			"translate(0,",
-			"translate(0",
-			"translate(1",
-			"Point.prototype",
-			"Point.prototype.rotate"
+			"include.*xc",
+			"incdirs",
+			"stralloc_repl",
+			"config_t",
+			"cfg;",
+			"toolcfg",
+			"dirs\\.build",
+			"dirs\\.build\"",
+			"dirs\\.build",
+			"relative",
+			"F5\"",
+			"out.*fmt",
+			"LDFLAGS\\)",
+			"link_command",
+			"\"sdcc\"",
+			"output_all",
+			"^main",
+			"IF NOT",
+			"recipe",
+			"preprocess_",
+			"preproc",
+			"^scan_main",
+			"^has_main",
+			"has_main",
+			"gen_simple_compile_rules",
+			"{\n",
+			"byte_equal",
+			"main\\(",
+			"path_output",
+			"add_source",
+			"^output",
+			"PIC18",
+			"PIC18\"",
+			"PIC18",
+			"-D__",
+			"inser",
+			"_lower",
+			"_tolower",
+			"tolower",
+			"^add_path_sa",
+			"add_path_sa",
+			"get_rule.*obj",
+			"main\\(",
+			"finds",
+			"ain\"",
+			"ainn\"",
+			"to supp",
+			"Change hi",
+			"main\\(",
+			"scan_main",
+			"has main",
+			"scan_main",
+			"has main",
+			"scan_main",
+			"buffer_2",
+			"has_main",
+			"finds",
+			"byte_equal",
+			"has_main",
+			"has_man",
+			"D__",
+			"__",
+			"DEFS",
+			"-D__",
+			"D__",
+			"indexofb",
+			"push_uni",
+			"str_con",
+			"-D",
+			"set_com",
+			"set_compil",
+			"tools\\.compiler",
+			"set_compiler_type",
+			"\"-DPI",
+			"stralloc_upper\\(",
+			"_upper\\(",
+			"-DPIC",
+			"upper",
+			"\"PIC",
+			"tools.compiler",
+			"dir.*bin",
+			"MCHP",
+			"XC8",
+			"i+",
+			"ext",
+			"sort_sources",
+			"strarray_sort",
+			"str_start",
+			"= \"xc8",
+			"compiler",
+			"tools.compiler",
+			"mcp\\\"",
+			"mcp",
+			"\\.mcp",
+			"compiler_settings",
+			"TS{",
+			"F42384DA-C7ED-4A02-880F-0F5E88735CE2",
+			"XC8",
+			"C:\\Sources\\pictest",
+			"catint",
+			"MAP_SET\\(toolcfg",
+			"ini_set\\(section, \"([^\"]*)\", \"([0-9]+)\"\\);",
+			"ini_set\\(section, \"([^\"]*)\", \"([0-9]*)\"\\);",
+			" : ",
+			"^main\\(",
+			"cfg;",
+			"build_type ",
+			"build_type",
+			"build_type[^A-Za-z]",
+			"build_type[^A-Za-z",
+			"build_type",
+			"config_t",
+			"build_type",
+			"Number of",
+			"\"Number",
+			"of rules",
+			"Number of",
+			"buffer_trunc",
+			"buffer_mmap",
+			"buffer_1",
+			"out =",
+			"set_compiler_type",
+			"^set_compiler",
+			"set_make_type",
+			"compiler",
+			"set_make_type",
+			"\"dirs.build\"",
+			"tools."
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -640,6 +625,24 @@
 		"regex": true,
 		"replace_history":
 		[
+			"map",
+			"compiler",
+			"..\\..",
+			"set_str(toolcfg",
+			"ini_set_long(section, \"\\1\", \\2);",
+			" = ",
+			"out",
+			"\"builddir\"",
+			"",
+			"make_tool_key(&sa, ",
+			"preprocess",
+			"_make",
+			"make_",
+			"make_tool_key(\\&sa, 1, \"\\1\")",
+			"set_value(toolcfg, \"\\1\", \\2);",
+			"",
+			"tgt.",
+			"_MAP_H",
 			"get_setting_word",
 			"get_setting_data",
 			"config_data_at",
@@ -700,7 +703,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 275,
+						"buffer_size": 70,
 						"regions":
 						{
 						},
@@ -709,128 +712,53 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/piccfg.c",
+							"current_file": "/home/roman/Dokumente/Sources/pictest/blinktest.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									540,
-									546
+									508,
+									518
 								],
 								[
-									689,
-									697
+									787,
+									791
 								],
 								[
-									846,
-									851
+									845,
+									852
 								],
 								[
-									1095,
-									1109
+									976,
+									987
 								],
 								[
-									1337,
-									1347
+									1149,
+									1159
 								],
 								[
-									1678,
-									1691
+									1243,
+									1250
 								],
 								[
-									1977,
-									1988
+									2225,
+									2229
 								],
 								[
-									2271,
-									2285
-								],
-								[
-									2795,
-									2811
-								],
-								[
-									3246,
-									3259
-								],
-								[
-									3764,
-									3777
-								],
-								[
-									4729,
-									4741
-								],
-								[
-									5087,
-									5103
-								],
-								[
-									5241,
-									5258
-								],
-								[
-									5844,
-									5856
-								],
-								[
-									6113,
-									6123
-								],
-								[
-									6427,
-									6437
-								],
-								[
-									7041,
-									7051
-								],
-								[
-									8298,
-									8306
-								],
-								[
-									8581,
-									8595
-								],
-								[
-									9703,
-									9715
-								],
-								[
-									10600,
-									10605
-								],
-								[
-									11425,
-									11429
+									7799,
+									7809
 								]
 							],
 							"symlist":
 							[
-								"cvalue",
-								"csetting",
-								"cword",
-								"config_data_at",
-								"dump_cword",
-								"dump_csetting",
-								"dump_cvalue",
-								"parse_cfgvalue",
-								"parse_cfgsetting",
-								"parse_cfgword",
-								"parse_cfgdata",
-								"config_bytes",
-								"get_setting_word",
-								"get_setting_value",
-								"find_setting",
-								"find_value",
-								"infer_chip",
-								"get_cfgdat",
-								"add_item",
-								"process_config",
-								"output_items",
-								"usage",
-								"main"
+								"BUTTON_GET",
+								"__at",
+								"SIZE_OF",
+								"dummy_putch",
+								"put_number",
+								"put_str",
+								"main",
+								"put_number"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -838,7 +766,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -849,84 +777,19 @@
 			[
 				{
 					"buffer": 1,
-					"file": "piccfg.c",
+					"file": "/home/roman/Dokumente/Sources/pictest/blinktest.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13578,
+						"buffer_size": 8257,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6985,
-								6985
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Userscape Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"typescript_plugin_format_options":
-							{
-								"convertTabsToSpaces": true,
-								"indentSize": 2,
-								"tabSize": 2
-							}
-						},
-						"translation.x": 0.0,
-						"translation.y": 7088.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 11274,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 5400.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/ihex/ihex_read_at.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 766,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								610,
-								610
+								2009,
+								2009
 							]
 						],
 						"settings":
@@ -936,10 +799,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 300.0,
+						"translation.y": 1439.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -947,7 +810,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 34.0
+		"height": 42.0
 	},
 	"input":
 	{
@@ -1021,7 +884,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 84.0
+		"height": 76.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1031,28 +894,200 @@
 		"selected_items":
 		[
 			[
-				"stralloc.h",
-				"lib/stralloc.h"
-			],
-			[
-				"dir.h",
-				"lib/dir.h"
-			],
-			[
 				"genma",
 				"genmakefile.c"
+			],
+			[
+				"mplab",
+				"mplab.c"
+			],
+			[
+				"genmakefile.h",
+				"genmakefile.h"
+			],
+			[
+				"genmakefile.c",
+				"genmakefile.c"
+			],
+			[
+				"byte.h",
+				"lib/byte.h"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
 			],
 			[
 				"strlist.h",
 				"lib/strlist.h"
 			],
 			[
-				"eagle-to-svg",
-				"eagle-to-svg.c"
+				"inflate.h",
+				"3rdparty/zlib/inflate.h"
+			],
+			[
+				"inflate.c",
+				"3rdparty/zlib/inflate.c"
+			],
+			[
+				"strlist_index",
+				"lib/strlist/strlist_indexofb.c"
+			],
+			[
+				"push_unique",
+				"lib/strlist/strlist_push_unique.c"
+			],
+			[
+				"strlist_pushb",
+				"lib/strlist/strlist_pushb.c"
+			],
+			[
+				"str.h",
+				"lib/str.h"
+			],
+			[
+				"",
+				"genmakefile.c"
+			],
+			[
+				"genmake",
+				"genmakefile.h"
+			],
+			[
+				"genmak",
+				"genmakefile.c"
+			],
+			[
+				"path.h",
+				"lib/path.h"
+			],
+			[
+				"ini.c",
+				"ini.c"
+			],
+			[
+				"fmt.h",
+				"lib/fmt.h"
+			],
+			[
+				"ini.h",
+				"ini.h"
+			],
+			[
+				"ini",
+				"ini.c"
+			],
+			[
+				"mplab.h",
+				"mplab.h"
+			],
+			[
+				"mplab.c",
+				"mplab.c"
+			],
+			[
+				"buffer_trunc",
+				"lib/buffer/buffer_truncfile.c"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"map.h",
+				"map.h"
+			],
+			[
+				"strarray_sort",
+				"lib/strarray/strarray_sort.c"
+			],
+			[
+				"strarray.h",
+				"lib/strarray.h"
+			],
+			[
+				"strarra",
+				"lib/strarray.h"
+			],
+			[
+				"strarray",
+				"lib/strarray.h"
+			],
+			[
+				"path_re",
+				"lib/path/path_relative.c"
+			],
+			[
+				"path_dir",
+				"lib/path/path_dirname.c"
+			],
+			[
+				"path_base",
+				"lib/path/path_basename.c"
+			],
+			[
+				"hmap",
+				"lib/hmap.h"
+			],
+			[
+				"hmap_add",
+				"lib/hmap/hmap_add.c"
+			],
+			[
+				"hmap_set",
+				"lib/hmap/hmap_set_stralloc.c"
+			],
+			[
+				"hmap_set_c",
+				"lib/hmap/hmap_set_chars.c"
+			],
+			[
+				"hmap.h",
+				"lib/hmap.h"
+			],
+			[
+				".mcp",
+				"~/Dokumente/Sources/pictest/build/mplab/pictest_xc8.mcp"
+			],
+			[
+				"strall",
+				"lib/stralloc.h"
+			],
+			[
+				"stralloc.",
+				"lib/stralloc/stralloc_0.c"
+			],
+			[
+				"path_relat",
+				"lib/path/path_relative.c"
+			],
+			[
+				"mpla",
+				"mplab.c"
+			],
+			[
+				"init.c",
+				"lib/buffer/buffer_init.c"
+			],
+			[
+				"GNU",
+				"GNUmakefile"
+			],
+			[
+				"gnu",
+				"GNUmakefile"
 			],
 			[
 				"eagle-to",
-				"eagle-to-circuit.c"
+				"eagle-to-svg.c"
+			],
+			[
+				"dir.h",
+				"lib/dir.h"
+			],
+			[
+				"eagle-to-svg",
+				"eagle-to-svg.c"
 			],
 			[
 				"ihex",
@@ -1147,14 +1182,6 @@
 				"lib/xml.h"
 			],
 			[
-				"buffer.h",
-				"lib/buffer.h"
-			],
-			[
-				"GNU",
-				"GNUmakefile"
-			],
-			[
 				"eagle-",
 				"eagle-to-circuit.c"
 			],
@@ -1187,10 +1214,6 @@
 				"lib/strlist.h"
 			],
 			[
-				"hmap.h",
-				"lib/hmap.h"
-			],
-			[
 				"path_ex",
 				"lib/path/path_exists.c"
 			],
@@ -1201,14 +1224,6 @@
 			[
 				"realp",
 				"lib/path/path_realpath.c"
-			],
-			[
-				"hmap_add",
-				"lib/hmap/hmap_add.c"
-			],
-			[
-				"hmap",
-				"lib/hmap.h"
 			],
 			[
 				"open.h",
@@ -1231,10 +1246,6 @@
 				"eagle-to-circuit.c"
 			],
 			[
-				"",
-				"~/Dokumente/Sources/striprouter/bin/circuits/example.circuit"
-			],
-			[
 				"exam",
 				"build/examples.mk"
 			],
@@ -1247,10 +1258,6 @@
 				"lib/buffer/buffer_putspad.c"
 			],
 			[
-				"byte.h",
-				"lib/byte.h"
-			],
-			[
 				"byte_chr",
 				"lib/byte/byte_chr.3"
 			],
@@ -1261,14 +1268,6 @@
 			[
 				"hmap_free",
 				"lib/hmap/hmap_free_data.c"
-			],
-			[
-				"str.h",
-				"lib/str.h"
-			],
-			[
-				"strall",
-				"lib/stralloc.h"
 			],
 			[
 				"array.h",
@@ -1325,14 +1324,6 @@
 			[
 				"xmlpp",
 				"xmlpp.c"
-			],
-			[
-				"path_re",
-				"lib/path/path_relative.c"
-			],
-			[
-				"genmake",
-				"genmakefile.c"
 			],
 			[
 				"alloc",
@@ -1413,134 +1404,6 @@
 			[
 				"test-pa",
 				"test-parsigram.moon"
-			],
-			[
-				"test-pars",
-				"test-parsigram.moon"
-			],
-			[
-				"test-per",
-				"test-perfectmoney.moon"
-			],
-			[
-				"test-perf",
-				"test-perfectmoney.lua"
-			],
-			[
-				"parsi",
-				"helpers/parsigram.moon"
-			],
-			[
-				"app.moo",
-				"app.moon"
-			],
-			[
-				"test-pe",
-				"test-perfectmoney.moon"
-			],
-			[
-				"test-",
-				"test-parsigram.moon"
-			],
-			[
-				"pay",
-				"applications/payment.moon"
-			],
-			[
-				"drawings.moo",
-				"applications/drawings.moon"
-			],
-			[
-				"api.moon",
-				"applications/api.moon"
-			],
-			[
-				"users.moo",
-				"applications/users.moon"
-			],
-			[
-				"paymen",
-				"applications/payment.moon"
-			],
-			[
-				"models",
-				"helpers/models.moon"
-			],
-			[
-				"models.m",
-				"helpers/models.moon"
-			],
-			[
-				"bitcoin.moo",
-				"helpers/bitcoin.moon"
-			],
-			[
-				"api.moo",
-				"applications/api.moon"
-			],
-			[
-				"api.mo",
-				"helpers/api.moon"
-			],
-			[
-				"perfe",
-				"helpers/perfectmoney.moon"
-			],
-			[
-				"parsigram.moo",
-				"helpers/parsigram.moon"
-			],
-			[
-				"test-p",
-				"test-perfectmoney.moon"
-			],
-			[
-				"perfectmoney.moo",
-				"helpers/perfectmoney.moon"
-			],
-			[
-				"perfect",
-				"helpers/perfectmoney.moon"
-			],
-			[
-				"api.m",
-				"helpers/api.moon"
-			],
-			[
-				"pars",
-				"helpers/parsigram.moon"
-			],
-			[
-				"json.moo",
-				"helpers/json.moon"
-			],
-			[
-				"parsigram.mo",
-				"helpers/parsigram.moon"
-			],
-			[
-				"valida",
-				"helpers/validate.moon"
-			],
-			[
-				"validate",
-				"~/Documents/Sources/lapis-1.7.0-1/lapis/lapis/validate.moon"
-			],
-			[
-				"games",
-				"applications/games.moon"
-			],
-			[
-				"games.moo",
-				"models/games.moon"
-			],
-			[
-				"vali",
-				"helpers/validate.moon"
-			],
-			[
-				"sheta",
-				"static/shetab-deposit.html"
 			]
 		],
 		"width": 0.0
