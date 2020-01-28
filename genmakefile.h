@@ -107,14 +107,15 @@ typedef struct {
   machine_type mach;
   system_type sys;
   stralloc chip;
+  build_type_t build_type;
 } config_t;
 
-enum {
+typedef enum {
   BUILD_TYPE_RELEASE = 0,
   BUILD_TYPE_RELWITHDEBINFO,
   BUILD_TYPE_MINSIZEREL,
   BUILD_TYPE_DEBUG,
-};
+} build_type_t;
 
 void add_include_dir(const char* dir);
 void add_path_sa(strlist* list, stralloc* path);

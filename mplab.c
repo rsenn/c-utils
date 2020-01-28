@@ -23,9 +23,10 @@ set_value(MAP_T map, const char* key, long value) {
 
 static const char*
 suite_guid(stralloc* sa) {
+  int xc8 = !case_diffs(tools.compiler, "xc8");
   stralloc_zero(sa);
   stralloc_catm_internal(
-      sa, "{", (xc8 ? "38171385-97B2-4EC5-BF2C-C2C027BA5B04" : "507D93FD-16F1-4270-980F-0C7C0207E6D3"), "}", key, 0);
+      sa, "{", (xc8 ? "38171385-97B2-4EC5-BF2C-C2C027BA5B04" : "507D93FD-16F1-4270-980F-0C7C0207E6D3"), "}" , 0);
   stralloc_nul(sa);
   return sa->s;
 }
@@ -121,9 +122,9 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   section = ini_new(&section->next, "FILE_INFO");
   unsigned long i = 0;
 
-  buffer_puts(b, "; Number of rules: ");
+/*  buffer_puts(b, "; Number of rules: ");
   buffer_putulong(b, hmap_count(rules));
-  buffer_putsflush(b, "\r\n");
+  buffer_putsflush(b, "\r\n");*/
 
   stralloc_zero(&incdirs.sa);
 
