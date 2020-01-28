@@ -491,7 +491,7 @@ TEST(test_strlist_sort) {
   strlist_push(&sl, "air");
   strlist_push(&sl, "fire");
 
-  strlist_sort(&sl);
+  strlist_sort(&sl, 0);
 
   stralloc_init(&sa);
 
