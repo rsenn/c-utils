@@ -68,25 +68,30 @@
 	"buffers":
 	[
 		{
-			"contents": "BUTTON_GET\n__at\nSIZE_OF\ndummy_putch\nput_number\nput_str\nmain\nput_number",
+			"contents": "make_fileno\nset_str\nset_int\nget_suite\nsuite_guid\nmake_tool_key\nis_debug\nopt_size\nopt_speed\nset_debug\noutput_mplab_project\nset_debug",
 			"settings":
 			{
-				"buffer_size": 70,
+				"buffer_size": 131,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"contents": "#include \"src/config-bits.h\"\n#include \"lib/comparator.h\"\n#include \"lib/const.h\"\n#include \"lib/device.h\"\n#include \"lib/interrupt.h\"\n#include \"lib/random.h\"\n#include \"lib/softpwm.h\"\n#include \"lib/timer.h\"\n#include \"pictest.h\"\n\n#if USE_UART\n#include \"lib/uart.h\"\n#endif\n#if USE_SER\n#include \"lib/ser.h\"\n#endif\n#if USE_SOFTSER\n#include \"lib/softser.h\"\n#endif\n\n#include <math.h>\n\n#if NO_PORTB\n#define BUTTON_PORT PORTA\n#define BUTTON_SHIFT 0\n#else\n#define BUTTON_PORT PORTB\n#define BUTTON_SHIFT 4\n#endif\n\n#define BUTTON_GET() ((~(BUTTON_PORT)) >> BUTTON_SHIFT)\n\n#define B_LEFT 0b0001\n#define B_PLUS 0b0010\n#define B_MINUS 0b0100\n#define B_RIGHT 0b1000\n\n//#define b & v, b) (BUTTON_GET()&(b))\n\n#if defined(SDCC) && !(__SDCC_VERSION_MAJOR == 3 && __SDCC_VERSION_MINOR >= 9)\n__code unsigned int __at(_CONFIG) __configword = CONFIG_WORD;\n#endif\n\n#define SIZE_OF(arr) (sizeof(arr) / sizeof(arr[0]))\n\nextern const uint16_t rainbow[64];\nextern const uint8_t rainbow8[64][3];\n\nstatic void\ndummy_putch(char c) {}\n\ntypedef void(putch_fn)(char);\n\nputch_fn* put_char =\n#if USE_UART\n    uart_putch\n#elif USE_SER\n    ser_putch\n#else\n    dummy_putch\n#endif\n    ;\n\nvoid put_number(putch_fn* putc, uint16_t n, uint8_t base, int8_t pad /*, int8_t pointpos*/);\n\nvoid\nput_str(putch_fn* putc, const char* s) {\n  while(*s) putc(*s++);\n}\n\nvolatile BOOL run = 0;\nvolatile uint8_t msec_count = 0;\nvolatile uint16_t bres;\nvolatile uint32_t msecs, hsecs;\n\n//-----------------------------------------------------------------------------\n// Interrupt handling routine\n//-----------------------------------------------------------------------------\nINTERRUPT_HANDLER() {\n  SOFTPWM_ISR();\n  /*\n    if(TMR1IF) {\n      // Clear timer interrupt bit\n      TMR1IF = 0;\n    }*/\n\n#if USE_SER\n  ser_int();\n#endif\n\n  if(TIMER0_INTERRUPT_FLAG) {\n    bres += 256 * 4;\n\n    if(bres >= 5000) {\n      bres -= 5000;\n      msecs++;\n      msec_count++;\n    }\n    if(msec_count >= 10) { // if reached 1 decisecond!\n      hsecs++;             // update clock, etc\n\n      LED2_ANODE = hsecs & 1;\n\n      msec_count -= 10;\n    }\n    // Clear timer interrupt bit\n    TIMER0_INTERRUPT_CLEAR();\n  }\n}\n\n  //-----------------------------------------------------------------------------\nint\nmain() {\n  uint32_t tmp_msecs;\n  static uint32_t prev_hsecs = 0, last_button = 0;\n  uint8_t index, seconds;\n  static BOOL led_state = 0;\n  // static uint8_t prev_index = 0, prev_seconds = 0;\n  BOOL update_colors;\n  char input;\n  uint32_t interval = 500;\n\n  msec_count = msecs = 0;\n  hsecs = 0;\n  bres = 0;\n  run = 1;\n\n  random_init(128, 79, 209);\n\n#if USE_UART\n  uart_init();\n#endif\n#if USE_SER\n  ser_init();\n#endif\n#if USE_SOFTSER\n  softser_init();\n#endif\n\n#if HAVE_ADC\n  ADON = 0;\n  PCFG = 0b0110;\n#endif\n\n#if defined(__16f876a) || defined(__18f252)\n  TRISC4 = TRISC5 = INPUT;\n#endif\n\n  SET_LED2(0);\n\n#if HAVE_COMPARATOR\n  comparator_disable();\n// CMCONbits.CON = 0;\n//  CMCON = 0b111;          //Disable PORTA Comparators\n#endif\n\n#if !NO_PORTB\n  N_RBPU = 0;\n  //  N_RBPU = 0; // enable portb pull-ups\n  TRISB |= 0b11110000;\n  TRISB &= 0b11110011;\n  RB2 = RB3 = LOW;\n\n#endif\n\n#if HAVE_TIMER_0 && USE_TIMER0\n  timer0_init(PRESCALE_1_4);\n\n  TIMER0_INTERRUPT_CLEAR();\n  T0IE = 1;\n#endif\n  // timer1_init(2);\n\n  TRISA3 = TRISA5 = OUTPUT;\n  RA3 = RA5 = HIGH;\n\n  INIT_LED();\n  // INIT_LED2();\n  SET_LED(1);\n  //  SET_LED2(1);\n\n  LED_TRIS();\n  LED_OFF();\n\n  LED2_CATHODE_TRIS = 0;\n  LED2_CATHODE = 0;\n  LED2_ANODE_TRIS = 0;\n  LED2_ANODE = 0;\n\n  softpwm_init();\n  softpwm_values[0] = 30;\n  softpwm_values[1] = 60;\n  softpwm_values[2] = 80;\n\n  PEIE = 1;\n  INTERRUPT_ENABLE();\n\n  put_str(put_char, \"blinktest\\r\\n\");\n\n  for(;;) {\n\n    /*static float hue = 0;\n    static int i = 0;*/\n\n    INTERRUPT_DISABLE();\n    tmp_msecs = msecs;\n    INTERRUPT_ENABLE();\n\n    update_colors = 0;\n    input = 0;\n\n    if(RCIF || OERR || FERR) {\n      char dummy = RCREG;\n      input = RCREG;\n\n      if(OERR || FERR) {\n        CREN = 0;\n        input = 0;\n        dummy = 0xff;\n        dummy = 0x00;\n        CREN = 1;\n      }\n      RCIF = 0;\n\n    } else if(tmp_msecs > last_button + 200) {\n\n      uint8_t b = BUTTON_GET();\n\n      if(b & B_PLUS)\n        input = '+';\n      else if(b & B_MINUS)\n        input = '-';\n      else if(b & B_LEFT)\n        input = ' ';\n      else if(b & B_RIGHT)\n        input = '\\n';\n\n      if(b & 0b1111) {\n        last_button = tmp_msecs;\n      }\n    }\n\n    /*\n        if (input != 0) {\n\n          if (input == '+' || input == 'Q' || input == 'q') {\n            if (interval > 10) interval -= 10;\n          } else if (input == '-' || input == 'A' || input == 'a') {\n            if (interval < 4990) interval += 10;\n          } else if (input == ' ') {\n            run = !run;\n          } else if (input == '\\n') {\n            index += 8;\n            prev_hsecs = 0;\n            update_colors = 1;\n          }\n\n          put_str(put_char, \"CMD: \");\n          put_char(input);\n          put_str(put_char, \"\\r\\n\");\n\n          input = 0;\n        }*/\n\n    if(run) {\n\n      if(tmp_msecs >= prev_hsecs + interval) {\n        index++;\n\n        led_state = !led_state;\n        SET_LED(led_state);\n\n        update_colors = 1;\n        prev_hsecs = tmp_msecs;\n      }\n    }\n\n    if(update_colors) {\n      const uint8_t* rgb;\n\n      rgb = rainbow8[index];\n\n#ifdef USE_UART\n      uart_enable();\n#endif\n\n#if USE_SER || USE_UART\n      put_char('#');\n      put_number(put_char, index, 10, 0);\n      put_str(put_char, \": R=\");\n      put_number(put_char, rgb[0], 10, 0);\n      put_str(put_char, \"%, G=\");\n      put_number(put_char, rgb[1], 10, 0);\n      put_str(put_char, \"%, B=\");\n      put_number(put_char, rgb[2], 10, 0);\n      put_str(put_char, \"% (T=\");\n      put_number(put_char, interval, 10, 0);\n      put_str(put_char, \")\\r\\n\");\n#endif\n#ifdef USE_SOFTSER\n      put_number(softser_putch, tmp_msecs, 10, 0);\n      put_str(softser_putch, \")\\r\\n\");\n#endif\n\n      softpwm_disable();\n      {\n        softpwm_set(0, rgb[0]);\n        softpwm_set(1, rgb[1]);\n        softpwm_set(2, rgb[2]);\n      }\n      softpwm_enable();\n\n      update_colors = 0;\n      //      prev_index = index;\n    }\n#ifdef USE_UART\n    uart_disable();\n#endif\n\n    INTERRUPT_DISABLE();\n    tmp_msecs = msecs + 1000;\n    INTERRUPT_ENABLE();\n\n    for(;;) {\n      BOOL wait;\n      INTERRUPT_DISABLE();\n      wait = msecs < tmp_msecs;\n      INTERRUPT_ENABLE();\n\n      if(!wait) break;\n    }\n  }\n}\n\n//-----------------------------------------------------------------------------\n// Rainbow HSV table (Generated by 'tools/make-hue-table.c')\n//-----------------------------------------------------------------------------\nconst uint8_t rainbow8[64][3] = {\n    {100, 0, 0},   {100, 8, 0},  {100, 17, 0}, {100, 25, 0}, {100, 33, 0}, {100, 42, 0}, {100, 50, 0}, {100, 58, 0},\n    {100, 67, 0},  {100, 71, 0}, {100, 75, 0}, {100, 79, 0}, {100, 83, 0}, {100, 88, 0}, {100, 92, 0}, {100, 96, 0},\n    {100, 100, 0}, {88, 100, 0}, {75, 100, 0}, {63, 100, 0}, {50, 100, 0}, {38, 100, 0}, {25, 100, 0}, {13, 100, 0},\n    {0, 100, 0},   {0, 96, 4},   {0, 92, 8},   {0, 88, 13},  {0, 83, 17},  {0, 79, 21},  {0, 75, 25},  {0, 71, 29},\n    {0, 67, 33},   {0, 58, 42},  {0, 50, 50},  {0, 42, 58},  {0, 33, 67},  {0, 25, 75},  {0, 17, 83},  {0, 8, 92},\n    {0, 0, 100},   {4, 0, 96},   {8, 0, 92},   {13, 0, 88},  {17, 0, 83},  {21, 0, 79},  {25, 0, 75},  {29, 0, 71},\n    {33, 0, 67},   {38, 0, 63},  {42, 0, 58},  {46, 0, 54},  {50, 0, 50},  {54, 0, 46},  {58, 0, 42},  {63, 0, 38},\n    {67, 0, 33},   {71, 0, 29},  {75, 0, 25},  {79, 0, 21},  {83, 0, 17},  {88, 0, 13},  {92, 0, 8},   {96, 0, 4},\n};\n\n//-----------------------------------------------------------------------------\n// Format number as a string and output it using the given 'putc' function\n//-----------------------------------------------------------------------------\nvoid\nput_number(putch_fn* putc, uint16_t n, uint8_t base, int8_t pad) {\n  uint8_t buf[8 * sizeof(long)]; // Assumes 8-bit chars.\n  uint8_t di;\n  int8_t i = 0;\n  char padchar = ' ';\n\n  if(pad < 0) {\n    pad = -pad;\n    padchar = '0';\n  }\n\n  do {\n    di = n % base;\n    buf[i++] = (di < 10 ? (uint8_t)'0' + di : (uint8_t)'A' + di - 10);\n\n    n /= base;\n  } while(n > 0);\n\n  while(pad-- >= i) putc(padchar);\n\n  for(; i > 0; i--) putc((char)buf[(int16_t)i - 1]);\n}\n",
 			"file": "/home/roman/Dokumente/Sources/pictest/blinktest.c",
-			"file_size": 8629,
-			"file_write_time": 132246964090157492,
 			"settings":
 			{
-				"buffer_size": 8257,
+				"buffer_size": 8255,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mplab.c",
+			"settings":
+			{
+				"buffer_size": 17344,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -490,6 +495,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"set_de",
 			"include.*xc",
 			"incdirs",
 			"stralloc_repl",
@@ -616,8 +622,7 @@
 			"set_make_type",
 			"compiler",
 			"set_make_type",
-			"\"dirs.build\"",
-			"tools."
+			"\"dirs.build\""
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -703,7 +708,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 70,
+						"buffer_size": 131,
 						"regions":
 						{
 						},
@@ -712,53 +717,73 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/pictest/blinktest.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/mplab.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									508,
-									518
+									91,
+									102
 								],
 								[
-									787,
-									791
+									244,
+									251
 								],
 								[
-									845,
-									852
+									358,
+									365
 								],
 								[
-									976,
-									987
+									533,
+									542
 								],
 								[
-									1149,
-									1159
+									1297,
+									1307
 								],
 								[
-									1243,
-									1250
+									1497,
+									1510
 								],
 								[
-									2225,
-									2229
+									1726,
+									1734
 								],
 								[
-									7799,
-									7809
+									1851,
+									1859
+								],
+								[
+									1934,
+									1943
+								],
+								[
+									2057,
+									2066
+								],
+								[
+									2085,
+									2105
+								],
+								[
+									17007,
+									17016
 								]
 							],
 							"symlist":
 							[
-								"BUTTON_GET",
-								"__at",
-								"SIZE_OF",
-								"dummy_putch",
-								"put_number",
-								"put_str",
-								"main",
-								"put_number"
+								"make_fileno",
+								"set_str",
+								"set_int",
+								"get_suite",
+								"suite_guid",
+								"make_tool_key",
+								"is_debug",
+								"opt_size",
+								"opt_speed",
+								"set_debug",
+								"output_mplab_project",
+								"set_debug"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -766,13 +791,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -781,7 +806,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8257,
+						"buffer_size": 8255,
 						"regions":
 						{
 						},
@@ -800,6 +825,36 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 1439.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "mplab.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17344,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12716,
+								12716
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7648.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -894,6 +949,10 @@
 		"selected_items":
 		[
 			[
+				"mplab.c",
+				"mplab.c"
+			],
+			[
 				"genma",
 				"genmakefile.c"
 			],
@@ -980,10 +1039,6 @@
 			[
 				"mplab.h",
 				"mplab.h"
-			],
-			[
-				"mplab.c",
-				"mplab.c"
 			],
 			[
 				"buffer_trunc",
