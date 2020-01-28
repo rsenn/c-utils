@@ -387,6 +387,25 @@ format_linklib_switch(const char* libname, stralloc* out) {
 void
 format_linklib_dummy(const char* libname, stralloc* out) {}
 
+
+const char*
+skip_comment(const char* x, size_t* lenp) {
+  const char* p = x;
+  size_t n = *lenp;
+  while(n > 2) {
+
+        if(byte_equal(x, 2, "*/")) {
+    if(n > 0)  { ++x; --n; }
+    if(n > 0)  { ++x; --n; }
+break;
+        }
+    ++x;
+    --n;
+  }
+  *lenp = n;
+  return x;
+}
+
 /**
  * @brief scan_main  Checks if the given source file contains a main() function
  * @param x
@@ -394,22 +413,43 @@ format_linklib_dummy(const char* libname, stralloc* out) {}
  * @return
  */
 int
-scan_main(const char* x, size_t n) {
-  while(n) {
-    size_t i = byte_finds(x, n, "main");
-    if(i + 5 >= n)
-      return 0;
-    i += 4;
-    x += i;
-    n -= i;
-    if(i > 4 && !isspace(*(x - 5)))
+scan_main(const char* x, ssize_t n) {
+  while(n > 2) {
+
+    if(byte_equal(x, 2, "/*")) {
+      x = skip_comment(x, &n);
       continue;
-    if((i = scan_whitenskip(x, n)) == n)
-      break;
-    x += i;
-    n -= i;
-    if(*x == '(')
-      return 1;
+    } 
+
+    if(byte_equal(x, 2, "//")) {
+      size_t i = byte_chr(x, n, '\n');
+      x += i+1;
+      n -= i+1;
+      continue;
+    }
+
+     if(!isalpha(x[0]) && x[0] != '_') {
+      x++;
+      n--;
+      if(n >= 5 && byte_equal(x, 4, "main")) {
+        ssize_t i = 0;
+        if(i + 5 >= n)
+          return 0;
+        i += 4;
+        x += i;
+        n -= i;
+        if(i > 4 && !isspace(*(x - 5)))
+          continue;
+        if((i = scan_whitenskip(x, n)) == n)
+          break;
+        x += i;
+        n -= i;
+        if(n >= 1 && *x == '(')
+          return 1;
+      }
+    }
+    x++;
+    n--;
   }
   return 0;
 }
@@ -777,7 +817,7 @@ get_rule(const char* name) {
 
     // ret = hmap_data(t);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUTI_
     if(t) {
       buffer_putm_internal(buffer_2, "Created rule '", ((target*)hmap_data(t))->name, "'\n", 0);
       buffer_flush(buffer_2);
@@ -946,6 +986,11 @@ new_source(const char* name) {
     byte_zero(ret, sizeof(sourcefile));
     ret->name = str_dup(name);
     ret->has_main = has_main(ret->name) == 1;
+
+#if DEBUG_OUTPUT
+    if(ret->has_main)
+      debug_s("Source has main()", ret->name);
+#endif
 
     return ret;
   }
@@ -4348,7 +4393,7 @@ main(int argc, char* argv[]) {
 
   MAP_NEW(sourcedirs);
 
-  strarray_dump(buffer_2, &args);
+  //  strarray_dump(buffer_2, &args);
 
   strarray_foreach(&args, arg) {
 

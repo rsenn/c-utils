@@ -698,7 +698,7 @@ RELEASE := 1
 MINSIZE := 0
 endif
 ifeq ($(DEBUG),1)
-DEFINES += _DEBUG=1
+DEFINES += _DEBUG=1 DEBUG_OUTPUT=1
 else
 DEFINES += NDEBUG=1
 endif

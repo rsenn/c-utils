@@ -227,7 +227,8 @@ typedef struct __unaligned {
   uint32 type;  /* type */
   int8 sclass;  /* storage class */
   uint8 numaux; /* number of auxiliary symbols */
-} coff_symtab_entry_microchip;
+}
+coff_symtab_entry_microchip;
 
 #define COFF_SYMTAB_MCHP_TYPE_NULL 0    /* null */
 #define COFF_SYMTAB_MCHP_TYPE_VOID 1    /* void */
