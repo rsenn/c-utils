@@ -55,7 +55,7 @@ MAP_T sourcedirs, rules, vars;
 
 tools_t tools;
 static const char* newline = "\n";
-config_t cfg = { 0, 0, 0, -1 };
+config_t cfg = {0, 0, 0, -1};
 static int batch, shell, ninja;
 static int batchmode;
 
