@@ -158,10 +158,12 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
 
   stralloc_zero(&sa);
 
-  stralloc_copys(&sa, "..\\..\\bin\\");
-  stralloc_catb(&sa, tools.compiler, 3);
+  stralloc_copy(&sa, &dirs.work.sa);
+/*  stralloc_catb(&sa, tools.compiler, 3);
   stralloc_catc(&sa, '-');
-  stralloc_cat(&sa, &cfg.chip);
+  stralloc_cat(&sa, &cfg.chip);*/
+      stralloc_replacec(&sa, '/', '\\');
+
   stralloc_nul(&sa);
 
   ini_set(section, "dir_bin", sa.s);
