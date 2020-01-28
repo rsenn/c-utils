@@ -159,10 +159,10 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   stralloc_zero(&sa);
 
   stralloc_copy(&sa, &dirs.work.sa);
-/*  stralloc_catb(&sa, tools.compiler, 3);
-  stralloc_catc(&sa, '-');
-  stralloc_cat(&sa, &cfg.chip);*/
-      stralloc_replacec(&sa, '/', '\\');
+  /*  stralloc_catb(&sa, tools.compiler, 3);
+    stralloc_catc(&sa, '-');
+    stralloc_cat(&sa, &cfg.chip);*/
+  stralloc_replacec(&sa, '/', '\\');
 
   stralloc_nul(&sa);
 
@@ -201,51 +201,41 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   stralloc_zero(&incdirs.sa);
 
   strarray_foreach(&srcs, p) {
-
     s = *p;
-
-    if(!is_source(s) && num_sources == 0) {
+    if(!is_source(s) && num_sources == 0)
       num_sources = i;
-    }
-
     stralloc_zero(&sa);
     stralloc_copy(&sa, &dirs.this.sa);
     stralloc_catc(&sa, '/');
     stralloc_cats(&sa, *p);
     stralloc_nul(&sa);
-
     stralloc_zero(&dirname);
     path_dirname(*p, &dirname);
     stralloc_nul(&dirname);
-
     s = dirname.s;
     n = str_rchrs(dirname.s, "/\\", 2);
     if(s[n])
       s += n;
+    while(s[0] == '.' && s[1] == '.' && (s[2] == '/' || s[2] == '\\')) s += 3;
 
-    if(!str_equal(s, "."))
+    if(!str_equal(s, ".")) {
       strlist_push_unique(is_source(*p) ? &srcdirs : &incdirs, s);
-
+    }
     debug_sa("sa", &sa);
     debug_sa("dirs.build", &dirs.build.sa);
     debug_sa("dirs.work", &dirs.work.sa);
     debug_sa("dirs.out", &dirs.out.sa);
-
-    path_relative(sa.s, dirs.build.sa.s, &file);
+    path_relative(sa.s, dirs.out.sa.s, &file);
+    debug_sa("file", &file);
     stralloc_replacec(&file, '/', '\\');
     stralloc_nul(&file);
-
     make_fileno(&sa, i++);
-
     ini_set(generated_files, sa.s, "no");
     ini_set(other_files, sa.s, "no");
     ini_set_sa(section, &sa, &file);
-
     stralloc_zero(&file);
     path_dirname(*p, &file);
-
     ini_set_sa(file_subfolders, &sa, &file);
-
     stralloc_free(&file);
   }
 
@@ -312,12 +302,14 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
 
   set_int(toolcfg, "DB", mplab_cfg.warning_level); //!< Warning level
   set_str(toolcfg, "D1", defines.sa.s);
-  set_int(toolcfg, "DF", mplab_cfg.verbose_messages);     //!< verbose messages
-  set_int(toolcfg, "DD", mplab_cfg.optimize_global);      //!< optimize global
-  set_int(toolcfg, "C2", mplab_cfg.optimize_speed);       //!< optimize speed
-  set_int(toolcfg, "C3", mplab_cfg.optimize_debug);       //!< optmize debug
-  set_int(toolcfg, "DE", mplab_cfg.optimize_assembler);   //!< optimize assembler
+  set_int(toolcfg, "DF", mplab_cfg.verbose_messages);   //!< verbose messages
+  set_int(toolcfg, "DD", mplab_cfg.optimize_global);    //!< optimize global
+  set_int(toolcfg, "C2", mplab_cfg.optimize_speed);     //!< optimize speed
+  set_int(toolcfg, "C3", mplab_cfg.optimize_debug);     //!< optmize debug
+  set_int(toolcfg, "DE", mplab_cfg.optimize_assembler); //!< optimize assembler
+  set_int(toolcfg, "C6", 255);
   set_int(toolcfg, "D7", mplab_cfg.preprocess_assembler); //!< preprocess assembler
+  set_int(toolcfg, "DC", 9);
 
   set_int(toolcfg, "FE", mplab_cfg.debugger);                      //!< debugger: 39 = PicKit3, 31 = Auto
   set_int(toolcfg, "EC", mplab_cfg.clear_bss);                     //!< clear BSS
@@ -329,24 +321,69 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   set_int(toolcfg, "C1", mplab_cfg.managed_stack);                 //!< managed stack
   set_int(toolcfg, "10E", mplab_cfg.program_default_config_words); //!< program default config words
   set_int(toolcfg, "110", mplab_cfg.link_in_peripheral_library);   //!< link in peripheral library
-
+  set_int(toolcfg, "11E", 0);
+  set_int(toolcfg, "121", 0);
+  set_int(toolcfg, "122", 0);
+  set_int(toolcfg, "123", 0);
+  set_int(toolcfg, "124", 0);
+  set_int(toolcfg, "125", 0);
+  set_int(toolcfg, "11F", 94);
+  set_int(toolcfg, "127", 0);
+  set_str(toolcfg, "C9", "4,3,1,2");
   stralloc_zero(&sa);
   stralloc_copys(&sa, mplab_cfg.additional_command_line_options);
   stralloc_replaces(&sa, ",", "%2C");
   stralloc_replaces(&sa, " ", ",");
+  set_int(toolcfg, "EE", 0);
+  set_int(toolcfg, "104", 0);
+  set_str(toolcfg, "E9", "");
+  set_int(toolcfg, "C4", 0);
+  set_str(toolcfg, "F2", "");
+  set_str(toolcfg, "F3", "");
+  set_str(toolcfg, "F4", "");
   stralloc_nul(&sa);
+  /*set_str(toolcfg, "F5", "");*/
 
-  set_str(toolcfg, "E3", sa.s);                     //!< additional command line options
-  set_int(toolcfg, "E5", mplab_cfg.memory_model);   //!< memory model: 0=small, 1=large
+  set_str(toolcfg, "E3", sa.s); //!< additional command line options
+  /*set_int(toolcfg, "FB", 0);
+  set_int(toolcfg, "C0", 0);*/
+  set_int(toolcfg, "E5", mplab_cfg.memory_model); //!< memory model: 0=small, 1=large
+  set_int(toolcfg, "BD", 0);
+  set_int(toolcfg, "BC", 0);
+  set_int(toolcfg, "BB", 0);
+  set_int(toolcfg, "BF", 0);
+  set_int(toolcfg, "BE", 0);
+  set_str(toolcfg, "B8", "");
+  set_int(toolcfg, "101", 0);
+  set_str(toolcfg, "103", "");
+  set_int(toolcfg, "102", 0);
+  set_str(toolcfg, "BA", "");
+  set_int(toolcfg, "FF", 0);
+  set_int(toolcfg, "100", 0);
+  set_int(toolcfg, "106", 0);
+  set_int(toolcfg, "109", 0);
+  set_int(toolcfg, "10A", 1);
+  set_int(toolcfg, "10B", 0);
+  set_int(toolcfg, "10C", 0);
   set_int(toolcfg, "E8", mplab_cfg.size_of_double); //!< size of double: 0=24, 1=32
+  set_int(toolcfg, "10F", 1);
   set_int(toolcfg, "126", mplab_cfg.size_of_float); //!< size of float: 0=24, 1=32
-                                                    /*  set_int(toolcfg, "F1", 0);
-                                                      set_str(toolcfg, "F6", "");
-                                                      set_str(toolcfg, "F7", "");
-                                                      set_int(toolcfg, "B9", -1);
-                                                      set_int(toolcfg, "107", 0);
-                                                    */
+  set_int(toolcfg, "F1", 0);
+  set_str(toolcfg, "F6", "");
+  set_str(toolcfg, "F7", "");
+  set_int(toolcfg, "B9", -1);
+  set_int(toolcfg, "107", 0);
+
   strlist_init(&tcfg, ' ');
+  set_int(toolcfg, "118", 0);
+  set_int(toolcfg, "116", 0);
+  set_str(toolcfg, "117", "");
+  set_int(toolcfg, "10D", 0);
+  set_int(toolcfg, "114", -1);
+  set_int(toolcfg, "113", -1);
+  set_int(toolcfg, "111", 0);
+  set_int(toolcfg, "115", -1);
+  set_int(toolcfg, "F5", 0);
 
   MAP_FOREACH(toolcfg, it) {
     stralloc_zero(&sa);
@@ -355,6 +392,7 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
     stralloc_catb(&sa, it->vals.val_chars, it->data_len - 1);
 
     strlist_push_sa(&tcfg, &sa);
+    set_int(toolcfg, "E7", 0);
   }
   stralloc_nul(&tcfg.sa);
 
