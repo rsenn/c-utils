@@ -396,15 +396,22 @@ format_linklib_dummy(const char* libname, stralloc* out) {}
 int
 scan_main(const char* x, ssize_t n) {
   while(n > 0) {
-    if(n > 2 && byte_equal(x, 2, "/*")) {
-      size_t i = byte_finds(x, n, "*/");
+    if(n > 2) {
 
-      x += i;
-      n -= i;
+      if(byte_equal(x, 2, "/*")) {
+        size_t i = byte_finds(x, n, "*/");
 
-/*      if(n > 0) { ++x; --n; }
-      if(n > 0) { ++x; --n; }
-*/      continue;
+        x += i;
+        n -= i;
+
+        continue;
+      } else if(byte_equal(x, 2, "//")) {
+        size_t i = byte_chr(x, n, '\n');
+
+        x += i;
+        n -= i;
+        continue;
+      }
     }
 
     if(!isalpha(x[0]) && x[0] != '_') {
@@ -967,8 +974,11 @@ new_source(const char* name) {
     ret->name = str_dup(name);
     ret->has_main = has_main(ret->name) == 1;
 
-    debug_s("Source has main()", ret->name);
-
+#if DEBUG_OUTPUT
+    if(ret->has_main)
+      debug_s("Source has main()", ret->name);
+#endif
+    
     return ret;
   }
   return 0;
@@ -4370,7 +4380,7 @@ main(int argc, char* argv[]) {
 
   MAP_NEW(sourcedirs);
 
-//  strarray_dump(buffer_2, &args);
+  //  strarray_dump(buffer_2, &args);
 
   strarray_foreach(&args, arg) {
 
