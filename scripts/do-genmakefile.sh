@@ -49,8 +49,8 @@ esac
 set -f
 
 if [ $# -eq 0 ]; then
-  set -- lib *.c 3rdparty #tests
-  set -- "$@" -DHAVE_{ZLIB,LIBBZ2,LIBLZMA}=1
+  set -- lib {ar-wrap,binfmttest,bsdiffcat,buffertest,ccat,cc-wrap,cmake-run,cofflist,compiler-wrapper,count-depth,crc,decode-ls-lR,dnsip,dnsname,dnstest,eagle-gen-cmds,eagle-init-brd,eagle-to-circuit,eagle-to-svg,elf64list,elflist,elfwrsec,genmakefile,hexedit,httpproxy,httptest,impgen,jsonpp,jsontest,list-r,macho32list,mediathek-list,mediathek-parser,msys-shell,ntldd,omflist,opensearch-dump,parse,pathtool,pelist,piccfg,pkgcfg,plsconv,rdir-test,reg2cmd,regfilter,sln,strarraytest,tcping,testihex,torrent-progress,xml2json,xml2moon,xmlpp,xmltest2,xmltest3,xmltest4,xmltest,ziptest}.c 3rdparty #tests
+  set -- "$@" -DHAVE_{ZLIB,LIBBZ2,LIBLZMA}=1 -DHAVE_CONFIG_H=1
   set -- "$@" -I3rdparty/{zlib,bzip2,xz/liblzma/api}
 elif [ -d "$1" ]; then
   SRCDIRS=$(find "$1" -name "*.c" -exec dirname {} \; |sort -u)

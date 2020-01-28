@@ -305,7 +305,7 @@ local void fixedtables(state) struct inflate_state FAR* state;
 
     void makefixed(void);
 
-    int main(void)
+    int _main(void)
     {
         makefixed();
         return 0;

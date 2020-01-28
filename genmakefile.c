@@ -387,6 +387,25 @@ format_linklib_switch(const char* libname, stralloc* out) {
 void
 format_linklib_dummy(const char* libname, stralloc* out) {}
 
+
+const char*
+skip_comment(const char* x, size_t* lenp) {
+  const char* p = x;
+  size_t n = *lenp;
+  while(n > 2) {
+
+        if(byte_equal(x, 2, "*/")) {
+    if(n > 0)  { ++x; --n; }
+    if(n > 0)  { ++x; --n; }
+break;
+        }
+    ++x;
+    --n;
+  }
+  *lenp = n;
+  return x;
+}
+
 /**
  * @brief scan_main  Checks if the given source file contains a main() function
  * @param x
@@ -395,29 +414,23 @@ format_linklib_dummy(const char* libname, stralloc* out) {}
  */
 int
 scan_main(const char* x, ssize_t n) {
-  while(n > 0) {
-    if(n > 2) {
+  while(n > 2) {
 
-      if(byte_equal(x, 2, "/*")) {
-        size_t i = byte_finds(x, n, "*/");
+    if(byte_equal(x, 2, "/*")) {
+      x = skip_comment(x, &n);
+      continue;
+    } 
 
-        x += i;
-        n -= i;
-
-        continue;
-      } else if(byte_equal(x, 2, "//")) {
-        size_t i = byte_chr(x, n, '\n');
-
-        x += i;
-        n -= i;
-        continue;
-      }
+    if(byte_equal(x, 2, "//")) {
+      size_t i = byte_chr(x, n, '\n');
+      x += i+1;
+      n -= i+1;
+      continue;
     }
 
-    if(!isalpha(x[0]) && x[0] != '_') {
+     if(!isalpha(x[0]) && x[0] != '_') {
       x++;
       n--;
-
       if(n >= 5 && byte_equal(x, 4, "main")) {
         ssize_t i = 0;
         if(i + 5 >= n)
@@ -804,7 +817,7 @@ get_rule(const char* name) {
 
     // ret = hmap_data(t);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUTI_
     if(t) {
       buffer_putm_internal(buffer_2, "Created rule '", ((target*)hmap_data(t))->name, "'\n", 0);
       buffer_flush(buffer_2);
@@ -978,7 +991,7 @@ new_source(const char* name) {
     if(ret->has_main)
       debug_s("Source has main()", ret->name);
 #endif
-    
+
     return ret;
   }
   return 0;
