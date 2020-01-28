@@ -152,7 +152,16 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   section = ini_new(&section->next, "PATH_INFO");
   ini_set(section, "BuildDirPolicy", "BuildDirIsSourceDir");
   ini_set(section, "dir_src", "");
-  ini_set(section, "dir_bin", "build/htc-16f876a");
+
+  stralloc_zero(&sa);
+
+  stralloc_copys(&sa, "..\\..\\bin\\");
+  stralloc_catb(&sa, tools.compiler, 3);
+  stralloc_catc(&sa, '-');
+  stralloc_cat(&sa, &cfg.chip);
+  stralloc_nul(&sa);
+
+  ini_set(section, "dir_bin", sa.s);
   ini_set(section, "dir_tmp", "");
   ini_set(section, "dir_sin", "");
   ini_set(section, "dir_inc", incdirs.sa.s);
@@ -263,16 +272,26 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
 
   strlist_init(&defines, ',');
   strlist_init(&tcfg, ',');
-  vdefs = get_var("DEFS");
 
+  vdefs = get_var("DEFS");
   strlist_foreach(vdefs, s, n) {
     n = byte_chr(s, n, ' ');
-
     if(str_start(s, "-D")) {
       s += 2;
       n -= 2;
     }
     strlist_pushb(&defines, s, n);
+  }
+  vdefs = get_var("CPPFLAGS");
+  strlist_foreach(vdefs, s, n) {
+    n = byte_chr(s, n, ' ');
+    if(str_start(s, "-D") || str_start(s, "-d")) {
+      s += 2;
+      n -= 2;
+
+      if(s[str_chr(s, '$')] == '\0')
+        strlist_pushb(&defines, s, n);
+    }
   }
   stralloc_nul(&defines.sa);
 

@@ -205,7 +205,7 @@ void rule_command(target* rule, stralloc* out);
 int scan_main(const char* x, size_t n);
 int set_chip(const char* s);
 void set_command(stralloc* sa, const char* cmd, const char* args);
-int set_compiler_type(void);
+int set_compiler_type(const char*);
 int set_machine(const char* s);
 int set_make_type(void);
 int set_system(const char* s);

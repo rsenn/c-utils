@@ -3143,7 +3143,7 @@ set_make_type() {
  * @return
  */
 int
-set_compiler_type() {
+set_compiler_type(const char* compiler) {
 
   set_var("CC", "cc");
   set_var("CXX", "c++");
@@ -3164,10 +3164,10 @@ set_compiler_type() {
   //  push_var("DEFS", "-DHAVE_ERRNO_H=1");
 
   /*
-   * Visual C++ tools.compiler
+   * Visual C++ compiler
    */
-  if(str_start(tools.compiler, "msvc") || str_start(tools.compiler, "icl") || str_start(tools.compiler, "vs20") ||
-     str_start(tools.compiler, "vc") || tools.compiler[str_find(tools.compiler, "-cl")]) {
+  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
+     str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
 
     exts.obj = ".obj";
     exts.bin = ".exe";
@@ -3198,9 +3198,9 @@ set_compiler_type() {
     //    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
     /*
-     * Intel C++ tools.compiler
+     * Intel C++ compiler
      */
-    if(str_start(tools.compiler, "icl")) {
+    if(str_start(compiler, "icl")) {
       set_var("CC", "icl -nologo");
       set_var("CXX", "icl -nologo");
 
@@ -3232,7 +3232,7 @@ set_compiler_type() {
     if(cfg.build_type == BUILD_TYPE_DEBUG)
       push_var("LDFLAGS", "-debug");
 
-    if(str_start(tools.compiler, "icl"))
+    if(str_start(compiler, "icl"))
       push_var("LDFLAGS", "-manifest:embed -manifestuac:\"level='asInvoker' uiAccess='false'\"");
 
     if(cfg.mach.arch == ARM) {
@@ -3251,14 +3251,13 @@ set_compiler_type() {
 
     set_command(&link_command, "$(LINK) -out:$@ $(LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
 
-  } else if(str_start(tools.compiler, "gnu") || str_start(tools.compiler, "gcc") || cygming ||
-            str_start(tools.compiler, "clang") || str_start(tools.compiler, "llvm") ||
-            str_start(tools.compiler, "zapcc")) {
+  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") ||
+            str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
 
     exts.lib = ".a";
     exts.obj = ".o";
 
-    if(str_start(tools.compiler, "zapcc"))
+    if(str_start(compiler, "zapcc"))
       set_var("CC", "zapcc");
 
     if(cfg.build_type == BUILD_TYPE_DEBUG)
@@ -3268,9 +3267,9 @@ set_compiler_type() {
     else
       set_var("CFLAGS", "-O2");
 
-    if(str_end(tools.compiler, "32"))
+    if(str_end(compiler, "32"))
       push_var("CFLAGS", "-m32");
-    if(str_end(tools.compiler, "64"))
+    if(str_end(compiler, "64"))
       push_var("CFLAGS", "-m64");
 
     if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
@@ -3279,19 +3278,19 @@ set_compiler_type() {
     }
 
     /*
-     * GNU GCC compatible tools.compilers
+     * GNU GCC compatible compilers
      */
 
-    if(str_start(tools.compiler, "gnu") || str_start(tools.compiler, "gcc") || cygming) {
+    if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming) {
       set_var("CC", "gcc");
       set_var("CXX", "g++");
 
-      set_var("AR", str_start(tools.compiler, "gcc") ? "gcc-ar" : "ar");
+      set_var("AR", str_start(compiler, "gcc") ? "gcc-ar" : "ar");
 
       if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
         push_var("CFLAGS", "-ggdb");
 
-    } else if(str_start(tools.compiler, "clang") || str_start(tools.compiler, "llvm")) {
+    } else if(str_start(compiler, "clang") || str_start(compiler, "llvm")) {
       pathsep_args = '/';
 
       set_var("CC", "clang");
@@ -3311,7 +3310,7 @@ set_compiler_type() {
     /*
      * Borland C++ Builder
      */
-  } else if(str_start(tools.compiler, "bcc")) {
+  } else if(str_start(compiler, "bcc")) {
 
     pathsep_args = '\\';
 
@@ -3332,8 +3331,7 @@ set_compiler_type() {
       push_var("CFLAGS", "-d -a-");
 
     /* Embracadero C++ */
-    if(str_find(tools.compiler, "55") == str_len(tools.compiler) &&
-       str_find(tools.compiler, "60") == str_len(tools.compiler)) {
+    if(str_find(compiler, "55") == str_len(compiler) && str_find(compiler, "60") == str_len(compiler)) {
       set_var("CC", "bcc32c");
       set_var("CXX", "bcc32x");
 
@@ -3381,9 +3379,9 @@ set_compiler_type() {
     set_command(&lib_command, "$(LIB) /p256 $@ /u", "$^");
 
     /*
-     * LCC tools.compiler
+     * LCC compiler
      */
-  } else if(str_start(tools.compiler, "lcc")) {
+  } else if(str_start(compiler, "lcc")) {
 
     if(cfg.mach.bits == _64) {
       set_var("CC", "lcc64");
@@ -3413,9 +3411,9 @@ set_compiler_type() {
     stralloc_copys(&link_command, "$(LINK) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
     /*
-     * Tiny CC tools.compiler
+     * Tiny CC compiler
      */
-  } else if(str_start(tools.compiler, "tcc")) {
+  } else if(str_start(compiler, "tcc")) {
 
     exts.lib = ".a";
     exts.obj = ".o";
@@ -3438,7 +3436,7 @@ set_compiler_type() {
     set_command(&lib_command, "$(AR) rcs $@", "$^");
     set_command(&link_command, "$(CC) $(LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
 
-  } else if(str_start(tools.compiler, "occ") || str_start(tools.compiler, "orange")) {
+  } else if(str_start(compiler, "occ") || str_start(compiler, "orange")) {
     set_var("CC", "occ");
     set_var("LIB", "olib");
     set_var("LINK", "olink");
@@ -3468,13 +3466,13 @@ set_compiler_type() {
     set_command(&lib_command, "$(LIB) /! $@", "$^");
     set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) -o$@", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
 
-  } else if(str_start(tools.compiler, "8cc")) {
+  } else if(str_start(compiler, "8cc")) {
     exts.lib = ".a";
     exts.obj = ".o";
 
     set_var("CC", "8cc");
 
-  } else if(str_start(tools.compiler, "dmc") || str_start(tools.compiler, "digitalmars")) {
+  } else if(str_start(compiler, "dmc") || str_start(compiler, "digitalmars")) {
 
     pathsep_args = '\\';
 
@@ -3500,7 +3498,7 @@ set_compiler_type() {
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
     set_command(&link_command, "$(CC) $(CFLAGS) $(LDFLAGS) -o$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
-  } else if(str_start(tools.compiler, "pelles") || str_start(tools.compiler, "po")) {
+  } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
     set_var("CC", "cc");
     set_var("LINK", "polink");
     set_var("LIB", "polib");
@@ -3550,7 +3548,7 @@ set_compiler_type() {
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS) -c \"$<\" -Fo $@");
     stralloc_copys(&link_command, "$(CC) $^ -Fe $@ $(LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
-  } else if(str_start(tools.compiler, "sdcc")) {
+  } else if(str_start(compiler, "sdcc")) {
     set_var("CC", "sdcc");
     set_var("LINK", "sdcc");
     set_var("LIB", "sdar");
@@ -3627,7 +3625,7 @@ set_compiler_type() {
     stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-  } else if(str_start(tools.compiler, "htc")) {
+  } else if(str_start(compiler, "htc")) {
     unset_var("CXX");
 
     set_var("LIB", "libr");
@@ -3654,16 +3652,15 @@ set_compiler_type() {
 
     stralloc_nul(&cfg.chip);
     set_var("CHIP", cfg.chip.s);
-    /*
-        {
-          stralloc chipdef;
-          stralloc_init(&chipdef);
-          stralloc_copys(&chipdef, "-DPIC");
-          stralloc_cat(&chipdef, &cfg.chip);
-          stralloc_upper(&chipdef);
-          stralloc_cats(&chipdef, "=1");
-          push_var_sa("CPPFLAGS", &chipdef);
-        }*/
+    {
+      stralloc chipdef;
+      stralloc_init(&chipdef);
+      stralloc_copys(&chipdef, "-D__");
+      stralloc_cat(&chipdef, &cfg.chip);
+      stralloc_lower(&chipdef);
+      stralloc_cats(&chipdef, "=1");
+      push_var_sa("CPPFLAGS", &chipdef);
+    }
 
     if(!isset("MACH")) {
 
@@ -3707,7 +3704,7 @@ set_compiler_type() {
     stralloc_copys(&link_command,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
-  } else if(str_start(tools.compiler, "xc8") || str_start(tools.compiler, "picc")) {
+  } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
 
     //    no_libs = 1;
     unset_var("CXX");
@@ -3736,9 +3733,9 @@ set_compiler_type() {
     {
       stralloc chipdef;
       stralloc_init(&chipdef);
-      stralloc_copys(&chipdef, "-DPIC");
+      stralloc_copys(&chipdef, "-D__");
       stralloc_cat(&chipdef, &cfg.chip);
-      stralloc_upper(&chipdef);
+      stralloc_lower(&chipdef);
       stralloc_cats(&chipdef, "=1");
       push_var_sa("CPPFLAGS", &chipdef);
     }
@@ -3795,7 +3792,7 @@ set_compiler_type() {
   if(os == WIN) {
     push_lib("EXTRA_LIBS", "advapi32");
 
-    if(str_start(tools.compiler, "dmc"))
+    if(str_start(compiler, "dmc"))
       push_lib("EXTRA_LIBS", "wsock32");
     else
       push_lib("EXTRA_LIBS", "ws2_32");
@@ -4147,8 +4144,8 @@ main(int argc, char* argv[]) {
 
   strlist_foreach_s(&toks, s) {
     size_t i;
-    tools.compiler = s;
-    if(set_compiler_type()) {
+
+    if(set_compiler_type(s)) {
       tools.compiler = (char*)s;
       break;
     }
@@ -4162,7 +4159,7 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(!set_make_type() || !set_compiler_type()) {
+  if(!set_make_type() || !set_compiler_type(tools.compiler)) {
     usage(argv[0]);
     ret = 2;
     goto exit;

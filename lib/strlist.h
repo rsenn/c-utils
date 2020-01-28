@@ -44,6 +44,7 @@ void strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
 int64 strlist_index_of(strlist*, const char* str);
 void strlist_join(const strlist*, stralloc* sa, char delim);
 int strlist_pushb(strlist*, const char* s, size_t n);
+int strlist_pushb_unique(strlist*, const char* s, size_t n);
 int strlist_pushm_internal(strlist*, ...);
 int strlist_pushsa(strlist*, const stralloc* sa);
 int strlist_push_sa(strlist*, const stralloc* sa);
