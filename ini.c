@@ -1,6 +1,7 @@
 #include "ini.h"
 #include "map.h"
 #include "lib/str.h"
+#include "lib/fmt.h"
 #include "lib/alloc.h"
 #include "lib/stralloc.h"
 
@@ -14,6 +15,16 @@ ini_set_sa(ini_section_t* ini, stralloc* key, stralloc* value) {
   stralloc_nul(key);
   stralloc_nul(value);
   ini_set(ini, key->s, value->s);
+}
+
+void
+ini_set_long(ini_section_t* ini, const char* key, long value) {
+  char buf[FMT_LONG + 1];
+  size_t n;
+
+  n = fmt_long(buf, value);
+  buf[n] = '\0';
+  return ini_set(ini, key, buf);
 }
 
 ini_section_t*

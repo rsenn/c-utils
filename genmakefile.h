@@ -97,17 +97,25 @@ typedef struct {
 } exts_t;
 
 typedef struct {
-  machine_type mach;
-  system_type sys;
-  stralloc chip;
-} config_t;
+  char* toolchain;
+  char* compiler;
+  char* make;
+  char* preproc;
+} tools_t;
 
-enum {
+typedef enum {
   BUILD_TYPE_RELEASE = 0,
   BUILD_TYPE_RELWITHDEBINFO,
   BUILD_TYPE_MINSIZEREL,
   BUILD_TYPE_DEBUG,
-};
+} build_type_t;
+
+typedef struct {
+  machine_type mach;
+  system_type sys;
+  stralloc chip;
+  int build_type;
+} config_t;
 
 void add_include_dir(const char* dir);
 void add_path_sa(strlist* list, stralloc* path);
@@ -197,9 +205,9 @@ void rule_command(target* rule, stralloc* out);
 int scan_main(const char* x, size_t n);
 int set_chip(const char* s);
 void set_command(stralloc* sa, const char* cmd, const char* args);
-int set_compiler_type(const char* compiler);
+int set_compiler_type(void);
 int set_machine(const char* s);
-int set_make_type(const char* make, const char* compiler);
+int set_make_type(void);
 int set_system(const char* s);
 strlist* set_var(const char* name, const char* value);
 int sort_sources(const char** a, const char** b);
@@ -224,5 +232,6 @@ extern config_t cfg;
 extern dirs_t dirs;
 extern MAP_T rules, vars, sourcedirs;
 extern strarray srcs;
+extern tools_t tools;
 
 #endif

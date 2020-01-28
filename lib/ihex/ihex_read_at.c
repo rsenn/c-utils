@@ -6,14 +6,13 @@ size_t
 ihex_read_at(ihex_file* ihf, uint32 at, char* x, size_t n) {
   ihex_record* rec;
   char* start = x;
-    union {
+  union {
     uint32 off32;
     struct {
       uint16 lo16;
       uint16 hi16;
     };
   } o;
-
 
   if((rec = ihex_record_at(ihf, at, &o.off32))) {
     uint32 p = at - o.off32;
@@ -31,7 +30,8 @@ ihex_read_at(ihex_file* ihf, uint32 at, char* x, size_t n) {
 
       uint32 end = o.off32 + rec->length;
       rec = rec->next;
-      if(!rec) break;
+      if(!rec)
+        break;
       o.lo16 = rec->offset;
       p = 0;
 

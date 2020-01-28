@@ -61,13 +61,13 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
       size_t l1, l2;
       char* s1 = strlist_at_n(&p, i, &l1);
       char* s2 = strlist_at_n(&r, i, &l2);
-/*#ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "REL ");
-      buffer_put(buffer_2, s1, l1);
-      buffer_puts(buffer_2, " ");
-      buffer_put(buffer_2, s2, l2);
-      buffer_putnlflush(buffer_2);
-#endif*/
+      /*#ifdef DEBUG_OUTPUT
+            buffer_puts(buffer_2, "REL ");
+            buffer_put(buffer_2, s1, l1);
+            buffer_puts(buffer_2, " ");
+            buffer_put(buffer_2, s2, l2);
+            buffer_putnlflush(buffer_2);
+      #endif*/
       if(l1 != l2)
         break;
       if(byte_diff(s1, l1, s2))
