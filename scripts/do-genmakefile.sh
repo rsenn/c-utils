@@ -32,23 +32,24 @@ OUTPUT_FILE="${BUILDDIR:+$BUILDDIR/}$FILENAME"
 case $SYSTEM in
   *_NT-* | NT) 
       : ${COMPILERS="bcc55 bcc32 dmc32 pocc32 pocc64 tcc32 tcc64 lcc32 lcc64 occ32"}
-      BUILD_TOOLS="pomake batch ninja"
-      EXTENSIONS="mk bat ninja"
-      FILENAMES="\${C} \${C} \${C}"
-      OUTPUT_FILE="$FILENAME"
+      BUILD_TOOLS="nmake pomake gmake ninja"
+      EXTENSIONS="jom mk gnu ninja"
+      FILENAMES="\${C} \${C} Makefile \${C}"
     ;;
   *) 
     : ${COMPILERS="gcc clang tcc zapcc"}
-    BUILD_TOOLS="nmake pomake make gmake batch ninja"
-    EXTENSIONS="'' '' '' '' bat ninja"
-    FILENAMES="NMakefile Makefile Makefile GNUmakefile build build"
+    BUILD_TOOLS="nmake pomake make gmake ninja"
+    EXTENSIONS="jom pomake make gmake ninja"
+    FILENAMES="NMakefile Makefile Makefile GNUmakefile build"
+   
   ;;
 esac
+      OUTPUT_FILE="\${C}.\${EXT}"
 
 set -f
 
 if [ $# -eq 0 ]; then
-  set -- lib *.c 3rdparty tests
+  set -- lib *.c 3rdparty #tests
   set -- "$@" -DHAVE_{ZLIB,LIBBZ2,LIBLZMA}=1
   set -- "$@" -I3rdparty/{zlib,bzip2,xz/liblzma/api}
 elif [ -d "$1" ]; then
@@ -79,11 +80,14 @@ eval "OUTFILE=\"$OUTPUT_FILE\""
 set +f
 OUTDIR=`dirname "$OUTFILE"`
 mkdir -p "$OUTDIR"
+
+  echo Compiler: $C Build tool: $MAKE Output file: $OUTFILE 1>&2
+
    GENMK="$CMD $* -t $C -m $MAKE -o $OUTFILE"
    #echo "GENMK='$GENMK'" 1>&2
    ([ -n "$CMD" ] && set -f
    IFS=" "
-   eval "$GENMK >&/dev/null")
+   eval "$GENMK 2>/dev/null ")
   done
 done
 
