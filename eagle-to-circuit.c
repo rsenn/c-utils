@@ -293,7 +293,7 @@ build_part(xmlnode* part) {
   p.x = get_double(part, "x");
   p.y = get_double(part, "y");
 
-  update_bounds(roundl(p.x / 2.54), roundl(p.y / 2.54));
+  update_bounds(round(p.x / 2.54), round(p.y / 2.54));
 
   if(pkgname && str_len(pkgname)) {
     p.pkg = get_entry(packages, pkgname);
@@ -594,8 +594,8 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
     if(i > 0)
       buffer_putspace(&output);
 
-    int ix = roundl((p->x - x) / 2.54);
-    int iy = roundl((p->y - y) / 2.54);
+    int ix = round((p->x - x) / 2.54);
+    int iy = round((p->y - y) / 2.54);
 
     buffer_putlong(&output, -iy);
     buffer_putc(&output, ',');
@@ -632,8 +632,8 @@ output_part(const void* key, size_t key_len, const void* value, size_t value_len
   stralloc_nul(&name);
   buffer_putspad(&output, name.s, 18);
 
-  double x = roundl((ptr->x + pad1->x) / 2.54);
-  double y = roundl((ptr->y + pad1->y) / 2.54);
+  double x = round((ptr->x + pad1->x) / 2.54);
+  double y = round((ptr->y + pad1->y) / 2.54);
 
   buffer_putlong(&output, y + 10);
   buffer_putc(&output, ',');

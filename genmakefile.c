@@ -81,7 +81,7 @@ mkdir_components(strlist* dir, int mode) {
     strlist r = strlist_range(dir, 0, i);
 
 #ifdef DEBUG
-    debug_sa("mkdir_components", &r.sa);
+    //debug_sa("mkdir_components", &r.sa);
 #endif
     if(mkdir_sa(&r.sa, mode) == -1)
       ret |= -1;
@@ -161,7 +161,7 @@ strarray_dump(buffer* b, const strarray* arr) {
  * @param sa
  */
 void
-debug_sa(const char* name, stralloc* sa) {
+//debug_sa(const char* name, stralloc* sa) {
   buffer_puts(buffer_2, name);
   buffer_puts(buffer_2, ": ");
   buffer_putsa(buffer_2, sa);
@@ -2180,7 +2180,7 @@ gen_simple_compile_rules(
     stralloc_init(&obj);
     path_output(base, &obj, toext);
 
-    debug_sa("obj", &obj);
+    //debug_sa("obj", &obj);
 
     if((rule = get_rule_sa(&obj))) {
 
@@ -2301,7 +2301,7 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
 
       path_wildcard(&mask, "%");
     }
-    debug_sa("mask", &mask);
+    //debug_sa("mask", &mask);
 
     if((rule = get_rule_sa(&mask))) {
       strlist_push(&rule->prereq, src->name);
@@ -4186,7 +4186,7 @@ main(int argc, char* argv[]) {
       set_machine(tools.compiler);
   }
 
-  debug_sa("dirs.build", &dirs.build.sa);
+  //debug_sa("dirs.build", &dirs.build.sa);
 
   strlist_init(&toks, '\0');
   strlist_foreach(&dirs.build, s, n) { strlist_pushb_unique(&toks, s, n); }
@@ -4279,9 +4279,9 @@ main(int argc, char* argv[]) {
   stralloc_nul(&dirs.out.sa);
   stralloc_nul(&dirs.build.sa);
 
-  debug_sa("dirs.this", &dirs.this.sa);
-  debug_sa("dirs.out", &dirs.out.sa);
-  debug_sa("dirs.build", &dirs.build.sa);
+  //debug_sa("dirs.this", &dirs.this.sa);
+  //debug_sa("dirs.out", &dirs.out.sa);
+  //debug_sa("dirs.build", &dirs.build.sa);
 
   if(tools.preproc)
     set_var("CPP", tools.preproc);
@@ -4298,13 +4298,13 @@ main(int argc, char* argv[]) {
   path_relative(dirs.build.sa.s, dirs.out.sa.s, &dirs.work.sa);
   stralloc_nul(&dirs.work.sa);
   stralloc_nul(&dirs.work.sa);
-  debug_sa("dirs.work", &dirs.work.sa);
+  //debug_sa("dirs.work", &dirs.work.sa);
 
   stralloc_nul(&dirs.this.sa);
   stralloc_nul(&dirs.out.sa);
   path_relative(dirs.this.sa.s, dirs.out.sa.s, &srcdir);
   stralloc_nul(&srcdir);
-  debug_sa("srcdir", &srcdir);
+  //debug_sa("srcdir", &srcdir);
 
   if(dirs.out.sa.len) {
     stralloc_replacec(&dirs.this.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
@@ -4327,7 +4327,7 @@ main(int argc, char* argv[]) {
   // debug_sa("srcdir", &srcdir);
 
   path_relative(dirs.build.sa.s, dirs.out.sa.s, &tmp);
-  debug_sa("tmp", &tmp);
+  //debug_sa("tmp", &tmp);
 
   stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 

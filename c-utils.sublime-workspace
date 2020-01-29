@@ -72,10 +72,10 @@
 	"buffers":
 	[
 		{
-			"contents": "stralloc\nstralloc_init\nstralloc_ready\nstralloc_readyplus\nstralloc_copyb\nstralloc_copys\nstralloc_copy\nstralloc_catb\nstralloc_cats\nstralloc_catc\nstralloc_zero\nstralloc_trunc\nstralloc_catm_internal\nstralloc_catm\nstralloc_copym\nstralloc_catm\nstralloc_copym\nstralloc_cat\nstralloc_append\nstralloc_starts\nstralloc_startb\nstralloc_start\nstralloc_diff\nstralloc_diffs\nstralloc_equal\nstralloc_equals\nstralloc_0\nstralloc_nul\nstralloc_catulong\nstralloc_catulong0\nstralloc_catlong0\nstralloc_free\nstralloc_catlong\nstralloc_catuint0\nstralloc_catint0\nstralloc_catint\nstralloc_chop\nstralloc_chomp\nstralloc_trimr\nstralloc_decamelize\nstralloc_case_diff\nstralloc_case_diffs\nstralloc_diffb\nstralloc_diffs\nstralloc_case_equal\nstralloc_case_equals\nstralloc_cathexb\nstralloc_equalb\nstralloc_find\nstralloc_findb\nstralloc_finds\nbuffer_putsa\nbuffer_putsaflush\nbuffer_get_token_sa\nbuffer_getline_sa\nbuffer_get_new_token_sa\nbuffer_getnewline_sa\nbuffer_get_token_sa_pred\nbuffer_get_new_token_sa_pred\nbuffer_fromsa\nstralloc_write\nstralloc_scan\nstralloc_length\nstralloc_length\nstralloc_begin\nstralloc_end\nstralloc_iterator_decrement\nstralloc_iterator_dereference\nstralloc_iterator_distance\nstralloc_is_last\nstralloc_endb\nstralloc_iterator_increment\nstralloc_iterator_equal\nbyte_scan\nstralloc_insertb\nstralloc_inserts\nstralloc_insert\nstralloc_subst\nstralloc_fmt_call\nstralloc_fmt_pred\nstralloc_fmt\nstralloc_catdouble\nstralloc_chr\nstralloc_rchr\nstralloc_copywcb\nstralloc_copywcs\nstralloc_shrink\nstralloc_prependb\nstralloc_prepends\nstralloc_prepend\nstralloc_ends\nstralloc_expand\nstralloc_catwcb\nstralloc_catwcs\nstralloc_remove\nstralloc_replacec\nstralloc_removesuffixs\nstralloc_removesuffixb\nstralloc_contains\nstralloc_replaces\nstralloc_replace\nstralloc_case_end\nstralloc_case_starts\nstralloc_case_start\nstralloc_catuint\nstralloc_catxlong\nstralloc_count\nstralloc_erase\nstralloc_lower\nstralloc_move\nstralloc_ready_tuned\nstralloc_remove_all\nstralloc_replace_non_printable\nstralloc_reverse_blocks\nstralloc_reverse\nstralloc_upper",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 1988,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -86,6 +86,24 @@
 			"settings":
 			{
 				"buffer_size": 11956,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 17193,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "genmakefile.c",
+			"settings":
+			{
+				"buffer_size": 112791,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -543,6 +561,16 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"eagle-",
+			"to-circ",
+			"check_lib",
+			"check",
+			"eagle-to",
+			"^(\\s*)debug_sa",
+			"^\\s*debug_sa",
+			"debug_sa",
+			"^",
+			"proxy",
 			"stralloc_insertb",
 			"insert",
 			"define",
@@ -660,17 +688,7 @@
 			"include.*xc",
 			"incdirs",
 			"stralloc_repl",
-			"config_t",
-			"cfg;",
-			"toolcfg",
-			"dirs\\.build",
-			"dirs\\.build\"",
-			"dirs\\.build",
-			"relative",
-			"F5\"",
-			"out.*fmt",
-			"LDFLAGS\\)",
-			"link_command"
+			"config_t"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -678,6 +696,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			"\\1//debug_sa",
+			"#",
 			");",
 			"map",
 			"compiler",
@@ -757,606 +777,22 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1988,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
-							[
-								0,
-								0
-							]
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
-								[
-									488,
-									496
-								],
-								[
-									689,
-									702
-								],
-								[
-									1215,
-									1229
-								],
-								[
-									1414,
-									1432
-								],
-								[
-									1671,
-									1685
-								],
-								[
-									1886,
-									1900
-								],
-								[
-									2088,
-									2101
-								],
-								[
-									2447,
-									2460
-								],
-								[
-									2560,
-									2573
-								],
-								[
-									2609,
-									2622
-								],
-								[
-									2667,
-									2680
-								],
-								[
-									2700,
-									2714
-								],
-								[
-									2811,
-									2833
-								],
-								[
-									2883,
-									2896
-								],
-								[
-									2958,
-									2972
-								],
-								[
-									3061,
-									3074
-								],
-								[
-									3142,
-									3156
-								],
-								[
-									3298,
-									3310
-								],
-								[
-									3480,
-									3495
-								],
-								[
-									3776,
-									3791
-								],
-								[
-									3839,
-									3854
-								],
-								[
-									3912,
-									3926
-								],
-								[
-									4132,
-									4145
-								],
-								[
-									4386,
-									4400
-								],
-								[
-									4454,
-									4468
-								],
-								[
-									4510,
-									4525
-								],
-								[
-									4597,
-									4607
-								],
-								[
-									4641,
-									4653
-								],
-								[
-									4750,
-									4767
-								],
-								[
-									4809,
-									4827
-								],
-								[
-									4952,
-									4969
-								],
-								[
-									5078,
-									5091
-								],
-								[
-									5116,
-									5132
-								],
-								[
-									5182,
-									5199
-								],
-								[
-									5255,
-									5271
-								],
-								[
-									5326,
-									5341
-								],
-								[
-									5481,
-									5494
-								],
-								[
-									5603,
-									5617
-								],
-								[
-									5639,
-									5653
-								],
-								[
-									5727,
-									5746
-								],
-								[
-									5790,
-									5808
-								],
-								[
-									5856,
-									5875
-								],
-								[
-									5916,
-									5930
-								],
-								[
-									5990,
-									6004
-								],
-								[
-									6047,
-									6066
-								],
-								[
-									6117,
-									6137
-								],
-								[
-									6181,
-									6197
-								],
-								[
-									6251,
-									6266
-								],
-								[
-									6329,
-									6342
-								],
-								[
-									6393,
-									6407
-								],
-								[
-									6466,
-									6480
-								],
-								[
-									6572,
-									6584
-								],
-								[
-									6662,
-									6679
-								],
-								[
-									7334,
-									7353
-								],
-								[
-									7460,
-									7477
-								],
-								[
-									7562,
-									7585
-								],
-								[
-									7703,
-									7723
-								],
-								[
-									7884,
-									7908
-								],
-								[
-									7993,
-									8021
-								],
-								[
-									8156,
-									8169
-								],
-								[
-									8207,
-									8221
-								],
-								[
-									8286,
-									8299
-								],
-								[
-									8410,
-									8425
-								],
-								[
-									8467,
-									8482
-								],
-								[
-									8541,
-									8555
-								],
-								[
-									8578,
-									8590
-								],
-								[
-									8625,
-									8652
-								],
-								[
-									8674,
-									8703
-								],
-								[
-									8735,
-									8761
-								],
-								[
-									8796,
-									8812
-								],
-								[
-									8884,
-									8897
-								],
-								[
-									8971,
-									8998
-								],
-								[
-									9043,
-									9066
-								],
-								[
-									9138,
-									9147
-								],
-								[
-									9252,
-									9268
-								],
-								[
-									9325,
-									9341
-								],
-								[
-									9388,
-									9403
-								],
-								[
-									9459,
-									9473
-								],
-								[
-									9613,
-									9630
-								],
-								[
-									9681,
-									9698
-								],
-								[
-									9820,
-									9832
-								],
-								[
-									9907,
-									9925
-								],
-								[
-									9966,
-									9978
-								],
-								[
-									10015,
-									10028
-								],
-								[
-									10063,
-									10079
-								],
-								[
-									10131,
-									10147
-								],
-								[
-									10188,
-									10203
-								],
-								[
-									10224,
-									10241
-								],
-								[
-									10286,
-									10303
-								],
-								[
-									10338,
-									10354
-								],
-								[
-									10401,
-									10414
-								],
-								[
-									10465,
-									10480
-								],
-								[
-									10501,
-									10516
-								],
-								[
-									10568,
-									10583
-								],
-								[
-									10627,
-									10642
-								],
-								[
-									10682,
-									10699
-								],
-								[
-									10741,
-									10763
-								],
-								[
-									10800,
-									10822
-								],
-								[
-									10867,
-									10884
-								],
-								[
-									10928,
-									10945
-								],
-								[
-									10996,
-									11012
-								],
-								[
-									11087,
-									11104
-								],
-								[
-									11154,
-									11174
-								],
-								[
-									11220,
-									11239
-								],
-								[
-									11289,
-									11305
-								],
-								[
-									11342,
-									11359
-								],
-								[
-									11396,
-									11410
-								],
-								[
-									11444,
-									11458
-								],
-								[
-									11476,
-									11490
-								],
-								[
-									11508,
-									11521
-								],
-								[
-									11554,
-									11574
-								],
-								[
-									11635,
-									11654
-								],
-								[
-									11738,
-									11768
-								],
-								[
-									11795,
-									11818
-								],
-								[
-									11849,
-									11865
-								],
-								[
-									11883,
-									11897
-								]
 							],
 							"symlist":
 							[
-								"stralloc",
-								"stralloc_init",
-								"stralloc_ready",
-								"stralloc_readyplus",
-								"stralloc_copyb",
-								"stralloc_copys",
-								"stralloc_copy",
-								"stralloc_catb",
-								"stralloc_cats",
-								"stralloc_catc",
-								"stralloc_zero",
-								"stralloc_trunc",
-								"stralloc_catm_internal",
-								"stralloc_catm",
-								"stralloc_copym",
-								"stralloc_catm",
-								"stralloc_copym",
-								"stralloc_cat",
-								"stralloc_append",
-								"stralloc_starts",
-								"stralloc_startb",
-								"stralloc_start",
-								"stralloc_diff",
-								"stralloc_diffs",
-								"stralloc_equal",
-								"stralloc_equals",
-								"stralloc_0",
-								"stralloc_nul",
-								"stralloc_catulong",
-								"stralloc_catulong0",
-								"stralloc_catlong0",
-								"stralloc_free",
-								"stralloc_catlong",
-								"stralloc_catuint0",
-								"stralloc_catint0",
-								"stralloc_catint",
-								"stralloc_chop",
-								"stralloc_chomp",
-								"stralloc_trimr",
-								"stralloc_decamelize",
-								"stralloc_case_diff",
-								"stralloc_case_diffs",
-								"stralloc_diffb",
-								"stralloc_diffs",
-								"stralloc_case_equal",
-								"stralloc_case_equals",
-								"stralloc_cathexb",
-								"stralloc_equalb",
-								"stralloc_find",
-								"stralloc_findb",
-								"stralloc_finds",
-								"buffer_putsa",
-								"buffer_putsaflush",
-								"buffer_get_token_sa",
-								"buffer_getline_sa",
-								"buffer_get_new_token_sa",
-								"buffer_getnewline_sa",
-								"buffer_get_token_sa_pred",
-								"buffer_get_new_token_sa_pred",
-								"buffer_fromsa",
-								"stralloc_write",
-								"stralloc_scan",
-								"stralloc_length",
-								"stralloc_length",
-								"stralloc_begin",
-								"stralloc_end",
-								"stralloc_iterator_decrement",
-								"stralloc_iterator_dereference",
-								"stralloc_iterator_distance",
-								"stralloc_is_last",
-								"stralloc_endb",
-								"stralloc_iterator_increment",
-								"stralloc_iterator_equal",
-								"byte_scan",
-								"stralloc_insertb",
-								"stralloc_inserts",
-								"stralloc_insert",
-								"stralloc_subst",
-								"stralloc_fmt_call",
-								"stralloc_fmt_pred",
-								"stralloc_fmt",
-								"stralloc_catdouble",
-								"stralloc_chr",
-								"stralloc_rchr",
-								"stralloc_copywcb",
-								"stralloc_copywcs",
-								"stralloc_shrink",
-								"stralloc_prependb",
-								"stralloc_prepends",
-								"stralloc_prepend",
-								"stralloc_ends",
-								"stralloc_expand",
-								"stralloc_catwcb",
-								"stralloc_catwcs",
-								"stralloc_remove",
-								"stralloc_replacec",
-								"stralloc_removesuffixs",
-								"stralloc_removesuffixb",
-								"stralloc_contains",
-								"stralloc_replaces",
-								"stralloc_replace",
-								"stralloc_case_end",
-								"stralloc_case_starts",
-								"stralloc_case_start",
-								"stralloc_catuint",
-								"stralloc_catxlong",
-								"stralloc_count",
-								"stralloc_erase",
-								"stralloc_lower",
-								"stralloc_move",
-								"stralloc_ready_tuned",
-								"stralloc_remove_all",
-								"stralloc_replace_non_printable",
-								"stralloc_reverse_blocks",
-								"stralloc_reverse",
-								"stralloc_upper"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -1364,13 +800,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 9,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -1399,11 +835,71 @@
 						"translation.y": 4830.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17193,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13757,
+								13757
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 8763.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "genmakefile.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 112791,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								106020,
+								106020
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 98026.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"semi_transient": false,
 					"settings":
 					{
@@ -1677,11 +1173,11 @@
 						"translation.y": 2162.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 5,
 					"file": "lib/json.h",
 					"semi_transient": false,
 					"settings":
@@ -1707,11 +1203,11 @@
 						"translation.y": 2452.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 6,
 					"file": "xmltest.c",
 					"semi_transient": false,
 					"settings":
@@ -1737,11 +1233,11 @@
 						"translation.y": 4348.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 7,
 					"file": "lib/xml/xml_print.c",
 					"semi_transient": false,
 					"settings":
@@ -1767,11 +1263,11 @@
 						"translation.y": 276.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 8,
 					"file": "lib/xml.h",
 					"semi_transient": false,
 					"settings":
@@ -1797,11 +1293,11 @@
 						"translation.y": 414.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 9,
 					"file": "lib/xml/xml_newnode.c",
 					"semi_transient": false,
 					"settings":
@@ -1825,7 +1321,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 8,
 					"type": "text"
 				}
 			]
@@ -1916,6 +1412,18 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
+				"genma",
+				"genmakefile.c"
+			],
+			[
+				"cmakel",
+				"CMakeLists.txt"
+			],
 			[
 				"strall",
 				"lib/stralloc.h"
@@ -2079,10 +1587,6 @@
 			[
 				"map.h",
 				"map.h"
-			],
-			[
-				"genma",
-				"genmakefile.c"
 			],
 			[
 				"str.h",
@@ -2419,14 +1923,6 @@
 			[
 				"byte_chr",
 				"lib/byte/byte_chr.3"
-			],
-			[
-				"sort.c",
-				"lib/strlist/strlist_sort.c"
-			],
-			[
-				"hmap_free",
-				"lib/hmap/hmap_free_data.c"
 			]
 		],
 		"width": 0.0
