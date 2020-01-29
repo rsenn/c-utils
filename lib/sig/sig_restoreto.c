@@ -3,7 +3,6 @@
 /* MT-unsafe */
 
 #include <signal.h>
-#include <skalibs/sig.h>
 
 void sig_restoreto (sigset_t const *set, unsigned int n)
 {

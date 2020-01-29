@@ -2,8 +2,6 @@
 
 #include <string.h>
 #include <strings.h>
-#include <skalibs/types.h>
-#include <skalibs/sig.h>
 
 static size_t sig0_scan_norec (char const *s, int *sig)
 {

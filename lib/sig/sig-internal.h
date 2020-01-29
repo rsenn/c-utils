@@ -10,6 +10,6 @@ struct sigtable_s
   char const *name ;
 } ;
 
-extern sigtable_t const skalibs_sigtable[] ;
+extern sigtable_t const sigtable[] ;
 
 #endif

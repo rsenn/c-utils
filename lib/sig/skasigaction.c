@@ -1,10 +1,8 @@
 /* ISC license. */
 
-#include <skalibs/config.h>
 #include <signal.h>
-#include <skalibs/sig.h>
 
-int skasigaction (int sig, struct skasigaction const *new, struct skasigaction *old)
+int sigaction (int sig, struct sigaction const *new, struct sigaction *old)
 {
   struct sigaction sanew, saold ;
   if (((new->flags & SKASA_MASKALL) ? sigfillset(&sanew.sa_mask) : sigemptyset(&sanew.sa_mask)) == -1) return -1 ;

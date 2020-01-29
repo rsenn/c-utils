@@ -3,7 +3,7 @@
 #include <signal.h>
 #include "sig-internal.h"
 
-sigtable_t const skalibs_sigtable[] =
+sigtable_t const sigtable[] =
 {
   { SIGABRT, "ABRT" },
   { SIGALRM, "ALRM" },
