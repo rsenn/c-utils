@@ -111,7 +111,7 @@ hmap_count(HMAP_DB* hmap_db) {
 
 #define hmap_foreach(hmap_db, tuple) for(tuple = hmap_begin(hmap_db); tuple; tuple = hmap_next(hmap_db, tuple))
 
-static TUPLE*
+inline static TUPLE*
 hmap_begin(HMAP_DB* hmap) {
   return hmap->list_tuple;
 }

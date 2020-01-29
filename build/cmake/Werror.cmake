@@ -1,5 +1,12 @@
 option(WARN_WERROR "Halt the compilation with an error on compiler warnings." OFF)
 
+include(CheckCCompilerFlag)
+
+	check_c_compiler_flag("-Wno-unnused-variable" WARN_NO_UNUSED_VARIABLE)
+	if(WARN_NO_UNUSED_VARIABLE)
+			set(WERROR_FLAG "${WERROR_FLAG} -Wno-unnused-variable")
+	endif()
+
 message(INFO "Compiler Id: ${CMAKE_C_COMPILER_ID}")
 if(CMAKE_C_COMPILER_ID MATCHES "GNU")
   set(PEDANTIC_COMPILE_FLAGS -pedantic-errors -Wall -Wextra -pedantic
@@ -45,9 +52,9 @@ endif()
 
 if(WARN_WERROR)
   #SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${WERROR_FLAG})
-  SET(WARN_C_COMPILER_FLAGS "-Wall ${WERROR_FLAG}")
+  SET(WARN_C_COMPILER_FLAGS "-Wall -Wno-unused-variable ${WERROR_FLAG}")
 endif()
 if(WARN_PEDANTIC)
   #SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${PEDANTIC_COMPILE_FLAGS})
-  SET(WARN_C_COMPILER_FLAGS "-Wall ${PEDANTIC_COMPILE_FLAGS}")
+  SET(WARN_C_COMPILER_FLAGS "-Wall -Wno-unused-variable ${PEDANTIC_COMPILE_FLAGS}")
 endif()
