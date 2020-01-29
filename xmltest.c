@@ -140,7 +140,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         hmap_foreach(n->attributes, t) {
           buffer_putm_internal(b, ", \"", 0);
           buffer_put(b, t->key, t->key_len);
-          buffer_putm_internal(b, "=", t->vals.val_chars, "\"", 0);
+          buffer_putm_internal(b, "\", \"", t->vals.val_chars, "\"", 0);
         }
         if(attrs_str[1] == 't' || attrs_str[1] == 'a')
           buffer_puts(b, ", 0");
