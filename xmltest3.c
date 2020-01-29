@@ -4,14 +4,19 @@ xmlnode*
 create_xml_document() {
   xmlnode* doc = xml_newnode(XML_DOCUMENT);
   xmlnode* configuration_descriptor = doc->children = xml_element("configurationDescriptor");
+
   configuration_descriptor->attributes = xml_attributes("version", "65", 0);
+
   xmlnode* logical_folder = xml_child_element("logicalFolder", configuration_descriptor);
   logical_folder->attributes = xml_attributes("name", "root", "displayName", "root", "projectFiles", "true", 0);
+
   xmlnode* logical_folder1 = xml_child_element("logicalFolder", logical_folder);
   logical_folder1->attributes =
       xml_attributes("name", "HeaderFiles", "displayName", "Header Files", "projectFiles", "true", 0);
+
   xmlnode* logical_folder2 = xml_child_element("logicalFolder", logical_folder1);
   logical_folder2->attributes = xml_attributes("name", "f1", "displayName", "lib", "projectFiles", "true", 0);
+
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/buffer.h");
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/interrupt.h");
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/format.h");
@@ -20,35 +25,47 @@ create_xml_document() {
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/ser.h");
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/typedef.h");
   xml_child_element_text("itemPath", logical_folder2, "/home/roman/Dokumente/Sources/lc-meter/lib/delay.h");
+
   xml_child_element_attrs(
       "logicalFolder", logical_folder, "name=LinkerScript", "displayName=Linker Files", "projectFiles=true", 0);
   logical_folder1 = xml_child_element("logicalFolder", logical_folder);
   logical_folder1->attributes =
       xml_attributes("name", "SourceFiles", "displayName", "Source Files", "projectFiles", "true", 0);
+
   logical_folder2 = xml_child_element("logicalFolder", logical_folder1);
   logical_folder2->attributes = xml_attributes("name", "f1", "displayName", "lib", "projectFiles", "true", 0);
+
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/buffer.c");
   xml_child_element_text("itemPath", logical_folder2, "/home/roman/Dokumente/Sources/lc-meter/lib/delay.c");
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/lcd44780.c");
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/ser.c");
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/timer.c");
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/format.c");
+
   xml_child_element_text("itemPath", logical_folder1, "../../../src/print.c");
   xml_child_element_text("itemPath", logical_folder1, "../../../LC-meter.c");
   xml_child_element_text("itemPath", logical_folder1, "../../../src/measure.c");
+
   logical_folder1 = xml_child_element("logicalFolder", logical_folder);
   logical_folder1->attributes =
       xml_attributes("name", "ExternalFiles", "displayName", "Important Files", "projectFiles", "false", 0);
+
   xml_child_element_text("itemPath", logical_folder1, "Makefile");
+
   xmlnode* source_root_list = xml_child_element("sourceRootList", configuration_descriptor);
+
   xml_child_element_text("Elem", source_root_list, "../../mplab");
   xml_child_element_text("Elem", source_root_list, "../../../src");
   xml_child_element_text("Elem", source_root_list, "../../../lib");
+
   xml_child_element_text("projectmakefile", configuration_descriptor, "Makefile");
   xmlnode* confs = xml_child_element("confs", configuration_descriptor);
+
   xmlnode* conf = xml_child_element("conf", confs);
   conf->attributes = xml_attributes("name", "release", "type", "2", 0);
+
   xmlnode* tools_set = xml_child_element("toolsSet", conf);
+
   xml_child_element_text("developmentServer", tools_set, "localhost");
   xml_child_element_text("targetDevice", tools_set, "PIC18F2550");
   xml_child_element("targetHeader", tools_set);
@@ -57,18 +74,28 @@ create_xml_document() {
   xml_child_element_text("languageToolchain", tools_set, "XC8");
   xml_child_element_text("languageToolchainVersion", tools_set, "1.45");
   xml_child_element_text("platform", tools_set, "2");
+
   xmlnode* packs = xml_child_element("packs", conf);
+
   xml_child_element_attrs("pack", packs, "name=PIC18Fxxxx_DFP", "vendor=Microchip", "version=1.1.19", 0);
+
   xmlnode* compile_type = xml_child_element("compileType", conf);
+
   xmlnode* linker_tool = xml_child_element("linkerTool", compile_type);
+
   xml_child_element("linkerLibItems", linker_tool);
+
   xml_child_element("archiverTool", compile_type);
   xmlnode* loading = xml_child_element("loading", compile_type);
+
   xml_child_element_text("useAlternateLoadableFile", loading, "false");
   xml_child_element_text("parseOnProdLoad", loading, "false");
   xml_child_element("alternateLoadableFile", loading);
+
   xml_child_element("subordinates", compile_type);
+
   xmlnode* make_customization_type = xml_child_element("makeCustomizationType", conf);
+
   xml_child_element_text("makeCustomizationPreStepEnabled", make_customization_type, "false");
   xml_child_element("makeCustomizationPreStep", make_customization_type);
   xml_child_element_text("makeCustomizationPostStepEnabled", make_customization_type, "false");
@@ -76,7 +103,9 @@ create_xml_document() {
   xml_child_element_text("makeCustomizationPutChecksumInUserID", make_customization_type, "false");
   xml_child_element_text("makeCustomizationEnableLongLines", make_customization_type, "false");
   xml_child_element_text("makeCustomizationNormalizeHexFile", make_customization_type, "false");
+
   xmlnode* hitechcomp = xml_child_element("HI-TECH-COMP", conf);
+
   xml_child_element_attrs("property", hitechcomp, "key=additional-warnings", "value=true", 0);
   xml_child_element_attrs("property", hitechcomp, "key=asmlist", "value=true", 0);
   xml_child_element_attrs("property", hitechcomp, "key=default-bitfield-type", "value=true", 0);
@@ -115,7 +144,9 @@ create_xml_document() {
   xml_child_element_attrs("property", hitechcomp, "key=warning-level", "value=3", 0);
   xml_child_element_attrs("property", hitechcomp, "key=what-to-do", "value=ignore", 0);
   xml_child_element_attrs("appendMe", hitechcomp, "value=--double=32", 0);
+
   xmlnode* hitechlink = xml_child_element("HI-TECH-LINK", conf);
+
   xml_child_element_attrs("property", hitechlink, "key=additional-options-checksum", "value=", 0);
   xml_child_element_attrs("property", hitechlink, "key=additional-options-code-offset", "value=", 0);
   xml_child_element_attrs("property", hitechlink, "key=additional-options-command-line", "value=", 0);
@@ -160,7 +191,9 @@ create_xml_document() {
   xml_child_element_attrs("property", hitechlink, "key=opt-xc8-linker-serial", "value=", 0);
   xml_child_element_attrs("property", hitechlink, "key=program-the-device-with-default-config-words", "value=true", 0);
   xml_child_element_attrs("property", hitechlink, "key=remove-unused-sections", "value=true", 0);
+
   xmlnode* pickit3platform_tool = xml_child_element("PICkit3PlatformTool", conf);
+
   xml_child_element_attrs("property", pickit3platform_tool, "key=AutoSelectMemRanges", "value=auto", 0);
   xml_child_element_attrs("property", pickit3platform_tool, "key=Freeze Peripherals", "value=true", 0);
   xml_child_element_attrs(
@@ -216,9 +249,13 @@ create_xml_document() {
       "property", pickit3platform_tool, "key=programoptions.usehighvoltageonmclr", "value=false", 0);
   xml_child_element_attrs("property", pickit3platform_tool, "key=programoptions.uselvpprogramming", "value=false", 0);
   xml_child_element_attrs("property", pickit3platform_tool, "key=voltagevalue", "value=5.0", 0);
+
   xmlnode* xc8co = xml_child_element("XC8-CO", conf);
+
   xml_child_element_attrs("property", xc8co, "key=coverage-enable", "value=", 0);
+
   xmlnode* xc8configglobal = xml_child_element("XC8-config-global", conf);
+
   xml_child_element_attrs("property", xc8configglobal, "key=advanced-elf", "value=false", 0);
   xml_child_element_attrs("property", xc8configglobal, "key=gcc-opt-driver-new", "value=false", 0);
   xml_child_element_attrs("property", xc8configglobal, "key=gcc-opt-std", "value=--std=c89", 0);
@@ -230,9 +267,12 @@ create_xml_document() {
   xml_child_element_attrs("property", xc8configglobal, "key=stack-size-main", "value=auto", 0);
   xml_child_element_attrs("property", xc8configglobal, "key=stack-type", "value=compiled", 0);
   xml_child_element_attrs("property", xc8configglobal, "key=user-pack-device-support", "value=", 0);
+
   xmlnode* conf1 = xml_child_element("conf", confs);
   conf1->attributes = xml_attributes("name", "debug", "type", "2", 0);
+
   xmlnode* tool2 = xml_child_element("toolsSet", conf1);
+
   xml_child_element_text("developmentServer", tool2, "localhost");
   xml_child_element_text("targetDevice", tool2, "PIC18F2550");
   xml_child_element("targetHeader", tool2);
@@ -241,18 +281,28 @@ create_xml_document() {
   xml_child_element_text("languageToolchain", tool2, "XC8");
   xml_child_element_text("languageToolchainVersion", tool2, "1.45");
   xml_child_element_text("platform", tool2, "2");
+
   xmlnode* pack2 = xml_child_element("packs", conf1);
+
   xml_child_element_attrs("pack", pack2, "name=PIC18Fxxxx_DFP", "vendor=Microchip", "version=1.1.19", 0);
+
   xmlnode* comp2 = xml_child_element("compileType", conf1);
+
   xmlnode* link2 = xml_child_element("linkerTool", comp2);
+
   xml_child_element("linkerLibItems", link2);
+
   xml_child_element("archiverTool", comp2);
   xmlnode* load2 = xml_child_element("loading", comp2);
+
   xml_child_element_text("useAlternateLoadableFile", load2, "false");
   xml_child_element_text("parseOnProdLoad", load2, "false");
   xml_child_element("alternateLoadableFile", load2);
+
   xml_child_element("subordinates", comp2);
+
   xmlnode* make2 = xml_child_element("makeCustomizationType", conf1);
+
   xml_child_element_text("makeCustomizationPreStepEnabled", make2, "false");
   xml_child_element("makeCustomizationPreStep", make2);
   xml_child_element_text("makeCustomizationPostStepEnabled", make2, "false");
@@ -260,7 +310,9 @@ create_xml_document() {
   xml_child_element_text("makeCustomizationPutChecksumInUserID", make2, "false");
   xml_child_element_text("makeCustomizationEnableLongLines", make2, "false");
   xml_child_element_text("makeCustomizationNormalizeHexFile", make2, "false");
+
   xmlnode* hite2 = xml_child_element("HI-TECH-COMP", conf1);
+
   xml_child_element_attrs("property", hite2, "key=additional-warnings", "value=true", 0);
   xml_child_element_attrs("property", hite2, "key=asmlist", "value=true", 0);
   xml_child_element_attrs("property", hite2, "key=default-bitfield-type", "value=true", 0);
@@ -299,7 +351,9 @@ create_xml_document() {
   xml_child_element_attrs("property", hite2, "key=warning-level", "value=3", 0);
   xml_child_element_attrs("property", hite2, "key=what-to-do", "value=ignore", 0);
   xml_child_element_attrs("appendMe", hite2, "value=--double=32", 0);
+
   hite2 = xml_child_element("HI-TECH-LINK", conf1);
+
   xml_child_element_attrs("property", hite2, "key=additional-options-checksum", "value=", 0);
   xml_child_element_attrs("property", hite2, "key=additional-options-code-offset", "value=", 0);
   xml_child_element_attrs("property", hite2, "key=additional-options-command-line", "value=", 0);
@@ -344,7 +398,9 @@ create_xml_document() {
   xml_child_element_attrs("property", hite2, "key=opt-xc8-linker-serial", "value=", 0);
   xml_child_element_attrs("property", hite2, "key=program-the-device-with-default-config-words", "value=true", 0);
   xml_child_element_attrs("property", hite2, "key=remove-unused-sections", "value=true", 0);
+
   xmlnode* pick2 = xml_child_element("PICkit3PlatformTool", conf1);
+
   xml_child_element_attrs("property", pick2, "key=AutoSelectMemRanges", "value=auto", 0);
   xml_child_element_attrs("property", pick2, "key=Freeze Peripherals", "value=true", 0);
   xml_child_element_attrs("property", pick2, "key=SecureSegment.SegmentProgramming", "value=FullChipProgramming", 0);
@@ -388,9 +444,13 @@ create_xml_document() {
   xml_child_element_attrs("property", pick2, "key=programoptions.usehighvoltageonmclr", "value=false", 0);
   xml_child_element_attrs("property", pick2, "key=programoptions.uselvpprogramming", "value=false", 0);
   xml_child_element_attrs("property", pick2, "key=voltagevalue", "value=5.0", 0);
+
   xmlnode* xc8c2 = xml_child_element("XC8-CO", conf1);
+
   xml_child_element_attrs("property", xc8c2, "key=coverage-enable", "value=", 0);
+
   xc8c2 = xml_child_element("XC8-config-global", conf1);
+
   xml_child_element_attrs("property", xc8c2, "key=advanced-elf", "value=false", 0);
   xml_child_element_attrs("property", xc8c2, "key=gcc-opt-driver-new", "value=false", 0);
   xml_child_element_attrs("property", xc8c2, "key=gcc-opt-std", "value=--std=c89", 0);
@@ -402,6 +462,7 @@ create_xml_document() {
   xml_child_element_attrs("property", xc8c2, "key=stack-size-main", "value=auto", 0);
   xml_child_element_attrs("property", xc8c2, "key=stack-type", "value=compiled", 0);
   xml_child_element_attrs("property", xc8c2, "key=user-pack-device-support", "value=", 0);
+
   return doc;
 }
 int

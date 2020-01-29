@@ -1,5 +1,6 @@
 #include "lib/open.h"
 #include "lib/buffer.h"
+#include "lib/str.h"
 #include "lib/strlist.h"
 #include "lib/xml.h"
 
