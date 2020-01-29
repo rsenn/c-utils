@@ -161,11 +161,11 @@ strarray_dump(buffer* b, const strarray* arr) {
  * @param sa
  */
 void
-    // debug_sa(const char* name, stralloc* sa) {
-    buffer_puts(buffer_2, name);
-buffer_puts(buffer_2, ": ");
-buffer_putsa(buffer_2, sa);
-buffer_putnlflush(buffer_2);
+debug_sa(const char* name, stralloc* sa) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_putsa(buffer_2, sa);
+  buffer_putnlflush(buffer_2);
 }
 
 /**

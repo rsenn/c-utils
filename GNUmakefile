@@ -790,7 +790,7 @@ $(info MSYS: $(MSYS))
 #ifeq ($(MSYS),1)
 #  CFLAGS += -I/usr/include/w32api
 #endif
-
+DEFINES += NO_BUILTINS=1
 #CFLAGS = $(patsubst %,-W%,$(WARNINGS))
 DEFS := $(patsubst %,-D%,$(DEFINES))
 DEFS += $(EXTRA_DEFS)
