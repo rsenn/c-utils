@@ -40,16 +40,24 @@ newline_indent(buffer* b, int depth) {
 void
 xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
   TUPLE* t;
-  int i, text_children, chained_attributes;
+  int i, text_children, do_assign, chained_attributes;
   xmlnode* prev = 0;
   stralloc name;
   stralloc_init(&name);
   do {
     text_children = 0;
+    do_assign = 0;
     chained_attributes = 0;
-    if(n->type == XML_DOCUMENT)
+    if(n->type == XML_DOCUMENT) {
       n = n->children;
+      continue;
+    }
+
     stralloc_zero(&name);
+
+    if(prev == 0)
+      newline_indent(b, depth);
+
     if(n->type == XML_TEXT) {
       const char* x = xml_get_text(n, &name);
       if(x[0]) {
@@ -57,88 +65,97 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         newline_indent(b, depth);
       }
     } else if(n->type == XML_ELEMENT) {
+      size_t p = 0;
       if(n->name[0] == '/')
         continue;
       stralloc_decamelize(n->name, &name, '_');
       stralloc_remove_all(&name, "-.", 2);
       stralloc_lower(&name);
       stralloc_nul(&name);
-      if(parent && stralloc_equals(&name, parent)) {
+      if(parent)
+        p = scan_noncharsetnskip(parent, "0123456789", str_len(parent));
+      if((parent && !stralloc_diffb(&name, parent, p)) || strlist_contains(&vars, name.s)) {
         long num = 1;
         if(name.len > 0) {
-          size_t i = scan_noncharsetnskip(name.s, "0123456789", 10, name.len);
-          if(name.s[i]) {
-            if(scan_longn(&name.s[i], name.len - i, &num) > 0)
-              ++num;
-            name.len = i;
+          size_t i = scan_noncharsetnskip(name.s, "0123456789", name.len);
+          if(isdigit(parent[p])) {
+            scan_longn(&parent[p], str_len(parent) - p, &num);
+            ++num;
+            name.len = p;
           }
         }
         stralloc_catlong(&name, num);
         stralloc_nul(&name);
       }
-      /*      if(prev && !(parent && prev == 0)) {
-       buffer_puts(b, ";");      }*/
-      chained_attributes = xml_num_attrs(n) > 0 && (!text_children || n->children == 0);
-      if((n->children && n->children->next == 0 && n->children->type == XML_TEXT)) {
-        name.s = NULL;
-        text_children = 1;
-      }
-      if(name.s && !text_children) {
-        if(!strlist_contains(&vars, name.s)) {
-                newline_indent(b, depth );
 
-          buffer_puts(b, "xmlnode* ");
-          strlist_push(&vars, name.s);
+      chained_attributes = xml_num_attrs(n) > 0 && (!text_children || n->children == 0);
+      if(n->children) {
+        if((n->children->next == 0 && n->children->type == XML_TEXT)) {
+          //  name.s = NULL;
+          text_children = 1;
+        } else if((n->children->type == XML_ELEMENT) || (!chained_attributes && !text_children && name.s)) {
+          if(!strlist_contains(&vars, name.s)) {
+            buffer_puts(b, "xmlnode*");
+            newline_indent(b, depth);
+            strlist_push(&vars, name.s);
+          }
+          buffer_putm_internal(b, name.s, " = ", 0);
+          do_assign = 1;
         }
-        buffer_putm_internal(b, name.s, " = ", 0);
       }
+
       if(parent) {
         buffer_putm_internal(b, "xml_child_element(\"", n->name, "\", ", parent, ")", 0);
       } else {
         buffer_putm_internal(b, "xml_element(\"", n->name, "\")", 0);
       }
-    }
-    if(xml_num_attrs(n) > 0) {
-      if(chained_attributes) {
-        if(name.s) {
-          newline_indent(b, depth);
-          buffer_putsa(b, &name);
-        }
-        buffer_putm_internal(b, "->attributes", 0);
-        buffer_putm_internal(b, " =", 0);
-        newline_indent(b, depth);
-        buffer_putm_internal(b, "  xml_attributes", 0);
-        i = 0;
-        hmap_foreach(n->attributes, t) {
-          if(1) {
+
+      if(!text_children && !chained_attributes)
+        buffer_puts(b, ";");
+
+      if(n->attributes && xml_num_attrs(n) > 0) {
+        if(chained_attributes) {
+          if(name.s && do_assign) {
+            buffer_puts(b, ";");
             newline_indent(b, depth);
+            buffer_putsa(b, &name);
+          } else {
           }
-          buffer_putm_internal(b, i == 0 ? "  (\"" : "   \"", t->key, "\", \"", t->vals.val_chars, "\",", 0);
-          ++i;
-        }
-        buffer_puts(b, " 0);");
-        newline_indent(b, depth);
-      } else {
-        hmap_foreach(n->attributes, t) {
+          buffer_puts(b, "->attributes = xml_attributes(");
+          i = 0;
+          hmap_foreach(n->attributes, t) {
+            if(1)
+              newline_indent(b, depth + 1);
+
+            buffer_putm_internal(b, i == 0 ? "\"" : "\"", t->key, "\", \"", t->vals.val_chars, "\",", 0);
+            ++i;
+          }
           newline_indent(b, depth);
-          buffer_putm_internal(b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", 0);
+          buffer_puts(b, "0);");
+        } else {
+          hmap_foreach(n->attributes, t) {
+            newline_indent(b, depth);
+            buffer_putm_internal(
+                b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", 0);
+          }
+        }
+      }
+
+      if(text_children) {
+        buffer_putm_internal(b, "->children =", 0);
+        // newline_indent(b, depth + 2)
+        buffer_putm_internal(b, " xml_textnode(\"", n->children->name, "\");", 0);
+      }
+      if(!text_children) {
+        if(n->children) {
+          newline_indent(b, depth + 1);
+          if(name.s && (n->type == XML_ELEMENT || n->type == XML_DOCUMENT) && n->children)
+            xml_dump(n->children, b, name.s, depth + 1);
         }
       }
     }
-    // if(!text_children && !chained_attributes)
-    if(text_children) {
-      buffer_putm_internal(b, "->children =", 0);
-                  newline_indent(b, depth);
 
-      buffer_putm_internal(b,  " xml_textnode(\"", n->children->name, "\");", 0);
-    }
-
-    newline_indent(b, depth + 1);
-
-    if(n->children) {
-      if(name.s && (n->type == XML_ELEMENT || n->type == XML_DOCUMENT) && n->children)
-        xml_dump(n->children, b, name.s, depth + 1);
-    }
+    newline_indent(b, depth);
 
     buffer_flush(b);
     prev = n;
