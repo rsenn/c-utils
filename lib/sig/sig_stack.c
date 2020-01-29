@@ -1,5 +1,4 @@
 #include "../sig.h"
-/* ISC license. */
 
 #include <errno.h>
 #include <signal.h>

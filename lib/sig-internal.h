@@ -1,4 +1,3 @@
-/* ISC license. */
 
 #ifndef SIG_INTERNAL
 #define SIG_INTERNAL

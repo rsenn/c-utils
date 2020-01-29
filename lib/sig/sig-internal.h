@@ -1,5 +1,4 @@
 #include "../sig.h"
-/* ISC license. */
 
 #ifndef SIG_INTERNAL
 #define SIG_INTERNAL

@@ -4,13 +4,13 @@
 #include <sys/types.h>
 #include <signal.h>
 
-typedef void sighandler_t(int);
-typedef sighandler_t* sighandler_t_ref;
+typedef void sighandler_t_fn(int);
+typedef sighandler_t_fn* sighandler_t_ref;
 
 #if !defined(_POSIX_SOURCE) && !defined(__linux__) && !defined(__unix__)
 struct sigaction {
-  sighandler_t_ref handler;
-  unsigned int flags : 2;
+  sighandler_t_ref sa_handler;
+  unsigned int sa_flags : 2;
 };
 
 extern struct sigaction const SIG_DFL;

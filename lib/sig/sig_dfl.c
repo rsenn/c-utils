@@ -1,7 +1,8 @@
 #include "../sig.h"
-/* ISC license. */
 
 #include <signal.h>
 
-struct sigaction const SIG_DFL = {SIG_DFL, 0};
-struct sigaction const SIG_IGN = {SIG_IGN, 0};
+#undef SIG_DFL
+struct sigaction const SIG_DFL = {(void (*)(int))0, 0};
+#undef SIG_IGN
+struct sigaction const SIG_IGN = {(void (*)(int))1, 0};

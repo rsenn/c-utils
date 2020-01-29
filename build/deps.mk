@@ -932,43 +932,43 @@ $(BUILDDIR)omf_next.o: lib/omf/omf_next.c lib/omf.h lib/typedefs.h lib/uint8.h l
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)omf_data.o: lib/omf/omf_data.c lib/omf.h lib/typedefs.h lib/uint8.h lib/uint16.h lib/range.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)skasig_dfl.o: lib/sig/skasig_dfl.c
+$(BUILDDIR)sig_pause.o: lib/sig/sig_pause.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_pause.o: lib/sig/sig_pause.c
+$(BUILDDIR)sig_dfl.o: lib/sig/sig_dfl.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_number.o: lib/sig/sig_number.c lib/sig/sig-internal.h
+$(BUILDDIR)sig_number.o: lib/sig/sig_number.c lib/sig.h lib/sig/sig-internal.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)skasigaction.o: lib/sig/skasigaction.c
+$(BUILDDIR)sigaction.o: lib/sig/sigaction.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sigsegv.o: lib/sig/sigsegv.c
+$(BUILDDIR)sigsegv.o: lib/sig/sigsegv.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_restoreto.o: lib/sig/sig_restoreto.c
+$(BUILDDIR)sig_restoreto.o: lib/sig/sig_restoreto.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)sig_unblock.o: lib/sig/sig_unblock.c lib/windoze.h lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_table.o: lib/sig/sig_table.c lib/sig/sig-internal.h
+$(BUILDDIR)sig_table.o: lib/sig/sig_table.c lib/sig.h lib/sig/sig-internal.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_push.o: lib/sig/sig_push.c
+$(BUILDDIR)sig_push.o: lib/sig/sig_push.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_unshield.o: lib/sig/sig_unshield.c
+$(BUILDDIR)sig_unshield.o: lib/sig/sig_unshield.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_catch.o: lib/sig/sig_catch.c
+$(BUILDDIR)sig_catch.o: lib/sig/sig_catch.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_blocknone.o: lib/sig/sig_blocknone.c
+$(BUILDDIR)sig_blocknone.o: lib/sig/sig_blocknone.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig0_scan.o: lib/sig/sig0_scan.c
+$(BUILDDIR)sig0_scan.o: lib/sig/sig0_scan.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_name.o: lib/sig/sig_name.c lib/sig/sig-internal.h
+$(BUILDDIR)sig_name.o: lib/sig/sig_name.c lib/sig.h lib/sig/sig-internal.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_shield.o: lib/sig/sig_shield.c
+$(BUILDDIR)sig_shield.o: lib/sig/sig_shield.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)sig_block.o: lib/sig/sig_block.c lib/windoze.h lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sigfpe.o: lib/sig/sigfpe.c
+$(BUILDDIR)sigfpe.o: lib/sig/sigfpe.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_blockset.o: lib/sig/sig_blockset.c
+$(BUILDDIR)sig_blockset.o: lib/sig/sig_blockset.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)sig_stack.o: lib/sig/sig_stack.c
+$(BUILDDIR)sig_stack.o: lib/sig/sig_stack.c lib/sig.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)range_init.o: lib/range/range_init.c lib/range.h lib/typedefs.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<

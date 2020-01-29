@@ -1,5 +1,4 @@
 #include "../sig.h"
-/* ISC license. */
 
 /* MT-unsafe */
 
