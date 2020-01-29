@@ -2,12 +2,17 @@ option(WARN_WERROR "Halt the compilation with an error on compiler warnings." OF
 
 include(CheckCCompilerFlag)
 
-	check_c_compiler_flag("-Wno-unnused-variable" WARN_NO_UNUSED_VARIABLE)
-	if(WARN_NO_UNUSED_VARIABLE)
-			set(WERROR_FLAG "${WERROR_FLAG} -Wno-unnused-variable")
-	endif()
+check_c_compiler_flag("-Wno-unused-variable" WARN_NO_UNUSED_VARIABLE)
+if(WARN_NO_UNUSED_VARIABLE)
+    set(WERROR_FLAG "${WERROR_FLAG} -Wno-unused-variable")
+endif()
+check_c_compiler_flag("-Wno-unused-function" WARN_NO_UNUSED_FUNCTION)
+if(WARN_NO_UNUSED_FUNCTION)
+    set(WERROR_FLAG "${WERROR_FLAG} -Wno-unused-function")
+endif()
 
-message(INFO "Compiler Id: ${CMAKE_C_COMPILER_ID}")
+#message(INFO "Compiler Id: ${CMAKE_C_COMPILER_ID}")
+
 if(CMAKE_C_COMPILER_ID MATCHES "GNU")
   set(PEDANTIC_COMPILE_FLAGS -pedantic-errors -Wall -Wextra -pedantic
       -Wold-style-cast -Wundef
@@ -31,7 +36,7 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU")
       set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wshift-overflow=2
           -Wnull-dereference -Wduplicated-cond)
   endif()
-  set(WERROR_FLAG "-Wno-unused-but-set-variable -Werror")
+  set(WERROR_FLAG "${WERROR_FLAG} -Werror")
 endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang")
@@ -41,7 +46,7 @@ if(CMAKE_C_COMPILER_ID MATCHES "Clang")
 #    set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS}
 #        -Wzero-as-null-pointer-constant)
 #  endif()
-  set(WERROR_FLAG -Werror)
+  set(WERROR_FLAG "${WERROR_FLAG} -Werror")
 endif()
 
 if(MSVC)
@@ -52,9 +57,9 @@ endif()
 
 if(WARN_WERROR)
   #SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${WERROR_FLAG})
-  SET(WARN_C_COMPILER_FLAGS "-Wall -Wno-unused-variable ${WERROR_FLAG}")
+  SET(WARN_C_COMPILER_FLAGS "-Wall ${WERROR_FLAG}")
 endif()
 if(WARN_PEDANTIC)
   #SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${PEDANTIC_COMPILE_FLAGS})
-  SET(WARN_C_COMPILER_FLAGS "-Wall -Wno-unused-variable ${PEDANTIC_COMPILE_FLAGS}")
+  SET(WARN_C_COMPILER_FLAGS "-Wall ${PEDANTIC_COMPILE_FLAGS}")
 endif()
