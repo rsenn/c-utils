@@ -1,13 +1,14 @@
+#include "../lib/uint64.h"
 #include "../lib/fmt.h"
 #include "../lib/str.h"
-#include <assert.h>
 #include "../lib/scan.h"
 #include "../lib/byte.h"
+#include <assert.h>
 
 int
 main() {
   char buf[1024];
-  long long l;
+  int64 l;
 
   assert(fmt_longlong(0, 12345) == 5);
   assert(fmt_longlong(0, -12345) == 6);

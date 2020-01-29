@@ -26,5 +26,5 @@ again:
       goto again;
     }
   }
-  return &path[n + 1];
+  return (char*)&path[n + 1];
 }

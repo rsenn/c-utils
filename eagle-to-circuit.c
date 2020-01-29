@@ -1,4 +1,3 @@
-
 #include "lib/windoze.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
@@ -27,43 +26,8 @@
 #include <libgen.h>
 #endif
 
-#if 0
-#define MAP_T cbmap_t
-#define MAP_SIZE cbmap_count
-#define MAP_NEW(map) map = cbmap_new()
-#define MAP_VISIT_ALL cbmap_visit_all
-//#define MAP_GET(map, key, klen) cbmap_get
-static inline void* MAP_GET(cbmap_t map, const void* key, size_t klen) {
-  void* ret = NULL;
-  size_t rlen = 0;
-  cbmap_get(map, key, klen, &ret, &rlen);
-  return (ret && rlen) ? ret : NULL;
-}
+#include "map.h"
 
-#define MAP_INSERT cbmap_insert
-#else
-#define MAP_T HMAP_DB*
-#define MAP_SIZE hmap_size
-#define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
-#define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
-  {                                                                                                                    \
-    TUPLE* t;                                                                                                          \
-    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                  \
-  }
-//#define MAP_GET(map, key, klen, pdata, plen) (*(size_t*)(plen) = sizeof(*(pdata)), *(void**)(pdata) = hmap_get(map,
-// key, klen)) #define MAP_GET(map, key, klen, pdata, plen) (*(size_t*)(plen) = sizeof(*(pdata)), *(void**)(pdata) =
-// hmap_get(map, key, klen))
-static inline void*
-MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
-  TUPLE* t = NULL;
-  if(hmap_search(map, key, klen, &t) == HMAP_SUCCESS)
-    return t->vals.val_chars;
-
-  return NULL;
-}
-
-#define MAP_INSERT(map, key, klen, data, dlen) hmap_set(&map, key, klen, data, dlen)
-#endif
 #ifdef _MSC_VER
 #define alloca _alloca
 #endif
@@ -231,10 +195,6 @@ get_or_create(MAP_T m, char* name, size_t datasz) {
   return ptr;
 }
 
-//}
-/**
- * Index a cbmap
- */
 void*
 get_entry(MAP_T map, const char* key) {
   return MAP_GET(map, (void*)key, str_len(key) + 1);
@@ -1019,12 +979,12 @@ main(int argc, char* argv[]) {
   match_query(doc, xq);
   match_foreach(doc, "package", build_package);
   buffer_puts(buffer_2, "items in packages: ");
-  buffer_putulong(buffer_2, cbmap_count(packages));
+  buffer_putulong(buffer_2, MAP_SIZE(packages));
   buffer_putnlflush(buffer_2);
   match_foreach(doc, "deviceset", build_deviceset);
   match_foreach(doc, "part|element", build_part);
   buffer_puts(buffer_2, "items in parts: ");
-  buffer_putulong(buffer_2, cbmap_count(parts));
+  buffer_putulong(buffer_2, MAP_SIZE(parts));
   buffer_putnlflush(buffer_2);
   match_foreach(doc, "net|signal", build_nets);
   match_foreach(doc, "symbol", build_sym);

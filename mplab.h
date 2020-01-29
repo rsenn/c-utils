@@ -9,7 +9,7 @@ typedef struct mplab_config_s {
   int optimize_debug : 1;
   int optimize_assembler : 1;
   int preprocess_assembler : 1;
-  int debugger : 6;
+  int debugger : 8;
   int clear_bss : 1;
   int keep_generated_startup_as : 1;
   int initialize_data : 1;
