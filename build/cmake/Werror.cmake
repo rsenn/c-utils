@@ -1,8 +1,7 @@
+option(WARN_WERROR "Halt the compilation with an error on compiler warnings." OFF)
 
-option(FMT_WERROR "Halt the compilation with an error on compiler warnings." OFF)
-
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+message(INFO "Compiler Id: ${CMAKE_C_COMPILER_ID}")
+if(CMAKE_C_COMPILER_ID MATCHES "GNU")
   set(PEDANTIC_COMPILE_FLAGS -pedantic-errors -Wall -Wextra -pedantic
       -Wold-style-cast -Wundef
       -Wredundant-decls -Wwrite-strings -Wpointer-arith
@@ -12,29 +11,29 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
       -Winvalid-pch -Woverloaded-virtual
       -Wconversion
       -Wno-ctor-dtor-privacy -Wno-format-nonliteral -Wno-shadow)
-  if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.6)
+  if(NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 4.6)
       set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wnoexcept
          -Wno-dangling-else -Wno-unused-local-typedefs)
   endif()
-  if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)
+  if(NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 5.0)
       set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wdouble-promotion
           -Wtrampolines -Wzero-as-null-pointer-constant -Wuseless-cast
           -Wvector-operation-performance -Wsized-deallocation)
   endif()
-  if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0)
+  if(NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 6.0)
       set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wshift-overflow=2
           -Wnull-dereference -Wduplicated-cond)
   endif()
-  set(WERROR_FLAG -Werror)
+  set(WERROR_FLAG "-Wno-unused-but-set-variable -Werror")
 endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
   set(PEDANTIC_COMPILE_FLAGS -Wall -Wextra -pedantic -Wconversion -Wno-sign-conversion)
-  check_cxx_compiler_flag(-Wzero-as-null-pointer-constant HAS_NULLPTR_WARNING)
-  if(HAS_NULLPTR_WARNING)
-    set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS}
-        -Wzero-as-null-pointer-constant)
-  endif()
+#  check_c_compiler_flag(-Wzero-as-null-pointer-constant HAS_NULLPTR_WARNING)
+#  if(HAS_NULLPTR_WARNING)
+#    set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS}
+#        -Wzero-as-null-pointer-constant)
+#  endif()
   set(WERROR_FLAG -Werror)
 endif()
 
@@ -44,9 +43,11 @@ if(MSVC)
 endif()
 
 
-if(FMT_WERROR)
-  add_definitions(${WERROR_FLAG})
+if(WARN_WERROR)
+  #SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${WERROR_FLAG})
+  SET(WARN_C_COMPILER_FLAGS "-Wall ${WERROR_FLAG}")
 endif()
-if(FMT_PEDANTIC)
-  add_definitions(${PEDANTIC_COMPILE_FLAGS})
+if(WARN_PEDANTIC)
+  #SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${PEDANTIC_COMPILE_FLAGS})
+  SET(WARN_C_COMPILER_FLAGS "-Wall ${PEDANTIC_COMPILE_FLAGS}")
 endif()

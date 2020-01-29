@@ -51,8 +51,6 @@ include(FindPkgConfig)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 
-include(${CMAKE_SOURCE_DIR}/build/cmake/Werror.cmake)
-
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -148,6 +146,8 @@ foreach(CompilerFlag ${CompilerFlags})
     set(${CompilerFlag} "${FLAG}" CACHE STRING "Compiler flags ${CompilerFlag}")
   message("${CompilerFlag}: ${${CompilerFlag}}")
 endforeach()
+
+include(${CMAKE_SOURCE_DIR}/build/cmake/Werror.cmake)
 
 
 ################################################################################
@@ -307,7 +307,10 @@ foreach(ARCHIVE ${MODSUBDIRS})
   file(GLOB MODSOURCES lib/${ARCHIVE}_*.c)
   endif()
   add_library("${ARCHIVE}" ${MODSOURCES} ${MODHEADERS})
-  set_target_properties("${ARCHIVE}" PROPERTIES PREFIX "")
+  set_target_properties("${ARCHIVE}" PROPERTIES
+    PREFIX ""
+    COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS}"
+  )
 endforeach(ARCHIVE)
 
 foreach(NETLIB dns http io ndelay socket)
