@@ -86,8 +86,16 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
             name.len = p;
           }
         }
-        stralloc_catlong(&name, num);
-        stralloc_nul(&name);
+
+        do {
+
+          stralloc_catlong(&name, num);
+          stralloc_nul(&name);
+
+          ++num;
+          name.len = p;
+
+        } while(strlist_contains(&vars, name.s));
       }
       num_attrs = xml_num_attrs(n);
       text_children = (n->children && n->children->next == 0 && n->children->type == XML_TEXT);

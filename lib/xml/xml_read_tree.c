@@ -24,6 +24,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
 #endif /* defined XML_DEBUG */
       break;
     }
+
     case XML_TEXT: {
       xmlnode* tnode;
       const char* x = name && name->s ? name->s : value && value->s ? value : "";
@@ -54,6 +55,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
       }
       break;
     }
+
     case XML_ELEMENT:
     default: {
 #ifdef XML_DEBUG
@@ -66,7 +68,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
         reader->parent = p->parent;
         reader->ptr = &p->next;
 
-        while(*reader->ptr) reader->ptr = &(*reader->ptr)->next;
+        //       while(*reader->ptr) reader->ptr = &(*reader->ptr)->next;
 
         assert(*reader->ptr == 0);
         /*
@@ -84,8 +86,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
                 stralloc_nul(name);
                 node->name = name->s;
                 name->s = NULL;*/
-      }
-      if(!reader->closing) {
+      } else if(!reader->closing) {
         xmlnode* node;
         xmlnode* p = reader->parent;
 
@@ -95,7 +96,12 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
         node->attributes = *attrs;
         *attrs = NULL;
         node->parent = p;
+        node->children = NULL;
+
         *(reader->ptr) = node;
+
+        if(*reader->ptr)
+          xml_print(*reader->ptr, buffer_1);
 
         if(reader->self_closing) {
           reader->ptr = &node->next;
@@ -107,6 +113,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
       break;
     }
   }
+
   return 1;
 }
 

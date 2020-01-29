@@ -63,15 +63,21 @@ start:
 }
 
 static void
-xml_print_list(xmlnode* node, buffer* b, int depth) {
-  for(; node; node = node->next) xml_print_node(node, b, depth);
+xml_print_list(xmlnode* list, buffer* b, int depth) {
+  xmlnode *node, *prev = 0;
+  for(node = list; node; node = node->next) {
+
+    xml_print_node(node, b, depth);
+    prev = node;
+  }
 }
 
 void
 xml_print(xmlnode* node, buffer* b) {
   if(node->type == XML_DOCUMENT) {
     buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+    node = node->children;
   }
 
-  (node->children && node->children->next ? xml_print_list : xml_print_node)(node->children, b, 0);
+  (node && node->next ? xml_print_list : xml_print_node)(node, b, 0);
 }
