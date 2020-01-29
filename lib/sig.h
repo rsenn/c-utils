@@ -12,10 +12,10 @@ struct sigaction {
   sighandler_t_ref sa_handler;
   unsigned int sa_flags : 2;
 };
-
-extern struct sigaction const SIG_DFL;
-extern struct sigaction const SIG_IGN;
 #endif
+
+extern struct sigaction const sig_dfl;
+extern struct sigaction const sig_ign;
 
 #ifndef SA_MASKALL
 #define SA_MASKALL 0x01
@@ -25,6 +25,11 @@ extern struct sigaction const SIG_IGN;
 #endif
 
 #define SIGSTACKSIZE 16
+
+
+#define sig_catcha(sig, ac) sig_action(sig, (ac), 0)
+#define sig_restore(sig) sig_action((sig), &sig_dfl, 0)
+
 
 int sig_action(int sig, struct sigaction const* new, struct sigaction* old);
 void sig_blocknone(void);

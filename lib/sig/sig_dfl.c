@@ -2,7 +2,7 @@
 
 #include <signal.h>
 
-#undef SIG_DFL
-struct sigaction const SIG_DFL = {(void (*)(int))0, 0};
-#undef SIG_IGN
-struct sigaction const SIG_IGN = {(void (*)(int))1, 0};
+#undef sig_dfl
+struct sigaction const sig_dfl = {(void (*)(int))0, 0};
+#undef sig_ign
+struct sigaction const sig_ign = {(void (*)(int))1, 0};

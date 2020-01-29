@@ -1,7 +1,9 @@
-#include <string.h>
 #include "../lib/buffer.h"
 #include "../lib/textcode.h"
+#include "../lib/str.h"
+#include <string.h>
 #include <unistd.h>
+#include <alloca.h>
 
 void
 urlencode(const char* c) {

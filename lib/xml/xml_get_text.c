@@ -1,5 +1,6 @@
 #include "../xml.h"
 #include "../str.h"
+#include "../scan.h"
 
 char*
 xml_get_text(xmlnode* node, stralloc* out) {

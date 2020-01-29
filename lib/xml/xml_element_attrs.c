@@ -2,6 +2,9 @@
 #include "../str.h"
 #include <stdarg.h>
 
+HMAP_DB*
+xml_vattributes(const char* arg, va_list args);
+
 xmlnode*
 xml_element_attrs(const char* name, const char* arg, ...) {
   va_list args;

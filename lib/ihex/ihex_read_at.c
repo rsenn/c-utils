@@ -1,6 +1,7 @@
 #include "../ihex.h"
 #include "../slist.h"
 #include "../uint32.h"
+#include "../byte.h"
 
 size_t
 ihex_read_at(ihex_file* ihf, uint32 at, char* x, size_t n) {

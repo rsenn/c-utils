@@ -47,7 +47,7 @@ cb_find(critbit_tree* cb, const void* key, size_t keylen) {
     ptr = node->child[branch];
   }
   from_external_node(ptr, &str, &len);
-  if(len >= keylen && memcmp(key, str, keylen) == 0) {
+  if(len >= keylen && byte_diff(key, keylen, str) == 0) {
     return str;
   }
   return 0;
