@@ -83,12 +83,12 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
       if(*r->ptr)
         r->ptr = &(*r->ptr)->next;
       p = r->parent;
-      
+
       if(r->closing)
         stralloc_insertb(name, "/", 0, 1);
 
       stralloc_nul(name);
-      
+
       if(!r->closing || r->self_closing) {
         node = xml_element(name->s);
         node->children = NULL;
@@ -98,11 +98,11 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
         *r->ptr = node;
       }
 
-        if(!r->closing && !r->self_closing) {
-          xmlreader_push(r, node);
-          break;
-        }
-    
+      if(!r->closing && !r->self_closing) {
+        xmlreader_push(r, node);
+        break;
+      }
+
       if(r->closing && !r->self_closing) {
         xmlreader_pop(r);
         break;
