@@ -48,7 +48,6 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
   stralloc name;
   stralloc_init(&name);
   do {
-    text_children = 0;
     do_assign = 0;
     chained_attributes = 0;
     if(n->type == XML_DOCUMENT) {
@@ -91,13 +90,13 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         stralloc_nul(&name);
       }
       num_attrs = xml_num_attrs(n);
+      text_children = (n->children && n->children->next == 0 && n->children->type == XML_TEXT);
 
       chained_attributes = num_attrs > 0 && (!text_children || n->children == 0);
       if(n->children) {
-        if((n->children->next == 0 && n->children->type == XML_TEXT)) {
-          //  name.s = NULL;
-          text_children = 1;
-        } else if((n->children->type == XML_ELEMENT) || (!chained_attributes && !text_children && name.s)) {
+        if(/*!text_children &&
+            */
+           ((n->children->type == XML_ELEMENT) || (!chained_attributes && !text_children && name.s))) {
           if(!strlist_contains(&vars, name.s)) {
             buffer_puts(b, "xmlnode*");
             newline_indent(b, depth);
@@ -110,7 +109,10 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
 
       attrs_str = num_attrs > 0 && !n->children ? "_attrs" : "";
 
-      if(attrs_str[0])
+      if(text_children && parent)
+        attrs_str = "_text";
+
+      if(attrs_str[1] == 'a')
         chained_attributes = 0;
 
       if(parent)
@@ -119,19 +121,29 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         buffer_putm_internal(b, "xml_element", attrs_str, "(\"", n->name, 0);
       buffer_flush(b);
 
-      if(!chained_attributes && n->attributes) {
+      if(attrs_str[1] == 't') {
+        stralloc text;
+        stralloc_init(&text);
+        buffer_putm_internal(b, ", \"", xml_get_text(n, &text), "\"", 0);
+        stralloc_free(&text);
+        text_children = 0;
+      } else if(!chained_attributes && n->attributes) {
         i = 0;
         hmap_foreach(n->attributes, t) {
           buffer_putm_internal(b, ", \"", 0);
           buffer_put(b, t->key, t->key_len);
           buffer_putm_internal(b, "=", t->vals.val_chars, "\"", 0);
         }
-        buffer_puts(b, ", 0");
+        if(attrs_str[1] == 't' || attrs_str[1] == 'a')
+          buffer_puts(b, ", 0");
       }
+
       buffer_puts(b, ")");
 
       if(!text_children && !chained_attributes)
         buffer_puts(b, ";");
+
+      buffer_flush(b);
 
       if(num_attrs > 0 && !attrs_str[0]) {
         if(chained_attributes) {
@@ -161,16 +173,19 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         }
       }
 
-      if(text_children) {
-        buffer_putm_internal(b, "->children =", 0);
-        // newline_indent(b, depth + 2)
-        buffer_putm_internal(b, " xml_textnode(\"", n->children->name, "\");", 0);
-      }
-      if(!text_children) {
-        if(n->children) {
-          newline_indent(b, depth + 1);
-          if(name.s && (n->type == XML_ELEMENT || n->type == XML_DOCUMENT) && n->children)
-            xml_dump(n->children, b, name.s, depth + 1);
+      if(attrs_str[1] != 't') {
+        if(text_children) {
+          buffer_putm_internal(b, "->children =", 0);
+          // newline_indent(b, depth + 2)
+          buffer_putm_internal(b, " xml_textnode(\"", n->children->name, "\");", 0);
+        }
+
+        if(!text_children) {
+          if(n->children) {
+            newline_indent(b, depth + 1);
+            if(name.s && (n->type == XML_ELEMENT || n->type == XML_DOCUMENT) && n->children)
+              xml_dump(n->children, b, name.s, depth + 1);
+          }
         }
       }
     }

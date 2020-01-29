@@ -58,9 +58,9 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
 
 static void
 xml_print_list(xmlnode* node, buffer* b, int depth) {
-  do {
+  for(; node; node = node->next) {
     xml_print_node(node, b, depth);
-  } while((node = node->next));
+  }
 }
 
 void
