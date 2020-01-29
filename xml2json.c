@@ -115,7 +115,7 @@ xml_style_json(char* x, size_t n) {
   style.sa.len = n;
   strlist_foreach(&style, x, n) {
     size_t np = byte_chr(x, n, ':');
-    ssize_t nv = np == n ? 0 : n - (np + 1);
+    size_t nv = np == n ? 0 : n - (np + 1);
     char* s = &x[np + 1];
     char* value = (s && *s == '\0') ? s : byte_trim(s, &nv, whitespace, 6);
     char* prop = byte_trim(x, &np, whitespace, 6);

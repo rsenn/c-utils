@@ -36,6 +36,8 @@
 #define M_PI 3.14159265358979323846264338327950288
 #endif
 
+typedef int(cmp_fn_t)(const void*, const void*);
+
 struct pad {
   stralloc name;
   double x, y;
@@ -346,7 +348,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
   }
-  qsort(array_start(&n->contacts), array_length(&n->contacts, sizeof(struct ref)), sizeof(struct ref), compare_ref);
+  qsort(array_start(&n->contacts), array_length(&n->contacts, sizeof(struct ref)), sizeof(struct ref), (cmp_fn_t*)&compare_ref);
 }
 
 /**
@@ -544,7 +546,7 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
 
   struct pad* first = array_start(&pkg->pads);
 
-  qsort(first, array_length(&pkg->pads, sizeof(struct pad)), sizeof(struct pad), compare_pads);
+  qsort(first, array_length(&pkg->pads, sizeof(struct pad)), sizeof(struct pad), (cmp_fn_t*)&compare_pads);
 
   double x = first->x, y = first->y;
 
@@ -588,7 +590,7 @@ output_part(const void* key, size_t key_len, const void* value, size_t value_len
   buffer_putspad(&output, name.s, 19);
   stralloc_free(&name);
 
-  clean_pkgname(&name, &ptr->pkg->name);
+  clean_pkgname(&name, ptr->pkg);
   stralloc_nul(&name);
   buffer_putspad(&output, name.s, 18);
 
@@ -600,6 +602,7 @@ output_part(const void* key, size_t key_len, const void* value, size_t value_len
   buffer_putlong(&output, x + 10);
 
   buffer_putnlflush(&output);
+  return 1;
 }
 
 int
@@ -623,7 +626,7 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
   struct part_ref u = {&refs, ptr};
   MAP_VISIT_ALL(nets, output_net, &u);
 
-  strlist_sort(&refs, &cmp_ref);
+  strlist_sort(&refs, (cmp_fn_t*)&cmp_ref);
 
   strlist_foreach(&refs, s, n) {
     size_t clen;
@@ -908,7 +911,7 @@ match_query(xmlnode* doc, const char* q) {
       stralloc_init(&query);
       elem_name = "*";
 
-      for(a = xml_attributes(node); a; a = hmap_next(node->attributes, a)) {
+      for(a = hmap_begin(node->attributes); a; a = hmap_next(node->attributes, a)) {
         strlist part_names;
         const char* attr_name = a->key;
         const char* v = a->vals.val_chars;

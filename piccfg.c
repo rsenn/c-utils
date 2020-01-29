@@ -207,6 +207,7 @@ parse_cfgdata(cword** wptr, const char* x, size_t n) {
     x += eol;
     n -= eol;
   }
+  return 0;
 }
 
 size_t

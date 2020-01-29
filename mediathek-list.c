@@ -172,7 +172,7 @@ read_mediathek_list(const char* url, buffer* b) {
 
   http_get(&h, url);
 
-  buffer_init(&in, (buffer_op_proto*)&http_read, (fd_t)&h, malloc(8192), 8192);
+  buffer_init(&in, (buffer_op_proto*)&http_read, (fd_t)(uintptr_t)(void*)&h, malloc(8192), 8192);
   in.cookie = &h;
   in.deinit = &buffer_free;
   buffer_lzma(b, &in, 0);

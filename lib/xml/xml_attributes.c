@@ -27,7 +27,7 @@ xml_vattributes(const char* arg, va_list args) {
 
     if(db == 0)
       hmap_init(XML_HMAP_BUCKETS, &db);
-    hmap_set(&db, arg, nlen, value, vlen + 1);
+    hmap_set(&db, arg, nlen, (char*)value, vlen + 1);
 
   } while((arg = va_arg(args, const char*)));
 

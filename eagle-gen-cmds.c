@@ -1196,7 +1196,7 @@ match_query(xmlnode* doc, const char* q) {
       stralloc_init(&query);
       elem_name = "*";
 
-      for(a = xml_attributes(node); a; a = hmap_next(node->attributes, a)) {
+      for(a = hmap_begin(node->attributes); a; a = hmap_next(node->attributes, a)) {
         strlist part_names;
         char* attr_name = a->key;
         char* v = a->vals.val_chars;
@@ -1365,7 +1365,6 @@ main(int argc, char* argv[]) {
   {
     buffer input, out;
     xmlnode* doc;
-    xmlnode* libraries;
     xmlnode *plain, *left, *right, *bottom, *top, *gnd_signal, *polygon, *n;
     devicesets = cbmap_new();
     packages = cbmap_new();
@@ -1465,9 +1464,8 @@ main(int argc, char* argv[]) {
       rect extent;
       int num_aligned = 0;
 
-      libraries = xml_find_element(doc, "libraries");
+      //libraries = xml_find_element(doc, "libraries");
 
-      //    tree_topleft(doc, "wire", &right_x, &top_y);
       stralloc_init(&layer_str);
 
       stralloc_catlong(&layer_str, get_layer(current_layer));
@@ -1490,10 +1488,8 @@ main(int argc, char* argv[]) {
       for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
         xmlnode* node = xmlnodeset_iter_ref(it);
         double x1, x2, y1, y2;
-        const char* layer = NULL;
 
-        if(xml_has_attribute(node, "layer"))
-          layer = xml_get_attribute(node, "layer");
+        //if(xml_has_attribute(node, "layer")) layer = xml_get_attribute(node, "layer");
 
         if(do_align_coords) {
 

@@ -48,7 +48,7 @@ MAP_T sourcedirs, rules, vars;
 
 tools_t tools;
 static const char* newline = "\n";
-config_t cfg = {0, 0, 0, -1};
+config_t cfg = {{0,0}, {0,0}, {0,0,0}, -1};
 static int batch, shell, ninja;
 static int batchmode;
 
@@ -411,7 +411,7 @@ skip_comment(const char* x, size_t* lenp) {
  * @return
  */
 int
-scan_main(const char* x, ssize_t n) {
+scan_main(const char* x, size_t n) {
   while(n > 2) {
 
     if(x[0] == '/') {

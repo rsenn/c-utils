@@ -62,12 +62,12 @@ crc32(uint32 crc, const char* data, size_t size) {
 int
 get_crc32(const char* filename, uint32* crc) {
   size_t n;
-  char* x;
+  const char* x;
 
-  if(mmap_read(filename, &n) == 0)
+  if((x = mmap_read(filename, &n)) == 0)
     return -1;
 
-  *crc = crc32(0, (const char*)x, n);
+  *crc = crc32(0, x, n);
 
   mmap_unmap(x, n);
   return 0;
@@ -296,7 +296,7 @@ main(int argc, char* argv[]) {
     char* spec = argv[index];
     char sym = spec[0], *s = &spec[1];
 
-    while(sym = *spec++) {
+    while((sym = *spec++)) {
       size_t n = 0;
       if(sym == '@') {
         n = scan_xlonglong(spec, &addr);

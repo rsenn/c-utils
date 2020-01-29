@@ -13,18 +13,19 @@
 */
 char*
 path_basename(const char* path) {
+  char* x = (char*)path;
   size_t n;
 again:
-  n = str_rchrs(path, "/\\", 2);
-  if(path[n] == '\0')
-    return path;
-  if(path[n + 1] == 0) {
+  n = str_rchrs(x, "/\\", 2);
+  if(x[n] == '\0')
+    return x;
+  if(x[n + 1] == 0) {
     if(n == 0)
-      return path;
+      return x;
     else {
-      ((char*)path)[n] = 0;
+      (x)[n] = 0;
       goto again;
     }
   }
-  return (char*)&path[n + 1];
+  return &x[n + 1];
 }

@@ -18,10 +18,10 @@ extern struct sigaction const sig_dfl;
 extern struct sigaction const sig_ign;
 
 #ifndef SA_MASKALL
-#define SA_MASKALL 0x01
+#define SA_MASKALL ((unsigned long)0x01)
 #endif
 #ifndef SA_NOCLDSTOP
-#define SA_NOCLDSTOP 0x02
+#define SA_NOCLDSTOP ((unsigned long)0x02)
 #endif
 
 #define SIGSTACKSIZE 16

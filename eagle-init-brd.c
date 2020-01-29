@@ -293,7 +293,7 @@ get_attribute_double(double* d, xmlnode* e, const char* name) {
 void
 cat_attributes(stralloc* sa, xmlnode* e) {
   TUPLE* a;
-  for(a = xml_attributes(e); a; a = hmap_next(e->attributes, a)) {
+  for(a = hmap_begin(e->attributes); a; a = hmap_next(e->attributes, a)) {
     const char* value = (const char*)a->vals.val_chars;
     stralloc_cats(sa, "\n  ");
     stralloc_catb(sa, a->key, a->key_len);
@@ -301,7 +301,7 @@ cat_attributes(stralloc* sa, xmlnode* e) {
     if(value)
       stralloc_cats(sa, value);
     stralloc_catb(sa, "\"", 1);
-    if(a->next == xml_attributes(e))
+    if(a->next == hmap_begin(e->attributes))
       break;
   }
 }
