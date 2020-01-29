@@ -220,7 +220,7 @@ main(int argc, char* argv[1]) {
   doc = xml_read_tree(&infile);
   if(doc) {
     xml_dump(doc->children, buffer_1, 0, 1);
-    xml_print(doc->children, buffer_1);
+    xml_print(doc->children, buffer_2);
     xml_free(doc);
   }
   buffer_close(&infile);
