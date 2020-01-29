@@ -51,6 +51,9 @@ include(FindPkgConfig)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 
+include(${CMAKE_SOURCE_DIR}/build/cmake/Werror.cmake)
+
+
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
   check_function_exists(llseek HAVE_LLSEEK)
@@ -211,6 +214,8 @@ endif(OPENSSL_FOUND)
 #  ${OPENSSL_LIBRARIES}
 #  )
 add_definitions(-Dinline=__inline)
+
+
 
 if(MINGW)
   set(LIBMSWSOCK ws2_32)

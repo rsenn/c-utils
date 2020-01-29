@@ -6,24 +6,7 @@
 #include "lib/strlist.h"
 #include "lib/xml.h"
 
-#define MAP_T HMAP_DB*
-#define MAP_SIZE hmap_size
-#define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
-#define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
-  {                                                                                                                    \
-    TUPLE* t;                                                                                                          \
-    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                  \
-  }
-#define MAP_FOREACH(map, t) hmap_foreach(map, t)
-static inline void*
-MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
-  TUPLE* t = NULL;
-  if(hmap_search(map, key, klen, &t) == HMAP_SUCCESS)
-    return t->vals.val_chars;
-  return NULL;
-}
-
-#define MAP_INSERT(map, key, klen, data, dlen) hmap_set(&map, key, klen, data, dlen)
+#include "map.h"
 
 static const char* palette[16] = {"#000000",
                                   "#0000aa",
