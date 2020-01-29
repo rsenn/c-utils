@@ -9,6 +9,7 @@
 #include "lib/str.h"
 #include "lib/mmap.h"
 #include "lib/map.h"
+#include "lib/scan.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -40,6 +41,8 @@ newline_indent(buffer* b, int depth) {
 void
 xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
   TUPLE* t;
+  size_t num_attrs;
+  const char* attrs_str;
   int i, text_children, do_assign, chained_attributes;
   xmlnode* prev = 0;
   stralloc name;
@@ -87,8 +90,9 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         stralloc_catlong(&name, num);
         stralloc_nul(&name);
       }
+      num_attrs = xml_num_attrs(n);
 
-      chained_attributes = xml_num_attrs(n) > 0 && (!text_children || n->children == 0);
+      chained_attributes = num_attrs > 0 && (!text_children || n->children == 0);
       if(n->children) {
         if((n->children->next == 0 && n->children->type == XML_TEXT)) {
           //  name.s = NULL;
@@ -104,16 +108,32 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         }
       }
 
-      if(parent) {
-        buffer_putm_internal(b, "xml_child_element(\"", n->name, "\", ", parent, ")", 0);
-      } else {
-        buffer_putm_internal(b, "xml_element(\"", n->name, "\")", 0);
+      attrs_str = num_attrs > 0 && !n->children ? "_attrs" : "";
+
+      if(attrs_str[0])
+        chained_attributes = 0;
+
+      if(parent)
+        buffer_putm_internal(b, "xml_child_element", attrs_str, "(\"", n->name, "\", ", parent, 0);
+      else
+        buffer_putm_internal(b, "xml_element", attrs_str, "(\"", n->name, 0);
+      buffer_flush(b);
+
+      if(!chained_attributes && n->attributes) {
+        i = 0;
+        hmap_foreach(n->attributes, t) {
+          buffer_putm_internal(b, ", \"", 0);
+          buffer_put(b, t->key, t->key_len);
+          buffer_putm_internal(b, "=", t->vals.val_chars, "\"", 0);
+        }
+        buffer_puts(b, ", 0");
       }
+      buffer_puts(b, ")");
 
       if(!text_children && !chained_attributes)
         buffer_puts(b, ";");
 
-      if(n->attributes && xml_num_attrs(n) > 0) {
+      if(num_attrs > 0 && !attrs_str[0]) {
         if(chained_attributes) {
           if(name.s && do_assign) {
             buffer_puts(b, ";");

@@ -194,6 +194,7 @@ char* xml_get_text(xmlnode* node, stralloc* out);
 
 xmlnode* xml_element_attrs(const char* name, const char* arg, ...);
 xmlnode* xml_child_element_attrs(const char* name, xmlnode* parent, const char* arg, ...);
+xmlnode* xml_child_element_text(const char* name, xmlnode* parent, const char* text);
 
 #ifdef __cplusplus
 }

@@ -3,9 +3,9 @@
 #include <stdarg.h>
 
 xmlnode*
-xml_element_attrs(const char* name, const char* arg, ...) {
+xml_child_element_attrs(const char* name, xmlnode* parent, const char* arg, ...) {
   va_list args;
-  xmlnode* node = xml_element(name);
+  xmlnode* node = xml_child_element(name, parent);
   va_start(args, arg);
   node->attributes = xml_vattributes(arg, args);
   va_end(args);
