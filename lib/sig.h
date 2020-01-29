@@ -26,7 +26,6 @@ extern struct sigaction const SIG_IGN;
 
 #define SIGSTACKSIZE 16
 
-size_t sig0_scan(char const* s, int* sig);
 int sigaction(int sig, struct sigaction const* new, struct sigaction* old);
 void sig_blocknone(void);
 void sig_blockset(sigset_t const* set);
