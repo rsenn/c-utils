@@ -72,12 +72,23 @@
 	"buffers":
 	[
 		{
-			"contents": "sighandler_t_ref\nsigaction\nsigaction\nsigaction\nsig0_scan\nsigaction\nsig_blocknone\nsig_blockset\nsig_block\nsig_catch\nsigfpe\nsig_name\nsig_number\nsig_pause\nsig_pop\nsig_pusha\nsig_push\nsig_restoreto\nsigsegv\nsig_shield\nsig_unshield",
+			"contents": "sighandler_t_ref\nsigaction\nsigaction\nsigaction\nsig_catcha\nsig_restore\nsig_action\nsig_blocknone\nsig_blockset\nsig_block\nsig_catch\nsigfpe\nsig_name\nsig_number\nsig_pause\nsig_pop\nsig_pusha\nsig_push\nsig_restoreto\nsigsegv\nsig_shield\nsig_unshield",
 			"settings":
 			{
-				"buffer_size": 223,
+				"buffer_size": 237,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
+				"scratch": true
+			}
+		},
+		{
+			"contents": "Package Control Messages\n========================\n\nSteadfast Color Scheme\n----------------------\n\n  Welcome to the Steadfast Color Scheme!\n  \n  Activate by selecting:\n    Preferences => Color Scheme => Steadfast\n  \n  Find a bug or have an improvement? Let me know at:\n    https://github.com/serogers/steadfast_color_scheme\n  \n  Enjoy!\n\n\nMaterial Color Scheme\n---------------------\n\n  Thanks for installing Material!\n  \n  \n  How to activate\n  ===============\n  \n  Activate the color scheme by modifying your user preferences file, which you can find using the menu item `Sublime Text -> Preferences -> Settings - User` (⌘+, on Mac).\n  \n  Material Dark\n  ---------\n  \n  Dark variation\n  \n  *Example settings*\n  \n      {\n        \"color_scheme\": \"Packages/Material Color Scheme/sublime/material-dark.tmTheme\",\n      }\n  \n  \n  Material Light\n  ---------------\n  \n  Light variation.\n  \n  *Example settings*\n  \n      {\n        \"color_scheme\": \"Packages/Material Color Scheme/sublime/material-light.tmTheme\",\n      }\n",
+			"settings":
+			{
+				"buffer_size": 1009,
+				"line_ending": "Unix",
+				"name": "Package Control Messages",
+				"read_only": true,
 				"scratch": true
 			}
 		},
@@ -90,19 +101,38 @@
 			}
 		},
 		{
-			"file": "CMakeLists.txt",
+			"file": "lib/sig.h",
 			"settings":
 			{
-				"buffer_size": 17193,
+				"buffer_size": 1236,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/pictest/build/mplabx-pic18/blinktest_18f2550_xc8.X/nbproject/configurations.xml",
+			"settings":
+			{
+				"buffer_size": 11477,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "xmltest3.c",
+			"settings":
+			{
+				"buffer_size": 8946,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/sig.h",
+			"contents": "/* ISC license. */\n\n#ifndef SIG_H\n#define SIG_H\n\n#include <sys/types.h>\n#include <signal.h>\n#include <skalibs/gccattributes.h>\n\ntypedef void skasighandler_t(int);\ntypedef skasighandler_t* skasighandler_t_ref;\n\nstruct skasigaction {\n  skasighandler_t_ref handler;\n  unsigned int flags : 2;\n};\n\n#define SKASA_MASKALL 0x01\n#define SKASA_NOCLDSTOP 0x02\n\nextern struct skasigaction const SKASIG_DFL;\nextern struct skasigaction const SKASIG_IGN;\nextern int skasigaction(int, struct skasigaction const*, struct skasigaction*);\n\n#define sig_catcha(sig, ac) skasigaction(sig, (ac), 0)\n#define sig_restore(sig) skasigaction((sig), &SKASIG_DFL, 0)\n\nextern void sig_restoreto(sigset_t const*, unsigned int);\nextern int sig_catch(int, skasighandler_t_ref);\n#define sig_ignore(sig) sig_catcha((sig), &SKASIG_IGN)\n#define sig_uncatch(sig) sig_restore(sig)\n\n#define SIGSTACKSIZE 16\nextern int sig_pusha(int, struct skasigaction const*);\nextern int sig_pop(int);\nextern int sig_push(int, skasighandler_t_ref);\n\nextern void sig_block(int);\nextern void sig_blockset(sigset_t const*);\nextern void sig_unblock(int);\nextern void sig_blocknone(void);\nextern void sig_pause(void);\nextern void sig_shield(void);\nextern void sig_unshield(void);\n\nextern char const* sig_name(int);\nextern int sig_number(char const*);\nextern size_t sig0_scan(char const*, int*);\n\n#endif\n",
+			"file": "/home/roman/Dokumente/Sources/skalibs/src/include/skalibs/sig.h",
+			"file_size": 1342,
+			"file_write_time": 132247640666825646,
 			"settings":
 			{
-				"buffer_size": 1132,
+				"buffer_size": 1342,
 				"line_ending": "Unix"
 			}
 		},
@@ -110,7 +140,7 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 112799,
+				"buffer_size": 112812,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -137,7 +167,7 @@
 			"file": "xmltest.c",
 			"settings":
 			{
-				"buffer_size": 6267,
+				"buffer_size": 6273,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -146,7 +176,7 @@
 			"file": "lib/xml/xml_print.c",
 			"settings":
 			{
-				"buffer_size": 2220,
+				"buffer_size": 2187,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -155,7 +185,7 @@
 			"file": "lib/xml.h",
 			"settings":
 			{
-				"buffer_size": 9418,
+				"buffer_size": 9366,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -197,6 +227,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"adva",
+				"Package Control: Advanced Install Package"
+			],
 			[
 				"install",
 				"Package Control: Install Package"
@@ -280,10 +314,6 @@
 			[
 				"install ",
 				"Package Control: Install Package"
-			],
-			[
-				"adva",
-				"Package Control: Advanced Install Package"
 			],
 			[
 				"remove",
@@ -410,11 +440,17 @@
 	"expanded_folders":
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/build",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
 		"/home/roman/Dokumente/Sources/c-utils/tests"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/.config/sublime-text-3/Packages/RainbowBrackets/README.md",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/Werror.cmake",
+		"/home/roman/Dokumente/Sources/skalibs/lib/sig.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_callback.c",
 		"/home/roman/Dokumente/Sources/lc-meter/build/mplabx-pic18f/LC_meter_18f2550_xc8.X/nbproject/configurations.xml",
 		"/home/roman/Dokumente/Sources/c-utils/xmltest3.c",
@@ -538,15 +574,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_read_buf.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_read_record.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_load_buf.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_record_at.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_load_record.c",
-		"/home/roman/Dokumente/Sources/c-utils/utils/eagle.js",
-		"/home/roman/Dokumente/Sources/pictest/eagle/PIC18F2550-USB+ICSP-Board.brd",
-		"/home/roman/Dokumente/Sources/c-utils/out.svg"
+		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_record_at.c"
 	],
 	"find":
 	{
-		"height": 44.0
+		"height": 51.0
 	},
 	"find_in_files":
 	{
@@ -569,6 +601,15 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"\\\\\" =",
+			"\\\\\"=",
+			"\\\"=",
+			"\\\\\"=",
+			"\\\\\"",
+			"attrs",
+			"link",
+			"define",
+			"children",
 			"SIG_H",
 			"skalib",
 			"ska",
@@ -687,16 +728,7 @@
 			"remove",
 			"trim",
 			"strip",
-			"hmap",
-			"add",
-			"strlist_conta",
-			"decamelize",
-			"stralloc_decamelize",
-			"camelize",
-			"xml_read.*tree",
-			"readtree",
-			"element",
-			"set_de"
+			"hmap"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -778,7 +810,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -786,7 +818,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 223,
+						"buffer_size": 237,
 						"regions":
 						{
 						},
@@ -795,93 +827,98 @@
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
 							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/sig.h",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									131,
-									147
+									135,
+									151
 								],
 								[
-									205,
-									214
+									234,
+									243
 								],
 								[
-									356,
-									365
+									331,
+									340
 								],
 								[
-									399,
-									408
+									370,
+									379
 								],
 								[
-									467,
-									476
+									569,
+									579
 								],
 								[
-									515,
-									524
+									622,
+									633
 								],
 								[
-									599,
-									612
+									676,
+									686
 								],
 								[
-									632,
-									644
+									754,
+									767
 								],
 								[
-									679,
-									688
+									780,
+									792
 								],
 								[
-									708,
-									717
+									820,
+									829
 								],
 								[
-									747,
-									753
+									841,
+									850
 								],
 								[
-									773,
-									781
+									885,
+									891
 								],
 								[
-									804,
-									814
+									911,
+									919
 								],
 								[
-									846,
-									855
+									934,
+									944
 								],
 								[
-									875,
-									882
+									969,
+									978
 								],
 								[
-									905,
-									914
+									990,
+									997
 								],
 								[
-									966,
-									974
+									1012,
+									1021
 								],
 								[
-									1004,
-									1017
+									1065,
+									1073
 								],
 								[
-									1068,
-									1075
+									1109,
+									1122
 								],
 								[
-									1095,
-									1105
+									1165,
+									1172
 								],
 								[
-									1125,
-									1137
+									1185,
+									1195
+								],
+								[
+									1208,
+									1220
 								]
 							],
 							"symlist":
@@ -890,8 +927,9 @@
 								"sigaction",
 								"sigaction",
 								"sigaction",
-								"sig0_scan",
-								"sigaction",
+								"sig_catcha",
+								"sig_restore",
+								"sig_action",
 								"sig_blocknone",
 								"sig_blockset",
 								"sig_block",
@@ -914,17 +952,48 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1009,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1009,
+								1009
+							]
+						],
+						"settings":
+						{
+							"auto_indent": false,
+							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_width": 2,
+							"word_wrap": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
-					"buffer": 1,
+					"buffer": 2,
 					"file": "lib/stralloc.h",
 					"semi_transient": false,
 					"settings":
@@ -936,8 +1005,8 @@
 						"selection":
 						[
 							[
-								9268,
-								9268
+								9979,
+								9979
 							]
 						],
 						"settings":
@@ -946,41 +1015,10 @@
 							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 4830.0,
+						"translation.y": 4200.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 17193,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								13757,
-								13757
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 8763.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -989,15 +1027,104 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1132,
+						"buffer_size": 1236,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								215,
-								215
+								354,
+								354
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/roman/Dokumente/Sources/pictest/build/mplabx-pic18/blinktest_18f2550_xc8.X/nbproject/configurations.xml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11477,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4880,
+								4880
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "xmltest3.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8946,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								237,
+								237
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/roman/Dokumente/Sources/skalibs/src/include/skalibs/sig.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1342,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								637,
+								637
 							]
 						],
 						"settings":
@@ -1005,19 +1132,19 @@
 							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 138.0,
+						"translation.y": 180.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 7,
 					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 112799,
+						"buffer_size": 112812,
 						"regions":
 						{
 						},
@@ -1030,19 +1157,20 @@
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 98026.0,
+						"translation.y": 85240.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 8,
 					"semi_transient": false,
 					"settings":
 					{
@@ -1313,14 +1441,14 @@
 							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2162.0,
+						"translation.y": 2030.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 9,
 					"file": "lib/json.h",
 					"semi_transient": false,
 					"settings":
@@ -1343,27 +1471,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2452.0,
+						"translation.y": 2134.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 10,
 					"file": "xmltest.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6267,
+						"buffer_size": 6273,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6217,
-								6217
+								3970,
+								3970
 							]
 						],
 						"settings":
@@ -1373,19 +1501,19 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4348.0,
+						"translation.y": 2340.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 11,
 					"file": "lib/xml/xml_print.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2220,
+						"buffer_size": 2187,
 						"regions":
 						{
 						},
@@ -1403,19 +1531,19 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 276.0,
+						"translation.y": 240.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 12,
 					"file": "lib/xml.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9418,
+						"buffer_size": 9366,
 						"regions":
 						{
 						},
@@ -1433,14 +1561,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 414.0,
+						"translation.y": 360.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 13,
 					"file": "lib/xml/xml_newnode.c",
 					"semi_transient": false,
 					"settings":
@@ -1464,7 +1592,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 13,
 					"type": "text"
 				}
 			]
@@ -1472,7 +1600,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 32.0
+		"height": 39.0
 	},
 	"input":
 	{
@@ -1556,6 +1684,14 @@
 		"selected_items":
 		[
 			[
+				"xmltest.c",
+				"xmltest.c"
+			],
+			[
+				"xmltest3",
+				"xmltest3.c"
+			],
+			[
 				"sig.h",
 				"lib/sig.h"
 			],
@@ -1594,10 +1730,6 @@
 			[
 				"xml_print.c",
 				"lib/xml/xml_print.c"
-			],
-			[
-				"xmltest.c",
-				"xmltest.c"
 			],
 			[
 				"alloc.h",
@@ -2062,10 +2194,6 @@
 			[
 				"putspad",
 				"lib/buffer/buffer_putspad.c"
-			],
-			[
-				"buffer_putspad",
-				"lib/buffer/buffer_putspad.c"
 			]
 		],
 		"width": 0.0
@@ -2088,7 +2216,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 1,
+	"selected_group": 0,
 	"settings":
 	{
 	},
