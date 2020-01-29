@@ -316,7 +316,7 @@ worker_encode(worker_thread* thr, worker_state state) {
       }
 
       break;
-      }
+    }
 
     default: worker_error(thr, ret); return THR_STOP;
   }

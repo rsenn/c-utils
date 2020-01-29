@@ -380,8 +380,7 @@ hex_data::read(std::istream& s) {
           blocks[address].assign(data, data + length);
         break;
       }
-      case 1:
-        break; /* Ignore EOF record */
+      case 1: break; /* Ignore EOF record */
       case 2: /* Segment address record (INHX32) */ segment_addr_rec = true; break;
       case 4: /* Linear address record (INHX32) */
         if((0 == address) && (2 == length)) {
@@ -519,4 +518,4 @@ compare(hex_data& hex1, hex_data& hex2, value_type mask, address_type begin, add
   }
   return true;
 }
-}
+} // namespace intelhex

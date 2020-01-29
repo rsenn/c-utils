@@ -200,19 +200,19 @@ fallbackQSort3(UInt32* fmap, UInt32* eclass, Int32 loSt, Int32 hiSt) {
 #undef FALLBACK_QSORT_SMALL_THRESH
 #undef FALLBACK_QSORT_STACK_SIZE
 
-  /*---------------------------------------------*/
-  /* Pre:
-        nblock > 0
-        eclass exists for [0 .. nblock-1]
-        ((UChar*)eclass) [0 .. nblock-1] holds block
-        ptr exists for [0 .. nblock-1]
+/*---------------------------------------------*/
+/* Pre:
+      nblock > 0
+      eclass exists for [0 .. nblock-1]
+      ((UChar*)eclass) [0 .. nblock-1] holds block
+      ptr exists for [0 .. nblock-1]
 
-     Post:
-        ((UChar*)eclass) [0 .. nblock-1] holds block
-        All other areas of eclass destroyed
-        fmap [0 .. nblock-1] holds sorted order
-        bhtab [ 0 .. 2+(nblock/32) ] destroyed
-  */
+   Post:
+      ((UChar*)eclass) [0 .. nblock-1] holds block
+      All other areas of eclass destroyed
+      fmap [0 .. nblock-1] holds sorted order
+      bhtab [ 0 .. 2+(nblock/32) ] destroyed
+*/
 
 #define SET_BH(zz) bhtab[(zz) >> 5] |= (1 << ((zz)&31))
 #define CLEAR_BH(zz) bhtab[(zz) >> 5] &= ~(1 << ((zz)&31))
@@ -629,14 +629,14 @@ mainSimpleSort(UInt32* ptr, UChar* block, UInt16* quadrant, Int32 nblock, Int32 
   }
 }
 
-  /*---------------------------------------------*/
-  /*--
-     The following is an implementation of
-     an elegant 3-way quicksort for strings,
-     described in a paper "Fast Algorithms for
-     Sorting and Searching Strings", by Robert
-     Sedgewick and Jon L. Bentley.
-  --*/
+/*---------------------------------------------*/
+/*--
+   The following is an implementation of
+   an elegant 3-way quicksort for strings,
+   described in a paper "Fast Algorithms for
+   Sorting and Searching Strings", by Robert
+   Sedgewick and Jon L. Bentley.
+--*/
 
 #define mswap(zz1, zz2)                                                                                                \
   {                                                                                                                    \
@@ -834,20 +834,20 @@ mainQSort3(
 #undef MAIN_QSORT_DEPTH_THRESH
 #undef MAIN_QSORT_STACK_SIZE
 
-  /*---------------------------------------------*/
-  /* Pre:
-        nblock > N_OVERSHOOT
-        block32 exists for [0 .. nblock-1 +N_OVERSHOOT]
-        ((UChar*)block32) [0 .. nblock-1] holds block
-        ptr exists for [0 .. nblock-1]
+/*---------------------------------------------*/
+/* Pre:
+      nblock > N_OVERSHOOT
+      block32 exists for [0 .. nblock-1 +N_OVERSHOOT]
+      ((UChar*)block32) [0 .. nblock-1] holds block
+      ptr exists for [0 .. nblock-1]
 
-     Post:
-        ((UChar*)block32) [0 .. nblock-1] holds block
-        All other areas of block32 destroyed
-        ftab [0 .. 65536 ] destroyed
-        ptr [0 .. nblock-1] holds sorted order
-        if (*budget < 0), sorting was abandoned
-  */
+   Post:
+      ((UChar*)block32) [0 .. nblock-1] holds block
+      All other areas of block32 destroyed
+      ftab [0 .. 65536 ] destroyed
+      ptr [0 .. nblock-1] holds sorted order
+      if (*budget < 0), sorting was abandoned
+*/
 
 #define BIGFREQ(b) (ftab[((b) + 1) << 8] - ftab[(b) << 8])
 #define SETMASK (1 << 21)

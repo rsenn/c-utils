@@ -1,4 +1,3 @@
-#include "../sig.h"
 /* ISC license. */
 
 #ifndef SIG_INTERNAL
@@ -10,6 +9,6 @@ struct sigtable_s {
   char const* name;
 };
 
-extern sigtable_t const sigtable[];
+extern sigtable_t const skalibs_sigtable[];
 
 #endif

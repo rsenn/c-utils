@@ -455,7 +455,7 @@ sendMTFValues(EState* s) {
          Increment the symbol frequencies for the selected table.
        --*/
       if(nGroups == 6 && 50 == ge - gs + 1) {
-      /*--- fast track the common case ---*/
+        /*--- fast track the common case ---*/
 
 #define BZ_ITUR(nn) s->rfreq[bt][mtfv[gs + (nn)]]++
 

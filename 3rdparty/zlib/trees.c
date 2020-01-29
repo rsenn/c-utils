@@ -947,7 +947,7 @@ int last;       /* one if this is the last block for a file */
   if(buf != (char*)0) { /* force stored block */
 #else
   if(stored_len + 4 <= opt_lenb && buf != (char*)0) {
-  /* 4: two words for the lengths */
+    /* 4: two words for the lengths */
 #endif
     /* The test buf != NULL is only necessary if LIT_BUFSIZE > WSIZE.
      * Otherwise we can't have processed more than WSIZE input bytes since

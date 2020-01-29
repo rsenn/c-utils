@@ -158,7 +158,7 @@ const char* mode;
     state->direct = 1; /* for empty file */
   }
 
-    /* save the path name for error messages */
+  /* save the path name for error messages */
 #ifdef _WIN32
   if(fd == -2) {
     len = wcstombs(NULL, path, 0);

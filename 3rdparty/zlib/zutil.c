@@ -185,15 +185,15 @@ uInt len;
 #ifdef SYS16BIT
 
 #ifdef __TURBOC__
-  /* Turbo C in 16-bit mode */
+/* Turbo C in 16-bit mode */
 
 #define MY_ZCALLOC
 
-  /* Turbo C malloc() does not allow dynamic allocation of 64K bytes
-   * and farmalloc(64K) returns a pointer with an offset of 8, so we
-   * must fix the pointer. Warning: the pointer must be put back to its
-   * original form in order to free it, use zcfree().
-   */
+/* Turbo C malloc() does not allow dynamic allocation of 64K bytes
+ * and farmalloc(64K) returns a pointer with an offset of 8, so we
+ * must fix the pointer. Warning: the pointer must be put back to its
+ * original form in order to free it, use zcfree().
+ */
 
 #define MAX_PTR 10
 /* 10*64K = 640K */
@@ -265,7 +265,7 @@ zcfree(voidpf opaque, voidpf ptr) {
 #endif /* __TURBOC__ */
 
 #ifdef M_I86
-  /* Microsoft C in 16-bit mode */
+/* Microsoft C in 16-bit mode */
 
 #define MY_ZCALLOC
 

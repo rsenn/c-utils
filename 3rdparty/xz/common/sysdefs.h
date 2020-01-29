@@ -64,7 +64,6 @@ typedef unsigned char uint8_t;
 typedef unsigned long uintptr_t;
 typedef long intptr_t;
 
-
 #define ULONG_MAX 4294967295UL
 
 #endif
@@ -108,7 +107,6 @@ typedef long intptr_t;
 #ifndef UINT64_MAX
 #define UINT64_MAX 18446744073709551615ULL
 #endif
-
 
 // Be more compatible with systems that have non-conforming inttypes.h.
 // We assume that int is 32-bit and that long is either 32-bit or 64-bit.

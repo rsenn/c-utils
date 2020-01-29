@@ -1,10 +1,10 @@
+#include "../sig.h"
 /* ISC license. */
 
 /* MT-unsafe */
 
-
-int sig_push (int sig, sighandler_t_ref f)
-{
-  struct sigaction ssa = { f, SKASA_MASKALL | SKASA_NOCLDSTOP } ;
-  return sig_pusha(sig, &ssa) ;
+int
+sig_push(int sig, sighandler_t_ref f) {
+  struct sigaction ssa = {f, SA_MASKALL | SA_NOCLDSTOP};
+  return sig_pusha(sig, &ssa);
 }
