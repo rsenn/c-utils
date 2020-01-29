@@ -5,7 +5,12 @@ static void xml_print_list(xmlnode*, buffer*, int);
 
 static void
 xml_print_node(xmlnode* node, buffer* b, int depth) {
-  int closing = node_is_closing(node);
+  int closing;
+  size_t num_children;
+
+start:
+  closing = node_is_closing(node);
+  num_children = node->children == 0 ? 0 : node->children->next ? 2 : 1;
 
   if(node->type == XML_TEXT) {
     stralloc text;
@@ -24,6 +29,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
   if(node->attributes && node->attributes->tuple_count) {
     buffer_putc(b, ' ');
     xml_print_attributes(node->attributes, b, " ", "=", "\"");
+    buffer_flush(b);
   }
 
   if(node->children) {
@@ -31,10 +37,10 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
     buffer_puts(b, ">");
 
     if(only_text_children) {
-      xml_print_list(node->children, b, 0);
+      (num_children > 1 ? xml_print_list : xml_print_node)(node->children, b, 0);
     } else {
       buffer_puts(b, "\n");
-      xml_print_list(node->children, b, depth + 1);
+      (num_children > 1 ? xml_print_list : xml_print_node)(node->children, b, depth + 1);
       buffer_putnspace(b, depth * 2);
     }
     buffer_putm_internal(b, "</", node->name, ">\n", 0);
@@ -58,17 +64,14 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
 
 static void
 xml_print_list(xmlnode* node, buffer* b, int depth) {
-  for(; node; node = node->next) {
-    xml_print_node(node, b, depth);
-  }
+  for(; node; node = node->next) xml_print_node(node, b, depth);
 }
 
 void
 xml_print(xmlnode* node, buffer* b) {
   if(node->type == XML_DOCUMENT) {
     buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-    node = node->children;
   }
 
-  (node->parent ? xml_print_node : xml_print_list)(node, b, 0);
+  (node->children && node->children->next ? xml_print_list : xml_print_node)(node->children, b, 0);
 }

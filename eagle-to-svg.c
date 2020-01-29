@@ -1,3 +1,5 @@
+#include "lib/scan.h"
+#include "lib/scan.h"
 #include "lib/open.h"
 #include "lib/buffer.h"
 #include "lib/str.h"
