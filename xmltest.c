@@ -191,6 +191,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         if(!text_children) {
           if(n->children) {
             newline_indent(b, depth + 1);
+
             if(name.s && (n->type == XML_ELEMENT || n->type == XML_DOCUMENT) && n->children)
               xml_dump(n->children, b, name.s, depth + 1);
           }
@@ -218,7 +219,8 @@ main(int argc, char* argv[1]) {
   buffer_skip_until(&infile, "\r\n", 2);
   doc = xml_read_tree(&infile);
   if(doc) {
-    xml_dump(doc->children, buffer_1, 0, 0);
+    xml_dump(doc->children, buffer_1, 0, 1);
+    xml_print(doc->children, buffer_1);
     xml_free(doc);
   }
   buffer_close(&infile);

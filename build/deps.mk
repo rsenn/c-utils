@@ -2168,3 +2168,191 @@ $(BUILDDIR)opensearch-dump.o: opensearch-dump.c lib/buffer.h lib/typedefs.h lib/
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)torrent-progress.o: torrent-progress.c lib/windoze.h lib/uint64.h lib/buffer.h lib/typedefs.h lib/io.h lib/windoze.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/mmap.h lib/open.h lib/stralloc.h lib/byte.h lib/fmt.h lib/str.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)sln.o: sln.c lib/windoze.h lib/buffer.h lib/typedefs.h lib/byte.h lib/errmsg.h lib/path.h lib/windoze.h lib/stralloc.h lib/str.h lib/str.h lib/stralloc.h lib/strarray.h lib/uint64.h lib/array.h lib/byte.h lib/mmap.h lib/getopt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)test_tuple.o: tests/test_tuple.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/tuple.h tests/../lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)unit_test_runner.o: tests/unit_test_runner.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/path.h tests/../lib/strlist.h tests/../lib/byte.h tests/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)test_stralloc.o: tests/test_stralloc.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)test_path.o: tests/test_path.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/path.h tests/../lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)test_strlist.o: tests/test_strlist.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/strlist.h tests/../lib/byte.h tests/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)test_wordexp.o: tests/test_wordexp.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)all_tests.o: tests/all_tests.c tests/unit_test.h tests/../lib/buffer.h tests/../lib/typedefs.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint64.h tests/../lib/uint32.h tests/../lib/windoze.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)unit_test.o: tests/unit_test.c tests/../lib/windoze.h tests/../lib/stralloc.h tests/../lib/typedefs.h tests/../lib/buffer.h tests/../lib/open.h tests/../lib/windoze.h tests/../lib/uint64.h tests/../lib/io_internal.h tests/../lib/array.h tests/../lib/iarray.h tests/../lib/taia.h tests/../lib/tai.h tests/../lib/uint32.h tests/../lib/io.h tests/../lib/errmsg.h tests/unit_test.h tests/../lib/taia.h tests/../lib/path_internal.h tests/../lib/str.h tests/../lib/path.h tests/../lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)count-depth.o: count-depth.c lib/byte.h lib/typedefs.h lib/buffer.h lib/fmt.h lib/uint32.h lib/uint64.h lib/str.h lib/io.h lib/windoze.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ccat.o: ccat.c lib/buffer.h lib/typedefs.h lib/open.h lib/windoze.h lib/uint64.h lib/unix.h lib/getopt.h lib/readlink.h lib/str.h lib/mmap.h lib/byte.h lib/iarray.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)tcpproxy.o: tcpproxy.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)jsonpp.o: jsonpp.c lib/json.h lib/charbuf.h lib/typedefs.h lib/byte.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/slist.h lib/alloc.h lib/uint64.h lib/str.h lib/open.h lib/windoze.h lib/fmt.h lib/uint32.h lib/errmsg.h lib/str.h lib/scan.h lib/getopt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)pelist.o: pelist.c lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/uint64.h lib/buffer.h lib/mmap.h lib/uint64.h lib/pe.h lib/uint32.h lib/uint16.h lib/uint8.h lib/str.h lib/fmt.h lib/byte.h lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cparser.o: cparser/cparser.c cparser/ansi-c.tab.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lex.yy.o: cparser/lex.yy.c cparser/ansi-c.tab.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ansi-c.tab.o: cparser/ansi-c.tab.c cparser/../lib/buffer.h cparser/../lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xmltest4.o: xmltest4.c lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/stralloc.h lib/xml.h lib/hmap.h lib/textbuf.h lib/str.h lib/mmap.h lib/scan.h lib/strlist.h lib/byte.h lib/array.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)impgen.o: impgen.c lib/byte.h lib/typedefs.h lib/buffer.h lib/mmap.h lib/uint64.h lib/open.h lib/windoze.h lib/pe.h lib/uint32.h lib/uint16.h lib/uint8.h lib/uint32.h lib/str.h lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)omflist.o: omflist.c lib/buffer.h lib/typedefs.h lib/unix.h lib/windoze.h lib/getopt.h lib/readlink.h lib/str.h lib/errmsg.h lib/omf.h lib/uint8.h lib/uint16.h lib/range.h lib/fmt.h lib/uint32.h lib/uint64.h lib/mmap.h lib/byte.h lib/stralloc.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)httptest.o: httptest.c lib/windoze.h lib/http.h lib/uint16.h lib/uint32.h lib/uint64.h lib/stralloc.h lib/typedefs.h lib/buffer.h lib/ip4.h lib/uint8.h lib/byte.h lib/io.h lib/windoze.h lib/iarray.h lib/taia.h lib/tai.h lib/iopause.h lib/io.h lib/socket.h lib/taia.h lib/errmsg.h lib/open.h lib/dns.h lib/iopause.h lib/fmt.h lib/iarray.h lib/scan.h lib/str.h lib/stralloc.h lib/tai.h lib/case.h lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)redir.o: redir.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)lex.yy.o: lex.yy.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fdpassing.o: examples/fdpassing.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)b64encode.o: examples/b64encode.c examples/../lib/str.h examples/../lib/typedefs.h examples/../lib/buffer.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan.o: examples/scan.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)readhttp.o: examples/readhttp.c examples/../lib/stralloc.h examples/../lib/typedefs.h examples/../lib/buffer.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)longlong.o: examples/longlong.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/str.h examples/../lib/scan.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_tosa_example.o: examples/buffer_tosa_example.c examples/../lib/byte.h examples/../lib/typedefs.h examples/../lib/stralloc.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io2.o: examples/io2.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)marshal.o: examples/marshal.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/stralloc.h examples/../lib/buffer.h examples/../lib/scan.h examples/../lib/textcode.h examples/../lib/byte.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/open.h examples/../lib/windoze.h examples/../lib/mmap.h examples/../lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)protobuf.o: examples/protobuf.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)server.o: examples/server.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/str.h examples/../lib/socket.h examples/../lib/uint16.h examples/../lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uint.o: examples/uint.c examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/byte.h examples/../lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)range.o: examples/range.c examples/../lib/rangecheck.h examples/../lib/typedefs.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)proxy.o: examples/proxy.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/buffer.h examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/str.h examples/../lib/dns.h examples/../lib/iopause.h examples/../lib/io.h examples/../lib/stralloc.h examples/../lib/getopt.h examples/../lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_fromsa_example.o: examples/buffer_fromsa_example.c examples/../lib/stralloc.h examples/../lib/typedefs.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)mult.o: examples/mult.c examples/../lib/safemult.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_iso8691.o: examples/fmt_iso8691.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_long_example.o: examples/fmt_long_example.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)iom.o: examples/iom.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_ip6_example.o: examples/fmt_ip6_example.c examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/typedefs.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)urlencode.o: examples/urlencode.c examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)unurl.o: examples/unurl.c examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cescape.o: examples/cescape.c examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)utf8_example.o: examples/utf8_example.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_buffer.o: examples/stralloc_buffer.c examples/../lib/stralloc.h examples/../lib/typedefs.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt.o: examples/fmt.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io5.o: examples/io5.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/buffer.h examples/../lib/ip6.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_human_example.o: examples/fmt_human_example.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io4.o: examples/io4.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)uudecode.o: examples/uudecode.c examples/../lib/textcode.h examples/../lib/str.h examples/../lib/typedefs.h examples/../lib/buffer.h examples/../lib/open.h examples/../lib/windoze.h examples/../lib/uint64.h examples/../lib/stralloc.h examples/../lib/scan.h examples/../lib/uint32.h examples/../lib/case.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)httpd.o: examples/httpd.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/buffer.h examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/array.h examples/../lib/case.h examples/../lib/fmt.h examples/../lib/iob.h examples/../lib/io.h examples/../lib/array.h examples/../lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_strm_alloca.o: examples/fmt_strm_alloca.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_mmap.o: examples/buffer_mmap.c examples/../lib/buffer.h examples/../lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)vd.o: examples/vd.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/buffer.h examples/../lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)json.o: examples/json.c examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)dnsip.o: examples/dnsip.c examples/../lib/dns.h examples/../lib/iopause.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h examples/../lib/stralloc.h examples/../lib/ip4.h examples/../lib/uint8.h examples/../lib/uint16.h examples/../lib/buffer.h examples/../lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)iob.o: examples/iob.c examples/../lib/iob.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h examples/../lib/array.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)dllink.o: examples/dllink.c examples/../lib/socket.h examples/../lib/typedefs.h examples/../lib/uint16.h examples/../lib/uint32.h examples/../lib/buffer.h examples/../lib/case.h examples/../lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cas.o: examples/cas.c examples/../lib/cas.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)array.o: examples/array.c examples/../lib/array.h examples/../lib/typedefs.h examples/../lib/uint64.h examples/../lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io3.o: examples/io3.c examples/../lib/uint64.h examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)textcode.o: examples/textcode.c examples/../lib/array.h examples/../lib/typedefs.h examples/../lib/uint64.h examples/../lib/textcode.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)fmt_httpdate_example.o: examples/fmt_httpdate_example.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/buffer.h examples/../lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffer_1_example.o: examples/buffer_1_example.c examples/../lib/buffer.h examples/../lib/typedefs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)io.o: examples/io.c examples/../lib/io.h examples/../lib/windoze.h examples/../lib/iarray.h examples/../lib/uint64.h examples/../lib/typedefs.h examples/../lib/taia.h examples/../lib/tai.h examples/../lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)stralloc_chomp_example.o: examples/stralloc_chomp_example.c examples/../lib/stralloc.h examples/../lib/typedefs.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)client.o: examples/client.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/ip6.h examples/../lib/byte.h examples/../lib/str.h examples/../lib/socket.h examples/../lib/uint16.h examples/../lib/ndelay.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)byte_copy_example.o: examples/byte_copy_example.c examples/../lib/byte.h examples/../lib/typedefs.h examples/../lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)scan_long_example.o: examples/scan_long_example.c examples/../lib/scan.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/fmt.h examples/../lib/buffer.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)netstring.o: examples/netstring.c examples/../lib/fmt.h examples/../lib/typedefs.h examples/../lib/uint32.h examples/../lib/uint64.h examples/../lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cdbget2.o: examples/cdbget2.c examples/../lib/buffer.h examples/../lib/typedefs.h examples/../lib/errmsg.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ansi-c.tab.o: ansi-c.tab.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xmltest.o: xmltest.c lib/xml.h lib/buffer.h lib/typedefs.h lib/hmap.h lib/stralloc.h lib/textbuf.h lib/uint64.h lib/buffer.h lib/byte.h lib/fmt.h lib/uint32.h lib/hmap.h lib/iterator.h lib/stralloc.h lib/strlist.h lib/byte.h lib/str.h lib/mmap.h lib/map.h lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xmltest2.o: xmltest2.c lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/iterator.h lib/stralloc.h lib/strlist.h lib/byte.h lib/xml.h lib/hmap.h lib/textbuf.h lib/str.h lib/mmap.h lib/scan.h lib/array.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)buffertest.o: buffertest.c lib/stralloc.h lib/typedefs.h lib/buffer.h lib/open.h lib/windoze.h lib/uint64.h lib/mmap.h lib/byte.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)dnsip.o: dnsip.c lib/socket.h lib/typedefs.h lib/uint16.h lib/uint32.h lib/io.h lib/windoze.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/iarray.h lib/case.h lib/open.h lib/stralloc.h lib/scan.h lib/fmt.h lib/str.h lib/tai.h lib/taia.h lib/buffer.h lib/dns.h lib/iopause.h lib/io.h lib/stralloc.h lib/errmsg.h lib/ip4.h lib/uint8.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cmake-run.o: cmake-run.c lib/windoze.h lib/strlist.h lib/stralloc.h lib/typedefs.h lib/byte.h lib/uint64.h lib/buffer.h lib/strarray.h lib/array.h lib/open.h lib/windoze.h lib/stralloc.h lib/buffer.h lib/path.h lib/str.h lib/process.h lib/env.h lib/errmsg.h lib/byte.h lib/mmap.h lib/scan.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)regfilter.o: regfilter.c lib/windoze.h lib/uint64.h lib/buffer.h lib/typedefs.h lib/byte.h lib/fmt.h lib/uint32.h lib/uint64.h lib/open.h lib/windoze.h lib/scan.h lib/str.h lib/stralloc.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h lib/path.h lib/stralloc.h lib/str.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)binfmttest.o: binfmttest.c lib/byte.h lib/typedefs.h lib/binfmt.h lib/uint8.h lib/uint32.h lib/uint64.h lib/range.h lib/mmap.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)list-r.o: list-r.c lib/windoze.h lib/getopt.h lib/buffer.h lib/typedefs.h lib/dir.h lib/uint64.h lib/fmt.h lib/uint32.h lib/fnmatch.h lib/io.h lib/windoze.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h lib/open.h lib/str.h lib/stralloc.h lib/uint64.h lib/ioctlcmd.h lib/byte.h lib/array.h lib/unix.h lib/getopt.h lib/readlink.h lib/path.h lib/stralloc.h lib/str.h lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)mediathek-parser.o: mediathek-parser.c lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/array.h lib/uint64.h lib/buffer.h lib/byte.h lib/io.h lib/iarray.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/open.h lib/str.h lib/stralloc.h lib/strlist.h lib/stralloc.h lib/byte.h lib/buffer.h lib/fmt.h lib/mmap.h lib/ucs.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)elfwrsec.o: elfwrsec.c lib/buffer.h lib/typedefs.h lib/elf.h lib/uint8.h lib/uint16.h lib/uint32.h lib/uint64.h lib/range.h lib/mmap.h lib/str.h lib/byte.h lib/fmt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ntldd.o: ntldd.c lib/windoze.h lib/uint64.h lib/buffer.h lib/typedefs.h lib/byte.h lib/unix.h lib/windoze.h lib/getopt.h lib/readlink.h lib/path.h lib/stralloc.h lib/str.h lib/str.h lib/pe.h lib/uint64.h lib/uint32.h lib/uint16.h lib/uint8.h lib/mmap.h lib/fmt.h lib/stralloc.h lib/strlist.h lib/byte.h lib/buffer.h libntldd.h lib/uint16.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)cc-wrap.o: cc-wrap.c lib/windoze.h lib/strlist.h lib/stralloc.h lib/typedefs.h lib/byte.h lib/uint64.h lib/buffer.h lib/strarray.h lib/array.h lib/stralloc.h lib/buffer.h lib/path.h lib/windoze.h lib/str.h lib/process.h lib/env.h lib/errmsg.h lib/byte.h lib/mmap.h lib/scan.h lib/uint32.h lib/open.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)bsdiffcat.o: bsdiffcat.c lib/windoze.h lib/array.h lib/typedefs.h lib/uint64.h lib/uint64.h lib/buffer.h lib/fmt.h lib/uint32.h lib/io.h lib/windoze.h lib/iarray.h lib/taia.h lib/tai.h lib/iarray.h lib/mmap.h lib/open.h lib/byte.h lib/str.h lib/errmsg.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)xmlpp.o: xmlpp.c lib/buffer.h lib/typedefs.h lib/hmap.h lib/stralloc.h lib/buffer.h lib/io.h lib/windoze.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/stralloc.h lib/xml.h lib/hmap.h lib/textbuf.h lib/byte.h lib/fmt.h lib/mmap.h lib/str.h lib/getopt.h lib/errmsg.h lib/scan.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)ziptest.o: ziptest.c lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/buffer.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/str.h lib/byte.h lib/mmap.h lib/open.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)pathtool.o: pathtool.c lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/buffer.h lib/errmsg.h lib/path.h lib/stralloc.h lib/str.h lib/stralloc.h lib/strlist.h lib/byte.h lib/uint64.h lib/buffer.h lib/windoze.h lib/str.h lib/byte.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)msys-shell.o: msys-shell.c lib/windoze.h lib/strlist.h lib/stralloc.h lib/typedefs.h lib/byte.h lib/uint64.h lib/buffer.h lib/array.h lib/strarray.h lib/array.h lib/stralloc.h lib/buffer.h lib/path.h lib/windoze.h lib/str.h lib/process.h lib/env.h lib/errmsg.h lib/byte.h lib/unix.h lib/getopt.h lib/readlink.h lib/getopt.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)t.o: t.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)compiler-wrapper.o: compiler-wrapper.c lib/windoze.h lib/stralloc.h lib/typedefs.h lib/strlist.h lib/stralloc.h lib/byte.h lib/uint64.h lib/buffer.h lib/str.h lib/byte.h lib/fmt.h lib/uint32.h lib/buffer.h lib/dir.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)plsconv.o: plsconv.c lib/windoze.h lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/buffer.h lib/byte.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/open.h lib/playlist.h lib/stralloc.h lib/buffer.h lib/str.h lib/stralloc.h lib/fmt.h lib/scan.h lib/hmap.h lib/xml.h lib/hmap.h lib/textbuf.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<

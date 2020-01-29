@@ -1,9 +1,30 @@
 #include "../byte.h"
 #include "../fmt.h"
+#include "../buffer.h"
 #include "../scan.h"
 #include "../str.h"
 #include "../xml.h"
+#include "../alloc.h"
 #include <assert.h>
+
+static void
+xmlreader_push(xmlreader* r, xmlnode* parent) {
+  xmlreader* old = alloc_zero(sizeof(xmlreader));
+  byte_copy(old, sizeof(xmlreader), r);
+
+  r->stack = old;
+  r->parent = parent;
+  r->ptr = &parent->children;
+}
+
+static void
+xmlreader_pop(xmlreader* r) {
+  xmlreader* prev;
+  assert(r->stack);
+  prev = r->stack;
+  byte_copy(r, sizeof(xmlreader), r->stack);
+  alloc_free(prev);
+}
 
 static size_t
 xml_unescape(const char* x, size_t n, stralloc* out) {
@@ -11,14 +32,14 @@ xml_unescape(const char* x, size_t n, stralloc* out) {
 }
 
 static int
-xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   xmlnode** nptr;
   stralloc text;
   stralloc_init(&text);
 
   switch(id) {
     case XML_ATTRIBUTE: {
-#ifdef XML_DEBUG
+#if 1
       buffer_putm_internal(buffer_2, "reading attribute '", name->s, "' value '", value->s, "'", 0);
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
@@ -26,7 +47,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
     }
 
     case XML_TEXT: {
-      xmlnode* tnode;
+      xmlnode *pnode, *tnode, **nptr;
       const char* x = name && name->s ? name->s : value && value->s ? value : "";
       size_t i, n = name && name->len ? name->len : value && value->len ? value->len : 0;
 
@@ -35,7 +56,7 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
       x += i;
       n -= i;
 
-      if(n > 0) {
+      if(n > 0 && (pnode = r->parent) && pnode->type == XML_ELEMENT && (&r->parent->children == r->ptr)) {
         tnode = xml_newnode(XML_TEXT);
 
         stralloc_zero(&text);
@@ -44,73 +65,48 @@ xml_read_node(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, 
 
         tnode->name = text.s;
         text.s = 0;
-        tnode->parent = reader->parent;
-        tnode->next = 0;
+        tnode->parent = r->parent;
+        tnode->next = *r->ptr;
 
-        nptr = reader->ptr;
-        while(*nptr) nptr = &(*nptr)->next;
-
-        *nptr = tnode;
-        reader->ptr = &(*nptr)->next;
+        *r->ptr = tnode;
       }
       break;
     }
 
     case XML_ELEMENT:
     default: {
-#ifdef XML_DEBUG
+      xmlnode *p, *node = 0;
+#if 1
       buffer_putm_internal(buffer_2, "reading element '", name->s, "'", 0);
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
+      if(*r->ptr)
+        r->ptr = &(*r->ptr)->next;
+      p = r->parent;
+      
+      if(r->closing)
+        stralloc_insertb(name, "/", 0, 1);
 
-      if(reader->closing && !reader->self_closing) {
-        xmlnode* p = reader->parent;
-        reader->parent = p->parent;
-        reader->ptr = &p->next;
-
-        //       while(*reader->ptr) reader->ptr = &(*reader->ptr)->next;
-
-        assert(*reader->ptr == 0);
-        /*
-                xmlnode *node, *parent = reader->parent;
-
-                if(parent) {
-                  if(reader->ptr == 0)
-                  reader->ptr = &parent->next;
-                  reader->parent = parent->parent;
-                }
-                node = xml_newnode(XML_ELEMENT);
-                *reader->ptr = node;
-                reader->ptr = &node->next;
-                stralloc_insertb(name, "/", 0, 1);
-                stralloc_nul(name);
-                node->name = name->s;
-                name->s = NULL;*/
-      } else if(!reader->closing) {
-        xmlnode* node;
-        xmlnode* p = reader->parent;
-
-        stralloc_nul(name);
-
+      stralloc_nul(name);
+      
+      if(!r->closing || r->self_closing) {
         node = xml_element(name->s);
+        node->children = NULL;
+        node->parent = r->parent;
         node->attributes = *attrs;
         *attrs = NULL;
-        node->parent = p;
-        node->children = NULL;
-
-        *(reader->ptr) = node;
-
-        if(*reader->ptr)
-          xml_print(*reader->ptr, buffer_1);
-
-        if(reader->self_closing) {
-          reader->ptr = &node->next;
-        } else {
-          reader->parent = node;
-          reader->ptr = &node->children;
-        }
+        *r->ptr = node;
       }
-      break;
+
+        if(!r->closing && !r->self_closing) {
+          xmlreader_push(r, node);
+          break;
+        }
+    
+      if(r->closing && !r->self_closing) {
+        xmlreader_pop(r);
+        break;
+      }
     }
   }
 

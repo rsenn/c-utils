@@ -115,14 +115,12 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
 
     if(*s != '<' && !(r->closing || r->self_closing)) {
       stralloc_zero(&tag);
-
       buffer_gettok_sa(b, &tag, "<", 1);
       if(tag.len) {
         stralloc_nul(&tag);
         fn(r, XML_TEXT, &tag, NULL, NULL);
       }
     }
-
     if(r->attrmap) {
       hmap_destroy(&r->attrmap);
       r->attrmap = NULL;
@@ -132,14 +130,13 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     if(b->n - b->p <= 1)
       break;
 
-    /* if((n =  < 0)
-       return;
-     s = buffer_peek(b);
+    if(n <= 0)
+      return;
+    s = buffer_peek(b);
 
-     if(!is_whitespace(tag.s, tag.len)) {
-       if(!fn(r, XML_TEXT, NULL, &tag, NULL))
-         return;e
-
-     }*/
+    if(!is_whitespace(tag.s, tag.len)) {
+      if(!fn(r, XML_TEXT, NULL, &tag, NULL))
+        return;
+    }
   }
 }

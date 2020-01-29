@@ -43,6 +43,7 @@ typedef struct xmlreader {
   int closing : 1;
   int self_closing : 1;
   const void* data;
+  struct xmlreader* stack;
 } xmlreader;
 
 typedef struct xmlnodeset {

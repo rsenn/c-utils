@@ -26,7 +26,7 @@ start:
 
   buffer_putm_internal(b, "<", node->name, 0);
 
-  if(node->type == XML_ELEMENT && node->attributes /*&& node->attributes->tuple_count*/) {
+  if(node->type == XML_ELEMENT && node->attributes && node->attributes->tuple_count) {
     buffer_putc(b, ' ');
     xml_print_attributes(node->attributes, b, " ", "=", "\"");
     buffer_flush(b);
@@ -43,7 +43,9 @@ start:
       (num_children > 1 ? xml_print_list : xml_print_node)(node->children, b, depth + 1);
       buffer_putnspace(b, depth * 2);
     }
-    buffer_putm_internal(b, "</", node->name, ">\n", 0);
+    buffer_puts(b, "</");
+    buffer_puts(b, node->name);
+    buffer_puts(b, ">\n");
 
   } else if(node->name[0] == '/' || (node->next && node_is_closing(node->next))) {
     buffer_putc(b, '>');
