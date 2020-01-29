@@ -192,6 +192,9 @@ xmlnode* xml_find_parent(xmlnode*, const char* tag);
 void xml_walk(xmlnode*, int (*)());
 char* xml_get_text(xmlnode* node, stralloc* out);
 
+xmlnode* xml_element_attrs(const char* name, const char* arg, ...);
+xmlnode* xml_child_element_attrs(const char* name, xmlnode* parent, const char* arg, ...);
+
 #ifdef __cplusplus
 }
 #endif
