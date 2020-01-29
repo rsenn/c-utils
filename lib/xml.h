@@ -2,6 +2,7 @@
 #define LIB_XML_H_
 
 #include <sys/types.h>
+#include <assert.h>
 #include "buffer.h"
 #include "hmap.h"
 #include "stralloc.h"
@@ -95,13 +96,21 @@ xml_add_text(xmlnode* parent, const char* text) {
   xml_add_child(parent, n);
   return n;
 }
+static size_t
+xml_num_attrs(xmlnode* node) {
+  assert(node->type == XML_ELEMENT);
+  if(node->attributes == 0)
+    return 0;
+  return hmap_count(node->attributes);
+}
+
 void xml_set_attribute_double(xmlnode*, const char* a, double d, int prec);
 void xml_set_attribute(xmlnode*, const char* a, const char* v);
 int xml_set_attributes(xmlnode*, ...);
 xmlnode* xml_element(const char*);
 xmlnode* xml_child_element(const char*, xmlnode*);
 
-#define xml_attributes(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
+//#define xml_attributes(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 
 #define xmlnodeset_item(ns, i) ((ns)->nodes[i])
 
