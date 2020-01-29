@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"cha",
+				"chained_attributes"
+			],
+			[
 				"cfg",
 				"cfgdata"
 			],
@@ -68,29 +72,74 @@
 	"buffers":
 	[
 		{
-			"contents": "make_fileno\nset_str\nset_int\nget_suite\nsuite_guid\nmake_tool_key\nis_debug\nopt_size\nopt_speed\nset_debug\noutput_mplab_project\nset_debug",
+			"contents": "stralloc\nstralloc_init\nstralloc_ready\nstralloc_readyplus\nstralloc_copyb\nstralloc_copys\nstralloc_copy\nstralloc_catb\nstralloc_cats\nstralloc_catc\nstralloc_zero\nstralloc_trunc\nstralloc_catm_internal\nstralloc_catm\nstralloc_copym\nstralloc_catm\nstralloc_copym\nstralloc_cat\nstralloc_append\nstralloc_starts\nstralloc_startb\nstralloc_start\nstralloc_diff\nstralloc_diffs\nstralloc_equal\nstralloc_equals\nstralloc_0\nstralloc_nul\nstralloc_catulong\nstralloc_catulong0\nstralloc_catlong0\nstralloc_free\nstralloc_catlong\nstralloc_catuint0\nstralloc_catint0\nstralloc_catint\nstralloc_chop\nstralloc_chomp\nstralloc_trimr\nstralloc_decamelize\nstralloc_case_diff\nstralloc_case_diffs\nstralloc_diffb\nstralloc_diffs\nstralloc_case_equal\nstralloc_case_equals\nstralloc_cathexb\nstralloc_equalb\nstralloc_find\nstralloc_findb\nstralloc_finds\nbuffer_putsa\nbuffer_putsaflush\nbuffer_get_token_sa\nbuffer_getline_sa\nbuffer_get_new_token_sa\nbuffer_getnewline_sa\nbuffer_get_token_sa_pred\nbuffer_get_new_token_sa_pred\nbuffer_fromsa\nstralloc_write\nstralloc_scan\nstralloc_length\nstralloc_length\nstralloc_begin\nstralloc_end\nstralloc_iterator_decrement\nstralloc_iterator_dereference\nstralloc_iterator_distance\nstralloc_is_last\nstralloc_endb\nstralloc_iterator_increment\nstralloc_iterator_equal\nbyte_scan\nstralloc_insertb\nstralloc_inserts\nstralloc_insert\nstralloc_subst\nstralloc_fmt_call\nstralloc_fmt_pred\nstralloc_fmt\nstralloc_catdouble\nstralloc_chr\nstralloc_rchr\nstralloc_copywcb\nstralloc_copywcs\nstralloc_shrink\nstralloc_prependb\nstralloc_prepends\nstralloc_prepend\nstralloc_ends\nstralloc_expand\nstralloc_catwcb\nstralloc_catwcs\nstralloc_remove\nstralloc_replacec\nstralloc_removesuffixs\nstralloc_removesuffixb\nstralloc_contains\nstralloc_replaces\nstralloc_replace\nstralloc_case_end\nstralloc_case_starts\nstralloc_case_start\nstralloc_catuint\nstralloc_catxlong\nstralloc_count\nstralloc_erase\nstralloc_lower\nstralloc_move\nstralloc_ready_tuned\nstralloc_remove_all\nstralloc_replace_non_printable\nstralloc_reverse_blocks\nstralloc_reverse\nstralloc_upper",
 			"settings":
 			{
-				"buffer_size": 131,
+				"buffer_size": 1988,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/pictest/blinktest.c",
+			"file": "lib/stralloc.h",
 			"settings":
 			{
-				"buffer_size": 8255,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
+				"buffer_size": 11956,
+				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "mplab.c",
+			"contents": "Searching 1544 files for \"parent =\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_erase.c:\n    7:   struct critbit_node* parent = 0;\n   20:       parent = (struct critbit_node*)ptr;\n\n/home/roman/Dokumente/Sources/c-utils/lib/var/var_create.c:\n   35:     newvar->parent = oldvar;\n\n/home/roman/Dokumente/Sources/c-utils/lib/var/var_init.c:\n   15:   var->parent = NULL;\n\n/home/roman/Dokumente/Sources/c-utils/lib/vartab/vartab_push.c:\n   15:   vartab->parent = varstack;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_add_child.c:\n    7:   node->parent = parent;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_attrnode.c:\n   12:       attr->children->parent = attr;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c:\n   48:         tnode->parent = *r->ptr;\n   76:         node->parent = r->parent;\n   83:           r->parent = node;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_reader_init.c:\n    8:   r->parent = r->doc;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_remove.c:\n    7:   node->parent = NULL;\n\n/home/roman/Dokumente/Sources/c-utils/liblzma/common/index.c:\n  219:   node->parent = tree->rightmost;\n  260:     if(node->parent == NULL) {\n  267:     pivot->parent = node->parent;\n  271:       node->right->parent = node;\n  274:     node->parent = pivot;\n  332:   s->node.parent = NULL;\n  900:     assert(group->node.parent == NULL);\n\n/home/roman/Dokumente/Sources/c-utils/utils/colorscheme.js:\n   17:           let parent = node.parentElement ? node.parentElement.firstElementChild : null;\n   43:           let parent = node.parentElement ? node.parentElement.firstElementChild : null;\n\n/home/roman/Dokumente/Sources/c-utils/utils/devpane.js:\n  147:     this.parent = Element.find(node);\n  506:       parent = Element.create(\"tr\", { parent });\n  867:     let gparent = rect.boxes ? rect.boxes.parentNode : null;\n\n/home/roman/Dokumente/Sources/c-utils/utils/devtools.js:\n  324:         let parent = node && node.parentNode !== undefined ? node.parentNode : null;\n  339:       prevParent = parent;\n  874:     let parent = null;\n  879:       parent = rect;\n  886:     parent = parent || args.shift() || body;\n  888:     if(typeof parent == \"string\") parent = Element.find(parent);\n\n/home/roman/Dokumente/Sources/c-utils/utils/dom.es5.js:\n 2675:     let parent = args.shift();\n 2684:         parent = props[k];\n 2745:     parent = Element.find(parent);\n 3030:     let parent = element.parentElement ? element.parentElement : element.parentNode;\n 3181:   static factory(delegate = {}, parent = null) {\n 3196:         if(!parent) parent = root;\n 3211:     delegate.bound_factory = (tag, attr = {}, parent = null) => {\n 3244:       const parent = e.parentNode;\n 3445:   static gradient(type, { stops, factory = SVG.create, parent = null, line = false, ...props }) {\n\n/home/roman/Dokumente/Sources/c-utils/utils/dom.js:\n 2798:     let parent = args.shift();\n 2807:         parent = props[k];\n 2867:   static toCommand(elem, parent = \"\") {\n 2888:     if(!parent && global.window) parent = window.document;\n 2894:     parent = Element.find(parent);\n 3182:     let parent = element.parentElement ? element.parentElement : element.parentNode;\n 3333:   static factory(delegate = {}, parent = null) {\n 3348:         if(!parent) parent = root;\n 3363:     delegate.bound_factory = (tag, attr = {}, parent = null) => {\n 3396:       const parent = e.parentNode;\n 3622:   static gradient(type, { stops, factory = SVG.create, parent = null, line = false, ...props }) {\n 3764:       let parent = this.element.parentNode;\n\n/home/roman/Dokumente/Sources/c-utils/utils/lua.js:\n  123:     this.parent = parent;\n\n/home/roman/Dokumente/Sources/c-utils/utils/util.es5.js:\n 1588: Util.traverseTree = function(tree, fn, depth = 0, parent = null) {\n\n/home/roman/Dokumente/Sources/c-utils/utils/util.js:\n 1639: Util.traverseTree = function(tree, fn, depth = 0, parent = null) {\n\n55 matches across 18 files\n\n\nSearching 1544 files for \"r->parent =\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/lib/var/var_create.c:\n   35:     newvar->parent = oldvar;\n\n/home/roman/Dokumente/Sources/c-utils/lib/var/var_init.c:\n   15:   var->parent = NULL;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c:\n   83:           r->parent = node;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_reader_init.c:\n    8:   r->parent = r->doc;\n\n4 matches across 4 files\n",
 			"settings":
 			{
-				"buffer_size": 17344,
+				"buffer_size": 4379,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "lib/json.h",
+			"settings":
+			{
+				"buffer_size": 3798,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "xmltest.c",
+			"settings":
+			{
+				"buffer_size": 6267,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/xml/xml_print.c",
+			"settings":
+			{
+				"buffer_size": 2220,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/xml.h",
+			"settings":
+			{
+				"buffer_size": 9418,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/xml/xml_newnode.c",
+			"settings":
+			{
+				"buffer_size": 262,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -336,24 +385,69 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist",
-		"/home/roman/Dokumente/Sources/c-utils/lib/uint16",
 		"/home/roman/Dokumente/Sources/c-utils/tests"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_callback.c",
+		"/home/roman/Dokumente/Sources/lc-meter/build/mplabx-pic18f/LC_meter_18f2550_xc8.X/nbproject/configurations.xml",
+		"/home/roman/Dokumente/Sources/c-utils/xmltest3.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_attributes.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/alloc.h",
+		"/home/roman/Dokumente/Sources/lc-meter/nbproject/configurations.xml",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_dump.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/xmltest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_child_element_text.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_child_element_attrs.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute_double.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/node_modules/iconv-lite/encodings/tables/cp936.json",
+		"/home/roman/Dokumente/Sources/c-utils/xmltest2.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_element_attrs.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putm_internal.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_element.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_attrnode.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_nonwhitenskip.3",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_infosys.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_child_element.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_add_child.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_textnode.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_textnodeb.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_reader_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_get_text.c",
+		"/home/roman/Dokumente/Sources/lc-meter/build/mplabx-pic18f/LC_meter_18f2550_xc8.X/test.txt",
+		"/home/roman/Dokumente/Sources/lc-meter/build/mplabx-pic18f/LC_meter_18f2550_xc8.X/xmlnode",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_get_attribute.c",
+		"/home/roman/Dokumente/Sources/pictest/blinktest.c",
+		"/home/roman/Dokumente/Sources/c-utils/mplab.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_remove_all.c",
+		"/home/roman/Dokumente/Sources/c-utils/tests/test_stralloc.c",
+		"/home/roman/Dokumente/Sources/c-utils/xml2json.c",
+		"/home/roman/Dokumente/Sources/c-utils/map.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_decamelize.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print_attributes.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_camelize.c",
+		"/home/roman/Dokumente/Sources/c-utils/build/occ32/MinSizeRel/xml_print_attributes.cbr",
 		"/home/roman/Dokumente/Sources/lc-meter/gen-mk-mplab.sh",
 		"/home/roman/Dokumente/Sources/pictest/gen-mk-mplab.sh",
 		"/home/roman/Dokumente/Sources/pictest/gen-mk.sh",
 		"/home/roman/Dokumente/Sources/lc-meter/gen-mk.sh",
-		"/home/roman/Dokumente/Sources/c-utils/mplab.c",
 		"/home/roman/Dokumente/Sources/pictest/lib/device.h",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
 		"/home/roman/Dokumente/Sources/pictest/lib/ser.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/zlib/inflate.c",
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/zlib/inflate.h",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest-18f2550-debug-htc.mcp",
@@ -362,7 +456,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_indexofb.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pushb.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push_unique.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_htc.mcp",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pusb_unique.c",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/htc-18f2550-debug.mcp",
@@ -372,7 +465,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/ini.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
 		"/home/roman/Dokumente/Sources/c-utils/mplab.h",
-		"/home/roman/Dokumente/Sources/c-utils/map.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_sort.c",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest-18f2550-debug-xc8.mcp",
@@ -382,7 +474,6 @@
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest_htc.mcp",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest_xc8.mcp",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_18f2550_xc8.mcp",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_truncfile.c",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest2_htc.mcp",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_18f2550_htc.mcp",
@@ -394,13 +485,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-svg.js",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_init.c",
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-svg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add.c",
 		"/home/roman/Dokumente/Sources/c-utils/test.sh",
 		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
 		"/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_read_at.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print_attributes.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_set_chars.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_set_stralloc.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_0.c",
@@ -427,59 +516,18 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_load_record.c",
 		"/home/roman/Dokumente/Sources/c-utils/utils/eagle.js",
 		"/home/roman/Dokumente/Sources/pictest/eagle/PIC18F2550-USB+ICSP-Board.brd",
-		"/home/roman/Dokumente/Sources/c-utils/out.svg",
-		"/home/roman/Dokumente/Sources/c-utils/utils/util.es5.js",
-		"/home/roman/Dokumente/Sources/c-utils/utils/util.js",
-		"/home/roman/Dokumente/Sources/c-utils/utils/dom.es5.js",
-		"/home/roman/Sources/c-utils/eagle-to-svg.js",
-		"/home/roman/Sources/c-utils/utils/util.es5.js",
-		"/home/roman/Sources/c-utils/eagle-to-svg.c",
-		"/home/roman/Sources/c-utils/utils/dom.es5.js",
-		"/home/roman/Sources/c-utils/utils/hu.js",
-		"/home/roman/Sources/c-utils/out.svg",
-		"/home/roman/Sources/c-utils/utils/savage.js",
-		"/home/roman/Dokumente/Sources/pictest/TTL_Inverter.svg",
-		"/home/roman/the-wild-beauty-company/vias.svg",
-		"/home/roman/Sources/c-utils/utils/eagle.js",
-		"/home/roman/Dokumente/Sources/c-utils/vias.svg",
-		"/home/roman/Dokumente/Sources/c-utils/vias2.svg",
-		"/home/roman/Dokumente/Unbenannt.c",
-		"/home/roman/Dokumente/Unbenannt.pnm",
-		"/home/roman/Sources/c-utils/xml2json.c",
-		"/home/roman/Sources/c-utils/lib/json/json_print.c",
-		"/home/roman/Sources/c-utils/utils/dom.js",
-		"/home/roman/Sources/c-utils/lib/buffer.h.cmake",
-		"/home/roman/Dokumente/Unbenannt.xpm",
-		"/home/roman/Dokumente/Unbenannt.ppm",
-		"/home/roman/Dokumente/Unbenannt.png",
-		"/home/roman/Dokumente/Unbenannt.pbm",
-		"/home/roman/Sources/c-utils/eagle-to-svg.js.DOMParser;",
-		"/home/roman/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Sources/c-utils/lib/scan.h",
-		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_buf.c",
-		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_record.c",
-		"/home/roman/Sources/c-utils/lib/ihex.h",
-		"/home/roman/Sources/c-utils/testihex.c",
-		"/home/roman/Sources/c-utils/piccfg.c",
-		"/home/roman/Sources/c-utils/genmakefile.c",
-		"/home/roman/Sources/c-utils/lib/ihex/ihex_read_data.c",
-		"/home/roman/Sources/c-utils/cofflist.c",
-		"/home/roman/Sources/c-utils/lib/xml/xml_print.c",
-		"/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd",
-		"/home/roman/Sources/c-utils/lib/coff/coff_header.c",
-		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_catlong0.c",
-		"/home/roman/Downloads/circuit-20200112-0009.circuitjs (1).txt",
-		"/home/roman/Downloads/circuit-20200112-0009.circuitjs.txt"
+		"/home/roman/Dokumente/Sources/c-utils/out.svg"
 	],
 	"find":
 	{
-		"height": 42.0
+		"height": 44.0
 	},
 	"find_in_files":
 	{
 		"height": 258.0,
 		"where_history":
 		[
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/pictest/lib,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/pictest,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,*.js,",
@@ -495,6 +543,119 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"stralloc_insertb",
+			"insert",
+			"define",
+			"defines",
+			"define",
+			"undef",
+			"reader",
+			"goto",
+			"xml_dump",
+			"r->parent =",
+			"parent =",
+			"fn\\(",
+			"fn(",
+			"fn\\(",
+			"->parent =",
+			"parent =",
+			"fn\\(",
+			"reader.*ptr",
+			"read_node",
+			"print",
+			"de->children->next",
+			"logical_folder =",
+			"logical",
+			"attributes =",
+			"xml_attributes",
+			"begin",
+			"dump",
+			"hmap_init",
+			"print_list",
+			"print_node",
+			"xml_print_node",
+			"get_doc",
+			"has_attr",
+			"strlist",
+			"xml_child",
+			"hmap_init",
+			"print",
+			"text_children",
+			"get_te",
+			"text",
+			"xml_attributes",
+			"\\)$",
+			"->attr",
+			"diffb",
+			"stralloc_equalb",
+			"contains",
+			"scan_noncharsetnskip",
+			"catlong",
+			"name.s",
+			"nspace",
+			"nspacwe",
+			"putn",
+			"putspace",
+			"scan_long",
+			"scan_noncharsetnskip",
+			"textnode",
+			"//       ",
+			"\\)$",
+			"\\)\\$",
+			")\\$",
+			"=  xm",
+			"count",
+			"hmap_cout",
+			"count",
+			"num",
+			"attr",
+			"TUPL",
+			"attributes",
+			"hmap_init",
+			"init",
+			"xml_set_attributes",
+			"va_list",
+			"depth",
+			"add_chil",
+			"_textnode",
+			"\\.n",
+			"->n",
+			"doc",
+			"assert",
+			"xml_add",
+			"name",
+			"name;",
+			"xml_dump",
+			"until",
+			"xml_unescape",
+			"whitens",
+			"get_te",
+			"text",
+			"xml_set_",
+			"xml_set",
+			"skip",
+			"whitiens",
+			"text",
+			"whitens",
+			"\\\\n",
+			"\\\\\"",
+			"\\\\\\\\n",
+			"\\\\n",
+			"xml_dump",
+			"depth",
+			"stralloc_remove_all",
+			"remove",
+			"trim",
+			"strip",
+			"hmap",
+			"add",
+			"strlist_conta",
+			"decamelize",
+			"stralloc_decamelize",
+			"camelize",
+			"xml_read.*tree",
+			"readtree",
+			"element",
 			"set_de",
 			"include.*xc",
 			"incdirs",
@@ -509,120 +670,7 @@
 			"F5\"",
 			"out.*fmt",
 			"LDFLAGS\\)",
-			"link_command",
-			"\"sdcc\"",
-			"output_all",
-			"^main",
-			"IF NOT",
-			"recipe",
-			"preprocess_",
-			"preproc",
-			"^scan_main",
-			"^has_main",
-			"has_main",
-			"gen_simple_compile_rules",
-			"{\n",
-			"byte_equal",
-			"main\\(",
-			"path_output",
-			"add_source",
-			"^output",
-			"PIC18",
-			"PIC18\"",
-			"PIC18",
-			"-D__",
-			"inser",
-			"_lower",
-			"_tolower",
-			"tolower",
-			"^add_path_sa",
-			"add_path_sa",
-			"get_rule.*obj",
-			"main\\(",
-			"finds",
-			"ain\"",
-			"ainn\"",
-			"to supp",
-			"Change hi",
-			"main\\(",
-			"scan_main",
-			"has main",
-			"scan_main",
-			"has main",
-			"scan_main",
-			"buffer_2",
-			"has_main",
-			"finds",
-			"byte_equal",
-			"has_main",
-			"has_man",
-			"D__",
-			"__",
-			"DEFS",
-			"-D__",
-			"D__",
-			"indexofb",
-			"push_uni",
-			"str_con",
-			"-D",
-			"set_com",
-			"set_compil",
-			"tools\\.compiler",
-			"set_compiler_type",
-			"\"-DPI",
-			"stralloc_upper\\(",
-			"_upper\\(",
-			"-DPIC",
-			"upper",
-			"\"PIC",
-			"tools.compiler",
-			"dir.*bin",
-			"MCHP",
-			"XC8",
-			"i+",
-			"ext",
-			"sort_sources",
-			"strarray_sort",
-			"str_start",
-			"= \"xc8",
-			"compiler",
-			"tools.compiler",
-			"mcp\\\"",
-			"mcp",
-			"\\.mcp",
-			"compiler_settings",
-			"TS{",
-			"F42384DA-C7ED-4A02-880F-0F5E88735CE2",
-			"XC8",
-			"C:\\Sources\\pictest",
-			"catint",
-			"MAP_SET\\(toolcfg",
-			"ini_set\\(section, \"([^\"]*)\", \"([0-9]+)\"\\);",
-			"ini_set\\(section, \"([^\"]*)\", \"([0-9]*)\"\\);",
-			" : ",
-			"^main\\(",
-			"cfg;",
-			"build_type ",
-			"build_type",
-			"build_type[^A-Za-z]",
-			"build_type[^A-Za-z",
-			"build_type",
-			"config_t",
-			"build_type",
-			"Number of",
-			"\"Number",
-			"of rules",
-			"Number of",
-			"buffer_trunc",
-			"buffer_mmap",
-			"buffer_1",
-			"out =",
-			"set_compiler_type",
-			"^set_compiler",
-			"set_make_type",
-			"compiler",
-			"set_make_type",
-			"\"dirs.build\""
+			"link_command"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -630,6 +678,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			");",
 			"map",
 			"compiler",
 			"..\\..",
@@ -708,7 +757,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 131,
+						"buffer_size": 1988,
 						"regions":
 						{
 						},
@@ -717,73 +766,593 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/mplab.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									91,
-									102
+									488,
+									496
 								],
 								[
-									244,
-									251
+									689,
+									702
 								],
 								[
-									358,
-									365
+									1215,
+									1229
 								],
 								[
-									533,
-									542
+									1414,
+									1432
 								],
 								[
-									1297,
-									1307
+									1671,
+									1685
 								],
 								[
-									1497,
-									1510
+									1886,
+									1900
 								],
 								[
-									1726,
-									1734
+									2088,
+									2101
 								],
 								[
-									1851,
-									1859
+									2447,
+									2460
 								],
 								[
-									1934,
-									1943
+									2560,
+									2573
 								],
 								[
-									2057,
-									2066
+									2609,
+									2622
 								],
 								[
-									2085,
-									2105
+									2667,
+									2680
 								],
 								[
-									17007,
-									17016
+									2700,
+									2714
+								],
+								[
+									2811,
+									2833
+								],
+								[
+									2883,
+									2896
+								],
+								[
+									2958,
+									2972
+								],
+								[
+									3061,
+									3074
+								],
+								[
+									3142,
+									3156
+								],
+								[
+									3298,
+									3310
+								],
+								[
+									3480,
+									3495
+								],
+								[
+									3776,
+									3791
+								],
+								[
+									3839,
+									3854
+								],
+								[
+									3912,
+									3926
+								],
+								[
+									4132,
+									4145
+								],
+								[
+									4386,
+									4400
+								],
+								[
+									4454,
+									4468
+								],
+								[
+									4510,
+									4525
+								],
+								[
+									4597,
+									4607
+								],
+								[
+									4641,
+									4653
+								],
+								[
+									4750,
+									4767
+								],
+								[
+									4809,
+									4827
+								],
+								[
+									4952,
+									4969
+								],
+								[
+									5078,
+									5091
+								],
+								[
+									5116,
+									5132
+								],
+								[
+									5182,
+									5199
+								],
+								[
+									5255,
+									5271
+								],
+								[
+									5326,
+									5341
+								],
+								[
+									5481,
+									5494
+								],
+								[
+									5603,
+									5617
+								],
+								[
+									5639,
+									5653
+								],
+								[
+									5727,
+									5746
+								],
+								[
+									5790,
+									5808
+								],
+								[
+									5856,
+									5875
+								],
+								[
+									5916,
+									5930
+								],
+								[
+									5990,
+									6004
+								],
+								[
+									6047,
+									6066
+								],
+								[
+									6117,
+									6137
+								],
+								[
+									6181,
+									6197
+								],
+								[
+									6251,
+									6266
+								],
+								[
+									6329,
+									6342
+								],
+								[
+									6393,
+									6407
+								],
+								[
+									6466,
+									6480
+								],
+								[
+									6572,
+									6584
+								],
+								[
+									6662,
+									6679
+								],
+								[
+									7334,
+									7353
+								],
+								[
+									7460,
+									7477
+								],
+								[
+									7562,
+									7585
+								],
+								[
+									7703,
+									7723
+								],
+								[
+									7884,
+									7908
+								],
+								[
+									7993,
+									8021
+								],
+								[
+									8156,
+									8169
+								],
+								[
+									8207,
+									8221
+								],
+								[
+									8286,
+									8299
+								],
+								[
+									8410,
+									8425
+								],
+								[
+									8467,
+									8482
+								],
+								[
+									8541,
+									8555
+								],
+								[
+									8578,
+									8590
+								],
+								[
+									8625,
+									8652
+								],
+								[
+									8674,
+									8703
+								],
+								[
+									8735,
+									8761
+								],
+								[
+									8796,
+									8812
+								],
+								[
+									8884,
+									8897
+								],
+								[
+									8971,
+									8998
+								],
+								[
+									9043,
+									9066
+								],
+								[
+									9138,
+									9147
+								],
+								[
+									9252,
+									9268
+								],
+								[
+									9325,
+									9341
+								],
+								[
+									9388,
+									9403
+								],
+								[
+									9459,
+									9473
+								],
+								[
+									9613,
+									9630
+								],
+								[
+									9681,
+									9698
+								],
+								[
+									9820,
+									9832
+								],
+								[
+									9907,
+									9925
+								],
+								[
+									9966,
+									9978
+								],
+								[
+									10015,
+									10028
+								],
+								[
+									10063,
+									10079
+								],
+								[
+									10131,
+									10147
+								],
+								[
+									10188,
+									10203
+								],
+								[
+									10224,
+									10241
+								],
+								[
+									10286,
+									10303
+								],
+								[
+									10338,
+									10354
+								],
+								[
+									10401,
+									10414
+								],
+								[
+									10465,
+									10480
+								],
+								[
+									10501,
+									10516
+								],
+								[
+									10568,
+									10583
+								],
+								[
+									10627,
+									10642
+								],
+								[
+									10682,
+									10699
+								],
+								[
+									10741,
+									10763
+								],
+								[
+									10800,
+									10822
+								],
+								[
+									10867,
+									10884
+								],
+								[
+									10928,
+									10945
+								],
+								[
+									10996,
+									11012
+								],
+								[
+									11087,
+									11104
+								],
+								[
+									11154,
+									11174
+								],
+								[
+									11220,
+									11239
+								],
+								[
+									11289,
+									11305
+								],
+								[
+									11342,
+									11359
+								],
+								[
+									11396,
+									11410
+								],
+								[
+									11444,
+									11458
+								],
+								[
+									11476,
+									11490
+								],
+								[
+									11508,
+									11521
+								],
+								[
+									11554,
+									11574
+								],
+								[
+									11635,
+									11654
+								],
+								[
+									11738,
+									11768
+								],
+								[
+									11795,
+									11818
+								],
+								[
+									11849,
+									11865
+								],
+								[
+									11883,
+									11897
 								]
 							],
 							"symlist":
 							[
-								"make_fileno",
-								"set_str",
-								"set_int",
-								"get_suite",
-								"suite_guid",
-								"make_tool_key",
-								"is_debug",
-								"opt_size",
-								"opt_speed",
-								"set_debug",
-								"output_mplab_project",
-								"set_debug"
+								"stralloc",
+								"stralloc_init",
+								"stralloc_ready",
+								"stralloc_readyplus",
+								"stralloc_copyb",
+								"stralloc_copys",
+								"stralloc_copy",
+								"stralloc_catb",
+								"stralloc_cats",
+								"stralloc_catc",
+								"stralloc_zero",
+								"stralloc_trunc",
+								"stralloc_catm_internal",
+								"stralloc_catm",
+								"stralloc_copym",
+								"stralloc_catm",
+								"stralloc_copym",
+								"stralloc_cat",
+								"stralloc_append",
+								"stralloc_starts",
+								"stralloc_startb",
+								"stralloc_start",
+								"stralloc_diff",
+								"stralloc_diffs",
+								"stralloc_equal",
+								"stralloc_equals",
+								"stralloc_0",
+								"stralloc_nul",
+								"stralloc_catulong",
+								"stralloc_catulong0",
+								"stralloc_catlong0",
+								"stralloc_free",
+								"stralloc_catlong",
+								"stralloc_catuint0",
+								"stralloc_catint0",
+								"stralloc_catint",
+								"stralloc_chop",
+								"stralloc_chomp",
+								"stralloc_trimr",
+								"stralloc_decamelize",
+								"stralloc_case_diff",
+								"stralloc_case_diffs",
+								"stralloc_diffb",
+								"stralloc_diffs",
+								"stralloc_case_equal",
+								"stralloc_case_equals",
+								"stralloc_cathexb",
+								"stralloc_equalb",
+								"stralloc_find",
+								"stralloc_findb",
+								"stralloc_finds",
+								"buffer_putsa",
+								"buffer_putsaflush",
+								"buffer_get_token_sa",
+								"buffer_getline_sa",
+								"buffer_get_new_token_sa",
+								"buffer_getnewline_sa",
+								"buffer_get_token_sa_pred",
+								"buffer_get_new_token_sa_pred",
+								"buffer_fromsa",
+								"stralloc_write",
+								"stralloc_scan",
+								"stralloc_length",
+								"stralloc_length",
+								"stralloc_begin",
+								"stralloc_end",
+								"stralloc_iterator_decrement",
+								"stralloc_iterator_dereference",
+								"stralloc_iterator_distance",
+								"stralloc_is_last",
+								"stralloc_endb",
+								"stralloc_iterator_increment",
+								"stralloc_iterator_equal",
+								"byte_scan",
+								"stralloc_insertb",
+								"stralloc_inserts",
+								"stralloc_insert",
+								"stralloc_subst",
+								"stralloc_fmt_call",
+								"stralloc_fmt_pred",
+								"stralloc_fmt",
+								"stralloc_catdouble",
+								"stralloc_chr",
+								"stralloc_rchr",
+								"stralloc_copywcb",
+								"stralloc_copywcs",
+								"stralloc_shrink",
+								"stralloc_prependb",
+								"stralloc_prepends",
+								"stralloc_prepend",
+								"stralloc_ends",
+								"stralloc_expand",
+								"stralloc_catwcb",
+								"stralloc_catwcs",
+								"stralloc_remove",
+								"stralloc_replacec",
+								"stralloc_removesuffixs",
+								"stralloc_removesuffixb",
+								"stralloc_contains",
+								"stralloc_replaces",
+								"stralloc_replace",
+								"stralloc_case_end",
+								"stralloc_case_starts",
+								"stralloc_case_start",
+								"stralloc_catuint",
+								"stralloc_catxlong",
+								"stralloc_count",
+								"stralloc_erase",
+								"stralloc_lower",
+								"stralloc_move",
+								"stralloc_ready_tuned",
+								"stralloc_remove_all",
+								"stralloc_replace_non_printable",
+								"stralloc_reverse_blocks",
+								"stralloc_reverse",
+								"stralloc_upper"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -791,30 +1360,367 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 7,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "/home/roman/Dokumente/Sources/pictest/blinktest.c",
+					"file": "lib/stralloc.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8255,
+						"buffer_size": 11956,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2009,
-								2009
+								9268,
+								9268
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Ultimate Dark/Ultimate Dark.tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 4830.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4379,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										132,
+										140
+									],
+									[
+										157,
+										165
+									],
+									[
+										273,
+										281
+									],
+									[
+										363,
+										371
+									],
+									[
+										460,
+										468
+									],
+									[
+										558,
+										566
+									],
+									[
+										667,
+										675
+									],
+									[
+										768,
+										776
+									],
+									[
+										807,
+										815
+									],
+									[
+										847,
+										855
+									],
+									[
+										940,
+										948
+									],
+									[
+										1033,
+										1041
+									],
+									[
+										1126,
+										1134
+									],
+									[
+										1172,
+										1180
+									],
+									[
+										1208,
+										1216
+									],
+									[
+										1257,
+										1265
+									],
+									[
+										1289,
+										1297
+									],
+									[
+										1322,
+										1330
+									],
+									[
+										1367,
+										1375
+									],
+									[
+										1466,
+										1474
+									],
+									[
+										1562,
+										1570
+									],
+									[
+										1710,
+										1718
+									],
+									[
+										1752,
+										1760
+									],
+									[
+										1811,
+										1819
+									],
+									[
+										1940,
+										1948
+									],
+									[
+										2030,
+										2038
+									],
+									[
+										2062,
+										2070
+									],
+									[
+										2090,
+										2098
+									],
+									[
+										2116,
+										2124
+									],
+									[
+										2178,
+										2186
+									],
+									[
+										2198,
+										2206
+									],
+									[
+										2301,
+										2309
+									],
+									[
+										2339,
+										2347
+									],
+									[
+										2369,
+										2377
+									],
+									[
+										2415,
+										2423
+									],
+									[
+										2531,
+										2539
+									],
+									[
+										2575,
+										2583
+									],
+									[
+										2643,
+										2651
+									],
+									[
+										2682,
+										2690
+									],
+									[
+										2767,
+										2775
+									],
+									[
+										2878,
+										2886
+									],
+									[
+										2916,
+										2924
+									],
+									[
+										2967,
+										2975
+									],
+									[
+										3022,
+										3030
+									],
+									[
+										3059,
+										3067
+									],
+									[
+										3105,
+										3113
+									],
+									[
+										3221,
+										3229
+									],
+									[
+										3265,
+										3273
+									],
+									[
+										3333,
+										3341
+									],
+									[
+										3372,
+										3380
+									],
+									[
+										3457,
+										3465
+									],
+									[
+										3517,
+										3525
+									],
+									[
+										3620,
+										3628
+									],
+									[
+										3752,
+										3760
+									],
+									[
+										3880,
+										3888
+									],
+									[
+										4051,
+										4062
+									],
+									[
+										4141,
+										4152
+									],
+									[
+										4240,
+										4251
+									],
+									[
+										4333,
+										4344
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								4244,
+								4244
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 2,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2162.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/json.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3798,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2653,
+								2653
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2452.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "xmltest.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6267,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6217,
+								6217
 							]
 						],
 						"settings":
@@ -824,40 +1730,98 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1439.0,
+						"translation.y": 4348.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/xml/xml_print.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2220,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								705,
+								705
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 276.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "mplab.c",
+					"buffer": 6,
+					"file": "lib/xml.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17344,
+						"buffer_size": 9418,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12716,
-								12716
+								780,
+								780
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C.sublime-syntax",
+							"syntax": "Packages/C++/C++.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 7648.0,
+						"translation.y": 414.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/xml/xml_newnode.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 262,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								232,
+								232
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
@@ -865,7 +1829,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 42.0
+		"height": 32.0
 	},
 	"input":
 	{
@@ -939,7 +1903,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 76.0
+		"height": 80.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -949,12 +1913,192 @@
 		"selected_items":
 		[
 			[
-				"mplab.c",
-				"mplab.c"
+				"strall",
+				"lib/stralloc.h"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"",
+				"xmltest3.c"
+			],
+			[
+				"xml_at",
+				"lib/xml/xml_attributes.c"
+			],
+			[
+				"test3",
+				"xmltest3.c"
+			],
+			[
+				"xml_print.c",
+				"lib/xml/xml_print.c"
+			],
+			[
+				"xmltest.c",
+				"xmltest.c"
+			],
+			[
+				"alloc.h",
+				"lib/alloc.h"
+			],
+			[
+				"READ_",
+				"lib/xml/xml_read_callback.c"
+			],
+			[
+				"XML_READ",
+				"lib/xml/xml_read_callback.c"
+			],
+			[
+				"read_tree",
+				"lib/xml/xml_read_tree.c"
+			],
+			[
+				"tree.c",
+				"lib/xml/xml_read_tree.c"
+			],
+			[
+				"read_ca",
+				"lib/xml/xml_read_callback.c"
+			],
+			[
+				"_tree.c",
+				"lib/xml/xml_read_tree.c"
+			],
+			[
+				"hmap.",
+				"lib/hmap.h"
+			],
+			[
+				"newnod",
+				"lib/xml/xml_newnode.c"
+			],
+			[
+				"dump.c",
+				"lib/hmap/hmap_dump.c"
+			],
+			[
+				"hmap.h",
+				"lib/hmap.h"
+			],
+			[
+				"xml_pr",
+				"lib/xml/xml_print.c"
+			],
+			[
+				"xml.h",
+				"lib/xml.h"
+			],
+			[
+				"xml_new",
+				"lib/xml/xml_newnode.c"
+			],
+			[
+				"test3.c",
+				"xmltest3.c"
+			],
+			[
+				"xml_attr",
+				"lib/xml/xml_attributes.c"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"mltest3",
+				"xmltest3.c"
+			],
+			[
+				"93",
+				"node_modules/iconv-lite/encodings/tables/cp936.json"
+			],
+			[
+				"nt_attr",
+				"lib/xml/xml_element_attrs.c"
+			],
+			[
+				"scan.h",
+				"lib/scan.h"
+			],
+			[
+				"scann.h",
+				"lib/scan/scan_nonwhitenskip.3"
+			],
+			[
+				"xmltest",
+				"xmltest3.c"
+			],
+			[
+				"set_attr",
+				"lib/xml/xml_set_attribute.c"
+			],
+			[
+				"hmap",
+				"lib/hmap.h"
+			],
+			[
+				"attributes",
+				"~/Dokumente/Sources/c-utils/lib/xml/xml_attributes.c"
+			],
+			[
+				"xml_child",
+				"lib/xml/xml_child_element.c"
+			],
+			[
+				"xml_add",
+				"lib/xml/xml_add_child.c"
+			],
+			[
+				"xml_ee",
+				"lib/xml/xml_element.c"
+			],
+			[
+				"xml.",
+				"lib/xml.h"
+			],
+			[
+				"xml_get",
+				"lib/xml/xml_get_text.c"
+			],
+			[
+				"xml_get_te",
+				"lib/xml/xml_get_text.c"
+			],
+			[
+				"strlist.h",
+				"lib/strlist.h"
+			],
+			[
+				"map.h",
+				"map.h"
 			],
 			[
 				"genma",
 				"genmakefile.c"
+			],
+			[
+				"str.h",
+				"lib/str.h"
+			],
+			[
+				"deca",
+				"lib/stralloc/stralloc_decamelize.c"
+			],
+			[
+				"camel",
+				"lib/stralloc/stralloc_camelize.c"
+			],
+			[
+				"xml_",
+				"build/occ32/MinSizeRel/xml_print_attributes.cbr"
+			],
+			[
+				"mplab.c",
+				"mplab.c"
 			],
 			[
 				"mplab",
@@ -971,14 +2115,6 @@
 			[
 				"byte.h",
 				"lib/byte.h"
-			],
-			[
-				"stralloc.h",
-				"lib/stralloc.h"
-			],
-			[
-				"strlist.h",
-				"lib/strlist.h"
 			],
 			[
 				"inflate.h",
@@ -999,14 +2135,6 @@
 			[
 				"strlist_pushb",
 				"lib/strlist/strlist_pushb.c"
-			],
-			[
-				"str.h",
-				"lib/str.h"
-			],
-			[
-				"",
-				"genmakefile.c"
 			],
 			[
 				"genmake",
@@ -1045,14 +2173,6 @@
 				"lib/buffer/buffer_truncfile.c"
 			],
 			[
-				"buffer.h",
-				"lib/buffer.h"
-			],
-			[
-				"map.h",
-				"map.h"
-			],
-			[
 				"strarray_sort",
 				"lib/strarray/strarray_sort.c"
 			],
@@ -1081,10 +2201,6 @@
 				"lib/path/path_basename.c"
 			],
 			[
-				"hmap",
-				"lib/hmap.h"
-			],
-			[
 				"hmap_add",
 				"lib/hmap/hmap_add.c"
 			],
@@ -1097,16 +2213,8 @@
 				"lib/hmap/hmap_set_chars.c"
 			],
 			[
-				"hmap.h",
-				"lib/hmap.h"
-			],
-			[
 				".mcp",
 				"~/Dokumente/Sources/pictest/build/mplab/pictest_xc8.mcp"
-			],
-			[
-				"strall",
-				"lib/stralloc.h"
 			],
 			[
 				"stralloc.",
@@ -1221,20 +2329,12 @@
 				"lib/ihex.h"
 			],
 			[
-				"scan.h",
-				"lib/scan.h"
-			],
-			[
 				"cofflist.c",
 				"cofflist.c"
 			],
 			[
 				"gen-cmd",
 				"eagle-gen-cmds.c"
-			],
-			[
-				"xml.h",
-				"lib/xml.h"
 			],
 			[
 				"eagle-",
@@ -1323,142 +2423,6 @@
 			[
 				"hmap_free",
 				"lib/hmap/hmap_free_data.c"
-			],
-			[
-				"array.h",
-				"lib/array.h"
-			],
-			[
-				"cbmap.h",
-				"lib/cbmap.h"
-			],
-			[
-				"cbmap",
-				"lib/cbmap.h"
-			],
-			[
-				"cb.h",
-				"lib/cb.h"
-			],
-			[
-				"hexed",
-				"hexedit.c"
-			],
-			[
-				"json.h",
-				"lib/json.h"
-			],
-			[
-				"uint32",
-				"lib/uint32.h"
-			],
-			[
-				"json_pr",
-				"lib/json/json_print.c"
-			],
-			[
-				"jsontest",
-				"jsontest.c"
-			],
-			[
-				"json",
-				"jsonpp.c"
-			],
-			[
-				"_trim",
-				"lib/stralloc/stralloc_trimr.c"
-			],
-			[
-				"str_trimr",
-				"lib/stralloc/stralloc_trimr.c"
-			],
-			[
-				"str_trim",
-				"lib/str/str_triml.c"
-			],
-			[
-				"xmlpp",
-				"xmlpp.c"
-			],
-			[
-				"alloc",
-				"lib/alloc/alloc_zero.c"
-			],
-			[
-				"testihe",
-				"testihex.c"
-			],
-			[
-				"rtest",
-				"build/rdir-test"
-			],
-			[
-				"slist.h",
-				"lib/slist.h"
-			],
-			[
-				"list.h",
-				"lib/list.h"
-			],
-			[
-				"parse.c",
-				"parse.c"
-			],
-			[
-				"GENMA",
-				"genmakefile.c"
-			],
-			[
-				"payme",
-				"applications/payment.moon"
-			],
-			[
-				"users.moon",
-				"applications/users.moon"
-			],
-			[
-				"socket.moo",
-				"applications/socket.moon"
-			],
-			[
-				"config.moo",
-				"config.moon"
-			],
-			[
-				"config.moon",
-				"config.moon"
-			],
-			[
-				"payment",
-				"applications/payment.moon"
-			],
-			[
-				"socket",
-				"applications/socket.moon"
-			],
-			[
-				"webso",
-				"helpers/websocket.moon"
-			],
-			[
-				"websock",
-				"helpers/websocket.moon"
-			],
-			[
-				"payment.moo",
-				"applications/payment.moon"
-			],
-			[
-				"parsigram.html",
-				"static/parsigram.html"
-			],
-			[
-				"config.mo",
-				"docker/backend/config.moon"
-			],
-			[
-				"test-pa",
-				"test-parsigram.moon"
 			]
 		],
 		"width": 0.0
