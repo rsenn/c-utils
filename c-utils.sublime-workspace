@@ -783,6 +783,10 @@
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
@@ -857,6 +861,7 @@
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
 							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
