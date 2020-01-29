@@ -26,7 +26,7 @@ start:
 
   buffer_putm_internal(b, "<", node->name, 0);
 
-  if(node->attributes && node->attributes->tuple_count) {
+  if(node->type == XML_ELEMENT && node->attributes /*&& node->attributes->tuple_count*/) {
     buffer_putc(b, ' ');
     xml_print_attributes(node->attributes, b, " ", "=", "\"");
     buffer_flush(b);

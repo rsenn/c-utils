@@ -1,5 +1,6 @@
 #include "../xml.h"
 #include "../str.h"
+#include "../buffer.h"
 #include "../hmap.h"
 #include <stdarg.h>
 
@@ -8,7 +9,7 @@ xml_vattributes(const char* arg, va_list args) {
   HMAP_DB* db = 0;
   const char* value;
   size_t i, nlen, vlen;
-  hmap_init(1024, &db);
+
   do {
     nlen = str_len(arg);
     if(arg[i = str_chr(arg, '=')]) {
@@ -23,8 +24,14 @@ xml_vattributes(const char* arg, va_list args) {
     }
     if(value == 0)
       break;
+
+    if(db == 0)
+      hmap_init(XML_HMAP_BUCKETS, &db);
     hmap_set(&db, arg, nlen, value, vlen + 1);
+
   } while((arg = va_arg(args, const char*)));
+
+  hmap_dump(db, buffer_2);
   return db;
 }
 
