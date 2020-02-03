@@ -37,6 +37,7 @@
 #include "lib/unix.h"
 #include "lib/path.h"
 #include "lib/scan.h"
+#include "lib/mmap.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -483,12 +484,15 @@ mode_str(stralloc* out, int mode) {
   stralloc_catb(out, mchars, sizeof(mchars));
 }
 
+uint32
+crc32(uint32 crc, const char* data, size_t size);
+
 static int
 file_crc32(const char* path, uint32* crc) {
   size_t n;
   char* x;
   if((x = mmap_read(path, &n))) {
-    *crc = crc32(x, n);
+    *crc = crc32(0, x, n);
     mmap_unmap(x, n);
     return 0;
   }
@@ -742,7 +746,7 @@ main(int argc, char* argv[]) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlLnro:x:t:m:", opts, &index);
+    c = getopt_long(argc, argv, "hlLnro:x:t:m:c", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
