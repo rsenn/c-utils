@@ -1148,7 +1148,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)crc.o $(BUILDDIR)getopt.o $(BUILDDIR)fnmatch.o $(call add-library,errmsg rdir dir strarray array safemult stralloc buffer mmap open byte fmt scan str)
+$(BUILDDIR)list-r$(M64_)$(EXEEXT): $(BUILDDIR)list-r.o $(BUILDDIR)crc.o $(BUILDDIR)getopt.o $(BUILDDIR)fnmatch.o $(call add-library,strlist errmsg rdir dir strarray array safemult stralloc buffer mmap open byte fmt scan str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

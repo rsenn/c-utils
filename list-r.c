@@ -38,6 +38,7 @@
 #include "lib/path.h"
 #include "lib/scan.h"
 #include "lib/mmap.h"
+#include "lib/strlist.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -82,7 +83,7 @@
 
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
-static array exclude_masks;
+static strlist exclude_masks;
 static char opt_separator = DIRSEP_C;
 
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_crc = 0;
@@ -285,7 +286,6 @@ filetime_to_unix(const FILETIME* ft) {
   return (uint64)(windowsTicks / 10000000 - SEC_TO_UNIX_EPOCH);
 }
 
-
 int
 is_junction_point(const char* fn) {
   int status = 0;
@@ -484,13 +484,12 @@ mode_str(stralloc* out, int mode) {
   stralloc_catb(out, mchars, sizeof(mchars));
 }
 
-uint32
-crc32(uint32 crc, const char* data, size_t size);
+uint32 crc32(uint32 crc, const char* data, size_t size);
 
 static int
 file_crc32(const char* path, uint32* crc) {
   size_t n;
-  char* x;
+  const char* x;
   if((x = mmap_read(path, &n))) {
     *crc = crc32(0, x, n);
     mmap_unmap(x, n);
@@ -591,9 +590,21 @@ list_dir_internal(stralloc* dir, char type) {
     mtime = dir_time(&d, D_TIME_MODIFICATION);
 #endif
 #endif
+    {
+      const char* exclude;
+      int match = 0;
+      strlist_foreach_s(&exclude_masks, exclude) {
+        if(fnmatch(exclude, name, FNM_PATHNAME) == 0) {
+          match = 1;
+          break;
+        }
+      }
+      if(match)
+        continue;
+    }
     if(opt_crc) {
       uint32 crc;
-      if(is_dir ||  file_crc32(dir->s, &crc)) {
+      if(is_dir || file_crc32(dir->s, &crc)) {
         buffer_putnspace(buffer_1, 8);
       } else {
         buffer_putxlong0(buffer_1, crc, 8);
@@ -745,6 +756,8 @@ main(int argc, char* argv[]) {
   setmode(STDOUT_FILENO, O_BINARY);
 #endif
 
+  strlist_init(&exclude_masks, '\0');
+
   for(;;) {
     c = getopt_long(argc, argv, "hlLnro:x:t:m:c", opts, &index);
     if(c == -1)
@@ -754,11 +767,7 @@ main(int argc, char* argv[]) {
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
-      case 'x': {
-        char* s = optarg;
-        array_catb(&exclude_masks, (void*)&s, sizeof(char*));
-        break;
-      }
+      case 'x': strlist_push(&exclude_masks, optarg); break;
       case 'o': {
         buffer_1->fd = io_err_check(open_trunc(optarg));
         break;
@@ -802,8 +811,7 @@ main(int argc, char* argv[]) {
       optind++;
     }
     */
-  array_catb(&exclude_masks, "\0\0\0\0\0\0\0\0", sizeof(char**));
-  print_strarray(buffer_2, &exclude_masks);
+  strlist_dump(buffer_2, &exclude_masks);
   if(optind < argc) {
     while(optind < argc) {
       if(opt_relative)
