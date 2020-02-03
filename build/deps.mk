@@ -2386,3 +2386,7 @@ $(BUILDDIR)compiler-wrapper.o: compiler-wrapper.c lib/windoze.h lib/stralloc.h l
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)plsconv.o: plsconv.c lib/windoze.h lib/unix.h lib/typedefs.h lib/windoze.h lib/getopt.h lib/readlink.h lib/buffer.h lib/byte.h lib/io.h lib/iarray.h lib/uint64.h lib/taia.h lib/tai.h lib/uint32.h lib/iarray.h lib/open.h lib/playlist.h lib/stralloc.h lib/buffer.h lib/str.h lib/stralloc.h lib/fmt.h lib/scan.h lib/hmap.h lib/xml.h lib/hmap.h lib/textbuf.h
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)crc.o: crc.c lib/buffer.h lib/typedefs.h lib/errmsg.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)crc.o: crc.c lib/buffer.h lib/typedefs.h lib/errmsg.h lib/uint32.h
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<

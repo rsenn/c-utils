@@ -441,7 +441,6 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/build",
-		"/home/roman/Dokumente/Sources/c-utils/build/cmake",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
 		"/home/roman/Dokumente/Sources/c-utils/tests"
 	],
@@ -1034,8 +1033,8 @@
 						"selection":
 						[
 							[
-								354,
-								354
+								152,
+								152
 							]
 						],
 						"settings":
@@ -2216,7 +2215,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
+	"selected_group": 1,
 	"settings":
 	{
 	},

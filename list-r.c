@@ -84,7 +84,7 @@ static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static array exclude_masks;
 static char opt_separator = DIRSEP_C;
 
-static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0;
+static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_crc = 0;
 static unsigned long opt_minsize = 0;
 static const char* opt_relative_to = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
@@ -284,6 +284,7 @@ filetime_to_unix(const FILETIME* ft) {
   return (uint64)(windowsTicks / 10000000 - SEC_TO_UNIX_EPOCH);
 }
 
+
 int
 is_junction_point(const char* fn) {
   int status = 0;
@@ -482,6 +483,18 @@ mode_str(stralloc* out, int mode) {
   stralloc_catb(out, mchars, sizeof(mchars));
 }
 
+static int
+file_crc32(const char* path, uint32* crc) {
+  size_t n;
+  char* x;
+  if((x = mmap_read(path, &n))) {
+    *crc = crc32(x, n);
+    mmap_unmap(x, n);
+    return 0;
+  }
+  return -1;
+}
+
 int
 list_dir_internal(stralloc* dir, char type) {
   size_t l;
@@ -574,6 +587,16 @@ list_dir_internal(stralloc* dir, char type) {
     mtime = dir_time(&d, D_TIME_MODIFICATION);
 #endif
 #endif
+    if(opt_crc) {
+      uint32 crc;
+      if(is_dir ||  file_crc32(dir->s, &crc)) {
+        buffer_putnspace(buffer_1, 8);
+      } else {
+        buffer_putxlong0(buffer_1, crc, 8);
+      }
+      buffer_putspace(buffer_1);
+    }
+
     if(opt_list && size >= opt_minsize) {
       stralloc_init(&pre);
       /* Mode string */
@@ -686,6 +709,7 @@ usage(char* argv0) {
                        "  -t, --time-style FORMAT   format time according to FORMAT\n",
                        "  -m, --min-size   BYTES    minimum file size\n",
                        "  -L, --dereference         dereference symlinks\n",
+                       "  -c, --crc                 cyclic redundancy check\n",
                        0);
   buffer_putnlflush(buffer_1);
 }
@@ -707,6 +731,7 @@ main(int argc, char* argv[]) {
     {"time-style", 1, 0, 't'},
     {"dereference", 0, &opt_deref, 1},
     {"min-size", 1, 0, 'm'},
+    {"crc", 1, 0, 'c'},
 #if WINDOWS
     {"separator", 1, 0, 's'},
 #endif
@@ -746,6 +771,7 @@ main(int argc, char* argv[]) {
       case 'L': opt_deref = 1; break;
       case 'n': opt_numeric = 1; break;
       case 'r': opt_relative = 1; break;
+      case 'c': opt_crc = 1; break;
       case 'm': scan_ulong(optarg, &opt_minsize); break;
       default: usage(argv[0]); return 1;
     }
