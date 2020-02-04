@@ -617,7 +617,7 @@ list_dir_internal(stralloc* dir, char type) {
       stralloc_catc(&pre, ' ');
     }
 
-    if(opt_list && size >= opt_minsize) {
+    if(opt_list && (is_dir || size >= opt_minsize)) {
       /* Mode string */
       mode_str(&pre, mode);
       stralloc_catb(&pre, " ", 1);
@@ -656,7 +656,7 @@ list_dir_internal(stralloc* dir, char type) {
       len -= 2;
       s += 2;
     }
-    if(pre.len > 0 && size >= opt_minsize)
+    if(pre.len > 0 && (is_dir || size >= opt_minsize))
       buffer_putsa(buffer_1, &pre);
 
     if(opt_relative_to) {
@@ -671,7 +671,7 @@ list_dir_internal(stralloc* dir, char type) {
       }
     }
 
-    if(size >= opt_minsize) {
+    if(is_dir || size >= opt_minsize) {
       buffer_put(buffer_1, s, len);
       buffer_put(buffer_1, "\n", 1);
       buffer_flush(buffer_1);
