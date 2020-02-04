@@ -39,6 +39,7 @@
 #include "lib/scan.h"
 #include "lib/mmap.h"
 #include "lib/strlist.h"
+#include "lib/strarray.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -92,10 +93,12 @@ static long opt_depth = -1;
 static uint32 opt_types = (uint32)(int32)-1;
 static const char* opt_relative_to = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
+static strarray etc_users, etc_groups;
+
 #if(defined(_WIN32) || defined(MINGW)) && !defined(__MSYS__)
 static uint64 filetime_to_unix(const FILETIME* ft);
-static const char*
 
+static const char*
 last_error() {
   DWORD errCode = GetLastError();
   static char tmpbuf[1024];
@@ -369,12 +372,12 @@ type_mask(const char* arg) {
   return mask;
 }
 
-static void
-read_users() {
+static size_t
+read_users(strarray* users) {
   size_t n;
   const char* x;
-  strarray users;
-  strarray_init(&users);
+  strarray_init(users);
+  
   if((x = mmap_read("/etc/passwd", &n))) {
     while(n > 0) {
       const char* name = x;
@@ -393,7 +396,7 @@ read_users() {
       if(len == n)
         break;
       if(len > 0) {
-        strarray_setb(&users, uid, name, namelen);
+        strarray_setb(users, uid, name, namelen);
       }
       len = byte_chr(x, n, '\n');
       if(len == n)
@@ -403,6 +406,7 @@ read_users() {
     }
     mmap_unmap(x, n);
   }
+  return array_length(users, sizeof(char*));
 }
 
 static void
@@ -914,6 +918,15 @@ main(int argc, char* argv[]) {
       case 'm': scan_ulong(optarg, &opt_minsize); break;
       default: usage(argv[0]); return 1;
     }
+  }
+
+  if(opt_list && !opt_numeric) {
+    size_t num_users = read_users(&etc_users);
+
+
+    buffer_puts(buffer_2, "num_users; ");
+    buffer_putlong(buffer_2, num_users);
+    buffer_putnlflush(buffer_2);
   }
   /*
     while(optind < argc) {
