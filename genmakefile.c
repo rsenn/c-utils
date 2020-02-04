@@ -3499,7 +3499,7 @@ set_compiler_type(const char* compiler) {
 
     make_begin_inline = 0;
     make_end_inline = 0;
-    push_var("STDC_LIBS", "oldnames.lib");
+    //push_var("STDC_LIBS", "oldnames.lib");
 
     if(cfg.mach.bits == _64) {
       push_var("STDC_LIBS", "ccl64.lib");
