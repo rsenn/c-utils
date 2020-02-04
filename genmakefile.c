@@ -3886,13 +3886,13 @@ set_compiler_type(const char* compiler) {
   }
 
   if(cfg.sys.os == WIN) {
-    push_lib("EXTRA_LIBS", "advapi32");
+    //push_lib("EXTRA_LIBS", "advapi32");
 
-    if(str_start(compiler, "dmc"))
+  /*  if(str_start(compiler, "dmc"))
       push_lib("EXTRA_LIBS", "wsock32");
     else
       push_lib("EXTRA_LIBS", "ws2_32");
-
+*/
     push_lib("EXTRA_LIBS", "kernel32");
   }
   if(cygming) {
