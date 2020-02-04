@@ -573,8 +573,9 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     str_copy(dir->s + dir->len, name);
     dir->len += str_len(name);
     is_symlink = !!(dtype & D_SYMLINK);
+
 #if !WINDOWS_NATIVE
-    if(!opt_deref && lstat(dir->s, &st) != -1) {
+    if((opt_deref ? stat : lstat)(dir->s, &st) != -1) {
       if(root_dev && st.st_dev) {
         if(st.st_dev != root_dev) {
           continue;
