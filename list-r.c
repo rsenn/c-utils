@@ -342,17 +342,29 @@ static uint32
 type_mask(const char* arg) {
   size_t i;
   uint32 mask = 0;
+  int inv = 0;
   for(i = 0; arg[i]; i++) {
+    uint32 bit = 0;
     switch(arg[i]) {
-      case 'f': mask |= D_FILE; break;
-      case 'd': mask |= D_DIRECTORY; break;
-      case 'l': mask |= D_SYMLINK; break;
-      case 'b': mask |= D_BLKDEV; break;
-      case 'c': mask |= D_CHARDEV; break;
-      case 'p': mask |= D_PIPE; break;
-      case 's': mask |= D_SOCKET; break;
+      case 'f': bit = D_FILE; break;
+      case 'd': bit = D_DIRECTORY; break;
+      case 'l': bit = D_SYMLINK; break;
+      case 'b': bit = D_BLKDEV; break;
+      case 'c': bit = D_CHARDEV; break;
+      case 'p': bit = D_PIPE; break;
+      case 's': bit = D_SOCKET; break;
+      case '!':
+      case '~':
+      case '^':
+        inv = !inv;
+        mask = ~mask;
+        continue;
       default: break;
     }
+    if(inv)
+      mask &= ~bit;
+    else
+      mask |= bit;
   }
   return mask;
 }
@@ -419,7 +431,15 @@ make_time(stralloc* out, time_t t, size_t width) {
 }
 
 static void
-mode_str(stralloc* out, int mode) {
+mode_octal(stralloc* out, int mode) {
+  char buf[6];
+  size_t i, n = fmt_8long(buf, mode & 07777);
+  for(i = 0; i + n < 4; i++) stralloc_catc(out, '0');
+  stralloc_catb(out, buf, n);
+}
+
+static void
+mode_flags(stralloc* out, int mode) {
   char mchars[10];
   switch(mode & S_IFMT) {
 #ifdef S_IFLNK
@@ -501,6 +521,10 @@ mode_str(stralloc* out, int mode) {
   else
 #endif
     mchars[9] = '-';
+
+  if(mode & 04000)
+    mchars[3] = 's';
+
   stralloc_catb(out, mchars, sizeof(mchars));
 }
 
@@ -621,7 +645,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     mode = st.st_mode;
     uid = st.st_uid;
     gid = st.st_gid;
-    size = is_dir ? st.st_size : 0;
+    size = is_dir ? 0 : st.st_size;
     mtime = st.st_mtime;
 
 #else
@@ -650,6 +674,8 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       buffer_flush(buffer_2);
       goto end;
     }
+
+    stralloc_nul(dir);
 
     s = dir->s;
     len = dir->len;
@@ -690,24 +716,24 @@ list_dir_internal(stralloc* dir, char type, long depth) {
         stralloc_catc(&pre, ' ');
       }
 
-      if(opt_list && (is_dir || size >= opt_minsize)) {
+      if(opt_list) {
         /* Mode string */
-        mode_str(&pre, mode);
+        (opt_numeric ? mode_octal : mode_flags)(&pre, mode);
         stralloc_catb(&pre, " ", 1);
         /* num links */
         make_num(&pre, nlink, 3);
         stralloc_catb(&pre, " ", 1);
         /* uid */
-        make_num(&pre, uid, 0);
+        make_num(&pre, uid, 5);
         stralloc_catb(&pre, " ", 1);
         /* gid */
-        make_num(&pre, gid, 0);
+        make_num(&pre, gid, 5);
         stralloc_catb(&pre, " ", 1);
         /* size */
-        make_num(&pre, size, 6);
+        make_num(&pre, size, 10);
         stralloc_catb(&pre, " ", 1);
         /* time */
-        make_num(&pre, mtime, 0);
+        make_num(&pre, mtime, 10);
         /*     make_time(&pre, mtime, 10); */
         stralloc_catb(&pre, " ", 1);
       }
@@ -728,11 +754,9 @@ list_dir_internal(stralloc* dir, char type, long depth) {
         }
       }
 
-      if(is_dir || size >= opt_minsize) {
-        buffer_put(buffer_1, s, len);
-        buffer_put(buffer_1, "\n", 1);
-        buffer_flush(buffer_1);
-      }
+      buffer_put(buffer_1, s, len);
+      buffer_put(buffer_1, "\n", 1);
+      buffer_flush(buffer_1);
     }
 
     if(is_dir && (opt_deref || !is_symlink)) {
