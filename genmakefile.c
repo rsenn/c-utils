@@ -3957,10 +3957,11 @@ usage(char* argv0) {
                        "     mplab       MPLAB project (.mcp)\n"
                        "     mplabx      MPLAB X project (NetBeans)\n"
                        "\n"
-                       "  --debug        Specify build type"
-                       "  --release\n"
-                       "  --relwithdebinfo\n"
-                       "  --minsizerel\n"
+                       "  Specify build type:\n\n"
+                       "    --debug            with debugging information, no optimization\n"
+                       "    --relwithdebinfo   with debugging information, optimize for speed\n"
+                       "    --release          optimize for speed\n"
+                       "    --minsizerel       optimize for size\n"
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_1);
