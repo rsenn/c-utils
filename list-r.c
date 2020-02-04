@@ -590,6 +590,7 @@ list_dir_internal(stralloc* dir, char type) {
     mtime = dir_time(&d, D_TIME_MODIFICATION);
 #endif
 #endif
+
     {
       const char* exclude;
       int match = 0;
@@ -655,7 +656,7 @@ list_dir_internal(stralloc* dir, char type) {
       len -= 2;
       s += 2;
     }
-    if(pre.len > 0) //opt_list && size >= opt_minsize)
+    if(pre.len > 0 && size >= opt_minsize)
       buffer_putsa(buffer_1, &pre);
 
     if(opt_relative_to) {
