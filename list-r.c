@@ -445,8 +445,8 @@ make_time(stralloc* out, uint64 t, uint32 width) {
 static void
 make_str(stralloc* out, const char* s, uint32 width) {
   size_t i, sz = str_len(s);
-    for(i = 0; i + sz < width; i++) stralloc_catc(out, ' ');
   stralloc_catb(out, s, sz);
+  for(i = 0; i + sz < width; i++) stralloc_catc(out, ' ');
 }
 
 static void
