@@ -981,7 +981,7 @@ new_source(const char* name) {
   if((ret = (sourcefile*)malloc(sizeof(sourcefile)))) {
     byte_zero(ret, sizeof(sourcefile));
     ret->name = str_dup(name);
-    ret->has_main = has_main(ret->name) == 1;
+    ret->has_main = is_source(ret->name) && has_main(ret->name) == 1;
 
 #if DEBUG_OUTPUT
     if(ret->has_main)
