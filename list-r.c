@@ -337,13 +337,12 @@ is_junction_point(const char* fn) {
 #endif
 static int list_dir_internal(stralloc* dir, char type, long depth);
 static void
-make_num(stralloc* out, size_t num, size_t width) {
+make_num(stralloc* out, uint32 num, uint32 width) {
   char fmt[FMT_ULONG + 1];
-  size_t sz = fmt_ulonglong(fmt, num);
+  size_t sz = fmt_uint(fmt, num);
   ssize_t n = width - sz;
-  while(n-- > 0) {
+  while(n-- > 0)
     stralloc_catb(out, " ", 1);
-  }
   stralloc_catb(out, fmt, sz);
 }
 
