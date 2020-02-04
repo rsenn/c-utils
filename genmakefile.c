@@ -4338,9 +4338,13 @@ main(int argc, char* argv[]) {
   path_absolute_sa(&dirs.out.sa);
   path_absolute_sa(&dirs.build.sa);
 
+  if(dirs.work.sa.len == 0)
+    stralloc_copys(&dirs.work.sa, ".");
+
   stralloc_nul(&dirs.this.sa);
   stralloc_nul(&dirs.out.sa);
   stralloc_nul(&dirs.build.sa);
+  stralloc_nul(&dirs.work.sa);
 
   // debug_sa("dirs.this", &dirs.this.sa);
   // debug_sa("dirs.out", &dirs.out.sa);
