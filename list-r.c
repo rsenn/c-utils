@@ -574,6 +574,20 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     dir->len += str_len(name);
     is_symlink = !!(dtype & D_SYMLINK);
 
+    if(dtype) {
+      is_dir = !!(dtype & D_DIRECTORY);
+    } else {
+#if WINDOWS_NATIVE
+      is_dir = 0;
+#else
+      is_dir = !!S_ISDIR(mode);
+#endif
+    }
+    if(dtype & D_SYMLINK)
+      is_symlink = 1;
+
+    mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
+
 #if !WINDOWS_NATIVE
     if((opt_deref ? stat : lstat)(dir->s, &st) != -1) {
       if(root_dev && st.st_dev) {
@@ -589,27 +603,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     size = is_dir ? st.st_size : 0;
     mtime = st.st_mtime;
 
-#endif
-#if 0 //! WINDOWS_NATIVE
-    if(S_ISLNK(st.st_mode)) {
-      stat(dir->s, &st);
-    }
-    mode = st.st_mode;
-#endif
-    if(dtype) {
-      is_dir = !!(dtype & D_DIRECTORY);
-    } else {
-#if WINDOWS_NATIVE
-      is_dir = 0;
 #else
-      is_dir = !!S_ISDIR(mode);
-#endif
-    }
-    if(dtype & D_SYMLINK)
-      is_symlink = 1;
-
-    mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
-#if WINDOWS_NATIVE
 #if USE_READDIR
     if(!is_dir) {
       size = dir_size(&d); /* dir_INTERNAL(&d)->dir_entry->d_name); */
