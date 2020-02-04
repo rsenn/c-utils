@@ -2928,7 +2928,7 @@ output_all_rules(buffer* b, HMAP_DB* hmap) {
     if(no_libs && str_end(name, ".a"))
       continue;
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Outputting rule '");
     buffer_put(buffer_2, t->key, t->key_len);
     buffer_putc(buffer_2, '\'');
