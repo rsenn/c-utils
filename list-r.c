@@ -650,7 +650,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       mode_str(&pre, mode);
       stralloc_catb(&pre, " ", 1);
       /* num links */
-      make_num(&pre, nlink, 3);
+      make_num(&pre, dtype == D_DIRECTORY ? nlink : 1, 3);
       stralloc_catb(&pre, " ", 1);
       /* uid */
       make_num(&pre, uid, 0);
