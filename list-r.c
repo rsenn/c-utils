@@ -502,7 +502,7 @@ int
 list_dir_internal(stralloc* dir, char type) {
   size_t l;
   struct dir_s d;
-  stralloc pre;
+  static stralloc pre;
   int dtype;
   int is_dir, is_symlink;
   size_t len;
@@ -602,18 +602,21 @@ list_dir_internal(stralloc* dir, char type) {
       if(match)
         continue;
     }
+    stralloc_zero(&pre);
+
     if(opt_crc) {
       uint32 crc;
       if(is_dir || file_crc32(dir->s, &crc)) {
-        buffer_putnspace(buffer_1, 8);
+        stralloc_cats(&pre, "        ");
       } else {
-        buffer_putxlong0(buffer_1, crc, 8);
+        stralloc_catxlong(&pre, crc);
+        if(pre.len < 8)
+          stralloc_insertb(&pre, "        ", 0, 8 - pre.len);
       }
-      buffer_putspace(buffer_1);
+      stralloc_catc(&pre, ' ');
     }
 
     if(opt_list && size >= opt_minsize) {
-      stralloc_init(&pre);
       /* Mode string */
       mode_str(&pre, mode);
       stralloc_catb(&pre, " ", 1);
@@ -652,7 +655,7 @@ list_dir_internal(stralloc* dir, char type) {
       len -= 2;
       s += 2;
     }
-    if(opt_list && size >= opt_minsize)
+    if(pre.len > 0) //opt_list && size >= opt_minsize)
       buffer_putsa(buffer_1, &pre);
 
     if(opt_relative_to) {
