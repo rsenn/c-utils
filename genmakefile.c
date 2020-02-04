@@ -1445,7 +1445,9 @@ dump_sourcedirs(buffer* b, HMAP_DB* sourcedirs) {
     sourcedir* srcdir = hmap_data(t);
     sourcefile* pfile;
 
-    buffer_putm_internal(b, "source dir '", t->key, "' (", 0);
+    buffer_puts(b, "source dir '");
+    buffer_put(b, t->key, t->key_len);
+    buffer_puts(b, "' (");
     buffer_putulong(b, srcdir->n_sources);
     buffer_puts(b, "): ");
     buffer_put(b, t->key, t->key_len);
@@ -2927,8 +2929,10 @@ output_all_rules(buffer* b, HMAP_DB* hmap) {
       continue;
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "Outputting rule '", name, "'", newline, 0);
-    buffer_flush(buffer_2);
+    buffer_puts(buffer_2, "Outputting rule '");
+    buffer_put(buffer_2, t->key, t->key_len);
+    buffer_putc(buffer_2, '\'');
+    buffer_putnlflush(buffer_2);
 #endif
 
     if(ninja)
