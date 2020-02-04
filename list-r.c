@@ -929,6 +929,7 @@ main(int argc, char* argv[]) {
     }
   }
 
+#if !WINDOWS_NATIVE
   if(opt_list && !opt_numeric) {
     size_t num_users = read_etc(&etc_users, "/etc/passwd");
     size_t num_groups = read_etc(&etc_groups, "/etc/group");
@@ -941,6 +942,8 @@ main(int argc, char* argv[]) {
     buffer_putlong(buffer_2, num_groups);
     buffer_putnlflush(buffer_2);
   }
+#endif
+  
   /*
     while(optind < argc) {
       if(!str_diff(argv[optind], "-l") || !str_diff(argv[optind], "--list")) {
