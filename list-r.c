@@ -555,7 +555,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
   l = dir->len;
   while((name = dir_read(&d))) {
     int match = 0;
-    unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
+    uint32 mode = 0, nlink = 0, uid = 0, gid = 0;
     uint64 size = 0, mtime = 0;
     dtype = dir_type(&d);
     dir->len = l;
