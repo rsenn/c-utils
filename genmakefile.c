@@ -37,7 +37,7 @@ static const char* cross_compile = "";
 dirs_t dirs;
 static strlist vpath;
 static stralloc srcdir;
-static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
+static char pathsep_make = f, pathsep_args = DEFAULT_PATHSEP;
 static strlist build_as_lib;
 static strlist include_dirs, link_libraries;
 static strlist pptoks;
@@ -3093,12 +3093,17 @@ set_system(const char* s) {
   if(s[str_find(s, "win")]) {
     cfg.sys.os = WIN;
     cfg.sys.type = WIN;
+
+    pathsep_args = '\\';
+
   } else if(s[str_find(s, "mac")]) {
     cfg.sys.os = MAC;
     cfg.sys.type = UNIX;
   } else if(s[str_find(s, "lin")]) {
     cfg.sys.os = LINUX;
     cfg.sys.type = UNIX;
+
+
   } else {
     ret = 0;
   }
