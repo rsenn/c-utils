@@ -934,7 +934,6 @@ main(int argc, char* argv[]) {
     size_t num_users = read_etc(&etc_users, "/etc/passwd");
     size_t num_groups = read_etc(&etc_groups, "/etc/group");
 
-
     buffer_puts(buffer_2, "num_users; ");
     buffer_putlong(buffer_2, num_users);
     buffer_putnlflush(buffer_2);
@@ -943,7 +942,7 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
   }
 #endif
-  
+
   /*
     while(optind < argc) {
       if(!str_diff(argv[optind], "-l") || !str_diff(argv[optind], "--list")) {
