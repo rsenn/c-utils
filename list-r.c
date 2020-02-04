@@ -369,6 +369,42 @@ type_mask(const char* arg) {
   return mask;
 }
 
+
+static void
+read_users() {
+  size_t n;
+  const char* x;
+  strarray users;
+  strarray_init(&users);
+  
+  if((x = mmap_read("/etc/passwd", &n))) {
+     while(n > 0) {
+      const char* name = x;
+      size_t len, namelen = byte_chr(x, n, ':');
+      uint32 uid = 0;
+
+      if(name == n) break;
+
+      x += namelen + 1;
+      n -= namelen - 1;
+
+      len = byte_chr(x, n, ':');
+
+      if(len == n) break;
+
+      x += len + 1;
+      n -= len - 1;
+
+      len = scan_uint(x, &uid);
+
+      if(len == n) break;
+
+
+
+     }
+  }
+}
+
 static void
 make_num(stralloc* out, int32 num, uint32 width) {
   char fmt[FMT_ULONG + 1];

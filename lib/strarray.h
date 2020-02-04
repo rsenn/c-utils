@@ -45,6 +45,7 @@ int strarray_pushb(strarray*, const char* b, size_t n);
 int strarray_pushd(strarray*, const char* s);
 int strarray_push(strarray*, const char* s);
 int strarray_set(strarray*, size_t index, const char* s);
+int strarray_setb(strarray*, size_t index, const char* s, size_t len);
 
 #ifdef STRALLOC_H
 #define strarray_push_sa_unique(a, sa)                                                                                 \
