@@ -369,39 +369,39 @@ type_mask(const char* arg) {
   return mask;
 }
 
-
 static void
 read_users() {
   size_t n;
   const char* x;
   strarray users;
   strarray_init(&users);
-  
   if((x = mmap_read("/etc/passwd", &n))) {
-     while(n > 0) {
+    while(n > 0) {
       const char* name = x;
       size_t len, namelen = byte_chr(x, n, ':');
       uint32 uid = 0;
-
-      if(name == n) break;
-
+      if(name == n)
+        break;
       x += namelen + 1;
       n -= namelen - 1;
-
       len = byte_chr(x, n, ':');
-
-      if(len == n) break;
-
+      if(len == n)
+        break;
       x += len + 1;
       n -= len - 1;
-
       len = scan_uint(x, &uid);
-
-      if(len == n) break;
-
-
-
-     }
+      if(len == n)
+        break;
+      if(len > 0) {
+        strarray_setb(&users, uid, name, namelen);
+      }
+      len = byte_chr(x, n, '\n');
+      if(len == n)
+        break;
+      x += len + 1;
+      n -= len - 1;
+    }
+    mmap_unmap(x, n);
   }
 }
 
