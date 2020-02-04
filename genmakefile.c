@@ -37,7 +37,7 @@ static const char* cross_compile = "";
 dirs_t dirs;
 static strlist vpath;
 static stralloc srcdir;
-static char pathsep_make = f, pathsep_args = DEFAULT_PATHSEP;
+static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static strlist build_as_lib;
 static strlist include_dirs, link_libraries;
 static strlist pptoks;
