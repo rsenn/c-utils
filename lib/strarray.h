@@ -18,7 +18,6 @@ typedef array strarray;
 /* strarray_init will initialize a strarray. */
 #define strarray_zero(l) array_trunc((l), 0)
 #define strarray_init(l) byte_zero((l), sizeof(strarray))
-#define strarray_free(l) array_reset((l))
 
 #define strarray_size(l) array_length((l), sizeof(char*))
 
@@ -74,6 +73,7 @@ int strarray_each(strarray* arr, void (*pred)(char**));
 int strarray_glob(strarray* arr, const char* pattern);
 
 int64 strarray_splice(strarray*, uint64 start, uint64 del, uint64 insert, const char** x);
+void strarray_free(strarray*);
 
 #ifdef __cplusplus
 }

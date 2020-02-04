@@ -413,7 +413,7 @@ add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 u
 add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES})
 add_program(impgen buffer byte mmap open pe uint16 uint32)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
-add_program(list-r strlist stralloc buffer unix dir array fmt open str uint64 ${LIBADVAPI32})
+add_program(list-r strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
 add_program(mediathek-list errmsg stralloc buffer byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES})
 add_program(mediathek-parser ucs errmsg stralloc buffer array byte open str unix strlist)
