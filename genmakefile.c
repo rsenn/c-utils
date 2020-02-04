@@ -2049,7 +2049,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
   stralloc_init(&obj);
 
   slink_foreach(&sdir->sources, src) {
-    const char *s, *ext = 0;
+    const char *ext = 0;
 
     if(!src->name)
       continue;
@@ -2057,7 +2057,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
     if(!is_source(src->name))
       continue;
 
-    s = str_basename(src->name);
+    //s = str_basename(src->name);
 
     target.len = len;
 
