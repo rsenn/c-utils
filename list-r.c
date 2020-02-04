@@ -611,7 +611,7 @@ list_dir_internal(stralloc* dir, char type) {
       } else {
         stralloc_catxlong(&pre, crc);
         if(pre.len < 8)
-          stralloc_insertb(&pre, "        ", 0, 8 - pre.len);
+          stralloc_insertb(&pre, "00000000", 0, 8 - pre.len);
       }
       stralloc_catc(&pre, ' ');
     }
