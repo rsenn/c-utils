@@ -621,134 +621,6 @@ get_includes(const char* srcfile, strlist* includes, int sys) {
   return 0;
 }
 
-/**
- * @brief rule_command_subst  Get rule command with substitutions
- * @param rule
- * @param out
- * @param prereq
- * @param plen
- */
-void
-rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen) {
-  size_t i;
-  stralloc* in = &rule->recipe;
-
-  for(i = 0; i < in->len; ++i) {
-    const char* p = &in->s[i];
-
-    if((shell || batch) && i + 4 <= in->len && *p == '$' && p[1] == '(') {
-      size_t vlen;
-      stralloc_catc(out, shell ? '$' : '%');
-      i += 2;
-      vlen = byte_chr(&in->s[i], in->len - i, ')');
-      stralloc_catb(out, &in->s[i], vlen);
-      if(batch)
-        stralloc_catc(out, '%');
-      i += vlen;
-      continue;
-    }
-
-    if(i + 2 <= in->len && *p == '$' && str_chr("@^<|", p[1]) < 4) {
-      switch(p[1]) {
-        case '@': {
-          size_t p = out->len;
-          stralloc_cats(out, rule->name);
-          byte_replace(&out->s[p], out->len - p, pathsep_args == '/' ? '\\' : '/', pathsep_args);
-          break;
-        }
-        case '^': {
-          stralloc_catb(out, prereq, plen);
-          break;
-        }
-        case '|': {
-          stralloc_subst(out, prereq, plen, " ", make_sep_inline ? make_sep_inline : "\n ");
-          break;
-        }
-        case '<': {
-          size_t n = byte_chr(prereq, plen, ' ');
-          stralloc_catb(out, prereq, n);
-          break;
-        }
-      }
-      ++i;
-    } else {
-      if(!stralloc_append(out, p))
-        break;
-    }
-  }
-}
-
-/**
- * @brief rule_command
- * @param rule
- * @param out
- */
-void
-rule_command(target* rule, stralloc* out) {
-  size_t len;
-  const char* pfx = 0;
-  char *s, from = pathsep_args == '/' ? '\\' : '/';
-  strlist prereq;
-  strlist_init(&prereq, ' ');
-
-  if(stralloc_contains(&rule->recipe, "-+$^")) {
-    //    pfx = "-+";
-  }
-
-  strlist_foreach(&rule->prereq, s, len) {
-    if(pfx) {
-      strlist_push(&prereq, pfx);
-      stralloc_catb(&prereq.sa, s, len);
-    } else {
-      strlist_pushb(&prereq, s, len);
-    }
-  }
-  //  stralloc_copy(&prereq.sa, &rule->prereq.sa);
-
-  stralloc_replacec(&prereq.sa, from, pathsep_args);
-
-  if(0) { // make_begin_inline == NULL && rule->recipe == &lib_command) {
-    char* x;
-    size_t n = 0;
-    range r;
-    r.start = stralloc_begin(&prereq.sa);
-    r.end = stralloc_end(&prereq.sa);
-    for(; r.start < r.end;) {
-      for(x = r.start;;) {
-        n = strlist_skip(&prereq, x);
-        if(n == 0 || x + n - r.start > 512)
-          break;
-        x += n;
-      }
-      if(out->len) {
-        stralloc_cats(out, newline);
-        stralloc_catc(out, '\t');
-      }
-
-      if(pfx && byte_equal(r.start, str_len(pfx), pfx)) {
-        r.start += 2;
-      }
-
-      n = x - r.start;
-
-      if(n > 0 && r.start[n - 1] == ' ')
-        --n;
-
-      rule_command_subst(rule, out, r.start, n);
-
-      if(r.start + n < r.end && r.start[n] == ' ')
-        ++n;
-
-      r.start += n;
-    }
-  } else if(str_start(tools.make, "g")) {
-    stralloc_copy(out, &rule->recipe);
-  } else {
-    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len);
-  }
-
-  stralloc_free(&prereq.sa);
-}
 
 /**
  * @brief subst_var
@@ -924,6 +796,213 @@ rule_match(target* rule, const char* pattern) {
   }
   stralloc_free(&sa);
   return ret;
+}
+
+/**
+ * @brief rule_command_subst  Get rule command with substitutions
+ * @param rule
+ * @param out
+ * @param prereq
+ * @param plen
+ */
+void
+rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen) {
+  size_t i;
+  stralloc* in = &rule->recipe;
+
+  for(i = 0; i < in->len; ++i) {
+    const char* p = &in->s[i];
+
+    if((shell || batch) && i + 4 <= in->len && *p == '$' && p[1] == '(') {
+      size_t vlen;
+      stralloc_catc(out, shell ? '$' : '%');
+      i += 2;
+      vlen = byte_chr(&in->s[i], in->len - i, ')');
+      stralloc_catb(out, &in->s[i], vlen);
+      if(batch)
+        stralloc_catc(out, '%');
+      i += vlen;
+      continue;
+    }
+
+    if(i + 2 <= in->len && *p == '$' && str_chr("@^<|", p[1]) < 4) {
+      switch(p[1]) {
+        case '@': {
+          size_t p = out->len;
+          stralloc_cats(out, rule->name);
+          byte_replace(&out->s[p], out->len - p, pathsep_args == '/' ? '\\' : '/', pathsep_args);
+          break;
+        }
+        case '^': {
+          stralloc_catb(out, prereq, plen);
+          break;
+        }
+        case '|': {
+          stralloc_subst(out, prereq, plen, " ", make_sep_inline ? make_sep_inline : "\n ");
+          break;
+        }
+        case '<': {
+          size_t n = byte_chr(prereq, plen, ' ');
+          stralloc_catb(out, prereq, n);
+          break;
+        }
+      }
+      ++i;
+    } else {
+      if(!stralloc_append(out, p))
+        break;
+    }
+  }
+}
+
+/**
+ * @brief rule_command
+ * @param rule
+ * @param out
+ */
+void
+rule_command(target* rule, stralloc* out) {
+  size_t len;
+  const char* pfx = 0;
+  char *s, from = pathsep_args == '/' ? '\\' : '/';
+  strlist prereq;
+  strlist_init(&prereq, ' ');
+
+  if(stralloc_contains(&rule->recipe, "-+$^")) {
+    //    pfx = "-+";
+  }
+
+  strlist_foreach(&rule->prereq, s, len) {
+    if(pfx) {
+      strlist_push(&prereq, pfx);
+      stralloc_catb(&prereq.sa, s, len);
+    } else {
+      strlist_pushb(&prereq, s, len);
+    }
+  }
+  //  stralloc_copy(&prereq.sa, &rule->prereq.sa);
+
+  stralloc_replacec(&prereq.sa, from, pathsep_args);
+
+  if(0) { // make_begin_inline == NULL && rule->recipe == &lib_command) {
+    char* x;
+    size_t n = 0;
+    range r;
+    r.start = stralloc_begin(&prereq.sa);
+    r.end = stralloc_end(&prereq.sa);
+    for(; r.start < r.end;) {
+      for(x = r.start;;) {
+        n = strlist_skip(&prereq, x);
+        if(n == 0 || x + n - r.start > 512)
+          break;
+        x += n;
+      }
+      if(out->len) {
+        stralloc_cats(out, newline);
+        stralloc_catc(out, '\t');
+      }
+
+      if(pfx && byte_equal(r.start, str_len(pfx), pfx)) {
+        r.start += 2;
+      }
+
+      n = x - r.start;
+
+      if(n > 0 && r.start[n - 1] == ' ')
+        --n;
+
+      rule_command_subst(rule, out, r.start, n);
+
+      if(r.start + n < r.end && r.start[n] == ' ')
+        ++n;
+
+      r.start += n;
+    }
+  } else if(str_start(tools.make, "g")) {
+    stralloc_copy(out, &rule->recipe);
+  } else {
+    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len);
+  }
+
+  stralloc_free(&prereq.sa);
+}
+
+
+/**
+ * @brief rule_add_dep
+ * @param t
+ * @param other
+ * @return
+ */
+int
+rule_add_dep(target* t, target* other) {
+
+  target** ptr;
+
+  if((ptr = array_find(&t->deps, sizeof(target*), &other)) == NULL) {
+    array_catb(&t->deps, &other, sizeof(other));
+
+    array_foreach_t(&other->deps, ptr) { rule_add_dep(t, *ptr); }
+    return 1;
+  }
+  return 0;
+}
+
+/**
+ * @brief rule_add_deps
+ * @param t
+ * @param deps
+ */
+void
+rule_add_deps(target* t, const strlist* deps) {
+  const char* x;
+  size_t n;
+
+  strlist_foreach(deps, x, n) {
+    target *other, **ptr;
+
+    if(str_len(t->name) == n && !str_diffn(t->name, x, n))
+      continue;
+
+    if((other = rule_find_b(x, n))) {
+      rule_add_dep(t, other);
+    }
+  }
+}
+
+
+/**
+ * @brief rule_dump
+ * @param rule
+ */
+void
+rule_dump(target* rule) {
+#ifdef DEBUG
+  buffer_putm_internal(buffer_2, "Rule '", rule->name, "'\n", 0);
+
+  if(rule->prereq.sa.len) {
+    stralloc_nul(&rule->prereq.sa);
+    buffer_putm_internal(buffer_2, "  prereq: ", rule->prereq.sa.s, "\n", 0);
+  }
+  if(rule->output.sa.len) {
+    stralloc_nul(&rule->output.sa);
+    buffer_putm_internal(buffer_2, "  output: ", rule->output.sa.s, "\n", 0);
+  }
+  if(rule->recipe.len) {
+    stralloc_nul(&rule->recipe);
+    buffer_putm_internal(buffer_2, "  recipe: ", rule->recipe.s, "\n", 0);
+  }
+  if(array_length(&rule->deps, sizeof(target*))) {
+    target** t;
+    buffer_puts(buffer_2, "  deps:");
+    array_foreach_t(&rule->deps, t) {
+      buffer_putspace(buffer_2);
+      buffer_puts(buffer_2, (*t)->name);
+    }
+    buffer_puts(buffer_2, newline);
+  }
+  buffer_putnlflush(buffer_2);
+#endif
 }
 
 /**
@@ -1514,43 +1593,19 @@ includes_to_libs(const strlist* includes, strlist* libs) {
   stralloc_free(&sa);
 }
 
-/**
- * @brief target_ptrs  Given a list of target names, outputs an array of pointers to those targets.
- * @param targets      Target names
- * @param out          Output array
- */
-void
-target_ptrs(const strlist* targets, array* out) {
-  const char* x;
-  size_t n;
-
-  strlist_foreach(targets, x, n) {
-    target* rule;
-
-    if((rule = rule_find_b(x, n))) {
-      if(!array_find(out, sizeof(target*), &rule))
-        array_catb(out, &rule, sizeof(target*));
-    } else {
-      buffer_puts(buffer_2, "ERROR: rule '");
-      buffer_put(buffer_2, x, n);
-      buffer_puts(buffer_2, "' not found");
-      buffer_putnlflush(buffer_2);
-    }
-  }
-}
 
 /**
- * @brief target_dep_list_recursive   Lists all dependencies of a target
+ * @brief rule_dep_list_recursive   Lists all dependencies of a target
  * @param l                           Output target names
  * @param t                           Target
  */
-static uint32 target_dep_serial;
+static uint32 rule_dep_serial;
 
 void
-target_dep_list_recursive(strlist* l, target* t, int depth, strlist* hier) {
+rule_dep_list_recursive(target* t, strlist* l, int depth, strlist* hier) {
   target** ptr;
 
-  t->serial = target_dep_serial;
+  t->serial = rule_dep_serial;
 
   array_foreach_t(&t->deps, ptr) {
     const char* name = (*ptr)->name;
@@ -1561,7 +1616,7 @@ target_dep_list_recursive(strlist* l, target* t, int depth, strlist* hier) {
     if(!strlist_contains(hier, name)) {
 
       strlist_push(hier, name);
-      target_dep_list_recursive(l, *ptr, depth + 1, hier);
+      rule_dep_list_recursive(*ptr, l,  depth + 1, hier);
       strlist_pop(hier);
 
       if(depth >= 0) {
@@ -1573,12 +1628,12 @@ target_dep_list_recursive(strlist* l, target* t, int depth, strlist* hier) {
 }
 
 /**
- * @brief target_dep_list
+ * @brief rule_dep_list
  * @param l
  * @param t
  */
 void
-target_dep_list(strlist* l, target* t) {
+rule_dep_list(target* t, strlist* l) {
 
   strlist hier;
   strlist_init(&hier, '\0');
@@ -1586,9 +1641,9 @@ target_dep_list(strlist* l, target* t) {
 
   strlist_zero(l);
 
-  --target_dep_serial;
+  --rule_dep_serial;
 
-  target_dep_list_recursive(l, t, 0, &hier);
+  rule_dep_list_recursive(t, l, 0, &hier);
   strlist_free(&hier);
 }
 
@@ -1598,7 +1653,7 @@ target_dep_list(strlist* l, target* t) {
  * @param t                  Target
  */
 void
-target_deps_indirect(strlist* l, target* t) {
+rule_deps_indirect(target* t, strlist* l) {
   target** ptr;
   strlist hier;
   strlist_init(&hier, '\0');
@@ -1608,7 +1663,7 @@ target_deps_indirect(strlist* l, target* t) {
 
   array_foreach_t(&t->deps, ptr) {
     if(*ptr)
-      target_dep_list_recursive(l, *ptr, 0, &hier);
+      rule_dep_list_recursive(*ptr, l,  0, &hier);
   }
 
   strlist_removes(l, t->name);
@@ -1631,7 +1686,7 @@ deps_indirect(strlist* l, const strlist* names) {
   strlist_foreach(names, x, n) {
     if((t = rule_find_b(x, n))) {
       strlist_pushb(&hier, x, n);
-      target_dep_list_recursive(l, t, -1, &hier);
+      rule_dep_list_recursive(t, l,  -1, &hier);
       strlist_zero(&hier);
     }
   }
@@ -1654,7 +1709,7 @@ deps_direct(strlist* l, const target* t) {
 }
 
 /**
- * @brief print_target_deps_r
+ * @brief print_rule_deps_r
  * @param b
  * @param t
  * @param deplist
@@ -1662,7 +1717,7 @@ deps_direct(strlist* l, const target* t) {
  * @param depth
  */
 void
-print_target_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, int depth) {
+print_rule_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, int depth) {
   target** ptr;
   size_t l = hierlist->sa.len;
 
@@ -1691,7 +1746,7 @@ print_target_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, i
       put_newline(b, 1);
 
       if(strlist_push_unique(deplist, name))
-        print_target_deps_r(b, (*ptr), deplist, hierlist, depth + 1);
+        print_rule_deps_r(b, (*ptr), deplist, hierlist, depth + 1);
     }
   }
 
@@ -1700,12 +1755,12 @@ print_target_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, i
 }
 
 /**
- * @brief print_target_deps  Prints dependency tree for a target
+ * @brief print_rule_deps  Prints dependency tree for a target
  * @param b                  Output buffer
  * @param t                  Target
  */
 void
-print_target_deps(buffer* b, target* t) {
+print_rule_deps(buffer* b, target* t) {
   const char* s;
   size_t n, nb;
   strlist deplist, hierlist;
@@ -1717,7 +1772,7 @@ print_target_deps(buffer* b, target* t) {
   buffer_putm_internal(b, "# Dependencies for '", t->name, "':", 0);
   buffer_putnlflush(b);
 
-  print_target_deps_r(b, t, &deplist, &hierlist, 0);
+  print_rule_deps_r(b, t, &deplist, &hierlist, 0);
 
   strlist_free(&deplist);
   strlist_free(&hierlist);
@@ -1872,7 +1927,7 @@ deps_for_libs(HMAP_DB* rules) {
       */
       target_ptrs(&libs, &lib->deps);
 
-      // print_target_deps(buffer_2, lib);
+      // print_rule_deps(buffer_2, lib);
 
       strlist_free(&libs);
     }
@@ -1881,43 +1936,26 @@ deps_for_libs(HMAP_DB* rules) {
 }
 
 /**
- * @brief target_add_dep
- * @param t
- * @param other
- * @return
- */
-int
-target_add_dep(target* t, target* other) {
-
-  target** ptr;
-
-  if((ptr = array_find(&t->deps, sizeof(target*), &other)) == NULL) {
-    array_catb(&t->deps, &other, sizeof(other));
-
-    array_foreach_t(&other->deps, ptr) { target_add_dep(t, *ptr); }
-    return 1;
-  }
-  return 0;
-}
-
-/**
- * @brief target_add_deps
- * @param t
- * @param deps
+ * @brief target_ptrs  Given a list of target names, outputs an array of pointers to those targets.
+ * @param targets      Target names
+ * @param out          Output array
  */
 void
-target_add_deps(target* t, const strlist* deps) {
+target_ptrs(const strlist* targets, array* out) {
   const char* x;
   size_t n;
 
-  strlist_foreach(deps, x, n) {
-    target *other, **ptr;
+  strlist_foreach(targets, x, n) {
+    target* rule;
 
-    if(str_len(t->name) == n && !str_diffn(t->name, x, n))
-      continue;
-
-    if((other = rule_find_b(x, n))) {
-      target_add_dep(t, other);
+    if((rule = rule_find_b(x, n))) {
+      if(!array_find(out, sizeof(target*), &rule))
+        array_catb(out, &rule, sizeof(target*));
+    } else {
+      buffer_puts(buffer_2, "ERROR: rule '");
+      buffer_put(buffer_2, x, n);
+      buffer_puts(buffer_2, "' not found");
+      buffer_putnlflush(buffer_2);
     }
   }
 }
@@ -2006,39 +2044,6 @@ gen_clean_rule(HMAP_DB* rules) {
   }
 }
 
-/**
- * @brief rule_dump
- * @param rule
- */
-void
-rule_dump(target* rule) {
-#ifdef DEBUG
-  buffer_putm_internal(buffer_2, "Rule '", rule->name, "'\n", 0);
-
-  if(rule->prereq.sa.len) {
-    stralloc_nul(&rule->prereq.sa);
-    buffer_putm_internal(buffer_2, "  prereq: ", rule->prereq.sa.s, "\n", 0);
-  }
-  if(rule->output.sa.len) {
-    stralloc_nul(&rule->output.sa);
-    buffer_putm_internal(buffer_2, "  output: ", rule->output.sa.s, "\n", 0);
-  }
-  if(rule->recipe.len) {
-    stralloc_nul(&rule->recipe);
-    buffer_putm_internal(buffer_2, "  recipe: ", rule->recipe.s, "\n", 0);
-  }
-  if(array_length(&rule->deps, sizeof(target*))) {
-    target** t;
-    buffer_puts(buffer_2, "  deps:");
-    array_foreach_t(&rule->deps, t) {
-      buffer_putspace(buffer_2);
-      buffer_puts(buffer_2, (*t)->name);
-    }
-    buffer_puts(buffer_2, newline);
-  }
-  buffer_putnlflush(buffer_2);
-#endif
-}
 
 /**
  * @brief gen_srcdir_compile_rules  Generate compile rules for every source file given
@@ -2514,10 +2519,10 @@ gen_link_rules(HMAP_DB* rules) {
 
                 strlist_sub(&libs, &indir);
 
-                target_add_deps(link, &libs);
+                rule_add_deps(link, &libs);
 
                 strlist_zero(&deps);
-                target_dep_list(&deps, link);
+                rule_dep_list(&deps, link);
 
                 //debug_sa("final deps", &deps);
         */
@@ -2537,7 +2542,7 @@ gen_link_rules(HMAP_DB* rules) {
         includes_to_libs(&incs, &libs);
         target_ptrs(&libs, &link->deps);
         strlist_zero(&deps);
-        target_dep_list(&deps, link);
+        rule_dep_list(link, &deps);
 
         strlist_foreach_s(&link_libraries, link_lib) {
           target* lib = rule_find(link_lib);
@@ -2549,7 +2554,7 @@ gen_link_rules(HMAP_DB* rules) {
           strlist_cat(&link->prereq, &deps);
 
 #if 0 // def DEBUG_OUTPUT
-        /*print_target_deps(buffer_2, link);
+        /*print_rule_deps(buffer_2, link);
         buffer_putm_internal(buffer_2, "Deps for executable '", link->name, "': ", 0);
         buffer_putsa(buffer_2, &deps.sa);
         buffer_putnlflush(buffer_2);*/
@@ -2800,7 +2805,7 @@ output_make_rule(buffer* b, target* rule) {
   size_t num_deps = strlist_count(&rule->prereq);
 
   /* if(array_length(&rule->deps, sizeof(target*)))
-     print_target_deps(b, rule);
+     print_rule_deps(b, rule);
   */
 
   if(num_deps == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) &&
@@ -4536,7 +4541,7 @@ main(int argc, char* argv[]) {
     TUPLE* t;
     hmap_foreach(rules, t) {
       target* tgt = hmap_data(t);
-      // print_target_deps(buffer_2, tgt);
+      // print_rule_deps(buffer_2, tgt);
     }
   }
   if(inst_bins || inst_libs)
