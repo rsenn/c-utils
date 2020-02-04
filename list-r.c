@@ -771,11 +771,11 @@ list_dir_internal(stralloc* dir, char type, long depth) {
         stralloc_catb(&pre, " ", 1);
         /* uid */
         s = opt_numeric ? NULL : resolve_etc(&etc_users, uid);
-        s ? make_str(&pre, s, 5) : make_num(&pre, uid, 5);
+        s ? make_str(&pre, s, 8) : make_num(&pre, uid, opt_numeric ? 5 : 8);
         stralloc_catb(&pre, " ", 1);
         /* gid */
         s = opt_numeric ? NULL : resolve_etc(&etc_groups, gid);
-        s ? make_str(&pre, s, 5) : make_num(&pre, gid, 5);
+        s ? make_str(&pre, s, 8) : make_num(&pre, gid, opt_numeric ? 5 : 8);
         stralloc_catb(&pre, " ", 1);
         /* size */
         make_num(&pre, size, 10);
