@@ -379,6 +379,21 @@ make_num(stralloc* out, int32 num, uint32 width) {
 }
 
 static void
+make_time(stralloc* out, uint64 t, uint32 width) {
+  char fmt[21];
+  size_t i, sz = fmt_iso8601(fmt, t);
+  for(i = 0; i + sz < width; i++) stralloc_catc(out, ' ');
+
+  if(sz > 0 && fmt[sz - 1] == 'Z')
+    sz--;
+
+  if(sz > 10 && fmt[10] == 'T')
+    fmt[10] = ' ';
+
+  stralloc_catb(out, fmt, sz);
+}
+
+static void
 print_strarray(buffer* b, array* a) {
   size_t i, n = array_length(a, sizeof(char*));
   char** x = array_start(a);
@@ -406,7 +421,7 @@ fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
   }
   return ret;
 }
-
+/*
 void
 make_time(stralloc* out, time_t t, size_t width) {
   if(opt_numeric) {
@@ -428,7 +443,7 @@ make_time(stralloc* out, time_t t, size_t width) {
     }
     stralloc_catb(out, buf, sz);
   }
-}
+}*/
 
 static void
 mode_octal(stralloc* out, int mode) {
@@ -460,31 +475,40 @@ mode_flags(stralloc* out, int mode) {
     case S_IFREG: break;
   }
 #ifdef S_IRUSR
-  if(mode & S_IRUSR) mchars[1] = 'r';
+  if(mode & S_IRUSR)
+    mchars[1] = 'r';
 #endif
 #ifdef S_IWUSR
-  if(mode & S_IWUSR) mchars[2] = 'w';
+  if(mode & S_IWUSR)
+    mchars[2] = 'w';
 #endif
 #ifdef S_IXUSR
-  if(mode & S_IXUSR) mchars[3] = 'x';
+  if(mode & S_IXUSR)
+    mchars[3] = 'x';
 #endif
 #ifdef S_IRGRP
-  if(mode & S_IRGRP) mchars[4] = 'r';
+  if(mode & S_IRGRP)
+    mchars[4] = 'r';
 #endif
 #ifdef S_IWGRP
-  if(mode & S_IWGRP) mchars[5] = 'w';
+  if(mode & S_IWGRP)
+    mchars[5] = 'w';
 #endif
 #ifdef S_IXGRP
-  if(mode & S_IXGRP) mchars[6] = 'x';
+  if(mode & S_IXGRP)
+    mchars[6] = 'x';
 #endif
 #ifdef S_IROTH
-  if(mode & S_IROTH) mchars[7] = 'r';
+  if(mode & S_IROTH)
+    mchars[7] = 'r';
 #endif
 #ifdef S_IWOTH
-  if(mode & S_IWOTH) mchars[8] = 'w';
+  if(mode & S_IWOTH)
+    mchars[8] = 'w';
 #endif
 #ifdef S_IXOTH
-  if(mode & S_IXOTH) mchars[9] = 'x';
+  if(mode & S_IXOTH)
+    mchars[9] = 'x';
 #endif
 
   if(mode & 04000)
@@ -698,7 +722,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
         make_num(&pre, size, 10);
         stralloc_catb(&pre, " ", 1);
         /* time */
-        make_num(&pre, mtime, 10);
+        opt_numeric ? make_num(&pre, mtime, 10) : make_time(&pre, mtime, 10);
         /*     make_time(&pre, mtime, 10); */
         stralloc_catb(&pre, " ", 1);
       }
