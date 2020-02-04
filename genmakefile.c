@@ -1371,6 +1371,8 @@ populate_sourcedirs(HMAP_DB* sourcedirs) {
       strlist_init(&l, '\0');
 
       path_dirname(*p, &dir);
+      stralloc_nul(&dir);
+
       dlen = dir.len;
 
       // debug_sa("path_dirname(srcfile)", &dir);
@@ -4451,20 +4453,9 @@ main(int argc, char* argv[]) {
 
   populate_sourcedirs(sourcedirs);
 
-  /*    if(no_libs)
-        cmd_libs = 0;
-      if(no_bins)
-        cmd_bins = 0;
-      if(no_objs)
-        cmd_objs = 0;
-  */
-  /*buffer_puts(buffer_2, "pptoks: ");
-  strlist_dump(buffer_2, &pptoks);
-  buffer_putnlflush(buffer_2);
-  */
-#ifdef DEBUG_OUTPUT
+/* #ifdef DEBUG_OUTPUT
   dump_sourcedirs(buffer_2, sourcedirs);
-#endif
+#endif */
   if(cmd_libs) {
     gen_lib_rules(rules, sourcedirs);
 
