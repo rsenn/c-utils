@@ -414,7 +414,7 @@ static char*
 resolve_etc(const strarray* arr, uint32 id) {
   uint64 len = array_length(arr, sizeof(char*));
   if(id >= 0 && id < len)
-    return array_get(arr, sizeof(char*), id);
+    return *(char**)array_get(arr, sizeof(char*), id);
   return 0;
 }
 
@@ -440,6 +440,13 @@ make_time(stralloc* out, uint64 t, uint32 width) {
     fmt[10] = ' ';
 
   stralloc_catb(out, fmt, sz);
+}
+
+static void
+make_str(stralloc* out, const char* s, uint32 width) {
+  size_t i, sz = str_len(s);
+    for(i = 0; i + sz < width; i++) stralloc_catc(out, ' ');
+  stralloc_catb(out, s, sz);
 }
 
 static void
@@ -755,6 +762,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       }
 
       if(opt_list) {
+        const char* s;
         /* Mode string */
         (opt_numeric ? mode_octal : mode_flags)(&pre, mode);
         stralloc_catb(&pre, " ", 1);
@@ -762,10 +770,12 @@ list_dir_internal(stralloc* dir, char type, long depth) {
         make_num(&pre, nlink, 3);
         stralloc_catb(&pre, " ", 1);
         /* uid */
-        make_num(&pre, uid, 5);
+        s = opt_numeric ? NULL : resolve_etc(&etc_users, uid);
+        s ? make_str(&pre, s, 5) : make_num(&pre, uid, 5);
         stralloc_catb(&pre, " ", 1);
         /* gid */
-        make_num(&pre, gid, 5);
+        s = opt_numeric ? NULL : resolve_etc(&etc_groups, gid);
+        s ? make_str(&pre, s, 5) : make_num(&pre, gid, 5);
         stralloc_catb(&pre, " ", 1);
         /* size */
         make_num(&pre, size, 10);
