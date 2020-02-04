@@ -969,30 +969,6 @@ add_path_sa(strlist* list, stralloc* path) {
  * @{
  */
 
-/**
- * @brief new_source  Create new source file entry.
- * @param name
- * @return
- */
-sourcefile*
-new_source(const char* name) {
-  sourcefile* ret;
-
-  if((ret = (sourcefile*)malloc(sizeof(sourcefile)))) {
-    byte_zero(ret, sizeof(sourcefile));
-    ret->name = str_dup(name);
-    ret->has_main = is_source(ret->name) && has_main(ret->name) == 1;
-
-#if DEBUG_OUTPUT
-    if(ret->has_main)
-      debug_s("Source has main()", ret->name);
-#endif
-
-    return ret;
-  }
-  return 0;
-}
-
 int
 is_source(const char* filename) {
   if(str_end(filename, ".c"))
@@ -1048,6 +1024,30 @@ int
 is_object_sa(stralloc* sa) {
   stralloc_nul(sa);
   return is_object(sa->s);
+}
+
+/**
+ * @brief new_source  Create new source file entry.
+ * @param name
+ * @return
+ */
+sourcefile*
+new_source(const char* name) {
+  sourcefile* ret;
+
+  if((ret = (sourcefile*)malloc(sizeof(sourcefile)))) {
+    byte_zero(ret, sizeof(sourcefile));
+    ret->name = str_dup(name);
+    ret->has_main = is_source(ret->name) && has_main(ret->name) == 1;
+
+#if DEBUG_OUTPUT
+    if(ret->has_main)
+      debug_s("Source has main()", ret->name);
+#endif
+
+    return ret;
+  }
+  return 0;
 }
 
 /**
