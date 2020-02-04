@@ -616,7 +616,9 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       const char* exclude;
       int match = 0;
       strlist_foreach_s(&exclude_masks, exclude) {
-        if(fnmatch(exclude, name, FNM_PATHNAME) == 0) {
+        int has_slash = exclude[str_chr(exclude, '/')];
+
+        if(fnmatch(exclude, has_slash ? dir->s : name, FNM_PATHNAME) == 0) {
           match = 1;
           break;
         }
@@ -808,7 +810,10 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'l': opt_list = 1; break;
-      case 'd': scan_long(optarg, &opt_depth);; break;
+      case 'd':
+        scan_long(optarg, &opt_depth);
+        ;
+        break;
       case 'L': opt_deref = 1; break;
       case 'n': opt_numeric = 1; break;
       case 'r': opt_relative = 1; break;

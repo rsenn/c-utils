@@ -34,7 +34,7 @@ main(int argc, char* argv[]) {
       errmsg_warn("error mapping '", argv[i], "': ", 0);
       b.x = 0;
       b.n = 0;
-    //  return 127;
+      //  return 127;
     }
 
     crc = crc32(crc, (const char*)b.x, b.n);
