@@ -35,12 +35,12 @@ rdir_read(rdir_t* d) {
       stralloc_nul(&d->sa);
 
       if(type == D_DIRECTORY) {
-#ifdef DEBUG_OUTPUT
+/* #ifdef DEBUG_OUTPUT
         buffer_puts(buffer_2, "entering ");
         buffer_puts(buffer_2, d->sa.s);
         buffer_putnlflush(buffer_2);
 #endif
-
+ */
         dir_open(&d->dir, d->sa.s);
       } else {
         d->sa.len = len;

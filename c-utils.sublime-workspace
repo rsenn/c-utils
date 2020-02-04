@@ -72,10 +72,10 @@
 	"buffers":
 	[
 		{
-			"contents": "sighandler_t_ref\nsigaction\nsigaction\nsigaction\nsig_catcha\nsig_restore\nsig_action\nsig_blocknone\nsig_blockset\nsig_block\nsig_catch\nsigfpe\nsig_name\nsig_number\nsig_pause\nsig_pop\nsig_pusha\nsig_push\nsig_restoreto\nsigsegv\nsig_shield\nsig_unshield",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 237,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -93,46 +93,10 @@
 			}
 		},
 		{
-			"file": "lib/stralloc.h",
+			"file": "list-r.c",
 			"settings":
 			{
-				"buffer_size": 11956,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/sig.h",
-			"settings":
-			{
-				"buffer_size": 1236,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/pictest/build/mplabx-pic18/blinktest_18f2550_xc8.X/nbproject/configurations.xml",
-			"settings":
-			{
-				"buffer_size": 11477,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "xmltest3.c",
-			"settings":
-			{
-				"buffer_size": 8946,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "/* ISC license. */\n\n#ifndef SIG_H\n#define SIG_H\n\n#include <sys/types.h>\n#include <signal.h>\n#include <skalibs/gccattributes.h>\n\ntypedef void skasighandler_t(int);\ntypedef skasighandler_t* skasighandler_t_ref;\n\nstruct skasigaction {\n  skasighandler_t_ref handler;\n  unsigned int flags : 2;\n};\n\n#define SKASA_MASKALL 0x01\n#define SKASA_NOCLDSTOP 0x02\n\nextern struct skasigaction const SKASIG_DFL;\nextern struct skasigaction const SKASIG_IGN;\nextern int skasigaction(int, struct skasigaction const*, struct skasigaction*);\n\n#define sig_catcha(sig, ac) skasigaction(sig, (ac), 0)\n#define sig_restore(sig) skasigaction((sig), &SKASIG_DFL, 0)\n\nextern void sig_restoreto(sigset_t const*, unsigned int);\nextern int sig_catch(int, skasighandler_t_ref);\n#define sig_ignore(sig) sig_catcha((sig), &SKASIG_IGN)\n#define sig_uncatch(sig) sig_restore(sig)\n\n#define SIGSTACKSIZE 16\nextern int sig_pusha(int, struct skasigaction const*);\nextern int sig_pop(int);\nextern int sig_push(int, skasighandler_t_ref);\n\nextern void sig_block(int);\nextern void sig_blockset(sigset_t const*);\nextern void sig_unblock(int);\nextern void sig_blocknone(void);\nextern void sig_pause(void);\nextern void sig_shield(void);\nextern void sig_unshield(void);\n\nextern char const* sig_name(int);\nextern int sig_number(char const*);\nextern size_t sig0_scan(char const*, int*);\n\n#endif\n",
-			"file": "/home/roman/Dokumente/Sources/skalibs/src/include/skalibs/sig.h",
-			"file_size": 1342,
-			"file_write_time": 132247640666825646,
-			"settings":
-			{
-				"buffer_size": 1342,
+				"buffer_size": 22476,
 				"line_ending": "Unix"
 			}
 		},
@@ -140,62 +104,72 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 112812,
-				"encoding": "UTF-8",
+				"buffer_size": 113084,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Searching 1544 files for \"parent =\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_erase.c:\n    7:   struct critbit_node* parent = 0;\n   20:       parent = (struct critbit_node*)ptr;\n\n/home/roman/Dokumente/Sources/c-utils/lib/var/var_create.c:\n   35:     newvar->parent = oldvar;\n\n/home/roman/Dokumente/Sources/c-utils/lib/var/var_init.c:\n   15:   var->parent = NULL;\n\n/home/roman/Dokumente/Sources/c-utils/lib/vartab/vartab_push.c:\n   15:   vartab->parent = varstack;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_add_child.c:\n    7:   node->parent = parent;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_attrnode.c:\n   12:       attr->children->parent = attr;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c:\n   48:         tnode->parent = *r->ptr;\n   76:         node->parent = r->parent;\n   83:           r->parent = node;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_reader_init.c:\n    8:   r->parent = r->doc;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_remove.c:\n    7:   node->parent = NULL;\n\n/home/roman/Dokumente/Sources/c-utils/liblzma/common/index.c:\n  219:   node->parent = tree->rightmost;\n  260:     if(node->parent == NULL) {\n  267:     pivot->parent = node->parent;\n  271:       node->right->parent = node;\n  274:     node->parent = pivot;\n  332:   s->node.parent = NULL;\n  900:     assert(group->node.parent == NULL);\n\n/home/roman/Dokumente/Sources/c-utils/utils/colorscheme.js:\n   17:           let parent = node.parentElement ? node.parentElement.firstElementChild : null;\n   43:           let parent = node.parentElement ? node.parentElement.firstElementChild : null;\n\n/home/roman/Dokumente/Sources/c-utils/utils/devpane.js:\n  147:     this.parent = Element.find(node);\n  506:       parent = Element.create(\"tr\", { parent });\n  867:     let gparent = rect.boxes ? rect.boxes.parentNode : null;\n\n/home/roman/Dokumente/Sources/c-utils/utils/devtools.js:\n  324:         let parent = node && node.parentNode !== undefined ? node.parentNode : null;\n  339:       prevParent = parent;\n  874:     let parent = null;\n  879:       parent = rect;\n  886:     parent = parent || args.shift() || body;\n  888:     if(typeof parent == \"string\") parent = Element.find(parent);\n\n/home/roman/Dokumente/Sources/c-utils/utils/dom.es5.js:\n 2675:     let parent = args.shift();\n 2684:         parent = props[k];\n 2745:     parent = Element.find(parent);\n 3030:     let parent = element.parentElement ? element.parentElement : element.parentNode;\n 3181:   static factory(delegate = {}, parent = null) {\n 3196:         if(!parent) parent = root;\n 3211:     delegate.bound_factory = (tag, attr = {}, parent = null) => {\n 3244:       const parent = e.parentNode;\n 3445:   static gradient(type, { stops, factory = SVG.create, parent = null, line = false, ...props }) {\n\n/home/roman/Dokumente/Sources/c-utils/utils/dom.js:\n 2798:     let parent = args.shift();\n 2807:         parent = props[k];\n 2867:   static toCommand(elem, parent = \"\") {\n 2888:     if(!parent && global.window) parent = window.document;\n 2894:     parent = Element.find(parent);\n 3182:     let parent = element.parentElement ? element.parentElement : element.parentNode;\n 3333:   static factory(delegate = {}, parent = null) {\n 3348:         if(!parent) parent = root;\n 3363:     delegate.bound_factory = (tag, attr = {}, parent = null) => {\n 3396:       const parent = e.parentNode;\n 3622:   static gradient(type, { stops, factory = SVG.create, parent = null, line = false, ...props }) {\n 3764:       let parent = this.element.parentNode;\n\n/home/roman/Dokumente/Sources/c-utils/utils/lua.js:\n  123:     this.parent = parent;\n\n/home/roman/Dokumente/Sources/c-utils/utils/util.es5.js:\n 1588: Util.traverseTree = function(tree, fn, depth = 0, parent = null) {\n\n/home/roman/Dokumente/Sources/c-utils/utils/util.js:\n 1639: Util.traverseTree = function(tree, fn, depth = 0, parent = null) {\n\n55 matches across 18 files\n\n\nSearching 1544 files for \"r->parent =\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/lib/var/var_create.c:\n   35:     newvar->parent = oldvar;\n\n/home/roman/Dokumente/Sources/c-utils/lib/var/var_init.c:\n   15:   var->parent = NULL;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c:\n   83:           r->parent = node;\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_reader_init.c:\n    8:   r->parent = r->doc;\n\n4 matches across 4 files\n",
+			"contents": "Searching 1567 files for \"entering\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/zlib/inftrees.c:\n   92:      sorted table, and then entering the symbols in order in the sorted\n\n/home/roman/Dokumente/Sources/c-utils/ansi-c.tab.c:\n 1525:   YYDPRINTF((stderr, \"Entering state %d\\n\", yystate));\n\n/home/roman/Dokumente/Sources/c-utils/cparser/ansi-c.tab.c:\n 1644:   YYDPRINTF((stderr, \"Entering state %d\\n\", yystate));\n\n/home/roman/Dokumente/Sources/c-utils/lib/rdir/rdir_read.c:\n   39:         buffer_puts(buffer_2, \"entering \");\n\n/home/roman/Dokumente/Sources/c-utils/lib/unix/win32_popen.c:\n  345:      * error handling code. all detected errors end up here, entering\n\n/home/roman/Dokumente/Sources/c-utils/redir.c:\n  507:                        \"227 Entering Passive Mode (%d,%d,%d,%d,%d,%d)\\n\",\n  573:   syslog(LOG_DEBUG, \"Entering copyloop() - timeout is %d\", timeout_secs);\n\n7 matches across 6 files\n",
 			"settings":
 			{
-				"buffer_size": 4379,
+				"buffer_size": 914,
 				"line_ending": "Unix",
 				"name": "Find Results",
 				"scratch": true
 			}
 		},
 		{
-			"file": "lib/json.h",
+			"file": "lib/rdir/rdir_read.c",
 			"settings":
 			{
-				"buffer_size": 3798,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "xmltest.c",
-			"settings":
-			{
-				"buffer_size": 6273,
+				"buffer_size": 1568,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/xml/xml_print.c",
+			"file": "genmakefile.h",
 			"settings":
 			{
-				"buffer_size": 2187,
-				"encoding": "UTF-8",
+				"buffer_size": 7652,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/xml.h",
+			"file": "lib/strlist.h",
 			"settings":
 			{
-				"buffer_size": 9366,
-				"encoding": "UTF-8",
+				"buffer_size": 4254,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/xml/xml_newnode.c",
+			"file": "lib/mmap/mmap_read.c",
 			"settings":
 			{
-				"buffer_size": 262,
-				"encoding": "UTF-8",
+				"buffer_size": 1252,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "crc.c",
+			"settings":
+			{
+				"buffer_size": 873,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"settings":
+			{
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		}
@@ -228,6 +202,10 @@
 		"selected_items":
 		[
 			[
+				"outline",
+				"Browse Mode: FileBrowser Left, Outline Right"
+			],
+			[
 				"adva",
 				"Package Control: Advanced Install Package"
 			],
@@ -246,10 +224,6 @@
 			[
 				"remove pac",
 				"Package Control: Remove Package"
-			],
-			[
-				"outline",
-				"Browse Mode: Outline (Right)"
 			],
 			[
 				"TOKS",
@@ -439,35 +413,39 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/build",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/tests"
+		"/home/roman/Dokumente/Sources/c-utils"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/wait.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/sig.h",
+		"/home/roman/Dokumente/Sources/pictest/build/mplabx-pic18/blinktest_18f2550_xc8.X/nbproject/configurations.xml",
+		"/home/roman/Dokumente/Sources/c-utils/xmltest3.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/include/skalibs/sig.h",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json.h",
+		"/home/roman/Dokumente/Sources/c-utils/xmltest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_newnode.c",
 		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/.config/sublime-text-3/Packages/RainbowBrackets/README.md",
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/Werror.cmake",
 		"/home/roman/Dokumente/Sources/skalibs/lib/sig.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_callback.c",
 		"/home/roman/Dokumente/Sources/lc-meter/build/mplabx-pic18f/LC_meter_18f2550_xc8.X/nbproject/configurations.xml",
-		"/home/roman/Dokumente/Sources/c-utils/xmltest3.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_attributes.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/alloc.h",
 		"/home/roman/Dokumente/Sources/lc-meter/nbproject/configurations.xml",
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_dump.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Dokumente/Sources/c-utils/xmltest.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_child_element_text.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_child_element_attrs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute_double.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/node_modules/iconv-lite/encodings/tables/cp936.json",
 		"/home/roman/Dokumente/Sources/c-utils/xmltest2.c",
@@ -475,7 +453,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putm_internal.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_element.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_attrnode.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_nonwhitenskip.3",
 		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_infosys.c",
@@ -567,17 +544,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putxlong0.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_xlong.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_xlonglong.c",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-init-brd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_read_buf.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_read_record.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_load_buf.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_record_at.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_xlonglong.c"
 	],
 	"find":
 	{
-		"height": 51.0
+		"height": 41.0
 	},
 	"find_in_files":
 	{
@@ -600,6 +571,54 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"entering",
+			"^set_sys",
+			"^\\s*cfg",
+			"\\.sys",
+			"set_sys",
+			"^\\s*cfg",
+			"cfg",
+			"getopt",
+			"cfg\\.sys",
+			"set_sys",
+			"\\.sys",
+			"cfg",
+			"cfg;",
+			"set_sys",
+			"pathsep_args =",
+			"pathsep_args",
+			"set_system",
+			"pathsep_args",
+			"set_system",
+			"'s'",
+			"set_sys",
+			"\\.os",
+			"mkdir -p",
+			"mkdir",
+			"has_main\\(",
+			"has_main",
+			"dump_sourcedirs",
+			"sourcedirs",
+			"gen_lib_rules",
+			"srcdirs",
+			"srcdir",
+			"sourcedir",
+			"dump_sourcedirs",
+			"exclu",
+			"dump",
+			"strlist_dump",
+			"exclude_masks",
+			"main\\(",
+			"exclude_masks",
+			"'x'",
+			"crc32",
+			"file_crc",
+			"getopt",
+			"file_crc32",
+			"file_crc",
+			"mmap",
+			"opt_crc",
+			"opt_rel",
 			"\\\\\" =",
 			"\\\\\"=",
 			"\\\"=",
@@ -679,55 +698,7 @@
 			"scan_long",
 			"scan_noncharsetnskip",
 			"textnode",
-			"//       ",
-			"\\)$",
-			"\\)\\$",
-			")\\$",
-			"=  xm",
-			"count",
-			"hmap_cout",
-			"count",
-			"num",
-			"attr",
-			"TUPL",
-			"attributes",
-			"hmap_init",
-			"init",
-			"xml_set_attributes",
-			"va_list",
-			"depth",
-			"add_chil",
-			"_textnode",
-			"\\.n",
-			"->n",
-			"doc",
-			"assert",
-			"xml_add",
-			"name",
-			"name;",
-			"xml_dump",
-			"until",
-			"xml_unescape",
-			"whitens",
-			"get_te",
-			"text",
-			"xml_set_",
-			"xml_set",
-			"skip",
-			"whitiens",
-			"text",
-			"whitens",
-			"\\\\n",
-			"\\\\\"",
-			"\\\\\\\\n",
-			"\\\\n",
-			"xml_dump",
-			"depth",
-			"stralloc_remove_all",
-			"remove",
-			"trim",
-			"strip",
-			"hmap"
+			"//       "
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -809,7 +780,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -817,7 +788,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 237,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -827,131 +798,16 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/sig.h",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/rdir/rdir_read.c",
+							"outline_alphabetical": true,
 							"outline_rename_mode": false,
-							"symkeys":
-							[
-								[
-									135,
-									151
-								],
-								[
-									234,
-									243
-								],
-								[
-									331,
-									340
-								],
-								[
-									370,
-									379
-								],
-								[
-									569,
-									579
-								],
-								[
-									622,
-									633
-								],
-								[
-									676,
-									686
-								],
-								[
-									754,
-									767
-								],
-								[
-									780,
-									792
-								],
-								[
-									820,
-									829
-								],
-								[
-									841,
-									850
-								],
-								[
-									885,
-									891
-								],
-								[
-									911,
-									919
-								],
-								[
-									934,
-									944
-								],
-								[
-									969,
-									978
-								],
-								[
-									990,
-									997
-								],
-								[
-									1012,
-									1021
-								],
-								[
-									1065,
-									1073
-								],
-								[
-									1109,
-									1122
-								],
-								[
-									1165,
-									1172
-								],
-								[
-									1185,
-									1195
-								],
-								[
-									1208,
-									1220
-								]
-							],
-							"symlist":
-							[
-								"sighandler_t_ref",
-								"sigaction",
-								"sigaction",
-								"sigaction",
-								"sig_catcha",
-								"sig_restore",
-								"sig_action",
-								"sig_blocknone",
-								"sig_blockset",
-								"sig_block",
-								"sig_catch",
-								"sigfpe",
-								"sig_name",
-								"sig_number",
-								"sig_pause",
-								"sig_pop",
-								"sig_pusha",
-								"sig_push",
-								"sig_restoreto",
-								"sigsegv",
-								"sig_shield",
-								"sig_unshield"
-							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
@@ -975,72 +831,141 @@
 							"auto_indent": false,
 							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
 							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 2,
 							"tab_width": 2,
+							"translate_tabs_to_spaces": true,
 							"word_wrap": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 10,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 1,
-			"sheets":
-			[
+				},
 				{
 					"buffer": 2,
-					"file": "lib/stralloc.h",
+					"file": "list-r.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11956,
+						"buffer_size": 22476,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9979,
-								9979
+								16124,
+								16124
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax"
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4200.0,
+						"translation.y": 11764.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "lib/sig.h",
+					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1236,
+						"buffer_size": 113084,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								152,
-								152
+								68058,
+								68058
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax"
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 61335.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 914,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										144,
+										152
+									],
+									[
+										270,
+										278
+									],
+									[
+										393,
+										401
+									],
+									[
+										525,
+										533
+									],
+									[
+										669,
+										677
+									],
+									[
+										761,
+										769
+									],
+									[
+										835,
+										843
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								529,
+								529
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1050,27 +975,201 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "/home/roman/Dokumente/Sources/pictest/build/mplabx-pic18/blinktest_18f2550_xc8.X/nbproject/configurations.xml",
+					"buffer": 5,
+					"file": "lib/rdir/rdir_read.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11477,
+						"buffer_size": 1568,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4880,
-								4880
+								989,
+								989
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/XML/XML.sublime-syntax",
+							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 315.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "genmakefile.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7652,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								719,
+								719
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 660.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/strlist.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4254,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1151,
+								1151
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 800.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/mmap/mmap_read.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 1252,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								839,
+								839
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 300.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "crc.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 873,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								129,
+								129
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1078,528 +1177,13 @@
 					},
 					"stack_index": 7,
 					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "xmltest3.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8946,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								237,
-								237
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "/home/roman/Dokumente/Sources/skalibs/src/include/skalibs/sig.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1342,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								637,
-								637
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 180.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 112812,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								106020,
-								106020
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 85240.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4379,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										132,
-										140
-									],
-									[
-										157,
-										165
-									],
-									[
-										273,
-										281
-									],
-									[
-										363,
-										371
-									],
-									[
-										460,
-										468
-									],
-									[
-										558,
-										566
-									],
-									[
-										667,
-										675
-									],
-									[
-										768,
-										776
-									],
-									[
-										807,
-										815
-									],
-									[
-										847,
-										855
-									],
-									[
-										940,
-										948
-									],
-									[
-										1033,
-										1041
-									],
-									[
-										1126,
-										1134
-									],
-									[
-										1172,
-										1180
-									],
-									[
-										1208,
-										1216
-									],
-									[
-										1257,
-										1265
-									],
-									[
-										1289,
-										1297
-									],
-									[
-										1322,
-										1330
-									],
-									[
-										1367,
-										1375
-									],
-									[
-										1466,
-										1474
-									],
-									[
-										1562,
-										1570
-									],
-									[
-										1710,
-										1718
-									],
-									[
-										1752,
-										1760
-									],
-									[
-										1811,
-										1819
-									],
-									[
-										1940,
-										1948
-									],
-									[
-										2030,
-										2038
-									],
-									[
-										2062,
-										2070
-									],
-									[
-										2090,
-										2098
-									],
-									[
-										2116,
-										2124
-									],
-									[
-										2178,
-										2186
-									],
-									[
-										2198,
-										2206
-									],
-									[
-										2301,
-										2309
-									],
-									[
-										2339,
-										2347
-									],
-									[
-										2369,
-										2377
-									],
-									[
-										2415,
-										2423
-									],
-									[
-										2531,
-										2539
-									],
-									[
-										2575,
-										2583
-									],
-									[
-										2643,
-										2651
-									],
-									[
-										2682,
-										2690
-									],
-									[
-										2767,
-										2775
-									],
-									[
-										2878,
-										2886
-									],
-									[
-										2916,
-										2924
-									],
-									[
-										2967,
-										2975
-									],
-									[
-										3022,
-										3030
-									],
-									[
-										3059,
-										3067
-									],
-									[
-										3105,
-										3113
-									],
-									[
-										3221,
-										3229
-									],
-									[
-										3265,
-										3273
-									],
-									[
-										3333,
-										3341
-									],
-									[
-										3372,
-										3380
-									],
-									[
-										3457,
-										3465
-									],
-									[
-										3517,
-										3525
-									],
-									[
-										3620,
-										3628
-									],
-									[
-										3752,
-										3760
-									],
-									[
-										3880,
-										3888
-									],
-									[
-										4051,
-										4062
-									],
-									[
-										4141,
-										4152
-									],
-									[
-										4240,
-										4251
-									],
-									[
-										4333,
-										4344
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								4244,
-								4244
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 2,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 2030.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/json.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3798,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2653,
-								2653
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2134.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "xmltest.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6273,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3970,
-								3970
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2340.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "lib/xml/xml_print.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2187,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								705,
-								705
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 240.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "lib/xml.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 9366,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								780,
-								780
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 360.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "lib/xml/xml_newnode.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 262,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								232,
-								232
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
 				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 39.0
+		"height": 29.0
 	},
 	"input":
 	{
@@ -1610,29 +1194,20 @@
 		"cells":
 		[
 			[
-				2,
-				0,
-				3,
-				2
-			],
-			[
 				0,
 				0,
-				2,
-				2
+				1,
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
-			0.2,
-			0.8,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
-			0.5,
 			1.0
 		]
 	},
@@ -1673,7 +1248,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 80.0
+		"height": 54.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1682,6 +1257,30 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"genmakefile.h",
+				"genmakefile.h"
+			],
+			[
+				"genmake",
+				"genmakefile.c"
+			],
+			[
+				"wait.h",
+				"lib/wait.h"
+			],
+			[
+				"strlist",
+				"lib/strlist.h"
+			],
+			[
+				"crc.c",
+				"crc.c"
+			],
+			[
+				"list-r",
+				"list-r.c"
+			],
 			[
 				"xmltest.c",
 				"xmltest.c"
@@ -1891,10 +1490,6 @@
 				"mplab.c"
 			],
 			[
-				"genmakefile.h",
-				"genmakefile.h"
-			],
-			[
 				"genmakefile.c",
 				"genmakefile.c"
 			],
@@ -1921,10 +1516,6 @@
 			[
 				"strlist_pushb",
 				"lib/strlist/strlist_pushb.c"
-			],
-			[
-				"genmake",
-				"genmakefile.h"
 			],
 			[
 				"genmak",
@@ -2151,10 +1742,6 @@
 				"lib/coff/coff_get_strtab.c"
 			],
 			[
-				"strlist",
-				"lib/strlist.h"
-			],
-			[
 				"path_ex",
 				"lib/path/path_exists.c"
 			],
@@ -2181,18 +1768,6 @@
 			[
 				"eagle",
 				"eagle-to-circuit.c"
-			],
-			[
-				"eag",
-				"eagle-to-circuit.c"
-			],
-			[
-				"exam",
-				"build/examples.mk"
-			],
-			[
-				"putspad",
-				"lib/buffer/buffer_putspad.c"
 			]
 		],
 		"width": 0.0
@@ -2215,7 +1790,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 1,
+	"selected_group": 0,
 	"settings":
 	{
 	},
