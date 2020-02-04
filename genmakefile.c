@@ -4168,6 +4168,7 @@ main(int argc, char* argv[]) {
   if(outfile) {
     int fd;
     path_dirname(outfile, &dirs.out.sa);
+    stralloc_replacec(&dirs.out.sa, '\\', pathsep_make);
 
     if(stralloc_equals(&dirs.out.sa, "."))
       stralloc_zero(&dirs.out.sa);
