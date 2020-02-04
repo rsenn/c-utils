@@ -373,12 +373,12 @@ type_mask(const char* arg) {
 }
 
 static size_t
-read_users(strarray* users) {
-  size_t n;
+read_etc(strarray* out, const char* path) {
+  size_t count = 0, n;
   const char* x;
-  strarray_init(users);
-  
-  if((x = mmap_read("/etc/passwd", &n))) {
+  strarray_init(out);
+
+  if((x = mmap_read(path, &n))) {
     while(n > 0) {
       const char* name = x;
       size_t len, namelen = byte_chr(x, n, ':');
@@ -396,7 +396,8 @@ read_users(strarray* users) {
       if(len == n)
         break;
       if(len > 0) {
-        strarray_setb(users, uid, name, namelen);
+        strarray_setb(out, uid, name, namelen);
+        count++;
       }
       len = byte_chr(x, n, '\n');
       if(len == n)
@@ -406,7 +407,15 @@ read_users(strarray* users) {
     }
     mmap_unmap(x, n);
   }
-  return array_length(users, sizeof(char*));
+  return count;
+}
+
+static char*
+resolve_etc(const strarray* arr, uint32 id) {
+  uint64 len = array_length(arr, sizeof(char*));
+  if(id >= 0 && id < len)
+    return array_get(arr, sizeof(char*), id);
+  return 0;
 }
 
 static void
@@ -921,11 +930,15 @@ main(int argc, char* argv[]) {
   }
 
   if(opt_list && !opt_numeric) {
-    size_t num_users = read_users(&etc_users);
+    size_t num_users = read_etc(&etc_users, "/etc/passwd");
+    size_t num_groups = read_etc(&etc_groups, "/etc/group");
 
 
     buffer_puts(buffer_2, "num_users; ");
     buffer_putlong(buffer_2, num_users);
+    buffer_putnlflush(buffer_2);
+    buffer_puts(buffer_2, "num_groups; ");
+    buffer_putlong(buffer_2, num_groups);
     buffer_putnlflush(buffer_2);
   }
   /*
