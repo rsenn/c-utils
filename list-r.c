@@ -608,7 +608,7 @@ list_dir_internal(stralloc* dir, char type) {
 
     if(opt_crc) {
       if(is_dir || dtype != D_FILE || file_crc32(dir->s, &crc)) {
-        stralloc_cats(&pre, "        ");
+        stralloc_cats(&pre, "\t");
       } else {
         stralloc_catxlong(&pre, crc);
         if(pre.len < 8)
