@@ -3146,8 +3146,8 @@ set_system(const char* s) {
     ret = 0;
   }
 
-  pathsep_args = cfg.sys.type == NTOS ? '\\' : '/';
-  pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
+  //pathsep_args = cfg.sys.type == NTOS ? '\\' : '/';
+  //pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
 
   return ret;
 }
@@ -4086,7 +4086,7 @@ main(int argc, char* argv[]) {
 #endif
 
   pathsep_args = WINDOWS_NATIVE ? '\\' : '/';
-  pathsep_make = WINDOWS_NATIVE ? '\\' : '/';
+  pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
 
   strlist_init(&vpath, ' ');
 
