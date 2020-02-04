@@ -33,7 +33,7 @@ static const char* libpfx = DEFAULT_LIBPFX;
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 static const char* comment = "#";
 static const char* cross_compile = "";
-static const char* output_name = NULL;
+static stralloc output_name;
 
 dirs_t dirs;
 static strlist vpath;
@@ -621,7 +621,6 @@ get_includes(const char* srcfile, strlist* includes, int sys) {
   return 0;
 }
 
-
 /**
  * @brief subst_var
  * @param in
@@ -737,7 +736,7 @@ rule_rename(target* rule, const char* name) {
 
   if(out->len > len)
     out->len = len + 1;
-  else 
+  else
     out->len = 0;
 
   stralloc_cats(&rule->output.sa, name);
@@ -929,7 +928,6 @@ rule_command(target* rule, stralloc* out) {
   stralloc_free(&prereq.sa);
 }
 
-
 /**
  * @brief rule_add_dep
  * @param t
@@ -971,7 +969,6 @@ rule_add_deps(target* t, const strlist* deps) {
     }
   }
 }
-
 
 /**
  * @brief rule_dump
@@ -1595,7 +1592,6 @@ includes_to_libs(const strlist* includes, strlist* libs) {
   stralloc_free(&sa);
 }
 
-
 /**
  * @brief rule_dep_list_recursive   Lists all dependencies of a target
  * @param l                           Output target names
@@ -1618,7 +1614,7 @@ rule_dep_list_recursive(target* t, strlist* l, int depth, strlist* hier) {
     if(!strlist_contains(hier, name)) {
 
       strlist_push(hier, name);
-      rule_dep_list_recursive(*ptr, l,  depth + 1, hier);
+      rule_dep_list_recursive(*ptr, l, depth + 1, hier);
       strlist_pop(hier);
 
       if(depth >= 0) {
@@ -1665,7 +1661,7 @@ rule_deps_indirect(target* t, strlist* l) {
 
   array_foreach_t(&t->deps, ptr) {
     if(*ptr)
-      rule_dep_list_recursive(*ptr, l,  0, &hier);
+      rule_dep_list_recursive(*ptr, l, 0, &hier);
   }
 
   strlist_removes(l, t->name);
@@ -1688,7 +1684,7 @@ deps_indirect(strlist* l, const strlist* names) {
   strlist_foreach(names, x, n) {
     if((t = rule_find_b(x, n))) {
       strlist_pushb(&hier, x, n);
-      rule_dep_list_recursive(t, l,  -1, &hier);
+      rule_dep_list_recursive(t, l, -1, &hier);
       strlist_zero(&hier);
     }
   }
@@ -2045,7 +2041,6 @@ gen_clean_rule(HMAP_DB* rules) {
     stralloc_weak(&rule->recipe, &delete_command);
   }
 }
-
 
 /**
  * @brief gen_srcdir_compile_rules  Generate compile rules for every source file given
@@ -2567,13 +2562,17 @@ gen_link_rules(HMAP_DB* rules) {
     }
   }
 
-  if(num_main == 1 && link && output_name) {
+  if(num_main == 1 && link && output_name.len) {
     stralloc oldname;
     size_t pos;
     stralloc_init(&oldname);
     stralloc_copy(&oldname, &link->output.sa);
 
-    rule_rename(link, output_name);
+    if(!stralloc_ends(&output_name, exts.bin))
+      stralloc_cats(&output_name, exts.bin);
+
+    stralloc_nul(&output_name);
+    rule_rename(link, output_name.s);
 
     if((pos = stralloc_find(&all->prereq.sa, &oldname)) < all->prereq.sa.len) {
       stralloc_replace(&all->prereq.sa, pos, oldname.len, link->output.sa.s, link->output.sa.len);
@@ -3146,8 +3145,8 @@ set_system(const char* s) {
     ret = 0;
   }
 
-  //pathsep_args = cfg.sys.type == NTOS ? '\\' : '/';
-  //pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
+  // pathsep_args = cfg.sys.type == NTOS ? '\\' : '/';
+  // pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
 
   return ret;
 }
@@ -3401,7 +3400,8 @@ set_compiler_type(const char* compiler) {
     }
 
     set_command(&lib_command, "$(AR) rcs $@", "$^");
-    // set_command(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
+    // set_command(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS)
+    // $(EXTRA_LIBS)");
     set_command(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS)");
 
     exts.bin = "";
@@ -3499,7 +3499,7 @@ set_compiler_type(const char* compiler) {
 
     make_begin_inline = 0;
     make_end_inline = 0;
-    //push_var("STDC_LIBS", "oldnames.lib");
+    // push_var("STDC_LIBS", "oldnames.lib");
 
     if(cfg.mach.bits == _64) {
       push_var("STDC_LIBS", "ccl64.lib");
@@ -3861,7 +3861,8 @@ set_compiler_type(const char* compiler) {
     push_var("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");*/
 
     stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_C-FLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
+    stralloc_copys(&compile_command,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_C-FLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(
         &link_command,
         "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
@@ -3886,13 +3887,13 @@ set_compiler_type(const char* compiler) {
   }
 
   if(cfg.sys.os == WIN) {
-    //push_lib("EXTRA_LIBS", "advapi32");
+    // push_lib("EXTRA_LIBS", "advapi32");
 
-  /*  if(str_start(compiler, "dmc"))
-      push_lib("EXTRA_LIBS", "wsock32");
-    else
-      push_lib("EXTRA_LIBS", "ws2_32");
-*/
+    /*  if(str_start(compiler, "dmc"))
+        push_lib("EXTRA_LIBS", "wsock32");
+      else
+        push_lib("EXTRA_LIBS", "ws2_32");
+  */
     push_lib("EXTRA_LIBS", "kernel32");
   }
   if(cygming) {
@@ -4117,7 +4118,7 @@ main(int argc, char* argv[]) {
       case 'P': tools.preproc = optarg; break;
       case 'a': set_machine(optarg); break;
       case 's': set_system(optarg); break;
-      case 'n': output_name = optarg; break;
+      case 'n': stralloc_copys(&output_name, optarg); break;
       case 'p':
         if(optarg)
           set_chip(optarg);
