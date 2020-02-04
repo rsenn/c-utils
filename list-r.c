@@ -337,12 +337,11 @@ is_junction_point(const char* fn) {
 #endif
 static int list_dir_internal(stralloc* dir, char type, long depth);
 static void
-make_num(stralloc* out, uint32 num, uint32 width) {
+make_num(stralloc* out, int32 num, uint32 width) {
   char fmt[FMT_ULONG + 1];
-  size_t sz = fmt_uint(fmt, num);
+  size_t sz = fmt_int(fmt, num);
   ssize_t n = width - sz;
-  while(n-- > 0)
-    stralloc_catb(out, " ", 1);
+  while(n-- > 0) stralloc_catb(out, " ", 1);
   stralloc_catb(out, fmt, sz);
 }
 
@@ -528,10 +527,12 @@ list_dir_internal(stralloc* dir, char type, long depth) {
   uint32 crc;
   const char* exclude;
 #if !WINDOWS_NATIVE
-  struct stat st;
   static dev_t root_dev;
 #endif
   char *name, *s;
+  struct stat st;
+  byte_zero(&st, sizeof(st));
+
   (void)type;
   while(dir->len > 1 && IS_DIRSEP(dir->s[dir->len - 1])) dir->len--;
   stralloc_nul(dir);
@@ -541,7 +542,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       root_dev = st.st_dev;
     }
   }
-#endif  
+#endif
   if(dir_open(&d, dir->s) != 0) {
     buffer_puts(buffer_2, "ERROR: Opening directory ");
     buffer_putsa(buffer_2, dir);
@@ -554,8 +555,15 @@ list_dir_internal(stralloc* dir, char type, long depth) {
   l = dir->len;
   while((name = dir_read(&d))) {
     int match = 0;
-    uint32 mode = 0, nlink = 0, uid = 0, gid = 0;
-    uint64 size = 0, mtime = 0;
+    uint64 mtime = 0;
+#if !WINDOWS_NATIVE
+    nlink_t nlink = 0;
+    uid_t uid = 0;
+    gid_t gid = 0;
+    off_t size = 0;
+    mode_t mode = 0;
+    byte_zero(&st, sizeof(st));
+#endif
     dtype = dir_type(&d);
     dir->len = l;
     if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, "..")) {
@@ -573,8 +581,15 @@ list_dir_internal(stralloc* dir, char type, long depth) {
         }
       }
     }
+    nlink = is_dir ? st.st_nlink : 1;
+    mode = st.st_mode;
+    uid = st.st_uid;
+    gid = st.st_gid;
+    size = is_dir ? st.st_size : 0;
+    mtime = st.st_mtime;
+
 #endif
-#if !WINDOWS_NATIVE
+#if 0 //! WINDOWS_NATIVE
     if(S_ISLNK(st.st_mode)) {
       stat(dir->s, &st);
     }
@@ -591,14 +606,9 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     }
     if(dtype & D_SYMLINK)
       is_symlink = 1;
-#if !WINDOWS_NATIVE
-    nlink = is_dir ? st.st_nlink : 1;
-    uid = st.st_uid;
-    gid = st.st_gid;
-    size = st.st_size;
-    mtime = st.st_mtime;
-#else
+
     mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
+#if WINDOWS_NATIVE
 #if USE_READDIR
     if(!is_dir) {
       size = dir_size(&d); /* dir_INTERNAL(&d)->dir_entry->d_name); */
