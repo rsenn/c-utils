@@ -88,6 +88,7 @@ static char opt_separator = DIRSEP_C;
 
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_crc = 0;
 static unsigned long opt_minsize = 0;
+static long opt_depth = -1;
 static const char* opt_relative_to = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 #if(defined(_WIN32) || defined(MINGW)) && !defined(__MSYS__)
@@ -334,7 +335,7 @@ is_junction_point(const char* fn) {
 }
 
 #endif
-static int list_dir_internal(stralloc* dir, char type);
+static int list_dir_internal(stralloc* dir, char type, long depth);
 static void
 make_num(stralloc* out, size_t num, size_t width) {
   char fmt[FMT_ULONG + 1];
@@ -502,9 +503,13 @@ crc32(uint32 crc, const char* data, size_t size) {
 }
 
 static int
-file_crc32(const char* path, uint32* crc) {
+file_crc32(const char* path, size_t size, uint32* crc) {
   size_t n;
   const char* x;
+  if(size == 0) {
+    *crc = 0;
+    return 0;
+  }
   if((x = mmap_read(path, &n))) {
     *crc = crc32(0, x, n);
     mmap_unmap(x, n);
@@ -514,7 +519,7 @@ file_crc32(const char* path, uint32* crc) {
 }
 
 int
-list_dir_internal(stralloc* dir, char type) {
+list_dir_internal(stralloc* dir, char type, long depth) {
   size_t l;
   struct dir_s d;
   static stralloc pre;
@@ -622,7 +627,7 @@ list_dir_internal(stralloc* dir, char type) {
     stralloc_zero(&pre);
 
     if(opt_crc) {
-      if(is_dir || dtype != D_FILE || file_crc32(dir->s, &crc)) {
+      if(dtype != D_FILE || file_crc32(dir->s, size, &crc)) {
         stralloc_cats(&pre, "\t");
       } else {
         stralloc_catxlong(&pre, crc);
@@ -694,7 +699,8 @@ list_dir_internal(stralloc* dir, char type) {
 
     if(is_dir && (opt_deref || !is_symlink)) {
       dir->len--;
-      list_dir_internal(dir, 0);
+      if(opt_depth == -1 || depth + 1 < opt_depth)
+        list_dir_internal(dir, 0, depth + 1);
     }
   }
 end:
@@ -744,6 +750,7 @@ usage(char* argv0) {
                        "  -m, --min-size   BYTES    minimum file size\n",
                        "  -L, --dereference         dereference symlinks\n",
                        "  -c, --crc                 cyclic redundancy check\n",
+                       "  -d, --depth      NUM      max depth\n",
                        0);
   buffer_putnlflush(buffer_1);
 }
@@ -766,6 +773,7 @@ main(int argc, char* argv[]) {
     {"dereference", 0, &opt_deref, 1},
     {"min-size", 1, 0, 'm'},
     {"crc", 1, 0, 'c'},
+    {"depth", 1, 0, 'd'},
 #if WINDOWS
     {"separator", 1, 0, 's'},
 #endif
@@ -778,7 +786,7 @@ main(int argc, char* argv[]) {
   strlist_init(&exclude_masks, '\0');
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlLnro:x:t:m:c", opts, &index);
+    c = getopt_long(argc, argv, "hlLnro:x:t:m:cd:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -800,6 +808,7 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'l': opt_list = 1; break;
+      case 'd': scan_long(optarg, &opt_depth);; break;
       case 'L': opt_deref = 1; break;
       case 'n': opt_numeric = 1; break;
       case 'r': opt_relative = 1; break;
@@ -836,12 +845,12 @@ main(int argc, char* argv[]) {
       if(opt_relative)
         opt_relative_to = argv[optind];
       stralloc_copys(&dir, argv[optind]);
-      list_dir_internal(&dir, 0);
+      list_dir_internal(&dir, 0, 0);
       optind++;
     }
   } else {
     stralloc_copys(&dir, ".");
-    list_dir_internal(&dir, 0);
+    list_dir_internal(&dir, 0, 0);
   }
   return 0;
 }

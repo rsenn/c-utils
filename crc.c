@@ -32,7 +32,9 @@ main(int argc, char* argv[]) {
 
     if(buffer_mmapread(&b, argv[i]) == -1) {
       errmsg_warn("error mapping '", argv[i], "': ", 0);
-      return 127;
+      b.x = 0;
+      b.n = 0;
+    //  return 127;
     }
 
     crc = crc32(crc, (const char*)b.x, b.n);
