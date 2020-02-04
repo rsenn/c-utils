@@ -89,6 +89,7 @@ static char opt_separator = DIRSEP_C;
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_crc = 0;
 static unsigned long opt_minsize = 0;
 static long opt_depth = -1;
+static uint32 opt_types = (uint32)(int32)-1;
 static const char* opt_relative_to = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 #if(defined(_WIN32) || defined(MINGW)) && !defined(__MSYS__)
@@ -336,6 +337,26 @@ is_junction_point(const char* fn) {
 
 #endif
 static int list_dir_internal(stralloc* dir, char type, long depth);
+
+static uint32
+type_mask(const char* arg) {
+  size_t i;
+  uint32 mask = 0;
+  for(i = 0; arg[i]; i++) {
+    switch(arg[i]) {
+      case 'f': mask |= D_FILE; break;
+      case 'd': mask |= D_DIRECTORY; break;
+      case 'l': mask |= D_SYMLINK; break;
+      case 'b': mask |= D_BLKDEV; break;
+      case 'c': mask |= D_CHARDEV; break;
+      case 'p': mask |= D_PIPE; break;
+      case 's': mask |= D_SOCKET; break;
+      default: break;
+    }
+  }
+  return mask;
+}
+
 static void
 make_num(stralloc* out, int32 num, uint32 width) {
   char fmt[FMT_ULONG + 1];
@@ -521,7 +542,6 @@ list_dir_internal(stralloc* dir, char type, long depth) {
   size_t l;
   struct dir_s d;
   static stralloc pre;
-  int dtype;
   int is_dir, is_symlink;
   size_t len;
   uint32 crc;
@@ -554,7 +574,8 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     stralloc_cats(dir, DIRSEP_S);
   l = dir->len;
   while((name = dir_read(&d))) {
-    int match = 0;
+    int match = 0, show = 1;
+    dir_type_t dtype;
     uint64 mtime = 0;
 #if !WINDOWS_NATIVE
     nlink_t nlink = 0;
@@ -620,11 +641,11 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     if(is_dir)
       stralloc_catc(dir, opt_separator);
 
-    if(dir->len > MAX_PATH) {
+    if(dir->len > PATH_MAX) {
       buffer_puts(buffer_2, "ERROR: Directory ");
       buffer_putsa(buffer_2, dir);
-      buffer_puts(buffer_2, " longer than MAX_PATH (" STRINGIFY(MAX_PATH) ")!\n");
-      /*buffer_putulong(buffer_2, MAX_PATH);
+      buffer_puts(buffer_2, " longer than PATH_MAX (" STRINGIFY(PATH_MAX) ")!\n");
+      /*buffer_putulong(buffer_2, PATH_MAX);
       buffer_puts(buffer_2, ")!\n");*/
       buffer_flush(buffer_2);
       goto end;
@@ -648,61 +669,70 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     if(match)
       continue;
 
-    stralloc_zero(&pre);
+    if(!is_dir && (opt_minsize != -1 && size < opt_minsize))
+      show = 0;
 
-    if(opt_crc) {
-      if(dtype != D_FILE || file_crc32(dir->s, size, &crc)) {
-        stralloc_cats(&pre, "\t");
-      } else {
-        stralloc_catxlong(&pre, crc);
-        if(pre.len < 8)
-          stralloc_insertb(&pre, "00000000", 0, 8 - pre.len);
+    if(dtype && (dtype & opt_types) == 0)
+      show = 0;
+
+    if(show) {
+
+      stralloc_zero(&pre);
+
+      if(opt_crc) {
+        if(dtype != D_FILE || file_crc32(dir->s, size, &crc)) {
+          stralloc_cats(&pre, "\t");
+        } else {
+          stralloc_catxlong(&pre, crc);
+          if(pre.len < 8)
+            stralloc_insertb(&pre, "00000000", 0, 8 - pre.len);
+        }
+        stralloc_catc(&pre, ' ');
       }
-      stralloc_catc(&pre, ' ');
-    }
 
-    if(opt_list && (is_dir || size >= opt_minsize)) {
-      /* Mode string */
-      mode_str(&pre, mode);
-      stralloc_catb(&pre, " ", 1);
-      /* num links */
-      make_num(&pre, nlink, 3);
-      stralloc_catb(&pre, " ", 1);
-      /* uid */
-      make_num(&pre, uid, 0);
-      stralloc_catb(&pre, " ", 1);
-      /* gid */
-      make_num(&pre, gid, 0);
-      stralloc_catb(&pre, " ", 1);
-      /* size */
-      make_num(&pre, size, 6);
-      stralloc_catb(&pre, " ", 1);
-      /* time */
-      make_num(&pre, mtime, 0);
-      /*     make_time(&pre, mtime, 10); */
-      stralloc_catb(&pre, " ", 1);
-    }
-    /* fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d)); */
+      if(opt_list && (is_dir || size >= opt_minsize)) {
+        /* Mode string */
+        mode_str(&pre, mode);
+        stralloc_catb(&pre, " ", 1);
+        /* num links */
+        make_num(&pre, nlink, 3);
+        stralloc_catb(&pre, " ", 1);
+        /* uid */
+        make_num(&pre, uid, 0);
+        stralloc_catb(&pre, " ", 1);
+        /* gid */
+        make_num(&pre, gid, 0);
+        stralloc_catb(&pre, " ", 1);
+        /* size */
+        make_num(&pre, size, 6);
+        stralloc_catb(&pre, " ", 1);
+        /* time */
+        make_num(&pre, mtime, 0);
+        /*     make_time(&pre, mtime, 10); */
+        stralloc_catb(&pre, " ", 1);
+      }
+      /* fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d)); */
 
-    if(pre.len > 0 && (is_dir || size >= opt_minsize))
-      buffer_putsa(buffer_1, &pre);
+      if(pre.len > 0)
+        buffer_putsa(buffer_1, &pre);
 
-    if(opt_relative_to) {
-      size_t sz = str_len(opt_relative_to);
-      if(str_diffn(s, opt_relative_to, sz) == 0) {
-        s += sz;
-        len -= sz;
-        while(*s == '\\' || *s == '/') {
-          s++;
-          len--;
+      if(opt_relative_to) {
+        size_t sz = str_len(opt_relative_to);
+        if(str_diffn(s, opt_relative_to, sz) == 0) {
+          s += sz;
+          len -= sz;
+          while(*s == '\\' || *s == '/') {
+            s++;
+            len--;
+          }
         }
       }
-    }
 
-    if(is_dir || size >= opt_minsize) {
-      buffer_put(buffer_1, s, len);
-      buffer_put(buffer_1, "\n", 1);
-      buffer_flush(buffer_1);
+      if(is_dir || size >= opt_minsize) {
+        buffer_put(buffer_1, s, len);
+        buffer_put(buffer_1, "\n", 1);
+        buffer_flush(buffer_1);
+      }
     }
 
     if(is_dir && (opt_deref || !is_symlink)) {
@@ -759,6 +789,12 @@ usage(char* argv0) {
                        "  -L, --dereference         dereference symlinks\n",
                        "  -c, --crc                 cyclic redundancy check\n",
                        "  -d, --depth      NUM      max depth\n",
+                       "  -f, --types      TYPES    filter by type:\n"
+                       "\n"
+                       "    d = directory, b = block dev s = socket\n"
+                       "    f = file,      c = char dev\n"
+                       "    l = symlink,   p = pipe (fifo)\n"
+                       "\n",
                        0);
   buffer_putnlflush(buffer_1);
 }
@@ -782,6 +818,7 @@ main(int argc, char* argv[]) {
     {"min-size", 1, 0, 'm'},
     {"crc", 1, 0, 'c'},
     {"depth", 1, 0, 'd'},
+    {"filter-type", 1, 0, 'f'},
 #if WINDOWS
     {"separator", 1, 0, 's'},
 #endif
@@ -794,7 +831,7 @@ main(int argc, char* argv[]) {
   strlist_init(&exclude_masks, '\0');
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlLnro:x:t:m:cd:", opts, &index);
+    c = getopt_long(argc, argv, "hlLnro:x:t:m:cd:f:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -811,6 +848,7 @@ main(int argc, char* argv[]) {
         opt_timestyle = optarg;
         break;
       }
+      case 'f': opt_types = type_mask(optarg); break;
       case 's': {
         opt_separator = optarg[0];
         break;

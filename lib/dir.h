@@ -17,7 +17,7 @@ extern "C" {
 #define IS_DIRSEP(c) ((c) == '/')
 #endif
 
-enum {
+typedef enum dir_type {
   D_PIPE = 0x01,
   D_CHARDEV = 0x02,
   D_BLKDEV = 0x04,
@@ -25,7 +25,7 @@ enum {
   D_DIRECTORY = 0x10,
   D_FILE = 0x20,
   D_SOCKET = 0x40,
-};
+} dir_type_t;
 
 enum {
   D_TIME_CREATION,
