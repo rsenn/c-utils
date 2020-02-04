@@ -527,6 +527,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
   int is_dir, is_symlink;
   size_t len;
   uint32 crc;
+  const char* exclude;
 #if !WINDOWS_NATIVE
   struct stat st;
   static dev_t root_dev;
@@ -553,6 +554,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     stralloc_cats(dir, DIRSEP_S);
   l = dir->len;
   while((name = dir_read(&d))) {
+    int match = 0;
     unsigned int mode = 0, nlink = 0, uid = 0, gid = 0;
     uint64 size = 0, mtime = 0;
     dtype = dir_type(&d);
@@ -611,27 +613,37 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     mtime = dir_time(&d, D_TIME_MODIFICATION);
 #endif
 #endif
+    if(is_dir)
+      stralloc_catc(dir, opt_separator);
+
+    if(dir->len > MAX_PATH) {
+      buffer_puts(buffer_2, "ERROR: Directory ");
+      buffer_putsa(buffer_2, dir);
+      buffer_puts(buffer_2, " longer than MAX_PATH (" STRINGIFY(MAX_PATH) ")!\n");
+      /*buffer_putulong(buffer_2, MAX_PATH);
+      buffer_puts(buffer_2, ")!\n");*/
+      buffer_flush(buffer_2);
+      goto end;
+    }
+
     s = dir->s;
     len = dir->len;
-    if(len >= 2 && s[0] == '.' && IS_DIRSEP(s[1])) {
+    if(len > 2 && s[0] == '.' && IS_DIRSEP(s[1])) {
       len -= 2;
       s += 2;
     }
 
-    {
-      const char* exclude;
-      int match = 0;
-      strlist_foreach_s(&exclude_masks, exclude) {
-        int has_slash = !!exclude[str_chr(exclude, '/')];
+    strlist_foreach_s(&exclude_masks, exclude) {
+      int has_slash = !!exclude[str_chr(exclude, '/')];
 
-        if(fnmatch(exclude, has_slash ? s : name, FNM_PATHNAME) == 0) {
-          match = 1;
-          break;
-        }
+      if(fnmatch(exclude, has_slash ? s : name, FNM_PATHNAME) == 0) {
+        match = 1;
+        break;
       }
-      if(match)
-        continue;
     }
+    if(match)
+      continue;
+
     stralloc_zero(&pre);
 
     if(opt_crc) {
@@ -650,7 +662,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       mode_str(&pre, mode);
       stralloc_catb(&pre, " ", 1);
       /* num links */
-      make_num(&pre, dtype == D_DIRECTORY ? nlink : 1, 3);
+      make_num(&pre, is_dir ? nlink : 1, 3);
       stralloc_catb(&pre, " ", 1);
       /* uid */
       make_num(&pre, uid, 0);
@@ -667,17 +679,6 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       stralloc_catb(&pre, " ", 1);
     }
     /* fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d)); */
-    if(is_dir)
-      stralloc_catc(dir, opt_separator);
-    if(dir->len > MAX_PATH) {
-      buffer_puts(buffer_2, "ERROR: Directory ");
-      buffer_putsa(buffer_2, dir);
-      buffer_puts(buffer_2, " longer than MAX_PATH (" STRINGIFY(MAX_PATH) ")!\n");
-      /*buffer_putulong(buffer_2, MAX_PATH);
-      buffer_puts(buffer_2, ")!\n");*/
-      buffer_flush(buffer_2);
-      goto end;
-    }
 
     if(pre.len > 0 && (is_dir || size >= opt_minsize))
       buffer_putsa(buffer_1, &pre);
