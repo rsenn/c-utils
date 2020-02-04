@@ -683,7 +683,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     mode = st.st_mode;
     uid = st.st_uid;
     gid = st.st_gid;
-    size = is_dir ? 0 : st.st_size;
+    size = st.st_size;
     mtime = st.st_mtime;
 
 #else
