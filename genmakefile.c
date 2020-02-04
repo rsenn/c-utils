@@ -4027,10 +4027,10 @@ main(int argc, char* argv[]) {
   byte_zero(&srcs, sizeof(srcs));
   byte_zero(&tools, sizeof(tools));
 
-#if defined(__linux__) || defined(__unix__)
-  cfg.sys.os = LINUX;
-#elif defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64) || WINDOWS_NATIVE
   cfg.sys.os = WIN;
+#elif defined(__linux__) || defined(__unix__)
+  cfg.sys.os = LINUX;
 #elif defined(__APPLE__)
   cfg.sys.os = MAC;
 #endif
