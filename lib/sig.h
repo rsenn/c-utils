@@ -3,6 +3,11 @@
 
 #include <sys/types.h>
 #include <signal.h>
+#include "windoze.h"
+
+#if WINDOWS_NATIVE
+#define sigset_t _sigset_t
+#endif
 
 typedef void sighandler_t_fn(int);
 typedef sighandler_t_fn* sighandler_t_ref;
