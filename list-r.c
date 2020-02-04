@@ -611,14 +611,20 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     mtime = dir_time(&d, D_TIME_MODIFICATION);
 #endif
 #endif
+    s = dir->s;
+    len = dir->len;
+    if(len >= 2 && s[0] == '.' && IS_DIRSEP(s[1])) {
+      len -= 2;
+      s += 2;
+    }
 
     {
       const char* exclude;
       int match = 0;
       strlist_foreach_s(&exclude_masks, exclude) {
-        int has_slash = exclude[str_chr(exclude, '/')];
+        int has_slash = !!exclude[str_chr(exclude, '/')];
 
-        if(fnmatch(exclude, has_slash ? dir->s : name, FNM_PATHNAME) == 0) {
+        if(fnmatch(exclude, has_slash ? s : name, FNM_PATHNAME) == 0) {
           match = 1;
           break;
         }
@@ -672,12 +678,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       buffer_flush(buffer_2);
       goto end;
     }
-    s = dir->s;
-    len = dir->len;
-    if(len >= 2 && s[0] == '.' && IS_DIRSEP(s[1])) {
-      len -= 2;
-      s += 2;
-    }
+
     if(pre.len > 0 && (is_dir || size >= opt_minsize))
       buffer_putsa(buffer_1, &pre);
 
