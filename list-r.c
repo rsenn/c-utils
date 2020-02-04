@@ -542,7 +542,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       root_dev = st.st_dev;
     }
   }
-#endif
+#endif  
   if(dir_open(&d, dir->s) != 0) {
     buffer_puts(buffer_2, "ERROR: Opening directory ");
     buffer_putsa(buffer_2, dir);
@@ -593,7 +593,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     if(dtype & D_SYMLINK)
       is_symlink = 1;
 #if !WINDOWS_NATIVE
-    nlink = st.st_nlink;
+    nlink = is_dir ? st.st_nlink : 1;
     uid = st.st_uid;
     gid = st.st_gid;
     size = st.st_size;
@@ -662,7 +662,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       mode_str(&pre, mode);
       stralloc_catb(&pre, " ", 1);
       /* num links */
-      make_num(&pre, is_dir ? nlink : 1, 3);
+      make_num(&pre, nlink, 3);
       stralloc_catb(&pre, " ", 1);
       /* uid */
       make_num(&pre, uid, 0);
