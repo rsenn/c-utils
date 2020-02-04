@@ -2403,7 +2403,7 @@ gen_link_rules(HMAP_DB* rules) {
     stralloc_zero(&ppsrc);
     stralloc_zero(&obj);
 
-    if(has_main(srcfile) == 1) {
+    if(is_source(srcfile) && has_main(srcfile)) {
 
       path_dirname(srcfile, &dir);
       srcdir = get_sourcedir_sa(&dir);
