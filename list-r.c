@@ -484,7 +484,22 @@ mode_str(stralloc* out, int mode) {
   stralloc_catb(out, mchars, sizeof(mchars));
 }
 
-uint32 crc32(uint32 crc, const char* data, size_t size);
+uint32
+crc32(uint32 crc, const char* data, size_t size) {
+  uint32 i, r = ~0;
+  const char* end = data + size;
+
+  while(data < end) {
+    r ^= *data++;
+
+    for(i = 0; i < 8; i++) {
+      uint32 t = ~((r & 1) - 1);
+      r = (r >> 1) ^ (0xedb88320 & t);
+    }
+  }
+
+  return ~r;
+}
 
 static int
 file_crc32(const char* path, uint32* crc) {
@@ -506,7 +521,7 @@ list_dir_internal(stralloc* dir, char type) {
   int dtype;
   int is_dir, is_symlink;
   size_t len;
-        uint32 crc;
+  uint32 crc;
 #if !WINDOWS_NATIVE
   struct stat st;
   static dev_t root_dev;

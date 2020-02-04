@@ -23,8 +23,7 @@ static const char* palette[16] = {"#000000",
                                   "#ff55ff",
                                   "#aa5500",
                                   "#ffff55",
-                                  "#aaaaaa"
-                                  };
+                                  "#aaaaaa"};
 
 static buffer input, output;
 static xmlnodeset nodeset;

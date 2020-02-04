@@ -348,7 +348,10 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
   }
-  qsort(array_start(&n->contacts), array_length(&n->contacts, sizeof(struct ref)), sizeof(struct ref), (cmp_fn_t*)&compare_ref);
+  qsort(array_start(&n->contacts),
+        array_length(&n->contacts, sizeof(struct ref)),
+        sizeof(struct ref),
+        (cmp_fn_t*)&compare_ref);
 }
 
 /**

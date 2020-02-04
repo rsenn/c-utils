@@ -19,7 +19,7 @@ crc32(uint32 crc, const char* data, size_t size) {
   return ~r;
 }
 
-#ifdef CRC_MAIN
+#if 1
 int
 main(int argc, char* argv[]) {
   int i;

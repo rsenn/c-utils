@@ -441,7 +441,7 @@ add_program(ar-wrap process errmsg env buffer path dir strarray strlist stralloc
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
 add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
 add_program(tcping map unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
-#add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
+add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
 
 add_program(jsonpp json errmsg unix)

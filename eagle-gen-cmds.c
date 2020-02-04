@@ -1464,7 +1464,7 @@ main(int argc, char* argv[]) {
       rect extent;
       int num_aligned = 0;
 
-      //libraries = xml_find_element(doc, "libraries");
+      // libraries = xml_find_element(doc, "libraries");
 
       stralloc_init(&layer_str);
 
@@ -1489,7 +1489,7 @@ main(int argc, char* argv[]) {
         xmlnode* node = xmlnodeset_iter_ref(it);
         double x1, x2, y1, y2;
 
-        //if(xml_has_attribute(node, "layer")) layer = xml_get_attribute(node, "layer");
+        // if(xml_has_attribute(node, "layer")) layer = xml_get_attribute(node, "layer");
 
         if(do_align_coords) {
 
