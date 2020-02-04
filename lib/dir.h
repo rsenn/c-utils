@@ -18,9 +18,13 @@ extern "C" {
 #endif
 
 enum {
-  D_FILE = 0x20,
-  D_DIRECTORY = 0x10,
+  D_PIPE = 0x01,
+  D_CHARDEV = 0x02,
+  D_BLKDEV = 0x04,
   D_SYMLINK = 0x08,
+  D_DIRECTORY = 0x10,
+  D_FILE = 0x20,
+  D_SOCKET = 0x40,
 };
 
 enum {

@@ -506,6 +506,7 @@ list_dir_internal(stralloc* dir, char type) {
   int dtype;
   int is_dir, is_symlink;
   size_t len;
+        uint32 crc;
 #if !WINDOWS_NATIVE
   struct stat st;
   static dev_t root_dev;
@@ -606,8 +607,7 @@ list_dir_internal(stralloc* dir, char type) {
     stralloc_zero(&pre);
 
     if(opt_crc) {
-      uint32 crc;
-      if(is_dir || file_crc32(dir->s, &crc)) {
+      if(is_dir || dtype != D_FILE || file_crc32(dir->s, &crc)) {
         stralloc_cats(&pre, "        ");
       } else {
         stralloc_catxlong(&pre, crc);
