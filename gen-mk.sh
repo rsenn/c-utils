@@ -13,8 +13,12 @@ PROGRAMS="ar-wrap.c binfmttest.c bsdiffcat.c buffertest.c ccat.c cc-wrap.c cmake
 
 MODULES="alloc,array,binfmt,buffer,byte,case,cb,cbmap,charbuf,coff,dir,dns,elf,env,errmsg,expand,fmt,gpio,hashmap,hmap,http,iarray,ihex,io,json,list,map,mmap,ndelay,omf,open,path,pe,playlist,process,range,rdir,safemult,scan,slist,socket,str,stralloc,strarray,strlist,tai,taia,textbuf,textcode,ucs,uint16,uint32,uint64,unix,var,vartab,wait,xml"
 
-LIBS="-lws2_32 -lzlib -lbz2 -llzma"
-DEFS="-DHAVE_{ZLIB,LIBBZ2,LIBLZMA}=1"
+LIBS="-lws2_32"
+
+if [ "$COMPRESS" = true ]; then
+  LIBS="$LIBS -lzlib -lbz2 -llzma"
+  DEFS="-DHAVE_{ZLIB,LIBBZ2,LIBLZMA}=1"
+fi
 
 [ $# -eq 0 ] && 
 set -- lcc32 lcc64 tcc32 tcc64 bcc55 bcc101
