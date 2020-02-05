@@ -72,10 +72,10 @@
 	"buffers":
 	[
 		{
-			"contents": "strarray\nstrarray_zero\nstrarray_init\nstrarray_size\nstrarray_begin\nstrarray_end\nstrarray_at\nstrarray_foreach\nstrarray_to_argv\nstrarray_from_argv\nstrarray_contains\nstrarray_push_unique\nstrarray_index_of\nstrarray_pop\nstrarray_pushb\nstrarray_pushd\nstrarray_push\nstrarray_set\nstrarray_setb\nstrarray_push_sa_unique\nstrarray_contains_sa\nstrarray_push_sa\nstrarray_index_of_sa\nstrarray_sort\nstrarray_appends\nstrarray_prepends\nstrarray_removeprefixs\nstrarray_removesuffixs\nstrarray_joins\nstrarray_transform\nstrarray_each\nstrarray_glob\nstrarray_splice\nstrarray_free",
+			"contents": "[Version]\n    signature\n[DefaultInstall]\n    CopyFiles\n    AddReg\n[DestinationDirs]\n    Scheme.Cur\n    Scheme.Txt\n[Scheme.Reg]\n[Scheme.Cur]\n[Strings]\n    CUR_DIR\n    SCHEME_NAME\n    pointer\n    help\n    work\n    busy\n    text\n    unavailiable\n    vert\n    horz\n    dgn1\n    dgn2\n    move\n    link\n    cross\n    hand\n    alternate",
 			"settings":
 			{
-				"buffer_size": 554,
+				"buffer_size": 329,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -97,6 +97,28 @@
 				"buffer_size": 3273,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "; xFree cursors for Windows XP.\n; Win 2000/XP Alphablended Cursor Scheme installation file.\n\n[Version]\nsignature=\"$CHICAGO$\"\n\n[DefaultInstall]\nCopyFiles = Scheme.Cur, Scheme.Txt\nAddReg    = Scheme.Reg\n\n[DestinationDirs]\nScheme.Cur = 10,\"%CUR_DIR%\"\nScheme.Txt = 10,\"%CUR_DIR%\"\n\n[Scheme.Reg]\nHKCU,\"Control Panel\\Cursors\\Schemes\",\"%SCHEME_NAME%\",,\"%10%\\%CUR_DIR%\\%pointer%,%10%\\%CUR_DIR%\\%help%,%10%\\%CUR_DIR%\\%work%,%10%\\%CUR_DIR%\\%busy%,%10%\\%CUR_DIR%\\%cross%,%10%\\%CUR_DIR%\\%Text%,%10%\\%CUR_DIR%\\%Hand%,%10%\\%CUR_DIR%\\%unavailiable%,%10%\\%CUR_DIR%\\%Vert%,%10%\\%CUR_DIR%\\%Horz%,%10%\\%CUR_DIR%\\%Dgn1%,%10%\\%CUR_DIR%\\%Dgn2%,%10%\\%CUR_DIR%\\%move%,%10%\\%CUR_DIR%\\%alternate%,%10%\\%CUR_DIR%\\%link%\"\n\n; -- Common Information\n\n[Scheme.Cur]\nNormal Select.cur\nHelp Select.cur\nWorking In Background.ani\nBusy.ani\nText Select.cur\nUnavailable.cur\nVertical Resize.cur\nHorizontal Resize.cur\nDiagonal Resize 1.cur\nDiagonal Resize 2.cur\nMove.cur\nLink Select.cur\nPrecision Select.cur\nHandwriting.cur\nAlternate Select.cur\n\n[Strings]\nCUR_DIR       = \"Cursors\\xFree Cursors\"\nSCHEME_NAME   = \"xFree Cursors (Alphablended)\"\npointer       = \"Normal Select.cur\"\nhelp          = \"Help Select.cur\"\nwork          = \"Working In Background.ani\"\nbusy          = \"Busy.ani\"\ntext          = \"Text Select.cur\"\nunavailiable  = \"Unavailable.cur\"\nvert          = \"Vertical Resize.cur\"\nhorz          = \"Horizontal Resize.cur\"\ndgn1          = \"Diagonal Resize 1.cur\"\ndgn2          = \"Diagonal Resize 2.cur\"\nmove          = \"Move.cur\"\nlink          = \"Link Select.cur\"\ncross         = \"Precision Select.cur\"\nhand          = \"Handwriting.cur\"\nalternate     = \"Alternate Select.cur\"\n",
+			"file": "/home/roman/.cache/.fr-lKqJcr/Ubuntu/Extras/Cursors/Install.inf",
+			"file_size": 1694,
+			"file_write_time": 127993070120000000,
+			"settings":
+			{
+				"buffer_size": 1640,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "; xFree cursors for Windows XP.\n; Win 2000/XP Alphablended Cursor Scheme installation file.\n\n[Version]\nsignature=\"$CHICAGO$\"\n\n  CopyFiles = Scheme.Cur, Scheme.Txt\nAddReg    = Scheme.Reg\n\n[DestinationDirs]\nScheme.Cur = 10,\"%CUR_DIR%\"\nScheme.Txt = 10,\"%CUR_DIR%\"\n\n[Scheme.Reg]\nHKCU,\"Control Panel\\Cursors\\Schemes\",\"%SCHEME_NAME%\",,\"%10%\\%CUR_DIR%\\%pointer%,%10%\\%CUR_DIR%\\%help%,%10%\\%CUR_DIR%\\%work%,%10%\\%CUR_DIR%\\%busy%,%10%\\%CUR_DIR%\\%cross%,%10%\\%CUR_DIR%\\%Text%,%10%\\%CUR_DIR%\\%Hand%,%10%\\%CUR_DIR%\\%unavailiable%,%10%\\%CUR_DIR%\\%Vert%,%10%\\%CUR_DIR%\\%Horz%,%10%\\%CUR_DIR%\\%Dgn1%,%10%\\%CUR_DIR%\\%Dgn2%,%10%\\%CUR_DIR%\\%move%,%10%\\%CUR_DIR%\\%alternate%,%10%\\%CUR_DIR%\\%link%\"\n\n; -- Common Information\n\n[Scheme.Cur]\nNormal Select.cur\nHelp Select.cur\nWorking In Background.ani\nBusy.ani\nText Select.cur\nUnavailable.cur\nVertical Resize.cur\nHorizontal Resize.cur\nDiagonal Resize 1.cur\nDiagonal Resize 2.cur\nMove.cur\nLink Select.cur\nPrecision Select.cur\nHandwriting.cur\nAlternate Select.cur\n\n[Strings]\nCUR_DIR       = \"Cursors\\xFree Cursors\"\nSCHEME_NAME   = \"xFree Cursors (Alphablended)\"\npointer       = \"Normal Select.cur\"\nhelp          = \"Help Select.cur\"\nwork          = \"Working In Background.ani\"\nbusy          = \"Busy.ani\"\ntext          = \"Text Select.cur\"\nunavailiable  = \"Unavailable.cur\"\nvert          = \"Vertical Resize.cur\"\nhorz          = \"Horizontal Resize.cur\"\ndgn1          = \"Diagonal Resize 1.cur\"\ndgn2          = \"Diagonal Resize 2.cur\"\nmove          = \"Move.cur\"\nlink          = \"Link Select.cur\"\ncross         = \"Precision Select.cur\"\nhand          = \"Handwriting.cur\"\nalternate     = \"Alternate Select.cur\"\n",
+			"file": "/home/roman/.cache/.fr-JZaZo9/Clearlooks_Themes/Extras/Cursors/Install.inf",
+			"file_size": 1694,
+			"file_write_time": 127992818120000000,
+			"settings":
+			{
+				"buffer_size": 1625,
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -434,6 +456,7 @@
 	],
 	"file_history":
 	[
+		"/home/roman/.cache/.fr-We2ler/Ubuntu/Extras/Cursors/Install.inf",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_setn.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
@@ -560,8 +583,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_0.c",
 		"/home/roman/Dokumente/Sources/c-utils/test.svg",
 		"/opt/microchip/xc8/v1.43/dat/cfgdata/16f876a.cfgdata",
-		"/opt/microchip/xc8/v1.43/dat/cfgdata/18f25k22.cfgdata",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_charsetnskip.c"
+		"/opt/microchip/xc8/v1.43/dat/cfgdata/18f25k22.cfgdata"
 	],
 	"find":
 	{
@@ -813,193 +835,167 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 554,
+						"buffer_size": 329,
 						"regions":
 						{
 						},
 						"selection":
 						[
+							[
+								329,
+								329
+							]
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
+							"current_file": "/home/roman/.cache/.fr-JZaZo9/Clearlooks_Themes/Extras/Cursors/Install.inf",
 							"outline_alphabetical": false,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									251,
-									259
+									93,
+									102
 								],
 								[
-									318,
-									331
+									103,
+									112
 								],
 								[
-									363,
-									376
+									126,
+									142
 								],
 								[
-									422,
-									435
+									143,
+									152
 								],
 								[
-									481,
-									495
+									178,
+									184
 								],
 								[
-									532,
-									544
+									202,
+									219
 								],
 								[
-									596,
-									607
+									220,
+									230
 								],
 								[
-									671,
-									687
+									248,
+									258
 								],
 								[
-									784,
-									800
+									277,
+									289
 								],
 								[
-									817,
-									835
+									719,
+									731
 								],
 								[
-									897,
-									914
+									1003,
+									1012
 								],
 								[
-									965,
-									985
+									1013,
+									1020
 								],
 								[
-									1461,
-									1478
+									1053,
+									1064
 								],
 								[
-									1512,
-									1524
+									1100,
+									1107
 								],
 								[
-									1550,
-									1564
+									1136,
+									1140
 								],
 								[
-									1606,
-									1620
+									1170,
+									1174
 								],
 								[
-									1652,
-									1665
+									1214,
+									1218
 								],
 								[
-									1697,
-									1709
+									1241,
+									1245
 								],
 								[
-									1755,
-									1768
+									1275,
+									1287
 								],
 								[
-									1849,
-									1872
+									1309,
+									1313
 								],
 								[
-									2346,
-									2366
+									1347,
+									1351
 								],
 								[
-									2419,
-									2435
+									1387,
+									1391
 								],
 								[
-									2476,
-									2496
+									1427,
+									1431
 								],
 								[
-									2542,
-									2555
+									1467,
+									1471
 								],
 								[
-									2610,
-									2626
+									1494,
+									1498
 								],
 								[
-									2662,
-									2679
+									1528,
+									1533
 								],
 								[
-									2715,
-									2737
+									1567,
+									1571
 								],
 								[
-									2773,
-									2795
-								],
-								[
-									2832,
-									2846
-								],
-								[
-									2899,
-									2917
-								],
-								[
-									2980,
-									2993
-								],
-								[
-									3037,
-									3050
-								],
-								[
-									3095,
-									3110
-								],
-								[
-									3185,
-									3198
+									1601,
+									1610
 								]
 							],
 							"symlist":
 							[
-								"strarray",
-								"strarray_zero",
-								"strarray_init",
-								"strarray_size",
-								"strarray_begin",
-								"strarray_end",
-								"strarray_at",
-								"strarray_foreach",
-								"strarray_to_argv",
-								"strarray_from_argv",
-								"strarray_contains",
-								"strarray_push_unique",
-								"strarray_index_of",
-								"strarray_pop",
-								"strarray_pushb",
-								"strarray_pushd",
-								"strarray_push",
-								"strarray_set",
-								"strarray_setb",
-								"strarray_push_sa_unique",
-								"strarray_contains_sa",
-								"strarray_push_sa",
-								"strarray_index_of_sa",
-								"strarray_sort",
-								"strarray_appends",
-								"strarray_prepends",
-								"strarray_removeprefixs",
-								"strarray_removesuffixs",
-								"strarray_joins",
-								"strarray_transform",
-								"strarray_each",
-								"strarray_glob",
-								"strarray_splice",
-								"strarray_free"
+								"[Version]",
+								"    signature",
+								"[DefaultInstall]",
+								"    CopyFiles",
+								"    AddReg",
+								"[DestinationDirs]",
+								"    Scheme.Cur",
+								"    Scheme.Txt",
+								"[Scheme.Reg]",
+								"[Scheme.Cur]",
+								"[Strings]",
+								"    CUR_DIR",
+								"    SCHEME_NAME",
+								"    pointer",
+								"    help",
+								"    work",
+								"    busy",
+								"    text",
+								"    unavailiable",
+								"    vert",
+								"    horz",
+								"    dgn1",
+								"    dgn2",
+								"    move",
+								"    link",
+								"    cross",
+								"    hand",
+								"    alternate"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -1007,13 +1003,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 14,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -1043,7 +1039,7 @@
 						"translation.y": 11167.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -1071,11 +1067,69 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
+					"file": "/home/roman/.cache/.fr-lKqJcr/Ubuntu/Extras/Cursors/Install.inf",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1640,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
+							"syntax": "Packages/INI/INI.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/roman/.cache/.fr-JZaZo9/Clearlooks_Themes/Extras/Cursors/Install.inf",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1625,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1601,
+								1610
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
+							"syntax": "Packages/INI/INI.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 190.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
 					"file": "lib/strarray/strarray_set.c",
 					"semi_transient": false,
 					"settings":
@@ -1099,11 +1153,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 6,
 					"file": "lib/array.h",
 					"semi_transient": false,
 					"settings":
@@ -1129,11 +1183,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 7,
 					"file": "lib/array/array_reset.c",
 					"semi_transient": false,
 					"settings":
@@ -1157,11 +1211,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 8,
 					"file": "lib/strarray/strarray_setb.c",
 					"semi_transient": false,
 					"settings":
@@ -1185,11 +1239,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 9,
 					"file": "lib/strarray/strarray_sort.c",
 					"semi_transient": false,
 					"settings":
@@ -1213,11 +1267,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 10,
 					"file": "lib/strarray/strarray_free.c",
 					"semi_transient": false,
 					"settings":
@@ -1241,11 +1295,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 11,
 					"file": "lib/strarray/strarray_prepends.c",
 					"semi_transient": false,
 					"settings":
@@ -1271,11 +1325,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 12,
 					"file": "examples/fmt_iso8691.c",
 					"semi_transient": false,
 					"settings":
@@ -1299,11 +1353,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 13,
 					"file": "lib/fmt/fmt_iso8601.c",
 					"semi_transient": false,
 					"settings":
@@ -1329,11 +1383,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 14,
 					"semi_transient": false,
 					"settings":
 					{
@@ -1356,7 +1410,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 11,
 					"type": "text"
 				}
 			]
