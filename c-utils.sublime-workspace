@@ -72,10 +72,10 @@
 	"buffers":
 	[
 		{
-			"contents": "[Version]\n    signature\n[DefaultInstall]\n    CopyFiles\n    AddReg\n[DestinationDirs]\n    Scheme.Cur\n    Scheme.Txt\n[Scheme.Reg]\n[Scheme.Cur]\n[Strings]\n    CUR_DIR\n    SCHEME_NAME\n    pointer\n    help\n    work\n    busy\n    text\n    unavailiable\n    vert\n    horz\n    dgn1\n    dgn2\n    move\n    link\n    cross\n    hand\n    alternate",
+			"contents": "INTERNAL_STRINGIFY\nSTRINGIFY\nprint_strarray\nfnmatch_strarray\nfiletime_to_unix\nlast_error\nget_file_size\nget_file_time\nget_win_api\nget_file_owner\nfiletime_to_unix\nis_junction_point\nlist_dir_internal\ntype_mask\nread_etc\nresolve_etc\nmake_num\nmake_time\nmake_str\nprint_strarray\nfnmatch_strarray\nmode_octal\nmode_flags\ncrc32\nfile_crc32\nlist_dir_internal\nio_err_check\nwrite_err_check\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 329,
+				"buffer_size": 384,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -85,120 +85,48 @@
 			"file": "list-r.c",
 			"settings":
 			{
-				"buffer_size": 26852,
+				"buffer_size": 26821,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/strarray.h",
+			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 3273,
-				"encoding": "UTF-8",
+				"buffer_size": 115279,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "; xFree cursors for Windows XP.\n; Win 2000/XP Alphablended Cursor Scheme installation file.\n\n[Version]\nsignature=\"$CHICAGO$\"\n\n[DefaultInstall]\nCopyFiles = Scheme.Cur, Scheme.Txt\nAddReg    = Scheme.Reg\n\n[DestinationDirs]\nScheme.Cur = 10,\"%CUR_DIR%\"\nScheme.Txt = 10,\"%CUR_DIR%\"\n\n[Scheme.Reg]\nHKCU,\"Control Panel\\Cursors\\Schemes\",\"%SCHEME_NAME%\",,\"%10%\\%CUR_DIR%\\%pointer%,%10%\\%CUR_DIR%\\%help%,%10%\\%CUR_DIR%\\%work%,%10%\\%CUR_DIR%\\%busy%,%10%\\%CUR_DIR%\\%cross%,%10%\\%CUR_DIR%\\%Text%,%10%\\%CUR_DIR%\\%Hand%,%10%\\%CUR_DIR%\\%unavailiable%,%10%\\%CUR_DIR%\\%Vert%,%10%\\%CUR_DIR%\\%Horz%,%10%\\%CUR_DIR%\\%Dgn1%,%10%\\%CUR_DIR%\\%Dgn2%,%10%\\%CUR_DIR%\\%move%,%10%\\%CUR_DIR%\\%alternate%,%10%\\%CUR_DIR%\\%link%\"\n\n; -- Common Information\n\n[Scheme.Cur]\nNormal Select.cur\nHelp Select.cur\nWorking In Background.ani\nBusy.ani\nText Select.cur\nUnavailable.cur\nVertical Resize.cur\nHorizontal Resize.cur\nDiagonal Resize 1.cur\nDiagonal Resize 2.cur\nMove.cur\nLink Select.cur\nPrecision Select.cur\nHandwriting.cur\nAlternate Select.cur\n\n[Strings]\nCUR_DIR       = \"Cursors\\xFree Cursors\"\nSCHEME_NAME   = \"xFree Cursors (Alphablended)\"\npointer       = \"Normal Select.cur\"\nhelp          = \"Help Select.cur\"\nwork          = \"Working In Background.ani\"\nbusy          = \"Busy.ani\"\ntext          = \"Text Select.cur\"\nunavailiable  = \"Unavailable.cur\"\nvert          = \"Vertical Resize.cur\"\nhorz          = \"Horizontal Resize.cur\"\ndgn1          = \"Diagonal Resize 1.cur\"\ndgn2          = \"Diagonal Resize 2.cur\"\nmove          = \"Move.cur\"\nlink          = \"Link Select.cur\"\ncross         = \"Precision Select.cur\"\nhand          = \"Handwriting.cur\"\nalternate     = \"Alternate Select.cur\"\n",
-			"file": "/home/roman/.cache/.fr-lKqJcr/Ubuntu/Extras/Cursors/Install.inf",
-			"file_size": 1694,
-			"file_write_time": 127993070120000000,
+			"file": "lib/stralloc.h",
 			"settings":
 			{
-				"buffer_size": 1640,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": "; xFree cursors for Windows XP.\n; Win 2000/XP Alphablended Cursor Scheme installation file.\n\n[Version]\nsignature=\"$CHICAGO$\"\n\n  CopyFiles = Scheme.Cur, Scheme.Txt\nAddReg    = Scheme.Reg\n\n[DestinationDirs]\nScheme.Cur = 10,\"%CUR_DIR%\"\nScheme.Txt = 10,\"%CUR_DIR%\"\n\n[Scheme.Reg]\nHKCU,\"Control Panel\\Cursors\\Schemes\",\"%SCHEME_NAME%\",,\"%10%\\%CUR_DIR%\\%pointer%,%10%\\%CUR_DIR%\\%help%,%10%\\%CUR_DIR%\\%work%,%10%\\%CUR_DIR%\\%busy%,%10%\\%CUR_DIR%\\%cross%,%10%\\%CUR_DIR%\\%Text%,%10%\\%CUR_DIR%\\%Hand%,%10%\\%CUR_DIR%\\%unavailiable%,%10%\\%CUR_DIR%\\%Vert%,%10%\\%CUR_DIR%\\%Horz%,%10%\\%CUR_DIR%\\%Dgn1%,%10%\\%CUR_DIR%\\%Dgn2%,%10%\\%CUR_DIR%\\%move%,%10%\\%CUR_DIR%\\%alternate%,%10%\\%CUR_DIR%\\%link%\"\n\n; -- Common Information\n\n[Scheme.Cur]\nNormal Select.cur\nHelp Select.cur\nWorking In Background.ani\nBusy.ani\nText Select.cur\nUnavailable.cur\nVertical Resize.cur\nHorizontal Resize.cur\nDiagonal Resize 1.cur\nDiagonal Resize 2.cur\nMove.cur\nLink Select.cur\nPrecision Select.cur\nHandwriting.cur\nAlternate Select.cur\n\n[Strings]\nCUR_DIR       = \"Cursors\\xFree Cursors\"\nSCHEME_NAME   = \"xFree Cursors (Alphablended)\"\npointer       = \"Normal Select.cur\"\nhelp          = \"Help Select.cur\"\nwork          = \"Working In Background.ani\"\nbusy          = \"Busy.ani\"\ntext          = \"Text Select.cur\"\nunavailiable  = \"Unavailable.cur\"\nvert          = \"Vertical Resize.cur\"\nhorz          = \"Horizontal Resize.cur\"\ndgn1          = \"Diagonal Resize 1.cur\"\ndgn2          = \"Diagonal Resize 2.cur\"\nmove          = \"Move.cur\"\nlink          = \"Link Select.cur\"\ncross         = \"Precision Select.cur\"\nhand          = \"Handwriting.cur\"\nalternate     = \"Alternate Select.cur\"\n",
-			"file": "/home/roman/.cache/.fr-JZaZo9/Clearlooks_Themes/Extras/Cursors/Install.inf",
-			"file_size": 1694,
-			"file_write_time": 127992818120000000,
-			"settings":
-			{
-				"buffer_size": 1625,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "lib/strarray/strarray_set.c",
-			"settings":
-			{
-				"buffer_size": 264,
+				"buffer_size": 12024,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/array.h",
+			"file": "lib/stralloc/stralloc_ends.c",
 			"settings":
 			{
-				"buffer_size": 2541,
+				"buffer_size": 169,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/array/array_reset.c",
+			"file": "lib/stralloc/stralloc_endsb.c",
 			"settings":
 			{
-				"buffer_size": 150,
+				"buffer_size": 184,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/strarray/strarray_setb.c",
+			"file": "lib/scan/scan_whitenskip.c",
 			"settings":
 			{
-				"buffer_size": 280,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strarray/strarray_sort.c",
-			"settings":
-			{
-				"buffer_size": 263,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strarray/strarray_free.c",
-			"settings":
-			{
-				"buffer_size": 167,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strarray/strarray_prepends.c",
-			"settings":
-			{
-				"buffer_size": 439,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "examples/fmt_iso8691.c",
-			"settings":
-			{
-				"buffer_size": 449,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/fmt/fmt_iso8601.c",
-			"settings":
-			{
-				"buffer_size": 798,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"settings":
-			{
-				"buffer_size": 0,
+				"buffer_size": 208,
 				"line_ending": "Unix"
 			}
 		}
@@ -456,6 +384,19 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_set.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array/array_reset.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_setb.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_sort.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_prepends.c",
+		"/home/roman/Dokumente/Sources/c-utils/examples/fmt_iso8691.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_iso8601.c",
+		"/home/roman/.cache/.fr-lKqJcr/Ubuntu/Extras/Cursors/Install.inf",
+		"/home/roman/.cache/.fr-JZaZo9/Clearlooks_Themes/Extras/Cursors/Install.inf",
 		"/home/roman/.cache/.fr-We2ler/Ubuntu/Extras/Cursors/Install.inf",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_setn.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
@@ -464,7 +405,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_fill.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_iso8601.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_8long.c",
 		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_rchr.c",
@@ -553,8 +493,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/ini.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
 		"/home/roman/Dokumente/Sources/c-utils/mplab.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_sort.c",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest-18f2550-debug-xc8.mcp",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/serialtest_htc.mcp",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/ringtone_htc.mcp",
@@ -573,17 +511,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-svg.js",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_init.c",
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-svg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add.c",
-		"/home/roman/Dokumente/Sources/c-utils/test.sh",
-		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
-		"/opt/microchip/xc8/v1.43/dat/cfgdata/18f2550.cfgdata",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ihex/ihex_read_at.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_set_chars.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_set_stralloc.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_0.c",
-		"/home/roman/Dokumente/Sources/c-utils/test.svg",
-		"/opt/microchip/xc8/v1.43/dat/cfgdata/16f876a.cfgdata",
-		"/opt/microchip/xc8/v1.43/dat/cfgdata/18f25k22.cfgdata"
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add.c"
 	],
 	"find":
 	{
@@ -610,6 +538,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"has main",
+			"_ends",
+			"exts.bin",
+			"_ends",
+			"ends",
+			"isupper",
+			"scan_whitenskip",
+			"skip_comment",
+			"scan_main",
 			"rset",
 			"_free",
 			"array_free",
@@ -728,16 +665,7 @@
 			"create-lib",
 			"varnames:",
 			"\"tcc",
-			"rcs",
-			"Outputting",
-			"\"debug\"",
-			"Specify",
-			"->key",
-			"putm_internal",
-			"hmap_foreach",
-			"putm_internal",
-			"entering",
-			"^set_sys"
+			"rcs"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -835,181 +763,189 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 329,
+						"buffer_size": 384,
 						"regions":
 						{
 						},
 						"selection":
 						[
-							[
-								329,
-								329
-							]
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/.cache/.fr-JZaZo9/Clearlooks_Themes/Extras/Cursors/Install.inf",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/list-r.c",
 							"outline_alphabetical": false,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									93,
-									102
+									87,
+									105
 								],
 								[
-									103,
-									112
+									128,
+									137
 								],
 								[
-									126,
-									142
+									1533,
+									1547
 								],
 								[
-									143,
-									152
+									1581,
+									1597
 								],
 								[
-									178,
-									184
+									2125,
+									2141
 								],
 								[
-									202,
-									219
+									2183,
+									2193
 								],
 								[
-									220,
-									230
+									2849,
+									2862
 								],
 								[
-									248,
-									258
+									3780,
+									3793
 								],
 								[
-									277,
-									289
+									4508,
+									4519
 								],
 								[
-									719,
-									731
+									4803,
+									4817
 								],
 								[
-									1003,
-									1012
+									8678,
+									8694
 								],
 								[
-									1013,
-									1020
+									8868,
+									8885
 								],
 								[
-									1053,
-									1064
+									10795,
+									10812
 								],
 								[
-									1100,
-									1107
+									10867,
+									10876
 								],
 								[
-									1136,
-									1140
+									11517,
+									11525
 								],
 								[
-									1170,
-									1174
+									12297,
+									12308
 								],
 								[
-									1214,
-									1218
+									12500,
+									12508
 								],
 								[
-									1241,
-									1245
+									12728,
+									12737
 								],
 								[
-									1275,
-									1287
+									13037,
+									13045
 								],
 								[
-									1309,
-									1313
+									13224,
+									13238
 								],
 								[
-									1347,
-									1351
+									13503,
+									13519
 								],
 								[
-									1387,
-									1391
+									14333,
+									14343
 								],
 								[
-									1427,
-									1431
+									14531,
+									14541
 								],
 								[
-									1467,
-									1471
+									15701,
+									15706
 								],
 								[
-									1494,
-									1498
+									15986,
+									15996
 								],
 								[
-									1528,
-									1533
+									16243,
+									16260
 								],
 								[
-									1567,
-									1571
+									21523,
+									21535
 								],
 								[
-									1601,
-									1610
+									21734,
+									21749
+								],
+								[
+									21995,
+									22000
+								],
+								[
+									23553,
+									23557
 								]
 							],
 							"symlist":
 							[
-								"[Version]",
-								"    signature",
-								"[DefaultInstall]",
-								"    CopyFiles",
-								"    AddReg",
-								"[DestinationDirs]",
-								"    Scheme.Cur",
-								"    Scheme.Txt",
-								"[Scheme.Reg]",
-								"[Scheme.Cur]",
-								"[Strings]",
-								"    CUR_DIR",
-								"    SCHEME_NAME",
-								"    pointer",
-								"    help",
-								"    work",
-								"    busy",
-								"    text",
-								"    unavailiable",
-								"    vert",
-								"    horz",
-								"    dgn1",
-								"    dgn2",
-								"    move",
-								"    link",
-								"    cross",
-								"    hand",
-								"    alternate"
+								"INTERNAL_STRINGIFY",
+								"STRINGIFY",
+								"print_strarray",
+								"fnmatch_strarray",
+								"filetime_to_unix",
+								"last_error",
+								"get_file_size",
+								"get_file_time",
+								"get_win_api",
+								"get_file_owner",
+								"filetime_to_unix",
+								"is_junction_point",
+								"list_dir_internal",
+								"type_mask",
+								"read_etc",
+								"resolve_etc",
+								"make_num",
+								"make_time",
+								"make_str",
+								"print_strarray",
+								"fnmatch_strarray",
+								"mode_octal",
+								"mode_flags",
+								"crc32",
+								"file_crc32",
+								"list_dir_internal",
+								"io_err_check",
+								"write_err_check",
+								"usage",
+								"main"
 							],
-							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 3,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -1018,7 +954,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 26852,
+						"buffer_size": 26821,
 						"regions":
 						{
 						},
@@ -1039,29 +975,87 @@
 						"translation.y": 11167.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "lib/strarray.h",
+					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3273,
+						"buffer_size": 115279,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								939,
-								939
+								24327,
+								24327
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 18885.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/stralloc.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12024,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11456,
+								11456
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 3891.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/stralloc/stralloc_ends.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 169,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								137,
+								137
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1071,220 +1065,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "/home/roman/.cache/.fr-lKqJcr/Ubuntu/Extras/Cursors/Install.inf",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1640,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
-							"syntax": "Packages/INI/INI.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/home/roman/.cache/.fr-JZaZo9/Clearlooks_Themes/Extras/Cursors/Install.inf",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1625,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1601,
-								1610
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Codecourse Contrast (rainglow).tmTheme",
-							"syntax": "Packages/INI/INI.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 190.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
 					"buffer": 5,
-					"file": "lib/strarray/strarray_set.c",
+					"file": "lib/stralloc/stralloc_endsb.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 264,
+						"buffer_size": 184,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/array.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2541,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								104,
-								104
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/array/array_reset.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 150,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								59,
-								59
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/strarray/strarray_setb.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 280,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								142,
-								142
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/strarray/strarray_sort.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 263,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								263,
-								263
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "lib/strarray/strarray_free.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 167,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								64,
-								64
+								153,
+								153
 							]
 						],
 						"settings":
@@ -1299,50 +1093,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 11,
-					"file": "lib/strarray/strarray_prepends.c",
+					"buffer": 6,
+					"file": "lib/scan/scan_whitenskip.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 439,
+						"buffer_size": 208,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "examples/fmt_iso8691.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 449,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
+								199,
+								199
 							]
 						],
 						"settings":
@@ -1353,64 +1117,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "lib/fmt/fmt_iso8601.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 798,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								783,
-								783
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
@@ -1502,6 +1209,22 @@
 		"selected_items":
 		[
 			[
+				"ends.c",
+				"lib/stralloc/stralloc_ends.c"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"scan_whi",
+				"lib/scan/scan_whitenskip.c"
+			],
+			[
+				"genma",
+				"genmakefile.c"
+			],
+			[
 				"reset.c",
 				"lib/array/array_reset.c"
 			],
@@ -1522,10 +1245,6 @@
 				"lib/strarray.h"
 			],
 			[
-				"stralloc.h",
-				"lib/stralloc.h"
-			],
-			[
 				"fmt_iso",
 				"lib/fmt/fmt_iso8601.c"
 			],
@@ -1544,10 +1263,6 @@
 			[
 				"dir.h",
 				"lib/dir.h"
-			],
-			[
-				"genma",
-				"genmakefile.c"
 			],
 			[
 				"genmake",
@@ -2004,14 +1719,6 @@
 			[
 				"coff.h",
 				"lib/coff.h"
-			],
-			[
-				"coffli",
-				"cofflist.c"
-			],
-			[
-				"cofflist",
-				"cofflist.c"
 			]
 		],
 		"width": 0.0
