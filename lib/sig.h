@@ -6,8 +6,46 @@
 #include "windoze.h"
 
 #if WINDOWS_NATIVE
-#define sigset_t _sigset_t
+typedef long sigset_t;
+
+ #ifndef SIG_BLOCK
+  #define SIG_BLOCK 1
+ #endif /* defined(SIG_BLOCK) */
+ #ifndef SIG_UNBLOCK
+  #define SIG_UNBLOCK 2
+ #endif /* defined(SIG_UNBLOCK) */
+
+ #ifndef SIGALL
+  #define SIGALL (~(sigset_t)0L) /* All signals.    */
+ #endif
+
+ #ifndef sigbit
+  #define sigbit(n)       (1L << ((n) - 1))
+ #endif
+ #ifndef sigemptyset
+  #define sigemptyset(s)  *(s) = ~SIGALL
+ #endif
+ #ifndef sigfillset
+  #define sigfillset(s)   *(s) = SIGALL
+ #endif
+
+ #ifndef sigaddset
+  #define sigaddset(s,n)  *(s) |= sigbit(n)
+ #endif
+ #ifndef sigdelset
+  #define sigdelset(s,n)  *(s) &= ~sigbit(n)
+ #endif
+ #ifndef sigismember
+  #define sigismember(set,n) ((*(set) & sigbit(n)) == sigbit(n))
+ #endif
+  #include <errno.h>
+ #ifndef ENOBUFS
+  #define ENOBUFS 1039
+ #endif
 #endif
+
+#define SA_MASKALL 1
+#define SA_NOCLDSTOP 2
 
 typedef void sighandler_t_fn(int);
 typedef sighandler_t_fn* sighandler_t_ref;
@@ -38,7 +76,7 @@ extern struct sigaction const sig_ign;
 
 int sig_action(int sig, struct sigaction const* new, struct sigaction* old);
 void sig_blocknone(void);
-void sig_blockset(sigset_t const* set);
+void sig_blockset(const sigset_t* set);
 void sig_block(void);
 int sig_catch(int sig, sighandler_t_ref f);
 int sigfpe(void);

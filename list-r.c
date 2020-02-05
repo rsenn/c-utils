@@ -645,13 +645,11 @@ list_dir_internal(stralloc* dir, char type, long depth) {
   while((name = dir_read(&d))) {
     int match = 0, show = 1;
     dir_type_t dtype;
-    uint64 mtime = 0;
+    uint64 mtime = 0, size = 0;
+    uint32 mode = 0, nlink = 0;
+    uint32 uid = 0, gid = 0;
+
 #if !WINDOWS_NATIVE
-    nlink_t nlink = 0;
-    uid_t uid = 0;
-    gid_t gid = 0;
-    off_t size = 0;
-    mode_t mode = 0;
     byte_zero(&st, sizeof(st));
 #endif
     dtype = dir_type(&d);
@@ -676,9 +674,9 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     if(dtype & D_SYMLINK)
       is_symlink = 1;
 
+#if !WINDOWS_NATIVE
     mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
 
-#if !WINDOWS_NATIVE
     if((opt_deref ? stat : lstat)(dir->s, &st) != -1) {
       if(root_dev && st.st_dev) {
         if(st.st_dev != root_dev) {
