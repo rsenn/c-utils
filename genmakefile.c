@@ -1132,7 +1132,7 @@ new_source(const char* name) {
     ret->name = str_dup(name);
     ret->has_main = is_source(ret->name) && has_main(ret->name) == 1;
 
-#if DEBUG_OUTPUT
+#if DEBUG_OUTPUT_
     if(ret->has_main)
       debug_s("Source has main()", ret->name);
 #endif
