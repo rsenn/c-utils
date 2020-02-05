@@ -2568,7 +2568,7 @@ gen_link_rules(HMAP_DB* rules) {
     stralloc_init(&oldname);
     stralloc_copy(&oldname, &link->output.sa);
 
-    if(!stralloc_ends(&output_name, exts.bin))
+    if(!stralloc_ends(&output_name, exts.bin, str_len(exts.bin)))
       stralloc_cats(&output_name, exts.bin);
 
     stralloc_nul(&output_name);
