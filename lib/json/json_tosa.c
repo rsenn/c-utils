@@ -3,7 +3,7 @@
 #include "../json.h"
 
 static void
-json_default_printer(jsonfmt* p, jsonval* v, int depth) {
+json_default_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->indent = "  ";
   p->newline = "\n";
   p->spacing = " ";
@@ -11,7 +11,7 @@ json_default_printer(jsonfmt* p, jsonval* v, int depth) {
 };
 
 void
-json_tosa(jsonval val, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int)) {
+json_tosa(jsonval val, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int, int)) {
   buffer b;
   char buf[1024];
 
