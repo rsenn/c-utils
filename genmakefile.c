@@ -421,7 +421,7 @@ scan_main(const char* x, size_t n) {
         x += i + 1;
         n -= i + 1;
       }
-    } else if(!isalpha(x[0]) && x[0] != '_' && x[1] == 'm') {
+    } else if((!((x[0] >= 'A' && x[0] <= 'Z') || (x[0] >= 'a' && x[0] <= 'z')))  && x[0] != '_' && x[1] == 'm') {
       if(n >= 5 && byte_equal(&x[1], 4, "main")) {
         ssize_t i = 0;
         if(i + 5 >= n)
@@ -742,7 +742,7 @@ rule_rename(target* rule, const char* name) {
   stralloc_cats(&rule->output.sa, name);
   stralloc_nul(&rule->output.sa);
 
-  free(rule->name);
+  free((char*)rule->name);
   rule->name = str_dup(out->s);
 }
 
