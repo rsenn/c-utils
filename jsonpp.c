@@ -68,7 +68,7 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index) {
 
 void
 json_pretty_print(jsonval val, buffer* b) {
-  void* printfn = compact ? &compact_printer : 0;
+  json_print_fn* printfn = compact ? &compact_printer : 0;
   stralloc out;
   stralloc_init(&out);
   json_tosa(val, &out, printfn);

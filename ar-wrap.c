@@ -357,10 +357,10 @@ main(int argc, char* argv[]) {
       debug_sa("@", &arg);
 
       if(openreadclose(arg.s + 1, &sa, 4096) > 0) {
-        stralloc_nul(&arg);
         char *it, *end;
         array a;
         array_init(&a);
+        stralloc_nul(&arg);
 
         it = stralloc_begin(&sa);
         end = stralloc_end(&sa);

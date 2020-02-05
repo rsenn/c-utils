@@ -4,12 +4,14 @@
 
 xmlnode*
 create_xml_document() {
-  xmlnode* doc = xml_newnode(XML_DOCUMENT);
-  xmlnode* configuration_descriptor = doc->children = xml_element("configurationDescriptor");
+xmlnode *compile_type, *conf, *configuration_descriptor, *confs, *doc, *hitechcomp, *linker_tool, *loading, *logical_folder, *logical_folder1, *logical_folder2, *logical_folder3, *make_customization_type, *packs, *source_root_list, *tools_set;
+
+  doc = xml_newnode(XML_DOCUMENT);
+  configuration_descriptor = doc->children = xml_element("configurationDescriptor");
 
   configuration_descriptor->attributes = xml_attributes("version", "65", 0);
 
-  xmlnode* logical_folder = xml_child_element("logicalFolder", configuration_descriptor);
+  logical_folder = xml_child_element("logicalFolder", configuration_descriptor);
   logical_folder->attributes = xml_attributes("name", "root", "displayName", "root", "projectFiles", "true", 0);
 
   xml_child_element_attrs(
@@ -23,11 +25,11 @@ create_xml_document() {
                           "projectFiles",
                           "true",
                           0);
-  xmlnode* logical_folder1 = xml_child_element("logicalFolder", logical_folder);
+  logical_folder1 = xml_child_element("logicalFolder", logical_folder);
   logical_folder->attributes =
       xml_attributes("name", "SourceFiles", "displayName", "Source Files", "projectFiles", "true", 0);
 
-  xmlnode* logical_folder2 = xml_child_element("logicalFolder", logical_folder1);
+  logical_folder2 = xml_child_element("logicalFolder", logical_folder1);
   logical_folder->attributes = xml_attributes("name", "f1", "displayName", "lib", "projectFiles", "true", 0);
 
   xml_child_element_text("itemPath", logical_folder2, "../../../lib/comparator.c");
@@ -42,23 +44,23 @@ create_xml_document() {
 
   xml_child_element_text("itemPath", logical_folder1, "../../../blinktest.c");
 
-  xmlnode* logical_folder3 = xml_child_element("logicalFolder", logical_folder);
+  logical_folder3 = xml_child_element("logicalFolder", logical_folder);
   logical_folder->attributes =
       xml_attributes("name", "ExternalFiles", "displayName", "Important Files", "projectFiles", "false", 0);
 
   xml_child_element_text("itemPath", logical_folder3, "Makefile");
 
-  xmlnode* source_root_list = xml_child_element("sourceRootList", configuration_descriptor);
+  source_root_list = xml_child_element("sourceRootList", configuration_descriptor);
 
   xml_child_element_text("Elem", source_root_list, "../../..");
 
   xml_child_element_text("projectmakefile", configuration_descriptor, "Makefile");
-  xmlnode* confs = xml_child_element("confs", configuration_descriptor);
+  confs = xml_child_element("confs", configuration_descriptor);
 
-  xmlnode* conf = xml_child_element("conf", confs);
+  conf = xml_child_element("conf", confs);
   conf->attributes = xml_attributes("name", "debug", "type", "2", 0);
 
-  xmlnode* tools_set = xml_child_element("toolsSet", conf);
+  tools_set = xml_child_element("toolsSet", conf);
 
   xml_child_element_text("developmentServer", tools_set, "localhost");
   xml_child_element_text("targetDevice", tools_set, "PIC18F2550");
@@ -69,18 +71,18 @@ create_xml_document() {
   xml_child_element_text("languageToolchainVersion", tools_set, "1.45");
   xml_child_element_text("platform", tools_set, "3");
 
-  xmlnode* packs = xml_child_element("packs", conf);
+  packs = xml_child_element("packs", conf);
 
   xml_child_element_attrs("pack", packs, "name", "PIC18Fxxxx_DFP", "vendor", "Microchip", "version", "1.1.19", 0);
 
-  xmlnode* compile_type = xml_child_element("compileType", conf);
+  compile_type = xml_child_element("compileType", conf);
 
-  xmlnode* linker_tool = xml_child_element("linkerTool", compile_type);
+  linker_tool = xml_child_element("linkerTool", compile_type);
 
   xml_child_element("linkerLibItems", linker_tool);
 
   xml_child_element("archiverTool", compile_type);
-  xmlnode* loading = xml_child_element("loading", compile_type);
+  loading = xml_child_element("loading", compile_type);
 
   xml_child_element_text("useAlternateLoadableFile", loading, "false");
   xml_child_element_text("parseOnProdLoad", loading, "false");
@@ -88,7 +90,7 @@ create_xml_document() {
 
   xml_child_element("subordinates", compile_type);
 
-  xmlnode* make_customization_type = xml_child_element("makeCustomizationType", conf);
+  make_customization_type = xml_child_element("makeCustomizationType", conf);
 
   xml_child_element_text("makeCustomizationPreStepEnabled", make_customization_type, "false");
   xml_child_element("makeCustomizationPreStep", make_customization_type);
@@ -98,7 +100,7 @@ create_xml_document() {
   xml_child_element_text("makeCustomizationEnableLongLines", make_customization_type, "false");
   xml_child_element_text("makeCustomizationNormalizeHexFile", make_customization_type, "false");
 
-  xmlnode* hitechcomp = xml_child_element("HI-TECH-COMP", conf);
+  hitechcomp = xml_child_element("HI-TECH-COMP", conf);
 
   xml_child_element_attrs("property", hitechcomp, "key", "additional-warnings", "value", "true", 0);
   xml_child_element_attrs("property", hitechcomp, "key", "asmlist", "value", "true", 0);

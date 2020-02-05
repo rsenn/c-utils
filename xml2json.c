@@ -313,11 +313,11 @@ main(int argc, char* argv[]) {
     // xml_walk(doc, testwalk);
 
     buffer_close(input);
-
+{
     jsonval root = xml_to_json(doc);
 
     json_print(root, buffer_1, pretty_printer);
-
+}
     /*
      * Cleanup function for the XML library.
      */

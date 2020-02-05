@@ -502,9 +502,9 @@ main(int argc, char* argv[]) {
       {"libs", 0, NULL, PRINT_LIBS},
       {"path", 0, NULL, PRINT_PATH},
       {"list-all", 0, NULL, 'l'},
-      {"print-errors", 0, &mode, PKGCFG_PRINT_ERR},
-      {"short-errors", 0, &mode, PKGCFG_SHORT_ERR},
-      {"exists", 0, &mode, PKGCFG_EXISTS},
+      {"print-errors", 0, NULL, 'P'},
+      {"short-errors", 0, NULL, 'S'},
+      {"exists", 0, NULL, 'E'},
       {0, 0, 0, 0},
   };
 
@@ -514,7 +514,7 @@ main(int argc, char* argv[]) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "?hmilpa", opts, &index);
+    c = getopt_long(argc, argv, "?hmilpaPS", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -534,6 +534,10 @@ main(int argc, char* argv[]) {
         if(!cmd.code)
           cmd.code = LIST_ALL;
         break;
+        
+      case 'P': mode = PKGCFG_PRINT_ERR; break;
+      case 'S': mode = PKGCFG_SHORT_ERR; break;
+      case 'E': mode = PKGCFG_EXISTS; break;
       default:
         buffer_puts(buffer_1, "WARNING: Invalid argument -");
         buffer_putc(buffer_1, isprint(c) ? c : '?');

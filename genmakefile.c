@@ -1360,9 +1360,10 @@ add_include_dir(const char* dir) {
 
 void
 include_dirs_to_cppflags() {
+  const char* dir;
   stralloc arg;
   stralloc_init(&arg);
-  const char* dir;
+
   strlist_foreach_s(&include_dirs, dir) {
 
 #ifdef DEBUG_OUTPUT
@@ -2344,10 +2345,12 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
 void
 gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
   TUPLE* t;
+  target* all;
   stralloc inc, abspath;
   stralloc_init(&inc);
   stralloc_init(&abspath);
-  target* all = rule_get("all");
+
+  all = rule_get("all");
 
   hmap_foreach(srcdirs, t) {
     target* rule;
@@ -2409,8 +2412,8 @@ gen_link_rules(HMAP_DB* rules) {
   all = rule_get("all");
 
   strarray_foreach(&srcs, p) {
-    srcfile = *p;
     sourcedir* srcdir;
+    srcfile = *p;
 
     strlist_zero(&incs);
     strlist_zero(&libs);
@@ -4025,7 +4028,9 @@ main(int argc, char* argv[]) {
   buffer* out = buffer_1;
   const char** it;
   const char* s;
-  size_t n;
+  size_t n;  
+  target *rule, *all, *compile;
+  char** arg;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"objext", 1, NULL, 'O'},
@@ -4461,9 +4466,7 @@ main(int argc, char* argv[]) {
     goto exit;
   }
 
-  target* rule;
-  char** arg;
-  target* all = rule_get("all");
+ all = rule_get("all");
 
   if(strlist_count(&dirs.work) && !stralloc_equals(&dirs.work.sa, ".")) {
 
@@ -4510,7 +4513,7 @@ main(int argc, char* argv[]) {
       stralloc_cats(&rulename, exts.obj);
     }
 
-    target* compile = rule_get_sa(&rulename);
+compile = rule_get_sa(&rulename);
     stralloc_weak(&compile->recipe, &compile_command);
 
     stralloc_free(&rulename);

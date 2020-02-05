@@ -55,9 +55,9 @@ typedef union {
 #define JSON_FMT_SEPARATOR 3
 #define JSON_FMT_QUOTE 4
 
-typedef int(json_read_callback_fn)(jsonreader* r, jsondata id, stralloc* name, stralloc* value, HMAP_DB** attrs);
-
-typedef int(json_predicate_fn)();
+typedef int json_read_callback_fn(jsonreader* r, jsondata id, stralloc* name, stralloc* value, HMAP_DB** attrs);
+typedef void json_print_fn(jsonfmt*, jsonval*, int, int);
+typedef int json_predicate_fn();
 
 void json_free(jsonval*);
 
@@ -83,7 +83,7 @@ jsonval* json_push(jsonval* arr, jsonval item);
 int64 json_length(jsonval);
 
 void json_print(jsonval, buffer* b, void (*p)());
-void json_tosa(jsonval, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int));
+void json_tosa(jsonval, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int, int));
 
 double json_todouble(jsonval);
 int64 json_toint(jsonval);

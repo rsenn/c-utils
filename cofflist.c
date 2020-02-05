@@ -350,6 +350,7 @@ main(int argc, char** argv) {
         return -1;
       }
 
+{
       coff_opt_header* opthdr = coff_header_opt(base);
 
       if(opthdr->magic == COFF_OPT_MAGIC_MICROCHIP_V1) {
@@ -394,6 +395,7 @@ main(int argc, char** argv) {
           coff_print_data_directories(buffer_2, base, data_dir, num_dirs);
       }
       */
+      }
       mmap_unmap((void*)base, filesize);
     } else {
       errmsg_warn("ERROR opening '", argv[optind], "': ", 0);

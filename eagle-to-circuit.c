@@ -367,7 +367,9 @@ build_nets(xmlnode* node) {
   struct net* ptr;
   xmlnode* sn;
   char *sign, *name = node->name;
+  
   assert(str_equal(name, "net") || str_equal(name, "signal"));
+  
   if(!(sign = xml_get_attribute(node, "name")))
     return;
   print_name_value(buffer_2, name, sign);
@@ -502,6 +504,7 @@ compare_pads(const struct pad* a, const struct pad* b) {
 
 void
 clean_pkgname(stralloc* pkgname, const struct package* pkg) {
+size_t idx;
   stralloc_init(pkgname);
   stralloc_copy(pkgname, &pkg->name);
   stralloc_lower(pkgname);
@@ -527,7 +530,8 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   stralloc_replaces(pkgname, "x0", "x");
   stralloc_replaces(pkgname, "-", "_n");
   stralloc_replaces(pkgname, "+", "_p");
-  for(size_t idx = 0; idx < pkgname->len; idx++) {
+  
+  for(idx = 0; idx < pkgname->len; idx++) {
     if(!isalnum(pkgname->s[idx]))
       pkgname->s[idx] = '_';
   }
@@ -536,7 +540,9 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
 int
 dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
+  double x,y;
   const struct package* pkg = value;
+  struct pad* first;
   stralloc pkgname;
   clean_pkgname(&pkgname, pkg);
 
@@ -547,20 +553,22 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
   stralloc_free(&pkgname);
   buffer_putspace(&output);
 
-  struct pad* first = array_start(&pkg->pads);
+  first = array_start(&pkg->pads);
 
   qsort(first, array_length(&pkg->pads, sizeof(struct pad)), sizeof(struct pad), (cmp_fn_t*)&compare_pads);
 
-  double x = first->x, y = first->y;
+  x = first->x;
+  y = first->y;
 
   for(i = 0; i < array_length(&pkg->pads, sizeof(struct pad)); ++i) {
     const struct pad* p = array_get(&pkg->pads, sizeof(struct pad), i);
+    int ix,iy;
 
     if(i > 0)
       buffer_putspace(&output);
 
-    int ix = round((p->x - x) / 2.54);
-    int iy = round((p->y - y) / 2.54);
+     ix = round((p->x - x) / 2.54);
+     iy = round((p->y - y) / 2.54);
 
     buffer_putlong(&output, -iy);
     buffer_putc(&output, ',');
@@ -585,6 +593,7 @@ int
 output_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct part* ptr = (struct part*)value;
   struct pad* pad1 = array_start(&ptr->pkg->pads);
+  double x,y;
 
   stralloc name;
   stralloc_init(&name);
@@ -597,8 +606,8 @@ output_part(const void* key, size_t key_len, const void* value, size_t value_len
   stralloc_nul(&name);
   buffer_putspad(&output, name.s, 18);
 
-  double x = round((ptr->x + pad1->x) / 2.54);
-  double y = round((ptr->y + pad1->y) / 2.54);
+  x = round((ptr->x + pad1->x) / 2.54);
+  y = round((ptr->y + pad1->y) / 2.54);
 
   buffer_putlong(&output, y + 10);
   buffer_putc(&output, ',');
@@ -613,7 +622,11 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
   struct part* ptr = (struct part*)value;
   const char *s, *comment;
   size_t n;
-  assert(ptr->name.s);
+  strlist refs;
+  struct part_ref u;
+  u.list = &refs;
+  u.part = ptr;
+    assert(ptr->name.s);
   buffer_puts(&output, "\n# Part: ");
   buffer_putsa(&output, &ptr->name);
   buffer_puts(&output, "\n");
@@ -622,11 +635,10 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
     buffer_puts(buffer_2, " package: ");
     buffer_putsa(buffer_2, &ptr->pkg->name);
   }
-  strlist refs;
 
   strlist_init(&refs, '\n');
 
-  struct part_ref u = {&refs, ptr};
+
   MAP_VISIT_ALL(nets, output_net, &u);
 
   strlist_sort(&refs, (cmp_fn_t*)&cmp_ref);
@@ -706,7 +718,6 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
   struct net* n = (struct net*)value;
   strlist* refs = ((struct part_ref*)user_data)->list;
   struct part* p = ((struct part_ref*)user_data)->part;
-  ;
   struct ref* rc;
 
   int64 i, len;
@@ -956,23 +967,24 @@ match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
 int
 main(int argc, char* argv[]) {
   xmlnode* doc;
+  int argi = 1, output_fd = 1;   
+  const char* input_file = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
+  const char* output_file = NULL;
+  
   MAP_NEW(devicesets);
   MAP_NEW(packages);
   MAP_NEW(parts);
   MAP_NEW(nets);
-  MAP_NEW(symbols);
-  int argi = 1;
+  MAP_NEW(symbols); 
+   
   strlist_init(&connections, '\0');
-  const char* input_file = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
-  const char* output_file = NULL;
+
   if(argv[argi])
     input_file = argv[argi++];
   if(argv[argi])
     output_file = argv[argi++];
   if(argv[argi])
     xq = argv[argi++];
-
-  int output_fd = 1;
 
   if(output_file)
     output_fd = open_trunc(output_file);
