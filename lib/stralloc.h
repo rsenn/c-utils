@@ -253,6 +253,7 @@ int stralloc_prepends(stralloc* sa, const char* s);
 int stralloc_prepend(stralloc* sa, const stralloc* other);
 
 size_t stralloc_ends(const stralloc* sa, const stralloc* suffix);
+size_t stralloc_endsb(const stralloc* sa, const char* x, size_t n);
 
 int stralloc_expand(stralloc* sa);
 
