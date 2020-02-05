@@ -3,5 +3,5 @@
 
 size_t
 stralloc_ends(const stralloc* sa, const stralloc* suffix) {
-  return stralloc_ends(sa, suffix->s, suffix->len);
+  return stralloc_endsb(sa, suffix->s, suffix->len);
 }
