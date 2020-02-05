@@ -38,4 +38,7 @@ memalign_alloc_aligned(size_t size) {
 #endif
 }
 
-// void *memalign(size_t boundary, size_t size) __attribute__((weak,alias("memalign_alloc")));
+/*
+  void *memalign(size_t boundary, size_t size) __attribute__((weak,alias("memalign_alloc")));
+ */
+
