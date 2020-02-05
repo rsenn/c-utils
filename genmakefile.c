@@ -1228,7 +1228,7 @@ get_var(const char* name) {
   if(hmap_search(vars, name, str_len(name) + 1, &t) != HMAP_SUCCESS) {
     strlist var;
 
-    strlist_init(&var, isupper(name[0]) ? ' ' : pathsep_args);
+    strlist_init(&var, (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : pathsep_args);
 
     hmap_set(&vars, name, str_len(name) + 1, &var, sizeof(strlist));
     hmap_search(vars, name, str_len(name) + 1, &t);
