@@ -687,7 +687,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       }
     }
     nlink = is_dir ? st.st_nlink : 1;
-    mode = st.st_mode | ((dtype & D_SYMLINK) ?  S_IFLNK : 0);
+    mode = st.st_mode | ((dtype & D_SYMLINK) ? S_IFLNK : 0);
     uid = st.st_uid;
     gid = st.st_gid;
     size = st.st_size;
