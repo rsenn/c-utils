@@ -141,7 +141,6 @@ main(int argc, char* argv[]) {
   if(argv[argi])
     output_file = argv[argi++];
 
-
   if(output_file)
     output_fd = open_trunc(output_file);
 
@@ -192,16 +191,16 @@ main(int argc, char* argv[]) {
   xml_add_child(svgdoc, svgelem);
   xml_add_child(svgelem, (svgdefs = xml_element("defs")));
   xml_add_child(svgelem, (svggroup = xml_element("g")));
-{
-  xmlnode *clip_p, *clip_path = xml_element("clipPath");
-  xml_set_attribute(clip_path, "id", "pad-clip");
-  xml_add_child(svgdefs, clip_path);
-  clip_p = xml_element("path");
-  xml_set_attribute(
-      clip_p,
-      "d",
-      "M0 2.128c.242 0 .438.185.438.412 0 .228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
-  xml_add_child(clip_path, clip_p);
+  {
+    xmlnode *clip_p, *clip_path = xml_element("clipPath");
+    xml_set_attribute(clip_path, "id", "pad-clip");
+    xml_add_child(svgdefs, clip_path);
+    clip_p = xml_element("path");
+    xml_set_attribute(
+        clip_p,
+        "d",
+        "M0 2.128c.242 0 .438.185.438.412 0 .228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
+    xml_add_child(clip_path, clip_p);
   }
   xml_set_attribute(svggroup, "stroke-width", "0.3");
   xml_set_attribute(svggroup, "stroke-linecap", "round");

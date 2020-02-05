@@ -292,7 +292,7 @@ infer_chip(const char* x, size_t n) {
   static stralloc chip;
   size_t i;
 
-  for( i = 0; i + 3 < n; i++) {
+  for(i = 0; i + 3 < n; i++) {
     size_t len = n - i;
     const char* s = &x[i];
 
@@ -318,7 +318,7 @@ infer_chip(const char* x, size_t n) {
 
 const char*
 get_cfgdat(const char* chip) {
-size_t i;
+  size_t i;
   static stralloc path;
   if(path.len == 0) {
     dir_t d;
@@ -326,7 +326,7 @@ size_t i;
     static const char* const search_dirs[] = {"/opt/microchip",
                                               "C:\\Program Files\\Microchip",
                                               "C:\\Program Files (x86)\\Microchip"};
-    for( i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
+    for(i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
       dir = search_dirs[i];
       if(path_exists(dir))
         break;
@@ -553,7 +553,7 @@ main(int argc, char* argv[]) {
   config_bytes(&hex, &cfg, &baseaddr);
 
   if(verbose) {
-    for( i = 0; i < cfg.len; i += 2) {
+    for(i = 0; i < cfg.len; i += 2) {
       uint16 v = uint16_read(&cfg.s[i]);
 
       buffer_putxlong0(buffer_2, baseaddr + i, 4);

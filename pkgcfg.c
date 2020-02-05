@@ -534,7 +534,7 @@ main(int argc, char* argv[]) {
         if(!cmd.code)
           cmd.code = LIST_ALL;
         break;
-        
+
       case 'P': mode = PKGCFG_PRINT_ERR; break;
       case 'S': mode = PKGCFG_SHORT_ERR; break;
       case 'E': mode = PKGCFG_EXISTS; break;

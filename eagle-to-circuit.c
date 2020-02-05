@@ -367,9 +367,9 @@ build_nets(xmlnode* node) {
   struct net* ptr;
   xmlnode* sn;
   char *sign, *name = node->name;
-  
+
   assert(str_equal(name, "net") || str_equal(name, "signal"));
-  
+
   if(!(sign = xml_get_attribute(node, "name")))
     return;
   print_name_value(buffer_2, name, sign);
@@ -504,7 +504,7 @@ compare_pads(const struct pad* a, const struct pad* b) {
 
 void
 clean_pkgname(stralloc* pkgname, const struct package* pkg) {
-size_t idx;
+  size_t idx;
   stralloc_init(pkgname);
   stralloc_copy(pkgname, &pkg->name);
   stralloc_lower(pkgname);
@@ -530,7 +530,7 @@ size_t idx;
   stralloc_replaces(pkgname, "x0", "x");
   stralloc_replaces(pkgname, "-", "_n");
   stralloc_replaces(pkgname, "+", "_p");
-  
+
   for(idx = 0; idx < pkgname->len; idx++) {
     if(!isalnum(pkgname->s[idx]))
       pkgname->s[idx] = '_';
@@ -540,7 +540,7 @@ size_t idx;
 int
 dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
-  double x,y;
+  double x, y;
   const struct package* pkg = value;
   struct pad* first;
   stralloc pkgname;
@@ -562,13 +562,13 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
 
   for(i = 0; i < array_length(&pkg->pads, sizeof(struct pad)); ++i) {
     const struct pad* p = array_get(&pkg->pads, sizeof(struct pad), i);
-    int ix,iy;
+    int ix, iy;
 
     if(i > 0)
       buffer_putspace(&output);
 
-     ix = round((p->x - x) / 2.54);
-     iy = round((p->y - y) / 2.54);
+    ix = round((p->x - x) / 2.54);
+    iy = round((p->y - y) / 2.54);
 
     buffer_putlong(&output, -iy);
     buffer_putc(&output, ',');
@@ -593,7 +593,7 @@ int
 output_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct part* ptr = (struct part*)value;
   struct pad* pad1 = array_start(&ptr->pkg->pads);
-  double x,y;
+  double x, y;
 
   stralloc name;
   stralloc_init(&name);
@@ -626,7 +626,7 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
   struct part_ref u;
   u.list = &refs;
   u.part = ptr;
-    assert(ptr->name.s);
+  assert(ptr->name.s);
   buffer_puts(&output, "\n# Part: ");
   buffer_putsa(&output, &ptr->name);
   buffer_puts(&output, "\n");
@@ -637,7 +637,6 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
   }
 
   strlist_init(&refs, '\n');
-
 
   MAP_VISIT_ALL(nets, output_net, &u);
 
@@ -967,16 +966,16 @@ match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
 int
 main(int argc, char* argv[]) {
   xmlnode* doc;
-  int argi = 1, output_fd = 1;   
+  int argi = 1, output_fd = 1;
   const char* input_file = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
   const char* output_file = NULL;
-  
+
   MAP_NEW(devicesets);
   MAP_NEW(packages);
   MAP_NEW(parts);
   MAP_NEW(nets);
-  MAP_NEW(symbols); 
-   
+  MAP_NEW(symbols);
+
   strlist_init(&connections, '\0');
 
   if(argv[argi])

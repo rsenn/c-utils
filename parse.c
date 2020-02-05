@@ -128,12 +128,12 @@ print_args(buffer* b, const strlist* sl) {
 
 ssize_t
 parse_line(const char* x, ssize_t n) {
-ssize_t i;
+  ssize_t i;
   strlist args;
   stralloc str;
   strlist_init(&args, '\0');
   stralloc_init(&str);
-   i = byte_chr(x, n, '(');
+  i = byte_chr(x, n, '(');
   if(x[i] == '\0')
     return 0;
   i += 1;

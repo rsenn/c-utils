@@ -80,7 +80,7 @@ mkdir_components(strlist* dir, int mode) {
     strlist r = strlist_range(dir, 0, i);
 
 #ifdef DEBUG
-   debug_sa("mkdir_components", &r.sa);
+    debug_sa("mkdir_components", &r.sa);
 #endif
     if(mkdir_sa(&r.sa, mode) == -1)
       ret |= -1;
@@ -4028,7 +4028,7 @@ main(int argc, char* argv[]) {
   buffer* out = buffer_1;
   const char** it;
   const char* s;
-  size_t n;  
+  size_t n;
   target *rule, *all, *compile;
   char** arg;
 
@@ -4466,7 +4466,7 @@ main(int argc, char* argv[]) {
     goto exit;
   }
 
- all = rule_get("all");
+  all = rule_get("all");
 
   if(strlist_count(&dirs.work) && !stralloc_equals(&dirs.work.sa, ".")) {
 
@@ -4513,7 +4513,7 @@ main(int argc, char* argv[]) {
       stralloc_cats(&rulename, exts.obj);
     }
 
-compile = rule_get_sa(&rulename);
+    compile = rule_get_sa(&rulename);
     stralloc_weak(&compile->recipe, &compile_command);
 
     stralloc_free(&rulename);

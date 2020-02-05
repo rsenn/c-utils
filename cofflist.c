@@ -350,51 +350,51 @@ main(int argc, char** argv) {
         return -1;
       }
 
-{
-      coff_opt_header* opthdr = coff_header_opt(base);
+      {
+        coff_opt_header* opthdr = coff_header_opt(base);
 
-      if(opthdr->magic == COFF_OPT_MAGIC_MICROCHIP_V1) {
-        coff_opt_header_microchip* opthdr_mchp = (void*)opthdr;
+        if(opthdr->magic == COFF_OPT_MAGIC_MICROCHIP_V1) {
+          coff_opt_header_microchip* opthdr_mchp = (void*)opthdr;
 
-        put_value(buffer_2, "COFF_OPT_HEADER\nmagic", uint16_get(&opthdr_mchp->magic));
-        put_value(buffer_2, "vstamp", uint16_get(&opthdr_mchp->vstamp));
-        put_value(buffer_2, "proc_type", /*uint32_get*/ (opthdr_mchp->proc_type));
-        put_value(buffer_2, "rom_width_bits", /*uint32_get*/ (opthdr_mchp->rom_width_bits));
-        put_value(buffer_2, "ram_width_bits", /*uint32_get*/ (opthdr_mchp->ram_width_bits));
-      }
+          put_value(buffer_2, "COFF_OPT_HEADER\nmagic", uint16_get(&opthdr_mchp->magic));
+          put_value(buffer_2, "vstamp", uint16_get(&opthdr_mchp->vstamp));
+          put_value(buffer_2, "proc_type", /*uint32_get*/ (opthdr_mchp->proc_type));
+          put_value(buffer_2, "rom_width_bits", /*uint32_get*/ (opthdr_mchp->rom_width_bits));
+          put_value(buffer_2, "ram_width_bits", /*uint32_get*/ (opthdr_mchp->ram_width_bits));
+        }
 
-      // if(!(nt_headers->coff_header.characteristics & COFF_FILE_DLL)) {
-      // buffer_putsflush(buffer_2, "not DLL\n");
-      // return -1;
-      // }
-      //
-      /*      if(print_opt_header)
-              coff_dump_opthdr(buffer_1, base);
-      */
-      if(list_sections)
-        coff_dump_sections(base);
+        // if(!(nt_headers->coff_header.characteristics & COFF_FILE_DLL)) {
+        // buffer_putsflush(buffer_2, "not DLL\n");
+        // return -1;
+        // }
+        //
+        /*      if(print_opt_header)
+                coff_dump_opthdr(buffer_1, base);
+        */
+        if(list_sections)
+          coff_dump_sections(base);
 
-      if(list_imports || list_exports)
-        coff_list_symbols(buffer_1, base);
-      /*
-      if(list_imports)
-        coff_dump_imports(base);
+        if(list_imports || list_exports)
+          coff_list_symbols(buffer_1, base);
+        /*
+        if(list_imports)
+          coff_dump_imports(base);
 
-       if(list_exports)
-         coff_dump_exports(base);
-      if(print_export_dir) {
-        coff_data_directory* data_dir = &coff_header_datadir(base)[COFF_DIRECTORY_ENTRY_EXPORT];
-        coff_export_directory* export_dir = coff_rva2ptr(base, data_dir->virtual_address);
+         if(list_exports)
+           coff_dump_exports(base);
+        if(print_export_dir) {
+          coff_data_directory* data_dir = &coff_header_datadir(base)[COFF_DIRECTORY_ENTRY_EXPORT];
+          coff_export_directory* export_dir = coff_rva2ptr(base, data_dir->virtual_address);
 
-        coff_print_export_directory(buffer_2, base, export_dir);
-      }
-      if(print_data_dir) {
-        uint32 num_dirs;
-        coff_data_directory* data_dir = coff_get_datadir(base, &num_dirs);
+          coff_print_export_directory(buffer_2, base, export_dir);
+        }
+        if(print_data_dir) {
+          uint32 num_dirs;
+          coff_data_directory* data_dir = coff_get_datadir(base, &num_dirs);
 
-          coff_print_data_directories(buffer_2, base, data_dir, num_dirs);
-      }
-      */
+            coff_print_data_directories(buffer_2, base, data_dir, num_dirs);
+        }
+        */
       }
       mmap_unmap((void*)base, filesize);
     } else {

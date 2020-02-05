@@ -20,7 +20,7 @@ putdata(const uint8* x, size_t n) {
 
 int
 main(int argc, char* argv[]) {
-ssize_t ret;
+  ssize_t ret;
   static buffer input;
   const char* filename = argv[1] ? argv[1]
                                  : "/home/roman/Dokumente/Sources/xc8/pictest/bootloaders/18f2550-usb-hid-xc8/FIRMWARE/"
@@ -32,24 +32,24 @@ ssize_t ret;
   buffer_mmapread(&input, filename);
   buffer_getline_sa(&input, &sa);
 
-{
-  ihex_record* recp;
-  ihex_file ihx;
+  {
+    ihex_record* recp;
+    ihex_file ihx;
 
-   ret = ihex_load_record(&recp, sa.s, sa.len);
-  ret = ihex_load_buf(&ihx, x, sz);
+    ret = ihex_load_record(&recp, sa.s, sa.len);
+    ret = ihex_load_buf(&ihx, x, sz);
 
-  slink_foreach(ihx.records, recp) {
-    buffer_puts(buffer_2, "record addr = 0x");
-    buffer_putxlong0(buffer_2, recp->offset, 4);
-    buffer_puts(buffer_2, ", len = ");
-    buffer_putulong(buffer_2, recp->length);
-    buffer_puts(buffer_2, ", type = ");
-    buffer_putulong(buffer_2, recp->type);
-    buffer_puts(buffer_2, ", data = ");
-    putdata(recp->data, recp->length);
-    buffer_putnlflush(buffer_2);
-  }
+    slink_foreach(ihx.records, recp) {
+      buffer_puts(buffer_2, "record addr = 0x");
+      buffer_putxlong0(buffer_2, recp->offset, 4);
+      buffer_puts(buffer_2, ", len = ");
+      buffer_putulong(buffer_2, recp->length);
+      buffer_puts(buffer_2, ", type = ");
+      buffer_putulong(buffer_2, recp->type);
+      buffer_puts(buffer_2, ", data = ");
+      putdata(recp->data, recp->length);
+      buffer_putnlflush(buffer_2);
+    }
   }
 
   buffer_puts(buffer_2, "ret = ");
