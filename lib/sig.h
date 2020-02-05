@@ -52,8 +52,8 @@ typedef sighandler_t_fn* sighandler_t_ref;
 
 #if !defined(_POSIX_SOURCE) && !defined(__linux__) && !defined(__unix__)
 struct sigaction {
-  sighandler_t_ref sa_handler;
-  unsigned int sa_flags : 2;
+    sighandler_t_ref sa_handler;
+    unsigned int sa_flags : 2;
 };
 #endif
 

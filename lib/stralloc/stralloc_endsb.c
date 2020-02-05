@@ -3,5 +3,5 @@
 
 size_t
 stralloc_endsb(const stralloc* sa, const char* x, size_t n) {
-  return (sa->len >= n) && byte_equal(sa->s + sa->len - n, n, x);
+    return (sa->len >= n) && byte_equal(sa->s + sa->len - n, n, x);
 }

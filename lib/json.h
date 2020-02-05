@@ -14,39 +14,39 @@ extern "C" {
 #endif
 
 typedef enum {
-  JSON_UNDEFINED = 0,
-  JSON_BOOL,
-  JSON_INT,
-  JSON_DOUBLE,
-  JSON_STRING,
-  JSON_ARRAY,
-  JSON_OBJECT,
+    JSON_UNDEFINED = 0,
+    JSON_BOOL,
+    JSON_INT,
+    JSON_DOUBLE,
+    JSON_STRING,
+    JSON_ARRAY,
+    JSON_OBJECT,
 } jsondata;
 
 typedef struct {
-  jsondata type;
-  union {
-    int boolv : 1;
-    int64 intv;
-    double doublev;
-    stralloc stringv;
-    slink* listv;
-    HMAP_DB* dictv;
-  };
+    jsondata type;
+    union {
+        int boolv : 1;
+        int64 intv;
+        double doublev;
+        stralloc stringv;
+        slink* listv;
+        HMAP_DB* dictv;
+    };
 } jsonval;
 
 typedef struct {
-  charbuf* b;
-  jsonval* doc;
-  jsonval** loc;
+    charbuf* b;
+    jsonval* doc;
+    jsonval** loc;
 } jsonreader;
 
 typedef union {
-  const char* ws[5];
-  struct {
-    char *indent, *newline, *spacing, *separat, *quote;
-    int precision, depth, index;
-  };
+    const char* ws[5];
+    struct {
+        char *indent, *newline, *spacing, *separat, *quote;
+        int precision, depth, index;
+    };
 } jsonfmt;
 
 #define JSON_FMT_INDENT 0
@@ -91,91 +91,91 @@ const char* json_tostring(jsonval, stralloc* sa);
 
 static inline int
 json_is_identifier_char(int c) {
-  return isalpha(c) || c == '$' || c == '_' || ispunct(c);
+    return isalpha(c) || c == '$' || c == '_' || ispunct(c);
 }
 static inline const char*
 json_str(jsonval* val) {
-  if(val->type == JSON_STRING) {
-    stralloc_nul(&val->stringv);
-    return val->stringv.s;
-  }
-  return 0;
+    if(val->type == JSON_STRING) {
+        stralloc_nul(&val->stringv);
+        return val->stringv.s;
+    }
+    return 0;
 }
 
 static inline jsonval
 json_undefined() {
-  jsonval ret;
-  ret.type = JSON_UNDEFINED;
-  return ret;
+    jsonval ret;
+    ret.type = JSON_UNDEFINED;
+    return ret;
 }
 static inline jsonval
 json_null() {
-  jsonval ret;
-  ret.type = JSON_OBJECT;
-  ret.dictv = 0;
-  return ret;
+    jsonval ret;
+    ret.type = JSON_OBJECT;
+    ret.dictv = 0;
+    return ret;
 }
 static inline jsonval
 json_object() {
-  jsonval ret;
-  ret.type = JSON_OBJECT;
-  ret.dictv = 0;
-  hmap_init(MAP_BUCKET, &ret.dictv);
-  return ret;
+    jsonval ret;
+    ret.type = JSON_OBJECT;
+    ret.dictv = 0;
+    hmap_init(MAP_BUCKET, &ret.dictv);
+    return ret;
 }
 static inline jsonval
 json_array() {
-  jsonval ret;
-  ret.type = JSON_ARRAY;
-  ret.listv = 0;
-  return ret;
+    jsonval ret;
+    ret.type = JSON_ARRAY;
+    ret.listv = 0;
+    return ret;
 }
 static inline jsonval
 json_double(double n) {
-  jsonval ret;
-  ret.type = JSON_DOUBLE;
-  ret.doublev = n;
-  return ret;
+    jsonval ret;
+    ret.type = JSON_DOUBLE;
+    ret.doublev = n;
+    return ret;
 }
 static inline jsonval
 json_int(int64 i) {
-  jsonval ret;
-  ret.type = JSON_INT;
-  ret.intv = i;
-  return ret;
+    jsonval ret;
+    ret.type = JSON_INT;
+    ret.intv = i;
+    return ret;
 }
 static inline jsonval
 json_bool(int b) {
-  jsonval ret;
-  ret.type = JSON_BOOL;
-  ret.boolv = !!b;
-  return ret;
+    jsonval ret;
+    ret.type = JSON_BOOL;
+    ret.boolv = !!b;
+    return ret;
 }
 static inline jsonval
 json_string(const char* s) {
-  jsonval ret;
-  ret.type = JSON_STRING;
-  ret.stringv.a = 1 + (ret.stringv.len = str_len(s));
-  ret.stringv.s = (char*)str_ndup(s, ret.stringv.len);
-  return ret;
+    jsonval ret;
+    ret.type = JSON_STRING;
+    ret.stringv.a = 1 + (ret.stringv.len = str_len(s));
+    ret.stringv.s = (char*)str_ndup(s, ret.stringv.len);
+    return ret;
 }
 static inline jsonval
 json_stringn(const char* s, size_t n) {
-  jsonval ret;
-  ret.type = JSON_STRING;
-  ret.stringv.s = (char*)str_ndup(s, n);
-  ret.stringv.len = n;
-  ret.stringv.a = n + 1;
-  return ret;
+    jsonval ret;
+    ret.type = JSON_STRING;
+    ret.stringv.s = (char*)str_ndup(s, n);
+    ret.stringv.len = n;
+    ret.stringv.a = n + 1;
+    return ret;
 }
 
 static inline int
 json_isnull(jsonval v) {
-  return v.type == JSON_OBJECT && v.dictv == 0;
+    return v.type == JSON_OBJECT && v.dictv == 0;
 }
 static inline int
 json_isnumber(jsonval v) {
-  return v.type == JSON_INT || v.type == JSON_DOUBLE;
+    return v.type == JSON_INT || v.type == JSON_DOUBLE;
 }
 
 #ifdef __cplusplus

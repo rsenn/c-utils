@@ -20,9 +20,9 @@ extern "C" {
  */
 
 typedef struct stralloc_s {
-  char* s;
-  size_t len;
-  size_t a;
+    char* s;
+    size_t len;
+    size_t a;
 } stralloc;
 
 /* stralloc_init will initialize a stralloc.
@@ -200,7 +200,7 @@ size_t stralloc_scan(stralloc* out, const stralloc* in, size_t (*scan_function)(
 #else
 inline static size_t
 stralloc_length(const stralloc* sa) {
-  return sa->len;
+    return sa->len;
 }
 #endif
 
@@ -215,11 +215,11 @@ size_t stralloc_endb(const stralloc* sa, const void* suffix, size_t len);
 
 inline static void
 stralloc_iterator_increment(char** it) {
-  ++(*it);
+    ++(*it);
 }
 inline static int
 stralloc_iterator_equal(char** it1, char** it2) {
-  return it1 == it2;
+    return it1 == it2;
 }
 
 #ifdef BYTE_H

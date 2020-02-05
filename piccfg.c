@@ -19,28 +19,28 @@
 #include <ctype.h>
 
 typedef struct cvalue {
-  struct cvalue* next;
-  uint16 value;
-  int is_default;
-  const char* name;
-  const char* description;
+    struct cvalue* next;
+    uint16 value;
+    int is_default;
+    const char* name;
+    const char* description;
 } cvalue;
 
 typedef struct csetting {
-  struct csetting* next;
-  uint16 mask;
-  const char* name;
-  const char* description;
-  struct cvalue* values;
+    struct csetting* next;
+    uint16 mask;
+    const char* name;
+    const char* description;
+    struct cvalue* values;
 } csetting;
 
 typedef struct cword {
-  struct cword* next;
-  uint32 address;
-  uint16 mask;
-  uint16 default_value;
-  const char* name;
-  csetting* settings;
+    struct cword* next;
+    uint32 address;
+    uint16 mask;
+    uint16 default_value;
+    const char* name;
+    csetting* settings;
 } cword;
 
 static cword* words;
@@ -53,408 +53,409 @@ static int nodefault = 1, oneline = 0, comments = 1, output_name = 0, verbose = 
 
 uint16
 config_data_at(uint32 addr) {
-  if(baseaddr == 0x0000400e) {
-    size_t offs = addr - 0x2007;
-    assert(offs < cfg.len);
-    return uint16_read(&cfg.s[offs]);
-  } else {
-    size_t offs = (addr & 0x0fff);
-    return cfg.s[offs];
-  }
+    if(baseaddr == 0x0000400e) {
+        size_t offs = addr - 0x2007;
+        assert(offs < cfg.len);
+        return uint16_read(&cfg.s[offs]);
+    } else {
+        size_t offs = (addr & 0x0fff);
+        return cfg.s[offs];
+    }
 }
 
 void
 dump_cword(buffer* b, cword* word) {
-  buffer_puts(b, word->name ? word->name : "(null)");
-  buffer_puts(b, " @ 0x");
-  buffer_putxlong0(b, word->address, 4);
-  buffer_puts(b, "\tmask 0x");
-  buffer_putxlong0(b, word->mask, 2);
-  buffer_puts(b, "\tdefault 0x");
-  buffer_putxlong0(b, word->default_value, 2);
-  buffer_putnlflush(b);
+    buffer_puts(b, word->name ? word->name : "(null)");
+    buffer_puts(b, " @ 0x");
+    buffer_putxlong0(b, word->address, 4);
+    buffer_puts(b, "\tmask 0x");
+    buffer_putxlong0(b, word->mask, 2);
+    buffer_puts(b, "\tdefault 0x");
+    buffer_putxlong0(b, word->default_value, 2);
+    buffer_putnlflush(b);
 }
 
 void
 dump_csetting(buffer* b, csetting* setting) {
-  buffer_puts(b, "  ");
-  buffer_puts(b, setting->name ? setting->name : "(null)");
-  buffer_puts(b, "\tmask 0x");
-  buffer_putxlong0(b, setting->mask, 2);
-  buffer_puts(b, "\t\t");
-  buffer_puts(b, setting->description);
-  buffer_putnlflush(b);
+    buffer_puts(b, "  ");
+    buffer_puts(b, setting->name ? setting->name : "(null)");
+    buffer_puts(b, "\tmask 0x");
+    buffer_putxlong0(b, setting->mask, 2);
+    buffer_puts(b, "\t\t");
+    buffer_puts(b, setting->description);
+    buffer_putnlflush(b);
 }
 void
 dump_cvalue(buffer* b, cvalue* value) {
-  buffer_puts(b, "    ");
-  buffer_puts(b, value->name ? value->name : "(null)");
-  buffer_puts(b, "\tvalue 0x");
-  buffer_putxlong0(b, value->value, 2);
-  buffer_puts(b, "\t\t");
-  buffer_puts(b, value->description);
-  buffer_putnlflush(b);
+    buffer_puts(b, "    ");
+    buffer_puts(b, value->name ? value->name : "(null)");
+    buffer_puts(b, "\tvalue 0x");
+    buffer_putxlong0(b, value->value, 2);
+    buffer_puts(b, "\t\t");
+    buffer_puts(b, value->description);
+    buffer_putnlflush(b);
 }
 
 cvalue**
 parse_cfgvalue(cvalue** vptr, cword* w, csetting* s, const char* x, size_t n) {
-  cvalue* v = *vptr = alloc(sizeof(cvalue));
-  size_t i;
-  unsigned long value;
-  i = scan_xlongn(x, n, &value);
-  assert(i);
-  v->is_default = (w->default_value & s->mask) == value;
-  v->value = value;
-  x += i + 1;
-  n -= i + 1;
-  i = byte_chr(x, n, ':');
-  i = byte_chr(x, i, ',');
-  v->name = str_ndup(x, i);
-  assert(i < n);
-  x += i + 1;
-  n -= i + 1;
-  v->description = str_ndup(x, n);
-  v->next = NULL;
-  return &v->next;
+    cvalue* v = *vptr = alloc(sizeof(cvalue));
+    size_t i;
+    unsigned long value;
+    i = scan_xlongn(x, n, &value);
+    assert(i);
+    v->is_default = (w->default_value & s->mask) == value;
+    v->value = value;
+    x += i + 1;
+    n -= i + 1;
+    i = byte_chr(x, n, ':');
+    i = byte_chr(x, i, ',');
+    v->name = str_ndup(x, i);
+    assert(i < n);
+    x += i + 1;
+    n -= i + 1;
+    v->description = str_ndup(x, n);
+    v->next = NULL;
+    return &v->next;
 }
 
 csetting**
 parse_cfgsetting(csetting** sptr, cword* w, const char* x, size_t n) {
-  csetting* s = *sptr = alloc(sizeof(csetting));
-  size_t i;
-  unsigned long value;
-  i = scan_xlongn(x, n, &value);
-  assert(i);
-  s->mask = value;
-  x += i + 1;
-  n -= i + 1;
-  i = byte_chr(x, n, ':');
-  s->name = str_ndup(x, i);
-  assert(i < n);
-  x += i + 1;
-  n -= i + 1;
-  s->description = str_ndup(x, n);
-  s->next = NULL;
-  s->values = NULL;
-  return &s->next;
+    csetting* s = *sptr = alloc(sizeof(csetting));
+    size_t i;
+    unsigned long value;
+    i = scan_xlongn(x, n, &value);
+    assert(i);
+    s->mask = value;
+    x += i + 1;
+    n -= i + 1;
+    i = byte_chr(x, n, ':');
+    s->name = str_ndup(x, i);
+    assert(i < n);
+    x += i + 1;
+    n -= i + 1;
+    s->description = str_ndup(x, n);
+    s->next = NULL;
+    s->values = NULL;
+    return &s->next;
 }
 
 cword**
 parse_cfgword(cword** wptr, const char* x, size_t n) {
-  cword* w = *wptr = alloc(sizeof(cword));
-  size_t i;
-  unsigned long value;
-  i = scan_xlongn(x, n, &value);
-  assert(i);
-  w->address = value;
-  x += i + 1;
-  n -= i + 1;
-  i = scan_xlongn(x, n, &value);
-  assert(i);
-  w->mask = value;
-  x += i + 1;
-  n -= i + 1;
-  i = scan_xlongn(x, n, &value);
-  assert(i);
-  w->default_value = value;
-  x += i + 1;
-  n -= i + 1;
-  w->name = str_ndup(x, n);
-  w->next = NULL;
-  w->settings = NULL;
-  return &w->next;
+    cword* w = *wptr = alloc(sizeof(cword));
+    size_t i;
+    unsigned long value;
+    i = scan_xlongn(x, n, &value);
+    assert(i);
+    w->address = value;
+    x += i + 1;
+    n -= i + 1;
+    i = scan_xlongn(x, n, &value);
+    assert(i);
+    w->mask = value;
+    x += i + 1;
+    n -= i + 1;
+    i = scan_xlongn(x, n, &value);
+    assert(i);
+    w->default_value = value;
+    x += i + 1;
+    n -= i + 1;
+    w->name = str_ndup(x, n);
+    w->next = NULL;
+    w->settings = NULL;
+    return &w->next;
 }
 
 int
 parse_cfgdata(cword** wptr, const char* x, size_t n) {
-  size_t eol, col;
-  cword* w = 0;
-  csetting *s = 0, **sptr = NULL;
-  cvalue *v = 0, **vptr = NULL;
+    size_t eol, col;
+    cword* w = 0;
+    csetting *s = 0, **sptr = NULL;
+    cvalue *v = 0, **vptr = NULL;
 
-  while(n > 0) {
+    while(n > 0) {
 
-    eol = byte_chr(x, n, '\n');
+        eol = byte_chr(x, n, '\n');
 
-    if(eol > 0 && x[0] == 'C') {
-      const char* line = x;
-      col = byte_chr(x, n, ':') + 1;
-      assert(col < eol);
-      x += col;
-      n -= col;
-      eol -= col;
+        if(eol > 0 && x[0] == 'C') {
+            const char* line = x;
+            col = byte_chr(x, n, ':') + 1;
+            assert(col < eol);
+            x += col;
+            n -= col;
+            eol -= col;
 
-      if(!str_diffn(line, "CWORD", 5)) {
-        cword** nwptr = parse_cfgword(wptr, x, eol);
-        w = *wptr;
-        sptr = &w->settings;
-        wptr = nwptr;
-      } else if(!str_diffn(line, "CSETTING", 8)) {
-        csetting** nsptr = parse_cfgsetting(sptr, w, x, eol);
-        s = *sptr;
-        vptr = &s->values;
-        sptr = nsptr;
-      } else if(!str_diffn(line, "CVALUE", 6)) {
-        cvalue** nvptr = parse_cfgvalue(vptr, w, s, x, eol);
-        v = *vptr;
-        vptr = nvptr;
-      }
+            if(!str_diffn(line, "CWORD", 5)) {
+                cword** nwptr = parse_cfgword(wptr, x, eol);
+                w = *wptr;
+                sptr = &w->settings;
+                wptr = nwptr;
+            } else if(!str_diffn(line, "CSETTING", 8)) {
+                csetting** nsptr = parse_cfgsetting(sptr, w, x, eol);
+                s = *sptr;
+                vptr = &s->values;
+                sptr = nsptr;
+            } else if(!str_diffn(line, "CVALUE", 6)) {
+                cvalue** nvptr = parse_cfgvalue(vptr, w, s, x, eol);
+                v = *vptr;
+                vptr = nvptr;
+            }
+        }
+
+        if(eol < n)
+            eol++;
+
+        x += eol;
+        n -= eol;
     }
-
-    if(eol < n)
-      eol++;
-
-    x += eol;
-    n -= eol;
-  }
-  return 0;
+    return 0;
 }
 
 size_t
 config_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
-  size_t bytes;
-  stralloc_zero(sa);
-  stralloc_ready(sa, 14);
+    size_t bytes;
+    stralloc_zero(sa);
+    stralloc_ready(sa, 14);
 
-  if(((bytes = ihex_read_at(&hex, 0x00300000, sa->s, 14)) == 14)) {
-    *addr = 0x00300000;
-  } else {
-    if((bytes = ihex_read_at(&hex, 0x400e, sa->s, 2)) == 2)
-      *addr = 0x400e;
-  }
+    if(((bytes = ihex_read_at(&hex, 0x00300000, sa->s, 14)) == 14)) {
+        *addr = 0x00300000;
+    } else {
+        if((bytes = ihex_read_at(&hex, 0x400e, sa->s, 2)) == 2)
+            *addr = 0x400e;
+    }
 
-  sa->len = bytes;
-  return bytes;
+    sa->len = bytes;
+    return bytes;
 }
 
 uint16
 get_setting_word(cword* word, csetting* setting) {
-  uint16 value = config_data_at(word->address);
+    uint16 value = config_data_at(word->address);
 
-  value &= setting->mask;
+    value &= setting->mask;
 
-  return value;
+    return value;
 }
 
 cvalue*
 get_setting_value(cword* word, csetting* setting) {
-  cvalue* value;
-  uint16 byteval = get_setting_word(word, setting);
+    cvalue* value;
+    uint16 byteval = get_setting_word(word, setting);
 
-  if(verbose) {
-    buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", 0);
-    buffer_putxlong0(buffer_2, byteval, 2);
-    buffer_putnlflush(buffer_2);
-  }
-
-  slink_foreach(setting->values, value) {
     if(verbose) {
-      buffer_putm_internal(buffer_2, "  ", value->name, ": ", 0);
-      buffer_putxlong0(buffer_2, value->value, 2);
-      buffer_putnlflush(buffer_2);
+        buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", 0);
+        buffer_putxlong0(buffer_2, byteval, 2);
+        buffer_putnlflush(buffer_2);
     }
 
-    if(value->value == byteval)
-      return value;
-  }
+    slink_foreach(setting->values, value) {
+        if(verbose) {
+            buffer_putm_internal(buffer_2, "  ", value->name, ": ", 0);
+            buffer_putxlong0(buffer_2, value->value, 2);
+            buffer_putnlflush(buffer_2);
+        }
 
-  return NULL;
+        if(value->value == byteval)
+            return value;
+    }
+
+    return NULL;
 }
 
 csetting*
 find_setting(const char* str) {
-  cword* word;
-  csetting* setting;
-  slink_foreach(words, word) {
-    slink_foreach(word->settings, setting) {
-      if(!str_diffn(str, setting->name, str_len(setting->name)))
-        return setting;
+    cword* word;
+    csetting* setting;
+    slink_foreach(words, word) {
+        slink_foreach(word->settings, setting) {
+            if(!str_diffn(str, setting->name, str_len(setting->name)))
+                return setting;
+        }
     }
-  }
-  return NULL;
+    return NULL;
 }
 
 cvalue*
 find_value(const char* str) {
-  csetting* setting = find_setting(str);
-  cvalue* value;
-  str += str_chr(str, '=');
-  while(*str == '=' || *str == ' ') ++str;
-  slink_foreach(setting->values, value) {
-    if(!str_diffn(str, value->name, str_len(value->name)))
-      return value;
-  }
-  return NULL;
+    csetting* setting = find_setting(str);
+    cvalue* value;
+    str += str_chr(str, '=');
+    while(*str == '=' || *str == ' ') ++str;
+    slink_foreach(setting->values, value) {
+        if(!str_diffn(str, value->name, str_len(value->name)))
+            return value;
+    }
+    return NULL;
 }
 
 const char*
 infer_chip(const char* x, size_t n) {
-  static stralloc chip;
-  size_t i;
+    static stralloc chip;
+    size_t i;
 
-  for(i = 0; i + 3 < n; i++) {
-    size_t len = n - i;
-    const char* s = &x[i];
+    for(i = 0; i + 3 < n; i++) {
+        size_t len = n - i;
+        const char* s = &x[i];
 
-    if(*s == '1') {
-      char c2 = tolower(s[2]);
-      if(c2 == 'l' || c2 == 'f') {
-        char c1 = s[1];
-        if(c1 == '2' || c1 == '6' || c1 == '8') {
-          len = scan_charsetnskip(s, "0123456789aAbBcCeEfFgGhHiIjJkKlLmMnNpPrRtTvV", len);
+        if(*s == '1') {
+            char c2 = tolower(s[2]);
+            if(c2 == 'l' || c2 == 'f') {
+                char c1 = s[1];
+                if(c1 == '2' || c1 == '6' || c1 == '8') {
+                    len = scan_charsetnskip(s, "0123456789aAbBcCeEfFgGhHiIjJkKlLmMnNpPrRtTvV", len);
 
-          if(len > 3) {
-            stralloc_copyb(&chip, s, len);
-            stralloc_lower(&chip);
-            stralloc_nul(&chip);
-            return chip.s;
-          }
+                    if(len > 3) {
+                        stralloc_copyb(&chip, s, len);
+                        stralloc_lower(&chip);
+                        stralloc_nul(&chip);
+                        return chip.s;
+                    }
+                }
+            }
         }
-      }
     }
-  }
-  return 0;
+    return 0;
 }
 
 const char*
 get_cfgdat(const char* chip) {
-  size_t i;
-  static stralloc path;
-  if(path.len == 0) {
-    dir_t d;
-    const char *dir = 0, *subdir;
-    static const char* const search_dirs[] = {"/opt/microchip",
-                                              "C:\\Program Files\\Microchip",
-                                              "C:\\Program Files (x86)\\Microchip"};
-    for(i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
-      dir = search_dirs[i];
-      if(path_exists(dir))
-        break;
+    size_t i;
+    static stralloc path;
+    if(path.len == 0) {
+        dir_t d;
+        const char *dir = 0, *subdir;
+        static const char* const search_dirs[] = {"/opt/microchip",
+                                                  "C:\\Program Files\\Microchip",
+                                                  "C:\\Program Files (x86)\\Microchip"
+                                                 };
+        for(i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
+            dir = search_dirs[i];
+            if(path_exists(dir))
+                break;
+        }
+        if(dir == NULL)
+            return NULL;
+        stralloc_copys(&path, dir);
+        stralloc_cats(&path, "/xc8/");
+        stralloc_nul(&path);
+        dir_open(&d, path.s);
+        while((subdir = dir_read(&d))) {
+            if(subdir[0] == '.')
+                continue;
+            dir = subdir;
+            /*  buffer_putm_internal(buffer_2, "subdir = ", subdir, 0);
+              buffer_putnlflush(buffer_2);*/
+        }
+        stralloc_cats(&path, dir);
     }
-    if(dir == NULL)
-      return NULL;
-    stralloc_copys(&path, dir);
-    stralloc_cats(&path, "/xc8/");
+    path.len = stralloc_finds(&path, "/dat/");
+    stralloc_cats(&path, "/dat/cfgdata/");
+    stralloc_cats(&path, chip);
+    stralloc_cats(&path, ".cfgdata");
     stralloc_nul(&path);
-    dir_open(&d, path.s);
-    while((subdir = dir_read(&d))) {
-      if(subdir[0] == '.')
-        continue;
-      dir = subdir;
-      /*  buffer_putm_internal(buffer_2, "subdir = ", subdir, 0);
-        buffer_putnlflush(buffer_2);*/
-    }
-    stralloc_cats(&path, dir);
-  }
-  path.len = stralloc_finds(&path, "/dat/");
-  stralloc_cats(&path, "/dat/cfgdata/");
-  stralloc_cats(&path, chip);
-  stralloc_cats(&path, ".cfgdata");
-  stralloc_nul(&path);
 
-  if(path_exists(path.s)) {
-    buffer_putm_internal(buffer_2, "Found cfgdata: ", path.s, 0);
-    buffer_putnlflush(buffer_2);
-    return path.s;
-  }
-  return 0;
+    if(path_exists(path.s)) {
+        buffer_putm_internal(buffer_2, "Found cfgdata: ", path.s, 0);
+        buffer_putnlflush(buffer_2);
+        return path.s;
+    }
+    return 0;
 }
 
 void
 add_item(const char* name, const char* value) {
 
-  stralloc out;
-  stralloc_init(&out);
+    stralloc out;
+    stralloc_init(&out);
 
-  if(value)
-    stralloc_catm_internal(&out, name, " = ", value, 0);
-  else
-    stralloc_catm_internal(&out, "// ", name, 0);
+    if(value)
+        stralloc_catm_internal(&out, name, " = ", value, 0);
+    else
+        stralloc_catm_internal(&out, "// ", name, 0);
 
-  strlist_push_sa(&pragmas, &out);
+    strlist_push_sa(&pragmas, &out);
 
-  stralloc_free(&out);
+    stralloc_free(&out);
 }
 
 void
 process_config(void (*callback)(const char* key, const char* value)) {
-  cword *prevword = 0, *word;
-  csetting* setting;
-  cvalue* value;
+    cword *prevword = 0, *word;
+    csetting* setting;
+    cvalue* value;
 
-  slink_foreach(words, word) {
-    if(!str_diffn(word->name, "IDLOC", 5))
-      break;
+    slink_foreach(words, word) {
+        if(!str_diffn(word->name, "IDLOC", 5))
+            break;
 
-    if(verbose)
-      dump_cword(buffer_2, word);
+        if(verbose)
+            dump_cword(buffer_2, word);
 
-    slink_foreach(word->settings, setting) {
+        slink_foreach(word->settings, setting) {
 
-      value = get_setting_value(word, setting);
+            value = get_setting_value(word, setting);
 
-      if(value == NULL) {
-        buffer_puts(buffer_2, "WARNING:  value ");
-        buffer_putxlong0(buffer_2, get_setting_word(word, setting), 2);
-        buffer_putm_internal(buffer_2, " for setting ", setting->name, " not found!", 0);
-        buffer_putnlflush(buffer_2);
-        continue;
-      }
+            if(value == NULL) {
+                buffer_puts(buffer_2, "WARNING:  value ");
+                buffer_putxlong0(buffer_2, get_setting_word(word, setting), 2);
+                buffer_putm_internal(buffer_2, " for setting ", setting->name, " not found!", 0);
+                buffer_putnlflush(buffer_2);
+                continue;
+            }
 
-      if(value->is_default && nodefault) {
+            if(value->is_default && nodefault) {
 #ifdef DEBUG_OUTPUT
-        if(verbose) {
-          buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, 0);
-          buffer_putnlflush(buffer_2);
-        }
+                if(verbose) {
+                    buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, 0);
+                    buffer_putnlflush(buffer_2);
+                }
 #endif
-        continue;
-      }
+                continue;
+            }
 
-      if(output_name && prevword != word)
-        callback(word->name, NULL);
+            if(output_name && prevword != word)
+                callback(word->name, NULL);
 
-      callback(setting->name, value->name);
-      prevword = word;
+            callback(setting->name, value->name);
+            prevword = word;
+        }
     }
-  }
 }
 
 void
 output_items(const strlist* items) {
-  const char* x;
-  int i, col = 0;
-  size_t n;
+    const char* x;
+    int i, col = 0;
+    size_t n;
 
-  i = 0;
-  strlist_foreach(items, x, n) {
-    if(x[0] != '/') {
-      if(i)
-        buffer_puts(buffer_1, (oneline && col > 0) ? ", " : "\n#pragma config ");
-      else
-        buffer_puts(buffer_1, "#pragma config ");
+    i = 0;
+    strlist_foreach(items, x, n) {
+        if(x[0] != '/') {
+            if(i)
+                buffer_puts(buffer_1, (oneline && col > 0) ? ", " : "\n#pragma config ");
+            else
+                buffer_puts(buffer_1, "#pragma config ");
 
-    } else if(i) {
-      col = -1;
-      buffer_puts(buffer_1, "\n\n");
+        } else if(i) {
+            col = -1;
+            buffer_puts(buffer_1, "\n\n");
+        }
+
+        if(comments && !oneline) {
+            csetting* setting = find_setting(x);
+            const char* description = setting ? setting->description : 0;
+            cvalue* value = find_value(x);
+            if(value)
+                description = value->description;
+            buffer_putspad(buffer_1, x, 20);
+            buffer_putm_internal(buffer_1, " // ", description, 0);
+
+        } else
+
+            buffer_put(buffer_1, x, n);
+        ++i;
+        ++col;
     }
-
-    if(comments && !oneline) {
-      csetting* setting = find_setting(x);
-      const char* description = setting ? setting->description : 0;
-      cvalue* value = find_value(x);
-      if(value)
-        description = value->description;
-      buffer_putspad(buffer_1, x, 20);
-      buffer_putm_internal(buffer_1, " // ", description, 0);
-
-    } else
-
-      buffer_put(buffer_1, x, n);
-    ++i;
-    ++col;
-  }
-  buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_1);
 }
 
 /**
@@ -463,111 +464,124 @@ output_items(const strlist* items) {
  */
 void
 usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(argv0),
-                       " <hex-file> <cfgdata-file>\n"
-                       "\n"
-                       "Options\n"
-                       "  -h, --help                show this help\n"
-                       "  -o, --oneline             output oneliner\n"
-                       "  -D, --no-default          don't output settings with default value\n"
-                       "  -C, --no-comments         don't output description comments\n"
-                       "  -n, --name                output register name\n"
-                       "  -v, --verbose             show verbose messages\n"
-                       "\n",
-                       NULL);
-  buffer_putnlflush(buffer_1);
+    buffer_putm_internal(buffer_1,
+                         "Usage: ",
+                         str_basename(argv0),
+                         " <hex-file> <cfgdata-file>\n"
+                         "\n"
+                         "Options\n"
+                         "  -h, --help                show this help\n"
+                         "  -o, --oneline             output oneliner\n"
+                         "  -D, --no-default          don't output settings with default value\n"
+                         "  -C, --no-comments         don't output description comments\n"
+                         "  -n, --name                output register name\n"
+                         "  -v, --verbose             show verbose messages\n"
+                         "\n",
+                         NULL);
+    buffer_putnlflush(buffer_1);
 }
 
 int
 main(int argc, char* argv[]) {
-  const char* x;
-  size_t i, n;
-  int c, index = 0;
-  const char *cfgdata = 0, *hexfile = 0;
+    const char* x;
+    size_t i, n;
+    int c, index = 0;
+    const char *cfgdata = 0, *hexfile = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"oneline", 0, &oneline, 1},
-                           {"default", 0, &nodefault, 0},
-                           {"no-comments", 0, &comments, 0},
-                           {"name", 0, &output_name, 1},
-                           {"verbose", 0, &verbose, 1},
-                           {0, 0, 0, 0}};
+    struct longopt opts[] = {{"help", 0, NULL, 'h'},
+        {"oneline", 0, &oneline, 1},
+        {"default", 0, &nodefault, 0},
+        {"no-comments", 0, &comments, 0},
+        {"name", 0, &output_name, 1},
+        {"verbose", 0, &verbose, 1},
+        {0, 0, 0, 0}
+    };
 
-  for(;;) {
-    c = getopt_long(argc, argv, "hodCnv", opts, &index);
-    if(c == -1)
-      break;
-    if(c == 0)
-      continue;
+    for(;;) {
+        c = getopt_long(argc, argv, "hodCnv", opts, &index);
+        if(c == -1)
+            break;
+        if(c == 0)
+            continue;
 
-    switch(c) {
-      case 'h': usage(argv[0]); return 0;
-      case 'o': oneline = 1; break;
-      case 'd': nodefault = 0; break;
-      case 'C': comments = 0; break;
-      case 'n': output_name = 1; break;
-      case 'v': verbose++; break;
-      default:
-        buffer_puts(buffer_2, "No such option '-");
-        buffer_putc(buffer_2, c);
-        buffer_putsflush(buffer_2, "'\n");
+        switch(c) {
+        case 'h':
+            usage(argv[0]);
+            return 0;
+        case 'o':
+            oneline = 1;
+            break;
+        case 'd':
+            nodefault = 0;
+            break;
+        case 'C':
+            comments = 0;
+            break;
+        case 'n':
+            output_name = 1;
+            break;
+        case 'v':
+            verbose++;
+            break;
+        default:
+            buffer_puts(buffer_2, "No such option '-");
+            buffer_putc(buffer_2, c);
+            buffer_putsflush(buffer_2, "'\n");
 
-        return 1;
+            return 1;
+        }
     }
-  }
 
-  if(optind < argc) {
-    hexfile = argv[optind++];
+    if(optind < argc) {
+        hexfile = argv[optind++];
 
-    if(optind < argc)
-      cfgdata = argv[optind++];
-  }
-
-  if(!hexfile)
-    hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
-
-  if(cfgdata) {
-    if(!path_exists(cfgdata))
-      cfgdata = get_cfgdat(cfgdata);
-  } else {
-    const char* chip = infer_chip(hexfile, str_len(hexfile));
-    if(chip)
-      cfgdata = get_cfgdat(chip);
-  }
-
-  x = mmap_read(cfgdata, &n);
-  assert(x);
-  assert(n);
-  parse_cfgdata(&words, x, n);
-  mmap_unmap(x, n);
-
-  x = mmap_read(hexfile, &n);
-  assert(x);
-  assert(n);
-  ihex_load_buf(&hex, x, n);
-  mmap_unmap(x, n);
-
-  stralloc_init(&cfg);
-  config_bytes(&hex, &cfg, &baseaddr);
-
-  if(verbose) {
-    for(i = 0; i < cfg.len; i += 2) {
-      uint16 v = uint16_read(&cfg.s[i]);
-
-      buffer_putxlong0(buffer_2, baseaddr + i, 4);
-      buffer_puts(buffer_2, ": ");
-      buffer_putxlong0(buffer_2, v, 4);
-      buffer_putnlflush(buffer_2);
+        if(optind < argc)
+            cfgdata = argv[optind++];
     }
-  }
 
-  strlist_init(&pragmas, '\0');
+    if(!hexfile)
+        hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
 
-  process_config(&add_item);
+    if(cfgdata) {
+        if(!path_exists(cfgdata))
+            cfgdata = get_cfgdat(cfgdata);
+    } else {
+        const char* chip = infer_chip(hexfile, str_len(hexfile));
+        if(chip)
+            cfgdata = get_cfgdat(chip);
+    }
 
-  output_items(&pragmas);
+    x = mmap_read(cfgdata, &n);
+    assert(x);
+    assert(n);
+    parse_cfgdata(&words, x, n);
+    mmap_unmap(x, n);
 
-  return 0;
+    x = mmap_read(hexfile, &n);
+    assert(x);
+    assert(n);
+    ihex_load_buf(&hex, x, n);
+    mmap_unmap(x, n);
+
+    stralloc_init(&cfg);
+    config_bytes(&hex, &cfg, &baseaddr);
+
+    if(verbose) {
+        for(i = 0; i < cfg.len; i += 2) {
+            uint16 v = uint16_read(&cfg.s[i]);
+
+            buffer_putxlong0(buffer_2, baseaddr + i, 4);
+            buffer_puts(buffer_2, ": ");
+            buffer_putxlong0(buffer_2, v, 4);
+            buffer_putnlflush(buffer_2);
+        }
+    }
+
+    strlist_init(&pragmas, '\0');
+
+    process_config(&add_item);
+
+    output_items(&pragmas);
+
+    return 0;
 }

@@ -28,24 +28,24 @@
 #define PKGCFG_SHORT_ERR 4
 
 typedef enum {
-  PRINT_VERSION = 1,
-  PRINT_CFLAGS,
-  PRINT_LIBS,
-  PRINT_REQUIRES,
-  PRINT_PATH,
-  LIST_ALL,
+    PRINT_VERSION = 1,
+    PRINT_CFLAGS,
+    PRINT_LIBS,
+    PRINT_REQUIRES,
+    PRINT_PATH,
+    LIST_ALL,
 } id;
 
 static struct {
-  id code;
-  strlist path;
-  stralloc self;
+    id code;
+    strlist path;
+    stralloc self;
 } cmd;
 
 typedef struct pkg_s {
-  stralloc name;
-  cbmap_t vars;
-  cbmap_t fields;
+    stralloc name;
+    cbmap_t vars;
+    cbmap_t fields;
 } pkg;
 
 static const char* const field_names[] = {
@@ -63,10 +63,10 @@ static const char* const field_names[] = {
  */
 const char*
 pkg_get(pkg* pf, const char* key) {
-  char* v = NULL;
-  size_t len;
-  cbmap_get(isupper(key[0]) ? pf->fields : pf->vars, (char*)key, str_len(key) + 1, (void**)&v, &len);
-  return v;
+    char* v = NULL;
+    size_t len;
+    cbmap_get(isupper(key[0]) ? pf->fields : pf->vars, (char*)key, str_len(key) + 1, (void**)&v, &len);
+    return v;
 }
 
 /**
@@ -77,24 +77,24 @@ pkg_get(pkg* pf, const char* key) {
  */
 int
 wordexp_sa(const char* s, stralloc* sa) {
-  wordexp_t wx;
-  char** w;
-  size_t i;
+    wordexp_t wx;
+    char** w;
+    size_t i;
 
-  if(wordexp(s, &wx, WRDE_NOCMD | WRDE_UNDEF))
-    return 0;
+    if(wordexp(s, &wx, WRDE_NOCMD | WRDE_UNDEF))
+        return 0;
 
-  w = wx.we_wordv;
+    w = wx.we_wordv;
 
-  for(i = 0; i < wx.we_wordc; ++i) {
-    if(sa->len)
-      stralloc_catb(sa, " ", 1);
-    stralloc_cats(sa, w[i]);
-  }
+    for(i = 0; i < wx.we_wordc; ++i) {
+        if(sa->len)
+            stralloc_catb(sa, " ", 1);
+        stralloc_cats(sa, w[i]);
+    }
 
-  wordfree(&wx);
+    wordfree(&wx);
 
-  return 1;
+    return 1;
 }
 
 /**
@@ -106,37 +106,37 @@ wordexp_sa(const char* s, stralloc* sa) {
  */
 int
 pkg_expand(pkg* pf, const char* key, stralloc* out) {
-  stralloc k;
-  const char* s;
+    stralloc k;
+    const char* s;
 
-  stralloc_init(&k);
-  stralloc_copys(&k, key);
-  stralloc_nul(&k);
+    stralloc_init(&k);
+    stralloc_copys(&k, key);
+    stralloc_nul(&k);
 
-  k.s[0] = toupper(k.s[0]);
+    k.s[0] = toupper(k.s[0]);
 
-  if((s = pkg_get(pf, key)) == NULL)
-    return 0;
-
-  {
-    stralloc v;
-    stralloc_init(&v);
-    stralloc_copys(&v, s);
-
-    for(;;) {
-      stralloc_nul(&v);
-      if(!wordexp_sa(v.s, out))
+    if((s = pkg_get(pf, key)) == NULL)
         return 0;
-      if(stralloc_finds(out, "${") == out->len)
-        break;
 
-      stralloc_free(&v);
-      v = *out;
-      stralloc_init(out);
+    {
+        stralloc v;
+        stralloc_init(&v);
+        stralloc_copys(&v, s);
+
+        for(;;) {
+            stralloc_nul(&v);
+            if(!wordexp_sa(v.s, out))
+                return 0;
+            if(stralloc_finds(out, "${") == out->len)
+                break;
+
+            stralloc_free(&v);
+            v = *out;
+            stralloc_init(out);
+        }
     }
-  }
 
-  return 1;
+    return 1;
 }
 
 /**
@@ -144,9 +144,9 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
  */
 void
 pkg_free(pkg* p) {
-  cbmap_destroy(&p->fields);
-  cbmap_destroy(&p->vars);
-  stralloc_free(&p->name);
+    cbmap_destroy(&p->fields);
+    cbmap_destroy(&p->vars);
+    stralloc_free(&p->name);
 }
 
 /**
@@ -157,91 +157,91 @@ pkg_free(pkg* p) {
  */
 int
 pkg_read(buffer* b, pkg* p) {
-  stralloc name, value;
-  stralloc_init(&name);
-  stralloc_init(&value);
+    stralloc name, value;
+    stralloc_init(&name);
+    stralloc_init(&value);
 
-  p->vars = cbmap_new();
-  p->fields = cbmap_new();
+    p->vars = cbmap_new();
+    p->fields = cbmap_new();
 
-  for(;;) {
-    int ret;
-    char sep, ch;
+    for(;;) {
+        int ret;
+        char sep, ch;
 
-    while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
+        while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
 
-    if((ret = buffer_get_new_token_sa(b, &name, ":=\r\n", 4)) == -1)
-      goto fail;
-    stralloc_chomp(&name);
-    if(name.len > 0 && name.s[0] == '#')
-      continue;
-    if(ret == 1 && isspace(name.s[0]))
-      continue;
+        if((ret = buffer_get_new_token_sa(b, &name, ":=\r\n", 4)) == -1)
+            goto fail;
+        stralloc_chomp(&name);
+        if(name.len > 0 && name.s[0] == '#')
+            continue;
+        if(ret == 1 && isspace(name.s[0]))
+            continue;
 
-    if(ret == 0 || name.s[0] == '\0')
-      break;
-    if(name.len > 1) {
-      sep = name.s[--name.len];
-    }
+        if(ret == 0 || name.s[0] == '\0')
+            break;
+        if(name.len > 1) {
+            sep = name.s[--name.len];
+        }
 
-    while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
+        while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
 
-    stralloc_zero(&value);
-    if((ret = buffer_getline_sa(b, &value)) == -1)
-      goto fail;
+        stralloc_zero(&value);
+        if((ret = buffer_getline_sa(b, &value)) == -1)
+            goto fail;
 
-    if(value.s[0] == '\0')
-      break;
+        if(value.s[0] == '\0')
+            break;
 
-    if(name.len) {
-      stralloc_trimr(&value, "\r\n\t \0", 5);
-      stralloc_nul(&value);
-      stralloc_nul(&name);
+        if(name.len) {
+            stralloc_trimr(&value, "\r\n\t \0", 5);
+            stralloc_nul(&value);
+            stralloc_nul(&name);
 #ifdef DEBUG_OUTPUT
-      buffer_putm_3(buffer_2, "Name: ", name.s, "\n");
-      buffer_putm_3(buffer_2, "Value: ", value.s, "\n");
-      buffer_flush(buffer_2);
+            buffer_putm_3(buffer_2, "Name: ", name.s, "\n");
+            buffer_putm_3(buffer_2, "Value: ", value.s, "\n");
+            buffer_flush(buffer_2);
 #endif
 
-      cbmap_insert(sep == '=' ? p->vars : p->fields, name.s, name.len + 1, value.s, value.len + 1);
+            cbmap_insert(sep == '=' ? p->vars : p->fields, name.s, name.len + 1, value.s, value.len + 1);
+        }
     }
-  }
 
-  buffer_close(b);
-  return 1;
+    buffer_close(b);
+    return 1;
 
 fail:
-  stralloc_free(&name);
-  stralloc_free(&value);
-  buffer_close(b);
-  return 0;
+    stralloc_free(&name);
+    stralloc_free(&value);
+    buffer_close(b);
+    return 0;
 }
 
 static int
 visit_set(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
-  pkg* p = user_data;
-  stralloc var, v;
-  stralloc_init(&var);
-  stralloc_copyb(&var, key, key_len - 1);
-  stralloc_nul(&var);
+    pkg* p = user_data;
+    stralloc var, v;
+    stralloc_init(&var);
+    stralloc_copyb(&var, key, key_len - 1);
+    stralloc_nul(&var);
 
-  stralloc_init(&v);
-  if(value_len && ((char*)value)[value_len - 1] == '\0')
-    --value_len;
-  stralloc_catb(&v, value, value_len);
+    stralloc_init(&v);
+    if(value_len && ((char*)value)[value_len - 1] == '\0')
+        --value_len;
+    stralloc_catb(&v, value, value_len);
 
-  /* wordexp_sa(value, &v); */
+    /* wordexp_sa(value, &v); */
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_3(buffer_2, "ENV SET ", key, "=");
-  buffer_putsa(buffer_2, &v);
-  buffer_putnlflush(buffer_2);
+    buffer_putm_3(buffer_2, "ENV SET ", key, "=");
+    buffer_putsa(buffer_2, &v);
+    buffer_putnlflush(buffer_2);
 #endif
-  stralloc_nul(&v);
-  env_set(key, v.s);
-  /* setenv(key, v.s, 1); */
+    stralloc_nul(&v);
+    env_set(key, v.s);
+    /* setenv(key, v.s, 1); */
 
-  return 1;
+    return 1;
 }
 
 /**
@@ -251,18 +251,18 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
  */
 int
 pkg_set(pkg* p) {
-  return cbmap_visit_all(p->vars, &visit_set, p);
+    return cbmap_visit_all(p->vars, &visit_set, p);
 }
 
 static int
 visit_unset(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
-  (void)key_len;
-  (void)value;
-  (void)value_len;
-  (void)user_data;
-  /* unsetenv(key); */
-  env_unset(key);
-  return 1;
+    (void)key_len;
+    (void)value;
+    (void)value_len;
+    (void)user_data;
+    /* unsetenv(key); */
+    env_unset(key);
+    return 1;
 }
 
 /**
@@ -272,25 +272,25 @@ visit_unset(const void* key, size_t key_len, const void* value, size_t value_len
  */
 int
 pkg_unset(pkg* p) {
-  return cbmap_visit_all(p->vars, &visit_unset, p);
+    return cbmap_visit_all(p->vars, &visit_unset, p);
 }
 
 typedef struct {
-  buffer* b;
-  const char* m;
+    buffer* b;
+    const char* m;
 } dump_t;
 
 static int
 visit_dump(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
-  dump_t* ptr = user_data;
-  buffer_put(ptr->b, ptr->m, str_len(ptr->m) - 3);
-  buffer_puts(ptr->b, " ");
-  buffer_put(ptr->b, key, key_len - 1);
-  buffer_puts(ptr->b, isupper(((char*)key)[0]) ? ": " : "=\"");
-  buffer_put(ptr->b, value, value_len - 1);
-  buffer_puts(ptr->b, isupper(((char*)key)[0]) ? "\n" : "\"\n");
-  buffer_flush(ptr->b);
-  return 1;
+    dump_t* ptr = user_data;
+    buffer_put(ptr->b, ptr->m, str_len(ptr->m) - 3);
+    buffer_puts(ptr->b, " ");
+    buffer_put(ptr->b, key, key_len - 1);
+    buffer_puts(ptr->b, isupper(((char*)key)[0]) ? ": " : "=\"");
+    buffer_put(ptr->b, value, value_len - 1);
+    buffer_puts(ptr->b, isupper(((char*)key)[0]) ? "\n" : "\"\n");
+    buffer_flush(ptr->b);
+    return 1;
 }
 
 /**
@@ -300,20 +300,20 @@ visit_dump(const void* key, size_t key_len, const void* value, size_t value_len,
  */
 void
 pkg_dump(buffer* b, pkg* pf) {
-  dump_t dump_st;
-  dump_st.b = b;
-  dump_st.m = str_basename(pf->name.s);
-  buffer_putsa(b, &pf->name);
-  buffer_putnlflush(b);
+    dump_t dump_st;
+    dump_st.b = b;
+    dump_st.m = str_basename(pf->name.s);
+    buffer_putsa(b, &pf->name);
+    buffer_putnlflush(b);
 
-  cbmap_visit_all(pf->vars, &visit_dump, &dump_st);
-  cbmap_visit_all(pf->fields, &visit_dump, &dump_st);
+    cbmap_visit_all(pf->vars, &visit_dump, &dump_st);
+    cbmap_visit_all(pf->fields, &visit_dump, &dump_st);
 }
 
 void
 pkg_init(pkg* pf, const char* fn) {
-  byte_zero(pf, sizeof(pkg));
-  stralloc_copys(&pf->name, fn);
+    byte_zero(pf, sizeof(pkg));
+    stralloc_copys(&pf->name, fn);
 }
 
 /**
@@ -321,72 +321,72 @@ pkg_init(pkg* pf, const char* fn) {
  */
 void
 pkg_list() {
-  slink* pkgs;
-  slink** it;
-  stralloc path, line;
-  int i, n = strlist_count(&cmd.path);
+    slink* pkgs;
+    slink** it;
+    stralloc path, line;
+    int i, n = strlist_count(&cmd.path);
 
-  slist_init(&pkgs);
+    slist_init(&pkgs);
 
-  stralloc_init(&path);
-  stralloc_init(&line);
+    stralloc_init(&path);
+    stralloc_init(&line);
 
-  for(i = 0; i < n; ++i) {
-    const char* entry;
-    dir_t d;
+    for(i = 0; i < n; ++i) {
+        const char* entry;
+        dir_t d;
 
-    path = strlist_at_sa(&cmd.path, i);
-    {
-      size_t len = path.len;
-      stralloc_nul(&path);
-      dir_open(&d, path.s);
-
-      while((entry = dir_read(&d))) {
-        stralloc_catm_internal(&path, "/", entry, 0);
-
-        if(stralloc_endb(&path, ".pc", 3)) {
-          stralloc line;
-          buffer pc;
-          pkg pf;
-
-          stralloc_init(&line);
-          stralloc_nul(&path);
-          pkg_init(&pf, path.s);
-
-          if(!buffer_mmapread(&pc, path.s)) {
-            path.len -= 3;
+        path = strlist_at_sa(&cmd.path, i);
+        {
+            size_t len = path.len;
             stralloc_nul(&path);
+            dir_open(&d, path.s);
 
-            stralloc_copys(&line, str_basename(path.s));
+            while((entry = dir_read(&d))) {
+                stralloc_catm_internal(&path, "/", entry, 0);
 
-            if(pkg_read(&pc, &pf)) {
-              const char* desc;
+                if(stralloc_endb(&path, ".pc", 3)) {
+                    stralloc line;
+                    buffer pc;
+                    pkg pf;
 
-              if((desc = pkg_get(&pf, "Description"))) {
-                stralloc_cats(&line, " - ");
-                stralloc_cats(&line, desc);
-              }
+                    stralloc_init(&line);
+                    stralloc_nul(&path);
+                    pkg_init(&pf, path.s);
+
+                    if(!buffer_mmapread(&pc, path.s)) {
+                        path.len -= 3;
+                        stralloc_nul(&path);
+
+                        stralloc_copys(&line, str_basename(path.s));
+
+                        if(pkg_read(&pc, &pf)) {
+                            const char* desc;
+
+                            if((desc = pkg_get(&pf, "Description"))) {
+                                stralloc_cats(&line, " - ");
+                                stralloc_cats(&line, desc);
+                            }
+                        }
+
+                        stralloc_nul(&line);
+
+                        buffer_putsa(buffer_1, &line);
+                        buffer_putnlflush(buffer_1);
+
+                        slist_pushs(&pkgs, line.s);
+                        line.s = NULL;
+                        line.a = 0;
+                    }
+
+                    pkg_free(&pf);
+                }
+
+                path.len = len;
             }
-
-            stralloc_nul(&line);
-
-            buffer_putsa(buffer_1, &line);
-            buffer_putnlflush(buffer_1);
-
-            slist_pushs(&pkgs, line.s);
-            line.s = NULL;
-            line.a = 0;
-          }
-
-          pkg_free(&pf);
         }
-
-        path.len = len;
-      }
     }
-  }
 
-  slink_foreach(&pkgs, it) {}
+    slink_foreach(&pkgs, it) {}
 }
 
 /**
@@ -397,29 +397,29 @@ pkg_list() {
  */
 int
 pkg_open(const char* pkgname, pkg* pf) {
-  buffer pc;
-  int ret, i, n = strlist_count(&cmd.path);
+    buffer pc;
+    int ret, i, n = strlist_count(&cmd.path);
 
-  stralloc_init(&pf->name);
+    stralloc_init(&pf->name);
 
-  for(i = 0; i < n; ++i) {
-    stralloc path = strlist_at_sa(&cmd.path, i);
+    for(i = 0; i < n; ++i) {
+        stralloc path = strlist_at_sa(&cmd.path, i);
 
-    stralloc_catm_internal(&path, "/", pkgname, ".pc", 0);
-    stralloc_nul(&path);
+        stralloc_catm_internal(&path, "/", pkgname, ".pc", 0);
+        stralloc_nul(&path);
 
-    stralloc_copy(&pf->name, &path);
+        stralloc_copy(&pf->name, &path);
 
-    if(!buffer_mmapread(&pc, path.s))
-      break;
-  }
+        if(!buffer_mmapread(&pc, path.s))
+            break;
+    }
 
-  if(pc.x == NULL)
-    return 0;
+    if(pc.x == NULL)
+        return 0;
 
-  ret = pkg_read(&pc, pf);
+    ret = pkg_read(&pc, pf);
 
-  return ret;
+    return ret;
 }
 
 /**
@@ -428,168 +428,176 @@ pkg_open(const char* pkgname, pkg* pf) {
  */
 int
 pkg_conf(strarray* modules, int mode) {
-  int i;
-  stralloc value;
-  stralloc_init(&value);
+    int i;
+    stralloc value;
+    stralloc_init(&value);
 
-  for(i = 0; i < strarray_size(modules); ++i) {
-    const char* pkgname = strarray_at(modules, i);
-    pkg pf;
-    byte_zero(&pf, sizeof(pf));
+    for(i = 0; i < strarray_size(modules); ++i) {
+        const char* pkgname = strarray_at(modules, i);
+        pkg pf;
+        byte_zero(&pf, sizeof(pf));
 
-    if(!pkg_open(pkgname, &pf)) {
-      if(mode & PKGCFG_EXISTS)
-        return 0;
-      continue;
-    }
+        if(!pkg_open(pkgname, &pf)) {
+            if(mode & PKGCFG_EXISTS)
+                return 0;
+            continue;
+        }
 
-    if(cmd.code == PRINT_PATH) {
-      if(value.len)
-        stralloc_catc(&value, '\n');
-      stralloc_cat(&value, &pf.name);
-    } else {
-      const char* fn = field_names[cmd.code - 1];
+        if(cmd.code == PRINT_PATH) {
+            if(value.len)
+                stralloc_catc(&value, '\n');
+            stralloc_cat(&value, &pf.name);
+        } else {
+            const char* fn = field_names[cmd.code - 1];
 
-      pkg_set(&pf);
+            pkg_set(&pf);
 
 #ifdef DEBUG
-      pkg_dump(buffer_2, &pf);
+            pkg_dump(buffer_2, &pf);
 #endif
 
-      if(!pkg_expand(&pf, fn, &value)) {
-        errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
-        buffer_flush(buffer_1);
+            if(!pkg_expand(&pf, fn, &value)) {
+                errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
+                buffer_flush(buffer_1);
+                pkg_unset(&pf);
+                pkg_free(&pf);
+                return 0;
+            }
+        }
+
         pkg_unset(&pf);
         pkg_free(&pf);
-        return 0;
-      }
     }
 
-    pkg_unset(&pf);
-    pkg_free(&pf);
-  }
-
-  if(!(mode & PKGCFG_EXISTS)) {
-    buffer_putsa(buffer_1, &value);
-    buffer_putnlflush(buffer_1);
-  }
-  return 1;
+    if(!(mode & PKGCFG_EXISTS)) {
+        buffer_putsa(buffer_1, &value);
+        buffer_putnlflush(buffer_1);
+    }
+    return 1;
 }
 
 void
 usage(char* progname) {
-  buffer_putm_3(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n");
-  buffer_puts(buffer_1, "Options\n");
-  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
-  buffer_puts(buffer_1, "  --cflags                          print required CFLAGS to stdout\n");
-  buffer_puts(buffer_1, "  --libs                            print required linker flags to stdout\n");
-  buffer_puts(buffer_1, "  --path                            show the exact filenames for any matching .pc files\n");
-  buffer_puts(buffer_1, "  --modversion                      print the specified module's version to stdout\n");
-  buffer_putnlflush(buffer_1);
+    buffer_putm_3(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n");
+    buffer_puts(buffer_1, "Options\n");
+    buffer_puts(buffer_1, "  --help, -h                        show this help\n");
+    buffer_puts(buffer_1, "  --cflags                          print required CFLAGS to stdout\n");
+    buffer_puts(buffer_1, "  --libs                            print required linker flags to stdout\n");
+    buffer_puts(buffer_1, "  --path                            show the exact filenames for any matching .pc files\n");
+    buffer_puts(buffer_1, "  --modversion                      print the specified module's version to stdout\n");
+    buffer_putnlflush(buffer_1);
 }
 
 extern buffer* optbuf;
 
 int
 main(int argc, char* argv[]) {
-  int c;
-  int index = 0;
-  int mode = 0;
-  struct longopt opts[] = {
-      {"help", 0, NULL, 'h'},
-      {"modversion", 0, NULL, PRINT_VERSION},
-      {"cflags", 0, NULL, PRINT_CFLAGS},
-      {"libs", 0, NULL, PRINT_LIBS},
-      {"path", 0, NULL, PRINT_PATH},
-      {"list-all", 0, NULL, 'l'},
-      {"print-errors", 0, NULL, 'P'},
-      {"short-errors", 0, NULL, 'S'},
-      {"exists", 0, NULL, 'E'},
-      {0, 0, 0, 0},
-  };
+    int c;
+    int index = 0;
+    int mode = 0;
+    struct longopt opts[] = {
+        {"help", 0, NULL, 'h'},
+        {"modversion", 0, NULL, PRINT_VERSION},
+        {"cflags", 0, NULL, PRINT_CFLAGS},
+        {"libs", 0, NULL, PRINT_LIBS},
+        {"path", 0, NULL, PRINT_PATH},
+        {"list-all", 0, NULL, 'l'},
+        {"print-errors", 0, NULL, 'P'},
+        {"short-errors", 0, NULL, 'S'},
+        {"exists", 0, NULL, 'E'},
+        {0, 0, 0, 0},
+    };
 
-  errmsg_iam(argv[0]);
+    errmsg_iam(argv[0]);
 #ifdef _MSC_VER
-  optbuf = buffer_1;
+    optbuf = buffer_1;
 #endif
 
-  for(;;) {
-    c = getopt_long(argc, argv, "?hmilpaPS", opts, &index);
-    if(c == -1)
-      break;
-    if(c == 0)
-      continue;
+    for(;;) {
+        c = getopt_long(argc, argv, "?hmilpaPS", opts, &index);
+        if(c == -1)
+            break;
+        if(c == 0)
+            continue;
 
-    switch(c) {
-      case '?':
-      case 'h': usage(argv[0]); return 0;
-      case PRINT_VERSION:
-      case PRINT_CFLAGS:
-      case PRINT_LIBS:
-      case PRINT_PATH:
-        if(!cmd.code)
-          cmd.code = c;
-        break;
-      case 'l':
-        if(!cmd.code)
-          cmd.code = LIST_ALL;
-        break;
+        switch(c) {
+        case '?':
+        case 'h':
+            usage(argv[0]);
+            return 0;
+        case PRINT_VERSION:
+        case PRINT_CFLAGS:
+        case PRINT_LIBS:
+        case PRINT_PATH:
+            if(!cmd.code)
+                cmd.code = c;
+            break;
+        case 'l':
+            if(!cmd.code)
+                cmd.code = LIST_ALL;
+            break;
 
-      case 'P': mode = PKGCFG_PRINT_ERR; break;
-      case 'S': mode = PKGCFG_SHORT_ERR; break;
-      case 'E': mode = PKGCFG_EXISTS; break;
-      default:
-        buffer_puts(buffer_1, "WARNING: Invalid argument -");
-        buffer_putc(buffer_1, isprint(c) ? c : '?');
-        buffer_putm_internal(buffer_1, " '", optarg ? optarg : "", "'", 0);
-        buffer_putnlflush(buffer_1);
-        break;
-        /*usage(argv[0]);
-        return 1;*/
+        case 'P':
+            mode = PKGCFG_PRINT_ERR;
+            break;
+        case 'S':
+            mode = PKGCFG_SHORT_ERR;
+            break;
+        case 'E':
+            mode = PKGCFG_EXISTS;
+            break;
+        default:
+            buffer_puts(buffer_1, "WARNING: Invalid argument -");
+            buffer_putc(buffer_1, isprint(c) ? c : '?');
+            buffer_putm_internal(buffer_1, " '", optarg ? optarg : "", "'", 0);
+            buffer_putnlflush(buffer_1);
+            break;
+            /*usage(argv[0]);
+            return 1;*/
+        }
     }
-  }
 
-  path_readlink("/proc/self/exe", &cmd.self);
+    path_readlink("/proc/self/exe", &cmd.self);
 
-  strlist_froms(&cmd.path, getenv("PKG_CONFIG_PATH"), ':');
+    strlist_froms(&cmd.path, getenv("PKG_CONFIG_PATH"), ':');
 
-  if(strlist_count(&cmd.path) == 0) {
-    stralloc prefix;
-    stralloc_init(&prefix);
-    stralloc_copy(&prefix, &cmd.self);
-    {
-      size_t len = stralloc_finds(&prefix, "/bin");
+    if(strlist_count(&cmd.path) == 0) {
+        stralloc prefix;
+        stralloc_init(&prefix);
+        stralloc_copy(&prefix, &cmd.self);
+        {
+            size_t len = stralloc_finds(&prefix, "/bin");
 
-      if(len == prefix.len) {
-        stralloc_copys(&prefix, "/usr");
-        len = prefix.len;
-      }
-      prefix.len = len;
-      stralloc_cats(&prefix, "/lib/pkgconfig");
-      strlist_push_sa(&cmd.path, &prefix);
-      prefix.len = len;
-      stralloc_cats(&prefix, "/share/pkgconfig");
-      strlist_push_sa(&cmd.path, &prefix);
+            if(len == prefix.len) {
+                stralloc_copys(&prefix, "/usr");
+                len = prefix.len;
+            }
+            prefix.len = len;
+            stralloc_cats(&prefix, "/lib/pkgconfig");
+            strlist_push_sa(&cmd.path, &prefix);
+            prefix.len = len;
+            stralloc_cats(&prefix, "/share/pkgconfig");
+            strlist_push_sa(&cmd.path, &prefix);
+        }
     }
-  }
 
 #ifdef PKGCONF_DEBUG
-  buffer_putm_2(buffer_2, path_basename(argv[0]), ": ");
-  buffer_puts(buffer_2, "PKG_CONFIG_PATH is ");
-  buffer_putsa(buffer_2, &cmd.path.sa);
-  buffer_putnlflush(buffer_2);
+    buffer_putm_2(buffer_2, path_basename(argv[0]), ": ");
+    buffer_puts(buffer_2, "PKG_CONFIG_PATH is ");
+    buffer_putsa(buffer_2, &cmd.path.sa);
+    buffer_putnlflush(buffer_2);
 #endif
 
-  if(cmd.code == LIST_ALL) {
-    pkg_list();
-    return 0;
-  } else if(optind < argc) {
-    strarray modules;
-    strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);
-    return !pkg_conf(&modules, mode);
-  } else {
-    buffer_puts(buffer_2, "Must specify package names on the command line");
-    buffer_putnlflush(buffer_2);
-    return 1;
-  }
+    if(cmd.code == LIST_ALL) {
+        pkg_list();
+        return 0;
+    } else if(optind < argc) {
+        strarray modules;
+        strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);
+        return !pkg_conf(&modules, mode);
+    } else {
+        buffer_puts(buffer_2, "Must specify package names on the command line");
+        buffer_putnlflush(buffer_2);
+        return 1;
+    }
 }
