@@ -80,7 +80,7 @@ mkdir_components(strlist* dir, int mode) {
     strlist r = strlist_range(dir, 0, i);
 
 #ifdef DEBUG
-    // debug_sa("mkdir_components", &r.sa);
+   debug_sa("mkdir_components", &r.sa);
 #endif
     if(mkdir_sa(&r.sa, mode) == -1)
       ret |= -1;
@@ -4178,6 +4178,8 @@ main(int argc, char* argv[]) {
       stralloc_catc(&dirs.out.sa, pathsep_make);
 
     mkdir_components(&dirs.out, 0755);
+    mkdir_components(&dirs.work, 0755);
+    mkdir_components(&dirs.build, 0755);
 
     byte_zero(&filebuf, sizeof(filebuf));
 
