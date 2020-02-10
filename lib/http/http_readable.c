@@ -36,15 +36,10 @@ http_readable(http* h, int freshen) {
   http_response* r;
 
   buffer_putsflush(buffer_2, "http readable\n");
-
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      if((ret = http_ssl_connect(h->sock, h)) == 1) {
-        h->connected = 1;
-        io_wantwrite(h->sock);
-        errno = EAGAIN;
-      }
+      ret = http_ssl_connect(h->sock, h);
       return ret;
     }
   }

@@ -32,6 +32,7 @@ http_socket(http* h, int nonblock) {
     ndelay_off(h->sock);
 
   io_fd(h->sock);
+
 #ifdef HAVE_OPENSSL
   if(h->tls) {
     http_ssl_socket(h);

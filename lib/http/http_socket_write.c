@@ -13,15 +13,10 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
   http* h = ((buffer*)b)->cookie;
   ssize_t ret = 0;
 #ifdef HAVE_OPENSSL
-  if(h->ssl) {
-    assert(h->connected);
+  if(h->ssl)
     ret = http_ssl_write(h->sock, buf, len, b);
-  }
+  else
 #endif
-
-#ifdef HAVE_OPENSSL
-  if(!h->ssl)
     ret = winsock2errno(send(fd, buf, len, 0));
-#endif
   return ret;
 }

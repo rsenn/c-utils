@@ -117,19 +117,13 @@ main(int argc, char* argv[]) {
         return 3;
       }
       while((fd = io_canwrite()) != -1) {
-        if(h.sock != fd)
-          continue;
-        http_writeable(&h);
+        if(h.sock == fd)
+          http_writeable(&h ,fd);
       }
       while((fd = io_canread()) != -1) {
-        if(h.sock == fd) {
-          doread = 1;
-        }
+        if(h.sock == fd)
+          http_readable(&h,fd);
       }
-      if(doread)
-        http_readable(&h, 1);
-      h.q.in.cookie = &h;
-
       while((n = http_read(&h, buf, sizeof(buf), &h.q.in)) > 0) {
         if(buffer_put(&out, buf, n)) {
           errmsg_warnsys("write error: ", 0);

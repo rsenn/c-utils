@@ -13,18 +13,18 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
   errno = 0;
   if(!h->tls)
     return 0;
-  if(!h->connected) {
-    if((ret = http_ssl_connect(fd, h)) == 1)
-      h->connected = 1;
-    if(h->connected) {
-      io_wantwrite(fd);
-      if(!io_canread(fd)) {
-        errno = EAGAIN;
-        return -1;
-      }
-    }
-    return ret;
-  }
+  /* if(!h->connected) {
+     if((ret = http_ssl_connect(fd, h)) == 1)
+       h->connected = 1;
+     if(h->connected) {
+       io_wantwrite(fd);
+       if(!io_canread(fd)) {
+         errno = EAGAIN;
+         return -1;
+       }
+     }
+     return ret;
+   }*/
   assert(h->connected);
 do_read:
   if((ret = SSL_read(h->ssl, buf, len)) <= 0) {

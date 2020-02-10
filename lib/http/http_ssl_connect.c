@@ -18,11 +18,11 @@ http_ssl_connect(fd_t fd, http* h) {
   }
 
   if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-    if(errno == EAGAIN)
+    if(errno == EAGAIN) {
       io_wantread(fd);
-    else if(errno == EWOULDBLOCK)
-      ;
-    io_wantwrite(fd);
+    } else if(errno == EWOULDBLOCK) {
+      io_wantwrite(fd);
+    }
   } else if(ret == 1) {
     h->connected = 1;
     io_wantwrite(fd);
