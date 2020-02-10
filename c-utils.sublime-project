@@ -6,7 +6,8 @@
   },
   {
     "name": "Build debug",
-    "shell_cmd": "make DEBUG=1 SELECT=1 CC=clang"
+    "shell_cmd": "make DEBUG=1 SELECT=1 CC=clang",
+      "working_dir": "${project_path:${folder:${file_path}}}"
   },
     {
     "name": "Rebuild CTags",

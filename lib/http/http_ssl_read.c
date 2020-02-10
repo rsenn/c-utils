@@ -18,7 +18,7 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
   if((ret = SSL_read(h->ssl, buf, len)) <= 0) {
     if(http_ssl_io_again(h, ret))
       return -1;
-else     if((err = http_ssl_error(h, ret)))
+    else if((err = http_ssl_error(h, ret)))
       return http_ssl_io_errhandle(h, err);
   }
 #if DEBUG_OUTPUT

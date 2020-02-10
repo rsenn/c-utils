@@ -14,6 +14,12 @@
 #define EAGAIN 11
 #endif
 
+#ifdef HAVE_OPENSSL
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <assert.h>
+#endif
+
 #define is_space(c) ((c) == ' ' || (c) == '\t' || (c) == '\r' || (c) == '\n')
 
 extern ssize_t buffer_dummyread(int, void*, size_t, void*);
@@ -42,10 +48,10 @@ http_readable(http* h, int freshen) {
   if(h->ssl) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h)) == 1) {
-        io_dontwantread(h->sock);
-        io_dontwantwrite(h->sock);
+
+        errno = EWOULDBLOCK;
+        return http_ssl_io_errhandle(h, SSL_ERROR_WANT_WRITE);
       }
-      return http_ssl_io_errhandle(h, ret);
     }
   }
 #endif
@@ -53,6 +59,7 @@ http_readable(http* h, int freshen) {
   // do_read:
   if(freshen)
     buffer_freshen(&h->q.in);
+
   if((r = h->response) == NULL) {
     return ret;
   }
