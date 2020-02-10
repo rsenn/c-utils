@@ -77,6 +77,7 @@ http_get(http* h, const char* location) {
     (*r)->content_length = (uint64)-1;
   }
   ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);
+  h->connected = 0;
 
   if(ret == -1) {
 
@@ -87,7 +88,7 @@ http_get(http* h, const char* location) {
   }
 
   io_wantwrite(h->sock);
-  io_wantread(h->sock);
-
+  /*io_wantread(h->sock);
+   */
   return ret == 0;
 }

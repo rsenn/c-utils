@@ -87,7 +87,11 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
 
-  s = h->ssl ? http_ssl_read(h->sock, buf, len, h) : io_tryread(fd, buf, len);
+  s =
+#ifdef HAVE_OPENSSL
+      h->ssl ? http_ssl_read(h->sock, buf, len, h) :
+#endif
+             io_tryread(fd, buf, len);
 
   /*  buffer_puts(buffer_2, "io_tryread(");
     buffer_putlong(buffer_2, fd);

@@ -70,19 +70,23 @@ typedef struct {
   void* ssl;
   int nonblocking : 1;
   int keepalive : 1;
+  int connected : 1;
 } http;
 
-int http_get(http*, const char* location);
-void http_init(http*, const char* host, uint16 port);
-int http_readable(http*, int freshen);
+void    http_close(http*);
+int     http_get(http*, const char* location);
+void    http_init(http*, const char* host, uint16 port);
+int     http_readable(http*, int freshen);
 ssize_t http_read_header(http*, http_response* r);
-size_t http_read_internal(http*, char* buf, size_t len);
-ssize_t http_read(http*, char* buf, size_t len, buffer*);
-int http_sendreq(http*);
+ssize_t http_read(http*, char* buf, size_t len, buffer* bf);
+size_t  http_read_internal(http*, char* buf, size_t len);
+int     http_sendreq(http*);
+int     http_socket(http*, int nonblock);
 ssize_t http_socket_read(fd_t, void* buf, size_t len, buffer* b);
-int http_socket(http*, int nonblock);
-void http_writeable(void);
-void http_close(http* h);
+ssize_t http_ssl_connect(fd_t, http* h);
+ssize_t http_ssl_read(fd_t, void* buf, size_t len, http* h);
+void    http_writeable(http*);
+
 
 #ifdef __cplusplus
 }
