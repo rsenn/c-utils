@@ -209,21 +209,38 @@ endif(NOT BZIP2_FOUND)
 ################################################################################
 ## Check OpenSSL
 ################################################################################
+if(NOT OPENSSL_ROOT_DIR)
+  set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
+endif()
+
 pkg_search_module(OPENSSL openssl libssl)
 if(OPENSSL_FOUND)
   if(pkgcfg_lib_OPENSSL_crypto)
+  set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}")
     list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_crypto})
   endif(pkgcfg_lib_OPENSSL_crypto)
   if(pkgcfg_lib_OPENSSL_ssl)
+    set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
+
     list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_ssl})
   endif(pkgcfg_lib_OPENSSL_ssl)
 else(OPENSSL_FOUND)
   include(FindOpenSSL)
 endif(OPENSSL_FOUND)
+
+
 if(OPENSSL_FOUND)
+
   add_definitions(-DHAVE_OPENSSL=1)
+  if(OPENSSL_INCLUDE_DIR)
   include_directories(${OPENSSL_INCLUDE_DIR})
+  endif()
+  if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
+    link_libraries(${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+  endif()
+
 endif(OPENSSL_FOUND)
+message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND} OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY} OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
 
 #link_libraries(
 #  ${ZLIB_LIBRARY}
@@ -246,7 +263,6 @@ if(USE_SELECT)
 endif(USE_SELECT)
 
 if(WIN32 OR MSVC)
-  option(USE_WIDECHAR "Use widechar API" OFF)
   if(USE_WIDECHAR)
      add_definitions(-DUSE_WIDECHAR=1)
   endif(USE_WIDECHAR)
