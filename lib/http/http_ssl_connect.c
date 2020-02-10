@@ -26,10 +26,19 @@ http_ssl_connect(http* h) {
   if(ret == 1) {
     h->connected = 1;
     io_wantwrite(h->sock);
-#if DEBUG_OUTPUT
-    buffer_putsflush(buffer_2, "http_ssl_connect\n");
-#endif
   }
+#if DEBUG_OUTPUT
+  buffer_puts(buffer_2, "http_ssl_connect ");
+  buffer_puts(buffer_2, "ret=");
+  buffer_putlong(buffer_2, ret);
+
+  if(ret <= 0) {
+    buffer_puts(buffer_2, " err=");
+    buffer_puts(buffer_2, http_ssl_errflag(err));
+  }
+  buffer_putnlflush(buffer_2);
+
+#endif
   return ret;
 }
 #endif

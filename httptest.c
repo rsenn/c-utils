@@ -59,6 +59,21 @@ usage(char* av0) {
   buffer_flush(buffer_1);
 }
 
+
+int
+http_io_handler(http* h) {
+  fd_t fd;
+
+while((fd = io_canwrite()) != -1) {
+  if(h->sock == fd)
+    http_writeable(&h);
+}
+while((fd = io_canread()) != -1) {
+  if(h->sock == fd)
+    http_readable(&h, 1);
+}
+
+}
 int
 main(int argc, char* argv[]) {
   int argi;
@@ -116,15 +131,6 @@ main(int argc, char* argv[]) {
         errmsg_warnsys("wait error: ", 0);
         return 3;
       }
-      while((fd = io_canwrite()) != -1) {
-        if(h.sock == fd)
-          http_writeable(&h);
-      }
-      while((fd = io_canread()) != -1) {
-        if(h.sock == fd)
-          http_readable(&h, 1);
-      }
-
       if(!h.connected)
         continue;
 

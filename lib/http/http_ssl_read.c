@@ -14,7 +14,7 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
   errno = 0;
   assert(h->tls);
   assert(h->connected);
-do_read:
+//do_read:
   if((ret = SSL_read(h->ssl, buf, len)) <= 0) {
     if(http_ssl_io_again(h, ret))
       return -1;

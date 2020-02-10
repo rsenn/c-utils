@@ -50,7 +50,7 @@ http_readable(http* h, int freshen) {
   }
 #endif
 
-do_read:
+//do_read:
   if(freshen)
     buffer_freshen(&h->q.in);
   if((r = h->response) == NULL) {

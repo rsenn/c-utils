@@ -13,7 +13,7 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, void* b) {
   errno = 0;
   assert(h->tls);
   assert(h->connected);
-do_write:
+//do_write:
   if((ret = SSL_write(h->ssl, buf, n)) <= 0) {
     if(http_ssl_io_again(h, ret))
       return -1;

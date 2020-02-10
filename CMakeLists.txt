@@ -194,7 +194,7 @@ else(ZLIB_FOUND)
 endif(ZLIB_FOUND)
 
 if(ZLIB_LIBRARY_RELEASE)
-	set(ZLIB_LIBRARY "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib library")
+    set(ZLIB_LIBRARY "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib library")
 endif(ZLIB_LIBRARY_RELEASE)
 
 
@@ -232,7 +232,7 @@ endif(OPENSSL_FOUND)
 if(OPENSSL_FOUND)
   if(NOT OPENSSL_INCLUDE_DIR)
   set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
-  endif() 
+  endif()
 
    if(NOT OPENSSL_LIB_DIR)
   set(OPENSSL_LIB_DIR "${OPENSSL_ROOT_DIR}/lib")
@@ -340,7 +340,9 @@ endif(LIBLZMA_LIBRARY)
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
-set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
+set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan
+  #sig
+  slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix var vartab wait xml ucs)
 
 foreach(ARCHIVE ${MODSUBDIRS})
   file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
@@ -386,7 +388,7 @@ target_link_libraries(playlist byte fmt scan str xml)
 target_link_libraries(rdir dir)
 target_link_libraries(scan byte str)
 target_link_libraries(socket byte fmt ndelay scan uint16 ${LIBMSWSOCK})
-target_link_libraries(str byte)	
+target_link_libraries(str byte)
 target_link_libraries(stralloc open byte fmt str)
 target_link_libraries(strarray array)
 target_link_libraries(strlist stralloc buffer)
@@ -403,7 +405,7 @@ target_link_libraries(uint32 taia tai)
 set(genmakefile_SOURCES mplab.c ini.c)
 
 if(OPENSSL_LIB_DIR)
-set(CMAKE_EXE_LINKER_FLAGS -L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR})
+  set(CMAKE_EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR}")
 endif()
 
 set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )
