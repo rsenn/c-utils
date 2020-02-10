@@ -43,6 +43,9 @@ http_readable(http* h, int freshen) {
       if((ret = http_ssl_connect(h->sock, h)) == 1) {
 
         buffer_putsflush(buffer_2, "SSL handshake done\n");
+        if(io_canread(h->sock))
+          goto do_read;
+
         h->connected = 1;
         io_wantwrite(h->sock);
         return ret;
@@ -52,6 +55,7 @@ http_readable(http* h, int freshen) {
     }
   }
 #endif
+do_read:
 
   if(freshen)
     buffer_freshen(&h->q.in);
