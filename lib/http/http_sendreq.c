@@ -2,13 +2,12 @@
 #include "../socket_internal.h"
 #include "../buffer.h"
 #include "../http.h"
+#include "../byte.h"
 #include "../io.h"
-
 static ssize_t
 do_send(fd_t s, const void* buf, size_t len) {
   return send(s, buf, len, 0);
 }
-
 int
 http_sendreq(http* h) {
   buffer* out = &h->q.out;
@@ -23,7 +22,23 @@ http_sendreq(http* h) {
   buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", 0);
   buffer_puts(out, "\r\n");
 #if DEBUG_OUTPUT
-  buffer_put(buffer_2, out->x, out->p);
+  {
+    const char* x = out->x;
+    ssize_t i, n = out->p;
+
+    while(n > 0) {
+      i = byte_chr(x, n, '\r');
+      buffer_puts(buffer_2, "Header: ");
+      buffer_put(buffer_2, x, i);
+      buffer_putnlflush(buffer_2);
+      x += i + 1;
+      n -= i + 1;
+      if(*x == '\n') {
+        x++;
+        n--;
+      }
+    }
+  }
   buffer_flush(buffer_2);
 #endif
   buffer_flush(out);
