@@ -22,39 +22,17 @@
 size_t http_read_internal(http* h, char* buf, size_t n);
 
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
+ssize_t http_ssl_error(ssize_t ret, http* h);
 
 #ifdef HAVE_OPENSSL
 ssize_t
 http_ssl_write(fd_t fd, const void* buf, size_t n, http* h) {
   ssize_t ret;
-  int err;
-
   errno = 0;
-
   ret = SSL_write(h->ssl, buf, n);
-  /* it was not done */
-  if(ret <= 0) {
-    /* get error code */
-    err = SSL_get_error(h->ssl, ret);
-    /* call ssl_write() again when socket gets writeable */
-    if(err == SSL_ERROR_WANT_WRITE) {
-      errno = EWOULDBLOCK;
-      return -1;
-      /* call ssl_write() again when socket gets writeable */
-    } else if(err == SSL_ERROR_WANT_READ) {
-      errno = EAGAIN;
-      return -1;
-    } else if(err == SSL_ERROR_SYSCALL) {
-      /* ignore these */
-      if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {
-        //   errno = EWOULDBLOCK;
-        return -1;
-      }
-      return -1;
-    } else if(err == SSL_ERROR_ZERO_RETURN)
-      return 0;
-  }
-  return ret;
+  if(ret <= 0)
+  ret = http_ssl_error(ret, h);
+return ret;
 }
 #endif
 

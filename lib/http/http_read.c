@@ -48,7 +48,6 @@ http_ssl_error(ssize_t ret, http* h) {
       ret = 0;
     } else if(err == SSL_ERROR_SSL) {
       io_wantwrite(h->sock);
-      h->connected = 1;
       return 1;
     }
 
