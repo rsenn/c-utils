@@ -23,9 +23,63 @@ size_t http_read_internal(http* h, char* buf, size_t n);
 
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
 
+ssize_t
+http_ssl_write(fd_t fd, const void* buf, size_t n, http* h) {
+  ssize_t ret;
+  int err;
+
+  errno = 0;
+
+  ret = SSL_write(h->ssl, buf, n);
+
+  /* it was not done */
+  if(ret <= 0) {
+    /* get error code */
+    err = SSL_get_error(h->ssl, ret);
+
+    /* call ssl_write() again when socket gets writeable */
+    if(err == SSL_ERROR_WANT_WRITE) {
+      io_wantwrite(fd);
+      errno = EWOULDBLOCK;
+      return -1;
+    }
+
+    /* call ssl_write() again when socket gets writeable */
+    if(err == SSL_ERROR_WANT_READ) {
+      io_wantread(fd);
+
+      errno = EWOULDBLOCK;
+      return -1;
+    }
+
+    /*
+     * EWOULDBLOCK, EINTR, EAGAIN are ignored because
+     * these say the handshake is in progress and needs
+     * more events.
+     */
+    if(err == SSL_ERROR_SYSCALL) {
+      /* ignore these */
+      if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {
+        errno = EWOULDBLOCK;
+        return -1;
+      }
+
+      return -1;
+    }
+
+    if(err == SSL_ERROR_ZERO_RETURN)
+      return 0;
+  }
+
+  return ret;
+}
+
 static ssize_t
 http_socket_write(fd_t fd, void* buf, size_t len, buffer* b) {
   http* h = b->cookie;
+
+  if(h->ssl)
+    return http_ssl_write(h->sock, buf, len, h);
 
   return winsock2errno(send(fd, buf, len, 0));
 }

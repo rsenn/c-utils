@@ -77,7 +77,7 @@ main(int argc, char* argv[]) {
 
   if(argc < 2) {
     argv[1] = "https://127.0.0.1:443/show";
-    //    argv[1] = "http://127.0.0.1:5555/show";
+    argv[1] = "http://127.0.0.1:5555/show";
     argc++;
   }
 

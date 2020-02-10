@@ -8,6 +8,11 @@
 #include <errno.h>
 #include <assert.h>
 
+#ifdef HAVE_OPENSSL
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#endif
+
 size_t http_read_internal(http* h, char* buf, size_t len);
 
 static void
@@ -38,13 +43,51 @@ putline(const char* what, const char* b, ssize_t l, buffer* buf) {
 }
 
 ssize_t
+http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
+  ssize_t ret = SSL_read(h->ssl, buf, len);
+  int err; /* it was not done */
+  if(ret < 0) {
+    /* get error code */
+    err = SSL_get_error(fd, ret);
+    /* call ssl_read() again when socket gets readable */
+    if(err == SSL_ERROR_WANT_READ) {
+      io_wantread(fd);
+      errno = EAGAIN;
+      return -1;
+    }
+    /* call ssl_read() again when socket gets writeable */
+    if(err == SSL_ERROR_WANT_WRITE) {
+      io_wantwrite(fd);
+      errno = EAGAIN;
+      return -1;
+    }
+    /*
+     * EWOULDBLOCK, EINTR, EAGAIN are ignored because
+     * these say the handshake is in progress and needs
+     * more events.
+     */
+    if(err == SSL_ERROR_SYSCALL) {
+      /* ignore these */
+      if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {
+        errno = EAGAIN;
+        return -1;
+      }
+      return -1;
+    }
+    if(err == SSL_ERROR_ZERO_RETURN)
+      return 0;
+  }
+  return ret;
+}
+
+ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   int s;
   http* h = b->cookie;
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
 
-  s = io_tryread(fd, buf, len);
+  s = h->ssl ? http_ssl_read(h->sock, buf, len, h) : io_tryread(fd, buf, len);
 
   /*  buffer_puts(buffer_2, "io_tryread(");
     buffer_putlong(buffer_2, fd);
