@@ -12,7 +12,7 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #endif
-
+extern ssize_t http_ssl_connect(fd_t fd, http* h) ;
 size_t http_read_internal(http* h, char* buf, size_t len);
 
 static void
@@ -89,7 +89,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
 
   s =
 #ifdef HAVE_OPENSSL
-      h->ssl ? http_ssl_read(h->sock, buf, len, h) :
+      h->ssl ? (h->connected ? http_ssl_read(h->sock, buf, len, h)  : http_ssl_connect(h->sock, h)) :
 #endif
              io_tryread(fd, buf, len);
 
