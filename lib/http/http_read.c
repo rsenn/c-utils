@@ -90,10 +90,12 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
 
 #ifdef HAVE_OPENSSL
   if(!h->connected) {
-    if((s = http_ssl_connect(h->sock, h)) == 1)
+    if((s = http_ssl_connect(h->sock, h)) == 1) {
       h->connected = 1;
-    else
+    }
+    else if(s == -1) {
       return s;
+    }
   }
 #endif
 
