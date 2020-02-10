@@ -5,6 +5,7 @@
 #include "../io.h"
 #include "../byte.h"
 #include "../errmsg.h"
+#include "../socket.h"
 #include <errno.h>
 #include <assert.h>
 
