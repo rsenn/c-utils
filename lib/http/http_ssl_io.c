@@ -29,7 +29,7 @@ http_ssl_io_errhandle(http* h, int err) {
   if(err == SSL_ERROR_WANT_WRITE || err == SSL_ERROR_WANT_READ) {
     r = -1;
     e = err == SSL_ERROR_WANT_READ ? EAGAIN : EWOULDBLOCK;
-  } else if(err == SSL_ERROR_SSL || err = 0) {
+  } else if(err == SSL_ERROR_SSL || err == 0) {
     e = 0;
     r = 1;
   }
