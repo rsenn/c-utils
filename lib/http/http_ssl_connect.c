@@ -14,7 +14,7 @@ http_ssl_connect(fd_t fd, http* h) {
   ret = SSL_connect(h->ssl);
 
   if(ret <= 0)
-    ret = http_ssl_error(ret, h, &msg);
+    ret = http_ssl_error(ret, h, 0);
 
   if(!(ret == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))) {
   }
