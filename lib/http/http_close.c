@@ -5,9 +5,19 @@
 #else
 #include <unistd.h>
 #endif
+
 void
 http_close(http* h) {
-  if(h->sock != -1)
+#ifdef HAVE_OPENSSL
+  if(h->ssl) {
+    SSL_shutdown(h->ssl);
+    h->ssl = NULL;
+  } else 
+#endif
+  if(h->sock != -1) {
     close(h->sock);
+    h->sock = -1;
+  }
+
   h->sock = -1;
 }

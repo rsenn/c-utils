@@ -31,8 +31,6 @@ boundary_predicate(stralloc* sa, void* arg) {
   return 0;
 }
 
-ssize_t http_ssl_connect(fd_t fd, http* h);
-
 ssize_t
 http_readable(http* h, int freshen) {
   ssize_t ret = 0;

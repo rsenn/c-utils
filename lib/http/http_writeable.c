@@ -14,21 +14,6 @@
 
 ssize_t http_ssl_error(ssize_t ret, http* h, char** mptr);
 
-ssize_t
-http_ssl_connect(fd_t fd, http* h) {
-  ssize_t ret = SSL_connect(h->ssl);
-
-  buffer_puts(buffer_2, "SSL connect = ");
-  buffer_putlong(buffer_2, ret);
-  buffer_putnlflush(buffer_2);
-
-  if(ret == 1)
-    h->connected = 1;
-  else if(ret <= 0)
-    ret = http_ssl_error(ret, h, 0);
-
-  return ret;
-}
 #endif
 
 ssize_t
@@ -39,6 +24,9 @@ http_writeable(http* h) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h->sock, h)) == 1) {
         h->connected = 1;
+        if(io_canwrite(h->sock))
+          goto request;
+
         io_wantwrite(h->sock);
         errno = EWOULDBLOCK;
         return -1;
@@ -48,7 +36,7 @@ http_writeable(http* h) {
     }
   }
 #endif
-
+request:
   h->connected = 1;
   if(h->connected) {
     http_sendreq(h);

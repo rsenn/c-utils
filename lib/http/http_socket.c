@@ -22,24 +22,6 @@
 size_t http_read_internal(http* h, char* buf, size_t n);
 
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
-ssize_t http_ssl_error(ssize_t ret, http* h, char** mptr);
-
-#ifdef HAVE_OPENSSL
-ssize_t
-http_ssl_write(fd_t fd, const void* buf, size_t n, http* h) {
-  ssize_t ret;
-  errno = 0;
-  ret = SSL_write(h->ssl, buf, n);
-  if(ret <= 0) {
-    ret = http_ssl_error(ret, h, 0);
-  } else {
-    buffer_puts(buffer_2, "SSL write = ");
-    buffer_putlong(buffer_2, ret);
-    buffer_putnlflush(buffer_2);
-  }
-  return ret;
-}
-#endif
 
 static ssize_t
 http_socket_write(fd_t fd, void* buf, size_t len, buffer* b) {
@@ -48,14 +30,15 @@ http_socket_write(fd_t fd, void* buf, size_t len, buffer* b) {
 
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
-    ret =  http_ssl_write(h->sock, buf, len, h);
+    ret = http_ssl_write(h->sock, buf, len, h);
 
     buffer_puts(buffer_2, "SSL write = ");
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
   }
 #endif
-  else ret = winsock2errno(send(fd, buf, len, 0));
+  else
+    ret = winsock2errno(send(fd, buf, len, 0));
 }
 
 #ifdef HAVE_OPENSSL
