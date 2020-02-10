@@ -6,12 +6,13 @@
 
 ssize_t
 http_ssl_error(ssize_t ret, http* h, char** mptr) {
-
-  if(ret < 0) {
     /* get error code */
     char buf[256];
     size_t n = sizeof(buf);
     int err;
+
+if(ret >= 0)
+  return ret;
     /* get error code */
     err = SSL_get_error(h->ssl, ret);
 
@@ -62,7 +63,7 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
       buffer_puts(buffer_2, buf);
       buffer_putnlflush(buffer_2);
     }
-  }
+
   return ret;
 }
 #endif
