@@ -30,7 +30,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
         return s;
       }
     }
-    s = http_ssl_read(h->sock, buf, len, h);
+    s = http_ssl_read(h->sock, buf, len, b);
 
   } else
 #endif

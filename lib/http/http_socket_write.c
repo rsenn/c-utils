@@ -16,23 +16,29 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      if((s = http_ssl_connect(h->sock, h)) == 1) {
+      if((ret = http_ssl_connect(h->sock, h)) == 1) {
         h->connected = 1;
-        errno = EWOUDLBLOCK;
+
+        errno = EWOULDBLOCK;
         return -1;
 
-      } else if(s == -1) {
-        return s;
+      } else if(ret == -1) {
+        return ret;
       }
     }
   }
-  
-  ret = http_ssl_write(h->sock, buf, len, h);
-
-  buffer_puts(buffer_2, "SSL write = ");
-  buffer_putlong(buffer_2, ret);
-  buffer_putnlflush(buffer_2);
-}
 #endif
-else ret = winsock2errno(send(fd, buf, len, 0));
+
+#ifdef HAVE_OPENSSL
+  if(h->ssl) {
+    ret = http_ssl_write(h->sock, buf, len, b);
+    buffer_puts(buffer_2, "SSL write = ");
+    buffer_putlong(buffer_2, ret);
+    buffer_putnlflush(buffer_2);
+  }
+#endif
+  else
+    ret = winsock2errno(send(fd, buf, len, 0));
+
+  return ret;
 }
