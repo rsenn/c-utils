@@ -74,27 +74,27 @@ typedef struct {
   int tls : 1;
 } http;
 
-void    http_close(http* h);
-int     http_get(http* h, const char* location);
-void    http_init(http* h, const char* host, uint16 port);
+void http_close(http* h);
+int http_get(http* h, const char* location);
+void http_init(http* h, const char* host, uint16 port);
 ssize_t http_readable(http* h, int freshen);
 ssize_t http_read(http* h, char* buf, size_t len, buffer* bf);
-int     http_sendreq(http* h);
-int     http_socket(http* h, int nonblock);
+int http_sendreq(http* h);
+int http_socket(http* h, int nonblock);
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
 ssize_t http_socket_write(fd_t fd, void* buf, size_t len, buffer* b);
 
 #ifdef HAVE_OPENSSL
 extern void* http_sslctx;
 ssize_t http_ssl_connect(fd_t fd, http* h);
-void*   http_ssl_ctx(void);
+void* http_ssl_ctx(void);
 ssize_t http_ssl_error(ssize_t ret, http* h, char** mptr);
-ssize_t http_ssl_read(fd_t fd, void* buf, size_t len, http* h);
-int     http_ssl_socket(http* h);
-ssize_t http_ssl_write(fd_t fd, const void* buf, size_t n, http* h);
+int http_ssl_socket(http* h);
+ssize_t http_ssl_read(fd_t fd, void* buf, size_t len, void* b);
+ssize_t http_ssl_write(fd_t fd, const void* buf, size_t n, void* b);
+
 #endif
 ssize_t http_writeable(http* h);
-
 
 #ifdef __cplusplus
 }

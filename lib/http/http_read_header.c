@@ -8,6 +8,28 @@
 #include <errno.h>
 #include <assert.h>
 
+
+
+static void
+putline(const char* what, const char* b, ssize_t l, buffer* buf) {
+  buffer_puts(buffer_2, what);
+  buffer_puts(buffer_2, "[");
+  buffer_putulong(buffer_2, l <= 0 ? -l : l);
+  buffer_puts(buffer_2, "]");
+  buffer_puts(buffer_2, ": ");
+  if(l <= 0)
+    buffer_puts(buffer_2, b);
+  else {
+    while(l-- > 0) buffer_put(buffer_2, b++, 1);
+  }
+  /*
+  buffer_puts(buffer_2, " (bytes in recvb: ");
+  buffer_putulong(buffer_2, buf->n - buf->p);
+  buffer_puts(buffer_2, ")");*/
+  buffer_putnlflush(buffer_2);
+}
+
+
 ssize_t
 http_read_header(http* h, http_response* r) {
   ssize_t ret = 0, bytesread = 0;

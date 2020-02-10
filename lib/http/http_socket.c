@@ -23,7 +23,6 @@ size_t http_read_internal(http* h, char* buf, size_t n);
 
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
 
-
 int
 http_socket(http* h, int nonblock) {
   if((h->sock = socket_tcp4()) == -1)

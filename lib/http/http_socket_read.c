@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <assert.h>
 
-
 ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   ssize_t s;
