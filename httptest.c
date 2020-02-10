@@ -16,6 +16,7 @@
 #include "lib/tai.h"
 #include "lib/case.h"
 #include "lib/buffer.h"
+#include "lib/getopt.h"
 #include <errno.h>
 #ifdef __ORANGEC__
 #include <sockets.h>
@@ -40,6 +41,24 @@ static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
 static io_entry* g_iofd;
 static http h;
+
+
+void
+usage(char* av0) {
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] [FILES...]\n"
+                       "\n"
+                       "Options:\n"
+                       "\n"
+                       "  -h, --help              Show this help\n"
+                       "  -o, --output FILE       Output file\n"
+                       "\n",
+                       0);
+  buffer_flush(buffer_1);
+}
+
 int
 main(int argc, char* argv[]) {
   int argi;
@@ -49,8 +68,27 @@ main(int argc, char* argv[]) {
   static char outbuf[256 * 1024];
   fd_t fd, outfile;
   buffer out;
+  int c;
   const char* outname = "output-XXXXXX.txt";
+     struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
+
   errmsg_iam(argv[0]);
+
+
+  for(;;) {
+    c = getopt_long(argc, argv, "ho:", opts, &index);
+    if(c == -1)
+      break;
+    if(c == 0)
+      continue;
+
+    switch(c) {
+            case 'o': outname = optarg; break;
+      case 'h': usage(argv[0]); return 0;
+
+      default: usage(argv[0]); return 1;
+    }
+  }
   //  unlink(outname);
   if((outfile = open_temp(&outname)) == -1) {
     errmsg_warnsys("open error: ", 0);
