@@ -25,6 +25,10 @@ http_get(http* h, const char* location) {
   size_t len = str_len(location);
   h->tls = len >= 5 && !byte_diff(location, 5, "https");
 
+  buffer_putm_internal(buffer_2, "http_get ", location, "\n", 0);
+
+  buffer_flush(buffer_2);
+
   if(location[0] != '/') {
     size_t len;
     len = str_findb(location, "://", 3);

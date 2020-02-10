@@ -13,13 +13,13 @@ http_ssl_connect(http* h) {
   char* msg = 0;
   errno = 0;
   assert(!h->connected);
-  ret = SSL_connect(h->ssl);
-  if(ret <= 0) {
-    if((err = http_ssl_error(h, ret)))
-      if((ret = http_ssl_io(h, err)) < -1)
-        return ret;
+  if((ret = SSL_connect(h->ssl)) <= 0) {
+    err = http_ssl_error(h, ret);
+    if(err == SSL_ERROR_SSL)
+      return 1;
+    else if(http_ssl_io(h, err) < -1)
+      return -1;
   }
-
   if(ret == 1) {
     if(!h->connected) {
       h->connected = 1;

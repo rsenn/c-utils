@@ -4,9 +4,8 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-
-static const char*
-ssl_error_flag(int i) {
+const char*
+http_ssl_errflag(int i) {
   switch(i) {
     case SSL_ERROR_NONE: return "NONE";
     case SSL_ERROR_SSL: return "SSL";
@@ -33,7 +32,7 @@ http_ssl_error(http* h, ssize_t ret) {
     err = SSL_get_error(h->ssl, ret);
 
     h->err = err;
-   
+
     ERR_error_string_n(err, buf, n);
     ERR_clear_error();
 
