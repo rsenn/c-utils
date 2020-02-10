@@ -21,7 +21,6 @@ extern ssize_t buffer_dummyread(int, void*, size_t, void*);
 static int
 boundary_predicate(stralloc* sa, void* arg) {
   stralloc* pred = arg;
-
   if(pred->len >= sa->len) {
     if(!byte_diff(&sa->s[sa->len - pred->len], pred->len, pred->s))
       return 1;
@@ -42,8 +41,11 @@ http_readable(http* h, int freshen) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      ret = http_ssl_connect(h);
-      return http_ssl_io(h, ret);
+      if((ret = http_ssl_connect(h)) == 1) {
+        io_dontwantread(h->sock);
+        io_dontwantwrite(h->sock);
+      }
+      return http_ssl_io_errhandle(h, ret);
     }
   }
 #endif

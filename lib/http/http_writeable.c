@@ -16,11 +16,9 @@
 ssize_t
 http_writeable(http* h) {
   ssize_t ret = 0;
-
 #if DEBUG_OUTPUT
   buffer_puts(buffer_2, "http_writable ");
   buffer_putlong(buffer_2, h->sock);
-
   buffer_puts(buffer_2, " tls=");
   buffer_putlong(buffer_2, !!h->tls);
   /*  buffer_puts(buffer_2, " ssl=");
@@ -33,13 +31,12 @@ http_writeable(http* h) {
   buffer_putlong(buffer_2, !!h->nonblocking);
   buffer_putsflush(buffer_2, "\n");
 #endif
-
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
-    if(!h->connected) {
+    if(!h->connected)
       ret = http_ssl_connect(h);
-      return http_ssl_io(h, ret);
-    }
+    if(ret != 1)
+      return ret;
   }
 #endif
 request:

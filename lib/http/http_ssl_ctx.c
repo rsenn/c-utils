@@ -10,7 +10,6 @@ void*
 http_ssl_ctx(void) {
   const SSL_METHOD* method;
   SSL_CTX* ctx;
-
 #if 1 // OPENSSL_API_COMPAT >= 0x10100000L
   const OPENSSL_INIT_SETTINGS* settings = OPENSSL_INIT_new();
   OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, settings);
@@ -35,5 +34,4 @@ http_ssl_ctx(void) {
   }
   return ctx;
 }
-
 #endif

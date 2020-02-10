@@ -25,27 +25,20 @@ int
 http_socket(http* h, int nonblock) {
   if((h->sock = socket_tcp4()) == -1)
     return -1;
-
   if(nonblock)
     ndelay_on(h->sock);
   else
     ndelay_off(h->sock);
-
   io_fd(h->sock);
-
 #ifdef HAVE_OPENSSL
   if(h->tls) {
     http_ssl_socket(h);
-
     buffer_putsflush(buffer_2, "ssl socket\n");
   }
 #endif
-
   buffer_init_free(&h->q.in, &http_socket_read, h->sock, malloc(BUFFER_INSIZE), BUFFER_INSIZE);
   h->q.in.cookie = (void*)h;
-
   buffer_init_free(&h->q.out, &http_socket_write, h->sock, malloc(BUFFER_OUTSIZE), BUFFER_OUTSIZE);
   h->q.out.cookie = (void*)h;
-
   return 0;
 }

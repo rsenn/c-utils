@@ -15,12 +15,11 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, void* b) {
   assert(h->connected);
 do_write:
   if((ret = SSL_write(h->ssl, buf, n)) <= 0) {
-    if((err = http_ssl_error(h, ret))) {
-      if(http_ssl_io(h, err) <= -1)
-        return -1;
-    }
+    if(http_ssl_io_again(h, ret))
+      return -1;
+    if((err = http_ssl_error(h, ret)))
+      return http_ssl_io_errhandle(h, err);
   }
-
 #if DEBUG_OUTPUT
   buffer_puts(buffer_2, "http_ssl_write ");
   buffer_puts(buffer_2, " ret=");

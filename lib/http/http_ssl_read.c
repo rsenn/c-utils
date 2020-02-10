@@ -15,14 +15,12 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
   assert(h->tls);
   assert(h->connected);
 do_read:
-
   if((ret = SSL_read(h->ssl, buf, len)) <= 0) {
-    if((err = http_ssl_error(h, ret))) {
-      if(http_ssl_io(h, err) <= -1)
-        return -1;
-    }
+    if(http_ssl_io_again(h, ret))
+      return -1;
+    if((err = http_ssl_error(h, ret)))
+      return http_ssl_io_errhandle(h, err);
   }
-
 #if DEBUG_OUTPUT
   buffer_puts(buffer_2, "http_ssl_read ");
   buffer_puts(buffer_2, " ret=");

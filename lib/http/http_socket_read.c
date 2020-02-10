@@ -14,21 +14,19 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   http* h = ((buffer*)b)->cookie;
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
-
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      if((ret = http_ssl_connect(h)) == 1) {
-        errno = EWOULDBLOCK;
-        ret = -1;
-      }
-      http_ssl_io(h, ret);
+      ret = http_ssl_connect(h);
+      if(http_ssl_io_again(h, ret) || ret == -1)
+        return -1;
+      if(!io_canread(h->sock))
+        return http_ssl_io_errhandle(h, EAGAIN);
     }
     ret = http_ssl_read(h->sock, buf, len, b);
   } else
 #endif
     ret = io_tryread(fd, buf, len);
-
   if(ret == 0) {
     closesocket(h->sock);
     h->q.in.fd = h->q.out.fd = h->sock = -1;

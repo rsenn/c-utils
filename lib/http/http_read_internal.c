@@ -21,10 +21,8 @@ http_read_internal(http* h, char* buf, size_t len) {
   char* x = buffer_PEEK(in); /* buffer read pos */
   char* y = buf + len;       /* buffer write pos + len */
   http_response* r;
-
   if((r = h->response) == NULL)
     return len;
-
   if(r->status == HTTP_RECV_HEADER) {
     if(http_read_header(h, r) > 0)
       r->ptr = 0;
@@ -33,7 +31,6 @@ http_read_internal(http* h, char* buf, size_t len) {
     switch(r->transfer) {
       case HTTP_TRANSFER_UNDEF: break;
       case HTTP_TRANSFER_BOUNDARY: break;
-
       case HTTP_TRANSFER_CHUNKED: {
         if(r->ptr == r->chunk_length) {
           size_t skip;
@@ -48,10 +45,8 @@ http_read_internal(http* h, char* buf, size_t len) {
           if((i = byte_chr(&in->x[in->p], bytes, '\n')) < bytes) {
             i = scan_xlonglong(&in->x[in->p], &r->chunk_length);
             in->p += i;
-
             if((i = scan_eolskip(&in->x[in->p], in->n - in->p)))
               in->p += i;
-
             r->ptr = 0;
             if(r->chunk_length) {
               // putnum("chunk begin", r->chunk_length);

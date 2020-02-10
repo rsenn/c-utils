@@ -14,27 +14,20 @@ http_sendreq(http* h) {
   buffer* out = &h->q.out;
   if(h->request == NULL)
     return 0;
-
   buffer_puts(out, "GET ");
   buffer_putsa(out, &h->request->location);
   buffer_puts(out, " HTTP/1.1\r\n");
-
   buffer_puts(out, "Host: ");
   buffer_putsa(out, &h->host);
   buffer_puts(out, "\r\n");
-
   buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", 0);
-
   buffer_puts(out, "\r\n");
-
 #if DEBUG_OUTPUT
   buffer_put(buffer_2, out->x, out->p);
   buffer_flush(buffer_2);
 #endif
   buffer_flush(out);
-
   io_dontwantwrite(h->sock);
   io_wantread(h->sock);
-
   return 1;
 }
