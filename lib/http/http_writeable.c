@@ -11,12 +11,22 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+
 ssize_t http_ssl_error(ssize_t ret, http* h, char** mptr);
+
 ssize_t
 http_ssl_connect(fd_t fd, http* h) {
   ssize_t ret = SSL_connect(h->ssl);
-  if(ret <= 0)
+
+  buffer_puts(buffer_2, "SSL connect = ");
+  buffer_putlong(buffer_2, ret);
+  buffer_putnlflush(buffer_2);
+
+  if(ret == 1)
+    h->connected = 1;
+  else if(ret <= 0)
     ret = http_ssl_error(ret, h, 0);
+
   return ret;
 }
 #endif
@@ -29,17 +39,20 @@ http_writeable(http* h) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h->sock, h)) == 1) {
         h->connected = 1;
-
-        buffer_puts(buffer_2, "SSL connected");
-        buffer_putnlflush(buffer_2);
-
+        io_wantwrite(h->sock);
+        errno = EWOULDBLOCK;
+        return -1;
       } else if(ret == -1) {
         return ret;
       }
     }
   }
 #endif
+
   h->connected = 1;
-  http_sendreq(h);
-  io_dontwantwrite(h->sock);
+  if(h->connected) {
+    http_sendreq(h);
+    io_dontwantwrite(h->sock);
+    io_wantread(h->sock);
+  }
 }

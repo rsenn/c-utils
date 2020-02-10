@@ -30,8 +30,13 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, http* h) {
   ssize_t ret;
   errno = 0;
   ret = SSL_write(h->ssl, buf, n);
-  if(ret <= 0)
+  if(ret <= 0) {
     ret = http_ssl_error(ret, h, 0);
+  } else {
+    buffer_puts(buffer_2, "SSL write = ");
+    buffer_putlong(buffer_2, ret);
+    buffer_putnlflush(buffer_2);
+  }
   return ret;
 }
 #endif
@@ -39,12 +44,18 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, http* h) {
 static ssize_t
 http_socket_write(fd_t fd, void* buf, size_t len, buffer* b) {
   http* h = b->cookie;
+  ssize_t ret = 0;
 
 #ifdef HAVE_OPENSSL
-  if(h->ssl)
-    return http_ssl_write(h->sock, buf, len, h);
+  if(h->ssl) {
+    ret =  http_ssl_write(h->sock, buf, len, h);
+
+    buffer_puts(buffer_2, "SSL write = ");
+    buffer_putlong(buffer_2, ret);
+    buffer_putnlflush(buffer_2);
+  }
 #endif
-  return winsock2errno(send(fd, buf, len, 0));
+  else ret = winsock2errno(send(fd, buf, len, 0));
 }
 
 #ifdef HAVE_OPENSSL

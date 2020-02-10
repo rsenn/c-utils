@@ -18,6 +18,7 @@
 #include "lib/buffer.h"
 #include "lib/getopt.h"
 #include <errno.h>
+#include <signal.h>
 #ifdef __ORANGEC__
 #include <sockets.h>
 #endif
@@ -41,7 +42,6 @@ static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
 static io_entry* g_iofd;
 static http h;
-
 
 void
 usage(char* av0) {
@@ -69,11 +69,12 @@ main(int argc, char* argv[]) {
   fd_t fd, outfile;
   buffer out;
   int c;
-  const char* outname = "output-XXXXXX.txt";
-     struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
+  const char* outname = 0;
+  const char* tmpl = "output-XXXXXX.txt";
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
-
+  signal(SIGPIPE, SIG_IGN);
 
   for(;;) {
     c = getopt_long(argc, argv, "ho:", opts, &index);
@@ -83,15 +84,16 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(c) {
-            case 'o': outname = optarg; break;
+      case 'o': outname = optarg; break;
       case 'h': usage(argv[0]); return 0;
 
       default: usage(argv[0]); return 1;
     }
   }
-  //  unlink(outname);
-  if((outfile = open_temp(&outname)) == -1) {
-    errmsg_warnsys("open error: ", 0);
+  if(outname && str_equal(outname, "-"))
+    outfile = 1;
+  else if((outfile = outname ? open_trunc(outname) : open_temp(&tmpl)) == -1) {
+    errmsg_warnsys("open error: ", outname, 0);
     return 126;
   }
   buffer_init(&out, &write, outfile, outbuf, sizeof(outbuf));

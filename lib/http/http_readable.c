@@ -48,6 +48,8 @@ http_readable(http* h, int freshen) {
         h->connected = 1;
         io_wantwrite(h->sock);
         return ret;
+      } else if(ret < 0) {
+        return ret;
       }
     }
   }

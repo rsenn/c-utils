@@ -25,6 +25,7 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
 
     ERR_error_string_n(err, buf, n);
     ERR_clear_error();
+
     if(mptr)
       *mptr = str_dup(buf);
 
@@ -32,12 +33,16 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
     if(err == SSL_ERROR_WANT_READ) {
       io_wantread(h->sock);
       errno = EAGAIN;
-      return -1;
+      buffer_putsflush(buffer_2, "SSL want read\n");
+
+      ret = -1;
       /* call ssl_read() again when socket gets writeable */
     } else if(err == SSL_ERROR_WANT_WRITE) {
       io_wantwrite(h->sock);
       errno = EWOULDBLOCK;
-      return -1; /*
+      buffer_putsflush(buffer_2, "SSL want write\n");
+
+      ret = -1; /*
                   * EWOULDBLOCK, EINTR, EAGAIN are ignored because
                   * these say the handshake is in progress and needs
                   * more events.
@@ -45,15 +50,18 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
     } else if(err == SSL_ERROR_SYSCALL) {
       /* ignore these */
       if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {
-        errno = EAGAIN;
+        // errno = EAGAIN;
       }
     } else if(err == SSL_ERROR_ZERO_RETURN) {
       ret = 0;
     } else if(err == SSL_ERROR_SSL) {
       io_wantwrite(h->sock);
-      return 1;
+      ret = 1;
+    } else {
+      ret = -1;
     }
 
+if(ret <= 0) {
     buffer_puts(buffer_2, "SSL ret: ");
     buffer_putlong(buffer_2, ret);
     buffer_puts(buffer_2, " err: ");
@@ -62,6 +70,7 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
     buffer_puts(buffer_2, buf);
     buffer_putnlflush(buffer_2);
   }
+  }
   return ret;
 }
 
@@ -69,14 +78,19 @@ ssize_t
 http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
   ssize_t ret = SSL_read(h->ssl, buf, len);
   char* msg = 0;
+  
+    buffer_puts(buffer_2, "SSL read = ");
+    buffer_putlong(buffer_2, ret);
+    buffer_putnlflush(buffer_2);
+
   if(ret <= 0) {
     ret = http_ssl_error(ret, h, &msg);
     if(msg) {
-      buffer_puts(buffer_2, "error: ");
+      buffer_puts(buffer_2, "read error: ");
       buffer_puts(buffer_2, msg);
       buffer_putnlflush(buffer_2);
     }
-  }
+  } 
 
   return ret;
 }
