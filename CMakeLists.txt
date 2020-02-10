@@ -374,6 +374,7 @@ target_link_libraries(json slist hmap stralloc buffer alloc)
 target_link_libraries(ndelay socket)
 target_link_libraries(process wait errmsg)
 target_link_libraries(ihex scan byte)
+target_link_libraries(uint32 taia tai)
 
 set(genmakefile_SOURCES mplab.c ini.c)
 
