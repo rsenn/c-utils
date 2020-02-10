@@ -171,6 +171,7 @@ main(int argc, char* argv[]) {
 
   charbuf_init(&input, (read_fn*)&read, in_fd);
 
+again:
   if(in_place) {
     if(out_fd == STDOUT_FILENO) {
 
@@ -185,9 +186,11 @@ main(int argc, char* argv[]) {
   buffer_flush(&output);
   close(output.fd);
 
-  buffer_puts(buffer_1, "tmpl: ");
-  buffer_puts(buffer_1, tmpl);
-  buffer_putnlflush(buffer_1);
+  if(tmpl) {
+    buffer_puts(buffer_1, "tmpl: ");
+    buffer_puts(buffer_1, tmpl);
+    buffer_putnlflush(buffer_1);
+  }
   buffer_puts(buffer_1, "out_path: ");
   buffer_puts(buffer_1, out_path);
   buffer_putnlflush(buffer_1);
@@ -201,15 +204,23 @@ main(int argc, char* argv[]) {
     mmap_unmap(x, n);
   }
 
+  charbuf_close(&input);
+
   if(in_place) {
     // buffer inplace;
     unlink(in_path);
     link(tmpl, in_path);
-/*    buffer_truncfile(&inplace, out_path);
-    buffer_put(&inplace, tmp.s, tmp.len);
-    buffer_flush(&inplace);
-    buffer_close(&inplace);
-*/  }
+    /*    buffer_truncfile(&inplace, out_path);
+        buffer_put(&inplace, tmp.s, tmp.len);
+        buffer_flush(&inplace);
+        buffer_close(&inplace);
+    */
 
-charbuf_close(&input);
+    if(out_path == 0) {
+
+      in_path = argv[optind++];
+      in_fd = open_read(in_path);
+      goto again;
+    }
+  }
 }

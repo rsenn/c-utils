@@ -43,7 +43,9 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   http* h = b->cookie;
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
+
   s = io_tryread(fd, buf, len);
+
   /*  buffer_puts(buffer_2, "io_tryread(");
     buffer_putlong(buffer_2, fd);
     buffer_puts(buffer_2, ", ");
@@ -131,8 +133,10 @@ http_read_internal(http* h, char* buf, size_t len) {
   char* x = buffer_PEEK(in); /* buffer read pos */
   char* y = buf + len;       /* buffer write pos + len */
   http_response* r;
+
   if((r = h->response) == NULL)
     return len;
+
   if(r->status == HTTP_RECV_HEADER) {
     if(http_read_header(h, r) > 0)
       r->ptr = 0;

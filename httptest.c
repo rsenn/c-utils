@@ -55,8 +55,8 @@ main(int argc, char* argv[]) {
   int argi;
   iopause_fd iop;
   static buffer in;
- static char inbuf[128*1024];
-  static char outbuf[256*1024];
+  static char inbuf[128 * 1024];
+  static char outbuf[256 * 1024];
   fd_t fd, outfile;
   buffer out;
   const char* outname = "output-XXXXXX.txt";
@@ -69,14 +69,15 @@ main(int argc, char* argv[]) {
     return 126;
   }
 
-buffer_init(&out, &write,  outfile, outbuf, sizeof(outbuf));
+  buffer_init(&out, &write, outfile, outbuf, sizeof(outbuf));
 
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
   h.keepalive = 0;
 
   if(argc < 2) {
-    argv[1] = "127.0.0.1:5555/show";
+    argv[1] = "https://127.0.0.1:443/show";
+    //    argv[1] = "http://127.0.0.1:5555/show";
     argc++;
   }
 
@@ -89,13 +90,13 @@ buffer_init(&out, &write,  outfile, outbuf, sizeof(outbuf));
       buffer_putlong(buffer_1, (long)ret);
       buffer_putnlflush(buffer_1);
     */
-  //  ndelay_on(h.sock);
-    //io_fd(h.sock);
+    //  ndelay_on(h.sock);
+    // io_fd(h.sock);
 
-   // g_iofd = io_getentry(h.sock);
+    // g_iofd = io_getentry(h.sock);
 
-   // io_wantwrite(h.sock);
-  //io_wantread(h.sock);
+    // io_wantwrite(h.sock);
+    // io_wantread(h.sock);
 
     /*
       byte_zero(&iop, sizeof(iop));
@@ -153,7 +154,7 @@ buffer_init(&out, &write,  outfile, outbuf, sizeof(outbuf));
       }
     }
 
-buffer_flush(&out);
+    buffer_flush(&out);
 
     /* buffer_putsa(buffer_1, &h.response->data);*/
     buffer_putnlflush(buffer_1);
