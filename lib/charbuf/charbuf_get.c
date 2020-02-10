@@ -3,12 +3,12 @@
 int
 charbuf_get(charbuf* b) {
   int ret;
-if(b->eof || b->err) 
+  if(b->eof || b->err)
     return b->eof ? 0 : -1;
 
   if(b->p) {
     b->p = 0;
-  }else {
+  } else {
     if((ret = b->op(b->fd, &b->ch, 1, b) <= 0)) {
       if(ret == 0)
         b->eof = 1;

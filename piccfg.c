@@ -240,13 +240,13 @@ cvalue*
 get_setting_value(cword* word, csetting* setting) {
   cvalue* value;
   uint16 byteval = get_setting_word(word, setting);
-/*
-  if(verbose) {
-    buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", 0);
-    buffer_putxlong0(buffer_2, byteval, 2);
-    buffer_putnlflush(buffer_2);
-  }
-*/
+  /*
+    if(verbose) {
+      buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", 0);
+      buffer_putxlong0(buffer_2, byteval, 2);
+      buffer_putnlflush(buffer_2);
+    }
+  */
   slink_foreach(setting->values, value) {
     if(verbose) {
       buffer_putm_internal(buffer_2, "  ", value->name, ": ", 0);
@@ -377,7 +377,7 @@ add_item(strlist* list, const char* name, const char* value) {
 }
 
 void
-process_config(void (*callback)(strlist*,const char* key, const char* value), strlist* list) {
+process_config(void (*callback)(strlist*, const char* key, const char* value), strlist* list) {
   cword *prevword = 0, *word;
   csetting* setting;
   cvalue* value;
@@ -552,11 +552,9 @@ main(int argc, char* argv[]) {
   stralloc_init(&cfg);
   config_bytes(&hex, &cfg, &baseaddr);
 
-
   strlist_init(&pragmas, '\0');
 
   process_config(&add_item, &pragmas);
-
 
   if(verbose) {
     cword* word;
@@ -571,15 +569,14 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
     }
 
+    /*    for(i = 0; i < cfg.len; i += 2) {
+          uint16 v = uint16_read(&cfg.s[i]);
 
-/*    for(i = 0; i < cfg.len; i += 2) {
-      uint16 v = uint16_read(&cfg.s[i]);
-
-      buffer_putxlong0(buffer_2, baseaddr + i, 4);
-      buffer_puts(buffer_2, ": ");
-      buffer_putxlong0(buffer_2, v, 4);
-      buffer_putnlflush(buffer_2);
-    }*/
+          buffer_putxlong0(buffer_2, baseaddr + i, 4);
+          buffer_puts(buffer_2, ": ");
+          buffer_putxlong0(buffer_2, v, 4);
+          buffer_putnlflush(buffer_2);
+        }*/
   }
 
   output_items(&pragmas);

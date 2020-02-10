@@ -13,7 +13,7 @@ charbuf_peekc(charbuf* b, char* ch) {
     }
     ret = b->p = 1;
   }
-  if(b->p  && ch)
+  if(b->p && ch)
     *ch = b->ch;
 
   return ret;

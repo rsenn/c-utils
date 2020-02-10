@@ -121,7 +121,7 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(c) {
-      case 'i': in_place=1;break;
+      case 'i': in_place = 1; break;
       case 'h': usage(argv[0]); return 0;
 
       default: usage(argv[0]); return 1;
@@ -129,7 +129,7 @@ main(int argc, char* argv[]) {
   }
 
   stralloc_init(&tmp);
-//  stralloc_init(&data);
+  //  stralloc_init(&data);
 
   if(optind < argc) {
     buffer_putm_internal(buffer_2, "Opening input file '", argv[optind], "'...", 0);
@@ -144,22 +144,18 @@ main(int argc, char* argv[]) {
     optind++;
   }
 
-
   charbuf_init(&input, (read_fn*)&read, in_fd);
 
   if(in_place) {
-
   }
 
-if(in_place)
-  buffer_fromsa(&output, &tmp);
-else
-  buffer_init(&output, &write, out_fd, buf, sizeof(buf));
+  if(in_place)
+    buffer_fromsa(&output, &tmp);
+  else
+    buffer_init(&output, &write, out_fd, buf, sizeof(buf));
   strip_comments(&input, &output);
 
   buffer_flush(&output);
-
-  
 
   buffer_puts(buffer_1, "max_depth: ");
   buffer_putulong(buffer_1, 2);
