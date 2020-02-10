@@ -63,9 +63,7 @@ strip_comments(charbuf* in, buffer* out) {
   stralloc line;
   stralloc_init(&line);
   n = 0;
-
   while((c = charbuf_get(in)) > 0) {
-
     if(in->eof || in->err)
       goto end;
     if(c == '/') {
@@ -75,7 +73,6 @@ strip_comments(charbuf* in, buffer* out) {
         charbuf_skip(in);
         stralloc_catc(&line, '\n');
         continue;
-
       } else if(c == '*') {
         charbuf_skip(in);
         do {
@@ -86,16 +83,13 @@ strip_comments(charbuf* in, buffer* out) {
         } while(c != '/');
       }
     }
-
     stralloc_catc(&line, c);
     n++;
-
     if(c == '\n' && line.len > 0) {
       p = scan_charsetnskip(line.s, " \t\r\v", line.len);
       is_empty = line.len == 0 || p == line.len || (line.s[line.len - 1] == '\n' && p == line.len - 1);
       if(is_empty)
         continue;
-
       put_line(out, line.s, line.len);
       stralloc_zero(&line);
     }
