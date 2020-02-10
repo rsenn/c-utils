@@ -56,6 +56,88 @@ static linklib_fmt* format_linklib_fn;
 static int inst_bins, inst_libs;
 static int cygming;
 
+#ifdef _DEBUG
+/**
+ * @brief debug_sa
+ * @param name
+ * @param sa
+ */
+void
+debug_sa(const char* name, stralloc* sa) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_putsa(buffer_2, sa);
+  buffer_putnlflush(buffer_2);
+}
+
+/**
+ * @brief debug_s
+ * @param name
+ * @param s
+ */
+void
+debug_s(const char* name, const char* s) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_puts(buffer_2, s);
+  buffer_putnlflush(buffer_2);
+}
+void
+debug_target(const target* t) {
+  buffer_putm_internal(buffer_2, "name: ", t->name, "\n", 0);
+  buffer_puts(buffer_2, "output: ");
+  buffer_putsa(buffer_2, &t->output.sa);
+  buffer_puts(buffer_2, "\nprereq: ");
+  buffer_putsa(buffer_2, &t->prereq.sa);
+  buffer_puts(buffer_2, "\nrecipe: ");
+  buffer_putsa(buffer_2, &t->recipe);
+
+  buffer_putnlflush(buffer_2);
+}
+
+/**
+ * @brief debug_sl
+ * @param name
+ * @param l
+ */
+void
+debug_sl(const char* name, const strlist* l) {
+  size_t pos, n;
+  const char* x;
+  stralloc tmp;
+  stralloc_init(&tmp);
+  strlist_foreach(l, x, n) {
+    if(tmp.len)
+      stralloc_catc(&tmp, ' ');
+    if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
+      stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
+    else
+      stralloc_catb(&tmp, x, n);
+  }
+  // debug_sa(name, &tmp);
+  stralloc_free(&tmp);
+}
+
+/**
+ * @brief debug_int
+ * @param name
+ * @param i
+ */
+void
+debug_int(const char* name, int i) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_putlong(buffer_2, i);
+  buffer_putnlflush(buffer_2);
+}
+#else
+#define debug_sa(x, y)
+#define debug_sl(x, y)
+#define debug_s(x, y)
+#define debug_int(x, y)
+#endif
+
+
 #ifndef _WIN32
 #define _mkdir mkdir
 #endif
@@ -152,88 +234,6 @@ strarray_dump(buffer* b, const strarray* arr) {
     ++p;
   }
 }
-
-#ifdef _DEBUG
-/**
- * @brief debug_sa
- * @param name
- * @param sa
- */
-void
-debug_sa(const char* name, stralloc* sa) {
-  buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, ": ");
-  buffer_putsa(buffer_2, sa);
-  buffer_putnlflush(buffer_2);
-}
-
-/**
- * @brief debug_s
- * @param name
- * @param s
- */
-void
-debug_s(const char* name, const char* s) {
-  buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, ": ");
-  buffer_puts(buffer_2, s);
-  buffer_putnlflush(buffer_2);
-}
-void
-debug_target(const target* t) {
-  buffer_putm_internal(buffer_2, "name: ", t->name, "\n", 0);
-  buffer_puts(buffer_2, "output: ");
-  buffer_putsa(buffer_2, &t->output.sa);
-  buffer_puts(buffer_2, "\nprereq: ");
-  buffer_putsa(buffer_2, &t->prereq.sa);
-  buffer_puts(buffer_2, "\nrecipe: ");
-  buffer_putsa(buffer_2, &t->recipe);
-
-  buffer_putnlflush(buffer_2);
-}
-
-/**
- * @brief debug_sl
- * @param name
- * @param l
- */
-void
-debug_sl(const char* name, const strlist* l) {
-  size_t pos, n;
-  const char* x;
-  stralloc tmp;
-  stralloc_init(&tmp);
-  strlist_foreach(l, x, n) {
-    if(tmp.len)
-      stralloc_catc(&tmp, ' ');
-    if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
-      stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
-    else
-      stralloc_catb(&tmp, x, n);
-  }
-  // debug_sa(name, &tmp);
-  stralloc_free(&tmp);
-}
-
-/**
- * @brief debug_int
- * @param name
- * @param i
- */
-void
-debug_int(const char* name, int i) {
-  buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, ": ");
-  buffer_putlong(buffer_2, i);
-  buffer_putnlflush(buffer_2);
-}
-#else
-#define debug_sa(x, y)
-#define debug_sl(x, y)
-#define debug_s(x, y)
-#define debug_int(x, y)
-#endif
-
 /**
  * @defgroup path functions
  * @{

@@ -427,7 +427,7 @@ add_program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt hma
 add_program(elf64list elf mmap uint16 uint32 uint64)
 add_program(elflist buffer errmsg unix elf mmap str)
 add_program(elfwrsec buffer elf mmap)
-add_program(genmakefile debug strarray stralloc array buffer rdir errmsg hmap mmap path scan slist case str unix strlist alloc byte ${LIBSHLWAPI})
+add_program(genmakefile case errmsg strarray slist rdir dir path strlist hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES})
 add_program(impgen buffer byte mmap open pe uint16 uint32)
