@@ -41,46 +41,6 @@ http_socket_write(fd_t fd, void* buf, size_t len, buffer* b) {
     ret = winsock2errno(send(fd, buf, len, 0));
 }
 
-#ifdef HAVE_OPENSSL
-static SSL_CTX* http_sslctx;
-static SSL_CTX*
-new_sslctx(void) {
-  const SSL_METHOD* method;
-  SSL_CTX* ctx;
-
-#if 1 // OPENSSL_API_COMPAT >= 0x10100000L
-  const OPENSSL_INIT_SETTINGS* settings = OPENSSL_INIT_new();
-  OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, settings);
-  method = TLS_client_method(); /* create new server-method instance */
-#else
-  SSL_library_init();
-  OpenSSL_add_all_algorithms();    /* load & register all cryptos, etc. */
-  SSL_load_error_strings();        /* load all error messages */
-  method = SSLv23_client_method(); /* create new server-method instance */
-#endif
-  ctx = SSL_CTX_new(method); /* create new context from method */
-  if(ctx == NULL) {
-    ERR_print_errors_fp(stderr);
-    abort();
-  }
-  if(!SSL_CTX_use_RSAPrivateKey_file(ctx, "http.key", SSL_FILETYPE_PEM)) {
-    SSL_CTX_free(ctx);
-    return NULL;
-  }
-
-  if(!SSL_CTX_use_certificate_file(ctx, "http.crt", SSL_FILETYPE_PEM)) {
-    SSL_CTX_free(ctx);
-    return NULL;
-  }
-
-  if(!SSL_CTX_check_private_key(ctx)) {
-    SSL_CTX_free(ctx);
-    return NULL;
-  }
-  return ctx;
-}
-#endif
-
 int
 http_socket(http* h, int nonblock) {
   if((h->sock = socket_tcp4()) == -1)
@@ -94,7 +54,7 @@ http_socket(http* h, int nonblock) {
   io_fd(h->sock);
 #ifdef HAVE_OPENSSL
   if(!http_sslctx)
-    http_sslctx = new_sslctx();
+    http_sslctx = http_ssl_ctx();
   h->ssl = SSL_new(http_sslctx);
   SSL_set_fd(h->ssl, h->sock);
 #endif

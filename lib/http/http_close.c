@@ -12,9 +12,9 @@ http_close(http* h) {
   if(h->ssl) {
     SSL_shutdown(h->ssl);
     h->ssl = NULL;
-  } else 
+  } else
 #endif
-  if(h->sock != -1) {
+      if(h->sock != -1) {
     close(h->sock);
     h->sock = -1;
   }

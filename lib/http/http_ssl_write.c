@@ -12,11 +12,11 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, http* h) {
 
   if(ret <= 0) {
     ret = http_ssl_error(ret, h, 0);
-  } 
+  }
 
-      buffer_puts(buffer_2, "SSL write = ");
-    buffer_putlong(buffer_2, ret);
-    buffer_putnlflush(buffer_2);
+  buffer_puts(buffer_2, "SSL write = ");
+  buffer_putlong(buffer_2, ret);
+  buffer_putnlflush(buffer_2);
   return ret;
 }
 #endif
