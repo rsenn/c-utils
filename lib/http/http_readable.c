@@ -33,7 +33,7 @@ boundary_predicate(stralloc* sa, void* arg) {
 
 ssize_t http_ssl_connect(fd_t fd, http* h);
 
-int
+ssize_t
 http_readable(http* h, int freshen) {
   ssize_t ret = 0;
   int err;
@@ -47,23 +47,21 @@ http_readable(http* h, int freshen) {
         buffer_putsflush(buffer_2, "SSL handshake done\n");
         h->connected = 1;
         io_wantwrite(h->sock);
-        return;
+        return ret;
       }
 
+      if(ret == -1) {
+        if(errno == EAGAIN) {
+          io_wantread(h->sock);
+          return ret;
+        } else if(errno == EWOULDBLOCK) {
+          io_wantwrite(h->sock);
+          return ret;
+        }
+      }
     }
   }
 #endif
-
-  if(ret == -1) {
-    if(errno == EAGAIN) {
-      io_wantread(h->sock);
-      return ret;
-    } else if(errno == EWOULDBLOCK) {
-      io_wantwrite(h->sock);
-      return ret;
-    }
-  }
-
 
   if(freshen)
     buffer_freshen(&h->q.in);

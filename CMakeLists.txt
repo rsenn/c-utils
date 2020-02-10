@@ -117,7 +117,7 @@ if(HAVE_COMPAT_LIB)
   set(LIBCOMPAT compat)
 endif()
 
-check_library_exists(m round "" HAVE_MATH_LIB)
+check_library_exists(m roundf "" HAVE_MATH_LIB)
 if(HAVE_MATH_LIB)
   set(LIBMATH m)
 endif()

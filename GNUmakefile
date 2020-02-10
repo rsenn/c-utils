@@ -783,6 +783,7 @@ ifeq ($(PIE),1)
 CFLAGS += -fPIE
 LDFLAGS += -pie
 endif
+LDFLAGS += -L$(prefix)/lib$(if $(ARCH),-$(ARCH))
 
 #$(info HOST:
 $(info MSYS: $(MSYS))
