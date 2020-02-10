@@ -42,7 +42,7 @@ http_ssl_connect(fd_t fd, http* h) {
     else if(err == SSL_ERROR_SYSCALL) {
       /* ignore these */
       if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {
-      //  errno = EAGAIN;
+        //  errno = EAGAIN;
         return -1;
       }
       return -1;
@@ -71,23 +71,23 @@ http_writeable(http* h) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h->sock, h)) == 1) {
         h->connected = 1;
-        io_wantwrite(h->sock);
+
+        buffer_puts(buffer_2, "SSL connected");
+        buffer_putnlflush(buffer_2);
+  
+  
+      } else if(ret == -1) {
+        if(errno == EAGAIN) {
+          io_wantread(h->sock);
+        } else if(errno == EWOULDBLOCK) {
+          io_wantwrite(h->sock);
+        }
+        errno = EWOULDBLOCK;
         return ret;
       }
     }
   }
 #endif
-
-  if(ret == -1) {
-    if(errno == EAGAIN) {
-      io_wantread(h->sock);
-    } else if(errno == EWOULDBLOCK) {
-      io_wantwrite(h->sock);
-    }
-errno = EWOULDBLOCK;
-     return ret;
-  }
-
   h->connected = 1;
   http_sendreq(h);
   io_dontwantwrite(h->sock);
