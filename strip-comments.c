@@ -56,23 +56,26 @@ put_line(buffer* b, const char* x, ssize_t len) {
 
 int
 strip_comments(charbuf* in, buffer* out) {
-  int c;
+  int c, is_empty;
   const char* x;
-  size_t n;
+  size_t p, n;
   char buf[2];
   stralloc line;
   stralloc_init(&line);
+  n = 0;
 
-  while(!in->eof && !in->err && (c = charbuf_get(in)) > 0) {
+  while((c = charbuf_get(in)) > 0) {
+
+    if(in->eof || in->err)
+      goto end;
     if(c == '/') {
       c = charbuf_peek(in);
-
-      if(c <= 0)
-        goto end;
-
       if(c == '/') {
         charbuf_skip_until(in, '\n');
+        charbuf_skip(in);
+        stralloc_catc(&line, '\n');
         continue;
+
       } else if(c == '*') {
         charbuf_skip(in);
         do {
@@ -85,8 +88,14 @@ strip_comments(charbuf* in, buffer* out) {
     }
 
     stralloc_catc(&line, c);
+    n++;
 
     if(c == '\n' && line.len > 0) {
+      p = scan_charsetnskip(line.s, " \t\r\v", line.len);
+      is_empty = line.len == 0 || p == line.len || (line.s[line.len - 1] == '\n' && p == line.len - 1);
+      if(is_empty)
+        continue;
+
       put_line(out, line.s, line.len);
       stralloc_zero(&line);
     }

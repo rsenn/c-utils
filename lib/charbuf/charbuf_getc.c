@@ -4,11 +4,12 @@ int
 charbuf_getc(charbuf* b, char* ch) {
   int ret = 1;
   if(b->eof || b->err)
-    return b->eof ? 0 : -1;
+    return -1;
 
   if(b->p) {
     b->p = 0;
   } else {
+    b->ch = '\0';
     if((ret = b->op(b->fd, &b->ch, 1, b) <= 0)) {
       if(ret == 0)
         b->eof = 1;
