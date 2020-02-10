@@ -53,10 +53,8 @@ http_socket(http* h, int nonblock) {
 
   io_fd(h->sock);
 #ifdef HAVE_OPENSSL
-  if(!http_sslctx)
-    http_sslctx = http_ssl_ctx();
-  h->ssl = SSL_new(http_sslctx);
-  SSL_set_fd(h->ssl, h->sock);
+  http_ssl_socket(h);
+
 #endif
 
   if(h->q.in.x) {

@@ -25,7 +25,8 @@ http_get(http* h, const char* location) {
 
   if(location[0] != '/') {
     size_t len;
-    if(location[len = str_findb(location, "://", 3)])
+    len = str_findb(location, "://", 3);
+    if(location[len])
       location += len + 3;
     len = str_chrs(location, "/:", 2);
     stralloc_copyb(&h->host, location, len);
@@ -35,6 +36,8 @@ http_get(http* h, const char* location) {
     }
     location += len;
   }
+  h->tls = !byte_diff(location, 5, "https");
+
   stralloc_nul(&h->host);
   stralloc_init(&dns);
   if(dns_ip4(&dns, &h->host) == -1) {

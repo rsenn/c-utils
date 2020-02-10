@@ -100,12 +100,13 @@ main(int argc, char* argv[]) {
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
   h.keepalive = 0;
-  if(argc < 2) {
-    argv[1] = "https://127.0.0.1:443/show";
+  argi = optind;
+  if(argv[optind] == 0) {
+    argv[optind++] = "https://127.0.0.1:443/show";
     // argv[1] = "http://127.0.0.1:5555/show";
-    argc++;
+    argv[optind] = 0;
   }
-  for(argi = 1; argi < argc; ++argi) {
+  for(; argi <= argc; ++argi) {
     int ret = http_get(&h, argv[argi]);
     for(;;) {
       char buf[8192];
