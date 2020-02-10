@@ -14,7 +14,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   http* h = ((buffer*)b)->cookie;
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
-
+/*
 #ifdef HAVE_OPENSSL
   if(!h->connected) {
     if((s = http_ssl_connect(h->sock, h)) == 1) {
@@ -29,7 +29,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   if(h->ssl)
     s = http_ssl_read(h->sock, buf, len, h);
   else
-#endif
+#endif*/
     s = io_tryread(fd, buf, len);
 
   /*  buffer_puts(buffer_2, "io_tryread(");
