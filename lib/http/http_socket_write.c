@@ -20,7 +20,7 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
         return -1;
     }
 
-    if(!io_canwrite(h->sock)) {
+    if(!io_canread(h->sock) && !io_canwrite(h->sock)) {
       errno = EWOULDBLOCK;
       return -1;
     }

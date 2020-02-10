@@ -17,17 +17,16 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
 
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
-
     if(!h->connected) {
-      if((s = http_ssl_connect(h->sock, h)) == 1) {
-        h->connected = 1;
-        buffer_putsflush(buffer_2, "ssl handshake done\n");
-        errno = EAGAIN;
+      if((ret = http_ssl_connect(h->sock, h)) == -1)
         return -1;
+      if(h->connected)
+        buffer_putsflush(buffer_2, "ssl handshake done\n");
+    }
 
-      } else if(s == -1) {
-        return s;
-      }
+    if(!io_canread(h->sock) && !io_canwrite(h->sock)) {
+      errno = EAGAIN;
+      return -1;
     }
 
     s = http_ssl_read(h->sock, buf, len, b);
