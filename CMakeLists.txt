@@ -254,7 +254,7 @@ message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\nOPENSSL_INCLUDE_DIR=${OPENSSL_LI
 #  ${ZLIB_LIBRARY}
 #  ${BZIP2_LIBRARY}
 #  ${LIBLZMA_LIBRARY}
-#  ${OPENSSL_LIBRARIES}
+#  ${CRYPTO_LIBRARIES}
 #  )
 add_definitions(-Dinline=__inline)
 
@@ -436,7 +436,7 @@ set(COMPRESSION_LIBRARIES
 )
 
 if(OPENSSL_LIBRARIES)
-  set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES} pthread)
+  set(CRYPTO_LIBRARIES pthread ${OPENSSL_LIBRARIES})
 endif(OPENSSL_LIBRARIES)
 
 add_program(binfmttest binfmt)
@@ -458,12 +458,12 @@ add_program(elflist buffer errmsg unix elf mmap str)
 add_program(elfwrsec buffer elf mmap)
 add_program(genmakefile case errmsg strarray slist rdir dir path strlist hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
-add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK} ${OPENSSL_LIBRARIES})
+add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES})
 add_program(impgen buffer byte mmap open pe uint16 uint32)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
-add_program(mediathek-list errmsg stralloc buffer byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES})
+add_program(mediathek-list errmsg stralloc buffer byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES} pthread)
 add_program(mediathek-parser ucs errmsg stralloc buffer array byte open str unix strlist)
 add_program(ntldd stralloc buffer pe strlist byte path str unix uint64)
 add_program(opensearch-dump xml stralloc buffer)

@@ -12,7 +12,7 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #endif
-extern ssize_t http_ssl_connect(fd_t fd, http* h) ;
+extern ssize_t http_ssl_connect(fd_t fd, http* h);
 size_t http_read_internal(http* h, char* buf, size_t len);
 
 static void
@@ -48,7 +48,7 @@ http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
   int err; /* it was not done */
   if(ret < 0) {
     /* get error code */
-    err = SSL_get_error(fd, ret);
+    err = SSL_get_error(h->ssl, ret);
     /* call ssl_read() again when socket gets readable */
     if(err == SSL_ERROR_WANT_READ) {
       io_wantread(fd);
@@ -82,14 +82,23 @@ http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
 
 ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
-  int s;
+  ssize_t s;
   http* h = b->cookie;
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
 
+#ifdef HAVE_OPENSSL
+  if(!h->connected) {
+    if((s = http_ssl_connect(h->sock, h)) == 1)
+      h->connected = 1;
+    else
+      return s;
+  }
+#endif
+
   s =
 #ifdef HAVE_OPENSSL
-      h->ssl ? (h->connected ? http_ssl_read(h->sock, buf, len, h)  : http_ssl_connect(h->sock, h)) :
+      h->ssl ? http_ssl_read(h->sock, buf, len, h) :
 #endif
              io_tryread(fd, buf, len);
 

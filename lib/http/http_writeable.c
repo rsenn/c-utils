@@ -12,13 +12,14 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #endif
+
 ssize_t
 http_ssl_connect(fd_t fd, http* h) {
   ssize_t ret = SSL_connect(h->ssl);
   int err; /* it was not done */
   if(ret < 0) {
     /* get error code */
-    err = SSL_get_error(fd, ret);
+    err = SSL_get_error(h->ssl, ret);
     /* call ssl_read() again when socket gets readable */
     if(err == SSL_ERROR_WANT_READ) {
       io_wantread(fd);
