@@ -90,13 +90,12 @@ strip_comments(charbuf* in) {
     if(c != '\n')
       continue;
 
-    put_line(outbuf, line.s, line.len);
 
    n = scan_charsetnskip(line.s, " \t\r\v", line.len);
    if((n < line.len && line.s[n] == '\n') || n == line.len)
     continue;
 
-
+    put_line(outbuf, line.s, line.len);
     stralloc_zero(&line);
   }
 end:
