@@ -21,16 +21,11 @@ http_writeable(http* h) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h->sock, h)) == 1) {
         h->connected = 1;
-        h->connected = 1;
-        io_wantwrite(h->sock);
 
-      } else if(ret == -1) {
-        errno = EWOULDBLOCK;
       }
-      errmsg_infosys("writeable: SSL handshake = ",
-                     ret == 1 ? "done" : ret == 0 ? "eof" : errno == 0 ? "success" : "error",
-                     0);
-      return ret;
+/* errmsg_infosys("writeable: SSL handshake = ", ret == 1 ? "done" : ret == 0 ? "eof" : errno == 0 ? "success" : "error", 0);*/ 
+errno = EWOULDBLOCK;
+      return -1;
     }
   }
 #endif
