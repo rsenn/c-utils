@@ -118,7 +118,7 @@ main(int argc, char* argv[]) {
       }
       while((fd = io_canwrite()) != -1) {
         if(h.sock == fd)
-          http_writeable(&h ,fd);
+          http_writeable(&h);
       }
       while((fd = io_canread()) != -1) {
         if(h.sock == fd)
