@@ -40,7 +40,7 @@ open_temp(const char** pt) {
   int i, res;
   unsigned int random;
   char* tmp;
-  char* tmpl = pt ? *pt : 0;
+  char* tmpl = pt && *pt ? *pt : default_tmpl;
 
   if(!tmpl) {
     tmpl = (const char*)default_tmpl;
@@ -52,6 +52,9 @@ open_temp(const char** pt) {
     if(tmp < tmpl)
       goto error;
   }
+
+  if(pt && tmpl)
+    *pt = tmpl;
 
   for(i = 0; i < 6; ++i) {
     if(tmp[i] != 'X') {
@@ -78,11 +81,10 @@ open_temp(const char** pt) {
 #endif
     );
 
+
     if(res >= 0 || errno != EEXIST)
       break;
   }
 
-  if(pt)
-    *pt = tmpl;
   return res;
 }
