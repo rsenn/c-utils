@@ -465,6 +465,7 @@ add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
 add_program(jsonpp json errmsg unix)
 add_program(xml2json json xml errmsg unix)
 add_program(xml2moon xml textcode errmsg)
+add_program(strip-comments  errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
 
 add_program(httpproxy http io map)
 #add_program(tinyproxy http io)

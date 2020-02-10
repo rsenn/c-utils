@@ -403,7 +403,7 @@ process_config(void (*callback)(strlist*,const char* key, const char* value), st
 
       if(value->is_default && nodefault) {
 #ifdef DEBUG_OUTPUT
-        if(verbose > 2) {
+        if(verbose > 1) {
           buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, 0);
           buffer_putnlflush(buffer_2);
         }
