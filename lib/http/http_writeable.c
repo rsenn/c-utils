@@ -28,7 +28,7 @@ http_ssl_connect(fd_t fd, http* h) {
     /* call ssl_read() again when socket gets writeable */
     if(err == SSL_ERROR_WANT_WRITE) {
       io_wantwrite(fd);
-      errno = EAGAIN;
+      errno = EWOULDBLOCK;
       return -1;
     }
     /*
@@ -45,7 +45,8 @@ http_ssl_connect(fd_t fd, http* h) {
       return -1;
     }
     if(err == SSL_ERROR_ZERO_RETURN)
-      return 0;
+        return 0;
+    return -1;
   }
   return ret;
 }
@@ -53,14 +54,26 @@ http_ssl_connect(fd_t fd, http* h) {
 
 void
 http_writeable(http* h) {
+  ssize_t ret = 0;
+  io_dontwantwrite(h->sock);
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      if(http_ssl_connect(h->sock, h) != 1)
+      if((ret = http_ssl_connect(h->sock, h)) == 1) {
+        h->connected = 1;
         return;
+      }
     }
   }
 #endif
+
+  if(ret == -1) {
+    if(errno == EAGAIN)
+      io_wantread(h->sock);
+      else  if(errno == EWOULDBLOCK)
+      io_wantwrite(h->sock);
+    return ret;
+  }
   h->connected = 1;
   http_sendreq(h);
 }

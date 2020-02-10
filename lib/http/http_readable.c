@@ -31,11 +31,22 @@ boundary_predicate(stralloc* sa, void* arg) {
   return 0;
 }
 
+
+
+ssize_t
+http_ssl_connect(fd_t fd, http* h);
+
 int
 http_readable(http* h, int freshen) {
   ssize_t ret = -1;
   int err;
   http_response* r;
+
+  if(h->ssl && !h->connected) {
+    io_dontwantread(h->sock);
+    if((ret = http_ssl_connect(h->sock, h)) != 0)
+return ret;
+  }
 
   if(freshen)
     buffer_freshen(&h->q.in);

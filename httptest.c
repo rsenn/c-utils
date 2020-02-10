@@ -122,37 +122,40 @@ main(int argc, char* argv[]) {
           continue;
 
         http_writeable(&h);
-/*        if(http_sendreq(&h) == -1) {
-          errmsg_warnsys("send error: ", 0);
+        /*        if(http_sendreq(&h) == -1) {
+                  errmsg_warnsys("send error: ", 0);
+                  return 2;
+                }
+        */
+      }
+
+      while((fd = io_canread()) != -1) {
+        if(h.sock == fd) {
+          doread = 1;
+        }
+      }
+      if(doread)
+        http_readable(&h, 1);
+
+      h.q.in.cookie = &h;
+      while((n = http_read(&h, buf, sizeof(buf), &h.q.in)) > 0) {
+        if(buffer_put(&out, buf, n)) {
+          errmsg_warnsys("write error: ", 0);
           return 2;
         }
-*/      }
 
-while((fd = io_canread()) != -1) {
-  if(h.sock == fd) {
-    doread = 1;
-  }
-}
+        if(n == -1 || h.response->status == HTTP_STATUS_ERROR) {
+          errmsg_warnsys("read error: ", 0);
+          return 1;
+        }
+      }
 
-h.q.in.cookie = &h;
-while((n = http_read(&h, buf, sizeof(buf), &h.q.in)) > 0) {
-  if(buffer_put(&out, buf, n)) {
-    errmsg_warnsys("write error: ", 0);
-    return 2;
-  }
+      buffer_dump(buffer_1, &h.q.in);
 
-  if(n == -1 || h.response->status == HTTP_STATUS_ERROR) {
-    errmsg_warnsys("read error: ", 0);
-    return 1;
-  }
-}
+      if(h.response->status >= HTTP_STATUS_CLOSED) {
 
-buffer_dump(buffer_1, &h.q.in);
-
-if(h.response->status >= HTTP_STATUS_CLOSED) {
-
-  break;
-}
+        break;
+      }
     }
 
     buffer_flush(&out);
