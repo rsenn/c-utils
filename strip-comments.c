@@ -15,8 +15,6 @@
 #include <unistd.h>
 #endif
 
-static charbuf infile;
-static buffer* outbuf;
 static char quote[4] = {'"', 0};
 static int one_line, indent = 2, compact;
 static stralloc indent_str;
@@ -45,20 +43,19 @@ usage(char* av0) {
 }
 
 int
-put_line(buffer* b, const char* x, size_t len) {
-  while(len > 1) {
-    if(!(x[len - 1] == '\n' || x[len - 1] == '\r' || isspace(x[len - 1])))
-      break;
-    len--;
-  }
-  if(len > 0) {
+put_line(buffer* b, const char* x, ssize_t len) {
+  /*  if(len > 1) {
+      if((x[len - 1] == '\n' || x[len - 1] == '\r'))
+
+      len--;
+    }*/
+  if(len > 0)
     buffer_put(b, x, len);
-    buffer_puts(b, "\n");
-  }
+  //   buffer_puts(b, "\n");
 }
 
 int
-strip_comments(charbuf* in) {
+strip_comments(charbuf* in, buffer* out) {
   int c;
   const char* x;
   size_t n;
@@ -66,10 +63,12 @@ strip_comments(charbuf* in) {
   stralloc line;
   stralloc_init(&line);
 
-  while((c = charbuf_get(in)) > 0) {
-
+  while(!in->eof && !in->err && (c = charbuf_get(in)) > 0) {
     if(c == '/') {
       c = charbuf_peek(in);
+
+      if(c <= 0)
+        goto end;
 
       if(c == '/') {
         charbuf_skip_until(in, '\n');
@@ -87,31 +86,26 @@ strip_comments(charbuf* in) {
 
     stralloc_catc(&line, c);
 
-    if(c != '\n')
-      continue;
-
-
-   n = scan_charsetnskip(line.s, " \t\r\v", line.len);
-   if((n < line.len && line.s[n] == '\n') || n == line.len)
-    continue;
-
-    put_line(outbuf, line.s, line.len);
-    stralloc_zero(&line);
+    if(c == '\n' && line.len > 0) {
+      put_line(out, line.s, line.len);
+      stralloc_zero(&line);
+    }
   }
 end:
-  put_line(outbuf, line.s, line.len);
-charbuf_close(in);
-  buffer_flush(outbuf);
+  put_line(out, line.s, line.len);
+  stralloc_free(&line);
+  charbuf_close(in);
 }
 
 int
 main(int argc, char* argv[]) {
-  int fd;
+  int in_fd = STDIN_FILENO, out_fd = STDOUT_FILENO;
   stralloc tmp;
   int c;
   int index = 0;
   char buf[16384];
   buffer output;
+  charbuf input;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"indent", 0, NULL, 'l'}, {0, 0, 0, 0}};
 
@@ -133,18 +127,30 @@ main(int argc, char* argv[]) {
 
   stralloc_init(&tmp);
 
-  buffer_init(&output, &write, STDOUT_FILENO, buf, sizeof(buf));
-  outbuf = &output;
+  if(optind < argc) {
+    buffer_putm_internal(buffer_2, "Opening input file '", argv[optind], "'...", 0);
+    buffer_putnlflush(buffer_2);
+    in_fd = open_read(argv[optind]);
+    optind++;
+  }
+  if(optind < argc) {
+    buffer_putm_internal(buffer_2, "Opening output file '", argv[optind], "'...", 0);
+    buffer_putnlflush(buffer_2);
+    out_fd = open_trunc(argv[optind]);
+    optind++;
+  }
 
-  fd = optind < argc ? open_read(argv[optind]) : 0;
+  charbuf_init(&input, (read_fn*)&read, in_fd);
 
-  charbuf_init(&infile, (read_fn*)&read, fd);
+  buffer_init(&output, &write, out_fd, buf, sizeof(buf));
 
-  strip_comments(&infile);
+  strip_comments(&input, &output);
+  buffer_flush(&output);
 
   buffer_puts(buffer_1, "max_depth: ");
   buffer_putulong(buffer_1, 2);
   buffer_putnlflush(buffer_1);
 
-  charbuf_close(&infile);
+  charbuf_close(&input);
+  buffer_close(&output);
 }

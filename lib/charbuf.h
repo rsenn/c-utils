@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-typedef ssize_t(read_fn)(fd_t fd, void* buf, size_t n, void*);
+typedef ssize_t read_fn(fd_t fd, void* buf, size_t n, void*);
 
 typedef struct {
   char ch;
