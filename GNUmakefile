@@ -1255,7 +1255,7 @@ endif
 
 
 
-$(BUILDDIR)strip-comments$(M64_)$(EXEEXT): $(BUILDDIR)strip-comments.o $(call add-library, errmsg slist alloc array safemult charbuf textbuf hmap stralloc buffer mmap open str byte scan fmt)
+$(BUILDDIR)strip-comments$(M64_)$(EXEEXT): $(BUILDDIR)strip-comments.o $(call add-library, errmsg slist alloc array safemult charbuf textbuf hmap stralloc buffer mmap open str byte scan fmt uint32 taia tai)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

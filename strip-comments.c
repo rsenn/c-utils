@@ -37,6 +37,7 @@ usage(char* av0) {
                        "Options:\n"
                        "\n"
                        "  -h, --help              Show this help\n"
+                       "  -i, --in-place          Write to input file\n"
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -105,12 +106,14 @@ main(int argc, char* argv[]) {
   int in_fd = STDIN_FILENO, out_fd = STDOUT_FILENO;
   stralloc tmp;
   int c;
+  const char *in_path = 0, *out_path = 0;
   int index = 0;
   char buf[16384];
   buffer output;
   int in_place = 0;
   charbuf input;
   stralloc data;
+  const char* tmpl = 0;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
 
@@ -137,33 +140,42 @@ main(int argc, char* argv[]) {
   if(optind < argc) {
     buffer_putm_internal(buffer_2, "Opening input file '", argv[optind], "'...", 0);
     buffer_putnlflush(buffer_2);
-    in_fd = open_read(argv[optind]);
+    in_fd = open_read((in_path = argv[optind]));
     optind++;
   }
   if(optind < argc) {
     buffer_putm_internal(buffer_2, "Opening output file '", argv[optind], "'...", 0);
     buffer_putnlflush(buffer_2);
-    out_fd = open_trunc(argv[optind]);
+    out_fd = open_trunc((out_path = argv[optind]));
     optind++;
   }
 
   charbuf_init(&input, (read_fn*)&read, in_fd);
 
   if(in_place) {
-  }
+    out_fd = open_temp(&tmpl);
 
-  if(in_place)
-    buffer_fromsa(&output, &tmp);
-  else
-    buffer_init(&output, &write, out_fd, buf, sizeof(buf));
+    if(!out_path)
+      out_path = in_path;
+  }
+  buffer_init(&output, &write, out_fd, buf, sizeof(buf));
   strip_comments(&input, &output);
 
   buffer_flush(&output);
 
-  buffer_puts(buffer_1, "max_depth: ");
-  buffer_putulong(buffer_1, 2);
+  buffer_puts(buffer_1, "tmpl: ");
+  buffer_puts(buffer_1, tmpl);
   buffer_putnlflush(buffer_1);
 
+  if(in_place) {
+    buffer inplace;
+    unlink(out_path);
+    buffer_truncfile(&inplace, out_path);
+    buffer_put(&inplace, tmp.s, tmp.len);
+    buffer_flush(&inplace);
+    buffer_close(&inplace);
+  }
+
   charbuf_close(&input);
-  buffer_close(&output);
+  // buffer_close(&output);
 }

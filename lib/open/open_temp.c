@@ -36,10 +36,11 @@
 static char default_tmpl[] = "temp-XXXXXX.txt";
 
 int
-open_temp(const char* tmpl) {
+open_temp(const char** pt) {
   int i, res;
   unsigned int random;
   char* tmp;
+  char* tmpl = pt ? *pt : 0;
 
   if(!tmpl) {
     tmpl = (const char*)default_tmpl;
@@ -80,5 +81,8 @@ open_temp(const char* tmpl) {
     if(res >= 0 || errno != EEXIST)
       break;
   }
+
+  if(pt)
+    *pt = tmpl;
   return res;
 }
