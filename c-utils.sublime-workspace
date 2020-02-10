@@ -72,31 +72,23 @@
 	"buffers":
 	[
 		{
-			"contents": "cvalue\ncsetting\ncword\nconfig_data_at\ndump_cword\ndump_csetting\ndump_cvalue\nparse_cfgvalue\nparse_cfgsetting\nparse_cfgword\nparse_cfgdata\nconfig_bytes\nget_setting_word\nget_setting_value\nfind_setting\nfind_value\ninfer_chip\nget_cfgdat\nadd_item\nprocess_config\noutput_items\nusage\nmain",
+			"contents": "put_str_escaped\nusage\nput_line\nstrip_comments\nmain",
 			"settings":
 			{
-				"buffer_size": 275,
+				"buffer_size": 50,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"contents": "#include \"lib/open.h\"\n#include \"lib/fmt.h\"\n#include \"lib/errmsg.h\"\n#include \"lib/str.h\"\n#include \"lib/scan.h\"\n#include \"lib/getopt.h\"\n#include \"lib/charbuf.h\"\n#include \"lib/stralloc.h\"\n#include \"lib/buffer.h\"\n#include <ctype.h>\n\n#if WINDOWS_NATIVE\n#include <io.h>\n#else\n#include <unistd.h>\n#endif\n\nstatic char quote[4] = {'\"', 0};\nstatic int one_line, indent = 2, compact;\nstatic stralloc indent_str;\n\nvoid\nput_str_escaped(buffer* b, const char* str) {\n  stralloc esc;\n  stralloc_init(&esc);\n  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);\n  buffer_putsa(b, &esc);\n}\n\nvoid\nusage(char* av0) {\n  buffer_putm_internal(buffer_1,\n                       \"Usage: \",\n                       str_basename(av0),\n                       \" [OPTIONS] [FILES...]\\n\"\n                       \"\\n\"\n                       \"Options:\\n\"\n                       \"\\n\"\n                       \"  -h, --help              Show this help\\n\"\n                       \"  -i, --in-place          Write to input file\\n\"\n                       \"\\n\",\n                       0);\n  buffer_flush(buffer_1);\n}\n\nint\nput_line(buffer* b, const char* x, ssize_t len) {\n  if(len > 1) {\n    if((x[len - 1] == '\\n' || x[len - 1] == '\\r'))\n\n      len--;\n  }\n  if(len > 0) {\n    buffer_puts(buffer_2, \"put_line(\");\n    buffer_dump(buffer_2, b);\n    buffer_puts(buffer_2, \", \");\n    buffer_putptr(buffer_2, x);\n    buffer_puts(buffer_2, \", \");\n    buffer_putlong(buffer_2, len);\n    buffer_puts(buffer_2, \");\");\n    buffer_putnlflush(buffer_2);\n\n    buffer_put(b, x, len);\n  }\n  buffer_puts(b, \"\\n\");\n}\n\nint\nstrip_comments(charbuf* in, buffer* out) {\n  int c, is_empty;\n  const char* x;\n  size_t p, n;\n  char buf[2];\n  stralloc line;\n  stralloc_init(&line);\n  n = 0;\n  while((c = charbuf_get(in)) > 0) {\n\n    if(c == '/') {\n      int c2 = charbuf_peek(in);\n      if(c2 == '/') {\n        charbuf_skip_until(in, '\\n');\n        /*   charbuf_skip(in);\n           stralloc_catc(&line, '\\n');*/\n        continue;\n      } else if(c2 == '*') {\n        charbuf_skip(in);\n        do {\n          if(charbuf_skip_until(in, '*') <= 0)\n            break;\n          charbuf_skip(in);\n          c2 = charbuf_peek(in);\n        } while(c2 != '/');\n        charbuf_skip(in);\n        continue;\n      }\n    }\n    buf[0] = c;\n\n    //   buffer_putc(out, c);\n    n++;\n    if(c == '\\n') {\n      /*      p = scan_charsetnskip(line.s, \" \\t\\r\\v\", line.len);\n          is_empty = line.len == 0 || p == line.len || (line.s[line.len - 1] == '\\n' && p == line.len - 1);\n           if(is_empty)\n               continue;*/\n      put_line(out, line.s, line.len);\n      stralloc_zero(&line);\n      continue;\n    }\n    stralloc_catb(&line, buf, 1);\n  }\nend:\n  put_line(out, line.s, line.len);\n  buffer_flush(out);\n  stralloc_free(&line);\n  charbuf_close(in);\n}\n\nint\nmain(int argc, char* argv[]) {\n  int in_fd = STDIN_FILENO, out_fd = STDOUT_FILENO;\n  stralloc tmp;\n  int c;\n  const char *in_path = 0, *out_path = 0;\n  int index = 0;\n  char buf[16384];\n  buffer output, temp;\n  int in_place = 0;\n  charbuf input;\n  stralloc data;\n  size_t n;\n  const char* x;\n  const char* tmpl = 0;\n\n  struct longopt opts[] = {{\"help\", 0, NULL, 'h'}, {\"in-place\", 0, NULL, 'i'}, {0, 0, 0, 0}};\n\n  errmsg_iam(argv[0]);\n\n  for(;;) {\n    c = getopt_long(argc, argv, \"hi\", opts, &index);\n    if(c == -1)\n      break;\n    if(c == 0)\n      continue;\n\n    switch(c) {\n      case 'i': in_place = 1; break;\n      case 'h': usage(argv[0]); return 0;\n\n      default: usage(argv[0]); return 1;\n    }\n  }\n\n  stralloc_init(&tmp);\n  //  stralloc_init(&data);\n\n  if(optind < argc) {\n    buffer_putm_internal(buffer_2, \"Opening input file '\", argv[optind], \"'...\", 0);\n    buffer_putnlflush(buffer_2);\n    in_fd = open_read((in_path = argv[optind]));\n    optind++;\n  }\n  if(optind < argc) {\n    buffer_putm_internal(buffer_2, \"Opening output file '\", argv[optind], \"'...\", 0);\n    buffer_putnlflush(buffer_2);\n    out_fd = open_trunc((out_path = argv[optind]));\n    optind++;\n  }\n\n  charbuf_init(&input, (read_fn*)&read, in_fd);\n\n  if(in_place) {\n    if(out_fd == STDOUT_FILENO) {\n\n      out_fd = open_temp(&tmpl);\n\n      out_path = tmpl;\n    }\n  }\n  buffer_write_fd(&output, out_fd);\n  strip_comments(&input, &output);\n\n  buffer_flush(&output);\n  close(output.fd);\n\n  buffer_puts(buffer_1, \"tmpl: \");\n  buffer_puts(buffer_1, tmpl);\n  buffer_putnlflush(buffer_1);\n  buffer_puts(buffer_1, \"out_path: \");\n  buffer_puts(buffer_1, out_path);\n  buffer_putsutnlflush(buffer_1);\n\n  if((x = mmap_read(out_path, &n)) && n > 1) {\n\n    buffer_puts(buffer_1, \"out: \");\n    buffer_put(buffer_1, x, n);\n    buffer_putnlflush(buffer_1);\n\n    mmap_unmap(x, n);\n  }\n\n  if(in_place) {\n    // buffer inplace;\n      unlink(in_path);\n      link(tmpl, in_path);\n/*    buffer_truncfile(&inplace, out_path);\n    buffer_put(&inplace, tmp.s, tmp.len);\n    buffer_flush(&inplace);\n    buffer_close(&inplace);\n*/  }\n\ncharbuf_close(&input);\n}\n",
+			"file": "strip-comments.c",
+			"file_size": 4930,
+			"file_write_time": 132257772460380572,
 			"settings":
 			{
-				"buffer_size": 115279,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "#include \"lib/uint8.h\"\n#include \"lib/uint16.h\"\n#include \"lib/uint32.h\"\n#include \"lib/slist.h\"\n#include \"lib/mmap.h\"\n#include \"lib/alloc.h\"\n#include \"lib/byte.h\"\n#include \"lib/str.h\"\n#include \"lib/scan.h\"\n#include \"lib/ihex.h\"\n#include \"lib/stralloc.h\"\n#include \"lib/buffer.h\"\n#include \"lib/map.h\"\n#include \"lib/strlist.h\"\n#include \"lib/getopt.h\"\n#include \"lib/dir.h\"\n#include \"lib/path.h\"\n#include <assert.h>\n#include <ctype.h>\n\ntypedef struct cvalue {\n  struct cvalue* next;\n  uint16 value;\n  int is_default;\n  const char* name;\n  const char* description;\n} cvalue;\n\ntypedef struct csetting {\n  struct csetting* next;\n  uint16 mask;\n  const char* name;\n  const char* description;\n  struct cvalue* values;\n} csetting;\n\ntypedef struct cword {\n  struct cword* next;\n  uint32 address;\n  uint16 mask;\n  uint16 default_value;\n  const char* name;\n  csetting* settings;\n} cword;\n\nstatic cword* words;\nstatic ihex_file hex;\nstatic uint32 baseaddr;\nstatic stralloc cfg;\n// static map_t(const char*) pragmas;\nstatic strlist pragmas;\nstatic int nodefault = 1, oneline = 0, comments = 1, output_name = 0, verbose = 0;\n\nuint16\nconfig_data_at(uint32 addr) {\n  if(baseaddr == 0x0000400e) {\n    size_t offs = addr - 0x2007;\n    assert(offs < cfg.len);\n    return uint16_read(&cfg.s[offs]);\n  } else {\n    size_t offs = (addr & 0x0fff);\n    return cfg.s[offs];\n  }\n}\n\nvoid\ndump_cword(buffer* b, cword* word) {\n  buffer_puts(b, word->name ? word->name : \"(null)\");\n  buffer_puts(b, \" @ 0x\");\n  buffer_putxlong0(b, word->address, 4);\n  buffer_puts(b, \"\\tmask 0x\");\n  buffer_putxlong0(b, word->mask, 2);\n  buffer_puts(b, \"\\tdefault 0x\");\n  buffer_putxlong0(b, word->default_value, 2);\n  buffer_putnlflush(b);\n}\n\nvoid\ndump_csetting(buffer* b, csetting* setting) {\n  buffer_puts(b, \"  \");\n  buffer_puts(b, setting->name ? setting->name : \"(null)\");\n  buffer_puts(b, \"\\tmask 0x\");\n  buffer_putxlong0(b, setting->mask, 2);\n  buffer_puts(b, \"\\t\\t\");\n  buffer_puts(b, setting->description);\n  buffer_putnlflush(b);\n}\nvoid\ndump_cvalue(buffer* b, cvalue* value) {\n  buffer_puts(b, \"    \");\n  buffer_puts(b, value->name ? value->name : \"(null)\");\n  buffer_puts(b, \"\\tvalue 0x\");\n  buffer_putxlong0(b, value->value, 2);\n  buffer_puts(b, \"\\t\\t\");\n  buffer_puts(b, value->description);\n  buffer_putnlflush(b);\n}\n\ncvalue**\nparse_cfgvalue(cvalue** vptr, cword* w, csetting* s, const char* x, size_t n) {\n  cvalue* v = *vptr = alloc(sizeof(cvalue));\n  size_t i;\n  unsigned long value;\n  i = scan_xlongn(x, n, &value);\n  assert(i);\n  v->is_default = (w->default_value & s->mask) == value;\n  v->value = value;\n  x += i + 1;\n  n -= i + 1;\n  i = byte_chr(x, n, ':');\n  i = byte_chr(x, i, ',');\n  v->name = str_ndup(x, i);\n  assert(i < n);\n  x += i + 1;\n  n -= i + 1;\n  v->description = str_ndup(x, n);\n  v->next = NULL;\n  return &v->next;\n}\n\ncsetting**\nparse_cfgsetting(csetting** sptr, cword* w, const char* x, size_t n) {\n  csetting* s = *sptr = alloc(sizeof(csetting));\n  size_t i;\n  unsigned long value;\n  i = scan_xlongn(x, n, &value);\n  assert(i);\n  s->mask = value;\n  x += i + 1;\n  n -= i + 1;\n  i = byte_chr(x, n, ':');\n  s->name = str_ndup(x, i);\n  assert(i < n);\n  x += i + 1;\n  n -= i + 1;\n  s->description = str_ndup(x, n);\n  s->next = NULL;\n  s->values = NULL;\n  return &s->next;\n}\n\ncword**\nparse_cfgword(cword** wptr, const char* x, size_t n) {\n  cword* w = *wptr = alloc(sizeof(cword));\n  size_t i;\n  unsigned long value;\n  i = scan_xlongn(x, n, &value);\n  assert(i);\n  w->address = value;\n  x += i + 1;\n  n -= i + 1;\n  i = scan_xlongn(x, n, &value);\n  assert(i);\n  w->mask = value;\n  x += i + 1;\n  n -= i + 1;\n  i = scan_xlongn(x, n, &value);\n  assert(i);\n  w->default_value = value;\n  x += i + 1;\n  n -= i + 1;\n  w->name = str_ndup(x, n);\n  w->next = NULL;\n  w->settings = NULL;\n  return &w->next;\n}\n\nint\nparse_cfgdata(cword** wptr, const char* x, size_t n) {\n  size_t eol, col;\n  cword* w = 0;\n  csetting *s = 0, **sptr = NULL;\n  cvalue *v = 0, **vptr = NULL;\n\n  while(n > 0) {\n\n    eol = byte_chr(x, n, '\\n');\n\n    if(eol > 0 && x[0] == 'C') {\n      const char* line = x;\n      col = byte_chr(x, n, ':') + 1;\n      assert(col < eol);\n      x += col;\n      n -= col;\n      eol -= col;\n\n      if(!str_diffn(line, \"CWORD\", 5)) {\n        cword** nwptr = parse_cfgword(wptr, x, eol);\n        w = *wptr;\n        sptr = &w->settings;\n        wptr = nwptr;\n      } else if(!str_diffn(line, \"CSETTING\", 8)) {\n        csetting** nsptr = parse_cfgsetting(sptr, w, x, eol);\n        s = *sptr;\n        vptr = &s->values;\n        sptr = nsptr;\n      } else if(!str_diffn(line, \"CVALUE\", 6)) {\n        cvalue** nvptr = parse_cfgvalue(vptr, w, s, x, eol);\n        v = *vptr;\n        vptr = nvptr;\n      }\n    }\n\n    if(eol < n)\n      eol++;\n\n    x += eol;\n    n -= eol;\n  }\n  return 0;\n}\n\nsize_t\nconfig_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {\n  size_t bytes;\n  stralloc_zero(sa);\n  stralloc_ready(sa, 14);\n\n  if(((bytes = ihex_read_at(&hex, 0x00300000, sa->s, 14)) == 14)) {\n    *addr = 0x00300000;\n  } else {\n    if((bytes = ihex_read_at(&hex, 0x400e, sa->s, 2)) == 2)\n      *addr = 0x400e;\n  }\n\n  sa->len = bytes;\n  return bytes;\n}\n\nuint16\nget_setting_word(cword* word, csetting* setting) {\n  uint16 value = config_data_at(word->address);\n\n  value &= setting->mask;\n\n  return value;\n}\n\ncvalue*\nget_setting_value(cword* word, csetting* setting) {\n  cvalue* value;\n  uint16 byteval = get_setting_word(word, setting);\n/*\n  if(verbose) {\n    buffer_putm_internal(buffer_2, word->name, \": \", setting->name, \" = \", 0);\n    buffer_putxlong0(buffer_2, byteval, 2);\n    buffer_putnlflush(buffer_2);\n  }\n*/\n  slink_foreach(setting->values, value) {\n    if(verbose) {\n      buffer_putm_internal(buffer_2, \"  \", value->name, \": \", 0);\n      buffer_putxlong0(buffer_2, value->value, 2);\n      buffer_putnlflush(buffer_2);\n    }\n\n    if(value->value == byteval)\n      return value;\n  }\n\n  return NULL;\n}\n\ncsetting*\nfind_setting(const char* str) {\n  cword* word;\n  csetting* setting;\n  slink_foreach(words, word) {\n    slink_foreach(word->settings, setting) {\n      if(!str_diffn(str, setting->name, str_len(setting->name)))\n        return setting;\n    }\n  }\n  return NULL;\n}\n\ncvalue*\nfind_value(const char* str) {\n  csetting* setting = find_setting(str);\n  cvalue* value;\n  str += str_chr(str, '=');\n  while(*str == '=' || *str == ' ') ++str;\n  slink_foreach(setting->values, value) {\n    if(!str_diffn(str, value->name, str_len(value->name)))\n      return value;\n  }\n  return NULL;\n}\n\nconst char*\ninfer_chip(const char* x, size_t n) {\n  static stralloc chip;\n  size_t i;\n\n  for(i = 0; i + 3 < n; i++) {\n    size_t len = n - i;\n    const char* s = &x[i];\n\n    if(*s == '1') {\n      char c2 = tolower(s[2]);\n      if(c2 == 'l' || c2 == 'f') {\n        char c1 = s[1];\n        if(c1 == '2' || c1 == '6' || c1 == '8') {\n          len = scan_charsetnskip(s, \"0123456789aAbBcCeEfFgGhHiIjJkKlLmMnNpPrRtTvV\", len);\n\n          if(len > 3) {\n            stralloc_copyb(&chip, s, len);\n            stralloc_lower(&chip);\n            stralloc_nul(&chip);\n            return chip.s;\n          }\n        }\n      }\n    }\n  }\n  return 0;\n}\n\nconst char*\nget_cfgdat(const char* chip) {\n  size_t i;\n  static stralloc path;\n  if(path.len == 0) {\n    dir_t d;\n    const char *dir = 0, *subdir;\n    static const char* const search_dirs[] = {\"/opt/microchip\",\n                                              \"C:\\\\Program Files\\\\Microchip\",\n                                              \"C:\\\\Program Files (x86)\\\\Microchip\"};\n    for(i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {\n      dir = search_dirs[i];\n      if(path_exists(dir))\n        break;\n    }\n    if(dir == NULL)\n      return NULL;\n    stralloc_copys(&path, dir);\n    stralloc_cats(&path, \"/xc8/\");\n    stralloc_nul(&path);\n    dir_open(&d, path.s);\n    while((subdir = dir_read(&d))) {\n      if(subdir[0] == '.')\n        continue;\n      dir = subdir;\n      /*  buffer_putm_internal(buffer_2, \"subdir = \", subdir, 0);\n        buffer_putnlflush(buffer_2);*/\n    }\n    stralloc_cats(&path, dir);\n  }\n  path.len = stralloc_finds(&path, \"/dat/\");\n  stralloc_cats(&path, \"/dat/cfgdata/\");\n  stralloc_cats(&path, chip);\n  stralloc_cats(&path, \".cfgdata\");\n  stralloc_nul(&path);\n\n  if(path_exists(path.s)) {\n    buffer_putm_internal(buffer_2, \"Found cfgdata: \", path.s, 0);\n    buffer_putnlflush(buffer_2);\n    return path.s;\n  }\n  return 0;\n}\n\nvoid\nadd_item(strlist* list, const char* name, const char* value) {\n\n  stralloc out;\n  stralloc_init(&out);\n\n  if(value)\n    stralloc_catm_internal(&out, name, \" = \", value, 0);\n  else\n    stralloc_catm_internal(&out, \"// \", name, 0);\n\n  strlist_push_sa(list, &out);\n\n  stralloc_free(&out);\n}\n\nvoid\nprocess_config(void (*callback)(strlist*,const char* key, const char* value), strlist* list) {\n  cword *prevword = 0, *word;\n  csetting* setting;\n  cvalue* value;\n\n  slink_foreach(words, word) {\n    if(!str_diffn(word->name, \"IDLOC\", 5))\n      break;\n\n    if(verbose)\n      dump_cword(buffer_2, word);\n\n    slink_foreach(word->settings, setting) {\n\n      value = get_setting_value(word, setting);\n\n      if(value == NULL) {\n        buffer_puts(buffer_2, \"WARNING:  value \");\n        buffer_putxlong0(buffer_2, get_setting_word(word, setting), 2);\n        buffer_putm_internal(buffer_2, \" for setting \", setting->name, \" not found!\", 0);\n        buffer_putnlflush(buffer_2);\n        continue;\n      }\n\n      if(value->is_default && nodefault) {\n#ifdef DEBUG_OUTPUT\n        if(verbose > 1) {\n          buffer_putm_internal(buffer_2, \"skip default value \", value->name, \" for setting \", setting->name, 0);\n          buffer_putnlflush(buffer_2);\n        }\n#endif\n        continue;\n      }\n\n      if(output_name && prevword != word)\n        callback(list, word->name, NULL);\n\n      callback(list, setting->name, value->name);\n      prevword = word;\n    }\n  }\n}\n\nvoid\noutput_items(const strlist* items) {\n  const char* x;\n  int i, col = 0;\n  size_t n;\n\n  i = 0;\n  strlist_foreach(items, x, n) {\n    if(x[0] != '/') {\n      if(i)\n        buffer_puts(buffer_1, (oneline && col > 0) ? \", \" : \"\\n#pragma config \");\n      else\n        buffer_puts(buffer_1, \"#pragma config \");\n\n    } else if(i) {\n      col = -1;\n      buffer_puts(buffer_1, \"\\n\\n\");\n    }\n\n    if(comments && !oneline) {\n      csetting* setting = find_setting(x);\n      const char* description = setting ? setting->description : 0;\n      cvalue* value = find_value(x);\n      if(value)\n        description = value->description;\n      buffer_putspad(buffer_1, x, 20);\n      buffer_putm_internal(buffer_1, \" // \", description, 0);\n\n    } else\n\n      buffer_put(buffer_1, x, n);\n    ++i;\n    ++col;\n  }\n  buffer_putnlflush(buffer_1);\n}\n\n/**\n * @brief usage  Show command line usage\n * @param argv0\n */\nvoid\nusage(char* argv0) {\n  buffer_putm_internal(buffer_1,\n                       \"Usage: \",\n                       str_basename(argv0),\n                       \" <hex-file> <cfgdata-file>\\n\"\n                       \"\\n\"\n                       \"Options\\n\"\n                       \"  -h, --help                show this help\\n\"\n                       \"  -o, --oneline             output oneliner\\n\"\n                       \"  -D, --no-default          don't output settings with default value\\n\"\n                       \"  -C, --no-comments         don't output description comments\\n\"\n                       \"  -n, --name                output register name\\n\"\n                       \"  -v, --verbose             show verbose messages\\n\"\n                       \"\\n\",\n                       NULL);\n  buffer_putnlflush(buffer_1);\n}\n\nint\nmain(int argc, char* argv[]) {\n  const char* x;\n  size_t i, n;\n  int c, index = 0;\n  const char *cfgdata = 0, *hexfile = 0;\n\n  struct longopt opts[] = {{\"help\", 0, NULL, 'h'},\n                           {\"oneline\", 0, &oneline, 1},\n                           {\"default\", 0, &nodefault, 0},\n                           {\"no-comments\", 0, &comments, 0},\n                           {\"name\", 0, &output_name, 1},\n                           {\"verbose\", 0, &verbose, 1},\n                           {0, 0, 0, 0}};\n\n  for(;;) {\n    c = getopt_long(argc, argv, \"hodCnv\", opts, &index);\n    if(c == -1)\n      break;\n    if(c == 0)\n      continue;\n\n    switch(c) {\n      case 'h': usage(argv[0]); return 0;\n      case 'o': oneline = 1; break;\n      case 'd': nodefault = 0; break;\n      case 'C': comments = 0; break;\n      case 'n': output_name = 1; break;\n      case 'v': verbose++; break;\n      default:\n        buffer_puts(buffer_2, \"No such option '-\");\n        buffer_putc(buffer_2, c);\n        buffer_putsflush(buffer_2, \"'\\n\");\n\n        return 1;\n    }\n  }\n\n  if(optind < argc) {\n    hexfile = argv[optind++];\n\n    if(optind < argc)\n      cfgdata = argv[optind++];\n  }\n\n  if(!hexfile)\n    hexfile = \"/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex\";\n\n  if(cfgdata) {\n    if(!path_exists(cfgdata))\n      cfgdata = get_cfgdat(cfgdata);\n  } else {\n    const char* chip = infer_chip(hexfile, str_len(hexfile));\n    if(chip)\n      cfgdata = get_cfgdat(chip);\n  }\n\n  x = mmap_read(cfgdata, &n);\n  assert(x);\n  assert(n);\n  parse_cfgdata(&words, x, n);\n  mmap_unmap(x, n);\n\n  x = mmap_read(hexfile, &n);\n  assert(x);\n  assert(n);\n  ihex_load_buf(&hex, x, n);\n  mmap_unmap(x, n);\n\n  stralloc_init(&cfg);\n  config_bytes(&hex, &cfg, &baseaddr);\n\n\n  strlist_init(&pragmas, '\\0');\n\n  process_config(&add_item, &pragmas);\n\n\n  if(verbose) {\n    cword* word;\n\n    slink_foreach(words, word) {\n      uint16 value = config_data_at(word->address);\n      buffer_puts(buffer_2, word->name);\n      buffer_puts(buffer_2, \" @ \");\n      buffer_putxlong0(buffer_2, word->address, 4);\n      buffer_puts(buffer_2, \": \");\n      buffer_putxlong0(buffer_2, value & word->mask, 4);\n      buffer_putnlflush(buffer_2);\n    }\n\n\n/*    for(i = 0; i < cfg.len; i += 2) {\n      uint16 v = uint16_read(&cfg.s[i]);\n\n      buffer_putxlong0(buffer_2, baseaddr + i, 4);\n      buffer_puts(buffer_2, \": \");\n      buffer_putxlong0(buffer_2, v, 4);\n      buffer_putnlflush(buffer_2);\n    }*/\n  }\n\n  output_items(&pragmas);\n\n  return 0;\n}\n",
-			"file": "piccfg.c",
-			"file_size": 14051,
-			"file_write_time": 132255402389003485,
-			"settings":
-			{
-				"buffer_size": 14051,
+				"buffer_size": 4933,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -349,17 +341,41 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray"
+		"/home/roman/Dokumente/Sources/c-utils"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_temp.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_tosa.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_fromsa.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peek.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peekc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_charsetnskip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_getc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/build/CMakeFiles/Progress/21",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_skip_until.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip_pred.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_nextc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_froms.c",
+		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip_until.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_feed.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/piccfg.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_whitenskip.c",
+		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
+		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
 		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_ends.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_endsb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_whitenskip.c",
 		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_set.c",
@@ -375,7 +391,6 @@
 		"/home/roman/.cache/.fr-JZaZo9/Clearlooks_Themes/Extras/Cursors/Install.inf",
 		"/home/roman/.cache/.fr-We2ler/Ubuntu/Extras/Cursors/Install.inf",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_setn.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_type.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_fill.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
@@ -412,13 +427,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_child_element_attrs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute_double.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/node_modules/iconv-lite/encodings/tables/cp936.json",
 		"/home/roman/Dokumente/Sources/c-utils/xmltest2.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_element_attrs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putm_internal.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_element.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_attrnode.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_nonwhitenskip.3",
 		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_infosys.c",
@@ -459,34 +472,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pushb.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push_unique.c",
 		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_htc.mcp",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pusb_unique.c",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/htc-18f2550-debug.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/htc.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest_sdcc.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_16f876a_htc.mcp",
-		"/home/roman/Dokumente/Sources/c-utils/ini.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
-		"/home/roman/Dokumente/Sources/c-utils/mplab.h",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest-18f2550-debug-xc8.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/serialtest_htc.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/ringtone_htc.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/ps2test_htc.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest_htc.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest_xc8.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_18f2550_xc8.mcp",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_truncfile.c",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/pictest2_htc.mcp",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_18f2550_htc.mcp",
-		"/home/roman/Dokumente/Sources/lc-meter/build/mplab/LC-meter-HD44780-16f876a-xc8.mcp",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_relative.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_basename.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_dirname.c",
-		"/home/roman/Dokumente/Sources/c-utils/piccfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-to-svg.js"
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pusb_unique.c"
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 41.0
 	},
 	"find_in_files":
 	{
@@ -509,6 +499,25 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"_dump",
+			"mmapread",
+			"mmap_rea",
+			"buffer_write",
+			"open_",
+			"tmp",
+			"temp",
+			"buffer_trunc",
+			"fromsa",
+			"formsa",
+			"67",
+			"infile",
+			"whitens",
+			"get_de",
+			"get_ge",
+			"json",
+			"errmsg",
+			"jsonpp.*EXE",
+			"jsonpp",
 			"skip defa",
 			"config_bytes",
 			"baseaddr",
@@ -617,26 +626,7 @@
 			"$(CPPFLAGS)",
 			"-D_DEBUG",
 			"\"_DEBUG",
-			"_DEBUG",
-			"\"_DEBUG",
-			"_DEBUG",
-			"push_define",
-			"'D'",
-			"-D",
-			"\"DEFS\"",
-			" $(DEFS)",
-			"$(DEFS)",
-			"$(LDFLAGS) $(EXTRA_LDFLAGS) $(EXTRA_LDFLAGS)",
-			"$(LDFLAGS)",
-			"$(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CFLAGS)",
-			"$(CFLAGS $(EXTRA_CFLAGS) $(EXTRA_CFLAGS)",
-			"$(CFLAGS)",
-			"\\$\\(CFLAGS\\) ",
-			"(CFLAGS) ",
-			"_replace",
-			"stralloc_find",
-			"_replace",
-			"all"
+			"_DEBUG"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -644,6 +634,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"input",
 			"mode_flags",
 			"bit ",
 			"$(CPPFLAGS) $(DEFS)",
@@ -734,7 +725,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 275,
+						"buffer_size": 50,
 						"regions":
 						{
 						},
@@ -743,128 +734,38 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/piccfg.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
 							"outline_alphabetical": false,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									559,
-									565
+									407,
+									422
 								],
 								[
-									708,
-									716
+									616,
+									621
 								],
 								[
-									865,
-									870
+									1115,
+									1123
 								],
 								[
-									1114,
-									1128
+									1598,
+									1612
 								],
 								[
-									1356,
-									1366
-								],
-								[
-									1697,
-									1710
-								],
-								[
-									1996,
-									2007
-								],
-								[
-									2290,
-									2304
-								],
-								[
-									2814,
-									2830
-								],
-								[
-									3265,
-									3278
-								],
-								[
-									3783,
-									3796
-								],
-								[
-									4760,
-									4772
-								],
-								[
-									5118,
-									5134
-								],
-								[
-									5272,
-									5289
-								],
-								[
-									5879,
-									5891
-								],
-								[
-									6148,
-									6158
-								],
-								[
-									6462,
-									6472
-								],
-								[
-									7101,
-									7111
-								],
-								[
-									8363,
-									8371
-								],
-								[
-									8657,
-									8671
-								],
-								[
-									9819,
-									9831
-								],
-								[
-									10716,
-									10721
-								],
-								[
-									11541,
-									11545
+									2819,
+									2823
 								]
 							],
 							"symlist":
 							[
-								"cvalue",
-								"csetting",
-								"cword",
-								"config_data_at",
-								"dump_cword",
-								"dump_csetting",
-								"dump_cvalue",
-								"parse_cfgvalue",
-								"parse_cfgsetting",
-								"parse_cfgword",
-								"parse_cfgdata",
-								"config_bytes",
-								"get_setting_word",
-								"get_setting_value",
-								"find_setting",
-								"find_value",
-								"infer_chip",
-								"get_cfgdat",
-								"add_item",
-								"process_config",
-								"output_items",
+								"put_str_escaped",
 								"usage",
+								"put_line",
+								"strip_comments",
 								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
@@ -875,72 +776,41 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "genmakefile.c",
+					"file": "strip-comments.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 115279,
+						"buffer_size": 4933,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								90963,
-								90963
+								4470,
+								4470
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Rainglow/rainglow/Darkside (rainglow).tmTheme",
+							"color_scheme": "Packages/Babel/Next.tmTheme",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 65076.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "piccfg.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 14051,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								12211,
-								12211
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/JavaScriptNext - ES6 Syntax/Next.tmTheme",
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 5507.0,
+						"translation.y": 1390.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -951,7 +821,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 26.0
+		"height": 29.0
 	},
 	"input":
 	{
@@ -1025,7 +895,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 70.0
+		"height": 74.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1034,6 +904,90 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"strip-com",
+				"strip-comments.c"
+			],
+			[
+				"open.h",
+				"lib/open.h"
+			],
+			[
+				"open_temp.c",
+				"lib/open/open_temp.c"
+			],
+			[
+				"tosa.c",
+				"lib/stralloc/buffer_tosa.c"
+			],
+			[
+				"fromsa.c",
+				"lib/buffer/buffer_fromsa.c"
+			],
+			[
+				"scaN_CHAR",
+				"lib/scan/scan_charsetnskip.c"
+			],
+			[
+				"21",
+				"build/CMakeFiles/Progress/21"
+			],
+			[
+				"strip-c",
+				"strip-comments.c"
+			],
+			[
+				"charbuf.h",
+				"lib/charbuf.h"
+			],
+			[
+				"charbuf_peek",
+				"lib/charbuf/charbuf_peek.c"
+			],
+			[
+				"_skip.c",
+				"lib/charbuf/charbuf_skip.c"
+			],
+			[
+				"_peek.c",
+				"lib/charbuf/charbuf_peek.c"
+			],
+			[
+				"charbuf_skip",
+				"lib/charbuf/charbuf_skip_until.c"
+			],
+			[
+				"feed.c",
+				"lib/buffer/buffer_feed.c"
+			],
+			[
+				"skip_un",
+				"lib/buffer/buffer_skip_until.c"
+			],
+			[
+				"scan.h",
+				"lib/scan.h"
+			],
+			[
+				"charbuf",
+				"lib/charbuf.h"
+			],
+			[
+				"scan_whi",
+				"lib/scan/scan_whitenskip.c"
+			],
+			[
+				"scan",
+				"lib/scan.h"
+			],
+			[
+				"GNUMa",
+				"GNUmakefile"
+			],
 			[
 				"piccf",
 				"piccfg.c"
@@ -1045,10 +999,6 @@
 			[
 				"stralloc.h",
 				"lib/stralloc.h"
-			],
-			[
-				"scan_whi",
-				"lib/scan/scan_whitenskip.c"
 			],
 			[
 				"genma",
@@ -1227,10 +1177,6 @@
 				"lib/xml/xml_attributes.c"
 			],
 			[
-				"buffer.h",
-				"lib/buffer.h"
-			],
-			[
 				"mltest3",
 				"xmltest3.c"
 			],
@@ -1241,10 +1187,6 @@
 			[
 				"nt_attr",
 				"lib/xml/xml_element_attrs.c"
-			],
-			[
-				"scan.h",
-				"lib/scan.h"
 			],
 			[
 				"scann.h",
@@ -1473,78 +1415,6 @@
 			[
 				"util.js",
 				"utils/util.js"
-			],
-			[
-				"to-sv",
-				"eagle-to-svg.js"
-			],
-			[
-				"out.svg",
-				"out.svg"
-			],
-			[
-				"dom.es",
-				"utils/dom.es5.js"
-			],
-			[
-				"util.es",
-				"utils/util.es5.js"
-			],
-			[
-				"hu.js",
-				"utils/hu.js"
-			],
-			[
-				"out.sv",
-				"out.svg"
-			],
-			[
-				"sava",
-				"utils/savage.js"
-			],
-			[
-				"hu.j",
-				"utils/hu.js"
-			],
-			[
-				"util",
-				"utils/util.es5.js"
-			],
-			[
-				"to-svg",
-				"eagle-to-svg.js"
-			],
-			[
-				"eagle.js",
-				"utils/eagle.js"
-			],
-			[
-				"xml2json",
-				"xml2json.c"
-			],
-			[
-				"dom.js",
-				"utils/dom.js"
-			],
-			[
-				"ihex.h",
-				"lib/ihex.h"
-			],
-			[
-				"cofflist.c",
-				"cofflist.c"
-			],
-			[
-				"gen-cmd",
-				"eagle-gen-cmds.c"
-			],
-			[
-				"eagle-",
-				"eagle-to-circuit.c"
-			],
-			[
-				"eaggle-",
-				"eagle-gen-cmds.c"
 			]
 		],
 		"width": 0.0
