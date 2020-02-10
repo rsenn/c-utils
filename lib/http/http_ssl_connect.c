@@ -17,17 +17,11 @@ http_ssl_connect(fd_t fd, http* h) {
     ret = http_ssl_error(ret, h, &msg);
 
   if(!(ret == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))) {
-
-    buffer_puts(buffer_2, "SSL connect: ret=");
-    buffer_putlong(buffer_2, ret);
-    /*  if(msg) {
-      buffer_puts(buffer_2, ", msg: ");
-      buffer_puts(buffer_2, msg);
-      free(msg);
-      msg = 0;
-    }*/
-    buffer_putnlflush(buffer_2);
   }
+
+  buffer_puts(buffer_2, "SSL connect: ret=");
+  buffer_putlong(buffer_2, ret);
+  buffer_putnlflush(buffer_2);
 
   if(ret == 1)
     h->connected = 1;

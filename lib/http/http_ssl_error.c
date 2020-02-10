@@ -25,12 +25,14 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
   /* call ssl_read() again when socket gets readable */
   if(err == SSL_ERROR_WANT_READ) {
     io_wantread(h->sock);
+    io_dontwantwrite(h->sock);
     errno = EAGAIN;
     buffer_putsflush(buffer_2, "SSL want read\n");
     return -1;
     /* call ssl_read() again when socket gets writeable */
   } else if(err == SSL_ERROR_WANT_WRITE) {
     io_wantwrite(h->sock);
+    io_dontwantread(h->sock);
     errno = EWOULDBLOCK;
     buffer_putsflush(buffer_2, "SSL want write\n");
     return -1;

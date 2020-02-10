@@ -10,7 +10,7 @@
 
 ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
-  ssize_t s;
+  ssize_t ret;
   http* h = ((buffer*)b)->cookie;
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
@@ -29,12 +29,12 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
       return -1;
     }
 
-    s = http_ssl_read(h->sock, buf, len, b);
+    ret = http_ssl_read(h->sock, buf, len, b);
 
   } else
 #endif
   {
-    s = io_tryread(fd, buf, len);
+    ret = io_tryread(fd, buf, len);
   }
 
   /*  buffer_puts(buffer_2, "io_tryread(");
@@ -46,11 +46,11 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     buffer_puts(buffer_2, ") = ");
     buffer_putlong(buffer_2, s);
     buffer_putnlflush(buffer_2);*/
-  if(s == 0) {
+  if(ret == 0) {
     closesocket(h->sock);
     h->q.in.fd = h->q.out.fd = h->sock = -1;
     r->status = HTTP_STATUS_CLOSED;
-  } else if(s == -1) {
+  } else if(ret == -1) {
     r->err = errno;
     if(errno != EWOULDBLOCK && errno != EAGAIN) {
       r->status = HTTP_STATUS_ERROR;
@@ -58,13 +58,13 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
       errno = 0;
     }
   }
-  if(s > 0) {
+  if(ret > 0) {
     size_t n = h->q.in.n;
-    h->q.in.n += s;
-    s = http_read_internal(h, buf, s);
+    h->q.in.n += ret;
+    ret = http_read_internal(h, buf, ret);
     h->q.in.n = n;
   }
   // putnum("http_socket_read", s);
   // putnum("err", r->err);
-  return s;
+  return ret;
 }
