@@ -101,7 +101,7 @@ strip_comments(charbuf* in) {
   }
 end:
   put_line(outbuf, line.s, line.len);
-
+charbuf_close(in);
   buffer_flush(outbuf);
 }
 
@@ -111,6 +111,8 @@ main(int argc, char* argv[]) {
   stralloc tmp;
   int c;
   int index = 0;
+  char buf[16384];
+  buffer output;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"indent", 0, NULL, 'l'}, {0, 0, 0, 0}};
 
@@ -132,7 +134,8 @@ main(int argc, char* argv[]) {
 
   stralloc_init(&tmp);
 
-  outbuf = buffer_1;
+  buffer_init(&output, &write, STDOUT_FILENO, buf, sizeof(buf));
+  outbuf = &output;
 
   fd = optind < argc ? open_read(argv[optind]) : 0;
 
