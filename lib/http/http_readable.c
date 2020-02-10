@@ -1,7 +1,5 @@
-#define USE_WS2_32 1
-#include "../socket_internal.h"
 #include "../windoze.h"
-
+#include "../errmsg.h"
 #include "../buffer.h"
 #include "../byte.h"
 #include "../http.h"
@@ -36,17 +34,23 @@ http_readable(http* h, int freshen) {
   ssize_t ret = 0;
   int err;
   http_response* r;
+  buffer_putsflush(buffer_2, "http readable\n");
 
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h->sock, h)) == 1) {
+
         h->connected = 1;
         io_wantwrite(h->sock);
+        errno = EAGAIN;
+        return -1;
       }
-      errmsg_infosys("readable: SSL handshake = ",
-                     ret == 1 ? "done" : ret == 0 ? "eof" : errno == 0 ? "success" : "error",
-                     0);
+      //      buffer_putsflush(buffer_2, "\nreadable: SSL handshake\n");
+      /*
+            if(ret == 1 && io_canread(h->sock))
+              goto do_read;
+      */
       return ret;
     }
   }

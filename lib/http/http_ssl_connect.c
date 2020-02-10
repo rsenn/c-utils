@@ -9,23 +9,27 @@ ssize_t
 http_ssl_connect(fd_t fd, http* h) {
   ssize_t ret;
   char* msg = 0;
-
+  int out = 0;
+  errno = 0;
   assert(!h->connected);
   ret = SSL_connect(h->ssl);
-
-  if(ret <= 0)
+  if(ret <= 0) {
+    buffer_puts(buffer_2, "SSL_connect ");
+    out = 1;
     ret = http_ssl_error(ret, h, 0);
-
-  if(!(ret == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))) {
   }
-
-  buffer_puts(buffer_2, "SSL connect: ret=");
-  buffer_putlong(buffer_2, ret);
-  buffer_putnlflush(buffer_2);
-
-  if(ret == 1)
+  if(ret == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))
+    return ret;
+  if(out) {
+    buffer_puts(buffer_2, "ret=");
+    buffer_putlong(buffer_2, ret);
+    buffer_putnlflush(buffer_2);
+  }
+  if(ret == 1) {
     h->connected = 1;
-
+    // io_dontwantread(h->sock);
+    io_wantwrite(fd);
+  }
   return ret;
 }
 #endif

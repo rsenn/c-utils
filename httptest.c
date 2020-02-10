@@ -129,6 +129,7 @@ main(int argc, char* argv[]) {
       if(doread)
         http_readable(&h, 1);
       h.q.in.cookie = &h;
+
       while((n = http_read(&h, buf, sizeof(buf), &h.q.in)) > 0) {
         if(buffer_put(&out, buf, n)) {
           errmsg_warnsys("write error: ", 0);
@@ -139,7 +140,7 @@ main(int argc, char* argv[]) {
           return 1;
         }
       }
-      buffer_dump(buffer_1, &h.q.in);
+      //      buffer_dump(buffer_1, &h.q.in);
       if(h.response->status >= HTTP_STATUS_CLOSED) {
         break;
       }

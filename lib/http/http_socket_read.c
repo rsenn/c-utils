@@ -16,47 +16,22 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   // s = winsock2errno(recv(fd, buf, len, 0));
 
 #ifdef HAVE_OPENSSL
-  if(h->ssl) {
-    if(!h->connected) {
-      if((ret = http_ssl_connect(h->sock, h)) == -1)
-        return -1;
-      if(h->connected)
-        buffer_putsflush(buffer_2, "ssl handshake done\n");
-    }
-
-    if(!io_canread(h->sock) && !io_canwrite(h->sock)) {
-      errno = EAGAIN;
-      return -1;
-    }
-
+  if(h->ssl)
     ret = http_ssl_read(h->sock, buf, len, b);
-
-  } else
+  else
 #endif
-  {
     ret = io_tryread(fd, buf, len);
-  }
 
-  /*  buffer_puts(buffer_2, "io_tryread(");
-    buffer_putlong(buffer_2, fd);
-    buffer_puts(buffer_2, ", ");
-    buffer_putptr(buffer_2, buf);
-    buffer_puts(buffer_2, ", ");
-    buffer_putulong(buffer_2, len);
-    buffer_puts(buffer_2, ") = ");
-    buffer_putlong(buffer_2, s);
-    buffer_putnlflush(buffer_2);*/
   if(ret == 0) {
     closesocket(h->sock);
     h->q.in.fd = h->q.out.fd = h->sock = -1;
     r->status = HTTP_STATUS_CLOSED;
   } else if(ret == -1) {
     r->err = errno;
-    if(errno != EWOULDBLOCK && errno != EAGAIN) {
+    if(errno != EWOULDBLOCK && errno != EAGAIN)
       r->status = HTTP_STATUS_ERROR;
-    } else {
-      errno = 0;
-    }
+    else
+      return ret;
   }
   if(ret > 0) {
     size_t n = h->q.in.n;

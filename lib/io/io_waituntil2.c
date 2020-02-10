@@ -140,22 +140,23 @@ io_waituntil2(int64 milliseconds) {
       ++r;
     }
 
+#ifdef DEBUG_IO
     put_fdset(buffer_2, "rfds", &rfds, maxfd);
     buffer_puts(buffer_2, ", ");
     put_fdset(buffer_2, "wfds", &wfds, maxfd);
     buffer_putnlflush(buffer_2);
-
+#endif
     tv.tv_sec = milliseconds / 1000;
     tv.tv_usec = milliseconds % 1000 * 1000;
 
     if((i = select(maxfd + 1, &rfds, &wfds, NULL, milliseconds == -1 ? 0 : &tv)) == -1)
       return -1;
-
+#ifdef DEBUG_IO
     put_fdset(buffer_2, "rfds2", &rfds, maxfd);
     buffer_puts(buffer_2, ", ");
     put_fdset(buffer_2, "wfds2", &wfds, maxfd);
     buffer_putnlflush(buffer_2);
-
+#endif
     for(j = maxfd; j >= 0; --j) {
       if(!(e = iarray_get(io_getfds(), j)))
         continue;

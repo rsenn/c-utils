@@ -1,10 +1,10 @@
 #include "../http.h"
 #include "../scan.h"
-#include "../socket_internal.h"
 #include "../str.h"
 #include "../stralloc.h"
 #include "../io.h"
 #include "../byte.h"
+#include "../errmsg.h"
 #include <errno.h>
 #include <assert.h>
 
@@ -16,16 +16,29 @@
 ssize_t
 http_writeable(http* h) {
   ssize_t ret = 0;
+  buffer_puts(buffer_2, "http writable ");
+  buffer_puts(buffer_2, "tls=");
+  buffer_putlong(buffer_2, !!h->tls);
+  buffer_puts(buffer_2, " sock=");
+  buffer_putlong(buffer_2, h->sock);
+  buffer_puts(buffer_2, " ssl=");
+  buffer_putptr(buffer_2, h->ssl);
+  buffer_puts(buffer_2, " connected=");
+  buffer_putlong(buffer_2, !!h->connected);
+  buffer_puts(buffer_2, " keepalive=");
+  buffer_putlong(buffer_2, !!h->keepalive);
+  buffer_puts(buffer_2, " nonblocking=");
+  buffer_putlong(buffer_2, !!h->nonblocking);
+  buffer_putsflush(buffer_2, "\n");
+
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h->sock, h)) == 1) {
         h->connected = 1;
-
       }
-/* errmsg_infosys("writeable: SSL handshake = ", ret == 1 ? "done" : ret == 0 ? "eof" : errno == 0 ? "success" : "error", 0);*/ 
-errno = EWOULDBLOCK;
-      return -1;
+      // buffer_putsflush(buffer_2, "\nwritable: SSL handshake\n");
+      return ret;
     }
   }
 #endif

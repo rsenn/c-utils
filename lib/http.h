@@ -80,7 +80,7 @@ ssize_t http_readable(http* h, int freshen);
 ssize_t http_writeable(http* h);
 
 ssize_t http_read_header(http* h, http_response* r);
-ssize_t http_read(http* h, char* buf, size_t len, buffer* bf);
+ssize_t http_read(http* h, char* buf, size_t len, void*);
 size_t http_read_internal(http* h, char* buf, size_t len);
 int http_sendreq(http* h);
 int http_socket(http* h, int nonblock);
