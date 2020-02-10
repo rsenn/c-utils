@@ -25,23 +25,17 @@ http_get(http* h, const char* location) {
 
   if(location[0] != '/') {
     size_t len;
-
     if(location[len = str_findb(location, "://", 3)])
       location += len + 3;
-
     len = str_chrs(location, "/:", 2);
     stralloc_copyb(&h->host, location, len);
-
     if(location[len] == ':') {
       len += 1;
       len += scan_ushort(&location[len], &h->port);
     }
-
     location += len;
   }
-
   stralloc_nul(&h->host);
-
   stralloc_init(&dns);
   if(dns_ip4(&dns, &h->host) == -1) {
     errmsg_warnsys("ERROR: resolving ", h->host.s, ": ", NULL);
