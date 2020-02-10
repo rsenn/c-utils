@@ -13,40 +13,54 @@
 #include <openssl/err.h>
 
 ssize_t
-http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
-  ssize_t ret = SSL_read(h->ssl, buf, len);
-  int err; /* it was not done */
+http_ssl_error(ssize_t ret, http* h) {
+
   if(ret < 0) {
     /* get error code */
+    char buf[256];
+    size_t n = sizeof(buf);
+    int err;
+    /* get error code */
+    err = SSL_get_error(h->ssl, ret);
+
     err = SSL_get_error(h->ssl, ret);
     /* call ssl_read() again when socket gets readable */
     if(err == SSL_ERROR_WANT_READ) {
-      io_wantread(fd);
       errno = EAGAIN;
-      return -1;
-    }
-    /* call ssl_read() again when socket gets writeable */
-    if(err == SSL_ERROR_WANT_WRITE) {
-      io_wantwrite(fd);
-      errno = EAGAIN;
-      return -1;
-    }
-    /*
-     * EWOULDBLOCK, EINTR, EAGAIN are ignored because
-     * these say the handshake is in progress and needs
-     * more events.
-     */
-    if(err == SSL_ERROR_SYSCALL) {
+      /* call ssl_read() again when socket gets writeable */
+    } else if(err == SSL_ERROR_WANT_WRITE) {
+      errno = EWOULDBLOCK;
+      /*
+       * EWOULDBLOCK, EINTR, EAGAIN are ignored because
+       * these say the handshake is in progress and needs
+       * more events.
+       */
+    } else if(err == SSL_ERROR_SYSCALL) {
       /* ignore these */
       if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {
         errno = EAGAIN;
-        return -1;
       }
-      return -1;
+    } else if(err == SSL_ERROR_ZERO_RETURN) {
+      ret = 0;
+    } else if(err == SSL_ERROR_SSL) {
+      ret = 1;
     }
-    if(err == SSL_ERROR_ZERO_RETURN)
-      return 0;
+
+    if(err) {
+      buffer_puts(buffer_2, "SSL error: ");
+      buffer_puts(buffer_2, buf);
+      buffer_putnlflush(buffer_2);
+    }
   }
+  return ret;
+}
+
+ssize_t
+http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
+  ssize_t ret = SSL_read(h->ssl, buf, len);
+  if(ret < 0)
+    ret = http_ssl_error(ret, h);
+
   return ret;
 }
 #endif
@@ -92,8 +106,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   if(!h->connected) {
     if((s = http_ssl_connect(h->sock, h)) == 1) {
       h->connected = 1;
-    }
-    else if(s == -1) {
+    } else if(s == -1) {
       return s;
     }
   }

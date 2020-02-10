@@ -11,54 +11,13 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-
+ssize_t
+http_ssl_error(ssize_t ret, http* h);
 ssize_t
 http_ssl_connect(fd_t fd, http* h) {
   ssize_t ret = SSL_connect(h->ssl);
-  int err; /* it was not done */
-  if(ret < 0) {
-    char buf[256];
-    size_t n = sizeof(buf);
-    /* get error code */
-    err = SSL_get_error(h->ssl, ret);
-
-    ERR_error_string_n(err, buf, n);
-
-    /* call ssl_read() again when socket gets readable */
-    if(err == SSL_ERROR_WANT_READ) {
-      errno = EAGAIN;
-      return -1;
-    }
-    /* call ssl_read() again when socket gets writeable */
-    else if(err == SSL_ERROR_WANT_WRITE) {
-      errno = EWOULDBLOCK;
-      return -1;
-    }
-    /*
-     * EWOULDBLOCK, EINTR, EAGAIN are ignored because
-     * these say the handshake is in progress and needs
-     * more events.
-     */
-    else if(err == SSL_ERROR_SYSCALL) {
-      /* ignore these */
-      if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {
-        //  errno = EAGAIN;
-        return -1;
-      }
-      return -1;
-    } else if(err == SSL_ERROR_ZERO_RETURN) {
-      return 0;
-    } else if(err == SSL_ERROR_SSL) {
-      return 1;
-    }
-
-    if(err) {
-      buffer_puts(buffer_2, "SSL error: ");
-      buffer_puts(buffer_2, buf);
-      buffer_putnlflush(buffer_2);
-    }
-    return -1;
-  }
+  if(ret < 0)
+    ret = http_ssl_error(ret, h);
   return ret;
 }
 #endif

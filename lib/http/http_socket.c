@@ -38,30 +38,20 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, http* h) {
     err = SSL_get_error(h->ssl, ret);
     /* call ssl_write() again when socket gets writeable */
     if(err == SSL_ERROR_WANT_WRITE) {
-      io_wantwrite(fd);
       errno = EWOULDBLOCK;
       return -1;
-    }
-    /* call ssl_write() again when socket gets writeable */
-    if(err == SSL_ERROR_WANT_READ) {
-      io_wantread(fd);
-      errno = EWOULDBLOCK;
+      /* call ssl_write() again when socket gets writeable */
+    } else if(err == SSL_ERROR_WANT_READ) {
+      errno = EAGAIN;
       return -1;
-    }
-    /*
-     * EWOULDBLOCK, EINTR, EAGAIN are ignored because
-     * these say the handshake is in progress and needs
-     * more events.
-     */
-    if(err == SSL_ERROR_SYSCALL) {
+    } else if(err == SSL_ERROR_SYSCALL) {
       /* ignore these */
       if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {
-        errno = EWOULDBLOCK;
+        //   errno = EWOULDBLOCK;
         return -1;
       }
       return -1;
-    }
-    if(err == SSL_ERROR_ZERO_RETURN)
+    } else if(err == SSL_ERROR_ZERO_RETURN)
       return 0;
   }
   return ret;
