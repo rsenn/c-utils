@@ -5,7 +5,7 @@
 #include <openssl/err.h>
 
 ssize_t
-http_ssl_write(fd_t fd, const void* buf, size_t n, void* b) {
+  (fd_t fd, const void* buf, size_t n, void* b) {
    http* h = ((buffer*)b)->cookie;
   ssize_t ret;
   errno = 0;
