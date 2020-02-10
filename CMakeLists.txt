@@ -230,10 +230,17 @@ endif(OPENSSL_FOUND)
 
 
 if(OPENSSL_FOUND)
+  if(NOT OPENSSL_INCLUDE_DIR)
+  set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
+  endif() 
+
+   if(NOT OPENSSL_LIB_DIR)
+  set(OPENSSL_LIB_DIR "${OPENSSL_ROOT_DIR}/lib")
+  endif()
 
   add_definitions(-DHAVE_OPENSSL=1)
   if(OPENSSL_INCLUDE_DIR)
-  include_directories(${OPENSSL_INCLUDE_DIR})
+    include_directories(${OPENSSL_INCLUDE_DIR})
   endif()
   if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
     set(OPENSSL_LIBARRIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
@@ -241,7 +248,7 @@ if(OPENSSL_FOUND)
   endif()
 
 endif(OPENSSL_FOUND)
-message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND} OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY} OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
+message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\nOPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\nOPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\nOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\nOPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY} OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
 
 #link_libraries(
 #  ${ZLIB_LIBRARY}
@@ -290,7 +297,7 @@ if(NOT BZIP2_LIBRARY)
   add_library(bz2 ${LIBBZ2_SOURCES})
   set(BZIP2_LIBRARY_DEBUG bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_LIBRARY_RELEASE bz2 CACHE FILEPATH "" FORCE)
-  set(BZIP2_LIBRARY bz2 CACHE FILEPATH "" FORCE)
+  set(BZIP2_LIBR+ARY bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
 endif(NOT BZIP2_LIBRARY)
 
@@ -395,6 +402,10 @@ target_link_libraries(uint32 taia tai)
 
 set(genmakefile_SOURCES mplab.c ini.c)
 
+if(OPENSSL_LIB_DIR)
+set(CMAKE_EXE_LINKER_FLAGS -L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR})
+endif()
+
 set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )
 file(GLOB MODHEADERS lib/*.h)
 function(add_program PROG)
@@ -409,6 +420,7 @@ function(add_program PROG)
   add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
   target_link_libraries(${PROG} ${ARGN})
   install(TARGETS ${PROG} DESTINATION bin)
+  set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR}")
 endfunction(add_program PROG)
 
 
@@ -446,7 +458,7 @@ add_program(elflist buffer errmsg unix elf mmap str)
 add_program(elfwrsec buffer elf mmap)
 add_program(genmakefile case errmsg strarray slist rdir dir path strlist hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
-add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES})
+add_program(httptest http dns stralloc buffer errmsg byte io socket taia ${LIBMSWSOCK} ${OPENSSL_LIBRARIES})
 add_program(impgen buffer byte mmap open pe uint16 uint32)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
