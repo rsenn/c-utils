@@ -4,10 +4,12 @@
 #include "../http.h"
 #include "../byte.h"
 #include "../io.h"
+
 static ssize_t
 do_send(fd_t s, const void* buf, size_t len) {
   return send(s, buf, len, 0);
 }
+
 int
 http_sendreq(http* h) {
   buffer* out = &h->q.out;

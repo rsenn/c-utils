@@ -39,11 +39,12 @@ http_writeable(http* h) {
       return ret;
   }
 #endif
-//request:
+  // request:
   h->connected = 1;
   if(h->connected) {
     http_sendreq(h);
     // io_dontwantwrite(h->sock);
     // io_wantread(h->sock);
-  }return ret;
+  }
+  return ret;
 }

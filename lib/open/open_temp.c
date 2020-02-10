@@ -40,7 +40,7 @@ open_temp(const char** pt) {
   int i, res;
   unsigned int random;
   char* tmp;
- const char* tmpl = pt && *pt ? *pt : default_tmpl;
+  const char* tmpl = pt && *pt ? *pt : default_tmpl;
 
   if(!tmpl) {
     tmpl = (const char*)default_tmpl;
