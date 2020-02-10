@@ -3,7 +3,7 @@
 #include "../buffer.h"
 #include "../byte.h"
 #include "../http.h"
-#include "../io_internal.h"
+#include "../io.h"
 #include "../scan.h"
 #include "../stralloc.h"
 #include "../str.h"
@@ -39,11 +39,12 @@ http_readable(http* h, int freshen) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      ret = http_ssl_connect(h->sock, h);
-      return ret;
+      ret = http_ssl_connect(h);
+      return http_ssl_io(h, ret);
     }
   }
 #endif
+
 do_read:
   if(freshen)
     buffer_freshen(&h->q.in);

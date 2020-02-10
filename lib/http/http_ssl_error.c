@@ -1,4 +1,5 @@
 #include "../http.h"
+#include "../io.h"
 
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
@@ -23,11 +24,11 @@ ssl_error_flag(int i) {
   }
 }
 
-ssize_t
-http_ssl_error(ssize_t ret, http* h, char** mptr) {
+int
+http_ssl_error(http* h, ssize_t ret) {
   char buf[256];
   size_t n = sizeof(buf);
-  int err;
+  int err = 0;
   if(ret <= 0) {
     err = SSL_get_error(h->ssl, ret);
     ERR_error_string_n(err, buf, n);
@@ -45,28 +46,29 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
       ret = 0;
     } else if(err == SSL_ERROR_SSL) {
       ret = 1;
+      err = 0;
     } else {
       ret = -1;
     }
   }
-  buffer_puts(buffer_2, " ret=");
-  buffer_putlong(buffer_2, ret);
+  /* buffer_puts(buffer_2, " ret=");
+   buffer_putlong(buffer_2, ret);
 
-  if(ret <= 0 || err) {
-    buffer_putm_internal(buffer_2, " err=", ssl_error_flag(err), 0);
-    buffer_puts(buffer_2, " (");
-    buffer_putlong(buffer_2, err);
-    buffer_puts(buffer_2, ")");
-  }
-  if(err != SSL_ERROR_WANT_WRITE && err != SSL_ERROR_WANT_READ) {
-    if(buf[0])
-      buffer_putm_internal(buffer_2, " buf=", buf, 0);
-  }
-  buffer_puts(buffer_2, "\n");
-  buffer_flush(buffer_2);
-
+   if(ret <= 0 || err) {
+     buffer_putm_internal(buffer_2, " err=", ssl_error_flag(err), 0);
+     buffer_puts(buffer_2, " (");
+     buffer_putlong(buffer_2, err);
+     buffer_puts(buffer_2, ")");
+   }
+   if(err != SSL_ERROR_WANT_WRITE && err != SSL_ERROR_WANT_READ) {
+     if(buf[0])
+       buffer_putm_internal(buffer_2, " buf=", buf, 0);
+   }
+   buffer_puts(buffer_2, "\n");
+   buffer_flush(buffer_2);
+ */
   if(ret >= 0 && err != SSL_ERROR_WANT_WRITE && err != SSL_ERROR_WANT_READ)
     errno = 0;
-  return ret;
+  return err;
 }
 #endif

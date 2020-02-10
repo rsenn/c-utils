@@ -1,31 +1,31 @@
 #include "../http.h"
+#include "../io.h"
 
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
-#include <assert.h>
 #include <openssl/err.h>
+#include <assert.h>
 
 ssize_t
-http_ssl_connect(fd_t fd, http* h) {
+http_ssl_connect(http* h) {
   ssize_t ret;
   char* msg = 0;
   errno = 0;
   assert(!h->connected);
   ret = SSL_connect(h->ssl);
   if(ret <= 0) {
-    buffer_puts(buffer_2, "http_ssl_connect ");
-    ret = http_ssl_error(ret, h, 0);
+    int err = http_ssl_error(h, ret);
+
+    if(err)
+      ret = http_ssl_io(h, err);
   }
 
-  if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-    if(errno == EAGAIN) {
-      io_wantread(fd);
-    } else if(errno == EWOULDBLOCK) {
-      io_wantwrite(fd);
+  if(ret == 1) {
+    if(!h->connected) {
+      h->connected = 1;
+      buffer_putsflush(buffer_2, "connected\n");
     }
-  } else if(ret == 1) {
-    h->connected = 1;
-    io_wantwrite(fd);
+     io_wantwrite(h->sock);
   }
   return ret;
 }

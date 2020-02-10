@@ -2,7 +2,7 @@
 #include "../socket_internal.h"
 #include "../buffer.h"
 #include "../http.h"
-#include "../io_internal.h"
+#include "../io.h"
 
 static ssize_t
 do_send(fd_t s, const void* buf, size_t len) {

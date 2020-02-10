@@ -7,6 +7,7 @@
 #include "lib/charbuf.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
+#include "lib/mmap.h"
 #include <ctype.h>
 
 #if WINDOWS_NATIVE

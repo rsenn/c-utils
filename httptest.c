@@ -122,8 +122,12 @@ main(int argc, char* argv[]) {
       }
       while((fd = io_canread()) != -1) {
         if(h.sock == fd)
-          http_readable(&h,fd);
+          http_readable(&h, 1);
       }
+
+      if(!h.connected)
+        continue;
+
       while((n = http_read(&h, buf, sizeof(buf), &h.q.in)) > 0) {
         if(buffer_put(&out, buf, n)) {
           errmsg_warnsys("write error: ", 0);

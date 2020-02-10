@@ -6,6 +6,11 @@
 #include <unistd.h>
 #endif
 
+#ifdef HAVE_OPENSSL
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#endif
+
 void
 http_close(http* h) {
 #ifdef HAVE_OPENSSL

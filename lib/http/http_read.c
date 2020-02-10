@@ -17,12 +17,11 @@ putnum(const char* what, ssize_t n) {
 }
 
 ssize_t
-http_read(http* h, char* buf, size_t len, void* bf) {
+http_read(fd_t fd, char* buf, size_t len, void* ptr) {
   ssize_t bytes, n, ret = 0;
   http_response* r;
-  buffer* b;
-  h = ((buffer*)bf)->cookie;
-  b = &h->q.in;
+  http* h = ((buffer*)ptr)->cookie;
+  buffer* b = &h->q.in;
   r = h->response;
   while(len) {
     int st = r->status;
@@ -54,7 +53,7 @@ http_read(http* h, char* buf, size_t len, void* bf) {
     if(r->ptr == r->content_length && b->n - b->p > 0) {
       http_read_internal(h, &b->x[b->p], b->n - b->p);
       if(r->status == HTTP_STATUS_FINISH) {
-        io_dontwantread(h->sock);
+        // io_dontwantread(h->sock);
         break;
       }
     }

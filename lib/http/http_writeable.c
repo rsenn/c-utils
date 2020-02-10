@@ -37,8 +37,8 @@ http_writeable(http* h) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      ret = http_ssl_connect(h->sock, h);
-      return ret;
+      ret = http_ssl_connect(h);
+      return http_ssl_io(h, ret);
     }
   }
 #endif
@@ -46,7 +46,7 @@ request:
   h->connected = 1;
   if(h->connected) {
     http_sendreq(h);
-    io_dontwantwrite(h->sock);
-    io_wantread(h->sock);
+    // io_dontwantwrite(h->sock);
+    // io_wantread(h->sock);
   }
 }
