@@ -34,49 +34,33 @@ http_readable(http* h, int freshen) {
   ssize_t ret = 0;
   int err;
   http_response* r;
-  buffer_putsflush(buffer_2, "http readable\n");
-
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h->sock, h)) == 1) {
-
         h->connected = 1;
         io_wantwrite(h->sock);
         errno = EAGAIN;
-        return -1;
       }
-      //      buffer_putsflush(buffer_2, "\nreadable: SSL handshake\n");
-      /*
-            if(ret == 1 && io_canread(h->sock))
-              goto do_read;
-      */
       return ret;
     }
   }
 #endif
 do_read:
-
   if(freshen)
     buffer_freshen(&h->q.in);
-
   if((r = h->response) == NULL) {
     return ret;
   }
-
   while(r->status == HTTP_RECV_HEADER) {
     if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
       break;
-
     stralloc_trimr(&r->data, "\r\n", 2);
     stralloc_nul(&r->data);
-
     // putline("Header", r->data.s, -r->data.len, &h->q.in);
-
     if(r->data.len == 0) {
       r->ptr = 0;
       r->status = HTTP_RECV_DATA;
-
       if(h->q.in.p < h->q.in.n) {
         ret = 1;
       } else {
@@ -85,10 +69,8 @@ do_read:
       }
       break;
     }
-
     if(stralloc_startb(&r->data, "Content-Type: multipart", 23)) {
       size_t p = str_find(r->data.s, "boundary=");
-
       if(r->data.s[p]) {
         stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
       }
@@ -99,50 +81,37 @@ do_read:
     } else {
       r->transfer = HTTP_TRANSFER_CHUNKED;
     }
-
     stralloc_zero(&r->data);
   }
-
   if(r->status == HTTP_RECV_DATA) {
     ret = 1;
-
     /*
         if(r->content_length) {
           size_t a;
-
           if(r->content_length < (a = r->data.a - r->data.len))
             a = r->content_length;
           if(a > 1024)
             a = 1024;
-
           stralloc_readyplus(&r->data, 1024);
-
           if((ret = buffer_get(&h->q.in, &r->data.s[r->data.len], r->data.a - r->data.len)) <= 0)
             break;
-
           putline("data", &r->data.s[r->data.len], 1, &h->q.in);
-
           r->data.len += ret;
           r->content_length -= ret;
           continue;
         }
-
         r->status = HTTP_STATUS_FINISH;*/
   }
-
   if(ret == -1) {
     err = errno;
     errno = 0;
   } else {
     err = 0;
   }
-
   if(ret == 0) {
     r->status = HTTP_STATUS_FINISH;
   }
-
   if(err && err != EWOULDBLOCK)
     r->status = HTTP_STATUS_ERROR;
-
   return ret;
 }

@@ -68,7 +68,7 @@ main(int argc, char* argv[]) {
   static char outbuf[256 * 1024];
   fd_t fd, outfile;
   buffer out;
-  int c;
+  int c, index;
   const char* outname = 0;
   const char* tmpl = "output-XXXXXX.txt";
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};

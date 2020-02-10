@@ -17,17 +17,12 @@ http_ssl_connect(fd_t fd, http* h) {
     buffer_puts(buffer_2, "SSL_connect ");
     out = 1;
     ret = http_ssl_error(ret, h, 0);
+    /*  if(ret == -1  && (errno == EWOULDBLOCK || errno == EAGAIN))
+        return ret;*/
   }
-  if(ret == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))
-    return ret;
-  if(out) {
-    buffer_puts(buffer_2, "ret=");
-    buffer_putlong(buffer_2, ret);
-    buffer_putnlflush(buffer_2);
-  }
+
   if(ret == 1) {
     h->connected = 1;
-    // io_dontwantread(h->sock);
     io_wantwrite(fd);
   }
   return ret;

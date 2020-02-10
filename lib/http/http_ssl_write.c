@@ -26,16 +26,10 @@ do_write:
   ret = SSL_write(h->ssl, buf, n);
   if(ret <= 0) {
     buffer_puts(buffer_2, "SSL write ");
-    out = 1;
     ret = http_ssl_error(ret, h, 0);
+    out = 1;
   }
-  if(ret == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))
-    return ret;
-  if(out) {
-    buffer_puts(buffer_2, "ret=");
-    buffer_putlong(buffer_2, ret);
-    buffer_putnlflush(buffer_2);
-  }
+
   return ret;
 }
 #endif

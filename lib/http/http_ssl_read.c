@@ -19,25 +19,24 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
       io_wantread(fd);
       io_wantwrite(fd);
       errno = EAGAIN;
+      ret = -1;
     }
-    return -1;
+
+    if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
+      return ret;
+
+    return ret;
   }
   assert(h->connected);
 do_read:
   if((ret = SSL_read(h->ssl, buf, len)) <= 0) {
     buffer_puts(buffer_2, "SSL_read ");
-    out = 1;
+
     ret = http_ssl_error(ret, h, 0);
+
+    out = 1;
   }
 
-  if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
-    return ret;
-
-  if(out) {
-    buffer_puts(buffer_2, "ret=");
-    buffer_putlong(buffer_2, ret);
-    buffer_putnlflush(buffer_2);
-  }
   return ret;
 }
 #endif
