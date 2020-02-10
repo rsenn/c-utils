@@ -25,14 +25,15 @@ http_sendreq(http* h) {
 
   buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", 0);
 
-  buffer_putsflush(out, "\r\n");
+  buffer_puts(out, "\r\n");
+
+#if DEBUG_OUTPUT
+  buffer_put(buffer_2, out->x, out->p);
+  buffer_flush(buffer_2);
+#endif
   buffer_flush(out);
 
   io_dontwantwrite(h->sock);
-  /*
-    buffer_freshen(&h->q.in);
-    http_readable(h, 0);
-  */
   io_wantread(h->sock);
 
   return 1;

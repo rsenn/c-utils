@@ -14,4 +14,5 @@ http_init(http* h, const char* host, uint16 port) {
   h->request = NULL;
   h->nonblocking = 0;
   h->keepalive = 0;
+  h->err = 0;
 }

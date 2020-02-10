@@ -31,8 +31,12 @@ http_ssl_error(http* h, ssize_t ret) {
   int err = 0;
   if(ret <= 0) {
     err = SSL_get_error(h->ssl, ret);
+
+    h->err = err;
+   
     ERR_error_string_n(err, buf, n);
     ERR_clear_error();
+
     if(err == SSL_ERROR_WANT_READ) {
       errno = EAGAIN;
       ret = -1;
@@ -51,24 +55,6 @@ http_ssl_error(http* h, ssize_t ret) {
       ret = -1;
     }
   }
-  /* buffer_puts(buffer_2, " ret=");
-   buffer_putlong(buffer_2, ret);
-
-   if(ret <= 0 || err) {
-     buffer_putm_internal(buffer_2, " err=", ssl_error_flag(err), 0);
-     buffer_puts(buffer_2, " (");
-     buffer_putlong(buffer_2, err);
-     buffer_puts(buffer_2, ")");
-   }
-   if(err != SSL_ERROR_WANT_WRITE && err != SSL_ERROR_WANT_READ) {
-     if(buf[0])
-       buffer_putm_internal(buffer_2, " buf=", buf, 0);
-   }
-   buffer_puts(buffer_2, "\n");
-   buffer_flush(buffer_2);
- */
-  if(ret >= 0 && err != SSL_ERROR_WANT_WRITE && err != SSL_ERROR_WANT_READ)
-    errno = 0;
   return err;
 }
 #endif
