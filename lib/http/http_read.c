@@ -81,7 +81,6 @@ putline(const char* what, const char* b, ssize_t l, buffer* buf) {
   buffer_putnlflush(buffer_2);
 }
 
-
 ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   ssize_t s;
