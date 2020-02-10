@@ -11,36 +11,6 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#endif
-extern ssize_t http_ssl_connect(fd_t fd, http* h);
-size_t http_read_internal(http* h, char* buf, size_t len);
-
-static void
-putnum(const char* what, ssize_t n) {
-  buffer_puts(buffer_2, what);
-  buffer_puts(buffer_2, ": ");
-  buffer_putlonglong(buffer_2, n);
-  buffer_putnlflush(buffer_2);
-}
-
-static void
-putline(const char* what, const char* b, ssize_t l, buffer* buf) {
-  buffer_puts(buffer_2, what);
-  buffer_puts(buffer_2, "[");
-  buffer_putulong(buffer_2, l <= 0 ? -l : l);
-  buffer_puts(buffer_2, "]");
-  buffer_puts(buffer_2, ": ");
-  if(l <= 0)
-    buffer_puts(buffer_2, b);
-  else {
-    while(l-- > 0) buffer_put(buffer_2, b++, 1);
-  }
-  /*
-  buffer_puts(buffer_2, " (bytes in recvb: ");
-  buffer_putulong(buffer_2, buf->n - buf->p);
-  buffer_puts(buffer_2, ")");*/
-  buffer_putnlflush(buffer_2);
-}
 
 ssize_t
 http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
@@ -79,6 +49,38 @@ http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
   }
   return ret;
 }
+#endif
+
+extern ssize_t http_ssl_connect(fd_t fd, http* h);
+size_t http_read_internal(http* h, char* buf, size_t len);
+
+static void
+putnum(const char* what, ssize_t n) {
+  buffer_puts(buffer_2, what);
+  buffer_puts(buffer_2, ": ");
+  buffer_putlonglong(buffer_2, n);
+  buffer_putnlflush(buffer_2);
+}
+
+static void
+putline(const char* what, const char* b, ssize_t l, buffer* buf) {
+  buffer_puts(buffer_2, what);
+  buffer_puts(buffer_2, "[");
+  buffer_putulong(buffer_2, l <= 0 ? -l : l);
+  buffer_puts(buffer_2, "]");
+  buffer_puts(buffer_2, ": ");
+  if(l <= 0)
+    buffer_puts(buffer_2, b);
+  else {
+    while(l-- > 0) buffer_put(buffer_2, b++, 1);
+  }
+  /*
+  buffer_puts(buffer_2, " (bytes in recvb: ");
+  buffer_putulong(buffer_2, buf->n - buf->p);
+  buffer_puts(buffer_2, ")");*/
+  buffer_putnlflush(buffer_2);
+}
+
 
 ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {

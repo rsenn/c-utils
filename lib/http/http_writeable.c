@@ -11,7 +11,6 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#endif
 
 ssize_t
 http_ssl_connect(fd_t fd, http* h) {
@@ -50,6 +49,8 @@ http_ssl_connect(fd_t fd, http* h) {
   }
   return ret;
 }
+#endif
+
 void
 http_writeable(http* h) {
 #ifdef HAVE_OPENSSL
