@@ -31,22 +31,39 @@ boundary_predicate(stralloc* sa, void* arg) {
   return 0;
 }
 
-
-
-ssize_t
-http_ssl_connect(fd_t fd, http* h);
+ssize_t http_ssl_connect(fd_t fd, http* h);
 
 int
 http_readable(http* h, int freshen) {
-  ssize_t ret = -1;
+  ssize_t ret = 0;
   int err;
   http_response* r;
 
-  if(h->ssl && !h->connected) {
-    io_dontwantread(h->sock);
-    if((ret = http_ssl_connect(h->sock, h)) != 0)
-return ret;
+#ifdef HAVE_OPENSSL
+  if(h->ssl) {
+    if(!h->connected) {
+      if((ret = http_ssl_connect(h->sock, h)) == 1) {
+
+        buffer_putsflush(buffer_2, "SSL handshake done\n");
+        h->connected = 1;
+        io_wantwrite(h->sock);
+        return;
+      }
+
+    }
   }
+#endif
+
+  if(ret == -1) {
+    if(errno == EAGAIN) {
+      io_wantread(h->sock);
+      return ret;
+    } else if(errno == EWOULDBLOCK) {
+      io_wantwrite(h->sock);
+      return ret;
+    }
+  }
+
 
   if(freshen)
     buffer_freshen(&h->q.in);

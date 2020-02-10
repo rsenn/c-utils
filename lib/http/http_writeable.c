@@ -45,7 +45,7 @@ http_ssl_connect(fd_t fd, http* h) {
       return -1;
     }
     if(err == SSL_ERROR_ZERO_RETURN)
-        return 0;
+      return 0;
     return -1;
   }
   return ret;
@@ -68,14 +68,15 @@ http_writeable(http* h) {
 #endif
 
   if(ret == -1) {
-    if(errno == EAGAIN)
+    if(errno == EAGAIN) {
       io_wantread(h->sock);
-      else  if(errno == EWOULDBLOCK)
+      return ret;
+    } else if(errno == EWOULDBLOCK) {
       io_wantwrite(h->sock);
-    return ret;
+      return ret;
+    }
   }
   h->connected = 1;
   http_sendreq(h);
-    io_dontwantwrite(h->sock);
-
+  io_dontwantwrite(h->sock);
 }
