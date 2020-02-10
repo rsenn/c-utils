@@ -62,19 +62,21 @@ usage(char* av0) {
 static int
 http_io_handler(http* h) {
   fd_t r, w;
+  int n = 0;
   do {
     if((w = io_canwrite()) != -1) {
       if(h->sock == w) {
         http_writeable(h);
-        continue;
+        n++;
       }
     } else if((r = io_canread()) != -1) {
       if(h->sock == r) {
         http_readable(h, 1);
-        continue;
+        n++;
       }
     }
-  } while(w != -1 || r != -1);
+  } while(r != -1 || w != -1);
+  return n;
 }
 
 int
@@ -136,7 +138,11 @@ main(int argc, char* argv[]) {
         errmsg_warnsys("wait error: ", 0);
         return 3;
       }
-      http_io_handler(&h);
+      n = http_io_handler(&h);
+
+      buffer_puts(buffer_2, "io handle readable/writeable: ");
+      buffer_putlong(buffer_2, n);
+      buffer_putnlflush(buffer_2);
       if(!h.connected)
         continue;
 

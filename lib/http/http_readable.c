@@ -7,6 +7,8 @@
 #include "../scan.h"
 #include "../stralloc.h"
 #include "../str.h"
+#include "../socket.h"
+
 #include <ctype.h>
 #include <errno.h>
 
