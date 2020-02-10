@@ -75,7 +75,12 @@ http_writeable(http* h) {
         buffer_puts(buffer_2, "SSL connected");
         buffer_putnlflush(buffer_2);
   
-  
+  if(!io_canwrite(h->sock)) {
+
+    errno = EWOULDBLOCK;
+    return -1;
+  }
+
       } else if(ret == -1) {
         if(errno == EAGAIN) {
           io_wantread(h->sock);
