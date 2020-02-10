@@ -23,7 +23,7 @@ http_sendreq(http* h) {
   buffer_putsa(out, &h->host);
   buffer_puts(out, "\r\n");
 
-  buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n");
+  buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", 0);
 
   buffer_putsflush(out, "\r\n");
   buffer_flush(out);

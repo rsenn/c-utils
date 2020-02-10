@@ -71,13 +71,15 @@ main(int argc, char* argv[]) {
 
   buffer_init(&out, &write, outfile, outbuf, sizeof(outbuf));
 
+
+
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
   h.keepalive = 0;
 
   if(argc < 2) {
     argv[1] = "https://127.0.0.1:443/show";
-    argv[1] = "http://127.0.0.1:5555/show";
+   // argv[1] = "http://127.0.0.1:5555/show";
     argc++;
   }
 

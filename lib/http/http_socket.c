@@ -22,7 +22,7 @@
 size_t http_read_internal(http* h, char* buf, size_t n);
 
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
-ssize_t http_ssl_error(ssize_t ret, http* h);
+ssize_t http_ssl_error(ssize_t ret, http* h, char**mptr);
 
 #ifdef HAVE_OPENSSL
 ssize_t
@@ -31,8 +31,8 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, http* h) {
   errno = 0;
   ret = SSL_write(h->ssl, buf, n);
   if(ret <= 0)
-  ret = http_ssl_error(ret, h);
-return ret;
+    ret = http_ssl_error(ret, h, 0);
+  return ret;
 }
 #endif
 
@@ -54,7 +54,7 @@ new_sslctx(void) {
   const SSL_METHOD* method;
   SSL_CTX* ctx;
 
-#if OPENSSL_API_COMPAT >= 0x10100000L
+#if  1 //OPENSSL_API_COMPAT >= 0x10100000L
   const OPENSSL_INIT_SETTINGS* settings = OPENSSL_INIT_new();
   OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, settings);
   method = TLS_client_method(); /* create new server-method instance */
@@ -68,6 +68,23 @@ new_sslctx(void) {
   if(ctx == NULL) {
     ERR_print_errors_fp(stderr);
     abort();
+  }
+  if(!SSL_CTX_use_RSAPrivateKey_file(ctx, "http.key", SSL_FILETYPE_PEM))
+  {
+    SSL_CTX_free(ctx);
+    return NULL;
+  }
+
+  if(!SSL_CTX_use_certificate_file(ctx, "http.crt", SSL_FILETYPE_PEM))
+  {
+    SSL_CTX_free(ctx);
+    return NULL;
+  }
+
+  if(!SSL_CTX_check_private_key(ctx))
+  {
+    SSL_CTX_free(ctx);
+    return NULL;
   }
   return ctx;
 }

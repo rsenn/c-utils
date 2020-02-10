@@ -13,7 +13,7 @@
 #include <openssl/err.h>
 
 ssize_t
-http_ssl_error(ssize_t ret, http* h) {
+http_ssl_error(ssize_t ret, http* h, char** mptr) {
 
   if(ret < 0) {
     /* get error code */
@@ -24,6 +24,9 @@ http_ssl_error(ssize_t ret, http* h) {
     err = SSL_get_error(h->ssl, ret);
 
     ERR_error_string_n(err, buf, n);
+    ERR_clear_error();
+    if(mptr)
+      *mptr = str_dup(buf);
 
     /* call ssl_read() again when socket gets readable */
     if(err == SSL_ERROR_WANT_READ) {
@@ -65,8 +68,14 @@ http_ssl_error(ssize_t ret, http* h) {
 ssize_t
 http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
   ssize_t ret = SSL_read(h->ssl, buf, len);
-  if(ret < 0) {
-    ret = http_ssl_error(ret, h);
+  char *msg = 0;
+  if(ret <= 0) {
+    ret = http_ssl_error(ret, h, &msg);
+    if(msg) {
+      buffer_puts(buffer_2, "error: ");
+      buffer_puts(buffer_2, msg);
+      buffer_putnlflush(buffer_2);
+    }
   }
 
   return ret;
@@ -120,11 +129,12 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
   }
 #endif
 
-  s =
 #ifdef HAVE_OPENSSL
-      h->ssl ? http_ssl_read(h->sock, buf, len, h) :
+  if(h->ssl)   
+    s = http_ssl_read(h->sock, buf, len, h);
+  else
 #endif
-             io_tryread(fd, buf, len);
+    s = io_tryread(fd, buf, len);
 
   /*  buffer_puts(buffer_2, "io_tryread(");
     buffer_putlong(buffer_2, fd);
