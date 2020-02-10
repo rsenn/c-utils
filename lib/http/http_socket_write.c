@@ -16,15 +16,13 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      if((ret = http_ssl_connect(h->sock, h)) == 1) {
-        h->connected = 1;
-
-        errno = EWOULDBLOCK;
+      if((ret = http_ssl_connect(h->sock, h)) == -1)
         return -1;
+    }
 
-      } else if(ret == -1) {
-        return ret;
-      }
+    if(!io_canwrite(h->sock)) {
+      errno = EWOULDBLOCK;
+      return -1;
     }
   }
 #endif

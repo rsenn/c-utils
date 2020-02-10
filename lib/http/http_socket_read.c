@@ -21,8 +21,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     if(!h->connected) {
       if((s = http_ssl_connect(h->sock, h)) == 1) {
         h->connected = 1;
-        io_dontwantread(h->sock);
-        io_wantwrite(h->sock);
+        buffer_putsflush(buffer_2, "ssl handshake done\n");
         errno = EAGAIN;
         return -1;
 
@@ -30,6 +29,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
         return s;
       }
     }
+
     s = http_ssl_read(h->sock, buf, len, b);
 
   } else

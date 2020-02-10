@@ -13,6 +13,9 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, void* b) {
 
   if(ret <= 0) {
     ret = http_ssl_error(ret, h, 0);
+
+    if(ret == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))
+      return ret;
   }
 
   buffer_puts(buffer_2, "SSL write = ");

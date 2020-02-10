@@ -27,7 +27,6 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
     io_wantread(h->sock);
     errno = EAGAIN;
     buffer_putsflush(buffer_2, "SSL want read\n");
-
     return -1;
     /* call ssl_read() again when socket gets writeable */
   } else if(err == SSL_ERROR_WANT_WRITE) {
@@ -61,6 +60,9 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
     buffer_puts(buffer_2, buf);
     buffer_putnlflush(buffer_2);
   }
+
+  if(ret >= 0)
+    errno = 0;
 
   return ret;
 }
