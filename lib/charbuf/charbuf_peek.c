@@ -2,7 +2,11 @@
 
 int
 charbuf_peek(charbuf* b) {
-  if(!b->p) {
+ if(b->eof || b->err) 
+    return b->eof ? 0 : -1;
+
+
+   if(!b->p) {
     int ret;
     if((ret = b->op(b->fd, &b->ch, 1, b) <= 0)) {
       if(ret == 0)

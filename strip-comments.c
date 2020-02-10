@@ -105,20 +105,23 @@ main(int argc, char* argv[]) {
   int index = 0;
   char buf[16384];
   buffer output;
+  int in_place = 0;
   charbuf input;
+  stralloc data;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"indent", 0, NULL, 'l'}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "h", opts, &index);
+    c = getopt_long(argc, argv, "hi", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
       continue;
 
     switch(c) {
+      case 'i': in_place=1;break;
       case 'h': usage(argv[0]); return 0;
 
       default: usage(argv[0]); return 1;
@@ -126,6 +129,7 @@ main(int argc, char* argv[]) {
   }
 
   stralloc_init(&tmp);
+//  stralloc_init(&data);
 
   if(optind < argc) {
     buffer_putm_internal(buffer_2, "Opening input file '", argv[optind], "'...", 0);
@@ -140,12 +144,22 @@ main(int argc, char* argv[]) {
     optind++;
   }
 
+
   charbuf_init(&input, (read_fn*)&read, in_fd);
 
-  buffer_init(&output, &write, out_fd, buf, sizeof(buf));
+  if(in_place) {
 
+  }
+
+if(in_place)
+  buffer_fromsa(&output, &tmp);
+else
+  buffer_init(&output, &write, out_fd, buf, sizeof(buf));
   strip_comments(&input, &output);
+
   buffer_flush(&output);
+
+  
 
   buffer_puts(buffer_1, "max_depth: ");
   buffer_putulong(buffer_1, 2);

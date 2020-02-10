@@ -6,4 +6,6 @@ charbuf_init(charbuf* b, read_fn* op, fd_t fd) {
   b->ch = '\0';
   b->op = op;
   b->fd = fd;
+  b->eof = 0;
+  b->err = 0;
 }

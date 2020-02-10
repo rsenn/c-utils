@@ -37,6 +37,8 @@ int charbuf_skip_until(charbuf*, char);
 int charbuf_skip(charbuf*);
 
 static inline int
+charbuf_done(charbuf* b) {return b->eof || b->err; }
+static inline int
 charbuf_skip_ifeq(charbuf* b, int c) {
   return (charbuf_peek(b) == c) ? charbuf_skip(b) : 0;
 }

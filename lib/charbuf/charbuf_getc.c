@@ -2,20 +2,22 @@
 
 int
 charbuf_getc(charbuf* b, char* ch) {
-  int ret = 0;
+  int ret = 1;
+   if(b->eof || b->err) 
+    return b->eof ? 0 : -1;
+
   if(b->p) {
     b->p = 0;
-    ret = 1;
-
-  } else {
+  }else {
     if((ret = b->op(b->fd, &b->ch, 1, b) <= 0)) {
       if(ret == 0)
         b->eof = 1;
       else if(ret < 0)
         b->err = 1;
     }
+    b->p = 1;
   }
-  if(ret > 0 && ch)
+  if(b->p && ch)
     *ch = b->ch;
   return ret;
 }
