@@ -13,8 +13,8 @@ typedef ssize_t read_fn(fd_t fd, void* buf, size_t n, void*);
 typedef struct {
   char ch;
   int p : 1;
-  int eof: 1;
-  int err: 1;
+  int eof : 1;
+  int err : 1;
   read_fn* op;
   union {
     fd_t fd;
@@ -37,7 +37,9 @@ int charbuf_skip_until(charbuf*, char);
 int charbuf_skip(charbuf*);
 
 static inline int
-charbuf_done(charbuf* b) {return b->eof || b->err; }
+charbuf_done(charbuf* b) {
+  return b->eof || b->err;
+}
 static inline int
 charbuf_skip_ifeq(charbuf* b, int c) {
   return (charbuf_peek(b) == c) ? charbuf_skip(b) : 0;

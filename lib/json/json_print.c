@@ -174,7 +174,7 @@ void
 json_print(jsonval val, buffer* b, void (*p)()) {
   jsonfmt printer;
   if(p == NULL)
-    p = (void (*)())&json_default_printer;
+    p = (void (*)()) & json_default_printer;
   p(&printer, &val, 0, -1);
   json_print_val(&val, b, 0, p);
   buffer_puts(b, printer.newline);

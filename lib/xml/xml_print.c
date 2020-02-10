@@ -8,7 +8,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
   int closing;
   size_t num_children;
 
-//start:
+  // start:
   closing = node_is_closing(node);
   num_children = node->children == 0 ? 0 : node->children->next ? 2 : 1;
 
@@ -66,9 +66,8 @@ xml_print_node(xmlnode* node, buffer* b, int depth) {
 
 static void
 xml_print_list(xmlnode* list, buffer* b, int depth) {
-  xmlnode *node;
-  for(node = list; node; node = node->next)
-    xml_print_node(node, b, depth);
+  xmlnode* node;
+  for(node = list; node; node = node->next) xml_print_node(node, b, depth);
 }
 
 void

@@ -4,7 +4,7 @@
 
 extern int xml_has_attr(xmlnode* node, strlist* names);
 
-typedef int (pred_fn_t)(xmlnode *, const char *, const char *, const char *);
+typedef int(pred_fn_t)(xmlnode*, const char*, const char*, const char*);
 struct tag_attr_value {
   const char *t, *a, *v;
 };

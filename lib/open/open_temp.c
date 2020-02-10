@@ -81,7 +81,6 @@ open_temp(const char** pt) {
 #endif
     );
 
-
     if(res >= 0 || errno != EEXIST)
       break;
   }

@@ -51,7 +51,7 @@ put_line(buffer* b, const char* x, ssize_t len) {
       len--;
   }
   if(len > 0) {
-    #ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "put_line(");
     buffer_dump(buffer_2, b);
     buffer_puts(buffer_2, ", ");
@@ -203,8 +203,8 @@ main(int argc, char* argv[]) {
 
   if(in_place) {
     // buffer inplace;
-      unlink(in_path);
-      link(tmpl, in_path);
+    unlink(in_path);
+    link(tmpl, in_path);
 /*    buffer_truncfile(&inplace, out_path);
     buffer_put(&inplace, tmp.s, tmp.len);
     buffer_flush(&inplace);

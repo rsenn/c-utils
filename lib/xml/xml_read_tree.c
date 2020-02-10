@@ -75,7 +75,7 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
 
     case XML_ELEMENT:
     default: {
-      xmlnode *node = 0;
+      xmlnode* node = 0;
 #if 1
       buffer_putm_internal(buffer_2, "reading element '", name->s, "'", 0);
       buffer_putnlflush(buffer_2);

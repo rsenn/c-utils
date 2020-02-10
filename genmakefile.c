@@ -137,7 +137,6 @@ debug_int(const char* name, int i) {
 #define debug_int(x, y)
 #endif
 
-
 #ifndef _WIN32
 #define _mkdir mkdir
 #endif

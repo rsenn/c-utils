@@ -68,7 +68,8 @@ typedef struct {
   http_request* request;
   http_response* response;
   void* ssl;
-  int nonblocking;
+  int nonblocking : 1;
+  int keepalive : 1;
 } http;
 
 int http_get(http*, const char* location);

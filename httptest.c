@@ -62,15 +62,17 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   //  unlink(outname);
-  if((outfile = open_temp(outname)) == -1) {
+  if((outfile = open_temp(&outname)) == -1) {
     errmsg_warnsys("open error: ", 0);
     return 126;
   }
 
   http_init(&h, url_host, url_port);
+  h.nonblocking = 1;
+  h.keepalive = 0;
 
   if(argc < 2) {
-    argv[1] = "127.0.0.1:8080/login";
+    argv[1] = "127.0.0.1:5555/show";
     argc++;
   }
 
@@ -83,7 +85,7 @@ main(int argc, char* argv[]) {
       buffer_putlong(buffer_1, (long)ret);
       buffer_putnlflush(buffer_1);
     */
-
+    ndelay_on(h.sock);
     io_fd(h.sock);
 
     g_iofd = io_getentry(h.sock);

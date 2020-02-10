@@ -58,10 +58,7 @@ new_sslctx(void) {
 
 int
 http_socket(http* h, int nonblock) {
-
-  h->sock = socket_tcp4();
-
-  if(h->sock == -1)
+  if((h->sock = socket_tcp4()) == -1)
     return -1;
 
   if(nonblock)
@@ -70,11 +67,9 @@ http_socket(http* h, int nonblock) {
     ndelay_off(h->sock);
 
   io_fd(h->sock);
-
 #ifdef HAVE_OPENSSL
   if(!http_sslctx)
     http_sslctx = new_sslctx();
-
   h->ssl = SSL_new(http_sslctx);
   SSL_set_fd(h->ssl, h->sock);
 #endif
