@@ -23,9 +23,11 @@ http_ssl_connect(http* h) {
   if(ret == 1) {
     if(!h->connected) {
       h->connected = 1;
+#if DEBUG_OUTPUT
       buffer_putsflush(buffer_2, "connected\n");
+#endif
     }
-     io_wantwrite(h->sock);
+    io_wantwrite(h->sock);
   }
   return ret;
 }

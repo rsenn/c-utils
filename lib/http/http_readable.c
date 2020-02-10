@@ -34,8 +34,11 @@ http_readable(http* h, int freshen) {
   ssize_t ret = 0;
   int err;
   http_response* r;
-
-  buffer_putsflush(buffer_2, "http readable\n");
+#if DEBUG_OUTPUT
+  buffer_puts(buffer_2, "http_readable ");
+  buffer_putlong(buffer_2, h->sock);
+  buffer_putnlflush(buffer_2);
+#endif
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {

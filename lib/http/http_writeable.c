@@ -17,14 +17,14 @@ ssize_t
 http_writeable(http* h) {
   ssize_t ret = 0;
 
-#if 1
-  buffer_puts(buffer_2, "http writable ");
-  buffer_puts(buffer_2, "tls=");
+#if DEBUG_OUTPUT    
+  buffer_puts(buffer_2, "http_writable ");
+    buffer_putlong(buffer_2, h->sock);
+
+  buffer_puts(buffer_2, " tls=");
   buffer_putlong(buffer_2, !!h->tls);
-  buffer_puts(buffer_2, " sock=");
-  buffer_putlong(buffer_2, h->sock);
-  buffer_puts(buffer_2, " ssl=");
-  buffer_putptr(buffer_2, h->ssl);
+/*  buffer_puts(buffer_2, " ssl=");
+  buffer_putptr(buffer_2, h->ssl);*/
   buffer_puts(buffer_2, " connected=");
   buffer_putlong(buffer_2, !!h->connected);
   buffer_puts(buffer_2, " keepalive=");
