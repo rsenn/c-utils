@@ -81,8 +81,8 @@ ssize_t http_readable(http* h, int freshen);
 ssize_t http_read(http* h, char* buf, size_t len, buffer* bf);
 int http_sendreq(http* h);
 int http_socket(http* h, int nonblock);
-ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
-ssize_t http_socket_write(fd_t fd, void* buf, size_t len, buffer* b);
+ssize_t http_socket_read(fd_t fd, void* buf, size_t len, void*);
+ssize_t http_socket_write(fd_t fd, void* buf, size_t len, void*);
 
 #ifdef HAVE_OPENSSL
 extern void* http_sslctx;

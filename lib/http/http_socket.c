@@ -21,7 +21,6 @@
 
 size_t http_read_internal(http* h, char* buf, size_t n);
 
-ssize_t http_socket_read(fd_t fd, void* buf, size_t len, buffer* b);
 
 int
 http_socket(http* h, int nonblock) {
@@ -35,7 +34,8 @@ http_socket(http* h, int nonblock) {
 
   io_fd(h->sock);
 #ifdef HAVE_OPENSSL
-  http_ssl_socket(h);
+  if(h->tls)
+    http_ssl_socket(h);
 
 #endif
 
@@ -46,7 +46,7 @@ http_socket(http* h, int nonblock) {
     h->q.in.cookie = (void*)h;
   }
 
-  h->q.in.op = (buffer_op_proto*)&http_socket_read;
+  h->q.in.op = h->tls ? &http_ssl_read : &http_socket_read;
 
   if(h->q.out.x) {
     h->q.out.fd = h->sock;
@@ -54,7 +54,7 @@ http_socket(http* h, int nonblock) {
     buffer_write_fd(&h->q.out, h->sock);
     h->q.out.cookie = (void*)h;
   }
-  h->q.out.op = (buffer_op_proto*)&http_socket_write;
+  h->q.out.op = (buffer_op_proto*)(h->tls ? &http_ssl_write : &http_socket_write);
 
   return 0;
 }

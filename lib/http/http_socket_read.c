@@ -9,9 +9,9 @@
 #include <assert.h>
 
 ssize_t
-http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
+http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   ssize_t s;
-  http* h = b->cookie;
+  http* h = ((buffer*)b)->cookie;
   http_response* r = h->response;
   // s = winsock2errno(recv(fd, buf, len, 0));
 
