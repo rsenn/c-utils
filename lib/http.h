@@ -82,6 +82,7 @@ int http_sendreq(http*);
 ssize_t http_socket_read(fd_t, void* buf, size_t len, buffer* b);
 int http_socket(http*, int nonblock);
 void http_writeable(void);
+void http_close(http* h);
 
 #ifdef __cplusplus
 }
