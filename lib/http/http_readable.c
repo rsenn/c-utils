@@ -49,16 +49,6 @@ http_readable(http* h, int freshen) {
         io_wantwrite(h->sock);
         return ret;
       }
-
-      if(ret == -1) {
-        if(errno == EAGAIN) {
-          io_wantread(h->sock);
-          return ret;
-        } else if(errno == EWOULDBLOCK) {
-          io_wantwrite(h->sock);
-          return ret;
-        }
-      }
     }
   }
 #endif

@@ -68,7 +68,7 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
 ssize_t
 http_ssl_read(fd_t fd, void* buf, size_t len, http* h) {
   ssize_t ret = SSL_read(h->ssl, buf, len);
-  char *msg = 0;
+  char* msg = 0;
   if(ret <= 0) {
     ret = http_ssl_error(ret, h, &msg);
     if(msg) {
@@ -130,7 +130,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, buffer* b) {
 #endif
 
 #ifdef HAVE_OPENSSL
-  if(h->ssl)   
+  if(h->ssl)
     s = http_ssl_read(h->sock, buf, len, h);
   else
 #endif
