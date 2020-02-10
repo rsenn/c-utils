@@ -29,8 +29,8 @@ typedef struct buffer {
 #define BUFFER_INIT_FREE(op, fd, buf, len)                                                                             \
   { (buf), 0, 0, (len), (buffer_op_proto*)(void*)(op), NULL, buffer_free, (fd) }
 #define BUFFER_INIT_READ(op, fd, buf, len) BUFFER_INIT(op, fd, buf, len) /*obsolete*/
-#define BUFFER_INSIZE 8192
-#define BUFFER_OUTSIZE 8192
+#define BUFFER_INSIZE 65535
+#define BUFFER_OUTSIZE 32768
 
 void buffer_init(buffer*, buffer_op_proto*, fd_t fd, char* y, size_t ylen);
 void buffer_init_free(buffer*, buffer_op_proto*, fd_t fd, char* y, size_t ylen);

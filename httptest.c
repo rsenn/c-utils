@@ -55,8 +55,10 @@ main(int argc, char* argv[]) {
   int argi;
   iopause_fd iop;
   static buffer in;
-  char inbuf[8192];
+ static char inbuf[128*1024];
+  static char outbuf[256*1024];
   fd_t fd, outfile;
+  buffer out;
   const char* outname = "output-XXXXXX.txt";
 
   errmsg_iam(argv[0]);
@@ -66,6 +68,8 @@ main(int argc, char* argv[]) {
     errmsg_warnsys("open error: ", 0);
     return 126;
   }
+
+buffer_init(&out, &write,  outfile, outbuf, sizeof(outbuf));
 
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
@@ -85,13 +89,13 @@ main(int argc, char* argv[]) {
       buffer_putlong(buffer_1, (long)ret);
       buffer_putnlflush(buffer_1);
     */
-    ndelay_on(h.sock);
-    io_fd(h.sock);
+  //  ndelay_on(h.sock);
+    //io_fd(h.sock);
 
-    g_iofd = io_getentry(h.sock);
+   // g_iofd = io_getentry(h.sock);
 
-    io_wantwrite(h.sock);
-    io_wantread(h.sock);
+   // io_wantwrite(h.sock);
+  //io_wantread(h.sock);
 
     /*
       byte_zero(&iop, sizeof(iop));
@@ -130,7 +134,7 @@ main(int argc, char* argv[]) {
 
       h.q.in.cookie = &h;
       while((n = http_read(&h, buf, sizeof(buf), &h.q.in)) > 0) {
-        if(write(outfile, buf, n) == -1) {
+        if(buffer_put(&out, buf, n)) {
           errmsg_warnsys("write error: ", 0);
           return 2;
         }
@@ -143,9 +147,13 @@ main(int argc, char* argv[]) {
 
       buffer_dump(buffer_1, &h.q.in);
 
-      if(h.response->status >= HTTP_STATUS_CLOSED)
+      if(h.response->status >= HTTP_STATUS_CLOSED) {
+
         break;
+      }
     }
+
+buffer_flush(&out);
 
     /* buffer_putsa(buffer_1, &h.response->data);*/
     buffer_putnlflush(buffer_1);
