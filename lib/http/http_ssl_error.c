@@ -34,7 +34,7 @@ http_ssl_error(ssize_t ret, http* h, char** mptr) {
     io_wantwrite(h->sock);
     errno = EWOULDBLOCK;
     buffer_putsflush(buffer_2, "SSL want write\n");
-return -1;
+    return -1;
   } else if(err == SSL_ERROR_SYSCALL) {
     /* ignore these */
     if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {

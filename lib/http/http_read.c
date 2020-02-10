@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <assert.h>
 
-
 static void
 putnum(const char* what, ssize_t n) {
   buffer_puts(buffer_2, what);
@@ -16,8 +15,6 @@ putnum(const char* what, ssize_t n) {
   buffer_putlonglong(buffer_2, n);
   buffer_putnlflush(buffer_2);
 }
-
-
 
 ssize_t
 http_read(http* h, char* buf, size_t len, buffer* bf) {

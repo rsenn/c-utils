@@ -22,6 +22,8 @@ http_get(http* h, const char* location) {
   char ip[FMT_IP4];
   stralloc dns;
   uint32 serial = 0;
+  size_t len = str_len(location);
+  h->tls = len >= 5 && !byte_diff(location, 5, "https");
 
   if(location[0] != '/') {
     size_t len;
@@ -36,7 +38,6 @@ http_get(http* h, const char* location) {
     }
     location += len;
   }
-  h->tls = !byte_diff(location, 5, "https");
 
   stralloc_nul(&h->host);
   stralloc_init(&dns);

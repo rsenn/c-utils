@@ -16,21 +16,27 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   // s = winsock2errno(recv(fd, buf, len, 0));
 
 #ifdef HAVE_OPENSSL
-  if(!h->connected) {
-    if((s = http_ssl_connect(h->sock, h)) == 1) {
-      h->connected = 1;
-    } else if(s == -1) {
-      return s;
-    }
-  }
-#endif
+  if(h->ssl) {
 
-#ifdef HAVE_OPENSSL
-  if(h->ssl)
+    if(!h->connected) {
+      if((s = http_ssl_connect(h->sock, h)) == 1) {
+        h->connected = 1;
+        io_dontwantread(h->sock);
+        io_wantwrite(h->sock);
+        errno = EAGAIN;
+        return -1;
+
+      } else if(s == -1) {
+        return s;
+      }
+    }
     s = http_ssl_read(h->sock, buf, len, h);
-  else
+
+  } else
 #endif
+  {
     s = io_tryread(fd, buf, len);
+  }
 
   /*  buffer_puts(buffer_2, "io_tryread(");
     buffer_putlong(buffer_2, fd);

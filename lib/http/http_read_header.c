@@ -8,8 +8,6 @@
 #include <errno.h>
 #include <assert.h>
 
-
-
 static void
 putline(const char* what, const char* b, ssize_t l, buffer* buf) {
   buffer_puts(buffer_2, what);
@@ -28,7 +26,6 @@ putline(const char* what, const char* b, ssize_t l, buffer* buf) {
   buffer_puts(buffer_2, ")");*/
   buffer_putnlflush(buffer_2);
 }
-
 
 ssize_t
 http_read_header(http* h, http_response* r) {
