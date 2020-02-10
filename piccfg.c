@@ -240,13 +240,13 @@ cvalue*
 get_setting_value(cword* word, csetting* setting) {
   cvalue* value;
   uint16 byteval = get_setting_word(word, setting);
-
+/*
   if(verbose) {
     buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", 0);
     buffer_putxlong0(buffer_2, byteval, 2);
     buffer_putnlflush(buffer_2);
   }
-
+*/
   slink_foreach(setting->values, value) {
     if(verbose) {
       buffer_putm_internal(buffer_2, "  ", value->name, ": ", 0);
@@ -361,7 +361,7 @@ get_cfgdat(const char* chip) {
 }
 
 void
-add_item(const char* name, const char* value) {
+add_item(strlist* list, const char* name, const char* value) {
 
   stralloc out;
   stralloc_init(&out);
@@ -371,13 +371,13 @@ add_item(const char* name, const char* value) {
   else
     stralloc_catm_internal(&out, "// ", name, 0);
 
-  strlist_push_sa(&pragmas, &out);
+  strlist_push_sa(list, &out);
 
   stralloc_free(&out);
 }
 
 void
-process_config(void (*callback)(const char* key, const char* value)) {
+process_config(void (*callback)(strlist*,const char* key, const char* value), strlist* list) {
   cword *prevword = 0, *word;
   csetting* setting;
   cvalue* value;
@@ -403,7 +403,7 @@ process_config(void (*callback)(const char* key, const char* value)) {
 
       if(value->is_default && nodefault) {
 #ifdef DEBUG_OUTPUT
-        if(verbose) {
+        if(verbose > 2) {
           buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, 0);
           buffer_putnlflush(buffer_2);
         }
@@ -412,9 +412,9 @@ process_config(void (*callback)(const char* key, const char* value)) {
       }
 
       if(output_name && prevword != word)
-        callback(word->name, NULL);
+        callback(list, word->name, NULL);
 
-      callback(setting->name, value->name);
+      callback(list, setting->name, value->name);
       prevword = word;
     }
   }
@@ -552,20 +552,35 @@ main(int argc, char* argv[]) {
   stralloc_init(&cfg);
   config_bytes(&hex, &cfg, &baseaddr);
 
+
+  strlist_init(&pragmas, '\0');
+
+  process_config(&add_item, &pragmas);
+
+
   if(verbose) {
-    for(i = 0; i < cfg.len; i += 2) {
+    cword* word;
+
+    slink_foreach(words, word) {
+      uint16 value = config_data_at(word->address);
+      buffer_puts(buffer_2, word->name);
+      buffer_puts(buffer_2, " @ ");
+      buffer_putxlong0(buffer_2, word->address, 4);
+      buffer_puts(buffer_2, ": ");
+      buffer_putxlong0(buffer_2, value & word->mask, 4);
+      buffer_putnlflush(buffer_2);
+    }
+
+
+/*    for(i = 0; i < cfg.len; i += 2) {
       uint16 v = uint16_read(&cfg.s[i]);
 
       buffer_putxlong0(buffer_2, baseaddr + i, 4);
       buffer_puts(buffer_2, ": ");
       buffer_putxlong0(buffer_2, v, 4);
       buffer_putnlflush(buffer_2);
-    }
+    }*/
   }
-
-  strlist_init(&pragmas, '\0');
-
-  process_config(&add_item);
 
   output_items(&pragmas);
 
