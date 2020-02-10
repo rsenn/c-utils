@@ -11,8 +11,7 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-ssize_t
-http_ssl_error(ssize_t ret, http* h);
+ssize_t http_ssl_error(ssize_t ret, http* h);
 ssize_t
 http_ssl_connect(fd_t fd, http* h) {
   ssize_t ret = SSL_connect(h->ssl);

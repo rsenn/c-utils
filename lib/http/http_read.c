@@ -33,12 +33,12 @@ http_ssl_error(ssize_t ret, http* h) {
       /* call ssl_read() again when socket gets writeable */
     } else if(err == SSL_ERROR_WANT_WRITE) {
       io_wantwrite(h->sock);
-errno = EWOULDBLOCK;
-return -1;      /*
-       * EWOULDBLOCK, EINTR, EAGAIN are ignored because
-       * these say the handshake is in progress and needs
-       * more events.
-       */
+      errno = EWOULDBLOCK;
+      return -1; /*
+                  * EWOULDBLOCK, EINTR, EAGAIN are ignored because
+                  * these say the handshake is in progress and needs
+                  * more events.
+                  */
     } else if(err == SSL_ERROR_SYSCALL) {
       /* ignore these */
       if(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN) {
@@ -47,19 +47,19 @@ return -1;      /*
     } else if(err == SSL_ERROR_ZERO_RETURN) {
       ret = 0;
     } else if(err == SSL_ERROR_SSL) {
-         io_wantwrite(h->sock);
-         h->connected = 1;
+      io_wantwrite(h->sock);
+      h->connected = 1;
       return 1;
     }
 
-      buffer_puts(buffer_2, "SSL ret: ");
-      buffer_putlong(buffer_2, ret);
-      buffer_puts(buffer_2, " err: ");
-      buffer_putlong(buffer_2, err);
-      buffer_puts(buffer_2, " : ");
-      buffer_puts(buffer_2, buf);
-      buffer_putnlflush(buffer_2);
-      }
+    buffer_puts(buffer_2, "SSL ret: ");
+    buffer_putlong(buffer_2, ret);
+    buffer_puts(buffer_2, " err: ");
+    buffer_putlong(buffer_2, err);
+    buffer_puts(buffer_2, " : ");
+    buffer_puts(buffer_2, buf);
+    buffer_putnlflush(buffer_2);
+  }
   return ret;
 }
 
