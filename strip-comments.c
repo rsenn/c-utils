@@ -51,6 +51,7 @@ put_line(buffer* b, const char* x, ssize_t len) {
       len--;
   }
   if(len > 0) {
+    #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "put_line(");
     buffer_dump(buffer_2, b);
     buffer_puts(buffer_2, ", ");
@@ -59,7 +60,7 @@ put_line(buffer* b, const char* x, ssize_t len) {
     buffer_putlong(buffer_2, len);
     buffer_puts(buffer_2, ");");
     buffer_putnlflush(buffer_2);
-
+#endif
     buffer_put(b, x, len);
   }
   buffer_puts(b, "\n");

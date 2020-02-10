@@ -82,13 +82,10 @@
 			}
 		},
 		{
-			"contents": "#include \"lib/open.h\"\n#include \"lib/fmt.h\"\n#include \"lib/errmsg.h\"\n#include \"lib/str.h\"\n#include \"lib/scan.h\"\n#include \"lib/getopt.h\"\n#include \"lib/charbuf.h\"\n#include \"lib/stralloc.h\"\n#include \"lib/buffer.h\"\n#include <ctype.h>\n\n#if WINDOWS_NATIVE\n#include <io.h>\n#else\n#include <unistd.h>\n#endif\n\nstatic char quote[4] = {'\"', 0};\nstatic int one_line, indent = 2, compact;\nstatic stralloc indent_str;\n\nvoid\nput_str_escaped(buffer* b, const char* str) {\n  stralloc esc;\n  stralloc_init(&esc);\n  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);\n  buffer_putsa(b, &esc);\n}\n\nvoid\nusage(char* av0) {\n  buffer_putm_internal(buffer_1,\n                       \"Usage: \",\n                       str_basename(av0),\n                       \" [OPTIONS] [FILES...]\\n\"\n                       \"\\n\"\n                       \"Options:\\n\"\n                       \"\\n\"\n                       \"  -h, --help              Show this help\\n\"\n                       \"  -i, --in-place          Write to input file\\n\"\n                       \"\\n\",\n                       0);\n  buffer_flush(buffer_1);\n}\n\nint\nput_line(buffer* b, const char* x, ssize_t len) {\n  if(len > 1) {\n    if((x[len - 1] == '\\n' || x[len - 1] == '\\r'))\n\n      len--;\n  }\n  if(len > 0) {\n    buffer_puts(buffer_2, \"put_line(\");\n    buffer_dump(buffer_2, b);\n    buffer_puts(buffer_2, \", \");\n    buffer_putptr(buffer_2, x);\n    buffer_puts(buffer_2, \", \");\n    buffer_putlong(buffer_2, len);\n    buffer_puts(buffer_2, \");\");\n    buffer_putnlflush(buffer_2);\n\n    buffer_put(b, x, len);\n  }\n  buffer_puts(b, \"\\n\");\n}\n\nint\nstrip_comments(charbuf* in, buffer* out) {\n  int c, is_empty;\n  const char* x;\n  size_t p, n;\n  char buf[2];\n  stralloc line;\n  stralloc_init(&line);\n  n = 0;\n  while((c = charbuf_get(in)) > 0) {\n\n    if(c == '/') {\n      int c2 = charbuf_peek(in);\n      if(c2 == '/') {\n        charbuf_skip_until(in, '\\n');\n        /*   charbuf_skip(in);\n           stralloc_catc(&line, '\\n');*/\n        continue;\n      } else if(c2 == '*') {\n        charbuf_skip(in);\n        do {\n          if(charbuf_skip_until(in, '*') <= 0)\n            break;\n          charbuf_skip(in);\n          c2 = charbuf_peek(in);\n        } while(c2 != '/');\n        charbuf_skip(in);\n        continue;\n      }\n    }\n    buf[0] = c;\n\n    //   buffer_putc(out, c);\n    n++;\n    if(c == '\\n') {\n      /*      p = scan_charsetnskip(line.s, \" \\t\\r\\v\", line.len);\n          is_empty = line.len == 0 || p == line.len || (line.s[line.len - 1] == '\\n' && p == line.len - 1);\n           if(is_empty)\n               continue;*/\n      put_line(out, line.s, line.len);\n      stralloc_zero(&line);\n      continue;\n    }\n    stralloc_catb(&line, buf, 1);\n  }\nend:\n  put_line(out, line.s, line.len);\n  buffer_flush(out);\n  stralloc_free(&line);\n  charbuf_close(in);\n}\n\nint\nmain(int argc, char* argv[]) {\n  int in_fd = STDIN_FILENO, out_fd = STDOUT_FILENO;\n  stralloc tmp;\n  int c;\n  const char *in_path = 0, *out_path = 0;\n  int index = 0;\n  char buf[16384];\n  buffer output, temp;\n  int in_place = 0;\n  charbuf input;\n  stralloc data;\n  size_t n;\n  const char* x;\n  const char* tmpl = 0;\n\n  struct longopt opts[] = {{\"help\", 0, NULL, 'h'}, {\"in-place\", 0, NULL, 'i'}, {0, 0, 0, 0}};\n\n  errmsg_iam(argv[0]);\n\n  for(;;) {\n    c = getopt_long(argc, argv, \"hi\", opts, &index);\n    if(c == -1)\n      break;\n    if(c == 0)\n      continue;\n\n    switch(c) {\n      case 'i': in_place = 1; break;\n      case 'h': usage(argv[0]); return 0;\n\n      default: usage(argv[0]); return 1;\n    }\n  }\n\n  stralloc_init(&tmp);\n  //  stralloc_init(&data);\n\n  if(optind < argc) {\n    buffer_putm_internal(buffer_2, \"Opening input file '\", argv[optind], \"'...\", 0);\n    buffer_putnlflush(buffer_2);\n    in_fd = open_read((in_path = argv[optind]));\n    optind++;\n  }\n  if(optind < argc) {\n    buffer_putm_internal(buffer_2, \"Opening output file '\", argv[optind], \"'...\", 0);\n    buffer_putnlflush(buffer_2);\n    out_fd = open_trunc((out_path = argv[optind]));\n    optind++;\n  }\n\n  charbuf_init(&input, (read_fn*)&read, in_fd);\n\n  if(in_place) {\n    if(out_fd == STDOUT_FILENO) {\n\n      out_fd = open_temp(&tmpl);\n\n      out_path = tmpl;\n    }\n  }\n  buffer_write_fd(&output, out_fd);\n  strip_comments(&input, &output);\n\n  buffer_flush(&output);\n  close(output.fd);\n\n  buffer_puts(buffer_1, \"tmpl: \");\n  buffer_puts(buffer_1, tmpl);\n  buffer_putnlflush(buffer_1);\n  buffer_puts(buffer_1, \"out_path: \");\n  buffer_puts(buffer_1, out_path);\n  buffer_putsutnlflush(buffer_1);\n\n  if((x = mmap_read(out_path, &n)) && n > 1) {\n\n    buffer_puts(buffer_1, \"out: \");\n    buffer_put(buffer_1, x, n);\n    buffer_putnlflush(buffer_1);\n\n    mmap_unmap(x, n);\n  }\n\n  if(in_place) {\n    // buffer inplace;\n      unlink(in_path);\n      link(tmpl, in_path);\n/*    buffer_truncfile(&inplace, out_path);\n    buffer_put(&inplace, tmp.s, tmp.len);\n    buffer_flush(&inplace);\n    buffer_close(&inplace);\n*/  }\n\ncharbuf_close(&input);\n}\n",
 			"file": "strip-comments.c",
-			"file_size": 4930,
-			"file_write_time": 132257772460380572,
 			"settings":
 			{
-				"buffer_size": 4933,
+				"buffer_size": 4961,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -476,7 +473,7 @@
 	],
 	"find":
 	{
-		"height": 41.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -499,6 +496,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"flush",
 			"_dump",
 			"mmapread",
 			"mmap_rea",
@@ -625,8 +623,7 @@
 			"$(CPPFLAGS) $(DEFS) $(DEFS)",
 			"$(CPPFLAGS)",
 			"-D_DEBUG",
-			"\"_DEBUG",
-			"_DEBUG"
+			"\"_DEBUG"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -752,12 +749,12 @@
 									1123
 								],
 								[
-									1598,
-									1612
+									1629,
+									1643
 								],
 								[
-									2819,
-									2823
+									2850,
+									2854
 								]
 							],
 							"symlist":
@@ -791,15 +788,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4933,
+						"buffer_size": 4961,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4470,
-								4470
+								4900,
+								4900
 							]
 						],
 						"settings":
@@ -810,7 +807,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1390.0,
+						"translation.y": 2596.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
