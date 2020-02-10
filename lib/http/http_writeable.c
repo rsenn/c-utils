@@ -55,12 +55,12 @@ http_ssl_connect(fd_t fd, http* h) {
 void
 http_writeable(http* h) {
   ssize_t ret = 0;
-  io_dontwantwrite(h->sock);
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h->sock, h)) == 1) {
         h->connected = 1;
+        io_wantwrite(h->sock);
         return;
       }
     }
@@ -76,4 +76,6 @@ http_writeable(http* h) {
   }
   h->connected = 1;
   http_sendreq(h);
+    io_dontwantwrite(h->sock);
+
 }
