@@ -75,8 +75,10 @@ http_io_handler(http* h, buffer* out) {
       ssize_t ret = http_readable(h, 0);
       buffer_puts(buffer_2, "readable ret=");
       buffer_putlong(buffer_2, ret);
+#if HAVE_OPENSSL
       buffer_puts(buffer_2, "  err=");
       buffer_puts(buffer_2, http_ssl_errflag(h->err));
+#endif
       buffer_putnlflush(buffer_2);
 
       if(h->connected && h->sent) {
