@@ -94,7 +94,9 @@ main(int argc, char* argv[]) {
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
+  #if !WINDOWS_NATIVE
   signal(SIGPIPE, SIG_IGN);
+  #endif
 
   for(;;) {
     c = getopt_long(argc, argv, "ho:", opts, &index);
