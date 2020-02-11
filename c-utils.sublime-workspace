@@ -820,7 +820,7 @@
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Entheogen Color Scheme/entheogen.tmTheme",
+							"color_scheme": "Packages/Babel/Next.tmTheme",
 							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
