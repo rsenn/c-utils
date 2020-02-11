@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"SSL_",
+				"SSL_ERROR_WANT_READ"
+			],
+			[
 				"cha",
 				"chained_attributes"
 			],
@@ -72,20 +76,79 @@
 	"buffers":
 	[
 		{
-			"contents": "put_str_escaped\nusage\nput_line\nstrip_comments\nmain",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 50,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "strip-comments.c",
+			"file": "lib/http/http_ssl_write.c",
 			"settings":
 			{
-				"buffer_size": 4961,
+				"buffer_size": 795,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_ssl_connect.c",
+			"settings":
+			{
+				"buffer_size": 867,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "httptest.c",
+			"settings":
+			{
+				"buffer_size": 4114,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_sendreq.c",
+			"settings":
+			{
+				"buffer_size": 1110,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_readable.c",
+			"settings":
+			{
+				"buffer_size": 3152,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 19814,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "build/cmake/Checks.cmake",
+			"settings":
+			{
+				"buffer_size": 13807,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "c-utils.sublime-project",
+			"settings":
+			{
+				"buffer_size": 1006,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -119,6 +182,18 @@
 		"selected_items":
 		[
 			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"install pac",
+				"Package Control: Install Package"
+			],
+			[
+				"add repo",
+				"Package Control: Add Repository"
+			],
+			[
 				"outline",
 				"Outline: Toggle Sort"
 			],
@@ -137,14 +212,6 @@
 			[
 				"ctags",
 				"Build With: Rebuild CTags"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
-			],
-			[
-				"install pac",
-				"Package Control: Install Package"
 			],
 			[
 				"add re",
@@ -338,10 +405,67 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils"
+		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/alloc",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http",
+		"/home/roman/Dokumente/Sources/c-utils/lib/iarray"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/windoze.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_connect.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_error.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_io.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_socket.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_ctx.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_write.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_write.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_header.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_internal.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_readable.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/http_ssl.c",
+		"/usr/include/openssl/ssl.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_httpdate.c",
+		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
+		"/home/roman/Dokumente/Sources/c-utils/examples/fmt_httpdate_example.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/hhttp_close.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/iopause.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/iob.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_getcookie.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_createfile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_close.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_dump.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_waituntil2.c",
+		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
+		"/home/roman/Dokumente/Sources/c-utils/examples/httpd.c",
+		"/home/roman/Dokumente/Sources/c-utils/http.c",
+		"/home/roman/Dokumente/Sources/c-utils/bsdiffcat.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_dup.c",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_init_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn2.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_feed.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_tryread.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_put.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_read_fd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ndelay.h",
+		"/usr/share/cmake-3.10/Modules/FindOpenSSL.cmake",
 		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_temp.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_tosa.c",
@@ -352,7 +476,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_charsetnskip.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_getc.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/build/CMakeFiles/Progress/21",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_skip_until.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip_pred.c",
@@ -360,9 +483,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_nextc.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_init.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_froms.c",
-		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip_until.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_feed.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/piccfg.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_whitenskip.c",
@@ -373,7 +494,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_ends.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_endsb.c",
-		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_set.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
@@ -407,7 +527,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_newnode.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/.config/sublime-text-3/Packages/RainbowBrackets/README.md",
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/Werror.cmake",
 		"/home/roman/Dokumente/Sources/skalibs/lib/sig.h",
@@ -421,65 +540,19 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_child_element_text.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_child_element_attrs.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute_double.c",
-		"/home/roman/Dokumente/Sources/c-utils/node_modules/iconv-lite/encodings/tables/cp936.json",
-		"/home/roman/Dokumente/Sources/c-utils/xmltest2.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_element_attrs.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putm_internal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_element.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_attrnode.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_nonwhitenskip.3",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_infosys.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_child_element.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_add_child.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_textnode.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_textnodeb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_reader_init.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_get_text.c",
-		"/home/roman/Dokumente/Sources/lc-meter/build/mplabx-pic18f/LC_meter_18f2550_xc8.X/test.txt",
-		"/home/roman/Dokumente/Sources/lc-meter/build/mplabx-pic18f/LC_meter_18f2550_xc8.X/xmlnode",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_get_attribute.c",
-		"/home/roman/Dokumente/Sources/pictest/blinktest.c",
-		"/home/roman/Dokumente/Sources/c-utils/mplab.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_remove_all.c",
-		"/home/roman/Dokumente/Sources/c-utils/tests/test_stralloc.c",
-		"/home/roman/Dokumente/Sources/c-utils/xml2json.c",
-		"/home/roman/Dokumente/Sources/c-utils/map.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_decamelize.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print_attributes.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_camelize.c",
-		"/home/roman/Dokumente/Sources/c-utils/build/occ32/MinSizeRel/xml_print_attributes.cbr",
-		"/home/roman/Dokumente/Sources/lc-meter/gen-mk-mplab.sh",
-		"/home/roman/Dokumente/Sources/pictest/gen-mk-mplab.sh",
-		"/home/roman/Dokumente/Sources/pictest/gen-mk.sh",
-		"/home/roman/Dokumente/Sources/lc-meter/gen-mk.sh",
-		"/home/roman/Dokumente/Sources/pictest/lib/device.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
-		"/home/roman/Dokumente/Sources/pictest/lib/ser.c",
-		"/home/roman/Dokumente/Sources/c-utils/3rdparty/zlib/inflate.c",
-		"/home/roman/Dokumente/Sources/c-utils/3rdparty/zlib/inflate.h",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest-18f2550-debug-htc.mcp",
-		"/home/roman/Dokumente/Sources/c-utils/ini.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_indexofb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pushb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push_unique.c",
-		"/home/roman/Dokumente/Sources/pictest/build/mplab/blinktest_htc.mcp",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pusb_unique.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute.c"
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 44.0
 	},
 	"find_in_files":
 	{
 		"height": 258.0,
 		"where_history":
 		[
+			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h,*.js",
+			"/home/roman/Dokumente/Sources/c-utils/lib/http,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/pictest/lib,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/pictest,*.c,*.h,*.js",
@@ -496,134 +569,134 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"flush",
-			"_dump",
-			"mmapread",
-			"mmap_rea",
-			"buffer_write",
-			"open_",
-			"tmp",
-			"temp",
-			"buffer_trunc",
-			"fromsa",
-			"formsa",
-			"67",
-			"infile",
-			"whitens",
-			"get_de",
-			"get_ge",
-			"json",
-			"errmsg",
-			"jsonpp.*EXE",
-			"jsonpp",
-			"skip defa",
-			"config_bytes",
-			"baseaddr",
-			"BASEADDR",
-			"config_data_at",
-			"get_setting_value",
-			"config_data_at",
-			"config_word",
-			"get_config_word",
-			"words",
-			"slink_foreach",
-			"config_bytes",
-			"words",
-			"config_data_at",
-			"config_bytes",
-			"get_setting_value",
-			"config_data_at",
-			"get_setting_value",
-			"get_setting_word",
-			"config_data_at",
-			"dump_cword",
-			"process_config",
-			"add_item",
-			"pragmas",
-			"output_items",
-			"process_config",
-			"get_setting_word",
-			"config_data_at",
-			"xc8\"",
-			"hex",
-			"intel",
-			"has main",
-			"_ends",
-			"exts.bin",
-			"_ends",
-			"ends",
-			"isupper",
-			"scan_whitenskip",
-			"skip_comment",
-			"scan_main",
-			"rset",
-			"_free",
-			"array_free",
-			"mode_flags",
-			"make_str",
-			"resolve_etc",
-			"make_num",
-			"size =",
-			"read_etc",
-			"resolve_etc",
-			"read_etc",
-			"read_users",
-			"etc_users",
-			"read_users",
-			"make_num",
-			"0o",
-			"mode_flags",
-			"8long",
-			"mode_str",
-			"make_num",
-			"mask \\|",
-			"mask |",
-			"stralloc_nul",
-			"opt_types",
-			"dtype",
-			"MAX_PATH",
-			"type_mask",
-			"type_ma",
-			"show\\)",
-			"opt_types",
+			"USE_SELECT",
+			"lzma",
+			"LZMA",
+			"option",
+			"option\\(",
+			"EWOULDBL",
+			"SSL_ERROR",
+			"http_ssl_io_errhandle",
+			"http_io_handler",
+			"err = 0",
+			"if\\(",
+			"if(",
+			"http_ssl_io_errhandle",
+			"http_ssl_again",
+			"SSL_ERROR",
+			"ssl_error",
+			"http_ssl_error(ret, h)",
+			"http_ssl_error(ret, h);\n",
+			"ssl_error",
+			"return http_ssl_io",
+			"http_ssl_io",
+			"ERROR_",
+			"SSL_ERROR_",
+			"error",
+			"SSL_ERROR_",
+			"SSL_ERROR_NONE",
+			"ERROR_",
+			"OPENSSL_ERR",
+			"http_ssl_error",
+			"^(\\s*)(buffer_put.*\\(buffer_2,)",
+			"buffer_.*buffer_2",
+			"ret = http_ssl_error(ret, h, 0);",
+			"ret = http_ssl_error",
+			"ssl_error",
+			"ssl_err",
+			"http.h",
+			"wantread",
+			"h->fd",
+			"http_ssl_connect(h->sock, h)",
+			"http_ssl_connect",
+			"http_ssl_connect(h->sock, h)",
+			"http_ssl_connect",
+			"http_read[^a-z]",
+			"http_read",
+			"http_resad",
+			"timegm",
+			"io_wantread",
+			"\nIO_",
+			"IO_",
+			"writeab",
+			"readable",
+			"io_fd",
+			" \"SSL_ERROR_",
+			"ssl_error",
+			"able:",
+			"writable:",
+			"http_ssl_connect",
+			"SSL handsha",
+			"bf",
+			"buffer_dump",
+			"\"\\[ ",
+			"\"[ ",
+			"put_fdset",
+			"fd_set",
+			"http_ssl_error.ret",
+			"http_ssl_error",
+			"want.read",
+			"want read",
+			"ssl_error",
+			"http_socket_read",
+			"http_ssl_err",
+			"\\&msg",
+			"msg",
+			"httptest",
+			"errmsg_",
+			"utsflush",
+			"buffer_init_free",
+			"proto",
+			"http_sslctx",
+			"new_sslctx",
+			"http_ssl_socket",
+			"new_sslctx",
+			"ssl_connect",
+			"ssl_write",
+			"ssl_error",
+			"ssl_write",
+			"ssl_read",
+			"\nssl_read",
+			"ssl_read",
+			"SIGPIP",
+			"http_ssl_connect",
+			"output",
 			"getopt",
-			"lstat",
-			"^make_num",
-			"make_num",
-			"nlink =",
-			"make_num",
-			"exclude",
-			"exclude_",
-			"exclude",
-			"dtype",
-			"dir_type",
-			"DT_",
-			"DT_FILE",
-			"exts.bin",
-			".exe\"",
-			"'B'",
-			"exeext",
-			"binext",
-			"output_name",
-			"stralloc_replace",
-			"replace",
-			"toolchain =",
-			"toolchain",
-			"mingw",
-			"\"gcc\"",
-			"\"gcc",
-			"ws2_32",
+			"_error",
+			"new_sslctx",
+			"http_ssl_error",
+			"http_ssl_connect",
+			"http_socket_write",
+			"http_ssl_connect",
+			"http_sendreq",
+			"puts",
+			"doread",
+			"get_error",
+			"SSL_get_error",
+			"http_ssl_connect",
+			"http_sendreq",
+			"socket_write",
+			"socket_writge",
+			"http_socket_read",
+			"tryread",
+			"io_tryread",
+			"http_socket_read",
+			"http_read_internal",
+			"http_socket_read",
+			"BUFFER_INSIZE",
+			"buffer_",
+			"buffer_put",
 			"outfile",
-			"pathsep_make",
-			"make\"",
-			"set_compiler_type",
-			"set_make_type",
-			"pathsep_args =",
-			"pathsep_args",
-			"$(CPPFLAGS) $(DEFS) $(DEFS)",
-			"$(CPPFLAGS)",
-			"-D_DEBUG",
-			"\"_DEBUG"
+			"hea",
+			"header",
+			"connection",
+			"connection:",
+			"connection",
+			"outname",
+			"LINK_FLAGS",
+			"OPENSSL_INC",
+			"Wl",
+			"OPENSSL_ROOT_DIR"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -631,6 +704,16 @@
 		"regex": true,
 		"replace_history":
 		[
+			"http_ssl_io_again",
+			"http_ssl_error(h, ret)",
+			"http_ssl_io",
+			"\\1//\\2",
+			"int err = http_ssl_error(ret,h);",
+			"int err = http_ssl_error",
+			"h->sock",
+			"http_ssl_connect(h)",
+			" \"",
+			"http_ssl_socket",
 			"input",
 			"mode_flags",
 			"bit ",
@@ -722,7 +805,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 50,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -731,39 +814,14 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/build/cmake/Checks.cmake",
 							"outline_alphabetical": false,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
-								[
-									407,
-									422
-								],
-								[
-									616,
-									621
-								],
-								[
-									1115,
-									1123
-								],
-								[
-									1629,
-									1643
-								],
-								[
-									2850,
-									2854
-								]
 							],
 							"symlist":
 							[
-								"put_str_escaped",
-								"usage",
-								"put_line",
-								"strip_comments",
-								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 4,
@@ -773,44 +831,251 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 8,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 6,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "strip-comments.c",
+					"file": "lib/http/http_ssl_write.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4961,
+						"buffer_size": 795,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4900,
-								4900
+								312,
+								312
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Babel/Next.tmTheme",
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2596.0,
+						"translation.y": 207.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/http/http_ssl_connect.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 867,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								521,
+								521
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 414.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "httptest.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4114,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2476,
+								2476
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2315.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/http/http_sendreq.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1110,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								233,
+								233
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/http/http_readable.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3152,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								220,
+								220
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 19814,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								276,
+								276
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "build/cmake/Checks.cmake",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13807,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2003,
+								2003
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "c-utils.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1006,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								220,
+								220
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScriptNext - ES6 Syntax/JSON (JavaScriptNext).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 69.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -818,7 +1083,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 29.0
+		"height": 44.0
 	},
 	"input":
 	{
@@ -888,11 +1153,11 @@
 	{
 		"height": 96.0
 	},
-	"pinned_build_system": "Rebuild CTags",
+	"pinned_build_system": "Build debug",
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 74.0
+		"height": 80.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -902,12 +1167,172 @@
 		"selected_items":
 		[
 			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
+				"CMakeLists",
+				"CMakeLists.txt"
+			],
+			[
+				"windoze",
+				"lib/windoze.h"
+			],
+			[
+				"httptest",
+				"httptest.c"
+			],
+			[
+				"http.h",
+				"lib/http.h"
+			],
+			[
+				"httptet",
+				"httptest.c"
+			],
+			[
+				"httpda",
+				"lib/scan/scan_httpdate.c"
+			],
+			[
+				"strip-c",
+				"strip-comments.c"
+			],
+			[
+				"sendreq",
+				"lib/http/http_sendreq.c"
+			],
+			[
+				"readable",
+				"lib/http/http_readable.c"
+			],
+			[
+				"http_ssl_err",
+				"lib/http/http_ssl_error.c"
+			],
+			[
+				"iob.h",
+				"lib/iob.h"
+			],
+			[
+				"iopa",
+				"lib/iopause.h"
+			],
+			[
+				"io.h",
+				"lib/io.h"
+			],
+			[
+				"http_c",
+				"lib/http/http_close.c"
+			],
+			[
+				"str_dup",
+				"lib/str/str_dup.c"
+			],
+			[
+				"cmakelist",
+				"CMakeLists.txt"
+			],
+			[
 				"buffer.h",
 				"lib/buffer.h"
 			],
 			[
+				"buffer_fe",
+				"lib/buffer/buffer_feed.c"
+			],
+			[
+				"stub",
+				"lib/buffer/buffer_stubborn2.c"
+			],
+			[
+				"buffer_feed",
+				"lib/buffer/buffer_feed.c"
+			],
+			[
+				"stubbo",
+				"lib/buffer/buffer_stubborn2.c"
+			],
+			[
+				"_socket.c",
+				"lib/http/http_socket.c"
+			],
+			[
+				"http_socket_rea",
+				"lib/http/http_socket_read.c"
+			],
+			[
+				"strip-",
+				"strip-comments.c"
+			],
+			[
+				"httptest.c",
+				"httptest.c"
+			],
+			[
+				"http_cl",
+				"lib/http/http_close.c"
+			],
+			[
+				"http_sock",
+				"lib/http/http_socket.c"
+			],
+			[
+				"cmakeLi",
+				"CMakeLists.txt"
+			],
+			[
+				"readabl",
+				"lib/http/http_readable.c"
+			],
+			[
+				"http_get",
+				"lib/http/http_get.c"
+			],
+			[
+				"http_r",
+				"lib/http/http_sendreq.c"
+			],
+			[
+				"http_get.c",
+				"lib/http/http_get.c"
+			],
+			[
 				"strip-com",
 				"strip-comments.c"
+			],
+			[
+				"",
+				"lib/http/http_read.c"
+			],
+			[
+				"httP_",
+				"lib/http/http_close.c"
+			],
+			[
+				"bbuffer_read",
+				"lib/buffer/buffer_read_fd.c"
+			],
+			[
+				"buffer_put.c",
+				"lib/buffer/buffer_put.c"
+			],
+			[
+				"buffer_putc",
+				"lib/buffer/buffer_putc.c"
+			],
+			[
+				"http_",
+				"lib/http/http_init.c"
+			],
+			[
+				"http_socket",
+				"lib/http/http_socket.c"
+			],
+			[
+				"http_ini",
+				"lib/http/http_init.c"
 			],
 			[
 				"open.h",
@@ -932,10 +1357,6 @@
 			[
 				"21",
 				"build/CMakeFiles/Progress/21"
-			],
-			[
-				"strip-c",
-				"strip-comments.c"
 			],
 			[
 				"charbuf.h",
@@ -1082,20 +1503,12 @@
 				"lib/sig.h"
 			],
 			[
-				"cmake",
-				"CMakeLists.txt"
-			],
-			[
 				"cmakel",
 				"CMakeLists.txt"
 			],
 			[
 				"strall",
 				"lib/stralloc.h"
-			],
-			[
-				"",
-				"xmltest3.c"
 			],
 			[
 				"xml_at",
@@ -1264,154 +1677,6 @@
 			[
 				"genmakefile.c",
 				"genmakefile.c"
-			],
-			[
-				"byte.h",
-				"lib/byte.h"
-			],
-			[
-				"inflate.h",
-				"3rdparty/zlib/inflate.h"
-			],
-			[
-				"inflate.c",
-				"3rdparty/zlib/inflate.c"
-			],
-			[
-				"strlist_index",
-				"lib/strlist/strlist_indexofb.c"
-			],
-			[
-				"push_unique",
-				"lib/strlist/strlist_push_unique.c"
-			],
-			[
-				"strlist_pushb",
-				"lib/strlist/strlist_pushb.c"
-			],
-			[
-				"genmak",
-				"genmakefile.c"
-			],
-			[
-				"path.h",
-				"lib/path.h"
-			],
-			[
-				"ini.c",
-				"ini.c"
-			],
-			[
-				"fmt.h",
-				"lib/fmt.h"
-			],
-			[
-				"ini.h",
-				"ini.h"
-			],
-			[
-				"ini",
-				"ini.c"
-			],
-			[
-				"mplab.h",
-				"mplab.h"
-			],
-			[
-				"buffer_trunc",
-				"lib/buffer/buffer_truncfile.c"
-			],
-			[
-				"strarray_sort",
-				"lib/strarray/strarray_sort.c"
-			],
-			[
-				"strarra",
-				"lib/strarray.h"
-			],
-			[
-				"strarray",
-				"lib/strarray.h"
-			],
-			[
-				"path_re",
-				"lib/path/path_relative.c"
-			],
-			[
-				"path_dir",
-				"lib/path/path_dirname.c"
-			],
-			[
-				"path_base",
-				"lib/path/path_basename.c"
-			],
-			[
-				"hmap_add",
-				"lib/hmap/hmap_add.c"
-			],
-			[
-				"hmap_set",
-				"lib/hmap/hmap_set_stralloc.c"
-			],
-			[
-				"hmap_set_c",
-				"lib/hmap/hmap_set_chars.c"
-			],
-			[
-				".mcp",
-				"~/Dokumente/Sources/pictest/build/mplab/pictest_xc8.mcp"
-			],
-			[
-				"stralloc.",
-				"lib/stralloc/stralloc_0.c"
-			],
-			[
-				"path_relat",
-				"lib/path/path_relative.c"
-			],
-			[
-				"mpla",
-				"mplab.c"
-			],
-			[
-				"init.c",
-				"lib/buffer/buffer_init.c"
-			],
-			[
-				"GNU",
-				"GNUmakefile"
-			],
-			[
-				"gnu",
-				"GNUmakefile"
-			],
-			[
-				"eagle-to",
-				"eagle-to-svg.c"
-			],
-			[
-				"eagle-to-svg",
-				"eagle-to-svg.c"
-			],
-			[
-				"ihex",
-				"lib/ihex.h"
-			],
-			[
-				"picc",
-				"piccfg.c"
-			],
-			[
-				"eagle-ini",
-				"eagle-init-brd.c"
-			],
-			[
-				"eagle-t",
-				"eagle-to-svg.js"
-			],
-			[
-				"util.js",
-				"utils/util.js"
 			]
 		],
 		"width": 0.0
