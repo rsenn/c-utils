@@ -46,6 +46,7 @@ http_writeable(http* h) {
   // request:
   if(h->connected && h->sent == 0) {
     http_sendreq(h);
+    h->sent = 1;
   }
   return ret;
 }
