@@ -326,17 +326,17 @@ if(NOT BZIP2_LIBRARY)
   set(BZIP2_LIBR+ARY bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
 endif(NOT BZIP2_LIBRARY)
-
-if(NOT LIBLZMA_LIBRARY)
-  message("Building liblzma from 3rdparty/xz")
-  file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
-  add_library(lzma ${LIBLZMA_SOURCES})
-  set_target_properties(lzma PROPERTIES
-    COMPILE_DEFINITIONS "HAVE_CONFIG_H=1"
-  )
-  set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
-  set(LIBLZMA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api CACHE PATH "" FORCE)
-endif(NOT LIBLZMA_LIBRARY)
+#
+#if(NOT LIBLZMA_LIBRARY)
+#  message("Building liblzma from 3rdparty/xz")
+#  file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
+#  add_library(lzma ${LIBLZMA_SOURCES})
+#  set_target_properties(lzma PROPERTIES
+#    COMPILE_DEFINITIONS "HAVE_CONFIG_H=1"
+#  )
+#  set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
+#  set(LIBLZMA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api CACHE PATH "" FORCE)
+#endif(NOT LIBLZMA_LIBRARY)
 
 message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
 if(ZLIB_LIBRARY)
