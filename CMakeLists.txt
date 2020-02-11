@@ -182,6 +182,12 @@ if(USE_LZMA)
     endif(HAVE_LIBLZMA AND HAVE_LZMA_H)
 
   endif(NOT LIBLZMA_FOUND)
+
+else(USE_LZMA)
+      unset(LIBLZMA_LIBRARY CACHE)
+      unset(LIBLZMA_INCLUDE_DIR CACHE)
+      unset(LIBLZMA_FOUND CACHE)
+
 endif(USE_LZMA)
 
 
@@ -203,6 +209,10 @@ if(USE_ZLIB)
       set(ZLIB_LIBRARY "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib library")
   endif(ZLIB_LIBRARY_RELEASE)
 
+else(USE_ZLIB)
+unset(ZLIB_LIBRARY_RELEASE CACHE)
+unset(ZLIB_LIBRARY_DEBUG CACHE)
+unset(ZLIB_LIBRARY CACHE)
 endif(USE_ZLIB)
 
 
@@ -219,47 +229,53 @@ endif(USE_BZIP)
 ################################################################################
 ## Check OpenSSL
 ################################################################################
-if(NOT OPENSSL_ROOT_DIR)
-  set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
-endif()
-
-pkg_search_module(OPENSSL openssl libssl)
-if(OPENSSL_FOUND)
-  if(pkgcfg_lib_OPENSSL_crypto)
-  set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}")
-    list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_crypto})
-  endif(pkgcfg_lib_OPENSSL_crypto)
-  if(pkgcfg_lib_OPENSSL_ssl)
-    set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
-
-    list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_ssl})
-  endif(pkgcfg_lib_OPENSSL_ssl)
-else(OPENSSL_FOUND)
-  include(FindOpenSSL)
-endif(OPENSSL_FOUND)
-
-
-if(OPENSSL_FOUND)
-  if(NOT OPENSSL_INCLUDE_DIR)
-  set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
+if(USE_SSL)
+  if(NOT OPENSSL_ROOT_DIR)
+    set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
   endif()
 
-   if(NOT OPENSSL_LIB_DIR)
-  set(OPENSSL_LIB_DIR "${OPENSSL_ROOT_DIR}/lib")
-  endif()
+  pkg_search_module(OPENSSL openssl libssl)
+  if(OPENSSL_FOUND)
+    if(pkgcfg_lib_OPENSSL_crypto)
+    set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}")
+      list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_crypto})
+    endif(pkgcfg_lib_OPENSSL_crypto)
+    if(pkgcfg_lib_OPENSSL_ssl)
+      set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
 
-  add_definitions(-DHAVE_OPENSSL=1)
-  if(OPENSSL_INCLUDE_DIR)
-    include_directories(${OPENSSL_INCLUDE_DIR})
-  endif()
-  if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
-    set(OPENSSL_LIBARRIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-    #link_libraries(${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-  endif()
+      list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_ssl})
+    endif(pkgcfg_lib_OPENSSL_ssl)
+  else(OPENSSL_FOUND)
+    include(FindOpenSSL)
+  endif(OPENSSL_FOUND)
 
-endif(OPENSSL_FOUND)
-message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\nOPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\nOPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\nOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\nOPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY} OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
 
+  if(OPENSSL_FOUND)
+    if(NOT OPENSSL_INCLUDE_DIR)
+    set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
+    endif()
+
+     if(NOT OPENSSL_LIB_DIR)
+    set(OPENSSL_LIB_DIR "${OPENSSL_ROOT_DIR}/lib")
+    endif()
+
+    add_definitions(-DHAVE_OPENSSL=1)
+    if(OPENSSL_INCLUDE_DIR)
+      include_directories(${OPENSSL_INCLUDE_DIR})
+    endif()
+    if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
+      set(OPENSSL_LIBARRIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+      #link_libraries(${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+    endif()
+
+  endif(OPENSSL_FOUND)
+  message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\nOPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\nOPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\nOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\nOPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY} OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
+else(USE_SSL)
+ unset(OPENSSL_LIBRARIES CACHE)
+ unset(OPENSSL_CRYPTO_LIBRARY CACHE)
+ unset(OPENSSL_SSL_LIBRARY CACHE)
+ unset(OPENSSL_INCLUDE_DIR CACHE)
+endif(USE_SSL)
 #link_libraries(
 #  ${ZLIB_LIBRARY}
 #  ${BZIP2_LIBRARY}
