@@ -143,6 +143,7 @@ main(int argc, char* argv[]) {
       buffer_puts(buffer_2, "io handle readable/writeable: ");
       buffer_putlong(buffer_2, n);
       buffer_putnlflush(buffer_2);
+
       if(!h.connected)
         continue;
 
@@ -158,6 +159,7 @@ main(int argc, char* argv[]) {
       }
       //      buffer_dump(buffer_1, &h.q.in);
       if(h.response->status >= HTTP_STATUS_CLOSED) {
+        buffer_putsflush(buffer_2, "HTTP_STATUS_CLOSED\n");
         break;
       }
     }

@@ -50,9 +50,10 @@ http_readable(http* h, int freshen) {
   if(h->ssl) {
     if(!h->connected) {
       if((ret = http_ssl_connect(h)) == 1) {
-
         errno = EWOULDBLOCK;
-        return http_ssl_io_errhandle(h, SSL_ERROR_WANT_WRITE);
+        io_dontwantread(h->sock);
+        io_wantwrite(h->sock);
+        return -1;
       }
     }
   }
