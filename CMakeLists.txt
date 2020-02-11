@@ -4,9 +4,10 @@ set(CMAKE_WARN_VS8 OFF)
 
 project(dirlist C)
 
-option(USE_LZMA "lzma compression" OFF)
-option(USE_BZIP "bzip2 compression" OFF)
-option(USE_ZLIB "zlib compression" OFF)
+option(USE_LZMA "lzma compression" ON)
+option(USE_BZIP "bzip2 compression" ON)
+option(USE_ZLIB "zlib compression" ON)
+option(USE_SSL "ssl encryption" ON)
 
 option(USE_SELECT "Use select() syscall" ON)
 option(USE_POLL "Use poll() syscall" OFF)
