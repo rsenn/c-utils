@@ -12,7 +12,10 @@ http_init(http* h, const char* host, uint16 port) {
   stralloc_copys(&h->host, host);
   h->port = port;
   h->request = NULL;
+  h->err = 0;
   h->nonblocking = 0;
   h->keepalive = 0;
-  h->err = 0;
+  h->connected = 0;
+  h->tls = 0;
+  h->sent = 0;
 }

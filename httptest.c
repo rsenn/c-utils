@@ -60,43 +60,64 @@ usage(char* av0) {
 }
 
 static int
-http_io_handler(http* h) {
+http_io_handler(http* h, buffer* out) {
   fd_t r, w;
-  int n = 0;
-  do {
-    if((w = io_canwrite()) != -1) {
-      if(h->sock == w) {
-        http_writeable(h);
-        n++;
-      }
-    } else if((r = io_canread()) != -1) {
-      if(h->sock == r) {
-        http_readable(h, 1);
-        n++;
-      }
+  int nr = 0, nw = 0;
+  while((w = io_canwrite()) != -1) {
+    if(h->sock == w) {
+      http_writeable(h);
+      nw++;
     }
-  } while(r != -1 || w != -1);
-  return n;
+  }
+
+  while((r = io_canread()) != -1) {
+    if(h->sock == r) {
+      ssize_t ret = http_readable(h, 0);
+      buffer_puts(buffer_2, "readable ret=");
+      buffer_putlong(buffer_2, ret);
+      buffer_puts(buffer_2, "  err=");
+      buffer_puts(buffer_2, http_ssl_errflag(h->err));
+      buffer_putnlflush(buffer_2);
+
+      if(h->connected && h->sent) {
+        char buf[8192];
+        ssize_t n;
+
+        while((n = http_read(h, buf, sizeof(buf), &h->q.in)) > 0) {
+          if(buffer_put(out, buf, n)) {
+            errmsg_warnsys("write error: ", 0);
+            return 2;
+          }
+          if(n == -1 || h->response->status == HTTP_STATUS_ERROR) {
+            errmsg_warnsys("read error: ", 0);
+            return 1;
+          }
+        }
+      }
+
+      nr++;
+    }
+  }
+  return nr + nw;
 }
 
 int
 main(int argc, char* argv[]) {
   int argi;
   iopause_fd iop;
-  static buffer in;
+  static buffer in, out;
   static char inbuf[128 * 1024];
   static char outbuf[256 * 1024];
   fd_t fd, outfile;
-  buffer out;
   int c, index;
   const char* outname = 0;
   const char* tmpl = "output-XXXXXX.txt";
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
-  #if !WINDOWS_NATIVE
+#if !WINDOWS_NATIVE
   signal(SIGPIPE, SIG_IGN);
-  #endif
+#endif
 
   for(;;) {
     c = getopt_long(argc, argv, "ho:", opts, &index);
@@ -131,32 +152,18 @@ main(int argc, char* argv[]) {
   for(; argi <= argc; ++argi) {
     int ret = http_get(&h, argv[argi]);
     for(;;) {
-      char buf[8192];
-      ssize_t n;
+
       int doread = 0;
+
+      buffer_putsflush(buffer_2, "io_waituntil2\n");
+
       if(io_waituntil2(-1) == -1) {
         errmsg_warnsys("wait error: ", 0);
         return 3;
       }
-      n = http_io_handler(&h);
 
-      buffer_puts(buffer_2, "io handle readable/writeable: ");
-      buffer_putlong(buffer_2, n);
-      buffer_putnlflush(buffer_2);
+      http_io_handler(&h, &out);
 
-      if(!h.connected)
-        continue;
-
-      while((n = http_read(&h, buf, sizeof(buf), &h.q.in)) > 0) {
-        if(buffer_put(&out, buf, n)) {
-          errmsg_warnsys("write error: ", 0);
-          return 2;
-        }
-        if(n == -1 || h.response->status == HTTP_STATUS_ERROR) {
-          errmsg_warnsys("read error: ", 0);
-          return 1;
-        }
-      }
       //      buffer_dump(buffer_1, &h.q.in);
       if(h.response->status >= HTTP_STATUS_CLOSED) {
         buffer_putsflush(buffer_2, "HTTP_STATUS_CLOSED\n");

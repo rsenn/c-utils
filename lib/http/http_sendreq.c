@@ -44,7 +44,9 @@ http_sendreq(http* h) {
   buffer_flush(buffer_2);
 #endif
   buffer_flush(out);
+  h->sent = 1;
   io_dontwantwrite(h->sock);
   io_wantread(h->sock);
+
   return 1;
 }

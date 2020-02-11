@@ -4,6 +4,8 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+
+
 const char*
 http_ssl_errflag(int i) {
   switch(i) {

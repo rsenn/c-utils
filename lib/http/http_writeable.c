@@ -30,22 +30,22 @@ http_writeable(http* h) {
   buffer_putlong(buffer_2, !!h->keepalive);
   buffer_puts(buffer_2, " nonblocking=");
   buffer_putlong(buffer_2, !!h->nonblocking);
+  buffer_puts(buffer_2, " sent=");
+  buffer_putlong(buffer_2, !!h->sent);
   buffer_putsflush(buffer_2, "\n");
 #endif
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
-    if(!h->connected)
+    if(!h->connected) {
       ret = http_ssl_connect(h);
-    if(ret != 1)
-      return ret;
+      if(ret != 1)
+        return ret;
+    }
   }
 #endif
   // request:
-  h->connected = 1;
-  if(h->connected) {
+  if(h->connected && h->sent == 0) {
     http_sendreq(h);
-    // io_dontwantwrite(h->sock);
-    // io_wantread(h->sock);
   }
   return ret;
 }

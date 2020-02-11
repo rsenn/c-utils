@@ -73,6 +73,7 @@ typedef struct {
   int keepalive : 1;
   int connected : 1;
   int tls : 1;
+  int sent : 1;
 } http;
 
 void http_close(http* h);

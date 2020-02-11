@@ -25,10 +25,7 @@ http_ssl_connect(http* h) {
   }
   if(ret == 1) {
     h->connected = 1;
-        buffer_putsflush(buffer_2, "http_ssl_connect done!\n");
-
-    io_dontwantread(h->sock);
-    io_wantwrite(h->sock);
+    buffer_putsflush(buffer_2, "http_ssl_connect done!\n");
   }
 #if DEBUG_OUTPUT
   buffer_puts(buffer_2, "http_ssl_connect ");
