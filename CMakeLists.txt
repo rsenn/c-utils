@@ -4,10 +4,13 @@ set(CMAKE_WARN_VS8 OFF)
 
 project(dirlist C)
 
+option(USE_LZMA "lzma compression" OFF)
+option(USE_BZIP "bzip2 compression" OFF)
+option(USE_ZLIB "zlib compression" OFF)
 
-set(USE_SELECT "UNDEF" CACHE STRING "Use select() syscall")
-set(USE_POLL "UNDEF" CACHE STRING "Use poll() syscall")
-set(USE_EPOLL "UNDEF" CACHE STRING "Use epoll() syscall")
+option(USE_SELECT  "Use select() syscall" ON)
+option(USE_POLL  "Use poll() syscall" OFF)
+option(USE_EPOLL   "Use epoll() syscall" OFF)
 
 
 set(DIRLIST_VERSION 1.0)
@@ -151,60 +154,67 @@ endforeach()
 include(${CMAKE_SOURCE_DIR}/build/cmake/Werror.cmake)
 
 
-################################################################################
-## Check LibLZMA
-################################################################################
-#pkg_search_module(LIBLZMA liblzma lzma)
-#if(LIBLZMA_FOUND)
-#  if(pkgcfg_lib_LIBLZMA_lzma)
-#    set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma} CACHE FILEPATH "")
-#  endif(pkgcfg_lib_LIBLZMA_lzma)
-#endif(LIBLZMA_FOUND)
-#
-#if(NOT LIBLZMA_FOUND)
-#  include(FindLibLZMA)
-#endif(NOT LIBLZMA_FOUND)
+if(USE_LZMA)
+  ################################################################################
+  ## Check LibLZMA
+  ################################################################################
+  #pkg_search_module(LIBLZMA liblzma lzma)
+  #if(LIBLZMA_FOUND)
+  #  if(pkgcfg_lib_LIBLZMA_lzma)
+  #    set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma} CACHE FILEPATH "")
+  #  endif(pkgcfg_lib_LIBLZMA_lzma)
+  #endif(LIBLZMA_FOUND)
+  #
+  #if(NOT LIBLZMA_FOUND)
+  #  include(FindLibLZMA)
+  #endif(NOT LIBLZMA_FOUND)
 
-if(NOT LIBLZMA_FOUND)
-  check_library_exists(lzma lzma_auto_decoder "" HAVE_LIBLZMA)
-  check_include_file(lzma.h HAVE_LZMA_H)
+  if(NOT LIBLZMA_FOUND)
+    check_library_exists(lzma lzma_auto_decoder "" HAVE_LIBLZMA)
+    check_include_file(lzma.h HAVE_LZMA_H)
 
-  if(HAVE_LIBLZMA AND HAVE_LZMA_H)
-    set(LIBLZMA_FOUND TRUE)
-    set(LIBLZMA_INCLUDE_DIR "")
-    set(LIBLZMA_LIBRARY lzma)
-    message(STATUS "Found liblzma")
-    message(STATUS "  LIBLZMA_LIBRARY=${LIBLZMA_LIBRARY}")
-  endif(HAVE_LIBLZMA AND HAVE_LZMA_H)
+    if(HAVE_LIBLZMA AND HAVE_LZMA_H)
+      set(LIBLZMA_FOUND TRUE)
+      set(LIBLZMA_INCLUDE_DIR "")
+      set(LIBLZMA_LIBRARY lzma)
+      message(STATUS "Found liblzma")
+      message(STATUS "  LIBLZMA_LIBRARY=${LIBLZMA_LIBRARY}")
+    endif(HAVE_LIBLZMA AND HAVE_LZMA_H)
 
-endif(NOT LIBLZMA_FOUND)
-
-
-################################################################################
-## Check Zlib
-################################################################################
-pkg_search_module(ZLIB zlib libz z)
-if(ZLIB_FOUND)
-  if(pkgcfg_lib_ZLIB_z)
-    set(ZLIB_LIBRARY_RELEASE "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
-    set(ZLIB_LIBRARY_DEBUG "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
-  endif(pkgcfg_lib_ZLIB_z)
-else(ZLIB_FOUND)
-  #include(FindZlib)
-endif(ZLIB_FOUND)
-
-if(ZLIB_LIBRARY_RELEASE)
-    set(ZLIB_LIBRARY "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib library")
-endif(ZLIB_LIBRARY_RELEASE)
+  endif(NOT LIBLZMA_FOUND)
+endif(USE_LZMA)
 
 
-################################################################################
-## Check BZip2
-################################################################################
-pkg_search_module(BZIP2 libbz2 bzip2)
-if(NOT BZIP2_FOUND)
-  include(FindBZip2)
-endif(NOT BZIP2_FOUND)
+if(USE_ZLIB)
+  ################################################################################
+  ## Check Zlib
+  ################################################################################
+  pkg_search_module(ZLIB zlib libz z)
+  if(ZLIB_FOUND)
+    if(pkgcfg_lib_ZLIB_z)
+      set(ZLIB_LIBRARY_RELEASE "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
+      set(ZLIB_LIBRARY_DEBUG "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
+    endif(pkgcfg_lib_ZLIB_z)
+  else(ZLIB_FOUND)
+    #include(FindZlib)
+  endif(ZLIB_FOUND)
+
+  if(ZLIB_LIBRARY_RELEASE)
+      set(ZLIB_LIBRARY "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib library")
+  endif(ZLIB_LIBRARY_RELEASE)
+
+endif(USE_ZLIB)
+
+
+  if(USE_BZIP)
+  ################################################################################
+  ## Check BZip2
+  ################################################################################
+  pkg_search_module(BZIP2 libbz2 bzip2)
+  if(NOT BZIP2_FOUND)
+    include(FindBZip2)
+  endif(NOT BZIP2_FOUND)
+endif(USE_BZIP)
 
 ################################################################################
 ## Check OpenSSL
