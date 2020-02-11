@@ -8,9 +8,9 @@ option(USE_LZMA "lzma compression" OFF)
 option(USE_BZIP "bzip2 compression" OFF)
 option(USE_ZLIB "zlib compression" OFF)
 
-option(USE_SELECT  "Use select() syscall" ON)
-option(USE_POLL  "Use poll() syscall" OFF)
-option(USE_EPOLL   "Use epoll() syscall" OFF)
+option(USE_SELECT "Use select() syscall" ON)
+option(USE_POLL "Use poll() syscall" OFF)
+option(USE_EPOLL  "Use epoll() syscall" OFF)
 
 
 set(DIRLIST_VERSION 1.0)
