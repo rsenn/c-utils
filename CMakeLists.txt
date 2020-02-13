@@ -469,8 +469,8 @@ function(DEFINE_HAVE OUTVAR)
 endfunction(DEFINE_HAVE)
 
 if(BUILD_LZMA)
- message("Building liblzma from 3rdparty/xz")
- file(GLOB LIBLZMA_SOURCES
+  message("Building liblzma from 3rdparty/xz")
+  file(GLOB LIBLZMA_SOURCES
     #3rdparty/xz/debug/*.c
     #3rdparty/xz/lib/*.c
     #3rdparty/xz/src/common/*.c
@@ -484,20 +484,21 @@ if(BUILD_LZMA)
     3rdparty/xz/src/liblzma/lzma/*.c
     3rdparty/xz/src/liblzma/rangecoder/*.c
     3rdparty/xz/src/liblzma/simple/*.c
- )
- list(FILTER LIBLZMA_SOURCES EXCLUDE REGEX ".*_mt\\..*")
+  )
+  list(FILTER LIBLZMA_SOURCES EXCLUDE REGEX ".*_mt\\..*")
 
- add_library(lzma ${LIBLZMA_SOURCES})
+  add_library(lzma ${LIBLZMA_SOURCES})
+  set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
   set(LIBLZMA_INCLUDE_DIRS
-    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/common 
-    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/lzma
-    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/lz
-    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/check
-    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/simple
-    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/delta
-    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/rangecoder
-    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/common 
-    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api
+    ${LZMA_SOURCE_DIR}/src/common 
+    ${LZMA_SOURCE_DIR}/src/liblzma/lzma
+    ${LZMA_SOURCE_DIR}/src/liblzma/lz
+    ${LZMA_SOURCE_DIR}/src/liblzma/check
+    ${LZMA_SOURCE_DIR}/src/liblzma/simple
+    ${LZMA_SOURCE_DIR}/src/liblzma/delta
+    ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder
+    ${LZMA_SOURCE_DIR}/src/liblzma/common 
+    ${LZMA_SOURCE_DIR}/src/liblzma/api
   )
   DEFINE_HAVE(LIBLZMA_DEFS HAVE_STDINT_H HAVE_STDLIB_H HAVE_STDBOOL_H HAVE_INTTYPES_H HAVE_LIMITS_H HAVE_STRING_H HAVE_STRINGS_H HAVE_MEMORY_H HAVE_SYS_PARAM_H HAVE_SYS_TIME_H HAVE_SYS_TYPES_H HAVE_LZMA_H)
   #message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
