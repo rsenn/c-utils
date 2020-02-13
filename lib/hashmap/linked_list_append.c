@@ -1,5 +1,5 @@
 #include "../linked_list.h"
-#include "../memory.h"
+#include "../alloc.h"
 
 void
 linked_list_append(linked_list* list, void* data) {

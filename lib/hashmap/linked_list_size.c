@@ -1,5 +1,5 @@
 #include "../linked_list.h"
-#include "../memory.h"
+#include "../alloc.h"
 
 size_t
 linked_list_size(linked_list* list) {

@@ -1,5 +1,5 @@
 #include "../linked_list.h"
-#include "../memory.h"
+#include "../alloc.h"
 
 linked_list_node*
 linked_list_head(linked_list* list) {

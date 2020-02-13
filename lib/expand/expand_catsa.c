@@ -1,3 +1,4 @@
+#include "../alloc.h"
 #include "../vartab.h"
 #include "../byte.h"
 #include "../tree.h"

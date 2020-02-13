@@ -1,5 +1,5 @@
 #include "../linked_list.h"
-#include "../memory.h"
+#include "../alloc.h"
 
 void
 linked_list_init(linked_list* list, linked_list_destructor free_data) {
