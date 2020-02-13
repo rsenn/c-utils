@@ -23,22 +23,6 @@ set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
 set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
 
 
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl" OR NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
-    file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-    file(DOWNLOAD "http://distfiles.gentoo.org/distfiles/openssl-1.1.0j.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
-  endif()
-
-  exec_program(bsdtar ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
-  file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.0j" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-  file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
-  file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
-  exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS
-    -p0 -i ../../build/cmake/openssl-1.1.0j-pkgs7.patch
-  )
-
-
-endif()
 #if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
 #  add_subdirectory(3rdparty/openssl)
 #endif()
@@ -310,14 +294,6 @@ if(USE_SSL)
     set(OPENSSL_LIB_DIR "${OPENSSL_ROOT_DIR}/lib")
     endif()
 
-    add_definitions(-DHAVE_OPENSSL=1)
-    if(OPENSSL_INCLUDE_DIR)
-      include_directories(${OPENSSL_INCLUDE_DIR})
-    endif()
-    if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
-      set(OPENSSL_LIBARRIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-      #link_libraries(${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-    endif()
 
   endif(OPENSSL_FOUND)
   message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\nOPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\nOPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\nOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\nOPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY} OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
@@ -456,7 +432,7 @@ if(BUILD_BZIP)
   add_library(bz2 ${LIBBZ2_SOURCES})
   set(BZIP2_LIBRARY_DEBUG bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_LIBRARY_RELEASE bz2 CACHE FILEPATH "" FORCE)
-  set(BZIP2_LIBR+ARY bz2 CACHE FILEPATH "" FORCE)
+  set(BZIP2_LIBRARY bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
 endif(BUILD_BZIP)
 
@@ -514,6 +490,41 @@ if(BUILD_LZMA)
   set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
   set(LIBLZMA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api" CACHE FILEPATH "" FORCE)
 endif(BUILD_LZMA)
+
+
+if(BUILD_SSL)
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/Configure" OR NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+      file(DOWNLOAD "https://www.openssl.org/source/openssl-1.1.1d.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
+    endif()
+
+    exec_program(bsdtar ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1d" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+    file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
+    file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
+ #[[   exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS
+      -p0 -i ../../build/cmake/openssl-1.1.0j-pkgs7.patch
+    )]]
+
+  endif()
+      add_subdirectory(3rdparty/openssl)
+  set(OPENSSL_LIBRARIES ssl crypto CACHE STRING "" FORCE)
+  set(OPENSSL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/openssl/include" CACHE FILEPATH "" FORCE)
+endif()
+
+if(USE_SSL)
+    add_definitions(-DHAVE_OPENSSL=1)
+endif(USE_SSL)
+if(OPENSSL_INCLUDE_DIR)
+  include_directories(${OPENSSL_INCLUDE_DIR})
+endif()
+
+if(NOT OPENSSL_LIBRARIES)
+    if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
+    set(OPENSSL_LIBARRIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+    endif()
+endif()
 
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
@@ -602,7 +613,9 @@ function(add_program PROG)
   add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
   target_link_libraries(${PROG} ${ARGN})
   install(TARGETS ${PROG} DESTINATION bin)
+  if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
   set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR}")
+  endif(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
   if(EMSCRIPTEN)
     set_target_properties(${PROG} PROPERTIES SUFFIX ".${EMSCRIPTEN_EXE_SUFFIX}")
   endif(EMSCRIPTEN)
