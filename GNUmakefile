@@ -1506,7 +1506,7 @@ endif
 endif
 
 $(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): $(BUILDDIR)bsdiffcat.o $(call add-library, array safemult strlist stralloc buffer mmap open dir byte fmt uint64 uint32 errmsg str)
+$(BUILDDIR)bsdiffcat$(M64_)$(EXEEXT): $(BUILDDIR)bsdiffcat.o $(call add-library, path array safemult strlist stralloc buffer mmap open dir byte fmt uint64 uint32 errmsg str)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
