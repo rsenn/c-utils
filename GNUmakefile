@@ -76,25 +76,27 @@ int main() {\n
 }\n
 endef
 
-HAVE_PIPE_FLAG := $(call check-try-compile,,-pipe)
+HAVE_PIPE_FLAG := $(call check-try-compile,$(default-program),-pipe)
 ifneq ($(HAVE_PIPE_FLAG),1)
 NOPIPE := 1
 endif
 
-HAVE_OPT_FLAG := $(call check-try-compile,,-O0)
+HAVE_OPT_FLAG := $(call check-try-compile,$(default-program),-O0)
 ifneq ($(HAVE_OPT_FLAG),1)
 NOOPT := 1
 endif
 
-HAVE_WARN_FLAGS := $(call check-try-compile,,-Wall -Wno-strict-aliasing -Wno-unused-function -Wno-unused-variable)
+HAVE_WARN_FLAGS := $(call check-try-compile,$(default-program),-Wall -Wno-strict-aliasing -Wno-unused-function -Wno-unused-variable)
 ifneq ($(HAVE_WARN_FLAGS),1)
 NOWARN := 1
 endif
 
-HAVE_DEBUG_FLAGS := $(call check-try-compile,,-g -g3)
+HAVE_DEBUG_FLAGS := $(call check-try-compile,$(default-program),-g -ggdb)
 ifneq ($(HAVE_DEBUG_FLAGS),1)
 NODEBUG := 1
 endif
+
+$(info HAVE_DEBUG_FLAGS: $(HAVE_DEBUG_FLAGS))
 
 HAVE_SCOPE := $(call check-try-compile,$(CHECK_SCOPE_ID))
 ifeq ($(HAVE_SCOPE),1)

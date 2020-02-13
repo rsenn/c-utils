@@ -2698,10 +2698,28 @@ int
 input_command(stralloc* cmd, strlist* args) {
   int compile = 0, link = 0, objects = 0;
   const char* arg;
+  stralloc output;
+  strlist files;
+  stralloc_init(&output);
+  strlist_init(&files, ' ');
+
   strlist_foreach_s(args, arg) {
     if(str_equal(arg, "-c") || str_end(arg, ".c")) {
       compile = 1;
       link = 0;
+    }
+  }
+
+  strlist_foreach_s(args, arg) {
+    if(str_diffn(arg, "-o", 2) == 0) {
+      if(arg[2] == '\0') {
+        arg += str_len(arg) + 1;
+        stralloc_copys(&output, arg);
+      } else {
+        stralloc_copys(&output, &arg[2]);
+      }
+    } else if(arg[0] != '-') {
+      strlist_push(&files, arg);
     }
   }
 
@@ -2715,6 +2733,18 @@ input_command(stralloc* cmd, strlist* args) {
       }
     }
   }
+
+  if(compile && output.len == 0) {
+    path_extension(strlist_at(&files, 0), &output, exts.obj);
+  }
+
+  buffer_puts(buffer_2, link ? "link" : compile ? "compile" : "other");
+  buffer_puts(buffer_2, " rule: ");
+  buffer_putsa(buffer_2, &output);
+  buffer_puts(buffer_2, ": ");
+  strlist_dump(&files, buffer_2);
+  buffer_putnlflush(buffer_2);
+
   return link ? 2 : compile ? 1 : 0;
 }
 
@@ -3619,7 +3649,8 @@ set_compiler_type(const char* compiler) {
     push_lib("DEFAULT_LIBS", "clwin");
     push_lib("DEFAULT_LIBS", "climp");
 
-    //    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ \"/I;\" $<");
+    //    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ \"/I;\"
+    //    $<");
     stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ $<");
     set_command(&lib_command, "$(LIB) /! $@", "$^");
     set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
@@ -4071,7 +4102,7 @@ int
 main(int argc, char* argv[]) {
   int c;
   int ret = 0, index = 0;
-  const char *outfile = NULL, *dir = NULL;
+  const char *outfile = NULL, *infile = NULL, *dir = NULL;
   strlist toks;
   strarray args;
   strlist cmdline;
@@ -4114,6 +4145,7 @@ main(int argc, char* argv[]) {
                            {"Debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
                            {"define", 1, NULL, 'D'},
                            {"build-as-lib", 0, 0, 'S'},
+                           {"input-file", 0, 0, 'f'},
                            {"cross", 0, 0, 'c'},
                            {"chip", 1, 0, 'p'},
                            {"preprocessor", 1, 0, 'P'},
@@ -4152,7 +4184,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:", opts, &index);
+    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -4180,6 +4212,7 @@ main(int argc, char* argv[]) {
         if(optarg)
           set_chip(optarg);
         break;
+      case 'f': infile = optarg; break;
       case 'l': strarray_push(&libs, optarg); break;
       case 'I': {
         buffer_puts(buffer_2, "Add -I: ");
@@ -4475,6 +4508,26 @@ main(int argc, char* argv[]) {
   }
   strarray_init(&args);
   strarray_init(&srcs);
+
+  if(infile) {
+    const char* x;
+    size_t n;
+
+    if((x = mmap_read(infile, &n))) {
+      while(n > 0) {
+        size_t i = byte_chr(x, n, '\n');
+        if(i > 0) {
+          input_command_line(x, i);
+        }
+
+        if(i < n)
+          i++;
+
+        x += i;
+        n -= i;
+      }
+    }
+  }
 
   while(optind < argc) {
     stralloc arg;

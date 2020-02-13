@@ -25,10 +25,10 @@ int main() {
 endef
 
 define cmds-try-compile =
-set -e;
-NAME=test_$$RANDOM;
-echo "$(if $(1),$(1),$(default-program))" >$$NAME.c;
-$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(CPPFLAGS) $(2) -o $$NAME $$NAME.c;
+set -xe; \
+NAME=test_$$RANDOM; \
+echo "$(if $(1),$(1),$(default-program))" >$$NAME.c; \
+$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(CPPFLAGS) $(2) -o $$NAME $$NAME.c; 
 endef
 
 define prog-check-include =
