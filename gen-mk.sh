@@ -29,7 +29,7 @@ for compiler; do
   for build_type in Debug RelWithDebInfo MinSizeRel Release; do
 	output_dir=build/$compiler/$build_type
 	mkdir -p $output_dir
- (exec_cmd "genmakefile --create-bins --create-libs -n shish -m ninja -t $compiler --$build_type \$DEFS lib/{\$MODULES}/*.c \$PROGRAMS -o $output_dir/build.ninja \$LIBS"
-  exec_cmd "genmakefile --create-bins --create-libs -n shish -m make -t $compiler --$build_type \$DEFS lib/{\$MODULES}/*.c \$PROGRAMS -o $output_dir/Makefile")
+ (exec_cmd "genmakefile --create-bins --create-libs -m ninja -t $compiler --$build_type \$DEFS lib/{\$MODULES}/*.c \$PROGRAMS -o $output_dir/build.ninja \$LIBS"
+  exec_cmd "genmakefile --create-bins --create-libs -m make -t $compiler --$build_type \$DEFS lib/{\$MODULES}/*.c \$PROGRAMS -o $output_dir/Makefile")
   done
 done

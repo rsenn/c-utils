@@ -10,6 +10,6 @@ hashmap_free(hashmap* map) {
     }
   }
   linked_list_free(map->keys);
-  safe_free(map->table);
-  safe_free(map);
+  alloc_free(map->table);
+  alloc_free(map);
 }

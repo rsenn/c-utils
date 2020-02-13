@@ -8,7 +8,7 @@ linked_list_append(linked_list* list, void* data) {
   while(node->next) {
     node = node->next;
   }
-  new_node = safe_malloc(sizeof(linked_list_node));
+  new_node = alloc(sizeof(linked_list_node));
   new_node->data = data;
   new_node->next = NULL;
   node->next = new_node;

@@ -170,7 +170,7 @@ expand_param(
         n = expand_arg(&param->word->narg, &tmpnode, varstack, argv, exitcode, flags);
         errmsg_warn((n && n->narg.stra.s) ? n->narg.stra.s : "parameter null or not set", 0);
         if(tmpnode)
-          tree_free(tmpnode);
+          alloc_free(tmpnode);
       }
       break;
     }
