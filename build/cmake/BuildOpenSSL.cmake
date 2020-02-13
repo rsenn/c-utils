@@ -32,6 +32,7 @@ add_definitions(-DOPENSSL_NO_MDC2=1 -DOPENSSL_NO_DES=1)
 add_definitions(-DOPENSSL_CPUID_OBJ=1 -DOPENSSL_USE_NODELETE=1)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/../..)
 include_directories(${THISDIR})
 include_directories(${THISDIR}/include)
 include_directories(${THISDIR}/crypto)
@@ -40,7 +41,7 @@ include_directories(${THISDIR}/crypto/modes)
 
 link_libraries(dl)
 exec_program(perl ARGS ${THISDIR}/util/mkbuildinf.pl OUTPUT_VARIABLE MKBUILDINF_H)
-exec_program(perl ARGS
+#[[exec_program(perl ARGS
   -I${THISDIR}
   -Mconfigdata 
   ${THISDIR}/util/dofile.pl
@@ -55,7 +56,7 @@ endif()
 
 message("BN_CONF_H: ${BN_CONF_H}")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h "${BN_CONF_H}\n\n")
-
+]]
 set(OPENSSLDIR "${CMAKE_INSTALL_PREFIX}/ssl")
 
 file(WRITE ${CMAKE_BINARY_DIR}/buildinf.h "${MKBUILDINF_H}\n\n")
@@ -124,6 +125,10 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/opensslconf.h.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/include/openssl/opensslconf.h
 )
+
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/bn_conf.h.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h )
+
 
 add_library(crypto ${LIBCRYPTO_SOURCES})
 
