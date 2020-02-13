@@ -197,7 +197,7 @@ pkg_read(buffer* b, pkg* p) {
       stralloc_trimr(&value, "\r\n\t \0", 5);
       stralloc_nul(&value);
       stralloc_nul(&name);
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       buffer_putm_3(buffer_2, "Name: ", name.s, "\n");
       buffer_putm_3(buffer_2, "Value: ", value.s, "\n");
       buffer_flush(buffer_2);
@@ -232,7 +232,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
 
   /* wordexp_sa(value, &v); */
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_putm_3(buffer_2, "ENV SET ", key, "=");
   buffer_putsa(buffer_2, &v);
   buffer_putnlflush(buffer_2);
@@ -586,7 +586,7 @@ main(int argc, char* argv[]) {
   } else if(optind < argc) {
     strarray modules;
     strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);
-    return !pkg_conf(&modules, mode);
+    return pkg_conf(&modules, mode);
   } else {
     buffer_puts(buffer_2, "Must specify package names on the command line");
     buffer_putnlflush(buffer_2);

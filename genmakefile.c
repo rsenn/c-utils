@@ -2694,6 +2694,59 @@ get_keys(MAP_T map, strlist* list) {
   hmap_foreach(vars, t) { strlist_push(list, t->key); }
 }
 
+int
+input_command(stralloc* cmd, strlist* args) {
+  int compile = 0, link = 0, objects = 0;
+  const char* arg;
+  strlist_foreach_s(args, arg) {
+    if(str_equal(arg, "-c") || str_end(arg, ".c")) {
+      compile = 1;
+      link = 0;
+    }
+  }
+
+  strlist_foreach_s(args, arg) {
+    if(str_end(arg, exts.obj) || str_end(arg, exts.lib)) {
+      objects++;
+
+      if(objects > 1) {
+        compile = 0;
+        link = 1;
+      }
+    }
+  }
+  return link ? 2 : compile ? 1 : 0;
+}
+
+int
+input_command_line(const char* x, size_t n) {
+  size_t idx = 0;
+  int ret;
+  stralloc command;
+  strlist args;
+  stralloc_init(&command);
+  strlist_init(&args, '\0');
+
+  while(n > 0) {
+    size_t i = scan_whitenskip(x, n);
+    if(i == n)
+      break;
+    x += i;
+    n -= i;
+    i = scan_nonwhitenskip(x, n);
+
+    if(idx == 0)
+      stralloc_copyb(&command, x, i);
+    else
+      strlist_pushb(&args, x, i);
+    idx++;
+  }
+  ret = input_command(&command, &args);
+  stralloc_free(&command);
+  strlist_free(&args);
+  return ret;
+}
+
 /**
  * @brief subst_var
  * @param in
