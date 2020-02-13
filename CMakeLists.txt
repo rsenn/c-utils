@@ -474,7 +474,9 @@ if(BUILD_LZMA)
     #3rdparty/xz/debug/*.c
     #3rdparty/xz/lib/*.c
     #3rdparty/xz/src/common/*.c
-    3rdparty/xz/src/liblzma/check/*.c
+    3rdparty/xz/src/liblzma/check/check.c
+    3rdparty/xz/src/liblzma/check/*_fast.c
+    3rdparty/xz/src/liblzma/check/*_table.c
     #3rdparty/xz/src/liblzma/check/*.S
     3rdparty/xz/src/liblzma/common/*.c
     3rdparty/xz/src/liblzma/delta/*.c
