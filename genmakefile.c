@@ -726,7 +726,7 @@ target*
 rule_find(const char* needle) {
   TUPLE* t;
 
-  hmap_foreach(rules, t) {
+  MAP_FOREACH(rules, t) {
     const char* name = t->key;
 
     if(str_equal(name, needle))
@@ -1425,7 +1425,7 @@ void
 get_rules_by_cmd(stralloc* cmd, strlist* deps) {
   TUPLE* t;
 
-  hmap_foreach(rules, t) {
+  MAP_FOREACH(rules, t) {
     target* rule = t->vals.val_custom;
 
     if(rule->recipe.s == cmd->s || stralloc_equal(&rule->recipe, cmd)) {
@@ -1526,7 +1526,7 @@ void
 dump_sourcedirs(buffer* b, HMAP_DB* sourcedirs) {
   TUPLE* t;
 
-  hmap_foreach(sourcedirs, t) {
+  MAP_FOREACH(sourcedirs, t) {
     sourcedir* srcdir = hmap_data(t);
     sourcefile* pfile;
 
@@ -1894,7 +1894,7 @@ deps_for_libs(HMAP_DB* rules) {
   strlist_init(&indir, ' ');
   stralloc_init(&sa);
 
-  hmap_foreach(sourcedirs, t) {
+  MAP_FOREACH(sourcedirs, t) {
     sourcedir* srcdir = hmap_data(t);
     target* lib;
     size_t n;
@@ -2002,7 +2002,7 @@ gen_clean_rule(HMAP_DB* rules) {
 
     cmdoffs = delete_command.len;
 
-    hmap_foreach(rules, t) {
+    MAP_FOREACH(rules, t) {
 
       const char* target = t->key;
 
@@ -2372,7 +2372,7 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
 
   all = rule_get("all");
 
-  hmap_foreach(srcdirs, t) {
+  MAP_FOREACH(srcdirs, t) {
     target* rule;
     sourcedir* srcdir = hmap_data(t);
     const char *s, *base = path_basename(t->key);
@@ -2646,7 +2646,7 @@ gen_install_rules(HMAP_DB* rules) {
   target* inst = NULL;
   const char* v = 0;
 
-  hmap_foreach(rules, t) {
+  MAP_FOREACH(rules, t) {
     target* rule = t->vals.val_custom;
     int do_lib, do_bin;
 
@@ -2712,7 +2712,7 @@ gen_install_rules(HMAP_DB* rules) {
 void
 get_keys(MAP_T map, strlist* list) {
   TUPLE* t;
-  hmap_foreach(vars, t) { strlist_push(list, t->key); }
+  MAP_FOREACH(vars, t) { strlist_push(list, t->key); }
 }
 
 int
@@ -3107,7 +3107,7 @@ void
 output_all_rules(buffer* b, HMAP_DB* hmap) {
   TUPLE* t;
 
-  hmap_foreach(hmap, t) {
+  MAP_FOREACH(hmap, t) {
     target* rule = t->vals.val_custom;
     const char* name = t->key;
 
@@ -3144,7 +3144,7 @@ output_script(buffer* b, target* rule) {
     TUPLE* t;
     ++serial;
 
-    /*    hmap_foreach(rules, t) {
+    /*    MAP_FOREACH(rules, t) {
           rule = hmap_data(t);
 
           output_script(b, rule);
@@ -4705,7 +4705,7 @@ main(int argc, char* argv[]) {
   debug_stra("srcs", &srcs);
   buffer_puts(buffer_2, "targetdirs:\n");
 
-  hmap_foreach(targetdirs, t) {
+  MAP_FOREACH(targetdirs, t) {
     uint32* count_ptr = t->vals.val_chars;
     buffer_putspace(buffer_2);
     buffer_puts(buffer_2, t->key);
@@ -4724,7 +4724,7 @@ main(int argc, char* argv[]) {
     deps_for_libs(rules);
   } else {
     TUPLE* t;
-    hmap_foreach(sourcedirs, t) {
+    MAP_FOREACH(sourcedirs, t) {
       sourcedir* srcdir = hmap_data(t);
 
       /*if(tools.preproc) {
@@ -4742,7 +4742,7 @@ main(int argc, char* argv[]) {
 
   if(cmd_bins == 0 || cmd_libs == 1) {
     TUPLE* t;
-    hmap_foreach(rules, t) {
+    MAP_FOREACH(rules, t) {
       target* tgt = hmap_data(t);
 
       if(stralloc_equal(&tgt->recipe, &lib_command) && cmd_libs)
@@ -4754,7 +4754,7 @@ main(int argc, char* argv[]) {
 
   {
     TUPLE* t;
-    hmap_foreach(rules, t) {
+    MAP_FOREACH(rules, t) {
       target* tgt = hmap_data(t);
       // print_rule_deps(buffer_2, tgt);
     }
