@@ -2,6 +2,7 @@
 #include "../stralloc.h"
 #include "../tree.h"
 #include "../expand.h"
+#include "../alloc.h"
 
 /* expand all arguments of an argument list
  * returns count of argument nodes

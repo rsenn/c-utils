@@ -1,6 +1,6 @@
 #include "../byte.h"
 #include "../linked_list.h"
-#include "../memory.h"
+#include "../alloc.h"
 #include "../hashmap.h"
 
 void

@@ -1,5 +1,5 @@
 #include "../linked_list.h"
-#include "../memory.h"
+#include "../alloc.h"
 #include "../hashmap.h"
 int
 hashmap_default_comparator(const void* l, const void* r) {

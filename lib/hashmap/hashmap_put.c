@@ -1,5 +1,5 @@
 #include "../linked_list.h"
-#include "../memory.h"
+#include "../alloc.h"
 #include "../hashmap.h"
 #include "../alloc.h"
 void

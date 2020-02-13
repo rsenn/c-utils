@@ -8,6 +8,7 @@
 #include "../tree.h"
 #include "../expand.h"
 #include "../errmsg.h"
+#include "../alloc.h"
 
 #if WINDOWS_NATIVE
 #define getpid() GetProcessId(NULL)

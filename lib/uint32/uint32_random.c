@@ -4,7 +4,7 @@
 #define UINT32_POOLSIZE 16
 
 uint32 uint32_pool[UINT32_POOLSIZE];
-unsigned long uint32_bytes_seeded = 0;
+extern uint32 uint32_bytes_seeded;
 
 uint32
 uint32_random(void) {

@@ -4,7 +4,7 @@
 #include "../var.h"
 #include "../tree.h"
 #include "../expand.h"
-#include <stdlib.h>
+#include "../alloc.h"
 
 /* concatenate <len> bytes from <b> to the argument list pointed to by <nptr>
  */
