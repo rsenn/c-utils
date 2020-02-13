@@ -10,14 +10,14 @@ linked_list_free(linked_list* list) {
     if(list->free_data != NULL) {
       list->free_data(current_node->data);
     }
-    safe_free(previous_node);
+    alloc_free(previous_node);
     previous_node = current_node;
     current_node = previous_node->next;
   }
 
-  safe_free(previous_node);
+  alloc_free(previous_node);
 
   list->head = NULL;
 
-  safe_free(list);
+  alloc_free(list);
 }

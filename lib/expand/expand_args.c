@@ -34,8 +34,9 @@ expand_args(union node* args, union node** nptr, struct vartab* varstack, char* 
     }
 
     if(arg->list.next) {
-      n->list.next = tree_newnode(N_ARG);
+      n->list.next = alloc_zero(sizeof(union node));
       n = n->list.next;
+      n->id = N_ARG;
       stralloc_init(&n->narg.stra);
       ret++;
     }

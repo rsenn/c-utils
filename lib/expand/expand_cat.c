@@ -18,7 +18,8 @@ expand_cat(const char* b, unsigned int len, union node** nptr, struct vartab* va
      the stralloc has zero length, and concatenate the stralloc as a whole */
   if(flags & (X_NOSPLIT | X_QUOTED)) {
     if(n == NULL) {
-      n = *nptr = tree_newnode(N_ARG);
+      n = *nptr = alloc_zero(sizeof(union node));
+      n->id = N_ARG;
       stralloc_zero(&n->narg.stra);
     }
 
@@ -43,7 +44,8 @@ expand_cat(const char* b, unsigned int len, union node** nptr, struct vartab* va
 
     /* if there isn't already a node create one now! */
     if(n == NULL) {
-      *nptr = n = tree_newnode(N_ARG);
+      *nptr = n = alloc_zero(sizeof(union node));
+      n->id = N_ARG;
       nptr = &n;
       stralloc_init(&n->narg.stra);
     }

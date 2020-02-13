@@ -56,6 +56,24 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckIncludeFile)
 
+function(DUMP VAR)
+  message("\n\nVariable dump of: " ${ARGV} "\n")
+
+  foreach(VAR ${ARGV})
+  message("\t${VAR} = ${${VAR}}")
+  endforeach(VAR ${ARGV})
+  message("\n")
+endfunction(DUMP VAR)
+string(REGEX REPLACE ".*/" "" COMPILER_NAME "${CMAKE_C_COMPILER}")
+
+DUMP(EMSCRIPTEN EMCC_SUFFIX EMSCRIPTEN_PREFIX EMSCRIPTEN_TOOLCHAIN_PATH COMPILER_NAME)
+
+if(COMPILER_NAME MATCHES "em.*")
+  set(EMSCRIPTEN TRUE)
+endif(COMPILER_NAME MATCHES "em.*")
+
+
+
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -435,6 +453,8 @@ if(OPENSSL_LIB_DIR)
   set(CMAKE_EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR}")
 endif()
 
+
+
 set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )
 file(GLOB MODHEADERS lib/*.h)
 function(add_program PROG)
@@ -450,6 +470,9 @@ function(add_program PROG)
   target_link_libraries(${PROG} ${ARGN})
   install(TARGETS ${PROG} DESTINATION bin)
   set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR}")
+  if(EMSCRIPTEN)
+    set_target_properties(${PROG} PROPERTIES SUFFIX ".html")
+  endif(EMSCRIPTEN)
 endfunction(add_program PROG)
 
 

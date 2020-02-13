@@ -17,7 +17,7 @@ hashmap_remove(hashmap* map, void* key) {
       if(list->free_data) {
         list->free_data(current_node->data);
       }
-      safe_free(current_node);
+      alloc_free(current_node);
       list->size--;
       map->size--;
       return;

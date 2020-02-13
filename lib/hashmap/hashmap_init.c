@@ -7,7 +7,7 @@ void
 hashmap_init(hashmap* map, size_t capacity, hashmap_comparator comparator, hashmap_hash_func hash_func) {
   map->capacity = capacity;
   map->size = 0;
-  map->table = (linked_list**)safe_malloc(sizeof(linked_list*) * map->capacity);
+  map->table = (linked_list**)alloc(sizeof(linked_list*) * map->capacity);
   byte_zero(map->table, sizeof(linked_list*) * map->capacity);
   if(comparator) {
     map->comparator = comparator;
@@ -19,6 +19,6 @@ hashmap_init(hashmap* map, size_t capacity, hashmap_comparator comparator, hashm
   } else {
     map->hash_func = hashmap_default_hash_func;
   }
-  map->keys = (linked_list*)safe_malloc(sizeof(linked_list));
+  map->keys = (linked_list*)alloc(sizeof(linked_list));
   linked_list_init(map->keys, NULL);
 }
