@@ -493,7 +493,7 @@ endif(BUILD_LZMA)
 
 
 if(BUILD_SSL)
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/Configure" OR NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/Configure")
     if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
       file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
       file(DOWNLOAD "https://www.openssl.org/source/openssl-1.1.1d.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
@@ -508,7 +508,8 @@ if(BUILD_SSL)
     )]]
 
   endif()
-      add_subdirectory(3rdparty/openssl)
+  add_subdirectory(3rdparty/openssl)
+
   set(OPENSSL_LIBRARIES ssl crypto CACHE STRING "" FORCE)
   set(OPENSSL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/openssl/include" CACHE FILEPATH "" FORCE)
 endif()
