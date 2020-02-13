@@ -9,6 +9,7 @@
 #include "lib/open.h"
 #include "lib/byte.h"
 #include "lib/str.h"
+#include "lib/path.h"
 #include "lib/errmsg.h"
 #include "lib/uint32.h"
 
@@ -270,11 +271,11 @@ main(int argc, char* argv[]) {
       bsdiff_read(&patch, &data, &extra);
 
     } else {
-      errmsg_infosys(str_basename(argv[0]), ": ", "read header", ": ", NULL);
+      errmsg_infosys(path_basename(argv[0]), ": ", "read header", ": ", NULL);
       exitcode = 2;
     }
   } else {
-    errmsg_infosys(str_basename(argv[0]), ": ", "open file", ": ", NULL);
+    errmsg_infosys(path_basename(argv[0]), ": ", "open file", ": ", NULL);
     exitcode = 1;
   }
 

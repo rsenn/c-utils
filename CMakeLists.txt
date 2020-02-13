@@ -503,7 +503,7 @@ endif(OPENSSL_LIBRARIES)
 
 add_program(binfmttest binfmt)
 if(USE_BZIP)
-add_program(bsdiffcat buffer array safemult byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
+add_program(bsdiffcat errmsg buffer array safemult str byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
 add_program(ccat buffer open str unix ${COMPRESSION_LIBRARIES})
 endif(USE_BZIP)
 add_program(buffertest stralloc buffer array case mmap ${COMPRESSION_LIBRARIES})
