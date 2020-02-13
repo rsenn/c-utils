@@ -119,6 +119,7 @@ if(USE_SELECT STREQUAL "ON")
 endif()
 
 
+
 #message(INFO "Checking for epoll()...")
 #check_function_exists(epoll_wait HAVE_EPOLL)
 #if(HAVE_EPOLL)
@@ -326,41 +327,6 @@ if(NOT ZLIB_FOUND OR NOT EXISTS "${ZLIB_LIBRARY}")
   unset(ZLIB_LIBRARY CACHE)
 endif()
 
-if(USE_ZLIB AND NOT ZLIB_FOUND)
-    message("Building zlib from 3rdparty/zlib")
-    file(GLOB ZLIB_SOURCES 3rdparty/zlib/*.c)
-    add_library(z ${ZLIB_SOURCES})
-    set(ZLIB_LIBRARY_DEBUG z CACHE FILEPATH "" FORCE)
-    set(ZLIB_LIBRARY_RELEASE z CACHE FILEPATH "" FORCE)
-    set(ZLIB_LIBRARY z CACHE FILEPATH "" FORCE)
-    set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/zlib CACHE PATH "" FORCE)
-endif(USE_ZLIB AND NOT ZLIB_FOUND)
-
-if(USE_BZIP)
-  if(NOT BZIP2_FOUND)
-    message("Building libbz2 from 3rdparty/bzip2")
-    file(GLOB LIBBZ2_SOURCES 3rdparty/bzip2/*.c)
-    add_library(bz2 ${LIBBZ2_SOURCES})
-    set(BZIP2_LIBRARY_DEBUG bz2 CACHE FILEPATH "" FORCE)
-    set(BZIP2_LIBRARY_RELEASE bz2 CACHE FILEPATH "" FORCE)
-    set(BZIP2_LIBR+ARY bz2 CACHE FILEPATH "" FORCE)
-    set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
-  endif(NOT BZIP2_FOUND)
-endif(USE_BZIP)
-
-if(USE_LZMA)
-#if(NOT LIBLZMA_LIBRARY)
-#  message("Building liblzma from 3rdparty/xz")
-#  file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
-#  add_library(lzma ${LIBLZMA_SOURCES})
-#  set_target_properties(lzma PROPERTIES
-#    COMPILE_DEFINITIONS "HAVE_CONFIG_H=1"
-#  )
-#  set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
-#  set(LIBLZMA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api CACHE PATH "" FORCE)
-#endif(NOT LIBLZMA_LIBRARY)
-endif(USE_LZMA)
-
 if(USE_ZLIB)
   message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
   if(ZLIB_LIBRARY)
@@ -392,6 +358,85 @@ if(USE_LZMA)
     add_definitions(-DHAVE_LIBLZMA=0)
   endif(LIBLZMA_LIBRARY)
 endif(USE_LZMA)
+
+
+macro(invert INVAR OUTVAR)
+  if(${${INVAR}})
+    set("${OUTVAR}" FALSE)
+  else(${${INVAR}})
+    set("${OUTVAR}" TRUE)
+  endif(${${INVAR}})
+endmacro(invert INVAR OUTVAR)
+
+
+macro(invoption VAR DESC INVAR)
+  if(${${INVAR}})
+    option("${VAR}" "${DESC}" OFF)
+  else(${${INVAR}})
+    option("${VAR}" "${DESC}" ON)
+  endif(${${INVAR}})
+endmacro(invoption VAR DESC INVAR)
+
+
+invoption(BUILD_LZMA "build 3rdparty liblzma" LIBLZMA_FOUND)
+invoption(BUILD_BZIP "build 3rdparty libbz2" BZIP2_FOUND)
+invoption(BUILD_ZLIB "build 3rdparty libz" ZLIB_FOUND)
+invoption(BUILD_SSL "build 3rdparty openssl" OPENSSL_FOUND)
+
+
+if(BUILD_ZLIB)
+  message("Building zlib from 3rdparty/zlib")
+  set(ZLIB_SOURCES 
+    3rdparty/zlib/adler32.c
+    3rdparty/zlib/compress.c
+    3rdparty/zlib/crc32.c
+    3rdparty/zlib/deflate.c
+    3rdparty/zlib/infback.c
+    3rdparty/zlib/inffast.c
+    3rdparty/zlib/inflate.c
+    3rdparty/zlib/inftrees.c
+    3rdparty/zlib/trees.c
+    3rdparty/zlib/uncompr.c
+    3rdparty/zlib/zutil.c
+  )
+  add_library(z ${ZLIB_SOURCES})
+  set(ZLIB_LIBRARY_DEBUG z CACHE FILEPATH "" FORCE)
+  set(ZLIB_LIBRARY_RELEASE z CACHE FILEPATH "" FORCE)
+  set(ZLIB_LIBRARY z CACHE FILEPATH "" FORCE)
+  set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/zlib CACHE PATH "" FORCE)
+endif(BUILD_ZLIB)
+
+if(BUILD_BZIP)
+  message("Building libbz2 from 3rdparty/bzip2")
+  set(LIBBZ2_SOURCES
+    3rdparty/bzip2/blocksort.c
+    3rdparty/bzip2/bzlib.c
+    3rdparty/bzip2/compress.c
+    3rdparty/bzip2/crctable.c
+    3rdparty/bzip2/decompress.c
+    3rdparty/bzip2/huffman.c
+    3rdparty/bzip2/randtable.c
+  )
+  add_library(bz2 ${LIBBZ2_SOURCES})
+  set(BZIP2_LIBRARY_DEBUG bz2 CACHE FILEPATH "" FORCE)
+  set(BZIP2_LIBRARY_RELEASE bz2 CACHE FILEPATH "" FORCE)
+  set(BZIP2_LIBR+ARY bz2 CACHE FILEPATH "" FORCE)
+  set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
+endif(BUILD_BZIP)
+
+
+if(BUILD_LIBLZMA)
+ message("Building liblzma from 3rdparty/xz")
+ file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
+ add_library(lzma ${LIBLZMA_SOURCES})
+ set_target_properties(lzma PROPERTIES
+   COMPILE_DEFINITIONS "HAVE_CONFIG_H=1"
+ )
+ set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
+ set(LIBLZMA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api CACHE PATH "" FORCE)
+endif(BUILD_LIBLZMA)
+
+
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 

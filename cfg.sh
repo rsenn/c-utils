@@ -210,20 +210,19 @@ cfg-msys32() {
 cfg-wasm() { 
   export VERBOSE 
  (EMCC=$(which emcc)
-  EM_CONFIG=$(which em-config)
-  EMSCRIPTEN=$(dirname "$EM_CONFIG");
+  EMSCRIPTEN=$(dirname "$EMCC");
   EMSCRIPTEN=${EMSCRIPTEN%%/bin*};
   test -f /opt/cmake-toolchains/generic/Emscripten-wasm.cmake && TOOLCHAIN=/opt/cmake-toolchains/generic/Emscripten-wasm.cmake
   test -z "$TOOLCHAIN" -o '!' -f "$TOOLCHAIN" && TOOLCHAIN=$(find "$EMSCRIPTEN" -iname emscripten-wasm.cmake);
   test -z "$TOOLCHAIN" -o '!' -f "$TOOLCHAIN" && TOOLCHAIN=$(find "$EMSCRIPTEN" -iname emscripten.cmake);
-  test -f "$TOOLCHAIN" && export TOOLCHAIN || unset TOOLCHAIN;
+  test  -f "$TOOLCHAIN" || unset TOOLCHAIN;
   export EMSCRIPTEN
   : ${prefix:="$EMSCRIPTEN"}
   builddir=build/emscripten-wasm \
   CC="$EMCC" \
   cfg \
-    -DEMSCRIPTEN_PREFIX="$prefix" \
-    -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN" \
+    -DEMSCRIPTEN_PREFIX="$EMSCRIPTEN" \
+    ${TOOLCHAIN:+-DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN"} \
     -DCMAKE_EXE_LINKER_FLAGS="-s WASM=1" \
     -DCMAKE_EXECUTABLE_SUFFIX=".html" \
     -DCMAKE_EXECUTABLE_SUFFIX_INIT=".html" \
