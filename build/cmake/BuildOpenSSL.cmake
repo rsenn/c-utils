@@ -19,7 +19,7 @@ if(MSVC OR (WIN32 AND MINGW AND NOT CYGWIN))
 endif()
 
 
-add_definitions(-DENGINESDIR='\"/usr/lib/engines-1.1\"')
+#add_definitions(-DENGINESDIR='\"/usr/lib/engines-1.1\"')
 add_definitions(-DL_ENDIAN)
 add_definitions(-DNDEBUG)
 add_definitions(-DOPENSSL_API_COMPAT=0x10100000L)
@@ -32,7 +32,7 @@ add_definitions(-DOPENSSL_NO_MDC2=1 -DOPENSSL_NO_DES=1)
 add_definitions(-DOPENSSL_CPUID_OBJ=1 -DOPENSSL_USE_NODELETE=1)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/../..)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${THISDIR})
 include_directories(${THISDIR}/include)
 include_directories(${THISDIR}/crypto)
@@ -40,7 +40,7 @@ include_directories(${THISDIR}/crypto/include)
 include_directories(${THISDIR}/crypto/modes)
 
 link_libraries(dl)
-exec_program(perl ARGS ${THISDIR}/util/mkbuildinf.pl OUTPUT_VARIABLE MKBUILDINF_H)
+#exec_program(perl ARGS ${THISDIR}/util/mkbuildinf.pl OUTPUT_VARIABLE MKBUILDINF_H)
 #[[exec_program(perl ARGS
   -I${THISDIR}
   -Mconfigdata 
@@ -58,8 +58,8 @@ message("BN_CONF_H: ${BN_CONF_H}")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h "${BN_CONF_H}\n\n")
 ]]
 set(OPENSSLDIR "${CMAKE_INSTALL_PREFIX}/ssl")
-
-file(WRITE ${CMAKE_BINARY_DIR}/buildinf.h "${MKBUILDINF_H}\n\n")
+set(BUILDINF_TEMPLATE "#define PLATFORM \"platform: \"\n#define DATE \"built on: Thu Feb 13 07:00:01 2020 UTC\"\n\nstatic const char compiler_flags[] = {\n    'c','o','m','p','i','l','e','r',':',' ','\\0'\n};")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/buildinf.h" "${BUILDINF_TEMPLATE}\n")
 
 file(GLOB LIBCRYPTO_SOURCES
   crypto/aes/*.c
@@ -79,21 +79,18 @@ file(GLOB LIBCRYPTO_SOURCES
   crypto/comp/*.c
   crypto/conf/*.c
   crypto/ct/*.c
-  #crypto/des/*.c
   crypto/dh/*.c
   crypto/dsa/*.c
   crypto/dso/*.c
   crypto/ec/curve25519.c crypto/ec/ec2_mult.c crypto/ec/ec2_oct.c crypto/ec/ec2_smpl.c crypto/ec/ec_ameth.c crypto/ec/ec_asn1.c crypto/ec/ec_check.c crypto/ec/ec_curve.c crypto/ec/ec_cvt.c crypto/ec/ecdh_kdf.c crypto/ec/ecdh_ossl.c crypto/ec/ecdsa_ossl.c crypto/ec/ecdsa_sign.c crypto/ec/ecdsa_vrf.c crypto/ec/ec_err.c crypto/ec/ec_key.c crypto/ec/ec_kmeth.c crypto/ec/eck_prn.c crypto/ec/ec_lib.c crypto/ec/ec_mult.c crypto/ec/ec_oct.c crypto/ec/ec_pmeth.c crypto/ec/ecp_mont.c crypto/ec/ecp_nist.c crypto/ec/ecp_nistp224.c crypto/ec/ecp_nistp256.c crypto/ec/ecp_nistp521.c crypto/ec/ecp_nistputil.c crypto/ec/ecp_oct.c crypto/ec/ec_print.c crypto/ec/ecp_smpl.c crypto/ec/ecx_meth.c 
-  crypto/engine/*.c
+  #crypto/engine/*.c
   crypto/err/*.c
   crypto/evp/*.c
   crypto/hmac/*.c
-  #crypto/idea/*.c
   crypto/kdf/*.c
   crypto/lhash/*.c
   crypto/md4/*.c
   crypto/md5/*.c
-  #crypto/mdc2/*.c
   crypto/modes/*.c
   crypto/objects/*.c
   crypto/ocsp/*.c
@@ -126,8 +123,15 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/include/openssl/opensslconf.h
 )
 
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/bn_conf.h.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h )
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/bn_conf.h.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h
+)
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/dso_conf.h.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/include/internal/dso_conf.h
+)
 
 
 add_library(crypto ${LIBCRYPTO_SOURCES})
