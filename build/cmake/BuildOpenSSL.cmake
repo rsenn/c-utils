@@ -1,5 +1,5 @@
 project(openssl)
-set(THISDIR "${CMAKE_CURRENT_SOURCE_DIR}" INTERNAL)
+set(THISDIR "${CMAKE_CURRENT_SOURCE_DIR}"  CACHE INTERNAL "")
 
 
 include(CheckTypeSize)
@@ -23,7 +23,7 @@ add_definitions(-DENGINESDIR='\"/usr/lib/engines-1.1\"')
 add_definitions(-DL_ENDIAN)
 add_definitions(-DNDEBUG)
 add_definitions(-DOPENSSL_API_COMPAT=0x10100000L)
-add_definitions(-DOPENSSLDIR='\"/etc/ssl\"')
+#add_definitions(-DOPENSSLDIR='\"/etc/ssl\"')
 add_definitions(-DOPENSSL_NO_DYNAMIC_ENGINE)
 add_definitions(-DOPENSSL_THREADS)
 add_definitions(-DOPENSSL_NO_IDEA=1 -DOPENSSL_NO_RC5=1)
@@ -56,7 +56,7 @@ endif()
 message("BN_CONF_H: ${BN_CONF_H}")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h "${BN_CONF_H}\n\n")
 
-
+set(OPENSSLDIR "${CMAKE_INSTALL_PREFIX}/ssl")
 
 file(WRITE ${CMAKE_BINARY_DIR}/buildinf.h "${MKBUILDINF_H}\n\n")
 

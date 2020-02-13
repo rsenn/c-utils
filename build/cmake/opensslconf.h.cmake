@@ -198,6 +198,8 @@ extern "C" {
 
 #define RC4_INT unsigned int
 
+#define OPENSSLDIR "@OPENSSLDIR@"
+
 #ifdef  __cplusplus
 }
 #endif
