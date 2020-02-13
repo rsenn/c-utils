@@ -4,7 +4,7 @@ CC = gcc
 CXX = g++
 CPPFLAGS = -DDEBUG=1
 DEFS = -DHAVE_ERRNO_H=1
-CFLAGS = -O0 -g -ggdb
+CFLAGS = $(if $(NOOPT),,-O0) -g -ggdb
 LDFLAGS = -g
 AR = gcc-ar
 EXTRA_LIBS = -ladvapi32 -lws2_32 -lkernel32

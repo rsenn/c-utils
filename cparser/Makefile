@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g3 -ggdb -O0 -Wall
+CFLAGS = -g3 -ggdb $(if $(NOOPT),,-O0) -Wall
 CPPFLAGS = -I$(BUILDDIR) -I.. -I. -I../lib -DYYDEBUG=1 -DYYERROR_VERBOSE=1
 
 BUILD := $(shell $(CC) -dumpmachine)

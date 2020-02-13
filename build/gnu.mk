@@ -1,6 +1,6 @@
 CC = gcc
 CCLD ?= $(CC)
-CFLAGS = -Os
+CFLAGS =  $(if $(NOOPT),,$(if $(NOOPT),,-O0))
 DEFS = 
 CPPFLAGS = 
 BUILDDIR = build/i686-pc-cygwin/Release/

@@ -76,6 +76,26 @@ int main() {\n
 }\n
 endef
 
+HAVE_PIPE_FLAG := $(call check-try-compile,,-pipe)
+ifneq ($(HAVE_PIPE_FLAG),1)
+NOPIPE := 1
+endif
+
+HAVE_OPT_FLAG := $(call check-try-compile,,-O0)
+ifneq ($(HAVE_OPT_FLAG),1)
+NOOPT := 1
+endif
+
+HAVE_WARN_FLAGS := $(call check-try-compile,,-Wall -Wno-strict-aliasing -Wno-unused-function -Wno-unused-variable)
+ifneq ($(HAVE_WARN_FLAGS),1)
+NOWARN := 1
+endif
+
+HAVE_DEBUG_FLAGS := $(call check-try-compile,,-g -g3)
+ifneq ($(HAVE_DEBUG_FLAGS),1)
+NODEBUG := 1
+endif
+
 HAVE_SCOPE := $(call check-try-compile,$(CHECK_SCOPE_ID))
 ifeq ($(HAVE_SCOPE),1)
 DEFINES += LIBC_HAS_SCOPE_ID=1
@@ -634,21 +654,21 @@ ifneq ($(NOPIPE),1)
 CFLAGS = -pipe
 endif
 
-CFLAGS_Prof = -pg -O2
-CFLAGS_Debug = -g -ggdb -O0
-CFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
-CFLAGS_RelWithDebInfo = -g -ggdb -O2
-CFLAGS_Release = -g -fomit-frame-pointer -O2
+CFLAGS_Prof = -pg $(if $(NOOPT),,-O2)
+CFLAGS_Debug = -g -ggdb $(if $(NOOPT),,$(if $(NOOPT),,-O0))
+CFLAGS_MinSizeRel = -g -fomit-frame-pointer $(if $(NOOPT),,-Os)
+CFLAGS_RelWithDebInfo = -g -ggdb $(if $(NOOPT),,-O2)
+CFLAGS_Release = -g -fomit-frame-pointer $(if $(NOOPT),,-O2)
 
 CXXFLAGS = -pipe
 
 CXXFLAGS += -std=c++11
 
-CXXFLAGS_Prof = -pg -O2
-CXXFLAGS_Debug = -g -ggdb -O0
-CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer -Os
-CXXFLAGS_RelWithDebInfo = -g -ggdb -O2
-CXXFLAGS_Release = -g -fomit-frame-pointer -O2
+CXXFLAGS_Prof = -pg -O2 $(if $(NOOPT),,-O2)
+CXXFLAGS_Debug = -g -ggdb $(if $(NOOPT),,$(if $(NOOPT),,-O0))
+CXXFLAGS_MinSizeRel = -g -fomit-frame-pointer $(if $(NOOPT),,-Os)
+CXXFLAGS_RelWithDebInfo = -g -ggdb $(if $(NOOPT),,-O2)
+CXXFLAGS_Release = -g -fomit-frame-pointer $(if $(NOOPT),,-O2)
 ifeq ($(BUILD_TYPE),)
 ifeq ($(PROF),1)
 BUILD_TYPE = Prof
@@ -921,10 +941,12 @@ endif
 #
 #$(info DEFINES: $(DEFINES))
 
-
-FLAGS += $(patsubst %,-W%,$(WARNINGS)) $(patsubst %,-D%,$(DEFINES))
+ifneq ($(NOWARN),1)
+FLAGS += $(patsubst %,-W%,$(WARNINGS))
+endif
+FLAGS += $(patsubst %,-D%,$(DEFINES))
 FLAGS += $(CPPFLAGS)
-FLAGS := $(sort $(FLAGS))
+#FLAGS := $(sort $(FLAGS))
 
 FLAGS_FILE := $(patsubst %/,%,$(dir $(patsubst %/,%,$(BUILDDIR))))/$(notdir $(patsubst %/,%,$(BUILDDIR))).flags
 
@@ -988,13 +1010,26 @@ endif
 endif
 endif
 
+ifeq ($(NOOPT),1)
+CFLAGS := $(filter-out -O%,$(CFLAGS))
+endif
+
+ifeq ($(NOWARN),1)
+CFLAGS := $(filter-out -W%,$(CFLAGS))
+endif
+
+ifeq ($(NODEBUG),1)
+CFLAGS := $(filter-out -g%,$(CFLAGS))
+endif
+
+$(info CC: $(CC))
 $(info CFLAGS: $(CFLAGS))
 $(info CXXFLAGS: $(CXXFLAGS))
 $(info LDFLAGS: $(LDFLAGS))
-$(info EXTRA_CPPFLAGS: $(EXTRA_CPPFLAGS))
-$(info CC: $(CC))
-$(info COMPILE: $(COMPILE))
-$(info CROSS_COMPILE: $(CROSS_COMPILE))
+$(info NOOPT: $(NOOPT))
+$(info NOWARN: $(NOWARN))
+# $(info COMPILE: $(COMPILE))	
+# $(info CROSS_COMPILE: $(CROSS_COMPILE))
 
 ifneq ($(HAVE_ZLIB),1)
 	BUILD_ZLIB = 1

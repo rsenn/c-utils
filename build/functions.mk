@@ -18,11 +18,17 @@ endef
 
 lib-target = $(eval $(call lib-tmpl,$(1),$(2),$(3),$(4)))
 
+define default-program
+int main() {
+	return 0;
+}
+endef
+
 define cmds-try-compile =
 set -e;
 NAME=test_$$RANDOM;
-echo "$(1)" >$$NAME.c;
-$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS)  -o $$NAME $$NAME.c;
+echo "$(if $(1),$(1),$(default-program))" >$$NAME.c;
+$(CROSS_COMPILE)$(CC)$(if $(SYSROOT), --sysroot=$(SYSROOT),) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(CPPFLAGS) $(2) -o $$NAME $$NAME.c;
 endef
 
 define prog-check-include =

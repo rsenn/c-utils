@@ -23,7 +23,7 @@
   "folders": [
   {
     "path": ".",
-          "file_exclude_patterns": ["*~", "*.??make", "*.orig", "*.mk", "*.jom","*.gnu","*.ninja", "*.stackdump", "*.3", "*.o", "*.lo", "*.d", "*.m4", "*~", "*.pro.user*", "*cfg*.sh"]
+          "file_exclude_patterns": ["*~", "*.??make", "*.orig", "*.jom","*.gnu","*.ninja", "*.stackdump", "*.3", "*.o", "*.lo", "*.d", "*.m4", "*~", "*.pro.user*", "*cfg*.sh"]
 
   }],
   "settings":

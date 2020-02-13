@@ -66,6 +66,7 @@ http_readable(http* h, int freshen) {
   if((r = h->response) == NULL) {
     return ret;
   }
+  
   while(r->status == HTTP_RECV_HEADER) {
     if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
       break;

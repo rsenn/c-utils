@@ -126,7 +126,6 @@
 			"settings":
 			{
 				"buffer_size": 3175,
-				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -862,6 +861,10 @@
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
