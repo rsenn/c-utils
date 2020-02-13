@@ -360,9 +360,12 @@ endif()
 
 if(USE_ZLIB)
   message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
-  if(ZLIB_LIBRARY)
+  if(ZLIB_INCLUDE_DIR)
    # link_libraries(${ZLIB_LIBRARY})
     include_directories(${ZLIB_INCLUDE_DIR})
+  endif(ZLIB_INCLUDE_DIR)
+
+  if(ZLIB_LIBRARY)
     add_definitions(-DHAVE_ZLIB=1)
   else(ZLIB_LIBRARY)
     add_definitions(-DHAVE_ZLIB=0)
@@ -381,10 +384,12 @@ endif(USE_BZIP)
 
 if(USE_LZMA)
   message("LIBLZMA_LIBRARY: ${LIBLZMA_LIBRARY} LIBLZMA_FOUND: ${LIBLZMA_FOUND}")
-  if(LIBLZMA_LIBRARY)
+  if(LIBLZMA_INCLUDE_DIR)
     #link_libraries(${LIBLZMA_LIBRARY})
-    include_directories(${LIBLZMA_INCLUDE_DIRS})
-    add_definitions(-DHAVE_LIBLZMA=1 -DLZMA_API_STATIC=1)
+    include_directories(${LIBLZMA_INCLUDE_DIR})
+  endif(LIBLZMA_INCLUDE_DIR)
+   if(LIBLZMA_LIBRARY)
+   add_definitions(-DHAVE_LIBLZMA=1 -DLZMA_API_STATIC=1)
   else(LIBLZMA_LIBRARY)
     add_definitions(-DHAVE_LIBLZMA=0)
   endif(LIBLZMA_LIBRARY)
@@ -506,10 +511,9 @@ if(BUILD_LZMA)
    COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
      INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}"
  )
- set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
-
+  set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
+  set(LIBLZMA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api" CACHE FILEPATH "" FORCE)
 endif(BUILD_LZMA)
-
 
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
