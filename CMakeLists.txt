@@ -504,10 +504,12 @@ if(BUILD_SSL)
   
    file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
     file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
+
+    file(WRITE "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch" "--- 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.corig     2020-02-13 09:37:58.389826334 +0100\n+++ 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.c    2020-02-13 09:33:12.801691620 +0100\n@@ -104,7 +104,7 @@\n #elif defined(__mips__)\n static const u32 fcsr = 1;\n #else\n-#error \"unrecognized platform\"\n+#warning \"unrecognized platform\"\n #endif\n \n int poly1305_init(void *ctx, const unsigned char key[16])")
  
- #[[   exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS
-      -p0 -i ../../build/cmake/openssl-1.1.0j-pkgs7.patch
-    )]]
+    exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}" ARGS
+      -p0 -i "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch"
+    )
 
   endif() 
 
