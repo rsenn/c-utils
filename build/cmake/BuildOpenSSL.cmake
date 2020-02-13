@@ -1,4 +1,5 @@
 project(openssl)
+set(THISDIR "${CMAKE_CURRENT_SOURCE_DIR}" INTERNAL)
 
 
 include(CheckTypeSize)
@@ -31,25 +32,29 @@ add_definitions(-DOPENSSL_NO_MDC2=1 -DOPENSSL_NO_DES=1)
 add_definitions(-DOPENSSL_CPUID_OBJ=1 -DOPENSSL_USE_NODELETE=1)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto/modes)
+include_directories(${THISDIR})
+include_directories(${THISDIR}/include)
+include_directories(${THISDIR}/crypto)
+include_directories(${THISDIR}/crypto/include)
+include_directories(${THISDIR}/crypto/modes)
 
 link_libraries(dl)
-
-exec_program(perl ARGS ${CMAKE_CURRENT_SOURCE_DIR}/util/mkbuildinf.pl OUTPUT_VARIABLE MKBUILDINF_H)
+exec_program(perl ARGS ${THISDIR}/util/mkbuildinf.pl OUTPUT_VARIABLE MKBUILDINF_H)
 exec_program(perl ARGS
-  -I${CMAKE_CURRENT_SOURCE_DIR}
+  -I${THISDIR}
   -Mconfigdata 
-  ${CMAKE_CURRENT_SOURCE_DIR}/util/dofile.pl
+  ${THISDIR}/util/dofile.pl
   -oMakefile 
-  ${CMAKE_CURRENT_SOURCE_DIR}/crypto/include/internal/bn_conf.h.in
-  OUTPUT_VARIABLE BN_CONF_H)
+  ${THISDIR}/crypto/include/internal/bn_conf.h.in
+  OUTPUT_VARIABLE BN_CONF_H
+  RETURN_VALUE RETVAL_DOFILE)
+
+if(RETVAL_DOFILE)
+  message(FATAL_ERROR "dofile.pl returned: ${RETVAL_DOFILE}\n\n${BN_CONF_H}")
+endif()
 
 message("BN_CONF_H: ${BN_CONF_H}")
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/crypto/include/internal/bn_conf.h "${BN_CONF_H}\n\n")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h "${BN_CONF_H}\n\n")
 
 
 
