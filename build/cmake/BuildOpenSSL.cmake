@@ -1,5 +1,23 @@
 project(openssl)
 
+
+include(CheckTypeSize)
+check_type_size("long" LONG_INT)
+check_type_size("long long" LONG_LONG_INT)
+check_type_size("int" INT)
+if(HAVE_LONG_INT AND "${LONG_INT}" EQUAL 8)
+  set(SIXTY_FOUR_BIT_LONG ON)
+elseif(HAVE_LONG_LONG_INT AND "${LONG_LONG_INT}" EQUAL 8)
+  set(SIXTY_FOUR_BIT ON)
+else()
+  set(THIRTY_TWO_BIT ON)
+endif()
+
+if(MSVC OR (WIN32 AND MINGW AND NOT CYGWIN))
+  set(OPENSSL_EXPORT_VAR_AS_FUNCTION 1)
+endif()
+
+
 add_definitions(-DENGINESDIR='\"/usr/lib/engines-1.1\"')
 add_definitions(-DL_ENDIAN)
 add_definitions(-DNDEBUG)
@@ -12,13 +30,12 @@ add_definitions(-DOPENSSL_NO_MDC2=1 -DOPENSSL_NO_DES=1)
 
 add_definitions(-DOPENSSL_CPUID_OBJ=1 -DOPENSSL_USE_NODELETE=1)
 
-
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(crypto)
-include_directories(crypto/include)
-include_directories(crypto/modes)
-include_directories(include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto/modes)
 
 link_libraries(dl)
 
@@ -96,7 +113,12 @@ file(GLOB LIBCRYPTO_SOURCES
  #  engines/*.c
   crypto/cpt_err.c crypto/cryptlib.c crypto/cversion.c crypto/ebcdic.c crypto/ex_data.c crypto/getenv.c crypto/init.c crypto/mem.c crypto/mem_clr.c crypto/mem_dbg.c crypto/mem_sec.c crypto/o_dir.c crypto/o_fips.c crypto/o_fopen.c crypto/o_init.c crypto/o_str.c crypto/o_time.c crypto/threads_none.c crypto/threads_pthread.c crypto/threads_win.c crypto/uid.c
 
- )
+)
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/opensslconf.h.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/include/openssl/opensslconf.h
+)
 
 add_library(crypto ${LIBCRYPTO_SOURCES})
 
