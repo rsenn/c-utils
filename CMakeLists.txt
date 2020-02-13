@@ -535,7 +535,7 @@ endif()
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
-set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg expand fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan
+set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan
   #sig
   slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix wait xml ucs)
 
@@ -566,7 +566,6 @@ target_link_libraries(cbmap str)
 target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI})
 target_link_libraries(dir stralloc)
 target_link_libraries(errmsg str)
-target_link_libraries(expand errmsg var unix)
 target_link_libraries(elf byte str range mmap uint64 uint32)
 target_link_libraries(fmt byte str uint64 uint32)
 target_link_libraries(gpio mmap)
