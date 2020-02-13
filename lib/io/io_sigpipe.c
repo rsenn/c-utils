@@ -9,8 +9,10 @@ io_sigpipe(void) {
 #if !(defined(_WIN32) || defined(_WIN64))
   static int isitdone;
   if(!isitdone) {
+#if defined(SIGPIPE) && defined(SIG_IGN)
     signal(SIGPIPE, SIG_IGN);
     isitdone = 1;
+#endif
   }
 #endif
 }

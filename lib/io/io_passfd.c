@@ -35,6 +35,17 @@ io_passfd(fd_t sock, fd_t fd) {
 #include <sys/uio.h>
 #include <errno.h>
 
+#ifdef __wasi__
+#define CMSG_FIRSTHDR
+#define SCM_RIGHTS       0x01    /* rw: access rights (array of int) */
+
+struct cmsghdr {
+  size_t cmsg_len;	/* data byte count, including hdr */
+  int32_t cmsg_level;	/* originating protocol */
+  int32_t cmsg_type;	/* protocol-specific type */
+};
+#endif
+
 union fdmsg {
   struct cmsghdr h;
   /* on NetBSD, CMSG_SPACE is not constant */
