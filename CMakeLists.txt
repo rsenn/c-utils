@@ -55,6 +55,7 @@ include(FindPkgConfig)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckIncludeFile)
+include(CheckCCompilerFlag)
 
 function(DUMP VAR)
   message("\n\nVariable dump of: " ${ARGV} "\n")
@@ -74,6 +75,23 @@ if(COMPILER_NAME MATCHES "em.*")
 #  endforeach(LIB BZIP ZLIB LZMA SSL)
   set(EMSCRIPTEN_EXE_SUFFIX "html")
 endif(COMPILER_NAME MATCHES "em.*")
+
+
+check_c_compiler_flag("-flto" F_LTO)
+
+if(F_LTO)
+  option(ENABLE_LTO "Enable link-time optimization" OFF)
+endif(F_LTO)
+if(EMSCRIPTEN)
+  option(ENABLE_LTO "Enable link-time optimization" ON)
+endif(EMSCRIPTEN)
+
+
+if(ENABLE_LTO)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
+endif(ENABLE_LTO)
+
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -145,6 +163,19 @@ if(HAVE_MATH_LIB)
   set(LIBMATH m)
 endif()
 
+check_include_file(stdint.h HAVE_STDINT_H)
+check_include_file(stdlib.h HAVE_STDLIB_H)
+check_include_file(stdbool.h HAVE_STDBOOL_H)
+check_include_file(inttypes.h HAVE_INTTYPES_H)
+check_include_file(limits.h HAVE_LIMITS_H)
+check_include_file(string.h HAVE_STRING_H)
+check_include_file(strings.h HAVE_STRINGS_H)
+check_include_file(memory.h HAVE_MEMORY_H)
+check_include_file(sys/param.h HAVE_SYS_PARAM_H)
+check_include_file(sys/time.h HAVE_SYS_TIME_H)
+check_include_file(sys/types.h HAVE_SYS_TYPES_H)
+
+
 #include(${CMAKE_SOURCE_DIR}/FindZlib.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
 #include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
@@ -195,7 +226,7 @@ if(USE_LZMA)
 
     if(HAVE_LIBLZMA AND HAVE_LZMA_H)
       set(LIBLZMA_FOUND TRUE)
-      set(LIBLZMA_INCLUDE_DIR "")
+      set(LIBLZMA_INCLUDE_DIRS "")
       set(LIBLZMA_LIBRARY lzma)
       message(STATUS "Found liblzma")
       message(STATUS "  LIBLZMA_LIBRARY=${LIBLZMA_LIBRARY}")
@@ -205,7 +236,7 @@ if(USE_LZMA)
 
 else(USE_LZMA)
       unset(LIBLZMA_LIBRARY CACHE)
-      unset(LIBLZMA_INCLUDE_DIR CACHE)
+      unset(LIBLZMA_INCLUDE_DIRS CACHE)
       unset(LIBLZMA_FOUND CACHE)
 
 endif(USE_LZMA)
@@ -352,7 +383,7 @@ if(USE_LZMA)
   message("LIBLZMA_LIBRARY: ${LIBLZMA_LIBRARY} LIBLZMA_FOUND: ${LIBLZMA_FOUND}")
   if(LIBLZMA_LIBRARY)
     #link_libraries(${LIBLZMA_LIBRARY})
-    include_directories(${LIBLZMA_INCLUDE_DIR})
+    include_directories(${LIBLZMA_INCLUDE_DIRS})
     add_definitions(-DHAVE_LIBLZMA=1 -DLZMA_API_STATIC=1)
   else(LIBLZMA_LIBRARY)
     add_definitions(-DHAVE_LIBLZMA=0)
@@ -425,16 +456,56 @@ if(BUILD_BZIP)
 endif(BUILD_BZIP)
 
 
-if(BUILD_LIBLZMA)
+function(DEFINE_HAVE OUTVAR)
+  set(OUT "")
+  foreach(DEF ${ARGN})
+ # message("Check definition ${DEF}: ${${DEF}}")
+    if(${DEF} STREQUAL 1)
+      list(APPEND OUT "${DEF}=1")
+    endif(${DEF} STREQUAL 1)
+  endforeach(DEF ${ARGN})
+  set("${OUTVAR}" "${OUT}" PARENT_SCOPE)
+
+endfunction(DEFINE_HAVE)
+
+if(BUILD_LZMA)
  message("Building liblzma from 3rdparty/xz")
- file(GLOB LIBLZMA_SOURCES 3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c)
+ file(GLOB LIBLZMA_SOURCES
+    #3rdparty/xz/debug/*.c
+    #3rdparty/xz/lib/*.c
+    #3rdparty/xz/src/common/*.c
+    3rdparty/xz/src/liblzma/check/*.c
+    #3rdparty/xz/src/liblzma/check/*.S
+    3rdparty/xz/src/liblzma/common/*.c
+    3rdparty/xz/src/liblzma/delta/*.c
+    3rdparty/xz/src/liblzma/lz/*.c
+    3rdparty/xz/src/liblzma/lzma/*.c
+    3rdparty/xz/src/liblzma/rangecoder/*.c
+    3rdparty/xz/src/liblzma/simple/*.c
+ )
+ list(FILTER LIBLZMA_SOURCES EXCLUDE REGEX ".*_mt\\..*")
+
  add_library(lzma ${LIBLZMA_SOURCES})
- set_target_properties(lzma PROPERTIES
-   COMPILE_DEFINITIONS "HAVE_CONFIG_H=1"
+  set(LIBLZMA_INCLUDE_DIRS
+    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/common 
+    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/lzma
+    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/lz
+    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/check
+    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/simple
+    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/delta
+    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/rangecoder
+    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/common 
+    ${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api
+  )
+  DEFINE_HAVE(LIBLZMA_DEFS HAVE_STDINT_H HAVE_STDLIB_H HAVE_STDBOOL_H HAVE_INTTYPES_H HAVE_LIMITS_H HAVE_STRING_H HAVE_STRINGS_H HAVE_MEMORY_H HAVE_SYS_PARAM_H HAVE_SYS_TIME_H HAVE_SYS_TYPES_H HAVE_LZMA_H)
+  #message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
+  set_target_properties(lzma PROPERTIES
+   COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
+     INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}"
  )
  set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
- set(LIBLZMA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/xz/liblzma/api CACHE PATH "" FORCE)
-endif(BUILD_LIBLZMA)
+
+endif(BUILD_LZMA)
 
 
 
