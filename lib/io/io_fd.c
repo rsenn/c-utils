@@ -53,6 +53,10 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*)
 #define F_GETSIG 11 /* for sockets. */
 #endif
 
+#ifndef O_NDELAY
+#define O_NDELAY O_NONBLOCK
+#endif
+
 static iarray io_fds;
 
 void*

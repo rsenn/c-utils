@@ -608,8 +608,12 @@ ifeq ($(SYS),msys)
 endif
 endif
 endif
+ifeq ($(OS),wasi)
+	READDIR := 1
+	DEFINES += _BSD_SOURCE=1
+endif
 
-#$(info READDIR: $(READDIR))
+$(info READDIR: $(READDIR))
 
 ifeq ($(WIN32),)
 ifeq ($(SYS),mingw32)
@@ -862,11 +866,11 @@ VPATH = $(BUILDDIR):.:lib:src
 ##$(info CCVER: $(CCVER))
 ##$(info CROSS_COMPILE: $(CROSS_COMPILE))
 ##$(info CXXVER: $(CXXVER))
-##$(info HOST: $(HOST))
-##$(info TOOLCHAIN: $(TOOLCHAIN))
-##$(info KERN: $(KERN))
+$(info HOST: $(HOST))
+$(info TOOLCHAIN: $(TOOLCHAIN))
+$(info KERN: $(KERN))
 ##$(info M64: $(M64))
-##$(info OS: $(OS))
+$(info OS: $(OS))
 ##$(info STATIC: $(STATIC))
 ##$(info TRIPLET: $(TRIPLET))
 ifeq ($(OS),darwin)
@@ -941,7 +945,7 @@ LDFLAGS += $(EXTRA_LDFLAGS)
 endif
 #CFLAGS += $(DEFS:%=-D%)
 #
-#$(info DEFINES: $(DEFINES))
+$(info DEFINES: $(DEFINES))
 
 ifneq ($(NOWARN),1)
 FLAGS += $(patsubst %,-W%,$(WARNINGS))
@@ -1011,6 +1015,7 @@ FLAGS += --sysroot=$(SYSROOT)
 endif
 endif
 endif
+CFLAGS := $(filter-out -D%,$(CFLAGS))
 
 ifeq ($(NOOPT),1)
 CFLAGS := $(filter-out -O%,$(CFLAGS))

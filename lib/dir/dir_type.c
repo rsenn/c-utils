@@ -1,8 +1,5 @@
-#if USE_READDIR || !(defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
-#include <dirent.h>
-#endif
-
-#include "../dir_internal.h"
+#define __wasm_basics___struct_timespec_h 1
+#include "../windoze.h"
 
 #if !defined(_DIRENT_HAVE_D_TYPE) && (defined(__MSYS__) || defined(__CYGWIN__))
 #include "../buffer.h"
@@ -10,6 +7,13 @@
 
 #include <sys/stat.h>
 #endif
+
+#define __wasilibc_unmodified_upstream 1
+#if USE_READDIR || defined(__wasi__) || !(defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
+#include <dirent.h>
+#endif
+
+#include "../dir_internal.h"
 #ifndef FILE_ATTRIBUTE_REPARSE_POINT
 #define FILE_ATTRIBUTE_REPARSE_POINT 0x400
 #endif
@@ -37,7 +41,7 @@ dir_type(struct dir_s* d) {
 #define DT_LNK 10
 #endif
 
-#if defined(_DIRENT_HAVE_D_TYPE) || (!defined(__MSYS__) && !defined(__CYGWIN__))
+#if defined(_DIRENT_HAVE_D_TYPE) || (!defined(__MSYS__) && !defined(__CYGWIN__)) 
   switch((dir_TYPE(d))) {
     case DT_DIR: r |= D_DIRECTORY; break;
     case DT_REG: r |= D_FILE; break;

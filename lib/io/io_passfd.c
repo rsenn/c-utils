@@ -1,4 +1,5 @@
 #include "../windoze.h"
+#include "../socket_internal.h"
 #ifdef _WIN32
 #define cmsghdr wsacmsghdr
 #endif
@@ -30,7 +31,6 @@ io_passfd(fd_t sock, fd_t fd) {
 #include "../typedefs.h"
 #include "../byte.h"
 #include <string.h>
-#include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <errno.h>
