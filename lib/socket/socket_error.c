@@ -1,4 +1,6 @@
 #define USE_WS2_32 1
+#define __wasilibc_unmodified_upstream 1
+
 #include "../socket_internal.h"
 
 int

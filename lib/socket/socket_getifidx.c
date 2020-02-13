@@ -7,9 +7,8 @@
 #include "../socket_internal.h"
 #include <sys/types.h>
 
-#ifndef WINDOWS
+#if !defined(WINDOWS) && !defined(__wasi__)
 #include <net/if.h>
-#endif
 
 uint32
 socket_getifidx(const char* ifname) {
@@ -19,3 +18,4 @@ socket_getifidx(const char* ifname) {
   return 0;
 #endif
 }
+#endif

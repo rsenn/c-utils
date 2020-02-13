@@ -2,6 +2,7 @@
 
 #include <signal.h>
 
+#ifdef SA_RESTART
 int
 sig_action(int sig, struct sigaction const* new, struct sigaction* old) {
   struct sigaction sanew, saold;
@@ -27,3 +28,4 @@ sig_action(int sig, struct sigaction const* new, struct sigaction* old) {
   }
   return 0;
 }
+#endif

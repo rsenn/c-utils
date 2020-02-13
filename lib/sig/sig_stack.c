@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <signal.h>
 
+#ifdef NSIG
 static struct sigaction sig_stack[NSIG - 1][SIGSTACKSIZE];
 static unsigned int sigsp[NSIG - 1];
 
@@ -27,3 +28,4 @@ sig_pop(int sig) {
     return -1;
   return --sigsp[sig - 1];
 }
+#endif
