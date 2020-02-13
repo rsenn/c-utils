@@ -2624,10 +2624,6 @@ $(BUILDDIR)04_compress_easy_mt.o: 3rdparty/xz/doc/examples/04_compress_easy_mt.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)03_compress_custom.o: 3rdparty/xz/doc/examples/03_compress_custom.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)getopt1.o: 3rdparty/xz/lib/getopt1.c 3rdparty/xz/lib/getopt_int.h
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
-$(BUILDDIR)getopt.o: 3rdparty/xz/lib/getopt.c 3rdparty/xz/lib/getopt_int.h
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)scanlzma.o: 3rdparty/xz/extra/scanlzma/scanlzma.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)test_bcj_exact_size.o: 3rdparty/xz/tests/test_bcj_exact_size.c
