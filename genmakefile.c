@@ -1,8 +1,5 @@
-#include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
 #include "genmakefile.h"
 #include "map.h"
@@ -688,7 +685,7 @@ rule_get(const char* name) {
 
     //    hmap_add(&rules, name, len + 1, 1, HMAP_DATA_TYPE_CUSTOM, ret, sizeof(struct target_s));
     hmap_set(&rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
-    assert(hmap_search(rules, name, len + 1, &t) == HMAP_SUCCESS);
+    (hmap_search(rules, name, len + 1, &t) == HMAP_SUCCESS);
 
     // ret = hmap_data(t);
 
@@ -2883,7 +2880,6 @@ var_output(buffer* b, HMAP_DB* vars, const char* name) {
   TUPLE* t = 0;
 
   if(hmap_search(vars, name, str_len(name) + 1, &t) == HMAP_SUCCESS) {
-    //  assert(t);
     stralloc_init(&v);
 
     var = hmap_data(t);
