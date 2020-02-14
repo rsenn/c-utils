@@ -39,6 +39,7 @@ int strarray_from_argv(int argc, const char* const argv[], strarray* arr);
   } while(0)
 
 int64 strarray_index_of(strarray*, const char* s);
+int64 strarray_index_of_b(strarray*, const char* s, size_t n);
 char* strarray_pop(strarray*, char* s);
 int strarray_pushb(strarray*, const char* b, size_t n);
 int strarray_pushd(strarray*, const char* s);
