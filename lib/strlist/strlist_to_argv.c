@@ -1,3 +1,4 @@
+#include "../alloc.h"
 #include "../strlist.h"
 #include <stdlib.h>
 

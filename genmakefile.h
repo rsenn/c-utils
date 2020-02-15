@@ -149,7 +149,6 @@ void get_rules_by_cmd(stralloc*, strlist* deps);
 void includes_cppflags(void);
 void includes_to_libs(const strlist*, strlist* libs);
 int input_command_line(const char*, size_t n);
-int input_command(stralloc*, strlist* args);
 int is_include(const char*);
 int is_include_sa(stralloc*);
 int is_object(const char*);

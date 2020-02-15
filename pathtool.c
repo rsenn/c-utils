@@ -90,7 +90,7 @@ pathtool(const char* arg, stralloc* sa) {
   if(absolute) {
     path_absolute(arg, sa);
     stralloc_nul(sa);
-    path_collapse(sa->s, sa);
+    path_canonical_sa(sa);
 
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "absolute: ");

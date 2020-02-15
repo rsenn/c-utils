@@ -1,36 +1,32 @@
 #include "../path_internal.h"
-#include "../strlist.h"
 #include "../byte.h"
 
-int
-path_collapse(const char* path, stralloc* out) {
-  const char* x;
-  int count = 0;
-  size_t n;
+size_t
+path_collapse(char* path, size_t n) {
+  char* x = path;
+  int ret = 0;
   char sep = path_getsep(path);
-  strlist p, o;
-  strlist_init(&p, sep);
-  strlist_init(&o, sep);
-  strlist_froms(&p, path, sep == '\\' ? '/' : '\\');
+  char* end = x + n;
 
-  stralloc_zero(out);
+  while(x < end) {
+    size_t i = byte_chr(x, end - x, sep);
 
-  byte_copy(&o.sa, sizeof(stralloc), out);
+    if(x + i < end) {
+      i++;
 
-  strlist_foreach(&p, x, n) {
-    if(count > 1) {
-      if(n == 1 && *x == '.') {
-        continue;
-      }
-      if(n == 2 && byte_equal(x, 2, "..")) {
-        strlist_pop(&o);
-        --count;
-        continue;
+      if(x + i + 2 < end) {
+        if(x[i] == '.' && x[i + 1] == '.' && (x + i + 2 == end || x[i + 2] == sep)) {
+          i += 3;
+          byte_copy(x, n - i, &x[i]);
+          end -= i;
+          ret++;
+          continue;
+        }
       }
     }
-    strlist_pushb(&o, x, n);
-    ++count;
+
+    x += i;
+    n -= i;
   }
-  byte_copy(out, sizeof(stralloc), &o.sa);
-  return count;
+  return x - path;
 }

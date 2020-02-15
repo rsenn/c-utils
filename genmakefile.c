@@ -285,6 +285,17 @@ path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
   stralloc_nul(out);
 }
 
+void
+path_prefix_sa(const stralloc* prefix, stralloc* sa) {
+  if(prefix->len && !stralloc_equals(prefix, ".")) {
+    stralloc_insertb(sa, prefix->s, 0, prefix->len);
+
+    if(!stralloc_endb(prefix, &pathsep_make, 1))
+      stralloc_insertb(sa, &pathsep_make, prefix->len, 1);
+  }
+  stralloc_nul(sa);
+}
+
 /**
  * Change file extension and concatenate it to out.
  */
@@ -1170,6 +1181,18 @@ is_b(const char* x, size_t n, int (*fn_s)(const char*)) {
   return ret;
 }
 
+static int
+count_b(strlist* list, int (*fn_s)(const char*)) {
+  const char* x;
+  size_t n;
+  int ret = 0;
+  strlist_foreach(list, x, n) {
+    if(is_b(x, n, fn_s))
+      ret++;
+  }
+  return ret;
+}
+
 int
 is_source(const char* filename) {
   if(str_end(filename, ".c"))
@@ -1365,7 +1388,7 @@ sources_find(const char* name, size_t len, size_t* cptr) {
   const char** x;
   const char* ret = 0;
   size_t i, n, count = 0;
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "Find source: ");
   buffer_put(buffer_2, name, len);
   buffer_putnlflush(buffer_2);
@@ -1377,7 +1400,9 @@ sources_find(const char* name, size_t len, size_t* cptr) {
       i = byte_findb(*x, n, path_basename(name), len);
 
     if(i < n) {
-      ret = *x;
+
+      if(!ret && is_source(*x))
+        ret = *x;
       count++;
     }
   }
@@ -1388,7 +1413,10 @@ sources_find(const char* name, size_t len, size_t* cptr) {
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Found source: ");
     buffer_puts(buffer_2, ret);
-    buffer_puts(buffer_2, "( ");
+    buffer_puts(buffer_2, "(query = '");
+    buffer_put(buffer_2, name, len);
+    buffer_puts(buffer_2, " ', ");
+
     buffer_putulong(buffer_2, count);
     buffer_puts(buffer_2, " results)");
 
@@ -1701,8 +1729,8 @@ sourcedir_populate(HMAP_DB* sourcedirs, strarray* sources) {
       stralloc_cats(&dir, s);
       stralloc_nul(&dir);
 
-      stralloc_zero(&r);
-      path_collapse(dir.s, &r);
+      stralloc_copy(&r, &dir);
+      path_canonical_sa(&r);
       strlist_push_unique_sa(&srcdir->includes, &r);
     }
 
@@ -2074,10 +2102,14 @@ gen_single_rule(HMAP_DB* rules, stralloc* output, strlist* prereq, stralloc* cmd
 
   if((rule = rule_get_sa(output))) {
     rule->prereq.sep = prereq->sep;
-    stralloc_move(&rule->prereq.sa, &prereq->sa);
+    strlist_cat_unique(&rule->prereq, prereq);
 
-    if(cmd)
-      stralloc_copy(&rule->recipe, cmd);
+    if(cmd && !(rule->recipe.len && stralloc_equal(&rule->recipe, cmd))) {
+      if(rule->recipe.len)
+        stralloc_cats(&rule->recipe, "\n");
+
+      stralloc_cat(&rule->recipe, cmd);
+    }
   }
   return rule;
 }
@@ -2819,63 +2851,63 @@ get_keys(MAP_T map, strlist* list) {
 }
 
 int
-input_command(stralloc* cmd, strlist* args) {
+input_command(stralloc* cmd, char* argv[]) {
   size_t n, len;
   int compile = 0, link = 0, objects = 0;
   const char *x, *file;
+  char** p;
   sourcedir* srcdir;
   stralloc output, dir;
-  strlist files;
+  strlist files, flags;
   stralloc_init(&output);
   stralloc_init(&dir);
   strlist_init(&files, ' ');
+  strlist_init(&flags, ' ');
 
-  strlist_foreach(args, x, len) {
+  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
     int src = is_source_b(x, len);
     if(byte_equal(x, 2, "-c") || src) {
       compile = 1;
       link = 0;
     }
     if(src)
-      sources_add_b(x, len);
+      sources_add_b(x, byte_chrs(x, len, " \t\n\v\r", 5));
   }
 
-  strlist_foreach(args, x, len) {
+  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
+    len = str_len(x);
     if(len >= 2 && !byte_diff(x, 2, "-o")) {
       size_t i;
-
       if(len > 2) {
         x += 2;
         len -= 2;
       } else {
-        x = strlist_next_b(args, x, &len);
+        x = *++p;
+        len = str_len(x);
       }
-
       if(len)
         stralloc_copyb(&output, x, len);
     }
   }
 
-  strlist_foreach(args, x, len) {
+  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
+    len = str_len(x);
+    strlist_pushb(&flags, x, len);
+
     if(len >= 2 && byte_equal(x, 2, "-o")) {
       x += (x[2] == '\0') ? 3 : 2;
-
     } else if(len >= 3 && byte_equal(x, 3, "-MF")) {
       size_t i = len > 3 ? 3 : 4;
       x += i;
       len -= i;
-
     } else if(len >= 1 && x[0] != '-') {
-
-      /*   if(outdir.s && str_start(x, outdir.s))
-           x += outdir.len;
-   */
       if(is_filename_b(x, len))
         strlist_pushb(&files, x, len);
     }
   }
 
-  strlist_foreach(args, x, len) {
+  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
+    len = str_len(x);
     if(byte_finds(x, len, exts.obj) < len || byte_finds(x, len, exts.lib) < len) {
       objects++;
 
@@ -2886,81 +2918,60 @@ input_command(stralloc* cmd, strlist* args) {
     }
   }
 
-  if(compile && output.len == 0) {
-    path_extension(strlist_at(&files, 0), &output, exts.obj);
+  if(output.len == 0) {
+    stralloc sa;
+    stralloc_init(&sa);
+    stralloc_copyb(&sa, files.sa.s, byte_chr(files.sa.s, files.sa.len, files.sep));
+    stralloc_nul(&sa);
+    path_extension(sa.s, &output, exts.obj);
+    stralloc_free(&sa);
   }
 
   if(!output.len) {
-    n = 0;
-
-    strlist_foreach(&files, file, len) {
-      if(!is_source_b(file, len))
-        break;
-
-      n++;
-    }
-
+    n = count_b(&files, &is_source);
     if(n < strlist_count(&files)) {
       stralloc sa;
       stralloc_init(&sa);
-
       if(strlist_copyat(&files, n, &output)) {
-
-        path_extension(output.s, &sa, ".c");
-
-        strlist_push_sa(&files, &sa);
-
         strlist_removeb(&files, output.s, output.len);
         stralloc_nul(&output);
       }
+      stralloc_free(&sa);
     }
   }
 
   if(output.len) {
     char* d;
     uint32* count_ptr;
-
     stralloc_nul(&output);
     stralloc_zero(&dir);
     d = path_dirname(output.s, &dir);
-
     if(!(count_ptr = MAP_GET(targetdirs, dir.s, dir.len + 1))) {
       uint32 count = 0;
-
       MAP_INSERT(targetdirs, dir.s, dir.len + 1, &count, sizeof(count));
       count_ptr = MAP_GET(targetdirs, dir.s, dir.len + 1);
     }
-
     (*count_ptr)++;
   }
   n = strlist_count(&files);
 
   if(output.len) {
-
     stralloc source;
     stralloc_init(&source);
-
     /// path_prefix_s(&dirs.this.sa, path_basename(output.s), &source);
-
     stralloc_copy(&source, &output);
-
     if(is_object_sa(&source)) {
       size_t extpos;
       for(;;) {
-        extpos = byte_rchr(source.s, source.len, '.');
-
+        extpos = byte_rchr(source.s, source.len - 1, '.');
         if(extpos == source.len)
           break;
-
         if(source.s[extpos + byte_chrs(&source.s[extpos], source.len - extpos, "/\\", 2)])
           break;
-
-        source.len = extpos;
-
+        source.len = extpos + 1;
         if(is_source_sa(&source))
           break;
       }
-
       if(extpos < source.len) {
         extpos++;
         source.len = extpos;
@@ -2991,24 +3002,44 @@ input_command(stralloc* cmd, strlist* args) {
     }
 
     if(file) {
-      if(n == 1)
-        stralloc_zero(&files.sa);
-      stralloc_copys(&files.sa, file);
+      // if(n == 1)
+      stralloc_zero(&files.sa);
+      strlist_push_unique(&files, file);
     }
+    stralloc_free(&source);
   }
+  stralloc_nul(&output);
 
-  n = strlist_count(&files);
+  path_prefix_sa(&dirs.work.sa, &output);
 
-  if(files.sa.len || output.len) {
+  n = count_b(&files, &is_source);
+  if(n > 0)
+    compile = 1;
+
+  if((n || count_b(&files, &is_object)) || output.len) {
 #if DEBUG_OUTPUT
     buffer_puts(buffer_2, link ? "link" : compile ? "compile" : "other");
-    buffer_puts(buffer_2, "rule : ");
+    buffer_puts(buffer_2, " rule\n  output = '");
     buffer_putsa(buffer_2, &output);
-    buffer_puts(buffer_2, "\nfiles = ");
+    buffer_puts(buffer_2, "'\n  command = '");
+    buffer_putsa(buffer_2, cmd);
+    buffer_puts(buffer_2, "'\n  files = ");
     strlist_dump(buffer_2, &files);
     buffer_putnlflush(buffer_2);
 #endif
-    gen_single_rule(rules, &output, &files, link ? &link_command : compile ? &compile_command : &lib_command);
+
+    stralloc_catc(cmd, ' ');
+    stralloc_cat(cmd, &flags.sa);
+    stralloc_nul(cmd);
+    {
+      stralloc* sacmd = alloc_zero(sizeof(stralloc));
+      stralloc_move(sacmd, cmd);
+
+      gen_single_rule(rules,
+                      &output,
+                      &files,
+                      sacmd); // link ? &link_command : compile ? &compile_command : &lib_command);
+    }
   }
 
   stralloc_free(&output);
@@ -3021,29 +3052,39 @@ int
 input_command_line(const char* x, size_t n) {
   size_t idx = 0;
   int ret;
+  char** av;
   stralloc command;
   strlist args;
   stralloc_init(&command);
   strlist_init(&args, '\0');
-
   while(n > 0) {
-    size_t i = scan_whitenskip(x, n);
-    if(i == n)
+    size_t i;
+    if((i = scan_whitenskip(x, n)) == n)
       break;
     x += i;
     n -= i;
+    if(n >= 7 && *x == '[') {
+      if(n > 16 && !byte_diff(&x[7], 9, "Building ")) {
+        i = 16;
+      } else if((i = byte_chr(x, n, ']')) < n)
+        i++;
+      x += i;
+      n -= i;
+      continue;
+    }
     i = scan_nonwhitenskip(x, n);
-
     if(idx == 0)
       stralloc_copyb(&command, x, i);
     else
       strlist_pushb(&args, x, i);
-
     x += i;
     n -= i;
     idx++;
   }
-  ret = input_command(&command, &args);
+  if(*(av = strlist_to_argv(&args)))
+    ret = input_command(&command, av);
+  if(av)
+    alloc_free(av);
   stralloc_free(&command);
   strlist_free(&args);
   return ret;
@@ -4543,10 +4584,6 @@ main(int argc, char* argv[]) {
     else
       stralloc_catc(&dirs.out.sa, pathsep_make);
 
-    mkdir_components(&dirs.out, 0755);
-    mkdir_components(&dirs.work, 0755);
-    mkdir_components(&dirs.build, 0755);
-
     byte_zero(&filebuf, sizeof(filebuf));
 
     if(buffer_truncfile(&filebuf, outfile)) {
@@ -4556,12 +4593,6 @@ main(int argc, char* argv[]) {
     }
     out = &filebuf;
     //  path_absolute_sa(&dirs.out.sa);
-  }
-
-  if(dir) {
-    stralloc_copys(&dirs.build.sa, dir);
-  } else if(dirs.out.sa.len) {
-    stralloc_copy(&dirs.build.sa, &dirs.out.sa);
   }
 
   path_getcwd(&dirs.this.sa);
@@ -4693,7 +4724,7 @@ main(int argc, char* argv[]) {
       }
       stralloc_nul(&target);
 
-      stralloc_copy(&dirs.build.sa, &dirs.this.sa);
+      stralloc_copy(&dirs.build.sa, &dirs.out.sa);
       strlist_push(&dirs.build, dir ? dir : "build");
       strlist_push_sa(&dirs.build, &target);
       strlist_push(&dirs.build, build_types[cfg.build_type]);
@@ -4704,11 +4735,13 @@ main(int argc, char* argv[]) {
     stralloc_replacec(&dirs.build.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   }
 
-  path_absolute_sa(&dirs.out.sa);
-  path_absolute_sa(&dirs.build.sa);
-
   if(dirs.work.sa.len == 0)
     stralloc_copys(&dirs.work.sa, ".");
+
+  path_absolute_sa(&dirs.out.sa);
+  path_canonical_sa(&dirs.out.sa);
+  path_absolute_sa(&dirs.build.sa);
+  path_canonical_sa(&dirs.build.sa);
 
   stralloc_nul(&dirs.this.sa);
   stralloc_nul(&dirs.out.sa);
@@ -4731,9 +4764,6 @@ main(int argc, char* argv[]) {
     path_relative(dirs.out.sa.s, dirs.this.sa.s, &dirs.out.sa);
   */
 
-  path_relative(dirs.build.sa.s, dirs.out.sa.s, &dirs.work.sa);
-  stralloc_nul(&dirs.work.sa);
-  stralloc_nul(&dirs.work.sa);
   // debug_sa("dirs.work", &dirs.work.sa);
 
   stralloc_nul(&dirs.this.sa);
@@ -4765,9 +4795,28 @@ main(int argc, char* argv[]) {
   path_relative(dirs.build.sa.s, dirs.out.sa.s, &tmp);
   // debug_sa("tmp", &tmp);
 
+  if(dirs.build.sa.len > dirs.out.sa.len && byte_equal(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s)) {
+    const char* x = dirs.build.sa.s + dirs.out.sa.len;
+    size_t n = dirs.build.sa.len - dirs.out.sa.len;
+    stralloc_zero(&dirs.work.sa);
+    if(n > 0 && *x == '/') {
+      x++;
+      n--;
+    }
+    stralloc_catb(&dirs.work.sa, x, n);
+  }
+
+  //  path_relative(dirs.build.sa.s, dirs.out.sa.s, &dirs.work.sa);
+  stralloc_nul(&dirs.work.sa);
+
   stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
+  mkdir_components(&dirs.out, 0755);
+  mkdir_components(&dirs.build, 0755);
+  if(stralloc_diffs(&dirs.work.sa, "."))
+    mkdir_components(&dirs.work, 0755);
   /*
+
     if(tmp.len) {
       stralloc_catc(&tmp, pathsep_make);
       stralloc_copy(&dirs.build.sa, &tmp);
@@ -4796,8 +4845,12 @@ main(int argc, char* argv[]) {
     if((x = mmap_read(infile, &n))) {
       while(n > 0) {
         size_t i = byte_chr(x, n, '\n');
-        if(i > 0) {
-          input_command_line(x, i);
+
+        if(!(i > 2 && x[0] == '-' && x[1] == '-')) {
+
+          if(i > 0) {
+            input_command_line(x, i);
+          }
         }
 
         if(i < n)
@@ -4907,55 +4960,57 @@ main(int argc, char* argv[]) {
   if(((batch | shell) && stralloc_equals(&dirs.work.sa, ".")))
     batchmode = 1;
 
-  sourcedir_populate(sourcedirs, &srcs);
+  if(!infile) {
+    sourcedir_populate(sourcedirs, &srcs);
 
 #if DEBUG_OUTPUT
 
-  // debug_stra("srcs", &srcs);
-  buffer_puts(buffer_2, "targetdirs:\n");
+    // debug_stra("srcs", &srcs);
+    buffer_puts(buffer_2, "targetdirs:\n");
 
-  MAP_FOREACH(targetdirs, t) {
-    uint32* count_ptr = (uint32*)t->vals.val_chars;
-    buffer_puts(buffer_2, "  '");
-    buffer_puts(buffer_2, t->key);
-    buffer_puts(buffer_2, "' => ");
-    buffer_putulong(buffer_2, *count_ptr);
+    MAP_FOREACH(targetdirs, t) {
+      uint32* count_ptr = (uint32*)t->vals.val_chars;
+      buffer_puts(buffer_2, "  '");
+      buffer_puts(buffer_2, t->key);
+      buffer_puts(buffer_2, "' => ");
+      buffer_putulong(buffer_2, *count_ptr);
+      buffer_putnlflush(buffer_2);
+    }
     buffer_putnlflush(buffer_2);
-  }
-  buffer_putnlflush(buffer_2);
 
-  // sourcedir_dump_all(buffer_2, sourcedirs);
+    // sourcedir_dump_all(buffer_2, sourcedirs);
 #endif
 
-  if(cmd_libs) {
-    gen_lib_rules(rules, sourcedirs);
+    if(cmd_libs) {
+      gen_lib_rules(rules, sourcedirs);
 
-    deps_for_libs(rules);
-  } else {
-    TUPLE* t;
-    MAP_FOREACH(sourcedirs, t) {
-      sourcedir* srcdir = hmap_data(t);
+      deps_for_libs(rules);
+    } else {
+      TUPLE* t;
+      MAP_FOREACH(sourcedirs, t) {
+        sourcedir* srcdir = hmap_data(t);
 
-      /*if(tools.preproc) {
-        gen_simple_compile_rules(rules, srcdir, t->key, ".c", exts.pps, &preprocess_command);
-        gen_simple_compile_rules(rules, srcdir, t->key, exts.pps, exts.obj, &compile_command);
-      } else */
-      { gen_simple_compile_rules(rules, srcdir, t->key, ".c", exts.obj, &compile_command); }
+        /*if(tools.preproc) {
+          gen_simple_compile_rules(rules, srcdir, t->key, ".c", exts.pps, &preprocess_command);
+          gen_simple_compile_rules(rules, srcdir, t->key, exts.pps, exts.obj, &compile_command);
+        } else */
+        { gen_simple_compile_rules(rules, srcdir, t->key, ".c", exts.obj, &compile_command); }
+      }
     }
-  }
 
-  if(cmd_bins) {
+    if(cmd_bins) {
 
-    cmd_bins = gen_link_rules(rules, &srcs);
-  }
+      cmd_bins = gen_link_rules(rules, &srcs);
+    }
 
-  if(cmd_bins == 0 || cmd_libs == 1) {
-    TUPLE* t;
-    MAP_FOREACH(rules, t) {
-      target* tgt = hmap_data(t);
+    if(cmd_bins == 0 || cmd_libs == 1) {
+      TUPLE* t;
+      MAP_FOREACH(rules, t) {
+        target* tgt = hmap_data(t);
 
-      if(stralloc_equal(&tgt->recipe, &lib_command) && cmd_libs)
-        strlist_push(&all->prereq, t->key);
+        if(stralloc_equal(&tgt->recipe, &lib_command) && cmd_libs)
+          strlist_push(&all->prereq, t->key);
+      }
     }
   }
 
