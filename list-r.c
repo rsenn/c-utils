@@ -383,7 +383,7 @@ read_etc(strarray* out, const char* path) {
       const char* name = x;
       size_t len, namelen = byte_chr(x, n, ':');
       uint32 uid = 0;
-      if(name == n)
+      if(namelen == n)
         break;
       x += namelen + 1;
       n -= namelen - 1;

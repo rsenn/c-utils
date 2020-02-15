@@ -2,17 +2,28 @@
 
 size_t
 strlist_count(const strlist* sl) {
-  size_t p, l = 1;
+  const char* x;
+  ssize_t n, p, l = 1;
 
   if(sl->sa.len == 0)
     return 0;
 
-  for(p = 0; p < sl->sa.len; ++p) {
-    if(sl->sa.s[p] == sl->sep) {
-      if(p + 1 == sl->sa.len)
-        return l;
-      ++l;
+  x = sl->sa.s;
+  n = sl->sa.len;
+
+  while(n > 0) {
+    p = byte_chr(x, n, sl->sep);
+
+    if(p < n) {
+      char c = x[p];
+
+      if(c == sl->sep)
+        p++;
     }
+
+    l++;
+    x += p;
+    n -= p;
   }
   return l;
 }

@@ -201,7 +201,6 @@ int set_compiler_type(const char*);
 int set_machine(const char*);
 int set_make_type(void);
 int set_system(const char*);
-const char* skip_comment(const char*, size_t* lenp);
 sourcedir* sourcedir_findb(const char*, size_t n);
 sourcedir* sourcedir_find(const char*);
 sourcedir* sourcedir_find_sa(stralloc*);

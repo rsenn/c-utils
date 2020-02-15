@@ -2,12 +2,12 @@
 #include "../fmt.h"
 #include "../strlist.h"
 #include <ctype.h>
-
+/*
 char strlist_dumpx[5] = {',', '\n', ' ', ' ', '\0'};
-
+*/
 void
 strlist_dump(buffer* out, const strlist* sl) {
-  const char *s, *end;
+  const char *x, *end;
   size_t i = 0, n, count = strlist_count(sl);
   buffer_puts(out, "strlist[");
   buffer_putulong(out, count);
@@ -16,23 +16,25 @@ strlist_dump(buffer* out, const strlist* sl) {
     buffer_flush(out);
     return;
   }
-  buffer_puts(out, "] {\n  0: \"");
-
-  end = sl->sa.s + sl->sa.len;
-  strlist_foreach_s(sl, s) {
-
-    n = byte_chr(s, end - s, sl->sep);
-    buffer_put(out, s, n); //, &chrs[sizeof(chrs) - 1]  - p);
-
-    if(s + 1 >= end)
-      break;
-    if(i + 1 >= count)
-      break;
-
-    buffer_put(out, "\"", 1);
-    buffer_puts(out, strlist_dumpx);
-    buffer_putulong(out, ++i);
-    buffer_puts(out, ": \"");
+  buffer_puts(out, "] {\n");
+  x = sl->sa.s;
+  n = sl->sa.len;
+  end = sl->sa.s + n;
+  while(x < end) {
+    size_t p = byte_chr(x, end - x, sl->sep);
+    if(p) {
+      buffer_puts(out, "  ");
+      buffer_putulong(out, i);
+      buffer_puts(out, " = \"");
+      buffer_put(out, x, p); //, &chrs[sizeof(chrs) - 1]  - p);
+      if(p + x < end && x[p] == sl->sep)
+        p++;
+      //    buffer_puts(out, strlist_dumpx);
+      buffer_putsflush(out, "\"\n");
+    }
+    x += p;
+    n -= p;
+    i++;
   }
-  buffer_putsflush(out, "\"\n}\n");
+  buffer_putsflush(out, "}\n");
 }

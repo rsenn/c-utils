@@ -52,7 +52,6 @@ void* __declspec(dllimport) popen(const char*, const char*);
 #undef _popen
 #endif
 
-extern char strlist_dumpx[5];
 
 static const char* dt_fmt = "%Y%m%d %H:%M";
 static http h;
@@ -772,9 +771,6 @@ main(int argc, char* argv[]) {
          exit(EXIT_FAILURE);
      }
   */
-
-  strlist_dumpx[1] = '\n';
-  strlist_dumpx[2] = '\t';
 
   argv0 = argv[0];
 
