@@ -87,7 +87,7 @@ static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static strlist exclude_masks;
 static char opt_separator = DIRSEP_C;
 
-static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_crc = 0;
+static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev =1, opt_crc = 0;
 static unsigned long opt_minsize = 0;
 static long opt_depth = -1;
 static uint32 opt_types = (uint32)(int32)-1;
@@ -678,7 +678,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
 
     if((opt_deref ? stat : lstat)(dir->s, &st) != -1) {
-      if(root_dev && st.st_dev) {
+      if(opt_samedev &&  root_dev && st.st_dev) {
         if(st.st_dev != root_dev) {
           continue;
         }
@@ -885,6 +885,9 @@ main(int argc, char* argv[]) {
     {"exclude", 1, 0, 'x'},
     {"time-style", 1, 0, 't'},
     {"dereference", 0, &opt_deref, 1},
+    {"no-dereference", 0, &opt_deref, 0},
+    {"one-filesysten", 0, &opt_samedev, 1},
+    {"cross-filesysten", 0, &opt_samedev, 0},
     {"min-size", 1, 0, 'm'},
     {"crc", 1, 0, 'c'},
     {"depth", 1, 0, 'd'},
@@ -901,7 +904,7 @@ main(int argc, char* argv[]) {
   strlist_init(&exclude_masks, '\0');
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlLnro:x:t:m:cd:f:", opts, &index);
+    c = getopt_long(argc, argv, "hlLnro:x:t:m:cd:f:CD", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -929,6 +932,8 @@ main(int argc, char* argv[]) {
         ;
         break;
       case 'L': opt_deref = 1; break;
+      case 'C': opt_samedev = 0; break;
+      case 'D': opt_samedev = 1; break;
       case 'n': opt_numeric = 1; break;
       case 'r': opt_relative = 1; break;
       case 'c': opt_crc = 1; break;
