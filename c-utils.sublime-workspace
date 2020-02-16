@@ -88,10 +88,10 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "_LARGEFILE_SOURCE\n_GNU_SOURCE\n_FILE_OFFSET_BITS\nINTERNAL_STRINGIFY\nSTRINGIFY\nsnprintf\nIO_REPARSE_TAG_SYMLINK\nFILE_ATTRIBUTE_REPARSE_POINT\nSE_FILE_OBJECT\nSTDIN_FILENO\nSTDOUT_FILENO\nSTDERR_FILENO\nS_IFMT\nprint_strarray\nfnmatch_strarray\nfiletime_to_unix\nlast_error\nget_file_size\nget_file_time\nget_win_api\nget_file_owner\nWINDOWS_TICK\nSEC_TO_UNIX_EPOCH\nfiletime_to_unix\nis_junction_point\nlist_dir_internal\ntype_mask\nread_etc\nresolve_etc\nmake_num\nmake_time\nmake_str\nprint_strarray\nfnmatch_strarray\nmode_octal\nmode_flags\ncrc32\nfile_crc32\nlist_dir_internal\nio_err_check\nwrite_err_check\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 587,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -110,6 +110,15 @@
 			"settings":
 			{
 				"buffer_size": 25066,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "list-r.c",
+			"settings":
+			{
+				"buffer_size": 27229,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -159,7 +168,7 @@
 			"file": "lib/path.h",
 			"settings":
 			{
-				"buffer_size": 2347,
+				"buffer_size": 2293,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -456,6 +465,7 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/getopt.h",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_collapse.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
@@ -582,8 +592,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peekc.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_charsetnskip.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_getc.c",
-		"/home/roman/Dokumente/Sources/c-utils/build/CMakeFiles/Progress/21"
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_getc.c"
 	],
 	"find":
 	{
@@ -613,6 +622,22 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"opt_minsize",
+			"opt_minsize\n",
+			"opt_minsize",
+			"min",
+			"getopt",
+			"st_dev",
+			"rdev",
+			"'D'",
+			"deref",
+			"opt_deref",
+			"opt_derf",
+			"getopt",
+			"root_dev",
+			"st_dev",
+			"dev",
+			"rdev",
 			"-Werr",
 			"input_command_line",
 			"path_prefix_",
@@ -724,23 +749,7 @@
 			"input_",
 			"srcs",
 			"^main",
-			"main",
-			"srcs",
-			"strlist_dump",
-			"putulong",
-			"dumpx",
-			"sources_add_b",
-			"strlist_removeb",
-			"strlist_removen",
-			"strlist_dumpx",
-			"strlist_dump",
-			"cmp_fn_t",
-			"removeb",
-			"strlist_remove",
-			"strlist_len",
-			"is_filename",
-			"^is_filename",
-			"stralloc_remove"
+			"main"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -860,7 +869,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 587,
 						"regions":
 						{
 						},
@@ -870,13 +879,228 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/darkside-contrast.tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/list-r.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									8,
+									25
+								],
+								[
+									36,
+									47
+								],
+								[
+									58,
+									75
+								],
+								[
+									87,
+									105
+								],
+								[
+									128,
+									137
+								],
+								[
+									896,
+									904
+								],
+								[
+									1126,
+									1148
+								],
+								[
+									1212,
+									1240
+								],
+								[
+									1285,
+									1299
+								],
+								[
+									1346,
+									1358
+								],
+								[
+									1398,
+									1411
+								],
+								[
+									1451,
+									1464
+								],
+								[
+									1498,
+									1504
+								],
+								[
+									1533,
+									1547
+								],
+								[
+									1581,
+									1597
+								],
+								[
+									2142,
+									2158
+								],
+								[
+									2200,
+									2210
+								],
+								[
+									2866,
+									2879
+								],
+								[
+									3797,
+									3810
+								],
+								[
+									4525,
+									4536
+								],
+								[
+									4820,
+									4834
+								],
+								[
+									8613,
+									8625
+								],
+								[
+									8643,
+									8660
+								],
+								[
+									8695,
+									8711
+								],
+								[
+									8885,
+									8902
+								],
+								[
+									10812,
+									10829
+								],
+								[
+									10884,
+									10893
+								],
+								[
+									11534,
+									11542
+								],
+								[
+									12317,
+									12328
+								],
+								[
+									12520,
+									12528
+								],
+								[
+									12748,
+									12757
+								],
+								[
+									13057,
+									13065
+								],
+								[
+									13244,
+									13258
+								],
+								[
+									13523,
+									13539
+								],
+								[
+									14353,
+									14363
+								],
+								[
+									14551,
+									14561
+								],
+								[
+									15721,
+									15726
+								],
+								[
+									16006,
+									16016
+								],
+								[
+									16263,
+									16280
+								],
+								[
+									21562,
+									21574
+								],
+								[
+									21773,
+									21788
+								],
+								[
+									22034,
+									22039
+								],
+								[
+									23747,
+									23751
+								]
 							],
 							"symlist":
 							[
+								"_LARGEFILE_SOURCE",
+								"_GNU_SOURCE",
+								"_FILE_OFFSET_BITS",
+								"INTERNAL_STRINGIFY",
+								"STRINGIFY",
+								"snprintf",
+								"IO_REPARSE_TAG_SYMLINK",
+								"FILE_ATTRIBUTE_REPARSE_POINT",
+								"SE_FILE_OBJECT",
+								"STDIN_FILENO",
+								"STDOUT_FILENO",
+								"STDERR_FILENO",
+								"S_IFMT",
+								"print_strarray",
+								"fnmatch_strarray",
+								"filetime_to_unix",
+								"last_error",
+								"get_file_size",
+								"get_file_time",
+								"get_win_api",
+								"get_file_owner",
+								"WINDOWS_TICK",
+								"SEC_TO_UNIX_EPOCH",
+								"filetime_to_unix",
+								"is_junction_point",
+								"list_dir_internal",
+								"type_mask",
+								"read_etc",
+								"resolve_etc",
+								"make_num",
+								"make_time",
+								"make_str",
+								"print_strarray",
+								"fnmatch_strarray",
+								"mode_octal",
+								"mode_flags",
+								"crc32",
+								"file_crc32",
+								"list_dir_internal",
+								"io_err_check",
+								"write_err_check",
+								"usage",
+								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -884,13 +1108,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -920,7 +1144,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -950,11 +1174,41 @@
 						"translation.y": 828.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
+					"file": "list-r.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 27229,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								19478,
+								19478
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 16606.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "lib/stralloc.h",
 					"semi_transient": false,
 					"settings":
@@ -978,11 +1232,11 @@
 						"translation.y": 4753.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 5,
 					"file": "lib/path/path_relative.c",
 					"semi_transient": false,
 					"settings":
@@ -1008,11 +1262,11 @@
 						"translation.y": 207.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 6,
 					"file": "lib/path/path_realpath.c",
 					"semi_transient": false,
 					"settings":
@@ -1038,11 +1292,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 7,
 					"file": "lib/path/path_canonical_sa.c",
 					"semi_transient": false,
 					"settings":
@@ -1066,11 +1320,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 8,
 					"file": "lib/path/path_canonical.c",
 					"semi_transient": false,
 					"settings":
@@ -1094,16 +1348,16 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 9,
 					"file": "lib/path.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2347,
+						"buffer_size": 2293,
 						"regions":
 						{
 						},
@@ -1122,11 +1376,11 @@
 						"translation.y": 414.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 10,
 					"semi_transient": false,
 					"settings":
 					{
@@ -1177,11 +1431,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 11,
 					"semi_transient": false,
 					"settings":
 					{
@@ -1204,7 +1458,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 10,
 					"type": "text"
 				}
 			]
@@ -1295,6 +1549,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"getopt",
+				"lib/getopt.h"
+			],
+			[
+				"list-r",
+				"list-r.c"
+			],
 			[
 				"cmakelists",
 				"CMakeLists.txt"
@@ -1784,10 +2046,6 @@
 				"crc.c"
 			],
 			[
-				"list-r",
-				"list-r.c"
-			],
-			[
 				"xmltest.c",
 				"xmltest.c"
 			],
@@ -1802,10 +2060,6 @@
 			[
 				"cmakel",
 				"CMakeLists.txt"
-			],
-			[
-				"strall",
-				"lib/stralloc.h"
 			]
 		],
 		"width": 0.0

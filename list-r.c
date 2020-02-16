@@ -87,7 +87,7 @@ static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static strlist exclude_masks;
 static char opt_separator = DIRSEP_C;
 
-static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev =1, opt_crc = 0;
+static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0;
 static unsigned long opt_minsize = 0;
 static long opt_depth = -1;
 static uint32 opt_types = (uint32)(int32)-1;
@@ -678,7 +678,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
 
     if((opt_deref ? stat : lstat)(dir->s, &st) != -1) {
-      if(opt_samedev &&  root_dev && st.st_dev) {
+      if(opt_samedev && root_dev && st.st_dev) {
         if(st.st_dev != root_dev) {
           continue;
         }
@@ -738,7 +738,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     if(match)
       continue;
 
-    if(!is_dir && (opt_minsize != -1 && size < opt_minsize))
+    if(!is_dir && (/*opt_minsize != -1 && */size < opt_minsize))
       show = 0;
 
     if(dtype && (dtype & opt_types) == 0)
@@ -857,6 +857,9 @@ usage(char* argv0) {
                        "  -t, --time-style FORMAT   format time according to FORMAT\n",
                        "  -m, --min-size   BYTES    minimum file size\n",
                        "  -L, --dereference         dereference symlinks\n",
+                       "      --no-dereference\n",
+                       "  -D, --one-filesystem\n",
+                       "  -C, --cross-filesystem\n",
                        "  -c, --crc                 cyclic redundancy check\n",
                        "  -d, --depth      NUM      max depth\n",
                        "  -f, --types      TYPES    filter by type:\n"

@@ -60,7 +60,7 @@
 
 #if !WINDOWS_NATIVE //&& !WINDOWS_OVERRIDE
 #include <sys/param.h>
-#if !(defined(_WINSOCKAPI_) || defined(_WINSOCK2API_) )
+#if !(defined(_WINSOCKAPI_) || defined(_WINSOCK2API_))
 #include <sys/socket.h>
 #include <netinet/in.h>
 #define __INSIDE_CYGWIN_NET__ 1

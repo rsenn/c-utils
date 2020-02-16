@@ -52,7 +52,6 @@ void* __declspec(dllimport) popen(const char*, const char*);
 #undef _popen
 #endif
 
-
 static const char* dt_fmt = "%Y%m%d %H:%M";
 static http h;
 
