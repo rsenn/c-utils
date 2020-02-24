@@ -738,7 +738,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     if(match)
       continue;
 
-    if(!is_dir && (/*opt_minsize != -1 && */size < opt_minsize))
+    if(!is_dir && (/*opt_minsize != -1 && */ size < opt_minsize))
       show = 0;
 
     if(dtype && (dtype & opt_types) == 0)

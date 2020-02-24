@@ -51,8 +51,9 @@ get_depth(jsonval* v) {
  * @param[in]  index  The index
  */
 static void
-pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
+pretty_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   int valdepth = v ? get_depth(v) : -1;
+  static char quote[2] = {0,0};
 
   p->newline = valdepth > 1
                    ? "\n"
@@ -63,7 +64,8 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->precision = 5;
   p->depth = depth;
   p->index = index;
-  p->quote = quote_char;
+  p->quote = quote;
+  p->quote[0] = q;
 
   if(v == NULL) {
     p->quote = no_quote ? "\0" : quote_char;

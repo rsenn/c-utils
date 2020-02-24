@@ -36,14 +36,15 @@ max_depth_fn(jsonval* v, int* arg, int depth) {
 }
 
 static int
-get_depth(jsonval* v) {
+get_depth(const jsonval* v) {
   int max_depth = -1;
-  json_recurse(v, max_depth_fn, &max_depth);
+  json_recurse((jsonval*)v, max_depth_fn, &max_depth);
   return max_depth;
 }
 
 static void
-compact_printer(jsonfmt* p, jsonval* v, int depth, int index) {
+compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
+
   int valdepth = v ? get_depth(v) : 0;
   int pretty = depth < 4 && valdepth > 1;
   /*
@@ -57,27 +58,43 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index) {
     buffer_puts(buffer_2, ")");
     buffer_putnlflush(buffer_2);
   }*/
-  p->newline = "\n"; //(!one_line  && valdepth > 1 && ((index > -1) || index == -2)) ? "\n" : "";
-  p->indent = indent_str.s;
-  p->spacing = ((valdepth < 1 && index > 0) || (valdepth >= 1 && index > -1)) ? " " : "";
-  p->separat = ","; // : ",";
+  p->newline = "";
+  p->spacing = "";
+  p->separat = ",";
   p->quote = quote;
-  //  byte_copy(&p->quote, 2, quote[0] ? quote : "\"");
-  p->precision = 16;
+  p->precision = 3;
+  p->depth = depth;
+  p->index = index;
+};
+
+
+static void
+default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
+  int pretty = v && get_depth(v) > 1;
+  p->indent = "  ";
+  p->newline = "\n";
+  p->spacing = " ";
+  p->separat = ", ";
+  p->quote = quote;
+  p->precision = 10;
+  p->depth = depth;
+  p->index = index;
 };
 
 void
 json_pretty_print(jsonval val, buffer* b) {
-  json_print_fn* printfn = compact ? &compact_printer : 0;
-  stralloc out;
-  stralloc_init(&out);
-  json_tosa(val, &out, printfn);
+  json_print_fn* printfn = compact ? &compact_printer : &default_printer;
 
-  if(out.len > 16384) {
-    json_print(val, b, printfn);
-  } else {
-    buffer_putsa(b, &out);
-  }
+  json_print(val, b, printfn); /*
+   stralloc out;
+   stralloc_init(&out);
+   json_tosa(val, &out, printfn);
+
+   if(out.len > 16384) {
+     json_print(val, b, printfn);
+   } else {
+     buffer_putsa(b, &out);
+   } */
 }
 
 void
@@ -98,6 +115,22 @@ usage(char* av0) {
                        "\n",
                        0);
   buffer_flush(buffer_1);
+}
+
+ssize_t
+charbuf_read(fd_t fd, char* buf, size_t len, void* ptr) {
+  ssize_t r = read(fd, buf, len);
+
+#ifdef DEBUG_OUTPUT_
+  if(r > 0) {
+    buffer_puts(buffer_2, "Read ");
+    buffer_putulong(buffer_2, r);
+    buffer_puts(buffer_2, " bytes: '");
+    buffer_put(buffer_2, buf, r);
+    buffer_putnlflush(buffer_2);
+  }
+#endif
+  return r;
 }
 
 int
@@ -147,11 +180,12 @@ main(int argc, char* argv[]) {
 
   doc = json_read_tree(&infile);
 
-  buffer_puts(buffer_1, "max_depth: ");
-  buffer_putulong(buffer_1, get_depth(doc));
-  buffer_putnlflush(buffer_1);
+//  buffer_puts(buffer_2, "max_depth: ");
+//  buffer_putulong(buffer_2, get_depth(doc));
+//  buffer_putnlflush(buffer_2);
 
   json_pretty_print(*doc, buffer_1);
+  buffer_flush(buffer_1);
 
   charbuf_close(&infile);
 

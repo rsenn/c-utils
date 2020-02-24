@@ -10,7 +10,7 @@ charbuf_peekc(charbuf* b, char* ch) {
       else if(ret < 0)
         b->err = 1;
     } else {
-      ret = b->p = 1;
+      b->p = 1;
     }
   }
   if(b->p && ch)
