@@ -53,7 +53,7 @@ get_depth(jsonval* v) {
 static void
 pretty_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   int valdepth = v ? get_depth(v) : -1;
-  static char quote[2] = {0,0};
+  static char quote[2] = {0, 0};
 
   p->newline = valdepth > 1
                    ? "\n"

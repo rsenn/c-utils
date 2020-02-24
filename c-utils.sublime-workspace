@@ -88,105 +88,46 @@
 	"buffers":
 	[
 		{
-			"contents": "_LARGEFILE_SOURCE\n_GNU_SOURCE\n_FILE_OFFSET_BITS\nINTERNAL_STRINGIFY\nSTRINGIFY\nsnprintf\nIO_REPARSE_TAG_SYMLINK\nFILE_ATTRIBUTE_REPARSE_POINT\nSE_FILE_OBJECT\nSTDIN_FILENO\nSTDOUT_FILENO\nSTDERR_FILENO\nS_IFMT\nprint_strarray\nfnmatch_strarray\nfiletime_to_unix\nlast_error\nget_file_size\nget_file_time\nget_win_api\nget_file_owner\nWINDOWS_TICK\nSEC_TO_UNIX_EPOCH\nfiletime_to_unix\nis_junction_point\nlist_dir_internal\ntype_mask\nread_etc\nresolve_etc\nmake_num\nmake_time\nmake_str\nprint_strarray\nfnmatch_strarray\nmode_octal\nmode_flags\ncrc32\nfile_crc32\nlist_dir_internal\nio_err_check\nwrite_err_check\nusage\nmain",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 587,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "lib/strlist/strlist_to_argv.c",
+			"file": "jsonpp.c",
 			"settings":
 			{
-				"buffer_size": 384,
+				"buffer_size": 4671,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "CMakeLists.txt",
+			"file": "lib/json/json_print.c",
 			"settings":
 			{
-				"buffer_size": 25066,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "list-r.c",
-			"settings":
-			{
-				"buffer_size": 27229,
+				"buffer_size": 5511,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/stralloc.h",
+			"file": "lib/buffer.h",
 			"settings":
 			{
-				"buffer_size": 12024,
+				"buffer_size": 10359,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/path/path_relative.c",
+			"file": "lib/json.h",
 			"settings":
 			{
-				"buffer_size": 2604,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/path/path_realpath.c",
-			"settings":
-			{
-				"buffer_size": 1113,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/path/path_canonical_sa.c",
-			"settings":
-			{
-				"buffer_size": 125,
+				"buffer_size": 3929,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/path/path_canonical.c",
-			"settings":
-			{
-				"buffer_size": 191,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/path.h",
-			"settings":
-			{
-				"buffer_size": 2293,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 5763 files for \"skip_comment\" (regex, case sensitive)\n\n/home/roman/Dokumente/Sources/c-utils/genmakefile.c:\n  504: skip_comment(const char* x, size_t* lenp) {\n  539:         x = skip_comment(x, &n);\n\n/home/roman/Dokumente/Sources/c-utils/genmakefile.h:\n  204: const char* skip_comment(const char*, size_t* lenp);\n\n3 matches across 2 files\n",
-			"settings":
-			{
-				"buffer_size": 349,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"settings":
-			{
-				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		}
@@ -459,19 +400,28 @@
 	"expanded_folders":
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/Hex-Rays.IDA.Pro.Advanced.SDK.v6.1-RDW",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_to_argv.c",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
+		"/home/roman/Dokumente/Sources/c-utils/jsontest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_relative.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_realpath.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_canonical_sa.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_canonical.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/getopt.h",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_collapse.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_canonical.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_canonical_sa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_to_argv.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
 		"/home/roman/Dokumente/Sources/c-utils/pathtool.c",
@@ -517,7 +467,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putflush.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_prefetch.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/bn_conf.h.cmake",
 		"/home/roman/Dokumente/Sources/shish/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildOpenSSL.cmake",
@@ -584,19 +533,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/ndelay.h",
 		"/usr/share/cmake-3.10/Modules/FindOpenSSL.cmake",
 		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_temp.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_tosa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_fromsa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_get.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peek.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peekc.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_charsetnskip.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_getc.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_temp.c"
 	],
 	"find":
 	{
-		"height": 44.0
+		"height": 41.0
 	},
 	"find_in_files":
 	{
@@ -622,6 +563,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"print_sep",
+			"depth - 1",
+			"depth",
 			"opt_minsize",
 			"opt_minsize\n",
 			"opt_minsize",
@@ -746,10 +690,7 @@
 			"sources_get",
 			"rdir_",
 			"rdir",
-			"input_",
-			"srcs",
-			"^main",
-			"main"
+			"input_"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -869,7 +810,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 587,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -879,228 +820,13 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/darkside-contrast.tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/list-r.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
-								[
-									8,
-									25
-								],
-								[
-									36,
-									47
-								],
-								[
-									58,
-									75
-								],
-								[
-									87,
-									105
-								],
-								[
-									128,
-									137
-								],
-								[
-									896,
-									904
-								],
-								[
-									1126,
-									1148
-								],
-								[
-									1212,
-									1240
-								],
-								[
-									1285,
-									1299
-								],
-								[
-									1346,
-									1358
-								],
-								[
-									1398,
-									1411
-								],
-								[
-									1451,
-									1464
-								],
-								[
-									1498,
-									1504
-								],
-								[
-									1533,
-									1547
-								],
-								[
-									1581,
-									1597
-								],
-								[
-									2142,
-									2158
-								],
-								[
-									2200,
-									2210
-								],
-								[
-									2866,
-									2879
-								],
-								[
-									3797,
-									3810
-								],
-								[
-									4525,
-									4536
-								],
-								[
-									4820,
-									4834
-								],
-								[
-									8613,
-									8625
-								],
-								[
-									8643,
-									8660
-								],
-								[
-									8695,
-									8711
-								],
-								[
-									8885,
-									8902
-								],
-								[
-									10812,
-									10829
-								],
-								[
-									10884,
-									10893
-								],
-								[
-									11534,
-									11542
-								],
-								[
-									12317,
-									12328
-								],
-								[
-									12520,
-									12528
-								],
-								[
-									12748,
-									12757
-								],
-								[
-									13057,
-									13065
-								],
-								[
-									13244,
-									13258
-								],
-								[
-									13523,
-									13539
-								],
-								[
-									14353,
-									14363
-								],
-								[
-									14551,
-									14561
-								],
-								[
-									15721,
-									15726
-								],
-								[
-									16006,
-									16016
-								],
-								[
-									16263,
-									16280
-								],
-								[
-									21562,
-									21574
-								],
-								[
-									21773,
-									21788
-								],
-								[
-									22034,
-									22039
-								],
-								[
-									23747,
-									23751
-								]
 							],
 							"symlist":
 							[
-								"_LARGEFILE_SOURCE",
-								"_GNU_SOURCE",
-								"_FILE_OFFSET_BITS",
-								"INTERNAL_STRINGIFY",
-								"STRINGIFY",
-								"snprintf",
-								"IO_REPARSE_TAG_SYMLINK",
-								"FILE_ATTRIBUTE_REPARSE_POINT",
-								"SE_FILE_OBJECT",
-								"STDIN_FILENO",
-								"STDOUT_FILENO",
-								"STDERR_FILENO",
-								"S_IFMT",
-								"print_strarray",
-								"fnmatch_strarray",
-								"filetime_to_unix",
-								"last_error",
-								"get_file_size",
-								"get_file_time",
-								"get_win_api",
-								"get_file_owner",
-								"WINDOWS_TICK",
-								"SEC_TO_UNIX_EPOCH",
-								"filetime_to_unix",
-								"is_junction_point",
-								"list_dir_internal",
-								"type_mask",
-								"read_etc",
-								"resolve_etc",
-								"make_num",
-								"make_time",
-								"make_str",
-								"print_strarray",
-								"fnmatch_strarray",
-								"mode_octal",
-								"mode_flags",
-								"crc32",
-								"file_crc32",
-								"list_dir_internal",
-								"io_err_check",
-								"write_err_check",
-								"usage",
-								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -1114,34 +840,35 @@
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "lib/strlist/strlist_to_argv.c",
+					"file": "jsonpp.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 384,
+						"buffer_size": 4671,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								46,
-								46
+								3008,
+								3008
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage",
+							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/stark-contrast.tmTheme",
+							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2972.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
@@ -1149,107 +876,85 @@
 				},
 				{
 					"buffer": 2,
-					"file": "CMakeLists.txt",
+					"file": "lib/json/json_print.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 25066,
+						"buffer_size": 5511,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1030,
-								1030
+								4613,
+								4613
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/stark-contrast.tmTheme",
+							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 828.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "list-r.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 27229,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								19478,
-								19478
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 16606.0,
+						"translation.y": 3675.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "lib/stralloc.h",
+					"buffer": 3,
+					"file": "lib/buffer.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12024,
+						"buffer_size": 10359,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9268,
-								9268
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/stark-contrast.tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4753.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "lib/path/path_relative.c",
+					"buffer": 4,
+					"file": "lib/json.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2604,
+						"buffer_size": 3929,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1655,
-								1655
+								597,
+								758
+							],
+							[
+								881,
+								881
 							]
 						],
 						"settings":
@@ -1259,206 +964,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 207.0,
+						"translation.y": 3480.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/path/path_realpath.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1113,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/path/path_canonical_sa.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 125,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								122,
-								122
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/path/path_canonical.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 191,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								183,
-								183
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/path.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2293,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								934,
-								934
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 414.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 349,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										125,
-										137
-									],
-									[
-										188,
-										200
-									],
-									[
-										282,
-										294
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								195,
-								195
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -1549,6 +1058,26 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"json.h",
+				"lib/json.h"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"json_print",
+				"lib/json/json_print.c"
+			],
+			[
+				"jsonpp",
+				"jsonpp.c"
+			],
+			[
+				"json",
+				"jsontest.c"
+			],
 			[
 				"getopt",
 				"lib/getopt.h"
@@ -1810,10 +1339,6 @@
 				"lib/str/str_dup.c"
 			],
 			[
-				"buffer.h",
-				"lib/buffer.h"
-			],
-			[
 				"buffer_fe",
 				"lib/buffer/buffer_feed.c"
 			],
@@ -2044,22 +1569,6 @@
 			[
 				"crc.c",
 				"crc.c"
-			],
-			[
-				"xmltest.c",
-				"xmltest.c"
-			],
-			[
-				"xmltest3",
-				"xmltest3.c"
-			],
-			[
-				"sig.h",
-				"lib/sig.h"
-			],
-			[
-				"cmakel",
-				"CMakeLists.txt"
 			]
 		],
 		"width": 0.0

@@ -49,14 +49,17 @@ typedef union {
   };
 } jsonfmt;
 
-#define JSON_FMT_INDENT 0
-#define JSON_FMT_NEWLINE 1
-#define JSON_FMT_SPACING 2
-#define JSON_FMT_SEPARATOR 3
-#define JSON_FMT_QUOTE 4
+enum {
+  JSON_FMT_INDENT = 0,
+  JSON_FMT_NEWLINE = 1,
+  JSON_FMT_SPACING = 2,
+  JSON_FMT_SEPARATOR = 3,
+  JSON_FMT_QUOTE = 4,
+};
 
 typedef int json_read_callback_fn(jsonreader* r, jsondata id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 typedef void json_print_fn(jsonfmt*, jsonval*, int, int, char);
+typedef void json_format_fn(jsonfmt*, jsonval*, int, int, char);
 typedef int json_predicate_fn();
 
 void json_free(jsonval*);
@@ -82,7 +85,7 @@ jsonval json_get_property(jsonval, jsonval name);
 jsonval* json_push(jsonval* arr, jsonval item);
 int64 json_length(jsonval);
 
-void json_print(jsonval, buffer* b, json_print_fn*p);
+void json_print(jsonval, buffer* b, json_print_fn* p);
 void json_tosa(jsonval, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int, int));
 
 double json_todouble(jsonval);

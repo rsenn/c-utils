@@ -67,12 +67,11 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
   p->index = index;
 };
 
-
 static void
 default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
   int pretty = v && get_depth(v) > 1;
-  p->indent = "  ";
-  p->newline = "\n";
+  p->indent = depth > 3 ? "" : "  ";
+  p->newline = depth > 3 ? "" : "\n";
   p->spacing = " ";
   p->separat = ", ";
   p->quote = quote;
@@ -180,9 +179,9 @@ main(int argc, char* argv[]) {
 
   doc = json_read_tree(&infile);
 
-//  buffer_puts(buffer_2, "max_depth: ");
-//  buffer_putulong(buffer_2, get_depth(doc));
-//  buffer_putnlflush(buffer_2);
+  //  buffer_puts(buffer_2, "max_depth: ");
+  //  buffer_putulong(buffer_2, get_depth(doc));
+  //  buffer_putnlflush(buffer_2);
 
   json_pretty_print(*doc, buffer_1);
   buffer_flush(buffer_1);

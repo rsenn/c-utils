@@ -7,6 +7,51 @@
 #include "../fmt.h"
 #include <assert.h>
 
+struct indent_write {
+  buffer_op_proto* realop;
+  int level;
+  const char* indent;
+};
+
+static void
+buffer_indent_set(buffer* b, int in) {
+  struct indent_write* iw = b->cookie;
+  iw->indent = inn;
+}
+
+static void
+buffer_indent_write(fd_t fd, char* x, size_t n, void* ptr) {
+  buffer* b = ptr;
+  struct indent_write* iw = b->cookie;
+
+  ssize_t ret;
+  while(n > 0) {
+
+    ret = iw->realop(fd, x, 1, ptr);
+
+    if(*x == '\n') {
+      size_t i;
+      for(i = 0; i < iw->level; i++) {
+        ret = iw->realop(fd, iw->indent, str_len(iw->indent), ptr);
+        if(ret < 0)
+          return ret;
+      }
+    }
+    x++;
+    n--;
+  }
+  return ret;
+}
+
+static void
+buffer_indent(buffer* b, struct indent_write* iw) {
+  iw->realop = b->op;
+  iw->indent = "  ";
+  iw->level = 0;
+  b->op = &buffer_indent_write;
+  b->cookie = iw;
+}
+
 static void
 depth_fn(const jsonval* v, int* arg, int depth) {
   if(*arg < depth)
@@ -108,19 +153,19 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
 
       ++index;
 
-      p(&printer, 0, depth + 1, index);
+      p(&printer, 0, depth, index);
       json_print_key(b, t->key, t->key_len, &printer);
 
       buffer_puts(b, ":");
       json_print_separator(t->vals.val_custom, b, JSON_FMT_SPACING, &printer);
 
-      json_print_val(t->vals.val_custom, b, depth, p);
+      json_print_val(t->vals.val_custom, b, depth + 1, p);
 
       if(!last) {
         json_print_separator(t->vals.val_custom, b, JSON_FMT_SEPARATOR, &printer);
       }
     }
-    p(&printer, val, depth - 1, -2);
+    p(&printer, val, depth, -2);
     json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   }
   buffer_puts(b, "}");
@@ -140,13 +185,13 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
 
   slink_foreach(val->listv, ptr) {
     p(&printer, val, depth, index);
-    json_print_val(slist_data(ptr), b, depth, p);
+    json_print_val(slist_data(ptr), b, depth + 1, p);
     ++index;
     if(slist_next(ptr)) {
       json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
     }
   }
-  p(&printer, val, depth - 1, -2);
+  p(&printer, val, depth, -2);
 
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   buffer_puts(b, "]");
@@ -173,10 +218,10 @@ json_print_val(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*,
 }
 
 void
-json_print(jsonval val, buffer* b,json_print_fn*p) {
+json_print(jsonval val, buffer* b, json_print_fn* p) {
   jsonfmt printer;
   if(p == NULL)
-    p = & json_default_printer;
+    p = &json_default_printer;
   p(&printer, &val, 0, -1, '"');
   json_print_val(&val, b, 0, p);
   buffer_puts(b, printer.newline);
