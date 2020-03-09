@@ -16,10 +16,10 @@ struct indent_write {
 static void
 buffer_indent_set(buffer* b, int in) {
   struct indent_write* iw = b->cookie;
-  iw->indent = inn;
+  iw->indent = in;
 }
 
-static void
+static ssize_t
 buffer_indent_write(fd_t fd, char* x, size_t n, void* ptr) {
   buffer* b = ptr;
   struct indent_write* iw = b->cookie;
