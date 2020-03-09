@@ -39,7 +39,7 @@ cfg() {
  (mkdir -p $builddir
   : ${relsrcdir=`realpath --relative-to "$builddir" .`}
   set -x
-  cd $builddir
+  cd "${builddir:-.}"
   ${CMAKE:-cmake} -Wno-dev \
     -G "$generator" \
     ${VERBOSE+:-DCMAKE_VERBOSE_MAKEFILE=TRUE} \
