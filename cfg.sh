@@ -1,5 +1,11 @@
 cfg() {
-  : ${build:=`gcc -dumpmachine | sed 's|-pc-|-|g'`}
+  if type gcc 2>/dev/null >/dev/null && type g++ 2>/dev/null >/dev/null; then
+    : ${CC:=gcc} ${CXX:=g++}
+  elif type clang 2>/dev/null >/dev/null && type clang++ 2>/dev/null >/dev/null; then
+    : ${CC:=clang} ${CXX:=clang++}
+  fi
+
+  : ${build:=`$CC -dumpmachine | sed 's|-pc-|-|g'`}
 
   if [ -z "$host" ]; then
     host=$build
@@ -34,6 +40,7 @@ cfg() {
       -DBUILD_SHARED_LIBS=OFF \
       -DENABLE_PIC=OFF ;;
   esac
+
   : ${generator:="Unix Makefiles"}
 
  (mkdir -p $builddir
@@ -140,7 +147,7 @@ cfg-emscripten() {
   host=${build/-gnu/-emscriptenlibc}
   builddir=build/${host%-*}-emscripten
   
-  prefix=/opt/emsdk/emscripten/master/system/include
+  prefix=`which emcc | sed 's|/emcc$|/system|'` 
   libdir=$prefix/lib
   bindir=$prefix/bin
 
