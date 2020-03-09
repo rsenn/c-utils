@@ -1,5 +1,5 @@
 cfg() {
-  : ${build:=`gcc -dumpmachine`}
+  : ${build:=`gcc -dumpmachine | sed 's|-pc-|-|g'`}
 
   if [ -z "$host" ]; then
     host=$build
@@ -22,6 +22,7 @@ cfg() {
   else
    : ${builddir=build/$host}
   fi
+  test -n "$builddir" && builddir=`echo $builddir | sed 's|-pc-|-|g'`
 
   case $(uname -o) in
    # MSys|MSYS|Msys) SYSTEM="MSYS" ;;
@@ -75,7 +76,7 @@ cfg-android ()
 }
 
 cfg-diet() {
- (: ${build=$(${CC:-gcc} -dumpmachine)}
+ (: ${build=$(${CC:-gcc} -dumpmachine | sed 's|-pc-|-|g')}
   : ${host=${build/-gnu/-diet}}
   : ${prefix=/opt/diet}
   : ${libdir=/opt/diet/lib-${host%%-*}}
@@ -98,7 +99,7 @@ cfg-diet() {
 }
 
 cfg-diet64() {
- (build=$(gcc -dumpmachine)
+ (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   host=${build%%-*}-linux-diet
   host=x86_64-${host#*-}
 
@@ -109,7 +110,7 @@ cfg-diet64() {
 }
 
 cfg-diet32() {
- (build=$(gcc -dumpmachine)
+ (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   host=${build%%-*}-linux-diet
   host=i686-${host#*-}
 
@@ -121,7 +122,7 @@ cfg-diet32() {
 }
 
 cfg-mingw() {
- (build=$(gcc -dumpmachine)
+ (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   : ${host=${build%%-*}-w64-mingw32}
   : ${prefix=/usr/$host/sys-root/mingw}
 
@@ -135,12 +136,13 @@ cfg-mingw() {
     "$@")
 }
 cfg-emscripten() {
- (build=$(${CC:-emcc} -dumpmachine)
+ (build=$(${CC:-emcc} -dumpmachine | sed 's|-pc-|-|g')
   host=${build/-gnu/-emscriptenlibc}
-  : ${builddir=build/${host%-*}-emscripten}
-  : ${prefix=/opt/emsdk/emscripten/incoming/system}
-  : ${libdir=/opt/emsdk/emscripten/incoming/system/lib}
-  : ${bindir=/opt/emsdk/emscripten/incoming/system/bin}
+  builddir=build/${host%-*}-emscripten
+  
+  prefix=/opt/emsdk/emscripten/master/system/include
+  libdir=$prefix/lib
+  bindir=$prefix/bin
 
   CC="emcc" \
   PKG_CONFIG="PKG_CONFIG_PATH=$libdir/pkgconfig pkg-config" \
@@ -155,7 +157,7 @@ cfg-emscripten() {
 }
 
 cfg-tcc() {
- (build=$(cc -dumpmachine)
+ (build=$(cc -dumpmachine | sed 's|-pc-|-|g')
   host=${build/-gnu/-tcc}
   builddir=build/$host
   prefix=/usr
@@ -170,7 +172,7 @@ cfg-tcc() {
 }
 
 cfg-musl() {
- (: ${build=$(${CC:-gcc} -dumpmachine)}
+ (: ${build=$(${CC:-gcc} -dumpmachine | sed 's|-pc-|-|g')}
   : ${host=${build/-gnu/-musl}}
 
  : ${prefix=/usr}
@@ -192,7 +194,7 @@ cfg-musl() {
 
 
 cfg-musl64() {
- (build=$(gcc -dumpmachine)
+ (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   host=${build%%-*}-linux-musl
   host=x86_64-${host#*-}
 
@@ -204,7 +206,7 @@ cfg-musl64() {
 }
 
 cfg-musl32() {
- (build=$(gcc -dumpmachine)
+ (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   host=$(echo "$build" | sed "s|x86_64|i686| ; s|-gnu|-musl|")
 
   builddir=build/$host \
@@ -215,7 +217,7 @@ cfg-musl32() {
 }
 
 cfg-msys() {
- (build=$(gcc -dumpmachine)
+ (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   : ${host=${build%%-*}-pc-msys}
   : ${prefix=/usr/$host/sys-root/msys}
 
@@ -229,7 +231,7 @@ cfg-msys() {
 }
 
 cfg-msys32() {
- (build=$(gcc -dumpmachine)
+ (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   host=${build%%-*}-pc-msys
   host=i686-${host#*-}
   cfg-msys "$@")
@@ -272,20 +274,21 @@ cfg-wasm() {
 }
 
 cfg-msys32() {
- (build=$(gcc -dumpmachine)
+ (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   host=${build%%-*}-pc-msys
   host=i686-${host#*-}
   cfg-msys "$@")
 }
 
 cfg-msys() {
- (build=$(gcc -dumpmachine)
+ (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   : ${host=${build%%-*}-pc-msys}
   : ${prefix=/usr/$host/sys-root/msys}
 
   builddir=build/$host \
   bindir=$prefix/bin \
   libdir=$prefix/lib \
+  
   CC="$host-gcc" \
   cfg \
     -DCMAKE_CROSSCOMPILING=TRUE \
@@ -293,7 +296,7 @@ cfg-msys() {
 }
 
 cfg-tcc() {
- (build=$(cc -dumpmachine)
+ (build=$(cc -dumpmachine | sed 's|-pc-|-|g')
   host=${build/-gnu/-tcc}
   builddir=build/$host
   prefix=/usr
@@ -306,3 +309,4 @@ cfg-tcc() {
     -DCMAKE_VERBOSE_MAKEFILE=ON \
     "$@")
 }
+  

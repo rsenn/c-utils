@@ -39,6 +39,8 @@ http_get(http* h, const char* location) {
     if(location[len] == ':') {
       len += 1;
       len += scan_ushort(&location[len], &h->port);
+    } else {
+      h->port = h->tls ? 443 : 80;
     }
     location += len;
   }

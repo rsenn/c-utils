@@ -35,8 +35,12 @@ set_timeouts(int seconds) {
   taia_uint(&stamp, 0);
 }
 /*
+ *
  *  URL: http://verteiler1.mediathekview.de/Filmliste-akt.xz
  */
+
+/* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf */
+static const char default_url[] = "https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
@@ -147,7 +151,7 @@ main(int argc, char* argv[]) {
   h.keepalive = 0;
   argi = optind;
   if(argv[optind] == 0) {
-    argv[optind++] = "https://127.0.0.1:443/show";
+    argv[optind++] = default_url;
     // argv[1] = "http://127.0.0.1:5555/show";
     argv[optind] = 0;
   }
