@@ -110,22 +110,34 @@ cfg-diet64() {
   host=${build%%-*}-linux-diet
   host=x86_64-${host#*-}
 
+  prefix=/opt/diet \
   builddir=build/$host \
   CC="diet-gcc" \
   cfg-diet \
-  "$@")
+  "$@" \
+    -DCMAKE_INSTALL_LIBDIR="lib-${host%%-*}")
 }
 
 cfg-diet32() {
  (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   host=${build%%-*}-linux-diet
   host=i686-${host#*-}
+  
+  if type diet32-clang 2>/dev/null >/dev/null; then
+    CC="diet32-clang"
+    export CC
+  elif type diet32-gcc 2>/dev/null >/dev/null; then
+    CC="diet32-gcc"
+    export CC
+  else
+    CC="gcc"
+    launcher="/opt/diet/bin-i386/diet"
+    CFLAGS="-m32"
+    export CC launcher CFLAGS
+  fi
 
   builddir=build/$host \
-  CFLAGS="-m32" \
-  launcher="/opt/diet/bin-i386/diet" \
-  cfg-diet \
-  "$@")
+  cfg-diet  "$@")
 }
 
 cfg-mingw() {
