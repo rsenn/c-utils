@@ -965,6 +965,7 @@ endef
 ifneq ($(HOST),($(subst msys1,,$(HOST))))
 NO_AT ?= 1
 endif
+NO_AT := 1
 
 
 ifneq ($(NO_AT),1)
@@ -972,6 +973,8 @@ CFLAGS += @$(FLAGS_FILE)
 else
 CFLAGS += $(shell cat $(FLAGS_FILE))
 endif
+CFLAGS += $(patsubst %,-D%,$(DEFINES))
+
 
 ifneq ($(SYSROOT),)
 ifneq ($(call file-exists,$(SYSROOT)),1)
@@ -1028,6 +1031,8 @@ endif
 ifeq ($(NODEBUG),1)
 CFLAGS := $(filter-out -g%,$(CFLAGS))
 endif
+
+CFLAGS += $(DEFINES:%=-D%)
 
 $(info CC: $(CC))
 $(info CFLAGS: $(CFLAGS))
