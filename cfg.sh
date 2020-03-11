@@ -92,8 +92,13 @@ cfg-diet() {
   : ${CC="diet-gcc"}
   export CC
 
+  if type pkgconf >/dev/null; then
+    export PKG_CONFIG=pkgconf
+  fi
+
+  export PKG_CONFIG_PATH="$libdir/pkgconfig"
+  
   builddir=build/${host%-*}-diet \
-  PKG_CONFIG="PKG_CONFIG_PATH=$libdir/pkgconfig pkg-config" \
   cfg \
     -DCMAKE_INSTALL_PREFIX="$prefix" \
     -DENABLE_SHARED=OFF \
@@ -101,6 +106,9 @@ cfg-diet() {
     -DSHARED_LIBS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_VERBOSE_MAKEFILE=ON \
+    -DCMAKE_FIND_ROOT_PATH="$prefix" \
+    -DCMAKE_SYSTEM_LIBRARY_PATH="$prefix/lib-${host%%-*}" \
+    -D{CMAKE_INSTALL_LIBDIR=,INSTALL_LIB_DIR=$prefix/}"lib-${host%%-*}" \
       ${launcher:+-DCMAKE_C_COMPILER_LAUNCHER="$launcher"} \
     "$@")
 }
@@ -110,12 +118,12 @@ cfg-diet64() {
   host=${build%%-*}-linux-diet
   host=x86_64-${host#*-}
 
-  prefix=/opt/diet \
+  export prefix=/opt/diet
+
   builddir=build/$host \
   CC="diet-gcc" \
   cfg-diet \
-  "$@" \
-    -DCMAKE_INSTALL_LIBDIR="lib-${host%%-*}")
+  "$@")
 }
 
 cfg-diet32() {

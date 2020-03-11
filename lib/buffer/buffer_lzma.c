@@ -138,7 +138,7 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
   if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) {
     return 0;
   }
-  ctx = calloc(1, sizeof(lzma_ctx));
+  ctx = alloc_zero(sizeof(lzma_ctx));
   if(ctx == NULL)
     return 0;
 

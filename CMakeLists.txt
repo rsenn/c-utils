@@ -234,22 +234,45 @@ endif(USE_LZMA)
 
 
 if(USE_ZLIB)
+
+
   ################################################################################
   ## Check Zlib
   ################################################################################
-  pkg_search_module(ZLIB zlib libz z)
-  if(ZLIB_FOUND)
-    if(pkgcfg_lib_ZLIB_z)
-      set(ZLIB_LIBRARY_RELEASE "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
-      set(ZLIB_LIBRARY_DEBUG "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
-    endif(pkgcfg_lib_ZLIB_z)
-  else(ZLIB_FOUND)
-    #include(FindZlib)
-  endif(ZLIB_FOUND)
+  message(STATUS "Checking for libz")
+  find_library(ZLIB z)
 
-  if(ZLIB_LIBRARY_RELEASE)
-      set(ZLIB_LIBRARY "${ZLIB_LIBRARY_RELEASE}" CACHE FILEPATH "zlib library")
-  endif(ZLIB_LIBRARY_RELEASE)
+  message(STATUS "${ZLIB}")
+
+
+
+  set(ZLIB_LIBRARY "${ZLIB}")
+
+
+  if(ZLIB)
+    set(ZLIB_FOUND TRUE)
+    if(ZLIB STREQUAL "")
+      set(ZLIB z)
+    endif()
+    set(ZLIB_LIBARY_RELEASE "${ZLIB}" CACHE FILEPATH "")
+    set(ZLIB_LIBARY_DEBUG "${ZLIB}" CACHE FILEPATH "")
+    set(ZLIB_LIBARY "${ZLIB}" CACHE FILEPATH "")
+  endif(ZLIB)
+
+  if(NOT ZLIB_FOUND)
+
+    pkg_search_module(ZLIB zlib libz z)
+    if(ZLIB_FOUND)
+      if(pkgcfg_lib_ZLIB_z)
+        set(ZLIB_LIBRARY_RELEASE "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
+        set(ZLIB_LIBRARY_DEBUG "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
+      endif(pkgcfg_lib_ZLIB_z)
+    else(ZLIB_FOUND)
+      #include(FindZlib)
+    endif(ZLIB_FOUND)
+
+  endif(NOT ZLIB_FOUND)
+
 
 else(USE_ZLIB)
   unset(ZLIB_LIBRARY_RELEASE CACHE)
@@ -319,12 +342,22 @@ endif(USE_SSL)
 add_definitions(-Dinline=__inline)
 
 
-
-if(MINGW)
-  set(LIBMSWSOCK ws2_32)
-elseif(WIN32 OR WIN64 OR MSVC)
-  set(LIBMSWSOCK wsock32)
-endif()
+if(MINGW OR WIN32 OR WIN64 OR MSVC)
+  check_library_exists(ws2_32 select "" HAVE_WS2_32_LIB)
+  if(HAVE_WS2_32_LIB)
+    set(LIBMSWSOCK ws2_32)
+  else(HAVE_WS2_32_LIB)
+    check_library_exists(wsock32 select "" HAVE_WSOCK32_LIB)
+    if(HAVE_WSOCK32_LIB)
+      set(LIBMSWSOCK wsock32)
+    else(HAVE_WSOCK32_LIB)
+      check_library_exists(mswsock select "" HAVE_MSWSOCK_LIB)
+      if(HAVE_MSWSOCK_LIB)
+        set(LIBMSWSOCK mswsock)
+      endif(HAVE_MSWSOCK_LIB)
+    endif(HAVE_WSOCK32_LIB)
+  endif(HAVE_WS2_32_LIB)
+endif(MINGW OR WIN32 OR WIN64 OR MSVC)
 
 if(USE_SELECT)
    add_definitions(-DUSE_SELECT=1)
@@ -567,7 +600,7 @@ endforeach()
 target_link_libraries(unix stralloc buffer ndelay)
 target_link_libraries(array safemult byte str)
 target_link_libraries(binfmt mmap byte)
-target_link_libraries(buffer byte fmt mmap open str ${ZLIB_LIBRARY})
+target_link_libraries(buffer alloc byte fmt mmap open str ${ZLIB_LIBRARY})
 target_link_libraries(cb str)
 target_link_libraries(cbmap str)
 target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI})
@@ -676,7 +709,7 @@ add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
 if(USE_LZMA)
-add_program(mediathek-list errmsg stralloc buffer byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES} pthread)
+add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES} pthread)
 endif(USE_LZMA)
 
 add_program(mediathek-parser ucs errmsg stralloc buffer array byte open str unix strlist)
