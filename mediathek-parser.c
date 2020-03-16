@@ -205,7 +205,7 @@ process_entry(char** av, int ac) {
   if(!str_start(av[0], "\"X"))
     return 0;
 
-  while(ac > 6 && !(str_len(av[4]) == 10 && str_len(av[6]) == 8)) {
+  while(ac > 6 && !(av[4] && str_len(av[4]) == 10 && av[6] && str_len(av[6]) == 8)) {
     av++;
     ac--;
   }

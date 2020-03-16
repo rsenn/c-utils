@@ -20,7 +20,7 @@ strlist_dump(buffer* out, const strlist* sl) {
   x = sl->sa.s;
   n = sl->sa.len;
   end = sl->sa.s + n;
-  while(x < end) {
+  do {
     size_t p = byte_chr(x, end - x, sl->sep);
     if(p) {
       buffer_puts(out, "  ");
@@ -35,6 +35,6 @@ strlist_dump(buffer* out, const strlist* sl) {
     x += p;
     n -= p;
     i++;
-  }
+  } while(x < end);
   buffer_putsflush(out, "}\n");
 }
