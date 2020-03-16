@@ -22,16 +22,15 @@ strlist_dump(buffer* out, const strlist* sl) {
   end = sl->sa.s + n;
   do {
     size_t p = byte_chr(x, end - x, sl->sep);
-    if(p) {
-      buffer_puts(out, "  ");
-      buffer_putulong(out, i);
-      buffer_puts(out, " = \"");
-      buffer_put(out, x, p); //, &chrs[sizeof(chrs) - 1]  - p);
-      if(p + x < end && x[p] == sl->sep)
-        p++;
-      //    buffer_puts(out, strlist_dumpx);
-      buffer_putsflush(out, "\"\n");
-    }
+
+    buffer_puts(out, "  ");
+    buffer_putulong(out, i);
+    buffer_puts(out, " = \"");
+    buffer_put(out, x, p); //, &chrs[sizeof(chrs) - 1]  - p);
+    //    buffer_puts(out, strlist_dumpx);
+    buffer_putsflush(out, "\"\n");
+    if(p + x < end && x[p] == sl->sep)
+      p++;
     x += p;
     n -= p;
     i++;
