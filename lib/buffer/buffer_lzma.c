@@ -1,4 +1,5 @@
 #include "../buffer.h"
+#include "../alloc.h"
 #include "../uint8.h"
 #include <stdlib.h>
 

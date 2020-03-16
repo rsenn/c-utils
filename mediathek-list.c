@@ -570,12 +570,12 @@ output_entry(buffer* b, strlist* sl) {
     const char* s = strlist_at(sl, i);
     buffer_put(b, " \"", 2);
 
+    if(s == NULL)
+      s = "";
+
     while((c = *s++)) {
-      if(c == '"') {
-        c = '\\';
-        buffer_PUTC(b, c);
-        c = '"';
-      }
+      if(c == '"')
+        buffer_putc(b, '\\');
       buffer_PUTC(b, c);
     }
 
