@@ -17,7 +17,7 @@
 #include "lib/case.h"
 #include "lib/buffer.h"
 #include "lib/getopt.h"
-#include <errno.h>
+#include <errno.h>8
 #include <signal.h>
 #ifdef __ORANGEC__
 #include <sockets.h>

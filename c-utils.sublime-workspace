@@ -88,23 +88,81 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "critbit_tree\nCRITBIT_TREE\ncb_insert\ncb_find\ncb_erase\ncb_find_prefix\ncb_foreach\ncb_clear\ncb_insert_str\ncb_find_str\ncb_erase_str\ncb_find_prefix_str\nCB_KV_SIZE\ncb_new_kv\ncb_get_kv\ncb_get_kv_ex",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 189,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"contents": "#include \"lib/windoze.h\"\n#include \"lib/http.h\"\n#include \"lib/byte.h\"\n#include \"lib/io.h\"\n#include \"lib/iopause.h\"\n#include \"lib/socket.h\"\n#include \"lib/taia.h\"\n#include \"lib/errmsg.h\"\n#include \"lib/open.h\"\n#include \"lib/dns.h\"\n#include \"lib/fmt.h\"\n#include \"lib/iarray.h\"\n#include \"lib/scan.h\"\n#include \"lib/str.h\"\n#include \"lib/stralloc.h\"\n#include \"lib/tai.h\"\n#include \"lib/case.h\"\n#include \"lib/buffer.h\"\n#include \"lib/getopt.h\"\n#include <errno.h>8\n#include <signal.h>\n#ifdef __ORANGEC__\n#include <sockets.h>\n#endif\n#if WINDOWS_NATIVE\n#include <io.h>\n#else\n#include <unistd.h>\n#endif\nstatic int last_errno = 0;\nstatic struct taia deadline, stamp;\nstatic void\nset_timeouts(int seconds) {\n  taia_uint(&deadline, seconds);\n  taia_uint(&stamp, 0);\n}\n/*\n *\n *  URL: http://verteiler1.mediathekview.de/Filmliste-akt.xz\n */\n\n/* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf */\nstatic const char default_url[] = \"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf\";\nstatic const char* const url_host = \"127.0.0.1\";\nstatic const char* const url_location = \"/login\";\nstatic const uint16 url_port = 8080;\nstatic io_entry* g_iofd;\nstatic http h;\n\nvoid\nusage(char* av0) {\n  buffer_putm_internal(buffer_1,\n                       \"Usage: \",\n                       str_basename(av0),\n                       \" [OPTIONS] [FILES...]\\n\"\n                       \"\\n\"\n                       \"Options:\\n\"\n                       \"\\n\"\n                       \"  -h, --help              Show this help\\n\"\n                       \"  -o, --output FILE       Output file\\n\"\n                       \"\\n\",\n                       0);\n  buffer_flush(buffer_1);\n}\n\nstatic int\nhttp_io_handler(http* h, buffer* out) {\n  fd_t r, w;\n  int nr = 0, nw = 0;\n  while((w = io_canwrite()) != -1) {\n    if(h->sock == w) {\n      http_writeable(h);\n      nw++;\n    }\n  }\n\n  while((r = io_canread()) != -1) {\n    if(h->sock == r) {\n      ssize_t ret = http_readable(h, 0);\n      buffer_puts(buffer_2, \"readable ret=\");\n      buffer_putlong(buffer_2, ret);\n#if HAVE_OPENSSL\n      buffer_puts(buffer_2, \"  err=\");\n      buffer_puts(buffer_2, http_ssl_errflag(h->err));\n#endif\n      buffer_putnlflush(buffer_2);\n\n      if(h->connected && h->sent) {\n        char buf[8192];\n        ssize_t n;\n\n        while((n = http_read(h, buf, sizeof(buf), &h->q.in)) > 0) {\n          if(buffer_put(out, buf, n)) {\n            errmsg_warnsys(\"write error: \", 0);\n            return 2;\n          }\n          if(n == -1 || h->response->status == HTTP_STATUS_ERROR) {\n            errmsg_warnsys(\"read error: \", 0);\n            return 1;\n          }\n        }\n      }\n\n      nr++;\n    }\n  }\n  return nr + nw;\n}\n\nint\nmain(int argc, char* argv[]) {\n  int argi;\n  iopause_fd iop;\n  static buffer in, out;\n  static char inbuf[128 * 1024];\n  static char outbuf[256 * 1024];\n  fd_t fd, outfile;\n  int c, index;\n  const char* outname = 0;\n  const char* tmpl = \"output-XXXXXX.txt\";\n  struct longopt opts[] = {{\"help\", 0, NULL, 'h'}, {\"output\", 0, NULL, 'o'}, {0, 0, 0, 0}};\n\n  errmsg_iam(argv[0]);\n#if !WINDOWS_NATIVE\n  signal(SIGPIPE, SIG_IGN);\n#endif\n\n  for(;;) {\n    c = getopt_long(argc, argv, \"ho:\", opts, &index);\n    if(c == -1)\n      break;\n    if(c == 0)\n      continue;\n\n    switch(c) {\n      case 'o': outname = optarg; break;\n      case 'h': usage(argv[0]); return 0;\n\n      default: usage(argv[0]); return 1;\n    }\n  }\n  if(outname && str_equal(outname, \"-\"))\n    outfile = 1;\n  else if((outfile = outname ? open_trunc(outname) : open_temp(&tmpl)) == -1) {\n    errmsg_warnsys(\"open error: \", outname, 0);\n    return 126;\n  }\n  buffer_init(&out, &write, outfile, outbuf, sizeof(outbuf));\n  http_init(&h, url_host, url_port);\n  h.nonblocking = 1;\n  h.keepalive = 0;\n  argi = optind;\n  if(argv[optind] == 0) {\n    argv[optind++] = default_url;\n    // argv[1] = \"http://127.0.0.1:5555/show\";\n    argv[optind] = 0;\n  }\n  for(; argi <= argc; ++argi) {\n    int ret = http_get(&h, argv[argi]);\n    for(;;) {\n\n      int doread = 0;\n\n      buffer_putsflush(buffer_2, \"io_waituntil2\\n\");\n\n      if(io_waituntil2(-1) == -1) {\n        errmsg_warnsys(\"wait error: \", 0);\n        return 3;\n      }\n\n      http_io_handler(&h, &out);\n\n      //      buffer_dump(buffer_1, &h.q.in);\n      if(h.response->status >= HTTP_STATUS_CLOSED) {\n        buffer_putsflush(buffer_2, \"HTTP_STATUS_CLOSED\\n\");\n        break;\n      }\n    }\n    buffer_flush(&out);\n    /* buffer_putsa(buffer_1, &h.response->data);*/\n    buffer_putnlflush(buffer_1);\n  }\n  return 0;\n}\n",
 			"file": "httptest.c",
-			"file_size": 4547,
-			"file_write_time": 132282133798813834,
 			"settings":
 			{
 				"buffer_size": 4548,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_getn.c",
+			"settings":
+			{
+				"buffer_size": 348,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/cb.h",
+			"settings":
+			{
+				"buffer_size": 2380,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_init_free.c",
+			"settings":
+			{
+				"buffer_size": 180,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 26161,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "GNUmakefile",
+			"settings":
+			{
+				"buffer_size": 61148,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_lzma.c",
+			"settings":
+			{
+				"buffer_size": 3256,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/alloc/alloc_zero.c",
+			"settings":
+			{
+				"buffer_size": 146,
 				"line_ending": "Unix"
 			}
 		}
@@ -389,9 +447,7 @@
 	"expanded_folders":
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path"
+		"/home/roman/Dokumente/Sources/c-utils/lib"
 	],
 	"file_history":
 	[
@@ -526,7 +582,7 @@
 	],
 	"find":
 	{
-		"height": 43.0
+		"height": 29.0
 	},
 	"find_in_files":
 	{
@@ -552,6 +608,20 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"mediathek-list.*EXE",
+			"ccat.*EXEEX",
+			"^CFLAGS",
+			"NO_AT",
+			"$(FLAGS",
+			"$(FLAGS)",
+			"$(DEFINES",
+			"$(DEFINES)",
+			"DEFINES",
+			"HAVE_LIBBZ2",
+			"WIN32",
+			"_librar",
+			"check_",
+			"wsock32",
 			" -dumpmachine",
 			"https://",
 			"default_url",
@@ -665,26 +735,12 @@
 			"^main_scan",
 			"sources_find",
 			"^sources_find",
-			"strlist_removeb",
-			"strlist_remove",
-			"sources_get",
-			"^main_present",
-			"main_present",
-			"^main_present",
-			"ERROR.*open",
-			"path_mmap_read",
-			"warnsys",
-			"ERROR.*open",
-			"path_mmap_read",
-			"ERROR.*open",
-			"sources_get",
-			"^sources_get",
-			"removeb"
+			"strlist_removeb"
 		],
 		"highlight": false,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": false,
+		"regex": true,
 		"replace_history":
 		[
 			" -dumpmachine | sed 's|-pc-|-|g'",
@@ -800,7 +856,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 189,
 						"regions":
 						{
 						},
@@ -814,13 +870,93 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/darkside-contrast.tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/httptest.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/cb.h",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									893,
+									905
+								],
+								[
+									980,
+									992
+								],
+								[
+									1106,
+									1115
+								],
+								[
+									1179,
+									1186
+								],
+								[
+									1242,
+									1250
+								],
+								[
+									1306,
+									1320
+								],
+								[
+									1426,
+									1436
+								],
+								[
+									1640,
+									1648
+								],
+								[
+									1677,
+									1690
+								],
+								[
+									1752,
+									1763
+								],
+								[
+									1823,
+									1835
+								],
+								[
+									1896,
+									1914
+								],
+								[
+									2100,
+									2110
+								],
+								[
+									2158,
+									2167
+								],
+								[
+									2248,
+									2257
+								],
+								[
+									2305,
+									2317
+								]
 							],
 							"symlist":
 							[
+								"critbit_tree",
+								"CRITBIT_TREE",
+								"cb_insert",
+								"cb_find",
+								"cb_erase",
+								"cb_find_prefix",
+								"cb_foreach",
+								"cb_clear",
+								"cb_insert_str",
+								"cb_find_str",
+								"cb_erase_str",
+								"cb_find_prefix_str",
+								"CB_KV_SIZE",
+								"cb_new_kv",
+								"cb_get_kv",
+								"cb_get_kv_ex"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -828,13 +964,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 8,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -850,8 +986,8 @@
 						"selection":
 						[
 							[
-								245,
-								245
+								722,
+								722
 							]
 						],
 						"settings":
@@ -862,10 +998,214 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 198.0,
+						"translation.y": 3120.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/buffer/buffer_getn.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 348,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								113,
+								113
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/cb.h",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 2380,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1944,
+								1944
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/User/SchemeEditorTemp/Abdal Black Hackers.tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 540.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/buffer/buffer_init_free.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 180,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								180,
+								180
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 26161,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10017,
+								10017
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 6866.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "GNUmakefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 61148,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								31967,
+								31967
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 1714.0,
+						"translation.y": 24493.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/buffer/buffer_lzma.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3256,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2761,
+								2761
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2520.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/alloc/alloc_zero.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 146,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
@@ -873,7 +1213,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 32.0
+		"height": 29.0
 	},
 	"input":
 	{
@@ -915,6 +1255,10 @@
 	{
 		"height": 0.0
 	},
+	"output.Debugger":
+	{
+		"height": 139.0
+	},
 	"output.SublimeLinter":
 	{
 		"height": 0.0
@@ -947,7 +1291,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 77.0
+		"height": 54.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -956,6 +1300,18 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"gnuma",
+				"GNUmakefile"
+			],
+			[
+				"cmakelists",
+				"CMakeLists.txt"
+			],
+			[
+				"alloc",
+				"lib/alloc/alloc_zero.c"
+			],
 			[
 				"cfg.s",
 				"~/Dokumente/Sources/c-utils/cfg.sh"
@@ -999,10 +1355,6 @@
 			[
 				"list-r",
 				"list-r.c"
-			],
-			[
-				"cmakelists",
-				"CMakeLists.txt"
 			],
 			[
 				"stralloc.h",
@@ -1459,14 +1811,6 @@
 			[
 				"genmakefile.h",
 				"genmakefile.h"
-			],
-			[
-				"wait.h",
-				"lib/wait.h"
-			],
-			[
-				"strlist",
-				"lib/strlist.h"
 			]
 		],
 		"width": 0.0

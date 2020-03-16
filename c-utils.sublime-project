@@ -1,39 +1,58 @@
 {
-  "build_systems": [
-  {
-    "name": "List",
-    "shell_cmd": "ls -l"
-  },
-  {
-    "name": "Build debug",
-    "shell_cmd": "make DEBUG=1 SELECT=1 CC=clang",
-      "working_dir": "${project_path:${folder:${file_path}}}"
-  },
-    {
-    "name": "Rebuild CTags",
-    "shell_cmd": "make .tags"
-  },
-    {
-      "name": "clang-format",
-      "shell_cmd": "clang-format -verbose -style=file -i `find . -name '*.c' -or -name '*.h'`",
-      "working_dir": "${project_path:${folder:${file_path}}}"
-    },
-
-  ],
-  "folders": [
-  {
-    "path": ".",
-          "file_exclude_patterns": ["*~", "*.??make", "*.orig", "*.jom","*.gnu","*.ninja", "*.stackdump", "*.3", "*.o", "*.lo", "*.d", "*.m4", "*~", "*.pro.user*", "*cfg*.sh"]
-
-  }],
-
-  
-  "settings":
-  {
-    "sublimegdb_commandline": "gdb --interpreter=mi ${file}",
-    "sublimegdb_workingdir": "${folder:${project_path:${file}}}",
-    "sublimegdb_exec_cmd": "-exec-run",
-    "tab_size": 2,
-    "sublimegdb_i_know_how_to_use_gdb_thank_you_very_much": true
-  }
+	"build_systems":
+	[
+		{
+			"name": "List",
+			"shell_cmd": "ls -l"
+		},
+		{
+			"name": "Build debug",
+			"shell_cmd": "make DEBUG=1 SELECT=1 CC=clang",
+			"working_dir": "${project_path:${folder:${file_path}}}"
+		},
+		{
+			"name": "Rebuild CTags",
+			"shell_cmd": "make .tags"
+		},
+		{
+			"name": "clang-format",
+			"shell_cmd": "clang-format -verbose -style=file -i `find . -name '*.c' -or -name '*.h'`",
+			"working_dir": "${project_path:${folder:${file_path}}}"
+		}
+	],
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"*~",
+				"*.??make",
+				"*.orig",
+				"*.jom",
+				"*.gnu",
+				"*.ninja",
+				"*.stackdump",
+				"*.3",
+				"*.o",
+				"*.lo",
+				"*.d",
+				"*.m4",
+				"*~",
+				"*.pro.user*",
+				"*cfg*.sh"
+			],
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"debug.configurations":
+		[
+		],
+		"sublimegdb_commandline": "gdb --interpreter=mi ${file}",
+		"sublimegdb_exec_cmd": "-exec-run",
+		"sublimegdb_i_know_how_to_use_gdb_thank_you_very_much": true,
+		"sublimegdb_workingdir": "${folder:${project_path:${file}}}",
+		"tab_size": 2
+	}
 }
