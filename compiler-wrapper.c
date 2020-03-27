@@ -488,7 +488,9 @@ execute_cmd() {
         strlist_push(&cmd, "--pass1");
         break;
       }
-      default: { break; }
+      default: {
+        break;
+      }
     }
 
     if(output_file.len > 0) {
@@ -534,7 +536,9 @@ execute_cmd() {
         strlist_push(&cmd, "-c");
         break;
       }
-      default: { break; }
+      default: {
+        break;
+      }
     }
 
     if(debug) {
