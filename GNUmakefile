@@ -1308,7 +1308,7 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
-$(BUILDDIR)logserial$(M64_)$(EXEEXT): $(BUILDDIR)logserial.o $(call add-library, errmsg  alloc strarray array  stralloc buffer str byte scan fmt taia tai)
+$(BUILDDIR)logserial$(M64_)$(EXEEXT): $(BUILDDIR)logserial.o $(call add-library,io iarray errmsg   strarray array  stralloc buffer str alloc byte scan fmt taia tai)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

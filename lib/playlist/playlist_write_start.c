@@ -37,7 +37,9 @@ playlist_write_start(buffer* b, playlist* pl) {
       break;
     }
     case UNKNOWN:
-    default: { return 0; }
+    default: {
+      return 0;
+    }
   }
   return 1;
 }

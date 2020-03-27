@@ -51,7 +51,9 @@ dir_type(struct dir_s* d) {
     case DT_CHR: r |= D_CHARDEV; break;
     case DT_SOCK: r |= D_SOCKET; break;
     case 0:
-    default: { break; }
+    default: {
+      break;
+    }
   }
 #else
   {
