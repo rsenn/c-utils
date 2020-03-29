@@ -630,12 +630,12 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
   assert(ptr->name.s);
   buffer_puts(&output, "\n# Part: ");
   buffer_putsa(&output, &ptr->name);
-  buffer_puts(&output, "\n");
 
   if(ptr->pkg) {
-    buffer_puts(buffer_2, " package: ");
-    buffer_putsa(buffer_2, &ptr->pkg->name);
+    buffer_puts(&output, "\n# Package: ");
+    buffer_putsa(&output, &ptr->pkg->name);
   }
+  buffer_putsflush(&output, "\n");
 
   strlist_init(&refs, '\n');
 
@@ -657,7 +657,7 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
     buffer_putc(&output, '\n');
   }
 
-  buffer_putnlflush(&output);
+  buffer_flush(&output);
   strlist_free(&refs);
 
   if(ptr->dset) {
