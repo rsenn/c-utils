@@ -39,7 +39,7 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
 
   switch(id) {
     case XML_ATTRIBUTE: {
-#if 1
+#if DEBUG_OUTPUT_
       buffer_putm_internal(buffer_2, "reading attribute '", name->s, "' value '", value->s, "'", 0);
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
@@ -48,7 +48,7 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
 
     case XML_TEXT: {
       xmlnode *pnode, *tnode, **nptr;
-      const char* x = name && name->s ? (const char*)name->s : value && (const char*)value->s ? (const char*)value : "";
+      const char* x = name && name->s ? (const char*)name->s : value && (const char*)value->s ? (const char*)value->s : "";
       size_t i, n = name && name->len ? name->len : value && value->len ? value->len : 0;
 
       i = scan_whitenskip(x, n);
@@ -76,7 +76,7 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
     case XML_ELEMENT:
     default: {
       xmlnode* node = 0;
-#if 1
+#if DEBUG_OUTPUT_
       buffer_putm_internal(buffer_2, "reading element '", name->s, "'", 0);
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */

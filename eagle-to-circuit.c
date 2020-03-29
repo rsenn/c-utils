@@ -589,6 +589,7 @@ cmp_ref(const char** a, const char** b) {
 
   return str_diff(*a, *b);
 }
+
 int
 output_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct part* ptr = (struct part*)value;
