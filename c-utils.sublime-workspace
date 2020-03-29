@@ -88,21 +88,20 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"file": "logserial.c",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 3367,
+				"encoding": "UTF-8",
 				"line_ending": "Unix",
-				"name": "𝌆 Outline",
-				"scratch": true
+				"name": "#include \"serial.h\""
 			}
 		},
 		{
-			"file": "mediathek-parser.c",
+			"file": "httptest.c",
 			"settings":
 			{
-				"buffer_size": 10019,
-				"encoding": "UTF-8",
+				"buffer_size": 4552,
 				"line_ending": "Unix"
 			}
 		}
@@ -387,14 +386,29 @@
 	"expanded_folders":
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/lib"
+		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_splice.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array/array_allocate.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/serial.h",
+		"/home/roman/Dokumente/Sources/c-utils/serial.c",
+		"/home/roman/Dokumente/Sources/c-utils/mediathek-parser.c",
+		"/home/roman/Dokumente/Sources/c-utils/montty.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_from_argv.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_lzma.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn2.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_to_argv.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_dump.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_flush.c",
@@ -404,7 +418,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getn.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_init_free.c",
 		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
 		"/home/roman/Dokumente/Sources/c-utils/lib/alloc/alloc_zero.c",
 		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
@@ -430,11 +443,9 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_absolute_sa.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_cat.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_cat_unique.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_exists.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_index_of.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_index_of_b.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_start.c",
@@ -506,19 +517,9 @@
 		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
 		"/home/roman/Dokumente/Sources/c-utils/examples/fmt_httpdate_example.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/hhttp_close.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/iopause.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/iob.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_getcookie.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_createfile.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_close.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_dump.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_waituntil2.c",
-		"/home/roman/Dokumente/Sources/c-utils/http.c",
-		"/home/roman/Dokumente/Sources/c-utils/bsdiffcat.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_dup.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_tryread.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_read_fd.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_getcookie.c"
 	],
 	"find":
 	{
@@ -548,6 +549,27 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"io_wait",
+			"longflush",
+			"alloca",
+			"ports",
+			"ports;",
+			"logser",
+			"portlist",
+			"get_ports",
+			"stra",
+			"contains",
+			"waitun",
+			"wait",
+			"errmsg.*warn",
+			"logser",
+			"strip-comm.*EXE",
+			"PROGRAMS",
+			"_init",
+			"buffer",
+			"from",
+			"strlist_from",
+			"list",
 			"read_line",
 			"process_en",
 			"^process_e",
@@ -654,28 +676,7 @@
 			"^sources_add",
 			"sources_add",
 			"rdir_read",
-			"sources_find",
-			"source_find",
-			"sources_find",
-			"sourcedir_dump_all",
-			"\"target",
-			"targetdirs\"",
-			"\"srcs",
-			"byte_diff",
-			"skip_comment",
-			"skip_com",
-			"--(.);",
-			"\\+\\+(.);",
-			"skip_comment",
-			"sources_get",
-			"next_b",
-			"strlist_next_b",
-			"path_prefix_s\\(.*\\.s[^a]",
-			"path_prefix_s(&dirs.this.sa, path_basename(output.s)",
-			"path_prefix_s\\(.*\\.s[^a]",
-			"path_prefix_s\\(.*\\.s",
-			"path_prefix_s.*dirs.this",
-			"path_prefix_s.*dirs"
+			"sources_find"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -788,41 +789,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/darkside-contrast.tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/mediathek-parser.c",
-							"outline_rename_mode": false,
-							"symkeys":
-							[
-							],
-							"symlist":
-							[
-							],
-							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				}
 			]
 		},
 		{
@@ -830,20 +798,55 @@
 			"sheets":
 			[
 				{
-					"buffer": 1,
-					"file": "mediathek-parser.c",
+					"buffer": 0,
+					"file": "logserial.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10019,
+						"buffer_size": 3367,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1580,
-								1580
+								1373,
+								1373
+							],
+							[
+								2321,
+								2321
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#include \"serial.h\"",
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1728.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "httptest.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4552,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4201,
+								4201
 							]
 						],
 						"settings":
@@ -853,10 +856,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 574.0,
+						"translation.y": 2727.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -864,7 +867,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 25.0
+		"height": 27.0
 	},
 	"input":
 	{
@@ -942,7 +945,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 46.0
+		"height": 50.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -952,16 +955,72 @@
 		"selected_items":
 		[
 			[
+				"httptest",
+				"httptest.c"
+			],
+			[
+				"array.h",
+				"lib/array.h"
+			],
+			[
+				"gnuma",
+				"GNUmakefile"
+			],
+			[
+				"strarray.h",
+				"lib/strarray.h"
+			],
+			[
+				"errmsg",
+				"lib/errmsg.h"
+			],
+			[
+				"io.h",
+				"lib/io.h"
+			],
+			[
+				"gnumake",
+				"GNUmakefile"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"erial.c",
+				"serial.c"
+			],
+			[
+				"serial.h",
+				"serial.h"
+			],
+			[
+				"serial.c",
+				"serial.c"
+			],
+			[
+				"from_arg",
+				"lib/strarray/strarray_from_argv.c"
+			],
+			[
+				"strarray",
+				"lib/strarray.h"
+			],
+			[
+				"strlist.h",
+				"lib/strlist.h"
+			],
+			[
+				"mont",
+				"montty.c"
+			],
+			[
 				"mediathek-list.c",
 				"mediathek-list.c"
 			],
 			[
 				"lzma.c",
 				"lib/buffer/buffer_lzma.c"
-			],
-			[
-				"buffer.h",
-				"lib/buffer.h"
 			],
 			[
 				"flush",
@@ -1000,10 +1059,6 @@
 				"mediathek-parser.c"
 			],
 			[
-				"gnuma",
-				"GNUmakefile"
-			],
-			[
 				"cmakelists",
 				"CMakeLists.txt"
 			],
@@ -1018,10 +1073,6 @@
 			[
 				"http_get",
 				"lib/http/http_get.c"
-			],
-			[
-				"httptest",
-				"httptest.c"
 			],
 			[
 				"cmakeli",
@@ -1074,10 +1125,6 @@
 			[
 				"to_argv",
 				"lib/strarray/strarray_to_argv.c"
-			],
-			[
-				"strlist.h",
-				"lib/strlist.h"
 			],
 			[
 				"strlist_cat.c",
@@ -1142,10 +1189,6 @@
 			[
 				"idex_of",
 				"lib/strarray/strarray_index_of.c"
-			],
-			[
-				"strarray.h",
-				"lib/strarray.h"
 			],
 			[
 				"byte_",
@@ -1274,10 +1317,6 @@
 			[
 				"iopa",
 				"lib/iopause.h"
-			],
-			[
-				"io.h",
-				"lib/io.h"
 			],
 			[
 				"http_c",
@@ -1426,42 +1465,6 @@
 			[
 				"skip_un",
 				"lib/buffer/buffer_skip_until.c"
-			],
-			[
-				"scan.h",
-				"lib/scan.h"
-			],
-			[
-				"charbuf",
-				"lib/charbuf.h"
-			],
-			[
-				"scan",
-				"lib/scan.h"
-			],
-			[
-				"GNUMa",
-				"GNUmakefile"
-			],
-			[
-				"piccf",
-				"piccfg.c"
-			],
-			[
-				"ends.c",
-				"lib/stralloc/stralloc_ends.c"
-			],
-			[
-				"reset.c",
-				"lib/array/array_reset.c"
-			],
-			[
-				"setb.c",
-				"lib/strarray/strarray_setb.c"
-			],
-			[
-				"array.h",
-				"lib/array.h"
 			]
 		],
 		"width": 0.0

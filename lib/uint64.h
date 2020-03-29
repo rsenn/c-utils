@@ -58,6 +58,13 @@ uint64_get(const void* ptr) {
 }
 
 #else
+inline static uint64
+uint64_get(const void* ptr) {
+  uint64 ret;
+  uint64_unpack_big(ptr, &ret);
+  return ret;
+}
+
 void uint64_pack(char* out, uint64 in);
 void uint64_unpack(const char* in, uint64* out);
 uint64 uint64_read(const char* in);
