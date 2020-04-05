@@ -91,10 +91,18 @@
 			"file": "logserial.c",
 			"settings":
 			{
-				"buffer_size": 3367,
+				"buffer_size": 3382,
 				"encoding": "UTF-8",
 				"line_ending": "Unix",
 				"name": "#include \"serial.h\""
+			}
+		},
+		{
+			"file": "xmltest.c",
+			"settings":
+			{
+				"buffer_size": 6273,
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -386,9 +394,7 @@
 	"expanded_folders":
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/array",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray"
+		"/home/roman/Dokumente/Sources/c-utils/examples"
 	],
 	"file_history":
 	[
@@ -794,7 +800,7 @@
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -803,37 +809,71 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3367,
+						"buffer_size": 3382,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1373,
-								1373
-							],
-							[
-								2321,
-								2321
+								3299,
+								3299
 							]
 						],
 						"settings":
 						{
 							"auto_name": "#include \"serial.h\"",
+							"color_scheme": "Packages/User/SchemeEditorTemp/Aurora.tmTheme",
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1728.0,
+						"translation.y": 2754.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "xmltest.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 6273,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/User/SchemeEditorTemp/Aurora.tmTheme",
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							}
+						},
+						"translation.x": 0.0,
+						"translation.y": 378.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
+					"buffer": 2,
 					"file": "httptest.c",
 					"semi_transient": false,
 					"settings":
@@ -845,21 +885,22 @@
 						"selection":
 						[
 							[
-								4201,
-								4201
+								4412,
+								4412
 							]
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/User/SchemeEditorTemp/Aurora.tmTheme",
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2727.0,
+						"translation.y": 3258.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]

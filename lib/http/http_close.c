@@ -4,9 +4,11 @@
 #include <io.h>
 #else
 #include <unistd.h>
+#include <netdb.h>
 #endif
 
 #ifdef HAVE_OPENSSL
+#include <openssl/opensslconf.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #endif
