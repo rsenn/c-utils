@@ -70,7 +70,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
           reader->self_closing = 1;
       }
 
-      buffer_puts(output, reader->self_closing ? (name->s[0] == '?' ? "?>" : "/>") : ">");
+      buffer_puts(output, reader->self_closing ? (name->s[0] == '?' ? "?>" : " />") : ">");
 
       stralloc_copy(&prev_element, name);
       prev_closing = closing;

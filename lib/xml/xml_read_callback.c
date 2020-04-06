@@ -1,4 +1,4 @@
-  #include "../byte.h"
+#include "../byte.h"
 #include "../stralloc.h"
 #include "../xml.h"
 #include "../str.h"
@@ -86,7 +86,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       }
       charset = quoted ? "\"" : "/> \t\r\n\v";
       if((n = buffer_gettok_sa(b, &val, charset, str_len(charset))) < 0)
-        break; 
+        break;
       if(quoted && buffer_skipc(b) < 0)
         break;
       stralloc_nul(&attr);
@@ -130,8 +130,8 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     if(b->n - b->p <= 1)
       break;
 
-   /*  if(n <= 0)
-      break; */
+    /*  if(n <= 0)
+       break; */
     s = buffer_peek(b);
 
     if(!is_whitespace(tag.s, tag.len)) {
