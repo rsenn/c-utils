@@ -754,7 +754,7 @@ add_program(strip-comments  errmsg env charbuf buffer path dir strarray strlist 
 
 add_program(httpproxy http io map)
 add_program(montty io map)
-add_program(logserial errmsg io strarray stralloc buffer )
+add_program(logserial rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
 #add_program(tinyproxy http io)
 #if(NOT WIN32)
 #add_program(tcpproxy http io)
