@@ -186,6 +186,8 @@ process_loop(fd_t serial_fd, int64 timeout) {
     if((ret = io_waituntil2(wait_msecs)) < 0) {
       errmsg_warnsys("wait error: ", 0);
       break;
+    } else {
+      ret = 1;
     }
 
     while((read_fd = io_canread()) != -1) {
