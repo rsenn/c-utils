@@ -20,6 +20,12 @@ static strarray ports;
 static fd_t input_fd = 0;
 static stralloc input_buf;
 
+/**
+ * @brief      { function_description }
+ *
+ * @param[in]  dir   The dir
+ * @param      arr   The arr
+ */
 void
 dir_entries(const char* dir, strarray* arr) {
   rdir_t d;
@@ -32,6 +38,11 @@ dir_entries(const char* dir, strarray* arr) {
   rdir_close(&d);
 }
 
+/**
+ * @brief      { function_description }
+ *
+ * @return     { description_of_the_return_value }
+ */
 int64
 serial_ports() {
   static int i;
@@ -47,20 +58,19 @@ serial_ports() {
 
     // if(strarray_index_of(&ports, *port) == -1) {
     if(strarray_push_unique(&newports, *port)) {
-     /*  buffer_putlong(buffer_2, i);
-      buffer_puts(buffer_2, ": detected new port: ");
-      buffer_puts(buffer_2, *port);
-      buffer_putnlflush(buffer_2); */
-  
+      /*  buffer_putlong(buffer_2, i);
+       buffer_puts(buffer_2, ": detected new port: ");
+       buffer_puts(buffer_2, *port);
+       buffer_putnlflush(buffer_2); */
     }
   }
 
   strarray_foreach(&ports, port) {
     if(strarray_index_of(&newports, *port) == -1) {
-    /*   buffer_putlong(buffer_2, i);
-      buffer_puts(buffer_2, ": disappeared port: ");
-      buffer_puts(buffer_2, *port);
-      buffer_putnlflush(buffer_2); */
+      /*   buffer_putlong(buffer_2, i);
+        buffer_puts(buffer_2, ": disappeared port: ");
+        buffer_puts(buffer_2, *port);
+        buffer_putnlflush(buffer_2); */
     }
   }
 
@@ -70,6 +80,11 @@ serial_ports() {
   return strarray_size(&ports);
 }
 
+/**
+ * @brief      Gets the ports.
+ *
+ * @return     The ports.
+ */
 int64
 get_ports() {
   int64 n = 0, r = 0;
@@ -85,11 +100,11 @@ get_ports() {
           continue;
         }
         if(!strarray_contains(&ports, port)) {
-          //strarray_push(&ports, port);
-           strarray_splice(&ports, 0, 0, 1, &port);
-         /*  buffer_puts(buffer_2, "detected new port: ");
-          buffer_puts(buffer_2, port);
-          buffer_putnlflush(buffer_2); */
+          // strarray_push(&ports, port);
+          strarray_splice(&ports, 0, 0, 1, &port);
+          /*  buffer_puts(buffer_2, "detected new port: ");
+           buffer_puts(buffer_2, port);
+           buffer_putnlflush(buffer_2); */
           r++;
         }
       }
@@ -99,6 +114,16 @@ get_ports() {
   return strarray_size(&ports);
 }
 
+/**
+ * @brief      { function_description }
+ *
+ * @param[in]  serial_fd  The serial fd
+ * @param      buf        The buffer
+ * @param[in]  len        The length
+ * @param      ptr        The pointer
+ *
+ * @return     { description_of_the_return_value }
+ */
 ssize_t
 serial_read(fd_t serial_fd, char* buf, size_t len, void* ptr) {
   ssize_t ret = read(serial_fd, buf, len);
@@ -107,6 +132,11 @@ serial_read(fd_t serial_fd, char* buf, size_t len, void* ptr) {
   return ret;
 }
 
+/**
+ * @brief      { function_description }
+ *
+ * @return     { description_of_the_return_value }
+ */
 ssize_t
 process_term() {
   char x[128];
@@ -122,6 +152,13 @@ process_term() {
   return ret;
 }
 
+/**
+ * @brief      { function_description }
+ *
+ * @param[in]  serial_fd  The serial fd
+ *
+ * @return     { description_of_the_return_value }
+ */
 ssize_t
 process_serial(fd_t serial_fd) {
   char x[1024];
@@ -141,15 +178,11 @@ process_serial(fd_t serial_fd) {
 
   } else if(ret < 0) {
     errmsg_warnsys("serial error", 0);
-        io_dontwantread(serial_fd);
+    io_dontwantread(serial_fd);
 
-        io_close(serial_fd);
+    io_close(serial_fd);
   }
-  if(stralloc_length(&input_buf)) {
-    buffer_putsa(buffer_1, &input_buf);
-    buffer_flush(buffer_1);
-          stralloc_zero(&input_buf);
-  }
+
   return ret;
 }
 
@@ -176,8 +209,8 @@ process_loop(fd_t serial_fd, int64 timeout) {
     if(wait_msecs < 0)
       wait_msecs = 0;
     fd_t read_fd;
-    //io_wantread(input_fd);
-  // io_wantread(serial_fd);
+    // io_wantread(input_fd);
+    // io_wantread(serial_fd);
     /* if(wait_msecs > 0) {
       buffer_puts(buffer_2, "wait msecs: ");
       buffer_putlonglong(buffer_2, wait_msecs);
@@ -200,7 +233,14 @@ process_loop(fd_t serial_fd, int64 timeout) {
           return ret;
       }
     }
-        if(wait_msecs <= 0)
+
+    if(stralloc_length(&input_buf)) {
+      buffer_putsa(buffer_1, &input_buf);
+      buffer_flush(buffer_1);
+      stralloc_zero(&input_buf);
+    }
+
+    if(wait_msecs <= 0)
       break;
   }
   return ret;
@@ -208,78 +248,53 @@ process_loop(fd_t serial_fd, int64 timeout) {
 
 int
 main() {
-
   int running = 1;
   fd_t serial_fd;
-
   io_fd(input_fd);
   ndelay_on(input_fd);
-
   while(running) {
-
     int64 i, newports;
-
-    //   buffer_putsflush(buffer_2, "main loop\n");
-
-    // buffer serial;
     const char* portname = NULL;
     newports = get_ports();
-
-    //    serial_ports();
-
-    /*     buffer_puts(buffer_2, "num ports: ");
-        buffer_putlonglong(buffer_2, newports);
-        buffer_putnlflush(buffer_2);
-  */
-
+    /*buffer_puts(buffer_2, "num ports: ");
+    buffer_putlonglong(buffer_2, newports);
+    buffer_putnlflush(buffer_2);*/
     if(newports == 0) {
       usleep(250 * 1000);
       continue;
     }
-
     portname = strarray_at(&ports, 0);
-
-     buffer_puts(buffer_2, "portname: ");
+    buffer_puts(buffer_2, "portname: ");
     buffer_puts(buffer_2, portname);
     buffer_putnlflush(buffer_2);
- 
     serial_fd = serial_open(portname, 38400);
     ndelay_on(serial_fd);
-
     if(serial_fd == -1) {
       usleep(250 * 1000);
       continue;
     }
-    /*
-        buffer_puts(buffer_2, "port opened: ");
-        buffer_putlong(buffer_2, serial_fd);
-        buffer_putnlflush(buffer_2); */
-
+    /*buffer_puts(buffer_2, "port opened: ");
+    buffer_putlong(buffer_2, serial_fd);
+    buffer_putnlflush(buffer_2); */
     // buffer_read_fd(&serial, serial_fd);
     io_fd(serial_fd);
     io_wantread(serial_fd);
-
     // serial.op = &read;
-while(process_loop(serial_fd, 250) > 0)
-  ;
-
-io_dontwantread(serial_fd);
-io_close(serial_fd);
-
+    while(process_loop(serial_fd, 250) > 0)
+      ;
+    io_dontwantread(serial_fd);
+    io_close(serial_fd);
     int64 idx = strarray_index_of(&ports, portname);
-
     if(idx != -1) {
-      /*     buffer_puts(buffer_2, "removed port: ");
-          buffer_puts(buffer_2, strarray_at(&ports, idx));
-          buffer_putnlflush(buffer_2); */
+      /*buffer_puts(buffer_2, "removed port: ");
+      buffer_puts(buffer_2, strarray_at(&ports, idx));
+      buffer_putnlflush(buffer_2); */
       strarray_splice(&ports, idx, 1, 0, NULL);
     }
-
- /*    buffer_puts(buffer_1, "Ports (");
+    /*buffer_puts(buffer_1, "Ports (");
     buffer_putulong(buffer_1, strarray_size(&ports));
     buffer_puts(buffer_1, "): "); */
-
-/*     for(i = 0; i < strarray_size(&ports); i++) {
+    /*for(i = 0; i < strarray_size(&ports); i++) {
       const char* portstr = strarray_at(&ports, i);
       if(portstr == NULL)
         continue;

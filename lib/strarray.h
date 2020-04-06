@@ -78,6 +78,8 @@ void strarray_free(strarray*);
 
 int strarray_push_unique(strarray* arr, const char* s);
 
+void strarray_intersection(const strarray* s1, const strarray* s2, strarray* out);
+
 #ifdef __cplusplus
 }
 #endif
