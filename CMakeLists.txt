@@ -641,6 +641,14 @@ if(OPENSSL_LIB_DIR)
 endif()
 
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  option(USE_EFENCE "Enable electric fence" OFF)
+endif()
+
+
+if(USE_EFENCE)
+  set(ELECTRICFENCE_LIBRARY efence)
+endif(USE_EFENCE)
 
 set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )
 file(GLOB MODHEADERS lib/*.h)
@@ -654,7 +662,7 @@ function(add_program PROG)
   endforeach(DEP ${ARGN})
   #message("Program '${PROG}' dependencies: ${INCLUDES}")
   add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
-  target_link_libraries(${PROG} ${ARGN})
+  target_link_libraries(${PROG} ${ARGN} ${ELECTRICFENCE_LIBRARY})
   install(TARGETS ${PROG} DESTINATION bin)
   if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
   set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR}")
@@ -679,6 +687,7 @@ set(COMPRESSION_LIBRARIES
 if(OPENSSL_LIBRARIES)
   set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES} pthread ${LIBCOMPAT} )
 endif(OPENSSL_LIBRARIES)
+
 
 add_program(binfmttest binfmt)
 if(USE_BZIP)

@@ -14,6 +14,7 @@
 #include "lib/xml.h"
 #include "lib/array.h"
 #include "lib/open.h"
+#include "lib/slist.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -51,6 +52,7 @@ struct pin {
   stralloc name;
   double x, y, r;
   int visible;
+  int used;
 };
 struct symbol {
   stralloc name;
@@ -76,6 +78,7 @@ struct part {
   struct device* dev;
   struct deviceset* dset;
   struct net* pins;
+  int num_pins;
   double x, y;
 };
 struct ref {
@@ -262,8 +265,9 @@ build_part(xmlnode* part) {
   }
   assert(p.pkg);
 
-  pins = array_length(&p.pkg->pads, sizeof(struct net*));
-  p.pins = calloc(sizeof(struct net*), pins);
+  pins = array_length(&p.pkg->pads, sizeof(struct pad));
+  p.num_pins = pins;
+  p.pins = calloc(sizeof(struct net), pins);
   dsname = xml_get_attribute(part, "deviceset");
   if(dsname)
     p.dset = get_entry(devicesets, dsname);
@@ -681,6 +685,22 @@ net_connects(const struct net* net, struct part* part, int pin) {
 }
 
 void
+part_unconnected() {
+  TUPLE* t;
+  MAP_FOREACH(parts, t) {
+    struct part* part = hmap_data(t);
+    for(size_t i = 0; i < part->num_pins; i++) {
+      struct net* pin = &part->pins[i];
+      buffer_puts(buffer_2, "Part ");
+      buffer_putsa(buffer_2, &part->name);
+      buffer_puts(buffer_2, " Pin ");
+      buffer_putlong(buffer_2, i);
+      buffer_putnlflush(buffer_2);
+    }
+  }
+}
+
+void
 pin_sa(stralloc* sa, const stralloc* name, int pin) {
   stralloc_cat(sa, name);
   stralloc_catc(sa, '.');
@@ -730,13 +750,13 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
       return 1;
   }
 
-  /* {
-    buffer_puts(&output, "## Net ");
-    buffer_putsa(&output, &n->name);
-    buffer_puts(&output, "\n");
-  }*/
   len = array_length(&n->contacts, sizeof(struct ref));
 
+  if(len == 0) {
+    buffer_puts(&output, "## Net ");
+    buffer_putsa(&output, &n->name);
+    buffer_putsflush(&output, " has no connections\n");
+  }
   for(i = 0; i < len; ++i) {
     struct ref* r = array_get(&n->contacts, sizeof(struct ref), i);
     if(r == rc)
@@ -1030,6 +1050,8 @@ main(int argc, char* argv[]) {
   hmap_print_list(nets);
 
   strlist_dump(buffer_2, &connections);
+
+  part_unconnected();
 
   /*
    * Cleanup function for the XML library.

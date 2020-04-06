@@ -15,50 +15,37 @@ static strarray ports;
 
 int64
 get_ports() {
-
   int64 n = 0, r = 0;
   char** pvec;
-
   for(pvec = get_serial_ports(); pvec[n]; n++) {
     const char* port = pvec[n];
     size_t i = str_find(port, "tty");
-
     if(port[i]) {
-
       if(port[i + 3] == 'A' || port[i + 3] == 'U') {
-
         if(access(port, R_OK)) {
           if(errno != ENOENT && errno != ENODEV && errno != EACCES)
             errmsg_warnsys(port, 0);
           continue;
         }
-
         if(!strarray_contains(&ports, port)) {
-
           strarray_splice(&ports, 0, 0, 1, &port);
-
           buffer_puts(buffer_2, "detected new port: ");
           buffer_puts(buffer_2, port);
           buffer_putnlflush(buffer_2);
-
           r++;
         }
       }
     }
   }
-
   free(pvec);
   return r;
 }
 
 ssize_t
 serial_read(fd_t fd, char* buf, size_t len, void* ptr) {
-
   ssize_t ret = read(fd, buf, len);
-
   if(ret <= 0)
     return 0;
-
   return ret;
 }
 
@@ -92,8 +79,10 @@ process_input(buffer* input) {
     }
   }
 
-  buffer_putsa(buffer_1, &sa);
-  buffer_flush(buffer_1);
+  if(stralloc_length(&sa)) {
+    buffer_putsa(buffer_1, &sa);
+    buffer_flush(buffer_1);
+  }
   stralloc_free(&sa);
   return ret;
 }

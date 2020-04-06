@@ -18,19 +18,29 @@ static buffer infile, b;
 static int depth = 0, prev_closing = 0;
 static stralloc prev_element;
 static int quote_char = '"';
-static int one_line, indent = 2, compact, terminate;
+static int one_line, indent = 2, compact, terminate, inplace;
 static stralloc indent_str;
+buffer* output;
 
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   static int newline_written = 0;
   switch(id) {
     case XML_TEXT: {
-      stralloc_trimr(value, " \r\n\t", 4);
-      buffer_putsa(buffer_1, value);
+      if(name) {
+        stralloc_trimr(name, " \r\n\t", 4);
+        buffer_putsa(output, name);
+      }
       break;
     }
     case XML_ELEMENT: {
+
+      /* buffer_puts(buffer_2, "Element: ");
+      buffer_putsa(buffer_2, name);
+      if(value)
+        buffer_putsa(buffer_2, value);
+      buffer_putnlflush(buffer_2); */
+
       int closing = reader->closing || reader->self_closing;
 
       if(reader->closing) {
@@ -40,19 +50,19 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
 
         if(!newline_written) {
-          buffer_puts(buffer_1, "\n");
-          buffer_flush(buffer_1);
+          buffer_puts(output, "\n");
+          buffer_flush(output);
 
           newline_written = 1;
-          buffer_putnspace(buffer_1, depth * 2);
+          buffer_putnspace(output, depth * indent);
         }
       }
 
-      buffer_putm_internal(buffer_1, "<", reader->closing ? "/" : "", name->s, 0);
+      buffer_putm_internal(output, "<", reader->closing ? "/" : "", name->s, 0);
 
       if(attrs && *attrs && (*attrs)->list_tuple) {
-        buffer_putspace(buffer_1);
-        xml_print_attributes(*attrs, buffer_1, " ", "=", "\"");
+        buffer_putspace(output);
+        xml_print_attributes(*attrs, output, " ", "=", "\"");
       }
 
       if(terminate && !reader->self_closing) {
@@ -60,7 +70,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
           reader->self_closing = 1;
       }
 
-      buffer_puts(buffer_1, reader->self_closing ? (name->s[0] == '?' ? "?>" : "/>") : ">");
+      buffer_puts(output, reader->self_closing ? (name->s[0] == '?' ? "?>" : "/>") : ">");
 
       stralloc_copy(&prev_element, name);
       prev_closing = closing;
@@ -100,23 +110,28 @@ usage(char* av0) {
 
 int
 main(int argc, char* argv[]) {
+  buffer outfile;
   xmlreader r;
   int ret;
   int c;
   int index = 0;
+  const char* input_file;
+  const char* tmpl = 0;
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"single-quote", 0, &quote_char, '\''},
                            {"double-quote", 0, &quote_char, '"'},
                            {"one-line", 0, NULL, 'o'},
                            {"compact", 0, NULL, 'c'},
                            {"indent", 0, NULL, 'l'},
+                           {"inplace", 0, NULL, 'i'},
                            {"terminate", 0, NULL, 't'},
                            {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
+  output = buffer_1;
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:ct", opts, &index);
+    c = getopt_long(argc, argv, "hsdol:cti", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -129,15 +144,26 @@ main(int argc, char* argv[]) {
       case 'o': one_line = 1; break;
       case 'c': compact = 1; break;
       case 't': terminate = 1; break;
+      case 'i': inplace = 1; break;
       case 'l': scan_int(optarg, &indent); break;
       default: usage(argv[0]); return 1;
     }
   }
 
-  if(argc > 1)
-    ret = buffer_mmapprivate(&infile, argv[1]);
+  if(optind < argc)
+    ret = buffer_mmapprivate(&infile, (input_file = argv[optind]));
   else
     ret = buffer_read_fd(&infile, 0);
+
+  if(inplace) {
+    fd_t out_fd = open_temp(&tmpl);
+    if(out_fd == -1) {
+      errmsg_warn("output file", 0);
+      return 1;
+    }
+    buffer_write_fd(&outfile, out_fd);
+    output = &outfile;
+  }
 
   if(ret) {
     errmsg_infosys("input");
@@ -146,8 +172,21 @@ main(int argc, char* argv[]) {
 
   xml_reader_init(&r, &infile);
   xml_read_callback(&r, xml_read_function);
-  buffer_putnlflush(buffer_1);
-  buffer_close(&b);
+  buffer_close(&infile);
+
+  buffer_putnlflush(output);
+  buffer_close(output);
+
+  if(inplace) {
+    if(unlink(input_file) == -1) {
+      errmsg_infosys("unlink");
+      return 1;
+    }
+    if(rename(tmpl, input_file) == -1) {
+      errmsg_infosys("rename");
+      return 1;
+    }
+  }
 
   return 0;
 }
