@@ -85,11 +85,11 @@ get_ports() {
           continue;
         }
         if(!strarray_contains(&ports, port)) {
-          strarray_push(&ports, port);
-          // strarray_splice(&ports, 0, 0, 1, &port);
-          buffer_puts(buffer_2, "detected new port: ");
+          //strarray_push(&ports, port);
+           strarray_splice(&ports, 0, 0, 1, &port);
+         /*  buffer_puts(buffer_2, "detected new port: ");
           buffer_puts(buffer_2, port);
-          buffer_putnlflush(buffer_2);
+          buffer_putnlflush(buffer_2); */
           r++;
         }
       }
@@ -136,15 +136,19 @@ process_serial(fd_t serial_fd) {
     }
   } else if(ret == 0) {
     errmsg_warn("serial closed", 0);
+    io_dontwantread(serial_fd);
     io_close(serial_fd);
 
   } else if(ret < 0) {
     errmsg_warnsys("serial error", 0);
+        io_dontwantread(serial_fd);
+
         io_close(serial_fd);
   }
   if(stralloc_length(&input_buf)) {
     buffer_putsa(buffer_1, &input_buf);
     buffer_flush(buffer_1);
+          stralloc_zero(&input_buf);
   }
   return ret;
 }
@@ -173,7 +177,7 @@ process_loop(fd_t serial_fd, int64 timeout) {
       wait_msecs = 0;
     fd_t read_fd;
     //io_wantread(input_fd);
-    io_wantread(serial_fd);
+  // io_wantread(serial_fd);
     /* if(wait_msecs > 0) {
       buffer_puts(buffer_2, "wait msecs: ");
       buffer_putlonglong(buffer_2, wait_msecs);
@@ -226,22 +230,22 @@ main() {
         buffer_putnlflush(buffer_2);
   */
 
-    if(strarray_size(&ports) == 0) {
-      usleep(1000 * 1000);
+    if(newports == 0) {
+      usleep(250 * 1000);
       continue;
     }
 
     portname = strarray_at(&ports, 0);
 
-    /* buffer_puts(buffer_2, "portname: ");
+     buffer_puts(buffer_2, "portname: ");
     buffer_puts(buffer_2, portname);
     buffer_putnlflush(buffer_2);
- */
+ 
     serial_fd = serial_open(portname, 38400);
     ndelay_on(serial_fd);
 
     if(serial_fd == -1) {
-      usleep(1000 * 1000);
+      usleep(250 * 1000);
       continue;
     }
     /*
@@ -254,8 +258,11 @@ main() {
     io_wantread(serial_fd);
 
     // serial.op = &read;
+while(process_loop(serial_fd, 250) > 0)
+  ;
 
-    process_loop(serial_fd, 3000);
+io_dontwantread(serial_fd);
+io_close(serial_fd);
 
     int64 idx = strarray_index_of(&ports, portname);
 
@@ -266,11 +273,11 @@ main() {
       strarray_splice(&ports, idx, 1, 0, NULL);
     }
 
-    buffer_puts(buffer_1, "Ports (");
+ /*    buffer_puts(buffer_1, "Ports (");
     buffer_putulong(buffer_1, strarray_size(&ports));
-    buffer_puts(buffer_1, "): ");
+    buffer_puts(buffer_1, "): "); */
 
-    for(i = 0; i < strarray_size(&ports); i++) {
+/*     for(i = 0; i < strarray_size(&ports); i++) {
       const char* portstr = strarray_at(&ports, i);
       if(portstr == NULL)
         continue;
@@ -278,7 +285,7 @@ main() {
         buffer_puts(buffer_1, " ");
       buffer_puts(buffer_1, portstr);
     }
-    buffer_putnlflush(buffer_1);
+    buffer_putnlflush(buffer_1); */
   }
   stralloc_free(&input_buf);
 }
