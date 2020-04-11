@@ -18,7 +18,7 @@
           <Add option="-ggdb"/>
           <Add option="-O0"/>
           <Add option="-DUSE_WIDECHAR=0"/>
-          <Add option="-DDEBUG"/>
+          <Add option="-D_DEBUG"/>
           <Add directory="."/>
         </Compiler>
       </Target>
