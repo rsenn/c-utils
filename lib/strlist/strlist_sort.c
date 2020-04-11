@@ -22,6 +22,8 @@ strlist_sort(strlist* sl, cmp_fn_t* cmp_fn) {
   size_t p, l = 0;
   char *end, *tmp, **ptrs;
 
+  stralloc_readyplus(&sl->sa, 1);
+
   if(cmp_fn == NULL)
     cmp_fn = (cmp_fn_t*)&sort_cmp;
 
@@ -38,7 +40,7 @@ strlist_sort(strlist* sl, cmp_fn_t* cmp_fn) {
     p += len;
   }
 
-  qsort(ptrs, l, sizeof(char*), (cmp_fn_t*)&cmp_fn);
+  qsort(ptrs, l, sizeof(char*), (cmp_fn_t*)cmp_fn);
   stralloc_init(&sl->sa);
 
   for(p = 0; p < l; ++p) {

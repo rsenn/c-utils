@@ -18,8 +18,9 @@
 
 static charbuf infile;
 static char quote[4] = {'"', 0};
-static int one_line, indent = 2, compact;
+static int one_line, indent = 2, compact, depth_arg = 3;
 static stralloc indent_str;
+static const char *spacing, *separator;
 
 void
 put_str_escaped(buffer* b, const char* str) {
@@ -58,9 +59,9 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
     buffer_puts(buffer_2, ")");
     buffer_putnlflush(buffer_2);
   }*/
-  p->newline = "";
-  p->spacing = "";
-  p->separat = ",";
+  p->newline = "\n";
+  p->spacing = " ";
+  p->separat = ",\n";
   p->quote = quote;
   p->precision = 3;
   p->depth = depth;
@@ -70,13 +71,14 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
 static void
 default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
   int pretty = v && get_depth(v) > 1;
-  p->indent = depth > 3 ? "" : "  ";
-  p->newline = depth > 3 ? "" : "\n";
-  p->spacing = " ";
-  p->separat = ", ";
+
+  p->indent = depth > depth_arg ? "" : "  "; // depth <= 1 ? "  " : depth > 3 ? "  " : " ";
+  p->spacing = spacing ? spacing : " ";
+  p->newline = depth > depth_arg ? p->spacing : "\n";
+  p->separat = separator ? separator : depth > depth_arg ? ", " : ",\n";
   p->quote = quote;
   p->precision = 10;
-  p->depth = depth;
+  p->depth = depth - (index == -2);
   p->index = index;
 };
 
@@ -84,8 +86,8 @@ void
 json_pretty_print(jsonval val, buffer* b) {
   json_print_fn* printfn = compact ? &compact_printer : &default_printer;
 
-  json_print(val, b, printfn); /*
-   stralloc out;
+  json_print(val, b, printfn);
+  /*  stralloc out;
    stralloc_init(&out);
    json_tosa(val, &out, printfn);
 
@@ -111,6 +113,9 @@ usage(char* av0) {
                        "  -o, --one-line          One-line\n"
                        "  -c, --compact           Compact\n"
                        "  -l, --indent NUM        Indent level\n"
+                       "  -D, --depth NUM         Depth level\n"
+                       "  -S, --separator CHARS   Separator\n"
+                       "  -W, --spacing CHARS     Spacing\n"
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -143,6 +148,9 @@ main(int argc, char* argv[]) {
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"single-quote", 0, NULL, 's'},
                            {"double-quote", 0, NULL, 'd'},
+                           {"depth", 0, NULL, 'D'},
+                           {"separator", 0, NULL, 'S'},
+                           {"spacing", 0, NULL, 'W'},
                            {"one-line", 0, NULL, 'o'},
                            {"compact", 0, NULL, 'c'},
                            {"indent", 0, NULL, 'l'},
@@ -151,7 +159,7 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:c", opts, &index);
+    c = getopt_long(argc, argv, "hsdol:cD:S:W:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -161,6 +169,9 @@ main(int argc, char* argv[]) {
       case 'h': usage(argv[0]); return 0;
       case 's': quote[0] = '\''; break;
       case 'd': quote[0] = '"'; break;
+      case 'S': separator = optarg; break;
+      case 'W': spacing = optarg; break;
+      case 'D': scan_int(optarg, &depth_arg); break;
       case 'o': one_line = 1; break;
       case 'c': compact = 1; break;
       case 'l': scan_int(optarg, &indent); break;
@@ -168,6 +179,7 @@ main(int argc, char* argv[]) {
     }
   }
 
+  stralloc_init(&indent_str);
   for(c = 0; c < indent; ++c) stralloc_cats(&indent_str, " ");
   stralloc_nul(&indent_str);
 

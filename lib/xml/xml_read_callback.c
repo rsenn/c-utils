@@ -10,7 +10,7 @@ is_whitespace(const char* x, size_t n) {
   size_t i;
 
   for(i = 0; i < n; ++i) {
-    if(!byte_chr(" \t\v\r\n\0", 5, x[i]))
+    if(byte_chr(" \t\v\r\n\0", 5, x[i]) == 5)
       return 0;
   }
   return 1;
@@ -60,11 +60,11 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       r->self_closing = 1;
     } else if(*s == '!') {
       if(buffer_skip_until(b, ">", 1) <= 0)
-        return;
+        break;
       continue;
     }
     if((n = buffer_gettok_sa(b, &tag, " \n\t\r\v/>", 7)) < 0)
-      return;
+      break;
     stralloc_nul(&tag);
     buffer_skipspace(b);
 
@@ -77,23 +77,23 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       if((n = buffer_gettok_sa(b, &attr, "=", 1)) < 0)
         break;
       if(buffer_skipc(b) < 0)
-        return;
+        break;
 
       if(*buffer_peek(b) == '"') {
         if(buffer_skipc(b) < 0)
-          return;
+          break;
         quoted = 1;
       }
       charset = quoted ? "\"" : "/> \t\r\n\v";
       if((n = buffer_gettok_sa(b, &val, charset, str_len(charset))) < 0)
         break;
       if(quoted && buffer_skipc(b) < 0)
-        return;
+        break;
       stralloc_nul(&attr);
       stralloc_nul(&val);
       hmap_set(&r->attrmap, attr.s, attr.len, val.s, val.len + 1);
       if(!fn(r, XML_ATTRIBUTE, &attr, &val, NULL))
-        return;
+        break;
       buffer_skipspace(b);
     }
     buffer_skipspace(b);
@@ -116,7 +116,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     if(*s != '<' && !(r->closing || r->self_closing)) {
       stralloc_zero(&tag);
       buffer_gettok_sa(b, &tag, "<", 1);
-      if(tag.len) {
+      if(tag.len && !is_whitespace(tag.s, tag.len)) {
         stralloc_nul(&tag);
         fn(r, XML_TEXT, &tag, NULL, NULL);
       }
@@ -130,13 +130,13 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     if(b->n - b->p <= 1)
       break;
 
-    if(n <= 0)
-      return;
+    /*  if(n <= 0)
+       break; */
     s = buffer_peek(b);
 
     if(!is_whitespace(tag.s, tag.len)) {
       if(!fn(r, XML_TEXT, NULL, &tag, NULL))
-        return;
+        break;
     }
   }
 }

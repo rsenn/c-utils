@@ -23,4 +23,5 @@ dir_close(struct dir_s* d) {
 #endif
   }
   free(d->dir_int);
+  d->dir_int = NULL;
 }

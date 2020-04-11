@@ -3,10 +3,10 @@
 
 void
 strarray_free(strarray* arr) {
-  char* x;
+  char** x;
   strarray_foreach(arr, x) {
-    if(x)
-      free(x);
+    if(*x)
+      free(*x);
   }
   array_reset(arr);
 }

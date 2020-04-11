@@ -22,8 +22,10 @@ json_free_val(jsonval* val, jsonval* parent) {
     }
     case JSON_OBJECT: {
       TUPLE* t;
-      hmap_foreach(val->dictv, t) { json_free_val(t->vals.val_custom, val); }
-      hmap_destroy(&val->dictv);
+      if(val->dictv != NULL) {
+        hmap_foreach(val->dictv, t) { json_free_val(t->vals.val_custom, val); }
+        hmap_destroy(&val->dictv);
+      }
       break;
     }
     case JSON_ARRAY: {

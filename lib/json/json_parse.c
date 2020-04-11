@@ -82,16 +82,42 @@ json_parse_bool(jsonval* j, charbuf* b) {
 }
 
 int
+json_parse_null_or_undefined(jsonval* j, charbuf* b) {
+  if(charbuf_skip_ifset(b, "nu", 2)) {
+    const char* n;
+    int v = charbuf_peek(b) == 'u';
+    for(n = v ? "ull" : "ndefined"; *n; ++n) {
+      if(!charbuf_skip_ifeq(b, *n))
+        return 0;
+    }
+    j->type = v ? JSON_OBJECT : JSON_UNDEFINED;
+    j->dictv = NULL;
+    return 1;
+  }
+  return 0;
+}
+
+int
 json_parse_array(jsonval* j, charbuf* b) {
   slink** ptr;
+  int i = 0;
 
   if(charbuf_skip_ifeq(b, '[')) {
     j->type = JSON_ARRAY;
+    j->listv = 0;
+
+    if(charbuf_skip_ifeq(b, ']'))
+      return 1;
+
     ptr = &j->listv;
 
     for(;; ptr = &((*ptr)->next)) {
       if((*ptr = slink_new(jsonval)) == NULL)
         return 0;
+
+      /* buffer_puts(buffer_2, "json array element ");
+      buffer_putlong(buffer_2, i++);
+      buffer_putnlflush(buffer_2); */
 
       if(!json_parse((jsonval*)&((*ptr)[1]), b))
         break;
@@ -160,6 +186,8 @@ json_parse(jsonval* j, charbuf* b) {
   if((r = json_parse_num(j, b)))
     return r;
   if((r = json_parse_string(j, b)))
+    return r;
+  if((r = json_parse_null_or_undefined(j, b)))
     return r;
   return r;
 }

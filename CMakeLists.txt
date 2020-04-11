@@ -294,7 +294,7 @@ endif(USE_BZIP)
 ################################################################################
 ## Check OpenSSL
 ################################################################################
-if(USE_SSL)
+if(USE_SSL AND NOT BUILD_SSL)
   if(NOT OPENSSL_ROOT_DIR)
     set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
   endif()
@@ -327,12 +327,12 @@ if(USE_SSL)
 
   message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n   OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n   OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n   OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
 
-else(USE_SSL)
+else(USE_SSL AND NOT BUILD_SSL)
  unset(OPENSSL_LIBRARIES CACHE)
  unset(OPENSSL_CRYPTO_LIBRARY CACHE)
  unset(OPENSSL_SSL_LIBRARY CACHE)
  unset(OPENSSL_INCLUDE_DIR CACHE)
-endif(USE_SSL)
+endif(USE_SSL AND NOT BUILD_SSL)
 #link_libraries(
 #  ${ZLIB_LIBRARY}
 #  ${BZIP2_LIBRARY}
@@ -533,24 +533,22 @@ endif(BUILD_LZMA)
 
 
 if(BUILD_SSL)
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/Configure")
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
     if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
       file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-      file(DOWNLOAD "https://www.openssl.org/source/openssl-1.1.1d.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
+      file(DOWNLOAD "https://www.openssl.org/source/openssl-1.1.1f.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
     endif()
 
     exec_program(bsdtar ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1d" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-  
-   file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
-    file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
+    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1f" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+      exec_program(bsdtar ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty/openssl" -xzf "${CMAKE_SOURCE_DIR}/openssl-cmake.tar.gz")
 
-    file(WRITE "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch" "--- 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.corig     2020-02-13 09:37:58.389826334 +0100\n+++ 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.c    2020-02-13 09:33:12.801691620 +0100\n@@ -104,7 +104,7 @@\n #elif defined(__mips__)\n static const u32 fcsr = 1;\n #else\n-#error \"unrecognized platform\"\n+#warning \"unrecognized platform\"\n #endif\n \n int poly1305_init(void *ctx, const unsigned char key[16])")
+#   file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS)
+#    file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt" "${OPENSSL_CMAKELISTS}")
+#
+#    file(WRITE "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch" "--- 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.corig     2020-02-13 09:37:58.389826334 +0100\n+++ 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.c    2020-02-13 09:33:12.801691620 +0100\n@@ -104,7 +104,7 @@\n #elif defined(__mips__)\n static const u32 fcsr = 1;\n #else\n-#error \"unrecognized platform\"\n+#warning \"unrecognized platform\"\n #endif\n \n int poly1305_init(void *ctx, const unsigned char key[16])")
  
-    exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}" ARGS
-      -p0 -i "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch"
-    )
-
+#    exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}" ARGS -p0 -i "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch")
   endif() 
 
   add_subdirectory(3rdparty/openssl)
@@ -560,9 +558,9 @@ if(BUILD_SSL)
 endif()
 
 if(USE_SSL)
-  add_definitions(-DHAVE_OPENSSL=1)
+  add_definitions(-DHAVE_OPENSSL=1 -DOPENSSL_API_COMPAT=0x10200000L)
   if(OPENSSL_INCLUDE_DIR)
-    include_directories(${OPENSSL_INCLUDE_DIR})
+    include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/include ${OPENSSL_INCLUDE_DIR})
   endif()
 
   #if(NOT OPENSSL_LIBRARIES)
@@ -643,6 +641,14 @@ if(OPENSSL_LIB_DIR)
 endif()
 
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  option(USE_EFENCE "Enable electric fence" OFF)
+endif()
+
+
+if(USE_EFENCE)
+  set(ELECTRICFENCE_LIBRARY efence)
+endif(USE_EFENCE)
 
 set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )
 file(GLOB MODHEADERS lib/*.h)
@@ -656,7 +662,7 @@ function(add_program PROG)
   endforeach(DEP ${ARGN})
   #message("Program '${PROG}' dependencies: ${INCLUDES}")
   add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
-  target_link_libraries(${PROG} ${ARGN})
+  target_link_libraries(${PROG} ${ARGN} ${ELECTRICFENCE_LIBRARY})
   install(TARGETS ${PROG} DESTINATION bin)
   if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
   set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR}")
@@ -681,6 +687,7 @@ set(COMPRESSION_LIBRARIES
 if(OPENSSL_LIBRARIES)
   set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES} pthread ${LIBCOMPAT} )
 endif(OPENSSL_LIBRARIES)
+
 
 add_program(binfmttest binfmt)
 if(USE_BZIP)
@@ -747,7 +754,7 @@ add_program(strip-comments  errmsg env charbuf buffer path dir strarray strlist 
 
 add_program(httpproxy http io map)
 add_program(montty io map)
-add_program(logserial errmsg io strarray stralloc buffer )
+add_program(logserial rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
 #add_program(tinyproxy http io)
 #if(NOT WIN32)
 #add_program(tcpproxy http io)
