@@ -19,9 +19,11 @@ int __inline__ __sync_val_compare_and_swap(volatile unsigned int* ptr, int cmp, 
 }
 #endif
 
+#undef __CAS
+
 #ifdef __arm__
-typedef long(__kernel_cmpxchg_t)(long oldval, long newval, long* ptr);
-static __inline long
+typedef long(_cmpxchg_t)(long oldval, long newval, long* ptr);
+static inline long
 __CAS(long* ptr, long oldval, long newval) {
   long actual_oldval, fail;
 
@@ -31,7 +33,7 @@ __CAS(long* ptr, long oldval, long newval) {
     if(__builtin_expect(oldval != actual_oldval, 0))
       return actual_oldval;
 
-    fail = (*(__kernel_cmpxchg_t*)0xffff0fc0)(actual_oldval, newval, ptr);
+    fail = (*(_cmpxchg_t*)0xffff0fc0)(actual_oldval, newval, ptr);
 
     if(__builtin_expect(!fail, 1))
       return oldval;

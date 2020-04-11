@@ -225,7 +225,7 @@ process_loop(fd_t serial_fd, int64 timeout) {
     while((read_fd = io_canread()) != -1) {
       if(read_fd == serial_fd) {
         if((ret = process_serial(serial_fd) <= 0)) {
-          if(!(ret == -1 && errno = EAGAIN))
+          if(!(ret == -1 && errno == EAGAIN))
             return ret;
         }
       }
