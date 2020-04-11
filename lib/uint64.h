@@ -42,6 +42,10 @@ typedef uint64_t uint64;
 typedef int64_t int64;
 #endif
 
+void uint64_pack_big(char* out, uint64 in);
+void uint64_unpack_big(const char* in, uint64* out);
+uint64 uint64_read_big(const char* in);
+
 #if !defined(NO_UINT64_MACROS)
 
 #if(defined(__i386__) || defined(_M_IX86) || defined(_X86_) || defined(__x86_64__) || defined(_M_AMD64) ||             \
@@ -70,9 +74,6 @@ void uint64_unpack(const char* in, uint64* out);
 uint64 uint64_read(const char* in);
 #endif
 #endif
-void uint64_pack_big(char* out, uint64 in);
-void uint64_unpack_big(const char* in, uint64* out);
-uint64 uint64_read_big(const char* in);
 
 #if defined(_WIN32) && defined(_MSC_VER)
 // for older MSVC
