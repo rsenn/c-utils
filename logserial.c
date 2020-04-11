@@ -163,7 +163,6 @@ ssize_t
 process_serial(fd_t serial_fd) {
   char x[1024];
   ssize_t ret;
-
   if((ret = read(serial_fd, x, sizeof(x))) > 0) {
     stralloc_catb(&input_buf, x, ret);
     if(stralloc_contains(&input_buf, "\n")) {
@@ -175,14 +174,15 @@ process_serial(fd_t serial_fd) {
     errmsg_warn("serial closed", 0);
     io_dontwantread(serial_fd);
     io_close(serial_fd);
-
   } else if(ret < 0) {
-    errmsg_warnsys("serial error", 0);
-    io_dontwantread(serial_fd);
-
-    io_close(serial_fd);
+    if(errno == EAGAIN) {
+      io_eagain_read(serial_fd);
+    } else {
+      errmsg_warnsys("serial error", 0);
+      io_dontwantread(serial_fd);
+      io_close(serial_fd);
+    }
   }
-
   return ret;
 }
 
@@ -222,24 +222,23 @@ process_loop(fd_t serial_fd, int64 timeout) {
     } else {
       ret = 1;
     }
-
     while((read_fd = io_canread()) != -1) {
       if(read_fd == serial_fd) {
-        if((ret = process_serial(serial_fd) <= 0))
-          return ret;
+        if((ret = process_serial(serial_fd) <= 0)) {
+          if(!(ret == -1 && errno = EAGAIN))
+            return ret;
+        }
       }
       if(read_fd == input_fd) {
         if((ret = process_term() <= 0))
           return ret;
       }
     }
-
     if(stralloc_length(&input_buf)) {
       buffer_putsa(buffer_1, &input_buf);
       buffer_flush(buffer_1);
       stralloc_zero(&input_buf);
     }
-
     if(wait_msecs <= 0)
       break;
   }
@@ -251,7 +250,8 @@ main() {
   int running = 1;
   fd_t serial_fd;
   io_fd(input_fd);
-  ndelay_on(input_fd);
+  io_nonblock(input_fd);
+
   while(running) {
     int64 i, newports;
     const char* portname = NULL;
@@ -268,7 +268,9 @@ main() {
     buffer_puts(buffer_2, portname);
     buffer_putnlflush(buffer_2);
     serial_fd = serial_open(portname, 38400);
-    ndelay_on(serial_fd);
+    io_nonblock(serial_fd);
+    io_closeonexec(serial_fd);
+
     if(serial_fd == -1) {
       usleep(250 * 1000);
       continue;

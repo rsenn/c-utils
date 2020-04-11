@@ -88,27 +88,84 @@
 	"buffers":
 	[
 		{
-			"file": "jsonpp.c",
+			"file": "logserial.c",
 			"settings":
 			{
-				"buffer_size": 5415,
+				"buffer_size": 7558,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json/json_print.c",
+			"file": "lib/array.h",
 			"settings":
 			{
-				"buffer_size": 5699,
+				"buffer_size": 2541,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strarray.h",
+			"settings":
+			{
+				"buffer_size": 3191,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strarray/strarray_intersection.c",
+			"settings":
+			{
+				"buffer_size": 504,
 				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "#include \"../strarray.h\""
+			}
+		},
+		{
+			"file": "lib/strarray/strarray_union.c",
+			"settings":
+			{
+				"buffer_size": 748,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json/json_parse.c",
+			"file": "lib/io.h",
 			"settings":
 			{
-				"buffer_size": 4071,
+				"buffer_size": 5676,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/taia/taia_now.c",
+			"settings":
+			{
+				"buffer_size": 1064,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/taia.h",
+			"settings":
+			{
+				"buffer_size": 2750,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tai.h",
+			"settings":
+			{
+				"buffer_size": 2309,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_putdouble.c",
+			"settings":
+			{
+				"buffer_size": 253,
 				"line_ending": "Unix"
 			}
 		}
@@ -394,21 +451,49 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir",
+		"/home/roman/Dokumente/Sources/c-utils/lib/rdir",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_frac.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_push.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_push_unique.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/rdir/rdir_close.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/rdir/rdir_open.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/rdir/rdir_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_open.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/rdir.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_close.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/serial.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_size.c",
+		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
+		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
+		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/tai.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/omf.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ndelay/ndelay_on.c",
+		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
+		"/home/roman/Dokumente/Sources/c-utils/examples/io5.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse.c",
 		"/home/roman/Dokumente/Sources/c-utils/map.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_callback.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_free.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
-		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
@@ -420,19 +505,15 @@
 		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write_fd.c",
-		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
 		"/home/roman/Dokumente/Sources/c-utils/FunctionGenerator-ICL8038.sch",
 		"/home/roman/Dokumente/Sources/an-tronics/eagle/FunctionGenerator-ICL8038.brd",
 		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_splice.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/array/array_allocate.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/serial.h",
-		"/home/roman/Dokumente/Sources/c-utils/serial.c",
 		"/home/roman/Dokumente/Sources/c-utils/mediathek-parser.c",
 		"/home/roman/Dokumente/Sources/c-utils/montty.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
@@ -447,13 +528,10 @@
 		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getn.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_init_free.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/lib/alloc/alloc_zero.c",
-		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
 		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Dokumente/Sources/c-utils/cfg.sh",
-		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
 		"/home/roman/Dokumente/Sources/c-utils/jsontest.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_relative.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_realpath.c",
@@ -461,7 +539,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_canonical.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/getopt.h",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_collapse.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_to_argv.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
@@ -508,29 +585,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_put.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/typedefs.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/uint64.h",
-		"/opt/cmake-toolchains/generic/Emscripten-wasm.cmake",
-		"/home/roman/Dokumente/Sources/c-utils/build/gnu.mk",
-		"/home/roman/Dokumente/Sources/c-utils/build/functions.mk",
-		"/home/roman/.config/sublime-text-3/Packages/EmoKid Color Scheme/PlayroomPastBedtime.tmTheme",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_connect.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_readable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_error.c",
-		"/home/roman/Dokumente/Sources/c-utils/examples/httpd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/alloc/alloc.c",
-		"/home/roman/Dokumente/Sources/c-utils/build/cmake/Checks.cmake",
-		"/home/roman/Dokumente/Sources/c-utils/lib/windoze.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/uint64.h"
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 42.0
 	},
 	"find_in_files":
 	{
@@ -556,6 +615,36 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"diff",
+			"wantread",
+			"Ports ",
+			"new port",
+			"io_close",
+			"close",
+			"io_close",
+			"io_fd",
+			"new port",
+			"wait mse",
+			"detected",
+			"rdir_open",
+			"logser",
+			"disap",
+			"buffer_2",
+			"genma",
+			"\\s+\\\\$",
+			"new port",
+			"logser",
+			"dir_open",
+			"get_serial_ports",
+			"logser",
+			"taia",
+			"process_input",
+			"io_[^ ]*read",
+			"io_read",
+			"canread",
+			"buffer ",
+			"io_wait",
+			"io_",
 			"\" \"",
 			"\"  \"",
 			"slist_next",
@@ -653,37 +742,7 @@
 			"dirs.build",
 			"dirs.work",
 			"path_collapse_sa",
-			"colla",
-			"path_absolute_sa",
-			"dir[^a-z]",
-			"dir",
-			"'d'",
-			"dirs.work",
-			"work",
-			"dirs.work",
-			"infile",
-			"^input",
-			"populate",
-			"populate_src",
-			"populate_sr",
-			"srcs",
-			"_popul",
-			"infile",
-			"_move",
-			"to_argv",
-			"x\\+\\+\\) {",
-			"x++) {",
-			"x\\+\\+) {",
-			"x\\+\\+);$",
-			"input_c",
-			"input_command",
-			"contains",
-			"gen_single_rule",
-			"sources_find",
-			"strlist_removeb",
-			"\"link",
-			"source_find",
-			"Find source"
+			"colla"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -691,6 +750,9 @@
 		"regex": true,
 		"replace_history":
 		[
+			" \\",
+			"process_serial",
+			"process_loop",
 			" -dumpmachine | sed 's|-pc-|-|g'",
 			"path_canonical_sa",
 			"p\\+\\+\\) {",
@@ -806,19 +868,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "jsonpp.c",
+					"file": "logserial.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5415,
+						"buffer_size": 7558,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1278,
-								1315
+								4281,
+								4281
 							]
 						],
 						"settings":
@@ -828,7 +890,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4266.0,
+						"translation.y": 1215.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -836,49 +898,167 @@
 				},
 				{
 					"buffer": 1,
-					"file": "lib/json/json_print.c",
+					"file": "lib/array.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5699,
+						"buffer_size": 2541,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4108,
-								4108
+								867,
+								867
 							]
 						],
 						"settings":
 						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 162.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/strarray.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3191,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3052,
+								3052
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2025.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/strarray/strarray_intersection.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 504,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								452,
+								452
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#include \"../strarray.h\"",
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1458.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/strarray/strarray_union.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 748,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								102,
+								102
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/io.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5676,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3756,
+								3756
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "lib/json/json_parse.c",
+					"buffer": 6,
+					"file": "lib/taia/taia_now.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4071,
+						"buffer_size": 1064,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2200,
-								2200
+								977,
+								977
 							]
 						],
 						"settings":
@@ -888,10 +1068,94 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1674.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/taia.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2750,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								795,
+								795
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 243.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/tai.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2309,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								182,
+								182
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 243.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/buffer/buffer_putdouble.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 253,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
 					"type": "text"
 				}
 			]
@@ -899,7 +1163,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 27.0
+		"height": 36.0
 	},
 	"input":
 	{
@@ -977,7 +1241,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 50.0
+		"height": 80.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -986,6 +1250,110 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"strarr",
+				"lib/strarray.h"
+			],
+			[
+				"array.h",
+				"lib/array.h"
+			],
+			[
+				"io.h",
+				"lib/io.h"
+			],
+			[
+				"tai.h",
+				"lib/tai.h"
+			],
+			[
+				"taia_now",
+				"lib/taia/taia_now.c"
+			],
+			[
+				"taia_",
+				"lib/taia/taia_frac.c"
+			],
+			[
+				"taia.h",
+				"lib/taia.h"
+			],
+			[
+				"putdouble",
+				"lib/buffer/buffer_putdouble.c"
+			],
+			[
+				"dir_open",
+				"lib/dir/dir_open.c"
+			],
+			[
+				"dir.h",
+				"lib/dir.h"
+			],
+			[
+				"rdir.h",
+				"lib/rdir.h"
+			],
+			[
+				"rdir_read",
+				"lib/rdir/rdir_read.c"
+			],
+			[
+				"rdir_open",
+				"lib/rdir/rdir_open.c"
+			],
+			[
+				"dir_close",
+				"lib/dir/dir_close.c"
+			],
+			[
+				"dir_in",
+				"lib/dir_internal.h"
+			],
+			[
+				"rdir_close",
+				"lib/rdir/rdir_close.c"
+			],
+			[
+				"genma",
+				"genmakefile.c"
+			],
+			[
+				"strarray_free",
+				"lib/strarray/strarray_free.c"
+			],
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
+				"logser",
+				"logserial.c"
+			],
+			[
+				"strarray",
+				"lib/strarray.h"
+			],
+			[
+				"list-r.c",
+				"list-r.c"
+			],
+			[
+				"serial.c",
+				"serial.c"
+			],
+			[
+				"o.h",
+				"lib/omf.h"
+			],
+			[
+				"ndelay",
+				"lib/ndelay/ndelay_on.c"
+			],
+			[
+				"httptest",
+				"httptest.c"
+			],
 			[
 				"charbuf",
 				"lib/charbuf.h"
@@ -1039,14 +1407,6 @@
 				"lib/stralloc.h"
 			],
 			[
-				"httptest",
-				"httptest.c"
-			],
-			[
-				"array.h",
-				"lib/array.h"
-			],
-			[
 				"gnuma",
 				"GNUmakefile"
 			],
@@ -1057,10 +1417,6 @@
 			[
 				"errmsg",
 				"lib/errmsg.h"
-			],
-			[
-				"io.h",
-				"lib/io.h"
 			],
 			[
 				"gnumake",
@@ -1079,16 +1435,8 @@
 				"serial.h"
 			],
 			[
-				"serial.c",
-				"serial.c"
-			],
-			[
 				"from_arg",
 				"lib/strarray/strarray_from_argv.c"
-			],
-			[
-				"strarray",
-				"lib/strarray.h"
 			],
 			[
 				"strlist.h",
@@ -1181,10 +1529,6 @@
 			[
 				"list-r",
 				"list-r.c"
-			],
-			[
-				"genma",
-				"genmakefile.c"
 			],
 			[
 				"path.h",
@@ -1307,10 +1651,6 @@
 				"lib/scan/scan_whitenskip.c"
 			],
 			[
-				"cmake",
-				"CMakeLists.txt"
-			],
-			[
 				"putflush.c",
 				"lib/buffer/buffer_putflush.c"
 			],
@@ -1421,82 +1761,6 @@
 			[
 				"strip-",
 				"strip-comments.c"
-			],
-			[
-				"httptest.c",
-				"httptest.c"
-			],
-			[
-				"http_cl",
-				"lib/http/http_close.c"
-			],
-			[
-				"http_sock",
-				"lib/http/http_socket.c"
-			],
-			[
-				"cmakeLi",
-				"CMakeLists.txt"
-			],
-			[
-				"readabl",
-				"lib/http/http_readable.c"
-			],
-			[
-				"http_r",
-				"lib/http/http_sendreq.c"
-			],
-			[
-				"http_get.c",
-				"lib/http/http_get.c"
-			],
-			[
-				"strip-com",
-				"strip-comments.c"
-			],
-			[
-				"",
-				"lib/http/http_read.c"
-			],
-			[
-				"httP_",
-				"lib/http/http_close.c"
-			],
-			[
-				"bbuffer_read",
-				"lib/buffer/buffer_read_fd.c"
-			],
-			[
-				"buffer_put.c",
-				"lib/buffer/buffer_put.c"
-			],
-			[
-				"buffer_putc",
-				"lib/buffer/buffer_putc.c"
-			],
-			[
-				"http_",
-				"lib/http/http_init.c"
-			],
-			[
-				"http_socket",
-				"lib/http/http_socket.c"
-			],
-			[
-				"http_ini",
-				"lib/http/http_init.c"
-			],
-			[
-				"open.h",
-				"lib/open.h"
-			],
-			[
-				"open_temp.c",
-				"lib/open/open_temp.c"
-			],
-			[
-				"tosa.c",
-				"lib/stralloc/buffer_tosa.c"
 			]
 		],
 		"width": 0.0
