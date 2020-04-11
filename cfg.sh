@@ -7,7 +7,7 @@ cfg() {
 
   : ${build:=`$CC -dumpmachine | sed 's|-pc-|-|g'`}
 
-  if [ -z "$host" ]; then
+  if [ -z "$host" -a -z "$builddir" ]; then
     host=$build
     case "$host" in
       x86_64-w64-mingw32) host="$host" builddir=build/$host prefix=/mingw64 ;;
