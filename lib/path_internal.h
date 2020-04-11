@@ -1,9 +1,5 @@
 #include <limits.h>
 
-#ifdef __linux__
-#include <linux/limits.h>
-#endif
-
 #include "str.h"
 #include "path.h"
 #include "stralloc.h"

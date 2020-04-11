@@ -26,7 +26,7 @@
 #include <stddef.h>
 #endif
 #include <string.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #endif
 
 #ifdef Z_SOLO
@@ -214,7 +214,7 @@ void ZLIB_INTERNAL zmemzero OF((Bytef * dest, uInt len));
 
 /* Diagnostic functions */
 #ifdef DEBUG
-#include <stdio.h>
+//#include <stdio.h>
 extern int ZLIB_INTERNAL z_verbose;
 extern void ZLIB_INTERNAL z_error OF((char* m));
 #define Assert(cond, msg)                                                                                              \
