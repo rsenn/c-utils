@@ -1,4 +1,0 @@
-[submodule "3rdparty/xz"]
-	path = 3rdparty/xz
-	url = https://github.com/xbmc/xz.git
-	branch = master
