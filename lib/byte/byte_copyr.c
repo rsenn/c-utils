@@ -5,7 +5,7 @@
 void
 byte_copyr(void* out, size_t len, const void* in) {
   char* s = (char*)out + len;
-  const char* t = in;
+  const char* t = (const char*)in;
   const char* u = t + len;
 
   for(;;) {

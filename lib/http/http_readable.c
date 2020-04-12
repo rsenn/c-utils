@@ -28,7 +28,7 @@ extern ssize_t buffer_dummyread(int, void*, size_t, void*);
 
 static int
 boundary_predicate(stralloc* sa, void* arg) {
-  stralloc* pred = arg;
+  stralloc* pred = (stralloc*)arg;
   if(pred->len >= sa->len) {
     if(!byte_diff(&sa->s[sa->len - pred->len], pred->len, pred->s))
       return 1;

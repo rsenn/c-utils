@@ -1,6 +1,6 @@
 #include "../scan.h"
 
-#ifdef __GNUC__
+#if 0 //def __GNUC__
 static inline int
 isdigit(int c) {
   return (c >= '0' && c <= '9');

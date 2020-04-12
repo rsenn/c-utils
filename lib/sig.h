@@ -72,7 +72,7 @@ extern struct sigaction const sig_ign;
 #define sig_catcha(sig, ac) sig_action(sig, (ac), 0)
 #define sig_restore(sig) sig_action((sig), &sig_dfl, 0)
 
-int sig_action(int sig, struct sigaction const* new, struct sigaction* old);
+int sig_action(int, struct sigaction const*, struct sigaction*);
 void sig_blocknone(void);
 void sig_blockset(const sigset_t* set);
 void sig_block(void);

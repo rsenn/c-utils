@@ -4,9 +4,9 @@
 jsonval*
 json_push(jsonval* arr, jsonval item) {
   if(arr->type == JSON_ARRAY) {
-    slink* new = slink_new(jsonval);
-    jsonval* val = slist_data(new);
-    slist_push(&arr->listv, new);
+    slink* __new = slink_new(jsonval);
+    jsonval* val = slist_data(__new);
+    slist_push(&arr->listv, __new);
     *val = item;
     return val;
   }

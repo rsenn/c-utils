@@ -3,7 +3,7 @@
 
 int
 cbmap_delete(cbmap_t map, void* key, size_t key_len) {
-  unsigned char* p = map->root;
+  unsigned char* p = (unsigned char*)map->root;
   const unsigned char* key_bytes = (const unsigned char*)key;
   void** wherep = &map->root;
   void** whereq = NULL;
@@ -24,7 +24,7 @@ cbmap_delete(cbmap_t map, void* key, size_t key_len) {
     }
     direction = (1 + (q->otherbits | c)) >> 8;
     wherep = &q->branch[direction];
-    p = *wherep;
+    p = (unsigned char*)*wherep;
   }
 
   data = (struct cbmap_data_node*)p;

@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE
@@ -9,6 +10,6 @@
 void*
 io_getcookie(fd_t d) {
   io_entry* e;
-  e = iarray_get(io_getfds(), d);
+  e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   return e ? e->cookie : 0;
 }

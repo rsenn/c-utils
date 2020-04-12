@@ -10,7 +10,7 @@
 
 ssize_t
 http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
-  http* h = ((buffer*)b)->cookie;
+  http* h = (http*)((buffer*)b)->cookie;
   ssize_t ret = 0;
 #ifdef HAVE_OPENSSL
   if(h->ssl) {

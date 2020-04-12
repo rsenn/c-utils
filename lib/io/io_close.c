@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../windoze.h"
 
 #include <sys/types.h>
@@ -17,7 +18,7 @@ extern void io_dontwantwrite_really(fd_t d, io_entry* e);
 void
 io_close(fd_t d) {
   io_entry* e;
-  if((e = iarray_get(io_getfds(), d))) {
+  if((e = (io_entry*)iarray_get((iarray*)io_getfds(), d))) {
     e->inuse = 0;
     e->cookie = 0;
     if(e->kernelwantread)

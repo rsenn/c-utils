@@ -193,7 +193,7 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
   while((w = getword(f))) {
     if(i + 1 >= l) {
       l += l / 2 + 10;
-      tmp = realloc(wv, l * sizeof(char*));
+      tmp = alloc_re(wv, l * sizeof(char*));
       if(!tmp)
         break;
       wv = tmp;

@@ -62,7 +62,7 @@ glob(const char* pattern, int flags, int (*errfunc)(const char* epath, int eerrn
     } else {
       // printf("glob: found file %s\n",found_file.cFileName);
       pglob->gl_pathc++;
-      pglob->gl_pathv = realloc(pglob->gl_pathv, pglob->gl_pathc * sizeof(char*));
+      pglob->gl_pathv = alloc_re(pglob->gl_pathv, pglob->gl_pathc * sizeof(char*));
       pglob->gl_pathv[pglob->gl_pathc - 1] = strdup(found_file.cFileName);
     }
   }

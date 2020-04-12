@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../socket_internal.h"
 
 #if WINDOWS_NATIVE
@@ -56,7 +57,7 @@ io_dontwantwrite_really(fd_t d, io_entry* e) {
 
 void
 io_dontwantwrite(fd_t d) {
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   if(e) {
     if(e->canwrite)
       io_dontwantwrite_really(d, e);

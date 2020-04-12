@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../socket_internal.h"
 #include "../io_internal.h"
 
@@ -80,7 +81,7 @@ io_wantwrite_really(fd_t d, io_entry* e) {
 
 void
 io_wantwrite(fd_t d) {
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   if(!e)
     return;
   if(e->wantwrite && e->kernelwantwrite)

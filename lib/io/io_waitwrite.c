@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../socket_internal.h"
 
 #if WINDOWS_NATIVE
@@ -15,7 +16,7 @@
 int64
 io_waitwrite(fd_t d, const char* buf, int64 len) {
   long r;
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   if(!e) {
     errno = EBADF;
     return -3;
@@ -40,7 +41,7 @@ int64
 io_waitwrite(fd_t d, const char* buf, int64 len) {
   long r;
   struct pollfd p;
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   io_sigpipe();
   if(!e) {
     errno = EBADF;

@@ -1,4 +1,5 @@
 #define USE_WS2_32 1
+#include "../alloc.h"
 #include "../socket_internal.h"
 #include "../socket.h"
 #include "../scan.h"
@@ -52,7 +53,7 @@ http_get(http* h, const char* location) {
     return 0;
   }
 
-  a = (void*)dns.s;
+  a = (ipv4addr*)dns.s;
 
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 
@@ -70,8 +71,7 @@ http_get(http* h, const char* location) {
     h->request = NULL;
   }
   {
-    http_request* req = h->request = malloc(sizeof(http_request));
-    byte_zero(req, sizeof(http_request));
+    http_request* req = h->request = (http_request*)alloc_zero(sizeof(http_request));
     req->serial = serial;
     req->type = GET;
     stralloc_init(&(req->location));
@@ -79,8 +79,7 @@ http_get(http* h, const char* location) {
   }
   {
     http_response** r = &h->response;
-    (*r) = malloc(sizeof(http_response));
-    byte_zero((*r), sizeof(http_response));
+    (*r) = (http_response*)alloc_zero(sizeof(http_response));
     stralloc_init(&((*r)->data));
     stralloc_init(&((*r)->boundary));
 

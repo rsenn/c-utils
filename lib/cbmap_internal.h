@@ -1,3 +1,6 @@
+#ifndef CBMAP_INTERNAL_H
+#define CBMAP_INTERNAL_H
+
 #include "cbmap.h"
 #include "cbmap/cbmap_alloc.h"
 #include <string.h>
@@ -67,3 +70,4 @@ void cbmap_internal_node_destroy(struct cbmap_internal_node* node);
 void cbmap_data_node_destroy(struct cbmap_data_node* data,
                              cbmap_allocator_t key_allocator,
                              cbmap_allocator_t value_allocator);
+#endif

@@ -1,8 +1,9 @@
+#include "../io.h"
 #include "../io_internal.h"
 
 void
 io_eagain(fd_t d) {
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   if(e) {
     if(e->wantread)
       e->canread = 0;

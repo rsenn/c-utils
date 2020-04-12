@@ -19,7 +19,7 @@ stralloc_ready_tuned(stralloc* sa, size_t n, size_t base, size_t a, size_t b) {
       return 0;
     sa->a = t;
   } else if(n > sa->a) {
-    if(!(sa->s = realloc(sa->s, t)))
+    if(!(sa->s = alloc_re(sa->s, t)))
       return 0;
     sa->a = t;
   }

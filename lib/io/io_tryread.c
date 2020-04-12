@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE
@@ -27,7 +28,7 @@
 
 int64
 io_tryread(fd_t d, char* buf, int64 len) {
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   if(!e) {
     errno = EBADF;
     return -3;
@@ -95,7 +96,7 @@ io_tryread(fd_t d, char* buf, int64 len) {
     long r;
     struct itimerval old, new;
     struct pollfd p;
-    io_entry* e = iarray_get(io_getfds(), d);
+    io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
     if(!e) {
       errno = EBADF;
       return -3;

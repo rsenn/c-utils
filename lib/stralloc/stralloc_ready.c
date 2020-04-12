@@ -22,7 +22,7 @@ stralloc_ready(stralloc* sa, size_t len) {
     else
       byte_zero(tmp, wanted);
   } else {
-    if(!(tmp = realloc(sa->s, wanted)))
+    if(!(tmp = alloc_re(sa->s, wanted)))
       return 0;
   }
   sa->a = wanted;

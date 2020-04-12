@@ -2,8 +2,8 @@
 
 size_t
 byte_ccopy(void* dst, size_t count, const void* src, char c) {
-  char* a = dst;
-  const char* b = src;
+  char* a = (char*)dst;
+  const char* b = (const char*)src;
   while(count--) {
     *a++ = *b;
     if(*b == c) {

@@ -13,10 +13,13 @@ extern "C" {
 #endif
 
 struct http_request_s;
+  
+
+typedef enum { GET = 0, POST } http_req_t;
 
 typedef struct http_request_s {
   uint32 serial;
-  enum { GET = 0, POST } type;
+  http_req_t type;
   stralloc location;
   stralloc headers;
   struct http_request_s* next;

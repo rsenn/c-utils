@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../windoze.h"
 #include "../socket_internal.h"
 #ifdef _WIN32
@@ -67,7 +68,7 @@ io_passfd(fd_t sock, fd_t fd) {
 #endif
   byte_zero(&msg, sizeof(msg));
   iov.iov_len = 1;
-  iov.iov_base = "x";
+  iov.iov_base = (void*)"x";
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
   msg.msg_name = 0;

@@ -6,7 +6,7 @@ static void
 freechain(iarray_page* p, size_t pagesize) {
   while(p) {
     iarray_page* n = p->next;
-    mmap_unmap((const void*)p, pagesize);
+    mmap_unmap((char*)p, pagesize);
     p = n;
   }
 }

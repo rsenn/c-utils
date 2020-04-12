@@ -26,7 +26,7 @@ getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
     int x;
     if(i >= *n) {
       int tmp = *n + 100;
-      char* new = realloc(*lineptr, tmp);
+      char* new = alloc_re(*lineptr, tmp);
       if(!new)
         return -1;
       *lineptr = new;

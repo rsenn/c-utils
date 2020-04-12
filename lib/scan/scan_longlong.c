@@ -1,6 +1,6 @@
 #include "../scan.h"
 
-static const unsigned long maxlong = ((unsigned long)-1) >> 1;
+#define MAXLONG (((unsigned long)-1) >> 1)
 
 size_t
 scan_longlong(const char* src, int64* dest) {
@@ -10,7 +10,7 @@ scan_longlong(const char* src, int64* dest) {
   unsigned int neg = c == '-';
   o = c == '-' || c == '+';
   if((i = scan_ulonglong(src + o, &l))) {
-    if(i > 0 && l > maxlong + neg) {
+    if(i > 0 && l > MAXLONG + neg) {
       l /= 10;
       --i;
     }

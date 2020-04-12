@@ -3,8 +3,8 @@
 
 uint64
 pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64) {
-  uint8* base = pe;
-  uint8* p = ptr;
+  uint8* base = (uint8*)pe;
+  uint8* p = (uint8*)ptr;
   unsigned off, size;
   uint64 ret = 0;
   if(PE_32(base)) {

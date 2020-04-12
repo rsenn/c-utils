@@ -4,8 +4,8 @@
  * to out[len - 1]. */
 void
 byte_copy(void* out, size_t len, const void* in) {
-  char* s = out;
-  const char* t = in;
+  char* s = (char*)out;
+  const char* t = (const char*)in;
   size_t i;
   for(i = 0; i < len; ++i) s[i] = t[i];
 }

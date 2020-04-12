@@ -4,7 +4,7 @@ void
 byte_lower(void* s, size_t len) {
   unsigned char c;
   unsigned char* x;
-  x = s;
+  x = (unsigned char*)s;
   while(len) {
     --len;
     c = *x;

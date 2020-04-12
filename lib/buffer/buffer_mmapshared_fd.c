@@ -8,7 +8,7 @@
 #include <unistd.h>
 #endif
 
-extern ssize_t buffer_dummyreadmmap();
+extern ssize_t buffer_dummyreadmmap(fd_t, void*, size_t, void*);
 extern void buffer_munmap(void* buf);
 
 int
@@ -18,7 +18,7 @@ buffer_mmapshared_fd(buffer* b, fd_t fd) {
     return -1;
   b->p = 0;
   b->a = b->n;
-  b->op = buffer_dummyreadmmap;
-  b->deinit = buffer_munmap;
+  b->op = (buffer_op_proto*)&buffer_dummyreadmmap;
+  b->deinit = (void(*)())&buffer_munmap;
   return 0;
 }

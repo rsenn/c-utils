@@ -14,15 +14,15 @@ struct indent_write {
 };
 
 static void
-buffer_indent_set(buffer* b, int in) {
-  struct indent_write* iw = b->cookie;
+buffer_indent_set(buffer* b, const char* in) {
+  struct indent_write* iw = (struct indent_write*)b->cookie;
   iw->indent = in;
 }
 
 static ssize_t
 buffer_indent_write(fd_t fd, char* x, size_t n, void* ptr) {
-  buffer* b = ptr;
-  struct indent_write* iw = b->cookie;
+  buffer* b = (buffer*)ptr;
+  struct indent_write* iw = (struct indent_write*) b->cookie;
 
   ssize_t ret;
   while(n > 0) {
@@ -32,7 +32,7 @@ buffer_indent_write(fd_t fd, char* x, size_t n, void* ptr) {
     if(*x == '\n') {
       size_t i;
       for(i = 0; i < iw->level; i++) {
-        ret = iw->realop(fd, iw->indent, str_len(iw->indent), ptr);
+        ret = iw->realop(fd, (void*)iw->indent, str_len(iw->indent), ptr);
         if(ret < 0)
           return ret;
       }
@@ -48,7 +48,7 @@ buffer_indent(buffer* b, struct indent_write* iw) {
   iw->realop = b->op;
   iw->indent = "  ";
   iw->level = 0;
-  b->op = &buffer_indent_write;
+  b->op = (buffer_op_proto*)&buffer_indent_write;
   b->cookie = iw;
 }
 
@@ -75,7 +75,7 @@ json_default_printer(jsonfmt* p, const jsonval* v, int depth, int index, char qu
   p->separat = pretty ? ", " : ",";
   p->quote = q;
   if(quote)
-    p->quote[0] = quote;
+    p->quote = quote;
 
   p->precision = 10;
   p->depth = depth;
@@ -172,7 +172,10 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
 static void
 json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*, int, int)) {
   jsonfmt printer;
+  union {
   slink* ptr;
+  void* iter;
+  } it;
   int index = 0;
 
   buffer_puts(b, "[");
@@ -186,11 +189,11 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
   p(&printer, val, depth + 1, index);
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
 
-  slink_foreach(val->listv, ptr) {
+  slink_foreach(val->listv, it.iter) {
     p(&printer, val, depth + 1, index);
-    json_print_val(slist_data(ptr), b, depth + 1, p);
+    json_print_val(slist_data(it.ptr), b, depth + 1, p);
     ++index;
-    if(slist_next(ptr)) {
+    if(slist_next(it.ptr)) {
       json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
     }
   }

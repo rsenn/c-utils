@@ -23,9 +23,9 @@ array_splice(array* a, uint64 membersize, uint64 start, uint64 del, uint64 inser
   if(insert != del) {
     size_t bytes;
     char* newend;
-    s = array_get(a, membersize, start + del);
+    s = (char*)array_get(a, membersize, start + del);
     bytes = a->p + a->initialized - s;
-    newend = array_allocate(a, membersize, newlen);
+    newend = (char*)array_allocate(a, membersize, newlen);
 
     if(bytes) {
       s = array_get(a, membersize, start + del);

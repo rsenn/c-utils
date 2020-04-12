@@ -1,5 +1,6 @@
 #include "../byte.h"
 #include "../map_internal.h"
+#include "../alloc.h"
 
 #include <stdlib.h>
 
@@ -8,7 +9,7 @@ map_newnode(const char* key, void* value, int vsize) {
   map_node_t* node;
   int ksize = str_len(key) + 1;
   int voffset = ksize + ((sizeof(void*) - ksize) % sizeof(void*));
-  node = malloc(sizeof(*node) + voffset + vsize);
+  node = (map_node_t*)alloc(sizeof(*node) + voffset + vsize);
   if(!node)
     return NULL;
   byte_copy(node + 1, ksize, key);
@@ -43,7 +44,8 @@ map_resize(map_base_t* m, int nbuckets) {
     }
   }
   /* Reset buckets */
-  buckets = realloc(m->buckets, sizeof(*m->buckets) * nbuckets);
+  buckets = m->buckets;
+  alloc_re((void**)&buckets, sizeof(*m->buckets) * m->nbuckets, sizeof(*m->buckets) * nbuckets);
   if(buckets != NULL) {
     m->buckets = buckets;
     m->nbuckets = nbuckets;
@@ -58,7 +60,7 @@ map_resize(map_base_t* m, int nbuckets) {
       node = next;
     }
   }
-  /* Return error code if realloc() failed */
+  /* Return error code if alloc_re() failed */
   return (buckets == NULL) ? -1 : 0;
 }
 

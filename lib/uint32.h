@@ -62,7 +62,7 @@ uint32_unpack(const char* in, uint32* out) {
 
 inline static uint32
 uint32_get(const void* ptr) {
-  const char* in = ptr;
+  const char* in = (const char*)ptr;
   return *(uint32*)in;
 }
 

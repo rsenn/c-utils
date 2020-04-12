@@ -1,3 +1,4 @@
+#include "../io.h"
 #define _LARGEFILE64_SOURCE
 #define USE_WS2_32 1
 

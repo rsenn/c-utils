@@ -5,7 +5,7 @@ byte_count(const void* s, size_t n, char c) {
   const unsigned char* t;
   unsigned int count;
   unsigned char ch;
-  t = s;
+  t = (unsigned char*)s;
   count = 0;
   ch = (unsigned char)c;
   for(;;) {

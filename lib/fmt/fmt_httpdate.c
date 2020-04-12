@@ -2,12 +2,8 @@
 #include "../fmt.h"
 #include <time.h>
 
-static unsigned int
-fmt_2digits(char* dest, int i) {
-  dest[0] = (char)((i / 10) + '0');
-  dest[1] = (char)((i % 10) + '0');
-  return 2;
-}
+unsigned int
+fmt_2digits(char* dest, int i);
 
 size_t
 fmt_httpdate(char* dest, time_t t) {

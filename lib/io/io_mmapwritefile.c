@@ -1,3 +1,4 @@
+#include "../io.h"
 #define _LARGEFILE64_SOURCE
 #include "../windoze.h"
 #include "../io_internal.h"
@@ -22,7 +23,7 @@ io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback 
   char buf[BUFSIZE];
   int64 n, m;
   uint64 sent = 0;
-  io_entry* e = iarray_get(io_getfds(), out);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), out);
   if(e) {
     const char* c;
     unsigned long left;

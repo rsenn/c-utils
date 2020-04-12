@@ -36,9 +36,9 @@ http_socket(http* h, int nonblock) {
     buffer_putsflush(buffer_2, "ssl socket\n");
   }
 #endif
-  buffer_init_free(&h->q.in, &http_socket_read, h->sock, malloc(BUFFER_INSIZE), BUFFER_INSIZE);
+  buffer_init_free(&h->q.in, (buffer_op_proto*)&http_socket_read, h->sock, (char*)alloc(BUFFER_INSIZE), BUFFER_INSIZE);
   h->q.in.cookie = (void*)h;
-  buffer_init_free(&h->q.out, &http_socket_write, h->sock, malloc(BUFFER_OUTSIZE), BUFFER_OUTSIZE);
+  buffer_init_free(&h->q.out, (buffer_op_proto*)&http_socket_write, h->sock, (char*)alloc(BUFFER_OUTSIZE), BUFFER_OUTSIZE);
   h->q.out.cookie = (void*)h;
   return 0;
 }

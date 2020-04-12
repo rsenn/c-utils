@@ -66,8 +66,7 @@ rdir_read(rdir_t* d) {
 
 static void
 rdir_push(rdir_t* d) {
-  rdir_t* rdn = malloc(sizeof(rdir_t));
-  byte_copy(rdn, sizeof(rdir_t), d);
+  rdir_t* rdn = (rdir_t*)alloc_zero(sizeof(rdir_t));
   byte_zero(d, sizeof(rdir_t));
   d->prev = rdn;
 

@@ -3,5 +3,5 @@
 
 void
 omf_close(omf_file* omf) {
-  mmap_unmap(omf->map, omf->size);
+  mmap_unmap((char*)omf->map, omf->size);
 }

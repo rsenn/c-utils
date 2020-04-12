@@ -5,7 +5,7 @@
 
 int
 cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_len) {
-  unsigned char* p = map->root;
+  unsigned char* p = (unsigned char*)map->root;
   const unsigned char* key_bytes = (const unsigned char*)key;
   struct cbmap_data_node* data;
 
@@ -22,7 +22,7 @@ cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_le
       c = key_bytes[q->byte];
     }
     direction = (1 + (q->otherbits | c)) >> 8;
-    p = q->branch[direction];
+    p = (unsigned char*)q->branch[direction];
   }
 
   data = (struct cbmap_data_node*)p;

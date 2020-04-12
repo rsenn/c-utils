@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../socket_internal.h"
 
 #if WINDOWS_NATIVE
@@ -24,7 +25,7 @@
 int64
 io_trywrite(fd_t d, const char* buf, int64 len) {
 #ifdef USE_SELECT
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   int r;
   if(!e) {
     errno = EBADF;
@@ -33,7 +34,7 @@ io_trywrite(fd_t d, const char* buf, int64 len) {
   r = winsock2errno(send(d, buf, len, 0));
   return r;
 #elif WINDOWS_NATIVE
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   int r;
   if(!e) {
     errno = EBADF;
@@ -78,7 +79,7 @@ io_trywrite(fd_t d, const char* buf, int64 len) {
   long r;
   struct itimerval old, new;
   struct pollfd p;
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   io_sigpipe();
   if(!e) {
     errno = EBADF;

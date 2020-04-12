@@ -6,3 +6,4 @@ uint16_pack(char* out, uint16 in) {
   out[0] = (char)in;
   out[1] = (char)(in >> 8);
 }
+#undef NO_UINT16_MACROS

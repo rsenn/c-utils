@@ -6,8 +6,8 @@ byte_case_diff(const void* x1, size_t len, const void* x2) {
   const unsigned char* t;
   int x;
   int y;
-  s = x1;
-  t = x2;
+  s = (const unsigned char*)x1;
+  t = (const unsigned char*)x2;
   while(len > 0) {
     --len;
     x = *s++;

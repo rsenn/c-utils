@@ -13,5 +13,5 @@ buffer_fromstr(buffer* b, char* s, size_t len) {
   b->n = len;
   b->a = b->n + 1;
   b->fd = -1;
-  b->op = (void*)&buffer_dummyread_fromstr;
+  b->op = (buffer_op_proto*)&buffer_dummyread_fromstr;
 }

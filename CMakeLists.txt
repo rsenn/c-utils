@@ -336,7 +336,7 @@ endif(USE_BZIP)
 ################################################################################
 ## Check OpenSSL
 ################################################################################
-if(USE_SSL AND NOT BUILD_SSL)
+if(USE_SSL) #AND NOT BUILD_SSL)
   if(NOT OPENSSL_ROOT_DIR)
     set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
   endif()
@@ -344,6 +344,7 @@ if(USE_SSL AND NOT BUILD_SSL)
   pkg_search_module(OPENSSL openssl libssl)
 
   if(OPENSSL_FOUND)
+    check_include_file(openssl/ssl.h HAVE_OPENSSL_SSL_H)
     if(pkgcfg_lib_OPENSSL_crypto)
       set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}")
       list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_crypto})
@@ -357,7 +358,11 @@ if(USE_SSL AND NOT BUILD_SSL)
     include(FindOpenSSL)
   endif(OPENSSL_FOUND)
 
+  if(NOT HAVE_OPENSSL_SSL_H)
+    set(OPENSSL_FOUND FALSE)
+  endif(NOT HAVE_OPENSSL_SSL_H)
 
+  message(OPENSSL_FOUND: ${OPENSSL_FOUND})
   if(OPENSSL_FOUND)
     if(NOT OPENSSL_INCLUDE_DIR)
     set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
@@ -365,16 +370,18 @@ if(USE_SSL AND NOT BUILD_SSL)
      if(NOT OPENSSL_LIB_DIR)
     set(OPENSSL_LIB_DIR "${OPENSSL_ROOT_DIR}/lib")
     endif()
+  else(OPENSSL_FOUND)
+    set(BUILD_SSL TRUE)
   endif(OPENSSL_FOUND)
 
   message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n   OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n   OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n   OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
 
-else(USE_SSL AND NOT BUILD_SSL)
+else()
  unset(OPENSSL_LIBRARIES CACHE)
  unset(OPENSSL_CRYPTO_LIBRARY CACHE)
  unset(OPENSSL_SSL_LIBRARY CACHE)
  unset(OPENSSL_INCLUDE_DIR CACHE)
-endif(USE_SSL AND NOT BUILD_SSL)
+endif()
 #link_libraries(
 #  ${ZLIB_LIBRARY}
 #  ${BZIP2_LIBRARY}

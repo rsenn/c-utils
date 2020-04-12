@@ -20,7 +20,7 @@ ssize_t
 http_read(fd_t fd, char* buf, size_t len, void* ptr) {
   ssize_t bytes, n, ret = 0;
   http_response* r;
-  http* h = ((buffer*)ptr)->cookie;
+  http* h = (http*)((buffer*)ptr)->cookie;
   buffer* b = &h->q.in;
   r = h->response;
   while(len) {

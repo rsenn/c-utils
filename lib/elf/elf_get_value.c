@@ -3,7 +3,7 @@
 
 uint64
 elf_get_value(void* elf, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64) {
-  uint8* base = elf;
+  uint8* base = (uint8*)elf;
   uint8* p = ptr;
   unsigned off, size;
   uint64 ret = 0;

@@ -5,7 +5,7 @@
 size_t
 byte_chr(const void* haystack, size_t len, char needle) {
   char c = needle;
-  const char* s = haystack;
+  const char* s = (const char*)haystack;
   const char* t = s + len;
 
   for(;;) {

@@ -161,7 +161,7 @@ int64 io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_cal
 unsigned int io_debugstring(fd_t sfd, char* buf, unsigned int bufsize);
 
 void* io_getfds(void);
-#define io_getentry(fd) ((io_entry*)iarray_get(io_getfds(), (fd)))
+#define io_getentry(fd) ((io_entry*)iarray_get((iarray*)io_getfds(), (fd)))
 
 #ifndef io_seek
 #define io_seek lseek

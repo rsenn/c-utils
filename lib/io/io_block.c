@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../windoze.h"
 #include "../socket_internal.h"
 #include "../io_internal.h"
@@ -15,7 +16,7 @@
 
 void
 io_block(fd_t d) {
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
 #if WINDOWS_NATIVE
   unsigned long i = 0;
   if(ioctlsocket(d, FIONBIO, &i) == 0)

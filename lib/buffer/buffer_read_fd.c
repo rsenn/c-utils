@@ -11,7 +11,7 @@
 #include <unistd.h>
 #endif
 
-#include <stdlib.h>
+#include "../alloc.h"
 
 int
 buffer_read_fd(buffer* b, fd_t fd) {
@@ -24,11 +24,11 @@ buffer_read_fd(buffer* b, fd_t fd) {
 
   b->p = b->n = 0;
   b->a = BUFFER_INSIZE;
-  b->x = malloc(BUFFER_INSIZE);
+  b->x = (char*)alloc(BUFFER_INSIZE);
 
   if(b->x == NULL)
     return -1;
-  b->op = (void*)read;
-  b->deinit = buffer_free;
+  b->op = (buffer_op_proto*)read;
+  b->deinit = (void(*)())&buffer_free;
   return 0;
 }

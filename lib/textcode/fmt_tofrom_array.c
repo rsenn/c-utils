@@ -9,10 +9,10 @@ fmt_tofrom_array(size_t (*func)(char*, const char*, size_t), array* dest, array*
     array_fail(dest);
     return;
   }
-  needed = func(0, array_start(src), array_bytes(src));
+  needed = func(0, (const char*)array_start(src), array_bytes(src));
   if(array_bytes(dest) + needed > needed && array_allocate(dest, 1, array_bytes(dest) + needed - 1)) {
     x = ((char*)array_start(dest)) + array_bytes(dest) - needed;
-    func(x, array_start(src), array_bytes(src));
+    func(x, (const char*)array_start(src), array_bytes(src));
   } else
     array_fail(dest);
 }

@@ -1,3 +1,6 @@
+#ifndef MAP_INTERNAL_H
+#define MAP_INTERNAL_H
+
 #include "map.h"
 #include "str.h"
 #include <stdlib.h>
@@ -28,3 +31,4 @@ map_bucketidx(map_base_t* m, unsigned hash) {
    * the line below should be changed to use mod instead of AND */
   return hash & (m->nbuckets - 1);
 }
+#endif

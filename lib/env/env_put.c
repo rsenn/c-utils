@@ -1,3 +1,4 @@
+#include "../alloc.h"
 #include "../windoze.h"
 #include "../typedefs.h"
 
@@ -173,7 +174,7 @@ env_putb(const char* x, size_t n) {
     if(!env_init())
       return 0;
   }
-  u = malloc(n + 1);
+  u = (char*)alloc(n + 1);
   if(!u)
     return 0;
   str_copyn(u, x, n);
@@ -199,7 +200,7 @@ env_put2b(const char* s, const char* t, size_t n) {
       return 0;
   }
   slen = str_len(s);
-  u = malloc(slen + n + 2);
+  u = (char*)alloc(slen + n + 2);
   if(!u)
     return 0;
   str_copy(u, s);
@@ -231,7 +232,7 @@ env_init(void) {
   if(!newenviron)
     return 0;
   for(en = 0; environ[en]; ++en) {
-    newenviron[en] = malloc(str_len(environ[en]) + 1);
+    newenviron[en] = (char*)alloc(str_len(environ[en]) + 1);
     if(!newenviron[en]) {
       for(i = 0; i < en; ++i) {
         free(newenviron[i]);

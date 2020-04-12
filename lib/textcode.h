@@ -146,8 +146,8 @@ size_t scan_tofrom_array(size_t (*func)(const char*, char*, size_t*), array* src
 
 size_t fmt_stripwhitespace(char* dest, const char* src, size_t len);
 
-extern const char base64[64];
-extern const char base64url[64];
+extern const char base64[66];
+extern const char base64url[66];
 
 #ifdef __cplusplus
 }

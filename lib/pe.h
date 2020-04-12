@@ -462,7 +462,7 @@ const char* pe_datadir_name(int);
                PE_FIELD_SIZE(pe32_##st, field),                                                                        \
                PE_FIELD_OFFSET(pe64_##st, field),                                                                      \
                PE_FIELD_SIZE(pe64_##st, field))
-#define PE_MAGIC(pe) uint16_read(pe_header_opt(pe))
+#define PE_MAGIC(pe) uint16_read((const char*)pe_header_opt(pe))
 
 #define PE_BITS(pe) (PE_MAGIC(pe) == PE_MAGIC_PE64 ? 64 : 32)
 #define PE_64(pe) (PE_MAGIC(pe) == PE_MAGIC_PE64)

@@ -24,7 +24,7 @@ cbmap_data_node_update_value(cbmap_allocator_t value_allocator,
 
   /* Update data with the new value */
   data->value_len = value_len;
-  data->value = new_value;
+  data->value = (unsigned char*)new_value;
 
   return data->value;
 }
@@ -46,14 +46,14 @@ cbmap_data_node_new(cbmap_allocator_t key_allocator,
 
   /* Allocate value */
   data->value_len = value_len;
-  data->value = value_allocator->malloc(value, value_len);
+  data->value = (unsigned char*)value_allocator->malloc(value, value_len);
   if(data->value == NULL) {
     CBM_FREE(data);
     return NULL;
   }
   /* Allocate key */
   data->key_len = key_len;
-  data->key = key_allocator->malloc(key, key_len);
+  data->key = (unsigned char*)key_allocator->malloc(key, key_len);
   if(data->key == NULL) {
     value_allocator->free(data->value);
     CBM_FREE(data);
@@ -66,8 +66,8 @@ cbmap_data_node_new(cbmap_allocator_t key_allocator,
 
 int
 cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_len) {
-  unsigned char c, *p = map->root;
-  const unsigned char* const key_bytes = (void*)key;
+  unsigned char c, *p = (unsigned char*)map->root;
+  const unsigned char* key_bytes = (const unsigned char*)key;
   unsigned int newbyte, newotherbits;
   struct cbmap_data_node *data, *newdata;
   int newdirection;
@@ -93,7 +93,7 @@ cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_l
       c = key_bytes[node->byte];
     }
     direction = (1 + (node->otherbits | c)) >> 8;
-    p = node->branch[direction];
+    p = (unsigned char*)node->branch[direction];
   }
 
   data = GET_DATA_NODE(p);
@@ -139,7 +139,7 @@ different_byte_found:
   insertion_node = &map->root;
   for(;;) {
     unsigned char c = 0;
-    unsigned char* p = *insertion_node;
+    unsigned char* p = (unsigned char*)*insertion_node;
     int direction;
     if(!IS_INTERNAL_NODE(p)) {
       break;

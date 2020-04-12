@@ -4,7 +4,10 @@
 
 ihex_record*
 ihex_record_at(ihex_file* ihf, uint32 at, uint32* roffs) {
-  ihex_record* rec;
+  union {
+    ihex_record* rec;
+    void* ptr;
+  } it;
   union {
     uint32 off32;
     struct {
@@ -15,16 +18,16 @@ ihex_record_at(ihex_file* ihf, uint32 at, uint32* roffs) {
 
   o.off32 = 0;
 
-  slink_foreach(ihf->records, rec) {
-    if(rec->type == 0) {
-      o.lo16 = rec->offset;
-    } else if(rec->type == 4) {
-      o.hi16 = rec->data[1] | (rec->data[0] << 8);
+  slink_foreach(ihf->records, it.ptr) {
+    if(it.rec->type == 0) {
+      o.lo16 = it.rec->offset;
+    } else if(it.rec->type == 4) {
+      o.hi16 = it.rec->data[1] | (it.rec->data[0] << 8);
     }
-    if(at >= o.off32 && at < o.off32 + rec->length) {
+    if(at >= o.off32 && at < o.off32 + it.rec->length) {
       if(roffs)
         *roffs = o.off32;
-      return rec;
+      return it.rec;
     }
   }
   return 0;

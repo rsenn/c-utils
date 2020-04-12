@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../windoze.h"
 #include "../io_internal.h"
 

@@ -1,12 +1,5 @@
 #include "../byte.h"
-
-typedef struct stralloc_s {
-  char* s;
-  size_t len, a;
-} stralloc;
-
-void stralloc_zero(stralloc*);
-int stralloc_readyplus(stralloc*, size_t);
+#include "../stralloc.h"
 
 size_t
 byte_scan(const char* in, size_t in_len, stralloc* out, size_t (*scan_function)(const char*, char*)) {

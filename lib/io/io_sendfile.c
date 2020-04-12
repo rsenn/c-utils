@@ -1,3 +1,4 @@
+#include "../io.h"
 #define USE_WS2_32 1
 #define WINDOWS_OVERRIDE 1
 #include "../windoze.h"
@@ -32,7 +33,7 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
   off_t sbytes;
   int r = sendfile(fd, s, off, n, 0, &sbytes, 0);
   if(r == -1) {
-    io_entry* e = iarray_get(io_getfds(), s);
+    io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), s);
     if(e) {
       e->canwrite = 0;
       e->next_write = -1;
@@ -52,7 +53,7 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   if(r == -1 && errno != EAGAIN)
     r = -3;
   if(r != bytes) {
-    io_entry* e = iarray_get(io_getfds(), s);
+    io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), s);
     if(e) {
       e->canwrite = 0;
       e->next_write = -1;
@@ -72,7 +73,7 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   if(r == -1 && errno != EAGAIN)
     r = -3;
   if(r != bytes) {
-    io_entry* e = iarray_get(io_getfds(), s);
+    io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), s);
     if(e) {
       e->canwrite = 0;
       e->next_write = -1;
@@ -96,7 +97,7 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
   p.trailer_length = 0;
   if(send_file(&destfd, &p, 0) >= 0) {
     if(p.bytes_sent != bytes) {
-      io_entry* e = iarray_get(io_getfds(), s);
+      io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), s);
       if(e) {
         e->canwrite = 0;
         e->next_write = -1;
@@ -133,7 +134,7 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 int64
 io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
   off_t o = off;
-  io_entry* e = iarray_get(io_getfds(), s);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), s);
   off_t i;
   uint64 done = 0;
   /* What a spectacularly broken design for sendfile64.
@@ -180,7 +181,7 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
   typedef BOOL WINAPI transmit_file_fn(SOCKET, HANDLE, DWORD, DWORD, LPOVERLAPPED, LPTRANSMIT_FILE_BUFFERS, DWORD);
   static transmit_file_fn* transmit_file;
 
-  io_entry* e = iarray_get(io_getfds(), out);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), out);
   if(!e) {
     errno = EBADF;
     return -3;

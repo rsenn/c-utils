@@ -1,7 +1,7 @@
 #include "../textcode.h"
 
 static inline int
-dec(unsigned char x) {
+scan_base64url_decimal(unsigned char x) {
   if(x >= 'A' && x <= 'Z')
     return x - 'A';
   if(x >= 'a' && x <= 'z')
@@ -21,7 +21,7 @@ scan_base64url(const char* src, char* dest, size_t* destlen) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t i;
   for(i = 0;;) {
-    int a = dec(*s);
+    int a = scan_base64url_decimal(*s);
     if(a < 0)
       break; /* base64url does not have padding */
     tmp = (tmp << 6) | a;

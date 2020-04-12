@@ -1,8 +1,9 @@
 #include "uint32.h"
+#include "uint8.h"
 
 const struct {
   uint32 tab[9854];
-  char data[8115];
+  uint8 data[8115];
 } entities = {
     {
         0x267e,   0x3541,   0x9342,   0xcf43,   0x01c844, 0x034145, 0x03d346, 0x041047, 0x047b48, 0x04c849, 0x05454a,

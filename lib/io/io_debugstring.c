@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../windoze.h"
 #include "../socket_internal.h"
 #include "../fmt.h"
@@ -13,7 +14,7 @@ unsigned int
 io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   unsigned int i;
   io_entry* e;
-  e = iarray_get(io_getfds(), s);
+  e = (io_entry*)iarray_get((iarray*)io_getfds(), s);
   if(!e)
     return 0;
   if(bufsize < 100)

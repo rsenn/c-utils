@@ -11,8 +11,8 @@ omf_record_begin(omf_record* rec) {
     case 0x90: {
       int16 group_index, segment_index;
 
-      p = omf_read_index(p, &group_index);
-      p = omf_read_index(p, &segment_index);
+      p = (char*)omf_read_index(p, &group_index);
+      p = (char*)omf_read_index(p, &segment_index);
 
       if(segment_index == 0)
         p += 2; // skip base frame field

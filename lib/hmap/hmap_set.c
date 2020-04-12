@@ -1,3 +1,4 @@
+#include "../alloc.h"
 #include "../hmap_internal.h"
 
 int
@@ -10,7 +11,7 @@ hmap_set(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_
 
     hmap_free_data(t);
 
-    t->vals.val_chars = calloc(1, d_len);
+    t->vals.val_chars = (char*)alloc_zero(d_len);
 
     if(t->vals.val_chars == NULL)
       return HMAP_ALLOCATED_ERROR;

@@ -1,31 +1,33 @@
+#define NO_UINT16_MACROS 1
+#include "../uint16.h"
 #include "../pe.h"
 
-void*
-pe_header_nt(void* pe) {
-  pe_dos_header* dos = pe;
-  uint32 lfanew;
-  lfanew = uint32_get(&dos->e_lfanew);
-  return (unsigned char*)dos + lfanew;
-}
+  void*
+  pe_header_nt(void* pe) {
+    pe_dos_header* dos = (pe_dos_header*)pe;
+    uint32 lfanew;
+    lfanew = uint32_get(&dos->e_lfanew);
+    return (unsigned char*)dos + lfanew;
+  }
 
-uint32
-pe_header_sig(void* pe) {
-  return *(uint32*)pe_header_nt(pe);
-}
+  uint32
+  pe_header_sig(void* pe) {
+    return *(uint32*)pe_header_nt(pe);
+  }
 
-pe32_nt_headers*
-pe_header_nt32(void* pe) {
-  return PE_32(pe) ? pe_header_nt(pe) : 0;
-}
+  pe32_nt_headers*
+  pe_header_nt32(void* pe) {
+    return PE_32(pe) ? (pe32_nt_headers*)pe_header_nt(pe) : (pe32_nt_headers*)0;
+  }
 
-pe64_nt_headers*
-pe_header_nt64(void* pe) {
-  return PE_64(pe) ? pe_header_nt(pe) : 0;
+  pe64_nt_headers*
+  pe_header_nt64(void* pe) {
+    return PE_64(pe) ? (pe64_nt_headers*)pe_header_nt(pe) : (pe64_nt_headers*)0;
 }
 
 pe_coff_header*
 pe_header_coff(void* pe) {
-  uint32* sign = pe_header_nt(pe);
+  uint32* sign = (uint32*)pe_header_nt(pe);
   return (pe_coff_header*)&sign[1];
 }
 
@@ -37,13 +39,13 @@ pe_header_opt(void* pe) {
 
 pe32_opt_header*
 pe_header_opt32(void* pe) {
-  pe32_opt_header* hdr = pe_header_opt(pe);
+  pe32_opt_header* hdr = (pe32_opt_header*)pe_header_opt(pe);
   return PE_32(pe) ? hdr : 0;
 }
 
 pe64_opt_header*
 pe_header_opt64(void* pe) {
-  pe64_opt_header* hdr = pe_header_opt(pe);
+  pe64_opt_header* hdr = (pe64_opt_header*)pe_header_opt(pe);
   return PE_64(pe) ? hdr : 0;
 }
 
@@ -61,6 +63,6 @@ pe_header_sections(void* pe, uint16* nsections) {
 
 pe_data_directory*
 pe_header_datadir(void* pe) {
-  uint8* opthdr = pe_header_opt(pe);
+  uint8* opthdr = (uint8*)pe_header_opt(pe);
   return (pe_data_directory*)(PE_32(pe) ? opthdr + 96 : opthdr + 112);
 }

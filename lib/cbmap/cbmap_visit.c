@@ -9,7 +9,7 @@ cbmap_visit(unsigned char* top, cbmap_visitor visitor_fn, void* user_data) {
     int direction;
     struct cbmap_internal_node* q = GET_INTERNAL_NODE(top);
     for(direction = 0; direction < 2; ++direction) {
-      if(cbmap_visit(q->branch[direction], visitor_fn, user_data) != 1) {
+      if(cbmap_visit((unsigned char*)q->branch[direction], visitor_fn, user_data) != 1) {
         return 0;
       }
     }
@@ -22,7 +22,7 @@ cbmap_visit(unsigned char* top, cbmap_visitor visitor_fn, void* user_data) {
 int
 cbmap_visit_prefix(
     cbmap_t map, unsigned char* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data) {
-  unsigned char* p = map->root;
+  unsigned char* p = (unsigned char*)map->root;
   unsigned char* top;
   struct cbmap_data_node* data;
   size_t i;
@@ -40,7 +40,7 @@ cbmap_visit_prefix(
       c = key_prefix[q->byte];
     }
     direction = (1 + (q->otherbits | c)) >> 8;
-    p = q->branch[direction];
+    p = (unsigned char*)q->branch[direction];
     if(q->byte < key_prefix_len) {
       top = p;
     }

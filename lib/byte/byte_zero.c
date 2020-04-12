@@ -6,7 +6,7 @@ byte_zero(void* out, size_t len) {
 #if 1
   /* gcc 4.3.1 generates wrong code for this, so I'm switching to
    * simpler code */
-  char* s = out;
+  char* s = (char*)out;
   size_t i;
   for(i = 0; i < len; ++i) s[i] = 0;
 #else

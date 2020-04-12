@@ -9,7 +9,7 @@
 
 static void
 xmlreader_push(xmlreader* r, xmlnode* parent) {
-  xmlreader* old = alloc_zero(sizeof(xmlreader));
+  xmlreader* old = (xmlreader*)alloc_zero(sizeof(xmlreader));
   byte_copy(old, sizeof(xmlreader), r);
 
   r->stack = old;

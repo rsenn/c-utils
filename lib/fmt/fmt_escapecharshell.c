@@ -2,14 +2,7 @@
 #include "../uint32.h"
 #include <sys/types.h>
 
-static void
-fmt_oct3(char* dest, unsigned char w) {
-  dest[2] = (char)((w & 7) + '0');
-  w >>= 3;
-  dest[1] = (char)((w & 7) + '0');
-  w >>= 3;
-  dest[0] = (char)((w & 7) + '0');
-}
+void fmt_oct3(char* dest, unsigned char w);
 
 size_t
 fmt_escapecharshell(char* dest, uint32 ch) {

@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../windoze.h"
 
 #include "../io_internal.h"
@@ -11,7 +12,7 @@ io_canwrite() {
   if(first_writeable == -1)
 #if defined(HAVE_SIGIO)
   {
-    if(alt_firstwrite >= 0 && (e = iarray_get(io_getfds(), alt_firstwrite)) && e->canwrite) {
+    if(alt_firstwrite >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstwrite)) && e->canwrite) {
       debug_printf(("io_canwrite: normal write queue is empty, swapping in alt write queue (starting with %ld)\n",
                     alt_firstwrite));
       first_writeable = alt_firstwrite;
@@ -24,7 +25,7 @@ io_canwrite() {
 #endif
   for(;;) {
     int64 r;
-    e = iarray_get(io_getfds(), first_writeable);
+    e = (io_entry*)iarray_get((iarray*)io_getfds(), first_writeable);
     if(!e)
       break;
     r = first_writeable;

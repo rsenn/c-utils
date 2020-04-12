@@ -55,7 +55,7 @@ typedef struct xmlnodeset {
 
 typedef int(xml_read_callback_fn)(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
-typedef int(xml_predicate_fn)();
+typedef int(xml_pred_t)(xmlnode*,const void*,const void*,const void*);
 /*
 xmlnode* xml_attrnode(const char*, size_t name_len, const char* value, size_t value_len);
 int xml_content_sa(xmlnode*, stralloc* sa);
@@ -65,7 +65,7 @@ size_t xml_escape(const char*, size_t n, stralloc* out);
 xmlnode* xml_find_element_attr(xmlnode*, const char* tag, const char* attr, const char* value);
 xmlnode* xml_find_element(xmlnode*, const char* tag);
 void xml_free(xmlnode*);
-char* xml_get_attribute(xmlnode*, const char* attr);
+Mchar* xml_get_attribute(xmlnode*, const char* attr);
 xmlnode* xml_get_document(xmlnode*);
 */
 #ifdef STRLIST_H
@@ -87,22 +87,22 @@ void xml_delete(xmlnode* node);
 xmlnode* xml_element_attrs(const char* name, const char* arg, ...);
 xmlnode* xml_element(const char* name);
 size_t xml_escape(const char* s, size_t n, stralloc* out);
-xmlnodeset xml_find_all_1(xmlnode* node, int (*pred)(), const void* a1);
-xmlnodeset xml_find_all_2(xmlnode* node, int (*pred)(), const void* a1, const void* a2);
-xmlnodeset xml_find_all_3(xmlnode* node, int (*pred)(), const void* a1, const void* a2, const void* a3);
+xmlnodeset xml_find_all_1(xmlnode* node, xml_pred_t*, const void* a1);
+xmlnodeset xml_find_all_2(xmlnode* node, xml_pred_t*, const void* a1, const void* a2);
+xmlnodeset xml_find_all_3(xmlnode* node, xml_pred_t*, const void* a1, const void* a2, const void* a3);
 xmlnodeset xml_find_all_attrs(xmlnode* node, const char* attrs);
 xmlnode* xml_find_attr(xmlnode* node, const char* attr);
 xmlnode* xml_find_element_attr(xmlnode* node, const char* tag, const char* attr, const char* value);
 xmlnode* xml_find_element(xmlnode* node, const char* tag);
 xmlnode* xml_find_parent_attr(xmlnode* node, const char* attrs);
-xmlnode* xml_find_parent_pred_1(xmlnode* node, int (*pred)(), const void* arg);
-xmlnode* xml_find_parent_pred_2(xmlnode* node, int (*pred)(), const void* a0, const void* a1);
-xmlnode* xml_find_parent_pred_3(xmlnode* node, int (*pred)(), const void* a0, const void* a1, const void* a2);
+xmlnode* xml_find_parent_pred_1(xmlnode* node, xml_pred_t*, const void* arg);
+xmlnode* xml_find_parent_pred_2(xmlnode* node, xml_pred_t*, const void* a0, const void* a1);
+xmlnode* xml_find_parent_pred_3(xmlnode* node, xml_pred_t*, const void* a0, const void* a1, const void* a2);
 xmlnode* xml_find_parent(xmlnode* node, const char* tag);
-xmlnode* xml_find_pred_1(xmlnode* node, int (*pred)(), const void* arg);
-xmlnode* xml_find_pred_2(xmlnode* node, int (*pred)(), const void* a0, const void* a1);
-xmlnode* xml_find_pred_3(xmlnode* node, int (*pred)(), const void* a0, const void* a1, const void* a2);
-xmlnode* xml_find_pred_n(xmlnode* node, int (*pred)(xmlnode*, const void*), int n, ...);
+xmlnode* xml_find_pred_1(xmlnode* node, xml_pred_t*, const void* arg);
+xmlnode* xml_find_pred_2(xmlnode* node, xml_pred_t*, const void* a0, const void* a1);
+xmlnode* xml_find_pred_3(xmlnode* node, xml_pred_t*, const void* a0, const void* a1, const void* a2);
+xmlnode* xml_find_pred_n(xmlnode* node, xml_pred_t*, int n, ...);
 xmlnode* xml_find_with_attrs(xmlnode* node, const char* attrs);
 void xml_free(xmlnode* node);
 double xml_get_attribute_double(xmlnode* node, const char* attr);
@@ -116,9 +116,9 @@ void xml_insert(xmlnode** nptr, xmlnode* node);
 xmlnode* xml_newnode(xmlnodeid type);
 int xml_path(const xmlnode* node, stralloc* out);
 int xml_path_relative(const xmlnode* node, stralloc* out);
-xmlnodeset xml_pfind_all(xmlnode* node, int (*pred)(), const void* ptr[4]);
-xmlnode* xml_pfind_parent(xmlnode* node, int (*pred)(), const void* ptr[]);
-xmlnode* xml_pfind_pred(xmlnode* node, int (*pred)(), const void* ptr[]);
+xmlnodeset xml_pfind_all(xmlnode* node, xml_pred_t*, const void* ptr[4]);
+xmlnode* xml_pfind_parent(xmlnode* node, xml_pred_t*, const void* ptr[]);
+xmlnode* xml_pfind_pred(xmlnode* node, xml_pred_t*, const void* ptr[]);
 void xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, const char* quot);
 void xml_print_nodeset(const xmlnodeset* ns, buffer* b);
 void xml_print(xmlnode* node, buffer* b);
@@ -130,7 +130,7 @@ xmlnode* xml_root_element(xmlnode* node);
 void xml_set_attribute_double(xmlnode* node, const char* a, double d, int prec);
 int xml_set_attributes(xmlnode* node, ...);
 void xml_set_attribute(xmlnode* node, const char* a, const char* v);
-int xml_tag_pred(xmlnode* node, const void* arg);
+int xml_tag_pred(xmlnode* node, const void*, const void*, const void*);
 xmlnode* xml_textnodeb(const char* text, size_t len);
 xmlnode* xml_textnode(const char* s);
 void xml_walk(xmlnode* root, int (*func)());
@@ -204,19 +204,20 @@ xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) {
 
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48
+typedef int (xml_pred_t)(xmlnode*, const void*,const void*,const void*);
 
-xmlnode* xml_find_pred(xmlnode*, int (*pred)(xmlnode*, const void*), ...);
-xmlnodeset xml_find_all(xmlnode*, int (*pred)(xmlnode*, const void*), ...);
-xmlnodeset xml_find_all_1(xmlnode*, int (*pred)(), const void*);
-xmlnodeset xml_find_all_2(xmlnode*, int (*pred)(), const void*, const void*);
-xmlnodeset xml_find_all_3(xmlnode*, int (*pred)(), const void*, const void*, const void*);
+xmlnode* xml_find_pred(xmlnode*, xml_pred_t*, ...);
+xmlnodeset xml_find_all(xmlnode*, xml_pred_t*, ...);
+xmlnodeset xml_find_all_1(xmlnode*, xml_pred_t*, const void*);
+xmlnodeset xml_find_all_2(xmlnode*, xml_pred_t*, const void*, const void*);
+xmlnodeset xml_find_all_3(xmlnode*, xml_pred_t*, const void*, const void*, const void*);
 
-xmlnode* xml_find_pred_1(xmlnode*, int (*pred)(), const void* arg);
-xmlnode* xml_find_pred_2(xmlnode*, int (*pred)(), const void* a0, const void* a1);
-xmlnode* xml_find_pred_3(xmlnode*, int (*pred)(), const void* a0, const void* a1, const void* a2);
+xmlnode* xml_find_pred_1(xmlnode*, xml_pred_t*, const void* arg);
+xmlnode* xml_find_pred_2(xmlnode*, xml_pred_t*, const void* a0, const void* a1);
+xmlnode* xml_find_pred_3(xmlnode*, xml_pred_t*, const void* a0, const void* a1, const void* a2);
 
 xmlnode* xml_find_element(xmlnode*, const char* tag);
-xmlnode* xml_find_pred_n(xmlnode*, int (*pred)(xmlnode*, const void*), int n, ...);
+xmlnode* xml_find_pred_n(xmlnode*, xml_pred_t*, int n, ...);
 
 int xml_has_attribute_n(xmlnode*, const char* b, size_t n);
 int xml_has_attribute(xmlnode*, const char* attr);
@@ -229,9 +230,9 @@ xmlnode* xml_find_with_attrs(xmlnode*, const char* attrs);
 xmlnodeset xml_find_all_attrs(xmlnode*, const char* attrs);
 
 xmlnode* xml_find_parent_attr(xmlnode*, const char* attrs);
-xmlnode* xml_find_parent_pred_1(xmlnode*, int (*pred)(), const void* arg);
-xmlnode* xml_find_parent_pred_2(xmlnode*, int (*pred)(), const void* a0, const void* a1);
-xmlnode* xml_find_parent_pred_3(xmlnode*, int (*pred)(), const void* a0, const void* a1, const void* a2);
+xmlnode* xml_find_parent_pred_1(xmlnode*, xml_pred_t*, const void* arg);
+xmlnode* xml_find_parent_pred_2(xmlnode*, xml_pred_t*, const void* a0, const void* a1);
+xmlnode* xml_find_parent_pred_3(xmlnode*, xml_pred_t*, const void* a0, const void* a1, const void* a2);
 xmlnode* xml_find_parent(xmlnode*, const char* tag);
 
 void xml_walk(xmlnode*, int (*)());

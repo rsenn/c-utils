@@ -57,7 +57,7 @@ uint64 uint64_read_big(const char* in);
 
 inline static uint64
 uint64_get(const void* ptr) {
-  const char* in = ptr;
+  const char* in = (const char*)ptr;
   return *(uint64*)in;
 }
 

@@ -27,7 +27,7 @@ strlist_sort(strlist* sl, cmp_fn_t* cmp_fn) {
   if(cmp_fn == NULL)
     cmp_fn = (cmp_fn_t*)&sort_cmp;
 
-  ptrs = calloc(sizeof(char*), (strlist_count(sl) + 1));
+  ptrs = (char**)alloc_zero(sizeof(char*) * (strlist_count(sl) + 1));
   tmp = sl->sa.s;
   end = &sl->sa.s[sl->sa.len];
 

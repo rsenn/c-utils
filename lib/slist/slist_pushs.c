@@ -1,5 +1,6 @@
 #include "../slist.h"
 #include "../str.h"
+#include "../alloc.h"
 
 #include <stdlib.h>
 
@@ -8,7 +9,7 @@ slist_pushs(slink** list, const char* s) {
   slink** ptr = list;
   slink* n;
 
-  if((n = malloc(sizeof(slink*) + sizeof(char*))) == NULL)
+  if((n = (slink*)alloc(sizeof(slink*) + sizeof(char*))) == NULL)
     return 0;
 
   while(*ptr) ptr = &(*ptr)->next;

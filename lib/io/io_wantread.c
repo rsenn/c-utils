@@ -1,3 +1,4 @@
+#include "../io.h"
 #define USE_WS2_32 1
 /*#if defined(_WIN32) || defined(_WIN64)
 #define _CYGWIN_IF_H_
@@ -112,7 +113,7 @@ io_wantread_really(fd_t d, io_entry* e) {
 
 void
 io_wantread(fd_t d) {
-  io_entry* e = iarray_get(io_getfds(), d);
+  io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   if(!e || e->wantread)
     return;
   if(e->canread) {

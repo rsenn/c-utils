@@ -27,10 +27,10 @@ ihex_load_record(ihex_record** pihr, const char* in, size_t n) {
   if((i = scan_xchar(&x[(len * 2)], &chk)) != 2)
     return 0;
 
-  if((*pihr = alloc(sizeof(ihex_record) + len))) {
+  if((*pihr = (ihex_record*)alloc(sizeof(ihex_record) + len))) {
     size_t j;
     ihex_record* r = *pihr;
-    uint8* data = (void*)&r->data;
+    uint8* data = (uint8*)&r->data;
 
     for(j = 0; j < len; j++) {
       if((i = scan_xchar(x, &data[j])) != 2) {

@@ -1,3 +1,4 @@
+#include "../io.h"
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE
@@ -15,7 +16,7 @@ io_canread() {
   if(first_readable == -1)
 #if defined(HAVE_SIGIO)
   {
-    if(alt_firstread >= 0 && (e = iarray_get(io_getfds(), alt_firstread)) && e->canread) {
+    if(alt_firstread >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstread)) && e->canread) {
       debug_printf(
           ("io_canread: normal read queue is empty, swapping in alt read queue (starting with %ld)\n", alt_firstread));
       first_readable = alt_firstread;
@@ -28,7 +29,7 @@ io_canread() {
 #endif
   for(;;) {
     int64 r;
-    e = iarray_get(io_getfds(), first_readable);
+    e = (io_entry*)iarray_get((iarray*)io_getfds(), first_readable);
     if(!e)
       break;
     r = first_readable;

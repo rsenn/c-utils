@@ -17,7 +17,7 @@ lookup(size_t ofs, const char* t) {
     unsigned char ch = entities.tab[ofs] & 0xff;
     if(ch == (unsigned char)*t || (!ch && *t == ';')) {
       if(!ch || *t == ';')
-        return entities.data + (entities.tab[ofs] >> 8);
+        return (const char*)entities.data + (entities.tab[ofs] >> 8);
       else
         return lookup(entities.tab[ofs] >> 8, t + 1);
     } else

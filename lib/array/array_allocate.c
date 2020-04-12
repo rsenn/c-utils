@@ -73,7 +73,7 @@ array_allocate(array* x, uint64 membersize, int64 pos) {
       if(sizeof(size_t) != sizeof(int64) && __unlikely((size_t)(wanted) != wanted))
         return 0;
       {
-        char* tmp = realloc(x->p, wanted);
+        char* tmp = (char*)realloc((void*)x->p, wanted);
         if(__unlikely(!tmp))
           return 0;
         x->p = tmp;

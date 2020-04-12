@@ -2,7 +2,7 @@
 
 void*
 omf_record_next(omf_record* rec, void* ptr) {
-  unsigned char* p = ptr;
+  unsigned char* p = (unsigned char*)ptr;
 
   switch(rec->type) {
     /* OMF_THEADR */
@@ -33,7 +33,7 @@ omf_record_next(omf_record* rec, void* ptr) {
       /* skip name */
       p += p[0] + 1;
 
-      p = omf_read_index(p, &type_index);
+      p = (unsigned char*)omf_read_index(p, &type_index);
 
       /* checksum?  */
       if(p[0] == 0 || p + 1 == omf_record_end(rec))
@@ -53,7 +53,7 @@ omf_record_next(omf_record* rec, void* ptr) {
       /* skip public offset */
       p += (rec->type & 1) ? 4 : 2;
 
-      p = omf_read_index(p, &type_index);
+      p = (unsigned char*)omf_read_index(p, &type_index);
 
       /* skip checksum */
       p += 1;
