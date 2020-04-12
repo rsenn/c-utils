@@ -88,7 +88,7 @@ static strlist exclude_masks;
 static char opt_separator = DIRSEP_C;
 
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0;
-static unsigned long opt_minsize = 0;
+static int64 opt_minsize = -1;
 static long opt_depth = -1;
 static uint32 opt_types = (uint32)(int32)-1;
 static const char* opt_relative_to = 0;
@@ -738,7 +738,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     if(match)
       continue;
 
-    if(!is_dir && (/*opt_minsize != -1 && */ size < opt_minsize))
+    if(!is_dir && (opt_minsize != -1 && size < opt_minsize))
       show = 0;
 
     if(dtype && (dtype & opt_types) == 0)

@@ -14,12 +14,12 @@ stralloc_ready_tuned(stralloc* sa, size_t n, size_t base, size_t a, size_t b) {
   if(t < n)
     return (errno = ERANGE, 0);
   if(!sa->s) {
-    sa->s = alloc(t);
+    sa->s = malloc(t);
     if(!sa->s)
       return 0;
     sa->a = t;
   } else if(n > sa->a) {
-    if(!(sa->s = alloc_re(sa->s, t)))
+    if(!(sa->s = realloc(sa->s, t)))
       return 0;
     sa->a = t;
   }
