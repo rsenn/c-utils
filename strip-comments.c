@@ -18,8 +18,11 @@
 
 static char quote[4] = {'"', 0};
 static int one_line, indent = 2, compact;
-static stralloc indent_str;
+static stralloc indent_str,queue;
+static buffer output;
 
+size_t
+consume_output(stralloc* sa, buffer* out);
 void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
@@ -44,12 +47,16 @@ usage(char* av0) {
   buffer_flush(buffer_1);
 }
 
-size_t
-put_line(buffer* b, const char* x, ssize_t len) {
-  size_t n = len;
-  while(n >= 1 && (x[n - 1] == '\n' || x[n - 1] == '\r'))
-      n--;
+void
+put_line(stralloc* sa, const char* x, ssize_t len) {
+  if(len > 1) {
+    if((x[len - 1] == '\n' || x[len - 1] == '\r'))
+
+      len--;
+    while(len >= 1 && isspace(x[len - 1]))
+      len--;
   }
+
   if(len > 0) {
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "put_line(");
@@ -61,16 +68,57 @@ put_line(buffer* b, const char* x, ssize_t len) {
     buffer_puts(buffer_2, ");");
     buffer_putnlflush(buffer_2);
 #endif
-    while(n < len && x[n] != '\n')
-      n++;
-    buffer_put(b, x, n);
-}
-  return n;
+    stralloc_catb(sa, x, len);
+  }
+    stralloc_catb(sa, "\n", 1);
+
+    if(len > 0) {
+consume_output(sa, &output);
+    }
 }
 
+size_t
+eat_line(const char* s, size_t n, buffer* out) {
+  size_t p, q;
+  const char* x = s;
+  p = scan_noncharsetnskip(x, "\n\r", n);
+  if(p > 0) {
+    q = scan_charsetnskip(&x[p], "\n\r", n - p);
+    buffer_put(out, x, p + q);
+    x += p + q;
+    n -= p + q;
+  }
+  return x - s;
+}
 
-int
-put_lines_sa(buffer* b, stralloc* sa) {
+size_t
+consume_output(stralloc* sa, buffer* out) {
+  size_t i = 0, p = 0, n = sa->len;
+  while(p < n) {
+    size_t r = eat_line(&sa->s[p], n - p, out);
+    if(r == 0)
+      break;
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "#");
+    buffer_putlong(buffer_2, i++);
+    buffer_puts(buffer_2, " eat_line() = ");
+    buffer_putlong(buffer_2, r);
+    buffer_putnlflush(buffer_2);
+#endif
+    p += r;
+  }
+
+  if(p > 0 && p < n) {
+    stralloc_remove(sa, 0, p);
+  } else {
+    stralloc_zero(sa);
+  }
+  #ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "remainging ");
+    buffer_putlong(buffer_2, n - p);
+    buffer_putnlflush(buffer_2);
+#endif
+  return p;
 }
 
 int
@@ -112,14 +160,17 @@ strip_comments(charbuf* in, buffer* out) {
           is_empty = line.len == 0 || p == line.len || (line.s[line.len - 1] == '\n' && p == line.len - 1);
            if(is_empty)
                continue;*/
-      put_line(out, line.s, line.len);
+      put_line(&queue, line.s, line.len);
       stralloc_zero(&line);
       continue;
     }
     stralloc_catb(&line, buf, 1);
   }
 end:
-  put_line(out, line.s, line.len);
+ put_line(&queue, line.s, line.len);
+ if(queue.len > 0)
+  consume_output(&queue, out);
+
   buffer_flush(out);
   stralloc_free(&line);
   charbuf_close(in);
@@ -133,21 +184,20 @@ main(int argc, char* argv[]) {
   const char *in_path = 0, *out_path = 0;
   int index = 0;
   char buf[16384];
-  buffer output, temp;
-  int in_place = 0, no_empty_lines = 0;
+  buffer  temp;
+  int in_place = 0;
   charbuf input;
   stralloc data;
   size_t n;
   const char* x;
   const char* tmpl = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-  {"in-place", 0, NULL, 'i'},{"no-empty-lines", 0, NULL, 'e'}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hie", opts, &index);
+    c = getopt_long(argc, argv, "hi", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -155,7 +205,6 @@ main(int argc, char* argv[]) {
 
     switch(c) {
       case 'i': in_place = 1; break;
-      case 'e': no_empty_lines = 1; break;
       case 'h': usage(argv[0]); return 0;
 
       default: usage(argv[0]); return 1;
@@ -201,10 +250,9 @@ again:
     buffer_putnlflush(buffer_1);
   }
   if(out_path) {
-
     buffer_puts(buffer_1, "out_path: ");
-  buffer_puts(buffer_1, out_path);
-  buffer_putnlflush(buffer_1);
+    buffer_puts(buffer_1, out_path);
+    buffer_putnlflush(buffer_1);
   }
 
   if((x = mmap_read(out_path, &n)) && n > 1) {
