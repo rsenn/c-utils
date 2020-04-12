@@ -1,4 +1,4 @@
-#define NO_UINT16_MACROS 1
+//#define NO_UINT16_MACROS 1
 #include "../uint16.h"
 #include "../pe.h"
 

@@ -1687,7 +1687,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)piccfg$(M64_)$(EXEEXT): LIBS += -lz
-$(BUILDDIR)piccfg$(M64_)$(EXEEXT): $(BUILDDIR)piccfg.o $(call add-library,ihex dir path strlist map stralloc buffer alloc mmap scan fmt open str byte)
+$(BUILDDIR)piccfg$(M64_)$(EXEEXT): $(BUILDDIR)piccfg.o $(call add-library,ihex dir path strlist map stralloc buffer alloc mmap scan fmt open str byte uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
