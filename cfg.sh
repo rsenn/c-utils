@@ -200,7 +200,7 @@ cfg-tcc() {
 
 cfg-musl() {
  (: ${build=$(${CC:-gcc} -dumpmachine | sed 's|-pc-|-|g')}
-  : ${host=${build/-gnu/-musl}}
+  : ${host=${build%-*}-musl}
 
  : ${prefix=/usr}
  : ${includedir=/usr/include/$host}
