@@ -44,12 +44,11 @@ usage(char* av0) {
   buffer_flush(buffer_1);
 }
 
-int
+size_t
 put_line(buffer* b, const char* x, ssize_t len) {
-  if(len > 1) {
-    if((x[len - 1] == '\n' || x[len - 1] == '\r'))
-
-      len--;
+  size_t n = len;
+  while(n >= 1 && (x[n - 1] == '\n' || x[n - 1] == '\r'))
+      n--;
   }
   if(len > 0) {
 #ifdef DEBUG_OUTPUT_
@@ -62,9 +61,16 @@ put_line(buffer* b, const char* x, ssize_t len) {
     buffer_puts(buffer_2, ");");
     buffer_putnlflush(buffer_2);
 #endif
-    buffer_put(b, x, len);
-  }
-  buffer_puts(b, "\n");
+    while(n < len && x[n] != '\n')
+      n++;
+    buffer_put(b, x, n);
+}
+  return n;
+}
+
+
+int
+put_lines_sa(buffer* b, stralloc* sa) {
 }
 
 int
@@ -128,19 +134,20 @@ main(int argc, char* argv[]) {
   int index = 0;
   char buf[16384];
   buffer output, temp;
-  int in_place = 0;
+  int in_place = 0, no_empty_lines = 0;
   charbuf input;
   stralloc data;
   size_t n;
   const char* x;
   const char* tmpl = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  {"in-place", 0, NULL, 'i'},{"no-empty-lines", 0, NULL, 'e'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hi", opts, &index);
+    c = getopt_long(argc, argv, "hie", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -148,6 +155,7 @@ main(int argc, char* argv[]) {
 
     switch(c) {
       case 'i': in_place = 1; break;
+      case 'e': no_empty_lines = 1; break;
       case 'h': usage(argv[0]); return 0;
 
       default: usage(argv[0]); return 1;
@@ -192,9 +200,12 @@ again:
     buffer_puts(buffer_1, tmpl);
     buffer_putnlflush(buffer_1);
   }
-  buffer_puts(buffer_1, "out_path: ");
+  if(out_path) {
+
+    buffer_puts(buffer_1, "out_path: ");
   buffer_puts(buffer_1, out_path);
   buffer_putnlflush(buffer_1);
+  }
 
   if((x = mmap_read(out_path, &n)) && n > 1) {
 

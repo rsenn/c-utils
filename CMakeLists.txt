@@ -2,7 +2,7 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 cmake_minimum_required(VERSION 2.8)
 set(CMAKE_WARN_VS8 OFF)
 
-project(dirlist C)
+project(c-utils C)
 
 option(USE_LZMA "lzma compression" ON)
 option(USE_BZIP "bzip2 compression" ON)
@@ -487,7 +487,7 @@ invoption(BUILD_SSL "build 3rdparty openssl" OPENSSL_FOUND)
 
 if(BUILD_ZLIB)
   message("Building zlib from 3rdparty/zlib")
-  set(ZLIB_SOURCES 
+  set(ZLIB_SOURCES
     3rdparty/zlib/adler32.c
     3rdparty/zlib/compress.c
     3rdparty/zlib/crc32.c
@@ -543,7 +543,7 @@ if(BUILD_LZMA)
   #file(WRITE "${CMAKE_BINARY_DIR}/lzma-config.h.cmake" "\n/*\n * Ensure we have C99-style int64_t, etc, all defined.\n */\n\n/* First, we need to know if the system has already defined them. */\n#cmakedefine HAVE_INT16_T\n#cmakedefine HAVE_INT32_T\n#cmakedefine HAVE_INT64_T\n#cmakedefine HAVE_INTMAX_T\n\n#cmakedefine HAVE_UINT8_T\n#cmakedefine HAVE_UINT16_T\n#cmakedefine HAVE_UINT32_T\n#cmakedefine HAVE_UINT64_T\n#cmakedefine HAVE_UINTMAX_T\n\n/* We might have the types we want under other spellings. */\n#cmakedefine HAVE___INT64\n#cmakedefine HAVE_U_INT64_T\n#cmakedefine HAVE_UNSIGNED___INT64\n\n/* The sizes of various standard integer types. */\n@SIZE_OF_SHORT_CODE@\n@SIZE_OF_INT_CODE@\n@SIZE_OF_LONG_CODE@\n@SIZE_OF_LONG_LONG_CODE@\n@SIZE_OF_UNSIGNED_SHORT_CODE@\n@SIZE_OF_UNSIGNED_CODE@\n@SIZE_OF_UNSIGNED_LONG_CODE@\n@SIZE_OF_UNSIGNED_LONG_LONG_CODE@\n@SIZE_OF_SIZE_T_CODE@\n\n/*\n * If we lack int64_t, define it to the first of __int64, int, long, and long long\n * that exists and is the right size.\n */\n#if !defined(HAVE_INT64_T) && defined(HAVE___INT64)\ntypedef __int64 int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_INT == 8\ntypedef int int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_LONG == 8\ntypedef long int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_LONG_LONG == 8\ntypedef long long int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T)\n#error No 64-bit integer type was found.\n#endif\n\n/*\n * Similarly for int32_t\n */\n#if !defined(HAVE_INT32_T) && SIZE_OF_INT == 4\ntypedef int int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if !defined(HAVE_INT32_T) && SIZE_OF_LONG == 4\ntypedef long int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if !defined(HAVE_INT32_T)\n#error No 32-bit integer type was found.\n#endif\n\n/*\n * Similarly for int16_t\n */\n#if !defined(HAVE_INT16_T) && SIZE_OF_INT == 2\ntypedef int int16_t;\n#define HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T) && SIZE_OF_SHORT == 2\ntypedef short int16_t;\n#define HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T)\n#error No 16-bit integer type was found.\n#endif\n\n/*\n * Similarly for uint64_t\n */\n#if !defined(HAVE_UINT64_T) && defined(HAVE_UNSIGNED___INT64)\ntypedef unsigned __int64 uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED == 8\ntypedef unsigned uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED_LONG == 8\ntypedef unsigned long uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED_LONG_LONG == 8\ntypedef unsigned long long uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T)\n#error No 64-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint32_t\n */\n#if !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED == 4\ntypedef unsigned uint32_t;\n#define HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED_LONG == 4\ntypedef unsigned long uint32_t;\n#define HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T)\n#error No 32-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint16_t\n */\n#if !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED == 2\ntypedef unsigned uint16_t;\n#define HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED_SHORT == 2\ntypedef unsigned short uint16_t;\n#define HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 16-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint8_t\n */\n#if !defined(HAVE_UINT8_T)\ntypedef unsigned char uint8_t;\n#define HAVE_UINT8_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 8-bit unsigned integer type was found.\n#endif\n\n/* Define intmax_t and uintmax_t if they are not already defined. */\n#if !defined(HAVE_INTMAX_T)\ntypedef int64_t intmax_t;\n#define INTMAX_MIN INT64_MIN\n#define INTMAX_MAX INT64_MAX\n#endif\n\n#if !defined(HAVE_UINTMAX_T)\ntypedef uint64_t uintmax_t;\n#endif\n\n\n#cmakedefine uintptr_t @uintptr_t@\n\n\n#cmakedefine HAVE_RESTRICT\n#cmakedefine HAVE___RESTRICT\n\n#cmakedefine HAVE_INLINE\n#cmakedefine HAVE___INLINE\n\n#ifndef HAVE_RESTRICT\n#  ifdef HAVE___RESTRICT\n#    define LZMA_RESTRICT __restrict\n#  else\n#    define LZMA_RESTRICT\n#  endif\n#else\n#  define LZMA_RESTRICT restrict\n#endif /* HAVE_RESTRICT */\n\n#if defined(HAVE_INLINE)\n# define LZMA_INLINE inline\n#else\n# if defined(HAVE___INLINE)\n#  define LZMA_INLINE __inline\n# else\n#  define LZMA_INLINE\n# endif\n#endif\n\n#cmakedefine WORDS_BIGENDIAN 1\n\n#cmakedefine HAVE_BYTESWAP_H 1\n#cmakedefine HAVE_BSWAP_16 1\n#cmakedefine HAVE_BSWAP_32 1\n#cmakedefine HAVE_BSWAP_64 1\n\n\n#define HAVE_CHECK_CRC32 1\n#define HAVE_CHECK_CRC64 1\n#define HAVE_CHECK_SHA256 1\n\n#define HAVE_DECODER_ARM 1\n#define HAVE_DECODER_ARMTHUMB 1\n#define HAVE_DECODER_DELTA 1\n#define HAVE_DECODER_IA64 1\n#define HAVE_DECODER_LZMA1 1\n#define HAVE_DECODER_LZMA2 1\n#define HAVE_DECODER_POWERPC 1\n#define HAVE_DECODER_SPARC 1\n#define HAVE_DECODER_X86 1\n\n#define HAVE_ENCODER_ARM 1\n#define HAVE_ENCODER_ARMTHUMB 1\n#define HAVE_ENCODER_DELTA 1\n#define HAVE_ENCODER_IA64 1\n#define HAVE_ENCODER_LZMA1 1\n#define HAVE_ENCODER_LZMA2 1\n#define HAVE_ENCODER_POWERPC 1\n#define HAVE_ENCODER_SPARC 1\n#define HAVE_ENCODER_X86 1\n\n#define HAVE_MF_BT2 1\n#define HAVE_MF_BT3 1\n#define HAVE_MF_BT4 1\n#define HAVE_MF_HC3 1\n#define HAVE_MF_HC4 1\n\n/* Define to 1 if you have the <inttypes.h> header file. */\n#cmakedefine HAVE_INTTYPES_H 1\n\n/* Define to 1 if you have the <limits.h> header file. */\n#cmakedefine HAVE_LIMITS_H 1\n\n/* Define to 1 if you have the <memory.h> header file. */\n#cmakedefine HAVE_MEMORY_H 1\n\n/* Define to 1 if stdbool.h conforms to C99. */\n#cmakedefine HAVE_STDBOOL_H 1\n\n/* Define to 1 if you have the <stdint.h> header file. */\n#cmakedefine HAVE_STDINT_H 1\n\n/* Define to 1 if you have the <strings.h> header file. */\n#cmakedefine HAVE_STRINGS_H 1\n\n/* Define to 1 if you have the <string.h> header file. */\n#cmakedefine HAVE_STRING_H 1\n\n/* Define to 1 if you have the <sys/byteorder.h> header file. */\n#cmakedefine HAVE_SYS_BYTEORDER_H 1\n\n/* Define to 1 if you have the <sys/endian.h> header file. */\n#cmakedefine HAVE_SYS_ENDIAN_H 1\n\n/* Define to 1 or 0, depending whether the compiler supports simple visibility\n   declarations. */\n#cmakedefine HAVE_VISIBILITY 1\n\n/* Define to 1 if the system has the type `_Bool'. */\n#cmakedefine HAVE__BOOL 1\n\n/* Define to 1 if the system supports fast unaligned access to 16-bit and\n   32-bit integers. */\n#if defined(__i386) || defined(__i386__) || defined(_M_IX86) \\n || defined(__x86_64) || defined(__x86_64__) || defined(_M_X64) \\n || defined(__amd64) || defined(__amd64__) \\n || defined(__powerpc) || defined(__powerpc__) \\n || defined(__ppc) || defined(__ppc__) || defined(__POWERPC__)\n# define TUKLIB_FAST_UNALIGNED_ACCESS 1\n#endif")
 
   configure_file("${CMAKE_SOURCE_DIR}/3rdparty/lzma-config.h.cmake" "${CMAKE_BINARY_DIR}/3rdparty/xz/config.h")
- 
+
   file(GLOB LIBLZMA_SOURCES
     #3rdparty/xz/debug/*.c
     #3rdparty/xz/lib/*.c
@@ -565,14 +565,14 @@ if(BUILD_LZMA)
   add_library(lzma ${LIBLZMA_SOURCES})
   set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
   set(LIBLZMA_INCLUDE_DIRS
-    ${LZMA_SOURCE_DIR}/src/common 
+    ${LZMA_SOURCE_DIR}/src/common
     ${LZMA_SOURCE_DIR}/src/liblzma/lzma
     ${LZMA_SOURCE_DIR}/src/liblzma/lz
     ${LZMA_SOURCE_DIR}/src/liblzma/check
     ${LZMA_SOURCE_DIR}/src/liblzma/simple
     ${LZMA_SOURCE_DIR}/src/liblzma/delta
     ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder
-    ${LZMA_SOURCE_DIR}/src/liblzma/common 
+    ${LZMA_SOURCE_DIR}/src/liblzma/common
     ${LZMA_SOURCE_DIR}/src/liblzma/api
     ${CMAKE_BINARY_DIR}/3rdparty/xz
   )
@@ -606,9 +606,9 @@ if(BUILD_SSL)
 
 
 #    file(WRITE "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch" "--- 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.corig     2020-02-13 09:37:58.389826334 +0100\n+++ 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.c    2020-02-13 09:33:12.801691620 +0100\n@@ -104,7 +104,7 @@\n #elif defined(__mips__)\n static const u32 fcsr = 1;\n #else\n-#error \"unrecognized platform\"\n+#warning \"unrecognized platform\"\n #endif\n \n int poly1305_init(void *ctx, const unsigned char key[16])")
- 
+
    exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS -p0 -i "${CMAKE_BINARY_DIR}/openssl-pthread.patch")
-  endif() 
+  endif()
 
   add_subdirectory(3rdparty/openssl)
 
