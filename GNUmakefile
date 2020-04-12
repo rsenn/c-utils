@@ -1404,7 +1404,7 @@ ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
-$(BUILDDIR)impgen$(M64_)$(EXEEXT): $(BUILDDIR)impgen.o $(call add-library, pe mmap buffer alloc byte fmt str open uint32)
+$(BUILDDIR)impgen$(M64_)$(EXEEXT): $(BUILDDIR)impgen.o $(call add-library, pe mmap buffer alloc byte fmt str open uint32 uint16)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1412,7 +1412,7 @@ endif
 
 $(BUILDDIR)ntldd$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS) $(ADVAPI32_LIB)
 $(BUILDDIR)ntldd$(M64_)$(EXEEXT): CPPFLAGS += -DNTLDD_VERSION_MAJOR=0 -DNTLDD_VERSION_MINOR=2
-$(BUILDDIR)ntldd$(M64_)$(EXEEXT): $(BUILDDIR)ntldd.o $(BUILDDIR)getopt.o $(call add-library, path dir pe mmap strlist stralloc buffer alloc fmt str byte open uint32)
+$(BUILDDIR)ntldd$(M64_)$(EXEEXT): $(BUILDDIR)ntldd.o $(BUILDDIR)getopt.o $(call add-library, path dir pe uint16 mmap strlist stralloc buffer alloc fmt str byte open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1535,28 +1535,28 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)binfmttest$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)binfmttest$(M64_)$(EXEEXT): $(BUILDDIR)binfmttest.o $(call add-library, binfmt pe array safemult strlist stralloc errmsg buffer alloc mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)binfmttest$(M64_)$(EXEEXT): $(BUILDDIR)binfmttest.o $(call add-library, binfmt pe uint16 array safemult strlist stralloc errmsg buffer alloc mmap open dir str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)elf64list$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)elf64list$(M64_)$(EXEEXT): $(BUILDDIR)elf64list.o $(call add-library, binfmt pe array safemult strlist stralloc errmsg buffer alloc mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)elf64list$(M64_)$(EXEEXT): $(BUILDDIR)elf64list.o $(call add-library, binfmt pe uint16 array safemult strlist stralloc errmsg buffer alloc mmap open dir str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)macho32list$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)macho32list$(M64_)$(EXEEXT): $(BUILDDIR)macho32list.o $(call add-library, binfmt pe array safemult strlist stralloc errmsg buffer alloc mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)macho32list$(M64_)$(EXEEXT): $(BUILDDIR)macho32list.o $(call add-library, binfmt pe uint16 array safemult strlist stralloc errmsg buffer alloc mmap open dir str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
 $(BUILDDIR)pelist$(M64_)$(EXEEXT): LIBS += $(LIBBZ2)
-$(BUILDDIR)pelist$(M64_)$(EXEEXT): $(BUILDDIR)pelist.o $(BUILDDIR)getopt.o $(call add-library, binfmt array safemult strlist stralloc errmsg buffer alloc pe mmap open dir str byte fmt uint64 uint32)
+$(BUILDDIR)pelist$(M64_)$(EXEEXT): $(BUILDDIR)pelist.o $(BUILDDIR)getopt.o $(call add-library, binfmt array safemult strlist stralloc errmsg buffer alloc pe uint16 mmap open dir str byte fmt uint64 uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

@@ -15,7 +15,7 @@ stralloc_reverse_blocks(stralloc* sa, size_t size) {
 #elif defined(HAVE_ALLOCA)
   char* tmp = alloca(size);
 #else
-  char* tmp = malloc(size);
+  char* tmp = alloc(size);
 #endif
   for(; i < n; i++) {
     byte_copy(tmp, size, sa->s + i * size);
