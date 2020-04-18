@@ -18,11 +18,10 @@
 
 static char quote[4] = {'"', 0};
 static int one_line, indent = 2, compact;
-static stralloc indent_str,queue;
+static stralloc indent_str, queue;
 static buffer output;
 
-size_t
-consume_output(stralloc* sa, buffer* out);
+size_t consume_output(stralloc* sa, buffer* out);
 void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
@@ -53,8 +52,7 @@ put_line(stralloc* sa, const char* x, ssize_t len) {
     if((x[len - 1] == '\n' || x[len - 1] == '\r'))
 
       len--;
-    while(len >= 1 && isspace(x[len - 1]))
-      len--;
+    while(len >= 1 && isspace(x[len - 1])) len--;
   }
 
   if(len > 0) {
@@ -70,55 +68,63 @@ put_line(stralloc* sa, const char* x, ssize_t len) {
 #endif
     stralloc_catb(sa, x, len);
   }
-    stralloc_catb(sa, "\n", 1);
+  stralloc_catb(sa, "\n", 1);
 
-    if(len > 0) {
-consume_output(sa, &output);
-    }
+  if(len > 0) {
+    consume_output(sa, &output);
+  }
 }
 
 size_t
-eat_line(const char* s, size_t n, buffer* out) {
+eat_line(const char** s, size_t n, buffer* out) {
   size_t p, q;
-  const char* x = s;
+  const char* x = *s;
   p = scan_noncharsetnskip(x, "\n\r", n);
-  if(p > 0) {
+  if(p >= 0) {
     q = scan_charsetnskip(&x[p], "\n\r", n - p);
-    buffer_put(out, x, p + q);
+    if(p == 0 && q == n)
+      return p;
+    buffer_put(out, x, p + (q > 2 ? 2 : q));
     x += p + q;
     n -= p + q;
   }
-  return x - s;
+  *s = x;
+  return p;
 }
 
 size_t
 consume_output(stralloc* sa, buffer* out) {
-  size_t i = 0, p = 0, n = sa->len;
-  while(p < n) {
-    size_t r = eat_line(&sa->s[p], n - p, out);
-    if(r == 0)
-      break;
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "#");
-    buffer_putlong(buffer_2, i++);
-    buffer_puts(buffer_2, " eat_line() = ");
+  size_t prevlen = -1;
+  const char* s = sa->s;
+  const char* e = s + sa->len;
+
+  while(s < e) {
+    size_t r = eat_line(&s, e - s, out);
+    if(r == 0) {
+      if(prevlen)
+        break;
+      //      buffer_puts(out, "\n");
+      //  break;
+    }
+#ifdef DEBUG_OUTPUT_
+    buffer_puts(buffer_2, "eat_line() = ");
     buffer_putlong(buffer_2, r);
     buffer_putnlflush(buffer_2);
 #endif
-    p += r;
+    prevlen = r;
   }
 
-  if(p > 0 && p < n) {
-    stralloc_remove(sa, 0, p);
+  if(s > sa->s && s < e) {
+    stralloc_remove(sa, 0, s - sa->s);
   } else {
     stralloc_zero(sa);
   }
-  #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "remainging ");
-    buffer_putlong(buffer_2, n - p);
-    buffer_putnlflush(buffer_2);
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "remaining ");
+  buffer_putlong(buffer_2, e - s);
+  buffer_putnlflush(buffer_2);
 #endif
-  return p;
+  return s - sa->s;
 }
 
 int
@@ -167,9 +173,9 @@ strip_comments(charbuf* in, buffer* out) {
     stralloc_catb(&line, buf, 1);
   }
 end:
- put_line(&queue, line.s, line.len);
- if(queue.len > 0)
-  consume_output(&queue, out);
+  put_line(&queue, line.s, line.len);
+  if(queue.len > 0)
+    consume_output(&queue, out);
 
   buffer_flush(out);
   stralloc_free(&line);
@@ -184,7 +190,7 @@ main(int argc, char* argv[]) {
   const char *in_path = 0, *out_path = 0;
   int index = 0;
   char buf[16384];
-  buffer  temp;
+  buffer temp;
   int in_place = 0;
   charbuf input;
   stralloc data;

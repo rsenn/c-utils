@@ -91,7 +91,56 @@
 			"file": "logserial.c",
 			"settings":
 			{
-				"buffer_size": 7558,
+				"buffer_size": 7560,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "list-r.c",
+			"settings":
+			{
+				"buffer_size": 27218,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "strip-comments.c",
+			"settings":
+			{
+				"buffer_size": 6342,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_copys.c",
+			"settings":
+			{
+				"buffer_size": 155,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/str/str_copyb.c",
+			"settings":
+			{
+				"buffer_size": 258,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_copyb.c",
+			"settings":
+			{
+				"buffer_size": 432,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_ready.c",
+			"settings":
+			{
+				"buffer_size": 941,
 				"line_ending": "Unix"
 			}
 		},
@@ -107,7 +156,7 @@
 			"file": "lib/strarray.h",
 			"settings":
 			{
-				"buffer_size": 3191,
+				"buffer_size": 3204,
 				"line_ending": "Unix"
 			}
 		},
@@ -125,7 +174,7 @@
 			"file": "lib/strarray/strarray_union.c",
 			"settings":
 			{
-				"buffer_size": 748,
+				"buffer_size": 751,
 				"line_ending": "Unix"
 			}
 		},
@@ -133,7 +182,7 @@
 			"file": "lib/io.h",
 			"settings":
 			{
-				"buffer_size": 5676,
+				"buffer_size": 5685,
 				"line_ending": "Unix"
 			}
 		},
@@ -451,6 +500,7 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/case",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir",
 		"/home/roman/Dokumente/Sources/c-utils/lib/rdir",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray",
@@ -458,6 +508,7 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/plot-cv/test-moon.js",
 		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_frac.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_push.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_push_unique.c",
@@ -584,12 +635,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/.log",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_put.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/typedefs.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/uint64.h"
+		"/home/roman/Dokumente/Sources/c-utils/lib/typedefs.h"
 	],
 	"find":
 	{
-		"height": 42.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -615,6 +665,16 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"consume",
+			"len--",
+			"DEBUG",
+			"opt_min",
+			"dir",
+			"opt_min",
+			"opt_minsize",
+			"opt_min",
+			"opt_minsize",
+			"min",
 			"diff",
 			"wantread",
 			"Ports ",
@@ -732,17 +792,7 @@
 			"-Werr",
 			"input_command_line",
 			"path_prefix_",
-			"insertb",
-			"diffb",
-			"path_relative",
-			"mkdir_com",
-			"^main",
-			"mkdir_components",
-			"absolute",
-			"dirs.build",
-			"dirs.work",
-			"path_collapse_sa",
-			"colla"
+			"insertb"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -863,7 +913,7 @@
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -872,15 +922,136 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7558,
+						"buffer_size": 7560,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4281,
-								4281
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/JavaScriptNext - ES6 Syntax/Next.tmTheme",
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 675.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "list-r.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 27218,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								19418,
+								19418
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 12968.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "strip-comments.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6342,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								501,
+								501
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/freshcut-contrast.tmTheme",
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/stralloc/stralloc_copys.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 155,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/str/str_copyb.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 258,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								241,
+								241
 							]
 						],
 						"settings":
@@ -890,14 +1061,72 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1215.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
+					"buffer": 5,
+					"file": "lib/stralloc/stralloc_copyb.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 432,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/stralloc/stralloc_ready.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 941,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								704,
+								704
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
 					"file": "lib/array.h",
 					"semi_transient": false,
 					"settings":
@@ -923,39 +1152,40 @@
 						"translation.y": 162.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 8,
 					"file": "lib/strarray.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3191,
+						"buffer_size": 3204,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3052,
-								3052
+								0,
+								0
 							]
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
 							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2025.0,
+						"translation.y": 135.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 9,
 					"file": "lib/strarray/strarray_intersection.c",
 					"semi_transient": false,
 					"settings":
@@ -982,24 +1212,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 10,
 					"file": "lib/strarray/strarray_union.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 748,
+						"buffer_size": 751,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								102,
-								102
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1013,24 +1243,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 11,
 					"file": "lib/io.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5676,
+						"buffer_size": 5685,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3756,
-								3756
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1041,11 +1271,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 12,
 					"file": "lib/taia/taia_now.c",
 					"semi_transient": false,
 					"settings":
@@ -1071,11 +1301,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 13,
 					"file": "lib/taia.h",
 					"semi_transient": false,
 					"settings":
@@ -1099,11 +1329,11 @@
 						"translation.y": 243.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 14,
 					"file": "lib/tai.h",
 					"semi_transient": false,
 					"settings":
@@ -1127,11 +1357,11 @@
 						"translation.y": 243.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 15,
 					"file": "lib/buffer/buffer_putdouble.c",
 					"semi_transient": false,
 					"settings":
@@ -1155,7 +1385,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 15,
 					"type": "text"
 				}
 			]
@@ -1251,6 +1481,26 @@
 		"selected_items":
 		[
 			[
+				"strip-c",
+				"strip-comments.c"
+			],
+			[
+				"ready",
+				"lib/stralloc/stralloc_ready.c"
+			],
+			[
+				"copyb",
+				"lib/stralloc/stralloc_copyb.c"
+			],
+			[
+				"stralloc_copys",
+				"lib/stralloc/stralloc_copys.c"
+			],
+			[
+				"list-r.c",
+				"list-r.c"
+			],
+			[
 				"strarr",
 				"lib/strarray.h"
 			],
@@ -1333,10 +1583,6 @@
 			[
 				"strarray",
 				"lib/strarray.h"
-			],
-			[
-				"list-r.c",
-				"list-r.c"
 			],
 			[
 				"serial.c",
@@ -1711,10 +1957,6 @@
 				"lib/scan/scan_httpdate.c"
 			],
 			[
-				"strip-c",
-				"strip-comments.c"
-			],
-			[
 				"readable",
 				"lib/http/http_readable.c"
 			],
@@ -1749,18 +1991,6 @@
 			[
 				"stubbo",
 				"lib/buffer/buffer_stubborn2.c"
-			],
-			[
-				"_socket.c",
-				"lib/http/http_socket.c"
-			],
-			[
-				"http_socket_rea",
-				"lib/http/http_socket_read.c"
-			],
-			[
-				"strip-",
-				"strip-comments.c"
 			]
 		],
 		"width": 0.0
