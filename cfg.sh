@@ -94,6 +94,8 @@ cfg-diet() {
 
   if type pkgconf >/dev/null; then
     export PKG_CONFIG=pkgconf
+  elif type pkg-config >/dev/null; then
+    export PKG_CONFIG=pkg-config
   fi
 
   export PKG_CONFIG_PATH="$libdir/pkgconfig"

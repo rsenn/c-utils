@@ -81,7 +81,7 @@ file(GLOB LIBCRYPTO_SOURCES
   crypto/ct/*.c
   crypto/dh/*.c
   crypto/dsa/*.c
-  crypto/dso/*.c
+  #crypto/dso/*.c
   crypto/ec/curve25519.c crypto/ec/ec2_mult.c crypto/ec/ec2_oct.c crypto/ec/ec2_smpl.c crypto/ec/ec_ameth.c crypto/ec/ec_asn1.c crypto/ec/ec_check.c crypto/ec/ec_curve.c crypto/ec/ec_cvt.c crypto/ec/ecdh_kdf.c crypto/ec/ecdh_ossl.c crypto/ec/ecdsa_ossl.c crypto/ec/ecdsa_sign.c crypto/ec/ecdsa_vrf.c crypto/ec/ec_err.c crypto/ec/ec_key.c crypto/ec/ec_kmeth.c crypto/ec/eck_prn.c crypto/ec/ec_lib.c crypto/ec/ec_mult.c crypto/ec/ec_oct.c crypto/ec/ec_pmeth.c crypto/ec/ecp_mont.c crypto/ec/ecp_nist.c crypto/ec/ecp_nistp224.c crypto/ec/ecp_nistp256.c crypto/ec/ecp_nistp521.c crypto/ec/ecp_nistputil.c crypto/ec/ecp_oct.c crypto/ec/ec_print.c crypto/ec/ecp_smpl.c crypto/ec/ecx_meth.c 
   #crypto/engine/*.c
   crypto/err/*.c

@@ -610,6 +610,8 @@ if(BUILD_SSL)
    exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS -p0 -i "${CMAKE_BINARY_DIR}/openssl-pthread.patch")
   endif()
 
+  add_definitions(-DOPENSSL_NO_UI_CONSOLE=1)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOPENSSL_NO_UI_CONSOLE=1")
   add_subdirectory(3rdparty/openssl)
 
   set(OPENSSL_LIBRARIES ssl crypto CACHE STRING "" FORCE)

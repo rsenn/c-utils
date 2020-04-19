@@ -196,7 +196,7 @@ main(int argc, char* argv[]) {
   stralloc data;
   size_t n;
   const char* x;
-  const char* tmpl = 0;
+  const char* tmpl = "/tmp/strip-comments.XXXXXX";
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
 
@@ -238,9 +238,7 @@ main(int argc, char* argv[]) {
 again:
   if(in_place) {
     if(out_fd == STDOUT_FILENO) {
-
       out_fd = open_temp(&tmpl);
-
       out_path = tmpl;
     }
   }
@@ -260,7 +258,7 @@ again:
     buffer_puts(buffer_1, out_path);
     buffer_putnlflush(buffer_1);
   }
-
+/* 
   if((x = mmap_read(out_path, &n)) && n > 1) {
 
     buffer_puts(buffer_1, "out: ");
@@ -268,7 +266,7 @@ again:
     buffer_putnlflush(buffer_1);
 
     mmap_unmap(x, n);
-  }
+  } */
 
   charbuf_close(&input);
 
@@ -283,7 +281,6 @@ again:
     */
 
     if(out_path == 0) {
-
       in_path = argv[optind++];
       in_fd = open_read(in_path);
       goto again;
