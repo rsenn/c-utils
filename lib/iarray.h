@@ -53,15 +53,15 @@ typedef struct {
       unsigned long len;
 } iarray;
 
-void*  iarray_allocate(iarray*, size_t pos);
-void*  iarray_get(iarray*, size_t pos);
-void   iarray_init(iarray*, size_t elemsize);
+void* iarray_allocate(iarray*, size_t pos);
+void* iarray_get(iarray*, size_t pos);
+void iarray_init(iarray*, size_t elemsize);
 size_t iarray_length(iarray*);
 
 /* WARNING: do not use the array during or after iarray_free, make sure
  * no threads are potentially doing anything with the iarray while it is
  * being freed! */
-void   iarray_free(iarray*);
+void iarray_free(iarray*);
 
 #ifdef __cplusplus
 }

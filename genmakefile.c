@@ -92,6 +92,15 @@ debug_s(const char* name, const char* s) {
   buffer_puts(buffer_2, s);
   buffer_putnlflush(buffer_2);
 }
+
+void
+debug_byte(const char* name, const char* x, size_t n) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_put(buffer_2, x, n);
+  buffer_putnlflush(buffer_2);
+}
+
 void
 debug_target(const target* t) {
   buffer_putm_internal(buffer_2, "name: ", t->name, "\n", 0);
@@ -118,13 +127,13 @@ debug_sl(const char* name, const strlist* l) {
   stralloc_init(&tmp);
   strlist_foreach(l, x, n) {
     if(tmp.len)
-      stralloc_catc(&tmp, ' ');
+      stralloc_cats(&tmp, ", ");
     if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
       stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
     else
       stralloc_catb(&tmp, x, n);
   }
-  // debug_sa(name, &tmp);
+  debug_sa(name, &tmp);
   stralloc_free(&tmp);
 }
 
@@ -402,15 +411,11 @@ extract_tokens(const char* x, size_t n, strlist* tokens) {
     if(*x == '\r' || *x == '\n')
       break;
     i = scan_charsetnskip(x, tok_charset, n);
-    if(i > 0 && !(i == 7 && byte_equal(x, 7, "defined"))) {
-      if(!(*x >= '0' && *x <= '9')) {
+    if(i > 0 && !(i == 7 && byte_equal(x, 7, "defined")))
+      if(!(*x >= '0' && *x <= '9'))
         if(strlist_pushb_unique(tokens, x, i)) {
-          /*          buffer_puts(buffer_2, "added tok: ");
-                    buffer_put(buffer_2, x, i);
-                    buffer_putnlflush(buffer_2);*/
+          // debug_byte("added tok", x, i);
         }
-      }
-    }
     if(i == n)
       break;
     x += i;
@@ -587,12 +592,16 @@ includes_cppflags() {
   strlist_foreach_s(&include_dirs, dir) {
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "dirs.out: ");
-    buffer_puts(buffer_2, dirs.out.sa.s);
+    debug_sa("dirs.work: ", &dirs.work.sa);
+    debug_sa("dirs.build: ", &dirs.build.sa);
+    debug_sa("dirs.out: ", &dirs.out.sa);
+    debug_sa("dirs.this: ", &dirs.this.sa);
+    debug_s("dir: ", dir);
     buffer_putnlflush(buffer_2);
 #endif
     stralloc_zero(&arg);
-    path_relative(dir, dirs.out.sa.s, &arg);
+    stralloc_cats(&arg, dir);
+    //    path_relative(dir, dirs.this.sa.s, &arg);
 
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "include_dir: ");
@@ -681,7 +690,6 @@ includes_add(const char* dir) {
   stralloc_nul(&absolute);
   if(strlist_push_unique(&include_dirs, absolute.s)) {
 #ifdef DEBUG_OUTPUT
-
     buffer_puts(buffer_2, "Added to include_dirs: ");
     buffer_putsa(buffer_2, &absolute);
     buffer_putnlflush(buffer_2);
@@ -4210,6 +4218,8 @@ set_compiler_type(const char* compiler) {
 
     cfg.mach.arch = PIC;
 
+    cmd_libs = 0;
+
     exts.bin = ".cof";
     exts.obj = ".p1";
     exts.lib = ".lpp";
@@ -5025,6 +5035,9 @@ main(int argc, char* argv[]) {
   }
   if(inst_bins || inst_libs)
     gen_install_rules(rules);
+
+  strlist_sort(&pptoks, 0);
+  debug_sl("pptoks", &pptoks);
 
 fail:
 

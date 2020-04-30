@@ -91,8 +91,40 @@
 			"file": "strip-comments.c",
 			"settings":
 			{
-				"buffer_size": 6518,
+				"buffer_size": 6531,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "genmakefile.c",
+			"settings":
+			{
+				"buffer_size": 126331,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strlist/strlist_sort.c",
+			"settings":
+			{
+				"buffer_size": 968,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/path/path_relative.c",
+			"settings":
+			{
+				"buffer_size": 2604,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "genmakefile.h",
+			"settings":
+			{
+				"buffer_size": 7248,
 				"line_ending": "Unix"
 			}
 		}
@@ -378,8 +410,7 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/case",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dir",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path",
 		"/home/roman/Dokumente/Sources/c-utils/lib/rdir",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml"
@@ -540,9 +571,47 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"extract_pp",
+			"\"pp",
+			"pptok",
+			"added tok",
+			"debug_sl",
+			"sourcedir_populate",
+			"includes_extra",
+			"extract_pptok",
+			"added tok",
+			"debug_sl",
+			"extract_tokens",
+			"tokens",
+			"extract_pptok",
+			"extract_pp",
+			"extract_",
+			"'D'",
+			"main\\(",
+			"pptoks",
+			"          ",
+			"pptoks",
+			"extract_pptok",
+			"extract",
+			"preproc",
+			"xc8\"",
+			"cmd.libs",
+			"create-libs",
+			"--create",
+			"-lib",
+			"-library",
+			"library",
+			"include_dir",
+			"work",
+			"debug_",
+			"work",
+			"include_dir",
+			"includes_add",
+			"includes",
+			"'I'",
 			"consume",
 			"len--",
 			"DEBUG",
@@ -632,45 +701,7 @@
 			"NO_AT",
 			"$(FLAGS",
 			"$(FLAGS)",
-			"$(DEFINES",
-			"$(DEFINES)",
-			"DEFINES",
-			"HAVE_LIBBZ2",
-			"WIN32",
-			"_librar",
-			"check_",
-			"wsock32",
-			" -dumpmachine",
-			"https://",
-			"default_url",
-			"init-brd",
-			"port",
-			"http_get",
-			"8080",
-			"eagle-gen",
-			"print_sep",
-			"depth - 1",
-			"depth",
-			"opt_minsize",
-			"opt_minsize\n",
-			"opt_minsize",
-			"min",
-			"getopt",
-			"st_dev",
-			"rdev",
-			"'D'",
-			"deref",
-			"opt_deref",
-			"opt_derf",
-			"getopt",
-			"root_dev",
-			"st_dev",
-			"dev",
-			"rdev",
-			"-Werr",
-			"input_command_line",
-			"path_prefix_",
-			"insertb"
+			"$(DEFINES"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -786,7 +817,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -795,15 +826,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6518,
+						"buffer_size": 6531,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2629,
-								2629
+								2194,
+								2194
 							]
 						],
 						"settings":
@@ -816,7 +847,160 @@
 						"translation.y": 1784.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "genmakefile.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 126331,
+						"regions":
+						{
+							"col_FFA500FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										80735,
+										80741
+									],
+									[
+										91386,
+										91392
+									]
+								],
+								"scope": "col_FFA500FF"
+							},
+							"col_FFA500FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_FFA500FF_circle.png",
+								"regions":
+								[
+									[
+										80666,
+										80666
+									],
+									[
+										91323,
+										91323
+									]
+								],
+								"scope": "col_gutter"
+							}
+						},
+						"selection":
+						[
+							[
+								10659,
+								10659
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 9929.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/strlist/strlist_sort.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 968,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								189,
+								189
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 69.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/path/path_relative.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 2604,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1242.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "genmakefile.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7248,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1610,
+								1610
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1534.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -902,6 +1086,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"genma",
+				"genmakefile.h"
+			],
+			[
+				"strlist_sort",
+				"lib/strlist/strlist_sort.c"
+			],
 			[
 				"strip-comm",
 				"strip-comments.c"
@@ -989,10 +1181,6 @@
 			[
 				"rdir_close",
 				"lib/rdir/rdir_close.c"
-			],
-			[
-				"genma",
-				"genmakefile.c"
 			],
 			[
 				"strarray_free",
@@ -1408,10 +1596,6 @@
 			],
 			[
 				"stub",
-				"lib/buffer/buffer_stubborn2.c"
-			],
-			[
-				"stubbo",
 				"lib/buffer/buffer_stubborn2.c"
 			]
 		],

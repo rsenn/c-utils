@@ -258,15 +258,15 @@ again:
     buffer_puts(buffer_1, out_path);
     buffer_putnlflush(buffer_1);
   }
-/* 
-  if((x = mmap_read(out_path, &n)) && n > 1) {
+  /*
+    if((x = mmap_read(out_path, &n)) && n > 1) {
 
-    buffer_puts(buffer_1, "out: ");
-    buffer_put(buffer_1, x, n);
-    buffer_putnlflush(buffer_1);
+      buffer_puts(buffer_1, "out: ");
+      buffer_put(buffer_1, x, n);
+      buffer_putnlflush(buffer_1);
 
-    mmap_unmap(x, n);
-  } */
+      mmap_unmap(x, n);
+    } */
 
   charbuf_close(&input);
 

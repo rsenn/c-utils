@@ -138,6 +138,23 @@ int str_isfloat(const char* s);
 int str_isspace(const char* s);
 void print_attrs(HMAP_DB* a_node);
 void print_element_attrs(xmlnode* a_node);
+
+void
+dump_strarray(const char* name, strarray* stra) {
+  const char** p;
+  size_t n = 0;
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ":\n  ");
+  strarray_foreach(stra, p) {
+    if(n)
+      buffer_puts(buffer_2, ", ");
+    buffer_puts(buffer_2, "#");
+    buffer_putulong(buffer_2, n++);
+    buffer_puts(buffer_2, ": ");
+    buffer_puts(buffer_2, *p ? *p : "(null)");
+  }
+  buffer_putnlflush(buffer_2);
+}
 int dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
 cbmap_t devicesets, packages, parts, nets, symbols;
 static strarray layers;
@@ -145,8 +162,9 @@ static int measures_layer = -1, bottom_layer = -1;
 static array wires;
 static wire bounds;
 
-static int do_list_layers, do_draw_measures, do_align_coords;
+static int do_list_layers, do_draw_measures, do_align_coords, print_comments;
 static const char* current_layer = "Bottom";
+static current_layer_id = -1;
 static const char* current_signal = NULL;
 
 static double alignment = 2.54; // millimeters
@@ -158,6 +176,8 @@ static rect contour;
 static const char* base;
 static int active_layer = -1;
 static stralloc current_alignment;
+
+static struct { xmlnode *parts, *sheets, *elements; } nodes;
 
 static double
 human_to_mm(const char* measure) {
@@ -364,8 +384,8 @@ int
 layer_id(const char* str) {
   int id = -1;
   if(scan_uint(str, (unsigned int*)&id)) {
-    if(id >= 0 && id < strarray_size(&layers))
-      return id;
+    // if(id >= 0 && id < strarray_size(&layers))
+    return id;
   }
   return -1;
 }
@@ -393,17 +413,29 @@ layer_name(int i) {
 const char*
 layer_by_id(const char* str) {
   int id;
-  if((id = get_layer(str)) != -1)
+  if((id = layer_name(str)) != -1)
     return layer_name(id);
   return NULL;
+}
+const char*
+layer_index(long idx) {
+  return strarray_at(&layers, idx);
 }
 
 void
 build_layers(xmlnode* layer) {
-  int num = atoi(xml_get_attribute(layer, "number"));
+  const char* layerNum = xml_get_attribute(layer, "number");
 
-  strarray_set(&layers, num, xml_get_attribute(layer, "name"));
-  /*  xml_print(layer, buffer_1); */
+  if(layerNum) {
+    long num = -1;
+    const char* name = xml_get_attribute(layer, "name");
+
+    if(name && scan_long(layerNum, &num) > 0)
+
+      strarray_set(&layers, num, name);
+  }
+
+  // xml_print(layer, buffer_2);
 }
 
 void
@@ -626,6 +658,8 @@ build_package(xmlnode* set) {
   char *pn, *name = xml_get_attribute(set, "name");
   struct package pkg;
   byte_zero(&pkg, sizeof(struct package));
+  if(name == NULL)
+    name = "";
   stralloc_copys(&pkg.name, name);
 
   for(node = set->children; node; node = node->next) {
@@ -660,12 +694,12 @@ build_deviceset(xmlnode* set) {
 #endif
 
   byte_zero(&d, sizeof(struct deviceset));
-  stralloc_copys(&d.name, name);
+  stralloc_copys(&d.name, name ? name : "(null)");
   d.devices = cbmap_new();
   gates = get_child(set, "gates");
   devices = get_child(set, "devices");
 
-  for(node = gates->children; node; node = node->next) {
+  for(node = gates ? gates->children : NULL; node; node = node->next) {
     struct gate g;
     if(node->type != XML_ELEMENT)
       continue;
@@ -675,7 +709,7 @@ build_deviceset(xmlnode* set) {
     array_catb(&d.gates, (const void*)&g, sizeof(struct gate));
   }
 
-  for(node = devices->children; node; node = node->next) {
+  for(node = devices ? devices->children : NULL; node; node = node->next) {
     char *name, *package;
     struct pinmapping pm;
     struct package* pkg;
@@ -692,7 +726,7 @@ build_deviceset(xmlnode* set) {
     pm.pkg = pkg;
     cbmap_insert(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
   }
-  cbmap_insert(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
+  //  cbmap_insert(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
 }
 
 /**
@@ -731,7 +765,11 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
   xmlnodeset_iter_t it, e;
   if(!ns)
     return;
-  for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it) fn(*it);
+
+  for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it) {
+
+    fn(*it);
+  }
 }
 
 /**
@@ -1025,9 +1063,9 @@ print_xy(buffer* b, const char* name, double x, double y) {
     buffer_putm_2(b, name, ": ");
   }
   buffer_puts(b, "(");
-  buffer_putdouble(b, x, 4);
+  buffer_putdouble(b, x / 10, 4);
   buffer_puts(b, " ");
-  buffer_putdouble(b, y, 4);
+  buffer_putdouble(b, y / 10, 4);
   buffer_puts(b, ")");
 
   if(name)
@@ -1060,7 +1098,13 @@ print_rect(buffer* b, const char* name, const rect* r) {
 
 void
 print_xml_xy(buffer* b, xmlnode* e) {
-  buffer_putm_5(b, "(", xml_get_attribute(e, "x"), " ", xml_get_attribute(e, "y"), ")");
+  double x = xml_get_attribute_double(e, "x");
+  double y = xml_get_attribute_double(e, "y");
+  buffer_puts(b, "(");
+  buffer_putdouble(b, x / 25.4, 2);
+  buffer_puts(b, " ");
+  buffer_putdouble(b, y / 25.4, 2);
+  buffer_puts(b, ")");
 }
 
 void
@@ -1073,6 +1117,22 @@ print_xml_rect(buffer* b, xmlnode* e) {
   buffer_putm_internal(
       b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", 0);
   buffer_flush(b);
+}
+
+void
+print_xml_layer(buffer* b, xmlnode* e) {
+  const char* layer = xml_get_attribute(e, "layer");
+
+  if(layer) {
+    long layer_id = xml_get_attribute_long(e, "layer");
+
+    if(layer_id != current_layer_id) {
+      const char* layerName = layer_index(layer_id);
+      buffer_putm_internal(b, "Layer ", layerName ? layerName : layer, ";\n", 0);
+
+      current_layer_id = layer_id;
+    }
+  }
 }
 
 void
@@ -1112,7 +1172,18 @@ print_script(buffer* b, xmlnode* e) {
     }
   }
 
-  if(str_equal(e->name, "wire")) {
+  if(str_equal(e->name, "element")) {
+    const char* rot = xml_get_attribute(e, "rot");
+    buffer_putm_internal(b, "MOVE ", xml_get_attribute(e, "name"), " ", 0);
+
+    print_xml_xy(b, e);
+    if(rot) {
+      buffer_putm_internal(b, "; ROTATE ", rot, " '", xml_get_attribute(e, "name"), "'", 0);
+    }
+
+  } else if(str_equal(e->name, "wire")) {
+    print_xml_layer(b, e);
+
     buffer_putsa(b, &cmd);
     if(current_signal)
       buffer_putm_3(b, "'", current_signal, "' ");
@@ -1156,8 +1227,10 @@ print_script(buffer* b, xmlnode* e) {
 
     print_xml_xy(b, e);
   } else {
+#ifdef DEBUG_OUTPUT
     buffer_putm_2(buffer_2, "No such element: ", e->name);
     buffer_putnlflush(buffer_2);
+#endif /* defined DEBUG_OUTPUT */
     return;
   }
   buffer_putc(b, ';');
@@ -1270,38 +1343,38 @@ draw_measures(xmlnode* doc) {
   gnd_signal = xml_find_element_attr(doc, "signal", "name", "GND");
   polygon = xml_find_element(gnd_signal, "polygon");
 
-  if(polygon == NULL) {
-    polygon = xml_element("polygon");
+  /*  if(polygon == NULL) {
+     polygon = xml_element("polygon");
 
-    xml_set_attribute(polygon, "width", "0.254");
-    xml_set_attribute(polygon, "layer", "16");
-    xml_set_attribute(polygon, "isolate", "1.27");
-    xml_set_attribute(polygon, "thermals", "yes");
+     xml_set_attribute(polygon, "width", "0.254");
+     xml_set_attribute(polygon, "layer", "16");
+     xml_set_attribute(polygon, "isolate", "1.27");
+     xml_set_attribute(polygon, "thermals", "yes");
 
-    xml_add_child(gnd_signal, polygon);
-  }
+     xml_add_child(gnd_signal, polygon);
+   }
+    if(polygon->children) {
+     xml_free(polygon->children);
+     polygon->children = NULL;
+   }
 
-  if(polygon->children) {
-    xml_free(polygon->children);
-    polygon->children = NULL;
-  }
-
-  n = xml_element("vertex");
-  xml_set_attribute_double(n, "x", bounds.x1, 3);
-  xml_set_attribute_double(n, "y", bounds.y2, 3);
-  xml_add_child(polygon, n);
-  n = xml_element("vertex");
-  xml_set_attribute_double(n, "x", bounds.x1, 3);
-  xml_set_attribute_double(n, "y", bounds.y1, 3);
-  xml_add_child(polygon, n);
-  n = xml_element("vertex");
-  xml_set_attribute_double(n, "x", bounds.x2, 3);
-  xml_set_attribute_double(n, "y", bounds.y1, 3);
-  xml_add_child(polygon, n);
-  n = xml_element("vertex");
-  xml_set_attribute_double(n, "x", bounds.x2, 3);
-  xml_set_attribute_double(n, "y", bounds.y2, 3);
-  xml_add_child(polygon, n);
+   n = xml_element("vertex");
+   xml_set_attribute_double(n, "x", bounds.x1, 3);
+   xml_set_attribute_double(n, "y", bounds.y2, 3);
+   xml_add_child(polygon, n);
+   n = xml_element("vertex");
+   xml_set_attribute_double(n, "x", bounds.x1, 3);
+   xml_set_attribute_double(n, "y", bounds.y1, 3);
+   xml_add_child(polygon, n);
+   n = xml_element("vertex");
+   xml_set_attribute_double(n, "x", bounds.x2, 3);
+   xml_set_attribute_double(n, "y", bounds.y1, 3);
+   xml_add_child(polygon, n);
+   n = xml_element("vertex");
+   xml_set_attribute_double(n, "x", bounds.x2, 3);
+   xml_set_attribute_double(n, "y", bounds.y2, 3);
+   xml_add_child(polygon, n);
+   */
 }
 
 /**
@@ -1337,10 +1410,11 @@ main(int argc, char* argv[]) {
                            {"draw", 0, NULL, 'd'},
                            {"align", 0, NULL, 'a'},
                            {"align-by", 0, NULL, 'A'},
+                           {"comments", 0, NULL, 'c'},
                            {0, 0, 0, 0}};
 
   for(;;) {
-    c = getopt_long(argc, argv, "LdhaA:l:", opts, &index);
+    c = getopt_long(argc, argv, "LdhaA:l:c", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -1351,6 +1425,7 @@ main(int argc, char* argv[]) {
       case 'L': do_list_layers = 1; break;
       case 'd': do_draw_measures = 1; break;
       case 'a': do_align_coords = 1; break;
+      case 'c': print_comments = 1; break;
       case 'A':
         do_align_coords = 1;
         alignment = human_to_mm(optarg);
@@ -1365,7 +1440,11 @@ main(int argc, char* argv[]) {
   {
     buffer input, out;
     xmlnode* doc;
+    xmlnode* root;
     xmlnode *plain, *left, *right, *bottom, *top, *gnd_signal, *polygon, *n;
+    stralloc path;
+    stralloc_init(&path);
+
     devicesets = cbmap_new();
     packages = cbmap_new();
     parts = cbmap_new();
@@ -1384,6 +1463,8 @@ main(int argc, char* argv[]) {
     doc = xml_read_tree(&input);
 
     match_foreach(doc, "layer", build_layers);
+
+    dump_strarray("layers", &layers);
 
     if(do_list_layers) {
 
@@ -1477,7 +1558,14 @@ main(int argc, char* argv[]) {
 
       byte_zero(&extent, sizeof(extent));
       // ns = xml_find_with_attrs(doc, "x|y|x1|y1|x2|y2");
-      ns = xml_find_all_attrs(doc, "x|y|x1|y1");
+
+      nodes.elements = xml_find_element(doc, "elements");
+      nodes.parts = xml_find_element(doc, "parts");
+      nodes.sheets = xml_find_element(doc, "sheets");
+
+      root = nodes.sheets ? nodes.sheets : nodes.elements;
+
+      ns = xml_find_all_attrs(root, "x|y|x1|y1");
 
       n = xmlnodeset_size(&ns);
 
@@ -1489,10 +1577,15 @@ main(int argc, char* argv[]) {
         xmlnode* node = xmlnodeset_iter_ref(it);
         double x1, x2, y1, y2;
 
+        if(print_comments) {
+          buffer_putm_internal(buffer_1, "\n# Element '", node->name, "' XPath: ", 0);
+          buffer_puts(buffer_1, "# ");
+          xml_path(node, &path);
+          buffer_putsa(buffer_1, &path);
+        }
         // if(xml_has_attribute(node, "layer")) layer = xml_get_attribute(node, "layer");
 
         if(do_align_coords) {
-
           if(get_parent(node, "libraries") == 0)
             num_aligned += node_align(node);
         }
@@ -1505,29 +1598,29 @@ main(int argc, char* argv[]) {
 
           while((named = xml_find_parent_attr(named, "name"))) {
             const char* name = xml_get_attribute(named, "name");
-            stralloc path;
-            stralloc_init(&path);
 
             if(str_equal(named->name, "signal")) {
               if(current_signal == NULL || str_diff(name, current_signal)) {
                 current_signal = name;
 
-                buffer_puts(buffer_2, "# ");
-                xml_path(named, &path);
-                buffer_putsa(buffer_2, &path);
-                buffer_puts(buffer_2, "[@");
+                if(print_comments) {
+                  buffer_puts(buffer_1, "[@");
+
+                  xml_print_attributes(named->attributes, buffer_1, ", @", "=", "'");
+                  buffer_puts(buffer_1, "]");
+                }
               }
             }
-
-            xml_print_attributes(named->attributes, buffer_2, ", @", "=", "'");
-            buffer_putnlflush(buffer_2);
           }
 
           //      print_xy(buffer_2, layer, x1, y1);
         }
-        print_script(buffer_2, node);
+        if(print_comments)
+          buffer_putsflush(buffer_1, "\n\n");
+        print_script(buffer_1, node);
       }
-      buffer_flush(buffer_2);
+
+      buffer_flush(buffer_1);
 
       print_rect(buffer_2, "extent", &extent);
 

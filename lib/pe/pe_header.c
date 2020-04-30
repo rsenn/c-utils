@@ -2,27 +2,27 @@
 #include "../uint16.h"
 #include "../pe.h"
 
-  void*
-  pe_header_nt(void* pe) {
-    pe_dos_header* dos = (pe_dos_header*)pe;
-    uint32 lfanew;
-    lfanew = uint32_get(&dos->e_lfanew);
-    return (unsigned char*)dos + lfanew;
-  }
+void*
+pe_header_nt(void* pe) {
+  pe_dos_header* dos = (pe_dos_header*)pe;
+  uint32 lfanew;
+  lfanew = uint32_get(&dos->e_lfanew);
+  return (unsigned char*)dos + lfanew;
+}
 
-  uint32
-  pe_header_sig(void* pe) {
-    return *(uint32*)pe_header_nt(pe);
-  }
+uint32
+pe_header_sig(void* pe) {
+  return *(uint32*)pe_header_nt(pe);
+}
 
-  pe32_nt_headers*
-  pe_header_nt32(void* pe) {
-    return PE_32(pe) ? (pe32_nt_headers*)pe_header_nt(pe) : (pe32_nt_headers*)0;
-  }
+pe32_nt_headers*
+pe_header_nt32(void* pe) {
+  return PE_32(pe) ? (pe32_nt_headers*)pe_header_nt(pe) : (pe32_nt_headers*)0;
+}
 
-  pe64_nt_headers*
-  pe_header_nt64(void* pe) {
-    return PE_64(pe) ? (pe64_nt_headers*)pe_header_nt(pe) : (pe64_nt_headers*)0;
+pe64_nt_headers*
+pe_header_nt64(void* pe) {
+  return PE_64(pe) ? (pe64_nt_headers*)pe_header_nt(pe) : (pe64_nt_headers*)0;
 }
 
 pe_coff_header*

@@ -1,7 +1,7 @@
 #include "../xml.h"
 
 void
-xml_walk(xmlnode* root, int (*func)(xmlnode*,xmlnode*)) {
+xml_walk(xmlnode* root, int (*func)(xmlnode*, xmlnode*)) {
   xmlnode* node = root;
 
   do {

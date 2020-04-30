@@ -22,6 +22,6 @@ buffer_write_fd(buffer* b, fd_t fd) {
   if(b->x == NULL)
     return -1;
   b->op = (buffer_op_proto*)&write;
-  b->deinit = (void(*)())&buffer_free;
+  b->deinit = (void (*)()) & buffer_free;
   return 0;
 }

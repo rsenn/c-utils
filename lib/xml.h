@@ -55,7 +55,7 @@ typedef struct xmlnodeset {
 
 typedef int(xml_read_callback_fn)(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
-typedef int(xml_pred_t)(xmlnode*,const void*,const void*,const void*);
+typedef int(xml_pred_t)(xmlnode*, const void*, const void*, const void*);
 /*
 xmlnode* xml_attrnode(const char*, size_t name_len, const char* value, size_t value_len);
 int xml_content_sa(xmlnode*, stralloc* sa);
@@ -106,6 +106,7 @@ xmlnode* xml_find_pred_n(xmlnode* node, xml_pred_t*, int n, ...);
 xmlnode* xml_find_with_attrs(xmlnode* node, const char* attrs);
 void xml_free(xmlnode* node);
 double xml_get_attribute_double(xmlnode* node, const char* attr);
+long xml_get_attribute_long(xmlnode* node, const char* attr);
 int xml_get_attribute_sa(xmlnode* n, stralloc* sa, const char* name);
 char* xml_get_attribute(xmlnode* node, const char* attr);
 xmlnode* xml_get_document(xmlnode* node);
@@ -204,7 +205,7 @@ xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) {
 
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48
-typedef int (xml_pred_t)(xmlnode*, const void*,const void*,const void*);
+typedef int(xml_pred_t)(xmlnode*, const void*, const void*, const void*);
 
 xmlnode* xml_find_pred(xmlnode*, xml_pred_t*, ...);
 xmlnodeset xml_find_all(xmlnode*, xml_pred_t*, ...);

@@ -19,6 +19,6 @@ buffer_mmapshared_fd(buffer* b, fd_t fd) {
   b->p = 0;
   b->a = b->n;
   b->op = (buffer_op_proto*)&buffer_dummyreadmmap;
-  b->deinit = (void(*)())&buffer_munmap;
+  b->deinit = (void (*)()) & buffer_munmap;
   return 0;
 }

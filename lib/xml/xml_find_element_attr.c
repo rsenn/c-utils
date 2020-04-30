@@ -2,7 +2,7 @@
 #include "../xml.h"
 #include "../str.h"
 
-extern int xml_has_attr(xmlnode* node, /*strlist* names */const char*,const char*,const char*);
+extern int xml_has_attr(xmlnode* node, /*strlist* names */ const char*, const char*, const char*);
 
 typedef int(pred_fn_t)(xmlnode*, const void*, const void*, const void*);
 struct tag_attr_value {

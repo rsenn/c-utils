@@ -13,7 +13,6 @@ extern "C" {
 #endif
 
 struct http_request_s;
-  
 
 typedef enum { GET = 0, POST } http_req_t;
 

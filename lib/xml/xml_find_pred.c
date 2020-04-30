@@ -3,7 +3,7 @@
 #include <stdarg.h>
 
 static xmlnode*
-xml_find_predicate(xmlnode* node, xml_pred_t*pred, const void* vptr[]) {
+xml_find_predicate(xmlnode* node, xml_pred_t* pred, const void* vptr[]) {
   while(node) {
     if(pred(node, vptr[0], vptr[1], vptr[2]))
       break;
@@ -60,7 +60,7 @@ xml_find_pred_1(xmlnode* node, xml_pred_t* pred, const void* arg) {
 }
 
 xmlnode*
-xml_find_pred_2(xmlnode* node, xml_pred_t* pred,  const void* a0, const void* a1) {
+xml_find_pred_2(xmlnode* node, xml_pred_t* pred, const void* a0, const void* a1) {
   const void* vptr[4];
   vptr[0] = a0;
   vptr[1] = a1;
@@ -69,8 +69,7 @@ xml_find_pred_2(xmlnode* node, xml_pred_t* pred,  const void* a0, const void* a1
   return xml_pfind_pred(node, pred, vptr);
 }
 xmlnode*
-xml_find_pred_3(
-    xmlnode* node, xml_pred_t* pred, const void* a0, const void* a1, const void* a2) {
+xml_find_pred_3(xmlnode* node, xml_pred_t* pred, const void* a0, const void* a1, const void* a2) {
   const void* vptr[4];
   vptr[0] = a0;
   vptr[1] = a1;

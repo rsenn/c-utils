@@ -12,6 +12,6 @@ buffer_mmapprivate_fd(buffer* b, fd_t fd) {
   b->a = b->n;
   b->fd = fd;
   b->op = &buffer_dummyreadmmap;
-  b->deinit = (void(*)())buffer_munmap;
+  b->deinit = (void (*)())buffer_munmap;
   return 0;
 }

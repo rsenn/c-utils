@@ -8,13 +8,7 @@ typedef int(cmp_fn_t)(const void*, const void*);
 
 static int
 sort_cmp(const char** a, const char** b) {
-  size_t len, alen = str_len(*a), blen = str_len(*b);
-  if(alen != blen)
-    return alen - blen;
-
-  len = alen < blen ? alen : blen;
-
-  return byte_diff(*a, len, *b);
+  return str_diff(*a, *b);
 }
 
 size_t
@@ -27,7 +21,7 @@ strlist_sort(strlist* sl, cmp_fn_t* cmp_fn) {
   if(cmp_fn == NULL)
     cmp_fn = (cmp_fn_t*)&sort_cmp;
 
-  ptrs = (char**)alloc_zero(sizeof(char*) * (strlist_count(sl) + 1));
+  ptrs = (char**)malloc(sizeof(char*) * (strlist_count(sl)));
   tmp = sl->sa.s;
   end = &sl->sa.s[sl->sa.len];
 
@@ -41,11 +35,12 @@ strlist_sort(strlist* sl, cmp_fn_t* cmp_fn) {
   }
 
   qsort(ptrs, l, sizeof(char*), (cmp_fn_t*)cmp_fn);
+  sl->sa.s = 0;
   stralloc_init(&sl->sa);
 
   for(p = 0; p < l; ++p) {
-    size_t len = byte_chr(ptrs[p], end - ptrs[p], '\0');
-    strlist_pushb(sl, ptrs[p], len);
+    // size_t len = byte_chr(ptrs[p], end - ptrs[p], '\0');
+    strlist_push(sl, ptrs[p]);
   }
 
   free(tmp);
