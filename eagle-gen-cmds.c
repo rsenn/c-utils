@@ -36,7 +36,7 @@
 #endif
 
 #include "lib/round.c"
-#define iround(f) ((double)((long)(f)))
+#define iround(f) ((double)((long)(f + 0.5)))
 
 #define mm2in(mm) ((mm) / 25.4)
 #define in2mm(in) ((mm)*25.4)
@@ -492,6 +492,71 @@ rect_update(rect* r, double x, double y) {
     r->y1 = y;
   if(y > r->y2 || r->y2 == DBL_MAX)
     r->y2 = y;
+}
+
+void
+rect_round(rect* r, double prec) {
+  r->x1 = round_to(r->x1, prec);
+  r->y1 = round_to(r->y1, prec);
+  r->x2 = round_to(r->x2, prec);
+  r->y2 = round_to(r->y2, prec);
+}
+void
+rect_mult(rect* r, double f) {
+  r->x1 *= f;
+  r->y1 *= f;
+  r->x2 *= f;
+  r->y2 *= f;
+}
+
+void
+rect_outset(rect* r, double offset) {
+  r->x1 -= offset;
+  r->x2 += offset;
+  r->y1 -= offset;
+  r->y2 += offset;
+}
+
+void
+rect_zero(rect* r) {
+  r->x1 = 0;
+  r->y1 = 0;
+  r->x2 = 0;
+  r->y2 = 0;
+}
+
+wire
+line(xy a, xy b) {
+  wire ret;
+
+  ret.x1 = a.x;
+  ret.y1 = a.y;
+
+  ret.x2 = b.x;
+  ret.y2 = b.y;
+  return ret;
+}
+
+xy
+vec(double x, double y) {
+  xy ret;
+  ret.x = x;
+  ret.y = y;
+  return ret;
+}
+
+void
+print_wire(buffer* b, const struct wire w) {
+  // print_base(b);
+  buffer_puts(b, "Wire ");
+  print_xy(b, NULL, w.x1, w.y1);
+  buffer_puts(b, " ");
+  print_xy(b, NULL, w.x2, w.y2);
+  /*
+    print_vertex(b, vec(w.x1, w.y1));
+    buffer_puts(b, " ");
+    print_vertex(b, vec(w.x2, w.y2));
+   */
 }
 
 void
@@ -1060,7 +1125,7 @@ void
 print_xy(buffer* b, const char* name, double x, double y) {
   if(name) {
     print_base(b);
-    buffer_putm_2(b, name, ": ");
+    buffer_putm_2(b, name, " ");
   }
   buffer_puts(b, "(");
   buffer_putdouble(b, x / 10, 4);
@@ -1075,7 +1140,7 @@ print_xy(buffer* b, const char* name, double x, double y) {
 }
 
 void
-print_vertex(buffer* b, const struct pos v) {
+print_vertex(buffer* b, const xy v) {
   buffer_putc(b, '(');
   buffer_putdouble(b, v.x, 4);
   buffer_putspace(b);
@@ -1087,13 +1152,31 @@ void
 print_rect(buffer* b, const char* name, const rect* r) {
   if(name) {
     print_base(b);
-    buffer_putm_2(b, name, ": ");
+    buffer_putm_2(b, name, " ");
   }
   print_vertex(b, r->a);
   buffer_putspace(b);
   print_vertex(b, r->b);
   if(name)
     buffer_putnlflush(b);
+}
+
+void
+print_bounds(buffer* b, const rect r, const char* sep) {
+  const xy point[4] = {vec(r.x1, r.y1), vec(r.x2, r.y1), vec(r.x2, r.y2), vec(r.x1, r.y2)};
+
+  const wire w[4] = {line(point[0], point[1]),
+                     line(point[1], point[2]),
+                     line(point[2], point[3]),
+                     line(point[3], point[0])};
+  int i;
+
+  for(i = 0; i < 4; i++) {
+    if(i > 0)
+      buffer_puts(b, sep ? sep : "; ");
+    print_wire(buffer_1, w[i]);
+    buffer_puts(b, " 0.01");
+  }
 }
 
 void
@@ -1340,6 +1423,11 @@ draw_measures(xmlnode* doc) {
   xml_add_child(plain, right);
   xml_add_child(plain, bottom);
 
+  print_script(buffer_1, left);
+  print_script(buffer_1, top);
+  print_script(buffer_1, right);
+  print_script(buffer_1, bottom);
+
   gnd_signal = xml_find_element_attr(doc, "signal", "name", "GND");
   polygon = xml_find_element(gnd_signal, "polygon");
 
@@ -1434,8 +1522,8 @@ main(int argc, char* argv[]) {
       default: usage(argv[0]); return 1;
     }
   }
-
-  bounds.x1 = bounds.y1 = bounds.x2 = bounds.y2 = DBL_MAX;
+  rect_zero(&bounds);
+  rect_zero(&wire_bounds);
 
   {
     buffer input, out;
@@ -1526,15 +1614,6 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
 
     match_foreach(doc, "wire", check_wire);
-    bounds.x1 -= 2.54;
-    bounds.x2 += 2.54;
-    bounds.y1 -= 2.54;
-    bounds.y2 += 2.54;
-
-    bounds.x1 = iround(100 * bounds.x1) / 100;
-    bounds.y1 = iround(100 * bounds.y1) / 100;
-    bounds.x2 = iround(100 * bounds.x2) / 100;
-    bounds.y2 = iround(100 * bounds.y2) / 100;
 
     {
       int n;
@@ -1641,10 +1720,18 @@ main(int argc, char* argv[]) {
         buffer_putlong(buffer_2, num_aligned);
         buffer_putm_internal(buffer_2, " nodes\n", "Saving to '", base, "'...", 0);
         buffer_putnlflush(buffer_2);
+        {
+          stralloc filename;
+          stralloc_init(&filename);
+          stralloc_copys(&filename, base);
+          stralloc_cats(&filename, ".new");
+          stralloc_nul(&filename);
 
-        buffer_truncfile(&out, base);
+          buffer_truncfile(&out, filename.s);
 
-        xml_print(doc, &out);
+          xml_print(doc, &out);
+          stralloc_free(&filename);
+        }
       }
 
       /*    print_xy(buffer_2, "extent.1", extent.x1, extent.y1);
@@ -1661,6 +1748,34 @@ main(int argc, char* argv[]) {
     }
 
     /*  cbmap_visit_all(nets, dump_net, "nets"); */
+
+    //
+    const double scale = 1.0 / 2.54;
+
+    wire_bounds.x2 += 2.54;
+    wire_bounds.y2 += 2.54;
+    // rect_outset(&bounds, 1.27);
+
+    rect_mult(&wire_bounds, scale);
+    rect_round(&wire_bounds, 0.1);
+
+    // print_rect(buffer_2, "Wire", &wire_bounds);
+
+    buffer_puts(buffer_1, "\nLayer Measures;\n");
+    print_bounds(buffer_1, wire_bounds, ";\n");
+    buffer_putsflush(buffer_1, ";\n\n");
+    /*  print_wire(buffer_1, line(vec(99, 99), vec(33, 33)));
+     print_wire(buffer_1, line(c, d));
+     print_wire(buffer_1, line(d, a));
+  */
+
+    rect_outset(&bounds, 2.54);
+    rect_mult(&bounds, 1 / 2.54);
+    rect_round(&bounds, 0.1);
+
+    print_rect(buffer_2, "bounds", &bounds);
+
+    // print_bounds(buffer_1, bounds);
 
     /*
      * Cleanup function for the XML library.

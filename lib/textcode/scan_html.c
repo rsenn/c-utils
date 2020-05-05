@@ -122,24 +122,24 @@ unittest_main() {
   /* check that we stop at < */
   assert(scan_html(html, buf, &destlen) == 0 && destlen == 0);
   /* check that we properly decode &lt; */
-  memset(buf, '?', sizeof(buf));
+  byte_fill(buf, sizeof(buf), '?');
   assert(scan_html(strchr(html, '>') + 1, buf, &destlen) == 16 && destlen == 13 && !memcmp(buf, "libowfat<home?", 14));
   /* check that we stop at " and properly decode &quot; */
-  memset(buf, '?', sizeof(buf));
+  byte_fill(buf, sizeof(buf), '?');
   assert(scan_html_tagarg(strchr(html, '"') + 1, buf, &destlen) == 28 && destlen == 23 &&
          !memcmp(buf, "http://example.com/\"foo?", 24));
   /* check that we pass through invalid escapes */
-  memset(buf, '?', sizeof(buf));
+  byte_fill(buf, sizeof(buf), '?');
   assert(scan_html("&fnord;", buf, &destlen) == 7 && destlen == 7 && !memcmp(buf, "&fnord;?", 8));
-  memset(buf, '?', sizeof(buf));
+  byte_fill(buf, sizeof(buf), '?');
   assert(scan_html("&#x;", buf, &destlen) == 4 && destlen == 4 && !memcmp(buf, "&#x;?", 5));
-  memset(buf, '?', sizeof(buf));
+  byte_fill(buf, sizeof(buf), '?');
   assert(scan_html("&#;", buf, &destlen) == 3 && destlen == 3 && !memcmp(buf, "&#;?", 4));
   /* check that &#x[hex]; is decoded properly */
-  memset(buf, '?', sizeof(buf));
+  byte_fill(buf, sizeof(buf), '?');
   assert(scan_html("&#x1;", buf, &destlen) == 5 && destlen == 1 && buf[0] == 1 && buf[1] == '?');
   /* check that &#[decimal]; is decoded properly */
-  memset(buf, '?', sizeof(buf));
+  byte_fill(buf, sizeof(buf), '?');
   assert(scan_html("&#1;", buf, &destlen) == 4 && destlen == 1 && buf[0] == 1 && buf[1] == '?');
 }
 #endif

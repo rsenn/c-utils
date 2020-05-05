@@ -61,13 +61,13 @@ int
 unittest_main() {
   char buf[100];
   size_t i, l;
-  memset(buf, 0, 10);
+  byte_zero(buf,  10);
   assert(scan_base64("Zm5vcmQ=", buf, &l) == 8 && l == 5 && !memcmp(buf, "fnord", 6));
   /* check that we don't insist on the padding */
-  memset(buf, 0, 10);
+  byte_zero(buf,  10);
   assert(scan_base64("Zm5vcmQ", buf, &l) == 7 && l == 5 && !memcmp(buf, "fnord", 6));
   /* check the special non-isalnum chars :) */
-  memset(buf, 0, 10);
+  byte_zero(buf,  10);
   assert(scan_base64("/+8=", buf, &l) == 4 && l == 2 && !memcmp(buf, "\xff\xef", 3));
   return 0;
 }

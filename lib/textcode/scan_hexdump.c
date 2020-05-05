@@ -35,10 +35,10 @@ int
 unittest_main() {
   char buf[100];
   size_t l;
-  memset(buf, 0, sizeof(buf));
+  byte_zero(buf,  sizeof(buf));
   assert(scan_hexdump("0123456789abcdef", buf, &l) == 16 && l == 8 &&
          !memcmp(buf, "\x01\x23\x45\x67\x89\xab\xcd\xef", 9));
-  memset(buf, '?', sizeof(buf));
+  byte_fill(buf, sizeof(buf), '?');
   assert(scan_hexdump("0", buf, &l) == 0 && l == 0 && buf[0] == '?');
 }
 #endif

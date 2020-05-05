@@ -1,6 +1,7 @@
 #include "../byte.h"
 #include "../dns.h"
 #include "../uint16.h"
+
 #include "../stralloc.h"
 
 int

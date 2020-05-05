@@ -361,7 +361,7 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
    * this includes a pointer to a file information table that contains
    * the flags and handles for all open files.
    */
-  memset(&start, 0, sizeof(start));
+  byte_zero(&start,  sizeof(start));
   start.cb = sizeof(start);
   start.wShowWindow = SW_SHOWDEFAULT;
 #if 0 

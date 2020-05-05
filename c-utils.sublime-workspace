@@ -88,43 +88,20 @@
 	"buffers":
 	[
 		{
-			"file": "strip-comments.c",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 6531,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"buffer_size": 0,
+				"line_ending": "Unix",
+				"name": "𝌆 Outline",
+				"scratch": true
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"file": "eagle-gen-cmds.c",
 			"settings":
 			{
-				"buffer_size": 126331,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strlist/strlist_sort.c",
-			"settings":
-			{
-				"buffer_size": 968,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/path/path_relative.c",
-			"settings":
-			{
-				"buffer_size": 2604,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "genmakefile.h",
-			"settings":
-			{
-				"buffer_size": 7248,
+				"buffer_size": 44642,
 				"line_ending": "Unix"
 			}
 		}
@@ -156,6 +133,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"outlin",
+				"Browse Mode: Outline (Right)"
+			],
 			[
 				"Package Control: ",
 				"Package Control: Install Package"
@@ -243,10 +224,6 @@
 			[
 				"add re",
 				"Package Control: Add Repository"
-			],
-			[
-				"outlin",
-				"Browse Mode: Outline (Right)"
 			],
 			[
 				"schheme",
@@ -410,6 +387,7 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/coff",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path",
 		"/home/roman/Dokumente/Sources/c-utils/lib/rdir",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray",
@@ -418,6 +396,26 @@
 	"file_history":
 	[
 		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_double.c",
+		"/home/roman/Dokumente/Sources/an-tronics/diptrace/Amplifier Class AB.sch",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Dokumente/Sources/c-utils/ar-wrap.c",
+		"/home/roman/Dokumente/Sources/an-tronics/diptrace/Amplifier Class AB.brd",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_get_attribute_double.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute_long.c",
+		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/d.lbr",
+		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/c.lbr",
+		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/r.lbr",
+		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/t.lbr",
+		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/l.lbr",
+		"/opt/eagle-7.2.0/scr/eagle.scr",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_sort.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putdouble.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute_double.c",
 		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
 		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_copys.c",
@@ -425,14 +423,12 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_copyb.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_ready.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_intersection.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_union.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_now.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/taia.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/tai.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putdouble.c",
 		"/home/roman/Dokumente/Sources/plot-cv/test-moon.js",
 		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_frac.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_push.c",
@@ -446,7 +442,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/rdir.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_close.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_free.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/serial.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_size.c",
@@ -509,7 +504,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/getopt.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_collapse.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_to_argv.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
 		"/home/roman/Dokumente/Sources/c-utils/pathtool.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_absolute_sa.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_cat.c",
@@ -524,31 +518,15 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_removeb.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_remove_at.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_rchrs.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_sort.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pushb.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push_sa.c",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_at.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_copyat.c",
-		"/home/roman/Dokumente/Sources/c-utils/node_modules/tar/.nyc_output/0471d9cf-687f-4ae8-84a5-ce7468becd03.json",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_whitenskip.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_count.c",
-		"/home/roman/Dokumente/Sources/c-utils/x-fn.sh",
-		"/home/roman/Dokumente/Sources/c-utils/tmp.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_is_absolute.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_is_directory.c",
-		"/home/roman/.cache/.fr-wXcvXN/README.md",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_sort.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_dirname.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putc.c",
-		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_nonwhitenskip.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putflush.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_copyat.c"
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 47.0
 	},
 	"find_in_files":
 	{
@@ -574,134 +552,134 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"extract_pp",
-			"\"pp",
-			"pptok",
-			"added tok",
-			"debug_sl",
-			"sourcedir_populate",
-			"includes_extra",
-			"extract_pptok",
-			"added tok",
-			"debug_sl",
-			"extract_tokens",
-			"tokens",
-			"extract_pptok",
-			"extract_pp",
-			"extract_",
-			"'D'",
-			"main\\(",
-			"pptoks",
-			"          ",
-			"pptoks",
-			"extract_pptok",
-			"extract",
-			"preproc",
-			"xc8\"",
-			"cmd.libs",
-			"create-libs",
-			"--create",
-			"-lib",
-			"-library",
-			"library",
-			"include_dir",
-			"work",
-			"debug_",
-			"work",
-			"include_dir",
-			"includes_add",
-			"includes",
-			"'I'",
-			"consume",
-			"len--",
-			"DEBUG",
-			"opt_min",
-			"dir",
-			"opt_min",
-			"opt_minsize",
-			"opt_min",
-			"opt_minsize",
-			"min",
-			"diff",
-			"wantread",
-			"Ports ",
-			"new port",
-			"io_close",
-			"close",
-			"io_close",
-			"io_fd",
-			"new port",
-			"wait mse",
-			"detected",
-			"rdir_open",
-			"logser",
-			"disap",
-			"buffer_2",
-			"genma",
-			"\\s+\\\\$",
-			"new port",
-			"logser",
-			"dir_open",
-			"get_serial_ports",
-			"logser",
-			"taia",
-			"process_input",
-			"io_[^ ]*read",
-			"io_read",
-			"canread",
-			"buffer ",
-			"io_wait",
-			"io_",
-			"\" \"",
-			"\"  \"",
-			"slist_next",
-			"slink_new",
-			"slink_mnew",
-			"parse_num",
-			"xml",
-			"&lt",
-			"buffer_1",
-			"tmpl",
-			"pins =",
-			"pins",
-			"slink",
-			"MAP_VISIT_ALL",
-			"pads",
-			"io_wait",
-			"longflush",
-			"alloca",
-			"ports",
-			"ports;",
-			"logser",
-			"portlist",
-			"get_ports",
-			"stra",
-			"contains",
-			"waitun",
-			"wait",
-			"errmsg.*warn",
-			"logser",
-			"strip-comm.*EXE",
-			"PROGRAMS",
-			"_init",
-			"buffer",
-			"from",
-			"strlist_from",
-			"list",
-			"read_line",
-			"process_en",
-			"^process_e",
-			"^process",
-			"process_entry",
-			"^process",
-			"strlist_dump",
-			"mediathek-list.*EXE",
-			"ccat.*EXEEX",
-			"^CFLAGS",
-			"NO_AT",
-			"$(FLAGS",
-			"$(FLAGS)",
-			"$(DEFINES"
+			"print_wire",
+			"print_bound",
+			"print_bounds",
+			"Measure",
+			"print_bound",
+			"print_bounds",
+			"print_bou",
+			"print_wir",
+			"print_xy",
+			"print_wire",
+			"print_bounds",
+			"Measures",
+			"Measure",
+			"print_bound",
+			"print_wire",
+			"^print.wire",
+			"print_bounds",
+			"print_bound",
+			"print_",
+			"print_wire",
+			"<layer ",
+			"<layer",
+			"<lay",
+			"layer",
+			"<layer",
+			"layer",
+			"<layer",
+			"print_bounds",
+			"print_wire",
+			"print_bounds",
+			"wire_bound",
+			"_bounds",
+			"bounds",
+			"^[^ ]*print_rec",
+			"^[^ ]*print",
+			"^[^ ]*bound",
+			"vec\\(",
+			"vector\\(",
+			"wire\\(",
+			"^vector",
+			"print_wire",
+			"print_xy",
+			"print_base",
+			"print_xy",
+			"print_verte",
+			"print_xy",
+			"^print_xy",
+			"print_xy",
+			"print_vert",
+			"print_verte",
+			"print_vertex",
+			"print_vert",
+			"line\\(",
+			"line",
+			"vector",
+			"point",
+			"poinnt",
+			"ector",
+			"vector\\(",
+			"vector",
+			"line\\(",
+			"line",
+			"line\\(",
+			"line\\)(",
+			"create_wire",
+			"print_wire",
+			"struct pos",
+			"pos",
+			"create_point",
+			"create_po",
+			"double",
+			"create_point",
+			"create_wire",
+			"struct vert",
+			"_vertex",
+			"vertex",
+			"border",
+			"^[^ ]*print",
+			"^[^ ]*border",
+			"print_border",
+			"print_rect",
+			"^[^ ]*wire",
+			"wire_b",
+			"wire_bä",
+			"wire_b",
+			"bounds",
+			"print_wire",
+			"print_ver",
+			"print_wire",
+			"print_vertex",
+			"vertex",
+			"^[^ ]*wire",
+			"wire.*\\*",
+			"\\*wire",
+			"\\(.*wire",
+			"wire",
+			"print_wire",
+			"print_rect",
+			"rect_round",
+			"round_to",
+			"rect_round",
+			"round_to",
+			"iround",
+			"round_to",
+			"iroud",
+			"round_to",
+			"rect_round",
+			"iround",
+			"round",
+			"rect_round",
+			"wire_bou",
+			"byte_chr",
+			"fmt_doub",
+			"print_vert",
+			"print_rect",
+			"_rect",
+			"dump_rec",
+			"outset",
+			"rect_round",
+			"wire_bou",
+			"bounds.*=",
+			"bounds",
+			"^rect_",
+			"rect_",
+			"wire_bounds",
+			"print_rec",
+			"wire_bou",
+			"print_rect"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -709,6 +687,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"(root",
 			" \\",
 			"process_serial",
 			"process_loop",
@@ -817,190 +796,75 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "strip-comments.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6531,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
-							[
-								2194,
-								2194
-							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1784.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 126331,
-						"regions":
-						{
-							"col_FFA500FF":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										80735,
-										80741
-									],
-									[
-										91386,
-										91392
-									]
-								],
-								"scope": "col_FFA500FF"
-							},
-							"col_FFA500FF_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_FFA500FF_circle.png",
-								"regions":
-								[
-									[
-										80666,
-										80666
-									],
-									[
-										91323,
-										91323
-									]
-								],
-								"scope": "col_gutter"
-							}
-						},
-						"selection":
-						[
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
+							"outline_rename_mode": false,
+							"symkeys":
 							[
-								10659,
-								10659
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 9929.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "lib/strlist/strlist_sort.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 968,
-						"regions":
-						{
-						},
-						"selection":
-						[
+							],
+							"symlist":
 							[
-								189,
-								189
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							],
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 69.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/path/path_relative.c",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 2604,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1242.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "genmakefile.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7248,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1610,
-								1610
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1534.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "eagle-gen-cmds.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 44642,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								26066,
+								26066
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 40152.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -1008,7 +872,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 36.0
+		"height": 41.0
 	},
 	"input":
 	{
@@ -1019,20 +883,29 @@
 		"cells":
 		[
 			[
+				2,
+				0,
+				3,
+				2
+			],
+			[
 				0,
 				0,
-				1,
-				1
+				2,
+				2
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.2,
+			0.8,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
+			0.5,
 			1.0
 		]
 	},
@@ -1077,7 +950,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 80.0
+		"height": 90.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1086,6 +959,50 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"gen-",
+				"eagle-gen-cmds.c"
+			],
+			[
+				"fmt_d",
+				"lib/fmt/fmt_double.c"
+			],
+			[
+				"putdo",
+				"lib/buffer/buffer_putdouble.c"
+			],
+			[
+				"fmt_du",
+				"lib/fmt/fmt_double.c"
+			],
+			[
+				"set_attr",
+				"lib/xml/xml_set_attribute_double.c"
+			],
+			[
+				"gen-cm",
+				"eagle-gen-cmds.c"
+			],
+			[
+				"xml.h",
+				"lib/xml.h"
+			],
+			[
+				"strarray",
+				"lib/strarray.h"
+			],
+			[
+				"get_attr",
+				"lib/xml/xml_get_attribute_double.c"
+			],
+			[
+				"",
+				"~/Dokumente/Sources/an-tronics/diptrace/Amplifier Class AB.brd"
+			],
+			[
+				"gen-cmds",
+				"eagle-gen-cmds.c"
+			],
 			[
 				"genma",
 				"genmakefile.h"
@@ -1193,10 +1110,6 @@
 			[
 				"logser",
 				"logserial.c"
-			],
-			[
-				"strarray",
-				"lib/strarray.h"
 			],
 			[
 				"serial.c",
@@ -1557,46 +1470,6 @@
 			[
 				"CMakeLists",
 				"CMakeLists.txt"
-			],
-			[
-				"windoze",
-				"lib/windoze.h"
-			],
-			[
-				"httpda",
-				"lib/scan/scan_httpdate.c"
-			],
-			[
-				"readable",
-				"lib/http/http_readable.c"
-			],
-			[
-				"http_ssl_err",
-				"lib/http/http_ssl_error.c"
-			],
-			[
-				"iob.h",
-				"lib/iob.h"
-			],
-			[
-				"iopa",
-				"lib/iopause.h"
-			],
-			[
-				"http_c",
-				"lib/http/http_close.c"
-			],
-			[
-				"str_dup",
-				"lib/str/str_dup.c"
-			],
-			[
-				"buffer_fe",
-				"lib/buffer/buffer_feed.c"
-			],
-			[
-				"stub",
-				"lib/buffer/buffer_stubborn2.c"
 			]
 		],
 		"width": 0.0
@@ -1619,7 +1492,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
+	"selected_group": 1,
 	"settings":
 	{
 	},

@@ -236,7 +236,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
      * Initialise the variable for passing to CreateProcess
      */
 
-    memset(&StartupInfo, 0, sizeof(StartupInfo));
+    byte_zero(&StartupInfo,  sizeof(StartupInfo));
     StartupInfo.cb = sizeof(StartupInfo);
 
     /* Used by os for duplicating the Handles. */
