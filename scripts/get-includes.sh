@@ -16,7 +16,7 @@ isin() {
   exit 1)
 }
 pushv() {
-    eval "shift;$1=\"\${$1:+\"\$$1\${IFS%\"\${IFS#?}\"}\"}\$*\""
+    eval 'shift;'$1'="${'$1':+$'$1' }$*"'
 }
 pushv_unique() {
   local __VAR=$1 __ARG IFS=${IFS%${IFS#?}}
@@ -32,11 +32,11 @@ output_target() {
   shift
   IFS=" "
   DEPS="$SOURCE $*"
-
+OBJECT='$(BUILDDIR)'$(basename "$SOURCE" .c)${SUFFIX}
 
   cat <<EOF
-${CPPFLAGS:+\$(BUILDDIR)$(basename "$SOURCE" .c)${SUFFIX}: CPPFLAGS += $CPPFLAGS
-}\$(BUILDDIR)$(basename "$SOURCE" .c)${SUFFIX}: ${DEPS}
+${CPPFLAGS:+$OBJECT: CPPFLAGS += $CPPFLAGS
+}$OBJECT: ${DEPS}
 $TS\$(CROSS_COMPILE)\$(CC) \$(CFLAGS) \$(EXTRA_CFLAGS) \$(CPPFLAGS) \$(INCLUDES) \$(DEFS) -c -o \$@ \$<
 
 EOF
@@ -58,6 +58,7 @@ SOURCE_ROOT=.
 ;;
 esac
 INCLUDES=
+INCLUDE_FILES=
 
 CMDS=
  trap 'rm -f "$TMP"' EXIT
