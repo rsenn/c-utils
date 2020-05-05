@@ -2,6 +2,7 @@
 
 #include "../socket_internal.h"
 #include "../byte.h"
+#include "../case.h"
 #include "../dns.h"
 #include "../ip4.h"
 #include "../ip6.h"
@@ -106,25 +107,32 @@ init(char ip[256]) {
     }
 
   if(!iplen) {
-    i = openreadclose("/etc/resolv.conf", &data, 64);
+    const char* rcf;
+    rcf = getenv("RESOLVCONF");
+    if(rcf == NULL)
+      rcf = "/etc/resolv.conf";
+    i = openreadclose(rcf, &data, 64);
     if(i == (unsigned long int)-1)
       return -1;
     if(i) {
+      size_t n, p = 0;
       if(!stralloc_append(&data, "\n"))
         return -1;
       i = 0;
-      for(j = 0; j < data.len; ++j)
-        if(data.s[j] == '\n') {
-          if(byte_equal("nameserver ", 11, data.s + i) || byte_equal("nameserver\t", 11, data.s + i)) {
-            i += 10;
-            while((data.s[i] == ' ') || (data.s[i] == '\t')) ++i;
-            if(iplen <= 60)
-              if(scan_ip6(data.s + i, ip + iplen)) {
-                iplen += 16;
-              }
+
+      do {
+        do {
+          p += case_finds(&data.s[p], data.len - p, "nameserver");
+          if(p + 10 <= data.len)
+            p += 10;
+        } while(p < data.len && !(data.s[p] == ' ' || data.s[p] == '\t'));
+
+        while((data.s[p] == ' ') || (data.s[p] == '\t')) ++p;
+        if(iplen <= 60)
+          if(scan_ip6(data.s + p, ip + iplen)) {
+            iplen += 16;
           }
-          i = j + 1;
-        }
+      } while(p < data.len);
     }
   }
 
@@ -133,7 +141,7 @@ init(char ip[256]) {
     iplen = 16;
   }
   byte_zero(ip + iplen, 256 - iplen);
-  return 0;
+  return iplen;
 }
 
 static int ok;

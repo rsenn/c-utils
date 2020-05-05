@@ -75,20 +75,20 @@ typedef void(dns_event_handler)(struct dns_resolver* dns, dns_event_type type);
 
 struct dns_resolver {
   struct dns_transmit t;
- /* char* query;
-  unsigned int querylen;
-  char* packet;
-  unsigned int packetlen;
-  int s1;
-  int tcpstate;
-  unsigned int udploop;
-  unsigned int curserver;
-  time_t deadline;
-  unsigned int pos;
-  const char* servers;
-  struct in6_addr localip;
-  unsigned int scope_id;
-  char qtype[2];*/
+  /* char* query;
+   unsigned int querylen;
+   char* packet;
+   unsigned int packetlen;
+   int s1;
+   int tcpstate;
+   unsigned int udploop;
+   unsigned int curserver;
+   time_t deadline;
+   unsigned int pos;
+   const char* servers;
+   struct in6_addr localip;
+   unsigned int scope_id;
+   char qtype[2];*/
   int ans;
 
   stralloc result;
@@ -106,8 +106,8 @@ struct dns_resolver {
 
 /* bzero a resolver struct and set timeout to a sane value */
 static __inline__ void
-dns_init(struct dns_resolver* dns) {
-  byte_zero(dns,sizeof(struct dns_resolver));
+dns_zero(struct dns_resolver* dns) {
+  byte_zero(dns, sizeof(struct dns_resolver));
   dns->timeout = DEFAULT_TIMEOUT;
 }
 

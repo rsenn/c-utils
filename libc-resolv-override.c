@@ -7,20 +7,21 @@
 #include "lib/taia.h"
 #include "lib/tai.h"
 #include "lib/open.h"
-#include "lib/fmt.h"
 #include "lib/scan.h"
 #include "lib/str.h"
 #include "lib/byte.h"
 #include "lib/uint16.h"
 #include "lib/uint8.h"
 #include "lib/env.h"
+#include "lib/ip6.h"
+#include "lib/ip4.h"
+#include "lib/fmt.h"
 #include "lib/buffer.h"
 
 #include "libc-resolv-override.h"
 #include <errno.h>
 
 char ip[256];
-
 
 int
 dns_domain_todot(char* out, const char* d, size_t n) {
@@ -272,7 +273,7 @@ dns_get_name(struct dns_resolver* dns, char* out, size_t len) {
 
 int
 dns_name_lookup(struct dns_resolver* dns, const char* name) {
-  char *domain=0;
+  char* domain = 0;
 
   dns_domain_fromdot(&domain, name, 64);
 
@@ -415,18 +416,21 @@ utoa(char* buf, unsigned int i) {
   return n;
 }
 
-static stralloc ns;
+static char ns[256];
+static struct dns_resolver dns;
 
-int
-main() {
-  const char* s;
+void
+dns_init() {
+  char b[64];
+  dns_zero(&dns);
+/*   const char* s;
 
   if((s = env_get("DNSCACHE"))) {
     stralloc_copys(&ns, s);
   }
 
   if(!ns.len) {
-    size_t n,p;
+    size_t n, p = 0;
     const char* rcf;
     stralloc tmp;
     stralloc_init(&tmp);
@@ -434,16 +438,24 @@ main() {
       rcf = "/etc/resolv.conf";
     openreadclose(rcf, &tmp, 1024);
     stralloc_nul(&tmp);
-    p = case_finds(tmp.s, tmp.len, "nameserver");
-    if(p  + 10 <= tmp.len)
-    p += 10;
-    p += scan_whitenskip(&tmp.s[p], tmp.len - p);
+    do {
+      p += case_finds(&tmp.s[p], tmp.len - p, "nameserver");
+      if(p + 10 <= tmp.len)
+        p += 10;
+    } while(p < tmp.len && !(tmp.s[p] == ' ' || tmp.s[p] == '\t'));
+     p += scan_whitenskip(&tmp.s[p], tmp.len - p);
     n = scan_nonwhitenskip(&tmp.s[p], tmp.len - p);
-
     stralloc_copyb(&ns, &tmp.s[p], n);
-  }
+  } */
+
+dns_resolvconfip(ns);
 
   buffer_puts(buffer_2, "nameserver is: ");
-  buffer_putsa(buffer_2, &ns);
+  buffer_put(buffer_2, b, fmt_ip6(b, ns));
   buffer_putnlflush(buffer_2);
+}
+
+int
+main() {
+  dns_init();
 }
