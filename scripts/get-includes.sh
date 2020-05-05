@@ -116,9 +116,9 @@ CMDS=
   
 fi
   done
-  ([ -n "$INCLUDES" ] &&
-           echo $SOURCE CPPFLAGS=\"${INCLUDES}\" $INCLUDE_FILES ||
-           echo $SOURCE $INCLUDE_FILES) 1>&2
+  # ([ -n "$INCLUDES" ] &&
+  #          echo $SOURCE CPPFLAGS=\"${INCLUDES}\" $INCLUDE_FILES ||
+  #          echo $SOURCE $INCLUDE_FILES) 1>&2
 
   CPPFLAGS="${INCLUDES}"
 
@@ -129,5 +129,5 @@ fi
  } <"$TMP"
 done
  if [ -n "$ALL_INCLUDES" ]; then
-    echo $ALL_INCLUDES
+    echo $ALL_INCLUDES 1>&2
   fi
