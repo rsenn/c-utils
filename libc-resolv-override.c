@@ -470,8 +470,8 @@ main(int argc, char* argv[]) {
     ++argv;
   while(*argv) {
     if(!stralloc_copys(&fqdn, *argv)) {
-        errmsg_warnsys("out of memory", 0);
-    return 111;
+      errmsg_warnsys("out of memory", 0);
+      return 111;
     }
     if(dns_ip4(&out, &fqdn) == -1) {
       errmsg_warnsys("unable to find IP address for ", *argv, 0);
@@ -491,6 +491,36 @@ main(int argc, char* argv[]) {
 }
 #endif
 
+static char**
+resolve_ip4(const char* name, int* nptr) {
+  size_t i, n;
+  char b[64];
+  static char* addrlist[(256 / 16 + 1) * sizeof(char*)];
+  byte_zero(&addrlist, sizeof(addrlist));
+
+  errmsg_info("resolving: ", name, 0);
+
+  if(!stralloc_copys(&fqdn, name)) {
+    errmsg_warnsys("out of memory", 0);
+    return 0;
+  }
+
+  if(dns_ip6(&out, &fqdn) == -1) {
+    errmsg_warnsys("unable to find IP address for ", name, 0);
+    return 0;
+  }
+
+  for(i = 0, n = 0; i < out.len && n < (sizeof(addrlist) / sizeof(addrlist[0]) - 1); i += 16, n++) {
+    addrlist[n] = &out.s[i];
+
+    b[fmt_ip6(b, addrlist[n])]='\0';
+        errmsg_info("result: ", b, 0);
+  }
+  if(nptr)
+    *nptr = n;
+  return addrlist;
+}
+
 struct hostent*
 gethostbyname(const char* name) {
   size_t i;
@@ -499,23 +529,28 @@ gethostbyname(const char* name) {
   if(ret.h_addr_list)
     alloc_free(ret.h_addr_list);
 
-  if(!stralloc_copys(&fqdn, name)) {
-        errmsg_warnsys("out of memory", 0);
-    return NULL;
-  }
-  if(dns_ip4(&out, &fqdn) == -1) {
-    errmsg_warnsys("unable to find IP address for ", name, 0);
-    return NULL;
-  }
-
   ret.h_name = name;
   ret.h_aliases = a;
   ret.h_addrtype = AF_INET;
-  ret.h_length = out.len;
-  ret.h_addr_list = alloc_zero(((out.len / 16) + 1) * sizeof(char*));
-
-  for(i = 0; i < out.len; i += 16)
-    ret.h_addr_list[i] = &out.s[i];
+  ret.h_addr_list = resolve_ip4(name, &i);
+  ret.h_length = i * 16;
 
   return &ret;
+}
+
+int
+getaddrinfo(const char* node, const char* service, const struct addrinfo* hints, struct addrinfo** res) {
+
+  struct hostent* h = gethostbyname(node);
+  static struct addrinfo r;
+  struct sockaddr_in6* sin;
+  if(r.ai_addr)
+    alloc_free(r.ai_addr);
+  byte_zero(&r, sizeof(r));
+
+  r.ai_family = AF_INET6;
+  // r.ai_protocol = PF_INET6;
+  r.ai_addr = sin = alloc_zero(r.ai_addrlen = sizeof(struct sockaddr_in6));
+
+  byte_copy(&sin->sin6_addr, sizeof(sin->sin6_addr), h->h_addr_list[0]);
 }

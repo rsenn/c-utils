@@ -44,6 +44,8 @@ else
 add-library = $(patsubst %,$(BUILDDIR)%.a,$(call clean-lib,$(1)))
 endif
 
+add-lib-sources = $(wildcard $(foreach NAME,$(1),$(patsubst %,lib/%/*.c,$(1))))
+
 
 #check-header = $(info $(call cmd-check-header,$(1)))
 DEFINES_FILE := build/defines.mk
@@ -1325,13 +1327,16 @@ ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
 
+$(BUILDDIR)libresolvoverride.o: CPPFLAGS += -DNO_MAIN=1 
+$(BUILDDIR)libresolvoverride.o: EXTRA_CFLAGS += -flto -fPIC
 $(BUILDDIR)libresolvoverride.o: libc-resolv-override.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 
 $(BUILDDIR)libresolvoverride$(M64_).so: DEFS += -DNO_MAIN=1
 $(BUILDDIR)libresolvoverride$(M64_).so: CPPFLAGS += -DNO_MAIN=1
-$(BUILDDIR)libresolvoverride$(M64_).so: $(BUILDDIR)libresolvoverride.o $(call add-library,dns errmsg case dns io socket ndelay env buffer stralloc alloc taia tai open fmt scan str byte uint16)
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -shared $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
+$(BUILDDIR)libresolvoverride$(M64_).so: $(BUILDDIR)libresolvoverride.o  $(wildcard lib/*/alloc.c lib/*/iopause.c lib/*/alloc_zero.c lib/*/buffer_1.c lib/*/buffer_2.c lib/*/buffer_flush.c lib/*/buffer_put.c lib/*/buffer_putflush.c lib/*/buffer_putnlflush.c lib/*/buffer_puts.c lib/*/buffer_putsflush.c lib/*/buffer_stubborn.c lib/*/byte_chr.c lib/*/byte_copy.c lib/*/byte_diff.c lib/*/byte_equal.c lib/*/byte_zero.c lib/*/case_diffb.c lib/*/dns_dfd.c lib/*/dns_domain.c lib/*/dns_ip4.c lib/*/dns_*ip6.c lib/*/dns_packet.c lib/*/dns_random.c lib/*/dns_rcip.c lib/*/dns_resolve.c lib/*/dns_sortip.c lib/*/dns_transmit.c lib/errmsg/errmsg_iam.c lib/errmsg/errmsg_info.c lib/*/errmsg_puts.c lib/*/errmsg_warnsys.c lib/*/errmsg_write.c lib/*/fmt_ip4.c lib/*/fmt_ip6.c lib/*/fmt_ulong.c lib/*/fmt_xlong.c lib/*/ndelay_on.c lib/*/open_read.c lib/*/readclose.c lib/*/scan_fromhex.c lib/*/scan_ip4.c lib/*/scan_ip6.c lib/*/scan_pb_type5_fixed32.c lib/*/scan_ulong.c lib/*/scan_ulongn.c lib/*/scan_whitenskip.c lib/*/scan_xlong.c  lib/*/stralloc_append.c lib/*/stralloc_catb.c lib/*/stralloc_copyb.c lib/*/stralloc_copys.c lib/*/stralloc_ready.c  lib/*/openreadclose.c  lib/*/stralloc_readyplus.c lib/*/str_len.c lib/*/taia_add.c lib/*/taia_approx.c lib/*/taia_frac.c lib/*/taia_less.c lib/*/taia_now.c lib/*/taia_pack.c lib/*/taia_sub.c lib/*/taia_uint.c lib/*/tai_pack.c lib/*/uint16_pack_big.c lib/*/uint16_unpack_big.c lib/*/uint32_unpack.c lib/socket/*.c  ) 
+#	$(call add-lib-sources,dns errmsg case dns io socket ndelay env buffer stralloc alloc taia tai open fmt scan str byte uint16)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) -shared -flto -fPIC $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)  $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
 endif
