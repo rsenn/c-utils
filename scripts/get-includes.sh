@@ -1,6 +1,6 @@
 #!/bin/sh
 IFS="
-"
+ "
 TS='  '
 
 SOURCES=$(find "$@" -name "*.[ch]" )
@@ -19,7 +19,8 @@ pushv() {
     eval 'shift;'$1'="${'$1':+$'$1' }$*"'
 }
 pushv_unique() {
-  local __VAR=$1 __ARG IFS=${IFS%${IFS#?}}
+  local __VAR=$1 __ARG IFS="
+ "
   shift
   for __ARG; do
     eval "! isin \$__ARG \${$__VAR}" && pushv "$__VAR" "$__ARG" || return 1
@@ -120,7 +121,10 @@ fi
            echo $SOURCE $INCLUDE_FILES) 1>&2
 
   CPPFLAGS="${INCLUDES}"
-  output_target "$SOURCE" $INCLUDE_FILES 
+
+  [ -n "$CPPFLAGS" ] &&
+  output_target "$SOURCE" $(echo "$INCLUDE_FILES" |sort -u)
+  INCLUDE_FILES=
 
  } <"$TMP"
 done
