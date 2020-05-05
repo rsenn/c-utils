@@ -492,7 +492,7 @@ main(int argc, char* argv[]) {
 #endif
 
 static char**
-resolve_ip4(const char* name, int* nptr) {
+resolve_ip6(const char* name, int* nptr) {
   size_t i, n;
   char b[64];
   static char* addrlist[(256 / 16 + 1) * sizeof(char*)];
@@ -513,8 +513,8 @@ resolve_ip4(const char* name, int* nptr) {
   for(i = 0, n = 0; i < out.len && n < (sizeof(addrlist) / sizeof(addrlist[0]) - 1); i += 16, n++) {
     addrlist[n] = &out.s[i];
 
-    b[fmt_ip6(b, addrlist[n])]='\0';
-        errmsg_info("result: ", b, 0);
+    b[fmt_ip6(b, addrlist[n])] = '\0';
+    errmsg_info("result: ", b, 0);
   }
   if(nptr)
     *nptr = n;
@@ -531,8 +531,8 @@ gethostbyname(const char* name) {
 
   ret.h_name = name;
   ret.h_aliases = a;
-  ret.h_addrtype = AF_INET;
-  ret.h_addr_list = resolve_ip4(name, &i);
+  ret.h_addrtype = AF_INET6;
+  ret.h_addr_list = resolve_ip6(name, &i);
   ret.h_length = i * 16;
 
   return &ret;
@@ -543,14 +543,22 @@ getaddrinfo(const char* node, const char* service, const struct addrinfo* hints,
 
   struct hostent* h = gethostbyname(node);
   static struct addrinfo r;
-  struct sockaddr_in6* sin;
-  if(r.ai_addr)
-    alloc_free(r.ai_addr);
+  struct addrinfo* info;
+  // struct sockaddr_in6* sin;
+  /*  if(r.ai_addr)
+     alloc_free(r.ai_addr); */
   byte_zero(&r, sizeof(r));
 
-  r.ai_family = AF_INET6;
+  r.ai_family = h->h_addrtype;
   // r.ai_protocol = PF_INET6;
-  r.ai_addr = sin = alloc_zero(r.ai_addrlen = sizeof(struct sockaddr_in6));
+  // r.ai_addr = sin = alloc_zero(r.ai_addrlen = sizeof(struct sockaddr_in6));
+  r.ai_addrlen = sizeof(struct sockaddr_in6);
 
-  byte_copy(&sin->sin6_addr, sizeof(sin->sin6_addr), h->h_addr_list[0]);
+  r.ai_addr = h->h_addr_list[0];
+
+  //  byte_copy(&sin->sin6_addr, sizeof(sin->sin6_addr), h->h_addr_list[0]);
+  info = malloc(sizeof(struct addrinfo));
+  byte_copy(info, (sizeof(struct addrinfo)), &r);
+  *res = info;
+  return 0;
 }
