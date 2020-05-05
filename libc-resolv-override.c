@@ -424,38 +424,38 @@ dns_init() {
   char b[64];
   size_t n, i;
   dns_zero(&dns);
-/*   const char* s;
+  /*   const char* s;
 
-  if((s = env_get("DNSCACHE"))) {
-    stralloc_copys(&ns, s);
+    if((s = env_get("DNSCACHE"))) {
+      stralloc_copys(&ns, s);
+    }
+
+    if(!ns.len) {
+      size_t n, p = 0;
+      const char* rcf;
+      stralloc tmp;
+      stralloc_init(&tmp);
+      if((rcf = env_get("RESOLVCONF")) == NULL)
+        rcf = "/etc/resolv.conf";
+      openreadclose(rcf, &tmp, 1024);
+      stralloc_nul(&tmp);
+      do {
+        p += case_finds(&tmp.s[p], tmp.len - p, "nameserver");
+        if(p + 10 <= tmp.len)
+          p += 10;
+      } while(p < tmp.len && !(tmp.s[p] == ' ' || tmp.s[p] == '\t'));
+       p += scan_whitenskip(&tmp.s[p], tmp.len - p);
+      n = scan_nonwhitenskip(&tmp.s[p], tmp.len - p);
+      stralloc_copyb(&ns, &tmp.s[p], n);
+    } */
+
+  n = dns_resolvconfip(ns);
+
+  for(i = 0; byte_diff(ns + i, 16, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"); i += 16) {
+    buffer_puts(buffer_2, "nameserver: ");
+    buffer_put(buffer_2, b, fmt_ip6(b, ns + i));
+    buffer_putnlflush(buffer_2);
   }
-
-  if(!ns.len) {
-    size_t n, p = 0;
-    const char* rcf;
-    stralloc tmp;
-    stralloc_init(&tmp);
-    if((rcf = env_get("RESOLVCONF")) == NULL)
-      rcf = "/etc/resolv.conf";
-    openreadclose(rcf, &tmp, 1024);
-    stralloc_nul(&tmp);
-    do {
-      p += case_finds(&tmp.s[p], tmp.len - p, "nameserver");
-      if(p + 10 <= tmp.len)
-        p += 10;
-    } while(p < tmp.len && !(tmp.s[p] == ' ' || tmp.s[p] == '\t'));
-     p += scan_whitenskip(&tmp.s[p], tmp.len - p);
-    n = scan_nonwhitenskip(&tmp.s[p], tmp.len - p);
-    stralloc_copyb(&ns, &tmp.s[p], n);
-  } */
-
-n = dns_resolvconfip(ns);
-
-for(i = 0; byte_diff(ns+i, 16, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"); i += 16) {
-  buffer_puts(buffer_2, "nameserver: ");
-  buffer_put(buffer_2, b, fmt_ip6(b, ns+i));
-  buffer_putnlflush(buffer_2); 
-}
 }
 
 int
