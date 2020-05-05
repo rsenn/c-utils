@@ -9,6 +9,7 @@
 #include "../open.h"
 #include "../taia.h"
 #include "../stralloc.h"
+#include "../scan.h"
 
 #include <stdlib.h>
 
@@ -115,24 +116,25 @@ init(char ip[256]) {
     if(i == (unsigned long int)-1)
       return -1;
     if(i) {
-      size_t n, p = 0;
+      size_t i, n, p = 0;
       if(!stralloc_append(&data, "\n"))
         return -1;
       i = 0;
 
       do {
-        do {
-          p += case_finds(&data.s[p], data.len - p, "nameserver");
-          if(p + 10 <= data.len)
-            p += 10;
-        } while(p < data.len && !(data.s[p] == ' ' || data.s[p] == '\t'));
+        p += scan_whitenskip(&data.s[p], data.len - p);
 
-        while((data.s[p] == ' ') || (data.s[p] == '\t')) ++p;
-        if(iplen <= 60)
-          if(scan_ip6(data.s + p, ip + iplen)) {
-            iplen += 16;
-          }
-      } while(p < data.len);
+        if(!case_diffb(&data.s[p], 10, "nameserver")) {
+          if(p + 10 < data.len)
+            p += 10;
+          p += scan_whitenskip(&data.s[p], data.len - p);
+
+          if(iplen <= 60)
+            if((i = scan_ip6(data.s + p, ip + iplen)))
+              iplen += 16;
+        }
+        p += byte_chr(&data.s[p], data.len - p, '\n');
+      } while(++p < data.len);
     }
   }
 
