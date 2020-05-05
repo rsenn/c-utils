@@ -36,6 +36,9 @@ extern "C" {
 #ifdef __SSIZE_T_DEF
 #define _SSIZE_T_DEFINED 1
 #endif
+#ifdef _SSIZE_T_DEFINED_
+#define _SSIZE_T_DEFINED 1
+#endif
 
 #if defined(__SSIZE_TYPE__) && !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
 #define _SSIZE_T_DEFINED 1

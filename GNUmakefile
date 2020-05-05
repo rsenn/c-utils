@@ -300,6 +300,9 @@ PREFIX := $(shell $(CROSS_COMPILE)$(CC) -print-search-dirs |sed -n 's,.*:\s\+=\?
 endif
 #$(info PREFIX: $(PREFIX))
 
+ifneq ($(SYSROOT),)
+CC += --sysroot=$(SYSROOT)
+endif
 #ifeq ($(SYSROOT),)
 #ifneq ($(CROSS_COMPILE),$(subst /,-,$(CROSS_COMPILE)))
 #SYSROOT := $(subst /bin/,,$(CROSS_COMPILE))

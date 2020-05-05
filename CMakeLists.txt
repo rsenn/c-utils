@@ -103,6 +103,19 @@ endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 
 check_c_compiler_flag("-flto" F_LTO)
+check_c_compiler_flag("-fPIC" F_PIC)
+check_c_compiler_flag("-fPIE" F_PIE)
+
+foreach(FLAG lto PIC PIE)
+  check_c_compiler_flag("-f${FLAG}" "F_${FLAG}")
+  string(TOUPPER "${FLAG}" NAME)
+
+  if("${F_${NAME}}")
+    set("${F_${NAME}}" "-f${FLAG}")
+  else("${F_${NAME}}")
+     set("${F_${NAME}}" "")
+ endif("${F_${NAME}}")
+endforeach()
 
 if(F_LTO)
   option(ENABLE_LTO "Enable link-time optimization" OFF)
@@ -111,6 +124,13 @@ if(EMSCRIPTEN)
   option(ENABLE_LTO "Enable link-time optimization" ON)
 endif(EMSCRIPTEN)
 
+#[[
+if(ENABLE_LTO)
+  set(F_LTO "-flto")
+else(ENABLE_LTO)
+  set(F_LTO "")
+endif(ENABLE_LTO)
+]]
 
 if(ENABLE_LTO)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto")
@@ -638,18 +658,23 @@ set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns
   #sig
   slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix wait xml ucs)
 
-foreach(ARCHIVE ${MODSUBDIRS})
-  file(GLOB MODHEADERS lib/${ARCHIVE}.h lib/${ARCHIVE}_*.h)
-  file(GLOB MODSOURCES lib/${ARCHIVE}/*.c)
+foreach(LIBNAME ${MODSUBDIRS})
+  file(GLOB MODHEADERS lib/${LIBNAME}.h lib/${LIBNAME}_*.h)
+  file(GLOB MODSOURCES lib/${LIBNAME}/*.c)
   if(NOT MODSOURCES)
-  file(GLOB MODSOURCES lib/${ARCHIVE}_*.c)
+  file(GLOB MODSOURCES lib/${LIBNAME}_*.c)
   endif()
-  add_library("${ARCHIVE}" ${MODSOURCES} ${MODHEADERS})
-  set_target_properties("${ARCHIVE}" PROPERTIES
+  add_library("${LIBNAME}" STATIC ${MODSOURCES} ${MODHEADERS})
+  add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS})
+  set_target_properties("${LIBNAME}" PROPERTIES
     PREFIX ""
     COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS}"
+  )  
+  set_target_properties("${LIBNAME}-shared" PROPERTIES
+    PREFIX "lib"
+    COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC"
   )
-endforeach(ARCHIVE)
+endforeach(LIBNAME)
 
 foreach(NETLIB dns http io ndelay socket)
    target_link_libraries(${NETLIB} ${LIBMSWSOCK})
@@ -726,12 +751,36 @@ function(add_program PROG)
   target_link_libraries(${PROG} ${ARGN} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
   install(TARGETS ${PROG} DESTINATION bin)
   if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
-  set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR}")
+  set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR}"
+    COMPILE_FLAGS "")
   endif(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
   if(EMSCRIPTEN)
     set_target_properties(${PROG} PROPERTIES SUFFIX ".${EMSCRIPTEN_EXE_SUFFIX}")
   endif(EMSCRIPTEN)
 endfunction(add_program PROG)
+function(add_module MOD SRC)
+  unset(INCLUDES)
+   #[[ foreach(DEP ${ARGN})
+    list(FIND MODSUBDIRS "${DEP}" I)
+    if(I GREATER -1)
+    list(APPEND INCLUDES "lib/${DEP}.h")
+    endif(I GREATER -1)
+    endforeach(DEP ${ARGN})]]
+  #message("Program '${MOD}' dependencies: ${INCLUDES}")
+  set(LIBS "")
+  foreach(LIB ${ARGN})
+  list(APPEND LIBS "${LIB}-shared")
+  endforeach(LIB ${ARGN})
+  if(NOT EMSCRIPTEN)
+  add_library(${MOD} SHARED ${SRC}  )
+  target_link_libraries(${MOD} ${LIBS} ${EXTRA_LIBRARIES})
+  install(TARGETS ${MOD} DESTINATION libexec)
+  set_target_properties(${MOD} PROPERTIES 
+    LINK_FLAGS "-L${OPENSSL_LIB_DIR} -shared"
+    )
+  target_compile_options(${MOD} PUBLIC -fPIC)
+  endif(NOT EMSCRIPTEN)
+endfunction(add_module MOD)
 
 
 
@@ -824,6 +873,9 @@ add_program(logserial rdir dir errmsg io ndelay strarray stralloc buffer taia ta
 
 add_program(parse strlist errmsg)
 add_program(testihex ihex stralloc buffer alloc mmap)
+add_program(setuidgid errmsg  mmap open scan str)
+#add_program(libc-resolv-override dns errmsg  mmap open scan str)
+add_module(libresolvoverride libc-resolv-override.c dns stralloc)
 
 add_subdirectory(tests)
 add_subdirectory(examples)

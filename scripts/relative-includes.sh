@@ -39,7 +39,7 @@ grep -H -n '^\s*#\s*include' $SOURCES |
 
      if [ "$INCLUDE_REL" != "$INCLUDE_FILE" ]; then
        echo "sed -i '$LINE s|$INCLUDE|$INCLUDE_OUT|' $FILE" 
-       echo "FILE=$FILE LINE=$LINE INCLUDE=$INCLUDE INCLUDE_REL=$INCLUDE_REL" 1>&2
+      # echo "FILE=$FILE LINE=$LINE INCLUDE=$INCLUDE INCLUDE_REL=$INCLUDE_REL" 1>&2
      fi
    done)
   done)
