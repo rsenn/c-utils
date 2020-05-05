@@ -1,29 +1,27 @@
-#include "lib/case.h"
+
 #include "lib/dns.h"
-#include "lib/io.h"
-#include "lib/socket.h"
-#include "lib/ndelay.h"
-#include "lib/stralloc.h"
-#include "lib/taia.h"
-#include "lib/tai.h"
-#include "lib/open.h"
-#include "lib/scan.h"
-#include "lib/str.h"
-#include "lib/byte.h"
-#include "lib/uint16.h"
-#include "lib/uint8.h"
-#include "lib/env.h"
+
 #include "lib/ip6.h"
 #include "lib/ip4.h"
-#include "lib/fmt.h"
 #include "lib/buffer.h"
+#include "lib/byte.h"
+#include "lib/case.h"
+#include "lib/env.h"
+#include "lib/errmsg.h"
+#include "lib/fmt.h"
+#include "lib/scan.h"
+#include "lib/socket.h"
+#include "lib/alloc.h"
+#include "lib/stralloc.h"
+#include "lib/uint16.h"
 
 #include "libc-resolv-override.h"
 #include <errno.h>
+#include <netdb.h>
 
-char ip[256];
+static char ip[256];
 
-int
+static int
 dns_domain_todot(char* out, const char* d, size_t n) {
   char ch;
   char ch2;
@@ -74,7 +72,7 @@ dns_domain_todot(char* out, const char* d, size_t n) {
   return idx;
 }
 #if 0
-int
+static int
 dns_event(struct dns_resolver* d) {
   char udpbuf[513];
   unsigned char ch;
@@ -207,8 +205,8 @@ dns_event(struct dns_resolver* d) {
   return 0;
 }
 #endif
-
-int
+/*
+static int
 dns_get_addr(struct dns_resolver* dns, struct in_addr* addr) {
   int ret;
   stralloc_zero(&dns->result);
@@ -217,7 +215,7 @@ dns_get_addr(struct dns_resolver* dns, struct in_addr* addr) {
   return ret;
 }
 
-int
+static int
 dns_get_name(struct dns_resolver* dns, char* out, size_t len) {
   unsigned int pos;
   char header[12];
@@ -271,7 +269,7 @@ dns_get_name(struct dns_resolver* dns, char* out, size_t len) {
   return 0;
 }
 
-int
+static int
 dns_name_lookup(struct dns_resolver* dns, const char* name) {
   char* domain = 0;
 
@@ -285,8 +283,9 @@ dns_name_lookup(struct dns_resolver* dns, const char* name) {
 
   return 0;
 }
+*/
 /*
-int
+static int
 dns_post_poll(struct dns_resolver* d, const struct pollfd* x) {
   int fd;
 
@@ -308,7 +307,7 @@ dns_post_poll(struct dns_resolver* d, const struct pollfd* x) {
   return dns_event(d);
 }
 
-int
+static int
 dns_post_select(struct dns_resolver* d, const fd_set* readset, const fd_set* writeset) {
   int fd;
 
@@ -330,7 +329,7 @@ dns_post_select(struct dns_resolver* d, const fd_set* readset, const fd_set* wri
   return dns_event(d);
 }
 
-int
+static int
 dns_pre_poll(struct dns_resolver* dns, struct pollfd* pfd) {
   if(dns->s1) {
     pfd->fd = dns->s1 - 1;
@@ -350,7 +349,7 @@ dns_pre_poll(struct dns_resolver* dns, struct pollfd* pfd) {
   return 0;
 }
 
-int
+static int
 dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* writeset) {
   int fd;
 
@@ -373,7 +372,7 @@ dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* writeset) {
 } */
 
 /* converts unsigned int to string. returns length of the string. */
-unsigned int
+static unsigned int
 utoa(char* buf, unsigned int i) {
   register char* p = buf;
   register unsigned int n = 0; /* buffer index */
@@ -418,8 +417,11 @@ utoa(char* buf, unsigned int i) {
 
 static char ns[256];
 static struct dns_resolver dns;
+static char seed[128];
+static stralloc fqdn;
+static stralloc out;
 
-void
+static void
 dns_init() {
   char b[64];
   size_t n, i;
@@ -448,17 +450,72 @@ dns_init() {
       n = scan_nonwhitenskip(&tmp.s[p], tmp.len - p);
       stralloc_copyb(&ns, &tmp.s[p], n);
     } */
+  dns_random_init(seed);
 
   n = dns_resolvconfip(ns);
 
   for(i = 0; byte_diff(ns + i, 16, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"); i += 16) {
-    buffer_puts(buffer_2, "nameserver: ");
-    buffer_put(buffer_2, b, fmt_ip6(b, ns + i));
-    buffer_putnlflush(buffer_2);
+    b[fmt_ip6(b, ns + i)] = '\0';
+    errmsg_info("nameserver: ", b, 0);
   }
 }
 
+#ifndef NO_MAIN
 int
-main() {
+main(int argc, char* argv[]) {
+  char str[IP4_FMT];
+  unsigned int i;
   dns_init();
+  if(*argv)
+    ++argv;
+  while(*argv) {
+    if(!stralloc_copys(&fqdn, *argv)) {
+        errmsg_warnsys("out of memory", 0);
+    return 111;
+    }
+    if(dns_ip4(&out, &fqdn) == -1) {
+      errmsg_warnsys("unable to find IP address for ", *argv, 0);
+      return 111;
+    }
+
+    for(i = 0; i + 4 <= out.len; i += 4) {
+      if(i)
+        buffer_puts(buffer_1, " ");
+      buffer_put(buffer_1, str, ip4_fmt(str, out.s + i));
+    }
+    buffer_puts(buffer_1, "\n");
+    ++argv;
+  }
+  buffer_flush(buffer_1);
+  return 0;
+}
+#endif
+
+struct hostent*
+gethostbyname(const char* name) {
+  size_t i;
+  static struct hostent ret;
+  static char* a[2] = {NULL, NULL};
+  if(ret.h_addr_list)
+    alloc_free(ret.h_addr_list);
+
+  if(!stralloc_copys(&fqdn, name)) {
+        errmsg_warnsys("out of memory", 0);
+    return NULL;
+  }
+  if(dns_ip4(&out, &fqdn) == -1) {
+    errmsg_warnsys("unable to find IP address for ", name, 0);
+    return NULL;
+  }
+
+  ret.h_name = name;
+  ret.h_aliases = a;
+  ret.h_addrtype = AF_INET;
+  ret.h_length = out.len;
+  ret.h_addr_list = alloc_zero(((out.len / 16) + 1) * sizeof(char*));
+
+  for(i = 0; i < out.len; i += 16)
+    ret.h_addr_list[i] = &out.s[i];
+
+  return &ret;
 }
