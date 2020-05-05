@@ -39,7 +39,6 @@ OBJECT='$(BUILDDIR)'$(basename "$SOURCE" .c)${SUFFIX}
 ${CPPFLAGS:+$OBJECT: CPPFLAGS += $CPPFLAGS
 }$OBJECT: ${DEPS}
 $TS\$(CROSS_COMPILE)\$(CC) \$(CFLAGS) \$(EXTRA_CFLAGS) \$(CPPFLAGS) \$(INCLUDES) \$(DEFS) -c -o \$@ \$<
-
 EOF
 )
 }
@@ -122,7 +121,7 @@ fi
 
   CPPFLAGS="${INCLUDES}"
 
-  [ -n "$CPPFLAGS" ] &&
+  #[ -n "$CPPFLAGS" ] &&
   output_target "$SOURCE" $INCLUDE_FILES
   INCLUDE_FILES=
 
