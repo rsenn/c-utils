@@ -1193,7 +1193,11 @@ ifeq ($(BUILD_LIBBZ2),1)
 $(call lib-target,libbz2,,3rdparty/bzip2/*.c)
 endif
 ifeq ($(BUILD_LIBLZMA),1)
-$(call lib-target,liblzma,,3rdparty/xz/*/*.c 3rdparty/xz/*/*/*.c,CPPFLAGS += -I3rdparty/xz -DHAVE_CONFIG_H=1 -DMYTHREAD_POSIX=1)
+LIBLZMA_SOURCES :=  $(shell ls -d 3rdparty/xz/src/liblzma/*.c 3rdparty/xz/src/liblzma/*/*.c |grep -v 'fast\|alone')
+LIBLZMA_INCLUDES := -I3rdparty/xz/src/common -I3rdparty/xz/src/liblzma/check -I3rdparty/xz/src/liblzma/common -I3rdparty/xz/src/liblzma/delta -I3rdparty/xz/src/liblzma/lz -I3rdparty/xz/src/liblzma/lzma -I3rdparty/xz/src/liblzma/rangecoder -I3rdparty/xz/src/liblzma/simple -include stdint.h -include stdbool.h
+
+
+$(call lib-target,liblzma,,$(LIBLZMA_SOURCES),CPPFLAGS += $(LIBLZMA_INCLUDES) -I3rdparty/xz -DMYTHREAD_POSIX=1 -DHAVE_INTTYPES_H=1 -DHAVE_LIMITS_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDINT_H=1 -DHAVE_STRING_H=1 -DHAVE_STRINGS_H=1 -DHAVE_SMALL=1 -DHAVE_CHECK_CRC32=1 -DHAVE_CHECK_CRC64=1 -DHAVE_CHECK_SHA256=1 -DHAVE_DECODER_foo=1 -DHAVE_DECODERS=1 -DHAVE_DECODER_ARM=1 -DHAVE_DECODER_ARMTHUMB=1 -DHAVE_DECODER_DELTA=1 -DHAVE_DECODER_IA64=1 -DHAVE_DECODER_LZMA1=1 -DHAVE_DECODER_LZMA2=1 -DHAVE_DECODER_POWERPC=1 -DHAVE_DECODER_SPARC=1 -DHAVE_DECODER_X86=1 -DHAVE_ENCODER_foo=1 -DHAVE_ENCODERS=1 -DHAVE_ENCODER_ARM=1 -DHAVE_ENCODER_ARMTHUMB=1 -DHAVE_ENCODER_DELTA=1 -DHAVE_ENCODER_IA64=1 -DHAVE_ENCODER_LZMA1=1 -DHAVE_ENCODER_LZMA2=1 -DHAVE_ENCODER_POWERPC=1 -DHAVE_ENCODER_SPARC=1 -DHAVE_ENCODER_X86=1 -DHAVE_MF_BT2=1 -DHAVE_MF_BT3=1 -DHAVE_MF_BT4=1 -DHAVE_MF_HC3=1 -DHAVE_MF_HC4=1)
 endif
 
 $(BUILDDIR)decode-ls-lR$(M64_)$(EXEEXT): $(BUILDDIR)decode-ls-lR.o $(call add-library, stralloc buffer alloc str byte)
