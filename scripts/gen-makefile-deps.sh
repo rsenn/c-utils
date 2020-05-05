@@ -19,6 +19,6 @@ CMD='echo "'$OUTSTR'"'
 CMD='y=$(gcc -MM -I. "$x" | sed ":lp; \\|\\\\$| { N; s|\\\\\\n\\s*||; b lp }; s|.*: ||; s|/[^.]\+/\.\.||g"); '$CMD
 CMD='y=; '$CMD
 CMD='for x ; do '$CMD'; done'
-CMD="$CMD"'; ./scripts/get-includes.sh 3rdparty'
+CMD="$CMD"'; ./scripts/get-includes.sh 3rdparty 2>/dev/null'
 
 eval "$CMD${PIPE:+ | $PIPE}"

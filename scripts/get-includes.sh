@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 IFS="
  "
-TS='  '
+TS=$'\t'
 
-SOURCES=$(find "$@" -name "*.[ch]" )
+SOURCES=$(find "$@" -name "*.c" )
 find_source() {
   echo "$SOURCES" | grep -E "(/|^)$1\$"
 }
@@ -123,7 +123,7 @@ fi
   CPPFLAGS="${INCLUDES}"
 
   [ -n "$CPPFLAGS" ] &&
-  output_target "$SOURCE" $(echo "$INCLUDE_FILES" |sort -u)
+  output_target "$SOURCE" $INCLUDE_FILES
   INCLUDE_FILES=
 
  } <"$TMP"
