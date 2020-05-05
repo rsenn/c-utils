@@ -422,6 +422,7 @@ static struct dns_resolver dns;
 void
 dns_init() {
   char b[64];
+  size_t n, i;
   dns_zero(&dns);
 /*   const char* s;
 
@@ -448,11 +449,13 @@ dns_init() {
     stralloc_copyb(&ns, &tmp.s[p], n);
   } */
 
-dns_resolvconfip(ns);
+n = dns_resolvconfip(ns);
 
-  buffer_puts(buffer_2, "nameserver is: ");
-  buffer_put(buffer_2, b, fmt_ip6(b, ns));
-  buffer_putnlflush(buffer_2);
+for(i = 0; byte_diff(ns+i, 16, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"); i += 16) {
+  buffer_puts(buffer_2, "nameserver: ");
+  buffer_put(buffer_2, b, fmt_ip6(b, ns+i));
+  buffer_putnlflush(buffer_2); 
+}
 }
 
 int
