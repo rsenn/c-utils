@@ -88,20 +88,81 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "variable: IFS\nvariable: TS\nvariable: SOURCES\nexpansion: $(find \"$@\" -name \"*.c\" )\nfunction: find_source\nexpansion: $SOURCES\nexpansion: $1\nfunction: isin\nvariable: __NEEDLE\nexpansion: $1\nexpansion: $#\nexpansion: $__NEEDLE\nexpansion: $1\nfunction: pushv\nexpansion: $1\nexpansion: $1\nexpansion: $1\nfunction: pushv_unique\nvariable: __VAR\nexpansion: $1\nvariable: __ARG\nvariable: IFS\nexpansion: $__VAR\nexpansion: $__VAR\nexpansion: $__ARG\nfunction: output_target\nvariable: SOURCE\nexpansion: $1\nvariable: SUFFIX\nvariable: IFS\nvariable: DEPS\nexpansion: $SOURCE\nexpansion: $*\nvariable: OBJECT\nexpansion: $(basename \"$SOURCE\" .c)${SUFFIX}\nexpansion: ${CPPFLAGS:+$OBJECT: CPPFLAGS += $CPPFLAGS\n}$OBJECT\nexpansion: ${DEPS}\nexpansion: $TS\nvariable: ALL_INCLUDES\nexpansion: $SOURCES\nvariable: SOURCE\nexpansion: ${SOURCE#./}\nvariable: SOURCE_DIR\nexpansion: $(dirname \"${SOURCE}\")\nexpansion: $SOURCE_DIR\nvariable: SOURCE_ROOT\nexpansion: ${SOURCE_DIR#3rdparty/}\nvariable: SOURCE_ROOT\nexpansion: ${SOURCE_ROOT%%/*}\nvariable: SOURCE_ROOT\nvariable: INCLUDES\nvariable: INCLUDE_FILES\nvariable: CMDS\nvariable: TMP\nexpansion: `mktemp $PWD/tmpXXXXX`\nexpansion: $SOURCE\nexpansion: $TMP\nvariable: IFS\nvariable: IFS\nvariable: INCLUDE\nexpansion: ${INCLUDE_CMD#*include}\nvariable: INCLUDE\nexpansion: ${INCLUDE#[ \\r\\t]}\nvariable: INCLUDE\nexpansion: ${INCLUDE%[ \\r\\t]}\nexpansion: $INCLUDE\nvariable: SYSINCLUDE\nvariable: SYSINCLUDE\nvariable: INCLUDE_FILE\nexpansion: ${INCLUDE#*[\\\"<]}\nvariable: INCLUDE_FILE\nexpansion: ${INCLUDE_FILE%[\\\">]*}\nexpansion: $SYSINCLUDE\nexpansion: $INCLUDE_FILE\nvariable: CMDS\nexpansion: ${CMDS:+$CMDS }$INCLUDE_CMD\nexpansion: $INCLUDE_FILE\nvariable: RELATIVE\nvariable: RELATIVE\nvariable: INCLUDE_NAME\nexpansion: $(basename \"$INCLUDE_FILE\")\nexpansion: $RELATIVE\nvariable: INCLUDE_PATH\nexpansion: $SOURCE_DIR\nexpansion: ${INCLUDE_FILE}\nvariable: DIR\nexpansion: $SOURCE_DIR\nvariable: INCLUDE_PATH\nexpansion: $( (find \"${DIR}\" -name \"$INCLUDE_NAME\" -not -wholename \"*build/*\") | head -n1)\nexpansion: $INCLUDE_PATH\nexpansion: $DIR\nvariable: DIR\nexpansion: `dirname \"$DIR\"`\nexpansion: $RELATIVE\nexpansion: $INCLUDE_PATH\nexpansion: ${INCLUDE_PATH}\nexpansion: $INCLUDE_PATH\nexpansion: ${INCLUDE_PATH}\nexpansion: $FILE\nexpansion: $LINE\nexpansion: $INCLUDE_CMD\nexpansion: $INCLUDE_PATH\nvariable: INCLUDE_REL\nexpansion: $( realpath --relative-to=\"$(dirname \"$SOURCE\")\" $INCLUDE_PATH)\nvariable: INCLUDE_DIR\nexpansion: `dirname $INCLUDE_PATH`\nvariable: INCLUDE_DIR\nexpansion: ${INCLUDE_DIR#./}\nexpansion: ${INCLUDE_DIR}\nexpansion: ${INCLUDE_DIR}\nexpansion: ${INCLUDE_PATH}\nvariable: CPPFLAGS\nexpansion: ${INCLUDES}\nexpansion: $SOURCE\nexpansion: $INCLUDE_FILES\nvariable: INCLUDE_FILES\nexpansion: $TMP\nexpansion: $ALL_INCLUDES\nexpansion: $ALL_INCLUDES",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 2728,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "eagle-gen-cmds.c",
+			"file": "libc-resolv-override.c",
 			"settings":
 			{
-				"buffer_size": 44642,
+				"buffer_size": 11711,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "setuidgid.c",
+			"settings":
+			{
+				"buffer_size": 1306,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 37862,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "scripts/gen-makefile-deps.sh",
+			"settings":
+			{
+				"buffer_size": 897,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "scripts/relative-includes.sh",
+			"settings":
+			{
+				"buffer_size": 1124,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "scripts/get-includes.sh",
+			"settings":
+			{
+				"buffer_size": 3060,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "GNUmakefile",
+			"settings":
+			{
+				"buffer_size": 66016,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/daemontools/src/setuidgid.c",
+			"settings":
+			{
+				"buffer_size": 723,
 				"line_ending": "Unix"
 			}
 		}
@@ -134,15 +195,35 @@
 		"selected_items":
 		[
 			[
+				"toks",
+				"Toks: Full report any occurrences of symbol (prompt)"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"ctags",
+				"CTags: Show Symbols (all)"
+			],
+			[
+				"ctag",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"adv",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
 				"outlin",
 				"Browse Mode: Outline (Right)"
 			],
 			[
 				"Package Control: ",
-				"Package Control: Install Package"
-			],
-			[
-				"install",
 				"Package Control: Install Package"
 			],
 			[
@@ -218,10 +299,6 @@
 				"Package Control: Remove Package"
 			],
 			[
-				"ctags",
-				"Build With: Rebuild CTags"
-			],
-			[
 				"add re",
 				"Package Control: Add Repository"
 			],
@@ -274,20 +351,12 @@
 				"SchemeEditor: Edit Current Scheme"
 			],
 			[
-				"install ",
-				"Package Control: Install Package"
-			],
-			[
 				"remove",
 				"Package Control: Remove Package"
 			],
 			[
 				"instalp",
 				"Package Control: Install Package"
-			],
-			[
-				"adv",
-				"Package Control: Advanced Install Package"
 			],
 			[
 				"html",
@@ -387,14 +456,71 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/coff",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open",
 		"/home/roman/Dokumente/Sources/c-utils/lib/rdir",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep_internal.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep_loose.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec0.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec0_run.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_fromenv.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r_name.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_run.c",
+		"/home/roman/Dokumente/Sources/c-utils/setuidgid.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
+		"/home/roman/Dokumente/Sources/daemontools/src/setuidgid.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xexecvep.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec0.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec0_run.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec_fromenv.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec_r.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec_r_name.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec_run.c",
+		"/home/roman/Dokumente/Sources/skalibs/src/sysdeps/trycmsgcloexec.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/alloc/alloc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/alloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_ip6.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
+		"/home/roman/Dokumente/Sources/c-utils/FunctionGenerator-ICL8038.brd",
+		"/home/roman/Dokumente/Sources/c-utils/build/functions.mk",
+		"/home/roman/Dokumente/Sources/c-utils/dnsip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_rcip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/case.h",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_equal.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/fmt_ip4.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ip6.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/scan_ip6.c",
+		"/home/roman/Dokumente/Sources/c-utils/libc-resolv-override.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_packet.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_name.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_ip4.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_dfd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/textcode/scan_base64.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/textcode/scan_uuencoded.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_fill.c",
+		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/apps/opt.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_nd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/env/env_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/openreadclose.c",
+		"/home/roman/Dokumente/Sources/c-utils/3rdparty/bzip2/blocksort.c",
+		"/home/roman/Dokumente/Sources/c-utils/libc-resolv-override.c",
 		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_double.c",
@@ -413,7 +539,6 @@
 		"/opt/eagle-7.2.0/scr/eagle.scr",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_sort.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putdouble.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute_double.c",
 		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
@@ -459,7 +584,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
 		"/home/roman/Dokumente/Sources/c-utils/xmlpp.c",
@@ -467,62 +591,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/textcode.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_mmapprivate.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_private.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write_fd.c",
-		"/home/roman/Dokumente/Sources/c-utils/FunctionGenerator-ICL8038.sch",
-		"/home/roman/Dokumente/Sources/an-tronics/eagle/FunctionGenerator-ICL8038.brd",
-		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_splice.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/array/array_allocate.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Dokumente/Sources/c-utils/serial.h",
-		"/home/roman/Dokumente/Sources/c-utils/mediathek-parser.c",
-		"/home/roman/Dokumente/Sources/c-utils/montty.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_from_argv.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_lzma.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn2.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_to_argv.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_dump.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_flush.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_feed.c",
-		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getn.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_init_free.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/alloc/alloc_zero.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
-		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
-		"/home/roman/Dokumente/Sources/c-utils/cfg.sh",
-		"/home/roman/Dokumente/Sources/c-utils/jsontest.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_relative.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_realpath.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_canonical_sa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_canonical.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/getopt.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_collapse.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_to_argv.c",
-		"/home/roman/Dokumente/Sources/c-utils/pathtool.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_absolute_sa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_cat.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_cat_unique.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_exists.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_index_of.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_index_of_b.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_start.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_finds.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_removeb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_remove_at.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_rchrs.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pushb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push_sa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_at.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_copyat.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write.c"
 	],
 	"find":
 	{
@@ -533,6 +602,7 @@
 		"height": 258.0,
 		"where_history":
 		[
+			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/c-utils/lib/http,*.c,*.h,*.js",
@@ -552,134 +622,134 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"print_wire",
-			"print_bound",
-			"print_bounds",
-			"Measure",
-			"print_bound",
-			"print_bounds",
-			"print_bou",
-			"print_wir",
-			"print_xy",
-			"print_wire",
-			"print_bounds",
-			"Measures",
-			"Measure",
-			"print_bound",
-			"print_wire",
-			"^print.wire",
-			"print_bounds",
-			"print_bound",
-			"print_",
-			"print_wire",
-			"<layer ",
-			"<layer",
-			"<lay",
-			"layer",
-			"<layer",
-			"layer",
-			"<layer",
-			"print_bounds",
-			"print_wire",
-			"print_bounds",
-			"wire_bound",
-			"_bounds",
-			"bounds",
-			"^[^ ]*print_rec",
-			"^[^ ]*print",
-			"^[^ ]*bound",
-			"vec\\(",
-			"vector\\(",
-			"wire\\(",
-			"^vector",
-			"print_wire",
-			"print_xy",
-			"print_base",
-			"print_xy",
-			"print_verte",
-			"print_xy",
-			"^print_xy",
-			"print_xy",
-			"print_vert",
-			"print_verte",
-			"print_vertex",
-			"print_vert",
-			"line\\(",
-			"line",
-			"vector",
-			"point",
-			"poinnt",
-			"ector",
-			"vector\\(",
-			"vector",
-			"line\\(",
-			"line",
-			"line\\(",
-			"line\\)(",
-			"create_wire",
-			"print_wire",
-			"struct pos",
-			"pos",
-			"create_point",
-			"create_po",
-			"double",
-			"create_point",
-			"create_wire",
-			"struct vert",
-			"_vertex",
-			"vertex",
-			"border",
-			"^[^ ]*print",
-			"^[^ ]*border",
-			"print_border",
-			"print_rect",
-			"^[^ ]*wire",
-			"wire_b",
-			"wire_bä",
-			"wire_b",
-			"bounds",
-			"print_wire",
-			"print_ver",
-			"print_wire",
-			"print_vertex",
-			"vertex",
-			"^[^ ]*wire",
-			"wire.*\\*",
-			"\\*wire",
-			"\\(.*wire",
-			"wire",
-			"print_wire",
-			"print_rect",
-			"rect_round",
-			"round_to",
-			"rect_round",
-			"round_to",
-			"iround",
-			"round_to",
-			"iroud",
-			"round_to",
-			"rect_round",
-			"iround",
-			"round",
-			"rect_round",
-			"wire_bou",
+			"output_",
+			"IFS=",
+			"pushv_uniq",
+			"^ ",
+			"set -x",
+			"INCLUDE_CMD",
+			"Not found",
+			"set -x",
+			"lzma",
+			"F_LTO",
+			"flto",
+			"LTO",
+			"add_mod",
+			"add_lib",
+			"add_mod",
+			"libres",
+			"_SOURCES",
+			"add_mod",
+			"add_program",
 			"byte_chr",
-			"fmt_doub",
-			"print_vert",
-			"print_rect",
-			"_rect",
-			"dump_rec",
-			"outset",
-			"rect_round",
-			"wire_bou",
-			"bounds.*=",
-			"bounds",
-			"^rect_",
-			"rect_",
-			"wire_bounds",
-			"print_rec",
-			"wire_bou",
-			"print_rect"
+			"diffn",
+			"scan_int",
+			"str_diff",
+			"setuidgid",
+			"it:",
+			"it",
+			"PROGRAMS",
+			"override",
+			"PROGRAMS",
+			"ip4.c",
+			"resolving",
+			"resolve",
+			"dns",
+			"dns/",
+			"resolve",
+			"iopaus",
+			"openread",
+			"errmsg",
+			"errmsg_inf",
+			"libres",
+			"socket",
+			"hmap",
+			"socket",
+			"dns/\\*",
+			"dns/*",
+			"v6any",
+			"V6any",
+			"V6",
+			"libres",
+			"add-lib",
+			"resolve_tx",
+			"buffer_1",
+			"libres",
+			"buffer_1",
+			"uffer_2",
+			"buffer_2",
+			"errmsg",
+			"buffer_2",
+			"resolv-",
+			"libres",
+			"EXEEXT",
+			"static }",
+			"libc-",
+			"dns_ip4",
+			"<= 60",
+			"scan",
+			"scan_",
+			"scan_ip",
+			"whitens",
+			"return",
+			"dns_ini",
+			"rcip",
+			"nameser",
+			"transmit_start",
+			"in6addr_any",
+			"dns->packet",
+			"dns_ip4_packet",
+			"IAC_DNS_H_",
+			"transmit_",
+			"transmit",
+			"memset",
+			"fromdot",
+			"dns_domain_fromdot",
+			"getname",
+			"uint8",
+			"memset",
+			"struct in_addrcha",
+			"struct in_addr",
+			"DNS_NAME4_DOMAIN",
+			"name4_doma",
+			"name4",
+			"libc-",
+			"libc",
+			"getname",
+			"packet_get",
+			"memcmp",
+			"putnl",
+			"whitens",
+			"find",
+			"finds",
+			"stralloc_",
+			"find",
+			"thistc",
+			"nexttcp",
+			"poll",
+			"nexttcp",
+			"transmit",
+			"nexttc",
+			"getname",
+			"dns_packet_getname",
+			"getname",
+			"ip4_pack",
+			"ip4",
+			"getname",
+			"ip4",
+			"init",
+			"_init",
+			"dns_ip4_packet",
+			"getname",
+			"ip4_pac",
+			"ip4",
+			"\\*d",
+			"dns_packet_getname",
+			"resolvconfip",
+			"dns_resolvconfip",
+			"resolvconf",
+			"logserial",
+			"PROGRAMS"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -687,6 +757,10 @@
 		"regex": true,
 		"replace_history":
 		[
+			"",
+			"}",
+			"dns->t.packet",
+			"DNS_H_",
 			"(root",
 			" \\",
 			"process_serial",
@@ -804,7 +878,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 2728,
 						"regions":
 						{
 						},
@@ -813,13 +887,608 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/scripts/get-includes.sh",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									12,
+									15
+								],
+								[
+									21,
+									23
+								],
+								[
+									31,
+									38
+								],
+								[
+									39,
+									64
+								],
+								[
+									65,
+									76
+								],
+								[
+									89,
+									97
+								],
+								[
+									115,
+									117
+								],
+								[
+									123,
+									127
+								],
+								[
+									134,
+									142
+								],
+								[
+									144,
+									146
+								],
+								[
+									159,
+									161
+								],
+								[
+									192,
+									201
+								],
+								[
+									206,
+									208
+								],
+								[
+									241,
+									246
+								],
+								[
+									268,
+									270
+								],
+								[
+									276,
+									278
+								],
+								[
+									283,
+									285
+								],
+								[
+									295,
+									307
+								],
+								[
+									320,
+									325
+								],
+								[
+									326,
+									328
+								],
+								[
+									329,
+									334
+								],
+								[
+									335,
+									338
+								],
+								[
+									396,
+									402
+								],
+								[
+									415,
+									421
+								],
+								[
+									424,
+									430
+								],
+								[
+									454,
+									467
+								],
+								[
+									474,
+									480
+								],
+								[
+									481,
+									483
+								],
+								[
+									486,
+									492
+								],
+								[
+									506,
+									509
+								],
+								[
+									516,
+									520
+								],
+								[
+									522,
+									529
+								],
+								[
+									530,
+									532
+								],
+								[
+									534,
+									540
+								],
+								[
+									554,
+									587
+								],
+								[
+									601,
+									652
+								],
+								[
+									654,
+									661
+								],
+								[
+									662,
+									665
+								],
+								[
+									775,
+									787
+								],
+								[
+									804,
+									812
+								],
+								[
+									820,
+									826
+								],
+								[
+									828,
+									840
+								],
+								[
+									844,
+									854
+								],
+								[
+									855,
+									877
+								],
+								[
+									884,
+									895
+								],
+								[
+									917,
+									928
+								],
+								[
+									929,
+									952
+								],
+								[
+									955,
+									966
+								],
+								[
+									976,
+									994
+								],
+								[
+									1005,
+									1016
+								],
+								[
+									1027,
+									1035
+								],
+								[
+									1037,
+									1050
+								],
+								[
+									1053,
+									1057
+								],
+								[
+									1086,
+									1089
+								],
+								[
+									1090,
+									1112
+								],
+								[
+									1143,
+									1150
+								],
+								[
+									1152,
+									1156
+								],
+								[
+									1165,
+									1168
+								],
+								[
+									1218,
+									1221
+								],
+								[
+									1234,
+									1241
+								],
+								[
+									1242,
+									1265
+								],
+								[
+									1270,
+									1277
+								],
+								[
+									1278,
+									1296
+								],
+								[
+									1301,
+									1308
+								],
+								[
+									1309,
+									1327
+								],
+								[
+									1338,
+									1346
+								],
+								[
+									1368,
+									1378
+								],
+								[
+									1396,
+									1406
+								],
+								[
+									1429,
+									1441
+								],
+								[
+									1442,
+									1459
+								],
+								[
+									1464,
+									1476
+								],
+								[
+									1477,
+									1499
+								],
+								[
+									1505,
+									1516
+								],
+								[
+									1543,
+									1556
+								],
+								[
+									1576,
+									1580
+								],
+								[
+									1582,
+									1609
+								],
+								[
+									1621,
+									1634
+								],
+								[
+									1651,
+									1659
+								],
+								[
+									1677,
+									1685
+								],
+								[
+									1708,
+									1720
+								],
+								[
+									1721,
+									1748
+								],
+								[
+									1756,
+									1765
+								],
+								[
+									1778,
+									1790
+								],
+								[
+									1792,
+									1803
+								],
+								[
+									1804,
+									1819
+								],
+								[
+									1836,
+									1839
+								],
+								[
+									1840,
+									1851
+								],
+								[
+									1878,
+									1890
+								],
+								[
+									1891,
+									1970
+								],
+								[
+									1988,
+									2001
+								],
+								[
+									2023,
+									2027
+								],
+								[
+									2054,
+									2057
+								],
+								[
+									2058,
+									2074
+								],
+								[
+									2100,
+									2109
+								],
+								[
+									2134,
+									2147
+								],
+								[
+									2196,
+									2211
+								],
+								[
+									2275,
+									2288
+								],
+								[
+									2316,
+									2331
+								],
+								[
+									2334,
+									2339
+								],
+								[
+									2340,
+									2345
+								],
+								[
+									2346,
+									2358
+								],
+								[
+									2376,
+									2389
+								],
+								[
+									2409,
+									2420
+								],
+								[
+									2421,
+									2484
+								],
+								[
+									2489,
+									2500
+								],
+								[
+									2501,
+									2524
+								],
+								[
+									2529,
+									2540
+								],
+								[
+									2541,
+									2558
+								],
+								[
+									2594,
+									2608
+								],
+								[
+									2646,
+									2660
+								],
+								[
+									2695,
+									2710
+								],
+								[
+									2870,
+									2878
+								],
+								[
+									2880,
+									2891
+								],
+								[
+									2936,
+									2943
+								],
+								[
+									2945,
+									2959
+								],
+								[
+									2962,
+									2975
+								],
+								[
+									2983,
+									2987
+								],
+								[
+									3004,
+									3017
+								],
+								[
+									3036,
+									3049
+								]
 							],
 							"symlist":
 							[
+								"variable: IFS",
+								"variable: TS",
+								"variable: SOURCES",
+								"expansion: $(find \"$@\" -name \"*.c\" )",
+								"function: find_source",
+								"expansion: $SOURCES",
+								"expansion: $1",
+								"function: isin",
+								"variable: __NEEDLE",
+								"expansion: $1",
+								"expansion: $#",
+								"expansion: $__NEEDLE",
+								"expansion: $1",
+								"function: pushv",
+								"expansion: $1",
+								"expansion: $1",
+								"expansion: $1",
+								"function: pushv_unique",
+								"variable: __VAR",
+								"expansion: $1",
+								"variable: __ARG",
+								"variable: IFS",
+								"expansion: $__VAR",
+								"expansion: $__VAR",
+								"expansion: $__ARG",
+								"function: output_target",
+								"variable: SOURCE",
+								"expansion: $1",
+								"variable: SUFFIX",
+								"variable: IFS",
+								"variable: DEPS",
+								"expansion: $SOURCE",
+								"expansion: $*",
+								"variable: OBJECT",
+								"expansion: $(basename \"$SOURCE\" .c)${SUFFIX}",
+								"expansion: ${CPPFLAGS:+$OBJECT: CPPFLAGS += $CPPFLAGS\n}$OBJECT",
+								"expansion: ${DEPS}",
+								"expansion: $TS",
+								"variable: ALL_INCLUDES",
+								"expansion: $SOURCES",
+								"variable: SOURCE",
+								"expansion: ${SOURCE#./}",
+								"variable: SOURCE_DIR",
+								"expansion: $(dirname \"${SOURCE}\")",
+								"expansion: $SOURCE_DIR",
+								"variable: SOURCE_ROOT",
+								"expansion: ${SOURCE_DIR#3rdparty/}",
+								"variable: SOURCE_ROOT",
+								"expansion: ${SOURCE_ROOT%%/*}",
+								"variable: SOURCE_ROOT",
+								"variable: INCLUDES",
+								"variable: INCLUDE_FILES",
+								"variable: CMDS",
+								"variable: TMP",
+								"expansion: `mktemp $PWD/tmpXXXXX`",
+								"expansion: $SOURCE",
+								"expansion: $TMP",
+								"variable: IFS",
+								"variable: IFS",
+								"variable: INCLUDE",
+								"expansion: ${INCLUDE_CMD#*include}",
+								"variable: INCLUDE",
+								"expansion: ${INCLUDE#[ \\r\\t]}",
+								"variable: INCLUDE",
+								"expansion: ${INCLUDE%[ \\r\\t]}",
+								"expansion: $INCLUDE",
+								"variable: SYSINCLUDE",
+								"variable: SYSINCLUDE",
+								"variable: INCLUDE_FILE",
+								"expansion: ${INCLUDE#*[\\\"<]}",
+								"variable: INCLUDE_FILE",
+								"expansion: ${INCLUDE_FILE%[\\\">]*}",
+								"expansion: $SYSINCLUDE",
+								"expansion: $INCLUDE_FILE",
+								"variable: CMDS",
+								"expansion: ${CMDS:+$CMDS }$INCLUDE_CMD",
+								"expansion: $INCLUDE_FILE",
+								"variable: RELATIVE",
+								"variable: RELATIVE",
+								"variable: INCLUDE_NAME",
+								"expansion: $(basename \"$INCLUDE_FILE\")",
+								"expansion: $RELATIVE",
+								"variable: INCLUDE_PATH",
+								"expansion: $SOURCE_DIR",
+								"expansion: ${INCLUDE_FILE}",
+								"variable: DIR",
+								"expansion: $SOURCE_DIR",
+								"variable: INCLUDE_PATH",
+								"expansion: $( (find \"${DIR}\" -name \"$INCLUDE_NAME\" -not -wholename \"*build/*\") | head -n1)",
+								"expansion: $INCLUDE_PATH",
+								"expansion: $DIR",
+								"variable: DIR",
+								"expansion: `dirname \"$DIR\"`",
+								"expansion: $RELATIVE",
+								"expansion: $INCLUDE_PATH",
+								"expansion: ${INCLUDE_PATH}",
+								"expansion: $INCLUDE_PATH",
+								"expansion: ${INCLUDE_PATH}",
+								"expansion: $FILE",
+								"expansion: $LINE",
+								"expansion: $INCLUDE_CMD",
+								"expansion: $INCLUDE_PATH",
+								"variable: INCLUDE_REL",
+								"expansion: $( realpath --relative-to=\"$(dirname \"$SOURCE\")\" $INCLUDE_PATH)",
+								"variable: INCLUDE_DIR",
+								"expansion: `dirname $INCLUDE_PATH`",
+								"variable: INCLUDE_DIR",
+								"expansion: ${INCLUDE_DIR#./}",
+								"expansion: ${INCLUDE_DIR}",
+								"expansion: ${INCLUDE_DIR}",
+								"expansion: ${INCLUDE_PATH}",
+								"variable: CPPFLAGS",
+								"expansion: ${INCLUDES}",
+								"expansion: $SOURCE",
+								"expansion: $INCLUDE_FILES",
+								"variable: INCLUDE_FILES",
+								"expansion: $TMP",
+								"expansion: $ALL_INCLUDES",
+								"expansion: $ALL_INCLUDES"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -827,44 +1496,250 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 8,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 5,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "eagle-gen-cmds.c",
+					"file": "libc-resolv-override.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 44642,
+						"buffer_size": 11711,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								26066,
-								26066
+								11051,
+								11051
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 40152.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "setuidgid.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1306,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1153,
+								1153
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1255.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 37862,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8177,
+								8177
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 8643.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "scripts/gen-makefile-deps.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 897,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								865,
+								865
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 384.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "scripts/relative-includes.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1124,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1124,
+								1124
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 768.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "scripts/get-includes.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3060,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								765,
+								765
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 835.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "GNUmakefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 66016,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								39374,
+								39374
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 48451.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/roman/Dokumente/Sources/daemontools/src/setuidgid.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 723,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								707,
+								707
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 576.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
@@ -960,8 +1835,152 @@
 		"selected_items":
 		[
 			[
+				"gen-ma",
+				"scripts/gen-makefile-deps.sh"
+			],
+			[
 				"gen-",
-				"eagle-gen-cmds.c"
+				"scripts/gen-makefile-deps.sh"
+			],
+			[
+				"gnuma",
+				"GNUmakefile"
+			],
+			[
+				"CMakeLists",
+				"CMakeLists.txt"
+			],
+			[
+				"setuid",
+				"setuidgid.c"
+			],
+			[
+				"byte.h",
+				"lib/byte.h"
+			],
+			[
+				"scan.h",
+				"lib/scan.h"
+			],
+			[
+				"str.h",
+				"lib/str.h"
+			],
+			[
+				"mmap_read",
+				"lib/mmap/mmap_read.c"
+			],
+			[
+				"GNU",
+				"GNUmakefile"
+			],
+			[
+				"alloc.h",
+				"lib/alloc.h"
+			],
+			[
+				"alloc.c",
+				"lib/alloc/alloc.c"
+			],
+			[
+				"functions.mk",
+				"build/functions.mk"
+			],
+			[
+				"func",
+				"FunctionGenerator-ICL8038.brd"
+			],
+			[
+				"errmsg.h",
+				"lib/errmsg.h"
+			],
+			[
+				"dns.h",
+				"lib/dns.h"
+			],
+			[
+				"dnsip",
+				"dnsip.c"
+			],
+			[
+				"case.h",
+				"lib/case.h"
+			],
+			[
+				"rcip",
+				"lib/dns/dns_rcip.c"
+			],
+			[
+				"libc",
+				"libc-resolv-override.c"
+			],
+			[
+				"scan_ip",
+				"lib/socket/scan_ip6.c"
+			],
+			[
+				"ip6",
+				"lib/ip6.h"
+			],
+			[
+				"byte_",
+				"lib/byte/byte_equal.c"
+			],
+			[
+				"buffer_put",
+				"lib/buffer/buffer_putc.c"
+			],
+			[
+				"fmt_ip",
+				"lib/socket/fmt_ip4.c"
+			],
+			[
+				"dns_rc",
+				"lib/dns/dns_rcip.c"
+			],
+			[
+				"packet",
+				"lib/dns/dns_packet.c"
+			],
+			[
+				"libc-",
+				"libc-resolv-override.h"
+			],
+			[
+				"byte_fill",
+				"lib/byte/byte_fill.c"
+			],
+			[
+				"dns_name",
+				"lib/dns/dns_name.c"
+			],
+			[
+				"libc-r",
+				"libc-resolv-override.c"
+			],
+			[
+				"packet.",
+				"lib/dns/dns_packet.c"
+			],
+			[
+				"dns_pack",
+				"lib/dns/dns_packet.c"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"env_get",
+				"lib/env/env_get.c"
+			],
+			[
+				"openread",
+				"lib/stralloc/openreadclose.c"
+			],
+			[
+				"libc-res",
+				"libc-resolv-override.c"
 			],
 			[
 				"fmt_d",
@@ -1172,14 +2191,6 @@
 				"map.h"
 			],
 			[
-				"stralloc.h",
-				"lib/stralloc.h"
-			],
-			[
-				"gnuma",
-				"GNUmakefile"
-			],
-			[
 				"strarray.h",
 				"lib/strarray.h"
 			],
@@ -1324,10 +2335,6 @@
 				"lib/path/path_exists.c"
 			],
 			[
-				"byte.h",
-				"lib/byte.h"
-			],
-			[
 				"4874",
 				"node_modules/tar/.nyc_output/0471d9cf-687f-4ae8-84a5-ce7468becd03.json"
 			],
@@ -1338,138 +2345,6 @@
 			[
 				"mediathek-list",
 				"mediathek-list.c"
-			],
-			[
-				"strlist_push",
-				"lib/strlist/strlist_push_sa.c"
-			],
-			[
-				"strlist_pushb",
-				"lib/strlist/strlist_pushb.c"
-			],
-			[
-				"sort.c",
-				"lib/strlist/strlist_sort.c"
-			],
-			[
-				"STRLIST_AT",
-				"lib/strlist/strlist_at.c"
-			],
-			[
-				"removeb.c",
-				"lib/strlist/strlist_removeb.c"
-			],
-			[
-				"strlist_c",
-				"lib/strlist/strlist_count.c"
-			],
-			[
-				"strlist_cun",
-				"lib/strlist/strlist_count.c"
-			],
-			[
-				"strlist_count",
-				"lib/strlist/strlist_count.c"
-			],
-			[
-				"str.h",
-				"lib/str.h"
-			],
-			[
-				"idex_of",
-				"lib/strarray/strarray_index_of.c"
-			],
-			[
-				"byte_",
-				"lib/byte/byte_finds.c"
-			],
-			[
-				"str_str",
-				"lib/str/str_start.c"
-			],
-			[
-				"scan_whiten",
-				"lib/scan/scan_whitenskip.c"
-			],
-			[
-				"rchrs",
-				"lib/str/str_rchrs.c"
-			],
-			[
-				"gen",
-				"genmakefile.h"
-			],
-			[
-				"strarray_sort",
-				"lib/strarray/strarray_sort.c"
-			],
-			[
-				"pathh",
-				"lib/path.h"
-			],
-			[
-				"pkgcfg",
-				"pkgcfg.c"
-			],
-			[
-				"scan_whi",
-				"lib/scan/scan_nonwhitenskip.c"
-			],
-			[
-				"scan_skip",
-				"lib/scan/scan_whitenskip.c"
-			],
-			[
-				"putflush.c",
-				"lib/buffer/buffer_putflush.c"
-			],
-			[
-				"mediathek-lis",
-				"mediathek-list.c"
-			],
-			[
-				"cmakelist",
-				"CMakeLists.txt"
-			],
-			[
-				"putc",
-				"lib/buffer/buffer_putc.c"
-			],
-			[
-				"type",
-				"lib/typedefs.h"
-			],
-			[
-				"gnu.mk",
-				"build/gnu.mk"
-			],
-			[
-				"GNUma",
-				"GNUmakefile"
-			],
-			[
-				"CMAkeL",
-				"CMakeLists.txt"
-			],
-			[
-				"CMAkeList",
-				"CMakeLists.txt"
-			],
-			[
-				"httptet",
-				"httptest.c"
-			],
-			[
-				"sendreq",
-				"lib/http/http_sendreq.c"
-			],
-			[
-				"http.h",
-				"lib/http.h"
-			],
-			[
-				"CMakeLists",
-				"CMakeLists.txt"
 			]
 		],
 		"width": 0.0
