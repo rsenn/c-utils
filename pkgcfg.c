@@ -37,13 +37,12 @@ typedef enum {
   PRINT_LIBS = 4,
   PRINT_REQUIRES = 8,
   PRINT_PATH = 16,
-  LIST_ALL = 32,
-  STATIC_LIBS = 64
+  LIST_ALL = 32
 } id;
 
-typedef enum { LIBS_ONLY_L = 128, LIBS_ONLY_OTHER = 256 } libs_mode_t;
+typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_OTHER = 128 } libs_mode_t;
 
-typedef enum { CFLAGS_ONLY_I = 512, CFLAGS_ONLY_OTHER = 1024 } cflags_mode_t;
+typedef enum { CFLAGS_ONLY_I = 256, CFLAGS_ONLY_OTHER = 512 } cflags_mode_t;
 
 static struct {
   id code;
@@ -70,6 +69,7 @@ static const char *sysroot = 0, *pkgcfg_path = 0;
 static int libs_mode = 0;
 static int static_libs = 0;
 static int cflags_mode = 0;
+static int sorted = 1;
 
 int
 get_field_index(int flags) {
@@ -463,11 +463,13 @@ pkg_list() {
 
           stralloc_nul(&line);
 
-          slink_foreach(&pkgs, it)
-            if(str_diff(line.s, slink_data(it)) < 0)
-              break;
-        
-          slist_unshifts(it, line.s);
+          if(sorted) {
+            slink_foreach(&pkgs, it) if(str_diff(line.s, slink_data(it)) < 0) break;
+
+            slist_unshifts(it, line.s);
+          } else {
+            slist_pushs(&pkgs, line.s);
+          }
 
           byte_zero(&line, sizeof(line));
         }
@@ -479,7 +481,7 @@ pkg_list() {
     }
   }
 
-  slist_foreach(pkgs, item) { 
+  slist_foreach(pkgs, item) {
     const char* x = slist_data(item);
     buffer_puts(buffer_1, x);
     buffer_putnlflush(buffer_1);
@@ -796,7 +798,9 @@ main(int argc, char* argv[]) {
       //  {"libs", 0, NULL, PRINT_LIBS},
       {"cflags-only-I", 0, &cflags_mode, CFLAGS_ONLY_I},
       {"cflags-only-other", 0, &cflags_mode, CFLAGS_ONLY_OTHER},
-      {"static", 0, NULL, STATIC_LIBS},
+      {"static", 0, &static_libs, 1},
+      {"sorted", 0, &sorted, 1},
+      {"unsorted", 0, &sorted, 0},
 
       /*   {"atleast", 0, NULL, 0},
           {"atleast-pkgconfig-version", 0, NULL, 0},
@@ -854,7 +858,6 @@ main(int argc, char* argv[]) {
         cflags_mode = c;
         break;
 
-      case STATIC_LIBS: static_libs = 1; break;
       case PRINT_VERSION:
       case PRINT_CFLAGS:
       case PRINT_LIBS:
