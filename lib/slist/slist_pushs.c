@@ -18,6 +18,6 @@ slist_pushs(slink** list, const char* s) {
 
   n[0].next = NULL;
   *(char**)slist_data(n) = str_dup(s);
-//  *((const char**)&n[1]) = str_dup(s);
+  //  *((const char**)&n[1]) = str_dup(s);
   return 1;
 }

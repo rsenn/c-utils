@@ -56,6 +56,8 @@ typedef struct xmlnodeset {
 typedef int(xml_read_callback_fn)(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
 typedef int(xml_pred_t)(xmlnode*, const void*, const void*, const void*);
+typedef void xml_print_fmt_t(xmlnode*, buffer*, int, char ch, int n);
+
 /*
 xmlnode* xml_attrnode(const char*, size_t name_len, const char* value, size_t value_len);
 int xml_content_sa(xmlnode*, stralloc* sa);
@@ -81,6 +83,7 @@ xmlnode* xml_child_element_attrs(const char* name, xmlnode* parent, const char* 
 xmlnode* xml_child_element(const char* name, xmlnode* parent);
 xmlnode* xml_child_element_text(const char* name, xmlnode* parent, const char* text);
 int xml_content_sa(xmlnode* node, stralloc* sa);
+size_t xml_num_children(xmlnode* node);
 const char* xml_content(xmlnode* node);
 void xml_debug(xmlnode* node, buffer* b);
 void xml_delete(xmlnode* node);
@@ -122,7 +125,7 @@ xmlnode* xml_pfind_parent(xmlnode* node, xml_pred_t*, const void* ptr[]);
 xmlnode* xml_pfind_pred(xmlnode* node, xml_pred_t*, const void* ptr[]);
 void xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, const char* quot);
 void xml_print_nodeset(const xmlnodeset* ns, buffer* b);
-void xml_print(xmlnode* node, buffer* b);
+void xml_print(xmlnode* node, buffer* b, xml_print_fmt_t* fmt);
 void xml_read_callback(xmlreader* r, xml_read_callback_fn* fn);
 void xml_reader_init(xmlreader* r, buffer* b);
 xmlnode* xml_read_tree(buffer* b);

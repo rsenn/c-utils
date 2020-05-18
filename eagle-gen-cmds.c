@@ -1739,7 +1739,7 @@ main(int argc, char* argv[]) {
 
           buffer_truncfile(&out, filename.s);
 
-          xml_print(doc, &out);
+          xml_print(doc, &out, 0);
           stralloc_free(&filename);
         }
       }

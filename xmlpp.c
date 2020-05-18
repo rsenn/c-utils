@@ -22,7 +22,6 @@
 #include <unistd.h>
 #endif
 
-
 static buffer infile, b;
 static int depth = 0, prev_closing = 0;
 static stralloc prev_element;
@@ -58,7 +57,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
 
       if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
 
-        if(!newline_written) {
+        if(!newline_written && !one_line) {
           buffer_puts(output, "\n");
           buffer_flush(output);
 
@@ -116,11 +115,47 @@ usage(char* av0) {
                        0);
   buffer_flush(buffer_1);
 }
+static int max_depth;
+static int
+xmlpp_get_depth(xmlnode* node, int d) {
+xmlnode* n;
+  if(d == 0)
+    max_depth = 0;
+  else if(d > max_depth)
+    max_depth = d;
+
+  for(n = node->children; n; n = n->next)
+    xmlpp_get_depth(n, d + 1);
+
+  return max_depth;
+}
+
+
+static void
+xmlpp_fmt(xmlnode* node, buffer* b, int depth, char ch) {
+
+   int inner = depth < 0;
+
+  depth = depth < 0 ? -depth : depth;
+
+if(xmlpp_get_depth(node, 0) <= 1)
+  return;
+
+  buffer_putc(b, ch);
+
+  /*   switch(ch) {
+      case '\n':
+      break;
+      case ' ':
+      break;
+    } */
+}
 
 int
 main(int argc, char* argv[]) {
   buffer outfile;
   xmlreader r;
+  xmlnode* doc;
   int ret;
   int c;
   int index = 0;
@@ -179,8 +214,11 @@ main(int argc, char* argv[]) {
     return errno == ENOENT ? 127 : 1;
   }
 
-  xml_reader_init(&r, &infile);
-  xml_read_callback(&r, xml_read_function);
+  // xml_reader_init(&r, &infile);
+  doc = xml_read_tree(&infile);
+
+  xml_print(doc, output, xmlpp_fmt);
+  // xml_read_callback(&r, xml_read_function);
   buffer_close(&infile);
 
   buffer_putnlflush(output);

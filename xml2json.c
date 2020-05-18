@@ -65,8 +65,8 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   p->precision = 5;
   p->depth = depth;
   p->index = index;
-  p->quote[0]= q;
-  p->quote[1]= 0;
+  p->quote[0] = q;
+  p->quote[1] = 0;
 
   if(v == NULL) {
     p->quote[0] = no_quote ? '\0' : quote_char[0];

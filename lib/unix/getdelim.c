@@ -17,7 +17,7 @@
 ssize_t
 getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
   size_t i;
-      char* new;
+  char* new;
   if(!lineptr || !n) {
     errno = EINVAL;
     return -1;
@@ -28,7 +28,7 @@ getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
     int x;
     if(i >= *n) {
       int tmp = *n + 100;
-     if(!alloc_re((void**)lineptr, *n, tmp))
+      if(!alloc_re((void**)lineptr, *n, tmp))
         return -1;
       *lineptr = new;
       *n = tmp;

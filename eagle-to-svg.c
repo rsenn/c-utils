@@ -227,7 +227,7 @@ main(int argc, char* argv[]) {
   }
   // nodeset = xml_find_all_1(signals, xml_match_name, "wire");
 
-  xml_print(svgdoc, &output);
+  xml_print(svgdoc, &output, 0);
   /*
    * Cleanup function for the XML library.
    */

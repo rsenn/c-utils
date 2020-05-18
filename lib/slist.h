@@ -40,7 +40,7 @@ int slist_unshifts(slink**, const char* s);
 
 static inline void*
 slist_data(slink* list) {
-  return (void *)(((slink**)&list)[1]);
+  return (void*)(((slink**)&list)[1]);
 }
 
 static inline void*

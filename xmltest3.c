@@ -148,6 +148,6 @@ main(int argc, char* argv[1]) {
   byte_zero(&out, sizeof(out));
   buffer_truncfile(&out, "configuration.xml");
   doc = create_xml_document();
-  xml_print(doc, buffer_1);
+  xml_print(doc, buffer_1, 0);
   xml_free(doc);
 }
