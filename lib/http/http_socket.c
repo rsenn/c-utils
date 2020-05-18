@@ -1,4 +1,5 @@
 #include "../windoze.h"
+#include "../alloc.h"
 //#define USE_WS2_32 1
 #include "../socket_internal.h"
 #include "../buffer.h"
