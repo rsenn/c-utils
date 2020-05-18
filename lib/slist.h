@@ -32,7 +32,7 @@ int slist_shifts(slink**);
 slink* slist_shift(slink**);
 int slist_unshifts(slink**, const char* s);
 
-#define slink_foreach(link, n) for((n) = (void*)(link); *(n); (n) = (void*)((slink*)(n))->next)
+#define slink_foreach(link, n) for((n) = (void*)(link); *(void**)(n); (n) = (void*)((slink*)(n))->next)
 #define slist_foreach(list, n) for((n) = (void*)slist_begin(list); *(slink**)(n); (n) = (void*)slist_next((slink**)n))
 
 #define _slist_begin(st) ((struct slink**)&(st))
@@ -40,7 +40,7 @@ int slist_unshifts(slink**, const char* s);
 
 static inline void*
 slist_data(slink* list) {
-  return (void *)(((slink**)list)[1]);
+  return (void *)(((slink**)&list)[1]);
 }
 
 static inline void*
