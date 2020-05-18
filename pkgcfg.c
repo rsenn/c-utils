@@ -692,10 +692,35 @@ main(int argc, char* argv[]) {
       {"cflags", 0, NULL, PRINT_CFLAGS},
       {"libs", 0, NULL, PRINT_LIBS},
       {"path", 0, NULL, PRINT_PATH},
+      {"variable", 1, NULL, 'V'},
       {"list-all", 0, NULL, 'l'},
       {"print-errors", 0, NULL, 'P'},
       {"short-errors", 0, NULL, 'S'},
       {"exists", 0, NULL, 'E'},
+    /*   {"atleast", 0, NULL, 0},
+      {"atleast-pkgconfig-version", 0, NULL, 0},
+      {"atleast-version", 0, NULL, 0},
+      {"cflags-only-I", 0, NULL, 0},
+      {"cflags-only-other", 0, NULL, 0},
+      {"debug", 0, NULL, 0},
+      {"define-prefix", 0, NULL, 0},
+      {"define-variable", 0, NULL, 0},
+      {"dont-define-prefix", 0, NULL, 0},
+      {"errors-to-stdout", 0, NULL, 0},
+      {"exact-version", 0, NULL, 0},
+      {"libs-only-l", 0, NULL, 0},
+      {"libs-only-other", 0, NULL, 0},
+      {"max-version", 0, NULL, 0},
+      {"prefix-variable", 0, NULL, 0},
+      {"print-provides", 0, NULL, 0},
+      {"print-requires", 0, NULL, 0},
+      {"print-requires-private", 0, NULL, 0},
+      {"print-variables", 0, NULL, 0},
+      {"silence-errors", 0, NULL, 0},
+      {"static", 0, NULL, 0},
+      {"uninstalled", 0, NULL, 0},
+      {"validate", 0, NULL, 0}, */
+
       {0, 0, 0, 0},
   };
 
@@ -705,17 +730,17 @@ main(int argc, char* argv[]) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "?hmilpaPSv", opts, &index);
+    c = getopt_long(argc, argv, "?hmilpaPSvV:", opts, &index);
     if(c == -1)
-      break;
+      break; 
     if(c == 0)
       continue;
 
     switch(c) {
       case '?':
       case 'h': usage(argv[0]); return 0;
+      case 'V': break;
       case 'v': {
-
         buffer_putsflush(buffer_1, "1.0\n");
         exit(0);
       }
