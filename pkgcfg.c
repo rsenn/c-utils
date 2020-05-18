@@ -416,65 +416,65 @@ pkg_list() {
   slink* pkgs;
   slink** it;
   stralloc path, line;
-  int i, n = strlist_count(&cmd.path);
+  const char* s;
+  size_t n, len;
 
   slist_init(&pkgs);
 
   stralloc_init(&path);
   stralloc_init(&line);
 
-  for(i = 0; i < n; ++i) {
+  strlist_foreach(&cmd.path, s, n) {
     const char* entry;
     dir_t d;
+    stralloc_copyb(&path, s, n);
+      len = path.len;
+    stralloc_nul(&path);
 
-    path = strlist_at_sa(&cmd.path, i);
-    {
-      size_t len = path.len;
-      stralloc_nul(&path);
-      dir_open(&d, path.s);
+  if(dir_open(&d, path.s))
+    continue;
 
-      while((entry = dir_read(&d))) {
-        stralloc_catm_internal(&path, "/", entry, 0);
+    while((entry = dir_read(&d))) {
+      stralloc_catm_internal(&path, "/", entry, 0);
 
-        if(stralloc_endb(&path, ".pc", 3)) {
-          stralloc line;
-          buffer pc;
-          pkg pf;
+      if(stralloc_endb(&path, ".pc", 3)) {
+        stralloc line;
+        buffer pc;
+        pkg pf;
 
-          stralloc_init(&line);
+        stralloc_init(&line);
+        stralloc_nul(&path);
+        pkg_init(&pf, path.s);
+
+        if(!buffer_mmapread(&pc, path.s)) {
+          path.len -= 3;
           stralloc_nul(&path);
-          pkg_init(&pf, path.s);
 
-          if(!buffer_mmapread(&pc, path.s)) {
-            path.len -= 3;
-            stralloc_nul(&path);
+          stralloc_copys(&line, str_basename(path.s));
 
-            stralloc_copys(&line, str_basename(path.s));
+          if(pkg_read(&pc, &pf)) {
+            const char* desc;
 
-            if(pkg_read(&pc, &pf)) {
-              const char* desc;
-
-              if((desc = pkg_get(&pf, "Description"))) {
-                stralloc_cats(&line, " - ");
-                stralloc_cats(&line, desc);
-              }
+            if((desc = pkg_get(&pf, "Description"))) {
+              stralloc_cats(&line, " - ");
+              stralloc_cats(&line, desc);
             }
-
-            stralloc_nul(&line);
-
-            buffer_putsa(buffer_1, &line);
-            buffer_putnlflush(buffer_1);
-
-            slist_pushs(&pkgs, line.s);
-            line.s = NULL;
-            line.a = 0;
           }
 
-          pkg_free(&pf);
+          stralloc_nul(&line);
+
+          buffer_putsa(buffer_1, &line);
+          buffer_putnlflush(buffer_1);
+
+          slist_pushs(&pkgs, line.s);
+          line.s = NULL;
+          line.a = 0;
         }
 
-        path.len = len;
+        pkg_free(&pf);
       }
+
+      path.len = len;
     }
   }
 
@@ -491,25 +491,24 @@ int
 pkg_open(const char* pkgname, pkg* pf) {
   buffer pc;
   const char* s;
-  int ret = 0, i;
- 
+  size_t n;
+  int ret = 0;
+
   stralloc_init(&pf->name);
 
-  strlist_foreach_s(&cmd.path, s) {
+  strlist_foreach(&cmd.path, s, n) {
 
-    stralloc_copys(&pf->name, s);
-
+    stralloc_copyb(&pf->name, s, n);
     stralloc_catm_internal(&pf->name, "/", pkgname, ".pc", 0);
     stralloc_nul(&pf->name);
-
 
     if(!buffer_mmapread(&pc, pf->name.s))
       break;
   }
 
   if(pc.x)
-     ret = pkg_read(&pc, pf);
-  else 
+    ret = pkg_read(&pc, pf);
+  else
     stralloc_free(&pf->name);
 
   return ret;
