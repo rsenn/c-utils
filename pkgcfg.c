@@ -463,17 +463,13 @@ pkg_list() {
 
           stralloc_nul(&line);
 
-          /*     buffer_putsa(buffer_1, &line);
-              buffer_putnlflush(buffer_1); */
-       
-          for(it = &pkgs; *it; it = &((*it)->next)) {
-            if(str_diff(line.s, slist_data(*it)) < 0)
+          slink_foreach(&pkgs, it)
+            if(str_diff(line.s, slink_data(it)) < 0)
               break;
-          }
-
+        
           slist_unshifts(it, line.s);
-          line.s = NULL;
-          line.a = 0;
+
+          byte_zero(&line, sizeof(line));
         }
 
         pkg_free(&pf);
@@ -484,8 +480,11 @@ pkg_list() {
   }
 
   slist_foreach(pkgs, item) { 
-    buffer_puts(buffer_1, slist_data(item));
+    const char* x = slist_data(item);
+    buffer_puts(buffer_1, x);
     buffer_putnlflush(buffer_1);
+
+    free(x);
   }
 }
 
