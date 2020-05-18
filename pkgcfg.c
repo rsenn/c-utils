@@ -507,12 +507,12 @@ pkg_conf(strarray* modules, int mode) {
   }
 
   if(!(mode & PKGCFG_EXISTS)) {
-    strlist sl;
+    /* strlist sl;
     strlist_init(&sl, '\n');
     stralloc_nul(&value);
     strlist_froms(&sl, value.s, ' ');
     strlist_dump(buffer_2, &sl);
-
+ */
     buffer_putsa(buffer_1, &value);
     buffer_putnlflush(buffer_1);
   }
